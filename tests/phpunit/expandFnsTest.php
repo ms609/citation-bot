@@ -134,4 +134,39 @@ final class expandFnsTest extends testBaseClass {
   public function testBrackets() {
     $this->assertSame("ABC",remove_brackets('{}{}{A[][][][][]B()(){}[]][][[][C][][][[()()'));
   }
+  
+  // The X prevents first character caps
+  public function testCapitalization_lots_more() { // Double check that constants are in order when we sort - paranoid
+    $this->assertSame('X BJPsych', title_capitalization(title_case('X Bjpsych'), TRUE));
+    $this->assertSame('X delle', title_capitalization(title_case('X delle'), TRUE));
+    $this->assertSame('X IEEE', title_capitalization(title_case('X Ieee'), TRUE));
+    $this->assertSame('X NASA', title_capitalization(title_case('X Nasa'), TRUE));
+    $this->assertSame('X over', title_capitalization(title_case('X Over'), TRUE));
+    $this->assertSame('X und', title_capitalization(title_case('X Und'), TRUE));
+    $this->assertSame('X within', title_capitalization(title_case('X Within'), TRUE));
+    $this->assertSame('X AAPS', title_capitalization(title_case('X Aaps'), TRUE));
+    $this->assertSame('X BJOG', title_capitalization(title_case('X Bjog'), TRUE));
+  }
+  public function testCapitalization_lots_more2() {
+    $this->assertSame('X e-Neuroforum', title_capitalization(title_case('X E-Neuroforum'), TRUE));
+    $this->assertSame('X eGEMs', title_capitalization(title_case('X Egems'), TRUE));
+    $this->assertSame('X eNeuro', title_capitalization(title_case('X Eneuro'), TRUE));
+    $this->assertSame('X eVolo', title_capitalization(title_case('X EVolo'), TRUE));
+    $this->assertSame('X HannahArendt.net', title_capitalization(title_case('X hannaharendt.net'), TRUE));
+    $this->assertSame('X iJournal', title_capitalization(title_case('X IJournal'), TRUE));
+    $this->assertSame('X JABS : Journal of Applied Biological Sciences', title_capitalization(title_case('X Jabs : Journal of Applied Biological Sciences'), TRUE));
+  }
+  public function testCapitalization_lots_more3() {
+    $this->assertSame('X La Trobe', title_capitalization(title_case('X La Trobe'), TRUE));
+    $this->assertSame('X MERIP', title_capitalization(title_case('X Merip'), TRUE));
+    $this->assertSame('X mSystems', title_capitalization(title_case('X MSystems'), TRUE));
+    $this->assertSame('X PhytoKeys', title_capitalization(title_case('X Phytokeys'), TRUE));
+    $this->assertSame('X PNAS', title_capitalization(title_case('X Pnas'), TRUE));
+  }
+  public function testCapitalization_lots_more4() {
+    $this->assertSame('X Srp Arh Celok Lek', title_capitalization(title_case('X SRP Arh Celok Lek'), TRUE));
+    $this->assertSame('X Time Out London', title_capitalization(title_case('X Time out London'), TRUE));
+    $this->assertSame('X z/Journal', title_capitalization(title_case('X Z/journal'), TRUE));
+    $this->assertSame('X ZooKeys', title_capitalization(title_case('X zookeys'), TRUE));
+  }
 }

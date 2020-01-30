@@ -79,6 +79,7 @@ final class constantsTest extends testBaseClass {
   }
   
   public function testAtoZ() {
+    $leader = TRUE;
     $start_alpha = '/* The following will be automatically updated to alphabetical order */';
     $end_alpha = '/* The above will be automatically updated to alphabetical order */';
     $filename = __DIR__ . '/../../constants/capitalization.php';
@@ -88,9 +89,18 @@ final class constantsTest extends testBaseClass {
       $alpha_end = stripos($section, $end_alpha);
       if (!$alpha_end) continue;
       $alpha_bit = substr($section, 0, $alpha_end);
-      $alpha_bits = preg_split("~(?<='),~", $alpha_bit);
+      $alpha_bits = preg_split('~(?<="),~', $alpha_bit);
       $alpha_bits = array_map('trim', $alpha_bits);
-      //   sort($alpha_bits, SORT_STRING | SORT_FLAG_CASE);  // TODO deal with constants that might not be in same order in both arrays.  Right now we just fix line lenghts which means it probably does nothing
+      if ($leader) {
+        $leader_bits = $alpha_bits;
+        sort($alpha_bits, SORT_STRING | SORT_FLAG_CASE);
+        $leader = FALSE;
+      } else {
+        $this->assertSame(count($leader_bits), count($alpha_bits));
+        array_multisort($leader_bits, SORT_STRING | SORT_FLAG_CASE, $alpha_bits);
+        $leader_bits = NULL;
+        $leader = TRUE;
+      }
       $bits_length = array_map('strlen', $alpha_bits);
       $bit_length = current($bits_length);
       $chunk_length = 0;
@@ -100,7 +110,7 @@ final class constantsTest extends testBaseClass {
       array_unshift($alpha_bits, ''); // We use next below, need a fake bit at the start
       foreach ($bits_length as $bit_length) {
        $bit = next($alpha_bits);
-       $alphaed .= $bit ? ($bit . ', ') : '';
+       $alphaed .= $bit ? ($bit . ", ") : '';
        $line_length += $bit_length + 2;
        if ($line_length > 86) {
          $alphaed .= $new_line;
