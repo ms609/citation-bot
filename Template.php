@@ -2073,8 +2073,8 @@ final class Template {
       }
       return TRUE;
     } else {
-      report_inline('no record retrieved.');
-      return FALSE;
+      report_inline('no record retrieved.');  // @codeCoverageIgnore
+      return FALSE;                           // @codeCoverageIgnore
     }
   }
   
