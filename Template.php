@@ -2399,6 +2399,17 @@ final class Template {
   }
 
   public function get_semanticscholar_url($doi) {
+        if ($this->has('arxiv') ||
+            $this->has('biorxiv') ||
+            $this->has('citeseerx') ||
+            $this->has('pmc') ||
+            $this->has('rfc') ||
+            $this->has('ssrn') ||
+            ($this->has('doi') && $this->get('doi-access') === 'free') ||
+            ($this->has('jstor') && $this->get('jstor-access') === 'free') ||
+            ($this->has('osti') && $this->get('osti-access') === 'free') ||
+            ($this->has('ol') && $this->get('ol-access') === 'free')
+           ) return TRUE; // do not add url if have OA already
     $url = "https://api.semanticscholar.org/v1/paper/$doi";
     $json = @file_get_contents($url);
     if ($json) {
@@ -2441,15 +2452,15 @@ final class Template {
         if (stripos($oa_url, 'semanticscholar.org') !== FALSE) return FALSE;  // Limit semanticscholar to licenced only - use API call instead
         if ($this->get('url')) {
             if ($this->get('url') !== $oa_url) $this->get_identifiers_from_url($oa_url);  // Maybe we can get a new link type
-            return TRUE;
+            return FALSE;
         }
         preg_match("~^https?://([^\/]+)/~", $oa_url, $match);
         $host_name = @$match[1];
-        if (str_ireplace(CANONICAL_PUBLISHER_URLS, '', $host_name) !== $host_name) return FALSE; // Its the publisher
+        if (str_ireplace(CANONICAL_PUBLISHER_URLS, '', $host_name) !== $host_name) return TRUE; // Its the publisher
         if (stripos($oa_url, 'bioone.org/doi') !== FALSE) return TRUE;
-        if (stripos($oa_url, 'gateway.isiknowledge.com') !== FALSE) return TRUE;
+        if (stripos($oa_url, 'gateway.isiknowledge.com') !== FALSE) return FALSE;
         if (stripos($oa_url, 'biodiversitylibrary') !== FALSE) return TRUE;
-        if (stripos($oa_url, 'orbit.dtu.dk/en/publications') !== FALSE) return TRUE; // Abstract only
+        if (stripos($oa_url, 'orbit.dtu.dk/en/publications') !== FALSE) return FALSE; // Abstract only
         // Check if best location is already linked -- avoid double links
         if (preg_match("~^https?://europepmc\.org/articles/pmc(\d+)~", $oa_url, $match) || preg_match("~^https?://www\.pubmedcentral\.nih\.gov/articlerender.fcgi\?.*\bartid=(\d+)"
                       . "|^https?://www\.ncbi\.nlm\.nih\.gov/(?:m/)?pmc/articles/PMC(\d+)~", $oa_url, $match)) {
@@ -2459,17 +2470,17 @@ final class Template {
         }
         if (preg_match("~\barxiv\.org/.*(?:pdf|abs)/(.+)$~", $oa_url, $match)) {
           if ($this->has('arxiv') || $this->has('eprint')) {
-             return TRUE;
+             return FALSE;
           }
         }
         if ($this->has('hdl') ) {
-          if (stripos($oa_url, $this->get('hdl')) !== FALSE) return TRUE;
-          if (stripos($oa_url, 'hdl.handle.net') !== FALSE) return TRUE;
+          if (stripos($oa_url, $this->get('hdl')) !== FALSE) return FALSE;
+          if (stripos($oa_url, 'hdl.handle.net') !== FALSE) return FALSE;
           foreach (HANDLES_HOSTS as $hosts) {
             if (preg_match('~^https?://' . str_replace('.', '\.', $hosts) . '(/.+)$~', $url, $matches)) {
               $handle1 = $matches[1];
               foreach (HANDLES_PATHS as $handle_path) {
-                if (preg_match('~^' . $handle_path . '(.+)$~', $handle1)) return TRUE;
+                if (preg_match('~^' . $handle_path . '(.+)$~', $handle1)) return FALSE;
               }
               break;
             }
@@ -2477,27 +2488,27 @@ final class Template {
         }
         if (strpos($oa_url, 'citeseerx.ist.psu.edu') !== false) {
           if ($this->has('citeseerx') ) {
-             return TRUE;
+             return FALSE;
           }
         }
         if (preg_match(REGEXP_BIBCODE, urldecode($oa_url), $bibcode)) {
            if ($this->has('bibcode')) {
-             return TRUE;
+             return FALSE;
           }
         }
         if (preg_match("~https?://www.ncbi.nlm.nih.gov/(?:m/)?pubmed/.*?=?(\d+)~", $oa_url, $match)) {
           if ($this->has('pmid')) {
-             return TRUE;
+             return FALSE;
           }
         }
         if (preg_match("~^https?://d?x?\.?doi\.org/*~", $oa_url, $match)) {
           if ($this->has('doi')) {
-             return TRUE;
+             return FALSE;
           }
         }
         if (preg_match("~^https?://doi\.library\.ubc\.ca/*~", $oa_url, $match)) {
           if ($this->has('doi')) {
-             return TRUE;
+             return FALSE;
           }
         }
 
