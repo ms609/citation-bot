@@ -2549,6 +2549,10 @@ T1 - This is the Title }}';
     $template = $this->make_citation($text);
     $template->tidy_parameter('chapter-format');
     $this->assertNull($template->get('chapter-format'));
+    $text = "{{cite web|format=portable document format|url=http://www.x.com/stuff.pdf}}";
+    $template = $this->make_citation($text);
+    $template->tidy_parameter('format');
+    $this->assertNull($template->get('format'));
   }
            
   public function testTidy20() {
