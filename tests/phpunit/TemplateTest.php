@@ -458,7 +458,7 @@ final class TemplateTest extends testBaseClass {
   }
   
   public function testTemplateRenamingURLConvert() {
-    $text='{{cite journal |url=http://www.paulselden.net/uploads/7/5/3/2/7532217/elsterrestrialization.pdf |title=Terrestrialization (Precambrian–Devonian) |last=Selden |first=Paul A. |year=2005 |encyclopedia=[[Encyclopedia of Life Sciences]] |publisher=[[John Wiley & Sons, Ltd.]] |doi=10.1038/npg.els.0004145 |format=DUDE}}';
+    $text='{{cite journal |url=http://www.paulselden.net/uploads/7/5/3/2/7532217/elsterrestrialization.pdf |title=Terrestrialization (Precambrian–Devonian) |last=Selden |first=Paul A. |year=2005 |encyclopedia=[[Encyclopedia of Life Sciences]] |publisher=[[John Wiley & Sons, Ltd.]] |doi=  10.1007/978-94-017-0611-7_6 |format=DUDE}}';
     $expanded = $this->process_citation($text);
     $this->assertSame('0470016175', $expanded->get('isbn'));
     $this->assertSame('cite book', $expanded->wikiname());
