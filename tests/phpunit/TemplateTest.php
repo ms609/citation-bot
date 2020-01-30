@@ -2038,6 +2038,10 @@ T1 - This is the Title }}';
     $prepared = $this->prepare_citation($text);
     $this->assertSame('10.1.1.923.345', $prepared->get('citeseerx'));
  
+    $text = '{{cite journal | archiveurl= https://mathscinet.ams.org/mathscinet-getitem?mr=0012343 }}';
+    $prepared = $this->prepare_citation($text);
+    $this->assertSame('0012343', $prepared->get('mr'));
+    $this->assertNull($prepared->get('archiveurl'));
   }
     
   public function testStripPDF() {
@@ -2796,6 +2800,13 @@ T1 - This is the Title }}';
     $this->assertNull($template->get('url'));
   }
  
+  public function testTidy53c() {
+    $text = "{{cite journal|archiveurl=https://s3.amazonaws.com/academia.edu/stuff}}";
+    $template = $this->make_citation($text);
+    $template->tidy_parameter('archiveurl');
+    $this->assertNull($template->get('archiveurl'));
+  }
+ 
   public function testTidy54() {
     $text = "{{cite journal|url=https://ieeexplore.ieee.org.proxy/document/1234}}";
     $template = $this->make_citation($text);
@@ -2921,6 +2932,13 @@ T1 - This is the Title }}';
  
   public function testTidy70() {
     $text = "{{cite journal|url=https://search.proquest.com/docview/1234/fulltext}}";
+    $template = $this->make_citation($text);
+    $template->tidy_parameter('url');
+    $this->assertSame('https://search.proquest.com/docview/1234', $template->get('url'));
+  }
+ 
+  public function testTidy70b() {
+    $text = "{{cite journal|url=https://search.proquest.com/docview/1234?account=XXXXX}}";
     $template = $this->make_citation($text);
     $template->tidy_parameter('url');
     $this->assertSame('https://search.proquest.com/docview/1234', $template->get('url'));
@@ -3582,6 +3600,11 @@ T1 - This is the Title }}';
     $template = $this->make_citation($text);
     $template->final_tidy();
     $this->assertSame('cite book', $template->wikiname());
+
+    $text = "{{Citation|title=XYZsadfdsfsdfdsafsd|chapter=DSRGgbgfbxdzfdfsXXXX|journal=adsfsd}}";
+    $template = $this->make_citation($text);
+    $template->final_tidy();
+    $this->assertSame('cite book', $template->wikiname()); // Wikiname does not return the actual value, but the normalized one
   }
 
   public function testTidyWork2() {
@@ -4100,5 +4123,78 @@ T1 - This is the Title }}';
      $this->assertSame('A', $template->get('journal'));
      $this->assertNull($template->get('series')); 
    }
-
+ 
+   public function testFindDOIBadAuthorAndFinalPage() { // Testing this code:   If fail, try again with fewer constraints...
+     $text = '{{cite journal|last=THIS_IS_BOGUS_TEST_DATA|pages=4346–43563413241234|title=ISiCLE: A Quantum Chemistry Pipeline for Establishing in Silico Collision Cross Section Libraries|journal=Analytical Chemistry|volume=91|issue=7|year=2019}}';
+     $template = $this->make_citation($text);
+     $template->get_doi_from_crossref();
+     $this->assertSame('10.1021/acs.analchem.8b04567', $template->get('doi'));
+   }
+ 
+   public function testDontDoIt() { // "complete" already
+     $text = '{{cite journal|title=X|journal=X|issue=X|volume=X|pages=X-Y|year=X|doi=X|bibcode=X|last1=X|first1=X}}';
+     $template = $this->make_citation($text);
+     $this->assertFalse($template->expand_by_adsabs());
+   }
+ 
+   public function testCAPSParams() {
+     $text = '{{cite journal|ARXIV=|TITLE=|LAST1=|JOURNAL=}}';
+     $template = $this->process_citation($text);
+     $this->assertSame(strtolower($text), $template->parsed_text());
+   }
+ 
+   public function testRemoveBadPublisher() {
+     $text = '{{cite journal|title=X|journal=X|issue=X|volume=X|pages=X-Y|pmc=1234123|publisher=u.s. National Library of medicine}}';
+     $template = $this->make_citation($text);
+     $template->tidy_parameter('publisher');
+     $this->assertNull($template->get('publisher'));
+   }
+ 
+   public function testAlmostSame() {
+     $text = '{{cite journal|publisher=[[Abc|Abc]]|journal=Abc}}';
+     $template = $this->make_citation($text);
+     $template->tidy_parameter('publisher');
+     $this->assertNull($template->get('publisher'));
+     $this->assertSame('[[abc|abc]]', strtolower($template->get('journal'))); // Might "fix" Abc redirect to ABC
+   }
+ 
+   public function testBogusArxivPub() {
+     $text = '{{cite journal|publisher=arXiv|arxiv=1234}}';
+     $template = $this->make_citation($text);
+     $template->tidy_parameter('publisher');
+     $this->assertNull($template->get('publisher'));
+    
+     $text = '{{cite journal|publisher=arXiv}}';
+     $template = $this->make_citation($text);
+     $template->tidy_parameter('publisher');
+     $this->assertSame('arXiv', $template->get('publisher'));
+   }
+ 
+   public function testBloombergConvert() {
+     $text = '{{cite journal|url=https://www.bloomberg.com/tosv2.html?vid=&uuid=367763b0-e798-11e9-9c67-c5e97d1f3156&url=L25ld3MvYXJ0aWNsZXMvMjAxOS0wNi0xMC9ob25nLWtvbmctdm93cy10by1wdXJzdWUtZXh0cmFkaXRpb24tYmlsbC1kZXNwaXRlLWh1Z2UtcHJvdGVzdA==}}';
+     $template = $this->make_citation($text);
+     $template->tidy_parameter('url');
+     $this->assertSame('https://www.bloomberg.com/news/articles/2019-06-10/hong-kong-vows-to-pursue-extradition-bill-despite-huge-protest', $template->get('url'));
+   }
+ 
+   public function testWork2Enc() {
+     $text = '{{cite journal|url=plato.stanford.edu|work=X}}';
+     $template = $this->make_citation($text);
+     $template->tidy_parameter('work');
+     $this->assertNull($template->get('work'));
+     $this->assertSame('X', $template->get('encyclopedia'));
+    
+     $text = '{{cite journal|work=X from encyclopædia}}';
+     $template = $this->make_citation($text);
+     $template->tidy_parameter('work');
+     $this->assertNull($template->get('work'));
+     $this->assertSame('X from encyclopædia', $template->get('encyclopedia'));
+   }
+ 
+   public function testNonPubs() {
+     $text = '{{cite book|work=citeseerx.ist.psu.edu}}';
+     $template = $this->make_citation($text);
+     $template->tidy_parameter('work');
+     $this->assertNull($template->get('work'));
+   }
 }

@@ -3461,10 +3461,6 @@ final class Template {
           }
           return;
     
-        case 'coauthor': case 'coauthors':  // Commonly left there and empty and deprecated
-          if ($this->blank($param)) $this->forget($param);
-          return;
-          
         case 'date':
           if ($this->blank('date') && $this->has('year')) $this->forget('date');
           return;
@@ -3827,14 +3823,6 @@ final class Template {
                $title = preg_replace(REGEXP_PIPED_WIKILINK, "$2", $title);
              }
           }
-          if (mb_substr($title, mb_strlen($title) - 3) == '...') {
-            // MOS:ELLIPSIS says do not do
-            // $title = mb_substr($title, 0, mb_strlen($title) - 3) 
-            //        . html_entity_decode("&hellip;", ENT_COMPAT | ENT_HTML401, 'UTF-8');
-          } elseif (in_array(mb_substr($title, -1), array(',', ':'))) { 
-              // Do not remove periods, which legitimately occur at the end of abreviations
-              $title = mb_substr($title, 0, -1);
-          }
           $this->set($param, $title);
           if ($title && str_equivalent($this->get($param), $this->get('work'))) $this->forget('work');
           if ($title && str_equivalent($this->get($param), $this->get('encyclopedia'))) $this->forget('$param');
@@ -4030,21 +4018,11 @@ final class Template {
                  report_info("Remove University ID from Gale URL");
                  if ($this->has('via') && stripos($this->get('via'), 'library') !== FALSE) $this->forget('via');
                  if ($this->has('via') && stripos($this->get('via'), 'gale') === FALSE) $this->forget('via');
-            } elseif (preg_match("~^(https?://(?:go|link)\.galegroup\.com/.*)\?u=[^&]*&(.+)$~", $this->get($param), $matches)) {
-                 $this->set($param, $matches[1] . '?' . $matches[2]);
-                 report_info("Remove University ID from Gale URL");
-                 if ($this->has('via') && stripos($this->get('via'), 'library') !== FALSE) $this->forget('via');
-                 if ($this->has('via') && stripos($this->get('via'), 'gale') === FALSE) $this->forget('via');
             }
           }
           if (stripos($this->get($param), 'proquest') !== FALSE) {
             if (preg_match("~^(?:http.+/login\?url=|)https?://(?:0\-|)search.proquest.com[^/]+(|/[^/]+)/docview/(.+)$~", $this->get($param), $matches)) {
                  $this->set($param, 'https://search.proquest.com' . $matches[1] . '/docview/' . $matches[2]);
-                 report_info("Remove proxy from ProQuest URL");
-                 if ($this->has('via') && stripos($this->get('via'), 'library') !== FALSE) $this->forget('via');
-                 if ($this->has('via') && stripos($this->get('via'), 'proquest') === FALSE) $this->forget('via');
-            } elseif (preg_match("~^http.+/login\?url=https?://search\.proquest\.com/docview/(.+)$~", $this->get($param), $matches)) {
-                 $this->set($param, 'https://search.proquest.com/docview/' . $matches[1]);
                  report_info("Remove proxy from ProQuest URL");
                  if ($this->has('via') && stripos($this->get('via'), 'library') !== FALSE) $this->forget('via');
                  if ($this->has('via') && stripos($this->get('via'), 'proquest') === FALSE) $this->forget('via');
