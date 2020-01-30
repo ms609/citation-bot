@@ -2073,8 +2073,8 @@ final class Template {
       }
       return TRUE;
     } else {
-      report_inline('no record retrieved.');
-      return FALSE;
+      report_inline('no record retrieved.');  // @codeCoverageIgnore
+      return FALSE;                           // @codeCoverageIgnore
     }
   }
   
@@ -3583,10 +3583,6 @@ final class Template {
           // No break here: Continue on from journal into periodical
         case 'periodical':
           $periodical = trim($this->get($param));
-          if (mb_substr($periodical, -1) === "," ) {
-            $periodical = mb_substr($periodical, 0, -1);
-            $this->set($param, $periodical);  // Remove comma
-          }
           if (substr(strtolower($periodical), 0, 7) === 'http://' || substr(strtolower($periodical), 0, 8) === 'https://') {
              if ($this->blank('url')) $this->rename($param, 'url');
              return;
@@ -4543,7 +4539,8 @@ final class Template {
     }
   }
 
-  protected function check_url() {  // @codeCoverageIgnore
+  // @codeCoverageIgnoreStart
+  protected function check_url() {
     // Check that the URL functions, and mark as dead if not.
     /*  Disable; to re-enable, we should log possible 404s and check back later.
      * Also, dead-link notifications should be placed ''after'', not within, the template.
@@ -4586,6 +4583,7 @@ final class Template {
       echo "Done" , is("format")?" ({$p["format"][0]})":"" , ".</p>";
     }*/
   }
+  // @codeCoverageIgnoreEnd
   
   /* function handle_et_al
    * To preserve user-input data, this function will only be called
