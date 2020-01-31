@@ -348,38 +348,29 @@ function adsabs_api($ids, $templates, $identifier) {
       if (preg_match("~\bthesis\b~ui", $journal_start)) {
         // Do nothing
       } elseif (substr($journal_start, 0, 6) == "eprint") {
-        if (substr($journal_start, 7, 6) == "arxiv:") {
-          if (isset($record->arxivclass)) $this_template->add_if_new("class", $record->arxivclass, 'adsabs');
-        } else {
-          $this_template->append_to('id', ' ' . substr($journal_start, 13));
-        }
+        $this_template->add_if_new("class", @$record->arxivclass, 'adsabs');
       } else {
         $this_template->add_if_new('journal', $journal_string[0], 'adsabs');
       }          
     }
     if (isset($record->page)) {
-      if ((stripos(implode('–', $record->page), 'arxiv') !== FALSE) || (stripos(implode('–', $record->page), '/') !== FALSE)) {  // Bad data
+      $tmp = implode($record->page);
+      if ((stripos($tmp, 'arxiv') !== FALSE) || (stripos($tmp, '/') !== FALSE)) {  // Bad data
        unset($record->page);
        unset($record->volume);
        unset($record->issue);
       }
     }
-    if (isset($record->volume)) {
-      $this_template->add_if_new("volume", (string) $record->volume, 'adsabs');
-    }
-    if (isset($record->issue)) {
-      $this_template->add_if_new("issue", (string) $record->issue, 'adsabs');
-    }
-    if (isset($record->year)) {
-      $this_template->add_if_new("year", preg_replace("~\D~", "", (string) $record->year), 'adsabs');
-    }
+    $this_template->add_if_new("volume", (string) @$record->volume, 'adsabs');
+    $this_template->add_if_new("issue", (string) @$record->issue, 'adsabs');
+    $this_template->add_if_new("year", preg_replace("~\D~", "", (string) @$record->year), 'adsabs');
     if (isset($record->page)) {
       $this_template->add_if_new("pages", implode('–', $record->page), 'adsabs');
     }
     if (isset($record->identifier)) { // Sometimes arXiv is in journal (see above), sometimes here in identifier
       foreach ($record->identifier as $recid) {
         if(strtolower(substr($recid, 0, 6)) === 'arxiv:') {
-           if (isset($record->arxivclass)) $this_template->add_if_new("class", $record->arxivclass, 'adsabs');
+           $this_template->add_if_new("class", @$record->arxivclass, 'adsabs');
         }
       }
     }
