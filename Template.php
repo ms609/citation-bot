@@ -132,6 +132,7 @@ final class Template {
   public function prepare() {
     if ($this->should_be_processed()) {
       $this->get_inline_doi_from_title();
+      $this->parameter_names_to_lowercase();
       $this->use_unnamed_params();
       $this->get_identifiers_from_url();
       $this->id_to_param();
@@ -2716,24 +2717,19 @@ final class Template {
   protected function parameter_names_to_lowercase() {
     if (is_array($this->param)) {
       $keys = array_keys($this->param);
-      $to_tidy = array();
       for ($i = 0; $i < count($keys); $i++) {
         if (!ctype_lower($this->param[$keys[$i]]->param)) {
           $this->param[$keys[$i]]->param = strtolower($this->param[$keys[$i]]->param);
-          array_push($to_tidy, $this->param[$keys[$i]]->param);
         }
       }
     } else {
        report_error('parameter_names_to_lowercase found non-array'); // @codeCoverageIgnore
     }
-    // Tidy afterwards, to avoid modifying array index
-    foreach ($to_tidy as $param) $this->tidy_parameter($param);
   }
 
   protected function use_unnamed_params() {
     if (empty($this->param)) return;
     
-    $this->parameter_names_to_lowercase();
     $param_occurrences = array();
     $duplicated_parameters = array();
     $duplicate_identical = array();
@@ -3096,13 +3092,6 @@ final class Template {
   $parameters_used=array();
   $mistake_corrections = array_values(COMMON_MISTAKES);
   $mistake_keys = array_keys(COMMON_MISTAKES);
-  foreach ($this->param as $p) { // Convert to all lower case, if needed
-    if (strtolower($p->param) != $p->param &&
-        in_array(strtolower($p->param), $parameter_list) &&
-        !in_array($p->param, $parameter_list)) {
-          $p->param = strtolower($p->param);
-    }
-  }
   foreach ($this->param as $p) {
     $parameters_used[] = $p->param;
   }
