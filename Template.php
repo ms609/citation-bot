@@ -2715,15 +2715,12 @@ final class Template {
 
   ### parameter processing
   protected function parameter_names_to_lowercase() {
-    if (is_array($this->param)) {
-      $keys = array_keys($this->param);
-      for ($i = 0; $i < count($keys); $i++) {
-        if (!ctype_lower($this->param[$keys[$i]]->param)) {
-          $this->param[$keys[$i]]->param = strtolower($this->param[$keys[$i]]->param);
-        }
+    if (empty($this->param)) return;
+    $keys = array_keys($this->param);
+    for ($i = 0; $i < count($keys); $i++) {
+      if (!ctype_lower($this->param[$keys[$i]]->param)) {
+        $this->param[$keys[$i]]->param = strtolower($this->param[$keys[$i]]->param);
       }
-    } else {
-       report_error('parameter_names_to_lowercase found non-array'); // @codeCoverageIgnore
     }
   }
 
