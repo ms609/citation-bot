@@ -789,11 +789,7 @@ function expand_by_jstor($template) {
        return FALSE;
     }
   }
-  $has_a_url = $template->has('url');
   $template->expand_by_RIS($dat, FALSE);
-  if ($template->has('url') && !$has_a_url) { // we added http://www.jstor.org/stable/12345, so remove quietly
-      $template->quietly_forget('url');
-  }
   return TRUE;
 }
 
