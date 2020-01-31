@@ -348,7 +348,10 @@ function adsabs_api($ids, $templates, $identifier) {
       if (preg_match("~\bthesis\b~ui", $journal_start)) {
         // Do nothing
       } elseif (substr($journal_start, 0, 6) == "eprint") {
-        $this_template->add_if_new("class", @$record->arxivclass, 'adsabs');
+        if (substr($journal_start, 0, 13) == "eprint arxiv:") {
+          $this_template->add_if_new("class", @$record->arxivclass, 'adsabs');
+          $this_template->add_if_new('arxiv', substr($recid, 6));
+        }
       } else {
         $this_template->add_if_new('journal', $journal_string[0], 'adsabs');
       }          
@@ -371,6 +374,7 @@ function adsabs_api($ids, $templates, $identifier) {
       foreach ($record->identifier as $recid) {
         if(strtolower(substr($recid, 0, 6)) === 'arxiv:') {
            $this_template->add_if_new("class", @$record->arxivclass, 'adsabs');
+           $this_template->add_if_new('arxiv', substr($recid, 6));
         }
       }
     }
