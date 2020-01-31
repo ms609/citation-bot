@@ -2034,7 +2034,7 @@ final class Template {
         } elseif (substr($journal_start, 0, 6) == "eprint") {
           if (substr($journal_start, 0, 13) == "eprint arxiv:") {
             $this->add_if_new('class', @$record->arxivclass);
-            $this->add_if_new('arxiv', substr($journal_start, 13))
+            $this->add_if_new('arxiv', substr($journal_start, 13));
           }
         } else {
           $this->add_if_new('journal', $journal_string[0]);
