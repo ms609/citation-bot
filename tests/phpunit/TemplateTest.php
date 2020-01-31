@@ -458,14 +458,6 @@ final class TemplateTest extends testBaseClass {
   }
   
   public function testTemplateRenamingURLConvert() {
-    $text='{{cite journal |url=http://www.paulselden.net/uploads/7/5/3/2/7532217/elsterrestrialization.pdf |title=Terrestrialization (Precambrian–Devonian) |last=Selden |first=Paul A. |year=2005 |encyclopedia=[[Encyclopedia of Life Sciences]] |publisher=[[John Wiley & Sons, Ltd.]] |doi=  10.1007/978-94-017-0611-7_6 |format=DUDE}}';
-    $expanded = $this->process_citation($text);
-    $this->assertSame('0470016175', $expanded->get('isbn'));
-    $this->assertSame('cite book', $expanded->wikiname());
-    $this->assertSame('http://www.paulselden.net/uploads/7/5/3/2/7532217/elsterrestrialization.pdf', $expanded->get('chapter-url'));
-    $this->assertNull($expanded->get('url'));
-    $this->assertNull($expanded->get('format'));
-    $this->assertSame('DUDE', $expanded->get('chapter-format'));
     $text='{{Cite book|url=http://www.sciencedirect.com/science/article/pii/B9780123864543000129|last=Roberts|first=L.|date=2014|publisher=Academic Press|isbn=978-0-12-386455-0|editor-last=Wexler|editor-first=Philip|location=Oxford|pages=993–995|doi=10.1016/b978-0-12-386454-3.00012-9}}';
     $expanded = $this->process_citation($text);
     $this->assertSame('http://www.sciencedirect.com/science/article/pii/B9780123864543000129', $expanded->get('chapter-url'));
