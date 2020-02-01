@@ -30,7 +30,7 @@ const BAD_TITLES = array("unknown", "missing", "arxiv e-prints", "arxiv mathemat
                          "ebscohost login",  "library login", "google groups", "sciencedirect", "cur_title",
                          "wordpress › error", "ssrn temporarily unavailable", "log in - proquest",
                          "shibboleth authentication request", "nookmarkable url intermediate page",
-                         "google books", "rte.ie", "loading",
+                         "google books", "rte.ie", "loading", "google book",
                          "the article you have been looking for has expired and is not longer available on our system. this is due to newswire licensing terms.",
                          "openid transaction in progress", 'download limit exceeded', 'privacy settings',
                          "untitled-1", "untitled-2", "professional paper");
@@ -41,7 +41,7 @@ const IN_PRESS_ALIASES = array("in press", "inpress", "pending", "published",
 const NON_JOURNAL_BIBCODES = array('arXiv', 'gr.qc', 'hep.ex', 'hep.lat', 'hep.ph', 'hep.th', 'astro.ph',
                                    'math', 'nucl.ex', 'nucl.th', 'physics', 'quant.ph', 'alg.geom',
                                    'cond.mat', 'cs.', 'econ.', 'eess.', 'nlin.');
-const NON_PUBLISHERS = ['books.google', 'google books', 'google news', 'google.co', 'amazon.com',
+const NON_PUBLISHERS = ['books.google', 'google books', 'google news', 'google.co', 'amazon.com', 'google book',
                         'zenodo', 'archive.org', 'citeseerx.ist.psu.edu', 'archive.fo', 'archive.today']; // Google Inc is a valid publisher, however.
 const BAD_ZOTERO_TITLES = ['Browse publications', 'Central Authentication Service', 'http://', 'https://',
                                  'ZbMATH - the first resource for mathematics', 'MR: Matches for:',

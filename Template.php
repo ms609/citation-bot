@@ -4109,7 +4109,7 @@ final class Template {
               $this->forget('via');
             } elseif (stripos($this->get('via'), 'JSTOR') !== FALSE && $this->has('jstor')) {
               $this->forget('via');
-            } elseif (stripos($this->get('via'), 'google books') !== FALSE && $this->has('isbn')) {
+            } elseif (stripos($this->get('via'), 'google book') !== FALSE && $this->has('isbn')) {
               $this->forget('via');
             } elseif (stripos($this->get('via'), 'questia') !== FALSE && $this->has('isbn')) {
               $this->forget('via');
@@ -4248,6 +4248,7 @@ final class Template {
         case 'website':
           if (($this->wikiname() === 'cite book') && (strcasecmp((string)$this->get($param), 'google.com') === 0 ||
                                                       strcasecmp((string)$this->get($param), 'Google Books') === 0 ||
+                                                      strcasecmp((string)$this->get($param), 'Google Book') === 0 ||
                                                          stripos((string)$this->get($param), 'Books.google.') === 0)) {
             $this->forget($param);
           }
