@@ -4200,7 +4200,7 @@ T1 - This is the Title }}';
      $text = '{{cite journal|journal=[[Journal Of Polymer Science]]}}';
      $template = $this->prepare_citation($text);
      $this->assertSame('[[Journal of Polymer Science]]', strtolower($template->get('journal')));
-    };
+    });
    }
  
    public function testRemoveAuthorLinks() {
@@ -4218,7 +4218,7 @@ T1 - This is the Title }}';
      $text = '{{cite journal|journal=[[Journal Of Polymer Science|"J Poly Sci"]]}}';
      $template = $this->prepare_citation($text);
      $this->assertSame('[[Journal ff Polymer Science|"J Poly Sci"]]', strtolower($template->get('journal')));
-    };
+    });
    }
  
    public function testBogusArxivPub() {
