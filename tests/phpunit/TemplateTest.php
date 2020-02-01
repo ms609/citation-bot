@@ -4184,7 +4184,7 @@ T1 - This is the Title }}';
    public function testSpellingLots() {
      $text = '{{cite journal|totle=X|journul=X|serias=X|auther=X|lust=X|cows=X|pigs=X|contrubution-url=X|controbution-urls=X|chupter-url=X|orl=X}}';
      $template = $this->prepare_citation($text); 
-     $this->assertSame('{{cite journal|title=X|journal=X|author=X|last=X|cows=X|page=X|contribution-url=X|contribution-url=X|chapter-url=X|url=X}}', $template->parsed_text());
+     $this->assertSame('{{cite journal|title=X|journal=X|series=X|author=X|last=X|cows=X|page=X|contribution-url=X|contribution-url=X|chapter-url=X|url=X}}', $template->parsed_text());
    }
  
    public function testAlmostSame() {
@@ -4199,26 +4199,26 @@ T1 - This is the Title }}';
     $this->requires_secrets(function() {
      $text = '{{cite journal|journal=[[Journal Of Polymer Science]]}}';
      $template = $this->prepare_citation($text);
-     $this->assertSame('[[Journal of Polymer Science]]', strtolower($template->get('journal')));
+     $this->assertSame('[[Journal of Polymer Science]]', $template->get('journal'));
+    });
+   }
+ 
+    public function testRedirectFixing2() {
+    $this->requires_secrets(function() {
+     $text = '{{cite journal|journal=[[Journal Of Polymer Science|"J Poly Sci"]]}}';
+     $template = $this->prepare_citation($text);
+     $this->assertSame('[[Journal of Polymer Science|J Poly Sci]]', $template->get('journal'));
     });
    }
  
    public function testRemoveAuthorLinks() {
      $text = '{{cite journal|author3-link=}}';
-     $template = $this->prepare_citation($text);
+     $template = $this->process_citation($text);
      $this->assertNull($template->get('author3-link'));
 
      $text = '{{cite journal|author3-link=|author3=X}}';
-     $template = $this->prepare_citation($text);
+     $template = $this->process_citation($text);
      $this->assertSame('', $template->get('author3-link'));
-   }
- 
-   public function testRedirectFixing2() {
-    $this->requires_secrets(function() {
-     $text = '{{cite journal|journal=[[Journal Of Polymer Science|"J Poly Sci"]]}}';
-     $template = $this->prepare_citation($text);
-     $this->assertSame('[[Journal ff Polymer Science|"J Poly Sci"]]', strtolower($template->get('journal')));
-    });
    }
  
    public function testBogusArxivPub() {
