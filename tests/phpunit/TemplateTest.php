@@ -4293,4 +4293,16 @@ T1 - This is the Title }}';
      $this->assertNull($template->get('work'));
      $this->assertSame('Exists', $template->get('title'));
    }
+ 
+   public function testNullPages() {
+     $text = '{{cite book|pages=null}}';
+     $template = $this->make_citation($text);
+     $template->tidy_parameter('pages');
+     $this->assertNull($template->get('pages'));
+     $template->add_if_new('work', 'null');
+     $template->add_if_new('pages', 'null');
+     $template->add_if_new('author', 'null');
+     $template->add_if_new('journal', 'null');
+     $this->assertSame('{{cite book}}', $template->parsed_text());
+   }
 }
