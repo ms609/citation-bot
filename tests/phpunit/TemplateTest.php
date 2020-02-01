@@ -4124,7 +4124,7 @@ T1 - This is the Title }}';
    }
  
    public function testDontDoIt() { // "complete" already
-     $text = '{{cite journal|title=X|journal=X|issue=X|volume=X|pages=12-34|year=1980|last2=Him|doi=X|bibcode=X|last1=X|first1=X}}';
+     $text = '{{cite journal|title=X|contribution=X|issue=X|volume=X|pages=12-34|year=1980|last2=Him|doi=X|bibcode=X|last1=X|first1=X}}';
      $template = $this->make_citation($text);
      $this->assertFalse($template->expand_by_adsabs());
    }
@@ -4140,6 +4140,20 @@ T1 - This is the Title }}';
      $template = $this->make_citation($text);
      $template->tidy_parameter('publisher');
      $this->assertNull($template->get('publisher'));
+   }
+ 
+   public function testShortSpelling() {
+     $text = '{{cite journal|list=X}}';
+     $template = $this->process_citation($text);
+     $this->assertSame('X', $template->get('last'));
+    
+     $text = '{{cite journal|las=X}}';
+     $template = $this->process_citation($text);
+     $this->assertSame('X', $template->get('last'));
+    
+     $text = '{{cite journal|lis=X}}';
+     $template = $this->process_citation($text);
+     $this->assertSame('X', $template->get('lis'));
    }
  
    public function testAlmostSame() {
