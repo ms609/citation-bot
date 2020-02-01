@@ -3345,7 +3345,7 @@ final class Template {
               substr($the_author,   -2) == ']]' &&
               mb_substr_count($the_author, '[[') === 1 && 
               mb_substr_count($the_author, ']]') === 1 &&
-              strpos($the_author, 'CITATION_BOT') === FALSE) &&
+              strpos($the_author, 'CITATION_BOT') === FALSE &&
               strpos($the_author, '{{!}}') === FALSE) {  // Has a normal wikilink
             if (preg_match(REGEXP_PLAIN_WIKILINK, $the_author, $matches)) {
               $this->add_if_new($param . '-link', $matches[1]);
@@ -3396,7 +3396,7 @@ final class Template {
                  substr($the_author,   -2) == ']]' &&
                  mb_substr_count($the_author, '[[') === 1 && 
                  mb_substr_count($the_author, ']]') === 1 &&
-                 strpos($the_author, 'CITATION_BOT') === FALSE) &&
+                 strpos($the_author, 'CITATION_BOT') === FALSE &&
                  strpos($the_author, '{{!}}') === FALSE) {  // Has a normal wikilink
                    echo "\n" . $the_author . " DEBUG\n";
                    if (preg_match(REGEXP_PLAIN_WIKILINK, $the_author, $matches)) {
