@@ -4202,7 +4202,7 @@ final class Template {
           // No break here: pages, issue and year (the previous case) should be treated in this fashion.
         case 'pages': case 'page': case 'pp': # And case 'year': case 'issue':, following from previous
           $value = $this->get($param);
-          if (strcasecmp('null', $value)) === 0) {
+          if (strcasecmp('null', $value) === 0) {
             $this->forget($param);
             return;
           }
