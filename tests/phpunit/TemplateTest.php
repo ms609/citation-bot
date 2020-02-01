@@ -3396,6 +3396,24 @@ T1 - This is the Title }}';
     $this->assertSame('etal', $template->get('displayauthors'));
   }
  
+  public function testAddingEtAl() {
+    $text = "{{cite web}}";
+    $template = $this->process_citation($text);
+    $template->add_if_new('authors','etal');
+    $template->tidy_paramter('authors');
+    $this->assertNull($template->get('author'));
+    $this->assertNull($template->get('authors'));
+    $this->assertSame('etal', $template->get('displayauthors'));
+   
+    $text = "{{cite web}}";
+    $template = $this->process_citation($text);
+    $template->add_if_new('author','etal');
+    $template->tidy_paramter('author');
+    $this->assertNull($template->get('author'));
+    $this->assertNull($template->get('authors'));
+    $this->assertSame('etal', $template->get('displayauthors'));
+  }
+ 
   public function testCiteTypeWarnings1() {
     $text = "{{cite web|journal=X|chapter=|publisher=}}";
     $template = $this->make_citation($text);
