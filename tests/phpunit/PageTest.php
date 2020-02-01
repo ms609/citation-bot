@@ -31,8 +31,12 @@ final class PageTest extends testBaseClass {
  
   public function testPageChangeSummary2() {
       $page = $this->process_page('{{cite journal|chapter-url=https://mathscinet.ams.org/mathscinet-getitem?mr=1234|title=mr=1234}}');
-      $this->assertSame('Add: mr. Removed URL that duplicated unique identifier. Some additions/deletions were actually parameter name changes. | You can [[WP:UCB|use this bot]] yourself. [[WP:DBUG|Report bugs here]]. ', $page->edit_summary());
+      $this->assertSame('{{cite journal|title=mr=1234|mr = 1234}}', $page->parsed_text());
+      $this->assertSame('Add: mr. Removed URL that duplicated unique identifier. | You can [[WP:UCB|use this bot]] yourself. [[WP:DBUG|Report bugs here]]. ', $page->edit_summary());
+  }
+  public function testPageChangeSummary2a() {
       $page = $this->process_page('{{cite journal|chapterurl=https://mathscinet.ams.org/mathscinet-getitem?mr=1234|title=mr=1234}}');
+      $this->assertSame('{{cite journal|title=mr=1234|mr = 1234}}', $page->parsed_text());
       $this->assertSame('Add: mr. Removed URL that duplicated unique identifier. | You can [[WP:UCB|use this bot]] yourself. [[WP:DBUG|Report bugs here]]. ', $page->edit_summary());
   }
    

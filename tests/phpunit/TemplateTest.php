@@ -4124,7 +4124,7 @@ T1 - This is the Title }}';
    }
  
    public function testDontDoIt() { // "complete" already
-     $text = '{{cite journal|title=X|journal=X|issue=X|volume=X|pages=X-Y|year=X|doi=X|bibcode=X|last1=X|first1=X}}';
+     $text = '{{cite journal|title=X|journal=X|issue=X|volume=X|pages=12-34|year=1980|last2=Him|doi=X|bibcode=X|last1=X|first1=X}}';
      $template = $this->make_citation($text);
      $this->assertFalse($template->expand_by_adsabs());
    }
