@@ -1440,6 +1440,10 @@ T1 - This is the Title }}';
     $prepared = $this->prepare_citation($text);
     $this->assertSame('etal', $prepared->get('display-authors'));
     $this->assertNull($prepared->get('last3'));
+    $text = '{{cite book|last1=etal}}';
+    $prepared = $this->prepare_citation($text);
+    $this->assertSame('etal', $prepared->get('display-authors'));
+    $this->assertNull($prepared->get('last1'));
   }
        
   public function testWebsite2Url() {
@@ -4165,16 +4169,22 @@ T1 - This is the Title }}';
  
    public function testShortSpelling() {
      $text = '{{cite journal|list=X}}';
-     $template = $this->process_citation($text);
+     $template = $this->prepare_citation($text);
      $this->assertSame('X', $template->get('last'));
     
      $text = '{{cite journal|las=X}}';
-     $template = $this->process_citation($text);
+     $template = $this->prepare_citation($text);
      $this->assertSame('X', $template->get('last'));
     
      $text = '{{cite journal|lis=X}}';
-     $template = $this->process_citation($text);
+     $template = $this->prepare_citation($text);
      $this->assertSame('X', $template->get('lis'));
+   }
+ 
+   public function testSpellingLots() {
+     $text = '{{cite journal|totle=X|journul=X|serias=X|auther=X|lust=X|cows=X|pigs=X|contrubution-url=X|controbution-urls=X|chupter-url=X|orl=X}}';
+     $template = $this->prepare_citation($text); 
+     $this->assertSame('{{cite journal|title=X|journal=X|series=X|author=X|last=X|cows=X|page=X|contribution-url=X|contribution-url=X|chapter-url=X|url=X}}', $template->parsed_text());
    }
  
    public function testAlmostSame() {
@@ -4183,6 +4193,32 @@ T1 - This is the Title }}';
      $template->tidy_parameter('publisher');
      $this->assertNull($template->get('publisher'));
      $this->assertSame('[[abc|abc]]', strtolower($template->get('journal'))); // Might "fix" Abc redirect to ABC
+   }
+ 
+   public function testRedirectFixing() {
+    $this->requires_secrets(function() {
+     $text = '{{cite journal|journal=[[Journal Of Polymer Science]]}}';
+     $template = $this->prepare_citation($text);
+     $this->assertSame('[[Journal of Polymer Science]]', $template->get('journal'));
+    });
+   }
+ 
+    public function testRedirectFixing2() {
+    $this->requires_secrets(function() {
+     $text = '{{cite journal|journal=[[Journal Of Polymer Science|"J Poly Sci"]]}}';
+     $template = $this->prepare_citation($text);
+     $this->assertSame('[[Journal of Polymer Science|J Poly Sci]]', $template->get('journal'));
+    });
+   }
+ 
+   public function testRemoveAuthorLinks() {
+     $text = '{{cite journal|author3-link=}}';
+     $template = $this->process_citation($text);
+     $this->assertNull($template->get('author3-link'));
+
+     $text = '{{cite journal|author3-link=|author3=X}}';
+     $template = $this->process_citation($text);
+     $this->assertSame('', $template->get('author3-link'));
    }
  
    public function testBogusArxivPub() {
