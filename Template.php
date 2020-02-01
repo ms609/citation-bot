@@ -3406,14 +3406,6 @@ final class Template {
             }
             return;
 
-        case 'author_separator': case 'author-separator':
-          if ($this->blank($param)) {
-            $this->forget($param);
-          } else {
-            report_warning(" Please fix deprecated author separator manually.");
-          }
-          return;
-
         case 'bibcode':
           if ($this->blank($param)) return;
           $bibcode_journal = substr($this->get($param), 4);
