@@ -1444,6 +1444,14 @@ T1 - This is the Title }}';
     $prepared = $this->prepare_citation($text);
     $this->assertSame('etal', $prepared->get('display-authors'));
     $this->assertNull($prepared->get('last1'));
+    $text = '{{cite book|last1=et al}}';
+    $prepared = $this->prepare_citation($text);
+    $this->assertSame('etal', $prepared->get('display-authors'));
+    $this->assertNull($prepared->get('last1'));
+    $text = '{{cite book|last1=et al}}';
+    $prepared = $this->prepare_citation($text);
+    $this->assertSame('etal', $prepared->get('display-authors'));
+    $this->assertNull($prepared->get('last1'));
   }
        
   public function testWebsite2Url() {
@@ -3388,6 +3396,26 @@ T1 - This is the Title }}';
     $this->assertSame('etal', $template->get('displayauthors'));
   }
  
+  public function testAddingEtAl() {
+    $text = "{{cite web}}";
+    $template = $this->process_citation($text);
+    $template->set('authors', 'et al');
+    $template->tidy_parameter('authors');
+    $this->assertNull($template->get('authors'));
+    $this->assertSame('etal', $template->get('displayauthors'));
+    $this->assertNull($template->get('author'));
+  }
+ 
+   public function testAddingEtAl2() {
+    $text = "{{cite web}}";
+    $template = $this->process_citation($text);
+    $template->set('author','et al');
+    $template->tidy_parameter('author');
+    $this->assertNull($template->get('author'));
+    $this->assertNull($template->get('authors'));
+    $this->assertSame('etal', $template->get('displayauthors'));
+  }
+ 
   public function testCiteTypeWarnings1() {
     $text = "{{cite web|journal=X|chapter=|publisher=}}";
     $template = $this->make_citation($text);
@@ -4259,6 +4287,13 @@ T1 - This is the Title }}';
      $template = $this->make_citation($text);
      $template->tidy_parameter('work');
      $this->assertNull($template->get('work'));
+     $this->assertSame('citeseerx.ist.psu.edu', $template->get('title'));
+    
+     $text = '{{cite book|work=citeseerx.ist.psu.edu|title=Exists}}';
+     $template = $this->make_citation($text);
+     $template->tidy_parameter('work');
+     $this->assertNull($template->get('work'));
+     $this->assertSame('Exists', $template->get('title'));
    }
  
    public function testNullPages() {
