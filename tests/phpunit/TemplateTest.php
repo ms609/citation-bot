@@ -1444,6 +1444,14 @@ T1 - This is the Title }}';
     $prepared = $this->prepare_citation($text);
     $this->assertSame('etal', $prepared->get('display-authors'));
     $this->assertNull($prepared->get('last1'));
+    $text = '{{cite book|last1=et al}}';
+    $prepared = $this->prepare_citation($text);
+    $this->assertSame('etal', $prepared->get('display-authors'));
+    $this->assertNull($prepared->get('last1'));
+    $text = '{{cite book|last1=et al}}';
+    $prepared = $this->prepare_citation($text);
+    $this->assertSame('et al.', $prepared->get('display-authors'));
+    $this->assertNull($prepared->get('last1'));
   }
        
   public function testWebsite2Url() {
