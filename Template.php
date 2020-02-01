@@ -3389,7 +3389,7 @@ final class Template {
                 }
               }
             }
-            if ($pmatch[2] && strpos($pmatch[1], 'last') === 1)) {
+            if ($pmatch[2] && $pmatch[1] === 'last') {
               $the_author = $this->get($param);
               if (substr($the_author, 0, 2) == '[[' &&
                  substr($the_author,   -2) == ']]' &&
