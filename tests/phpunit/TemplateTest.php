@@ -3399,7 +3399,7 @@ T1 - This is the Title }}';
   public function testAddingEtAl() {
     $text = "{{cite web}}";
     $template = $this->process_citation($text);
-    $template->add_if_new('authors', 'et al');
+    $template->set('authors', 'et al');
     $template->tidy_parameter('authors');
     $this->assertNull($template->get('author'));
     $this->assertNull($template->get('authors'));
@@ -3409,7 +3409,7 @@ T1 - This is the Title }}';
    public function testAddingEtAl2() {
     $text = "{{cite web}}";
     $template = $this->process_citation($text);
-    $template->add_if_new('author','et al');
+    $template->set('author','et al');
     $template->tidy_parameter('author');
     $this->assertNull($template->get('author'));
     $this->assertNull($template->get('authors'));
