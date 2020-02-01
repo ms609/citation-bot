@@ -364,7 +364,7 @@ final class Template {
     }
     
     if (strcasecmp((string) $value, 'null') === 0) { // Hopeully name is not actually null
-      return FALSE; // @codeCoverageIgnore
+      return FALSE;
     }
     
     if (mb_stripos($this->get($param_name), 'CITATION_BOT_PLACEHOLDER_COMMENT') !== FALSE) {
@@ -4202,6 +4202,10 @@ final class Template {
           // No break here: pages, issue and year (the previous case) should be treated in this fashion.
         case 'pages': case 'page': case 'pp': # And case 'year': case 'issue':, following from previous
           $value = $this->get($param);
+          if (strcasecmp('null', $value)) === 0) {
+            $this->forget($param);
+            return;
+          }
           if (strpos($value, "[//")  === 0) { // We can fix them, if they are the very first item
             $value = "[https://" . substr($value, 3);
             $this->set($param, $value);
