@@ -4546,7 +4546,7 @@ final class Template {
   public function handle_et_al() {
     foreach (AUTHOR_PARAMETERS as $author_cardinality => $group) {
       foreach ($group as $param) {
-        if (strpos($this->get($param), 'et al')) {
+        if (strpos($this->get($param), 'et al') !== FALSE) { // Have to deal with 0 != FALSE
           // remove 'et al' from the parameter value if present
           $val_base = preg_replace("~,?\s*'*et al['.]*~", '', $this->get($param));
           if ($author_cardinality == 1) {
