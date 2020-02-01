@@ -4546,6 +4546,7 @@ final class Template {
               $this->set($param, $val_base);
               if ($param == 'authors' && $this->blank('author')) {
                 $this->rename('authors', 'author');
+                $param = 'author';
               }
             } else {
               $this->forget($param);
