@@ -4259,5 +4259,12 @@ T1 - This is the Title }}';
      $template = $this->make_citation($text);
      $template->tidy_parameter('work');
      $this->assertNull($template->get('work'));
+     $this->assertSame('citeseerx.ist.psu.edu', $template->get('title'));
+    
+     $text = '{{cite book|work=citeseerx.ist.psu.edu|title=Exists}}';
+     $template = $this->make_citation($text);
+     $template->tidy_parameter('work');
+     $this->assertNull($template->get('work'));
+     $this->assertSame('Exists', $template->get('title'));
    }
 }
