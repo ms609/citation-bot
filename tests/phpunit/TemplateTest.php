@@ -759,14 +759,13 @@ final class TemplateTest extends testBaseClass {
     $this->assertSame('Approximate Physics', $expanded->get('last2'));
     $this->assertSame('Pure Evil', $expanded->get('author2-link'));
    
-    $expanded = $this->process_citation("{{Cite journal|last1=[[Pure {{!}} Evil]]}}");
-    $this->assertSame('[[Pure {{!}} Evil]]', $expanded->get('last1'));
-    $this->assertNull($expanded->get('author1-link'));
-   
     $expanded = $this->process_citation("{{Cite journal|last1=[[Pure Evil]] and [[Hoser]]}}");
     $this->assertSame('[[Pure Evil]] and [[Hoser]]', $expanded->get('last1'));
     $this->assertNull($expanded->get('author1-link'));
    
+    $expanded = $this->process_citation("{{Cite journal|last1=[[Pure {{!}} Evil]]}}");
+    $this->assertNull($expanded->get('author1-link'));
+    $this->assertSame('[[Pure {{!}} Evil]]', $expanded->get('last1'));
   }
  
   public function testJournalCapitalization() {
