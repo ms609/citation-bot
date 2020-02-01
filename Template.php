@@ -3396,13 +3396,14 @@ final class Template {
                  mb_substr_count($the_author, '[[') === 1 && 
                  mb_substr_count($the_author, ']]') === 1 &&
                  strpos($the_author, '{{!}}') === FALSE) {  // Has a normal wikilink
-                 if (preg_match(REGEXP_PLAIN_WIKILINK, $the_author, $matches)) {
+                   echo "\n" . $the_author . " DEBUG\n";
+                   if (preg_match(REGEXP_PLAIN_WIKILINK, $the_author, $matches)) {
                     $this->add_if_new('author' . $pmatch[2] . '-link', $matches[1]);
                     $this->set($param, $matches[1]);
-                 } elseif (preg_match(REGEXP_PIPED_WIKILINK, $the_author, $matches)) {
+                   } elseif (preg_match(REGEXP_PIPED_WIKILINK, $the_author, $matches)) {
                     $this->add_if_new('author' . $pmatch[2] . '-link', $matches[1]);
                     $this->set($param, $matches[2]);
-                 }
+                  }
               }
             }
             return;
