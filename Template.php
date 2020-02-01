@@ -2430,12 +2430,11 @@ final class Template {
           report_warning("Ignored a blacklisted OA match on a repository via OAI-PMH for DOI: " . echoable($doi)); // @codeCoverageIgnore
           return 'nothing';                                                                                        // @codeCoverageIgnore
         }  
-        // sometimes url_for_landing_page = NULL, eg http://api.oadoi.org/v2/10.1145/3238147.3240474?email=m@f
-        if ($best_location->url_for_landing_page != null) {
+        if ($best_location->url_for_landing_page != NULL) {
           $oa_url = $best_location->url_for_landing_page;
-        } elseif ($best_location->url_for_pdf != null) {
+        } elseif ($best_location->url_for_pdf != NULL) {
           $oa_url = $best_location->url_for_pdf;
-        } elseif ($best_location->url != null) {
+        } elseif ($best_location->url != NULL) {
           $oa_url = $best_location->url;
         } else {
           return 'nothing';
@@ -3372,19 +3371,10 @@ final class Template {
           }
           // No return here
         case 'authors':
-          if (!$pmatch[2]) {
-            if ($this->has('author') && $this->has('authors')) {
-              $this->rename('author', 'DUPLICATE_authors');
-              $authors = $this->get('authors');
-            } else {
-              $authors = $this->get($param);
-            }
-            if (!$this->initial_author_params) {
-              $this->handle_et_al();
-            }
-          }
+          if ($this->has('author') && $this->has('authors')) $this->rename('author', 'DUPLICATE_authors');
+          if (!$this->initial_author_params) $this->handle_et_al();
           // Continue from authors without break
-          case 'last': case 'surname':
+         case 'last': case 'surname':
             if (!$this->initial_author_params) {
               if ($pmatch[2]) {
                 if (preg_match("~\[\[(([^\|]+)\|)?([^\]]+)\]?\]?~", $this->get($param), $match)) {
@@ -4547,7 +4537,7 @@ final class Template {
   public function handle_et_al() {
     foreach (AUTHOR_PARAMETERS as $author_cardinality => $group) {
       foreach ($group as $param) {
-        if (strpos($this->get($param), 'et al')) {
+        if (strpos($this->get($param), 'et al') !== FALSE) { // Have to deal with 0 != FALSE
           // remove 'et al' from the parameter value if present
           $val_base = preg_replace("~,?\s*'*et al['.]*~", '', $this->get($param));
           if ($author_cardinality == 1) {
@@ -4556,6 +4546,7 @@ final class Template {
               $this->set($param, $val_base);
               if ($param == 'authors' && $this->blank('author')) {
                 $this->rename('authors', 'author');
+                $param = 'author';
               }
             } else {
               $this->forget($param);
