@@ -3401,9 +3401,9 @@ T1 - This is the Title }}';
     $template = $this->process_citation($text);
     $template->set('authors', 'et al');
     $template->tidy_parameter('authors');
-    $this->assertNull($template->get('author'));
     $this->assertNull($template->get('authors'));
     $this->assertSame('etal', $template->get('displayauthors'));
+    $this->assertNull($template->get('author'));
   }
  
    public function testAddingEtAl2() {
