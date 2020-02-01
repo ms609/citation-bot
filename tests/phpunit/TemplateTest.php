@@ -1440,9 +1440,7 @@ T1 - This is the Title }}';
     $prepared = $this->prepare_citation($text);
     $this->assertSame('etal', $prepared->get('display-authors'));
     $this->assertNull($prepared->get('last3'));
-    $text = '{{cite book}}';
-    $prepared = $this->make_citation($text);
-    $prepared->set('last1', 'etal'):
+    $text = '{{cite book|last1=etal}}';
     $prepared = $this->prepare_citation($text);
     $this->assertSame('etal', $prepared->get('display-authors'));
     $this->assertNull($prepared->get('last1'));
