@@ -1450,7 +1450,7 @@ T1 - This is the Title }}';
     $this->assertNull($prepared->get('last1'));
     $text = '{{cite book|last1=et al}}';
     $prepared = $this->prepare_citation($text);
-    $this->assertSame('et al.', $prepared->get('display-authors'));
+    $this->assertSame('etal', $prepared->get('display-authors'));
     $this->assertNull($prepared->get('last1'));
   }
        
@@ -3400,7 +3400,7 @@ T1 - This is the Title }}';
     $text = "{{cite web}}";
     $template = $this->process_citation($text);
     $template->add_if_new('authors','etal');
-    $template->tidy_paramter('authors');
+    $template->tidy_parameter('authors');
     $this->assertNull($template->get('author'));
     $this->assertNull($template->get('authors'));
     $this->assertSame('etal', $template->get('displayauthors'));
@@ -3408,7 +3408,7 @@ T1 - This is the Title }}';
     $text = "{{cite web}}";
     $template = $this->process_citation($text);
     $template->add_if_new('author','etal');
-    $template->tidy_paramter('author');
+    $template->tidy_parameter('author');
     $this->assertNull($template->get('author'));
     $this->assertNull($template->get('authors'));
     $this->assertSame('etal', $template->get('displayauthors'));
