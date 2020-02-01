@@ -2976,6 +2976,14 @@ T1 - This is the Title }}';
     $template = $this->make_citation($text);
     $this->assertTrue($template->profoundly_incomplete());
     $this->assertFalse($template->profoundly_incomplete('http://foxnews.com/x'));
+    $text = "{{cite web|url=http://foxnews.com/x|contribution=Fox|title=xxx|issue=a|year=2000}}"; // Non-journal website
+    $template = $this->make_citation($text);
+    $this->assertTrue($template->profoundly_incomplete());
+    $this->assertFalse($template->profoundly_incomplete('http://foxnews.com/x'));
+    $text = "{{cite web|url=http://foxnews.com/x|encyclopedia=Fox|title=xxx|issue=a|year=2000}}"; // Non-journal website
+    $template = $this->make_citation($text);
+    $this->assertTrue($template->profoundly_incomplete());
+    $this->assertFalse($template->profoundly_incomplete('http://foxnews.com/x'));
   }
  
   public function testAddEditor() {
@@ -4132,11 +4140,11 @@ T1 - This is the Title }}';
    }
  
    public function testDontDoIt() { // "complete" already
-     $text = '{{cite journal|title=X|contribution=X|issue=X|volume=X|pages=12-34|year=1980|last2=Him|doi=X|bibcode=X|last1=X|first1=X}}';
+     $text = '{{cite journal|title=X|journal=X|issue=X|volume=X|pages=12-34|year=1980|last2=Him|doi=X|bibcode=X|last1=X|first1=X}}';
      $template = $this->make_citation($text);
      $this->assertFalse($template->expand_by_adsabs());
      $this->assertFalse($template->incomplete());
-     $text = '{{cite journal|title=X|encyclopedia=X|issue=X|volume=X|pages=12-34|year=1980|last2=Him|doi=X|bibcode=X|last1=X|first1=X}}';
+     $text = '{{cite journal|title=X|periodical=X|issue=X|volume=X|pages=12-34|year=1980|last2=Him|doi=X|bibcode=X|last1=X|first1=X}}';
      $template = $this->make_citation($text);
      $this->assertFalse($template->expand_by_adsabs());
      $this->assertFalse($template->incomplete());
