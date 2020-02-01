@@ -3398,7 +3398,6 @@ final class Template {
                  mb_substr_count($the_author, ']]') === 1 &&
                  strpos($the_author, 'CITATION_BOT') === FALSE &&
                  strpos($the_author, '{{!}}') === FALSE) {  // Has a normal wikilink
-                   echo "\n" . $the_author . " DEBUG\n";
                    if (preg_match(REGEXP_PLAIN_WIKILINK, $the_author, $matches)) {
                     $this->add_if_new('author' . $pmatch[2] . '-link', $matches[1]);
                     $this->set($param, $matches[1]);
