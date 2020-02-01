@@ -3971,6 +3971,14 @@ T1 - This is the Title }}';
      $this->assertNull($template->get('id'));
    }
  
+   public function testIDconvert6b() {
+     $text='{{Cite journal | id = {{mr|id=222}} }}';
+     $template = $this->process_citation($text);
+     $template = $this->make_citation($template->parsed_text()); // Turn sub-templates into text
+     $this->assertSame('222', $template->get('mr'));
+     $this->assertNull($template->get('id'));
+   }
+ 
    public function testIDconvert7() {
      $text='{{Cite journal | id = {{osti|02268454}} {{ssrn|1234}} }}';
      $template = $this->process_citation($text);
@@ -4127,6 +4135,11 @@ T1 - This is the Title }}';
      $text = '{{cite journal|title=X|contribution=X|issue=X|volume=X|pages=12-34|year=1980|last2=Him|doi=X|bibcode=X|last1=X|first1=X}}';
      $template = $this->make_citation($text);
      $this->assertFalse($template->expand_by_adsabs());
+     $this->assertFalse($template->incomplete()));
+     $text = '{{cite journal|title=X|encyclopedia=X|issue=X|volume=X|pages=12-34|year=1980|last2=Him|doi=X|bibcode=X|last1=X|first1=X}}';
+     $template = $this->make_citation($text);
+     $this->assertFalse($template->expand_by_adsabs());
+     $this->assertFalse($template->incomplete()));
    }
  
    public function testCAPSParams() {
