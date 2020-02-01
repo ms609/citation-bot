@@ -3371,19 +3371,10 @@ final class Template {
           }
           // No return here
         case 'authors':
-          if (!$pmatch[2]) {
-            if ($this->has('author') && $this->has('authors')) {
-              $this->rename('author', 'DUPLICATE_authors');
-              $authors = $this->get('authors');
-            } else {
-              $authors = $this->get($param);
-            }
-            if (!$this->initial_author_params) {
-              $this->handle_et_al();
-            }
-          }
+          if ($this->has('author') && $this->has('authors')) $this->rename('author', 'DUPLICATE_authors');
+          if (!$this->initial_author_params) $this->handle_et_al();
           // Continue from authors without break
-          case 'last': case 'surname':
+         case 'last': case 'surname':
             if (!$this->initial_author_params) {
               if ($pmatch[2]) {
                 if (preg_match("~\[\[(([^\|]+)\|)?([^\]]+)\]?\]?~", $this->get($param), $match)) {
