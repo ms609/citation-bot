@@ -741,7 +741,34 @@ final class TemplateTest extends testBaseClass {
     $expanded = $this->process_citation("{{cite journal|journal=[[Bulletin du Muséum national d’Histoire naturelle, Paris|Hose]]}}");
     $this->assertSame("[[Bulletin du Muséum national d'Histoire naturelle, Paris|Hose]]", $expanded->get('journal'));
   }
-  
+ 
+  public function testRemoveWikilinks2() {
+    $expanded = $this->process_citation("{{Cite journal|last1=[[Pure Evil]]}}");
+    $this->assertSame('Pure Evil', $expanded->get('last1'));
+    $this->assertSame('Pure Evil', $expanded->get('author1-link'));
+   
+    $expanded = $this->process_citation("{{Cite journal|last1=[[Pure Evil|Approximate Physics]]}}");
+    $this->assertSame('Approximate Physics', $expanded->get('last1'));
+    $this->assertSame('Pure Evil', $expanded->get('author1-link'));
+   
+    $expanded = $this->process_citation("{{Cite journal|last2=[[Pure Evil]]}}");
+    $this->assertSame('Pure Evil', $expanded->get('last2'));
+    $this->assertSame('Pure Evil', $expanded->get('author2-link'));
+   
+    $expanded = $this->process_citation("{{Cite journal|last2=[[Pure Evil|Approximate Physics]]}}");
+    $this->assertSame('Approximate Physics', $expanded->get('last2'));
+    $this->assertSame('Pure Evil', $expanded->get('author2-link'));
+   
+    $expanded = $this->process_citation("{{Cite journal|last1=[[Pure {{!}} Evil]]}}");
+    $this->assertSame('[[Pure {{!}} Evil]]', $expanded->get('last1'));
+    $this->assertNull($expanded->get('author1-link'));
+   
+    $expanded = $this->process_citation("{{Cite journal|last1=[[Pure Evil]] and [[Hoser]]}}");
+    $this->assertSame('[[Pure Evil]] and [[Hoser]]', $expanded->get('last1'));
+    $this->assertNull($expanded->get('author1-link'));
+   
+  }
+ 
   public function testJournalCapitalization() {
     $expanded = $this->process_citation("{{Cite journal|pmid=9858585}}");
     $this->assertSame('Molecular and Cellular Biology', $expanded->get('journal'));
