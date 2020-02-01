@@ -4135,11 +4135,11 @@ T1 - This is the Title }}';
      $text = '{{cite journal|title=X|contribution=X|issue=X|volume=X|pages=12-34|year=1980|last2=Him|doi=X|bibcode=X|last1=X|first1=X}}';
      $template = $this->make_citation($text);
      $this->assertFalse($template->expand_by_adsabs());
-     $this->assertFalse($template->incomplete()));
+     $this->assertFalse($template->incomplete());
      $text = '{{cite journal|title=X|encyclopedia=X|issue=X|volume=X|pages=12-34|year=1980|last2=Him|doi=X|bibcode=X|last1=X|first1=X}}';
      $template = $this->make_citation($text);
      $this->assertFalse($template->expand_by_adsabs());
-     $this->assertFalse($template->incomplete()));
+     $this->assertFalse($template->incomplete());
    }
  
    public function testCAPSParams() {
