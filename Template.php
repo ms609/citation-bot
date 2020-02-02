@@ -3345,6 +3345,7 @@ final class Template {
               substr($the_author,   -2) == ']]' &&
               mb_substr_count($the_author, '[[') === 1 && 
               mb_substr_count($the_author, ']]') === 1 &&
+              strpos($the_author, 'CITATION_BOT') === FALSE &&
               strpos($the_author, '{{!}}') === FALSE) {  // Has a normal wikilink
             if (preg_match(REGEXP_PLAIN_WIKILINK, $the_author, $matches)) {
               $this->add_if_new($param . '-link', $matches[1]);
@@ -3377,11 +3378,6 @@ final class Template {
          case 'last': case 'surname':
             if (!$this->initial_author_params) {
               if ($pmatch[2]) {
-                if (preg_match("~\[\[(([^\|]+)\|)?([^\]]+)\]?\]?~", $this->get($param), $match)) {
-                  $this->add_if_new('authorlink' . $pmatch[2], ucfirst($match[2] ? $match[2] : $match[3]));
-                  $this->set($param, trim($match[3]));
-                  report_modification("Dissecting authorlink");
-                }
                 $translator_regexp = "~\b([Tt]r(ans(lat...?(by)?)?)?\.?)\s([\w\p{L}\p{M}\s]+)$~u";
                 if (preg_match($translator_regexp, trim($this->get($param)), $match)) {
                   $others = trim("$match[1] $match[5]");
@@ -3392,6 +3388,23 @@ final class Template {
                   }
                   $this->set($param, trim(preg_replace($translator_regexp, "", $this->get($param))));
                 }
+              }
+            }
+            if ($pmatch[2] && $pmatch[1] === 'last') {
+              $the_author = $this->get($param);
+              if (substr($the_author, 0, 2) == '[[' &&
+                 substr($the_author,   -2) == ']]' &&
+                 mb_substr_count($the_author, '[[') === 1 && 
+                 mb_substr_count($the_author, ']]') === 1 &&
+                 strpos($the_author, 'CITATION_BOT') === FALSE &&
+                 strpos($the_author, '{{!}}') === FALSE) {  // Has a normal wikilink
+                   if (preg_match(REGEXP_PLAIN_WIKILINK, $the_author, $matches)) {
+                    $this->add_if_new('author' . $pmatch[2] . '-link', $matches[1]);
+                    $this->set($param, $matches[1]);
+                   } elseif (preg_match(REGEXP_PIPED_WIKILINK, $the_author, $matches)) {
+                    $this->add_if_new('author' . $pmatch[2] . '-link', $matches[1]);
+                    $this->set($param, $matches[2]);
+                  }
               }
             }
             return;
