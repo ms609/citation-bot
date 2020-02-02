@@ -4434,7 +4434,13 @@ final class Template {
         $trial[] = substr($doi, 0, -1);
     }
     if (substr($doi, 0, 3) != "10.") {
-      $trial[] = "10." . $doi;
+      if (substr($doi, 0, 2) === "0.") {
+        $trial[] = "1" . $doi;
+      } elseif (substr($doi, 0, 1) === ".") {
+        $trial[] = "10" . $doi;
+      } else {
+        $trial[] = "10." . $doi;
+      }
     }
     if (preg_match("~^(.+)(10\.\d{4,6}/.+)~", trim($doi), $match)) {
       $trial[] = $match[1];
