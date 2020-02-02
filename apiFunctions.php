@@ -566,6 +566,7 @@ function expand_doi_with_dx($template, $doi) {
      // Examples of DOI usage   https://www.doi.org/demos.html
      if (stripos('10.2307', $doi) === 0) return FALSE; // jstor API is better
      $try_to_add_it = function($name, $data) use($template) {
+       if ($template->has($name)) return FALSE; // Not worth updating based upon DX
        if (is_null($data)) return FALSE;
        while (is_array($data)) {
          if (empty($data)) return FALSE;
@@ -600,24 +601,15 @@ function expand_doi_with_dx($template, $doi) {
      // BE WARNED:  this code uses the "@$var" method.
      // If the variable is not set, then PHP just passes NULL, then that is interpreted as a empty string
      if ($template->blank(['date', 'year'])) {
-       if (isset($json['issued']['date-parts']['0']['0'])) {
-         $try_to_add_it('year', $json['issued']['date-parts']['0']['0']);
-       } elseif (isset($json['created']['date-parts']['0']['0'])) {
-         $try_to_add_it('year', $json['created']['date-parts']['0']['0']);
-       } elseif (isset($json['published-print']['date-parts']['0']['0'])) {
-         $try_to_add_it('year', $json['published-print']['date-parts']['0']['0']);
-       }
+       $try_to_add_it('year', @$json['issued']['date-parts']['0']['0']);
+       $try_to_add_it('year', @$json['created']['date-parts']['0']['0']);
+       $try_to_add_it('year', @$json['published-print']['date-parts']['0']['0']);
      }
      $try_to_add_it('issue', @$json['issue']);
      $try_to_add_it('pages', @$json['pages']);
      $try_to_add_it('volume', @$json['volume']);
-     if ($template->blank('isbn')) {
-       if (isset($json['ISBN']['0'])) {
-         $try_to_add_it('isbn', $json['ISBN']['0']);
-       } elseif (isset($json['isbn-type']['0']['value'])) {
-         $try_to_add_it('isbn', $json['isbn-type']['0']['value']);
-       }
-     }
+     $try_to_add_it('isbn', @$json['ISBN']['0']);
+     $try_to_add_it('isbn', @$json['isbn-type']['0']['value']);
      if (isset($json['author'])) {
        $i = 0;
        foreach ($json['author'] as $auth) {
