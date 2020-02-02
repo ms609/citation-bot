@@ -1943,7 +1943,7 @@ T1 - This is the Title }}';
   }
 
   public function testJustAnLCCN() {
-    $this->requires_secrets(function() {
+    $this->requires_google(function() {
       $text = '{{cite book | lccn=2009925036}}';
       $expanded = $this->process_citation($text);
       $this->assertSame('Alternative Energy for Dummies', $expanded->get('title'));
@@ -1963,7 +1963,7 @@ T1 - This is the Title }}';
   }
  
   public function testBadBibcodeARXIVPages() {
-   $this->requires_secrets(function() {
+   $this->requires_bibcode(function() {
     $text = "{{cite journal|bibcode=1995astro.ph..8159B|pages=8159}}"; // Pages from bibcode have slash in it astro-ph/8159B
     $expanded = $this->process_citation($text);
     $pages = (string) $expanded->get('pages');
