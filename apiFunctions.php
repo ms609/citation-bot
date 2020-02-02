@@ -682,14 +682,7 @@ function doi_active($doi) {
     } elseif ($works === FALSE) {
       $cache[$doi] = FALSE;
     } else { // TRUE
-      $active = is_doi_active($doi);
-      if ($active === NULL) {
-        $cache[$doi] = NULL;      // @codeCoverageIgnore
-      } elseif ($active === FALSE) {
-        $cache[$doi] = FALSE;
-      } else {
-        $cache[$doi] = TRUE;
-      }
+      $cache[$doi] = is_doi_active($doi);
     }
   }
   return $cache[$doi];
