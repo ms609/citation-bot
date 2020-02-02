@@ -243,7 +243,7 @@ class ZoteroTest extends testBaseClass {
     $this->assertSame('http://ieeexplore.ieee.org/123456789/', $url);
   }
  
-  public function testTruncateDOI() {
+  public function testZoteroTruncateDOI() {
    $this->requires_zotero(function() {
     $text = '{{cite journal|url=http://www.oxfordhandbooks.com/view/10.1093/oxfordhb/9780199552238.001.0001/oxfordhb-9780199552238-e-023}}';
     $expanded = $this->process_citation($text);
@@ -253,7 +253,7 @@ class ZoteroTest extends testBaseClass {
    });
   }
  
-  public function testRespectDates() {
+  public function testZoteroRespectDates() {
    $this->requires_zotero(function() {
       $text = '{{Use mdy dates}}{{cite web|url=https://www.nasa.gov/content/profile-of-john-glenn}}';
       $page = $this->process_page($text);
