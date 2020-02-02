@@ -4365,17 +4365,5 @@ T1 - This is the Title }}';
      $template = $this->make_citation($text);
      $template->verify_doi();
      $this->assertSame('10.1175/1525-7541(2003)004<1147:TVGPCP>2.0.CO;2', $template->get('doi'));
-  
-     // non-crossref ones now
-
-     $text = '{{cite journal|doi=10.3233/PRM-140291}}';
-     $template = $this->make_citation($text);
-     $template->verify_doi();
-     $this->assertSame('10.3233/PRM-140291', $template->get('doi'));
-  
-     $text = '{{cite journal|doi=0.3233/PRM-140291}}';
-     $template = $this->make_citation($text);
-     $template->verify_doi();
-     $this->assertSame('10.3233/PRM-140291', $template->get('doi'));
   }
 }
