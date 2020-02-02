@@ -4434,13 +4434,13 @@ final class Template {
         $trial[] = substr($doi, 0, -1);
     }
     if (substr($doi, 0, 3) != "10.") {
-      $trial[] = $doi;
+      $trial[] = "10." . $doi;
     }
     if (preg_match("~^(.+)(10\.\d{4,6}/.+)~", trim($doi), $match)) {
       $trial[] = $match[1];
       $trial[] = $match[2];
     }
-    $replacements = array (      "&lt;" => "<",      "&gt;" => ">",    );
+    $replacements = array ("&lt;" => "<", "&gt;" => ">");
     if (preg_match("~&[lg]t;~", $doi)) {
       $trial[] = str_replace(array_keys($replacements), $replacements, $doi);
     }
