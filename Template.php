@@ -2487,7 +2487,7 @@ final class Template {
              return 'duplicate';
           }
         }
-        if (preg_match("~https?://www.ncbi.nlm.nih.gov/(?:m/)?pubmed/.*?=?(\d+)~", $oa_url, $match)) {
+        if (preg_match("~^https?://www.ncbi.nlm.nih.gov/(?:m/)?pubmed/.*?=?(\d+)~", $oa_url, $match)) {
           if ($this->has('pmid')) {
              return 'duplicate';
           }
@@ -2945,7 +2945,6 @@ final class Template {
          && strlen($test_dat) > 0
          && similar_text($closest, $test_dat) / strlen($test_dat) > 0.4
          && ($shortest + 1 < $shortish  // No close competitor
-             || $shortest / $shortish <= 2/3
              || strlen($closest) > strlen($comp)
             )
       ) {
@@ -4435,13 +4434,19 @@ final class Template {
         $trial[] = substr($doi, 0, -1);
     }
     if (substr($doi, 0, 3) != "10.") {
-      $trial[] = $doi;
+      if (substr($doi, 0, 2) === "0.") {
+        $trial[] = "1" . $doi;
+      } elseif (substr($doi, 0, 1) === ".") {
+        $trial[] = "10" . $doi;
+      } else {
+        $trial[] = "10." . $doi;
+      }
     }
     if (preg_match("~^(.+)(10\.\d{4,6}/.+)~", trim($doi), $match)) {
       $trial[] = $match[1];
       $trial[] = $match[2];
     }
-    $replacements = array (      "&lt;" => "<",      "&gt;" => ">",    );
+    $replacements = array ("&lt;" => "<", "&gt;" => ">");
     if (preg_match("~&[lg]t;~", $doi)) {
       $trial[] = str_replace(array_keys($replacements), $replacements, $doi);
     }
