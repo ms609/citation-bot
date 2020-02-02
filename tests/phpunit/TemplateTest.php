@@ -958,17 +958,6 @@ final class TemplateTest extends testBaseClass {
     $this->assertNull($expanded->get('bibcode'));
     $this->assertNull($expanded->get('doi'));
   }
-  
-  public function testBibcodesBooks() {
-    $this->bibcode_secrets(function() {
-      $text = "{{Cite book|bibcode=1982mcts.book.....H}}";
-      $expanded = $this->process_citation($text);
-      $this->assertSame('1982', $expanded->get('year'));
-      $this->assertSame('Houk', $expanded->get('last1'));
-      $this->assertSame('N.', $expanded->get('first1'));
-      $this->assertNotNull($expanded->get('title'));
-    });
-  }
  
   public function testParameterAlias() {
     $text = '{{cite journal |author-last1=Knops |author-first1=J.M. |author-last2=Nash III |author-first2=T.H.
@@ -1555,14 +1544,6 @@ T1 - This is the Title }}';
     $this->assertSame('551', $expanded->get('issue'));
     $this->assertNull($expanded->get('volume'));
   }
-
-  public function testZooKeys2() {
-     $this->requires_secrets(function() { // this only works if we can query wikipedia and see if page exists
-      $text = '{{Cite journal|journal=[[Zookeys]]}}';
-      $expanded = $this->process_citation($text);
-      $this->assertSame('[[ZooKeys]]', $expanded->get('journal'));
-     });
-  }
  
   public function testZooKeysDoiTidy() {
       $text = '{{Cite journal|doi=10.3897/zookeys.123.322222}}';
@@ -1643,14 +1624,6 @@ T1 - This is the Title }}';
     $this->assertSame('http://plants.jstor.org/stable/10.5555/al.ap.specimen.nsw225972', $expanded->get('url'));
     $this->assertNull($expanded->get('jstor'));
     $this->assertNull($expanded->get('doi'));
-  }
-  
-  public function testBibcodeDotEnding() {
-    $this->bibcode_secrets(function() {
-      $text='{{cite journal|title=Electric Equipment of the Dolomites Railway|journal=Nature|date=2 January 1932|volume=129|issue=3244|page=18|doi=10.1038/129018a0}}';
-      $expanded = $this->process_citation($text);
-      $this->assertSame('1932Natur.129Q..18.', $expanded->get('bibcode'));
-    });
   }
 
   public function testConvertJournalToBook() {
@@ -1960,14 +1933,6 @@ T1 - This is the Title }}';
      $this->assertSame('Explosives engineering', $expanded->get('title'));
      $this->assertNull($expanded->get('url'));
   }
-
-  public function testJustAnLCCN() {
-    $this->requires_secrets(function() {
-      $text = '{{cite book | lccn=2009925036}}';
-      $expanded = $this->process_citation($text);
-      $this->assertSame('Alternative Energy for Dummies', $expanded->get('title'));
-    });
-  }
     
   public function testArxivPDf() {
     $text = '{{cite web|url=https://arxiv.org/ftp/arxiv/papers/1312/1312.7288.pdf}}';
@@ -1979,16 +1944,6 @@ T1 - This is the Title }}';
     $text = 'bad things like {{cite journal}}{{cite book|||}}{{cite arxiv}}{{cite web}} should not crash bot'; // bot removed pipes
     $expanded = $this->process_page($text);
     $this->assertSame('bad things like {{cite journal}}{{cite book}}{{cite arxiv}}{{cite web}} should not crash bot', $expanded->parsed_text());
-  }
- 
-  public function testBadBibcodeARXIVPages() {
-   $this->requires_secrets(function() {
-    $text = "{{cite journal|bibcode=1995astro.ph..8159B|pages=8159}}"; // Pages from bibcode have slash in it astro-ph/8159B
-    $expanded = $this->process_citation($text);
-    $pages = (string) $expanded->get('pages');
-    $this->assertSame(FALSE, stripos($pages, 'astro'));
-    $this->assertNull($expanded->get('journal'));  // if we get a journal, the data is updated and test probably no longer gets bad data
-   });
   }
 
   public function testLatexMathInTitle() { // This contains Math stuff that should be z~10, but we just verify that we do not make it worse at this time.  See https://tex.stackexchange.com/questions/55701/how-do-i-write-sim-approximately-with-the-correct-spacing
@@ -4191,24 +4146,6 @@ T1 - This is the Title }}';
      $this->assertSame('10.1021/acs.analchem.8b04567', $template->get('doi'));
    }
  
-   public function testDontDoIt() { // "complete" already
-     $text = '{{cite journal|title=X|journal=X|issue=X|volume=X|pages=12-34|year=1980|last2=Him|doi=X|bibcode=X|last1=X|first1=X}}';
-     $template = $this->make_citation($text);
-     $this->assertFalse($template->incomplete());
-     $text = '{{cite journal|title=X|periodical=X|issue=X|volume=X|pages=12-34|year=1980|last2=Him|doi=X|bibcode=X|last1=X|first1=X}}';
-     $template = $this->make_citation($text);
-     $this->assertFalse($template->incomplete());
-  
-     $this->bibcode_secrets(function() {
-      $text = '{{cite journal|title=X|journal=X|issue=X|volume=X|pages=12-34|year=1980|last2=Him|doi=X|bibcode=X|last1=X|first1=X}}';
-      $template = $this->make_citation($text);
-      $this->assertFalse($template->expand_by_adsabs());
-      $text = '{{cite journal|title=X|periodical=X|issue=X|volume=X|pages=12-34|year=1980|last2=Him|doi=X|bibcode=X|last1=X|first1=X}}';
-      $template = $this->make_citation($text);
-      $this->assertFalse($template->expand_by_adsabs());
-     });
-   }
- 
    public function testCAPSParams() {
      $text = '{{cite journal|ARXIV=|TITLE=|LAST1=|JOURNAL=}}';
      $template = $this->process_citation($text);
@@ -4249,23 +4186,7 @@ T1 - This is the Title }}';
      $this->assertNull($template->get('publisher'));
      $this->assertSame('[[abc|abc]]', strtolower($template->get('journal'))); // Might "fix" Abc redirect to ABC
    }
- 
-   public function testRedirectFixing() {
-    $this->requires_secrets(function() {
-     $text = '{{cite journal|journal=[[Journal Of Polymer Science]]}}';
-     $template = $this->prepare_citation($text);
-     $this->assertSame('[[Journal of Polymer Science]]', $template->get('journal'));
-    });
-   }
- 
-    public function testRedirectFixing2() {
-    $this->requires_secrets(function() {
-     $text = '{{cite journal|journal=[[Journal Of Polymer Science|"J Poly Sci"]]}}';
-     $template = $this->prepare_citation($text);
-     $this->assertSame('[[Journal of Polymer Science|J Poly Sci]]', $template->get('journal'));
-    });
-   }
- 
+
    public function testRemoveAuthorLinks() {
      $text = '{{cite journal|author3-link=}}';
      $template = $this->process_citation($text);
@@ -4366,4 +4287,84 @@ T1 - This is the Title }}';
      $template->verify_doi();
      $this->assertSame('10.1175/1525-7541(2003)004<1147:TVGPCP>2.0.CO;2', $template->get('doi'));
   }
+ 
+   public function testDontDoIt() { // "complete" already
+     $text = '{{cite journal|title=X|journal=X|issue=X|volume=X|pages=12-34|year=1980|last2=Him|doi=X|bibcode=X|last1=X|first1=X}}';
+     $template = $this->make_citation($text);
+     $this->assertFalse($template->incomplete());
+     $text = '{{cite journal|title=X|periodical=X|issue=X|volume=X|pages=12-34|year=1980|last2=Him|doi=X|bibcode=X|last1=X|first1=X}}';
+     $template = $this->make_citation($text);
+     $this->assertFalse($template->incomplete());
+  
+     $this->requires_bibcode(function() {
+      $text = '{{cite journal|title=X|journal=X|issue=X|volume=X|pages=12-34|year=1980|last2=Him|doi=X|bibcode=X|last1=X|first1=X}}';
+      $template = $this->make_citation($text);
+      $this->assertFalse($template->expand_by_adsabs());
+      $text = '{{cite journal|title=X|periodical=X|issue=X|volume=X|pages=12-34|year=1980|last2=Him|doi=X|bibcode=X|last1=X|first1=X}}';
+      $template = $this->make_citation($text);
+      $this->assertFalse($template->expand_by_adsabs());
+     });
+   }
+ 
+  public function testBibcodeDotEnding() {
+    $this->requires_bibcode(function() {
+      $text='{{cite journal|title=Electric Equipment of the Dolomites Railway|journal=Nature|date=2 January 1932|volume=129|issue=3244|page=18|doi=10.1038/129018a0}}';
+      $expanded = $this->process_citation($text);
+      $this->assertSame('1932Natur.129Q..18.', $expanded->get('bibcode'));
+    });
+  }
+
+  public function testBibcodesBooks() {
+    $this->requires_bibcode(function() {
+      $text = "{{Cite book|bibcode=1982mcts.book.....H}}";
+      $expanded = $this->process_citation($text);
+      $this->assertSame('1982', $expanded->get('year'));
+      $this->assertSame('Houk', $expanded->get('last1'));
+      $this->assertSame('N.', $expanded->get('first1'));
+      $this->assertNotNull($expanded->get('title'));
+    });
+  }
+  
+  public function testBadBibcodeARXIVPages() {
+   $this->requires_bibcode(function() {
+    $text = "{{cite journal|bibcode=1995astro.ph..8159B|pages=8159}}"; // Pages from bibcode have slash in it astro-ph/8159B
+    $expanded = $this->process_citation($text);
+    $pages = (string) $expanded->get('pages');
+    $this->assertSame(FALSE, stripos($pages, 'astro'));
+    $this->assertNull($expanded->get('journal'));  // if we get a journal, the data is updated and test probably no longer gets bad data
+   });
+  }
+ 
+  public function testZooKeys2() {
+     $this->requires_secrets(function() { // this only works if we can query wikipedia and see if page exists
+      $text = '{{Cite journal|journal=[[Zookeys]]}}';
+      $expanded = $this->process_citation($text);
+      $this->assertSame('[[ZooKeys]]', $expanded->get('journal'));
+     });
+  }
+ 
+  public function testJustAnLCCN() {
+    $this->requires_google(function() {
+      $text = '{{cite book | lccn=2009925036}}';
+      $expanded = $this->process_citation($text);
+      $this->assertSame('Alternative Energy for Dummies', $expanded->get('title'));
+    });
+  }
+ 
+   public function testRedirectFixing() {
+    $this->requires_secrets(function() {
+     $text = '{{cite journal|journal=[[Journal Of Polymer Science]]}}';
+     $template = $this->prepare_citation($text);
+     $this->assertSame('[[Journal of Polymer Science]]', $template->get('journal'));
+    });
+   }
+ 
+    public function testRedirectFixing2() {
+    $this->requires_secrets(function() {
+     $text = '{{cite journal|journal=[[Journal Of Polymer Science|"J Poly Sci"]]}}';
+     $template = $this->prepare_citation($text);
+     $this->assertSame('[[Journal of Polymer Science|J Poly Sci]]', $template->get('journal'));
+    });
+   }
+ 
 }
