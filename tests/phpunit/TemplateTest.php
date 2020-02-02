@@ -958,17 +958,6 @@ final class TemplateTest extends testBaseClass {
     $this->assertNull($expanded->get('bibcode'));
     $this->assertNull($expanded->get('doi'));
   }
-  
-  public function testBibcodesBooks() {
-    $this->bibcode_secrets(function() {
-      $text = "{{Cite book|bibcode=1982mcts.book.....H}}";
-      $expanded = $this->process_citation($text);
-      $this->assertSame('1982', $expanded->get('year'));
-      $this->assertSame('Houk', $expanded->get('last1'));
-      $this->assertSame('N.', $expanded->get('first1'));
-      $this->assertNotNull($expanded->get('title'));
-    });
-  }
  
   public function testParameterAlias() {
     $text = '{{cite journal |author-last1=Knops |author-first1=J.M. |author-last2=Nash III |author-first2=T.H.
@@ -1643,14 +1632,6 @@ T1 - This is the Title }}';
     $this->assertSame('http://plants.jstor.org/stable/10.5555/al.ap.specimen.nsw225972', $expanded->get('url'));
     $this->assertNull($expanded->get('jstor'));
     $this->assertNull($expanded->get('doi'));
-  }
-  
-  public function testBibcodeDotEnding() {
-    $this->bibcode_secrets(function() {
-      $text='{{cite journal|title=Electric Equipment of the Dolomites Railway|journal=Nature|date=2 January 1932|volume=129|issue=3244|page=18|doi=10.1038/129018a0}}';
-      $expanded = $this->process_citation($text);
-      $this->assertSame('1932Natur.129Q..18.', $expanded->get('bibcode'));
-    });
   }
 
   public function testConvertJournalToBook() {
@@ -4365,5 +4346,24 @@ T1 - This is the Title }}';
      $template = $this->make_citation($text);
      $template->verify_doi();
      $this->assertSame('10.1175/1525-7541(2003)004<1147:TVGPCP>2.0.CO;2', $template->get('doi'));
+  }
+ 
+  public function testBibcodeDotEnding() {
+    $this->requires_bibcode(function() {
+      $text='{{cite journal|title=Electric Equipment of the Dolomites Railway|journal=Nature|date=2 January 1932|volume=129|issue=3244|page=18|doi=10.1038/129018a0}}';
+      $expanded = $this->process_citation($text);
+      $this->assertSame('1932Natur.129Q..18.', $expanded->get('bibcode'));
+    });
+  }
+
+  public function testBibcodesBooks() {
+    $this->requires_bibcode(function() {
+      $text = "{{Cite book|bibcode=1982mcts.book.....H}}";
+      $expanded = $this->process_citation($text);
+      $this->assertSame('1982', $expanded->get('year'));
+      $this->assertSame('Houk', $expanded->get('last1'));
+      $this->assertSame('N.', $expanded->get('first1'));
+      $this->assertNotNull($expanded->get('title'));
+    });
   }
 }
