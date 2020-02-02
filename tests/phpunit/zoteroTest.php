@@ -124,6 +124,10 @@ class ZoteroTest extends testBaseClass {
   }
 
   public function testZoteroExpansion_doi_not_from_crossref() {
+   $text = '{{Cite journal|doi=.3233/PRM-140291}}';
+   $expanded = $this->make_citation($text);
+   $expanded->verify_doi();
+   $this->assertSame('10.3233/PRM-140291', $expanded->get('doi'));
    $this->requires_zotero(function() {
     $text = '{{Cite journal|doi=10.3233/PRM-140291}}'; // mEDRA DOI - they do not provide RIS information from dx.doi.org
     $expanded = $this->process_citation($text);
