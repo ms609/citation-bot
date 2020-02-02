@@ -105,8 +105,13 @@ final class apiFunctionsTest extends testBaseClass {
   }
   
   public function testExpansion_doi_not_from_crossre_fISTIC_Data() {
-     $expanded = $this->process_citation('{{Cite journal}}');
-     expand_doi_with_dx($expanded, '10.3972/water973.0145.db');
+    $text = '{{Cite journal|doi=0.3972/water973.0145.db}}';
+    $expanded = $this->make_citation($text);
+    $expanded->verify_doi();
+    $this->assertSame('10.3972/water973.0145.db', $expanded->get('doi'));
+    
+    $expanded = $this->process_citation('{{Cite journal}}');
+    expand_doi_with_dx($expanded, '10.3972/water973.0145.db');
     $this->assertSame('{{Cite journal}}', $expanded->parsed_text());
   }
  
