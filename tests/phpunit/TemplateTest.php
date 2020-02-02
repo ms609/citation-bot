@@ -4172,24 +4172,6 @@ T1 - This is the Title }}';
      $this->assertSame('10.1021/acs.analchem.8b04567', $template->get('doi'));
    }
  
-   public function testDontDoIt() { // "complete" already
-     $text = '{{cite journal|title=X|journal=X|issue=X|volume=X|pages=12-34|year=1980|last2=Him|doi=X|bibcode=X|last1=X|first1=X}}';
-     $template = $this->make_citation($text);
-     $this->assertFalse($template->incomplete());
-     $text = '{{cite journal|title=X|periodical=X|issue=X|volume=X|pages=12-34|year=1980|last2=Him|doi=X|bibcode=X|last1=X|first1=X}}';
-     $template = $this->make_citation($text);
-     $this->assertFalse($template->incomplete());
-  
-     $this->bibcode_secrets(function() {
-      $text = '{{cite journal|title=X|journal=X|issue=X|volume=X|pages=12-34|year=1980|last2=Him|doi=X|bibcode=X|last1=X|first1=X}}';
-      $template = $this->make_citation($text);
-      $this->assertFalse($template->expand_by_adsabs());
-      $text = '{{cite journal|title=X|periodical=X|issue=X|volume=X|pages=12-34|year=1980|last2=Him|doi=X|bibcode=X|last1=X|first1=X}}';
-      $template = $this->make_citation($text);
-      $this->assertFalse($template->expand_by_adsabs());
-     });
-   }
- 
    public function testCAPSParams() {
      $text = '{{cite journal|ARXIV=|TITLE=|LAST1=|JOURNAL=}}';
      $template = $this->process_citation($text);
@@ -4347,6 +4329,24 @@ T1 - This is the Title }}';
      $template->verify_doi();
      $this->assertSame('10.1175/1525-7541(2003)004<1147:TVGPCP>2.0.CO;2', $template->get('doi'));
   }
+ 
+   public function testDontDoIt() { // "complete" already
+     $text = '{{cite journal|title=X|journal=X|issue=X|volume=X|pages=12-34|year=1980|last2=Him|doi=X|bibcode=X|last1=X|first1=X}}';
+     $template = $this->make_citation($text);
+     $this->assertFalse($template->incomplete());
+     $text = '{{cite journal|title=X|periodical=X|issue=X|volume=X|pages=12-34|year=1980|last2=Him|doi=X|bibcode=X|last1=X|first1=X}}';
+     $template = $this->make_citation($text);
+     $this->assertFalse($template->incomplete());
+  
+     $this->requires_bibcode(function() {
+      $text = '{{cite journal|title=X|journal=X|issue=X|volume=X|pages=12-34|year=1980|last2=Him|doi=X|bibcode=X|last1=X|first1=X}}';
+      $template = $this->make_citation($text);
+      $this->assertFalse($template->expand_by_adsabs());
+      $text = '{{cite journal|title=X|periodical=X|issue=X|volume=X|pages=12-34|year=1980|last2=Him|doi=X|bibcode=X|last1=X|first1=X}}';
+      $template = $this->make_citation($text);
+      $this->assertFalse($template->expand_by_adsabs());
+     });
+   }
  
   public function testBibcodeDotEnding() {
     $this->requires_bibcode(function() {
