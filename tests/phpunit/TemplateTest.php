@@ -4333,4 +4333,26 @@ T1 - This is the Title }}';
      $template->add_if_new('journal', 'null');
      $this->assertSame('{{cite book}}', $template->parsed_text());
    }
+ 
+  public function testVerifyDOI() {
+     $text = '{{cite journal|doi=1111/j.1471-0528.1995.tb09132.x}}';
+     $template = $this->make_citation($text);
+     $template->verify_doi();
+     $this->assertSame('10.111/j.1471-0528.1995.tb09132.x', $template->get('doi'));
+   
+     $text = '{{cite journal|doi=10.1111/j.1471-0528.1995.tb09132.}}';
+     $template = $this->make_citation($text);
+     $template->verify_doi();
+     $this->assertSame('10.111/j.1471-0528.1995.tb09132.x', $template->get('doi'));
+   
+     $text = '{{cite journal|doi=10.1111/j.1471-0528.1995.tb09132.x;}}';
+     $template = $this->make_citation($text);
+     $template->verify_doi();
+     $this->assertSame('10.111/j.1471-0528.1995.tb09132.x', $template->get('doi'));
+   
+     $text = '{{cite journal|doi=10.1175/1525-7541(2003)004&gt;1147:TVGPCP&lt;2.0.CO;2}}';
+     $template = $this->make_citation($text);
+     $template->verify_doi();
+     $this->assertSame('10.1175/1525-7541(2003)004<1147:TVGPCP>2.0.CO;2', $template->get('doi'));
+  }
 }
