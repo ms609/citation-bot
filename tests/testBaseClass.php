@@ -35,9 +35,18 @@ abstract class testBaseClass extends PHPUnit\Framework\TestCase {
       $function();
     }
   }
+  
+  protected function requires_google($function) {
+    if (!getenv('PHP_GOOGLEKEY')) {
+      echo 'G';
+      $this->assertNull(NULL);
+    } else {
+      $function();
+    }
+  } 
 
   // Only routines that absolutely need bibcode access since we are limited 
-  protected function bibcode_secrets($function) {
+  protected function requires_bibcode($function) {
     global $BLOCK_BIBCODE_SEARCH;
     if ($this->skip_bibcode !== FALSE && $this->skip_bibcode !== TRUE) {
       $this->assertNull('skip_bibcode bocks commit');
