@@ -52,11 +52,6 @@ final class apiFunctionsTest extends testBaseClass {
   }
   
     public function testExpansion_doi_not_from_crossrefJapanJournal() {
-     $text = '{{Cite journal|doi=.11429/ppmsj1919.17.0_48}}';
-     $expanded = $this->make_citation($text);
-     $expanded->verify_doi();
-     $this->assertSame('10.11429/ppmsj1919.17.0_48', $expanded->get('doi'));
-
      $text = '{{cite journal|doi=10.11429/ppmsj1919.17.0_48}}';
      $expanded = $this->process_citation($text);
      $this->assertSame('On the Interaction of Elementary Particles. I', $expanded->get('title'));
