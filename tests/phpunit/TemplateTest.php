@@ -1544,14 +1544,6 @@ T1 - This is the Title }}';
     $this->assertSame('551', $expanded->get('issue'));
     $this->assertNull($expanded->get('volume'));
   }
-
-  public function testZooKeys2() {
-     $this->requires_secrets(function() { // this only works if we can query wikipedia and see if page exists
-      $text = '{{Cite journal|journal=[[Zookeys]]}}';
-      $expanded = $this->process_citation($text);
-      $this->assertSame('[[ZooKeys]]', $expanded->get('journal'));
-     });
-  }
  
   public function testZooKeysDoiTidy() {
       $text = '{{Cite journal|doi=10.3897/zookeys.123.322222}}';
@@ -1941,14 +1933,6 @@ T1 - This is the Title }}';
      $this->assertSame('Explosives engineering', $expanded->get('title'));
      $this->assertNull($expanded->get('url'));
   }
-
-  public function testJustAnLCCN() {
-    $this->requires_google(function() {
-      $text = '{{cite book | lccn=2009925036}}';
-      $expanded = $this->process_citation($text);
-      $this->assertSame('Alternative Energy for Dummies', $expanded->get('title'));
-    });
-  }
     
   public function testArxivPDf() {
     $text = '{{cite web|url=https://arxiv.org/ftp/arxiv/papers/1312/1312.7288.pdf}}';
@@ -1960,16 +1944,6 @@ T1 - This is the Title }}';
     $text = 'bad things like {{cite journal}}{{cite book|||}}{{cite arxiv}}{{cite web}} should not crash bot'; // bot removed pipes
     $expanded = $this->process_page($text);
     $this->assertSame('bad things like {{cite journal}}{{cite book}}{{cite arxiv}}{{cite web}} should not crash bot', $expanded->parsed_text());
-  }
- 
-  public function testBadBibcodeARXIVPages() {
-   $this->requires_bibcode(function() {
-    $text = "{{cite journal|bibcode=1995astro.ph..8159B|pages=8159}}"; // Pages from bibcode have slash in it astro-ph/8159B
-    $expanded = $this->process_citation($text);
-    $pages = (string) $expanded->get('pages');
-    $this->assertSame(FALSE, stripos($pages, 'astro'));
-    $this->assertNull($expanded->get('journal'));  // if we get a journal, the data is updated and test probably no longer gets bad data
-   });
   }
 
   public function testLatexMathInTitle() { // This contains Math stuff that should be z~10, but we just verify that we do not make it worse at this time.  See https://tex.stackexchange.com/questions/55701/how-do-i-write-sim-approximately-with-the-correct-spacing
@@ -4212,23 +4186,7 @@ T1 - This is the Title }}';
      $this->assertNull($template->get('publisher'));
      $this->assertSame('[[abc|abc]]', strtolower($template->get('journal'))); // Might "fix" Abc redirect to ABC
    }
- 
-   public function testRedirectFixing() {
-    $this->requires_secrets(function() {
-     $text = '{{cite journal|journal=[[Journal Of Polymer Science]]}}';
-     $template = $this->prepare_citation($text);
-     $this->assertSame('[[Journal of Polymer Science]]', $template->get('journal'));
-    });
-   }
- 
-    public function testRedirectFixing2() {
-    $this->requires_secrets(function() {
-     $text = '{{cite journal|journal=[[Journal Of Polymer Science|"J Poly Sci"]]}}';
-     $template = $this->prepare_citation($text);
-     $this->assertSame('[[Journal of Polymer Science|J Poly Sci]]', $template->get('journal'));
-    });
-   }
- 
+
    public function testRemoveAuthorLinks() {
      $text = '{{cite journal|author3-link=}}';
      $template = $this->process_citation($text);
@@ -4366,4 +4324,47 @@ T1 - This is the Title }}';
       $this->assertNotNull($expanded->get('title'));
     });
   }
+  
+  public function testBadBibcodeARXIVPages() {
+   $this->requires_bibcode(function() {
+    $text = "{{cite journal|bibcode=1995astro.ph..8159B|pages=8159}}"; // Pages from bibcode have slash in it astro-ph/8159B
+    $expanded = $this->process_citation($text);
+    $pages = (string) $expanded->get('pages');
+    $this->assertSame(FALSE, stripos($pages, 'astro'));
+    $this->assertNull($expanded->get('journal'));  // if we get a journal, the data is updated and test probably no longer gets bad data
+   });
+  }
+ 
+  public function testZooKeys2() {
+     $this->requires_secrets(function() { // this only works if we can query wikipedia and see if page exists
+      $text = '{{Cite journal|journal=[[Zookeys]]}}';
+      $expanded = $this->process_citation($text);
+      $this->assertSame('[[ZooKeys]]', $expanded->get('journal'));
+     });
+  }
+ 
+  public function testJustAnLCCN() {
+    $this->requires_google(function() {
+      $text = '{{cite book | lccn=2009925036}}';
+      $expanded = $this->process_citation($text);
+      $this->assertSame('Alternative Energy for Dummies', $expanded->get('title'));
+    });
+  }
+ 
+   public function testRedirectFixing() {
+    $this->requires_secrets(function() {
+     $text = '{{cite journal|journal=[[Journal Of Polymer Science]]}}';
+     $template = $this->prepare_citation($text);
+     $this->assertSame('[[Journal of Polymer Science]]', $template->get('journal'));
+    });
+   }
+ 
+    public function testRedirectFixing2() {
+    $this->requires_secrets(function() {
+     $text = '{{cite journal|journal=[[Journal Of Polymer Science|"J Poly Sci"]]}}';
+     $template = $this->prepare_citation($text);
+     $this->assertSame('[[Journal of Polymer Science|J Poly Sci]]', $template->get('journal'));
+    });
+   }
+ 
 }
