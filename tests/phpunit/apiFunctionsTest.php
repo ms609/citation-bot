@@ -13,9 +13,10 @@ final class apiFunctionsTest extends testBaseClass {
        '1966Natur.211..116M', // 3
        '1995Sci...267...77R', // 4
        '1995Geo....23..967E', // 5
-       '2003hoe..book.....K', // 6
-       '2000A&A...361..952H', // 7
-       '1995astro.ph..8159B', // 8
+       '2003hoe..book.....K', // 6 - book
+       '2000A&A...361..952H', // 7 - & symbol
+       '1995astro.ph..8159B', // 8 - arxiv
+       '1932Natur.129Q..18.', // 9 - dot end
        ];
       $text = '{{Cite journal | bibcode = ' . implode('}}{{Cite journal | bibcode = ', $bibcodes) . '}}';
       $page = new TestPage();
@@ -27,11 +28,11 @@ final class apiFunctionsTest extends testBaseClass {
       $this->assertSame('14879', $templates[0]->get('pages'));
       $this->assertNull($templates[6]->get('journal'));
       $this->assertSame('Astronomy and Astrophysics', $templates[7]->get('journal'));
-      $this->assertNull($template[8]->get('pages'));
-      $this->assertNull($template[8]->get('page'));
-      $this->assertSame('astro-ph/9508159', $template[8]->get('arxiv'));
+      $this->assertNull($templates[8]->get('pages'));
+      $this->assertNull($templates[8]->get('page'));
+      $this->assertSame('astro-ph/9508159', $templates[8]->get('arxiv'));
+      $this->assertSame('10.1038/129018a0', $templates[9]->get('doi'));
     });
-
     $text = "fafa3faewf34af";
     $this->assertSame($text, bibcode_link($text)); // Mostly just for code coverage, make sure code does not seg fault.
   }
