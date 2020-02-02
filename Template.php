@@ -2487,7 +2487,7 @@ final class Template {
              return 'duplicate';
           }
         }
-        if (preg_match("~https?://www.ncbi.nlm.nih.gov/(?:m/)?pubmed/.*?=?(\d+)~", $oa_url, $match)) {
+        if (preg_match("~^https?://www.ncbi.nlm.nih.gov/(?:m/)?pubmed/.*?=?(\d+)~", $oa_url, $match)) {
           if ($this->has('pmid')) {
              return 'duplicate';
           }
@@ -2945,7 +2945,6 @@ final class Template {
          && strlen($test_dat) > 0
          && similar_text($closest, $test_dat) / strlen($test_dat) > 0.4
          && ($shortest + 1 < $shortish  // No close competitor
-             || $shortest / $shortish <= 2/3
              || strlen($closest) > strlen($comp)
             )
       ) {
