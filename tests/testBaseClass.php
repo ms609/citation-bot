@@ -11,8 +11,8 @@ $SLOW_MODE = TRUE;
 
 abstract class testBaseClass extends PHPUnit\Framework\TestCase {
   // Set to TRUE to commit skipping to GIT.  FALSE to not skip.  Something else to skip tests while debugging
-  private $skip_zotero = TRUE; // TODO
-  private $skip_bibcode= TRUE; // TODO
+  private $skip_zotero = FALSE;
+  private $skip_bibcode= FALSE;
   
   protected function process_page($text) { // Only used if more than just a citation template
     $page = new TestPage();
