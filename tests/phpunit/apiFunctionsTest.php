@@ -52,6 +52,11 @@ final class apiFunctionsTest extends testBaseClass {
   }
   
     public function testExpansion_doi_not_from_crossrefJapanJournal() {
+     $text = '{{Cite journal|doi=.11429/ppmsj1919.17.0_48}}';
+     $expanded = $this->make_citation($text);
+     $expanded->verify_doi();
+     $this->assertSame('10.11429/ppmsj1919.17.0_48', $expanded->get('doi'));
+
      $text = '{{cite journal|doi=10.11429/ppmsj1919.17.0_48}}';
      $expanded = $this->process_citation($text);
      $this->assertSame('On the Interaction of Elementary Particles. I', $expanded->get('title'));
@@ -105,8 +110,13 @@ final class apiFunctionsTest extends testBaseClass {
   }
   
   public function testExpansion_doi_not_from_crossre_fISTIC_Data() {
-     $expanded = $this->process_citation('{{Cite journal}}');
-     expand_doi_with_dx($expanded, '10.3972/water973.0145.db');
+    $text = '{{Cite journal|doi=0.3972/water973.0145.db}}';
+    $expanded = $this->make_citation($text);
+    $expanded->verify_doi();
+    $this->assertSame('10.3972/water973.0145.db', $expanded->get('doi'));
+    
+    $expanded = $this->process_citation('{{Cite journal}}');
+    expand_doi_with_dx($expanded, '10.3972/water973.0145.db');
     $this->assertSame('{{Cite journal}}', $expanded->parsed_text());
   }
  
