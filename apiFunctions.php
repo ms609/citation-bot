@@ -569,10 +569,8 @@ function expand_doi_with_dx($template, $doi) {
        if ($template->has($name)) return FALSE; // Not worth updating based upon DX
        if (is_null($data)) return FALSE;
        while (is_array($data)) {
-         if (empty($data)) return FALSE;
-         if (!isset($data['0'])) return FALSE;              // @codeCoverageIgnore
-         if (isset($data['1'])) return FALSE;               // @codeCoverageIgnore
-         $data = $data['0'];                                // @codeCoverageIgnore
+         if (!isset($data['0']) || isset($data['1'])) return FALSE; // @codeCoverageIgnore
+         $data = $data['0'];                                        // @codeCoverageIgnore
        }
        if ($data == '') return FALSE;
        $template->add_if_new($name, $data);
