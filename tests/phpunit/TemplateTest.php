@@ -970,12 +970,6 @@ final class TemplateTest extends testBaseClass {
     });
   }
  
-  public function testBibcodeSkipComplete() {
-    $text = "{{Cite journal | last1 = Reed | first1 = E. J. | last2 = Manaa | first2 = M. R. | last3 = Fried | first3 = L. E. | last4 = Glaesemann | first4 = K. | last5 = Joannopoulos  | title = A Transient Semi-Metallic Layer in Detonating Nitromethane | journal = Shock Compression of Condensed Matter |editors=Mark Elert, Michael D. Furnish, Ricky Chau, Neil Holmes, and Jeffrey Nguyen | doi = 10.1063/1.2833100 | series = AIP Conference Proceedings | pages = 459–462| year = 2007 |volume=955|issue=1|bibcode=2007AIPC..955..459R}}";
-    $template = $this->make_citation($text);
-    $this->assertFalse($template->expand_by_adsabs()); // complete should cause FALSE
-  }
- 
   public function testParameterAlias() {
     $text = '{{cite journal |author-last1=Knops |author-first1=J.M. |author-last2=Nash III |author-first2=T.H.
     |date=1991 |title=Mineral cycling and epiphytic lichens: Implications at the ecosystem level 
@@ -4200,12 +4194,19 @@ T1 - This is the Title }}';
    public function testDontDoIt() { // "complete" already
      $text = '{{cite journal|title=X|journal=X|issue=X|volume=X|pages=12-34|year=1980|last2=Him|doi=X|bibcode=X|last1=X|first1=X}}';
      $template = $this->make_citation($text);
-     $this->assertFalse($template->expand_by_adsabs());
      $this->assertFalse($template->incomplete());
      $text = '{{cite journal|title=X|periodical=X|issue=X|volume=X|pages=12-34|year=1980|last2=Him|doi=X|bibcode=X|last1=X|first1=X}}';
      $template = $this->make_citation($text);
-     $this->assertFalse($template->expand_by_adsabs());
      $this->assertFalse($template->incomplete());
+  
+     $this->bibcode_secrets(function() {
+      $text = '{{cite journal|title=X|journal=X|issue=X|volume=X|pages=12-34|year=1980|last2=Him|doi=X|bibcode=X|last1=X|first1=X}}';
+      $template = $this->make_citation($text);
+      $this->assertFalse($template->expand_by_adsabs());
+      $text = '{{cite journal|title=X|periodical=X|issue=X|volume=X|pages=12-34|year=1980|last2=Him|doi=X|bibcode=X|last1=X|first1=X}}';
+      $template = $this->make_citation($text);
+      $this->assertFalse($template->expand_by_adsabs());
+     });
    }
  
    public function testCAPSParams() {
@@ -4364,5 +4365,17 @@ T1 - This is the Title }}';
      $template = $this->make_citation($text);
      $template->verify_doi();
      $this->assertSame('10.1175/1525-7541(2003)004<1147:TVGPCP>2.0.CO;2', $template->get('doi'));
+  
+     // non-crossref ones now
+
+     $text = '{{cite journal|doi=10.3233/PRM-140291}}';
+     $template = $this->make_citation($text);
+     $template->verify_doi();
+     $this->assertSame('10.3233/PRM-140291', $template->get('doi'));
+  
+     $text = '{{cite journal|doi=0.3233/PRM-140291}}';
+     $template = $this->make_citation($text);
+     $template->verify_doi();
+     $this->assertSame('10.3233/PRM-140291', $template->get('doi'));
   }
 }
