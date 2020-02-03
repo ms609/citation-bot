@@ -4344,15 +4344,15 @@ T1 - This is the Title }}';
 
   public function testNoBibcodesForBookReview() {
    $this->requires_bibcode(function() {
-    $text = '{{cite book|last1=Klein|first1=Edward |title=Elements of histology|url=https://books.google.com/books?id=08m1UWAKyEAC&pg=PA124|accessdate=January 29, 2017|year=1785|publisher=Lea|page=124}}';
-    $expanded = $this->process_citation($text);
+    $text = "{{cite journal |title=Churchill's Bomb: How the United States Overtook Britain in the First Nuclear Arms Race |year=1920}}";
+    $expanded = $this->make_citation($text);
+    $expanded->expand_by_adsabs(); // Won't expand because of wrong year
     $this->assertNull($expanded->get('bibcode'));
-    $this->assertNull($expanded->get('doi'));
     
-    $text = "{{cite book |last=Farmelo |first=Graham |author-link=Graham Farmelo |title=Churchill's Bomb: How the United States Overtook Britain in the First Nuclear Arms Race |publisher=Basic Books |year=2013 |isbn=978-0-465-02195-6 |location=New York}}";
-    $expanded = $this->process_citation($text);
+    $text = "{{cite book |title=Churchill's Bomb: How the United States Overtook Britain in the First Nuclear Arms Race |isbn=X|ol=X|lccn=X|olcn=X}}";
+    $expanded = $this->make_citation($text);
+    $expanded->expand_by_adsabs(); // Won't expand because of bookish stuff
     $this->assertNull($expanded->get('bibcode'));
-    $this->assertNull($expanded->get('doi'));
    });
   }
  
