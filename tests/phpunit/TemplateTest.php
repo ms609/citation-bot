@@ -945,19 +945,6 @@ final class TemplateTest extends testBaseClass {
       $expanded = $this->process_citation($text);
       $this->assertTrue(stripos($expanded->get('journal'), 'Entomologist') !== FALSE);
   }
-  
-  public function testNoBibcodesForArxiv() {
-    $text = "{{Cite arxiv|last=Sussillo|first=David|last2=Abbott|first2=L. F.|date=2014-12-19|title=Random Walk Initialization for Training Very Deep Feedforward Networks|eprint=1412.6558 |class=cs.NE}}";
-    $expanded = $this->process_citation($text);
-    $this->assertNull($expanded->get('bibcode'));  // If this eventually gets a journal, we will have to change the test
-  }
-
-  public function testNoBibcodesForBookReview() {
-    $text = '{{cite book|last1=Klein|first1=Edward |title=Elements of histology|url=https://books.google.com/books?id=08m1UWAKyEAC&pg=PA124|accessdate=January 29, 2017|year=1785|publisher=Lea|page=124}}';
-    $expanded = $this->process_citation($text);
-    $this->assertNull($expanded->get('bibcode'));
-    $this->assertNull($expanded->get('doi'));
-  }
  
   public function testParameterAlias() {
     $text = '{{cite journal |author-last1=Knops |author-first1=J.M. |author-last2=Nash III |author-first2=T.H.
@@ -4332,6 +4319,23 @@ T1 - This is the Title }}';
     $pages = (string) $expanded->get('pages');
     $this->assertSame(FALSE, stripos($pages, 'astro'));
     $this->assertNull($expanded->get('journal'));  // if we get a journal, the data is updated and test probably no longer gets bad data
+   });
+  }
+ 
+  public function testNoBibcodesForArxiv() {
+   $this->requires_bibcode(function() {
+    $text = "{{Cite arxiv|last=Sussillo|first=David|last2=Abbott|first2=L. F.|date=2014-12-19|title=Random Walk Initialization for Training Very Deep Feedforward Networks|eprint=1412.6558 |class=cs.NE}}";
+    $expanded = $this->process_citation($text);
+    $this->assertNull($expanded->get('bibcode'));  // If this eventually gets a journal, we will have to change the test
+   });
+  }
+
+  public function testNoBibcodesForBookReview() {
+   $this->requires_bibcode(function() {
+    $text = '{{cite book|last1=Klein|first1=Edward |title=Elements of histology|url=https://books.google.com/books?id=08m1UWAKyEAC&pg=PA124|accessdate=January 29, 2017|year=1785|publisher=Lea|page=124}}';
+    $expanded = $this->process_citation($text);
+    $this->assertNull($expanded->get('bibcode'));
+    $this->assertNull($expanded->get('doi'));
    });
   }
  
