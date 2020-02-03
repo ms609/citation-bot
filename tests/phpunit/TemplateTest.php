@@ -4336,6 +4336,11 @@ T1 - This is the Title }}';
     $expanded = $this->process_citation($text);
     $this->assertNull($expanded->get('bibcode'));
     $this->assertNull($expanded->get('doi'));
+    
+    $text = "{{cite book |last=Farmelo |first=Graham |author-link=Graham Farmelo |title=Churchill's Bomb: How the United States Overtook Britain in the First Nuclear Arms Race |publisher=Basic Books |year=2013 |isbn=978-0-465-02195-6 |location=New York}}";
+    $expanded = $this->process_citation($text);
+    $this->assertNull($expanded->get('bibcode'));
+    $this->assertNull($expanded->get('doi'));
    });
   }
  
