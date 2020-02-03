@@ -347,9 +347,9 @@ function adsabs_api($ids, $templates, $identifier) {
       $journal_start = mb_strtolower($journal_string[0]);
       if (preg_match("~\bthesis\b~ui", $journal_start)) {
         // Do nothing
-      } elseif (substr($journal_start, 0, 6) == "eprint") {
-        if (substr($journal_start, 0, 13) == "eprint arxiv:") {
-          $this_template->add_if_new("class", @$record->arxivclass, 'adsabs');
+      } elseif (substr($journal_start, 0, 6) == "eprint") {  // Appears to no longer be used
+        if (substr($journal_start, 0, 13) == "eprint arxiv:") {                  // @codeCoverageIgnore
+          $this_template->add_if_new("class", @$record->arxivclass, 'adsabs');   // @codeCoverageIgnore
         }
       } else {
         $this_template->add_if_new('journal', $journal_string[0], 'adsabs');
