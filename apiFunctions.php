@@ -616,14 +616,16 @@ function expand_doi_with_dx($template, $doi) {
           $try_to_add_it('author' . (string) $i, @$auth['literal']);
        }
      }
+     // Publisher hiding as journal name - defective data
      if (isset($json['container-title']) && isset($json['publisher']) && ($json['publisher'] === $json['container-title'])) {
-        unset($json['container-title']);  // Publisher hiding as journal name too
+        unset($json['container-title']);   // @codeCoverageIgnore
      }
      if (@$json['type'] == 'article-journal' ||
          @$json['type'] == 'article' ||
          (@$json['type'] == '' && (isset($json['container-title']) || isset($json['issn']['0'])))) {
        $try_to_add_it('journal', @$json['container-title']);
        $try_to_add_it('title', @$json['title']);
+       $try_to_add_it('issn', @$json['issn']); // Will not add if journal is set
      } elseif (@$json['type'] == 'monograph' || @$json['type'] == 'book') {
        $try_to_add_it('title', @$json['title']);
        $try_to_add_it('title', @$json['container-title']);// Usually not set, but just in case this instead of title is set
