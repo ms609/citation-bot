@@ -4061,7 +4061,7 @@ T1 - This is the Title }}';
    }
  
    public function testRoman3() { // Bogus roman in the middle
-     $text = "{Cite journal | doi = 10.1016/0301-0104(82)87006-7|title=Are atoms intrinsic to molecular electronic wavefunctions? IIII. Analysis of FORS configurations}}";
+     $text = "{{Cite journal | doi = 10.1016/0301-0104(82)87006-7|title=Are atoms intrinsic to molecular electronic wavefunctions? IIII. Analysis of FORS configurations}}";
      $template = $this->process_citation($text);
      $this->assertNull($template->get('journal'));
    }
