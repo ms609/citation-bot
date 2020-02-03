@@ -497,7 +497,7 @@ function expand_by_doi($template, $force = FALSE) {
             echo "hose1\n";
             ++$ed_i;
             echo "hose2 $ed_i\n";
-            if ($ed_i < 31 && trim(@$crossRef->journal_title) == '') {
+            if ($ed_i < 31 && !isset(@$crossRef->journal_title)) {
               echo "\n adding editor\n $ed_i \n format_surname($author->surname) \n format_forename($author->given_name) 'n";
               $template->add_if_new("editor$ed_i-last", format_surname($author->surname));
               $template->add_if_new("editor$ed_i-first", format_forename($author->given_name));
