@@ -4060,6 +4060,18 @@ T1 - This is the Title }}';
      $this->assertSame('The Journal of Chemical Physics', $template->get('journal'));
    }
  
+   public function testRoman3() { // Bogus roman in the middle
+     $text = "{{Cite journal | doi = 10.1016/0301-0104(82)87006-7|title=Are atoms intrinsic to molecular electronic wavefunctions? IIII. Analysis of FORS configurations}}";
+     $template = $this->process_citation($text);
+     $this->assertNull($template->get('journal'));
+   }
+   
+   public function testRoman4() { // Right roman in the middle
+     $text = "{{Cite journal | doi = 10.1016/0301-0104(82)87006-7|title=Are atoms intrinsic to molecular electronic wavefunctions? III. Analysis of FORS configurations}}";
+     $template = $this->process_citation($text);
+     $this->assertSame('Chemical Physics', $template->get('journal'));
+   }
+ 
    public function testAppendToComment() {
      $text = '{{cite web}}';
      $template = $this->make_citation($text);

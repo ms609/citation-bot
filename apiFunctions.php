@@ -416,7 +416,7 @@ function expand_by_doi($template, $force = FALSE) {
       if ($template->has('title') && trim(@$crossRef->article_title)) { // Verify title of DOI matches existing data somewhat
         $bad_data = TRUE;
         $new = $crossRef->article_title;
-        if (preg_match('~^(.................+)\.\s+([IVX]+)\.\s.+$~i', $new, $matches)) {
+        if (preg_match('~^(.................+)[\.\?]\s+([IVX]+)\.\s.+$~i', $new, $matches)) {
            $new = $matches[1];
            $new_roman = $matches[2];
         } elseif (preg_match('~^([IVX]+)\.[\s\-\—]*(.................+)$~i', $new, $matches)) {
@@ -428,7 +428,7 @@ function expand_by_doi($template, $force = FALSE) {
         foreach (['chapter', 'title', 'series'] as $possible) {
           if ($template->has($possible)) {
             $old = $template->get($possible);
-            if (preg_match('~^(.................+)\.\s+([IVX]+)\.\s.+$~i', $old, $matches)) {
+            if (preg_match('~^(.................+)[\.\?]\s+([IVX]+)\.\s.+$~i', $old, $matches)) {
                $old = $matches[1];
                $old_roman = $matches[2];
             } elseif (preg_match('~^([IVX]+)\.[\s\-\—]*(.................+)$~i', $old, $matches)) {
@@ -493,7 +493,7 @@ function expand_by_doi($template, $force = FALSE) {
           if (strtoupper($author->surname) === '&NA;') break; // No Author, leave loop now!  Have only seen upper-case in the wild
           if ($author["contributor_role"] == 'editor') {
             ++$ed_i;
-            if ($ed_i < 31 && $crossRef->journal_title === NULL) {
+            if ($ed_i < 31 && @$crossRef->journal_title === NULL) {
               $template->add_if_new("editor$ed_i-last", format_surname($author->surname));
               $template->add_if_new("editor$ed_i-first", format_forename($author->given_name));
             }
