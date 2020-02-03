@@ -1686,12 +1686,11 @@ final class Template {
       'title'      => $this->get('title'),
       'journal'    => $this->get('journal'),
       'author'     => $this->first_surname(),
-      'year'       => $this->get('year'),
+      'year'       => $this->year(),
       'volume'     => $this->get('volume'),
       'start_page' => isset($page_range[1]) ? $page_range[1] : NULL,
       'end_page'   => isset($page_range[2]) ? $page_range[2] : NULL,
-      'issn'       => $this->get('issn'),
-      'url'        => trim($this->get('url')),
+      'issn'       => $this->get('issn')
     ];
     
     $novel_data = FALSE;
@@ -1707,7 +1706,7 @@ final class Template {
   
     if ($data['journal'] || $data['issn']) {
       $url = "https://www.crossref.org/openurl/?noredirect=TRUE&pid=" . CROSSREFUSERNAME
-           . ($data['title'] ? "&atitle=" . urlencode(de_wikify($data['title'])) : "")
+           . ($data['title'] ? "&atitle=" . urlencode(de_wikify($data['title'])) : '')
            . ($data['author'] ? "&aulast=" . urlencode($data['author']) : '')
            . ($data['start_page'] ? "&spage=" . urlencode($data['start_page']) : '')
            . ($data['end_page'] > $data['start_page'] ? "&epage=" . urlencode($data['end_page']) : '')
