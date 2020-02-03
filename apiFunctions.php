@@ -493,7 +493,7 @@ function expand_by_doi($template, $force = FALSE) {
           if (strtoupper($author->surname) === '&NA;') break; // No Author, leave loop now!  Have only seen upper-case in the wild
           if ($author["contributor_role"] == 'editor') {
             ++$ed_i;
-            if ($ed_i < 31 && @$crossRef->journal_title === NULL) {
+            if ($ed_i < 31 && !isset($crossRef->journal_title)) {
               $template->add_if_new("editor$ed_i-last", format_surname($author->surname));
               $template->add_if_new("editor$ed_i-first", format_forename($author->given_name));
             }
