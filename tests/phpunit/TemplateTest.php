@@ -13,7 +13,7 @@ final class TemplateTest extends testBaseClass {
 
       $text = '{{Cite book | doi = 10.1117/12.135408}}';
       $expanded = $this->process_citation($text);
-      $this->assertNull($expanded->parse_text());
+      $this->assertNull($expanded->parsed_text());
 
   }
  
