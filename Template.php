@@ -1689,7 +1689,7 @@ final class Template {
       'year'       => $this->year(),
       'volume'     => $this->get('volume'),
       'start_page' => isset($page_range[1]) ? $page_range[1] : NULL,
-      'end_page'   => isset($page_range[2]) ? $page_range[2] : 0,
+      'end_page'   => isset($page_range[2]) ? $page_range[2] : NULL,
       'issn'       => $this->get('issn')
     ];
     
