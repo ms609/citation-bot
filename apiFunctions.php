@@ -495,7 +495,7 @@ function expand_by_doi($template, $force = FALSE) {
   
           if ($author["contributor_role"] == 'editor') {
             ++$ed_i;
-            if ($ed_i < 31 && @$crossRef->journal_title === NULL) {
+            if ($ed_i < 31 && @$crossRef->journal_title == NULL) {
               echo "\n adding editor\n $ed_i \n format_surname($author->surname) \n format_forename($author->given_name) 'n";
               $template->add_if_new("editor$ed_i-last", format_surname($author->surname));
               $template->add_if_new("editor$ed_i-first", format_forename($author->given_name));
