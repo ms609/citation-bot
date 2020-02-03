@@ -27,15 +27,16 @@ final class apiFunctionsTest extends testBaseClass {
       $this->assertSame('Journal of Paleontology', $templates[1]->get('journal'));
       $this->assertSame('Geological Society of America Bulletin', $templates[2]->get('journal'));
       $this->assertSame('Nature', $templates[3]->get('journal'));
-      $this->assertSame('10.1126/science.267.5194.77', $templates[4]->get('doi'));
+      $this->assertSame('Science', $templates[4]->get('journal'));
       $this->assertSame('Geology', $templates[5]->get('journal'));
       $this->assertNull($templates[6]->get('journal'));
+      $this->assertSame('Hands-On Electronics', $templates[6]->get('title'));
       $this->assertSame('Astronomy and Astrophysics', $templates[7]->get('journal'));
       $this->assertNull($templates[8]->get('pages'));
       $this->assertNull($templates[8]->get('page'));
       $this->assertNull($templates[8]->get('class'));
       $this->assertSame('astro-ph/9508159', $templates[8]->get('arxiv'));
-      $this->assertSame('10.1038/129018a0', $templates[9]->get('doi'));
+      $this->assertSame('Nature', $templates[9]->get('journal'));
     });
     $text = "fafa3faewf34af";
     $this->assertSame($text, bibcode_link($text)); // Mostly just for code coverage, make sure code does not seg fault.
