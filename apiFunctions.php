@@ -477,6 +477,7 @@ function expand_by_doi($template, $force = FALSE) {
       }
       $template->add_if_new('series', $crossRef->series_title); // add_if_new will format the title for a series?
       $template->add_if_new("year", $crossRef->year);
+      print_r($crossRef->contributors);
       if (   $template->blank(array('editor', 'editor1', 'editor-last', 'editor1-last')) // If editors present, authors may not be desired
           && $crossRef->contributors->contributor
         ) {
