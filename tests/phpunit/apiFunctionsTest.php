@@ -13,19 +13,30 @@ final class apiFunctionsTest extends testBaseClass {
        '1966Natur.211..116M', // 3
        '1995Sci...267...77R', // 4
        '1995Geo....23..967E', // 5
-       '2003hoe..book.....K', // 6
-       '2000A&A...361..952H', // 7
+       '2003hoe..book.....K', // 6 - book
+       '2000A&A...361..952H', // 7 - & symbol
+       '1995astro.ph..8159B', // 8 - arxiv
+       '1932Natur.129Q..18.', // 9 - dot end
        ];
       $text = '{{Cite journal | bibcode = ' . implode('}}{{Cite journal | bibcode = ', $bibcodes) . '}}';
       $page = new TestPage();
       $page->parse_text($text);
       $templates = $page->extract_object('Template');
       $page->expand_templates_from_identifier('bibcode', $templates);
-      $this->assertSame('Nature', $templates[3]->get('journal'));
-      $this->assertSame('Geology', $templates[5]->get('journal'));
       $this->assertSame('14879', $templates[0]->get('pages'));
+      $this->assertSame('Journal of Paleontology', $templates[1]->get('journal'));
+      $this->assertSame('Geological Society of America Bulletin', $templates[2]->get('journal'));
+      $this->assertSame('Nature', $templates[3]->get('journal'));
+      $this->assertSame('Science', $templates[4]->get('journal'));
+      $this->assertSame('Geology', $templates[5]->get('journal'));
       $this->assertNull($templates[6]->get('journal'));
+      $this->assertSame('Hands-On Electronics', $templates[6]->get('title'));
       $this->assertSame('Astronomy and Astrophysics', $templates[7]->get('journal'));
+      $this->assertNull($templates[8]->get('pages'));
+      $this->assertNull($templates[8]->get('page'));
+      $this->assertNull($templates[8]->get('class'));
+      $this->assertSame('astro-ph/9508159', $templates[8]->get('arxiv'));
+      $this->assertSame('Nature', $templates[9]->get('journal'));
     });
     $text = "fafa3faewf34af";
     $this->assertSame($text, bibcode_link($text)); // Mostly just for code coverage, make sure code does not seg fault.
