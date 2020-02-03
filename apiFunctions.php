@@ -158,9 +158,9 @@ function arxiv_api($ids, $templates) {
     while (preg_match('~\$_(\d+)\$~', $the_title, $match)) {
       $the_title = str_replace($match[0], '<sub>' . $match[1] . '</sub>', $the_title);
     }
-    while (preg_match('~\\ce{([^}{^ ]+)}~', $the_title, $match)) {
-      $the_title = str_replace($match[0], ' ' . $match[1] . ' ', $the_title);
-      $the_title = str_replace('  ', ' ', $the_title);
+    while (preg_match('~\\ce{([^}{^ ]+)}~', $the_title, $match)) {   // arXiv fixes these when it sees them
+      $the_title = str_replace($match[0], ' ' . $match[1] . ' ', $the_title);  // @codeCoverageIgnore
+      $the_title = str_replace('  ', ' ', $the_title);                         // @codeCoverageIgnore
     }
     $this_template->add_if_new("title", $the_title, 'arxiv'); // Formatted by add_if_new
     $this_template->add_if_new("title", (string) $entry->title, 'arxiv'); // Formatted by add_if_new

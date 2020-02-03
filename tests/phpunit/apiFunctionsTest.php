@@ -17,6 +17,7 @@ final class apiFunctionsTest extends testBaseClass {
        '2000A&A...361..952H', // 7 - & symbol
        '1995astro.ph..8159B', // 8 - arxiv
        '1932Natur.129Q..18.', // 9 - dot end
+       '2019arXiv190502552Q', // 10 - new arxiv
        ];
       $text = '{{Cite journal | bibcode = ' . implode('}}{{Cite journal | bibcode = ', $bibcodes) . '}}';
       $page = new TestPage();
@@ -37,6 +38,8 @@ final class apiFunctionsTest extends testBaseClass {
       $this->assertNull($templates[8]->get('class'));
       $this->assertSame('astro-ph/9508159', $templates[8]->get('arxiv'));
       $this->assertSame('Nature', $templates[9]->get('journal'));
+      $this->assertSame('1905.02552', $templates[10]->get('arxiv'));
+      $this->assertNull($templates[10]->get('journal'));
     });
     $text = "fafa3faewf34af";
     $this->assertSame($text, bibcode_link($text)); // Mostly just for code coverage, make sure code does not seg fault.
