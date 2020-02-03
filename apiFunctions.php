@@ -491,7 +491,7 @@ function expand_by_doi($template, $force = FALSE) {
         foreach ($crossRef->contributors->contributor as $author) {
           print_r($author);
           if (strtoupper($author->surname) === '&NA;') break; // No Author, leave loop now!  Have only seen upper-case in the wild
-          echo "\n role is $author['contributor_role']\n count is $ed_i and $au_i\n Journal is @$crossRef->journal_title \n";
+          echo "\n role is " . $author["contributor_role"] . "\n count is $ed_i and $au_i \n Journal is :" .  @$crossRef->journal_title . ":\n";
   
           if ($author["contributor_role"] == 'editor') {
             ++$ed_i;
