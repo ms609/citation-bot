@@ -250,6 +250,11 @@ final class apiFunctionsTest extends testBaseClass {
      $text = "{{Cite book | doi = 10.1063/1.2833100| title = A Transient Semi-Metallic Layer in Detonating Nitromethane}}";
      $template = $this->process_citation($text);
      $this->assertSame("AIP Conference Proceedings", $template->get('series'));
+    
+    // Next is kind of messed up, but "matches" enough to expand
+     $text = "{{Cite book | doi = 10.1063/1.2833100| title = AIP Conference Proceedings}}";
+     $template = $this->process_citation($text);
+     $this->assertSame("2008", $template->get('year'));
   }
   
   public function testCrossRefAddEditors() {
