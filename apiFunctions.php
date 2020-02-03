@@ -488,10 +488,11 @@ function expand_by_doi($template, $force = FALSE) {
         $add_authors = is_null($existing_author)
                     || $existing_author = ''
                     || author_is_human($existing_author);
-        print_r($crossRef->contributors->contributor);
         foreach ($crossRef->contributors->contributor as $author) {
           print_r($author);
           if (strtoupper($author->surname) === '&NA;') break; // No Author, leave loop now!  Have only seen upper-case in the wild
+          echo "\n role is $author['contributor_role']\n count is $ed_i and $au_i\n Journal is @$crossRef->journal_title \n";
+  
           if ($author["contributor_role"] == 'editor') {
             ++$ed_i;
             if ($ed_i < 31 && @$crossRef->journal_title === NULL) {
