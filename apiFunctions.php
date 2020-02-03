@@ -428,10 +428,10 @@ function expand_by_doi($template, $force = FALSE) {
         foreach (['chapter', 'title', 'series'] as $possible) {
           if ($template->has($possible)) {
             $old = $template->get($possible);
-            if (preg_match('~^(.................+)\.\s+([IVX]+)\.\s.+$~i', $old, $matches)) {
+            if (preg_match('~^(.................+)[\.\?]\s+([IVX]+)\.\s.+$~i', $old, $matches)) {
                $old = $matches[1];
                $old_roman = $matches[2];
-            } elseif (preg_match('~^([IVX]+)[\.\?][\s\-\—]*(.................+)$~i', $old, $matches)) {
+            } elseif (preg_match('~^([IVX]+)\.[\s\-\—]*(.................+)$~i', $old, $matches)) {
                $old = $matches[2];
                $old_roman = $matches[1];
             } else {
