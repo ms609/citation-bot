@@ -1904,10 +1904,8 @@ final class Template {
     } elseif ($this->blank(['eprint', 'arxiv']) && $this->has('doi') 
               && preg_match(REGEXP_DOI, $this->get_without_comments_and_placeholders('doi'), $doi)) {
       $result = $this->query_adsabs("identifier:" . urlencode('"' . $doi[0] . '"'));
-    } elseif ($this->blank('doi') && $this->has('eprint')) {
-        $result = $this->query_adsabs("identifier:" . urlencode('"' .$this->get('eprint') . '"'));
-    } elseif ($this->blank('doi') && $this->has('arxiv')) {
-        $result = $this->query_adsabs("identifier:" . urlencode('"' .$this->get('arxiv') . '"'));
+    } elseif ($this->blank('doi') && !$this->blank(['eprint', 'arxiv'])) {
+        $result = $this->query_adsabs("identifier:" . urlencode('"' .$this->get('eprint').$this->get('arxiv') . '"'));
     } else {
       $identifiers = array();
       if ($this->has('doi') && preg_match(REGEXP_DOI, $this->get_without_comments_and_placeholders('doi'), $doi)) {
