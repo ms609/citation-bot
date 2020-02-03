@@ -253,10 +253,9 @@ final class apiFunctionsTest extends testBaseClass {
   }
   
   public function testCrossRefAddEditors() {
-     return; // TODO
      $text = "{{Cite book | doi = 10.1117/12.135408}}";
      $template = $this->process_citation($text);
-     $this->assertSame("What did I get", $template->parsed_text());
+     $this->assertSame("Kopera", $template->get('editor1-last'));
   }
 
 }
