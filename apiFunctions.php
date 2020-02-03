@@ -501,7 +501,7 @@ function expand_by_doi($template, $force = FALSE) {
             }
           } elseif ($author['contributor_role'] == 'author' && $add_authors) {
             ++$au_i;
-            echo "\n adding author \n $aui \n format_surname($author->surname) \n format_forename($author->given_name) 'n";
+            echo "\n adding author \n $au_i \n format_surname($author->surname) \n format_forename($author->given_name) 'n";
             $template->add_if_new("last$au_i", format_surname($author->surname));
             $template->add_if_new("first$au_i", format_forename($author->given_name));
           } else {
