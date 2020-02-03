@@ -251,5 +251,11 @@ final class apiFunctionsTest extends testBaseClass {
      $template = $this->process_citation($text);
      $this->assertSame("AIP Conference Proceedings", $template->get('series'));
   }
+  
+  public function testCrossRefAddEditors() {
+     $text = "{{Cite book | doi = 10.1117/12.135408}}";
+     $template = $this->process_citation($text);
+     $this->assertSame("What did I get", $template->parsed_text());
+  }
 
 }
