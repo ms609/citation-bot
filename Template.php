@@ -2421,16 +2421,10 @@ final class Template {
           // false positives are too common https://github.com/Impactstory/oadoi/issues/121
           report_warning("Ignored a blacklisted OA match on a repository via OAI-PMH for DOI: " . echoable($doi)); // @codeCoverageIgnore
           return 'nothing';                                                                                        // @codeCoverageIgnore
-        }  
-        if ($best_location->url_for_landing_page != NULL) {
-          $oa_url = $best_location->url_for_landing_page;
-        } elseif ($best_location->url_for_pdf != NULL) {
-          $oa_url = $best_location->url_for_pdf;
-        } elseif ($best_location->url != NULL) {
-          $oa_url = $best_location->url;
-        } else {
-          return 'nothing';
         }
+        $oa_url = @$best_location->url_for_landing_page ? @$best_location->url_for_landing_page : @$best_location->url;
+        if (!$oa_url) return 'nothing';
+
         if (stripos($oa_url, 'citeseerx.ist.psu.edu') !== FALSE) return FALSE; //is currently blacklisted due to copyright concerns
         if (stripos($oa_url, 'semanticscholar.org') !== FALSE) return FALSE;  // Limit semanticscholar to licenced only - use API call instead
         if ($this->get('url')) {
@@ -4392,6 +4386,19 @@ final class Template {
        // Remove blank stuff that will most likely never get filled in
        $this->forget('issue');
        $this->forget('journal');
+    }
+    if (preg_match('~^10\.1093/ref\:odnb/\d+$~', $this->get('doi')) &&
+        $this->has('title') &&
+        $this->wikiname() !== 'cite encyclopedia' && 
+        $this->wikiname() !== 'cite encyclopaedia') {
+      preg_match("~^(\s*).*\b(\s*)$~", $this->name, $spacing);
+      if (substr($this->name,0,1) === 'c') {
+        $this->name = $spacing[1] . 'cite ODNB' . $spacing[2];
+      } else {
+        $this->name = $spacing[1] . 'Cite ODNB' . $spacing[2];
+      }
+      $this->forget('website');
+      if (stripos($this->get('publisher'), 'oxford') !== FALSE) $this->forget('publisher');
     }
     foreach (ALL_ALIASES as $alias_list) {
       if (!$this->blank($alias_list)) { // At least one is set
