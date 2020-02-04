@@ -1900,11 +1900,6 @@ final class Template {
     report_action("Checking AdsAbs database");
     if ($this->has('bibcode')) {
       $result = $this->query_adsabs("identifier:" . urlencode('"' . $this->get("bibcode") . '"'));
-    } elseif ($this->blank(['eprint', 'arxiv']) && $this->has('doi') 
-              && preg_match(REGEXP_DOI, $this->get_without_comments_and_placeholders('doi'), $doi)) {
-      $result = $this->query_adsabs("identifier:" . urlencode('"' . $doi[0] . '"'));
-    } elseif ($this->blank('doi') && !$this->blank(['eprint', 'arxiv'])) {
-        $result = $this->query_adsabs("identifier:" . urlencode('"' .$this->get('eprint').$this->get('arxiv') . '"'));
     } else {
       $identifiers = array();
       if ($this->has('doi') && preg_match(REGEXP_DOI, $this->get_without_comments_and_placeholders('doi'), $doi)) {
@@ -1920,8 +1915,8 @@ final class Template {
     }
  
     if ($result->numFound > 1) {
-      report_warning("Multiple articles match identifiers " . implode('; ', $identifiers)   // @codeCoverageIgnore
-      . "... I don't know which to use. Trying other citation data.");                      // @codeCoverageIgnore
+      report_warning("Multiple articles match identifiers " . implode('; ', $identifiers)); // @codeCoverageIgnore
+      return FALSE;                                                                         // @codeCoverageIgnore
     }
     
     if ($result->numFound == 0) {
@@ -1975,12 +1970,8 @@ final class Template {
     if ($result->numFound == 1) {
       $record = $result->docs[0];
       if (isset($record->year) && $this->year()) {
-        if (abs((int)$record->year - (int)$this->year()) > 2) {
-          return FALSE;  // Probably a book review or something with same title, etc.  have to be fuzzy if arXiv year does not match published year
-        }
-        if ($this->has('doi') && ((int)$record->year !== (int)$this->year())) {
-          return FALSE;  // require exact match if we have doi
-        }
+        $diff = abs((int)$record->year - (int)$this->year()); // Check for book reviews (fuzzy >2 for arxiv data)
+        if ($diff > 2 || ($this->has('doi') && $diff !== 0)) return FALSE;
       }
       
       if ($this->has('title') && titles_are_dissimilar($this->get('title'), $record->title[0]) 
