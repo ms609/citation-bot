@@ -4324,6 +4324,13 @@ T1 - This is the Title }}';
      $this->assertNull($template->get('publisher'));
   }
  
+  public function testSaveAccessType() {
+     $text = '{{cite web|url=http://doi.org/10.1063/1.2833100 |url-access=Tested}}';
+     $template = $this->make_citation($text);
+     $template->get_identifiers_from_url();
+     $this->assertSame('Tested', $template->get('doi-access'));
+  }
+ 
    public function testDontDoIt() { // "complete" already
      $text = '{{cite journal|title=X|journal=X|issue=X|volume=X|pages=12-34|year=1980|last2=Him|doi=X|bibcode=X|last1=X|first1=X}}';
      $template = $this->make_citation($text);

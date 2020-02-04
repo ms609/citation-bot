@@ -1274,7 +1274,7 @@ final class Template {
        return FALSE;
     }
 
-    if (preg_match("~^https?://(?:d?x?\.?doi\.org|doi\.library\.ubc\.ca)/([^\?]*)~i", $url, $match)) {
+    if (preg_match("~^https?://(?:(?:dx\.|)doi\.org|doi\.library\.ubc\.ca)/([^\?]*)~i", $url, $match)) {
       if ($this->has('doi')) {
         if (strcasecmp($this->get('doi'), $match[1]) === 0) {
          if (is_null($url_sent)) {
@@ -1305,6 +1305,9 @@ final class Template {
       if ($this->add_if_new('doi', urldecode($match[1]))) { // Will expand from DOI when added
         if (is_null($url_sent)) {
           quietly('report_modification', "URL is hard-coded DOI; converting to use DOI parameter.");
+          if ($this->has('url-access')) {
+             $this->rename('url-access', 'doi-access');
+          }
           $this->forget($url_type);
         }
         return TRUE;
@@ -2482,7 +2485,7 @@ final class Template {
              return 'duplicate';
           }
         }
-        if (preg_match("~^https?://d?x?\.?doi\.org/*~", $oa_url, $match)) {
+        if (preg_match("~^https?://(?:dx\.|)doi\.org/*~", $oa_url, $match)) {
           if ($this->has('doi')) {
              return 'publisher';
           }
