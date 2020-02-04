@@ -1645,12 +1645,16 @@ final class Template {
              $this->forget($url_type);
           }
           return $this->add_if_new('ol', $match[1]); 
-      } elseif (preg_match("~^https?://search\.proquest\.com/docview/(\d{4,})$~i", $url, $match) && $this->blank('id') && $this->has('title')) {
+      } elseif (preg_match("~^https?://search\.proquest\.com/docview/(\d{4,})$~i", $url, $match) && $this->has('title')) {
+        if ($this->append_to('id', '{{ProQuest|' . $match[1] . '}}')) {  
           quietly('report_modification', 'Converting URL to ProQuest parameter');
           if (is_null($url_sent)) {
              $this->forget($url_type);
           }
-          return $this->add_if_new('id', '{{ProQuest|' . $match[1] . '}}');
+          return TRUE;
+        } else {
+          return FALSE; // Append blocked by comment
+        }
       } elseif (preg_match("~^https?://web\.archive\.org/web/\d{14}/(https?://.*)$~", $url, $match) && $this->blank(['archiveurl', 'archive-url'])) {
           quietly('report_modification', 'Extracting URL from archive');
           if (is_null($url_sent)) {
@@ -3665,7 +3669,7 @@ final class Template {
             $this->forget($param);  // Not good to encourage adding this
             return;
           }
-          if (stripos($this->get($param), 'proquest') !== FALSE) {
+          if (stripos($this->get($param), 'proquest') !== FALSE && stripos($this->get($param), 'llc') === FALSE) {
             $this->forget($param);
             if ($this->blank('via')) {
               $this_big_url = $this->get('url') . $this->get('thesis-url') . $this->get('thesisurl') . $this->get('chapter-url') . $this->get('chapterurl');
