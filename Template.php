@@ -1915,8 +1915,8 @@ final class Template {
     }
  
     if ($result->numFound > 1) {
-      report_warning("Multiple articles match identifiers " . implode('; ', $identifiers)) // @codeCoverageIgnore
-      return FALSE;                                                                        // @codeCoverageIgnore
+      report_warning("Multiple articles match identifiers " . implode('; ', $identifiers)); // @codeCoverageIgnore
+      return FALSE;                                                                         // @codeCoverageIgnore
     }
     
     if ($result->numFound == 0) {
