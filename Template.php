@@ -3536,7 +3536,7 @@ final class Template {
           
         case 'journal':
           if ($this->blank($param)) return;
-          if (preg_match('~^(|\S\S\S+\.)(\S\S\S+)\.(org|net|com)$~', $this->get($param)) {
+          if (preg_match('~^(|\S\S\S+\.)(\S\S\S+)\.(org|net|com)$~', $this->get($param))) {
             $this->rename($param, 'website');
             return;
           }
