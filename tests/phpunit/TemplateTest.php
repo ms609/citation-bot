@@ -4314,6 +4314,16 @@ T1 - This is the Title }}';
      $this->assertSame('10.1175/1525-7541(2003)004<1147:TVGPCP>2.0.CO;2', $template->get('doi'));
   }
  
+  public function testOxfordTemplate() {
+     $text = '{{cite web |last1=Courtney |first1=W. P. |last2=Hinings |first2=Jessica |title=Woodley, George (bap. 1786, d. 1846) |url=https://doi.org/10.1093/ref:odnb/29929 |website=Oxford Dictionary of National Biography |publisher=Oxford University Press |accessdate=12 September 2019}}';
+     $template = $this->process_citation($text);
+     $this->assertSame('cite odnb', $template->wikiname());
+     $this->assertSame('Woodley, George (bap. 1786, d. 1846)', $template->get('title'));
+     $this->assertNull($template->get('url'));
+     $this->assertSame('10.1093/ref:odnb/29929', $template->get('doi'));
+     $this->assertNull($template->get('publisher'));
+  }
+ 
    public function testDontDoIt() { // "complete" already
      $text = '{{cite journal|title=X|journal=X|issue=X|volume=X|pages=12-34|year=1980|last2=Him|doi=X|bibcode=X|last1=X|first1=X}}';
      $template = $this->make_citation($text);
