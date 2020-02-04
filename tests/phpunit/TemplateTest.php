@@ -4343,13 +4343,8 @@ T1 - This is the Title }}';
   }
 
   public function testNoBibcodesForBookReview() {
-   $this->requires_bibcode(function() {
-    $text = "{{cite journal |title=Churchill's Bomb: How the United States Overtook Britain in the First Nuclear Arms Race |year=1920}}";
-    $expanded = $this->make_citation($text);
-    $expanded->expand_by_adsabs(); // Won't expand because of wrong year
-    $this->assertNull($expanded->get('bibcode'));
-    
-    $text = "{{cite book |title=Churchill's Bomb: How the United States Overtook Britain in the First Nuclear Arms Race |isbn=X|ol=X|lccn=X|olcn=X}}";
+   $this->requires_bibcode(function() {  // don't add isbn. It causes early exit
+    $text = "{{cite book |title=Churchill's Bomb: How the United States Overtook Britain in the First Nuclear Arms Race |publisher=X|location=X|lccn=X|olcn=X}}";
     $expanded = $this->make_citation($text);
     $expanded->expand_by_adsabs(); // Won't expand because of bookish stuff
     $this->assertNull($expanded->get('bibcode'));
