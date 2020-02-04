@@ -666,6 +666,7 @@ function expand_doi_with_dx($template, $doi) {
 
 function doi_active($doi) {
   static $cache = [];
+  if (strpos($doi, '10.1111/j.1572-0241') === 0 ) $cache[$doi] = FALSE; // Nature dropped the ball on these
   if (!isset($cache[$doi]) || $cache[$doi] === NULL) {
     $works = doi_works($doi);
     if ($works === NULL) {
