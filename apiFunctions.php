@@ -698,6 +698,7 @@ function is_doi_active($doi) {
 }
 
 function is_doi_works($doi) {
+  if (strpos($doi, '10.1111/j.1572-0241') === 0 ) return FALSE; // Nature dropped the ball for now TODO - 10.1111/j.1572-0241.2006.00844.x
   $headers_test = @get_headers("https://dx.doi.org/" . urlencode($doi), 1);
   if ($headers_test === FALSE) return NULL; // most likely bad, but will recheck again an again
   $response = $headers_test[0];
