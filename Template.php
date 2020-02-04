@@ -393,24 +393,28 @@ final class Template {
     switch ($param_name) {
       ### EDITORS
       case (boolean) preg_match('~^editor(\d{1,})$~', $param_name, $match) :
-        if (!$this->blank(['editor', 'editor-last', 'editor-first'])) return FALSE; // Existing incompatible data
-        if ($this->blank(['editor' . $match[1], 'editor' . $match[1] . '-last', 'editor' . $match[1] . '-first'])) {
+        if ($this->had_initial_editor) return FALSE;
+        if (!$this->blank(['editors', 'editor', 'editor-last', 'editor-first'])) return FALSE; // Existing incompatible data
+        if ($this->blank(['editor' . $match[1], 'editor' . $match[1] . '-last', 'editor' . $match[1] . '-first',
+                          'editor-last' . $match[1], 'editor-first' . $match[1]])) {
           return $this->add($param_name, sanitize_string($value));
         } else {
           return FALSE;
         }
       break;
       case (boolean) preg_match('~^editor(\d{1,})-first$~', $param_name, $match) :
-        if (!$this->blank(['editor', 'editor-last', 'editor-first'])) return FALSE; // Existing incompatible data
-        if ($this->blank(['editor' . $match[1], 'editor' . $match[1] . '-first'])) {
+        if ($this->had_initial_editor) return FALSE;
+        if (!$this->blank(['editors', 'editor', 'editor-last', 'editor-first'])) return FALSE; // Existing incompatible data
+        if ($this->blank(['editor' . $match[1], 'editor' . $match[1] . '-first', 'editor-first' . $match[1]])) {
           return $this->add($param_name, sanitize_string($value));
         } else {
           return FALSE;
         }
       break;
       case (boolean) preg_match('~^editor(\d{1,})-last$~', $param_name, $match) :
+        if ($this->had_initial_editor) return FALSE;
         if (!$this->blank(['editors', 'editor', 'editor-last', 'editor-first'])) return FALSE; // Existing incompatible data
-        if ($this->blank(['editor' . $match[1], 'editor' . $match[1] . '-last'])) {
+        if ($this->blank(['editor' . $match[1], 'editor' . $match[1] . '-last', 'editor-last' . $match[1]])) {
           return $this->add($param_name, sanitize_string($value));
         } else {
           return FALSE;
