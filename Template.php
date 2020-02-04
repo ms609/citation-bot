@@ -3578,9 +3578,7 @@ final class Template {
                   $new_periodical != $periodical) {
                  $now = WikipediaBot::is_redirect($periodical);
                  if ($now === -1) { // Dead link
-                   if (WikipediaBot::is_redirect($new_periodical) !== -1) {
-                     $this->set($param, '[[' . $new_periodical . ']]');
-                   }
+                   $this->set($param, '[[' . $new_periodical . ']]');
                  } elseif ($now === 1) { // Redirect
                    if (WikipediaBot::is_redirect($new_periodical) === 0) {
                      $this->set($param, '[[' . $new_periodical . ']]');
@@ -3599,9 +3597,7 @@ final class Template {
                 $new_linked_text != $linked_text) {
                   $now = WikipediaBot::is_redirect($linked_text);
                   if ($now === -1) {
-                    if (WikipediaBot::is_redirect($new_linked_text) !== -1) {
-                      $linked_text = $new_linked_text; // Dead to something
-                    }
+                    $linked_text = $new_linked_text; // Dead to something
                   } elseif ($now === 1) {
                     if (WikipediaBot::is_redirect($new_linked_text) === 0) {
                       $linked_text = $new_linked_text; // Redirect to actual page
