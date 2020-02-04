@@ -4393,6 +4393,19 @@ final class Template {
        $this->forget('issue');
        $this->forget('journal');
     }
+    if (preg_match('~^10\.1093/ref\:odnb/\d+$~', $this->get('doi')) &&
+        $this->has('title') &&
+        $this->wikiname() !== 'cite encyclopedia' && 
+        $this->wikiname() !== 'cite encyclopaedia') {
+      preg_match("~^(\s*).*\b(\s*)$~", $this->name, $spacing);
+      if (substr($this->name,0,1) === 'c') {
+        $this->name = $spacing[1] . 'cite ODNB' . $spacing[2];
+      } else {
+        $this->name = $spacing[1] . 'Cite ODNB' . $spacing[2];
+      }
+      $this->forget('website');
+      if (stripos($this->get('publisher', 'oxford')) $this->forget('publisher'));
+    }
     foreach (ALL_ALIASES as $alias_list) {
       if (!$this->blank($alias_list)) { // At least one is set
         foreach ($alias_list as $alias) {
