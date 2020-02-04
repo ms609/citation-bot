@@ -2421,16 +2421,10 @@ final class Template {
           // false positives are too common https://github.com/Impactstory/oadoi/issues/121
           report_warning("Ignored a blacklisted OA match on a repository via OAI-PMH for DOI: " . echoable($doi)); // @codeCoverageIgnore
           return 'nothing';                                                                                        // @codeCoverageIgnore
-        }  
-        if ($best_location->url_for_landing_page != NULL) {
-          $oa_url = $best_location->url_for_landing_page;
-        } elseif ($best_location->url_for_pdf != NULL) {
-          $oa_url = $best_location->url_for_pdf;
-        } elseif ($best_location->url != NULL) {
-          $oa_url = $best_location->url;
-        } else {
-          return 'nothing';
         }
+        $oa_url = @$best_location->url_for_landing_page ? @$best_location->url_for_landing_page : @$best_location->url;
+        if (!$oa_url) return 'nothing';
+
         if (stripos($oa_url, 'citeseerx.ist.psu.edu') !== FALSE) return FALSE; //is currently blacklisted due to copyright concerns
         if (stripos($oa_url, 'semanticscholar.org') !== FALSE) return FALSE;  // Limit semanticscholar to licenced only - use API call instead
         if ($this->get('url')) {
