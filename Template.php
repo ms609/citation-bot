@@ -4404,7 +4404,7 @@ final class Template {
         $this->name = $spacing[1] . 'Cite ODNB' . $spacing[2];
       }
       $this->forget('website');
-      if (stripos($this->get('publisher', 'oxford')) $this->forget('publisher'));
+      if (stripos($this->get('publisher'), 'oxford') !== FALSE) $this->forget('publisher'));
     }
     foreach (ALL_ALIASES as $alias_list) {
       if (!$this->blank($alias_list)) { // At least one is set
