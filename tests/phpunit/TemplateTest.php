@@ -2932,6 +2932,33 @@ T1 - This is the Title }}';
     $this->assertSame('Hello There', $template->get('quotes'));
   }
  
+   public function testTidy73() {
+    $text = "{{cite web|journal=www.cnn.com}}";
+    $template = $this->make_citation($text);
+    $template->tidy_parameter('journal');
+    $this->assertSame(str_replace('journal', 'website', $text), $template->parsed_text());
+    
+    $text = "{{cite web|journal=cnn.com}}";
+    $template = $this->make_citation($text);
+    $template->tidy_parameter('journal');
+    $this->assertSame(str_replace('journal', 'website', $text), $template->parsed_text());
+    
+    $text = "{{cite web|journal=theweb.org}}";
+    $template = $this->make_citation($text);
+    $template->tidy_parameter('journal');
+    $this->assertSame(str_replace('journal', 'website', $text), $template->parsed_text());
+    
+    $text = "{{cite web|journal=theweb.net}}";
+    $template = $this->make_citation($text);
+    $template->tidy_parameter('journal');
+    $this->assertSame(str_replace('journal', 'website', $text), $template->parsed_text());
+    
+    $text = "{{cite web|journal=the web.net}}";
+    $template = $this->make_citation($text);
+    $template->tidy_parameter('journal');
+    $this->assertNull($template->get('website'));
+  }
+ 
   public function testIncomplete() {
     $text = "{{cite book|url=http://perma-archives.org/pqd1234|isbn=Xxxx|title=xxx|issue=a|volume=x}}"; // Non-date website
     $template = $this->make_citation($text);
