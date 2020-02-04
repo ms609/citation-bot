@@ -666,7 +666,6 @@ function expand_doi_with_dx($template, $doi) {
 
 function doi_active($doi) {
   static $cache = [];
-  if (strpos($doi, '10.1111/j.1572-0241') === 0 ) $cache[$doi] = FALSE; // Nature dropped the ball on these
   if (!isset($cache[$doi]) || $cache[$doi] === NULL) {
     $works = doi_works($doi);
     if ($works === NULL) {
@@ -699,6 +698,7 @@ function is_doi_active($doi) {
 }
 
 function is_doi_works($doi) {
+  if (strpos($doi, '10.1111/j.1572-0241') === 0 ) return FALSE; // Nature dropped the ball for now TODO - 10.1111/j.1572-0241.2006.00844.x
   $headers_test = @get_headers("https://dx.doi.org/" . urlencode($doi), 1);
   if ($headers_test === FALSE) return NULL; // most likely bad, but will recheck again an again
   $response = $headers_test[0];
