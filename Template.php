@@ -3536,6 +3536,10 @@ final class Template {
           
         case 'journal':
           if ($this->blank($param)) return;
+          if (preg_match('~^(|\S\S\S+\.)(\S\S\S+)\.(org|net|com)$~', $this->get($param)) {
+            $this->rename($param, 'website');
+            return;
+          }
           if ($this->blank(['chapter', 'isbn'])) {
             // Avoid renaming between cite journal and cite book
             $this->change_name_to('cite journal');
