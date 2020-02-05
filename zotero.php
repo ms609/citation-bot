@@ -240,7 +240,7 @@ function expand_by_zotero(&$template, $url = NULL) {
     report_action("Using Zotero translation server to retrieve details from identifiers.");
     $zotero_announced = 0;
   }
-  if ($BLOCK_ZOTERO_SEARCH) return;
+  if ($BLOCK_ZOTERO_SEARCH) return FALSE;
   $zotero_response = zotero_request($url);
   if ($zotero_response === FALSE) return FALSE;  // Error message already printed
   return process_zotero_response($zotero_response, $template, $url, $url_kind, $access_date);
