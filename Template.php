@@ -4351,6 +4351,10 @@ final class Template {
           $this->tidy_parameter('publisher');
         }
       }
+      if ($this->wikiname() === 'cite journal' && $this->blank(WORK_ALIASES) &&
+          stripos($this->initial_name, 'journal') === FALSE) {
+         $this->change_name_to('cite document');
+      }
     }
     if ($this->wikiname() === 'cite arxiv' && $this->has('bibcode')) {
       $this->forget('bibcode'); // Not supported and 99% of the time just a arxiv bibcode anyway
