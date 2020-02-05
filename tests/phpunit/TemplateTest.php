@@ -323,7 +323,7 @@ final class TemplateTest extends testBaseClass {
     $this->assertNull($expanded->get('url'));
     $text = "{{Cite web | url = https://www.ncbi.nlm.nih.gov/pmc/articles/PMC2491514/pdf/annrcse01476-0076.pdf}}";
     $expanded = $this->process_citation($text);
-    $this->assertSame('cite journal', $expanded->wikiname());
+    $this->assertSame('cite document', $expanded->wikiname());
     $this->assertSame('https://www.ncbi.nlm.nih.gov/pmc/articles/PMC2491514/pdf/annrcse01476-0076.pdf', $expanded->get('url'));
     $this->assertSame('2491514', $expanded->get('pmc'));
   }
