@@ -4351,7 +4351,8 @@ final class Template {
           $this->tidy_parameter('publisher');
         }
       }
-      if ($this->wikiname() === 'cite journal' && $this->blank(WORK_ALIASES)) {
+      if ($this->wikiname() === 'cite journal' && $this->blank(WORK_ALIASES) &&
+          stripos($this->initial_name, 'journal') === FALSE) {
          $this->change_name_to('cite document');
       }
     }
