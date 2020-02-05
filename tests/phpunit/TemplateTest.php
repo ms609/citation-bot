@@ -4328,7 +4328,8 @@ T1 - This is the Title }}';
      $text = '{{cite web|url=http://doi.org/10.1063/1.2833100 |url-access=Tested}}';
      $template = $this->make_citation($text);
      $template->get_identifiers_from_url();
-     $this->assertSame('Tested', $template->get('doi-access'));
+     $this->assertNull($template->get('doi-access'));
+     $this->assertNull($template->get('url-access'));
   }
  
    public function testDontDoIt() { // "complete" already
