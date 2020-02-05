@@ -1305,9 +1305,6 @@ final class Template {
       if ($this->add_if_new('doi', urldecode($match[1]))) { // Will expand from DOI when added
         if (is_null($url_sent)) {
           quietly('report_modification', "URL is hard-coded DOI; converting to use DOI parameter.");
-          if ($this->has('url-access')) {
-             $this->rename('url-access', 'doi-access');
-          }
           $this->forget($url_type);
         }
         return TRUE;
