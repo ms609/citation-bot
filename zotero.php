@@ -179,8 +179,10 @@ function drop_urls_that_match_dois($templates) {
 function zotero_request($url) {
   global $zotero_failures_count;
   global $ch_zotero;
+  global $BLOCK_ZOTERO_SEARCH;
 
   curl_setopt($ch_zotero, CURLOPT_POSTFIELDS, $url);  
+  if ($BLOCK_ZOTERO_SEARCH) return FALSE;
   
   $zotero_response = curl_exec($ch_zotero);
   if ($zotero_response === FALSE) {
@@ -201,7 +203,6 @@ function zotero_request($url) {
 function expand_by_zotero(&$template, $url = NULL) {
   global $zotero_failures_count;
   global $zotero_announced;
-  global $BLOCK_ZOTERO_SEARCH;
   if ($zotero_failures_count > ZOTERO_GIVE_UP) {
     $zotero_failures_count = $zotero_failures_count - 1;                      // @codeCoverageIgnore
     if (ZOTERO_GIVE_UP == $zotero_failures_count) $zotero_failures_count = 0; // @codeCoverageIgnore
@@ -240,14 +241,13 @@ function expand_by_zotero(&$template, $url = NULL) {
     report_action("Using Zotero translation server to retrieve details from identifiers.");
     $zotero_announced = 0;
   }
-  if ($BLOCK_ZOTERO_SEARCH) return FALSE;
   $zotero_response = zotero_request($url);
-  if ($zotero_response === FALSE) return FALSE;  // Error message already printed
   return process_zotero_response($zotero_response, $template, $url, $url_kind, $access_date);
 }
 
 function process_zotero_response($zotero_response, &$template, $url, $url_kind, $access_date) {
   global $zotero_failures_count;
+  if ($zotero_response === FALSE) return FALSE;  // Error message already printed in zotero_request()
  
   switch (trim($zotero_response)) {
     case '':
