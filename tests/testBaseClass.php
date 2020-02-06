@@ -32,6 +32,7 @@ abstract class testBaseClass extends PHPUnit\Framework\TestCase {
         !getenv('PHP_OAUTH_ACCESS_TOKEN')   || !getenv('PHP_OAUTH_ACCESS_SECRET')
        ) {
       echo 'S';
+      ob_flush();
       $this->assertNull(NULL);
     } else {
       $function();
@@ -41,6 +42,7 @@ abstract class testBaseClass extends PHPUnit\Framework\TestCase {
   protected function requires_google($function) {
     if (!getenv('PHP_GOOGLEKEY')) {
       echo 'G';
+      ob_flush();
       $this->assertNull(NULL);
     } else {
       $function();
@@ -55,6 +57,7 @@ abstract class testBaseClass extends PHPUnit\Framework\TestCase {
     }
     if ($this->skip_bibcode || !getenv('PHP_ADSABSAPIKEY')) {
       echo 'B';
+      ob_flush();
       $this->assertNull(NULL);
     } else {
       try {
@@ -74,6 +77,7 @@ abstract class testBaseClass extends PHPUnit\Framework\TestCase {
     }
     if ($this->skip_zotero && getenv('TRAVIS_PULL_REQUEST') && (getenv('TRAVIS_PULL_REQUEST') !== 'false' )) { // Main build NEVER skips anything
       echo 'Z';
+      ob_flush();
       $this->assertNull(NULL);
     } else {
       try {

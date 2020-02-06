@@ -1,7 +1,7 @@
 <?php
 
 /*
- * Tests for zotero.php
+ * Tests for zotero.php - some of these work even when zotero fails because they check for the absence of bad data
  */
 
 require_once __DIR__ . '/../testBaseClass.php';
@@ -629,51 +629,11 @@ class ZoteroTest extends testBaseClass {
    });
   }
  
-  public function testZoteroTruncateDOI() {
-   $this->requires_zotero(function() {
-    $text = '{{cite journal|url=http://www.oxfordhandbooks.com/view/10.1093/oxfordhb/9780199552238.001.0001/oxfordhb-9780199552238-e-023}}';
-    $expanded = $this->process_citation($text);
-    $this->assertNull($expanded->get('doi-broken-date'));
-    $this->assertSame('http://www.oxfordhandbooks.com/view/10.1093/oxfordhb/9780199552238.001.0001/oxfordhb-9780199552238-e-023', $expanded->get('url'));
-    $this->assertSame('10.1093/oxfordhb/9780199552238.003.0023', $expanded->get('doi'));
-   });
-  }
- 
-  public function testZoteroRespectDates() {
-   $this->requires_zotero(function() {
-      $text = '{{Use mdy dates}}{{cite web|url=https://www.nasa.gov/content/profile-of-john-glenn}}';
-      $page = $this->process_page($text);
-      $this->assertTrue((boolean) strpos($page->parsed_text(), 'December 5, 2016'));
-      $text = '{{Use dmy dates}}{{cite web|url=https://www.nasa.gov/content/profile-of-john-glenn}}';
-      $page = $this->process_page($text);
-      $this->assertTrue((boolean) strpos($page->parsed_text(), '5 December 2016'));
-   });
-  }
- 
-  public function testZoteroExpansionPII() {
-   $this->requires_zotero(function() {
-    $text = '{{Cite journal|url = https://www.sciencedirect.com/science/article/pii/S0024379512004405}}';
-    $expanded = $this->expand_via_zotero($text);
-    $this->assertSame('10.1016/j.laa.2012.05.036', $expanded->get('doi'));
-    $this->assertNull($expanded->get('url')); // Recognize canonical publisher URL as duplicate of valid doi
-   });
-  }
- 
   public function testCitationTemplateWithoutJournalZotero() {
    $this->requires_zotero(function() {
     $text = '{{citation|url=http://www.word-detective.com/2011/03/mexican-standoff/|title=Mexican standoff|work=The Word Detective|accessdate=2013-03-21}}';
     $expanded = $this->process_citation($text);
     $this->assertNull($expanded->get('isbn')); // This citation used to crash code in ISBN search.  Mostly checking "something" to make Travis CI happy
-   });
-  }
-
-  public function testZoteroExpansionNBK() {
-   $this->requires_zotero(function() {
-    $text = '{{Cite journal|url=https://www.ncbi.nlm.nih.gov/books/NBK24662/|access-date=2099-12-12}}';  // Date is before access-date so will expand
-    $expanded = $this->expand_via_zotero($text);
-    $this->assertSame('Continuing Efforts to More Efficiently Use Laboratory Animals', $expanded->get('title'));
-    $this->assertSame('2004', $expanded->get('year'));
-    $this->assertSame('National Academies Press (US)', $expanded->get('publisher'));
    });
   }
  
@@ -682,17 +642,6 @@ class ZoteroTest extends testBaseClass {
     $text = '{{Cite journal|url=https://www.ncbi.nlm.nih.gov/books/NBK24663/|access-date=1978-12-12}}';  // Access date is too far in past, will not expand
     $expanded = $this->expand_via_zotero($text);
     $this->assertSame($text, $expanded->parsed_text());
-   });
-  }
-
-  public function testZoteroExpansionNYT() {
-   $this->requires_zotero(function() {
-    $text = '{{Cite journal|url =https://www.nytimes.com/2018/06/11/technology/net-neutrality-repeal.html}}';
-    $expanded = $this->expand_via_zotero($text);
-    $this->assertSame("Net Neutrality Has Officially Been Repealed. Here's How That Could Affect You", $expanded->get('title'));
-    $this->assertSame('Keith', $expanded->get('first1')); // Would be tidied to 'first' in final_parameter_tudy
-    $this->assertSame('Collins', $expanded->get('last1'));
-    $this->assertSame('cite news', $expanded->wikiname());
    });
   }
 
@@ -723,47 +672,6 @@ class ZoteroTest extends testBaseClass {
     $this->assertSame('', $date);
    });
   }
-
-  public function testZoteroExpansion_citeseerx() {
-   $this->requires_zotero(function() {
-    $text = '{{Cite journal| citeseerx=10.1.1.483.8892 }}';
-    $expanded = $this->process_citation($text);
-    $this->assertSame('Chemical Kinetics Models for the Fatigue Behavior of Fused Silica Optical Fiber', $expanded->get('title'));
-   });
-  }
-
-  public function testZoteroExpansion_hdl() {
-   $this->requires_zotero(function() {
-    $text = '{{Cite journal| hdl=10411/OF7UCA }}';
-    $expanded = $this->process_citation($text);
-    $this->assertSame('Replication Data for: Perceiving emotion in non-social targets: The effect of trait empathy on emotional through art', $expanded->get('title'));
-   });
-  }
-
-  public function testZoteroExpansion_osti() {
-   $this->requires_zotero(function() {
-    $text = '{{Cite journal| osti=1406676 }}';
-    $expanded = $this->process_citation($text);
-    $this->assertSame('10.1016/j.ifacol.2017.08.010', $expanded->get('doi'));
-   });
-  }
-    
-  public function testZoteroExpansion_rfc() {
-   $this->requires_zotero(function() {
-    $text = '{{Cite journal| rfc=6679 }}';
-    $expanded = $this->process_citation($text);
-    $this->assertSame('Explicit Congestion Notification (ECN) for RTP over UDP', $expanded->get('title'));
-   });
-  }
-     
-  public function testZoteroExpansion_ssrn() {
-   $this->requires_zotero(function() {
-    $text = '{{Cite journal| ssrn=195630 }}';
-    $expanded = $this->process_citation($text);
-    $this->assertSame('The Pricing of Internet Stocks', $expanded->get('title'));
-    $this->assertSame('September 1999', $expanded->get('date'));
-   });
-  }
  
   public function testZoteroBadVolumes() { // has ( and such in it
    $this->requires_zotero(function() {
@@ -780,5 +688,97 @@ class ZoteroTest extends testBaseClass {
     $this->assertNull($expanded->get('title')); // Hopefully will work some day and not give � character
    });
   }
-
+ 
+  public function testZoteroExpansion_osti() {
+   $this->requires_zotero(function() {
+    $text = '{{Cite journal| osti=1406676 }}';
+    $expanded = $this->process_citation($text);
+    $this->assertSame('10.1016/j.ifacol.2017.08.010', $expanded->get('doi'));
+   });
+  }
+    
+  public function testZoteroExpansion_rfc() {
+   $this->requires_zotero(function() {
+    $text = '{{Cite journal| rfc=6679 }}';
+    $expanded = $this->process_citation($text);
+    $this->assertSame('Explicit Congestion Notification (ECN) for RTP over UDP', $expanded->get('title'));
+   });
+  }
+  
+  public function testZoteroRespectDates() {
+   $this->requires_zotero(function() {
+      $text = '{{Use mdy dates}}{{cite web|url=https://www.nasa.gov/content/profile-of-john-glenn}}';
+      $page = $this->process_page($text);
+      $this->assertTrue((boolean) strpos($page->parsed_text(), 'December 5, 2016'));
+      $text = '{{Use dmy dates}}{{cite web|url=https://www.nasa.gov/content/profile-of-john-glenn}}';
+      $page = $this->process_page($text);
+      $this->assertTrue((boolean) strpos($page->parsed_text(), '5 December 2016'));
+   });
+  }
+ 
+  public function testZoteroExpansionPII() {
+   $this->requires_zotero(function() {
+    $text = '{{Cite journal|url = https://www.sciencedirect.com/science/article/pii/S0024379512004405}}';
+    $expanded = $this->expand_via_zotero($text);
+    $this->assertSame('10.1016/j.laa.2012.05.036', $expanded->get('doi'));
+    $this->assertNull($expanded->get('url')); // Recognize canonical publisher URL as duplicate of valid doi
+   });
+  }
+      
+  public function testZoteroExpansion_ssrn() {
+   $this->requires_zotero(function() {
+    $text = '{{Cite journal| ssrn=195630 }}';
+    $expanded = $this->process_citation($text);
+    $this->assertSame('The Pricing of Internet Stocks', $expanded->get('title'));
+    $this->assertSame('September 1999', $expanded->get('date'));
+   });
+  }
+ 
+  public function testZoteroExpansionNYT() {
+   $this->requires_zotero(function() {
+    $text = '{{Cite journal|url =https://www.nytimes.com/2018/06/11/technology/net-neutrality-repeal.html}}';
+    $expanded = $this->expand_via_zotero($text);
+    $this->assertSame("Net Neutrality Has Officially Been Repealed. Here's How That Could Affect You", $expanded->get('title'));
+    $this->assertSame('Keith', $expanded->get('first1')); // Would be tidied to 'first' in final_parameter_tudy
+    $this->assertSame('Collins', $expanded->get('last1'));
+    $this->assertSame('cite news', $expanded->wikiname());
+   });
+  }
+ 
+  public function testZoteroExpansionNBK() {
+   $this->requires_zotero(function() {
+    $text = '{{Cite journal|url=https://www.ncbi.nlm.nih.gov/books/NBK24662/|access-date=2099-12-12}}';  // Date is before access-date so will expand
+    $expanded = $this->expand_via_zotero($text);
+    $this->assertSame('Continuing Efforts to More Efficiently Use Laboratory Animals', $expanded->get('title'));
+    $this->assertSame('2004', $expanded->get('year'));
+    $this->assertSame('National Academies Press (US)', $expanded->get('publisher'));
+   });
+  }
+ 
+  public function testZoteroTruncateDOI() {
+   $this->requires_zotero(function() {
+    $text = '{{cite journal|url=http://www.oxfordhandbooks.com/view/10.1093/oxfordhb/9780199552238.001.0001/oxfordhb-9780199552238-e-023}}';
+    $expanded = $this->process_citation($text);
+    $this->assertNull($expanded->get('doi-broken-date'));
+    $this->assertSame('http://www.oxfordhandbooks.com/view/10.1093/oxfordhb/9780199552238.001.0001/oxfordhb-9780199552238-e-023', $expanded->get('url'));
+    $this->assertSame('10.1093/oxfordhb/9780199552238.003.0023', $expanded->get('doi'));
+   });
+  }
+ 
+  public function testZoteroExpansion_hdl() {
+   $this->requires_zotero(function() {
+    $text = '{{Cite journal| hdl=10411/OF7UCA }}';
+    $expanded = $this->process_citation($text);
+    $this->assertSame('Replication Data for: Perceiving emotion in non-social targets: The effect of trait empathy on emotional through art', $expanded->get('title'));
+   });
+  }
+ 
+  public function testZoteroExpansion_citeseerx() {
+   $this->requires_zotero(function() {
+    $text = '{{Cite journal| citeseerx=10.1.1.483.8892 }}';
+    $expanded = $this->process_citation($text);
+    $this->assertSame('Chemical Kinetics Models for the Fatigue Behavior of Fused Silica Optical Fiber', $expanded->get('title'));
+   });
+  }
+ 
 }
