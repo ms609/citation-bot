@@ -112,8 +112,9 @@ final class PageTest extends testBaseClass {
       $page->overwrite_text($trialCitation);
       $page_result = $page->write($api, "Testing bot write function");
       if (getenv('TRAVIS')) {
-        $this->assertTrue(TRUE); // make CI happy
         echo 'T';  // ! API call failed: '''Your IP address is in a range which has been blocked on all wikis.''' The block was made by [//meta.wikimedia.org/wiki/User:Jon_Kolbert Jon Kolbert] (meta.wikimedia.org). The reason given is ''[[m:NOP|Open Proxy]]: Colocation webhost - Contact [[m:Special:Contact/stewards|stewards]] if you are affected ''. * Start of block: 02:23, 27 October 2019 * Expiration of block: 02:23, 27 October 2021
+        ob_flush();
+        $this->assertTrue(TRUE); // make CI happy
         return;
       } else {
         $this->assertTrue($page_result);
