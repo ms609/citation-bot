@@ -1549,7 +1549,7 @@ final class Template {
           }
           if (!$handle) return FALSE;
           // Trim off session stuff
-          while (preg_match('~^(.+)(?:/browse\?|;jsessionid|;sequence=|\?sequence=|&isAllowed=|&origin=|&rd=|\?value=|&type=|/browse-title|&submit_browse=)~',
+          while (preg_match('~^(.+)(?:/browse\?|;jsessionid|;sequence=|\?sequence=|&isAllowed=|&origin=|&rd=|\?value=|&type=|/browse-title|&submit_browse=|\?urlappend=|\%3Bui=embed)~',
                                 $handle, $matches)) {
             $handle = $matches[1];
           }
