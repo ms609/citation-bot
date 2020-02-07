@@ -3585,7 +3585,7 @@ T1 - This is the Title }}';
     $text = "{{cite web|url=https://search.proquest.com/docview/12341234|id=CITATION_BOT_PLACEHOLDER_COMMENT}}";
     $template = $this->make_citation($text);
     $this->assertFalse($template->get_identifiers_from_url());
-    $this->assertNull($template->get('id'));
+    $this->assertSame('CITATION_BOT_PLACEHOLDER_COMMENT', $template->get('id'));
     $this->assertSame('https://search.proquest.com/docview/12341234', $template->get('url'));
   }
 
