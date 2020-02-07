@@ -3580,6 +3580,14 @@ T1 - This is the Title }}';
     $template = $this->make_citation($text);
     $this->assertFalse($template->get_identifiers_from_url());
   }
+ 
+  public function testConversionOfURL7() {
+    $text = "{{cite web|url=https://search.proquest.com/docview/12341234|id=CITATION_BOT_PLACEHOLDER_COMMENT}}";
+    $template = $this->make_citation($text);
+    $this->assertFalse($template->get_identifiers_from_url());
+    $this->assertSame('CITATION_BOT_PLACEHOLDER_COMMENT', $template->get('id'));
+    $this->assertSame('https://search.proquest.com/docview/12341234', $template->get('url'));
+  }
 
   public function testVolumeIssueDemixing5() {
     $text = '{{cite journal|issue = volume 12|doi=XYZ}}';
