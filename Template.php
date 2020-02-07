@@ -2382,8 +2382,9 @@ final class Template {
     $doi = $this->get_without_comments_and_placeholders('doi');
     if (!$doi) return;
     $return = $this->get_unpaywall_url($doi);
-    if (@$return === 'publisher') return;
+    if ($return === 'publisher' || $return === 'duplicate' || $return === 'have free') return;
     if ($this->blank('url')) { // Have room for one
+      return ; // PANIC STOP TODO
       $this->get_semanticscholar_url($doi);
     }
   }
