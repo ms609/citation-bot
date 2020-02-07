@@ -1802,7 +1802,7 @@ final class Template {
  */
     if ($doi = $this->get_without_comments_and_placeholders('doi')) {
       if (!strpos($doi, "[") && !strpos($doi, "<")) { // Doi's with square brackets and less/greater than cannot search PUBMED (yes, we asked).
-        $results = $this->do_pumbed_query(array("doi"), TRUE);
+        $results = $this->do_pumbed_query(array("doi"));
         if ($results[1] == 1) return $results;
       }
     }
@@ -1813,13 +1813,13 @@ final class Template {
       if ($results[1] == 1) return $results;
     }
     if ($this->has("title") && ($this->has("author") || $this->has("author") || $this->has("author1") || $this->has("author1"))) {
-      $results = $this->do_pumbed_query(array("title", "author", "author", "author1", "author1"));
+      $results = $this->do_pumbed_query(array("title", "author", "last", "author1", "last1"));
       if ($results[1] == 1) return $results;
       if ($results[1] > 1) {
-        $results = $this->do_pumbed_query(array("title", "author", "author", "author1", "author1", "year", "date"));
+        $results = $this->do_pumbed_query(array("title", "author", "last", "author1", "last1", "year", "date"));
         if ($results[1] == 1) return $results;
         if ($results[1] > 1) {
-          $results = $this->do_pumbed_query(array("title", "author", "author", "author1", "author1", "year", "date", "volume", "issue"));
+          $results = $this->do_pumbed_query(array("title", "author", "last", "author1", "last", "year", "date", "volume", "issue"));
           if ($results[1] == 1) return $results;
         }
       }
@@ -1829,13 +1829,12 @@ final class Template {
     return $results;
   }
 
-  protected function do_pumbed_query($terms, $check_for_errors = FALSE) {
+  protected function do_pumbed_query($terms) {
   /* do_query
    *
    * Searches pubmed based on terms provided in an array.
    * Provide an array of wikipedia parameters which exist in $p, and this function will construct a Pubmed seach query and
    * return the results as array (first result, # of results)
-   * If $check_for_errors is TRUE, it will return 'false' on errors returned by pubmed
    */
     $query = '';
     foreach ($terms as $term) {
@@ -1843,6 +1842,8 @@ final class Template {
         'doi' =>  'AID',
         'author1' =>  'Author',
         'author' =>  'Author',
+        'last1' =>  'Author',
+        'last' =>  'Author',
         'issue' =>  'Issue',
         'journal' =>  'Journal',
         'pages' =>  'Pagination',
@@ -1867,18 +1868,20 @@ final class Template {
     $query = substr($query, 5); // Chop off initial " AND "
     $url = "https://eutils.ncbi.nlm.nih.gov/entrez/eutils/esearch.fcgi?db=pubmed&tool=WikipediaCitationBot&email=martins+pubmed@gmail.com&term=$query";
     $xml = @simplexml_load_file($url);
+    // @codeCoverageIgnoreStart
     if ($xml === FALSE) {
-      report_warning("Unable to do PMID search");    // @codeCoverageIgnore
-      return array(NULL, 0);                         // @codeCoverageIgnore
+      report_warning("Unable to do PMID search");
+      return array(NULL, 0);
     }
-    if ($check_for_errors && $xml->ErrorList) {
-      if (isset($xml->ErrorList->PhraseNotFound)) {   // @codeCoverageIgnore
-        report_warning("Phrase not found in PMID search with query $query: " . echoable(print_r($xml->ErrorList, TRUE)));  // @codeCoverageIgnore
+    if ($xml->ErrorList) {
+      if (isset($xml->ErrorList->PhraseNotFound)) {
+        report_warning("Phrase not found in PMID search with query $query: " . echoable(print_r($xml->ErrorList, TRUE)));
       } else {
-        report_inline('no results.');  // @codeCoverageIgnore
+        report_inline('no results.');
       }
-      return array(NULL, 0);  // @codeCoverageIgnore
+      return array(NULL, 0);
     }
+    // @codeCoverageIgnoreEnd
 
     return $xml ? array((string)$xml->IdList->Id[0], (string)$xml->Count) : array(NULL, 0);// first results; number of results
   }
