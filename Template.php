@@ -1573,10 +1573,9 @@ final class Template {
           }
           if (preg_match('~^([^/]+/[^/]+)/.*$~', $handle, $matches)   // Might be padded with stuff
             && stripos($headers_test['Location'], $handle) === FALSE
-            && stripos($headers_test['Location'], $matches[1]) !== FALSE) {
-              $handle = $matches[1];
+            && stripos($headers_test['Location'], $matches[1]) !== FALSE) {  // Too long ones almost never resolve, but I seen at least one
+              $handle = $matches[1]; // @codeCoverageIgnore
           }
-         
           return $this->add_if_new('hdl', $handle);
       } elseif (preg_match("~^https?://zbmath\.org/\?format=complete&q=an:([0-9][0-9][0-9][0-9]\.[0-9][0-9][0-9][0-9][0-9])~i", $url, $match)) {
           quietly('report_modification', "Converting URL to ZBL parameter");
@@ -4401,7 +4400,9 @@ final class Template {
       } else {
         $this->name = $spacing[1] . 'Cite ODNB' . $spacing[2];
       }
-      $this->forget('website');
+      foreach (array_diff(WORK_ALIASES, array('encyclopedia','encyclopaedia')) as $worker) {
+        $this->forget($worker);
+      }
       if (stripos($this->get('publisher'), 'oxford') !== FALSE) $this->forget('publisher');
     }
     foreach (ALL_ALIASES as $alias_list) {
