@@ -211,7 +211,7 @@ final class PageTest extends testBaseClass {
   public function testUrlReferencesWithText8() {
       $text = "<ref>James L. Elshoff, Michael Marcotty, [http://doi.acm.org/10.1145/358589.358596 Improving computer program readability to aid modification], Communications of the ACM, v.25 n.8, p.512-521, Aug 1982.</ref>";
       $page = $this->process_page($text);
-      $this->assertSame('<ref>{{Cite journal |doi = 10.1145/358589.358596|title = Improving computer program readability to aid modification|journal = Communications of the ACM|volume = 25|issue = 8|pages = 512–521|year = 1982|last1 = Elshoff|first1 = James L.|last2 = Marcotty|first2 = Michael|url = https://www.semanticscholar.org/paper/46c0955a810b4a3777e4251e2df7954488df196d}}</ref>', $page->parsed_text());
+      $this->assertSame('<ref>{{Cite journal |doi = 10.1145/358589.358596|title = Improving computer program readability to aid modification|journal = Communications of the ACM|volume = 25|issue = 8|pages = 512–521|year = 1982|last1 = Elshoff|first1 = James L.|last2 = Marcotty|first2 = Michael}}</ref>', $page->parsed_text());
   }
  
   public function testUrlReferencesWithText9() { // Two "urls"
@@ -248,7 +248,7 @@ final class PageTest extends testBaseClass {
   public function testUrlReferencesWithText14() {
       $text = "<ref>{{cite web}}</ref><ref>{{cite web}}</ref><ref>James L. Elshoff, Michael Marcotty, [http://doi.acm.org/10.1145/358589.358596 Improving computer program readability to aid modification], Communications of the ACM, v.25 n.8, p.512-521, Aug 1982.</ref>";
       $page = $this->process_page($text);
-      $this->assertSame('<ref>{{cite web}}</ref><ref>{{cite web}}</ref><ref>{{Cite journal |doi = 10.1145/358589.358596|title = Improving computer program readability to aid modification|journal = Communications of the ACM|volume = 25|issue = 8|pages = 512–521|year = 1982|last1 = Elshoff|first1 = James L.|last2 = Marcotty|first2 = Michael|url = https://www.semanticscholar.org/paper/46c0955a810b4a3777e4251e2df7954488df196d}}</ref>', $page->parsed_text());
+      $this->assertSame('<ref>{{cite web}}</ref><ref>{{cite web}}</ref><ref>{{Cite journal |doi = 10.1145/358589.358596|title = Improving computer program readability to aid modification|journal = Communications of the ACM|volume = 25|issue = 8|pages = 512–521|year = 1982|last1 = Elshoff|first1 = James L.|last2 = Marcotty|first2 = Michael}}</ref>', $page->parsed_text());
   }
  
    public function testUrlReferencesWithText15() {
