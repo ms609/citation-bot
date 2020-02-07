@@ -484,7 +484,7 @@ final class TemplateTest extends testBaseClass {
     // S2
     $text = '{{cite journal | url = https://link.springer.com/article/10.1007/BF00233701#page-1 | doi = 10.1007/BF00233701}}';
     $expanded = $this->process_citation($text);
-    $this->assertSame('https://www.semanticscholar.org/paper/3fc87a06419764142ce27490ceb54c4824cec178', $expanded->get('url'));
+    $this->assertNull($expanded->get('url'));
   }
  
   public function testDoiExpansion4() {
@@ -827,7 +827,7 @@ final class TemplateTest extends testBaseClass {
     
   public function testPageDuplication() {
      // Fake bibcoce otherwise we'll find a bibcode
-     $text = '{{cite journal| p=546 |doi=10.1103/PhysRev.57.546|title=Nuclear Fission of Separated Uranium Isotopes |journal=Physical Review |volume=57 |issue=6 |year=1940 |last1=Nier |first1=Alfred O. |last2=Booth |first2=E. T. |last3=Dunning |first3=J. R. |last4=Grosse |first4=A. V. |bibcode=XXXXXXXXXXXXX|url=https://www.semanticscholar.org/paper/1708420783f70a8bdcef32873b28549bb358fb4b}}';
+     $text = '{{cite journal| p=546 |doi=10.1103/PhysRev.57.546|title=Nuclear Fission of Separated Uranium Isotopes |journal=Physical Review |volume=57 |issue=6 |year=1940 |last1=Nier |first1=Alfred O. |last2=Booth |first2=E. T. |last3=Dunning |first3=J. R. |last4=Grosse |first4=A. V. |bibcode=XXXXXXXXXXXXX}}';
      $expanded = $this->process_citation($text);
      $this->assertSame($text, $expanded->parsed_text());
    }
