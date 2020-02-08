@@ -54,6 +54,18 @@ final class TemplateTest extends testBaseClass {
     $expanded = $this->process_citation($text);
     $this->assertSame($text, $expanded->parsed_text());
   }
+ 
+  public function testTitleOfNone() {
+    $text = "{{Cite web|title=none}}";// none is magic flag
+    $expanded = $this->make_citation($text);
+    $this->assertFalse($expanded->add_if_new('url', 'https://www.apple.com/');
+    $this->assertNull($expanded->get('url'));             
+
+    $text = "{{Cite web|title=None}}";
+    $expanded = $this->make_citation($text);
+    $this->assertTrue($expanded->add_if_new('url', 'https://www.apple.com/');
+    $this->assertSame('https://www.apple.com/', $expanded->get('url'));  
+  }
 
   public function testCleanUpTemplates() {
     $text = "{{Citeweb}}";
