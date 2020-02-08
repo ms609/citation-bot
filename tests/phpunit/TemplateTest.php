@@ -134,7 +134,7 @@ final class TemplateTest extends testBaseClass {
      $this->assertNull($expanded->get('bibcode'));
      $this->assertNull($expanded->get('pmc'));
   }
- 
+  
   public function testJstorExpansion() {
     $text = "{{Cite web | www.jstor.org/stable/pdfplus/1701972.pdf?&acceptTC=true|website=i found this online}}";
     $prepared = $this->prepare_citation($text);
