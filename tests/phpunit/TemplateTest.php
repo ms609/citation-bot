@@ -940,20 +940,20 @@ final class TemplateTest extends testBaseClass {
    $text = "{{cite journal|doi=10.5555/555555}}";
    $template = $this->make_citation($text);
    $return = $template->get_unpaywall_url($template->get('doi'));
-   $template->assertSame('nothing', $return);
-   $template->assertNull($template->get('url'));
+   $this->assertSame('nothing', $return);
+   $this->assertNull($template->get('url'));
   }
   
   public function testUnPaywall() {
    $text = "{{cite journal|doi=10.1145/358589.358596}}";
    $template = $this->make_citation($text);
    $template->get_semanticscholar_url($template->get('doi'));
-   $template->assertSame('https://www.semanticscholar.org/paper/46c0955a810b4a3777e4251e2df7954488df196d', $template->get('url'));
+   $this->assertSame('https://www.semanticscholar.org/paper/46c0955a810b4a3777e4251e2df7954488df196d', $template->get('url'));
    
    $text = "{{cite journal|doi=10.1145/358589.358596|doi-access=free}}";
    $template = $this->make_citation($text);
    $template->get_semanticscholar_url($template->get('doi'));
-   $template->assertNull($template->get('url'));
+   $this->assertNull($template->get('url'));
   }
  
   public function testCommentHandling() {
