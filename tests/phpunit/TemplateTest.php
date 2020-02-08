@@ -1470,11 +1470,11 @@ T1 - This is the Title }}';
   public function testWebsite2Url() {
       $text = '{{cite book |website=ttp://example.org }}';
       $prepared = $this->prepare_citation($text);
-      $this->assertSame('http://example.org', $prepared->get('url'));
+      $this->assertNull($prepared->get('url'));
       
       $text = '{{cite book |website=example.org }}';
       $prepared = $this->prepare_citation($text);
-      $this->assertSame('http://example.org', $prepared->get('url'));
+      $this->assertNull($prepared->get('url'));
       
       $text = '{{cite book |website=ttp://jstor.org/pdf/123456 | jstor=123456 }}';
       $prepared = $this->prepare_citation($text);
