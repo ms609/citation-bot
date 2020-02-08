@@ -960,13 +960,6 @@ final class TemplateTest extends testBaseClass {
     $this->assertSame('58796', $expanded->get('pmc'));
   }
  
-  public function testFindPMID() {
-    $text = "{{cite journal|year=2001|volume=98|issue=20|pages=11720-11724|title=Dehydroascorbic acid, a blood-brain barrier transportable form of vitamin C, mediates potent cerebroprotection in experimental stroke|last1 = Huang|first1 = J.|last2 = Agus|first2 = D. B.|last3 = Winfree|first3 = C. J.|last4 = Kiss|first4 = S.|last5 = Mack|first5 = W. J.|last6 = McTaggart|first6 = R. A.|last7 = Choudhri|first7 = T. F.|last8 = Kim|first8 = L. J.|last9 = Mocco|first9 = J.|last10 = Pinsky|first10 = D. J.|last11 = Fox|first11 = W. D.|last12 = Israel|first12 = R. J.|last13 = Boyd|first13 = T. A.|last14 = Golde|first14 = D. W.|last15 = Connolly|first15 = E. S.}}";
-    $expanded = $this->make_citation($text);
-    $expanded->find_pmid();
-    $this->assertSame('11573006', $expanded->get('pmid'));
-  }
- 
   public function testSiciExtraction() {
     $text='{{cite journal|url=http://fake.url/9999-9999(2002)152[0215:XXXXXX]2.0.CO;2}}';
     $expanded = $this->process_citation($text);
