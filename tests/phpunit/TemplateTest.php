@@ -66,6 +66,12 @@ final class TemplateTest extends testBaseClass {
     $this->assertTrue($expanded->add_if_new('url', 'https://www.apple.com/'));
     $this->assertSame('https://www.apple.com/', $expanded->get('url'));  
   }
+ 
+  public function testJournal2Web() {
+    $text = "{{Cite journal|journal=www.cnn.com}}";
+    $expanded = $this->process_citation($text);
+    $this->assertSame('www.cnn.com', $expanded->get('website'));  
+  }
 
   public function testCleanUpTemplates() {
     $text = "{{Citeweb}}";
@@ -920,7 +926,27 @@ final class TemplateTest extends testBaseClass {
     $expanded = $this->process_citation($text);
     $this->assertNull($expanded->get('url'));
   }
+ 
+  public function testSemanticScholar() {
+   $text = "{{cite journal|doi=10.5555/555555}}";
+   $template = $this->make_citation($text);
+   $return = $template->get_unpaywall_url($template->get('doi'));
+   $this->assertSame('nothing', $return);
+   $this->assertNull($template->get('url'));
+  }
   
+  public function testUnPaywall() {
+   $text = "{{cite journal|doi=10.1145/358589.358596}}";
+   $template = $this->make_citation($text);
+   $template->get_semanticscholar_url($template->get('doi'));
+   $this->assertSame('https://www.semanticscholar.org/paper/46c0955a810b4a3777e4251e2df7954488df196d', $template->get('url'));
+   
+   $text = "{{cite journal|doi=10.1145/358589.358596|doi-access=free}}";
+   $template = $this->make_citation($text);
+   $template->get_semanticscholar_url($template->get('doi'));
+   $this->assertNull($template->get('url'));
+  }
+ 
   public function testCommentHandling() {
     $text = "{{cite book|pages=3333 <!-- yes --> }} {{cite book <!-- no --> | pages=3<nowiki>-</nowiki>6}} {{cite book | pages=3<pre>-</pre>6}} {{cite book | pages=3<math>-</math>6}} {{cite book | pages=3<score>-</score>6}} {{cite book | pages=3<chem>-</chem>6}}";
     $expanded_page = $this->process_page($text);
@@ -4367,6 +4393,14 @@ T1 - This is the Title }}';
  
   public function testOxfordTemplate() {
      $text = '{{cite web |last1=Courtney |first1=W. P. |last2=Hinings |first2=Jessica |title=Woodley, George (bap. 1786, d. 1846) |url=https://doi.org/10.1093/ref:odnb/29929 |website=Oxford Dictionary of National Biography |publisher=Oxford University Press |accessdate=12 September 2019}}';
+     $template = $this->process_citation($text);
+     $this->assertSame('cite odnb', $template->wikiname());
+     $this->assertSame('Woodley, George (bap. 1786, d. 1846)', $template->get('title'));
+     $this->assertNull($template->get('url'));
+     $this->assertSame('10.1093/ref:odnb/29929', $template->get('doi'));
+     $this->assertNull($template->get('publisher'));
+    // Now with caps in wikiname
+     $text = '{{Cite web |last1=Courtney |first1=W. P. |last2=Hinings |first2=Jessica |title=Woodley, George (bap. 1786, d. 1846) |url=https://doi.org/10.1093/ref:odnb/29929 |website=Oxford Dictionary of National Biography |publisher=Oxford University Press |accessdate=12 September 2019}}';
      $template = $this->process_citation($text);
      $this->assertSame('cite odnb', $template->wikiname());
      $this->assertSame('Woodley, George (bap. 1786, d. 1846)', $template->get('title'));
