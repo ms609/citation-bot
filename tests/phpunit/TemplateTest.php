@@ -66,6 +66,12 @@ final class TemplateTest extends testBaseClass {
     $this->assertTrue($expanded->add_if_new('url', 'https://www.apple.com/'));
     $this->assertSame('https://www.apple.com/', $expanded->get('url'));  
   }
+ 
+  public function testJournal2Web() {
+    $text = "{{Cite journal|journal=www.cnn.com}}";
+    $expanded = $this->process_citation($text);
+    $this->assertSame('www.cnn.com', $expanded->get('website'));  
+  }
 
   public function testCleanUpTemplates() {
     $text = "{{Citeweb}}";
