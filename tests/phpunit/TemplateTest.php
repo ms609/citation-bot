@@ -134,15 +134,6 @@ final class TemplateTest extends testBaseClass {
      $this->assertNull($expanded->get('bibcode'));
      $this->assertNull($expanded->get('pmc'));
   }
-  
-  public function testGetDoiFromCrossref2() { // Some bad data, but not a lot
-     $text = '{{Cite journal | pages = 37–430|last1= Blahblahblah | title = Improved wood–kirkwood detonation chemical kinetics | journal = Theoretical Chemistry Accounts | volume = 120 | year = 2007 |issue=1–3}}';
-     $expanded = $this->process_citation($text);
-     $this->assertSame('10.1007/s00214-007-0303-9', $expanded->get('doi'));
-     $this->assertNull($expanded->get('pmid'));  // do not want reference where pmid leads to doi
-     $this->assertNull($expanded->get('bibcode'));
-     $this->assertNull($expanded->get('pmc'));
-  }
  
   public function testJstorExpansion() {
     $text = "{{Cite web | www.jstor.org/stable/pdfplus/1701972.pdf?&acceptTC=true|website=i found this online}}";
@@ -970,7 +961,7 @@ final class TemplateTest extends testBaseClass {
   }
  
   public function testFindPMID() {
-    $text = "{{cite journal|year=2001|volume=98|issue=20|pages=11720-11724title=Dehydroascorbic acid, a blood–brain barrier transportable form of vitamin C, mediates potent cerebroprotection in experimental stroke|last1 = Huang|first1 = J.|last2 = Agus|first2 = D. B.|last3 = Winfree|first3 = C. J.|last4 = Kiss|first4 = S.|last5 = Mack|first5 = W. J.|last6 = McTaggart|first6 = R. A.|last7 = Choudhri|first7 = T. F.|last8 = Kim|first8 = L. J.|last9 = Mocco|first9 = J.|last10 = Pinsky|first10 = D. J.|last11 = Fox|first11 = W. D.|last12 = Israel|first12 = R. J.|last13 = Boyd|first13 = T. A.|last14 = Golde|first14 = D. W.|last15 = Connolly|first15 = E. S.}}";
+    $text = "{{cite journal|year=2001|volume=98|issue=20|pages=11720-11724|title=Dehydroascorbic acid, a blood-brain barrier transportable form of vitamin C, mediates potent cerebroprotection in experimental stroke|last1 = Huang|first1 = J.|last2 = Agus|first2 = D. B.|last3 = Winfree|first3 = C. J.|last4 = Kiss|first4 = S.|last5 = Mack|first5 = W. J.|last6 = McTaggart|first6 = R. A.|last7 = Choudhri|first7 = T. F.|last8 = Kim|first8 = L. J.|last9 = Mocco|first9 = J.|last10 = Pinsky|first10 = D. J.|last11 = Fox|first11 = W. D.|last12 = Israel|first12 = R. J.|last13 = Boyd|first13 = T. A.|last14 = Golde|first14 = D. W.|last15 = Connolly|first15 = E. S.}}";
     $expanded = $this->make_citation($text);
     $expanded->find_pmid();
     $this->assertSame('11573006', $expanded->get('pmid'));
