@@ -2521,11 +2521,13 @@ final class Template {
           }
           // @codeCoverageIgnoreEnd
           $response_code = intval(substr($headers_test[0], 9, 3)); 
+          // @codeCoverageIgnoreStart
           if($response_code > 400) {  // Generally 400 and below are okay, includes redirects too though
             $this->forget('url');
             report_warning("Open access URL gave response code " . $response_code . " from oiDOI API for doi: " . echoable($doi));
             return 'nothing';
           }
+          // @codeCoverageIgnoreEnd
         }
         return 'got one';
       }
