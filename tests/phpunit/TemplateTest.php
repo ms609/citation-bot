@@ -4415,6 +4415,14 @@ T1 - This is the Title }}';
      $this->assertNull($template->get('url'));
      $this->assertSame('10.1093/ref:odnb/29929', $template->get('doi'));
      $this->assertNull($template->get('publisher'));
+    // Now with caps in wikiname
+     $text = '{{Cite web |last1=Courtney |first1=W. P. |last2=Hinings |first2=Jessica |title=Woodley, George (bap. 1786, d. 1846) |url=https://doi.org/10.1093/ref:odnb/29929 |website=Oxford Dictionary of National Biography |publisher=Oxford University Press |accessdate=12 September 2019}}';
+     $template = $this->process_citation($text);
+     $this->assertSame('cite odnb', $template->wikiname());
+     $this->assertSame('Woodley, George (bap. 1786, d. 1846)', $template->get('title'));
+     $this->assertNull($template->get('url'));
+     $this->assertSame('10.1093/ref:odnb/29929', $template->get('doi'));
+     $this->assertNull($template->get('publisher'))
   }
  
   public function testSaveAccessType() {
