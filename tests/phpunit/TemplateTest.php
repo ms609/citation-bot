@@ -1112,6 +1112,11 @@ final class TemplateTest extends testBaseClass {
       $text = '{{citation|title=:: Huh ::}}';
       $prepared = $this->make_citation($text);
       $prepared->tidy_parameter('title');
+      $this->assertSame(':: Huh ::', $prepared->get('title'));
+   
+      $text = '{{citation|title=: Huh :}}';
+      $prepared = $this->make_citation($text);
+      $prepared->tidy_parameter('title');
       $this->assertSame('Huh', $prepared->get('title'));
 
       $text = '{{citation|title=; Huh ;;}}';
