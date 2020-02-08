@@ -936,7 +936,7 @@ final class TemplateTest extends testBaseClass {
     $this->assertNull($expanded->get('url'));
   }
  
-  public funtion testSemanticScholar() {
+  public function testSemanticScholar() {
    $text = "{{cite journal|doi=10.5555/555555}}";
    $template = $this->make_citation($text);
    $return = $template->get_unpaywall_url($template->get('doi'));
@@ -944,7 +944,7 @@ final class TemplateTest extends testBaseClass {
    $template->assertNull($template->get('url'));
   }
   
-  public funtion testUnPaywall() {
+  public function testUnPaywall() {
    $text = "{{cite journal|doi=10.1145/358589.358596}}";
    $template = $this->make_citation($text);
    $template->get_semanticscholar_url($template->get('doi'));
