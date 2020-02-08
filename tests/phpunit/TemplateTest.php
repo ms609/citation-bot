@@ -4422,7 +4422,7 @@ T1 - This is the Title }}';
      $this->assertSame('Woodley, George (bap. 1786, d. 1846)', $template->get('title'));
      $this->assertNull($template->get('url'));
      $this->assertSame('10.1093/ref:odnb/29929', $template->get('doi'));
-     $this->assertNull($template->get('publisher'))
+     $this->assertNull($template->get('publisher'));
   }
  
   public function testSaveAccessType() {
