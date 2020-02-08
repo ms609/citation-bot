@@ -24,7 +24,7 @@ final class apiFunctionsTest extends testBaseClass {
       $page->parse_text($text);
       $templates = $page->extract_object('Template');
       $page->expand_templates_from_identifier('bibcode', $templates);
-      $this->assertSame('14879', $templates[0]->get('pages'));
+      $this->assertSame('14879', $templates[0]->get('pages') . $templates[0]->get('page'));
       $this->assertSame('Journal of Paleontology', $templates[1]->get('journal'));
       $this->assertSame('Geological Society of America Bulletin', $templates[2]->get('journal'));
       $this->assertSame('Nature', $templates[3]->get('journal'));
