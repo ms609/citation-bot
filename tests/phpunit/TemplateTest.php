@@ -1645,7 +1645,33 @@ T1 - This is the Title }}';
     $this->assertSame('cite arxiv', $prepared->wikiname());
     $text = "{{cite arxiv | bibcode = 2013physics305.7450M}}";
     $prepared = $this->prepare_citation($text);
-    $this->assertSame('cite arxiv', $prepared->wikiname());    
+    $this->assertSame('cite arxiv', $prepared->wikiname());
+  }
+ 
+  public function testArxivDocumentBibcodeCode() {
+    $text = "{{cite arxiv| arxiv=1234|bibcode=abc}}";
+    $template = $this->make_citation($text);
+    $template->change_name_to('cite journal');
+    $template->final_tidy();
+    $this->assertSame('cite arxiv', $template->wikiname());
+    $this->assertNull($template->get('bibcode'));    
+   
+    $text = "{{cite journal}}";
+    $template = $this->make_citation($text);
+    $template->final_tidy();
+    $this->assertSame('cite journal', $template->wikiname());
+   
+    $text = "{{cite web}}";
+    $template = $this->make_citation($text);
+    $template->change_name_to('cite journal');
+    $template->final_tidy();
+    $this->assertSame('cite document', $template->wikiname());
+   
+    $text = "{{cite web|eprint=xxx}}";
+    $template = $this->make_citation($text);
+    $template->change_name_to('cite journal');
+    $template->final_tidy();
+    $this->assertSame('cite arxiv', $template->wikiname());
   }
  
   public function testRenameToExisting() {

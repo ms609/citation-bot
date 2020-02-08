@@ -4355,7 +4355,11 @@ final class Template {
       }
       if ($this->wikiname() === 'cite journal' && $this->blank(WORK_ALIASES) &&
           stripos($this->initial_name, 'journal') === FALSE) {
-         $this->change_name_to('cite document');
+         if ($this->has('arxiv') || $this->has('eprint')) {
+            $this->change_name_to('cite arxiv');
+         } else {
+            $this->change_name_to('cite document');
+         }
       }
     }
     if ($this->wikiname() === 'cite arxiv' && $this->has('bibcode')) {
