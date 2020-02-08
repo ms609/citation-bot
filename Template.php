@@ -859,6 +859,7 @@ final class Template {
         // look for identifiers in URL - might be better to add a PMC parameter, say
         if ($this->get_identifiers_from_url($value)) return FALSE;
         if (!$this->blank(array_merge([$param_name], TITLE_LINK_ALIASES))) return FALSE;
+        if ($this->get('title') === 'none') return FALSE;
         $value = sanitize_string($value);
         foreach (['url', 'article-url', 'chapter-url', 'chapterurl', 'conference-url', 'conferenceurl',
                   'contribution-url', 'contributionurl', 'entry-url', 'event-url', 'eventurl', 'lay-url',
