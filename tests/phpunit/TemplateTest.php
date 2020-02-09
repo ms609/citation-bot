@@ -3651,7 +3651,7 @@ T1 - This is the Title }}';
   }
  
   public function testConversionOfURL7() {
-    $text = "{{cite web|url=https://search.proquest.com/docview/12341234|id=CITATION_BOT_PLACEHOLDER_COMMENT}}";
+    $text = "{{cite web|url=https://search.proquest.com/docview/12341234|id=CITATION_BOT_PLACEHOLDER_COMMENT|title=Xyz}}";
     $template = $this->make_citation($text);
     $this->assertFalse($template->get_identifiers_from_url());
     $this->assertSame('CITATION_BOT_PLACEHOLDER_COMMENT', $template->get('id'));
@@ -4452,6 +4452,10 @@ T1 - This is the Title }}';
       $this->assertSame('N.', $expanded->get('first1'));
       $this->assertNotNull($expanded->get('title'));
     });
+    $text = "{{Cite book|bibcode=1982mcts.book.....H}}";  // Verify requires_bibcode() works
+    $expanded = $this->process_citation($text);
+    $this->assertNull($expanded->get('title'));
+    $this->assertNull($expanded->get('year'));
   }
   
   public function testBadBibcodeARXIVPages() {

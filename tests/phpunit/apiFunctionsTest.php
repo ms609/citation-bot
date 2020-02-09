@@ -41,8 +41,29 @@ final class apiFunctionsTest extends testBaseClass {
       $this->assertSame('1905.02552', $templates[10]->get('arxiv'));
       $this->assertNull($templates[10]->get('journal'));
     });
+    
+    // Mostly just for code coverage, make sure code does not seg fault.
     $text = "fafa3faewf34af";
-    $this->assertSame($text, bibcode_link($text)); // Mostly just for code coverage, make sure code does not seg fault.
+    $this->assertSame($text, bibcode_link($text));
+
+    // Now verify that lack of requires_bibcode() blocks API in tests
+    $bibcodes = [
+       '2017NatCo...814879F', // 0
+       '1974JPal...48..524M', // 1
+       '1996GSAB..108..195R', // 2
+       '1966Natur.211..116M', // 3
+       '1995Sci...267...77R', // 4
+       '1995Geo....23..967E', // 5
+       '2003hoe..book.....K', // 6 - book
+       '2000A&A...361..952H', // 7 - & symbol
+       '1995astro.ph..8159B', // 8 - arxiv
+       '1932Natur.129Q..18.', // 9 - dot end
+       '2019arXiv190502552Q', // 10 - new arxiv
+       ];
+    $text = '{{Cite journal | bibcode = ' . implode('}}{{Cite journal | bibcode = ', $bibcodes) . '}}';
+    $page = new TestPage();
+    $page->parse_text($text);
+    $this->assertSame($text, $page->parsed_text($text));
   }
   
   public function testArxivDateUpgradeSeesDate() {
