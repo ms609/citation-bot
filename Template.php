@@ -1116,6 +1116,7 @@ final class Template {
   // This is also called when adding a URL with add_if_new, in which case
   // it looks for a parameter before adding the url.
   public function get_identifiers_from_url($url_sent = NULL) {
+            echo "HOSER7\n";
     if (is_null($url_sent)) {
        // Chapter URLs are generally better than URLs for the whole book.
         if ($this->has('url') && $this->has('chapterurl')) {
@@ -1358,7 +1359,7 @@ final class Template {
     }
   
     // JSTOR
-
+        echo "HOSER6\n";
     if (stripos($url, "jstor.org") !== FALSE) {
       $sici_pos = stripos($url, "sici");
       if ($sici_pos) {  //  Outdated url style
@@ -1651,15 +1652,19 @@ final class Template {
           }
           return $this->add_if_new('ol', $match[1]); 
       } elseif (preg_match("~^https?://search\.proquest\.com/docview/(\d{4,})$~i", $url, $match) && $this->has('title')) {
+        echo "HOSER1\n";
         if ($this->append_to('id', '{{ProQuest|' . $match[1] . '}}')) {  
           quietly('report_modification', 'Converting URL to ProQuest parameter');
           if (is_null($url_sent)) {
              $this->forget($url_type);
           }
+                  echo "HOSER3\n";
           return TRUE;
         } else {
+        echo "HOSER2\n";
           return FALSE; // Append blocked by comment
         }
+                echo "HOSER4\n";
       } elseif (preg_match("~^https?://web\.archive\.org/web/\d{14}/(https?://.*)$~", $url, $match) && $this->blank(['archiveurl', 'archive-url'])) {
           quietly('report_modification', 'Extracting URL from archive');
           if (is_null($url_sent)) {
