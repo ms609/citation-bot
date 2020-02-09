@@ -1,13 +1,13 @@
 <?php
   
 function html_echo($text, $alternate_text='') {
-  if (!getenv('TRAVIS')) echo HTML_OUTPUT ? $text : $alternate_text;
+  if (TRUE ||!getenv('TRAVIS')) echo HTML_OUTPUT ? $text : $alternate_text;
 }
 
 function user_notice($symbol, $class, $text) {
   static $last_time = 0;
   global $FLUSHING_OKAY;
-  if (!getenv('TRAVIS')) {
+  if (TRUE || !getenv('TRAVIS')) {
     echo "\n " . (HTML_OUTPUT ? "<span class='$class'>" : "")               // @codeCoverageIgnore
      . "$symbol $text" . (HTML_OUTPUT ? "</span>" : "");                    // @codeCoverageIgnore
   }
@@ -28,7 +28,7 @@ function report_warning($text) { user_notice("  !", "warning", $text); }
 function report_modification($text) { user_notice("  ~", "changed", $text); }
 function report_add($text) { user_notice("  +", "added", $text); }
 function report_forget($text) { user_notice("  -", "removed", $text); }
-function report_inline($text) { if (!getenv('TRAVIS')) echo " $text"; }
+function report_inline($text) { if (TRUE ||!getenv('TRAVIS')) echo " $text"; }
 function report_error($text) { report_warning($text); trigger_error($text, E_USER_ERROR); } // call report_warning to give users a message before we die
 function report_minor_error($text) {  // For things we want to error on TRAVIS, but continue on Wikipedia
   report_warning($text);                                                   // @codeCoverageIgnore
