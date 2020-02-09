@@ -4452,6 +4452,10 @@ T1 - This is the Title }}';
       $this->assertSame('N.', $expanded->get('first1'));
       $this->assertNotNull($expanded->get('title'));
     });
+    $text = "{{Cite book|bibcode=1982mcts.book.....H}}";  // Verify requires_bibcode() works
+    $expanded = $this->process_citation($text);
+    $this->assertNull($expanded->get('title'));
+    $this->assertNull($expanded->get('year'));
   }
   
   public function testBadBibcodeARXIVPages() {
