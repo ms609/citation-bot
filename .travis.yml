@@ -2,7 +2,7 @@ sudo: false
 dist: trusty
 branches:
   except: release
-DIE
+
 language: php
                   ###### mediawiki/oauthclient uses features deprecated in 7.4 and higher           ######
                   ###### waiting on 1.0.3 https://packagist.org/packages/mediawiki/oauthclient      ######
