@@ -1894,8 +1894,6 @@ final class Template {
      report_info("Skipping AdsAbs API: not in slow mode");
      return FALSE;
     }
-    global $BLOCK_BIBCODE_SEARCH;
-    if (@$BLOCK_BIBCODE_SEARCH === TRUE) return FALSE;
     if ($this->has('bibcode') && !$this->incomplete() && $this->has('doi')) {
       return FALSE; // Don't waste a query
     }
@@ -2106,7 +2104,9 @@ final class Template {
       report_warning("PHP_ADSABSAPIKEY environment variable not set. Cannot query AdsAbs.");  // @codeCoverageIgnore
       return (object) array('numFound' => 0);                                                 // @codeCoverageIgnore
     }
-    
+    global $BLOCK_BIBCODE_SEARCH;
+    if (@$BLOCK_BIBCODE_SEARCH === TRUE) (object) array('numFound' => 0);
+
     try {
       $ch = curl_init();
       curl_setopt($ch, CURLOPT_HTTPHEADER, array('Authorization: Bearer ' . getenv('PHP_ADSABSAPIKEY')));
