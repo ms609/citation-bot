@@ -179,7 +179,6 @@ function adsabs_api($ids, $templates, $identifier) {
   global $ADSABS_GIVE_UP;
   global $BLOCK_BIBCODE_SEARCH;
   if (@$ADSABS_GIVE_UP) return FALSE;
-  if (@$BLOCK_BIBCODE_SEARCH === TRUE) return FALSE;
   if (count($ids) == 0) return FALSE;
   
   foreach ($ids as $key => $bibcode) {
@@ -225,7 +224,8 @@ function adsabs_api($ids, $templates, $identifier) {
     report_warning("PHP_ADSABSAPIKEY environment variable not set. Cannot query AdsAbs.");  // @codeCoverageIgnore
     return FALSE;                                                                           // @codeCoverageIgnore
   }
-  
+
+  if (@$BLOCK_BIBCODE_SEARCH === TRUE) return FALSE;
   try {
     report_action("Expanding from BibCodes via AdsAbs API");
     $ch = curl_init();
