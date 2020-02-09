@@ -695,6 +695,9 @@ class ZoteroTest extends testBaseClass {
     $expanded = $this->process_citation($text);
     $this->assertSame('10.1016/j.ifacol.2017.08.010', $expanded->get('doi'));
    });
+  $text = '{{Cite journal| osti=1406676 }}';
+  $expanded = $this->process_citation($text);
+  $this->assertSame($text, $expanded->parsed_text()); // Verify that lack of requires_zotero() blocks zotero
   }
     
   public function testZoteroExpansion_rfc() {
