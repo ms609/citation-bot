@@ -1896,6 +1896,7 @@ final class Template {
     }    echo "\n DEBUG 16 \n";
     $query = substr($query, 5); // Chop off initial " AND "
     $url = "https://eutils.ncbi.nlm.nih.gov/entrez/eutils/esearch.fcgi?db=pubmed&tool=WikipediaCitationBot&email=martins+pubmed@gmail.com&term=$query";
+    echo $url;
     $xml = @simplexml_load_file($url);
     // @codeCoverageIgnoreStart
     if ($xml === FALSE) {
