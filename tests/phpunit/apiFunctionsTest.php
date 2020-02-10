@@ -13,7 +13,7 @@ final class apiFunctionsTest extends testBaseClass {
        '1966Natur.211..116M', // 3
        '1995Sci...267...77R', // 4
        '1995Geo....23..967E', // 5
-       '2003hoe..book.....K', // 6 - book
+       '2003...............', // 6 - book - bogus to test year only code
        '2000A&A...361..952H', // 7 - & symbol
        '1995astro.ph..8159B', // 8 - arxiv
        '1932Natur.129Q..18.', // 9 - dot end
@@ -31,7 +31,8 @@ final class apiFunctionsTest extends testBaseClass {
       $this->assertSame('Science', $templates[4]->get('journal'));
       $this->assertSame('Geology', $templates[5]->get('journal'));
       $this->assertNull($templates[6]->get('journal'));
-      $this->assertSame('Hands-On Electronics', $templates[6]->get('title'));
+      $this->assertNull($templates[6]->get('title'));
+      $this->assertSame('2003', $templates[6]->get('year'));
       $this->assertSame('Astronomy and Astrophysics', $templates[7]->get('journal'));
       $this->assertNull($templates[8]->get('pages'));
       $this->assertNull($templates[8]->get('page'));
