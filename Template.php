@@ -1692,8 +1692,8 @@ final class Template {
     report_action("Checking CrossRef database for doi. ");
     $page_range = $this->page_range();
     $data = [
-      'title'      => $this->get('title'),
-      'journal'    => $this->get('journal'),
+      'title'      => de_wikify($this->get('title')),
+      'journal'    => de_wikify($this->get('journal')),
       'author'     => $this->first_surname(),
       'year'       => $this->year(),
       'volume'     => $this->get('volume'),
@@ -1715,14 +1715,14 @@ final class Template {
   
     if ($data['journal'] || $data['issn']) {
       $url = "https://www.crossref.org/openurl/?noredirect=TRUE&pid=" . CROSSREFUSERNAME
-           . ($data['title'] ? "&atitle=" . urlencode(de_wikify($data['title'])) : '')
+           . ($data['title'] ? "&atitle=" . urlencode($data['title']) : '')
            . ($data['author'] ? "&aulast=" . urlencode($data['author']) : '')
            . ($data['start_page'] ? "&spage=" . urlencode($data['start_page']) : '')
            . ($data['end_page'] > $data['start_page'] ? "&epage=" . urlencode($data['end_page']) : '')
            . ($data['year'] ? "&date=" . urlencode(preg_replace("~([12]\d{3}).*~", "$1", $data['year'])) : '')
            . ($data['volume'] ? "&volume=" . urlencode($data['volume']) : '')
            . ($data['issn'] ? ("&issn=" . $data['issn'])
-                            : ($data['journal'] ? "&title=" . urlencode(de_wikify($data['journal'])) : ''));
+                            : ($data['journal'] ? "&title=" . urlencode($data['journal']) : ''));
       if (!($result = @simplexml_load_file($url)->query_result->body->query)){
         report_warning("Error loading simpleXML file from CrossRef.");  // @codeCoverageIgnore
       } elseif ($result['status'] == 'malformed') {
@@ -1739,9 +1739,9 @@ final class Template {
     // If fail, try again with fewer constraints...
     report_info("Full search failed. Dropping author & end_page... ");
     $url = "https://www.crossref.org/openurl/?noredirect=TRUE&pid=" . CROSSREFUSERNAME
-           . ($data['title'] ? "&atitle=" . urlencode(de_wikify($data['title'])) : "")
+           . ($data['title'] ? "&atitle=" . urlencode($data['title']) : "")
            . ($data['issn'] ? "&issn=" . $data['issn'] 
-                            : ($data['journal'] ? "&title=" . urlencode(de_wikify($data['journal'])) : ''))
+                            : ($data['journal'] ? "&title=" . urlencode($data['journal']) : ''))
            . ($data['year'] ? "&date=" . urlencode(preg_replace("~([12]\d{3}).*~", "$1", $data['year'])) : '')
            . ($data['volume'] ? "&volume=" . urlencode($data['volume']) : '')
            . ($data['start_page'] ? "&spage=" . urlencode($data['start_page']) : '');
