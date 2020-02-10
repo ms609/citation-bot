@@ -2447,9 +2447,9 @@ final class Template {
         if (stripos($oa_url, 'orbit.dtu.dk/en/publications') !== FALSE) return 'nothing'; // Abstract only
         // Check if best location is already linked -- avoid double links
         if(($this->has('pmc') &&
-             preg_match("~^https?://europepmc\.org/articles/pmc\d+"
-                      . "|^https?://www\.pubmedcentral\.nih\.gov/articlerender.fcgi\?.*\bartid=\d+"
-                      . "|^https?://www\.ncbi\.nlm\.nih\.gov/(?:m/)?pmc/articles/PMC\d+~", $oa_url))
+             preg_match("~^https?://europepmc\.org/articles/pmc\d"
+                      . "|^https?://www\.pubmedcentral\.nih\.gov/articlerender.fcgi\?.*\bartid=\d"
+                      . "|^https?://www\.ncbi\.nlm\.nih\.gov/(?:m/)?pmc/articles/PMC\d~", $oa_url))
          ||($this->has('arxiv') &&
             preg_match("~arxiv\.org/~", $oa_url))
          ||($this->has('eprint') &&
@@ -2459,7 +2459,7 @@ final class Template {
          ||($this->has('bibcode') &&
             preg_match(REGEXP_BIBCODE, urldecode($oa_url))
          ||($this->has('pmid') &&
-            preg_match("~^https?://www.ncbi.nlm.nih.gov/.*pubmed/~", $oa_url)) {
+            preg_match("~^https?://www.ncbi.nlm.nih.gov/.*pubmed/~", $oa_url))) {
            return 'duplicate';
         }
         // @codeCoverageIgnoreStart
