@@ -1728,6 +1728,7 @@ final class Template {
       } elseif ($result['status'] == 'malformed') {
         report_warning("Cannot search CrossRef: " . echoable($result->msg));  // @codeCoverageIgnore
       } elseif ($result["status"] == "resolved") {
+      echo "\nDEGUG 2\n";
         if (!isset($result->doi) || is_array($result->doi)) return FALSE; // Never seen array, but pays to be paranoid
         report_info(" Successful!");
         return $this->add_if_new('doi', $result->doi);
@@ -1751,6 +1752,7 @@ final class Template {
     }  elseif ($result['status'] == 'malformed') {
       report_warning("Cannot search CrossRef: " . echoable($result->msg)); // @codeCoverageIgnore
     } elseif ($result["status"]=="resolved") {
+      echo "\nDEGUG 1\n";
       if (!isset($result->doi) || is_array($result->doi)) return FALSE; // Never seen array, but pays to be paranoid
       report_info(" Successful!");
       return $this->add_if_new('doi', $result->doi);
