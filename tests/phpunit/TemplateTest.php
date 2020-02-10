@@ -2347,7 +2347,7 @@ T1 - This is the Title }}';
     $this->assertSame('Volume 12', $prepared->get('volume'));
   }
  
-   public function testVolumeIssueDemixing210() {
+   public function testVolumeIssueDemixing10() {
     $text = '{{cite journal|volume = number 12}}';
     $prepared = $this->prepare_citation($text);
     $this->assertSame('number 12', $prepared->get('volume'));
@@ -3832,14 +3832,14 @@ T1 - This is the Title }}';
     $this->assertSame('https://search.proquest.com/docview/12341234', $template->get('url'));
   }
 
-  public function testVolumeIssueDemixing5() {
+  public function testVolumeIssueDemixing21() {
     $text = '{{cite journal|issue = volume 12|doi=XYZ}}';
     $prepared = $this->prepare_citation($text);
     $this->assertSame('12', $prepared->get('volume'));
     $this->assertNull($prepared->get('issue'));
   }
  
-  public function testVolumeIssueDemixing14() {
+  public function testVolumeIssueDemixing22() {
     $text = '{{cite journal|issue = volume 12XX|volume=12XX|doi=XYZ}}';
     $prepared = $this->prepare_citation($text);
     $this->assertSame('12XX', $prepared->get('volume'));
