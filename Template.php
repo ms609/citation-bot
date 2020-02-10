@@ -1794,8 +1794,8 @@ final class Template {
     }
     // If we've got this far, the DOI was unproductive or there was no DOI.
 
-    if ($this->has("journal") && $this->has("volume") && $this->has("pages")) {
-      $results = $this->do_pumbed_query(array("journal", "volume", "issue", "pages"));
+    if ($this->has("journal") && $this->has("volume") && ($this->has("pages")|| $this->has("page"))) {
+      $results = $this->do_pumbed_query(array("journal", "volume", "issue", "pages", "page"));
       if ($results[1] == 1) return $results;
     }
     if ($this->has("title") && ($this->has("author") || $this->has("last") || $this->has("author1") || $this->has("last1"))) {
