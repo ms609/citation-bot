@@ -1746,10 +1746,13 @@ final class Template {
   public function find_pmid() {
     if (!$this->blank('pmid')) return;
     report_action("Searching PubMed... ");
+          echo "\n DEBUG 1 \n";
     $results = $this->query_pubmed();
     if ($results[1] == 1) {
+            echo "\n DEBUG 1.1 \n";
       // Double check title if no DOI and no Journal were used
       if ($this->blank('doi') && $this->blank('journal') && $this->has('title')) {
+              echo "\n DEBUG 1.2 \n";
         $url = "https://eutils.ncbi.nlm.nih.gov/entrez/eutils/esummary.fcgi?tool=WikipediaCitationBot&email=martins+pubmed@gmail.com&db=pubmed&id=" . $results[0];
         $xml = @simplexml_load_file($url);
         if ($xml === FALSE) {
@@ -1793,20 +1796,26 @@ final class Template {
       }
     }
     // If we've got this far, the DOI was unproductive or there was no DOI.
-
+      echo "\n DEBUG 2 \n";
     if ($this->has("journal") && $this->has("volume") && ($this->has("pages")|| $this->has("page"))) {
       $results = $this->do_pumbed_query(array("journal", "volume", "issue", "pages", "page"));
       if ($results[1] == 1) return $results;
     }
     if ($this->has("title") && ($this->has("author") || $this->has("last") || $this->has("author1") || $this->has("last1"))) {
+      echo "\n DEBUG 3 \n";
       $results = $this->do_pumbed_query(array("title", "author", "last", "author1", "last1"));
+      print_r($results);
       if ($results[1] == 1) return $results;
       if ($results[1] > 1) {
+              echo "\n DEBUG 4 \n";
         $results = $this->do_pumbed_query(array("title", "author", "last", "author1", "last1", "year", "date"));
         if ($results[1] == 1) return $results;
+              echo "\n DEBUG 5 \n";
         if ($results[1] > 1) {
+                echo "\n DEBUG 6 \n";
           $results = $this->do_pumbed_query(array("title", "author", "last", "author1", "last", "year", "date", "volume", "issue"));
           if ($results[1] == 1) return $results;
+                echo "\n DEBUG 7 \n";
         }
       }
     }
@@ -1821,7 +1830,7 @@ final class Template {
    * Searches pubmed based on terms provided in an array.
    * Provide an array of wikipedia parameters which exist in $p, and this function will construct a Pubmed seach query and
    * return the results as array (first result, # of results)
-   */
+   */      echo "\n DEBUG 8 \n";
     $query = '';
     foreach ($terms as $term) {
       $key_index = array(
@@ -1860,9 +1869,12 @@ final class Template {
         }
       }
     }
+          echo "\n DEBUG 9 \n";
     $query = substr($query, 5); // Chop off initial " AND "
     $url = "https://eutils.ncbi.nlm.nih.gov/entrez/eutils/esearch.fcgi?db=pubmed&tool=WikipediaCitationBot&email=martins+pubmed@gmail.com&term=$query";
+    print "\n $url \n";
     $xml = @simplexml_load_file($url);
+    print_r($xml);
     // @codeCoverageIgnoreStart
     if ($xml === FALSE) {
       report_warning("Unable to do PMID search");
