@@ -2457,7 +2457,7 @@ final class Template {
          ||($this->has('citeseerx') &&
             preg_match("~citeseerx\.ist\.psu\.edu~", $oa_url))
          ||($this->has('bibcode') &&
-            preg_match(REGEXP_BIBCODE, urldecode($oa_url))
+            preg_match(REGEXP_BIBCODE, urldecode($oa_url)))
          ||($this->has('pmid') &&
             preg_match("~^https?://www.ncbi.nlm.nih.gov/.*pubmed/~", $oa_url))) {
            return 'duplicate';
