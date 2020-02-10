@@ -4583,6 +4583,11 @@ T1 - This is the Title }}';
      $template = $this->make_citation($text);
      $template->verify_doi();
      $this->assertSame('10.1175/1525-7541(2003)004<1147:TVGPCP>2.0.CO;2', $template->get('doi'));
+   
+     $text = '{{cite journal|doi=0.5240/7B2F-ED76-31F6-8CFB-4DB9-M}}'; // Not in crosseff, and no meta data in DX.DOI.ORG
+     $template = $this->make_citation($text);
+     $template->verify_doi();
+     $this->assertSame('10.5240/7B2F-ED76-31F6-8CFB-4DB9-M', $template->get('doi'));
   }
  
   public function testOxfordTemplate() {
