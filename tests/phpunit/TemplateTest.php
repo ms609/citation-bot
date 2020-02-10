@@ -1013,7 +1013,19 @@ final class TemplateTest extends testBaseClass {
     $expanded = $this->process_citation($text);
     $this->assertNull($expanded->get('url'));
   }
+
+  public function testOpenAccessLookup5() {  
+    $text = '{{Cite journal | doi = 10.5260/chara.18.3.53}}';
+    $expanded = $this->process_citation($text);
+    $this->assertSame('10393/35779', $expanded->get('hdl'));
+  }
  
+  public function testOpenAccessLookup6() {  
+    $text = '{{Cite journal | doi = 10.5260/chara.18.3.53|hdl=10393/35779}}'; 
+    $expanded = $this->process_citation($text);
+    $this->assertSame('10393/35779', $expanded->get('hdl')); // This basically runs through a bunch of code to return 'have free'
+  }
+
   public function testSemanticScholar() {
    $text = "{{cite journal|doi=10.5555/555555}}";
    $template = $this->make_citation($text);
@@ -3202,6 +3214,14 @@ T1 - This is the Title }}';
     $this->assertNull($template->get('website'));
   }
  
+   public function testTidy74() {
+    $text = "{{cite web|url=http://proquest.umi.com/pqdweb?did=1100578721&sid=3&Fmt=3&clientId=3620&RQT=309&VName=PQD|id=Proquest Document ID 1100578721}}";
+    $template = $this->make_citation($text);
+    $template->tidy_parameter('url');
+    $this->assertSame('https://search.proquest.com/docview/434365733', $template->get('url'));
+    $this->assertNull($template->get('id'));
+   }
+
   public function testIncomplete() {
     $text = "{{cite book|url=http://perma-archives.org/pqd1234|isbn=Xxxx|title=xxx|issue=a|volume=x}}"; // Non-date website
     $template = $this->make_citation($text);
@@ -4563,6 +4583,11 @@ T1 - This is the Title }}';
      $template = $this->make_citation($text);
      $template->verify_doi();
      $this->assertSame('10.1175/1525-7541(2003)004<1147:TVGPCP>2.0.CO;2', $template->get('doi'));
+   
+     $text = '{{cite journal|doi=0.5240/7B2F-ED76-31F6-8CFB-4DB9-M}}'; // Not in crosseff, and no meta data in DX.DOI.ORG
+     $template = $this->make_citation($text);
+     $template->verify_doi();
+     $this->assertSame('10.5240/7B2F-ED76-31F6-8CFB-4DB9-M', $template->get('doi'));
   }
  
   public function testOxfordTemplate() {
