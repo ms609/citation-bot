@@ -1772,12 +1772,16 @@ final class Template {
   }
 
   public function find_pmid() {
+    echo "\n DEBUG 1 \n";
     if (!$this->blank('pmid')) return;
     report_action("Searching PubMed... ");
     $results = $this->query_pubmed();
+        echo "\n DEBUG 2 \n";
     if ($results[1] == 1) {
+          echo "\n DEBUG 3 \n";
       // Double check title if no DOI and no Journal were used
       if ($this->blank('doi') && $this->blank('journal') && $this->has('title')) {
+            echo "\n DEBUG 3 \n";
         $url = "https://eutils.ncbi.nlm.nih.gov/entrez/eutils/esummary.fcgi?tool=WikipediaCitationBot&email=martins+pubmed@gmail.com&db=pubmed&id=" . $results[0];
         $xml = @simplexml_load_file($url);
         if ($xml === FALSE) {
@@ -1785,6 +1789,7 @@ final class Template {
           return;                                       // @codeCoverageIgnore
         }
         $Items = $xml->DocSum->Item;
+            echo "\n DEBUG 4 \n";
         foreach ($Items as $item) {
            if ($item['Name'] == 'Title') {
                $new_title = str_replace(array("[", "]"), "", (string) $item);
@@ -1794,13 +1799,16 @@ final class Template {
                    return;
                  }
                }
+                 echo "\n DEBUG 5 \n";
                report_inline("Similar matching pubmed title not similar enough.  Rejected: " . pubmed_link('pmid', $results[0]));
                return;
            }
         }
       }
+          echo "\n DEBUG 6 \n";
       $this->add_if_new('pmid', $results[0]);
     } else {
+          echo "\n DEBUG 7 \n";
       report_inline("nothing found.");
     }
   }
@@ -1813,31 +1821,38 @@ final class Template {
  *   [0] => PMID of first matching result
  *   [1] => total number of results
  *
- */
+ */    echo "\n DEBUG 8 \n";
     if ($doi = $this->get_without_comments_and_placeholders('doi')) {
       if (!strpos($doi, "[") && !strpos($doi, "<")) { // Doi's with square brackets and less/greater than cannot search PUBMED (yes, we asked).
         $results = $this->do_pumbed_query(array("doi"));
         if ($results[1] == 1) return $results;
       }
     }
+        echo "\n DEBUG 9 \n";
     // If we've got this far, the DOI was unproductive or there was no DOI.
 
     if ($this->has("journal") && $this->has("volume") && $this->has("pages")) {
       $results = $this->do_pumbed_query(array("journal", "volume", "issue", "pages"));
       if ($results[1] == 1) return $results;
     }
+        echo "\n DEBUG 10 \n";
     if ($this->has("title") && ($this->has("author") || $this->has("author") || $this->has("author1") || $this->has("author1"))) {
       $results = $this->do_pumbed_query(array("title", "author", "last", "author1", "last1"));
       if ($results[1] == 1) return $results;
+          echo "\n DEBUG 11 \n";
       if ($results[1] > 1) {
         $results = $this->do_pumbed_query(array("title", "author", "last", "author1", "last1", "year", "date"));
         if ($results[1] == 1) return $results;
+            echo "\n DEBUG 12 \n";
         if ($results[1] > 1) {
+              echo "\n DEBUG 13 \n";
           $results = $this->do_pumbed_query(array("title", "author", "last", "author1", "last", "year", "date", "volume", "issue"));
           if ($results[1] == 1) return $results;
+              echo "\n DEBUG 14 \n";
         }
       }
     }
+        echo "\n DEBUG 15 \n";
     $results = [];
     $results[1] = 0;
     return $results;
@@ -1878,7 +1893,7 @@ final class Template {
            $query .= " AND (" . "\"" . str_replace("%E2%80%93", "-", urlencode($val)) . "\"" . "[$key])";
         }
       }
-    }
+    }    echo "\n DEBUG 16 \n";
     $query = substr($query, 5); // Chop off initial " AND "
     $url = "https://eutils.ncbi.nlm.nih.gov/entrez/eutils/esearch.fcgi?db=pubmed&tool=WikipediaCitationBot&email=martins+pubmed@gmail.com&term=$query";
     $xml = @simplexml_load_file($url);
@@ -1887,6 +1902,7 @@ final class Template {
       report_warning("Unable to do PMID search");
       return array(NULL, 0);
     }
+        echo "\n DEBUG 17 \n";
     if ($xml->ErrorList) {
       if (isset($xml->ErrorList->PhraseNotFound)) {
         report_warning("Phrase not found in PMID search with query $query: " . echoable(print_r($xml->ErrorList, TRUE)));
@@ -1895,6 +1911,7 @@ final class Template {
       }
       return array(NULL, 0);
     }
+        echo "\n DEBUG 18 \n";
     // @codeCoverageIgnoreEnd
 
     return $xml ? array((string)$xml->IdList->Id[0], (string)$xml->Count) : array(NULL, 0);// first results; number of results
