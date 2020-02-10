@@ -1849,7 +1849,7 @@ final class Template {
         foreach ($data_array as $val) {
           if (!in_array(strtolower($val), array('the', 'and', 'a', 'for', 'in', 'on',
                                                 'an', 'as', 'at', 'and', 'but', 'how',
-                                                'why', 'by', 'when', 'with', '')) {  // Small words are NOT indexed
+                                                'why', 'by', 'when', 'with', ''))) {  // Small words are NOT indexed
             $query .= " AND (" . str_replace("%E2%80%93", "-", urlencode($val)) . "[$key])";
           }
         }
