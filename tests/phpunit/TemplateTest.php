@@ -412,13 +412,13 @@ final class TemplateTest extends testBaseClass {
     $this->assertNull($expanded->get('chapter-url'));
   }
 
-  public function testAmazonExpansion3() 
+  public function testAmazonExpansion3() {
     $text = "{{Cite web | url=https://www.amazon.com/Gold-Toe-Metropolitan-Dress-Three/dp/B0002TV0K8 | accessdate=2012-04-20 | title=Gold Toe Men's Metropolitan Dress Sock (Pack of Three Pairs) at Amazon Men's Clothing store}}";
     $expanded = $this->process_citation($text);
     $this->assertSame($text, $expanded->parsed_text());  // We do not touch this kind of URL
   }
 
-  public function testAmazonExpansion4() 
+  public function testAmazonExpansion4() {
     $text = "{{Cite web | chapter-url=http://www.amazon.eu/On-Origin-Phyla-James-Valentine/dp/0226845494 | accessdate=2012-04-20 |isbn= |publisher=amazon}}";
     $expanded = $this->prepare_citation($text);
     $this->assertSame('cite book', $expanded->wikiname());
@@ -429,7 +429,7 @@ final class TemplateTest extends testBaseClass {
     $this->assertSame('{{ASIN|0226845494|country=eu}}', $expanded->get('id'));
   }
 
-  public function testAmazonExpansion5() 
+  public function testAmazonExpansion5() {
     $text = "{{Cite book | chapter-url=http://www.amazon.eu/On-Origin-Phyla-James-Valentine/dp/0226845494 |isbn=exists}}";
     $expanded = $this->prepare_citation($text);;
     $this->assertNull($expanded->get('asin'));
