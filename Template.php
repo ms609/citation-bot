@@ -1841,7 +1841,7 @@ final class Template {
         ##Text Words [TW] , Title/Abstract [TIAB]
           ## Formatting: YYY/MM/DD Publication Date [DP]
       );
-      if ($term === "title" $this->has('title')) {
+      if ($term === "title" && $this->has('title')) {
         $key = 'Title';
         $data = $this->get('title');
         $data = str_replace([';',',',':','.','    ','   ', '  '], [' ',' ',' ',' ',' ', ' ', ' '], $data);
