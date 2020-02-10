@@ -1692,15 +1692,22 @@ final class Template {
     report_action("Checking CrossRef database for doi. ");
     $page_range = $this->page_range();
     $data = [
-      'title'      => $this->get('title'),
-      'journal'    => $this->get('journal'),
+      'title'      => de_wikify($this->get('title')),
+      'journal'    => de_wikify($this->get('journal')),
       'author'     => $this->first_surname(),
-      'year'       => $this->year(),
+      'year'       => (int) preg_replace("~([12]\d{3}).*~", "$1", $this->year()),
       'volume'     => $this->get('volume'),
       'start_page' => isset($page_range[1]) ? $page_range[1] : NULL,
       'end_page'   => isset($page_range[2]) ? $page_range[2] : NULL,
       'issn'       => $this->get('issn')
     ];
+
+    if ($data['year'] < 1900 || $data['year'] > (date("Y") + 3)) {
+      $data['year'] = NULL;
+    }
+    if ((int) $data['end_page'] < (int) $data['start_page']) {
+      $data['end_page'] = NULL;
+    }
     
     $novel_data = FALSE;
     foreach ($data as $key => $value) if ($value) {
@@ -1712,17 +1719,17 @@ final class Template {
       report_info("No new data since last CrossRef search.");
       return FALSE;
     } 
-  
+    // They already allow some fuzziness in matches
     if ($data['journal'] || $data['issn']) {
       $url = "https://www.crossref.org/openurl/?noredirect=TRUE&pid=" . CROSSREFUSERNAME
-           . ($data['title'] ? "&atitle=" . urlencode(de_wikify($data['title'])) : '')
+           . ($data['title'] ? "&atitle=" . urlencode($data['title']) : '')
            . ($data['author'] ? "&aulast=" . urlencode($data['author']) : '')
            . ($data['start_page'] ? "&spage=" . urlencode($data['start_page']) : '')
-           . ($data['end_page'] > $data['start_page'] ? "&epage=" . urlencode($data['end_page']) : '')
-           . ($data['year'] ? "&date=" . urlencode(preg_replace("~([12]\d{3}).*~", "$1", $data['year'])) : '')
+           . ($data['end_page'] ? "&epage=" . urlencode($data['end_page']) : '')
+           . ($data['year'] ? "&date=" . urlencode($data['year']) : '')
            . ($data['volume'] ? "&volume=" . urlencode($data['volume']) : '')
            . ($data['issn'] ? ("&issn=" . $data['issn'])
-                            : ($data['journal'] ? "&title=" . urlencode(de_wikify($data['journal'])) : ''));
+                            : ($data['journal'] ? "&title=" . urlencode($data['journal']) : ''));
       if (!($result = @simplexml_load_file($url)->query_result->body->query)){
         report_warning("Error loading simpleXML file from CrossRef.");  // @codeCoverageIgnore
       } elseif ($result['status'] == 'malformed') {
@@ -1732,28 +1739,6 @@ final class Template {
         report_info(" Successful!");
         return $this->add_if_new('doi', $result->doi);
       }
-    }
-    
-    if ( !$data['author'] || !($data['journal'] || $data['issn']) || !$data['start_page'] ) return FALSE;
-    
-    // If fail, try again with fewer constraints...
-    report_info("Full search failed. Dropping author & end_page... ");
-    $url = "https://www.crossref.org/openurl/?noredirect=TRUE&pid=" . CROSSREFUSERNAME
-           . ($data['title'] ? "&atitle=" . urlencode(de_wikify($data['title'])) : "")
-           . ($data['issn'] ? "&issn=" . $data['issn'] 
-                            : ($data['journal'] ? "&title=" . urlencode(de_wikify($data['journal'])) : ''))
-           . ($data['year'] ? "&date=" . urlencode(preg_replace("~([12]\d{3}).*~", "$1", $data['year'])) : '')
-           . ($data['volume'] ? "&volume=" . urlencode($data['volume']) : '')
-           . ($data['start_page'] ? "&spage=" . urlencode($data['start_page']) : '');
-    
-    if (!($result = @simplexml_load_file($url)->query_result->body->query)) {
-      report_warning("Error loading simpleXML file from CrossRef.");  // @codeCoverageIgnore
-    }  elseif ($result['status'] == 'malformed') {
-      report_warning("Cannot search CrossRef: " . echoable($result->msg)); // @codeCoverageIgnore
-    } elseif ($result["status"]=="resolved") {
-      if (!isset($result->doi) || is_array($result->doi)) return FALSE; // Never seen array, but pays to be paranoid
-      report_info(" Successful!");
-      return $this->add_if_new('doi', $result->doi);
     }
     return FALSE;
   }
@@ -1809,11 +1794,11 @@ final class Template {
     }
     // If we've got this far, the DOI was unproductive or there was no DOI.
 
-    if ($this->has("journal") && $this->has("volume") && $this->has("pages")) {
-      $results = $this->do_pumbed_query(array("journal", "volume", "issue", "pages"));
+    if ($this->has("journal") && $this->has("volume") && ($this->has("pages")|| $this->has("page"))) {
+      $results = $this->do_pumbed_query(array("journal", "volume", "issue", "pages", "page"));
       if ($results[1] == 1) return $results;
     }
-    if ($this->has("title") && ($this->has("author") || $this->has("author") || $this->has("author1") || $this->has("author1"))) {
+    if ($this->has("title") && ($this->has("author") || $this->has("last") || $this->has("author1") || $this->has("last1"))) {
       $results = $this->do_pumbed_query(array("title", "author", "last", "author1", "last1"));
       if ($results[1] == 1) return $results;
       if ($results[1] > 1) {
@@ -1853,12 +1838,15 @@ final class Template {
         'year' =>  'Publication Date',
         'title' =>  'Title',
         'pmid' =>  'PMID',
-        'volume' =>  'Volume',
+        'volume' =>  'Volume'
         ##Text Words [TW] , Title/Abstract [TIAB]
           ## Formatting: YYY/MM/DD Publication Date [DP]
       );
       $key = $key_index[mb_strtolower($term)];
       if ($key && $term && $val = $this->get($term)) {
+        if ($key === "Title" && strpos($val, ':') !== FALSE) {
+          $val = substr($val, 0, strpos($val, ':')); // PubMed searches truncates names at the colon
+        }
         if ($key === "AID") {
            $query .= " AND (" . "\"" . str_replace(array("%E2%80%93", ';'), array("-", '%3B'), $val) . "\"" . "[$key])"; // PMID does not like escaped /s in DOIs, but other characters seem problematic.
         } else {
