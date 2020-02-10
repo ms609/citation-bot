@@ -1695,12 +1695,19 @@ final class Template {
       'title'      => de_wikify($this->get('title')),
       'journal'    => de_wikify($this->get('journal')),
       'author'     => $this->first_surname(),
-      'year'       => $this->year(),
+      'year'       => (int) preg_replace("~([12]\d{3}).*~", "$1", $this->year()),
       'volume'     => $this->get('volume'),
       'start_page' => isset($page_range[1]) ? $page_range[1] : NULL,
       'end_page'   => isset($page_range[2]) ? $page_range[2] : NULL,
       'issn'       => $this->get('issn')
     ];
+
+    if ($data['year'] < 1900 || $data['year'] > (date("Y") + 3)) {
+      $data['year'] = NULL;
+    }
+    if ((int) $data['end_page'] < (int) $data['start_page']) {
+      $data['end_page'] = NULL;
+    }
     
     $novel_data = FALSE;
     foreach ($data as $key => $value) if ($value) {
@@ -1718,8 +1725,8 @@ final class Template {
            . ($data['title'] ? "&atitle=" . urlencode($data['title']) : '')
            . ($data['author'] ? "&aulast=" . urlencode($data['author']) : '')
            . ($data['start_page'] ? "&spage=" . urlencode($data['start_page']) : '')
-           . ($data['end_page'] > $data['start_page'] ? "&epage=" . urlencode($data['end_page']) : '')
-           . ($data['year'] ? "&date=" . urlencode(preg_replace("~([12]\d{3}).*~", "$1", $data['year'])) : '')
+           . ($data['end_page'] ? "&epage=" . urlencode($data['end_page']) : '')
+           . ($data['year'] ? "&date=" . urlencode($data['year']) : '')
            . ($data['volume'] ? "&volume=" . urlencode($data['volume']) : '')
            . ($data['issn'] ? ("&issn=" . $data['issn'])
                             : ($data['journal'] ? "&title=" . urlencode($data['journal']) : ''));
@@ -1742,7 +1749,7 @@ final class Template {
            . ($data['title'] ? "&atitle=" . urlencode($data['title']) : "")
            . ($data['issn'] ? "&issn=" . $data['issn'] 
                             : ($data['journal'] ? "&title=" . urlencode($data['journal']) : ''))
-           . ($data['year'] ? "&date=" . urlencode(preg_replace("~([12]\d{3}).*~", "$1", $data['year'])) : '')
+           . ($data['year'] ? "&date=" . urlencode($data['year']) : '')
            . ($data['volume'] ? "&volume=" . urlencode($data['volume']) : '')
            . ($data['start_page'] ? "&spage=" . urlencode($data['start_page']) : '');
     
