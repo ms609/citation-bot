@@ -1686,9 +1686,11 @@ final class Template {
   }
 
   public function get_doi_from_crossref() {
+      echo "\n DEBUG 1\n";
     if ($this->has('doi')) {
       return TRUE;
     }
+      echo "\n DEBUG 2\n";
     report_action("Checking CrossRef database for doi. ");
     $page_range = $this->page_range();
     $data = [
@@ -1701,18 +1703,18 @@ final class Template {
       'end_page'   => isset($page_range[2]) ? $page_range[2] : NULL,
       'issn'       => $this->get('issn')
     ];
-    
+          echo "\n DEBUG 3\n";
     $novel_data = FALSE;
     foreach ($data as $key => $value) if ($value) {
       if ($this->api_has_not_used('crossref', equivalent_parameters($key))) $novel_data = TRUE;
       $this->record_api_usage('crossref', $key);    
     }
-
+      echo "\n DEBUG 4\n";
     if (!$novel_data) {
       report_info("No new data since last CrossRef search.");
       return FALSE;
     } 
-  
+        echo "\n DEBUG 5\n";
     if ($data['journal'] || $data['issn']) {
       $url = "https://www.crossref.org/openurl/?noredirect=TRUE&pid=" . CROSSREFUSERNAME
            . ($data['title'] ? "&atitle=" . urlencode(de_wikify($data['title'])) : '')
@@ -1723,20 +1725,24 @@ final class Template {
            . ($data['volume'] ? "&volume=" . urlencode($data['volume']) : '')
            . ($data['issn'] ? ("&issn=" . $data['issn'])
                             : ($data['journal'] ? "&title=" . urlencode(de_wikify($data['journal'])) : ''));
+            echo "\n DEBUG 6\n";
       if (!($result = @simplexml_load_file($url)->query_result->body->query)){
         report_warning("Error loading simpleXML file from CrossRef.");  // @codeCoverageIgnore
+              echo "\n DEBUG 7\n";
       } elseif ($result['status'] == 'malformed') {
         report_warning("Cannot search CrossRef: " . echoable($result->msg));  // @codeCoverageIgnore
+              echo "\n DEBUG 8\n";
       } elseif ($result["status"] == "resolved") {
-      echo "\nDEGUG 2\n";
+      echo "\n DEBUG 9\n";
         if (!isset($result->doi) || is_array($result->doi)) return FALSE; // Never seen array, but pays to be paranoid
         report_info(" Successful!");
+              echo "\n DEBUG 10\n";
         return $this->add_if_new('doi', $result->doi);
       }
     }
-    
+          echo "\n DEBUG 11\n";
     if ( !$data['author'] || !($data['journal'] || $data['issn']) || !$data['start_page'] ) return FALSE;
-    
+          echo "\n DEBUG 12\n";
     // If fail, try again with fewer constraints...
     report_info("Full search failed. Dropping author & end_page... ");
     $url = "https://www.crossref.org/openurl/?noredirect=TRUE&pid=" . CROSSREFUSERNAME
@@ -1746,17 +1752,21 @@ final class Template {
            . ($data['year'] ? "&date=" . urlencode(preg_replace("~([12]\d{3}).*~", "$1", $data['year'])) : '')
            . ($data['volume'] ? "&volume=" . urlencode($data['volume']) : '')
            . ($data['start_page'] ? "&spage=" . urlencode($data['start_page']) : '');
-    
+          echo "\n DEBUG 13\n";
     if (!($result = @simplexml_load_file($url)->query_result->body->query)) {
+            echo "\n DEBUG 15\n";
       report_warning("Error loading simpleXML file from CrossRef.");  // @codeCoverageIgnore
     }  elseif ($result['status'] == 'malformed') {
+            echo "\n DEBUG 16\n";
       report_warning("Cannot search CrossRef: " . echoable($result->msg)); // @codeCoverageIgnore
     } elseif ($result["status"]=="resolved") {
-      echo "\nDEGUG 1\n";
+      echo "\n DEBUG 17\n";
       if (!isset($result->doi) || is_array($result->doi)) return FALSE; // Never seen array, but pays to be paranoid
       report_info(" Successful!");
+            echo "\n DEBUG 18\n";
       return $this->add_if_new('doi', $result->doi);
     }
+          echo "\n DEBUG 19\n";
     return FALSE;
   }
 
