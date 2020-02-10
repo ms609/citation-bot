@@ -13,7 +13,7 @@ final class apiFunctionsTest extends testBaseClass {
        '1966Natur.211..116M', // 3
        '1995Sci...267...77R', // 4
        '1995Geo....23..967E', // 5
-       '2003...............', // 6 - book - bogus to test year only code
+       '2003....book.......', // 6 - book - bogus to test year only code
        '2000A&A...361..952H', // 7 - & symbol
        '1995astro.ph..8159B', // 8 - arxiv
        '1932Natur.129Q..18.', // 9 - dot end
