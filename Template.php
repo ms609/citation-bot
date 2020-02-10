@@ -1726,6 +1726,7 @@ final class Template {
            . ($data['issn'] ? ("&issn=" . $data['issn'])
                             : ($data['journal'] ? "&title=" . urlencode(de_wikify($data['journal'])) : ''));
             echo "\n DEBUG 6\n";
+      echo $url;
       if (!($result = @simplexml_load_file($url)->query_result->body->query)){
         report_warning("Error loading simpleXML file from CrossRef.");  // @codeCoverageIgnore
               echo "\n DEBUG 7\n";
