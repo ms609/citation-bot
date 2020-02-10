@@ -3215,10 +3215,11 @@ T1 - This is the Title }}';
   }
  
    public function testTidy74() {
-    $text = "{{cite web|url=http://proquest.umi.com/pqdweb?did=1100578721&sid=3&Fmt=3&clientId=3620&RQT=309&VName=PQD}}";
+    $text = "{{cite web|url=http://proquest.umi.com/pqdweb?did=1100578721&sid=3&Fmt=3&clientId=3620&RQT=309&VName=PQD|id=Proquest Document ID 1100578721}}";
     $template = $this->make_citation($text);
     $template->tidy_parameter('url');
     $this->assertSame('https://search.proquest.com/docview/434365733', $template->get('url'));
+    $this->assertNull($template->get('id'));
    }
 
   public function testIncomplete() {
