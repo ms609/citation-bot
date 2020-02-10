@@ -2462,11 +2462,13 @@ final class Template {
             preg_match("~^https?://www.ncbi.nlm.nih.gov/.*pubmed/~", $oa_url)) {
            return 'duplicate';
         }
+        // @codeCoverageIgnoreStart
         if($this->has('doi') &&
             preg_match("~^https?://doi\.library\.ubc\.ca/|^https?://(?:dx\.|)doi\.org/~", $oa_url))
             {
-            return 'publisher';
+            return 'publisher';  // This should be found above and be listed as location=publisher
         }
+        // @codeCoverageIgnoreEnd
         if ($this->has('hdl') ) {
           if (stripos($oa_url, $this->get('hdl')) !== FALSE) return 'have free';
           if (stripos($oa_url, 'hdl.handle.net') !== FALSE) return 'have free';
@@ -2474,7 +2476,7 @@ final class Template {
             if (preg_match('~^https?://' . str_replace('.', '\.', $hosts) . '(/.+)$~', $url, $matches)) {
               $handle1 = $matches[1];
               foreach (HANDLES_PATHS as $handle_path) {
-                if (preg_match('~^' . $handle_path . '(.+)$~', $handle1)) return 'publisher';
+                if (preg_match('~^' . $handle_path . '(.+)$~', $handle1)) return 'have free';
               }
               break;
             }
