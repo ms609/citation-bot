@@ -1813,7 +1813,7 @@ final class Template {
       $results = $this->do_pumbed_query(array("journal", "volume", "issue", "pages"));
       if ($results[1] == 1) return $results;
     }
-    if ($this->has("title") && ($this->has("author") || $this->has("author") || $this->has("author1") || $this->has("author1"))) {
+    if ($this->has("title") && ($this->has("author") || $this->has("last") || $this->has("author1") || $this->has("last1"))) {
       $results = $this->do_pumbed_query(array("title", "author", "last", "author1", "last1"));
       if ($results[1] == 1) return $results;
       if ($results[1] > 1) {
