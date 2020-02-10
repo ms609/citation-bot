@@ -1719,7 +1719,7 @@ final class Template {
       report_info("No new data since last CrossRef search.");
       return FALSE;
     } 
-  
+    // They already allow some fuzziness in matches
     if ($data['journal'] || $data['issn']) {
       $url = "https://www.crossref.org/openurl/?noredirect=TRUE&pid=" . CROSSREFUSERNAME
            . ($data['title'] ? "&atitle=" . urlencode($data['title']) : '')
@@ -1739,28 +1739,6 @@ final class Template {
         report_info(" Successful!");
         return $this->add_if_new('doi', $result->doi);
       }
-    }
-    
-    if ( !$data['author'] || !($data['journal'] || $data['issn']) || !$data['start_page'] ) return FALSE;
-    
-    // If fail, try again with fewer constraints...
-    report_info("Full search failed. Dropping author & end_page... ");
-    $url = "https://www.crossref.org/openurl/?noredirect=TRUE&pid=" . CROSSREFUSERNAME
-           . ($data['title'] ? "&atitle=" . urlencode($data['title']) : "")
-           . ($data['issn'] ? "&issn=" . $data['issn'] 
-                            : ($data['journal'] ? "&title=" . urlencode($data['journal']) : ''))
-           . ($data['year'] ? "&date=" . urlencode($data['year']) : '')
-           . ($data['volume'] ? "&volume=" . urlencode($data['volume']) : '')
-           . ($data['start_page'] ? "&spage=" . urlencode($data['start_page']) : '');
-    
-    if (!($result = @simplexml_load_file($url)->query_result->body->query)) {
-      report_warning("Error loading simpleXML file from CrossRef.");  // @codeCoverageIgnore
-    }  elseif ($result['status'] == 'malformed') {
-      report_warning("Cannot search CrossRef: " . echoable($result->msg)); // @codeCoverageIgnore
-    } elseif ($result["status"]=="resolved") {
-      if (!isset($result->doi) || is_array($result->doi)) return FALSE; // Never seen array, but pays to be paranoid
-      report_info(" Successful!");
-      return $this->add_if_new('doi', $result->doi);
     }
     return FALSE;
   }
