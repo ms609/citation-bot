@@ -1838,12 +1838,15 @@ final class Template {
         'year' =>  'Publication Date',
         'title' =>  'Title',
         'pmid' =>  'PMID',
-        'volume' =>  'Volume',
+        'volume' =>  'Volume'
         ##Text Words [TW] , Title/Abstract [TIAB]
           ## Formatting: YYY/MM/DD Publication Date [DP]
       );
       $key = $key_index[mb_strtolower($term)];
       if ($key && $term && $val = $this->get($term)) {
+        if ($key === "Title" && strpos($val, ':') !== FALSE) {
+          $val = substr($val, 0, strpos($val, ':')); // PubMed searches truncates names at the colon
+        }
         if ($key === "AID") {
            $query .= " AND (" . "\"" . str_replace(array("%E2%80%93", ';'), array("-", '%3B'), $val) . "\"" . "[$key])"; // PMID does not like escaped /s in DOIs, but other characters seem problematic.
         } else {
