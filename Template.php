@@ -1766,8 +1766,10 @@ final class Template {
                    return;
                  }
                }
+               // @codeCoverageIgnoreStart
                report_inline("Similar matching pubmed title not similar enough.  Rejected: " . pubmed_link('pmid', $results[0]));
                return;
+               // @codeCoverageIgnoreEnd
            }
         }
       }
@@ -2431,8 +2433,7 @@ final class Template {
         $oa_url = @$best_location->url_for_landing_page ? @$best_location->url_for_landing_page : @$best_location->url;
         if (!$oa_url) return 'nothing';
 
-        if (stripos($oa_url, 'citeseerx.ist.psu.edu') !== FALSE) return FALSE; //is currently blacklisted due to copyright concerns
-        if (stripos($oa_url, 'semanticscholar.org') !== FALSE) return FALSE;  // Limit semanticscholar to licenced only - use API call instead
+        if (stripos($oa_url, 'semanticscholar.org') !== FALSE) return 'semanticscholar';  // Limit semanticscholar to licenced only - use API call instead
         if ($this->get('url')) {
             if ($this->get('url') !== $oa_url) $this->get_identifiers_from_url($oa_url);  // Maybe we can get a new link type
             return 'have url';
@@ -2445,20 +2446,30 @@ final class Template {
         if (stripos($oa_url, 'biodiversitylibrary') !== FALSE) return 'publisher';
         if (stripos($oa_url, 'orbit.dtu.dk/en/publications') !== FALSE) return 'nothing'; // Abstract only
         // Check if best location is already linked -- avoid double links
-        if (preg_match("~^https?://europepmc\.org/articles/pmc(\d+)~", $oa_url, $match) || preg_match("~^https?://www\.pubmedcentral\.nih\.gov/articlerender.fcgi\?.*\bartid=(\d+)"
-                      . "|^https?://www\.ncbi\.nlm\.nih\.gov/(?:m/)?pmc/articles/PMC(\d+)~", $oa_url, $match)) {
-          if ($this->has('pmc') ) {
-             return 'duplicate';
-          }
+        if(($this->has('pmc') &&
+             preg_match("~^https?://europepmc\.org/articles/pmc\d+"
+                      . "|^https?://www\.pubmedcentral\.nih\.gov/articlerender.fcgi\?.*\bartid=\d+"
+                      . "|^https?://www\.ncbi\.nlm\.nih\.gov/(?:m/)?pmc/articles/PMC\d+~", $oa_url))
+         ||($this->has('arxiv') &&
+            preg_match("~arxiv\.org/~", $oa_url))
+         ||($this->has('eprint') &&
+            preg_match("~arxiv\.org/~", $oa_url))
+         ||($this->has('citeseerx') &&
+            preg_match("~citeseerx\.ist\.psu\.edu~", $oa_url))
+         ||($this->has('bibcode') &&
+            preg_match(REGEXP_BIBCODE, urldecode($oa_url))
+         ||($this->has('pmid') &&
+            preg_match("~^https?://www.ncbi.nlm.nih.gov/.*pubmed/~", $oa_url)) {
+           return 'duplicate';
         }
-        if (preg_match("~\barxiv\.org/.*(?:pdf|abs)/(.+)$~", $oa_url, $match)) {
-          if ($this->has('arxiv') || $this->has('eprint')) {
-             return 'duplicate';
-          }
+        if($this->has('doi') &&
+            preg_match("~^https?://doi\.library\.ubc\.ca/|^https?://(?:dx\.|)doi\.org/~", $oa_url))
+            {
+            return 'publisher';
         }
         if ($this->has('hdl') ) {
-          if (stripos($oa_url, $this->get('hdl')) !== FALSE) return 'publisher';
-          if (stripos($oa_url, 'hdl.handle.net') !== FALSE) return 'publisher';
+          if (stripos($oa_url, $this->get('hdl')) !== FALSE) return 'have free';
+          if (stripos($oa_url, 'hdl.handle.net') !== FALSE) return 'have free';
           foreach (HANDLES_HOSTS as $hosts) {
             if (preg_match('~^https?://' . str_replace('.', '\.', $hosts) . '(/.+)$~', $url, $matches)) {
               $handle1 = $matches[1];
@@ -2467,31 +2478,6 @@ final class Template {
               }
               break;
             }
-          }
-        }
-        if (strpos($oa_url, 'citeseerx.ist.psu.edu') !== false) {
-          if ($this->has('citeseerx') ) {
-             return 'duplicate';
-          }
-        }
-        if (preg_match(REGEXP_BIBCODE, urldecode($oa_url), $bibcode)) {
-           if ($this->has('bibcode')) {
-             return 'duplicate';
-          }
-        }
-        if (preg_match("~^https?://www.ncbi.nlm.nih.gov/(?:m/)?pubmed/.*?=?(\d+)~", $oa_url, $match)) {
-          if ($this->has('pmid')) {
-             return 'duplicate';
-          }
-        }
-        if (preg_match("~^https?://(?:dx\.|)doi\.org/*~", $oa_url, $match)) {
-          if ($this->has('doi')) {
-             return 'publisher';
-          }
-        }
-        if (preg_match("~^https?://doi\.library\.ubc\.ca/*~", $oa_url, $match)) {
-          if ($this->has('doi')) {
-             return 'publisher';
           }
         }
 
@@ -2506,7 +2492,7 @@ final class Template {
             ($this->has('osti') && $this->get('osti-access') === 'free') ||
             ($this->has('ol') && $this->get('ol-access') === 'free')
            ) return 'have free'; // do not add url if have OA already
-        
+        if (stripos($oa_url, 'citeseerx.ist.psu.edu') !== FALSE) return 'citeseerx'; //is currently blacklisted due to copyright concerns
         $this->add_if_new('url', $oa_url);  // Will check for PMCs etc hidden in URL
         if ($this->has('url')) {  // The above line might have eaten the URL and upgraded it
           $headers_test = @get_headers($this->get('url'), 1);
