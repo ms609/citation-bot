@@ -3525,26 +3525,27 @@ final class Template {
           return;
           
         case 'journal':
+        case 'periodical':
           if ($this->blank($param)) return;
-          if (preg_match('~^(|[a-zA-Z0-9][a-zA-Z0-9]+\.)([a-zA-Z0-9][a-zA-Z0-9][a-zA-Z0-9]+)\.(org|net|com)$~', $this->get($param))) {
-            $this->rename($param, 'website');
+          $periodical = trim($this->get($param));
+          if (preg_match('~^(|[a-zA-Z0-9][a-zA-Z0-9]+\.)([a-zA-Z0-9][a-zA-Z0-9][a-zA-Z0-9]+)\.(org|net|com)$~', $periodical)) {
+            if ($this->blank('website')) $this->rename($param, 'website');
             return;
           }
-          if ($this->blank(['chapter', 'isbn'])) {
-            // Avoid renaming between cite journal and cite book
-            $this->change_name_to('cite journal');
-          }
-          if (str_equivalent($this->get($param), $this->get('work'))) $this->forget('work');
-          // No break here: Continue on from journal into periodical
-        case 'periodical':
-          $periodical = trim($this->get($param));
           if (substr(strtolower($periodical), 0, 7) === 'http://' || substr(strtolower($periodical), 0, 8) === 'https://') {
              if ($this->blank('url')) $this->rename($param, 'url');
              return;
-          } elseif (substr(strtolower($periodical), 0, 4) === 'www.') {
+          }
+          if (substr(strtolower($periodical), 0, 4) === 'www.') {
              if ($this->blank('website')) $this->rename($param, 'website');
              return;
-          } elseif ( mb_substr($periodical, 0, 2) !== "[["   // Only remove partial wikilinks
+          }
+          if (str_equivalent($periodical, $this->get('work'))) $this->forget('work');
+          if ($param = 'journal' && $this->blank(['chapter', 'isbn'])) {
+            // Avoid renaming between cite journal and cite book
+            $this->change_name_to('cite journal');
+          }
+          if ( mb_substr($periodical, 0, 2) !== "[["   // Only remove partial wikilinks
                     || mb_substr($periodical, -2) !== "]]"
                     || mb_substr_count($periodical, '[[') !== 1 
                     || mb_substr_count($periodical, ']]') !== 1
