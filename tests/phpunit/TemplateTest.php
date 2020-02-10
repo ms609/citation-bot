@@ -1013,6 +1013,12 @@ final class TemplateTest extends testBaseClass {
     $expanded = $this->process_citation($text);
     $this->assertNull($expanded->get('url'));
   }
+
+  public function testOpenAccessLookup5() {  
+    $text = '{{Cite journal | doi = 10.5260/chara.18.3.53}}';
+    $expanded = $this->process_citation($text);
+    $this->assertSame('10393/35779', $expanded->get('hdl'));
+  }
  
   public function testSemanticScholar() {
    $text = "{{cite journal|doi=10.5555/555555}}";
