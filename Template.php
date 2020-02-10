@@ -1836,21 +1836,27 @@ final class Template {
         'page' =>  'Pagination',
         'date' =>  'Publication Date',
         'year' =>  'Publication Date',
-        'title' =>  'Title',
         'pmid' =>  'PMID',
         'volume' =>  'Volume'
         ##Text Words [TW] , Title/Abstract [TIAB]
           ## Formatting: YYY/MM/DD Publication Date [DP]
       );
-      $key = $key_index[mb_strtolower($term)];
-      if ($key && $term && $val = $this->get($term)) {
-        if ($key === "Title" && strpos($val, ':') !== FALSE) {
-          $val = substr($val, 0, strpos($val, ':')); // PubMed searches truncates names at the colon
+      if ($term === "title" $this->has('title')) {
+        $key = 'Title';
+        $data = $this->get('title');
+        $data = str_replace([';',',',':','.','    ','   ', '  '], [' ',' ',' ',' ',' ', ' ', ' '], $data);
+        $data_array = explode(" ", $data);
+        foreach ($data_array as $val) {
+            $query .= " AND (" . "\"" . str_replace("%E2%80%93", "-", urlencode($val)) . "\"" . "[$key])";
         }
-        if ($key === "AID") {
-           $query .= " AND (" . "\"" . str_replace(array("%E2%80%93", ';'), array("-", '%3B'), $val) . "\"" . "[$key])"; // PMID does not like escaped /s in DOIs, but other characters seem problematic.
-        } else {
-           $query .= " AND (" . "\"" . str_replace("%E2%80%93", "-", urlencode($val)) . "\"" . "[$key])";
+      } else {
+        $key = $key_index[mb_strtolower($term)];
+        if ($key && $term && $val = $this->get($term)) {
+          if ($key === "AID") {
+             $query .= " AND (" . "\"" . str_replace(array("%E2%80%93", ';'), array("-", '%3B'), $val) . "\"" . "[$key])"; // PMID does not like escaped /s in DOIs, but other characters seem problematic.
+          } else {
+             $query .= " AND (" . "\"" . str_replace("%E2%80%93", "-", urlencode($val)) . "\"" . "[$key])";
+          }
         }
       }
     }
