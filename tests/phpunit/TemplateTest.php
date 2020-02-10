@@ -4391,13 +4391,6 @@ T1 - This is the Title }}';
      $this->assertSame('10.1175/1525-7541(2003)004<1147:TVGPCP>2.0.CO;2', $template->get('doi'));
   }
  
-  public function testGetPMIDwitNoDOIorJournal() {  // Also has evil colon in the name
-      $text = '{{cite journal|title=ISiCLE: A Quantum Chemistry Pipeline for Establishing in Silico Collision Cross Section Libraries|volume=91|issue=7|pages=4346 |year=2019|last1=Colby}}';
-      $template = $this->make_citation($text);
-      $template->find_pmid();
-      $this->assertSame('30741529', $template->get('pmid'));
-  }
- 
   public function testOxfordTemplate() {
      $text = '{{cite web |last1=Courtney |first1=W. P. |last2=Hinings |first2=Jessica |title=Woodley, George (bap. 1786, d. 1846) |url=https://doi.org/10.1093/ref:odnb/29929 |website=Oxford Dictionary of National Biography |publisher=Oxford University Press |accessdate=12 September 2019}}';
      $template = $this->process_citation($text);
