@@ -8,44 +8,62 @@ require_once __DIR__ . '/../testBaseClass.php';
  
 final class PageTest extends testBaseClass {
 
-  public function testPageChangeSummary() {
+  public function testPageChangeSummary1() {
       $page = $this->process_page('{{cite journal|chapter=chapter name|title=book name}}'); // Change to book from journal
       $this->assertSame('Alter: template type. | You can [[WP:UCB|use this bot]] yourself. [[WP:DBUG|Report bugs here]]. ', $page->edit_summary());
+  }
+
+  public function testPageChangeSummary2() {
       $page = $this->process_page('{{cite book||quote=a quote}}'); // Just lose extra pipe
       $this->assertSame('Misc citation tidying. | You can [[WP:UCB|use this bot]] yourself. [[WP:DBUG|Report bugs here]]. ', $page->edit_summary());
+  }
+
+  public function testPageChangeSummary31() {
       $page = $this->process_page('<ref>http://onlinelibrary.wiley.com/doi/10.1111/j.1475-4983.2012.01203.x</ref>');
       $this->assertFalse(strpos($page->parsed_text(), 'onlinelibrary.wiley.com')); // URL is gone
       $this->assertSame('Alter: template type. Add: year, pages, issue, volume, journal, title, doi, author pars. 1-2. Removed URL that duplicated unique identifier. Converted bare reference to cite template. Formatted [[WP:ENDASH|dashes]]. | You can [[WP:UCB|use this bot]] yourself. [[WP:DBUG|Report bugs here]]. ', $page->edit_summary());                
+  }
+
+  public function testPageChangeSummary4() {
       $page = $this->process_page('{{cite web|<!-- comment --> journal=Journal Name}}'); // Comment BEFORE parameter
       $this->assertSame('Alter: template type. | You can [[WP:UCB|use this bot]] yourself. [[WP:DBUG|Report bugs here]]. ', $page->edit_summary());
       $this->assertSame('{{cite journal|<!-- comment --> journal=Journal Name}}', $page->parsed_text());
+  }
+
+  public function testPageChangeSummary5() {
       $page = $this->process_page('{{cite web|journal<!-- comment -->=Journal Name}}'); // Comment AFTER parameter
       $this->assertSame('Alter: template type. | You can [[WP:UCB|use this bot]] yourself. [[WP:DBUG|Report bugs here]]. ', $page->edit_summary());
       $this->assertSame('{{cite journal|journal<!-- comment -->=Journal Name}}', $page->parsed_text());
+  }
+
+  public function testPageChangeSummary6() {
       $page = $this->process_page('{{cite book|url=http://fake.url/|chapter=Chap|title=Title}}');
       $this->assertSame('{{cite book|chapter-url=http://fake.url/|chapter=Chap|title=Title}}', $page->parsed_text());
       $this->assertSame('Add: chapter-url. Removed or converted URL. Some additions/deletions were actually parameter name changes. | You can [[WP:UCB|use this bot]] yourself. [[WP:DBUG|Report bugs here]]. ', $page->edit_summary());
+  }
+
+  public function testPageChangeSummary7() {
       $page = $this->process_page('{{cite news|url=http://zbmath.org/?format=complete&q=an:1111.22222}}'); // Very little done to cite news
       $this->assertSame('Add: zbl. Removed URL that duplicated unique identifier. | You can [[WP:UCB|use this bot]] yourself. [[WP:DBUG|Report bugs here]]. ', $page->edit_summary());
   }
  
-  public function testPageChangeSummary2() {
+  public function testPageChangeSummary8() {
       $page = $this->process_page('{{cite journal|chapter-url=https://mathscinet.ams.org/mathscinet-getitem?mr=1234|title=mr=1234}}');
       $this->assertSame('{{cite journal|title=mr=1234|mr = 1234}}', $page->parsed_text());
       $this->assertSame('Add: mr. Removed URL that duplicated unique identifier. | You can [[WP:UCB|use this bot]] yourself. [[WP:DBUG|Report bugs here]]. ', $page->edit_summary());
   }
-  public function testPageChangeSummary2a() {
+  public function testPageChangeSummary9() {
       $page = $this->process_page('{{cite journal|chapterurl=https://mathscinet.ams.org/mathscinet-getitem?mr=1234|title=mr=1234}}');
       $this->assertSame('{{cite journal|title=mr=1234|mr = 1234}}', $page->parsed_text());
       $this->assertSame('Add: mr. Removed URL that duplicated unique identifier. | You can [[WP:UCB|use this bot]] yourself. [[WP:DBUG|Report bugs here]]. ', $page->edit_summary());
   }
    
-  public function testPageChangeSummary3() {
+  public function testPageChangeSummary10() {
       $page = $this->process_page('{{cite journal|distribution-url=https://mathscinet.ams.org/mathscinet-getitem?mr=1234|title=mr=1234}}');
       $this->assertSame('Add: contribution-url. Removed parameters. | You can [[WP:UCB|use this bot]] yourself. [[WP:DBUG|Report bugs here]]. ', $page->edit_summary());
   }
  
-  public function testPageChangeSummary4() {
+  public function testPageChangeSummary11() {
       $page = $this->process_page('{{cite journal|accessdate=12 Nov 2000}}');
       $this->assertSame('Removed accessdate with no specified URL. | You can [[WP:UCB|use this bot]] yourself. [[WP:DBUG|Report bugs here]]. ', $page->edit_summary());
   }
