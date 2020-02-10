@@ -2386,7 +2386,7 @@ final class Template {
   }
 
   public function get_semanticscholar_url($doi) {
-        if ($this->has('arxiv') ||
+   if ($this->has('arxiv') ||
             $this->has('biorxiv') ||
             $this->has('citeseerx') ||
             $this->has('pmc') ||
@@ -2396,17 +2396,16 @@ final class Template {
             ($this->has('jstor') && $this->get('jstor-access') === 'free') ||
             ($this->has('osti') && $this->get('osti-access') === 'free') ||
             ($this->has('ol') && $this->get('ol-access') === 'free')
-           ) return TRUE; // do not add url if have OA already
+           ) return; // do not add url if have OA already
     $url = "https://api.semanticscholar.org/v1/paper/$doi";
     $json = @file_get_contents($url);
     if ($json) {
       $oa = @json_decode($json);
       if ($oa !== FALSE && isset($oa->url) && isset($oa->is_publisher_licensed) && $oa->is_publisher_licensed) {
         $this->add_if_new('url', $oa->url);
-        return TRUE;
+        return;
       }
     }
-    return FALSE;
   }
 
   public function get_unpaywall_url($doi) {
