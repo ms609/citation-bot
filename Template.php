@@ -1841,13 +1841,17 @@ final class Template {
         ##Text Words [TW] , Title/Abstract [TIAB]
           ## Formatting: YYY/MM/DD Publication Date [DP]
       );
-      if ($term === "title" && $this->has('title')) {
+      if (mb_strtolower($term) === "title" && $this->has('title')) {
         $key = 'Title';
         $data = $this->get('title');
-        $data = str_replace([';',',',':','.','    ','   ', '  '], [' ',' ',' ',' ',' ', ' ', ' '], $data);
+        $data = str_replace([';', ',', ':', '.', '?', '!', '&', '/'], [' ',' ',' ',' ',' ',' ',' ',' '], $data);
         $data_array = explode(" ", $data);
         foreach ($data_array as $val) {
-            $query .= " AND (" . "\"" . str_replace("%E2%80%93", "-", urlencode($val)) . "\"" . "[$key])";
+          if (!in_array(strtolower($val), array('the', 'and', 'a', 'for', 'in', 'on',
+                                                'an', 'as', 'at', 'and', 'but', 'how',
+                                                'why', 'by', 'when', 'with', 'who', 'where', ''))) {  // Small words are NOT indexed
+            $query .= " AND (" . str_replace("%E2%80%93", "-", urlencode($val)) . "[$key])";
+          }
         }
       } else {
         $key = $key_index[mb_strtolower($term)];
@@ -1855,7 +1859,7 @@ final class Template {
           if ($key === "AID") {
              $query .= " AND (" . "\"" . str_replace(array("%E2%80%93", ';'), array("-", '%3B'), $val) . "\"" . "[$key])"; // PMID does not like escaped /s in DOIs, but other characters seem problematic.
           } else {
-             $query .= " AND (" . "\"" . str_replace("%E2%80%93", "-", urlencode($val)) . "\"" . "[$key])";
+             $query .= " AND (" . str_replace("%E2%80%93", "-", urlencode($val)) . "[$key])";
           }
         }
       }
@@ -2386,7 +2390,7 @@ final class Template {
   }
 
   public function get_semanticscholar_url($doi) {
-        if ($this->has('arxiv') ||
+   if ($this->has('arxiv') ||
             $this->has('biorxiv') ||
             $this->has('citeseerx') ||
             $this->has('pmc') ||
@@ -2396,17 +2400,16 @@ final class Template {
             ($this->has('jstor') && $this->get('jstor-access') === 'free') ||
             ($this->has('osti') && $this->get('osti-access') === 'free') ||
             ($this->has('ol') && $this->get('ol-access') === 'free')
-           ) return TRUE; // do not add url if have OA already
+           ) return; // do not add url if have OA already
     $url = "https://api.semanticscholar.org/v1/paper/$doi";
     $json = @file_get_contents($url);
     if ($json) {
       $oa = @json_decode($json);
       if ($oa !== FALSE && isset($oa->url) && isset($oa->is_publisher_licensed) && $oa->is_publisher_licensed) {
         $this->add_if_new('url', $oa->url);
-        return TRUE;
+        return;
       }
     }
-    return FALSE;
   }
 
   public function get_unpaywall_url($doi) {
