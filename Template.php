@@ -1841,21 +1841,25 @@ final class Template {
         ##Text Words [TW] , Title/Abstract [TIAB]
           ## Formatting: YYY/MM/DD Publication Date [DP]
       );
-      if ($term === "title" && $this->has('title')) {
+      if (mb_strtolower($term) === "title" && $this->has('title')) {
         $key = 'Title';
         $data = $this->get('title');
-        $data = str_replace([';',',',':','.','    ','   ', '  '], [' ',' ',' ',' ',' ', ' ', ' '], $data);
+        $data = str_replace([';', ',', ':', '.', '?', '!', '&', '/'], [' ',' ',' ',' ',' ',' ',' ',' '], $data);
         $data_array = explode(" ", $data);
         foreach ($data_array as $val) {
-            $query .= " AND (" . "\"" . str_replace("%E2%80%93", "-", urlencode($val)) . "\"" . "[$key])";
+          if (!in_array(strtolower($val), array('the', 'and', 'a', 'for', 'in', 'on',
+                                                'an', 'as', 'at', 'and', 'but', 'how',
+                                                'why', 'by', 'when', 'with', '')) {  // Small words are NOT indexed
+            $query .= " AND (" . str_replace("%E2%80%93", "-", urlencode($val)) . "[$key])";
+          }
         }
       } else {
         $key = $key_index[mb_strtolower($term)];
         if ($key && $term && $val = $this->get($term)) {
           if ($key === "AID") {
              $query .= " AND (" . "\"" . str_replace(array("%E2%80%93", ';'), array("-", '%3B'), $val) . "\"" . "[$key])"; // PMID does not like escaped /s in DOIs, but other characters seem problematic.
-          } else {
-             $query .= " AND (" . "\"" . str_replace("%E2%80%93", "-", urlencode($val)) . "\"" . "[$key])";
+          }
+             $query .= " AND (" . str_replace("%E2%80%93", "-", urlencode($val)) . "[$key])";
           }
         }
       }
