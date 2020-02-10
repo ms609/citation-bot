@@ -2414,7 +2414,7 @@ T1 - This is the Title }}';
     $this->assertSame('9', $prepared->get('volume'));
   }
 
-   public function testVolumeIssueDemixing19() {
+   public function testVolumeIssueDemixing20() {
     $text = '{{cite journal|issue = number 333XV }}';
     $prepared = $this->prepare_citation($text);
     $this->assertSame('333XV', $prepared->get('issue'));
