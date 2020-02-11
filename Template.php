@@ -4499,7 +4499,8 @@ final class Template {
       report_inline("It's not...");
       $this->add_if_new('doi-broken-date', date("Y-m-d"));
       return FALSE;
-    } else { // Only get to this code if we got NULL earlier and now suddenly get OK
+    } else {
+      // Only get to this code if we got NULL earlier and now suddenly get OK
       // @codeCoverageIgnoreStart
       foreach (DOI_BROKEN_ALIASES as $alias) $this->forget($alias);
       $this->doi_valid = TRUE;
