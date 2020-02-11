@@ -1030,7 +1030,7 @@ final class TemplateTest extends testBaseClass {
     $text = '{{Cite journal | doi = 10.5260/chara.18.3.53|hdl=10393/XXXXXX}}'; 
     $expanded = $this->process_citation($text);
     $this->assertSame('10393/XXXXXX', $expanded->get('hdl')); // This basically runs through a bunch of code to return 'have free'
-    $this->assertNull($template->get('url'));
+    $this->assertNull($expanded->get('url'));
   }
 
   public function testSemanticScholar() {
