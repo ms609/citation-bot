@@ -2458,18 +2458,19 @@ final class Template {
             preg_match("~citeseerx\.ist\.psu\.edu~", $oa_url))) {
            return 'have free';
         }
-        // Check if best location is already linked -- avoid double links
+        // @codeCoverageIgnoreStart
+        // These are not generally full-text.  Will probably never see
         if(($this->has('bibcode') &&
             preg_match(REGEXP_BIBCODE, urldecode($oa_url)))
          ||($this->has('pmid') &&
             preg_match("~^https?://www.ncbi.nlm.nih.gov/.*pubmed/~", $oa_url))) {
-           return 'duplicate';
+           return 'probably not free';
         }
-        // @codeCoverageIgnoreStart
+        // This should be found above when listed as location=publisher
         if($this->has('doi') &&
             preg_match("~^https?://doi\.library\.ubc\.ca/|^https?://(?:dx\.|)doi\.org/~", $oa_url))
             {
-            return 'publisher';  // This should be found above and be listed as location=publisher
+            return 'publisher';
         }
         // @codeCoverageIgnoreEnd
         if (preg_match('~^https?://hdl\.handle\.net/(\d{2,}.*/.+)$~', $oa_url, $matches)) {  // Normalize Handle URLs
@@ -2483,7 +2484,6 @@ final class Template {
               foreach (HANDLES_PATHS as $handle_path) {
                 if (preg_match('~^' . $handle_path . '(.+)$~', $handle1)) return 'have free';
               }
-              break;
             }
           }
         }
@@ -4433,6 +4433,8 @@ final class Template {
     if ($this->doi_valid) return TRUE;
     report_info("Checking that DOI " . echoable($doi) . " is operational...");
 
+    $trial = array();
+    $trial[] = $doi;
     // DOI not correctly formatted
     switch (substr($doi, -1)) {
       case ".":
@@ -4459,11 +4461,7 @@ final class Template {
     if (preg_match("~&[lg]t;~", $doi)) {
       $trial[] = str_replace(array_keys($replacements), $replacements, $doi);
     }
-    if (isset($trial) && !in_array($doi, $trial) && preg_match("~^10\.\d{4,6}/.~", trim($doi))) {
-      array_unshift($trial, $doi); // doi:10.1126/science.10.1126/SCIENCE.291.5501.24 is valid, not the subparts
-    }
-    if (isset($trial)) {
-     foreach ($trial as $try) {
+    foreach ($trial as $try) {
       // Check that it begins with 10.
       if (preg_match("~[^/]*(\d{4}/.+)$~", $try, $match)) $try = "10." . $match[1];
       if (doi_active($try)) {
@@ -4477,8 +4475,8 @@ final class Template {
         }
         return TRUE;
       }
-     }
-     foreach ($trial as $try) {
+    }
+    foreach ($trial as $try) {
       // Check that it begins with 10.
       if (preg_match("~[^/]*(\d{4}/.+)$~", $try, $match)) $try = "10." . $match[1];
       if (doi_works($try)) {
@@ -4492,7 +4490,6 @@ final class Template {
         }
         return TRUE;
       }
-     }
     }
     $doi_status = doi_works($doi);
     if ($doi_status === NULL) {
@@ -4503,10 +4500,13 @@ final class Template {
       $this->add_if_new('doi-broken-date', date("Y-m-d"));
       return FALSE;
     } else {
+      // Only get to this code if we got NULL earlier and now suddenly get OK
+      // @codeCoverageIgnoreStart
       foreach (DOI_BROKEN_ALIASES as $alias) $this->forget($alias);
       $this->doi_valid = TRUE;
       report_inline('DOI ok.');
       return TRUE;
+      // @codeCoverageIgnoreEnd
     }
   }
 
