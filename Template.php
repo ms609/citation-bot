@@ -3546,10 +3546,6 @@ final class Template {
              if ($this->blank('website')) $this->rename($param, 'website');
              return;
           }
-          if ($param = 'journal' && $this->blank(['chapter', 'isbn'])) {
-            // Avoid renaming between cite journal and cite book
-            $this->change_name_to('cite journal');
-          }
           if ( mb_substr($periodical, 0, 2) !== "[["   // Only remove partial wikilinks
                     || mb_substr($periodical, -2) !== "]]"
                     || mb_substr_count($periodical, '[[') !== 1 
