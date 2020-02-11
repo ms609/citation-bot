@@ -1962,7 +1962,7 @@ final class Template {
         . ($this->year() ? ("&year:" . urlencode($this->year())) : '')
         . ($this->has('issn') ? ("&issn:" . urlencode($this->get('issn'))) : '')
         . ($this->has('volume') ? ("&volume:" . urlencode('"' . $this->get('volume') . '"')) : '')
-        . ($this->page() ? ("&page:" . urlencode('"' . str_replace(['&mdash;', '--', '&ndash;', '—', '–'], ['-','-','-','-','-'], $this->page()) . '"')) : '')
+        . ($this->page() ? ("&page:" . urlencode('"' . $this->page() . '"')) : '')
       );
       if ($result->numFound == 0) return FALSE;
       if (!isset($result->docs[0]->pub)) return FALSE;
@@ -3264,31 +3264,31 @@ final class Template {
         $this->set($param, preg_replace('~^[:,;](?!:)~u', '', $this->get($param)));  // Remove leading commas, colons, and semi-colons
         $this->set($param, preg_replace('~&#x2013;~u', '&ndash;', $this->get($param)));
         $this->set($param, preg_replace('~&#x2014;~u', '&mdash;', $this->get($param)));
-      }
       
-      // Remove final semi-colon from a few items
-      if ((in_array($param, ['date', 'year', 'location', 'publisher', 'issue', 'number', 'page', 'pages', 'pp', 'p', 'volume']) ||
+        // Remove final semi-colon from a few items
+        if ((in_array($param, ['date', 'year', 'location', 'publisher', 'issue', 'number', 'page', 'pages', 'pp', 'p', 'volume']) ||
            in_array($param, FLATTENED_AUTHOR_PARAMETERS))
           && strpos($this->get($param), '&') === FALSE) {
-        $this->set($param, preg_replace('~;$~u', '', $this->get($param)));
-      }
-      
-      // Remove quotes, if only at start and end -- In the case of title, leave them unless they are messed up
-      if (preg_match("~^([\'\"]+)([^\'\"]+)([\'\"]+)$~u", $this->get($param), $matches)) {
-        if (($matches[1] !== $matches[3]) || ($param !== 'title' && $param !== 'chapter' && $param !== 'publisher')) {
-          $this->set($param, $matches[2]);
+         $this->set($param, preg_replace('~;$~u', '', $this->get($param)));
         }
-      }
+      
+        // Remove quotes, if only at start and end -- In the case of title, leave them unless they are messed up
+        if (preg_match("~^([\'\"]+)([^\'\"]+)([\'\"]+)$~u", $this->get($param), $matches)) {
+          if (($matches[1] !== $matches[3]) || ($param !== 'title' && $param !== 'chapter' && $param !== 'publisher')) {
+            $this->set($param, $matches[2]);
+         }
+        }
 
-      // Non-breaking spaces at ends
-      $this->set($param, trim($this->get($param), " \t\n\r\0\x0B"));
-      while (preg_match("~^&nbsp;(.+)$~u", $this->get($param), $matches)) {
+        // Non-breaking spaces at ends
+        $this->set($param, trim($this->get($param), " \t\n\r\0\x0B"));
+        while (preg_match("~^&nbsp;(.+)$~u", $this->get($param), $matches)) {
           $this->set($param, trim($matches[1], " \t\n\r\0\x0B"));
-      }
-      while (preg_match("~^(.+)&nbsp;$~u", $this->get($param), $matches)) {
+        }
+        while (preg_match("~^(.+)&nbsp;$~u", $this->get($param), $matches)) {
           $this->set($param, trim($matches[1], " \t\n\r\0\x0B"));
+        }
+        $this->set($param, preg_replace('~\x{00AD}~u', '', $this->get($param))); // Remove soft hyphen
       }
-      $this->set($param, preg_replace('~\x{00AD}~u', '', $this->get($param))); // Remove soft hyphen
     }
  
     if (!preg_match('~(\D+)(\d*)~', $param, $pmatch)) {
@@ -4641,8 +4641,13 @@ final class Template {
   }
 
   protected function page() {
-    $page = $this->get('pages');
-    return ($page ? $page : $this->get('page'));
+    if ($this->has('pages')) {
+      $page = $this->get('pages');
+    } else {
+      $page = $this->get('page');
+    }
+    $page = str_replace(['&mdash;', '--', '&ndash;', '—', '–'], ['-','-','-','-','-'], $page);
+    return $page;
   }
   
   protected function year() {

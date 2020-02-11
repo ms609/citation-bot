@@ -42,7 +42,7 @@ const UC_SMALL_WORDS = array(/* The following will be automatically updated to a
 const JOURNAL_ACRONYMS = array(/* The following will be automatically updated to alphabetical order */
           " (BBA) ", " (online ed.) ", " AAPOS ", " AAPS ", " ACS ", " Algebra i Analiz ", 
           " Angew Chem Int Ed ", " APS Division ", " Arch Dis Child Fetal Neonatal Ed ", 
-          " ASAIO ", " ASME AES ", " ASME MTD ", " B/gcvs ", " B/gcvs ", " B/gcvs ", " BioEssays ", 
+          " ASAIO ", " ASME AES ", " ASME MTD ", " Avtomatika i Telemekhanika ", " B/gcvs ", " B/gcvs ", " B/gcvs ", " BioEssays ", 
           " bioRxiv ", " bioRxiv ", " BJOG ", " BMJ ", " CBD Ubiquitin ", " CFSK-DT ", 
           " CMAJ ", " dell'Accademia ", " Drug Des Devel Ther ", " Dtsch ", " Dtsch. ", 
           " e-Journal ", " e-Journal ", " e-Neuroforum ", " e-Neuroforum ", " e-Print ", 
@@ -80,7 +80,7 @@ const JOURNAL_ACRONYMS = array(/* The following will be automatically updated to
 const UCFIRST_JOURNAL_ACRONYMS = array(/* The following will be automatically updated to alphabetical order */ 
           " (Bba) ", " (online Ed.) ", " Aapos ", " Aaps ", " Acs ", " Algebra I Analiz ", 
           " Angew Chem Int ed ", " Aps Division ", " Arch Dis Child Fetal Neonatal ed ", 
-          " Asaio ", " Asme Aes ", " Asme MTD ", " B/GCVS ", " B/Gcvs ", " b/gcvs ", " Bioessays ", 
+          " Asaio ", " Asme Aes ", " Asme MTD ", " Avtomatika I Telemekhanika ", " B/GCVS ", " B/Gcvs ", " b/gcvs ", " Bioessays ", 
           " BioRxiv ", " Biorxiv ", " Bjog ", " Bmj ", " Cbd Ubiquitin ", " CFSK-Dt ", 
           " Cmaj ", " Dell'Accademia ", " Drug des Devel Ther ", " DTSCH ", " DTSCH. ", 
           " E-Journal ", " E-journal ", " E-Neuroforum ", " E-neuroforum ", " E-Print ", 
