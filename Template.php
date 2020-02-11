@@ -1962,7 +1962,7 @@ final class Template {
         . ($this->year() ? ("&year:" . urlencode($this->year())) : '')
         . ($this->has('issn') ? ("&issn:" . urlencode($this->get('issn'))) : '')
         . ($this->has('volume') ? ("&volume:" . urlencode('"' . $this->get('volume') . '"')) : '')
-        . ($this->page() ? ("&page:" . urlencode('"' . str_replace(['&mdash;', '--', '&ndash;', '—', '–'], ['-','-','-','-','-'], $this->page()) . '"')) : '')
+        . ($this->page() ? ("&page:" . urlencode('"' . $this->page() . '"')) : '')
       );
       if ($result->numFound == 0) return FALSE;
       if (!isset($result->docs[0]->pub)) return FALSE;
@@ -4636,8 +4636,13 @@ final class Template {
   }
 
   protected function page() {
-    $page = $this->get('pages');
-    return ($page ? $page : $this->get('page'));
+    if ($this->has('pages')) {
+      $page = $this->get('pages');
+    } else {
+      $page = $this->get('page');
+    }
+    $page = str_replace(['&mdash;', '--', '&ndash;', '—', '–'], ['-','-','-','-','-'], $page);
+    return $page;
   }
   
   protected function year() {
