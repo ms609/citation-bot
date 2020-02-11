@@ -4484,7 +4484,7 @@ final class Template {
         $this->doi_valid = TRUE;
         foreach (DOI_BROKEN_ALIASES as $alias) $this->forget($alias);
         if ($doi == $try) {
-           report_inline('DOI ok.');   // @codeCoverageIgnore
+           report_inline('DOI ok.');
         } else {
            report_info("Modified DOI:  " . echoable($try) . " is operational...");
         }
