@@ -2445,7 +2445,7 @@ final class Template {
         if (stripos($oa_url, 'gateway.isiknowledge.com') !== FALSE) return 'nothing';
         if (stripos($oa_url, 'biodiversitylibrary') !== FALSE) return 'publisher';
         if (stripos($oa_url, 'orbit.dtu.dk/en/publications') !== FALSE) return 'nothing'; // Abstract only
-        // Check if best location is already linked -- avoid double links
+        // Check if free location is already linked
         if(($this->has('pmc') &&
              preg_match("~^https?://europepmc\.org/articles/pmc\d"
                       . "|^https?://www\.pubmedcentral\.nih\.gov/articlerender.fcgi\?.*\bartid=\d"
@@ -2455,8 +2455,11 @@ final class Template {
          ||($this->has('eprint') &&
             preg_match("~arxiv\.org/~", $oa_url))
          ||($this->has('citeseerx') &&
-            preg_match("~citeseerx\.ist\.psu\.edu~", $oa_url))
-         ||($this->has('bibcode') &&
+            preg_match("~citeseerx\.ist\.psu\.edu~", $oa_url))) {
+           return 'have free';
+        }
+        // Check if best location is already linked -- avoid double links
+        if(($this->has('bibcode') &&
             preg_match(REGEXP_BIBCODE, urldecode($oa_url)))
          ||($this->has('pmid') &&
             preg_match("~^https?://www.ncbi.nlm.nih.gov/.*pubmed/~", $oa_url))) {
@@ -2469,11 +2472,13 @@ final class Template {
             return 'publisher';  // This should be found above and be listed as location=publisher
         }
         // @codeCoverageIgnoreEnd
+        if (preg_match('~^https?://hdl\.handle\.net/(\d{2,}.*/.+)$~', $oa_url, $matches)) {  // Normalize Handle URLs
+            $oa_url = 'https://hdl.handle.net/handle/' . $matches[1];  
+        }
         if ($this->has('hdl') ) {
           if (stripos($oa_url, $this->get('hdl')) !== FALSE) return 'have free';
-          if (stripos($oa_url, 'hdl.handle.net') !== FALSE) return 'have free';
           foreach (HANDLES_HOSTS as $hosts) {
-            if (preg_match('~^https?://' . str_replace('.', '\.', $hosts) . '(/.+)$~', $url, $matches)) {
+            if (preg_match('~^https?://' . str_replace('.', '\.', $hosts) . '(/.+)$~', $oa_url, $matches)) {
               $handle1 = $matches[1];
               foreach (HANDLES_PATHS as $handle_path) {
                 if (preg_match('~^' . $handle_path . '(.+)$~', $handle1)) return 'have free';
