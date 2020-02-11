@@ -3527,11 +3527,17 @@ final class Template {
         case 'journal':
         case 'periodical':
           if ($this->blank($param)) return;
-          $periodical = trim($this->get($param));
-          if (preg_match('~^(|[a-zA-Z0-9][a-zA-Z0-9]+\.)([a-zA-Z0-9][a-zA-Z0-9][a-zA-Z0-9]+)\.(org|net|com)$~', $periodical)) {
+          if (preg_match('~^(|[a-zA-Z0-9][a-zA-Z0-9]+\.)([a-zA-Z0-9][a-zA-Z0-9][a-zA-Z0-9]+)\.(org|net|com)$~', $this->get($param))) {
             if ($this->blank('website')) $this->rename($param, 'website');
             return;
           }
+          if ($this->blank(['chapter', 'isbn']) && $param === 'journal') {
+            // Avoid renaming between cite journal and cite book
+            $this->change_name_to('cite journal');
+          }
+          if (str_equivalent($this->get($param), $this->get('work'))) $this->forget('work');
+
+          $periodical = trim($this->get($param));
           if (substr(strtolower($periodical), 0, 7) === 'http://' || substr(strtolower($periodical), 0, 8) === 'https://') {
              if ($this->blank('url')) $this->rename($param, 'url');
              return;
@@ -3540,7 +3546,6 @@ final class Template {
              if ($this->blank('website')) $this->rename($param, 'website');
              return;
           }
-          if (str_equivalent($periodical, $this->get('work'))) $this->forget('work');
           if ($param = 'journal' && $this->blank(['chapter', 'isbn'])) {
             // Avoid renaming between cite journal and cite book
             $this->change_name_to('cite journal');
