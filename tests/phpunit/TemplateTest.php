@@ -1025,6 +1025,13 @@ final class TemplateTest extends testBaseClass {
     $expanded = $this->process_citation($text);
     $this->assertSame('10393/35779', $expanded->get('hdl')); // This basically runs through a bunch of code to return 'have free'
   }
+ 
+  public function testOpenAccessLookup7() {  
+    $text = '{{Cite journal | doi = 10.5260/chara.18.3.53|hdl=10393/XXXXXX}}'; 
+    $expanded = $this->process_citation($text);
+    $this->assertSame('10393/XXXXXX', $expanded->get('hdl')); // This basically runs through a bunch of code to return 'have free'
+    $this->assertNull($template->get('url'));
+  }
 
   public function testSemanticScholar() {
    $text = "{{cite journal|doi=10.5555/555555}}";
@@ -3194,6 +3201,11 @@ T1 - This is the Title }}';
     $this->assertSame(str_replace('journal', 'website', $text), $template->parsed_text());
     
     $text = "{{cite web|journal=cnn.com}}";
+    $template = $this->make_citation($text);
+    $template->tidy_parameter('journal');
+    $this->assertSame(str_replace('journal', 'website', $text), $template->parsed_text());
+    
+    $text = "{{cite web|journal=www.x}}";
     $template = $this->make_citation($text);
     $template->tidy_parameter('journal');
     $this->assertSame(str_replace('journal', 'website', $text), $template->parsed_text());
