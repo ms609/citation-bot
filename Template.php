@@ -3531,10 +3531,6 @@ final class Template {
             $this->rename($param, 'website');
             return;
           }
-          if ($this->blank(['chapter', 'isbn']) && $param === 'journal') {
-            // Avoid renaming between cite journal and cite book
-            $this->change_name_to('cite journal');
-          }
           if (str_equivalent($this->get($param), $this->get('work'))) $this->forget('work');
 
           $periodical = trim($this->get($param));
@@ -3544,7 +3540,13 @@ final class Template {
           } elseif (substr(strtolower($periodical), 0, 4) === 'www.') {
              if ($this->blank('website')) $this->rename($param, 'website');
              return;
-          } elseif ( mb_substr($periodical, 0, 2) !== "[["   // Only remove partial wikilinks
+          }
+          if ($this->blank(['chapter', 'isbn']) && $param === 'journal') {
+            // Avoid renaming between cite journal and cite book
+            $this->change_name_to('cite journal');
+          }
+          
+          if ( mb_substr($periodical, 0, 2) !== "[["   // Only remove partial wikilinks
                     || mb_substr($periodical, -2) !== "]]"
                     || mb_substr_count($periodical, '[[') !== 1 
                     || mb_substr_count($periodical, ']]') !== 1
