@@ -1936,6 +1936,7 @@ final class Template {
       if (!in_array($this->wikiname(), ['cite journal', 'citation', 'cite conference', 'cite book', 'cite arxiv', 'cite article'])) return FALSE;
       if ($this->wikiname() == 'cite book' && $this->has('isbn')) return FALSE;
       if ($this->wikiname() == 'citation' && $this->has('isbn') && $this->has('chapter')) return FALSE;
+      if ($this->has('bibcode')) return FALSE; // Must be GIGO
     }
     
     if (($result->numFound != 1) && $this->has('title')) { // Do assume failure to find arXiv means that it is not there
