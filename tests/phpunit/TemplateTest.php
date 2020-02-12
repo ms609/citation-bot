@@ -4703,15 +4703,6 @@ T1 - This is the Title }}';
     $this->assertNull($expanded->get('bibcode'));
    });
   }
-
-  public function testFindBibcodeNoTitle() {
-   $this->requires_bibcode(function() {
-    $text = "{{Cite journal | last1 = Glaesemann | first1 = K. R. | last2 = Gordon | first2 = M. S. | last3 = Nakano | first3 = H. | journal = Physical Chemistry Chemical Physics | volume = 1 | issue = 6 | pages = 967–975| year = 1999  }}";
-    $expanded = $this->make_citation($text);
-    $expanded->expand_by_adsabs();
-    $this->assertSame('1999PCCP....1..967G', $expanded->get('bibcode'));
-   });
-  }
  
   public function testZooKeys2() {
      $this->requires_secrets(function() { // this only works if we can query wikipedia and see if page exists
