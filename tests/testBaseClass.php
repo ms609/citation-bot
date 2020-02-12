@@ -10,9 +10,27 @@ $BLOCK_ZOTERO_SEARCH = TRUE;
 $SLOW_MODE = TRUE;
 
 abstract class testBaseClass extends PHPUnit\Framework\TestCase {
-  // Set to TRUE to commit skipping to GIT.  FALSE to not skip.  Something else to skip tests while debugging
-  private $skip_zotero = TRUE; // TODO
+  // Set to TRUE to commit skipping to GIT.  FALSE to not skip.
+  private $skip_zotero = TRUE ; // TODO
   private $skip_bibcode= FALSE;
+  private $skip_google = FALSE;
+  private $skip_wiki   = FALSE;
+  
+   // Non-trusted builds
+  if (!getenv('PHP_ADSABSAPIKEY')) $skip_bibcode = TRUE;
+  if (!getenv('PHP_GOOGLEKEY')) $skip_google = TRUE;
+  if (!getenv('PHP_OAUTH_CONSUMER_TOKEN') || !getenv('PHP_OAUTH_CONSUMER_SECRET') ||
+      !getenv('PHP_OAUTH_ACCESS_TOKEN')   || !getenv('PHP_OAUTH_ACCESS_SECRET')) {
+    $skip_wiki = TRUE;
+  }
+
+  // Main build skips nothing
+  if (getenv('TRAVIS_PULL_REQUEST') === 'false') {
+     $skip_zotero = FALSE;
+     $skip_bibcode= FALSE;
+     $skip_google = FALSE;
+     $skip_wiki   = FALSE;
+  }
 
   protected function process_page($text) { // Only used if more than just a citation template
     $page = new TestPage();
@@ -28,9 +46,7 @@ abstract class testBaseClass extends PHPUnit\Framework\TestCase {
   }
 
   protected function requires_secrets($function) {
-    if (!getenv('PHP_OAUTH_CONSUMER_TOKEN') || !getenv('PHP_OAUTH_CONSUMER_SECRET') ||
-        !getenv('PHP_OAUTH_ACCESS_TOKEN')   || !getenv('PHP_OAUTH_ACCESS_SECRET')
-       ) {
+    if ($this->skip_wiki) {
       echo 'S';
       ob_flush();
       $this->assertNull(NULL);
@@ -40,7 +56,7 @@ abstract class testBaseClass extends PHPUnit\Framework\TestCase {
   }
   
   protected function requires_google($function) {
-    if (!getenv('PHP_GOOGLEKEY')) {
+    if ($this->skip_google) {
       echo 'G';
       ob_flush();
       $this->assertNull(NULL);
@@ -52,10 +68,7 @@ abstract class testBaseClass extends PHPUnit\Framework\TestCase {
   // Only routines that absolutely need bibcode access since we are limited 
   protected function requires_bibcode($function) {
     global $BLOCK_BIBCODE_SEARCH;
-    if ($this->skip_bibcode !== FALSE && $this->skip_bibcode !== TRUE) {
-      $this->assertNull('skip_bibcode bocks commit');
-    }
-    if (($this->skip_bibcode && getenv('TRAVIS_PULL_REQUEST') !== 'false' ) || !getenv('PHP_ADSABSAPIKEY')) { // Main build NEVER skips anything
+    if ($this->skip_bibcode) {
       echo 'B';
       ob_flush();
       $this->assertNull(NULL);
@@ -72,10 +85,7 @@ abstract class testBaseClass extends PHPUnit\Framework\TestCase {
   // allows us to turn off zoreto tests
   protected function requires_zotero($function) {
     global $BLOCK_ZOTERO_SEARCH;
-    if ($this->skip_zotero !== FALSE && $this->skip_zotero !== TRUE) {
-      $this->assertNull('skip_zotero bocks commit');
-    }
-    if ($this->skip_zotero && (getenv('TRAVIS_PULL_REQUEST') !== 'false' )) { // Main build NEVER skips anything
+    if ($this->skip_zotero) {
       echo 'Z';
       ob_flush();
       $this->assertNull(NULL);
