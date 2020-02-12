@@ -1961,6 +1961,7 @@ final class Template {
     }
     
     if ($result->numFound != 1 && $this->has('journal')) {
+      echo "\n DEBUG 1 \n";
       $journal = $this->get('journal');
       // try partial search using bibcode components:
       $result = $this->query_adsabs("pub:" . urlencode('"' . remove_brackets($journal) . '"')
@@ -1969,10 +1970,12 @@ final class Template {
         . ($this->has('volume') ? ("&volume:" . urlencode('"' . $this->get('volume') . '"')) : '')
         . ($this->page() ? ("&page:" . urlencode('"' . $this->page() . '"')) : '')
       );
+      print_r($result);
       if ($result->numFound == 0 || !isset($result->docs[0]->pub)) {
         report_inline('no record retrieved.');
         return FALSE;
       }
+            echo "\n DEBUG 2 \n";
       $journal_string = explode(",", (string) $result->docs[0]->pub);
       $journal_fuzzyer = "~\bof\b|\bthe\b|\ba\beedings\b|\W~";
       if (strlen($journal_string[0]) 
@@ -1986,6 +1989,7 @@ final class Template {
         return FALSE;
       }
     }
+          echo "\n DEBUG 3 \n";
     if ($result->numFound == 1) {
       $record = $result->docs[0];
       if (isset($record->year) && $this->year()) {
@@ -2019,7 +2023,7 @@ final class Template {
           return FALSE;
         }
       }
-      
+            echo "\n DEBUG 4 \n";
       if ($this->blank('bibcode')) {
         $this->add('bibcode', (string) $record->bibcode); // not add_if_new or we'll repeat this search!
       } elseif ($this->get('bibcode') !== (string) $record->bibcode && stripos($this->get('bibcode'), 'citation_bot_placeholder') === FALSE) {
@@ -2047,6 +2051,7 @@ final class Template {
           $this->add_if_new('journal', $journal_string[0]);
         }          
       }
+            echo "\n DEBUG 5 \n";
       if (isset($record->page)) {
          $tmp = implode($record->page);
          if ((stripos($tmp, 'arxiv') !== FALSE) || (stripos($tmp, '/') !== FALSE)) {  // Bad data
@@ -2069,14 +2074,17 @@ final class Template {
           }
         }
       }
+            echo "\n DEBUG 6 \n";
       if (isset($record->doi)) {
         $this->add_if_new('doi', (string) $record->doi[0]);          
       }
       return TRUE;
     } elseif ($result->numFound == 0) {
+            echo "\n DEBUG 7 \n";
       report_inline('no record retrieved.');  // @codeCoverageIgnore
       return FALSE;                           // @codeCoverageIgnore
     } else {
+            echo "\n DEBUG 8 \n";
       report_inline('multiple records retrieved.  Ignoring.');  // @codeCoverageIgnore
       return FALSE;                                             // @codeCoverageIgnore
     }
@@ -2116,7 +2124,7 @@ final class Template {
       report_warning("PHP_ADSABSAPIKEY environment variable not set. Cannot query AdsAbs.");  // @codeCoverageIgnore
       return (object) array('numFound' => 0);                                                 // @codeCoverageIgnore
     }
-    
+          echo "\n DEBUG 10 \n";
     try {
       $ch = curl_init();
       curl_setopt($ch, CURLOPT_HTTPHEADER, array('Authorization: Bearer ' . getenv('PHP_ADSABSAPIKEY')));
@@ -2127,6 +2135,8 @@ final class Template {
                   . "?q=$options&fl=arxiv_class,author,bibcode,doi,doctype,identifier,"
                   . "issue,page,pub,pubdate,title,volume,year";
       curl_setopt($ch, CURLOPT_URL, $adsabs_url);
+      echo $adsabs_url;
+                echo "\n DEBUG 11 \n";
       $return = curl_exec($ch);
       if (502 === curl_getinfo($ch, CURLINFO_HTTP_CODE)) {
         // @codeCoverageIgnoreStart
@@ -2138,7 +2148,9 @@ final class Template {
         }
         // @codeCoverageIgnoreEnd
       }
+                echo "\n DEBUG 12 \n";
       if ($return === FALSE) {
+                  echo "\n DEBUG 13 \n";
         // @codeCoverageIgnoreStart
         $exception = curl_error($ch);
         $number = curl_errno($ch);
@@ -2149,10 +2161,13 @@ final class Template {
       $http_response = curl_getinfo($ch, CURLINFO_HTTP_CODE);
       $header_length = curl_getinfo($ch, CURLINFO_HEADER_SIZE);
       curl_close($ch);
+                echo "\n DEBUG 14 \n";
       $header = substr($return, 0, $header_length);
       $body = substr($return, $header_length);
       $decoded = @json_decode($body);
-      
+                echo "\n DEBUG 15 \n";
+      print_r($decoded);
+                echo "\n DEBUG 16 \n";
       if (is_object($decoded) && isset($decoded->error)) {
         // @codeCoverageIgnoreStart
         if (isset($decoded->error->trace)) {
@@ -2168,11 +2183,13 @@ final class Template {
         }
         // @codeCoverageIgnoreStart
       }
+                echo "\n DEBUG 17 \n";
       if ($http_response != 200) {
         throw new Exception(strtok($header, "\n"), $http_response); // @codeCoverageIgnore
       }
-      
+                echo "\n DEBUG 18 \n";
       if (preg_match_all('~\nX\-RateLimit\-(\w+):\s*(\d+)\r~i', $header, $rate_limit)) {
+                  echo "\n DEBUG 19 \n";
         if ($rate_limit[2][2]) {
           report_info("AdsAbs search " . ($rate_limit[2][0] - $rate_limit[2][1]) . "/" . $rate_limit[2][0] .
                ":\n       " . str_replace("&", "\n       ", urldecode($options)));
@@ -2182,21 +2199,27 @@ final class Template {
           return (object) array('numFound' => 0);                                                                 // @codeCoverageIgnore
         }
       } else {
+                  echo "\n DEBUG 20 \n";
         throw new Exception("Headers do not contain rate limit information:\n" . $header, 5000); // @codeCoverageIgnore
       }
       if (!is_object($decoded)) {
+                  echo "\n DEBUG 21 \n";
         throw new Exception("Could not decode API response:\n" . $body, 5000);   // @codeCoverageIgnore
       }
       
       if (isset($decoded->response)) {
+                  echo "\n DEBUG 22 \n";
         $response = $decoded->response;
       } else {
+                  echo "\n DEBUG 23 \n";
         if ($decoded->error) throw new Exception("" . $decoded->error, 5000); // @codeCoverageIgnore
         throw new Exception("Could not decode AdsAbs response", 5000);        // @codeCoverageIgnore
       }
+                echo "\n DEBUG 24 \n";
       return $response;
       // @codeCoverageIgnoreStart
     } catch (Exception $e) {
+                echo "\n DEBUG 25 \n";
       if ($e->getCode() == 5000) { // made up code for AdsAbs error
         report_warning(sprintf("API Error in query_adsabs: %s",
                       $e->getMessage()));
@@ -2212,6 +2235,7 @@ final class Template {
       }
       return (object) array('numFound' => 0);
     }
+              echo "\n DEBUG 26 \n";
     // @codeCoverageIgnoreEnd
   }
   
