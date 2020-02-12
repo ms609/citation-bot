@@ -55,7 +55,7 @@ abstract class testBaseClass extends PHPUnit\Framework\TestCase {
     if ($this->skip_bibcode !== FALSE && $this->skip_bibcode !== TRUE) {
       $this->assertNull('skip_bibcode bocks commit');
     }
-    if ($this->skip_bibcode || !getenv('PHP_ADSABSAPIKEY')) {
+    if (($this->skip_bibcode && getenv('TRAVIS_PULL_REQUEST') !== 'false' ) || !getenv('PHP_ADSABSAPIKEY')) { // Main build NEVER skips anything
       echo 'B';
       ob_flush();
       $this->assertNull(NULL);
@@ -75,7 +75,7 @@ abstract class testBaseClass extends PHPUnit\Framework\TestCase {
     if ($this->skip_zotero !== FALSE && $this->skip_zotero !== TRUE) {
       $this->assertNull('skip_zotero bocks commit');
     }
-    if ($this->skip_zotero && getenv('TRAVIS_PULL_REQUEST') && (getenv('TRAVIS_PULL_REQUEST') !== 'false' )) { // Main build NEVER skips anything
+    if ($this->skip_zotero && (getenv('TRAVIS_PULL_REQUEST') !== 'false' )) { // Main build NEVER skips anything
       echo 'Z';
       ob_flush();
       $this->assertNull(NULL);
