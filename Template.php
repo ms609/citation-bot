@@ -1938,8 +1938,8 @@ final class Template {
           ($this->wikiname() == 'citation' && $this->has('isbn') && $this->has('chapter')) ||
           ($this->has('bibcode'))) // Must be GIGO
           {
-            report_inline('no record retrieved.');
-            return FALSE;
+            report_inline('no record retrieved.');                // @codeCoverageIgnore
+            return FALSE;                                         // @codeCoverageIgnore
           }
     }
     
@@ -1954,9 +1954,9 @@ final class Template {
       // If we have a match, but other links exists, and we have nothing journal like, then require exact title match
       if (!$this->blank(['doi','pmc','pmid','eprint','arxiv','url', 'chapter-url', 'chapterurl', 'contribution-url', 'contributionurl', 'section-url', 'sectionurl', 'transcript-url', 'transcripturl']) &&
           $this->blank(['issn', 'journal', 'volume', 'issue', 'number']) &&
-          mb_strtolower($record->title[0]) !=  mb_strtolower($this->get('title'))) {
-          report_info("Exact title match not found in database."); // Probably not a journal, trust zotero more
-          return FALSE;
+          mb_strtolower($record->title[0]) !=  mb_strtolower($this->get_without_comments_and_placeholders('title'))) {  // Probably not a journal, trust zotero more
+          report_info("Exact title match not found in database.");    // @codeCoverageIgnore
+          return FALSE;                                               // @codeCoverageIgnore
       }
     }
     
@@ -1970,8 +1970,8 @@ final class Template {
         . ($this->page_range() ? ("&fq=page:" . urlencode('"' . $this->page_range()[1] . '"')) : '')
       );
       if ($result->numFound == 0 || !isset($result->docs[0]->pub)) {
-        report_inline('no record retrieved.');
-        return FALSE;
+        report_inline('no record retrieved.');    // @codeCoverageIgnore
+        return FALSE;                             // @codeCoverageIgnore
       }
       $journal_string = explode(",", (string) $result->docs[0]->pub);
       $journal_fuzzyer = "~\([iI]ncorporating.+|\bof\b|\bthe\b|\ba|eedings\b|\W~";
@@ -1980,10 +1980,10 @@ final class Template {
                  mb_strtolower(preg_replace($journal_fuzzyer, "", $journal_string[0]))
                  ) === FALSE
       ) {
-        report_info("Partial match but database journal \"" .
-          echoable($journal_string[0]) . "\" didn't match \"" .
-          echoable($journal) . "\".");
-        return FALSE;
+        report_info("Partial match but database journal \"" .         // @codeCoverageIgnore
+          echoable($journal_string[0]) . "\" didn't match \"" .       // @codeCoverageIgnore
+          echoable($journal) . "\".");                                // @codeCoverageIgnore
+        return FALSE;                                                 // @codeCoverageIgnore
       }
     }
     if ($result->numFound == 1) {
@@ -1995,8 +1995,8 @@ final class Template {
       
       if ($this->has('title') && titles_are_dissimilar($this->get('title'), $record->title[0]) 
          && !in_array($this->get('title'), ['Archived copy', "{title}", 'ScienceDirect', "Google Books", "None"])) { // Verify the title matches.  We get some strange mis-matches {
-        report_info("Similar title not found in database");
-        return FALSE;
+        report_info("Similar title not found in database");       // @codeCoverageIgnore
+        return FALSE;                                             // @codeCoverageIgnore
       }
       
       if (strpos((string) $record->bibcode, 'book') !== FALSE) {  // Found a book.  Need special code
@@ -2073,10 +2073,10 @@ final class Template {
         $this->add_if_new('doi', (string) $record->doi[0]);          
       }
       return TRUE;
-    } elseif ($result->numFound == 0) {
-      report_inline('no record retrieved.');  // @codeCoverageIgnore
-      return FALSE;                           // @codeCoverageIgnore
-    } else {
+    } elseif ($result->numFound == 0) {                         // @codeCoverageIgnore
+      report_inline('no record retrieved.');                    // @codeCoverageIgnore
+      return FALSE;                                             // @codeCoverageIgnore
+    } else {                                                    // @codeCoverageIgnore
       report_inline('multiple records retrieved.  Ignoring.');  // @codeCoverageIgnore
       return FALSE;                                             // @codeCoverageIgnore
     }
