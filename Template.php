@@ -1933,25 +1933,29 @@ final class Template {
     
     if ($result->numFound == 0) {
       // Avoid blowing through our quota
-      if (!in_array($this->wikiname(), ['cite journal', 'citation', 'cite conference', 'cite book', 'cite arxiv', 'cite article'])) return FALSE;
-      if ($this->wikiname() == 'cite book' && $this->has('isbn')) return FALSE;
-      if ($this->wikiname() == 'citation' && $this->has('isbn') && $this->has('chapter')) return FALSE;
-      if ($this->has('bibcode')) return FALSE; // Must be GIGO
+      if ((!in_array($this->wikiname(), ['cite journal', 'citation', 'cite conference', 'cite book', 'cite arxiv', 'cite article'])) ||
+          ($this->wikiname() == 'cite book' && $this->has('isbn')) ||
+          ($this->wikiname() == 'citation' && $this->has('isbn') && $this->has('chapter')) ||
+          ($this->has('bibcode'))) // Must be GIGO
+          {
+            report_inline('no record retrieved.');
+            return FALSE;
+          }
     }
     
     if (($result->numFound != 1) && $this->has('title')) { // Do assume failure to find arXiv means that it is not there
       $result = $this->query_adsabs("title:" . urlencode('"' .  trim(str_replace('"', ' ', $this->get_without_comments_and_placeholders("title"))) . '"'));
       if ($result->numFound == 0) return FALSE;
       $record = $result->docs[0];
-      if (titles_are_dissimilar($this->get('title'), $record->title[0])) {
-        report_info("Similar title not found in database");
-        return FALSE;
+      if (titles_are_dissimilar($this->get_without_comments_and_placeholders("title"), $record->title[0])) {  // Considering we searched for title, this is very paranoid
+        report_info("Similar title not found in database.");                // @codeCoverageIgnore
+        return FALSE;                                                       // @codeCoverageIgnore
       }
       // If we have a match, but other links exists, and we have nothing journal like, then require exact title match
       if (!$this->blank(['doi','pmc','pmid','eprint','arxiv','url', 'chapter-url', 'chapterurl', 'contribution-url', 'contributionurl', 'section-url', 'sectionurl', 'transcript-url', 'transcripturl']) &&
           $this->blank(['issn', 'journal', 'volume', 'issue', 'number']) &&
           mb_strtolower($record->title[0]) !=  mb_strtolower($this->get('title'))) {
-          report_info("Exact title match not found in database"); // Probably not a journal, trust zotero more
+          report_info("Exact title match not found in database."); // Probably not a journal, trust zotero more
           return FALSE;
       }
     }
@@ -1965,8 +1969,10 @@ final class Template {
         . ($this->has('volume') ? ("&volume:" . urlencode('"' . $this->get('volume') . '"')) : '')
         . ($this->page() ? ("&page:" . urlencode('"' . $this->page() . '"')) : '')
       );
-      if ($result->numFound == 0) return FALSE;
-      if (!isset($result->docs[0]->pub)) return FALSE;
+      if ($result->numFound == 0 || !isset($result->docs[0]->pub)) {
+        report_inline('no record retrieved.');
+        return FALSE;
+      }
       $journal_string = explode(",", (string) $result->docs[0]->pub);
       $journal_fuzzyer = "~\bof\b|\bthe\b|\ba\beedings\b|\W~";
       if (strlen($journal_string[0]) 
@@ -1974,7 +1980,7 @@ final class Template {
                  mb_strtolower(preg_replace($journal_fuzzyer, "", $journal_string[0]))
                  ) === FALSE
       ) {
-        report_info("Match for pagination but database journal \"" .
+        report_info("Partial match but database journal \"" .
           echoable($journal_string[0]) . "\" didn't match \"" .
           echoable($journal) . "\".");
         return FALSE;
@@ -1988,7 +1994,7 @@ final class Template {
       }
       
       if ($this->has('title') && titles_are_dissimilar($this->get('title'), $record->title[0]) 
-         && !in_array($this->get('title'), ['Archived copy', "{title}", 'ScienceDirect', "Google Books", "None", "none"])) { // Verify the title matches.  We get some strange mis-matches {
+         && !in_array($this->get('title'), ['Archived copy', "{title}", 'ScienceDirect', "Google Books", "None"])) { // Verify the title matches.  We get some strange mis-matches {
         report_info("Similar title not found in database");
         return FALSE;
       }
@@ -2067,9 +2073,12 @@ final class Template {
         $this->add_if_new('doi', (string) $record->doi[0]);          
       }
       return TRUE;
-    } else {
+    } elseif ($result->numFound == 0) {
       report_inline('no record retrieved.');  // @codeCoverageIgnore
       return FALSE;                           // @codeCoverageIgnore
+    } else {
+      report_inline('multiple records retrieved.  Ignoring.');  // @codeCoverageIgnore
+      return FALSE;                                             // @codeCoverageIgnore
     }
   }
   
