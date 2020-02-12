@@ -10,17 +10,13 @@ $BLOCK_ZOTERO_SEARCH = TRUE;
 $SLOW_MODE = TRUE;
 
 abstract class testBaseClass extends PHPUnit\Framework\TestCase {
-  
-  protected $skip_zotero, $skip_bibcode, $skip_google, $skip_wiki;
 
-  function __construct() {
-   // Set to TRUE to commit skipping to GIT.  FALSE to not skip.
-   $this->skip_zotero = TRUE ; // TODO
-   $this->skip_bibcode= FALSE;
-   $this->skip_google = FALSE;
-   $this->skip_wiki   = FALSE;
+  private skip_zotero = TRUE ; // TODO
+  private skip_bibcode= FALSE;
+  private skip_google = FALSE;
+  private skip_wiki   = FALSE;
   
-    
+  function __construct () {
    // Non-trusted builds
    if (!getenv('PHP_ADSABSAPIKEY')) $this->skip_bibcode = TRUE;
    if (!getenv('PHP_GOOGLEKEY')) $this->skip_google = TRUE;
