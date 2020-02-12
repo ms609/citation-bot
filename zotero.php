@@ -16,8 +16,8 @@ function query_url_api($ids, $templates) {
   curl_setopt($ch_zotero, CURLOPT_HTTPHEADER, ['Content-Type: text/plain']);
   curl_setopt($ch_zotero, CURLOPT_RETURNTRANSFER, TRUE);   
   if (getenv('TRAVIS')) { // try harder in TRAVIS to make tests more successful and make it his zotero less often
-    curl_setopt($ch_zotero, CURLOPT_CONNECTTIMEOUT, 10);
-    curl_setopt($ch_zotero, CURLOPT_TIMEOUT, 45);
+    curl_setopt($ch_zotero, CURLOPT_CONNECTTIMEOUT, 30);
+    curl_setopt($ch_zotero, CURLOPT_TIMEOUT, 119);
   } else {
     // @codeCoverageIgnoreStart
     curl_setopt($ch_zotero, CURLOPT_CONNECTTIMEOUT, 1);
