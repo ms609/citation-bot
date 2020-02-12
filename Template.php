@@ -1936,7 +1936,7 @@ final class Template {
       if ((!in_array($this->wikiname(), ['cite journal', 'citation', 'cite conference', 'cite book', 'cite arxiv', 'cite article'])) ||
           ($this->wikiname() == 'cite book' && $this->has('isbn')) ||
           ($this->wikiname() == 'citation' && $this->has('isbn') && $this->has('chapter')) ||
-          ($this->has('bibcode')) // Must be GIGO
+          ($this->has('bibcode'))) // Must be GIGO
           {
             report_inline('no record retrieved.');
             return FALSE;
