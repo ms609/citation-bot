@@ -5,34 +5,34 @@ require_once __DIR__ . '/../setup.php';
 error_reporting(E_ALL); // All tests run this way
 if (!defined('VERBOSE')) define('VERBOSE', TRUE);
 
+// Change these to temporarily disable sets of tests======================
+$testing_skip_zotero = TRUE ; // TODO - turn back on
+$testing_skip_bibcode= FALSE;
+$testing_skip_google = FALSE;
+$testing_skip_wiki   = FALSE;
+// =======================================================================
+
+// Non-trusted builds
+if (!getenv('PHP_ADSABSAPIKEY')) $testing_skip_bibcode = TRUE;
+if (!getenv('PHP_GOOGLEKEY')) $testing_skip_google = TRUE;
+if (!getenv('PHP_OAUTH_CONSUMER_TOKEN') || !getenv('PHP_OAUTH_CONSUMER_SECRET') ||
+    !getenv('PHP_OAUTH_ACCESS_TOKEN')   || !getenv('PHP_OAUTH_ACCESS_SECRET')) {
+   $testing_skip_wiki = TRUE;
+}
+
+// Main build skips nothing
+if (getenv('TRAVIS_PULL_REQUEST') === 'false') {
+   $testing_skip_zotero = FALSE;
+   $testing_skip_bibcode= FALSE;
+   $testing_skip_google = FALSE;
+   $testing_skip_wiki   = FALSE;
+}
+
 $BLOCK_BIBCODE_SEARCH = TRUE;
 $BLOCK_ZOTERO_SEARCH = TRUE;
 $SLOW_MODE = TRUE;
 
 abstract class testBaseClass extends PHPUnit\Framework\TestCase {
-
-  protected $skip_zotero = TRUE ; // TODO
-  protected $skip_bibcode= FALSE;
-  protected $skip_google = FALSE;
-  protected $skip_wiki   = FALSE;
-  
-  public function __construct() {
-   // Non-trusted builds
-   if (!getenv('PHP_ADSABSAPIKEY')) $this->skip_bibcode = TRUE;
-   if (!getenv('PHP_GOOGLEKEY')) $this->skip_google = TRUE;
-   if (!getenv('PHP_OAUTH_CONSUMER_TOKEN') || !getenv('PHP_OAUTH_CONSUMER_SECRET') ||
-      !getenv('PHP_OAUTH_ACCESS_TOKEN')   || !getenv('PHP_OAUTH_ACCESS_SECRET')) {
-     $this->skip_wiki = TRUE;
-   }
-
-   // Main build skips nothing
-   if (getenv('TRAVIS_PULL_REQUEST') === 'false') {
-     $this->skip_zotero = FALSE;
-     $this->skip_bibcode= FALSE;
-     $this->skip_google = FALSE;
-     $this->skip_wiki   = FALSE;
-   }
-  }
 
   protected function process_page($text) { // Only used if more than just a citation template
     $page = new TestPage();
@@ -48,7 +48,7 @@ abstract class testBaseClass extends PHPUnit\Framework\TestCase {
   }
 
   protected function requires_secrets($function) {
-    if ($this->skip_wiki) {
+    if ($testing_skip_wiki) {
       echo 'S';
       ob_flush();
       $this->assertNull(NULL);
@@ -58,7 +58,7 @@ abstract class testBaseClass extends PHPUnit\Framework\TestCase {
   }
   
   protected function requires_google($function) {
-    if ($this->skip_google) {
+    if ($testing_skip_google) {
       echo 'G';
       ob_flush();
       $this->assertNull(NULL);
@@ -70,7 +70,7 @@ abstract class testBaseClass extends PHPUnit\Framework\TestCase {
   // Only routines that absolutely need bibcode access since we are limited 
   protected function requires_bibcode($function) {
     global $BLOCK_BIBCODE_SEARCH;
-    if ($this->skip_bibcode) {
+    if ($testing_skip_bibcode) {
       echo 'B';
       ob_flush();
       $this->assertNull(NULL);
