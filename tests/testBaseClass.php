@@ -10,26 +10,32 @@ $BLOCK_ZOTERO_SEARCH = TRUE;
 $SLOW_MODE = TRUE;
 
 abstract class testBaseClass extends PHPUnit\Framework\TestCase {
-  // Set to TRUE to commit skipping to GIT.  FALSE to not skip.
-  private $skip_zotero = TRUE ; // TODO
-  private $skip_bibcode= FALSE;
-  private $skip_google = FALSE;
-  private $skip_wiki   = FALSE;
   
-   // Non-trusted builds
-  if (!getenv('PHP_ADSABSAPIKEY')) $skip_bibcode = TRUE;
-  if (!getenv('PHP_GOOGLEKEY')) $skip_google = TRUE;
-  if (!getenv('PHP_OAUTH_CONSUMER_TOKEN') || !getenv('PHP_OAUTH_CONSUMER_SECRET') ||
-      !getenv('PHP_OAUTH_ACCESS_TOKEN')   || !getenv('PHP_OAUTH_ACCESS_SECRET')) {
-    $skip_wiki = TRUE;
-  }
+  private $skip_zotero, $skip_bibcode, $skip_google, $skip_wiki;
 
-  // Main build skips nothing
-  if (getenv('TRAVIS_PULL_REQUEST') === 'false') {
-     $skip_zotero = FALSE;
-     $skip_bibcode= FALSE;
-     $skip_google = FALSE;
-     $skip_wiki   = FALSE;
+  function __construct() {
+   // Set to TRUE to commit skipping to GIT.  FALSE to not skip.
+   $this->skip_zotero = TRUE ; // TODO
+   $this->skip_bibcode= FALSE;
+   $this->skip_google = FALSE;
+   $this->skip_wiki   = FALSE;
+  
+    
+   // Non-trusted builds
+   if (!getenv('PHP_ADSABSAPIKEY')) $this->skip_bibcode = TRUE;
+   if (!getenv('PHP_GOOGLEKEY')) $this->skip_google = TRUE;
+   if (!getenv('PHP_OAUTH_CONSUMER_TOKEN') || !getenv('PHP_OAUTH_CONSUMER_SECRET') ||
+      !getenv('PHP_OAUTH_ACCESS_TOKEN')   || !getenv('PHP_OAUTH_ACCESS_SECRET')) {
+     $this->skip_wiki = TRUE;
+   }
+
+   // Main build skips nothing
+   if (getenv('TRAVIS_PULL_REQUEST') === 'false') {
+     $this->skip_zotero = FALSE;
+     $this->skip_bibcode= FALSE;
+     $this->skip_google = FALSE;
+     $this->skip_wiki   = FALSE;
+   }
   }
 
   protected function process_page($text) { // Only used if more than just a citation template
