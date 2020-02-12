@@ -30,7 +30,7 @@ Always write a clear log message for your commits. One-line messages are fine fo
   * We use `echo` and `exit` for normal code, and `print` and `die` for debug code that is intended to be removed later
   * All code is verified to be valid PHP 5.6, 7.3, and 8.0 according to static analysis
   * All code is verified to be valid PHP 7.3 at runtime
-  * We are attempting to get 100% code coverage with untestable code flagged in the source
+  * We want 100% code coverage with untestable code flagged in the source -- such as code that handles error conditions.  See the file apiFunctions.php for lots of examples of non-coverage code.
 
 ## Bot output conventions
 The bot reports its activity to users using:
