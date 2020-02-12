@@ -4650,7 +4650,7 @@ T1 - This is the Title }}';
     $this->requires_bibcode(function() {
       $text='{{cite journal|bibcode=2018MNRAS.tmp.2192I}}';
       $expanded = $this->process_citation($text);
-      $this->assertSame('2018MNRAS.481..703', $expanded->get('bibcode'));
+      $this->assertSame('2018MNRAS.481..703I', $expanded->get('bibcode'));
     });
   }
 
