@@ -11,12 +11,12 @@ $SLOW_MODE = TRUE;
 
 abstract class testBaseClass extends PHPUnit\Framework\TestCase {
 
-  private $skip_zotero = TRUE ; // TODO
-  private $skip_bibcode= FALSE;
-  private $skip_google = FALSE;
-  private $skip_wiki   = FALSE;
+  protected $skip_zotero = TRUE ; // TODO
+  protected $skip_bibcode= FALSE;
+  protected $skip_google = FALSE;
+  protected $skip_wiki   = FALSE;
   
-  function __construct() {
+  public function __construct() {
    // Non-trusted builds
    if (!getenv('PHP_ADSABSAPIKEY')) $this->skip_bibcode = TRUE;
    if (!getenv('PHP_GOOGLEKEY')) $this->skip_google = TRUE;
