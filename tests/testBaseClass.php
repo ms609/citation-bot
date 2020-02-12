@@ -11,7 +11,7 @@ $SLOW_MODE = TRUE;
 
 abstract class testBaseClass extends PHPUnit\Framework\TestCase {
   
-  private $skip_zotero, $skip_bibcode, $skip_google, $skip_wiki;
+  protected $skip_zotero, $skip_bibcode, $skip_google, $skip_wiki;
 
   function __construct() {
    // Set to TRUE to commit skipping to GIT.  FALSE to not skip.
