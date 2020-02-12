@@ -6,10 +6,10 @@ error_reporting(E_ALL); // All tests run this way
 if (!defined('VERBOSE')) define('VERBOSE', TRUE);
 
 // Change these to temporarily disable sets of tests======================
-$testing_skip_zotero = TRUE ; // TODO - turn back on
-$testing_skip_bibcode= FALSE;
-$testing_skip_google = FALSE;
-$testing_skip_wiki   = FALSE;
+$testing_skip_zotero = TRUE ; // TODO - turn back on                    //
+$testing_skip_bibcode= FALSE;                                           //
+$testing_skip_google = FALSE;                                           //
+$testing_skip_wiki   = FALSE;                                           //
 // =======================================================================
 
 // Non-trusted builds
@@ -34,20 +34,8 @@ $SLOW_MODE = TRUE;
 
 abstract class testBaseClass extends PHPUnit\Framework\TestCase {
 
-  protected function process_page($text) { // Only used if more than just a citation template
-    $page = new TestPage();
-    $page->parse_text($text);
-    $page->expand_text();
-    return $page;
-  }
-
-  protected function parameter_parse_text_helper($text) {
-    $parameter = new Parameter();
-    $parameter->parse_text($text);
-    return $parameter;
-  }
-
   protected function requires_secrets($function) {
+    global $testing_skip_wiki;
     if ($testing_skip_wiki) {
       echo 'S';
       ob_flush();
@@ -58,6 +46,7 @@ abstract class testBaseClass extends PHPUnit\Framework\TestCase {
   }
   
   protected function requires_google($function) {
+    global $testing_skip_google;
     if ($testing_skip_google) {
       echo 'G';
       ob_flush();
@@ -70,6 +59,7 @@ abstract class testBaseClass extends PHPUnit\Framework\TestCase {
   // Only routines that absolutely need bibcode access since we are limited 
   protected function requires_bibcode($function) {
     global $BLOCK_BIBCODE_SEARCH;
+    global $testing_skip_bibcode;
     if ($testing_skip_bibcode) {
       echo 'B';
       ob_flush();
@@ -87,7 +77,8 @@ abstract class testBaseClass extends PHPUnit\Framework\TestCase {
   // allows us to turn off zoreto tests
   protected function requires_zotero($function) {
     global $BLOCK_ZOTERO_SEARCH;
-    if ($this->skip_zotero) {
+    global $testing_skip_zotero;
+    if ($testing_skip_zotero) {
       echo 'Z';
       ob_flush();
       $this->assertNull(NULL);
@@ -128,6 +119,19 @@ abstract class testBaseClass extends PHPUnit\Framework\TestCase {
     $template = new Template();
     $template->parse_text($expanded_text);
     return $template;
+  }
+    
+  protected function process_page($text) { // Only used if more than just a citation template
+    $page = new TestPage();
+    $page->parse_text($text);
+    $page->expand_text();
+    return $page;
+  }
+
+  protected function parameter_parse_text_helper($text) {
+    $parameter = new Parameter();
+    $parameter->parse_text($text);
+    return $parameter;
   }
 
   protected function getDateAndYear($input){
