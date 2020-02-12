@@ -1965,10 +1965,10 @@ final class Template {
       $journal = $this->get('journal');
       // try partial search using bibcode components:
       $result = $this->query_adsabs("pub:" . urlencode('"' . remove_brackets($journal) . '"')
-        . ($this->year() ? ("&year:" . urlencode($this->year())) : '')
-        . ($this->has('issn') ? ("&issn:" . urlencode($this->get('issn'))) : '')
-        . ($this->has('volume') ? ("&volume:" . urlencode('"' . $this->get('volume') . '"')) : '')
-        . ($this->page() ? ("&page:" . urlencode('"' . $this->page() . '"')) : '')
+        . ($this->year() ? ("&fq=year:" . urlencode($this->year())) : '')
+        . ($this->has('issn') ? ("&fq=issn:" . urlencode($this->get('issn'))) : '')
+        . ($this->has('volume') ? ("&fq=volume:" . urlencode('"' . $this->get('volume') . '"')) : '')
+        . ($this->page() ? ("&fq=page:" . urlencode('"' . $this->page() . '"')) : '')
       );
       print_r($result);
       if ($result->numFound == 0 || !isset($result->docs[0]->pub)) {
