@@ -4711,7 +4711,6 @@ T1 - This is the Title }}';
     $expanded->expand_by_adsabs();
     $this->assertSame('1999PCCP....1..967G', $expanded->get('bibcode'));
    });
-   $this->assertTrue(FALSE);
   }
 
   public function testZooKeys2() {
