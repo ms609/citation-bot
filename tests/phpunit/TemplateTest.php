@@ -4646,6 +4646,14 @@ T1 - This is the Title }}';
      });
    }
  
+  public function testBibcodeRemap() {
+    $this->requires_bibcode(function() {
+      $text='{{cite journal|bibcode=2018MNRAS.tmp.2192I}}';
+      $expanded = $this->process_citation($text);
+      $this->assertSame('2018MNRAS.481..703', $expanded->get('bibcode'));
+    });
+  }
+
   public function testBibcodeDotEnding() {
     $this->requires_bibcode(function() {
       $text='{{cite journal|title=Electric Equipment of the Dolomites Railway|journal=Nature|date=2 January 1932|volume=129|issue=3244|page=18|doi=10.1038/129018a0}}';
