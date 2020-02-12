@@ -1960,21 +1960,21 @@ final class Template {
       }
     }
     
-    if ($result->numFound != 1 && ($this->has('journal') || $this->has('issn'))) {
+    if ($result->numFound != 1 && $this->has('journal')) {
       $journal = $this->get('journal');
       // try partial search using bibcode components:
       $result = $this->query_adsabs("pub:" . urlencode('"' . remove_brackets($journal) . '"')
-        . ($this->year() ? ("&year:" . urlencode($this->year())) : '')
-        . ($this->has('issn') ? ("&issn:" . urlencode($this->get('issn'))) : '')
-        . ($this->has('volume') ? ("&volume:" . urlencode('"' . $this->get('volume') . '"')) : '')
-        . ($this->page() ? ("&page:" . urlencode('"' . $this->page() . '"')) : '')
+        . ($this->year() ? ("&fq=year:" . urlencode($this->year())) : '')
+        . ($this->has('issn') ? ("&fq=issn:" . urlencode($this->get('issn'))) : '')
+        . ($this->has('volume') ? ("&fq=volume:" . urlencode('"' . $this->get('volume') . '"')) : '')
+        . ($this->page_range() ? ("&fq=page:" . urlencode('"' . $this->page_range()[1] . '"')) : '')
       );
       if ($result->numFound == 0 || !isset($result->docs[0]->pub)) {
         report_inline('no record retrieved.');
         return FALSE;
       }
       $journal_string = explode(",", (string) $result->docs[0]->pub);
-      $journal_fuzzyer = "~\bof\b|\bthe\b|\ba\beedings\b|\W~";
+      $journal_fuzzyer = "~\([iI]ncorporating.+|\bof\b|\bthe\b|\ba|eedings\b|\W~";
       if (strlen($journal_string[0]) 
       &&  strpos(mb_strtolower(preg_replace($journal_fuzzyer, "", $journal)),
                  mb_strtolower(preg_replace($journal_fuzzyer, "", $journal_string[0]))
