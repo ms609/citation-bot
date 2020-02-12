@@ -1968,7 +1968,7 @@ final class Template {
         . ($this->year() ? ("&fq=year:" . urlencode($this->year())) : '')
         . ($this->has('issn') ? ("&fq=issn:" . urlencode($this->get('issn'))) : '')
         . ($this->has('volume') ? ("&fq=volume:" . urlencode('"' . $this->get('volume') . '"')) : '')
-        . ($this->page() ? ("&fq=page:" . urlencode('"' . $this->page() . '"')) : '')
+        . ($this->page_range() ? ("&fq=page:" . urlencode('"' . $this->page_range()[1] . '"')) : '')
       );
       print_r($result);
       if ($result->numFound == 0 || !isset($result->docs[0]->pub)) {
