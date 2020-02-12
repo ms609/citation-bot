@@ -1960,7 +1960,7 @@ final class Template {
       }
     }
     
-    if ($result->numFound != 1 && $this->has('journal')) {
+    if ($result->numFound != 1 && ($this->has('journal') || $this->has('issn'))) {
       $journal = $this->get('journal');
       // try partial search using bibcode components:
       $result = $this->query_adsabs("pub:" . urlencode('"' . remove_brackets($journal) . '"')
