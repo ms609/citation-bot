@@ -4712,6 +4712,15 @@ T1 - This is the Title }}';
     $this->assertSame('1999PCCP....1..967G', $expanded->get('bibcode'));
    });
   }
+ 
+  public function testFindBibcodeForBook() {
+   $this->requires_bibcode(function() {
+    $text = "{{Cite journal | doi=10.2277/0521815363}}";
+    $expanded = $this->make_citation($text);
+    $expanded->expand_by_adsabs();
+    $this->assertSame('2003hoe..book.....K', $expanded->get('bibcode'));
+   });
+  }
 
   public function testZooKeys2() {
      $this->requires_secrets(function() { // this only works if we can query wikipedia and see if page exists
