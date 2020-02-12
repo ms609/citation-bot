@@ -2038,10 +2038,10 @@ final class Template {
         $journal_start = mb_strtolower($journal_string[0]);
         if (preg_match("~\bthesis\b~ui", $journal_start)) {
           // Do nothing
-        } elseif (substr($journal_start, 0, 6) == "eprint") {
-          if (substr($journal_start, 0, 13) == "eprint arxiv:") {
-            $this->add_if_new('class', @$record->arxivclass);
-            $this->add_if_new('arxiv', substr($journal_start, 13));
+        } elseif (substr($journal_start, 0, 6) == "eprint") {        // This is outdated format.  Seems to not exists now
+          if (substr($journal_start, 0, 13) == "eprint arxiv:") {      //@codeCoverageIgnore
+            $this->add_if_new('class', @$record->arxivclass);          //@codeCoverageIgnore
+            $this->add_if_new('arxiv', substr($journal_start, 13));    //@codeCoverageIgnore
           }
         } else {
           $this->add_if_new('journal', $journal_string[0]);
