@@ -307,6 +307,21 @@ final class PageTest extends testBaseClass {
       $page = $this->process_page($text);
       $this->assertSame('{{cite thesis|mr = 1234}}{{bots|allow=Citation Bot}}', $page->parsed_text());
   }
+ 
+  public function testODNB() {
+   $text='{{Cite ODNB|title=Pierrepoint, Albert, (1905–1992)|ref=harv}} {{ODNBsub}}';
+   $page = $this->process_page($text);
+   $this->assertSame('{{Cite ODNB|title=Pierrepoint, Albert, (1905–1992)|ref=harv}} ', $page->parsed_text());
+   $text='{{Cite ODNB|title=Pierrepoint, Albert,_(1905–1992)|ref=harv}} {{ODNBsub}}';
+   $page = $this->process_page($text);
+   $this->assertSame('{{Cite ODNB|title=Pierrepoint, Albert,_(1905–1992)|ref=harv}} ', $page->parsed_text());
+   $text='{{Cite ODNB|title=Pierrepoint,_Albert,_(1905–1992)|ref=harv}} {{ODNBsub}}';
+   $page = $this->process_page($text);
+   $this->assertSame($text, $page->parsed_text()); // two underscores
+   $text='{{Cite ODNB|title=Pierrepoint, Albert, (1905–1992)|ref=harv}}{{Yup}}{{ODNBsub}}';
+   $page = $this->process_page($text);
+   $this->assertSame($text, $page->parsed_text()); // template in the way
+  }
 
   public function testBadPage() {  // Use this when debugging pages that crash the bot
     // This MUST be escaped page name-underscores not spaces and such
