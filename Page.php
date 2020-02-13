@@ -320,7 +320,7 @@ class Page {
     }
     $this->replace_object($all_templates);
 
-    $this->text = preg_replace('~(\{\{[Cc]ite ODNB\s*\|[^\{\}\_]+_?[^\{\}\_]+\}\}\s*)\{\{ODNBsub\}\}~u', '$1', $text); // Allow only one underscore to shield us from MATH etc.
+    $this->text = preg_replace('~(\{\{[Cc]ite ODNB\s*\|[^\{\}\_]+_?[^\{\}\_]+\}\}\s*)\{\{ODNBsub\}\}~u', '$1', $this->text); // Allow only one underscore to shield us from MATH etc.
 
     $this->replace_object($singlebrack);
     $this->replace_object($preformated);
