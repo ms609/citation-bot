@@ -326,15 +326,11 @@ final class PageTest extends testBaseClass {
   public function testBadPage() {  // Use this when debugging pages that crash the bot
     // This MUST be escaped page name-underscores not spaces and such
     $bad_page = ""; //  Replace with something like "Vietnam_War" when debugging
-    if ($bad_page !== "") {
+    if ($bad_page !== "Alan_Turing") {
       $text = file_get_contents('https://en.wikipedia.org/w/index.php?title=' . $bad_page . '&action=raw');
       $page = new TestPage();
       $page->parse_text($text);
-      $BLOCK_BIBCODE_SEARCH = FALSE;
-      $BLOCK_ZOTERO_SEARCH = FALSE;
       $page->expand_text();
-      $BLOCK_BIBCODE_SEARCH = TRUE;
-      $BLOCK_ZOTERO_SEARCH = TRUE;
       $this->assertTrue(FALSE); // prevent us from git committing with a website included
     }
     $this->assertTrue(TRUE);
