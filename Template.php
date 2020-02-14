@@ -1874,12 +1874,8 @@ final class Template {
       report_warning("Unable to do PMID search");
       return array(NULL, 0);
     }
-    if ($xml->ErrorList) {
-      if (isset($xml->ErrorList->PhraseNotFound)) {
-        report_warning("Phrase not found in PMID search with query $query: " . echoable(print_r($xml->ErrorList, TRUE)));
-      } else {
-        report_inline('no results.');
-      }
+    if ($xml->ErrorList) { // Could look at $xml->ErrorList->PhraseNotFound for list of what was not found
+      report_inline('no results.');
       return array(NULL, 0);
     }
     // @codeCoverageIgnoreEnd
