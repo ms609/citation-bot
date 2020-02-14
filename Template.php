@@ -1828,20 +1828,17 @@ final class Template {
     foreach ($terms as $term) {
       $key_index = array(
         'doi' =>  'AID',
-        'surname' =>  'Author',
         'issue' =>  'Issue',
         'journal' =>  'Journal',
-        'page' =>  'Pagination',
         'date' =>  'Publication Date',
         'year' =>  'Publication Date',
         'pmid' =>  'PMID',
         'volume' =>  'Volume'
-        ##Text Words [TW] , Title/Abstract [TIAB]
-          ## Formatting: YYY/MM/DD Publication Date [DP]
       );
-      if (mb_strtolower($term) === "title") {
+      $term = mb_strtolower($term)
+      if ($term === "title") {
        if ($data = $this->get_without_comments_and_placeholders('title')) {
-        $key = $key_index[mb_strtolower($term)];
+        $key = 'Title';
         $data = straighten_quotes($data);
         $data = str_replace([';', ',', ':', '.', '?', '!', '&', '/', '(', ')', '[', ']', '{', '}', '"', "'", '|', '\\'],
                             [' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '], $data);
@@ -1856,19 +1853,19 @@ final class Template {
           }
         }
        }
-      } elseif (mb_strtolower($term) === "page") {
+      } elseif ($term === "page") {
         if ($this->page_range()) {
           $val = $this->page_range()[1];
-          $key = $key_index[mb_strtolower($term)];
+          $key = 'Pagination';
           $query .= " AND (" . str_replace("%E2%80%93", "-", urlencode($val)) . "[$key])";
         }
-      } elseif (mb_strtolower($term) === "surname") {
+      } elseif ($term === "surname") {
         if ($val = $this->first_surname()) {
-          $key = $key_index[mb_strtolower($term)];
+          $key = 'Author';
           $query .= " AND (" . str_replace("%E2%80%93", "-", urlencode($val)) . "[$key])";
         }
       } else {
-        $key = $key_index[mb_strtolower($term)];
+        $key = $key_index[$term];
         if ($key && $term && $val = $this->get_without_comments_and_placeholders($term)) {
           if (preg_match(REGEXP_PLAIN_WIKILINK, $val, $matches)) {
               $val = $matches[1];
