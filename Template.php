@@ -1876,7 +1876,7 @@ final class Template {
       return array(NULL, 0);
     }
     if ($xml->ErrorList) { // Could look at $xml->ErrorList->PhraseNotFound for list of what was not found
-      report_inline('no results.');
+      if (isset($xml->ErrorList->PhraseNotFound)) print_r($xml->ErrorList->PhraseNotFound);
       return array(NULL, 0);
     }
     // @codeCoverageIgnoreEnd
