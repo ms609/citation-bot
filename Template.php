@@ -1850,7 +1850,7 @@ final class Template {
           if (!in_array(strtolower($val), array('the', 'and', 'a', 'for', 'in', 'on', 's', 're', 't',
                                                 'an', 'as', 'at', 'and', 'but', 'how',
                                                 'why', 'by', 'when', 'with', 'who', 'where', '')) &&
-             (strlen($val) > 3)) {  // Small words are NOT indexed
+             (mb_strlen($val) > 3)) {  // Small words are NOT indexed
             $query .= " AND (" . str_replace("%E2%80%93", "-", urlencode($val)) . "[$key])";
           }
         }
@@ -1867,8 +1867,8 @@ final class Template {
           $query .= " AND (" . str_replace("%E2%80%93", "-", urlencode($val)) . "[$key])";
         }
       } elseif ($term === "year") {
-        if ($val = $this->year()) {
-          $key = 'Publication Date';
+        $key = 'Publication Date';
+        if ($val = ($this->year() || $this->get('date'))) {
           $query .= " AND (" . str_replace("%E2%80%93", "-", urlencode($val)) . "[$key])";
         }
       } else {
