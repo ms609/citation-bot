@@ -1753,7 +1753,7 @@ final class Template {
         $url = "https://eutils.ncbi.nlm.nih.gov/entrez/eutils/esummary.fcgi?tool=WikipediaCitationBot&email=martins+pubmed@gmail.com&db=pubmed&id=" . $results[0];
         $xml = @simplexml_load_file($url);
         if ($xml === FALSE) {
-          report_warning("Unable to do PMID search");   // @codeCoverageIgnore
+          report_inline("nothing found.");              // @codeCoverageIgnore
           return;                                       // @codeCoverageIgnore
         }
         $Items = $xml->DocSum->Item;
