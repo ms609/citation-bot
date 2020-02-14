@@ -1797,18 +1797,18 @@ final class Template {
     }
     // If we've got this far, the DOI was unproductive or there was no DOI.
 
-    if ($this->has("journal") && $this->has("volume") && ($this->has("pages")|| $this->has("page"))) {
+    if ($this->has("journal") && $this->has("volume") && $this->page_range()) {
       $results = $this->do_pumbed_query(array("journal", "volume", "issue", "page"));
       if ($results[1] == 1) return $results;
     }
-    if ($this->has("title") && ($this->has("author") || $this->has("last") || $this->has("author1") || $this->has("last1"))) {
-      $results = $this->do_pumbed_query(array("title", "author", "last", "author1", "last1"));
+    if ($this->has("title") && $this->first_surname()) {
+      $results = $this->do_pumbed_query(array("title", "surname"));
       if ($results[1] == 1) return $results;
       if ($results[1] > 1) {
-        $results = $this->do_pumbed_query(array("title", "author", "last", "author1", "last1", "year", "date"));
+        $results = $this->do_pumbed_query(array("title", "surname", "year", "date"));
         if ($results[1] == 1) return $results;
         if ($results[1] > 1) {
-          $results = $this->do_pumbed_query(array("title", "author", "last", "author1", "last", "year", "date", "volume", "issue"));
+          $results = $this->do_pumbed_query(array("title", "surname", "year", "date", "volume", "issue"));
           if ($results[1] == 1) return $results;
         }
       }
@@ -1829,24 +1829,17 @@ final class Template {
     foreach ($terms as $term) {
       $key_index = array(
         'doi' =>  'AID',
-        'author1' =>  'Author',
-        'author' =>  'Author',
-        'last1' =>  'Author',
-        'last' =>  'Author',
         'issue' =>  'Issue',
         'journal' =>  'Journal',
-        'page' =>  'Pagination',
         'date' =>  'Publication Date',
         'year' =>  'Publication Date',
         'pmid' =>  'PMID',
         'volume' =>  'Volume'
-        ##Text Words [TW] , Title/Abstract [TIAB]
-          ## Formatting: YYY/MM/DD Publication Date [DP]
       );
-      if (mb_strtolower($term) === "title") {
-       if ($this->has('title')) {
+      $term = mb_strtolower($term);
+      if ($term === "title") {
+       if ($data = $this->get_without_comments_and_placeholders('title')) {
         $key = 'Title';
-        $data = $this->get_without_comments_and_placeholders('title');
         $data = straighten_quotes($data);
         $data = str_replace([';', ',', ':', '.', '?', '!', '&', '/', '(', ')', '[', ']', '{', '}', '"', "'", '|', '\\'],
                             [' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '], $data);
@@ -1861,14 +1854,19 @@ final class Template {
           }
         }
        }
-      } elseif (mb_strtolower($term) === "page") {
+      } elseif ($term === "page") {
         if ($this->page_range()) {
           $val = $this->page_range()[1];
-          $key = $key_index[mb_strtolower($term)];
+          $key = 'Pagination';
+          $query .= " AND (" . str_replace("%E2%80%93", "-", urlencode($val)) . "[$key])";
+        }
+      } elseif ($term === "surname") {
+        if ($val = $this->first_surname()) {
+          $key = 'Author';
           $query .= " AND (" . str_replace("%E2%80%93", "-", urlencode($val)) . "[$key])";
         }
       } else {
-        $key = $key_index[mb_strtolower($term)];
+        $key = $key_index[$term];
         if ($key && $term && $val = $this->get_without_comments_and_placeholders($term)) {
           if (preg_match(REGEXP_PLAIN_WIKILINK, $val, $matches)) {
               $val = $matches[1];
