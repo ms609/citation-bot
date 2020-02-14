@@ -1843,7 +1843,8 @@ final class Template {
         ##Text Words [TW] , Title/Abstract [TIAB]
           ## Formatting: YYY/MM/DD Publication Date [DP]
       );
-      if (mb_strtolower($term) === "title" && $this->has('title')) {
+      if (mb_strtolower($term) === "title") {
+       if ($this->has('title')) {
         $key = 'Title';
         $data = $this->get_without_comments_and_placeholders('title');
         $data = straighten_quotes($data);
@@ -1859,8 +1860,10 @@ final class Template {
             $query .= " AND (" . str_replace("%E2%80%93", "-", urlencode($val)) . "[$key])";
           }
         }
+       }
       } elseif (mb_strtolower($term) === "page") {
         if ($this->page_range()) {
+          $val = $this->page_range()[1];
           $key = $key_index[mb_strtolower($term)];
           $query .= " AND (" . str_replace("%E2%80%93", "-", urlencode($val)) . "[$key])";
         }
