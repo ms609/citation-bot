@@ -1867,8 +1867,8 @@ final class Template {
           $query .= " AND (" . str_replace("%E2%80%93", "-", urlencode($val)) . "[$key])";
         }
       } elseif ($term === "year") {
-        if ($val = $this->year()) {
-          $key = 'Publication Date';
+        $key = 'Publication Date';
+        if ($val = ($this->year() || $this->get('date'))) {
           $query .= " AND (" . str_replace("%E2%80%93", "-", urlencode($val)) . "[$key])";
         }
       } else {
