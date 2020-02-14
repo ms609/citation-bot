@@ -1848,9 +1848,7 @@ final class Template {
         $data = $this->get_without_comments_and_placeholders('title');
         $data = str_replace([';', ',', ':', '.', '?', '!', '&', '/', '(', ')', '[', ']', '{', '}', '"', "'", '|', '\\'],
                             [' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '], $data);
-        $data = strtr(utf8_decode($data), 
-           'ŠŒŽšœžŸ¥µÀÁÂÃÄÅÆÇÈÉÊËÌÍÎÏÐÑÒÓÔÕÖØÙÚÛÜÝßàáâãäåæçèéêëìíîïðñòóôõöøùúûüýÿ',
-           'SOZsozYYuAAAAAAACEEEEIIIIDNOOOOOOUUUUYsaaaaaaaceeeeiiiionoooooouuuuyy');
+        $data = strip_diacritics($data);
         $data_array = explode(" ", $data);
         foreach ($data_array as $val) {
           if (!in_array(strtolower($val), array('the', 'and', 'a', 'for', 'in', 'on', 's', 're', 't',
@@ -1868,12 +1866,10 @@ final class Template {
           } elseif (preg_match(REGEXP_PIPED_WIKILINK, $val, $matches)) {
               $val = $matches[2];
           }
-          $val = strtr(utf8_decode($val), 
-            'ŠŒŽšœžŸ¥µÀÁÂÃÄÅÆÇÈÉÊËÌÍÎÏÐÑÒÓÔÕÖØÙÚÛÜÝßàáâãäåæçèéêëìíîïðñòóôõöøùúûüýÿ',
-            'SOZsozYYuAAAAAAACEEEEIIIIDNOOOOOOUUUUYsaaaaaaaceeeeiiiionoooooouuuuyy');
           if ($key === "AID") {
              $query .= " AND (" . "\"" . str_replace(array("%E2%80%93", ';'), array("-", '%3B'), $val) . "\"" . "[$key])"; // PMID does not like escaped /s in DOIs, but other characters seem problematic.
           } else {
+             $val = strip_diacritics($val);
              $query .= " AND (" . str_replace("%E2%80%93", "-", urlencode($val)) . "[$key])";
           }
         }
