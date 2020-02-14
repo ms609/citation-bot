@@ -1845,9 +1845,9 @@ final class Template {
       );
       if (mb_strtolower($term) === "title" && $this->has('title')) {
         $key = 'Title';
-        $data = $this->get('title');
-        $data = str_replace([';', ',', ':', '.', '?', '!', '&', '/', '(', ')', '[', ']', '{', '}', '"', "'"],
-                            [' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '], $data);
+        $data = $this->get_without_comments_and_placeholders('title');
+        $data = str_replace([';', ',', ':', '.', '?', '!', '&', '/', '(', ')', '[', ']', '{', '}', '"', "'", '\', '|'],
+                            [' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '], $data);
         $data_array = explode(" ", $data);
         foreach ($data_array as $val) {
           if (!in_array(strtolower($val), array('the', 'and', 'a', 'for', 'in', 'on', 's', 're', 't',
