@@ -1752,12 +1752,12 @@ final class Template {
       if ($this->blank('doi') && $this->blank('journal') && $this->has('title')) {
         $url = "https://eutils.ncbi.nlm.nih.gov/entrez/eutils/esummary.fcgi?tool=WikipediaCitationBot&email=martins+pubmed@gmail.com&db=pubmed&id=" . $results[0];
         $xml = @simplexml_load_file($url);
-        if ($xml === FALSE) {                           // @codeCoverageIgnore
+        if ($xml === FALSE) {
           sleep(3);                                     // @codeCoverageIgnore
-          $xml = @simplexml_load_file($url);
+          $xml = @simplexml_load_file($url);            // @codeCoverageIgnore
         }
         if ($xml === FALSE) {
-          report_inline("nothing found.");              // @codeCoverageIgnore
+          report_inline("Unable to query pubmed.");     // @codeCoverageIgnore
           return;                                       // @codeCoverageIgnore
         }
         $Items = $xml->DocSum->Item;
@@ -1894,7 +1894,11 @@ final class Template {
     $xml = @simplexml_load_file($url);
     // @codeCoverageIgnoreStart
     if ($xml === FALSE) {
-      report_warning("Unable to do PMID search");
+      sleep(3);
+      $xml = @simplexml_load_file($url);
+    }
+    if ($xml === FALSE) {
+      report_warning("no results.");
       return array(NULL, 0);
     }
     if ($xml->ErrorList) { // Could look at $xml->ErrorList->PhraseNotFound for list of what was not found
