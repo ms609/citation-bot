@@ -1840,7 +1840,7 @@ final class Template {
           ## Formatting: YYY/MM/DD Publication Date [DP]
       );
       if (mb_strtolower($term) === "title") {
-       if ($data = $this->get_without_comments_and_placeholders('title');) {
+       if ($data = $this->get_without_comments_and_placeholders('title')) {
         $key = $key_index[mb_strtolower($term)];
         $data = straighten_quotes($data);
         $data = str_replace([';', ',', ':', '.', '?', '!', '&', '/', '(', ')', '[', ']', '{', '}', '"', "'", '|', '\\'],
