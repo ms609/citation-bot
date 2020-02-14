@@ -1752,6 +1752,10 @@ final class Template {
       if ($this->blank('doi') && $this->blank('journal') && $this->has('title')) {
         $url = "https://eutils.ncbi.nlm.nih.gov/entrez/eutils/esummary.fcgi?tool=WikipediaCitationBot&email=martins+pubmed@gmail.com&db=pubmed&id=" . $results[0];
         $xml = @simplexml_load_file($url);
+        if ($xml === FALSE) {                           // @codeCoverageIgnore
+          sleep(3);                                     // @codeCoverageIgnore
+          $xml = @simplexml_load_file($url);
+        }
         if ($xml === FALSE) {
           report_inline("nothing found.");              // @codeCoverageIgnore
           return;                                       // @codeCoverageIgnore
