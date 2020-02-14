@@ -1689,6 +1689,7 @@ final class Template {
     if ($this->has('doi')) {
       return TRUE;
     }
+    return FALSE;
     report_action("Checking CrossRef database for doi. ");
     $page_range = $this->page_range();
     $data = [
