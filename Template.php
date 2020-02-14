@@ -1835,7 +1835,7 @@ final class Template {
         'pmid' =>  'PMID',
         'volume' =>  'Volume'
       );
-      $term = mb_strtolower($term)
+      $term = mb_strtolower($term);
       if ($term === "title") {
        if ($data = $this->get_without_comments_and_placeholders('title')) {
         $key = 'Title';
