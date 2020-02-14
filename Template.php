@@ -1804,10 +1804,10 @@ final class Template {
       $results = $this->do_pumbed_query(array("title", "surname"));
       if ($results[1] == 1) return $results;
       if ($results[1] > 1) {
-        $results = $this->do_pumbed_query(array("title", "surname", "year", "date"));
+        $results = $this->do_pumbed_query(array("title", "surname", "year"));
         if ($results[1] == 1) return $results;
         if ($results[1] > 1) {
-          $results = $this->do_pumbed_query(array("title", "surname", "year", "date", "volume", "issue"));
+          $results = $this->do_pumbed_query(array("title", "surname", "year", "volume", "issue"));
           if ($results[1] == 1) return $results;
         }
       }
@@ -1830,8 +1830,6 @@ final class Template {
         'doi' =>  'AID',
         'issue' =>  'Issue',
         'journal' =>  'Journal',
-        'date' =>  'Publication Date',
-        'year' =>  'Publication Date',
         'pmid' =>  'PMID',
         'volume' =>  'Volume'
       );
@@ -1862,6 +1860,11 @@ final class Template {
       } elseif ($term === "surname") {
         if ($val = $this->first_surname()) {
           $key = 'Author';
+          $query .= " AND (" . str_replace("%E2%80%93", "-", urlencode($val)) . "[$key])";
+        }
+      } elseif ($term === "year") {
+        if ($val = $this->year()) {
+          $key = 'Publication Date';
           $query .= " AND (" . str_replace("%E2%80%93", "-", urlencode($val)) . "[$key])";
         }
       } else {
