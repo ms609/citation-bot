@@ -1797,7 +1797,7 @@ final class Template {
     // If we've got this far, the DOI was unproductive or there was no DOI.
 
     if ($this->has("journal") && $this->has("volume") && ($this->has("pages")|| $this->has("page"))) {
-      $results = $this->do_pumbed_query(array("journal", "volume", "issue", "pages", "page"));
+      $results = $this->do_pumbed_query(array("journal", "volume", "issue", "page"));
       if ($results[1] == 1) return $results;
     }
     if ($this->has("title") && ($this->has("author") || $this->has("last") || $this->has("author1") || $this->has("last1"))) {
@@ -1834,7 +1834,6 @@ final class Template {
         'last' =>  'Author',
         'issue' =>  'Issue',
         'journal' =>  'Journal',
-        'pages' =>  'Pagination',
         'page' =>  'Pagination',
         'date' =>  'Publication Date',
         'year' =>  'Publication Date',
@@ -1858,6 +1857,11 @@ final class Template {
              (strlen($val) > 3)) {  // Small words are NOT indexed
             $query .= " AND (" . str_replace("%E2%80%93", "-", urlencode($val)) . "[$key])";
           }
+        }
+      } elseif (mb_strtolower($term) === "page") {
+        if ($this->page_range()) {
+          $key = $key_index[mb_strtolower($term)];
+          $query .= " AND (" . str_replace("%E2%80%93", "-", urlencode($val)) . "[$key])";
         }
       } else {
         $key = $key_index[mb_strtolower($term)];
