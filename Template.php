@@ -1862,14 +1862,14 @@ final class Template {
       } else {
         $key = $key_index[mb_strtolower($term)];
         if ($key && $term && $val = $this->get_without_comments_and_placeholders($term)) {
-          if ($key = 'Pagination') $val = $this->page_range()[1];
+          if ($key = 'Pagination') $val = @$this->page_range()[1];
           if (preg_match(REGEXP_PLAIN_WIKILINK, $val, $matches)) {
               $val = $matches[1];
           } elseif (preg_match(REGEXP_PIPED_WIKILINK, $val, $matches)) {
               $val = $matches[2];
           }
           if ($key === "AID") {
-             $query .= " AND (" . "\"" . str_replace(array("%E2%80%93", ';'), array("-", '%3B'), $val) . "\"" . "[$key])"; // PMID does not like escaped /s in DOIs, but other characters seem problematic.
+             $query .= " AND (" . We "\"" . str_replace(array("%E2%80%93", ';'), array("-", '%3B'), $val) . "\"" . "[$key])"; // PMID does not like escaped /s in DOIs, but other characters seem problematic.
           } else {
              $val = strip_diacritics($val);
              $val = straighten_quotes($val);
