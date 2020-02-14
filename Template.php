@@ -1846,6 +1846,7 @@ final class Template {
       if (mb_strtolower($term) === "title" && $this->has('title')) {
         $key = 'Title';
         $data = $this->get_without_comments_and_placeholders('title');
+        $data = straighten_quotes($data);
         $data = str_replace([';', ',', ':', '.', '?', '!', '&', '/', '(', ')', '[', ']', '{', '}', '"', "'", '|', '\\'],
                             [' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '], $data);
         $data = strip_diacritics($data);
@@ -1870,6 +1871,7 @@ final class Template {
              $query .= " AND (" . "\"" . str_replace(array("%E2%80%93", ';'), array("-", '%3B'), $val) . "\"" . "[$key])"; // PMID does not like escaped /s in DOIs, but other characters seem problematic.
           } else {
              $val = strip_diacritics($val);
+             $val = straighten_quotes($val);
              $query .= " AND (" . str_replace("%E2%80%93", "-", urlencode($val)) . "[$key])";
           }
         }
