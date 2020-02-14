@@ -211,7 +211,7 @@ final class PageTest extends testBaseClass {
   public function testUrlReferencesWithText5() {
       $text = "<ref>Stoeckelhuber, Mechthild, Alexander Sliwa, and Ulrich Welsch. &quot;[http://onlinelibrary.wiley.com/doi/10.1002/1097-0185(20000701)259:3%3C312::AID-AR80%3E3.0.CO;2-X/full Histo‐physiology of the scent‐marking glands of the penile pad, anal pouch, and the forefoot in the aardwolf (Proteles cristatus)].&quot; The anatomical record 259.3 (2000): 312-326.</ref>";
       $page = $this->process_page($text);
-      $this->assertSame('<ref>{{Cite journal | doi=10.1002/1097-0185(20000701)259:3<312::AID-AR80>3.0.CO;2-X| title=Histo-physiology of the scent-marking glands of the penile pad, anal pouch, and the forefoot in the aardwolf (Proteles cristatus)| journal=The Anatomical Record| volume=259| issue=3| pages=312–326| year=2000| last1=Stoeckelhuber| first1=Mechthild| last2=Sliwa| first2=Alexander| last3=Welsch| first3=Ulrich}}</ref>', $page->parsed_text());
+      $this->assertSame('<ref>{{Cite journal | doi=10.1002/1097-0185(20000701)259:3<312::AID-AR80>3.0.CO;2-X| pmid=10861364| title=Histo-physiology of the scent-marking glands of the penile pad, anal pouch, and the forefoot in the aardwolf (Proteles cristatus)| journal=The Anatomical Record| volume=259| issue=3| pages=312–326| year=2000| last1=Stoeckelhuber| first1=Mechthild| last2=Sliwa| first2=Alexander| last3=Welsch| first3=Ulrich}}</ref>', $page->parsed_text());
   }
 
   public function testUrlReferencesWithText6() {
