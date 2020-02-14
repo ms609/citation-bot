@@ -1869,7 +1869,7 @@ final class Template {
           if ($key === "AID") {
              $query .= " AND (" . "\"" . str_replace(array("%E2%80%93", ';'), array("-", '%3B'), $val) . "\"" . "[$key])"; // PMID does not like escaped /s in DOIs, but other characters seem problematic.
           } else {
-             $data = strip_diacritics($data);
+             $val = strip_diacritics($val);
              $query .= " AND (" . str_replace("%E2%80%93", "-", urlencode($val)) . "[$key])";
           }
         }
