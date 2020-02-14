@@ -1872,7 +1872,7 @@ final class Template {
               $val = $matches[2];
           }
           if ($key === "AID") {
-             $query .= " AND (" . We "\"" . str_replace(array("%E2%80%93", ';'), array("-", '%3B'), $val) . "\"" . "[$key])"; // PMID does not like escaped /s in DOIs, but other characters seem problematic.
+             $query .= " AND (" . "\"" . str_replace(array("%E2%80%93", ';'), array("-", '%3B'), $val) . "\"" . "[$key])"; // PMID does not like escaped /s in DOIs, but other characters seem problematic.
           } else {
              $val = strip_diacritics($val);
              $val = straighten_quotes($val);
