@@ -1754,7 +1754,7 @@ final class Template {
         $url = "https://eutils.ncbi.nlm.nih.gov/entrez/eutils/esummary.fcgi?tool=WikipediaCitationBot&email=martins+pubmed@gmail.com&db=pubmed&id=" . $results[0];
         $xml = @simplexml_load_file($url);
         if ($xml === FALSE) {
-          report_warning("Unable to do PMID search");   // @codeCoverageIgnore
+          report_inline("nothing found.");              // @codeCoverageIgnore
           return;                                       // @codeCoverageIgnore
         }
         $Items = $xml->DocSum->Item;
@@ -1805,10 +1805,10 @@ final class Template {
       $results = $this->do_pumbed_query(array("title", "surname"));
       if ($results[1] == 1) return $results;
       if ($results[1] > 1) {
-        $results = $this->do_pumbed_query(array("title", "surname", "year", "date"));
+        $results = $this->do_pumbed_query(array("title", "surname", "year"));
         if ($results[1] == 1) return $results;
         if ($results[1] > 1) {
-          $results = $this->do_pumbed_query(array("title", "surname", "year", "date", "volume", "issue"));
+          $results = $this->do_pumbed_query(array("title", "surname", "year", "volume", "issue"));
           if ($results[1] == 1) return $results;
         }
       }
@@ -1831,8 +1831,6 @@ final class Template {
         'doi' =>  'AID',
         'issue' =>  'Issue',
         'journal' =>  'Journal',
-        'date' =>  'Publication Date',
-        'year' =>  'Publication Date',
         'pmid' =>  'PMID',
         'volume' =>  'Volume'
       );
@@ -1863,6 +1861,11 @@ final class Template {
       } elseif ($term === "surname") {
         if ($val = $this->first_surname()) {
           $key = 'Author';
+          $query .= " AND (" . str_replace("%E2%80%93", "-", urlencode($val)) . "[$key])";
+        }
+      } elseif ($term === "year") {
+        if ($val = $this->year()) {
+          $key = 'Publication Date';
           $query .= " AND (" . str_replace("%E2%80%93", "-", urlencode($val)) . "[$key])";
         }
       } else {
