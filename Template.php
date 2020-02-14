@@ -1872,6 +1872,7 @@ final class Template {
     // @codeCoverageIgnoreStart
     if ($xml === FALSE) {
       report_warning("Unable to do PMID search");
+      echo "\n" . $url . "\n\n";
       return array(NULL, 0);
     }
     if ($xml->ErrorList) {
