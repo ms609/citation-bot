@@ -1751,6 +1751,7 @@ final class Template {
       // Double check title if no DOI and no Journal were used
       if ($this->blank('doi') && $this->blank('journal') && $this->has('title')) {
         $url = "https://eutils.ncbi.nlm.nih.gov/entrez/eutils/esummary.fcgi?tool=WikipediaCitationBot&email=martins+pubmed@gmail.com&db=pubmed&id=" . $results[0];
+        usleep(10000); // Wait 1/100 of a second since we just tried
         $xml = @simplexml_load_file($url);
         if ($xml === FALSE) {
           sleep(3);                                     // @codeCoverageIgnore
@@ -1828,15 +1829,14 @@ final class Template {
    * Provide an array of wikipedia parameters which exist in $p, and this function will construct a Pubmed seach query and
    * return the results as array (first result, # of results)
    */
-    $query = '';
-    foreach ($terms as $term) {
-      $key_index = array(
-        'doi' =>  'AID',
+    $key_index = array(
         'issue' =>  'Issue',
         'journal' =>  'Journal',
         'pmid' =>  'PMID',
         'volume' =>  'Volume'
-      );
+    );
+    $query = '';
+    foreach ($terms as $term) {
       $term = mb_strtolower($term);
       if ($term === "title") {
        if ($data = $this->get_without_comments_and_placeholders('title')) {
@@ -1871,26 +1871,28 @@ final class Template {
         if ($val = ($this->year() || $this->get('date'))) {
           $query .= " AND (" . str_replace("%E2%80%93", "-", urlencode($val)) . "[$key])";
         }
+      } elseif ($term === "doi") {
+        $key = 'AID';
+        if ($val = $this->get_without_comments_and_placeholders($term)) {
+           $query .= " AND (" . "\"" . str_replace(array("%E2%80%93", ';'), array("-", '%3B'), $val) . "\"" . "[$key])"; // PubMed does not like escaped /s in DOIs, but other characters seem problematic.
+        }
       } else {
         $key = $key_index[$term];
         if ($key && $term && $val = $this->get_without_comments_and_placeholders($term)) {
           if (preg_match(REGEXP_PLAIN_WIKILINK, $val, $matches)) {
-              $val = $matches[1];
+              $val = $matches[1];    // @codeCoverageIgnore
           } elseif (preg_match(REGEXP_PIPED_WIKILINK, $val, $matches)) {
-              $val = $matches[2];
+              $val = $matches[2];    // @codeCoverageIgnore
           }
-          if ($key === "AID") {
-             $query .= " AND (" . "\"" . str_replace(array("%E2%80%93", ';'), array("-", '%3B'), $val) . "\"" . "[$key])"; // PMID does not like escaped /s in DOIs, but other characters seem problematic.
-          } else {
-             $val = strip_diacritics($val);
-             $val = straighten_quotes($val);
-             $query .= " AND (" . str_replace("%E2%80%93", "-", urlencode($val)) . "[$key])";
-          }
+          $val = strip_diacritics($val);
+          $val = straighten_quotes($val);
+          $query .= " AND (" . str_replace("%E2%80%93", "-", urlencode($val)) . "[$key])";
         }
       }
     }
     $query = substr($query, 5); // Chop off initial " AND "
     $url = "https://eutils.ncbi.nlm.nih.gov/entrez/eutils/esearch.fcgi?db=pubmed&tool=WikipediaCitationBot&email=martins+pubmed@gmail.com&term=$query";
+    usleep(10000); // Wait 1/100 of a second since we probably just tried
     $xml = @simplexml_load_file($url);
     // @codeCoverageIgnoreStart
     if ($xml === FALSE) {
