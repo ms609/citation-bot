@@ -195,6 +195,12 @@ final class TemplateTest extends testBaseClass {
     $this->assertNull($expanded->get('issn'));
     $this->assertNull($expanded->get('url'));
   }
+ 
+  public function testGroveMusic() { // TODO - we can do better
+    $text = '{{cite web |url=https://doi.org/10.1093/gmo/9781561592630.article.J441700 |title=Tatum, Art(hur, Jr.) (jazz) |last=Howlett |first=Felicity | website=Grove Music Online |publisher=Oxford University Press |date=2002 |access-date=November 20, 2018 |url-access=subscription|via=Grove Music Online}}';
+    $template = $this->process_citation($text);
+    $this->assertSame('{{cite document |title=Tatum, Art(hur, Jr.) (jazz) |last=Howlett |first=Felicity |publisher=Oxford University Press |date=2002 |doi=10.1093/gmo/9781561592630.article.J441700 }}'', $template->parsed_text());
+  }
   
   public function testBrokenDoiUrlRetention1() {
     $text = '{{cite journal|url=http://opil.ouplaw.com/view/10.1093/law:epil/9780199231690/law-9780199231690-e1301|title=Israel, Occupied Territories|publisher=|doi=10.1093/law:epil/9780199231690/law-9780199231690-e1301|doi-broken-date=2018-07-07}}';
