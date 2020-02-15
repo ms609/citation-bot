@@ -4441,6 +4441,17 @@ final class Template {
       }
       if (stripos($this->get('publisher'), 'oxford') !== FALSE) $this->forget('publisher');
     }
+    if (preg_match('~^10\.1093/$~', $this->get('doi')) &&
+        $this->has('title') &&
+        ($this->wikiname() === 'cite web' || $this->wikiname() === 'cite journal') &&
+        $this->blank([WORK_ALIASES]) && $this->blank('url')) {
+      preg_match("~^(\s*).*\b(\s*)$~", $this->name, $spacing);
+      if (substr($this->name,0,1) === 'c') {
+        $this->name = $spacing[1] . 'cite document' . $spacing[2];
+      } else {
+        $this->name = $spacing[1] . 'Cite document' . $spacing[2];
+      }
+    }
     foreach (ALL_ALIASES as $alias_list) {
       if (!$this->blank($alias_list)) { // At least one is set
         foreach ($alias_list as $alias) {
