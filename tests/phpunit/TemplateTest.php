@@ -4626,6 +4626,15 @@ T1 - This is the Title }}';
      $this->assertNull($template->get('publisher'));
   }
  
+  public function testNameStuff() {
+     $text = '{{cite journal|author1=[[Robert Jay Charlson|Charlson]] |first1=R. J.}}';
+     $template = $this->process_citation($text);
+     $this->assertSame('Robert Jay Charlson', $template->get('author1-link'));
+     $this->assertSame('Charlson', $template->get('last1'));
+     $this->assertSame('R. J.', $template->get('first1'));
+     $this->assertNull($template->get('author1'));
+  }
+
   public function testSaveAccessType() {
      $text = '{{cite web|url=http://doi.org/10.1063/1.2833100 |url-access=Tested}}';
      $template = $this->make_citation($text);
