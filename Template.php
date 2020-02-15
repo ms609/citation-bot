@@ -3371,12 +3371,13 @@ echo "\n tidy " . $param . '   ' . $the_author ."\n";
               strpos($the_author, 'CITATION_BOT') === FALSE &&
               strpos($the_author, '{{!}}') === FALSE) {  // Has a normal wikilink
             if (preg_match(REGEXP_PLAIN_WIKILINK, $the_author, $matches)) {
-              $this->add_if_new($param . '-link', $matches[1]);
-              $this->set($param, $matches[1]);
+  $this->set($param, $matches[1]);           
+ $this->add_if_new($param . '-link', $matches[1]);
+             
             } elseif (preg_match(REGEXP_PIPED_WIKILINK, $the_author, $matches)) {
-              $this->add_if_new($param . '-link', $matches[1]);
-              $this->set($param, $matches[2]);
-            }
+  $this->set($param, $matches[2]);        
+    $this->add_if_new($param . '-link', $matches[1]);
+               }
           }
 echo "\n". $this->parsed_text() . "\n";
           if ($this->blank('agency') && in_array(strtolower($the_author), ['associated press', 'reuters'])) {
