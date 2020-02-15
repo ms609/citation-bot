@@ -4441,7 +4441,7 @@ final class Template {
       }
       if (stripos($this->get('publisher'), 'oxford') !== FALSE) $this->forget('publisher');
     }
-    if (preg_match('~^10\.1093/$~', $this->get('doi')) &&
+    if (preg_match('~^10\.1093/~', $this->get('doi')) &&
         $this->has('title') &&
         ($this->wikiname() === 'cite web' || $this->wikiname() === 'cite journal') &&
         $this->blank([WORK_ALIASES]) && $this->blank('url')) {
