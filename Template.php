@@ -4444,7 +4444,7 @@ final class Template {
     if (preg_match('~^10\.1093/~', $this->get('doi')) &&
         $this->has('title') &&
         ($this->wikiname() === 'cite web' || $this->wikiname() === 'cite journal') &&
-        $this->blank([WORK_ALIASES]) && $this->blank('url')) {
+        $this->blank(WORK_ALIASES) && $this->blank('url')) {
       preg_match("~^(\s*).*\b(\s*)$~", $this->name, $spacing);
       if (substr($this->name,0,1) === 'c') {
         $this->name = $spacing[1] . 'cite document' . $spacing[2];
