@@ -10,6 +10,7 @@ $testing_skip_zotero = TRUE; // TODO                                    //
 $testing_skip_bibcode= FALSE;                                           //
 $testing_skip_google = FALSE;                                           //
 $testing_skip_wiki   = FALSE;                                           //
+$testing_skip_dx     = TRUE; // TODO                                    //
 // =======================================================================
 
 // Non-trusted builds
@@ -26,6 +27,7 @@ if (getenv('TRAVIS_PULL_REQUEST') === 'false') {
    $testing_skip_bibcode= FALSE;
    $testing_skip_google = FALSE;
    $testing_skip_wiki   = FALSE;
+   $testing_skip_dx     = FALSE;
 }
 
 $BLOCK_BIBCODE_SEARCH = TRUE;
@@ -54,7 +56,18 @@ abstract class testBaseClass extends PHPUnit\Framework\TestCase {
     } else {
       $function();
     }
-  } 
+  }
+    
+  protected function requires_dx($function) {
+    global $testing_skip_dx;
+    if ($testing_skip_dx) {
+      echo 'X';
+      ob_flush();
+      $this->assertNull(NULL);
+    } else {
+      $function();
+    }
+  }
 
   // Only routines that absolutely need bibcode access since we are limited 
   protected function requires_bibcode($function) {
