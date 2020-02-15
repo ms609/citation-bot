@@ -3391,6 +3391,7 @@ final class Template {
           if (isset($pmatch[2]) && $this->has('first' . $pmatch[2]) && $this->blank('last' . $pmatch[2])) {
             $this->rename('author' . $pmatch[2], 'last' . $pmatch[2]);
             $pmatch[1] = 'last';
+            $param = 'last-' . $pmatch[2];
           }
           // No return here
         case 'authors':
