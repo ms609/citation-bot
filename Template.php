@@ -3362,6 +3362,8 @@ final class Template {
           
         case 'author':
           $the_author = $this->get($param);
+echo "\n tidy " . $param . '   ' . $the_author ."\n";
+
           if (substr($the_author, 0, 2) == '[[' &&
               substr($the_author,   -2) == ']]' &&
               mb_substr_count($the_author, '[[') === 1 && 
@@ -3376,6 +3378,7 @@ final class Template {
               $this->set($param, $matches[2]);
             }
           }
+echo "\n". $this->parsed_text() . "\n";
           if ($this->blank('agency') && in_array(strtolower($the_author), ['associated press', 'reuters'])) {
             $this->rename('author', 'agency');
             if (@$pmatch[2] == '1' || @$pmatch[2] == '') {
@@ -3392,6 +3395,7 @@ final class Template {
             $this->rename('author' . $pmatch[2], 'last' . $pmatch[2]);
             $pmatch[1] = 'last';
             $param = 'last' . $pmatch[2];
+echo "swapping\n";
             return;
           }
           // No return here
@@ -3400,6 +3404,7 @@ final class Template {
           if (!$this->initial_author_params) $this->handle_et_al();
           // Continue from authors without break
          case 'last': case 'surname':
+echo "\n in last ". $param ."\n";
             if (!$this->initial_author_params) {
               if ($pmatch[2]) {
                 $translator_regexp = "~\b([Tt]r(ans(lat...?(by)?)?)?\.?)\s([\w\p{L}\p{M}\s]+)$~u";
@@ -3415,6 +3420,7 @@ final class Template {
               }
             }
             if ($pmatch[2] && $pmatch[1] === 'last') {
+echo "\n stuff" . $this->parsed_text()  . \n";
               $the_author = $this->get($param);
               if (substr($the_author, 0, 2) == '[[' &&
                  substr($the_author,   -2) == ']]' &&
