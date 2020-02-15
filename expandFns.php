@@ -523,7 +523,7 @@ function tidy_date($string) {
   return ''; // And we give up
 }
 
-function good_10_1093_doi($url) { // We assume dois are bad, unless on good list
+function not_bad_10_1093_doi($url) { // We assume dois are bad, unless on good list
   if(!preg_match('~10.1093/([^/]+)/~u', $url, $match)) return TRUE;
   $test = strtolower($match[1]);
   // March 2019 Good list
@@ -532,7 +532,7 @@ function good_10_1093_doi($url) { // We assume dois are bad, unless on good list
 }
 
 function bad_10_1093_doi($url) {
-  return !good_10_1093_doi($url);
+  return !not_bad_10_1093_doi($url);
 }
 
 // ============================================= Other functions ======================================
