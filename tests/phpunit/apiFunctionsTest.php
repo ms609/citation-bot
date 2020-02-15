@@ -80,14 +80,17 @@ final class apiFunctionsTest extends testBaseClass {
   }
   
   public function testExpansion_doi_not_from_crossrefRG() {
+    $this->requires_dx(function() {
      $text = '{{Cite journal| doi= 10.13140/RG.2.1.1002.9609}}';
      $expanded = $this->process_citation($text);
      $this->assertSame('Lesson Study as a form of in-School Professional Development', $expanded->get('title'));
      $this->assertSame('2015', $expanded->get('year'));
      $this->assertSame('Aoibhinn Ni Shuilleabhain', $expanded->get('author1'));
+    });
   }
   
-    public function testExpansion_doi_not_from_crossrefJapanJournal() {
+   public function testExpansion_doi_not_from_crossrefJapanJournal() {
+    $this->requires_dx(function() {
      $text = '{{cite journal|doi=10.11429/ppmsj1919.17.0_48}}';
      $expanded = $this->process_citation($text);
      $this->assertSame('On the Interaction of Elementary Particles. I', $expanded->get('title'));
@@ -96,7 +99,8 @@ final class apiFunctionsTest extends testBaseClass {
      $this->assertSame('17', $expanded->get('volume'));
      $this->assertSame('YUKAWA', $expanded->get('last1'));
      $this->assertSame('Hideki', $expanded->get('first1'));
-    }
+    });
+  }
   // See https://www.doi.org/demos.html  NOT ALL EXPAND AT THIS TIME
   public function testExpansion_doi_not_from_crossrefBook() {
     $this->requires_dx(function() {
