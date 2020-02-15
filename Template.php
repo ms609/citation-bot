@@ -3392,6 +3392,7 @@ final class Template {
             $this->rename('author' . $pmatch[2], 'last' . $pmatch[2]);
             $pmatch[1] = 'last';
             $param = 'last' . $pmatch[2];
+            return;
           }
           // No return here
         case 'authors':
