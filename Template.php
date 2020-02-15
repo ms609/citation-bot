@@ -4904,13 +4904,22 @@ final class Template {
       $this->forgetter('registration', $echo_forgetting);
       $this->forgetter('subscription', $echo_forgetting);
       $this->forgetter('url-access', $echo_forgetting);
-      $this->forgetter('via', $echo_forgetting);
-      $this->forgetter('website', $echo_forgetting);
       $this->forgetter('deadurl', $echo_forgetting);
       $this->forgetter('url-status', $echo_forgetting);
       if ($this->has('work') && stripos($this->get('work'), 'www.') === 0) {
          $this->forgetter('work', $echo_forgetting);
       }
+      if ($this->blank(array_diff(WORK_ALIASES, 'website')) && bad_10_1093_doi($this->get('doi')) {
+        if ($this->has('via') && $this->blank('website')) {
+          $this->rename('via', 'work');
+        } elseif ($this->has('website') && $this->blank('via')) {
+          $this->rename('website', 'work');
+        } elseif ($this->has('website') && $this->has('via')) {
+          $this->rename('website', 'work', $this->get('website') . ' via ' . $this->get('via') );
+        }
+      }
+      $this->forgetter('via', $echo_forgetting);
+      $this->forgetter('website', $echo_forgetting);
     }
     if ($par == 'chapter' && $this->blank('url')) {
       if($this->has('chapter-url')) {
