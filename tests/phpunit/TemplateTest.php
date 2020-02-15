@@ -4608,8 +4608,7 @@ T1 - This is the Title }}';
      $this->assertSame('10.5240/7B2F-ED76-31F6-8CFB-4DB9-M', $template->get('doi'));
   }
  
-  public function testOxfordTemplate() {
-     $text = '{{cite web |last1=Courtney |first1=W. P. |last2=Hinings |first2=Jessica |title=Woodley, George (bap. 1786, d. 1846) |url=https://doi.org/10.1093/ref:odnb/29929 |website=Oxford Dictionary of National Biography |publisher=Oxford University Press |accessdate=12 September 2019}}';
+  public function test{{cite web |last1=Courtney |first1=W. P. |last2=Hinings |first2=Jessica |title=Woodley, George (bap. 1786, d. 1846) |url=https://doi.org/10.1093/ref:odnb/29929 |website=Oxford Dictionary of National Biography |publisher=Oxford University Press |accessdate=12 September 2019}}';
      $template = $this->process_citation($text);
      $this->assertSame('cite odnb', $template->wikiname());
      $this->assertSame('Woodley, George (bap. 1786, d. 1846)', $template->get('title'));
@@ -4626,6 +4625,15 @@ T1 - This is the Title }}';
      $this->assertNull($template->get('publisher'));
   }
  
+  public function testNameStuff() {
+     $text = '{{cite journal|author1=[[Robert Jay Charlson|Charlson]] |first1=R. J.}}';
+     $template = $this->process_citation($text);
+     $this->assertSame('Robert Jay Charlson', $template->get('author1-link'));
+     $this->assertSame('Charlson', $template->get('last1'));
+     $this->assertSame('R. J.', $template->get('first1'));
+     $this->assertNull($template->get('author1'));
+  }
+
   public function testSaveAccessType() {
      $text = '{{cite web|url=http://doi.org/10.1063/1.2833100 |url-access=Tested}}';
      $template = $this->make_citation($text);
