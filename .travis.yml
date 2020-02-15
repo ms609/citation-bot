@@ -2,19 +2,12 @@ sudo: false
 dist: trusty
 branches:
   except: release
-
+junk
 language: php
                   ###### mediawiki/oauthclient uses features deprecated in 7.4 and higher           ######
                   ###### waiting on 1.0.3 https://packagist.org/packages/mediawiki/oauthclient      ######
 matrix:           ###### ONLY ONE WITH FULL TESTING WITH IS 7.3 OTHERS ARE ALL STATIC ANALYSIS ONLY ######
   include:
-    - stage: pretest
-      name: "Quick PHP 5.6 syntax check"
-      php: 5.6.40
-      script: '! find . -type f -name "*.php" -exec php -d error_reporting=32767 -l {} \; 2>&1 >&- | grep "^"'
-    - php: nightly
-      name: "Quick PHP 8.0 syntax check"
-      script: '! find . -type f -name "*.php" -exec php -d error_reporting=32767 -l {} \; 2>&1 >&- | grep "^"'
     - stage: test
       name: "Full test with PHP 7.3"
       php: 7.3
@@ -22,20 +15,7 @@ matrix:           ###### ONLY ONE WITH FULL TESTING WITH IS 7.3 OTHERS ARE ALL S
         - travis_retry composer self-update
         - composer require mediawiki/oauthclient
         - '! find . -type f -name "*.php" -exec php -d error_reporting=32767 -l {} \; 2>&1 >&- | grep "^"'
-      script: phpunit --coverage-clover coverage.xml
-      after_success: bash <(curl -s https://codecov.io/bash)
-    - stage: deploy-to-master
-      name: "Update WMFlabs servers"
-      if: branch = master AND type != pull_request
-      php: 5.6 # Avoid downloading and installing 5.5
-      script:
-        - wget -O- https://tools.wmflabs.org/citations/gitpull.php
-    - stage: deploy-to-development
-      name: "Update WMFlabs test servers"
-      if: branch = development AND type != pull_request
-      php: 5.6 # Avoid downloading and installing 5.5
-      script:
-        - wget -O- https://tools.wmflabs.org/citations-dev/gitpull.php
+      script: phpunit
 
 git:
   depth: 21
