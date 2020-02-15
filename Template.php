@@ -4915,7 +4915,17 @@ final class Template {
         } elseif ($this->has('website') && $this->blank('via')) {
           $this->rename('website', 'work');
         } elseif ($this->has('website') && $this->has('via')) {
-          $this->rename('website', 'work', $this->get('website') . ' via ' . $this->get('via') );
+          if (titles_are_similar($this->get('website'), $this->get('via'))) {
+            $this->rename('via', 'work');
+          } else {
+            $this->rename('website', 'work', $this->get('website') . ' via ' . $this->get('via') );
+          }
+        }
+        preg_match("~^(\s*).*\b(\s*)$~", $this->name, $spacing);
+        if (substr($this->name,0,1) === 'c') {
+          $this->name = $spacing[1] . 'cite document' . $spacing[2];
+        } else {
+          $this->name = $spacing[1] . 'Cite document' . $spacing[2];
         }
       }
       $this->forgetter('via', $echo_forgetting);
