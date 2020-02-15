@@ -4909,7 +4909,7 @@ final class Template {
       if ($this->has('work') && stripos($this->get('work'), 'www.') === 0) {
          $this->forgetter('work', $echo_forgetting);
       }
-      if ($this->blank(array_diff(WORK_ALIASES, 'website')) && bad_10_1093_doi($this->get('doi')) {
+      if ($this->blank(array_diff(WORK_ALIASES, 'website')) && bad_10_1093_doi($this->get('doi'))) {
         if ($this->has('via') && $this->blank('website')) {
           $this->rename('via', 'work');
         } elseif ($this->has('website') && $this->blank('via')) {
