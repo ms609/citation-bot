@@ -3420,7 +3420,7 @@ echo "\n in last ". $param ."\n";
               }
             }
             if ($pmatch[2] && $pmatch[1] === 'last') {
-echo "\n stuff" . $this->parsed_text()  . \n";
+echo "\n stuff" . $this->parsed_text()  . "\n";
               $the_author = $this->get($param);
               if (substr($the_author, 0, 2) == '[[' &&
                  substr($the_author,   -2) == ']]' &&
