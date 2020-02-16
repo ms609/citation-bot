@@ -4916,7 +4916,8 @@ final class Template {
           $this->rename('website', 'work');
         } elseif ($this->has('website') && $this->has('via')) {
           if (titles_are_similar($this->get('website'), $this->get('via'))) {
-            $this->rename('via', 'work');
+            $this->forgetter('via', $echo_forgetting);
+            $this->rename('website', 'work');
           } else {
             $tmp = $this->get('website') . ' via ' . $this->get('via');
             $this->forgetter('via', $echo_forgetting);
