@@ -4624,7 +4624,7 @@ T1 - This is the Title }}';
      $text = '{{cite journal|date=4000}}';
      $template = $this->make_citation($text);
      $template->add_if_new('year', (string) date('Y'), 'crossref');
-     $this->assertSame('4000', $template->get('year'));
+     $this->assertSame('4000', $template->get('date'));
 
      $text = '{{cite journal|year=4000}}';
      $template = $this->make_citation($text);
