@@ -205,25 +205,25 @@ final class TemplateTest extends testBaseClass {
   public function testGroveMusic2() {
     $text = '{{cite web |url=https://doi.org/10.1093/gmo/9781561592630.article.J441700 |title=Tatum, Art(hur, Jr.) (jazz) |last=Howlett |first=Felicity | website=Grove Music Online |publisher=Oxford University Press |date=2002|via=Grove Music Online}}';
     $template = $this->process_citation($text);
-    $this->assertSame('{{cite document |doi=10.1093/gmo/9781561592630.article.J441700 |title=Tatum, Art(hur, Jr.) (jazz) |last=Howlett |first=Felicity | work=Grove Music Online |publisher=Oxford University Press |date=2002}}', $template->parsed_text());
+    $this->assertSame('{{cite document |title=Tatum, Art(hur, Jr.) (jazz) |last=Howlett |first=Felicity | work=Grove Music Online |publisher=Oxford University Press |date=2002|doi=10.1093/gmo/9781561592630.article.J441700 }}', $template->parsed_text());
   }
  
   public function testGroveMusic3() {
     $text = '{{cite web |url=https://doi.org/10.1093/gmo/9781561592630.article.J441700 |title=Tatum, Art(hur, Jr.) (jazz) |last=Howlett |first=Felicity |publisher=Oxford University Press |date=2002|via=Grove Music Online}}';
     $template = $this->process_citation($text);
-    $this->assertSame('{{cite document |doi=10.1093/gmo/9781561592630.article.J441700 |title=Tatum, Art(hur, Jr.) (jazz) |last=Howlett |first=Felicity |publisher=Oxford University Press |date=2002|wokr=Grove Music Online}}', $template->parsed_text());
+    $this->assertSame('{{cite document |title=Tatum, Art(hur, Jr.) (jazz) |last=Howlett |first=Felicity |publisher=Oxford University Press |date=2002|work=Grove Music Online|doi=10.1093/gmo/9781561592630.article.J441700 }}', $template->parsed_text());
   }
  
   public function testGroveMusic4() {
     $text = '{{cite web |url=https://doi.org/=10.1093/gmo/9781561592630.article.J441700 |title=Tatum, Art(hur, Jr.) (jazz) |last=Howlett |first=Felicity |publisher=Oxford University Press |date=2002|website=Grove Music Online}}';
     $template = $this->process_citation($text);
-    $this->assertSame('{{cite document |doi=10.1093/gmo/9781561592630.article.J441700 |title=Tatum, Art(hur, Jr.) (jazz) |last=Howlett |first=Felicity |publisher=Oxford University Press |date=2002|work=Grove Music Online}}', $template->parsed_text());
+    $this->assertSame('{{cite document |title=Tatum, Art(hur, Jr.) (jazz) |last=Howlett |first=Felicity |publisher=Oxford University Press |date=2002|work=Grove Music Online|doi=10.1093/gmo/9781561592630.article.J441700 }', $template->parsed_text());
   }
  
   public function testGroveMusic5() {
     $text = '{{cite web |url=https://doi.org/10.1093/gmo/9781561592630.article.J441700 |title=Tatum, Art(hur, Jr.) (jazz) |last=Howlett |first=Felicity |publisher=Oxford University Press |date=2002|website=Grove Music Online|via=The Dog Farm}}';
     $template = $this->process_citation($text);
-    $this->assertSame('{{Cite document |doi=10.1093/gmo/9781561592630.article.J441700 |title=Tatum, Art(hur, Jr.) (jazz) |last=Howlett |first=Felicity |publisher=Oxford University Press |date=2002|work=Grove Music Online via The Dog Farm}}', $template->parsed_text());
+    $this->assertSame('{{cite document |title=Tatum, Art(hur, Jr.) (jazz) |last=Howlett |first=Felicity |publisher=Oxford University Press |date=2002|work=Grove Music Online via The Dog Farm|doi=10.1093/gmo/9781561592630.article.J441700 }}', $template->parsed_text());
   }
   
   public function testBrokenDoiUrlRetention1() {
