@@ -591,6 +591,7 @@ final class Template {
         }
       // Don't break here; we want to go straight in to year;
       case "year":
+        if ($value === $this->year()) return FALSE;
         if (   ($this->blank('date')
                || in_array(trim(strtolower($this->get_without_comments_and_placeholders('date'))), IN_PRESS_ALIASES))
             && ($this->blank('year') 
@@ -602,6 +603,13 @@ final class Template {
             $this->tidy_parameter('isbn');  // We just added a date, we now know if 2007 or later
             return TRUE;
           }
+        }
+        // Update Year with CrossRef data in a few limited cases
+        if ($param === 'year' && $api = 'crossref' && ((int) $this->year() < $value) && ((int)date('Y') - 3 < $value)) {
+          $this->forget('date')
+          $this->set('year', $value);
+          $this->tidy_parameter('isbn');
+          return TRUE;
         }
         return FALSE;
       
