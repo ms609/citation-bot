@@ -217,7 +217,7 @@ final class TemplateTest extends testBaseClass {
   public function testGroveMusic4() {
     $text = '{{cite web |url=https://doi.org/=10.1093/gmo/9781561592630.article.J441700 |title=Tatum, Art(hur, Jr.) (jazz) |last=Howlett |first=Felicity |publisher=Oxford University Press |date=2002|website=Grove Music Online}}';
     $template = $this->process_citation($text);
-    $this->assertSame('{{cite document |title=Tatum, Art(hur, Jr.) (jazz) |last=Howlett |first=Felicity |publisher=Oxford University Press |date=2002|work=Grove Music Online|doi=10.1093/gmo/9781561592630.article.J441700 }', $template->parsed_text());
+    $this->assertSame('{{cite document |title=Tatum, Art(hur, Jr.) (jazz) |last=Howlett |first=Felicity |publisher=Oxford University Press |date=2002|work=Grove Music Online|doi=10.1093/gmo/9781561592630.article.J441700 }}', $template->parsed_text());
   }
  
   public function testGroveMusic5() {
