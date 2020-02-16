@@ -17,7 +17,8 @@ const BAD_PUBLISHERS = array('london', 'edinburgi', 'edinburgh', 'no publisher',
 
 const PUBLISHERS_ARE_WORKS = array('the san diego union-tribune', 'forbes', 'salon', 'san jose mercury news', 'new york times',
                                    'the new york times', 'daily news online', 'daily news', 'the sun', 'the times',
-                                   'the star', 'washington post', 'the washington post', 'the tribune'); // LOWER CASE!
+                                   'the star', 'washington post', 'the washington post', 'the tribune',
+                                   'los angeles times', 'la times', 'the la times'); // LOWER CASE!
 
 const DUBIOUS_JOURNALS = array('fda', 'reuters', 'associated press', 'ap', 'ap wire'); // Things we add, but only if publisher and agency are both blank
 
