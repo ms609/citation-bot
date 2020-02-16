@@ -4918,7 +4918,9 @@ final class Template {
           if (titles_are_similar($this->get('website'), $this->get('via'))) {
             $this->rename('via', 'work');
           } else {
-            $this->rename('website', 'work', $this->get('website') . ' via ' . $this->get('via') );
+            $tmp = $this->get('website') . ' via ' . $this->get('via');
+            $this->forgetter('via', $echo_forgetting);
+            $this->rename('website', 'work', $tmp);
           }
         }
         preg_match("~^(\s*).*\b(\s*)$~", $this->name, $spacing);
