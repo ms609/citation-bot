@@ -165,7 +165,7 @@ function arxiv_api($ids, $templates) {
     $this_template->add_if_new("title", $the_title, 'arxiv'); // Formatted by add_if_new
     $this_template->add_if_new("title", (string) $entry->title, 'arxiv'); // Formatted by add_if_new
     $this_template->add_if_new("class", (string) $entry->category["term"], 'arxiv');
-    $this_template->add_if_new("year", date("Y", strtotime((string)$entry->published)));
+    $this_template->add_if_new("year", date("Y", strtotime((string)$entry->published)), 'arxiv');
 
     if ($entry->arxivjournal_ref) {
       $journal_data = trim((string) $entry->arxivjournal_ref); // this is human readble text
@@ -373,7 +373,7 @@ function adsabs_api($ids, $templates, $identifier) {
       foreach ($record->identifier as $recid) {
         if(strtolower(substr($recid, 0, 6)) === 'arxiv:') {
            $this_template->add_if_new("class", @$record->arxivclass, 'adsabs');
-           $this_template->add_if_new('arxiv', substr($recid, 6));
+           $this_template->add_if_new('arxiv', substr($recid, 6), 'adsabs');
         }
       }
     }
@@ -469,14 +469,14 @@ function expand_by_doi($template, $force = FALSE) {
         if (strtolower($template->get('title')) == strtolower($crossRef->article_title)) {
            $template->rename('title', 'chapter');
          } else {
-           $template->add_if_new('chapter', restore_italics($crossRef->article_title)); // add_if_new formats this value as a title
+           $template->add_if_new('chapter', restore_italics($crossRef->article_title), 'crossref'); // add_if_new formats this value as a title
         }
-        $template->add_if_new('title', restore_italics($crossRef->volume_title)); // add_if_new will wikify title and sanitize the string
+        $template->add_if_new('title', restore_italics($crossRef->volume_title), 'crossref'); // add_if_new will wikify title and sanitize the string
       } else {
-        $template->add_if_new('title', restore_italics($crossRef->article_title)); // add_if_new will wikify title and sanitize the string
+        $template->add_if_new('title', restore_italics($crossRef->article_title), 'crossref'); // add_if_new will wikify title and sanitize the string
       }
-      $template->add_if_new('series', $crossRef->series_title); // add_if_new will format the title for a series?
-      $template->add_if_new("year", $crossRef->year);
+      $template->add_if_new('series', $crossRef->series_title, 'crossref'); // add_if_new will format the title for a series?
+      $template->add_if_new("year", $crossRef->year, 'crossref');
       if (   $template->blank(array('editor', 'editor1', 'editor-last', 'editor1-last')) // If editors present, authors may not be desired
           && $crossRef->contributors->contributor
         ) {
@@ -494,29 +494,29 @@ function expand_by_doi($template, $force = FALSE) {
           if ($author["contributor_role"] == 'editor') {
             ++$ed_i;
             if ($ed_i < 31 && !isset($crossRef->journal_title)) {
-              $template->add_if_new("editor$ed_i-last", format_surname($author->surname));
-              $template->add_if_new("editor$ed_i-first", format_forename($author->given_name));
+              $template->add_if_new("editor$ed_i-last", format_surname($author->surname), 'crossref');
+              $template->add_if_new("editor$ed_i-first", format_forename($author->given_name), 'crossref');
             }
           } elseif ($author['contributor_role'] == 'author' && $add_authors) {
             ++$au_i;
-            $template->add_if_new("last$au_i", format_surname($author->surname));
-            $template->add_if_new("first$au_i", format_forename($author->given_name));
+            $template->add_if_new("last$au_i", format_surname($author->surname), 'crossref');
+            $template->add_if_new("first$au_i", format_forename($author->given_name), 'crossref');
           }
         }
       }
-      $template->add_if_new('isbn', $crossRef->isbn);
+      $template->add_if_new('isbn', $crossRef->isbn, 'crossref');
       $template->add_if_new('journal', $crossRef->journal_title); // add_if_new will format the title
-      if ($crossRef->volume > 0) $template->add_if_new('volume', $crossRef->volume);
+      if ($crossRef->volume > 0) $template->add_if_new('volume', $crossRef->volume, 'crossref');
       if (((strpos($crossRef->issue, '-') > 0 || (integer) $crossRef->issue > 1))) {
       // "1" may refer to a journal without issue numbers,
       //  e.g. 10.1146/annurev.fl.23.010191.001111, as well as a genuine issue 1.  Best ignore.
-        $template->add_if_new('issue', $crossRef->issue);
+        $template->add_if_new('issue', $crossRef->issue, 'crossref');
       }
       if ($template->blank("page")) {
         if ($crossRef->last_page && (strcmp($crossRef->first_page, $crossRef->last_page) !== 0)) {
-          $template->add_if_new("pages", $crossRef->first_page . "-" . $crossRef->last_page); //replaced by an endash later in script
+          $template->add_if_new("pages", $crossRef->first_page . "-" . $crossRef->last_page, 'crossref'); //replaced by an endash later in script
         } else {
-          $template->add_if_new("pages", $crossRef->first_page);
+          $template->add_if_new("pages", $crossRef->first_page, 'crossref');
         }
       }
     } else {
@@ -572,7 +572,7 @@ function expand_doi_with_dx($template, $doi) {
          $data = $data['0'];                                        // @codeCoverageIgnore
        }
        if ($data == '') return FALSE;
-       $template->add_if_new($name, $data);
+       $template->add_if_new($name, $data, 'dx');
      };
      if (!$doi) return FALSE;
      $ch = curl_init();
