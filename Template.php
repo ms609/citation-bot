@@ -34,8 +34,9 @@ final class Template {
     $this->initial_author_params = NULL; // Will be populated later if there are any
     $this->used_by_api = array(
       'adsabs'   => array(),
-      'arxiv'    => array(), 
-      'crossref' => array(), 
+      'arxiv'    => array(),
+      'crossref' => array(),
+      'dx'       => array(),
       'entrez'   => array(),
       'jstor'    => array(),
       'zotero'   => array(),
