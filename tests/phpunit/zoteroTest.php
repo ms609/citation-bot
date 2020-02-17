@@ -102,7 +102,7 @@ class ZoteroTest extends testBaseClass {
  
   public function testIEEEdoi() {
     $url = "https://ieeexplore.ieee.org/document/42423" . (string) rand(10,99);  // Mix it up to avoid blocks
-    $template->process_citation('{{cite journal | url = ' . $url . ' }}');
+    $template = $this->process_citation('{{cite journal | url = ' . $url . ' }}');
     $this->assertNotNull($template->get('doi'));
   }
 
