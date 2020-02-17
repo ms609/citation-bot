@@ -100,7 +100,7 @@ class ZoteroTest extends testBaseClass {
     $this->assertSame('http://ieeexplore.ieee.org/123456789/', $url);
   }
  
-  public funciton testIEEEdoi() {
+  public function testIEEEdoi() {
     $url = "https://ieeexplore.ieee.org/document/42423" . (string) rand(10,99);  // Mix it up to avoid blocks
     $template->process_citation('{{cite journal | url = ' . $url . ' }}');
     $this->assertNotNull($template->get('doi'));
