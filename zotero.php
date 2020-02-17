@@ -79,6 +79,24 @@ function query_url_api($ids, $templates) {
        }
   }
   curl_close($ch_zotero);
+  
+  $ch_ieee = curl_init();
+  curl_setopt($ch_ieee, CURLOPT_RETURNTRANSFER, TRUE);
+  curl_setopt($ch_ieee, CURLOPT_HEADER, FALSE);
+  foreach ($templates as $template) {
+    if ($template->blank('doi') && $template->has('url') && preg_match("~^https://ieeexplore\.ieee\.org/document/\d{5,}$~", $template->get('url'))) {
+       usleep(100000); // 0.10 seconds
+       curl_setopt($ch_ieee, CURLOPT_URL, $template->get('url'));
+       $return = curl_exec($ch_ieee);
+       if (preg_match_all('~"doi":"10\.\d{4}/[^\s"]+"~', $return, $matches, PREG_PATTERN_ORDER)) {
+          $dois = array_unique($matches[0]);
+          if (count($dois) === 1) {
+            $template->add_if_new('doi', $dois[0]));
+          }
+       }
+    }
+  }
+  curl_close($ch_ieee);
 }
 
 function drop_urls_that_match_dois($templates) {
