@@ -91,7 +91,7 @@ function query_url_api($ids, $templates) {
        if (preg_match_all('~"doi":"10\.\d{4}/[^\s"]+"~', $return, $matches, PREG_PATTERN_ORDER)) {
           $dois = array_unique($matches[0]);
           if (count($dois) === 1) {
-            $template->add_if_new('doi', $dois[0]));
+            $template->add_if_new('doi', $dois[0]);
           }
        }
     }
