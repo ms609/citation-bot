@@ -87,8 +87,8 @@ function query_url_api($ids, $templates) {
     if ($template->blank('doi') && $template->has('url') && preg_match("~^https://ieeexplore\.ieee\.org/document/\d{5,}$~", $template->get('url'))) {
        usleep(100000); // 0.10 seconds
        curl_setopt($ch_ieee, CURLOPT_URL, $template->get('url'));
-       $return = curl_exec($ch_ieee);
-       if (preg_match_all('~"doi":"10\.\d{4}/[^\s"]+"~', $return, $matches, PREG_PATTERN_ORDER)) {
+       $return = @curl_exec($ch_ieee);
+       if ($return && preg_match_all('~"doi":"10\.\d{4}/[^\s"]+"~', $return, $matches, PREG_PATTERN_ORDER)) {
           $dois = array_unique($matches[0]);
           if (count($dois) === 1) {
             $template->add_if_new('doi', $dois[0]);
