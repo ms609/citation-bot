@@ -1931,7 +1931,7 @@ final class Template {
   }
 
   public function expand_by_adsabs() {
-    // API docs at https://github.com/adsabs/adsabs-dev-api/blob/master/search.md
+    // API docs at https://github.com/adsabs/adsabs-dev-api
     global $SLOW_MODE;
     if (!$SLOW_MODE && $this->blank('bibcode')) {
      report_info("Skipping AdsAbs API: not in slow mode");
@@ -1955,23 +1955,19 @@ final class Template {
     report_action("Checking AdsAbs database");
     if ($this->has('bibcode')) {
       $result = $this->query_adsabs("identifier:" . urlencode('"' . $this->get("bibcode") . '"'));
+    } elseif ($this->has('doi') && preg_match(REGEXP_DOI, $this->get_without_comments_and_placeholders('doi'), $doi)) {
+      $result = $this->query_adsabs("identifier:" . urlencode('"' .  $doi[0] . '"'));  // In DOI we trust
+    } elseif ($this->has('eprint')) {
+      $result = $this->query_adsabs("identifier:" . urlencode('"' . $this->get('eprint'); . '"'));
+    } elseif ($this->has('arxiv')) {
+      $result = $this->query_adsabs("identifier:" . urlencode('"' . $this->get('arxiv'); . '"'));
     } else {
-      $identifiers = array();
-      if ($this->has('doi') && preg_match(REGEXP_DOI, $this->get_without_comments_and_placeholders('doi'), $doi)) {
-        $identifiers[] = $doi[0];
-      }
-      if ($this->has('eprint')) $identifiers[] = $this->get('eprint');
-      if ($this->has('arxiv')) $identifiers[] = $this->get('arxiv');
-      if (empty($identifiers)) {
-        $result = (object) array("numFound" => 0);
-      } else {
-        $result = $this->query_adsabs("identifier:" . urlencode('"' . implode(' OR ', $identifiers) . '"'));
-      }
+      $result = (object) array("numFound" => 0);
     }
  
     if ($result->numFound > 1) {
-      report_warning("Multiple articles match identifiers " . implode('; ', $identifiers)); // @codeCoverageIgnore
-      return FALSE;                                                                         // @codeCoverageIgnore
+      report_warning("Multiple articles match identifiers "); // @codeCoverageIgnore
+      return FALSE;                                           // @codeCoverageIgnore
     }
     
     if ($result->numFound == 0) {
