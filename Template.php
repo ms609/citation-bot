@@ -205,6 +205,9 @@ final class Template {
             } elseif (substr($the_title, -20, 20) == 'IEEE Xplore Document') {
               $this->rename('title', 'CITATION_BOT_PLACEHOLDER_title');
               $bad_data = TRUE;
+            } elseif ($the_title == 'IEEE Xplore – Sign In') {
+              $this->rename('title', 'CITATION_BOT_PLACEHOLDER_title');
+              $bad_data = TRUE; 
             } elseif (preg_match('~.+(?: Volume| Vol\.| V. | Number| No\.| Num\.| Issue ).*\d+.*page.*\d+~i', $the_title)) {
               $this->rename('title', 'CITATION_BOT_PLACEHOLDER_title');
               $bad_data = TRUE;
@@ -1213,6 +1216,12 @@ final class Template {
        $url = 'https://ieeexplore.ieee.org/document/' . $matches[1];
        if (is_null($url_sent)) {
          $this->set($url_type, $url); // Trimming leading zeroes
+       }
+    }
+    if (preg_match('~^https?://ieeexplore\.ieee\.org/(?:|abstract/)document/(\d+)/?$~', $url, $matches)) {
+       $url = 'https://ieeexplore.ieee.org/document/' . $matches[1];
+       if (is_null($url_sent)) {
+         $this->set($url_type, $url); // Normalize to HTTP and remove abstract and remove trailing slash
        }
     }
     // Trim ?seq=1#page_scan_tab_contents off of jstor urls
