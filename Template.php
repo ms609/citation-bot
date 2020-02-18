@@ -4498,7 +4498,7 @@ final class Template {
       case ".":
         // Missing a terminal 'x'?
         $trial[] = $doi . "x";
-      case ",": case ";":
+      case ",": case ";": case "\"":
         // Or is this extra punctuation copied in?
         $trial[] = substr($doi, 0, -1);
     }

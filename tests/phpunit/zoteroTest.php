@@ -101,9 +101,9 @@ class ZoteroTest extends testBaseClass {
   }
  
   public function testIEEEdoi() {
-    $url = "https://ieeexplore.ieee.org/document/42423" . (string) rand(10,99);  // Mix it up to avoid blocks
+    $url = "https://ieeexplore.ieee.org/document/4242344";
     $template = $this->process_citation('{{cite journal | url = ' . $url . ' }}');
-    $this->assertNotNull($template->get('doi'));
+    $this->assertSame('10.1109/ISSCC.2007.373373', $template->get('doi'));
   }
 
   public function testZoteroResponse1() {
