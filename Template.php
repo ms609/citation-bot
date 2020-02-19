@@ -1958,9 +1958,9 @@ final class Template {
     } elseif ($this->has('doi') && preg_match(REGEXP_DOI, $this->get_without_comments_and_placeholders('doi'), $doi)) {
       $result = $this->query_adsabs("identifier:" . urlencode('"' .  $doi[0] . '"'));  // In DOI we trust
     } elseif ($this->has('eprint')) {
-      $result = $this->query_adsabs("identifier:" . urlencode('"' . $this->get('eprint'); . '"'));
+      $result = $this->query_adsabs("identifier:" . urlencode('"' . $this->get('eprint') . '"'));
     } elseif ($this->has('arxiv')) {
-      $result = $this->query_adsabs("identifier:" . urlencode('"' . $this->get('arxiv'); . '"'));
+      $result = $this->query_adsabs("identifier:" . urlencode('"' . $this->get('arxiv')  . '"'));
     } else {
       $result = (object) array("numFound" => 0);
     }
