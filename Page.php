@@ -217,6 +217,7 @@ class Page {
     }
     $our_templates = array();
     $our_templates_slight = array();
+    $our_templates_conferences = array();
     report_phase('Remedial work to prepare citations');
     for ($i = 0; $i < count($all_templates); $i++) {
       $this_template = $all_templates[$i];
@@ -227,6 +228,7 @@ class Page {
         array_push($our_templates_slight, $this_template);
         $this_template->get_identifiers_from_url();
         $this_template->tidy();
+        if ($this_template->wikiname() === 'cite conference') array_push($our_templates_conferences, $this_template);
       } elseif (in_array($this_template->wikiname(), TEMPLATES_WE_BARELY_PROCESS)) { // No capitalization of thesis, etc.
         array_push($our_templates_slight, $this_template);
         $this_template->get_identifiers_from_url();
@@ -253,6 +255,8 @@ class Page {
     $this->expand_templates_from_identifier('doi',     $our_templates);
     expand_arxiv_templates($our_templates);
     $this->expand_templates_from_identifier('url',     $our_templates);
+    query_ieee_webpages($our_templates_conferences);
+    query_ieee_webpages($our_templates);
     
     report_phase('Expand individual templates by API calls');
     for ($i = 0; $i < count($our_templates); $i++) {
@@ -271,6 +275,7 @@ class Page {
     }
     $this->expand_templates_from_identifier('doi',     $our_templates);
     drop_urls_that_match_dois($our_templates);
+    drop_urls_that_match_dois($our_templates_conferences);
     
     // Last ditch usage of ISSN - This could mean running the bot again will add more things
     $issn_templates = array_merge(TEMPLATES_WE_PROCESS, TEMPLATES_WE_SLIGHTLY_PROCESS, ['cite magazine']);
