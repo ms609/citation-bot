@@ -185,17 +185,17 @@ final class Template {
               $bad_data = TRUE;
           }
           if ($the_title != '' && stripos($the_title, 'CITATION') === FALSE) {
-            if (strcasecmp($the_title, $the_journal) === 0 &&
-                strcasecmp($the_title, $the_chapter) === 0) { // Journal === Title === Chapter INSANE!  Never actually seen
+            if (str_i_same($the_title, $the_journal) &&
+                str_i_same($the_title, $the_chapter)) { // Journal === Title === Chapter INSANE!  Never actually seen
               $this->rename('title', 'CITATION_BOT_PLACEHOLDER_title');
               $this->rename('journal', 'CITATION_BOT_PLACEHOLDER_journal');
               $this->rename('chapter', 'CITATION_BOT_PLACEHOLDER_chapter');
               $bad_data = TRUE;
-            } elseif (strcasecmp($the_title, $the_journal) === 0) { // Journal === Title
+            } elseif (str_i_same($the_title, $the_journal)) { // Journal === Title
               $this->rename('title', 'CITATION_BOT_PLACEHOLDER_title');
               $this->rename('journal', 'CITATION_BOT_PLACEHOLDER_journal');
               $bad_data = TRUE;
-            } elseif (strcasecmp($the_title, $the_chapter) === 0) { // Chapter === Title
+            } elseif (str_i_same($the_title, $the_chapter)) { // Chapter === Title
               $this->rename('title', 'CITATION_BOT_PLACEHOLDER_title');
               $this->rename('chapter', 'CITATION_BOT_PLACEHOLDER_chapter');
               $bad_data = TRUE;
@@ -370,7 +370,7 @@ final class Template {
       return FALSE;
     }
     
-    if (strcasecmp((string) $value, 'null') === 0) { // Hopeully name is not actually null
+    if (str_i_same((string) $value, 'null')) { // Hopeully name is not actually null
       return FALSE;
     }
     
@@ -765,7 +765,7 @@ final class Template {
         return FALSE;
       
       case 'volume':
-        if ($this->blank($param_name) || strcasecmp('in press', $this->get($param_name)) === 0) {
+        if ($this->blank($param_name) || str_i_same('in press', $this->get($param_name))) {
           if ($value == '0') return FALSE;
           if ($value == '1') { // dubious
             if (bad_10_1093_doi($this->get('doi'))) return FALSE;
@@ -787,7 +787,7 @@ final class Template {
       
       case 'issue':
         if ($value == '0') return FALSE;
-        if ($this->blank(ISSUE_ALIASES) || strcasecmp('in press', $this->get($param_name)) === 0) {
+        if ($this->blank(ISSUE_ALIASES) || str_i_same('in press', $this->get($param_name))) {
           if ($value == '1') { // dubious
             if (bad_10_1093_doi($this->get('doi'))) return FALSE;
             if (stripos($this->rawtext, 'oxforddnb') !== FALSE) return FALSE;
@@ -817,7 +817,7 @@ final class Template {
         }
         if ($this->blank(PAGE_ALIASES) // no page yet set
            || $all_page_values == ""
-           || (strcasecmp($all_page_values,'no') === 0 || strcasecmp($all_page_values,'none') === 0) // Is exactly "no" or "none"
+           || (str_i_same($all_page_values,'no') || str_i_same($all_page_values,'none')) // Is exactly "no" or "none"
            || (strpos(strtolower($all_page_values), 'no') !== FALSE && $this->blank('at')) // "None" or "no" contained within something other than "at"
            || (
                 (  str_replace($en_dash, $en_dash_X, $value) != $value) // dash in new `pages`
@@ -880,7 +880,7 @@ final class Template {
                   'contribution-url', 'contributionurl', 'entry-url', 'event-url', 'eventurl', 'lay-url',
                   'layurl', 'map-url', 'mapurl', 'section-url', 'sectionurl', 'transcript-url',
                   'transcripturl'] as $exisiting)  {
-          if (strcasecmp($value, $this->get($exisiting)) === 0) {
+          if (str_i_same($value, $this->get($exisiting))) {
             return FALSE;
           }
         }
@@ -919,12 +919,12 @@ final class Template {
             if ($this->wikiname() === 'cite arxiv') $this->change_name_to('cite journal');
             $this->add('doi', $match[0]);          
             return TRUE;
-          } elseif (strcasecmp($this->get('doi'), $match[0]) !=0 && !$this->blank(DOI_BROKEN_ALIASES) && doi_active($match[0])) {
+          } elseif (!str_i_same($this->get('doi'), $match[0]) && !$this->blank(DOI_BROKEN_ALIASES) && doi_active($match[0])) {
             report_action("Replacing non-functional DOI with a functional one");
             $this->set('doi', $match[0]);
             $this->tidy_parameter('doi');
             return TRUE;
-          } elseif (strcasecmp($this->get('doi'), $match[0]) != 0 
+          } elseif (!str_i_same($this->get('doi'), $match[0])
                     && strpos($this->get('doi'), '10.13140/') === 0 
                     && doi_active($match[0])) {
             report_action("Replacing ResearchGate DOI with publisher's");
@@ -1299,7 +1299,7 @@ final class Template {
 
     if (preg_match("~^https?://(?:(?:dx\.|)doi\.org|doi\.library\.ubc\.ca)/([^\?]*)~i", $url, $match)) {
       if ($this->has('doi')) {
-        if (strcasecmp($this->get('doi'), $match[1]) === 0) {
+        if (str_i_same($this->get('doi'), $match[1])) {
          if (is_null($url_sent)) {
           quietly('report_modification', "URL is hard-coded DOI; removing since we already have DOI paramter");
           $this->forget($url_type);
@@ -3267,7 +3267,7 @@ final class Template {
         $this->rename('url', 'chapter-url');
         $this->rename('format', 'chapter-format');
         $this->rename('url-access', 'chapter-url-access');
-      } elseif (!$this->blank(['chapter-url','chapterurl']) && (0 === strcasecmp($this->get('chapter-url'), $this->get('url')))) {
+      } elseif (!$this->blank(['chapter-url','chapterurl']) && (str_i_same($this->get('chapter-url'), $this->get('url')))) {
         $this->forget('url');
       }  // otherwise they are differnt urls
     }
@@ -4245,7 +4245,7 @@ final class Template {
           // No break here: pages, issue and year (the previous case) should be treated in this fashion.
         case 'pages': case 'page': case 'pp': # And case 'year': case 'issue':, following from previous
           $value = $this->get($param);
-          if (strcasecmp('null', $value) === 0) {
+          if (str_i_same('null', $value)) {
             $this->forget($param);
             return;
           }
@@ -4294,9 +4294,9 @@ final class Template {
           return;
           
         case 'website':
-          if (($this->wikiname() === 'cite book') && (strcasecmp((string)$this->get($param), 'google.com') === 0 ||
-                                                      strcasecmp((string)$this->get($param), 'Google Books') === 0 ||
-                                                      strcasecmp((string)$this->get($param), 'Google Book') === 0 ||
+          if (($this->wikiname() === 'cite book') && (str_i_same((string)$this->get($param), 'google.com') ||
+                                                      str_i_same((string)$this->get($param), 'Google Books') ||
+                                                      str_i_same((string)$this->get($param), 'Google Book') ||
                                                          stripos((string)$this->get($param), 'Books.google.') === 0)) {
             $this->forget($param);
           }
@@ -5198,7 +5198,7 @@ final class Template {
           case "aqs":
              break;
           case "ie":
-             if (strcasecmp($part_start[1], 'utf-8') === 0) break;  // UTF-8 is the default
+             if (str_i_same($part_start[1], 'utf-8')) break;  // UTF-8 is the default
           case "hl": case "safe": case "q":
              $url .=  $part . "&" ;
              break;
