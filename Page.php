@@ -228,7 +228,7 @@ class Page {
         array_push($our_templates_slight, $this_template);
         $this_template->get_identifiers_from_url();
         $this_template->tidy();
-        if ($this_template->wikiname() === 'cite conference')) array_push($our_templates_conferences, $this_template);
+        if ($this_template->wikiname() === 'cite conference') array_push($our_templates_conferences, $this_template);
       } elseif (in_array($this_template->wikiname(), TEMPLATES_WE_BARELY_PROCESS)) { // No capitalization of thesis, etc.
         array_push($our_templates_slight, $this_template);
         $this_template->get_identifiers_from_url();
