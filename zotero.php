@@ -134,7 +134,6 @@ function drop_urls_that_match_dois($templates) {
     if ($doi &&  // IEEE code does not require "not incomplete"
         $url &&
         !preg_match(REGEXP_DOI_ISSN_ONLY, $doi) &&
-        (strpos('10.1093/', $doi) === FALSE) &&
         $template->blank(DOI_BROKEN_ALIASES) &&
         preg_match("~^https?://ieeexplore\.ieee\.org/document/\d{5,}/?$~", $url) && strpos($doi, '10.1109') === 0) {
           report_forget("Existing IEEE resulting from equivalent DOI; dropping URL");
