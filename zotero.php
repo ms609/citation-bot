@@ -79,19 +79,25 @@ function query_url_api($ids, $templates) {
        }
   }
   curl_close($ch_zotero);
-  
+}
+
+function query_ieee_webpages($templates) {
   $ch_ieee = curl_init();
   curl_setopt($ch_ieee, CURLOPT_RETURNTRANSFER, TRUE);
   curl_setopt($ch_ieee, CURLOPT_HEADER, FALSE);
   foreach ($templates as $template) {
-    if ($template->blank('doi') && $template->has('url') && preg_match("~^https://ieeexplore\.ieee\.org/document/\d{5,}$~", $template->get('url'))) {
+    if ($template->blank('doi') && $template->has('url') && preg_match("~^https://ieeexplore\.ieee\.org/document/(\d{5,})$~", $template->get('url'), $matches_url)) {
        usleep(100000); // 0.10 seconds
        curl_setopt($ch_ieee, CURLOPT_URL, $template->get('url'));
        $return = @curl_exec($ch_ieee);
        if ($return && preg_match_all('~"doi":"(10\.\d{4}/[^\s"]+)"~', $return, $matches, PREG_PATTERN_ORDER)) {
           $dois = array_unique($matches[1]);
           if (count($dois) === 1) {
-            $template->add_if_new('doi', $dois[0]);
+            if ($template->add_if_new('doi', $dois[0])) {
+              if (strpos($template->get('doi'), $matches_url[1]) !== FALSE && doi_works($template->get('doi'))) {
+                $template->forget('url');  // It is one of those DOIs with the document number in it
+              }
+            }
           }
        }
     }
