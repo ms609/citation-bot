@@ -1221,7 +1221,7 @@ final class Template {
          $this->set($url_type, $url); // Trimming leading zeroes
        }
     }
-    if (preg_match('~^https?://ieeexplore\.ieee\.org/(?:|abstract/)document/(\d+)/?$~', $url, $matches)) {
+    if (preg_match('~^https?://ieeexplore\.ieee\.org(?:|\:80)/(?:|abstract/)document/(\d+)/?(?:|\?reload=true)$~', $url, $matches)) {
        $url = 'https://ieeexplore.ieee.org/document/' . $matches[1];
        if (is_null($url_sent)) {
          $this->set($url_type, $url); // Normalize to HTTP and remove abstract and remove trailing slash
