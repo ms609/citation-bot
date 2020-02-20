@@ -358,7 +358,7 @@ function process_zotero_response($zotero_response, &$template, $url, $url_kind, 
   }
   if (isset($result->bookTitle)) {
    foreach (array_merge(BAD_ACCEPTED_MANUSCRIPT_TITLES, IN_PRESS_ALIASES) as $bad_title ) {
-      if (strcasecmp($result->bookTitle, $bad_title) === 0) {
+      if (str_i_same($result->bookTitle, $bad_title)) {
         report_info("Received invalid book title data for URL ". $url . ": $result->bookTitle");
         return FALSE;
       }
@@ -366,7 +366,7 @@ function process_zotero_response($zotero_response, &$template, $url, $url_kind, 
   }
   if (isset($result->title)) {
    foreach (array_merge(BAD_ACCEPTED_MANUSCRIPT_TITLES, IN_PRESS_ALIASES) as $bad_title ) {
-      if (strcasecmp($result->title, $bad_title) === 0) {
+      if (str_i_same($result->title, $bad_title)) {
         report_info("Received invalid title data for URL ". $url . ": $result->title");
         return FALSE;
       }
@@ -374,7 +374,7 @@ function process_zotero_response($zotero_response, &$template, $url, $url_kind, 
   }
   if (isset($result->publicationTitle)) {
    foreach (array_merge(BAD_ACCEPTED_MANUSCRIPT_TITLES, IN_PRESS_ALIASES) as $bad_title ) {
-      if (strcasecmp($result->publicationTitle, $bad_title) === 0) {
+      if (str_i_same($result->publicationTitle, $bad_title)) {
         report_info("Received invalid publication title data for URL ". $url . ": $result->publicationTitle");
         return FALSE;
       }

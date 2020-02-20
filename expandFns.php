@@ -192,7 +192,7 @@ function str_remove_irrelevant_bits($str) {
 
 // See also titles_are_similar()
 function str_equivalent($str1, $str2) {
-  return 0 === strcasecmp(str_remove_irrelevant_bits($str1), str_remove_irrelevant_bits($str2));
+  return str_i_same(str_remove_irrelevant_bits($str1), str_remove_irrelevant_bits($str2));
 }
 
 // See also str_equivalent()
@@ -465,7 +465,7 @@ function tidy_date($string) {
   $string = preg_replace('~^Date published \(~', '', $string); // seen this
   // https://stackoverflow.com/questions/29917598/why-does-0000-00-00-000000-return-0001-11-30-000000
   if (strpos($string, '0001-11-30') !== FALSE) return '';
-  if (strcasecmp('19xx', $string) === 0) return ''; //archive.org gives this if unknown
+  if (str_i_same('19xx', $string)) return ''; //archive.org gives this if unknown
   if (preg_match('~^\d{4} \d{4}\-\d{4}$~', $string)) return ''; // si.edu
   if (preg_match('~^(\d\d?)/(\d\d?)/(\d{4})$~', $string, $matches)) { // dates with slashes 
     if (intval($matches[1]) < 13 && intval($matches[2]) > 12) {
@@ -617,3 +617,6 @@ function can_safely_modify_dashes($value) {
        && (preg_match('~^\d{4}\-[a-zA-Z]+$~u',$value) !== 1)); // 2005-A used in {{sfn}} junk
 }
 
+function str_i_same($str1, $str2) {
+   return (boolean) (0 === strcasecmp($str1, $str2));
+}
