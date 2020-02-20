@@ -409,6 +409,9 @@ function process_zotero_response($zotero_response, &$template, $url, $url_kind, 
     if (preg_match('~\sIMDb ID: ((?:tt|co|nm)\d+)\s~i', ' ' . $result->extra . ' ', $matches)) { // We don't use it
       $result->extra = trim(str_replace(trim($matches[0]), '', $result->extra));
     }
+    if (preg_match('~\s(original-date: \S+)\s~i', ' ' . $result->extra . ' ', $matches)) { // We don't use it
+      $result->extra = trim(str_replace(trim($matches[0]), '', $result->extra));
+    }
     if (trim($result->extra) !== '') {
       report_minor_error("Unhandled extra data: " . $result->extra); // @codeCoverageIgnore
     }
