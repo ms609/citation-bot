@@ -131,6 +131,15 @@ function drop_urls_that_match_dois($templates) {
        $url_kind = NULL;
     }
     $url = $template->get($url_kind);
+    if ($doi &&  // IEEE code does not require "not incomplete"
+        $url &&
+        !preg_match(REGEXP_DOI_ISSN_ONLY, $doi) &&
+        $template->blank(DOI_BROKEN_ALIASES) &&
+        preg_match("~^https?://ieeexplore\.ieee\.org/document/\d{5,}/?$~", $url) && strpos($doi, '10.1109') === 0) {
+          report_forget("Existing IEEE resulting from equivalent DOI; dropping URL");
+          $template->forget($url_kind);
+    }
+    
     if ($doi &&
         $url &&
         !$template->profoundly_incomplete() &&
@@ -164,9 +173,6 @@ function drop_urls_that_match_dois($templates) {
           $template->forget($url_kind);
        } elseif (str_ireplace('bmj.com/cgi/pmidlookup','', $url) !== $url && $template->has('pmid')) {
           report_forget("Existing The BMJ URL resulting from equivalent PMID and DOI; dropping URL");
-          $template->forget($url_kind);
-       } elseif (preg_match("~^https?://ieeexplore\.ieee\.org/document/\d{5,}/?$~", $url) && strpos($doi, '10.1109') === 0) {
-          report_forget("Existing IEEE resulting from equivalent DOI; dropping URL");
           $template->forget($url_kind);
        } else {
           curl_setopt($ch, CURLOPT_URL, "https://dx.doi.org/" . urlencode($doi));
