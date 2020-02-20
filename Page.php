@@ -256,6 +256,7 @@ class Page {
     expand_arxiv_templates($our_templates);
     $this->expand_templates_from_identifier('url',     $our_templates);
     query_ieee_webpages($our_templates_conferences);
+    query_ieee_webpages($our_templates);
     
     report_phase('Expand individual templates by API calls');
     for ($i = 0; $i < count($our_templates); $i++) {
