@@ -765,7 +765,7 @@ final class Template {
         return FALSE;
       
       case 'volume':
-        if ($this->blank($param_name) || strcasecmp('in press', $this->get($param_name)) {
+        if ($this->blank($param_name) || strcasecmp('in press', $this->get($param_name) === 0) {
           if ($value == '0') return FALSE;
           if ($value == '1') { // dubious
             if (bad_10_1093_doi($this->get('doi'))) return FALSE;
@@ -787,7 +787,7 @@ final class Template {
       
       case 'issue':
         if ($value == '0') return FALSE;
-        if ($this->blank(ISSUE_ALIASES) || strcasecmp('in press', $this->get($param_name)) {
+        if ($this->blank(ISSUE_ALIASES) || strcasecmp('in press', $this->get($param_name) === 0) {
           if ($value == '1') { // dubious
             if (bad_10_1093_doi($this->get('doi'))) return FALSE;
             if (stripos($this->rawtext, 'oxforddnb') !== FALSE) return FALSE;
