@@ -555,7 +555,7 @@ function prior_parameters($par, $list=array()) {
     }
   }
   switch ($par) {
-    case 'title':       return prior_parameters('author', array_merge(array('author', 'authors', 'author1', 'first1', 'initials1'), $list) );
+    case 'title':       return prior_parameters('author', array_merge(FLATTENED_AUTHOR_PARAMETERS, $list) );
     case 'journal':       return prior_parameters('title', $list);
     case 'volume':       return prior_parameters('journal', $list);
     case 'issue': case 'number':       return prior_parameters('volume', $list);
