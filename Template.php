@@ -4872,18 +4872,24 @@ final class Template {
     
     $insert_after = prior_parameters($par);
     print_r($insert_after);
+    $prior_pos_best = -9999;
     foreach (array_reverse($insert_after) as $after) {
       if (($after_key = $this->get_param_key($after)) !== NULL) {
         $keys = array_keys($this->param);
         for ($prior_pos = 0; $prior_pos < count($keys); $prior_pos++) {
-          if ($keys[$prior_pos] == $after_key) break;
+          if ($keys[$prior_pos] == $after_key) {
+            if($prior_pos > $prior_pos_best) $prior_pos_best = $prior_pos;
+            break; 
+          }
         }
-        $this->param = array_merge(
-          array_slice($this->param, 0, $prior_pos + 1), 
-          array($p),
-          array_slice($this->param, $prior_pos + 1));
-        return TRUE;
       }
+    }
+    if ($prior_pos_best > -1) {
+        $this->param = array_merge(
+          array_slice($this->param, 0, $prior_pos_best + 1), 
+          array($p),
+          array_slice($this->param, $prior_pos_best + 1));
+        return TRUE;
     }
     $this->param[] = $p;
     return TRUE;
