@@ -1913,7 +1913,7 @@ final class Template {
     }
     $query = substr($query, 5); // Chop off initial " AND "
     $url = "https://eutils.ncbi.nlm.nih.gov/entrez/eutils/esearch.fcgi?db=pubmed&tool=WikipediaCitationBot&email=martins+pubmed@gmail.com&term=$query";
-    usleep(10000); // Wait 1/100 of a second since we probably just tried
+    usleep(20000); // Wait 1/50 of a second since we probably just tried
     $xml = @simplexml_load_file($url);
     // @codeCoverageIgnoreStart
     if ($xml === FALSE) {
