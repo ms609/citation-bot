@@ -1769,10 +1769,10 @@ final class Template {
     report_action("Searching PubMed... ");
     $results = $this->query_pubmed();
     if ($results[1] == 1) {
-      // Double check title if no DOI and no Journal were used
-      if ($this->blank('doi') && $this->blank('journal') && $this->has('title')) {
+      // Double check title if no DOI was
+      if ($this->has('title')) {
         $url = "https://eutils.ncbi.nlm.nih.gov/entrez/eutils/esummary.fcgi?tool=WikipediaCitationBot&email=martins+pubmed@gmail.com&db=pubmed&id=" . $results[0];
-        usleep(10000); // Wait 1/100 of a second since we just tried
+        usleep(10000); // Wait 1/10 of a second since we just tried
         $xml = @simplexml_load_file($url);
         if ($xml === FALSE) {
           sleep(3);                                     // @codeCoverageIgnore
@@ -1817,7 +1817,7 @@ final class Template {
     if ($doi = $this->get_without_comments_and_placeholders('doi')) {
       if (!strpos($doi, "[") && !strpos($doi, "<")) { // Doi's with square brackets and less/greater than cannot search PUBMED (yes, we asked).
         $results = $this->do_pumbed_query(array("doi"));
-        if ($results[1] == 1) return $results;
+        if ($results[1] !== 0) return $results; // If more than one, we are doomed
       }
     }
     // If we've got this far, the DOI was unproductive or there was no DOI.
