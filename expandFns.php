@@ -556,13 +556,16 @@ function prior_parameters($par, $list=array()) {
   }
   switch ($par) {
     case 'title':       return prior_parameters('author', array_merge(FLATTENED_AUTHOR_PARAMETERS, $list) );
-    case 'journal':       return prior_parameters('title', $list);
+    case 'chapter':       return prior_parameters('title', $list) );
+    case 'journal':       return prior_parameters('chapter', $list));
     case 'volume':       return prior_parameters('journal', $list);
     case 'issue': case 'number':       return prior_parameters('volume', $list);
     case 'page' : case 'pages':       return prior_parameters('issue', $list);
 
     case 'pmid':       return prior_parameters('doi', $list);
     case 'pmc':       return prior_parameters('pmid', $list);
+    case 'arxiv': case 'eprint':    return prior_parameters('pmc', $list);
+    case 'bibcode':     return prior_parameters('arxiv', $list);
     default: return $list;
   }
 }
