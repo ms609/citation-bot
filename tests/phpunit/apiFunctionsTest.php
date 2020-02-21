@@ -106,7 +106,7 @@ final class apiFunctionsTest extends testBaseClass {
     $this->requires_dx(function() {
      $expanded = $this->make_citation('{{Cite journal}}');
      expand_doi_with_dx($expanded, '10.1017/CBO9780511983658');  // This is cross-ref doi, so for DX DOI expansion
-     $this->assertSame('{{Cite book|year = 1996|isbn = 9780521572903|last1 = Luo|first1 = Zhi-Quan|title = Mathematical Programs with Equilibrium Constraints|last2 = Pang|first2 = Jong-Shi|last3 = Ralph|first3 = Daniel|publisher = Cambridge University Press}}', $expanded->parsed_text());
+     $this->assertSame('{{Cite book|year = 1996|isbn = 9780521572903|last1 = Luo|first1 = Zhi-Quan|last2 = Pang|first2 = Jong-Shi|last3 = Ralph|first3 = Daniel|title = Mathematical Programs with Equilibrium Constraints|publisher = Cambridge University Press}}', $expanded->parsed_text());
     });
   }
   
@@ -122,7 +122,7 @@ final class apiFunctionsTest extends testBaseClass {
     $this->requires_dx(function() {
      $expanded = $this->make_citation('{{Cite journal}}');
      expand_doi_with_dx($expanded, '10.1594/PANGAEA.726855');
-     $this->assertSame('{{Cite journal|year = 2009|last1 = Irino|first1 = Tomohisa|title = Chemical and mineral compositions of sediments from ODP Site 127-797, supplement to: Irino, Tomohisa; Tada, Ryuji (2000): Quantification of aeolian dust (Kosa) contribution to the Japan Sea sediments and its variation during the last 200 ky. Geochemical Journal, 34(1), 59-93|last2 = Tada|first2 = Ryuji}}', $expanded->parsed_text());
+     $this->assertSame('{{Cite journal|year = 2009|last1 = Irino|first1 = Tomohisa|last2 = Tada|first2 = Ryuji|title = Chemical and mineral compositions of sediments from ODP Site 127-797, supplement to: Irino, Tomohisa; Tada, Ryuji (2000): Quantification of aeolian dust (Kosa) contribution to the Japan Sea sediments and its variation during the last 200 ky. Geochemical Journal, 34(1), 59-93}}', $expanded->parsed_text());
     });
   }
 
@@ -138,7 +138,7 @@ final class apiFunctionsTest extends testBaseClass {
     $this->requires_dx(function() {
      $expanded = $this->make_citation('{{Cite journal}}');
      expand_doi_with_dx($expanded, '10.1594/PANGAEA.667386');
-     $this->assertSame('{{Cite book|year = 2008|last1 = Kraus|first1 = Stefan|title = Geological map of Potter Peninsula (King George Island, South Shetland Islands, Antarctic Peninsula)|last2 = del Valle|first2 = Rodolfo|publisher = PANGAEA - Data Publisher for Earth & Environmental Science|chapter = Impact of climate induced glacier melt on marine coastal systems, Antarctica (IMCOAST/IMCONet)}}', $expanded->parsed_text());
+     $this->assertSame('{{Cite book|year = 2008|last1 = Kraus|first1 = Stefan|last2 = del Valle|first2 = Rodolfo|title = Geological map of Potter Peninsula (King George Island, South Shetland Islands, Antarctic Peninsula)|chapter = Impact of climate induced glacier melt on marine coastal systems, Antarctica (IMCOAST/IMCONet)|publisher = PANGAEA - Data Publisher for Earth & Environmental Science}}', $expanded->parsed_text());
     });
   }
 
@@ -183,7 +183,7 @@ final class apiFunctionsTest extends testBaseClass {
     $this->requires_dx(function() {
      $expanded = $this->make_citation('{{Cite journal}}');
      expand_doi_with_dx($expanded, '10.11467/isss2003.7.1_11');
-     $this->assertSame('{{Cite journal|year = 2009|volume = 7|last1 = 竹本|first1 = 賢太郎|title = 大学におけるWebメールとターミナルサービスの研究|last2 = 川東|first2 = 正美|last3 = 久保|first3 = 信行|last4 = 左近|first4 = 多喜男|publisher = 標準化研究学会}}',$expanded->parsed_text());
+     $this->assertSame('{{Cite journal|year = 2009|volume = 7|last1 = 竹本|first1 = 賢太郎|last2 = 川東|first2 = 正美|last3 = 久保|first3 = 信行|last4 = 左近|first4 = 多喜男|title = 大学におけるWebメールとターミナルサービスの研究|publisher = 標準化研究学会}}',$expanded->parsed_text());
     });
   }
 
@@ -234,7 +234,7 @@ final class apiFunctionsTest extends testBaseClass {
     $this->requires_dx(function() {
      $expanded = $this->make_citation('{{Cite journal}}');
      expand_doi_with_dx($expanded, '10.3743/KOSIM.2011.28.2.117');
-     $this->assertSame('{{Cite journal|year = 2011|issue = 2|volume = 28|last1 = Kim|first1 = Byung-Kyu|title = Kscd를 활용한 국내 과학기술자의 해외 학술지 인용행태 연구|journal = 정보관리학회지|last2 = Kang|first2 = Mu-Yeong|last3 = Choi|first3 = Seon-Heui|last4 = Kim|first4 = Soon-Young|last5 = You|first5 = Beom-Jong|last6 = Shin|first6 = Jae-Do}}', $expanded->parsed_text());
+     $this->assertSame('{{Cite journal|year = 2011|issue = 2|volume = 28|last1 = Kim|first1 = Byung-Kyu|last2 = Kang|first2 = Mu-Yeong|last3 = Choi|first3 = Seon-Heui|last4 = Kim|first4 = Soon-Young|last5 = You|first5 = Beom-Jong|last6 = Shin|first6 = Jae-Do|title = Kscd를 활용한 국내 과학기술자의 해외 학술지 인용행태 연구|journal = 정보관리학회지}}', $expanded->parsed_text());
     });
   }
   
