@@ -151,6 +151,7 @@ function arxiv_api($ids, $templates) {
         $this_template->add_if_new("author$i", $name, 'arxiv');
       }
     }
+    echo "\n XXX\n";
     $the_title = (string) $entry->title;
     while (preg_match('~\$\^{(\d+)}\$~', $the_title, $match)) {
       $the_title = str_replace($match[0], '<sup>' . $match[1] . '</sup>', $the_title);
@@ -162,15 +163,20 @@ function arxiv_api($ids, $templates) {
       $the_title = str_replace($match[0], ' ' . $match[1] . ' ', $the_title);  // @codeCoverageIgnore
       $the_title = str_replace('  ', ' ', $the_title);                         // @codeCoverageIgnore
     }
+    echo "\n" . $this_template->parsed_text() . "\n";
     $this_template->add_if_new("title", $the_title, 'arxiv'); // Formatted by add_if_new
+    echo "\n" . $this_template->parsed_text() . "\n";
     $this_template->add_if_new("title", (string) $entry->title, 'arxiv'); // Formatted by add_if_new
+    echo "\n" . $this_template->parsed_text() . "\n";
     $this_template->add_if_new("class", (string) $entry->category["term"], 'arxiv');
+    echo "\n" . $this_template->parsed_text() . "\n";
     $this_template->add_if_new("year", date("Y", strtotime((string)$entry->published)), 'arxiv');
-
+    echo "\n" . $this_template->parsed_text() . "\n";
     if ($entry->arxivjournal_ref) {
       $journal_data = trim((string) $entry->arxivjournal_ref); // this is human readble text
       parse_plain_text_reference($journal_data, $this_template, TRUE);
     }
+    echo "\n" . $this_template->parsed_text() . "\n";
     $this_template = next($templates);
   }
 }
