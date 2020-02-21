@@ -567,8 +567,10 @@ function prior_parameters($par, $list=array()) {
     case 'arxiv': case 'eprint':    return prior_parameters('pmc', $list);
     case 'bibcode':     return prior_parameters('arxiv', $list);
     case 'hdl':     return prior_parameters('bibcode', $list);
-    case 'biorxiv': case 'citeseerx': case 'jfm': case 'zbl': case 'mr': case 'osti': case 'ssrn': case 'rfc':
+    case 'isbn': case 'biorxiv': case 'citeseerx': case 'jfm': case 'zbl': case 'mr': case 'osti': case 'ssrn': case 'rfc': case 'citeseerx':
        return prior_parameters('hdl', $list);
+    case 'lccn': case 'issn': case 'ol': case 'ocln':
+       return prior_parameters('isbn', $list);      
     default: return $list;
   }
 }
