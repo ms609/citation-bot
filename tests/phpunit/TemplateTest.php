@@ -10,7 +10,7 @@ final class TemplateTest extends testBaseClass {
  
   public function testLotsOfFloaters() {
     $text_in = "{{cite journal|issue 3 volume 5 | title Love|journal Dog|series Not mine today|chapter cows|this is random stuff | 123-4567-890 }}";
-    $text_out= "{{cite book|this is random stuff | issue = 3| volume = 5| title = Love| journal = Dog| series = Not mine today| chapter = Cows| isbn = 123-4567-890}}";
+    $text_out= "{{cite book|this is random stuff | issue = 3| volume = 5| title = Love| chapter = Cows| journal = Dog| series = Not mine today| isbn = 123-4567-890}}";
     $prepared = $this->prepare_citation($text_in);
     $this->assertSame($text_out, $prepared->parsed_text());
   }
