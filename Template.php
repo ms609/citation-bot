@@ -4871,6 +4871,7 @@ final class Template {
     $p->val = (string) $val;
     
     $insert_after = prior_parameters($par);
+    print_r($insert_after);
     foreach (array_reverse($insert_after) as $after) {
       if (($after_key = $this->get_param_key($after)) !== NULL) {
         $keys = array_keys($this->param);
