@@ -1812,6 +1812,7 @@ final class Template {
  * Returns an array:
  *   [0] => PMID of first matching result
  *   [1] => total number of results
+ *   [2] => what was used to find PMID
  *
  */
     if ($doi = $this->get_without_comments_and_placeholders('doi')) {
@@ -1930,7 +1931,7 @@ final class Template {
     }
     // @codeCoverageIgnoreEnd
 
-    return $xml ? array((string)$xml->IdList->Id[0], (string)$xml->Count) : array(NULL, 0);// first results; number of results
+    return $xml ? array((string)$xml->IdList->Id[0], (string)$xml->Count, $terms) : array(NULL, 0);// first results; number of results
   }
 
   public function expand_by_adsabs() {
