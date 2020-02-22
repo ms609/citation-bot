@@ -331,6 +331,6 @@ const PARAMETER_LIST = array(
      'director', 'editor-format', 'editor-name-separator', 'editor-separator', 'editorformat',
      'editors#', 'ended', 'in', 'interviewers', 'lay-summary', 'month', 'name-separator',
      'notestitle', 'p-prefix', 'pp-prefix', 'program', 'publisherid', 'registration', 'separator',
-     'subscription', 'titleyear', 'author_separator');
+     'subscription', 'titleyear', 'author_separator', 'coauthors');
 
     
