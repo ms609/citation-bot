@@ -1494,10 +1494,11 @@ final class Template {
             || preg_match("~\d{4}\.\d{4,5}(?:v\d+)?~", $match[1], $arxiv_id) // post-2007
             ) {
           quietly('report_modification', "Converting URL to arXiv parameter");
+          $ret = $this->add_if_new('arxiv', $arxiv_id[0]); // Have to add before forget to get cite type right
           if (is_null($url_sent)) {
             $this->forget($url_type);
           }
-          return $this->add_if_new('arxiv', $arxiv_id[0]);
+          return $ret;
         }
         if ($this->wikiname() === 'cite web') $this->change_name_to('cite arxiv');
         
