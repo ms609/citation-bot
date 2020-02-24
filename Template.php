@@ -5012,6 +5012,8 @@ final class Template {
          $this->change_name_to('cite news');
        } elseif (!$this->blank(['isbn', 'lccn', 'oclc', 'ol', 'chapter'])) {
          $this->change_name_to('cite book');
+       } elseif ($this->has('arxiv') || $this->has('eprint')) {
+         $this->change_name_to('cite arxiv');
        } else {
          $this->change_name_to('cite document');
        }
