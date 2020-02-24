@@ -178,9 +178,9 @@ class Page {
                       },
                       $this->text
                       ); 
-     // PLAIN {{DOI}}, {{PMID}}, {{PMC}} {{isbn}} {{olcn}} Converted to templates
+     // PLAIN {{DOI}}, {{PMID}}, {{PMC}} {{isbn}} {{olcn}} {{bibcode}} {{arxiv}}Converted to templates
      $this->text = preg_replace_callback(   // like <ref>{{doi|10.1244/abc}}</ref>
-                      "~(<(?:\s*)ref[^>]*?>)(\s*\{\{(?:doi\|10\.\d{4,6}\/[^\s\}\{\|]+?|pmid\|\d{4,9}|pmc\|\d{4,9}|oclc\|\d{4,9}|isbn\|[0-9\-xX]+?|jstor\|[^\s\}\{\|]+?)\}\}\s*)(<\s*?\/\s*?ref(?:\s*)>)~i",
+                      "~(<(?:\s*)ref[^>]*?>)(\s*\{\{(?:doi\|10\.\d{4,6}\/[^\s\}\{\|]+?|pmid\|\d{4,9}|pmc\|\d{4,9}|oclc\|\d{4,9}|isbn\|[0-9\-xX]+?|arxiv\|\d{4}\.\d{4,5}|arxiv\|[a-z\.\-]{2,12}\/\d{7,8}|bibcode\|[12]\d{3}[\w\d\.&]{15}|jstor\|[^\s\}\{\|]+?)\}\}\s*)(<\s*?\/\s*?ref(?:\s*)>)~i",
                       function($matches) {return $matches[1] . '{{Cite journal | id=' . $matches[2] . ' | ' . strtolower('CITATION_BOT_PLACEHOLDER_BARE_URL') .'=' . base64_encode($matches[2]) . '}}' . $matches[3] ;},
                       $this->text
                       );
