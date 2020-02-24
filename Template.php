@@ -595,6 +595,7 @@ final class Template {
         }
       // Don't break here; we want to go straight in to year;
       case "year":
+        echo "\n " .$param_name . '   ' . (string) $api . '   '  . $value .  " \n";
         if ($value === $this->year()) return FALSE;
         if (   ($this->blank('date')
                || in_array(trim(strtolower($this->get_without_comments_and_placeholders('date'))), IN_PRESS_ALIASES))
