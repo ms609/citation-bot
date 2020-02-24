@@ -609,7 +609,7 @@ final class Template {
           }
         }
         // Update Year with CrossRef data in a few limited cases
-        if ($param_name === 'year' && $api = 'crossref' && ((int) $this->year() < $value) && ((int)date('Y') - 3 < $value)) {
+        if ($param_name === 'year' && $api === 'crossref' && ((int) $this->year() < $value) && ((int)date('Y') - 3 < $value)) {
           $this->forget('date');
           $this->set('year', $value);
           $this->tidy_parameter('isbn');
