@@ -4857,10 +4857,10 @@ final class Template {
         $example = preg_replace('~[^\s=][^=]*[^\s=]~u', 'X', $example); // Collapse strings
         $example = preg_replace('~ +~u', ' ', $example); // Collapse spaces
         // Check if messed up
-        if (substr_count($example, '=') !== 1) $example = ' param = val ';
-        if (substr_count($example, "\n") > 1 ) $example = ' param = val ';
+        if (substr_count($example, '=') !== 1) $example = 'param = val';
+        if (substr_count($example, "\n") > 1 ) $example = 'param = val';
       } else {
-        $example = ' param = val ';
+        $example = 'param = val';
       }
       $this->example_param = $example;
     }
