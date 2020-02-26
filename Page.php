@@ -254,7 +254,7 @@ class Page {
     $this->expand_templates_from_identifier('jstor',   $our_templates);
     $this->expand_templates_from_identifier('doi',     $our_templates);
     expand_arxiv_templates($our_templates);
-    if (!$is_a_man_with_no_plan) $this->expand_templates_from_identifier('url',     $our_templates);
+    if (!$is_a_man_with_no_plan) $this->expand_templates_from_identifier('url',     $our_templates); // TODO
     query_ieee_webpages($our_templates_conferences);
     query_ieee_webpages($our_templates);
     
