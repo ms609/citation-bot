@@ -28,7 +28,7 @@ const HANDLES_HOSTS = array('hdl.handle.net', 'kb.osu.edu', 'repositorio.aemet.e
                             'www.era.lib.ed.ac.uk', 'research-repository.st-andrews.ac.uk',
                             'dataverse.scholarsportal.info', 'idus.us.es', 'dspace.library.uu.nl',
                             'dspace.mit.edu', 'digital.csic.es', 'apps.who.int', 'repository.si.edu',
-                            'lume.ufrgs.br', 'digitallibrary.amnh.org', 'hdl.cqu.edu.au', 'repository.bilkent.edu.tr'
+                            'lume.ufrgs.br', 'digitallibrary.amnh.org', 'hdl.cqu.edu.au', 'repository.bilkent.edu.tr',
                             'digital.library.wisc.edu');
 // Order here could matter
 // YOU MUST escape the RegEx
