@@ -5109,7 +5109,7 @@ final class Template {
   }
   
   protected function volume_issue_demix($data, $param) {
-     if (!in_array($param, ['volume','issue','number'])) return;
+     if (!in_array($param, ['volume','issue','number'])) report_minor_error('volume_issue_demix ' . $param);
      $data = trim($data);
      if (preg_match("~^(\d+)\s*\((\d+(-|–|\–|\{\{ndash\}\})?\d*)\)$~", $data, $matches) ||
               preg_match("~^(?:vol\. |Volume |vol |)(\d+)[,\s]\s*(?:no\.|number|issue|Iss.|no )\s*(\d+(-|–|\–|\{\{ndash\}\})?\d*)$~i", $data, $matches) ||
@@ -5136,8 +5136,11 @@ final class Template {
               $this->set('issue', $possible_issue);
             }
          }
-     } elseif (preg_match('~^\((\d+)\)$~', $data, $matches)) {
+     } elseif (preg_match('~^\((\d+)\)\.?$~', $data, $matches)) {
        $this->set($param, $matches[1]);
+       return;
+     } elseif (preg_match('~^(\d+)\.$~', $data, $matches)) {
+       $this->set($param, $matches[1]); // remove period
        return;
      }
 // volume misuse seems to be popular in cite book, and we would need to move volume to title
