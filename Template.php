@@ -5109,7 +5109,7 @@ final class Template {
   }
   
   protected function volume_issue_demix($data, $param) {
-     if ($param = 'year') return;
+     if ($param === 'year') return;
      if (!in_array($param, ['volume','issue','number'])) {
        report_error('volume_issue_demix ' . $param);
      }
