@@ -5109,7 +5109,10 @@ final class Template {
   }
   
   protected function volume_issue_demix($data, $param) {
-     if (!in_array($param, ['volume','issue','number'])) report_minor_error('volume_issue_demix ' . $param);
+     if ($param = 'year') return;
+     if (!in_array($param, ['volume','issue','number'])) {
+       report_error('volume_issue_demix ' . $param);
+     }
      $data = trim($data);
      if (preg_match("~^(\d+)\s*\((\d+(-|–|\–|\{\{ndash\}\})?\d*)\)$~", $data, $matches) ||
               preg_match("~^(?:vol\. |Volume |vol |)(\d+)[,\s]\s*(?:no\.|number|issue|Iss.|no )\s*(\d+(-|–|\–|\{\{ndash\}\})?\d*)$~i", $data, $matches) ||
