@@ -303,12 +303,6 @@ final class apiFunctionsTest extends testBaseClass {
      $this->assertSame($text, $template->parsed_text());
   }
   
-  public function testArxivChemicals() {
-     $text = "{{cite arXiv|eprint=2001.01484}}";
-     $template = $this->process_citation($text);
-     $this->assertSame("<sup>14</sup>N/<sup>15</sup>N isotopic ratio in CH<sub>3</sub>CN of Titan's atmosphere measured with ALMA", $template->get('title'));
-  }
-  
   public function testCrossRefAddSeries() {
      $text = "{{Cite book | doi = 10.1063/1.2833100| title = A Transient Semi-Metallic Layer in Detonating Nitromethane}}";
      $template = $this->process_citation($text);
