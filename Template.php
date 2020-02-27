@@ -3758,6 +3758,14 @@ final class Template {
             $this->set($param, 'Google Maps');  // Case when Google actually IS a publisher
             return;
           }
+          if (stripos($this->get('url'), 'developers.google.com') !== FALSE && stripos($publisher, 'google') !== FALSE)  {
+            $this->set($param, 'Google Inc.');  // Case when Google actually IS a publisher
+            return;
+          }
+          if (stripos($this->get('url'), 'support.google.com') !== FALSE && stripos($publisher, 'google') !== FALSE)  {
+            $this->set($param, 'Google Inc.');  // Case when Google actually IS a publisher
+            return;
+          }
           foreach (NON_PUBLISHERS as $not_publisher) {
             if (strpos($publisher, $not_publisher) !== FALSE) {
               $this->forget($param);
