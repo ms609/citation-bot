@@ -4562,7 +4562,7 @@ final class Template {
          $trial[] = $try;
          $changed = TRUE;
       }
-      if (preg_match('~^(.+)v\d{1,x}$~', $try, $matches)) { // Versions
+      if (preg_match('~^(.+)v\d{1,2}$~', $try, $matches)) { // Versions
          $try = $matches[1];
          $trial[] = $try;
          $changed = TRUE;
