@@ -4534,6 +4534,40 @@ final class Template {
     if (preg_match("~&[lg]t;~", $doi)) {
       $trial[] = str_replace(array_keys($replacements), $replacements, $doi);
     }
+    $changed = TRUE;
+    $try = $doi;
+    while ($changed) {
+      $changed = FALSE;
+      $extension = substr($try, strrpos($try, '.'));
+      if (in_array(strtolower($extension), array('.htm', '.html', '.jpg', '.jpeg', '.pdf', '.png', '.xml'))) {
+         $try = substr($try, 0, (strrpos($try, $extension)));
+         $trial[] = $try;
+         $changed = TRUE;
+      }
+      $extension = substr($try, strrpos($try, '#'));
+      if (strpos(strtolower($extension), '#page_scan_tab_contents') === 0) {
+         $try = substr($try, 0, (strrpos($try, $extension)));
+         $trial[] = $try;
+         $changed = TRUE;
+      }
+      $extension = substr($try, strrpos($try, ';'));
+      if (strpos(strtolower($extension), ';jsessionid') === 0) {
+         $try = substr($try, 0, (strrpos($try, $extension)));
+         $trial[] = $try;
+         $changed = TRUE;
+      }
+      $extension = substr($try, strrpos($try, '/'));
+      if (in_array(strtolower($extension), array('/abstract', '/full', '/pdf', '/epdf', '/asset/', '/summary', '/short'))) {
+         $try = substr($try, 0, (strrpos($try, $extension)));
+         $trial[] = $try;
+         $changed = TRUE;
+      }
+      if (preg_match('~^(.+)v\d{1,x}$~', $try, $matches)) { // Versions
+         $try = $matches[1];
+         $trial[] = $try;
+         $changed = TRUE;
+      }
+    }
     foreach ($trial as $try) {
       // Check that it begins with 10.
       if (preg_match("~[^/]*(\d{4}/.+)$~", $try, $match)) $try = "10." . $match[1];
