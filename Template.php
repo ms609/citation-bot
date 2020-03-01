@@ -5251,7 +5251,8 @@ final class Template {
           case "ei": case "ots": case "sig": case "source": case "lr":
           case "as_brr": case "sa": case "oi": case "ct": case "id":
           case "oq": case "rls": case "sourceid": case "tbm": case "ved":
-          case "aqs": case "gs_l": case "uact":
+          case "aqs": case "gs_l": case "uact": case "tbo": case "tbs":
+          case "num":
              break;
           case "ie":
              if (str_i_same($part_start[1], 'utf-8')) break;  // UTF-8 is the default
