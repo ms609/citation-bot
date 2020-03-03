@@ -60,7 +60,8 @@ class WikipediaBot {
            sleep(5);
            return FALSE;  // Would be best to retry, but we are down in the weeds of the code
         }
-        report_error('API call failed: ' . $response->error->info);
+        sleep(5);
+        report_minor_error('API call failed: ' . $response->error->info); // Could be something lik abusefilter-warning-predatory
         // @codeCoverageIgnoreEnd
       }
       return FALSE;  // @codeCoverageIgnore
