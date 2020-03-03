@@ -1212,23 +1212,22 @@ final class Template {
          $this->set($url_type, $url); // Update URL with cleaner one
        } 
     }
+    if (preg_match('~^https?://ieeexplore\.ieee\.org(?:|\:80)/(?:|abstract/)document/(\d+)/?(?:|\?reload=true)$~', $url, $matches)) {
+       $url = 'https://ieeexplore.ieee.org/document/' . $matches[1];
+       if (is_null($url_sent)) {
+         $this->set($url_type, $url); // Normalize to HTTPS and remove abstract and remove trailing slash etc
+       }
+    }
+    if (preg_match('~^https?://ieeexplore\.ieee\.org.*/iel5/\d+/\d+/(\d+).pdf(?:|\?.*)$~', $url, $matches)) {
+       $url = 'https://ieeexplore.ieee.org/document/' . $matches[1];
+       if (is_null($url_sent)) {
+         $this->set($url_type, $url); // Normalize 
+       }
+    }
     if (preg_match('~^https://ieeexplore\.ieee\.org/document/0+(\d+)$~', $url, $matches)) {
        $url = 'https://ieeexplore.ieee.org/document/' . $matches[1];
        if (is_null($url_sent)) {
          $this->set($url_type, $url); // Trimming leading zeroes
-       }
-    }
-    if (preg_match('~^https?://ieeexplore\.ieee\.org(?:|\:80)/(?:|abstract/)document/(\d+)/?(?:|\?reload=true)$~', $url, $matches)) {
-       $url = 'https://ieeexplore.ieee.org/document/' . $matches[1];
-       if (is_null($url_sent)) {
-         $this->set($url_type, $url); // Normalize to HTTP and remove abstract and remove trailing slash
-       }
-    }
-    if (preg_match('~^https?://ieeexplore\.ieee\.org(?:|\:80)/Xplore/login.jsp\?url.+/iel5/\d+/\d+/(\d+).pdf$~', $url, $matches)) {
-       $matches[1] = preg_replace('~^0+~', '', $matches[1]);
-       $url = 'https://ieeexplore.ieee.org/document/' . $matches[1];
-       if (is_null($url_sent)) {
-         $this->set($url_type, $url); // Normalize to HTTP and remove abstract and remove trailing slash
        }
     }
     
