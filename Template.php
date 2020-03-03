@@ -1224,6 +1224,14 @@ final class Template {
          $this->set($url_type, $url); // Normalize to HTTP and remove abstract and remove trailing slash
        }
     }
+    if (preg_match('~^https?://ieeexplore\.ieee\.org(?:|\:80)/Xplore/login.jsp\?url.+/iel5/\d+/\d+/(\d+).pdf$~', $url, $matches)) {
+       $matches[1] = preg_replace('~^0+~', '', $matches[1]);
+       $url = 'https://ieeexplore.ieee.org/document/' . $matches[1];
+       if (is_null($url_sent)) {
+         $this->set($url_type, $url); // Normalize to HTTP and remove abstract and remove trailing slash
+       }
+    }
+    
     // Trim ?seq=1#page_scan_tab_contents off of jstor urls
     // We do this since not all jstor urls are recognized below
     if (preg_match("~^(https?://\S*jstor.org\S*)\?seq=1#[a-zA-Z_]+$~", $url, $matches)) {
