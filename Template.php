@@ -4009,7 +4009,7 @@ final class Template {
           }
           if (stripos($the_host, 'proxy') !== FALSE ||
               stripos($the_host, 'lib') !== FALSE ||
-              stripos($the_host), 'mutex') !== FALSE) {
+              stripos($the_host, 'mutex') !== FALSE) {
                 // Generic proxy code www.host.com.proxy-stuff/dsfasfdsfasdfds
               if (preg_match("~^https?://(www\.[^\./\-]+\.com)\.[^/]+(?:|proxy|library|\.lib\.|mutex\.gmu)[^/]+/(\S+)$~i", $this->get($param), $matches)) {
                  report_info("Remove proxy from " . $matches[1] . " URL");
