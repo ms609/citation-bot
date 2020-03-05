@@ -4002,9 +4002,14 @@ final class Template {
                  }
               }
           }
-          if (stripos($this->get($param), 'proxy') !== FALSE ||
-              stripos($this->get($param), 'lib') !== FALSE ||
-              stripos($this->get($param), 'mutex') !== FALSE) {
+          if (preg_match('~^https?://([^/]+)/~', $this->get($param), $matches)) { 
+             $the_host = $matches[1];
+          } else {
+             $the_host = '';
+          }
+          if (stripos($the_host, 'proxy') !== FALSE ||
+              stripos($the_host, 'lib') !== FALSE ||
+              stripos($the_host), 'mutex') !== FALSE) {
                 // Generic proxy code www.host.com.proxy-stuff/dsfasfdsfasdfds
               if (preg_match("~^https?://(www\.[^\./\-]+\.com)\.[^/]+(?:|proxy|library|\.lib\.|mutex\.gmu)[^/]+/(\S+)$~i", $this->get($param), $matches)) {
                  report_info("Remove proxy from " . $matches[1] . " URL");
@@ -4022,7 +4027,7 @@ final class Template {
                  }
               }
           }
-          if (stripos($this->get($param), 'galegroup') !== FALSE) {
+          if (stripos($the_host, 'galegroup') !== FALSE) {
             if (preg_match("~^(?:http.+url=|)https?://go.galegroup.com(%2fps.+)$~", $this->get($param), $matches)) {
                  $this->set($param, 'https://go.galegroup.com' . urldecode($matches[1]));
                  report_info("Remove proxy from Gale URL");
@@ -4051,7 +4056,7 @@ final class Template {
                  if ($this->has('via') && stripos($this->get('via'), 'gale') === FALSE) $this->forget('via');
             }
           }
-          if (stripos($this->get($param), 'proquest') !== FALSE) {
+          if (stripos($the_host, 'proquest') !== FALSE) {
             if (preg_match("~^(?:http.+/login\?url=|)https?://(?:0\-|)search.proquest.com[^/]+(|/[^/]+)/docview/(.+)$~", $this->get($param), $matches)) {
                  $this->set($param, 'https://search.proquest.com' . $matches[1] . '/docview/' . $matches[2]);
                  report_info("Remove proxy from ProQuest URL");
