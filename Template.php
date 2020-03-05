@@ -4027,7 +4027,7 @@ final class Template {
                  }
               }
           }
-          if (stripos($the_host, 'galegroup') !== FALSE) {
+          if (stripos($this->get($param), 'galegroup') !== FALSE) {
             if (preg_match("~^(?:http.+url=|)https?://go.galegroup.com(%2fps.+)$~", $this->get($param), $matches)) {
                  $this->set($param, 'https://go.galegroup.com' . urldecode($matches[1]));
                  report_info("Remove proxy from Gale URL");
@@ -4056,7 +4056,7 @@ final class Template {
                  if ($this->has('via') && stripos($this->get('via'), 'gale') === FALSE) $this->forget('via');
             }
           }
-          if (stripos($the_host, 'proquest') !== FALSE) {
+          if (stripos($this->get($param), 'proquest') !== FALSE) {
             if (preg_match("~^(?:http.+/login\?url=|)https?://(?:0\-|)search.proquest.com[^/]+(|/[^/]+)/docview/(.+)$~", $this->get($param), $matches)) {
                  $this->set($param, 'https://search.proquest.com' . $matches[1] . '/docview/' . $matches[2]);
                  report_info("Remove proxy from ProQuest URL");
