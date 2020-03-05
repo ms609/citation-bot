@@ -3091,6 +3091,12 @@ T1 - This is the Title }}';
     $this->assertSame('https://www.oxfordhandbooks.com/view/1234', $template->get('url'));
     $this->assertNull($template->get('via'));
   }
+ 
+  public function testTidy55B() { // Do not drop AU
+    $text = "{{cite news|title=Misogynist rants from Young Libs|url=http://www.theage.com.au/victoria/misogynist-rants-from-young-libs-20140809-3dfhw.html|accessdate=10 August 2014|newspaper=[[The Age]]|date=10 August 2014|agency=[[Fairfax Media]]}}";
+    $template = $this->process_citation($text);
+    $this->assertSame('http://www.theage.com.au/victoria/misogynist-rants-from-young-libs-20140809-3dfhw.html', $template->get('url'));
+  }
 
   public function testTidy56() {
     $text = "{{cite journal|url=https://www.oxfordartonline.com.proxy/view/1234|via=me}}";
