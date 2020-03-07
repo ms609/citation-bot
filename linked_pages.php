@@ -66,7 +66,7 @@ foreach($links as $link) {
 
 
   $attempts = 0;
-  shuffle($pages_in_category);
+
   $page = new Page();
   foreach ($pages_in_category as $page_title) {
     // $page->expand_text will take care of this notice if we are in HTML mode.
