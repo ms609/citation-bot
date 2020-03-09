@@ -5266,7 +5266,7 @@ final class Template {
           case "aqs": case "gs_l": case "uact": case "tbo": case "tbs":
           case "num":
              break;
-          case "ie":
+          case "ie": case "oe":
              if (str_i_same($part_start[1], 'utf-8')) break;  // UTF-8 is the default
           case "hl": case "safe": case "q":
              $url .=  $part . "&" ;
