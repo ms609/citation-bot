@@ -1010,6 +1010,7 @@ final class Template {
       case 'isbn';
         if ($this->blank($param_name)) { 
           $value = $this->isbn10Toisbn13($value);
+          if (strlen($value) > 19) return FALSE; // Two ISBNs
           return $this->add($param_name, $value);
         }
         return FALSE;
