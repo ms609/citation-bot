@@ -354,6 +354,16 @@ final class Template {
     }
     return TRUE;
   }
+  
+  public function blank_other_than_comments($param) {
+    if (!$param) return NULL;
+    if (empty($this->param)) return TRUE;
+    if (!is_array($param)) $param = array($param);
+    foreach ($this->param as $p) {
+      if (in_array($p->param, $param) && trim(preg_replace('~# # # CITATION_BOT_PLACEHOLDER_COMMENT.*?# # #~sui', '', $p->val)) != '') return FALSE;
+    }
+    return TRUE;
+  }
 
   /* function add_if_new
    * Adds a parameter to a template if the parameter and its equivalents are blank
@@ -4432,7 +4442,7 @@ final class Template {
       $this->forget('bibcode'); // Not supported and 99% of the time just a arxiv bibcode anyway
     }
     if ($this->wikiname() === 'citation') { // Special CS2 code goes here
-      if ($this->has('title') && $this->has('chapter') && !$this->blank(WORK_ALIASES)) { // Invalid combination
+      if (!$this->blank_other_than_comments('title') && !$this->blank_other_than_comments('chapter') && !$this->blank_other_than_comments(WORK_ALIASES)) { // Invalid combination
           report_info('CS2 template has incompatible parameters.  Changing to CS1 cite book. Please verify.');
           if ($this->name === 'citation') { // Need special code to keep caps the same
             $this->name = 'cite book';
