@@ -34,7 +34,8 @@ const BAD_TITLES = array("unknown", "missing", "arxiv e-prints", "arxiv mathemat
                          "google books", "rte.ie", "loading", "google book",
                          "the article you have been looking for has expired and is not longer available on our system. this is due to newswire licensing terms.",
                          "openid transaction in progress", 'download limit exceeded', 'privacy settings',
-                         "untitled-1", "untitled-2", "professional paper");
+                         "untitled-1", "untitled-2", "professional paper", "zbmath",
+                         "theses and dissertations available from proquest");
 const IN_PRESS_ALIASES = array("in press", "inpress", "pending", "published", 
                                "published online", "no-no", "n/a", "online ahead of print", 
                                "unpublished", "unknown", "tba", "forthcoming", "in the press", 
