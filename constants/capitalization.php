@@ -14,7 +14,7 @@ const LC_SMALL_WORDS = array(/* The following will be automatically updated to a
           " off ", " og ", " on ", " or ", " over ", " PCR ", " per ", " PNAS ", " PS: ", 
           " R&D ", " RNA ", " RTÉ ", " S&P ", " SAE ", " SSRN ", " TCI: ", " the ", " then ", 
           " till ", " to ", " UK ", " um ", " und ", " up ", " USA ", " van ", " vir ", 
-          " von ", " voor ", " when ", " with ", " within ", " woor ", " y ", " zu ", " zum ", 
+          " von ", " voor ", " when ", " with ", " within ", " woor ", " y ", " zbMATH ", " zu ", " zum ", 
           " zur ", /* The above will be automatically updated to alphabetical order */ 
           // After this line we list exceptions that need re-capitalizing after they have been decapitalized.
           " El Dorado ", " Las Vegas ", " Los Angeles ", " N Y ", " U S A ");
@@ -33,7 +33,7 @@ const UC_SMALL_WORDS = array(/* The following will be automatically updated to a
           " Off ", " Og ", " On ", " Or ", " Over ", " Pcr ", " Per ", " Pnas ", " Ps: ", 
           " R&d ", " Rna ", " Rté ", " S&p ", " Sae ", " Ssrn ", " Tci: ", " The ", " Then ", 
           " Till ", " To ", " Uk ", " Um ", " Und ", " Up ", " Usa ", " Van ", " Vir ", 
-          " Von ", " Voor ", " When ", " With ", " Within ", " Woor ", " Y ", " Zu ", " Zum ", 
+          " Von ", " Voor ", " When ", " With ", " Within ", " Woor ", " Y ", " ZbMATH ", " Zu ", " Zum ", 
           " Zur ", /* The above will be automatically updated to alphabetical order */ 
           // After this line we list exceptions that need re-capitalizing after they have been decapitalized.
           " el Dorado ", " las Vegas ", " los Angeles ", " N y ", " U S a ");
