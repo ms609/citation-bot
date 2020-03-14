@@ -8,8 +8,8 @@ const BAD_ACCEPTED_MANUSCRIPT_TITLES = array("oup accepted manuscript", "placeho
 const BAD_AUTHORS = array("unknown", "missing", "- -.", "- -", "no authorship indicated", "no authorship", "no author",
                            "no authors", "no author indicated", "no authorship indicated");
 const NON_HUMAN_AUTHORS = array('collaborat', 'reporter', 'journalist', 'correspondent', 'anchor', 'staff', 'foreign',
-                                'national', 'endowment', ' for the ', 'humanities', 'committee',
-                                'society', ' of america', 'association', ' at the ', 'board of ',
+                                'national', 'endowment', ' for the ', 'humanities', 'committee', 'group',
+                                'society', ' of america', 'association', ' at the ', 'board of ', 'communications',
                                 'corporation', 'incorporated', 'editorial', 'university', 'dept. of', 'department',
                                 'dept of ', 'college', 'center for', 'office of', 'editor');
 const BAD_PUBLISHERS = array('london', 'edinburgi', 'edinburgh', 'no publisher', 'no publisher given',
@@ -34,7 +34,8 @@ const BAD_TITLES = array("unknown", "missing", "arxiv e-prints", "arxiv mathemat
                          "google books", "rte.ie", "loading", "google book",
                          "the article you have been looking for has expired and is not longer available on our system. this is due to newswire licensing terms.",
                          "openid transaction in progress", 'download limit exceeded', 'privacy settings',
-                         "untitled-1", "untitled-2", "professional paper");
+                         "untitled-1", "untitled-2", "professional paper", "zbmath",
+                         "theses and dissertations available from proquest");
 const IN_PRESS_ALIASES = array("in press", "inpress", "pending", "published", 
                                "published online", "no-no", "n/a", "online ahead of print", 
                                "unpublished", "unknown", "tba", "forthcoming", "in the press", 
