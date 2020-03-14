@@ -2678,7 +2678,11 @@ final class Template {
       $removed_redundant = 0;
       $hash = '';
       $removed_parts ='';
-      
+
+      if (strpos($url, '#v=onepage')) { // The default when coming in from a URL
+        $url = str_replace('#v=onepage', '', $url);
+        $removed_parts .= '#v=onepage';
+      }
       if (strpos($url, "#")) {
         $url_parts = explode("#", $url);
         $url = $url_parts[0];
