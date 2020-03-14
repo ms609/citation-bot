@@ -14,7 +14,7 @@ const LC_SMALL_WORDS = array(/* The following will be automatically updated to a
           " off ", " og ", " on ", " or ", " over ", " PCR ", " per ", " PNAS ", " PS: ", 
           " R&D ", " RNA ", " RTÉ ", " S&P ", " SAE ", " SSRN ", " TCI: ", " the ", " then ", 
           " till ", " to ", " UK ", " um ", " und ", " up ", " USA ", " van ", " vir ", 
-          " von ", " voor ", " when ", " with ", " within ", " woor ", " y ", " zbMATH ", " zu ", " zum ", 
+          " von ", " voor ", " when ", " with ", " within ", " woor ", " y ", " zu ", " zum ", 
           " zur ", /* The above will be automatically updated to alphabetical order */ 
           // After this line we list exceptions that need re-capitalizing after they have been decapitalized.
           " El Dorado ", " Las Vegas ", " Los Angeles ", " N Y ", " U S A ");
@@ -33,7 +33,7 @@ const UC_SMALL_WORDS = array(/* The following will be automatically updated to a
           " Off ", " Og ", " On ", " Or ", " Over ", " Pcr ", " Per ", " Pnas ", " Ps: ", 
           " R&d ", " Rna ", " Rté ", " S&p ", " Sae ", " Ssrn ", " Tci: ", " The ", " Then ", 
           " Till ", " To ", " Uk ", " Um ", " Und ", " Up ", " Usa ", " Van ", " Vir ", 
-          " Von ", " Voor ", " When ", " With ", " Within ", " Woor ", " Y ", " ZbMATH ", " Zu ", " Zum ", 
+          " Von ", " Voor ", " When ", " With ", " Within ", " Woor ", " Y ", " Zu ", " Zum ", 
           " Zur ", /* The above will be automatically updated to alphabetical order */ 
           // After this line we list exceptions that need re-capitalizing after they have been decapitalized.
           " el Dorado ", " las Vegas ", " los Angeles ", " N y ", " U S a ");
@@ -72,7 +72,7 @@ const JOURNAL_ACRONYMS = array(/* The following will be automatically updated to
           " STDs ", " Série A ", " Tellus A ", " The De Paulia ", " The EMBO Journal ", 
           " Time Off Magazine ", " Time Out London ", " tot de ", " Transactions and archaeological record of the Cardiganshire Antiquarian Society ", 
           " U.S. ", " U.S.A. ", " U.S.A. ", " uHealth ", " uHealth ", " USGS ", " v Astronomicheskii Zhurna ", 
-          " WRIR ", " z/Journal ", " z/Journal ", " Zeitschrift für Geologische Wissenschaften ", 
+          " WRIR ", " z/Journal ", " z/Journal ", " zbMATH ", " Zeitschrift für Geologische Wissenschaften ", 
           " Zeitschrift für Physik A Hadrons and Nuclei ", " Zeitschrift für Physik A: Hadrons and Nuclei ", 
           " ZooKeys ", /* The above will be automatically updated to alphabetical order */ 
 );
@@ -110,7 +110,7 @@ const UCFIRST_JOURNAL_ACRONYMS = array(/* The following will be automatically up
           " STDS ", " Série a ", " Tellus a ", " The de Paulia ", " The Embo Journal ", 
           " Time off Magazine ", " Time Out London ", " Tot de ", " Transactions and Archaeological Record of the Cardiganshire Antiquarian Society ", 
           " U.s. ", " U.S.a. ", " U.s.a ", " UHealth ", " Uhealth ", " Usgs ", " V Astronomicheskii Zhurna ", 
-          " Wrir ", " Z/Journal ", " Z/journal ", " Zeitschrift Für Geologische Wissenschaften ", 
+          " Wrir ", " Z/Journal ", " Z/journal ", " ZbMATH ", " Zeitschrift Für Geologische Wissenschaften ", 
           " Zeitschrift für Physik a Hadrons and Nuclei ", " Zeitschrift Für Physik a: Hadrons And Nuclei ", 
           " Zookeys ", /* The above will be automatically updated to alphabetical order */ 
 );
