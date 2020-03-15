@@ -4190,6 +4190,8 @@ final class Template {
               $this->forget('via');
             } elseif (stripos($this->get('via'), 'library') !== FALSE) {
               $this->forget('via');
+            } elseif (in_array($this->wikiname(), ['cite arxiv', 'cite biorxiv', 'cite citeseerx', 'cite ssrn'])) { 
+              $this->forget('via');
             } elseif ($this->has('pmc') || $this->has('pmid') || ($this->has('doi') && $this->blank(DOI_BROKEN_ALIASES))) {
               $via = trim(strtolower($this->get('via')));
               if (in_array($via, ['', 'project muse', 'wiley', 'springer', 'questia', 'elsevier', 'wiley online library',
