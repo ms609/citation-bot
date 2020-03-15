@@ -350,7 +350,7 @@ final class Template {
     if (empty($this->param)) return TRUE;
     if (!is_array($param)) $param = array($param);
     foreach ($this->param as $p) {
-      if (in_array($p->param, $param) && (trim($p->val) != '' || str_i_same('Epub ahead of print', $p->val)) return FALSE;
+      if (in_array($p->param, $param) && trim($p->val) != '' && !str_i_same('Epub ahead of print', $p->val)) return FALSE;
     }
     return TRUE;
   }
