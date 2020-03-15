@@ -404,6 +404,7 @@ final class Template {
 
     $auNo = preg_match('~\d+$~', $param_name, $auNo) ? $auNo[0] : '';        
 
+    if (str_i_same('Epub ahead of print', $this->get($param_name)) $this->set($param_name, '');  // Ready for an upgrade
     switch ($param_name) {
       ### EDITORS
       case (boolean) preg_match('~^editor(\d{1,})$~', $param_name, $match) :
