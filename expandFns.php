@@ -570,7 +570,7 @@ function prior_parameters($par, $list=array()) {
     case 'isbn': case 'biorxiv': case 'citeseerx': case 'jfm': case 'zbl': case 'mr': case 'osti': case 'ssrn': case 'rfc': case 'citeseerx':
        return prior_parameters('hdl', $list);
     case 'lccn': case 'issn': case 'ol': case 'ocln':
-       return prior_parameters('isbn', array_merge(['biorxiv', 'citeseerx', 'jfm', 'zbl', 'mr',e 'osti',e 'ssrn', 'rfc', 'citeseerx'], $list));
+       return prior_parameters('isbn', array_merge(['biorxiv', 'citeseerx', 'jfm', 'zbl', 'mr', 'osti', 'ssrn', 'rfc', 'citeseerx'], $list));
     default: return $list;
   }
 }
