@@ -224,12 +224,12 @@ class ZoteroTest extends testBaseClass {
     $access_date = FALSE;
     $url = '';
     $url_kind = NULL;
-    $zotero_data[0] = (object) array('bookTitle' => '(pdf) This is a Title (pdf)', 'publisher' => 'Joe', 'title' => 'Billy', 'itemType' => 'bookSection');
+    $zotero_data[0] = (object) array('bookTitle' => '(pdf) This is a Title (pdf)', 'publisher' => 'JoeJoe', 'title' => 'Billy', 'itemType' => 'bookSection');
     $zotero_response = json_encode($zotero_data);
     $this->assertTrue(process_zotero_response($zotero_response, $template, $url, $url_kind, $access_date));
     $this->assertSame('cite book', $template->wikiname());
     $this->assertSame('Billy', $template->get('chapter'));
-    $this->assertSame('Joe', $template->get('publisher'));
+    $this->assertSame('JoeJoe', $template->get('publisher'));
     $this->assertSame('This is a Title', $template->get('title'));
   }
 
@@ -291,12 +291,12 @@ class ZoteroTest extends testBaseClass {
     $access_date = FALSE;
     $url = '';
     $url_kind = NULL;
-    $zotero_data[0] = (object) array('title' => 'Billy', 'itemType' => 'thesis', 'university' => 'Iowa', 'thesisType' => 'Masters');
+    $zotero_data[0] = (object) array('title' => 'Billy', 'itemType' => 'thesis', 'university' => 'IowaIowa', 'thesisType' => 'Masters');
     $zotero_response = json_encode($zotero_data);
     $this->assertTrue(process_zotero_response($zotero_response, $template, $url, $url_kind, $access_date));
     $this->assertSame('cite thesis', $template->wikiname());
     $this->assertSame('Billy', $template->get('title'));
-    $this->assertSame('Iowa', $template->get('publisher'));
+    $this->assertSame('IowaIowa', $template->get('publisher'));
     $this->assertSame('Masters', $template->get('type'));
   }
 
