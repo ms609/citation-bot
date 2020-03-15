@@ -571,7 +571,9 @@ function prior_parameters($par, $list=array()) {
        return prior_parameters('hdl', $list);
     case 'lccn': case 'issn': case 'ol': case 'ocln':
        return prior_parameters('isbn', array_merge(['biorxiv', 'citeseerx', 'jfm', 'zbl', 'mr', 'osti', 'ssrn', 'rfc', 'citeseerx'], $list));
-    default: return $list;
+    default:
+      report_minor_error('unexpected ' . $par . ' in prior_parameters()');
+      return $list;
   }
 }
 
