@@ -350,7 +350,7 @@ final class Template {
     if (empty($this->param)) return TRUE;
     if (!is_array($param)) $param = array($param);
     foreach ($this->param as $p) {
-      if (in_array($p->param, $param) && trim($p->val) != '') return FALSE;
+      if (in_array($p->param, $param) && (trim($p->val) != '' || str_i_same('Epub ahead of print', $p->val)) return FALSE;
     }
     return TRUE;
   }
@@ -404,7 +404,6 @@ final class Template {
 
     $auNo = preg_match('~\d+$~', $param_name, $auNo) ? $auNo[0] : '';        
 
-    if (str_i_same('Epub ahead of print', $this->get($param_name)) $this->set($param_name, '');  // Ready for an upgrade
     switch ($param_name) {
       ### EDITORS
       case (boolean) preg_match('~^editor(\d{1,})$~', $param_name, $match) :
