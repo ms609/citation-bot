@@ -1045,7 +1045,7 @@ final class Template {
         return FALSE;
       
       case 'publisher':
-        if (strlen(preg_replace('~[\.\s]~', '', $value)) < 5) return FALSE; // too few characters 
+        if (strlen(preg_replace('~[\.\s\d\,]~', '', $value)) < 5) return FALSE; // too few characters 
         if (stripos($value, 'Springer') === 0) $value = 'Springer'; // they add locations often
         if (stripos($value, '[s.n.]') !== FALSE) return FALSE;
         if (preg_match('~^\[([^\|\[\]]*)\]$~', $value, $match)) $value = $match[1]; // usually zotero problem of [data]
