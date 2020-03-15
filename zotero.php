@@ -509,7 +509,7 @@ function process_zotero_response($zotero_response, &$template, $url, $url_kind, 
   }
   if ( isset($result->volume) 
   &&   strpos($result->volume, "(") === FALSE ) $template->add_if_new('volume', $result->volume);
-  if ( isset($result->date))             $template->add_if_new('date'   , tidy_date($result->date));
+  if ( isset($result->date) && strlen($result->date)>3)$template->add_if_new('date'   , tidy_date($result->date));
   if ( isset($result->series) && stripos($url, 'portal.acm.org')===FALSE)  $template->add_if_new('series' , $result->series);
   if ( isset($result->author[0]) && !isset($result->author[1]) &&
       !author_is_human(@$result->author[0][0] . ' ' . @$result->author[0][1])) {
