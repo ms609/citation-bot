@@ -555,22 +555,30 @@ function prior_parameters($par, $list=array()) {
     }
   }
   switch ($par) {
-    case 'title':                     return prior_parameters('author', array_merge(FLATTENED_AUTHOR_PARAMETERS, $list));
-    case 'chapter':                   return prior_parameters('title', $list);
-    case 'journal':                   return prior_parameters('chapter', $list);
-    case 'volume':                    return prior_parameters('journal', $list);
+    case 'dummy':                     return $list;
+    case 'title':                     return prior_parameters('dummy', array_merge(FLATTENED_AUTHOR_PARAMETERS, $list));
+    case 'title-link':                return prior_parameters('title', $list);
+    case 'chapter':                   return prior_parameters('title-link', $list);
+    case 'journal': case 'work': case 'newspaper':     return prior_parameters('chapter', $list);
+    case 'series':                    return prior_parameters('journal', array_merge(['work', 'newspaper'], $list));
+    case 'year': 'date':              return prior_parameters('series', $list));
+    case 'volume':                    return prior_parameters('year', array_merge(['date'], $list));
     case 'issue': case 'number':      return prior_parameters('volume', $list);
     case 'page' : case 'pages':       return prior_parameters('issue', array_merge(['number'], $list));
-
-    case 'pmid':                      return prior_parameters('doi', $list);
+    case 'doi':                       return prior_parameters('page', array_merge(['pages'], $list));
+    case 'doi-broken-date':           return prior_parameters('doi', $list);
+    case 'jstor':                     return prior_parameters('doi-broken-date', $list);
+    case 'pmid':                      return prior_parameters('jstor', $list);
     case 'pmc':                       return prior_parameters('pmid', $list);
     case 'arxiv': case 'eprint':      return prior_parameters('pmc', $list);
     case 'bibcode':                   return prior_parameters('arxiv', array_merge(['eprint'], $list));
     case 'hdl':                       return prior_parameters('bibcode', $list);
     case 'isbn': case 'biorxiv': case 'citeseerx': case 'jfm': case 'zbl': case 'mr': case 'osti': case 'ssrn': case 'rfc': case 'citeseerx':
        return prior_parameters('hdl', $list);
-    case 'lccn': case 'issn': case 'ol': case 'ocln':
+    case 'lccn': case 'issn': case 'ol': case 'oclc': case 'asin':
        return prior_parameters('isbn', array_merge(['biorxiv', 'citeseerx', 'jfm', 'zbl', 'mr', 'osti', 'ssrn', 'rfc', 'citeseerx'], $list));
+    case 'url':
+        return prior_parameters('lccn', array_merge(['issn', 'ol', 'oclc', 'asin'], $list));
     default:
       report_minor_error('unexpected ' . $par . ' in prior_parameters()');
       return $list;
