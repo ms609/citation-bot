@@ -573,7 +573,7 @@ function prior_parameters($par, $list=array()) {
     case 'jstor':                     return prior_parameters('doi-broken-date', $list);
     case 'pmid':                      return prior_parameters('jstor', $list);
     case 'pmc':                       return prior_parameters('pmid', $list);
-    case 'arxiv': case 'eprint': case 'type' : return prior_parameters('pmc', $list);
+    case 'arxiv': case 'eprint': case 'class' : return prior_parameters('pmc', $list);
     case 'bibcode':                   return prior_parameters('arxiv', array_merge(['eprint', 'class'], $list));
     case 'hdl':                       return prior_parameters('bibcode', $list);
     case 'isbn': case 'biorxiv': case 'citeseerx': case 'jfm': case 'zbl': case 'mr': case 'osti': case 'ssrn': case 'rfc': case 'citeseerx':
