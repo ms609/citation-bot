@@ -28,7 +28,7 @@ final class Template {
 
   protected $name, $param, $initial_param, $initial_author_params, $initial_name,
             $used_by_api, $doi_valid = FALSE, $had_initial_editor = FALSE,
-            $mod_dashes = FALSE, $mod_names = FALSE;
+            $mod_dashes = FALSE, $mod_names = FALSE, $no_initial_doi = FALSE;
 
   public function parse_text($text) {
     $this->initial_author_params = NULL; // Will be populated later if there are any
@@ -97,6 +97,7 @@ final class Template {
         $this->had_initial_editor = TRUE;
       }
     }
+    $this->no_initial_doi = $this->blank('doi');
   }
 
   // Re-assemble parsed template into string
@@ -619,7 +620,7 @@ final class Template {
           }
         }
         // Update Year with CrossRef data in a few limited cases
-        if ($param_name === 'year' && $api === 'crossref' && ((int) $this->year() < $value) && ((int)date('Y') - 3 < $value)) {
+        if ($param_name === 'year' && $api === 'crossref' && $this->no_initial_doi && ((int) $this->year() < $value) && ((int)date('Y') - 3 < $value)) {
           $this->forget('date');
           $this->set('year', $value);
           $this->tidy_parameter('isbn');
@@ -3434,7 +3435,7 @@ final class Template {
           if ($this->has('author') && $this->has('authors')) $this->rename('author', 'DUPLICATE_authors');
           if (!$this->initial_author_params) $this->handle_et_al();
           // Continue from authors without break
-         case 'last': case 'surname':
+        case 'last': case 'surname':
             if (!$this->initial_author_params) {
               if ($pmatch[2]) {
                 $translator_regexp = "~\b([Tt]r(ans(lat...?(by)?)?)?\.?)\s([\w\p{L}\p{M}\s]+)$~u";
@@ -4286,7 +4287,15 @@ final class Template {
             $value = "[https://" . substr($value, 3);
             $this->set($param, $value);
           }
-          if (preg_match('~^p\.?p\. *(\d+[–-]\d+)$~u' , $value, $matches)) {
+          if (preg_match('~^p\.?p\.? *(\d+[–-]?\d+)$~u' , $value, $matches)) {
+            $value = $matches[1];
+            $this->set($param, $value);
+          }
+          if (preg_match('~^[Pp]ages?[\.\:]? *(\d+[–-]?\d+)$~u' , $value, $matches)) {
+            $value = $matches[1];
+            $this->set($param, $value);
+          }
+          if (preg_match('~^p\.? *(\d+[–-]?\d+)$~u' , $value, $matches)) {
             $value = $matches[1];
             $this->set($param, $value);
           }
