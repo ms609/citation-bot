@@ -582,7 +582,7 @@ function prior_parameters($par, $list=array()) {
        return prior_parameters('isbn', array_merge(['biorxiv', 'citeseerx', 'jfm', 'zbl', 'mr', 'osti', 'ssrn', 'rfc', 'citeseerx'], $list));
     case 'url':
         return prior_parameters('lccn', array_merge(['issn', 'ol', 'oclc', 'asin'], $list));
-    case 'archive-url': case 'archiveurl': case 'accessdate': case 'access-date': return prior_parameters('url', $list));
+    case 'archive-url': case 'archiveurl': case 'accessdate': case 'access-date': return prior_parameters('url', $list);
     case 'archive-date': case 'archivedate': return prior_parameters('archive-url', array_merge(['archiveurl', 'accessdate', 'access-date'], $list));
     case 'id': case 'type': case 'via':return prior_parameters('archive-date', array_merge(['archivedate'], $list));
     default:
