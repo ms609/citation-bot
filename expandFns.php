@@ -586,7 +586,6 @@ function prior_parameters($par, $list=array()) {
     case 'archive-date': case 'archivedate': return prior_parameters('archive-url', array_merge(['archiveurl', 'accessdate', 'access-date'], $list));
     case 'id': case 'type': case 'via':return prior_parameters('archive-date', array_merge(['archivedate'], $list));
     default:
-      report_minor_error('unexpected ' . $par . ' in prior_parameters()');
       return $list;
   }
 }
