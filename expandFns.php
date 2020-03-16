@@ -562,8 +562,8 @@ function prior_parameters($par, $list=array()) {
       return prior_parameters('dummy', array_merge(FLATTENED_AUTHOR_PARAMETERS, $list));
     case 'title-link':case 'titlelink':return prior_parameters('title', $list);
     case 'chapter':                   return prior_parameters('title-link', array_merge(['titlelink'], $list));
-    case 'journal': case 'work': case 'newspaper':     return prior_parameters('chapter', $list);
-    case 'series':                    return prior_parameters('journal', array_merge(['work', 'newspaper'], $list));
+    case 'journal': case 'work': case 'newspaper': case 'website':  return prior_parameters('chapter', $list);
+    case 'series':                    return prior_parameters('journal', array_merge(['work', 'newspaper', 'website'], $list));
     case 'year': case 'date':         return prior_parameters('series', $list);
     case 'volume':                    return prior_parameters('year', array_merge(['date'], $list));
     case 'issue': case 'number':      return prior_parameters('volume', $list);
