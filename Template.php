@@ -28,7 +28,7 @@ final class Template {
 
   protected $name, $param, $initial_param, $initial_author_params, $initial_name,
             $used_by_api, $doi_valid = FALSE, $had_initial_editor = FALSE,
-            $mod_dashes = FALSE, $mod_names = FALSE;
+            $mod_dashes = FALSE, $mod_names = FALSE, $no_initial_doi = FALSE;
 
   public function parse_text($text) {
     $this->initial_author_params = NULL; // Will be populated later if there are any
@@ -97,6 +97,7 @@ final class Template {
         $this->had_initial_editor = TRUE;
       }
     }
+    $this->no_initial_doi = $this->blank('doi');
   }
 
   // Re-assemble parsed template into string
@@ -619,7 +620,7 @@ final class Template {
           }
         }
         // Update Year with CrossRef data in a few limited cases
-        if ($param_name === 'year' && $api === 'crossref' && ((int) $this->year() < $value) && ((int)date('Y') - 3 < $value)) {
+        if ($param_name === 'year' && $api === 'crossref' && $this->no_initial_doi && ((int) $this->year() < $value) && ((int)date('Y') - 3 < $value)) {
           $this->forget('date');
           $this->set('year', $value);
           $this->tidy_parameter('isbn');
