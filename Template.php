@@ -4351,6 +4351,9 @@ final class Template {
             $this->rename($param, 'date'); // When date & year are blank, this is displayed as date.  So convert
           }
           return;
+          
+        case default:
+          report_minor_error($param . ' Was passed');
       }
     }
   }
