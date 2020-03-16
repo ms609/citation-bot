@@ -557,7 +557,7 @@ function prior_parameters($par, $list=array()) {
   switch ($par) {
     case 'author': case 'authors':    return $list;
     case 'dummy':                     return $list;
-    case 'title': case 'others': case 'display-editors': case 'displayeditors': : case 'display-authors': case 'displayauthors':
+    case 'title': case 'others': case 'display-editors': case 'displayeditors': case 'display-authors': case 'displayauthors':
       return prior_parameters('dummy', array_merge(FLATTENED_AUTHOR_PARAMETERS, $list));
     case 'title-link':                return prior_parameters('title', $list);
     case 'chapter':                   return prior_parameters('title-link', $list);
