@@ -548,10 +548,11 @@ function prior_parameters($par, $list=array()) {
   if (preg_match('~(\D+)(\d+)~', $par, $match)) {
     switch ($match[1]) {
       case 'first': case 'initials': case 'forename':
-        return array('last' . $match[2], 'surname' . $match[2]);
-      case 'last': case 'surname': 
-        return array('first' . ($match[2]-1), 'forename' . ($match[2]-1), 'initials' . ($match[2]-1));
-      default: return array($match[1] . ($match[2]-1));
+        return array('last' . $match[2], 'surname' . $match[2], 'author' . ($match[2]-1));
+      case 'last': case 'surname': case 'author':
+        return array('first' . ($match[2]-1), 'forename' . ($match[2]-1), 'initials' . ($match[2]-1), 'author' . ($match[2]-1));
+      default:
+        return array_merge(FLATTENED_AUTHOR_PARAMETERS, array($match[1] . ($match[2]-1)));
     }
   }
   switch ($par) {
