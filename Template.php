@@ -4352,7 +4352,7 @@ final class Template {
           }
           return;
           
-        case default:
+        default:
           report_minor_error($param . ' Was passed');
       }
     }
