@@ -561,7 +561,7 @@ function prior_parameters($par, $list=array()) {
     case 'chapter':                   return prior_parameters('title-link', $list);
     case 'journal': case 'work': case 'newspaper':     return prior_parameters('chapter', $list);
     case 'series':                    return prior_parameters('journal', array_merge(['work', 'newspaper'], $list));
-    case 'year': 'date':              return prior_parameters('series', $list));
+    case 'year': 'date':              return prior_parameters('series', $list);
     case 'volume':                    return prior_parameters('year', array_merge(['date'], $list));
     case 'issue': case 'number':      return prior_parameters('volume', $list);
     case 'page' : case 'pages':       return prior_parameters('issue', array_merge(['number'], $list));
