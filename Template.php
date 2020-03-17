@@ -3286,7 +3286,8 @@ final class Template {
           strpos($this->get('chapter'), '[') === FALSE &&
           $this->blank('trans-chapter') &&
           (!stripos($this->get('url'), 'google.com') || strpos($this->get('url'), 'pg=')) && // Do not move books without page numbers
-          !stripos($this->get('url'), 'archive.org/details/isbn')) { 
+          !stripos($this->get('url'), 'archive.org/details/isbn') &&
+          (!stripos($this->get('url'), 'archive.org') || strpos($this->get('url'), 'page') || strpos($this->get('url'), 'chapter'))) { 
         $this->rename('url', 'chapter-url');
         $this->rename('format', 'chapter-format');
         $this->rename('url-access', 'chapter-url-access');
