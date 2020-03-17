@@ -305,7 +305,7 @@ final class Template {
           &&  $this->has("title")
           && ($this->has("date") || $this->has("year"))
           && ($this->has("author2") || $this->has("last2") || $this->has('surname2')
-          && ($this->get('journal') !== 'none'))
+          && ($this->get('journal') !== 'none' && $this->get('title') !== 'none'))
     ));
   }
 
