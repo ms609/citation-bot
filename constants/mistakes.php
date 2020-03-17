@@ -63,4 +63,5 @@ const COMMON_MISTAKES = array ( // Common mistakes that aren't picked up by the 
   "trans_chapter"   =>  "trans-chapter",
   "trans_title"     =>  "trans-title",
   "DOI"             =>  "doi",
+  "publication"     =>  "work", 
 );
