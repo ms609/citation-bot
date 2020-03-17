@@ -416,7 +416,7 @@ function expand_by_doi($template, $force = FALSE) {
     $crossRef = query_crossref($doi);
     if ($crossRef) {
       if (in_array(strtolower($crossRef->article_title), BAD_ACCEPTED_MANUSCRIPT_TITLES)) return FALSE ;
-      if ($template->has('title') && trim(@$crossRef->article_title)) { // Verify title of DOI matches existing data somewhat
+      if ($template->has('title') && trim(@$crossRef->article_title) && $template->get('title') !== 'none') { // Verify title of DOI matches existing data somewhat
         $bad_data = TRUE;
         $new = $crossRef->article_title;
         if (preg_match('~^(.................+)[\.\?]\s+([IVX]+)\.\s.+$~i', $new, $matches)) {
