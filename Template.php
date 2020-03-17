@@ -2260,10 +2260,10 @@ final class Template {
     } catch (Exception $e) {
       if ($e->getCode() == 5000) { // made up code for AdsAbs error
         report_warning(sprintf("API Error in query_adsabs: %s",
-           $e->getMessage()));
+                      $e->getMessage()));
       } elseif (strpos($e->getMessage(), 'org.apache.solr.search.SyntaxError') !== FALSE) {
         report_info(sprintf("Internal Error %d in query_adsabs: %s",
-                    $e->getCode(), $e->getMessage()));
+                      $e->getCode(), $e->getMessage()));
       } elseif (strpos($e->getMessage(), 'HTTP') === 0) {
         report_warning(sprintf("HTTP Error %d in query_adsabs: %s",
                       $e->getCode(), $e->getMessage()));
