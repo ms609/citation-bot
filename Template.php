@@ -96,7 +96,7 @@ final class Template {
       if (in_array($p->param, EDITOR1_ALIASES) && $p->val) {
         $this->had_initial_editor = TRUE;
       }
-      if ($p->param = 'veditors' && $p->val) $this->had_initial_editor = TRUE;
+      if ($p->param === 'veditors' && $p->val) $this->had_initial_editor = TRUE;
     }
     $this->no_initial_doi = $this->blank('doi');
   }
