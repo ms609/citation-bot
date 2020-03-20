@@ -3289,7 +3289,7 @@ final class Template {
           (!stripos($this->get('url'), 'google.com') || strpos($this->get('url'), 'pg=')) && // Do not move books without page numbers
           !stripos($this->get('url'), 'archive.org/details/isbn') &&
           (!stripos($this->get('url'), 'archive.org') || strpos($this->get('url'), 'page') || strpos($this->get('url'), 'chapter')) &&
-          !stripos($this->get('url'), 'page_id=0') && !stripos($this->get('url'), 'page=0')) { 
+          !stripos($this->get('url'), 'page_id=0') && !stripos($this->get('url'), 'page=0')  && substr($this->get('url'), -2) !== '_0')) { 
         $this->rename('url', 'chapter-url');
         $this->rename('format', 'chapter-format');
         $this->rename('url-access', 'chapter-url-access');
