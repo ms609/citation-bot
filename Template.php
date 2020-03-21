@@ -281,7 +281,7 @@ final class Template {
     return !$this->api_has_used($api, $param);
   }
   
-  public function incomplete() {
+  public function incomplete() {   // FYI: some references will never be considered complete
     if ($this->wikiname() =='cite book' || ($this->wikiname() =='citation' && $this->has('isbn'))) { // Assume book
       if ($this->display_authors() >= $this->number_of_authors()) return TRUE;
       return (!(
