@@ -114,7 +114,7 @@ final class apiFunctionsTest extends testBaseClass {
     $this->requires_dx(function() {
      $expanded = $this->make_citation('{{Cite journal}}');
      expand_doi_with_dx($expanded, '10.1002/0470841559.ch1');  // This is cross-ref doi, so for DX DOI expansion
-     $this->assertSame('{{Cite book|year = 2003|isbn = 0471975141|title = Internetworking LANs and WANs|chapter = Network Concepts|location = Chichester, UK|publisher = John Wiley & Sons}}', $expanded->parsed_text());
+     $this->assertSame('{{Cite book|year = 2003|isbn = 0471975141|title = Internetworking LANs and WANs|chapter = Network Concepts|publisher = John Wiley & Sons|location = Chichester, UK}}', $expanded->parsed_text());
     });
   }
   
@@ -234,7 +234,7 @@ final class apiFunctionsTest extends testBaseClass {
     $this->requires_dx(function() {
      $expanded = $this->make_citation('{{Cite journal}}');
      expand_doi_with_dx($expanded, '10.3743/KOSIM.2011.28.2.117');
-     $this->assertSame('{{Cite journal|year = 2011|issue = 2|volume = 28|last1 = Kim|first1 = Byung-Kyu|last2 = Kang|first2 = Mu-Yeong|last3 = Choi|first3 = Seon-Heui|last4 = Kim|first4 = Soon-Young|last5 = You|first5 = Beom-Jong|last6 = Shin|first6 = Jae-Do|title = Kscd를 활용한 국내 과학기술자의 해외 학술지 인용행태 연구|journal = 정보관리학회지}}', $expanded->parsed_text());
+     $this->assertSame('{{Cite journal|year = 2011|volume = 28|issue = 2|journal = 정보관리학회지|title = Kscd를 활용한 국내 과학기술자의 해외 학술지 인용행태 연구}}', $expanded->parsed_text());
     });
   }
   
