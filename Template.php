@@ -281,7 +281,7 @@ final class Template {
     return !$this->api_has_used($api, $param);
   }
   
-  public function incomplete() {
+  public function incomplete() {   // FYI: some references will never be considered complete
     if ($this->wikiname() =='cite book' || ($this->wikiname() =='citation' && $this->has('isbn'))) { // Assume book
       if ($this->display_authors() >= $this->number_of_authors()) return TRUE;
       return (!(
@@ -2708,7 +2708,7 @@ final class Template {
           case "id":
             break; // Don't "remove redundant"
           case "as": case "useragent": case "as_brr": case "source":  case "hl":
-          case "ei": case "ots": case "sig": case "source": case "lr":
+          case "ei": case "ots": case "sig": case "source": case "lr": case "ved":
           case "as_brr": case "sa": case "oi": case "ct": case "client": // List of parameters known to be safe to remove
           default:
             if ($removed_redundant !== 0) $removed_parts .= $part; // http://blah-blah is first parameter and it is not actually dropped
@@ -2716,8 +2716,8 @@ final class Template {
         }
       }
       if ($removed_redundant > 1) { // http:// is counted as 1 parameter
-        report_forget(echoable($removed_parts));
-        $this->set($url_type, $url . $hash);
+        report_forget(echoable($removed_parts . $hash));
+        $this->set($url_type, $url);
       }
       $this->google_book_details($gid[1]);
       return TRUE;
