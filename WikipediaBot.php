@@ -437,6 +437,14 @@ class WikipediaBot {
  * @codeCoverageIgnore
  */
   private function authenticate_user() {
+    if (isset($_SESSION['citation_bot_user_id'])) {
+      if ($this->is_valid_user($ident->username)) {
+        $this->the_user = isset($_SESSION['citation_bot_user_id']);
+        return;
+      } else {
+        @session_destroy();
+      }
+    }
     if (isset($_SESSION['access_key']) && isset($_SESSION['access_secret'])) {
      try {
       $user_token = new Token($_SESSION['access_key'], $_SESSION['access_secret']);
@@ -450,6 +458,7 @@ class WikipediaBot {
         report_error('User is either invalid or blocked on en.wikipedia.org');
       }
       $this->the_user = $ident->username;
+      $_SESSION['citation_bot_user_id'] = $this->the_user;
       return;
      }
      catch (Throwable $e) { ; } // PHP 7
