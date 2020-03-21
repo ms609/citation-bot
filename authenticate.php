@@ -1,6 +1,6 @@
 <?php
 @session_start();
-@setcookie(session_name(),session_id(),time()+(365*24*3600)); // set time length on web browser
+@setcookie(session_name(),session_id(),time()+(7*24*3600)); // 7 days
 error_reporting(E_ALL^E_NOTICE);
 define("HTML_OUTPUT");
 
