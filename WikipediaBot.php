@@ -438,8 +438,8 @@ class WikipediaBot {
  */
   private function authenticate_user() {
     if (isset($_SESSION['citation_bot_user_id'])) {
-      if ($this->is_valid_user($ident->username)) {
-        $this->the_user = isset($_SESSION['citation_bot_user_id']);
+      if ($this->is_valid_user($_SESSION['citation_bot_user_id'])) {
+        $this->the_user = $_SESSION['citation_bot_user_id'];
         return;
       } else {
         @session_destroy();
