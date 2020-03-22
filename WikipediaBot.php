@@ -440,6 +440,7 @@ class WikipediaBot {
     if (isset($_SESSION['citation_bot_user_id'])) {
       if ($this->is_valid_user($_SESSION['citation_bot_user_id'])) {
         $this->the_user = $_SESSION['citation_bot_user_id'];
+        @setcookie(session_name(),session_id(),time()+(24*3600)); // 24 hours
         return;
       } else {
         @session_destroy();
