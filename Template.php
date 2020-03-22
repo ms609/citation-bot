@@ -593,14 +593,14 @@ final class Template {
         if (preg_match("~^\d{4}$~", sanitize_string($value))) {
           // Not adding any date data beyond the year, so 'year' parameter is more suitable
           $param_name = "year";
-        } elseif ($this->date_style !== DATES_WHATEVER) {
+        } elseif ($this->date_style !== DATES_WHATEVER || preg_match('~^\d{4}\-\d{2}\-\d{2}$~', $value)) {
           $time = strtotime($value);
           if ($time) {
             $day = date('d', $time);
             if ($day !== '01') { // Probably just got month and year if day=1
               if ($this->date_style === DATES_MDY) {
                  $value = date('F j, Y', $time);
-              } elseif ($this->date_style === DATES_DMY) {
+              } else { // DATES_DMY and make DATES_WHATEVER pretty
                  $value = date('j F Y', $time);
               }
             }
