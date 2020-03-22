@@ -71,6 +71,7 @@ if (isset($_GET['oauth_verifier']) && isset($_SESSION['request_key']) && isset($
 
 // New Incoming Access Grant without SESSION
 if (isset($_GET['oauth_verifier'])) {
+   @session_unset();
    @session_destroy();
    echo("Incoming authorization tokens did not have matching session -- possible cookies lost");
    exit(1);
@@ -96,6 +97,7 @@ try {
 }
 catch (Throwable $e) { ; } // PHP 7
 catch (Exception $e) { ; } // PHP 5
+@session_unset();
 @session_destroy();
 echo("Error authenticating.  Resetting.  Please try again.");
 exit(1);

@@ -440,8 +440,10 @@ class WikipediaBot {
     if (isset($_SESSION['citation_bot_user_id'])) {
       if ($this->is_valid_user($_SESSION['citation_bot_user_id'])) {
         $this->the_user = $_SESSION['citation_bot_user_id'];
+        @setcookie(session_name(),session_id(),time()+(24*3600)); // 24 hours
         return;
       } else {
+        @session_unset();
         @session_destroy();
       }
     }
@@ -454,6 +456,7 @@ class WikipediaBot {
       $client = new Client($conf);
       $ident = $client->identify( $user_token );
       if (!$this->is_valid_user($ident->username)) {
+        @session_unset();
         @session_destroy();
         report_error('User is either invalid or blocked on en.wikipedia.org');
       }
@@ -464,6 +467,7 @@ class WikipediaBot {
      catch (Throwable $e) { ; } // PHP 7
      catch (Exception $e) { ; } // PHP 5
     }
+    @session_unset();
     @session_destroy();
     $return = urlencode($_SERVER['REQUEST_URI']);
     @header("Location: authenticate.php?return=$return");
