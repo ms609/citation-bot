@@ -9,7 +9,7 @@ use MediaWiki\OAuthClient\Token;
 use MediaWiki\OAuthClient\Request;
 use MediaWiki\OAuthClient\SignatureMethod\HmacSha1;
 class WikipediaBot {
-  
+
   private $consumer, $token, $ch, $the_user;
   private static $last_WikipediaBot = NULL;
 
