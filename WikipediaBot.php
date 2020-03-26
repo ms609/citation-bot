@@ -213,7 +213,7 @@ class WikipediaBot {
         "title" => $page,
         "text" => $text,
         "summary" => $editSummary,
-        "minor" => "0",
+        "notminor" => "1",
         "bot" => "1",
         "basetimestamp" => $baseTimeStamp,
         "starttimestamp" => $startedEditing,
