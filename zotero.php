@@ -187,7 +187,7 @@ function drop_urls_that_match_dois($templates) {
           $template->forget($url_kind);
        } elseif ($template->has('pmc')) {
           curl_setopt($ch, CURLOPT_URL, "https://dx.doi.org/" . urlencode($doi));
-          if (FALSE && @curl_exec($ch)) {   // TODO - Turn back on
+          if (@curl_exec($ch)) {
             $redirectedUrl_doi = curl_getinfo($ch, CURLINFO_EFFECTIVE_URL);  // Final URL
             if (stripos($redirectedUrl_doi, 'cookie') !== FALSE) break;
             if (stripos($redirectedUrl_doi, 'denied') !== FALSE) break;
