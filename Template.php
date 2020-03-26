@@ -4357,6 +4357,11 @@ final class Template {
               stripos($this->get('url') . $this->get('chapter-url') . $this->get('chapterurl'), 'archive.org') === FALSE) {
             $this->forget($param);
           }
+          if (($this->wikiname() === 'cite arxiv') || $this->has('eprint') || $this->has('arxiv')) {
+            if (str_i_same((string) $this->get($param), 'arxiv')) {
+              $this->forget($param);
+            }
+          }
           return;
          
         case 'publicationplace': case 'publication-place':
