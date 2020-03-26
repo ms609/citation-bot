@@ -3999,6 +3999,8 @@ final class Template {
                quietly('report_modification', "Decoding Bloomberg URL.");
                $this->set($param, 'https://www.bloomberg.com' .  base64_decode($matches[1]));
              }
+          } elseif (preg_match("~^(https?://news\.google\.com/newspapers\S+)&sjid=[^#&=]+(&\S+)$~i", $this->get($param), $matches)) {
+              $this->set($param, $matches[1] . $matches[2]);
           }
           // Proxy stuff
           if (stripos($this->get($param), 'proxy') !== FALSE) { // Look for proxy first for speed, this list will grow and grow
