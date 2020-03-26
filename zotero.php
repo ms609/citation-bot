@@ -171,11 +171,11 @@ function drop_urls_that_match_dois($templates) {
           report_forget("Existing Invalid Springer Link URL when DOI is present; dropping URL");
           $template->forget($url_kind);
        } elseif (str_ireplace('insights.ovid.com/pubmed','', $url) !== $url && $template->has('pmid')) {
-          report_forget("Existing OVID URL resulting from equivalent PMID and DOI; dropping URL");
-          $template->forget($url_kind);
+ //         report_forget("Existing OVID URL resulting from equivalent PMID and DOI; dropping URL");
+ //         $template->forget($url_kind);
        } elseif (str_ireplace('iopscience.iop.org','', $url) !== $url) {
-          report_forget("Existing IOP URL resulting from equivalent DOI; dropping URL");
-          $template->forget($url_kind);
+ //         report_forget("Existing IOP URL resulting from equivalent DOI; dropping URL");
+ //         $template->forget($url_kind);
        } elseif (str_ireplace('journals.lww.com','', $url) !== $url) {
           report_forget("Existing Outdated LWW URL resulting from equivalent DOI; dropping URL");
           $template->forget($url_kind);
@@ -183,11 +183,11 @@ function drop_urls_that_match_dois($templates) {
           report_forget("Existing Outdated WK Health URL resulting from equivalent DOI; dropping URL");
           $template->forget($url_kind);
        } elseif (str_ireplace('bmj.com/cgi/pmidlookup','', $url) !== $url && $template->has('pmid')) {
-          report_forget("Existing The BMJ URL resulting from equivalent PMID and DOI; dropping URL");
-          $template->forget($url_kind);
+ //         report_forget("Existing The BMJ URL resulting from equivalent PMID and DOI; dropping URL");
+ //         $template->forget($url_kind);
        } else {
           curl_setopt($ch, CURLOPT_URL, "https://dx.doi.org/" . urlencode($doi));
-          if (@curl_exec($ch)) {
+          if (FALSE && @curl_exec($ch)) {   // TODO - Turn back on
             $redirectedUrl_doi = curl_getinfo($ch, CURLINFO_EFFECTIVE_URL);  // Final URL
             if (stripos($redirectedUrl_doi, 'cookie') !== FALSE) break;
             if (stripos($redirectedUrl_doi, 'denied') !== FALSE) break;
