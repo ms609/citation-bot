@@ -822,15 +822,14 @@ final class TemplateTest extends testBaseClass {
   }
  
   public function testRemoveWikilinks1() {
-    return; // TODO fix test
     $expanded = $this->process_citation("{{Cite journal|author1=[[Pure Evil]]}}");
-    $this->assertSame('Pure Evil', $expanded->get('author1'));
-    $this->assertSame('Pure Evil', $expanded->get('author1-link'));
+    $this->assertSame('[[Pure Evil]]', $expanded->get('author1'));
+    $this->assertNull($expanded->get('author1-link')); // No longer needs to be done
     $expanded = $this->process_citation("{{Cite journal|author1=[[Pure]] and [[Evil]]}}");
     $this->assertSame('[[Pure]] and [[Evil]]', $expanded->get('author1'));
     $expanded = $this->process_citation("{{Cite journal|author1=[[Pure Evil|Approximate Physics]]}}");
-    $this->assertSame('Approximate Physics', $expanded->get('author1'));
-    $this->assertSame('Pure Evil', $expanded->get('author1-link'));
+    $this->assertSame('[[Pure Evil|Approximate Physics]]', $expanded->get('author1'));
+    $this->assertNull($expanded->get('author1-link'));
   }
 
   public function testRemoveWikilinks2() {
@@ -2734,12 +2733,11 @@ T1 - This is the Title }}';
   }
 
   public function testTidy7() {
-    return; // TODO fix test
-    $text = "{{cite web|author1=[[Hoser|Yoser]]}}";
+    $text = "{{cite web|author1=[[Hoser|Yoser]]}}";  // No longer do this, COINS now fixed
     $template = $this->make_citation($text);
     $template->tidy_parameter('author1');
-    $this->assertSame('Yoser', $template->get('author1'));
-    $this->assertSame('Hoser', $template->get('author1-link'));
+    $this->assertSame('[[Hoser|Yoser]]', $template->get('author1'));
+    $this->assertNull($template->get('author1-link'));
   }
 
   public function testTidy8() {
@@ -3694,13 +3692,12 @@ T1 - This is the Title }}';
   }
 
   public function testAuthors1() {
-    return; // TODO fix test
     $text = "{{cite web|title=X}}";
     $template = $this->make_citation($text);
     $template->set('author3', '[[Joe|Joes]]'); // Must use set
     $template->tidy_parameter('author3');
-    $this->assertSame('Joes', $template->get('author3'));
-    $this->assertSame('Joe', $template->get('author3-link'));
+    $this->assertSame('[[Joe|Joes]]', $template->get('author3'));
+    $this->assertNull($template->get('author3-link'));
   }
 
   public function testMoreEtAl() {

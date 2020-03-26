@@ -2462,7 +2462,7 @@ final class Template {
     $return = $this->get_unpaywall_url($doi);
     if ($return === 'publisher' || $return === 'duplicate' || $return === 'have free') return;
     if ($this->blank('url')) { // Have room for one
-      return ; // PANIC STOP TODO
+      return ; // Seems to not be useful, since only on already free dois
       $this->get_semanticscholar_url($doi);
     }
   }
