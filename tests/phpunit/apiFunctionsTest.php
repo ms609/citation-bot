@@ -159,7 +159,6 @@ final class apiFunctionsTest extends testBaseClass {
   }
   
   public function testExpansion_doi_not_from_crossref_fISTIC_Data() {
-    return; // TODO
     $text = '{{Cite journal|doi=0.3972/water973.0145.db}}';
     $expanded = $this->make_citation($text);
     $expanded->verify_doi();
