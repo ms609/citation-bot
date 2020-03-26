@@ -828,8 +828,8 @@ final class TemplateTest extends testBaseClass {
     $expanded = $this->process_citation("{{Cite journal|author1=[[Pure]] and [[Evil]]}}");
     $this->assertSame('[[Pure]] and [[Evil]]', $expanded->get('author1'));
     $expanded = $this->process_citation("{{Cite journal|author1=[[Pure Evil|Approximate Physics]]}}");
-    $this->assertSame('Approximate Physics', $expanded->get('author1'));
-    $this->assertSame('Pure Evil', $expanded->get('author1-link'));
+    $this->assertSame('[[Pure Evil|Approximate Physics]]', $expanded->get('author1'));
+    $this->assertNull($expanded->get('author1-link'));
   }
 
   public function testRemoveWikilinks2() {
