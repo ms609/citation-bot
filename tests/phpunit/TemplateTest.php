@@ -3326,7 +3326,7 @@ T1 - This is the Title }}';
     $text = "{{cite arxiv|website=arXiv}}";
     $template = $this->make_citation($text);
     $template->tidy_parameter('website');
-    $this->asserNull($template->get('website'));
+    $this->assertNull($template->get('website'));
    }
  
   public function testIncomplete() {
