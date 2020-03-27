@@ -3861,7 +3861,7 @@ final class Template {
              $title = $matches[1];
           }
           // Only do for cite book, since might be title="A review of the book Bob (Robert Edition)"
-          if ($this->wikiname === 'cite book' && $this->blank('edition') && preg_match('~^(.+)\(([^\(\)]+) edition\)$~i', $title, $matches)) {
+          if ($this->wikiname() === 'cite book' && $this->blank('edition') && preg_match('~^(.+)\(([^\(\)]+) edition\)$~i', $title, $matches)) {
              $title = trim($matches[1]);
              $this->add_if_new('edition', trim($matches[2]));
           }
