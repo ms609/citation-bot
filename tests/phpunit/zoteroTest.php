@@ -105,6 +105,11 @@ class ZoteroTest extends testBaseClass {
     $template = $this->process_citation('{{cite journal | url = ' . $url . ' }}');
     $this->assertSame('10.1109/ISSCC.2007.373373', $template->get('doi'));
   }
+ 
+  public function testIEEEdropBadURL() {
+    $template = $this->process_citation('{{cite journal | url = https://ieeexplore.ieee.org/document/4242344341324324123412343214 |doi =10.1109/ISSCC.2007.373373 }}');
+    $this->assertNull($template->get('url'));
+  }
 
   public function testZoteroResponse1() {
     $text = '{{cite web|id=}}';
