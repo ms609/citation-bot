@@ -5346,7 +5346,7 @@ final class Template {
     if (stripos($url, 'archive.org/details/isbn')) return FALSE;
     if (stripos($url, 'page_id=0')) return FALSE;
     if (stripos($url, 'page=0')) return FALSE;
-    if (substr($url, -2) !== '_0') return FALSE;
+    if (substr($url, -2) === '_0') return FALSE;
     if (preg_match('~archive\.org/details/[^/]+$~', $url)) return FALSE;
     if (stripos($url, 'archive.org')) {
       if (strpos($url, 'page') || strpos($url, 'chapter')) return TRUE;
@@ -5356,6 +5356,7 @@ final class Template {
     // Only do a few select website unless we just converted to cite book from cite journal
     if (strpos($url, 'archive.org')) return TRUE;
     if (strpos($url, 'google.com')) return TRUE;
+    if (strpos($url, 'www.sciencedirect.com/science/article')) return TRUE;
     return FALSE;
   }
 }
