@@ -1092,8 +1092,15 @@ final class Template {
         if ($this->blank($param_name)) {
           return $this->add($param_name, $value); // Do NOT Sanitize.  It includes templates often
         }
-        return FALSE;  
-        
+        return FALSE;
+
+      case 'edition':
+        if ($this->blank($param_name)) {
+          $this->add($param_name, $value);
+          return TRUE;
+        }
+        return FALSE;
+
       default:  // We want to make sure we understand what we are adding
         // @codeCoverageIgnoreStart
         report_minor_error('Unexpected parameter: ' . $param_name . ' trying to be set to ' . $value);
@@ -3852,6 +3859,11 @@ final class Template {
           if (preg_match('~^\[\[([^\]\[\|]+)\]$~', $title, $matches) ||
               preg_match('~^\[([^\]\[\|]+)\]\]$~', $title, $matches)) {
              $title = $matches[1];
+          }
+          // Only do for cite book, since might be title="A review of the book Bob (Robert Edition)"
+          if ($this->wikiname === 'cite book' && $this->blank('edition') && preg_match('~^(.+)\(([^\(\)]+) edition\)$~i', $title, $matches)) {
+             $title = trim($matches[1]);
+             $this->add_if_new('edition', trim($matches[2]));
           }
           if (mb_substr_count($title, '[[') !== 1 ||  // Completely remove multiple wikilinks
               mb_substr_count($title, ']]') !== 1) {
