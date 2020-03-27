@@ -2634,6 +2634,7 @@ T1 - This is the Title }}';
             "{{Cite web | title=JSTOR This is bad data|journal=JSTOR This is bad data|jstor=1974136}}" .
             "{{Cite web | title=JSTOR This is a title on JSTOR|pmc=1974137}}" .
             "{{Cite web | title=JSTOR This is a title with IEEE Xplore Document|pmid=1974138}}" .
+            "{{Cite web | title=IEEE Xplore This is a title with Document|pmid=1974138}}" .
             "{{Cite web | title=JSTOR This is a title document with Volume 3 and page 5|doi= 10.1021/jp101758y}}";
     $page = $this->process_page($text);
     $this->assertSame(0, substr_count($page->parsed_text(), 'JSTOR'));
@@ -3084,6 +3085,13 @@ T1 - This is the Title }}';
     $this->assertSame('https://ieeexplore.ieee.org/document/1234', $template->get('url'));
   }
  
+  public function testTidy54b() {
+    $text = "{{cite journal|url=https://ieeexplore.ieee.org.proxy/iel5/232/32/123456.pdf?yup}}";
+    $template = $this->make_citation($text);
+    $template->tidy_parameter('url');
+    $this->assertSame('https://ieeexplore.ieee.org/document/123456', $template->get('url'));
+  }
+ 
   public function testTidy55() {
     $text = "{{cite journal|url=https://www.oxfordhandbooks.com.proxy/view/1234|via=Library}}";
     $template = $this->make_citation($text);
@@ -3281,7 +3289,46 @@ T1 - This is the Title }}';
     $this->assertSame('https://search.proquest.com/docview/434365733', $template->get('url'));
     $this->assertNull($template->get('id'));
    }
-
+ 
+   public function testTidy75() {
+    $text = "{{cite web|url=developers.google.com|publisher=the google hive mind}}";
+    $template = $this->make_citation($text);
+    $template->tidy_parameter('url');
+    $this->assertSame('Google Inc.', $template->get('publisher'));
+    $text = "{{cite web|url=support.google.com|publisher=the Google hive mind}}";
+    $template = $this->make_citation($text);
+    $template->tidy_parameter('url');
+    $this->assertSame('Google Inc.', $template->get('publisher'));
+   }
+ 
+   public function testTidy76() {
+    $text = "{{cite news |url=https://news.google.com/newspapers?id=rPZVAAAAIBAJ&sjid=4-EDAAAAIBAJ&pg=4073%2C7051142 |newspaper=Eugene Register-Guard |location=Oregon |last=Withers |first=Bud |title=Bend baseball bounces back |date=June 23, 1978 |page=1D }}";
+    $template = $this->make_citation($text);
+    $template->tidy_parameter('url');
+    $this->assertSame('https://news.google.com/newspapers?id=rPZVAAAAIBAJ&pg=4073%2C7051142', $template->get('url'));
+   }
+ 
+   public function testTidy77() {
+    $text = "{{cite journal |pages=Pages: 1-2 }}";
+    $template = $this->make_citation($text);
+    $template->tidy_parameter('pages');
+    $this->assertSame('1–2', $template->get('pages'));
+   }
+ 
+   public function testTidy78() {
+    $text = "{{cite journal |pages=p. 1-2 }}";
+    $template = $this->make_citation($text);
+    $template->tidy_parameter('pages');
+    $this->assertSame('1–2', $template->get('pages'));
+   }
+ 
+   public function testTidy79() {
+    $text = "{{cite arxiv|website=arXiv}}";
+    $template = $this->make_citation($text);
+    $template->tidy_parameter('website');
+    $this->asserNull($template->get('website'));
+   }
+ 
   public function testIncomplete() {
     $text = "{{cite book|url=http://perma-archives.org/pqd1234|isbn=Xxxx|title=xxx|issue=a|volume=x}}"; // Non-date website
     $template = $this->make_citation($text);
