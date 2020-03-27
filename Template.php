@@ -5357,4 +5357,5 @@ final class Template {
     if (strpos($url, 'archive.org')) return TRUE;
     if (strpos($url, 'google.com')) return TRUE;
     return FALSE;
+  }
 }
