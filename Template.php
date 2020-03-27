@@ -3285,15 +3285,7 @@ final class Template {
       // all open-access versions of conference papers point to the paper itself
       // not to the whole proceedings
       // so we use chapter-url so that the template is well rendered afterwards
-      if ($this->blank(['chapter-url','chapterurl']) &&
-          $this->has('chapter') &&
-          strpos($this->get('chapter'), '[') === FALSE &&
-          $this->blank('trans-chapter') &&
-          (!stripos($this->get('url'), 'google.com') || strpos($this->get('url'), 'pg=')) && // Do not move books without page numbers
-          !stripos($this->get('url'), 'archive.org/details/isbn') &&
-          (!stripos($this->get('url'), 'archive.org') || strpos($this->get('url'), 'page') || strpos($this->get('url'), 'chapter')) &&
-          !stripos($this->get('url'), 'page_id=0') && !stripos($this->get('url'), 'page=0') &&
-          substr($this->get('url'), -2) !== '_0' && !preg_match('~archive\.org/details/[^/]+$~', $this->get('url'))) { 
+      if ($this->should_url2chapter(TRUE)) { 
         $this->rename('url', 'chapter-url');
         $this->rename('format', 'chapter-format');
         $this->rename('url-access', 'chapter-url-access');
@@ -4141,12 +4133,7 @@ final class Template {
             }
             if ($changed) report_info("Normalized ProQuest URL");
           }
-          if ($param === 'url' && $this->blank(['chapterurl', 'chapter-url']) &&
-              $this->has('chapter') && $this->wikiname() === 'cite book' &&
-              strpos($this->get('chapter'), '[') === FALSE &&
-              $this->blank('trans-chapter') &&
-              (!stripos($this->get('url'), 'google.com') || strpos($this->get('url'), 'pg=')) && // Do not move books without page numbers
-              !stripos($this->get('url'), 'archive.org/details/isbn')) {
+          if ($param === 'url' && $this->wikiname() === 'cite book' && $this->should_url2chapter(FALSE)) {            
             $this->rename('url', 'chapter-url');
             $this->rename('format', 'chapter-format');
             $this->rename('url-access', 'chapter-url-access');
@@ -5347,4 +5334,27 @@ final class Template {
     $simple = trim(str_replace(['-', '   ', '  '], [' ', ' ', ' '], strtolower($this->get($param))));
     return in_array($simple, JOURNAL_IS_BOOK_SERIES);
   }
+  
+  private function should_url2chapter($force) {
+    if ($this->has('chapterurl')) return FALSE;
+    if ($this->has('chapter-url')) return FALSE;
+    if ($this->has('trans-chapter')) return FALSE;
+    if ($this->blank('chapter')) return FALSE;
+    if (strpos($this->get('chapter'), '[') !== FALSE) return FALSE;
+    $url = $this->get('url');
+    if (stripos($url, 'google.com') && !strpos($this->get('url'), 'pg=')) return FALSE; // Do not move books without page numbers
+    if (stripos($url, 'archive.org/details/isbn')) return FALSE;
+    if (stripos($url, 'page_id=0')) return FALSE;
+    if (stripos($url, 'page=0')) return FALSE;
+    if (substr($url, -2) !== '_0') return FALSE;
+    if (preg_match('~archive\.org/details/[^/]+$~', $url)) return FALSE;
+    if (stripos($url, 'archive.org')) {
+      if (strpos($url, 'page') || strpos($url, 'chapter')) return TRUE;
+      return FALSE;
+    }
+    if ($force) return TRUE;
+    // Only do a few select website unless we just converted to cite book from cite journal
+    if (strpos($url, 'archive.org')) return TRUE;
+    if (strpos($url, 'google.com')) return TRUE;
+    return FALSE;
 }
