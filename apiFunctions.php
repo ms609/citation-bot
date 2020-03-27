@@ -152,11 +152,12 @@ function arxiv_api($ids, $templates) {
       }
     }
     $the_title = (string) $entry->title;
+    // arXiv fixes these when it sees them
     while (preg_match('~\$\^{(\d+)}\$~', $the_title, $match)) {
-      $the_title = str_replace($match[0], '<sup>' . $match[1] . '</sup>', $the_title);
+      $the_title = str_replace($match[0], '<sup>' . $match[1] . '</sup>', $the_title); // @codeCoverageIgnore
     }
     while (preg_match('~\$_(\d+)\$~', $the_title, $match)) {
-      $the_title = str_replace($match[0], '<sub>' . $match[1] . '</sub>', $the_title);
+      $the_title = str_replace($match[0], '<sub>' . $match[1] . '</sub>', $the_title); // @codeCoverageIgnore
     }
     while (preg_match('~\\ce{([^}{^ ]+)}~', $the_title, $match)) {   // arXiv fixes these when it sees them
       $the_title = str_replace($match[0], ' ' . $match[1] . ' ', $the_title);  // @codeCoverageIgnore
