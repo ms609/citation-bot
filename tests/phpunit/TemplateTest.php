@@ -3088,7 +3088,7 @@ T1 - This is the Title }}';
   public function testTidy54b() {
     $text = "{{cite journal|url=https://ieeexplore.ieee.org.proxy/iel5/232/32/123456.pdf?yup}}";
     $template = $this->make_citation($text);
-    $template->tidy_parameter('url');
+    $template->get_identifiers_from_url();
     $this->assertSame('https://ieeexplore.ieee.org/document/123456', $template->get('url'));
   }
  
@@ -3293,11 +3293,11 @@ T1 - This is the Title }}';
    public function testTidy75() {
     $text = "{{cite web|url=developers.google.com|publisher=the google hive mind}}";
     $template = $this->make_citation($text);
-    $template->tidy_parameter('url');
+    $template->tidy_parameter('publisher');
     $this->assertSame('Google Inc.', $template->get('publisher'));
     $text = "{{cite web|url=support.google.com|publisher=the Google hive mind}}";
     $template = $this->make_citation($text);
-    $template->tidy_parameter('url');
+    $template->tidy_parameter('publisher');
     $this->assertSame('Google Inc.', $template->get('publisher'));
    }
  
