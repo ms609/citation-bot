@@ -3260,9 +3260,9 @@ final class Template {
     if (strpos($this->get('doi'), '10.1093') !== FALSE && $this->wikiname() !== 'cite web') return;
     if (bad_10_1093_doi($this->get('doi'))) return;
     $new_name = strtolower(trim($new_name)); // Match wikiname() output and cite book below
+    if ($new_name === $this->wikiname()) return;
     if (in_array($this->wikiname(), TEMPLATES_WE_RENAME)
     && ($rename_cite_book || $this->wikiname() != 'cite book')
-    && $new_name != $this->wikiname()
     ) {
       if ($new_name === 'cite arxiv') {
         if (!$this->blank(['website','displayauthors','display-authors','access-date','accessdate'])) return; // Unsupported parameters
