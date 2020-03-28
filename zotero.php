@@ -472,6 +472,12 @@ function process_zotero_response($zotero_response, &$template, $url, $url_kind, 
       }
     }
   }
+  if (str_i_same(substr(@$result->publicationTitle, 0, 4), 'http') ||
+      str_i_same(substr(@$result->bookTitle, 0, 4), 'http') ||
+      str_i_same(substr(@$result->title, 0, 4), 'http')) {
+    report_info("URL returned in Journal/Newpaper/Title/Chapter field for " . $url);
+    return FALSE;
+  }
   
   if (isset($result->bookTitle)) {
     $result->bookTitle = preg_replace('~\s*\(pdf\)$~i', '', $result->bookTitle);
