@@ -64,7 +64,8 @@ if (isset($_GET['oauth_verifier']) && isset($_SESSION['request_key']) && isset($
    }
    catch (Throwable $e) { ; } // PHP 7
    catch (Exception $e) { ; } // PHP 5
-   @sesssion_destroy();
+   @session_unset();
+   @session_destroy();
    echo("Incoming authorization tokens did not work");
    exit(1);  
 }
