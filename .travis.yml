@@ -8,14 +8,6 @@ language: php
                   ###### waiting on 1.0.3 https://packagist.org/packages/mediawiki/oauthclient      ######
 matrix:           ###### ONLY ONE WITH FULL TESTING WITH IS 7.3 OTHERS ARE ALL STATIC ANALYSIS ONLY ######
   include:
-    - stage: pretest
-      name: "Full test with PHP 8.0"
-      php: nightly
-      before_script:  
-        - travis_retry composer self-update
-        - composer require mediawiki/oauthclient:1.1.0
-        - '! find . -type f -name "*.php" -exec php -d error_reporting=32767 -l {} \; 2>&1 >&- | grep "^"'
-      script: phpunit
     - stage: test
       name: "Full test with PHP 7.4"
       php: 7.4
