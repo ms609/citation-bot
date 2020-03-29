@@ -4897,7 +4897,7 @@ final class Template {
     // $parameter_i->param is the parameter name within the Parameter object
     if ($this->param) {
       foreach ($this->param as $parameter_i) {
-        if ($parameter_i->param == $name) {
+        if ($parameter_i->param === $name) {
           if ($parameter_i->val === NULL) $parameter_i->val = ''; // Clean up
           return $parameter_i->val;
         }
