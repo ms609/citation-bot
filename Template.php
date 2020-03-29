@@ -4407,6 +4407,7 @@ final class Template {
         }
       }
       if ($this->is_book_series('series') || $this->is_book_series('journal')) { // Double check these troublesome guys
+        $this->tidy_parameter('series');
         $this->tidy_parameter('journal');
         $this->tidy_parameter('title');
         $this->tidy_parameter('chapter');
