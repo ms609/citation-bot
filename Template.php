@@ -4534,7 +4534,7 @@ final class Template {
         $this->name = $spacing[1] . 'Cite document' . $spacing[2];
       }
     }
-    if ($this->param) { /
+    if ($this->param) {
       $drop_me_maybe = array();
       foreach (ALL_ALIASES as $alias_list) {
         if (!$this->blank($alias_list)) { // At least one is set
