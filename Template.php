@@ -4537,10 +4537,17 @@ final class Template {
         $this->name = $spacing[1] . 'Cite document' . $spacing[2];
       }
     }
-    foreach (ALL_ALIASES as $alias_list) {
-      if (!$this->blank($alias_list)) { // At least one is set
-        foreach ($alias_list as $alias) {
-          if ($this->blank($alias)) $this->forget($alias); // Delete all the other ones
+    if ($this->param) {
+      $drop_me_maybe = array();
+      foreach (ALL_ALIASES as $alias_list) {
+        if (!$this->blank($alias_list)) { // At least one is set
+          $drop_me_maybe = array_merge($drop_me_maybe, $alias_list);
+        }
+      }
+      // Do it this way to avoid massive N*M work load (N=size of $param and M=size of $drop_me_maybe) which happens when checking if each one is blank
+      foreach ($this->param as $p) {
+        if (@$p->val === '' && in_array(@$p->param, $drop_me_maybe)) {
+           $this->forget($p->param);
         }
       }
     }
@@ -4893,7 +4900,7 @@ final class Template {
     // $parameter_i->param is the parameter name within the Parameter object
     if ($this->param) {
       foreach ($this->param as $parameter_i) {
-        if ($parameter_i->param == $name) {
+        if ($parameter_i->param === $name) {
           if ($parameter_i->val === NULL) $parameter_i->val = ''; // Clean up
           return $parameter_i->val;
         }
