@@ -4,8 +4,6 @@ branches:
   except: release
 
 language: php
-                  ###### mediawiki/oauthclient uses features deprecated in 7.4 and higher           ######
-                  ###### waiting on 1.0.3 https://packagist.org/packages/mediawiki/oauthclient      ######
 matrix:           ###### ONLY ONE WITH FULL TESTING WITH IS 7.3 OTHERS ARE ALL STATIC ANALYSIS ONLY ######
   include:
     - stage: pretest
