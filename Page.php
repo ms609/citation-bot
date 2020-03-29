@@ -249,6 +249,7 @@ class Page {
     }
     // BATCH API CALLS
     report_phase('Consult APIs to expand templates');
+    set_time_limit(120);
     $this->expand_templates_from_identifier('doi',     $our_templates);  // Do DOIs first!  Try again later for added DOIs
     $this->expand_templates_from_identifier('pmid',    $our_templates);
     $this->expand_templates_from_identifier('pmc',     $our_templates);
@@ -256,7 +257,8 @@ class Page {
     $this->expand_templates_from_identifier('jstor',   $our_templates);
     $this->expand_templates_from_identifier('doi',     $our_templates);
     expand_arxiv_templates($our_templates);
-    if (!$is_a_man_with_no_plan) $this->expand_templates_from_identifier('url',     $our_templates); // TODO
+    set_time_limit(120);
+    $this->expand_templates_from_identifier('url',     $our_templates);
     query_ieee_webpages($our_templates_ieee);
     query_ieee_webpages($our_templates);
     
@@ -276,6 +278,7 @@ class Page {
       $this_template->get_open_access_url();
     }
     $this->expand_templates_from_identifier('doi',     $our_templates);
+    set_time_limit(120);
     drop_urls_that_match_dois($our_templates);
     drop_urls_that_match_dois($our_templates_conferences);
     
