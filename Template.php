@@ -4406,8 +4406,10 @@ final class Template {
           $this->forget('series');
         }
       }
-      if ($this->is_book_series('series') && $this->has('journal')) {
-        $this->tidy_parameter('journal'); 
+      if ($this->is_book_series('series') || $this->is_book_series('journal')) { // Double check these troublesome guys
+        $this->tidy_parameter('journal');
+        $this->tidy_parameter('title');
+        $this->tidy_parameter('chapter');
       }
       // "Work is a troublesome parameter
       if ($this->get('work') !== NULL && $this->blank('work')) { // Have work=, but it is blank
