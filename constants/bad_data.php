@@ -178,11 +178,12 @@ const AVOIDED_LINKS = array('', 'Digital_object_identifier', 'JSTOR', 'Website',
                             'Request_for_Comments', 'Social_Science_Research_Network', 'Zentralblatt_MATH',
                             'Open_Library', 'ArXiv', 'OCLC', 'Cf.');
 
+// Lower case, and periods converted to spaces
 const JOURNAL_IS_BOOK_SERIES = array('methods of molecular biology' , 'methods mol biol',
-                                     'methods of molecular biology (clifton, n.j.)',
-                                     'methods in molecular biolog',
-                                     'methods in molecular biology (clifton, n.j.)',
-                                     'advances in pharmacology (san diego, calif.)',
+                                     'methods of molecular biology (clifton, n j )',
+                                     'methods in molecular biology',
+                                     'methods in molecular biology (clifton, n j )',
+                                     'advances in pharmacology (san diego, calif )',
                                      'advances in pharmacology', 'inorganic syntheses',
                                      'advances in enzymology and related areas of molecular biology',
                                      'studies in bilingualism', 'antibiotics and chemotherapy');
