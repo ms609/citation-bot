@@ -4407,6 +4407,13 @@ final class Template {
         }
       }
       // Double check these troublesome "journals"
+      if ($this->is_book_series('journal')) {
+        if ($this->blank('series')) {
+          $this->rename('journal', 'series');
+        } elseif ($this->get('series') === $this->get('journal')) {
+          $this->forget('journal');
+        }
+      }
       if ($this->is_book_series('journal') || $this->is_book_series('series') ||
           $this->is_book_series('chapter') || $this->is_book_series('title')) {
         $this->tidy_parameter('series');
