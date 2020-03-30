@@ -4406,7 +4406,9 @@ final class Template {
           $this->forget('series');
         }
       }
-      if ($this->is_book_series('series') || $this->is_book_series('journal')) { // Double check these troublesome guys
+      // Double check these troublesome "journals"
+      if ($this->is_book_series('journal') || $this->is_book_series('series') ||
+          $this->is_book_series('chapter') || $this->is_book_series('title')) {
         $this->tidy_parameter('series');
         $this->tidy_parameter('journal');
         $this->tidy_parameter('title');
@@ -5356,7 +5358,7 @@ final class Template {
   }
     
   private function is_book_series($param) {
-    $simple = trim(str_replace(['-', '   ', '  '], [' ', ' ', ' '], strtolower($this->get($param))));
+    $simple = trim(str_replace(['-', '.',  '   ', '  '], [' ', ' ', ' ', ' '], strtolower($this->get($param))));
     return in_array($simple, JOURNAL_IS_BOOK_SERIES);
   }
   
