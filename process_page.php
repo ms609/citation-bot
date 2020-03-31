@@ -31,7 +31,7 @@ if (HTML_OUTPUT) {?>
 <?php
 }
 
-$edit_summary_end = "| Activated by [[User:" . $api->get_the_user() . "]] ";
+$edit_summary_end = "| Activated by " . $api->get_the_user() . " ";
 $final_edit_overview = "";
 
 $pages = (isset($argv) && isset($argv[1])) // argv set on command line
