@@ -61,7 +61,7 @@ if (HTML_OUTPUT) {
 <?php
 }
 
-$edit_summary_end = "| Activated by [[User:" . $api->get_the_user() . "]] | [[Category:$category]] | via #UCB_Category ";
+$edit_summary_end = "| Activated by " . $api->get_the_user() . " | [[Category:$category]] | via #UCB_Category ";
 $final_edit_overview = "";
 
 if ($category) {
