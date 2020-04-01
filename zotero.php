@@ -631,8 +631,8 @@ function url_simplify($url) {
     $url = 'https://ieeexplore.ieee.org/document/' . $matches[1];
   }
   $url = $url . '/';
-  $url = str_replace(['/abstract/', '/full/', '/full+pdf/', '/pdf/', '/document/', '/html/', '/html+pdf/', '/abs/', '/epdf/', '/doi/', '/xprint/', '/print/', '.short/', '.long/'],
-                     ['/', '/', '/', '/', '/', '/', '/', '/', '/', '/', '/', '/', '/', '/'], $url);
+  $url = str_replace(['/abstract/', '/full/', '/full+pdf/', '/pdf/', '/document/', '/html/', '/html+pdf/', '/abs/', '/epdf/', '/doi/', '/xprint/', '/print/', '.short', '.long', '.abstract', '.full', '///', '//'],
+                     ['/', '/', '/', '/', '/', '/', '/', '/', '/', '/', '/', '/', '/', '/', '/', '/', '/', '/'], $url);
   $ul = substr($url, 0, -1); // Remove the ending slash we added
   $url = strtok($url, '?#');
   $url = str_ireplace('https', 'http', $url);
