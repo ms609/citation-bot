@@ -3311,9 +3311,11 @@ final class Template {
   
   public function wikiname() {
     $name = trim(mb_strtolower(str_replace('_', ' ', $this->name)));
-    if ($name === 'cite work') $name = 'cite book'; // Treat the same since alias
-    if ($name === 'cite newspaper') $name = 'cite news'; // Treat the same since alias
-    if ($name === 'cite website') $name = 'cite web'; // Treat the same since alias
+     // Treat the same since alias
+    if ($name === 'cite work') $name = 'cite book';
+    if ($name === 'cite newspaper') $name = 'cite news';
+    if ($name === 'cite website') $name = 'cite web';
+    if ($name === 'cite paper') $name = 'cite journal';
     return $name ;
   }
   
