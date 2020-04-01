@@ -37,4 +37,4 @@ const HANDLES_PATHS = array('/dspace/bitstream/handle/', '/msf/handle/', '/vital
                             '/dspace/handle/', '/handle2/', '/xmlui/handle/', '/iris/handle/',
                             '/repository/bitstream/handle/', '/repository/handle/', 
                             '/tools/dspace/load/\?file=/repository/bitstream/handle/',
-                            '/xmlui/bitstream/handle/', '/jspui/handle/');
+                            '/xmlui/bitstream/handle/', '/jspui/handle/', '/jspui/bitstream/');
