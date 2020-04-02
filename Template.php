@@ -1635,7 +1635,7 @@ final class Template {
           if (is_null($url_sent)) {
              $this->forget($url_type);
           }
-          if (preg_match('~^([^/]+/[^/]+)/.*$~', $handle, $matches)   // Might be padded with stuff
+          if (!stripos($url, 'hdl.handle.net') && preg_match('~^([^/]+/[^/]+)/.*$~', $handle, $matches)   // Might be padded with stuff - do not shorten hdl.handle.net ones though
             && stripos($headers_test['Location'], $handle) === FALSE
             && stripos($headers_test['Location'], $matches[1]) !== FALSE) {  // Too long ones almost never resolve, but I seen at least one
               $handle = $matches[1]; // @codeCoverageIgnore
