@@ -1620,13 +1620,13 @@ final class Template {
           if (strlen($handle) < 6 || strpos($handle, '/') === FALSE) return FALSE;
           // Verify that it works as a hdl - first with urlappend and sequence stuff, since that is often page numbers
           if (preg_match('~^(.+)(?:\?urlappend=|\?sequence=)~', $handle, $matches)) {
-            $test_url = "https://hdl.handle.net/handle/" . urlencode($handle);
+            $test_url = "https://hdl.handle.net/handle/" . $handle;
             $headers_test = @get_headers($test_url, 1);
             if ($headers_test === FALSE || empty($headers_test['Location'])) {
                $handle = $matches[1]; // Shorten it
             }
           }
-          $test_url = "https://hdl.handle.net/handle/" . urlencode($handle);
+          $test_url = "https://hdl.handle.net/handle/" . $handle;
           $headers_test = @get_headers($test_url, 1);  // verify that data is registered
           if ($headers_test !== FALSE && empty($headers_test['Location'])) {  // If we get FALSE, that means that hdl.handle.net is currently down.  In that case we optimisticly assume the HDL resolves, since they almost always do. 
              return FALSE; // does not resolve
