@@ -321,7 +321,10 @@ function process_zotero_response($zotero_response, &$template, $url, $url_kind, 
     report_warning("Bad Gateway error for URL ". $url);
     return FALSE;
   }
-  
+  if (strpos($zotero_response, '503 Service Temporarily Unavailable') !== FALSE) {
+    report_warning("Temporarily Unavailable error for URL ". $url);
+    return FALSE;
+  }
   $zotero_data = @json_decode($zotero_response, FALSE);
   if (!isset($zotero_data)) {
     report_warning("Could not parse JSON for URL ". $url . ": $zotero_response");
