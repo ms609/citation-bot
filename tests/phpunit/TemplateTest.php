@@ -2606,7 +2606,7 @@ T1 - This is the Title }}';
   public function testHandles5() { // Do not shorten when already hdl
     $template = $this->make_citation('{{Cite journal|url=http://hdl.handle.net/2027/loc.ark:/13960/t6349vh5n?urlappend=%3Bseq=672}}');
     $template->get_identifiers_from_url();
-    $this->assertSame('2027/loc.ark:/13960/t6349vh5n?urlappend=%3Bseq=672', $template->get('hdl'));
+    $this->assertSame('2027/loc.ark:/13960/t6349vh5n?urlappend=;seq=672', $template->get('hdl'));
     $this->assertNull($template->get('url'));
   }
  
