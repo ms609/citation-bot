@@ -1628,6 +1628,9 @@ final class Template {
           }
           // Safety check
           if (strlen($handle) < 6 || strpos($handle, '/') === FALSE) return FALSE;
+
+          if (strpos($handle, '?') !== FALSE) return FALSE;  // TODO this bug needs fixed in CS1/CS2 
+
           // Verify that it works as a hdl
           $test_url = "https://hdl.handle.net/" . $handle;
           sleep(0.02);
