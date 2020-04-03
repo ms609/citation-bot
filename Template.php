@@ -1605,8 +1605,8 @@ final class Template {
             }
           }
           if (!$handle) return FALSE;
-          // Trim off session stuff
-          while (preg_match('~^(.+)(?:/browse\?|;jsessionid|;sequence=|\?sequence=|&isAllowed=|&origin=|&rd=|\?value=|&type=|/browse-title|&submit_browse=|\?urlappend=|\%3Bui=embed)~',
+          // Trim off session stuff - urlappend seems to be used for page numbers and such
+          while (preg_match('~^(.+)(?:/browse\?|;jsessionid|;sequence=|\?sequence=|&isAllowed=|&origin=|&rd=|\?value=|&type=|/browse-title|&submit_browse=|\%3Bui=embed)~',
                                 $handle, $matches)) {
             $handle = $matches[1];
           }
@@ -1622,7 +1622,7 @@ final class Template {
           $test_url = "https://hdl.handle.net/" . urlencode(urldecode($handle));
           $headers_test = @get_headers($test_url, 1);  // verify that data is registered
           if ($headers_test !== FALSE && empty($headers_test['Location'])) {  // If we get FALSE, that means that hdl.handle.net is currently down.  In that case we optimisticly assume the HDL resolves, since they almost always do. 
-             return FALSE; // does not resolve.
+             return FALSE; // does not resolve
           }
           quietly('report_modification', "Converting URL to HDL parameter");
           if (is_null($url_sent)) {
