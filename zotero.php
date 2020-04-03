@@ -572,6 +572,7 @@ function process_zotero_response($zotero_response, &$template, $url, $url_kind, 
       case 'videoRecording':
       case 'film':
       case 'presentation';
+      case 'computerProgram';
         // Nothing special that we know of yet
         break;
 

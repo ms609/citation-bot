@@ -1610,10 +1610,11 @@ final class Template {
                                 $handle, $matches)) {
             $handle = $matches[1];
           }
+          $handle = urldecode($handle);
           // Verify that it works as a hdl - first with urlappend, since that is often page numbers
           if (preg_match('~^(.+)\?urlappend=~', $handle, $matches)) {
             sleep(0.1);
-            $test_url = "https://hdl.handle.net/" . urlencode(urldecode($handle));
+            $test_url = "https://hdl.handle.net/" . $handle;
             $headers_test = @get_headers($test_url, 1);
             if ($headers_test === FALSE || empty($headers_test['Location'])) {
                $handle = $matches[1]; // Shorten it
@@ -1628,11 +1629,11 @@ final class Template {
           // Safety check
           if (strlen($handle) < 6 || strpos($handle, '/') === FALSE) return FALSE;
           // Verify that it works as a hdl
-          $test_url = "https://hdl.handle.net/" . urlencode(urldecode($handle));
-          $headers_test = @get_headers($test_url, 1);  // verify that data is registered
-          if ($headers_test !== FALSE && empty($headers_test['Location'])) {  // If we get FALSE, that means that hdl.handle.net is currently down.  In that case we optimisticly assume the HDL resolves, since they almost always do. 
-             return FALSE; // does not resolve
-          }
+          $test_url = "https://hdl.handle.net/" . $handle;
+          sleep(0.02);
+          $headers_test = @get_headers($test_url, 1);
+          if ($headers_test === FALSE) return FALSE; // hdl.handle.net is down
+          if (empty($headers_test['Location'])) return FALSE; // does not resolve
           quietly('report_modification', "Converting URL to HDL parameter");
           if (is_null($url_sent)) {
              $this->forget($url_type);
