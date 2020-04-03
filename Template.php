@@ -1610,12 +1610,6 @@ final class Template {
                                 $handle, $matches)) {
             $handle = $matches[1];
           }
-          while (preg_match('~^(.+)/$~', $handle, $matches)) { // Trailing slash
-            $handle = $matches[1];
-          }
-          while (preg_match('~^/(.+)$~', $handle, $matches)) { // Leading slash
-            $handle = $matches[1];
-          }
           // Safety check
           if (strlen($handle) < 6 || strpos($handle, '/') === FALSE) return FALSE;
           // Verify that it works as a hdl - first with urlappend and sequence stuff, since that is often page numbers
@@ -1625,6 +1619,12 @@ final class Template {
             if ($headers_test === FALSE || empty($headers_test['Location'])) {
                $handle = $matches[1]; // Shorten it
             }
+          }
+          while (preg_match('~^(.+)/$~', $handle, $matches)) { // Trailing slash
+            $handle = $matches[1];
+          }
+          while (preg_match('~^/(.+)$~', $handle, $matches)) { // Leading slash
+            $handle = $matches[1];
           }
           $test_url = "https://hdl.handle.net/" . urlencode(urldecode($handle));
           $headers_test = @get_headers($test_url, 1);  // verify that data is registered
