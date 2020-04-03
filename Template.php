@@ -1612,6 +1612,7 @@ final class Template {
           }
           // Verify that it works as a hdl - first with urlappend, since that is often page numbers
           if (preg_match('~^(.+)\?urlappend=~', $handle, $matches)) {
+            sleep(0.1);
             $test_url = "https://hdl.handle.net/" . urlencode(urldecode($handle));
             $headers_test = @get_headers($test_url, 1);
             if ($headers_test === FALSE || empty($headers_test['Location'])) {
