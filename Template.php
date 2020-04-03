@@ -1610,8 +1610,8 @@ final class Template {
                                 $handle, $matches)) {
             $handle = $matches[1];
           }
-          // Verify that it works as a hdl - first with urlappend and sequence stuff, since that is often page numbers
-          if (preg_match('~^(.+)(?:\?urlappend=|\?sequence=)~', $handle, $matches)) {
+          // Verify that it works as a hdl - first with urlappend, since that is often page numbers
+          if (preg_match('~^(.+)\?urlappend=~', $handle, $matches)) {
             $test_url = "https://hdl.handle.net/" . urlencode(urldecode($handle));
             $headers_test = @get_headers($test_url, 1);
             if ($headers_test === FALSE || empty($headers_test['Location'])) {
