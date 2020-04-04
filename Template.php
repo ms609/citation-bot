@@ -746,7 +746,10 @@ final class Template {
         if ($this->blank($param_name) || in_array($this->get($param_name),
                                            ['Archived copy', "{title}", 'ScienceDirect', 'Google Books', 'None'])
                                       || (stripos($this->get($param_name), 'EZProxy') !== FALSE && stripos($value, 'EZProxy') === FALSE)) {
-          if (str_equivalent($this->get('encyclopedia') . $this->get('encyclopaedia'), sanitize_string($value))) {
+          if (str_equivalent($this->get('encyclopedia') . $this->get('encyclopaedia') , sanitize_string($value))) {
+            return FALSE;
+          }
+          if (str_equivalent($this->get('work'), sanitize_string($value))) {
             return FALSE;
           }
           if (str_equivalent($this->get('dictionary'), sanitize_string($value))) {
