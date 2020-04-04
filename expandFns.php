@@ -637,7 +637,7 @@ function can_safely_modify_dashes($value) {
        && (strpos($value, "[//") === FALSE)
        && (stripos($value, 'CITATION_BOT_PLACEHOLDER') === FALSE)
        && (strpos($value, "(") === FALSE)
-       && (strpos($value, '–')) === FALSE) // No existing long dashes
+       && (strpos($value, '–') === FALSE) // No existing long dashes
        && ((substr_count($value, '-') + substr_count($value, '–') + substr_count($value, ',')) < 3) // This line helps us ignore with 1-5–1-6 stuff
        && (preg_match('~^[a-zA-Z]+[0-9]*.[0-9]+$~u',$value) !== 1) // A-3, A3-5 etc.  Use "." for generic dash
        && (preg_match('~^\d{4}\-[a-zA-Z]+$~u',$value) !== 1)); // 2005-A used in {{sfn}} junk
