@@ -415,6 +415,7 @@ function expand_by_doi($template, $force = FALSE) {
   }
   if ($doi && ($force || $template->incomplete())) {
     $crossRef = query_crossref($doi);
+    print_r($crossRef);
     if ($crossRef) {
       if (in_array(strtolower($crossRef->article_title), BAD_ACCEPTED_MANUSCRIPT_TITLES)) return FALSE ;
       if ($template->has('title') && trim(@$crossRef->article_title) && $template->get('title') !== 'none') { // Verify title of DOI matches existing data somewhat
@@ -470,13 +471,18 @@ function expand_by_doi($template, $force = FALSE) {
       report_action("Querying CrossRef: doi:" . doi_link($doi));
 
       if ($crossRef->volume_title && $template->blank('journal')) {
+        echo "\n" . "X1" . "\n";
         if (strtolower($template->get('title')) == strtolower($crossRef->article_title)) {
+                  echo "\n" . "X2" . "\n";
            $template->rename('title', 'chapter');
          } else {
+                  echo "\n" . "X3" . "\n";
            $template->add_if_new('chapter', restore_italics($crossRef->article_title), 'crossref'); // add_if_new formats this value as a title
         }
+                echo "\n" . "X4" . "\n";
         $template->add_if_new('title', restore_italics($crossRef->volume_title), 'crossref'); // add_if_new will wikify title and sanitize the string
       } else {
+                echo "\n" . "X5" . "\n";
         $template->add_if_new('title', restore_italics($crossRef->article_title), 'crossref'); // add_if_new will wikify title and sanitize the string
       }
       $template->add_if_new('series', $crossRef->series_title, 'crossref'); // add_if_new will format the title for a series?
