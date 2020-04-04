@@ -742,6 +742,8 @@ final class Template {
       ### (page, volume etc) ###
       
       case 'title':
+        echo "\n" . "adding title $value " . "\n";
+        echo "\n" . "santized to title ".  sanitize_string($value)  . "\n";
         if (in_array(strtolower(sanitize_string($value)), BAD_TITLES ) === TRUE) return FALSE;
         if ($this->blank($param_name) || in_array($this->get($param_name),
                                            ['Archived copy', "{title}", 'ScienceDirect', 'Google Books', 'None'])
