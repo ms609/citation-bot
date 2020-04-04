@@ -644,7 +644,7 @@ function can_safely_modify_dashes($value) {
    // And now special existing long-dash code
    if (strpos($value, '–') === FALSE) return TRUE; // No existing long dashes
    if (substr_count($value, '–') !== 1) return FALSE; // More than one long dash
-   if (preg_match('~^(.+)\–(.+)\$~u', $value, $matches) {
+   if (preg_match('~^(.+)\–(.+)\$~u', $value, $matches)) {
      return ($matches[1] === $matches[2]); // Safely drop them if exactly the same
    }
    return FALSE; // Paranoid failsafe
