@@ -2765,6 +2765,7 @@ final class Template {
       str_replace(":", "___", $data));
     $xml = @simplexml_load_string($simplified_xml);
     if ($xml === FALSE) return FALSE;
+    print_r($xml);
     if ($xml->dc___title[1]) {
       $this->add_if_new('title',  
                wikify_external_text(str_replace("___", ":", $xml->dc___title[0] . ": " . $xml->dc___title[1])));
