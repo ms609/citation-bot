@@ -186,6 +186,7 @@ function str_remove_irrelevant_bits($str) {
   $str = str_ireplace(array('<sub>', '<sup>', '<i>', '<b>', '</sub>', '</sup>', '</i>', '</b>'), '', $str);
   $str = straighten_quotes($str);
   $str = preg_replace('~\(Incorporating .*\)$~i', '', $str);  // Physical Chemistry Chemical Physics (Incorporating Faraday Transactions)
+  $str = preg_replace('~[,;:\.] \d+ Volume Set$~i', '', $str);  // Ullmann's Encyclopedia of Industrial Chemistry, 40 Volume Set
   $str = trim($str);
   return $str;
 }
