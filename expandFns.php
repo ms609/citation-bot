@@ -635,6 +635,7 @@ function check_doi_for_jstor($doi, &$template) {
 function can_safely_modify_dashes($value) {
    return((stripos($value, "http") === FALSE)
        && (strpos($value, "[//") === FALSE)
+       && (substr_count($value, "<") !== 0) // <span></span> stuff
        && (stripos($value, 'CITATION_BOT_PLACEHOLDER') === FALSE)
        && (strpos($value, "(") === FALSE)
        && ((substr_count($value, '-') + substr_count($value, '–') + substr_count($value, ',') + substr_count($value, 'dash')) < 3) // This line helps us ignore with 1-5–1-6 stuff
