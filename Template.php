@@ -895,6 +895,7 @@ final class Template {
         if ($this->get_identifiers_from_url($value)) return FALSE;
         if (!$this->blank(array_merge([$param_name], TITLE_LINK_ALIASES))) return FALSE;
         if ($this->get('title') === 'none') return FALSE;
+        if (strpos($this->get('title'), '[') !== FALSE) return FALSE;  // TITLE_LINK_ALIASES within the title
         $value = sanitize_string($value);
         foreach (['url', 'article-url', 'chapter-url', 'chapterurl', 'conference-url', 'conferenceurl',
                   'contribution-url', 'contributionurl', 'entry-url', 'event-url', 'eventurl', 'lay-url',
@@ -3905,11 +3906,14 @@ final class Template {
              if (preg_match(REGEXP_PLAIN_WIKILINK, $title, $matches)) {
                $title = str_replace(array("[[", "]]"), "", $title);
                if (strlen($matches[1]) > (0.6 * strlen($title))) {  // Only add as title-link if a large part of title text
-                 $this->add_if_new('title-link', $matches[1]);
+                 $title = '[[' . $title . ']]';
                }
              } elseif (preg_match(REGEXP_PIPED_WIKILINK, $title, $matches)) {
-               $this->add_if_new('title-link', $matches[1]);
+               $linked_part = $matches[2];
                $title = preg_replace(REGEXP_PIPED_WIKILINK, "$2", $title);
+               if (strlen($linked_part) > (0.6 * strlen($title))) {  // Only add as title-link if a large part of title text
+                  $title = '[[' . $matches[1] . '|' . $title . ']]';
+               }
              }
           }
           $this->set($param, $title);
