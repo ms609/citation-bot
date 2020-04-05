@@ -3909,8 +3909,9 @@ final class Template {
                  $title = '[[' . $title . ']]';
                }
              } elseif (preg_match(REGEXP_PIPED_WIKILINK, $title, $matches)) {
+               $linked_part = $matches[2];
                $title = preg_replace(REGEXP_PIPED_WIKILINK, "$2", $title);
-               if (strlen($matches[1]) > (0.6 * strlen($title))) {  // Only add as title-link if a large part of title text
+               if (strlen($linked_part) > (0.6 * strlen($title))) {  // Only add as title-link if a large part of title text
                   $title = '[[' . $matches[1] . '|' . $title . ']]';
                }
              }
