@@ -331,7 +331,7 @@ class Page {
     $this->replace_object($all_templates);
 
     $this->text = preg_replace('~(\{\{[Cc]ite ODNB\s*\|[^\{\}\_]+_?[^\{\}\_]+\}\}\s*)\{\{ODNBsub\}\}~u', '$1', $this->text); // Allow only one underscore to shield us from MATH etc.
-
+    $this->text = preg_replace('~(\{\{[Cc]ite ODNB\s*\|[^\{\}\_]+ref ?= ?\{\{sfn[^\{\}\_]+\}\}[^\{\}\_]+\}\}\s*)\{\{ODNBsub\}\}~u', '$1', $this->text); // Allow a ref={{sfn in the template
     $this->replace_object($singlebrack);
     $this->replace_object($preformated);
     $this->replace_object($musicality);
