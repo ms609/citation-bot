@@ -5403,8 +5403,14 @@ final class Template {
     if (stripos($url, 'page=0')) return FALSE;
     if (substr($url, -2) === '_0') return FALSE;
     if (preg_match('~archive\.org/details/[^/]+$~', $url)) return FALSE;
+    if (stripos($url, 'PA1') && !preg_match('~PA1[0-9]~i', $url)) return FALSE;
+    if (stripos($url, 'PA0')) return FALSE;
     if (stripos($url, 'archive.org')) {
-      if (strpos($url, 'page') || strpos($url, 'chapter')) return TRUE;
+      if (strpos($url, 'chapter')) return TRUE;
+      if (strpos($url, 'page')) {
+        if (preg_match('~page/?[01]?$~i', $url)) return FALSE;
+        return TRUE;
+      }
       return FALSE;
     }
     if ($force) return TRUE;
