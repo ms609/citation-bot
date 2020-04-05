@@ -135,7 +135,7 @@ const OBVIOUS_FOREIGN_WORDS = array(" Abhandlungen ", " Actes ", " Annales ", " 
            " Lietuvos ", " muziejų ", " rinkiniai ", " Traduction ", " Terminologie ", " Rédaction ",
            " Etudes ", " irlandaises  ", " Studia ", " humaniora ", " Estonica ",
            " Archiwa ", " Biblioteki  ", " Muzea ", " Kościelne ", " Zbornik ",			   
-           " Radova ", " Filozofskog  ", " Fakulteta ", " Prištini ");
+           " Radova ", " Filozofskog  ", " Fakulteta ", " Prištini ", " Mém. ");
  
 const MAP_DIACRITICS = array("À"=>"A", "Á"=>"A", "Â"=>"A", "Ã"=>"A",
 	"Ä"=>"A", "Å"=>"A", "Æ"=>"AE", "Ç"=>"C", "È"=>"E", "É"=>"E",
