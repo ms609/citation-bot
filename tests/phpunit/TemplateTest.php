@@ -840,14 +840,14 @@ final class TemplateTest extends testBaseClass {
     $expanded = $this->process_citation("{{Cite journal|journal=Dark Lord of the Sith [[Pure Evil]]}}");
     $this->assertSame('Dark Lord of the Sith Pure Evil', $expanded->get('journal'));
     $expanded = $this->process_citation("{{Cite journal|title=[[Pure Evil]]}}");
-    $this->assertSame('Pure Evil', $expanded->get('title'));
-    $this->assertSame('Pure Evil', $expanded->get('title-link'));
+    $this->assertSame('[[Pure Evil]]', $expanded->get('title'));
+    $this->assertNull($expanded->get('title-link'));
   }
 
   public function testRemoveWikilinks3() {
     $expanded = $this->process_citation("{{Cite journal|title=[[Pure Evil|Approximate Physics]]}}");
-    $this->assertSame('Approximate Physics', $expanded->get('title'));
-    $this->assertSame('Pure Evil', $expanded->get('title-link'));
+    $this->assertSame('[[Pure Evil|Approximate Physics]]', $expanded->get('title'));
+    $this->assertNull($expanded->get('title-link'));
     $expanded = $this->process_citation("{{Cite journal|title=[[Dark]] Lord of the [[Sith (Star Wars)|Sith]] [[Pure Evil]]}}");
     $this->assertSame('Dark Lord of the Sith Pure Evil', $expanded->get('title'));
     $expanded = $this->process_citation("{{Cite journal|title=Dark Lord of the [[Sith (Star Wars)|Sith]] Pure Evil}}");
