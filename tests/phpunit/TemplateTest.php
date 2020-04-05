@@ -852,7 +852,7 @@ final class TemplateTest extends testBaseClass {
     $this->assertSame('Dark Lord of the Sith Pure Evil', $expanded->get('title'));
     $expanded = $this->process_citation("{{Cite journal|title=Dark Lord of the [[Sith (Star Wars)|Sith]] Pure Evil}}");
     $this->assertSame('Dark Lord of the Sith Pure Evil', $expanded->get('title'));
-    $this->assertSame('Sith (Star Wars)', $expanded->get('title-link'));
+    $this->assertNull($expanded->get('title-link'));
     $expanded = $this->process_citation("{{Cite journal|title=[[Pure Evil] }}");
     $this->assertSame('Pure Evil', $expanded->get('title'));
     $this->assertNull($expanded->get('title-link'));
