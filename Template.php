@@ -2760,13 +2760,13 @@ final class Template {
         $hash = '#v=onepage';
       }
       $url = $url . $hash;
-      if ($url != $orig_book_url) {
+      if ($url != $orig_book_url && $url_type && (strpos($url_type, 'url') !== FALSE)) {
         if ($removed_redundant > 1) { // http:// is counted as 1 parameter
           report_forget(echoable($removed_parts));
         } else {
           report_forget('Simplified Google Books URL');
         }
-        if ($url_type && strpos($url_type, 'url') !== FALSE) $this->set($url_type, $url);
+        $this->set($url_type, $url);
       }
       $this->google_book_details($gid[1]);
       return TRUE;
