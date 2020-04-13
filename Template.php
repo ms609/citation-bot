@@ -2766,7 +2766,7 @@ final class Template {
         } else {
           report_forget('Simplified Google Books URL');
         }
-        $this->set($url_type, $url);
+        if ($url_type && strpos($url_type, 'url') !== FALSE) $this->set($url_type, $url);
       }
       $this->google_book_details($gid[1]);
       return TRUE;
