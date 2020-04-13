@@ -3916,7 +3916,11 @@ final class Template {
              if (preg_match(REGEXP_PLAIN_WIKILINK, $title, $matches)) {
                $title = str_replace(array("[[", "]]"), "", $title);
                if (strlen($matches[1]) > (0.6 * strlen($title))) {  // Only add as title-link if a large part of title text
-                 $title = '[[' . $matches[1] . "|" . $title . ']]';
+                 if ($matches[1] == $title) {
+                   $title = '[[' . $title . ']]';
+                 } else {
+                   $title = '[[' . $matches[1] . "|" . $title . ']]';
+                 }
                }
              } elseif (preg_match(REGEXP_PIPED_WIKILINK, $title, $matches)) {
                $linked_part = $matches[2];
