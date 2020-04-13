@@ -2718,6 +2718,7 @@ final class Template {
     }
     // Now we parse a Google Books URL
     if ($url && preg_match("~books\.google\.[\w\.]+/.*\bid=([\w\d\-]+)~", $url, $gid)) {
+      $orig_books_url = $url;
       $removed_redundant = 0;
       $hash = '';
       $removed_parts ='';
@@ -2752,10 +2753,19 @@ final class Template {
         }
       }
       if (strpos($hash, 'v=onepage') !== FALSE) {
+        if (!str_i_same($hash, '#v=onepage')) {
+          $removed_redundant++;
+          $removed_parts .= substr(str_ireplace('v=onepage', '', $hash), 1);
+        }
         $hash = '#v=onepage';
       }
-      if ($removed_redundant > 1) { // http:// is counted as 1 parameter
-        report_forget(echoable($removed_parts));
+      $url = $url . $hash;
+      if ($url != $orig_book_url) {
+        if ($removed_redundant > 1) { // http:// is counted as 1 parameter
+          report_forget(echoable($removed_parts));
+        } else {
+          report_forget('Simplified Google Books URL')
+        }
         $this->set($url_type, $url . $hash);
       }
       $this->google_book_details($gid[1]);
