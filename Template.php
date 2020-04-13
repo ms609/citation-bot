@@ -4995,7 +4995,7 @@ final class Template {
   }
   
   public function set($par, $val) {
-    if ((string) $par === '')) report_error('NULL parameter passed to set with value of ' . $val);
+    if ((string) $par === '') report_error('NULL parameter passed to set with value of ' . $val);
     if (mb_stripos($this->get((string) $par), 'CITATION_BOT_PLACEHOLDER_COMMENT') !== FALSE) {
       return FALSE;
     }
