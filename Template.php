@@ -2766,7 +2766,7 @@ final class Template {
         } else {
           report_forget('Simplified Google Books URL');
         }
-        $this->set($url_type, $url);
+        if ($url_type && strpos($url_type, 'url') !== FALSE) $this->set($url_type, $url);
       }
       $this->google_book_details($gid[1]);
       return TRUE;
@@ -4995,6 +4995,7 @@ final class Template {
   }
   
   public function set($par, $val) {
+    if ((string) $par === '') report_error('NULL parameter passed to set with value of ' . $val);
     if (mb_stripos($this->get((string) $par), 'CITATION_BOT_PLACEHOLDER_COMMENT') !== FALSE) {
       return FALSE;
     }
