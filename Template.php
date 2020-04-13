@@ -2718,7 +2718,7 @@ final class Template {
     }
     // Now we parse a Google Books URL
     if ($url && preg_match("~books\.google\.[\w\.]+/.*\bid=([\w\d\-]+)~", $url, $gid)) {
-      $orig_books_url = $url;
+      $orig_book_url = $url;
       $removed_redundant = 0;
       $hash = '';
       $removed_parts ='';
@@ -2764,9 +2764,9 @@ final class Template {
         if ($removed_redundant > 1) { // http:// is counted as 1 parameter
           report_forget(echoable($removed_parts));
         } else {
-          report_forget('Simplified Google Books URL')
+          report_forget('Simplified Google Books URL');
         }
-        $this->set($url_type, $url . $hash);
+        $this->set($url_type, $url);
       }
       $this->google_book_details($gid[1]);
       return TRUE;
