@@ -435,6 +435,7 @@ function throttle ($min_interval) {
 function tidy_date($string) {
   $string=trim($string);
   if (stripos($string, 'Invalid') !== FALSE) return '';
+  if (stripos($string, '1/1/0001') !== FALSE) return '';
   if (!preg_match('~\d{2}~', $string)) return ''; // If there are not two numbers next to each other, reject
   // Google sends ranges
   if (preg_match('~^(\d{4})(\-\d{2}\-\d{2})\s+\-\s+(\d{4})(\-\d{2}\-\d{2})$~', $string, $matches)) { // Date range
