@@ -4347,7 +4347,7 @@ final class Template {
             $value = "[https://" . substr($value, 3);
             $this->set($param, $value);
           }
-          if (preg_match('~^p\.?p\.?[(?:&nbsp;)|\s]*(\d+[–-]?\d+)$~u' , $value, $matches)) {
+          if (preg_match('~^p\.?p\.?[(?:&nbsp;)\s]*(\d+[–-]?\d+)$~u' , $value, $matches)) {
             $value = $matches[1];
             $this->set($param, $value);
           }
