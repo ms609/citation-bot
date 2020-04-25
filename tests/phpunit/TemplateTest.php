@@ -50,7 +50,7 @@ final class TemplateTest extends testBaseClass {
   }
 
   public function testNoGoonUTF8() {
-    $text = "{{cite news |date=びっくり１位　白鴎|title=阪神びっくり１位　白鴎大・大山、鉄人魂の持ち主だ|journal=鉄人魂}}";
+    $text = "{{cite news |date=びっくり１位 白鴎|title=阪神びっくり１位 白鴎大・大山、鉄人魂の持ち主だ|journal=鉄人魂}}";
     $expanded = $this->process_citation($text);
     $this->assertSame($text, $expanded->parsed_text());
   }
