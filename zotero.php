@@ -329,7 +329,9 @@ function process_zotero_response($zotero_response, &$template, $url, $url_kind, 
     return FALSE;
   }
   $zotero_data = @json_decode($zotero_response, FALSE);
-  if (!isset($zotero_data)) {
+ 
+ 
+if (!isset($zotero_data)) {
     report_warning("Could not parse JSON for URL ". $url . ": $zotero_response");
     return FALSE;
   } elseif (!is_array($zotero_data)) {
@@ -345,7 +347,7 @@ function process_zotero_response($zotero_response, &$template, $url, $url_kind, 
   } else {
     $result = $zotero_data[0];
   }
-  
+  print_r($result);
   if (!isset($result->title)) {
     report_warning("Did not get a title for URL ". $url . ": $zotero_response");
     return FALSE;
