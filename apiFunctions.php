@@ -600,6 +600,7 @@ function expand_doi_with_dx($template, $doi) {
      $json = @json_decode($ris, TRUE);
      if($json === FALSE) return FALSE;
      report_action("Querying dx.doi.org: doi:" . doi_link($doi));
+ print_r($json);
      // BE WARNED:  this code uses the "@$var" method.
      // If the variable is not set, then PHP just passes NULL, then that is interpreted as a empty string
      if ($template->blank(['date', 'year'])) {
