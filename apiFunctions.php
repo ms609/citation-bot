@@ -645,7 +645,7 @@ function expand_doi_with_dx($template, $doi) {
        $try_to_add_it('title', @$json['title']);
        $try_to_add_it('location', @$json['publisher-location']);
        $try_to_add_it('publisher', @$json['publisher']);
-       $try_to_add_it('chapter', @$json['categories']['0']);  // Not really right, but there is no cite data set template
+       if (!isset($json['categories']['1'])) $try_to_add_it('chapter', @$json['categories']['0']);  // Not really right, but there is no cite data set template
      } elseif (@$json['type'] == '') {  // Add what we can where we can
        $try_to_add_it('title', @$json['title']);
        $try_to_add_it('location', @$json['publisher-location']);
