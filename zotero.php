@@ -185,6 +185,9 @@ function drop_urls_that_match_dois($templates) {
        } elseif ($template->has('pmc') && str_ireplace('bmj.com/cgi/pmidlookup','', $url) !== $url && $template->has('pmid')) {
           report_forget("Existing The BMJ URL resulting from equivalent PMID and DOI; dropping URL");
           $template->forget($url_kind);
+       } elseif ($template->get('doi-access') === 'free' && $template->get('url-status') === 'dead' && $url_kind === 'url') {
+          report_forget("Existing free DOI; dropping dead URL");
+          $template->forget($url_kind);
        } elseif ($template->has('pmc')) {
           curl_setopt($ch, CURLOPT_URL, "https://dx.doi.org/" . urlencode($doi));
           if (@curl_exec($ch)) {
