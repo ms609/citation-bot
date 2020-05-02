@@ -1025,8 +1025,17 @@ final class Template {
           if ($bibcode_pad > 0) {  // Paranoid, don't want a negative value, if bibcodes get longer
             $value = $value . str_repeat( ".", $bibcode_pad);  // Add back on trailing periods
           }
+          if (stripos($value, 'arxiv') !== FALSE) {
+            if ($this->has('arxiv') || $this->has('eprint'))return FALSE;
+            $low_quality = TRUE;
+          } else {
+            $low_quality = FALSE;
+          }
           $this->add($param_name, $value);
           $this->expand_by_adsabs();
+          if ($low_quality && ($this->has('arxiv') || $this->has('eprint'))) { // added arxiv
+            $this->quietly_forget($param_name);
+          }
           return TRUE;
         } 
         return FALSE;
