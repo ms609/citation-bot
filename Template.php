@@ -1039,7 +1039,7 @@ final class Template {
           }
           $this->add($param_name, $value);
           $this->expand_by_adsabs();
-          if ($low_quality && ($this->has('arxiv') || $this->has('eprint'))) { // added arxiv
+          if ($low_quality) {
             $this->quietly_forget($param_name);
           }
           return TRUE;
