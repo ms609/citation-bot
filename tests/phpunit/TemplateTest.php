@@ -4373,12 +4373,11 @@ T1 - This is the Title }}';
    }
  
    public function testIDconvert5() {
-     $text='{{Cite journal | id = {{oclc|02268454}} {{ol|1234}} {{bibcode|2018arXiv}} }}';
+     $text='{{Cite journal | id = {{oclc|02268454}} {{ol|1234}}  }}';
      $template = $this->process_citation($text);
      $template = $this->make_citation($template->parsed_text()); // Turn sub-templates into text
      $this->assertSame('02268454', $template->get('oclc'));
      $this->assertSame('1234', $template->get('ol'));
-     $this->assertSame('2018arXiv..........', $template->get('bibcode'));
      $this->assertNull($template->get('id'));
    }
  
