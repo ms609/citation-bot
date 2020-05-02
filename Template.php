@@ -1026,7 +1026,7 @@ final class Template {
             ) {
           $this->quietly_forget($param_name);  // Upgrade bad bibcode
         }
-        if ($this->blank($param_name)) {
+        if ($this->blank($param_name)) { 
           $bibcode_pad = 19 - strlen($value);
           if ($bibcode_pad > 0) {  // Paranoid, don't want a negative value, if bibcodes get longer
             $value = $value . str_repeat( ".", $bibcode_pad);  // Add back on trailing periods
