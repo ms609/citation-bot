@@ -1020,13 +1020,28 @@ final class Template {
         return FALSE;
       
       case 'bibcode':
+        if (stripos($value, 'arxiv') === FALSE &&
+            stripos($this->get($param_name), 'arxiv') !== FALSE &&
+            strlen(trim($value)) > 16
+            ) {
+          $this->quietly_forget($param_name);  // Upgrade bad bibcode
+        }
         if ($this->blank($param_name)) { 
           $bibcode_pad = 19 - strlen($value);
           if ($bibcode_pad > 0) {  // Paranoid, don't want a negative value, if bibcodes get longer
             $value = $value . str_repeat( ".", $bibcode_pad);  // Add back on trailing periods
           }
+          if (stripos($value, 'arxiv') !== FALSE) {
+            if ($this->has('arxiv') || $this->has('eprint'))return FALSE;
+            $low_quality = TRUE;
+          } else {
+            $low_quality = FALSE;
+          }
           $this->add($param_name, $value);
           $this->expand_by_adsabs();
+          if ($low_quality) {
+            $this->quietly_forget($param_name);
+          }
           return TRUE;
         } 
         return FALSE;
