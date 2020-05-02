@@ -1019,14 +1019,15 @@ final class Template {
         }
         return FALSE;
       
+      case 'bibcode_nosearch':  // Avoid recursive loop
       case 'bibcode':
         if (stripos($value, 'arxiv') === FALSE &&
-            stripos($this->get($param_name), 'arxiv') !== FALSE &&
+            stripos($this->get('bibcode'), 'arxiv') !== FALSE &&
             strlen(trim($value)) > 16
             ) {
-          $this->quietly_forget($param_name);  // Upgrade bad bibcode
+          $this->quietly_forget('bibcode');  // Upgrade bad bibcode
         }
-        if ($this->blank($param_name)) { 
+        if ($this->blank('bibcode')) { 
           $bibcode_pad = 19 - strlen($value);
           if ($bibcode_pad > 0) {  // Paranoid, don't want a negative value, if bibcodes get longer
             $value = $value . str_repeat( ".", $bibcode_pad);  // Add back on trailing periods
@@ -1037,10 +1038,10 @@ final class Template {
           } else {
             $low_quality = FALSE;
           }
-          $this->add($param_name, $value);
-          $this->expand_by_adsabs();
+          $this->add('bibcode', $value);
+          if ($param_name === 'bibcode') $this->expand_by_adsabs();
           if ($low_quality) {
-            $this->quietly_forget($param_name);
+            $this->quietly_forget('bibcode');
           }
           return TRUE;
         } 
@@ -2113,7 +2114,7 @@ final class Template {
       }
       
       if (strpos((string) $record->bibcode, 'book') !== FALSE) {  // Found a book.  Need special code
-         $this->add('bibcode', (string) $record->bibcode); // not add_if_new or we'll no get return code
+         $this->add_if_new('bibcode_nosearch', (string) $record->bibcode);
          return $this->expand_by_adsabs();
       }
       
@@ -2134,7 +2135,7 @@ final class Template {
       }
       
       if ($this->blank('bibcode')) {
-        $this->add('bibcode', (string) $record->bibcode); // not add_if_new or we'll repeat this search!
+        $this->add_if_new('bibcode_nosearch', (string) $record->bibcode);
       } elseif ($this->get('bibcode') !== (string) $record->bibcode && stripos($this->get('bibcode'), 'citation_bot_placeholder') === FALSE) {
         report_info("Updating " . bibcode_link($this->get('bibcode')) . " to " .  bibcode_link((string) $record->bibcode));
         $this->set('bibcode', (string) $record->bibcode); // The bibcode has been updated
