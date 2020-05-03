@@ -2775,6 +2775,13 @@ final class Template {
         }
         $hash = '#v=onepage';
       }
+      if (strpos($hash, 'v=snippet') !== FALSE) {
+        if (!str_i_same($hash, '#v=snippet')) {
+          $removed_redundant++;
+          $removed_parts .= substr(str_ireplace('v=snippet', '', $hash), 1);
+        }
+        $hash = '#v=snippet';
+      }
       $url = $url . $hash;
       if ($url != $orig_book_url && $url_type && (strpos($url_type, 'url') !== FALSE)) {
         if ($removed_redundant > 1) { // http:// is counted as 1 parameter
