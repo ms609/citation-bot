@@ -2762,7 +2762,8 @@ final class Template {
             break; // Don't "remove redundant"
           case "as": case "useragent": case "as_brr": case "source":  case "hl":
           case "ei": case "ots": case "sig": case "source": case "lr": case "ved":
-          case "as_brr": case "sa": case "oi": case "ct": case "client": // List of parameters known to be safe to remove
+          case "sa": case "oi": case "ct": case "client":
+          case "buy": case "edge": case "zoom": case "img": case "printspec": // List of parameters known to be safe to remove
           default:
             if ($removed_redundant !== 0) $removed_parts .= $part; // http://blah-blah is first parameter and it is not actually dropped
             $removed_redundant++;
@@ -5381,7 +5382,7 @@ final class Template {
           case "aq": case "aqi": case "bih": case "biw": case "client": 
           case "as": case "useragent": case "as_brr": case "source":
           case "ei": case "ots": case "sig": case "source": case "lr":
-          case "as_brr": case "sa": case "oi": case "ct": case "id":
+          case "sa": case "oi": case "ct": case "id":
           case "oq": case "rls": case "sourceid": case "tbm": case "ved":
           case "aqs": case "gs_l": case "uact": case "tbo": case "tbs":
           case "num":
