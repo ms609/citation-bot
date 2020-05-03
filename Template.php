@@ -2745,7 +2745,7 @@ final class Template {
         $hash = "#" . $url_parts[1];
       }
       $url_parts = explode("&", str_replace("?", "&", $url));
-      $url = "https://books.google.com/?id=" . $gid[1];
+      $url = "https://books.google.com/books?id=" . $gid[1];
       foreach ($url_parts as $part) {
         $part_start = explode("=", $part);
         switch ($part_start[0]) {
@@ -2762,7 +2762,8 @@ final class Template {
             break; // Don't "remove redundant"
           case "as": case "useragent": case "as_brr": case "source":  case "hl":
           case "ei": case "ots": case "sig": case "source": case "lr": case "ved":
-          case "as_brr": case "sa": case "oi": case "ct": case "client": // List of parameters known to be safe to remove
+          case "sa": case "oi": case "ct": case "client":
+          case "buy": case "edge": case "zoom": case "img": case "printspec": // List of parameters known to be safe to remove
           default:
             if ($removed_redundant !== 0) $removed_parts .= $part; // http://blah-blah is first parameter and it is not actually dropped
             $removed_redundant++;
@@ -2775,12 +2776,19 @@ final class Template {
         }
         $hash = '#v=onepage';
       }
+      if (strpos($hash, 'v=snippet') !== FALSE) {
+        if (!str_i_same($hash, '#v=snippet')) {
+          $removed_redundant++;
+          $removed_parts .= substr(str_ireplace('v=snippet', '', $hash), 1);
+        }
+        $hash = '#v=snippet';
+      }
       $url = $url . $hash;
       if ($url != $orig_book_url && $url_type && (strpos($url_type, 'url') !== FALSE)) {
         if ($removed_redundant > 1) { // http:// is counted as 1 parameter
           report_forget(echoable($removed_parts));
         } else {
-          report_forget('Simplified Google Books URL');
+          report_forget('Standardized Google Books URL');
         }
         $this->set($url_type, $url);
       }
@@ -5381,7 +5389,7 @@ final class Template {
           case "aq": case "aqi": case "bih": case "biw": case "client": 
           case "as": case "useragent": case "as_brr": case "source":
           case "ei": case "ots": case "sig": case "source": case "lr":
-          case "as_brr": case "sa": case "oi": case "ct": case "id":
+          case "sa": case "oi": case "ct": case "id":
           case "oq": case "rls": case "sourceid": case "tbm": case "ved":
           case "aqs": case "gs_l": case "uact": case "tbo": case "tbs":
           case "num":
