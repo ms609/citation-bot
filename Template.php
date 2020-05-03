@@ -2745,7 +2745,7 @@ final class Template {
         $hash = "#" . $url_parts[1];
       }
       $url_parts = explode("&", str_replace("?", "&", $url));
-      $url = "https://books.google.com/?id=" . $gid[1];
+      $url = "https://books.google.com/books?id=" . $gid[1];
       foreach ($url_parts as $part) {
         $part_start = explode("=", $part);
         switch ($part_start[0]) {
@@ -2780,7 +2780,7 @@ final class Template {
         if ($removed_redundant > 1) { // http:// is counted as 1 parameter
           report_forget(echoable($removed_parts));
         } else {
-          report_forget('Simplified Google Books URL');
+          report_forget('Standardized Google Books URL');
         }
         $this->set($url_type, $url);
       }
