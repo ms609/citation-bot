@@ -2765,6 +2765,7 @@ final class Template {
             break; // Don't "remove redundant"
           case "as": case "useragent": case "as_brr": case "source":  case "hl":
           case "ei": case "ots": case "sig": case "source": case "lr": case "ved":
+          case "gs_lcp": case "sxsrf":
           case "sa": case "oi": case "ct": case "client":
           case "buy": case "edge": case "zoom": case "img": case "printspec": // List of parameters known to be safe to remove
           default:
@@ -5395,7 +5396,7 @@ final class Template {
           case "sa": case "oi": case "ct": case "id":
           case "oq": case "rls": case "sourceid": case "tbm": case "ved":
           case "aqs": case "gs_l": case "uact": case "tbo": case "tbs":
-          case "num":
+          case "num": case "redir_esc": case "gs_lcp": case "sxsrf":
              break;
           case "ie": case "oe":
              if (str_i_same($part_start[1], 'utf-8')) break;  // UTF-8 is the default
