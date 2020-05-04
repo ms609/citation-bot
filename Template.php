@@ -2737,6 +2737,11 @@ final class Template {
     }
     // Now we parse a Google Books URL
     if ($url && preg_match("~books\.google\.[\w\.]+/.*\bid=([\w\d\-]+)~", $url, $gid)) {
+      if (strpos($url, 'books.google.com/?id=') === FALSE) {
+        $the_option_books = 'books';
+      } else {
+        $the_option_books = ''; // Do not add "books" to existing super short URLS
+      }
       $orig_book_url = $url;
       $removed_redundant = 0;
       $hash = '';
@@ -2748,7 +2753,7 @@ final class Template {
         $hash = "#" . $url_parts[1];
       }
       $url_parts = explode("&", str_replace("?", "&", $url));
-      $url = "https://books.google.com/books?id=" . $gid[1];
+      $url = "https://books.google.com/" . $the_option_books . "?id=" . $gid[1];
       foreach ($url_parts as $part) {
         $part_start = explode("=", $part);
         switch ($part_start[0]) {
