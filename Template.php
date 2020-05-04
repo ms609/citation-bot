@@ -2767,6 +2767,7 @@ final class Template {
             break; // Don't "remove redundant"
           case "as": case "useragent": case "as_brr": case "source":  case "hl":
           case "ei": case "ots": case "sig": case "source": case "lr": case "ved":
+          case "gs_lcp": case "sxsrf": case "gfe_rd": case "gws_rd":
           case "sa": case "oi": case "ct": case "client": case "redir_esc";
           case "buy": case "edge": case "zoom": case "img": case "printspec": // List of parameters known to be safe to remove
           default:
@@ -5394,13 +5395,20 @@ final class Template {
           case "aq": case "aqi": case "bih": case "biw": case "client": 
           case "as": case "useragent": case "as_brr": case "source":
           case "ei": case "ots": case "sig": case "source": case "lr":
-          case "sa": case "oi": case "ct": case "id":
+          case "sa": case "oi": case "ct": case "id":  case "cd":
           case "oq": case "rls": case "sourceid": case "tbm": case "ved":
           case "aqs": case "gs_l": case "uact": case "tbo": case "tbs":
-          case "num":
+          case "num": case "redir_esc": case "gs_lcp": case "sxsrf":
+          case "gfe_rd": case "gws_rd":
+             break;
+          case "rct":
+             if (str_i_same($part_start[1], 'j')) break;  // default
+             $url .=  $part . "&" ;
              break;
           case "ie": case "oe":
              if (str_i_same($part_start[1], 'utf-8')) break;  // UTF-8 is the default
+             $url .=  $part . "&" ;
+             break;
           case "hl": case "safe": case "q":
              $url .=  $part . "&" ;
              break;
