@@ -2668,6 +2668,8 @@ final class Template {
   }
   
   protected function expand_by_google_books_inner($url, $url_type) {
+    // TODO add support for NEW google books URLS, such as https://www.google.com/books/edition/_/SjpSkzjIzfsC?hl=en
+    // Note: what aboue page numbers and seaches and such
     if (!$url || !preg_match("~books\.google\.[\w\.]+/.*\bid=([\w\d\-]+)~", $url, $gid)) { // No Google URL yet.
       $google_books_worked = FALSE ;
       $isbn = $this->get('isbn');
@@ -2766,7 +2768,7 @@ final class Template {
           case "as": case "useragent": case "as_brr": case "source":  case "hl":
           case "ei": case "ots": case "sig": case "source": case "lr": case "ved":
           case "gs_lcp": case "sxsrf": case "gfe_rd": case "gws_rd"
-          case "sa": case "oi": case "ct": case "client":
+          case "sa": case "oi": case "ct": case "client": case "redir_esc";
           case "buy": case "edge": case "zoom": case "img": case "printspec": // List of parameters known to be safe to remove
           default:
             if ($removed_redundant !== 0) $removed_parts .= $part; // http://blah-blah is first parameter and it is not actually dropped
