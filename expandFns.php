@@ -640,6 +640,7 @@ function can_safely_modify_dashes($value) {
        && (substr_count($value, "<") === 0) // <span></span> stuff
        && (stripos($value, 'CITATION_BOT_PLACEHOLDER') === FALSE)
        && (strpos($value, "(") === FALSE)
+       && (preg_match('~(?:[a-zA-Z].*\s|\s.*[a-zA-Z])~u',$value) !== 1) === FALSE) // Spaces and letters
        && ((substr_count($value, '-') + substr_count($value, '–') + substr_count($value, ',') + substr_count($value, 'dash')) < 3) // This line helps us ignore with 1-5–1-6 stuff
        && (preg_match('~^[a-zA-Z]+[0-9]*.[0-9]+$~u',$value) !== 1) // A-3, A3-5 etc.  Use "." for generic dash
        && (preg_match('~^\d{4}\-[a-zA-Z]+$~u',$value) !== 1)); // 2005-A used in {{sfn}} junk
