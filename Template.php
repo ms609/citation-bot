@@ -2668,8 +2668,9 @@ final class Template {
   }
   
   protected function expand_by_google_books_inner($url, $url_type) {
-    if (!$url || !preg_match("~books\.google\.[\w\.]+/.*\bid=([\w\d\-]+)~", $url, $gid) ||
-       !preg_match("~\.google\.com/books/edition/_/([a-zA-Z0-9]+)(?:\?.+|)$~", $url, $gid)) { // No Google URL yet.
+    if (!$url || !(preg_match("~books\.google\.[\w\.]+/.*\bid=([\w\d\-]+)~", $url, $gid) ||
+                   preg_match("~\.google\.com/books/edition/_/([a-zA-Z0-9]+)(?:\?.+|)$~", $url, $gid))
+       ) { // No Google URL yet.
       $google_books_worked = FALSE ;
       $isbn = $this->get('isbn');
       $lccn = $this->get('lccn');
@@ -2804,6 +2805,7 @@ final class Template {
       $this->google_book_details($gid[1]);
       return TRUE;
     }
+    return FALSE;
   }
 
   protected function google_book_details($gid) {
