@@ -2668,9 +2668,8 @@ final class Template {
   }
   
   protected function expand_by_google_books_inner($url, $url_type) {
-    // TODO add support for NEW google books URLS, such as https://www.google.com/books/edition/_/SjpSkzjIzfsC?hl=en
-    // Note: what aboue page numbers and seaches and such
-    if (!$url || !preg_match("~books\.google\.[\w\.]+/.*\bid=([\w\d\-]+)~", $url, $gid)) { // No Google URL yet.
+    if (!$url || !preg_match("~books\.google\.[\w\.]+/.*\bid=([\w\d\-]+)~", $url, $gid) ||
+       !preg_match("~\.google\.com/books/edition/_/([a-zA-Z0-9]+)(?:\?.+|)$~", $url, $gid)) { // No Google URL yet.
       $google_books_worked = FALSE ;
       $isbn = $this->get('isbn');
       $lccn = $this->get('lccn');
@@ -2798,6 +2797,10 @@ final class Template {
         }
         $this->set($url_type, $url);
       }
+      $this->google_book_details($gid[1]);
+      return TRUE;
+    }
+    if (preg_match("~\.google\.com/books/edition/_/([a-zA-Z0-9]+)(?:\?.+|)$~", $url, $gid)) {
       $this->google_book_details($gid[1]);
       return TRUE;
     }
