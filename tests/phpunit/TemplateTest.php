@@ -1061,12 +1061,6 @@ final class TemplateTest extends testBaseClass {
     $expanded = $this->process_citation($text);
     $this->assertNull($expanded->get('url'));
   }
-
-  public function testOpenAccessLookup5() {  
-    $text = '{{Cite journal | doi = 10.5260/chara.18.3.53}}';
-    $expanded = $this->process_citation($text);
-    $this->assertSame('10393/35779', $expanded->get('hdl'));
-  }
  
   public function testOpenAccessLookup6() {  
     $text = '{{Cite journal | doi = 10.5260/chara.18.3.53|hdl=10393/35779}}'; 
