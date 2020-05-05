@@ -1440,6 +1440,20 @@ final class TemplateTest extends testBaseClass {
     $this->assertSame('17 September 1990'   , $expanded->get('date'));
     $this->assertNull($expanded->get('pages')); // Do not expand pages.  Google might give total pages to us
   }
+
+  public function testGoogleBooksExpansionNEW() {
+    $text = "{{Cite web | url=https://www.google.com/books/edition/_/SjpSkzjIzfsC?hl=en}}";
+    $expanded = $this->process_citation($text);
+    $this->assertSame('cite book', $expanded->wikiname());
+    $this->assertSame('https://www.google.com/books/edition/_/SjpSkzjIzfsC?hl=en', $expanded->get('url')); // TODO - shorten???????
+    $this->assertSame('Wonderful Life: The Burgess Shale and the Nature of History',$expanded->get('title'));
+    $this->assertSame('9780393307009', $expanded->get('isbn')   );
+    $this->assertSame('Gould'        , $expanded->get('last1'));
+    $this->assertSame('Stephen Jay'  , $expanded->get('first1') );
+    $this->assertSame('17 September 1990'   , $expanded->get('date'));
+    $this->assertNull($expanded->get('pages')); // Do not expand pages.  Google might give total pages to us
+  }
+
   
   public function testGoogleDates() {
     $text = "{{cite book|url=https://books.google.com/books?id=yN8DAAAAMBAJ&pg=PA253}}";
