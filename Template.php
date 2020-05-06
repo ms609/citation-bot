@@ -3381,6 +3381,7 @@ final class Template {
     $name = trim(mb_strtolower(str_replace('_', ' ', $this->name)));
      // Treat the same since alias
     if ($name === 'cite work') $name = 'cite book';
+    if ($name === 'cite chapter') $name = 'cite book';
     if ($name === 'cite newspaper') $name = 'cite news';
     if ($name === 'cite website') $name = 'cite web';
     if ($name === 'cite paper') $name = 'cite journal';
