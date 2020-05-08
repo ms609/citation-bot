@@ -13,6 +13,11 @@ matrix:           ###### ONLY ONE WITH FULL TESTING WITH IS 7.3 OTHERS ARE ALL S
     - php: nightly
       name: "Quick PHP 8.0 syntax check"
       script: '! find . -type f -name "*.php" -exec php -d error_reporting=32767 -l {} \; 2>&1 >&- | grep "^"'
+    - stage: lint
+      before_script:  
+        - travis_retry composer self-update
+        - composer require overtrue/phplint --dev -vvv
+      script: ./vendor/bin/phplint ./ --exclude=vendor
     - stage: test
       name: "Full test with PHP 7.3"
       php: 7.3
