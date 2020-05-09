@@ -325,8 +325,8 @@ function process_zotero_response($zotero_response, &$template, $url, $url_kind, 
     return FALSE;
   }
   if (strpos($zotero_response, '503 Service Temporarily Unavailable') !== FALSE) {
-    report_warning("Temporarily Unavailable error for URL ". $url);
-    return FALSE;
+    report_warning("Temporarily Unavailable error for URL ". $url);  // @codeCoverageIgnore
+    return FALSE;                                                    // @codeCoverageIgnore
   }
   $zotero_data = @json_decode($zotero_response, FALSE);
   if (!isset($zotero_data)) {
@@ -433,7 +433,7 @@ function process_zotero_response($zotero_response, &$template, $url, $url_kind, 
       $result->extra = trim(str_replace(trim($matches[0]), '', $result->extra));
     }
     if (preg_match('~\s(original-date: \S+)\s~i', ' ' . $result->extra . ' ', $matches)) { // We don't use it
-      $result->extra = trim(str_replace(trim($matches[0]), '', $result->extra));
+      $result->extra = trim(str_replace(trim($matches[0]), '', $result->extra));           // @codeCoverageIgnore
     }
     if (trim($result->extra) !== '') {
       report_minor_error("Unhandled extra data: " . $result->extra); // @codeCoverageIgnore
@@ -481,8 +481,8 @@ function process_zotero_response($zotero_response, &$template, $url, $url_kind, 
   if (str_i_same(substr(@$result->publicationTitle, 0, 4), 'http') ||
       str_i_same(substr(@$result->bookTitle, 0, 4), 'http') ||
       str_i_same(substr(@$result->title, 0, 4), 'http')) {
-    report_info("URL returned in Journal/Newpaper/Title/Chapter field for " . $url);
-    return FALSE;
+    report_info("URL returned in Journal/Newpaper/Title/Chapter field for " . $url);  // @codeCoverageIgnore
+    return FALSE;                                                                     // @codeCoverageIgnore
   }
   
   if (isset($result->bookTitle)) {
@@ -577,8 +577,8 @@ function process_zotero_response($zotero_response, &$template, $url, $url_kind, 
         
       case 'videoRecording':
       case 'film':
-      case 'presentation';
-      case 'computerProgram';
+      case 'presentation';     // @codeCoverageIgnore
+      case 'computerProgram';  // @codeCoverageIgnore
         // Nothing special that we know of yet
         break;
 
