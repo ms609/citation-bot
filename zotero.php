@@ -107,8 +107,8 @@ function query_ieee_webpages($templates) {
        curl_setopt($ch_ieee, CURLOPT_URL, $template->get($kind));
        $return = @curl_exec($ch_ieee);
        if ($return && strpos("<title> -  </title>", $return) !== FALSE) {
-         report_forget("Existing IEEE no longer works - dropping URL");
-         $template->forget($kind);
+         report_forget("Existing IEEE no longer works - dropping URL"); // @codeCoverageIgnore
+         $template->forget($kind);                                      // @codeCoverageIgnore
        }
     }
    }
