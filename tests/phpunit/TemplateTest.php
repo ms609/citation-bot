@@ -4109,7 +4109,7 @@ T1 - This is the Title }}';
     $this->assertSame('cite book', $template->wikiname());           
   }
  
-  public function testConversionOfURL2B) {
+  public function testConversionOfURL2B() {
     $text = "{{cite web|url=http://worldcat.org/title/edition/oclc/1234}}"; // Edition
     $template = $this->make_citation($text);
     $this->assertTrue($template->get_identifiers_from_url());
