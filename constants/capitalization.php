@@ -12,7 +12,7 @@ const LC_SMALL_WORDS = array(/* The following will be automatically updated to a
           " mit ", " MNRAS ", " mot ", " N.Y. ", " N.Y.) ", " NASA ", " NEJM ", " non ", 
           " nor ", " NRC ", " NY ", " NYC ", " NYT ", " NZ ", " och ", " OECD ", " of ", 
           " off ", " og ", " on ", " or ", " over ", " PCR ", " per ", " PNAS ", " PS: ", 
-          " R&D ", " RNA ", " RTÉ ", " S&P ", " SAE ", " SSRN ", " TCI: ", " the ", " then ", 
+          " R&D ", " RNA ", " RTÉ ", " S&P ", " SAE ", " SpringerPlus ", " SSRN ", " TCI: ", " the ", " then ", 
           " till ", " to ", " UK ", " um ", " und ", " up ", " USA ", " van ", " vir ", 
           " von ", " voor ", " when ", " with ", " within ", " woor ", " y ", " zu ", " zum ", 
           " zur ", /* The above will be automatically updated to alphabetical order */ 
@@ -31,7 +31,7 @@ const UC_SMALL_WORDS = array(/* The following will be automatically updated to a
           " Mit ", " Mnras ", " Mot ", " N.y. ", " N.y.) ", " Nasa ", " Nejm ", " Non ", 
           " Nor ", " Nrc ", " Ny ", " Nyc ", " Nyt ", " Nz ", " Och ", " Oecd ", " Of ", 
           " Off ", " Og ", " On ", " Or ", " Over ", " Pcr ", " Per ", " Pnas ", " Ps: ", 
-          " R&d ", " Rna ", " Rté ", " S&p ", " Sae ", " Ssrn ", " Tci: ", " The ", " Then ", 
+          " R&d ", " Rna ", " Rté ", " S&p ", " Sae ", " Springerplus ", " Ssrn ", " Tci: ", " The ", " Then ", 
           " Till ", " To ", " Uk ", " Um ", " Und ", " Up ", " Usa ", " Van ", " Vir ", 
           " Von ", " Voor ", " When ", " With ", " Within ", " Woor ", " Y ", " Zu ", " Zum ", 
           " Zur ", /* The above will be automatically updated to alphabetical order */ 
