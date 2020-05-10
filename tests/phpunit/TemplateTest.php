@@ -1858,7 +1858,7 @@ T1 - This is the Title }}';
     $this->assertSame('1961', $expanded->get('year'));
     $this->assertSame('81', $expanded->get('volume'));
     $this->assertSame('1', $expanded->get('issue'));
-    $this->assertSame('43', $expanded->get('pages'));
+    $this->assertSame('43', $expanded->get('page'));
   }
   
   public function testJstorSICI() {
@@ -2040,7 +2040,7 @@ T1 - This is the Title }}';
     parse_plain_text_reference("ZooKeys 212 (1999), 032412332, 33 pages", $expanded, TRUE);
     $this->assertSame('cite journal', $expanded->wikiname());
     $this->assertSame('1999', $expanded->get('year'));
-    $this->assertSame('032412332', $expanded->get('pages'));
+    $this->assertSame('032412332', $expanded->get('page'));
   }
  
   public function testArxivMore12() {
