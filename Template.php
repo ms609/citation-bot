@@ -292,8 +292,8 @@ final class Template {
       ));
     }
     // And now everything else
-    if ($this->blank(['pages', 'page']) ||
-        preg_match('~no.+no|n/a|in press|none~', $this->get('pages') . $this->get('page')) ||
+    if ($this->blank(['pages', 'page', 'at']) ||
+        preg_match('~no.+no|n/a|in press|none~', $this->get('pages') . $this->get('page') . $this->get('at')) ||
         (preg_match('~^1[^0-9]~', $this->get('pages') . $this->get('page') . '-') && ($this->blank('year') || 2 > (date("Y") - $this->get('year')))) // It claims to be on page one
        ) {
       return TRUE;
@@ -842,6 +842,7 @@ final class Template {
                 && ($this->blank('year') || 2 > (date("Y") - $this->get('year'))) // Less than two years old
               )
         ) {
+            if ($param_name === "pages" && preg_match('~^\d{1,}$~', $value)) $param_name = 'page'; // No dashes, just numbers
             // One last check to see if old template had a specific page listed
             if ($all_page_values != '' &&
                 preg_match("~^[a-zA-Z]?[a-zA-Z]?(\d+)[a-zA-Z]?[a-zA-Z]?[-–—‒]+[a-zA-Z]?[a-zA-Z]?(\d+)[a-zA-Z]?[a-zA-Z]?$~u", $value, $newpagenos) && // Adding a range
