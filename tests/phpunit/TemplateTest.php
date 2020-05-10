@@ -2589,14 +2589,14 @@ T1 - This is the Title }}';
     $text = '{{Cite journal|pages=1234-9}}';
     $prepared = $this->prepare_citation($text);
     $prepared->add_if_new('pages', '1230-1240');
-    $this->assertSame('1234-9', $prepared->get('pages'));
+    $this->assertSame('1234–9', $prepared->get('pages'));
   }
  
    public function testAddPages2() {
     $text = '{{Cite journal|pages=1234-44}}';
     $prepared = $this->prepare_citation($text);
     $prepared->add_if_new('pages', '1230-1270');
-    $this->assertSame('1234-44', $prepared->get('pages'));
+    $this->assertSame('1234–44', $prepared->get('pages'));
   }
  
    public function testEdition() {
@@ -4112,7 +4112,7 @@ T1 - This is the Title }}';
   public function testConversionOfURL2B() {
     $text = "{{cite web|url=http://worldcat.org/title/edition/oclc/1234}}"; // Edition
     $template = $this->make_citation($text);
-    $this->assertTrue($template->get_identifiers_from_url());
+    $this->assertFalse($template->get_identifiers_from_url());
     $this->assertNull($template->get('oclc'));
     $this->assertSame('http://worldcat.org/title/edition/oclc/1234', $template->get('url'));
     $this->assertSame('cite web', $template->wikiname());           
