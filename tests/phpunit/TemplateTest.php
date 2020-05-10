@@ -2587,25 +2587,25 @@ T1 - This is the Title }}';
  
   public function testAddPages() {
     $text = '{{Cite journal|pages=1234-9}}';
-    $template = $this->prepare_citation($text);
+    $prepared = $this->prepare_citation($text);
     $prepared->add_if_new('pages', '1230-1240');
-    $this->assertSame('1234-9', $template->get('pages'));
+    $this->assertSame('1234-9', $prepared->get('pages'));
   }
  
    public function testAddPages2() {
     $text = '{{Cite journal|pages=1234-44}}';
-    $template = $this->prepare_citation($text);
+    $prepared = $this->prepare_citation($text);
     $prepared->add_if_new('pages', '1230-1270');
-    $this->assertSame('1234-44', $template->get('pages'));
+    $this->assertSame('1234-44', $prepared->get('pages'));
   }
  
    public function testEdition() {
     $text = '{{Cite journal}}';
-    $template = $this->prepare_citation($text);
+    $prepared = $this->prepare_citation($text);
     $this->assertTrue($prepared->add_if_new('edition', '1'));
-    $this->assertSame('1', $template->get('edition'));
+    $this->assertSame('1', $prepared->get('edition'));
     $this->assertFalse($prepared->add_if_new('edition', '2'));
-    $this->assertSame('1', $template->get('edition')); 
+    $this->assertSame('1', $prepared->get('edition')); 
   }
  
   public function testFixRubbishVolumeWithDoi() {
