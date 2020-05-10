@@ -1123,7 +1123,7 @@ final class TemplateTest extends testBaseClass {
     $this->assertSame('9999-9999', $expanded->get('issn')); // Fake to avoid cross-ref search
     $this->assertSame('2002', $this->getDateAndYear($expanded));
     $this->assertSame('152', $expanded->get('volume'));
-    $this->assertSame('215', $expanded->get('pages'));
+    $this->assertSame('215', $expanded->get('page'));
   }
 
   public function testSiciExtraction2() {
@@ -1133,7 +1133,7 @@ final class TemplateTest extends testBaseClass {
     $this->assertNull($expanded->get('issn'));
     $this->assertSame('2002', $this->getDateAndYear($expanded));
     $this->assertSame('152', $expanded->get('volume'));
-    $this->assertSame('215', $expanded->get('pages'));
+    $this->assertSame('215', $expanded->get('page'));
   }
  
   public function testUseISSN() {
@@ -1952,7 +1952,7 @@ T1 - This is the Title }}';
     parse_plain_text_reference("Phys. Rev. Lett. 117, 211101 (2016)", $expanded, TRUE);
     $this->assertSame('cite journal', $expanded->wikiname());
     $this->assertSame('2016', $expanded->get('year'));
-    $this->assertSame('211101', $expanded->get('pages'));
+    $this->assertSame('211101', $expanded->get('page'));
   }
     
   public function testArxivMore2() {
@@ -1961,7 +1961,7 @@ T1 - This is the Title }}';
     parse_plain_text_reference("Phys. Rev. B 79, 115202 (2009)", $expanded, TRUE);
     $this->assertSame('cite journal', $expanded->wikiname());
     $this->assertSame('2009', $expanded->get('year'));
-    $this->assertSame('115202', $expanded->get('pages'));
+    $this->assertSame('115202', $expanded->get('page'));
   }
     
   public function testArxivMore3() {
@@ -1979,7 +1979,7 @@ T1 - This is the Title }}';
     parse_plain_text_reference("Phys. Rev. B 78, 245315 (2008)", $expanded, TRUE);
     $this->assertSame('cite journal', $expanded->wikiname());
     $this->assertSame('2008', $expanded->get('year'));
-    $this->assertSame('245315', $expanded->get('pages'));
+    $this->assertSame('245315', $expanded->get('page'));
   }
     
   public function testArxivMore5() {
@@ -1988,7 +1988,7 @@ T1 - This is the Title }}';
     parse_plain_text_reference("Journal of Noses37:1234,2012", $expanded, TRUE);
     $this->assertSame('cite journal', $expanded->wikiname());
     $this->assertSame('2012', $expanded->get('year'));
-    $this->assertSame('1234', $expanded->get('pages'));
+    $this->assertSame('1234', $expanded->get('page'));
     $this->assertSame('37', $expanded->get('volume'));
   }
 
@@ -2014,7 +2014,7 @@ T1 - This is the Title }}';
     parse_plain_text_reference("Journal, 11, 62 (2001)", $expanded, TRUE);
     $this->assertSame('cite journal', $expanded->wikiname());
     $this->assertSame('2001', $expanded->get('year'));
-    $this->assertSame('62', $expanded->get('pages'));
+    $this->assertSame('62', $expanded->get('page'));
   }
     
   public function testArxivMore9() {
@@ -2023,7 +2023,7 @@ T1 - This is the Title }}';
     parse_plain_text_reference("Journal, 83:13232, 2018", $expanded, TRUE);
     $this->assertSame('cite journal', $expanded->wikiname());
     $this->assertSame('2018', $expanded->get('year'));
-    $this->assertSame('13232', $expanded->get('pages'));
+    $this->assertSame('13232', $expanded->get('page'));
   } 
   public function testArxivMore10() {
     $text = "{{cite arxiv}}";
@@ -2031,7 +2031,7 @@ T1 - This is the Title }}';
     parse_plain_text_reference("Journal 1 (4), 2311 (1980)", $expanded, TRUE);
     $this->assertSame('cite journal', $expanded->wikiname());
     $this->assertSame('1980', $expanded->get('year'));
-    $this->assertSame('2311', $expanded->get('pages'));
+    $this->assertSame('2311', $expanded->get('page'));
   }
     
   public function testArxivMore11() {
@@ -2051,7 +2051,7 @@ T1 - This is the Title }}';
     $this->assertSame('2018', $expanded->get('year'));
     $this->assertSame('Astronomy & Astrophysics', $expanded->get('journal'));
     $this->assertSame('A49', $expanded->get('volume'));
-    $this->assertSame('619', $expanded->get('pages'));
+    $this->assertSame('619', $expanded->get('page'));
   }
  
   public function testArxivMore13() {
