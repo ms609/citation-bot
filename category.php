@@ -114,5 +114,5 @@ if ($category) {
 } else {
   echo ("You must specify a category.  Try appending ?cat=Blah+blah to the URL, or -cat Category_name at the command line.");
 }
-html_echo(' # # #</pre></body></html>', "\n");
+html_echo(' # # #</pre><footer><a href="./" title="Use Citation Bot again">Another</a>?</footer></body></html>', "\n");
 exit(0);
