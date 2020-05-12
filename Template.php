@@ -4053,7 +4053,7 @@ final class Template {
           }
           // TODO a single constant for ALL URLs everywere in code for easy update and having them all in all places
           if ($this->blank(['url', 'chapter-url', 'chapterurl', 'conference-url', 'conferenceurl', 'contribution-url', 'contributionurl', 'entry-url', 'event-url', 'eventurl', 'section-url', 'sectionurl' . 'transcript-url', 'transcripturl' ])) {
-             if (preg_match("~^https?://web\.archive\.org/web/\d{14}/(https?://.*)$~", $url, $match)) {
+             if (preg_match("~^https?://web\.archive\.org/web/\d{14}/(https?://.*)$~", $this->get($param), $match)) {
                 quietly('report_modification', 'Extracting URL from archive');
                 $this->add_if_new('url', $match[1]);
              }
