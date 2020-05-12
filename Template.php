@@ -4055,7 +4055,8 @@ final class Template {
           if ($this->blank(['url', 'chapter-url', 'chapterurl', 'conference-url', 'conferenceurl', 'contribution-url', 'contributionurl', 'entry-url', 'event-url', 'eventurl', 'section-url', 'sectionurl' . 'transcript-url', 'transcripturl' ])) {
              if (preg_match("~^https?://web\.archive\.org/web/\d{14}/(https?://.*)$~", $url, $match)) {
                 quietly('report_modification', 'Extracting URL from archive');
-                $this->add_if_new('url', $match[1]); 
+                $this->add_if_new('url', $match[1]);
+             }
           }
           return;
  
