@@ -898,10 +898,7 @@ final class Template {
         if ($this->get('title') === 'none') return FALSE;
         if (strpos($this->get('title'), '[') !== FALSE) return FALSE;  // TITLE_LINK_ALIASES within the title
         $value = sanitize_string($value);
-        foreach (['url', 'article-url', 'chapter-url', 'chapterurl', 'conference-url', 'conferenceurl',
-                  'contribution-url', 'contributionurl', 'entry-url', 'event-url', 'eventurl', 'lay-url',
-                  'layurl', 'map-url', 'mapurl', 'section-url', 'sectionurl', 'transcript-url',
-                  'transcripturl'] as $exisiting)  {
+        foreach (ALL_URL_TYPES as $exisiting)  {
           if (str_i_same($value, $this->get($exisiting))) {
             return FALSE;
           }
@@ -2070,7 +2067,7 @@ final class Template {
         return FALSE;                                                       // @codeCoverageIgnore
       }
       // If we have a match, but other links exists, and we have nothing journal like, then require exact title match
-      if (!$this->blank(['doi','pmc','pmid','eprint','arxiv','url', 'chapter-url', 'chapterurl', 'contribution-url', 'contributionurl', 'section-url', 'sectionurl', 'transcript-url', 'transcripturl']) &&
+      if (!$this->blank(array_merge(['doi','pmc','pmid','eprint','arxiv'], ALL_URL_TYPES)) &&
           $this->blank(['issn', 'journal', 'volume', 'issue', 'number']) &&
           mb_strtolower($record->title[0]) !=  mb_strtolower($this->get_without_comments_and_placeholders('title'))) {  // Probably not a journal, trust zotero more
           report_info("Exact title match not found in database.");    // @codeCoverageIgnore
@@ -3460,7 +3457,7 @@ final class Template {
 
         case 'accessdate':
         case 'access-date':
-          if ($this->has($pmatch[1]) && $this->blank(['url', 'chapter-url', 'chapterurl', 'contribution-url', 'contributionurl', 'section-url', 'sectionurl', 'transcript-url', 'transcripturl']))
+          if ($this->has($pmatch[1]) && $this->blank(ALL_URL_TYPES))
           {
             $this->forget($pmatch[1]);
           }
@@ -4051,8 +4048,7 @@ final class Template {
                }
              }
           }
-          // TODO a single constant for ALL URLs everywere in code for easy update and having them all in all places
-          if ($this->blank(['url', 'chapter-url', 'chapterurl', 'conference-url', 'conferenceurl', 'contribution-url', 'contributionurl', 'entry-url', 'event-url', 'eventurl', 'section-url', 'sectionurl' . 'transcript-url', 'transcripturl' ])) {
+          if ($this->blank(ALL_URL_TYPES)) {
              if (preg_match("~^https?://web\.archive\.org/web/\d{14}/(https?://.*)$~", $this->get($param), $match)) {
                 quietly('report_modification', 'Extracting URL from archive');
                 $this->add_if_new('url', $match[1]);
@@ -4285,7 +4281,7 @@ final class Template {
           return;
           
         case 'via':   // Should just remove all 'via' with no url, but do not want to make people angry
-          if ($this->blank(['url', 'chapter-url', 'chapterurl', 'contribution-url', 'contributionurl'])) { // Include blank via
+          if ($this->blank(ALL_URL_TYPES)) { // Include blank via
             if (stripos($this->get('via'), 'PubMed') !== FALSE && ($this->has('pmc') || $this->has('pmid'))) {
               $this->forget('via');
             } elseif (stripos($this->get('via'), 'JSTOR') !== FALSE && $this->has('jstor')) {
@@ -5120,7 +5116,7 @@ final class Template {
   private function forgetter($par, $echo_forgetting) { // Do not call this function directly
    if (!$this->blank($par)) { // do not remove all this other stuff if blank
     if ($par == 'url') {
-      if ($this->blank(['chapter-url', 'chapterurl', 'contribution-url', 'contributionurl'])) {
+      if ($this->blank(ALL_URL_TYPES)) {
         $this->forgetter('archive-url', $echo_forgetting);
         $this->forgetter('archiveurl', $echo_forgetting);
         $this->forgetter('accessdate', $echo_forgetting);
@@ -5174,7 +5170,7 @@ final class Template {
     if ($par == 'chapter-url' || $par == 'chapterurl') {
        $this->forgetter('chapter-format', $echo_forgetting);
        $this->forgetter('chapter-url-access', $echo_forgetting);
-       if ($this->blank(['url', 'contribution-url', 'contributionurl'])) {
+       if ($this->blank(ALL_URL_TYPES)) {
         $this->forgetter('accessdate', $echo_forgetting);
         $this->forgetter('access-date', $echo_forgetting);
         $this->forgetter('archive-url', $echo_forgetting);
@@ -5209,7 +5205,7 @@ final class Template {
       }
     }
     if (strpos($par, 'url') !== FALSE && $this->wikiname() === 'cite web' &&
-        $this->blank(['url', 'chapter-url', 'chapterurl', 'conference-url', 'conferenceurl', 'contribution-url', 'contributionurl', 'entry-url', 'event-url', 'eventurl', 'section-url', 'sectionurl' . 'transcript-url', 'transcripturl' ])) {
+        $this->blank(ALL_URL_TYPES)) {
        if ($this->has('journal')) {
          $this->change_name_to('cite journal');
        } elseif ($this->has('newspaper')) {
