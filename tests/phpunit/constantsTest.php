@@ -195,7 +195,7 @@ final class constantsTest extends testBaseClass {
     $new = '';
     foreach($whitelist as $value) {
       $value = str_replace('#', '1', $value);
-      $text = '{{cite journal | ' . $value . ' = X }}';
+      $text = '{{cite journal | ' . $value . ' = Z123Z }}';
       $expanded = $this->process_citation($text);
       if (!str_i_same($text, $expanded->parsed_text())) {
          $orig .= $text;
