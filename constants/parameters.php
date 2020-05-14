@@ -331,10 +331,10 @@ const PARAMETER_LIST = array(
 
  const DEAD_PARAMETERS = array('PPPrefix', 'PPrefix', 'Ref', 'albumlink', 'albumtype',
      'author-format', 'author-name-separator', 'author-separator', 'authors#', 'began', 'call-sign',
-     'chapter-link', 'city', 'coauthor', 'cointerviewers', 'day', 'dead-url', 'deadurl',
-     'director', 'editor-format', 'editor-name-separator', 'editor-separator', 'editorformat',
+     'chapter-link', 'city', 'coauthor', 'day', 'dead-url', 'deadurl',
+     'editor-format', 'editor-name-separator', 'editor-separator', 'editorformat',
      'editors#', 'ended', 'in', 'interviewers', 'lay-summary', 'month', 'name-separator',
-     'notestitle', 'p-prefix', 'pp-prefix', 'program', 'publisherid', 'registration', 'separator',
-     'subscription', 'titleyear', 'author_separator', 'coauthors', 'urldate');
+     'p-prefix', 'pp-prefix', 'program', 'registration', 'separator',
+     'subscription', 'author_separator', 'coauthors', 'urldate');
 
     
