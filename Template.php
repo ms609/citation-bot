@@ -5441,7 +5441,7 @@ final class Template {
     if ($this->blank('issn')) return FALSE; // Nothing to use
     if (!$this->blank(WORK_ALIASES)) return FALSE; // Nothing to add
     if ($this->get('issn') === '9999-9999') return FALSE; // Fake test suite data
-    if (!preg_match('~$\d{4}.?\d{3}[0-9xX]^~u', $this->get('issn'))) return FALSE;
+    if (!preg_match('~^\d{4}.?\d{3}[0-9xX]$~u', $this->get('issn'))) return FALSE;
     $html = @file_get_contents('https://www.worldcat.org/issn/' . $this->get('issn'));
     if (preg_match('~<title>(.*)\(eJournal~', $html, $matches)) {
       if ($this->wikiname() === 'cite magazine') {
