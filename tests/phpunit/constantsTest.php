@@ -195,7 +195,7 @@ final class constantsTest extends testBaseClass {
       $value = str_replace('#', '1', $value);
       $text = '{{cite journal | ' . $value . ' = X }}';
       $expanded = $this->process_citation($text);
-      $this->assertSame($text, $expanded->parsed_text());
+      $this->assertSame(strtolower($text), strtolower($expanded->parsed_text()));
     }
   }
   
