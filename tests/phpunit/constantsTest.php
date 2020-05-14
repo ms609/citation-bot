@@ -198,8 +198,8 @@ final class constantsTest extends testBaseClass {
       $text = '{{cite journal | ' . $value . ' = X }}';
       $expanded = $this->process_citation($text);
       if (!str_i_same($text, $expanded->parsed_text())) {
-         $orig =. $text;
-         $new =. $expanded->parsed_text();
+         $orig .= $text;
+         $new .= $expanded->parsed_text();
       }
     }
     $this->assertSame($orig, $new);
