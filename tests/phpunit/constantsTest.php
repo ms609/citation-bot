@@ -196,6 +196,7 @@ final class constantsTest extends testBaseClass {
       $text = '{{cite journal | ' . $value . ' = X }}';
       $expanded = $this->process_citation($text);
       $this->assertSame($text, $expanded->parsed_text());
+    }
   }
   
   public function testDead() {
