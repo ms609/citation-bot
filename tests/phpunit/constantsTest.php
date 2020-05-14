@@ -189,6 +189,15 @@ final class constantsTest extends testBaseClass {
       $this->assertSame(FALSE, $we_failed);
   }
   
+  public function testWhiteListNotBlacklisted() {
+    $whitelist = array_merge(DEAD_PARAMETERS, PARAMETER_LIST);
+    foreach($whitelist as $value) {
+      $value = str_replace('#', '1', $value);
+      $text = '{{cite journal | ' . $value . ' = X }}';
+      $expanded = $this->process_citation($text);
+      $this->assertSame($text, $expanded->parsed_text());
+  }
+  
   public function testDead() {
     $overlap = array_intersect(DEAD_PARAMETERS, PARAMETER_LIST);
     if (empty($overlap)) {
