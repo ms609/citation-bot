@@ -198,6 +198,9 @@ final class constantsTest extends testBaseClass {
       if (stripos($value, '_bot')) $value = 'title'; // basically skip it
       $text = '{{citation | ' . $value . ' = Z123Z }}';
       $prepared = $this->prepare_citation($text); // Use prepare to avoid being "smart"
+      $text = str_replace(['authors1', 'editors1', 'publication-date', 'publicationdate', 'publication-place', 'publicationplace', 'chapter-url', 'chapterurl'],
+                          ['author1',  'editor1',  'date',             'date',            'location',          'location',         'url',         'url'       ], $text); // Stuff that get "fixed"
+      $text = str_replace([' | access-date =', ' | accessdate =', ' | doi-broken =', ' | doi-broken-date =', ' | doi-inactive-date ='], '', $text);
       if (!str_i_same($text, $prepared->parsed_text())) {
          $orig .= $text;
          $new .= $prepared->parsed_text();
