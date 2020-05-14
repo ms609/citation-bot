@@ -195,11 +195,12 @@ final class constantsTest extends testBaseClass {
     $new = '';
     foreach($whitelist as $value) {
       $value = str_replace('#', '1', $value);
-      $text = '{{cite journal | ' . $value . ' = Z123Z }}';
-      $expanded = $this->process_citation($text);
-      if (!str_i_same($text, $expanded->parsed_text())) {
+      if (stripos($value, '_bot')) $value = 'title'; // basically skip it
+      $text = '{{citation | ' . $value . ' = Z123Z }}';
+      $prepared = $this->prepare_citation($text); // Use prepare to avoid being "smart"
+      if (!str_i_same($text, $prepared->parsed_text())) {
          $orig .= $text;
-         $new .= $expanded->parsed_text();
+         $new .= $prepared->parsed_text();
       }
     }
     $this->assertSame($orig, $new);
