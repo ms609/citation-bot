@@ -329,7 +329,7 @@ const PARAMETER_LIST = array(
 'type', 'url', 'url-access', 'url-status', 'vauthors', 'veditors', 'version', 'via', 'volume',
 'website', 'work', 'year', 'zbl');
 
- const DEAD_PARAMETERS = array('PPPrefix', 'PPrefix', 'Ref', 'albumlink', 'albumtype', 'artist',
+ const DEAD_PARAMETERS = array('ppprefix', 'pprefix', 'ref', 'albumlink', 'albumtype',
      'author-format', 'author-name-separator', 'author-separator', 'authors#', 'began', 'call-sign',
      'chapter-link', 'city', 'coauthor', 'cointerviewers', 'day', 'dead-url', 'deadurl',
      'director', 'editor-format', 'editor-name-separator', 'editor-separator', 'editorformat',
