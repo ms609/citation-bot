@@ -3243,8 +3243,9 @@ final class Template {
   foreach ($this->param as $p) {
     ++$i;
 
-    if ((strlen($p->param) > 0) && !in_array(preg_replace('~\d+~', '#', $p->param), $parameter_list) && stripos($p->param, 'CITATION_BOT')===FALSE) {
-     
+    if ((strlen($p->param) > 0) &&
+        !(in_array(preg_replace('~\d+~', '#', $p->param), $parameter_list) || in_array($p->param, $parameter_list)) && // Some parameters have actual numbers in them
+        stripos($p->param, 'CITATION_BOT')===FALSE) {
       if (trim($p->val) === '') {
         if (stripos($p->param, 'DUPLICATE_') === 0) {
           report_forget("Dropping empty left-over duplicate parameter " . echoable($p->param) . " ");
