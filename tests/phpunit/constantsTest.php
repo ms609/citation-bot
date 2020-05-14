@@ -200,7 +200,7 @@ final class constantsTest extends testBaseClass {
       $prepared = $this->prepare_citation($text); // Use prepare to avoid being "smart"
       $text = str_replace(['authors1', 'editors1', 'publication-date', 'publicationdate', 'publication-place', 'publicationplace', 'chapter-url ', 'chapterurl '],  // Put spaces on end to not change chapter-url-access and such
                           ['author1',  'editor1',  'date',             'date',            'location',          'location',         'url ',         'url '       ], $text); // Stuff that get "fixed"
-      $text = str_replace([' | access-date = Z123Z ', ' | accessdate = Z123Z ', ' | doi-broken = Z123Z ', ' | doi-broken-date = Z123Z ', ' | doi-inactive-date = Z123Z '], '', $text);
+      $text = str_replace(['| access-date = Z123Z ', '| accessdate = Z123Z ', '| doi-broken = Z123Z ', '| doi-broken-date = Z123Z ', ' |doi-inactive-date = Z123Z '], '', $text);
       if (!str_i_same($text, $prepared->parsed_text())) {
          $orig .= $text;
          $new .= $prepared->parsed_text();
