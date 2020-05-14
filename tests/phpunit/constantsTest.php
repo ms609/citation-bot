@@ -191,12 +191,18 @@ final class constantsTest extends testBaseClass {
   
   public function testWhiteListNotBlacklisted() {
     $whitelist = array_merge(DEAD_PARAMETERS, PARAMETER_LIST);
+    $orig = '';
+    $new = '';
     foreach($whitelist as $value) {
       $value = str_replace('#', '1', $value);
       $text = '{{cite journal | ' . $value . ' = X }}';
       $expanded = $this->process_citation($text);
-      $this->assertSame(strtolower($text), strtolower($expanded->parsed_text()));
+      if (!str_i_same($text, $expanded->parsed_text())) {
+         $orig =. $text;
+         $new =. $expanded->parsed_text();
+      }
     }
+    $this->assertSame($orig, $new);
   }
   
   public function testDead() {
