@@ -1452,7 +1452,7 @@ final class TemplateTest extends testBaseClass {
     $text = "{{Cite web | url=https://www.google.com/books/edition/_/SjpSkzjIzfsC?hl=en}}";
     $expanded = $this->process_citation($text);
     $this->assertSame('cite book', $expanded->wikiname());
-    $this->assertSame('https://www.google.com/books/edition/_/SjpSkzjIzfsC?hl=en', $expanded->get('url')); // TODO - shorten???????
+    $this->assertSame('https://www.google.com/books/edition/_/SjpSkzjIzfsC', $expanded->get('url'));
     $this->assertSame('Wonderful Life: The Burgess Shale and the Nature of History',$expanded->get('title'));
     $this->assertSame('9780393307009', $expanded->get('isbn')   );
     $this->assertSame('Gould'        , $expanded->get('last1'));

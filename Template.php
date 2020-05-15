@@ -2800,8 +2800,12 @@ final class Template {
       $this->google_book_details($gid[1]);
       return TRUE;
     }
-    if (preg_match("~\.google\.com/books/edition/_/([a-zA-Z0-9]+)(?:\?.+|)$~", $url, $gid)) {
-      $this->google_book_details($gid[1]);
+    if (preg_match("~^(.+\.google\.com/books/edition/_/)([a-zA-Z0-9]+)(\?.+|)$~", $url, $gid)) {
+      if ($url_type && $gid[3] === '?hl=en') {
+        report_forget('Standardized Google Books URL');
+        $this->set($url_type, $gid[1] . $gid[2]);
+      }
+      $this->google_book_details($gid[2]);
       return TRUE;
     }
     return FALSE;
