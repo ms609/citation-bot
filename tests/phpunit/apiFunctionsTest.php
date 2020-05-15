@@ -202,7 +202,7 @@ final class apiFunctionsTest extends testBaseClass {
     $this->requires_dx(function() {
      $expanded = $this->make_citation('{{Cite journal}}');
      expand_doi_with_dx($expanded, '10.1392/BC1.0');
-     $this->assertSame('{{cite journal|year=2004|last1=Attanasio|first1=Piero|title=The use of Doi in eContent value chain|publisher=mEDRA}}', $expanded->parsed_text());
+     $this->assertSame('{{Cite journal|year = 2004|last1 = Attanasio|first1 = Piero|title = The use of Doi in eContent value chain|publisher = mEDRA}}', $expanded->parsed_text());
     });
   }    
 
