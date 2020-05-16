@@ -39,6 +39,12 @@ class ZoteroTest extends testBaseClass {
      $this->assertNull($expanded->get('doi'));
   }
  
+  public function testAccessDateAndDate() {
+     $text = "{{cite journal | archive-date=2020 |accessdate=2020|title=X|journal=X|date=2020|issue=X|volume=X|chapter=X|pages=X|last1=X|first1=X|last2=X|first2=X }}";
+     $template = $this->make_template($text);  // Does not do anything other than touch code
+     $this->assertFalse(expand_by_zotero($temlpate, NULL)); 
+  }
+ 
   public function testDropSomeProxies() {
     $text = "{{cite journal|doi=X|journal=X|title=X|last1=X|first1=X|volume=X|issue=X|year=X|url=proxy.libraries}}";
     $template = $this->make_citation($text);
