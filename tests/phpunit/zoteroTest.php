@@ -41,7 +41,7 @@ class ZoteroTest extends testBaseClass {
  
   public function testAccessDateAndDate() {
      $text = "{{cite journal | archive-date=2020 |accessdate=2020|title=X|journal=X|date=2020|issue=X|volume=X|chapter=X|pages=X|last1=X|first1=X|last2=X|first2=X }}";
-     $template = $this->make_template($text);  // Does not do anything other than touch code
+     $template = $this->make_citation($text);  // Does not do anything other than touch code
      $this->assertFalse(expand_by_zotero($temlpate, NULL)); 
   }
  
