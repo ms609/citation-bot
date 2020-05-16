@@ -197,7 +197,7 @@ function drop_urls_that_match_dois($templates) {
             $redirectedUrl_doi = url_simplify($redirectedUrl_doi);
             $url_short         = url_simplify($url);
             if ( preg_match('~^https?://.+/pii/?(S?\d{4}[^/]+)~i', $redirectedUrl_doi, $matches ) === 1 ) {
-                 $redirectedUrl_doi = $matches[1] ;  // Grab PII numbers
+                 $redirectedUrl_doi = $matches[1] ;  // @codeCoverageIgnore Grab PII numbers
             }
             if (stripos($url_short, $redirectedUrl_doi) !== FALSE ||
                 stripos($redirectedUrl_doi, $url_short) !== FALSE) {
