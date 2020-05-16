@@ -73,6 +73,15 @@ final class TemplateTest extends testBaseClass {
     $this->assertTrue($expanded->add_if_new('url', 'https://www.apple.com/'));
     $this->assertSame('https://www.apple.com/', $expanded->get('url'));  
   }
+
+   public function testTitleLink() {
+    $text = "{{Cite web|url=X}}";
+    $expanded = $this->make_citation($text);
+    $this->assertFalse($expanded->add_if_new('title-link', 'x'));
+    $text = "{{Cite web}}";
+    $expanded = $this->make_citation($text);
+    $this->assertTrue($expanded->add_if_new('title-link', 'x'));
+   }
  
   public function testJournal2Web() {
     $text = "{{Cite journal|journal=www.cnn.com}}";
