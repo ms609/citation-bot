@@ -281,7 +281,7 @@ final class PageTest extends testBaseClass {
   }
  
   public function testUrlReferencesWithText16() {
-      $text = "<ref>{{axriv|0806.0013}}</ref>";
+      $text = "<ref>{{arxiv|0806.0013}}</ref>";
       $page = $this->process_page($text);
       $this->assertTrue((boolean) stripos($page->parsed_text(), 'PhysRevD.78.081701'));
   }
