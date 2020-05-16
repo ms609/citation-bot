@@ -62,6 +62,16 @@ final class PageTest extends testBaseClass {
       $this->assertSame('Removed accessdate with no specified URL. | You can [[WP:UCB|use this bot]] yourself. [[WP:DBUG|Report bugs here]]. ', $page->edit_summary());
   }
  
+  public function testPageChangeSummary12() {
+      $page = $this->process_page('{{cite journal|chapter-url=http://www.facebook.com/|title=X|journal=Y}}');
+      $this->assertSame('Removed or converted URL. | You can [[WP:UCB|use this bot]] yourself. [[WP:DBUG|Report bugs here]]. ', $page->edit_summary());
+  }
+ 
+  public function testPageChangeSummary13() {
+      $page = $this->process_page('{{cite journal|notestitle=X}}');
+      $this->assertSame('Some additions/deletions were actually parameter name changes.  | You can [[WP:UCB|use this bot]] yourself. [[WP:DBUG|Report bugs here]]. ', $page->edit_summary());
+  }
+ 
   public function testBotRead() {
    $this->requires_secrets(function() {
       $page = new TestPage();
@@ -270,6 +280,18 @@ final class PageTest extends testBaseClass {
       $this->assertSame($text, $page->parsed_text());
   }
  
+  public function testUrlReferencesWithText16() {
+      $text = "<ref>{{axriv|0806.0013}}</ref>";
+      $page = $this->process_page($text);
+      $this->assertTrue((boolean) stripos($page->parsed_text(), 'PhysRevD.78.081701'));
+  }
+                        
+  public function testUrlReferencesWithText17() {
+      $text = "<ref>{{oclc|12345678901234567890}}</ref>";
+      $page = $this->process_page($text);
+      $this->assertSame($text, $page->parsed_text());
+  }                    
+                        
   public function testMagazine() {
       $text = '{{cite magazine|work=Yup}}';
       $page = $this->process_page($text);
