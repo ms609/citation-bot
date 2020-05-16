@@ -64,12 +64,12 @@ final class PageTest extends testBaseClass {
  
   public function testPageChangeSummary12() {
       $page = $this->process_page('{{cite journal|chapter-url=http://www.facebook.com/|title=X|journal=Y}}');
-      $this->assertSame('Removed or converted URL. | You can [[WP:UCB|use this bot]] yourself. [[WP:DBUG|Report bugs here]]. ', $page->edit_summary());
+      $this->assertSame('Add: url. Removed URL that duplicated unique identifier. Some additions/deletions were actually parameter name changes. | You can [[WP:UCB|use this bot]] yourself. [[WP:DBUG|Report bugs here]]. ', $page->edit_summary());
   }
  
   public function testPageChangeSummary13() {
       $page = $this->process_page('{{cite journal|notestitle=X}}');
-      $this->assertSame('Some additions/deletions were actually parameter name changes.  | You can [[WP:UCB|use this bot]] yourself. [[WP:DBUG|Report bugs here]]. ', $page->edit_summary());
+      $this->assertSame('Alter: template type. Add: chapter. Removed parameters. | You can [[WP:UCB|use this bot]] yourself. [[WP:DBUG|Report bugs here]]. ', $page->edit_summary());
   }
  
   public function testBotRead() {
