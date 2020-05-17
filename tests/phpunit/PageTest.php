@@ -23,6 +23,11 @@ final class PageTest extends testBaseClass {
       $this->assertFalse(strpos($page->parsed_text(), 'onlinelibrary.wiley.com')); // URL is gone
       $this->assertSame('Alter: template type. Add: pages, issue, volume, journal, year, title, doi, author pars. 1-2. Removed URL that duplicated unique identifier. Converted bare reference to cite template. Formatted [[WP:ENDASH|dashes]]. | You can [[WP:UCB|use this bot]] yourself. [[WP:DBUG|Report bugs here]]. ', $page->edit_summary());                
   }
+ 
+  public function testPageChangeSummary32() { // Mixture of droping chapter-url and moving URL to chapter-url.  Bogus template content
+      $page = $this->process_page('{{cite book|chapter=X|chapter-url= https://mathscinet.ams.org/mathscinet-getitem?mr=2320282|last1=X|last2=X|first1=X|first2=X |url= https://books.google.com/books?id=to0yXzq_EkQC&pg=PP154|title=Y|isbn=XXX|year=XXX}}');
+      $this->assertSame('Alter: chapter-url. Add: mr, date. Removed or converted URL. Removed parameters. Some additions/deletions were actually parameter name changes. | You can [[WP:UCB|use this bot]] yourself. [[WP:DBUG|Report bugs here]]. ', $page->edit_summary());                
+  }
 
   public function testPageChangeSummary4() {
       $page = $this->process_page('{{cite web|<!-- comment --> journal=Journal Name}}'); // Comment BEFORE parameter
