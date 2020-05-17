@@ -2670,7 +2670,7 @@ T1 - This is the Title }}';
     $text = '{{Cite journal}}';
     $prepared = $this->make_citation($text);
     $prepared->add_if_new('bibcode_nosearch', '1arxiv1');
-    $this->assertNull('$prepared->get('bibcode'));
+    $this->assertNull($prepared->get('bibcode'));
   }
  
    public function testEdition() {
