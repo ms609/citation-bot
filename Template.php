@@ -4137,7 +4137,7 @@ final class Template {
                  if ($this->has('via') && stripos($this->get('via'), 'wiki') !== FALSE) $this->forget('via');
                  if ($this->has('via') && stripos($this->get('via'), 'oclc') !== FALSE) $this->forget('via');
               } elseif (preg_match("~^https://([^\.\-\/]+)-([^\.\-\/]+)\.([^\.\-\/]+)\.idm\.oclc\.org/(.+)$~i", $this->get($param), $matches)) {
-                 $this->set($param, $matches[1] . '.' $matches[2] . '/' . $matches[3]);
+                 $this->set($param, $matches[1] . '.' . $matches[2] . '/' . $matches[3]);
                  report_info("Remove proxy from URL");
                  if ($this->has('via') && stripos($this->get('via'), 'wiki') !== FALSE) $this->forget('via');
                  if ($this->has('via') && stripos($this->get('via'), 'oclc') !== FALSE) $this->forget('via');
