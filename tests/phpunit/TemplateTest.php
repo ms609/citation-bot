@@ -3457,6 +3457,20 @@ T1 - This is the Title }}';
     $this->assertNull($template->get('website'));
    }
  
+   public function testTidy80() {
+    $text = "{{cite web|url=https://www-rocksbackpages-com.wikipedialibrary.idm.oclc.org/Library/Article/camel-over-the-moon }}";
+    $template = $this->make_citation($text);
+    $template->tidy_parameter('url');
+    $this->assertSame('https://www.rocksbackpages.com/Library/Article/camel-over-the-moon ', $template->get('url'));
+   }
+ 
+   public function testTidy81() {
+    $text = "{{cite web|url=https://rocksbackpages-com.wikipedialibrary.idm.oclc.org/Library/Article/camel-over-the-moon }}";
+    $template = $this->make_citation($text);
+    $template->tidy_parameter('url');
+    $this->assertSame('https://rocksbackpages.com/Library/Article/camel-over-the-moon ', $template->get('url'));
+   }
+ 
   public function testIncomplete() {
     $text = "{{cite book|url=http://perma-archives.org/pqd1234|isbn=Xxxx|title=xxx|issue=a|volume=x}}"; // Non-date website
     $template = $this->make_citation($text);
