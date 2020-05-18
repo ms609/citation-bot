@@ -1765,7 +1765,7 @@ T1 - This is the Title }}';
     $this->assertNull($expanded->get('author'));
     $this->assertNull($expanded->get('author1'));
     $this->assertNull($expanded->get('authors'));
-    $this->assertSame('http://books.google.com/books?id=p-IDAAAAMBAJ&lpg=PA195&dq=Popular%20Science%201930%20plane%20%22Popular%20Mechanics%22&pg=PA194#v=onepage', $expanded->get('url'));
+    $this->assertSame('https://books.google.com/books?id=p-IDAAAAMBAJ&lpg=PA195&dq=Popular%20Science%201930%20plane%20%22Popular%20Mechanics%22&pg=PA194#v=onepage', $expanded->get('url'));
   }
  
   public function testHearst2 () {
@@ -1777,7 +1777,7 @@ T1 - This is the Title }}';
     $this->assertNull($expanded->get('author'));
     $this->assertNull($expanded->get('author1'));
     $this->assertNull($expanded->get('authors'));
-    $this->assertSame('http://books.google.com/books?id=p-IDAAAAMBAJ&lpg=PA195&dq=Popular%20Science%201930%20plane%20%22Popular%20Mechanics%22&pg=PA194#v=snippet', $expanded->get('url'));
+    $this->assertSame('https://books.google.com/books?id=p-IDAAAAMBAJ&lpg=PA195&dq=Popular%20Science%201930%20plane%20%22Popular%20Mechanics%22&pg=PA194#v=snippet', $expanded->get('url'));
   }
        
   public function testInternalCaps() { // checks for title formating in tidy() not breaking things
@@ -1954,12 +1954,12 @@ T1 - This is the Title }}';
   }
  
   public function testChangeNameURL() {
-    $text = "{{cite web|url=x|chapter-url=X}}";
-    $template = $this->make_citation($text);
-    $template->change_name_to('cite book');
+    $text = "{{cite web|url=x|chapter-url=X|chapter=Z}}";
+    $template = $this->process_citation($text);
     $this->assertSame('cite book', $template->wikiname());
-    $this->assertSame('X', $template->get('chaper-url'));
-    $this->assertNull($template->get('url'));
+    $this->assertSame('Z', $template->get('chapter'));
+    $this->assertSame('X', $template->get('chapter-url'));
+    $this->assertNull($template->get('url')); // Remove since identical to chapter
   }
  
   public function testRenameToExisting() {
@@ -2642,21 +2642,21 @@ T1 - This is the Title }}';
     $text = '{{Cite journal|page=1234}}';
     $prepared = $this->prepare_citation($text);
     $prepared->add_if_new('pages', '1230-1270');
-    $this->assertSame('1234', $prepared->get('pages'));
+    $this->assertSame('1234', $prepared->get('page'));
   }
  
   public function testAddPages4() {
     $text = '{{Cite journal|page=1234}}';
     $prepared = $this->prepare_citation($text);
     $prepared->add_if_new('pages', '1230-70');
-    $this->assertSame('1234', $prepared->get('pages'));
+    $this->assertSame('1234', $prepared->get('page'));
   }
 
   public function testAddPages5() {
     $text = '{{Cite journal|page=1234}}';
     $prepared = $this->prepare_citation($text);
     $prepared->add_if_new('pages', '1230-9');
-    $this->assertSame('1234', $prepared->get('pages'));
+    $this->assertSame('1234', $prepared->get('page'));
   }
  
   public function testAddBibcode() {
