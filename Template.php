@@ -5213,7 +5213,7 @@ final class Template {
       }
     }
     if (strpos($par, 'url') !== FALSE && $this->wikiname() === 'cite web' &&
-        $this->blank(array_diff(ALL_URL_TYPES, array($par)0)) {
+        $this->blank(array_diff(ALL_URL_TYPES, array($par)))) {
        if ($this->has('journal')) {
          $this->change_name_to('cite journal');
        } elseif ($this->has('newspaper')) {
