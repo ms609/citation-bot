@@ -4130,12 +4130,12 @@ final class Template {
               }
           }
           // Wikipedia Proxy
-          if (stripos($this->get($param), 'wikipedialibrary') !== FALSE) {
-              if (preg_match("~^https://([^\.\-\/]+)-([^\.\-\/]+)-([^\.\-\/]+)\.wikipedialibrary\.idm\.oclc\.org/(.+)$~", $this->get($param), $matches)) {
+          if (stripos($this->get($param), 'idm.oclc.org') !== FALSE) {
+              if (preg_match("~^https://([^\.\-\/]+)-([^\.\-\/]+)-([^\.\-\/]+)\.([^\.\-\/]+)\.idm\.oclc\.org/(.+)$~", $this->get($param), $matches)) {
                  $this->set($param, $matches[1] . '.' $matches[2] . '.' . $matches[3] . '/' . $matches[4]);
                  report_info("Remove proxy from Wikipeadia URL");
                  if ($this->has('via') && stripos($this->get('via'), 'wiki') !== FALSE) $this->forget('via');
-              } elseif (preg_match("~^https://([^\.\-\/]+)-([^\.\-\/]+)\.wikipedialibrary\.idm\.oclc\.org/(.+)$~", $this->get($param), $matches)) {
+              } elseif (preg_match("~^https://([^\.\-\/]+)-([^\.\-\/]+)\.([^\.\-\/]+)\.idm\.oclc\.org/(.+)$~", $this->get($param), $matches)) {
                  $this->set($param, $matches[1] . '.' $matches[2] . '/' . $matches[3]);
                  report_info("Remove proxy from Wikipeadia URL");
                  if ($this->has('via') && stripos($this->get('via'), 'wiki') !== FALSE) $this->forget('via');
