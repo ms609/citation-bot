@@ -5124,7 +5124,7 @@ final class Template {
   private function forgetter($par, $echo_forgetting) { // Do not call this function directly
    if (!$this->blank($par)) { // do not remove all this other stuff if blank
     if ($par == 'url') {
-      if ($this->blank(ALL_URL_TYPES)) {
+      if ($this->blank(array_diff(ALL_URL_TYPES, array($par)))) {
         $this->forgetter('archive-url', $echo_forgetting);
         $this->forgetter('archiveurl', $echo_forgetting);
         $this->forgetter('accessdate', $echo_forgetting);
@@ -5178,7 +5178,7 @@ final class Template {
     if ($par == 'chapter-url' || $par == 'chapterurl') {
        $this->forgetter('chapter-format', $echo_forgetting);
        $this->forgetter('chapter-url-access', $echo_forgetting);
-       if ($this->blank(ALL_URL_TYPES)) {
+       if ($this->blank(array_diff(ALL_URL_TYPES, array($par)))) {
         $this->forgetter('accessdate', $echo_forgetting);
         $this->forgetter('access-date', $echo_forgetting);
         $this->forgetter('archive-url', $echo_forgetting);
@@ -5213,7 +5213,7 @@ final class Template {
       }
     }
     if (strpos($par, 'url') !== FALSE && $this->wikiname() === 'cite web' &&
-        $this->blank(ALL_URL_TYPES)) {
+        $this->blank(array_diff(ALL_URL_TYPES, array($par))) {
        if ($this->has('journal')) {
          $this->change_name_to('cite journal');
        } elseif ($this->has('newspaper')) {
