@@ -1765,6 +1765,19 @@ T1 - This is the Title }}';
     $this->assertNull($expanded->get('author'));
     $this->assertNull($expanded->get('author1'));
     $this->assertNull($expanded->get('authors'));
+    $this->assertSame('https://books.google.com/books?id=p-IDAAAAMBAJ&lpg=PA195&dq=Popular%20Science%201930%20plane%20%22Popular%20Mechanics%22&pg=PA194#v=onepage', $expanded->get('url'));
+  }
+ 
+  public function testHearst2 () {
+    $text = '{{cite book|url=http://books.google.com/books?id=p-IDAAAAMBAJ&lpg=PA195&dq=Popular%20Science%201930%20plane%20%22Popular%20Mechanics%22&pg=PA194#v=snippet&q&f=true}}';
+    $expanded = $this->process_citation($text);
+    $this->assertSame('Hearst Magazines', $expanded->get('publisher'));
+    $this->assertNull($expanded->get('last1'));
+    $this->assertNull($expanded->get('last'));
+    $this->assertNull($expanded->get('author'));
+    $this->assertNull($expanded->get('author1'));
+    $this->assertNull($expanded->get('authors'));
+    $this->assertSame('https://books.google.com/books?id=p-IDAAAAMBAJ&lpg=PA195&dq=Popular%20Science%201930%20plane%20%22Popular%20Mechanics%22&pg=PA194#v=snippet', $expanded->get('url'));
   }
        
   public function testInternalCaps() { // checks for title formating in tidy() not breaking things
@@ -1938,6 +1951,15 @@ T1 - This is the Title }}';
     $template->change_name_to('cite journal');
     $template->final_tidy();
     $this->assertSame('cite arxiv', $template->wikiname());
+  }
+ 
+  public function testChangeNameURL() {
+    $text = "{{cite web|url=x|chapter-url=X|chapter=Z}}";
+    $template = $this->process_citation($text);
+    $this->assertSame('cite book', $template->wikiname());
+    $this->assertSame('Z', $template->get('chapter'));
+    $this->assertSame('X', $template->get('chapter-url'));
+    $this->assertNull($template->get('url')); // Remove since identical to chapter
   }
  
   public function testRenameToExisting() {
@@ -2368,6 +2390,14 @@ T1 - This is the Title }}';
     $this->assertSame($text, $prepared->parsed_text());
   }
  
+  public function testTidyBookEdition() {
+    $text = '{{cite book|title=Joe Blow (First Edition)}}';
+    $template = $this->make_citation($text);
+    $template->tidy_parameter('title');
+    $this->assertSame('First', $template->get('edition'));
+    $this->assertSame('Joe Blow', $template->get('title'));
+  }
+ 
   public function testDoiValidation() {
     $text = '{{cite web|last=Daintith|first=John|title=tar|url=http://www.oxfordreference.com/view/10.1093/acref/9780199204632.001.0001/acref-9780199204632-e-4022|work=Oxford University Press|publisher=A dictionary of chemistry|edition=6th|accessdate=14 March 2013}}';
     $prepared = $this->prepare_citation($text);
@@ -2608,6 +2638,41 @@ T1 - This is the Title }}';
     $this->assertSame('1234–44', $prepared->get('pages'));
   }
  
+  public function testAddPages3() {
+    $text = '{{Cite journal|page=1234}}';
+    $prepared = $this->prepare_citation($text);
+    $prepared->add_if_new('pages', '1230-1270');
+    $this->assertSame('1234', $prepared->get('page'));
+  }
+ 
+  public function testAddPages4() {
+    $text = '{{Cite journal|page=1234}}';
+    $prepared = $this->prepare_citation($text);
+    $prepared->add_if_new('pages', '1230-70');
+    $this->assertSame('1234', $prepared->get('page'));
+  }
+
+  public function testAddPages5() {
+    $text = '{{Cite journal|page=1234}}';
+    $prepared = $this->prepare_citation($text);
+    $prepared->add_if_new('pages', '1230-9');
+    $this->assertSame('1234', $prepared->get('page'));
+  }
+ 
+  public function testAddBibcode() {
+    $text = '{{Cite journal|bibcode=1arxiv1}}';
+    $prepared = $this->make_citation($text);
+    $prepared->add_if_new('bibcode_nosearch', '1234567890123456789');
+    $this->assertSame('1234567890123456789', $prepared->get('bibcode'));
+  }
+ 
+  public function testAddBibcode2() {
+    $text = '{{Cite journal}}';
+    $prepared = $this->make_citation($text);
+    $prepared->add_if_new('bibcode_nosearch', '1arxiv1');
+    $this->assertNull($prepared->get('bibcode'));
+  }
+ 
    public function testEdition() {
     $text = '{{Cite journal}}';
     $prepared = $this->prepare_citation($text);
@@ -2678,6 +2743,10 @@ T1 - This is the Title }}';
  
   public function testAddArchiveDate() {
     $text = '{{Cite web|archive-url=https://web.archive.org/web/20190521084631/https://johncarlosbaez.wordpress.com/2018/09/20/patterns-that-eventually-fail/|archive-date=}}';
+    $template = $this->prepare_citation($text);
+    $this->assertSame('2019-05-21', $template->get('archive-date'));
+   
+    $text = '{{Cite web|archive-url=https://wayback.archive-it.org/4554/20190521084631/https://johncarlosbaez.wordpress.com/2018/09/20/patterns-that-eventually-fail/|archive-date=}}';
     $template = $this->prepare_citation($text);
     $this->assertSame('2019-05-21', $template->get('archive-date'));
   }
