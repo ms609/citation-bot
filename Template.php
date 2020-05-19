@@ -4156,6 +4156,7 @@ final class Template {
                 if (stripos($this->get('via'), 'wiki') !== FALSE ||
                     stripos($this->get('via'), 'oclc') !== FALSE) {
                   $this->forget('via');
+                }
               }
           }
           if (preg_match('~^https?://([^/]+)/~', $this->get($param), $matches)) { 
