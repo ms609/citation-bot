@@ -4141,7 +4141,7 @@ final class Template {
                  report_info("Remove proxy from URL");
                  if ($this->has('via') && stripos($this->get('via'), 'wiki') !== FALSE) $this->forget('via');
                  if ($this->has('via') && stripos($this->get('via'), 'oclc') !== FALSE) $this->forget('via');
-              } elseif (preg_match("~^https://[^\.\-\/]+\.idm\.oclc\.org/login\?q?url=(https?://[^\.\-\/]+\.[^\.\-\/]+\.[^\.\-\/]+/.*)$~i", $this->get($param), $matches)) {
+              } elseif (preg_match("~^https://(?:login.?|)[^\.\-\/]+\.idm\.oclc\.org/login\?q?url=(https?://[^\.\-\/]+\.[^\.\-\/]+\.[^\.\-\/]+/.*)$~i", $this->get($param), $matches)) {
                  $this->set($param, $matches[1]);
                  report_info("Remove proxy from URL");
                  if ($this->has('via') && stripos($this->get('via'), 'wiki') !== FALSE) $this->forget('via');
