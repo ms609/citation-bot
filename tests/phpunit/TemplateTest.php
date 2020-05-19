@@ -3489,7 +3489,7 @@ T1 - This is the Title }}';
     $text = "{{cite web|url=https://go.galegroup.com.ccclibrary.idm.oclc.org/X}}";
     $template = $this->make_citation($text);
     $template->tidy_parameter('url');
-    $this->assertSame('https://go.galegroup.com./X', $template->get('url'));
+    $this->assertSame('https://go.galegroup.com/X', $template->get('url'));
    }
  
    public function testTidy85() {
