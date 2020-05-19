@@ -3492,6 +3492,13 @@ T1 - This is the Title }}';
     $this->assertSame('https://go.galegroup.com./X', $template->get('url'));
    }
  
+   public function testTidy85() {
+    $text = "{{cite web|url=https://butte.idm.oclc.org/login?url=http://search.ebscohost.com%2fX}}";
+    $template = $this->make_citation($text);
+    $template->tidy_parameter('url');
+    $this->assertSame('http://search.ebscohost.com/X', $template->get('url'));
+   }
+ 
   public function testIncomplete() {
     $text = "{{cite book|url=http://perma-archives.org/pqd1234|isbn=Xxxx|title=xxx|issue=a|volume=x}}"; // Non-date website
     $template = $this->make_citation($text);
