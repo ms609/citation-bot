@@ -4147,6 +4147,9 @@ final class Template {
               } elseif (preg_match("~^https://(?:login.?|)[^\.\-\/]+\.idm\.oclc\.org/login\?q?url=(https?://[^\.\-\/]+\.[^\.\-\/]+\.[^\.\-\/]+/.*)$~i", $this->get($param), $matches)) {
                  $this->set($param, $matches[1]);
                  $oclc_found = TRUE;
+              } elseif (preg_match("~^https://(?:login.?|)[^\.\-\/]+\.idm\.oclc\.org/login\?q?url=(https?://[^\.\-\/\%]+\.[^\.\-\/\%]+\.[^\.\-\/\%]+)(\%2f.*)$~i", $this->get($param), $matches)) {
+                 $this->set($param, $matches[1] . urldecode($matches[2]));
+                 $oclc_found = TRUE;
               }
               if ($oclc_found) {
                 report_info("Remove OCLC proxy from URL");
