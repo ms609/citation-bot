@@ -4131,17 +4131,17 @@ final class Template {
           }
           // idm.oclc.org Proxy
           if (stripos($this->get($param), 'idm.oclc.org') !== FALSE) {
-              if (preg_match("~^https://([^\.\-\/]+)-([^\.\-\/]+)-([^\.\-\/]+)\.[^\.\-\/]+\.idm\.oclc\.org/(.+)$~i", $this->get($param), $matches)) {
+              if (preg_match("~^https://([^\.\-\/]+)-([^\.\-\/]+)-([^\.\-\/]+)\.[^\.\-\/]+(?:epl\.|)\.idm\.oclc\.org/(.+)$~i", $this->get($param), $matches)) {
                  $this->set($param, 'https://' . $matches[1] . '.' . $matches[2] . '.' . $matches[3] . '/' . $matches[4]);
                  report_info("Remove proxy from URL");
                  if ($this->has('via') && stripos($this->get('via'), 'wiki') !== FALSE) $this->forget('via');
                  if ($this->has('via') && stripos($this->get('via'), 'oclc') !== FALSE) $this->forget('via');
-              } elseif (preg_match("~^https://([^\.\-\/]+)-([^\.\-\/]+)\.[^\.\-\/]+\.idm\.oclc\.org/(.+)$~i", $this->get($param), $matches)) {
+              } elseif (preg_match("~^https://([^\.\-\/]+)-([^\.\-\/]+)\.[^\.\-\/]+(?:epl\.|)\.idm\.oclc\.org/(.+)$~i", $this->get($param), $matches)) {
                  $this->set($param, 'https://' . $matches[1] . '.' . $matches[2] . '/' . $matches[3]);
                  report_info("Remove proxy from URL");
                  if ($this->has('via') && stripos($this->get('via'), 'wiki') !== FALSE) $this->forget('via');
                  if ($this->has('via') && stripos($this->get('via'), 'oclc') !== FALSE) $this->forget('via');
-              } elseif (preg_match("~^https://(?:login.?|)[^\.\-\/]+\.idm\.oclc\.org/login\?q?url=(https?://[^\.\-\/]+\.[^\.\-\/]+\.[^\.\-\/]+/.*)$~i", $this->get($param), $matches)) {
+              } elseif (preg_match("~^https://(?:login.?|)[^\.\-\/]+(?:epl\.|)\.idm\.oclc\.org/login\?q?url=(https?://[^\.\-\/]+\.[^\.\-\/]+\.[^\.\-\/]+/.*)$~i", $this->get($param), $matches)) {
                  $this->set($param, $matches[1]);
                  report_info("Remove proxy from URL");
                  if ($this->has('via') && stripos($this->get('via'), 'wiki') !== FALSE) $this->forget('via');
