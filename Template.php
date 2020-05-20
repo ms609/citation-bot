@@ -4130,6 +4130,14 @@ final class Template {
                      $this->forget('via');
                    }
                  }
+              } elseif (preg_match("~^https?://(?:login\.|)(?:lib|)proxy\.[^\?\/]+\/login\?q?url=(http.+)$~", $this->get($param), $matches)) {
+                 if (strpos($matches[1], '/') === FALSE) {
+                    $this->set($param, . urldecode($matches[1]));
+                 } else {
+                    $this->set($param, . $matches[1]);
+                 }
+                 report_info("Remove proxy from URL");
+                 if ($this->has('via') && stripos($this->get('via'), 'library') !== FALSE) $this->forget('via');
               }
           }
           // idm.oclc.org Proxy
