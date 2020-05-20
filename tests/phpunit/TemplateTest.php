@@ -1456,6 +1456,12 @@ final class TemplateTest extends testBaseClass {
     $this->assertSame('17 September 1990'   , $expanded->get('date'));
     $this->assertNull($expanded->get('pages')); // Do not expand pages.  Google might give total pages to us
   }
+ 
+   public function testGoogleBooksExpansion2() {
+    $text = "{{Cite web | url=https://books.google.com/books?id=SjpSkzjIzfsC&printsec=frontcover#v=onepage}}";
+    $expanded = $this->process_citation($text);
+    $this->assertSame('https://books.google.com/books?id=SjpSkzjIzfsC', $expanded->get('url'));
+   }
 
   public function testGoogleBooksExpansionNEW() {
     $text = "{{Cite web | url=https://www.google.com/books/edition/_/SjpSkzjIzfsC?hl=en}}";
