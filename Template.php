@@ -4132,7 +4132,7 @@ final class Template {
                  }
               } elseif (preg_match("~^https?://(?:login\.|)(?:lib|)proxy\.[^\?\/]+\/login\?q?url=(http.+)$~", $this->get($param), $matches)) {
                  if (strpos($matches[1], '/') === FALSE) {
-                    $this->set($param, . urldecode($matches[1]));
+                    $this->set($param, urldecode($matches[1]));
                  } else {
                     $this->set($param, . $matches[1]);
                  }
