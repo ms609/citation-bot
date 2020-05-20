@@ -1319,7 +1319,7 @@ final class Template {
     }
     
     if (preg_match('~^https?://(?:www\.|)jstor\.org/stable/(?:pdf|pdfplus)/(.+)\.pdf$~i', $url, $matches) ||
-        preg_match('~^https?://(?:www\.|)jstor\.org/tc/accept\?origin=(?:\%2F|/)stable(?:\%2F|/)pdf(?:\%2F|/)(\d{3,})\.pdf$~', $url, $matches)) {
+        preg_match('~^https?://(?:www\.|)jstor\.org/tc/accept\?origin=(?:\%2F|/)stable(?:\%2F|/)pdf(?:\%2F|/)(\d{3,})\.pdf$~i', $url, $matches)) {
        if ($matches[1] == $this->get('jstor')) {
          if (is_null($url_sent)) {
            $this->forget($url_type);
@@ -4130,6 +4130,18 @@ final class Template {
                      $this->forget('via');
                    }
                  }
+              } elseif (preg_match("~^https?://(?:login\.|)(?:lib|)proxy\.[^\?\/]+\/login\?q?url=(https?://)(.+)$~", $this->get($param), $matches)) {
+                 if (strpos($matches[2], '/') === FALSE) {
+                    $this->set($param, $matches[1] . urldecode($matches[2]));
+                 } else {
+                    $this->set($param, $matches[1] . $matches[2]);
+                 }
+                 report_info("Remove proxy from URL");
+                 if ($this->has('via') && stripos($this->get('via'), 'library') !== FALSE) $this->forget('via');
+              } elseif (preg_match("~^https?://(?:login\.|)(?:lib|)proxy\.[^\?\/]+\/login\?q?url=(https?%3A%2F%2F.+)$~i", $this->get($param), $matches)) {
+                 $this->set($param, urldecode($matches[1]));
+                 report_info("Remove proxy from URL");
+                 if ($this->has('via') && stripos($this->get('via'), 'library') !== FALSE) $this->forget('via');
               }
           }
           // idm.oclc.org Proxy
@@ -4185,17 +4197,17 @@ final class Template {
               }
           }
           if (stripos($this->get($param), 'galegroup') !== FALSE) {
-            if (preg_match("~^(?:http.+url=|)https?://go.galegroup.com(%2fps.+)$~", $this->get($param), $matches)) {
+            if (preg_match("~^(?:http.+url=|)https?://go.galegroup.com(%2fps.+)$~i", $this->get($param), $matches)) {
                  $this->set($param, 'https://go.galegroup.com' . urldecode($matches[1]));
                  report_info("Remove proxy from Gale URL");
                  if ($this->has('via') && stripos($this->get('via'), 'library') !== FALSE) $this->forget('via');
                  if ($this->has('via') && stripos($this->get('via'), 'gale') === FALSE) $this->forget('via');
-            } elseif (preg_match("~^http.+url=https?://go\.galegroup\.com/(.+)$~", $this->get($param), $matches)) {
+            } elseif (preg_match("~^http.+url=https?://go\.galegroup\.com/(.+)$~i", $this->get($param), $matches)) {
                  $this->set($param, 'https://go.galegroup.com/' . $matches[1]);
                  report_info("Remove proxy from Gale URL");
                  if ($this->has('via') && stripos($this->get('via'), 'library') !== FALSE) $this->forget('via');
                  if ($this->has('via') && stripos($this->get('via'), 'gale') === FALSE) $this->forget('via');
-            } elseif (preg_match("~^(?:http.+url=|)https?://link.galegroup.com(%2fps.+)$~", $this->get($param), $matches)) {
+            } elseif (preg_match("~^(?:http.+url=|)https?://link.galegroup.com(%2fps.+)$~i", $this->get($param), $matches)) {
                  $this->set($param, 'https://link.galegroup.com' . urldecode($matches[1]));
                  report_info("Remove proxy from Gale URL");
                  if ($this->has('via') && stripos($this->get('via'), 'library') !== FALSE) $this->forget('via');
