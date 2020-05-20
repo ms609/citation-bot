@@ -3507,10 +3507,10 @@ T1 - This is the Title }}';
    }
  
    public function testTidy87() {
-    $text = "{{cite web|url=https://login.libproxy.union.edu/login?url=https://go.gale.com/ps/retrieve.do?tabID=T002&resultListType=RESULT_LIST&searchResultsType=SingleTab&searchType=BasicSearchForm&currentPosition=1&docId=GALE%7CA493733315&docType=Article&sort=Relevance&contentSegment=ZGPP-MOD1&prodId=ITOF&contentSet=GALE%7CA493733315&searchId=R2&userGroupName=nysl_ca_unionc&inPS=true
+    $text = "{{cite web|url=https://login.libproxy.union.edu/login?url=https://go.gale.com/ps/retrieve.do?tabID=T002&resultListType=RESULT_LIST&searchResultsType=SingleTab&searchType=BasicSearchForm&currentPosition=1&docId=GALE%7CA493733315&docType=Article&sort=Relevance&contentSegment=ZGPP-MOD1&prodId=ITOF&contentSet=GALE%7CA493733315&searchId=R2&userGroupName=nysl_ca_unionc&inPS=true}}";
     $template = $this->make_citation($text);
     $template->tidy_parameter('url');
-    $this->assertSame('https://go.gale.com/ps/retrieve.do?tabID=T002&resultListType=RESULT_LIST&searchResultsType=SingleTab&searchType=BasicSearchForm&currentPosition=1&docId=GALE%7CA493733315&docType=Article&sort=Relevance&contentSegment=ZGPP-MOD1&prodId=ITOF&contentSet=GALE%7CA493733315&searchId=R2&userGroupName=nysl_ca_unionc&inPS=true', $template->get('url'));
+    $this->assertSame("https://go.gale.com/ps/retrieve.do?tabID=T002&resultListType=RESULT_LIST&searchResultsType=SingleTab&searchType=BasicSearchForm&currentPosition=1&docId=GALE%7CA493733315&docType=Article&sort=Relevance&contentSegment=ZGPP-MOD1&prodId=ITOF&contentSet=GALE%7CA493733315&searchId=R2&userGroupName=nysl_ca_unionc&inPS=true", $template->get('url'));
    }
    
   public function testIncomplete() {
