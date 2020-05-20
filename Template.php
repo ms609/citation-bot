@@ -4135,14 +4135,20 @@ final class Template {
           // idm.oclc.org Proxy
           if (stripos($this->get($param), 'idm.oclc.org') !== FALSE) {
               $oclc_found = FALSE;
-              if (preg_match("~^https://([^\.\-\/]+)-([^\.\-\/]+)-([^\.\-\/]+)\.[^\.\-\/]+(?:\.epl|)\.idm\.oclc\.org/(.+)$~i", $this->get($param), $matches)) {
+              if (preg_match("~^https://([^\.\-\/]+)-([^\.\-\/]+)-([^\.\-\/]+)\.[^\.\-\/]+\.idm\.oclc\.org/(.+)$~i", $this->get($param), $matches)) {
                  $this->set($param, 'https://' . $matches[1] . '.' . $matches[2] . '.' . $matches[3] . '/' . $matches[4]);
                  $oclc_found = TRUE;
-              } elseif (preg_match("~^https://([^\.\-\/]+)-([^\.\-\/]+)\.[^\.\-\/]+(?:\.epl|)\.idm\.oclc\.org/(.+)$~i", $this->get($param), $matches)) {
+              } elseif (preg_match("~^https://([^\.\-\/]+)\.([^\.\-\/]+)\.com.[^\.\-\/]+\.idm\.oclc\.org/(.+)$~i", $this->get($param), $matches)) {
+                 $this->set($param, 'https://' . $matches[1] . '.' . $matches[2] . '.com/' . $matches[3]);
+                 $oclc_found = TRUE;
+              } elseif (preg_match("~^https://([^\.\-\/]+)-([^\.\-\/]+)\.[^\.\-\/]+\.idm\.oclc\.org/(.+)$~i", $this->get($param), $matches)) {
                  $this->set($param, 'https://' . $matches[1] . '.' . $matches[2] . '/' . $matches[3]);
                  $oclc_found = TRUE;
-              } elseif (preg_match("~^https://(?:login.?|)[^\.\-\/]+(?:\.epl|)\.idm\.oclc\.org/login\?q?url=(https?://[^\.\-\/]+\.[^\.\-\/]+\.[^\.\-\/]+/.*)$~i", $this->get($param), $matches)) {
+              } elseif (preg_match("~^https://(?:login.?|)[^\.\-\/]+\.idm\.oclc\.org/login\?q?url=(https?://[^\.\-\/]+\.[^\.\-\/]+\.[^\.\-\/]+/.*)$~i", $this->get($param), $matches)) {
                  $this->set($param, $matches[1]);
+                 $oclc_found = TRUE;
+              } elseif (preg_match("~^https://(?:login.?|)[^\.\-\/]+\.idm\.oclc\.org/login\?q?url=(https?://[^\.\-\/\%]+\.[^\.\-\/\%]+\.[^\.\-\/\%]+)(\%2f.*)$~i", $this->get($param), $matches)) {
+                 $this->set($param, $matches[1] . urldecode($matches[2]));
                  $oclc_found = TRUE;
               }
               if ($oclc_found) {
