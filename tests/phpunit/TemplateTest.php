@@ -3499,6 +3499,20 @@ T1 - This is the Title }}';
     $this->assertSame('http://search.ebscohost.com/X', $template->get('url'));
    }
  
+   public function testTidy86() {
+    $text = "{{cite web|url=https://login.libproxy.union.edu/login?qurl=https://go.gale.com%2fps%2fretrieve.do%3ftabID%3dT002%26resultListType%3dRESULT_LIST%26searchResultsType%3dSingleTab%26searchType%3dBasicSearchForm%26currentPosition%3d1%26docId%3dGALE%257CA493733315%26docType%3dArticle%26sort%3dRelevance%26contentSegment%3dZGPP-MOD1%26prodId%3dITOF%26contentSet%3dGALE%257CA493733315%26searchId%3dR2%26userGroupName%3dnysl_ca_unionc%26inPS%3dtrue}}";
+    $template = $this->make_citation($text);
+    $template->tidy_parameter('url');
+    $this->assertSame('https://go.gale.com/ps/retrieve.do?tabID=T002&resultListType=RESULT_LIST&searchResultsType=SingleTab&searchType=BasicSearchForm&currentPosition=1&docId=GALE%7CA493733315&docType=Article&sort=Relevance&contentSegment=ZGPP-MOD1&prodId=ITOF&contentSet=GALE%7CA493733315&searchId=R2&userGroupName=nysl_ca_unionc&inPS=true', $template->get('url'));
+   }
+ 
+   public function testTidy87() {
+    $text = "{{cite web|url=https://login.libproxy.union.edu/login?url=https://go.gale.com/ps/retrieve.do?tabID=T002&resultListType=RESULT_LIST&searchResultsType=SingleTab&searchType=BasicSearchForm&currentPosition=1&docId=GALE%7CA493733315&docType=Article&sort=Relevance&contentSegment=ZGPP-MOD1&prodId=ITOF&contentSet=GALE%7CA493733315&searchId=R2&userGroupName=nysl_ca_unionc&inPS=true
+    $template = $this->make_citation($text);
+    $template->tidy_parameter('url');
+    $this->assertSame('https://go.gale.com/ps/retrieve.do?tabID=T002&resultListType=RESULT_LIST&searchResultsType=SingleTab&searchType=BasicSearchForm&currentPosition=1&docId=GALE%7CA493733315&docType=Article&sort=Relevance&contentSegment=ZGPP-MOD1&prodId=ITOF&contentSet=GALE%7CA493733315&searchId=R2&userGroupName=nysl_ca_unionc&inPS=true', $template->get('url'));
+   }
+   
   public function testIncomplete() {
     $text = "{{cite book|url=http://perma-archives.org/pqd1234|isbn=Xxxx|title=xxx|issue=a|volume=x}}"; // Non-date website
     $template = $this->make_citation($text);
