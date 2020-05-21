@@ -936,6 +936,7 @@ final class Template {
         if (substr($value, 0, 8) == '10.5555/') return FALSE ; // Test DOI prefix.  NEVER will work
         if (stripos($value, '10.1093/law:epil') === 0) return FALSE; // Those do not work
         if (stripos($value, '10.1093/oi/authority') === 0) return FALSE; // Those do not work
+        if (stripos($value, '10.1111/j.1572-0241') === 0) return FALSE; // TODO - Nature dropped the ball
         if (preg_match(REGEXP_DOI, $value, $match)) {
           if ($this->blank($param_name)) {
             if ($this->wikiname() === 'cite arxiv') $this->change_name_to('cite journal');
@@ -3621,6 +3622,12 @@ final class Template {
               if ($httpCode == 200) $this->add_if_new('url', $test_url);
             }
             return;
+          }
+          if (stripos($doi, '10.1111/j.1572-0241') === 0) { // TODO - Nature dropped the ball
+            if (!$this->blank(['pmid', 'pmc', 'jstor'])) {
+               $this->forget('doi');
+               return;
+            }
           }
           $this->set($param, sanitize_doi($doi));
           if (!preg_match(REGEXP_DOI_ISSN_ONLY, $doi)) $this->change_name_to('cite journal', FALSE);
