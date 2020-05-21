@@ -3623,7 +3623,7 @@ final class Template {
             }
             return;
           }
-          if (stripos($value, '10.1111/j.1572-0241') === 0) { // TODO - Nature dropped the ball
+          if (stripos($doi, '10.1111/j.1572-0241') === 0) { // TODO - Nature dropped the ball
             if (!$this->blank(['pmid', 'pmc', 'jstor'])) {
                $this->forget('doi');
                return;
