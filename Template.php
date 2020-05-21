@@ -2792,6 +2792,9 @@ final class Template {
         $hash = '#v=snippet';
       }
       $url = $url . $hash;
+      if (preg_match('~^(https://books\.google\.com/books\?id=[^#^&]+)(?:&printsec=frontcover|)(?:#v=onepage|v=snippet|)$~', $url, $matches)) {
+         $url = $matches[1]; // URL Just wants the landing page
+      }
       if ($url != $orig_book_url && $url_type && (strpos($url_type, 'url') !== FALSE)) {
         if ($removed_redundant > 1) { // http:// is counted as 1 parameter
           report_forget(echoable($removed_parts));
