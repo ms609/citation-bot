@@ -335,6 +335,6 @@ const PARAMETER_LIST = array(
      'editor-format', 'editor-name-separator', 'editor-separator', 'editorformat',
      'editors#', 'ended', 'in', 'interviewers', 'lay-summary', 'month', 'name-separator',
      'p-prefix', 'pp-prefix', 'program', 'registration', 'separator',
-     'subscription', 'author_separator', 'coauthors', 'urldate');
+     'subscription', 'author_separator', 'coauthors', 'urldate', 'isbn2');
 
     
