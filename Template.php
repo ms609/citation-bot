@@ -2566,6 +2566,7 @@ final class Template {
         if (!$oa_url) return 'nothing';
 
         if (stripos($oa_url, 'semanticscholar.org') !== FALSE) return 'semanticscholar';  // Limit semanticscholar to licenced only - use API call instead
+        if (stripos($oa_url, 'citeseerx') !== FALSE) return 'citeseerx'; //is currently blacklisted due to copyright concerns
         if ($this->get('url')) {
             if ($this->get('url') !== $oa_url) $this->get_identifiers_from_url($oa_url);  // Maybe we can get a new link type
             return 'have url';
@@ -2631,7 +2632,6 @@ final class Template {
             ($this->has('osti') && $this->get('osti-access') === 'free') ||
             ($this->has('ol') && $this->get('ol-access') === 'free')
            ) return 'have free'; // do not add url if have OA already
-        if (stripos($oa_url, 'citeseerx.ist.psu.edu') !== FALSE) return 'citeseerx'; //is currently blacklisted due to copyright concerns
         $this->add_if_new('url', $oa_url);  // Will check for PMCs etc hidden in URL
         if ($this->has('url')) {  // The above line might have eaten the URL and upgraded it
           $headers_test = @get_headers($this->get('url'), 1);
