@@ -15,7 +15,7 @@ final class TemplateTest extends testBaseClass {
   }
 
  
-   public function testLotsOfFloaters() {
+   public function testLotsOfFloaters2() {
     $text_in = "{{citation|url = http://www.matem.unam.mx/urrutia/online_papers/Akiyama-Article.pdf}}";
     $prepared = $this->process_citation($text_in);
     $this->assertSame('huh', $prepared->parsed_text());
