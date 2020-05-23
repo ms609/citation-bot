@@ -2119,7 +2119,7 @@ final class Template {
       }
       
       if (isset($record->doi) && $this->get_without_comments_and_placeholders('doi')) {
-        if (!str_i_same($record->doi, $this->get_without_comments_and_placeholders('doi')) return FALSE; // New DOI does not match
+        if (!str_i_same($record->doi, $this->get_without_comments_and_placeholders('doi'))) return FALSE; // New DOI does not match
       }
       
       if (strpos((string) $record->bibcode, 'book') !== FALSE) {  // Found a book.  Need special code
