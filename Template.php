@@ -2118,6 +2118,10 @@ final class Template {
         return FALSE;                                             // @codeCoverageIgnore
       }
       
+      if (isset($record->doi) && $this->get_without_comments_and_placeholders('doi')) {
+        if (!str_i_same((string) $record->doi[0], $this->get_without_comments_and_placeholders('doi'))) return FALSE; // New DOI does not match
+      }
+      
       if (strpos((string) $record->bibcode, 'book') !== FALSE) {  // Found a book.  Need special code
          $this->add_if_new('bibcode_nosearch', (string) $record->bibcode);
          return $this->expand_by_adsabs();
