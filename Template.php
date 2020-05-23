@@ -3565,6 +3565,10 @@ final class Template {
                   }
               }
             }
+            if (!$pmatch[2] && $pmatch[1] === 'last' && !$this->blank(['first', 'first1'])) {
+              $this->raname('last', 'last1');
+              if ($this->set('first')) $this->raname('first', 'first1');
+            }
             return;
 
         case 'bibcode':
