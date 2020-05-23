@@ -2631,7 +2631,7 @@ final class Template {
             ($this->has('osti') && $this->get('osti-access') === 'free') ||
             ($this->has('ol') && $this->get('ol-access') === 'free')
            ) return 'have free'; // do not add url if have OA already
-        if (stripos($oa_url, 'citeseerx.ist.psu.edu') !== FALSE) return 'citeseerx'; //is currently blacklisted due to copyright concerns
+        if (stripos($oa_url, 'citeseerx') !== FALSE) return 'citeseerx'; //is currently blacklisted due to copyright concerns
         $this->add_if_new('url', $oa_url);  // Will check for PMCs etc hidden in URL
         if ($this->has('url')) {  // The above line might have eaten the URL and upgraded it
           $headers_test = @get_headers($this->get('url'), 1);
