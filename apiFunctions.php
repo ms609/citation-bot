@@ -532,6 +532,7 @@ function expand_by_doi($template, $force = FALSE) {
 }
 
 function query_crossref($doi) {
+  if (strpos($doi, '10.2307') === 1) return FALSE; // jstor API is better
   $doi = str_replace(DOI_URL_DECODE, DOI_URL_ENCODE, $doi);
   $url = "https://www.crossref.org/openurl/?pid=" . CROSSREFUSERNAME . "&id=doi:$doi&noredirect=TRUE";
   for ($i = 0; $i < 2; $i++) {
