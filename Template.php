@@ -1003,6 +1003,7 @@ final class Template {
       case 'pmid':
         if ($value === "0" ) return FALSE;  // Got PMID of zero once from pubmed
         if ($this->blank($param_name)) {
+          if ($this->wikiname() === 'cite web') $this->change_name_to('cite journal');
           $this->add($param_name, sanitize_string($value));
           $this->expand_by_pubmed($this->blank('pmc') || $this->blank('doi'));  //Force = TRUE if missing DOI or PMC
           $this->get_doi_from_crossref();
