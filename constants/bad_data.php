@@ -88,7 +88,8 @@ const CANONICAL_PUBLISHER_URLS = array ('elsevier.com', 'springer.com', 'science
 const PROXY_HOSTS_TO_DROP = array('proxy.libraries', 'proxy.lib.', '.ezproxy.', '-ezproxy.', '/ezproxy.',
                                   '.serialssolutions.com', '.ebscohost.com', 'linkinghub.elsevier.com',
                                   'doi.library.ubc.ca', 'ingentaconnect.com/content', 'sciencedirect.com/science?_ob',
-                                  'informaworld.com/smpp', '.search.serialssolutions.com', 'doi.apa.org'); // Drop these if there is a valid DOI
+                                  'informaworld.com/smpp', '.search.serialssolutions.com', 'doi.apa.org',
+                                  'onlinelibrary.wiley.com/resolve/openurl'); // Drop these if there is a valid DOI
 
 const WEB_NEWSPAPERS = array('bbc news', 'bbc', 'news.bbc.co.uk', 'bbc sports', 'bbc sport', 'www.bbc.co.uk');
 
