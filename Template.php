@@ -1112,6 +1112,7 @@ final class Template {
       case 'zbl': case 'location': case 'jstor': case 'oclc': case 'mr': case 'titlelink': case 'lccn':
       case 'ssrn': case 'ol': case 'jfm': case 'osti': case 'biorxiv': case 'citeseerx': case 'hdl':
       case (boolean) preg_match('~author(?:\d{1,}|)-link~', $param_name):
+        if ($param_name === "citeseerx") echo (2)/(0);
         if ($this->blank($param_name)) {
           return $this->add($param_name, sanitize_string($value));
         }
