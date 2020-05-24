@@ -372,7 +372,7 @@ final class TemplateTest extends testBaseClass {
   public function testNoLoseUrl() {
      $text = '{{cite book |last=Söderström |first=Ulrika |date=2015 |title=Sandby Borg: Unveiling the Sandby Borg Massacre |url= |location= |publisher=Kalmar lāns museum |isbn=9789198236620 |language=Swedish }}';
      $expanded = $this->process_page($text);
-     $this->assertSame(str_replace($text, $expanded->parsed_text());
+     $this->assertSame($text, $expanded->parsed_text());
   }
  
   public function testDotsAndVia() {
