@@ -3570,7 +3570,7 @@ final class Template {
                   }
               }
             }
-            if (!$pmatch[2] && $pmatch[1] === 'last' && !$this->blank(['first', 'first1'])) {
+            if (!$pmatch[2] && $pmatch[1] === 'last' && !$this->blank(['first1', 'first2', 'last2'])) {
               $this->rename('last', 'last1');
               if ($this->blank('first1')) $this->rename('first', 'first1');
             }
