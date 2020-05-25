@@ -14,7 +14,6 @@ const PIPE_PLACEHOLDER = '# # # CITATION_BOT_PLACEHOLDER_PIPE # # #';
 const TEMP_PLACEHOLDER = "# # # CITATION_BOT_PLACEHOLDER_TEMPORARY %s # # #";
 const WIKI_ROOT = "https://en.wikipedia.org/w/index.php";
 const API_ROOT = "https://en.wikipedia.org/w/api.php"; // wiki's API endpoint
-const BRACESPACE = "!BOTCODE-spaceBeforeTheBrace";
 
 //Common replacements
 const HTML_DECODE = array("[", "]", "<", ">", " ");
