@@ -2397,8 +2397,6 @@ T1 - This is the Title }}';
     $text = '{{cite web|url=ebookcentral-proquest-com.libproxy.berkeley.edu/lib/claremont/detail.action?docID=123456#goto_toc}}';
     $prepared = $this->prepare_citation($text);
     $this->assertSame('https://public.ebookcentral.proquest.com/choice/publicfullrecord.aspx?p=123456', $prepared->get('url'));
-      
-
   }
 
   public function testTrimGoogleStuff() {
