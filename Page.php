@@ -361,9 +361,12 @@ class Page {
     $all_templates = NULL; // remove circular memory reference that makes garbage collection hard (all templates have an array of all templates)
 
     // we often just fix Journal caps, so must be case sensitive compare
-    $caps_ok = array('lccn', 'isbn', 'doi'); // Avoid minor edits - gadget API will make these changes, since it does not check return code
-    return strcmp(str_ireplace($caps_ok, $caps_ok, $this->text),
-                  str_ireplace($caps_ok, $caps_ok, $this->start_text)) != 0;
+    // Avoid minor edits - gadget API will make these changes, since it does not check return code
+    $caps_ok = array('lccn', 'isbn', 'doi');
+    $last_first_in  = array(' last=',  ' last =',  '|last=',  '|last =',  ' first=',  ' first =',  '|first=',  '|first =');
+    $last_first_out = array(' last1=', ' last1 =', '|last1=', '|last1 =', ' first1=', ' first1 =', '|first1=', '|first1 =');
+    return strcmp(str_replace($last_first_in, $last_first_out, str_ireplace($caps_ok, $caps_ok, $this->text)),
+                  str_replace($last_first_in, $last_first_out,str_ireplace($caps_ok, $caps_ok, $this->start_text))) != 0;
   }
 
   public function edit_summary() {
