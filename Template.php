@@ -1515,7 +1515,7 @@ final class Template {
           $this->forget($url_type);
         } 
         return $this->add_if_new('pmc', $match[1] . $match[2]);
-      } elseif (preg_match("~^https?://(?:www\.|)europepmc\.org/articles?/pmc(\d{4,})~i", $url, $match)  ||
+      } elseif (preg_match("~^https?://(?:www\.|)europepmc\.org/articles?/pmc/?(\d{4,})~i", $url, $match)  ||
                 preg_match("~^https?://(?:www\.|)europepmc\.org/scanned\?pageindex=(?:\d+)\&articles=pmc(\d{4,})~i", $url, $match)) {
         if ($this->wikiname() === 'cite web') $this->change_name_to('cite journal');
         if ($this->blank('pmc')) {
