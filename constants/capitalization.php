@@ -88,7 +88,7 @@ const UCFIRST_JOURNAL_ACRONYMS = array(/* The following will be automatically up
           " ECrypt ", " Ecrypt ", " Efsa ", " EGEMs ", " Egems ", " EJournal ", " Ejournal ", " Eksperimental'naia I Klinicheskaia ",
           " ELife ", " Elife ", " ELS ", " Els ", " Embo J ", " Embo J. ", " Embo Journal ", 
           " Embo Rep ", " Embo Rep. ", " Embo Reports ", " ENeuro ", " Eneuro ",
-	  " ENeurologicalSci ",  " ENeurologicalsci ", " Eneurologicalsci ", " engrXiv ", 
+	  " ENeurologicalSci ",  " ENeurologicalsci ", " Eneurologicalsci ", " EngrXiv ", 
           " EPlasty ", " Eplasty ", " EPrint ", " Eprint ", " EPrints ", " Eprints ", " EPub ", 
           " Epub ", " EPub) ", " Escholarship ", " EVolo ", " Evolo ", " EWeek ", " Eweek ", 
           " Faseb J ", " Faseb J. ", " Febs J ", " Febs J. ", " Febs Journal ", " Fizika Goreniya I Vzryva ", " Föreningen I Stockholm ", 
