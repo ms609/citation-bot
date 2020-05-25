@@ -12,7 +12,7 @@
  */
 
 require_once("Page.php");
-require_once("Parameter.php")
+require_once("Parameter.php");
 
 final class Template {
   const PLACEHOLDER_TEXT = '# # # CITATION_BOT_PLACEHOLDER_TEMPLATE %s # # #';
@@ -4130,9 +4130,11 @@ final class Template {
           } elseif (preg_match("~^(https?://news\.google\.com/newspapers\S+)&sjid=[^#&=]+(&\S+)$~i", $this->get($param), $matches)) {
               $this->set($param, $matches[1] . $matches[2]);
           } elseif (preg_match("~^https?://.*ebookcentral.proquest.+/lib/.+docID(?:%3D|=)(\d+)(|#.*|&.*)$~i", $this->get($param), $matches)) {
-              if ($matches[2] === '#' || $matches[2] === '#goto_toc' || $matches[2] === '&' | $matches[2] === '&query=') {
+              if ($matches[2] === '#' || $matches[2] === '#goto_toc' || $matches[2] === '&' ||
+                  $matches[2] === '&query=' || $matches[2] === '&query=#') {
                 $matches[2] = '';
               }
+              if (substr($matches[2], -1) === '#') $matches[2] = substr($matches[2], 0, -1); // Sometime just a trailing # after & part
               quietly('report_modification', "Unmasking Proquest eBook URL.");
               $this->set($param, 'https://public.ebookcentral.proquest.com/choice/publicfullrecord.aspx?p=' . $matches[1] . $matches[2]);
           }
