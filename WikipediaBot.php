@@ -422,7 +422,7 @@ class WikipediaBot {
   
   static public function is_valid_user($user) {
     if (!$user) return FALSE;
-    $response = @file_get_contents('https://en.wikipedia.org/w/api.php?action=query&usprop=blockinfo&format=json&list=users&ususers=' . urlencode(str_replace(" ", "_", $user)));
+    $response = @file_get_contents(API_ROOT . '?action=query&usprop=blockinfo&format=json&list=users&ususers=' . urlencode(str_replace(" ", "_", $user)));
     if ($response == FALSE) return FALSE;
     $response = str_replace(array("\r", "\n"), '', $response);  // paranoid
     if (strpos($response, '"invalid"') !== FALSE) return FALSE; // IP Address and similar stuff
@@ -451,14 +451,14 @@ class WikipediaBot {
      try {
       $user_token = new Token($_SESSION['access_key'], $_SESSION['access_secret']);
       // Validate the credentials.
-      $conf = new ClientConfig('https://en.wikipedia.org/w/index.php?title=Special:OAuth');
+      $conf = new ClientConfig(WIKI_ROOT . '?title=Special:OAuth');
       $conf->setConsumer(new Consumer(getenv('PHP_WP_OAUTH_CONSUMER'), getenv('PHP_WP_OAUTH_SECRET')));
       $client = new Client($conf);
       $ident = $client->identify( $user_token );
       if (!$this->is_valid_user($ident->username)) {
         @session_unset();
         @session_destroy();
-        report_error('User is either invalid or blocked on en.wikipedia.org');
+        report_error('User is either invalid or blocked on ' . WIKI_ROOT);
       }
       $this->the_user = $ident->username;
       $_SESSION['citation_bot_user_id'] = $this->the_user;
