@@ -44,7 +44,7 @@ if ($page == '') report_error('Nothing requested');
 if (strlen($page) >256) report_error('Possible invalid page');
 $edit_summary_end = "| Activated by " . $api->get_the_user() . " | All pages linked from [[$page]] | via #UCB_webform_linked";
 
-$url = 'https://en.wikipedia.org/w/api.php?action=parse&prop=links&format=json&page=' . $page;
+$url = API_ROOT . '?action=parse&prop=links&format=json&page=' . $page;
 $json = @file_get_contents($url);
 if ($json === FALSE) {
   report_error(' Error getting page list');
