@@ -4131,7 +4131,7 @@ final class Template {
               $this->set($param, $matches[1] . $matches[2]);
           } elseif (preg_match("~^https?://.*ebookcentral.proquest.+/lib/.+docID(?:%3D|=)(\d+)(|#.*|&.*)$~i", $this->get($param), $matches)) {
               if ($matches[2] === '#' || $matches[2] === '#goto_toc' || $matches[2] === '&' ||
-                  $matches[2] === '&query=' || $matches[2] === '&query=#') {
+                  $matches[2] === '&query=' || $matches[2] === '&query=#' || preg_match('~^&tm=\d*$~', $matches[2])) {
                 $matches[2] = '';
               }
               if (substr($matches[2], -1) === '#') $matches[2] = substr($matches[2], 0, -1); // Sometime just a trailing # after & part
