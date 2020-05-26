@@ -77,7 +77,7 @@ const CANONICAL_PUBLISHER_URLS = array ('elsevier.com', 'springer.com', 'science
                                 'annualreviews.org', 'aip.scitation.org', 'psyche.entclub.org', 'thelancet.com',
                                 'amjbot.org', 'gsapubs.org', 'jwildlifedis.org', 'msptm.org', 'nrcresearchpress.',
                                 'fundacionmenteclara.org.ar', 'iopscience.iop.org', 'bmj.com/cgi/pmidlookup',
-                                'sciencemag.org', 'doi.apa.org',
+                                'sciencemag.org', 'doi.apa.org', 'psycnet.apa.org',
                                 //  Below are journal search engines
                                 '.serialssolutions.com', '.ebscohost.com',
                                 //  Below are proxys
@@ -89,7 +89,7 @@ const PROXY_HOSTS_TO_DROP = array('proxy.libraries', 'proxy.lib.', '.ezproxy.', 
                                   '.serialssolutions.com', '.ebscohost.com', 'linkinghub.elsevier.com',
                                   'doi.library.ubc.ca', 'ingentaconnect.com/content', 'sciencedirect.com/science?_ob',
                                   'informaworld.com/smpp', '.search.serialssolutions.com', 'doi.apa.org',
-                                  'onlinelibrary.wiley.com/resolve/openurl', 'findarticles.com'); // Drop these if there is a valid DOI
+                                  'onlinelibrary.wiley.com/resolve/openurl', 'findarticles.com', 'psycnet.apa.org'); // Drop these if there is a valid DOI
 
 const WEB_NEWSPAPERS = array('bbc news', 'bbc', 'news.bbc.co.uk', 'bbc sports', 'bbc sport', 'www.bbc.co.uk');
 
