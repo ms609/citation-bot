@@ -249,13 +249,7 @@ function titles_simple($inTitle) {
         // Strip trailing periods
         $inTitle = trim(rtrim($inTitle, '.'));
         // greek
-        $inTitle = str_replace(array('α', 'β', 'γ', 'δ', 'ϵ', 'ζ', 'η', 'θ', 'ι', 'κ', 'λ', 'μ', 'ν',
-                                     'ξ', 'π', 'ρ'. 'σ', 'ς', 'τ', 'υ', 'φ', 'χ', 'ψ', 'ω'),
-                               array('alpha', 'beta', 'gamma', 'delta', 'epsilon', 'zeta', 'eta', 'theta',
-                                     'iota', 'kapa', 'lamda', 'mu', 'nu', 'xi', 'pi', 'rho', 'sigma', 'sigma',
-                                     'tau',  'upsilon', 'phi', 'chi', 'psi', 'omega'), $inTitle);
-        $inTitle = str_replace(array('Γ', 'Δ', 'Θ', 'Λ', 'Ξ', 'Π', 'Σ', 'Φ', 'Ψ', 'Ω'),
-                               array('gamma', 'delta', 'theta', 'lambda', 'xi', 'pi', 'sigma', 'phi', 'psi', 'omega'), $inTitle);
+        $inTitle = strip_diacritics($inTitle);
         $inTitle = str_remove_irrelevant_bits($inTitle);
         return $inTitle;
 }
