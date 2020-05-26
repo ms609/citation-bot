@@ -183,12 +183,12 @@ function str_remove_irrelevant_bits($str) {
   $str = str_replace(array('.', ',', ';', ': '), array(' ', ' ', ' ', ' '), $str);
   $str = str_replace(array(':', '-', '&mdash;', '&ndash;', '—', '–'), array('', '', '', '', '', ''), $str);
   $str = str_replace(array('   ', '  '), array(' ', ' '), $str);
-  $str = str_replace("′","'", $str);
   $str = trim($str);
   $str = str_ireplace(array('Proceedings', 'Proceeding', 'Symposium', 'Huffington ', 'the Journal of ', 'nytimes.com'   , '& '  , '(Clifton, N.J.)'),
                       array('Proc',        'Proc',       'Sym',       'Huff ',       'journal of ',     'New York Times', 'and ', ''), $str);
   $str = str_ireplace(array('<sub>', '<sup>', '<i>', '<b>', '</sub>', '</sup>', '</i>', '</b>'), '', $str);
   $str = straighten_quotes($str);
+  $str = str_replace("′","'", $str);
   $str = preg_replace('~\(Incorporating .*\)$~i', '', $str);  // Physical Chemistry Chemical Physics (Incorporating Faraday Transactions)
   $str = preg_replace('~\d+ Volume Set$~i', '', $str);  // Ullmann's Encyclopedia of Industrial Chemistry, 40 Volume Set
   $str = preg_replace('~^Retracted~i', '', $str);
