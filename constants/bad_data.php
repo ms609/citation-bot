@@ -77,7 +77,7 @@ const CANONICAL_PUBLISHER_URLS = array ('elsevier.com', 'springer.com', 'science
                                 'annualreviews.org', 'aip.scitation.org', 'psyche.entclub.org', 'thelancet.com',
                                 'amjbot.org', 'gsapubs.org', 'jwildlifedis.org', 'msptm.org', 'nrcresearchpress.',
                                 'fundacionmenteclara.org.ar', 'iopscience.iop.org', 'bmj.com/cgi/pmidlookup',
-                                'sciencemag.org', 'doi.apa.org', 'psycnet.apa.org', 'journals.upress.ufl.edu'
+                                'sciencemag.org', 'doi.apa.org', 'psycnet.apa.org', 'journals.upress.ufl.edu',
                                 //  Below are journal search engines
                                 '.serialssolutions.com', '.ebscohost.com',
                                 //  Below are proxys
