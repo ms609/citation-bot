@@ -135,11 +135,11 @@ function wikify_external_text($title) {
   }
 
   $title = sanitize_string($title);
-  
+
   for ($i = 0; $i < count($replacement); $i++) {
     $title = str_replace($placeholder[$i], $replacement[$i], $title);
   }
-  return($title); 
+  return $title; 
 }
 
 function restore_italics ($text) {
