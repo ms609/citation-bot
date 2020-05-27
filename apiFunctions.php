@@ -464,6 +464,7 @@ function expand_by_doi($template, $force = FALSE) {
         }
         if ($bad_data) {
           report_warning("CrossRef title did not match existing title: doi:" . doi_link($doi));
+          echo "\n OLD:" . trim($template->get('title')) ."\n NEW:" . trim($crossRef->article_title);
           return FALSE;
         }
       }
