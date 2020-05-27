@@ -218,12 +218,16 @@ function titles_are_dissimilar($inTitle, $dbTitle) {
         // old data both decoded and not
         $inTitle2 = titles_simple($inTitle);
         $inTitle = titles_simple(mb_convert_encoding(html_entity_decode($inTitle), "HTML-ENTITIES", 'UTF-8'));
+   echo "\n\n 1\n" . trim($dbTitle) . "\n" . trim($inTitle2) . "\n" . trim($dbTitle) . "\n";
         $dbTitle = strip_diacritics($dbTitle);
         $inTitle = strip_diacritics($inTitle);
         $inTitle2 = strip_diacritics($inTitle2);
+   echo "\n\n 2n" . trim($dbTitle) . "\n" . trim($inTitle2) . "\n" . trim($dbTitle) . "\n";
         $inTitle = str_replace(" ","", $inTitle);
         $inTitle2 = str_replace(" ","", $inTitle2);
         $dbTitle = str_replace(" ","", $dbTitle);
+   echo "\n\n 3n" . trim($dbTitle) . "\n" . trim($inTitle2) . "\n" . trim($dbTitle) . "\n";
+  echo "\n" . levenshtein($inTitle, $dbTitle)  . "\n" . levenshtein($inTitle2, $dbTitle) . "\n" . similar_text($inTitle, $dbTitle) / strlen($inTitle) . "\n" . similar_text($inTitle2, $dbTitle) / strlen($inTitle2) . "\n";
         return ((strlen($inTitle) > 254 || strlen($dbTitle) > 254)
               ? (strlen($inTitle) != strlen($dbTitle)
                 || similar_text($inTitle, $dbTitle) / strlen($inTitle) < 0.98)
