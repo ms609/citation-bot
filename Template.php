@@ -2028,6 +2028,7 @@ final class Template {
     if ($this->has('bibcode') && !$this->incomplete() && $this->has('doi')) {
       return FALSE; // Don't waste a query
     }
+    if (stripos($bibcode, 'CITATION') !== false) return FALSE;
 
     if ($this->api_has_used('adsabs', equivalent_parameters('bibcode'))) {
       report_info("No need to repeat AdsAbs search for " . bibcode_link($this->get('bibcode'))); // @codeCoverageIgnore
