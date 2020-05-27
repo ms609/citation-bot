@@ -224,6 +224,13 @@ function titles_are_dissimilar($inTitle, $dbTitle) {
         $inTitle = str_replace(" ","", $inTitle);
         $inTitle2 = str_replace(" ","", $inTitle2);
         $dbTitle = str_replace(" ","", $dbTitle);
+        $inTitle = str_replace("&nbsp","", $inTitle);
+        $inTitle2 = str_replace("&nbsp","", $inTitle2);
+        $dbTitle = str_replace("&nbsp","", $dbTitle);
+  // This will convert &delta into delta
+        $inTitle = str_replace("&","", $inTitle);
+        $inTitle2 = str_replace("&","", $inTitle2);
+        $dbTitle = str_replace("&","", $dbTitle);
         return ((strlen($inTitle) > 254 || strlen($dbTitle) > 254)
               ? (strlen($inTitle) != strlen($dbTitle)
                 || similar_text($inTitle, $dbTitle) / strlen($inTitle) < 0.98)
