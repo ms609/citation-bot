@@ -221,6 +221,9 @@ function titles_are_dissimilar($inTitle, $dbTitle) {
         $dbTitle = strip_diacritics($dbTitle);
         $inTitle = strip_diacritics($inTitle);
         $inTitle2 = strip_diacritics($inTitle2);
+        $inTitle = str_replace(" ","", $inTitle);
+        $inTitle2 = str_replace(" ","", $inTitle2);
+        $dbTitle = str_replace(" ","", $dbTitle);
         return ((strlen($inTitle) > 254 || strlen($dbTitle) > 254)
               ? (strlen($inTitle) != strlen($dbTitle)
                 || similar_text($inTitle, $dbTitle) / strlen($inTitle) < 0.98)
