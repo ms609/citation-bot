@@ -90,7 +90,9 @@ class WikipediaBot {
       ]);
   }
   
-  public function fetch($params, $method, $first_try = TRUE) {
+  public function fetch($params, $method, $depth = 1) {
+    if ($depth !== 1) sleep(5);
+    if ($depth > 5) return FALSE;
     if (!$this->reset_curl()) {
       // @codeCoverageIgnoreStart
       curl_close($this->ch);
@@ -125,7 +127,7 @@ class WikipediaBot {
             sleep(5);
             unset($data);
             unset($ret);
-            return $this->fetch($params, $method, FALSE);
+            return $this->fetch($params, $method, $depth+1);
             // @codeCoverageIgnoreEnd
           }
           return ($this->ret_okay($ret)) ? $ret : FALSE;
@@ -152,7 +154,7 @@ class WikipediaBot {
             sleep(5);
             unset($data);
             unset($ret);
-            return $this->fetch($params, $method, FALSE);
+            return $this->fetch($params, $method, $depth+1);
             // @codeCoverageIgnoreEnd
           }
           return ($this->ret_okay($ret)) ? $ret : FALSE;
