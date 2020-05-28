@@ -1860,7 +1860,7 @@ final class Template {
           sleep(3);                                     // @codeCoverageIgnore
           $xml = @simplexml_load_file($url);            // @codeCoverageIgnore
         }
-        if ($xml === FALSE) {
+        if ($xml === FALSE || !is_object($xml->DocSum->Item)) {
           report_inline("Unable to query pubmed.");     // @codeCoverageIgnore
           return;                                       // @codeCoverageIgnore
         }
