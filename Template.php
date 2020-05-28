@@ -1865,6 +1865,14 @@ final class Template {
           return;                                       // @codeCoverageIgnore
         }
         $Items = $xml->DocSum->Item;
+        if (is_array($Items)) {
+          echo "\n is array\n";
+        } elseif (is_object($Items)) {
+          echo "\n is object\n";
+        } else {
+          echo "\n is neither:";
+          print_r($Items);
+        }
         foreach ($Items as $item) {
            if ($item['Name'] == 'Title') {
                $new_title = str_replace(array("[", "]"), "", (string) $item);
