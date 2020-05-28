@@ -124,7 +124,6 @@ class WikipediaBot {
           set_time_limit(120);
           if (isset($ret->error->code) && $ret->error->code == 'assertuserfailed') {
             // @codeCoverageIgnoreStart
-            sleep(5);
             unset($data);
             unset($ret);
             return $this->fetch($params, $method, $depth+1);
