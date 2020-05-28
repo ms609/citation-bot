@@ -1860,19 +1860,11 @@ final class Template {
           sleep(3);                                     // @codeCoverageIgnore
           $xml = @simplexml_load_file($url);            // @codeCoverageIgnore
         }
-        if ($xml === FALSE) {
+        if ($xml === FALSE || !is_object($xml->DocSum->Item)) {
           report_inline("Unable to query pubmed.");     // @codeCoverageIgnore
           return;                                       // @codeCoverageIgnore
         }
         $Items = $xml->DocSum->Item;
-        if (is_array($Items)) {
-          echo "\n is array\n";
-        } elseif (is_object($Items)) {
-          echo "\n is object\n";
-        } else {
-          echo "\n is neither:";
-          print_r($Items);
-        }
         foreach ($Items as $item) {
            if ($item['Name'] == 'Title') {
                $new_title = str_replace(array("[", "]"), "", (string) $item);
