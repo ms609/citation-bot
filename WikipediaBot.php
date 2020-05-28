@@ -122,7 +122,7 @@ class WikipediaBot {
           }
           $ret = @json_decode($data);
           set_time_limit(120);
-          if ($first_try && isset($ret->error->code) && $ret->error->code == 'assertuserfailed') {
+          if (isset($ret->error->code) && $ret->error->code == 'assertuserfailed') {
             // @codeCoverageIgnoreStart
             sleep(5);
             unset($data);
@@ -145,7 +145,7 @@ class WikipediaBot {
           }
           $ret = @json_decode($data);
           set_time_limit(120);    
-          if ($first_try && isset($ret->error) && (
+          if (isset($ret->error) && (
             (string) $ret->error->code === 'assertuserfailed' ||
             stripos((string) $response->error->info, 'The database has been automatically locked') !== FALSE ||
             stripos((string) $response->error->info, 'abusefilter-warning-predatory') !== FALSE)
