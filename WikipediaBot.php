@@ -61,9 +61,7 @@ class WikipediaBot {
       } else {
         report_minor_error('API call failed: ' . (string) $response->error->info);
       }
-      sleep(5);
       return FALSE;
-      // TODO - the bot actually dies during multi-page runs because of this.  Should retry somehow.  Down in weeds though. 
       // @codeCoverageIgnoreEnd
     }
     return TRUE;
