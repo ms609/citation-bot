@@ -92,7 +92,7 @@ class WikipediaBot {
       ]);
   }
   
-  public function fetch($params, $method = 'GET') {
+  public function fetch($params, $method = 'GET', $first_try = TRUE) {
     if (!$this->reset_curl()) {
       // @codeCoverageIgnoreStart
       curl_close($this->ch);
@@ -122,11 +122,12 @@ class WikipediaBot {
           }
           $ret = @json_decode($data);
           set_time_limit(120);
-          if (isset($ret->error->code) && $ret->error->code == 'assertuserfailed') {
+          if ($first_try && isset($ret->error->code) && $ret->error->code == 'assertuserfailed') {
             // @codeCoverageIgnoreStart
+            sleep(5);
             unset($data);
             unset($ret);
-            return $this->fetch($params, $method);
+            return $this->fetch($params, $method, FALSE);
             // @codeCoverageIgnoreEnd
           }
           return ($this->ret_okay($ret)) ? $ret : FALSE;
@@ -144,11 +145,16 @@ class WikipediaBot {
           }
           $ret = @json_decode($data);
           set_time_limit(120);    
-          if (isset($ret->error) && $ret->error->code == 'assertuserfailed') {
+          if ($first_try && isset($ret->error) && (
+            (string) $ret->error->code === 'assertuserfailed' ||
+            stripos((string) $response->error->info, 'The database has been automatically locked') !== FALSE ||
+            stripos((string) $response->error->info, 'abusefilter-warning-predatory') !== FALSE)
+          ) {
             // @codeCoverageIgnoreStart
+            sleep(5);
             unset($data);
             unset($ret);
-            return $this->fetch($params, $method);
+            return $this->fetch($params, $method, FALSE);
             // @codeCoverageIgnoreEnd
           }
           return ($this->ret_okay($ret)) ? $ret : FALSE;
