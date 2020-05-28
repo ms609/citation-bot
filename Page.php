@@ -28,7 +28,7 @@ class Page {
     if ($api->get_the_user() === 'AManWithNoPlan') $is_a_man_with_no_plan = TRUE; // Special debug options enabled
 
     $details = $api->fetch(['action'=>'query', 
-      'prop'=>'info', 'titles'=> $title, 'curtimestamp'=>'true']);
+      'prop'=>'info', 'titles'=> $title, 'curtimestamp'=>'true'], 'GET');
     
     if (!isset($details->query)) {
       // @codeCoverageIgnoreStart

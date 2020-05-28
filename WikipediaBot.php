@@ -35,7 +35,7 @@ class WikipediaBot {
   }
   
   public function username() {
-    $userQuery = $this->fetch(['action' => 'query', 'meta' => 'userinfo']);
+    $userQuery = $this->fetch(['action' => 'query', 'meta' => 'userinfo'], 'GET');
     return (isset($userQuery->query->userinfo->name)) ? $userQuery->query->userinfo->name : FALSE;
   }
   
@@ -92,7 +92,7 @@ class WikipediaBot {
       ]);
   }
   
-  public function fetch($params, $method = 'GET') {
+  public function fetch($params, $method) {
     if (!$this->reset_curl()) {
       // @codeCoverageIgnoreStart
       curl_close($this->ch);
@@ -164,13 +164,13 @@ class WikipediaBot {
   }
   
   public function write_page($page, $text, $editSummary, $lastRevId = NULL, $startedEditing = NULL) {
-    $response = $this->fetch(array(
+    $response = $this->fetch([
             'action' => 'query',
             'prop' => 'info|revisions',
             'rvprop' => 'timestamp',
             'meta' => 'tokens',
             'titles' => $page
-          ));
+          ], 'GET');
     
     if (!$response) {
       report_error("Write request failed");     // @codeCoverageIgnore
@@ -324,11 +324,11 @@ class WikipediaBot {
     return $list;
   }
   public function get_last_revision($page) {
-    $res = $this->fetch(Array(
+    $res = $this->fetch([
         "action" => "query",
         "prop" => "revisions",
         "titles" => $page,
-      ));
+      ], 'GET');
     if (!isset($res->query->pages)) {
         report_error("Failed to get article's last revision");         // @codeCoverageIgnore
         return FALSE;                                                  // @codeCoverageIgnore
@@ -369,7 +369,7 @@ class WikipediaBot {
         "action" => "query",
         "prop" => "info",
         "titles" => $page,
-        ]); 
+        ], 'GET'); 
     if (!isset($res->query->pages)) {
         report_warning("Failed to get article namespace");       // @codeCoverageIgnore
         return FALSE;                                            // @codeCoverageIgnore
@@ -387,11 +387,11 @@ class WikipediaBot {
     if ($api == NULL) {
         report_error('No API found in is_redirect()');   // @codeCoverageIgnore
     }
-    $res = $api->fetch(Array(
+    $res = $api->fetch([
         "action" => "query",
         "prop" => "info",
         "titles" => $page,
-        ), 'POST');
+        ], 'POST');
     
     if (!isset($res->query->pages)) {
         report_warning("Failed to get redirect status");    // @codeCoverageIgnore
@@ -401,11 +401,11 @@ class WikipediaBot {
     return (isset($res->missing) ? -1 : (isset($res->redirect) ? 1 : 0));
   }
   public function redirect_target($page) {
-    $res = $this->fetch(Array(
+    $res = $this->fetch([
         "action" => "query",
         "redirects" => "1",
         "titles" => $page,
-        ), 'POST');
+        ], 'POST');
     if (!isset($res->query->redirects[0]->to)) {
         report_warning("Failed to get redirect target");     // @codeCoverageIgnore
         return FALSE;                                        // @codeCoverageIgnore
