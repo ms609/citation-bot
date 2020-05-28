@@ -51,26 +51,20 @@ class WikipediaBot {
       report_error("Curl encountered HTTP response error");    // @codeCoverageIgnore
     }
     if (isset($response->error)) {
-      if ($response->error->code == 'blocked') {        // Travis CI IPs are blocked, even to logged in users.
-        report_error('Account "' . $this->username() .  '" or this IP is blocked from editing.');  // @codeCoverageIgnore
+      // @ codeCoverageIgnoreStart
+      if ((string) $response->error->code == 'blocked') { // Travis CI IPs are blocked, even to logged in users.
+        report_error('Account "' . $this->username() .  '" or this IP is blocked from editing.');
+      } elseif (strpos((string) $response->error->info, 'The database has been automatically locked') !== FALSE) {
+        report_minor_error('Wikipedia database Locked.  Aborting changes for this page.  Will sleep and move on.');
+      } elseif (strpos((string) $response->error->info, 'abusefilter-warning-predatory') !== FALSE) {
+        report_minor_error('Wikipedia page contains predatory references.  Aborting changes for this page.  Will sleep and move on.');
       } else {
-        // @codeCoverageIgnoreStart
-        if (strpos((string) $response->error->info, 'The database has been automatically locked') !== FALSE) {
-           report_minor_error('Wikipedia database Locked.  Aborting changes for this page.  Will sleep and move on.  Specifically: ' . $response->error->info);
-           sleep(5);
-           return FALSE;  // Would be best to retry, but we are down in the weeds of the code
-        }
-        if (strpos((string) $response->error->info, 'abusefilter-warning-predatory') !== FALSE) {
-           report_minor_error('Wikipedia page contains predatory references.  Aborting changes for this page.  Will sleep and move on.');
-           sleep(5);
-           return FALSE;  // Would be best to retry, but we are down in the weeds of the code
-        }
-        
-        sleep(5);
-        report_minor_error('API call failed: ' . $response->error->info);
-        // @codeCoverageIgnoreEnd
+        report_minor_error('API call failed: ' . (string) $response->error->info);
       }
-      return FALSE;  // @codeCoverageIgnore
+      sleep(5);
+      return FALSE;
+      // TODO - the bot actually dies during multi-page runs because of this.  Should retry somehow.  Down in weeds though. 
+      // @codeCoverageIgnoreEnd
     }
     return TRUE;
   }
