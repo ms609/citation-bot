@@ -60,8 +60,14 @@ class WikipediaBot {
            sleep(5);
            return FALSE;  // Would be best to retry, but we are down in the weeds of the code
         }
+        if (strpos((string) $response->error->info, 'abusefilter-warning-predatory') !== FALSE) {
+           report_minor_error('Wikipedia page contains predatory references.  Aborting changes for this page.  Will sleep and move on.');
+           sleep(5);
+           return FALSE;  // Would be best to retry, but we are down in the weeds of the code
+        }
+        
         sleep(5);
-        report_minor_error('API call failed: ' . $response->error->info); // Could be something lik abusefilter-warning-predatory
+        report_minor_error('API call failed: ' . $response->error->info);
         // @codeCoverageIgnoreEnd
       }
       return FALSE;  // @codeCoverageIgnore
