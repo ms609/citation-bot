@@ -186,8 +186,9 @@ function adsabs_api($ids, $templates, $identifier) {
   foreach ($ids as $key => $bibcode) {
     if (strpos($bibcode, 'book') !== false) {
         unset($ids[$key]);
-    } elseif (
-        strpos($bibcode, '&') !== false) {
+    } elseif (stripos($bibcode, 'CITATION') !== false) {
+        unset($ids[$key]);
+    } elseif (strpos($bibcode, '&') !== false) {
         unset($ids[$key]);
     }
   }

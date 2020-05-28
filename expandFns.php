@@ -135,11 +135,11 @@ function wikify_external_text($title) {
   }
 
   $title = sanitize_string($title);
-  
+
   for ($i = 0; $i < count($replacement); $i++) {
     $title = str_replace($placeholder[$i], $replacement[$i], $title);
   }
-  return($title); 
+  return $title; 
 }
 
 function restore_italics ($text) {
@@ -228,6 +228,13 @@ function titles_are_dissimilar($inTitle, $dbTitle) {
         $dbTitle = str_replace(" ","", $dbTitle);
    echo "\n\n 3n" . trim($dbTitle) . "\n" . trim($inTitle2) . "\n" . trim($dbTitle) . "\n";
   echo "\n" . levenshtein($inTitle, $dbTitle)  . "\n" . levenshtein($inTitle2, $dbTitle) . "\n" . similar_text($inTitle, $dbTitle) / strlen($inTitle) . "\n" . similar_text($inTitle2, $dbTitle) / strlen($inTitle2) . "\n";
+        $inTitle = str_replace("&nbsp","", $inTitle);
+        $inTitle2 = str_replace("&nbsp","", $inTitle2);
+        $dbTitle = str_replace("&nbsp","", $dbTitle);
+  // This will convert &delta into delta
+        $inTitle = str_replace("&","", $inTitle);
+        $inTitle2 = str_replace("&","", $inTitle2);
+        $dbTitle = str_replace("&","", $dbTitle);
         return ((strlen($inTitle) > 254 || strlen($dbTitle) > 254)
               ? (strlen($inTitle) != strlen($dbTitle)
                 || similar_text($inTitle, $dbTitle) / strlen($inTitle) < 0.98)
