@@ -150,7 +150,6 @@ class WikipediaBot {
             stripos((string) $response->error->info, 'abusefilter-warning-predatory') !== FALSE)
           ) {
             // @codeCoverageIgnoreStart
-            sleep(5);
             unset($data);
             unset($ret);
             return $this->fetch($params, $method, $depth+1);
