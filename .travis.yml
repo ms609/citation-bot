@@ -2,7 +2,7 @@ sudo: false
 dist: trusty
 branches:
   except: release
-DEBUG
+
 language: php
 matrix:
   include:
