@@ -294,7 +294,7 @@ final class PageTest extends testBaseClass {
   public function testUrlReferencesWithText17() {
       $text = "<ref>{{oclc|23454}}</ref>";
       $page = $this->process_page($text);
-      $this->assertTrue((boolean) strpos($page->parsed_text(), 'book'));
+      $this->assertTrue((boolean) strpos($page->parsed_text(), 'it'));
   }                    
                         
   public function testMagazine() {
