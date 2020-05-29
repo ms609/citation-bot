@@ -72,14 +72,13 @@ if ($category) {
     html_echo(' </pre></body></html>', "\n");
     exit(0);
   }
-  if (count($pages_in_category) > 1000) {
+  if (count($pages_in_category) > 1000 && $api->get_the_user() !== 'AManWithNoPlan') {
     echo('Category is huge.  Cancelling run. Pick a smaller category.  Listen to Obi-Wan Kenobi:  You want to go home and rethink your life.');
     html_echo(' </pre></body></html>', "\n");
     exit(0);
   }
   shuffle($pages_in_category);
   $page = new Page();
-  #$pages_in_category = array('User:DOI bot/Zandbox');
   foreach ($pages_in_category as $page_title) {
     // $page->expand_text will take care of this notice if we are in HTML mode.
     html_echo('', "\n\n\n*** Processing page '" . echoable($page_title) . "' : " . date("H:i:s") . "\n");
