@@ -637,6 +637,12 @@ function expand_doi_with_dx($template, $doi) {
        $try_to_add_it('title', @$json['container-title']);// Usually not set, but just in case this instead of title is set
        $try_to_add_it('location', @$json['publisher-location']);
        $try_to_add_it('publisher', @$json['publisher']);
+     } elseif (@$json['type'] == 'reference-book') {
+       $try_to_add_it('title', @$json['title']);
+       $try_to_add_it('title', @$json['container-title']);
+       $try_to_add_it('chapter', @$json['original-title']);
+       $try_to_add_it('location', @$json['publisher-location']);
+       $try_to_add_it('publisher', @$json['publisher']);
      } elseif (@$json['type'] == 'chapter') {
        $try_to_add_it('title', @$json['container-title']);
        $try_to_add_it('chapter', @$json['title']);
