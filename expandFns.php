@@ -192,7 +192,7 @@ function str_remove_irrelevant_bits($str) {
   $str = preg_replace('~\(Incorporating .*\)$~i', '', $str);  // Physical Chemistry Chemical Physics (Incorporating Faraday Transactions)
   $str = preg_replace('~\d+ Volume Set$~i', '', $str);  // Ullmann's Encyclopedia of Industrial Chemistry, 40 Volume Set
   $str = preg_replace('~^Retracted~i', '', $str);
-  $str = preg_replace('~\d?\d? ?The sequence of \S+ has been deposited in the GenBank database under accession number \S+ ?\d?~', '', $str);
+  $str = preg_replace('~\d?\d? ?The ?sequence ?of ?\S+ ?has ?been ?deposited ?in ?the ?GenBank ?database ?under ?accession ?number ?\S+ ?\d?~i', '', $str);
   $str = trim($str);
   $str = strip_diacritics($str);
   return $str;
