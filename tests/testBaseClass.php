@@ -75,10 +75,7 @@ abstract class testBaseClass extends PHPUnit\Framework\TestCase {
     
   protected function requires_arxiv($function) {
     global $testing_skip_arxiv;
-    static $need_to_warn = TRUE;
     if ($testing_skip_arxiv) {
-      if ($need_to_warn) report_warning("\n\n########################\n    arXiv tests disabled \n########################\n\n");
-      $need_to_warn = FALSE;
       echo 'V';
       ob_flush();
       $this->assertNull(NULL);
