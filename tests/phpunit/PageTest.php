@@ -286,9 +286,11 @@ final class PageTest extends testBaseClass {
   }
  
   public function testUrlReferencesWithText16() {
+    $this->requires_arxiv(function() {;
       $text = "<ref>{{arxiv|0806.0013}}</ref>";
       $page = $this->process_page($text);
       $this->assertTrue((boolean) stripos($page->parsed_text(), 'PhysRevD.78.081701'));
+    });
   }
                         
   public function testUrlReferencesWithText17() {
