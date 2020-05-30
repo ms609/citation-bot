@@ -305,6 +305,9 @@ function adsabs_api($ids, $templates, $identifier) {
     if ($e->getCode() == 5000) { // made up code for AdsAbs error
       report_warning(sprintf("API Error in query_adsabs: %s",
                     $e->getMessage()));
+    } elseif ($e->getCode() == 60) {
+        $ADSABS_GIVE_UP = TRUE;
+        report_warning('Giving up on AdsAbs for a while.  SSL certificate has expired.');
     } elseif (strpos($e->getMessage(), 'org.apache.solr.search.SyntaxError') !== FALSE) {
       report_info(sprintf("Internal Error %d in query_adsabs: %s",
                     $e->getCode(), $e->getMessage()));
