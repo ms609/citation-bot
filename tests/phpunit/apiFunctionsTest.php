@@ -68,7 +68,7 @@ final class apiFunctionsTest extends testBaseClass {
   }
   
   public function testArxivDateUpgradeSeesDate() {
-   $this->requires_arxiv(function() {;
+   $this->requires_arxiv(function() {
       $text = '{{Cite journal|date=September 2010|doi=10.1016/j.physletb.2010.08.018|arxiv=1006.4000}}';
       $expanded = $this->process_citation($text);
       $this->assertSame('September 2010', $expanded->get('date'));
@@ -245,7 +245,7 @@ final class apiFunctionsTest extends testBaseClass {
   }
   
   public function testComplexCrossRef() {
-    $this->requires_arxiv(function() {;
+    $this->requires_arxiv(function() {
      $text = '{{citation | title = Deciding the Winner of an Arbitrary Finite Poset Game is PSPACE-Complete| arxiv = 1209.1750| bibcode = 2012arXiv1209.1750G}}';
      $expanded = $this->process_citation($text);
      $this->assertSame('Deciding the Winner of an Arbitrary Finite Poset Game is PSPACE-Complete', $expanded->get('chapter'));
