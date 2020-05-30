@@ -438,7 +438,7 @@ final class TemplateTest extends testBaseClass {
   }
   
   public function testArxivExpansion() {
-   $this->requires_arxiv(function() {;
+   $this->requires_arxiv(function() {
     $text = "{{Cite web | http://uk.arxiv.org/abs/0806.0013}}"
           . "{{Cite arxiv | eprint = 0806.0013 | class=forgetit|publisher=uk.arxiv}}"
           . '{{Cite arxiv |eprint=1609.01689 | title = Accelerating Nuclear Configuration Interaction Calculations through a Preconditioned Block Iterative Eigensolver|class=cs.NA | year = 2016| last1 = Shao| first1 = Meiyue | display-authors = etal}}'
@@ -1493,7 +1493,7 @@ final class TemplateTest extends testBaseClass {
   }
   
   public function testLongAuthorLists() {
-  $this->requires_arxiv(function() {;
+  $this->requires_arxiv(function() {
     $text = '{{cite web | https://arxiv.org/PS_cache/arxiv/pdf/1003/1003.3124v2.pdf}}';
     $expanded = $this->process_citation($text);
     $this->assertSame('Aad, G.', $expanded->first_author());
@@ -2269,7 +2269,7 @@ T1 - This is the Title }}';
   }
     
   public function testArxivPDf() {
-   $this->requires_arxiv(function() {;
+   $this->requires_arxiv(function() {
     $text = '{{cite web|url=https://arxiv.org/ftp/arxiv/papers/1312/1312.7288.pdf}}';
     $expanded = $this->process_citation($text);
     $this->assertSame('1312.7288', $expanded->get('arxiv'));
@@ -2283,7 +2283,7 @@ T1 - This is the Title }}';
   }
 
   public function testLatexMathInTitle() { // This contains Math stuff that should be z~10, but we just verify that we do not make it worse at this time.  See https://tex.stackexchange.com/questions/55701/how-do-i-write-sim-approximately-with-the-correct-spacing
-   $this->requires_arxiv(function() {;
+   $this->requires_arxiv(function() {
     $text = "{{Cite arxiv|eprint=1801.03103}}";
     $expanded = $this->process_citation($text);
     $title = $expanded->get('title');
