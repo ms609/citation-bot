@@ -4842,7 +4842,7 @@ final class Template {
     }
     $doi_status = doi_works($doi);
     if ($doi_status === NULL) {
-      report_warning("DOI status unknown.  doi.org failed to respond to: " . echoable($doi));  // @codeCoverageIgnore
+      report_warning("DOI status unknown.  doi.org failed to respond to: " . doi_link($doi));  // @codeCoverageIgnore
       return FALSE;                                                                            // @codeCoverageIgnore
     } elseif ($doi_status === FALSE) {
       report_inline("It's not...");
