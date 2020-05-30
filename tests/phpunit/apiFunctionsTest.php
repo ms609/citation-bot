@@ -243,11 +243,13 @@ final class apiFunctionsTest extends testBaseClass {
   }
   
   public function testComplexCrossRef() {
+    $this->requires_arxiv(function() {;
      $text = '{{citation | title = Deciding the Winner of an Arbitrary Finite Poset Game is PSPACE-Complete| arxiv = 1209.1750| bibcode = 2012arXiv1209.1750G}}';
      $expanded = $this->process_citation($text);
      $this->assertSame('Deciding the Winner of an Arbitrary Finite Poset Game is PSPACE-Complete', $expanded->get('chapter'));
      $this->assertSame('Lecture Notes in Computer Science', $expanded->get('series'));
      $this->assertSame('Automata, Languages, and Programming', $expanded->get('title'));
+    });
   }
   
    public function testThesisDOI() {
