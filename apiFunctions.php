@@ -718,6 +718,10 @@ function is_doi_works($doi) {
            'ssl' => ['verify_peer' => FALSE, 'verify_peer_name' => FALSE, 'allow_self_signed' => TRUE]
          )); // Allow crudy cheap journals
   $headers_test = @get_headers("https://dx.doi.org/" . urlencode($doi), 1, $context);
+  if ($headers_test === FALSE) {
+     sleep(1);
+     $headers_test = @get_headers("https://dx.doi.org/" . urlencode($doi), 1, $context);
+  }
   if ($headers_test === FALSE) return NULL; // most likely bad, but will recheck again an again
   $response = $headers_test[0];
   if (empty($headers_test['Location'])) return FALSE; // leads nowhere
