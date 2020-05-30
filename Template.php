@@ -5490,7 +5490,7 @@ final class Template {
           case "as": case "useragent": case "as_brr": case "source":
           case "ei": case "ots": case "sig": case "source": case "lr":
           case "sa": case "oi": case "ct": case "id":  case "cd":
-          case "oq": case "rls": case "sourceid": case "tbm": case "ved":
+          case "oq": case "rls": case "sourceid": case "ved":
           case "aqs": case "gs_l": case "uact": case "tbo": case "tbs":
           case "num": case "redir_esc": case "gs_lcp": case "sxsrf":
           case "gfe_rd": case "gws_rd":
@@ -5503,7 +5503,7 @@ final class Template {
              if (str_i_same($part_start[1], 'utf-8')) break;  // UTF-8 is the default
              $url .=  $part . "&" ;
              break;
-          case "hl": case "safe": case "q":
+          case "hl": case "safe": case "q": case "tbm"
              $url .=  $part . "&" ;
              break;
           default:
