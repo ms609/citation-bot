@@ -5535,8 +5535,9 @@ final class Template {
       } else {   
         return $this->add_if_new('journal', trim($matches[1])); // Might be newspaper, hard to tell.
       }
-    } elseif (getenv('TRAVIS') && preg_match('~<title>(.*)</title>~', $html, $matches)) {    // @codeCoverageIgnore
-      report_error('unexpected title from ISSN ' . $matches[1]);                             // @codeCoverageIgnore
+    } elseif (getenv('TRAVIS') && preg_match('~<title>(.*)</title>~', $html, $matches)) {     // @codeCoverageIgnore
+      // Sometime just get [WorldCat.org]
+      report_error('unexpected title from ISSN ' . $this->get('issn') . ' : ' . $matches[1]); // @codeCoverageIgnore
     }
     return FALSE; // @codeCoverageIgnore
   }
