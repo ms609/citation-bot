@@ -1871,6 +1871,21 @@ final class Template {
     }
     return FALSE;
   }
+  
+  public function get_doi_from_semanticscholar() {
+    if ($this->has('doi')) {
+      return TRUE;
+    }
+    if ($this->blank(['s2cid', 'S2CID'])) return FALSE;
+    if ($this->has('s2cid') && $this->has('S2CID')) return FALSE;
+    report_action("Checking semanticscholar database for doi. ");
+    $doi = ConvertS2ID_DOI($this, $this->get('s2cid') . $this->get('S2CID'));
+    if ($doi) {
+      report_info(" Successful!");
+      return $this->add_if_new('doi', $doi);
+    }
+    return FALSE;
+  }
 
   public function find_pmid() {
     if (!$this->blank('pmid')) return;
