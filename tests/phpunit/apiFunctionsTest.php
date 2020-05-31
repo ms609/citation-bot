@@ -156,7 +156,7 @@ final class apiFunctionsTest extends testBaseClass {
     $this->requires_dx(function() {
      $expanded = $this->make_citation('{{Cite journal}}');
      expand_doi_with_dx($expanded, '10.3866/PKU.WHXB201112303');
-     $this->assertSame('{{Cite journal}}', $expanded->parsed_text());
+     $this->assertSame('{{Cite journal|year = 2012|volume = 28|issue = 3|last1 = Yu|first1 = ZHANG|last3 = Ning|first3 = MA|last4 = Wei-Zhou|first4 = WANG|title = Correlation between Bond-Length Change and Vibrational Frequency Shift in Hydrogen-Bonded Complexes Revisited|journal = Acta Physico-Chimica Sinica}}', $expanded->parsed_text());
     });
   }
   
