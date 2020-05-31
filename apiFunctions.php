@@ -952,11 +952,11 @@ function getS2ID ($template, $long_param) {
     report_warning("No response from semanticscholar.");   // @codeCoverageIgnore
     return FALSE;                                          // @codeCoverageIgnore
   }
-  if (substr_count($response, 'corpusId')) > 1) {
+  if (substr_count($response, 'corpusId') > 1) {
     report_warning("Invalid count from semanticscholar.");   // @codeCoverageIgnore
     return FALSE;                                            // @codeCoverageIgnore
   }
-  if (preg_match('~"corpusId":(\d+),~', $response, $match) {
+  if (preg_match('~"corpusId":(\d+),~', $response, $match)) {
     return $match[1];
   } else {
     report_warning("Invalid response from semanticscholar.");   // @codeCoverageIgnore
@@ -970,15 +970,15 @@ function ConvertS2ID_DOI ($template, $s2id) {
     report_warning("No response from semanticscholar.");   // @codeCoverageIgnore
     return FALSE;                                          // @codeCoverageIgnore
   }
-  if (substr_count($response, '"doi"')) > 1) {
+  if (substr_count($response, '"doi"') > 1) {
     report_warning("Invalid count from semanticscholar.");   // @codeCoverageIgnore
     return FALSE;                                            // @codeCoverageIgnore
   }
-  if (preg_match('~"doi":"([^,"]+)",~', $response, $match) {
+  if (preg_match('~"doi":"([^,"]+)",~', $response, $match)) {
     return $match[1];
   } else {
-    report_warning("No doi found from semanticscholar.");   // @codeCoverageIgnore
-    return FALSE;                                           // @codeCoverageIgnore
+    report_info("No doi found from semanticscholar.");   // @codeCoverageIgnore
+    return FALSE;                                        // @codeCoverageIgnore
   } 
 }
 ?>
