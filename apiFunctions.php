@@ -946,4 +946,39 @@ function parse_plain_text_reference($journal_data, &$this_template, $upgrade_yea
       }
 } 
 
+function getS2ID ($template, $long_param) {
+  $response = @file_get_contents('https://api.semanticscholar.org/v1/paper/' . $long_param, FALSE);
+  if (!$response) {
+    report_warning("No response from semanticscholar.");   // @codeCoverageIgnore
+    return FALSE;                                          // @codeCoverageIgnore
+  }
+  if (substr_count($response, 'corpusId')) > 1) {
+    report_warning("Invalid count from semanticscholar.");   // @codeCoverageIgnore
+    return FALSE;                                            // @codeCoverageIgnore
+  }
+  if (preg_match('~"corpusId":(\d+),~', $response, $match) {
+    return $match[1];
+  } else {
+    report_warning("Invalid response from semanticscholar.");   // @codeCoverageIgnore
+    return FALSE;                                               // @codeCoverageIgnore
+  } 
+}
+      
+function ConvertS2ID_DOI ($template, $s2id) {
+  $response = @file_get_contents('https://api.semanticscholar.org/v1/paper/CorpusID:' . $s2id, FALSE);
+  if (!$response) {
+    report_warning("No response from semanticscholar.");   // @codeCoverageIgnore
+    return FALSE;                                          // @codeCoverageIgnore
+  }
+  if (substr_count($response, '"doi"')) > 1) {
+    report_warning("Invalid count from semanticscholar.");   // @codeCoverageIgnore
+    return FALSE;                                            // @codeCoverageIgnore
+  }
+  if (preg_match('~"doi":"([^,"]+)",~', $response, $match) {
+    return $match[1];
+  } else {
+    report_warning("No doi found from semanticscholar.");   // @codeCoverageIgnore
+    return FALSE;                                           // @codeCoverageIgnore
+  } 
+}
 ?>
