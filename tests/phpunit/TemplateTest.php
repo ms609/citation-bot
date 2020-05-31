@@ -4990,6 +4990,37 @@ T1 - This is the Title }}';
      $this->assertNull($template->get('publisher'));
   }
  
+ 
+  public function testSemanticscholar1() {
+     $text = '{{cite web|url=https://semanticscholar.org/paper/861fc89e94d8564adc670fbd35c48b2d2f487704}}';
+     $template = $this->process_citation($text);
+     $this->assertSame('10.1093/ser/mwp005', $template->get('doi'));
+     $this->assertSame('cite journal', $template->wikiname());
+     $this->assertNull($template->get('s2cid-access'));
+     $this->assertSame('53378830', $template->get('s2cid')); 
+     $this->assertNull($template->get('url'));
+  }
+ 
+   public function testSemanticscholar2() {
+     $text = '{{cite web|url=https://www.semanticscholar.org/paper/The-Holdridge-life-zones-of-the-conterminous-United-Lugo-Brown/406120529d907d0c7bf96125b83b930ba56f29e4}}';
+     $template = $this->process_citation($text);
+     $this->assertSame('10.1046/j.1365-2699.1999.00329.x', $template->get('doi'));
+     $this->assertSame('cite journal', $template->wikiname());
+     $this->assertNull($template->get('s2cid-access'));
+     $this->assertSame('11733879', $template->get('s2cid')); 
+     $this->assertNull($template->get('url'));
+  }
+ 
+  public function testSemanticscholar3() {
+     $text = '{{cite web|url=https://pdfs.semanticscholar.org/8805/b4d923bee9c9534373425de81a1ba296d461.pdf }}';
+     $template = $this->process_citation($text);
+     $this->assertSame('10.1007/978-3-540-78646-7_75', $template->get('doi'));
+     $this->assertSame('cite journal', $template->wikiname());
+     $this->assertNull($template->get('s2cid-access'));
+     $this->assertSame('1090322', $template->get('s2cid')); 
+     $this->assertNull($template->get('url'));
+  }
+ 
   public function testNameStuff() {
      $text = '{{cite journal|author1=[[Robert Jay Charlson|Charlson]] |first1=R. J.}}';
      $template = $this->process_citation($text);
