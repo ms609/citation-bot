@@ -966,6 +966,7 @@ final class Template {
       case 's2cid':
         if ($this->blank(['s2cid', 'S2CID'])) {
           $this->add($param_name, $value);
+          if ($this->wikiname() === 'cite web') $this->rename('cite journal');
           return TRUE;
         }
         return FALSE;
