@@ -963,6 +963,13 @@ final class Template {
         }
         return FALSE;
       
+      case 's2cid':
+        if ($this->blank(['s2cid', 'S2CID'])) {
+          $this->add($param_name, $value);
+          return TRUE;
+        }
+        return FALSE;
+      
       case 'eprint':
       case 'arxiv':
         if ($this->blank(ARXIV_ALIASES)) {
@@ -1288,6 +1295,25 @@ final class Template {
        }
     }
     
+    // semanticscholar
+    if (preg_match('~^https?://(?:pdfs?\.|www\.|)semanticscholar\.org/(?:paper|\S{4})/(?:[^/]+/|)([0-9a-z]+)(?:|\.pdf)$~i', $url, $matches)) {
+       $long_s2cid = $matches[1];
+       if (strlen($long_s2cid) < 20) return FALSE;
+       $s2cid = getS2ID($this, $long_s2cid);
+       if ($s2cid == FALSE) return FALSE; // zero or FALSE
+       if ($this->has('s2cid')) {
+          if ($s2cid != $this->get('s2cid')) return FALSE; // Does not match existing
+       } elseif ($this->has('S2CID')) {
+          if ($s2cid != $this->get('S2CID')) return FALSE; // Does not match existing
+       } else {
+          $this->add_if_new('s2cid', $s2cid);
+       }
+       if (is_null($url_sent)) {
+         $this->forget($url_type);
+       }
+       return TRUE;
+    }
+
     // Trim ?seq=1#page_scan_tab_contents off of jstor urls
     // We do this since not all jstor urls are recognized below
     if (preg_match("~^(https?://\S*jstor.org\S*)\?seq=1#[a-zA-Z_]+$~", $url, $matches)) {
