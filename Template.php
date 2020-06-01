@@ -1301,7 +1301,7 @@ final class Template {
     if (preg_match('~^https?://(?:pdfs?\.|www\.|)semanticscholar\.org/(?:paper|\S{4})/(?:[^/]+/|)([0-9a-z]+)(?:|\.pdf)$~i', $url, $matches)) {
        $long_s2cid = $matches[1];
        if (strlen($long_s2cid) < 20) return FALSE;
-       $s2cid = getS2ID($this, $long_s2cid);
+       $s2cid = getS2ID($long_s2cid);
        if ($s2cid == FALSE) return FALSE; // zero or FALSE
        if ($this->has('s2cid')) {
           if ($s2cid != $this->get('s2cid')) return FALSE; // Does not match existing
@@ -1881,7 +1881,7 @@ final class Template {
     if ($this->blank(['s2cid', 'S2CID'])) return FALSE;
     if ($this->has('s2cid') && $this->has('S2CID')) return FALSE;
     report_action("Checking semanticscholar database for doi. ");
-    $doi = ConvertS2ID_DOI($this, $this->get('s2cid') . $this->get('S2CID'));
+    $doi = ConvertS2ID_DOI($this->get('s2cid') . $this->get('S2CID'));
     if ($doi) {
       report_info(" Successful!");
       return $this->add_if_new('doi', $doi);
