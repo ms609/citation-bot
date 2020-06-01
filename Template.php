@@ -1299,7 +1299,7 @@ final class Template {
     
     // semanticscholar
     if (preg_match('~^https?://(?:pdfs?\.|www\.|)semanticscholar\.org/paper()/(?:[^/]+/|)([0-9a-z]+)(?:|\.pdf)$~i', $url, $matches) ||
-        preg_match('~^https?://(?:pdfs?\.|www\.|)semanticscholar\.org/(\S{4})/(?:[^/]+/|)([0-9a-z]+)(?:|\.pdf)$~i', $url, $matches)) {) {
+        preg_match('~^https?://(?:pdfs?\.|www\.|)semanticscholar\.org/(\S{4})/(?:[^/]+/|)([0-9a-z]+)(?:|\.pdf)$~i', $url, $matches)) {
        $long_s2cid = $matches[1] . $matches[2];
        if (strlen($long_s2cid) < 20) return FALSE;
        $s2cid = getS2ID($long_s2cid);
