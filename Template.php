@@ -1302,14 +1302,10 @@ final class Template {
        $long_s2cid = $matches[1];
        if (strlen($long_s2cid) < 20) return FALSE;
        $s2cid = getS2ID($long_s2cid);
-       if ($s2cid == FALSE) return FALSE; // zero or FALSE
-       if ($this->has('s2cid')) {
-          if ($s2cid != $this->get('s2cid')) return FALSE; // Does not match existing
-       } elseif ($this->has('S2CID')) {
-          if ($s2cid != $this->get('S2CID')) return FALSE; // Does not match existing
-       } else {
-          $this->add_if_new('s2cid', $s2cid);
-       }
+       if ($s2cid === FALSE) return FALSE;
+       if ($this->has('s2cid') && $s2cid != $this->get('s2cid')) return FALSE; // Does not match existing
+       if ($this->has('S2CID') && $s2cid != $this->get('S2CID')) return FALSE; // Does not match existing
+       $this->add_if_new('s2cid', $s2cid);
        if (is_null($url_sent)) {
          $this->forget($url_type);
        }
