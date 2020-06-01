@@ -946,8 +946,9 @@ function parse_plain_text_reference($journal_data, &$this_template, $upgrade_yea
       }
 } 
 
-function getS2ID ($template, $long_param) {
+function getS2ID($template, $long_param) {
   $response = @file_get_contents('https://api.semanticscholar.org/v1/paper/' . $long_param);
+  echo "\n DEBUG ". $long_param . "\n" . $response . "\n"
   if (!$response) {
     report_warning("No response from semanticscholar.");   // @codeCoverageIgnore
     return FALSE;                                          // @codeCoverageIgnore
@@ -964,8 +965,9 @@ function getS2ID ($template, $long_param) {
   } 
 }
       
-function ConvertS2ID_DOI ($template, $s2id) {
+function ConvertS2ID_DOI($template, $s2id) {
   $response = @file_get_contents('https://api.semanticscholar.org/v1/paper/CorpusID:' . $s2id);
+  echo "\n DEBUG ". $s2id . "\n" . $response . "\n"
   if (!$response) {
     report_warning("No response from semanticscholar.");   // @codeCoverageIgnore
     return FALSE;                                          // @codeCoverageIgnore
