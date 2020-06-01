@@ -957,13 +957,15 @@ function getS2ID($template, $long_param) {
     report_warning("Bad response from semanticscholar.");  // @codeCoverageIgnore
     return FALSE;                                          // @codeCoverageIgnore
   }
-  print_r($json);
-  if (FALSE) {
-    return $match;
-  } else {
-    report_warning("Invalid response from semanticscholar.");   // @codeCoverageIgnore
-    return FALSE;                                               // @codeCoverageIgnore
-  } 
+  if (!isset($json->corpusId)) {
+    report_minor_error("No corpusId found from semanticscholar."); // @codeCoverageIgnore
+    return FALSE;                                                  // @codeCoverageIgnore
+  }
+  if (is_array($json->corpusId) || is_object($json->corpusId)) {
+    report_warning("Bad data from semanticscholar.");  // @codeCoverageIgnore
+    return FALSE;                                      // @codeCoverageIgnore
+  }
+  return $json->corpusId;
 }
       
 function ConvertS2ID_DOI($template, $s2id) {
@@ -977,12 +979,20 @@ function ConvertS2ID_DOI($template, $s2id) {
     report_warning("Bad response from semanticscholar.");  // @codeCoverageIgnore
     return FALSE;                                          // @codeCoverageIgnore
   }
-  print_r($json);
-  if (FALSE) {
-    return $match;
-  } else {
+  if (!isset($json->doi)) {
     report_info("No doi found from semanticscholar.");   // @codeCoverageIgnore
     return FALSE;                                        // @codeCoverageIgnore
+  }
+  if (is_array($json->doi) || is_object($json->doi)) {
+    report_warning("Bad data from semanticscholar.");  // @codeCoverageIgnore
+    return FALSE;                                      // @codeCoverageIgnore
+  }
+  $doi = $json->doi;
+  if (doi_active($doi) || doi_works($doi)) { // Try to fill both arrays now
+    return $doi;
+  } else {
+    report_info("non-functional doi found from semanticscholar.");// @codeCoverageIgnore
+    return FALSE;                                                 // @codeCoverageIgnore
   } 
 }
 ?>
