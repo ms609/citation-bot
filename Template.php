@@ -966,7 +966,7 @@ final class Template {
       case 's2cid':
         if ($this->blank(['s2cid', 'S2CID'])) {
           $this->add($param_name, $value);
-          if ($this->wikiname() === 'cite web') $this->rename('cite journal');
+          if ($this->wikiname() === 'cite web') $this->change_name_to('cite journal');
           $this->get_doi_from_semanticscholar();
           return TRUE;
         }
@@ -5065,6 +5065,7 @@ final class Template {
   // Amend parameters
   public function rename($old_param, $new_param, $new_value = FALSE) {
     if (!isset($this->param)) return FALSE;
+    if ($new_param === NULL) report_error('NULL passed to rename()');
     if ($old_param == $new_param) {
        if ($new_value !== FALSE) {
            $this->set($new_param, $new_value);
