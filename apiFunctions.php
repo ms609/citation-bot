@@ -965,7 +965,7 @@ function getS2ID($template, $long_param) {
     report_warning("Bad data from semanticscholar.");  // @codeCoverageIgnore
     return FALSE;                                      // @codeCoverageIgnore
   }
-  return $json->corpusId;
+  return (string) $json->corpusId;
 }
       
 function ConvertS2ID_DOI($template, $s2id) {
@@ -987,7 +987,7 @@ function ConvertS2ID_DOI($template, $s2id) {
     report_warning("Bad data from semanticscholar.");  // @codeCoverageIgnore
     return FALSE;                                      // @codeCoverageIgnore
   }
-  $doi = $json->doi;
+  $doi = (string) $json->doi;
   if (doi_active($doi) || doi_works($doi)) { // Try to fill both arrays now
     return $doi;
   } else {
