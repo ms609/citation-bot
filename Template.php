@@ -965,11 +965,13 @@ final class Template {
       
       case 's2cid':
         if ($this->blank(['s2cid', 'S2CID'])) {
+          echo "\n" . $value . " being added\n";
           $this->add($param_name, $value);
           if ($this->wikiname() === 'cite web') $this->change_name_to('cite journal');
           $this->get_doi_from_semanticscholar();
           return TRUE;
         }
+        echo "\n" . $value . " not being added\n";
         return FALSE;
       
       case 'eprint':
