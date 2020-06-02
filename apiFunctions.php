@@ -946,62 +946,51 @@ function parse_plain_text_reference($journal_data, &$this_template, $upgrade_yea
       }
 } 
 
-function getS2ID($long_param) {
+function getS2CID($long_param) {
   $response = @file_get_contents('https://api.semanticscholar.org/v1/paper/' . $long_param);
   if (!$response) {
-    echo "\n" . $long_param . " failed 1\n";
     report_warning("No response from semanticscholar.");   // @codeCoverageIgnore
     return FALSE;                                          // @codeCoverageIgnore
   }
   $json = @json_decode($response);
   if (!$json) {
-    echo "\n" . $long_param . " failed 2\n";
     report_warning("Bad response from semanticscholar.");  // @codeCoverageIgnore
     return FALSE;                                          // @codeCoverageIgnore
   }
   if (!isset($json->corpusId)) {
-    echo "\n" . $long_param . " failed 3\n";
     report_minor_error("No corpusId found from semanticscholar."); // @codeCoverageIgnore
     return FALSE;                                                  // @codeCoverageIgnore
   }
   if (is_array($json->corpusId) || is_object($json->corpusId)) {
-    echo "\n" . $long_param . " failed 4\n";
     report_warning("Bad data from semanticscholar.");  // @codeCoverageIgnore
     return FALSE;                                      // @codeCoverageIgnore
   }
-  echo "\n" . $long_param . " worked and got " . (string) $json->corpusId  . " \n";
   return (string) $json->corpusId;
 }
       
-function ConvertS2ID_DOI($s2id) {
-  $response = @file_get_contents('https://api.semanticscholar.org/v1/paper/CorpusID:' . $s2id);
+function ConvertS2CID_DOI($s2cid) {
+  $response = @file_get_contents('https://api.semanticscholar.org/v1/paper/CorpusID:' . $s2cid);
   if (!$response) {
-    echo "\n" . $s2id . " failed 1\n";
     report_warning("No response from semanticscholar.");   // @codeCoverageIgnore
     return FALSE;                                          // @codeCoverageIgnore
   }
   $json = @json_decode($response);
   if (!$json) {
-    echo "\n" . $s2id . " failed 2\n";
     report_warning("Bad response from semanticscholar.");  // @codeCoverageIgnore
     return FALSE;                                          // @codeCoverageIgnore
   }
   if (!isset($json->doi)) {
-    echo "\n" . $s2id . " failed 3\n";
     report_info("No doi found from semanticscholar.");   // @codeCoverageIgnore
     return FALSE;                                        // @codeCoverageIgnore
   }
   if (is_array($json->doi) || is_object($json->doi)) {
-    echo "\n" . $s2id . " failed 4\n";
     report_warning("Bad data from semanticscholar.");  // @codeCoverageIgnore
     return FALSE;                                      // @codeCoverageIgnore
   }
   $doi = (string) $json->doi;
   if (doi_active($doi) || doi_works($doi)) { // Try to fill both arrays now
-    echo "\n" . $s2id . " worked " . $doi . " \n";
     return $doi;
   } else {
-    echo "\n" . $s2id . " failed 5\n";
     report_info("non-functional doi found from semanticscholar.");// @codeCoverageIgnore
     return FALSE;                                                 // @codeCoverageIgnore
   } 
