@@ -5014,7 +5014,7 @@ T1 - This is the Title }}';
      $text = '{{cite web|url=https://pdfs.semanticscholar.org/8805/b4d923bee9c9534373425de81a1ba296d461.pdf }}';
      $template = $this->process_citation($text);
      $this->assertSame('10.1007/978-3-540-78646-7_75', $template->get('doi'));
-     $this->assertSame('cite journal', $template->wikiname());
+     $this->assertSame('cite book', $template->wikiname());
      $this->assertNull($template->get('s2cid-access'));
      $this->assertSame('1090322', $template->get('s2cid')); 
      $this->assertNull($template->get('url'));
