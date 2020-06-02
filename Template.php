@@ -383,12 +383,10 @@ final class Template {
    *
    */
   public function add_if_new($param_name, $value, $api = NULL) {
-    if ($param_name == 's2cid') echo "\n s2cid 1 \n";
     $value = trim($value);
     if ($value == '') {
       return FALSE;
     }
-    if ($param_name == 's2cid') echo "\n s2cid 2 \n";
     if (str_i_same((string) $value, 'null')) { // Hopeully name is not actually null
       return FALSE;
     }
@@ -396,26 +394,24 @@ final class Template {
     if (mb_stripos($this->get($param_name), 'CITATION_BOT_PLACEHOLDER_COMMENT') !== FALSE) {
       return FALSE;  // We let comments block the bot
     }
-    if ($param_name == 's2cid') echo "\n s2cid 3 \n";
     if (array_key_exists($param_name, COMMON_MISTAKES)) {
       $param_name = COMMON_MISTAKES[$param_name];
     }
-    if ($param_name == 's2cid') echo "\n s2cid 4 \n";
     if (!is_null($api)) $this->record_api_usage($api, $param_name);
     
     // If we already have name parameters for author, don't add more
     if ($this->initial_author_params && in_array($param_name, FLATTENED_AUTHOR_PARAMETERS)) {
       return FALSE;
     }
-    if ($param_name == 's2cid') echo "\n s2cid 5 \n";
-    if (substr($param_name, -4) > 0 || substr($param_name, -3) > 0 || substr($param_name, -2) > 30) {
+    if ($param_name !== 's2cid') {
+     if (substr($param_name, -4) > 0 || substr($param_name, -3) > 0 || substr($param_name, -2) > 30) {
       // Stop at 30 authors - or page codes will become cluttered! 
       if ($this->get('last29') || $this->get('author29') || $this->get('surname29')) $this->add_if_new('display-authors', 29);
       return FALSE;
+     }
     }
 
     $auNo = preg_match('~\d+$~', $param_name, $auNo) ? $auNo[0] : '';        
-    if ($param_name == 's2cid') echo "\n s2cid 6 \n";
     switch ($param_name) {
       ### EDITORS
       case (boolean) preg_match('~^editor(\d{1,})$~', $param_name, $match) :
@@ -965,15 +961,12 @@ final class Template {
         return FALSE;
       
       case 's2cid':
-        echo "\n s2cid 7 \n";
         if ($this->blank(['s2cid', 'S2CID'])) {
-          echo "\n" . $value . " being added\n";
           $this->add($param_name, $value);
           if ($this->wikiname() === 'cite web') $this->change_name_to('cite journal');
           $this->get_doi_from_semanticscholar();
           return TRUE;
         }
-        echo "\n" . $value . " not being added\n";
         return FALSE;
       
       case 'eprint':
