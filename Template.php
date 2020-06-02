@@ -387,7 +387,7 @@ final class Template {
     if ($value == '') {
       return FALSE;
     }
-
+    
     if (str_i_same((string) $value, 'null')) { // Hopeully name is not actually null
       return FALSE;
     }
@@ -395,11 +395,11 @@ final class Template {
     if (mb_stripos($this->get($param_name), 'CITATION_BOT_PLACEHOLDER_COMMENT') !== FALSE) {
       return FALSE;  // We let comments block the bot
     }
-
+    
     if (array_key_exists($param_name, COMMON_MISTAKES)) {
       $param_name = COMMON_MISTAKES[$param_name];
     }
-
+    
     if (!is_null($api)) $this->record_api_usage($api, $param_name);
     
     // If we already have name parameters for author, don't add more
