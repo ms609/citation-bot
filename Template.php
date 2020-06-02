@@ -407,13 +407,15 @@ final class Template {
       return FALSE;
     }
 
-    if (substr($param_name, -4) > 0 || substr($param_name, -3) > 0 || substr($param_name, -2) > 30) {
+    if ($param_name !== 's2cid') {
+     if (substr($param_name, -4) > 0 || substr($param_name, -3) > 0 || substr($param_name, -2) > 30) {
       // Stop at 30 authors - or page codes will become cluttered! 
       if ($this->get('last29') || $this->get('author29') || $this->get('surname29')) $this->add_if_new('display-authors', 29);
       return FALSE;
+     }
     }
 
-    $auNo = preg_match('~\d+$~', $param_name, $auNo) ? $auNo[0] : '';        
+    $auNo = preg_match('~\d+$~', $param_name, $auNo) ? $auNo[0] : '';
 
     switch ($param_name) {
       ### EDITORS
@@ -963,6 +965,15 @@ final class Template {
         }
         return FALSE;
       
+      case 's2cid':
+        if ($this->blank(['s2cid', 'S2CID'])) {
+          $this->add($param_name, $value);
+          if ($this->wikiname() === 'cite web') $this->change_name_to('cite journal');
+          $this->get_doi_from_semanticscholar();
+          return TRUE;
+        }
+        return FALSE;
+      
       case 'eprint':
       case 'arxiv':
         if ($this->blank(ARXIV_ALIASES)) {
@@ -1288,6 +1299,22 @@ final class Template {
        }
     }
     
+    // semanticscholar
+    if (preg_match('~^https?://(?:pdfs?\.|www\.|)semanticscholar\.org/paper()/(?:[^/]+/|)([0-9a-z]+)(?:|\.pdf)$~i', $url, $matches) ||
+        preg_match('~^https?://(?:pdfs?\.|www\.|)semanticscholar\.org/(\S{4})/(?:[^/]+/|)([0-9a-z]+)(?:|\.pdf)$~i', $url, $matches)) {
+       $long_s2cid = $matches[1] . $matches[2];
+       if (strlen($long_s2cid) < 20) return FALSE;
+       $s2cid = getS2CID($long_s2cid);
+       if ($s2cid === FALSE) return FALSE;
+       if ($this->has('s2cid') && $s2cid != $this->get('s2cid')) return FALSE; // Does not match existing
+       if ($this->has('S2CID') && $s2cid != $this->get('S2CID')) return FALSE; // Does not match existing
+       $this->add_if_new('s2cid', $s2cid);
+       if (is_null($url_sent)) {
+         $this->forget($url_type);
+       }
+       return TRUE;
+    }
+
     // Trim ?seq=1#page_scan_tab_contents off of jstor urls
     // We do this since not all jstor urls are recognized below
     if (preg_match("~^(https?://\S*jstor.org\S*)\?seq=1#[a-zA-Z_]+$~", $url, $matches)) {
@@ -1842,6 +1869,21 @@ final class Template {
         report_info(" Successful!");
         return $this->add_if_new('doi', $result->doi);
       }
+    }
+    return FALSE;
+  }
+  
+  public function get_doi_from_semanticscholar() {
+    if ($this->has('doi')) {
+      return TRUE;
+    }
+    if ($this->blank(['s2cid', 'S2CID'])) return FALSE;
+    if ($this->has('s2cid') && $this->has('S2CID')) return FALSE;
+    report_action("Checking semanticscholar database for doi. ");
+    $doi = ConvertS2CID_DOI($this->get('s2cid') . $this->get('S2CID'));
+    if ($doi) {
+      report_info(" Successful!");
+      return $this->add_if_new('doi', $doi);
     }
     return FALSE;
   }
@@ -5026,6 +5068,7 @@ final class Template {
   // Amend parameters
   public function rename($old_param, $new_param, $new_value = FALSE) {
     if (!isset($this->param)) return FALSE;
+    if ($new_param === NULL) report_error('NULL passed to rename()');
     if ($old_param == $new_param) {
        if ($new_value !== FALSE) {
            $this->set($new_param, $new_value);
