@@ -9,8 +9,8 @@ if (!defined('VERBOSE')) define('VERBOSE', TRUE);
 $testing_skip_zotero = TRUE;                                           // TODO
 $testing_skip_bibcode= TRUE;                                           // TODO
 $testing_skip_google = TRUE;                                           // TODO
-$testing_skip_wiki   = TRUE;                                           // TODO
-$testing_skip_dx     = TRUE;                                           // TODO
+$testing_skip_wiki   = FALSE;                                           //
+$testing_skip_dx     = FALSE;                                           //
 $testing_skip_arxiv  = TRUE;                                           // TODO
 // =======================================================================
 
