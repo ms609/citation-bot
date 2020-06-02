@@ -415,7 +415,8 @@ final class Template {
      }
     }
 
-    $auNo = preg_match('~\d+$~', $param_name, $auNo) ? $auNo[0] : '';        
+    $auNo = preg_match('~\d+$~', $param_name, $auNo) ? $auNo[0] : '';
+    
     switch ($param_name) {
       ### EDITORS
       case (boolean) preg_match('~^editor(\d{1,})$~', $param_name, $match) :
