@@ -276,10 +276,9 @@ function adsabs_api($ids, $templates, $identifier) {
       if ($rate_limit[2][2]) {
         report_info("AdsAbs 'big-query' request " . ($rate_limit[2][0] - $rate_limit[2][1]) . "/" . $rate_limit[2][0] .
              ":\n       ");
-             // "; reset at " . date('r', $rate_limit[2][2]);
       } else {
         // @codeCoverageIgnoreStart
-        report_warning("AdsAbs daily search limit exceeded. Big queries stopped until " . date('r', $rate_limit[2][2]) . "\n");
+        report_warning("AdsAbs daily search limit exceeded. Big queries stopped for a while\n");
         sleep(1);
         foreach ($templates as $template) {
            if ($template->has('bibcode')) $template->expand_by_adsabs();
@@ -297,7 +296,7 @@ function adsabs_api($ids, $templates, $identifier) {
     if (isset($decoded->response)) {
       $response = $decoded->response;
     } else {
-      if ($decoded->error) throw new Exception("" . $decoded->error, 5000); // @codeCoverageIgnore
+      if (isseet($decoded->error)) throw new Exception("" . $decoded->error, 5000); // @codeCoverageIgnore
       throw new Exception("Could not decode AdsAbs response", 5000);        // @codeCoverageIgnore
     }
   // @codeCoverageIgnoreStart
