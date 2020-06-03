@@ -7,7 +7,7 @@ if (!defined('VERBOSE')) define('VERBOSE', TRUE);
 
 // Change these to temporarily disable sets of tests======================
 $testing_skip_zotero = TRUE;                                           //    TODO
-$testing_skip_bibcode= TRUE;                                           //    TODO
+$testing_skip_bibcode= FALSE;                                           //    TODO
 $testing_skip_google = TRUE;                                           //    TODO
 $testing_skip_wiki   = TRUE;                                           //    TODO
 $testing_skip_dx     = TRUE;                                           //    TODO
