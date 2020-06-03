@@ -29,7 +29,7 @@ matrix:           ###### ONLY ONE WITH FULL TESTING WITH IS 7.3 OTHERS ARE ALL S
       name: "PHP phan"
       before_script:
         - travis_retry composer self-update
-        - composer require --dev phan/phan:1.x (PHP 7.1+)
+        - composer require --dev phan/phan:1.x
       script: php vendor/bin/phan
     - php: 7.3
       name: "PHP Assumptions"
