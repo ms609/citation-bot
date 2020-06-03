@@ -13,7 +13,7 @@ matrix:           ###### ONLY ONE WITH FULL TESTING WITH IS 7.3 OTHERS ARE ALL S
     - php: nightly
       name: "Quick PHP 8.0 syntax check"
       script: '! find . -type f -name "*.php" -exec php -d error_reporting=32767 -l {} \; 2>&1 >&- | grep "^"'
-    - stage: code-standard
+    - stage: code-standards
       name: "PHP lint"
       php: 7.3
       before_script:  
@@ -25,13 +25,7 @@ matrix:           ###### ONLY ONE WITH FULL TESTING WITH IS 7.3 OTHERS ARE ALL S
       before_script:
         - travis_retry composer self-update
         - composer require --dev phan/phan:1.x
-      script: php vendor/bin/phan --allow-polyfill-parser ./
-    - php: 7.3
-      name: "PHP Assumptions"
-      before_script:
-        - travis_retry composer self-update
-        - composer require --dev rskuipers/php-assumptions
-      script: php vendor/bin/phpa ./
+      script: php vendor/bin/phan --allow-polyfill-parser constants/*.php ./*.php
     - php: 7.3
       name: "PHP phpstan"
       before_script:
@@ -43,7 +37,7 @@ matrix:           ###### ONLY ONE WITH FULL TESTING WITH IS 7.3 OTHERS ARE ALL S
       before_script:
         - travis_retry composer self-update
         - composer require --dev vimeo/psalm
-      script:  php vendor/bin/psalm --init ; php vendor/bin/psalm
+      script:  php vendor/bin/psalm --init ; php vendor/bin/psalm setup.php
     - stage: test
       name: "Full test with PHP 7.3"
       php: 7.3
