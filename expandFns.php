@@ -559,7 +559,7 @@ function remove_comments($string) {
 function prior_parameters($par, $list=array()) {
   array_unshift($list, $par);
   if (preg_match('~(\D+)(\d+)~', $par, $match)) {
-    $before = (string) ((int) $match[2]-1)
+    $before = (string) ((int) $match[2] - 1);
     switch ($match[1]) {
       case 'first': case 'initials': case 'forename':
         return array('last' . $match[2], 'surname' . $match[2], 'author' . $before;
