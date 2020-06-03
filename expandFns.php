@@ -42,7 +42,7 @@ function sanitize_doi($doi) {
         preg_match('~^(10\.1093/ww.+)(?:/ww.+)$~', $doi, $match) ||
         preg_match('~^(10\.1093/anb.+)(?:/anb.+)$~', $doi, $match)) {
        $doi = $match[1];
-    } 
+    }
   }
   return $doi;
 }
@@ -527,9 +527,9 @@ function tidy_date($string) {
   
   // Dates with dots -- convert to slashes and try again.
   if (preg_match('~(\d\d?)\.(\d\d?)\.(\d{2}(?:\d{2})?)$~', $string, $matches) || preg_match('~^(\d\d?)\.(\d\d?)\.(\d{2}(?:\d{2})?)~', $string, $matches)) {
-    if (intval($matches[3]) < (date("y")+2))  $matches[3] = $matches[3] + 2000;
-    if (intval($matches[3]) < 100)  $matches[3] = $matches[3] + 1900;
-    return tidy_date($matches[1] . '/' .  $matches[2] . '/' . $matches[3]);
+    if (intval($matches[3]) < (date("y")+2))  $matches[3] = (int) $matches[3] + 2000;
+    if (intval($matches[3]) < 100)  $matches[3] = (int) $matches[3] + 1900;
+    return tidy_date($matches[1] . '/' .  $matches[2] . '/' . (string) $matches[3]);
   }
   
   if (preg_match('~\s(\d{4})$~', $string, $matches)) return $matches[1]; // Last ditch effort - ends in a year
@@ -559,13 +559,14 @@ function remove_comments($string) {
 function prior_parameters($par, $list=array()) {
   array_unshift($list, $par);
   if (preg_match('~(\D+)(\d+)~', $par, $match)) {
+    $before = (string) ((int) $match[2]-1)
     switch ($match[1]) {
       case 'first': case 'initials': case 'forename':
-        return array('last' . $match[2], 'surname' . $match[2], 'author' . ($match[2]-1));
+        return array('last' . $match[2], 'surname' . $match[2], 'author' . $before;
       case 'last': case 'surname': case 'author':
-        return array('first' . ($match[2]-1), 'forename' . ($match[2]-1), 'initials' . ($match[2]-1), 'author' . ($match[2]-1));
+        return array('first' . $before, 'forename' . $before, 'initials' . $before, 'author' . $before);
       default:
-        return array_merge(FLATTENED_AUTHOR_PARAMETERS, array($match[1] . ($match[2]-1)));
+        return array_merge(FLATTENED_AUTHOR_PARAMETERS, array($match[1] . $before));
     }
   }
   switch ($par) {
