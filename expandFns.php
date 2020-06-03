@@ -562,7 +562,7 @@ function prior_parameters($par, $list=array()) {
     $before = (string) ((int) $match[2] - 1);
     switch ($match[1]) {
       case 'first': case 'initials': case 'forename':
-        return array('last' . $match[2], 'surname' . $match[2], 'author' . $before;
+        return array('last' . $match[2], 'surname' . $match[2], 'author' . $before);
       case 'last': case 'surname': case 'author':
         return array('first' . $before, 'forename' . $before, 'initials' . $before, 'author' . $before);
       default:
