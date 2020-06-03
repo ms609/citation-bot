@@ -383,7 +383,7 @@ final class Template {
    *
    */
   public function add_if_new($param_name, $value, $api = NULL) {
-    $value = trim($value);
+    $value = trim((string) $value);
     if ($value == '') {
       return FALSE;
     }
@@ -2561,10 +2561,10 @@ final class Template {
       $this->add_if_new('issn', $sici[1]); // Check whether journal is set in add_if_new
       //if ($this->blank("year") && $this->blank('month') && $sici[3]) $this->set('month', date("M", mktime(0, 0, 0, $sici[3], 1, 2005)));
       //if ($this->blank('day') && is("month") && $sici[4]) set ("day", $sici[4]);
-      $this->add_if_new('year', $sici[2]);
-      $this->add_if_new('volume', $sici[5]);
-      if ($sici[6]) $this->add_if_new('issue', $sici[6]);
-      $this->add_if_new('pages', $sici[7]);
+      $this->add_if_new('year', (int) $sici[2]);
+      $this->add_if_new('volume', (int) $sici[5]);
+      if ($sici[6]) $this->add_if_new('issue', (int) $sici[6]);
+      $this->add_if_new('pages', (int) $sici[7]);
       return TRUE;
     } else return FALSE;
   }
