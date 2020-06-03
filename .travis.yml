@@ -21,34 +21,29 @@ matrix:           ###### ONLY ONE WITH FULL TESTING WITH IS 7.3 OTHERS ARE ALL S
         - composer require overtrue/phplint --dev -vvv
       script: ./vendor/bin/phplint ./ --exclude=vendor
     - php: 7.3
-      name: "PHP code sniffer"
-      before_script:  
-        - travis_retry composer self-update
-        - composer global require "squizlabs/php_codesniffer=*"
-    - php: 7.3
       name: "PHP phan"
       before_script:
         - travis_retry composer self-update
-        - composer require --dev phan/phan:1.x
+        - composer require --dev phan/phan:1.x --allow-polyfill-parser
       script: php vendor/bin/phan
     - php: 7.3
       name: "PHP Assumptions"
       before_script:
         - travis_retry composer self-update
         - composer require --dev rskuipers/php-assumptions
-      script: php vendor/bin/phpa
+      script: php vendor/bin/phpa ./
     - php: 7.3
       name: "PHP phpstan"
       before_script:
         - travis_retry composer self-update
         - composer require --dev phpstan/phpstan
-      script: php vendor/bin/phpstan
+      script: php vendor/bin/phpstan --no-interaction analyse
     - php: 7.3
       name: "PHP psalm"
       before_script:
         - travis_retry composer self-update
         - composer require --dev vimeo/psalm
-      script: php vendor/bin/psalm
+      script:  php vendor/bin/psalm --init ; php vendor/bin/psalm
     - stage: test
       name: "Full test with PHP 7.3"
       php: 7.3
