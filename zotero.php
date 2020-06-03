@@ -605,9 +605,12 @@ function process_zotero_response($zotero_response, &$template, $url, $url_kind, 
               break;
             default:                                                               // @codeCoverageIgnore
               report_minor_error("Unrecognized creator type: " . $creatorType);    // @codeCoverageIgnore
+              $authorParam = FALSE;                                                   // @codeCoverageIgnore
           }
-         if (author_is_human($result->creators[$i]->firstName . ' ' . $result->creators[$i]->lastName)) $template->validate_and_add($authorParam, $result->creators[$i]->lastName, $result->creators[$i]->firstName,
-                                      isset($result->rights) ? $result->rights : '', FALSE);
+         if ($authorParam && author_is_human($result->creators[$i]->firstName . ' ' . $result->creators[$i]->lastName)) {
+                        $template->validate_and_add($authorParam, $result->creators[$i]->lastName, $result->creators[$i]->firstName,
+                        isset($result->rights) ? $result->rights : '', FALSE);
+         }
         }
         $i++;
       }
