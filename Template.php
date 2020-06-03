@@ -3106,7 +3106,7 @@ final class Template {
       $test_dat = '';
       $shortish = -1;
       $comp = '';
-      $closest = NULL;
+      $closest = '';
       
       foreach ($parameter_list as $parameter) {
         if (preg_match('~^(' . preg_quote($parameter) . '[ \-:]\s*)~iu', $dat, $match)) {
@@ -3134,7 +3134,7 @@ final class Template {
           $shortest = 0;
           break;
         } else {
-          $closest = NULL;
+          $closest = '';
         }
         // Strict inequality as we want to favour the longest match possible
         if ($lev < $shortest || $shortest < 0) {
