@@ -24,8 +24,8 @@ matrix:           ###### ONLY ONE WITH FULL TESTING WITH IS 7.3 OTHERS ARE ALL S
       name: "PHP phan"
       before_script:
         - travis_retry composer self-update
-        - composer require --dev phan/phan:1.x --allow-polyfill-parser
-      script: php vendor/bin/phan
+        - composer require --dev phan/phan:1.x
+      script: php vendor/bin/phan --allow-polyfill-parser
     - php: 7.3
       name: "PHP Assumptions"
       before_script:
@@ -37,7 +37,7 @@ matrix:           ###### ONLY ONE WITH FULL TESTING WITH IS 7.3 OTHERS ARE ALL S
       before_script:
         - travis_retry composer self-update
         - composer require --dev phpstan/phpstan
-      script: php vendor/bin/phpstan --no-interaction analyse
+      script: php vendor/bin/phpstan --no-interaction analyse ./
     - php: 7.3
       name: "PHP psalm"
       before_script:
