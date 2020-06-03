@@ -146,8 +146,8 @@ class WikipediaBot {
           set_time_limit(120);    
           if (isset($ret->error) && (
             (string) $ret->error->code === 'assertuserfailed' ||
-            stripos((string) $response->error->info, 'The database has been automatically locked') !== FALSE ||
-            stripos((string) $response->error->info, 'abusefilter-warning-predatory') !== FALSE)
+            stripos((string) $ret->error->info, 'The database has been automatically locked') !== FALSE ||
+            stripos((string) $ret->error->info, 'abusefilter-warning-predatory') !== FALSE)
           ) {
             // @codeCoverageIgnoreStart
             unset($data);
@@ -342,14 +342,13 @@ class WikipediaBot {
   }
   public function get_prefix_index($prefix, $namespace = 0, $start = "") {
     $page_titles = [];
-    # $page_ids = [];
-    $vars["apfrom"] = $start;
     $vars = ["action" => "query",
       "list" => "allpages",
       "apnamespace" => $namespace,
       "apprefix" => $prefix,
       "aplimit" => "500",
     ];
+    if ($vars["apfrom"]) $vars["apfrom"] = $start;
     
     do {
       set_time_limit(10);
