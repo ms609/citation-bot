@@ -5203,7 +5203,7 @@ final class Template {
     $p->param = (string) $par;
     $p->val = (string) $val;
     
-    $insert_after = prior_parameters($par);
+    $insert_after = prior_parameters((string) $par);
     $prior_pos_best = -1;
     foreach (array_reverse($insert_after) as $after) {
       if (($after_key = $this->get_param_key($after)) !== NULL) {
