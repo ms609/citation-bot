@@ -383,7 +383,7 @@ final class Template {
    *
    */
   public function add_if_new($param_name, $value, $api = NULL) {
-    $value = trim($value);
+    $value = trim((string) $value);
     if ($value == '') {
       return FALSE;
     }
@@ -4085,7 +4085,7 @@ final class Template {
                  $num62 = str_split($matches[2]);
                  $time = 0;
                  for($i=0;$i<9;$i++) {
-                    $time = (62 * $time) + strpos($base62, $num62[$i]);
+                    $time = (62 * $time) + (int) strpos($base62, $num62[$i]);
                  }
                  $this->add_if_new('archive-date', date("Y-m-d", (int) ($time/1000000)));
               }
