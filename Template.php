@@ -1691,7 +1691,7 @@ final class Template {
 
           // Verify that it works as a hdl
           $test_url = "https://hdl.handle.net/" . $handle;
-          sleep(usleep(20000));
+          usleep(20000);
           $headers_test = @get_headers($test_url, 1);
           if ($headers_test === FALSE) return FALSE; // hdl.handle.net is down
           if (empty($headers_test['Location'])) return FALSE; // does not resolve
@@ -2016,7 +2016,7 @@ final class Template {
         }
       } elseif ($term === "year") {
         $key = 'Publication Date';
-        if ($val = ($this->year() || $this->get('date'))) {
+        if (($val = $this->year()) || ($val = $this->get('date'))) {
           $query .= " AND (" . str_replace("%E2%80%93", "-", urlencode($val)) . "[$key])";
         }
       } elseif ($term === "doi") {
