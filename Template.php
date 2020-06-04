@@ -1691,7 +1691,7 @@ final class Template {
 
           // Verify that it works as a hdl
           $test_url = "https://hdl.handle.net/" . $handle;
-          sleep(usleep(20000));
+          usleep(20000);
           $headers_test = @get_headers($test_url, 1);
           if ($headers_test === FALSE) return FALSE; // hdl.handle.net is down
           if (empty($headers_test['Location'])) return FALSE; // does not resolve
