@@ -2088,7 +2088,7 @@ T1 - This is the Title }}';
     parse_plain_text_reference("ZooKeys 212 (1999), 032412332, 33 pages", $expanded, TRUE);
     $this->assertSame('cite journal', $expanded->wikiname());
     $this->assertSame('1999', $expanded->get('year'));
-    $this->assertSame('032412332', $expanded->get('page'));
+    $this->assertNull($expanded->get('page'));  // reject 032412332 as too big
   }
  
   public function testArxivMore12() {
