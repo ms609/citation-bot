@@ -1834,6 +1834,8 @@ final class Template {
 
     if ($data['year'] < 1900 || $data['year'] > (date("Y") + 3)) {
       $data['year'] = NULL;
+    } else {
+      $data['year'] = (string) $data['year'];
     }
     if ((int) $data['end_page'] < (int) $data['start_page']) {
       $data['end_page'] = NULL;
