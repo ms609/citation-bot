@@ -387,6 +387,9 @@ final class Template {
     if ($value == '') {
       return FALSE;
     }
+    if (!is_string($param_name) || trim($param_name) == '') {
+      report_error('invalid param_name passed to add_if_new()');
+    }
     
     if (str_i_same((string) $value, 'null')) { // Hopeully name is not actually null
       return FALSE;
@@ -849,7 +852,7 @@ final class Template {
            || (   // Document with bogus pre-print page ranges
                    ($value           !== '1' && substr(str_replace($en_dash, $en_dash_X, $value), 0, 2)           !== '1X') // New is not 1-
                 && ($all_page_values === '1' || substr(str_replace($en_dash, $en_dash_X, $all_page_values), 0, 2) === '1X') // Old is 1-
-                && ($this->blank('year') || 2 > (date("Y") - $this->get('year'))) // Less than two years old
+                && ($this->blank('year') || 2 > ((int) date("Y") - (int) $this->get('year'))) // Less than two years old
               )
         ) {
             if ($param_name === "pages" && preg_match('~^\d{1,}$~', $value)) $param_name = 'page'; // No dashes, just numbers
@@ -1428,7 +1431,7 @@ final class Template {
       if (bad_10_1093_doi($doi)) return FALSE;
       $old_jstor = (string) $this->get('jstor');
       if (stripos($url, 'jstor')) check_doi_for_jstor($doi, $this);
-      if (is_null($url_sent) && $old_jstor !== (string) $this->get('jstor') && stripos('pdf', $url) === FALSE) {
+      if (is_null($url_sent) && $old_jstor !== (string) $this->get('jstor') && stripos($url, 'pdf') === FALSE) {
          $this->forget($url_type);
       }
       $this->tidy_parameter('doi'); // Sanitize DOI before comparing
@@ -1832,7 +1835,7 @@ final class Template {
       'issn'       => $this->get('issn')
     ];
 
-    if ($data['year'] < 1900 || $data['year'] > (date("Y") + 3)) {
+    if ($data['year'] < 1900 || $data['year'] > ((int) date("Y") + 3)) {
       $data['year'] = NULL;
     } else {
       $data['year'] = (string) $data['year'];
@@ -2348,7 +2351,7 @@ final class Template {
       
       if (preg_match_all('~\nX\-RateLimit\-(\w+):\s*(\d+)\r~i', $header, $rate_limit)) {
         if ($rate_limit[2][2]) {
-          report_info("AdsAbs search " . ($rate_limit[2][0] - $rate_limit[2][1]) . "/" . $rate_limit[2][0] .
+          report_info("AdsAbs search " . (string)((int) $rate_limit[2][0] - (int) $rate_limit[2][1]) . "/" . $rate_limit[2][0] .
                ":\n       " . str_replace("&", "\n       ", urldecode($options)));
                // "; reset at " . date('r', $rate_limit[2][2]);
         } else {
