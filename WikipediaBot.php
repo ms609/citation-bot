@@ -347,7 +347,7 @@ class WikipediaBot {
       "apnamespace" => $namespace,
       "apprefix" => $prefix,
       "aplimit" => "500",
-      "apfrom" = $start
+      "apfrom" => $start
     ];
     
     do {
