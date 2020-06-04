@@ -470,6 +470,7 @@ class Page {
     $objects = array();
     if (!is_array($regexp_in)) $regexp_in = [$regexp_in];
     
+    $preg_ok = TRUE;
     foreach ($regexp_in as $regexp) {
       $preg_ok = TRUE;
       while ($preg_ok = preg_match($regexp, $text, $match)) {
