@@ -2016,7 +2016,7 @@ final class Template {
         }
       } elseif ($term === "year") {
         $key = 'Publication Date';
-        if (($val = $this->year()) || ($val = $this->get('date')) {
+        if (($val = $this->year()) || ($val = $this->get('date'))) {
           $query .= " AND (" . str_replace("%E2%80%93", "-", urlencode($val)) . "[$key])";
         }
       } elseif ($term === "doi") {
