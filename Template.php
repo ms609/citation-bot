@@ -51,7 +51,7 @@ final class Template {
       $this->split_params(substr($text, $pipe_pos + 1, -2));
     } else {
       $this->name = substr($text, 2, -2);
-      $this->param = NULL;
+      $this->param = array();
     }
     $this->initial_name = $this->name;
     // Clean up outdated redirects
@@ -84,7 +84,7 @@ final class Template {
     }
 
     // extract initial parameters/values from Parameters in $this->param
-    if ($this->param) foreach ($this->param as $p) {
+    foreach ($this->param as $p) {
       $this->initial_param[$p->param] = $p->val;
 
       // Save author params for special handling
@@ -3303,7 +3303,7 @@ final class Template {
   protected function correct_param_spelling() {
   // check each parameter name against the list of accepted names (loaded in expand.php).
   // It will correct any that appear to be mistyped.
-  if (!isset($this->param)) return ;
+  if (empty($this->param)) return ;
   $parameter_list = PARAMETER_LIST;
   $parameter_dead = DEAD_PARAMETERS;
   $parameters_used=array();
@@ -3405,10 +3405,8 @@ final class Template {
 
   protected function join_params() {
     $ret = '';
-    if ($this->param) {
-      foreach($this->param as $p) {
-        $ret .= '|' . $p->parsed_text();
-      }
+    foreach($this->param as $p) {
+      $ret .= '|' . $p->parsed_text();
     }
     return $ret;
   }
@@ -4609,7 +4607,6 @@ final class Template {
   public function tidy() {
     // Should only be run once (perhaps when template is first loaded)
     // Future tidying should occur when parameters are added using tidy_parameter.
-    if (!$this->param) return TRUE;
     foreach ($this->param as $param) $this->tidy_parameter($param->param);
   }
   
@@ -4765,7 +4762,7 @@ final class Template {
         $this->name = $spacing[1] . 'Cite document' . $spacing[2];
       }
     }
-    if ($this->param) {
+    if (!empty($this->param)) {
       $drop_me_maybe = array();
       foreach (ALL_ALIASES as $alias_list) {
         if (!$this->blank($alias_list)) { // At least one is set
@@ -4779,7 +4776,7 @@ final class Template {
         }
       }
     }
-    if ($this->param) { // Forget author-link and such that have no such author
+    if (!empty($this->param)) { // Forget author-link and such that have no such author
       foreach ($this->param as $p) {
         $alias = $p->param;
         if ($this->blank($alias)) {
@@ -5005,7 +5002,7 @@ final class Template {
 
   protected function number_of_authors() {
     $max = 0;
-    if ($this->param) foreach ($this->param as $p) {
+    foreach ($this->param as $p) {
       if (preg_match('~(?:author|last|first|forename|initials|surname)(\d+)~', $p->param, $matches))
         $max = max($matches[1], $max);
     }
@@ -5076,7 +5073,7 @@ final class Template {
 
   // Amend parameters
   public function rename($old_param, $new_param, $new_value = FALSE) {
-    if (!isset($this->param)) return FALSE;
+    if (empty($this->param)) return FALSE;
     if ($new_param === NULL) report_error('NULL passed to rename()');
     if ($old_param == $new_param) {
        if ($new_value !== FALSE) {
@@ -5127,12 +5124,10 @@ final class Template {
     // NOTE $this->param and $p->param are different and refer to different types!
     // $this->param is an array of Parameter objects
     // $parameter_i->param is the parameter name within the Parameter object
-    if ($this->param) {
-      foreach ($this->param as $parameter_i) {
-        if ($parameter_i->param === $name) {
-          if ($parameter_i->val === NULL) $parameter_i->val = ''; // Clean up
+    foreach ($this->param as $parameter_i) {
+      if ($parameter_i->param === $name) {
+        if ($parameter_i->val === NULL) $parameter_i->val = ''; // Clean up
           return $parameter_i->val;
-        }
       }
     }
     return NULL;
@@ -5362,10 +5357,8 @@ final class Template {
     if ($this->has(strtolower('CITATION_BOT_PLACEHOLDER_BARE_URL'))) return array();
     $new = array();
     $ret = array();
-    if ($this->param) {
-      foreach ($this->param as $p) {
-        $new[$p->param] = $p->val;
-      }
+    foreach ($this->param as $p) {
+      $new[$p->param] = $p->val;
     }
 
     $old = ($this->initial_param) ? $this->initial_param : array();
