@@ -5,7 +5,10 @@ define("HTML_OUTPUT", !isset($argv));
 require_once('setup.php');
 $api = new WikipediaBot();
 if (!isset($argv)) $argv=[]; // When run as a webpage, this does not get set
+$argument = array();
+$oArg = NULL;
 $argument["cat"] = NULL;
+$argument["slow"] = NULL;
 foreach ($argv as $arg) {
   if (substr($arg, 0, 2) == "--") {
     $argument[substr($arg, 2)] = 1;
@@ -15,11 +18,11 @@ foreach ($argv as $arg) {
   } else {
     if (!isset($oArg)) report_error('Unexpected text: ' . $arg);
     switch ($oArg) {
-      case "P": case "A": case "T":
-        $argument["pages"][] = $arg;
+      case "cat": case "slow":
+        $argument[$oArg][] = $arg;
         break;
       default:
-      $argument[$oArg][] = $arg;
+       report_error('Unsupported command line option: -' . $oArg);
     }
   }
 }
