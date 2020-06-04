@@ -274,7 +274,7 @@ function adsabs_api($ids, $templates, $identifier) {
     
     if (preg_match_all('~\nX\-RateLimit\-(\w+):\s*(\d+)\r~i', $header, $rate_limit)) {
       if ($rate_limit[2][2]) {
-        report_info("AdsAbs 'big-query' request " . ($rate_limit[2][0] - $rate_limit[2][1]) . "/" . $rate_limit[2][0] .
+        report_info("AdsAbs 'big-query' request " . (string)((float) $rate_limit[2][0] - (float)$rate_limit[2][1]) . "/" . $rate_limit[2][0] .
              ":\n       ");
       } else {
         // @codeCoverageIgnoreStart
