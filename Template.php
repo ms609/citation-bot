@@ -31,7 +31,7 @@ final class Template {
             $mod_dashes = FALSE, $mod_names = FALSE, $no_initial_doi = FALSE;
 
   public function parse_text($text) {
-    $this->initial_author_params = NULL; // Will be populated later if there are any
+    $this->initial_author_params = array(); // Will be populated later if there are any
     $this->used_by_api = array(
       'adsabs'   => array(),
       'arxiv'    => array(),
@@ -302,7 +302,7 @@ final class Template {
     // And now everything else
     if ($this->blank(['pages', 'page', 'at']) ||
         preg_match('~no.+no|n/a|in press|none~', $this->get('pages') . $this->get('page') . $this->get('at')) ||
-        (preg_match('~^1[^0-9]~', $this->get('pages') . $this->get('page') . '-') && ($this->blank('year') || 2 > (date("Y") - $this->get('year')))) // It claims to be on page one
+        (preg_match('~^1[^0-9]~', $this->get('pages') . $this->get('page') . '-') && ($this->blank('year') || 2 > ((int)date("Y") - (int)$this->get('year')))) // It claims to be on page one
        ) {
       return TRUE;
     }
@@ -4659,22 +4659,24 @@ final class Template {
       if ($this->has('doi') && $this->has('issue') && ($this->get('issue') == $this->get('volume')) && // Issue = Volume and not NULL
         ($this->get('issue') == $this->get_without_comments_and_placeholders('issue')) &&
         ($this->get('volume') == $this->get_without_comments_and_placeholders('volume'))) { // No comments to flag problems
-        $crossRef = query_crossref($this->get('doi'));
-        $orig_data = trim((string) $this->get('volume'));
-        $possible_issue = trim((string) @$crossRef->issue);
-        $possible_volume = trim((string) @$crossRef->volume);
-        if ($possible_issue != $possible_volume) { // They don't match
-          if ((strpos($possible_issue, '-') > 0 || (integer) $possible_issue > 1) && (integer) $possible_volume > 0) { // Legit data
-            if ($possible_issue == $orig_data) {
-              $this->set('volume', $possible_volume);
-              report_action('Citation had volume and issue the same.  Changing volume.');
-            } elseif ($possible_volume == $orig_data) {
-              $this->set('issue', $possible_issue);
-              report_action('Citation had volume and issue the same.  Changing issue.');
-            } else {
-              report_inaction('Citation has volume and issue set to ' . $orig_data . ' which disagrees with CrossRef');  // @codeCoverageIgnore
-            }
-          }
+        $crossRef = query_crossref($this->get_without_comments_and_placeholders('doi'));
+        if ($crossRef !== FALSE) {
+          $orig_data = trim((string) $this->get('volume'));
+           $possible_issue = trim((string) @$crossRef->issue);
+           $possible_volume = trim((string) @$crossRef->volume);
+           if ($possible_issue != $possible_volume) { // They don't match
+             if ((strpos($possible_issue, '-') > 0 || (integer) $possible_issue > 1) && (integer) $possible_volume > 0) { // Legit data
+               if ($possible_issue == $orig_data) {
+                 $this->set('volume', $possible_volume);
+                 report_action('Citation had volume and issue the same.  Changing volume.');
+               } elseif ($possible_volume == $orig_data) {
+                 $this->set('issue', $possible_issue);
+                 report_action('Citation had volume and issue the same.  Changing issue.');
+               } else {
+                 report_inaction('Citation has volume and issue set to ' . $orig_data . ' which disagrees with CrossRef');  // @codeCoverageIgnore
+               }
+             }
+           }
         }
       }
       $this->tidy_parameter('url'); // depending upon end state, convert to chapter-url
@@ -5074,7 +5076,7 @@ final class Template {
   // Amend parameters
   public function rename($old_param, $new_param, $new_value = FALSE) {
     if (empty($this->param)) return FALSE;
-    if ($new_param === NULL) report_error('NULL passed to rename()');
+    if ($new_param === NULL || $old_param === NULL) report_error('NULL passed to rename()');
     if ($old_param == $new_param) {
        if ($new_value !== FALSE) {
            $this->set($new_param, $new_value);
