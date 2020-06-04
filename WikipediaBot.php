@@ -347,8 +347,8 @@ class WikipediaBot {
       "apnamespace" => $namespace,
       "apprefix" => $prefix,
       "aplimit" => "500",
+      "apfrom" = $start
     ];
-    if ($vars["apfrom"]) $vars["apfrom"] = $start;
     
     do {
       set_time_limit(10);
