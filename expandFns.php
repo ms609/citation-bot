@@ -81,6 +81,7 @@ function extract_doi($text) {
 // ============================================= String/Text functions ======================================
 function wikify_external_text($title) {
   $replacement = [];
+  $placeholder = [];
   if (preg_match_all("~<(?:mml:)?math[^>]*>(.*?)</(?:mml:)?math>~", $title, $matches)) {
     $placeholder = [];
     for ($i = 0; $i < count($matches[0]); $i++) {
