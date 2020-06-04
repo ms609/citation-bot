@@ -345,6 +345,7 @@ function process_zotero_response($zotero_response, &$template, $url, $url_kind, 
   } else {
     $result = $zotero_data[0];
   }
+  $result = (object) $result ;
   
   if (!isset($result->title)) {
     report_warning("Did not get a title for URL ". $url . ": $zotero_response");
