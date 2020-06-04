@@ -296,7 +296,7 @@ function adsabs_api($ids, $templates, $identifier) {
     if (isset($decoded->response)) {
       $response = $decoded->response;
     } else {
-      if (isseet($decoded->error)) throw new Exception("" . $decoded->error, 5000); // @codeCoverageIgnore
+      if (isset($decoded->error)) throw new Exception("" . $decoded->error, 5000); // @codeCoverageIgnore
       throw new Exception("Could not decode AdsAbs response", 5000);        // @codeCoverageIgnore
     }
   // @codeCoverageIgnoreStart
