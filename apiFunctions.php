@@ -412,8 +412,8 @@ function expand_by_doi($template, $force = FALSE) {
   if ($doi && preg_match('~^10\.2307/(\d+)$~', $doi)) {
       if ($template->add_if_new('jstor', substr($doi, 8)) &&
           $template->has('url') &&
-          stripos('jstor.org', $template->get('url')) &&
-          stripos('pdf', $template->get('url')) === FALSE) {
+          stripos($template->get('url'), 'jstor.org') &&
+          stripos($template->get('url'), 'pdf') === FALSE) {
       }
   }
   if ($doi && ($force || $template->incomplete())) {
@@ -571,7 +571,7 @@ function expand_doi_with_dx($template, $doi) {
      // https://api.crossref.org/works/$doi can be used to find out the agency
      // https://www.doi.org/registration_agencies.html  https://www.doi.org/RA_Coverage.html List of all ten doi granting agencies - many do not do journals
      // Examples of DOI usage   https://www.doi.org/demos.html
-     if (stripos('10.2307', $doi) === 0) return FALSE; // jstor API is better
+     if (stripos($doi, '10.2307') === 0) return FALSE; // jstor API is better
      $try_to_add_it = function($name, $data) use($template) {
        if ($template->has($name)) return FALSE; // Not worth updating based upon DX
        if (is_null($data)) return FALSE;

@@ -106,7 +106,7 @@ function query_ieee_webpages($templates) {
        usleep(100000); // 0.10 seconds
        curl_setopt($ch_ieee, CURLOPT_URL, $template->get($kind));
        $return = @curl_exec($ch_ieee);
-       if ($return && strpos("<title> -  </title>", $return) !== FALSE) {
+       if ($return && strpos($return, "<title> -  </title>") !== FALSE) {
          report_forget("Existing IEEE no longer works - dropping URL"); // @codeCoverageIgnore
          $template->forget($kind);                                      // @codeCoverageIgnore
        }
@@ -155,7 +155,7 @@ function drop_urls_that_match_dois($templates) {
         $url &&
         !$template->profoundly_incomplete() &&
         !preg_match(REGEXP_DOI_ISSN_ONLY, $doi) &&
-        (strpos('10.1093/', $doi) === FALSE) &&
+        (strpos($doi, '10.1093/') === FALSE) &&
         $template->blank(DOI_BROKEN_ALIASES))
     {
        if (str_ireplace(PROXY_HOSTS_TO_DROP,'', $url) !== $url) {
