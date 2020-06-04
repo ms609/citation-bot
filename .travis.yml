@@ -31,7 +31,7 @@ matrix:           ###### ONLY ONE WITH FULL TESTING WITH IS 7.3 OTHERS ARE ALL S
       before_script:
         - travis_retry composer self-update
         - composer require --dev phpstan/phpstan
-      script: php vendor/bin/phpstan --no-interaction analyse  --level=2 constants/*.php user_messages.php constants.php expandFns.php zotero.php WikipediaBot.php  NameTools.php Comment.php Page.php Parameter.php Template.php ./setup.php
+      script: php vendor/bin/phpstan --no-interaction analyse  --level=1 constants/*.php user_messages.php constants.php expandFns.php zotero.php WikipediaBot.php  NameTools.php Comment.php Page.php Parameter.php Template.php ./setup.php
     - php: 7.3
       name: "PHP psalm"
       before_script:
