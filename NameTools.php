@@ -211,7 +211,6 @@ function format_multiple_authors($authors, $returnAsArray = FALSE){
   }
 
   $authors = explode(";", $authors);
-  #dbg(array("IN"=>$authors));
   $savedChunk = '';
   if (isset($authors[1])) {
     foreach ($authors as $A){
@@ -229,7 +228,6 @@ function format_multiple_authors($authors, $returnAsArray = FALSE){
         if ($bit) $bitts[] = $bit;
       }
       $bits = $bitts; unset($bitts);
-      #dbg($bits, '$BITS');
       if ((isset($bits[1]) && $bits[1]) || $savedChunk) {
         $return[] = format_author($savedChunk .  ($savedChunk?", ":"") . $chunk);
         $savedChunk = '';
@@ -238,7 +236,7 @@ function format_multiple_authors($authors, $returnAsArray = FALSE){
       }
     }
   }
-  if ($savedChunk) $return[0] = $bits[0];
+  if ($savedChunk) $return[0] = @$bits[0];
   $return = implode("; ", $return);
   $frags = explode(" ", $return);
   $return = array();
