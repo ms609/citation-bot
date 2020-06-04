@@ -32,7 +32,6 @@
   '&times;'	=>	'\times',
   '&equals;'	=>	'\Relbar',
   '&%x220d;'	=>	'\ni',
-  '&lowast;'	=>	'*',
   '&minus;'	=>	'-',
   '&frasl;'	=>	'/',
   '&ratio;'	=>	':',
@@ -49,7 +48,6 @@
   '&rArr;'	=>	'\Rightarrow',
   
   // dynamische Zeichen
-  '&prod;'	=>	'\prod',
   '&dd;'	=>	'd',
   
   // griechisches Alphabet
@@ -133,10 +131,7 @@
   
   // Pfeile und andere Operatoren
   '&perp;'	=>	'\bot',
-  '&sim;'	=>	'~',
   '&prime;'	=>	'\prime',
-  '&le;'	=>	'\le',
-  '&ge;'	=>	'\ge',
   '&infin;'	=>	'\infty',
   '&clubs;'	=>	'\clubsuit',
   '&diams;'	=>	'\diamondsuit',
