@@ -2365,7 +2365,7 @@ final class Template {
       if (isset($decoded->response)) {
         $response = $decoded->response;
       } else {
-        if ($decoded->error) throw new Exception("" . $decoded->error, 5000); // @codeCoverageIgnore
+        if (isset($decoded->error)) throw new Exception("" . $decoded->error, 5000); // @codeCoverageIgnore
         throw new Exception("Could not decode AdsAbs response", 5000);        // @codeCoverageIgnore
       }
       return $response;
@@ -2559,12 +2559,12 @@ final class Template {
     if (preg_match(REGEXP_SICI, urldecode($this->parsed_text()), $sici)) {
       quietly('report_action', "Extracting information from SICI");
       $this->add_if_new('issn', $sici[1]); // Check whether journal is set in add_if_new
-      //if ($this->blank ("year") && $this->blank('month') && $sici[3]) $this->set('month', date("M", mktime(0, 0, 0, $sici[3], 1, 2005)));
+      //if ($this->blank("year") && $this->blank('month') && $sici[3]) $this->set('month', date("M", mktime(0, 0, 0, $sici[3], 1, 2005)));
       //if ($this->blank('day') && is("month") && $sici[4]) set ("day", $sici[4]);
       $this->add_if_new('year', $sici[2]);
-      $this->add_if_new('volume', 1*$sici[5]);
-      if ($sici[6]) $this->add_if_new('issue', 1*$sici[6]);
-      $this->add_if_new('pages', 1*$sici[7]);
+      $this->add_if_new('volume', (int) $sici[5]);
+      if ($sici[6]) $this->add_if_new('issue', (int) $sici[6]);
+      $this->add_if_new('pages', (int) $sici[7]);
       return TRUE;
     } else return FALSE;
   }
@@ -2826,7 +2826,7 @@ final class Template {
             break;
           case "id":
             break; // Don't "remove redundant"
-          case "as": case "useragent": case "as_brr":  case "hl":
+          case "as": case "useragent": case "as_brr": case "hl":
           case "ei": case "ots": case "sig": case "source": case "lr": case "ved":
           case "gs_lcp": case "sxsrf": case "gfe_rd": case "gws_rd":
           case "sa": case "oi": case "ct": case "client": case "redir_esc";
