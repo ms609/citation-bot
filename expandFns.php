@@ -499,9 +499,9 @@ function tidy_date($string) {
   if (preg_match('~^(\d{4}\-\d{2}\-\d{2})T\d{2}:\d{2}:\d{2}\+\d{2}:\d{2}$~', $string, $matches)) return tidy_date($matches[1]); // Remove time zone stuff from standard date format
   if (is_numeric($string) && is_int(1*$string)) {
     $string = intval($string);
-    if ($string < -2000 || $string > date("Y") + 10) return ''; // A number that is not a year; probably garbage 
+    if ($string < -2000 || $string > (int)date("Y") + 10) return ''; // A number that is not a year; probably garbage 
     if ($string > -2 && $string < 2) return ''; // reject -1,0,1
-    return $string; // year
+    return (string) $string; // year
   }
   if (preg_match('~^(\d{1,2}) ([A-Za-z]+\.?), ?(\d{4})$~', $string, $matches)) { // strtotime('3 October, 2016') gives 2019-10-03.  The comma is evil and strtotime is stupid
     $string = $matches[1] . ' ' . $matches[2] . ' ' . $matches[3];   // Remove comma
@@ -510,7 +510,7 @@ function tidy_date($string) {
   if ($time) {
     $day = date('d', $time);
     $year = intval(date('Y', $time));
-    if ($year < -2000 || $year > date("Y") + 10) return ''; // We got an invalid year
+    if ($year < -2000 || $year > (int)date("Y") + 10) return ''; // We got an invalid year
     if ($year < 3 && $year > -3) return '';
     if ($day == '01') { // Probably just got month and year
       $string = date('F Y', $time);
@@ -527,7 +527,7 @@ function tidy_date($string) {
   
   // Dates with dots -- convert to slashes and try again.
   if (preg_match('~(\d\d?)\.(\d\d?)\.(\d{2}(?:\d{2})?)$~', $string, $matches) || preg_match('~^(\d\d?)\.(\d\d?)\.(\d{2}(?:\d{2})?)~', $string, $matches)) {
-    if (intval($matches[3]) < (date("y")+2))  $matches[3] = (int) $matches[3] + 2000;
+    if (intval($matches[3]) < ((int) date("y")+2))  $matches[3] = (int) $matches[3] + 2000;
     if (intval($matches[3]) < 100)  $matches[3] = (int) $matches[3] + 1900;
     return tidy_date($matches[1] . '/' .  $matches[2] . '/' . (string) $matches[3]);
   }
