@@ -383,7 +383,7 @@ final class Template {
    *
    */
   public function add_if_new($param_name, $value, $api = NULL) {
-    $value = trim($value);
+    $value = trim((string) $value);
     if ($value == '') {
       return FALSE;
     }
@@ -1668,7 +1668,7 @@ final class Template {
           $handle = urldecode($handle);
           // Verify that it works as a hdl - first with urlappend, since that is often page numbers
           if (preg_match('~^(.+)\?urlappend=~', $handle, $matches)) {
-            sleep(0.1);
+            usleep(100000);
             $test_url = "https://hdl.handle.net/" . $handle;
             $headers_test = @get_headers($test_url, 1);
             if ($headers_test === FALSE || empty($headers_test['Location'])) {
@@ -1691,7 +1691,7 @@ final class Template {
 
           // Verify that it works as a hdl
           $test_url = "https://hdl.handle.net/" . $handle;
-          sleep(0.02);
+          sleep(usleep(20000));
           $headers_test = @get_headers($test_url, 1);
           if ($headers_test === FALSE) return FALSE; // hdl.handle.net is down
           if (empty($headers_test['Location'])) return FALSE; // does not resolve
@@ -1834,6 +1834,8 @@ final class Template {
 
     if ($data['year'] < 1900 || $data['year'] > (date("Y") + 3)) {
       $data['year'] = NULL;
+    } else {
+      $data['year'] = (string) $data['year'];
     }
     if ((int) $data['end_page'] < (int) $data['start_page']) {
       $data['end_page'] = NULL;
@@ -2350,8 +2352,8 @@ final class Template {
                ":\n       " . str_replace("&", "\n       ", urldecode($options)));
                // "; reset at " . date('r', $rate_limit[2][2]);
         } else {
-          report_warning("AdsAbs daily search limit exceeded. Retry at " . date('r', $rate_limit[2][2]) . "\n");  // @codeCoverageIgnore
-          return (object) array('numFound' => 0);                                                                 // @codeCoverageIgnore
+          report_warning("AdsAbs daily search limit exceeded. Retry in a while\n");  // @codeCoverageIgnore
+          return (object) array('numFound' => 0);                                    // @codeCoverageIgnore
         }
       } else {
         throw new Exception("Headers do not contain rate limit information:\n" . $header, 5000); // @codeCoverageIgnore
@@ -2363,7 +2365,7 @@ final class Template {
       if (isset($decoded->response)) {
         $response = $decoded->response;
       } else {
-        if ($decoded->error) throw new Exception("" . $decoded->error, 5000); // @codeCoverageIgnore
+        if (isset($decoded->error)) throw new Exception("" . $decoded->error, 5000); // @codeCoverageIgnore
         throw new Exception("Could not decode AdsAbs response", 5000);        // @codeCoverageIgnore
       }
       return $response;
@@ -2557,12 +2559,12 @@ final class Template {
     if (preg_match(REGEXP_SICI, urldecode($this->parsed_text()), $sici)) {
       quietly('report_action', "Extracting information from SICI");
       $this->add_if_new('issn', $sici[1]); // Check whether journal is set in add_if_new
-      //if ($this->blank ("year") && $this->blank('month') && $sici[3]) $this->set('month', date("M", mktime(0, 0, 0, $sici[3], 1, 2005)));
-      $this->add_if_new('year', $sici[2]);
+      //if ($this->blank("year") && $this->blank('month') && $sici[3]) $this->set('month', date("M", mktime(0, 0, 0, $sici[3], 1, 2005)));
       //if ($this->blank('day') && is("month") && $sici[4]) set ("day", $sici[4]);
-      $this->add_if_new('volume', 1*$sici[5]);
-      if ($sici[6]) $this->add_if_new('issue', 1*$sici[6]);
-      $this->add_if_new('pages', 1*$sici[7]);
+      $this->add_if_new('year', $sici[2]);
+      $this->add_if_new('volume', (int) $sici[5]);
+      if ($sici[6]) $this->add_if_new('issue', (int) $sici[6]);
+      $this->add_if_new('pages', (int) $sici[7]);
       return TRUE;
     } else return FALSE;
   }
@@ -2824,7 +2826,7 @@ final class Template {
             break;
           case "id":
             break; // Don't "remove redundant"
-          case "as": case "useragent": case "as_brr": case "source":  case "hl":
+          case "as": case "useragent": case "as_brr": case "hl":
           case "ei": case "ots": case "sig": case "source": case "lr": case "ved":
           case "gs_lcp": case "sxsrf": case "gfe_rd": case "gws_rd":
           case "sa": case "oi": case "ct": case "client": case "redir_esc";
@@ -4085,9 +4087,9 @@ final class Template {
                  $num62 = str_split($matches[2]);
                  $time = 0;
                  for($i=0;$i<9;$i++) {
-                    $time = (62 * $time) + strpos($base62, $num62[$i]);
+                    $time = (62 * $time) + (int) strpos($base62, $num62[$i]);
                  }
-                 $this->add_if_new('archive-date', date("Y-m-d", (int) $time/1000000));
+                 $this->add_if_new('archive-date', date("Y-m-d", (int) ($time/1000000)));
               }
               return;
           }
@@ -5537,7 +5539,7 @@ final class Template {
         $part_start = explode("=", $part);
         switch ($part_start[0]) {
           case "aq": case "aqi": case "bih": case "biw": case "client": 
-          case "as": case "useragent": case "as_brr": case "source":
+          case "as": case "useragent": case "as_brr":
           case "ei": case "ots": case "sig": case "source": case "lr":
           case "sa": case "oi": case "ct": case "id":  case "cd":
           case "oq": case "rls": case "sourceid": case "ved":
