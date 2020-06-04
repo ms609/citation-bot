@@ -39,12 +39,12 @@ if (isset($_REQUEST["slow"])) {
     <pre id="botOutput">
 <?php
 
-$page = str_replace(' ', '_', trim($_REQUEST['page']));
-if ($page == '') report_error('Nothing requested');
-if (strlen($page) >256) report_error('Possible invalid page');
-$edit_summary_end = "| Activated by " . $api->get_the_user() . " | All pages linked from [[$page]] | via #UCB_webform_linked";
+$page_name = str_replace(' ', '_', trim($_REQUEST['page']));
+if ($page_name == '') report_error('Nothing requested');
+if (strlen($page_name) >256) report_error('Possible invalid page');
+$edit_summary_end = "| Activated by " . $api->get_the_user() . " | All pages linked from [[$page_name]] | via #UCB_webform_linked";
 
-$url = API_ROOT . '?action=parse&prop=links&format=json&page=' . $page;
+$url = API_ROOT . '?action=parse&prop=links&format=json&page=' . $page_name;
 $json = @file_get_contents($url);
 if ($json === FALSE) {
   report_error(' Error getting page list');
@@ -89,7 +89,7 @@ foreach($links as $link) {
       echo "\n\n    # # # ";
     }
   }
-  echo ("\n Done all " . count($pages_in_category) . " pages linked from $page \n");
+  echo ("\n Done all " . count($pages_in_category) . " pages linked from " . $page_name . " \n");
 
 html_echo(' # # #</pre></body></html>', "\n");
 exit(0);
