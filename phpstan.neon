@@ -1,0 +1,15 @@
+parameters:
+	autoload_directories:
+		- constants
+	autoload_files:
+		- user_messages.php 
+    - constants.php
+    - expandFns.php
+    - zotero.php 
+    - WikipediaBot.php 
+    - NameTools.php 
+    - Comment.php
+    - Page.php
+    - Parameter.php
+    - Template.php
+    - setup.php
