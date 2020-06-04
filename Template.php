@@ -2404,6 +2404,7 @@ final class Template {
     $ris_publisher = FALSE;
     $ris_book      = FALSE;
     $ris_fullbook  = FALSE;
+    $has_T2        = FALSE;
     // Convert &#x__; to characters
     $ris = explode("\n", html_entity_decode($dat, ENT_COMPAT | ENT_HTML401, 'UTF-8'));
     $ris_authors = 0;
@@ -2411,7 +2412,7 @@ final class Template {
     if(preg_match('~(?:T[I1]).*-(.*)$~m', $dat,  $match)) {
         if(in_array(strtolower(trim($match[1])), BAD_ACCEPTED_MANUSCRIPT_TITLES)) return FALSE ;
     }
-    
+
     foreach ($ris as $ris_line) {
       $ris_part = explode(" - ", $ris_line . " ");
       if (trim($ris_part[0]) == "TY") {
@@ -2421,18 +2422,9 @@ final class Template {
         if (in_array(trim($ris_part[1]), ['BOOK', 'EBOOK', 'EDBOOK'])) {
           $ris_fullbook = TRUE;
         }
+      } elseif (trim($ris_part[0]) == "T2") {
+        $has_T2 = TRUE;
       }
-    }
-    if ($ris_book) {
-     $has_T2 = FALSE;
-     foreach ($ris as $ris_line) {
-      $ris_part = explode(" - ", $ris_line . " ");
-      switch (trim($ris_part[0])) {
-        case "T2":
-          $has_T2 = TRUE;
-          break;
-      }
-     }
     }
 
     foreach ($ris as $ris_line) {
