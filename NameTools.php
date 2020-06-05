@@ -264,6 +264,6 @@ function under_two_authors($text) {
  * check this using under_two_authors()
  */
 function split_authors($str) {
-  if (stripos($str, ';')) return explode(';', $str);
+  if (strpos($str, ';')) return explode(';', $str);
   return explode(',', $str);
 }

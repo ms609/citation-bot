@@ -1808,7 +1808,7 @@ final class Template {
   protected function get_doi_from_text() {
     if ($this->blank('doi') && preg_match('~10\.\d{4}/[^&\s\|\}\{]*~', urldecode($this->parsed_text()), $match)) {
       if (stripos($this->rawtext, 'oxforddnb.com') !== FALSE) return; // generally bad, and not helpful
-      if (stripos($this->rawtext, '10.1093') !== FALSE) return; // generally bad, and not helpful
+      if (strpos($this->rawtext, '10.1093') !== FALSE) return; // generally bad, and not helpful
       // Search the entire citation text for anything in a DOI format.
       // This is quite a broad match, so we need to ensure that no baggage has been tagged on to the end of the URL.
       $doi = preg_replace("~(\.x)/(?:\w+)~", "$1", $match[0]);
@@ -2226,7 +2226,7 @@ final class Template {
       }
       if (isset($record->page)) {
          $tmp = implode($record->page);
-         if ((stripos($tmp, 'arxiv') !== FALSE) || (stripos($tmp, '/') !== FALSE)) {  // Bad data
+         if ((stripos($tmp, 'arxiv') !== FALSE) || (strpos($tmp, '/') !== FALSE)) {  // Bad data
           unset($record->page);
           unset($record->volume);
           unset($record->issue);
