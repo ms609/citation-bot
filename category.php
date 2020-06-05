@@ -4,7 +4,11 @@ error_reporting(E_ALL^E_NOTICE);
 define("HTML_OUTPUT", !isset($argv));
 require_once('setup.php');
 $api = new WikipediaBot();
-if (!isset($argv)) $argv=[]; // When run as a webpage, this does not get set
+if (!isset($argv)) {
+  $argv=[]; // When run as a webpage, this does not get set
+} else {
+  unset($argv[0]); // Name of the script
+}
 $argument = array();
 $oArg = NULL;
 $argument["cat"] = NULL;
