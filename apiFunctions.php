@@ -589,19 +589,19 @@ function expand_doi_with_dx($template, $doi) {
      curl_setopt($ch, CURLOPT_RETURNTRANSFER, TRUE);
      curl_setopt($ch, CURLOPT_FOLLOWLOCATION, TRUE);
      try {
-       $ris = @curl_exec($ch);
+       $data = @curl_exec($ch);
      } catch (Exception $e) {                    // @codeCoverageIgnoreStart
        curl_close($ch);
        $template->mark_inactive_doi($doi);
        return FALSE;
      }                                           // @codeCoverageIgnoreEnd
      curl_close($ch);
-     if ($ris == FALSE || stripos($ris, 'DOI Not Found') !== FALSE || stripos($ris, 'DOI prefix') !== FALSE) {
+     if ($data == FALSE || stripos($data, 'DOI Not Found') !== FALSE || stripos($data, 'DOI prefix') !== FALSE) {
        $template->mark_inactive_doi($doi);
        return FALSE;
      }
-     $json = @json_decode($ris, TRUE);
-     if($json === FALSE) return FALSE;
+     $json = @json_decode($data, TRUE);
+     if($json == FALSE) return FALSE;
      report_action("Querying dx.doi.org: doi:" . doi_link($doi));
      // BE WARNED:  this code uses the "@$var" method.
      // If the variable is not set, then PHP just passes NULL, then that is interpreted as a empty string
