@@ -13,7 +13,7 @@ function entrez_api($ids, $templates, $db) {
     report_warning("Error in PubMed search: No response from Entrez server");    // @codeCoverageIgnore
     return FALSE;                                                                // @codeCoverageIgnore
   }
-  
+ 
   foreach (array_keys($ids) as $i) {
     $templates[$i]->record_api_usage('entrez', $db == 'pubmed' ? 'pmid' : 'pmc');
   }
@@ -25,7 +25,7 @@ function entrez_api($ids, $templates, $db) {
       continue;                                                                                              // @codeCoverageIgnore
     }
     $this_template = $templates[$template_key];
-  
+ 
     foreach ($document->Item as $item) {
       if (preg_match("~10\.\d{4}/[^\s\"']*~", $item, $match)) {
         $this_template->add_if_new('doi', $match[0], 'entrez');
