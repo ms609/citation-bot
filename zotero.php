@@ -92,7 +92,7 @@ function query_ieee_webpages($templates) {
        usleep(100000); // 0.10 seconds
        curl_setopt($ch_ieee, CURLOPT_URL, $template->get($kind));
        $return = @curl_exec($ch_ieee);
-       if ($return && preg_match_all('~"doi":"(10\.\d{4}/[^\s"]+)"~', $return, $matches, PREG_PATTERN_ORDER)) {
+       if ($return !== FALSE && preg_match_all('~"doi":"(10\.\d{4}/[^\s"]+)"~', $return, $matches, PREG_PATTERN_ORDER)) {
           $dois = array_unique($matches[1]);
           if (count($dois) === 1) {
             if ($template->add_if_new('doi', $dois[0])) {
@@ -106,7 +106,7 @@ function query_ieee_webpages($templates) {
        usleep(100000); // 0.10 seconds
        curl_setopt($ch_ieee, CURLOPT_URL, $template->get($kind));
        $return = @curl_exec($ch_ieee);
-       if ($return && strpos($return, "<title> -  </title>") !== FALSE) {
+       if ($return !== FALSE && strpos($return, "<title> -  </title>") !== FALSE) {
          report_forget("Existing IEEE no longer works - dropping URL"); // @codeCoverageIgnore
          $template->forget($kind);                                      // @codeCoverageIgnore
        }
