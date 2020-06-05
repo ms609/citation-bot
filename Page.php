@@ -41,6 +41,10 @@ class Page {
     foreach ($details->query->pages as $p) {
       $my_details = $p;
     }
+    if (!isset($my_details)) {
+      report_warning("Page fetch error - could not even get details");
+      return FALSE;
+    }
     $this->read_at = isset($details->curtimestamp) ? $details->curtimestamp : NULL;
     
     $details = $my_details;
