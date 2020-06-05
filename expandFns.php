@@ -151,10 +151,10 @@ function restore_italics ($text) {
 function sanitize_string($str) {
   // ought only be applied to newly-found data.
   if (strtolower(trim($str)) == 'science (new york, n.y.)') return 'Science';
+  $replacement = [];
+  $placeholder = [];
   $math_templates_present = preg_match_all("~<\s*math\s*>.*<\s*/\s*math\s*>~", $str, $math_hits);
   if ($math_templates_present) {
-    $replacement = [];
-    $placeholder = [];
     for ($i = 0; $i < count($math_hits[0]); $i++) {
       $replacement[$i] = $math_hits[0][$i];
       $placeholder[$i] = sprintf(TEMP_PLACEHOLDER, $i);
@@ -497,8 +497,9 @@ function tidy_date($string) {
       return $matches[3];// do not know. just give year
     }
   }
+  $string = trim($string);
   if (preg_match('~^(\d{4}\-\d{2}\-\d{2})T\d{2}:\d{2}:\d{2}\+\d{2}:\d{2}$~', $string, $matches)) return tidy_date($matches[1]); // Remove time zone stuff from standard date format
-  if (is_numeric($string) && is_int(1*$string)) {
+  if (preg_match('~^\-?\d+$~', $string)) {
     $string = intval($string);
     if ($string < -2000 || $string > (int)date("Y") + 10) return ''; // A number that is not a year; probably garbage 
     if ($string > -2 && $string < 2) return ''; // reject -1,0,1
