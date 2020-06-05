@@ -179,6 +179,14 @@ function arxiv_api($ids, $templates) {
 function adsabs_api($ids, $templates, $identifier) {
   global $ADSABS_GIVE_UP;
   global $BLOCK_BIBCODE_SEARCH;
+  foreach ($templates as $template) {
+    if ($template->has('bibcode') && $template->blank('doi') && bibcode_to_doi($template->get('bibcode'))) {
+      $template->add_if_new('doi', bibcode_to_doi($template->get('bibcode')));
+    }
+    if ($template->blank('bibcode') && $template->has('doi') && doi_to_bibcode($template->get('doi'))) {
+      $template->add_if_new('bibcode', doi_to_bibcode($template->get('doi')));
+    }
+  }
   if (@$ADSABS_GIVE_UP) return FALSE;
   if (@$BLOCK_BIBCODE_SEARCH === TRUE) return FALSE;
   if (count($ids) == 0) return FALSE;
@@ -1004,4 +1012,41 @@ function ConvertS2CID_DOI($s2cid) {
     return FALSE;                                                 // @codeCoverageIgnore
   } 
 }
+
+function bibcode_to_doi($bibcode) {
+  return bibcode_cache('b2d', $bibcode, NULL);
+}
+
+function doi_to_bibcode($doi) {
+  return bibcode_cache('d2b', NULL, $doi);
+}
+
+function store_bibcode_to_doi($bibcode, $doi) {
+  return bibcode_cache('sto', $bibcode, $doi);
+}
+
+function bibcode_cache($call, $bibcode, $doi) {
+  static $bibcode_to_doi = array();
+  static $doi_to_bibcode = array();
+
+  switch ($call) {
+    case 'b2d':
+      if (isset($bibcode_to_doi[$bibcode])) return $bibcode_to_doi[$bibcode];
+      return FALSE;
+      break;
+    case 'd2b':
+      if (isset($doi_to_bibcode[$doi])) return $doi_to_bibcode[$doi];
+      return FALSE;
+      break;
+    case 'sto':
+      if (doi_works($doi)) {
+        $bibcode_to_doi[$bibcode] = $doi;
+        $doi_to_bibcode[$doi] = $bibcode;
+      }
+      break;
+    default:
+      report_error('bibcode_cache() called with ' . $call);
+  }
+}
+
 ?>
