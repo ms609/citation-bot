@@ -31,6 +31,7 @@ final class Template {
             $mod_dashes = FALSE, $mod_names = FALSE, $no_initial_doi = FALSE;
 
   public function parse_text($text) {
+    global $page_error;
     $this->initial_author_params = array(); // Will be populated later if there are any
     $this->used_by_api = array(
       'adsabs'   => array(),
@@ -75,7 +76,6 @@ final class Template {
     if (substr($this->wikiname(),0,5) === 'cite ' || $this->wikiname() === 'citation') {
       if (preg_match('~< */? *ref *>~i', $this->rawtext)) {
          // @codeCoverageIgnoreStart
-         global $page_error;
          $page_error = TRUE;
          report_minor_error('reference within citation template: most likely unclosed template.  ' . "\n" . $this->rawtext . "\n");
          return;
@@ -2066,11 +2066,11 @@ final class Template {
   public function expand_by_adsabs() {
     // API docs at https://github.com/adsabs/adsabs-dev-api
     global $SLOW_MODE;
+    global $BLOCK_BIBCODE_SEARCH;
     if (!$SLOW_MODE && $this->blank('bibcode')) {
      report_info("Skipping AdsAbs API: not in slow mode");
      return FALSE;
     }
-    global $BLOCK_BIBCODE_SEARCH;
     if (@$BLOCK_BIBCODE_SEARCH === TRUE) return FALSE;
     if ($this->has('bibcode') && !$this->incomplete() && $this->has('doi')) {
       return FALSE; // Don't waste a query
