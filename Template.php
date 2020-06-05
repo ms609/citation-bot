@@ -31,6 +31,7 @@ final class Template {
             $mod_dashes = FALSE, $mod_names = FALSE, $no_initial_doi = FALSE;
 
   public function parse_text($text) {
+    global $page_error;
     $this->initial_author_params = array(); // Will be populated later if there are any
     $this->used_by_api = array(
       'adsabs'   => array(),
@@ -75,7 +76,6 @@ final class Template {
     if (substr($this->wikiname(),0,5) === 'cite ' || $this->wikiname() === 'citation') {
       if (preg_match('~< */? *ref *>~i', $this->rawtext)) {
          // @codeCoverageIgnoreStart
-         global $page_error;
          $page_error = TRUE;
          report_minor_error('reference within citation template: most likely unclosed template.  ' . "\n" . $this->rawtext . "\n");
          return;
@@ -1808,7 +1808,7 @@ final class Template {
   protected function get_doi_from_text() {
     if ($this->blank('doi') && preg_match('~10\.\d{4}/[^&\s\|\}\{]*~', urldecode($this->parsed_text()), $match)) {
       if (stripos($this->rawtext, 'oxforddnb.com') !== FALSE) return; // generally bad, and not helpful
-      if (stripos($this->rawtext, '10.1093') !== FALSE) return; // generally bad, and not helpful
+      if (strpos($this->rawtext, '10.1093') !== FALSE) return; // generally bad, and not helpful
       // Search the entire citation text for anything in a DOI format.
       // This is quite a broad match, so we need to ensure that no baggage has been tagged on to the end of the URL.
       $doi = preg_replace("~(\.x)/(?:\w+)~", "$1", $match[0]);
@@ -2066,11 +2066,11 @@ final class Template {
   public function expand_by_adsabs() {
     // API docs at https://github.com/adsabs/adsabs-dev-api
     global $SLOW_MODE;
+    global $BLOCK_BIBCODE_SEARCH;
     if (!$SLOW_MODE && $this->blank('bibcode')) {
      report_info("Skipping AdsAbs API: not in slow mode");
      return FALSE;
     }
-    global $BLOCK_BIBCODE_SEARCH;
     if (@$BLOCK_BIBCODE_SEARCH === TRUE) return FALSE;
     if ($this->has('bibcode') && !$this->incomplete() && $this->has('doi')) {
       return FALSE; // Don't waste a query
@@ -2226,7 +2226,7 @@ final class Template {
       }
       if (isset($record->page)) {
          $tmp = implode($record->page);
-         if ((stripos($tmp, 'arxiv') !== FALSE) || (stripos($tmp, '/') !== FALSE)) {  // Bad data
+         if ((stripos($tmp, 'arxiv') !== FALSE) || (strpos($tmp, '/') !== FALSE)) {  // Bad data
           unset($record->page);
           unset($record->volume);
           unset($record->issue);

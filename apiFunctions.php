@@ -13,7 +13,7 @@ function entrez_api($ids, $templates, $db) {
     report_warning("Error in PubMed search: No response from Entrez server");    // @codeCoverageIgnore
     return FALSE;                                                                // @codeCoverageIgnore
   }
-  
+ 
   foreach (array_keys($ids) as $i) {
     $templates[$i]->record_api_usage('entrez', $db == 'pubmed' ? 'pmid' : 'pmc');
   }
@@ -25,7 +25,7 @@ function entrez_api($ids, $templates, $db) {
       continue;                                                                                              // @codeCoverageIgnore
     }
     $this_template = $templates[$template_key];
-  
+ 
     foreach ($document->Item as $item) {
       if (preg_match("~10\.\d{4}/[^\s\"']*~", $item, $match)) {
         $this_template->add_if_new('doi', $match[0], 'entrez');
@@ -364,7 +364,7 @@ function adsabs_api($ids, $templates, $identifier) {
     }
     if (isset($record->page)) {
       $tmp = implode($record->page);
-      if ((stripos($tmp, 'arxiv') !== FALSE) || (stripos($tmp, '/') !== FALSE)) {  // Bad data
+      if ((stripos($tmp, 'arxiv') !== FALSE) || (strpos($tmp, '/') !== FALSE)) {  // Bad data
        unset($record->page);
        unset($record->volume);
        unset($record->issue);
@@ -571,7 +571,7 @@ function expand_doi_with_dx($template, $doi) {
      // https://api.crossref.org/works/$doi can be used to find out the agency
      // https://www.doi.org/registration_agencies.html  https://www.doi.org/RA_Coverage.html List of all ten doi granting agencies - many do not do journals
      // Examples of DOI usage   https://www.doi.org/demos.html
-     if (stripos($doi, '10.2307') === 0) return FALSE; // jstor API is better
+     if (strpos($doi, '10.2307') === 0) return FALSE; // jstor API is better
      $try_to_add_it = function($name, $data) use($template) {
        if ($template->has($name)) return FALSE; // Not worth updating based upon DX
        if (is_null($data)) return FALSE;
