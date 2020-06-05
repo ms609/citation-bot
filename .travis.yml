@@ -20,7 +20,7 @@ matrix:           ###### ONLY ONE WITH FULL TESTING WITH IS 7.3 OTHERS ARE ALL S
         - travis_retry composer self-update
         - composer require overtrue/phplint --dev -vvv
       script: ./vendor/bin/phplint ./ --exclude=vendor
-    - php: 7.3
+    - php: 7.2
       name: "PHP phan"
       before_script:
         - travis_retry composer self-update
