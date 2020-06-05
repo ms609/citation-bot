@@ -334,11 +334,11 @@ class WikipediaBot {
         "titles" => $page,
       ], 'GET');
     if (!isset($res->query->pages)) {
-        report_error("Failed to get article's last revision");         // @codeCoverageIgnore
-        return FALSE;                                                  // @codeCoverageIgnore
+        report_error("Failed to get article's last revision");      // @codeCoverageIgnore
+        return '';                                                  // @codeCoverageIgnore
     }
     $page = reset($res->query->pages);
-    return  (isset($page->revisions[0]->revid) ? $page->revisions[0]->revid : FALSE);
+    return  (isset($page->revisions[0]->revid) ? (string) $page->revisions[0]->revid : '');
   }
   public function get_prefix_index($prefix, $namespace = 0, $start = "") {
     $page_titles = [];
