@@ -467,6 +467,13 @@ function expand_by_doi($template, $force = FALSE) {
         }
         if ($bad_data) {
           report_warning("CrossRef title did not match existing title: doi:" . doi_link($doi));
+          if (isset($crossRef->series_title) report_info("  Possible new title: " . $crossRef->series_title);
+          if (isset($crossRef->article_title) report_info("  Possible new title: " . $crossRef->article_title);
+          foreach (['chapter', 'title', 'series'] as $possible) {
+           if ($template->has($possible)) {
+              report_info("  Existing old title: " . $template->get($possible));
+           }
+          }
           return FALSE;
         }
       }
@@ -765,7 +772,7 @@ function expand_by_jstor($template) {
     return FALSE;
   }
   if ($template->has('title')) {
-    $BAD_DATA = TRUE; 
+    $bad_data = TRUE; 
     $ris = explode("\n", html_entity_decode($dat, ENT_COMPAT | ENT_HTML401, 'UTF-8'));
     foreach ($ris as $ris_line) {
       $ris_part = explode(" - ", $ris_line . " ");
@@ -777,7 +784,7 @@ function expand_by_jstor($template) {
           $new_title = trim($ris_part[1]);
           foreach (['chapter', 'title', 'series'] as $possible) {
             if ($template->has($possible) && titles_are_similar($template->get($possible), $new_title)) {
-              $BAD_DATA = FALSE;
+              $bad_data = FALSE;
             }
           }
           break;
@@ -785,8 +792,22 @@ function expand_by_jstor($template) {
           break;
       }
     }
-    if ($BAD_DATA) {
+    if ($bad_data) {
        report_info('Old title did not match for ' . jstor_link($jstor));
+       foreach ($ris as $ris_line) {
+         $ris_part = explode(" - ", $ris_line . " ");
+         switch (trim($ris_part[0])) {
+           case "T1": case "TI": case "T2": case "BT":
+            $new_title = trim($ris_part[1]);
+            report_info("  Possible new title: " . $new_title);
+           default:
+         }
+       }
+       foreach (['chapter', 'title', 'series'] as $possible) {
+         if ($template->has($possible)) {
+            report_info("  Existing old title: " . $template->get($possible))
+         }
+       }
        return FALSE;
     }
   }
