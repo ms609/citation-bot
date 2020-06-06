@@ -734,10 +734,10 @@ class ZoteroTest extends testBaseClass {
    $this->requires_zotero(function() {
       $text = '{{Use mdy dates}}{{cite web|url=https://www.nasa.gov/content/profile-of-john-glenn}}';
       $page = $this->process_page($text);
-      $this->assertTrue((boolean) strpos($page->parsed_text(), 'December 5, 2016'));
+      $this->assertTrue((bool) strpos($page->parsed_text(), 'December 5, 2016'));
       $text = '{{Use dmy dates}}{{cite web|url=https://www.nasa.gov/content/profile-of-john-glenn}}';
       $page = $this->process_page($text);
-      $this->assertTrue((boolean) strpos($page->parsed_text(), '5 December 2016'));
+      $this->assertTrue((bool) strpos($page->parsed_text(), '5 December 2016'));
    });
   }
  
