@@ -805,7 +805,7 @@ function expand_by_jstor($template) {
        }
        foreach (['chapter', 'title', 'series'] as $possible) {
          if ($template->has($possible)) {
-            report_info("  Existing old title: " . $template->get($possible))
+            report_info("  Existing old title: " . $template->get($possible));
          }
        }
        return FALSE;
