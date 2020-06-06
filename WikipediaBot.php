@@ -472,8 +472,8 @@ class WikipediaBot {
       $_SESSION['citation_bot_user_id'] = $this->the_user;
       return;
      }
-     catch (Throwable $e) { ; } // PHP 7
      catch (Exception $e) { ; } // PHP 5
+     catch (Throwable $e) { ; } // PHP 7
     }
     @session_unset();
     @session_destroy();
