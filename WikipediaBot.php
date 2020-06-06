@@ -15,8 +15,11 @@ class WikipediaBot {
 
   function __construct($no_user = FALSE) {
     // setup.php must already be run at this point
-    if (!getenv('PHP_OAUTH_CONSUMER_TOKEN')) report_error("PHP_OAUTH_CONSUMER_TOKEN not set");
-    if (!getenv('PHP_OAUTH_ACCESS_TOKEN')) report_error("PHP_OAUTH_ACCESS_TOKEN not set");
+    if (!getenv('PHP_OAUTH_CONSUMER_TOKEN'))  report_error("PHP_OAUTH_CONSUMER_TOKEN not set");
+    if (!getenv('PHP_OAUTH_CONSUMER_SECRET')) report_error("PHP_OAUTH_CONSUMER_SECRET not set");
+    if (!getenv('PHP_OAUTH_ACCESS_TOKEN'))    report_error("PHP_OAUTH_ACCESS_TOKEN not set");
+    if (!getenv('PHP_OAUTH_ACCESS_SECRET'))   report_error("PHP_OAUTH_ACCESS_SECRET not set");
+
     if ($no_user) {
       ; // Do not set the username
     } elseif (getenv('TRAVIS')) {
@@ -455,6 +458,8 @@ class WikipediaBot {
       $user_token = new Token($_SESSION['access_key'], $_SESSION['access_secret']);
       // Validate the credentials.
       $conf = new ClientConfig(WIKI_ROOT . '?title=Special:OAuth');
+      if (!getenv('PHP_WP_OAUTH_CONSUMER')) report_error("PHP_WP_OAUTH_CONSUMER not set");
+      if (!getenv('PHP_WP_OAUTH_SECRET'))   report_error("PHP_WP_OAUTH_SECRET not set");
       $conf->setConsumer(new Consumer(getenv('PHP_WP_OAUTH_CONSUMER'), getenv('PHP_WP_OAUTH_SECRET')));
       $client = new Client($conf);
       $ident = $client->identify( $user_token );
