@@ -467,8 +467,8 @@ function expand_by_doi($template, $force = FALSE) {
         }
         if ($bad_data) {
           report_warning("CrossRef title did not match existing title: doi:" . doi_link($doi));
-          if (isset($crossRef->series_title) report_info("  Possible new title: " . $crossRef->series_title);
-          if (isset($crossRef->article_title) report_info("  Possible new title: " . $crossRef->article_title);
+          if (isset($crossRef->series_title)) report_info("  Possible new title: " . $crossRef->series_title);
+          if (isset($crossRef->article_title)) report_info("  Possible new title: " . $crossRef->article_title);
           foreach (['chapter', 'title', 'series'] as $possible) {
            if ($template->has($possible)) {
               report_info("  Existing old title: " . $template->get($possible));
