@@ -323,7 +323,7 @@ class Page {
         } elseif (is_array($this->modifications[$key])) {
           $this->modifications[$key] = array_unique(array_merge($this->modifications[$key], $template_mods[$key]));
         } else {
-          $this->modifications[$key] = $this->modifications[$key] || $template_mods[$key]; // Boolean like mod_dashes
+          $this->modifications[$key] = $this->modifications[$key] || $template_mods[$key]; // bool like mod_dashes
         }
       }
     }
@@ -338,7 +338,7 @@ class Page {
         } elseif (is_array($this->modifications[$key])) {
           $this->modifications[$key] = array_unique(array_merge($this->modifications[$key], $template_mods[$key]));
         } else {
-          $this->modifications[$key] = $this->modifications[$key] || $template_mods[$key]; // Boolean like mod_dashes
+          $this->modifications[$key] = $this->modifications[$key] || $template_mods[$key]; // bool like mod_dashes
         }
       }
     }
