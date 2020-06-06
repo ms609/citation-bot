@@ -422,7 +422,7 @@ final class Template {
 
     switch ($param_name) {
       ### EDITORS
-      case (boolean) preg_match('~^editor(\d{1,})$~', $param_name, $match) :
+      case (bool) preg_match('~^editor(\d{1,})$~', $param_name, $match) :
         if ($this->had_initial_editor) return FALSE;
         if (!$this->blank(['editors', 'editor', 'editor-last', 'editor-first'])) return FALSE; // Existing incompatible data
         if ($this->blank(['editor' . $match[1], 'editor' . $match[1] . '-last', 'editor' . $match[1] . '-first',
@@ -432,7 +432,7 @@ final class Template {
           return FALSE;
         }
       break;
-      case (boolean) preg_match('~^editor(\d{1,})-first$~', $param_name, $match) :
+      case (bool) preg_match('~^editor(\d{1,})-first$~', $param_name, $match) :
         if ($this->had_initial_editor) return FALSE;
         if (!$this->blank(['editors', 'editor', 'editor-last', 'editor-first'])) return FALSE; // Existing incompatible data
         if ($this->blank(['editor' . $match[1], 'editor' . $match[1] . '-first', 'editor-first' . $match[1]])) {
@@ -441,7 +441,7 @@ final class Template {
           return FALSE;
         }
       break;
-      case (boolean) preg_match('~^editor(\d{1,})-last$~', $param_name, $match) :
+      case (bool) preg_match('~^editor(\d{1,})-last$~', $param_name, $match) :
         if ($this->had_initial_editor) return FALSE;
         if (!$this->blank(['editors', 'editor', 'editor-last', 'editor-first'])) return FALSE; // Existing incompatible data
         if ($this->blank(['editor' . $match[1], 'editor' . $match[1] . '-last', 'editor-last' . $match[1]])) {
@@ -452,7 +452,7 @@ final class Template {
       break;
       
       #TRANSLATOR
-      case (boolean) preg_match('~^translator(\d{1,})$~', $param_name, $match) :
+      case (bool) preg_match('~^translator(\d{1,})$~', $param_name, $match) :
         if (!$this->blank(['translators', 'translator', 'translator-last', 'translator-first'])) return FALSE; // Existing incompatible data
         if ($this->blank(['translator' . $match[1], 'translator' . $match[1] . '-last', 'translator' . $match[1] . '-first'])) {
           return $this->add($param_name, sanitize_string($value));
@@ -1131,7 +1131,7 @@ final class Template {
          
       case 'zbl': case 'location': case 'jstor': case 'oclc': case 'mr': case 'titlelink': case 'lccn':
       case 'ssrn': case 'ol': case 'jfm': case 'osti': case 'biorxiv': case 'citeseerx': case 'hdl':
-      case (boolean) preg_match('~author(?:\d{1,}|)-link~', $param_name):
+      case (bool) preg_match('~author(?:\d{1,}|)-link~', $param_name):
         if ($this->blank($param_name)) {
           return $this->add($param_name, sanitize_string($value));
         }
@@ -1205,12 +1205,12 @@ final class Template {
            $return_code = FALSE;
            $return_code |= $this->get_identifiers_from_url(Template::MAGIC_STRING . 'chapterurl ');
            $return_code |= $this->get_identifiers_from_url(Template::MAGIC_STRING . 'url ');
-           return (boolean) $return_code;
+           return (bool) $return_code;
         } elseif ($this->has('url') && $this->has('chapter-url')) {
            $return_code = FALSE;
            $return_code |= $this->get_identifiers_from_url(Template::MAGIC_STRING . 'chapter-url ');
            $return_code |= $this->get_identifiers_from_url(Template::MAGIC_STRING . 'url ');
-           return (boolean) $return_code;
+           return (bool) $return_code;
         } elseif ($this->has('url')) {        
            $url = $this->get('url');
            $url_type = 'url';
