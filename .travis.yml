@@ -37,7 +37,7 @@ matrix:           ###### ONLY ONE WITH FULL TESTING WITH IS 7.3 OTHERS ARE ALL S
       before_script:
         - travis_retry composer self-update
         - composer require --dev vimeo/psalm
-      script:  php vendor/bin/psalm --init ; php vendor/bin/psalm setup.php  authenticate.php category.php generate_template.php gitpull.php linked_pages.php process_page.php  unlock_git.php
+      script:  php vendor/bin/psalm --init ; php vendor/bin/psalm  --show-info=true  setup.php  authenticate.php category.php generate_template.php gitpull.php linked_pages.php process_page.php  unlock_git.php
     - stage: test
       name: "Full test with PHP 7.3"
       php: 7.3
