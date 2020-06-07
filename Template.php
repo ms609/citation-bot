@@ -2688,7 +2688,25 @@ final class Template {
             ($this->has('jstor') && $this->get('jstor-access') === 'free') ||
             ($this->has('osti') && $this->get('osti-access') === 'free') ||
             ($this->has('ol') && $this->get('ol-access') === 'free')
-           ) return 'have free'; // do not add url if have OA already
+           ) {
+          return 'have free'; // do not add url if have OA already
+        }
+        // Double check URL against existing data
+        if (!preg_match('~^(?:https?|ftp):\/\/\/?([^\/\.]+\.[^\/]+)\/~i', $oa_url, $matches)) {
+           report_minor_error(' OA database gave invalid URL: ' . $oa_url);
+           return 'nothing';
+        }
+        $oa_hostname = $matches[1];
+        if (($this->has('osti') && stripos($oa_hostname, 'osti.gov') !== FALSE) ||
+            ($this->has('ssrn') && stripos($oa_hostname, 'ssrn.com') !== FALSE) ||
+            ($this->has('jstor') && stripos($oa_hostname, 'jstor.org') !== FALSE) ||
+            ($this->has('pmid') && stripos($oa_hostname, 'nlm.nih.gov') !== FALSE) ||
+            ($this->has('pmc') && stripos($oa_hostname, 'nlm.nih.gov') !== FALSE) ||
+            ($this->has('arxiv') && stripos($oa_hostname, 'arxiv.org') !== FALSE) ||
+            ($this->has('eprint') && stripos($oa_hostname, 'arxiv.org') !== FALSE) ||
+            (stripos($oa_hostname, 'doi.org') !== FALSE)) {
+          return 'have free';
+       }
         $this->add_if_new('url', $oa_url);  // Will check for PMCs etc hidden in URL
         if ($this->has('url')) {  // The above line might have eaten the URL and upgraded it
           $headers_test = @get_headers($this->get('url'), 1);
