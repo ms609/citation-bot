@@ -131,6 +131,14 @@ final class expandFnsTest extends testBaseClass {
     $this->assertSame($text_math,wikify_external_text($text_mml));  // The most important test: mml converstion to <math>
   }
   
+  public function testTrailingPeriods() {
+    $this->assertSame('In the X.Y.',wikify_external_text('In the X.Y.'));
+    $this->assertSame('In the X. Y.',wikify_external_text('In the X. Y.'));
+    $this->assertSame('In the X. and Y.',wikify_external_text('In the X. and Y'));
+    $this->assertSame('A.B.C.',wikify_external_text('A.B.C.'));
+    $this->assertSame('Blahy.',wikify_external_text('Blahy'));
+  }
+  
   public function testBrackets() {
     $this->assertSame("ABC",remove_brackets('{}{}{A[][][][][]B()(){}[]][][[][C][][][[()()'));
   }
