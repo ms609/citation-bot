@@ -97,6 +97,10 @@ function wikify_external_text($title) {
   $title = html_entity_decode($title, ENT_COMPAT | ENT_HTML401, "UTF-8");
   $title = preg_replace("~\s+~"," ", $title);  // Remove all white spaces before
   if (mb_substr($title, -6) == "&nbsp;") $title = mb_substr($title, 0, -6);
+  // Special code for ending periods
+  while (mb_substr($title, -2) == "..") {
+    $title = mb_substr($title, 0, -1);
+  }
   if (mb_substr($title, -1) == ".") { // Ends with a period
    if (mb_substr_count($title, '.') === 1) { // Only one period
       $title = mb_substr($title, 0, -1);
@@ -145,7 +149,11 @@ function wikify_external_text($title) {
       $title);
   }
 
-  $title = sanitize_string($title);
+  if (mb_substr($title, -1) == '.') {
+    $title = sanitize_string($title) . '.';
+  } else {
+    $title = sanitize_string($title);
+  }
 
   for ($i = 0; $i < count($replacement); $i++) {
     $title = str_replace($placeholder[$i], $replacement[$i], $title);
