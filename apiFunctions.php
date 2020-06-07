@@ -1035,16 +1035,18 @@ function expand_templates_from_archives($templates) { // This is done very late 
       if (stripos($archive_url, 'archive') !==FALSE) {
         $raw_html = @file_get_contents($archive_url);
         if ($raw_html != FALSE && preg_match('~^[\S\s]+doctype[\S\s]+html[\S\s]+head[\S\s]+<title>(.+)<\/title>[\S\s]+head[\S\s]+body~', $raw_html, $match)) {
-          if (stripos($match[1], 'archive') === FALSE &&
-              stripos($match[1], 'wayback') === FALSE &&
-              !in_array(strtolower($match[1]), BAD_ACCEPTED_MANUSCRIPT_TITLES) &&
-              !in_array(strtolower($match[1]), IN_PRESS_ALIASES)
+          $title = $match[1];
+          echo "\n" . $title . "\n";
+          if (stripos($title, 'archive') === FALSE &&
+              stripos($title, 'wayback') === FALSE &&
+              !in_array(strtolower($title), BAD_ACCEPTED_MANUSCRIPT_TITLES) &&
+              !in_array(strtolower($title), IN_PRESS_ALIASES)
              ) {
             $good_title = TRUE;
             foreach (BAD_ZOTERO_TITLES as $bad_title ) {
-               if (mb_stripos($match[1], $bad_title) !== FALSE) $good_title = FALSE;
+               if (mb_stripos($title, $bad_title) !== FALSE) $good_title = FALSE;
             }
-            if ($good_title) $template->add_if_new('title', $match[1]);
+            if ($good_title) $template->add_if_new('title', $title);
           }
         }
       }
