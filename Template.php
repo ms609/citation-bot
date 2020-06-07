@@ -2692,13 +2692,11 @@ final class Template {
           return 'have free'; // do not add url if have OA already
         }
         // Double check URL against existing data
-        $matches = NULL;
-        preg_match('~^((http[s]?|ftp):\/\/)?\/?([^\/\.]+\.)*?([^\/\.]+\.[^:\/\s\.]{2,3}(\.[^:\/\s\.]{2,3})?)(:\d+)?($|\/)([^#?\s]+)?(.*?)?(#[\w\-]+)?$i~', $oa_url, $matches);
-        if (!isset($matches[4]) || $matches[4] == '') {
+        if (!preg_match('~^(?:https?|ftp):\/\/\/?([^\/\.]+\.[^\/]+)\/~i', $oa_url, $matches)) {
            report_minor_error(' OA database gave invalid URL: ' . $oa_url);
            return 'nothing';
         }
-        $oa_hostname = $matches[4];
+        $oa_hostname = $matches[1];
         if (($this->has('osti') && stripos($oa_hostname, 'osti.gov') !== FALSE) ||
             ($this->has('ssrn') && stripos($oa_hostname, 'ssrn.com') !== FALSE) ||
             ($this->has('jstor') && stripos($oa_hostname, 'jstor.org') !== FALSE) ||
