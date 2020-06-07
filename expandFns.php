@@ -97,23 +97,6 @@ function wikify_external_text($title) {
   $title = html_entity_decode($title, ENT_COMPAT | ENT_HTML401, "UTF-8");
   $title = preg_replace("~\s+~"," ", $title);  // Remove all white spaces before
   if (mb_substr($title, -6) == "&nbsp;") $title = mb_substr($title, 0, -6);
-  $title = preg_replace('~[\*]$~', '', $title);
-  $title = title_capitalization($title, TRUE);
-
-  $htmlBraces  = array("&lt;", "&gt;");
-  $angleBraces = array("<", ">");
-  $title = str_ireplace($htmlBraces, $angleBraces, $title);
-
-  $originalTags = array('<title>', '</title>', '</ title>', 'From the Cover: ');
-  $wikiTags = array('','','','');
-  $title = str_ireplace($originalTags, $wikiTags, $title);
-  $originalTags = array('.<br>', '.</br>', '.</ br>', '.<p>', '.</p>', '.</ p>');
-  $wikiTags = array('. ','. ','. ','. ','. ','. ');
-  $title = str_ireplace($originalTags, $wikiTags, $title);
-  $originalTags = array('<br>', '</br>', '</ br>', '<p>', '</p>', '</ p>');
-  $wikiTags = array('. ','. ','. ','. ','. ','. ');
-  $title = str_ireplace($originalTags, $wikiTags, $title);
-
   // Special code for ending periods
   while (mb_substr($title, -2) == "..") {
     $str = mb_substr($title, 0, -1);
@@ -132,7 +115,23 @@ function wikify_external_text($title) {
     }
    }
   }
-  
+  $title = preg_replace('~[\*]$~', '', $title);
+  $title = title_capitalization($title, TRUE);
+
+  $htmlBraces  = array("&lt;", "&gt;");
+  $angleBraces = array("<", ">");
+  $title = str_ireplace($htmlBraces, $angleBraces, $title);
+
+  $originalTags = array('<title>', '</title>', '</ title>', 'From the Cover: ');
+  $wikiTags = array('','','','');
+  $title = str_ireplace($originalTags, $wikiTags, $title);
+  $originalTags = array('.<br>', '.</br>', '.</ br>', '.<p>', '.</p>', '.</ p>');
+  $wikiTags = array('. ','. ','. ','. ','. ','. ');
+  $title = str_ireplace($originalTags, $wikiTags, $title);
+  $originalTags = array('<br>', '</br>', '</ br>', '<p>', '</p>', '</ p>');
+  $wikiTags = array('. ','. ','. ','. ','. ','. ');
+  $title = str_ireplace($originalTags, $wikiTags, $title);
+
   $title_orig = '';
   while ($title != $title_orig) {
     $title_orig = $title;  // Might have to do more than once.   The following do not allow < within the inner match since the end tag is the same :-( and they might nest or who knows what
