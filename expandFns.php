@@ -161,7 +161,7 @@ function sanitize_string($str) {
   $clean = array ('&#91;', '&#93;', '&#124;', '&#123;', '&#125;', " what's ");
   $str = trim(str_replace($dirty, $clean, preg_replace('~[;,]+$~', '', $str)));
   // Special code for ending periods
-  while (mb_substr($str, -2) == ".."))  {
+  while (mb_substr($str, -2) == "..") {
     $str = mb_substr($str, 0, -1);
   }
   if (mb_substr($str, -1) == ".") { // Ends with a period
