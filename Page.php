@@ -304,6 +304,7 @@ class Page {
         $this_template->use_issn();
       }
     }
+    expand_templates_from_archives($our_templates);
 
     report_phase('Remedial work to clean up templates');
     for ($i = 0; $i < count($our_templates); $i++) {
