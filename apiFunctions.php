@@ -1044,7 +1044,7 @@ function expand_templates_from_archives($templates) { // This is done very late 
             foreach (BAD_ZOTERO_TITLES as $bad_title ) {
                if (mb_stripos($match[1], $bad_title) !== FALSE) $good_title = FALSE;
             }
-            if ($good_title) $template->add_if_new('title', $match[1]));
+            if ($good_title) $template->add_if_new('title', $match[1]);
           }
         }
       }
