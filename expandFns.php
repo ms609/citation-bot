@@ -149,7 +149,7 @@ function wikify_external_text($title) {
       $title);
   }
 
-  if (mb_substr($string, -1) == '.') {
+  if (mb_substr($title, -1) == '.') {
     $title = sanitize_string($title) . '.';
   } else {
     $title = sanitize_string($title);
