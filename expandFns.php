@@ -97,20 +97,6 @@ function wikify_external_text($title) {
   $title = html_entity_decode($title, ENT_COMPAT | ENT_HTML401, "UTF-8");
   $title = preg_replace("~\s+~"," ", $title);  // Remove all white spaces before
   if (mb_substr($title, -6) == "&nbsp;") $title = mb_substr($title, 0, -6);
-  if (mb_substr($title, -1) == ".") { // Ends with a period
-   if (mb_substr_count($title, '.') === 1) { // Only one period
-      $title = mb_substr($title, 0, -1);
-   } elseif (mb_substr_count($title, ' ') === 0) { // No spaces at all and multiple periods
-      ;
-   } else { // Multiple periods and at least one space
-    $last_word_start = mb_strrpos(' ' . $title, ' ');
-    $last_word = mb_substr($title, $last_word_start);
-    if (mb_substr_count($last_word, '.') === 1 && // Do not remove if something like D.C. or D. C.
-        mb_substr($title, $last_word_start-2, 1) !== '.') { 
-      $title = mb_substr($title, 0, -1);
-    }
-   }
-  }
   $title = preg_replace('~[\*]$~', '', $title);
   $title = title_capitalization($title, TRUE);
 
@@ -173,7 +159,22 @@ function sanitize_string($str) {
   }
   $dirty = array ('[', ']', '|', '{', '}', " what�s ");
   $clean = array ('&#91;', '&#93;', '&#124;', '&#123;', '&#125;', " what's ");
-  $str = trim(str_replace($dirty, $clean, preg_replace('~[;.,]+$~', '', $str)));
+  $str = trim(str_replace($dirty, $clean, preg_replace('~[;,]+$~', '', $str)));
+  // Special code for ending periods
+  if (mb_substr($str, -1) == ".") { // Ends with a period
+   if (mb_substr_count($str, '.') === 1) { // Only one period
+      $str = mb_substr($str, 0, -1);
+   } elseif (mb_substr_count($str, ' ') === 0) { // No spaces at all and multiple periods
+      ;
+   } else { // Multiple periods and at least one space
+    $last_word_start = mb_strrpos(' ' . $str, ' ');
+    $last_word = mb_substr($str, $last_word_start);
+    if (mb_substr_count($last_word, '.') === 1 && // Do not remove if something like D.C. or D. C.
+        mb_substr($str, $last_word_start-2, 1) !== '.') { 
+      $str = mb_substr($str, 0, -1);
+    }
+   }
+  }
   if ($math_templates_present) {
     $str = str_replace($placeholder, $replacement, $str);
   }
