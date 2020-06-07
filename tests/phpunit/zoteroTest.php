@@ -639,6 +639,18 @@ class ZoteroTest extends testBaseClass {
     $this->assertNull($template->get('url'));
   }
  
+   public function testUseArchive() {
+    $text = '{{cite journal|archive-url=https://web.archive.org/web/20160418061734/http://www.weimarpedia.de/index.php?id=1&tx_wpj_pi1%5barticle%5d=104&tx_wpj_pi1%5baction%5d=show&tx_wpj_pi1%5bcontroller%5d=article&cHash=0fc8834241a91f8cb7d6f1c91bc93489}}';
+    $template = $this->make_citation($text);
+    expand_templates_from_archives(array($template));
+    $this->assertSame('Goethe-Schiller-Denkmal - Weimarpedia', $template->get('title'));
+    
+    $text = '{{cite journal|series=Xarchive-url=https://web.archive.org/web/20160418061734/http://www.weimarpedia.de/index.php?id=1&tx_wpj_pi1%5barticle%5d=104&tx_wpj_pi1%5baction%5d=show&tx_wpj_pi1%5bcontroller%5d=article&cHash=0fc8834241a91f8cb7d6f1c91bc93489}}';
+    $template = $this->make_citation($text);
+    expand_templates_from_archives(array($template));
+    $this->assertNull($template->get('title'));
+  }
+ 
   public function testZoteroExpansion_doi_not_from_crossref() {
    $text = '{{Cite journal|doi=.3233/PRM-140291}}';
    $expanded = $this->make_citation($text);

@@ -97,10 +97,24 @@ function wikify_external_text($title) {
   $title = html_entity_decode($title, ENT_COMPAT | ENT_HTML401, "UTF-8");
   $title = preg_replace("~\s+~"," ", $title);  // Remove all white spaces before
   if (mb_substr($title, -6) == "&nbsp;") $title = mb_substr($title, 0, -6);
-  if (mb_substr($title, -1) == ".") {
-    $last_word = mb_substr($title, mb_strrpos(' ' . $title, ' '));  // Pad with a space to guarantee one is found and do not have to + 1
-    if (mb_substr_count($last_word, '.') === 1) $not_used = mb_substr($title, 0, -1); // Do not remove if something like D.C.  (will not catch D. C. though)
-  } // TODO - the above is unused
+  // Special code for ending periods
+  while (mb_substr($title, -2) == "..") {
+    $title = mb_substr($title, 0, -1);
+  }
+  if (mb_substr($title, -1) == ".") { // Ends with a period
+   if (mb_substr_count($title, '.') === 1) { // Only one period
+      $title = mb_substr($title, 0, -1);
+   } elseif (mb_substr_count($title, ' ') === 0) { // No spaces at all and multiple periods
+      ;
+   } else { // Multiple periods and at least one space
+    $last_word_start = mb_strrpos(' ' . $title, ' ');
+    $last_word = mb_substr($title, $last_word_start);
+    if (mb_substr_count($last_word, '.') === 1 && // Do not remove if something like D.C. or D. C.
+        mb_substr($title, $last_word_start-2, 1) !== '.') { 
+      $title = mb_substr($title, 0, -1);
+    }
+   }
+  }
   $title = preg_replace('~[\*]$~', '', $title);
   $title = title_capitalization($title, TRUE);
 
@@ -135,7 +149,11 @@ function wikify_external_text($title) {
       $title);
   }
 
-  $title = sanitize_string($title);
+  if (mb_substr($title, -1) == '.') {
+    $title = sanitize_string($title) . '.';
+  } else {
+    $title = sanitize_string($title);
+  }
 
   for ($i = 0; $i < count($replacement); $i++) {
     $title = str_replace($placeholder[$i], $replacement[$i], $title);

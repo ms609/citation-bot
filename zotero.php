@@ -246,7 +246,7 @@ function zotero_request($url) {
   }
   return $zotero_response;
 }
-  
+
 function expand_by_zotero(&$template, $url = NULL) {
   global $zotero_failures_count;
   global $zotero_announced;
