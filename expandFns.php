@@ -114,6 +114,25 @@ function wikify_external_text($title) {
   $wikiTags = array('. ','. ','. ','. ','. ','. ');
   $title = str_ireplace($originalTags, $wikiTags, $title);
 
+  // Special code for ending periods
+  while (mb_substr($title, -2) == "..") {
+    $str = mb_substr($title, 0, -1);
+  }
+  if (mb_substr($title, -1) == ".") { // Ends with a period
+   if (mb_substr_count($title, '.') === 1) { // Only one period
+      $title = mb_substr($title, 0, -1);
+   } elseif (mb_substr_count($title, ' ') === 0) { // No spaces at all and multiple periods
+      ;
+   } else { // Multiple periods and at least one space
+    $last_word_start = mb_strrpos(' ' . $title, ' ');
+    $last_word = mb_substr($title, $last_word_start);
+    if (mb_substr_count($last_word, '.') === 1 && // Do not remove if something like D.C. or D. C.
+        mb_substr($title, $last_word_start-2, 1) !== '.') { 
+      $str = mb_substr($title, 0, -1);
+    }
+   }
+  }
+  
   $title_orig = '';
   while ($title != $title_orig) {
     $title_orig = $title;  // Might have to do more than once.   The following do not allow < within the inner match since the end tag is the same :-( and they might nest or who knows what
@@ -131,7 +150,11 @@ function wikify_external_text($title) {
       $title);
   }
 
-  $title = sanitize_string($title);
+  if (mb_substr($string, -1) == '.') {
+    $title = sanitize_string($title) . '.';
+  } else {
+    $title = sanitize_string($title);
+  }
 
   for ($i = 0; $i < count($replacement); $i++) {
     $title = str_replace($placeholder[$i], $replacement[$i], $title);
@@ -159,25 +182,7 @@ function sanitize_string($str) {
   }
   $dirty = array ('[', ']', '|', '{', '}', " what�s ");
   $clean = array ('&#91;', '&#93;', '&#124;', '&#123;', '&#125;', " what's ");
-  $str = trim(str_replace($dirty, $clean, preg_replace('~[;,]+$~', '', $str)));
-  // Special code for ending periods
-  while (mb_substr($str, -2) == "..") {
-    $str = mb_substr($str, 0, -1);
-  }
-  if (mb_substr($str, -1) == ".") { // Ends with a period
-   if (mb_substr_count($str, '.') === 1) { // Only one period
-      $str = mb_substr($str, 0, -1);
-   } elseif (mb_substr_count($str, ' ') === 0) { // No spaces at all and multiple periods
-      ;
-   } else { // Multiple periods and at least one space
-    $last_word_start = mb_strrpos(' ' . $str, ' ');
-    $last_word = mb_substr($str, $last_word_start);
-    if (mb_substr_count($last_word, '.') === 1 && // Do not remove if something like D.C. or D. C.
-        mb_substr($str, $last_word_start-2, 1) !== '.') { 
-      $str = mb_substr($str, 0, -1);
-    }
-   }
-  }
+  $str = trim(str_replace($dirty, $clean, preg_replace('~[;.,]+$~', '', $str)));
   if ($math_templates_present) {
     $str = str_replace($placeholder, $replacement, $str);
   }
