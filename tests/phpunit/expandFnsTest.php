@@ -138,13 +138,13 @@ final class expandFnsTest extends testBaseClass {
     $this->assertSame('In the X. Y.', wikify_external_text('In the X. Y.'));
   }
   public function testTrailingPeriods3() {
-    $this->assertSame('In the X. and Y', wikify_external_text('In the X. and Y.'));
+    $this->assertSame('In the X. And Y', wikify_external_text('In the X. and Y.'));
   }
   public function testTrailingPeriods4() {
     $this->assertSame('A.B.C.', wikify_external_text('A.B.C.'));
    }
   public function testTrailingPeriods5() {
-    $this->assertSame('Blahy.', wikify_external_text('Blahy'));
+    $this->assertSame('Blahy', wikify_external_text('Blahy.'));
   }
   
   public function testBrackets() {
