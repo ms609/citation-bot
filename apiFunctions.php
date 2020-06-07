@@ -1025,4 +1025,30 @@ function ConvertS2CID_DOI($s2cid) {
     return FALSE;                                                 // @codeCoverageIgnore
   } 
 }
+
+function expand_templates_from_archives($templates) { // This is done very late as a latch ditch effort
+  foreach ($templates as $template) {
+    if ($template->blank(['title', 'chapter', 'series']) &&
+        !$template->blank(['archive-url', 'archive-url']) &&
+        $template->blank(WORK_ALIASES)) {
+      $archive_url = $template->get('archive-url') . $template->get('archiveurl');
+      if (stripos($archive_url, 'archive')) {
+        $raw_html = @file_get_contents($archive_url);
+        if ($raw_html != FALSE && preg_match('~^[\S\s]+doctype[\S\s]+html[\S\s]+head[\S\s]+<title>(.+)<\/title>[\S\s]+head[\S\s]+body~', $raw_html, $match)) {
+          if (stripos($match[1], 'archive') === FALSE &&
+              stripos($match[1], 'wayback') === FALSE &&
+              !in_array(strtolower($match[1]), BAD_ACCEPTED_MANUSCRIPT_TITLES) &&
+              !in_array(strtolower($match[1]), IN_PRESS_ALIASES) &&
+             ) {
+            $good_title = TRUE;
+            foreach (BAD_ZOTERO_TITLES as $bad_title ) {
+               if (mb_stripos($match[1], $bad_title) !== FALSE) $good_title = FALSE;
+            }
+            if ($good_title) $template->add_if_new('title', $match[1]));
+          }
+        }
+      }
+    }
+  }
+}
 ?>
