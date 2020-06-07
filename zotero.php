@@ -246,7 +246,8 @@ function zotero_request($url) {
   }
   return $zotero_response;
 }
-  
+
+// TODO add code to expand based upon archive URLS
 function expand_by_zotero(&$template, $url = NULL) {
   global $zotero_failures_count;
   global $zotero_announced;
