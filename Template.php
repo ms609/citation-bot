@@ -2616,7 +2616,6 @@ final class Template {
           return 'unreliable';                                                                                     // @codeCoverageIgnore
         }
         if (@$oa->journal_name == "Cochrane Database of Systematic Reviews" ) {
-          // false positives are too common https://github.com/Impactstory/oadoi/issues/121
           report_warning("Ignored a OA from Cochrane Database of Systematic Reviews for DOI: " . echoable($doi)); // @codeCoverageIgnore
           return 'unreliable';                                                                                    // @codeCoverageIgnore
         }
