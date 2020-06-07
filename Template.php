@@ -2694,7 +2694,10 @@ final class Template {
         // Double check URL against existing data
         $matches = NULL;
         preg_match('~^((http[s]?|ftp):\/\/)?\/?([^\/\.]+\.)*?([^\/\.]+\.[^:\/\s\.]{2,3}(\.[^:\/\s\.]{2,3})?)(:\d+)?($|\/)([^#?\s]+)?(.*?)?(#[\w\-]+)?$i~', $oa_url, $matches);
-        if (!isset($matches[4]) || $matches[4] == '') return 'nothing'; // Invalid URL
+        if (!isset($matches[4]) || $matches[4] == '') {
+           report_minor_error(' OA database gave invalid URL: ' . $oa_url);
+           return 'nothing';
+        }
         $oa_hostname = $matches[4];
         if (($this->has('osti') && stripos($oa_hostname, 'osti.gov') !== FALSE) ||
             ($this->has('ssrn') && stripos($oa_hostname, 'ssrn.com') !== FALSE) ||
