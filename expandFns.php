@@ -111,7 +111,7 @@ function wikify_external_text($title) {
     $last_word = mb_substr($title, $last_word_start);
     if (mb_substr_count($last_word, '.') === 1 && // Do not remove if something like D.C. or D. C.
         mb_substr($title, $last_word_start-2, 1) !== '.') { 
-      $str = mb_substr($title, 0, -1);
+      $title = mb_substr($title, 0, -1);
     }
    }
   }
