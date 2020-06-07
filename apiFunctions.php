@@ -1036,7 +1036,6 @@ function expand_templates_from_archives($templates) { // This is done very late 
         $raw_html = @file_get_contents($archive_url);
         if ($raw_html != FALSE && preg_match('~^[\S\s]+doctype[\S\s]+html[\S\s]+head[\S\s]+<title>(.+)<\/title>[\S\s]+head[\S\s]+body~', $raw_html, $match)) {
           $title = $match[1];
-          echo "\n" . $title . "\n";
           if (stripos($title, 'archive') === FALSE &&
               stripos($title, 'wayback') === FALSE &&
               !in_array(strtolower($title), BAD_ACCEPTED_MANUSCRIPT_TITLES) &&
