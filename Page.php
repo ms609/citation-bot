@@ -22,8 +22,8 @@ class Page {
   }
 
   public function get_text_from($title, $api) {
-    $this->construct_modifications_array(); // Could be new page
     global $is_a_man_with_no_plan;
+    $this->construct_modifications_array(); // Could be new page
     $is_a_man_with_no_plan = FALSE;
     if ($api->get_the_user() === 'AManWithNoPlan') $is_a_man_with_no_plan = TRUE; // Special debug options enabled
 
@@ -323,7 +323,7 @@ class Page {
         } elseif (is_array($this->modifications[$key])) {
           $this->modifications[$key] = array_unique(array_merge($this->modifications[$key], $template_mods[$key]));
         } else {
-          $this->modifications[$key] = $this->modifications[$key] || $template_mods[$key]; // Boolean like mod_dashes
+          $this->modifications[$key] = $this->modifications[$key] || $template_mods[$key]; // bool like mod_dashes
         }
       }
     }
@@ -338,7 +338,7 @@ class Page {
         } elseif (is_array($this->modifications[$key])) {
           $this->modifications[$key] = array_unique(array_merge($this->modifications[$key], $template_mods[$key]));
         } else {
-          $this->modifications[$key] = $this->modifications[$key] || $template_mods[$key]; // Boolean like mod_dashes
+          $this->modifications[$key] = $this->modifications[$key] || $template_mods[$key]; // bool like mod_dashes
         }
       }
     }
@@ -466,6 +466,8 @@ class Page {
   }
   
   public function extract_object($class) {
+    global $page_error;
+    global $is_a_man_with_no_plan;
     $i = 0;
     $text = $this->text;
     $regexp_in = $class::REGEXP;
@@ -488,9 +490,7 @@ class Page {
     if ($preg_ok === FALSE) { // Something went wrong
         // PHP 5 segmentation faults in preg_match when it fails.  PHP 7 returns FALSE.  Often from bad wiki-text
         // @codeCoverageIgnoreStart
-        global $page_error;
         $page_error = TRUE;
-        global $is_a_man_with_no_plan;
         if ($is_a_man_with_no_plan) echo "<p>\n\n" . $text . "\n\n<p>";
         report_minor_error('Regular expression failure in ' . htmlspecialchars($this->title) . ' when extracting ' . $class . 's');
         // @codeCoverageIgnoreEnd

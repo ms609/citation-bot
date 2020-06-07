@@ -23,6 +23,6 @@ final class GenTemplateTest extends testBaseClass {
       while (ob_get_level()) { ob_end_flush(); };
       ob_start(); // PHPUnit turns on a level of buffering itself -- Give it back to avoid "Risky Test"
       // Output checking time
-      $this->assertTrue((boolean) strpos($template_text, 'Cite journal'));
+      $this->assertTrue((bool) strpos($template_text, 'Cite journal'));
   }
 }

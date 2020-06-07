@@ -98,9 +98,9 @@ function wikify_external_text($title) {
   $title = preg_replace("~\s+~"," ", $title);  // Remove all white spaces before
   if (mb_substr($title, -6) == "&nbsp;") $title = mb_substr($title, 0, -6);
   if (mb_substr($title, -1) == ".") {
-    $last_word = mb_substr($title, mb_strpos($title, ' ') + 1);
-    if (mb_substr_count($last_word, '.') === 1) $last_word = mb_substr($title, 0, -1); // Do not remove if something like D.C.  (will not catch D. C. though)
-  }
+    $last_word = mb_substr($title, mb_strrpos(' ' . $title, ' '));  // Pad with a space to guarantee one is found and do not have to + 1
+    if (mb_substr_count($last_word, '.') === 1) $not_used = mb_substr($title, 0, -1); // Do not remove if something like D.C.  (will not catch D. C. though)
+  } // TODO - the above is unused
   $title = preg_replace('~[\*]$~', '', $title);
   $title = title_capitalization($title, TRUE);
 
@@ -307,7 +307,7 @@ function title_capitalization($in, $caps_after_punctuation) {
      return $new_case; // We ignore wikilinked names and URL linked since who knows what's going on there.
                        // Changing case may break links (e.g. [[Journal YZ|J. YZ]] etc.)
   }
-  
+
   if ($new_case == mb_strtoupper($new_case) 
      && mb_strlen(str_replace(array("[", "]"), "", trim($in))) > 6
      ) {
@@ -326,7 +326,7 @@ function title_capitalization($in, $caps_after_punctuation) {
   $new_case = mb_substr($new_case, 1, -1); // Remove added spaces
 
   $new_case = mb_substr(str_replace(UC_SMALL_WORDS, LC_SMALL_WORDS, " " . $new_case . " "), 1, -1);
-  
+
   if ($caps_after_punctuation || (substr_count($in, '.') / strlen($in)) > .07) {
     // When there are lots of periods, then they probably mark abbrev.s, not sentence ends
     // We should therefore capitalize after each punctuation character.
@@ -339,13 +339,13 @@ function title_capitalization($in, $caps_after_punctuation) {
     // But not "Ann. Of...." which seems to be common in journal titles
     $new_case = str_replace("Ann. Of ", "Ann. of ", $new_case);
   }
-  
+
   $new_case = preg_replace_callback(
     "~ \([a-z]~u" /* uppercase after parenthesis */, 
     function($matches) {return mb_strtoupper($matches[0]);},
     trim($new_case)
   );
-  
+
   $new_case = preg_replace_callback(
     "~\w{2}'[A-Z]\b~u" /* Lowercase after apostrophes */, 
     function($matches) {return mb_strtolower($matches[0]);},
@@ -357,14 +357,14 @@ function title_capitalization($in, $caps_after_punctuation) {
     function($matches) {return mb_strtolower($matches[1]) . mb_ucfirst($matches[2]);},
     ' ' . $new_case
   );
-  
+
   /** Italian dell'xxx words **/
   $new_case = preg_replace_callback(
     "~(\s)(Dell|Degli|Delle)([\'\x{00B4}][a-zA-ZÀ-ÿ]{3})~u",
     function($matches) {return $matches[1] . strtolower($matches[2]) . $matches[3];},
     $new_case
   );
-  
+
   $new_case = mb_ucfirst(trim($new_case));
 
   // Solitary 'a' should be lowercase
@@ -374,20 +374,20 @@ function title_capitalization($in, $caps_after_punctuation) {
 
   // This should be capitalized
   $new_case = str_replace(['(new Series)', '(new series)'] , ['(New Series)', '(New Series)'], $new_case);
-  
+
   // Catch some specific epithets, which should be lowercase
   $new_case = preg_replace_callback(
     "~(?:'')?(?P<taxon>\p{L}+\s+\p{L}+)(?:'')?\s+(?P<nova>(?:(?:gen\.? no?v?|sp\.? no?v?|no?v?\.? sp|no?v?\.? gen)\b[\.,\s]*)+)~ui" /* Species names to lowercase */,
     function($matches) {return "''" . ucfirst(strtolower($matches['taxon'])) . "'' " . strtolower($matches["nova"]);},
     $new_case);
-  
+
   // "des" at end is "Des" for Design not german "The"
   if (mb_substr($new_case, -4, 4) == ' des') $new_case = mb_substr($new_case, 0, -4)  . ' Des';
-  
+
   // Capitalization exceptions, e.g. Elife -> eLife
   $new_case = str_replace(UCFIRST_JOURNAL_ACRONYMS, JOURNAL_ACRONYMS, " " .  $new_case . " ");
   $new_case = mb_substr($new_case, 1, mb_strlen($new_case) - 2); // remove spaces, needed for matching in LC_SMALL_WORDS
-  
+
   // Single letter at end should be capitalized  J Chem Phys E for example.  Obviously not the spanish word "e".
   if (mb_substr($new_case, -2, 1) == ' ') $new_case = strrev(ucfirst(strrev($new_case)));
 
@@ -412,7 +412,7 @@ function mb_ucfirst($string)
 {
     return mb_strtoupper(mb_substr($string, 0, 1)) . mb_substr($string, 1, NULL);
 }
-  
+
 function mb_substr_replace($string, $replacement, $start, $length) {
     return mb_substr($string, 0, $start).$replacement.mb_substr($string, $start+$length);
 }
@@ -447,7 +447,7 @@ function throttle ($min_interval) {
 function tidy_date($string) {
   $string=trim($string);
   if (stripos($string, 'Invalid') !== FALSE) return '';
-  if (stripos($string, '1/1/0001') !== FALSE) return '';
+  if (strpos($string, '1/1/0001') !== FALSE) return '';
   if (!preg_match('~\d{2}~', $string)) return ''; // If there are not two numbers next to each other, reject
   // Google sends ranges
   if (preg_match('~^(\d{4})(\-\d{2}\-\d{2})\s+\-\s+(\d{4})(\-\d{2}\-\d{2})$~', $string, $matches)) { // Date range
@@ -661,5 +661,5 @@ function can_safely_modify_dashes($value) {
 }
 
 function str_i_same($str1, $str2) {
-   return (boolean) (0 === strcasecmp($str1, $str2));
+   return (bool) (0 === strcasecmp($str1, $str2));
 }

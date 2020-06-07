@@ -15,8 +15,11 @@ class WikipediaBot {
 
   function __construct($no_user = FALSE) {
     // setup.php must already be run at this point
-    if (!getenv('PHP_OAUTH_CONSUMER_TOKEN')) report_error("PHP_OAUTH_CONSUMER_TOKEN not set");
-    if (!getenv('PHP_OAUTH_ACCESS_TOKEN')) report_error("PHP_OAUTH_ACCESS_TOKEN not set");
+    if (!getenv('PHP_OAUTH_CONSUMER_TOKEN'))  report_error("PHP_OAUTH_CONSUMER_TOKEN not set");
+    if (!getenv('PHP_OAUTH_CONSUMER_SECRET')) report_error("PHP_OAUTH_CONSUMER_SECRET not set");
+    if (!getenv('PHP_OAUTH_ACCESS_TOKEN'))    report_error("PHP_OAUTH_ACCESS_TOKEN not set");
+    if (!getenv('PHP_OAUTH_ACCESS_SECRET'))   report_error("PHP_OAUTH_ACCESS_SECRET not set");
+
     if ($no_user) {
       ; // Do not set the username
     } elseif (getenv('TRAVIS')) {
@@ -334,11 +337,11 @@ class WikipediaBot {
         "titles" => $page,
       ], 'GET');
     if (!isset($res->query->pages)) {
-        report_error("Failed to get article's last revision");         // @codeCoverageIgnore
-        return FALSE;                                                  // @codeCoverageIgnore
+        report_error("Failed to get article's last revision");      // @codeCoverageIgnore
+        return '';                                                  // @codeCoverageIgnore
     }
     $page = reset($res->query->pages);
-    return  (isset($page->revisions[0]->revid) ? $page->revisions[0]->revid : FALSE);
+    return  (isset($page->revisions[0]->revid) ? (string) $page->revisions[0]->revid : '');
   }
   public function get_prefix_index($prefix, $namespace = 0, $start = "") {
     $page_titles = [];
@@ -455,6 +458,8 @@ class WikipediaBot {
       $user_token = new Token($_SESSION['access_key'], $_SESSION['access_secret']);
       // Validate the credentials.
       $conf = new ClientConfig(WIKI_ROOT . '?title=Special:OAuth');
+      if (!getenv('PHP_WP_OAUTH_CONSUMER')) report_error("PHP_WP_OAUTH_CONSUMER not set");
+      if (!getenv('PHP_WP_OAUTH_SECRET'))   report_error("PHP_WP_OAUTH_SECRET not set");
       $conf->setConsumer(new Consumer(getenv('PHP_WP_OAUTH_CONSUMER'), getenv('PHP_WP_OAUTH_SECRET')));
       $client = new Client($conf);
       $ident = $client->identify( $user_token );
@@ -467,8 +472,8 @@ class WikipediaBot {
       $_SESSION['citation_bot_user_id'] = $this->the_user;
       return;
      }
-     catch (Throwable $e) { ; } // PHP 7
      catch (Exception $e) { ; } // PHP 5
+     catch (Throwable $e) { ; } // PHP 7
     }
     @session_unset();
     @session_destroy();

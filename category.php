@@ -4,35 +4,35 @@ error_reporting(E_ALL^E_NOTICE);
 define("HTML_OUTPUT", !isset($argv));
 require_once('setup.php');
 $api = new WikipediaBot();
-if (!isset($argv)) $argv=[]; // When run as a webpage, this does not get set
-$argument = array();
-$oArg = NULL;
-$argument["cat"] = NULL;
-$argument["slow"] = NULL;
-foreach ($argv as $arg) {
-  if (substr($arg, 0, 2) == "--") {
-    $argument[substr($arg, 2)] = 1;
-    unset($oArg);
-  } elseif (substr($arg, 0, 1) == "-") {
-    $oArg = substr($arg, 1);
+if (!isset($argv)) {
+  if (isset($_REQUEST["slow"])) {
+    $SLOW_MODE = TRUE;
   } else {
-    if (!isset($oArg)) report_error('Unexpected text: ' . $arg);
-    switch ($oArg) {
-      case "cat": case "slow":
-        $argument[$oArg][] = $arg;
-        break;
-      default:
-       report_error('Unsupported command line option: -' . $oArg);
-    }
+    $SLOW_MODE = FALSE;
+  }
+  if (isset($_REQUEST["cat"])) {
+    $category = $_REQUEST["cat"];
+  } else {
+    $category = '';
+  }
+} else {
+  $SLOW_MODE = FALSE;
+  $category = '';
+  $oArg = NULL;
+  foreach ($argv as $arg) {
+   if ($arg == "--slow") {
+    $SLOW_MODE = TRUE;
+    unset($oArg);
+   } elseif ($arg == "-cat") {
+    $oArg = 'cat';
+   } else {
+    if (!isset($oArg) || $oArg !== 'cat') report_error('Unexpected text: ' . $arg);
+    $category = $arg;
+   }
   }
 }
 
-$SLOW_MODE = FALSE;
-if (isset($_REQUEST["slow"]) || isset($argument["slow"])) {
-  $SLOW_MODE = TRUE;
-}
-
-$category = trim($argument["cat"] ? $argument["cat"][0] : $_REQUEST["cat"]);
+$category = trim($category);
 if (strtolower(substr($category, 0, 9)) == 'category:') $category = trim(substr($category, 9));
 
 if (HTML_OUTPUT) {
