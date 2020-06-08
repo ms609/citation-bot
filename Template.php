@@ -3705,7 +3705,7 @@ final class Template {
             }
             return;
           }
-          if (stripos($doi, '10.1111/j.1572-0241') === 0 || NATURE_WORKS) {
+          if (stripos($doi, '10.1111/j.1572-0241') === 0 && NATURE_FAILS) {
             if (!$this->blank(['pmid', 'pmc', 'jstor'])) {
                $this->forget('doi');
                return;
