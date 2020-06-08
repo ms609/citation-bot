@@ -719,7 +719,7 @@ function is_doi_active($doi) {
 }
 
 function is_doi_works($doi) {
-  if (strpos($doi, '10.1111/j.1572-0241') === 0 ) return FALSE; // Nature dropped the ball for now TODO - 10.1111/j.1572-0241.2006.00844.x
+  if (strpos($doi, '10.1111/j.1572-0241') === 0 && NATURE_FAILS) return FALSE;
   $context = stream_context_create(array(
            'ssl' => ['verify_peer' => FALSE, 'verify_peer_name' => FALSE, 'allow_self_signed' => TRUE]
          )); // Allow crudy cheap journals
