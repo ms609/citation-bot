@@ -2577,7 +2577,7 @@ final class Template {
   }
 
   public function get_semanticscholar_url($doi) {
-   if       $this->has('pmc') ||
+   if(      $this->has('pmc') ||
             ($this->has('doi') && $this->get('doi-access') === 'free') ||
             ($this->has('jstor') && $this->get('jstor-access') === 'free') ||
             ($this->has('osti') && $this->get('osti-access') === 'free') ||
