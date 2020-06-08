@@ -946,7 +946,7 @@ final class Template {
         if (substr($value, 0, 8) == '10.5555/') return FALSE ; // Test DOI prefix.  NEVER will work
         if (stripos($value, '10.1093/law:epil') === 0) return FALSE; // Those do not work
         if (stripos($value, '10.1093/oi/authority') === 0) return FALSE; // Those do not work
-        if (stripos($value, '10.1111/j.1572-0241') === 0) return FALSE; // TODO - Nature dropped the ball
+        if (stripos($value, '10.1111/j.1572-0241') === 0 && NATURE_FAILS) return FALSE;
         if (preg_match(REGEXP_DOI, $value, $match)) {
           if ($this->blank($param_name)) {
             if ($this->wikiname() === 'cite arxiv') $this->change_name_to('cite journal');
@@ -2570,31 +2570,29 @@ final class Template {
     if (!$doi) return;
     $return = $this->get_unpaywall_url($doi);
     if ($return === 'publisher' || $return === 'duplicate' || $return === 'have free') return;
-    if ($this->blank('url')) { // Have room for one
-      return ; // Seems to not be useful, since only on already free dois
-      $this->get_semanticscholar_url($doi);
-    }
+    return; // Not yet
+    $this->get_semanticscholar_url($doi);
   }
 
   public function get_semanticscholar_url($doi) {
-   if ($this->has('arxiv') ||
-            $this->has('biorxiv') ||
-            $this->has('citeseerx') ||
-            $this->has('pmc') ||
-            $this->has('rfc') ||
-            $this->has('ssrn') ||
+   if(      $this->has('pmc') ||
             ($this->has('doi') && $this->get('doi-access') === 'free') ||
             ($this->has('jstor') && $this->get('jstor-access') === 'free') ||
             ($this->has('osti') && $this->get('osti-access') === 'free') ||
             ($this->has('ol') && $this->get('ol-access') === 'free')
-           ) return; // do not add url if have OA already
-    $url = "https://api.semanticscholar.org/v1/paper/$doi";
-    $json = @file_get_contents($url);
+           ) return; // do not add url if have OA already.  Do indlude preprints in list
+    if ($this->has('s2cid') || $this->has('S2CID')) return;
+    $context = stream_context_create(array(
+     'http'=>array(
+      'header'=>"x-api-key: " . getenv('PHP_S2APIKEY') . "\r\n"
+     )
+    ));
+    $url = 'https://' . (getenv('PHP_S2APIKEY') ? 'partner' : 'api') . '.semanticscholar.org/v1/paper/' . $doi;
+    $json = @file_get_contents($url, FALSE, $context);
     if ($json) {
       $oa = @json_decode($json);
       if ($oa !== FALSE && isset($oa->url) && isset($oa->is_publisher_licensed) && $oa->is_publisher_licensed) {
-        $this->add_if_new('url', $oa->url);
-        return;
+        $this->get_identifiers_from_url($oa->url);
       }
     }
   }
@@ -3705,7 +3703,7 @@ final class Template {
             }
             return;
           }
-          if (stripos($doi, '10.1111/j.1572-0241') === 0) { // TODO - Nature dropped the ball
+          if (stripos($doi, '10.1111/j.1572-0241') === 0 && NATURE_FAILS) {
             if (!$this->blank(['pmid', 'pmc', 'jstor'])) {
                $this->forget('doi');
                return;
