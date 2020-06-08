@@ -2581,7 +2581,7 @@ final class Template {
             ($this->has('ol') && $this->get('ol-access') === 'free') ||
             ($unpay === 'publisher') ||
             ($unpay === 'duplicate') ||
-            ($unpay === 'have free')) return;  
+            ($unpay === 'have free')
            ) return; // do not add url if have OA already.  Do indlude preprints in list
     if ($this->has('s2cid') || $this->has('S2CID')) return;
     $context = stream_context_create(array(
