@@ -2582,8 +2582,13 @@ final class Template {
             ($this->has('ol') && $this->get('ol-access') === 'free')
            ) return; // do not add url if have OA already.  Do indlude preprints in list
     if ($this->has('s2cid') || $this->has('S2CID')) return;
-    $url = 'https://' . (getenv('PHP_S2APIKEY') ? 'partner' : 'api') . 'semanticscholar.org/v1/paper/' . $doi;
-    $json = @file_get_contents($url);
+    $context = stream_context_create(array(
+     'http'=>array(
+      'header'=>"x-api-key: " . getenv('PHP_S2APIKEY') . "\r\n"
+     )
+    ));
+    $url = 'https://' . (getenv('PHP_S2APIKEY') ? 'partner' : 'api') . '.semanticscholar.org/v1/paper/' . $doi;
+    $json = @file_get_contents($url, FALSE, $context);
     if ($json) {
       $oa = @json_decode($json);
       if ($oa !== FALSE && isset($oa->url) && isset($oa->is_publisher_licensed) && $oa->is_publisher_licensed) {
