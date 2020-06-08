@@ -23,6 +23,8 @@ const PUBLISHERS_ARE_WORKS = array('the san diego union-tribune', 'forbes', 'sal
 
 const DUBIOUS_JOURNALS = array('fda', 'reuters', 'associated press', 'ap', 'ap wire'); // Things we add, but only if publisher and agency are both blank
 
+const NATURE_FAILS = TRUE;  // Nature dropped the ball for now TODO - 10.1111/j.1572-0241.2006.00844.x
+
 // Catch 'authors' such as "hearst magazines", "time inc", "nielsen business media, inc"
 // Ordered alphabetically.
 const PUBLISHER_ENDINGS = ["books", "corporation", 'centre', 'center', 'company', "inc.", "inc", "magazines",
