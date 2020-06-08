@@ -946,7 +946,7 @@ final class Template {
         if (substr($value, 0, 8) == '10.5555/') return FALSE ; // Test DOI prefix.  NEVER will work
         if (stripos($value, '10.1093/law:epil') === 0) return FALSE; // Those do not work
         if (stripos($value, '10.1093/oi/authority') === 0) return FALSE; // Those do not work
-        if (stripos($value, '10.1111/j.1572-0241') === 0) return FALSE; // TODO - Nature dropped the ball
+        if (stripos($value, '10.1111/j.1572-0241') === 0 && NATURE_FAILS) return FALSE;
         if (preg_match(REGEXP_DOI, $value, $match)) {
           if ($this->blank($param_name)) {
             if ($this->wikiname() === 'cite arxiv') $this->change_name_to('cite journal');
