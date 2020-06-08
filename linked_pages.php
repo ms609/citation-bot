@@ -42,7 +42,7 @@ if (isset($_REQUEST["slow"])) {
 $page_name = str_replace(' ', '_', trim($_REQUEST['page']));
 if ($page_name == '') report_error('Nothing requested');
 if (strlen($page_name) >256) report_error('Possible invalid page');
-$edit_summary_end = "| Suggested by " . $api->get_the_user() . " | All pages linked from $page_name | via #UCB_webform_linked";
+$edit_summary_end = "| Suggested by " . $api->get_the_user() . " | All pages linked from cached copy of $page_name | via #UCB_webform_linked";
 
 $url = API_ROOT . '?action=parse&prop=links&format=json&page=' . $page_name;
 $json = @file_get_contents($url);
