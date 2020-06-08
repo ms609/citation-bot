@@ -2577,23 +2577,19 @@ final class Template {
   }
 
   public function get_semanticscholar_url($doi) {
-   if ($this->has('arxiv') ||
-            $this->has('biorxiv') ||
-            $this->has('citeseerx') ||
-            $this->has('pmc') ||
-            $this->has('rfc') ||
-            $this->has('ssrn') ||
+   if       $this->has('pmc') ||
             ($this->has('doi') && $this->get('doi-access') === 'free') ||
             ($this->has('jstor') && $this->get('jstor-access') === 'free') ||
             ($this->has('osti') && $this->get('osti-access') === 'free') ||
             ($this->has('ol') && $this->get('ol-access') === 'free')
-           ) return; // do not add url if have OA already
+           ) return; // do not add url if have OA already.  Do indlude preprints in list
+    if ($this->has('s2cid') || $this->has('S2CID')) return;
     $url = "https://api.semanticscholar.org/v1/paper/$doi";
     $json = @file_get_contents($url);
     if ($json) {
       $oa = @json_decode($json);
       if ($oa !== FALSE && isset($oa->url) && isset($oa->is_publisher_licensed) && $oa->is_publisher_licensed) {
-        $this->add_if_new('url', $oa->url);
+        $this->get_identifiers_from_url($oa->url);
         return;
       }
     }
