@@ -4996,11 +4996,11 @@ T1 - This is the Title }}';
   public function testSemanticscholar1() {
      $text = '{{cite web|url=https://semanticscholar.org/paper/861fc89e94d8564adc670fbd35c48b2d2f487704}}';
      $template = $this->process_citation($text);
-     $this->assertNull($template->get('url'));
      $this->assertSame('53378830', $template->get('s2cid')); 
      $this->assertNull($template->get('s2cid-access'));
      $this->assertSame('cite journal', $template->wikiname());
      $this->assertSame('10.1093/ser/mwp005', $template->get('doi'));
+     $this->assertSame('http://www.lisdatacenter.org/wps/liswps/480.pdf', $template->get('url')); // OA URL
   }
  
    public function testSemanticscholar2() {
