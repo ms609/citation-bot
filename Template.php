@@ -2570,10 +2570,8 @@ final class Template {
     if (!$doi) return;
     $return = $this->get_unpaywall_url($doi);
     if ($return === 'publisher' || $return === 'duplicate' || $return === 'have free') return;
-    if ($this->blank('url')) { // Have room for one
-      return ; // Seems to not be useful, since only on already free dois
-      $this->get_semanticscholar_url($doi);
-    }
+    return; // Not yet
+    $this->get_semanticscholar_url($doi);
   }
 
   public function get_semanticscholar_url($doi) {
@@ -2584,13 +2582,12 @@ final class Template {
             ($this->has('ol') && $this->get('ol-access') === 'free')
            ) return; // do not add url if have OA already.  Do indlude preprints in list
     if ($this->has('s2cid') || $this->has('S2CID')) return;
-    $url = "https://api.semanticscholar.org/v1/paper/$doi";
+    $url = 'https://' . (getenv('PHP_S2APIKEY') ? 'partner' : 'api') . '/v1/paper/' . $doi;
     $json = @file_get_contents($url);
     if ($json) {
       $oa = @json_decode($json);
       if ($oa !== FALSE && isset($oa->url) && isset($oa->is_publisher_licensed) && $oa->is_publisher_licensed) {
         $this->get_identifiers_from_url($oa->url);
-        return;
       }
     }
   }
