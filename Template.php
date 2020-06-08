@@ -2570,7 +2570,6 @@ final class Template {
     if (!$doi) return;
     $return = $this->get_unpaywall_url($doi);
     if ($return === 'publisher' || $return === 'duplicate' || $return === 'have free') return;
-    return; // Not yet
     $this->get_semanticscholar_url($doi);
   }
 
