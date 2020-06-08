@@ -1110,7 +1110,7 @@ final class TemplateTest extends testBaseClass {
   public function testUnPaywall1() {
    $text = "{{cite journal}}";
    $template = $this->make_citation($text);
-   $template->get_semanticscholar_url('10.1145/358589.358596');
+   $template->get_semanticscholar_url('10.1145/358589.358596', '');
    $this->assertNull($template->get('url'));
    $this->assertSame('10.1145/358589.358596', $template->get('doi'));
   }
@@ -1118,7 +1118,7 @@ final class TemplateTest extends testBaseClass {
   public function testUnPaywall2() {
    $text = "{{cite journal|doi=10.1145/358589.358596|doi-access=free}}";
    $template = $this->make_citation($text);
-   $template->get_semanticscholar_url($template->get('doi'));
+   $template->get_semanticscholar_url($template->get('doi'), '');
    $this->assertNull($template->get('url'));
   }
  
