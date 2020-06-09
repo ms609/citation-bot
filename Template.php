@@ -1315,8 +1315,15 @@ final class Template {
           return FALSE;
        }
        $this->add_if_new('s2cid', $s2cid);
-       if (is_null($url_sent)) {
+       if (is_null($url_sent) && get_semanticscholar_license($s2cid) === FALSE) {
+         report_warning('Removed un-licensed Semantic Scholar URL that was converted to S2CID parameter');
          $this->forget($url_type);
+         return TRUE;
+       }
+       if (is_null($url_sent) && $this->has('pmc')) {
+         report_info('Removed Converted Semantic Scholar URL that blocked PMC URL');
+         $this->forget($url_type);
+         return TRUE;
        }
        return TRUE;
     }
