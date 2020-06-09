@@ -4462,9 +4462,12 @@ final class Template {
           }
           if ($this->blank('via')) return;
           foreach (array_merge( array('publisher'), WORK_ALIASES) as $others) {
-            if ($this->has($others) && str_equivalent($this->get($others), $this->get('via'))) {
-              $this->forget('via');
-              return;
+            if ($this->has($others)) {
+              if (str_equivalent($this->get($others), $this->get('via')) ||
+                  (stripos($this->get($others), 'bbc') !== FALSE && stripos($this->get('via'), 'bbc')) !== FALSE) {
+                $this->forget('via');
+                return;
+              }
             }
           }
           return;
