@@ -1309,7 +1309,8 @@ final class Template {
        if ($this->has('s2cid') && $s2cid != $this->get('s2cid')) return FALSE; // Does not match existing
        if ($this->has('S2CID') && $s2cid != $this->get('S2CID')) return FALSE; // Does not match existing
        $this->add_if_new('s2cid', $s2cid);
-       if (is_null($url_sent)) {
+       if (is_null($url_sent) && get_semanticscholar_license($s2cid) === FALSE) {
+         report_warning('Removed un-licensed Semantic Scholar URL that was converted');
          $this->forget($url_type);
        }
        return TRUE;
