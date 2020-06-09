@@ -966,13 +966,13 @@ function parse_plain_text_reference($journal_data, &$this_template, $upgrade_yea
       }
 } 
 
-function getS2CID($long_param) {
+function getS2CID($url) {
   $context = stream_context_create(array(
    'http'=>array(
     'header'=>"x-api-key: " . getenv('PHP_S2APIKEY') . "\r\n"
    )
   ));
-  $response = @file_get_contents('https://' . (getenv('PHP_S2APIKEY') ? 'partner' : 'api') . '.semanticscholar.org/v1/paper/' . $long_param, FALSE, $context);
+  $response = @file_get_contents('https://' . (getenv('PHP_S2APIKEY') ? 'partner' : 'api') . '.semanticscholar.org/v1/paper/URL:' . $url, FALSE, $context);
   if (!$response) {
     report_warning("No response from semanticscholar.");   // @codeCoverageIgnore
     return FALSE;                                          // @codeCoverageIgnore
@@ -1024,6 +1024,22 @@ function ConvertS2CID_DOI($s2cid) {
     report_info("non-functional doi found from semanticscholar.");// @codeCoverageIgnore
     return FALSE;                                                 // @codeCoverageIgnore
   } 
+}
+
+function get_semanticscholar_license($s2cid) {
+    $context = stream_context_create(array(
+     'http'=>array(
+      'header'=>"x-api-key: " . getenv('PHP_S2APIKEY') . "\r\n"
+     )
+    ));
+    $url = 'https://' . (getenv('PHP_S2APIKEY') ? 'partner' : 'api') . '.semanticscholar.org/CorpusID:' . $s2cid;
+    $json = @file_get_contents($url, FALSE, $context);
+    if ($json === FALSE) return NULL;
+    if (stripos($json, 'Paper not found') !== FALSE) return FALSE;
+    $oa = @json_decode($json);
+    if ($oa === FALSE) return NULL;
+    if (isset($oa->is_publisher_licensed) && $oa->is_publisher_licensed) return TRUE;
+    return FALSE;
 }
 
 function expand_templates_from_archives($templates) { // This is done very late as a latch ditch effort

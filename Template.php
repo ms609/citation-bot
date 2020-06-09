@@ -1303,17 +1303,27 @@ final class Template {
     }
     
     // semanticscholar
-    if (preg_match('~^https?://(?:pdfs?\.|www\.|)semanticscholar\.org/paper()/(?:[^/]+/|)([0-9a-z]+)(?:|\.pdf)$~i', $url, $matches) ||
-        preg_match('~^https?://(?:pdfs?\.|www\.|)semanticscholar\.org/(\S{4})/(?:[^/]+/|)([0-9a-z]+)(?:|\.pdf)$~i', $url, $matches)) {
-       $long_s2cid = $matches[1] . $matches[2];
-       if (strlen($long_s2cid) < 20) return FALSE;
-       $s2cid = getS2CID($long_s2cid);
+    if (preg_match('~^https?://(?:pdfs?\.|www\.|)semanticscholar\.org/~i', $url)) {
+       $s2cid = getS2CID($url);
        if ($s2cid === FALSE) return FALSE;
-       if ($this->has('s2cid') && $s2cid != $this->get('s2cid')) return FALSE; // Does not match existing
-       if ($this->has('S2CID') && $s2cid != $this->get('S2CID')) return FALSE; // Does not match existing
+       if ($this->has('s2cid') && $s2cid != $this->get('s2cid')) {
+          report_warning('Existsing URL does not match exisiting S2CID: ' .  $this->get('s2cid'));
+          return FALSE;
+       }
+       if ($this->has('s2cid') && $s2cid != $this->get('s2cid')) {
+          report_warning('Existsing URL does not match exisiting S2CID: ' .  $this->get('S2CID'));
+          return FALSE;
+       }
        $this->add_if_new('s2cid', $s2cid);
-       if (is_null($url_sent)) {
+       if (is_null($url_sent) && get_semanticscholar_license($s2cid) === FALSE) {
+         report_warning('Removed un-licensed Semantic Scholar URL that was converted to S2CID parameter');
          $this->forget($url_type);
+         return TRUE;
+       }
+       if (is_null($url_sent) && $this->has('pmc')) {
+         report_info('Removed Converted Semantic Scholar URL that blocked PMC URL');
+         $this->forget($url_type);
+         return TRUE;
        }
        return TRUE;
     }
@@ -2569,15 +2579,13 @@ final class Template {
     $doi = $this->get_without_comments_and_placeholders('doi');
     if (!$doi) return;
     $return = $this->get_unpaywall_url($doi);
-    return; // Not yet
     $this->get_semanticscholar_url($doi, $return);
   }
 
-  public function get_semanticscholar_url($doi, $unpay) {
+  public function get_semanticscholar_url($doi, $unpay) { // $unpay is unused right now
    if(      $this->has('pmc') ||
             ($this->has('doi') && $this->get('doi-access') === 'free') ||
-            ($this->has('jstor') && $this->get('jstor-access') === 'free') ||
-            ($unpay === 'publisher')
+            ($this->has('jstor') && $this->get('jstor-access') === 'free')
            ) return; // do not add url if have OA already.  Do indlude preprints in list
     if ($this->has('s2cid') || $this->has('S2CID')) return;
     $context = stream_context_create(array(
@@ -4453,9 +4461,12 @@ final class Template {
           }
           if ($this->blank('via')) return;
           foreach (array_merge( array('publisher'), WORK_ALIASES) as $others) {
-            if ($this->has($others) && str_equivalent($this->get($others), $this->get('via'))) {
-              $this->forget('via');
-              return;
+            if ($this->has($others)) {
+              if (str_equivalent($this->get($others), $this->get('via')) ||
+                  (stripos($this->get($others), 'bbc') !== FALSE && stripos($this->get('via'), 'bbc')) !== FALSE) {
+                $this->forget('via');
+                return;
+              }
             }
           }
           return;
