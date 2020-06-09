@@ -2579,11 +2579,10 @@ final class Template {
     $doi = $this->get_without_comments_and_placeholders('doi');
     if (!$doi) return;
     $return = $this->get_unpaywall_url($doi);
-    return; // Not yet
     $this->get_semanticscholar_url($doi, $return);
   }
 
-  public function get_semanticscholar_url($doi, $unpay) {
+  public function get_semanticscholar_url($doi, $unpay) { // $unpay is unused right now
    if(      $this->has('pmc') ||
             ($this->has('doi') && $this->get('doi-access') === 'free') ||
             ($this->has('jstor') && $this->get('jstor-access') === 'free')
