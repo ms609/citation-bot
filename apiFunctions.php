@@ -1032,7 +1032,7 @@ function get_semanticscholar_license($s2cid) {
       'header'=>"x-api-key: " . getenv('PHP_S2APIKEY') . "\r\n"
      )
     ));
-    $url = 'https://' . (getenv('PHP_S2APIKEY') ? 'partner' : 'api') . '.semanticscholar.org/v1/paper/' . $doi;
+    $url = 'https://' . (getenv('PHP_S2APIKEY') ? 'partner' : 'api') . '.semanticscholar.org/CorpusID:' . $s2cid;
     $json = @file_get_contents($url, FALSE, $context);
     if ($json === FALSE) return NULL;
     if (stripos($json, 'Paper not found') !== FALSE) return FALSE;
