@@ -2569,16 +2569,10 @@ final class Template {
     $doi = $this->get_without_comments_and_placeholders('doi');
     if (!$doi) return;
     $return = $this->get_unpaywall_url($doi);
-    return; // Not yet
     $this->get_semanticscholar_url($doi, $return);
   }
 
   public function get_semanticscholar_url($doi, $unpay) {
-   if(      $this->has('pmc') ||
-            ($this->has('doi') && $this->get('doi-access') === 'free') ||
-            ($this->has('jstor') && $this->get('jstor-access') === 'free') ||
-            ($unpay === 'publisher')
-           ) return; // do not add url if have OA already.  Do indlude preprints in list
     if ($this->has('s2cid') || $this->has('S2CID')) return;
     $context = stream_context_create(array(
      'http'=>array(
