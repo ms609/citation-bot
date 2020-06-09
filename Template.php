@@ -1303,11 +1303,8 @@ final class Template {
     }
     
     // semanticscholar
-    if (preg_match('~^https?://(?:pdfs?\.|www\.|)semanticscholar\.org/paper()/(?:[^/]+/|)([0-9a-z]+)(?:|\.pdf)$~i', $url, $matches) ||
-        preg_match('~^https?://(?:pdfs?\.|www\.|)semanticscholar\.org/(\S{4})/(?:[^/]+/|)([0-9a-z]+)(?:|\.pdf)$~i', $url, $matches)) {
-       $long_s2cid = $matches[1] . $matches[2];
-       if (strlen($long_s2cid) < 20) return FALSE;
-       $s2cid = getS2CID($long_s2cid);
+    if (preg_match('~^https?://(?:pdfs?\.|www\.|)semanticscholar\.org/~i', $url)) {
+       $s2cid = getS2CID($url);
        if ($s2cid === FALSE) return FALSE;
        if ($this->has('s2cid') && $s2cid != $this->get('s2cid')) return FALSE; // Does not match existing
        if ($this->has('S2CID') && $s2cid != $this->get('S2CID')) return FALSE; // Does not match existing

@@ -966,13 +966,13 @@ function parse_plain_text_reference($journal_data, &$this_template, $upgrade_yea
       }
 } 
 
-function getS2CID($long_param) {
+function getS2CID($url) {
   $context = stream_context_create(array(
    'http'=>array(
     'header'=>"x-api-key: " . getenv('PHP_S2APIKEY') . "\r\n"
    )
   ));
-  $response = @file_get_contents('https://' . (getenv('PHP_S2APIKEY') ? 'partner' : 'api') . '.semanticscholar.org/v1/paper/' . $long_param, FALSE, $context);
+  $response = @file_get_contents('https://' . (getenv('PHP_S2APIKEY') ? 'partner' : 'api') . '.semanticscholar.org/v1/paper/URL:' . $url, FALSE, $context);
   if (!$response) {
     report_warning("No response from semanticscholar.");   // @codeCoverageIgnore
     return FALSE;                                          // @codeCoverageIgnore
