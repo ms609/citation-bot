@@ -43,13 +43,14 @@ if (!getenv('PHP_OAUTH_CONSUMER_TOKEN') && file_exists('env.php')) {
 }
 require_once("constants.php");
 require_once("NameTools.php");
-require_once("Comment.php");
-require_once("Template.php");
-require_once("Page.php");
-require_once("Parameter.php");
-require_once("WikipediaBot.php");
 require_once("expandFns.php");
 require_once("zotero.php");
+require_once("Parameter.php");
+require_once("Comment.php");
+require_once("WikipediaBot.php");
+require_once("apiFunctions.php");
+require_once("Template.php");
+require_once("Page.php");
 
 mb_internal_encoding('UTF-8');
 ini_set("memory_limit", "256M");
