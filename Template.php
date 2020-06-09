@@ -1306,8 +1306,14 @@ final class Template {
     if (preg_match('~^https?://(?:pdfs?\.|www\.|)semanticscholar\.org/~i', $url)) {
        $s2cid = getS2CID($url);
        if ($s2cid === FALSE) return FALSE;
-       if ($this->has('s2cid') && $s2cid != $this->get('s2cid')) return FALSE; // Does not match existing
-       if ($this->has('S2CID') && $s2cid != $this->get('S2CID')) return FALSE; // Does not match existing
+       if ($this->has('s2cid') && $s2cid != $this->get('s2cid')) {
+          report_warning('Existsing URL does not match exisiting S2CID: ' .  $this->get('s2cid'));
+          return FALSE;
+       }
+       if ($this->has('s2cid') && $s2cid != $this->get('s2cid')) {
+          report_warning('Existsing URL does not match exisiting S2CID: ' .  $this->get('S2CID'));
+          return FALSE;
+       }
        $this->add_if_new('s2cid', $s2cid);
        if (is_null($url_sent)) {
          $this->forget($url_type);
@@ -2572,8 +2578,7 @@ final class Template {
   public function get_semanticscholar_url($doi, $unpay) {
    if(      $this->has('pmc') ||
             ($this->has('doi') && $this->get('doi-access') === 'free') ||
-            ($this->has('jstor') && $this->get('jstor-access') === 'free') ||
-            ($unpay === 'publisher')
+            ($this->has('jstor') && $this->get('jstor-access') === 'free')
            ) return; // do not add url if have OA already.  Do indlude preprints in list
     if ($this->has('s2cid') || $this->has('S2CID')) return;
     $context = stream_context_create(array(
