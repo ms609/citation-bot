@@ -11,7 +11,6 @@
  * to find information that can be added to existing citations.
  */
 
-require_once("Page.php");
 require_once("Parameter.php");
 
 final class Template {
