@@ -2579,8 +2579,7 @@ final class Template {
   public function get_semanticscholar_url($doi, $unpay) {
    if(      $this->has('pmc') ||
             ($this->has('doi') && $this->get('doi-access') === 'free') ||
-            ($this->has('jstor') && $this->get('jstor-access') === 'free') ||
-            ($unpay === 'publisher')
+            ($this->has('jstor') && $this->get('jstor-access') === 'free')
            ) return; // do not add url if have OA already.  Do indlude preprints in list
     if ($this->has('s2cid') || $this->has('S2CID')) return;
     $context = stream_context_create(array(
