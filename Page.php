@@ -317,7 +317,7 @@ class Page {
         $this_template->handle_et_al();
       }
       $this_template->final_tidy();
-      
+
       // Record any modifications that have been made:
       $template_mods = $this_template->modifications();
       foreach (array_keys($template_mods) as $key) {
