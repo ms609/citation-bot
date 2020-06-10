@@ -52,7 +52,7 @@ function sanitize_doi(string $doi) : string {
  * 0 => text containing a DOI, possibly encoded, possibly with additional text
  * 1 => the decoded DOI
  */
-function extract_doi(string $text) array {
+function extract_doi(string $text) : array {
   if (preg_match(
         "~(10\.\d{4}\d?(/|%2[fF])..([^\s\|\"\?&>]|&l?g?t;|<[^\s\|\"\?&]*>)+)~",
         $text, $match)) {
