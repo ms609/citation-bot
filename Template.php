@@ -5440,9 +5440,9 @@ final class Template {
     return $isbn13;
   }
   
-  protected function inline_doi_information() : array {
-    if ($this->name !== "doi-inline") return array();
-    if (count($this->param) !==2) return array();
+  protected function inline_doi_information() : ?array {
+    if ($this->name !== "doi-inline") return NULL;
+    if (count($this->param) !==2) return NULL;
     $vals   = array();
     $vals[0] = $this->param[0]->parsed_text();
     $vals[1] = $this->param[1]->parsed_text();
