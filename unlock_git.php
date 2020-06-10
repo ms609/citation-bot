@@ -1,6 +1,6 @@
 <?php
 ob_implicit_flush();
-echo "<!DOCTYPE html><html><body><pre>\n";
+echo "<!DOCTYPE html><html><body><pre>" . phpversion(). "\n";
 if (!file_exists('git_pull.lock')) die("Lock file gone</pre></body></html>\n");
 // Make the person wait.  I know how I can be.
 echo "Wait 6</p>\n";

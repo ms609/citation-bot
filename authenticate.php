@@ -24,8 +24,7 @@ try {
   $client = new Client($conf);
   unset($conf);
 }
-catch (Exception $e) { @ob_end_flush() ; echo("   \nCitation Bot's internal authorization tokens did not work"); exit(1); } // PHP 5
-catch (Throwable $e) { @ob_end_flush() ; echo("   \nCitation Bot's internal authorization tokens did not work"); exit(1); } // PHP 7
+catch (Throwable $e) { @ob_end_flush() ; echo("   \nCitation Bot's internal authorization tokens did not work"); exit(1); }
 
 // Existing Access Grant - verify that it works since we are here any way
 if (isset($_SESSION['access_key']) && isset($_SESSION['access_secret'])) {
@@ -36,8 +35,7 @@ if (isset($_SESSION['access_key']) && isset($_SESSION['access_secret'])) {
       echo ' Existing valid tokens user tokens set.';
       exit(0);
    }
-   catch (Exception $e) { ; } // PHP 5
-   catch (Throwable $e) { ; } // PHP 7
+   catch (Throwable $e) { ; }
    // We continue on and try to get a new key setup
    sleep(1);
 }
@@ -60,8 +58,7 @@ if (isset($_GET['oauth_verifier']) && isset($_SESSION['request_key']) && isset($
         echo "Authorization Success.  Future requests should just work now.";
         exit(0);
    }
-   catch (Exception $e) { ; } // PHP 5
-   catch (Throwable $e) { ; } // PHP 7
+   catch (Throwable $e) { ; }
    @session_unset();
    @session_destroy();
    echo("Incoming authorization tokens did not work");
@@ -94,8 +91,7 @@ try {
       echo "Go to this URL to <a href='$authUrl'>authorize citation bot</a>";
       exit(0);
 }
-catch (Exception $e) { ; } // PHP 5
-catch (Throwable $e) { ; } // PHP 7
+catch (Throwable $e) { ; }
 @session_unset();
 @session_destroy();
 echo("Error authenticating.  Resetting.  Please try again.");
