@@ -91,8 +91,8 @@ class Page {
     $this->set_date_pattern();
   }  
 
-  public function parsed_text() : string {
-    return (string) $this->text;
+  public function parsed_text() : ?string {
+    return $this->text;
   }
   
   // $parameter: parameter to send to api_function, e.g. "pmid"
