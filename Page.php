@@ -127,7 +127,7 @@ class Page {
     }
   }
   
-  public function expand_text() : mixed {
+  public function expand_text() : bool {
     global $is_a_man_with_no_plan;
     global $page_error;
     $page_error = FALSE;
