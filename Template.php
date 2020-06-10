@@ -358,7 +358,7 @@ final class Template {
   }
 
   public function blank($param) : bool {
-    if (!$param) return NULL;
+    if (!$param) report_error('Nothing passed to blank()');
     if (empty($this->param)) return TRUE;
     if (!is_array($param)) $param = array($param);
     foreach ($this->param as $p) {
@@ -4804,7 +4804,7 @@ final class Template {
     if (!empty($this->param)) { // Forget author-link and such that have no such author
       foreach ($this->param as $p) {
         $alias = $p->param;
-        if ($this->blank($alias)) {
+        if ($alias && $this->blank($alias)) {
           if (preg_match('~^author(\d+)\-?link$~', $alias, $matches) || preg_match('~^author\-?link(\d+)$~', $alias, $matches)) {
             if ($this->blank(AUTHOR_PARAMETERS[(int) $matches[1]])) {
               $this->forget($alias);
@@ -5170,7 +5170,7 @@ final class Template {
     return (isset($this->param[$i])) ? $this->param[$i] : NULL;
   }
   
-  protected function param_value($i) : ?int { // May return error if no param with index $i
+  protected function param_value($i) : ?string { // May return error if no param with index $i
     return $this->param_with_index($i)->val;
   }
   
