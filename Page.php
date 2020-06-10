@@ -17,7 +17,7 @@ class Page {
   protected $read_at, $start_text;
   protected $lastrevid;
 
-  function __construct() : void { 
+  function __construct() { 
       $this->construct_modifications_array();
   }
 
@@ -559,7 +559,7 @@ class Page {
 class TestPage extends Page {
   // Functions for use in testing context only
   
-  function __construct() : void {
+  function __construct() {
     $trace = debug_backtrace();
     $name = $trace[2]['function'];
     $this->title = empty($name) ? 'global' : $name;
