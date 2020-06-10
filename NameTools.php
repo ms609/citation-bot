@@ -4,7 +4,7 @@
  *  Input: $name - the name to be tested
  * Output: array ($name without Jr, if $name ends in Jr, Jr)
  */
-function junior_test($name) {
+function junior_test(string $name) : array {
   $junior = (substr($name, -3) == " Jr")?" Jr":FALSE;
   if ($junior) {
     $name = substr($name, 0, -3);
@@ -20,7 +20,7 @@ function junior_test($name) {
   return array($name, $junior);
 }
 
-function format_surname($surname) {
+function format_surname(string $surname) : string {
   if ($surname == '-') return '';
   if (preg_match('~^\S\.?$~u', $surname)) return mb_strtoupper($surname); // Just a single initial, with or without period
   $surname = mb_convert_case(trim(mb_ereg_replace("-", " - ", $surname)), MB_CASE_LOWER);
@@ -36,7 +36,8 @@ function format_surname($surname) {
         return format_surname_2($surname); // Case of surname
   }
 }
-function format_surname_2($surname) {
+
+function format_surname_2(string $surname) : string {
   $ret = preg_replace_callback("~(\p{L})(\p{L}+)~u", 
         function($matches) {
                 return mb_strtoupper($matches[1]) . mb_strtolower($matches[2]);
@@ -47,7 +48,7 @@ function format_surname_2($surname) {
   return $ret;
 }
 
-function format_forename($forename){
+function format_forename(string $forename) : string {
   if ($forename == '-') return '';
   return str_replace(array(" ."), "", trim(preg_replace_callback("~(\p{L})(\p{L}{3,})~u",  function(
             $matches) {
@@ -61,7 +62,7 @@ function format_forename($forename){
  * $str: A series of initials, in any format.  NOTE! Do not pass a forename here!
  *
  */
-function format_initials($str) {
+function format_initials(string $str) : string {
   $str = trim($str);
         if ($str == "") return FALSE;
         $end = (substr($str, strlen($str)-1) == ";") ? ";" : '';
@@ -69,7 +70,7 @@ function format_initials($str) {
         return mb_strtoupper(implode(".",$match[0]) . ".") . $end;
 }
 
-function is_initials($str){
+function is_initials(string $str) : bool {
         $str = trim($str);
         if (!$str) return FALSE;
         if (strlen(str_replace(array("-", ".", ";"), "", $str)) >3) return FALSE;
@@ -82,7 +83,7 @@ function is_initials($str){
  * author_is_human
  * Runs some tests to see if the full name of a single author is unlikely to be the name of a person.
  */
-function author_is_human($author) {
+function author_is_human(string $author) : bool {
   $author = trim($author);
   $chars = count_chars($author);
   if ($chars[ord(":")] > 0 || $chars[ord(" ")] > 3 || strlen($author) > 33
@@ -99,7 +100,7 @@ function author_is_human($author) {
 }
 
 // Returns the author's name formatted as Surname, F.I.
-function format_author($author){
+function format_author(string $author) {
   
   // Requires an author who is formatted as SURNAME, FORENAME or SURNAME FORENAME or FORENAME SURNAME. Substitute initials for forenames if nec.
   $surname = '';
@@ -194,7 +195,7 @@ function format_author($author){
   return trim($full_name);
 }
 
-function format_multiple_authors($authors, $returnAsArray = FALSE){
+function format_multiple_authors(string $authors, bool $returnAsArray = FALSE) {
   $authors = html_entity_decode($authors, ENT_COMPAT | ENT_HTML401, "UTF-8");
 
   $return = array();
@@ -252,7 +253,7 @@ function format_multiple_authors($authors, $returnAsArray = FALSE){
   }
 }
 
-function under_two_authors($text) {
+function under_two_authors(?string $text) : bool {
   return !(strpos($text, ';') !== FALSE  //if there is a semicolon
           || substr_count($text, ',') > 1  //if there is more than one comma
           || substr_count($text, ',') < substr_count(trim($text), ' ')  //if the number of commas is less than the number of spaces in the trimmed string
@@ -263,7 +264,7 @@ function under_two_authors($text) {
  * Assumes that there is more than one author to start with; 
  * check this using under_two_authors()
  */
-function split_authors($str) {
+function split_authors(string $str) : array {
   if (strpos($str, ';')) return explode(';', $str);
   return explode(',', $str);
 }
