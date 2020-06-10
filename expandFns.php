@@ -1,6 +1,6 @@
 <?php
 // ============================================= DOI functions ======================================
-function sanitize_doi($doi) {
+function sanitize_doi(string $doi) : string {
   if (substr($doi, -1) === '.') {
     $try_doi = substr($doi, 0, -1);
     if (doi_works($try_doi)) { // If it works without dot, then remove it
@@ -52,7 +52,7 @@ function sanitize_doi($doi) {
  * 0 => text containing a DOI, possibly encoded, possibly with additional text
  * 1 => the decoded DOI
  */
-function extract_doi($text) {
+function extract_doi(string $text) array {
   if (preg_match(
         "~(10\.\d{4}\d?(/|%2[fF])..([^\s\|\"\?&>]|&l?g?t;|<[^\s\|\"\?&]*>)+)~",
         $text, $match)) {
@@ -79,7 +79,7 @@ function extract_doi($text) {
 }
 
 // ============================================= String/Text functions ======================================
-function wikify_external_text($title) {
+function wikify_external_text(string $title) : string {
   $replacement = [];
   $placeholder = [];
   if (preg_match_all("~<(?:mml:)?math[^>]*>(.*?)</(?:mml:)?math>~", $title, $matches)) {
@@ -161,12 +161,12 @@ function wikify_external_text($title) {
   return $title; 
 }
 
-function restore_italics ($text) {
+function restore_italics (sting $text) : string {
   // <em> tags often go missing around species names in CrossRef
   return preg_replace('~([a-z]+)([A-Z][a-z]+\b)~', "$1 ''$2''", $text);
 }
 
-function sanitize_string($str) {
+function sanitize_string(string $str) : string {
   // ought only be applied to newly-found data.
   if (strtolower(trim($str)) == 'science (new york, n.y.)') return 'Science';
   $replacement = [];
@@ -188,11 +188,11 @@ function sanitize_string($str) {
   return $str;
 }
 
-function truncate_publisher($p){
+function truncate_publisher(string $p) : string {
   return preg_replace("~\s+(group|inc|ltd|publishing)\.?\s*$~i", "", $p);
 }
 
-function str_remove_irrelevant_bits($str) {
+function str_remove_irrelevant_bits(string $str) : string {
   $str = trim($str);
   $str = preg_replace(REGEXP_PLAIN_WIKILINK, "$1", $str);   // Convert [[X]] wikilinks into X
   $str = preg_replace(REGEXP_PIPED_WIKILINK, "$2", $str);   // Convert [[Y|X]] wikilinks into X
@@ -218,21 +218,21 @@ function str_remove_irrelevant_bits($str) {
 }
 
 // See also titles_are_similar()
-function str_equivalent($str1, $str2) {
+function str_equivalent(string $str1, stinrg $str2) : bool {
   return str_i_same(str_remove_irrelevant_bits($str1), str_remove_irrelevant_bits($str2));
 }
 
 // See also str_equivalent()
-function titles_are_similar($title1, $title2) {
+function titles_are_similar(string $title1, string $title2) : bool {
   return !titles_are_dissimilar($title1, $title2);
 }
 
 
-function de_wikify($string){
+function de_wikify(string $string) : string {
   return str_replace(Array("[", "]", "'''", "''", "&"), Array("", "", "'", "'", ""), preg_replace(Array("~<[^>]*>~", "~\&[\w\d]{2,7};~", "~\[\[[^\|\]]*\|([^\]]*)\]\]~"), Array("", "", "$1"),  $string));
 }
 
-function titles_are_dissimilar($inTitle, $dbTitle) {
+function titles_are_dissimilar(string $inTitle, string $dbTitle) : bool {
         // always decode new data
         $dbTitle = titles_simple(mb_convert_encoding(html_entity_decode($dbTitle), "HTML-ENTITIES", 'UTF-8'));
         // old data both decoded and not
@@ -264,7 +264,7 @@ function titles_are_dissimilar($inTitle, $dbTitle) {
         );
 }
 
-function titles_simple($inTitle) {
+function titles_simple(string $inTitle) : string {
         // Trailing "a review"
         $inTitle = preg_replace('~(?:\: | |\:)a review$~iu', '', trim($inTitle));
         // Strip trailing Online
@@ -287,11 +287,11 @@ function titles_simple($inTitle) {
         return $inTitle;
 }
 
-function strip_diacritics ($input) {
+function strip_diacritics (string $input) : string {
     return str_replace(array_keys(MAP_DIACRITICS), array_values(MAP_DIACRITICS), $input);
 }
 
-function straighten_quotes($str) { // (?<!\') and (?!\') means that it cannot have a single quote right before or after it
+function straighten_quotes(string $str) : string { // (?<!\') and (?!\') means that it cannot have a single quote right before or after it
   $str = preg_replace('~(?<!\')&#821[679];|&#39;|&#x201[89];|[\x{FF07}\x{2018}-\x{201B}`]|&[rl]s?[b]?quo;(?!\')~u', "'", $str);
   if((mb_strpos($str, '&rsaquo;') !== FALSE && mb_strpos($str, '&[lsaquo;')  !== FALSE) ||
      (mb_strpos($str, '\x{2039}') !== FALSE && mb_strpos($str, '\x{203A}') !== FALSE) ||
@@ -309,7 +309,7 @@ function straighten_quotes($str) { // (?<!\') and (?!\') means that it cannot ha
 
 // ============================================= Capitalization functions ======================================
 
-function title_case($text) {
+function title_case(string $text) :string {
   return mb_convert_case($text, MB_CASE_TITLE, "UTF-8");
 }
 
@@ -318,7 +318,7 @@ function title_case($text) {
  *      letter after colons and other punctuation marks to remain capitalized.
  *      If not, it won't capitalise after : etc.
  */
-function title_capitalization($in, $caps_after_punctuation) {
+function title_capitalization(string $in, bool $caps_after_punctuation) : string {
   // Use 'straight quotes' per WP:MOS
   $new_case = straighten_quotes(trim($in));
   if (mb_substr($new_case, 0, 1) === "[" && mb_substr($new_case, -1) === "]") {
@@ -426,16 +426,16 @@ function title_capitalization($in, $caps_after_punctuation) {
   return $new_case;
 }
 
-function mb_ucfirst($string)
+function mb_ucfirst(string $string) : string
 {
     return mb_strtoupper(mb_substr($string, 0, 1)) . mb_substr($string, 1, NULL);
 }
 
-function mb_substr_replace($string, $replacement, $start, $length) {
+function mb_substr_replace(string $string, string $replacement, int $start, int $length) : string {
     return mb_substr($string, 0, $start).$replacement.mb_substr($string, $start+$length);
 }
 
-function remove_brackets($string) {
+function remove_brackets(string $string) : string {
   return str_replace(['(', ')', '{', '}', '[', ']'], '' , $string);
 }
 
@@ -446,7 +446,7 @@ function remove_brackets($string) {
  * Cannot really test in TRAVIS
  * @codeCoverageIgnore
  */
-function throttle ($min_interval) {
+function throttle (int $min_interval) : void {
   static $last_write_time = 0;
   $time_since_last_write = time() - $last_write_time;
   if ($time_since_last_write < $min_interval) {
@@ -462,7 +462,7 @@ function throttle ($min_interval) {
 
 // ============================================= Data processing functions ======================================
 
-function tidy_date($string) {
+function tidy_date(string $string) :string {
   $string=trim($string);
   if (stripos($string, 'Invalid') !== FALSE) return '';
   if (strpos($string, '1/1/0001') !== FALSE) return '';
@@ -556,7 +556,7 @@ function tidy_date($string) {
   return ''; // And we give up
 }
 
-function not_bad_10_1093_doi($url) { // We assume dois are bad, unless on good list
+function not_bad_10_1093_doi(string $url) : bool { // We assume dois are bad, unless on good list
   if(!preg_match('~10.1093/([^/]+)/~u', $url, $match)) return TRUE;
   $test = strtolower($match[1]);
   // March 2019 Good list
@@ -564,19 +564,19 @@ function not_bad_10_1093_doi($url) { // We assume dois are bad, unless on good l
   return FALSE;
 }
 
-function bad_10_1093_doi($url) {
+function bad_10_1093_doi(string $url) :bool {
   return !not_bad_10_1093_doi($url);
 }
 
 // ============================================= Other functions ======================================
 
-function remove_comments($string) {
+function remove_comments(string $string) : string {
   // See Comment::PLACEHOLDER_TEXT for syntax
   $string = preg_replace('~# # # CITATION_BOT_PLACEHOLDER_COMMENT \d+ # # #~', "", $string);
   return preg_replace("~<!--.*?-->~us", "", $string);
 }
 
-function prior_parameters($par, $list=array()) {
+function prior_parameters(string $par, arrray $list=array()) {
   array_unshift($list, $par);
   if (preg_match('~(\D+)(\d+)~', $par, $match)) {
     $before = (string) ((int) $match[2] - 1);
@@ -626,7 +626,7 @@ function prior_parameters($par, $list=array()) {
   }
 }
 
-function equivalent_parameters($par) {
+function equivalent_parameters(string $par) : array {
   switch ($par) {
     case 'author': case 'authors': case 'author1': case 'last1': 
       return FLATTENED_AUTHOR_PARAMETERS;
@@ -639,7 +639,7 @@ function equivalent_parameters($par) {
   }
 }
   
-function check_doi_for_jstor($doi, &$template) {
+function check_doi_for_jstor(string $doi, Template &$template) : void {
   if ($template->has('jstor')) return;
   $doi = trim($doi);
   if ($doi == '') return;
@@ -666,7 +666,7 @@ function check_doi_for_jstor($doi, &$template) {
   }      
 }
 
-function can_safely_modify_dashes($value) {
+function can_safely_modify_dashes(string $value) : bool {
    return((stripos($value, "http") === FALSE)
        && (strpos($value, "[//") === FALSE)
        && (substr_count($value, "<") === 0) // <span></span> stuff
@@ -678,6 +678,6 @@ function can_safely_modify_dashes($value) {
        && (preg_match('~^\d{4}\-[a-zA-Z]+$~u',$value) !== 1)); // 2005-A used in {{sfn}} junk
 }
 
-function str_i_same($str1, $str2) {
+function str_i_same(string $str1, string $str2) : bool {
    return (bool) (0 === strcasecmp($str1, $str2));
 }
