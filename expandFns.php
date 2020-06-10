@@ -218,7 +218,7 @@ function str_remove_irrelevant_bits(string $str) : string {
 }
 
 // See also titles_are_similar()
-function str_equivalent(string $str1, stinrg $str2) : bool {
+function str_equivalent(string $str1, ?string $str2) : bool {
   return str_i_same(str_remove_irrelevant_bits($str1), str_remove_irrelevant_bits($str2));
 }
 
@@ -228,7 +228,7 @@ function titles_are_similar(string $title1, string $title2) : bool {
 }
 
 
-function de_wikify(string $string) : string {
+function de_wikify(?string $string) : string {
   return str_replace(Array("[", "]", "'''", "''", "&"), Array("", "", "'", "'", ""), preg_replace(Array("~<[^>]*>~", "~\&[\w\d]{2,7};~", "~\[\[[^\|\]]*\|([^\]]*)\]\]~"), Array("", "", "$1"),  $string));
 }
 
@@ -556,7 +556,7 @@ function tidy_date(string $string) :string {
   return ''; // And we give up
 }
 
-function not_bad_10_1093_doi(string $url) : bool { // We assume dois are bad, unless on good list
+function not_bad_10_1093_doi(?string $url) : bool { // We assume dois are bad, unless on good list
   if(!preg_match('~10.1093/([^/]+)/~u', $url, $match)) return TRUE;
   $test = strtolower($match[1]);
   // March 2019 Good list
