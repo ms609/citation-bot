@@ -5,7 +5,7 @@
 */
 
 ini_set("user_agent", "Citation_bot; citations@tools.wmflabs.org");
-include_once("./vendor/autoload.php");
+include_once('./vendor/autoload.php');
 
 if (!defined("HTML_OUTPUT") || getenv('TRAVIS')) {  // Fail safe code
   define("HTML_OUTPUT", FALSE);
