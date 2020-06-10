@@ -10,6 +10,9 @@
 require_once('Comment.php');
 require_once('Template.php');
 require_once('apiFunctions.php');
+require_once('expandFns.php');
+require_once('user_messages.php');
+require_once('zotero.php');
 
 class Page {
 
@@ -312,7 +315,7 @@ class Page {
         $this_template->handle_et_al();
       }
       $this_template->final_tidy();
-      
+
       // Record any modifications that have been made:
       $template_mods = $this_template->modifications();
       foreach (array_keys($template_mods) as $key) {

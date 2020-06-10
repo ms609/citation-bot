@@ -11,7 +11,9 @@
  * to find information that can be added to existing citations.
  */
 
-require_once("Parameter.php");
+require_once('Parameter.php');
+require_once('expandFns.php');
+require_once('user_messages.php');
 
 final class Template {
   const PLACEHOLDER_TEXT = '# # # CITATION_BOT_PLACEHOLDER_TEMPLATE %s # # #';

@@ -4,7 +4,7 @@
  * Tests for NameTools.php.
  */
 
-require_once __DIR__ . '/../testBaseClass.php';
+require_once(__DIR__ . '/../testBaseClass.php');
 
 final class doiToolsTest extends testBaseClass {
   public function testFormatMultipleAuthors1() {
