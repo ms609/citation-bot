@@ -264,7 +264,7 @@ function under_two_authors(string $text) : string {
  * Assumes that there is more than one author to start with; 
  * check this using under_two_authors()
  */
-function split_authors(string $str) array {
+function split_authors(string $str) : array {
   if (strpos($str, ';')) return explode(';', $str);
   return explode(',', $str);
 }
