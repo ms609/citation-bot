@@ -2,7 +2,7 @@
 /*
  * Tests for gadgetapi.php
  */
-require_once __DIR__ . '/../testBaseClass.php';
+require_once(__DIR__ . '/../testBaseClass.php');
  
 final class gadgetTest extends testBaseClass {
   public function testGadget() {
@@ -12,7 +12,7 @@ final class gadgetTest extends testBaseClass {
       ob_start();
       $_POST['text'] = '{{cite|pmid=34213}}';
       $_POST['summary'] = 'Something Nice';
-      require_once __DIR__ . '/../../gadgetapi.php';
+      require_once(__DIR__ . '/../../gadgetapi.php');
       $json_text = ob_get_contents();
       ob_end_clean();
       // Reset everything

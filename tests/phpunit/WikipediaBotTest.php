@@ -4,7 +4,7 @@
  * Tests for WikipediaBot.php
  */
 
-require_once __DIR__ . '/../testBaseClass.php';
+require_once(__DIR__ . '/../testBaseClass.php');
  
   class WikipediaBotTest extends testBaseClass {
       
