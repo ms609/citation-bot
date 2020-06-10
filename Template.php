@@ -5606,7 +5606,7 @@ final class Template {
     if ($this->get('issn') === '9999-9999') return FALSE; // Fake test suite data
     if (!preg_match('~^\d{4}.?\d{3}[0-9xX]$~u', $this->get('issn'))) return FALSE;
     $html = @file_get_contents('https://www.worldcat.org/issn/' . $this->get('issn'));
-    if (preg_match('~<title>(.*)\(eJournal~', $html, $matches)) {
+    if (preg_match('~<title>(.*)\(e?Journal~', $html, $matches)) {
       if ($this->wikiname() === 'cite magazine') {
         return $this->add_if_new('magazine', trim($matches[1]));  // @codeCoverageIgnore
       } else {   
