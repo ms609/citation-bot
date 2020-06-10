@@ -2,7 +2,7 @@
 @session_start();
 define("HTML_OUTPUT", !isset($argv));
 
-require_once("setup.php");
+require_once('setup.php');
 $api = new WikipediaBot();
 if (HTML_OUTPUT) {?>
 <!DOCTYPE html>
