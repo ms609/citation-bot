@@ -12,6 +12,8 @@
  */
 
 require_once("Parameter.php");
+require_once("expandFns.php");
+requite_once("user_messages.php");
 
 final class Template {
   const PLACEHOLDER_TEXT = '# # # CITATION_BOT_PLACEHOLDER_TEMPLATE %s # # #';
