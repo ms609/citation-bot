@@ -7,7 +7,7 @@
 
 abstract class WikiThings {
   const TREAT_IDENTICAL_SEPARATELY = FALSE;
-  protected string $rawtext;
+  protected $rawtext;
 
   public function parse_text(string $text) : void {
     $this->rawtext = $text;
