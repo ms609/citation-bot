@@ -31,11 +31,13 @@ matrix:           ###### ONLY ONE WITH FULL TESTING WITH IS 7.3 OTHERS ARE ALL S
     - stage: deploy-to-master
       name: "Update WMFlabs servers"
       if: branch = master AND type != pull_request
+      php: 7.3
       script:
         - wget -O- https://tools.wmflabs.org/citations/gitpull.php
     - stage: deploy-to-development
       name: "Update WMFlabs test servers"
       if: branch = development AND type != pull_request
+      php: 7.3
       script:
         - wget -O- https://tools.wmflabs.org/citations-dev/gitpull.php
 
