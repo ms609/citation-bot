@@ -192,7 +192,7 @@ function truncate_publisher(string $p) : string {
   return preg_replace("~\s+(group|inc|ltd|publishing)\.?\s*$~i", "", $p);
 }
 
-function str_remove_irrelevant_bits(string $str) : string {
+function str_remove_irrelevant_bits(?string $str) : string {
   $str = trim($str);
   $str = preg_replace(REGEXP_PLAIN_WIKILINK, "$1", $str);   // Convert [[X]] wikilinks into X
   $str = preg_replace(REGEXP_PIPED_WIKILINK, "$2", $str);   // Convert [[Y|X]] wikilinks into X
@@ -564,7 +564,7 @@ function not_bad_10_1093_doi(?string $url) : bool { // We assume dois are bad, u
   return FALSE;
 }
 
-function bad_10_1093_doi(string $url) :bool {
+function bad_10_1093_doi(?string $url) :bool {
   return !not_bad_10_1093_doi($url);
 }
 
