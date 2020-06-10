@@ -255,7 +255,7 @@ function expand_by_zotero(Template &$template, ?string $url = NULL) : bool {
     if (ZOTERO_GIVE_UP == $zotero_failures_count) $zotero_failures_count = 0; // @codeCoverageIgnore
   }
   if ($zotero_failures_count > ZOTERO_GIVE_UP) return FALSE;
-  $access_date = FALSE;
+  $access_date = '';
   $url_kind = NULL;
   if (is_null($url)) {
      if (in_array((string) $template->get('url-status'),  ['usurped', 'unfit', 'dead'])) return FALSE;
@@ -298,7 +298,7 @@ function expand_by_zotero(Template &$template, ?string $url = NULL) : bool {
   return process_zotero_response($zotero_response, $template, $url, $url_kind, $access_date);
 }
 
-function process_zotero_response($zotero_response, Template &$template, string $url, string $url_kind, string $access_date) : bool {
+function process_zotero_response($zotero_response, Template &$template, string $url, ?string $url_kind, string $access_date) : bool {
   global $zotero_failures_count;
   if ($zotero_response === FALSE) return FALSE;  // Error message already printed in zotero_request()
  
