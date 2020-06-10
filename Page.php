@@ -10,6 +10,9 @@
 require_once('Comment.php');
 require_once('Template.php');
 require_once('apiFunctions.php');
+require_once("expandFns.php");
+requite_once("user_messages.php");
+requite_once("zotero.php");
 
 class Page {
 
