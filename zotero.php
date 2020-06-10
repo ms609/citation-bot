@@ -2,7 +2,7 @@
 const ZOTERO_GIVE_UP = 5;
 const ZOTERO_SKIPS = 100;
 
-function query_url_api($ids, $templates) {
+function query_url_api(arrray $ids, array $templates) : void {
   global $SLOW_MODE;
   global $zotero_failures_count;
   global $ch_zotero;
@@ -81,7 +81,7 @@ function query_url_api($ids, $templates) {
   curl_close($ch_zotero);
 }
 
-function query_ieee_webpages($templates) {
+function query_ieee_webpages(array $templates) : void {
   $ch_ieee = curl_init();
   curl_setopt($ch_ieee, CURLOPT_RETURNTRANSFER, TRUE);
   curl_setopt($ch_ieee, CURLOPT_HEADER, FALSE);
@@ -116,7 +116,7 @@ function query_ieee_webpages($templates) {
   curl_close($ch_ieee);
 }
 
-function drop_urls_that_match_dois($templates) {
+function drop_urls_that_match_dois(array $templates) : void {
   // Now that we have expanded URLs, try to lose them
   $ch = curl_init();
   curl_setopt($ch, CURLOPT_FOLLOWLOCATION, TRUE);
@@ -223,7 +223,7 @@ function drop_urls_that_match_dois($templates) {
   @strtok('',''); // Free internal buffers
 }
 
-function zotero_request($url) {
+function zotero_request(string $url) : bool {
   global $zotero_failures_count;
   global $ch_zotero;
   global $BLOCK_ZOTERO_SEARCH;
@@ -247,7 +247,7 @@ function zotero_request($url) {
   return $zotero_response;
 }
 
-function expand_by_zotero(&$template, $url = NULL) {
+function expand_by_zotero(Template &$template, ?string $url = NULL) : bool {
   global $zotero_failures_count;
   global $zotero_announced;
   if ($zotero_failures_count > ZOTERO_GIVE_UP) {
@@ -298,7 +298,7 @@ function expand_by_zotero(&$template, $url = NULL) {
   return process_zotero_response($zotero_response, $template, $url, $url_kind, $access_date);
 }
 
-function process_zotero_response($zotero_response, &$template, $url, $url_kind, $access_date) {
+function process_zotero_response($zotero_response, Template &$template, string $url, string $url_kind, string $access_date) : bool {
   global $zotero_failures_count;
   if ($zotero_response === FALSE) return FALSE;  // Error message already printed in zotero_request()
  
@@ -634,7 +634,7 @@ function process_zotero_response($zotero_response, &$template, $url, $url_kind, 
   return TRUE;
 }
 
-function url_simplify($url) {
+function url_simplify(string $url) : string {
   $url = str_replace('/action/captchaChallenge?redirectUri=', '', $url);
   $url = urldecode($url);
   // IEEE is annoying
