@@ -38,7 +38,7 @@ $SLOW_MODE = TRUE;
 
 abstract class testBaseClass extends PHPUnit\Framework\TestCase {
 
-  protected function requires_secrets($function) {
+  protected function requires_secrets(callable $function) : void {
     global $testing_skip_wiki;
     if ($testing_skip_wiki) {
       echo 'S';
@@ -49,7 +49,7 @@ abstract class testBaseClass extends PHPUnit\Framework\TestCase {
     }
   }
   
-  protected function requires_google($function) {
+  protected function requires_google(callable $function) : void {
     global $testing_skip_google;
     if ($testing_skip_google) {
       echo 'G';
@@ -62,7 +62,7 @@ abstract class testBaseClass extends PHPUnit\Framework\TestCase {
     
     
     
-  protected function requires_dx($function) {
+  protected function requires_dx(callable $function) : void {
     global $testing_skip_dx;
     if ($testing_skip_dx) {
       echo 'X';
@@ -73,7 +73,7 @@ abstract class testBaseClass extends PHPUnit\Framework\TestCase {
     }
   }
     
-  protected function requires_arxiv($function) {
+  protected function requires_arxiv(callable $function) : void {
     global $testing_skip_arxiv;
     if ($testing_skip_arxiv) {
       echo 'V';
@@ -85,7 +85,7 @@ abstract class testBaseClass extends PHPUnit\Framework\TestCase {
   }
 
   // Only routines that absolutely need bibcode access since we are limited 
-  protected function requires_bibcode($function) {
+  protected function requires_bibcode(callable $function) : void {
     global $BLOCK_BIBCODE_SEARCH;
     global $testing_skip_bibcode;
     if ($testing_skip_bibcode) {
@@ -103,7 +103,7 @@ abstract class testBaseClass extends PHPUnit\Framework\TestCase {
   }
 
   // allows us to turn off zoreto tests
-  protected function requires_zotero($function) {
+  protected function requires_zotero(callable $function) : void {
     global $BLOCK_ZOTERO_SEARCH;
     global $testing_skip_zotero;
     if ($testing_skip_zotero) {
@@ -120,7 +120,7 @@ abstract class testBaseClass extends PHPUnit\Framework\TestCase {
     }
   } 
   
-  protected function make_citation($text) {
+  protected function make_citation(string $text) : Template {
     $this->assertSame('{{', mb_substr($text, 0, 2));
     $this->assertSame('}}', mb_substr($text, -2));
     $template = new Template();
@@ -128,7 +128,7 @@ abstract class testBaseClass extends PHPUnit\Framework\TestCase {
     return $template;
   }
   
-  protected function prepare_citation($text) {
+  protected function prepare_citation(string $text) : Template {
     $this->assertSame('{{', mb_substr($text, 0, 2));
     $this->assertSame('}}', mb_substr($text, -2));
     $template = new Template();
@@ -137,7 +137,7 @@ abstract class testBaseClass extends PHPUnit\Framework\TestCase {
     return $template;
   }
   
-  protected function process_citation($text) {
+  protected function process_citation(string $text) : Template {
     $this->assertEquals('{{', mb_substr($text, 0, 2));
     $this->assertEquals('}}', mb_substr($text, -2));
     $page = new TestPage();
@@ -149,27 +149,27 @@ abstract class testBaseClass extends PHPUnit\Framework\TestCase {
     return $template;
   }
     
-  protected function process_page($text) { // Only used if more than just a citation template
+  protected function process_page(string $text) : TestPage { // Only used if more than just a citation template
     $page = new TestPage();
     $page->parse_text($text);
     $page->expand_text();
     return $page;
   }
 
-  protected function parameter_parse_text_helper($text) {
+  protected function parameter_parse_text_helper(string $text) : Parameter {
     $parameter = new Parameter();
     $parameter->parse_text($text);
     return $parameter;
   }
 
-  protected function getDateAndYear($input){
+  protected function getDateAndYear(Template $input) : ?string {
     // Generates string that makes debugging easy and will throw error
     if (is_null($input->get('year'))) return $input->get('date') ; // Might be null too
     if (is_null($input->get('date'))) return $input->get('year') ;
     return 'Date is ' . $input->get('date') . ' and year is ' . $input->get('year');
   }
 
-  protected function expand_via_zotero($text) {
+  protected function expand_via_zotero(string $text) :  Template {
     global $ch_zotero;
     $expanded = $this->make_citation($text);
     
@@ -189,7 +189,7 @@ abstract class testBaseClass extends PHPUnit\Framework\TestCase {
     return $expanded;
   }
  
-  protected function reference_to_template($text) {
+  protected function reference_to_template(string $text) : Template {
     $text=trim($text);
     if (preg_match("~^(?:<(?:\s*)ref[^>]*?>)(.*)(?:<\s*?\/\s*?ref(?:\s*)>)$~i", $text, $matches)) {
       $template = new Template();
