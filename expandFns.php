@@ -161,12 +161,12 @@ function wikify_external_text(string $title) : string {
   return $title; 
 }
 
-function restore_italics (sting $text) : string {
+function restore_italics (string $text) : string {
   // <em> tags often go missing around species names in CrossRef
   return preg_replace('~([a-z]+)([A-Z][a-z]+\b)~', "$1 ''$2''", $text);
 }
 
-function sanitize_string(string $str) : string {
+function sanitize_string(?string $str) : string {
   // ought only be applied to newly-found data.
   if (strtolower(trim($str)) == 'science (new york, n.y.)') return 'Science';
   $replacement = [];
@@ -218,7 +218,7 @@ function str_remove_irrelevant_bits(?string $str) : string {
 }
 
 // See also titles_are_similar()
-function str_equivalent(string $str1, ?string $str2) : bool {
+function str_equivalent(?string $str1, ?string $str2) : bool {
   return str_i_same(str_remove_irrelevant_bits($str1), str_remove_irrelevant_bits($str2));
 }
 
@@ -678,6 +678,6 @@ function can_safely_modify_dashes(string $value) : bool {
        && (preg_match('~^\d{4}\-[a-zA-Z]+$~u',$value) !== 1)); // 2005-A used in {{sfn}} junk
 }
 
-function str_i_same(string $str1, string $str2) : bool {
+function str_i_same(?string $str1, ?string $str2) : bool {
    return (bool) (0 === strcasecmp($str1, $str2));
 }
