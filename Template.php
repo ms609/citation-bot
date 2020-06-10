@@ -4723,6 +4723,9 @@ final class Template {
          }
       }
     }
+    if ($this->wikiname() === 'cite arxiv' && $this-> get_without_comments_and_placeholders('doi')) {
+      $this->change_name_to('cite journal');
+    }
     if ($this->wikiname() === 'cite arxiv' && $this->has('bibcode')) {
       $this->forget('bibcode'); // Not supported and 99% of the time just a arxiv bibcode anyway
     }
