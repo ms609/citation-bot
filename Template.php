@@ -5105,9 +5105,8 @@ final class Template {
   }
 
   // Amend parameters
-  public function rename($old_param, $new_param, $new_value = FALSE) : void {
+  public function rename(string $old_param, string $new_param, $new_value = FALSE) : void {
     if (empty($this->param)) return;
-    if ($new_param === NULL || $old_param === NULL) report_error('NULL passed to rename()');
     if ($old_param == $new_param) {
        if ($new_value !== FALSE) {
            $this->set($new_param, $new_value);
