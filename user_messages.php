@@ -24,7 +24,7 @@ function report_phase(string $text) : void { user_notice("\n>", "phase", $text);
 function report_action(string $text) : void { user_notice(">", "subitem", $text); }
 function report_info(string $text) : void { user_notice("  >", "subsubitem", $text); }
 function report_inaction(string $text) : void { user_notice("  .", "boring", $text); }
-function report_warning(string $text) : void  user_notice("  !", "warning", $text); }
+function report_warning(string $text) : void  { user_notice("  !", "warning", $text); }
 function report_modification(string $text) : void { user_notice("  ~", "changed", $text); }
 function report_add(string $text) : void { user_notice("  +", "added", $text); }
 function report_forget(string $text) : void { user_notice("  -", "removed", $text); }
