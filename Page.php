@@ -14,14 +14,14 @@ require_once('apiFunctions.php');
 class Page {
 
   protected $text, $title, $modifications, $date_style;
-  protected $read_at, $namespace, $touched, $start_text, $last_write_time;
-  public $lastrevid;
+  protected $read_at, $start_text;
+  protected $lastrevid;
 
-  function __construct() { 
+  function __construct() : void { 
       $this->construct_modifications_array();
   }
 
-  public function get_text_from($title, $api) {
+  public function get_text_from($title, $api) : bool {
     global $is_a_man_with_no_plan;
     $this->construct_modifications_array(); // Could be new page
     $is_a_man_with_no_plan = FALSE;
@@ -58,8 +58,6 @@ class Page {
     }
     
     $this->title = $details->title;
-    $this->namespace = $details->ns;
-    $this->touched = isset($details->touched) ? $details->touched : NULL;
     $this->lastrevid = isset($details->lastrevid) ? $details->lastrevid : NULL;
 
     $this->text = @file_get_contents(WIKI_ROOT . '?' . http_build_query(['title' => $title, 'action' =>'raw']));
@@ -83,15 +81,15 @@ class Page {
   }
   
   // Called from gadgetapi.php
-  public function parse_text($text) {
+  public function parse_text($text) : void {
     $this->construct_modifications_array(); // Could be new page
     $this->text = $text;
     $this->start_text = $this->text;
     $this->set_date_pattern();
   }  
 
-  public function parsed_text() {
-    return $this->text;
+  public function parsed_text() : string {
+    return (string) $this->text;
   }
   
   // $parameter: parameter to send to api_function, e.g. "pmid"
@@ -99,7 +97,7 @@ class Page {
   // $api_function: string naming a function (specified in apiFunctions.php) 
   //                that takes the value of $templates->get($identifier) as an array;
   //                returns key-value array of items to be set, if new, in each template.
-  public function expand_templates_from_identifier($identifier, $templates) {
+  public function expand_templates_from_identifier($identifier, $templates) : void {
     $ids = array();
     switch ($identifier) {
       case 'pmid': 
@@ -126,7 +124,7 @@ class Page {
     }
   }
   
-  public function expand_text() {
+  public function expand_text() : mixed {
     global $is_a_man_with_no_plan;
     global $page_error;
     $page_error = FALSE;
@@ -375,7 +373,7 @@ class Page {
                   str_replace($last_first_in, $last_first_out,str_ireplace($caps_ok, $caps_ok, $this->start_text))) != 0;
   }
 
-  public function edit_summary() {
+  public function edit_summary() : string {
     $auto_summary = "";
     if (count($this->modifications["changeonly"]) !== 0) {
       $auto_summary .= "Alter: " . implode(", ", $this->modifications["changeonly"]) . ". ";
@@ -440,7 +438,7 @@ class Page {
     return $auto_summary . "| You can [[WP:UCB|use this bot]] yourself. [[WP:DBUG|Report bugs here]]. ";
   }
 
-  public function write($api, $edit_summary_end = NULL) {
+  public function write($api, $edit_summary_end = NULL) : bool {
     if ($this->allow_bots()) {
       throttle(10);
       if ($api->write_page($this->title, $this->text,
@@ -466,7 +464,7 @@ class Page {
     }
   }
   
-  public function extract_object($class) {
+  public function extract_object(WikiThings $class) : array {
     global $page_error;
     global $is_a_man_with_no_plan;
     $i = 0;
@@ -500,13 +498,13 @@ class Page {
     return $objects;
   }
 
-  protected function replace_object ($objects) {
+  protected function replace_object ($objects) : void {
     $i = count($objects);
     if ($objects) foreach (array_reverse($objects) as $obj)
       $this->text = str_ireplace(sprintf($obj::PLACEHOLDER_TEXT, --$i), $obj->parsed_text(), $this->text); // Case insensitive, since comment placeholder might get title case, etc.
   }
 
-  protected function announce_page() {
+  protected function announce_page() : void {
     $url_encoded_title =  urlencode($this->title);
     html_echo ("\n<hr>[" . date("H:i:s") . "] Processing page '<a href='" . WIKI_ROOT . "?title=$url_encoded_title' style='font-weight:bold;'>" 
         . htmlspecialchars($this->title)
@@ -518,7 +516,7 @@ class Page {
         "\n[" . date("H:i:s") . "] Processing page " . $this->title . "...\n");
   }
   
-  protected function allow_bots() {
+  protected function allow_bots() : bool {
     // from https://en.wikipedia.org/wiki/Template:Bots
     $bot_username = '(?:Citation|DOI)[ _]bot';
     if (preg_match('/\{\{(nobots|bots\|allow=none|bots\|deny=all|bots\|optout=all|bots\|deny=.*?'.$bot_username.'.*?)\}\}/iS',$this->text))
@@ -530,7 +528,7 @@ class Page {
     return TRUE;
   }
   
-  protected function set_date_pattern() {
+  protected function set_date_pattern() : void {
     // https://en.wikipedia.org/wiki/Template:Use_mdy_dates
     // https://en.wikipedia.org/wiki/Template:Use_dmy_dates
     $date_style = DATES_WHATEVER;
@@ -547,7 +545,7 @@ class Page {
     $this->date_style = $date_style;
   }
   
-  protected function construct_modifications_array() {
+  protected function construct_modifications_array() : void {
     $this->modifications = array();
     $this->modifications['changeonly'] = array();
     $this->modifications['additions'] = array();
@@ -561,14 +559,14 @@ class Page {
 class TestPage extends Page {
   // Functions for use in testing context only
   
-  function __construct() {
+  function __construct() : void {
     $trace = debug_backtrace();
     $name = $trace[2]['function'];
     $this->title = empty($name) ? 'global' : $name;
     parent::__construct();
   }
   
-  public function overwrite_text($text) {
+  public function overwrite_text($text) : void {
     $this->text = $text;
   }
   
