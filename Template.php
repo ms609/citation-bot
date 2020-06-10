@@ -4804,7 +4804,7 @@ final class Template {
     if (!empty($this->param)) { // Forget author-link and such that have no such author
       foreach ($this->param as $p) {
         $alias = $p->param;
-        if ($alias && $this->blank($alias)) {
+        if ($alias !== NULL && $this->blank($alias)) {
           if (preg_match('~^author(\d+)\-?link$~', $alias, $matches) || preg_match('~^author\-?link(\d+)$~', $alias, $matches)) {
             if ($this->blank(AUTHOR_PARAMETERS[(int) $matches[1]])) {
               $this->forget($alias);
