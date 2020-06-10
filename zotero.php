@@ -138,10 +138,9 @@ function drop_urls_that_match_dois(array $templates) : void {
        $url = $template->get('chapterurl');
        $url_kind = 'chapterurl';
     } else {
-       $url = FALSE;
-       $url_kind = NULL;
+       $url = '';
+       $url_kind = '';
     }
-    $url = $template->get($url_kind);
     if ($doi &&  // IEEE code does not require "not incomplete"
         $url &&
         !preg_match(REGEXP_DOI_ISSN_ONLY, $doi) &&
@@ -256,7 +255,7 @@ function expand_by_zotero(Template &$template, ?string $url = NULL) : bool {
   }
   if ($zotero_failures_count > ZOTERO_GIVE_UP) return FALSE;
   $access_date = '';
-  $url_kind = NULL;
+  $url_kind = '';
   if (is_null($url)) {
      if (in_array((string) $template->get('url-status'),  ['usurped', 'unfit', 'dead'])) return FALSE;
      $access_date = strtotime(tidy_date($template->get('accessdate') . ' ' . $template->get('access-date')));
@@ -298,7 +297,7 @@ function expand_by_zotero(Template &$template, ?string $url = NULL) : bool {
   return process_zotero_response($zotero_response, $template, $url, $url_kind, $access_date);
 }
 
-function process_zotero_response($zotero_response, Template &$template, string $url, ?string $url_kind, string $access_date) : bool {
+function process_zotero_response($zotero_response, Template &$template, string $url, string $url_kind, string $access_date) : bool {
   global $zotero_failures_count;
   if ($zotero_response === FALSE) return FALSE;  // Error message already printed in zotero_request()
  
