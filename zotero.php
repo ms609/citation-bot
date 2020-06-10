@@ -449,7 +449,7 @@ function process_zotero_response($zotero_response, Template &$template, string $
       $template->add_if_new('doi', $possible_doi);
       expand_by_doi($template);
       if (stripos($url, 'jstor')) check_doi_for_jstor($template->get('doi'), $template);
-      if (!$template->incomplete() && doi_active($template->get('doi')) && !preg_match(REGEXP_DOI_ISSN_ONLY, $template->get('doi')) && $url_kind !== NULL) {
+      if (!$template->incomplete() && doi_active($template->get('doi')) && !preg_match(REGEXP_DOI_ISSN_ONLY, $template->get('doi')) && $url_kind != '') {
           if ((str_ireplace(CANONICAL_PUBLISHER_URLS, '', $template->get($url_kind)) != $template->get($url_kind))) { // This is the use a replace to see if a substring is present trick
             report_forget("Existing canonical URL resulting in equivalent DOI; dropping URL");
             $template->forget($url_kind);
