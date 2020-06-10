@@ -483,14 +483,14 @@ function expand_by_doi($template, $force = FALSE) {
         if (strtolower($template->get('title')) == strtolower($crossRef->article_title)) {
            $template->rename('title', 'chapter');
          } else {
-           $template->add_if_new('chapter', restore_italics($crossRef->article_title), 'crossref'); // add_if_new formats this value as a title
+           $template->add_if_new('chapter', restore_italics((string) $crossRef->article_title), 'crossref'); // add_if_new formats this value as a title
         }
-        $template->add_if_new('title', restore_italics($crossRef->volume_title), 'crossref'); // add_if_new will wikify title and sanitize the string
+        $template->add_if_new('title', restore_italics((string) $crossRef->volume_title), 'crossref'); // add_if_new will wikify title and sanitize the string
       } else {
-        $template->add_if_new('title', restore_italics($crossRef->article_title), 'crossref'); // add_if_new will wikify title and sanitize the string
+        $template->add_if_new('title', restore_italics((string) $crossRef->article_title), 'crossref'); // add_if_new will wikify title and sanitize the string
       }
-      $template->add_if_new('series', $crossRef->series_title, 'crossref'); // add_if_new will format the title for a series?
-      $template->add_if_new("year", $crossRef->year, 'crossref');
+      $template->add_if_new('series', (string) $crossRef->series_title, 'crossref'); // add_if_new will format the title for a series?
+      $template->add_if_new("year", (string) $crossRef->year, 'crossref');
       if (   $template->blank(array('editor', 'editor1', 'editor-last', 'editor1-last')) // If editors present, authors may not be desired
           && $crossRef->contributors->contributor
         ) {
