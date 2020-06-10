@@ -467,7 +467,7 @@ class Page {
     }
   }
   
-  public function extract_object(WikiThings $class) : array {
+  public function extract_object(string $class) : array {
     global $page_error;
     global $is_a_man_with_no_plan;
     $i = 0;
