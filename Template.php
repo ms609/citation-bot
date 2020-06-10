@@ -2751,7 +2751,7 @@ final class Template {
     return $this->expand_by_google_books_inner(NULL, NULL);
   }
   
-  protected function expand_by_google_books_inner(string $url, string $url_type) : bool {
+  protected function expand_by_google_books_inner(?string $url, ?string $url_type) : bool {
     if (!$url || !(preg_match("~books\.google\.[\w\.]+/.*\bid=([\w\d\-]+)~", $url, $gid) ||
                    preg_match("~\.google\.com/books/edition/_/([a-zA-Z0-9]+)(?:\?.+|)$~", $url, $gid))
        ) { // No Google URL yet.
@@ -5105,15 +5105,15 @@ final class Template {
   }
 
   // Amend parameters
-  public function rename($old_param, $new_param, $new_value = FALSE) : ?bool {
-    if (empty($this->param)) return FALSE;
+  public function rename($old_param, $new_param, $new_value = FALSE) : void {
+    if (empty($this->param)) return;
     if ($new_param === NULL || $old_param === NULL) report_error('NULL passed to rename()');
     if ($old_param == $new_param) {
        if ($new_value !== FALSE) {
            $this->set($new_param, $new_value);
-           return TRUE;
+           return;
         }
-        return FALSE;
+        return;
     }
     $have_nothing = TRUE;
     foreach ($this->param as $p) {
@@ -5125,9 +5125,9 @@ final class Template {
     if ($have_nothing) {
        if ($new_value !== FALSE) {
           $this->set($new_param, $new_value);
-          return TRUE;
+          return;
        }
-       return FALSE;
+       return;
     }
     // Forget old copies
     $pos = $this->get_param_key($new_param);
@@ -5166,7 +5166,7 @@ final class Template {
     return NULL;
   }
   
-  protected function param_with_index($i) : ?string {
+  protected function param_with_index($i) : ?object {
     return (isset($this->param[$i])) ? $this->param[$i] : NULL;
   }
   
