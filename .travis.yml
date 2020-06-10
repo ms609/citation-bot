@@ -13,11 +13,12 @@ matrix:           ###### ONLY ONE WITH FULL TESTING WITH IS 7.3 OTHERS ARE ALL S
     - php: nightly
       name: "Quick PHP 8.0 syntax check"
       script: '! find . -type f -name "*.php" -exec php -d error_reporting=32767 -l {} \; 2>&1 >&- | grep "^"'
-    - stage: lint
+    - php: 7.2
+      name: "PHP Lint test"
       before_script:  
         - travis_retry composer self-update
         - composer require overtrue/phplint --dev -vvv
-      script: ./vendor/bin/phplint ./ --exclude=vendor
+      script: ./vendor/bin/phplint --exclude=vendor --no-interaction  ./
     - stage: test
       name: "Full test with PHP 7.3"
       php: 7.3
@@ -30,13 +31,13 @@ matrix:           ###### ONLY ONE WITH FULL TESTING WITH IS 7.3 OTHERS ARE ALL S
     - stage: deploy-to-master
       name: "Update WMFlabs servers"
       if: branch = master AND type != pull_request
-      php: 5.6 # Avoid downloading and installing 5.5
+      php: 7.3
       script:
         - wget -O- https://tools.wmflabs.org/citations/gitpull.php
     - stage: deploy-to-development
       name: "Update WMFlabs test servers"
       if: branch = development AND type != pull_request
-      php: 5.6 # Avoid downloading and installing 5.5
+      php: 7.3
       script:
         - wget -O- https://tools.wmflabs.org/citations-dev/gitpull.php
 
