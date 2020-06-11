@@ -1162,7 +1162,7 @@ final class Template {
     }
   }
 
-  public function validate_and_add($author_param, $author, $forename, $check_against, bool $add_even_if_existing) : void {
+  public function validate_and_add($author_param, $author, $forename, string $check_against, bool $add_even_if_existing) : void {
     if (!$add_even_if_existing && ($this->initial_author_params || $this->had_initial_editor)) return; // Zotero does not know difference betwee editors and authors often
     if (in_array(strtolower($author), BAD_AUTHORS) === FALSE && author_is_human($author) && author_is_human($forename)) {
       while(preg_match('~^(.*)\s[\S]+@~', ' ' . $author, $match) || // Remove emails 
@@ -1984,7 +1984,7 @@ final class Template {
     return $results;
   }
 
-  protected function do_pumbed_query($terms) : array {
+  protected function do_pumbed_query(array $terms) : array {
   /* do_query
    *
    * Searches pubmed based on terms provided in an array.
@@ -2296,7 +2296,7 @@ final class Template {
   // $options should be a series of field names, colons (optionally urlencoded), and
   // URL-ENCODED search strings, separated by (unencoded) ampersands.
   // Surround search terms in (url-encoded) ""s, i.e. doi:"10.1038/bla(bla)bla"
-  protected function query_adsabs($options) {
+  protected function query_adsabs(string $options) : object {
     global $ADSABS_GIVE_UP;
     // API docs at https://github.com/adsabs/adsabs-dev-api/blob/master/Search_API.ipynb
     if (@$ADSABS_GIVE_UP) return (object) array('numFound' => 0);
@@ -2409,7 +2409,7 @@ final class Template {
     // @codeCoverageIgnoreEnd
   }
   
-  public function expand_by_RIS(&$dat, $add_url) : void { // Pass by pointer to wipe this data when called from use_unnamed_params()
+  public function expand_by_RIS(string &$dat, bool $add_url) : void { // Pass by pointer to wipe this data when called from use_unnamed_params()
     $ris_review    = FALSE;
     $ris_issn      = FALSE;
     $ris_publisher = FALSE;
@@ -2583,7 +2583,7 @@ final class Template {
     $this->get_semanticscholar_url($doi, $return);
   }
 
-  public function get_semanticscholar_url($doi, $unpay) : void { // $unpay is unused right now
+  public function get_semanticscholar_url(string $doi, string $unpay) : void { // $unpay is unused right now
    if(      $this->has('pmc') ||
             ($this->has('doi') && $this->get('doi-access') === 'free') ||
             ($this->has('jstor') && $this->get('jstor-access') === 'free')

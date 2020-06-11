@@ -303,25 +303,25 @@ function adsabs_api(array $ids, array $templates, string $identifier) : bool {
   // @codeCoverageIgnoreStart
   } catch (Exception $e) {
     if ($e->getCode() == 5000) { // made up code for AdsAbs error
-      report_warning(sprintf("API Error in query_adsabs: %s",
+      report_warning(sprintf("API Error in adsabs_api: %s",
                     $e->getMessage()));
     } elseif ($e->getCode() == 60) {
         $ADSABS_GIVE_UP = TRUE;
         report_warning('Giving up on AdsAbs for a while.  SSL certificate has expired.');
     } elseif (strpos($e->getMessage(), 'org.apache.solr.search.SyntaxError') !== FALSE) {
-      report_info(sprintf("Internal Error %d in query_adsabs: %s",
+      report_info(sprintf("Internal Error %d in adsabs_api: %s",
                     $e->getCode(), $e->getMessage()));
     } elseif (strpos($e->getMessage(), 'HTTP') === 0) {
-      report_warning(sprintf("HTTP Error %d in query_adsabs: %s",
+      report_warning(sprintf("HTTP Error %d in adsabs_api: %s",
                     $e->getCode(), $e->getMessage()));
     } elseif (strpos($e->getMessage(), 'Too many requests') !== FALSE) {
         $ADSABS_GIVE_UP = TRUE;
         report_warning('Giving up on AdsAbs for a while.  Too many requests.');
     } else {
-      report_warning(sprintf("Error %d in query_adsabs: %s",
+      report_warning(sprintf("Error %d in adsabs_api: %s",
                     $e->getCode(), $e->getMessage()));
     }
-    @curl_close($ch); // Some code paths have it closed, others do not
+    if (isset($ch)) @curl_close($ch); // Some code paths have it closed, others do not
     return TRUE;
   }
   // @codeCoverageIgnoreEnd
