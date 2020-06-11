@@ -31,7 +31,7 @@ final class Template {
             $used_by_api, $doi_valid = FALSE, $had_initial_editor = FALSE,
             $mod_dashes = FALSE, $mod_names = FALSE, $no_initial_doi = FALSE;
 
-  public function parse_text($text) {
+  public function parse_text($text) : void {
     global $page_error;
     $this->initial_author_params = array(); // Will be populated later if there are any
     $this->used_by_api = array(
@@ -103,7 +103,7 @@ final class Template {
   }
 
   // Re-assemble parsed template into string
-  public function parsed_text() {
+  public function parsed_text() : string {
     if ($this->has(strtolower('CITATION_BOT_PLACEHOLDER_BARE_URL'))) {
       if ($this->blank(['title', 'chapter'])) {
         return base64_decode($this->get(strtolower('CITATION_BOT_PLACEHOLDER_BARE_URL')));
@@ -116,7 +116,7 @@ final class Template {
   }
 
   // Parts of each param: | [pre] [param] [eq] [value] [post]
-  protected function split_params($text) {
+  protected function split_params($text) : void {
     // Replace | characters that are inside template parameter/value pairs
     $PIPE_REGEX = "~(\[\[[^\[\]]*)(?:\|)([^\[\]]*\]\])~u";
     while (preg_match($PIPE_REGEX, $text)) {
@@ -133,7 +133,7 @@ final class Template {
     }
   }
 
-  public function prepare() {
+  public function prepare() : void {
     if ($this->should_be_processed()) {
       $this->get_inline_doi_from_title();
       $this->parameter_names_to_lowercase();
@@ -264,7 +264,7 @@ final class Template {
     }
   }
   
-  public function fix_rogue_etal() {
+  public function fix_rogue_etal() : void {
     if ($this->blank(DISPLAY_AUTHORS)) {
       $i = 2;
       while (!$this->blank(['author' . $i, 'last' . $i])) {
@@ -276,7 +276,7 @@ final class Template {
     }
   }
   
-  public function record_api_usage($api, $param) {
+  public function record_api_usage($api, $param) : void {
     if (!is_array($param)) $param = array($param);
     foreach ($param as $p) if (!in_array($p, $this->used_by_api[$api])) $this->used_by_api[$api][] = $p;
   }
@@ -286,11 +286,11 @@ final class Template {
     return count(array_intersect($param, $this->used_by_api[$api]));
   }
   
-  public function api_has_not_used($api, $param) {
+  public function api_has_not_used($api, $param) : bool {
     return !$this->api_has_used($api, $param);
   }
   
-  public function incomplete() {   // FYI: some references will never be considered complete
+  public function incomplete() : bool {   // FYI: some references will never be considered complete
     if ($this->wikiname() =='cite book' || ($this->wikiname() =='citation' && $this->has('isbn'))) { // Assume book
       if ($this->display_authors() >= $this->number_of_authors()) return TRUE;
       return (!(
@@ -319,7 +319,7 @@ final class Template {
     ));
   }
 
-  public function profoundly_incomplete($url = '') {
+  public function profoundly_incomplete($url = '') : bool {
     // Zotero translation server often returns bad data, which is worth having if we have no data,
     // but we don't want to fill a single missing field with garbage if a reference is otherwise well formed.
     $has_date = $this->has("date") || $this->has("year") ;
@@ -357,7 +357,7 @@ final class Template {
     ));
   }
 
-  public function blank($param) {
+  public function blank($param) : ?bool {
     if (!$param) return NULL;
     if (empty($this->param)) return TRUE;
     if (!is_array($param)) $param = array($param);
@@ -367,7 +367,7 @@ final class Template {
     return TRUE;
   }
   
-  public function blank_other_than_comments($param) {
+  public function blank_other_than_comments($param) : ?bool {
     if (!$param) return NULL;
     if (empty($this->param)) return TRUE;
     if (!is_array($param)) $param = array($param);
@@ -1189,7 +1189,7 @@ final class Template {
     }
   }
   
-  public function mark_inactive_doi($doi = NULL) {
+  public function mark_inactive_doi($doi = NULL) : void {
     // Only call if doi_broken.
     if (is_null($doi)) $doi = $this->get_without_comments_and_placeholders('doi');
     if (doi_works($doi) === FALSE) { // NULL which would cast to FALSE means we don't know, so use ===
@@ -1816,7 +1816,7 @@ final class Template {
     return FALSE ;
   }
 
-  protected function get_doi_from_text() {
+  protected function get_doi_from_text() : void {
     if ($this->blank('doi') && preg_match('~10\.\d{4}/[^&\s\|\}\{]*~', urldecode($this->parsed_text()), $match)) {
       if (stripos($this->rawtext, 'oxforddnb.com') !== FALSE) return; // generally bad, and not helpful
       if (strpos($this->rawtext, '10.1093') !== FALSE) return; // generally bad, and not helpful
@@ -1829,7 +1829,7 @@ final class Template {
     }
   }
 
-  public function get_doi_from_crossref() {
+  public function get_doi_from_crossref() : bool {
     if ($this->has('doi')) {
       return TRUE;
     }
@@ -1889,7 +1889,7 @@ final class Template {
     return FALSE;
   }
   
-  public function get_doi_from_semanticscholar() {
+  public function get_doi_from_semanticscholar() : bool {
     if ($this->has('doi')) {
       return TRUE;
     }
@@ -1904,7 +1904,7 @@ final class Template {
     return FALSE;
   }
 
-  public function find_pmid() {
+  public function find_pmid() : void {
     if (!$this->blank('pmid')) return;
     report_action("Searching PubMed... ");
     $results = $this->query_pubmed();
@@ -2270,7 +2270,7 @@ final class Template {
     }
   }
   
-  protected function expand_book_adsabs() {
+  protected function expand_book_adsabs() : bool {
     $return = FALSE;
     $result = $this->query_adsabs("bibcode:" . urlencode('"' . $this->get("bibcode") . '"'));
     if ($result->numFound == 1) {
@@ -2409,7 +2409,7 @@ final class Template {
     // @codeCoverageIgnoreEnd
   }
   
-  public function expand_by_RIS(&$dat, $add_url) { // Pass by pointer to wipe this data when called from use_unnamed_params()
+  public function expand_by_RIS(&$dat, $add_url) : void { // Pass by pointer to wipe this data when called from use_unnamed_params()
     $ris_review    = FALSE;
     $ris_issn      = FALSE;
     $ris_publisher = FALSE;
@@ -2421,7 +2421,7 @@ final class Template {
     $ris_authors = 0;
     
     if(preg_match('~(?:T[I1]).*-(.*)$~m', $dat,  $match)) {
-        if(in_array(strtolower(trim($match[1])), BAD_ACCEPTED_MANUSCRIPT_TITLES)) return FALSE ;
+        if(in_array(strtolower(trim($match[1])), BAD_ACCEPTED_MANUSCRIPT_TITLES)) return ;
     }
 
     foreach ($ris as $ris_line) {
@@ -2550,7 +2550,7 @@ final class Template {
     }
   }
  
-  public function expand_by_pubmed($force = FALSE) {
+  public function expand_by_pubmed(bool $force = FALSE) : void {
     if (!$force && !$this->incomplete()) return;
     if ($pm = $this->get('pmid')) {
       report_action('Checking ' . pubmed_link('pmid', $pm) . ' for more details');
@@ -2561,7 +2561,7 @@ final class Template {
     }
   }
 
-  protected function use_sici() {
+  protected function use_sici() : bool {
     if (preg_match(REGEXP_SICI, urldecode($this->parsed_text()), $sici)) {
       quietly('report_action', "Extracting information from SICI");
       $this->add_if_new('issn', $sici[1]); // Check whether journal is set in add_if_new
@@ -2575,7 +2575,7 @@ final class Template {
     } else return FALSE;
   }
 
-  public function get_open_access_url() {
+  public function get_open_access_url() : void {
     if (!$this->blank(DOI_BROKEN_ALIASES)) return;
     $doi = $this->get_without_comments_and_placeholders('doi');
     if (!$doi) return;
@@ -2583,7 +2583,7 @@ final class Template {
     $this->get_semanticscholar_url($doi, $return);
   }
 
-  public function get_semanticscholar_url($doi, $unpay) { // $unpay is unused right now
+  public function get_semanticscholar_url($doi, $unpay) : void { // $unpay is unused right now
    if(      $this->has('pmc') ||
             ($this->has('doi') && $this->get('doi-access') === 'free') ||
             ($this->has('jstor') && $this->get('jstor-access') === 'free')
@@ -2604,7 +2604,7 @@ final class Template {
     }
   }
 
-  public function get_unpaywall_url($doi) {
+  public function get_unpaywall_url($doi) : string {
     $url = "https://api.unpaywall.org/v2/$doi?email=" . CROSSREFUSERNAME;
     $json = @file_get_contents($url);
     if ($json) {
@@ -2664,8 +2664,7 @@ final class Template {
         }
         // This should be found above when listed as location=publisher
         if($this->has('doi') &&
-            preg_match("~^https?://doi\.library\.ubc\.ca/|^https?://(?:dx\.|)doi\.org/~", $oa_url))
-            {
+            preg_match("~^https?://doi\.library\.ubc\.ca/|^https?://(?:dx\.|)doi\.org/~", $oa_url)) {
             return 'publisher';
         }
         // @codeCoverageIgnoreEnd
@@ -2734,10 +2733,9 @@ final class Template {
         }
         return 'got one';
       }
-    } else {
-       report_warning("Could not retrieve open access details from Unpaywall API for doi: " . echoable($doi));
-       return 'nothing';
     }
+    report_warning("Could not retrieve open access details from Unpaywall API for doi: " . echoable($doi));
+    return 'nothing';
   }
   
   public function expand_by_google_books() {
@@ -2899,7 +2897,7 @@ final class Template {
     return FALSE;
   }
 
-  protected function google_book_details($gid) {
+  protected function google_book_details($gid) : bool {
     $google_book_url = "https://books.google.com/books/feeds/volumes/$gid";
     $data = @file_get_contents($google_book_url);
     if ($data === FALSE) return FALSE;
@@ -2940,7 +2938,7 @@ final class Template {
           }
         }
     }
-   $google_date = tidy_date($google_date);
+    $google_date = tidy_date($google_date);
     $this->add_if_new('date', $google_date);
     // Don't set 'pages' parameter, as this refers to the CITED pages, not the page count of the book.
     // foreach ($xml->dc___format as $format) {
@@ -2948,10 +2946,11 @@ final class Template {
     //      $this->add_if_new('pages', '1–' . (string) $matches[0]); // If we did add the total pages, then we should include the whole range
     //   }
     // }
+    return TRUE;
   }
 
   ### parameter processing
-  protected function parameter_names_to_lowercase() {
+  protected function parameter_names_to_lowercase() : void {
     if (empty($this->param)) return;
     $keys = array_keys($this->param);
     for ($i = 0; $i < count($keys); $i++) {
@@ -2961,7 +2960,7 @@ final class Template {
     }
   }
 
-  protected function use_unnamed_params() {
+  protected function use_unnamed_params() : void {
     if (empty($this->param)) return;
     
     $param_occurrences = array();
@@ -3320,7 +3319,7 @@ final class Template {
     }
   }
 
-  protected function correct_param_spelling() {
+  protected function correct_param_spelling() : void {
   // check each parameter name against the list of accepted names (loaded in expand.php).
   // It will correct any that appear to be mistyped.
   if (empty($this->param)) return ;
@@ -3423,7 +3422,7 @@ final class Template {
   }
 }
 
-  protected function join_params() {
+  protected function join_params() : string {
     $ret = '';
     foreach($this->param as $p) {
       $ret .= '|' . $p->parsed_text();
@@ -3431,7 +3430,7 @@ final class Template {
     return $ret;
   }
 
-  public function change_name_to($new_name, $rename_cite_book = TRUE) {
+  public function change_name_to($new_name, $rename_cite_book = TRUE) : void {
     if (strpos($this->get('doi'), '10.1093') !== FALSE && $this->wikiname() !== 'cite web') return;
     if (bad_10_1093_doi($this->get('doi'))) return;
     $new_name = strtolower(trim($new_name)); // Match wikiname() output and cite book below
@@ -3470,7 +3469,7 @@ final class Template {
     }
   }
   
-  public function wikiname() {
+  public function wikiname() : string {
     $name = trim(mb_strtolower(str_replace('_', ' ', $this->name)));
      // Treat the same since alias
     if ($name === 'cite work') $name = 'cite book';
@@ -3481,7 +3480,7 @@ final class Template {
     return $name ;
   }
   
-  public function should_be_processed() {
+  public function should_be_processed() : bool {
     return in_array($this->wikiname(), TEMPLATES_WE_PROCESS);
   }
   
@@ -4627,13 +4626,13 @@ final class Template {
     }
   }
   
-  public function tidy() {
+  public function tidy() : void {
     // Should only be run once (perhaps when template is first loaded)
     // Future tidying should occur when parameters are added using tidy_parameter.
     foreach ($this->param as $param) $this->tidy_parameter($param->param);
   }
   
-  public function final_tidy() {
+  public function final_tidy() : void {
     if ($this->should_be_processed()) {
       // Sometimes title and chapter come from different databases
       if ($this->has('chapter') && ($this->get('chapter') === $this->get('title'))) {  // Leave only one
@@ -4818,7 +4817,7 @@ final class Template {
     }
   }
   
-  public function verify_doi() {
+  public function verify_doi() : bool {
     $doi = $this->get_without_comments_and_placeholders('doi');
     if (!$doi) return FALSE;
     if ($this->doi_valid) return TRUE;
@@ -4994,7 +4993,7 @@ final class Template {
    * if no author parameters were specified at the start of the 
    * expansion process.
   */
-  public function handle_et_al() {
+  public function handle_et_al() : void {
     foreach (AUTHOR_PARAMETERS as $author_cardinality => $group) {
       foreach ($group as $param) {
         if (strpos($this->get($param), 'et al') !== FALSE) { // Have to deal with 0 != FALSE
@@ -5036,7 +5035,7 @@ final class Template {
     return ctype_digit($da) ? $da : 0;
   }
 
-  protected function number_of_authors() {
+  protected function number_of_authors() : int {
     $max = 0;
     foreach ($this->param as $p) {
       if (preg_match('~(?:author|last|first|forename|initials|surname)(\d+)~', $p->param, $matches))
@@ -5046,7 +5045,7 @@ final class Template {
   }
   
   // Retrieve properties of template
-  public function first_author() {
+  public function first_author() : ?string {
     foreach (array('author', 'author1', 'authors', 'vauthors') as $auth_param) {
       $author = $this->get($auth_param);
       if ($author) return $author;
@@ -5064,7 +5063,7 @@ final class Template {
 
   public function initial_author_params() { return $this->initial_author_params; }
   
-  protected function first_surname() {
+  protected function first_surname() : ?string {
     // Fetch the surname of the first author only
     if (preg_match("~[^.,;\s]{2,}~u", $this->first_author(), $first_author)) {
       return $first_author[0];
@@ -5083,13 +5082,13 @@ final class Template {
     return $page;
   }
   
-  protected function year() {
+  protected function year() : string {
     if ($this->has('year')) {
       return $this->get('year');
     }
     if ($this->has('date')) {
        $date = $this->get('date');
-       if (preg_match("~^(\d{4})$~", $date)) {
+       if (preg_match("~^\d{4}$~", $date)) {
          return $date; // Just a year
        } elseif (preg_match("~^(\d{4})[^0-9]~", $date, $matches)) {
          return $matches[1]; // Start with year
@@ -5100,7 +5099,7 @@ final class Template {
     return '';
   }
 
-  public function name() {return trim($this->name);}
+  public function name() : string {return trim($this->name);}
 
   protected function page_range() {
     preg_match("~(\w?\w?\d+\w?\w?)(?:\D+(\w?\w?\d+\w?\w?))?~", $this->page(), $pagenos);
@@ -5155,7 +5154,7 @@ final class Template {
     }
   }
 
-  public function get($name) {
+  public function get($name) : ?string {
     // NOTE $this->param and $p->param are different and refer to different types!
     // $this->param is an array of Parameter objects
     // $parameter_i->param is the parameter name within the Parameter object
@@ -5196,18 +5195,18 @@ final class Template {
     return NULL;
   }
 
-  public function has($par) {
+  public function has($par) : bool {
     return (bool) strlen($this->get($par));
   }
 
-  public function add($par, $val) {
+  public function add($par, $val) : bool {
     report_add("Adding $par: $val");
     $could_set = $this->set($par, $val);
     $this->tidy_parameter($par);
     return $could_set;
   }
   
-  public function set($par, $val) {
+  public function set($par, $val) : bool {
     if ((string) $par === '') report_error('NULL parameter passed to set with value of ' . $val);
     if (mb_stripos($this->get((string) $par), 'CITATION_BOT_PLACEHOLDER_COMMENT') !== FALSE) {
       return FALSE;
@@ -5261,7 +5260,7 @@ final class Template {
     return TRUE;
   }
 
-  public function append_to($par, $val) {
+  public function append_to($par, $val) : bool {
     if (mb_stripos($this->get($par), 'CITATION_BOT_PLACEHOLDER_COMMENT') !== FALSE) {
       return FALSE;
     }
@@ -5275,13 +5274,13 @@ final class Template {
     }
   }
 
-  public function quietly_forget($par) {
+  public function quietly_forget($par) : void {
     $this->forgetter($par, FALSE);
   }
-  public function forget($par) {
+  public function forget($par) : void {
     $this->forgetter($par, TRUE);
   }
-  private function forgetter($par, $echo_forgetting) { // Do not call this function directly
+  private function forgetter($par, $echo_forgetting) : void { // Do not call this function directly
    if (!$this->blank($par)) { // do not remove all this other stuff if blank
     if ($par == 'url') {
       if ($this->blank(array_diff(ALL_URL_TYPES, array($par)))) {
@@ -5419,7 +5418,7 @@ final class Template {
     return $ret;
   }
 
-  protected function isbn10Toisbn13($isbn10, $ignore_year = FALSE) {
+  protected function isbn10Toisbn13(string $isbn10, bool $ignore_year = FALSE) : string {
     $isbn10 = trim($isbn10);  // Remove leading and trailing spaces
     if (preg_match("~^[0-9Xx ]+$~", $isbn10) === 1) { // Uses spaces
       $isbn10 = str_replace(' ', '-', $isbn10);
@@ -5451,7 +5450,7 @@ final class Template {
     return $vals;
   }
   
-  protected function get_inline_doi_from_title() {
+  protected function get_inline_doi_from_title() : void {
      if (preg_match("~(?:\s)*(?:# # # CITATION_BOT_PLACEHOLDER_TEMPLATE )(\d+)(?: # # #)(?:\s)*~", $this->get('title'), $match)) {
        if ($inline_doi = $this->all_templates[$match[1]]->inline_doi_information()) {
          if ($this->add_if_new('doi', trim($inline_doi[0]))) { // Add doi
@@ -5465,7 +5464,7 @@ final class Template {
      }
   }
   
-  protected function volume_issue_demix($data, $param) {
+  protected function volume_issue_demix($data, $param) : void {
      if ($param === 'year') return;
      if (!in_array($param, ['volume','issue','number'])) {
        report_error('volume_issue_demix ' . $param); // @codeCoverageIgnore
@@ -5552,7 +5551,7 @@ final class Template {
      }
   }
                          
-  protected function simplify_google_search($url) {
+  protected function simplify_google_search($url) : string {
       if (stripos($url, 'q=') === FALSE) return $url;  // Not a search
       if (preg_match('~^https?://.*google.com/search/~', $url)) return $url; // Not a search if the slash is there
       $hash = '';
@@ -5603,7 +5602,7 @@ final class Template {
       return $url;
   }
   
-  public function use_issn() {
+  public function use_issn() : bool {
     if ($this->blank('issn')) return FALSE; // Nothing to use
     if (!$this->blank(WORK_ALIASES)) return FALSE; // Nothing to add
     if ($this->get('issn') === '9999-9999') return FALSE; // Fake test suite data
@@ -5622,12 +5621,12 @@ final class Template {
     return FALSE; // @codeCoverageIgnore
   }
     
-  private function is_book_series($param) {
+  private function is_book_series($param) : bool {
     $simple = trim(str_replace(['-', '.',  '   ', '  '], [' ', ' ', ' ', ' '], strtolower($this->get($param))));
     return in_array($simple, JOURNAL_IS_BOOK_SERIES);
   }
   
-  private function should_url2chapter($force) {
+  private function should_url2chapter($force) : bool {
     if ($this->has('chapterurl')) return FALSE;
     if ($this->has('chapter-url')) return FALSE;
     if ($this->has('trans-chapter')) return FALSE;
