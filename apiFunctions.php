@@ -971,7 +971,7 @@ function parse_plain_text_reference(string $journal_data, Template &$this_templa
       }
 } 
 
-function getS2CID($string $url) {
+function getS2CID(string $url) : ?string {
   $context = stream_context_create(array(
    'http'=>array(
     'header'=>"x-api-key: " . getenv('PHP_S2APIKEY') . "\r\n"
@@ -980,25 +980,25 @@ function getS2CID($string $url) {
   $response = @file_get_contents('https://' . (getenv('PHP_S2APIKEY') ? 'partner' : 'api') . '.semanticscholar.org/v1/paper/URL:' . $url, FALSE, $context);
   if (!$response) {
     report_warning("No response from semanticscholar.");   // @codeCoverageIgnore
-    return FALSE;                                          // @codeCoverageIgnore
+    return NULL;                                           // @codeCoverageIgnore
   }
   $json = @json_decode($response);
   if (!$json) {
     report_warning("Bad response from semanticscholar.");  // @codeCoverageIgnore
-    return FALSE;                                          // @codeCoverageIgnore
+    return NULL;                                           // @codeCoverageIgnore
   }
   if (!isset($json->corpusId)) {
     report_minor_error("No corpusId found from semanticscholar."); // @codeCoverageIgnore
-    return FALSE;                                                  // @codeCoverageIgnore
+    return NULL;                                                   // @codeCoverageIgnore
   }
   if (is_array($json->corpusId) || is_object($json->corpusId)) {
     report_warning("Bad data from semanticscholar.");  // @codeCoverageIgnore
-    return FALSE;                                      // @codeCoverageIgnore
+    return NULL;                                       // @codeCoverageIgnore
   }
   return (string) $json->corpusId;
 }
       
-function ConvertS2CID_DOI(string $s2cid) {
+function ConvertS2CID_DOI(string $s2cid) : ?string {
   $context = stream_context_create(array(
    'http'=>array(
     'header'=>"x-api-key: " . getenv('PHP_S2APIKEY') . "\r\n"
@@ -1007,27 +1007,27 @@ function ConvertS2CID_DOI(string $s2cid) {
   $response = @file_get_contents('https://' . (getenv('PHP_S2APIKEY') ? 'partner' : 'api') . '.semanticscholar.org/v1/paper/CorpusID:' . $s2cid, FALSE, $context);
   if (!$response) {
     report_warning("No response from semanticscholar.");   // @codeCoverageIgnore
-    return FALSE;                                          // @codeCoverageIgnore
+    return NULL;                                           // @codeCoverageIgnore
   }
   $json = @json_decode($response);
   if (!$json) {
     report_warning("Bad response from semanticscholar.");  // @codeCoverageIgnore
-    return FALSE;                                          // @codeCoverageIgnore
+    return NULL;                                           // @codeCoverageIgnore
   }
   if (!isset($json->doi)) {
     report_info("No doi found from semanticscholar.");   // @codeCoverageIgnore
-    return FALSE;                                        // @codeCoverageIgnore
+    return NULL;                                         // @codeCoverageIgnore
   }
   if (is_array($json->doi) || is_object($json->doi)) {
     report_warning("Bad data from semanticscholar.");  // @codeCoverageIgnore
-    return FALSE;                                      // @codeCoverageIgnore
+    return NULL;                                       // @codeCoverageIgnore
   }
   $doi = (string) $json->doi;
   if (doi_active($doi) || doi_works($doi)) { // Try to fill both arrays now
     return $doi;
   } else {
     report_info("non-functional doi found from semanticscholar.");// @codeCoverageIgnore
-    return FALSE;                                                 // @codeCoverageIgnore
+    return NULL;                                                  // @codeCoverageIgnore
   } 
 }
 
