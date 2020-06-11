@@ -406,7 +406,7 @@ function expand_by_doi(Template $template, bool $force = FALSE) : bool {
   // run this function, so we don't check this first.
   
   if (!$template->verify_doi()) return FALSE;
-  $doi = $template->get_without_comments_and_placeholders('doi');
+  $doi = (string) $template->get_without_comments_and_placeholders('doi');
   if ($doi === $template->last_searched_doi) return FALSE;
   $template->last_searched_doi = $doi;
   if (preg_match(REGEXP_DOI_ISSN_ONLY, $doi)) return FALSE; // We do not use DOI's that are just an ISSN.
@@ -423,7 +423,7 @@ function expand_by_doi(Template $template, bool $force = FALSE) : bool {
       if (in_array(strtolower($crossRef->article_title), BAD_ACCEPTED_MANUSCRIPT_TITLES)) return FALSE ;
       if ($template->has('title') && trim(@$crossRef->article_title) && $template->get('title') !== 'none') { // Verify title of DOI matches existing data somewhat
         $bad_data = TRUE;
-        $new = $crossRef->article_title;
+        $new = (string) $crossRef->article_title;
         if (preg_match('~^(.................+)[\.\?]\s+([IVX]+)\.\s.+$~i', $new, $matches)) {
            $new = $matches[1];
            $new_roman = $matches[2];
@@ -435,7 +435,7 @@ function expand_by_doi(Template $template, bool $force = FALSE) : bool {
         }
         foreach (['chapter', 'title', 'series'] as $possible) {
           if ($template->has($possible)) {
-            $old = $template->get($possible);
+            $old = (string) $template->get($possible);
             if (preg_match('~^(.................+)[\.\?]\s+([IVX]+)\.\s.+$~i', $old, $matches)) {
                $old = $matches[1];
                $old_roman = $matches[2];
