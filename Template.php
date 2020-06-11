@@ -5129,13 +5129,13 @@ final class Template {
     return $this->param_with_index($i)->val;
   }
   
-  public function get_without_comments_and_placeholders(string $name) {
+  public function get_without_comments_and_placeholders(string $name) : ?string {
     $ret = $this->get($name);
     $ret = preg_replace('~<!--.*?-->~su', '', $ret); // Comments
     $ret = preg_replace('~# # # CITATION_BOT_PLACEHOLDER.*?# # #~sui', '', $ret); // Other place holders already escaped.  Case insensitive
     $ret = str_replace("\xc2\xa0", ' ', $ret); // Replace non-breaking with breaking spaces, which are trimmable
     $ret = trim($ret);
-    return ($ret ? $ret : FALSE);
+    return ($ret ? $ret : NULL);
   }
 
   protected function get_param_key ($needle) {
