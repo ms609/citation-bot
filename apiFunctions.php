@@ -321,7 +321,7 @@ function adsabs_api(array $ids, array $templates, string $identifier) : bool {
       report_warning(sprintf("Error %d in query_adsabs: %s",
                     $e->getCode(), $e->getMessage()));
     }
-    @curl_close(@$ch); // Some code paths have it closed, others do not
+    if (isset($ch)) @curl_close($ch); // Some code paths have it closed, others do not
     return TRUE;
   }
   // @codeCoverageIgnoreEnd
