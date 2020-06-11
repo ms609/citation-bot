@@ -1499,8 +1499,10 @@ final class TemplateTest extends testBaseClass {
     $expanded = $this->process_citation($text);
     $this->assertSame('Aad, G.', $expanded->first_author());
     $this->assertNull($expanded->get('class'));
-    
-    // Same paper, but CrossRef records full list of authors instead of collaboration name
+   });
+  }
+  public function testLongAuthorLists2() {
+    // Same paper as testLongAuthorLists(), but CrossRef records full list of authors instead of collaboration name
     $text = '{{cite web | 10.1016/j.physletb.2010.03.064}}';
     $expanded = $this->process_citation($text);
     $this->assertSame('29', $expanded->get('displayauthors'));
@@ -1509,7 +1511,6 @@ final class TemplateTest extends testBaseClass {
       . '\sqrt{s}=900\text{ GeV}' .
       "</math> measured with the ATLAS detector at the LHC", $expanded->get('title'));
     $this->assertNull($expanded->get('last31'));
-   });
   }
   
   public function testInPress() {  
@@ -2731,7 +2732,6 @@ T1 - This is the Title }}';
   
   public function testHandles1() {
     $template = $this->make_citation('{{Cite web|url=http://hdl.handle.net/10125/20269////|journal=X}}');
-    return ; // TODO final target website down today 
     $this->assertTrue($template->get_identifiers_from_url());
     $this->assertSame('10125/20269', $template->get('hdl'));
     $this->assertSame('cite journal', $template->wikiname());
@@ -2740,7 +2740,6 @@ T1 - This is the Title }}';
  
   public function testHandles2() {
     $template = $this->make_citation('{{Cite web|url=https://hdl.handle.net/handle////10125/20269}}');
-    return ; // TODO final target website down today
     $this->assertTrue($template->get_identifiers_from_url());
     $this->assertSame('cite document', $template->wikiname());
     $this->assertSame('10125/20269', $template->get('hdl'));
@@ -2757,7 +2756,6 @@ T1 - This is the Title }}';
   public function testHandles4() {
     $template = $this->make_citation('{{Cite journal|url=http://digitallibrary.amnh.org/dataset.xhtml?persistentId=hdl:10125/20269;jsessionid=EE3BA49390611FCE0AAAEBB819E777BC?sequence=1}}');
     $template->get_identifiers_from_url();
-    return ; // TODO final target website down today
     $this->assertSame('10125/20269', $template->get('hdl'));
     $this->assertNull($template->get('url'));
   }
