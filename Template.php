@@ -4941,52 +4941,6 @@ final class Template {
       // @codeCoverageIgnoreEnd
     }
   }
-
-  // @codeCoverageIgnoreStart
-  protected function check_url() {
-    // Check that the URL functions, and mark as dead if not.
-    /*  Disable; to re-enable, we should log possible 404s and check back later.
-     * Also, dead-link notifications should be placed ''after'', not within, the template.
-     * Therefore, this might be better done at Page() level.
-     * Code must not just keep adding deadlink flags every time run
-     * Therefore, probably best only if template is alone within <ref> tags. 
-     * That would also mean that once {{deadlink}} was added, the bot would not try again
-     * https://github.com/wikimedia/DeadlinkChecker is a good repository/dependency to check if a link is dead.
-     * Should also consider flagging alive links with titles of "Buy this domain!"
-     * This task should be debugged heavily since flagging wrong will anger some people
-
-     function assessUrl($url){
-        echo "assessing URL ";
-        #if (strpos($url, "abstract") >0 || (strpos($url, "/abs") >0 && strpos($url, "adsabs.") === FALSE)) return "abstract page";
-        $ch = curl_init();
-        curl_setup($ch, str_replace("&amp;", "&", $url));
-        curl_setopt($ch, CURLOPT_NOBODY, 1);
-        curl_setopt($ch, CURLOPT_HEADER, FALSE);
-        curl_setopt($ch, CURLOPT_RETURNTRANSFER, TRUE);
-        curl_exec($ch);
-        switch(curl_getinfo($ch, CURLINFO_HTTP_CODE)){
-          case "404":
-            global $p;
-            curl_close($ch);
-            return "{{dead link|date=" . date("F Y") . "}}";
-          #case "403": case "401": return "subscription required"; Does not work for, e.g. http://arxiv.org/abs/cond-mat/9909293
-        }
-        curl_close($ch);
-        return NULL;
-      }
-     
-     if (!is("format") && is("url") && !is("accessdate") && !is("archivedate") && !is("archiveurl"))
-    {
-      report_action("Checking that URL is live...");
-      $formatSet = isset($p["format"]);
-      $p["format"][0] = assessUrl($p["url"][0]);
-      if (!$formatSet && trim($p["format"][0]) == "") {
-        unset($p["format"]);
-      }
-      echo "Done" , is("format")?" ({$p["format"][0]})":"" , ".</p>";
-    }*/
-  }
-  // @codeCoverageIgnoreEnd
   
   /* function handle_et_al
    * To preserve user-input data, this function will only be called
@@ -5032,14 +4986,14 @@ final class Template {
     if (($da = $this->get('display-authors')) === NULL) {
       $da = $this->get('displayauthors');
     }
-    return ctype_digit($da) ? $da : 0;
+    return ctype_digit($da) ? (int) $da : 0;
   }
 
   protected function number_of_authors() : int {
     $max = 0;
     foreach ($this->param as $p) {
       if (preg_match('~(?:author|last|first|forename|initials|surname)(\d+)~', $p->param, $matches))
-        $max = max($matches[1], $max);
+        $max = max((int) $matches[1], $max);
     }
     return $max;
   }
@@ -5084,10 +5038,10 @@ final class Template {
   
   protected function year() : string {
     if ($this->has('year')) {
-      return $this->get('year');
+      return (string) $this->get('year');
     }
     if ($this->has('date')) {
-       $date = $this->get('date');
+       $date = (string) $this->get('date');
        if (preg_match("~^\d{4}$~", $date)) {
          return $date; // Just a year
        } elseif (preg_match("~^(\d{4})[^0-9]~", $date, $matches)) {
@@ -5101,7 +5055,7 @@ final class Template {
 
   public function name() : string {return trim($this->name);}
 
-  protected function page_range() {
+  protected function page_range() : ?array {
     preg_match("~(\w?\w?\d+\w?\w?)(?:\D+(\w?\w?\d+\w?\w?))?~", $this->page(), $pagenos);
     return $pagenos;
   }
@@ -5175,13 +5129,13 @@ final class Template {
     return $this->param_with_index($i)->val;
   }
   
-  public function get_without_comments_and_placeholders(string $name) {
+  public function get_without_comments_and_placeholders(string $name) : ?string {
     $ret = $this->get($name);
     $ret = preg_replace('~<!--.*?-->~su', '', $ret); // Comments
     $ret = preg_replace('~# # # CITATION_BOT_PLACEHOLDER.*?# # #~sui', '', $ret); // Other place holders already escaped.  Case insensitive
     $ret = str_replace("\xc2\xa0", ' ', $ret); // Replace non-breaking with breaking spaces, which are trimmable
     $ret = trim($ret);
-    return ($ret ? $ret : FALSE);
+    return ($ret ? $ret : NULL);
   }
 
   protected function get_param_key ($needle) {
@@ -5632,7 +5586,7 @@ final class Template {
     if ($this->has('trans-chapter')) return FALSE;
     if ($this->blank('chapter')) return FALSE;
     if (strpos($this->get('chapter'), '[') !== FALSE) return FALSE;
-    $url = $this->get('url');
+    $url = (string) $this->get('url');
     if (stripos($url, 'google.com') && !strpos($this->get('url'), 'pg=')) return FALSE; // Do not move books without page numbers
     if (stripos($url, 'archive.org/details/isbn')) return FALSE;
     if (stripos($url, 'page_id=0')) return FALSE;
