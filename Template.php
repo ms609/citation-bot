@@ -3470,7 +3470,7 @@ final class Template {
   }
   
   public function wikiname() : string {
-    $name = trim(mb_strtolower(str_replace('_', ' ', $this->name)));
+    $name = trim(mb_strtolower(str_replace('_', ' ', (string) $this->name)));
      // Treat the same since alias
     if ($name === 'cite work') $name = 'cite book';
     if ($name === 'cite chapter') $name = 'cite book';
@@ -5072,13 +5072,13 @@ final class Template {
     }
   }
 
-  protected function page() {
+  protected function page() : string {
     if ($this->has('pages')) {
       $page = $this->get('pages');
     } else {
       $page = $this->get('page');
     }
-    $page = str_replace(['&mdash;', '--', '&ndash;', '—', '–'], ['-','-','-','-','-'], $page);
+    $page = str_replace(['&mdash;', '--', '&ndash;', '—', '–'], ['-','-','-','-','-'], (string) $page);
     return $page;
   }
   
@@ -5171,7 +5171,7 @@ final class Template {
     return (isset($this->param[$i])) ? $this->param[$i] : NULL;
   }
   
-  protected function param_value($i) { // May return error if no param with index $i
+  protected function param_value($i) : ?string { // May return error if no param with index $i
     return $this->param_with_index($i)->val;
   }
   
@@ -5274,13 +5274,13 @@ final class Template {
     }
   }
 
-  public function quietly_forget($par) : void {
+  public function quietly_forget(string $par) : void {
     $this->forgetter($par, FALSE);
   }
-  public function forget($par) : void {
+  public function forget(string $par) : void {
     $this->forgetter($par, TRUE);
   }
-  private function forgetter($par, $echo_forgetting) : void { // Do not call this function directly
+  private function forgetter(string $par, bool $echo_forgetting) : void { // Do not call this function directly
    if (!$this->blank($par)) { // do not remove all this other stuff if blank
     if ($par == 'url') {
       if ($this->blank(array_diff(ALL_URL_TYPES, array($par)))) {
@@ -5387,7 +5387,7 @@ final class Template {
     }
   }
 
-  public function modifications($type='all') {
+  public function modifications(string $type='all') : array {
     if ($this->has(strtolower('CITATION_BOT_PLACEHOLDER_BARE_URL'))) return array();
     $new = array();
     $ret = array();
@@ -5441,7 +5441,7 @@ final class Template {
     return $isbn13;
   }
   
-  public function inline_doi_information() {
+  protected function inline_doi_information() {
     if ($this->name !== "doi-inline") return FALSE;
     if (count($this->param) !==2) return FALSE;
     $vals   = array();
@@ -5551,7 +5551,7 @@ final class Template {
      }
   }
                          
-  protected function simplify_google_search($url) : string {
+  protected function simplify_google_search(string $url) : string {
       if (stripos($url, 'q=') === FALSE) return $url;  // Not a search
       if (preg_match('~^https?://.*google.com/search/~', $url)) return $url; // Not a search if the slash is there
       $hash = '';
@@ -5621,7 +5621,7 @@ final class Template {
     return FALSE; // @codeCoverageIgnore
   }
     
-  private function is_book_series($param) : bool {
+  private function is_book_series(string $param) : bool {
     $simple = trim(str_replace(['-', '.',  '   ', '  '], [' ', ' ', ' ', ' '], strtolower($this->get($param))));
     return in_array($simple, JOURNAL_IS_BOOK_SERIES);
   }
