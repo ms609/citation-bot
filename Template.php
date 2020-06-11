@@ -357,8 +357,7 @@ final class Template {
     ));
   }
 
-  public function blank($param) : bool {
-    if (!$param) report_error('Nothing passed to blank()');
+  public function blank($param) : ?bool {
     if (!$param) return NULL;
     if (empty($this->param)) return TRUE;
     if (!is_array($param)) $param = array($param);
