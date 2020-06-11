@@ -3234,12 +3234,12 @@ final class Template {
     }
   }
 
-  protected function id_to_param() {
+  protected function id_to_param(): void {
     $id = $this->get('id');
     if (trim($id)) {
       report_action("Trying to convert ID parameter to parameterized identifiers.");
     } else {
-      return FALSE;
+      return;
     }
     while (preg_match("~\b(PMID|DOI|ISBN|ISSN|ARXIV|LCCN)[\s:]*(\d[\d\s\-]*+[^\s\}\{\|,;]*)(?:[,;] )?~iu", $id, $match)) {
       $this->add_if_new(strtolower($match[1]), $match[2]);
