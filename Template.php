@@ -5108,10 +5108,10 @@ final class Template {
   }
 
   // Amend parameters
-  public function rename(string $old_param, string $new_param, $new_value = FALSE) : void {
+  public function rename(string $old_param, string $new_param, ?string $new_value = NULL) : void {
     if (empty($this->param)) return;
     if ($old_param == $new_param) {
-       if ($new_value !== FALSE) {
+       if ($new_value !== NULL) {
            $this->set($new_param, $new_value);
            return;
         }
@@ -5125,7 +5125,7 @@ final class Template {
       }
     }
     if ($have_nothing) {
-       if ($new_value !== FALSE) {
+       if ($new_value !== NULL) {
           $this->set($new_param, $new_value);
           return;
        }
@@ -5140,7 +5140,7 @@ final class Template {
     foreach ($this->param as $p) {
       if ($p->param == $old_param) {
         $p->param = $new_param;
-        if ($new_value) {
+        if ($new_value !== NULL) {
           $p->val = $new_value;
         }
         if (strpos($old_param . $new_param, 'CITATION_BOT_PLACEHOLDER_year') === FALSE &&
