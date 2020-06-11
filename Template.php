@@ -31,7 +31,7 @@ final class Template {
             $used_by_api, $doi_valid = FALSE, $had_initial_editor = FALSE,
             $mod_dashes = FALSE, $mod_names = FALSE, $no_initial_doi = FALSE;
 
-  public function parse_text($text) : void {
+  public function parse_text(string $text) : void {
     global $page_error;
     $this->initial_author_params = array(); // Will be populated later if there are any
     $this->used_by_api = array(
@@ -116,12 +116,12 @@ final class Template {
   }
 
   // Parts of each param: | [pre] [param] [eq] [value] [post]
-  protected function split_params($text) : void {
+  protected function split_params(string $text) : void {
     // Replace | characters that are inside template parameter/value pairs
     $PIPE_REGEX = "~(\[\[[^\[\]]*)(?:\|)([^\[\]]*\]\])~u";
     while (preg_match($PIPE_REGEX, $text)) {
       $text = preg_replace_callback($PIPE_REGEX,
-          function($matches) {
+          function(array $matches) : string {
              return($matches[1] . PIPE_PLACEHOLDER . $matches[2]);
           },
           $text);
@@ -276,17 +276,17 @@ final class Template {
     }
   }
   
-  public function record_api_usage($api, $param) : void {
+  public function record_api_usage(string $api, $param) : void {
     if (!is_array($param)) $param = array($param);
     foreach ($param as $p) if (!in_array($p, $this->used_by_api[$api])) $this->used_by_api[$api][] = $p;
   }
   
-  public function api_has_used($api, $param) {
+  public function api_has_used(string $api, $param) {
     if (!isset($this->used_by_api[$api])) report_error("Invalid API: $api");
     return count(array_intersect($param, $this->used_by_api[$api]));
   }
   
-  public function api_has_not_used($api, $param) : bool {
+  public function api_has_not_used(string $api, $param) : bool {
     return !$this->api_has_used($api, $param);
   }
   
@@ -319,7 +319,7 @@ final class Template {
     ));
   }
 
-  public function profoundly_incomplete($url = '') : bool {
+  public function profoundly_incomplete(string $url = '') : bool {
     // Zotero translation server often returns bad data, which is worth having if we have no data,
     // but we don't want to fill a single missing field with garbage if a reference is otherwise well formed.
     $has_date = $this->has("date") || $this->has("year") ;
@@ -367,7 +367,7 @@ final class Template {
     return TRUE;
   }
   
-  public function blank_other_than_comments($param) : ?bool {
+  public function blank_other_than_comments(?string $param) : ?bool {
     if (!$param) return NULL;
     if (empty($this->param)) return TRUE;
     if (!is_array($param)) $param = array($param);
@@ -383,7 +383,7 @@ final class Template {
    *      parameter so it is not used to trigger a new search via the same API.
    *
    */
-  public function add_if_new($param_name, $value, $api = NULL) {
+  public function add_if_new(string $param_name, ?string $value, ?string $api = NULL) : bool {
     $value = trim((string) $value);
     if ($value == '') {
       return FALSE;
@@ -1162,7 +1162,7 @@ final class Template {
     }
   }
 
-  public function validate_and_add($author_param, $author, $forename, $check_against, $add_even_if_existing) {
+  public function validate_and_add($author_param, $author, $forename, $check_against, bool $add_even_if_existing) : void {
     if (!$add_even_if_existing && ($this->initial_author_params || $this->had_initial_editor)) return; // Zotero does not know difference betwee editors and authors often
     if (in_array(strtolower($author), BAD_AUTHORS) === FALSE && author_is_human($author) && author_is_human($forename)) {
       while(preg_match('~^(.*)\s[\S]+@~', ' ' . $author, $match) || // Remove emails 
@@ -1189,7 +1189,7 @@ final class Template {
     }
   }
   
-  public function mark_inactive_doi($doi = NULL) : void {
+  public function mark_inactive_doi(?string $doi = NULL) : void {
     // Only call if doi_broken.
     if (is_null($doi)) $doi = $this->get_without_comments_and_placeholders('doi');
     if (doi_works($doi) === FALSE) { // NULL which would cast to FALSE means we don't know, so use ===
@@ -1199,7 +1199,7 @@ final class Template {
   
   // This is also called when adding a URL with add_if_new, in which case
   // it looks for a parameter before adding the url.
-  public function get_identifiers_from_url($url_sent = NULL) {
+  public function get_identifiers_from_url(?string $url_sent = NULL) : bool {
     if (is_null($url_sent)) {
        // Chapter URLs are generally better than URLs for the whole book.
         if ($this->has('url') && $this->has('chapterurl')) {
