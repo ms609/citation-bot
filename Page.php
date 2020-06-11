@@ -488,7 +488,7 @@ class Page {
         $objects[] = $obj;
       }
     }
-    if ($preg_ok === FALSE) { // Something went wrong
+    if ($preg_ok === FALSE || $preg_ok === NULL) { // Something went wrong
         // PHP 5 segmentation faults in preg_match when it fails.  PHP 7 returns FALSE.  Often from bad wiki-text
         // @codeCoverageIgnoreStart
         $page_error = TRUE;
