@@ -164,8 +164,8 @@ final class doiToolsTest extends testBaseClass {
   public function testFormat() { // Random extra code coverage tests
     $this->assertSame('& a. Johnson', format_surname('& A. Johnson'));
     $this->assertSame('Johnson; Smith', format_surname('Johnson; Smith'));
-    $this->assertSame(FALSE, format_author(''));
-    $this->assertSame(FALSE, format_multiple_authors(''));
+    $this->assertSame('', format_author(''));
+    $this->assertSame('', format_multiple_authors(''));
     $this->assertSame('John, Bob; Kim, Billy', format_multiple_authors('John,Bob,Kim,Billy'));
     $this->assertSame('Johnson, A. B. C. D. E. F. G', format_author('A. B. C. D. E. F. G. Johnson'));
     $this->assertSame(['John','Bob','Kim','Billy'], format_multiple_authors('John;Bob;Kim;Billy', TRUE));
