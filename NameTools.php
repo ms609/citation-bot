@@ -64,7 +64,7 @@ function format_forename(string $forename) : string {
  */
 function format_initials(string $str) : string {
   $str = trim($str);
-        if ($str == "") return FALSE;
+        if ($str == "") return "";
         $end = (substr($str, strlen($str)-1) == ";") ? ";" : '';
         preg_match_all("~\w~", $str, $match);
         return mb_strtoupper(implode(".",$match[0]) . ".") . $end;
