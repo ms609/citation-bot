@@ -13,7 +13,7 @@ class WikipediaBot {
   private $consumer, $token, $ch, $the_user;
   private static $last_WikipediaBot = NULL;
 
-  function __construct($no_user = FALSE) {
+  function __construct(bool $no_user = FALSE) {
     // setup.php must already be run at this point
     if (!getenv('PHP_OAUTH_CONSUMER_TOKEN'))  report_error("PHP_OAUTH_CONSUMER_TOKEN not set");
     if (!getenv('PHP_OAUTH_CONSUMER_SECRET')) report_error("PHP_OAUTH_CONSUMER_SECRET not set");
@@ -42,14 +42,14 @@ class WikipediaBot {
     return (isset($userQuery->query->userinfo->name)) ? $userQuery->query->userinfo->name : FALSE;
   }
   
-  public function get_the_user() {
+  public function get_the_user() : string {
     if (!isset($this->the_user) || @$this->the_user == NULL) {
       report_error('User Not Set');         // @codeCoverageIgnore
     }
     return $this->the_user; // Might or might not match the above
   }
   
-  private function ret_okay($response) {
+  private function ret_okay($response) : bool {
     if ($response === CURLE_HTTP_RETURNED_ERROR) {
       report_error("Curl encountered HTTP response error");    // @codeCoverageIgnore
     }
@@ -70,7 +70,7 @@ class WikipediaBot {
     return TRUE;
   }
   
-  private function reset_curl() {
+  private function reset_curl() : bool {
     if (!$this->ch) {
       $this->ch = curl_init();
     }
@@ -93,7 +93,7 @@ class WikipediaBot {
       ]);
   }
   
-  public function fetch($params, $method, $depth = 1) {
+  public function fetch($params, string $method, int $depth = 1) {
     if ($depth > 1) sleep($depth);
     if ($depth > 5) return FALSE;
     if (!$this->reset_curl()) {
@@ -170,7 +170,7 @@ class WikipediaBot {
     return FALSE;
   }
   
-  public function write_page($page, $text, $editSummary, $lastRevId = NULL, $startedEditing = NULL) {
+  public function write_page(string $page, string $text, string $editSummary, $lastRevId = NULL, $startedEditing = NULL) : bool {
     $response = $this->fetch([
             'action' => 'query',
             'prop' => 'info|revisions',
@@ -267,7 +267,7 @@ class WikipediaBot {
     }
   }
   
-  public function category_members($cat){
+  public function category_members(string $cat) : array {
     $list = [];
     $vars = [
       "cmtitle" => "Category:$cat", // Don't URLencode.
@@ -299,12 +299,12 @@ class WikipediaBot {
   }
   
   // Returns an array; Array ("title1", "title2" ... );
-  public function what_transcludes($template, $namespace = 99){
+  public function what_transcludes(string $template, int $namespace = 99) : array {
     $titles = $this->what_transcludes_2($template, $namespace);
     return $titles["title"];
   }
-  protected function what_transcludes_2($template, $namespace = 99) {
-    
+
+  protected function what_transcludes_2(string $template, int $namespace = 99) : array {
     $vars = Array (
       "action" => "query",
       "list" => "embeddedin",
@@ -330,7 +330,8 @@ class WikipediaBot {
     set_time_limit(120);
     return $list;
   }
-  public function get_last_revision($page) {
+
+  public function get_last_revision(string $page) : string {
     $res = $this->fetch([
         "action" => "query",
         "prop" => "revisions",
@@ -343,7 +344,8 @@ class WikipediaBot {
     $page = reset($res->query->pages);
     return  (isset($page->revisions[0]->revid) ? (string) $page->revisions[0]->revid : '');
   }
-  public function get_prefix_index($prefix, $namespace = 0, $start = "") {
+
+  public function get_prefix_index(string $prefix, int $namespace = 0, string $start = "") : array {
     $page_titles = [];
     $vars = ["action" => "query",
       "list" => "allpages",
@@ -370,7 +372,7 @@ class WikipediaBot {
     set_time_limit(120);
     return $page_titles;
   }
-  public function get_namespace($page) {
+  public function get_namespace(string $page) {
     $res = $this->fetch([
         "action" => "query",
         "prop" => "info",
@@ -383,7 +385,7 @@ class WikipediaBot {
     return (int) reset($res->query->pages)->ns;
   }
   # @return -1 if page does not exist; 0 if exists and not redirect; 1 if is redirect
-  static public function is_redirect($page, $api = NULL) {
+  static public function is_redirect(string $page, self $api = NULL) : int {
     if (self::$last_WikipediaBot == NULL) {
        new WikipediaBot(TRUE);      // @codeCoverageIgnore
     }
@@ -406,7 +408,7 @@ class WikipediaBot {
     $res = reset($res->query->pages);
     return (isset($res->missing) ? -1 : (isset($res->redirect) ? 1 : 0));
   }
-  public function redirect_target($page) {
+  public function redirect_target(string $page) {
     $res = $this->fetch([
         "action" => "query",
         "redirects" => "1",
@@ -418,15 +420,15 @@ class WikipediaBot {
     }
     return $res->query->redirects[0]->to;
   }
-  public function namespace_id($name) {
+  public function namespace_id(string $name) : int {
     $lc_name = strtolower($name);
     return array_key_exists($lc_name, NAMESPACE_ID) ? (int) NAMESPACE_ID[$lc_name] : 0;
   }
-  public function namespace_name($id) {
+  public function namespace_name(int $id) : ?string {
     return array_key_exists($id, NAMESPACES) ? NAMESPACES[$id] : NULL;
   }
   
-  static public function is_valid_user($user) {
+  static public function is_valid_user(?string $user) : bool {
     if (!$user) return FALSE;
     $response = @file_get_contents(API_ROOT . '?action=query&usprop=blockinfo&format=json&list=users&ususers=' . urlencode(str_replace(" ", "_", $user)));
     if ($response == FALSE) return FALSE;
@@ -442,7 +444,7 @@ class WikipediaBot {
  * Human interaction needed
  * @codeCoverageIgnore
  */
-  private function authenticate_user() {
+  private function authenticate_user() : void {
     if (isset($_SESSION['citation_bot_user_id'])) {
       if ($this->is_valid_user($_SESSION['citation_bot_user_id'])) {
         $this->the_user = $_SESSION['citation_bot_user_id'];
