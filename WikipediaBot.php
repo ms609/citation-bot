@@ -50,7 +50,7 @@ class WikipediaBot {
   }
   
   private function ret_okay(?object $response) : bool {
-    if (isnull($response)) {
+    if (is_null($response)) {
       report_minor_error('Wikipedia responce was not decoded.');
       return FALSE;
     }
