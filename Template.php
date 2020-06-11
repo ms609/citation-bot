@@ -1306,7 +1306,7 @@ final class Template {
     // semanticscholar
     if (preg_match('~^https?://(?:pdfs?\.|www\.|)semanticscholar\.org/~i', $url)) {
        $s2cid = getS2CID($url);
-       if ($s2cid === FALSE) return FALSE;
+       if ($s2cid == NULL) return FALSE;
        if ($this->has('s2cid') && $s2cid != $this->get('s2cid')) {
           report_warning('Existsing URL does not match exisiting S2CID: ' .  $this->get('s2cid'));
           return FALSE;
