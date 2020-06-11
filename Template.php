@@ -359,6 +359,7 @@ final class Template {
 
   public function blank($param) : bool {
     if (!$param) report_error('Nothing passed to blank()');
+    if (!$param) return NULL;
     if (empty($this->param)) return TRUE;
     if (!is_array($param)) $param = array($param);
     foreach ($this->param as $p) {
@@ -366,8 +367,8 @@ final class Template {
     }
     return TRUE;
   }
-  
-  public function blank_other_than_comments($param) : bool {
+
+  public function blank_other_than_comments($param) : ?bool {
     if (!$param) return NULL;
     if (empty($this->param)) return TRUE;
     if (!is_array($param)) $param = array($param);
@@ -2550,7 +2551,7 @@ final class Template {
     }
   }
  
-  public function expand_by_pubmed($force = FALSE) : void {
+  public function expand_by_pubmed(bool $force = FALSE) : void {
     if (!$force && !$this->incomplete()) return;
     if ($pm = $this->get('pmid')) {
       report_action('Checking ' . pubmed_link('pmid', $pm) . ' for more details');
@@ -2664,8 +2665,7 @@ final class Template {
         }
         // This should be found above when listed as location=publisher
         if($this->has('doi') &&
-            preg_match("~^https?://doi\.library\.ubc\.ca/|^https?://(?:dx\.|)doi\.org/~", $oa_url))
-            {
+            preg_match("~^https?://doi\.library\.ubc\.ca/|^https?://(?:dx\.|)doi\.org/~", $oa_url)) {
             return 'publisher';
         }
         // @codeCoverageIgnoreEnd
@@ -2734,10 +2734,9 @@ final class Template {
         }
         return 'got one';
       }
-    } else {
-       report_warning("Could not retrieve open access details from Unpaywall API for doi: " . echoable($doi));
-       return 'nothing';
     }
+    report_warning("Could not retrieve open access details from Unpaywall API for doi: " . echoable($doi));
+    return 'nothing';
   }
   
   public function expand_by_google_books() : bool {
@@ -2899,7 +2898,7 @@ final class Template {
     return FALSE;
   }
 
-  protected function google_book_details($gid) : void {
+  protected function google_book_details($gid) : bool {
     $google_book_url = "https://books.google.com/books/feeds/volumes/$gid";
     $data = @file_get_contents($google_book_url);
     if ($data === FALSE) return;
@@ -2940,7 +2939,7 @@ final class Template {
           }
         }
     }
-   $google_date = tidy_date($google_date);
+    $google_date = tidy_date($google_date);
     $this->add_if_new('date', $google_date);
     // Don't set 'pages' parameter, as this refers to the CITED pages, not the page count of the book.
     // foreach ($xml->dc___format as $format) {
@@ -2948,6 +2947,7 @@ final class Template {
     //      $this->add_if_new('pages', '1–' . (string) $matches[0]); // If we did add the total pages, then we should include the whole range
     //   }
     // }
+    return TRUE;
   }
 
   ### parameter processing
