@@ -195,7 +195,7 @@ function format_author(string $author) : string {
   return trim($full_name);
 }
 
-function format_multiple_authors(string $authors, bool $returnAsArray = FALSE) {
+function format_multiple_authors(string $authors) : string {
   $authors = html_entity_decode($authors, ENT_COMPAT | ENT_HTML401, "UTF-8");
 
   $return = array();
@@ -246,12 +246,7 @@ function format_multiple_authors(string $authors, bool $returnAsArray = FALSE) {
     $return[] = is_initials($frag)?format_initials($frag):$frag;
   }
   $returnString = preg_replace("~;$~", "", trim(implode(" ", $return)));
-  if ($returnAsArray){
-    $authors = explode ( "; ", $returnString);
-    return $authors;
-  } else {
-    return $returnString;
-  }
+  return $returnString;
 }
 
 function under_two_authors(?string $text) : bool {
