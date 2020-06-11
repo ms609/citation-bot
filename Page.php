@@ -83,14 +83,6 @@ class Page {
     }
   }
   
-  // Called from gadgetapi.php
-  public function get_text_from(string $text) : void {
-    $this->construct_modifications_array(); // Could be new page
-    $this->text = $text;
-    $this->start_text = $this->text;
-    $this->set_date_pattern();
-  }  
-
   public function parsed_text() : string {
     return $this->text;
   }
