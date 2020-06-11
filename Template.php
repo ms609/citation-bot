@@ -5280,7 +5280,8 @@ final class Template {
   public function forget(string $par) : void {
     $this->forgetter($par, TRUE);
   }
-  private function forgetter(string $par, bool $echo_forgetting) :void { // Do not call this function directly
+
+  private function forgetter(string $par, bool $echo_forgetting) : void { // Do not call this function directly
    if (!$this->blank($par)) { // do not remove all this other stuff if blank
     if ($par == 'url') {
       if ($this->blank(array_diff(ALL_URL_TYPES, array($par)))) {
