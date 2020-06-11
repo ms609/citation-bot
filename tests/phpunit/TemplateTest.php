@@ -1499,8 +1499,10 @@ final class TemplateTest extends testBaseClass {
     $expanded = $this->process_citation($text);
     $this->assertSame('Aad, G.', $expanded->first_author());
     $this->assertNull($expanded->get('class'));
-    
-    // Same paper, but CrossRef records full list of authors instead of collaboration name
+   });
+  }
+  public function testLongAuthorLists2() {
+    // Same paper as testLongAuthorLists(), but CrossRef records full list of authors instead of collaboration name
     $text = '{{cite web | 10.1016/j.physletb.2010.03.064}}';
     $expanded = $this->process_citation($text);
     $this->assertSame('29', $expanded->get('displayauthors'));
@@ -1509,7 +1511,6 @@ final class TemplateTest extends testBaseClass {
       . '\sqrt{s}=900\text{ GeV}' .
       "</math> measured with the ATLAS detector at the LHC", $expanded->get('title'));
     $this->assertNull($expanded->get('last31'));
-   });
   }
   
   public function testInPress() {  
