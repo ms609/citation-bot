@@ -488,8 +488,8 @@ class Page {
         $objects[] = $obj;
       }
     }
-    if ($preg_ok === FALSE) { // Something went wrong
-        // PHP 5 segmentation faults in preg_match when it fails.  PHP 7 returns FALSE.  Often from bad wiki-text
+    if ($preg_ok === FALSE || $preg_ok === NULL) { // Something went wrong.  Often from bad wiki-text.
+        // PHP 5 segmentation faults. PHP 7.0 returns FALSE. Later versions return NULL.
         // @codeCoverageIgnoreStart
         $page_error = TRUE;
         if ($is_a_man_with_no_plan) echo "<p>\n\n" . $text . "\n\n<p>";
