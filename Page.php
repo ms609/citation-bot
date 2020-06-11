@@ -83,6 +83,13 @@ class Page {
     }
   }
   
+  public function parse_text($text) : void {	
+    $this->construct_modifications_array(); // Could be new page	
+    $this->text = $text;	
+    $this->start_text = $this->text;	
+    $this->set_date_pattern();	
+  }
+ 
   public function parsed_text() : string {
     return $this->text;
   }
