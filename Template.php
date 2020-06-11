@@ -4722,7 +4722,7 @@ final class Template {
          }
       }
     }
-    if ($this->wikiname() === 'cite arxiv' && $this-> get_without_comments_and_placeholders('doi')) {
+    if ($this->wikiname() === 'cite arxiv' && $this->get_without_comments_and_placeholders('doi')) {
       $this->change_name_to('cite journal');
     }
     if ($this->wikiname() === 'cite arxiv' && $this->has('bibcode')) {
@@ -5175,7 +5175,7 @@ final class Template {
     return $this->param_with_index($i)->val;
   }
   
-  public function get_without_comments_and_placeholders(string $name) : bool {
+  public function get_without_comments_and_placeholders(string $name) {
     $ret = $this->get($name);
     $ret = preg_replace('~<!--.*?-->~su', '', $ret); // Comments
     $ret = preg_replace('~# # # CITATION_BOT_PLACEHOLDER.*?# # #~sui', '', $ret); // Other place holders already escaped.  Case insensitive
