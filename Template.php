@@ -2569,7 +2569,7 @@ final class Template {
       //if ($this->blank('day') && is("month") && $sici[4]) set ("day", $sici[4]);
       $this->add_if_new('year', (string) (int) $sici[2]);
       $this->add_if_new('volume', (string) (int) $sici[5]);
-      if ($sici[6]) === FALSE) $this->add_if_new('issue', (string) (int) $sici[6]);
+      if ($sici[6]) $this->add_if_new('issue', (string) (int) $sici[6]);
       $this->add_if_new('pages', (string) (int) $sici[7]);
       return TRUE;
     } else return FALSE;
