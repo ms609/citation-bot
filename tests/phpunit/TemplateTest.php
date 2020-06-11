@@ -3939,21 +3939,21 @@ T1 - This is the Title }}';
   public function testRenameSpecialCases() {
     $text = "{{cite web|id=x}}";
     $template = $this->make_citation($text);
-    $this->assertFalse($template->rename('work', 'work'));
-    $this->assertTrue($template->rename('work', 'work', 'new'));
+    $template->rename('work', 'work');
+    $template->rename('work', 'work', 'new');
     $this->assertSame('new', $template->get('work'));
    
     $text = "{{cite web|id=x}}";
     $template = $this->make_citation($text);
-    $this->assertFalse($template->rename('work', 'journal'));
-    $this->assertTrue($template->rename('work', 'journal', 'new'));
+    $template->rename('work', 'journal');
+    $template->rename('work', 'journal', 'new');
     $this->assertSame('new', $template->get('journal'));
 
  
     $text = "{{cite web}}"; // param will be null
     $template = $this->make_citation($text);
-    $this->assertFalse($template->rename('work', 'journal'));
-    $this->assertFalse($template->rename('work', 'journal', 'new'));
+    $template->rename('work', 'journal');
+    $template->rename('work', 'journal', 'new');
     $this->assertNull($template->get('journal'));
   }
  
