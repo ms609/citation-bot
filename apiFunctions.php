@@ -744,7 +744,7 @@ function query_jstor_api(array $ids, array $templates) : bool {
   return $return;
 }
 
-function expand_by_jstor(array $template) : bool {
+function expand_by_jstor(Template $template) : bool {
   if ($template->incomplete() === FALSE) return FALSE;
   if ($template->has('jstor')) {
      $jstor = trim($template->get('jstor'));
