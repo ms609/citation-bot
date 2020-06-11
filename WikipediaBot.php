@@ -373,7 +373,7 @@ class WikipediaBot {
     set_time_limit(120);
     return $page_titles;
   }
-  public function get_namespace(string $page) ?int {
+  public function get_namespace(string $page) : ?int {
     $res = $this->fetch([
         "action" => "query",
         "prop" => "info",
