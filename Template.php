@@ -367,7 +367,7 @@ final class Template {
     return TRUE;
   }
   
-  public function blank_other_than_comments(?string $param) : ?bool {
+  public function blank_other_than_comments($param) : ?bool {
     if (!$param) return NULL;
     if (empty($this->param)) return TRUE;
     if (!is_array($param)) $param = array($param);
