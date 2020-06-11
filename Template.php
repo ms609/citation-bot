@@ -2550,7 +2550,7 @@ final class Template {
     }
   }
  
-  public function expand_by_pubmed($force = FALSE) : bool {
+  public function expand_by_pubmed(bool $force = FALSE) : void {
     if (!$force && !$this->incomplete()) return;
     if ($pm = $this->get('pmid')) {
       report_action('Checking ' . pubmed_link('pmid', $pm) . ' for more details');
