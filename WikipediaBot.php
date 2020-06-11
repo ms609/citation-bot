@@ -37,9 +37,9 @@ class WikipediaBot {
     if ($this->ch) curl_close($this->ch);
   }
   
-  public function username() {
+  public function username() : string {
     $userQuery = $this->fetch(['action' => 'query', 'meta' => 'userinfo'], 'GET');
-    return (isset($userQuery->query->userinfo->name)) ? $userQuery->query->userinfo->name : FALSE;
+    return (isset($userQuery->query->userinfo->name)) ? $userQuery->query->userinfo->name : '';
   }
   
   public function get_the_user() : string {
