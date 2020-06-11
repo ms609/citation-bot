@@ -1,8 +1,8 @@
 <?php
-function query_pmid_api ($pmids, $templates) { return entrez_api($pmids, $templates, 'pubmed'); }
-function query_pmc_api  ($pmcs, $templates)  { return entrez_api($pmcs,  $templates, 'pmc'); }
+function query_pmid_api (array $pmids, array $templates) : bool { return entrez_api($pmids, $templates, 'pubmed'); }
+function query_pmc_api  (array $pmcs, array $templates) : bool { return entrez_api($pmcs,  $templates, 'pmc'); }
   
-function entrez_api($ids, $templates, $db) {
+function entrez_api(array $ids, array $templates, string $db) : bool {
   if (!count($ids)) return FALSE;
   $url = "https://eutils.ncbi.nlm.nih.gov/entrez/eutils/esummary.fcgi?tool=WikipediaCitationBot&email=martins+pubmed@gmail.com&db=$db&id=" 
                . implode(',', $ids);
@@ -89,9 +89,9 @@ function entrez_api($ids, $templates, $db) {
   return TRUE;
 }
 
-function query_bibcode_api($bibcodes, $templates) { return adsabs_api($bibcodes, $templates, 'bibcode'); }
+function query_bibcode_api(array $bibcodes, array $templates) : bool { return adsabs_api($bibcodes, $templates, 'bibcode'); }
 
-function expand_arxiv_templates ($templates) {
+function expand_arxiv_templates (array $templates) : bool {
   $ids = array();
   $arxiv_templates = array();
   foreach ($templates as $this_template) {
@@ -111,7 +111,7 @@ function expand_arxiv_templates ($templates) {
   return arxiv_api($ids, $arxiv_templates);
 }
 
-function arxiv_api($ids, $templates) {
+function arxiv_api(array $ids, array $templates) : bool {
   if (count($ids) == 0) return FALSE;
   report_action("Getting data from arXiv API");
   $context = stream_context_create(array(
@@ -174,9 +174,10 @@ function arxiv_api($ids, $templates) {
     }
     $this_template = next($templates);
   }
+  return TRUE;
 }
 
-function adsabs_api($ids, $templates, $identifier) {
+function adsabs_api(array $ids, array $templates, string $identifier) : bool {
   global $ADSABS_GIVE_UP;
   global $BLOCK_BIBCODE_SEARCH;
   if (@$ADSABS_GIVE_UP) return FALSE;
@@ -392,14 +393,14 @@ function adsabs_api($ids, $templates, $identifier) {
   return TRUE;
 }
 
-function query_doi_api($ids, $templates) {
+function query_doi_api(array $ids, array $templates) : bool {
   foreach ($templates as $template) {
     expand_by_doi($template);
   }
   return TRUE;
 }
 
-function expand_by_doi($template, $force = FALSE) {
+function expand_by_doi(Template $template, bool $force = FALSE) : bool {
   // Because it can recover rarely used parameters such as editors, series & isbn, 
   // there will be few instances where it could not in principle be profitable to 
   // run this function, so we don't check this first.
@@ -541,7 +542,7 @@ function expand_by_doi($template, $force = FALSE) {
   return TRUE;
 }
 
-function query_crossref($doi) {
+function query_crossref(string $doi) {
   if (strpos($doi, '10.2307') === 1) return FALSE; // jstor API is better
   $doi = str_replace(DOI_URL_DECODE, DOI_URL_ENCODE, $doi);
   $url = "https://www.crossref.org/openurl/?pid=" . CROSSREFUSERNAME . "&id=doi:$doi&noredirect=TRUE";
@@ -573,7 +574,7 @@ function query_crossref($doi) {
   return FALSE;                                                                      // @codeCoverageIgnore
 }
 
-function expand_doi_with_dx($template, $doi) {
+function expand_doi_with_dx(Template $template, string $doi) : bool {
      // See https://crosscite.org/docs.html for discussion of API we are using -- not all agencies resolve the same way
      // https://api.crossref.org/works/$doi can be used to find out the agency
      // https://www.doi.org/registration_agencies.html  https://www.doi.org/RA_Coverage.html List of all ten doi granting agencies - many do not do journals
@@ -685,7 +686,7 @@ function expand_doi_with_dx($template, $doi) {
      return TRUE;
 }
 
-function doi_active($doi) {
+function doi_active(string $doi) : ?bool {
   static $cache = [];
   if (!isset($cache[$doi]) || $cache[$doi] === NULL) {
     $works = doi_works($doi);
@@ -700,7 +701,7 @@ function doi_active($doi) {
   return $cache[$doi];
 }
 
-function doi_works($doi) {
+function doi_works(string $doi) : ?bool {
   static $cache = [];
   if (!isset($cache[$doi]) || $cache[$doi] === NULL) {
     $cache[$doi] = is_doi_works($doi);
@@ -708,7 +709,7 @@ function doi_works($doi) {
   return $cache[$doi];
 }
 
-function is_doi_active($doi) {
+function is_doi_active(string $doi) : ?bool {
   $headers_test = @get_headers("https://api.crossref.org/works/" . urlencode($doi));
   if ($headers_test === FALSE) return NULL; // most likely bad, but will recheck again an again
   $response = $headers_test[0];
@@ -718,7 +719,7 @@ function is_doi_active($doi) {
   return NULL;                                                                                        // @codeCoverageIgnore
 }
 
-function is_doi_works($doi) {
+function is_doi_works(string $doi) : ?bool {
   if (strpos($doi, '10.1111/j.1572-0241') === 0 && NATURE_FAILS) return FALSE;
   $context = stream_context_create(array(
            'ssl' => ['verify_peer' => FALSE, 'verify_peer_name' => FALSE, 'allow_self_signed' => TRUE]
@@ -735,11 +736,15 @@ function is_doi_works($doi) {
   return TRUE; // Lead somewhere
 }
 
-function query_jstor_api($ids, $templates) {
-  foreach ($templates as $template) expand_by_jstor($template);
+function query_jstor_api(array $ids, array $templates) : bool {
+  $return = FALSE;
+  foreach ($templates as $template) {
+    if (expand_by_jstor($template)) $return = TRUE;
+  }
+  return $return;
 }
 
-function expand_by_jstor($template) {
+function expand_by_jstor(Template $template) : bool {
   if ($template->incomplete() === FALSE) return FALSE;
   if ($template->has('jstor')) {
      $jstor = trim($template->get('jstor'));
@@ -817,7 +822,7 @@ function expand_by_jstor($template) {
 
 // This routine is actually not used much, since we often get a DOI and thus do not need to parse this thankfully
 // Do not add a new regex without adding a test too in TemplateTest.php
-function parse_plain_text_reference($journal_data, &$this_template, $upgrade_years = FALSE ) { // WARNING: Reference passing
+function parse_plain_text_reference(string $journal_data, Template &$this_template, bool $upgrade_years = FALSE ) : void { // WARNING: Reference passing
       $journal_data = trim($journal_data);
       if ($journal_data === "") return;
       $arxiv_journal=FALSE;
@@ -966,7 +971,7 @@ function parse_plain_text_reference($journal_data, &$this_template, $upgrade_yea
       }
 } 
 
-function getS2CID($url) {
+function getS2CID(string $url) : ?string {
   $context = stream_context_create(array(
    'http'=>array(
     'header'=>"x-api-key: " . getenv('PHP_S2APIKEY') . "\r\n"
@@ -975,25 +980,25 @@ function getS2CID($url) {
   $response = @file_get_contents('https://' . (getenv('PHP_S2APIKEY') ? 'partner' : 'api') . '.semanticscholar.org/v1/paper/URL:' . $url, FALSE, $context);
   if (!$response) {
     report_warning("No response from semanticscholar.");   // @codeCoverageIgnore
-    return FALSE;                                          // @codeCoverageIgnore
+    return NULL;                                           // @codeCoverageIgnore
   }
   $json = @json_decode($response);
   if (!$json) {
     report_warning("Bad response from semanticscholar.");  // @codeCoverageIgnore
-    return FALSE;                                          // @codeCoverageIgnore
+    return NULL;                                           // @codeCoverageIgnore
   }
   if (!isset($json->corpusId)) {
     report_minor_error("No corpusId found from semanticscholar."); // @codeCoverageIgnore
-    return FALSE;                                                  // @codeCoverageIgnore
+    return NULL;                                                   // @codeCoverageIgnore
   }
   if (is_array($json->corpusId) || is_object($json->corpusId)) {
     report_warning("Bad data from semanticscholar.");  // @codeCoverageIgnore
-    return FALSE;                                      // @codeCoverageIgnore
+    return NULL;                                       // @codeCoverageIgnore
   }
   return (string) $json->corpusId;
 }
       
-function ConvertS2CID_DOI($s2cid) {
+function ConvertS2CID_DOI(string $s2cid) : ?string {
   $context = stream_context_create(array(
    'http'=>array(
     'header'=>"x-api-key: " . getenv('PHP_S2APIKEY') . "\r\n"
@@ -1002,31 +1007,31 @@ function ConvertS2CID_DOI($s2cid) {
   $response = @file_get_contents('https://' . (getenv('PHP_S2APIKEY') ? 'partner' : 'api') . '.semanticscholar.org/v1/paper/CorpusID:' . $s2cid, FALSE, $context);
   if (!$response) {
     report_warning("No response from semanticscholar.");   // @codeCoverageIgnore
-    return FALSE;                                          // @codeCoverageIgnore
+    return NULL;                                           // @codeCoverageIgnore
   }
   $json = @json_decode($response);
   if (!$json) {
     report_warning("Bad response from semanticscholar.");  // @codeCoverageIgnore
-    return FALSE;                                          // @codeCoverageIgnore
+    return NULL;                                           // @codeCoverageIgnore
   }
   if (!isset($json->doi)) {
     report_info("No doi found from semanticscholar.");   // @codeCoverageIgnore
-    return FALSE;                                        // @codeCoverageIgnore
+    return NULL;                                         // @codeCoverageIgnore
   }
   if (is_array($json->doi) || is_object($json->doi)) {
     report_warning("Bad data from semanticscholar.");  // @codeCoverageIgnore
-    return FALSE;                                      // @codeCoverageIgnore
+    return NULL;                                       // @codeCoverageIgnore
   }
   $doi = (string) $json->doi;
   if (doi_active($doi) || doi_works($doi)) { // Try to fill both arrays now
     return $doi;
   } else {
     report_info("non-functional doi found from semanticscholar.");// @codeCoverageIgnore
-    return FALSE;                                                 // @codeCoverageIgnore
+    return NULL;                                                  // @codeCoverageIgnore
   } 
 }
 
-function get_semanticscholar_license($s2cid) {
+function get_semanticscholar_license(string $s2cid) : ?bool {
     $context = stream_context_create(array(
      'http'=>array(
       'header'=>"x-api-key: " . getenv('PHP_S2APIKEY') . "\r\n"
@@ -1042,7 +1047,7 @@ function get_semanticscholar_license($s2cid) {
     return FALSE;
 }
 
-function expand_templates_from_archives($templates) { // This is done very late as a latch ditch effort
+function expand_templates_from_archives(array $templates) : void { // This is done very late as a latch ditch effort
   foreach ($templates as $template) {
     if ($template->blank(['title', 'chapter', 'series']) &&
         !$template->blank(['archive-url', 'archive-url']) &&
