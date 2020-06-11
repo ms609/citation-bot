@@ -99,7 +99,7 @@ class Page {
   // $api_function: string naming a function (specified in apiFunctions.php) 
   //                that takes the value of $templates->get($identifier) as an array;
   //                returns key-value array of items to be set, if new, in each template.
-  public function expand_templates_from_identifier(string $identifier, ?array $templates) : void {
+  public function expand_templates_from_identifier(string $identifier, array $templates) : void {
     $ids = array();
     switch ($identifier) {
       case 'pmid': 

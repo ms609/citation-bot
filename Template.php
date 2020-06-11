@@ -5121,7 +5121,7 @@ final class Template {
     return NULL;
   }
   
-  protected function param_with_index($i) {
+  protected function param_with_index($i) : ?Parameter {
     return (isset($this->param[$i])) ? $this->param[$i] : NULL;
   }
   
