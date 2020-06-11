@@ -2899,7 +2899,7 @@ final class Template {
     return FALSE;
   }
 
-  protected function google_book_details($gid) : void {
+  protected function google_book_details($gid) : bool {
     $google_book_url = "https://books.google.com/books/feeds/volumes/$gid";
     $data = @file_get_contents($google_book_url);
     if ($data === FALSE) return FALSE;
@@ -2948,6 +2948,7 @@ final class Template {
     //      $this->add_if_new('pages', '1–' . (string) $matches[0]); // If we did add the total pages, then we should include the whole range
     //   }
     // }
+    return TRUE;
   }
 
   ### parameter processing
