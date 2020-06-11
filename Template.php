@@ -2664,8 +2664,7 @@ final class Template {
         }
         // This should be found above when listed as location=publisher
         if($this->has('doi') &&
-            preg_match("~^https?://doi\.library\.ubc\.ca/|^https?://(?:dx\.|)doi\.org/~", $oa_url))
-            {
+            preg_match("~^https?://doi\.library\.ubc\.ca/|^https?://(?:dx\.|)doi\.org/~", $oa_url)) {
             return 'publisher';
         }
         // @codeCoverageIgnoreEnd
@@ -2734,10 +2733,9 @@ final class Template {
         }
         return 'got one';
       }
-    } else {
-       report_warning("Could not retrieve open access details from Unpaywall API for doi: " . echoable($doi));
-       return 'nothing';
     }
+    report_warning("Could not retrieve open access details from Unpaywall API for doi: " . echoable($doi));
+    return 'nothing';
   }
   
   public function expand_by_google_books() {
