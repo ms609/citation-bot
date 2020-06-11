@@ -3,6 +3,7 @@
 define("HTML_OUTPUT", !isset($argv));
 
 require_once('setup.php');
+if (!isset($SLOW_MODE)) $SLOW_MODE = TRUE;
 $api = new WikipediaBot();
 if (HTML_OUTPUT) {?>
 <!DOCTYPE html>
