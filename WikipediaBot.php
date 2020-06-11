@@ -373,7 +373,7 @@ class WikipediaBot {
     set_time_limit(120);
     return $page_titles;
   }
-  public function get_namespace(string $page) {
+  public function get_namespace(string $page) : ?int {
     $res = $this->fetch([
         "action" => "query",
         "prop" => "info",
@@ -381,7 +381,7 @@ class WikipediaBot {
         ], 'GET'); 
     if (!isset($res->query->pages)) {
         report_warning("Failed to get article namespace");       // @codeCoverageIgnore
-        return FALSE;                                            // @codeCoverageIgnore
+        return NULL;                                             // @codeCoverageIgnore
     }
     return (int) reset($res->query->pages)->ns;
   }
@@ -409,7 +409,7 @@ class WikipediaBot {
     $res = reset($res->query->pages);
     return (isset($res->missing) ? -1 : (isset($res->redirect) ? 1 : 0));
   }
-  public function redirect_target(string $page) {
+  public function redirect_target(string $page) : ?string {
     $res = $this->fetch([
         "action" => "query",
         "redirects" => "1",
@@ -417,9 +417,9 @@ class WikipediaBot {
         ], 'POST');
     if (!isset($res->query->redirects[0]->to)) {
         report_warning("Failed to get redirect target");     // @codeCoverageIgnore
-        return FALSE;                                        // @codeCoverageIgnore
+        return NULL;                                         // @codeCoverageIgnore
     }
-    return $res->query->redirects[0]->to;
+    return (string) $res->query->redirects[0]->to;
   }
   public function namespace_id(string $name) : int {
     $lc_name = strtolower($name);
