@@ -39,19 +39,19 @@ function format_surname(string $surname) : string {
 
 function format_surname_2(string $surname) : string {
   $ret = preg_replace_callback("~(\p{L})(\p{L}+)~u", 
-        function($matches) {
+        function(array $matches) : string {
                 return mb_strtoupper($matches[1]) . mb_strtolower($matches[2]);
         },
     mb_ereg_replace(" - ", "-", $surname));
   $ret = str_ireplace(array('Von ', 'Und ', 'De La '), array('von ', 'und ', 'de la '), $ret);
-  $ret = preg_replace_callback('~;\w~', function($matches) {return strtolower($matches[0]);}, $ret);
+  $ret = preg_replace_callback('~;\w~', function(array $matches) : string {return strtolower($matches[0]);}, $ret);
   return $ret;
 }
 
 function format_forename(string $forename) : string {
   if ($forename == '-') return '';
   return str_replace(array(" ."), "", trim(preg_replace_callback("~(\p{L})(\p{L}{3,})~u",  function(
-            $matches) {
+            array $matches) : string {
             return mb_strtoupper($matches[1]) . mb_strtolower($matches[2]);}
          , $forename)));
 }
