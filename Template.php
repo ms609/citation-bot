@@ -2901,11 +2901,11 @@ final class Template {
   protected function google_book_details($gid) : bool {
     $google_book_url = "https://books.google.com/books/feeds/volumes/$gid";
     $data = @file_get_contents($google_book_url);
-    if ($data === FALSE) return;
+    if ($data === FALSE) return FALSE;
     $simplified_xml = str_replace('http___//www.w3.org/2005/Atom', 'http://www.w3.org/2005/Atom',
       str_replace(":", "___", $data));
     $xml = @simplexml_load_string($simplified_xml);
-    if ($xml === FALSE) return;
+    if ($xml === FALSE) return FALSE;
     if ($xml->dc___title[1]) {
       $this->add_if_new('title',  
                wikify_external_text(str_replace("___", ":", $xml->dc___title[0] . ": " . $xml->dc___title[1])));
