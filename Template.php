@@ -5078,7 +5078,7 @@ final class Template {
     } else {
       $page = $this->get('page');
     }
-    $page = str_replace(['&mdash;', '--', '&ndash;', '—', '–'], ['-','-','-','-','-'], $page);
+    $page = str_replace(['&mdash;', '--', '&ndash;', '—', '–'], ['-','-','-','-','-'], (string) $page);
     return $page;
   }
   
