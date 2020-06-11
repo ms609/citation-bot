@@ -2421,7 +2421,7 @@ final class Template {
     $ris_authors = 0;
     
     if(preg_match('~(?:T[I1]).*-(.*)$~m', $dat,  $match)) {
-        if(in_array(strtolower(trim($match[1])), BAD_ACCEPTED_MANUSCRIPT_TITLES)) return FALSE ;
+        if(in_array(strtolower(trim($match[1])), BAD_ACCEPTED_MANUSCRIPT_TITLES)) return ;
     }
 
     foreach ($ris as $ris_line) {
