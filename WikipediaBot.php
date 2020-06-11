@@ -49,9 +49,10 @@ class WikipediaBot {
     return $this->the_user; // Might or might not match the above
   }
   
-  private function ret_okay($response) : bool {
-    if ($response === CURLE_HTTP_RETURNED_ERROR) {
-      report_error("Curl encountered HTTP response error");    // @codeCoverageIgnore
+  private function ret_okay(?object $response) : bool {
+    if (isnull($response)) {
+      report_minor_error('Wikipedia responce was not decoded.');
+      return FALSE;
     }
     if (isset($response->error)) {
       // @ codeCoverageIgnoreStart
