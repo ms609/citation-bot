@@ -281,7 +281,7 @@ final class Template {
     foreach ($param as $p) if (!in_array($p, $this->used_by_api[$api])) $this->used_by_api[$api][] = $p;
   }
   
-  public function api_has_used(string $api, $param) {
+  public function api_has_used(string $api, $param) : int {
     if (!isset($this->used_by_api[$api])) report_error("Invalid API: $api");
     return count(array_intersect($param, $this->used_by_api[$api]));
   }
@@ -2604,7 +2604,7 @@ final class Template {
     }
   }
 
-  public function get_unpaywall_url($doi) : string {
+  public function get_unpaywall_url(string $doi) : string {
     $url = "https://api.unpaywall.org/v2/$doi?email=" . CROSSREFUSERNAME;
     $json = @file_get_contents($url);
     if ($json) {
@@ -2738,7 +2738,7 @@ final class Template {
     return 'nothing';
   }
   
-  public function expand_by_google_books() {
+  public function expand_by_google_books() : bool {
     if ($this->has('doi') && doi_active($this->get('doi'))) return FALSE;
     foreach (['url', 'chapterurl', 'chapter-url'] as $url_type) {
       if (stripos($this->get($url_type), 'books.google') !== FALSE || 
@@ -2749,7 +2749,7 @@ final class Template {
     return $this->expand_by_google_books_inner(NULL, NULL);
   }
   
-  protected function expand_by_google_books_inner($url, $url_type) {
+  protected function expand_by_google_books_inner(?string $url, ?string $url_type) : bool {
     if (!$url || !(preg_match("~books\.google\.[\w\.]+/.*\bid=([\w\d\-]+)~", $url, $gid) ||
                    preg_match("~\.google\.com/books/edition/_/([a-zA-Z0-9]+)(?:\?.+|)$~", $url, $gid))
        ) { // No Google URL yet.
@@ -3430,7 +3430,7 @@ final class Template {
     return $ret;
   }
 
-  public function change_name_to($new_name, $rename_cite_book = TRUE) : void {
+  public function change_name_to(string $new_name, bool $rename_cite_book = TRUE) : void {
     if (strpos($this->get('doi'), '10.1093') !== FALSE && $this->wikiname() !== 'cite web') return;
     if (bad_10_1093_doi($this->get('doi'))) return;
     $new_name = strtolower(trim($new_name)); // Match wikiname() output and cite book below
@@ -4722,7 +4722,7 @@ final class Template {
          }
       }
     }
-    if ($this->wikiname() === 'cite arxiv' && $this-> get_without_comments_and_placeholders('doi')) {
+    if ($this->wikiname() === 'cite arxiv' && $this->get_without_comments_and_placeholders('doi')) {
       $this->change_name_to('cite journal');
     }
     if ($this->wikiname() === 'cite arxiv' && $this->has('bibcode')) {
@@ -5028,7 +5028,7 @@ final class Template {
  *   Functions to retrieve values that may be specified 
  *   in various ways
  ********************************************************/
-  protected function display_authors() {
+  protected function display_authors() : int {
     if (($da = $this->get('display-authors')) === NULL) {
       $da = $this->get('displayauthors');
     }
@@ -5114,7 +5114,7 @@ final class Template {
            $this->set($new_param, $new_value);
            return;
         }
-        return ;
+        return;
     }
     $have_nothing = TRUE;
     foreach ($this->param as $p) {
@@ -5175,7 +5175,7 @@ final class Template {
     return $this->param_with_index($i)->val;
   }
   
-  public function get_without_comments_and_placeholders($name) {
+  public function get_without_comments_and_placeholders(string $name) {
     $ret = $this->get($name);
     $ret = preg_replace('~<!--.*?-->~su', '', $ret); // Comments
     $ret = preg_replace('~# # # CITATION_BOT_PLACEHOLDER.*?# # #~sui', '', $ret); // Other place holders already escaped.  Case insensitive
