@@ -414,7 +414,7 @@ final class Template {
     if ($param_name !== 's2cid') {
      if (substr($param_name, -4) > 0 || substr($param_name, -3) > 0 || substr($param_name, -2) > 30) {
       // Stop at 30 authors - or page codes will become cluttered! 
-      if ($this->get('last29') || $this->get('author29') || $this->get('surname29')) $this->add_if_new('display-authors', 29);
+      if ($this->get('last29') || $this->get('author29') || $this->get('surname29')) $this->add_if_new('display-authors', '29');
       return FALSE;
      }
     }
@@ -2568,9 +2568,9 @@ final class Template {
       //if ($this->blank("year") && $this->blank('month') && $sici[3]) $this->set('month', date("M", mktime(0, 0, 0, $sici[3], 1, 2005)));
       //if ($this->blank('day') && is("month") && $sici[4]) set ("day", $sici[4]);
       $this->add_if_new('year', $sici[2]);
-      $this->add_if_new('volume', (int) $sici[5]);
-      if ($sici[6]) $this->add_if_new('issue', (int) $sici[6]);
-      $this->add_if_new('pages', (int) $sici[7]);
+      $this->add_if_new('volume', $sici[5]);
+      if ($sici[6] && strpos($sici[6], '+') === FALSE) $this->add_if_new('issue', $sici[6]);
+      $this->add_if_new('pages', $sici[7]);
       return TRUE;
     } else return FALSE;
   }
