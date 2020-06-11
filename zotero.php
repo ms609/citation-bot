@@ -329,13 +329,13 @@ function process_zotero_response($zotero_response, Template &$template, string $
   }
   $zotero_data = @json_decode($zotero_response, FALSE);
   if (!isset($zotero_data)) {
-    report_warning("Could not parse JSON for URL ". $url . ": $zotero_response");
+    report_warning("Could not parse JSON for URL ". $url . ": " . $zotero_response);
     return FALSE;
   } elseif (!is_array($zotero_data)) {
     if (is_object($zotero_data)) {
       $zotero_data = (array) $zotero_data;
     } else {
-      report_warning("JSON did not parse correctly for URL ". $url . ": $zotero_response");
+      report_warning("JSON did not parse correctly for URL ". $url . ": " . $zotero_response);
       return FALSE;
     }
   }
@@ -347,7 +347,7 @@ function process_zotero_response($zotero_response, Template &$template, string $
   $result = (object) $result ;
   
   if (!isset($result->title)) {
-    report_warning("Did not get a title for URL ". $url . ": $zotero_response");
+    report_warning("Did not get a title for URL ". $url . ": " . $zotero_response);
     return FALSE;
   }
   if (substr(strtolower(trim($result->title)), 0, 9) == 'not found') {

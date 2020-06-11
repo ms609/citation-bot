@@ -213,6 +213,7 @@ function format_multiple_authors(string $authors, bool $returnAsArray = FALSE) {
 
   $authors = explode(";", $authors);
   $savedChunk = '';
+  $bits = array();
   if (isset($authors[1])) {
     foreach ($authors as $A){
       if (trim($A) != "") $return[] = format_author($A);
