@@ -263,8 +263,8 @@ class WikipediaBot {
                     "<a href='https://en.wikipedia.org/wiki/User_talk:Citation_bot'>" .
                     "report a bug.</a>.  There is no need to report the database being locked unless it continues to be a problem. ");
       // @codeCoverageIgnoreEnd
-      return FALSE;
     }
+    return FALSE;
   }
   
   public function category_members(string $cat) : array {
