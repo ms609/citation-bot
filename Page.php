@@ -24,7 +24,7 @@ class Page {
       $this->construct_modifications_array();
   }
 
-  public function get_text_from($title, $api) : bool {
+  public function get_text_from(string $title, WikipediaBot $api) : bool {
     global $is_a_man_with_no_plan;
     $this->construct_modifications_array(); // Could be new page
     $is_a_man_with_no_plan = FALSE;
@@ -84,14 +84,14 @@ class Page {
   }
   
   // Called from gadgetapi.php
-  public function parse_text($text) : void {
+  public function get_text_from(string $text) : void {
     $this->construct_modifications_array(); // Could be new page
     $this->text = $text;
     $this->start_text = $this->text;
     $this->set_date_pattern();
   }  
 
-  public function parsed_text() : ?string {
+  public function parsed_text() : string {
     return $this->text;
   }
   
@@ -100,7 +100,7 @@ class Page {
   // $api_function: string naming a function (specified in apiFunctions.php) 
   //                that takes the value of $templates->get($identifier) as an array;
   //                returns key-value array of items to be set, if new, in each template.
-  public function expand_templates_from_identifier($identifier, $templates) : void {
+  public function expand_templates_from_identifier(string $identifier, ?array $templates) : void {
     $ids = array();
     switch ($identifier) {
       case 'pmid': 
@@ -163,19 +163,19 @@ class Page {
     // Ones like <ref>https://www.nytimes.com/{{full|date=April 2016}}</ref> (?:full) so we can add others easily
     $this->text = preg_replace_callback(
                       "~(<(?:\s*)ref[^>]*?>)(\s*\[?(https?:\/\/[^ >}{\]\[]+?)\]?\s*{{(?:full|Full citation needed)\|date=[a-zA-Z0-9 ]+}})(<\s*?\/\s*?ref(?:\s*)>)~i",
-                      function($matches) {return $matches[1] . '{{Cite web | url=' . $matches[3] . ' | ' . strtolower('CITATION_BOT_PLACEHOLDER_BARE_URL') .'=' . base64_encode($matches[2]) . '}}' . $matches[4] ;},
+                      function(array $matches) : string {return $matches[1] . '{{Cite web | url=' . $matches[3] . ' | ' . strtolower('CITATION_BOT_PLACEHOLDER_BARE_URL') .'=' . base64_encode($matches[2]) . '}}' . $matches[4] ;},
                       $this->text
                       );
     // Examples: <ref>http://www.../index.html</ref>; <ref>[http://www.../index.html]</ref>
     $this->text = preg_replace_callback(   // Ones like <ref>http://www.../index.html</ref> or <ref>[http://www.../index.html]</ref>
                       "~(<(?:\s*)ref[^>]*?>)(\s*\[?(https?:\/\/[^ >}{\]\[]+?)\]?\s*)(<\s*?\/\s*?ref(?:\s*)>)~i",
-                      function($matches) {return $matches[1] . '{{Cite web | url=' . $matches[3] . ' | ' . strtolower('CITATION_BOT_PLACEHOLDER_BARE_URL') .'=' . base64_encode($matches[2]) . '}}' . $matches[4] ;},
+                      function(array $matches) : string {return $matches[1] . '{{Cite web | url=' . $matches[3] . ' | ' . strtolower('CITATION_BOT_PLACEHOLDER_BARE_URL') .'=' . base64_encode($matches[2]) . '}}' . $matches[4] ;},
                       $this->text
                       );
    // Ones like <ref>[http://www... http://www...]</ref>
     $this->text = preg_replace_callback(   
                       "~(<(?:\s*)ref[^>]*?>)((\s*\[)(https?:\/\/[^\s>\}\{\]\[]+?)(\s+)(https?:\/\/[^\s>\}\{\]\[]+?)(\s*\]\s*))(<\s*?\/\s*?ref(?:\s*)>)~i",
-                      function($matches) {
+                      function(array $matches) : string  {
                         if ($matches[4] === $matches[6]) {
                             return $matches[1] . '{{Cite web | url=' . $matches[4] . ' | ' . strtolower('CITATION_BOT_PLACEHOLDER_BARE_URL') .'=' . base64_encode($matches[2]) . '}}' . $matches[8] ;
                         }
@@ -186,7 +186,7 @@ class Page {
      // PLAIN {{DOI}}, {{PMID}}, {{PMC}} {{isbn}} {{oclc}} {{bibcode}} {{arxiv}} Converted to templates
      $this->text = preg_replace_callback(   // like <ref>{{doi|10.1244/abc}}</ref>
                       "~(<(?:\s*)ref[^>]*?>)(\s*\{\{(?:doi\|10\.\d{4,6}\/[^\s\}\{\|]+?|pmid\|\d{4,9}|pmc\|\d{4,9}|oclc\|\d{4,9}|isbn\|[0-9\-xX]+?|arxiv\|\d{4}\.\d{4,5}|arxiv\|[a-z\.\-]{2,12}\/\d{7,8}|bibcode\|[12]\d{3}[\w\d\.&]{15}|jstor\|[^\s\}\{\|]+?)\}\}\s*)(<\s*?\/\s*?ref(?:\s*)>)~i",
-                      function($matches) {
+                      function(array $matches) : string  {
                         if (stripos($matches[2], 'arxiv')) {
                           $type = 'arxiv';
                         } elseif (stripos($matches[2], 'isbn') || stripos($matches[2], 'oclc')) {
@@ -201,7 +201,7 @@ class Page {
      // PLAIN DOIS Converted to templates
      $this->text = preg_replace_callback(   // like <ref>10.1244/abc</ref>
                       "~(<(?:\s*)ref[^>]*?>)(\s*10\.[0-9]{4,6}\/\S+?\s*)(<\s*?\/\s*?ref(?:\s*)>)~i",
-                      function($matches) {return $matches[1] . '{{Cite journal | doi=' . $matches[2] . ' | ' . strtolower('CITATION_BOT_PLACEHOLDER_BARE_URL') .'=' . base64_encode($matches[2]) . '}}' . $matches[3] ;},
+                      function(array $matches) : string  {return $matches[1] . '{{Cite journal | doi=' . $matches[2] . ' | ' . strtolower('CITATION_BOT_PLACEHOLDER_BARE_URL') .'=' . base64_encode($matches[2]) . '}}' . $matches[3] ;},
                       $this->text
                       );
      if (
@@ -211,7 +211,7 @@ class Page {
      $this->text = preg_replace_callback(   // like <ref>John Doe, [https://doi.org/10.1244/abc Foo], Bar 1789.</ref>
                                             // also without titles on the urls
                       "~(<(?:\s*)ref[^>]*?>)([^\{\}<\[\]]+\[)(https?://\S+?/10\.[0-9]{4,6}\/[^\[\]\{\}\s]+?)( [^\]\[\{\}]+?\]|\])(\s*[^<\]\[]+?)(<\s*?\/\s*?ref(?:\s*)>)~i",
-                      function($matches) {
+                      function(array $matches) : string  {
                         if (substr_count(strtoupper($matches[2].$matches[3].$matches[4].$matches[5]), 'HTTP') !== 1) return $matches[0]; // more than one url
                         if (substr_count(strtoupper($matches[2].$matches[3].$matches[4].$matches[5]), 'SEE ALSO') !== 0) return $matches[0];
                         return $matches[1] . '{{Cite journal | url=' . $matches[3] . ' | ' . strtolower('CITATION_BOT_PLACEHOLDER_BARE_URL') .'=' . base64_encode($matches[2] . $matches[3] . $matches[4] . $matches[5]) . '}}' . $matches[6] ;},
@@ -441,7 +441,7 @@ class Page {
     return $auto_summary . "| You can [[WP:UCB|use this bot]] yourself. [[WP:DBUG|Report bugs here]]. ";
   }
 
-  public function write($api, $edit_summary_end = NULL) : bool {
+  public function write(WikipediaBot $api, ?string $edit_summary_end = NULL) : bool {
     if ($this->allow_bots()) {
       throttle(10);
       if ($api->write_page($this->title, $this->text,
@@ -569,7 +569,7 @@ class TestPage extends Page {
     parent::__construct();
   }
   
-  public function overwrite_text($text) : void {
+  public function overwrite_text(string $text) : void {
     $this->text = $text;
   }
   
