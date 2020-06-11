@@ -100,7 +100,7 @@ function author_is_human(string $author) : bool {
 }
 
 // Returns the author's name formatted as Surname, F.I.
-function format_author(string $author) {
+function format_author(string $author) : string {
   
   // Requires an author who is formatted as SURNAME, FORENAME or SURNAME FORENAME or FORENAME SURNAME. Substitute initials for forenames if nec.
   $surname = '';
@@ -114,7 +114,7 @@ function format_author(string $author) {
   $author = preg_replace("~(^[;,.\s]+|[;,.\s]+$)~", "", trim($author)); //Housekeeping
   $author = preg_replace("~^[aA]nd ~", "", trim($author)); // Just in case it has been split from a Smith; Jones; and Western
   if ($author == "") {
-      return FALSE;
+      return "";
   }
 
   $auth = explode(",", $author);
@@ -208,7 +208,7 @@ function format_multiple_authors(string $authors, bool $returnAsArray = FALSE) {
 
   $authors = trim($authors);
   if ($authors == "") {
-    return FALSE;
+    return '';
   }
 
   $authors = explode(";", $authors);
