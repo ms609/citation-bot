@@ -5138,7 +5138,7 @@ final class Template {
     return ($ret ? $ret : NULL);
   }
 
-  protected function get_param_key ($needle) ?int {
+  protected function get_param_key (string $needle) ?int {
     if (empty($this->param)) return NULL;
     if (!is_array($this->param)) return NULL; // Maybe the wrong thing to do?
     
