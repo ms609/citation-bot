@@ -1,4 +1,6 @@
-<?php 
+<?php
+declare(strict_types=1);
+
 const COMMON_MISTAKES = array ( // Common mistakes that aren't picked up by the levenshtein approach
   "albumlink"       =>  "titlelink",
   "artist"          =>  "others",
