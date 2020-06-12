@@ -492,7 +492,7 @@ class ZoteroTest extends testBaseClass {
   public function testZoteroResponse29() : void {
     $text = '{{cite web|id=}}';
     $template = $this->make_citation($text);
-    $access_date = 0';
+    $access_date = 0;
     $url = '';
     $url_kind = '';
     $creators[0] = (object) array('creatorType' => 'author', 'firstName' => "Joe", "lastName" => "");
