@@ -586,7 +586,7 @@ function expand_doi_with_dx(Template $template, string $doi) : bool {
          $data = $data['0'];                                        // @codeCoverageIgnore
        }
        if ($data == '') return FALSE;
-       $template->add_if_new($name, $data, 'dx');
+       $template->add_if_new($name, (string) $data, 'dx');
      };
      if (!$doi) return FALSE;
      $ch = curl_init();
