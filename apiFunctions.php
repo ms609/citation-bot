@@ -406,7 +406,7 @@ function expand_by_doi(Template $template, bool $force = FALSE) : bool {
   // run this function, so we don't check this first.
   
   if (!$template->verify_doi()) return FALSE;
-  $doi = (string) $template->get_without_comments_and_placeholders('doi');
+  $doi = $template->get_without_comments_and_placeholders('doi');
   if ($doi === $template->last_searched_doi) return FALSE;
   $template->last_searched_doi = $doi;
   if (preg_match(REGEXP_DOI_ISSN_ONLY, $doi)) return FALSE; // We do not use DOI's that are just an ISSN.
