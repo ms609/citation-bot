@@ -351,7 +351,7 @@ class ZoteroTest extends testBaseClass {
    public function testZoteroResponse18() : void {
     $text = '{{cite web|id=}}';
     $template = $this->make_citation($text);
-    $access_date = ;
+    $access_date = 0;
     $url = '';
     $url_kind = '';
     $zotero_data[0] = (object) array('title' => 'Billy', 'itemType' => 'webpage', 'extra' => 'PMID: 25408617 PMCID: PMC4233402');
