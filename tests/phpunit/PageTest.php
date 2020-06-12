@@ -308,7 +308,7 @@ final class PageTest extends testBaseClass {
   public function testThesis() {
       $text = '{{cite thesis|url=https://mathscinet.ams.org/mathscinet-getitem?mr=1234}}';
       $expanded = $this->process_citation($text);
-      $this->assertSame('1234', $expanded->get('mr'));
+      $this->assertSame('1234', $expanded->get2('mr'));
   }
  
   public function testNobots() {
