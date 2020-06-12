@@ -27,7 +27,7 @@ function entrez_api(array $ids, array $templates, string $db) : bool {
     $this_template = $templates[$template_key];
  
     foreach ($document->Item as $item) {
-      if (preg_match("~10\.\d{4}/[^\s\"']*~", $item, $match)) {
+      if (preg_match("~10\.\d{4}/[^\s\"']*~", (string) $item, $match)) {
         $this_template->add_if_new('doi', $match[0], 'entrez');
       }
       switch ($item["Name"]) {
