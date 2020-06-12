@@ -1,4 +1,5 @@
-<?php 
+<?php
+declare(strict_types=1);
 const ZOTERO_GIVE_UP = 5;
 const ZOTERO_SKIPS = 100;
 
