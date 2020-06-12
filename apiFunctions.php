@@ -27,7 +27,7 @@ function entrez_api(array $ids, array $templates, string $db) : bool {
     $this_template = $templates[$template_key];
  
     foreach ($document->Item as $item) {
-      if (preg_match("~10\.\d{4}/[^\s\"']*~", $item, $match)) {
+      if (preg_match("~10\.\d{4}/[^\s\"']*~", (string) $item, $match)) {
         $this_template->add_if_new('doi', $match[0], 'entrez');
       }
       switch ($item["Name"]) {
@@ -420,8 +420,8 @@ function expand_by_doi(Template $template, bool $force = FALSE) : bool {
   if ($doi && ($force || $template->incomplete())) {
     $crossRef = query_crossref($doi);
     if ($crossRef) {
-      if (in_array(strtolower($crossRef->article_title), BAD_ACCEPTED_MANUSCRIPT_TITLES)) return FALSE ;
-      if ($template->has('title') && trim(@$crossRef->article_title) && $template->get('title') !== 'none') { // Verify title of DOI matches existing data somewhat
+      if (in_array(strtolower((string) @$crossRef->article_title), BAD_ACCEPTED_MANUSCRIPT_TITLES)) return FALSE ;
+      if ($template->has('title') && trim((string) @$crossRef->article_title) && $template->get('title') !== 'none') { // Verify title of DOI matches existing data somewhat
         $bad_data = TRUE;
         $new = (string) $crossRef->article_title;
         if (preg_match('~^(.................+)[\.\?]\s+([IVX]+)\.\s.+$~i', $new, $matches)) {
@@ -435,7 +435,7 @@ function expand_by_doi(Template $template, bool $force = FALSE) : bool {
         }
         foreach (['chapter', 'title', 'series'] as $possible) {
           if ($template->has($possible)) {
-            $old = (string) $template->get($possible);
+            $old = $template->get($possible);
             if (preg_match('~^(.................+)[\.\?]\s+([IVX]+)\.\s.+$~i', $old, $matches)) {
                $old = $matches[1];
                $old_roman = $matches[2];
@@ -460,7 +460,7 @@ function expand_by_doi(Template $template, bool $force = FALSE) : bool {
         }
         if (isset($crossRef->series_title)) {
           foreach (['chapter', 'title'] as $possible) { // Series === series could easily be false possitive
-            if ($template->has($possible) && titles_are_similar($template->get($possible), $crossRef->series_title)) {
+            if ($template->has($possible) && titles_are_similar($template->get($possible), (string) $crossRef->series_title)) {
                 $bad_data = FALSE;
                 break;
             }
@@ -468,8 +468,8 @@ function expand_by_doi(Template $template, bool $force = FALSE) : bool {
         }
         if ($bad_data) {
           report_warning("CrossRef title did not match existing title: doi:" . doi_link($doi));
-          if (isset($crossRef->series_title)) report_info("  Possible new title: " . $crossRef->series_title);
-          if (isset($crossRef->article_title)) report_info("  Possible new title: " . $crossRef->article_title);
+          if (isset($crossRef->series_title)) report_info("  Possible new title: " . (string) $crossRef->series_title);
+          if (isset($crossRef->article_title)) report_info("  Possible new title: " . (string) $crossRef->article_title);
           foreach (['chapter', 'title', 'series'] as $possible) {
            if ($template->has($possible)) {
               report_info("  Existing old title: " . $template->get($possible));
@@ -481,7 +481,7 @@ function expand_by_doi(Template $template, bool $force = FALSE) : bool {
       report_action("Querying CrossRef: doi:" . doi_link($doi));
 
       if ($crossRef->volume_title && $template->blank('journal')) {
-        if (strtolower($template->get('title')) == strtolower($crossRef->article_title)) {
+        if (strtolower($template->get('title')) == strtolower((string) $crossRef->article_title)) {
            $template->rename('title', 'chapter');
          } else {
            $template->add_if_new('chapter', restore_italics((string) $crossRef->article_title), 'crossref'); // add_if_new formats this value as a title
