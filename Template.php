@@ -357,7 +357,7 @@ final class Template {
     ));
   }
 
-  public function blank(?string $param) : bool {
+  public function blank($param) : bool { // Accepts arrays of strings and string
     if (!$param) report_error('NULL passed to blank()');
     if (empty($this->param)) return TRUE;
     if (!is_array($param)) $param = array($param);
@@ -367,7 +367,7 @@ final class Template {
     return TRUE;
   }
   
-  public function blank_other_than_comments(?string $param) : bool {
+  public function blank_other_than_comments($param) : bool { // Accepts arrays of strings and string
     if (!$param) report_error('NULL passed to blank_other_than_comments()');
     if (empty($this->param)) return TRUE;
     if (!is_array($param)) $param = array($param);
