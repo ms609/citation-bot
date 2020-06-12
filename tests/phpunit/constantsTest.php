@@ -8,7 +8,7 @@ require_once(__DIR__ . '/../testBaseClass.php');
 
 final class constantsTest extends testBaseClass {
 
-  public function testConstantsDefined() {
+  public function testConstantsDefined() : void {
     $this->assertSame(count(UCFIRST_JOURNAL_ACRONYMS), count(JOURNAL_ACRONYMS));
     for ($i = 0; $i < sizeof(JOURNAL_ACRONYMS); $i++) {
       $this->assertSame(trim(JOURNAL_ACRONYMS[$i]), trim(title_capitalization(ucwords(trim(UCFIRST_JOURNAL_ACRONYMS[$i])), TRUE)));
@@ -42,7 +42,7 @@ final class constantsTest extends testBaseClass {
     $this->assertSame($text, $expanded->parsed_text());
   }
   
-  public function testImplicitConstants() {
+  public function testImplicitConstants() : void {
     // Consonants
     $this->assertSame('X', title_capitalization('x', TRUE));
     $this->assertSame('Xz', title_capitalization('xz', TRUE));
@@ -60,7 +60,7 @@ final class constantsTest extends testBaseClass {
     $this->assertSame('Xzzzy Aeiouy AEIOU and Xzzzy Aeiouy AEIOU', title_capitalization(ucwords('xzzzy Aeiouy aeiou and xzzzy Aeiouy aeiou'), TRUE));
   }
   
-  public function testConstantsOrder() {
+  public function testConstantsOrder() : void {
     $acronyms = JOURNAL_ACRONYMS; sort($acronyms, SORT_STRING | SORT_FLAG_CASE);
     $expected = current($acronyms);
     foreach (JOURNAL_ACRONYMS as $actual) {
@@ -69,7 +69,7 @@ final class constantsTest extends testBaseClass {
     }
   }
   
-  public function testAllLowerCase() {
+  public function testAllLowerCase() : void {
     $big_array = array_merge(HAS_NO_VOLUME, BAD_ACCEPTED_MANUSCRIPT_TITLES, BAD_AUTHORS,
                              PUBLISHER_ENDINGS, BAD_TITLES, IN_PRESS_ALIASES, NON_PUBLISHERS,
                              JOURNAL_IS_BOOK_SERIES);
@@ -78,7 +78,7 @@ final class constantsTest extends testBaseClass {
     }
   }
   
-  public function testAtoZ() {
+  public function testAtoZ() : void {
     $leader = TRUE;
     $start_alpha = '/* The following will be automatically updated to alphabetical order */';
     $end_alpha = '/* The above will be automatically updated to alphabetical order */';
@@ -134,7 +134,7 @@ final class constantsTest extends testBaseClass {
     }
   }
   
- public function testWhiteList() {
+ public function testWhiteList() : void {
       $we_failed = FALSE;
       
       $our_original_whitelist = PARAMETER_LIST;
@@ -189,7 +189,7 @@ final class constantsTest extends testBaseClass {
       $this->assertSame(FALSE, $we_failed);
   }
   
-  public function testWhiteListNotBlacklisted() {
+  public function testWhiteListNotBlacklisted() : void {
     $whitelist = array_merge(DEAD_PARAMETERS, PARAMETER_LIST);
     $orig = '';
     $new = '';
@@ -209,7 +209,7 @@ final class constantsTest extends testBaseClass {
     $this->assertSame($orig, $new);
   }
   
-  public function testDead() {
+  public function testDead() : void {
     $overlap = array_intersect(DEAD_PARAMETERS, PARAMETER_LIST);
     if (empty($overlap)) {
       $this->assertTrue(TRUE);
