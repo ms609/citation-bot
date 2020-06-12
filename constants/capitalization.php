@@ -1,4 +1,6 @@
 <?php
+declare(strict_types=1);
+
 const LC_SMALL_WORDS = array(/* The following will be automatically updated to alphabetical order */
           " AAOHN ", " AAP ", " AAUP ", " ABC ", " AC ", " ACM ", " AGU ", " AI ", " AIAA ", " AJHG ", 
           " al ", " an ", " and ", " and then ", " as ", " at ", " at ", " aus ", " av ", 
