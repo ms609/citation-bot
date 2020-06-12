@@ -92,7 +92,7 @@ final class expandFnsTest extends testBaseClass {
     $template = $this->prepare_citation('{{cite journal|jstor=}}');
     $doi = '10.2307/3241423?junk'; // test 10.2307 code and ? code
     check_doi_for_jstor($doi, $template);
-    $this->assertSame('3241423',$template->get('jstor'));
+    $this->assertSame('3241423',$template->get2('jstor'));
   }
 
   public function test_titles_are_dissimilar_LONG() : void {
