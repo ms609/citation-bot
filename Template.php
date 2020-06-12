@@ -5120,6 +5120,16 @@ final class Template {
     }
     return '';
   }
+  // This one is used in the test suite to distinguish there-but-blank vs not-there-at-all
+  public function get2($name) : ?string {
+    foreach ($this->param as $parameter_i) {
+      if ($parameter_i->param === $name) {
+        if ($parameter_i->val === NULL) $parameter_i->val = ''; // Clean up
+          return $parameter_i->val;
+      }
+    }
+    return NULL;
+  }
 
   public function has_but_maybe_blank($name) : bool {
     foreach ($this->param as $parameter_i) {
