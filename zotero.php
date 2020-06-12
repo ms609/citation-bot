@@ -529,8 +529,8 @@ function process_zotero_response($zotero_response, Template &$template, string $
   }
   $i = 0;
   while (isset($result->author[$i])) {
-      if (author_is_human(@$result->author[$i][0] . ' ' . @$result->author[$i][1])) $template->validate_and_add('author' . ($i+1), @$result->author[$i][1], @$result->author[$i][0],
-                                      isset($result->rights) ? $result->rights : '', FALSE);
+      if (author_is_human(@$result->author[$i][0] . ' ' . @$result->author[$i][1])) $template->validate_and_add('author' . ($i+1), (string) @$result->author[$i][1], (string) @$result->author[$i][0],
+                                      isset($result->rights) ? (string) $result->rights : '', FALSE);
       $i++;
   }
   
@@ -605,11 +605,11 @@ function process_zotero_response($zotero_response, Template &$template, string $
               break;
             default:                                                               // @codeCoverageIgnore
               report_minor_error("Unrecognized creator type: " . $creatorType);    // @codeCoverageIgnore
-              $authorParam = FALSE;                                                   // @codeCoverageIgnore
+              $authorParam = '';                                                   // @codeCoverageIgnore
           }
          if ($authorParam && author_is_human($result->creators[$i]->firstName . ' ' . $result->creators[$i]->lastName)) {
-                        $template->validate_and_add($authorParam, $result->creators[$i]->lastName, $result->creators[$i]->firstName,
-                        isset($result->rights) ? $result->rights : '', FALSE);
+                        $template->validate_and_add($authorParam, (string) $result->creators[$i]->lastName, (string) $result->creators[$i]->firstName,
+                        isset($result->rights) ? (string) $result->rights : '', FALSE);
          }
         }
         $i++;
