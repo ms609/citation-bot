@@ -136,16 +136,16 @@ function wikify_external_text(string $title) : string {
   while ($title != $title_orig) {
     $title_orig = $title;  // Might have to do more than once.   The following do not allow < within the inner match since the end tag is the same :-( and they might nest or who knows what
     $title = preg_replace_callback('~(?:<Emphasis Type="Italic">)([^<]+)(?:</Emphasis>)~iu',
-      function ($matches) {return ("''" . $matches[1] . "''");},
+      function (array $matches) : string {return ("''" . $matches[1] . "''");},
       $title);
     $title = preg_replace_callback('~(?:<Emphasis Type="Bold">)([^<]+)(?:</Emphasis>)~iu',
-      function ($matches) {return ("'''" . $matches[1] . "'''");},
+      function (array $matches) : string {return ("'''" . $matches[1] . "'''");},
       $title);
     $title = preg_replace_callback('~(?:<em>)([^<]+)(?:</em>)~iu',
-      function ($matches) {return ("''" . $matches[1] . "''");},
+      function (array $matches) : string {return ("''" . $matches[1] . "''");},
       $title);
     $title = preg_replace_callback('~(?:<i>)([^<]+)(?:</i>)~iu',
-      function ($matches) {return ("''" . $matches[1] . "''");},
+      function (array $matches) : string {return ("''" . $matches[1] . "''");},
       $title);
   }
 
@@ -336,10 +336,10 @@ function title_capitalization(string $in, bool $caps_after_punctuation) : string
   // Implicit acronyms
   $new_case = ' ' . $new_case . ' ';
   $new_case = preg_replace_callback("~[^\w&][b-df-hj-np-tv-xz]{3,}(?=\W)~ui", 
-      function ($matches) {return mb_strtoupper($matches[0]);}, // Three or more consonants.  NOT Y
+      function (array $matches) : string {return mb_strtoupper($matches[0]);}, // Three or more consonants.  NOT Y
       $new_case);
   $new_case = preg_replace_callback("~[^\w&][aeiou]{3,}(?=\W)~ui", 
-      function ($matches) {return mb_strtoupper($matches[0]);}, // Three or more vowels.  NOT Y
+      function (array $matches) : string {return mb_strtoupper($matches[0]);}, // Three or more vowels.  NOT Y
       $new_case);
   $new_case = mb_substr($new_case, 1, -1); // Remove added spaces
 
@@ -349,10 +349,10 @@ function title_capitalization(string $in, bool $caps_after_punctuation) : string
     // When there are lots of periods, then they probably mark abbrev.s, not sentence ends
     // We should therefore capitalize after each punctuation character.
     $new_case = preg_replace_callback("~[?.:!/]\s+[a-z]~u" /* Capitalise after punctuation */,
-      function ($matches) {return mb_strtoupper($matches[0]);},
+      function (array $matches) : string {return mb_strtoupper($matches[0]);},
       $new_case);
     $new_case = preg_replace_callback("~(?<!<)/[a-z]~u" /* Capitalise after slash unless part of ending html tag */,
-      function ($matches) {return mb_strtoupper($matches[0]);},
+      function (array $matches) : string {return mb_strtoupper($matches[0]);},
       $new_case);
     // But not "Ann. Of...." which seems to be common in journal titles
     $new_case = str_replace("Ann. Of ", "Ann. of ", $new_case);
@@ -360,26 +360,26 @@ function title_capitalization(string $in, bool $caps_after_punctuation) : string
 
   $new_case = preg_replace_callback(
     "~ \([a-z]~u" /* uppercase after parenthesis */, 
-    function($matches) {return mb_strtoupper($matches[0]);},
+    function (array $matches) : string {return mb_strtoupper($matches[0]);},
     trim($new_case)
   );
 
   $new_case = preg_replace_callback(
     "~\w{2}'[A-Z]\b~u" /* Lowercase after apostrophes */, 
-    function($matches) {return mb_strtolower($matches[0]);},
+    function (array $matches) : string {return mb_strtolower($matches[0]);},
     trim($new_case)
   );
   /** French l'Words and d'Words  **/
   $new_case = preg_replace_callback(
     "~(\s[LD][\'\x{00B4}])([a-zA-ZÀ-ÿ]+)~u",
-    function($matches) {return mb_strtolower($matches[1]) . mb_ucfirst($matches[2]);},
+    function (array $matches) : string {return mb_strtolower($matches[1]) . mb_ucfirst($matches[2]);},
     ' ' . $new_case
   );
 
   /** Italian dell'xxx words **/
   $new_case = preg_replace_callback(
     "~(\s)(Dell|Degli|Delle)([\'\x{00B4}][a-zA-ZÀ-ÿ]{3})~u",
-    function($matches) {return $matches[1] . strtolower($matches[2]) . $matches[3];},
+    function (array $matches) : string {return $matches[1] . strtolower($matches[2]) . $matches[3];},
     $new_case
   );
 
@@ -396,7 +396,7 @@ function title_capitalization(string $in, bool $caps_after_punctuation) : string
   // Catch some specific epithets, which should be lowercase
   $new_case = preg_replace_callback(
     "~(?:'')?(?P<taxon>\p{L}+\s+\p{L}+)(?:'')?\s+(?P<nova>(?:(?:gen\.? no?v?|sp\.? no?v?|no?v?\.? sp|no?v?\.? gen)\b[\.,\s]*)+)~ui" /* Species names to lowercase */,
-    function($matches) {return "''" . ucfirst(strtolower($matches['taxon'])) . "'' " . strtolower($matches["nova"]);},
+    function (array $matches) : string {return "''" . ucfirst(strtolower($matches['taxon'])) . "'' " . strtolower($matches["nova"]);},
     $new_case);
 
   // "des" at end is "Des" for Design not german "The"
