@@ -259,8 +259,8 @@ function expand_by_zotero(Template &$template, ?string $url = NULL) : bool {
   $url_kind = '';
   if (is_null($url)) {
      if (in_array((string) $template->get('url-status'),  ['usurped', 'unfit', 'dead'])) return FALSE;
-     $access_date = strtotime(tidy_date($template->get('accessdate') . ' ' . $template->get('access-date')));
-     $archive_date = strtotime(tidy_date($template->get('archivedate') . ' ' . $template->get('archive-date')));
+     $access_date = (int) strtotime(tidy_date($template->get('accessdate') . ' ' . $template->get('access-date')));
+     $archive_date = (int) strtotime(tidy_date($template->get('archivedate') . ' ' . $template->get('archive-date')));
      if ($access_date && $archive_date) {
        $access_date = min($access_date, $archive_date); // Whichever was first
      } elseif ($archive_date) {
