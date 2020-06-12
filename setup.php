@@ -1,4 +1,6 @@
 <?php
+declare(strict_types=1);
+
 /*
  * setup.php sets up the environment
  * Most of the page expansion depends on everything else
