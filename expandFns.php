@@ -231,7 +231,7 @@ function titles_are_similar(string $title1, string $title2) : bool {
 
 
 function de_wikify(?string $string) : string {
-  if ($str == NULL) return '';
+  if ($string == NULL) return '';
   return str_replace(Array("[", "]", "'''", "''", "&"), Array("", "", "'", "'", ""), preg_replace(Array("~<[^>]*>~", "~\&[\w\d]{2,7};~", "~\[\[[^\|\]]*\|([^\]]*)\]\]~"), Array("", "", "$1"),  $string));
 }
 
