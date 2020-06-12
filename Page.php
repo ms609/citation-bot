@@ -83,7 +83,7 @@ class Page {
     }
   }
   
-  public function parse_text($text) : void {
+  public function parse_text(string $text) : void {
     $this->construct_modifications_array(); // Could be new page
     $this->text = $text;
     $this->start_text = $this->text;
@@ -111,7 +111,7 @@ class Page {
     }
     for ($i = 0; $i < count($templates); $i++) {
       if (in_array($templates[$i]->wikiname(), TEMPLATES_WE_PROCESS)) {
-      if ($templates[$i]->has($identifier)
+        if ($templates[$i]->has($identifier)
         && !$templates[$i]->api_has_used($api, equivalent_parameters($identifier))) {
           $ids[$i] = $templates[$i]->get_without_comments_and_placeholders($identifier);
         }
@@ -500,7 +500,7 @@ class Page {
     return $objects;
   }
 
-  protected function replace_object ($objects) : void {
+  protected function replace_object (array $objects) : void {
     $i = count($objects);
     if ($objects) foreach (array_reverse($objects) as $obj)
       $this->text = str_ireplace(sprintf($obj::PLACEHOLDER_TEXT, --$i), $obj->parsed_text(), $this->text); // Case insensitive, since comment placeholder might get title case, etc.
