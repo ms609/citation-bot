@@ -111,9 +111,9 @@ class Page {
     }
     for ($i = 0; $i < count($templates); $i++) {
       if (in_array($templates[$i]->wikiname(), TEMPLATES_WE_PROCESS)) {
-        if ($the_id = $templates[$i]->get_without_comments_and_placeholders($identifier)
+        if ($this->has($identifier)
         && !$templates[$i]->api_has_used($api, equivalent_parameters($identifier))) {
-          $ids[$i] = $the_id;
+          $ids[$i] = $templates[$i]->get_without_comments_and_placeholders($identifier);
         }
       }
     }
