@@ -194,6 +194,7 @@ function truncate_publisher(string $p) : string {
 }
 
 function str_remove_irrelevant_bits(?string $str) : string {
+  if ($str == NULL) return '';
   $str = trim($str);
   $str = preg_replace(REGEXP_PLAIN_WIKILINK, "$1", $str);   // Convert [[X]] wikilinks into X
   $str = preg_replace(REGEXP_PIPED_WIKILINK, "$2", $str);   // Convert [[Y|X]] wikilinks into X
@@ -230,6 +231,7 @@ function titles_are_similar(string $title1, string $title2) : bool {
 
 
 function de_wikify(?string $string) : string {
+  if ($str == NULL) return '';
   return str_replace(Array("[", "]", "'''", "''", "&"), Array("", "", "'", "'", ""), preg_replace(Array("~<[^>]*>~", "~\&[\w\d]{2,7};~", "~\[\[[^\|\]]*\|([^\]]*)\]\]~"), Array("", "", "$1"),  $string));
 }
 
@@ -558,6 +560,7 @@ function tidy_date(string $string) :string {
 }
 
 function not_bad_10_1093_doi(?string $url) : bool { // We assume dois are bad, unless on good list
+  if ($url == NULL) return TRUE;
   if(!preg_match('~10.1093/([^/]+)/~u', $url, $match)) return TRUE;
   $test = strtolower($match[1]);
   // March 2019 Good list
@@ -680,5 +683,5 @@ function can_safely_modify_dashes(string $value) : bool {
 }
 
 function str_i_same(?string $str1, ?string $str2) : bool {
-   return (bool) (0 === strcasecmp($str1, $str2));
+   return (bool) (0 === strcasecmp((string) $str1, (string) $str2));
 }
