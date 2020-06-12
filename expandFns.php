@@ -168,6 +168,7 @@ function restore_italics (string $text) : string {
 
 function sanitize_string(?string $str) : string {
   // ought only be applied to newly-found data.
+  if ($str === NULL) return '';
   if (strtolower(trim($str)) == 'science (new york, n.y.)') return 'Science';
   $replacement = [];
   $placeholder = [];
