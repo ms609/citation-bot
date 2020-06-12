@@ -5,7 +5,7 @@
 require_once(__DIR__ . '/../testBaseClass.php');
  
 final class GenTemplateTest extends testBaseClass {
-  public function testGenTemplate() {
+  public function testGenTemplate() : void {
       global $FLUSHING_OKAY;
       global $SLOW_MODE;
       // Run API
