@@ -1988,7 +1988,7 @@ T1 - This is the Title }}';
     $this->assertSame('{{cite journal|volume=2|issue=3}}', $template->parsed_text());
     $template->rename('volume', 'issue');
     $this->assertSame('{{cite journal|issue=2}}', $template->parsed_text());
-    $template->for->get2('issue');
+    $template->forget('issue');
     $this->assertSame('{{cite journal}}', $template->parsed_text());
     $this->assertNull($template->get2('issue'));
     $this->assertNull($template->get2('doi'));
@@ -3889,41 +3889,41 @@ T1 - This is the Title }}';
    public function testForgettersChangeType() {
     $text = "{{cite web|id=x}}";
     $template = $this->make_citation($text);
-    $template->for->get2('url');
+    $template->forget('url');
     $this->assertSame('cite document', $template->wikiname());
 
     $text = "{{cite web|journal=X}}";
     $template = $this->make_citation($text);
-    $template->for->get2('url');
+    $template->forget('url');
     $this->assertSame('cite journal', $template->wikiname());
 
     $text = "{{cite web|newspaper=X}}";
     $template = $this->make_citation($text);
-    $template->for->get2('url');
+    $template->forget('url');
     $this->assertSame('cite news', $template->wikiname());
 
     $text = "{{cite web|chapter=X}}";
     $template = $this->make_citation($text);
-    $template->for->get2('url');
+    $template->forget('url');
     $this->assertSame('cite book', $template->wikiname());
   }
  
   public function testForgettersChangeOtherURLS() {
     $text = "{{cite web|chapter-url=Y|chapter=X}}";
     $template = $this->make_citation($text);
-    $template->for->get2('chapter');
+    $template->forget('chapter');
     $this->assertSame('Y', $template->get2('url'));
 
     $text = "{{cite web|chapterurl=Y|chapter=X}}";
     $template = $this->make_citation($text);
-    $template->for->get2('chapter');
+    $template->forget('chapter');
     $this->assertSame('Y', $template->get2('url'));
   }
       
   public function testForgettersChangeWWWWork() {
     $text = "{{cite web|url=X|work=www.apple.com}}";
     $template = $this->make_citation($text);
-    $template->for->get2('url');
+    $template->forget('url');
     $this->assertNull($template->get2('work'));
   }
       
