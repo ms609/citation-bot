@@ -1261,7 +1261,7 @@ final class Template {
       $url      = $this->get($matches[1]);
     } else {
       $url = $url_sent;
-      $url_type = NULL;
+      $url_type = 'An invalid value';
     }
     
     if (strtolower(substr( $url, 0, 6 )) === "ttp://" || strtolower(substr( $url, 0, 7 )) === "ttps://") { // Not unusual to lose first character in copy and paste
