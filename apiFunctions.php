@@ -500,9 +500,7 @@ function expand_by_doi(Template $template, bool $force = FALSE) : bool {
         // Check to see whether a single author is already set
         // This might be, for example, a collaboration
         $existing_author = $template->first_author();
-        $add_authors = is_null($existing_author)
-                    || $existing_author = ''
-                    || author_is_human($existing_author);
+        $add_authors = $existing_author == '' || author_is_human($existing_author);
         
         foreach ($crossRef->contributors->contributor as $author) {
           if (strtoupper($author->surname) === '&NA;') break; // No Author, leave loop now!  Have only seen upper-case in the wild
