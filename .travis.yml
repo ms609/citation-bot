@@ -9,7 +9,6 @@ matrix:           ###### ONLY ONE WITH FULL TESTING WITH IS 7.3 OTHERS ARE ALL S
     - stage: pretest
       name: "Quick PHP 7.2 syntax check"
       php: 7.2
-      script: '! find . -type f -name "*.php" -exec php -d error_reporting=32767 -l {} \; 2>&1 >&- | grep "^"'
     - php: nightly
       name: "Quick PHP 8.0 syntax check"
       script: '! find . -type f -name "*.php" -exec php -d error_reporting=32767 -l {} \; 2>&1 >&- | grep "^"'
@@ -36,7 +35,7 @@ matrix:           ###### ONLY ONE WITH FULL TESTING WITH IS 7.3 OTHERS ARE ALL S
       before_script:
         - travis_retry composer self-update
         - composer require --dev vimeo/psalm
-      script:  php vendor/bin/psalm --init ; cat psalm.xml; php vendor/bin/psalm setup.php  authenticate.php category.php generate_template.php gitpull.php linked_pages.php process_page.php  unlock_git.php
+      script: php vendor/bin/psalm setup.php  authenticate.php category.php generate_template.php gitpull.php linked_pages.php process_page.php  unlock_git.php
     - stage: test
       name: "Full test with PHP 7.3"
       php: 7.3
