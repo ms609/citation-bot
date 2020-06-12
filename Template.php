@@ -258,7 +258,7 @@ final class Template {
           }
         }
         $this->tidy();
-    } elseif ($this->wikiname() == 'cite magazine' &&  $this->blank('magazine') && $this->get('work') !== NULL) { 
+    } elseif ($this->wikiname() == 'cite magazine' &&  $this->blank('magazine') && $this->has_but_maybe_blank('work')) { 
       // This is all we do with cite magazine
       $this->rename('work', 'magazine');
     }
@@ -4420,7 +4420,7 @@ final class Template {
             $work_becomes = 'encyclopedia';
           }
 
-          if ($this->get($param) !== NULL && $this->blank($work_becomes)) {
+          if ($this->has_but_maybe_blank($param) && $this->blank($work_becomes)) {
             $this->rename('work', $work_becomes);
           }
           if ($this->wikiname() === 'cite book') {
@@ -4660,7 +4660,7 @@ final class Template {
         $this->tidy_parameter('chapter');
       }
       // "Work is a troublesome parameter
-      if ($this->get('work') !== NULL && $this->blank('work')) { // Have work=, but it is blank
+      if ($this->has_but_maybe_blank('work') && $this->blank('work')) { // Have work=, but it is blank
          if ($this->has('journal') ||
              $this->has('newspaper') ||
              $this->has('magazine') ||
@@ -4983,7 +4983,7 @@ final class Template {
  *   in various ways
  ********************************************************/
   protected function display_authors() : int {
-    if (($da = $this->get('display-authors')) === NULL) {
+    if (($da = $this->get('display-authors')) == '') {
       $da = $this->get('displayauthors');
     }
     return ctype_digit($da) ? (int) $da : 0;
@@ -5119,6 +5119,15 @@ final class Template {
       }
     }
     return '';
+  }
+
+  public function has_but_maybe_blank($name) : bool {
+    foreach ($this->param as $parameter_i) {
+      if ($parameter_i->param === $name) {
+         return TRUE;
+      }
+    }
+    return FALSE;
   }
   
   protected function param_with_index($i) : ?Parameter {
