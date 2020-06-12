@@ -165,9 +165,9 @@ final class Template {
       }
       // Clean up bad data
       if (!$this->blank(['pmc', 'pmid', 'doi', 'jstor'])) { // Have some good data
-          $the_title   = (string) $this->get('title');
-          $the_journal = (string) $this->get('journal');
-          $the_chapter = (string) $this->get('chapter');
+          $the_title   = $this->get('title');
+          $the_journal = $this->get('journal');
+          $the_chapter = $this->get('chapter');
           $bad_data = FALSE;
           if (strlen($the_title) > 15 && strpos($the_title, ' ') !== FALSE &&
               mb_strtoupper($the_title) === $the_title && strpos($the_title, 'CITATION') === FALSE) {
@@ -1440,9 +1440,9 @@ final class Template {
     if (stripos($url, 'oxforddnb.com') !== FALSE) return FALSE; // generally bad, and not helpful
     if ($doi = extract_doi($url)[1]) {
       if (bad_10_1093_doi($doi)) return FALSE;
-      $old_jstor = (string) $this->get('jstor');
+      $old_jstor = $this->get('jstor');
       if (stripos($url, 'jstor')) check_doi_for_jstor($doi, $this);
-      if (is_null($url_sent) && $old_jstor !== (string) $this->get('jstor') && stripos($url, 'pdf') === FALSE) {
+      if (is_null($url_sent) && $old_jstor !== $this->get('jstor') && stripos($url, 'pdf') === FALSE) {
          $this->forget($url_type);
       }
       $this->tidy_parameter('doi'); // Sanitize DOI before comparing
@@ -4605,7 +4605,7 @@ final class Template {
             $this->forget($param);
           }
           if (($this->wikiname() === 'cite arxiv') || $this->has('eprint') || $this->has('arxiv')) {
-            if (str_i_same((string) $this->get($param), 'arxiv')) {
+            if (str_i_same($this->get($param), 'arxiv')) {
               $this->forget($param);
             }
           }
@@ -4683,7 +4683,7 @@ final class Template {
         ($this->get('volume') == $this->get_without_comments_and_placeholders('volume'))) { // No comments to flag problems
         $crossRef = query_crossref($this->get_without_comments_and_placeholders('doi'));
         if ($crossRef !== FALSE) {
-          $orig_data = trim((string) $this->get('volume'));
+          $orig_data = trim($this->get('volume'));
            $possible_issue = trim((string) @$crossRef->issue);
            $possible_volume = trim((string) @$crossRef->volume);
            if ($possible_issue != $possible_volume) { // They don't match
@@ -5032,16 +5032,16 @@ final class Template {
     } else {
       $page = $this->get('page');
     }
-    $page = str_replace(['&mdash;', '--', '&ndash;', '—', '–'], ['-','-','-','-','-'], (string) $page);
+    $page = str_replace(['&mdash;', '--', '&ndash;', '—', '–'], ['-','-','-','-','-'], $page);
     return $page;
   }
   
   protected function year() : string {
     if ($this->has('year')) {
-      return (string) $this->get('year');
+      return $this->get('year');
     }
     if ($this->has('date')) {
-       $date = (string) $this->get('date');
+       $date = $this->get('date');
        if (preg_match("~^\d{4}$~", $date)) {
          return $date; // Just a year
        } elseif (preg_match("~^(\d{4})[^0-9]~", $date, $matches)) {
@@ -5108,7 +5108,7 @@ final class Template {
     }
   }
 
-  public function get($name) : ?string {
+  public function get($name) : string {
     // NOTE $this->param and $p->param are different and refer to different types!
     // $this->param is an array of Parameter objects
     // $parameter_i->param is the parameter name within the Parameter object
@@ -5118,7 +5118,7 @@ final class Template {
           return $parameter_i->val;
       }
     }
-    return NULL;
+    return '';
   }
   
   protected function param_with_index($i) : ?Parameter {
@@ -5586,7 +5586,7 @@ final class Template {
     if ($this->has('trans-chapter')) return FALSE;
     if ($this->blank('chapter')) return FALSE;
     if (strpos($this->get('chapter'), '[') !== FALSE) return FALSE;
-    $url = (string) $this->get('url');
+    $url = $this->get('url');
     if (stripos($url, 'google.com') && !strpos($this->get('url'), 'pg=')) return FALSE; // Do not move books without page numbers
     if (stripos($url, 'archive.org/details/isbn')) return FALSE;
     if (stripos($url, 'page_id=0')) return FALSE;
