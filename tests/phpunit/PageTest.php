@@ -8,77 +8,77 @@ require_once(__DIR__ . '/../testBaseClass.php');
  
 final class PageTest extends testBaseClass {
 
-  public function testPageChangeSummary1() {
+  public function testPageChangeSummary1() : void {
       $page = $this->process_page('{{cite journal|chapter=chapter name|title=book name}}'); // Change to book from journal
       $this->assertSame('Alter: template type. | You can [[WP:UCB|use this bot]] yourself. [[WP:DBUG|Report bugs here]]. ', $page->edit_summary());
   }
 
-  public function testPageChangeSummary2() {
+  public function testPageChangeSummary2() : void {
       $page = $this->process_page('{{cite book||quote=a quote}}'); // Just lose extra pipe
       $this->assertSame('Misc citation tidying. | You can [[WP:UCB|use this bot]] yourself. [[WP:DBUG|Report bugs here]]. ', $page->edit_summary());
   }
 
-  public function testPageChangeSummary31() {
+  public function testPageChangeSummary31() : void {
       $page = $this->process_page('<ref>http://onlinelibrary.wiley.com/doi/10.1111/j.1475-4983.2012.01203.x</ref>');
       $this->assertFalse(strpos($page->parsed_text(), 'onlinelibrary.wiley.com')); // URL is gone
       $this->assertSame('Alter: template type. Add: pages, issue, volume, journal, year, title, doi, author pars. 1-2. Removed URL that duplicated unique identifier. Converted bare reference to cite template. Formatted [[WP:ENDASH|dashes]]. | You can [[WP:UCB|use this bot]] yourself. [[WP:DBUG|Report bugs here]]. ', $page->edit_summary());                
   }
  
-  public function testPageChangeSummary32() { // Mixture of droping chapter-url and moving URL to chapter-url.  Bogus template content
+  public function testPageChangeSummary32() : void { // Mixture of droping chapter-url and moving URL to chapter-url.  Bogus template content
       $page = $this->process_page('{{cite book|chapter=X|chapter-url= https://mathscinet.ams.org/mathscinet-getitem?mr=2320282|last1=X|last2=X|first1=X|first2=X |url= https://books.google.com/books?id=to0yXzq_EkQC&pg=PP154|title=Y|isbn=XXX|year=XXX}}');
       $this->assertSame('Alter: chapter-url. Add: mr, date. Removed or converted URL. Removed parameters. Some additions/deletions were actually parameter name changes. | You can [[WP:UCB|use this bot]] yourself. [[WP:DBUG|Report bugs here]]. ', $page->edit_summary());                
   }
 
-  public function testPageChangeSummary4() {
+  public function testPageChangeSummary4() : void {
       $page = $this->process_page('{{cite web|<!-- comment --> journal=Journal Name}}'); // Comment BEFORE parameter
       $this->assertSame('Alter: template type. | You can [[WP:UCB|use this bot]] yourself. [[WP:DBUG|Report bugs here]]. ', $page->edit_summary());
       $this->assertSame('{{cite journal|<!-- comment --> journal=Journal Name}}', $page->parsed_text());
   }
 
-  public function testPageChangeSummary5() {
+  public function testPageChangeSummary5() : void {
       $page = $this->process_page('{{cite web|journal<!-- comment -->=Journal Name}}'); // Comment AFTER parameter
       $this->assertSame('Alter: template type. | You can [[WP:UCB|use this bot]] yourself. [[WP:DBUG|Report bugs here]]. ', $page->edit_summary());
       $this->assertSame('{{cite journal|journal<!-- comment -->=Journal Name}}', $page->parsed_text());
   }
 
-  public function testPageChangeSummary7() {
+  public function testPageChangeSummary7() : void {
       $page = $this->process_page('{{cite news|url=http://zbmath.org/?format=complete&q=an:1111.22222}}'); // Very little done to cite news
       $this->assertSame('Add: zbl. Removed URL that duplicated unique identifier. | You can [[WP:UCB|use this bot]] yourself. [[WP:DBUG|Report bugs here]]. ', $page->edit_summary());
   }
  
-  public function testPageChangeSummary8() {
+  public function testPageChangeSummary8() : void {
       $page = $this->process_page('{{cite journal|chapter-url=https://mathscinet.ams.org/mathscinet-getitem?mr=1234|title=mr=1234}}');
       $this->assertSame('{{cite journal|title=mr=1234|mr = 1234}}', $page->parsed_text());
       $this->assertSame('Add: mr. Removed URL that duplicated unique identifier. | You can [[WP:UCB|use this bot]] yourself. [[WP:DBUG|Report bugs here]]. ', $page->edit_summary());
   }
-  public function testPageChangeSummary9() {
+  public function testPageChangeSummary9() : void {
       $page = $this->process_page('{{cite journal|chapterurl=https://mathscinet.ams.org/mathscinet-getitem?mr=1234|title=mr=1234}}');
       $this->assertSame('{{cite journal|title=mr=1234|mr = 1234}}', $page->parsed_text());
       $this->assertSame('Add: mr. Removed URL that duplicated unique identifier. | You can [[WP:UCB|use this bot]] yourself. [[WP:DBUG|Report bugs here]]. ', $page->edit_summary());
   }
    
-  public function testPageChangeSummary10() {
+  public function testPageChangeSummary10() : void {
       $page = $this->process_page('{{cite journal|distribution-url=https://mathscinet.ams.org/mathscinet-getitem?mr=1234|title=mr=1234}}');
       $this->assertSame('Add: contribution-url. Removed parameters. | You can [[WP:UCB|use this bot]] yourself. [[WP:DBUG|Report bugs here]]. ', $page->edit_summary());
   }
  
-  public function testPageChangeSummary11() {
+  public function testPageChangeSummary11() : void {
       $page = $this->process_page('{{cite journal|accessdate=12 Nov 2000}}');
       $this->assertSame('Removed accessdate with no specified URL. | You can [[WP:UCB|use this bot]] yourself. [[WP:DBUG|Report bugs here]]. ', $page->edit_summary());
   }
  
-  public function testPageChangeSummary12() {
+  public function testPageChangeSummary12() : void {
       $page = $this->process_page('{{cite journal|chapter-url=http://www.facebook.com/|title=X|journal=Y}}');
       $this->assertSame('Add: url. Removed URL that duplicated unique identifier. Some additions/deletions were actually parameter name changes. | You can [[WP:UCB|use this bot]] yourself. [[WP:DBUG|Report bugs here]]. ', $page->edit_summary());
   }
  
-  public function testPageChangeSummary13() {
+  public function testPageChangeSummary13() : void {
       $page = $this->process_page('{{cite journal|notestitle=X}}');
       $this->assertSame('Alter: template type. Add: chapter. Removed parameters. | You can [[WP:UCB|use this bot]] yourself. [[WP:DBUG|Report bugs here]]. ', $page->edit_summary());
   }
  
-  public function testBotRead() {
-   $this->requires_secrets(function() {
+  public function testBotRead() : void {
+   $this->requires_secrets(function() : void {
       $page = new TestPage();
       $api = new WikipediaBot();
       $page->get_text_from('User:Blocked Testing Account/readtest', $api);
@@ -86,15 +86,15 @@ final class PageTest extends testBaseClass {
    });
   }
  
-  public function testBotReadNonExistant() {
-   $this->requires_secrets(function() {
+  public function testBotReadNonExistant() : void {
+   $this->requires_secrets(function() : void {
       $page = new TestPage();
       $api = new WikipediaBot();
       $this->assertSame(FALSE, $page->get_text_from('User:Blocked Testing Account/readtest/NOT_REAL_EVER', $api));
    });
   }
  
-  public function testDontCrashOnDates() { // See zotero test testRespectDates for actually making sure that it is used
+  public function testDontCrashOnDates() : void { // See zotero test testRespectDates for actually making sure that it is used
       $text = '{{Use dmy dates}}{{cite web}}';
       $page = $this->process_page($text);
       $text = '{{Use mdy dates}}{{cite web}}';
@@ -104,32 +104,32 @@ final class PageTest extends testBaseClass {
       $this->assertNull(NULL);
   }
  
-  public function testBotReadRedirect() {
-   $this->requires_secrets(function() {
+  public function testBotReadRedirect() : void {
+   $this->requires_secrets(function() : void {
       $page = new TestPage();
       $api = new WikipediaBot();
       $this->assertSame(FALSE, $page->get_text_from('Wikipedia:UCB', $api));
    });
   }
 
-  public function testBotReadInvalidNamespace() {
-   $this->requires_secrets(function() {
+  public function testBotReadInvalidNamespace() : void {
+   $this->requires_secrets(function() : void {
       $page = new TestPage();
       $api = new WikipediaBot();
       $this->assertSame(FALSE, $page->get_text_from('Bogus:UCBdfasdsfasdfd', $api));
    });
   }
  
-  public function testBotReadInvalidPage() {
-   $this->requires_secrets(function() {
+  public function testBotReadInvalidPage() : void {
+   $this->requires_secrets(function() : void {
       $page = new TestPage();
       $api = new WikipediaBot();
       $this->assertSame(FALSE, $page->get_text_from('.', $api));
    });
   }
   
-  public function testBotExpandWrite() {
-   $this->requires_secrets(function() {
+  public function testBotExpandWrite() : void {
+   $this->requires_secrets(function() : void {
       $api = new WikipediaBot();
       $page = new TestPage();
       $writeTestPage = 'User:Blocked Testing Account/writetest';
@@ -158,7 +158,7 @@ final class PageTest extends testBaseClass {
    });
   }
  
-  public function testEmptyPage() {
+  public function testEmptyPage() : void {
       $page = $this->process_page('');
       $page = $this->process_page('  ');
       $page = $this->process_page('  move along, nothing to see here ');
@@ -166,7 +166,7 @@ final class PageTest extends testBaseClass {
       $this->assertNull(NULL);
   }
 
-  public function testUrlReferences() {
+  public function testUrlReferences() : void {
       $page = $this->process_page("URL reference test 1 <ref name='bob'>http://doi.org/10.1007/s12668-011-0022-5< / ref>\n Second reference: \n<ref >  [https://www.ncbi.nlm.nih.gov/pmc/articles/PMC3705692/] </ref> URL reference test 1");
       if (getenv('TRAVIS_PULL_REQUEST') && (getenv('TRAVIS_PULL_REQUEST') !== 'false' )) {
          $this->assertSame("URL reference test 1 <ref name='bob'>{{Cite journal |doi = 10.1007/s12668-011-0022-5|title = Reoccurring Patterns in Hierarchical Protein Materials and Music: The Power of Analogies|year = 2011|last1 = Giesa|first1 = Tristan|last2 = Spivak|first2 = David I.|last3 = Buehler|first3 = Markus J.|s2cid = 5178100|journal = Bionanoscience|volume = 1|issue = 4|pages = 153–161|arxiv = 1111.5297}}< / ref>
@@ -181,157 +181,157 @@ final class PageTest extends testBaseClass {
       $this->assertTrue((bool) strpos($page->parsed_text(), 'title'));
   }
 
-  public function testUrlReferencesThatFail() {
+  public function testUrlReferencesThatFail() : void {
       $text = 'testUrlReferencesThatFail <ref name="bob">http://this.fails/nothing< / ref> testUrlReferencesThatFail <ref >  http://this.fails/nothing </ref> testUrlReferencesThatFail <ref>10.1234/ABCDEFGHIJ.faker</ref>';
       $page = $this->process_page($text);
       $this->assertSame($text, $page->parsed_text());
   }
  
-   public function testUrlReferencesWithText0() {
+   public function testUrlReferencesWithText0() : void {
       $text = "<ref>{{doi|10.2307/962034}}</ref>";
       $page = $this->process_page($text);
       $this->assertSame('<ref>{{Cite journal |doi = 10.2307/962034|jstor = 962034|title = Alban Berg, Wilhelm Fliess and the Secret Programme of the Violin Concerto|year = 1983|last1 = Jarman|first1 = Douglas|journal = The Musical Times|volume = 124|issue = 1682|pages = 218–223}}</ref>', $page->parsed_text());
   }
  
-  public function testUrlReferencesWithText1() {
+  public function testUrlReferencesWithText1() : void {
       $text = "<ref>Jarman, D. (1983). [https://www.jstor.org/discover/10.2307/962034?uid=3738032&amp;uid=373072751&amp;uid=2&amp;uid=3&amp;uid=60&amp;sid=21102523353593 Alban Berg, Wilhelm Fliess and the Secret Programme of the Violin Concerto]. ''The Musical Times'' Vol. 124, No. 1682 (Apr. 1983), pp. 218–223</ref>";
       $page = $this->process_page($text);
       $this->assertSame('<ref>{{Cite journal |jstor = 962034|doi = 10.2307/962034|title = Alban Berg, Wilhelm Fliess and the Secret Programme of the Violin Concerto|year = 1983|last1 = Jarman|first1 = Douglas|journal = The Musical Times|volume = 124|issue = 1682|pages = 218–223}}</ref>', $page->parsed_text());
   }
   
-  public function testUrlReferencesWithText2() {
+  public function testUrlReferencesWithText2() : void {
       $text = "<ref>[[Murray Gell-Mann]] (1995) &quot;[http://onlinelibrary.wiley.com/doi/10.1002/cplx.6130010105/pdf What is complexity? Remarks on simplicity and complexity by the Nobel Prize-winning author of The Quark and the Jaguar]&quot; ''Complexity'' states the 'algorithmic information complexity' (AIC) of some string of bits is the shortest length computer program which can print out that string of bits.</ref>";
       $page = $this->process_page($text);
       $this->assertSame($text, $page->parsed_text());
   }
   
-  public function testUrlReferencesWithText3() {
+  public function testUrlReferencesWithText3() : void {
       $text = "<ref>Raymond O.  Silverstein, &quot;A note on the term 'Bantu' as first used by W. H. I. Bleek&quot;, ''African Studies'' 27 (1968), 211–212, [https://www.doi.org/10.1080/00020186808707298 doi:10.1080/00020186808707298].</ref>";
       $page = $this->process_page($text);
       $this->assertSame('<ref>{{Cite journal |doi = 10.1080/00020186808707298|title = A note on the term "Bantu" as first used by W. H. I. Bleek|year = 1968|last1 = Silverstein|first1 = Raymond O.|journal = African Studies|volume = 27|issue = 4|pages = 211–212}}</ref>', $page->parsed_text());
   }
   
-  public function testUrlReferencesWithText4() { // Has [[ ]] in it
+  public function testUrlReferencesWithText4() : void { // Has [[ ]] in it
       $text = "<ref>[[Chandra Prakash Kala|Kala, C.P.]] and Ratajc, P. 2012.[https://rd.springer.com/article/10.1007/s10531-012-0246-x &quot;High altitude biodiversity of the Alps and the Himalayas: ethnobotany, plant distribution and conservation perspective&quot;.] ''Biodiversity and Conservation'', 21 (4): 1115–1126.</ref>";
       $page = $this->process_page($text);
       $this->assertSame($text, $page->parsed_text());
   }
   
-  public function testUrlReferencesWithText5() {
+  public function testUrlReferencesWithText5() : void {
       $text = "<ref>Stoeckelhuber, Mechthild, Alexander Sliwa, and Ulrich Welsch. &quot;[http://onlinelibrary.wiley.com/doi/10.1002/1097-0185(20000701)259:3%3C312::AID-AR80%3E3.0.CO;2-X/full Histo‐physiology of the scent‐marking glands of the penile pad, anal pouch, and the forefoot in the aardwolf (Proteles cristatus)].&quot; The anatomical record 259.3 (2000): 312-326.</ref>";
       $page = $this->process_page($text);
       $this->assertSame('<ref>{{Cite journal | doi=10.1002/1097-0185(20000701)259:3<312::AID-AR80>3.0.CO;2-X| title=Histo-physiology of the scent-marking glands of the penile pad, anal pouch, and the forefoot in the aardwolf (Proteles cristatus)| year=2000| last1=Stoeckelhuber| first1=Mechthild| last2=Sliwa| first2=Alexander| last3=Welsch| first3=Ulrich| journal=The Anatomical Record| volume=259| issue=3| pages=312–326| pmid=10861364}}</ref>', $page->parsed_text());
   }
 
-  public function testUrlReferencesWithText6() {
+  public function testUrlReferencesWithText6() : void {
       $text = "<ref>Emma Ambrose, Cas Mudde (2015). ''[http://www.tandfonline.com/doi/abs/10.1080/13537113.2015.1032033 Canadian Multiculturalism and the Absence of the Far Right]'' Nationalism and Ethnic Politics Vol. 21 Iss. 2.</ref>";
       $page = $this->process_page($text);
       $this->assertSame('<ref>{{Cite journal |doi = 10.1080/13537113.2015.1032033|title = Canadian Multiculturalism and the Absence of the Far Right|year = 2015|last1 = Ambrose|first1 = Emma|last2 = Mudde|first2 = Cas|journal = Nationalism and Ethnic Politics|volume = 21|issue = 2|pages = 213–236}}</ref>', $page->parsed_text());
   }
  
-  public function testUrlReferencesWithText7() {
+  public function testUrlReferencesWithText7() : void {
       $text = "<ref>Gregory, T. Ryan. (2008). [https://link.springer.com/article/10.1007/s12052-007-0001-z ''Evolution as Fact, Theory, and Path'']. ''Evolution: Education and Outreach'' 1 (1): 46–52.</ref>";
       $page = $this->process_page($text);
       $this->assertSame('<ref>{{Cite journal |doi = 10.1007/s12052-007-0001-z|title = Evolution as Fact, Theory, and Path|year = 2008|last1 = Gregory|first1 = T. Ryan|s2cid = 19788314|journal = Evolution: Education and Outreach|volume = 1|pages = 46–52}}</ref>', $page->parsed_text());
   }
  
-  public function testUrlReferencesWithText8() {
+  public function testUrlReferencesWithText8() : void {
       $text = "<ref>James L. Elshoff, Michael Marcotty, [http://doi.acm.org/10.1145/358589.358596 Improving computer program readability to aid modification], Communications of the ACM, v.25 n.8, p.512-521, Aug 1982.</ref>";
       $page = $this->process_page($text);
       $this->assertSame('<ref>{{Cite journal |doi = 10.1145/358589.358596|title = Improving computer program readability to aid modification|year = 1982|last1 = Elshoff|first1 = James L.|last2 = Marcotty|first2 = Michael|s2cid = 30026641|journal = Communications of the ACM|volume = 25|issue = 8|pages = 512–521}}</ref>', $page->parsed_text());
   }
  
-  public function testUrlReferencesWithText9() { // Two "urls"
+  public function testUrlReferencesWithText9() : void { // Two "urls"
       $text = "<ref>http James L. Elshoff, Michael Marcotty, [http://doi.acm.org/10.1145/358589.358596 Improving computer program readability to aid modification], Communications of the ACM, v.25 n.8, p.512-521, Aug 1982.</ref>";
       $page = $this->process_page($text);
       $this->assertSame($text, $page->parsed_text());
   }
 
-  public function testUrlReferencesWithText10() { // See also
+  public function testUrlReferencesWithText10() : void { // See also
       $text = "<ref>See Also, James L. Elshoff, Michael Marcotty, [http://doi.acm.org/10.1145/358589.358596 Improving computer program readability to aid modification], Communications of the ACM, v.25 n.8, p.512-521, Aug 1982.</ref>";
       $page = $this->process_page($text);
       $this->assertSame($text, $page->parsed_text());
   }
  
-  public function testUrlReferencesWithText11() { // Two bad ones.  Make sure we do not loop or anything 
+  public function testUrlReferencesWithText11() : void { // Two bad ones.  Make sure we do not loop or anything 
       $text = "<ref>See Also, James L. Elshoff, Michael Marcotty, [http://doi.acm.org/10.1145/358589.358596 Improving computer program readability to aid modification], Communications of the ACM, v.25 n.8, p.512-521, Aug 1982.</ref>";
       $text = $text . $text;
       $page = $this->process_page($text);
       $this->assertSame($text, $page->parsed_text());
   }
  
-  public function testUrlReferencesWithText12() {  // One that does not work and returns exact same text
+  public function testUrlReferencesWithText12() : void {  // One that does not work and returns exact same text
       $text = "<ref>James L. Elshoff, Michael Marcotty, [http://fake.url/10.1145/358589.FAKER_DOES_NOT_WORK358596 Improving computer program readability to aid modification], Communications of the ACM, v.25 n.8, p.512-521, Aug 1982.</ref>";
       $page = $this->process_page($text);
       $this->assertSame($text, $page->parsed_text());
   }
  
-  public function testUrlReferencesWithText13() {
+  public function testUrlReferencesWithText13() : void {
       $text = "<ref></ref><ref>James L. Elshoff, Michael Marcotty, [http://doi.acm.org/10.1145/358589.358596 Improving computer program readability to aid modification], Communications of the ACM, v.25 n.8, p.512-521, Aug 1982.</ref>";
       $page = $this->process_page($text);
       $this->assertSame($text, $page->parsed_text());
   }
   
-  public function testUrlReferencesWithText14() {
+  public function testUrlReferencesWithText14() : void {
       $text = "<ref>{{cite web}}</ref><ref>{{cite web}}</ref><ref>James L. Elshoff, Michael Marcotty, [http://doi.acm.org/10.1145/358589.358596 Improving computer program readability to aid modification], Communications of the ACM, v.25 n.8, p.512-521, Aug 1982.</ref>";
       $page = $this->process_page($text);
       $this->assertSame('<ref>{{cite web}}</ref><ref>{{cite web}}</ref><ref>{{Cite journal |doi = 10.1145/358589.358596|title = Improving computer program readability to aid modification|year = 1982|last1 = Elshoff|first1 = James L.|last2 = Marcotty|first2 = Michael|s2cid = 30026641|journal = Communications of the ACM|volume = 25|issue = 8|pages = 512–521}}</ref>', $page->parsed_text());
   }
  
-   public function testUrlReferencesWithText15() {
+   public function testUrlReferencesWithText15() : void {
       $text = "<ref>[http://doi.acm.org/10.1145/358589.358596 http://doi.acm.org/10.1145/358589.3585964444]</ref>";
       $text = $text . $text;
       $page = $this->process_page($text);
       $this->assertSame($text, $page->parsed_text());
   }
  
-  public function testUrlReferencesWithText16() {
-    $this->requires_arxiv(function() {
+  public function testUrlReferencesWithText16() : void {
+    $this->requires_arxiv(function() : void {
       $text = "<ref>{{arxiv|0806.0013}}</ref>";
       $page = $this->process_page($text);
       $this->assertTrue((bool) stripos($page->parsed_text(), 'PhysRevD.78.081701'));
     });
   }
                         
-  public function testUrlReferencesWithText17() {
+  public function testUrlReferencesWithText17() : void {
       $text = "<ref>{{oclc|23454}}</ref>";
       $page = $this->process_page($text);
       $this->assertTrue((bool) strpos($page->parsed_text(), 'it'));
   }                    
                         
-  public function testMagazine() {
+  public function testMagazine() : void {
       $text = '{{cite magazine|work=Yup}}';
       $page = $this->process_page($text);
       $this->assertTrue((bool) strpos($page->parsed_text(), 'magazine=Yup'));
   }
 
-  public function testThesis() {
+  public function testThesis() : void {
       $text = '{{cite thesis|url=https://mathscinet.ams.org/mathscinet-getitem?mr=1234}}';
       $expanded = $this->process_citation($text);
-      $this->assertSame('1234', $expanded->get('mr'));
+      $this->assertSame('1234', $expanded->get2('mr'));
   }
  
-  public function testNobots() {
+  public function testNobots() : void {
       $text = '{{cite thesis|url=https://mathscinet.ams.org/mathscinet-getitem?mr=1234}}{{nobots}}';
       $page = $this->process_page($text);
       $this->assertSame($text, $page->parsed_text());
       $this->assertSame(FALSE, $page->write(NULL, NULL));
   }
  
-  public function testNobots2() {
+  public function testNobots2() : void {
       $text = '{{cite thesis|url=https://mathscinet.ams.org/mathscinet-getitem?mr=1234}}{{bots|allow=not_you}}';
       $page = $this->process_page($text);
       $this->assertSame($text, $page->parsed_text());
       $this->assertSame(FALSE, $page->write(NULL, NULL));
   }
  
-   public function testNobots3() {
+   public function testNobots3() : void {
       $text = '{{cite thesis|url=https://mathscinet.ams.org/mathscinet-getitem?mr=1234}}{{bots|allow=Citation Bot}}';
       $page = $this->process_page($text);
       $this->assertSame('{{cite thesis|mr = 1234}}{{bots|allow=Citation Bot}}', $page->parsed_text());
   }
  
-  public function testODNB() {
+  public function testODNB() : void {
    $text='{{Cite ODNB|title=Pierrepoint, Albert, (1905–1992)|ref=harv}} {{ODNBsub}}';
    $page = $this->process_page($text);
    $this->assertSame('{{Cite ODNB|title=Pierrepoint, Albert, (1905–1992)|ref=harv}} ', $page->parsed_text());
@@ -346,7 +346,7 @@ final class PageTest extends testBaseClass {
    $this->assertSame($text, $page->parsed_text()); // template in the way
   }
 
-  public function testBadPage() {  // Use this when debugging pages that crash the bot
+  public function testBadPage() : void {  // Use this when debugging pages that crash the bot
     // This MUST be escaped page name-underscores not spaces and such
     $bad_page = ""; //  Replace with something like "Vietnam_War" when debugging
     if ($bad_page !== "") {
