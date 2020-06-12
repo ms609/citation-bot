@@ -1570,7 +1570,7 @@ ER -  }}';
      $this->assertNull($prepared->get2('title'));
      $this->assertNull($prepared->get2('date'));
      $this->assertNull($prepared->get2('journal'));
-     $this->assertNull($prepared->first_author());
+     $this->assertSame('', $prepared->first_author());
      $this->assertNull($prepared->get2('last1'));
      $this->assertNull($prepared->get2('first1'));
      $this->assertNull($prepared->get2('pages'));
