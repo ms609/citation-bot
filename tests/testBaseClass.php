@@ -164,9 +164,9 @@ abstract class testBaseClass extends PHPUnit\Framework\TestCase {
 
   protected function getDateAndYear(Template $input) : ?string {
     // Generates string that makes debugging easy and will throw error
-    if (is_null($input->get('year'))) return $input->get('date') ; // Might be null too
-    if (is_null($input->get('date'))) return $input->get('year') ;
-    return 'Date is ' . $input->get('date') . ' and year is ' . $input->get('year');
+    if (is_null($input->get2('year'))) return $input->get2('date') ; // Might be null too
+    if (is_null($input->get2('date'))) return $input->get2('year') ;
+    return 'Date is ' . $input->get2('date') . ' and year is ' . $input->get2('year');
   }
 
   protected function expand_via_zotero(string $text) :  Template {
