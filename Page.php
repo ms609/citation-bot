@@ -83,7 +83,7 @@ class Page {
     }
   }
   
-  public function parse_text($text) : void {
+  public function parse_text(string $text) : void {
     $this->construct_modifications_array(); // Could be new page
     $this->text = $text;
     $this->start_text = $this->text;
@@ -500,7 +500,7 @@ class Page {
     return $objects;
   }
 
-  protected function replace_object ($objects) : void {
+  protected function replace_object (array $objects) : void {
     $i = count($objects);
     if ($objects) foreach (array_reverse($objects) as $obj)
       $this->text = str_ireplace(sprintf($obj::PLACEHOLDER_TEXT, --$i), $obj->parsed_text(), $this->text); // Case insensitive, since comment placeholder might get title case, etc.

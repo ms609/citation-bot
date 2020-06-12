@@ -276,17 +276,17 @@ final class Template {
     }
   }
   
-  public function record_api_usage(string $api, $param) : void {
-    if (!is_array($param)) $param = array($param);
+  public function record_api_usage(string $api, string $param) : void {
+    $param = array($param);
     foreach ($param as $p) if (!in_array($p, $this->used_by_api[$api])) $this->used_by_api[$api][] = $p;
   }
   
-  public function api_has_used(string $api, $param) : int {
+  public function api_has_used(string $api, array $param) : int {
     if (!isset($this->used_by_api[$api])) report_error("Invalid API: $api");
     return count(array_intersect($param, $this->used_by_api[$api]));
   }
   
-  public function api_has_not_used(string $api, $param) : bool {
+  public function api_has_not_used(string $api, array $param) : bool {
     return !$this->api_has_used($api, $param);
   }
   
@@ -357,8 +357,8 @@ final class Template {
     ));
   }
 
-  public function blank($param) : ?bool {
-    if (!$param) return NULL;
+  public function blank($param) : bool { // Accepts arrays of strings and string
+    if (!$param) report_error('NULL passed to blank()');
     if (empty($this->param)) return TRUE;
     if (!is_array($param)) $param = array($param);
     foreach ($this->param as $p) {
@@ -367,8 +367,8 @@ final class Template {
     return TRUE;
   }
   
-  public function blank_other_than_comments($param) : ?bool {
-    if (!$param) return NULL;
+  public function blank_other_than_comments($param) : bool { // Accepts arrays of strings and string
+    if (!$param) report_error('NULL passed to blank_other_than_comments()');
     if (empty($this->param)) return TRUE;
     if (!is_array($param)) $param = array($param);
     foreach ($this->param as $p) {
@@ -1162,7 +1162,7 @@ final class Template {
     }
   }
 
-  public function validate_and_add($author_param, $author, $forename, string $check_against, bool $add_even_if_existing) : void {
+  public function validate_and_add(string $author_param, string $author, string $forename, string $check_against, bool $add_even_if_existing) : void {
     if (!$add_even_if_existing && ($this->initial_author_params || $this->had_initial_editor)) return; // Zotero does not know difference betwee editors and authors often
     if (in_array(strtolower($author), BAD_AUTHORS) === FALSE && author_is_human($author) && author_is_human($forename)) {
       while(preg_match('~^(.*)\s[\S]+@~', ' ' . $author, $match) || // Remove emails 
@@ -2897,8 +2897,8 @@ final class Template {
     return FALSE;
   }
 
-  protected function google_book_details($gid) : bool {
-    $google_book_url = "https://books.google.com/books/feeds/volumes/$gid";
+  protected function google_book_details(string $gid) : bool {
+    $google_book_url = "https://books.google.com/books/feeds/volumes/" . $gid;
     $data = @file_get_contents($google_book_url);
     if ($data === FALSE) return FALSE;
     $simplified_xml = str_replace('http___//www.w3.org/2005/Atom', 'http://www.w3.org/2005/Atom',
@@ -4806,7 +4806,7 @@ final class Template {
     if (!empty($this->param)) { // Forget author-link and such that have no such author
       foreach ($this->param as $p) {
         $alias = $p->param;
-        if ($this->blank($alias)) {
+        if ($alias != NULL && $this->blank($alias)) {
           if (preg_match('~^author(\d+)\-?link$~', $alias, $matches) || preg_match('~^author\-?link(\d+)$~', $alias, $matches)) {
             if ($this->blank(AUTHOR_PARAMETERS[(int) $matches[1]])) {
               $this->forget($alias);
@@ -5108,7 +5108,7 @@ final class Template {
     }
   }
 
-  public function get($name) : string {
+  public function get(string $name) : string {
     // NOTE $this->param and $p->param are different and refer to different types!
     // $this->param is an array of Parameter objects
     // $parameter_i->param is the parameter name within the Parameter object
@@ -5121,7 +5121,7 @@ final class Template {
     return '';
   }
   // This one is used in the test suite to distinguish there-but-blank vs not-there-at-all
-  public function get2($name) : ?string {
+  public function get2(string $name) : ?string {
     foreach ($this->param as $parameter_i) {
       if ($parameter_i->param === $name) {
         if ($parameter_i->val === NULL) $parameter_i->val = ''; // Clean up
@@ -5131,7 +5131,7 @@ final class Template {
     return NULL;
   }
 
-  public function has_but_maybe_blank($name) : bool {
+  public function has_but_maybe_blank(string $name) : bool {
     foreach ($this->param as $parameter_i) {
       if ($parameter_i->param === $name) {
          return TRUE;
@@ -5168,19 +5168,19 @@ final class Template {
     return NULL;
   }
 
-  public function has($par) : bool {
+  public function has(string $par) : bool {
     return (bool) strlen($this->get($par));
   }
 
-  public function add($par, $val) : bool {
+  public function add(string $par, string $val) : bool {
     report_add("Adding $par: $val");
     $could_set = $this->set($par, $val);
     $this->tidy_parameter($par);
     return $could_set;
   }
   
-  public function set($par, $val) : bool {
-    if ((string) $par === '') report_error('NULL parameter passed to set with value of ' . $val);
+  public function set(string $par, string $val) : bool {
+    if ($par === '') report_error('NULL parameter passed to set with value of ' . $val);
     if (mb_stripos($this->get((string) $par), 'CITATION_BOT_PLACEHOLDER_COMMENT') !== FALSE) {
       return FALSE;
     }
@@ -5233,7 +5233,7 @@ final class Template {
     return TRUE;
   }
 
-  public function append_to($par, $val) : bool {
+  public function append_to(string $par, string $val) : bool {
     if (mb_stripos($this->get($par), 'CITATION_BOT_PLACEHOLDER_COMMENT') !== FALSE) {
       return FALSE;
     }
@@ -5437,7 +5437,7 @@ final class Template {
      }
   }
   
-  protected function volume_issue_demix($data, $param) : void {
+  protected function volume_issue_demix(string $data, string $param) : void {
      if ($param === 'year') return;
      if (!in_array($param, ['volume','issue','number'])) {
        report_error('volume_issue_demix ' . $param); // @codeCoverageIgnore
@@ -5599,7 +5599,7 @@ final class Template {
     return in_array($simple, JOURNAL_IS_BOOK_SERIES);
   }
   
-  private function should_url2chapter($force) : bool {
+  private function should_url2chapter(bool $force) : bool {
     if ($this->has('chapterurl')) return FALSE;
     if ($this->has('chapter-url')) return FALSE;
     if ($this->has('trans-chapter')) return FALSE;
