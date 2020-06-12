@@ -3234,12 +3234,12 @@ final class Template {
     }
   }
 
-  protected function id_to_param() {
+  protected function id_to_param(): void {
     $id = $this->get('id');
     if (trim($id)) {
       report_action("Trying to convert ID parameter to parameterized identifiers.");
     } else {
-      return FALSE;
+      return;
     }
     while (preg_match("~\b(PMID|DOI|ISBN|ISSN|ARXIV|LCCN)[\s:]*(\d[\d\s\-]*+[^\s\}\{\|,;]*)(?:[,;] )?~iu", $id, $match)) {
       $this->add_if_new(strtolower($match[1]), $match[2]);
@@ -5015,7 +5015,7 @@ final class Template {
     return NULL;
   }
 
-  public function initial_author_params() { return $this->initial_author_params; }
+  public function initial_author_params() : array { return $this->initial_author_params; }
   
   protected function first_surname() : ?string {
     // Fetch the surname of the first author only
@@ -5121,7 +5121,7 @@ final class Template {
     return NULL;
   }
   
-  protected function param_with_index($i) {
+  protected function param_with_index($i) : ?Parameter {
     return (isset($this->param[$i])) ? $this->param[$i] : NULL;
   }
   
@@ -5138,7 +5138,7 @@ final class Template {
     return ($ret ? $ret : NULL);
   }
 
-  protected function get_param_key ($needle) {
+  protected function get_param_key (string $needle) : ?int {
     if (empty($this->param)) return NULL;
     if (!is_array($this->param)) return NULL; // Maybe the wrong thing to do?
     

@@ -9,42 +9,42 @@ require_once(__DIR__ . '/../testBaseClass.php');
 final class doiToolsTest extends testBaseClass {
   public function testFormatMultipleAuthors1() {
     $authors = 'M.A. Smith, Smith M.A., Smith MA., Martin A. Smith, MA Smith, Martin Smith'; // unparsable gibberish formatted in many ways--basically exists to check for code changes
-    $result=format_multiple_authors($authors,FALSE);
+    $result=format_multiple_authors($authors);
     $this->assertSame('M. A. Smith, Smith M. A.; Smith, M. A.; Martin A. Smith, M.A. Smith', $result);
   }
   public function testFormatMultipleAuthors2() {  // Semi-colon
     $authors = 'M.A. Smith; M.A. Smith';
-    $result=format_multiple_authors($authors,FALSE);
+    $result=format_multiple_authors($authors);
     $this->assertSame('Smith, M. A.; Smith, M. A.', $result);
   }
   public function testFormatMultipleAuthors3() { // Spaces
     $authors = 'M.A. Smith  M.A. Smith';
-    $result=format_multiple_authors($authors,FALSE);
+    $result=format_multiple_authors($authors);
     $this->assertSame('Smith, M. A.; Smith, M. A.', $result);
   }
   public function testFormatMultipleAuthors4() { // Commas
     $authors = 'M.A. Smith,  M.A. Smith';
-    $result=format_multiple_authors($authors,FALSE);
+    $result=format_multiple_authors($authors);
     $this->assertSame('Smith, M. A.; Smith, M. A.', $result);
   }
   public function testFormatMultipleAuthors5() { // Commas, no space
     $authors = 'M.A. Smith,M.A. Smith';
-    $result=format_multiple_authors($authors,FALSE);
+    $result=format_multiple_authors($authors);
     $this->assertSame('Smith, M. A.; Smith, M. A.', $result);
   }
   public function testFormatMultipleAuthors6() { // & symbol
     $authors = 'M.A. Smith & M.A. Smith';
-    $result=format_multiple_authors($authors,FALSE);
+    $result=format_multiple_authors($authors);
     $this->assertSame('Smith, M. A.; Smith, M. A.', $result);
   }
   public function testFormatMultipleAuthors7() { // The word "and"
     $authors = 'M.A. Smith and M.A. Smith';
-    $result=format_multiple_authors($authors,FALSE);
+    $result=format_multiple_authors($authors);
     $this->assertSame('Smith, M. A.; Smith, M. A.', $result);
   }
   public function testFormatMultipleAuthors8() { // extra commas
     $authors = ' ,,,, ,,, , , , , M.A. Smith, ,,, ,, , M.A. Smith,,,,, ,,, , , ';
-    $result=format_multiple_authors($authors,FALSE);
+    $result=format_multiple_authors($authors);
     $this->assertSame('Smith, M. A.; Smith, M. A.', $result);
   }
     
@@ -168,6 +168,5 @@ final class doiToolsTest extends testBaseClass {
     $this->assertSame('', format_multiple_authors(''));
     $this->assertSame('John, Bob; Kim, Billy', format_multiple_authors('John,Bob,Kim,Billy'));
     $this->assertSame('Johnson, A. B. C. D. E. F. G', format_author('A. B. C. D. E. F. G. Johnson'));
-    $this->assertSame(['John','Bob','Kim','Billy'], format_multiple_authors('John;Bob;Kim;Billy', TRUE));
   }
 }
