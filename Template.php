@@ -5015,7 +5015,7 @@ final class Template {
     return NULL;
   }
 
-  public function initial_author_params() : string { return $this->initial_author_params; }
+  public function initial_author_params() : array { return $this->initial_author_params; }
   
   protected function first_surname() : ?string {
     // Fetch the surname of the first author only
