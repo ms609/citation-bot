@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 @header("Access-Control-Allow-Origin: *"); //This is ok because the API is not authenticated
 @header("Content-Type: text/json");
 
@@ -34,4 +35,4 @@ $result = array(
   'editsummary' => $editSummary
 );
 
-echo @json_encode($result);  // On error returns "FALSE", which makes echo print nothing.  Thus we do not have to check for FALSE
+echo (string) @json_encode($result);  // On error returns "FALSE", which makes echo print nothing.  Thus we do not have to check for FALSE
