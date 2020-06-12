@@ -16,19 +16,19 @@ function sanitize_doi(string $doi) : string {
   $doi = preg_replace('~^doi:~i', '', $doi); // Strip doi: part if present
   $doi = str_replace("+" , "%2B", $doi); // plus signs are valid DOI characters, but in URLs are "spaces"
   $doi = str_replace(HTML_ENCODE_DOI, HTML_DECODE_DOI, trim(urldecode($doi)));
-  $extension = substr($doi, strrpos($doi, '.'));
+  $extension = substr($doi, (int) strrpos($doi, '.'));
   if (in_array(strtolower($extension), array('.htm', '.html', '.jpg', '.jpeg', '.pdf', '.png', '.xml', '.full'))) {
       $doi = substr($doi, 0, (strrpos($doi, $extension)));
   }
-  $extension = substr($doi, strrpos($doi, '#'));
+  $extension = substr($doi, (int) strrpos($doi, '#'));
   if (strpos(strtolower($extension), '#page_scan_tab_contents') === 0) {
       $doi = substr($doi, 0, (strrpos($doi, $extension)));
   }
-  $extension = substr($doi, strrpos($doi, ';'));
+  $extension = substr($doi, (int)strrpos($doi, ';'));
   if (strpos(strtolower($extension), ';jsessionid') === 0) {
       $doi = substr($doi, 0, (strrpos($doi, $extension)));
   }
-  $extension = substr($doi, strrpos($doi, '/'));
+  $extension = substr($doi, (int) strrpos($doi, '/'));
   if (in_array(strtolower($extension), array('/abstract', '/full', '/pdf', '/epdf', '/asset/', '/summary', '/short'))) {
       $doi = substr($doi, 0, (strrpos($doi, $extension)));
   }

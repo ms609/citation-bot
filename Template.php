@@ -1880,11 +1880,11 @@ final class Template {
       if (!($result = @simplexml_load_file($url)->query_result->body->query)){
         report_warning("Error loading simpleXML file from CrossRef.");  // @codeCoverageIgnore
       } elseif ($result['status'] == 'malformed') {
-        report_warning("Cannot search CrossRef: " . echoable($result->msg));  // @codeCoverageIgnore
+        report_warning("Cannot search CrossRef: " . echoable((string) $result->msg));  // @codeCoverageIgnore
       } elseif ($result["status"] == "resolved") {
         if (!isset($result->doi) || is_array($result->doi)) return FALSE; // Never seen array, but pays to be paranoid
         report_info(" Successful!");
-        return $this->add_if_new('doi', $result->doi);
+        return $this->add_if_new('doi', (string) $result->doi);
       }
     }
     return FALSE;
