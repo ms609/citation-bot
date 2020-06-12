@@ -255,12 +255,12 @@ function expand_by_zotero(Template &$template, ?string $url = NULL) : bool {
     if (ZOTERO_GIVE_UP == $zotero_failures_count) $zotero_failures_count = 0; // @codeCoverageIgnore
   }
   if ($zotero_failures_count > ZOTERO_GIVE_UP) return FALSE;
-  $access_date = '';
+  $access_date = 0;
   $url_kind = '';
   if (is_null($url)) {
      if (in_array((string) $template->get('url-status'),  ['usurped', 'unfit', 'dead'])) return FALSE;
-     $access_date = strtotime(tidy_date($template->get('accessdate') . ' ' . $template->get('access-date')));
-     $archive_date = strtotime(tidy_date($template->get('archivedate') . ' ' . $template->get('archive-date')));
+     $access_date = (int) strtotime(tidy_date($template->get('accessdate') . ' ' . $template->get('access-date')));
+     $archive_date = (int) strtotime(tidy_date($template->get('archivedate') . ' ' . $template->get('archive-date')));
      if ($access_date && $archive_date) {
        $access_date = min($access_date, $archive_date); // Whichever was first
      } elseif ($archive_date) {
@@ -298,7 +298,7 @@ function expand_by_zotero(Template &$template, ?string $url = NULL) : bool {
   return process_zotero_response($zotero_response, $template, $url, $url_kind, $access_date);
 }
 
-function process_zotero_response(?string $zotero_response, Template &$template, string $url, string $url_kind, string $access_date) : bool {
+function process_zotero_response(?string $zotero_response, Template &$template, string $url, string $url_kind, int $access_date) : bool {
   global $zotero_failures_count;
   if ($zotero_response === NULL) return FALSE;  // Error message already printed in zotero_request()
  

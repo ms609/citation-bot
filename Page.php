@@ -88,6 +88,7 @@ class Page {
     $this->text = $text;
     $this->start_text = $this->text;
     $this->set_date_pattern();
+    $this->title = '';
   }
  
   public function parsed_text() : string {
