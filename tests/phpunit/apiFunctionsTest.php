@@ -24,23 +24,23 @@ final class apiFunctionsTest extends testBaseClass {
       $page->parse_text($text);
       $templates = $page->extract_object('Template');
       $page->expand_templates_from_identifier('bibcode', $templates);
-      $this->assertSame('14879', $templates[0]->get('pages') . $templates[0]->get('page'));
-      $this->assertSame('Journal of Paleontology', $templates[1]->get('journal'));
-      $this->assertSame('Geological Society of America Bulletin', $templates[2]->get('journal'));
-      $this->assertSame('Nature', $templates[3]->get('journal'));
-      $this->assertSame('Science', $templates[4]->get('journal'));
-      $this->assertSame('Geology', $templates[5]->get('journal'));
-      $this->assertNull($templates[6]->get('journal'));
-      $this->assertNull($templates[6]->get('title'));
-      $this->assertSame('2003', $templates[6]->get('year'));
-      $this->assertSame('Astronomy and Astrophysics', $templates[7]->get('journal'));
-      $this->assertNull($templates[8]->get('pages'));
-      $this->assertNull($templates[8]->get('page'));
-      $this->assertNull($templates[8]->get('class'));
-      $this->assertSame('astro-ph/9508159', $templates[8]->get('arxiv'));
-      $this->assertSame('Nature', $templates[9]->get('journal'));
-      $this->assertSame('1905.02552', $templates[10]->get('arxiv'));
-      $this->assertNull($templates[10]->get('journal'));
+      $this->assertSame('14879', $templates[0]->->get2('pages') . $templates[0]->->get2('page'));
+      $this->assertSame('Journal of Paleontology', $templates[1]->->get2('journal'));
+      $this->assertSame('Geological Society of America Bulletin', $templates[2]->->get2('journal'));
+      $this->assertSame('Nature', $templates[3]->->get2('journal'));
+      $this->assertSame('Science', $templates[4]->->get2('journal'));
+      $this->assertSame('Geology', $templates[5]->->get2('journal'));
+      $this->assertNull($templates[6]->->get2('journal'));
+      $this->assertNull($templates[6]->->get2('title'));
+      $this->assertSame('2003', $templates[6]->->get2('year'));
+      $this->assertSame('Astronomy and Astrophysics', $templates[7]->->get2('journal'));
+      $this->assertNull($templates[8]->->get2('pages'));
+      $this->assertNull($templates[8]->->get2('page'));
+      $this->assertNull($templates[8]->->get2('class'));
+      $this->assertSame('astro-ph/9508159', $templates[8]->->get2('arxiv'));
+      $this->assertSame('Nature', $templates[9]->->get2('journal'));
+      $this->assertSame('1905.02552', $templates[10]->->get2('arxiv'));
+      $this->assertNull($templates[10]->->get2('journal'));
     });
     
     // Mostly just for code coverage, make sure code does not seg fault.
@@ -71,13 +71,13 @@ final class apiFunctionsTest extends testBaseClass {
    $this->requires_arxiv(function() {
       $text = '{{Cite journal|date=September 2010|doi=10.1016/j.physletb.2010.08.018|arxiv=1006.4000}}';
       $expanded = $this->process_citation($text);
-      $this->assertSame('September 2010', $expanded->get('date'));
-      $this->assertNull($expanded->get('year'));
+      $this->assertSame('September 2010', $expanded->->get2('date'));
+      $this->assertNull($expanded->->get2('year'));
       
       $text = '{{Cite journal|date=September 2009|doi=10.1016/j.physletb.2010.08.018|arxiv=1006.4000}}';
       $expanded = $this->process_citation($text);
-      $this->assertNull($expanded->get('date'));
-      $this->assertSame('2010', $expanded->get('year'));
+      $this->assertNull($expanded->->get2('date'));
+      $this->assertSame('2010', $expanded->->get2('year'));
     });
   }
   
@@ -85,9 +85,9 @@ final class apiFunctionsTest extends testBaseClass {
     $this->requires_dx(function() {
      $text = '{{Cite journal| doi= 10.13140/RG.2.1.1002.9609}}';
      $expanded = $this->process_citation($text);
-     $this->assertSame('Lesson Study as a form of in-School Professional Development', $expanded->get('title'));
-     $this->assertSame('2015', $expanded->get('year'));
-     $this->assertSame('Aoibhinn Ni Shuilleabhain', $expanded->get('author1'));
+     $this->assertSame('Lesson Study as a form of in-School Professional Development', $expanded->->get2('title'));
+     $this->assertSame('2015', $expanded->->get2('year'));
+     $this->assertSame('Aoibhinn Ni Shuilleabhain', $expanded->->get2('author1'));
     });
   }
   
@@ -95,12 +95,12 @@ final class apiFunctionsTest extends testBaseClass {
     $this->requires_dx(function() {
      $text = '{{cite journal|doi=10.11429/ppmsj1919.17.0_48}}';
      $expanded = $this->process_citation($text);
-     $this->assertSame('On the Interaction of Elementary Particles. I', $expanded->get('title'));
-     $this->assertSame('1935', $expanded->get('year'));
-     $this->assertSame('Proceedings of the Physico-Mathematical Society of Japan. 3Rd Series', $expanded->get('journal'));
-     $this->assertSame('17', $expanded->get('volume'));
-     $this->assertSame('YUKAWA', $expanded->get('last1'));
-     $this->assertSame('Hideki', $expanded->get('first1'));
+     $this->assertSame('On the Interaction of Elementary Particles. I', $expanded->->get2('title'));
+     $this->assertSame('1935', $expanded->->get2('year'));
+     $this->assertSame('Proceedings of the Physico-Mathematical Society of Japan. 3Rd Series', $expanded->->get2('journal'));
+     $this->assertSame('17', $expanded->->get2('volume'));
+     $this->assertSame('YUKAWA', $expanded->->get2('last1'));
+     $this->assertSame('Hideki', $expanded->->get2('first1'));
     });
   }
   // See https://www.doi.org/demos.html  NOT ALL EXPAND AT THIS TIME
@@ -248,9 +248,9 @@ final class apiFunctionsTest extends testBaseClass {
     $this->requires_arxiv(function() {
      $text = '{{citation | title = Deciding the Winner of an Arbitrary Finite Poset Game is PSPACE-Complete| arxiv = 1209.1750| bibcode = 2012arXiv1209.1750G}}';
      $expanded = $this->process_citation($text);
-     $this->assertSame('Deciding the Winner of an Arbitrary Finite Poset Game is PSPACE-Complete', $expanded->get('chapter'));
-     $this->assertSame('Lecture Notes in Computer Science', $expanded->get('series'));
-     $this->assertSame('Automata, Languages, and Programming', $expanded->get('title'));
+     $this->assertSame('Deciding the Winner of an Arbitrary Finite Poset Game is PSPACE-Complete', $expanded->->get2('chapter'));
+     $this->assertSame('Lecture Notes in Computer Science', $expanded->->get2('series'));
+     $this->assertSame('Automata, Languages, and Programming', $expanded->->get2('title'));
     });
   }
   
@@ -260,12 +260,12 @@ final class apiFunctionsTest extends testBaseClass {
      $text = "{{cite journal|doi=$doi}}";
      $template = $this->make_citation($text);
      expand_doi_with_dx($template, $doi);
-     $this->assertSame($doi, $template->get('doi'));
-     $this->assertSame("The caregiver's journey", $template->get('title'));
-     $this->assertSame('The University of Iowa', $template->get('publisher'));
-     $this->assertSame('2018', $template->get('year'));
-     $this->assertSame('Schumacher', $template->get('last1')); 
-     $this->assertSame('Lisa Anne', $template->get('first1'));
+     $this->assertSame($doi, $template->->get2('doi'));
+     $this->assertSame("The caregiver's journey", $template->->get2('title'));
+     $this->assertSame('The University of Iowa', $template->->get2('publisher'));
+     $this->assertSame('2018', $template->->get2('year'));
+     $this->assertSame('Schumacher', $template->->get2('last1')); 
+     $this->assertSame('Lisa Anne', $template->->get2('first1'));
     });
   }
   
@@ -273,14 +273,14 @@ final class apiFunctionsTest extends testBaseClass {
      $text = "{{cite journal|url=https://jstor.org/stable/832414?seq=1234}}";
      $template = $this->make_citation($text);
      $this->assertTrue(expand_by_jstor($template));
-     $this->assertNull($template->get('jstor')); // We don't do that here
+     $this->assertNull($template->->get2('jstor')); // We don't do that here
    }
   
    public function testJstor2() {
      $text = "{{cite journal|jstor=832414?seq=1234}}";
      $template = $this->make_citation($text);
      $this->assertTrue(expand_by_jstor($template));
-     $this->assertNull($template->get('url'));
+     $this->assertNull($template->->get2('url'));
    }
   
    public function testJstor3() {
@@ -305,18 +305,18 @@ final class apiFunctionsTest extends testBaseClass {
   public function testCrossRefAddSeries() {
      $text = "{{Cite book | doi = 10.1063/1.2833100| title = A Transient Semi-Metallic Layer in Detonating Nitromethane}}";
      $template = $this->process_citation($text);
-     $this->assertSame("AIP Conference Proceedings", $template->get('series'));
+     $this->assertSame("AIP Conference Proceedings", $template->->get2('series'));
     
     // Next is kind of messed up, but "matches" enough to expand
      $text = "{{Cite book | doi = 10.1063/1.2833100| title = AIP Conference Proceedings}}";
      $template = $this->process_citation($text);
-     $this->assertSame("2008", $template->get('year'));
+     $this->assertSame("2008", $template->->get2('year'));
   }
   
   public function testCrossRefAddEditors() {
      $text = "{{Cite book | doi = 10.1117/12.135408}}";
      $template = $this->process_citation($text);
-     $this->assertSame("Kopera", $template->get('editor1-last'));
+     $this->assertSame("Kopera", $template->->get2('editor1-last'));
   }
 
 }
