@@ -277,16 +277,16 @@ final class Template {
   }
   
   public function record_api_usage(string $api, string $param) : void {
-    if (!is_array($param)) $param = array($param);
+    $param = array($param);
     foreach ($param as $p) if (!in_array($p, $this->used_by_api[$api])) $this->used_by_api[$api][] = $p;
   }
   
-  public function api_has_used(string $api, string $param) : int {
+  public function api_has_used(string $api, array $param) : int {
     if (!isset($this->used_by_api[$api])) report_error("Invalid API: $api");
     return count(array_intersect($param, $this->used_by_api[$api]));
   }
   
-  public function api_has_not_used(string $api, string $param) : bool {
+  public function api_has_not_used(string $api, array $param) : bool {
     return !$this->api_has_used($api, $param);
   }
   
