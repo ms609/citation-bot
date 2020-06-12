@@ -2886,7 +2886,7 @@ final class Template {
       $this->google_book_details($gid[1]);
       return TRUE;
     }
-    if (preg_match("~^(.+\.google\.com/books/edition/_/)([a-zA-Z0-9]+)(\?.+|)$~", $url, $gid)) {
+    if (preg_match("~^(.+\.google\.com/books/edition/_/)([a-zA-Z0-9]+)(\?.+|)$~", (string) $url, $gid)) {
       if ($url_type && $gid[3] === '?hl=en') {
         report_forget('Standardized Google Books URL');
         $this->set($url_type, $gid[1] . $gid[2]);
@@ -4999,7 +4999,7 @@ final class Template {
   }
   
   // Retrieve properties of template
-  public function first_author() : ?string {
+  public function first_author() : string {
     foreach (array('author', 'author1', 'authors', 'vauthors') as $auth_param) {
       $author = $this->get($auth_param);
       if ($author) return $author;
@@ -5012,17 +5012,17 @@ final class Template {
         return ($surname . ', ' . $forenames);
       }
     }
-    return NULL;
+    return '';
   }
 
   public function initial_author_params() : array { return $this->initial_author_params; }
   
-  protected function first_surname() : ?string {
+  protected function first_surname() : string {
     // Fetch the surname of the first author only
     if (preg_match("~[^.,;\s]{2,}~u", $this->first_author(), $first_author)) {
       return $first_author[0];
     } else {
-      return NULL;
+      return '';
     }
   }
 
