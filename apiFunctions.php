@@ -140,6 +140,7 @@ function arxiv_api(array $ids, array $templates) : bool {
   foreach ($xml->entry as $entry) {
     $i = 0;
     report_info("Found match for arXiv " . $ids[$i]);
+    print_r($entry);
     if ($this_template->add_if_new("doi", (string) $entry->arxivdoi, 'arxiv')) {
       expand_by_doi($this_template);
     }
