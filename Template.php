@@ -2918,7 +2918,7 @@ final class Template {
       $this->add_if_new('title',  
                wikify_external_text(str_replace("___", ":", $xml->dc___title[0] . ": " . $xml->dc___title[1])));
     } else {
-      $this->add_if_new('title',  wikify_external_text(str_replace("___", ":", $xml->title)));
+      $this->add_if_new('title',  wikify_external_text(str_replace("___", ":", (string) $xml->title)));
     }
     // Possibly contains dud information on occasion
     // $this->add_if_new('publisher', str_replace("___", ":", $xml->dc___publisher));

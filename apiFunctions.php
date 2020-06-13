@@ -599,14 +599,14 @@ function expand_doi_with_dx(Template $template, string $doi) : bool {
      curl_setopt($ch, CURLOPT_RETURNTRANSFER, TRUE);
      curl_setopt($ch, CURLOPT_FOLLOWLOCATION, TRUE);
      try {
-       $data = @curl_exec($ch);
+       $data = (string) @curl_exec($ch);
      } catch (Exception $e) {                    // @codeCoverageIgnoreStart
        curl_close($ch);
        $template->mark_inactive_doi($doi);
        return FALSE;
      }                                           // @codeCoverageIgnoreEnd
      curl_close($ch);
-     if ($data == FALSE || stripos($data, 'DOI Not Found') !== FALSE || stripos($data, 'DOI prefix') !== FALSE) {
+     if ($data == "" || stripos($data, 'DOI Not Found') !== FALSE || stripos($data, 'DOI prefix') !== FALSE) {
        $template->mark_inactive_doi($doi);
        return FALSE;
      }
