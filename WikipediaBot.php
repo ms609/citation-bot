@@ -52,11 +52,11 @@ class WikipediaBot {
   
   private function ret_okay(?object $response) : bool {
     if (is_null($response)) {
-      report_minor_error('Wikipedia responce was not decoded.');
-      return FALSE;
+      report_minor_error('Wikipedia responce was not decoded.');  // @codeCoverageIgnore
+      return FALSE;                                               // @codeCoverageIgnore
     }
     if (isset($response->error)) {
-      // @ codeCoverageIgnoreStart
+      // @codeCoverageIgnoreStart
       if ((string) $response->error->code == 'blocked') { // Travis CI IPs are blocked, even to logged in users.
         report_error('Account "' . $this->username() .  '" or this IP is blocked from editing.');
       } elseif (strpos((string) $response->error->info, 'The database has been automatically locked') !== FALSE) {
