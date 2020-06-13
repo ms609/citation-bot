@@ -4688,7 +4688,7 @@ final class Template {
            $possible_issue = trim((string) @$crossRef->issue);
            $possible_volume = trim((string) @$crossRef->volume);
            if ($possible_issue != $possible_volume) { // They don't match
-             if ((strpos($possible_issue, '-') > 0 || (integer) $possible_issue > 1) && (integer) $possible_volume > 0) { // Legit data
+             if ((strpos($possible_issue, '-') > 0 || (int) $possible_issue > 1) && (int) $possible_volume > 0) { // Legit data
                if ($possible_issue == $orig_data) {
                  $this->set('volume', $possible_volume);
                  report_action('Citation had volume and issue the same.  Changing volume.');
@@ -4966,7 +4966,7 @@ final class Template {
               $this->forget($param);
               $authors = split_authors($val_base);
               foreach ($authors as $i => $author_name) {
-                $this->add_if_new('author' . ($i + 1), format_author($author_name));
+                $this->add_if_new('author' . ((int) $i + 1), format_author($author_name));
               }
             }
           }
