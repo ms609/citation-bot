@@ -5191,6 +5191,7 @@ final class Template {
       return TRUE;
     }
     if (!isset($this->example_param)) {
+      $example = 'param = val';
       if (isset($this->param[0])) {
         // Use second param as a template if present, in case first pair 
         // is last1 = Smith | first1 = J.\n
@@ -5200,10 +5201,8 @@ final class Template {
         // Check if messed up
         if (substr_count($example, '=') !== 1) $example = 'param = val';
         if (substr_count($example, "\n") > 1 ) $example = 'param = val';
-      } else {
-        $example = 'param = val';
       }
-      $this->example_param = $example;
+      $this->example_param = (string) $example; // cast to make static analysis happy
     }
     $p = new Parameter();
     $p->parse_text($this->example_param);
