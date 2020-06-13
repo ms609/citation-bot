@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 /*
  * Page contains methods that will do most of the higher-level work of expanding citations
  * on the wikipage associated with the Page object.

@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 
 require_once(__DIR__ . '/../setup.php');
 
@@ -6,12 +7,12 @@ error_reporting(E_ALL); // All tests run this way
 if (!defined('VERBOSE')) define('VERBOSE', TRUE);
 
 // Change these to temporarily disable sets of tests======================
-$testing_skip_zotero = TRUE;                                           //    TODO
+$testing_skip_zotero = FALSE;                                           //
 $testing_skip_bibcode= FALSE;                                           //
 $testing_skip_google = FALSE;                                           //
 $testing_skip_wiki   = FALSE;                                           //
 $testing_skip_dx     = FALSE;                                           //
-$testing_skip_arxiv  = TRUE;                                           //    TODO
+$testing_skip_arxiv  = FALSE;                                           //
 // =======================================================================
 
 // Non-trusted builds

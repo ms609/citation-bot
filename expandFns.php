@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 // ============================================= DOI functions ======================================
 function sanitize_doi(string $doi) : string {
   if (substr($doi, -1) === '.') {
