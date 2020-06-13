@@ -146,6 +146,9 @@ final class expandFnsTest extends testBaseClass {
   public function testTrailingPeriods5() : void {
     $this->assertSame('Blahy', wikify_external_text('Blahy.'));
   }
+  public function testTrailingPeriods6() : void {
+    $this->assertSame('Blahy', wikify_external_text('Blahy............'));
+  }
   
   public function testBrackets() : void {
     $this->assertSame("ABC",remove_brackets('{}{}{A[][][][][]B()(){}[]][][[][C][][][[()()'));
