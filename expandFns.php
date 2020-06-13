@@ -108,7 +108,7 @@ function wikify_external_text(string $title) : string {
   if (mb_substr($title, -6) == "&nbsp;") $title = mb_substr($title, 0, -6);
   // Special code for ending periods
   while (mb_substr($title, -2) == "..") {
-    $title = mb_substr($title, 0, -1); // @codeCoverageIgnore
+    $title = mb_substr($title, 0, -1);
   }
   if (mb_substr($title, -1) == ".") { // Ends with a period
    if (mb_substr_count($title, '.') === 1) { // Only one period
