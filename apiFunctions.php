@@ -522,8 +522,8 @@ function expand_by_doi(Template $template, bool $force = FALSE) : bool {
       }
       $template->add_if_new('isbn', (string) $crossRef->isbn, 'crossref');
       $template->add_if_new('journal', (string) $crossRef->journal_title); // add_if_new will format the title
-      if ((integer)$crossRef->volume > 0) $template->add_if_new('volume', (string) $crossRef->volume, 'crossref');
-      if (((strpos((string) $crossRef->issue, '-') > 0 || (integer) $crossRef->issue > 1))) {
+      if ((int)$crossRef->volume > 0) $template->add_if_new('volume', (string) $crossRef->volume, 'crossref');
+      if (((strpos((string) $crossRef->issue, '-') > 0 || (int) $crossRef->issue > 1))) {
       // "1" may refer to a journal without issue numbers,
       //  e.g. 10.1146/annurev.fl.23.010191.001111, as well as a genuine issue 1.  Best ignore.
         $template->add_if_new('issue', (string) $crossRef->issue, 'crossref');
