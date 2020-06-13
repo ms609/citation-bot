@@ -120,7 +120,7 @@ class WikipediaBot {
             CURLOPT_HTTPHEADER => [$authenticationHeader],
           ]);
           set_time_limit(45);
-          $data = curl_exec($this->ch);
+          $data = (string) @curl_exec($this->ch);
           if (!$data) {
             report_error("Curl error: " . echoable(curl_error($this->ch)));         // @codeCoverageIgnore
             return FALSE;                                                           // @codeCoverageIgnore
@@ -143,7 +143,7 @@ class WikipediaBot {
             CURLOPT_HTTPHEADER => [$authenticationHeader],
           ]);
           set_time_limit(45);
-          $data = curl_exec($this->ch);
+          $data = (string) @curl_exec($this->ch);
           if ( !$data ) {
             report_error("Curl error: " . echoable(curl_error($this->ch)));     // @codeCoverageIgnore
           }
