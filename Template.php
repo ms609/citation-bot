@@ -3007,7 +3007,7 @@ final class Template {
       foreach ($this->param as $param_key => $p) {
         if ($need_one && !empty($p->param)) {
           if (preg_match('~^\s*(https?://|www\.)\S+~', $p->param)) { # URL ending ~ xxx.com/?para=val
-            $val = isset($p->val) : (string) $p->val ? '';
+            $val = isset($p->val) ? (string) $p->val : '';
             $param = (string) $p->param;
             $this->param[$param_key]->val =  $param . '=' . $val;
             $this->param[$param_key]->param = 'url';
