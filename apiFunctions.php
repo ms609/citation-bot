@@ -27,12 +27,12 @@ function entrez_api(array $ids, array $templates, string $db) : bool {
     $this_template = $templates[$template_key];
  
     foreach ($document->Item as $item) {
-      if (preg_match("~10\.\d{4}/[^\s\"']*~", $item, $match)) {
+      if (preg_match("~10\.\d{4}/[^\s\"']*~", (string) $item, $match)) {
         $this_template->add_if_new('doi', $match[0], 'entrez');
       }
       switch ($item["Name"]) {
                 case "Title":   $this_template->add_if_new('title',  str_replace(array("[", "]"), "", (string) $item), 'entrez'); // add_if_new will format the title
-        break;  case "PubDate": preg_match("~(\d+)\s*(\w*)~", $item, $match);
+        break;  case "PubDate": preg_match("~(\d+)\s*(\w*)~", (string) $item, $match);
                                 $this_template->add_if_new('year', (string) $match[1], 'entrez');
         break;  case "FullJournalName": $this_template->add_if_new('journal',  ucwords((string) $item), 'entrez'); // add_if_new will format the title
         break;  case "Volume":  $this_template->add_if_new('volume', (string) $item, 'entrez');
@@ -143,7 +143,7 @@ function arxiv_api(array $ids, array $templates) : bool {
     }
     foreach ($entry->author as $auth) {
       $i++;
-      $name = $auth->name;
+      $name = (string) $auth->name;
       if (preg_match("~(.+\.)(.+?)$~", $name, $names) || preg_match('~^\s*(\S+) (\S+)\s*$~', $name, $names)) {
         $this_template->add_if_new("last$i", $names[2], 'arxiv');
         $this_template->add_if_new("first$i", $names[1], 'arxiv');
@@ -164,7 +164,6 @@ function arxiv_api(array $ids, array $templates) : bool {
       $the_title = str_replace('  ', ' ', $the_title);                         // @codeCoverageIgnore
     }
     $this_template->add_if_new("title", $the_title, 'arxiv'); // Formatted by add_if_new
-    $this_template->add_if_new("title", (string) $entry->title, 'arxiv'); // Formatted by add_if_new
     $this_template->add_if_new("class", (string) $entry->category["term"], 'arxiv');
     $this_template->add_if_new("year", date("Y", strtotime((string)$entry->published)), 'arxiv');
 
@@ -420,8 +419,8 @@ function expand_by_doi(Template $template, bool $force = FALSE) : bool {
   if ($doi && ($force || $template->incomplete())) {
     $crossRef = query_crossref($doi);
     if ($crossRef) {
-      if (in_array(strtolower($crossRef->article_title), BAD_ACCEPTED_MANUSCRIPT_TITLES)) return FALSE ;
-      if ($template->has('title') && trim(@$crossRef->article_title) && $template->get('title') !== 'none') { // Verify title of DOI matches existing data somewhat
+      if (in_array(strtolower((string) @$crossRef->article_title), BAD_ACCEPTED_MANUSCRIPT_TITLES)) return FALSE ;
+      if ($template->has('title') && trim((string) @$crossRef->article_title) && $template->get('title') !== 'none') { // Verify title of DOI matches existing data somewhat
         $bad_data = TRUE;
         $new = (string) $crossRef->article_title;
         if (preg_match('~^(.................+)[\.\?]\s+([IVX]+)\.\s.+$~i', $new, $matches)) {
@@ -435,7 +434,7 @@ function expand_by_doi(Template $template, bool $force = FALSE) : bool {
         }
         foreach (['chapter', 'title', 'series'] as $possible) {
           if ($template->has($possible)) {
-            $old = (string) $template->get($possible);
+            $old = $template->get($possible);
             if (preg_match('~^(.................+)[\.\?]\s+([IVX]+)\.\s.+$~i', $old, $matches)) {
                $old = $matches[1];
                $old_roman = $matches[2];
@@ -460,7 +459,7 @@ function expand_by_doi(Template $template, bool $force = FALSE) : bool {
         }
         if (isset($crossRef->series_title)) {
           foreach (['chapter', 'title'] as $possible) { // Series === series could easily be false possitive
-            if ($template->has($possible) && titles_are_similar($template->get($possible), $crossRef->series_title)) {
+            if ($template->has($possible) && titles_are_similar($template->get($possible), (string) $crossRef->series_title)) {
                 $bad_data = FALSE;
                 break;
             }
@@ -468,8 +467,8 @@ function expand_by_doi(Template $template, bool $force = FALSE) : bool {
         }
         if ($bad_data) {
           report_warning("CrossRef title did not match existing title: doi:" . doi_link($doi));
-          if (isset($crossRef->series_title)) report_info("  Possible new title: " . $crossRef->series_title);
-          if (isset($crossRef->article_title)) report_info("  Possible new title: " . $crossRef->article_title);
+          if (isset($crossRef->series_title)) report_info("  Possible new title: " . (string) $crossRef->series_title);
+          if (isset($crossRef->article_title)) report_info("  Possible new title: " . (string) $crossRef->article_title);
           foreach (['chapter', 'title', 'series'] as $possible) {
            if ($template->has($possible)) {
               report_info("  Existing old title: " . $template->get($possible));
@@ -481,7 +480,7 @@ function expand_by_doi(Template $template, bool $force = FALSE) : bool {
       report_action("Querying CrossRef: doi:" . doi_link($doi));
 
       if ($crossRef->volume_title && $template->blank('journal')) {
-        if (strtolower($template->get('title')) == strtolower($crossRef->article_title)) {
+        if (strtolower($template->get('title')) == strtolower((string) $crossRef->article_title)) {
            $template->rename('title', 'chapter');
          } else {
            $template->add_if_new('chapter', restore_italics((string) $crossRef->article_title), 'crossref'); // add_if_new formats this value as a title
@@ -503,33 +502,33 @@ function expand_by_doi(Template $template, bool $force = FALSE) : bool {
         $add_authors = $existing_author == '' || author_is_human($existing_author);
         
         foreach ($crossRef->contributors->contributor as $author) {
-          if (strtoupper($author->surname) === '&NA;') break; // No Author, leave loop now!  Have only seen upper-case in the wild
+          if (strtoupper((string) $author->surname) === '&NA;') break; // No Author, leave loop now!  Have only seen upper-case in the wild
           if ($author["contributor_role"] == 'editor') {
             ++$ed_i;
             if ($ed_i < 31 && !isset($crossRef->journal_title)) {
-              $template->add_if_new("editor$ed_i-last", format_surname($author->surname), 'crossref');
-              $template->add_if_new("editor$ed_i-first", format_forename($author->given_name), 'crossref');
+              $template->add_if_new("editor$ed_i-last", format_surname((string) $author->surname), 'crossref');
+              $template->add_if_new("editor$ed_i-first", format_forename((string) $author->given_name), 'crossref');
             }
           } elseif ($author['contributor_role'] == 'author' && $add_authors) {
             ++$au_i;
-            $template->add_if_new("last$au_i", format_surname($author->surname), 'crossref');
-            $template->add_if_new("first$au_i", format_forename($author->given_name), 'crossref');
+            $template->add_if_new("last$au_i", format_surname((string) $author->surname), 'crossref');
+            $template->add_if_new("first$au_i", format_forename((string) $author->given_name), 'crossref');
           }
         }
       }
-      $template->add_if_new('isbn', $crossRef->isbn, 'crossref');
-      $template->add_if_new('journal', $crossRef->journal_title); // add_if_new will format the title
-      if ($crossRef->volume > 0) $template->add_if_new('volume', $crossRef->volume, 'crossref');
+      $template->add_if_new('isbn', (string) $crossRef->isbn, 'crossref');
+      $template->add_if_new('journal', (string) $crossRef->journal_title); // add_if_new will format the title
+      if ($crossRef->volume > 0) $template->add_if_new('volume', (string) $crossRef->volume, 'crossref');
       if (((strpos($crossRef->issue, '-') > 0 || (integer) $crossRef->issue > 1))) {
       // "1" may refer to a journal without issue numbers,
       //  e.g. 10.1146/annurev.fl.23.010191.001111, as well as a genuine issue 1.  Best ignore.
-        $template->add_if_new('issue', $crossRef->issue, 'crossref');
+        $template->add_if_new('issue', (string) $crossRef->issue, 'crossref');
       }
       if ($template->blank("page")) {
-        if ($crossRef->last_page && (strcmp($crossRef->first_page, $crossRef->last_page) !== 0)) {
+        if ($crossRef->last_page && (strcmp((string) $crossRef->first_page, (string) $crossRef->last_page) !== 0)) {
           $template->add_if_new("pages", $crossRef->first_page . "-" . $crossRef->last_page, 'crossref'); //replaced by an endash later in script
         } else {
-          $template->add_if_new("pages", $crossRef->first_page, 'crossref');
+          $template->add_if_new("pages", (string) $crossRef->first_page, 'crossref');
         }
       }
     } else {
@@ -586,7 +585,7 @@ function expand_doi_with_dx(Template $template, string $doi) : bool {
          $data = $data['0'];                                        // @codeCoverageIgnore
        }
        if ($data == '') return FALSE;
-       $template->add_if_new($name, $data, 'dx');
+       $template->add_if_new($name, (string) $data, 'dx');
      };
      if (!$doi) return FALSE;
      $ch = curl_init();

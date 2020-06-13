@@ -255,12 +255,12 @@ function expand_by_zotero(Template &$template, ?string $url = NULL) : bool {
     if (ZOTERO_GIVE_UP == $zotero_failures_count) $zotero_failures_count = 0; // @codeCoverageIgnore
   }
   if ($zotero_failures_count > ZOTERO_GIVE_UP) return FALSE;
-  $access_date = '';
+  $access_date = 0;
   $url_kind = '';
   if (is_null($url)) {
      if (in_array((string) $template->get('url-status'),  ['usurped', 'unfit', 'dead'])) return FALSE;
-     $access_date = strtotime(tidy_date($template->get('accessdate') . ' ' . $template->get('access-date')));
-     $archive_date = strtotime(tidy_date($template->get('archivedate') . ' ' . $template->get('archive-date')));
+     $access_date = (int) strtotime(tidy_date($template->get('accessdate') . ' ' . $template->get('access-date')));
+     $archive_date = (int) strtotime(tidy_date($template->get('archivedate') . ' ' . $template->get('archive-date')));
      if ($access_date && $archive_date) {
        $access_date = min($access_date, $archive_date); // Whichever was first
      } elseif ($archive_date) {
@@ -298,7 +298,7 @@ function expand_by_zotero(Template &$template, ?string $url = NULL) : bool {
   return process_zotero_response($zotero_response, $template, $url, $url_kind, $access_date);
 }
 
-function process_zotero_response(?string $zotero_response, Template &$template, string $url, string $url_kind, string $access_date) : bool {
+function process_zotero_response(?string $zotero_response, Template &$template, string $url, string $url_kind, int $access_date) : bool {
   global $zotero_failures_count;
   if ($zotero_response === NULL) return FALSE;  // Error message already printed in zotero_request()
  
@@ -479,51 +479,51 @@ function process_zotero_response(?string $zotero_response, Template &$template, 
       }
     }
   }
-  if (str_i_same(substr(@$result->publicationTitle, 0, 4), 'http') ||
-      str_i_same(substr(@$result->bookTitle, 0, 4), 'http') ||
-      str_i_same(substr(@$result->title, 0, 4), 'http')) {
+  if (str_i_same(substr((string) @$result->publicationTitle, 0, 4), 'http') ||
+      str_i_same(substr((string) @$result->bookTitle, 0, 4), 'http') ||
+      str_i_same(substr((string) @$result->title, 0, 4), 'http')) {
     report_info("URL returned in Journal/Newpaper/Title/Chapter field for " . $url);  // @codeCoverageIgnore
     return FALSE;                                                                     // @codeCoverageIgnore
   }
   
   if (isset($result->bookTitle)) {
-    $result->bookTitle = preg_replace('~\s*\(pdf\)$~i', '', $result->bookTitle);
-    $result->bookTitle = preg_replace('~^\(pdf\)\s*~i', '', $result->bookTitle);
-    $result->bookTitle = preg_replace('~ \- ProQuest\.?~i', '', $result->bookTitle);
+    $result->bookTitle = preg_replace('~\s*\(pdf\)$~i', '', (string) $result->bookTitle);
+    $result->bookTitle = preg_replace('~^\(pdf\)\s*~i', '', (string) $result->bookTitle);
+    $result->bookTitle = preg_replace('~ \- ProQuest\.?~i', '', (string) $result->bookTitle);
   }
   if (isset($result->title)) {
-    $result->title = preg_replace('~\s*\(pdf\)$~i', '', $result->title);
-    $result->title = preg_replace('~^\(pdf\)\s*~i', '', $result->title);
-    $result->title = preg_replace('~ \- ProQuest\.?~i', '', $result->title);
+    $result->title = preg_replace('~\s*\(pdf\)$~i', '', (string) $result->title);
+    $result->title = preg_replace('~^\(pdf\)\s*~i', '', (string) $result->title);
+    $result->title = preg_replace('~ \- ProQuest\.?~i', '', (string) $result->title);
   }
   
   if (isset($result->bookTitle)) {
-    $template->add_if_new('title', $result->bookTitle);
-    if (isset($result->title))      $template->add_if_new('chapter',   $result->title);
-    if (isset($result->publisher))  $template->add_if_new('publisher', $result->publisher);
+    $template->add_if_new('title', (string) $result->bookTitle);
+    if (isset($result->title))      $template->add_if_new('chapter',   (string) $result->title);
+    if (isset($result->publisher))  $template->add_if_new('publisher', (string) $result->publisher);
   } else {
-    if (isset($result->title))      $template->add_if_new('title'  , $result->title);
+    if (isset($result->title))      $template->add_if_new('title'  , (string) $result->title);
     if (isset($result->itemType) && ($result->itemType === 'book' || $result->itemType === 'bookSection')) {
-       if (isset($result->publisher))  $template->add_if_new('publisher', $result->publisher);
+       if (isset($result->publisher))  $template->add_if_new('publisher', (string) $result->publisher);
     }
   }
 
-  if ( isset($result->issue))            $template->add_if_new('issue'  , $result->issue);
-  if ( isset($result->pages))            $template->add_if_new('pages'  , $result->pages);
+  if ( isset($result->issue))            $template->add_if_new('issue'  , (string) $result->issue);
+  if ( isset($result->pages))            $template->add_if_new('pages'  , (string) $result->pages);
   if (isset($result->itemType) && $result->itemType == 'newspaperArticle') {
-    if ( isset($result->publicationTitle)) $template->add_if_new('newspaper', $result->publicationTitle);
+    if ( isset($result->publicationTitle)) $template->add_if_new('newspaper', (string) $result->publicationTitle);
   } else {
     if ( isset($result->publicationTitle)) {
       if ((!$template->has('title') || !$template->has('chapter')) && // Do not add if already has title and chapter
-          (stripos($result->publicationTitle, ' edition') === FALSE)) {  // Do not add if "journal" includes "edition"
-        $template->add_if_new('journal', $result->publicationTitle);
+          (stripos((string) $result->publicationTitle, ' edition') === FALSE)) {  // Do not add if "journal" includes "edition"
+        $template->add_if_new('journal', (string) $result->publicationTitle);
       }
     }
   }
   if ( isset($result->volume) 
-  &&   strpos($result->volume, "(") === FALSE ) $template->add_if_new('volume', $result->volume);
-  if ( isset($result->date) && strlen($result->date)>3)$template->add_if_new('date'   , tidy_date($result->date));
-  if ( isset($result->series) && stripos($url, 'portal.acm.org')===FALSE)  $template->add_if_new('series' , $result->series);
+  &&   strpos($result->volume, "(") === FALSE ) $template->add_if_new('volume', (string) $result->volume);
+  if ( isset($result->date) && strlen($result->date)>3)$template->add_if_new('date', tidy_date($result->date));
+  if ( isset($result->series) && stripos($url, 'portal.acm.org')===FALSE)  $template->add_if_new('series' , (string) $result->series);
   if ( isset($result->author[0]) && !isset($result->author[1]) &&
       !author_is_human(@$result->author[0][0] . ' ' . @$result->author[0][1])) {
     unset($result->author[0]); // Do not add a single non-human author
@@ -572,7 +572,7 @@ function process_zotero_response(?string $zotero_response, Template &$template, 
         $template->change_name_to('cite thesis');
         if (isset($result->university)) $template->add_if_new('publisher' , $result->university);
         if (isset($result->thesisType) && $template->blank(['type', 'medium', 'degree'])) {
-          $template->add_if_new('type' , $result->thesisType); // Prefer type since it exists in cite journal too
+          $template->add_if_new('type' , (string) $result->thesisType); // Prefer type since it exists in cite journal too
         }
         break;
         
