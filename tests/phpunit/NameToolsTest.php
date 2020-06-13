@@ -134,11 +134,11 @@ final class doiToolsTest extends testBaseClass {
        $text = ""; // Empty string should work
        $result = junior_test($text);
        $this->assertSame("", $result[0]);
-       $this->assertSame(FALSE, $result[1]);
+       $this->assertSame("", $result[1]);
        $text = "Smith";
        $result = junior_test($text);
        $this->assertSame("Smith", $result[0]);
-       $this->assertSame(FALSE, $result[1]);
+       $this->assertSame("", $result[1]);
        $text = "Smith Jr.";
        $result = junior_test($text);
        $this->assertSame("Smith", $result[0]);
@@ -158,7 +158,7 @@ final class doiToolsTest extends testBaseClass {
        $text = "Ewing JR"; // My name is J.R. Ewing, but you can call me J.R.
        $result = junior_test($text);
        $this->assertSame("Ewing JR", $result[0]);
-       $this->assertSame(FALSE, $result[1]);
+       $this->assertSame("", $result[1]);
   }
 
   public function testFormat() : void { // Random extra code coverage tests
