@@ -6,40 +6,24 @@ branches:
 language: php
 matrix:           ###### ONLY ONE WITH FULL TESTING WITH IS 7.3 OTHERS ARE ALL STATIC ANALYSIS ONLY ######
   include:
-    - stage: pretest
-      name: "Quick PHP 7.2 syntax check"
-      php: 7.2
-      script: '! find . -type f -name "*.php" -exec php -d error_reporting=32767 -l {} \; 2>&1 >&- | grep "^"'
-    - php: nightly
-      name: "Quick PHP 8.0 syntax check"
-      script: '! find . -type f -name "*.php" -exec php -d error_reporting=32767 -l {} \; 2>&1 >&- | grep "^"'
-    - php: 7.2
-      name: "PHP Lint test"
-      before_script:  
-        - travis_retry composer self-update
-        - composer require overtrue/phplint --dev -vvv
-      script: ./vendor/bin/phplint --exclude=vendor --no-interaction  ./
     - stage: test
-      name: "Full test with PHP 7.3"
-      php: 7.3
+      name: "Full test with PHP 7.4"
+      php: 7.4
       before_script:  
         - travis_retry composer self-update
-        - composer require mediawiki/oauthclient:1.1.0
+        - composer require mediawiki/oauthclient
         - '! find . -type f -name "*.php" -exec php -d error_reporting=32767 -l {} \; 2>&1 >&- | grep "^"'
-      script: phpunit --coverage-clover coverage.xml
-      after_success: bash <(curl -s https://codecov.io/bash)
-    - stage: deploy-to-master
-      name: "Update WMFlabs servers"
-      if: branch = master AND type != pull_request
-      php: 7.3
-      script:
-        - wget -O- https://tools.wmflabs.org/citations/gitpull.php
-    - stage: deploy-to-development
-      name: "Update WMFlabs test servers"
-      if: branch = development AND type != pull_request
-      php: 7.3
-      script:
-        - wget -O- https://tools.wmflabs.org/citations-dev/gitpull.php
+      script: phpunit
+    - name: "Full test with PHP 8"
+      php: nightly
+      before_script:  
+        - travis_retry composer self-update
+        - composer require mediawiki/oauthclient
+        - '! find . -type f -name "*.php" -exec php -d error_reporting=32767 -l {} \; 2>&1 >&- | grep "^"'
+      script: phpunit
+    - name: Avoid success
+      php: 9.9.9
+      script: phpunit
 
 git:
   depth: 21
