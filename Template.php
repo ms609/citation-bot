@@ -4869,7 +4869,7 @@ final class Template {
       if ($pos = strrpos($try, '.')) {
        $extension = substr($try, $pos);
        if (in_array(strtolower($extension), array('.htm', '.html', '.jpg', '.jpeg', '.pdf', '.png', '.xml', '.full'))) {
-         $try = substr($try, 0, (strrpos($try, $extension)));
+         $try = substr($try, 0, $pos));
          $trial[] = $try;
          $changed = TRUE;
        }
@@ -4877,7 +4877,7 @@ final class Template {
       if ($pos = strrpos($try, '#')) {
        $extension = substr($try, $pos);
        if (strpos(strtolower($extension), '#page_scan_tab_contents') === 0) {
-         $try = substr($try, 0, (strrpos($try, $extension)));
+         $try = substr($try, 0, $pos);
          $trial[] = $try;
          $changed = TRUE;
        }
@@ -4885,7 +4885,7 @@ final class Template {
       if ($pos = strrpos($try, ';')) {
        $extension = substr($try, $pos);
        if (strpos(strtolower($extension), ';jsessionid') === 0) {
-         $try = substr($try, 0, (strrpos($try, $extension)));
+         $try = substr($try, 0, $pos);
          $trial[] = $try;
          $changed = TRUE;
        }
@@ -4893,7 +4893,7 @@ final class Template {
       if ($pos = strrpos($try, '/')) {
        $extension = substr($try, $pos);
        if (in_array(strtolower($extension), array('/abstract', '/full', '/pdf', '/epdf', '/asset/', '/summary', '/short'))) {
-         $try = substr($try, 0, (strrpos($try, $extension)));
+         $try = substr($try, 0, $pos);
          $trial[] = $try;
          $changed = TRUE;
        }
@@ -5211,10 +5211,10 @@ final class Template {
         if (substr_count($example, '=') !== 1) $example = 'param = val';
         if (substr_count($example, "\n") > 1 ) $example = 'param = val';
       }
-      $this->example_param = (string) $example; // cast to make static analysis happy
+      $this->example_param = (string) $example;
     }
     $p = new Parameter();
-    $p->parse_text($this->example_param);
+    $p->parse_text((string) $this->example_param); // cast to make static analysis happy
     $p->param = (string) $par;
     $p->val = (string) $val;
     
