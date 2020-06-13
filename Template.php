@@ -2019,8 +2019,8 @@ final class Template {
         }
        }
       } elseif ($term === "page") {
-        if ($this->page_range()) {
-          $val = $this->page_range()[1];
+        if ($pages = $this->page_range()) {
+          $val = $pages[1];
           $key = 'Pagination';
           $query .= " AND (" . str_replace("%E2%80%93", "-", urlencode($val)) . "[$key])";
         }
@@ -2148,11 +2148,12 @@ final class Template {
     if ($result->numFound != 1 && $this->has('journal')) {
       $journal = $this->get('journal');
       // try partial search using bibcode components:
+      $pages = $this->page_range();
       $result = $this->query_adsabs("pub:" . urlencode('"' . remove_brackets($journal) . '"')
         . ($this->year() ? ("&fq=year:" . urlencode($this->year())) : '')
         . ($this->has('issn') ? ("&fq=issn:" . urlencode($this->get('issn'))) : '')
         . ($this->has('volume') ? ("&fq=volume:" . urlencode('"' . $this->get('volume') . '"')) : '')
-        . ($this->page_range() ? ("&fq=page:" . urlencode('"' . $this->page_range()[1] . '"')) : '')
+        . ($pages ? ("&fq=page:" . urlencode('"' . $pages[1] . '"')) : '')
       );
       if ($result->numFound == 0 || !isset($result->docs[0]->pub)) {
         report_inline('no record retrieved.');    // @codeCoverageIgnore
