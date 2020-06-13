@@ -242,8 +242,8 @@ function adsabs_api(array $ids, array $templates, string $identifier) : bool {
     curl_setopt($ch, CURLOPT_HEADER, TRUE);
     curl_setopt($ch, CURLOPT_CUSTOMREQUEST, 'POST');
     curl_setopt($ch, CURLOPT_POSTFIELDS, "$identifier\n" . str_replace("%0A", "\n", urlencode(implode("\n", $ids))));
-    $return = curl_exec($ch);
-    if ($return === FALSE) {
+    $return = (string) @curl_exec($ch);
+    if ($return == "") {
       // @codeCoverageIgnoreStart
       $error = curl_error($ch);
       $errno = curl_errno($ch);
