@@ -18,7 +18,7 @@ matrix:           ###### ONLY ONE WITH FULL TESTING WITH IS 7.3 OTHERS ARE ALL S
       php: nightly
       before_script:  
         - travis_retry composer self-update
-        - composer require mediawiki/oauthclient
+        - composer require mediawiki/oauthclient:1.1.0
         - '! find . -type f -name "*.php" -exec php -d error_reporting=32767 -l {} \; 2>&1 >&- | grep "^"'
       script: phpunit
     - name: Avoid success
