@@ -51,7 +51,7 @@ if ($json === FALSE) {
   report_error(' Error getting page list');
 }    
 $array = @json_decode($json, true);
-if ($array === FALSE) {
+if ($array === FALSE || !isset($array['parse']['links'])) {
   report_error(' Error interpreting page list');
 }
 $links = $array['parse']['links'];
