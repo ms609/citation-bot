@@ -19,22 +19,24 @@ matrix:           ###### ONLY ONE WITH FULL TESTING WITH IS 7.3 OTHERS ARE ALL S
         - travis_retry composer self-update
         - composer require overtrue/phplint --dev -vvv
       script: ./vendor/bin/phplint --exclude=vendor --no-interaction  ./
-    - php: 7.2
-      name: "PHP phan"
-      before_script:
-        - travis_retry composer self-update
-        - composer require --dev phan/phan:1.x
-      script: php vendor/bin/phan --allow-polyfill-parser constants/*.php ./*.php
     - php: 7.3
       name: "PHP phpstan"
       before_script:
         - travis_retry composer self-update
         - composer require --dev phpstan/phpstan # below split out to save memory
       script: php vendor/bin/phpstan --no-interaction analyse  --level=3   constants/*.php  Parameter.php user_messages.php constants.php  expandFns.php zotero.php apiFunctions.php NameTools.php  Comment.php Page.php  WikipediaBot.php  Template.php setup.php   category.php ; php vendor/bin/phpstan --no-interaction analyse  --level=3  Parameter.php  constants/*.php  user_messages.php constants.php  expandFns.php zotero.php apiFunctions.php NameTools.php  Comment.php Page.php  WikipediaBot.php  Template.php setup.php   generate_template.php ; php vendor/bin/phpstan --no-interaction analyse  --level=3   gitpull.php ; php vendor/bin/phpstan --no-interaction analyse  --level=3 Parameter.php   constants/*.php  user_messages.php constants.php  expandFns.php zotero.php apiFunctions.php NameTools.php  Comment.php Page.php  WikipediaBot.php  Template.php setup.php   linked_pages.php ; php vendor/bin/phpstan --no-interaction analyse  --level=3   unlock_git.php ; php vendor/bin/phpstan --no-interaction analyse  --level=3 Parameter.php   constants/*.php  user_messages.php constants.php  expandFns.php zotero.php apiFunctions.php NameTools.php  Comment.php Page.php  WikipediaBot.php  Template.php setup.php   process_page.php ; php vendor/bin/phpstan --no-interaction analyse  --level=3 Parameter.php   constants/*.php  user_messages.php constants.php  expandFns.php zotero.php apiFunctions.php NameTools.php  Comment.php Page.php  WikipediaBot.php  Template.php setup.php   authenticate.php
+    - php: 7.2
+      name: "PHP phan"
+      before_script:
+        - travis_retry composer self-update
+        - composer require --dev phan/phan:1.x
+        - composer require mediawiki/oauthclient:1.1.0
+      script: php vendor/bin/phan --allow-polyfill-parser constants/*.php ./*.php
     - php: 7.3
       name: "PHP psalm"
       before_script:
         - travis_retry composer self-update
+        - composer require mediawiki/oauthclient:1.1.0
         - composer require --dev vimeo/psalm
       script: php vendor/bin/psalm setup.php  authenticate.php category.php generate_template.php gitpull.php linked_pages.php process_page.php  unlock_git.php
     - name: "Full test with PHP 8"
@@ -43,7 +45,6 @@ matrix:           ###### ONLY ONE WITH FULL TESTING WITH IS 7.3 OTHERS ARE ALL S
         - travis_retry composer self-update
         - '! find . -type f -name "*.php" -exec php -d error_reporting=32767 -l {} \; 2>&1 >&- | grep "^"'
       script: phpunit
-
     - stage: test
       name: "Full test with PHP 7.3"
       php: 7.3
