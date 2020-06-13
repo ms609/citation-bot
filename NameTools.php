@@ -6,11 +6,11 @@ declare(strict_types=1);
  * Output: array ($name without Jr, if $name ends in Jr, Jr)
  */
 function junior_test(string $name) : array {
-  $junior = (substr($name, -3) == " Jr")?" Jr":FALSE;
+  $junior = (substr($name, -3) == " Jr")?" Jr":"";
   if ($junior) {
     $name = substr($name, 0, -3);
   } else {
-    $junior = (substr($name, -4) == " Jr.")?" Jr.":FALSE;
+    $junior = (substr($name, -4) == " Jr.")?" Jr.":"";
     if ($junior) {
       $name = substr($name, 0, -4);
     }
