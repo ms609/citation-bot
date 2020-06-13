@@ -4966,7 +4966,7 @@ final class Template {
               $this->forget($param);
               $authors = split_authors($val_base);
               foreach ($authors as $i => $author_name) {
-                $this->add_if_new('author' . ($i + 1), format_author($author_name));
+                $this->add_if_new('author' . ((int) $i + 1), format_author($author_name));
               }
             }
           }
