@@ -16,21 +16,29 @@ function sanitize_doi(string $doi) : string {
   $doi = preg_replace('~^doi:~i', '', $doi); // Strip doi: part if present
   $doi = str_replace("+" , "%2B", $doi); // plus signs are valid DOI characters, but in URLs are "spaces"
   $doi = str_replace(HTML_ENCODE_DOI, HTML_DECODE_DOI, trim(urldecode($doi)));
-  $extension = substr($doi, (int) strrpos($doi, '.'));
-  if (in_array(strtolower($extension), array('.htm', '.html', '.jpg', '.jpeg', '.pdf', '.png', '.xml', '.full'))) {
-      $doi = substr($doi, 0, (strrpos($doi, $extension)));
+  if ($pos = (int) strrpos($doi, '.')) {
+   $extension = (string) substr($doi, $pos);
+   if (in_array(strtolower($extension), array('.htm', '.html', '.jpg', '.jpeg', '.pdf', '.png', '.xml', '.full'))) {
+      $doi = (string) substr($doi, 0, $pos);
+   }
   }
-  $extension = substr($doi, (int) strrpos($doi, '#'));
-  if (strpos(strtolower($extension), '#page_scan_tab_contents') === 0) {
-      $doi = substr($doi, 0, (strrpos($doi, $extension)));
+  if ($pos = (int) strrpos($doi, '#')) {
+   $extension = (string) substr($doi, $pos);
+   if (strpos(strtolower($extension), '#page_scan_tab_contents') === 0) {
+      $doi = (string) substr($doi, 0, $pos);
+   }
   }
-  $extension = substr($doi, (int)strrpos($doi, ';'));
-  if (strpos(strtolower($extension), ';jsessionid') === 0) {
-      $doi = substr($doi, 0, (strrpos($doi, $extension)));
+  if ($pos = (int) strrpos($doi, ';')) {
+   $extension = (string) substr($doi, $pos);
+   if (strpos(strtolower($extension), ';jsessionid') === 0) {
+      $doi = (string) substr($doi, 0, $pos);
+   }
   }
-  $extension = substr($doi, (int) strrpos($doi, '/'));
-  if (in_array(strtolower($extension), array('/abstract', '/full', '/pdf', '/epdf', '/asset/', '/summary', '/short'))) {
-      $doi = substr($doi, 0, (strrpos($doi, $extension)));
+  if ($pos = (int) strrpos($doi, '/')) {
+   $extension = (string) substr($doi, $pos);
+   if (in_array(strtolower($extension), array('/abstract', '/full', '/pdf', '/epdf', '/asset/', '/summary', '/short'))) {
+      $doi = (string) substr($doi, 0, $pos);
+   }
   }
   // And now for 10.1093 URLs
   // The add chapter/page stuff after the DOI in the URL and it looks like part of the DOI to us
@@ -68,7 +76,7 @@ function extract_doi(string $text) : array {
     while (preg_match(REGEXP_DOI, $doi_candidate) && !doi_works($doi_candidate)) {
       $last_delimiter = 0;
       foreach (array('/', '.', '#', '?') as $delimiter) {
-        $delimiter_position = strrpos($doi_candidate, $delimiter);
+        $delimiter_position = (int) strrpos($doi_candidate, $delimiter);
         $last_delimiter = ($delimiter_position > $last_delimiter) ? $delimiter_position : $last_delimiter;
       }
       $doi_candidate = substr($doi_candidate, 0, $last_delimiter);
@@ -108,7 +116,7 @@ function wikify_external_text(string $title) : string {
    } elseif (mb_substr_count($title, ' ') === 0) { // No spaces at all and multiple periods
       ;
    } else { // Multiple periods and at least one space
-    $last_word_start = mb_strrpos(' ' . $title, ' ');
+    $last_word_start = (int) mb_strrpos(' ' . $title, ' ');
     $last_word = mb_substr($title, $last_word_start);
     if (mb_substr_count($last_word, '.') === 1 && // Do not remove if something like D.C. or D. C.
         mb_substr($title, $last_word_start-2, 1) !== '.') { 
