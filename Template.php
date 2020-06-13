@@ -2229,8 +2229,8 @@ final class Template {
           // Do nothing
         } elseif (substr($journal_start, 0, 6) == "eprint") {        // This is outdated format.  Seems to not exists now
           if (substr($journal_start, 0, 13) == "eprint arxiv:") {      //@codeCoverageIgnore
-            $this->add_if_new('class', @$record->arxivclass);          //@codeCoverageIgnore
-            $this->add_if_new('arxiv', substr($journal_start, 13));    //@codeCoverageIgnore
+            if (isset($record->arxivclass)) $this->add_if_new('class', (string) @$record->arxivclass);  //@codeCoverageIgnore
+            $this->add_if_new('arxiv', substr($journal_start, 13));                                     //@codeCoverageIgnore
           }
         } else {
           $this->add_if_new('journal', $journal_string[0]);
@@ -2616,13 +2616,14 @@ final class Template {
           // The best location is already linked to by the doi link
           return 'publisher';
         }
+        if (!isset($best_location->evidence)) return 'nothing';
        // This bug report is closed.  Hpoing for the best.
        // if (@$best_location->evidence == 'oa repository (via OAI-PMH title and first author match)' ) {
        //   // false positives are too common https://github.com/Impactstory/oadoi/issues/121
        //   report_warning("Ignored a low-quality OA match on a repository via OAI-PMH for DOI: " . echoable($doi)); // @codeCoverageIgnore
        //   return 'unreliable';                                                                                     // @codeCoverageIgnore
        // }
-        if (@$oa->journal_name == "Cochrane Database of Systematic Reviews" ) {
+        if (isset($oa->journal_name) && $oa->journal_name == "Cochrane Database of Systematic Reviews" ) {
           report_warning("Ignored a OA from Cochrane Database of Systematic Reviews for DOI: " . echoable($doi)); // @codeCoverageIgnore
           return 'unreliable';                                                                                    // @codeCoverageIgnore
         }
@@ -2803,8 +2804,8 @@ final class Template {
         $result = @json_decode($string, FALSE);
         if (isset($result)) {
           if (isset($result->totalItems)) {
-            if ($result->totalItems === 1 && isset($result->items[0]) && isset($result->items[0]->id) ) {
-              $gid=$result->items[0]->id;
+            if ($result->totalItems === 1 && isset($result->items) && isset($result->items[0]) && isset($result->items[0]->id) ) {
+              $gid = (string) $result->items[0]->id;
               $url = 'https://books.google.com/books?id=' . $gid;
             } else {
               report_info("No results for Google API search $url_token");
@@ -3001,11 +3002,11 @@ final class Template {
       foreach ($this->param as $param_key => $p) {
         if ($need_one && !empty($p->param)) {
           if (preg_match('~^\s*(https?://|www\.)\S+~', $p->param)) { # URL ending ~ xxx.com/?para=val
-            $this->param[$param_key]->val = $p->param . '=' . $p->val;
+            $this->param[$param_key]->val = $p->param . '=' . (string) @$p->val;
             $this->param[$param_key]->param = 'url';
             $this->param[$param_key]->eq = ' = '; // Upgrade it to nicely spread out
             $need_one = FALSE;
-            if (stripos($p->val, 'books.google.') !== FALSE) {
+            if (stripos((string) @$p->val, 'books.google.') !== FALSE) {
               $this->change_name_to('cite book');
             }
           }
