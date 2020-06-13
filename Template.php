@@ -2229,7 +2229,7 @@ final class Template {
           // Do nothing
         } elseif (substr($journal_start, 0, 6) == "eprint") {        // This is outdated format.  Seems to not exists now
           if (substr($journal_start, 0, 13) == "eprint arxiv:") {      //@codeCoverageIgnore
-            if (isset($record->arxivclass)) $this->add_if_new('class', (string) @$record->arxivclass);  //@codeCoverageIgnore
+            if (isset($record->arxivclass)) $this->add_if_new('class', (string) $record->arxivclass);  //@codeCoverageIgnore
             $this->add_if_new('arxiv', substr($journal_start, 13));                                     //@codeCoverageIgnore
           }
         } else {
@@ -2253,7 +2253,7 @@ final class Template {
       if (isset($record->identifier)) { // Sometimes arXiv is in journal (see above), sometimes here in identifier
         foreach ($record->identifier as $recid) {
           if(strtolower(substr($recid, 0, 6)) === 'arxiv:') {
-             $this->add_if_new('class', @$record->arxivclass);
+             if (isset($record->arxivclass)) $this->add_if_new('class', (string) $record->arxivclass);
              $this->add_if_new('arxiv', substr($recid, 6));
           }
         }
@@ -2627,8 +2627,13 @@ final class Template {
           report_warning("Ignored a OA from Cochrane Database of Systematic Reviews for DOI: " . echoable($doi)); // @codeCoverageIgnore
           return 'unreliable';                                                                                    // @codeCoverageIgnore
         }
-        $oa_url = @$best_location->url_for_landing_page ? @$best_location->url_for_landing_page : @$best_location->url;
-        if (!$oa_url) return 'nothing';
+        if (isset($best_location->url_for_landing_page)) {
+          $oa_url = (string) $best_location->url_for_landing_page;
+        } elseif (isset($best_location->url)) {
+          $oa_url = (string) $best_location->url;
+        } else {
+          return 'nothing';
+        }
 
         if (stripos($oa_url, 'semanticscholar.org') !== FALSE) return 'semanticscholar';  // Limit semanticscholar to licenced only - use API call instead
         if (stripos($oa_url, 'citeseerx') !== FALSE) return 'citeseerx'; //is currently blacklisted due to copyright concerns
@@ -3002,11 +3007,13 @@ final class Template {
       foreach ($this->param as $param_key => $p) {
         if ($need_one && !empty($p->param)) {
           if (preg_match('~^\s*(https?://|www\.)\S+~', $p->param)) { # URL ending ~ xxx.com/?para=val
-            $this->param[$param_key]->val = $p->param . '=' . (string) @$p->val;
+            $val = isset($p->val) : (string) $p->val ? '';
+            $param = (string) $p->param;
+            $this->param[$param_key]->val =  $param . '=' . $val;
             $this->param[$param_key]->param = 'url';
             $this->param[$param_key]->eq = ' = '; // Upgrade it to nicely spread out
             $need_one = FALSE;
-            if (stripos((string) @$p->val, 'books.google.') !== FALSE) {
+            if (stripos($param . $val, 'books.google.') !== FALSE) {
               $this->change_name_to('cite book');
             }
           }
