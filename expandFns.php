@@ -108,7 +108,7 @@ function wikify_external_text(string $title) : string {
   if (mb_substr($title, -6) == "&nbsp;") $title = mb_substr($title, 0, -6);
   // Special code for ending periods
   while (mb_substr($title, -2) == "..") {
-    $title = mb_substr($title, 0, -1);
+    $title = mb_substr($title, 0, -1); // @codeCoverageIgnore
   }
   if (mb_substr($title, -1) == ".") { // Ends with a period
    if (mb_substr_count($title, '.') === 1) { // Only one period
@@ -454,10 +454,6 @@ function remove_brackets(string $string) : string {
 
 // ============================================= Wikipedia functions ======================================
 
-/**
- * Cannot really test in TRAVIS
- * @codeCoverageIgnore
- */
 function throttle (int $min_interval) : void {
   static $last_write_time = 0;
   $time_since_last_write = time() - $last_write_time;
