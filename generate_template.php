@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 // outputs a Wikipedia reference from a DOI 
 // usage: https://tools.wmflabs.org/citations/generate_template.php?doi=<DOI>
 

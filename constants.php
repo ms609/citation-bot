@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 // all new constant files need listed here
 require_once('constants/bad_data.php');   
 require_once('constants/capitalization.php');   

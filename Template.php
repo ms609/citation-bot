@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 /*
  * Template has methods to handle most aspects of citation template
  * parsing, handling, and expansion.
