@@ -42,7 +42,8 @@ function entrez_api(array $ids, array $templates, string $db) : bool {
         break;  case "AuthorList":
           $i = 0;
           foreach ($item->Item as $subItem) {
-            if (author_is_human((string) $subItem)) {
+            $subItem = (string) $subItem;
+            if (author_is_human($subItem)) {
               $jr_test = junior_test($subItem);
               $subItem = $jr_test[0];
               $junior = $jr_test[1];
@@ -57,7 +58,7 @@ function entrez_api(array $ids, array $templates, string $db) : bool {
             } else {
               // We probably have a committee or similar.  Just use 'author$i'.
               $i++;
-              $this_template->add_if_new("author$i", (string) $subItem, 'entrez');
+              $this_template->add_if_new("author$i", $subItem, 'entrez');
             }
           }
         break; case "LangList": case 'ISSN':
@@ -165,7 +166,9 @@ function arxiv_api(array $ids, array $templates) : bool {
     }
     $this_template->add_if_new("title", $the_title, 'arxiv'); // Formatted by add_if_new
     $this_template->add_if_new("class", (string) $entry->category["term"], 'arxiv');
-    $this_template->add_if_new("year", date("Y", strtotime((string)$entry->published)), 'arxiv');
+    if ($int_time = strtotime((string)$entry->published)) { 
+       $this_template->add_if_new("year", date("Y", $int_time), 'arxiv');
+    }
 
     if ($entry->arxivjournal_ref) {
       $journal_data = trim((string) $entry->arxivjournal_ref); // this is human readble text
@@ -518,8 +521,8 @@ function expand_by_doi(Template $template, bool $force = FALSE) : bool {
       }
       $template->add_if_new('isbn', (string) $crossRef->isbn, 'crossref');
       $template->add_if_new('journal', (string) $crossRef->journal_title); // add_if_new will format the title
-      if ($crossRef->volume > 0) $template->add_if_new('volume', (string) $crossRef->volume, 'crossref');
-      if (((strpos($crossRef->issue, '-') > 0 || (integer) $crossRef->issue > 1))) {
+      if ((integer)$crossRef->volume > 0) $template->add_if_new('volume', (string) $crossRef->volume, 'crossref');
+      if (((strpos((string) $crossRef->issue, '-') > 0 || (integer) $crossRef->issue > 1))) {
       // "1" may refer to a journal without issue numbers,
       //  e.g. 10.1146/annurev.fl.23.010191.001111, as well as a genuine issue 1.  Best ignore.
         $template->add_if_new('issue', (string) $crossRef->issue, 'crossref');
