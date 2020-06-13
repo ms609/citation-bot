@@ -349,8 +349,8 @@ function process_zotero_response(?string $zotero_response, Template &$template, 
   $result = (object) $result ;
   
   if (!isset($result->title)) {
-    report_warning("Did not get a title for URL ". $url . ": " . $zotero_response);
-    return FALSE;
+    report_warning("Did not get a title for URL ". $url . ": " . $zotero_response);  // @codeCoverageIgnore
+    return FALSE;                                                                    // @codeCoverageIgnore
   }
   if (substr(strtolower(trim($result->title)), 0, 9) == 'not found') {
     report_info("Could not resolve URL ". $url);

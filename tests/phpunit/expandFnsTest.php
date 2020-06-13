@@ -146,6 +146,9 @@ final class expandFnsTest extends testBaseClass {
   public function testTrailingPeriods5() : void {
     $this->assertSame('Blahy', wikify_external_text('Blahy.'));
   }
+  public function testTrailingPeriods6() : void {
+    $this->assertSame('Blahy', wikify_external_text('Blahy............'));
+  }
   
   public function testBrackets() : void {
     $this->assertSame("ABC",remove_brackets('{}{}{A[][][][][]B()(){}[]][][[][C][][][[()()'));
@@ -184,5 +187,10 @@ final class expandFnsTest extends testBaseClass {
     $this->assertSame('X Time Out London', title_capitalization(title_case('X Time out London'), TRUE));
     $this->assertSame('X z/Journal', title_capitalization(title_case('X Z/journal'), TRUE));
     $this->assertSame('X ZooKeys', title_capitalization(title_case('X zookeys'), TRUE));
+  }
+  
+  public function testThrottle() : void { // Just runs over the code and basically does nothing
+    $this->assertNull(throttle(1));
+    $this->assertNull(throttle(3));
   }
 }

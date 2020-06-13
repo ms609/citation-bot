@@ -454,10 +454,6 @@ function remove_brackets(string $string) : string {
 
 // ============================================= Wikipedia functions ======================================
 
-/**
- * Cannot really test in TRAVIS
- * @codeCoverageIgnore
- */
 function throttle (int $min_interval) : void {
   static $last_write_time = 0;
   $time_since_last_write = time() - $last_write_time;
