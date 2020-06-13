@@ -92,8 +92,8 @@ function query_ieee_webpages(array $templates) : void {
     if ($template->blank('doi') && preg_match("~^https://ieeexplore\.ieee\.org/document/(\d{5,})$~", $template->get($kind), $matches_url)) {
        usleep(100000); // 0.10 seconds
        curl_setopt($ch_ieee, CURLOPT_URL, $template->get($kind));
-       $return = @curl_exec($ch_ieee);
-       if ($return !== FALSE && preg_match_all('~"doi":"(10\.\d{4}/[^\s"]+)"~', $return, $matches, PREG_PATTERN_ORDER)) {
+       $return = (string) @curl_exec($ch_ieee);
+       if ($return !== "" && preg_match_all('~"doi":"(10\.\d{4}/[^\s"]+)"~', $return, $matches, PREG_PATTERN_ORDER)) {
           $dois = array_unique($matches[1]);
           if (count($dois) === 1) {
             if ($template->add_if_new('doi', $dois[0])) {
@@ -231,8 +231,8 @@ function zotero_request(string $url) : ?string {
   curl_setopt($ch_zotero, CURLOPT_POSTFIELDS, $url);  
   if ($BLOCK_ZOTERO_SEARCH) return NULL;
   
-  $zotero_response = curl_exec($ch_zotero);
-  if ($zotero_response === FALSE) {
+  $zotero_response = (string) curl_exec($ch_zotero);
+  if ($zotero_response == '') {
     // @codeCoverageIgnoreStart
     report_warning(curl_error($ch_zotero) . "   For URL: " . $url);
     if (strpos(curl_error($ch_zotero), 'timed out after') !== FALSE) {
