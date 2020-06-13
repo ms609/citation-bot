@@ -53,7 +53,7 @@ class Page {
     
     $details = $my_details;
     if (isset($details->invalid)) {
-      report_warning("Page invalid: ". $details->invalidreason);
+      report_warning("Page invalid: " . isset($details->invalidreason) ? (string) $details->invalidreason : '');
       return FALSE;
     }
     if ( !isset($details->touched) || !isset($details->lastrevid)) {
@@ -61,7 +61,11 @@ class Page {
        return FALSE;
     }
     
-    $this->title = $details->title;
+    if (!isset($details->title)) {
+       report_warning("Could not even get the page title.");
+       return FALSE;
+    }
+    $this->title = (string) $details->title;
     $this->lastrevid = isset($details->lastrevid) ? $details->lastrevid : NULL;
 
     $this->text = @file_get_contents(WIKI_ROOT . '?' . http_build_query(['title' => $title, 'action' =>'raw']));
