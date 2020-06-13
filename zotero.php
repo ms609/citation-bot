@@ -106,8 +106,8 @@ function query_ieee_webpages(array $templates) : void {
     } elseif ($template->has('doi') && preg_match("~^https://ieeexplore\.ieee\.org/document/(\d{5,})$~", $template->get($kind), $matches_url) && doi_works($template->get('doi'))) {
        usleep(100000); // 0.10 seconds
        curl_setopt($ch_ieee, CURLOPT_URL, $template->get($kind));
-       $return = @curl_exec($ch_ieee);
-       if ($return !== FALSE && strpos($return, "<title> -  </title>") !== FALSE) {
+       $return = (string) @curl_exec($ch_ieee);
+       if ($return != "" && strpos($return, "<title> -  </title>") !== FALSE) {
          report_forget("Existing IEEE no longer works - dropping URL"); // @codeCoverageIgnore
          $template->forget($kind);                                      // @codeCoverageIgnore
        }

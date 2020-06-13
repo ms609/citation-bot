@@ -50,7 +50,7 @@ $json = @file_get_contents($url);
 if ($json === FALSE) {
   report_error(' Error getting page list');
 }    
-$array = @json_decode($json, true);
+$array = @json_decode($json, TRUE);
 if ($array === FALSE || !isset($array['parse']['links'])) {
   report_error(' Error interpreting page list');
 }
