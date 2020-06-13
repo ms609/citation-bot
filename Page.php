@@ -46,8 +46,8 @@ class Page {
       $my_details = $p;
     }
     if (!isset($my_details)) {
-      report_warning("Page fetch error - could not even get details");
-      return FALSE;
+      report_warning("Page fetch error - could not even get details"); // @codeCoverageIgnore
+      return FALSE;                                                    // @codeCoverageIgnore
     }
     $this->read_at = isset($details->curtimestamp) ? $details->curtimestamp : NULL;
     
@@ -62,8 +62,8 @@ class Page {
     }
     
     if (!isset($details->title)) {
-       report_warning("Could not even get the page title.");
-       return FALSE;
+       report_warning("Could not even get the page title.");  // @codeCoverageIgnore
+       return FALSE;                                          // @codeCoverageIgnore
     }
     $this->title = (string) $details->title;
     $this->lastrevid = isset($details->lastrevid) ? $details->lastrevid : NULL;
