@@ -2317,18 +2317,18 @@ final class Template {
                   . "?q=$options&fl=arxiv_class,author,bibcode,doi,doctype,identifier,"
                   . "issue,page,pub,pubdate,title,volume,year";
       curl_setopt($ch, CURLOPT_URL, $adsabs_url);
-      $return = curl_exec($ch);
+      $return = (string) @curl_exec($ch);
       if (502 === curl_getinfo($ch, CURLINFO_HTTP_CODE)) {
         // @codeCoverageIgnoreStart
         sleep(4);
-        $return = curl_exec($ch);
+        $return = (string) @curl_exec($ch);
         if (502 === curl_getinfo($ch, CURLINFO_HTTP_CODE) && getenv('TRAVIS')) {
            sleep(20); // better slow than not at all in TRAVIS
-           $return = curl_exec($ch);
+           $return = (string) @curl_exec($ch);
         }
         // @codeCoverageIgnoreEnd
       }
-      if ($return === FALSE) {
+      if ($return == "") {
         // @codeCoverageIgnoreStart
         $exception = curl_error($ch);
         $number = curl_errno($ch);
