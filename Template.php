@@ -4869,7 +4869,7 @@ final class Template {
       if ($pos = strrpos($try, '.')) {
        $extension = substr($try, $pos);
        if (in_array(strtolower($extension), array('.htm', '.html', '.jpg', '.jpeg', '.pdf', '.png', '.xml', '.full'))) {
-         $try = substr($try, 0, $pos));
+         $try = substr($try, 0, $pos);
          $trial[] = $try;
          $changed = TRUE;
        }
