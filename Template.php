@@ -2634,6 +2634,7 @@ final class Template {
         } else {
           return 'nothing';
         }
+        if (!$ao_url) return 'nothing';
 
         if (stripos($oa_url, 'semanticscholar.org') !== FALSE) return 'semanticscholar';  // Limit semanticscholar to licenced only - use API call instead
         if (stripos($oa_url, 'citeseerx') !== FALSE) return 'citeseerx'; //is currently blacklisted due to copyright concerns
