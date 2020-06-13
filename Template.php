@@ -1261,7 +1261,7 @@ final class Template {
       $url      = $this->get($matches[1]);
     } else {
       $url = $url_sent;
-      $url_type = NULL;
+      $url_type = 'An invalid value';
     }
     
     if (strtolower(substr( $url, 0, 6 )) === "ttp://" || strtolower(substr( $url, 0, 7 )) === "ttps://") { // Not unusual to lose first character in copy and paste
@@ -1879,11 +1879,11 @@ final class Template {
       if (!($result = @simplexml_load_file($url)->query_result->body->query)){
         report_warning("Error loading simpleXML file from CrossRef.");  // @codeCoverageIgnore
       } elseif ($result['status'] == 'malformed') {
-        report_warning("Cannot search CrossRef: " . echoable($result->msg));  // @codeCoverageIgnore
+        report_warning("Cannot search CrossRef: " . echoable((string) $result->msg));  // @codeCoverageIgnore
       } elseif ($result["status"] == "resolved") {
         if (!isset($result->doi) || is_array($result->doi)) return FALSE; // Never seen array, but pays to be paranoid
         report_info(" Successful!");
-        return $this->add_if_new('doi', $result->doi);
+        return $this->add_if_new('doi', (string) $result->doi);
       }
     }
     return FALSE;
@@ -2886,7 +2886,7 @@ final class Template {
       $this->google_book_details($gid[1]);
       return TRUE;
     }
-    if (preg_match("~^(.+\.google\.com/books/edition/_/)([a-zA-Z0-9]+)(\?.+|)$~", $url, $gid)) {
+    if (preg_match("~^(.+\.google\.com/books/edition/_/)([a-zA-Z0-9]+)(\?.+|)$~", (string) $url, $gid)) {
       if ($url_type && $gid[3] === '?hl=en') {
         report_forget('Standardized Google Books URL');
         $this->set($url_type, $gid[1] . $gid[2]);
@@ -4999,7 +4999,7 @@ final class Template {
   }
   
   // Retrieve properties of template
-  public function first_author() : ?string {
+  public function first_author() : string {
     foreach (array('author', 'author1', 'authors', 'vauthors') as $auth_param) {
       $author = $this->get($auth_param);
       if ($author) return $author;
@@ -5012,17 +5012,17 @@ final class Template {
         return ($surname . ', ' . $forenames);
       }
     }
-    return NULL;
+    return '';
   }
 
   public function initial_author_params() : array { return $this->initial_author_params; }
   
-  protected function first_surname() : ?string {
+  protected function first_surname() : string {
     // Fetch the surname of the first author only
     if (preg_match("~[^.,;\s]{2,}~u", $this->first_author(), $first_author)) {
       return $first_author[0];
     } else {
-      return NULL;
+      return '';
     }
   }
 

@@ -15,19 +15,19 @@ function sanitize_doi(string $doi) : string {
   $doi = preg_replace('~^doi:~i', '', $doi); // Strip doi: part if present
   $doi = str_replace("+" , "%2B", $doi); // plus signs are valid DOI characters, but in URLs are "spaces"
   $doi = str_replace(HTML_ENCODE_DOI, HTML_DECODE_DOI, trim(urldecode($doi)));
-  $extension = substr($doi, strrpos($doi, '.'));
+  $extension = substr($doi, (int) strrpos($doi, '.'));
   if (in_array(strtolower($extension), array('.htm', '.html', '.jpg', '.jpeg', '.pdf', '.png', '.xml', '.full'))) {
       $doi = substr($doi, 0, (strrpos($doi, $extension)));
   }
-  $extension = substr($doi, strrpos($doi, '#'));
+  $extension = substr($doi, (int) strrpos($doi, '#'));
   if (strpos(strtolower($extension), '#page_scan_tab_contents') === 0) {
       $doi = substr($doi, 0, (strrpos($doi, $extension)));
   }
-  $extension = substr($doi, strrpos($doi, ';'));
+  $extension = substr($doi, (int)strrpos($doi, ';'));
   if (strpos(strtolower($extension), ';jsessionid') === 0) {
       $doi = substr($doi, 0, (strrpos($doi, $extension)));
   }
-  $extension = substr($doi, strrpos($doi, '/'));
+  $extension = substr($doi, (int) strrpos($doi, '/'));
   if (in_array(strtolower($extension), array('/abstract', '/full', '/pdf', '/epdf', '/asset/', '/summary', '/short'))) {
       $doi = substr($doi, 0, (strrpos($doi, $extension)));
   }
@@ -168,6 +168,7 @@ function restore_italics (string $text) : string {
 
 function sanitize_string(?string $str) : string {
   // ought only be applied to newly-found data.
+  if ($str === NULL) return '';
   if (strtolower(trim($str)) == 'science (new york, n.y.)') return 'Science';
   $replacement = [];
   $placeholder = [];
@@ -193,6 +194,7 @@ function truncate_publisher(string $p) : string {
 }
 
 function str_remove_irrelevant_bits(?string $str) : string {
+  if ($str == NULL) return '';
   $str = trim($str);
   $str = preg_replace(REGEXP_PLAIN_WIKILINK, "$1", $str);   // Convert [[X]] wikilinks into X
   $str = preg_replace(REGEXP_PIPED_WIKILINK, "$2", $str);   // Convert [[Y|X]] wikilinks into X
@@ -229,6 +231,7 @@ function titles_are_similar(string $title1, string $title2) : bool {
 
 
 function de_wikify(?string $string) : string {
+  if ($string == NULL) return '';
   return str_replace(Array("[", "]", "'''", "''", "&"), Array("", "", "'", "'", ""), preg_replace(Array("~<[^>]*>~", "~\&[\w\d]{2,7};~", "~\[\[[^\|\]]*\|([^\]]*)\]\]~"), Array("", "", "$1"),  $string));
 }
 
@@ -557,6 +560,7 @@ function tidy_date(string $string) :string {
 }
 
 function not_bad_10_1093_doi(?string $url) : bool { // We assume dois are bad, unless on good list
+  if ($url == NULL) return TRUE;
   if(!preg_match('~10.1093/([^/]+)/~u', $url, $match)) return TRUE;
   $test = strtolower($match[1]);
   // March 2019 Good list
@@ -649,7 +653,7 @@ function check_doi_for_jstor(string $doi, Template &$template) : void {
   $test_url = "https://www.jstor.org/citation/ris/" . $doi;
   $ch = curl_init($test_url);
   curl_setopt($ch, CURLOPT_RETURNTRANSFER, TRUE);
-  $ris = @curl_exec($ch);
+  $ris = (string) @curl_exec($ch);
   $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
   curl_close($ch);
   if ($httpCode == 200 &&
@@ -679,5 +683,5 @@ function can_safely_modify_dashes(string $value) : bool {
 }
 
 function str_i_same(?string $str1, ?string $str2) : bool {
-   return (bool) (0 === strcasecmp($str1, $str2));
+   return (bool) (0 === strcasecmp((string) $str1, (string) $str2));
 }
