@@ -1496,7 +1496,7 @@ final class TemplateTest extends testBaseClass {
   public function testLongAuthorLists() : void {
   $this->requires_arxiv(function() : void {
     $text = '{{cite web | https://arxiv.org/PS_cache/arxiv/pdf/1003/1003.3124v2.pdf|doi=<!--Do not add-->}}';
-    $expanded = $this->process_citation($text)
+    $expanded = $this->process_citation($text);
     $this->assertSame('The ATLAS Collaboration', $expanded->first_author());
    });
   }
