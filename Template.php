@@ -2072,7 +2072,11 @@ final class Template {
     }
     // @codeCoverageIgnoreEnd
 
-    return $xml ? array((string)$xml->IdList->Id[0], (string)$xml->Count, $terms) : array(NULL, 0);// first results; number of results
+    if (isset($xml->IdList->Id[0]) && isset($xml->Count)) {
+      return array((string)$xml->IdList->Id[0], (string)$xml->Count, $terms);// first results; number of results
+    } else {
+      return array(NULL, 0);
+    }
   }
 
   public function expand_by_adsabs() : bool {
