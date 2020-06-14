@@ -5155,11 +5155,11 @@ final class Template {
     return FALSE;
   }
   
-  protected function param_with_index($i) : ?Parameter {
+  protected function param_with_index(int $i) : ?Parameter {
     return (isset($this->param[$i])) ? $this->param[$i] : NULL;
   }
   
-  protected function param_value($i) : ?string { // May return error if no param with index $i
+  protected function param_value(int $i) : ?string { // May return error if no param with index $i
     return $this->param_with_index($i)->val;
   }
   
