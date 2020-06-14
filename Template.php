@@ -4697,7 +4697,7 @@ final class Template {
         ($this->get('issue') == $this->get_without_comments_and_placeholders('issue')) &&
         ($this->get('volume') == $this->get_without_comments_and_placeholders('volume'))) { // No comments to flag problems
         $crossRef = query_crossref($this->get_without_comments_and_placeholders('doi'));
-        if ($crossRef !== FALSE) {
+        if ($crossRef) {
           $orig_data = trim($this->get('volume'));
            $possible_issue = trim((string) @$crossRef->issue);
            $possible_volume = trim((string) @$crossRef->volume);
