@@ -1507,7 +1507,7 @@ final class Template {
         }
         curl_close($ch);
       }
-      if (preg_match("~^/(?:\w+/)*(\d{5,})[^\d%\-]*(?:\?|$)~", substr($url, stripos($url, 'jstor.org') + 9), $match) ||
+      if (preg_match("~^/(?:\w+/)*(\d{5,})[^\d%\-]*(?:\?|$)~", substr($url, (int) stripos($url, 'jstor.org') + 9), $match) ||
                 preg_match("~^https?://(?:www\.)?jstor\.org\S+(?:stable|discovery)/(?:10\.7591/|)(\d{5,}|(?:j|J|histirel|jeductechsoci|saoa)\.[a-zA-Z0-9\.]+)$~", $url, $match)) {
         if (is_null($url_sent)) {
           $this->forget($url_type);
@@ -4583,7 +4583,7 @@ final class Template {
           }
           if (   (mb_substr_count($value, "–") === 1) // Exactly one EN_DASH.  
               && can_safely_modify_dashes($value)) { 
-            $the_dash = mb_strpos($value, "–"); // ALL must be mb_ functions because of long dash
+            $the_dash = (int) mb_strpos($value, "–"); // ALL must be mb_ functions because of long dash
             $part1 = trim(mb_substr($value, 0, $the_dash));
             $part2 = trim(mb_substr($value, $the_dash + 1));
             if ($part1 === $part2) {
