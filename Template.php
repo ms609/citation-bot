@@ -2317,18 +2317,18 @@ final class Template {
                   . "?q=$options&fl=arxiv_class,author,bibcode,doi,doctype,identifier,"
                   . "issue,page,pub,pubdate,title,volume,year";
       curl_setopt($ch, CURLOPT_URL, $adsabs_url);
-      $return = curl_exec($ch);
+      $return = (string) @curl_exec($ch);
       if (502 === curl_getinfo($ch, CURLINFO_HTTP_CODE)) {
         // @codeCoverageIgnoreStart
         sleep(4);
-        $return = curl_exec($ch);
+        $return = (string) @curl_exec($ch);
         if (502 === curl_getinfo($ch, CURLINFO_HTTP_CODE) && getenv('TRAVIS')) {
            sleep(20); // better slow than not at all in TRAVIS
-           $return = curl_exec($ch);
+           $return = (string) @curl_exec($ch);
         }
         // @codeCoverageIgnoreEnd
       }
-      if ($return === FALSE) {
+      if ($return == "") {
         // @codeCoverageIgnoreStart
         $exception = curl_error($ch);
         $number = curl_errno($ch);
@@ -2933,7 +2933,7 @@ final class Template {
     $i = 0;
     if ($this->blank(array_merge(EDITOR1_ALIASES, AUTHOR1_ALIASES, ['publisher']))) { // Too many errors in gBook database to add to existing data.   Only add if blank.
       foreach ($xml->dc___creator as $author) {
-        $this->validate_and_add('author' . ++$i, str_replace("___", ":", $author), '', '', TRUE);
+        $this->validate_and_add('author' . ++$i, str_replace("___", ":", (string) $author), '', '', TRUE);
       }
     }
     
