@@ -95,14 +95,14 @@ class WikipediaBot {
       ]);
   }
   
-  public function fetch(array $params, string $method, int $depth = 1) {
+  public function fetch(array $params, string $method, int $depth = 1) : ?object {
     if ($depth > 1) sleep($depth);
-    if ($depth > 5) return FALSE;
+    if ($depth > 5) return NULL;
     if (!$this->reset_curl()) {
       // @codeCoverageIgnoreStart
       curl_close($this->ch);
       report_error('Could not initialize CURL resource: ' . echoable(curl_error($this->ch)));
-      return FALSE;
+      return NULL;
       // @codeCoverageIgnoreEnd
     }
     $params['format'] = 'json';
@@ -122,8 +122,8 @@ class WikipediaBot {
           set_time_limit(45);
           $data = (string) @curl_exec($this->ch);
           if (!$data) {
-            report_error("Curl error: " . echoable(curl_error($this->ch)));         // @codeCoverageIgnore
-            return FALSE;                                                           // @codeCoverageIgnore
+            report_error("Curl error: " . echoable(curl_error($this->ch)));        // @codeCoverageIgnore
+            return NULL;                                                           // @codeCoverageIgnore
           }
           $ret = @json_decode($data);
           set_time_limit(120);
@@ -134,7 +134,7 @@ class WikipediaBot {
             return $this->fetch($params, $method, $depth+1);
             // @codeCoverageIgnoreEnd
           }
-          return ($this->ret_okay($ret)) ? $ret : FALSE;
+          return ($this->ret_okay($ret)) ? $ret : NULL;
           
         case 'post':
           curl_setopt_array($this->ch, [
@@ -169,10 +169,10 @@ class WikipediaBot {
       report_warning("Exception caught!\n");
       report_info("Response: ". $E->getMessage());
     }
-    return FALSE;
+    return NULL;
   }
   
-  public function write_page(string $page, string $text, string $editSummary, $lastRevId = NULL, $startedEditing = NULL) : bool {
+  public function write_page(string $page, string $text, string $editSummary, ?int $lastRevId, ?string $startedEditing) : bool {
     $response = $this->fetch([
             'action' => 'query',
             'prop' => 'info|revisions',
