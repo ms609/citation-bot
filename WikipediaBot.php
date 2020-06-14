@@ -160,7 +160,7 @@ class WikipediaBot {
             return $this->fetch($params, $method, $depth+1);
             // @codeCoverageIgnoreEnd
           }
-          return ($this->ret_okay($ret)) ? $ret : FALSE;
+          return ($this->ret_okay($ret)) ? $ret : NULL;
 
         default:  // will only be hit if error in our code
           report_error("Unrecognized method in Fetch."); // @codeCoverageIgnore
@@ -319,7 +319,7 @@ class WikipediaBot {
     do {
       set_time_limit(20);
       $res = $this->fetch($vars, 'POST');
-      if (isset($res->query->embeddedin->ei) || $res === FALSE) {
+      if (isset($res->query->embeddedin->ei) || $res == NULL) {
         report_error('Error reading API for template/namespace: ' . echoable($template) . '/' . echoable(($namespace==99)?"Normal":$namespace));   // @codeCoverageIgnore
       } else {
         foreach($res->query->embeddedin as $page) {
