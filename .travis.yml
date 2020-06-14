@@ -41,7 +41,7 @@ matrix:           ###### ONLY ONE WITH FULL TESTING WITH IS 7.3 OTHERS ARE ALL S
       script:
         - wget -O- https://citations.toolforge.org/gitpull.php
     - stage: deploy-to-development
-      name: "UpdateWM toolforge test servers"
+      name: "Update VM toolforge test servers"
       if: branch = development AND type != pull_request
       php: 7.3
       script:
