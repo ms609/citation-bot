@@ -1513,7 +1513,7 @@ final class Template {
           $this->forget($url_type);
         }
         if ($this->get('jstor')) {
-          quieter y('report_inaction', "Not using redundant URL (jstor parameter set)");
+          quietly('report_inaction', "Not using redundant URL (jstor parameter set)");
         } else {
           quietly('report_modification', "Converting URL to JSTOR parameter " . jstor_link(urldecode($match[1])));
           $this->set('jstor', urldecode($match[1]));
