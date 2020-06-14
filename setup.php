@@ -35,8 +35,10 @@ if (!getenv('PHP_OAUTH_CONSUMER_TOKEN') && file_exists('env.php')) {
   ob_start();
   include_once('env.php');
   $env_output = trim(str_replace(['Reading authentication tokens from tools.wmflabs.org.',
-                                  'Reading authentication tokens from tools.wmflabs.org-dev.'],
-                                 ['', ''], ob_get_contents()));
+                                  'Reading authentication tokens from tools.wmflabs.org-dev.',
+                                  'Reading authentication tokens from citations.toolforge.org.',
+                                  'Reading authentication tokens from citations-dev.toolforge.org.'],
+                                 ['', '', '', ''], ob_get_contents()));
   if ($env_output) {
     ob_end_flush();  // Something unexpected, so print it out
   } else {
