@@ -95,7 +95,7 @@ class WikipediaBot {
       ]);
   }
   
-  public function fetch(array $params, string $method, int $depth = 1) {
+  public function fetch(array $params, string $method, int $depth = 1) : bool {
     if ($depth > 1) sleep($depth);
     if ($depth > 5) return FALSE;
     if (!$this->reset_curl()) {
