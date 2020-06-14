@@ -2064,15 +2064,19 @@ final class Template {
     }
     if ($xml === FALSE) {
       report_warning("no results.");
-      return array(NULL, 0);
+      return array('', 0);
     }
     if ($xml->ErrorList) { // Could look at $xml->ErrorList->PhraseNotFound for list of what was not found
       report_inline('no results.');
-      return array(NULL, 0);
+      return array('', 0);
     }
     // @codeCoverageIgnoreEnd
 
-    return $xml ? array((string)$xml->IdList->Id[0], (string)$xml->Count, $terms) : array(NULL, 0);// first results; number of results
+    if (isset($xml->IdList->Id[0]) && isset($xml->Count)) {
+      return array((string)$xml->IdList->Id[0], (int)(string)$xml->Count, $terms);// first results; number of results
+    } else {
+      return array('', 0);
+    }
   }
 
   public function expand_by_adsabs() : bool {
