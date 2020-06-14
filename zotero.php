@@ -231,7 +231,7 @@ function zotero_request(string $url) : ?string {
   curl_setopt($ch_zotero, CURLOPT_POSTFIELDS, $url);  
   if ($BLOCK_ZOTERO_SEARCH) return NULL;
   
-  $zotero_response = (string) curl_exec($ch_zotero);
+  $zotero_response = (string) @curl_exec($ch_zotero);
   if ($zotero_response == '') {
     // @codeCoverageIgnoreStart
     report_warning(curl_error($ch_zotero) . "   For URL: " . $url);
