@@ -582,7 +582,7 @@ function expand_doi_with_dx(Template $template, string $doi) : bool {
      // https://www.doi.org/registration_agencies.html  https://www.doi.org/RA_Coverage.html List of all ten doi granting agencies - many do not do journals
      // Examples of DOI usage   https://www.doi.org/demos.html
      if (strpos($doi, '10.2307') === 0) return FALSE; // jstor API is better
-     $try_to_add_it = function(string $name, $data) use($template) { // Data can be NULL, string, or array
+     $try_to_add_it = function(string $name, $data) use($template) : bool { // Data can be NULL, string, or array
        if ($template->has($name)) return FALSE; // Not worth updating based upon DX
        if (is_null($data)) return FALSE;
        while (is_array($data)) {
@@ -590,7 +590,7 @@ function expand_doi_with_dx(Template $template, string $doi) : bool {
          $data = $data['0'];                                        // @codeCoverageIgnore
        }
        if ($data == '') return FALSE;
-       $template->add_if_new($name, (string) $data, 'dx');
+       return $template->add_if_new($name, (string) $data, 'dx');
      };
      if (!$doi) return FALSE;
      $ch = curl_init();
