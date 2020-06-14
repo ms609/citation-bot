@@ -1493,7 +1493,7 @@ final class Template {
         curl_setopt($ch, CURLOPT_HEADER, 1);
         curl_setopt($ch, CURLOPT_NOBODY, 1);
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, TRUE);
-        if (curl_exec($ch) !== FALSE) {
+        if (@curl_exec($ch)) {
           $redirect_url = curl_getinfo($ch, CURLINFO_REDIRECT_URL);
           if (strpos($redirect_url, "jstor.org/stable/")) {
             $url = $redirect_url;
