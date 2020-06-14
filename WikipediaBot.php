@@ -312,7 +312,7 @@ class WikipediaBot {
       "list" => "embeddedin",
       "eilimit" => "5000",
       "eititle" => "Template:" . $template,
-      "einamespace" => ($namespace==99)?"":$namespace,
+      "einamespace" => ($namespace==99)?"":(string)$namespace,
     );
     $list = ['title' => NULL];
     
@@ -320,7 +320,7 @@ class WikipediaBot {
       set_time_limit(20);
       $res = $this->fetch($vars, 'POST');
       if (isset($res->query->embeddedin->ei) || $res == NULL) {
-        report_error('Error reading API for template/namespace: ' . echoable($template) . '/' . echoable(($namespace==99)?"Normal":$namespace));   // @codeCoverageIgnore
+        report_error('Error reading API for template/namespace: ' . echoable($template) . '/' . echoable(($namespace==99)?"Normal":(string)$namespace));   // @codeCoverageIgnore
       } else {
         foreach($res->query->embeddedin as $page) {
           $list["title"][] = $page->title;
