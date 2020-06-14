@@ -8,8 +8,8 @@
 
 ## GitHub repository details
 There are one to two main branches of the bot: 
-- The **master** code is implemented at https://tools.wmflabs.org/citations/, and is intended for public use.
-- When needed, the **development** branch is intended for major restructuring and testing, and is implemented at https://tools.wmflabs.org/citations-dev/ .  
+- The **master** code is implemented at https://citations.toolforge.org/, and is intended for public use.
+- When needed, the **development** branch is intended for major restructuring and testing, and is implemented at https://citations-dev.toolforge.org/ .  
 
 ## Overview
 
@@ -23,7 +23,7 @@ This is more properly a bot-gadget-tool combination. The parts are:
   All activity takes place on Tool Labs.
 * Citation expander (:en:Mediawiki:Gadget-citations.js) + gadgetapi.php. This
   is comprises an Ajax front-end in the on-wiki gadget and a PHP backend API.
-* [Generate template](https://github.com/ms609/citation-bot/blob/master/generate_template.php) creates the wiki reference given an identifier (for example given a doi: <https://tools.wmflabs.org/citations/generate_template.php?doi=10.1109/SCAM.2013.6648183>)
+* [Generate template](https://github.com/ms609/citation-bot/blob/master/generate_template.php) creates the wiki reference given an identifier (for example given a doi: <https://citations.toolforge.org/generate_template.php?doi=10.1109/SCAM.2013.6648183>)
 
 Bugs and requested changes are listed here: https://en.wikipedia.org/wiki/User_talk:Citation_bot .
 
@@ -70,7 +70,7 @@ To run the bot from a new environment, you will need to create an `env.php` file
 
     chmod o-rwx env.php
 
- To run the bot as a webservice from WMF Tool Forge:
+ To run the bot as a webservice from WM Toolforge:
 
     become citations[-dev]
     webservice stop
