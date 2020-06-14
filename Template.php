@@ -3499,11 +3499,11 @@ final class Template {
     return in_array($this->wikiname(), TEMPLATES_WE_PROCESS);
   }
   
-  public function tidy_parameter($param) {
+  public function tidy_parameter(string $param) : void {
     // Note: Parameters are treated in alphabetical order, except where one
     // case necessarily continues from the previous (without a return).
     
-    if (!$param) return FALSE;
+    if (!$param) return;
     
     if ($param === 'postscript' && $this->wikiname() !== 'citation' && preg_match('~^(?:# # # CITATION_BOT_PLACEHOLDER_COMMENT \d+ # # #)\s*(?:# # # CITATION_BOT_PLACEHOLDER_TEMPLATE \d+ # # #|)$~i', $this->get('postscript'))) {
        // Misleading -- comments of "NONE" etc mean nothing!
@@ -3514,7 +3514,7 @@ final class Template {
     }
     
     if (mb_stripos($this->get($param), 'CITATION_BOT_PLACEHOLDER_COMMENT') !== FALSE) {
-      return FALSE;  // We let comments block the bot
+      return;  // We let comments block the bot
     }
     
     if($this->has($param)) {
@@ -3559,7 +3559,7 @@ final class Template {
  
     if (!preg_match('~(\D+)(\d*)~', $param, $pmatch)) {
       report_warning("Unrecognized parameter name format in $param");  // @codeCoverageIgnore
-      return FALSE;                                                    // @codeCoverageIgnore
+      return;                                                          // @codeCoverageIgnore
     } else {
       switch ($pmatch[1]) {
         // Parameters are listed mostly alphabetically, though those with numerical content are grouped under "year"
@@ -4697,7 +4697,7 @@ final class Template {
         ($this->get('issue') == $this->get_without_comments_and_placeholders('issue')) &&
         ($this->get('volume') == $this->get_without_comments_and_placeholders('volume'))) { // No comments to flag problems
         $crossRef = query_crossref($this->get_without_comments_and_placeholders('doi'));
-        if ($crossRef !== FALSE) {
+        if ($crossRef) {
           $orig_data = trim($this->get('volume'));
            $possible_issue = trim((string) @$crossRef->issue);
            $possible_volume = trim((string) @$crossRef->volume);
