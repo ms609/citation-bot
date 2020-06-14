@@ -544,8 +544,8 @@ function expand_by_doi(Template $template, bool $force = FALSE) : bool {
   return TRUE;
 }
 
-function query_crossref(string $doi) {
-  if (strpos($doi, '10.2307') === 1) return FALSE; // jstor API is better
+function query_crossref(string $doi) : ?object {
+  if (strpos($doi, '10.2307') === 1) return NULL; // jstor API is better
   $doi = str_replace(DOI_URL_DECODE, DOI_URL_ENCODE, $doi);
   $url = "https://www.crossref.org/openurl/?pid=" . CROSSREFUSERNAME . "&id=doi:$doi&noredirect=TRUE";
   for ($i = 0; $i < 2; $i++) {
@@ -565,7 +565,7 @@ function query_crossref(string $doi) {
       if ($result["status"] == "resolved") {
         return $result;
       } else {
-        return FALSE;
+        return NULL;
       }
     } else {
       sleep(1);              // @codeCoverageIgnore
@@ -573,7 +573,7 @@ function query_crossref(string $doi) {
     }
   }
   report_warning("Error loading CrossRef file from DOI " . echoable($doi) . "!");    // @codeCoverageIgnore
-  return FALSE;                                                                      // @codeCoverageIgnore
+  return NULL;                                                                       // @codeCoverageIgnore
 }
 
 function expand_doi_with_dx(Template $template, string $doi) : bool {
