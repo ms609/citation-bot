@@ -172,7 +172,7 @@ class WikipediaBot {
     return FALSE;
   }
   
-  public function write_page(string $page, string $text, string $editSummary, $lastRevId = NULL, $startedEditing = NULL) : bool {
+  public function write_page(string $page, string $text, string $editSummary, ?string $lastRevId = NULL, ?string $startedEditing = NULL) : bool {
     $response = $this->fetch([
             'action' => 'query',
             'prop' => 'info|revisions',
