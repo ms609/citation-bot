@@ -2340,8 +2340,9 @@ final class Template {
         throw new Exception($exception, $number);
         // @codeCoverageIgnoreEnd
       }
-      $http_response = curl_getinfo($ch, CURLINFO_HTTP_CODE);
-      $header_length = curl_getinfo($ch, CURLINFO_HEADER_SIZE);
+      $http_response = (int) @curl_getinfo($ch, CURLINFO_HTTP_CODE);
+      $header_length = (int) @curl_getinfo($ch, CURLINFO_HEADER_SIZE);
+      if ($http_response == 0 || $header_length == 0) throw new Exception('Size of zero from website');
       curl_close($ch);
       $header = substr($return, 0, $header_length);
       $body = substr($return, $header_length);
