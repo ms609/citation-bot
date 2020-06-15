@@ -389,14 +389,15 @@ final class Template {
    */
   public function add_if_new(string $param_name, ?string $value, ?string $api = NULL) : bool {
     $value = trim((string) $value);
+    $param_name = trim($param_name); // Pure paranoia
     if ($value == '') {
       return FALSE;
     }
-    if (!is_string($param_name) || trim($param_name) == '') {
+    if ($param_name == '') {
       report_error('invalid param_name passed to add_if_new()'); // @codeCoverageIgnore
     }
     
-    if (str_i_same((string) $value, 'null')) { // Hopeully name is not actually null
+    if (str_i_same($value, 'null')) { // Hopeully name is not actually null
       return FALSE;
     }
     
