@@ -15,7 +15,7 @@ const PIPE_PLACEHOLDER = '# # # CITATION_BOT_PLACEHOLDER_PIPE # # #';
 const TEMP_PLACEHOLDER = "# # # CITATION_BOT_PLACEHOLDER_TEMPORARY %s # # #";
 const WIKI_ROOT = "https://en.wikipedia.org/w/index.php";
 const API_ROOT = "https://en.wikipedia.org/w/api.php"; // wiki's API endpoint
-const ZOTERO_ROOT = "https://tools.wmflabs.org/translation-server/web"; // TODO - change to https://translation-server.toolforge.org/web
+const ZOTERO_ROOT = "https://translation-server.toolforge.org/web";
 
 //Common replacements
 const HTML_DECODE = array("[", "]", "<", ">", " ");
