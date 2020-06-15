@@ -5,6 +5,8 @@ declare(strict_types=1);
  * from templates.
  */
 
+require_once('user_messages.php');
+
 final class Parameter {
   public $pre = '', $param = '', $eq = '', $val = '', $post = '';
 
