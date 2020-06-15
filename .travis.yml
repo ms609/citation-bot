@@ -36,8 +36,8 @@ matrix:           ###### ONLY ONE WITH FULL TESTING WITH IS 7.3 OTHERS ARE ALL S
         - composer require mediawiki/oauthclient:1.1.0
         - composer require --dev vimeo/psalm
       script: php vendor/bin/psalm --show-info=true
-    - name: "Full test with PHP 8"
-      php: nightly
+    - php: nightly
+      name: "Full test with PHP 8"
       before_script:  
         - travis_retry composer self-update
         - '! find . -type f -name "*.php" -exec php -d error_reporting=32767 -l {} \; 2>&1 >&- | grep "^"'
