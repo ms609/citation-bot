@@ -14,6 +14,7 @@ require_once('apiFunctions.php');
 require_once('expandFns.php');
 require_once('user_messages.php');
 require_once('zotero.php');
+require_once("constants.php");
 
 class Page {
 

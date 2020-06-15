@@ -11,6 +11,7 @@ use MediaWiki\OAuthClient\Request;
 use MediaWiki\OAuthClient\SignatureMethod\HmacSha1;
 
 require_once('user_messages.php');
+require_once("constants.php");
 
 class WikipediaBot {
 
