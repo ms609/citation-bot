@@ -36,4 +36,3 @@ const DATES_DMY      = 2;
 
 const CROSSREFUSERNAME = 'martins@gmail.com';
 // Use putenv to set PHP_ADSABSAPIKEY, PHP_GOOGLE_KEY and PHP_BOTUSERNAME environment variables
-";
