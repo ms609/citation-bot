@@ -6,6 +6,7 @@ declare(strict_types=1);
  */
 
 require_once('user_messages.php');
+require_once('constants.php');
 
 final class Parameter {
   public $pre = '', $param = '', $eq = '', $val = '', $post = '';
