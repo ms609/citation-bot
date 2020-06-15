@@ -1,6 +1,8 @@
 <?php
 declare(strict_types=1);
 
+require_once("constants.php");
+
 function html_echo(string $text, string $alternate_text='') : void {
   if (!getenv('TRAVIS')) echo HTML_OUTPUT ? $text : $alternate_text;
 }
