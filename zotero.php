@@ -3,6 +3,8 @@ declare(strict_types=1);
 const ZOTERO_GIVE_UP = 5;
 const ZOTERO_SKIPS = 100;
 
+require_once("constants.php");
+
 function query_url_api(array $ids, array $templates) : void {
   global $SLOW_MODE;
   global $zotero_failures_count;
