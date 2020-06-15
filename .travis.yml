@@ -55,17 +55,17 @@ matrix:           ###### ONLY ONE WITH FULL TESTING WITH IS 7.3 OTHERS ARE ALL S
       script: phpunit --coverage-clover coverage.xml
       after_success: bash <(curl -s https://codecov.io/bash)
     - stage: deploy-to-master
-      name: "Update WMFlabs servers"
+      name: "Update WM toolforge servers"
       if: branch = master AND type != pull_request
       php: 7.3
       script:
-        - wget -O- https://tools.wmflabs.org/citations/gitpull.php
+        - wget -O- https://citations.toolforge.org/gitpull.php
     - stage: deploy-to-development
-      name: "Update WMFlabs test servers"
+      name: "Update VM toolforge test servers"
       if: branch = development AND type != pull_request
       php: 7.3
       script:
-        - wget -O- https://tools.wmflabs.org/citations-dev/gitpull.php
+        - wget -O- https://citations-dev.toolforge.org/gitpull.php
 
 git:
   depth: 21
