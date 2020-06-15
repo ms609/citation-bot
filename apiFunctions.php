@@ -1,5 +1,10 @@
 <?php
 declare(strict_types=1);
+
+require_once("constants.php");
+require_once("user_messages.php");
+require_once("Template.php");
+
 function query_pmid_api (array $pmids, array $templates) : bool { return entrez_api($pmids, $templates, 'pubmed'); }
 function query_pmc_api  (array $pmcs, array $templates) : bool { return entrez_api($pmcs,  $templates, 'pmc'); }
   
