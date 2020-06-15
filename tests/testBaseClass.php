@@ -174,7 +174,7 @@ abstract class testBaseClass extends PHPUnit\Framework\TestCase {
     global $ch_zotero;
     $expanded = $this->make_citation($text);
     
-    $ch_zotero = curl_init('https://tools.wmflabs.org/translation-server/web');
+    $ch_zotero = curl_init(ZOTERO_ROOT);
     curl_setopt($ch_zotero, CURLOPT_CUSTOMREQUEST, "POST");
     curl_setopt($ch_zotero, CURLOPT_USERAGENT, "Citation_bot");  
     curl_setopt($ch_zotero, CURLOPT_HTTPHEADER, ['Content-Type: text/plain']);
