@@ -33,4 +33,7 @@
             <directory name="vendor" />
         </ignoreFiles>
     </projectFiles>
+    <psalm ignoreInternalFunctionFalseReturn="false" />
+    <psalm findUnusedVariablesAndParams="true" />
+    <psalm phpVersion="7.3" />
 </psalm>
