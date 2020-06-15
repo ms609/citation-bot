@@ -28,7 +28,7 @@ Always write a clear log message for your commits. One-line messages are fine fo
   * Regular expressions are defined using the symbol `~` in place of `/`, to reduce escaping and improve legibility when handling URLs.
   * We prefer `elseif` to `else if`
   * We use `echo` and `exit` for normal code, and `print` and `die` for debug code that is intended to be removed later
-  * All code is verified to be valid PHP 7.2, 7.3, and 8.0 according to static analysis
+  * All code is verified to be valid PHP 7.3, and 8.0 according to static analysis
   * All code is verified to be valid PHP 7.3 at runtime
   * We want 100% code coverage with untestable code flagged in the source -- such as code that handles error conditions.  See the file apiFunctions.php for lots of examples of non-coverage code.
 
