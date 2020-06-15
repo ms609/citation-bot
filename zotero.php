@@ -11,7 +11,7 @@ function query_url_api(array $ids, array $templates) : void {
   if (!isset($zotero_failures_count) || getenv('TRAVIS')) $zotero_failures_count = 0;
   if (!$SLOW_MODE) return; // Zotero takes time
   
-  $ch_zotero = curl_init('https://translation-server.toolforge.org/web');
+  $ch_zotero = curl_init(ZOTERO_ROOT);
   curl_setopt($ch_zotero, CURLOPT_CUSTOMREQUEST, "POST");
   curl_setopt($ch_zotero, CURLOPT_USERAGENT, "Citation_bot");  
   curl_setopt($ch_zotero, CURLOPT_HTTPHEADER, ['Content-Type: text/plain']);
