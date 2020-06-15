@@ -390,7 +390,7 @@ final class Template {
       return FALSE;
     }
     if (!is_string($param_name) || trim($param_name) == '') {
-      report_error('invalid param_name passed to add_if_new()');
+      report_error('invalid param_name passed to add_if_new()'); // @codeCoverageIgnore
     }
     
     if (str_i_same((string) $value, 'null')) { // Hopeully name is not actually null
@@ -476,7 +476,7 @@ final class Template {
             return $this->add($param_name, sanitize_string($value));
           }
         }
-      return FALSE;
+        return FALSE;
       case "first": case "first1":
        $value = trim(straighten_quotes($value));
        if ($this->blank(FORENAME1_ALIASES)) {
@@ -2712,8 +2712,8 @@ final class Template {
         }
         // Double check URL against existing data
         if (!preg_match('~^(?:https?|ftp):\/\/\/?([^\/\.]+\.[^\/]+)\/~i', $oa_url, $matches)) {
-           report_minor_error(' OA database gave invalid URL: ' . $oa_url);
-           return 'nothing';
+           report_minor_error(' OA database gave invalid URL: ' . $oa_url); // @codeCoverageIgnore
+           return 'nothing';                                                // @codeCoverageIgnore
         }
         $oa_hostname = $matches[1];
         if (($this->has('osti') && stripos($oa_hostname, 'osti.gov') !== FALSE) ||

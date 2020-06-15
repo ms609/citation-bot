@@ -191,7 +191,7 @@ function adsabs_api(array $ids, array $templates, string $identifier) : bool {
     if (strpos($bibcode, 'book') !== false) {
         unset($ids[$key]);
     } elseif (stripos($bibcode, 'CITATION') !== false) {
-        unset($ids[$key]);
+        unset($ids[$key]);  // @codeCoverageIgnore
     } elseif (strpos($bibcode, '&') !== false) {
         unset($ids[$key]);
     }
@@ -650,12 +650,12 @@ function expand_doi_with_dx(Template $template, string $doi) : bool {
        $try_to_add_it('title', @$json['container-title']);// Usually not set, but just in case this instead of title is set
        $try_to_add_it('location', @$json['publisher-location']);
        $try_to_add_it('publisher', @$json['publisher']);
-     } elseif (@$json['type'] == 'reference-book') {
-       $try_to_add_it('title', @$json['title']);
-       $try_to_add_it('title', @$json['container-title']);
-       $try_to_add_it('chapter', @$json['original-title']);
-       $try_to_add_it('location', @$json['publisher-location']);
-       $try_to_add_it('publisher', @$json['publisher']);
+     } elseif (@$json['type'] == 'reference-book') { // VERY rare
+       $try_to_add_it('title', @$json['title']);                 // @codeCoverageIgnore
+       $try_to_add_it('title', @$json['container-title']);       // @codeCoverageIgnore
+       $try_to_add_it('chapter', @$json['original-title']);      // @codeCoverageIgnore
+       $try_to_add_it('location', @$json['publisher-location']); // @codeCoverageIgnore
+       $try_to_add_it('publisher', @$json['publisher']);         // @codeCoverageIgnore
      } elseif (@$json['type'] == 'chapter') {
        $try_to_add_it('title', @$json['container-title']);
        $try_to_add_it('chapter', @$json['title']);
@@ -808,7 +808,7 @@ function expand_by_jstor(Template $template) : bool {
            case "T1": case "TI": case "T2": case "BT":
             $new_title = trim($ris_part[1]);
             report_info("  Possible new title: " . $new_title);
-           default:
+           default: // @codeCoverageIgnore
          }
        }
        foreach (['chapter', 'title', 'series'] as $possible) {
