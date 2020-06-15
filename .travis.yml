@@ -7,13 +7,10 @@ language: php
 matrix:           ###### ONLY ONE WITH FULL TESTING WITH IS 7.3 OTHERS ARE ALL STATIC ANALYSIS ONLY ######
   include:
     - stage: pretest
-      name: "Quick PHP 7.2 syntax check"
-      php: 7.2
-      script: '! find . -type f -name "*.php" -exec php -d error_reporting=32767 -l {} \; 2>&1 >&- | grep "^"'
-    - php: nightly
+      php: nightly
       name: "Quick PHP 8.0 syntax check"
       script: '! find . -type f -name "*.php" -exec php -d error_reporting=32767 -l {} \; 2>&1 >&- | grep "^"'
-    - php: 7.2
+    - php: 7.3
       name: "PHP Lint test"
       before_script:  
         - travis_retry composer self-update
