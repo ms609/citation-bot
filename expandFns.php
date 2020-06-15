@@ -2,6 +2,7 @@
 declare(strict_types=1);
 
 require_once("constants.php");
+require_once("apiFunctions.php");
 
 // ============================================= DOI functions ======================================
 function sanitize_doi(string $doi) : string {
