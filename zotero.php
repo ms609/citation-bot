@@ -241,6 +241,8 @@ function zotero_request(string $url) : ?string {
         report_warning("Giving up on URL expansion for a while");
         $zotero_failures_count = $zotero_failures_count + ZOTERO_SKIPS;
       }
+    } else {
+      echo $zotero_response;
     }
     $zotero_response = NULL;
     // @codeCoverageIgnoreEnd
