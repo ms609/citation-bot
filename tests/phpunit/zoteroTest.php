@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 
 /*
  * Tests for zotero.php - some of these work even when zotero fails because they check for the absence of bad data

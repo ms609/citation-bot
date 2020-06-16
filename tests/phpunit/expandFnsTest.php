@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 
 /*
  * Current tests that are failing.
