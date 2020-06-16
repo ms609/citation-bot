@@ -232,7 +232,7 @@ function zotero_request(string $url) : ?string {
 
   curl_setopt($ch_zotero, CURLOPT_POSTFIELDS, $url);  
   if ($BLOCK_ZOTERO_SEARCH) return NULL;
-  
+    echo "\n\n searching " .$url . "\n\n";
   $zotero_response = (string) @curl_exec($ch_zotero);
   if ($zotero_response == '') {
     // @codeCoverageIgnoreStart
@@ -247,6 +247,7 @@ function zotero_request(string $url) : ?string {
     $zotero_response = NULL;
     // @codeCoverageIgnoreEnd
   }
+  echo "\n\n" . $zotero_response . "\n\n";
   return $zotero_response;
 }
 
