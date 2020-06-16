@@ -5164,8 +5164,12 @@ final class Template {
     return (isset($this->param[$i])) ? $this->param[$i] : NULL;
   }
   
-  protected function param_value(int $i) : ?string { // May return error if no param with index $i
-    return $this->param_with_index($i)->val;
+  protected function param_value(int $i) : string {
+    $item = $this->param_with_index($i);
+    if (is_null($item)) {
+       report_error('param_value() called on invalid index: ' . (string) $i); 
+    }
+    return (string) $item->val;
   }
   
   public function get_without_comments_and_placeholders(string $name) : string {
