@@ -5169,7 +5169,7 @@ final class Template {
     if (is_null($item)) {
        report_error('param_value() called on invalid index: ' . (string) $i); 
     }
-    return (string) $this->param_with_index($i)->val;
+    return (string) $item->val;
   }
   
   public function get_without_comments_and_placeholders(string $name) : string {
