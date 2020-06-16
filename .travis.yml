@@ -7,16 +7,16 @@ language: php
 matrix:           ###### ONLY ONE WITH FULL TESTING WITH IS 7.3 OTHERS ARE ALL STATIC ANALYSIS ONLY ######
   include:
     - stage: pretest
-      php: nightly
+      php: nightly-8.0
       name: "Quick PHP 8.0 syntax check"
       script: '! find . -type f -name "*.php" -exec php -d error_reporting=32767 -l {} \; 2>&1 >&- | grep "^"'
-    - php: 7.3
+    - php: 8.0
       name: "PHP Lint test"
       before_script:  
         - travis_retry composer self-update
         - composer require overtrue/phplint --dev -vvv
       script: ./vendor/bin/phplint --exclude=vendor --no-interaction  ./
-    - php: 7.3
+    - php: 8.0-dev
       name: "PHP phpstan"
       before_script:
         - travis_retry composer self-update
@@ -24,7 +24,7 @@ matrix:           ###### ONLY ONE WITH FULL TESTING WITH IS 7.3 OTHERS ARE ALL S
       script: php vendor/bin/phpstan --no-interaction analyse  --level=3   constants/*.php  Parameter.php user_messages.php constants.php  expandFns.php zotero.php apiFunctions.php NameTools.php  Comment.php Page.php  WikipediaBot.php  Template.php setup.php   category.php ; php vendor/bin/phpstan --no-interaction analyse  --level=3  Parameter.php  constants/*.php  user_messages.php constants.php  expandFns.php zotero.php apiFunctions.php NameTools.php  Comment.php Page.php  WikipediaBot.php  Template.php setup.php   generate_template.php ; php vendor/bin/phpstan --no-interaction analyse  --level=3   gitpull.php ; php vendor/bin/phpstan --no-interaction analyse  --level=3 Parameter.php   constants/*.php  user_messages.php constants.php  expandFns.php zotero.php apiFunctions.php NameTools.php  Comment.php Page.php  WikipediaBot.php  Template.php setup.php   linked_pages.php ; php vendor/bin/phpstan --no-interaction analyse  --level=3   unlock_git.php ; php vendor/bin/phpstan --no-interaction analyse  --level=3 Parameter.php   constants/*.php  user_messages.php constants.php  expandFns.php zotero.php apiFunctions.php NameTools.php  Comment.php Page.php  WikipediaBot.php  Template.php setup.php   process_page.php ; php vendor/bin/phpstan --no-interaction analyse  --level=3 Parameter.php   constants/*.php  user_messages.php constants.php  expandFns.php zotero.php apiFunctions.php NameTools.php  Comment.php Page.php  WikipediaBot.php  Template.php setup.php   authenticate.php
     - stage: test
       name: "Full test with PHP 7.3"
-      php: 7.3
+      php: 8.0snapshot
       before_script:  
         - travis_retry composer self-update
         - composer require mediawiki/oauthclient:1.1.0
