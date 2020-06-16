@@ -202,6 +202,9 @@ class WikipediaBot {
       report_error("Write request triggered no response from server");   // @codeCoverageIgnore
     }
     
+    if (!isset($response->query->pages)) {
+      report_error("Pages array is non-existent.  Aborting.");
+    }
     $myPage = reset($response->query->pages); // reset gives first element in list
     
     if (!isset($myPage->lastrevid)) {
