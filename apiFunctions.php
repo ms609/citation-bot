@@ -248,7 +248,7 @@ function adsabs_api(array $ids, array $templates, string $identifier) : bool {
     curl_setopt($ch, CURLOPT_HEADER, TRUE);
     curl_setopt($ch, CURLOPT_CUSTOMREQUEST, 'POST');
     curl_setopt($ch, CURLOPT_POSTFIELDS, "$identifier\n" . str_replace("%0A", "\n", urlencode(implode("\n", $ids))));
-    $return = (string) @curl_exec($ch);
+    $return = (string) '';
     if ($return == "") {
       // @codeCoverageIgnoreStart
       $error = curl_error($ch);
@@ -606,7 +606,7 @@ function expand_doi_with_dx(Template $template, string $doi) : bool {
      curl_setopt($ch, CURLOPT_RETURNTRANSFER, TRUE);
      curl_setopt($ch, CURLOPT_FOLLOWLOCATION, TRUE);
      try {
-       $data = (string) @curl_exec($ch);
+       $data = (string) '';
      } catch (Exception $e) {                    // @codeCoverageIgnoreStart
        curl_close($ch);
        $template->mark_inactive_doi($doi);
