@@ -702,7 +702,7 @@ class ZoteroTest extends testBaseClass {
    $this->requires_zotero(function() : void {
     $text = "{{cite web|title= Gelada| website= nationalgeographic.com |url= http://animals.nationalgeographic.com/animals/mammals/gelada/ |publisher=[[National Geographic Society]]|accessdate=7 March 2012}}";
     $expanded = $this->expand_via_zotero($text);
-    $date = $expanded->get2('date');
+    $date = $expanded->get('date');
     $date = str_replace('10 May 2011', '', $date); // Sometimes we get no date
     $this->assertSame('', $date);
    });
