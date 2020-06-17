@@ -10,7 +10,7 @@ if (!defined('VERBOSE')) define('VERBOSE', TRUE);
 $testing_skip_zotero = FALSE;                                           //
 $testing_skip_bibcode= FALSE;                                           //
 $testing_skip_google = FALSE;                                           //
-$testing_skip_wiki   = FALSE;                                           //
+$testing_skip_wiki   = TRUE;                                           //
 $testing_skip_dx     = FALSE;                                           //
 $testing_skip_arxiv  = FALSE;                                           //
 // =======================================================================
