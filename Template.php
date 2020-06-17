@@ -1379,7 +1379,7 @@ final class Template {
          }
          return FALSE;
        } elseif ($this->blank('jstor')) {
-          $dat = @'('https://www.jstor.org/citation/ris/' . $matches[1]);
+          $dat = '';
           if ($dat !== FALSE &&
               stripos($dat, 'No RIS data found for') === FALSE &&
               stripos($dat, 'Block Reference') === FALSE &&
