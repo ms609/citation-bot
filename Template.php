@@ -1379,7 +1379,7 @@ final class Template {
          }
          return FALSE;
        } elseif ($this->blank('jstor')) {
-          $dat = @file_get_contents('https://www.jstor.org/citation/ris/' . $matches[1]);
+          $dat = @'('https://www.jstor.org/citation/ris/' . $matches[1]);
           if ($dat !== FALSE &&
               stripos($dat, 'No RIS data found for') === FALSE &&
               stripos($dat, 'Block Reference') === FALSE &&
@@ -2606,7 +2606,7 @@ final class Template {
      )
     ));
     $url = 'https://' . (getenv('PHP_S2APIKEY') ? 'partner' : 'api') . '.semanticscholar.org/v1/paper/' . $doi;
-    $json = @file_get_contents($url, FALSE, $context);
+    $json = '';
     if ($json) {
       $oa = @json_decode($json);
       if ($oa !== FALSE && isset($oa->url) && isset($oa->is_publisher_licensed) && $oa->is_publisher_licensed) {
@@ -2617,7 +2617,7 @@ final class Template {
 
   public function get_unpaywall_url(string $doi) : string {
     $url = "https://api.unpaywall.org/v2/$doi?email=" . CROSSREFUSERNAME;
-    $json = @file_get_contents($url);
+    $json = '';
     if ($json) {
       $oa = @json_decode($json);
       if ($oa !== FALSE && isset($oa->best_oa_location)) {
@@ -2789,7 +2789,7 @@ final class Template {
       }
       if ($isbn) {  // Try Books.Google.Com
         $google_book_url='https://books.google.com/books?isbn='.$isbn;
-        $google_content = @file_get_contents($google_book_url);
+        $google_content = '';
         if ($google_content !== FALSE) {
           preg_match_all('~books.google.com/books\?id=............&amp~', $google_content, $google_results);
           $google_results = $google_results[0];
@@ -2812,7 +2812,7 @@ final class Template {
         } else {
           return FALSE;
         }
-        $string = @file_get_contents("https://www.googleapis.com/books/v1/volumes?q=" . $url_token . "&key=" . getenv('PHP_GOOGLEKEY'));
+        $string = '';
         if ($string === FALSE) {
             report_warning("Did not receive results from Google API search $url_token");  // @codeCoverageIgnore
             return FALSE;                                                                 // @codeCoverageIgnore
@@ -2917,7 +2917,7 @@ final class Template {
 
   protected function google_book_details(string $gid) : bool {
     $google_book_url = "https://books.google.com/books/feeds/volumes/" . $gid;
-    $data = @file_get_contents($google_book_url);
+    $data = '';
     if ($data === FALSE) return FALSE;
     $simplified_xml = str_replace('http___//www.w3.org/2005/Atom', 'http://www.w3.org/2005/Atom',
       str_replace(":", "___", $data));
@@ -5602,7 +5602,7 @@ final class Template {
     if (!$this->blank(WORK_ALIASES)) return FALSE; // Nothing to add
     if ($this->get('issn') === '9999-9999') return FALSE; // Fake test suite data
     if (!preg_match('~^\d{4}.?\d{3}[0-9xX]$~u', $this->get('issn'))) return FALSE;
-    $html = @file_get_contents('https://www.worldcat.org/issn/' . $this->get('issn'));
+    $html = '';
     if (preg_match('~<title>(.*)\(e?Journal~', $html, $matches)) {
       if ($this->wikiname() === 'cite magazine') {
         return $this->add_if_new('magazine', trim($matches[1]));  // @codeCoverageIgnore
