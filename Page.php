@@ -84,7 +84,7 @@ class Page {
 
     if ($this->text) {
       return TRUE;
-    } else{
+    } else {
       return FALSE;               // @codeCoverageIgnore
     }
   }
@@ -98,7 +98,7 @@ class Page {
   }
  
   public function parsed_text() : string {
-    return $this->text;
+    return (string) $this->text;
   }
   
   // $parameter: parameter to send to api_function, e.g. "pmid"
