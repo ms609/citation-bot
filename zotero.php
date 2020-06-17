@@ -2,6 +2,7 @@
 declare(strict_types=1);
 const ZOTERO_GIVE_UP = 5;
 const ZOTERO_SKIPS = 100;
+const ERROR_DONE = 'ERROR_DONE';
 
 require_once("constants.php");
 
@@ -225,14 +226,14 @@ function drop_urls_that_match_dois(array $templates) : void {
   @strtok('',''); // Free internal buffers
 }
 
-function zotero_request(string $url) : ?string {
+function zotero_request(string $url) : string {
   global $zotero_failures_count;
   global $ch_zotero;
   global $BLOCK_ZOTERO_SEARCH;
 
   curl_setopt($ch_zotero, CURLOPT_POSTFIELDS, $url);  
-  if ($BLOCK_ZOTERO_SEARCH) return NULL;
-    echo "\n\n searching " .$url . "\n\n";
+  if ($BLOCK_ZOTERO_SEARCH) return ERROR_DONE;
+  
   $zotero_response = (string) @curl_exec($ch_zotero);
   if ($zotero_response == '') {
     // @codeCoverageIgnoreStart
@@ -244,7 +245,7 @@ function zotero_request(string $url) : ?string {
         $zotero_failures_count = $zotero_failures_count + ZOTERO_SKIPS;
       }
     }
-    $zotero_response = NULL;
+    $zotero_response = ERROR_DONE;
     // @codeCoverageIgnoreEnd
   }
   echo "\n\n" . $zotero_response . "\n\n";
@@ -302,9 +303,9 @@ function expand_by_zotero(Template &$template, ?string $url = NULL) : bool {
   return process_zotero_response($zotero_response, $template, $url, $url_kind, $access_date);
 }
 
-function process_zotero_response(?string $zotero_response, Template &$template, string $url, string $url_kind, int $access_date) : bool {
+function process_zotero_response(string $zotero_response, Template &$template, string $url, string $url_kind, int $access_date) : bool {
   global $zotero_failures_count;
-  if ($zotero_response === NULL) return FALSE;  // Error message already printed in zotero_request()
+  if ($zotero_response === ERROR_DONE) return FALSE;  // Error message already printed in zotero_request()
  
   switch (trim($zotero_response)) {
     case '':

@@ -1158,7 +1158,7 @@ final class TemplateTest extends testBaseClass {
   public function testUseISSN() : void {
       $text = "{{Cite book|issn=0031-0603}}";
       $expanded = $this->process_citation($text);
-      $this->assertTrue(stripos($expanded->get2('journal'), 'Entomologist') !== FALSE);
+      $this->assertTrue(stripos($expanded->get('journal'), 'Entomologist') !== FALSE);
   }
  
   public function testParameterAlias() : void {
@@ -2268,7 +2268,7 @@ T1 - This is the Title }}';
   public function testJustAnISBN() : void {
      $text = '{{cite book |isbn=0471186368}}';
      $expanded = $this->process_citation($text);
-     $this->assertSame('explosives engineering', strtolower($expanded->get2('title')));
+     $this->assertSame('explosives engineering', strtolower($expanded->get('title')));
      $this->assertNull($expanded->get2('url'));
   }
     

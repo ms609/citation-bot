@@ -70,7 +70,7 @@ class Page {
     $this->lastrevid = isset($details->lastrevid) ? $details->lastrevid : NULL;
 
     $this->text = @file_get_contents(WIKI_ROOT . '?' . http_build_query(['title' => $title, 'action' =>'raw']));
-    if ($this->text === FALSE) {
+    if ($this->text == FALSE) {
        report_warning('Unable to get anything for ' . $title . ' from ' . WIKI_ROOT);    // @codeCoverageIgnore
        return FALSE;                                                                     // @codeCoverageIgnore
     }
@@ -84,7 +84,7 @@ class Page {
 
     if ($this->text) {
       return TRUE;
-    } else{
+    } else {
       return FALSE;               // @codeCoverageIgnore
     }
   }
@@ -98,7 +98,7 @@ class Page {
   }
  
   public function parsed_text() : string {
-    return $this->text;
+    return (string) $this->text;
   }
   
   // $parameter: parameter to send to api_function, e.g. "pmid"
