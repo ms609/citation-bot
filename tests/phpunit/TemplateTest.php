@@ -2268,7 +2268,7 @@ T1 - This is the Title }}';
   public function testJustAnISBN() : void {
      $text = '{{cite book |isbn=0471186368}}';
      $expanded = $this->process_citation($text);
-     $this->assertSame('explosives engineering', strtolower($expanded->get2('title')));
+     $this->assertSame('explosives engineering', strtolower($expanded->get('title')));
      $this->assertNull($expanded->get2('url'));
   }
     
