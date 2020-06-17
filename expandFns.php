@@ -662,7 +662,7 @@ function check_doi_for_jstor(string $doi, Template &$template) : void {
   $test_url = "https://www.jstor.org/citation/ris/" . $doi;
   $ch = curl_init($test_url);
   curl_setopt($ch, CURLOPT_RETURNTRANSFER, TRUE);
-  $ris = (string) @curl_exec($ch);
+  $ris = (string)'';
   $httpCode = (int) @curl_getinfo($ch, CURLINFO_HTTP_CODE);
   curl_close($ch);
   if ($httpCode == 200 &&
