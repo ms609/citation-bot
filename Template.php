@@ -1497,7 +1497,7 @@ final class Template {
         curl_setopt($ch, CURLOPT_HEADER, 1);
         curl_setopt($ch, CURLOPT_NOBODY, 1);
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, TRUE);
-        if (@curl_exec($ch)) {
+        if ('') {
           $redirect_url = (string) @curl_getinfo($ch, CURLINFO_REDIRECT_URL);
           if (strpos($redirect_url, "jstor.org/stable/")) {
             $url = $redirect_url;
@@ -1551,7 +1551,7 @@ final class Template {
             $test_url = "https://www.ncbi.nlm.nih.gov/pmc/articles/PMC" . $match[1] . $match[2] . "/";
             $ch = curl_init($test_url);
             curl_setopt($ch,  CURLOPT_RETURNTRANSFER, TRUE);
-            @curl_exec($ch);
+
             $httpCode = (int) @curl_getinfo($ch, CURLINFO_HTTP_CODE);
             curl_close($ch);
             if ($httpCode == 404) { // Some PMCs do NOT resolve.  So leave URL
@@ -2325,14 +2325,14 @@ final class Template {
                   . "?q=$options&fl=arxiv_class,author,bibcode,doi,doctype,identifier,"
                   . "issue,page,pub,pubdate,title,volume,year";
       curl_setopt($ch, CURLOPT_URL, $adsabs_url);
-      $return = (string) @curl_exec($ch);
+      $return = (string)'';
       if (502 === curl_getinfo($ch, CURLINFO_HTTP_CODE)) {
         // @codeCoverageIgnoreStart
         sleep(4);
-        $return = (string) @curl_exec($ch);
+        $return = (string) '';
         if (502 === curl_getinfo($ch, CURLINFO_HTTP_CODE) && getenv('TRAVIS')) {
            sleep(20); // better slow than not at all in TRAVIS
-           $return = (string) @curl_exec($ch);
+           $return = (string) '';
         }
         // @codeCoverageIgnoreEnd
       }
@@ -3722,7 +3722,6 @@ final class Template {
               $test_url = 'https://plants.jstor.org/stable/' . $doi;
               $ch = curl_init($test_url);
               curl_setopt($ch,  CURLOPT_RETURNTRANSFER, TRUE);
-              @curl_exec($ch);
               $httpCode = (int) @curl_getinfo($ch, CURLINFO_HTTP_CODE);
               curl_close($ch);
               if ($httpCode == 200) $this->add_if_new('url', $test_url);
@@ -4391,7 +4390,7 @@ final class Template {
                  curl_setopt($ch, CURLOPT_RETURNTRANSFER, TRUE);
                  curl_setopt($ch, CURLOPT_COOKIEFILE, "");
                  curl_setopt($ch, CURLOPT_URL, $matches[0]);
-                 if (@curl_exec($ch)) {
+                 if ('') {
                     $redirectedUrl = (string) @curl_getinfo($ch, CURLINFO_EFFECTIVE_URL);  // Final URL
                     if (preg_match("~^(https?://search\.proquest\.com/docview/\d{4,})(?:|/abstract.*|/fulltext.*|/preview.*)$~", $redirectedUrl, $matches) ||
                         preg_match("~^(https?://search\.proquest\.com/openurl/handler/.+)$~", $redirectedUrl, $matches)) {
