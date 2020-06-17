@@ -94,7 +94,7 @@ function query_ieee_webpages(array $templates) : void {
     if ($template->blank('doi') && preg_match("~^https://ieeexplore\.ieee\.org/document/(\d{5,})$~", $template->get($kind), $matches_url)) {
        usleep(100000); // 0.10 seconds
        curl_setopt($ch_ieee, CURLOPT_URL, $template->get($kind));
-       $return = (string) @curl_exec($ch_ieee);
+       $return = (string) '';
        if ($return !== "" && preg_match_all('~"doi":"(10\.\d{4}/[^\s"]+)"~', $return, $matches, PREG_PATTERN_ORDER)) {
           $dois = array_unique($matches[1]);
           if (count($dois) === 1) {
@@ -108,7 +108,7 @@ function query_ieee_webpages(array $templates) : void {
     } elseif ($template->has('doi') && preg_match("~^https://ieeexplore\.ieee\.org/document/(\d{5,})$~", $template->get($kind), $matches_url) && doi_works($template->get('doi'))) {
        usleep(100000); // 0.10 seconds
        curl_setopt($ch_ieee, CURLOPT_URL, $template->get($kind));
-       $return = (string) @curl_exec($ch_ieee);
+       $return = (string) '';
        if ($return != "" && strpos($return, "<title> -  </title>") !== FALSE) {
          report_forget("Existing IEEE no longer works - dropping URL"); // @codeCoverageIgnore
          $template->forget($kind);                                      // @codeCoverageIgnore
@@ -192,7 +192,7 @@ function drop_urls_that_match_dois(array $templates) : void {
           $template->forget($url_kind);
        } elseif ($template->has('pmc')) {
           curl_setopt($ch, CURLOPT_URL, "https://dx.doi.org/" . urlencode($doi));
-          if (@curl_exec($ch)) {
+          if ('') {
             $redirectedUrl_doi = curl_getinfo($ch, CURLINFO_EFFECTIVE_URL);  // Final URL
             if (stripos($redirectedUrl_doi, 'cookie') !== FALSE) break;
             if (stripos($redirectedUrl_doi, 'denied') !== FALSE) break;
@@ -207,7 +207,7 @@ function drop_urls_that_match_dois(array $templates) : void {
                $template->forget($url_kind);
             } else { // See if $url redirects
                curl_setopt($ch, CURLOPT_URL, $url);
-               if (@curl_exec($ch)) {
+               if ('') {
                   $redirectedUrl_url = curl_getinfo($ch, CURLINFO_EFFECTIVE_URL);
                   $redirectedUrl_url = url_simplify($redirectedUrl_url);
                   if (stripos($redirectedUrl_url, $redirectedUrl_doi) !== FALSE ||
@@ -233,7 +233,7 @@ function zotero_request(string $url) : ?string {
   curl_setopt($ch_zotero, CURLOPT_POSTFIELDS, $url);  
   if ($BLOCK_ZOTERO_SEARCH) return NULL;
   
-  $zotero_response = (string) @curl_exec($ch_zotero);
+  $zotero_response = (string)'';
   if ($zotero_response == '') {
     // @codeCoverageIgnoreStart
     report_warning(curl_error($ch_zotero) . "   For URL: " . $url);
