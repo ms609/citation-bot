@@ -7,7 +7,16 @@ declare(strict_types=1);
 
 // If you ever change PLACEHOLDER_TEXT, please update expandFns.php::remove_comments
 
-abstract class WikiThings {
+interface WikiStuffInterface
+{
+  const TREAT_IDENTICAL_SEPARATELY;
+  protected $rawtext;
+  public function parse_text(string $text) : void ;
+  public function parsed_text() : string ;
+}
+
+
+abstract class WikiThings implements WikiStuffInterface {
   const TREAT_IDENTICAL_SEPARATELY = FALSE;
   protected $rawtext;
 
