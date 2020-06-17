@@ -9,14 +9,15 @@ declare(strict_types=1);
 
 interface WikiStuffInterface
 {
-  const TREAT_IDENTICAL_SEPARATELY;
   public function parse_text(string $text) : void ;
   public function parsed_text() : string ;
+  public static function get_treat_identical_seperately() : bool;
+  public static function get_regex() : string;
+  public static function get_placeholder() : string;
 }
 
 
 abstract class WikiThings implements WikiStuffInterface {
-  const TREAT_IDENTICAL_SEPARATELY = FALSE;
   protected $rawtext;
 
   public function parse_text(string $text) : void {
@@ -27,39 +28,71 @@ abstract class WikiThings implements WikiStuffInterface {
     if (!isset($this->rawtext)) die('Attempt to access undefined WikiThings');
     return $this->rawtext;
   }
+  
+  public static function get_treat_identical_seperately() : bool {
+    return FALSE;
+  }
 }
 
 final class Comment extends WikiThings {
-  const PLACEHOLDER_TEXT = '# # # CITATION_BOT_PLACEHOLDER_COMMENT %s # # #';
-  const REGEXP = '~<!--.*?-->~us';
+  public static function get_regex() : string {
+    return '~<!--.*?-->~us';
+  }
+  public static function get_placeholder : string (
+    return '# # # CITATION_BOT_PLACEHOLDER_COMMENT %s # # #';
+  }
 }
 
 final class Nowiki extends WikiThings {
-  const PLACEHOLDER_TEXT = '# # # CITATION_BOT_PLACEHOLDER_NOWIKI %s # # #';
-  const REGEXP = '~<nowiki>.*?</nowiki>~us';
+  public static function get_regex() : string {
+    return '~<nowiki>.*?</nowiki>~us';
+  }
+  public static function get_placeholder : string (
+    return '# # # CITATION_BOT_PLACEHOLDER_NOWIKI %s # # #';
+  }
 }
 
 final class Chemistry extends WikiThings {
-  const PLACEHOLDER_TEXT = '# # # CITATION_BOT_PLACEHOLDER_CHEMISTRY %s # # #';
-  const REGEXP = '~<chem>.*?</chem>~us';
+  public static function get_regex() : string {
+    return '~<chem>.*?</chem>~us';
+  }
+  public static function get_placeholder : string (
+    return '# # # CITATION_BOT_PLACEHOLDER_CHEMISTRY %s # # #';
+  }
 }
 
 final class Mathematics extends WikiThings {
-  const PLACEHOLDER_TEXT = '# # # CITATION_BOT_PLACEHOLDER_MATHEMATICS %s # # #';
-  const REGEXP = '~<math>.*?</math>~us';
+  public static function get_regex() : string {
+    return '~<math>.*?</math>~us';
+  }
+  public static function get_placeholder : string (
+    return '# # # CITATION_BOT_PLACEHOLDER_MATHEMATICS %s # # #';
+  }
 }
 
 final class Musicscores extends WikiThings {
-  const PLACEHOLDER_TEXT = '# # # CITATION_BOT_PLACEHOLDER_MUSIC %s # # #';
-  const REGEXP = '~<score>.*?</score>~us';
+  public static function get_regex() : string {
+    return '~<score>.*?</score>~us';
+  }
+  public static function get_placeholder : string (
+    return '# # # CITATION_BOT_PLACEHOLDER_MUSIC %s # # #';
+  }
 }
 
 final class Preformated extends WikiThings {
-  const PLACEHOLDER_TEXT = '# # # CITATION_BOT_PLACEHOLDER_PREFORMAT %s # # #';
-  const REGEXP = '~<pre>.*?</pre>~us';
+  public static function get_regex() : string {
+    return '~<pre>.*?</pre>~us';
+  }
+  public static function get_placeholder : string (
+    return '# # # CITATION_BOT_PLACEHOLDER_PREFORMAT %s # # #';
+  }
 }
 
 final class SingleBracket extends WikiThings {
-  const PLACEHOLDER_TEXT = '# # # CITATION_BOT_PLACEHOLDER_SINGLE_BRACKET %s # # #';
-  const REGEXP = '~(?<!\{)\{[^\{\}]+\}(?!\})~us';
+  public static function get_regex() : string {
+    return '~(?<!\{)\{[^\{\}]+\}(?!\})~us';
+  }
+  public static function get_placeholder : string (
+    return '# # # CITATION_BOT_PLACEHOLDER_SINGLE_BRACKET %s # # #';
+  }
 }
