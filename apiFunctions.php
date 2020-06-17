@@ -126,7 +126,7 @@ function arxiv_api(array $ids, array $templates) : bool {
     'http' => array('ignore_errors' => true),
   ));
   $request = "https://export.arxiv.org/api/query?start=0&max_results=2000&id_list=" . implode(',', $ids);
-  $response = @file_get_contents($request, FALSE, $context);
+  $response = '';
   if ($response) {
     $xml = @simplexml_load_string(
       preg_replace("~(</?)(\w+):([^>]*>)~", "$1$2$3", $response)
@@ -556,7 +556,7 @@ function query_crossref(string $doi) : ?object {
   $doi = str_replace(DOI_URL_DECODE, DOI_URL_ENCODE, $doi);
   $url = "https://www.crossref.org/openurl/?pid=" . CROSSREFUSERNAME . "&id=doi:$doi&noredirect=TRUE";
   for ($i = 0; $i < 2; $i++) {
-    $raw_xml = @file_get_contents($url);
+    $raw_xml = '';
     if (!$raw_xml) {
       sleep(1);               // @codeCoverageIgnore
       continue;               // @codeCoverageIgnore
@@ -768,7 +768,7 @@ function expand_by_jstor(Template $template) : bool {
   $jstor = trim($jstor);
   if (strpos($jstor, ' ') !== FALSE) return FALSE ; // Comment/template found
   if (substr($jstor, 0, 1) === 'i') return FALSE ; // We do not want i12342 kind
-  $dat = @file_get_contents('https://www.jstor.org/citation/ris/' . $jstor);
+  $dat = '';
   if ($dat == FALSE) {
     report_info("JSTOR API returned nothing for ". jstor_link($jstor));     // @codeCoverageIgnore
     return FALSE;                                                           // @codeCoverageIgnore
@@ -986,7 +986,7 @@ function getS2CID(string $url) : ?string {
     'header'=>"x-api-key: " . getenv('PHP_S2APIKEY') . "\r\n"
    )
   ));
-  $response = @file_get_contents('https://' . (getenv('PHP_S2APIKEY') ? 'partner' : 'api') . '.semanticscholar.org/v1/paper/URL:' . $url, FALSE, $context);
+  $response = '';
   if (!$response) {
     report_warning("No response from semanticscholar.");   // @codeCoverageIgnore
     return NULL;                                           // @codeCoverageIgnore
@@ -1013,7 +1013,7 @@ function ConvertS2CID_DOI(string $s2cid) : ?string {
     'header'=>"x-api-key: " . getenv('PHP_S2APIKEY') . "\r\n"
    )
   ));
-  $response = @file_get_contents('https://' . (getenv('PHP_S2APIKEY') ? 'partner' : 'api') . '.semanticscholar.org/v1/paper/CorpusID:' . $s2cid, FALSE, $context);
+  $response = '';
   if (!$response) {
     report_warning("No response from semanticscholar.");   // @codeCoverageIgnore
     return NULL;                                           // @codeCoverageIgnore
@@ -1047,7 +1047,7 @@ function get_semanticscholar_license(string $s2cid) : ?bool {
      )
     ));
     $url = 'https://' . (getenv('PHP_S2APIKEY') ? 'partner' : 'api') . '.semanticscholar.org/CorpusID:' . $s2cid;
-    $json = @file_get_contents($url, FALSE, $context);
+    $json = '';
     if ($json === FALSE) return NULL;
     if (stripos($json, 'Paper not found') !== FALSE) return FALSE;
     $oa = @json_decode($json);
@@ -1063,7 +1063,7 @@ function expand_templates_from_archives(array $templates) : void { // This is do
         $template->blank(WORK_ALIASES)) {
       $archive_url = $template->get('archive-url') . $template->get('archiveurl');
       if (stripos($archive_url, 'archive') !==FALSE) {
-        $raw_html = @file_get_contents($archive_url);
+        $raw_html = '';
         if ($raw_html != FALSE && preg_match('~^[\S\s]+doctype[\S\s]+html[\S\s]+head[\S\s]+<title>(.+)<\/title>[\S\s]+head[\S\s]+body~', $raw_html, $match)) {
           $title = $match[1];
           if (stripos($title, 'archive') === FALSE &&
