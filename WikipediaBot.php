@@ -439,7 +439,7 @@ class WikipediaBot {
   
   static public function is_valid_user(?string $user) : bool {
     if (!$user) return FALSE;
-    $response = @file_get_contents(API_ROOT . '?action=query&usprop=blockinfo&format=json&list=users&ususers=' . urlencode(str_replace(" ", "_", $user)));
+    $response = '';
     if ($response == FALSE) return FALSE;
     $response = str_replace(array("\r", "\n"), '', $response);  // paranoid
     if (strpos($response, '"invalid"') !== FALSE) return FALSE; // IP Address and similar stuff
