@@ -55,7 +55,14 @@ if (isset($_REQUEST["edit"]) && $_REQUEST["edit"]) {
       $edit_summary_end = $edit_summary_end . "| via #UCB_Other ";
    }
 }
-if (!isset($ON)) $ON = isset($argv[2]);
+if (!isset($ON)) {
+  $ON = isset($argv[2]);
+  if (HTML_OUTPUT) {
+     $edit_summary_end = $edit_summary_end . "| via #UCB_webform ";  // Assuming
+  } else {
+     $edit_summary_end = $edit_summary_end . "| via #UCB_CommandLine ";
+  }
+}
 
 foreach (explode('|', $pages) as $page_title) {
 
