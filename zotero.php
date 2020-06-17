@@ -237,7 +237,7 @@ function zotero_request(string $url) : string {
   $zotero_response = (string) @curl_exec($ch_zotero);
   if ($zotero_response == '') {
     // @codeCoverageIgnoreStart
-    echo("\n\n" . curl_error($ch_zotero) . "   For URL: " . $url . "\n\n");
+    report_warning(curl_error($ch_zotero) . "   For URL: " . $url);
     if (strpos(curl_error($ch_zotero), 'timed out after') !== FALSE) {
       $zotero_failures_count = $zotero_failures_count + 1;
       if ($zotero_failures_count > ZOTERO_GIVE_UP) {
