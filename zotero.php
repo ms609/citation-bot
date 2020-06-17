@@ -231,7 +231,7 @@ function zotero_request(string $url) : string {
   global $BLOCK_ZOTERO_SEARCH;
 
   curl_setopt($ch_zotero, CURLOPT_POSTFIELDS, $url);  
-  if ($BLOCK_ZOTERO_SEARCH) return NULL;
+  if ($BLOCK_ZOTERO_SEARCH) return 'ERROR_DONE'; // Magic phrase
   
   $zotero_response = (string) @curl_exec($ch_zotero);
   if ($zotero_response == '') {
