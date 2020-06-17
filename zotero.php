@@ -225,7 +225,7 @@ function drop_urls_that_match_dois(array $templates) : void {
   @strtok('',''); // Free internal buffers
 }
 
-function zotero_request(string $url) : ?string {
+function zotero_request(string $url) : string {
   global $zotero_failures_count;
   global $ch_zotero;
   global $BLOCK_ZOTERO_SEARCH;
@@ -244,7 +244,7 @@ function zotero_request(string $url) : ?string {
         $zotero_failures_count = $zotero_failures_count + ZOTERO_SKIPS;
       }
     }
-    $zotero_response = NULL;
+    $zotero_response = 'ERROR_DONE'; // Magic phrase
     // @codeCoverageIgnoreEnd
   }
   return $zotero_response;
@@ -301,9 +301,9 @@ function expand_by_zotero(Template &$template, ?string $url = NULL) : bool {
   return process_zotero_response($zotero_response, $template, $url, $url_kind, $access_date);
 }
 
-function process_zotero_response(?string $zotero_response, Template &$template, string $url, string $url_kind, int $access_date) : bool {
+function process_zotero_response(string $zotero_response, Template &$template, string $url, string $url_kind, int $access_date) : bool {
   global $zotero_failures_count;
-  if ($zotero_response === NULL) return FALSE;  // Error message already printed in zotero_request()
+  if ($zotero_response === 'ERROR_DONE') return FALSE;  // Error message already printed in zotero_request()
  
   switch (trim($zotero_response)) {
     case '':
