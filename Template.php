@@ -18,8 +18,9 @@ require_once('user_messages.php');
 require_once('apiFunctions.php');
 require_once("constants.php");
 require_once("NameTools.php");
+require_once("Comments.php");
 
-final class Template {
+final class Template implements WikiStuffInterface {
   const PLACEHOLDER_TEXT = '# # # CITATION_BOT_PLACEHOLDER_TEMPLATE %s # # #';
   const REGEXP = ['~\{\{[^\{\}\|]+\}\}~suS', '~\{\{[^\{\}]+\}\}~suS', '~\{\{(?>[^\{]|\{[^\{])+?\}\}~suS'];  // Please see https://stackoverflow.com/questions/1722453/need-to-prevent-php-regex-segfault for discussion of atomic regex
   const TREAT_IDENTICAL_SEPARATELY = FALSE;
