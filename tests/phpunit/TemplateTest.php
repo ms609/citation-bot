@@ -1825,6 +1825,7 @@ T1 - This is the Title }}';
   }
   
   public function testZooKeys() : void {
+   $this->requires_secrets(function() : void {
     $text = '{{Cite journal|doi=10.3897/zookeys.445.7778}}';
     $expanded = $this->process_citation($text);
     $this->assertSame('ZooKeys', $expanded->get2('journal'));
@@ -1838,6 +1839,7 @@ T1 - This is the Title }}';
     $expanded = $this->process_citation($text);
     $this->assertSame('551', $expanded->get2('issue'));
     $this->assertNull($expanded->get2('volume'));
+   });
   }
  
   public function testZooKeysDoiTidy1() : void {
@@ -4823,11 +4825,13 @@ T1 - This is the Title }}';
    }
  
    public function testAlmostSame() : void {
+    $this->requires_secrets(function() : void {
      $text = '{{cite journal|publisher=[[Abc|Abc]]|journal=Abc}}';
      $template = $this->make_citation($text);
      $template->tidy_parameter('publisher');
      $this->assertNull($template->get2('publisher'));
      $this->assertSame('[[abc|abc]]', strtolower($template->get2('journal'))); // Might "fix" Abc redirect to ABC
+    });
    }
 
    public function testRemoveAuthorLinks() : void {
