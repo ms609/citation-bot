@@ -10,7 +10,6 @@ declare(strict_types=1);
 interface WikiStuffInterface
 {
   const TREAT_IDENTICAL_SEPARATELY;
-  protected $rawtext;
   public function parse_text(string $text) : void ;
   public function parsed_text() : string ;
 }
