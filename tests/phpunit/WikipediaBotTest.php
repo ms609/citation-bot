@@ -64,7 +64,7 @@ require_once(__DIR__ . '/../testBaseClass.php');
         );
       $namespaces = $api->fetch($vars, 'POST');
       
-      if ($namespaces === FALSE) {
+      if ($namespaces == FALSE) {
         report_error('API failed to return anything for namespaces');
       }
       
