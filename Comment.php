@@ -23,35 +23,35 @@ abstract class WikiThings {
 
 final class Comment extends WikiThings {
   const PLACEHOLDER_TEXT = '# # # CITATION_BOT_PLACEHOLDER_COMMENT %s # # #';
-  const REGEXP = '~<!--.*?-->~us';
+  const REGEXP = ['~<!--.*?-->~us'];
 }
 
 final class Nowiki extends WikiThings {
   const PLACEHOLDER_TEXT = '# # # CITATION_BOT_PLACEHOLDER_NOWIKI %s # # #';
-  const REGEXP = '~<nowiki>.*?</nowiki>~us';
+  const REGEXP = ['~<nowiki>.*?</nowiki>~us'];
 }
 
 final class Chemistry extends WikiThings {
   const PLACEHOLDER_TEXT = '# # # CITATION_BOT_PLACEHOLDER_CHEMISTRY %s # # #';
-  const REGEXP = '~<chem>.*?</chem>~us';
+  const REGEXP = ['~<chem>.*?</chem>~us'];
 }
 
 final class Mathematics extends WikiThings {
   const PLACEHOLDER_TEXT = '# # # CITATION_BOT_PLACEHOLDER_MATHEMATICS %s # # #';
-  const REGEXP = '~<math>.*?</math>~us';
+  const REGEXP = ['~<math>.*?</math>~us'];
 }
 
 final class Musicscores extends WikiThings {
   const PLACEHOLDER_TEXT = '# # # CITATION_BOT_PLACEHOLDER_MUSIC %s # # #';
-  const REGEXP = '~<score>.*?</score>~us';
+  const REGEXP = ['~<score>.*?</score>~us'];
 }
 
 final class Preformated extends WikiThings {
   const PLACEHOLDER_TEXT = '# # # CITATION_BOT_PLACEHOLDER_PREFORMAT %s # # #';
-  const REGEXP = '~<pre>.*?</pre>~us';
+  const REGEXP = ['~<pre>.*?</pre>~us'];
 }
 
 final class SingleBracket extends WikiThings {
   const PLACEHOLDER_TEXT = '# # # CITATION_BOT_PLACEHOLDER_SINGLE_BRACKET %s # # #';
-  const REGEXP = '~(?<!\{)\{[^\{\}]+\}(?!\})~us';
+  const REGEXP = ['~(?<!\{)\{[^\{\}]+\}(?!\})~us'];
 }
