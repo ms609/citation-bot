@@ -5,7 +5,7 @@ declare(strict_types=1);
  * Contains constants and text-parsing functions for wikitext comments.
  */
 
-// If you ever change PLACEHOLDER_TEXT, please update expandFns.php::remove_comments
+// Do not PLACEHOLDER_TEXT, there are lots of REGEX and stripos() calls in the code
 
 abstract class WikiThings {
   const TREAT_IDENTICAL_SEPARATELY = FALSE;
