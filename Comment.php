@@ -5,8 +5,6 @@ declare(strict_types=1);
  * Contains constants and text-parsing functions for wikitext comments.
  */
 
-// If you ever change PLACEHOLDER_TEXT, please update expandFns.php::remove_comments
-
 abstract class WikiThings {
   const TREAT_IDENTICAL_SEPARATELY = FALSE;
   protected $rawtext;
@@ -23,6 +21,7 @@ abstract class WikiThings {
 
 final class Comment extends WikiThings {
   const PLACEHOLDER_TEXT = '# # # CITATION_BOT_PLACEHOLDER_COMMENT %s # # #';
+  const PLACEHOLDER_TEXT_REV = '~# # # CITATION_BOT_PLACEHOLDER_COMMENT \d+ # # #~';  // "reverse"
   const REGEXP = ['~<!--.*?-->~us'];
 }
 
