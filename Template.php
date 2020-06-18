@@ -5636,6 +5636,7 @@ final class Template {
     if (preg_match('~archive\.org/details/[^/]+$~', $url)) return FALSE;
     if (stripos($url, 'PA1') && !preg_match('~PA1[0-9]~i', $url)) return FALSE;
     if (stripos($url, 'PA0')) return FALSE;
+    if ($this->get_without_comments_and_placeholders('chapter') == '') return FALSE;
     if (stripos($url, 'archive.org')) {
       if (strpos($url, 'chapter')) return TRUE;
       if (strpos($url, 'page')) {
