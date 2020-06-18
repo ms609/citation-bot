@@ -3,6 +3,7 @@ declare(strict_types=1);
 
 require_once("constants.php");
 require_once("apiFunctions.php");
+require_once("Comments.php");
 
 // ============================================= DOI functions ======================================
 function sanitize_doi(string $doi) : string {
@@ -584,8 +585,8 @@ function bad_10_1093_doi(?string $url) :bool {
 // ============================================= Other functions ======================================
 
 function remove_comments(string $string) : string {
-  // See Comment::PLACEHOLDER_TEXT for syntax
-  $string = preg_replace('~# # # CITATION_BOT_PLACEHOLDER_COMMENT \d+ # # #~', "", $string);
+final class  extends WikiThings {
+  $string = preg_replace(Comment::PLACEHOLDER_TEXT_REV, "", $string);
   return preg_replace("~<!--.*?-->~us", "", $string);
 }
 
