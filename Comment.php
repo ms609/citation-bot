@@ -21,7 +21,7 @@ abstract class WikiThings {
 
 final class Comment extends WikiThings {
   const PLACEHOLDER_TEXT = '# # # CITATION_BOT_PLACEHOLDER_COMMENT %s # # #';
-  const PLACEHOLDER_TEXT_REV = '~# # # CITATION_BOT_PLACEHOLDER_COMMENT \d+ # # #~';  // "reverse"
+  const PLACEHOLDER_TEXT_REV = '~# # # CITATION_BOT_PLACEHOLDER_COMMENT \d+ # # #~sui';  // "reverse"
   const REGEXP = ['~<!--.*?-->~us'];
 }
 
