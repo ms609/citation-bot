@@ -38,6 +38,12 @@ if (!getenv('PHP_WP_OAUTH_CONSUMER') || !getenv('PHP_WP_OAUTH_SECRET')) {
 
 try {
   $conf = new ClientConfig('https://meta.wikimedia.org/w/index.php?title=Special:OAuth');
+}
+catch (Throwable $e) {
+  death_time("Citation Bot Could not contact meta.wikimedia.org");
+}
+
+try {
   $conf->setConsumer(new Consumer(getenv('PHP_WP_OAUTH_CONSUMER'), getenv('PHP_WP_OAUTH_SECRET')));
   $client = new Client($conf);
   unset($conf);
