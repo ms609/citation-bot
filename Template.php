@@ -23,7 +23,6 @@ final class Template {
   const PLACEHOLDER_TEXT = '# # # CITATION_BOT_PLACEHOLDER_TEMPLATE %s # # #';
   const REGEXP = ['~\{\{[^\{\}\|]+\}\}~suS', '~\{\{[^\{\}]+\}\}~suS', '~\{\{(?>[^\{]|\{[^\{])+?\}\}~suS'];  // Please see https://stackoverflow.com/questions/1722453/need-to-prevent-php-regex-segfault for discussion of atomic regex
   const TREAT_IDENTICAL_SEPARATELY = FALSE;
-  const REGEXP_HAS_ONE = '~\{\{.+\}\}~suS';
   const MAGIC_STRING = 'CITATION_BOT_PLACEHOLDER_URL_POINTER_'; 
   public $all_templates;  // Points to list of all the Template() on the Page() including this one
   public $date_style = DATES_WHATEVER;  // Will get from the page
@@ -2220,7 +2219,7 @@ final class Template {
       
       if ($this->blank('bibcode')) {
         $this->add_if_new('bibcode_nosearch', (string) $record->bibcode);
-      } elseif ($this->get('bibcode') !== (string) $record->bibcode && stripos($this->get('bibcode'), 'citation_bot_placeholder') === FALSE) {
+      } elseif ($this->get('bibcode') !== (string) $record->bibcode && stripos($this->get('bibcode'), 'CITATION_BOT_PLACEHOLDER') === FALSE) {
         report_info("Updating " . bibcode_link($this->get('bibcode')) . " to " .  bibcode_link((string) $record->bibcode));
         $this->set('bibcode', (string) $record->bibcode); // The bibcode has been updated
       }
@@ -5637,6 +5636,7 @@ final class Template {
     if (preg_match('~archive\.org/details/[^/]+$~', $url)) return FALSE;
     if (stripos($url, 'PA1') && !preg_match('~PA1[0-9]~i', $url)) return FALSE;
     if (stripos($url, 'PA0')) return FALSE;
+    if ($this->get_without_comments_and_placeholders('chapter') == '') return FALSE;
     if (stripos($url, 'archive.org')) {
       if (strpos($url, 'chapter')) return TRUE;
       if (strpos($url, 'page')) {

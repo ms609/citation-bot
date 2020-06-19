@@ -482,7 +482,6 @@ class Page {
     $placeholder_text = $class::PLACEHOLDER_TEXT;
     $treat_identical_separately = $class::TREAT_IDENTICAL_SEPARATELY;
     $objects = array();
-    if (!is_array($regexp_in)) $regexp_in = [$regexp_in];
     
     $preg_ok = TRUE;
     foreach ($regexp_in as $regexp) {
