@@ -14,15 +14,6 @@ use MediaWiki\OAuthClient\Token;
 use MediaWiki\OAuthClient\ClientConfig;
 use MediaWiki\OAuthClient\Client;
 
-function return_to_sender() : void {
-  if (isset($_GET['return'])) {
-    header("Location: " . (string) $_GET['return']);
-  } else {
-    header("Location: https://citations.toolforge.org/");
-  }
-  exit(0);
-}
-
 function death_time(string $err) : void {
   @session_unset();
   @session_destroy();
@@ -30,6 +21,15 @@ function death_time(string $err) : void {
   echo("\n\n" . $err);
   @ob_end_flush();
   exit(1);
+}
+
+function return_to_sender() : void {
+  if (isset($_GET['return'])) {
+    header("Location: " . (string) $_GET['return']);
+  } else {
+    header("Location: https://citations.toolforge.org/");
+  }
+  exit(0);
 }
 
 if (!getenv('PHP_WP_OAUTH_CONSUMER') || !getenv('PHP_WP_OAUTH_SECRET')) {
