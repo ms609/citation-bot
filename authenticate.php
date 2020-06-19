@@ -14,6 +14,15 @@ use MediaWiki\OAuthClient\Token;
 use MediaWiki\OAuthClient\ClientConfig;
 use MediaWiki\OAuthClient\Client;
 
+function death_time(string $err) : void { // Some calls have extra calls to exit to make phpstan happy
+  @session_unset();
+  @session_destroy();
+  @ob_end_flush();
+  echo("\n\n" . $err);
+  @ob_end_flush();
+  exit(1);
+}
+
 function return_to_sender() : void {
   if (isset($_GET['return'])) {
     header("Location: " . (string) $_GET['return']);
@@ -24,17 +33,24 @@ function return_to_sender() : void {
 }
 
 if (!getenv('PHP_WP_OAUTH_CONSUMER') || !getenv('PHP_WP_OAUTH_SECRET')) {
-  echo("Citation Bot's authorization tokens not configured");
-  exit(1);
+  death_time("Citation Bot's authorization tokens not configured");
 }
 
 try {
   $conf = new ClientConfig('https://meta.wikimedia.org/w/index.php?title=Special:OAuth');
+}
+catch (Throwable $e) {
+  death_time("Citation Bot Could not contact meta.wikimedia.org"); exit(1);
+}
+
+try {
   $conf->setConsumer(new Consumer(getenv('PHP_WP_OAUTH_CONSUMER'), getenv('PHP_WP_OAUTH_SECRET')));
   $client = new Client($conf);
   unset($conf);
 }
-catch (Throwable $e) { @ob_end_flush() ; echo("   \nCitation Bot's internal authorization tokens did not work"); exit(1); }
+catch (Throwable $e) {
+  death_time("Citation Bot's internal authorization tokens did not work"); exit(1);
+}
 
 // Existing Access Grant - verify that it works since we are here any way
 if (isset($_SESSION['access_key']) && isset($_SESSION['access_secret'])) {
@@ -62,10 +78,7 @@ if (isset($_GET['oauth_verifier']) && isset($_SESSION['request_key']) && isset($
         return_to_sender();
    }
    catch (Throwable $e) { ; }
-   @session_unset();
-   @session_destroy();
-   echo("Incoming authorization tokens did not work");
-   exit(1);
+   death_time("Incoming authorization tokens did not work");
 }
 unset ($_SESSION['request_key']);
 unset ($_SESSION['request_secret']);
@@ -86,9 +99,6 @@ try {
       exit(0);
 }
 catch (Throwable $e) { ; }
-@session_unset();
-@session_destroy();
-echo("Error authenticating.  Resetting.  Please try again.");
-exit(1);
+death_time("Error authenticating.  Resetting.  Please try again.");
 
 
