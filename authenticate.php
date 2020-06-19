@@ -14,7 +14,7 @@ use MediaWiki\OAuthClient\Token;
 use MediaWiki\OAuthClient\ClientConfig;
 use MediaWiki\OAuthClient\Client;
 
-function death_time(string $err) : void {
+function death_time(string $err) : void { // Some calls have extra calls to exit to make phpstan happy
   @session_unset();
   @session_destroy();
   @ob_end_flush();
@@ -40,7 +40,7 @@ try {
   $conf = new ClientConfig('https://meta.wikimedia.org/w/index.php?title=Special:OAuth');
 }
 catch (Throwable $e) {
-  death_time("Citation Bot Could not contact meta.wikimedia.org");
+  death_time("Citation Bot Could not contact meta.wikimedia.org"); exit(1);
 }
 
 try {
@@ -49,7 +49,7 @@ try {
   unset($conf);
 }
 catch (Throwable $e) {
-  death_time("Citation Bot's internal authorization tokens did not work");
+  death_time("Citation Bot's internal authorization tokens did not work"); exit(1);
 }
 
 // Existing Access Grant - verify that it works since we are here any way
