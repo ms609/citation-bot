@@ -585,7 +585,7 @@ function bad_10_1093_doi(?string $url) :bool {
 
 function remove_comments(string $string) : string {
   // See Comment::PLACEHOLDER_TEXT for syntax
-  $string = preg_replace('~# # # CITATION_BOT_PLACEHOLDER_COMMENT \d+ # # #~', "", $string);
+  $string = preg_replace('~# # # CITATION_BOT_PLACEHOLDER_COMMENT \d+ # # #~isu', "", $string);
   return preg_replace("~<!--.*?-->~us", "", $string);
 }
 

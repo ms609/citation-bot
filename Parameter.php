@@ -47,12 +47,12 @@ final class Parameter {
       $this->val  = $text;
     }
     // Comments before parameter names
-    if (preg_match('~^# # # CITATION_BOT_PLACEHOLDER_COMMENT \d+ # # #(?:\s*)~i', $this->param, $match)) {
+    if (preg_match('~^# # # CITATION_BOT_PLACEHOLDER_COMMENT \d+ # # #(?:\s*)~isu', $this->param, $match)) {
       $this->pre = $this->pre . $match[0];
       $this->param = str_replace($match[0], '', $this->param);
     }
     // Comments after parameter names
-    if (preg_match('~(?:\s*)# # # CITATION_BOT_PLACEHOLDER_COMMENT \d+ # # #$~i', $this->param, $match)) {
+    if (preg_match('~(?:\s*)# # # CITATION_BOT_PLACEHOLDER_COMMENT \d+ # # #$~isu', $this->param, $match)) {
       $this->eq = $match[0] . $this->eq;
       $this->param = str_replace($match[0], '', $this->param);
     }
