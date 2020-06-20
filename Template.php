@@ -5166,7 +5166,7 @@ final class Template {
   protected function param_value(int $i) : string {
     $item = $this->param_with_index($i);
     if (is_null($item)) {
-       report_error('param_value() called on invalid index: ' . (string) $i); 
+       report_error('param_value() called on invalid index: ' . (string) $i); // @codeCoveageIgnore
     }
     return (string) $item->val;
   }
