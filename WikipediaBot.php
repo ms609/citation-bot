@@ -203,7 +203,7 @@ class WikipediaBot {
     }
     
     if (!isset($response->query->pages)) {
-      report_error("Pages array is non-existent.  Aborting.");
+      report_error("Pages array is non-existent.  Aborting.");   // @codeCoverageIgnore
     }
     $myPage = reset($response->query->pages); // reset gives first element in list
     
