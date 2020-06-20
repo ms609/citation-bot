@@ -14,17 +14,14 @@ use MediaWiki\OAuthClient\Token;
 use MediaWiki\OAuthClient\ClientConfig;
 use MediaWiki\OAuthClient\Client;
 
-function death_time(string $err) : void { // Some calls have extra calls to exit to make phpstan happy
+// The two ways we leave this script - Some calls have extra calls to exit to make phpstan happy
+function death_time(string $err) : void {
   @session_destroy();
   die($err);
 }
 
-function return_to_sender() : void {
-  if (isset($_GET['return'])) {
-    header("Location: " . (string) $_GET['return']);
-  } else {
-    header("Location: https://citations.toolforge.org/");
-  }
+function return_to_sender(string $where = 'https://citations.toolforge.org/') : void {
+  @header("Location: " . $where);
   exit(0);
 }
 
@@ -71,7 +68,7 @@ if (isset($_GET['oauth_verifier']) && isset($_SESSION['request_key']) && isset($
         $_SESSION['access_key'] = $accessToken->key;
         $_SESSION['access_secret'] = $accessToken->secret;
         unset($_SESSION['request_key']);unset($_SESSION['request_secret']);
-        return_to_sender();
+        return_to_sender(isset($_GET['return']) ? (string) $_GET['return'] : NULL );
    }
    catch (Throwable $e) { ; }
    death_time("Incoming authorization tokens did not work");
@@ -91,8 +88,7 @@ try {
       list( $authUrl, $token ) = $client->initiate();
       $_SESSION['request_key'] = $token->key; // We will retrieve these from session when the user is sent back
       $_SESSION['request_secret'] = $token->secret;
-      @header("Location: $authUrl");
-      exit(0);
+      return_to_sender($authUrl);
 }
 catch (Throwable $e) { ; }
 death_time("Error authenticating.  Resetting.  Please try again.");
