@@ -1,6 +1,6 @@
 <?php
 declare(strict_types=1);
-@session_start();
+session_start();
 // don't do since we do not verify every time @setcookie(session_name(),session_id(),time()+(7*24*3600)); // 7 days
 error_reporting(E_ALL^E_NOTICE);
 define("HTML_OUTPUT", TRUE);
@@ -15,12 +15,8 @@ use MediaWiki\OAuthClient\ClientConfig;
 use MediaWiki\OAuthClient\Client;
 
 function death_time(string $err) : void { // Some calls have extra calls to exit to make phpstan happy
-  @session_unset();
   @session_destroy();
-  @ob_end_flush();
-  echo("\n\n" . $err);
-  @ob_end_flush();
-  exit(1);
+  die($err);
 }
 
 function return_to_sender() : void {
