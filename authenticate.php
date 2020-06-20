@@ -1,7 +1,7 @@
 <?php
 declare(strict_types=1);
-@session_start();
-// don't do since we do not verify every time @setcookie(session_name(),session_id(),time()+(7*24*3600)); // 7 days
+session_start();
+
 error_reporting(E_ALL^E_NOTICE);
 define("HTML_OUTPUT", TRUE);
 
@@ -14,21 +14,14 @@ use MediaWiki\OAuthClient\Token;
 use MediaWiki\OAuthClient\ClientConfig;
 use MediaWiki\OAuthClient\Client;
 
-function death_time(string $err) : void { // Some calls have extra calls to exit to make phpstan happy
-  @session_unset();
+// The two ways we leave this script - Some calls have extra calls to exit to make phpstan happy
+function death_time(string $err) : void {
   @session_destroy();
-  @ob_end_flush();
-  echo("\n\n" . $err);
-  @ob_end_flush();
-  exit(1);
+  die($err);
 }
 
-function return_to_sender() : void {
-  if (isset($_GET['return'])) {
-    header("Location: " . (string) $_GET['return']);
-  } else {
-    header("Location: https://citations.toolforge.org/");
-  }
+function return_to_sender(string $where = 'https://citations.toolforge.org/') : void {
+  @header("Location: " . $where);
   exit(0);
 }
 
@@ -75,7 +68,7 @@ if (isset($_GET['oauth_verifier']) && isset($_SESSION['request_key']) && isset($
         $_SESSION['access_key'] = $accessToken->key;
         $_SESSION['access_secret'] = $accessToken->secret;
         unset($_SESSION['request_key']);unset($_SESSION['request_secret']);
-        return_to_sender();
+        return_to_sender(isset($_GET['return']) ? (string) $_GET['return'] : NULL );
    }
    catch (Throwable $e) { ; }
    death_time("Incoming authorization tokens did not work");
@@ -95,8 +88,7 @@ try {
       list( $authUrl, $token ) = $client->initiate();
       $_SESSION['request_key'] = $token->key; // We will retrieve these from session when the user is sent back
       $_SESSION['request_secret'] = $token->secret;
-      @header("Location: $authUrl");
-      exit(0);
+      return_to_sender($authUrl);
 }
 catch (Throwable $e) { ; }
 death_time("Error authenticating.  Resetting.  Please try again.");
