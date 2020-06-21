@@ -248,7 +248,6 @@ function zotero_request(string $url) : string {
     $zotero_response = ERROR_DONE;
     // @codeCoverageIgnoreEnd
   }
-  echo "\n\n" . $zotero_response . "\n\n";
   return $zotero_response;
 }
 
