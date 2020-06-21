@@ -4976,7 +4976,7 @@ T1 - This is the Title }}';
      $template->verify_doi();
      $this->assertSame('10.1111/j.1471-0528.1995.tb09132.x', $template->get2('doi'));
    
-     $text = '{{cite journal|doi=10.1111/j.1471-0528.1995.tb09132.x;jsessionid]}';
+     $text = '{{cite journal|doi=10.1111/j.1471-0528.1995.tb09132.x;jsessionid}}';
      $template = $this->make_citation($text);
      $template->verify_doi();
      $this->assertSame('10.1111/j.1471-0528.1995.tb09132.x', $template->get2('doi'));
