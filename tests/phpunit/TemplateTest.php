@@ -4964,7 +4964,7 @@ T1 - This is the Title }}';
      $text = '{{cite journal|doi=10.1111/j.1471-0528.1995.tb09132.x#page_scan_tab_contents}}';
      $template = $this->make_citation($text);
      $template->verify_doi();
-     $this->assertSame('10.1111/j.1471-0528.1995.tb09132.x;jsessionid=2222', $template->get2('doi'));
+     $this->assertSame('10.1111/j.1471-0528.1995.tb09132.x', $template->get2('doi'));
    
      $text = '{{cite journal|doi=10.1111/j.1471-0528.1995.tb09132.x/abstract}}';
      $template = $this->make_citation($text);
