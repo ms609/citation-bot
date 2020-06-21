@@ -2,9 +2,8 @@
 declare(strict_types=1);
 @session_start();
 error_reporting(E_ALL^E_NOTICE);
-define("HTML_OUTPUT" ,TRUE);
+define("HTML_OUTPUT", TRUE);
 require_once('setup.php');
-require_once('constants/bad_data.php');
 
 $api = new WikipediaBot();
 
