@@ -17,7 +17,7 @@ use MediaWiki\OAuthClient\Client;
 // The two ways we leave this script - Some calls have extra calls to exit to make phpstan happy
 function death_time(string $err) : void {
   @session_destroy();
-  die($err);
+  exit($err);
 }
 
 function return_to_sender(string $where = 'https://citations.toolforge.org/') : void {
