@@ -16,7 +16,7 @@ abstract class WikiThings {
   }
 
   public function parsed_text() : string {
-    if (!isset($this->rawtext)) die('Attempt to access undefined WikiThings');
+    if (!isset($this->rawtext)) exit('Attempt to access undefined WikiThings');
     return $this->rawtext;
   }
 }
