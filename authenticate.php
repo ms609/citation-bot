@@ -85,7 +85,7 @@ try {
       $host = $_SERVER['HTTP_HOST'];
       $path = $_SERVER['REQUEST_URI'];
       $callback = $proto . '://' . $host . $path;
-      $callback = str_replace('citations.toolforge.org', 'tools.wmflabs.org/citations', $callback); // Temporary hack try
+      // $callback = str_replace('citations.toolforge.org', 'tools.wmflabs.org/citations', $callback); // Temporary hack try
       $client->setCallback($callback);
 }
 catch (Throwable $e) {
