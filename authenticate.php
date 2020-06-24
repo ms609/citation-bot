@@ -85,15 +85,18 @@ try {
       $host = $_SERVER['HTTP_HOST'];
       $path = $_SERVER['REQUEST_URI'];
       $callback = $proto . '://' . $host . $path;
-      // $callback = str_replace('citations.toolforge.org', 'tools.wmflabs.org/citations', $callback); // Temporary hack try
       $client->setCallback($callback);
-}
-catch (Throwable $e) {
-      death_time("Unable to set callback");
-}
-try {
       list( $authUrl, $token ) = $client->initiate();
       $_SESSION['request_key'] = $token->key; // We will retrieve these from session when the user is sent back
+      $_SESSION['request_secret'] = $token->secret;
+      return_to_sender($authUrl);
+}
+catch (Throwable $e) { ; }
+try {
+      $callback = str_replace('citations.toolforge.org', 'tools.wmflabs.org/citations', $callback);
+      $client->setCallback($callback);
+      list( $authUrl, $token ) = $client->initiate();
+      $_SESSION['request_key'] = $token->key;
       $_SESSION['request_secret'] = $token->secret;
       return_to_sender($authUrl);
 }
