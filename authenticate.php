@@ -84,7 +84,9 @@ try {
       ) ? "https" : "http";
       $host = $_SERVER['HTTP_HOST'];
       $path = $_SERVER['REQUEST_URI'];
-      $client->setCallback( $proto . '://' . $host . $path );
+      $callback = $proto . '://' . $host . $path;
+      $callback = str_replace('citations.toolforge.org', 'https://tools.wmflabs.org/citations', $callback); // Temporary hack try
+      $client->setCallback($callback);
       list( $authUrl, $token ) = $client->initiate();
       $_SESSION['request_key'] = $token->key; // We will retrieve these from session when the user is sent back
       $_SESSION['request_secret'] = $token->secret;
