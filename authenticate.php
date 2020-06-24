@@ -77,14 +77,14 @@ unset ($_SESSION['request_key']);
 unset ($_SESSION['request_secret']);
 
 // Nothing found.  Needs an access grant from scratch
-try {
-      $proto = (
+$proto = (
          (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on') ||
          (isset($_SERVER['HTTP_X_FORWARDED_PROTO']) && $_SERVER['HTTP_X_FORWARDED_PROTO'] === 'https')
       ) ? "https" : "http";
-      $host = $_SERVER['HTTP_HOST'];
-      $path = $_SERVER['REQUEST_URI'];
-      $callback = $proto . '://' . $host . $path;
+$host = $_SERVER['HTTP_HOST'];
+$path = $_SERVER['REQUEST_URI'];
+$callback = $proto . '://' . $host . $path;
+try {
       $client->setCallback($callback);
       list( $authUrl, $token ) = $client->initiate();
       $_SESSION['request_key'] = $token->key; // We will retrieve these from session when the user is sent back
