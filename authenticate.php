@@ -17,7 +17,7 @@ use MediaWiki\OAuthClient\Client;
 // The two ways we leave this script - Some calls have extra calls to exit to make phpstan happy
 function death_time(string $err) : void {
   @session_destroy();
-  die($err);
+  exit($err);
 }
 
 function return_to_sender(string $where = 'https://citations.toolforge.org/') : void {
@@ -77,20 +77,30 @@ unset ($_SESSION['request_key']);
 unset ($_SESSION['request_secret']);
 
 // Nothing found.  Needs an access grant from scratch
-try {
-      $proto = (
+$proto = (
          (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on') ||
          (isset($_SERVER['HTTP_X_FORWARDED_PROTO']) && $_SERVER['HTTP_X_FORWARDED_PROTO'] === 'https')
       ) ? "https" : "http";
-      $host = $_SERVER['HTTP_HOST'];
-      $path = $_SERVER['REQUEST_URI'];
-      $client->setCallback( $proto . '://' . $host . $path );
+$host = $_SERVER['HTTP_HOST'];
+$path = $_SERVER['REQUEST_URI'];
+$callback = $proto . '://' . $host . $path;
+try {
+      $client->setCallback($callback);
       list( $authUrl, $token ) = $client->initiate();
       $_SESSION['request_key'] = $token->key; // We will retrieve these from session when the user is sent back
       $_SESSION['request_secret'] = $token->secret;
       return_to_sender($authUrl);
 }
 catch (Throwable $e) { ; }
-death_time("Error authenticating.  Resetting.  Please try again.");
+try {
+      $callback = str_replace('citations.toolforge.org', 'tools.wmflabs.org/citations', $callback);
+      $client->setCallback($callback);
+      list( $authUrl, $token ) = $client->initiate();
+      $_SESSION['request_key'] = $token->key;
+      $_SESSION['request_secret'] = $token->secret;
+      return_to_sender($authUrl);
+}
+catch (Throwable $e) { ; }
+death_time("Unable to initiate OAuth.");
 
 
