@@ -40,7 +40,6 @@ if (HTML_OUTPUT) {
 ?>
 <!DOCTYPE html>
 <html>
-  <body>
   <head>
   <title>Citation bot: Category mode</title>
   <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
