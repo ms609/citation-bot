@@ -30,7 +30,7 @@ const UC_SMALL_WORDS = array(/* The following will be automatically updated to a
           " Di ", " Die ", " Dna ", " Do ", " Du ", " E ", " Ed ", " Ee ", " Ein ", " Eine ", " Einen ", 
           " El ", " Else ", " Embo ", " En ", " Et ", " Faseb ", " Fda ", " Febs ", " Fems ", 
           " For ", " From ", " För ", " Für ", " Hiv ", " Hiv/Aids ", " Hiv/aids ", " Hla ", 
-	  " Htmlgiant ", " Ibm ", " Ices " " Ieee ", " If ", " Ilr ", " In ", " Into ", 
+	  " Htmlgiant ", " Ibm ", " Ices ", " Ieee ", " If ", " Ilr ", " In ", " Into ", 
           " Is ", " Its ", " Jama ", " Jama: ", " La ", " Las ", " Le ", " Les ", " Los ", 
           " Mit ", " Mnras ", " Mot ", " N.y. ", " N.y.) ", " Nasa ", " Nejm ", " Non ", 
           " Nor ", " Nrc ", " Ny ", " Nyc ", " Nyt ", " Nz ", " Och ", " Oecd ", " Of ", 
