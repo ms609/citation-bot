@@ -39,7 +39,7 @@ if (strtolower(substr($category, 0, 9)) == 'category:') $category = trim(substr(
 if (HTML_OUTPUT) {
 ?>
 <!DOCTYPE html>
-<html>
+<html lang="en">
   <head>
   <title>Citation bot: Category mode</title>
   <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
