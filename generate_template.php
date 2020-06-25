@@ -5,7 +5,7 @@ declare(strict_types=1);
 
 @header("Access-Control-Allow-Origin: *"); //This is ok because the API is not authenticated
 
-echo "<!DOCTYPE html><html><body><pre>\n";
+echo "<!DOCTYPE html><html><head><title>Git Pull</title></head><body><pre>\n";
 $SLOW_MODE = TRUE;
 require_once('setup.php');
 $t = new Template();
