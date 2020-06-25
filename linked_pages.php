@@ -14,8 +14,7 @@ if (isset($_REQUEST["slow"])) {
 
 ?>
 <!DOCTYPE html>
-<html>
-  <body>
+<html lang="en">
   <head>
   <title>Citation bot: Linked page mode</title>
   <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
@@ -50,7 +49,7 @@ if ($json === FALSE) {
   report_error(' Error getting page list');
 }    
 $array = @json_decode($json, TRUE);
-if ($array === FALSE || !isset($array['parse']['links']) || !array($array['parse']['links'])) {
+if ($array === FALSE || !isset($array['parse']['links']) || !is_array($array['parse']['links'])) {
   report_error(' Error interpreting page list');
 }
 $links = $array['parse']['links'];
@@ -90,6 +89,8 @@ foreach($links as $link) {
     }
   }
   echo ("\n Done all " . count($pages_in_category) . " pages linked from " . $page_name . " \n");
-
-html_echo(' # # #</pre></body></html>', "\n");
 exit(0);
+?>
+ # # #</pre></body></html>
+
+
