@@ -79,7 +79,7 @@ const JOURNAL_ACRONYMS = array(/* The following will be automatically updated to
           " U.S. ", " U.S.A. ", " U.S.A. ", " uHealth ", " uHealth ", " USGS ", " v Astronomicheskii Zhurna ", 
           " WRIR ", " z/Journal ", " z/Journal ", " zbMATH ", " Zeitschrift für Geologische Wissenschaften ", 
           " Zeitschrift für Physik A Hadrons and Nuclei ", " Zeitschrift für Physik A: Hadrons and Nuclei ", 
-          " ZooKeys ", /* The above will be automatically updated to alphabetical order */ 
+          " ZooKeys ", " Hylli i Dritës ", " UNED Research Journal ", " CrystEngComm ", " ChemCatChem ", " CommLaw "/* The above will be automatically updated to alphabetical order */ 
 );
 const UCFIRST_JOURNAL_ACRONYMS = array(/* The following will be automatically updated to alphabetical order */ 
           " (Bba) ", " (online Ed.) ", " Aapos ", " Aaps ", " Acs ", " Algebra I Analiz ", 
@@ -118,7 +118,7 @@ const UCFIRST_JOURNAL_ACRONYMS = array(/* The following will be automatically up
           " U.s. ", " U.S.a. ", " U.s.a ", " UHealth ", " Uhealth ", " Usgs ", " V Astronomicheskii Zhurna ", 
           " Wrir ", " Z/Journal ", " Z/journal ", " ZbMATH ", " Zeitschrift Für Geologische Wissenschaften ", 
           " Zeitschrift für Physik a Hadrons and Nuclei ", " Zeitschrift Für Physik a: Hadrons And Nuclei ", 
-          " Zookeys ", /* The above will be automatically updated to alphabetical order */ 
+          " Zookeys ", " Hylli I Dritës ", " Uned Research Journal ", " Crystengcomm ", " Chemcatchem ", " Commlaw " /* The above will be automatically updated to alphabetical order */ 
 );
 
 const OBVIOUS_FOREIGN_WORDS = array(" Abhandlungen ", " Actes ", " Annales ", " Archiv ", " Archives de ",
