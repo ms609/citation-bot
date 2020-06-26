@@ -653,4 +653,3 @@ function url_simplify(string $url) : string {
   return $url;
 }
 
-?>
