@@ -1082,4 +1082,4 @@ function expand_templates_from_archives(array $templates) : void { // This is do
     }
   }
 }
-?>
+
