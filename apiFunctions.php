@@ -697,9 +697,9 @@ function expand_doi_with_dx(Template $template, string $doi) : bool {
 
 function doi_active(string $doi) : ?bool {
   static $cache = [];
-  if (!isset($cache[$doi]) || $cache[$doi] === NULL) {
+  if (!isset($cache[$doi]) || is_null($cache[$doi])) {
     $works = doi_works($doi);
-    if ($works === NULL) {
+    if (is_null($works)) {
       $cache[$doi] = NULL;        // @codeCoverageIgnore
     } elseif ($works === FALSE) {
       $cache[$doi] = FALSE;
@@ -712,7 +712,7 @@ function doi_active(string $doi) : ?bool {
 
 function doi_works(string $doi) : ?bool {
   static $cache = [];
-  if (!isset($cache[$doi]) || $cache[$doi] === NULL) {
+  if (!isset($cache[$doi]) || is_null($cache[$doi])) {
     $cache[$doi] = is_doi_works($doi);
   }
   return $cache[$doi];
