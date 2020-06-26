@@ -2809,6 +2809,13 @@ T1 - This is the Title }}';
     $page = $this->process_page($text);
     $this->assertSame(0, substr_count($page->parsed_text(), 'JSTOR'));
   }
+
+  public function testJunkData2() : void {
+    $text = "{{cite journal|doi=10.1016/j.bbagen.2019.129466|journal=Biochimica Et Biophysica Acta|title=Shibboleth Authentication Request}}";
+    $template = $this->process_citation($text);
+    $this->assertSame('Biochimica et Biophysica Acta (BBA) - General Subjects', $template->get2('journal'));
+    $this->assertSame('Time-resolved studies of metalloproteins using X-ray free electron laser radiation at SACLA', $template->get2('title'));
+  }
  
   public function testISSN(){
     $text = '{{Cite journal|journal=Yes}}';
@@ -5068,6 +5075,14 @@ T1 - This is the Title }}';
      $this->assertNull($template->get2('s2cid-access'));
      $this->assertSame('1090322', $template->get2('s2cid')); 
      $this->assertNull($template->get2('url'));
+  }
+ 
+  public function testJournalIsBookSeries() : void {
+     $text = '{{cite journal|journal=advances in enzymology and related areas of molecular biology}}';
+     $template = $this->process_citation($text);
+     $this->assertSame('cite book', $template->wikiname());
+     $this->assertNull($template->get2('journal'));
+     $this->assertSame('Advances in Enzymology and Related Areas of Molecular Biology', $template->get2('series')); 
   }
 
   public function testNameStuff() : void {
