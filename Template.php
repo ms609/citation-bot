@@ -2641,9 +2641,9 @@ final class Template {
         if (isset($best_location->url_for_landing_page)) {
           $oa_url = (string) $best_location->url_for_landing_page;
         } elseif (isset($best_location->url)) {
-          $oa_url = (string) $best_location->url;
+          $oa_url = (string) $best_location->url; // @codeCoverageIgnore
         } else {
-          return 'nothing';
+          return 'nothing'; // @codeCoverageIgnore
         }
         if (!$oa_url) return 'nothing';
 
