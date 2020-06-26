@@ -110,7 +110,7 @@ final class TemplateTest extends testBaseClass {
    }
  
    public function testBadPMID() : void {
-    $text = "{{Cite web|url=https://www.ncbi.nlm.nih.gov/pubmed/?term=Sainis%20KB%5BAuthor%5D&cauthor=true&cauthor_uid=19447493}";
+    $text = "{{Cite web|url=https://www.ncbi.nlm.nih.gov/pubmed/?term=Sainis%20KB%5BAuthor%5D&cauthor=true&cauthor_uid=19447493}}";
     $expanded = $this->process_citation($text);
     $this->assertNull($expanded->get2('pmid'));
     $this->assertNull($expanded->get2('pmc'));
