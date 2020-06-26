@@ -181,11 +181,10 @@ final class PageTest extends testBaseClass {
  
  
   public function testEmptyPage() : void {
-      $page = $this->process_page('');
-      $page = $this->process_page('  ');
-      $page = $this->process_page('  move along, nothing to see here ');
-      $page = $this->process_page('  move along, nothing to see here {{}} ');
-      $this->assertNull(NULL);
+      foreach (['', '  ', " \n ", '  move along, nothing to see here ', '  move along, nothing to see here {{}} ', ' }}}}{{{{ ', '{{{{}}', '{{{{    }}', '{{{{}}}}}}}}'] as $text) {
+        $page = $this->process_page($text);
+        $this->assertSame($text, $page->parsed_text());
+      }
   }
 
   public function testUrlReferences() : void {

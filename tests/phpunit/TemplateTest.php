@@ -84,7 +84,40 @@ final class TemplateTest extends testBaseClass {
     $this->assertTrue($expanded->add_if_new('title-link', 'x'));
    }
  
-  public function testJournal2Web() : void {
+   public function testAddAuthorAgain() : void {
+    $text = "{{Cite web|last1=X}}";
+    $expanded = $this->process_citation($text);
+    $this->assertFalse($expanded->add_if_new('last1', 'Z'));
+   }
+ 
+   public function testAddS2CIDAgain() : void {
+    $text = "{{Cite web|S2CID=X}}";
+    $expanded = $this->process_citation($text);
+    $this->assertFalse($expanded->add_if_new('s2cid', 'Z'));
+   }
+ 
+   public function testNatureBad() : void {
+    $text = "{{Cite web|doi=10.1111/j.1572-0241.xxxx|jstor=XYZ}}";
+    $expanded = $this->process_citation($text);
+    $this->assertNull($expanded->get2('doi'));
+   }
+ 
+   public function testDotInVolumeIssue() : void {
+    $text = "{{Cite web|issue=1234.|volume=2341.}}";
+    $expanded = $this->process_citation($text);
+    $this->assertSame('1234', $expanded->get2('issue'));
+    $this->assertSame('2341', $expanded->get2('volume'));  
+   }
+ 
+   public function testBadPMID() : void {
+    $text = "{{Cite web|url=https://www.ncbi.nlm.nih.gov/pubmed/?term=Sainis%20KB%5BAuthor%5D&cauthor=true&cauthor_uid=19447493}}";
+    $expanded = $this->process_citation($text);
+    $this->assertNull($expanded->get2('pmid'));
+    $this->assertNull($expanded->get2('pmc'));
+    $this->assertSame('https://www.ncbi.nlm.nih.gov/pubmed/?term=Sainis%20KB%5BAuthor%5D&cauthor=true&cauthor_uid=19447493', $expanded->get2('url'));  
+   }
+ 
+   public function testJournal2Web() : void {
     $text = "{{Cite journal|journal=www.cnn.com}}";
     $expanded = $this->process_citation($text);
     $this->assertSame('www.cnn.com', $expanded->get2('website'));  
@@ -2809,6 +2842,13 @@ T1 - This is the Title }}';
     $page = $this->process_page($text);
     $this->assertSame(0, substr_count($page->parsed_text(), 'JSTOR'));
   }
+
+  public function testJunkData2() : void {
+    $text = "{{cite journal|doi=10.1016/j.bbagen.2019.129466|journal=Biochimica Et Biophysica Acta|title=Shibboleth Authentication Request}}";
+    $template = $this->process_citation($text);
+    $this->assertSame('Biochimica et Biophysica Acta (BBA) - General Subjects', $template->get2('journal'));
+    $this->assertSame('Time-resolved studies of metalloproteins using X-ray free electron laser radiation at SACLA', $template->get2('title'));
+  }
  
   public function testISSN(){
     $text = '{{Cite journal|journal=Yes}}';
@@ -3150,10 +3190,10 @@ T1 - This is the Title }}';
   }
 
   public function testTidy42() : void {
-    $text = "{{cite journal|archiveurl=https://www.google.com/search?q=%22institute+for+sustainable+weight+loss%22&oq=%22institute+for+sustainable+weight+loss%22&aqs=chrome..69i57j69i59.14823j0j7&sourceid=chrome&ie=UTF-8}}";
+    $text = "{{cite journal|archiveurl=https://www.google.com/search?q=%22institute+for+sustainable+weight+loss%22&oq=%22institute+for+sustainable+weight+loss%22&aqs=chrome..69i57j69i59.14823j0j7&sourceid=chrome&ie=UTF-8&oe=Bogus&rct=ABC}}";
     $template = $this->make_citation($text);
     $template->tidy_parameter('archiveurl');
-    $this->assertSame('https://www.google.com/search?q=%22institute+for+sustainable+weight+loss%22', $template->get2('archiveurl'));
+    $this->assertSame('https://www.google.com/search?q=%22institute+for+sustainable+weight+loss%22&oe=Bogus&rct=ABC', $template->get2('archiveurl'));
   }
  
   public function testTidy43() : void {
@@ -5068,6 +5108,14 @@ T1 - This is the Title }}';
      $this->assertNull($template->get2('s2cid-access'));
      $this->assertSame('1090322', $template->get2('s2cid')); 
      $this->assertNull($template->get2('url'));
+  }
+ 
+  public function testJournalIsBookSeries() : void {
+     $text = '{{cite journal|journal=advances in enzymology and related areas of molecular biology}}';
+     $template = $this->process_citation($text);
+     $this->assertSame('cite book', $template->wikiname());
+     $this->assertNull($template->get2('journal'));
+     $this->assertSame('Advances in Enzymology and Related Areas of Molecular Biology', $template->get2('series')); 
   }
 
   public function testNameStuff() : void {
