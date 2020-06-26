@@ -1,4 +1,3 @@
-
 <!DOCTYPE html><html lang="en" dir="ltr"><head><title>Unlocker</title></head><body><pre>
 <?php
 ob_implicit_flush();
