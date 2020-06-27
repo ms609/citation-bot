@@ -84,12 +84,7 @@ final class constantsTest extends testBaseClass {
     $start_alpha = '/* The following will be automatically updated to alphabetical order */';
     $end_alpha = '/* The above will be automatically updated to alphabetical order */';
     $filename = __DIR__ . '/../../constants/capitalization.php';
-    $ch = curl_init();
-    curl_setopt($ch, CURLOPT_HEADER, 0);
-    curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
-    curl_setopt($ch, CURLOPT_URL, $filename);
-    $old_contents = curl_exec($ch);
-    curl_close($ch);
+    $old_contents = file_get_contents($filename);
     $sections = explode($start_alpha, $old_contents);
     foreach ($sections as &$section) {
       $alpha_end = stripos($section, $end_alpha);
