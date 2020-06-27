@@ -2,7 +2,7 @@
 declare(strict_types=1);
 
 const LC_SMALL_WORDS = array(/* The following will be automatically updated to alphabetical order */
-          " AAOHN ", " AAP ", " AAUP ", " ABC ", " AC ", " ACM ", " AGU ", " AI ", " AIAA ", 
+          " AAOHN ", " AAP ", " AAUP ", " ABC ", " AC ", " ACM ", " AGU ", " AI ", " AIAA ", " AIP ",
           " AJHG ", " al ", " an ", " and ", " and then ", " as ", " at ", " at ", " aus ", 
           " av ", " BBA ", " BBC ", " be ", " bei ", " BJPsych ", " BMC ", " BMJ ", " but ", 
           " by ", " CBC ", " CNS ", " d'un ", " d'une ", " D.C. ", " da ", " dans ", " das ", 
@@ -22,7 +22,7 @@ const LC_SMALL_WORDS = array(/* The following will be automatically updated to a
           // After this line we list exceptions that need re-capitalizing after they have been decapitalized.
           " El Dorado ", " Las Vegas ", " Los Angeles ", " N Y ", " U S A ");
 const UC_SMALL_WORDS = array(/* The following will be automatically updated to alphabetical order */
-          " Aaohn ", " Aap ", " Aaup ", " Abc ", " Ac ", " Acm ", " Agu ", " Ai ", " Aiaa ", 
+          " Aaohn ", " Aap ", " Aaup ", " Abc ", " Ac ", " Acm ", " Agu ", " Ai ", " Aiaa ", " Aip ",
           " Ajhg ", " Al ", " An ", " And ", " and Then ", " As ", " At ", " At ", " Aus ", 
           " Av ", " Bba ", " Bbc ", " Be ", " Bei ", " Bjpsych ", " Bmc ", " Bmj ", " But ", 
           " By ", " Cbc ", " Cns ", " D'un ", " D'une ", " D.c. ", " Da ", " Dans ", " Das ", 
@@ -63,7 +63,7 @@ const JOURNAL_ACRONYMS = array(/* The following will be automatically updated to
           " HannahArendt.net ", " History of Science; An Annual Review of Literature ", 
           " HOAJ biology ", " Hoppe-Seyler's ", " hprints ", " Hylli i Dritës ", " i ee ", 
           " i ee ", " iConference ", " IEEE/ACM ", " IEEE/ACM ", " IFAC-PapersOnLine ", 
-          " iJournal ", " iJournal ", " im Gesundheitswesen ", " iPhone ", " iScience ", 
+          " iJournal ", " iJournal ", " im Gesundheitswesen ", " Inside Higher Ed ", " iPhone ", " iScience ", 
           " iScience ", " ISME ", " ISRN Genetics ", " J Gerontol A Biol Sci Med Sci ", 
           " J Sch Nurs ", " J SIAM ", " J. SIAM ", " JABS : Journal of Applied Biological Sciences ", 
           " JAMA Psychiatry ", " JNCI: Journal ", " Journal of Materials Chemistry A ", 
@@ -107,7 +107,7 @@ const UCFIRST_JOURNAL_ACRONYMS = array(/* The following will be automatically up
           " Hannaharendt.net ", " History of Science; an Annual Review of Literature ", 
           " Hoaj Biology ", " Hoppe-Seyler´s ", " Hprints ", " Hylli I Dritës ", " I Ee ", 
           " I ee ", " Iconference ", " IEEE/Acm ", " Ieee/Acm ", " Ifac-Papersonline ", 
-          " IJournal ", " Ijournal ", " Im Gesundheitswesen ", " Iphone ", " IScience ", 
+          " IJournal ", " Ijournal ", " Im Gesundheitswesen ", " Inside Higher ed ", " Iphone ", " IScience ", 
           " Iscience ", " Isme ", " Isrn Genetics ", " J Gerontol a Biol Sci Med Sci ", 
           " J SCH Nurs ", " J Siam ", " J. Siam ", " Jabs : Journal of Applied Biological Sciences ", 
           " Jama Psychiatry ", " Jnci: Journal ", " Journal of Materials Chemistry A ", 
