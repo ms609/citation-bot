@@ -19,7 +19,7 @@ final class constantsTest extends testBaseClass {
       $this->assertNotEquals(' ', mb_substr(UCFIRST_JOURNAL_ACRONYMS[$i], -2, 1));
       $this->assertNotEquals(' ', mb_substr(UCFIRST_JOURNAL_ACRONYMS[$i],  1, 1));
       $this->assertSame   (' ', mb_substr(JOURNAL_ACRONYMS[$i], -1, 1));
-      $this->assertSame   (' ', mb_substr(JOURNAL_ACRONYMS[$i],  0, 1));_c
+      $this->assertSame   (' ', mb_substr(JOURNAL_ACRONYMS[$i],  0, 1));
       $this->assertNotEquals(' ', mb_substr(JOURNAL_ACRONYMS[$i], -2, 1));
       $this->assertNotEquals(' ', mb_substr(JOURNAL_ACRONYMS[$i],  1, 1));
     }
