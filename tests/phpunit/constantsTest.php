@@ -88,7 +88,7 @@ final class constantsTest extends testBaseClass {
     curl_setopt($ch, CURLOPT_HEADER, 0);
     curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
     curl_setopt($ch, CURLOPT_URL, $filename);
-    $old_contents = @curl_exec($ch);
+    $old_contents = curl_exec($ch);
     curl_close($ch);
     $sections = explode($start_alpha, $old_contents);
     foreach ($sections as &$section) {
