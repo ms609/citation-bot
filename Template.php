@@ -5629,11 +5629,7 @@ final class Template {
     if (!$this->blank(WORK_ALIASES)) return FALSE; // Nothing to add
     if ($this->get('issn') === '9999-9999') return FALSE; // Fake test suite data
     if (!preg_match('~^\d{4}.?\d{3}[0-9xX]$~u', $this->get('issn'))) return FALSE;
-    $ch = curl_init();
-    curl_setopt($ch, CURLOPT_HEADER, 0);
-    curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
-    curl_setopt($ch, CURLOPT_URL, 'https://www.worldcat.org/issn/' . $this->get('issn'));
-    $html = @curl_exec($ch);
+    $html = @file_get_contents('https://www.worldcat.org/issn/' . $this->get('issn'));
     if ($html == FALSE) {
       echo('Curl error: ' . curl_error($ch));
     }
