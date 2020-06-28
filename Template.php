@@ -2799,7 +2799,7 @@ final class Template {
         if ( !ctype_alnum($oclc) ) $oclc='' ;
       }
       if ($isbn) {  // Try Books.Google.Com
-        $google_book_url='https://books.google.com/books?isbn=' . $isbn;
+        $google_book_url = 'https://books.google.com/books?isbn=' . $isbn;
         $ch = curl_init();
         curl_setopt($ch, CURLOPT_HEADER, 0);
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
