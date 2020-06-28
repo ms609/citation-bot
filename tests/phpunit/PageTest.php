@@ -181,11 +181,10 @@ final class PageTest extends testBaseClass {
  
  
   public function testEmptyPage() : void {
-      $page = $this->process_page('');
-      $page = $this->process_page('  ');
-      $page = $this->process_page('  move along, nothing to see here ');
-      $page = $this->process_page('  move along, nothing to see here {{}} ');
-      $this->assertNull(NULL);
+      foreach (['', '  ', " \n ", '  move along, nothing to see here ', '  move along, nothing to see here {{}} ', ' }}}}{{{{ ', '{{{{}}', '{{{{    }}', '{{{{}}}}}}}}'] as $text) {
+        $page = $this->process_page($text);
+        $this->assertSame($text, $page->parsed_text());
+      }
   }
 
   public function testUrlReferences() : void {
@@ -358,7 +357,12 @@ final class PageTest extends testBaseClass {
     // This MUST be escaped page name-underscores not spaces and such
     $bad_page = ""; //  Replace with something like "Vietnam_War" when debugging
     if ($bad_page !== "") {
-      $text = file_get_contents(WIKI_ROOT . '?title=' . $bad_page . '&action=raw');
+      $ch = curl_init();
+      curl_setopt($ch, CURLOPT_HEADER, 0);
+      curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+      curl_setopt($ch, CURLOPT_URL, WIKI_ROOT . '?title=' . $bad_page . '&action=raw');
+      $text = curl_exec($ch);
+      curl_close($ch);
       $page = new TestPage();
       $page->parse_text($text);
       $BLOCK_BIBCODE_SEARCH = FALSE;

@@ -27,6 +27,7 @@ Always write a clear log message for your commits. One-line messages are fine fo
   * We ALWAYS put spaces after list items and method parameters (`[1, 2, 3]`, not `[1,2,3]`) and around operators (`x += 1`, not `x+=1`)
   * Regular expressions are defined using the symbol `~` in place of `/`, to reduce escaping and improve legibility when handling URLs.
   * We prefer `elseif` to `else if`
+  * We prefer `curl` to `file_get_contents` for easier debugging and greater control
   * We use `echo` and `exit` for normal code, and `print` and `die` for debug code that is intended to be removed later
   * All code is verified to be valid PHP 7.3, and 8.0 according to static analysis
   * All code is verified to be valid PHP 7.3 at runtime

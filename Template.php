@@ -2046,7 +2046,7 @@ final class Template {
         }
       } else {
         $key = $key_index[$term];
-        if ($key && $term && $val = $this->get_without_comments_and_placeholders($term)) {
+        if ($key && $val = $this->get_without_comments_and_placeholders($term)) {
           if (preg_match(REGEXP_PLAIN_WIKILINK, $val, $matches)) {
               $val = $matches[1];    // @codeCoverageIgnore
           } elseif (preg_match(REGEXP_PIPED_WIKILINK, $val, $matches)) {
@@ -2071,7 +2071,7 @@ final class Template {
       report_warning("no results.");
       return array('', 0);
     }
-    if ($xml->ErrorList) { // Could look at $xml->ErrorList->PhraseNotFound for list of what was not found
+    if (isset($xml->ErrorList)) { // Could look at $xml->ErrorList->PhraseNotFound for list of what was not found
       report_inline('no results.');
       return array('', 0);
     }
@@ -2639,11 +2639,11 @@ final class Template {
           return 'unreliable';                                                                                    // @codeCoverageIgnore
         }
         if (isset($best_location->url_for_landing_page)) {
-          $oa_url = (string) $best_location->url_for_landing_page;
-        } elseif (isset($best_location->url)) {
-          $oa_url = (string) $best_location->url;
-        } else {
-          return 'nothing';
+          $oa_url = (string) $best_location->url_for_landing_page;  // Prefer to PDF
+        } elseif (isset($best_location->url)) {   // @codeCoverageIgnore
+          $oa_url = (string) $best_location->url; // @codeCoverageIgnore
+        } else {                                  // @codeCoverageIgnore
+          return 'nothing';                       // @codeCoverageIgnore
         }
         if (!$oa_url) return 'nothing';
 
