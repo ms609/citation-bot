@@ -44,13 +44,8 @@ if (strlen($page_name) >256) report_error('Possible invalid page');
 $edit_summary_end = "| Suggested by " . $api->get_the_user() . " | All pages linked from cached copy of $page_name | via #UCB_webform_linked";
 
 $url = API_ROOT . '?action=parse&prop=links&format=json&page=' . $page_name;
-$ch = curl_init();
-curl_setopt($ch, CURLOPT_HEADER, 0);
-curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
-curl_setopt($ch, CURLOPT_URL, $url);
-$json = @curl_exec($ch);
-curl_close($ch);
-if ($json === FALSE) {
+$json = @curl_get_url($url);
+if ($json === '') {
   report_error(' Error getting page list');
 }    
 $array = @json_decode($json, TRUE);
