@@ -555,8 +555,12 @@ function query_crossref(string $doi) : ?object {
   if (strpos($doi, '10.2307') === 1) return NULL; // jstor API is better
   $doi = str_replace(DOI_URL_DECODE, DOI_URL_ENCODE, $doi);
   $url = "https://www.crossref.org/openurl/?pid=" . CROSSREFUSERNAME . "&id=doi:$doi&noredirect=TRUE";
+  $ch = curl_init();
+  curl_setopt($ch, CURLOPT_HEADER, 0);
+  curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+  curl_setopt($ch, CURLOPT_URL, $url);
   for ($i = 0; $i < 2; $i++) {
-    $raw_xml = @file_get_contents($url);
+    $raw_xml = @curl_exec($ch);
     if (!$raw_xml) {
       sleep(1);               // @codeCoverageIgnore
       continue;               // @codeCoverageIgnore
@@ -568,6 +572,7 @@ function query_crossref(string $doi) : ?object {
           $raw_xml);
     $xml = @simplexml_load_string($raw_xml);
     if ($xml) {
+      curl_close($ch);
       $result = $xml->query_result->body->query;
       if ($result["status"] == "resolved") {
         return $result;
@@ -579,6 +584,7 @@ function query_crossref(string $doi) : ?object {
       // Keep trying...
     }
   }
+  curl_close($ch);                                                                   // @codeCoverageIgnore
   report_warning("Error loading CrossRef file from DOI " . echoable($doi) . "!");    // @codeCoverageIgnore
   return NULL;                                                                       // @codeCoverageIgnore
 }
@@ -768,7 +774,12 @@ function expand_by_jstor(Template $template) : bool {
   $jstor = trim($jstor);
   if (strpos($jstor, ' ') !== FALSE) return FALSE ; // Comment/template found
   if (substr($jstor, 0, 1) === 'i') return FALSE ; // We do not want i12342 kind
-  $dat = @file_get_contents('https://www.jstor.org/citation/ris/' . $jstor);
+  $ch = curl_init();
+  curl_setopt($ch, CURLOPT_HEADER, 0);
+  curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+  curl_setopt($ch, CURLOPT_URL, 'https://www.jstor.org/citation/ris/' . $jstor);
+  $dat = @curl_exec($ch);
+  curl_close($ch);
   if ($dat == FALSE) {
     report_info("JSTOR API returned nothing for ". jstor_link($jstor));     // @codeCoverageIgnore
     return FALSE;                                                           // @codeCoverageIgnore
@@ -1057,13 +1068,17 @@ function get_semanticscholar_license(string $s2cid) : ?bool {
 }
 
 function expand_templates_from_archives(array $templates) : void { // This is done very late as a latch ditch effort
+  $ch = curl_init();
+  curl_setopt($ch, CURLOPT_HEADER, 0);
+  curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
   foreach ($templates as $template) {
     if ($template->blank(['title', 'chapter', 'series']) &&
         !$template->blank(['archive-url', 'archive-url']) &&
         $template->blank(WORK_ALIASES)) {
       $archive_url = $template->get('archive-url') . $template->get('archiveurl');
       if (stripos($archive_url, 'archive') !==FALSE) {
-        $raw_html = @file_get_contents($archive_url);
+        curl_setopt($ch, CURLOPT_URL, $archive_url);
+        $raw_html = @curl_exec($ch);
         if ($raw_html != FALSE && preg_match('~^[\S\s]+doctype[\S\s]+html[\S\s]+head[\S\s]+<title>(.+)<\/title>[\S\s]+head[\S\s]+body~', $raw_html, $match)) {
           $title = $match[1];
           if (stripos($title, 'archive') === FALSE &&
@@ -1081,5 +1096,6 @@ function expand_templates_from_archives(array $templates) : void { // This is do
       }
     }
   }
+  curl_close($ch);
 }
 
