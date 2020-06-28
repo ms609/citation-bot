@@ -1378,7 +1378,12 @@ final class Template {
          }
          return FALSE;
        } elseif ($this->blank('jstor')) {
-          $dat = @file_get_contents('https://www.jstor.org/citation/ris/' . $matches[1]);
+          $ch = curl_init();
+          curl_setopt($ch, CURLOPT_HEADER, 0);
+          curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+          curl_setopt($ch, CURLOPT_URL, 'https://www.jstor.org/citation/ris/' . $matches[1]);
+          $dat = @curl_exec($ch);
+          curl_close($ch);
           if ($dat !== FALSE &&
               stripos($dat, 'No RIS data found for') === FALSE &&
               stripos($dat, 'Block Reference') === FALSE &&
@@ -2618,7 +2623,12 @@ final class Template {
 
   public function get_unpaywall_url(string $doi) : string {
     $url = "https://api.unpaywall.org/v2/$doi?email=" . CROSSREFUSERNAME;
-    $json = @file_get_contents($url);
+    $ch = curl_init();
+    curl_setopt($ch, CURLOPT_HEADER, 0);
+    curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+    curl_setopt($ch, CURLOPT_URL, $url);
+    $json = @curl_exec($ch);
+    curl_close($ch);
     if ($json) {
       $oa = @json_decode($json);
       if ($oa !== FALSE && isset($oa->best_oa_location)) {
@@ -2789,8 +2799,13 @@ final class Template {
         if ( !ctype_alnum($oclc) ) $oclc='' ;
       }
       if ($isbn) {  // Try Books.Google.Com
-        $google_book_url='https://books.google.com/books?isbn='.$isbn;
-        $google_content = @file_get_contents($google_book_url);
+        $google_book_url = 'https://books.google.com/books?isbn=' . $isbn;
+        $ch = curl_init();
+        curl_setopt($ch, CURLOPT_HEADER, 0);
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+        curl_setopt($ch, CURLOPT_URL, $google_book_url);
+        $google_content = @curl_exec($ch);
+        curl_close($ch);
         if ($google_content !== FALSE) {
           preg_match_all('~books.google.com/books\?id=............&amp~', $google_content, $google_results);
           $google_results = $google_results[0];
@@ -2813,7 +2828,12 @@ final class Template {
         } else {
           return FALSE;
         }
-        $string = @file_get_contents("https://www.googleapis.com/books/v1/volumes?q=" . $url_token . "&key=" . getenv('PHP_GOOGLEKEY'));
+        $ch = curl_init();
+        curl_setopt($ch, CURLOPT_HEADER, 0);
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+        curl_setopt($ch, CURLOPT_URL, "https://www.googleapis.com/books/v1/volumes?q=" . $url_token . "&key=" . getenv('PHP_GOOGLEKEY'));
+        $string = @curl_exec($ch);
+        curl_close($ch);
         if ($string === FALSE) {
             report_warning("Did not receive results from Google API search $url_token");  // @codeCoverageIgnore
             return FALSE;                                                                 // @codeCoverageIgnore
@@ -2918,7 +2938,12 @@ final class Template {
 
   protected function google_book_details(string $gid) : bool {
     $google_book_url = "https://books.google.com/books/feeds/volumes/" . $gid;
-    $data = @file_get_contents($google_book_url);
+    $ch = curl_init();
+    curl_setopt($ch, CURLOPT_HEADER, 0);
+    curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+    curl_setopt($ch, CURLOPT_URL, $google_book_url);
+    $data = @curl_exec($ch);
+    curl_close($ch);
     if ($data === FALSE) return FALSE;
     $simplified_xml = str_replace('http___//www.w3.org/2005/Atom', 'http://www.w3.org/2005/Atom',
       str_replace(":", "___", $data));
