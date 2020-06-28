@@ -694,3 +694,14 @@ function can_safely_modify_dashes(string $value) : bool {
 function str_i_same(?string $str1, ?string $str2) : bool {
    return (bool) (0 === strcasecmp((string) $str1, (string) $str2));
 }
+
+function curl_get_url($url) : string {
+   static $ch = NULL;
+   if ($ch == NULL) {
+      $ch = curl_init();
+      curl_setopt($ch, CURLOPT_HEADER, 0);
+      curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+   }
+   curl_setopt($ch, CURLOPT_URL, $url);
+   return (string) @curl_exec($ch);
+}
