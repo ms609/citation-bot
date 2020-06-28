@@ -439,12 +439,7 @@ class WikipediaBot {
   
   static public function is_valid_user(?string $user) : bool {
     if (!$user) return FALSE;
-    $ch = curl_init();
-    curl_setopt($ch, CURLOPT_HEADER, 0);
-    curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
-    curl_setopt($ch, CURLOPT_URL, API_ROOT . '?action=query&usprop=blockinfo&format=json&list=users&ususers=' . urlencode(str_replace(" ", "_", $user)));
-    $response = @curl_exec($ch);
-    curl_close($ch);
+    $response = @curl_get_url(API_ROOT . '?action=query&usprop=blockinfo&format=json&list=users&ususers=' . urlencode(str_replace(" ", "_", $user)));
     if ($response == FALSE) return FALSE;
     $response = str_replace(array("\r", "\n"), '', $response);  // paranoid
     if (strpos($response, '"invalid"') !== FALSE) return FALSE; // IP Address and similar stuff
