@@ -69,12 +69,7 @@ class Page {
     $this->title = (string) $details->title;
     $this->lastrevid = isset($details->lastrevid) ? $details->lastrevid : NULL;
 
-    $ch = curl_init();
-    curl_setopt($ch, CURLOPT_HEADER, 0);
-    curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
-    curl_setopt($ch, CURLOPT_URL, WIKI_ROOT . '?' . http_build_query(['title' => $title, 'action' =>'raw']));
-    $this->text = @curl_exec($ch);
-    curl_close($ch);
+    $this->text = curl_get_url(WIKI_ROOT . '?' . http_build_query(['title' => $title, 'action' =>'raw']));
     if ($this->text == FALSE) {
        report_warning('Unable to get anything for ' . $title . ' from ' . WIKI_ROOT);    // @codeCoverageIgnore
        return FALSE;                                                                     // @codeCoverageIgnore
