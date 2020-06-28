@@ -5634,6 +5634,9 @@ final class Template {
     curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
     curl_setopt($ch, CURLOPT_URL, 'https://www.worldcat.org/issn/' . $this->get('issn'));
     $html = @curl_exec($ch);
+    if ($html == FALSE) {
+      echo('Curl error: ' . curl_error($ch));
+    }
     curl_close($ch);
     if (preg_match('~<title>(.*)\(e?Journal~', $html, $matches)) {
       if ($this->wikiname() === 'cite magazine') {
