@@ -38,6 +38,8 @@ if (isset($_REQUEST["slow"])) {
     <pre id="botOutput">
 <?php
 
+if (BOT_BLOCKED) report_error("The Citation Bot is currently blocked because of disagreement over its usage.  Please join in the discussion");
+
 $page_name = str_replace(' ', '_', trim($_REQUEST['page']));
 if ($page_name == '') report_error('Nothing requested');
 if (strlen($page_name) >256) report_error('Possible invalid page');
