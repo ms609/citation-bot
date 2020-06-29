@@ -65,6 +65,6 @@ if (!isset($SLOW_MODE)) $SLOW_MODE = isset($_REQUEST["slow"]) ? $_REQUEST["slow"
 if (file_exists('git_pull.lock')) report_error('GIT pull in progress');
 
 if (!getenv('TRAVIS') {
-  define("BOT_BLOCKED", WikipediaBot::is_valid_user('Citation_bot'));
+  define("BOT_BLOCKED", !WikipediaBot::is_valid_user('Citation_bot'));
 }
 
