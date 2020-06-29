@@ -63,3 +63,6 @@ ini_set("memory_limit", "256M");
 if (!isset($SLOW_MODE)) $SLOW_MODE = isset($_REQUEST["slow"]) ? $_REQUEST["slow"] : FALSE;
 
 if (file_exists('git_pull.lock')) report_error('GIT pull in progress');
+
+define("BOT_BLOCKED", TRUE);
+
