@@ -64,10 +64,7 @@ if (HTML_OUTPUT) {
 <?php
 }
 
-if (BOT_BLOCKED) {
-  echo('</pre><h1>The Citation Bot is currently blocked because of disagreement over its usage. <a href="https://en.wikipedia.org/wiki/User_talk:Citation_bot" title="Join the discussion" target="_blank">Please join in the discussion</a></h1></body></html>', "\n");
-  exit(0);
-}
+if (BOT_BLOCKED) exit('</pre><h1>The Citation Bot is currently blocked because of disagreement over its usage. <a href="https://en.wikipedia.org/wiki/User_talk:Citation_bot" title="Join the discussion" target="_blank">Please join in the discussion</a></h1></body></html>');
 
 $edit_summary_end = "| Suggested by " . $api->get_the_user() . " | [[Category:$category]] | via #UCB_Category ";
 $final_edit_overview = "";
