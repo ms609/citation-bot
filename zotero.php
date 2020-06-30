@@ -16,7 +16,6 @@ function query_url_api(array $ids, array $templates) : void {
   
   $ch_zotero = curl_init(ZOTERO_ROOT);
   curl_setopt($ch_zotero, CURLOPT_CUSTOMREQUEST, "POST");
-  curl_setopt($ch_zotero, CURLOPT_USERAGENT, "Citation_bot");  
   curl_setopt($ch_zotero, CURLOPT_HTTPHEADER, ['Content-Type: text/plain']);
   curl_setopt($ch_zotero, CURLOPT_RETURNTRANSFER, TRUE);   
   if (getenv('TRAVIS')) { // try harder in TRAVIS to make tests more successful and make it his zotero less often
@@ -63,15 +62,7 @@ function query_url_api(array $ids, array $templates) : void {
        if ($template->has('hdl'))       expand_by_zotero($template, 'https://hdl.handle.net/' . $template->get('hdl'));
        //  Has a CAPCHA --  if ($template->has('jfm'))       expand_by_zotero($template, 'https://zbmath.org/?format=complete&q=an:' . $template->get('jfm'));
        //  Has a CAPCHA --  if ($template->has('zbl'))       expand_by_zotero($template, 'https://zbmath.org/?format=complete&q=an:' . $template->get('zbl'));
-       //  Has "MR: Matches for: MR=154360" title -- if ($template->has('mr'))        expand_by_zotero($template, 'https://mathscinet.ams.org/mathscinet-getitem?mr=' . $template->get('mr'));
-       //   if ($template->has('mr') && $template->blank('doi')) {
-       // Do NOT do.  This is a DOI to the ariticle reviewed.  Not the review itself
-       //     $mr_data = @file_get_contents('https://mathscinet.ams.org/mathscinet-getitem?mr=' . $template->get('mr'));
-       //     if (preg_match('~<a class="link" target="_blank" href="/leavingmsn\?url=https://doi\.org/(10\.[^\s"]+)">Article</a>~i', $mr_data, $matches)) {
-       //       $template->add_if_new('doi', $matches[1]);
-       //       expand_by_doi($template, TRUE);
-       //     }
-       //   }
+       //  Do NOT do MR --  it is a review not the article itself.  Note that html does have doi, but do not use it.
        if ($template->has('osti'))      expand_by_zotero($template, 'https://www.osti.gov/biblio/' . $template->get('osti'));
        if ($template->has('rfc'))       expand_by_zotero($template, 'https://tools.ietf.org/html/rfc' . $template->get('rfc'));
        if ($template->has('ssrn'))      expand_by_zotero($template, 'https://papers.ssrn.com/sol3/papers.cfm?abstract_id=' . $template->get('ssrn'));

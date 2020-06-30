@@ -38,13 +38,20 @@ if (isset($_REQUEST["slow"])) {
     <pre id="botOutput">
 <?php
 
+if (BOT_BLOCKED) exit('</pre><h1>The Citation Bot is currently blocked because of disagreement over its usage. <a href="https://en.wikipedia.org/wiki/User_talk:Citation_bot" title="Join the discussion" target="_blank">Please join in the discussion</a></h1></body></html>');
+
 $page_name = str_replace(' ', '_', trim($_REQUEST['page']));
 if ($page_name == '') report_error('Nothing requested');
 if (strlen($page_name) >256) report_error('Possible invalid page');
 $edit_summary_end = "| Suggested by " . $api->get_the_user() . " | All pages linked from cached copy of $page_name | via #UCB_webform_linked";
 
 $url = API_ROOT . '?action=parse&prop=links&format=json&page=' . $page_name;
-$json = @file_get_contents($url);
+$ch = curl_init();
+curl_setopt($ch, CURLOPT_HEADER, 0);
+curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+curl_setopt($ch, CURLOPT_URL, $url);
+$json = @curl_exec($ch);
+curl_close($ch);
 if ($json === FALSE) {
   report_error(' Error getting page list');
 }    

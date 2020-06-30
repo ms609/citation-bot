@@ -176,7 +176,6 @@ abstract class testBaseClass extends PHPUnit\Framework\TestCase {
     
     $ch_zotero = curl_init(ZOTERO_ROOT);
     curl_setopt($ch_zotero, CURLOPT_CUSTOMREQUEST, "POST");
-    curl_setopt($ch_zotero, CURLOPT_USERAGENT, "Citation_bot");  
     curl_setopt($ch_zotero, CURLOPT_HTTPHEADER, ['Content-Type: text/plain']);
     curl_setopt($ch_zotero, CURLOPT_RETURNTRANSFER, TRUE);   
     curl_setopt($ch_zotero, CURLOPT_CONNECTTIMEOUT, 10);
