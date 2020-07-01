@@ -38,7 +38,7 @@ if (isset($_REQUEST["slow"])) {
     <pre id="botOutput">
 <?php
 
-if (BOT_BLOCKED) exit('</pre><h1>The Citation Bot is currently blocked because of disagreement over its usage. <a href="https://en.wikipedia.org/wiki/User_talk:Citation_bot" title="Join the discussion" target="_blank">Please join in the discussion</a></h1></body></html>');
+if (BOT_BLOCKED) exit('</pre><h1>The Citation Bot is currently blocked because of disagreement over its usage.</h1><br/><h1><a href="https://en.wikipedia.org/wiki/User_talk:Citation_bot" title="Join the discussion" target="_blank">Please join in the discussion</a></h1></body></html>');
 
 $page_name = str_replace(' ', '_', trim($_REQUEST['page']));
 if ($page_name == '') report_error('Nothing requested');
