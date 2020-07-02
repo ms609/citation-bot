@@ -12,27 +12,32 @@ if (isset($_REQUEST["slow"])) $SLOW_MODE = TRUE;
 //Set up tool requirements
 require_once('setup.php');
 
-$originalText = $_POST['text'];
-$editSummary = (string) $_POST['summary'];
+try {
+ $originalText = $_POST['text'];
+ $editSummary = (string) $_POST['summary'];
 
-//Expand text from postvars
-$page = new Page();
-$page->parse_text($originalText);
-$page->expand_text();
-$newText = $page->parsed_text();
-if ($newText == "") $newText = $originalText; // Something went very wrong
+ //Expand text from postvars
+ $page = new Page();
+ $page->parse_text($originalText);
+ $page->expand_text();
+ $newText = $page->parsed_text();
+ if ($newText == "") $newText = $originalText; // Something went very wrong
 
-//Modify edit summary to identify bot-assisted edits
-if ($newText !== $originalText) {
-  if ($editSummary) $editSummary .= ' | '; // Add pipe if already something there.
-  $editSummary .=  str_replace('use this bot', 'use this tool', $page->edit_summary()) . '| via #UCB_Gadget ';
+ //Modify edit summary to identify bot-assisted edits
+ if ($newText !== $originalText) {
+   if ($editSummary) $editSummary .= ' | '; // Add pipe if already something there.
+   $editSummary .=  str_replace('use this bot', 'use this tool', $page->edit_summary()) . '| via #UCB_Gadget ';
+ }
+
+ ob_end_clean();
+
+ $result = array(
+   'expandedtext' => $newText,
+   'editsummary' => $editSummary
+ );
+
+ echo (string) @json_encode($result);  // On error returns "FALSE", which makes echo print nothing.  Thus we do not have to check for FALSE
+} catch (Throwable $e) { // Paranoid panic code
+ @ob_end_clean();@ob_end_clean();@ob_end_clean(); // Should not need more than one, but paranoid
+ echo "";
 }
-
-ob_end_clean();
-
-$result = array(
-  'expandedtext' => $newText,
-  'editsummary' => $editSummary
-);
-
-echo (string) @json_encode($result);  // On error returns "FALSE", which makes echo print nothing.  Thus we do not have to check for FALSE
