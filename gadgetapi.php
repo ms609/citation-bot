@@ -1,18 +1,18 @@
 <?php
 declare(strict_types=1);
-@header("Access-Control-Allow-Origin: *"); //This is ok because the API is not authenticated
-@header("Content-Type: text/json");
-
-// This is needed because the Gadget API expects only JSON back, therefore ALL output from the citation bot is thrown away
-$FLUSHING_OKAY = FALSE;
-
-$SLOW_MODE = FALSE;
-if (isset($_REQUEST["slow"])) $SLOW_MODE = TRUE;
-
-//Set up tool requirements
-require_once('setup.php');
-
 try {
+ @header("Access-Control-Allow-Origin: *"); //This is ok because the API is not authenticated
+ @header("Content-Type: text/json");
+
+ // This is needed because the Gadget API expects only JSON back, therefore ALL output from the citation bot is thrown away
+ $FLUSHING_OKAY = FALSE;
+
+ $SLOW_MODE = FALSE;
+ if (isset($_REQUEST["slow"])) $SLOW_MODE = TRUE;
+
+ //Set up tool requirements
+ require_once('setup.php');
+
  $originalText = $_POST['text'];
  $editSummary = (string) $_POST['summary'];
 
