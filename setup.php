@@ -64,7 +64,6 @@ if (!isset($SLOW_MODE)) $SLOW_MODE = isset($_REQUEST["slow"]) ? $_REQUEST["slow"
 
 if (file_exists('git_pull.lock')) report_error('GIT pull in progress');
 
-if (!getenv('TRAVIS') && ! WikipediaBot::is_valid_user('Citation_bot')) {
-  define("BOT_BLOCKED", TRUE);
+function check_blocked() : void {
+  if (!getenv('TRAVIS') && ! WikipediaBot::is_valid_user('Citation_bot')) exit('</pre><div style="text-align:center"><h1>The Citation Bot is currently blocked because of disagreement over its usage.</h1><br/><h2><a href="https://en.wikipedia.org/wiki/User_talk:Citation_bot" title="Join the discussion" target="_blank">Please join in the discussion</a></h2></div></body></html>');
 }
-
