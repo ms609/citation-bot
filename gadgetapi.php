@@ -39,5 +39,4 @@ try {
  echo (string) @json_encode($result);  // On error returns "FALSE", which makes echo print nothing.  Thus we do not have to check for FALSE
 } catch (Throwable $e) { // Paranoid panic code
  @ob_end_clean();@ob_end_clean();@ob_end_clean(); // Should not need more than one, but paranoid
- echo "";
 }
