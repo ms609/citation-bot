@@ -13,7 +13,7 @@ try {
  //Set up tool requirements
  require_once('setup.php');
 
- $originalText = $_POST['text'];
+ $originalText = (string) $_POST['text'];
  $editSummary = (string) $_POST['summary'];
 
  //Expand text from postvars
@@ -24,7 +24,7 @@ try {
  if ($newText == "") $newText = $originalText; // Something went very wrong
 
  //Modify edit summary to identify bot-assisted edits
- if ($newText != $originalText) {
+ if ($newText !== $originalText) {
    if ($editSummary) $editSummary .= ' | '; // Add pipe if already something there.
    $editSummary .=  str_replace('use this bot', 'use this tool', $page->edit_summary()) . '| via #UCB_Gadget ';
  }
