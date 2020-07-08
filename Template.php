@@ -2942,9 +2942,9 @@ final class Template {
     curl_setopt($ch, CURLOPT_HEADER, 0);
     curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
     curl_setopt($ch, CURLOPT_URL, $google_book_url);
-    $data = @curl_exec($ch);
+    $data = (string) @curl_exec($ch);
     curl_close($ch);
-    if ($data === FALSE) return FALSE;
+    if ($data == '') return FALSE;
     $simplified_xml = str_replace('http___//www.w3.org/2005/Atom', 'http://www.w3.org/2005/Atom',
       str_replace(":", "___", $data));
     $xml = @simplexml_load_string($simplified_xml);
