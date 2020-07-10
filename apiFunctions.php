@@ -560,7 +560,7 @@ function query_crossref(string $doi) : ?object {
   curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
   curl_setopt($ch, CURLOPT_URL, $url);
   for ($i = 0; $i < 2; $i++) {
-    $raw_xml = @curl_exec($ch);
+    $raw_xml = (string) @curl_exec($ch);
     if (!$raw_xml) {
       sleep(1);               // @codeCoverageIgnore
       continue;               // @codeCoverageIgnore
@@ -778,9 +778,9 @@ function expand_by_jstor(Template $template) : bool {
   curl_setopt($ch, CURLOPT_HEADER, 0);
   curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
   curl_setopt($ch, CURLOPT_URL, 'https://www.jstor.org/citation/ris/' . $jstor);
-  $dat = @curl_exec($ch);
+  $dat = (string) @curl_exec($ch);
   curl_close($ch);
-  if ($dat == FALSE) {
+  if ($dat == '') {
     report_info("JSTOR API returned nothing for ". jstor_link($jstor));     // @codeCoverageIgnore
     return FALSE;                                                           // @codeCoverageIgnore
   }
@@ -1078,8 +1078,8 @@ function expand_templates_from_archives(array $templates) : void { // This is do
       $archive_url = $template->get('archive-url') . $template->get('archiveurl');
       if (stripos($archive_url, 'archive') !==FALSE) {
         curl_setopt($ch, CURLOPT_URL, $archive_url);
-        $raw_html = @curl_exec($ch);
-        if ($raw_html != FALSE && preg_match('~^[\S\s]+doctype[\S\s]+html[\S\s]+head[\S\s]+<title>(.+)<\/title>[\S\s]+head[\S\s]+body~', $raw_html, $match)) {
+        $raw_html = (string) @curl_exec($ch);
+        if ($raw_html != '' && preg_match('~^[\S\s]+doctype[\S\s]+html[\S\s]+head[\S\s]+<title>(.+)<\/title>[\S\s]+head[\S\s]+body~', $raw_html, $match)) {
           $title = $match[1];
           if (stripos($title, 'archive') === FALSE &&
               stripos($title, 'wayback') === FALSE &&
