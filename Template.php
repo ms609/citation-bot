@@ -24,15 +24,15 @@ final class Template {
   const REGEXP = ['~\{\{[^\{\}\|]+\}\}~suS', '~\{\{[^\{\}]+\}\}~suS', '~\{\{(?>[^\{]|\{[^\{])+?\}\}~suS'];  // Please see https://stackoverflow.com/questions/1722453/need-to-prevent-php-regex-segfault for discussion of atomic regex
   const TREAT_IDENTICAL_SEPARATELY = FALSE;
   const MAGIC_STRING = 'CITATION_BOT_PLACEHOLDER_URL_POINTER_'; 
-  public $all_templates;  // Points to list of all the Template() on the Page() including this one
-  public $date_style = DATES_WHATEVER;  // Will get from the page
-  protected $rawtext;
-  public $last_searched_doi = '';
-  protected $example_param;
+  public array $all_templates;  // Points to list of all the Template() on the Page() including this one
+  public string $date_style = DATES_WHATEVER;  // Will get from the page
+  protected string $rawtext;
+  public string $last_searched_doi = '';
+  protected string $example_param;
 
-  protected $name, $param, $initial_param, $initial_author_params, $initial_name,
-            $used_by_api, $doi_valid = FALSE, $had_initial_editor = FALSE,
-            $mod_dashes = FALSE, $mod_names = FALSE, $no_initial_doi = FALSE;
+  protected string $name, array $param, array $initial_param, array $initial_author_params, string $initial_name,
+            boolean $used_by_api, boolean $doi_valid = FALSE, boolean $had_initial_editor = FALSE,
+            boolean $mod_dashes = FALSE, boolean $mod_names = FALSE, boolean $no_initial_doi = FALSE;
 
   public function parse_text(string $text) : void {
     global $page_error;
