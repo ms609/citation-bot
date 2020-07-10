@@ -30,7 +30,7 @@ final class Template {
   public string $last_searched_doi = '';
   protected string $example_param;
 
-  protected string $name; protected array $param; protectedarray $initial_param; protected array $initial_author_params; protected string $initial_name;
+  protected string $name; protected array $param; protected array $initial_param; protected array $initial_author_params; protected string $initial_name;
             protected boolean $used_by_api; protected boolean $doi_valid = FALSE; protected boolean $had_initial_editor = FALSE;
             protected boolean $mod_dashes = FALSE; protected boolean $mod_names = FALSE; protected boolean $no_initial_doi = FALSE;
 
