@@ -1079,7 +1079,7 @@ function expand_templates_from_archives(array $templates) : void { // This is do
       if (stripos($archive_url, 'archive') !==FALSE) {
         curl_setopt($ch, CURLOPT_URL, $archive_url);
         $raw_html = (string) @curl_exec($ch);
-        if ($raw_html != '' && preg_match('~^[\S\s]+doctype[\S\s]+html[\S\s]+head[\S\s]+<title>(.+)<\/title>[\S\s]+head[\S\s]+body~', $raw_html, $match)) {
+        if ($raw_html && preg_match('~^[\S\s]+doctype[\S\s]+html[\S\s]+head[\S\s]+<title>(.+)<\/title>[\S\s]+head[\S\s]+body~', $raw_html, $match)) {
           $title = $match[1];
           if (stripos($title, 'archive') === FALSE &&
               stripos($title, 'wayback') === FALSE &&
