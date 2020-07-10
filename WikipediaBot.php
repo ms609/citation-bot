@@ -15,8 +15,8 @@ require_once("constants.php");
 
 class WikipediaBot {
 
-  private Consumer $consumer, Token $token, resource $ch, string $the_user;
-  private static ?WikipediaBot $last_WikipediaBot = NULL;
+  private $consumer, $token, resource $ch, string $the_user;
+  private static ?self $last_WikipediaBot = NULL;
 
   function __construct(bool $no_user = FALSE) {
     // setup.php must already be run at this point
