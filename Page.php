@@ -18,9 +18,9 @@ require_once("constants.php");
 
 class Page {
 
-  protected $text, $title, $modifications, $date_style;
-  protected $read_at, $start_text;
-  protected $lastrevid;
+  protected string $text, $title; protected array $modifications; protected string $date_style;
+  protected string $read_at; protected string $start_text;
+  protected string $lastrevid;
 
   function __construct() { 
       $this->construct_modifications_array();
