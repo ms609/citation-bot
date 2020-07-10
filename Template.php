@@ -1382,9 +1382,9 @@ final class Template {
           curl_setopt($ch, CURLOPT_HEADER, 0);
           curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
           curl_setopt($ch, CURLOPT_URL, 'https://www.jstor.org/citation/ris/' . $matches[1]);
-          $dat = @curl_exec($ch);
+          $dat = (string) @curl_exec($ch);
           curl_close($ch);
-          if ($dat !== FALSE &&
+          if ($dat &&
               stripos($dat, 'No RIS data found for') === FALSE &&
               stripos($dat, 'Block Reference') === FALSE &&
               stripos($dat, 'A problem occurred trying to deliver RIS data') === FALSE &&
@@ -2627,7 +2627,7 @@ final class Template {
     curl_setopt($ch, CURLOPT_HEADER, 0);
     curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
     curl_setopt($ch, CURLOPT_URL, $url);
-    $json = @curl_exec($ch);
+    $json = (string) @curl_exec($ch);
     curl_close($ch);
     if ($json) {
       $oa = @json_decode($json);
@@ -2804,9 +2804,9 @@ final class Template {
         curl_setopt($ch, CURLOPT_HEADER, 0);
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
         curl_setopt($ch, CURLOPT_URL, $google_book_url);
-        $google_content = @curl_exec($ch);
+        $google_content = (string) @curl_exec($ch);
         curl_close($ch);
-        if ($google_content !== FALSE) {
+        if ($google_content) {
           preg_match_all('~books.google.com/books\?id=............&amp~', $google_content, $google_results);
           $google_results = $google_results[0];
           $google_results = array_unique($google_results);
@@ -2832,9 +2832,9 @@ final class Template {
         curl_setopt($ch, CURLOPT_HEADER, 0);
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
         curl_setopt($ch, CURLOPT_URL, "https://www.googleapis.com/books/v1/volumes?q=" . $url_token . "&key=" . getenv('PHP_GOOGLEKEY'));
-        $string = @curl_exec($ch);
+        $string = (string) @curl_exec($ch);
         curl_close($ch);
-        if ($string === FALSE) {
+        if ($string == '') {
             report_warning("Did not receive results from Google API search $url_token");  // @codeCoverageIgnore
             return FALSE;                                                                 // @codeCoverageIgnore
         }
