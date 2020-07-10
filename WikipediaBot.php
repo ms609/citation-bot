@@ -15,7 +15,7 @@ require_once("constants.php");
 
 class WikipediaBot {
 
-  private $consumer, $token; private resource $ch; private string $the_user;
+  private $consumer; private $token; private $ch; private string $the_user;
   private static ?self $last_WikipediaBot = NULL;
 
   function __construct(bool $no_user = FALSE) {
