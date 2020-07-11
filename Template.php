@@ -88,6 +88,7 @@ final class Template {
     }
 
     // extract initial parameters/values from Parameters in $this->param
+    $this->initial_param = array();
     foreach ($this->param as $p) {
       $this->initial_param[$p->param] = $p->val;
 
