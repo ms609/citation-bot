@@ -25,7 +25,7 @@ final class Template {
   const TREAT_IDENTICAL_SEPARATELY = FALSE;
   const MAGIC_STRING = 'CITATION_BOT_PLACEHOLDER_URL_POINTER_'; 
   public array $all_templates;  // Points to list of all the Template() on the Page() including this one
-  public string $date_style = DATES_WHATEVER;  // Will get from the page
+  public int $date_style = DATES_WHATEVER;  // Will get from the page
   protected string $rawtext;
   public string $last_searched_doi = '';
   protected string $example_param;
