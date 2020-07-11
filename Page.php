@@ -20,7 +20,7 @@ class Page {
 
   protected string $text, $title; protected array $modifications; protected int $date_style;
   protected string $read_at; protected string $start_text;
-  protected string $lastrevid;
+  protected int $lastrevid;
 
   function __construct() { 
       $this->construct_modifications_array();
