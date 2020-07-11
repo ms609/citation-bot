@@ -22,9 +22,8 @@ matrix:           ###### ONLY ONE WITH FULL TESTING WITH IS 7.3 OTHERS ARE ALL S
         - travis_retry composer self-update
         - composer require --dev phpstan/phpstan # below split out to save memory
       script: php vendor/bin/phpstan --no-interaction analyse  --level=6   constants/*.php  Parameter.php user_messages.php constants.php  expandFns.php zotero.php apiFunctions.php NameTools.php  Comment.php Page.php  WikipediaBot.php  Template.php setup.php   category.php ; php vendor/bin/phpstan --no-interaction analyse  --level=6  Parameter.php  constants/*.php  user_messages.php constants.php  expandFns.php zotero.php apiFunctions.php NameTools.php  Comment.php Page.php  WikipediaBot.php  Template.php setup.php   generate_template.php ; php vendor/bin/phpstan --no-interaction analyse  --level=6   gitpull.php ; php vendor/bin/phpstan --no-interaction analyse  --level=6 Parameter.php   constants/*.php  user_messages.php constants.php  expandFns.php zotero.php apiFunctions.php NameTools.php  Comment.php Page.php  WikipediaBot.php  Template.php setup.php   linked_pages.php ; php vendor/bin/phpstan --no-interaction analyse  --level=6   unlock_git.php ; php vendor/bin/phpstan --no-interaction analyse  --level=6 Parameter.php   constants/*.php  user_messages.php constants.php  expandFns.php zotero.php apiFunctions.php NameTools.php  Comment.php Page.php  WikipediaBot.php  Template.php setup.php   process_page.php ; php vendor/bin/phpstan --no-interaction analyse  --level=6 Parameter.php   constants/*.php  user_messages.php constants.php  expandFns.php zotero.php apiFunctions.php NameTools.php  Comment.php Page.php  WikipediaBot.php  Template.php setup.php   authenticate.php
-    - stage: test
+    - php: 7.4
       name: "Full test with PHP 7.4"
-      php: 7.4
       before_script:  
         - travis_retry composer self-update
         - composer require mediawiki/oauthclient:1.1.0
