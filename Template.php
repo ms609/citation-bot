@@ -125,7 +125,7 @@ final class Template {
     $PIPE_REGEX = "~(\[\[[^\[\]]*)(?:\|)([^\[\]]*\]\])~u";
     while (preg_match($PIPE_REGEX, $text)) {
       $text = preg_replace_callback($PIPE_REGEX,
-          function(array $matches) : string {
+          function(string[] $matches) : string {
              return($matches[1] . PIPE_PLACEHOLDER . $matches[2]);
           },
           $text);
@@ -285,12 +285,12 @@ final class Template {
     foreach ($param as $p) if (!in_array($p, $this->used_by_api[$api])) $this->used_by_api[$api][] = $p;
   }
   
-  public function api_has_used(string $api, array $param) : int {
+  public function api_has_used(string $api, string[] $param) : int {
     if (!isset($this->used_by_api[$api])) report_error("Invalid API: $api");
     return count(array_intersect($param, $this->used_by_api[$api]));
   }
   
-  public function api_has_not_used(string $api, array $param) : bool {
+  public function api_has_not_used(string $api, string[] $param) : bool {
     return !$this->api_has_used($api, $param);
   }
   
@@ -2000,7 +2000,7 @@ final class Template {
     return $results;
   }
 
-  protected function do_pumbed_query(array $terms) : array {
+  protected function do_pumbed_query(string[] $terms) : array {
   /* do_query
    *
    * Searches pubmed based on terms provided in an array.
@@ -4898,7 +4898,7 @@ final class Template {
       $trial[] = $match[1];
       $trial[] = $match[2];
     }
-    $replacements = array ("&lt;" => "<", "&gt;" => ">");
+    $replacements = array("&lt;" => "<", "&gt;" => ">");
     if (preg_match("~&[lg]t;~", $doi)) {
       $trial[] = str_replace(array_keys($replacements), $replacements, $doi);
     }
@@ -5066,7 +5066,7 @@ final class Template {
     return '';
   }
 
-  public function initial_author_params() : array { return $this->initial_author_params; }
+  public function initial_author_params() : string[] { return $this->initial_author_params; }
   
   protected function first_surname() : string {
     // Fetch the surname of the first author only
