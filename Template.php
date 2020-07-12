@@ -1884,9 +1884,17 @@ final class Template {
            . ($data['volume'] ? "&volume=" . urlencode($data['volume']) : '')
            . ($data['issn'] ? ("&issn=" . $data['issn'])
                             : ($data['journal'] ? "&title=" . urlencode($data['journal']) : ''));
-      if (!($result = @simplexml_load_file($url)->query_result->body->query)){
+      $result = @simplexml_load_file($url);
+      if ($result === FALSE) {
         report_warning("Error loading simpleXML file from CrossRef.");  // @codeCoverageIgnore
-      } elseif ($result['status'] == 'malformed') {
+        return FALSE;                                                   // @codeCoverageIgnore
+      }
+      if (!isset($result->query_result->body->query)) {
+        report_warning("Unexpected simpleXML file from CrossRef.");  // @codeCoverageIgnore
+        return FALSE;                                                // @codeCoverageIgnore
+      }
+      $result = $result->query_result->body->query;
+      if ($result['status'] == 'malformed') {
         report_warning("Cannot search CrossRef: " . echoable((string) $result->msg));  // @codeCoverageIgnore
       } elseif ($result["status"] == "resolved") {
         if (!isset($result->doi)) return FALSE;
