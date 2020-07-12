@@ -247,7 +247,7 @@ final class PageTest extends testBaseClass {
   public function testUrlReferencesWithText6() : void {
       $text = "<ref>Emma Ambrose, Cas Mudde (2015). ''[http://www.tandfonline.com/doi/abs/10.1080/13537113.2015.1032033 Canadian Multiculturalism and the Absence of the Far Right]'' Nationalism and Ethnic Politics Vol. 21 Iss. 2.</ref>";
       $page = $this->process_page($text);
-      $this->assertSame('<ref>{{Cite journal |doi = 10.1080/13537113.2015.1032033|title = Canadian Multiculturalism and the Absence of the Far Right|year = 2015|last1 = Ambrose|first1 = Emma|last2 = Mudde|first2 = Cas|journal = Nationalism and Ethnic Politics|volume = 21|issue = 2|pages = 213–236}}</ref>', $page->parsed_text());
+      $this->assertSame('<ref>{{Cite journal |doi = 10.1080/13537113.2015.1032033|title = Canadian Multiculturalism and the Absence of the Far Right|year = 2015|last1 = Ambrose|first1 = Emma|last2 = Mudde|first2 = Cas|s2cid = 145773856|journal = Nationalism and Ethnic Politics|volume = 21|issue = 2|pages = 213–236}}</ref>', $page->parsed_text());
   }
  
   public function testUrlReferencesWithText7() : void {

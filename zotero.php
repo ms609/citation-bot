@@ -16,7 +16,6 @@ function query_url_api(array $ids, array $templates) : void {
   
   $ch_zotero = curl_init(ZOTERO_ROOT);
   curl_setopt($ch_zotero, CURLOPT_CUSTOMREQUEST, "POST");
-  curl_setopt($ch_zotero, CURLOPT_USERAGENT, "Citation_bot");  
   curl_setopt($ch_zotero, CURLOPT_HTTPHEADER, ['Content-Type: text/plain']);
   curl_setopt($ch_zotero, CURLOPT_RETURNTRANSFER, TRUE);   
   if (getenv('TRAVIS')) { // try harder in TRAVIS to make tests more successful and make it his zotero less often

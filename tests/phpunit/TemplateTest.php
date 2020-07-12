@@ -4805,7 +4805,7 @@ T1 - This is the Title }}';
      $template->add_if_new('date', '12-02-2019');
      $this->assertSame('12 February 2019', $template->get2('date'));
      $template = $this->make_citation($text);
-     $template->date_style = FALSE;
+     $template->date_style = DATES_WHATEVER;
      $template->add_if_new('date', '12-02-2019');
      $this->assertSame('12-02-2019', $template->get2('date'));
    }

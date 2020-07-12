@@ -34,6 +34,8 @@ if (HTML_OUTPUT) {?>
 <?php
 }
 
+check_blocked();
+
 $edit_summary_end = "| Suggested by " . $api->get_the_user() . " ";
 $final_edit_overview = "";
 
