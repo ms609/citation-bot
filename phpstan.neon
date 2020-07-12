@@ -1,5 +1,5 @@
 parameters:
-	level: 3
+	level: 6
 	checkMissingIterableValueType: false  # Do not care that arrays do not have types - PHP does not support, it is only a comment
 	dynamicConstantNames:
 		- HTML_OUTPUT
