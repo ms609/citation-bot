@@ -233,8 +233,8 @@ class Page {
     $singlebrack = $this->extract_object('SingleBracket');
     $all_templates = $this->extract_object('Template');
     if ($page_error) {
-      $this->text = $this->start_text;                   // @codeCoverageIgnore
-      return FALSE;                                      // @codeCoverageIgnore
+      $this->text = $this->start_text;
+      return FALSE;
     }
     for ($i = 0; $i < count($all_templates); $i++) {
        $all_templates[$i]->all_templates = &$all_templates; // Has to be pointer
