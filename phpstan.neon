@@ -5,3 +5,23 @@ parameters:
 		- HTML_OUTPUT
 		- SLOW_MODE
 		- NATURE_FAILS
+	bootstrapFiles:
+		- constants/bad_data.php
+		- constants/capitalization.php
+		- constants/math.php
+		- constants/mistakes.php
+		- constants/namespaces.php
+		- constants/parameters.php
+		- constants/regular_expressions.php
+		- Parameter.php
+		- user_messages.php
+		- constants.php
+		- expandFns.php
+		- zotero.php
+		- apiFunctions.php
+		- NameTools.php
+		- Comment.php
+		- Page.php
+		- WikipediaBot.php
+		- Template.php
+		- setup.php
