@@ -73,9 +73,9 @@ class Page {
     curl_setopt($ch, CURLOPT_HEADER, 0);
     curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
     curl_setopt($ch, CURLOPT_URL, WIKI_ROOT . '?' . http_build_query(['title' => $title, 'action' =>'raw']));
-    $this->text = @curl_exec($ch);
+    $this->text = (string) @curl_exec($ch);
     curl_close($ch);
-    if ($this->text == FALSE) {
+    if ($this->text == '') {
        report_warning('Unable to get anything for ' . $title . ' from ' . WIKI_ROOT);    // @codeCoverageIgnore
        return FALSE;                                                                     // @codeCoverageIgnore
     }
