@@ -81,7 +81,7 @@ final class Template {
       if (preg_match('~< */? *ref *>~i', $this->rawtext)) {
          // @codeCoverageIgnoreStart
          $page_error = TRUE;
-         report_minor_error('reference within citation template: most likely unclosed template.  ' . "\n" . $this->rawtext . "\n");
+         report_warning('reference within citation template: most likely unclosed template.  ' . "\n" . $this->rawtext . "\n");
          return;
          // @codeCoverageIgnoreEnd
       }
