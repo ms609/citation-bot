@@ -434,37 +434,32 @@ final class Template {
         if ($this->blank(['editor' . $match[1], 'editor' . $match[1] . '-last', 'editor' . $match[1] . '-first',
                           'editor-last' . $match[1], 'editor-first' . $match[1]])) {
           return $this->add($param_name, sanitize_string($value));
-        } else {
-          return FALSE;
         }
-      break;
+        return FALSE;
+
       case (bool) preg_match('~^editor(\d{1,})-first$~', $param_name, $match) :
         if ($this->had_initial_editor) return FALSE;
         if (!$this->blank(['editors', 'editor', 'editor-last', 'editor-first'])) return FALSE; // Existing incompatible data
         if ($this->blank(['editor' . $match[1], 'editor' . $match[1] . '-first', 'editor-first' . $match[1]])) {
           return $this->add($param_name, sanitize_string($value));
-        } else {
-          return FALSE;
         }
-      break;
+        return FALSE;
+
       case (bool) preg_match('~^editor(\d{1,})-last$~', $param_name, $match) :
         if ($this->had_initial_editor) return FALSE;
         if (!$this->blank(['editors', 'editor', 'editor-last', 'editor-first'])) return FALSE; // Existing incompatible data
         if ($this->blank(['editor' . $match[1], 'editor' . $match[1] . '-last', 'editor-last' . $match[1]])) {
           return $this->add($param_name, sanitize_string($value));
-        } else {
-          return FALSE;
         }
-      break;
+        return FALSE;
       
       #TRANSLATOR
       case (bool) preg_match('~^translator(\d{1,})$~', $param_name, $match) :
         if (!$this->blank(['translators', 'translator', 'translator-last', 'translator-first'])) return FALSE; // Existing incompatible data
         if ($this->blank(['translator' . $match[1], 'translator' . $match[1] . '-last', 'translator' . $match[1] . '-first'])) {
           return $this->add($param_name, sanitize_string($value));
-        } else {
-          return FALSE;
         }
+        return FALSE;
         
       ### AUTHORS
       case "author": case "author1": case "last1": case "last": case "authors":
@@ -481,6 +476,7 @@ final class Template {
           }
         }
         return FALSE;
+
       case "first": case "first1":
        $value = trim(straighten_quotes($value));
        if ($this->blank(FORENAME1_ALIASES)) {
@@ -1893,7 +1889,7 @@ final class Template {
       } elseif ($result['status'] == 'malformed') {
         report_warning("Cannot search CrossRef: " . echoable((string) $result->msg));  // @codeCoverageIgnore
       } elseif ($result["status"] == "resolved") {
-        if (!isset($result->doi) || is_array($result->doi)) return FALSE; // Never seen array, but pays to be paranoid
+        if (!isset($result->doi)) return FALSE;
         report_info(" Successful!");
         return $this->add_if_new('doi', (string) $result->doi);
       }
