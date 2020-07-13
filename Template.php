@@ -3666,7 +3666,7 @@ final class Template {
           // Continue from authors without break
         case 'last': case 'surname':
             if (!$this->initial_author_params) {
-              if ($pmatch[2]) {
+              if (@$pmatch[2]) {
                 $translator_regexp = "~\b([Tt]r(ans(lat...?(by)?)?)?\.?)\s([\w\p{L}\p{M}\s]+)$~u";
                 if (preg_match($translator_regexp, trim($this->get($param)), $match)) {
                   $others = trim("$match[1] $match[5]");
@@ -3679,7 +3679,7 @@ final class Template {
                 }
               }
             }
-            if ($pmatch[2] && $pmatch[1] === 'last') {
+            if (@$pmatch[2] && $pmatch[1] === 'last') {
               $the_author = $this->get($param);
               if (substr($the_author, 0, 2) == '[[' &&
                  substr($the_author,   -2) == ']]' &&
@@ -3696,7 +3696,7 @@ final class Template {
                   }
               }
             }
-            if (!$pmatch[2] && $pmatch[1] === 'last' && !$this->blank(['first1', 'first2', 'last2'])) {
+            if (!@$pmatch[2] && $pmatch[1] === 'last' && !$this->blank(['first1', 'first2', 'last2'])) {
               $this->rename('last', 'last1');
               if ($this->blank('first1')) $this->rename('first', 'first1');
             }
