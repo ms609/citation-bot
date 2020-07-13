@@ -741,8 +741,8 @@ function is_doi_works(string $doi) : ?bool {
          )); // Allow crudy cheap journals
   $headers_test = @get_headers("https://dx.doi.org/" . urlencode($doi), 1, $context);
   if ($headers_test === FALSE) {
-     sleep(1);
-     $headers_test = @get_headers("https://dx.doi.org/" . urlencode($doi), 1, $context);
+     sleep(1);                                                                            // @codeCoverageIgnore
+     $headers_test = @get_headers("https://dx.doi.org/" . urlencode($doi), 1, $context);  // @codeCoverageIgnore
   }
   if ($headers_test === FALSE) return NULL; // most likely bad, but will recheck again an again
   $response = $headers_test[0];

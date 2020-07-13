@@ -36,7 +36,7 @@ try {
    'editsummary' => $editSummary
  );
 
- echo (string) @json_encode($result);  // On error returns "FALSE", which makes echo print nothing.  Thus we do not have to check for FALSE
-} catch (Throwable $e) { // Paranoid panic code
- @ob_end_clean();@ob_end_clean();@ob_end_clean(); // Should not need more than one, but paranoid
-}
+ echo (string) @json_encode($result);
+} catch (Throwable $e) {                          // @codeCoverageIgnore
+ @ob_end_clean();@ob_end_clean();@ob_end_clean(); // @codeCoverageIgnore
+} // Above is paranoid panic code.  So paranoid that we even flush buffers two extra times
