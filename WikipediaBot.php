@@ -26,7 +26,7 @@ class WikipediaBot {
     if (!getenv('PHP_OAUTH_ACCESS_SECRET'))   report_error("PHP_OAUTH_ACCESS_SECRET not set");
 
     if ($no_user) {
-      $this->the_user = NULL;
+      $this->the_user = '';
     } elseif (getenv('TRAVIS')) {
       $this->the_user = 'Citation_bot';
     } else {
@@ -48,7 +48,7 @@ class WikipediaBot {
   }
   
   public function get_the_user() : string {
-    if (@$this->the_user == NULL) {
+    if ($this->the_user == '') {
       report_error('User Not Set');         // @codeCoverageIgnore
     }
     return $this->the_user; // Might or might not match the above
