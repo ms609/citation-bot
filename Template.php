@@ -2053,8 +2053,8 @@ final class Template {
            $query .= " AND (" . "\"" . str_replace(array("%E2%80%93", ';'), array("-", '%3B'), $val) . "\"" . "[$key])"; // PubMed does not like escaped /s in DOIs, but other characters seem problematic.
         }
       } else {
-        $key = $key_index[$term];
-        if ($key && $val = $this->get_without_comments_and_placeholders($term)) {
+        $key = $key_index[$term]; // Will crash if bad data is passed
+        if ($val = $this->get_without_comments_and_placeholders($term)) {
           if (preg_match(REGEXP_PLAIN_WIKILINK, $val, $matches)) {
               $val = $matches[1];    // @codeCoverageIgnore
           } elseif (preg_match(REGEXP_PIPED_WIKILINK, $val, $matches)) {
@@ -3591,7 +3591,7 @@ final class Template {
       }
     }
  
-    if (!preg_match('~(\D+)(\d*)~', $param, $pmatch)) {
+    if (!preg_match('~^(\D+)(\d*)~', $param, $pmatch)) {
       report_warning("Unrecognized parameter name format in $param");  // @codeCoverageIgnore
       return;                                                          // @codeCoverageIgnore
     } else {
@@ -3643,7 +3643,7 @@ final class Template {
           }
           if ($this->blank('agency') && in_array(strtolower($the_author), ['associated press', 'reuters'])) {
             $this->rename('author', 'agency');
-            if (@$pmatch[2] == '1' || @$pmatch[2] == '') {
+            if ($pmatch[2] == '1' || $pmatch[2] == '') {
               $this->forget('author-link');
               $this->forget('authorlink');
               $this->forget('author-link1');
@@ -3653,7 +3653,7 @@ final class Template {
             return;
           }
           // Convert authorX to lastX, if firstX is set
-          if (isset($pmatch[2]) && $this->has('first' . $pmatch[2]) && $this->blank('last' . $pmatch[2])) {
+          if ($pmatch[2] && $this->has('first' . $pmatch[2]) && $this->blank('last' . $pmatch[2])) {
             $this->rename('author' . $pmatch[2], 'last' . $pmatch[2]);
             $pmatch[1] = 'last';
             $param = 'last' . $pmatch[2];
@@ -3666,7 +3666,7 @@ final class Template {
           // Continue from authors without break
         case 'last': case 'surname':
             if (!$this->initial_author_params) {
-              if (@$pmatch[2]) {
+              if ($pmatch[2]) {
                 $translator_regexp = "~\b([Tt]r(ans(lat...?(by)?)?)?\.?)\s([\w\p{L}\p{M}\s]+)$~u";
                 if (preg_match($translator_regexp, trim($this->get($param)), $match)) {
                   $others = trim("$match[1] $match[5]");
@@ -3679,7 +3679,7 @@ final class Template {
                 }
               }
             }
-            if (@$pmatch[2] && $pmatch[1] === 'last') {
+            if ($pmatch[2] && $pmatch[1] === 'last') {
               $the_author = $this->get($param);
               if (substr($the_author, 0, 2) == '[[' &&
                  substr($the_author,   -2) == ']]' &&
@@ -3696,7 +3696,7 @@ final class Template {
                   }
               }
             }
-            if (!@$pmatch[2] && $pmatch[1] === 'last' && !$this->blank(['first1', 'first2', 'last2'])) {
+            if (!$pmatch[2] && $pmatch[1] === 'last' && !$this->blank(['first1', 'first2', 'last2'])) {
               $this->rename('last', 'last1');
               if ($this->blank('first1')) $this->rename('first', 'first1');
             }
@@ -5212,12 +5212,9 @@ final class Template {
 
   protected function get_param_key (string $needle) : ?int {
     if (empty($this->param)) return NULL;
-    if (!is_array($this->param)) return NULL; // Maybe the wrong thing to do?
-    
     foreach ($this->param as $i => $p) {
       if ($p->param == $needle) return $i;
     }
-    
     return NULL;
   }
 
@@ -5412,7 +5409,7 @@ final class Template {
     }
   }
 
-  public function modifications(string $type='all') : array {
+  public function modifications() : array {
     if ($this->has(strtolower('CITATION_BOT_PLACEHOLDER_BARE_URL'))) return array();
     $new = array();
     $ret = array();
@@ -5439,7 +5436,6 @@ final class Template {
 
     $ret['dashes'] = $this->mod_dashes;
     $ret['names'] = $this->mod_names;
-    if (in_array($type, array_keys($ret))) return $ret[$type];
     return $ret;
   }
 
