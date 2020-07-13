@@ -5409,7 +5409,7 @@ final class Template {
     }
   }
 
-  public function modifications(string $type='all') : array {
+  public function modifications() : array {
     if ($this->has(strtolower('CITATION_BOT_PLACEHOLDER_BARE_URL'))) return array();
     $new = array();
     $ret = array();
@@ -5436,7 +5436,6 @@ final class Template {
 
     $ret['dashes'] = $this->mod_dashes;
     $ret['names'] = $this->mod_names;
-    if (in_array($type, array_keys($ret))) return $ret[$type];
     return $ret;
   }
 
