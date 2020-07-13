@@ -45,10 +45,10 @@ require_once(__DIR__ . '/../testBaseClass.php');
     
     public function testRedirects() : void {
      $this->requires_secrets(function() : void {
+      $this->assertSame(-1, WikipediaBot::is_redirect('NoSuchPage:ThereCan-tBe'));
+      $this->assertSame( 0, WikipediaBot::is_redirect('User:Citation_bot'));
+      $this->assertSame( 1, WikipediaBot::is_redirect('WP:UCB'));
       $api = new WikipediaBot();
-      $this->assertSame(-1, WikipediaBot::is_redirect('NoSuchPage:ThereCan-tBe', $api));
-      $this->assertSame( 0, WikipediaBot::is_redirect('User:Citation_bot', $api));
-      $this->assertSame( 1, WikipediaBot::is_redirect('WP:UCB')); // Test use of static API global at same time
       $this->assertSame('User:Citation bot/use', $api->redirect_target('WP:UCB'));
      });
     }

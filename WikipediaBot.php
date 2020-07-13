@@ -394,16 +394,8 @@ class WikipediaBot {
     return (int) reset($res->query->pages)->ns;
   }
   # @return -1 if page does not exist; 0 if exists and not redirect; 1 if is redirect
-  static public function is_redirect(string $page, self $api = NULL) : int {
-    if (self::$last_WikipediaBot == NULL) {
-       new WikipediaBot(TRUE);      // @codeCoverageIgnore
-    }
-    if ($api == NULL) { // Nother passed in
-        $api = self::$last_WikipediaBot;
-    }
-    if ($api == NULL) {
-        report_error('No API found in is_redirect()');   // @codeCoverageIgnore
-    }
+  static public function is_redirect(string $page) : int {
+    $api = (self::$last_WikipediaBot == NULL) ? (new WikipediaBot(TRUE)) : self::$last_WikipediaBot;
     $res = $api->fetch([
         "action" => "query",
         "prop" => "info",
