@@ -3591,7 +3591,7 @@ final class Template {
       }
     }
  
-    if (!preg_match('~(\D+)(\d*)~', $param, $pmatch)) {
+    if (!preg_match('~^(\D+)(\d*)~', $param, $pmatch)) {
       report_warning("Unrecognized parameter name format in $param");  // @codeCoverageIgnore
       return;                                                          // @codeCoverageIgnore
     } else {
@@ -3643,7 +3643,7 @@ final class Template {
           }
           if ($this->blank('agency') && in_array(strtolower($the_author), ['associated press', 'reuters'])) {
             $this->rename('author', 'agency');
-            if (@$pmatch[2] == '1' || @$pmatch[2] == '') {
+            if ($pmatch[2] == '1' || $pmatch[2] == '') {
               $this->forget('author-link');
               $this->forget('authorlink');
               $this->forget('author-link1');
@@ -3653,7 +3653,7 @@ final class Template {
             return;
           }
           // Convert authorX to lastX, if firstX is set
-          if (isset($pmatch[2]) && $this->has('first' . $pmatch[2]) && $this->blank('last' . $pmatch[2])) {
+          if ($pmatch[2] && $this->has('first' . $pmatch[2]) && $this->blank('last' . $pmatch[2])) {
             $this->rename('author' . $pmatch[2], 'last' . $pmatch[2]);
             $pmatch[1] = 'last';
             $param = 'last' . $pmatch[2];
@@ -3666,7 +3666,7 @@ final class Template {
           // Continue from authors without break
         case 'last': case 'surname':
             if (!$this->initial_author_params) {
-              if (@$pmatch[2]) {
+              if ($pmatch[2]) {
                 $translator_regexp = "~\b([Tt]r(ans(lat...?(by)?)?)?\.?)\s([\w\p{L}\p{M}\s]+)$~u";
                 if (preg_match($translator_regexp, trim($this->get($param)), $match)) {
                   $others = trim("$match[1] $match[5]");
@@ -3679,7 +3679,7 @@ final class Template {
                 }
               }
             }
-            if (@$pmatch[2] && $pmatch[1] === 'last') {
+            if ($pmatch[2] && $pmatch[1] === 'last') {
               $the_author = $this->get($param);
               if (substr($the_author, 0, 2) == '[[' &&
                  substr($the_author,   -2) == ']]' &&
@@ -3696,7 +3696,7 @@ final class Template {
                   }
               }
             }
-            if (!@$pmatch[2] && $pmatch[1] === 'last' && !$this->blank(['first1', 'first2', 'last2'])) {
+            if (!$pmatch[2] && $pmatch[1] === 'last' && !$this->blank(['first1', 'first2', 'last2'])) {
               $this->rename('last', 'last1');
               if ($this->blank('first1')) $this->rename('first', 'first1');
             }
