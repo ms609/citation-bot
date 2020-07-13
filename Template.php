@@ -2053,8 +2053,8 @@ final class Template {
            $query .= " AND (" . "\"" . str_replace(array("%E2%80%93", ';'), array("-", '%3B'), $val) . "\"" . "[$key])"; // PubMed does not like escaped /s in DOIs, but other characters seem problematic.
         }
       } else {
-        $key = $key_index[$term];
-        if ($key && $val = $this->get_without_comments_and_placeholders($term)) {
+        $key = $key_index[$term]; // Will crash if bad data is passed
+        if ($val = $this->get_without_comments_and_placeholders($term)) {
           if (preg_match(REGEXP_PLAIN_WIKILINK, $val, $matches)) {
               $val = $matches[1];    // @codeCoverageIgnore
           } elseif (preg_match(REGEXP_PIPED_WIKILINK, $val, $matches)) {
