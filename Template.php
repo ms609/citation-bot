@@ -5212,12 +5212,9 @@ final class Template {
 
   protected function get_param_key (string $needle) : ?int {
     if (empty($this->param)) return NULL;
-    if (!is_array($this->param)) return NULL; // Maybe the wrong thing to do?
-    
     foreach ($this->param as $i => $p) {
       if ($p->param == $needle) return $i;
     }
-    
     return NULL;
   }
 
