@@ -242,7 +242,7 @@ function zotero_request(string $url) : string {
   return $zotero_response;
 }
 
-function expand_by_zotero(Template &$template, ?string $url = NULL) : bool {
+function expand_by_zotero(Template $template, ?string $url = NULL) : bool {
   global $zotero_failures_count;
   global $zotero_announced;
   if ($zotero_failures_count > ZOTERO_GIVE_UP) {
@@ -293,7 +293,7 @@ function expand_by_zotero(Template &$template, ?string $url = NULL) : bool {
   return process_zotero_response($zotero_response, $template, $url, $url_kind, $access_date);
 }
 
-function process_zotero_response(string $zotero_response, Template &$template, string $url, string $url_kind, int $access_date) : bool {
+function process_zotero_response(string $zotero_response, Template $template, string $url, string $url_kind, int $access_date) : bool {
   if ($zotero_response === ERROR_DONE) return FALSE;  // Error message already printed in zotero_request()
  
   switch (trim($zotero_response)) {
