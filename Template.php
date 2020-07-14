@@ -3593,7 +3593,7 @@ final class Template {
       if (in_array(strtolower($pmatch[3]), ['-first', '-last', '-link', 'link', '-mask', 'mask', '-surname', '-given', 'given'])) {
         return; // TODO - deal with these
       }
-      if (str_i_same($param ,'s2cid')) {
+      if (str_i_same($param ,'s2cid')|| str_i_same($param, 's2cid-access')) {
         return; // Nothing to clean up
       }
       if ($pmatch[3] != '') {
