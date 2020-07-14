@@ -3586,10 +3586,14 @@ final class Template {
       }
     }
  
-    if (!preg_match('~^(\D+)(\d*)~', $param, $pmatch)) {
-      report_warning("Unrecognized parameter name format in $param");  // @codeCoverageIgnore
-      return;                                                          // @codeCoverageIgnore
+    if (!preg_match('~^(\D+)(\d*)(\D*)$~', $param, $pmatch)) {
+      report_minor_error("Unrecognized parameter name format in $param");  // @codeCoverageIgnore
+      return;                                                              // @codeCoverageIgnore
     } else {
+      if ($pmatch[3] != '') {
+        report_minor_error("Unrecognized parameter name format in $param");  // @codeCoverageIgnore
+        return;                                                              // @codeCoverageIgnore
+      }
       switch ($pmatch[1]) {
         // Parameters are listed mostly alphabetically, though those with numerical content are grouped under "year"
 
