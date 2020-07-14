@@ -86,12 +86,7 @@ class Page {
       report_warning("Page is a redirect.");
       return FALSE;
     }
-
-    if ($this->text) {
-      return TRUE;
-    } else {
-      return FALSE;               // @codeCoverageIgnore
-    }
+    return TRUE;
   }
   
   public function parse_text(string $text) : void {
