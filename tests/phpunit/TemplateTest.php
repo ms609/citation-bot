@@ -1617,7 +1617,8 @@ ER -  }}';
    
       $text = '{{Cite journal  | TY - BOOK
 Y1 - 1990
-T1 - This will be a subtitle }}';
+T1 - This will be a subtitle
+ZZ - This will be ignored and not understood}}';
      $prepared = $this->prepare_citation($text);
      $this->assertSame('1990', $prepared->get2('year')); 
      $this->assertNull($prepared->get2('title'));
@@ -3546,17 +3547,19 @@ T1 - This is the Title }}';
    }
  
    public function testTidy80() : void {
-    $text = "{{cite web|url=https://www-rocksbackpages-com.wikipedialibrary.idm.oclc.org/Library/Article/camel-over-the-moon }}";
+    $text = "{{cite web|url=https://www-rocksbackpages-com.wikipedialibrary.idm.oclc.org/Library/Article/camel-over-the-moon |via = wiki stuff }}";
     $template = $this->make_citation($text);
     $template->tidy_parameter('url');
     $this->assertSame('https://www.rocksbackpages.com/Library/Article/camel-over-the-moon', $template->get2('url'));
+    $this->assertNull($template->get2('via'));
    }
  
    public function testTidy81() : void {
-    $text = "{{cite web|url=https://rocksbackpages-com.wikipedialibrary.idm.oclc.org/Library/Article/camel-over-the-moon }}";
+    $text = "{{cite web|url=https://rocksbackpages-com.wikipedialibrary.idm.oclc.org/Library/Article/camel-over-the-moon |via=My Dog}}";
     $template = $this->make_citation($text);
     $template->tidy_parameter('url');
     $this->assertSame('https://rocksbackpages.com/Library/Article/camel-over-the-moon', $template->get2('url'));
+    $this->assertSame('My Dog', $template->get2('via'));
    }
  
    public function testTidy82() : void {
