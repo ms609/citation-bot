@@ -90,6 +90,12 @@ final class TemplateTest extends testBaseClass {
     $this->assertFalse($expanded->add_if_new('last1', 'Z'));
    }
  
+   public function testAddAuthorAgainDiff() : void {
+    $text = "{{Cite web|last1=X}}";
+    $expanded = $this->make_citation($text);
+    $this->assertFalse($expanded->add_if_new('author1', 'Z'));
+   }
+ 
    public function testAddS2CIDAgain() : void {
     $text = "{{Cite web|S2CID=X}}";
     $expanded = $this->process_citation($text);
