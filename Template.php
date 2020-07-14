@@ -2123,7 +2123,7 @@ final class Template {
     } elseif ($this->has('eprint')) {
       $result = $this->query_adsabs("identifier:" . urlencode('"' . $this->get('eprint') . '"'));
     } elseif ($this->has('arxiv')) {
-      $result = $this->query_adsabs("identifier:" . urlencode('"' . $this->get('arxiv')  . '"'));
+      $result = $this->query_adsabs("identifier:" . urlencode('"' . $this->get('arxiv')  . '"')); // @codeCoverageIgnore
     } else {
       $result = (object) array("numFound" => 0);
     }
@@ -2533,8 +2533,9 @@ final class Template {
           break;
         case "M3": case "PY": case "N1": case "N2": case "ER": case "TY": case "KW":
           $dat = trim(str_replace("\n$ris_line", "", "\n$dat")); // Ignore these completely
+          break;
         default:
-          ;
+          report_info("Unexpected RIS data type ignored: " . $ris_part[0]);
       }
       unset($ris_part[0]);
       if ($ris_parameter
