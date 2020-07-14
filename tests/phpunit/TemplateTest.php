@@ -2013,6 +2013,13 @@ T1 - This is the Title }}';
     $this->assertSame('cite arxiv', $template->wikiname());
   }
  
+  public function testArxivToJournalIfDoi() : void {
+    $text = "{{cite arxiv| eprint=1234|doi=10.0/000}}";
+    $template = $this->make_citation($text);
+    $template->final_tidy();
+    $this->assertSame('cite journal', $template->wikiname());  
+  }
+ 
   public function testChangeNameURL() : void {
     $text = "{{cite web|url=x|chapter-url=X|chapter=Z}}";
     $template = $this->process_citation($text);
