@@ -9,7 +9,7 @@ declare(strict_types=1);
 
 abstract class WikiThings {
   const TREAT_IDENTICAL_SEPARATELY = FALSE;
-  protected ?string $rawtext = NULL;
+  protected string $rawtext; // Unitialized.  Will crash if read before set; which is good.
 
   public function parse_text(string $text) : void {
     $this->rawtext = $text;
