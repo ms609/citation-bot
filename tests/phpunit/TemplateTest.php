@@ -1232,12 +1232,7 @@ final class TemplateTest extends testBaseClass {
     $this->assertNotNull($expanded->get2('tutel'));
     $this->assertNotNull($expanded->get2('journal'));
     $this->assertNotNull($expanded->get2('pages'));
-    $this->assertNotNull($this->getDateAndYear($expanded));
-  
-    // test attempt to add a parameter listed in COMMON_MISTAKES
-    $album_link = 'http://album.com';
-    $expanded->add_if_new('albumlink', $album_link);
-    $this->assertSame($album_link, $expanded->get2('titlelink'));    
+    $this->assertNotNull($this->getDateAndYear($expanded)); 
      
     // Double-check pages expansion
     $text = "{{Cite journal|pp. 1-5}}";
@@ -1550,7 +1545,7 @@ final class TemplateTest extends testBaseClass {
     // Same paper as testLongAuthorLists(), but CrossRef records full list of authors instead of collaboration name
     $text = '{{cite web | 10.1016/j.physletb.2010.03.064}}';
     $expanded = $this->process_citation($text);
-    $this->assertSame('29', $expanded->get2('displayauthors'));
+    $this->assertSame('29', $expanded->get2('display-authors'));
     $this->assertSame('Aielli', $expanded->get2('last30'));
     $this->assertSame("Charged-particle multiplicities in pp interactions at <math>"
       . '\sqrt{s}=900\text{ GeV}' .
