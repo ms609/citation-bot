@@ -3591,7 +3591,7 @@ final class Template {
       return;                                                              // @codeCoverageIgnore
     } else {
       if (in_array(strtolower($pmatch[3]), ['-first', '-last', '-link', 'link', '-mask', 'mask', '-surname', '-given', 'given'])) {
-        return; // TODO - deal with and add test for ALL possible parameters 
+        return; // TODO - deal with these
       }
       if (str_i_same($param ,'s2cid')) {
         return; // Nothing to clean up
