@@ -3094,8 +3094,6 @@ final class Template {
               } elseif (preg_match("~@\s*\d{4}\-?\d{3}[\dxX]~", $endnote_line)) {
                 $endnote_parameter = "issn";
                 break;
-              } else {
-                $endnote_parameter = FALSE;
               }
             case "R": // Resource identifier... *may* be DOI but probably isn't always.
               if (extract_doi($endnote_datum)[1]) {
@@ -3103,14 +3101,14 @@ final class Template {
                 break;
               }
             case "8": // Date
-            case "0":// Citation type
+            case "0": // Citation type
             case "X": // Abstract
             case "M": // Object identifier
               $dat = trim(str_replace("\n%$endnote_line", "", "\n" . $dat));
             default:
               $endnote_parameter = FALSE;
           }
-          if ($endnote_parameter && $this->blank($endnote_parameter)) {
+          if ($endnote_parameter) {
             $this->add_if_new($endnote_parameter, trim(substr($endnote_line, 2)));
             $dat = trim(str_replace("\n%$endnote_line", "", "\n$dat"));
           }
