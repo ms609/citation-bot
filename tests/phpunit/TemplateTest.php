@@ -2044,6 +2044,17 @@ T1 - This is the Title }}';
     $this->assertNull($template->get2('volume'));
   }
     
+  public function testRenameToArxivWhenLoseUrl() : void {
+    $text = "{{cite web|url=1|arxiv=2}}";
+    $template = $this->make_citation($text);
+    $template->forget('url');
+    $this->assertSame('cite arxiv', $template->wikiname());
+    $text = "{{cite web|url=1|arxiv=2|chapter-url=XYX}}";
+    $template = $this->make_citation($text);
+    $template->forget('url');
+    $this->assertSame('cite web', $template->wikiname());
+  }
+ 
   public function testArxivMore1() : void {
     $text = "{{cite arxiv}}";
     $expanded = $this->process_citation($text);
