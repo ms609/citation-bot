@@ -377,7 +377,7 @@ class Page {
     for ($i = 0; $i < count($all_templates); $i++) {
        unset($all_templates[$i]->all_templates);
     }
-    $all_templates = NULL;
+    unset($all_templates = NULL);
 
     // we often just fix Journal caps, so must be case sensitive compare
     // Avoid minor edits - gadget API will make these changes, since it does not check return code
