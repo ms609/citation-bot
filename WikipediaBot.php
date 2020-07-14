@@ -16,7 +16,7 @@ require_once("constants.php");
 class WikipediaBot {
 
   private Consumer $consumer; private Token $token; private $ch; private string $the_user;
-  private static ?self $last_WikipediaBot = NULL;
+  private static self $last_WikipediaBot;
 
   function __construct(bool $no_user = FALSE) {
     // setup.php must already be run at this point
@@ -395,7 +395,7 @@ class WikipediaBot {
   }
   # @return -1 if page does not exist; 0 if exists and not redirect; 1 if is redirect
   static public function is_redirect(string $page) : int {
-    $api = (self::$last_WikipediaBot == NULL) ? (new WikipediaBot(TRUE)) : self::$last_WikipediaBot;
+    $api = isset(self::$last_WikipediaBot) ? self::$last_WikipediaBot : (new WikipediaBot(TRUE));
     $res = $api->fetch([
         "action" => "query",
         "prop" => "info",
