@@ -1687,12 +1687,12 @@ final class Template {
           }
           $handle = urldecode($handle);
           // Verify that it works as a hdl - first with urlappend, since that is often page numbers
-          if (preg_match('~^(.+)\?urlappend=~', $handle, $matches)) {
+          if (preg_match('~^(.+)\?urlappend=~', $handle, $matches)) {  // should we shorten it
             usleep(100000);
             $test_url = "https://hdl.handle.net/" . $handle;
             $headers_test = @get_headers($test_url, 1);
             if ($headers_test === FALSE || empty($headers_test['Location'])) {
-               $handle = $matches[1]; // Shorten it
+               $handle = $matches[1];
             }
           }
           while (preg_match('~^(.+)/$~', $handle, $matches)) { // Trailing slash
