@@ -90,10 +90,16 @@ final class TemplateTest extends testBaseClass {
     $this->assertFalse($expanded->add_if_new('last1', 'Z'));
    }
  
-   public function testAddAuthorAgainDiff() : void {
+   public function testAddAuthorAgainDiff1() : void {
     $text = "{{Cite web|last1=X}}";
     $expanded = $this->make_citation($text);
     $this->assertFalse($expanded->add_if_new('author1', 'Z'));
+   }
+ 
+   public function testAddAuthorAgainDiff2() : void {
+    $text = "{{Cite web|author1=X}}";
+    $expanded = $this->make_citation($text);
+    $this->assertFalse($expanded->add_if_new('last1', 'Z'));
    }
  
    public function testAddS2CIDAgain() : void {
@@ -5124,6 +5130,14 @@ T1 - This is the Title }}';
      $this->assertSame('cite web', $template->wikiname());
      $this->assertNull($template->get2('s2cid-access'));
      $this->assertSame('XXXXXX', $template->get2('s2cid')); 
+     $this->assertSame('https://semanticscholar.org/paper/861fc89e94d8564adc670fbd35c48b2d2f487704', $template->get2('url'));
+  }
+ 
+  public function testSemanticscholar41() : void { // s2cid does not match and ALL CAPS AND not cleaned up with initial tidy
+     $text = '{{cite web|url=https://semanticscholar.org/paper/861fc89e94d8564adc670fbd35c48b2d2f487704|S2CID=XXXXXX}}';
+     $template = $this->make_citation($text);
+     $template->get_identifiers_from_url();
+     $this->assertSame('XXXXXX', $template->get2('S2CID')); 
      $this->assertSame('https://semanticscholar.org/paper/861fc89e94d8564adc670fbd35c48b2d2f487704', $template->get2('url'));
   }
  
