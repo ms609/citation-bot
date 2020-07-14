@@ -404,7 +404,7 @@ final class Template {
     }
     
     if (array_key_exists($param_name, COMMON_MISTAKES)) {
-      $param_name = COMMON_MISTAKES[$param_name];
+      report_error("Attempted to add invalid parameter: " . $param_name); // @codeCoverageIgnore
     }
     
     if (!is_null($api)) $this->record_api_usage($api, $param_name);
@@ -1310,7 +1310,7 @@ final class Template {
           report_warning('Existsing URL does not match exisiting S2CID: ' .  $this->get('s2cid'));
           return FALSE;
        }
-       if ($this->has('s2cid') && $s2cid != $this->get('s2cid')) {
+       if ($this->has('S2CID') && $s2cid != $this->get('S2CID')) {
           report_warning('Existsing URL does not match exisiting S2CID: ' .  $this->get('S2CID'));
           return FALSE;
        }
@@ -1687,12 +1687,12 @@ final class Template {
           }
           $handle = urldecode($handle);
           // Verify that it works as a hdl - first with urlappend, since that is often page numbers
-          if (preg_match('~^(.+)\?urlappend=~', $handle, $matches)) {
+          if (preg_match('~^(.+)\?urlappend=~', $handle, $matches)) {  // should we shorten it
             usleep(100000);
             $test_url = "https://hdl.handle.net/" . $handle;
             $headers_test = @get_headers($test_url, 1);
             if ($headers_test === FALSE || empty($headers_test['Location'])) {
-               $handle = $matches[1]; // Shorten it
+               $handle = $matches[1];
             }
           }
           while (preg_match('~^(.+)/$~', $handle, $matches)) { // Trailing slash
@@ -2123,7 +2123,7 @@ final class Template {
     } elseif ($this->has('eprint')) {
       $result = $this->query_adsabs("identifier:" . urlencode('"' . $this->get('eprint') . '"'));
     } elseif ($this->has('arxiv')) {
-      $result = $this->query_adsabs("identifier:" . urlencode('"' . $this->get('arxiv')  . '"'));
+      $result = $this->query_adsabs("identifier:" . urlencode('"' . $this->get('arxiv')  . '"')); // @codeCoverageIgnore
     } else {
       $result = (object) array("numFound" => 0);
     }
@@ -2533,8 +2533,9 @@ final class Template {
           break;
         case "M3": case "PY": case "N1": case "N2": case "ER": case "TY": case "KW":
           $dat = trim(str_replace("\n$ris_line", "", "\n$dat")); // Ignore these completely
+          break;
         default:
-          ;
+          report_info("Unexpected RIS data type ignored: " . $ris_part[0]);
       }
       unset($ris_part[0]);
       if ($ris_parameter
@@ -3586,10 +3587,20 @@ final class Template {
       }
     }
  
-    if (!preg_match('~^(\D+)(\d*)~', $param, $pmatch)) {
-      report_warning("Unrecognized parameter name format in $param");  // @codeCoverageIgnore
-      return;                                                          // @codeCoverageIgnore
+    if (!preg_match('~^(\D+)(\d*)(\D*)$~', $param, $pmatch)) {
+      report_minor_error("Unrecognized parameter name format in $param");  // @codeCoverageIgnore
+      return;                                                              // @codeCoverageIgnore
     } else {
+      if (in_array(strtolower($pmatch[3]), ['-first', '-last', '-link', 'link', '-mask', 'mask', '-surname', '-given', 'given'])) {
+        return; // TODO - deal with these
+      }
+      if (str_i_same($param ,'s2cid')|| str_i_same($param, 's2cid-access')) {
+        return; // Nothing to clean up
+      }
+      if ($pmatch[3] != '') {
+        report_minor_error("Unrecognized parameter name format in $param");  // @codeCoverageIgnore
+        return;                                                              // @codeCoverageIgnore
+      }
       switch ($pmatch[1]) {
         // Parameters are listed mostly alphabetically, though those with numerical content are grouped under "year"
 

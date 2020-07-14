@@ -90,6 +90,18 @@ final class TemplateTest extends testBaseClass {
     $this->assertFalse($expanded->add_if_new('last1', 'Z'));
    }
  
+   public function testAddAuthorAgainDiff1() : void {
+    $text = "{{Cite web|last1=X}}";
+    $expanded = $this->make_citation($text);
+    $this->assertFalse($expanded->add_if_new('author1', 'Z'));
+   }
+ 
+   public function testAddAuthorAgainDiff2() : void {
+    $text = "{{Cite web|author1=X}}";
+    $expanded = $this->make_citation($text);
+    $this->assertFalse($expanded->add_if_new('last1', 'Z'));
+   }
+ 
    public function testAddS2CIDAgain() : void {
     $text = "{{Cite web|S2CID=X}}";
     $expanded = $this->process_citation($text);
@@ -475,7 +487,7 @@ final class TemplateTest extends testBaseClass {
    $this->requires_arxiv(function() : void {
     $text = "{{Cite web | http://uk.arxiv.org/abs/0806.0013}}"
           . "{{Cite arxiv | eprint = 0806.0013 | class=forgetit|publisher=uk.arxiv}}"
-          . '{{Cite arxiv |eprint=1609.01689 | title = Accelerating Nuclear Configuration Interaction Calculations through a Preconditioned Block Iterative Eigensolver|class=cs.NA | year = 2016| last1 = Shao| first1 = Meiyue | display-authors = etal}}'
+          . '{{Cite arxiv |arxiv=1609.01689 | title = Accelerating Nuclear Configuration Interaction Calculations through a Preconditioned Block Iterative Eigensolver|class=cs.NA | year = 2016| last1 = Shao| first1 = Meiyue | display-authors = etal}}'
           . '{{cite arXiv|eprint=hep-th/0303241}}' // tests line feeds
           ;
     $expanded = $this->process_page($text);
@@ -1220,12 +1232,7 @@ final class TemplateTest extends testBaseClass {
     $this->assertNotNull($expanded->get2('tutel'));
     $this->assertNotNull($expanded->get2('journal'));
     $this->assertNotNull($expanded->get2('pages'));
-    $this->assertNotNull($this->getDateAndYear($expanded));
-  
-    // test attempt to add a parameter listed in COMMON_MISTAKES
-    $album_link = 'http://album.com';
-    $expanded->add_if_new('albumlink', $album_link);
-    $this->assertSame($album_link, $expanded->get2('titlelink'));    
+    $this->assertNotNull($this->getDateAndYear($expanded)); 
      
     // Double-check pages expansion
     $text = "{{Cite journal|pp. 1-5}}";
@@ -1538,7 +1545,7 @@ final class TemplateTest extends testBaseClass {
     // Same paper as testLongAuthorLists(), but CrossRef records full list of authors instead of collaboration name
     $text = '{{cite web | 10.1016/j.physletb.2010.03.064}}';
     $expanded = $this->process_citation($text);
-    $this->assertSame('29', $expanded->get2('displayauthors'));
+    $this->assertSame('29', $expanded->get2('display-authors'));
     $this->assertSame('Aielli', $expanded->get2('last30'));
     $this->assertSame("Charged-particle multiplicities in pp interactions at <math>"
       . '\sqrt{s}=900\text{ GeV}' .
@@ -1611,7 +1618,8 @@ ER -  }}';
    
       $text = '{{Cite journal  | TY - BOOK
 Y1 - 1990
-T1 - This will be a subtitle }}';
+T1 - This will be a subtitle
+ZZ - This will be ignored and not understood}}';
      $prepared = $this->prepare_citation($text);
      $this->assertSame('1990', $prepared->get2('year')); 
      $this->assertNull($prepared->get2('title'));
@@ -2006,6 +2014,13 @@ T1 - This is the Title }}';
     $this->assertSame('cite arxiv', $template->wikiname());
   }
  
+  public function testArxivToJournalIfDoi() : void {
+    $text = "{{cite arxiv| eprint=1234|doi=10.0/000}}";
+    $template = $this->make_citation($text);
+    $template->final_tidy();
+    $this->assertSame('cite journal', $template->wikiname());  
+  }
+ 
   public function testChangeNameURL() : void {
     $text = "{{cite web|url=x|chapter-url=X|chapter=Z}}";
     $template = $this->process_citation($text);
@@ -2030,6 +2045,17 @@ T1 - This is the Title }}';
     $this->assertNull($template->get2('volume'));
   }
     
+  public function testRenameToArxivWhenLoseUrl() : void {
+    $text = "{{cite web|url=1|arxiv=2}}";
+    $template = $this->make_citation($text);
+    $template->forget('url');
+    $this->assertSame('cite arxiv', $template->wikiname());
+    $text = "{{cite web|url=1|arxiv=2|chapter-url=XYX}}";
+    $template = $this->make_citation($text);
+    $template->forget('url');
+    $this->assertSame('cite web', $template->wikiname());
+  }
+ 
   public function testArxivMore1() : void {
     $text = "{{cite arxiv}}";
     $expanded = $this->process_citation($text);
@@ -3540,17 +3566,19 @@ T1 - This is the Title }}';
    }
  
    public function testTidy80() : void {
-    $text = "{{cite web|url=https://www-rocksbackpages-com.wikipedialibrary.idm.oclc.org/Library/Article/camel-over-the-moon }}";
+    $text = "{{cite web|url=https://www-rocksbackpages-com.wikipedialibrary.idm.oclc.org/Library/Article/camel-over-the-moon |via = wiki stuff }}";
     $template = $this->make_citation($text);
     $template->tidy_parameter('url');
     $this->assertSame('https://www.rocksbackpages.com/Library/Article/camel-over-the-moon', $template->get2('url'));
+    $this->assertNull($template->get2('via'));
    }
  
    public function testTidy81() : void {
-    $text = "{{cite web|url=https://rocksbackpages-com.wikipedialibrary.idm.oclc.org/Library/Article/camel-over-the-moon }}";
+    $text = "{{cite web|url=https://rocksbackpages-com.wikipedialibrary.idm.oclc.org/Library/Article/camel-over-the-moon |via=My Dog}}";
     $template = $this->make_citation($text);
     $template->tidy_parameter('url');
     $this->assertSame('https://rocksbackpages.com/Library/Article/camel-over-the-moon', $template->get2('url'));
+    $this->assertSame('My Dog', $template->get2('via'));
    }
  
    public function testTidy82() : void {
@@ -5097,6 +5125,14 @@ T1 - This is the Title }}';
      $this->assertSame('cite web', $template->wikiname());
      $this->assertNull($template->get2('s2cid-access'));
      $this->assertSame('XXXXXX', $template->get2('s2cid')); 
+     $this->assertSame('https://semanticscholar.org/paper/861fc89e94d8564adc670fbd35c48b2d2f487704', $template->get2('url'));
+  }
+ 
+  public function testSemanticscholar41() : void { // s2cid does not match and ALL CAPS AND not cleaned up with initial tidy
+     $text = '{{cite web|url=https://semanticscholar.org/paper/861fc89e94d8564adc670fbd35c48b2d2f487704|S2CID=XXXXXX}}';
+     $template = $this->make_citation($text);
+     $template->get_identifiers_from_url();
+     $this->assertSame('XXXXXX', $template->get2('S2CID')); 
      $this->assertSame('https://semanticscholar.org/paper/861fc89e94d8564adc670fbd35c48b2d2f487704', $template->get2('url'));
   }
  
