@@ -2123,7 +2123,7 @@ final class Template {
     } elseif ($this->has('eprint')) {
       $result = $this->query_adsabs("identifier:" . urlencode('"' . $this->get('eprint') . '"'));
     } elseif ($this->has('arxiv')) {
-      $result = $this->query_adsabs("identifier:" . urlencode('"' . $this->get('arxiv')  . '"'));
+      $result = $this->query_adsabs("identifier:" . urlencode('"' . $this->get('arxiv')  . '"')); // @codeCoverageIgnore
     } else {
       $result = (object) array("numFound" => 0);
     }
