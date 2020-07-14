@@ -3590,7 +3590,7 @@ final class Template {
       report_minor_error("Unrecognized parameter name format in $param");  // @codeCoverageIgnore
       return;                                                              // @codeCoverageIgnore
     } else {
-      if (in_array(strtolower($pmatch[3]), ['-first', '-last', '-link', '-mask', '-surname', '-given']) {
+      if (in_array(strtolower($pmatch[3]), ['-first', '-last', '-link', '-mask', '-surname', '-given'])) {
         return; // TODO
       }
       if (str_i_same($param ,'s2cid')) {
