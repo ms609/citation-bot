@@ -1545,7 +1545,7 @@ final class TemplateTest extends testBaseClass {
     // Same paper as testLongAuthorLists(), but CrossRef records full list of authors instead of collaboration name
     $text = '{{cite web | 10.1016/j.physletb.2010.03.064}}';
     $expanded = $this->process_citation($text);
-    $this->assertSame('29', $expanded->get2('displayauthors'));
+    $this->assertSame('29', $expanded->get2('display-authors'));
     $this->assertSame('Aielli', $expanded->get2('last30'));
     $this->assertSame("Charged-particle multiplicities in pp interactions at <math>"
       . '\sqrt{s}=900\text{ GeV}' .
