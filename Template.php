@@ -2533,8 +2533,9 @@ final class Template {
           break;
         case "M3": case "PY": case "N1": case "N2": case "ER": case "TY": case "KW":
           $dat = trim(str_replace("\n$ris_line", "", "\n$dat")); // Ignore these completely
+          break;
         default:
-          ;
+          report_info("Unexpected RIS data type ignored: " . $ris_part[0]);
       }
       unset($ris_part[0]);
       if ($ris_parameter
