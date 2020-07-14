@@ -2460,10 +2460,11 @@ final class Template {
 
     foreach ($ris as $ris_line) {
       $ris_part = explode(" - ", $ris_line . " ");
+      $ris_parameter = FALSE;
       switch (trim($ris_part[0])) {
         case "T1":
           if ($ris_fullbook) {
-            $ris_parameter = FALSE; // Sub-title of main title most likely
+            ; // Sub-title of main title most likely
           } elseif ($ris_book) {
              $ris_parameter = "chapter";
           } else {
@@ -2486,15 +2487,13 @@ final class Template {
           $ris_parameter = "date";
           $ris_part[1] = (preg_replace("~([\-\s]+)$~", '', str_replace('/', '-', $ris_part[1])));
           break;
-        case "SP":
+        case "SP": // Deal with start pages later
           $start_page = trim($ris_part[1]);
           $dat = trim(str_replace("\n$ris_line", "", "\n$dat"));
-          $ris_parameter = FALSE; // Deal with start pages later
           break;
-        case "EP":
+        case "EP": // Deal with end pages later
           $end_page = trim($ris_part[1]);
           $dat = trim(str_replace("\n$ris_line", "", "\n$dat"));
-          $ris_parameter = FALSE; // Deal with end pages later
           break;
         case "DO":
           $ris_parameter = doi_active($ris_part[1]) ? "doi" : FALSE;
@@ -2517,29 +2516,25 @@ final class Template {
         case "IS":
           $ris_parameter = "issue";
           break;
-        case "RI":
+        case "RI": // Deal with review titles later
           $ris_review = "Reviewed work: " . trim($ris_part[1]);  // Get these from JSTOR
           $dat = trim(str_replace("\n$ris_line", "", "\n$dat"));
-          $ris_parameter = FALSE; // Deal with review titles later
           break;
-        case "SN":
-          $ris_parameter = "issn";
+        case "SN": // Deal with ISSN later
           $ris_issn = trim($ris_part[1]);
           $dat = trim(str_replace("\n$ris_line", "", "\n$dat"));
-          $ris_parameter = FALSE; // Deal with ISSN later
           break;
         case "UR":
           $ris_parameter = "url";
           break;
-        case "PB":
+        case "PB": // Deal with publisher later
           $ris_publisher = trim($ris_part[1]);  // Get these from JSTOR
           $dat = trim(str_replace("\n$ris_line", "", "\n$dat"));
-          $ris_parameter = FALSE; // Deal with publisher later
           break;
         case "M3": case "PY": case "N1": case "N2": case "ER": case "TY": case "KW":
           $dat = trim(str_replace("\n$ris_line", "", "\n$dat")); // Ignore these completely
         default:
-          $ris_parameter = FALSE;
+          ;
       }
       unset($ris_part[0]);
       if ($ris_parameter
