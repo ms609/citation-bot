@@ -1310,7 +1310,7 @@ final class Template {
           report_warning('Existsing URL does not match exisiting S2CID: ' .  $this->get('s2cid'));
           return FALSE;
        }
-       if ($this->has('s2cid') && $s2cid != $this->get('s2cid')) {
+       if ($this->has('S2CID') && $s2cid != $this->get('S2CID')) {
           report_warning('Existsing URL does not match exisiting S2CID: ' .  $this->get('S2CID'));
           return FALSE;
        }
