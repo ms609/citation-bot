@@ -3094,8 +3094,6 @@ final class Template {
               } elseif (preg_match("~@\s*\d{4}\-?\d{3}[\dxX]~", $endnote_line)) {
                 $endnote_parameter = "issn";
                 break;
-              } else {
-                $endnote_parameter = FALSE;
               }
             case "R": // Resource identifier... *may* be DOI but probably isn't always.
               if (extract_doi($endnote_datum)[1]) {
@@ -3103,14 +3101,14 @@ final class Template {
                 break;
               }
             case "8": // Date
-            case "0":// Citation type
+            case "0": // Citation type
             case "X": // Abstract
             case "M": // Object identifier
               $dat = trim(str_replace("\n%$endnote_line", "", "\n" . $dat));
             default:
               $endnote_parameter = FALSE;
           }
-          if ($endnote_parameter && $this->blank($endnote_parameter)) {
+          if ($endnote_parameter) {
             $this->add_if_new($endnote_parameter, trim(substr($endnote_line, 2)));
             $dat = trim(str_replace("\n%$endnote_line", "", "\n$dat"));
           }
@@ -3591,10 +3589,13 @@ final class Template {
       report_minor_error("Unrecognized parameter name format in $param");  // @codeCoverageIgnore
       return;                                                              // @codeCoverageIgnore
     } else {
-      if (in_array(strtolower($pmatch[3]), ['-first', '-last', '-link', 'link', '-mask', 'mask', '-surname', '-given', 'given'])) {
+      if (in_array(strtolower($pmatch[3]), ['-first', '-last', '-surname', '-given', 'given'])) {
         return; // TODO - deal with these
       }
-      if (str_i_same($param ,'s2cid')|| str_i_same($param, 's2cid-access')) {
+      if (in_array(strtolower($pmatch[3]), ['-link', 'link', '-mask', 'mask'])) {
+        return; // Nothing to clean up
+      }
+      if (str_i_same($param ,'s2cid') || str_i_same($param, 's2cid-access')) {
         return; // Nothing to clean up
       }
       if ($pmatch[3] != '') {
@@ -3606,9 +3607,9 @@ final class Template {
 
         case 'accessdate':
         case 'access-date':
-          if ($this->has($pmatch[1]) && $this->blank(ALL_URL_TYPES))
+          if ($this->has($param) && $this->blank(ALL_URL_TYPES))
           {
-            $this->forget($pmatch[1]);
+            $this->forget($param);
           }
           return;
 
