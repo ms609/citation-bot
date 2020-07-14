@@ -352,7 +352,13 @@ final class PageTest extends testBaseClass {
    $page = $this->process_page($text);
    $this->assertSame($text, $page->parsed_text()); // template in the way
   }
-
+ 
+  public function testBadWikiTextPage() : void {
+      $text = "{{cite journal|doi=10.2307/962034}}{{cite journal|<ref></ref>doi=10.2307/962034}}";
+      $page = $this->process_page($text);
+      $this->assertSame($text, $page->parsed_text());
+  }
+ 
   public function testBadPage() : void {  // Use this when debugging pages that crash the bot
     // This MUST be escaped page name-underscores not spaces and such
     $bad_page = ""; //  Replace with something like "Vietnam_War" when debugging

@@ -741,8 +741,8 @@ function is_doi_works(string $doi) : ?bool {
          )); // Allow crudy cheap journals
   $headers_test = @get_headers("https://dx.doi.org/" . urlencode($doi), 1, $context);
   if ($headers_test === FALSE) {
-     sleep(1);
-     $headers_test = @get_headers("https://dx.doi.org/" . urlencode($doi), 1, $context);
+     sleep(1);                                                                            // @codeCoverageIgnore
+     $headers_test = @get_headers("https://dx.doi.org/" . urlencode($doi), 1, $context);  // @codeCoverageIgnore
   }
   if ($headers_test === FALSE) return NULL; // most likely bad, but will recheck again an again
   $response = $headers_test[0];
@@ -842,7 +842,7 @@ function expand_by_jstor(Template $template) : bool {
 
 // This routine is actually not used much, since we often get a DOI and thus do not need to parse this thankfully
 // Do not add a new regex without adding a test too in TemplateTest.php
-function parse_plain_text_reference(string $journal_data, Template &$this_template, bool $upgrade_years = FALSE ) : void { // WARNING: Reference passing
+function parse_plain_text_reference(string $journal_data, Template $this_template, bool $upgrade_years = FALSE ) : void {
       $journal_data = trim($journal_data);
       if ($journal_data === "") return;
       $arxiv_journal=FALSE;

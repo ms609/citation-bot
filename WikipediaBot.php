@@ -26,7 +26,7 @@ class WikipediaBot {
     if (!getenv('PHP_OAUTH_ACCESS_SECRET'))   report_error("PHP_OAUTH_ACCESS_SECRET not set");
 
     if ($no_user) {
-      ; // Do not set the username
+      $this->the_user = '';
     } elseif (getenv('TRAVIS')) {
       $this->the_user = 'Citation_bot';
     } else {
@@ -48,7 +48,7 @@ class WikipediaBot {
   }
   
   public function get_the_user() : string {
-    if (!isset($this->the_user) || @$this->the_user == NULL) {
+    if ($this->the_user == '') {
       report_error('User Not Set');         // @codeCoverageIgnore
     }
     return $this->the_user; // Might or might not match the above
@@ -394,16 +394,8 @@ class WikipediaBot {
     return (int) reset($res->query->pages)->ns;
   }
   # @return -1 if page does not exist; 0 if exists and not redirect; 1 if is redirect
-  static public function is_redirect(string $page, self $api = NULL) : int {
-    if (self::$last_WikipediaBot == NULL) {
-       new WikipediaBot(TRUE);      // @codeCoverageIgnore
-    }
-    if ($api == NULL) { // Nother passed in
-        $api = self::$last_WikipediaBot;
-    }
-    if ($api == NULL) {
-        report_error('No API found in is_redirect()');   // @codeCoverageIgnore
-    }
+  static public function is_redirect(string $page) : int {
+    $api = (self::$last_WikipediaBot == NULL) ? (new WikipediaBot(TRUE)) : self::$last_WikipediaBot;
     $res = $api->fetch([
         "action" => "query",
         "prop" => "info",
@@ -443,9 +435,9 @@ class WikipediaBot {
     curl_setopt($ch, CURLOPT_HEADER, 0);
     curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
     curl_setopt($ch, CURLOPT_URL, API_ROOT . '?action=query&usprop=blockinfo&format=json&list=users&ususers=' . urlencode(str_replace(" ", "_", $user)));
-    $response = @curl_exec($ch);
+    $response = (string) @curl_exec($ch);
     curl_close($ch);
-    if ($response == FALSE) return FALSE;
+    if ($response == '') return FALSE;
     $response = str_replace(array("\r", "\n"), '', $response);  // paranoid
     if (strpos($response, '"invalid"') !== FALSE) return FALSE; // IP Address and similar stuff
     if (strpos($response, '"blockid"') !== FALSE) return FALSE; // Valid but blocked

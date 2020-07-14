@@ -79,11 +79,9 @@ final class Template {
    
     if (substr($this->wikiname(),0,5) === 'cite ' || $this->wikiname() === 'citation') {
       if (preg_match('~< */? *ref *>~i', $this->rawtext)) {
-         // @codeCoverageIgnoreStart
          $page_error = TRUE;
-         report_minor_error('reference within citation template: most likely unclosed template.  ' . "\n" . $this->rawtext . "\n");
+         report_warning('reference within citation template: most likely unclosed template.  ' . "\n" . $this->rawtext . "\n");
          return;
-         // @codeCoverageIgnoreEnd
       }
     }
 
@@ -434,37 +432,32 @@ final class Template {
         if ($this->blank(['editor' . $match[1], 'editor' . $match[1] . '-last', 'editor' . $match[1] . '-first',
                           'editor-last' . $match[1], 'editor-first' . $match[1]])) {
           return $this->add($param_name, sanitize_string($value));
-        } else {
-          return FALSE;
         }
-      break;
+        return FALSE;
+
       case (bool) preg_match('~^editor(\d{1,})-first$~', $param_name, $match) :
         if ($this->had_initial_editor) return FALSE;
         if (!$this->blank(['editors', 'editor', 'editor-last', 'editor-first'])) return FALSE; // Existing incompatible data
         if ($this->blank(['editor' . $match[1], 'editor' . $match[1] . '-first', 'editor-first' . $match[1]])) {
           return $this->add($param_name, sanitize_string($value));
-        } else {
-          return FALSE;
         }
-      break;
+        return FALSE;
+
       case (bool) preg_match('~^editor(\d{1,})-last$~', $param_name, $match) :
         if ($this->had_initial_editor) return FALSE;
         if (!$this->blank(['editors', 'editor', 'editor-last', 'editor-first'])) return FALSE; // Existing incompatible data
         if ($this->blank(['editor' . $match[1], 'editor' . $match[1] . '-last', 'editor-last' . $match[1]])) {
           return $this->add($param_name, sanitize_string($value));
-        } else {
-          return FALSE;
         }
-      break;
+        return FALSE;
       
       #TRANSLATOR
       case (bool) preg_match('~^translator(\d{1,})$~', $param_name, $match) :
         if (!$this->blank(['translators', 'translator', 'translator-last', 'translator-first'])) return FALSE; // Existing incompatible data
         if ($this->blank(['translator' . $match[1], 'translator' . $match[1] . '-last', 'translator' . $match[1] . '-first'])) {
           return $this->add($param_name, sanitize_string($value));
-        } else {
-          return FALSE;
         }
+        return FALSE;
         
       ### AUTHORS
       case "author": case "author1": case "last1": case "last": case "authors":
@@ -481,6 +474,7 @@ final class Template {
           }
         }
         return FALSE;
+
       case "first": case "first1":
        $value = trim(straighten_quotes($value));
        if ($this->blank(FORENAME1_ALIASES)) {
@@ -1888,12 +1882,20 @@ final class Template {
            . ($data['volume'] ? "&volume=" . urlencode($data['volume']) : '')
            . ($data['issn'] ? ("&issn=" . $data['issn'])
                             : ($data['journal'] ? "&title=" . urlencode($data['journal']) : ''));
-      if (!($result = @simplexml_load_file($url)->query_result->body->query)){
+      $result = @simplexml_load_file($url);
+      if ($result === FALSE) {
         report_warning("Error loading simpleXML file from CrossRef.");  // @codeCoverageIgnore
-      } elseif ($result['status'] == 'malformed') {
+        return FALSE;                                                   // @codeCoverageIgnore
+      }
+      if (!isset($result->query_result->body->query)) {
+        report_warning("Unexpected simpleXML file from CrossRef.");  // @codeCoverageIgnore
+        return FALSE;                                                // @codeCoverageIgnore
+      }
+      $result = $result->query_result->body->query;
+      if ($result['status'] == 'malformed') {
         report_warning("Cannot search CrossRef: " . echoable((string) $result->msg));  // @codeCoverageIgnore
       } elseif ($result["status"] == "resolved") {
-        if (!isset($result->doi) || is_array($result->doi)) return FALSE; // Never seen array, but pays to be paranoid
+        if (!isset($result->doi)) return FALSE;
         report_info(" Successful!");
         return $this->add_if_new('doi', (string) $result->doi);
       }
@@ -2051,8 +2053,8 @@ final class Template {
            $query .= " AND (" . "\"" . str_replace(array("%E2%80%93", ';'), array("-", '%3B'), $val) . "\"" . "[$key])"; // PubMed does not like escaped /s in DOIs, but other characters seem problematic.
         }
       } else {
-        $key = $key_index[$term];
-        if ($key && $val = $this->get_without_comments_and_placeholders($term)) {
+        $key = $key_index[$term]; // Will crash if bad data is passed
+        if ($val = $this->get_without_comments_and_placeholders($term)) {
           if (preg_match(REGEXP_PLAIN_WIKILINK, $val, $matches)) {
               $val = $matches[1];    // @codeCoverageIgnore
           } elseif (preg_match(REGEXP_PIPED_WIKILINK, $val, $matches)) {
@@ -2458,10 +2460,11 @@ final class Template {
 
     foreach ($ris as $ris_line) {
       $ris_part = explode(" - ", $ris_line . " ");
+      $ris_parameter = FALSE;
       switch (trim($ris_part[0])) {
         case "T1":
           if ($ris_fullbook) {
-            $ris_parameter = FALSE; // Sub-title of main title most likely
+            ; // Sub-title of main title most likely
           } elseif ($ris_book) {
              $ris_parameter = "chapter";
           } else {
@@ -2484,15 +2487,13 @@ final class Template {
           $ris_parameter = "date";
           $ris_part[1] = (preg_replace("~([\-\s]+)$~", '', str_replace('/', '-', $ris_part[1])));
           break;
-        case "SP":
+        case "SP": // Deal with start pages later
           $start_page = trim($ris_part[1]);
           $dat = trim(str_replace("\n$ris_line", "", "\n$dat"));
-          $ris_parameter = FALSE; // Deal with start pages later
           break;
-        case "EP":
+        case "EP": // Deal with end pages later
           $end_page = trim($ris_part[1]);
           $dat = trim(str_replace("\n$ris_line", "", "\n$dat"));
-          $ris_parameter = FALSE; // Deal with end pages later
           break;
         case "DO":
           $ris_parameter = doi_active($ris_part[1]) ? "doi" : FALSE;
@@ -2515,29 +2516,25 @@ final class Template {
         case "IS":
           $ris_parameter = "issue";
           break;
-        case "RI":
+        case "RI": // Deal with review titles later
           $ris_review = "Reviewed work: " . trim($ris_part[1]);  // Get these from JSTOR
           $dat = trim(str_replace("\n$ris_line", "", "\n$dat"));
-          $ris_parameter = FALSE; // Deal with review titles later
           break;
-        case "SN":
-          $ris_parameter = "issn";
+        case "SN": // Deal with ISSN later
           $ris_issn = trim($ris_part[1]);
           $dat = trim(str_replace("\n$ris_line", "", "\n$dat"));
-          $ris_parameter = FALSE; // Deal with ISSN later
           break;
         case "UR":
           $ris_parameter = "url";
           break;
-        case "PB":
+        case "PB": // Deal with publisher later
           $ris_publisher = trim($ris_part[1]);  // Get these from JSTOR
           $dat = trim(str_replace("\n$ris_line", "", "\n$dat"));
-          $ris_parameter = FALSE; // Deal with publisher later
           break;
         case "M3": case "PY": case "N1": case "N2": case "ER": case "TY": case "KW":
           $dat = trim(str_replace("\n$ris_line", "", "\n$dat")); // Ignore these completely
         default:
-          $ris_parameter = FALSE;
+          ;
       }
       unset($ris_part[0]);
       if ($ris_parameter
@@ -3589,7 +3586,7 @@ final class Template {
       }
     }
  
-    if (!preg_match('~(\D+)(\d*)~', $param, $pmatch)) {
+    if (!preg_match('~^(\D+)(\d*)~', $param, $pmatch)) {
       report_warning("Unrecognized parameter name format in $param");  // @codeCoverageIgnore
       return;                                                          // @codeCoverageIgnore
     } else {
@@ -3641,7 +3638,7 @@ final class Template {
           }
           if ($this->blank('agency') && in_array(strtolower($the_author), ['associated press', 'reuters'])) {
             $this->rename('author', 'agency');
-            if (@$pmatch[2] == '1' || @$pmatch[2] == '') {
+            if ($pmatch[2] == '1' || $pmatch[2] == '') {
               $this->forget('author-link');
               $this->forget('authorlink');
               $this->forget('author-link1');
@@ -3651,7 +3648,7 @@ final class Template {
             return;
           }
           // Convert authorX to lastX, if firstX is set
-          if (isset($pmatch[2]) && $this->has('first' . $pmatch[2]) && $this->blank('last' . $pmatch[2])) {
+          if ($pmatch[2] && $this->has('first' . $pmatch[2]) && $this->blank('last' . $pmatch[2])) {
             $this->rename('author' . $pmatch[2], 'last' . $pmatch[2]);
             $pmatch[1] = 'last';
             $param = 'last' . $pmatch[2];
@@ -5210,12 +5207,9 @@ final class Template {
 
   protected function get_param_key (string $needle) : ?int {
     if (empty($this->param)) return NULL;
-    if (!is_array($this->param)) return NULL; // Maybe the wrong thing to do?
-    
     foreach ($this->param as $i => $p) {
       if ($p->param == $needle) return $i;
     }
-    
     return NULL;
   }
 
@@ -5410,7 +5404,7 @@ final class Template {
     }
   }
 
-  public function modifications(string $type='all') : array {
+  public function modifications() : array {
     if ($this->has(strtolower('CITATION_BOT_PLACEHOLDER_BARE_URL'))) return array();
     $new = array();
     $ret = array();
@@ -5437,7 +5431,6 @@ final class Template {
 
     $ret['dashes'] = $this->mod_dashes;
     $ret['names'] = $this->mod_names;
-    if (in_array($type, array_keys($ret))) return $ret[$type];
     return $ret;
   }
 

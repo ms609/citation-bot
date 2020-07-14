@@ -96,7 +96,6 @@ function wikify_external_text(string $title) : string {
   $replacement = [];
   $placeholder = [];
   if (preg_match_all("~<(?:mml:)?math[^>]*>(.*?)</(?:mml:)?math>~", $title, $matches)) {
-    $placeholder = [];
     for ($i = 0; $i < count($matches[0]); $i++) {
       $replacement[$i] = '<math>' . 
         str_replace(array_keys(MML_TAGS), array_values(MML_TAGS), 
@@ -652,7 +651,7 @@ function equivalent_parameters(string $par) : array {
   }
 }
   
-function check_doi_for_jstor(string $doi, Template &$template) : void {
+function check_doi_for_jstor(string $doi, Template $template) : void {
   if ($template->has('jstor')) return;
   $doi = trim($doi);
   if ($doi == '') return;

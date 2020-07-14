@@ -73,9 +73,9 @@ class Page {
     curl_setopt($ch, CURLOPT_HEADER, 0);
     curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
     curl_setopt($ch, CURLOPT_URL, WIKI_ROOT . '?' . http_build_query(['title' => $title, 'action' =>'raw']));
-    $this->text = @curl_exec($ch);
+    $this->text = (string) @curl_exec($ch);
     curl_close($ch);
-    if ($this->text == FALSE) {
+    if ($this->text == '') {
        report_warning('Unable to get anything for ' . $title . ' from ' . WIKI_ROOT);    // @codeCoverageIgnore
        return FALSE;                                                                     // @codeCoverageIgnore
     }
@@ -233,8 +233,8 @@ class Page {
     $singlebrack = $this->extract_object('SingleBracket');
     $all_templates = $this->extract_object('Template');
     if ($page_error) {
-      $this->text = $this->start_text;                   // @codeCoverageIgnore
-      return FALSE;                                      // @codeCoverageIgnore
+      $this->text = $this->start_text;
+      return FALSE;
     }
     for ($i = 0; $i < count($all_templates); $i++) {
        $all_templates[$i]->all_templates = &$all_templates; // Has to be pointer
@@ -499,8 +499,8 @@ class Page {
         $objects[] = $obj;
       }
     }
-    if ($preg_ok === FALSE || $preg_ok === NULL) { // Something went wrong.  Often from bad wiki-text.
-        // PHP 5 segmentation faults. PHP 7.0 returns FALSE. Later versions return NULL.
+    if ($preg_ok === FALSE) { // Something went wrong.  Often from bad wiki-text.
+        // PHP 5 segmentation faults. PHP 7.0 returns FALSE
         // @codeCoverageIgnoreStart
         $page_error = TRUE;
         if ($is_a_man_with_no_plan) echo "<p>\n\n" . $text . "\n\n<p>";

@@ -9,14 +9,13 @@ declare(strict_types=1);
 
 abstract class WikiThings {
   const TREAT_IDENTICAL_SEPARATELY = FALSE;
-  protected $rawtext;
+  protected $rawtext = NULL;
 
   public function parse_text(string $text) : void {
     $this->rawtext = $text;
   }
 
   public function parsed_text() : string {
-    if (!isset($this->rawtext)) report_error('Attempt to access undefined WikiThings');
     return $this->rawtext;
   }
 }
