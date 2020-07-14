@@ -404,7 +404,7 @@ final class Template {
     }
     
     if (array_key_exists($param_name, COMMON_MISTAKES)) {
-      $param_name = COMMON_MISTAKES[$param_name];
+      report_error("Attempted to add invalid parameter: " . $param_name); // @codeCoverageIgnore
     }
     
     if (!is_null($api)) $this->record_api_usage($api, $param_name);
