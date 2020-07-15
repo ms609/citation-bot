@@ -252,8 +252,7 @@ function format_multiple_authors(string $authors) : string {
   return $returnString;
 }
 
-function under_two_authors(?string $text) : bool {
-  $text = (string) $text;
+function under_two_authors(string $text) : bool {
   return !(strpos($text, ';') !== FALSE  //if there is a semicolon
           || substr_count($text, ',') > 1  //if there is more than one comma
           || substr_count($text, ',') < substr_count(trim($text), ' ')  //if the number of commas is less than the number of spaces in the trimmed string

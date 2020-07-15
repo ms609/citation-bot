@@ -385,8 +385,8 @@ final class Template {
    *      parameter so it is not used to trigger a new search via the same API.
    *
    */
-  public function add_if_new(string $param_name, ?string $value, ?string $api = NULL) : bool {
-    $value = trim((string) $value);
+  public function add_if_new(string $param_name, string $value, ?string $api = NULL) : bool {
+    $value = trim($value);
     $param_name = trim($param_name); // Pure paranoia
     if ($value == '') {
       return FALSE;
@@ -1188,9 +1188,8 @@ final class Template {
     }
   }
   
-  public function mark_inactive_doi(?string $doi = NULL) : void {
-    // Only call if doi_broken.
-    if (is_null($doi)) $doi = $this->get_without_comments_and_placeholders('doi');
+  public function mark_inactive_doi() : void {
+    $doi = $this->get_without_comments_and_placeholders('doi');
     if (doi_works($doi) === FALSE) { // NULL which would cast to FALSE means we don't know, so use ===
       $this->add_if_new('doi-broken-date', date('Y-m-d'));
     }
@@ -2637,12 +2636,11 @@ final class Template {
           return 'publisher';
         }
         if (!isset($best_location->evidence)) return 'nothing';
-       // This bug report is closed.  Hpoing for the best.
-       // if (@$best_location->evidence == 'oa repository (via OAI-PMH title and first author match)' ) {
-       //   // false positives are too common https://github.com/Impactstory/oadoi/issues/121
-       //   report_warning("Ignored a low-quality OA match on a repository via OAI-PMH for DOI: " . echoable($doi)); // @codeCoverageIgnore
-       //   return 'unreliable';                                                                                     // @codeCoverageIgnore
-       // }
+        // This bug report is now closed (https://github.com/Impactstory/oadoi/issues/121)
+        // if (@$best_location->evidence == 'oa repository (via OAI-PMH title and first author match)' ) {
+        //   report_warning("Ignored a low-quality OA match on a repository via OAI-PMH for DOI: " . echoable($doi)); // @codeCoverageIgnore
+        //   return 'unreliable';                                                                                     // @codeCoverageIgnore
+        // }
         if (isset($oa->journal_name) && $oa->journal_name == "Cochrane Database of Systematic Reviews" ) {
           report_warning("Ignored a OA from Cochrane Database of Systematic Reviews for DOI: " . echoable($doi)); // @codeCoverageIgnore
           return 'unreliable';                                                                                    // @codeCoverageIgnore
@@ -2954,7 +2952,7 @@ final class Template {
     }
     // Possibly contains dud information on occasion
     // $this->add_if_new('publisher', str_replace("___", ":", $xml->dc___publisher));
-    $isbn = NULL;
+    $isbn = '';
     foreach ($xml->dc___identifier as $ident) {
       if (preg_match("~isbn.*?([\d\-]{9}[\d\-]+)~i", (string) $ident, $match)) {
         $isbn = $match[1];
@@ -3587,12 +3585,12 @@ final class Template {
       report_minor_error("Unrecognized parameter name format in $param");  // @codeCoverageIgnore
       return;                                                              // @codeCoverageIgnore
     } else {
-      // Put "odd ones" in "normalized" order - be careful down below about $param vs actual values
-      if (str_i_same($param ,'s2cid') || str_i_same($param ,'s2cid-access')) {
+      // Put "odd ones" in "normalized" order - be careful down below about $param vs $pmatch values
+      if (in_array(strtolower($param), ['s2cid','s2cid-access'])) {
         $pmatch = [$param, $param, '', ''];
       }
       if (in_array(strtolower($pmatch[3]), ['-first', '-last', '-surname', '-given', 'given', '-link', 'link', '-mask', 'mask'])) {
-        $pmatch = [$param, $pmatch[1] . $pmatch[3] , $pmatch[2], ''];
+        $pmatch = [$param, $pmatch[1] . $pmatch[3], $pmatch[2], ''];
       }
       if ($pmatch[3] != '') {
         report_minor_error("Unrecognized parameter name format in $param");  // @codeCoverageIgnore
