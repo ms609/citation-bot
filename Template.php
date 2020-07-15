@@ -3587,7 +3587,7 @@ final class Template {
       return;                                                              // @codeCoverageIgnore
     } else {
       // Put "odd ones" in "normalized" order - be careful down below about $param vs actual values
-      if (str_i_same($param ,'s2cid') || str_i_same($param ,'s2cid-access')) {
+      if (in_array(strtolower($param), ['s2cid','s2cid-access'])) {
         $pmatch = [$param, $param, '', ''];
       }
       if (in_array(strtolower($pmatch[3]), ['-first', '-last', '-surname', '-given', 'given', '-link', 'link', '-mask', 'mask'])) {
