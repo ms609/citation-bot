@@ -2807,10 +2807,10 @@ final class Template {
         curl_close($ch);
         if ($google_content) {
           preg_match_all('~books.google.com/books\?id=............&amp~', $google_content, $google_results);
+          echo $isbn; print_r($google_results);
           $google_results = $google_results[0];
           $google_results = array_unique($google_results);
-          if (count($google_results) === 1) {
-            exit(1);
+          if (count($google_results) === 1) 
             $google_results = $google_results[0];
             $gid = substr($google_results, 26, -4);
             $url = 'https://books.google.com/books?id=' . $gid;
