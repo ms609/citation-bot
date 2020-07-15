@@ -385,8 +385,8 @@ final class Template {
    *      parameter so it is not used to trigger a new search via the same API.
    *
    */
-  public function add_if_new(string $param_name, ?string $value, ?string $api = NULL) : bool {
-    $value = trim((string) $value);
+  public function add_if_new(string $param_name, string $value, ?string $api = NULL) : bool {
+    $value = trim($value);
     $param_name = trim($param_name); // Pure paranoia
     if ($value == '') {
       return FALSE;
