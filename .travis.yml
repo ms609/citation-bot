@@ -45,5 +45,5 @@ matrix:           ###### ONLY ONE WITH FULL TESTING WITH IS 7.3 OTHERS ARE ALL S
         - wget -O- https://citations-dev.toolforge.org/gitpull.php
 
 git:
-  depth: 21
+  depth: 222
   
