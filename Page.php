@@ -86,12 +86,7 @@ class Page {
       report_warning("Page is a redirect.");
       return FALSE;
     }
-
-    if ($this->text) {
-      return TRUE;
-    } else {
-      return FALSE;               // @codeCoverageIgnore
-    }
+    return TRUE;
   }
   
   public function parse_text(string $text) : void {
@@ -237,7 +232,7 @@ class Page {
       return FALSE;
     }
     for ($i = 0; $i < count($all_templates); $i++) {
-       $all_templates[$i]->all_templates = &$all_templates; // Has to be pointer
+       $all_templates[$i]->all_templates = $all_templates;
        $all_templates[$i]->date_style = $this->date_style;
     }
     $our_templates = array();
@@ -373,10 +368,11 @@ class Page {
       report_error('CITATION_BOT_PLACEHOLDER found after processing');  // @codeCoverageIgnore
     }
 
+    // remove circular memory reference that makes garbage collection hard (all templates have an array of all templates)
     for ($i = 0; $i < count($all_templates); $i++) {
-       unset($all_templates[$i]->all_templates); // unlink pointer
+       unset($all_templates[$i]->all_templates);
     }
-    $all_templates = NULL; // remove circular memory reference that makes garbage collection hard (all templates have an array of all templates)
+    unset($all_templates);
 
     // we often just fix Journal caps, so must be case sensitive compare
     // Avoid minor edits - gadget API will make these changes, since it does not check return code

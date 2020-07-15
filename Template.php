@@ -404,7 +404,7 @@ final class Template {
     }
     
     if (array_key_exists($param_name, COMMON_MISTAKES)) {
-      $param_name = COMMON_MISTAKES[$param_name];
+      report_error("Attempted to add invalid parameter: " . $param_name); // @codeCoverageIgnore
     }
     
     if (!is_null($api)) $this->record_api_usage($api, $param_name);
@@ -1305,12 +1305,12 @@ final class Template {
     // semanticscholar
     if (preg_match('~^https?://(?:pdfs?\.|www\.|)semanticscholar\.org/~i', $url)) {
        $s2cid = getS2CID($url);
-       if ($s2cid == NULL) return FALSE;
+       if ($s2cid == '') return FALSE;
        if ($this->has('s2cid') && $s2cid != $this->get('s2cid')) {
           report_warning('Existsing URL does not match exisiting S2CID: ' .  $this->get('s2cid'));
           return FALSE;
        }
-       if ($this->has('s2cid') && $s2cid != $this->get('s2cid')) {
+       if ($this->has('S2CID') && $s2cid != $this->get('S2CID')) {
           report_warning('Existsing URL does not match exisiting S2CID: ' .  $this->get('S2CID'));
           return FALSE;
        }
@@ -1687,12 +1687,12 @@ final class Template {
           }
           $handle = urldecode($handle);
           // Verify that it works as a hdl - first with urlappend, since that is often page numbers
-          if (preg_match('~^(.+)\?urlappend=~', $handle, $matches)) {
+          if (preg_match('~^(.+)\?urlappend=~', $handle, $matches)) {  // should we shorten it
             usleep(100000);
             $test_url = "https://hdl.handle.net/" . $handle;
             $headers_test = @get_headers($test_url, 1);
             if ($headers_test === FALSE || empty($headers_test['Location'])) {
-               $handle = $matches[1]; // Shorten it
+               $handle = $matches[1];
             }
           }
           while (preg_match('~^(.+)/$~', $handle, $matches)) { // Trailing slash
@@ -2123,7 +2123,7 @@ final class Template {
     } elseif ($this->has('eprint')) {
       $result = $this->query_adsabs("identifier:" . urlencode('"' . $this->get('eprint') . '"'));
     } elseif ($this->has('arxiv')) {
-      $result = $this->query_adsabs("identifier:" . urlencode('"' . $this->get('arxiv')  . '"'));
+      $result = $this->query_adsabs("identifier:" . urlencode('"' . $this->get('arxiv')  . '"')); // @codeCoverageIgnore
     } else {
       $result = (object) array("numFound" => 0);
     }
@@ -2533,8 +2533,9 @@ final class Template {
           break;
         case "M3": case "PY": case "N1": case "N2": case "ER": case "TY": case "KW":
           $dat = trim(str_replace("\n$ris_line", "", "\n$dat")); // Ignore these completely
+          break;
         default:
-          ;
+          report_info("Unexpected RIS data type ignored: " . $ris_part[0]);
       }
       unset($ris_part[0]);
       if ($ris_parameter
@@ -2797,20 +2798,18 @@ final class Template {
         if ( !ctype_alnum($oclc) ) $oclc='' ;
       }
       if ($isbn) {  // Try Books.Google.Com
-        $google_book_url = 'https://books.google.com/books?isbn=' . $isbn;
+        $google_book_url = 'https://www.google.com/search?tbo=p&tbm=bks&q=isbn:' . $isbn;
         $ch = curl_init();
         curl_setopt($ch, CURLOPT_HEADER, 0);
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
         curl_setopt($ch, CURLOPT_URL, $google_book_url);
         $google_content = (string) @curl_exec($ch);
         curl_close($ch);
-        if ($google_content) {
-          preg_match_all('~books.google.com/books\?id=............&amp~', $google_content, $google_results);
-          $google_results = $google_results[0];
+        if ($google_content && preg_match_all('~books\.google\.com/books\?id=(............)&amp~', $google_content, $google_results)) {
+          $google_results = $google_results[1];
           $google_results = array_unique($google_results);
           if (count($google_results) === 1) {
-            $google_results = $google_results[0];
-            $gid = substr($google_results, 26, -4);
+            $gid = $google_results[0];
             $url = 'https://books.google.com/books?id=' . $gid;
             $google_books_worked = TRUE;
           }
@@ -3093,8 +3092,6 @@ final class Template {
               } elseif (preg_match("~@\s*\d{4}\-?\d{3}[\dxX]~", $endnote_line)) {
                 $endnote_parameter = "issn";
                 break;
-              } else {
-                $endnote_parameter = FALSE;
               }
             case "R": // Resource identifier... *may* be DOI but probably isn't always.
               if (extract_doi($endnote_datum)[1]) {
@@ -3102,14 +3099,14 @@ final class Template {
                 break;
               }
             case "8": // Date
-            case "0":// Citation type
+            case "0": // Citation type
             case "X": // Abstract
             case "M": // Object identifier
               $dat = trim(str_replace("\n%$endnote_line", "", "\n" . $dat));
             default:
               $endnote_parameter = FALSE;
           }
-          if ($endnote_parameter && $this->blank($endnote_parameter)) {
+          if ($endnote_parameter) {
             $this->add_if_new($endnote_parameter, trim(substr($endnote_line, 2)));
             $dat = trim(str_replace("\n%$endnote_line", "", "\n$dat"));
           }
@@ -3586,18 +3583,29 @@ final class Template {
       }
     }
  
-    if (!preg_match('~^(\D+)(\d*)~', $param, $pmatch)) {
-      report_warning("Unrecognized parameter name format in $param");  // @codeCoverageIgnore
-      return;                                                          // @codeCoverageIgnore
+    if (!preg_match('~^(\D+)(\d*)(\D*)$~', $param, $pmatch)) {
+      report_minor_error("Unrecognized parameter name format in $param");  // @codeCoverageIgnore
+      return;                                                              // @codeCoverageIgnore
     } else {
+      // Put "odd ones" in "normalized" order - be careful down below about $param vs actual values
+      if (str_i_same($param ,'s2cid') || str_i_same($param ,'s2cid-access')) {
+        $pmatch = [$param, $param, '', ''];
+      }
+      if (in_array(strtolower($pmatch[3]), ['-first', '-last', '-surname', '-given', 'given', '-link', 'link', '-mask', 'mask'])) {
+        $pmatch = [$param, $pmatch[1] . $pmatch[3] , $pmatch[2], ''];
+      }
+      if ($pmatch[3] != '') {
+        report_minor_error("Unrecognized parameter name format in $param");  // @codeCoverageIgnore
+        return;                                                              // @codeCoverageIgnore
+      }
       switch ($pmatch[1]) {
         // Parameters are listed mostly alphabetically, though those with numerical content are grouped under "year"
 
         case 'accessdate':
         case 'access-date':
-          if ($this->has($pmatch[1]) && $this->blank(ALL_URL_TYPES))
+          if ($this->has($param) && $this->blank(ALL_URL_TYPES))
           {
-            $this->forget($pmatch[1]);
+            $this->forget($param);
           }
           return;
 
