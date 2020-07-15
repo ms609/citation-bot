@@ -108,12 +108,6 @@ final class TemplateTest extends testBaseClass {
     $this->assertFalse($expanded->add_if_new('s2cid', 'Z'));
    }
 
-   public function testS2CIDWithPMC() : void {
-     $text = "{{cite journal|url= https://www.semanticscholar.org/paper/NWChem%3A-Past%2C-present%2C-and-future.-Aprá-Bylaska/6154e5c4e5dc9946efcb1627bffa8cf3253f3ed4 | PMC = dndhdhdhdh}}";
-     $expanded = $this->process_citation($text);
-     $this->assertNull($expanded->get2('url'));
-   }
-
    public function testNatureBad() : void {
     $text = "{{Cite web|doi=10.1111/j.1572-0241.xxxx|jstor=XYZ}}";
     $expanded = $this->process_citation($text);
