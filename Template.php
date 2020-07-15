@@ -2810,7 +2810,7 @@ final class Template {
           echo $isbn . "\n" ; print_r($google_results);
           $google_results = array_unique($google_results);
           if (count($google_results) === 1) {
-            $google_results = $google_results[0];
+            $gid = $google_results[0];
             $url = 'https://books.google.com/books?id=' . $gid;
             $google_books_worked = TRUE;
           }
