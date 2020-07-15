@@ -385,8 +385,8 @@ final class Template {
    *      parameter so it is not used to trigger a new search via the same API.
    *
    */
-  public function add_if_new(string $param_name, ?string $value, ?string $api = NULL) : bool {
-    $value = trim((string) $value);
+  public function add_if_new(string $param_name, string $value, ?string $api = NULL) : bool {
+    $value = trim($value);
     $param_name = trim($param_name); // Pure paranoia
     if ($value == '') {
       return FALSE;
@@ -2952,7 +2952,7 @@ final class Template {
     }
     // Possibly contains dud information on occasion
     // $this->add_if_new('publisher', str_replace("___", ":", $xml->dc___publisher));
-    $isbn = NULL;
+    $isbn = '';
     foreach ($xml->dc___identifier as $ident) {
       if (preg_match("~isbn.*?([\d\-]{9}[\d\-]+)~i", (string) $ident, $match)) {
         $isbn = $match[1];
