@@ -2637,7 +2637,7 @@ final class Template {
           return 'publisher';
         }
         if (!isset($best_location->evidence)) return 'nothing';
-        // This bug report is closed (https://github.com/Impactstory/oadoi/issues/121)
+        // This bug report is now closed (https://github.com/Impactstory/oadoi/issues/121)
         // if (@$best_location->evidence == 'oa repository (via OAI-PMH title and first author match)' ) {
         //   report_warning("Ignored a low-quality OA match on a repository via OAI-PMH for DOI: " . echoable($doi)); // @codeCoverageIgnore
         //   return 'unreliable';                                                                                     // @codeCoverageIgnore
