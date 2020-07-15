@@ -2807,7 +2807,6 @@ final class Template {
         curl_close($ch);
         if ($google_content && preg_match_all('~books\.google\.com/books\?id=(............)&amp~', $google_content, $google_results)) {
           $google_results = $google_results[1];
-          echo $isbn . "\n" ; print_r($google_results);
           $google_results = array_unique($google_results);
           if (count($google_results) === 1) {
             $gid = $google_results[0];
