@@ -80,8 +80,6 @@ foreach($links as $link) {
     if ($page->get_text_from($page_title, $api) && $page->expand_text()) {
       report_phase("Writing to " . echoable($page_title) . '... ');
       while (!$page->write($api, $edit_summary_end) && $attempts < 2) ++$attempts;
-      // Parsed text can be viewed by diff link; don't clutter page. 
-      // echo "\n\n"; safely_echo($page->parsed_text());
       if ($attempts < 3 ) {
         html_echo(
         "\n  <a href=" . WIKI_ROOT . "?title=" . urlencode($page_title) . "&diff=prev&oldid="
