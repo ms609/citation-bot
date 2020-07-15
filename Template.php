@@ -3586,12 +3586,12 @@ final class Template {
       report_minor_error("Unrecognized parameter name format in $param");  // @codeCoverageIgnore
       return;                                                              // @codeCoverageIgnore
     } else {
-      // Put "odd ones" in "normalized" order - be careful down below about $param vs actual values
+      // Put "odd ones" in "normalized" order - be careful down below about $param vs $pmatch values
       if (in_array(strtolower($param), ['s2cid','s2cid-access'])) {
         $pmatch = [$param, $param, '', ''];
       }
       if (in_array(strtolower($pmatch[3]), ['-first', '-last', '-surname', '-given', 'given', '-link', 'link', '-mask', 'mask'])) {
-        $pmatch = [$param, $pmatch[1] . $pmatch[3] , $pmatch[2], ''];
+        $pmatch = [$param, $pmatch[1] . $pmatch[3], $pmatch[2], ''];
       }
       if ($pmatch[3] != '') {
         report_minor_error("Unrecognized parameter name format in $param");  // @codeCoverageIgnore
