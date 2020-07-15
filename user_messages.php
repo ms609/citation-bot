@@ -45,14 +45,6 @@ function quietly(callable $function, string $text) : void {
   }
 }
 
-/**
- * used when sending page output to webpage
- * @codeCoverageIgnore
- */
-function safely_echo (string $string) : void {
-  echo echoable($string);
-}
-
 function echoable(?string $string) : string {
   return HTML_OUTPUT ? htmlspecialchars((string) $string) : (string) $string;
 }
