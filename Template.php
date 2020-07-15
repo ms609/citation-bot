@@ -2798,20 +2798,18 @@ final class Template {
         if ( !ctype_alnum($oclc) ) $oclc='' ;
       }
       if ($isbn) {  // Try Books.Google.Com
-        $google_book_url = 'https://books.google.com/books?isbn=' . $isbn;
+        $google_book_url = 'https://www.google.com/search?tbo=p&tbm=bks&q=isbn:' . $isbn;
         $ch = curl_init();
         curl_setopt($ch, CURLOPT_HEADER, 0);
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
         curl_setopt($ch, CURLOPT_URL, $google_book_url);
         $google_content = (string) @curl_exec($ch);
         curl_close($ch);
-        if ($google_content) {
-          preg_match_all('~books.google.com/books\?id=............&amp~', $google_content, $google_results);
-          $google_results = $google_results[0];
+        if ($google_content && preg_match_all('~books\.google\.com/books\?id=(............)&amp~', $google_content, $google_results)) {
+          $google_results = $google_results[1];
           $google_results = array_unique($google_results);
           if (count($google_results) === 1) {
-            $google_results = $google_results[0];
-            $gid = substr($google_results, 26, -4);
+            $gid = $google_results[0];
             $url = 'https://books.google.com/books?id=' . $gid;
             $google_books_worked = TRUE;
           }
