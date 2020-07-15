@@ -90,8 +90,6 @@ if ($category) {
     if ($page->get_text_from($page_title, $api) && $page->expand_text()) {
       report_phase("Writing to " . echoable($page_title) . '... ');
       while (!$page->write($api, $edit_summary_end) && $attempts < 2) ++$attempts;
-      // Parsed text can be viewed by diff link; don't clutter page. 
-      // echo "\n\n"; safely_echo($page->parsed_text());
       if ($attempts < 3 ) {
         $last_rev = urlencode($api->get_last_revision($page_title));
         html_echo(
