@@ -99,7 +99,7 @@ foreach (explode('|', $pages) as $page_title) {
       }
     } elseif (!$ON && HTML_OUTPUT) {
       echo "\n # Proposed code for " . echoable($page_title) . ', which you have asked the bot to commit with edit summary ' . echoable($my_page->edit_summary()) . "<br><pre>";
-      safely_echo($my_page->parsed_text());
+      echo echoable($my_page->parsed_text());
       echo "</pre>";
       ob_flush();
   ?>
