@@ -2952,7 +2952,7 @@ final class Template {
     }
     // Possibly contains dud information on occasion
     // $this->add_if_new('publisher', str_replace("___", ":", $xml->dc___publisher));
-    $isbn = NULL;
+    $isbn = '';
     foreach ($xml->dc___identifier as $ident) {
       if (preg_match("~isbn.*?([\d\-]{9}[\d\-]+)~i", (string) $ident, $match)) {
         $isbn = $match[1];
