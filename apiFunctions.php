@@ -615,12 +615,12 @@ function expand_doi_with_dx(Template $template, string $doi) : bool {
        $data = (string) @curl_exec($ch);
      } catch (Exception $e) {                    // @codeCoverageIgnoreStart
        curl_close($ch);
-       $template->mark_inactive_doi($doi);
+       $template->mark_inactive_doi();
        return FALSE;
      }                                           // @codeCoverageIgnoreEnd
      curl_close($ch);
      if ($data == "" || stripos($data, 'DOI Not Found') !== FALSE || stripos($data, 'DOI prefix') !== FALSE) {
-       $template->mark_inactive_doi($doi);
+       $template->mark_inactive_doi();
        return FALSE;
      }
      $json = @json_decode($data, TRUE);

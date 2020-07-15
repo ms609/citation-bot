@@ -1188,9 +1188,8 @@ final class Template {
     }
   }
   
-  public function mark_inactive_doi(?string $doi = NULL) : void {
-    // Only call if doi_broken.
-    if (is_null($doi)) $doi = $this->get_without_comments_and_placeholders('doi');
+  public function mark_inactive_doi() : void {
+    $doi = $this->get_without_comments_and_placeholders('doi');
     if (doi_works($doi) === FALSE) { // NULL which would cast to FALSE means we don't know, so use ===
       $this->add_if_new('doi-broken-date', date('Y-m-d'));
     }
