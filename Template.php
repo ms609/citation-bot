@@ -2810,6 +2810,7 @@ final class Template {
           $google_results = $google_results[0];
           $google_results = array_unique($google_results);
           if (count($google_results) === 1) {
+            exit(1);
             $google_results = $google_results[0];
             $gid = substr($google_results, 26, -4);
             $url = 'https://books.google.com/books?id=' . $gid;
