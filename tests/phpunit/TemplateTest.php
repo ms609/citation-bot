@@ -2330,7 +2330,14 @@ T1 - This is the Title }}';
      $this->assertSame('explosives engineering', strtolower($expanded->get('title')));
      $this->assertNull($expanded->get2('url'));
   }
-    
+ 
+  public function testJustAnISBN2() : void {
+     $text = '{{cite book |isbn=9780387329895}}';
+     $expanded = $this->process_citation($text);
+     $this->assertSame('2007', $expanded->get('year'));
+     $this->assertNull($expanded->get2('url'));
+  }
+ 
   public function testArxivPDf() : void {
    $this->requires_arxiv(function() : void {
     $text = '{{cite web|url=https://arxiv.org/ftp/arxiv/papers/1312/1312.7288.pdf}}';
