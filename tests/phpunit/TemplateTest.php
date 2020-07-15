@@ -4614,6 +4614,13 @@ T1 - This is the Title }}';
      $this->assertSame('10.1063/1.2263373', $template->get2('doi'));
    }
  
+   public function testDropBadDOI() : void {
+     $text='{{Cite journal | doi=10.1063/1.2263373|chapter-url=http://dx.doi.org/10.000/broken}}';
+     $template = $this->make_citation($text);
+     $this->assertSame('10.1063/1.2263373', $template->get2('doi'));
+     $this->assertNull($template->get2('chapter-url'));
+   }
+ 
    public function testEmptyJunk() : void {
      $text='{{Cite journal| dsfasfdfasdfsdafsdafd = | issue = | issue = 33}}';
      $template = $this->process_citation($text);
