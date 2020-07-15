@@ -1012,6 +1012,52 @@ final class TemplateTest extends testBaseClass {
     $this->assertNull($expanded->get2('website'));
   }
  
+  public function testCovertUrl2Chapter() : void {
+   // Do not change
+    $text = '{{Cite web|title=X|chapter=Y|url=http://archive.org/}}';
+    $expanded = $this->make_citation($text);
+    $expanded->change_name_to('cite book');
+    $this->assertNull($expanded->get2('chapter-url'));
+    $this->assertNull($expanded->get2('chapterurl'));
+    $this->assertNotNull($expanded->get2('url'));
+   
+    $text = '{{Cite web|title=X|chapter=Y|url=http://archive.org/page/0}}';
+    $expanded = $this->make_citation($text);
+    $expanded->change_name_to('cite book');
+    $this->assertNull($expanded->get2('chapter-url'));
+    $this->assertNull($expanded->get2('chapterurl'));
+    $this->assertNotNull($expanded->get2('url'));
+   
+    $text = '{{Cite web|title=X|chapter=Y|url=http://archive.org/page/1}}';
+    $expanded = $this->make_citation($text);
+    $expanded->change_name_to('cite book');
+    $this->assertNull($expanded->get2('chapter-url'));
+    $this->assertNull($expanded->get2('chapterurl'));
+    $this->assertNotNull($expanded->get2('url'));
+   
+    $text = '{{Cite web|title=X|chapter=Y|url=http://archive.org/page}}';
+    $expanded = $this->make_citation($text);
+    $expanded->change_name_to('cite book');
+    $this->assertNull($expanded->get2('chapter-url'));
+    $this->assertNull($expanded->get2('chapterurl'));
+    $this->assertNotNull($expanded->get2('url')); 
+   
+   // Do change
+    $text = '{{Cite web|title=X|chapter=Y|url=http://archive.org/page/232}}';
+    $expanded = $this->make_citation($text);
+    $expanded->change_name_to('cite book');
+    $this->assertNotNull($expanded->get2('chapter-url'));
+    $this->assertNull($expanded->get2('chapterurl'));
+    $this->assertNull($expanded->get2('url'));
+   
+    $text = '{{Cite web|title=X|chapter=Y|url=http://archive.org/chapter/}}';
+    $expanded = $this->make_citation($text);
+    $expanded->change_name_to('cite book');
+    $this->assertNotNull($expanded->get2('chapter-url'));
+    $this->assertNull($expanded->get2('chapterurl'));
+    $this->assertNull($expanded->get2('url'));
+  }
+ 
   public function testPreferLinkedPublisher() : void {
     $text = "{{cite journal| journal=The History Teacher| publisher=''[[The History Teacher]]'' }}";
     $expanded = $this->process_citation($text);
