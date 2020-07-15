@@ -2805,14 +2805,12 @@ final class Template {
         curl_setopt($ch, CURLOPT_URL, $google_book_url);
         $google_content = (string) @curl_exec($ch);
         curl_close($ch);
-        if ($google_content) {
-          preg_match_all('~books\.google\.com/books\?id=............&amp~', $google_content, $google_results);
-          $google_results = $google_results[0];
+        if ($google_content && preg_match_all('~books\.google\.com/books\?id=(............)&amp~', $google_content, $google_results)) {
+          $google_results = $google_results[1];
           echo $isbn . "\n" ; print_r($google_results);
           $google_results = array_unique($google_results);
           if (count($google_results) === 1) {
             $google_results = $google_results[0];
-            $gid = substr($google_results, 26, -4);
             $url = 'https://books.google.com/books?id=' . $gid;
             $google_books_worked = TRUE;
           }
