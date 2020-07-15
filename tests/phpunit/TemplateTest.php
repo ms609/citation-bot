@@ -1013,7 +1013,7 @@ final class TemplateTest extends testBaseClass {
   }
  
   public function testCovertUrl2Chapter() : void {
-   // Do not change
+    // Do not change
     $text = '{{Cite web|title=X|chapter=Y|url=http://archive.org/}}';
     $expanded = $this->make_citation($text);
     $expanded->change_name_to('cite book');
@@ -1042,7 +1042,7 @@ final class TemplateTest extends testBaseClass {
     $this->assertNull($expanded->get2('chapterurl'));
     $this->assertNotNull($expanded->get2('url')); 
    
-   // Do change
+    // Do change
     $text = '{{Cite web|title=X|chapter=Y|url=http://archive.org/page/232}}';
     $expanded = $this->make_citation($text);
     $expanded->change_name_to('cite book');
