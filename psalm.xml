@@ -41,7 +41,6 @@
        <var name="$zotero_announced" type="bool" />
        <var name="$zotero_failures_count" type="int" />
        <var name="$ch_zotero" type="object" />
-       <var name="$is_a_man_with_no_plan" type="?bool" />
        <var name="$page_error" type="bool" />
        <var name="$ADSABS_GIVE_UP" type="?bool" />
        <var name="$BLOCK_BIBCODE_SEARCH" type="bool" />

@@ -446,6 +446,12 @@ class WikipediaBot {
     return TRUE;
   }
   
+  static public function NonStandardMode() : bool {
+    $api = isset(self::$last_WikipediaBot) ? self::$last_WikipediaBot : (new WikipediaBot(TRUE));
+    if ($api->get_the_user() === 'AManWithNoPlan') return TRUE;
+    return FALSE;
+  }
+  
 /**
  * Human interaction needed
  * @codeCoverageIgnore
