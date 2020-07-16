@@ -222,11 +222,7 @@ class Page {
      }
     // TEMPLATES
     $singlebrack = $this->extract_object('SingleBracket');
-    try {
-      $all_templates = $this->extract_object('Template');
-    } catch (Exception $e) {
-      $this->page_error = TRUE;
-    }
+    $all_templates = $this->extract_object('Template');
     if ($this->page_error) {
       $this->text = $this->start_text;
       return FALSE;
@@ -487,7 +483,11 @@ class Page {
       $preg_ok = TRUE;
       while ($preg_ok = preg_match($regexp, $text, $match)) {
         $obj = new $class();
-        $obj->parse_text($match[0]);
+        try {
+          $obj->parse_text($match[0]);
+        } catch (Exception $e) {
+          $this->page_error = TRUE;
+        }
         $exploded = $treat_identical_separately ? explode($match[0], $text, 2) : explode($match[0], $text);
         $text = implode(sprintf($placeholder_text, $i++), $exploded);
         $objects[] = $obj;
