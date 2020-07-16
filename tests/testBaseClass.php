@@ -6,42 +6,47 @@ require_once(__DIR__ . '/../setup.php');
 error_reporting(E_ALL); // All tests run this way
 if (!defined('VERBOSE')) define('VERBOSE', TRUE);
 
-// Change these to temporarily disable sets of tests======================
-$testing_skip_zotero = TRUE;                                           // TODO - broken
-$testing_skip_bibcode= FALSE;                                           //
-$testing_skip_google = FALSE;                                           //
-$testing_skip_wiki   = FALSE;                                           //
-$testing_skip_dx     = FALSE;                                           //
-$testing_skip_arxiv  = FALSE;                                           //
-// =======================================================================
-
-// Non-trusted builds
-if (!getenv('PHP_ADSABSAPIKEY')) $testing_skip_bibcode = TRUE;
-if (!getenv('PHP_GOOGLEKEY')) $testing_skip_google = TRUE;
-if (!getenv('PHP_OAUTH_CONSUMER_TOKEN') || !getenv('PHP_OAUTH_CONSUMER_SECRET') ||
-    !getenv('PHP_OAUTH_ACCESS_TOKEN')   || !getenv('PHP_OAUTH_ACCESS_SECRET')) {
-   $testing_skip_wiki = TRUE;
-}
-
-// Main build skips nothing
-if (getenv('TRAVIS_PULL_REQUEST') === 'false') {
-   $testing_skip_zotero = FALSE;
-   $testing_skip_bibcode= FALSE;
-   $testing_skip_google = FALSE;
-   $testing_skip_wiki   = FALSE;
-   $testing_skip_dx     = FALSE;
-   $testing_skip_arxiv  = FALSE;
-}
-
 $BLOCK_BIBCODE_SEARCH = TRUE;
 $BLOCK_ZOTERO_SEARCH = TRUE;
 $SLOW_MODE = TRUE;
 
 abstract class testBaseClass extends PHPUnit\Framework\TestCase {
+  // Change these to temporarily disable sets of tests======================
+  private $testing_skip_zotero = TRUE;                                           // TODO - broken
+  private $testing_skip_bibcode= FALSE;                                           //
+  private $testing_skip_google = FALSE;                                           //
+  private $testing_skip_wiki   = FALSE;                                           //
+  private $testing_skip_dx     = FALSE;                                           //
+  private $testing_skip_arxiv  = FALSE;                                           //
+  // =======================================================================
+  
+  function __construct() {
+    parent::__construct();
+
+   // Non-trusted builds
+    if (!getenv('PHP_ADSABSAPIKEY')) $this->testing_skip_bibcode = TRUE;
+    if (!getenv('PHP_GOOGLEKEY')) $this->testing_skip_google = TRUE;
+    if (!getenv('PHP_OAUTH_CONSUMER_TOKEN') || !getenv('PHP_OAUTH_CONSUMER_SECRET') ||
+        !getenv('PHP_OAUTH_ACCESS_TOKEN')   || !getenv('PHP_OAUTH_ACCESS_SECRET')) {
+       $this->testing_skip_wiki = TRUE;
+    }
+
+    // Main build skips nothing
+    if (getenv('TRAVIS_PULL_REQUEST') === 'false') {
+       $this->testing_skip_zotero = FALSE;
+       $this->testing_skip_bibcode= FALSE;
+       $this->testing_skip_google = FALSE;
+       $this->testing_skip_wiki   = FALSE;
+       $this->testing_skip_dx     = FALSE;
+       $this->testing_skip_arxiv  = FALSE;
+    }
+
+    make_ch_zotero();
+  }
+
 
   protected function requires_secrets(callable $function) : void {
-    global $testing_skip_wiki;
-    if ($testing_skip_wiki) {
+    if ($this->testing_skip_wiki) {
       echo 'S';
       ob_flush();
       $this->assertNull(NULL);
@@ -51,8 +56,7 @@ abstract class testBaseClass extends PHPUnit\Framework\TestCase {
   }
   
   protected function requires_google(callable $function) : void {
-    global $testing_skip_google;
-    if ($testing_skip_google) {
+    if ($this->testing_skip_google) {
       echo 'G';
       ob_flush();
       $this->assertNull(NULL);
@@ -60,12 +64,9 @@ abstract class testBaseClass extends PHPUnit\Framework\TestCase {
       $function();
     }
   }
-    
-    
-    
+
   protected function requires_dx(callable $function) : void {
-    global $testing_skip_dx;
-    if ($testing_skip_dx) {
+    if ($this->testing_skip_dx) {
       echo 'X';
       ob_flush();
       $this->assertNull(NULL);
@@ -75,8 +76,7 @@ abstract class testBaseClass extends PHPUnit\Framework\TestCase {
   }
     
   protected function requires_arxiv(callable $function) : void {
-    global $testing_skip_arxiv;
-    if ($testing_skip_arxiv) {
+    if ($this->testing_skip_arxiv) {
       echo 'V';
       ob_flush();
       $this->assertNull(NULL);
@@ -88,8 +88,7 @@ abstract class testBaseClass extends PHPUnit\Framework\TestCase {
   // Only routines that absolutely need bibcode access since we are limited 
   protected function requires_bibcode(callable $function) : void {
     global $BLOCK_BIBCODE_SEARCH;
-    global $testing_skip_bibcode;
-    if ($testing_skip_bibcode) {
+    if ($this->testing_skip_bibcode) {
       echo 'B';
       ob_flush();
       $this->assertNull(NULL);
@@ -106,8 +105,7 @@ abstract class testBaseClass extends PHPUnit\Framework\TestCase {
   // allows us to turn off zoreto tests
   protected function requires_zotero(callable $function) : void {
     global $BLOCK_ZOTERO_SEARCH;
-    global $testing_skip_zotero;
-    if ($testing_skip_zotero) {
+    if ($this->testing_skip_zotero) {
       echo 'Z';
       ob_flush();
       $this->assertNull(NULL);
@@ -171,20 +169,8 @@ abstract class testBaseClass extends PHPUnit\Framework\TestCase {
   }
 
   protected function expand_via_zotero(string $text) :  Template {
-    global $ch_zotero;
     $expanded = $this->make_citation($text);
-    
-    $ch_zotero = curl_init(ZOTERO_ROOT);
-    curl_setopt($ch_zotero, CURLOPT_CUSTOMREQUEST, "POST");
-    curl_setopt($ch_zotero, CURLOPT_HTTPHEADER, ['Content-Type: text/plain']);
-    curl_setopt($ch_zotero, CURLOPT_RETURNTRANSFER, TRUE);   
-    curl_setopt($ch_zotero, CURLOPT_CONNECTTIMEOUT, 10);
-    curl_setopt($ch_zotero, CURLOPT_TIMEOUT, 45);
-
     expand_by_zotero($expanded);
-    
-    curl_close($ch_zotero);
-    
     $expanded->tidy();
     return $expanded;
   }

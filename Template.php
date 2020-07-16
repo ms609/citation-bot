@@ -35,7 +35,6 @@ final class Template {
             protected bool $mod_dashes = FALSE; protected bool $mod_names = FALSE; protected bool $no_initial_doi = FALSE;
 
   public function parse_text(string $text) : void {
-    global $page_error;
     $this->initial_author_params = array(); // Will be populated later if there are any
     $this->used_by_api = array(
       'adsabs'   => array(),
@@ -79,9 +78,8 @@ final class Template {
    
     if (substr($this->wikiname(),0,5) === 'cite ' || $this->wikiname() === 'citation') {
       if (preg_match('~< */? *ref *>~i', $this->rawtext)) {
-         $page_error = TRUE;
          report_warning('reference within citation template: most likely unclosed template.  ' . "\n" . $this->rawtext . "\n");
-         return;
+         throw new Exception('page_error');
       }
     }
 

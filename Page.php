@@ -21,6 +21,7 @@ class Page {
   protected string $text, $title; protected array $modifications; protected int $date_style;
   protected string $read_at; protected string $start_text;
   protected int $lastrevid;
+  protected bool $page_error;
 
   function __construct() { 
       $this->construct_modifications_array();
@@ -131,8 +132,7 @@ class Page {
   }
   
   public function expand_text() : bool {
-    global $page_error;
-    $page_error = FALSE;
+    $this->page_error = FALSE;
     date_default_timezone_set('UTC');
     $this->announce_page();
     if (!$this->text) {
@@ -147,7 +147,7 @@ class Page {
     $mathematics = $this->extract_object('Mathematics');
     $musicality  = $this->extract_object('Musicscores');
     $preformated = $this->extract_object('Preformated');
-    if ($page_error) {
+    if ($this->page_error) {
       $this->text = $this->start_text;                  // @codeCoverageIgnore
       return FALSE;                                     // @codeCoverageIgnore
     }
@@ -223,7 +223,7 @@ class Page {
     // TEMPLATES
     $singlebrack = $this->extract_object('SingleBracket');
     $all_templates = $this->extract_object('Template');
-    if ($page_error) {
+    if ($this->page_error) {
       $this->text = $this->start_text;
       return FALSE;
     }
@@ -471,7 +471,6 @@ class Page {
   }
   
   public function extract_object(string $class) : array {
-    global $page_error;
     $i = 0;
     $text = $this->text;
     $regexp_in = $class::REGEXP;
@@ -484,7 +483,11 @@ class Page {
       $preg_ok = TRUE;
       while ($preg_ok = preg_match($regexp, $text, $match)) {
         $obj = new $class();
-        $obj->parse_text($match[0]);
+        try {
+          $obj->parse_text($match[0]);
+        } catch (Exception $e) {
+          $this->page_error = TRUE;
+        }
         $exploded = $treat_identical_separately ? explode($match[0], $text, 2) : explode($match[0], $text);
         $text = implode(sprintf($placeholder_text, $i++), $exploded);
         $objects[] = $obj;
@@ -493,7 +496,7 @@ class Page {
     if ($preg_ok === FALSE) { // Something went wrong.  Often from bad wiki-text.
         // PHP 5 segmentation faults. PHP 7.0 returns FALSE
         // @codeCoverageIgnoreStart
-        $page_error = TRUE;
+        $this->page_error = TRUE;
         if (WikipediaBot::NonStandardMode()) echo "<p>\n\n" . $text . "\n\n<p>";
         report_minor_error('Regular expression failure in ' . htmlspecialchars($this->title) . ' when extracting ' . $class . 's');
         // @codeCoverageIgnoreEnd
