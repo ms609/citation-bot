@@ -27,10 +27,7 @@ class Page {
   }
 
   public function get_text_from(string $title, WikipediaBot $api) : bool {
-    global $is_a_man_with_no_plan;
     $this->construct_modifications_array(); // Could be new page
-    $is_a_man_with_no_plan = FALSE;
-    if ($api->get_the_user() === 'AManWithNoPlan') $is_a_man_with_no_plan = TRUE; // Special debug options enabled
 
     $details = $api->fetch(['action'=>'query', 
       'prop'=>'info', 'titles'=> $title, 'curtimestamp'=>'true'], 'GET');
@@ -134,7 +131,6 @@ class Page {
   }
   
   public function expand_text() : bool {
-    global $is_a_man_with_no_plan;
     global $page_error;
     $page_error = FALSE;
     date_default_timezone_set('UTC');
@@ -476,7 +472,6 @@ class Page {
   
   public function extract_object(string $class) : array {
     global $page_error;
-    global $is_a_man_with_no_plan;
     $i = 0;
     $text = $this->text;
     $regexp_in = $class::REGEXP;
@@ -499,7 +494,7 @@ class Page {
         // PHP 5 segmentation faults. PHP 7.0 returns FALSE
         // @codeCoverageIgnoreStart
         $page_error = TRUE;
-        if ($is_a_man_with_no_plan) echo "<p>\n\n" . $text . "\n\n<p>";
+        if (WikipediaBot::NonStandardMode()) echo "<p>\n\n" . $text . "\n\n<p>";
         report_minor_error('Regular expression failure in ' . htmlspecialchars($this->title) . ' when extracting ' . $class . 's');
         // @codeCoverageIgnoreEnd
     }
