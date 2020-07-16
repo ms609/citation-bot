@@ -6,7 +6,7 @@ const ERROR_DONE = 'ERROR_DONE';
 
 require_once("constants.php");
 
-public function make_ch_zotero() : void { // This is never closed
+function make_ch_zotero() : void { // This is never closed
   global $ch_zotero;
   if (isset($ch_zotero)) return;
   $ch_zotero = curl_init(ZOTERO_ROOT);
