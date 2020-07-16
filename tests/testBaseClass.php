@@ -40,6 +40,8 @@ abstract class testBaseClass extends PHPUnit\Framework\TestCase {
        $this->testing_skip_dx     = FALSE;
        $this->testing_skip_arxiv  = FALSE;
     }
+
+    make_ch_zotero();
   }
 
 
@@ -167,12 +169,8 @@ abstract class testBaseClass extends PHPUnit\Framework\TestCase {
   }
 
   protected function expand_via_zotero(string $text) :  Template {
-    make_ch_zotero();
-
     $expanded = $this->make_citation($text);
-
     expand_by_zotero($expanded);
-    
     $expanded->tidy();
     return $expanded;
   }
