@@ -20,7 +20,7 @@ abstract class testBaseClass extends PHPUnit\Framework\TestCase {
   private $testing_skip_arxiv  = FALSE;                                           //
   // =======================================================================
   
-  function __construct () : void {
+  function __construct() {
     parent::__construct();
 
    // Non-trusted builds
