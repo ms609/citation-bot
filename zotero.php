@@ -13,6 +13,9 @@ public function make_ch_zotero() : void { // This is never closed
   curl_setopt($ch_zotero, CURLOPT_CUSTOMREQUEST, "POST");
   curl_setopt($ch_zotero, CURLOPT_HTTPHEADER, ['Content-Type: text/plain']);
   curl_setopt($ch_zotero, CURLOPT_RETURNTRANSFER, TRUE);
+  // Defaults used in TRAVIS overiden below when deployed
+  curl_setopt($ch_zotero, CURLOPT_CONNECTTIMEOUT, 10);
+  curl_setopt($ch_zotero, CURLOPT_TIMEOUT, 45);
 }
 
 function query_url_api(array $ids, array $templates) : void {
@@ -23,10 +26,7 @@ function query_url_api(array $ids, array $templates) : void {
   if (!isset($zotero_failures_count) || getenv('TRAVIS')) $zotero_failures_count = 0;
   if (!$SLOW_MODE) return; // Zotero takes time
   
-  if (getenv('TRAVIS')) { // try harder in TRAVIS to make tests more successful and make it his zotero less often
-    curl_setopt($ch_zotero, CURLOPT_CONNECTTIMEOUT, 30);
-    curl_setopt($ch_zotero, CURLOPT_TIMEOUT, 145);
-  } else {
+  if (!getenv('TRAVIS')) { // try harder in TRAVIS to make tests more successful and make it his zotero less often
     // @codeCoverageIgnoreStart
     curl_setopt($ch_zotero, CURLOPT_CONNECTTIMEOUT, 1);
     $url_count = 0;
