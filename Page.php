@@ -563,7 +563,7 @@ class Page {
   }
 }
 
-class TestPage extends Page {
+final class TestPage extends Page {
   // Functions for use in testing context only
   
   function __construct() {
