@@ -6,6 +6,15 @@ const ERROR_DONE = 'ERROR_DONE';
 
 require_once("constants.php");
 
+public function make_ch_zotero() : void { // This is never closed
+  global $ch_zotero;
+  if (isset($ch_zotero)) return;
+  $ch_zotero = curl_init(ZOTERO_ROOT);
+  curl_setopt($ch_zotero, CURLOPT_CUSTOMREQUEST, "POST");
+  curl_setopt($ch_zotero, CURLOPT_HTTPHEADER, ['Content-Type: text/plain']);
+  curl_setopt($ch_zotero, CURLOPT_RETURNTRANSFER, TRUE);
+}
+
 function query_url_api(array $ids, array $templates) : void {
   global $SLOW_MODE;
   global $zotero_failures_count;
@@ -14,10 +23,6 @@ function query_url_api(array $ids, array $templates) : void {
   if (!isset($zotero_failures_count) || getenv('TRAVIS')) $zotero_failures_count = 0;
   if (!$SLOW_MODE) return; // Zotero takes time
   
-  $ch_zotero = curl_init(ZOTERO_ROOT);
-  curl_setopt($ch_zotero, CURLOPT_CUSTOMREQUEST, "POST");
-  curl_setopt($ch_zotero, CURLOPT_HTTPHEADER, ['Content-Type: text/plain']);
-  curl_setopt($ch_zotero, CURLOPT_RETURNTRANSFER, TRUE);   
   if (getenv('TRAVIS')) { // try harder in TRAVIS to make tests more successful and make it his zotero less often
     curl_setopt($ch_zotero, CURLOPT_CONNECTTIMEOUT, 30);
     curl_setopt($ch_zotero, CURLOPT_TIMEOUT, 145);
@@ -73,7 +78,6 @@ function query_url_api(array $ids, array $templates) : void {
          }
        }
   }
-  curl_close($ch_zotero);
 }
 
 function query_ieee_webpages(array $templates) : void {
