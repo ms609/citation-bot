@@ -167,19 +167,11 @@ abstract class testBaseClass extends PHPUnit\Framework\TestCase {
   }
 
   protected function expand_via_zotero(string $text) :  Template {
-    global $ch_zotero;
+    make_ch_zotero();
+
     $expanded = $this->make_citation($text);
-    
-    $ch_zotero = curl_init(ZOTERO_ROOT);
-    curl_setopt($ch_zotero, CURLOPT_CUSTOMREQUEST, "POST");
-    curl_setopt($ch_zotero, CURLOPT_HTTPHEADER, ['Content-Type: text/plain']);
-    curl_setopt($ch_zotero, CURLOPT_RETURNTRANSFER, TRUE);   
-    curl_setopt($ch_zotero, CURLOPT_CONNECTTIMEOUT, 10);
-    curl_setopt($ch_zotero, CURLOPT_TIMEOUT, 45);
 
     expand_by_zotero($expanded);
-    
-    curl_close($ch_zotero);
     
     $expanded->tidy();
     return $expanded;
