@@ -3,8 +3,6 @@ declare(strict_types=1);
 
 require_once(__DIR__ . '/../setup.php');
 
-if (!defined('VERBOSE')) define('VERBOSE', TRUE);
-
 $BLOCK_BIBCODE_SEARCH = TRUE;
 $BLOCK_ZOTERO_SEARCH = TRUE;
 $SLOW_MODE = TRUE;

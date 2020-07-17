@@ -39,8 +39,8 @@ function report_minor_error(string $text) : void {  // For things we want to err
 }
 
 
-function quietly(callable $function, string $text) : void {
-  if (defined('VERBOSE') || HTML_OUTPUT ) {
+function quietly(callable $function, string $text) : void { // Stuff suppressed when running on the command line
+  if (HTML_OUTPUT || getenv('TRAVIS')) {
     $function($text);
   }
 }
