@@ -6,16 +6,8 @@ define("HTML_OUTPUT", !isset($argv));
 require_once('setup.php');
 $api = new WikipediaBot();
 if (!isset($argv)) {
-  if (isset($_REQUEST["slow"])) {
-    $SLOW_MODE = TRUE;
-  } else {
-    $SLOW_MODE = FALSE;
-  }
-  if (isset($_REQUEST["cat"])) {
-    $category = $_REQUEST["cat"];
-  } else {
-    $category = '';
-  }
+  $SLOW_MODE = isset($_REQUEST["slow"]);
+  $category = isset($_REQUEST["cat"]) ? (string) $_REQUEST["cat"] : '';
 } else {
   $SLOW_MODE = FALSE;
   $category = '';
