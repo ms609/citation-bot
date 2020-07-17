@@ -3,7 +3,6 @@ declare(strict_types=1);
 
 require_once(__DIR__ . '/../setup.php');
 
-error_reporting(E_ALL); // All tests run this way
 if (!defined('VERBOSE')) define('VERBOSE', TRUE);
 
 $BLOCK_BIBCODE_SEARCH = TRUE;
