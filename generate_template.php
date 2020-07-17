@@ -7,6 +7,7 @@ declare(strict_types=1);
 
 echo "<!DOCTYPE html><html lang=\"en\" dir=\"ltr\"><head><title>Make a Template</title></head><body><pre>\n";
 $SLOW_MODE = TRUE;
+define("HTML_OUTPUT", TRUE);
 require_once('setup.php');
 $t = new Template();
 $t->parse_text('{{Cite web}}');
