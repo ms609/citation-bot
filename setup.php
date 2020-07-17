@@ -1,6 +1,7 @@
 <?php
 declare(strict_types=1);
 error_reporting(E_ALL^E_NOTICE);
+if (getenv('TRAVIS')) error_reporting(E_ALL);
 
 /*
  * setup.php sets up the environment
