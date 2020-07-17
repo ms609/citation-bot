@@ -9,7 +9,7 @@ try {
 
  $SLOW_MODE = isset($_REQUEST["slow"]);
  define("HTML_OUTPUT", FALSE);
-
+ 
  //Set up tool requirements
  require_once('setup.php');
 
