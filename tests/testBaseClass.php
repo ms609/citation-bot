@@ -1,6 +1,6 @@
 <?php
 declare(strict_types=1);
-define("HTML_MODE", FALSE);
+define("HTML_OUTPUT", FALSE);
 require_once(__DIR__ . '/../setup.php');
 
 $BLOCK_BIBCODE_SEARCH = TRUE;
