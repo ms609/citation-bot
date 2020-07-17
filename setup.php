@@ -12,7 +12,7 @@ ini_set("user_agent", "Citation_bot; citations@tools.wmflabs.org");
 include_once('./vendor/autoload.php');
 
 if (!defined("HTML_OUTPUT")) {
-  report_error("HTML_OUTPUT not set); 
+  report_error("HTML_OUTPUT not set"); 
 }
 if (!isset($FLUSHING_OKAY)) {  // Default when not gadget API
   $FLUSHING_OKAY = TRUE;
