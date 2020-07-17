@@ -20,10 +20,10 @@ require_once("constants.php");
 require_once("NameTools.php");
 
 final class Template {
-  const PLACEHOLDER_TEXT = '# # # CITATION_BOT_PLACEHOLDER_TEMPLATE %s # # #';
-  const REGEXP = ['~\{\{[^\{\}\|]+\}\}~suS', '~\{\{[^\{\}]+\}\}~suS', '~\{\{(?>[^\{]|\{[^\{])+?\}\}~suS'];  // Please see https://stackoverflow.com/questions/1722453/need-to-prevent-php-regex-segfault for discussion of atomic regex
-  const TREAT_IDENTICAL_SEPARATELY = FALSE;
-  const MAGIC_STRING = 'CITATION_BOT_PLACEHOLDER_URL_POINTER_'; 
+  public const PLACEHOLDER_TEXT = '# # # CITATION_BOT_PLACEHOLDER_TEMPLATE %s # # #';
+  public const REGEXP = ['~\{\{[^\{\}\|]+\}\}~su', '~\{\{[^\{\}]+\}\}~su', '~\{\{(?>[^\{]|\{[^\{])+?\}\}~su'];  // Please see https://stackoverflow.com/questions/1722453/need-to-prevent-php-regex-segfault for discussion of atomic regex
+  public const TREAT_IDENTICAL_SEPARATELY = FALSE;
+  private const MAGIC_STRING = 'CITATION_BOT_PLACEHOLDER_URL_POINTER_'; 
   public array $all_templates;  // Points to list of all the Template() on the Page() including this one
   public int $date_style = DATES_WHATEVER;  // Will get from the page
   protected string $rawtext;
