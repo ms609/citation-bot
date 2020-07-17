@@ -103,6 +103,14 @@ require_once(__DIR__ . '/../testBaseClass.php');
      });
     }
    
+    public function testNonStandardMode() : void {
+     $this->requires_secrets(function() : void {
+      $api = new WikipediaBot(); // Make sure one exists
+      $this->assertSame('Citation_bot', $api->get_the_user());
+      $this->assertFalse(WikipediaBot::NonStandardMode());
+     });
+    }
+   
     public function testIsValidUser() : void {
       $result = WikipediaBot::is_valid_user('Smith609');
       $this->assertSame(TRUE, $result);
