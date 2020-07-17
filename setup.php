@@ -11,12 +11,11 @@ if (getenv('TRAVIS')) error_reporting(E_ALL);
 ini_set("user_agent", "Citation_bot; citations@tools.wmflabs.org");
 include_once('./vendor/autoload.php');
 
-if (!defined("HTML_OUTPUT")) {
-  report_error("HTML_OUTPUT not set"); 
-}
 if (!isset($FLUSHING_OKAY)) {  // Default when not gadget API
   $FLUSHING_OKAY = TRUE;
 }
+
+if (!defined("HTML_OUTPUT")) exit("HTML_OUTPUT not set");
 
 // We block these sometimes in testing
 $BLOCK_BIBCODE_SEARCH = FALSE;
@@ -30,7 +29,6 @@ if (!getenv('TRAVIS')) {
 
 require_once('user_messages.php');
 if (file_exists('git_pull.lock')) report_error('GIT pull in progress');
-
 if (!getenv('PHP_OAUTH_CONSUMER_TOKEN') && file_exists('env.php')) {
   // An opportunity to set the PHP_OAUTH_ environment variables used in this function,
   // if they are not set already. Remember to set permissions (not readable!)
