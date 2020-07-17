@@ -21,7 +21,7 @@ require_once("NameTools.php");
 
 final class Template {
   const PLACEHOLDER_TEXT = '# # # CITATION_BOT_PLACEHOLDER_TEMPLATE %s # # #';
-  const REGEXP = ['~\{\{[^\{\}\|]+\}\}~suS', '~\{\{[^\{\}]+\}\}~suS', '~\{\{(?>[^\{]|\{[^\{])+?\}\}~suS'];  // Please see https://stackoverflow.com/questions/1722453/need-to-prevent-php-regex-segfault for discussion of atomic regex
+  const REGEXP = ['~\{\{[^\{\}\|]+\}\}~su', '~\{\{[^\{\}]+\}\}~su', '~\{\{(?>[^\{]|\{[^\{])+?\}\}~su'];  // Please see https://stackoverflow.com/questions/1722453/need-to-prevent-php-regex-segfault for discussion of atomic regex
   const TREAT_IDENTICAL_SEPARATELY = FALSE;
   const MAGIC_STRING = 'CITATION_BOT_PLACEHOLDER_URL_POINTER_'; 
   public $all_templates;  // Points to list of all the Template() on the Page() including this one
