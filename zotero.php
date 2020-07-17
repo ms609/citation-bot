@@ -8,7 +8,7 @@ require_once("constants.php");
 
 function make_ch_zotero() : void { // This is never closed
   global $ch_zotero;
-  if (isset($ch_zotero) && $ch_zotero != NULL) return;
+  if (is_resource($ch_zotero)) return;
   $ch_zotero = curl_init(ZOTERO_ROOT);
   curl_setopt($ch_zotero, CURLOPT_CUSTOMREQUEST, "POST");
   curl_setopt($ch_zotero, CURLOPT_HTTPHEADER, ['Content-Type: text/plain']);
