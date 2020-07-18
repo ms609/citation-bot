@@ -11,12 +11,12 @@ final class GenTemplateTest extends testBaseClass {
       ob_start();
       ob_start();
       $_GET['jstor'] = '373737';
+      $template_text = '';
       require_once(__DIR__ . '/../../generate_template.php');
-      $template_text = ob_get_contents();
-      ob_end_clean();
-      $template_text = ob_get_contents() . $template_text;
-      ob_end_clean();
-      while (ob_get_level()) { ob_end_flush(); };
+      while (ob_get_level()) {
+       $template_text = ob_get_contents() . $template_text;
+       ob_end_clean();
+      };
       ob_start(); // PHPUnit turns on a level of buffering itself -- Give it back to avoid "Risky Test"
       // Output checking time
       $this->assertTrue((bool) strpos($template_text, 'Cite journal'));
