@@ -11,7 +11,7 @@ if (getenv('TRAVIS')) error_reporting(E_ALL);
 ini_set("user_agent", "Citation_bot; citations@tools.wmflabs.org");
 include_once('./vendor/autoload.php');
 
-if (!defined("HTML_OUTPUT"))) {
+if (!defined("HTML_OUTPUT")) {
   define("HTML_OUTPUT", FALSE);
 }
 if (!isset($FLUSHING_OKAY)) {  // Default when not gadget API
