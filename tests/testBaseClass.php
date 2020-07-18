@@ -44,10 +44,10 @@ abstract class testBaseClass extends PHPUnit\Framework\TestCase {
   protected function requires_secrets(callable $function) : void {
     if (isset($argv)) {
        echo "set";
-       die;
+      ;
     } else {
        echo "unset";
-       die;
+      ;
     }
 if ($this->testing_skip_wiki) {
       echo 'S';
