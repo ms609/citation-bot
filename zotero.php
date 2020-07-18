@@ -7,24 +7,24 @@ const ERROR_DONE = 'ERROR_DONE';
 require_once("constants.php");
 
 function make_ch_zotero() : void { // This is never closed
-  global $ch_zotero;
-  if (is_resource($ch_zotero)) return;
+  global $zotero_ch;
+  if (is_resource($zotero_ch)) return;
   // This gets called during the the testing suite constructor, so they they are not seen as being code covered
   // @codeCoverageIgnoreStart
-  $ch_zotero = curl_init(ZOTERO_ROOT);
-  curl_setopt($ch_zotero, CURLOPT_CUSTOMREQUEST, "POST");
-  curl_setopt($ch_zotero, CURLOPT_HTTPHEADER, ['Content-Type: text/plain']);
-  curl_setopt($ch_zotero, CURLOPT_RETURNTRANSFER, TRUE);
+  $zotero_ch = curl_init(ZOTERO_ROOT);
+  curl_setopt($zotero_ch, CURLOPT_CUSTOMREQUEST, "POST");
+  curl_setopt($zotero_ch, CURLOPT_HTTPHEADER, ['Content-Type: text/plain']);
+  curl_setopt($zotero_ch, CURLOPT_RETURNTRANSFER, TRUE);
   // Defaults used in TRAVIS overiden below when deployed
-  curl_setopt($ch_zotero, CURLOPT_CONNECTTIMEOUT, 10);
-  curl_setopt($ch_zotero, CURLOPT_TIMEOUT, 45);
+  curl_setopt($zotero_ch, CURLOPT_CONNECTTIMEOUT, 10);
+  curl_setopt($zotero_ch, CURLOPT_TIMEOUT, 45);
   // @codeCoverageIgnoreEnd
 }
 
 function query_url_api(array $ids, array $templates) : void {
   global $SLOW_MODE;
   global $zotero_failures_count;
-  global $ch_zotero;
+  global $zotero_ch;
   global $zotero_announced;
   if (!isset($zotero_failures_count) || getenv('TRAVIS')) $zotero_failures_count = 0;
   if (!$SLOW_MODE) return; // Zotero takes time
@@ -32,7 +32,7 @@ function query_url_api(array $ids, array $templates) : void {
   
   if (!getenv('TRAVIS')) { // try harder in TRAVIS to make tests more successful and make it his zotero less often
     // @codeCoverageIgnoreStart
-    curl_setopt($ch_zotero, CURLOPT_CONNECTTIMEOUT, 1);
+    curl_setopt($zotero_ch, CURLOPT_CONNECTTIMEOUT, 1);
     $url_count = 0;
     foreach ($templates as $template) {
      if (!$template->blank(['url', 'chapter-url', 'chapterurl'])) {
@@ -40,11 +40,11 @@ function query_url_api(array $ids, array $templates) : void {
      }
     }
     if ($url_count < 5) {
-      curl_setopt($ch_zotero, CURLOPT_TIMEOUT, 15);
+      curl_setopt($zotero_ch, CURLOPT_TIMEOUT, 15);
     } elseif ($url_count < 25) {
-      curl_setopt($ch_zotero, CURLOPT_TIMEOUT, 10);
+      curl_setopt($zotero_ch, CURLOPT_TIMEOUT, 10);
     } else {
-      curl_setopt($ch_zotero, CURLOPT_TIMEOUT, 5);
+      curl_setopt($zotero_ch, CURLOPT_TIMEOUT, 5);
     }
     // @codeCoverageIgnoreEnd
   }
@@ -54,7 +54,7 @@ function query_url_api(array $ids, array $templates) : void {
      expand_by_zotero($template);
   }
   if (!getenv('TRAVIS')) { // These are pretty reliable, unlike random urls
-      curl_setopt($ch_zotero, CURLOPT_TIMEOUT, 10);  // @codeCoverageIgnore
+      curl_setopt($zotero_ch, CURLOPT_TIMEOUT, 10);  // @codeCoverageIgnore
   }
   $zotero_announced = 2;
   foreach ($templates as $template) {
@@ -227,17 +227,17 @@ function drop_urls_that_match_dois(array $templates) : void {
 
 function zotero_request(string $url) : string {
   global $zotero_failures_count;
-  global $ch_zotero;
+  global $zotero_ch;
   global $BLOCK_ZOTERO_SEARCH;
 
-  curl_setopt($ch_zotero, CURLOPT_POSTFIELDS, $url);  
+  curl_setopt($zotero_ch, CURLOPT_POSTFIELDS, $url);  
   if ($BLOCK_ZOTERO_SEARCH) return ERROR_DONE;
   
-  $zotero_response = (string) @curl_exec($ch_zotero);
+  $zotero_response = (string) @curl_exec($zotero_ch);
   if ($zotero_response == '') {
     // @codeCoverageIgnoreStart
-    report_warning(curl_error($ch_zotero) . "   For URL: " . $url);
-    if (strpos(curl_error($ch_zotero), 'timed out after') !== FALSE) {
+    report_warning(curl_error($zotero_ch) . "   For URL: " . $url);
+    if (strpos(curl_error($zotero_ch), 'timed out after') !== FALSE) {
       $zotero_failures_count = $zotero_failures_count + 1;
       if ($zotero_failures_count > ZOTERO_GIVE_UP) {
         report_warning("Giving up on URL expansion for a while");
