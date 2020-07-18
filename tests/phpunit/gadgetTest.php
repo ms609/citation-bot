@@ -16,6 +16,7 @@ final class gadgetTest extends testBaseClass {
       $_POST['summary'] = 'Something Nice';
       require_once(__DIR__ . '/../../gadgetapi.php');
       $json_text = ob_get_contents();
+      ob_end_clean();
       // Reset everything
       $FLUSHING_OKAY = TRUE;
       $SLOW_MODE = TRUE;
