@@ -19,7 +19,13 @@ abstract class testBaseClass extends PHPUnit\Framework\TestCase {
   
   function __construct() {
     parent::__construct();
-
+    if (isset($argv)) {
+       echo "set";
+       die;
+    } else {
+       echo "unset";
+       die;
+    }
    // Non-trusted builds
     if (!getenv('PHP_ADSABSAPIKEY')) $this->testing_skip_bibcode = TRUE;
     if (!getenv('PHP_GOOGLEKEY')) $this->testing_skip_google = TRUE;
