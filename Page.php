@@ -569,7 +569,7 @@ final class TestPage extends Page {
   function __construct() {
     $trace = debug_backtrace();
     $name = $trace[2]['function'];
-    $this->title = empty($name) ? 'global' : $name;
+    $this->title = empty($name) ? 'Test Page' : $name;
     parent::__construct();
   }
   
