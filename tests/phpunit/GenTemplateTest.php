@@ -7,8 +7,6 @@ require_once(__DIR__ . '/../testBaseClass.php');
  
 final class GenTemplateTest extends testBaseClass {
   public function testGenTemplate() : void {
-      global $FLUSHING_OKAY;
-      global $SLOW_MODE;
       // Run API
       ob_start();
       ob_start();
@@ -18,9 +16,6 @@ final class GenTemplateTest extends testBaseClass {
       ob_end_clean();
       $template_text = ob_get_contents() . $template_text;
       ob_end_clean();
-      // Reset everything
-      $FLUSHING_OKAY = TRUE;
-      $SLOW_MODE = TRUE;
       while (ob_get_level()) { ob_end_flush(); };
       ob_start(); // PHPUnit turns on a level of buffering itself -- Give it back to avoid "Risky Test"
       // Output checking time
