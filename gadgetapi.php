@@ -39,3 +39,6 @@ try {
 } catch (Throwable $e) {                          // @codeCoverageIgnore
  @ob_end_clean();@ob_end_clean();@ob_end_clean(); // @codeCoverageIgnore
 } // Above is paranoid panic code.  So paranoid that we even flush buffers two extra times
+} finally {
+  $FLUSHING_OKAY = TRUE; // Reset for Travis
+}
