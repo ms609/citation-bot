@@ -19,13 +19,6 @@ abstract class testBaseClass extends PHPUnit\Framework\TestCase {
   
   function __construct() {
     parent::__construct();
-    if (isset($argv)) {
-       echo "set";
-       die;
-    } else {
-       echo "unset";
-       die;
-    }
    // Non-trusted builds
     if (!getenv('PHP_ADSABSAPIKEY')) $this->testing_skip_bibcode = TRUE;
     if (!getenv('PHP_GOOGLEKEY')) $this->testing_skip_google = TRUE;
@@ -49,7 +42,14 @@ abstract class testBaseClass extends PHPUnit\Framework\TestCase {
 
 
   protected function requires_secrets(callable $function) : void {
-    if ($this->testing_skip_wiki) {
+    if (isset($argv)) {
+       echo "set";
+       die;
+    } else {
+       echo "unset";
+       die;
+    }
+if ($this->testing_skip_wiki) {
       echo 'S';
       ob_flush();
       $this->assertNull(NULL);
