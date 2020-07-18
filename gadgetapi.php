@@ -7,7 +7,7 @@ try {
  // This is needed because the Gadget API expects only JSON back, therefore ALL output from the citation bot is thrown away
  $FLUSHING_OKAY = FALSE;
 
-$SLOW_MODE = isset($_REQUEST["slow"]);
+ $SLOW_MODE = isset($_REQUEST["slow"]);
 
  //Set up tool requirements
  require_once('setup.php');
