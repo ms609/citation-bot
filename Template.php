@@ -383,7 +383,7 @@ final class Template {
    *      parameter so it is not used to trigger a new search via the same API.
    *
    */
-  public function add_if_new(string $param_name, string $value, ?string $api = NULL) : bool {
+  public function add_if_new(string $param_name, string $value, string $api = '') : bool {
     $value = trim($value);
     $param_name = trim($param_name); // Pure paranoia
     if ($value == '') {
@@ -405,7 +405,7 @@ final class Template {
       report_error("Attempted to add invalid parameter: " . $param_name); // @codeCoverageIgnore
     }
     
-    if (!is_null($api)) $this->record_api_usage($api, $param_name);
+    if ($api) $this->record_api_usage($api, $param_name);
     
     // If we already have name parameters for author, don't add more
     if ($this->initial_author_params && in_array($param_name, FLATTENED_AUTHOR_PARAMETERS)) {
