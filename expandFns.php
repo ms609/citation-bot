@@ -689,6 +689,6 @@ function can_safely_modify_dashes(string $value) : bool {
        && (preg_match('~^\d{4}\-[a-zA-Z]+$~u',$value) !== 1)); // 2005-A used in {{sfn}} junk
 }
 
-function str_i_same(?string $str1, ?string $str2) : bool {
+function str_i_same(string $str1, string $str2) : bool {
    return (bool) (0 === strcasecmp((string) $str1, (string) $str2));
 }
