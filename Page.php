@@ -487,6 +487,8 @@ class Page {
           $obj->parse_text($match[0]);
         } catch (Exception $e) {
           $this->page_error = TRUE;
+          $this->text = $text;
+          return $objects;
         }
         $exploded = $treat_identical_separately ? explode($match[0], $text, 2) : explode($match[0], $text);
         $text = implode(sprintf($placeholder_text, $i++), $exploded);
