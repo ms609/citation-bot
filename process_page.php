@@ -2,7 +2,6 @@
 declare(strict_types=1);
 
 @session_start();
-define("HTML_OUTPUT", !isset($argv));
 
 require_once('setup.php');
 
