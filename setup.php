@@ -65,6 +65,8 @@ require_once('Page.php');
 mb_internal_encoding('UTF-8');
 ini_set("memory_limit", "256M");
 
+$ADSABS_GIVE_UP = FALSE;
+
 if (file_exists('git_pull.lock')) report_error('GIT pull in progress');
 
 if (isset($_REQUEST["slow"]) || getenv('TRAVIS') || (@$argv[2] === '--slow')) {

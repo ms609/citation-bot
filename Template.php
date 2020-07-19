@@ -2097,7 +2097,7 @@ final class Template {
      report_info("Skipping AdsAbs API: not in slow mode");
      return FALSE;
     }
-    if (@$BLOCK_BIBCODE_SEARCH === TRUE) return FALSE;
+    if ($BLOCK_BIBCODE_SEARCH === TRUE) return FALSE;
     if ($this->has('bibcode') && !$this->incomplete() && $this->has('doi')) {
       return FALSE; // Don't waste a query
     }
@@ -2315,7 +2315,7 @@ final class Template {
   protected function query_adsabs(string $options) : object {
     global $ADSABS_GIVE_UP;
     // API docs at https://github.com/adsabs/adsabs-dev-api/blob/master/Search_API.ipynb
-    if (@$ADSABS_GIVE_UP) return (object) array('numFound' => 0);
+    if ($ADSABS_GIVE_UP) return (object) array('numFound' => 0);
     if (!getenv('PHP_ADSABSAPIKEY')) {
       report_warning("PHP_ADSABSAPIKEY environment variable not set. Cannot query AdsAbs.");  // @codeCoverageIgnore
       return (object) array('numFound' => 0);                                                 // @codeCoverageIgnore
