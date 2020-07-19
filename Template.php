@@ -2315,7 +2315,7 @@ final class Template {
   protected function query_adsabs(string $options) : object {
     global $ADSABS_GIVE_UP;
     // API docs at https://github.com/adsabs/adsabs-dev-api/blob/master/Search_API.ipynb
-    if (@$ADSABS_GIVE_UP) return (object) array('numFound' => 0);
+    if ($ADSABS_GIVE_UP) return (object) array('numFound' => 0);
     if (!getenv('PHP_ADSABSAPIKEY')) {
       report_warning("PHP_ADSABSAPIKEY environment variable not set. Cannot query AdsAbs.");  // @codeCoverageIgnore
       return (object) array('numFound' => 0);                                                 // @codeCoverageIgnore
