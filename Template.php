@@ -2097,7 +2097,7 @@ final class Template {
      report_info("Skipping AdsAbs API: not in slow mode");
      return FALSE;
     }
-    if (@$BLOCK_BIBCODE_SEARCH === TRUE) return FALSE;
+    if ($BLOCK_BIBCODE_SEARCH === TRUE) return FALSE;
     if ($this->has('bibcode') && !$this->incomplete() && $this->has('doi')) {
       return FALSE; // Don't waste a query
     }
