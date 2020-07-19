@@ -5,23 +5,9 @@ declare(strict_types=1);
 require_once('setup.php');
 $api = new WikipediaBot();
 if (!isset($argv)) {
-  $SLOW_MODE = isset($_REQUEST["slow"]);
   $category = isset($_REQUEST["cat"]) ? (string) $_REQUEST["cat"] : '';
 } else {
-  $SLOW_MODE = FALSE;
-  $category = '';
-  $oArg = NULL;
-  foreach ($argv as $arg) {
-   if ($arg == "--slow") {
-    $SLOW_MODE = TRUE;
-    unset($oArg);
-   } elseif ($arg == "-cat") {
-    $oArg = 'cat';
-   } else {
-    if (!isset($oArg) || $oArg !== 'cat') report_error('Unexpected text: ' . $arg);
-    $category = $arg;
-   }
-  }
+  $category = $argv[1];
 }
 
 $category = trim($category);
