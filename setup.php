@@ -1,10 +1,11 @@
 <?php
 declare(strict_types=1);
-error_reporting(E_ALL^E_NOTICE);
-if (getenv('TRAVIS')) error_reporting(E_ALL);
-if (getenv('TRAVIS') || isset($argv)) {
+
+if ((bool) getenv('TRAVIS') || isset($argv)) {
+  error_reporting(E_ALL);
   define("HTML_OUTPUT", FALSE);
 } else {
+  error_reporting(E_ALL^E_NOTICE);
   define("HTML_OUTPUT", TRUE);
 }
 
