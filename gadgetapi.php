@@ -7,8 +7,6 @@ try {
  // This is needed because the Gadget API expects only JSON back, therefore ALL output from the citation bot is thrown away
  $FLUSHING_OKAY = FALSE;
 
-$SLOW_MODE = isset($_REQUEST["slow"]);
-
  //Set up tool requirements
  require_once('setup.php');
 
@@ -38,4 +36,7 @@ $SLOW_MODE = isset($_REQUEST["slow"]);
  echo (string) @json_encode($result);
 } catch (Throwable $e) {                          // @codeCoverageIgnore
  @ob_end_clean();@ob_end_clean();@ob_end_clean(); // @codeCoverageIgnore
-} // Above is paranoid panic code.  So paranoid that we even flush buffers two extra times
+ // Above is paranoid panic code.  So paranoid that we even flush buffers two extra times
+} finally {
+  $FLUSHING_OKAY = TRUE; // Reset for Travis
+}

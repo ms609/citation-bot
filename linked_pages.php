@@ -1,16 +1,10 @@
 <?php
 declare(strict_types=1);
-@session_start();
+session_start();
 
-define("HTML_OUTPUT", TRUE);
 require_once('setup.php');
 
 $api = new WikipediaBot();
-
-$SLOW_MODE = FALSE;
-if (isset($_REQUEST["slow"])) {
-  $SLOW_MODE = TRUE;
-}
 
 ?>
 <!DOCTYPE html>

@@ -2,27 +2,12 @@
 declare(strict_types=1);
 @session_start();
 
-define("HTML_OUTPUT", !isset($argv));
 require_once('setup.php');
 $api = new WikipediaBot();
 if (!isset($argv)) {
-  $SLOW_MODE = isset($_REQUEST["slow"]);
   $category = isset($_REQUEST["cat"]) ? (string) $_REQUEST["cat"] : '';
 } else {
-  $SLOW_MODE = FALSE;
-  $category = '';
-  $oArg = NULL;
-  foreach ($argv as $arg) {
-   if ($arg == "--slow") {
-    $SLOW_MODE = TRUE;
-    unset($oArg);
-   } elseif ($arg == "-cat") {
-    $oArg = 'cat';
-   } else {
-    if (!isset($oArg) || $oArg !== 'cat') report_error('Unexpected text: ' . $arg);
-    $category = $arg;
-   }
-  }
+  $category = (string) @$argv[1]; // category_name --slow makes sense
 }
 
 $category = trim($category);
@@ -106,7 +91,7 @@ if ($category) {
   $final_edit_overview .= "\n\n" . ' To get the best results, see our helpful <a href="https://en.wikipedia.org/wiki/User:Citation_bot/use">user guides</a>' . "\n\n";
   html_echo($final_edit_overview, '');
 } else {
-  echo ("You must specify a category.  Try appending ?cat=Blah+blah to the URL, or -cat Category_name at the command line.");
+  echo ("You must specify a category.  Try appending ?cat=Blah+blah to the URL, or Category_name at the command line.");
 }
 html_echo(' # # #</pre><footer><a href="./" title="Use Citation Bot again">Another</a>?</footer></body></html>', "\n");
 exit(0);

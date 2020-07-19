@@ -1,7 +1,13 @@
 <?php
 declare(strict_types=1);
-error_reporting(E_ALL^E_NOTICE);
-if (getenv('TRAVIS')) error_reporting(E_ALL);
+
+if ((bool) getenv('TRAVIS') || isset($argv)) {
+  error_reporting(E_ALL);
+  define("HTML_OUTPUT", FALSE);
+} else {
+  error_reporting(E_ALL^E_NOTICE);
+  define("HTML_OUTPUT", TRUE);
+}
 
 /*
  * setup.php sets up the environment
@@ -11,9 +17,6 @@ if (getenv('TRAVIS')) error_reporting(E_ALL);
 ini_set("user_agent", "Citation_bot; citations@tools.wmflabs.org");
 include_once('./vendor/autoload.php');
 
-if (!defined("HTML_OUTPUT") || getenv('TRAVIS')) {  // Fail safe code
-  define("HTML_OUTPUT", FALSE);
-}
 if (!isset($FLUSHING_OKAY)) {  // Default when not gadget API
   $FLUSHING_OKAY = TRUE;
 }
@@ -62,9 +65,17 @@ require_once('Page.php');
 mb_internal_encoding('UTF-8');
 ini_set("memory_limit", "256M");
 
-if (!isset($SLOW_MODE)) $SLOW_MODE = isset($_REQUEST["slow"]) ? $_REQUEST["slow"] : FALSE;
+$ADSABS_GIVE_UP = FALSE;
 
 if (file_exists('git_pull.lock')) report_error('GIT pull in progress');
+
+if (isset($_REQUEST["slow"]) || getenv('TRAVIS') || (@$argv[2] === '--slow')) {
+  $SLOW_MODE = TRUE;
+} elseif (isset($argv[2])) {
+  report_error("Unexpected text on the command.  Only --slow is valid second argument.  Found: " . $argv[2]);
+} else {
+  $SLOW_MODE = FALSE;
+}
 
 function check_blocked() : void {
   if (!getenv('TRAVIS') && ! WikipediaBot::is_valid_user('Citation_bot')) exit('</pre><div style="text-align:center"><h1>The Citation Bot is currently blocked because of disagreement over its usage.</h1><br/><h2><a href="https://en.wikipedia.org/wiki/User_talk:Citation_bot" title="Join the discussion" target="_blank">Please join in the discussion</a></h2></div></body></html>');
