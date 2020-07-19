@@ -2094,8 +2094,8 @@ final class Template {
     global $SLOW_MODE;
     global $BLOCK_BIBCODE_SEARCH;
     if (!$SLOW_MODE && $this->blank('bibcode')) {
-     report_info("Skipping AdsAbs API: not in slow mode");
-     return FALSE;
+     report_info("Skipping AdsAbs API: not in slow mode"); // @codeCoverageIgnore
+     return FALSE;                                         // @codeCoverageIgnore
     }
     if ($BLOCK_BIBCODE_SEARCH === TRUE) return FALSE;
     if ($this->has('bibcode') && !$this->incomplete() && $this->has('doi')) {
@@ -2767,13 +2767,18 @@ final class Template {
     foreach (['url', 'chapterurl', 'chapter-url'] as $url_type) {
       if (stripos($this->get($url_type), 'books.google') !== FALSE || 
           stripos($this->get($url_type), 'google.com/books/edition') !== FALSE) {
-         if ($this->expand_by_google_books_inner($this->get($url_type), $url_type)) return TRUE;
+         if ($this->expand_by_google_books_inner($url_type)) return TRUE;
       }
     }
-    return $this->expand_by_google_books_inner(NULL, NULL);
+    return $this->expand_by_google_books_inner('');
   }
   
-  protected function expand_by_google_books_inner(?string $url, ?string $url_type) : bool {
+  protected function expand_by_google_books_inner(string $url_type) : bool {
+    if ($url_type) {
+      $url = $this->get($url_type);
+    } else {
+      $url = '';
+    }
     if (!$url || !(preg_match("~books\.google\.[\w\.]+/.*\bid=([\w\d\-]+)~", $url, $gid) ||
                    preg_match("~\.google\.com/books/edition/_/([a-zA-Z0-9]+)(?:\?.+|)$~", $url, $gid))
        ) { // No Google URL yet.
