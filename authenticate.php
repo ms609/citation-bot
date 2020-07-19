@@ -2,8 +2,6 @@
 declare(strict_types=1);
 session_start();
 
-define("HTML_OUTPUT", TRUE);
-
 require_once('setup.php');
 
 // To use the oauthclient library, run:
