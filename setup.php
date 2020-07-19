@@ -3,9 +3,9 @@ declare(strict_types=1);
 error_reporting(E_ALL^E_NOTICE);
 if (getenv('TRAVIS')) error_reporting(E_ALL);
 if (getenv('TRAVIS') || isset($argv)) {
-  define("HTML_OUTPUT", "FALSE");
+  define("HTML_OUTPUT", FALSE);
 } else {
-  define("HTML_OUTPUT", "TRUE");
+  define("HTML_OUTPUT", TRUE);
 }
 
 /*
