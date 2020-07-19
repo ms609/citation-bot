@@ -232,8 +232,8 @@ function str_remove_irrelevant_bits(string $str) : string {
 }
 
 // See also titles_are_similar()
-function str_equivalent(?string $str1, ?string $str2) : bool {
-  return str_i_same(str_remove_irrelevant_bits((string) $str1), str_remove_irrelevant_bits((string) $str2));
+function str_equivalent(string $str1, string $str2) : bool {
+  return str_i_same(str_remove_irrelevant_bits($str1), str_remove_irrelevant_bits($str2));
 }
 
 // See also str_equivalent()
