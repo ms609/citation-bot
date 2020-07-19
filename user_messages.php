@@ -77,8 +77,8 @@ function jstor_link(string $id) : string {
  * Unused
  * @codeCoverageIgnore
  */
-function wiki_link(string $page, string $style = "#036;", ?string $target = NULL) : string {
-  if (!$target) $target = $page;
-  $css = $style?" style='color:$style !important'":"";
-  return "<a href='" . WIKI_ROOT . "?title=" . urlencode($target) . "' title='$page ($target) on Wikipedia'$css>$page</a>";
+function wiki_link(string $page) : string {
+   return HTML_OUTPUT
+    ? "<a href='" . WIKI_ROOT . "?title=" . urlencode($page) . "' target='_blank'>$page on Wikipedia</a>"
+    : "Wikipedia page : $page";
 }

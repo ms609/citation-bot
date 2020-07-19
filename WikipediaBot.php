@@ -381,7 +381,7 @@ final class WikipediaBot {
     set_time_limit(120);
     return $page_titles;
   }
-  public function get_namespace(string $page) : ?int {
+  public function get_namespace(string $page) : int {
     $res = $this->fetch([
         "action" => "query",
         "prop" => "info",
@@ -389,7 +389,7 @@ final class WikipediaBot {
         ], 'GET'); 
     if (!isset($res->query->pages)) {
         report_warning("Failed to get article namespace");       // @codeCoverageIgnore
-        return NULL;                                             // @codeCoverageIgnore
+        return -99999;                                             // @codeCoverageIgnore
     }
     return (int) reset($res->query->pages)->ns;
   }
