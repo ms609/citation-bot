@@ -463,8 +463,7 @@ final class WikipediaBot {
         @setcookie(session_name(),session_id(),time()+(24*3600)); // 24 hours
         return;
       } else {
-        @session_unset();
-        @session_destroy();
+        unset($_SESSION['citation_bot_user_id']);
       }
     }
     if (isset($_SESSION['access_key']) && isset($_SESSION['access_secret'])) {
