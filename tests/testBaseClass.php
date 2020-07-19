@@ -5,7 +5,6 @@ require_once(__DIR__ . '/../setup.php');
 
 $BLOCK_BIBCODE_SEARCH = TRUE;
 $BLOCK_ZOTERO_SEARCH = TRUE;
-$SLOW_MODE = TRUE;
 
 abstract class testBaseClass extends PHPUnit\Framework\TestCase {
   // Change these to temporarily disable sets of tests======================
