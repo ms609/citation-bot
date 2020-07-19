@@ -178,9 +178,9 @@ function restore_italics (string $text) : string {
   return preg_replace('~([a-z]+)([A-Z][a-z]+\b)~', "$1 ''$2''", $text);
 }
 
-function sanitize_string(?string $str) : string {
+function sanitize_string(string $str) : string {
   // ought only be applied to newly-found data.
-  if ($str === NULL) return '';
+  if ($str == '') return '';
   if (strtolower(trim($str)) == 'science (new york, n.y.)') return 'Science';
   $replacement = [];
   $placeholder = [];
@@ -205,8 +205,8 @@ function truncate_publisher(string $p) : string {
   return preg_replace("~\s+(group|inc|ltd|publishing)\.?\s*$~i", "", $p);
 }
 
-function str_remove_irrelevant_bits(?string $str) : string {
-  if ($str == NULL) return '';
+function str_remove_irrelevant_bits(string $str) : string {
+  if ($str == '') return '';
   $str = trim($str);
   $str = preg_replace(REGEXP_PLAIN_WIKILINK, "$1", $str);   // Convert [[X]] wikilinks into X
   $str = preg_replace(REGEXP_PIPED_WIKILINK, "$2", $str);   // Convert [[Y|X]] wikilinks into X
@@ -232,7 +232,7 @@ function str_remove_irrelevant_bits(?string $str) : string {
 }
 
 // See also titles_are_similar()
-function str_equivalent(?string $str1, ?string $str2) : bool {
+function str_equivalent(string $str1, string $str2) : bool {
   return str_i_same(str_remove_irrelevant_bits($str1), str_remove_irrelevant_bits($str2));
 }
 
@@ -242,8 +242,7 @@ function titles_are_similar(string $title1, string $title2) : bool {
 }
 
 
-function de_wikify(?string $string) : string {
-  if ($string == NULL) return '';
+function de_wikify(string $string) : string {
   return str_replace(Array("[", "]", "'''", "''", "&"), Array("", "", "'", "'", ""), preg_replace(Array("~<[^>]*>~", "~\&[\w\d]{2,7};~", "~\[\[[^\|\]]*\|([^\]]*)\]\]~"), Array("", "", "$1"),  $string));
 }
 
@@ -567,7 +566,7 @@ function tidy_date(string $string) :string {
   return ''; // And we give up
 }
 
-function not_bad_10_1093_doi(?string $url) : bool { // We assume dois are bad, unless on good list
+function not_bad_10_1093_doi(string $url) : bool { // We assume dois are bad, unless on good list
   if ($url == NULL) return TRUE;
   if(!preg_match('~10.1093/([^/]+)/~u', $url, $match)) return TRUE;
   $test = strtolower($match[1]);
@@ -576,7 +575,7 @@ function not_bad_10_1093_doi(?string $url) : bool { // We assume dois are bad, u
   return FALSE;
 }
 
-function bad_10_1093_doi(?string $url) :bool {
+function bad_10_1093_doi(string $url) :bool {
   return !not_bad_10_1093_doi($url);
 }
 
