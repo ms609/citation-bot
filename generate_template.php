@@ -6,8 +6,8 @@ declare(strict_types=1);
 @header("Access-Control-Allow-Origin: *"); //This is ok because the API is not authenticated
 
 echo "<!DOCTYPE html><html lang=\"en\" dir=\"ltr\"><head><title>Make a Template</title></head><body><pre>\n";
-$SLOW_MODE = TRUE;
 require_once('setup.php');
+
 $t = new Template();
 $t->parse_text('{{Cite web}}');
 if (count($_GET) > 10) exit('Excessive number of parameters passed</pre></body></html>');
