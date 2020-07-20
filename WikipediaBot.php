@@ -486,9 +486,7 @@ final class WikipediaBot {
       $_SESSION['citation_bot_user_id'] = $this->the_user;
       return;
      }
-     catch (Throwable $e) { 
-      ;
-     }
+     catch (Throwable $e) { ; }
     }
     unset($_SESSION['access_key']);
     unset($_SESSION['access_secret']);
