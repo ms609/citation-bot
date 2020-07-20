@@ -1,4 +1,13 @@
-<?php @session_start(); ?>
+<?php
+declare(strict_types=1);
+@session_start();
+if (isset($_SESSION['citation_bot_user_id']) && is_string($_SESSION['citation_bot_user_id'])) {
+  $the_example_user = @htmlspecialchars($_SESSION['citation_bot_user_id']);
+}
+if (!$the_example_user) {
+  $the_example_user = 'YourUserID"';
+}
+?>
 <!DOCTYPE html>
 <html lang="en" dir="ltr">
 <head>
@@ -50,6 +59,9 @@
       <a href="https://en.wikipedia.org/wiki/User:Citation_bot/use" title="Using Citation Bot">More details</a> | 
       <a href="https://en.wikipedia.org/wiki/User_talk:Citation_bot" title="Report bugs at Wikipedia">Report bugs</a> |
       <a href="https://github.com/ms609/citation-bot" title="GitHub repository">Source code</a>
+    </p>
+    <p>
+    Your Wikipedia user name will be included in the edit, such as "Suggested&nbsp;by&nbsp;<?php echo $the_example_user ?>"
     </p>
   </footer>
 </body>
