@@ -13,13 +13,13 @@ function user_notice(string $symbol, string $class, string $text) : void {
   if (!getenv('TRAVIS')) {
     echo "\n " . (HTML_OUTPUT ? "<span class='$class'>" : "")               // @codeCoverageIgnore
      . "$symbol $text" . (HTML_OUTPUT ? "</span>" : "");                    // @codeCoverageIgnore
-  }
-  if ($FLUSHING_OKAY) {
-     $now = microtime(TRUE);
-     if (in_array($class, array('phase', 'subitem', 'warning')) || 10 < ($now - $last_time)) {
-       $last_time = $now;
-       ob_flush();
-     }
+    if ($FLUSHING_OKAY) {
+      $now = microtime(TRUE);
+      if (in_array($class, array('phase', 'subitem', 'warning')) || 10 < ($now - $last_time)) {
+        $last_time = $now;
+        ob_flush();
+      }
+    }
   }
 }
 
