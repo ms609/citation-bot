@@ -487,10 +487,11 @@ final class WikipediaBot {
       return;
      }
      catch (Throwable $e) { 
-      unset($_SESSION['access_key']);
-      unset($_SESSION['access_secret']);
+      ;
      }
     }
+    unset($_SESSION['access_key']);
+    unset($_SESSION['access_secret']);
     $return = urlencode($_SERVER['REQUEST_URI']);
     @header("Location: authenticate.php?return=" . $return);
     exit(0);
