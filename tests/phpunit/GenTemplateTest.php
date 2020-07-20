@@ -11,7 +11,7 @@ final class GenTemplateTest extends testBaseClass {
       ob_start();
       ob_start();
       $_GET['jstor'] = '373737';
-      require_once(__DIR__ . '/../../generate_template.php');
+      require(__DIR__ . '/../../generate_template.php');
       unset($_GET);
       $template_text = '';
       while (ob_get_level()) {

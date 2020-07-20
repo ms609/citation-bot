@@ -359,9 +359,15 @@ final class PageTest extends testBaseClass {
       $this->assertSame($text, $page->parsed_text());
   }
  
+  public function testWikiTitlePrint() : void {
+    $text = 'John Smith';
+    $output = wiki_link($text);
+    $this->assertSame('Wikipedia page : John Smith', $output);
+  }
+ 
   public function testBadPage() : void {  // Use this when debugging pages that crash the bot
-    // This MUST be escaped page name-underscores not spaces and such
-    $bad_page = ""; //  Replace with something like "Vietnam_War" when debugging
+    $bad_page = ""; //  Replace with page name when debugging
+    $bad_page = urlencode(str_replace(' ', '_', $bad_page));
     if ($bad_page !== "") {
       $ch = curl_init();
       curl_setopt($ch, CURLOPT_HEADER, 0);

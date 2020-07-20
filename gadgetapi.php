@@ -1,11 +1,9 @@
 <?php
 declare(strict_types=1);
 try {
+ @session_start();
  @header("Access-Control-Allow-Origin: *"); //This is ok because the API is not authenticated
  @header("Content-Type: text/json");
-
- // This is needed because the Gadget API expects only JSON back, therefore ALL output from the citation bot is thrown away
- $FLUSHING_OKAY = FALSE;
 
  //Set up tool requirements
  require_once('setup.php');
@@ -37,6 +35,4 @@ try {
 } catch (Throwable $e) {                          // @codeCoverageIgnore
  @ob_end_clean();@ob_end_clean();@ob_end_clean(); // @codeCoverageIgnore
  // Above is paranoid panic code.  So paranoid that we even flush buffers two extra times
-} finally {
-  $FLUSHING_OKAY = TRUE; // Reset for Travis
 }
