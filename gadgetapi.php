@@ -1,6 +1,7 @@
 <?php
 declare(strict_types=1);
 try {
+ @session_start();
  @header("Access-Control-Allow-Origin: *"); //This is ok because the API is not authenticated
  @header("Content-Type: text/json");
 
