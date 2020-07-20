@@ -13,7 +13,11 @@ use MediaWiki\OAuthClient\Client;
 
 // The two ways we leave this script - Some calls have extra calls to exit to make phpstan happy
 function death_time(string $err) : void {
-  @session_destroy();
+  unset($_SESSION['access_key']);
+  unset($_SESSION['access_secret']);
+  unset($_SESSION['citation_bot_user_id']);
+  unset($_SESSION['request_key']);
+  unset($_SESSION['request_secret']);     
   exit('<!DOCTYPE html><html lang="en" dir="ltr"><head><title>Authentifcation System Failure</title></head><body>' . $err . '</body></html>');
 }
 

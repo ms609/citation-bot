@@ -478,8 +478,8 @@ final class WikipediaBot {
       $ident = $client->identify( $user_token );
       $user = (string) $ident->username;
       if (!self::is_valid_user($user)) {
-        @session_unset();
-        @session_destroy();
+        unset($_SESSION['access_key']);
+        unset($_SESSION['access_secret']);
         report_error('User is either invalid or blocked on ' . WIKI_ROOT);
       }
       $this->the_user = $user;
@@ -488,8 +488,8 @@ final class WikipediaBot {
      }
      catch (Throwable $e) { ; }
     }
-    @session_unset();
-    @session_destroy();
+    unset($_SESSION['access_key']);
+    unset($_SESSION['access_secret']);
     $return = urlencode($_SERVER['REQUEST_URI']);
     @header("Location: authenticate.php?return=" . $return);
     exit(0);
