@@ -458,7 +458,7 @@ final class WikipediaBot {
  */
   private function authenticate_user() : void {
     if (isset($_SESSION['citation_bot_user_id'])) {
-      if (is_string($_SESSION['citation_bot_user_id']) && $this->is_valid_user($_SESSION['citation_bot_user_id'])) {
+      if (is_string($_SESSION['citation_bot_user_id']) && self::is_valid_user($_SESSION['citation_bot_user_id'])) {
         $this->the_user = $_SESSION['citation_bot_user_id'];
         @setcookie(session_name(),session_id(),time()+(24*3600)); // 24 hours
         return;
@@ -477,7 +477,7 @@ final class WikipediaBot {
       $client = new Client($conf);
       $ident = $client->identify( $user_token );
       $user = (string) $ident->username;
-      if (!$this->is_valid_user($user)) {
+      if (!self::is_valid_user($user)) {
         unset($_SESSION['access_key']);
         unset($_SESSION['access_secret']);
         report_error('User is either invalid or blocked on ' . WIKI_ROOT);
