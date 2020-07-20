@@ -17,7 +17,9 @@ abstract class testBaseClass extends PHPUnit\Framework\TestCase {
   // =======================================================================
   
   function __construct() {
+    ob_flush();
     parent::__construct();
+    ob_flush();
 
    // Non-trusted builds
     if (!getenv('PHP_ADSABSAPIKEY')) $this->testing_skip_bibcode = TRUE;
@@ -38,8 +40,14 @@ abstract class testBaseClass extends PHPUnit\Framework\TestCase {
     }
 
     make_ch_zotero();
+    ob_flush();
   }
 
+  function __destruct() {
+    ob_flush();
+    parent::__destruct();
+    ob_flush();
+  }
 
   protected function requires_secrets(callable $function) : void {
     if ($this->testing_skip_wiki) {
