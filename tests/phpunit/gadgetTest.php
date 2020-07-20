@@ -12,10 +12,9 @@ final class gadgetTest extends testBaseClass {
       $_POST['text'] = '{{cite|pmid=34213}}';
       $_POST['summary'] = 'Something Nice';
       $_REQUEST["slow"] = "1";
-      global $FLUSHING_OKAY;
-      $FLUSHING_OKAY = FALSE;
+      ob_implicit_flush(0);
       require(__DIR__ . '/../../gadgetapi.php');
-      $FLUSHING_OKAY = TRUE;
+      ob_implicit_flush(1);
       $json_text = ob_get_contents();
       ob_end_clean();
       // Reset everything
