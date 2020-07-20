@@ -40,7 +40,6 @@ abstract class testBaseClass extends PHPUnit\Framework\TestCase {
     make_ch_zotero();
   }
 
-
   protected function requires_secrets(callable $function) : void {
     if ($this->testing_skip_wiki) {
       echo 'S';
