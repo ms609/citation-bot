@@ -10,19 +10,12 @@ function html_echo(string $text, string $alternate_text='') : void {
 function user_notice(string $symbol, string $class, string $text) : void {
   static $last_time = 0;
   global $FLUSHING_OKAY;
-  if (!getenv('TRAVIS')) {
+
     // @codeCoverageIgnoreStart
     echo "\n " . (HTML_OUTPUT ? "<span class='$class'>" : "")
      . "$symbol $text" . (HTML_OUTPUT ? "</span>" : "");
-    if ($FLUSHING_OKAY) {
-      $now = microtime(TRUE);
-      if (in_array($class, array('phase', 'subitem', 'warning')) || 10 < ($now - $last_time)) {
-        $last_time = $now;
         ob_flush();
-      }
-    }
-    // @codeCoverageIgnoreEnd
-  }
+
 }
 
 function report_phase(string $text) : void { user_notice("\n>", "phase", $text); }
