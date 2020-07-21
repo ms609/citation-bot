@@ -1626,6 +1626,16 @@ final class Template {
         if ($this->wikiname() === 'cite web') $this->change_name_to('cite journal');
         return $this->add_if_new('pmid', $match[1]);
         
+      } elseif (($this->has('doi') || $this->has('pmc')) && preg_match('~^ncbi\.nlm\.nih\.gov/entrez/eutils/elink.fcgi\?.+tool=sumsearch\.org.+id=(\d+)$~', $url), $match) {  // This is a redirect to the publisher, not pubmed
+        if ($url_sent) return FALSE;
+        if ($match[1] == $this->get('pmc')) {
+           $this->forget($url_type);
+        }
+        if ($match[1] == $this->get('pmid')) {
+          $this->forget($url_type);
+        }
+        return FALSE;
+        
       } elseif (preg_match("~^https?://(?:www\.|)amazon(?P<domain>\.[\w\.]{1,7})/.*dp/(?P<id>\d+X?)~i", $url, $match)) {
         
         if ($this->wikiname() === 'cite web') $this->change_name_to('cite book');
