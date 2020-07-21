@@ -1626,7 +1626,7 @@ final class Template {
         if ($this->wikiname() === 'cite web') $this->change_name_to('cite journal');
         return $this->add_if_new('pmid', $match[1]);
         
-      } elseif (preg_match('~^ncbi\.nlm\.nih\.gov/entrez/eutils/elink.fcgi\?.+tool=sumsearch\.org.+id=(\d+)$~', $url, $match)) {
+      } elseif (preg_match('~^http.+ncbi\.nlm\.nih\.gov/entrez/eutils/elink.fcgi\?.+tool=sumsearch\.org.+id=(\d+)$~', $url, $match)) {
         if ($url_sent) return FALSE;   // Many do not work
         if ($this->blank(['doi', 'pmc'])) return FALSE;  // This is a redirect to the publisher, not pubmed
         if ($match[1] == $this->get('pmc') || $match[1] == $this->get('pmid')) {
