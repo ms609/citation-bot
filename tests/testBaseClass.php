@@ -184,31 +184,31 @@ abstract class testBaseClass extends PHPUnit\Framework\TestCase {
   // We hate buffers
   public static function assertSame( mixed $expected, mixed $actual, string $message = '' ) : void {
     parent::assertSame($expected,  $actual, $message);
-    obflush();
+    ob_flush();
   }
 
   public static function assertEquals( mixed $expected, mixed $actual, string $message = '' ) : void {
     parent::assertEquals($expected,  $actual, $message);
-    obflush();
+    ob_flush();
   }
 
   public static function assertTrue( mixed $expected, mixed $actual, string $message = '' ) : void {
     parent::assertTrue($expected,  $actual, $message);
-    obflush();
+    ob_flush();
   }
 
   public static function assertFalse( mixed $expected, mixed $actual, string $message = '' ) : void {
     parent::assertFalse($expected,  $actual, $message);
-    obflush();
+    ob_flush();
   }
 
   public static function assertNull(mixed $expected, mixed $actual, string $message = '' ) : void {
     parent::assertNull($expected,  $actual, $message);
-    obflush();
+    ob_flush();
   }
 
   public static function assertNotNull( mixed $expected, mixed $actual, string $message = '' ) : void {
     parent::assertNotNull($expected,  $actual, $message);
-    obflush();
+    ob_flush();
   }
 }
