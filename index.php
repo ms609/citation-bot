@@ -5,7 +5,7 @@ if (isset($_SESSION['citation_bot_user_id']) && is_string($_SESSION['citation_bo
   $the_example_user = @htmlspecialchars($_SESSION['citation_bot_user_id']);
 }
 if (!$the_example_user) {
-  $the_example_user = 'YourUserID"';
+  $the_example_user = 'YourUserID';
 }
 ?>
 <!DOCTYPE html>
