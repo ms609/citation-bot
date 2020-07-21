@@ -192,22 +192,22 @@ abstract class testBaseClass extends PHPUnit\Framework\TestCase {
     ob_flush();
   }
 
-  public static function assertTrue( $expected, $actual, string $message = '' ) : void {
+  public static function assertTrue( $condition, string $message = '' ) : void {
     parent::assertTrue($expected,  $actual, $message);
     ob_flush();
   }
 
-  public static function assertFalse( $expected, $actual, string $message = '' ) : void {
+  public static function assertFalse( $condition, string $message = '' ) : void {
     parent::assertFalse($expected,  $actual, $message);
     ob_flush();
   }
 
-  public static function assertNull($expected, $actual, string $message = '' ) : void {
+  public static function assertNull( $condition, string $message = '' ) : void {
     parent::assertNull($expected,  $actual, $message);
     ob_flush();
   }
 
-  public static function assertNotNull( $expected, $actual, string $message = '' ) : void {
+  public static function assertNotNull( $condition, string $message = '' ) : void {
     parent::assertNotNull($expected,  $actual, $message);
     ob_flush();
   }
