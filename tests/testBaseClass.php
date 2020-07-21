@@ -180,5 +180,35 @@ abstract class testBaseClass extends PHPUnit\Framework\TestCase {
       trigger_error('Non-reference passsed to reference_to_template: ' . $text);
     }
   }
- 
+  
+  // We hate buffers
+  public function assertSame( mixed $expected, mixed $actual, string $message = '' ) {
+    parent::assertSame($expected,  $actual, $message);
+    obflush();
+  }
+  
+  public function assertEquals( mixed $expected, mixed $actual, string $message = '' ) {
+    parent::assertEquals($expected,  $actual, $message);
+    obflush();
+  }
+  
+  public function assertTrue( mixed $expected, mixed $actual, string $message = '' ) {
+    parent::assertTrue($expected,  $actual, $message);
+    obflush();
+  }
+  
+  public function assertFalse( mixed $expected, mixed $actual, string $message = '' ) {
+    parent::assertFalse($expected,  $actual, $message);
+    obflush();
+  }
+  
+  public function assertNull mixed $expected, mixed $actual, string $message = '' ) {
+    parent::assertNull($expected,  $actual, $message);
+    obflush();
+  }
+  
+  public function assertNotNull mixed $expected, mixed $actual, string $message = '' ) {
+    parent::assertNotNull($expected,  $actual, $message);
+    obflush();
+  }
 }
