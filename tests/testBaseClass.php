@@ -182,33 +182,33 @@ abstract class testBaseClass extends PHPUnit\Framework\TestCase {
   }
   
   // We hate buffers - makes debugging harder
-  public static function assertSame( $expected, $actual, string $message = '' ) : void {
+  public static function assertSame($expected, $actual, string $message = '') : void {
     parent::assertSame($expected,  $actual, $message);
     ob_flush();
   }
 
-  public static function assertEquals( $expected, $actual, string $message = '' ) : void {
+  public static function assertEquals($expected, $actual, string $message = '') : void {
     parent::assertEquals($expected,  $actual, $message);
     ob_flush();
   }
 
-  public static function assertTrue( $condition, string $message = '' ) : void {
-    parent::assertTrue($expected,  $actual, $message);
+  public static function assertTrue($condition, string $message = '') : void {
+    parent::assertTrue($condition, $message);
     ob_flush();
   }
 
-  public static function assertFalse( $condition, string $message = '' ) : void {
-    parent::assertFalse($expected,  $actual, $message);
+  public static function assertFalse($condition, string $message = '') : void {
+    parent::assertFalse($condition, $message);
     ob_flush();
   }
 
-  public static function assertNull( $condition, string $message = '' ) : void {
-    parent::assertNull($expected,  $actual, $message);
+  public static function assertNull($condition, string $message = '') : void {
+    parent::assertNull($condition, $message);
     ob_flush();
   }
 
-  public static function assertNotNull( $condition, string $message = '' ) : void {
-    parent::assertNotNull($expected,  $actual, $message);
+  public static function assertNotNull($condition, string $message = '') : void {
+    parent::assertNotNull($condition, $message);
     ob_flush();
   }
 }
