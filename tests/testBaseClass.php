@@ -181,7 +181,7 @@ abstract class testBaseClass extends PHPUnit\Framework\TestCase {
     }
   }
   
-  // We hate buffers
+  // We hate buffers - makes debugging harder
   public static function assertSame( $expected, $actual, string $message = '' ) : void {
     parent::assertSame($expected,  $actual, $message);
     ob_flush();
