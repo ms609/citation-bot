@@ -281,9 +281,9 @@ final class Template {
     foreach ($param as $p) if (!in_array($p, $this->used_by_api[$api])) $this->used_by_api[$api][] = $p;
   }
   
-  public function api_has_used(string $api, array $param) : int {
+  public function api_has_used(string $api, array $param) : bool {
     if (!isset($this->used_by_api[$api])) report_error("Invalid API: $api");
-    return count(array_intersect($param, $this->used_by_api[$api]));
+    return (bool) count(array_intersect($param, $this->used_by_api[$api]));
   }
   
   public function api_has_not_used(string $api, array $param) : bool {
@@ -5054,8 +5054,16 @@ final class Template {
   protected function number_of_authors() : int {
     $max = 0;
     foreach ($this->param as $p) {
-      if (preg_match('~(?:author|last|first|forename|initials|surname)(\d+)~', $p->param, $matches))
-        $max = max((int) $matches[1], $max);
+      if (preg_match('~(?:author|last|first|forename|initials|surname|given)(\d+)~', $p->param, $matches)) {
+        if (stripos($p->param, 'editor') === FALSE) $max = max((int) $matches[1], $max);
+      }
+    }
+    if ($max === 0) {
+      foreach ($this->param as $p) {
+        if (preg_match('~(?:author|last|first|forename|initials|surname|given)$~', $p->param)) {
+          if (stripos($p->param, 'editor') === FALSE) $max = 1;
+        }
+      }
     }
     return $max;
   }
@@ -5068,7 +5076,7 @@ final class Template {
     }
     $forenames = $this->get('first') . $this->get('forename') . $this->get('initials') .
       $this->get('first1') . $this->get('forename1') . $this->get('initials1');
-    foreach (array('last', 'surname', 'last1') as $surname_param) {
+    foreach (array('last', 'surname', 'last1', 'surname1') as $surname_param) {
       $surname = $this->get($surname_param);
       if ($surname) {
         return ($surname . ', ' . $forenames);
