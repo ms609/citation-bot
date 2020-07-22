@@ -5061,7 +5061,7 @@ final class Template {
     if ($max === 0) {
       foreach ($this->param as $p) {
         if (preg_match('~(?:author|last|first|forename|initials|surname|given)$~', $p->param)) {
-          if (stripos($p->param, 'editor') === FALSE) $max = 1;
+          if (stripos($p->param, 'editor') === FALSE) return 1;
         }
       }
     }
