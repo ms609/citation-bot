@@ -5074,8 +5074,8 @@ final class Template {
       $author = $this->get($auth_param);
       if ($author) return $author;
     }
-    $forenames = $this->get('first') . $this->get('forename') . $this->get('initials') .
-      $this->get('first1') . $this->get('forename1') . $this->get('initials1');
+    $forenames = $this->get('given') . $this->get('first') . $this->get('forename') . $this->get('initials') .
+      $this->get('given1') . $this->get('first1') . $this->get('forename1') . $this->get('initials1');
     foreach (array('last', 'surname', 'last1', 'surname1') as $surname_param) {
       $surname = $this->get($surname_param);
       if ($surname) {
