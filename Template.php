@@ -2820,7 +2820,7 @@ final class Template {
           }
         }
       }
-      if ( !$google_books_worked ) { // Try Google API instead 
+      if ( !$google_books_worked && PHP_GOOGLEKEY) { // Try Google API instead 
         if ($isbn) {
           $url_token = "isbn:" . $isbn;
         } elseif ($oclc) {
@@ -2833,7 +2833,7 @@ final class Template {
         $ch = curl_init();
         curl_setopt($ch, CURLOPT_HEADER, 0);
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
-        curl_setopt($ch, CURLOPT_URL, "https://www.googleapis.com/books/v1/volumes?q=" . $url_token . "&key=" . getenv('PHP_GOOGLEKEY'));
+        curl_setopt($ch, CURLOPT_URL, "https://www.googleapis.com/books/v1/volumes?q=" . $url_token . "&key=" . PHP_GOOGLEKEY);
         $string = (string) @curl_exec($ch);
         curl_close($ch);
         if ($string == '') {
