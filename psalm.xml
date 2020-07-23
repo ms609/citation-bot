@@ -36,7 +36,6 @@
     </projectFiles>
     <globals>
        <var name="$ch_zotero" type="resource" />
-       <var name="$FLUSHING_OKAY" type="bool" />
        <var name="$SLOW_MODE" type="bool" />
        <var name="$zotero_announced" type="bool" />
        <var name="$zotero_failures_count" type="int" />
