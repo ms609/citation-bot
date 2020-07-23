@@ -126,7 +126,7 @@ function arxiv_api(array $ids, array $templates) : bool {
     'http' => array('ignore_errors' => true),
   ));
   $request = "https://export.arxiv.org/api/query?start=0&max_results=2000&id_list=" . implode(',', $ids);
-  $response = @file_get_contents($request, FALSE, $context);
+  $response = (string) @file_get_contents($request, FALSE, $context);
   if ($response) {
     $xml = @simplexml_load_string(
       preg_replace("~(</?)(\w+):([^>]*>)~", "$1$2$3", $response)
@@ -990,9 +990,9 @@ function parse_plain_text_reference(string $journal_data, Template $this_templat
 function getS2CID(string $url) : string {
   if (PHP_S2APIKEY) {
     $context = stream_context_create(array('http'=>array('header'=>"x-api-key: " . PHP_S2APIKEY . "\r\n")));
-    $response = @file_get_contents('https://partner.semanticscholar.org/v1/paper/URL:' . $url, FALSE, $context);
+    $response = (string) @file_get_contents('https://partner.semanticscholar.org/v1/paper/URL:' . $url, FALSE, $context);
   } else {
-    $response = @file_get_contents('https://api.semanticscholar.org/v1/paper/URL:' . $url);
+    $response = (string) @file_get_contents('https://api.semanticscholar.org/v1/paper/URL:' . $url);
   }
   if (!$response) {
     report_warning("No response from semanticscholar.");   // @codeCoverageIgnore
@@ -1020,7 +1020,7 @@ function ConvertS2CID_DOI(string $s2cid) : string {
     'header'=>"x-api-key: " . getenv('PHP_S2APIKEY') . "\r\n"
    )
   ));
-  $response = @file_get_contents('https://' . (getenv('PHP_S2APIKEY') ? 'partner' : 'api') . '.semanticscholar.org/v1/paper/CorpusID:' . $s2cid, FALSE, $context);
+  $response = (string) @file_get_contents('https://' . (getenv('PHP_S2APIKEY') ? 'partner' : 'api') . '.semanticscholar.org/v1/paper/CorpusID:' . $s2cid, FALSE, $context);
   if (!$response) {
     report_warning("No response from semanticscholar.");   // @codeCoverageIgnore
     return '';                                           // @codeCoverageIgnore
@@ -1054,8 +1054,8 @@ function get_semanticscholar_license(string $s2cid) : ?bool {
      )
     ));
     $url = 'https://' . (getenv('PHP_S2APIKEY') ? 'partner' : 'api') . '.semanticscholar.org/CorpusID:' . $s2cid;
-    $json = @file_get_contents($url, FALSE, $context);
-    if ($json === FALSE) return NULL;
+    $json = (string) @file_get_contents($url, FALSE, $context);
+    if ($json == '') return NULL;
     if (stripos($json, 'Paper not found') !== FALSE) return FALSE;
     $oa = @json_decode($json);
     if ($oa === FALSE) return NULL;
