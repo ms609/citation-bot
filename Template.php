@@ -2611,10 +2611,10 @@ final class Template {
     if ($this->has('s2cid') || $this->has('S2CID')) return;
     $context = stream_context_create(array(
      'http'=>array(
-      'header'=>"x-api-key: " . getenv('PHP_S2APIKEY') . "\r\n"
+      'header'=>"x-api-key: " . PHP_S2APIKEY . "\r\n"
      )
     ));
-    $url = 'https://' . (getenv('PHP_S2APIKEY') ? 'partner' : 'api') . '.semanticscholar.org/v1/paper/' . $doi;
+    $url = 'https://' . (PHP_S2APIKEY ? 'partner' : 'api') . '.semanticscholar.org/v1/paper/' . $doi;
     $json = @file_get_contents($url, FALSE, $context);
     if ($json) {
       $oa = @json_decode($json);
