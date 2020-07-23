@@ -5,5 +5,4 @@ parameters:
 		- HTML_OUTPUT
 		- SLOW_MODE
 		- NATURE_FAILS
-		- _REQUEST
-		- argv
+		- FLUSHING_OKAY
