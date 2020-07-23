@@ -2612,7 +2612,6 @@ final class Template {
     } else {
       $json = (string) @file_get_contents('https://api.semanticscholar.org/v1/paper/' . $doi);
     }
-    $json = @file_get_contents($url, FALSE, $context);
     if ($json) {
       $oa = @json_decode($json);
       if ($oa !== FALSE && isset($oa->url) && isset($oa->is_publisher_licensed) && $oa->is_publisher_licensed) {
