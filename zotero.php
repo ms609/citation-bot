@@ -22,12 +22,11 @@ function make_ch_zotero() : void { // This is never closed
 }
 
 function query_url_api(array $ids, array $templates) : void {
-  global $SLOW_MODE;
   global $zotero_failures_count;
   global $zotero_ch;
   global $zotero_announced;
   if (!isset($zotero_failures_count) || getenv('TRAVIS')) $zotero_failures_count = 0;
-  if (!$SLOW_MODE) return; // Zotero takes time
+  if (!SLOW_MODE) return; // Zotero takes time
   make_ch_zotero();
   
   if (!getenv('TRAVIS')) { // try harder in TRAVIS to make tests more successful and make it his zotero less often
