@@ -147,10 +147,6 @@ class Page {
     $mathematics = $this->extract_object('Mathematics');
     $musicality  = $this->extract_object('Musicscores');
     $preformated = $this->extract_object('Preformated');
-    if ($this->page_error) {
-      $this->text = $this->start_text;                  // @codeCoverageIgnore
-      return FALSE;                                     // @codeCoverageIgnore
-    }
     if (!$this->allow_bots()) {
       report_warning("Page marked with {{nobots}} template.  Skipping.");
       $this->text = $this->start_text;
