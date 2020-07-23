@@ -2333,7 +2333,7 @@ final class Template {
       curl_setopt($ch, CURLOPT_HTTPHEADER, array('Authorization: Bearer ' . getenv('PHP_ADSABSAPIKEY')));
       curl_setopt($ch, CURLOPT_RETURNTRANSFER, TRUE);
       curl_setopt($ch, CURLOPT_HEADER, TRUE);
-      $adsabs_url = "https://" . (getenv('TRAVIS') ? 'qa' : 'api')
+      $adsabs_url = "https://" . TRAVIS ? 'qa' : 'api')
                   . ".adsabs.harvard.edu/v1/search/query"
                   . "?q=$options&fl=arxiv_class,author,bibcode,doi,doctype,identifier,"
                   . "issue,page,pub,pubdate,title,volume,year";
@@ -2343,8 +2343,8 @@ final class Template {
         // @codeCoverageIgnoreStart
         sleep(4);
         $return = (string) @curl_exec($ch);
-        if (502 === curl_getinfo($ch, CURLINFO_HTTP_CODE) && getenv('TRAVIS')) {
-           sleep(20); // better slow than not at all in TRAVIS
+        if (502 === curl_getinfo($ch, CURLINFO_HTTP_CODE) && TRAVIS) {
+           sleep(20); // better slow than not at all
            $return = (string) @curl_exec($ch);
         }
         // @codeCoverageIgnoreEnd
@@ -5655,7 +5655,7 @@ final class Template {
       } else {   
         return $this->add_if_new('journal', trim($matches[1])); // Might be newspaper, hard to tell.
       }
-    } elseif (getenv('TRAVIS') && preg_match('~<title>(.*)</title>~', $html, $matches)) {     // @codeCoverageIgnore
+    } elseif (TRAVIS && preg_match('~<title>(.*)</title>~', $html, $matches)) {     // @codeCoverageIgnore
       // Sometime just get [WorldCat.org]
       report_error('unexpected title from ISSN ' . $this->get('issn') . ' : ' . $matches[1]); // @codeCoverageIgnore
     }
