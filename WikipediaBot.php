@@ -27,7 +27,7 @@ final class WikipediaBot {
 
     if ($no_user) {
       $this->the_user = '';
-    } elseif (getenv('TRAVIS')) {
+    } elseif (TRAVIS) {
       $this->the_user = 'Citation_bot';
     } else {
       $this->authenticate_user();  // @codeCoverageIgnore
@@ -268,7 +268,7 @@ final class WikipediaBot {
       // @codeCoverageIgnoreEnd
     } else {
       // @codeCoverageIgnoreStart
-      if (!getenv('TRAVIS')) report_error("Unhandled write error.  Please copy this output and " .
+      if (!TRAVIS) report_error("Unhandled write error.  Please copy this output and " .
                     "<a href='https://en.wikipedia.org/wiki/User_talk:Citation_bot'>" .
                     "report a bug.</a>.  There is no need to report the database being locked unless it continues to be a problem. ");
       // @codeCoverageIgnoreEnd
