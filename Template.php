@@ -2323,14 +2323,11 @@ final class Template {
     global $ADSABS_GIVE_UP;
     // API docs at https://github.com/adsabs/adsabs-dev-api/blob/master/Search_API.ipynb
     if ($ADSABS_GIVE_UP) return (object) array('numFound' => 0);
-    if (!getenv('PHP_ADSABSAPIKEY')) {
-      report_warning("PHP_ADSABSAPIKEY environment variable not set. Cannot query AdsAbs.");  // @codeCoverageIgnore
-      return (object) array('numFound' => 0);                                                 // @codeCoverageIgnore
-    }
+    if (!PHP_ADSABSAPIKEY) return (object) array('numFound' => 0);
     
     try {
       $ch = curl_init();
-      curl_setopt($ch, CURLOPT_HTTPHEADER, array('Authorization: Bearer ' . getenv('PHP_ADSABSAPIKEY')));
+      curl_setopt($ch, CURLOPT_HTTPHEADER, array('Authorization: Bearer ' . PHP_ADSABSAPIKEY));
       curl_setopt($ch, CURLOPT_RETURNTRANSFER, TRUE);
       curl_setopt($ch, CURLOPT_HEADER, TRUE);
       $adsabs_url = "https://" . (TRAVIS ? 'qa' : 'api')
