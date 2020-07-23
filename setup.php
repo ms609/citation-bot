@@ -45,8 +45,8 @@ if (!TRAVIS) {
     ob_start();
 }
 
-if (!getenv('PHP_OAUTH_CONSUMER_TOKEN') && file_exists('env.php')) {
-  // Set the environment variables with putenv(), if they are not set already. Remember to set permissions (not readable!)
+if (file_exists('env.php')) {
+  // Set the environment variables with putenv(). Remember to set permissions (not readable!)
   ob_start();
   include_once('env.php');
   $env_output = trim(str_replace(['Reading authentication tokens from tools.wmflabs.org.',
