@@ -39,9 +39,6 @@ if (isset($_REQUEST["slow"]) || TRAVIS || (@$argv[2] === '--slow')) {
 $BLOCK_BIBCODE_SEARCH = FALSE;
 $BLOCK_ZOTERO_SEARCH  = FALSE;
 
-
-define("PHP_S2APIKEY", (string) getenv("PHP_S2APIKEY"));
-
 //Optimisation
 ob_implicit_flush();
 if (!TRAVIS) {
@@ -72,6 +69,7 @@ $ADSABS_GIVE_UP = FALSE;
 
 define("PHP_ADSABSAPIKEY", (string) getenv("PHP_ADSABSAPIKEY"));
 define("PHP_GOOGLEKEY", (string) getenv("PHP_GOOGLEKEY"));
+define("PHP_S2APIKEY", (string) getenv("PHP_S2APIKEY"));
 
 function check_blocked() : void {
   if (!TRAVIS && ! WikipediaBot::is_valid_user('Citation_bot')) exit('</pre><div style="text-align:center"><h1>The Citation Bot is currently blocked because of disagreement over its usage.</h1><br/><h2><a href="https://en.wikipedia.org/wiki/User_talk:Citation_bot" title="Join the discussion" target="_blank">Please join in the discussion</a></h2></div><footer><a href="./" title="Use Citation Bot again">Another&nbsp;page</a>?</footer></body></html>');
