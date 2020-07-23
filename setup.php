@@ -10,7 +10,9 @@ if (file_exists('git_pull.lock')) exit('GIT pull in progress');
 ini_set("user_agent", "Citation_bot; citations@tools.wmflabs.org");
 include_once('./vendor/autoload.php');
 
-if ((bool) getenv('TRAVIS') || isset($argv)) {
+define("TRAVIS", (bool) getenv('TRAVIS'));
+
+if (TRAVIS || isset($argv)) {
   error_reporting(E_ALL);
   define("HTML_OUTPUT", FALSE);
 } else {
@@ -25,7 +27,7 @@ if (strpos((string) @$_SERVER['PHP_SELF'], '/gadgetapi.php') === FALSE) {
   define("FLUSHING_OKAY", FALSE);
 }
 
-if (isset($_REQUEST["slow"]) || getenv('TRAVIS') || (@$argv[2] === '--slow')) {
+if (isset($_REQUEST["slow"]) || TRAVIS || (@$argv[2] === '--slow')) {
   define("SLOW_MODE", TRUE);
 } elseif (isset($argv[2])) {
   exit("Unexpected text on the command.  Only --slow is valid second argument.  Found: " . $argv[2]);
@@ -39,13 +41,12 @@ $BLOCK_ZOTERO_SEARCH  = FALSE;
 
 //Optimisation
 ob_implicit_flush();
-if (!getenv('TRAVIS')) {
+if (!TRAVIS) {
     ob_start();
 }
 
-if (!getenv('PHP_OAUTH_CONSUMER_TOKEN') && file_exists('env.php')) {
-  // An opportunity to set the PHP_OAUTH_ environment variables used in this function,
-  // if they are not set already. Remember to set permissions (not readable!)
+if (file_exists('env.php')) {
+  // Set the environment variables with putenv(). Remember to set permissions (not readable!)
   ob_start();
   include_once('env.php');
   $env_output = trim(str_replace(['Reading authentication tokens from tools.wmflabs.org.',
@@ -66,8 +67,12 @@ ini_set("memory_limit", "256M");
 
 $ADSABS_GIVE_UP = FALSE;
 
+define("PHP_ADSABSAPIKEY", (string) getenv("PHP_ADSABSAPIKEY"));
+define("PHP_GOOGLEKEY", (string) getenv("PHP_GOOGLEKEY"));
+define("PHP_S2APIKEY", (string) getenv("PHP_S2APIKEY"));
+
 function check_blocked() : void {
-  if (!getenv('TRAVIS') && ! WikipediaBot::is_valid_user('Citation_bot')) exit('</pre><div style="text-align:center"><h1>The Citation Bot is currently blocked because of disagreement over its usage.</h1><br/><h2><a href="https://en.wikipedia.org/wiki/User_talk:Citation_bot" title="Join the discussion" target="_blank">Please join in the discussion</a></h2></div><footer><a href="./" title="Use Citation Bot again">Another&nbsp;page</a>?</footer></body></html>');
+  if (!TRAVIS && ! WikipediaBot::is_valid_user('Citation_bot')) exit('</pre><div style="text-align:center"><h1>The Citation Bot is currently blocked because of disagreement over its usage.</h1><br/><h2><a href="https://en.wikipedia.org/wiki/User_talk:Citation_bot" title="Join the discussion" target="_blank">Please join in the discussion</a></h2></div><footer><a href="./" title="Use Citation Bot again">Another&nbsp;page</a>?</footer></body></html>');
 }
 
 require_once('constants.php');

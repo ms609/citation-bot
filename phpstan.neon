@@ -6,3 +6,4 @@ parameters:
 		- SLOW_MODE
 		- NATURE_FAILS
 		- FLUSHING_OKAY
+		- TRAVIS

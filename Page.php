@@ -451,7 +451,7 @@ class Page {
               $this->edit_summary() . $edit_summary_end,
               $this->lastrevid, $this->read_at)) {
         return TRUE;          // @codeCoverageIgnore
-      } elseif (!getenv('TRAVIS')) {
+      } elseif (!TRAVIS) {
         // @codeCoverageIgnoreStart
         throttle(10);
         sleep(10);  // could be database being locked

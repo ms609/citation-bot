@@ -25,11 +25,11 @@ function query_url_api(array $ids, array $templates) : void {
   global $zotero_failures_count;
   global $zotero_ch;
   global $zotero_announced;
-  if (!isset($zotero_failures_count) || getenv('TRAVIS')) $zotero_failures_count = 0;
+  if (!isset($zotero_failures_count) || TRAVIS) $zotero_failures_count = 0;
   if (!SLOW_MODE) return; // Zotero takes time
   make_ch_zotero();
   
-  if (!getenv('TRAVIS')) { // try harder in TRAVIS to make tests more successful and make it his zotero less often
+  if (!TRAVIS) { // try harder in tests
     // @codeCoverageIgnoreStart
     curl_setopt($zotero_ch, CURLOPT_CONNECTTIMEOUT, 1);
     $url_count = 0;
@@ -52,7 +52,7 @@ function query_url_api(array $ids, array $templates) : void {
   foreach ($templates as $template) {
      expand_by_zotero($template);
   }
-  if (!getenv('TRAVIS')) { // These are pretty reliable, unlike random urls
+  if (!TRAVIS) { // These are pretty reliable, unlike random urls
       curl_setopt($zotero_ch, CURLOPT_TIMEOUT, 10);  // @codeCoverageIgnore
   }
   $zotero_announced = 2;

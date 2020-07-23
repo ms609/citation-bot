@@ -28,9 +28,8 @@ const DOT_DECODE = array("/", "[", "{", "}", "]", "<", ">", ";", "(", ")");
 const DOI_URL_ENCODE = array("%23", "%3C", "%3E");
 const DOI_URL_DECODE = array("#", "<", ">");
 
-const DATES_WHATEVER = 0; // PHP has no native enum
+const DATES_WHATEVER = 0;
 const DATES_MDY      = 1;
 const DATES_DMY      = 2;
 
 const CROSSREFUSERNAME = 'martins@gmail.com';
-// Use putenv to set PHP_ADSABSAPIKEY, PHP_GOOGLE_KEY and PHP_BOTUSERNAME environment variables

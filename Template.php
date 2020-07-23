@@ -2323,17 +2323,14 @@ final class Template {
     global $ADSABS_GIVE_UP;
     // API docs at https://github.com/adsabs/adsabs-dev-api/blob/master/Search_API.ipynb
     if ($ADSABS_GIVE_UP) return (object) array('numFound' => 0);
-    if (!getenv('PHP_ADSABSAPIKEY')) {
-      report_warning("PHP_ADSABSAPIKEY environment variable not set. Cannot query AdsAbs.");  // @codeCoverageIgnore
-      return (object) array('numFound' => 0);                                                 // @codeCoverageIgnore
-    }
+    if (!PHP_ADSABSAPIKEY) return (object) array('numFound' => 0);
     
     try {
       $ch = curl_init();
-      curl_setopt($ch, CURLOPT_HTTPHEADER, array('Authorization: Bearer ' . getenv('PHP_ADSABSAPIKEY')));
+      curl_setopt($ch, CURLOPT_HTTPHEADER, array('Authorization: Bearer ' . PHP_ADSABSAPIKEY));
       curl_setopt($ch, CURLOPT_RETURNTRANSFER, TRUE);
       curl_setopt($ch, CURLOPT_HEADER, TRUE);
-      $adsabs_url = "https://" . (getenv('TRAVIS') ? 'qa' : 'api')
+      $adsabs_url = "https://" . (TRAVIS ? 'qa' : 'api')
                   . ".adsabs.harvard.edu/v1/search/query"
                   . "?q=$options&fl=arxiv_class,author,bibcode,doi,doctype,identifier,"
                   . "issue,page,pub,pubdate,title,volume,year";
@@ -2343,8 +2340,8 @@ final class Template {
         // @codeCoverageIgnoreStart
         sleep(4);
         $return = (string) @curl_exec($ch);
-        if (502 === curl_getinfo($ch, CURLINFO_HTTP_CODE) && getenv('TRAVIS')) {
-           sleep(20); // better slow than not at all in TRAVIS
+        if (502 === curl_getinfo($ch, CURLINFO_HTTP_CODE) && TRAVIS) {
+           sleep(20); // better slow than not at all
            $return = (string) @curl_exec($ch);
         }
         // @codeCoverageIgnoreEnd
@@ -2609,13 +2606,12 @@ final class Template {
             ($this->has('jstor') && $this->get('jstor-access') === 'free')
            ) return; // do not add url if have OA already.  Do indlude preprints in list
     if ($this->has('s2cid') || $this->has('S2CID')) return;
-    $context = stream_context_create(array(
-     'http'=>array(
-      'header'=>"x-api-key: " . getenv('PHP_S2APIKEY') . "\r\n"
-     )
-    ));
-    $url = 'https://' . (getenv('PHP_S2APIKEY') ? 'partner' : 'api') . '.semanticscholar.org/v1/paper/' . $doi;
-    $json = @file_get_contents($url, FALSE, $context);
+    if (PHP_S2APIKEY) {
+      $context = stream_context_create(array('http'=>array('header'=>"x-api-key: " . PHP_S2APIKEY . "\r\n")));
+      $json = (string) @file_get_contents('https://partner.semanticscholar.org/v1/paper/' . $doi, FALSE, $context);
+    } else {
+      $json = (string) @file_get_contents('https://api.semanticscholar.org/v1/paper/' . $doi);
+    }
     if ($json) {
       $oa = @json_decode($json);
       if ($oa !== FALSE && isset($oa->url) && isset($oa->is_publisher_licensed) && $oa->is_publisher_licensed) {
@@ -2823,7 +2819,7 @@ final class Template {
           }
         }
       }
-      if ( !$google_books_worked ) { // Try Google API instead 
+      if ( !$google_books_worked && PHP_GOOGLEKEY) { // Try Google API instead 
         if ($isbn) {
           $url_token = "isbn:" . $isbn;
         } elseif ($oclc) {
@@ -2836,7 +2832,7 @@ final class Template {
         $ch = curl_init();
         curl_setopt($ch, CURLOPT_HEADER, 0);
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
-        curl_setopt($ch, CURLOPT_URL, "https://www.googleapis.com/books/v1/volumes?q=" . $url_token . "&key=" . getenv('PHP_GOOGLEKEY'));
+        curl_setopt($ch, CURLOPT_URL, "https://www.googleapis.com/books/v1/volumes?q=" . $url_token . "&key=" . PHP_GOOGLEKEY);
         $string = (string) @curl_exec($ch);
         curl_close($ch);
         if ($string == '') {
@@ -5655,7 +5651,7 @@ final class Template {
       } else {   
         return $this->add_if_new('journal', trim($matches[1])); // Might be newspaper, hard to tell.
       }
-    } elseif (getenv('TRAVIS') && preg_match('~<title>(.*)</title>~', $html, $matches)) {     // @codeCoverageIgnore
+    } elseif (TRAVIS && preg_match('~<title>(.*)</title>~', $html, $matches)) {     // @codeCoverageIgnore
       // Sometime just get [WorldCat.org]
       report_error('unexpected title from ISSN ' . $this->get('issn') . ' : ' . $matches[1]); // @codeCoverageIgnore
     }

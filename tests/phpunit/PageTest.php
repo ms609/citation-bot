@@ -139,7 +139,7 @@ final class PageTest extends testBaseClass {
         'doi_broken_date=1986-01-01 | doi = 10.1038/nature09068}}';
       $page->overwrite_text($trialCitation);
       $page_result = $page->write($api, "Testing bot write function");
-      if (getenv('TRAVIS') && !$page_result) {
+      if (TRAVIS && !$page_result) {
         echo 'T';  // ! API call failed: '''Your IP address is in a range which has been blocked on all wikis.''' The block was made by [//meta.wikimedia.org/wiki/User:Jon_Kolbert Jon Kolbert] (meta.wikimedia.org). The reason given is ''[[m:NOP|Open Proxy]]: Colocation webhost - Contact [[m:Special:Contact/stewards|stewards]] if you are affected ''. * Start of block: 02:23, 27 October 2019 * Expiration of block: 02:23, 27 October 2021
         ob_flush();
         $this->assertTrue(TRUE); // make CI happy
@@ -179,7 +179,6 @@ final class PageTest extends testBaseClass {
    });
   }
  
- 
   public function testEmptyPage() : void {
       foreach (['', '  ', " \n ", '  move along, nothing to see here ', '  move along, nothing to see here {{}} ', ' }}}}{{{{ ', '{{{{}}', '{{{{    }}', '{{{{}}}}}}}}'] as $text) {
         $page = $this->process_page($text);
@@ -189,13 +188,7 @@ final class PageTest extends testBaseClass {
 
   public function testUrlReferences() : void {
       $page = $this->process_page("URL reference test 1 <ref name='bob'>http://doi.org/10.1007/s12668-011-0022-5< / ref>\n Second reference: \n<ref >  [https://www.ncbi.nlm.nih.gov/pmc/articles/PMC3705692/] </ref> URL reference test 1");
-      if (getenv('TRAVIS_PULL_REQUEST') && (getenv('TRAVIS_PULL_REQUEST') !== 'false' )) {
-         $this->assertSame("URL reference test 1 <ref name='bob'>{{Cite journal |doi = 10.1007/s12668-011-0022-5|title = Reoccurring Patterns in Hierarchical Protein Materials and Music: The Power of Analogies|year = 2011|last1 = Giesa|first1 = Tristan|last2 = Spivak|first2 = David I.|last3 = Buehler|first3 = Markus J.|s2cid = 5178100|journal = Bionanoscience|volume = 1|issue = 4|pages = 153–161|arxiv = 1111.5297}}< / ref>
- Second reference: 
-<ref >{{Cite journal |pmc = 3705692|year = 2013|last1 = Mahajan|first1 = P. T.|last2 = Pimple|first2 = P.|last3 = Palsetia|first3 = D.|last4 = Dave|first4 = N.|last5 = De Sousa|first5 = A.|title = Indian religious concepts on sexuality and marriage|journal = Indian Journal of Psychiatry|volume = 55|issue = Suppl 2|pages = S256–S262|doi = 10.4103/0019-5545.105547|pmid = 23858264}}</ref> URL reference test 1", $page->parsed_text());
-      } else { // Gets bibcode
-         $this->assertSame("URL reference test 1 <ref name='bob'>{{Cite journal |doi = 10.1007/s12668-011-0022-5|title = Reoccurring Patterns in Hierarchical Protein Materials and Music: The Power of Analogies|year = 2011|last1 = Giesa|first1 = Tristan|last2 = Spivak|first2 = David I.|last3 = Buehler|first3 = Markus J.|s2cid = 5178100|journal = Bionanoscience|volume = 1|issue = 4|pages = 153–161|arxiv = 1111.5297}}< / ref>\n Second reference: \n<ref >{{Cite journal |pmc = 3705692|year = 2013|last1 = Mahajan|first1 = P. T.|last2 = Pimple|first2 = P.|last3 = Palsetia|first3 = D.|last4 = Dave|first4 = N.|last5 = De Sousa|first5 = A.|title = Indian religious concepts on sexuality and marriage|journal = Indian Journal of Psychiatry|volume = 55|issue = Suppl 2|pages = S256–S262|doi = 10.4103/0019-5545.105547|pmid = 23858264}}</ref> URL reference test 1", $page->parsed_text());
-      }
+      $this->assertSame("URL reference test 1 <ref name='bob'>{{Cite journal |doi = 10.1007/s12668-011-0022-5|title = Reoccurring Patterns in Hierarchical Protein Materials and Music: The Power of Analogies|year = 2011|last1 = Giesa|first1 = Tristan|last2 = Spivak|first2 = David I.|last3 = Buehler|first3 = Markus J.|s2cid = 5178100|journal = Bionanoscience|volume = 1|issue = 4|pages = 153–161|arxiv = 1111.5297}}< / ref>\n Second reference: \n<ref >{{Cite journal |pmc = 3705692|year = 2013|last1 = Mahajan|first1 = P. T.|last2 = Pimple|first2 = P.|last3 = Palsetia|first3 = D.|last4 = Dave|first4 = N.|last5 = De Sousa|first5 = A.|title = Indian religious concepts on sexuality and marriage|journal = Indian Journal of Psychiatry|volume = 55|issue = Suppl 2|pages = S256–S262|doi = 10.4103/0019-5545.105547|pmid = 23858264}}</ref> URL reference test 1", $page->parsed_text());
       $page = $this->process_page(" text <ref name='dog' > 10.1063/1.2263373 </ref>");
       $this->assertTrue((bool) strpos($page->parsed_text(), 'title'));
       $page = $this->process_page(" text <ref name='dog' >[http://doi.org/10.1007/s12668-011-0022-5 http://doi.org/10.1007/s12668-011-0022-5]</ref>");
