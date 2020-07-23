@@ -39,6 +39,9 @@ if (isset($_REQUEST["slow"]) || TRAVIS || (@$argv[2] === '--slow')) {
 $BLOCK_BIBCODE_SEARCH = FALSE;
 $BLOCK_ZOTERO_SEARCH  = FALSE;
 
+
+define("PHP_S2APIKEY", (string) getenv("PHP_S2APIKEY"));
+
 //Optimisation
 ob_implicit_flush();
 if (!TRAVIS) {
