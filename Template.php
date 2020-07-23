@@ -2099,9 +2099,8 @@ final class Template {
 
   public function expand_by_adsabs() : bool {
     // API docs at https://github.com/adsabs/adsabs-dev-api
-    global $SLOW_MODE;
     global $BLOCK_BIBCODE_SEARCH;
-    if (!$SLOW_MODE && $this->blank('bibcode')) {
+    if (!SLOW_MODE && $this->blank('bibcode')) {
      report_info("Skipping AdsAbs API: not in slow mode"); // @codeCoverageIgnore
      return FALSE;                                         // @codeCoverageIgnore
     }
