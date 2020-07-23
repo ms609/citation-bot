@@ -191,6 +191,7 @@ function adsabs_api(array $ids, array $templates, string $identifier) : bool {
   global $BLOCK_BIBCODE_SEARCH;
   if ($ADSABS_GIVE_UP) return FALSE;
   if ($BLOCK_BIBCODE_SEARCH === TRUE) return FALSE;
+  if (!PHP_ADSABSAPIKEY) return FALSE;
   if (count($ids) == 0) return FALSE;
   
   foreach ($ids as $key => $bibcode) {
@@ -232,18 +233,13 @@ function adsabs_api(array $ids, array $templates, string $identifier) : bool {
               . ".adsabs.harvard.edu/v1/search/bigquery?q=*:*"
               . "&fl=arxiv_class,author,bibcode,doi,doctype,identifier,"
               . "issue,page,pub,pubdate,title,volume,year&rows=2000";
-
-  if (!getenv('PHP_ADSABSAPIKEY')) {
-    report_warning("PHP_ADSABSAPIKEY environment variable not set. Cannot query AdsAbs.");  // @codeCoverageIgnore
-    return FALSE;                                                                           // @codeCoverageIgnore
-  }
   
   try {
     report_action("Expanding from BibCodes via AdsAbs API");
     $ch = curl_init();
     curl_setopt($ch, CURLOPT_URL, $adsabs_url);
     curl_setopt($ch, CURLOPT_HTTPHEADER, array('Content-Type: big-query/csv', 
-      'Authorization: Bearer ' . getenv('PHP_ADSABSAPIKEY')));
+      'Authorization: Bearer ' . PHP_ADSABSAPIKEY));
     curl_setopt($ch, CURLOPT_RETURNTRANSFER, TRUE);
     curl_setopt($ch, CURLOPT_HEADER, TRUE);
     curl_setopt($ch, CURLOPT_CUSTOMREQUEST, 'POST');
