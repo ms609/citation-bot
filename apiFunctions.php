@@ -994,10 +994,10 @@ function parse_plain_text_reference(string $journal_data, Template $this_templat
 function getS2CID(string $url) : string {
   $context = stream_context_create(array(
    'http'=>array(
-    'header'=>"x-api-key: " . getenv('PHP_S2APIKEY') . "\r\n"
+    'header'=>"x-api-key: " . PHP_S2APIKEY . "\r\n"
    )
   ));
-  $response = @file_get_contents('https://' . (getenv('PHP_S2APIKEY') ? 'partner' : 'api') . '.semanticscholar.org/v1/paper/URL:' . $url, FALSE, $context);
+  $response = @file_get_contents('https://' . (PHP_S2APIKEY ? 'partner' : 'api') . '.semanticscholar.org/v1/paper/URL:' . $url, FALSE, $context);
   if (!$response) {
     report_warning("No response from semanticscholar.");   // @codeCoverageIgnore
     return '';                                             // @codeCoverageIgnore
