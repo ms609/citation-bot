@@ -12,17 +12,17 @@ include_once('./vendor/autoload.php');
 
 if ((bool) getenv('TRAVIS') || isset($argv)) {
   error_reporting(E_ALL);
-  consts HTML_OUTPUT = FALSE;
+  define("HTML_OUTPUT", FALSE);
 } else {
   error_reporting(E_ALL^E_NOTICE);
-  consts HTML_OUTPUT = TRUE;
+  define("HTML_OUTPUT", TRUE);
 }
 
 // This is needed because the Gadget API expects only JSON back, therefore ALL output from the citation bot is thrown away
 if (strpos((string) @$_SERVER['PHP_SELF'], '/gadgetapi.php') === FALSE) {
-  const FLUSHING_OKAY = TRUE;
+  define("FLUSHING_OKAY", TRUE);
 } else {
-  const FLUSHING_OKAY = FALSE;
+  define("FLUSHING_OKAY", FALSE);
 }
 
 if (isset($_REQUEST["slow"]) || getenv('TRAVIS') || (@$argv[2] === '--slow')) {
