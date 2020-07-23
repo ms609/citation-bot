@@ -228,7 +228,7 @@ function adsabs_api(array $ids, array $templates, string $identifier) : bool {
   if ($NONE_IS_INCOMPLETE) return FALSE;
   
   // API docs at https://github.com/adsabs/adsabs-dev-api/blob/master/Search_API.ipynb
-  $adsabs_url = "https://" . TRAVIS ? 'qa' : 'api')
+  $adsabs_url = "https://" . (TRAVIS ? 'qa' : 'api')
               . ".adsabs.harvard.edu/v1/search/bigquery?q=*:*"
               . "&fl=arxiv_class,author,bibcode,doi,doctype,identifier,"
               . "issue,page,pub,pubdate,title,volume,year&rows=2000";
