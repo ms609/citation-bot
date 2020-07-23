@@ -10,7 +10,13 @@ if (file_exists('git_pull.lock')) exit('GIT pull in progress');
 ini_set("user_agent", "Citation_bot; citations@tools.wmflabs.org");
 include_once('./vendor/autoload.php');
 
-if ((bool) getenv('TRAVIS') || isset($argv)) {
+if ((bool) getenv('TRAVIS')) {
+  define("TRAVIS", TRUE);
+} else {
+  define("TRAVIS", FALSE);
+}
+
+if (TRAVIS || isset($argv)) {
   error_reporting(E_ALL);
   define("HTML_OUTPUT", FALSE);
 } else {
@@ -25,7 +31,7 @@ if (strpos((string) @$_SERVER['PHP_SELF'], '/gadgetapi.php') === FALSE) {
   define("FLUSHING_OKAY", FALSE);
 }
 
-if (isset($_REQUEST["slow"]) || getenv('TRAVIS') || (@$argv[2] === '--slow')) {
+if (isset($_REQUEST["slow"]) || TRAVIS || (@$argv[2] === '--slow')) {
   define("SLOW_MODE", TRUE);
 } elseif (isset($argv[2])) {
   exit("Unexpected text on the command.  Only --slow is valid second argument.  Found: " . $argv[2]);
@@ -39,7 +45,7 @@ $BLOCK_ZOTERO_SEARCH  = FALSE;
 
 //Optimisation
 ob_implicit_flush();
-if (!getenv('TRAVIS')) {
+if (!TRAVIS) {
     ob_start();
 }
 
