@@ -44,9 +44,9 @@ $ch = curl_init();
 curl_setopt($ch, CURLOPT_HEADER, 0);
 curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
 curl_setopt($ch, CURLOPT_URL, $url);
-$json = @curl_exec($ch);
+$json = (string) @curl_exec($ch);
 curl_close($ch);
-if ($json === FALSE) {
+if ($json == '') {
   report_error(' Error getting page list');
 }    
 $array = @json_decode($json, TRUE);
@@ -88,7 +88,6 @@ foreach($links as $link) {
     }
   }
   echo ("\n Done all " . count($pages_in_category) . " pages linked from " . $page_name . " \n");
-exit(0);
 ?>
  # # #</pre></body></html>
 
