@@ -1054,9 +1054,9 @@ function get_semanticscholar_license(string $s2cid) : ?bool {
     } else {
       $response = (string) @file_get_contents('https://api.semanticscholar.org/v1/paper/CorpusID:' . $s2cid);
     }
-    if ($json == '') return NULL;
-    if (stripos($json, 'Paper not found') !== FALSE) return FALSE;
-    $oa = @json_decode($json);
+    if ($response == '') return NULL;
+    if (stripos($response, 'Paper not found') !== FALSE) return FALSE;
+    $oa = @json_decode($response);
     if ($oa === FALSE) return NULL;
     if (isset($oa->is_publisher_licensed) && $oa->is_publisher_licensed) return TRUE;
     return FALSE;
