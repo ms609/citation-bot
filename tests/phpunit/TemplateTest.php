@@ -4769,6 +4769,18 @@ T1 - This is the Title }}';
      $this->assertSame($text, $template->parsed_text());
     }
  
+    public function testIDconvert10() : void {
+     $text = '{{Cite journal|id = {{arxiv}}}}';
+     $template = $this->process_citation($text);
+     $this->assertSame('{{Cite journal}}', $template->parsed_text());
+    }
+ 
+    public function testIDconvert11() : void {
+     $text = '{{cite journal|id={{isbn}} {{oclc}} {{jstor}} {{arxiv}} }}';
+     $page = $this->process_page($text);
+     $this->assertSame('{{Cite journal}}', $page->parsed_text());
+    }
+ 
    public function testCAPS() : void {
      $text = '{{Cite journal | URL = }}';
      $template = $this->process_citation($text);
