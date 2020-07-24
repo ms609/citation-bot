@@ -294,10 +294,10 @@ final class Template {
     if ($this->wikiname() =='cite book' || ($this->wikiname() =='citation' && $this->has('isbn'))) { // Assume book
       if ($this->display_authors() >= $this->number_of_authors()) return TRUE;
       return (!(
-              $this->has("isbn")
-          &&  $this->has("title")
-          && ($this->has("date") || $this->has("year"))
-          && ($this->has("author2") || $this->has("last2") || $this->has('surname2'))
+              $this->has('isbn')
+          &&  $this->has('title')
+          && ($this->has('date') || $this->has('year'))
+          && ($this->has('author2') || $this->has('last2') || $this->has('surname2'))
       ));
     }
     // And now everything else
@@ -310,11 +310,11 @@ final class Template {
     if ($this->display_authors() >= $this->number_of_authors()) return TRUE;
     return (!(
              ($this->has('journal') || $this->has('periodical'))
-          &&  $this->has("volume")
-          && ($this->has("issue") || $this->has('number'))
-          &&  $this->has("title")
-          && ($this->has("date") || $this->has("year"))
-          && ($this->has("author2") || $this->has("last2") || $this->has('surname2')
+          &&  $this->has('volume')
+          && ($this->has('issue') || $this->has('number'))
+          &&  $this->has('title')
+          && ($this->has('date') || $this->has('year'))
+          && ($this->has('author2') || $this->has('last2') || $this->has('surname2')
           && ($this->get('journal') !== 'none' && $this->get('title') !== 'none'))
     ));
   }
@@ -322,7 +322,7 @@ final class Template {
   public function profoundly_incomplete(string $url = '') : bool {
     // Zotero translation server often returns bad data, which is worth having if we have no data,
     // but we don't want to fill a single missing field with garbage if a reference is otherwise well formed.
-    $has_date = $this->has("date") || $this->has("year") ;
+    $has_date = $this->has('date') || $this->has('year') ;
     foreach (NO_DATE_WEBSITES as $bad_website) {
       if (stripos($url, $bad_website) !== FALSE) {
         $has_date = TRUE;
@@ -333,8 +333,8 @@ final class Template {
     if ($this->wikiname() =='cite book' || ($this->wikiname() =='citation' && $this->has('isbn'))) { // Assume book
       if ($this->display_authors() >= $this->number_of_authors()) return TRUE;
       return (!(
-              $this->has("isbn")
-          &&  $this->has("title")
+              $this->has('isbn')
+          &&  $this->has('title')
           &&  $has_date
       ));
     }
@@ -345,14 +345,14 @@ final class Template {
               $this->has('website') || $this->has('publisher') || $this->has('newspaper') ||
               $this->has('magazine')|| $this->has('encyclopedia') || $this->has('encyclopaedia') ||
               $this->has('contribution'))
-          &&  $this->has("title")
+          &&  $this->has('title')
           &&  $has_date
     ));
     }
     return (!(
              ($this->has('journal') || $this->has('periodical'))
-          &&  $this->has("volume")
-          &&  $this->has("title")
+          &&  $this->has('volume')
+          &&  $this->has('title')
           &&  $has_date
     ));
   }
@@ -829,7 +829,7 @@ final class Template {
         if ($this->has('at')) return FALSE;  // Leave at= alone.  People often use that for at=See figure 17 on page......
         if (preg_match('~^\d+$~', $value) && intval($value) > 1000000) return FALSE;  // Sometimes get HUGE values
         $pages_value = $this->get('pages');
-        $all_page_values = $pages_value . $this->get("page") . $this->get("pp") . $this->get("p") . $this->get('at');
+        $all_page_values = $pages_value . $this->get('page') . $this->get('pp') . $this->get('p') . $this->get('at');
         $en_dash = [chr(2013), chr(150), chr(226), '-', '&ndash;'];
         $en_dash_X = ['X', 'X', 'X', 'X', 'X'];
         if (  mb_stripos($all_page_values, 'see ')  !== FALSE      // Someone is pointing to a specific part
@@ -881,11 +881,11 @@ final class Template {
             if (preg_match('~^1[-–]\d+$~u', $value) && preg_match('~^[a-zA-Z1-9]\d{3,}$~', $all_page_values)) {
               return FALSE;
             }
-            if ($param_name !== "pages") $this->forget("pages"); // Forget others -- sometimes we upgrade page=123 to pages=123-456
-            if ($param_name !== "page")  $this->forget("page");
-            if ($param_name !== "pp")    $this->forget("pp");
-            if ($param_name !== "p")     $this->forget("p");
-            if ($param_name !== "at")    $this->forget("at");
+            if ($param_name !== "pages") $this->forget('pages'); // Forget others -- sometimes we upgrade page=123 to pages=123-456
+            if ($param_name !== "page")  $this->forget('page');
+            if ($param_name !== "pp")    $this->forget('pp');
+            if ($param_name !== "p")     $this->forget('p');
+            if ($param_name !== "at")    $this->forget('at');
 
             $param_key = $this->get_param_key($param_name);
             if (!is_null($param_key)) {
@@ -1982,11 +1982,11 @@ final class Template {
     }
     // If we've got this far, the DOI was unproductive or there was no DOI.
 
-    if ($this->has("journal") && $this->has("volume") && $this->page_range()) {
+    if ($this->has('journal') && $this->has('volume') && $this->page_range()) {
       $results = $this->do_pumbed_query(array("journal", "volume", "issue", "page"));
       if ($results[1] == 1) return $results;
     }
-    if ($this->has("title") && $this->first_surname()) {
+    if ($this->has('title') && $this->first_surname()) {
       $results = $this->do_pumbed_query(array("title", "surname"));
       if ($results[1] == 1) return $results;
       if ($results[1] > 1) {
@@ -2121,7 +2121,7 @@ final class Template {
   
     report_action("Checking AdsAbs database");
     if ($this->has('bibcode')) {
-      $result = $this->query_adsabs("identifier:" . urlencode('"' . $this->get("bibcode") . '"'));
+      $result = $this->query_adsabs("identifier:" . urlencode('"' . $this->get('bibcode') . '"'));
     } elseif ($this->has('doi') && preg_match(REGEXP_DOI, $this->get_without_comments_and_placeholders('doi'), $doi)) {
       $result = $this->query_adsabs("identifier:" . urlencode('"' .  $doi[0] . '"'));  // In DOI we trust
     } elseif ($this->has('eprint')) {
@@ -2295,7 +2295,7 @@ final class Template {
   
   protected function expand_book_adsabs() : bool {
     $return = FALSE;
-    $result = $this->query_adsabs("bibcode:" . urlencode('"' . $this->get("bibcode") . '"'));
+    $result = $this->query_adsabs("bibcode:" . urlencode('"' . $this->get('bibcode') . '"'));
     if ($result->numFound == 1) {
       $return = TRUE;
       $record = $result->docs[0];
@@ -2310,7 +2310,7 @@ final class Template {
        }
       }
     }
-    if ($this->blank(['year', 'date']) && preg_match('~^(\d{4}).*book.*$~', $this->get("bibcode"), $matches)) {
+    if ($this->blank(['year', 'date']) && preg_match('~^(\d{4}).*book.*$~', $this->get('bibcode'), $matches)) {
       $this->add_if_new('year', $matches[1]); // Fail safe code to grab a year directly from the bibcode itself
     }
     return $return;
@@ -2582,7 +2582,7 @@ final class Template {
     if (preg_match(REGEXP_SICI, urldecode($this->parsed_text()), $sici)) {
       quietly('report_action', "Extracting information from SICI");
       $this->add_if_new('issn', $sici[1]); // Check whether journal is set in add_if_new
-      //if ($this->blank("year") && $this->blank('month') && $sici[3]) $this->set('month', date("M", mktime(0, 0, 0, $sici[3], 1, 2005)));
+      //if ($this->blank('year') && $this->blank('month') && $sici[3]) $this->set('month', date("M", mktime(0, 0, 0, $sici[3], 1, 2005)));
       //if ($this->blank('day') && is("month") && $sici[4]) set ("day", $sici[4]);
       $this->add_if_new('year', (string) (int) $sici[2]);
       $this->add_if_new('volume', (string) (int) $sici[5]);
@@ -3326,7 +3326,7 @@ final class Template {
           case "zbl":
           
             // Specific checks for particular templates:
-            if ($subtemplate_name == 'asin' && $subtemplate->has("country")) {
+            if ($subtemplate_name == 'asin' && $subtemplate->has('country')) {
               report_info("{{ASIN}} country parameter not supported: cannot convert.");
               break;
             }
