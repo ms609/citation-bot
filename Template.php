@@ -3339,7 +3339,6 @@ final class Template {
               break;
             }
             if ($subtemplate_name == 'oclc' && !is_null($subtemplate->param_with_index(1))) {
-              
               report_info("{{OCLC}} has multiple parameters: cannot convert.");
               report_info($subtemplate->parsed_text());
               break;
@@ -5211,9 +5210,7 @@ final class Template {
   
   protected function param_value(int $i) : string {
     $item = $this->param_with_index($i);
-    if (is_null($item)) {
-       report_error('param_value() called on invalid index: ' . (string) $i); // @codeCoverageIgnore
-    }
+    if (is_null($item)) return ''; // id={{arxiv}} and other junk
     return (string) $item->val;
   }
   
