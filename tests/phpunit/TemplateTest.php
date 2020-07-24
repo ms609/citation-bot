@@ -4778,7 +4778,7 @@ T1 - This is the Title }}';
     public function testIDconvert11() : void {
      $text = '{{cite journal|id={{isbn}} {{oclc}} {{jstor}} {{arxiv}} }}';
      $page = $this->process_page($text);
-     $this->assertSame('{{Cite journal}}', $page->parsed_text());
+     $this->assertSame('{{cite journal}}', $page->parsed_text());
     }
  
    public function testCAPS() : void {
