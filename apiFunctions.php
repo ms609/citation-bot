@@ -188,9 +188,7 @@ function arxiv_api(array $ids, array $templates) : bool {
 
 function adsabs_api(array $ids, array $templates, string $identifier) : bool {
   global $ADSABS_GIVE_UP;
-  global $BLOCK_BIBCODE_SEARCH;
   if ($ADSABS_GIVE_UP) return FALSE;
-  if ($BLOCK_BIBCODE_SEARCH === TRUE) return FALSE;
   if (!PHP_ADSABSAPIKEY) return FALSE;
   if (count($ids) == 0) return FALSE;
   

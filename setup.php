@@ -36,7 +36,6 @@ if (isset($_REQUEST["slow"]) || TRAVIS || (@$argv[2] === '--slow')) {
 }
 
 // We block these sometimes in testing
-$BLOCK_BIBCODE_SEARCH = FALSE;
 $BLOCK_ZOTERO_SEARCH  = FALSE;
 
 //Optimisation
