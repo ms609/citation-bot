@@ -6,11 +6,14 @@ const ERROR_DONE = 'ERROR_DONE';
 
 require_once("constants.php");
 
-function make_ch_zotero() : void { // This is never closed
+/*
+ * This gets called during the the testing suite constructor, so it is not seen as being code covered
+ * This CURL resource is never closed
+ * @codeCoverageIgnore
+ */
+function make_ch_zotero() : void {
   global $zotero_ch;
   if (is_resource($zotero_ch)) return;
-  // This gets called during the the testing suite constructor, so they they are not seen as being code covered
-  // @codeCoverageIgnoreStart
   $zotero_ch = curl_init(ZOTERO_ROOT);
   curl_setopt($zotero_ch, CURLOPT_CUSTOMREQUEST, "POST");
   curl_setopt($zotero_ch, CURLOPT_HTTPHEADER, ['Content-Type: text/plain']);
@@ -18,14 +21,12 @@ function make_ch_zotero() : void { // This is never closed
   // Defaults used in TRAVIS overiden below when deployed
   curl_setopt($zotero_ch, CURLOPT_CONNECTTIMEOUT, 10);
   curl_setopt($zotero_ch, CURLOPT_TIMEOUT, 45);
-  // @codeCoverageIgnoreEnd
 }
 
 function query_url_api(array $ids, array $templates) : void {
   global $zotero_ch;
   global $zotero_announced;
   if (!SLOW_MODE) return; // Zotero takes time
-  make_ch_zotero();
   
   if (!TRAVIS) { // try harder in tests
     // @codeCoverageIgnoreStart
