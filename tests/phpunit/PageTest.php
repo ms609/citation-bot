@@ -370,10 +370,10 @@ final class PageTest extends testBaseClass {
       curl_close($ch);
       $page = new TestPage();
       $page->parse_text($text);
-      $BLOCK_BIBCODE_SEARCH = FALSE;
+      $ADSABS_GIVE_UP = FALSE;
       $BLOCK_ZOTERO_SEARCH = FALSE;
       $page->expand_text();
-      $BLOCK_BIBCODE_SEARCH = TRUE;
+      $ADSABS_GIVE_UP = TRUE;
       $BLOCK_ZOTERO_SEARCH = TRUE;
       $this->assertTrue(FALSE); // prevent us from git committing with a website included
     }
