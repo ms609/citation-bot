@@ -65,6 +65,7 @@ mb_internal_encoding('UTF-8');
 ini_set("memory_limit", "256M");
 
 $ADSABS_GIVE_UP = FALSE;
+$zotero_failures_count = 0;
 
 define("PHP_ADSABSAPIKEY", (string) getenv("PHP_ADSABSAPIKEY"));
 define("PHP_GOOGLEKEY", (string) getenv("PHP_GOOGLEKEY"));
