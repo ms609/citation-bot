@@ -36,8 +36,6 @@ abstract class testBaseClass extends PHPUnit\Framework\TestCase {
        $this->testing_skip_dx     = FALSE;
        $this->testing_skip_arxiv  = FALSE;
     }
-
-    make_ch_zotero();
   }
 
   protected function requires_secrets(callable $function) : void {
