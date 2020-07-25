@@ -35,10 +35,6 @@ if (isset($_REQUEST["slow"]) || TRAVIS || (@$argv[2] === '--slow')) {
   define("SLOW_MODE", FALSE);
 }
 
-// We block these sometimes in testing
-$BLOCK_BIBCODE_SEARCH = FALSE;
-$BLOCK_ZOTERO_SEARCH  = FALSE;
-
 //Optimisation
 ob_implicit_flush();
 if (!TRAVIS) {
@@ -66,6 +62,7 @@ mb_internal_encoding('UTF-8');
 ini_set("memory_limit", "256M");
 
 $ADSABS_GIVE_UP = FALSE;
+$zotero_failures_count = 0;
 
 define("PHP_ADSABSAPIKEY", (string) getenv("PHP_ADSABSAPIKEY"));
 define("PHP_GOOGLEKEY", (string) getenv("PHP_GOOGLEKEY"));

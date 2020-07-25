@@ -3,8 +3,8 @@ declare(strict_types=1);
 
 require_once(__DIR__ . '/../setup.php');
 
-$BLOCK_BIBCODE_SEARCH = TRUE;
-$BLOCK_ZOTERO_SEARCH = TRUE;
+$ADSABS_GIVE_UP = TRUE;
+$zotero_failures_count = 100000;
 
 abstract class testBaseClass extends PHPUnit\Framework\TestCase {
   // Change these to temporarily disable sets of tests======================
@@ -82,34 +82,34 @@ abstract class testBaseClass extends PHPUnit\Framework\TestCase {
 
   // Only routines that absolutely need bibcode access since we are limited 
   protected function requires_bibcode(callable $function) : void {
-    global $BLOCK_BIBCODE_SEARCH;
+    global $ADSABS_GIVE_UP;
     if ($this->testing_skip_bibcode) {
       echo 'B';
       ob_flush();
       $this->assertNull(NULL);
     } else {
       try {
-        $BLOCK_BIBCODE_SEARCH = FALSE;
+        $ADSABS_GIVE_UP = FALSE;
         $function();
       } finally {
-        $BLOCK_BIBCODE_SEARCH = TRUE;
+        $ADSABS_GIVE_UP = TRUE;
       }
     }
   }
 
   // allows us to turn off zoreto tests
   protected function requires_zotero(callable $function) : void {
-    global $BLOCK_ZOTERO_SEARCH;
+    global $zotero_failures_count;
     if ($this->testing_skip_zotero) {
       echo 'Z';
       ob_flush();
       $this->assertNull(NULL);
     } else {
       try {
-        $BLOCK_ZOTERO_SEARCH = FALSE;
+        $zotero_failures_count = 0;
         $function();
       } finally {
-        $BLOCK_ZOTERO_SEARCH = TRUE;
+        $zotero_failures_count = 1000000;
       }
     }
   } 

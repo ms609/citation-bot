@@ -22,10 +22,8 @@ function make_ch_zotero() : void { // This is never closed
 }
 
 function query_url_api(array $ids, array $templates) : void {
-  global $zotero_failures_count;
   global $zotero_ch;
   global $zotero_announced;
-  if (!isset($zotero_failures_count) || TRAVIS) $zotero_failures_count = 0;
   if (!SLOW_MODE) return; // Zotero takes time
   make_ch_zotero();
   
@@ -227,10 +225,8 @@ function drop_urls_that_match_dois(array $templates) : void {
 function zotero_request(string $url) : string {
   global $zotero_failures_count;
   global $zotero_ch;
-  global $BLOCK_ZOTERO_SEARCH;
 
-  curl_setopt($zotero_ch, CURLOPT_POSTFIELDS, $url);  
-  if ($BLOCK_ZOTERO_SEARCH) return ERROR_DONE;
+  curl_setopt($zotero_ch, CURLOPT_POSTFIELDS, $url);
   
   $zotero_response = (string) @curl_exec($zotero_ch);
   if ($zotero_response == '') {
