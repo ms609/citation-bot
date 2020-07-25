@@ -3,7 +3,7 @@ declare(strict_types=1);
 
 require_once(__DIR__ . '/../setup.php');
 
-$BLOCK_BIBCODE_SEARCH = TRUE;
+$ADSABS_GIVE_UP = TRUE;
 $BLOCK_ZOTERO_SEARCH = TRUE;
 
 abstract class testBaseClass extends PHPUnit\Framework\TestCase {
@@ -82,17 +82,17 @@ abstract class testBaseClass extends PHPUnit\Framework\TestCase {
 
   // Only routines that absolutely need bibcode access since we are limited 
   protected function requires_bibcode(callable $function) : void {
-    global $BLOCK_BIBCODE_SEARCH;
+    global $ADSABS_GIVE_UP;
     if ($this->testing_skip_bibcode) {
       echo 'B';
       ob_flush();
       $this->assertNull(NULL);
     } else {
       try {
-        $BLOCK_BIBCODE_SEARCH = FALSE;
+        $ADSABS_GIVE_UP = FALSE;
         $function();
       } finally {
-        $BLOCK_BIBCODE_SEARCH = TRUE;
+        $ADSABS_GIVE_UP = TRUE;
       }
     }
   }
