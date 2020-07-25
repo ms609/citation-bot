@@ -25,7 +25,7 @@ function query_url_api(array $ids, array $templates) : void {
   global $zotero_failures_count;
   global $zotero_ch;
   global $zotero_announced;
-  if (!isset($zotero_failures_count) || TRAVIS) $zotero_failures_count = 0;
+  if (TRAVIS) $zotero_failures_count = 0;
   if (!SLOW_MODE) return; // Zotero takes time
   make_ch_zotero();
   
