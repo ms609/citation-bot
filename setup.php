@@ -35,9 +35,6 @@ if (isset($_REQUEST["slow"]) || TRAVIS || (@$argv[2] === '--slow')) {
   define("SLOW_MODE", FALSE);
 }
 
-// We block these sometimes in testing
-$BLOCK_ZOTERO_SEARCH  = FALSE;
-
 //Optimisation
 ob_implicit_flush();
 if (!TRAVIS) {
