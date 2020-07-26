@@ -4,7 +4,7 @@ declare(strict_types=1);
 require_once(__DIR__ . '/../setup.php');
 
 $ADSABS_GIVE_UP = TRUE;
-$zotero_failures_count = 100000;
+Zotero::zotero_failures_count = 100000;
 
 abstract class testBaseClass extends PHPUnit\Framework\TestCase {
   // Change these to temporarily disable sets of tests======================
@@ -97,17 +97,16 @@ abstract class testBaseClass extends PHPUnit\Framework\TestCase {
 
   // allows us to turn off zoreto tests
   protected function requires_zotero(callable $function) : void {
-    global $zotero_failures_count;
     if ($this->testing_skip_zotero) {
       echo 'Z';
       ob_flush();
       $this->assertNull(NULL);
     } else {
       try {
-        $zotero_failures_count = 0;
+        Template::zotero_failures_count = 0;
         $function();
       } finally {
-        $zotero_failures_count = 1000000;
+        Zotero::zotero_failures_count = 1000000;
       }
     }
   } 
