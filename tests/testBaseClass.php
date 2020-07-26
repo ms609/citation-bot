@@ -3,9 +3,6 @@ declare(strict_types=1);
 
 require_once(__DIR__ . '/../setup.php');
 
-$ADSABS_GIVE_UP = TRUE;
-$zotero_failures_count = 100000;
-
 abstract class testBaseClass extends PHPUnit\Framework\TestCase {
   // Change these to temporarily disable sets of tests======================
   private $testing_skip_zotero = TRUE;                                           // TODO - broken
@@ -17,6 +14,7 @@ abstract class testBaseClass extends PHPUnit\Framework\TestCase {
   // =======================================================================
   
   function __construct() {
+    global $ADSABS_GIVE_UP;
     parent::__construct();
 
    // Non-trusted builds
@@ -36,6 +34,9 @@ abstract class testBaseClass extends PHPUnit\Framework\TestCase {
        $this->testing_skip_dx     = FALSE;
        $this->testing_skip_arxiv  = FALSE;
     }
+    
+    $ADSABS_GIVE_UP = TRUE;
+    Zotero::block_zotero();
   }
 
   protected function requires_secrets(callable $function) : void {
@@ -97,17 +98,16 @@ abstract class testBaseClass extends PHPUnit\Framework\TestCase {
 
   // allows us to turn off zoreto tests
   protected function requires_zotero(callable $function) : void {
-    global $zotero_failures_count;
     if ($this->testing_skip_zotero) {
       echo 'Z';
       ob_flush();
       $this->assertNull(NULL);
     } else {
       try {
-        $zotero_failures_count = 0;
+        Zotero::unblock_zotero();
         $function();
       } finally {
-        $zotero_failures_count = 1000000;
+        Zotero::block_zotero();
       }
     }
   } 
@@ -163,7 +163,7 @@ abstract class testBaseClass extends PHPUnit\Framework\TestCase {
 
   protected function expand_via_zotero(string $text) :  Template {
     $expanded = $this->make_citation($text);
-    expand_by_zotero($expanded);
+    Zotero::expand_by_zotero($expanded);
     $expanded->tidy();
     return $expanded;
   }

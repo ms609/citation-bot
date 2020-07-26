@@ -360,7 +360,6 @@ final class PageTest extends testBaseClass {
  
   public function testBadPage() : void {  // Use this when debugging pages that crash the bot
     global $ADSABS_GIVE_UP;
-    global $zotero_failures_count;
     $bad_page = ""; //  Replace with page name when debugging
     $bad_page = urlencode(str_replace(' ', '_', $bad_page));
     if ($bad_page !== "") {
@@ -373,10 +372,10 @@ final class PageTest extends testBaseClass {
       $page = new TestPage();
       $page->parse_text($text);
       $ADSABS_GIVE_UP = FALSE;
-      $zotero_failures_count = 0;
+      Zotero::unblock_zotero();
       $page->expand_text();
       $ADSABS_GIVE_UP = TRUE;
-      $zotero_failures_count = 100000;
+      Zotero::block_zotero();
       $this->assertTrue(FALSE); // prevent us from git committing with a website included
     }
     $this->assertTrue(TRUE);

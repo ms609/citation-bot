@@ -1,36 +1,50 @@
 <?php
 declare(strict_types=1);
-const ZOTERO_GIVE_UP = 5;
-const ZOTERO_SKIPS = 100;
-const ERROR_DONE = 'ERROR_DONE';
 
 require_once("constants.php");
 
+function query_url_api(array $ids, array $templates) : void {
+   Zotero::query_url_api_class($ids, $templates);
+}
+
+final class Zotero {
+  private const ZOTERO_GIVE_UP = 5;
+  private const ZOTERO_SKIPS = 100;
+  private const ERROR_DONE = 'ERROR_DONE'; 
+  protected static $zotero_announced;
+  protected static $zotero_ch;
+  protected static $zotero_failures_count = 0;
+ 
 /*
  * This gets called during the the testing suite constructor, so it is not seen as being code covered
  * This CURL resource is never closed
  * @codeCoverageIgnore
  */
-function make_ch_zotero() : void {
-  global $zotero_ch;
-  if (is_resource($zotero_ch)) return;
-  $zotero_ch = curl_init(ZOTERO_ROOT);
-  curl_setopt($zotero_ch, CURLOPT_CUSTOMREQUEST, "POST");
-  curl_setopt($zotero_ch, CURLOPT_HTTPHEADER, ['Content-Type: text/plain']);
-  curl_setopt($zotero_ch, CURLOPT_RETURNTRANSFER, TRUE);
+public static function make_ch_zotero() : void {
+  if (is_resource(self::$zotero_ch)) return;
+  self::$zotero_ch = curl_init(ZOTERO_ROOT);
+  curl_setopt(self::$zotero_ch, CURLOPT_CUSTOMREQUEST, "POST");
+  curl_setopt(self::$zotero_ch, CURLOPT_HTTPHEADER, ['Content-Type: text/plain']);
+  curl_setopt(self::$zotero_ch, CURLOPT_RETURNTRANSFER, TRUE);
   // Defaults used in TRAVIS overiden below when deployed
-  curl_setopt($zotero_ch, CURLOPT_CONNECTTIMEOUT, 10);
-  curl_setopt($zotero_ch, CURLOPT_TIMEOUT, 45);
+  curl_setopt(self::$zotero_ch, CURLOPT_CONNECTTIMEOUT, 10);
+  curl_setopt(self::$zotero_ch, CURLOPT_TIMEOUT, 45);
 }
 
-function query_url_api(array $ids, array $templates) : void {
-  global $zotero_ch;
-  global $zotero_announced;
+public static function block_zotero() : void {
+  self::$zotero_failures_count = 1000000;  
+}
+
+public static function unblock_zotero() : void {
+  self::$zotero_failures_count = 0;  
+}
+
+public static function query_url_api_class(array $ids, array $templates) : void {
   if (!SLOW_MODE) return; // Zotero takes time
   
   if (!TRAVIS) { // try harder in tests
     // @codeCoverageIgnoreStart
-    curl_setopt($zotero_ch, CURLOPT_CONNECTTIMEOUT, 1);
+    curl_setopt(self::$zotero_ch, CURLOPT_CONNECTTIMEOUT, 1);
     $url_count = 0;
     foreach ($templates as $template) {
      if (!$template->blank(['url', 'chapter-url', 'chapterurl'])) {
@@ -38,23 +52,22 @@ function query_url_api(array $ids, array $templates) : void {
      }
     }
     if ($url_count < 5) {
-      curl_setopt($zotero_ch, CURLOPT_TIMEOUT, 15);
+      curl_setopt(self::$zotero_ch, CURLOPT_TIMEOUT, 15);
     } elseif ($url_count < 25) {
-      curl_setopt($zotero_ch, CURLOPT_TIMEOUT, 10);
+      curl_setopt(self::$zotero_ch, CURLOPT_TIMEOUT, 10);
     } else {
-      curl_setopt($zotero_ch, CURLOPT_TIMEOUT, 5);
+      curl_setopt(self::$zotero_ch, CURLOPT_TIMEOUT, 5);
     }
     // @codeCoverageIgnoreEnd
   }
-
-  $zotero_announced = 1;
+  self::$zotero_announced = 1;
   foreach ($templates as $template) {
-     expand_by_zotero($template);
+     self::expand_by_zotero($template);
   }
   if (!TRAVIS) { // These are pretty reliable, unlike random urls
-      curl_setopt($zotero_ch, CURLOPT_TIMEOUT, 10);  // @codeCoverageIgnore
+      curl_setopt(self::$zotero_ch, CURLOPT_TIMEOUT, 10);  // @codeCoverageIgnore
   }
-  $zotero_announced = 2;
+  self::$zotero_announced = 2;
   foreach ($templates as $template) {
        if ($template->has('biorxiv')) {
          if ($template->blank('doi')) {
@@ -62,27 +75,27 @@ function query_url_api(array $ids, array $templates) : void {
            expand_by_doi($template, TRUE);  // this data is better than zotero
          } elseif (strstr($template->get('doi') , '10.1101') === FALSE) {
            expand_doi_with_dx($template, '10.1101/' . $template->get('biorxiv'));  // dx data is better than zotero
-           expand_by_zotero($template, 'https://dx.doi.org/10.1101/' . $template->get('biorxiv'));  // Rare case there is a different DOI
+           self::expand_by_zotero($template, 'https://dx.doi.org/10.1101/' . $template->get('biorxiv'));  // Rare case there is a different DOI
          }
        }
-       if ($template->has('citeseerx')) expand_by_zotero($template, 'http://citeseerx.ist.psu.edu/viewdoc/summary?doi=' . $template->get('citeseerx'));
-       if ($template->has('hdl'))       expand_by_zotero($template, 'https://hdl.handle.net/' . $template->get('hdl'));
-       //  Has a CAPCHA --  if ($template->has('jfm'))       expand_by_zotero($template, 'https://zbmath.org/?format=complete&q=an:' . $template->get('jfm'));
-       //  Has a CAPCHA --  if ($template->has('zbl'))       expand_by_zotero($template, 'https://zbmath.org/?format=complete&q=an:' . $template->get('zbl'));
+       if ($template->has('citeseerx')) self::expand_by_zotero($template, 'http://citeseerx.ist.psu.edu/viewdoc/summary?doi=' . $template->get('citeseerx'));
+       if ($template->has('hdl'))       self::expand_by_zotero($template, 'https://hdl.handle.net/' . $template->get('hdl'));
+       //  Has a CAPCHA --  if ($template->has('jfm'))       self::expand_by_zotero($template, 'https://zbmath.org/?format=complete&q=an:' . $template->get('jfm'));
+       //  Has a CAPCHA --  if ($template->has('zbl'))       self::expand_by_zotero($template, 'https://zbmath.org/?format=complete&q=an:' . $template->get('zbl'));
        //  Do NOT do MR --  it is a review not the article itself.  Note that html does have doi, but do not use it.
-       if ($template->has('osti'))      expand_by_zotero($template, 'https://www.osti.gov/biblio/' . $template->get('osti'));
-       if ($template->has('rfc'))       expand_by_zotero($template, 'https://tools.ietf.org/html/rfc' . $template->get('rfc'));
-       if ($template->has('ssrn'))      expand_by_zotero($template, 'https://papers.ssrn.com/sol3/papers.cfm?abstract_id=' . $template->get('ssrn'));
+       if ($template->has('osti'))      self::expand_by_zotero($template, 'https://www.osti.gov/biblio/' . $template->get('osti'));
+       if ($template->has('rfc'))       self::expand_by_zotero($template, 'https://tools.ietf.org/html/rfc' . $template->get('rfc'));
+       if ($template->has('ssrn'))      self::expand_by_zotero($template, 'https://papers.ssrn.com/sol3/papers.cfm?abstract_id=' . $template->get('ssrn'));
        if ($template->has('doi')) {
          $doi = $template->get('doi');
          if (!doi_active($doi) && doi_works($doi) && !preg_match(REGEXP_DOI_ISSN_ONLY, $doi)) {
-           expand_by_zotero($template, 'https://dx.doi.org/' . urlencode($doi));  // DOIs without meta-data
+           self::expand_by_zotero($template, 'https://dx.doi.org/' . urlencode($doi));  // DOIs without meta-data
          }
        }
   }
 }
 
-function query_ieee_webpages(array $templates) : void {
+public static function query_ieee_webpages(array $templates) : void {
   $ch_ieee = curl_init();
   curl_setopt($ch_ieee, CURLOPT_RETURNTRANSFER, TRUE);
   curl_setopt($ch_ieee, CURLOPT_HEADER, FALSE);
@@ -117,7 +130,7 @@ function query_ieee_webpages(array $templates) : void {
   curl_close($ch_ieee);
 }
 
-function drop_urls_that_match_dois(array $templates) : void {
+public static function drop_urls_that_match_dois(array $templates) : void {
   // Now that we have expanded URLs, try to lose them
   $ch = curl_init();
   curl_setopt($ch, CURLOPT_FOLLOWLOCATION, TRUE);
@@ -194,8 +207,8 @@ function drop_urls_that_match_dois(array $templates) : void {
             $redirectedUrl_doi = curl_getinfo($ch, CURLINFO_EFFECTIVE_URL);  // Final URL
             if (stripos($redirectedUrl_doi, 'cookie') !== FALSE) break;
             if (stripos($redirectedUrl_doi, 'denied') !== FALSE) break;
-            $redirectedUrl_doi = url_simplify($redirectedUrl_doi);
-            $url_short         = url_simplify($url);
+            $redirectedUrl_doi = self::url_simplify($redirectedUrl_doi);
+            $url_short         = self::url_simplify($url);
             if ( preg_match('~^https?://.+/pii/?(S?\d{4}[^/]+)~i', $redirectedUrl_doi, $matches ) === 1 ) { // Grab PII numbers
                  $redirectedUrl_doi = $matches[1] ;  // @codeCoverageIgnore 
             }
@@ -207,7 +220,7 @@ function drop_urls_that_match_dois(array $templates) : void {
                curl_setopt($ch, CURLOPT_URL, $url);
                if (@curl_exec($ch)) {
                   $redirectedUrl_url = curl_getinfo($ch, CURLINFO_EFFECTIVE_URL);
-                  $redirectedUrl_url = url_simplify($redirectedUrl_url);
+                  $redirectedUrl_url = self::url_simplify($redirectedUrl_url);
                   if (stripos($redirectedUrl_url, $redirectedUrl_doi) !== FALSE ||
                       stripos($redirectedUrl_doi, $redirectedUrl_url) !== FALSE) {
                     report_forget("Existing canonical URL resulting from equivalent DOI; dropping URL");
@@ -223,37 +236,32 @@ function drop_urls_that_match_dois(array $templates) : void {
   @strtok('',''); // Free internal buffers
 }
 
-function zotero_request(string $url) : string {
-  global $zotero_failures_count;
-  global $zotero_ch;
-
-  curl_setopt($zotero_ch, CURLOPT_POSTFIELDS, $url);
+public static function zotero_request(string $url) : string {
+  curl_setopt(self::$zotero_ch, CURLOPT_POSTFIELDS, $url);
   
-  $zotero_response = (string) @curl_exec($zotero_ch);
+  $zotero_response = (string) @curl_exec(self::$zotero_ch);
   if ($zotero_response == '') {
     // @codeCoverageIgnoreStart
-    report_warning(curl_error($zotero_ch) . "   For URL: " . $url);
-    if (strpos(curl_error($zotero_ch), 'timed out after') !== FALSE) {
-      $zotero_failures_count = $zotero_failures_count + 1;
-      if ($zotero_failures_count > ZOTERO_GIVE_UP) {
+    report_warning(curl_error(self::$zotero_ch) . "   For URL: " . $url);
+    if (strpos(curl_error(self::$zotero_ch), 'timed out after') !== FALSE) {
+      self::$zotero_failures_count = self::$zotero_failures_count + 1;
+      if (self::$zotero_failures_count > self::ZOTERO_GIVE_UP) {
         report_warning("Giving up on URL expansion for a while");
-        $zotero_failures_count = $zotero_failures_count + ZOTERO_SKIPS;
+        self::$zotero_failures_count = self::$zotero_failures_count + self::ZOTERO_SKIPS;
       }
     }
-    $zotero_response = ERROR_DONE;
+    $zotero_response = self::ERROR_DONE;
     // @codeCoverageIgnoreEnd
   }
   return $zotero_response;
 }
 
-function expand_by_zotero(Template $template, ?string $url = NULL) : bool {
-  global $zotero_failures_count;
-  global $zotero_announced;
-  if ($zotero_failures_count > ZOTERO_GIVE_UP) {
-    $zotero_failures_count = $zotero_failures_count - 1;                      // @codeCoverageIgnore
-    if (ZOTERO_GIVE_UP == $zotero_failures_count) $zotero_failures_count = 0; // @codeCoverageIgnore
+public static function expand_by_zotero(Template $template, ?string $url = NULL) : bool {
+  if (self::$zotero_failures_count > self::ZOTERO_GIVE_UP) {
+    self::$zotero_failures_count = self::$zotero_failures_count - 1;                      // @codeCoverageIgnore
+    if (self::ZOTERO_GIVE_UP == self::$zotero_failures_count) self::$zotero_failures_count = 0; // @codeCoverageIgnore
   }
-  if ($zotero_failures_count > ZOTERO_GIVE_UP) return FALSE;
+  if (self::$zotero_failures_count > self::ZOTERO_GIVE_UP) return FALSE;
   $access_date = 0;
   $url_kind = '';
   if (is_null($url)) {
@@ -286,19 +294,19 @@ function expand_by_zotero(Template $template, ?string $url = NULL) : bool {
   $bad_url = implode('|', ZOTERO_AVOID_REGEX);
   if(preg_match("~^https?://(?:www\.|)(?:" . $bad_url . ")~i", $url)) return FALSE; 
 
-  if ($zotero_announced === 1) {
+  if (self::$zotero_announced === 1) {
     report_action("Using Zotero translation server to retrieve details from URLs.");
-    $zotero_announced = 0;
-  } elseif ($zotero_announced === 2) {
+    self::$zotero_announced = 0;
+  } elseif (self::$zotero_announced === 2) {
     report_action("Using Zotero translation server to retrieve details from identifiers.");
-    $zotero_announced = 0;
+    self::$zotero_announced = 0;
   }
-  $zotero_response = zotero_request($url);
-  return process_zotero_response($zotero_response, $template, $url, $url_kind, $access_date);
+  $zotero_response = self::zotero_request($url);
+  return self::process_zotero_response($zotero_response, $template, $url, $url_kind, $access_date);
 }
 
-function process_zotero_response(string $zotero_response, Template $template, string $url, string $url_kind, int $access_date) : bool {
-  if ($zotero_response === ERROR_DONE) return FALSE;  // Error message already printed in zotero_request()
+public static function process_zotero_response(string $zotero_response, Template $template, string $url, string $url_kind, int $access_date) : bool {
+  if ($zotero_response === self::ERROR_DONE) return FALSE;  // Error message already printed in zotero_request()
  
   switch (trim($zotero_response)) {
     case '':
@@ -632,7 +640,7 @@ function process_zotero_response(string $zotero_response, Template $template, st
   return TRUE;
 }
 
-function url_simplify(string $url) : string {
+public static function url_simplify(string $url) : string {
   $url = str_replace('/action/captchaChallenge?redirectUri=', '', $url);
   $url = urldecode($url);
   // IEEE is annoying
@@ -647,4 +655,6 @@ function url_simplify(string $url) : string {
   $url = str_ireplace('https', 'http', $url);
   return $url;
 }
+  
+} // End of CLASS
 
