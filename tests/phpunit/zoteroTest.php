@@ -43,66 +43,66 @@ class ZoteroTest extends testBaseClass {
   public function testAccessDateAndDate() : void {
      $text = "{{cite journal | archive-date=2020 |accessdate=2020|title=X|journal=X|date=2020|issue=X|volume=X|chapter=X|pages=X|last1=X|first1=X|last2=X|first2=X }}";
      $template = $this->make_citation($text);  // Does not do anything other than touch code
-     $this->assertFalse(expand_by_zotero($template));
+     $this->assertFalse(Zotero::expand_by_zotero($template));
   }
  
   public function testDropSomeProxies() : void {
     $text = "{{cite journal|doi=X|journal=X|title=X|last1=X|first1=X|volume=X|issue=X|year=X|url=proxy.libraries}}";
     $template = $this->make_citation($text);
-    drop_urls_that_match_dois([$template]);
+    Zotero::drop_urls_that_match_dois([$template]);
     $this->assertNull($template->get2('url'));
     
     $text = "{{cite journal|doi=X|journal=X|title=X|last1=X|first1=X|volume=X|issue=X|year=X|url=http://www.sciencedirect.com/science/article/B1234-13241234-343242/}}";
     $template = $this->make_citation($text);
-    drop_urls_that_match_dois([$template]);
+    Zotero::drop_urls_that_match_dois([$template]);
     $this->assertNull($template->get2('url'));
     
     $text = "{{cite journal|doi=X|journal=X|title=X|last1=X|first1=X|volume=X|issue=X|year=X|url=http://www.sciencedirect.com/science/article/pii/2222}}";
     $template = $this->make_citation($text);
-    drop_urls_that_match_dois([$template]);
+    Zotero::drop_urls_that_match_dois([$template]);
     $this->assertNull($template->get2('url'));
 
     $text = "{{cite journal|doi=X|journal=X|title=X|last1=X|first1=X|volume=X|issue=X|year=X|url=http://www.springerlink.com/content/s}}";
     $template = $this->make_citation($text);
-    drop_urls_that_match_dois([$template]);
+    Zotero::drop_urls_that_match_dois([$template]);
     $this->assertNull($template->get2('url'));
    
     $text = "{{cite journal|doi=X|journal=X|title=X|last1=X|first1=X|volume=X|issue=X|year=X|url=http://insights.ovid.com/pubmed|pmid=2222}}";
     $template = $this->make_citation($text);
-    drop_urls_that_match_dois([$template]);
+    Zotero::drop_urls_that_match_dois([$template]);
     $this->assertNull($template->get2('url'));
    
     $text = "{{cite journal|doi=X|journal=X|title=X|last1=X|first1=X|volume=X|issue=X|year=X|url=http://cnn.com/|doi-access=free|url-status=dead|doi=10.0000/10000}}";
     $template = $this->make_citation($text);
-    drop_urls_that_match_dois([$template]);
+    Zotero::drop_urls_that_match_dois([$template]);
     $this->assertNull($template->get2('url'));
    }
 
    public function testDropSomeEquivURLS2() : void {
     $text = "{{cite journal|pmc=XYZ|doi=X|journal=X|title=X|last1=X|first1=X|volume=X|issue=X|year=X|url=http://iopscience.iop.org/324234}}";
     $template = $this->make_citation($text);
-    drop_urls_that_match_dois([$template]);
+    Zotero::drop_urls_that_match_dois([$template]);
     $this->assertNull($template->get2('url'));
    }
 
    public function testDropSomeProxies3() : void {  
     $text = "{{cite journal|doi=X|journal=X|title=X|last1=X|first1=X|volume=X|issue=X|year=X|url=http://journals.lww.com/3243243}}";
     $template = $this->make_citation($text);
-    drop_urls_that_match_dois([$template]);
+    Zotero::drop_urls_that_match_dois([$template]);
     $this->assertNull($template->get2('url'));
    }
 
    public function testDropSomeProxies4() : void {
     $text = "{{cite journal|doi=X|journal=X|title=X|last1=X|first1=X|volume=X|issue=X|year=X|url=http://wkhealth.com/3243243}}";
     $template = $this->make_citation($text);
-    drop_urls_that_match_dois([$template]);
+    Zotero::drop_urls_that_match_dois([$template]);
     $this->assertNull($template->get2('url'));
    }
 
    public function testDropSomeURLEquivs5() : void {
     $text = "{{cite journal|pmc=XYZ|doi=X|journal=X|title=X|last1=X|first1=X|volume=X|issue=X|year=X|url=http://bmj.com/cgi/pmidlookup/sss|pmid=333}}";
     $template = $this->make_citation($text);
-    drop_urls_that_match_dois([$template]);
+    Zotero::drop_urls_that_match_dois([$template]);
     $this->assertNull($template->get2('url'));
   }
  
