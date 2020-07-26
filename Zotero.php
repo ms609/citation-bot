@@ -249,7 +249,7 @@ public static function zotero_request(string $url) : string {
   return $zotero_response;
 }
 
-public static function self::expand_by_zotero(Template $template, ?string $url = NULL) : bool {
+public static function expand_by_zotero(Template $template, ?string $url = NULL) : bool {
   if (self::$zotero_failures_count > ZOTERO_GIVE_UP) {
     self::$zotero_failures_count = self::$zotero_failures_count - 1;                      // @codeCoverageIgnore
     if (ZOTERO_GIVE_UP == self::$zotero_failures_count) self::$zotero_failures_count = 0; // @codeCoverageIgnore
