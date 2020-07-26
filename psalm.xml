@@ -28,7 +28,7 @@
         <file name="setup.php" />
         <file name="unlock_git.php" />
         <file name="user_messages.php" />
-        <file name="zotero.php" />
+        <file name="Zotero.php" />
         <directory name="constants" />
         <ignoreFiles>
             <directory name="vendor" />
