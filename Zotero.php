@@ -49,14 +49,14 @@ public static function query_url_api(array $ids, array $templates) : void {
     // @codeCoverageIgnoreEnd
   }
 
-  self::zotero_announced = 1;
+  self::$zotero_announced = 1;
   foreach ($templates as $template) {
      expand_by_zotero($template);
   }
   if (!TRAVIS) { // These are pretty reliable, unlike random urls
       curl_setopt(self::$zotero_ch, CURLOPT_TIMEOUT, 10);  // @codeCoverageIgnore
   }
-  self::zotero_announced = 2;
+  self::$zotero_announced = 2;
   foreach ($templates as $template) {
        if ($template->has('biorxiv')) {
          if ($template->blank('doi')) {
@@ -283,12 +283,12 @@ public static function expand_by_zotero(Template $template, ?string $url = NULL)
   $bad_url = implode('|', ZOTERO_AVOID_REGEX);
   if(preg_match("~^https?://(?:www\.|)(?:" . $bad_url . ")~i", $url)) return FALSE; 
 
-  if (self::zotero_announced === 1) {
+  if (self::$zotero_announced === 1) {
     report_action("Using Zotero translation server to retrieve details from URLs.");
-    self::zotero_announced = 0;
-  } elseif (self::zotero_announced === 2) {
+    self::$zotero_announced = 0;
+  } elseif (self::$zotero_announced === 2) {
     report_action("Using Zotero translation server to retrieve details from identifiers.");
-    self::zotero_announced = 0;
+    self::$zotero_announced = 0;
   }
   $zotero_response = zotero_request($url);
   return process_zotero_response($zotero_response, $template, $url, $url_kind, $access_date);
