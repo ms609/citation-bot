@@ -11,9 +11,9 @@ final class Zotero {
   private const ZOTERO_GIVE_UP = 5;
   private const ZOTERO_SKIPS = 100;
   private const ERROR_DONE = 'ERROR_DONE'; 
-  protected static $zotero_announced;
+  protected static int $zotero_announced;
   protected static $zotero_ch;
-  protected static $zotero_failures_count = 0;
+  protected static int $zotero_failures_count = 0;
  
 /*
  * This gets called during the the testing suite constructor, so it is not seen as being code covered
