@@ -32,11 +32,11 @@ public static function make_ch_zotero() : void {
 }
 
 public static function block_zotero() : void {
-  self::zotero_failures_count = 1000000;  
+  self::$zotero_failures_count = 1000000;  
 }
 
 public static function unblock_zotero() : void {
-  self::zotero_failures_count = 0;  
+  self::$zotero_failures_count = 0;  
 }
 
 public static function query_url_api_class(array $ids, array $templates) : void {
