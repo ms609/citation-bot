@@ -74,7 +74,7 @@ function check_blocked() : void {
 require_once('constants.php');
 require_once('NameTools.php');
 require_once('expandFns.php');
-require_once('zotero.php');
+require_once('Zotero.php');
 require_once('Parameter.php');
 require_once('Comment.php');
 require_once('WikipediaBot.php');
