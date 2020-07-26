@@ -16,7 +16,7 @@ final class Zotero {
  * This CURL resource is never closed
  * @codeCoverageIgnore
  */
-static function make_ch_zotero() : void {
+public static function make_ch_zotero() : void {
   if (is_resource($this->zotero_ch)) return;
   $this->zotero_ch = curl_init(ZOTERO_ROOT);
   curl_setopt($this->zotero_ch, CURLOPT_CUSTOMREQUEST, "POST");
@@ -27,7 +27,7 @@ static function make_ch_zotero() : void {
   curl_setopt($this->zotero_ch, CURLOPT_TIMEOUT, 45);
 }
 
-static function query_url_api(array $ids, array $templates) : void {
+public static function query_url_api(array $ids, array $templates) : void {
   if (!SLOW_MODE) return; // Zotero takes time
   
   if (!TRAVIS) { // try harder in tests
@@ -84,7 +84,7 @@ static function query_url_api(array $ids, array $templates) : void {
   }
 }
 
-static function query_ieee_webpages(array $templates) : void {
+public static function query_ieee_webpages(array $templates) : void {
   $ch_ieee = curl_init();
   curl_setopt($ch_ieee, CURLOPT_RETURNTRANSFER, TRUE);
   curl_setopt($ch_ieee, CURLOPT_HEADER, FALSE);
@@ -119,7 +119,7 @@ static function query_ieee_webpages(array $templates) : void {
   curl_close($ch_ieee);
 }
 
-static function drop_urls_that_match_dois(array $templates) : void {
+public static function drop_urls_that_match_dois(array $templates) : void {
   // Now that we have expanded URLs, try to lose them
   $ch = curl_init();
   curl_setopt($ch, CURLOPT_FOLLOWLOCATION, TRUE);
@@ -225,7 +225,7 @@ static function drop_urls_that_match_dois(array $templates) : void {
   @strtok('',''); // Free internal buffers
 }
 
-static function zotero_request(string $url) : string {
+public static function zotero_request(string $url) : string {
   curl_setopt($this->zotero_ch, CURLOPT_POSTFIELDS, $url);
   
   $zotero_response = (string) @curl_exec($this->zotero_ch);
@@ -245,7 +245,7 @@ static function zotero_request(string $url) : string {
   return $zotero_response;
 }
 
-static function expand_by_zotero(Template $template, ?string $url = NULL) : bool {
+public static function expand_by_zotero(Template $template, ?string $url = NULL) : bool {
   if ($this->zotero_failures_count > ZOTERO_GIVE_UP) {
     $this->zotero_failures_count = $this->zotero_failures_count - 1;                      // @codeCoverageIgnore
     if (ZOTERO_GIVE_UP == $this->zotero_failures_count) $this->zotero_failures_count = 0; // @codeCoverageIgnore
@@ -294,7 +294,7 @@ static function expand_by_zotero(Template $template, ?string $url = NULL) : bool
   return process_zotero_response($zotero_response, $template, $url, $url_kind, $access_date);
 }
 
-static function process_zotero_response(string $zotero_response, Template $template, string $url, string $url_kind, int $access_date) : bool {
+public static function process_zotero_response(string $zotero_response, Template $template, string $url, string $url_kind, int $access_date) : bool {
   if ($zotero_response === ERROR_DONE) return FALSE;  // Error message already printed in zotero_request()
  
   switch (trim($zotero_response)) {
@@ -629,7 +629,7 @@ static function process_zotero_response(string $zotero_response, Template $templ
   return TRUE;
 }
 
-static function url_simplify(string $url) : string {
+public static function url_simplify(string $url) : string {
   $url = str_replace('/action/captchaChallenge?redirectUri=', '', $url);
   $url = urldecode($url);
   // IEEE is annoying
