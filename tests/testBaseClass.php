@@ -162,7 +162,7 @@ abstract class testBaseClass extends PHPUnit\Framework\TestCase {
 
   protected function expand_via_zotero(string $text) :  Template {
     $expanded = $this->make_citation($text);
-    expand_by_zotero($expanded);
+    Zotero::expand_by_zotero($expanded);
     $expanded->tidy();
     return $expanded;
   }
