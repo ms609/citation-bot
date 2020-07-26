@@ -17,14 +17,14 @@ final class Zotero {
  * @codeCoverageIgnore
  */
 public static function make_ch_zotero() : void {
-  if (is_resource($this->zotero_ch)) return;
-  $this->zotero_ch = curl_init(ZOTERO_ROOT);
-  curl_setopt($this->zotero_ch, CURLOPT_CUSTOMREQUEST, "POST");
-  curl_setopt($this->zotero_ch, CURLOPT_HTTPHEADER, ['Content-Type: text/plain']);
-  curl_setopt($this->zotero_ch, CURLOPT_RETURNTRANSFER, TRUE);
+  if (is_resource(self::zotero_ch)) return;
+  self::zotero_ch = curl_init(ZOTERO_ROOT);
+  curl_setopt(self::zotero_ch, CURLOPT_CUSTOMREQUEST, "POST");
+  curl_setopt(self::zotero_ch, CURLOPT_HTTPHEADER, ['Content-Type: text/plain']);
+  curl_setopt(self::zotero_ch, CURLOPT_RETURNTRANSFER, TRUE);
   // Defaults used in TRAVIS overiden below when deployed
-  curl_setopt($this->zotero_ch, CURLOPT_CONNECTTIMEOUT, 10);
-  curl_setopt($this->zotero_ch, CURLOPT_TIMEOUT, 45);
+  curl_setopt(self::zotero_ch, CURLOPT_CONNECTTIMEOUT, 10);
+  curl_setopt(self::zotero_ch, CURLOPT_TIMEOUT, 45);
 }
 
 public static function query_url_api(array $ids, array $templates) : void {
@@ -32,7 +32,7 @@ public static function query_url_api(array $ids, array $templates) : void {
   
   if (!TRAVIS) { // try harder in tests
     // @codeCoverageIgnoreStart
-    curl_setopt($this->zotero_ch, CURLOPT_CONNECTTIMEOUT, 1);
+    curl_setopt(self::zotero_ch, CURLOPT_CONNECTTIMEOUT, 1);
     $url_count = 0;
     foreach ($templates as $template) {
      if (!$template->blank(['url', 'chapter-url', 'chapterurl'])) {
@@ -40,23 +40,23 @@ public static function query_url_api(array $ids, array $templates) : void {
      }
     }
     if ($url_count < 5) {
-      curl_setopt($this->zotero_ch, CURLOPT_TIMEOUT, 15);
+      curl_setopt(self::zotero_ch, CURLOPT_TIMEOUT, 15);
     } elseif ($url_count < 25) {
-      curl_setopt($this->zotero_ch, CURLOPT_TIMEOUT, 10);
+      curl_setopt(self::zotero_ch, CURLOPT_TIMEOUT, 10);
     } else {
-      curl_setopt($this->zotero_ch, CURLOPT_TIMEOUT, 5);
+      curl_setopt(self::zotero_ch, CURLOPT_TIMEOUT, 5);
     }
     // @codeCoverageIgnoreEnd
   }
 
-  $this->zotero_announced = 1;
+  self::zotero_announced = 1;
   foreach ($templates as $template) {
      expand_by_zotero($template);
   }
   if (!TRAVIS) { // These are pretty reliable, unlike random urls
-      curl_setopt($this->zotero_ch, CURLOPT_TIMEOUT, 10);  // @codeCoverageIgnore
+      curl_setopt(self::zotero_ch, CURLOPT_TIMEOUT, 10);  // @codeCoverageIgnore
   }
-  $this->zotero_announced = 2;
+  self::zotero_announced = 2;
   foreach ($templates as $template) {
        if ($template->has('biorxiv')) {
          if ($template->blank('doi')) {
@@ -226,17 +226,17 @@ public static function drop_urls_that_match_dois(array $templates) : void {
 }
 
 public static function zotero_request(string $url) : string {
-  curl_setopt($this->zotero_ch, CURLOPT_POSTFIELDS, $url);
+  curl_setopt(self::zotero_ch, CURLOPT_POSTFIELDS, $url);
   
-  $zotero_response = (string) @curl_exec($this->zotero_ch);
+  $zotero_response = (string) @curl_exec(self::zotero_ch);
   if ($zotero_response == '') {
     // @codeCoverageIgnoreStart
-    report_warning(curl_error($this->zotero_ch) . "   For URL: " . $url);
-    if (strpos(curl_error($this->zotero_ch), 'timed out after') !== FALSE) {
-      $this->zotero_failures_count = $this->zotero_failures_count + 1;
-      if ($this->zotero_failures_count > ZOTERO_GIVE_UP) {
+    report_warning(curl_error(self::zotero_ch) . "   For URL: " . $url);
+    if (strpos(curl_error(self::zotero_ch), 'timed out after') !== FALSE) {
+      self::zotero_failures_count = self::zotero_failures_count + 1;
+      if (self::zotero_failures_count > ZOTERO_GIVE_UP) {
         report_warning("Giving up on URL expansion for a while");
-        $this->zotero_failures_count = $this->zotero_failures_count + ZOTERO_SKIPS;
+        self::zotero_failures_count = self::zotero_failures_count + ZOTERO_SKIPS;
       }
     }
     $zotero_response = ERROR_DONE;
@@ -246,11 +246,11 @@ public static function zotero_request(string $url) : string {
 }
 
 public static function expand_by_zotero(Template $template, ?string $url = NULL) : bool {
-  if ($this->zotero_failures_count > ZOTERO_GIVE_UP) {
-    $this->zotero_failures_count = $this->zotero_failures_count - 1;                      // @codeCoverageIgnore
-    if (ZOTERO_GIVE_UP == $this->zotero_failures_count) $this->zotero_failures_count = 0; // @codeCoverageIgnore
+  if (self::zotero_failures_count > ZOTERO_GIVE_UP) {
+    self::zotero_failures_count = self::zotero_failures_count - 1;                      // @codeCoverageIgnore
+    if (ZOTERO_GIVE_UP == self::zotero_failures_count) self::zotero_failures_count = 0; // @codeCoverageIgnore
   }
-  if ($this->zotero_failures_count > ZOTERO_GIVE_UP) return FALSE;
+  if (self::zotero_failures_count > ZOTERO_GIVE_UP) return FALSE;
   $access_date = 0;
   $url_kind = '';
   if (is_null($url)) {
@@ -283,12 +283,12 @@ public static function expand_by_zotero(Template $template, ?string $url = NULL)
   $bad_url = implode('|', ZOTERO_AVOID_REGEX);
   if(preg_match("~^https?://(?:www\.|)(?:" . $bad_url . ")~i", $url)) return FALSE; 
 
-  if ($this->zotero_announced === 1) {
+  if (self::zotero_announced === 1) {
     report_action("Using Zotero translation server to retrieve details from URLs.");
-    $this->zotero_announced = 0;
-  } elseif ($this->zotero_announced === 2) {
+    self::zotero_announced = 0;
+  } elseif (self::zotero_announced === 2) {
     report_action("Using Zotero translation server to retrieve details from identifiers.");
-    $this->zotero_announced = 0;
+    self::zotero_announced = 0;
   }
   $zotero_response = zotero_request($url);
   return process_zotero_response($zotero_response, $template, $url, $url_kind, $access_date);
