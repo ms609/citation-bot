@@ -3,9 +3,6 @@ declare(strict_types=1);
 
 require_once(__DIR__ . '/../setup.php');
 
-$ADSABS_GIVE_UP = TRUE;
-Zotero::block_zotero();
-
 abstract class testBaseClass extends PHPUnit\Framework\TestCase {
   // Change these to temporarily disable sets of tests======================
   private $testing_skip_zotero = FALSE;                                           // TODO - broken
@@ -17,6 +14,7 @@ abstract class testBaseClass extends PHPUnit\Framework\TestCase {
   // =======================================================================
   
   function __construct() {
+    global $ADSABS_GIVE_UP;
     parent::__construct();
 
    // Non-trusted builds
@@ -36,6 +34,9 @@ abstract class testBaseClass extends PHPUnit\Framework\TestCase {
        $this->testing_skip_dx     = FALSE;
        $this->testing_skip_arxiv  = FALSE;
     }
+    
+    $ADSABS_GIVE_UP = TRUE;
+    Zotero::block_zotero();
   }
 
   protected function requires_secrets(callable $function) : void {
