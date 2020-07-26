@@ -7,14 +7,10 @@ final class Zotero {
   const ZOTERO_GIVE_UP = 5;
   const ZOTERO_SKIPS = 100;
   const ERROR_DONE = 'ERROR_DONE'; 
-  protected $zotero_announced;
-  protected $zotero_ch;
-  protected $zotero_failures_count;
-  
-  function __construct() {
-    this::make_ch_zotero();
-  }
-
+  protected static $zotero_announced;
+  protected static $zotero_ch;
+  public static $zotero_failures_count;
+ 
 /*
  * This gets called during the the testing suite constructor, so it is not seen as being code covered
  * This CURL resource is never closed
