@@ -3,6 +3,10 @@ declare(strict_types=1);
 
 require_once("constants.php");
 
+function query_url_api(array $ids, array $templates) : void {
+   Zotero::query_url_api_class($ids, $templates);
+}
+
 final class Zotero {
   private const ZOTERO_GIVE_UP = 5;
   private const ZOTERO_SKIPS = 100;
@@ -27,7 +31,8 @@ public static function make_ch_zotero() : void {
   curl_setopt(self::$zotero_ch, CURLOPT_TIMEOUT, 45);
 }
 
-public static function query_url_api(array $ids, array $templates) : void {
+
+public static function query_url_api_class(array $ids, array $templates) : void {
   if (!SLOW_MODE) return; // Zotero takes time
   
   if (!TRAVIS) { // try harder in tests
@@ -48,10 +53,9 @@ public static function query_url_api(array $ids, array $templates) : void {
     }
     // @codeCoverageIgnoreEnd
   }
-
   self::$zotero_announced = 1;
   foreach ($templates as $template) {
-     expand_by_zotero($template);
+     self::expand_by_zotero($template);
   }
   if (!TRAVIS) { // These are pretty reliable, unlike random urls
       curl_setopt(self::$zotero_ch, CURLOPT_TIMEOUT, 10);  // @codeCoverageIgnore
@@ -64,21 +68,21 @@ public static function query_url_api(array $ids, array $templates) : void {
            expand_by_doi($template, TRUE);  // this data is better than zotero
          } elseif (strstr($template->get('doi') , '10.1101') === FALSE) {
            expand_doi_with_dx($template, '10.1101/' . $template->get('biorxiv'));  // dx data is better than zotero
-           expand_by_zotero($template, 'https://dx.doi.org/10.1101/' . $template->get('biorxiv'));  // Rare case there is a different DOI
+           self::expand_by_zotero($template, 'https://dx.doi.org/10.1101/' . $template->get('biorxiv'));  // Rare case there is a different DOI
          }
        }
-       if ($template->has('citeseerx')) expand_by_zotero($template, 'http://citeseerx.ist.psu.edu/viewdoc/summary?doi=' . $template->get('citeseerx'));
-       if ($template->has('hdl'))       expand_by_zotero($template, 'https://hdl.handle.net/' . $template->get('hdl'));
-       //  Has a CAPCHA --  if ($template->has('jfm'))       expand_by_zotero($template, 'https://zbmath.org/?format=complete&q=an:' . $template->get('jfm'));
-       //  Has a CAPCHA --  if ($template->has('zbl'))       expand_by_zotero($template, 'https://zbmath.org/?format=complete&q=an:' . $template->get('zbl'));
+       if ($template->has('citeseerx')) self::expand_by_zotero($template, 'http://citeseerx.ist.psu.edu/viewdoc/summary?doi=' . $template->get('citeseerx'));
+       if ($template->has('hdl'))       self::expand_by_zotero($template, 'https://hdl.handle.net/' . $template->get('hdl'));
+       //  Has a CAPCHA --  if ($template->has('jfm'))       self::expand_by_zotero($template, 'https://zbmath.org/?format=complete&q=an:' . $template->get('jfm'));
+       //  Has a CAPCHA --  if ($template->has('zbl'))       self::expand_by_zotero($template, 'https://zbmath.org/?format=complete&q=an:' . $template->get('zbl'));
        //  Do NOT do MR --  it is a review not the article itself.  Note that html does have doi, but do not use it.
-       if ($template->has('osti'))      expand_by_zotero($template, 'https://www.osti.gov/biblio/' . $template->get('osti'));
-       if ($template->has('rfc'))       expand_by_zotero($template, 'https://tools.ietf.org/html/rfc' . $template->get('rfc'));
-       if ($template->has('ssrn'))      expand_by_zotero($template, 'https://papers.ssrn.com/sol3/papers.cfm?abstract_id=' . $template->get('ssrn'));
+       if ($template->has('osti'))      self::expand_by_zotero($template, 'https://www.osti.gov/biblio/' . $template->get('osti'));
+       if ($template->has('rfc'))       self::expand_by_zotero($template, 'https://tools.ietf.org/html/rfc' . $template->get('rfc'));
+       if ($template->has('ssrn'))      self::expand_by_zotero($template, 'https://papers.ssrn.com/sol3/papers.cfm?abstract_id=' . $template->get('ssrn'));
        if ($template->has('doi')) {
          $doi = $template->get('doi');
          if (!doi_active($doi) && doi_works($doi) && !preg_match(REGEXP_DOI_ISSN_ONLY, $doi)) {
-           expand_by_zotero($template, 'https://dx.doi.org/' . urlencode($doi));  // DOIs without meta-data
+           self::expand_by_zotero($template, 'https://dx.doi.org/' . urlencode($doi));  // DOIs without meta-data
          }
        }
   }
@@ -196,8 +200,8 @@ public static function drop_urls_that_match_dois(array $templates) : void {
             $redirectedUrl_doi = curl_getinfo($ch, CURLINFO_EFFECTIVE_URL);  // Final URL
             if (stripos($redirectedUrl_doi, 'cookie') !== FALSE) break;
             if (stripos($redirectedUrl_doi, 'denied') !== FALSE) break;
-            $redirectedUrl_doi = url_simplify($redirectedUrl_doi);
-            $url_short         = url_simplify($url);
+            $redirectedUrl_doi = self::url_simplify($redirectedUrl_doi);
+            $url_short         = self::url_simplify($url);
             if ( preg_match('~^https?://.+/pii/?(S?\d{4}[^/]+)~i', $redirectedUrl_doi, $matches ) === 1 ) { // Grab PII numbers
                  $redirectedUrl_doi = $matches[1] ;  // @codeCoverageIgnore 
             }
@@ -245,7 +249,7 @@ public static function zotero_request(string $url) : string {
   return $zotero_response;
 }
 
-public static function expand_by_zotero(Template $template, ?string $url = NULL) : bool {
+public static function self::expand_by_zotero(Template $template, ?string $url = NULL) : bool {
   if (self::$zotero_failures_count > ZOTERO_GIVE_UP) {
     self::$zotero_failures_count = self::$zotero_failures_count - 1;                      // @codeCoverageIgnore
     if (ZOTERO_GIVE_UP == self::$zotero_failures_count) self::$zotero_failures_count = 0; // @codeCoverageIgnore
@@ -290,7 +294,7 @@ public static function expand_by_zotero(Template $template, ?string $url = NULL)
     report_action("Using Zotero translation server to retrieve details from identifiers.");
     self::$zotero_announced = 0;
   }
-  $zotero_response = zotero_request($url);
+  $zotero_response = self::zotero_request($url);
   return process_zotero_response($zotero_response, $template, $url, $url_kind, $access_date);
 }
 
