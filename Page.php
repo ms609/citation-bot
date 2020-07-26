@@ -271,8 +271,8 @@ class Page {
     expand_arxiv_templates($our_templates);
     set_time_limit(120);
     $this->expand_templates_from_identifier('url',     $our_templates);
-    query_ieee_webpages($our_templates_ieee);
-    query_ieee_webpages($our_templates);
+    Zotero::query_ieee_webpages($our_templates_ieee);
+    Zotero::query_ieee_webpages($our_templates);
     
     report_phase('Expand individual templates by API calls');
     for ($i = 0; $i < count($our_templates); $i++) {
