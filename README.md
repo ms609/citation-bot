@@ -42,6 +42,7 @@ A quick tour of the main files:
 * `setup.php`: sets up needed functions, requires most of the other files listed here
 * `expandFns.php`: a variety of functions
 * `apiFunctions.php`: sets up needed functions for expanding pmid/doi/etc
+* `Zotero.php`: URL expansion related functions organized in a static class 
 
 Class files:
 * `Page.php`: Represents an individual page to expand citations on. Key methods are
