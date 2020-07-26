@@ -1,36 +1,42 @@
 <?php
 declare(strict_types=1);
-const ZOTERO_GIVE_UP = 5;
-const ZOTERO_SKIPS = 100;
-const ERROR_DONE = 'ERROR_DONE';
 
 require_once("constants.php");
+
+final class Zotero {
+  const ZOTERO_GIVE_UP = 5;
+  const ZOTERO_SKIPS = 100;
+  const ERROR_DONE = 'ERROR_DONE'; 
+  protected $zotero_announced;
+  protected $zotero_ch;
+  protected $zotero_failures_count;
+  
+  function __construct() {
+    this::make_ch_zotero();
+  }
 
 /*
  * This gets called during the the testing suite constructor, so it is not seen as being code covered
  * This CURL resource is never closed
  * @codeCoverageIgnore
  */
-function make_ch_zotero() : void {
-  global $zotero_ch;
-  if (is_resource($zotero_ch)) return;
-  $zotero_ch = curl_init(ZOTERO_ROOT);
-  curl_setopt($zotero_ch, CURLOPT_CUSTOMREQUEST, "POST");
-  curl_setopt($zotero_ch, CURLOPT_HTTPHEADER, ['Content-Type: text/plain']);
-  curl_setopt($zotero_ch, CURLOPT_RETURNTRANSFER, TRUE);
+static function make_ch_zotero() : void {
+  if (is_resource($this->zotero_ch)) return;
+  $this->zotero_ch = curl_init(ZOTERO_ROOT);
+  curl_setopt($this->zotero_ch, CURLOPT_CUSTOMREQUEST, "POST");
+  curl_setopt($this->zotero_ch, CURLOPT_HTTPHEADER, ['Content-Type: text/plain']);
+  curl_setopt($this->zotero_ch, CURLOPT_RETURNTRANSFER, TRUE);
   // Defaults used in TRAVIS overiden below when deployed
-  curl_setopt($zotero_ch, CURLOPT_CONNECTTIMEOUT, 10);
-  curl_setopt($zotero_ch, CURLOPT_TIMEOUT, 45);
+  curl_setopt($this->zotero_ch, CURLOPT_CONNECTTIMEOUT, 10);
+  curl_setopt($this->zotero_ch, CURLOPT_TIMEOUT, 45);
 }
 
-function query_url_api(array $ids, array $templates) : void {
-  global $zotero_ch;
-  global $zotero_announced;
+static function query_url_api(array $ids, array $templates) : void {
   if (!SLOW_MODE) return; // Zotero takes time
   
   if (!TRAVIS) { // try harder in tests
     // @codeCoverageIgnoreStart
-    curl_setopt($zotero_ch, CURLOPT_CONNECTTIMEOUT, 1);
+    curl_setopt($this->zotero_ch, CURLOPT_CONNECTTIMEOUT, 1);
     $url_count = 0;
     foreach ($templates as $template) {
      if (!$template->blank(['url', 'chapter-url', 'chapterurl'])) {
@@ -38,23 +44,23 @@ function query_url_api(array $ids, array $templates) : void {
      }
     }
     if ($url_count < 5) {
-      curl_setopt($zotero_ch, CURLOPT_TIMEOUT, 15);
+      curl_setopt($this->zotero_ch, CURLOPT_TIMEOUT, 15);
     } elseif ($url_count < 25) {
-      curl_setopt($zotero_ch, CURLOPT_TIMEOUT, 10);
+      curl_setopt($this->zotero_ch, CURLOPT_TIMEOUT, 10);
     } else {
-      curl_setopt($zotero_ch, CURLOPT_TIMEOUT, 5);
+      curl_setopt($this->zotero_ch, CURLOPT_TIMEOUT, 5);
     }
     // @codeCoverageIgnoreEnd
   }
 
-  $zotero_announced = 1;
+  $this->zotero_announced = 1;
   foreach ($templates as $template) {
      expand_by_zotero($template);
   }
   if (!TRAVIS) { // These are pretty reliable, unlike random urls
-      curl_setopt($zotero_ch, CURLOPT_TIMEOUT, 10);  // @codeCoverageIgnore
+      curl_setopt($this->zotero_ch, CURLOPT_TIMEOUT, 10);  // @codeCoverageIgnore
   }
-  $zotero_announced = 2;
+  $this->zotero_announced = 2;
   foreach ($templates as $template) {
        if ($template->has('biorxiv')) {
          if ($template->blank('doi')) {
@@ -82,7 +88,7 @@ function query_url_api(array $ids, array $templates) : void {
   }
 }
 
-function query_ieee_webpages(array $templates) : void {
+static function query_ieee_webpages(array $templates) : void {
   $ch_ieee = curl_init();
   curl_setopt($ch_ieee, CURLOPT_RETURNTRANSFER, TRUE);
   curl_setopt($ch_ieee, CURLOPT_HEADER, FALSE);
@@ -117,7 +123,7 @@ function query_ieee_webpages(array $templates) : void {
   curl_close($ch_ieee);
 }
 
-function drop_urls_that_match_dois(array $templates) : void {
+static function drop_urls_that_match_dois(array $templates) : void {
   // Now that we have expanded URLs, try to lose them
   $ch = curl_init();
   curl_setopt($ch, CURLOPT_FOLLOWLOCATION, TRUE);
@@ -223,21 +229,18 @@ function drop_urls_that_match_dois(array $templates) : void {
   @strtok('',''); // Free internal buffers
 }
 
-function zotero_request(string $url) : string {
-  global $zotero_failures_count;
-  global $zotero_ch;
-
-  curl_setopt($zotero_ch, CURLOPT_POSTFIELDS, $url);
+static function zotero_request(string $url) : string {
+  curl_setopt($this->zotero_ch, CURLOPT_POSTFIELDS, $url);
   
-  $zotero_response = (string) @curl_exec($zotero_ch);
+  $zotero_response = (string) @curl_exec($this->zotero_ch);
   if ($zotero_response == '') {
     // @codeCoverageIgnoreStart
-    report_warning(curl_error($zotero_ch) . "   For URL: " . $url);
-    if (strpos(curl_error($zotero_ch), 'timed out after') !== FALSE) {
-      $zotero_failures_count = $zotero_failures_count + 1;
-      if ($zotero_failures_count > ZOTERO_GIVE_UP) {
+    report_warning(curl_error($this->zotero_ch) . "   For URL: " . $url);
+    if (strpos(curl_error($this->zotero_ch), 'timed out after') !== FALSE) {
+      $this->zotero_failures_count = $this->zotero_failures_count + 1;
+      if ($this->zotero_failures_count > ZOTERO_GIVE_UP) {
         report_warning("Giving up on URL expansion for a while");
-        $zotero_failures_count = $zotero_failures_count + ZOTERO_SKIPS;
+        $this->zotero_failures_count = $this->zotero_failures_count + ZOTERO_SKIPS;
       }
     }
     $zotero_response = ERROR_DONE;
@@ -246,14 +249,12 @@ function zotero_request(string $url) : string {
   return $zotero_response;
 }
 
-function expand_by_zotero(Template $template, ?string $url = NULL) : bool {
-  global $zotero_failures_count;
-  global $zotero_announced;
-  if ($zotero_failures_count > ZOTERO_GIVE_UP) {
-    $zotero_failures_count = $zotero_failures_count - 1;                      // @codeCoverageIgnore
-    if (ZOTERO_GIVE_UP == $zotero_failures_count) $zotero_failures_count = 0; // @codeCoverageIgnore
+static function expand_by_zotero(Template $template, ?string $url = NULL) : bool {
+  if ($this->zotero_failures_count > ZOTERO_GIVE_UP) {
+    $this->zotero_failures_count = $this->zotero_failures_count - 1;                      // @codeCoverageIgnore
+    if (ZOTERO_GIVE_UP == $this->zotero_failures_count) $this->zotero_failures_count = 0; // @codeCoverageIgnore
   }
-  if ($zotero_failures_count > ZOTERO_GIVE_UP) return FALSE;
+  if ($this->zotero_failures_count > ZOTERO_GIVE_UP) return FALSE;
   $access_date = 0;
   $url_kind = '';
   if (is_null($url)) {
@@ -286,18 +287,18 @@ function expand_by_zotero(Template $template, ?string $url = NULL) : bool {
   $bad_url = implode('|', ZOTERO_AVOID_REGEX);
   if(preg_match("~^https?://(?:www\.|)(?:" . $bad_url . ")~i", $url)) return FALSE; 
 
-  if ($zotero_announced === 1) {
+  if ($this->zotero_announced === 1) {
     report_action("Using Zotero translation server to retrieve details from URLs.");
-    $zotero_announced = 0;
-  } elseif ($zotero_announced === 2) {
+    $this->zotero_announced = 0;
+  } elseif ($this->zotero_announced === 2) {
     report_action("Using Zotero translation server to retrieve details from identifiers.");
-    $zotero_announced = 0;
+    $this->zotero_announced = 0;
   }
   $zotero_response = zotero_request($url);
   return process_zotero_response($zotero_response, $template, $url, $url_kind, $access_date);
 }
 
-function process_zotero_response(string $zotero_response, Template $template, string $url, string $url_kind, int $access_date) : bool {
+static function process_zotero_response(string $zotero_response, Template $template, string $url, string $url_kind, int $access_date) : bool {
   if ($zotero_response === ERROR_DONE) return FALSE;  // Error message already printed in zotero_request()
  
   switch (trim($zotero_response)) {
@@ -632,7 +633,7 @@ function process_zotero_response(string $zotero_response, Template $template, st
   return TRUE;
 }
 
-function url_simplify(string $url) : string {
+static function url_simplify(string $url) : string {
   $url = str_replace('/action/captchaChallenge?redirectUri=', '', $url);
   $url = urldecode($url);
   // IEEE is annoying
@@ -647,4 +648,6 @@ function url_simplify(string $url) : string {
   $url = str_ireplace('https', 'http', $url);
   return $url;
 }
+  
+} // End of CLASS
 
