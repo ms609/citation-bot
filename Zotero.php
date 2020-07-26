@@ -13,7 +13,7 @@ final class Zotero {
   private const ERROR_DONE = 'ERROR_DONE'; 
   protected static $zotero_announced;
   protected static $zotero_ch;
-  public static $zotero_failures_count = 0;
+  protected static $zotero_failures_count = 0;
  
 /*
  * This gets called during the the testing suite constructor, so it is not seen as being code covered
@@ -31,6 +31,13 @@ public static function make_ch_zotero() : void {
   curl_setopt(self::$zotero_ch, CURLOPT_TIMEOUT, 45);
 }
 
+public static function block_zotero() : void {
+  this::zotero_failures_count = 1000000;  
+}
+
+public static function unblock_zotero() : void {
+  this::zotero_failures_count = 0;  
+}
 
 public static function query_url_api_class(array $ids, array $templates) : void {
   if (!SLOW_MODE) return; // Zotero takes time
