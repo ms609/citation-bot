@@ -4,12 +4,12 @@ declare(strict_types=1);
 require_once("constants.php");
 
 final class Zotero {
-  const ZOTERO_GIVE_UP = 5;
-  const ZOTERO_SKIPS = 100;
-  const ERROR_DONE = 'ERROR_DONE'; 
+  private const ZOTERO_GIVE_UP = 5;
+  private const ZOTERO_SKIPS = 100;
+  private const ERROR_DONE = 'ERROR_DONE'; 
   protected static $zotero_announced;
   protected static $zotero_ch;
-  public static $zotero_failures_count;
+  public static $zotero_failures_count = 0;
  
 /*
  * This gets called during the the testing suite constructor, so it is not seen as being code covered
