@@ -372,10 +372,10 @@ final class PageTest extends testBaseClass {
       $page = new TestPage();
       $page->parse_text($text);
       $ADSABS_GIVE_UP = FALSE;
-      Zotero::$zotero_failures_count = 0;
+      Zotero::unblock_zotero();
       $page->expand_text();
       $ADSABS_GIVE_UP = TRUE;
-      Zotero::$zotero_failures_count = 100000;
+      Zotero::block_zotero();
       $this->assertTrue(FALSE); // prevent us from git committing with a website included
     }
     $this->assertTrue(TRUE);
