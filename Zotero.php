@@ -295,7 +295,7 @@ public static function expand_by_zotero(Template $template, ?string $url = NULL)
     self::$zotero_announced = 0;
   }
   $zotero_response = self::zotero_request($url);
-  return process_zotero_response($zotero_response, $template, $url, $url_kind, $access_date);
+  return self::process_zotero_response($zotero_response, $template, $url, $url_kind, $access_date);
 }
 
 public static function process_zotero_response(string $zotero_response, Template $template, string $url, string $url_kind, int $access_date) : bool {
