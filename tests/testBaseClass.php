@@ -4,7 +4,7 @@ declare(strict_types=1);
 require_once(__DIR__ . '/../setup.php');
 
 $ADSABS_GIVE_UP = TRUE;
-Zotero::$zotero_failures_count = 100000;
+Zotero::block_zotero();
 
 abstract class testBaseClass extends PHPUnit\Framework\TestCase {
   // Change these to temporarily disable sets of tests======================
@@ -103,10 +103,10 @@ abstract class testBaseClass extends PHPUnit\Framework\TestCase {
       $this->assertNull(NULL);
     } else {
       try {
-        Template::$zotero_failures_count = 0;
+        Zotero::unblock_zotero();
         $function();
       } finally {
-        Zotero::$zotero_failures_count = 1000000;
+        Zotero::block_zotero();
       }
     }
   } 
