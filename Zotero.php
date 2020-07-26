@@ -238,23 +238,23 @@ public static function zotero_request(string $url) : string {
     report_warning(curl_error(self::$zotero_ch) . "   For URL: " . $url);
     if (strpos(curl_error(self::$zotero_ch), 'timed out after') !== FALSE) {
       self::$zotero_failures_count = self::$zotero_failures_count + 1;
-      if (self::$zotero_failures_count > self::ZOTERO_GIVE_UP) {
+      if (self::$zotero_failures_count > self::$ZOTERO_GIVE_UP) {
         report_warning("Giving up on URL expansion for a while");
-        self::$zotero_failures_count = self::$zotero_failures_count + self::ZOTERO_SKIPS;
+        self::$zotero_failures_count = self::$zotero_failures_count + self::$ZOTERO_SKIPS;
       }
     }
-    $zotero_response = self::ERROR_DONE;
+    $zotero_response = self::$ERROR_DONE;
     // @codeCoverageIgnoreEnd
   }
   return $zotero_response;
 }
 
 public static function expand_by_zotero(Template $template, ?string $url = NULL) : bool {
-  if (self::$zotero_failures_count > self::ZOTERO_GIVE_UP) {
+  if (self::$zotero_failures_count > self::$ZOTERO_GIVE_UP) {
     self::$zotero_failures_count = self::$zotero_failures_count - 1;                      // @codeCoverageIgnore
     if (ZOTERO_GIVE_UP == self::$zotero_failures_count) self::$zotero_failures_count = 0; // @codeCoverageIgnore
   }
-  if (self::$zotero_failures_count > self::ZOTERO_GIVE_UP) return FALSE;
+  if (self::$zotero_failures_count > self::$ZOTERO_GIVE_UP) return FALSE;
   $access_date = 0;
   $url_kind = '';
   if (is_null($url)) {
@@ -299,7 +299,7 @@ public static function expand_by_zotero(Template $template, ?string $url = NULL)
 }
 
 public static function process_zotero_response(string $zotero_response, Template $template, string $url, string $url_kind, int $access_date) : bool {
-  if ($zotero_response === self::ERROR_DONE) return FALSE;  // Error message already printed in zotero_request()
+  if ($zotero_response === self::$ERROR_DONE) return FALSE;  // Error message already printed in zotero_request()
  
   switch (trim($zotero_response)) {
     case '':
