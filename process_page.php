@@ -38,8 +38,8 @@ check_blocked();
 $edit_summary_end = "| Suggested by " . $api->get_the_user() . " ";
 $final_edit_overview = "";
 
-$pages = (isset($argv) && isset($argv[1])) // argv set on command line
-       ? $argv[1] : trim(ucfirst(strip_tags($_REQUEST["page"])));
+$pages = isset($_REQUEST["page"]) ? (string) $_REQUEST["page"] : (string) @$argv[1];
+
 if (isset($_REQUEST["edit"]) && $_REQUEST["edit"]) {		
   $ON = TRUE;
    if ($_REQUEST["edit"] == 'automated_tools') {
