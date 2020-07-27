@@ -4,13 +4,10 @@ declare(strict_types=1);
 
 require_once('setup.php');
 $api = new WikipediaBot();
-if (!isset($argv)) {
-  $category = isset($_REQUEST["cat"]) ? (string) $_REQUEST["cat"] : '';
-} else {
-  $category = (string) @$argv[1]; // category_name --slow makes sense
-}
+$category = isset($_REQUEST["cat"]) ? (string) $_REQUEST["cat"] : (string) @$argv[1];
 
 $category = trim($category);
+
 if (strtolower(substr($category, 0, 9)) == 'category:') $category = trim(substr($category, 9));
 
 if (HTML_OUTPUT) {
