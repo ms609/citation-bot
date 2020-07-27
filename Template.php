@@ -2608,7 +2608,7 @@ final class Template {
       $context = stream_context_create(array('http'=>array('header'=>"x-api-key: " . PHP_S2APIKEY . "\r\n")));
       $json = (string) @file_get_contents('https://partner.semanticscholar.org/v1/paper/' . $doi, FALSE, $context);
     } else {
-      $json = (string) @file_get_contents('https://api.semanticscholar.org/v1/paper/' . $doi);
+      $json = (string) @file_get_contents('https://api.semanticscholar.org/v1/paper/' . $doi); // @codeCoverageIgnore
     }
     if ($json) {
       $oa = @json_decode($json);
