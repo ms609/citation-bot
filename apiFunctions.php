@@ -990,7 +990,7 @@ function getS2CID(string $url) : string {
     $context = stream_context_create(array('http'=>array('header'=>"x-api-key: " . PHP_S2APIKEY . "\r\n")));
     $response = (string) @file_get_contents('https://partner.semanticscholar.org/v1/paper/URL:' . $url, FALSE, $context);
   } else {
-    $response = (string) @file_get_contents('https://api.semanticscholar.org/v1/paper/URL:' . $url);
+    $response = (string) @file_get_contents('https://api.semanticscholar.org/v1/paper/URL:' . $url);  // @codeCoverageIgnore
   }
   if (!$response) {
     report_warning("No response from semanticscholar.");   // @codeCoverageIgnore
@@ -1017,7 +1017,7 @@ function ConvertS2CID_DOI(string $s2cid) : string {
     $context = stream_context_create(array('http'=>array('header'=>"x-api-key: " . PHP_S2APIKEY . "\r\n")));
     $response = (string) @file_get_contents('https://partner.semanticscholar.org/v1/paper/CorpusID:' . $s2cid, FALSE, $context);
   } else {
-    $response = (string) @file_get_contents('https://api.semanticscholar.org/v1/paper/CorpusID:' . $s2cid);
+    $response = (string) @file_get_contents('https://api.semanticscholar.org/v1/paper/CorpusID:' . $s2cid);   // @codeCoverageIgnore
   }
   if (!$response) {
     report_warning("No response from semanticscholar.");   // @codeCoverageIgnore
@@ -1050,7 +1050,7 @@ function get_semanticscholar_license(string $s2cid) : ?bool {
       $context = stream_context_create(array('http'=>array('header'=>"x-api-key: " . PHP_S2APIKEY . "\r\n")));
       $response = (string) @file_get_contents('https://partner.semanticscholar.org/v1/paper/CorpusID:' . $s2cid, FALSE, $context);
     } else {
-      $response = (string) @file_get_contents('https://api.semanticscholar.org/v1/paper/CorpusID:' . $s2cid);
+      $response = (string) @file_get_contents('https://api.semanticscholar.org/v1/paper/CorpusID:' . $s2cid);   // @codeCoverageIgnore
     }
     if ($response == '') return NULL;
     if (stripos($response, 'Paper not found') !== FALSE) return FALSE;
