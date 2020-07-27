@@ -18,8 +18,8 @@ final class Zotero {
 /*
  * This gets called during the the testing suite constructor, so it is not seen as being code covered
  * This CURL resource is never closed
- * @codeCoverageIgnore
  */
+// @codeCoverageIgnoreStart
 public static function make_ch_zotero() : void {
   if (is_resource(self::$zotero_ch)) return;
   self::$zotero_ch = curl_init(ZOTERO_ROOT);
@@ -30,6 +30,7 @@ public static function make_ch_zotero() : void {
   curl_setopt(self::$zotero_ch, CURLOPT_CONNECTTIMEOUT, 10);
   curl_setopt(self::$zotero_ch, CURLOPT_TIMEOUT, 45);
 }
+// @codeCoverageIgnoreEnd
 
 public static function block_zotero() : void {
   self::$zotero_failures_count = 1000000;  
