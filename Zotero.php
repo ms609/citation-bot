@@ -18,8 +18,8 @@ final class Zotero {
 /*
  * This gets called during the the testing suite constructor, so it is not seen as being code covered
  * This CURL resource is never closed
- * @codeCoverageIgnore
  */
+// @codeCoverageIgnoreStart
 public static function make_ch_zotero() : void {
   if (is_resource(self::$zotero_ch)) return;
   self::$zotero_ch = curl_init(ZOTERO_ROOT);
@@ -30,6 +30,7 @@ public static function make_ch_zotero() : void {
   curl_setopt(self::$zotero_ch, CURLOPT_CONNECTTIMEOUT, 10);
   curl_setopt(self::$zotero_ch, CURLOPT_TIMEOUT, 45);
 }
+// @codeCoverageIgnoreEnd
 
 public static function block_zotero() : void {
   self::$zotero_failures_count = 1000000;  
@@ -237,6 +238,12 @@ public static function drop_urls_that_match_dois(array $templates) : void {
 }
 
 public static function zotero_request(string $url) : string {
+  if (self::$zotero_failures_count > self::ZOTERO_GIVE_UP) {
+    self::$zotero_failures_count = self::$zotero_failures_count - 1;                            // @codeCoverageIgnore
+    if (self::ZOTERO_GIVE_UP == self::$zotero_failures_count) self::$zotero_failures_count = 0; // @codeCoverageIgnore
+  }
+  if (self::$zotero_failures_count > self::ZOTERO_GIVE_UP) return self::ERROR_DONE;
+
   curl_setopt(self::$zotero_ch, CURLOPT_POSTFIELDS, $url);
   
   $zotero_response = (string) @curl_exec(self::$zotero_ch);
@@ -257,11 +264,6 @@ public static function zotero_request(string $url) : string {
 }
 
 public static function expand_by_zotero(Template $template, ?string $url = NULL) : bool {
-  if (self::$zotero_failures_count > self::ZOTERO_GIVE_UP) {
-    self::$zotero_failures_count = self::$zotero_failures_count - 1;                      // @codeCoverageIgnore
-    if (self::ZOTERO_GIVE_UP == self::$zotero_failures_count) self::$zotero_failures_count = 0; // @codeCoverageIgnore
-  }
-  if (self::$zotero_failures_count > self::ZOTERO_GIVE_UP) return FALSE;
   $access_date = 0;
   $url_kind = '';
   if (is_null($url)) {

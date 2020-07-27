@@ -101,6 +101,8 @@ abstract class testBaseClass extends PHPUnit\Framework\TestCase {
     if ($this->testing_skip_zotero) {
       echo 'Z';
       ob_flush();
+      Zotero::unblock_zotero();
+      Zotero::block_zotero();
       $this->assertNull(NULL);
     } else {
       try {
