@@ -61,8 +61,6 @@ if (file_exists('env.php')) {
 mb_internal_encoding('UTF-8');
 ini_set("memory_limit", "256M");
 
-adsabs_turn_back_on();
-
 define("PHP_ADSABSAPIKEY", (string) getenv("PHP_ADSABSAPIKEY"));
 define("PHP_GOOGLEKEY", (string) getenv("PHP_GOOGLEKEY"));
 define("PHP_S2APIKEY", (string) getenv("PHP_S2APIKEY"));
@@ -84,4 +82,4 @@ require_once('Page.php');
 require_once('user_messages.php');
 
 Zotero::make_ch_zotero();
-
+adsabs_turn_back_on();
