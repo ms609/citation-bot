@@ -14,7 +14,6 @@ abstract class testBaseClass extends PHPUnit\Framework\TestCase {
   // =======================================================================
   
   function __construct() {
-    global $ADSABS_GIVE_UP;
     parent::__construct();
 
    // Non-trusted builds
@@ -35,7 +34,7 @@ abstract class testBaseClass extends PHPUnit\Framework\TestCase {
        $this->testing_skip_arxiv  = FALSE;
     }
     
-    $ADSABS_GIVE_UP = TRUE;
+    adsabs_give_up();
     Zotero::block_zotero();
   }
 
@@ -81,17 +80,16 @@ abstract class testBaseClass extends PHPUnit\Framework\TestCase {
 
   // Only routines that absolutely need bibcode access since we are limited 
   protected function requires_bibcode(callable $function) : void {
-    global $ADSABS_GIVE_UP;
     if ($this->testing_skip_bibcode) {
       echo 'B';
       ob_flush();
       $this->assertNull(NULL);
     } else {
       try {
-        $ADSABS_GIVE_UP = FALSE;
+        adsabs_turn_back_on();
         $function();
       } finally {
-        $ADSABS_GIVE_UP = TRUE;
+        adsabs_give_up();
       }
     }
   }
