@@ -2416,7 +2416,7 @@ final class Template {
         report_warning(sprintf("HTTP Error %d in query_adsabs: %s",
                       $e->getCode(), $e->getMessage()));
       } elseif (strpos($e->getMessage(), 'Too many requests') !== FALSE) {
-           adsabs_give_up();
+          adsabs_give_up();
           report_warning('Giving up on AdsAbs for a while.  Too many requests.');
       } else {
         report_warning(sprintf("Error %d in query_adsabs: %s",
