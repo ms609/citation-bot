@@ -35,6 +35,6 @@
         </ignoreFiles>
     </projectFiles>
     <globals>
-       <var name="$ADSABS_GIVE_UP" type="bool" />
+       <var name="$ADSABS_GIVE_UP" type="int" />
     </globals>
 </psalm>

@@ -2319,9 +2319,8 @@ final class Template {
   // URL-ENCODED search strings, separated by (unencoded) ampersands.
   // Surround search terms in (url-encoded) ""s, i.e. doi:"10.1038/bla(bla)bla"
   protected function query_adsabs(string $options) : object {
-    global $ADSABS_GIVE_UP;
     // API docs at https://github.com/adsabs/adsabs-dev-api/blob/master/Search_API.ipynb
-    if ($ADSABS_GIVE_UP) return (object) array('numFound' => 0);
+    if (adsabs_gave_up()) return (object) array('numFound' => 0);
     if (!PHP_ADSABSAPIKEY) return (object) array('numFound' => 0);
     
     try {
@@ -2409,7 +2408,7 @@ final class Template {
         report_warning(sprintf("API Error in query_adsabs: %s",
                       $e->getMessage()));
       } elseif ($e->getCode() == 60) {
-        $ADSABS_GIVE_UP = TRUE;
+        adsabs_give_up();
         report_warning('Giving up on AdsAbs for a while.  SSL certificate has expired.');
       } elseif (strpos($e->getMessage(), 'org.apache.solr.search.SyntaxError') !== FALSE) {
         report_info(sprintf("Internal Error %d in query_adsabs: %s",
@@ -2418,7 +2417,7 @@ final class Template {
         report_warning(sprintf("HTTP Error %d in query_adsabs: %s",
                       $e->getCode(), $e->getMessage()));
       } elseif (strpos($e->getMessage(), 'Too many requests') !== FALSE) {
-          $ADSABS_GIVE_UP = TRUE;
+          adsabs_give_up();
           report_warning('Giving up on AdsAbs for a while.  Too many requests.');
       } else {
         report_warning(sprintf("Error %d in query_adsabs: %s",
