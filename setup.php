@@ -61,7 +61,7 @@ if (file_exists('env.php')) {
 mb_internal_encoding('UTF-8');
 ini_set("memory_limit", "256M");
 
-$ADSABS_GIVE_UP = FALSE;
+$ADSABS_GIVE_UP = 0;
 
 define("PHP_ADSABSAPIKEY", (string) getenv("PHP_ADSABSAPIKEY"));
 define("PHP_GOOGLEKEY", (string) getenv("PHP_GOOGLEKEY"));
