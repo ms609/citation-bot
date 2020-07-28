@@ -1091,3 +1091,22 @@ function expand_templates_from_archives(array $templates) : void { // This is do
   curl_close($ch);
 }
 
+function adsabs_gave_up() : bool {
+  global $ADSABS_GIVE_UP;
+  $ADSABS_GIVE_UP = max($ADSABS_GIVE_UP - 1, 0);
+  return ($ADSABS_GIVE_UP != 0);
+}
+
+function adsabs_give_up() : void {
+  global $ADSABS_GIVE_UP;
+  $ADSABS_GIVE_UP = 1000;
+}
+
+function adsabs_turn_back_on() : void {
+  global $ADSABS_GIVE_UP;
+  $ADSABS_GIVE_UP = 0;
+}
+
+
+
+
