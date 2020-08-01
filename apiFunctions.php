@@ -8,7 +8,22 @@ require_once("NameTools.php");
 
 function query_pmid_api (array $pmids, array $templates) : bool { return entrez_api($pmids, $templates, 'pubmed'); }
 function query_pmc_api  (array $pmcs, array $templates) : bool { return entrez_api($pmcs,  $templates, 'pmc'); }
-  
+
+final class AdsAbsControl {
+  private static $counter = 0;
+  public static function gave_up_yet() : bool {
+    self::$counter = max(self::$counter - 1, 0);
+    return (self::$counter != 0);
+  }
+  public static function give_up() : void {
+    self::$counter = 1000;
+  }
+  public static function back_on() : void {
+    self::$counter = 0;
+  }
+}
+
+
 function entrez_api(array $ids, array $templates, string $db) : bool {
   if (!count($ids)) return FALSE;
   $url = "https://eutils.ncbi.nlm.nih.gov/entrez/eutils/esummary.fcgi?tool=WikipediaCitationBot&email=martins+pubmed@gmail.com&db=$db&id=" 
@@ -187,7 +202,7 @@ function arxiv_api(array $ids, array $templates) : bool {
 }
 
 function adsabs_api(array $ids, array $templates, string $identifier) : bool {
-  if (adsabs_gave_up()) return FALSE;
+  if (AdsAbsControl::gave_up_yet()) return FALSE;
   if (!PHP_ADSABSAPIKEY) return FALSE;
   if (count($ids) == 0) return FALSE;
   
@@ -309,7 +324,7 @@ function adsabs_api(array $ids, array $templates, string $identifier) : bool {
       report_warning(sprintf("API Error in adsabs_api: %s",
                     $e->getMessage()));
     } elseif ($e->getCode() == 60) {
-        adsabs_give_up();
+        AdsAbsControl::give_up();
         report_warning('Giving up on AdsAbs for a while.  SSL certificate has expired.');
     } elseif (strpos($e->getMessage(), 'org.apache.solr.search.SyntaxError') !== FALSE) {
       report_info(sprintf("Internal Error %d in adsabs_api: %s",
@@ -318,7 +333,7 @@ function adsabs_api(array $ids, array $templates, string $identifier) : bool {
       report_warning(sprintf("HTTP Error %d in adsabs_api: %s",
                     $e->getCode(), $e->getMessage()));
     } elseif (strpos($e->getMessage(), 'Too many requests') !== FALSE) {
-        adsabs_give_up();
+        AdsAbsControl::give_up();
         report_warning('Giving up on AdsAbs for a while.  Too many requests.');
     } else {
       report_warning(sprintf("Error %d in adsabs_api: %s",
@@ -1090,23 +1105,4 @@ function expand_templates_from_archives(array $templates) : void { // This is do
   }
   curl_close($ch);
 }
-
-function adsabs_gave_up() : bool {
-  global $ADSABS_GIVE_UP;
-  $ADSABS_GIVE_UP = max($ADSABS_GIVE_UP - 1, 0);
-  return ($ADSABS_GIVE_UP != 0);
-}
-
-function adsabs_give_up() : void {
-  global $ADSABS_GIVE_UP;
-  $ADSABS_GIVE_UP = 1000;
-}
-
-function adsabs_turn_back_on() : void {
-  global $ADSABS_GIVE_UP;
-  $ADSABS_GIVE_UP = 0;
-}
-
-
-
 

@@ -34,7 +34,7 @@ abstract class testBaseClass extends PHPUnit\Framework\TestCase {
        $this->testing_skip_arxiv  = FALSE;
     }
     
-    adsabs_give_up();
+    AdsAbsControl::give_up();
     Zotero::block_zotero();
   }
 
@@ -83,13 +83,15 @@ abstract class testBaseClass extends PHPUnit\Framework\TestCase {
     if ($this->testing_skip_bibcode) {
       echo 'B';
       ob_flush();
+      AdsAbsControl::back_on();
+      AdsAbsControl::give_up();
       $this->assertNull(NULL);
     } else {
       try {
-        adsabs_turn_back_on();
+        AdsAbsControl::back_on();
         $function();
       } finally {
-        adsabs_give_up();
+        AdsAbsControl::give_up();
       }
     }
   }
