@@ -370,10 +370,10 @@ final class PageTest extends testBaseClass {
       curl_close($ch);
       $page = new TestPage();
       $page->parse_text($text);
-      adsabs_turn_back_on();
+      AdsAbsControl::turn_on();
       Zotero::unblock_zotero();
       $page->expand_text();
-      adsabs_give_up();
+      AdsAbsControl::give_up();
       Zotero::block_zotero();
       $this->assertTrue(FALSE); // prevent us from git committing with a website included
     }
