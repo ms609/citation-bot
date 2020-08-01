@@ -83,10 +83,12 @@ abstract class testBaseClass extends PHPUnit\Framework\TestCase {
     if ($this->testing_skip_bibcode) {
       echo 'B';
       ob_flush();
+      AdsAbsControl::back_on();
+      AdsAbsControl::give_up();
       $this->assertNull(NULL);
     } else {
       try {
-        AdsAbsControl::back_on()
+        AdsAbsControl::back_on();
         $function();
       } finally {
         AdsAbsControl::give_up();
