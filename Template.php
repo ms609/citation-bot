@@ -2407,7 +2407,7 @@ final class Template {
         report_warning(sprintf("API Error in query_adsabs: %s",
                       $e->getMessage()));
       } elseif ($e->getCode() == 60) {
-        adsabs_give_up();
+        AdsAbsControl::give_up();
         report_warning('Giving up on AdsAbs for a while.  SSL certificate has expired.');
       } elseif (strpos($e->getMessage(), 'org.apache.solr.search.SyntaxError') !== FALSE) {
         report_info(sprintf("Internal Error %d in query_adsabs: %s",
@@ -2416,7 +2416,7 @@ final class Template {
         report_warning(sprintf("HTTP Error %d in query_adsabs: %s",
                       $e->getCode(), $e->getMessage()));
       } elseif (strpos($e->getMessage(), 'Too many requests') !== FALSE) {
-          adsabs_give_up();
+          AdsAbsControl::give_up();
           report_warning('Giving up on AdsAbs for a while.  Too many requests.');
       } else {
         report_warning(sprintf("Error %d in query_adsabs: %s",
