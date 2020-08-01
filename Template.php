@@ -2319,7 +2319,7 @@ final class Template {
   // Surround search terms in (url-encoded) ""s, i.e. doi:"10.1038/bla(bla)bla"
   protected function query_adsabs(string $options) : object {
     // API docs at https://github.com/adsabs/adsabs-dev-api/blob/master/Search_API.ipynb
-    if (adsabs_gave_up()) return (object) array('numFound' => 0);
+    if (AdsAbsControl::gave_up_yet()) return (object) array('numFound' => 0);
     if (!PHP_ADSABSAPIKEY) return (object) array('numFound' => 0);
     
     try {
