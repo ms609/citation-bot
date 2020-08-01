@@ -10,16 +10,14 @@ function query_pmid_api (array $pmids, array $templates) : bool { return entrez_
 function query_pmc_api  (array $pmcs, array $templates) : bool { return entrez_api($pmcs,  $templates, 'pmc'); }
 
 final class AdsAbsControl {
-  static $counter = 0;
+  private static $counter = 0;
   public static function gave_up_yet() : bool {
     self::$counter = max(self::$counter - 1, 0);
     return (self::$counter != 0);
   }
-
   public static function give_up() : void {
     self::$counter = 1000;
   }
-
   public static function back_on() : void {
     self::$counter = 0;
   }
