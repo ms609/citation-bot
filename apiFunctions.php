@@ -204,7 +204,7 @@ function arxiv_api(array $ids, array $templates) : bool {
 }
 
 function adsabs_api(array $ids, array $templates, string $identifier) : bool {
-  if (adsabs_gave_up()) return FALSE;
+  if (AdsAbsControl::gave_up_yet()) return FALSE;
   if (!PHP_ADSABSAPIKEY) return FALSE;
   if (count($ids) == 0) return FALSE;
   
