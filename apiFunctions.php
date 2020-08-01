@@ -20,7 +20,7 @@ final class AdsAbsControl {
     self::$counter = 1000;
   }
 
-  public static function turn_back_on() : void {
+  public static function back_on() : void {
     self::$counter = 0;
   }
 }
