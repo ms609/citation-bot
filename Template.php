@@ -2529,7 +2529,7 @@ final class Template {
           $ris_publisher = trim($ris_part[1]);  // Get these from JSTOR
           $dat = trim(str_replace("\n$ris_line", "", "\n$dat"));
           break;
-        case "M3": case "PY": case "N1": case "N2": case "ER": case "TY": case "KW":
+        case "M3": case "N1": case "N2": case "ER": case "TY": case "KW":
           $dat = trim(str_replace("\n$ris_line", "", "\n$dat")); // Ignore these completely
           break;
         default:
