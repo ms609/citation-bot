@@ -456,6 +456,9 @@ final class WikipediaBot {
  * @codeCoverageIgnore
  */
   private function authenticate_user() : void {
+    // These would be old and unusable if we are here
+    unset($_SESSION['request_key']);
+    unset($_SESSION['request_secret']);
     if (isset($_SESSION['citation_bot_user_id'])) {
       if (is_string($_SESSION['citation_bot_user_id']) && self::is_valid_user($_SESSION['citation_bot_user_id'])) {
         $this->the_user = $_SESSION['citation_bot_user_id'];
