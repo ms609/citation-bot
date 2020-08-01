@@ -69,7 +69,7 @@ if (isset($_GET['oauth_verifier']) && isset($_SESSION['request_key']) && isset($
         $_SESSION['access_key'] = $accessToken->key;
         $_SESSION['access_secret'] = $accessToken->secret;
         unset($_SESSION['request_key']);unset($_SESSION['request_secret']);
-        return_to_sender(isset($_GET['return']) ? (string) $_GET['return'] : NULL );
+        isset($_GET['return']) ? return_to_sender((string) $_GET['return']) : return_to_sender();
    }
    catch (Throwable $e) { ; }
    death_time("Incoming authorization tokens did not work");
