@@ -7,7 +7,7 @@ declare(strict_types=1);
 
 require_once(__DIR__ . '/../testBaseClass.php');
  
-  class WikipediaBotTest extends testBaseClass {
+  final class WikipediaBotTest extends testBaseClass {
       
     public function testLoggedInUser() : void {
      $this->requires_secrets(function() : void {
