@@ -74,7 +74,5 @@ require_once(__DIR__ . '/../testBaseClass.php');
      new Token('','');
      $this->assertTrue(TRUE);
     }
-
-  }
    
 }
