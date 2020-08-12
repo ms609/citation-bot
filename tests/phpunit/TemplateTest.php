@@ -5170,7 +5170,7 @@ T1 - This is the Title }}';
      $this->assertSame('cite journal', $template->wikiname());
      $this->assertNull($template->get2('s2cid-access'));
      $this->assertSame('11733879', $template->get2('s2cid')); 
-     $this->assertNull($template->get2('url'));
+     $this->assertNotNull($template->get2('url'));
    }
 
   public function testSemanticscholar3() : void {
