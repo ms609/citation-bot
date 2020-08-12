@@ -5159,7 +5159,7 @@ T1 - This is the Title }}';
      $this->assertSame('53378830', $template->get2('s2cid')); 
      $this->assertNull($template->get2('s2cid-access'));
      $this->assertSame('cite journal', $template->wikiname());
-     $this->assertSame('10.1093/ser/mwp005', $template->get2('doi'));
+     $this->assertSame('10.1093/ser/mwp005', strtolower($template->get2('doi')));
      $this->assertSame('http://www.lisdatacenter.org/wps/liswps/480.pdf', $template->get2('url')); // OA URL
   }
  
