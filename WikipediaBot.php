@@ -17,7 +17,7 @@ final class WikipediaBot {
   /* @var resource $ch */
   private $ch;
   private Consumer $consumer; private Token $token; private string $the_user;
-  private static self $last_WikipediaBot;
+  private static ?self $last_WikipediaBot;
 
   function __construct(bool $no_user = FALSE) {
     // setup.php must already be run at this point
