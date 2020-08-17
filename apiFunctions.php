@@ -503,6 +503,7 @@ function expand_by_doi(Template $template, bool $force = FALSE) : bool {
       if ($crossRef->volume_title && $template->blank('journal')) {
         if (strtolower($template->get('title')) == strtolower((string) $crossRef->article_title)) {
            $template->rename('title', 'chapter');
+           $template->change_name_to('cite book');
          } else {
            $template->add_if_new('chapter', restore_italics((string) $crossRef->article_title), 'crossref'); // add_if_new formats this value as a title
         }
