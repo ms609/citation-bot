@@ -250,6 +250,7 @@ function adsabs_api(array $ids, array $templates, string $identifier) : bool {
     report_action("Expanding from BibCodes via AdsAbs API");
     $ch = curl_init();
     curl_setopt($ch, CURLOPT_URL, $adsabs_url);
+    curl_setopt($ch, CURLOPT_USERAGENT, 'Citation_bot; citations@tools.wmflabs.org');
     curl_setopt($ch, CURLOPT_HTTPHEADER, array('Content-Type: big-query/csv', 
       'Authorization: Bearer ' . PHP_ADSABSAPIKEY));
     curl_setopt($ch, CURLOPT_RETURNTRANSFER, TRUE);
@@ -567,6 +568,7 @@ function query_crossref(string $doi) : ?object {
   curl_setopt($ch, CURLOPT_HEADER, 0);
   curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
   curl_setopt($ch, CURLOPT_URL, $url);
+  curl_setopt($ch, CURLOPT_USERAGENT, 'Citation_bot; citations@tools.wmflabs.org');
   for ($i = 0; $i < 2; $i++) {
     $raw_xml = (string) @curl_exec($ch);
     if (!$raw_xml) {
@@ -615,6 +617,7 @@ function expand_doi_with_dx(Template $template, string $doi) : bool {
      };
      if (!$doi) return FALSE;
      $ch = curl_init();
+     curl_setopt($ch, CURLOPT_USERAGENT, 'Citation_bot; citations@tools.wmflabs.org');
      curl_setopt($ch, CURLOPT_URL,'https://doi.org/' . $doi);
      curl_setopt($ch, CURLOPT_HTTPHEADER, array("Accept: application/vnd.citationstyles.csl+json"));
      curl_setopt($ch, CURLOPT_RETURNTRANSFER, TRUE);
@@ -786,6 +789,7 @@ function expand_by_jstor(Template $template) : bool {
   curl_setopt($ch, CURLOPT_HEADER, 0);
   curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
   curl_setopt($ch, CURLOPT_URL, 'https://www.jstor.org/citation/ris/' . $jstor);
+  curl_setopt($ch, CURLOPT_USERAGENT, 'Citation_bot; citations@tools.wmflabs.org');
   $dat = (string) @curl_exec($ch);
   curl_close($ch);
   if ($dat == '') {
@@ -1078,6 +1082,7 @@ function expand_templates_from_archives(array $templates) : void { // This is do
   $ch = curl_init();
   curl_setopt($ch, CURLOPT_HEADER, 0);
   curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+  curl_setopt($ch, CURLOPT_USERAGENT, 'Citation_bot; citations@tools.wmflabs.org');
   foreach ($templates as $template) {
     if ($template->blank(['title', 'chapter', 'series']) &&
         !$template->blank(['archive-url', 'archive-url']) &&

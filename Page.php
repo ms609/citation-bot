@@ -69,6 +69,7 @@ class Page {
 
     $ch = curl_init();
     curl_setopt($ch, CURLOPT_HEADER, 0);
+    curl_setopt($ch, CURLOPT_USERAGENT, 'Citation_bot; citations@tools.wmflabs.org');
     curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
     curl_setopt($ch, CURLOPT_URL, WIKI_ROOT . '?' . http_build_query(['title' => $title, 'action' =>'raw']));
     $this->text = (string) @curl_exec($ch);

@@ -27,6 +27,7 @@ public static function make_ch_zotero() : void {
   curl_setopt(self::$zotero_ch, CURLOPT_CUSTOMREQUEST, "POST");
   curl_setopt(self::$zotero_ch, CURLOPT_HTTPHEADER, ['Content-Type: text/plain']);
   curl_setopt(self::$zotero_ch, CURLOPT_RETURNTRANSFER, TRUE);
+  curl_setopt(self::$zotero_ch, CURLOPT_USERAGENT, 'Citation_bot; citations@tools.wmflabs.org');
   // Defaults used in TRAVIS overiden below when deployed
   curl_setopt(self::$zotero_ch, CURLOPT_CONNECTTIMEOUT, 10);
   curl_setopt(self::$zotero_ch, CURLOPT_TIMEOUT, 45);
@@ -101,6 +102,7 @@ public static function query_ieee_webpages(array $templates) : void {
   $ch_ieee = curl_init();
   curl_setopt($ch_ieee, CURLOPT_RETURNTRANSFER, TRUE);
   curl_setopt($ch_ieee, CURLOPT_HEADER, FALSE);
+  curl_setopt($ch_ieee, CURLOPT_USERAGENT, 'Citation_bot; citations@tools.wmflabs.org');
   
   foreach (['url', 'chapter-url', 'chapterurl'] as $kind) {
    foreach ($templates as $template) {
@@ -142,6 +144,7 @@ public static function drop_urls_that_match_dois(array $templates) : void {
   curl_setopt($ch, CURLOPT_RETURNTRANSFER, TRUE);
   curl_setopt($ch, CURLOPT_COOKIEFILE, "");
   curl_setopt($ch, CURLOPT_AUTOREFERER, TRUE);
+  curl_setopt($ch, CURLOPT_USERAGENT, 'Citation_bot; citations@tools.wmflabs.org');
   foreach ($templates as $template) {
     $doi = $template->get_without_comments_and_placeholders('doi');
     if ($template->has('url')) {

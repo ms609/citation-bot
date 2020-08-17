@@ -333,6 +333,10 @@ function title_capitalization(string $in, bool $caps_after_punctuation) : string
      return $new_case; // We ignore wikilinked names and URL linked since who knows what's going on there.
                        // Changing case may break links (e.g. [[Journal YZ|J. YZ]] etc.)
   }
+  
+  if (stripos($new_case, 'www') !== FALSE || stripos($new_case, 'http') !== FALSE) {
+     return $new_case; // Who knows
+  }
 
   if ($new_case == mb_strtoupper($new_case) 
      && mb_strlen(str_replace(array("[", "]"), "", trim($in))) > 6
@@ -654,6 +658,7 @@ function check_doi_for_jstor(string $doi, Template $template) : void {
   $test_url = "https://www.jstor.org/citation/ris/" . $doi;
   $ch = curl_init($test_url);
   curl_setopt($ch, CURLOPT_RETURNTRANSFER, TRUE);
+  curl_setopt($ch, CURLOPT_USERAGENT, 'Citation_bot; citations@tools.wmflabs.org');
   $ris = (string) @curl_exec($ch);
   $httpCode = (int) @curl_getinfo($ch, CURLINFO_HTTP_CODE);
   curl_close($ch);
