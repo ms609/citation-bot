@@ -46,7 +46,7 @@ $final_edit_overview = "";
 if ($category) {
   $attempts = 0;
   $pages_in_category = $api->category_members($category);
-  if (!empty($pages_in_category)) {
+  if (empty($pages_in_category)) {
     echo('Category appears to be empty');
     html_echo(' </pre></body></html>', "\n");
     exit(0);
