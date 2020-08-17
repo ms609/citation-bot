@@ -101,6 +101,7 @@ public static function query_ieee_webpages(array $templates) : void {
   $ch_ieee = curl_init();
   curl_setopt($ch_ieee, CURLOPT_RETURNTRANSFER, TRUE);
   curl_setopt($ch_ieee, CURLOPT_HEADER, FALSE);
+  curl_setopt($ch_ieee, CURLOPT_USERAGENT, 'Citation_bot; citations@tools.wmflabs.org');
   
   foreach (['url', 'chapter-url', 'chapterurl'] as $kind) {
    foreach ($templates as $template) {
@@ -142,6 +143,7 @@ public static function drop_urls_that_match_dois(array $templates) : void {
   curl_setopt($ch, CURLOPT_RETURNTRANSFER, TRUE);
   curl_setopt($ch, CURLOPT_COOKIEFILE, "");
   curl_setopt($ch, CURLOPT_AUTOREFERER, TRUE);
+  curl_setopt($ch, CURLOPT_USERAGENT, 'Citation_bot; citations@tools.wmflabs.org');
   foreach ($templates as $template) {
     $doi = $template->get_without_comments_and_placeholders('doi');
     if ($template->has('url')) {
