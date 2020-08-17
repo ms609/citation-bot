@@ -90,7 +90,7 @@ final class WikipediaBot {
         
         CURLOPT_CONNECTTIMEOUT => 2,
         CURLOPT_TIMEOUT => 20,
-        
+        CURLOPT_USERAGENT => 'Citation_bot; citations@tools.wmflabs.org',
         CURLOPT_COOKIESESSION => TRUE,
         CURLOPT_COOKIEFILE => 'cookie.txt',
         CURLOPT_COOKIEJAR => 'cookiejar.txt',
@@ -434,6 +434,7 @@ final class WikipediaBot {
     $ch = curl_init();
     curl_setopt($ch, CURLOPT_HEADER, 0);
     curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+    curl_setopt($ch, CURLOPT_USERAGENT, 'Citation_bot; citations@tools.wmflabs.org');
     curl_setopt($ch, CURLOPT_URL, API_ROOT . '?action=query&usprop=blockinfo&format=json&list=users&ususers=' . urlencode(str_replace(" ", "_", $user)));
     $response = (string) @curl_exec($ch);
     curl_close($ch);
