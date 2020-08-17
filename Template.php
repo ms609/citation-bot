@@ -1374,6 +1374,7 @@ final class Template {
           curl_setopt($ch, CURLOPT_HEADER, 0);
           curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
           curl_setopt($ch, CURLOPT_URL, 'https://www.jstor.org/citation/ris/' . $matches[1]);
+          curl_setopt($ch, CURLOPT_USERAGENT, 'Citation_bot; citations@tools.wmflabs.org');
           $dat = (string) @curl_exec($ch);
           curl_close($ch);
           if ($dat &&
@@ -1493,6 +1494,7 @@ final class Template {
         curl_setopt($ch, CURLOPT_HEADER, 1);
         curl_setopt($ch, CURLOPT_NOBODY, 1);
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, TRUE);
+        curl_setopt($ch, CURLOPT_USERAGENT, 'Citation_bot; citations@tools.wmflabs.org');
         if (@curl_exec($ch)) {
           $redirect_url = (string) @curl_getinfo($ch, CURLINFO_REDIRECT_URL);
           if (strpos($redirect_url, "jstor.org/stable/")) {
@@ -1546,7 +1548,8 @@ final class Template {
           if (stripos($url, ".pdf") !== FALSE) {
             $test_url = "https://www.ncbi.nlm.nih.gov/pmc/articles/PMC" . $match[1] . $match[2] . "/";
             $ch = curl_init($test_url);
-            curl_setopt($ch,  CURLOPT_RETURNTRANSFER, TRUE);
+            curl_setopt($ch, CURLOPT_RETURNTRANSFER, TRUE);
+            curl_setopt($ch, CURLOPT_USERAGENT, 'Citation_bot; citations@tools.wmflabs.org');
             @curl_exec($ch);
             $httpCode = (int) @curl_getinfo($ch, CURLINFO_HTTP_CODE);
             curl_close($ch);
@@ -2327,6 +2330,7 @@ final class Template {
       curl_setopt($ch, CURLOPT_HTTPHEADER, array('Authorization: Bearer ' . PHP_ADSABSAPIKEY));
       curl_setopt($ch, CURLOPT_RETURNTRANSFER, TRUE);
       curl_setopt($ch, CURLOPT_HEADER, TRUE);
+      curl_setopt($ch, CURLOPT_USERAGENT, 'Citation_bot; citations@tools.wmflabs.org');
       $adsabs_url = "https://" . (TRAVIS ? 'qa' : 'api')
                   . ".adsabs.harvard.edu/v1/search/query"
                   . "?q=$options&fl=arxiv_class,author,bibcode,doi,doctype,identifier,"
@@ -2623,6 +2627,7 @@ final class Template {
     curl_setopt($ch, CURLOPT_HEADER, 0);
     curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
     curl_setopt($ch, CURLOPT_URL, $url);
+    curl_setopt($ch, CURLOPT_USERAGENT, 'Citation_bot; citations@tools.wmflabs.org');
     $json = (string) @curl_exec($ch);
     curl_close($ch);
     if ($json) {
@@ -2801,6 +2806,7 @@ final class Template {
       if ($isbn) {  // Try Books.Google.Com
         $google_book_url = 'https://www.google.com/search?tbo=p&tbm=bks&q=isbn:' . $isbn;
         $ch = curl_init();
+        curl_setopt($ch, CURLOPT_USERAGENT, 'Citation_bot; citations@tools.wmflabs.org');
         curl_setopt($ch, CURLOPT_HEADER, 0);
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
         curl_setopt($ch, CURLOPT_URL, $google_book_url);
@@ -2829,6 +2835,7 @@ final class Template {
         $ch = curl_init();
         curl_setopt($ch, CURLOPT_HEADER, 0);
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+        curl_setopt($ch, CURLOPT_USERAGENT, 'Citation_bot; citations@tools.wmflabs.org');
         curl_setopt($ch, CURLOPT_URL, "https://www.googleapis.com/books/v1/volumes?q=" . $url_token . "&key=" . PHP_GOOGLEKEY);
         $string = (string) @curl_exec($ch);
         curl_close($ch);
@@ -2937,6 +2944,7 @@ final class Template {
   protected function google_book_details(string $gid) : bool {
     $google_book_url = "https://books.google.com/books/feeds/volumes/" . $gid;
     $ch = curl_init();
+    curl_setopt($ch, CURLOPT_USERAGENT, 'Citation_bot; citations@tools.wmflabs.org');
     curl_setopt($ch, CURLOPT_HEADER, 0);
     curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
     curl_setopt($ch, CURLOPT_URL, $google_book_url);
@@ -3754,7 +3762,8 @@ final class Template {
             if ($this->blank('url')) {
               $test_url = 'https://plants.jstor.org/stable/' . $doi;
               $ch = curl_init($test_url);
-              curl_setopt($ch,  CURLOPT_RETURNTRANSFER, TRUE);
+              curl_setopt($ch, CURLOPT_RETURNTRANSFER, TRUE);
+              curl_setopt($ch, CURLOPT_USERAGENT, 'Citation_bot; citations@tools.wmflabs.org');
               @curl_exec($ch);
               $httpCode = (int) @curl_getinfo($ch, CURLINFO_HTTP_CODE);
               curl_close($ch);
@@ -4423,6 +4432,7 @@ final class Template {
                  curl_setopt($ch, CURLOPT_TIMEOUT, 15);
                  curl_setopt($ch, CURLOPT_RETURNTRANSFER, TRUE);
                  curl_setopt($ch, CURLOPT_COOKIEFILE, "");
+                 curl_setopt($ch, CURLOPT_USERAGENT, 'Citation_bot; citations@tools.wmflabs.org');
                  curl_setopt($ch, CURLOPT_URL, $matches[0]);
                  if (@curl_exec($ch)) {
                     $redirectedUrl = (string) @curl_getinfo($ch, CURLINFO_EFFECTIVE_URL);  // Final URL
