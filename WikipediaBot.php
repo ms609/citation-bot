@@ -90,12 +90,12 @@ final class WikipediaBot {
         
         CURLOPT_CONNECTTIMEOUT => 2,
         CURLOPT_TIMEOUT => 20,
-        CURLOPT_USERAGENT => 'Citation_bot; citations@tools.wmflabs.org',
+
         CURLOPT_COOKIESESSION => TRUE,
         CURLOPT_COOKIEFILE => 'cookie.txt',
         CURLOPT_COOKIEJAR => 'cookiejar.txt',
         CURLOPT_URL => API_ROOT,
-        CURLOPT_USERAGENT => 'Citation bot'
+        CURLOPT_USERAGENT => 'Citation_bot; citations@tools.wmflabs.org'
       ]);
   }
   
