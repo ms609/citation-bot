@@ -78,9 +78,7 @@ foreach (explode('|', $pages) as $page_title) {
     $text_expanded = $my_page->expand_text();
     if ($text_expanded && $ON) {
       $attempts = 0;
-      while (!$my_page->write($api, $edit_summary_end) && $attempts < MAX_TRIES) {
-        ++$attempts;
-      }
+      while (!$my_page->write($api, $edit_summary_end) && $attempts < MAX_TRIES) ++$attempts;
       if ($attempts < MAX_TRIES ) {
         $last_rev = urlencode($api->get_last_revision($page_title));
         html_echo(
