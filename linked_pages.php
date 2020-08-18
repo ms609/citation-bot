@@ -65,17 +65,15 @@ foreach($links as $link) {
     }
 }
 
-
-  $attempts = 0;
-
   $page = new Page();
   foreach ($pages_in_category as $page_title) {
     // $page->expand_text will take care of this notice if we are in HTML mode.
     html_echo('', "\n\n\n*** Processing page '" . echoable($page_title) . "' : " . date("H:i:s") . "\n");
     if ($page->get_text_from($page_title, $api) && $page->expand_text()) {
       report_phase("Writing to " . echoable($page_title) . '... ');
-      while (!$page->write($api, $edit_summary_end) && $attempts < 2) ++$attempts;
-      if ($attempts < 3 ) {
+      $attempts = 0;
+      while (!$page->write($api, $edit_summary_end) && $attempts < MAX_TRIES) ++$attempts;
+      if ($attempts < MAX_TRIES) {
         html_echo(
         "\n  <a href=" . WIKI_ROOT . "?title=" . urlencode($page_title) . "&diff=prev&oldid="
         . $api->get_last_revision($page_title) . ">diff</a>" .
