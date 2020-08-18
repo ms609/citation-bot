@@ -74,14 +74,14 @@ foreach (explode('|', $pages) as $page_title) {
   // $page->expand_text will take care of this notice if we are in HTML mode.
   html_echo('', "\n\n\n*** Processing page '" . echoable($page_title) . "' : " . date("H:i:s") . "\n");
   $my_page = new Page();
-  $attempts = 0;
   if ($my_page->get_text_from($page_title, $api)) {
     $text_expanded = $my_page->expand_text();
     if ($text_expanded && $ON) {
-      while (!$my_page->write($api, $edit_summary_end) && $attempts < 2) {
+      $attempts = 0;
+      while (!$my_page->write($api, $edit_summary_end) && $attempts < MAX_TRIES) {
         ++$attempts;
       }
-      if ($attempts < 3 ) {
+      if ($attempts < MAX_TRIES ) {
         $last_rev = urlencode($api->get_last_revision($page_title));
         html_echo(
           "\n <small><a href=" . WIKI_ROOT . "?title=" . urlencode($page_title) . "&diff=prev&oldid="
