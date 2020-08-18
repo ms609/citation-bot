@@ -2,6 +2,8 @@
 declare(strict_types=1);
 @session_start();
 
+define("MAX_TRIES", 3);
+
 require_once('setup.php');
 $api = new WikipediaBot();
 $category = isset($_REQUEST["cat"]) ? (string) $_REQUEST["cat"] : (string) @$argv[1];
@@ -44,7 +46,6 @@ $edit_summary_end = "| Suggested by " . $api->get_the_user() . " | [[Category:$c
 $final_edit_overview = "";
 
 if ($category) {
-  $attempts = 0;
   $pages_in_category = $api->category_members($category);
   if (empty($pages_in_category)) {
     echo('Category appears to be empty');
@@ -63,8 +64,9 @@ if ($category) {
     html_echo('', "\n\n\n*** Processing page '" . echoable($page_title) . "' : " . date("H:i:s") . "\n");
     if ($page->get_text_from($page_title, $api) && $page->expand_text()) {
       report_phase("Writing to " . echoable($page_title) . '... ');
-      while (!$page->write($api, $edit_summary_end) && $attempts < 2) ++$attempts;
-      if ($attempts < 3 ) {
+      $attempts = 0;
+      while (!$page->write($api, $edit_summary_end) && $attempts < MAX_TRIES) ++$attempts;
+      if ($attempts < MAX_TRIES ) {
         $last_rev = urlencode($api->get_last_revision($page_title));
         html_echo(
         "\n  <a href=" . WIKI_ROOT . "?title=" . urlencode($page_title) . "&diff=prev&oldid="
