@@ -2396,12 +2396,11 @@ final class Template {
       }
       if (!is_object($decoded)) {
         throw new Exception("Could not decode API response:\n" . $body, 5000);   // @codeCoverageIgnore
-      }
-      
-      if (isset($decoded->response)) {
+      } elseif (isset($decoded->response)) {
         $response = $decoded->response;
+      } elseif (isset($decoded->error)) {
+        throw new Exception("" . $decoded->error, 5000); // @codeCoverageIgnore
       } else {
-        if (isset($decoded->error)) throw new Exception("" . $decoded->error, 5000); // @codeCoverageIgnore
         throw new Exception("Could not decode AdsAbs response", 5000);        // @codeCoverageIgnore
       }
       return $response;
