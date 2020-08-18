@@ -2,8 +2,6 @@
 declare(strict_types=1);
 @session_start();
 
-define("MAX_TRIES", 3);
-
 require_once('setup.php');
 $api = new WikipediaBot();
 $category = isset($_REQUEST["cat"]) ? (string) $_REQUEST["cat"] : (string) @$argv[1];
