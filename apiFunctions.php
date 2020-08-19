@@ -65,7 +65,9 @@ function entrez_api(array $ids, array $templates, string $db) : bool {
           $i = 0;
           foreach ($item->Item as $subItem) {
             $subItem = (string) $subItem;
-            if (author_is_human($subItem)) {
+            if (preg_match('~^\d~', $subItem)) {
+              break; // Author started with a number, skip all remaining authors
+            } elseif (author_is_human($subItem)) {
               $jr_test = junior_test($subItem);
               $subItem = $jr_test[0];
               $junior = $jr_test[1];
