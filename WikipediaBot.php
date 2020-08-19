@@ -23,6 +23,19 @@ final class WikipediaBot {
 
   function __construct(bool $no_user = FALSE) {
     $this->ch = curl_init();
+    curl_setopt_array($this->ch, [
+        CURLOPT_FAILONERROR => TRUE, // This is a little paranoid, but we don't have trouble yet, and should deal with i
+        CURLOPT_FOLLOWLOCATION => TRUE,
+        CURLOPT_MAXREDIRS => 5,
+        CURLOPT_HEADER => 0, // Don't include header in output
+        CURLOPT_RETURNTRANSFER => TRUE,
+        CURLOPT_CONNECTTIMEOUT => 2,
+        CURLOPT_TIMEOUT => 20,
+        CURLOPT_COOKIESESSION => TRUE,
+        CURLOPT_COOKIEFILE => 'cookie.txt',
+        CURLOPT_COOKIEJAR => 'cookiejar.txt',
+        CURLOPT_USERAGENT => 'Citation_bot; citations@tools.wmflabs.org'
+    ]);
     // setup.php must already be run at this point
     if (!getenv('PHP_OAUTH_CONSUMER_TOKEN'))  report_error("PHP_OAUTH_CONSUMER_TOKEN not set");
     if (!getenv('PHP_OAUTH_CONSUMER_SECRET')) report_error("PHP_OAUTH_CONSUMER_SECRET not set");
@@ -83,21 +96,6 @@ final class WikipediaBot {
   public function fetch(array $params, string $method, int $depth = 1) : ?object {
     if ($depth > 1) sleep($depth);
     if ($depth > 5) return NULL;
-    curl_setopt_array($this->ch, [
-        CURLOPT_FAILONERROR => TRUE, // This is a little paranoid, but we don't have trouble yet, and should deal with i
-        CURLOPT_FOLLOWLOCATION => TRUE,
-        CURLOPT_MAXREDIRS => 5,
-        CURLOPT_HEADER => FALSE, // Don't include header in output
-        CURLOPT_HTTPGET => TRUE, // Reset to default GET
-        CURLOPT_RETURNTRANSFER => TRUE,
-        CURLOPT_CONNECTTIMEOUT => 2,
-        CURLOPT_TIMEOUT => 20,
-        CURLOPT_COOKIESESSION => TRUE,
-        CURLOPT_COOKIEFILE => 'cookie.txt',
-        CURLOPT_COOKIEJAR => 'cookiejar.txt',
-        CURLOPT_URL => API_ROOT,
-        CURLOPT_USERAGENT => 'Citation_bot; citations@tools.wmflabs.org'
-    ]);
     $params['format'] = 'json';
      
     $request = Request::fromConsumerAndToken($this->consumer, $this->token, $method, API_ROOT, $params);
@@ -109,6 +107,7 @@ final class WikipediaBot {
         case 'get':
           $url = API_ROOT . '?' . http_build_query($params);            
           curl_setopt_array($this->ch, [
+            CURLOPT_HTTPGET => TRUE,
             CURLOPT_URL => $url,
             CURLOPT_HTTPHEADER => [$authenticationHeader],
           ]);
@@ -134,6 +133,7 @@ final class WikipediaBot {
             CURLOPT_POST => TRUE,
             CURLOPT_POSTFIELDS => http_build_query($params),
             CURLOPT_HTTPHEADER => [$authenticationHeader],
+            CURLOPT_URL => API_ROOT
           ]);
           set_time_limit(45);
           $data = (string) @curl_exec($this->ch);
@@ -421,10 +421,12 @@ final class WikipediaBot {
   static public function is_valid_user(string $user) : bool {
     if (!$user) return FALSE;
     $ch = curl_init();
-    curl_setopt($ch, CURLOPT_HEADER, 0);
-    curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
-    curl_setopt($ch, CURLOPT_USERAGENT, 'Citation_bot; citations@tools.wmflabs.org');
-    curl_setopt($ch, CURLOPT_URL, API_ROOT . '?action=query&usprop=blockinfo&format=json&list=users&ususers=' . urlencode(str_replace(" ", "_", $user)));
+    curl_setopt_array($ch, [
+      CURLOPT_HEADER => 0,
+      CURLOPT_RETURNTRANSFER => TRUE,
+      CURLOPT_USERAGENT => 'Citation_bot; citations@tools.wmflabs.org',
+      CURLOPT_URL => API_ROOT . '?action=query&usprop=blockinfo&format=json&list=users&ususers=' . urlencode(str_replace(" ", "_", $user))
+    ]);
     $response = (string) @curl_exec($ch);
     curl_close($ch);
     if ($response == '') return FALSE;
