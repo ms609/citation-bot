@@ -28,7 +28,7 @@ final class Template {
   public int $date_style = DATES_WHATEVER;  // Will get from the page
   protected string $rawtext;
   public string $last_searched_doi = '';
-  protected string $example_param;
+  protected ?string $example_param;
 
   protected string $name; protected array $param; protected array $initial_param; protected array $initial_author_params; protected string $initial_name;
             protected array $used_by_api; protected bool $doi_valid = FALSE; protected bool $had_initial_editor = FALSE;
