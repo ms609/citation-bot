@@ -1312,14 +1312,14 @@ final class Template {
           return FALSE;
        }
        $this->add_if_new('s2cid', $s2cid);
-       if (is_null($url_sent) && get_semanticscholar_license($s2cid) === FALSE) {
-         report_warning('Should probably remove un-licensed Semantic Scholar URL that was converted to S2CID parameter');
-         // $this->forget($url_type);
-         return TRUE;
-       }
        if (is_null($url_sent) && $this->has('pmc')) {
          report_info('Removed Converted Semantic Scholar URL that blocked PMC URL');
          $this->forget($url_type);
+         return TRUE;
+       }
+       if (is_null($url_sent) && get_semanticscholar_license($s2cid) === FALSE) {
+         report_warning('Should probably remove un-licensed Semantic Scholar URL that was converted to S2CID parameter');
+         // $this->forget($url_type);
          return TRUE;
        }
        return TRUE;
@@ -2398,8 +2398,8 @@ final class Template {
         throw new Exception("Could not decode API response:\n" . $body, 5000);   // @codeCoverageIgnore
       } elseif (isset($decoded->response)) {
         $response = $decoded->response;
-      } elseif (isset($decoded->error)) {
-        throw new Exception("" . $decoded->error, 5000); // @codeCoverageIgnore
+      } elseif (isset($decoded->error)) {                    // @codeCoverageIgnore
+        throw new Exception("" . $decoded->error, 5000);     // @codeCoverageIgnore
       } else {
         throw new Exception("Could not decode AdsAbs response", 5000);        // @codeCoverageIgnore
       }
@@ -3381,7 +3381,7 @@ final class Template {
     $parameters_used[] = $p->param;
   }
 
-  $unused_parameters = ($parameters_used ? array_diff($parameter_list, $parameters_used) : $parameter_list);
+  $unused_parameters = array_diff($parameter_list, $parameters_used);
 
   $i = 0;
   foreach ($this->param as $p) {
