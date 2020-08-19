@@ -3539,10 +3539,12 @@ final class Template {
     
     if (!$param) return;
     
-    if ($param === 'postscript' && $this->wikiname() !== 'citation' && preg_match('~^(?:# # # CITATION_BOT_PLACEHOLDER_COMMENT \d+ # # #)\s*(?:# # # CITATION_BOT_PLACEHOLDER_TEMPLATE \d+ # # #|)$~i', $this->get('postscript'))) {
-       // Misleading -- comments of "NONE" etc mean nothing!
+    if ($param === 'postscript' && $this->wikiname() !== 'citation' &&
+        $key = $this->get_param_key('postscript') &&
+        preg_match('~^(?:# # # CITATION_BOT_PLACEHOLDER_COMMENT \d+ # # #)\s*(?:# # # CITATION_BOT_PLACEHOLDER_TEMPLATE \d+ # # #|)$~i', $this->get('postscript'))) {
+       // Remove misleading stuff -- comments of "NONE" etc mean nothing!
        // Cannot call forget, since it will not remove items with comments in it
-       unset($this->param[$this->get_param_key('postscript')]);
+       unset($this->param[$key]);
        report_forget('Dropping postscript that is only a comment');
        return;
     }
