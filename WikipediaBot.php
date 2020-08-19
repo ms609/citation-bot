@@ -14,7 +14,9 @@ require_once('user_messages.php');
 require_once("constants.php");
 
 final class WikipediaBot {
-  /* @var resource $ch */
+	/**
+	* @var resource
+	*/
   private $ch;
   private Consumer $consumer; private Token $token; private string $the_user;
   private static ?self $last_WikipediaBot;
