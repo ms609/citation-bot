@@ -19,6 +19,7 @@ final class WikipediaBot {
   private static $last_WikipediaBot;
 
   function __construct(bool $no_user = FALSE) {
+    $this->ch = curl_init();
     // setup.php must already be run at this point
     if (!getenv('PHP_OAUTH_CONSUMER_TOKEN'))  report_error("PHP_OAUTH_CONSUMER_TOKEN not set");
     if (!getenv('PHP_OAUTH_CONSUMER_SECRET')) report_error("PHP_OAUTH_CONSUMER_SECRET not set");
@@ -39,7 +40,7 @@ final class WikipediaBot {
   }
   
   function __destruct() {
-    if ($this->ch) curl_close($this->ch);
+    curl_close($this->ch);
   }
   
   public function username() : string {
@@ -76,39 +77,24 @@ final class WikipediaBot {
     return TRUE;
   }
   
-  private function reset_curl() : bool {
-    if (!$this->ch) {
-      $this->ch = curl_init();
-    }
-    return curl_setopt_array($this->ch, [
+  public function fetch(array $params, string $method, int $depth = 1) : ?object {
+    if ($depth > 1) sleep($depth);
+    if ($depth > 5) return NULL;
+    curl_setopt_array($this->ch, [
         CURLOPT_FAILONERROR => TRUE, // This is a little paranoid, but we don't have trouble yet, and should deal with i
         CURLOPT_FOLLOWLOCATION => TRUE,
         CURLOPT_MAXREDIRS => 5,
         CURLOPT_HEADER => FALSE, // Don't include header in output
         CURLOPT_HTTPGET => TRUE, // Reset to default GET
         CURLOPT_RETURNTRANSFER => TRUE,
-        
         CURLOPT_CONNECTTIMEOUT => 2,
         CURLOPT_TIMEOUT => 20,
-
         CURLOPT_COOKIESESSION => TRUE,
         CURLOPT_COOKIEFILE => 'cookie.txt',
         CURLOPT_COOKIEJAR => 'cookiejar.txt',
         CURLOPT_URL => API_ROOT,
         CURLOPT_USERAGENT => 'Citation_bot; citations@tools.wmflabs.org'
-      ]);
-  }
-  
-  public function fetch(array $params, string $method, int $depth = 1) : ?object {
-    if ($depth > 1) sleep($depth);
-    if ($depth > 5) return NULL;
-    if (!$this->reset_curl()) {
-      // @codeCoverageIgnoreStart
-      curl_close($this->ch);
-      report_error('Could not initialize CURL resource: ' . echoable(curl_error($this->ch)));
-      return NULL;
-      // @codeCoverageIgnoreEnd
-    }
+    ]);
     $params['format'] = 'json';
      
     $request = Request::fromConsumerAndToken($this->consumer, $this->token, $method, API_ROOT, $params);
