@@ -418,7 +418,7 @@ final class WikipediaBot {
   static public function is_valid_user(string $user) : bool {
     if (!$user) return FALSE;
     $ch = curl_init();
-    curl_setopt_array($this->ch, [
+    curl_setopt_array($ch, [
       CURLOPT_HEADER => 0,
       CURLOPT_RETURNTRANSFER => TRUE,
       CURLOPT_USERAGENT => 'Citation_bot; citations@tools.wmflabs.org',
