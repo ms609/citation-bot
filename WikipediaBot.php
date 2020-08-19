@@ -32,8 +32,6 @@ final class WikipediaBot {
         CURLOPT_COOKIEFILE => 'cookie.txt',
         CURLOPT_COOKIEJAR => 'cookiejar.txt',
         CURLOPT_USERAGENT => 'Citation_bot; citations@tools.wmflabs.org'
-        CURLOPT_HTTPGET => TRUE, // Reset to default GET
-        CURLOPT_URL => API_ROOT
     ]);
     // setup.php must already be run at this point
     if (!getenv('PHP_OAUTH_CONSUMER_TOKEN'))  report_error("PHP_OAUTH_CONSUMER_TOKEN not set");
