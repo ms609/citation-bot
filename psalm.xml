@@ -6,6 +6,7 @@
     xmlns="https://getpsalm.org/schema/config"
     xsi:schemaLocation="https://getpsalm.org/schema/config vendor/vimeo/psalm/config.xsd"
     phpVersion="7.3"
+    autoloader="setup.php"
 >
     <projectFiles>
         <file name="Comment.php" />
@@ -34,7 +35,4 @@
             <directory name="vendor" />
         </ignoreFiles>
     </projectFiles>
-    <globals>
-       <var name="$ADSABS_GIVE_UP" type="int" />
-    </globals>
 </psalm>
