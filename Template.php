@@ -3381,7 +3381,7 @@ final class Template {
     $parameters_used[] = $p->param;
   }
 
-  $unused_parameters = ($parameters_used ? array_diff($parameter_list, $parameters_used) : $parameter_list);
+  $unused_parameters = array_diff($parameter_list, $parameters_used);
 
   $i = 0;
   foreach ($this->param as $p) {
