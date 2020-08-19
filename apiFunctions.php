@@ -313,8 +313,8 @@ function adsabs_api(array $ids, array $templates, string $identifier) : bool {
       throw new Exception("Could not decode API response:\n" . $body, 5000);  // @codeCoverageIgnore
     } elseif (isset($decoded->response)) {
       $response = $decoded->response;
-    } elseif (isset($decoded->error)) {
-      throw new Exception("" . $decoded->error, 5000); // @codeCoverageIgnore
+    } elseif (isset($decoded->error)) {                   // @codeCoverageIgnore
+      throw new Exception("" . $decoded->error, 5000);    // @codeCoverageIgnore
     } else {
       throw new Exception("Could not decode AdsAbs response", 5000);        // @codeCoverageIgnore
     }
