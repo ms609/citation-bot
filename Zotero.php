@@ -12,7 +12,7 @@ final class Zotero {
   private const ZOTERO_SKIPS = 100;
   private const ERROR_DONE = 'ERROR_DONE'; 
   protected static $zotero_announced;
-  protected static $zotero_ch = make_ch_zotero();
+  protected static $zotero_ch = self::make_ch_zotero();
   protected static $zotero_failures_count = 0;
 
 private static function make_ch_zotero() : resource {
