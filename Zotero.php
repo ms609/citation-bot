@@ -12,26 +12,20 @@ final class Zotero {
   private const ZOTERO_SKIPS = 100;
   private const ERROR_DONE = 'ERROR_DONE'; 
   protected static $zotero_announced;
-  protected static $zotero_ch;
+  protected static $zotero_ch = make_ch_zotero();
   protected static $zotero_failures_count = 0;
- 
-/*
- * This gets called during the the testing suite constructor, so it is not seen as being code covered
- * This CURL resource is never closed
- */
-// @codeCoverageIgnoreStart
-public static function make_ch_zotero() : void {
-  if (is_resource(self::$zotero_ch)) return;
-  self::$zotero_ch = curl_init(ZOTERO_ROOT);
-  curl_setopt(self::$zotero_ch, CURLOPT_CUSTOMREQUEST, "POST");
-  curl_setopt(self::$zotero_ch, CURLOPT_HTTPHEADER, ['Content-Type: text/plain']);
-  curl_setopt(self::$zotero_ch, CURLOPT_RETURNTRANSFER, TRUE);
-  curl_setopt(self::$zotero_ch, CURLOPT_USERAGENT, 'Citation_bot; citations@tools.wmflabs.org');
+
+private static function make_ch_zotero() : resource {
+  $ch = curl_init(ZOTERO_ROOT);
+  curl_setopt($ch, CURLOPT_CUSTOMREQUEST, "POST");
+  curl_setopt($ch, CURLOPT_HTTPHEADER, ['Content-Type: text/plain']);
+  curl_setopt($ch, CURLOPT_RETURNTRANSFER, TRUE);
+  curl_setopt($ch, CURLOPT_USERAGENT, 'Citation_bot; citations@tools.wmflabs.org');
   // Defaults used in TRAVIS overiden below when deployed
-  curl_setopt(self::$zotero_ch, CURLOPT_CONNECTTIMEOUT, 10);
-  curl_setopt(self::$zotero_ch, CURLOPT_TIMEOUT, 45);
+  curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, 10);
+  curl_setopt($ch, CURLOPT_TIMEOUT, 45);
+  return $ch;
 }
-// @codeCoverageIgnoreEnd
 
 public static function block_zotero() : void {
   self::$zotero_failures_count = 1000000;  
