@@ -4997,17 +4997,29 @@ T1 - This is the Title }}';
    }
  
    public function testWork2Enc() : void {
-     $text = '{{cite journal|url=plato.stanford.edu|work=X}}';
+     $text = '{{cite web|url=plato.stanford.edu|work=X}}';
      $template = $this->make_citation($text);
      $template->tidy_parameter('work');
      $this->assertNull($template->get2('work'));
      $this->assertSame('X', $template->get2('encyclopedia'));
     
-     $text = '{{cite journal|work=X from encyclopædia}}';
+     $text = '{{cite web|work=X from encyclopædia}}';
      $template = $this->make_citation($text);
      $template->tidy_parameter('work');
      $this->assertNull($template->get2('work'));
      $this->assertSame('X from encyclopædia', $template->get2('encyclopedia'));
+  
+     $text = '{{cite journal|url=plato.stanford.edu|work=X}}';
+     $template = $this->make_citation($text);
+     $template->tidy_parameter('work');
+     $this->assertNull($template->get2('encyclopedia'));
+     $this->assertSame('X', $template->get2('work'));
+    
+     $text = '{{cite journal|work=X from encyclopædia}}';
+     $template = $this->make_citation($text);
+     $template->tidy_parameter('work');
+     $this->assertNull($template->get2('encyclopedia'));
+     $this->assertSame('X from encyclopædia', $template->get2('work'));
    }
  
    public function testNonPubs() : void {
