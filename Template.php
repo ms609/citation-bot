@@ -4485,7 +4485,7 @@ final class Template {
           }
 
           if ($this->has_but_maybe_blank($param) && $this->blank($work_becomes)) {
-            if ($work_becomes === 'encyclopedia' && $this->wikiname() === 'cite web')) {
+            if ($work_becomes === 'encyclopedia' && $this->wikiname() === 'cite web') {
               $this->change_name_to('cite encyclopedia');
             }
             if ($work_becomes !== 'encyclopedia' || in_array($this->wikiname(), ['cite dictionary', 'cite encyclopedia', 'citation'])) {
