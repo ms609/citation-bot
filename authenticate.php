@@ -22,7 +22,7 @@ function death_time(string $err) : void {
 }
 
 function return_to_sender(string $where = 'https://citations.toolforge.org/') : void {
-  @header("Location: " . $where);
+  header("Location: " . $where);
   exit(0);
 }
 
