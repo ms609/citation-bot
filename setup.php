@@ -81,5 +81,3 @@ require_once('apiFunctions.php');
 require_once('Template.php');
 require_once('Page.php');
 require_once('user_messages.php');
-
-Zotero::make_ch_zotero();
