@@ -14,13 +14,8 @@ final class Zotero {
   protected static $zotero_announced;
   protected static $zotero_ch;
   protected static $zotero_failures_count = 0;
- 
-/*
- * This gets called during the the testing suite constructor, so it is not seen as being code covered
- * This CURL resource is never closed
- */
-// @codeCoverageIgnoreStart
-public static function make_ch_zotero() : void {
+
+private static function make_ch_zotero() : void {
   if (is_resource(self::$zotero_ch)) return;
   self::$zotero_ch = curl_init(ZOTERO_ROOT);
   curl_setopt(self::$zotero_ch, CURLOPT_CUSTOMREQUEST, "POST");
@@ -31,7 +26,6 @@ public static function make_ch_zotero() : void {
   curl_setopt(self::$zotero_ch, CURLOPT_CONNECTTIMEOUT, 10);
   curl_setopt(self::$zotero_ch, CURLOPT_TIMEOUT, 45);
 }
-// @codeCoverageIgnoreEnd
 
 public static function block_zotero() : void {
   self::$zotero_failures_count = 1000000;  
@@ -43,7 +37,8 @@ public static function unblock_zotero() : void {
 
 public static function query_url_api_class(array $ids, array $templates) : void {
   if (!SLOW_MODE) return; // Zotero takes time
-  
+  self::make_ch_zotero();
+
   if (!TRAVIS) { // try harder in tests
     // @codeCoverageIgnoreStart
     curl_setopt(self::$zotero_ch, CURLOPT_CONNECTTIMEOUT, 1);
@@ -240,13 +235,14 @@ public static function drop_urls_that_match_dois(array $templates) : void {
   @strtok('',''); // Free internal buffers
 }
 
-public static function zotero_request(string $url) : string {
+private static function zotero_request(string $url) : string {
   if (self::$zotero_failures_count > self::ZOTERO_GIVE_UP) {
     self::$zotero_failures_count = self::$zotero_failures_count - 1;                            // @codeCoverageIgnore
     if (self::ZOTERO_GIVE_UP == self::$zotero_failures_count) self::$zotero_failures_count = 0; // @codeCoverageIgnore
   }
   if (self::$zotero_failures_count > self::ZOTERO_GIVE_UP) return self::ERROR_DONE;
 
+  self::make_ch_zotero();
   curl_setopt(self::$zotero_ch, CURLOPT_POSTFIELDS, $url);
   
   $zotero_response = (string) @curl_exec(self::$zotero_ch);
