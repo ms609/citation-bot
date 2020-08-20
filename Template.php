@@ -30,21 +30,24 @@ final class Template {
   public $last_searched_doi = '';
   protected $example_param;
 
-  protected $name, $param, $initial_param, $initial_author_params, $initial_name,
-            $used_by_api, $doi_valid = FALSE, $had_initial_editor = FALSE,
-            $mod_dashes = FALSE, $mod_names = FALSE, $no_initial_doi = FALSE;
+  protected $name, $param, $initial_param = array(), $initial_author_params = array(), $initial_name,
+            $doi_valid = FALSE, $had_initial_editor = FALSE,
+            $mod_dashes = FALSE, $mod_names = FALSE, $no_initial_doi = FALSE,
+            $used_by_api = array(
+               'adsabs'   => array(),
+               'arxiv'    => array(),
+               'crossref' => array(),
+               'dx'       => array(),
+               'entrez'   => array(),
+               'jstor'    => array(),
+               'zotero'   => array(),
+            );
 
+  function __construct() {
+     ;  // All the real construction is done in parse_text() and above in variable initialization
+  }
+  
   public function parse_text(string $text) : void {
-    $this->initial_author_params = array(); // Will be populated later if there are any
-    $this->used_by_api = array(
-      'adsabs'   => array(),
-      'arxiv'    => array(),
-      'crossref' => array(),
-      'dx'       => array(),
-      'entrez'   => array(),
-      'jstor'    => array(),
-      'zotero'   => array(),
-    );
     if (isset($this->rawtext)) {
         report_error("Template already initialized; call new Template() before calling Template::parse_text()"); // @codeCoverageIgnore
     }
@@ -84,7 +87,6 @@ final class Template {
     }
 
     // extract initial parameters/values from Parameters in $this->param
-    $this->initial_param = array();
     foreach ($this->param as $p) {
       $this->initial_param[$p->param] = $p->val;
 
