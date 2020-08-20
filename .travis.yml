@@ -15,7 +15,7 @@ matrix:           ###### ONLY ONE WITH FULL TESTING WITH IS 7.3 OTHERS ARE ALL S
       before_script:  
         - travis_retry composer self-update
         - composer require overtrue/phplint --dev -vvv
-      script: ./vendor/bin/phplint --exclude=vendor --no-interaction  ./
+      script: ./vendor/bin/phplint --exclude=vendor --no-interaction -vv ./
     - php: 7.4
       name: "PHP phpstan"
       before_script:

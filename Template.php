@@ -30,21 +30,24 @@ final class Template {
   public string $last_searched_doi = '';
   protected ?string $example_param;
 
-  protected string $name; protected array $param; protected array $initial_param; protected array $initial_author_params; protected string $initial_name;
-            protected array $used_by_api; protected bool $doi_valid = FALSE; protected bool $had_initial_editor = FALSE;
+  protected string $name; protected array $param; protected array $initial_param = array(); protected array $initial_author_params = array(); protected string $initial_name;
+            protected bool $doi_valid = FALSE; protected bool $had_initial_editor = FALSE;
             protected bool $mod_dashes = FALSE; protected bool $mod_names = FALSE; protected bool $no_initial_doi = FALSE;
+            protected array $used_by_api = array(
+               'adsabs'   => array(),
+               'arxiv'    => array(),
+               'crossref' => array(),
+               'dx'       => array(),
+               'entrez'   => array(),
+               'jstor'    => array(),
+               'zotero'   => array(),
+            );
 
+  function __construct() {
+     ;  // All the real construction is done in parse_text() and above in variable initialization
+  }
+  
   public function parse_text(string $text) : void {
-    $this->initial_author_params = array(); // Will be populated later if there are any
-    $this->used_by_api = array(
-      'adsabs'   => array(),
-      'arxiv'    => array(),
-      'crossref' => array(),
-      'dx'       => array(),
-      'entrez'   => array(),
-      'jstor'    => array(),
-      'zotero'   => array(),
-    );
     if (isset($this->rawtext)) {
         report_error("Template already initialized; call new Template() before calling Template::parse_text()"); // @codeCoverageIgnore
     }
@@ -84,7 +87,6 @@ final class Template {
     }
 
     // extract initial parameters/values from Parameters in $this->param
-    $this->initial_param = array();
     foreach ($this->param as $p) {
       $this->initial_param[$p->param] = $p->val;
 
