@@ -20,7 +20,7 @@ class Page {
 
   protected ?string $text = NULL;
   protected ?string $title = NULL;
-  protected ?array $modifications = NULL;
+  protected array $modifications = array();
   protected int $date_style = DATES_WHATEVER;
   protected ?string $read_at = NULL;
   protected ?string $start_text = NULL;
@@ -556,7 +556,6 @@ class Page {
   }
   
   protected function construct_modifications_array() : void {
-    $this->modifications = array();
     $this->modifications['changeonly'] = array();
     $this->modifications['additions'] = array();
     $this->modifications['deletions'] = array();
