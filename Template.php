@@ -24,16 +24,19 @@ final class Template {
   public const REGEXP = ['~\{\{[^\{\}\|]+\}\}~su', '~\{\{[^\{\}]+\}\}~su', '~\{\{(?>[^\{]|\{[^\{])+?\}\}~su'];  // Please see https://stackoverflow.com/questions/1722453/need-to-prevent-php-regex-segfault for discussion of atomic regex
   public const TREAT_IDENTICAL_SEPARATELY = FALSE;
   private const MAGIC_STRING = 'CITATION_BOT_PLACEHOLDER_URL_POINTER_'; 
-  public array $all_templates;  // Points to list of all the Template() on the Page() including this one
-  public int $date_style = DATES_WHATEVER;  // Will get from the page
-  protected string $rawtext;
-  public string $last_searched_doi = '';
-  protected ?string $example_param;
 
-  protected string $name; protected array $param; protected array $initial_param = array(); protected array $initial_author_params = array(); protected string $initial_name;
-            protected bool $doi_valid = FALSE; protected bool $had_initial_editor = FALSE;
-            protected bool $mod_dashes = FALSE; protected bool $mod_names = FALSE; protected bool $no_initial_doi = FALSE;
-            protected array $used_by_api = array(
+  protected ?string$name = NULL;
+  protected array $param = array();
+  protected array $initial_param = array();
+  protected array $initial_author_params = array();
+  protected ?string $initial_name = NULL;
+  protected bool $doi_valid = FALSE;
+  protected bool $had_initial_editor = FALSE;
+  protected bool $mod_dashes = FALSE;
+  protected bool $mod_names = FALSE;
+  protected bool $no_initial_doi = FALSE;
+  protected array $used_by_api = array(
+
                'adsabs'   => array(),
                'arxiv'    => array(),
                'crossref' => array(),
@@ -58,7 +61,6 @@ final class Template {
       $this->split_params(substr($text, $pipe_pos + 1, -2));
     } else {
       $this->name = substr($text, 2, -2);
-      $this->param = array();
     }
     $this->initial_name = $this->name;
     // Clean up outdated redirects
