@@ -39,7 +39,7 @@ final class Template {
   protected $had_initial_editor = FALSE;
   protected $mod_dashes = FALSE;
   protected $mod_names = FALSE;
-  protected $no_initial_doi = FALSE,;
+  protected $no_initial_doi = FALSE;
   protected $used_by_api = array(
                'adsabs'   => array(),
                'arxiv'    => array(),
