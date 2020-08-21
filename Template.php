@@ -29,6 +29,7 @@ final class Template {
   protected ?string $rawtext = NULL;		
   public string $last_searched_doi = '';		
   protected ?string $example_param = NULL;
+
   protected ?string $name = NULL;
   protected array $param = array();
   protected array $initial_param = array();
