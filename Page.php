@@ -18,10 +18,14 @@ require_once("constants.php");
 
 class Page {
 
-  protected $text, $title, $modifications, $date_style;
-  protected $read_at, $start_text;
-  protected $lastrevid;
-  protected $page_error;
+  protected $text = NULL;
+  protected $title = NULL;
+  protected $modifications = NULL;
+  protected $date_style = DATES_WHATEVER;
+  protected $read_at = NULL;
+  protected $start_text = NULL;
+  protected $lastrevid = NULL;
+  protected $page_error = FALSE;
 
   function __construct() { 
       $this->construct_modifications_array();
