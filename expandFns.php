@@ -587,7 +587,7 @@ function remove_comments(string $string) : string {
 
 function prior_parameters(string $par, array $list=array()) : array {
   array_unshift($list, $par);
-  if (preg_match('~(\D+)(\d+)~', $par, $match)) {
+  if (preg_match('~(\D+)(\d+)~', $par, $match) && stripos($par, 's2cid') === FALSE) {
     $before = (string) ((int) $match[2] - 1);
     switch ($match[1]) {
       case 'first': case 'initials': case 'forename':
