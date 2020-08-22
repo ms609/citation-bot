@@ -1212,11 +1212,11 @@ final class Template {
     if (is_null($url_sent)) {
        // Chapter URLs are generally better than URLs for the whole book.
         if ($this->has('url') && $this->has('chapterurl')) {
-           return (bool) ((int) $this->get_identifiers_from_url(Template::MAGIC_STRING . 'chapterurl ') +
-                          (int) $this->get_identifiers_from_url(Template::MAGIC_STRING . 'url '));
+           return (bool) ((int) $this->get_identifiers_from_url(Self::MAGIC_STRING . 'chapterurl ') +
+                          (int) $this->get_identifiers_from_url(Self::MAGIC_STRING . 'url '));
         } elseif ($this->has('url') && $this->has('chapter-url')) {
-           return (bool) ((int) $this->get_identifiers_from_url(Template::MAGIC_STRING . 'chapter-url ') +
-                          (int) $this->get_identifiers_from_url(Template::MAGIC_STRING . 'url '));
+           return (bool) ((int) $this->get_identifiers_from_url(Self::MAGIC_STRING . 'chapter-url ') +
+                          (int) $this->get_identifiers_from_url(Self::MAGIC_STRING . 'url '));
         } elseif ($this->has('url')) {        
            $url = $this->get('url');
            $url_type = 'url';
@@ -1260,7 +1260,7 @@ final class Template {
           // If no URL or website, nothing to worth with.
           return FALSE;
         }
-    } elseif (preg_match('~^' . Template::MAGIC_STRING . '(\S+) $~', $url_sent, $matches)) {
+    } elseif (preg_match('~^' . Self::MAGIC_STRING . '(\S+) $~', $url_sent, $matches)) {
       $url_sent = NULL;
       $url_type = $matches[1];
       $url      = $this->get($matches[1]);
@@ -3306,7 +3306,7 @@ final class Template {
       $this->add_if_new(strtolower($match[1]), $match[2]);
       $id = str_replace($match[0], '', $id);
     }
-    if (preg_match_all('~' . sprintf(Template::PLACEHOLDER_TEXT, '(\d+)') . '~', $id, $matches)) {
+    if (preg_match_all('~' . sprintf(Self::PLACEHOLDER_TEXT, '(\d+)') . '~', $id, $matches)) {
       for ($i = 0; $i < count($matches[1]); $i++) {
         $subtemplate = $this->all_templates[$matches[1][$i]];
         $subtemplate_name = $subtemplate->wikiname();
