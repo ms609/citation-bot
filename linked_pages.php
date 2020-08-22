@@ -64,7 +64,7 @@ foreach($links as $link) {
         }
     }
 }
-if (empty($pages_in_caregory)) report_error('No links to expand found');
+if (empty($pages_in_category)) report_error('No links to expand found');
   $page = new Page();
   foreach ($pages_in_category as $page_title) {
     // $page->expand_text will take care of this notice if we are in HTML mode.
