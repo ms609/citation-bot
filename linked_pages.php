@@ -34,7 +34,7 @@ $api = new WikipediaBot();
 
 check_blocked();
 
-$page_name = str_replace(' ', '_', trim($_REQUEST['page']));
+$page_name = str_replace(' ', '_', trim((string) @$_REQUEST['page']));
 if ($page_name == '') report_error('Nothing requested');
 if (strlen($page_name) >256) report_error('Possible invalid page');
 $edit_summary_end = "| Suggested by " . $api->get_the_user() . " | All pages linked from cached copy of $page_name | via #UCB_webform_linked";
@@ -64,7 +64,7 @@ foreach($links as $link) {
         }
     }
 }
-
+if (empty($pages_in_caregory)) report_error('No links to expand found');
   $page = new Page();
   foreach ($pages_in_category as $page_title) {
     // $page->expand_text will take care of this notice if we are in HTML mode.
