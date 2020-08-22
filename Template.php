@@ -4326,7 +4326,7 @@ final class Template {
               }
           }
           // idm.oclc.org Proxy
-          if (stripos($this->get($param), 'idm.oclc.org') !== FALSE) {
+          if (stripos($this->get($param), 'idm.oclc.org') !== FALSE && stripos($this->get($param), 'wikipedialibrary') === FALSE) {
               $oclc_found = FALSE;
               if (preg_match("~^https://([^\.\-\/]+)-([^\.\-\/]+)-([^\.\-\/]+)\.[^\.\-\/]+\.idm\.oclc\.org/(.+)$~i", $this->get($param), $matches)) {
                  $this->set($param, 'https://' . $matches[1] . '.' . $matches[2] . '.' . $matches[3] . '/' . $matches[4]);
@@ -4357,9 +4357,10 @@ final class Template {
           } else {
              $the_host = '';
           }
-          if (stripos($the_host, 'proxy') !== FALSE ||
+          if ((stripos($the_host, 'proxy') !== FALSE ||
               stripos($the_host, 'lib') !== FALSE ||
-              stripos($the_host, 'mutex') !== FALSE) {
+              stripos($the_host, 'mutex') !== FALSE) &&
+	      stripos($the_host, 'wikipedialibrary') === FALSE) {
                 // Generic proxy code www.host.com.proxy-stuff/dsfasfdsfasdfds
               if (preg_match("~^https?://(www\.[^\./\-]+\.com)\.[^/]*(?:proxy|library|\.lib\.|mutex\.gmu)[^/]*/(\S+)$~i", $this->get($param), $matches)) {
                  report_info("Remove proxy from " . $matches[1] . " URL");
