@@ -444,6 +444,7 @@ final class WikipediaBot {
   }
   
   static public function NonStandardMode() : bool {
+    if (TRAVIS) return FALSE;
     if (!isset(self::$last_WikipediaBot)) return FALSE;
     return (self::$last_WikipediaBot->get_the_user() === 'AManWithNoPlan');
   }
