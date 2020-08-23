@@ -233,9 +233,9 @@ final class WikipediaBot {
     if (isset($result->error)) {
       // @codeCoverageIgnoreStart
       report_minor_error("Write error: " . 
-                    echoable(strtoupper($result->error->code)) . ": " . 
+                    echoable(strtoupper((string) $result->error->code)) . ": " . 
                     str_replace(array("You ", " have "), array("This bot ", " has "), 
-                    echoable($result->error->info)));
+                    echoable((string) $result->error->info)));
       return FALSE;
       // @codeCoverageIgnoreEnd
     } elseif (isset($result->edit)) {
