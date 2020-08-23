@@ -50,6 +50,7 @@ if ($category) {
     html_echo(' </pre></body></html>', "\n");
     exit(0);
   }
+  $pages_in_category = array_unique($pages_in_category); // Paranoid
   if (count($pages_in_category) > 1000) {
     echo('Category is huge.  Cancelling run. Pick a smaller category.  Listen to Obi-Wan Kenobi:  You want to go home and rethink your life.');
     html_echo(' </pre></body></html>', "\n");

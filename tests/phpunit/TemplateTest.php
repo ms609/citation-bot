@@ -3615,15 +3615,15 @@ T1 - This is the Title }}';
     $text = "{{cite web|url=https://www-rocksbackpages-com.wikipedialibrary.idm.oclc.org/Library/Article/camel-over-the-moon |via = wiki stuff }}";
     $template = $this->make_citation($text);
     $template->tidy_parameter('url');
-    $this->assertSame('https://www.rocksbackpages.com/Library/Article/camel-over-the-moon', $template->get2('url'));
-    $this->assertNull($template->get2('via'));
+    $this->assertSame('https://www-rocksbackpages-com.wikipedialibrary.idm.oclc.org/Library/Article/camel-over-the-moon', $template->get2('url'));
+    $this->assertSame('wiki stuff', $template->get2('via'));
    }
  
    public function testTidy81() : void {
     $text = "{{cite web|url=https://rocksbackpages-com.wikipedialibrary.idm.oclc.org/Library/Article/camel-over-the-moon |via=My Dog}}";
     $template = $this->make_citation($text);
     $template->tidy_parameter('url');
-    $this->assertSame('https://rocksbackpages.com/Library/Article/camel-over-the-moon', $template->get2('url'));
+    $this->assertSame('https://rocksbackpages-com.wikipedialibrary.idm.oclc.org/Library/Article/camel-over-the-moon', $template->get2('url'));
     $this->assertSame('My Dog', $template->get2('via'));
    }
  

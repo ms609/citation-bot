@@ -82,8 +82,14 @@ final class WikipediaBot {
         report_error('Account "' . $this->username() .  '" or this IP is blocked from editing.');
       } elseif (strpos((string) $response->error->info, 'The database has been automatically locked') !== FALSE) {
         report_minor_error('Wikipedia database Locked.  Aborting changes for this page.  Will sleep and move on.');
+        sleep(10);
+        return TRUE;
       } elseif (strpos((string) $response->error->info, 'abusefilter-warning-predatory') !== FALSE) {
         report_minor_error('Wikipedia page contains predatory references.  Aborting changes for this page.  Will sleep and move on.');
+        return TRUE;
+      } elseif (strpos((string) $response->error->info, 'protected') !== FALSE) {
+        report_minor_error('Wikipedia page is protected from editing.  Aborting changes for this page.  Will sleep and move on.');
+        return TRUE;
       } else {
         report_minor_error('API call failed: ' . (string) $response->error->info);
       }
@@ -145,7 +151,8 @@ final class WikipediaBot {
           if (isset($ret->error) && (
             (string) $ret->error->code === 'assertuserfailed' ||
             stripos((string) $ret->error->info, 'The database has been automatically locked') !== FALSE ||
-            stripos((string) $ret->error->info, 'abusefilter-warning-predatory') !== FALSE)
+            stripos((string) $ret->error->info, 'abusefilter-warning-predatory') !== FALSE ||
+            stripos((string) $ret->error->info, 'protected') !== FALSE)
           ) {
             // @codeCoverageIgnoreStart
             unset($data);
@@ -439,8 +446,7 @@ final class WikipediaBot {
   }
   
   static public function NonStandardMode() : bool {
-    if (!isset(self::$last_WikipediaBot)) return FALSE;
-    return (self::$last_WikipediaBot->get_the_user() === 'AManWithNoPlan');
+    return !TRAVIS && isset(self::$last_WikipediaBot) && self::$last_WikipediaBot->get_the_user() === 'AManWithNoPlan';
   }
   
 /**

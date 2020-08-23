@@ -1212,11 +1212,11 @@ final class Template {
     if (is_null($url_sent)) {
        // Chapter URLs are generally better than URLs for the whole book.
         if ($this->has('url') && $this->has('chapterurl')) {
-           return (bool) ((int) $this->get_identifiers_from_url(Template::MAGIC_STRING . 'chapterurl ') +
-                          (int) $this->get_identifiers_from_url(Template::MAGIC_STRING . 'url '));
+           return (bool) ((int) $this->get_identifiers_from_url(Self::MAGIC_STRING . 'chapterurl ') +
+                          (int) $this->get_identifiers_from_url(Self::MAGIC_STRING . 'url '));
         } elseif ($this->has('url') && $this->has('chapter-url')) {
-           return (bool) ((int) $this->get_identifiers_from_url(Template::MAGIC_STRING . 'chapter-url ') +
-                          (int) $this->get_identifiers_from_url(Template::MAGIC_STRING . 'url '));
+           return (bool) ((int) $this->get_identifiers_from_url(Self::MAGIC_STRING . 'chapter-url ') +
+                          (int) $this->get_identifiers_from_url(Self::MAGIC_STRING . 'url '));
         } elseif ($this->has('url')) {        
            $url = $this->get('url');
            $url_type = 'url';
@@ -1260,7 +1260,7 @@ final class Template {
           // If no URL or website, nothing to worth with.
           return FALSE;
         }
-    } elseif (preg_match('~^' . Template::MAGIC_STRING . '(\S+) $~', $url_sent, $matches)) {
+    } elseif (preg_match('~^' . Self::MAGIC_STRING . '(\S+) $~', $url_sent, $matches)) {
       $url_sent = NULL;
       $url_type = $matches[1];
       $url      = $this->get($matches[1]);
@@ -2544,10 +2544,14 @@ final class Template {
           $dat = trim(str_replace("\n$ris_line", "", "\n$dat"));
           break;
         case "M3": case "N1": case "N2": case "ER": case "TY": case "KW":
+        case "C1": case "DB": case "AB": case "Y2": // The following line is from JSTOR RIS (basically the header and blank lines)
+        case "": case "Provider: JSTOR http://www.jstor.org": case "Database: JSTOR": case "Content: text/plain; charset=\"UTF-8\"";
           $dat = trim(str_replace("\n$ris_line", "", "\n$dat")); // Ignore these completely
           break;
         default:
-          report_info("Unexpected RIS data type ignored: " . $ris_part[0]);
+          if (isset($ris_part[1])) {
+             report_info("Unexpected RIS data type ignored: " . trim($ris_part[0]) . " set to " . trim($ris_part[1]));
+          };
       }
       unset($ris_part[0]);
       if ($ris_parameter
@@ -3306,7 +3310,7 @@ final class Template {
       $this->add_if_new(strtolower($match[1]), $match[2]);
       $id = str_replace($match[0], '', $id);
     }
-    if (preg_match_all('~' . sprintf(Template::PLACEHOLDER_TEXT, '(\d+)') . '~', $id, $matches)) {
+    if (preg_match_all('~' . sprintf(Self::PLACEHOLDER_TEXT, '(\d+)') . '~', $id, $matches)) {
       for ($i = 0; $i < count($matches[1]); $i++) {
         $subtemplate = $this->all_templates[$matches[1][$i]];
         $subtemplate_name = $subtemplate->wikiname();
@@ -4326,7 +4330,7 @@ final class Template {
               }
           }
           // idm.oclc.org Proxy
-          if (stripos($this->get($param), 'idm.oclc.org') !== FALSE) {
+          if (stripos($this->get($param), 'idm.oclc.org') !== FALSE && stripos($this->get($param), 'wikipedialibrary') === FALSE) {
               $oclc_found = FALSE;
               if (preg_match("~^https://([^\.\-\/]+)-([^\.\-\/]+)-([^\.\-\/]+)\.[^\.\-\/]+\.idm\.oclc\.org/(.+)$~i", $this->get($param), $matches)) {
                  $this->set($param, 'https://' . $matches[1] . '.' . $matches[2] . '.' . $matches[3] . '/' . $matches[4]);
@@ -4357,9 +4361,10 @@ final class Template {
           } else {
              $the_host = '';
           }
-          if (stripos($the_host, 'proxy') !== FALSE ||
+          if ((stripos($the_host, 'proxy') !== FALSE ||
               stripos($the_host, 'lib') !== FALSE ||
-              stripos($the_host, 'mutex') !== FALSE) {
+              stripos($the_host, 'mutex') !== FALSE) &&
+	      stripos($the_host, 'wikipedialibrary') === FALSE) {
                 // Generic proxy code www.host.com.proxy-stuff/dsfasfdsfasdfds
               if (preg_match("~^https?://(www\.[^\./\-]+\.com)\.[^/]*(?:proxy|library|\.lib\.|mutex\.gmu)[^/]*/(\S+)$~i", $this->get($param), $matches)) {
                  report_info("Remove proxy from " . $matches[1] . " URL");
@@ -5666,18 +5671,23 @@ final class Template {
   public function use_issn() : bool {
     if ($this->blank('issn')) return FALSE; // Nothing to use
     if (!$this->blank(WORK_ALIASES)) return FALSE; // Nothing to add
-    if ($this->get('issn') === '9999-9999') return FALSE; // Fake test suite data
-    if (!preg_match('~^\d{4}.?\d{3}[0-9xX]$~u', $this->get('issn'))) return FALSE;
-    $html = @file_get_contents('https://www.worldcat.org/issn/' . $this->get('issn'));
+    $issn = $this->get('issn');
+    if ($issn === '9999-9999') return FALSE; // Fake test suite data
+    if (!preg_match('~^\d{4}.?\d{3}[0-9xX]$~u', $issn)) return FALSE;
+    $html = @file_get_contents('https://www.worldcat.org/issn/' . $issn);
     if (preg_match('~<title>(.*)\(e?Journal~', $html, $matches)) {
-      if ($this->wikiname() === 'cite magazine') {
-        return $this->add_if_new('magazine', trim($matches[1]));  // @codeCoverageIgnore
-      } else {   
-        return $this->add_if_new('journal', trim($matches[1])); // Might be newspaper, hard to tell.
+      $the_name = trim($matches[1]);
+      if ($issn === '0027-8378') { // Special Cases, better than The Nation : A Weekly Journal Devoted to Politics, Literature, Science, Drama, Music, Art, and Finance
+         $the_name = 'The Nation';
       }
-    } elseif (TRAVIS && preg_match('~<title>(.*)</title>~', $html, $matches)) {     // @codeCoverageIgnore
+      if ($this->wikiname() === 'cite magazine') {
+        return $this->add_if_new('magazine', $the_name);  // @codeCoverageIgnore
+      } else {   
+        return $this->add_if_new('journal', $the_name); // Might be newspaper, hard to tell.
+      }
+    } elseif (preg_match('~<title>(.*)</title>~', $html, $matches)) {     // @codeCoverageIgnore
       // Sometime just get [WorldCat.org]
-      report_error('unexpected title from ISSN ' . $this->get('issn') . ' : ' . $matches[1]); // @codeCoverageIgnore
+      report_minor_error('unexpected title from ISSN ' . $issn . ' : ' . $matches[1]); // @codeCoverageIgnore
     }
     return FALSE; // @codeCoverageIgnore
   }
