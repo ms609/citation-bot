@@ -5671,18 +5671,23 @@ final class Template {
   public function use_issn() : bool {
     if ($this->blank('issn')) return FALSE; // Nothing to use
     if (!$this->blank(WORK_ALIASES)) return FALSE; // Nothing to add
-    if ($this->get('issn') === '9999-9999') return FALSE; // Fake test suite data
-    if (!preg_match('~^\d{4}.?\d{3}[0-9xX]$~u', $this->get('issn'))) return FALSE;
-    $html = @file_get_contents('https://www.worldcat.org/issn/' . $this->get('issn'));
+    $issn = $this->get('issn');
+    if ($issn === '9999-9999') return FALSE; // Fake test suite data
+    if (!preg_match('~^\d{4}.?\d{3}[0-9xX]$~u', $issn)) return FALSE;
+    $html = @file_get_contents('https://www.worldcat.org/issn/' . $issn);
     if (preg_match('~<title>(.*)\(e?Journal~', $html, $matches)) {
-      if ($this->wikiname() === 'cite magazine') {
-        return $this->add_if_new('magazine', trim($matches[1]));  // @codeCoverageIgnore
-      } else {   
-        return $this->add_if_new('journal', trim($matches[1])); // Might be newspaper, hard to tell.
+      $the_name = trim($matches[1]);
+      if ($issn === '0027-8378') { // Special Cases, better than The Nation : A Weekly Journal Devoted to Politics, Literature, Science, Drama, Music, Art, and Finance
+         $the_name = 'The Nation';
       }
-    } elseif (TRAVIS && preg_match('~<title>(.*)</title>~', $html, $matches)) {     // @codeCoverageIgnore
+      if ($this->wikiname() === 'cite magazine') {
+        return $this->add_if_new('magazine', $the_name);  // @codeCoverageIgnore
+      } else {   
+        return $this->add_if_new('journal', $the_name); // Might be newspaper, hard to tell.
+      }
+    } elseif (preg_match('~<title>(.*)</title>~', $html, $matches)) {     // @codeCoverageIgnore
       // Sometime just get [WorldCat.org]
-      report_error('unexpected title from ISSN ' . $this->get('issn') . ' : ' . $matches[1]); // @codeCoverageIgnore
+      report_minor_error('unexpected title from ISSN ' . $issn . ' : ' . $matches[1]); // @codeCoverageIgnore
     }
     return FALSE; // @codeCoverageIgnore
   }
