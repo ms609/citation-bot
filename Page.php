@@ -527,14 +527,20 @@ class Page {
   }
   
   protected function allow_bots() : bool {
+    if (preg_match('~\{\{pp-full\}\}~i', $this->text)) { // NO ONE can edit this page
+      return FALSE;
+    }
     // from https://en.wikipedia.org/wiki/Template:Bots
     $bot_username = '(?:Citation|DOI)[ _]bot';
-    if (preg_match('/\{\{(nobots|bots\|allow=none|bots\|deny=all|bots\|optout=all|bots\|deny=.*?'.$bot_username.'.*?)\}\}/iS',$this->text))
+    if (preg_match('~\{\{(nobots|bots\|allow=none|bots\|deny=all|bots\|optout=all|bots\|deny=.*?'.$bot_username.'.*?)\}\}~iS',$this->text)) {
       return FALSE;
-    if (preg_match('/\{\{(bots\|allow=all|bots\|allow=.*?'.$bot_username.'.*?)\}\}/iS', $this->text))
+    }
+    if (preg_match('~\{\{(bots\|allow=all|bots\|allow=.*?'.$bot_username.'.*?)\}\}~iS', $this->text)) {
       return TRUE;
-    if (preg_match('/\{\{(bots\|allow=.*?)\}\}/iS', $this->text))
+    }
+    if (preg_match('~\{\{(bots\|allow=.*?)\}\}~iS', $this->text)) {
       return FALSE;
+    }
     return TRUE;
   }
   
