@@ -26,15 +26,15 @@ final class Template {
   private const MAGIC_STRING = 'CITATION_BOT_PLACEHOLDER_URL_POINTER_'; 
   public $all_templates = NULL;  // Points to list of all the Template() on the Page() including this one
   public $date_style = DATES_WHATEVER;  // Will get from the page
-  protected $rawtext = NULL;
+  protected $rawtext = '';
   public $last_searched_doi = '';
   protected $example_param = NULL;
 
-  protected $name = NULL;
+  protected $name = '';
   protected $param = array();
   protected $initial_param = array();
   protected $initial_author_params = array();
-  protected $initial_name = NULL;
+  protected $initial_name = '';
   protected $doi_valid = FALSE;
   protected $had_initial_editor = FALSE;
   protected $mod_dashes = FALSE;
