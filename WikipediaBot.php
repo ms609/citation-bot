@@ -69,6 +69,7 @@ final class WikipediaBot {
   }
   
   private function ret_okay(?object $response) : bool {
+    if (self::NonStandardMode()) print_r($response); // DEBUG
     if (is_null($response)) {
       report_minor_error('Wikipedia responce was not decoded.');  // @codeCoverageIgnore
       return FALSE;                                               // @codeCoverageIgnore
