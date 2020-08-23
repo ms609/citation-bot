@@ -52,7 +52,7 @@ if ($json == '') {
 }    
 $array = @json_decode($json, TRUE);
 if ($array === FALSE || !isset($array['parse']['links']) || !is_array($array['parse']['links'])) {
-  report_error(' Error interpreting page list');
+  report_error(' Error interpreting page list - perhaps page requested does not even exist');
 }
 $links = $array['parse']['links'];
 $pages_in_category = [];
@@ -64,6 +64,7 @@ foreach($links as $link) {
         }
     }
 }
+$pages_in_category = array_unique($pages_in_category);
 if (empty($pages_in_category)) report_error('No links to expand found');
   $page = new Page();
   foreach ($pages_in_category as $page_title) {
