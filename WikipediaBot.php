@@ -112,7 +112,7 @@ final class WikipediaBot {
           $data = (string) @curl_exec($this->ch);
           if (!$data) {
             report_minor_error("Curl error: " . echoable(curl_error($this->ch)));  // @codeCoverageIgnore
-            sleep(10);
+            sleep(10);                                                             // @codeCoverageIgnore
             return NULL;                                                           // @codeCoverageIgnore
           }
           $ret = @json_decode($data);
