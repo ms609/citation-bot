@@ -136,7 +136,7 @@ final class WikipediaBot {
           set_time_limit(45);
           $data = (string) @curl_exec($this->ch);
           if ( !$data ) {
-            report_miror_error("Curl error: " . echoable(curl_error($this->ch)));     // @codeCoverageIgnore
+            report_minor_error("Curl error: " . echoable(curl_error($this->ch)));     // @codeCoverageIgnore
             sleep(10);                                                                // @codeCoverageIgnore
             return NULL;                                                              // @codeCoverageIgnore
           }
