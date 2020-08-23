@@ -69,7 +69,6 @@ final class WikipediaBot {
   }
   
   private function ret_okay(?object $response) : bool {
-    if (self::NonStandardMode()) print_r($response); // DEBUG
     if (is_null($response)) {
       report_minor_error('Wikipedia responce was not decoded.');  // @codeCoverageIgnore
       return FALSE;                                               // @codeCoverageIgnore
@@ -444,9 +443,7 @@ final class WikipediaBot {
   }
   
   static public function NonStandardMode() : bool {
-    if (TRAVIS) return FALSE;
-    if (!isset(self::$last_WikipediaBot)) return FALSE;
-    return (self::$last_WikipediaBot->get_the_user() === 'AManWithNoPlan');
+    return !TRAVIS && isset(self::$last_WikipediaBot) && self::$last_WikipediaBot->get_the_user() === 'AManWithNoPlan';
   }
   
 /**
