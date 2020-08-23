@@ -111,7 +111,8 @@ final class WikipediaBot {
           set_time_limit(45);
           $data = (string) @curl_exec($this->ch);
           if (!$data) {
-            report_error("Curl error: " . echoable(curl_error($this->ch)));        // @codeCoverageIgnore
+            report_minor_error("Curl error: " . echoable(curl_error($this->ch)));  // @codeCoverageIgnore
+            sleep(10);
             return NULL;                                                           // @codeCoverageIgnore
           }
           $ret = @json_decode($data);
@@ -135,7 +136,9 @@ final class WikipediaBot {
           set_time_limit(45);
           $data = (string) @curl_exec($this->ch);
           if ( !$data ) {
-            report_error("Curl error: " . echoable(curl_error($this->ch)));     // @codeCoverageIgnore
+            report_miror_error("Curl error: " . echoable(curl_error($this->ch)));     // @codeCoverageIgnore
+            sleep(10);                                                                // @codeCoverageIgnore
+            return NULL;                                                              // @codeCoverageIgnore
           }
           $ret = @json_decode($data);
           set_time_limit(120);    
@@ -152,13 +155,14 @@ final class WikipediaBot {
           }
           return ($this->ret_okay($ret)) ? $ret : NULL;
 
-        default:  // will only be hit if error in our code
+        default:  // will only be hit if bug in our code
           report_error("Unrecognized method in Fetch."); // @codeCoverageIgnore
       }
     } catch(Exception $E) {
       report_warning("Exception caught!\n");
       report_info("Response: ". $E->getMessage());
     }
+    sleep(10); // Wait for wikipedia to fix itself
     return NULL;
   }
   
@@ -172,29 +176,29 @@ final class WikipediaBot {
           ], 'GET');
     
     if (!$response) {
-      report_error("Write request failed");     // @codeCoverageIgnore
+      report_minor_error("Write request failed"); return FALSE;   // @codeCoverageIgnore
     }
     if (isset($response->warnings)) {
       // @codeCoverageIgnoreStart
       if (isset($response->warnings->prop)) {
-        report_error((string) $response->warnings->prop->{'*'});
+        report_minor_error((string) $response->warnings->prop->{'*'}); return FALSE;
       }
       if (isset($response->warnings->info)) {
-        report_error((string) $response->warnings->info->{'*'});
+        report_minor_error((string) $response->warnings->info->{'*'}); return FALSE;
       }
       // @codeCoverageIgnoreEnd
     }
     if (!isset($response->batchcomplete)) {
-      report_error("Write request triggered no response from server");   // @codeCoverageIgnore
+      report_minor_error("Write request triggered no response from server"); return FALSE; // @codeCoverageIgnore
     }
     
     if (!isset($response->query->pages)) {
-      report_error("Pages array is non-existent.  Aborting.");   // @codeCoverageIgnore
+      report_minor_error("Pages array is non-existent.  Aborting."); return FALSE; // @codeCoverageIgnore
     }
     $myPage = reset($response->query->pages); // reset gives first element in list
     
     if (!isset($myPage->lastrevid)) {
-      report_error("Page seems not to exist. Aborting.");   // @codeCoverageIgnore
+      report_minor_error("Page seems not to exist. Aborting."); return FALSE;  // @codeCoverageIgnore
     }
     $baseTimeStamp = $myPage->revisions[0]->timestamp;
     
@@ -228,10 +232,11 @@ final class WikipediaBot {
     
     if (isset($result->error)) {
       // @codeCoverageIgnoreStart
-      report_error("Write error: " . 
+      report_minor_error("Write error: " . 
                     echoable(strtoupper($result->error->code)) . ": " . 
                     str_replace(array("You ", " have "), array("This bot ", " has "), 
                     echoable($result->error->info)));
+      return FALSE;
       // @codeCoverageIgnoreEnd
     } elseif (isset($result->edit)) {
       // @codeCoverageIgnoreStart
@@ -254,9 +259,12 @@ final class WikipediaBot {
       // @codeCoverageIgnoreEnd
     } else {
       // @codeCoverageIgnoreStart
-      if (!TRAVIS) report_error("Unhandled write error.  Please copy this output and " .
+      if (!TRAVIS) {
+          report_minor_error("Unhandled write error.  Please copy this output and " .
                     "<a href='https://en.wikipedia.org/wiki/User_talk:Citation_bot'>" .
                     "report a bug.</a>.  There is no need to report the database being locked unless it continues to be a problem. ");
+          sleep(10);
+      }
       // @codeCoverageIgnoreEnd
     }
     return FALSE;
@@ -333,8 +341,9 @@ final class WikipediaBot {
         "titles" => $page,
       ], 'GET');
     if (!isset($res->query->pages)) {
-        report_error("Failed to get article's last revision");      // @codeCoverageIgnore
-        return '';                                                  // @codeCoverageIgnore
+        report_minor_error("Failed to get article's last revision"); // @codeCoverageIgnore
+        sleep(4);                                                    // @codeCoverageIgnore
+        return '';                                                   // @codeCoverageIgnore
     }
     $page = reset($res->query->pages);
     return  (isset($page->revisions[0]->revid) ? (string) $page->revisions[0]->revid : '');
