@@ -31,7 +31,7 @@ function entrez_api(array $ids, array $templates, string $db) : bool {
   report_action("Using $db API to retrieve publication details: ");
   
   $xml = @simplexml_load_file($url);
-  if ($xml === FALSE) {
+  if (!is_object($xml)) {
     report_warning("Error in PubMed search: No response from Entrez server");    // @codeCoverageIgnore
     return FALSE;                                                                // @codeCoverageIgnore
   }
@@ -152,11 +152,13 @@ function arxiv_api(array $ids, array $templates) : bool {
     report_warning("No response from arXiv.");       // @codeCoverageIgnore
     return FALSE;                                    // @codeCoverageIgnore
   }
-  if ($xml) {
-    if ((string)$xml->entry->title === "Error") {
+  if (!is_object($xml)) {
+    report_warning("No valid from arXiv.");       // @codeCoverageIgnore
+    return FALSE;                                 // @codeCoverageIgnore
+  }
+  if ((string)$xml->entry->title === "Error") {
       report_warning("arXiv search failed; please report error: " . (string)$xml->entry->summary);
       return FALSE;
-    }
   }
   
   $this_template = current($templates); // advance at end of foreach loop
@@ -582,7 +584,7 @@ function query_crossref(string $doi) : ?object {
           '<year media_type="print">',
           $raw_xml);
     $xml = @simplexml_load_string($raw_xml);
-    if ($xml) {
+    if (is_object($xml)) {
       curl_close($ch);
       $result = $xml->query_result->body->query;
       if ($result["status"] == "resolved") {
