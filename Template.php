@@ -1020,6 +1020,14 @@ final class Template {
             $this->forget($alias);
           }
         }
+		    $time = strtotime($value);
+        if ($time) { // paranoid
+            if ($this->date_style === DATES_MDY) {
+               $value = date('F j, Y', $time);
+            } elseif ($this->date_style === DATES_DMY) {
+               $value = date('j F Y', $time);
+            }
+        }		    
         if ($this->blank(DOI_BROKEN_ALIASES)) {
           return $this->add($param_name, $value);
         }
