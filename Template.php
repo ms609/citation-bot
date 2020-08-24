@@ -1020,7 +1020,7 @@ final class Template {
             $this->forget($alias);
           }
         }
-		    $time = strtotime($value);
+        $time = strtotime($value);
         if ($time) { // paranoid
             if ($this->date_style === DATES_MDY) {
                $value = date('F j, Y', $time);
