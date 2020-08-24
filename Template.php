@@ -3726,12 +3726,23 @@ final class Template {
                  mb_substr_count($the_author, ']]') === 1 &&
                  strpos($the_author, 'CITATION_BOT') === FALSE &&
                  strpos($the_author, '{{!}}') === FALSE) {  // Has a normal wikilink
+                   $did_something = FALSE;
                    if (preg_match(REGEXP_PLAIN_WIKILINK, $the_author, $matches)) {
                     $this->set($param, $matches[1]);
                     $this->add_if_new('author' . $pmatch[2] . '-link', $matches[1]);
+                    $did_something = TRUE;
                    } elseif (preg_match(REGEXP_PIPED_WIKILINK, $the_author, $matches)) {
                     $this->set($param, $matches[2]);
                     $this->add_if_new('author' . $pmatch[2] . '-link', $matches[1]);
+                    $did_something = TRUE;
+                  }
+                  if ($did_something && strpos($this->get('first' . $pmatch[2]), '[') !==FALSE) { // Clean up links in first names
+                    $the_author = $this->get('first' . $pmatch[2]);
+                    if (preg_match(REGEXP_PLAIN_WIKILINK, $the_author, $matches)) {
+                      $this->set('first' . $pmatch[2], $matches[1]);
+                    } elseif (preg_match(REGEXP_PIPED_WIKILINK, $the_author, $matches)) {
+                      $this->set('first' . $pmatch[2], $matches[2]);
+                    }
                   }
               }
             }
