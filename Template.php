@@ -3737,7 +3737,7 @@ final class Template {
                     $did_something = TRUE;
                   }
                   if ($did_something && strpos($this->get('first' . $pmatch[2]), '[') !==FALSE) { // Clean up links in first names
-                    $the_author = $this->get('first' . $pmatch[2])
+                    $the_author = $this->get('first' . $pmatch[2]);
                     if (preg_match(REGEXP_PLAIN_WIKILINK, $the_author, $matches)) {
                       $this->set('first' . $pmatch[2], $matches[1]);
                     } elseif (preg_match(REGEXP_PIPED_WIKILINK, $the_author, $matches)) {
