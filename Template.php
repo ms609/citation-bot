@@ -3919,7 +3919,7 @@ final class Template {
               $new_periodical = title_capitalization(ucwords($periodical), TRUE);
               if (str_ireplace(OBVIOUS_FOREIGN_WORDS, '', ' ' . $periodical . ' ') == ' ' . $periodical . ' ' &&
                   str_replace(['(', ')'], '', $periodical) == $periodical &&
-                 $new_periodical != $periodical) {
+                  $new_periodical != $periodical) {
                  $now = WikipediaBot::is_redirect($periodical);
                  if ($now === -1) { // Dead link
                    $this->set($param, '[[' . $new_periodical . ']]');
