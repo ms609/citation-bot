@@ -18,12 +18,12 @@ require_once("constants.php");
 
 class Page {
 
-  protected $text = NULL;
-  protected $title = NULL;
+  protected $text = '';
+  protected $title = '';
   protected $modifications = array();
   protected $date_style = DATES_WHATEVER;
-  protected $read_at = NULL;
-  protected $start_text = NULL;
+  protected $read_at = '';
+  protected $start_text = '';
   protected $lastrevid = NULL;
   protected $page_error = FALSE;
 
@@ -98,6 +98,8 @@ class Page {
     $this->start_text = $this->text;
     $this->set_date_pattern();
     $this->title = '';
+    $this->read_at = '';
+    $this->lastrevid = NULL;
   }
  
   public function parsed_text() : string {
