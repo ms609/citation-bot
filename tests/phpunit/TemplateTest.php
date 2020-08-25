@@ -950,7 +950,7 @@ final class TemplateTest extends testBaseClass {
   }
   public function testRemoveWikilinks4b() : void {
     $expanded = $this->process_citation("{{Cite journal|title=Dark Lord of the [[Sith]] Pure Evil}}");
-    $this->assertSame('Dark Lord of the Sith Pure Evil', $expanded->get2('title'));
+    $this->assertSame('Dark Lord of the [[Sith]] Pure Evil', $expanded->get2('title'));
     $this->assertNull($expanded->get2('title-link'));
   }
   public function testRemoveWikilinks4c() : void {
@@ -1927,7 +1927,7 @@ T1 - This is the Title }}';
     $text = '{{cite journal|title=[[Zootimeboys]] and Girls|journal=[[Zootimeboys]] and Girls}}';
     $prepared = $this->prepare_citation($text);
     $this->assertSame('Zootimeboys and Girls', $prepared->get2('journal'));
-    $this->assertSame('Zootimeboys and Girls', $prepared->get2('title'));
+    $this->assertSame('[[Zootimeboys]] and Girls', $prepared->get2('title'));
   }
   
   public function testNewWikiText() : void { // checks for new information that looks like wiki text and needs escaped
