@@ -4165,13 +4165,8 @@ final class Template {
              $title = preg_replace("~\]\]~", "", $title);
           } elseif (strpos($title, '{{!}}') === FALSE) { // Convert a single link to a title-link
              if (preg_match(REGEXP_PLAIN_WIKILINK, $title, $matches)) {
-               $title = str_replace(array("[[", "]]"), "", $title);
                if (strlen($matches[1]) > (0.7 * strlen($title))) {  // Only add as title-link if a large part of title text
-                 if ($matches[1] == $title) {
-                   $title = '[[' . $title . ']]';
-                 } else {
-                   $title = '[[' . $matches[1] . "|" . $title . ']]';
-                 }
+                 $title = '[[' . $matches[1] . "|" . str_replace(array("[[", "]]"), "", $title) . ']]';
                }
              } elseif (preg_match(REGEXP_PIPED_WIKILINK, $title, $matches) &&
                        strpos($title, ':') === FALSE) { // Avoid touching inter-wiki links
