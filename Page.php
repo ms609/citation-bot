@@ -553,10 +553,16 @@ class Page {
     if (preg_match('~\{\{Use mdy dates[^\}\{]*\}\}~i',$this->text)) {
       $date_style = DATES_MDY;
     }
+    if (preg_match('~\{\{Use mdy[^\}\{]*\}\}~i',$this->text)) {
+      $date_style = DATES_MDY;
+    }
     if (preg_match('~\{\{mdy[^\}\{]*\}\}~i',$this->text)) {
       $date_style = DATES_MDY;
     }
     if (preg_match('~\{\{Use dmy dates[^\}\{]*\}\}~i',$this->text)) {
+      $date_style = DATES_DMY;
+    }
+    if (preg_match('~\{\{Use dmy[^\}\{]*\}\}~i',$this->text)) {
       $date_style = DATES_DMY;
     }
     if (preg_match('~\{\{dmy[^\}\{]*\}\}~i',$this->text)) {
