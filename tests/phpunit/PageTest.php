@@ -210,7 +210,7 @@ final class PageTest extends testBaseClass {
   public function testUrlReferencesWithText1() : void {
       $text = "<ref>Jarman, D. (1983). [https://www.jstor.org/discover/10.2307/962034?uid=3738032&amp;uid=373072751&amp;uid=2&amp;uid=3&amp;uid=60&amp;sid=21102523353593 Alban Berg, Wilhelm Fliess and the Secret Programme of the Violin Concerto]. ''The Musical Times'' Vol. 124, No. 1682 (Apr. 1983), pp. 218–223</ref>";
       $page = $this->process_page($text);
-      $this->assertSame('<ref>{{Cite journal|jstor = 962034|doi = 10.2307/962034|title = Alban Berg, Wilhelm Fliess and the Secret Programme of the Violin Concerto|year = 1983|last1 = Jarman|first1 = Douglas|journal = The Musical Times|volume = 124|issue = 1682|pages = 218–223}}</ref>', $page->parsed_text());
+      $this->assertSame('<ref>{{Cite journal|jstor=962034|doi=10.2307/962034|title=Alban Berg, Wilhelm Fliess and the Secret Programme of the Violin Concerto|year=1983|last1=Jarman|first1=Douglas|journal=The Musical Times|volume=124|issue=1682|pages=218–223}}</ref>', $page->parsed_text());
   }
   
   public function testUrlReferencesWithText2() : void {
@@ -234,7 +234,7 @@ final class PageTest extends testBaseClass {
   public function testUrlReferencesWithText5() : void {
       $text = "<ref>Stoeckelhuber, Mechthild, Alexander Sliwa, and Ulrich Welsch. &quot;[http://onlinelibrary.wiley.com/doi/10.1002/1097-0185(20000701)259:3%3C312::AID-AR80%3E3.0.CO;2-X/full Histo‐physiology of the scent‐marking glands of the penile pad, anal pouch, and the forefoot in the aardwolf (Proteles cristatus)].&quot; The anatomical record 259.3 (2000): 312-326.</ref>";
       $page = $this->process_page($text);
-      $this->assertSame('<ref>{{Cite journal| doi=10.1002/1097-0185(20000701)259:3<312::AID-AR80>3.0.CO;2-X| title=Histo-physiology of the scent-marking glands of the penile pad, anal pouch, and the forefoot in the aardwolf (Proteles cristatus)| year=2000| last1=Stoeckelhuber| first1=Mechthild| last2=Sliwa| first2=Alexander| last3=Welsch| first3=Ulrich| journal=The Anatomical Record| volume=259| issue=3| pages=312–326| pmid=10861364}}</ref>', $page->parsed_text());
+      $this->assertSame('<ref>{{Cite journal|doi=10.1002/1097-0185(20000701)259:3<312::AID-AR80>3.0.CO;2-X|title=Histo-physiology of the scent-marking glands of the penile pad, anal pouch, and the forefoot in the aardwolf (Proteles cristatus)|year=2000|last1=Stoeckelhuber|first1=Mechthild|last2=Sliwa|first2=Alexander|last3=Welsch|first3=Ulrich|journal=The Anatomical Record|volume=259|issue=3|pages=312–326|pmid=10861364}}</ref>', $page->parsed_text());
   }
 
   public function testUrlReferencesWithText6() : void {
