@@ -26,15 +26,14 @@ final class Template {
   private const MAGIC_STRING = 'CITATION_BOT_PLACEHOLDER_URL_POINTER_'; 
   public $all_templates = NULL;  // Points to list of all the Template() on the Page() including this one
   public $date_style = DATES_WHATEVER;  // Will get from the page
-  protected $rawtext = NULL;
+  protected $rawtext = NULL;  // Must start out as NULL
   public $last_searched_doi = '';
-  protected $example_param = NULL;
-
-  protected $name = NULL;
+  protected $example_param = '';
+  protected $name = '';
   protected $param = array();
   protected $initial_param = array();
   protected $initial_author_params = array();
-  protected $initial_name = NULL;
+  protected $initial_name = '';
   protected $doi_valid = FALSE;
   protected $had_initial_editor = FALSE;
   protected $mod_dashes = FALSE;
@@ -108,6 +107,19 @@ final class Template {
       if ($p->param === 'veditors' && $p->val) $this->had_initial_editor = TRUE;
     }
     $this->no_initial_doi = $this->blank('doi');
+
+    $example = 'param = val';
+    if (isset($this->param[0])) {
+        // Use second param as a template if present, in case first pair 
+        // is last1 = Smith | first1 = J.\n
+        $example = $this->param[isset($this->param[1]) ? 1 : 0]->parsed_text();
+        $example = preg_replace('~[^\s=][^=]*[^\s=]~u', 'X', $example); // Collapse strings
+        $example = preg_replace('~ +~u', ' ', $example); // Collapse spaces
+        // Check if messed up
+        if (substr_count($example, '=') !== 1) $example = 'param = val';
+        if (substr_count($example, "\n") > 1 ) $example = 'param = val';
+    }
+    $this->example_param = (string) $example;
   }
 
   // Re-assemble parsed template into string
@@ -5302,20 +5314,6 @@ final class Template {
     if (($pos = $this->get_param_key((string) $par)) !== NULL) {
       $this->param[$pos]->val = (string) $val;
       return TRUE;
-    }
-    if (!isset($this->example_param)) {
-      $example = 'param = val';
-      if (isset($this->param[0])) {
-        // Use second param as a template if present, in case first pair 
-        // is last1 = Smith | first1 = J.\n
-        $example = $this->param[isset($this->param[1]) ? 1 : 0]->parsed_text();
-        $example = preg_replace('~[^\s=][^=]*[^\s=]~u', 'X', $example); // Collapse strings
-        $example = preg_replace('~ +~u', ' ', $example); // Collapse spaces
-        // Check if messed up
-        if (substr_count($example, '=') !== 1) $example = 'param = val';
-        if (substr_count($example, "\n") > 1 ) $example = 'param = val';
-      }
-      $this->example_param = (string) $example;
     }
     $p = new Parameter();
     $p->parse_text((string) $this->example_param); // cast to make static analysis happy
