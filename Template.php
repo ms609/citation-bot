@@ -4165,21 +4165,13 @@ final class Template {
              $title = preg_replace("~\]\]~", "", $title);
           } elseif (strpos($title, '{{!}}') === FALSE) { // Convert a single link to a title-link
              if (preg_match(REGEXP_PLAIN_WIKILINK, $title, $matches)) {
-               $title = str_replace(array("[[", "]]"), "", $title);
-               if (strlen($matches[1]) > (0.6 * strlen($title))) {  // Only add as title-link if a large part of title text
-                 if ($matches[1] == $title) {
-                   $title = '[[' . $title . ']]';
-                 } else {
-                   $title = '[[' . $matches[1] . "|" . $title . ']]';
-                 }
+               if (strlen($matches[1]) > (0.7 * strlen($title))) {  // Only add as title-link if a large part of title text
+                 $title = '[[' . $matches[1] . "|" . str_replace(array("[[", "]]"), "", $title) . ']]';
                }
              } elseif (preg_match(REGEXP_PIPED_WIKILINK, $title, $matches) &&
                        strpos($title, ':') === FALSE) { // Avoid touching inter-wiki links
-               $linked_part = $matches[2];
-               if (strlen($linked_part) < (0.4 * strlen($title))) { // Only remove if small fraction
-                  $title = preg_replace(REGEXP_PIPED_WIKILINK, "$2", $title);
-               } elseif (strlen($linked_part) > (0.6 * strlen($title))) {  // Only add as title-link if a large part of title text
-                  $title = '[[' . $matches[1] . '|' . $title . ']]';
+               if (strlen($matches[0]) > (0.7 * strlen($title))) {  // Only add as title-link if a large part of title text
+                // TODO - this is not correct  $title = '[[' . $matches[1] . '|' . str_replace(array("[[", "]]"), "", $title) . ']]';
                }
              }
           }
