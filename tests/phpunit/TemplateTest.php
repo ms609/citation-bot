@@ -11,14 +11,14 @@ final class TemplateTest extends testBaseClass {
  
   public function testLotsOfFloaters() : void {
     $text_in = "{{cite journal|issue 3 volume 5 | title Love|journal Dog|series Not mine today|chapter cows|this is random stuff | 123-4567-890 }}";
-    $text_out= "{{cite book|this is random stuff | issue = 3| volume = 5| title = Love| chapter = Cows| journal = Dog| series = Not mine today| isbn = 123-4567-890}}";
+    $text_out= "{{cite book|this is random stuff |issue = 3|volume = 5|title = Love|chapter = Cows|journal = Dog|series = Not mine today|isbn = 123-4567-890}}";
     $prepared = $this->prepare_citation($text_in);
     $this->assertSame($text_out, $prepared->parsed_text());
   }
   
   public function testLotsOfFloaters2() : void {
     $text_in = "{{cite journal|isssue 3 volumee 5 | tittle Love|journall Dog|series Not mine today|chapte cows|this is random stuff | zauthor Joe }}";
-    $text_out= "{{cite journal|isssue 3 volumee 5 | tittle Love|chapte cows|this is random stuff | zauthor Joe | journal = L Dog| series = Not mine today}}";
+    $text_out= "{{cite journal|isssue 3 volumee 5 | tittle Love|chapte cows|this is random stuff | zauthor Joe |journal = L Dog|series = Not mine today}}";
     $prepared = $this->prepare_citation($text_in);
     $this->assertSame($text_out, $prepared->parsed_text());
   }
@@ -3615,15 +3615,15 @@ T1 - This is the Title }}';
     $text = "{{cite web|url=https://www-rocksbackpages-com.wikipedialibrary.idm.oclc.org/Library/Article/camel-over-the-moon |via = wiki stuff }}";
     $template = $this->make_citation($text);
     $template->tidy_parameter('url');
-    $this->assertSame('https://www-rocksbackpages-com.wikipedialibrary.idm.oclc.org/Library/Article/camel-over-the-moon', $template->get2('url'));
-    $this->assertSame('wiki stuff', $template->get2('via'));
+    $this->assertSame('https://www.rocksbackpages.com/Library/Article/camel-over-the-moon', $template->get2('url'));
+    $this->assertNull($template->get2('via'));
    }
  
    public function testTidy81() : void {
     $text = "{{cite web|url=https://rocksbackpages-com.wikipedialibrary.idm.oclc.org/Library/Article/camel-over-the-moon |via=My Dog}}";
     $template = $this->make_citation($text);
     $template->tidy_parameter('url');
-    $this->assertSame('https://rocksbackpages-com.wikipedialibrary.idm.oclc.org/Library/Article/camel-over-the-moon', $template->get2('url'));
+    $this->assertSame('https://rocksbackpages.com/Library/Article/camel-over-the-moon', $template->get2('url'));
     $this->assertSame('My Dog', $template->get2('via'));
    }
  
@@ -4632,7 +4632,7 @@ T1 - This is the Title }}';
      $text='{{Cite journal| p 33 }}';
      $template = $this->process_citation($text);
      $this->assertSame('33', $template->get2('page'));
-     $this->assertSame('{{Cite journal| page = 33 }}', $template->parsed_text());
+     $this->assertSame('{{Cite journal|page = 33}}', $template->parsed_text());
 
      $text='{{Cite journal | p 33 |page=}}';
      $template = $this->process_citation($text);

@@ -26,15 +26,14 @@ final class Template {
   private const MAGIC_STRING = 'CITATION_BOT_PLACEHOLDER_URL_POINTER_'; 
   public ?array $all_templates = NULL;  // Points to list of all the Template() on the Page() including this one
   public int $date_style = DATES_WHATEVER;  // Will get from the page
-  protected ?string $rawtext = NULL;
+  protected ?string $rawtext = NULL;  // Must start out as NULL
   public string $last_searched_doi = '';
-  protected ?string $example_param = NULL;
-
-  protected ?string $name = NULL;
+  protected string $example_param = '';
+  protected string $name = '';
   protected array $param = array();
   protected array $initial_param = array();
   protected array $initial_author_params = array();
-  protected ?string $initial_name = NULL;
+  protected string $initial_name = '';
   protected bool $doi_valid = FALSE;
   protected bool $had_initial_editor = FALSE;
   protected bool $mod_dashes = FALSE;
@@ -108,6 +107,19 @@ final class Template {
       if ($p->param === 'veditors' && $p->val) $this->had_initial_editor = TRUE;
     }
     $this->no_initial_doi = $this->blank('doi');
+
+    $example = 'param = val';
+    if (isset($this->param[0])) {
+        // Use second param as a template if present, in case first pair 
+        // is last1 = Smith | first1 = J.\n
+        $example = $this->param[isset($this->param[1]) ? 1 : 0]->parsed_text();
+        $example = preg_replace('~[^\s=][^=]*[^\s=]~u', 'X', $example); // Collapse strings
+        $example = preg_replace('~ +~u', ' ', $example); // Collapse spaces
+        // Check if messed up
+        if (substr_count($example, '=') !== 1) $example = 'param = val';
+        if (substr_count($example, "\n") > 1 ) $example = 'param = val';
+    }
+    $this->example_param = (string) $example;
   }
 
   // Re-assemble parsed template into string
@@ -1020,6 +1032,14 @@ final class Template {
             $this->forget($alias);
           }
         }
+        $time = strtotime($value);
+        if ($time) { // paranoid
+            if ($this->date_style === DATES_MDY) {
+               $value = date('F j, Y', $time);
+            } elseif ($this->date_style === DATES_DMY) {
+               $value = date('j F Y', $time);
+            }
+        }		    
         if ($this->blank(DOI_BROKEN_ALIASES)) {
           return $this->add($param_name, $value);
         }
@@ -3718,12 +3738,23 @@ final class Template {
                  mb_substr_count($the_author, ']]') === 1 &&
                  strpos($the_author, 'CITATION_BOT') === FALSE &&
                  strpos($the_author, '{{!}}') === FALSE) {  // Has a normal wikilink
+                   $did_something = FALSE;
                    if (preg_match(REGEXP_PLAIN_WIKILINK, $the_author, $matches)) {
                     $this->set($param, $matches[1]);
                     $this->add_if_new('author' . $pmatch[2] . '-link', $matches[1]);
+                    $did_something = TRUE;
                    } elseif (preg_match(REGEXP_PIPED_WIKILINK, $the_author, $matches)) {
                     $this->set($param, $matches[2]);
                     $this->add_if_new('author' . $pmatch[2] . '-link', $matches[1]);
+                    $did_something = TRUE;
+                  }
+                  if ($did_something && strpos($this->get('first' . $pmatch[2]), '[') !==FALSE) { // Clean up links in first names
+                    $the_author = $this->get('first' . $pmatch[2]);
+                    if (preg_match(REGEXP_PLAIN_WIKILINK, $the_author, $matches)) {
+                      $this->set('first' . $pmatch[2], $matches[1]);
+                    } elseif (preg_match(REGEXP_PIPED_WIKILINK, $the_author, $matches)) {
+                      $this->set('first' . $pmatch[2], $matches[2]);
+                    }
                   }
               }
             }
@@ -4142,10 +4173,12 @@ final class Template {
                    $title = '[[' . $matches[1] . "|" . $title . ']]';
                  }
                }
-             } elseif (preg_match(REGEXP_PIPED_WIKILINK, $title, $matches)) {
+             } elseif (preg_match(REGEXP_PIPED_WIKILINK, $title, $matches) &&
+                       strpos($title, ':') === FALSE) { // Avoid touching inter-wiki links
                $linked_part = $matches[2];
-               $title = preg_replace(REGEXP_PIPED_WIKILINK, "$2", $title);
-               if (strlen($linked_part) > (0.6 * strlen($title))) {  // Only add as title-link if a large part of title text
+               if (strlen($linked_part) < (0.4 * strlen($title))) { // Only remove if small fraction
+                  $title = preg_replace(REGEXP_PIPED_WIKILINK, "$2", $title);
+               } elseif (strlen($linked_part) > (0.6 * strlen($title))) {  // Only add as title-link if a large part of title text
                   $title = '[[' . $matches[1] . '|' . $title . ']]';
                }
              }
@@ -4330,7 +4363,7 @@ final class Template {
               }
           }
           // idm.oclc.org Proxy
-          if (stripos($this->get($param), 'idm.oclc.org') !== FALSE && stripos($this->get($param), 'wikipedialibrary') === FALSE) {
+          if (stripos($this->get($param), 'idm.oclc.org') !== FALSE) {
               $oclc_found = FALSE;
               if (preg_match("~^https://([^\.\-\/]+)-([^\.\-\/]+)-([^\.\-\/]+)\.[^\.\-\/]+\.idm\.oclc\.org/(.+)$~i", $this->get($param), $matches)) {
                  $this->set($param, 'https://' . $matches[1] . '.' . $matches[2] . '.' . $matches[3] . '/' . $matches[4]);
@@ -4361,10 +4394,9 @@ final class Template {
           } else {
              $the_host = '';
           }
-          if ((stripos($the_host, 'proxy') !== FALSE ||
+          if (stripos($the_host, 'proxy') !== FALSE ||
               stripos($the_host, 'lib') !== FALSE ||
-              stripos($the_host, 'mutex') !== FALSE) &&
-	      stripos($the_host, 'wikipedialibrary') === FALSE) {
+              stripos($the_host, 'mutex') !== FALSE) {
                 // Generic proxy code www.host.com.proxy-stuff/dsfasfdsfasdfds
               if (preg_match("~^https?://(www\.[^\./\-]+\.com)\.[^/]*(?:proxy|library|\.lib\.|mutex\.gmu)[^/]*/(\S+)$~i", $this->get($param), $matches)) {
                  report_info("Remove proxy from " . $matches[1] . " URL");
@@ -5282,20 +5314,6 @@ final class Template {
     if (($pos = $this->get_param_key((string) $par)) !== NULL) {
       $this->param[$pos]->val = (string) $val;
       return TRUE;
-    }
-    if (!isset($this->example_param)) {
-      $example = 'param = val';
-      if (isset($this->param[0])) {
-        // Use second param as a template if present, in case first pair 
-        // is last1 = Smith | first1 = J.\n
-        $example = $this->param[isset($this->param[1]) ? 1 : 0]->parsed_text();
-        $example = preg_replace('~[^\s=][^=]*[^\s=]~u', 'X', $example); // Collapse strings
-        $example = preg_replace('~ +~u', ' ', $example); // Collapse spaces
-        // Check if messed up
-        if (substr_count($example, '=') !== 1) $example = 'param = val';
-        if (substr_count($example, "\n") > 1 ) $example = 'param = val';
-      }
-      $this->example_param = (string) $example;
     }
     $p = new Parameter();
     $p->parse_text((string) $this->example_param); // cast to make static analysis happy
