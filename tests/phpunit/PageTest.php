@@ -308,9 +308,11 @@ final class PageTest extends testBaseClass {
   }
                         
   public function testUrlReferencesWithText17() : void {
+    $this->requires_google(function() : void {
       $text = "<ref>{{oclc|23454}}</ref>";
       $page = $this->process_page($text);
       $this->assertTrue((bool) strpos($page->parsed_text(), 'it'));
+    });
   }                    
                         
   public function testMagazine() : void {
