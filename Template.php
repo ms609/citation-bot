@@ -4171,7 +4171,7 @@ final class Template {
              } elseif (preg_match(REGEXP_PIPED_WIKILINK, $title, $matches) &&
                        strpos($title, ':') === FALSE) { // Avoid touching inter-wiki links
                if (strlen($matches[0]) > (0.7 * strlen($title))) {  // Only add as title-link if a large part of title text
-                  $title = '[[' . $matches[1] . '|' . str_replace(array("[[", "]]"), "", $title) . ']]';
+                // TODO - this is not correct  $title = '[[' . $matches[1] . '|' . str_replace(array("[[", "]]"), "", $title) . ']]';
                }
              }
           }
