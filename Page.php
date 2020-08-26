@@ -553,12 +553,20 @@ class Page {
     if (preg_match('~\{\{Use mdy dates[^\}\{]*\}\}~i',$this->text)) {
       $date_style = DATES_MDY;
     }
+    if (preg_match('~\{\{Use mdy[^\}\{]*\}\}~i',$this->text)) {
+      $date_style = DATES_MDY;
+    }
+    if (preg_match('~\{\{mdy[^\}\{]*\}\}~i',$this->text)) {
+      $date_style = DATES_MDY;
+    }
     if (preg_match('~\{\{Use dmy dates[^\}\{]*\}\}~i',$this->text)) {
-      if ($date_style === DATES_MDY) {     // Found both :-(
-        $date_style = DATES_WHATEVER;      // @codeCoverageIgnore
-      } else {
-        $date_style = DATES_DMY;
-      }
+      $date_style = DATES_DMY;
+    }
+    if (preg_match('~\{\{Use dmy[^\}\{]*\}\}~i',$this->text)) {
+      $date_style = DATES_DMY;
+    }
+    if (preg_match('~\{\{dmy[^\}\{]*\}\}~i',$this->text)) {
+      $date_style = DATES_DMY;
     }
     $this->date_style = $date_style;
   }

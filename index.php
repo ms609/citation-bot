@@ -4,7 +4,7 @@ declare(strict_types=1);
 if (isset($_SESSION['citation_bot_user_id']) && is_string($_SESSION['citation_bot_user_id'])) {
   $the_example_user = @htmlspecialchars($_SESSION['citation_bot_user_id']);
 }
-if (!$the_example_user) {
+if (empty($the_example_user)) {
   $the_example_user = 'YourUserID';
 }
 ?>
