@@ -427,7 +427,7 @@ final class Template {
     }
     
     if (array_key_exists($param_name, COMMON_MISTAKES)) {
-      report_error("Attempted to add invalid parameter: " . $param_name); // @codeCoverageIgnore
+      report_error("Attempted to add invalid parameter: " . echoable($param_name)); // @codeCoverageIgnore
     }
     
     if ($api) $this->record_api_usage($api, $param_name);
@@ -1183,7 +1183,7 @@ final class Template {
 
       default:  // We want to make sure we understand what we are adding
         // @codeCoverageIgnoreStart
-        report_minor_error('Unexpected parameter: ' . $param_name . ' trying to be set to ' . $value);
+        report_minor_error('Unexpected parameter: ' . echoable($param_name) . ' trying to be set to ' . echoable($value));
         if ($this->blank($param_name)) {
           return $this->add($param_name, sanitize_string($value));
         }
@@ -1333,11 +1333,11 @@ final class Template {
        $s2cid = getS2CID($url);
        if ($s2cid == '') return FALSE;
        if ($this->has('s2cid') && $s2cid != $this->get('s2cid')) {
-          report_warning('Existsing URL does not match exisiting S2CID: ' .  $this->get('s2cid'));
+          report_warning('Existsing URL does not match exisiting S2CID: ' .  echoable($this->get('s2cid')));
           return FALSE;
        }
        if ($this->has('S2CID') && $s2cid != $this->get('S2CID')) {
-          report_warning('Existsing URL does not match exisiting S2CID: ' .  $this->get('S2CID'));
+          report_warning('Existsing URL does not match exisiting S2CID: ' .  echoable($this->get('S2CID')));
           return FALSE;
        }
        $this->add_if_new('s2cid', $s2cid);
@@ -2438,23 +2438,22 @@ final class Template {
       // @codeCoverageIgnoreStart
     } catch (Exception $e) {
       if ($e->getCode() == 5000) { // made up code for AdsAbs error
-        report_warning(sprintf("API Error in query_adsabs: %s",
-                      $e->getMessage()));
+        report_warning(sprintf("API Error in query_adsabs: %s", echoable($e->getMessage())));
       } elseif ($e->getCode() == 60) {
         AdsAbsControl::give_up();
         report_warning('Giving up on AdsAbs for a while.  SSL certificate has expired.');
       } elseif (strpos($e->getMessage(), 'org.apache.solr.search.SyntaxError') !== FALSE) {
         report_info(sprintf("Internal Error %d in query_adsabs: %s",
-                      $e->getCode(), $e->getMessage()));
+                      $e->getCode(), echoable($e->getMessage())));
       } elseif (strpos($e->getMessage(), 'HTTP') === 0) {
         report_warning(sprintf("HTTP Error %d in query_adsabs: %s",
-                      $e->getCode(), $e->getMessage()));
+                      $e->getCode(), echoable($e->getMessage())));
       } elseif (strpos($e->getMessage(), 'Too many requests') !== FALSE) {
           AdsAbsControl::give_up();
           report_warning('Giving up on AdsAbs for a while.  Too many requests.');
       } else {
         report_warning(sprintf("Error %d in query_adsabs: %s",
-                      $e->getCode(), $e->getMessage()));
+                      $e->getCode(), echoable($e->getMessage())));
       }
       return (object) array('numFound' => 0);
     }
@@ -2570,7 +2569,7 @@ final class Template {
           break;
         default:
           if (isset($ris_part[1])) {
-             report_info("Unexpected RIS data type ignored: " . trim($ris_part[0]) . " set to " . trim($ris_part[1]));
+             report_info("Unexpected RIS data type ignored: " . echoable(trim($ris_part[0])) . " set to " . echoable(trim($ris_part[1])));
           };
       }
       unset($ris_part[0]);
@@ -2761,7 +2760,7 @@ final class Template {
         }
         // Double check URL against existing data
         if (!preg_match('~^(?:https?|ftp):\/\/\/?([^\/\.]+\.[^\/]+)\/~i', $oa_url, $matches)) {
-           report_minor_error(' OA database gave invalid URL: ' . $oa_url); // @codeCoverageIgnore
+           report_minor_error(' OA database gave invalid URL: ' . echoable($oa_url)); // @codeCoverageIgnore
            return 'nothing';                                                // @codeCoverageIgnore
         }
         $oa_hostname = $matches[1];
@@ -2874,7 +2873,7 @@ final class Template {
         $string = (string) @curl_exec($ch);
         curl_close($ch);
         if ($string == '') {
-            report_warning("Did not receive results from Google API search $url_token");  // @codeCoverageIgnore
+            report_warning("Did not receive results from Google API search" . echoable($url_token));  // @codeCoverageIgnore
             return FALSE;                                                                 // @codeCoverageIgnore
         }
         $result = @json_decode($string, FALSE);
@@ -2884,13 +2883,13 @@ final class Template {
               $gid = (string) $result->items[0]->id;
               $url = 'https://books.google.com/books?id=' . $gid;
             } else {
-              report_info("No results for Google API search $url_token");
+              report_info("No results for Google API search " . echoable($url_token));
             }
             // @codeCoverageIgnoreStart
           } elseif (isset($result->error)) {
-            report_warning("Google Books API reported error: " . print_r($result->error->errors, TRUE));
+            report_warning("Google Books API reported error: " . echoable(print_r($result->error->errors, TRUE)));
           } else {
-            report_warning("Could not parse Google API results for $url_token");
+            report_warning("Could not parse Google API results for " . echoable($url_token));
             return FALSE;
           }
             // @codeCoverageIgnoreEnd
@@ -3218,7 +3217,7 @@ final class Template {
       foreach ($parameter_list as $parameter) {
         if (preg_match('~^(' . preg_quote($parameter) . '[ \-:]\s*)~iu', $dat, $match)) {
           $parameter_value = trim(mb_substr($dat, mb_strlen($match[1])));
-          report_add("Found $parameter floating around in template; converted to parameter");
+          report_add("Found " . echoable($parameter) . "floating around in template; converted to parameter");
           $this->add_if_new($parameter, $parameter_value);
           $numSpaces = preg_match_all('~[\s]+~', $parameter_value);
           if ($numSpaces < 4) {
@@ -3379,7 +3378,7 @@ final class Template {
             }
             if ($subtemplate_name == 'oclc' && !is_null($subtemplate->param_with_index(1))) {
               report_info("{{OCLC}} has multiple parameters: cannot convert.");
-              report_info($subtemplate->parsed_text());
+              report_info(echoable($subtemplate->parsed_text()));
               break;
             }
           
@@ -3444,7 +3443,7 @@ final class Template {
       if ($mistake_id) {
         // Check for common mistakes.  This will over-ride anything found by levenshtein: important for "editor1link" !-> "editor-link" (though this example is no longer relevant as of 2017)
         $p->param = $mistake_corrections[$mistake_id];
-        report_modification('replaced with ' . $mistake_corrections[$mistake_id] . ' (common mistakes list)');
+        report_modification('replaced with ' . echoable($mistake_corrections[$mistake_id]) . ' (common mistakes list)');
         continue;
       }
       
@@ -3489,7 +3488,7 @@ final class Template {
       }
       
       if (in_array($p->param, $parameter_dead)) {
-        report_inline("Could not fix outdated $p->param");
+        report_inline("Could not fix outdated " . echoable($p->param));
       } elseif ($shortest < 12 && $shortest < $shortish) {
         $p->param = $closest;
         report_inline("replaced with $closest (likelihood " . (24 - $shortest) . "/24)"); // Scale arbitrarily re-based by adding 12 so users are more impressed by size of similarity
@@ -3632,7 +3631,7 @@ final class Template {
     }
  
     if (!preg_match('~^(\D+)(\d*)(\D*)$~', $param, $pmatch)) {
-      report_minor_error("Unrecognized parameter name format in $param");  // @codeCoverageIgnore
+      report_minor_error("Unrecognized parameter name format in " . echoable($param));  // @codeCoverageIgnore
       return;                                                              // @codeCoverageIgnore
     } else {
       // Put "odd ones" in "normalized" order - be careful down below about $param vs $pmatch values
@@ -3643,7 +3642,7 @@ final class Template {
         $pmatch = [$param, $pmatch[1] . $pmatch[3], $pmatch[2], ''];
       }
       if ($pmatch[3] != '') {
-        report_minor_error("Unrecognized parameter name format in $param");  // @codeCoverageIgnore
+        report_minor_error("Unrecognized parameter name format in " . echoable($param));  // @codeCoverageIgnore
         return;                                                              // @codeCoverageIgnore
       }
       switch ($pmatch[1]) {
@@ -4391,7 +4390,7 @@ final class Template {
               stripos($the_host, 'mutex') !== FALSE) {
                 // Generic proxy code www.host.com.proxy-stuff/dsfasfdsfasdfds
               if (preg_match("~^https?://(www\.[^\./\-]+\.com)\.[^/]*(?:proxy|library|\.lib\.|mutex\.gmu)[^/]*/(\S+)$~i", $this->get($param), $matches)) {
-                 report_info("Remove proxy from " . $matches[1] . " URL");
+                 report_info("Remove proxy from " . echoable($matches[1]) . " URL");
                  $this->set($param, 'https://' . $matches[1] . '/' . $matches[2]);
                  if ($this->has('via')) { 
                      $this->forget('via');
@@ -4399,7 +4398,7 @@ final class Template {
               // Generic proxy code www-host-com.proxy-stuff/dsfasfdsfasdfds
               } elseif (preg_match("~^https?://www\-([^\./\-]+)\-com[\.\-][^/]*(?:proxy|library|\.lib\.|mutex\.gmu)[^/]*/(\S+)$~i", $this->get($param), $matches)) {
                  $matches[1] = 'www.' . $matches[1] . '.com';
-                 report_info("Remove proxy from " . $matches[1] . " URL");
+                 report_info("Remove proxy from " . echoable($matches[1]) . " URL");
                  $this->set($param, 'https://' . $matches[1] . '/' . $matches[2]);
                  if ($this->has('via')) { 
                      $this->forget('via');
@@ -4807,7 +4806,7 @@ final class Template {
                  $this->set('issue', $possible_issue);
                  report_action('Citation had volume and issue the same.  Changing issue.');
                } else {
-                 report_inaction('Citation has volume and issue set to ' . $orig_data . ' which disagrees with CrossRef');  // @codeCoverageIgnore
+                 report_inaction('Citation has volume and issue set to ' . echoable($orig_data) . ' which disagrees with CrossRef');  // @codeCoverageIgnore
                }
              }
            }
@@ -4866,8 +4865,8 @@ final class Template {
               if ($this->blank($to_drop)) $this->forget($to_drop);
             }
           } else {
-            report_warning('Citation should probably not have journal = ' . $this->get('journal')
-            . ' as well as chapter / ISBN ' . $this->get('chapter') . ' ' .  $this->get('isbn'));
+            report_warning(echoable('Citation should probably not have journal = ' . $this->get('journal')
+            . ' as well as chapter / ISBN ' . $this->get('chapter') . ' ' .  $this->get('isbn')));
           }
     }
     if ($this->wikiname() === 'cite book' && $this->blank(['issue', 'journal'])) {
@@ -5220,7 +5219,7 @@ final class Template {
             strpos($old_param . $new_param, 'CITATION_BOT_PLACEHOLDER_date') === FALSE &&
             strpos($old_param . $new_param, 'CITATION_BOT_PLACEHOLDER_title') === FALSE &&
             strpos($old_param . $new_param, 'CITATION_BOT_PLACEHOLDER_journal') === FALSE) {
-          report_modification("Renamed \"$old_param\" -> \"$new_param\"");
+          report_modification("Renamed \"" . echoable($old_param) . "\" -> \"" . echoable($new_param) "\"");
           $this->mod_names = TRUE;
         }
         $this->tidy_parameter($new_param);
@@ -5292,14 +5291,14 @@ final class Template {
   }
 
   public function add(string $par, string $val) : bool {
-    report_add("Adding $par: $val");
+    report_add(echoable("Adding $par: $val"));
     $could_set = $this->set($par, $val);
     $this->tidy_parameter($par);
     return $could_set;
   }
   
   public function set(string $par, string $val) : bool {
-    if ($par === '') report_error('NULL parameter passed to set with value of ' . $val);
+    if ($par === '') report_error('NULL parameter passed to set with value of ' . echoable($val));
     if (mb_stripos($this->get((string) $par), 'CITATION_BOT_PLACEHOLDER_COMMENT') !== FALSE) {
       return FALSE;
     }
@@ -5543,7 +5542,7 @@ final class Template {
   protected function volume_issue_demix(string $data, string $param) : void {
      if ($param === 'year') return;
      if (!in_array($param, ['volume','issue','number'])) {
-       report_error('volume_issue_demix ' . $param); // @codeCoverageIgnore
+       report_error('volume_issue_demix ' . echoable($param)); // @codeCoverageIgnore
      }
      $data = trim($data);
      if (preg_match("~^(\d+)\s*\((\d+(-|–|\–|\{\{ndash\}\})?\d*)\)$~", $data, $matches) ||
@@ -5666,7 +5665,7 @@ final class Template {
              break;
           default:
              // @codeCoverageIgnoreStart
-             report_minor_error("Unexpected Google URL component:  " . $part);
+             report_minor_error("Unexpected Google URL component:  " . echoable($part));
              $url .=  $part . "&" ;
              break;
              // @codeCoverageIgnoreEnd
@@ -5697,7 +5696,7 @@ final class Template {
       }
     } elseif (preg_match('~<title>(.*)</title>~', $html, $matches)) {     // @codeCoverageIgnore
       // Sometime just get [WorldCat.org]
-      report_minor_error('unexpected title from ISSN ' . $issn . ' : ' . $matches[1]); // @codeCoverageIgnore
+      report_minor_error('unexpected title from ISSN ' . echoable($issn) . ' : ' . echoable($matches[1])); // @codeCoverageIgnore
     }
     return FALSE; // @codeCoverageIgnore
   }
