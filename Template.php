@@ -26,7 +26,7 @@ final class Template {
   private const MAGIC_STRING = 'CITATION_BOT_PLACEHOLDER_URL_POINTER_'; 
   public array $all_templates;  // Points to list of all the Template() on the Page() including this one.  It can only be set by the page class after all templates are made
   public int $date_style = DATES_WHATEVER;  // Will get from the page
-  protected string $$rawtext;  // Must start out as unset
+  protected string $rawtext;  // Must start out as unset
   public string $last_searched_doi = '';
   protected string $example_param = '';
   protected string $name = '';
