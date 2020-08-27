@@ -5219,7 +5219,7 @@ final class Template {
             strpos($old_param . $new_param, 'CITATION_BOT_PLACEHOLDER_date') === FALSE &&
             strpos($old_param . $new_param, 'CITATION_BOT_PLACEHOLDER_title') === FALSE &&
             strpos($old_param . $new_param, 'CITATION_BOT_PLACEHOLDER_journal') === FALSE) {
-          report_modification("Renamed \"" . echoable($old_param) . "\" -> \"" . echoable($new_param) "\"");
+          report_modification("Renamed \"" . echoable($old_param) . "\" -> \"" . echoable($new_param) . "\"");
           $this->mod_names = TRUE;
         }
         $this->tidy_parameter($new_param);
