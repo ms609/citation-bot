@@ -7,6 +7,10 @@
     xsi:schemaLocation="https://getpsalm.org/schema/config vendor/vimeo/psalm/config.xsd"
     phpVersion="7.4"
     autoloader="setup.php"
+    strictBinaryOperands="true"
+    allowStringToStandInForClass="true"
+    findUnusedVariablesAndParams="true"
+    runTaintAnalysis="true"
 >
     <projectFiles>
         <file name="Comment.php" />
