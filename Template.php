@@ -24,9 +24,9 @@ final class Template {
   public const REGEXP = ['~\{\{[^\{\}\|]+\}\}~su', '~\{\{[^\{\}]+\}\}~su', '~\{\{(?>[^\{]|\{[^\{])+?\}\}~su'];  // Please see https://stackoverflow.com/questions/1722453/need-to-prevent-php-regex-segfault for discussion of atomic regex
   public const TREAT_IDENTICAL_SEPARATELY = FALSE;
   private const MAGIC_STRING = 'CITATION_BOT_PLACEHOLDER_URL_POINTER_'; 
-  public $all_templates = NULL;  // Points to list of all the Template() on the Page() including this one
+  public $all_templates;  // Points to list of all the Template() on the Page() including this one.  It can only be set by the page class after all templates are made
   public $date_style = DATES_WHATEVER;  // Will get from the page
-  protected $rawtext = NULL;  // Must start out as NULL
+  protected $rawtext;  // Must start out as unset
   public $last_searched_doi = '';
   protected $example_param = '';
   protected $name = '';
