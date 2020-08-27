@@ -582,10 +582,10 @@ function query_crossref(string $doi) : ?object {
           '<year media_type="print">',
           $raw_xml);
     $xml = @simplexml_load_string($raw_xml);
-    if (is_object($xml)) {
+    if (is_object($xml) && isset($xml->query_result->body->query)) {
       curl_close($ch);
       $result = $xml->query_result->body->query;
-      if ($result["status"] == "resolved") {
+      if ((string) @$result["status"] == "resolved") {
         return $result;
       } else {
         return NULL;
