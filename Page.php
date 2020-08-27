@@ -99,7 +99,7 @@ class Page {
     $this->set_date_pattern();
     $this->title = '';
     $this->read_at = '';
-    $this->lastrevid = NULL;
+    $this->lastrevid = 0;
   }
  
   public function parsed_text() : string {
