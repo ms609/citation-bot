@@ -121,10 +121,8 @@ function expand_arxiv_templates (array $templates) : bool {
   $arxiv_templates = array();
   foreach ($templates as $this_template) {
     if ($this_template->wikiname() == 'cite arxiv') {
-      $arxiv_param = 'eprint';
       $this_template->rename('arxiv', 'eprint');
     } else {
-      $arxiv_param = 'arxiv';
       $this_template->rename('eprint', 'arxiv');
     }
     $eprint = str_ireplace("arXiv:", "", $this_template->get('eprint') . $this_template->get('arxiv'));
