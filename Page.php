@@ -24,7 +24,7 @@ class Page {
   protected $date_style = DATES_WHATEVER;
   protected $read_at = '';
   protected $start_text = '';
-  protected $lastrevid = NULL;
+  protected $lastrevid = 0;
   protected $page_error = FALSE;
 
   function __construct() { 
@@ -69,7 +69,7 @@ class Page {
        return FALSE;                                          // @codeCoverageIgnore
     }
     $this->title = (string) $details->title;
-    $this->lastrevid = isset($details->lastrevid) ? $details->lastrevid : NULL;
+    $this->lastrevid = (int) $details->lastrevid ;
 
     $ch = curl_init();
     curl_setopt($ch, CURLOPT_HEADER, 0);

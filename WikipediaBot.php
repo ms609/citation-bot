@@ -169,7 +169,7 @@ final class WikipediaBot {
     return NULL;
   }
   
-  public function write_page(string $page, string $text, string $editSummary, ?int $lastRevId, ?string $startedEditing) : bool {
+  public function write_page(string $page, string $text, string $editSummary, int $lastRevId, string $startedEditing) : bool {
     $response = $this->fetch([
             'action' => 'query',
             'prop' => 'info|revisions',
@@ -205,8 +205,8 @@ final class WikipediaBot {
     }
     $baseTimeStamp = $myPage->revisions[0]->timestamp;
     
-    if ((!is_null($lastRevId) && $myPage->lastrevid != $lastRevId)
-     || (!is_null($startedEditing) && strtotime($baseTimeStamp) > strtotime($startedEditing))) {
+    if (($lastRevId != 0 && $myPage->lastrevid != $lastRevId)
+     || ($startedEditing != '' && strtotime($baseTimeStamp) > strtotime($startedEditing))) {
       report_minor_error("Possible edit conflict detected. Aborting.");      // @codeCoverageIgnore
       return FALSE;                                                          // @codeCoverageIgnore
     }
