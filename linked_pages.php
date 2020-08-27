@@ -87,7 +87,7 @@ if (empty($pages_in_category)) report_error('No links to expand found');
       echo "\n\n    # # # ";
     }
   }
-  echo ("\n Done all " . count($pages_in_category) . " pages linked from " . $page_name . " \n");
+  echo ("\n Done all " . count($pages_in_category) . " pages linked from " . echoable($page_name) . " \n");
 ?>
  # # #</pre></body></html>
 

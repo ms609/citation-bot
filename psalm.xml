@@ -10,7 +10,7 @@
     strictBinaryOperands="true"
     allowStringToStandInForClass="true"
     findUnusedVariablesAndParams="true"
-    runTaintAnalysis="true"
+    runTaintAnalysis="false"
 >
     <projectFiles>
         <file name="Comment.php" />
