@@ -17,6 +17,8 @@ if (count($_GET) > 10) exit('Excessive number of parameters passed');
 if (count($_GET) === 0) exit('No parameters passed');
 foreach ($_GET as $param=>$value) {
   if (strlen($param . $value) > 256) exit('Excessively long parameter passed');
+  if (strlen($param) == 0) exit('Parameter error');
+  if (strlen($value) == 0) exit('Unset parameter error');
   $t->set($param, $value);
 }
 
