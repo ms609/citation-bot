@@ -483,7 +483,6 @@ class Page {
     
     $preg_ok = TRUE;
     foreach ($regexp_in as $regexp) {
-      $preg_ok = TRUE;
       while ($preg_ok = preg_match($regexp, $text, $match)) {
         $obj = new $class();
         try {
