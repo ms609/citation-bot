@@ -205,8 +205,8 @@ final class WikipediaBot {
     }
     $baseTimeStamp = $myPage->revisions[0]->timestamp;
     
-    if ($lastRevId != 0 && $myPage->lastrevid != $lastRevId)
-     || ($startedEditing != '') && strtotime($baseTimeStamp) > strtotime($startedEditing))) {
+    if (($lastRevId != 0 && $myPage->lastrevid != $lastRevId)
+     || ($startedEditing != '' && strtotime($baseTimeStamp) > strtotime($startedEditing))) {
       report_minor_error("Possible edit conflict detected. Aborting.");      // @codeCoverageIgnore
       return FALSE;                                                          // @codeCoverageIgnore
     }
