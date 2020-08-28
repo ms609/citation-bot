@@ -11,7 +11,7 @@ return [
     // information should be included.	
     //	
     'exclude_analysis_directory_list' => [	
-        'vendor/'
+        'vendor/', 'tests/', 'tests/phpunit'
     ],
     'directory_list' => [	
         '.', 'tests/', 'tests/phpunit', 'vendor/'
