@@ -287,7 +287,7 @@ final class Template {
   public function fix_rogue_etal() : void {
     if ($this->blank(DISPLAY_AUTHORS)) {
       $i = 2;
-      while (!$this->blank(['author' . (string) $i, 'last' . $i])) {
+      while (!$this->blank(['author' . (string) $i, 'last' . (string) $i])) {
         $i = $i + 1;
       }
       $i = $i - 1;
@@ -3490,12 +3490,12 @@ final class Template {
         report_inline("Could not fix outdated " . echoable($p->param));
       } elseif ($shortest < 12 && $shortest < $shortish) {
         $p->param = $closest;
-        report_inline("replaced with $closest (likelihood " . (24 - $shortest) . "/24)"); // Scale arbitrarily re-based by adding 12 so users are more impressed by size of similarity
+        report_inline("replaced with $closest (likelihood " . (string)round(24.0 - $shortest,1) . "/24)"); // Scale arbitrarily re-based by adding 12 so users are more impressed by size of similarity
       } else {
         $similarity = similar_text($p->param, $closest) / strlen($p->param);
         if ($similarity > 0.6) {
           $p->param = $closest;
-          report_inline("replaced with $closest (similarity " . (string)(round(2 * 12 * $similarity, 1)) . "/24)"); // Scale arbitrarily re-based by multiplying by 2 so users are more impressed by size of similarity
+          report_inline("replaced with $closest (similarity " . (string)(round(24.0 * $similarity, 1)) . "/24)"); // Scale arbitrarily re-based by multiplying by 2 so users are more impressed by size of similarity
         } else {
           report_inline("could not be replaced with confidence.  Please check the citation yourself.");
         }
