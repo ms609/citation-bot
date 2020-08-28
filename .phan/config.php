@@ -14,6 +14,6 @@ return [
         'vendor/'
     ],
     'directory_list' => [	
-        '.', 'tests', 'tests/phpunit'
+        '.', 'tests/', 'tests/phpunit', 'vendor/'
     ],	
 ];
