@@ -3111,7 +3111,7 @@ final class Template {
         $endnote_authors = 0;
         foreach ($endnote_test as $endnote_line) {
           $endnote_linetype = substr($endnote_line, 0, 1);
-          $endnote_datum = trim(substr($endnote_line, 2)); // cut line type and leading space
+          $endnote_datum = trim((string) substr($endnote_line, 2)); // cut line type and leading space.  Cast to string in case of FALSE
           switch ($endnote_linetype) {
             case "A": 
               $this->add_if_new('author' . (string) ++$endnote_authors, format_author($endnote_datum));
