@@ -3230,13 +3230,13 @@ final class Template {
         $test_dat = preg_replace("~\d~", "_$0",
                     preg_replace("~[ -+].*$~", "", substr(mb_strtolower($dat), 0, $para_len)));
         if (preg_match("~\d~", $parameter)) {
-          $lev = levenshtein($test_dat, preg_replace("~\d~", "_$0", $parameter));
+          $lev = (float) levenshtein($test_dat, preg_replace("~\d~", "_$0", $parameter));
         } else {
-          $lev = levenshtein($test_dat, $parameter);
+          $lev = (float) levenshtein($test_dat, $parameter);
         }
         if ($lev == 0) {
           $closest = $parameter;
-          $shortest = 0;
+          $shortest = 0.0;
           break;
         } else {
           $closest = '';
@@ -3451,10 +3451,10 @@ final class Template {
       $p->param = preg_replace('~(?:forename|initials?)\-?_?(\d+)~', "first$1", $p->param);
 
       // Check the parameter list to find a likely replacement
-      $shortest = -1;
+      $shortest = -1.0;
       $closest = '';
       $comp = '';
-      $shortish = -1;
+      $shortish = -1.0;
       
       if (preg_match('~\d+~', $p->param, $match)) { // Deal with # values
          $param_number = $match[0];
@@ -3464,7 +3464,7 @@ final class Template {
       foreach ($unused_parameters as $parameter) {
         $parameter = str_replace('#', $param_number, $parameter);
         if (strpos($parameter, '#') !== FALSE) continue; // Do no use # items unless we have a number
-        $lev = levenshtein($p->param, $parameter, 5, 4, 6);
+        $lev = (float) levenshtein($p->param, $parameter, 5, 4, 6);
         // Strict inequality as we want to favour the longest match possible
         if ($lev < $shortest || $shortest < 0) {
           $comp = $closest;
