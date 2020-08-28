@@ -262,13 +262,13 @@ function titles_are_dissimilar(string $inTitle, string $dbTitle) : bool {
         return ((strlen($inTitle) > 254 || strlen($dbTitle) > 254)
               ? (strlen($inTitle) != strlen($dbTitle)
                 || similar_text($inTitle, $dbTitle) / strlen($inTitle) < 0.98)
-              : levenshtein($inTitle, $dbTitle) > 3
+              : (levenshtein($inTitle, $dbTitle) > 3)
         )
         &&  
         ((strlen($inTitle2) > 254 || strlen($dbTitle) > 254)
               ? (strlen($inTitle2) != strlen($dbTitle)
                 || similar_text($inTitle2, $dbTitle) / strlen($inTitle2) < 0.98)
-              : levenshtein($inTitle2, $dbTitle) > 3
+              : (levenshtein($inTitle2, $dbTitle) > 3)
         );
 }
 
