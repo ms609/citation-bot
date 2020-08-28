@@ -3478,12 +3478,12 @@ final class Template {
           $comp = $parameter;
         }
       }
-      $str_len = (float) strlen($p->param);
+      $str_len = strlen($p->param);
 
       // Account for short words...
       if ($str_len < 4) {
-        $shortest *= ($str_len / ((bool) similar_text($p->param, $closest) ? (float) similar_text($p->param, $closest) : 0.001));
-        $shortish *= ($str_len / ((bool) similar_text($p->param, $comp) ? (float) similar_text($p->param, $comp) : 0.001));
+        $shortest *= ((float) $str_len / (float) (similar_text($p->param, $closest) ? similar_text($p->param, $closest) : 0.001));
+        $shortish *= ((float) $str_len / (float) (similar_text($p->param, $comp) ? similar_text($p->param, $comp) : 0.001));
       }
       
       if (in_array($p->param, $parameter_dead)) {
