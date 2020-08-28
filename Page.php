@@ -501,8 +501,10 @@ class Page {
         // PHP 5 segmentation faults. PHP 7.0 returns FALSE
         // @codeCoverageIgnoreStart
         $this->page_error = TRUE;
-        if (WikipediaBot::NonStandardMode()) echo "<p>\n\n" . echoable($text) . "\n\n<p>";
         report_minor_error('Regular expression failure in ' . htmlspecialchars($this->title) . ' when extracting ' . $class . 's');
+        if ($class === "Template") {
+          echo "The following text might help you figure out where the error on the page is (Look for lone { and } characters) <p>\n\n" . echoable($text) . "\n\n<p>";
+        }
         // @codeCoverageIgnoreEnd
     }
     $this->text = $text;
