@@ -49,7 +49,7 @@ const NON_JOURNAL_BIBCODES = array('arXiv', 'gr.qc', 'hep.ex', 'hep.lat', 'hep.p
                                    'cond.mat', 'cs.', 'econ.', 'eess.', 'nlin.');
 const NON_PUBLISHERS = ['books.google', 'google books', 'google news', 'google.co', 'amazon.com', 'google book',
                         'zenodo', 'archive.org', 'citeseerx.ist.psu.edu', 'archive.fo', 'archive.today',
-                        'hdl.handle.net', 'pub med']; // Google Inc is a valid publisher, however.
+                        'hdl.handle.net', 'pub med', 'researchgate']; // Google Inc is a valid publisher, however.
 const BAD_ZOTERO_TITLES = ['Browse publications', 'Central Authentication Service', 'http://', 'https://',
                                  'ZbMATH - the first resource for mathematics', 'MR: Matches for:',
                                  ' Log In', 'Log In ', 'Sign in', 'Bookmarkable URL intermediate page', 'Shibboleth Authentication Request',
