@@ -557,7 +557,7 @@ function tidy_date(string $string) :string {
   if (preg_match('~(\d\d?)\.(\d\d?)\.(\d{2}(?:\d{2})?)$~', $string, $matches) || preg_match('~^(\d\d?)\.(\d\d?)\.(\d{2}(?:\d{2})?)~', $string, $matches)) {
     if (intval($matches[3]) < ((int) date("y")+2))  $matches[3] = (int) $matches[3] + 2000;
     if (intval($matches[3]) < 100)  $matches[3] = (int) $matches[3] + 1900;
-    return tidy_date($matches[1] . '/' .  $matches[2] . '/' . (string) $matches[3]);
+    return tidy_date((string) $matches[1] . '/' . (string) $matches[2] . '/' . (string) $matches[3]);
   }
   
   if (preg_match('~\s(\d{4})$~', $string, $matches)) return $matches[1]; // Last ditch effort - ends in a year
