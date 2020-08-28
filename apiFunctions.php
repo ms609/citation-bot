@@ -121,10 +121,8 @@ function expand_arxiv_templates (array $templates) : bool {
   $arxiv_templates = array();
   foreach ($templates as $this_template) {
     if ($this_template->wikiname() == 'cite arxiv') {
-      $arxiv_param = 'eprint';
       $this_template->rename('arxiv', 'eprint');
     } else {
-      $arxiv_param = 'arxiv';
       $this_template->rename('eprint', 'arxiv');
     }
     $eprint = str_ireplace("arXiv:", "", $this_template->get('eprint') . $this_template->get('arxiv'));
@@ -584,10 +582,10 @@ function query_crossref(string $doi) : ?object {
           '<year media_type="print">',
           $raw_xml);
     $xml = @simplexml_load_string($raw_xml);
-    if (is_object($xml)) {
+    if (is_object($xml) && isset($xml->query_result->body->query)) {
       curl_close($ch);
       $result = $xml->query_result->body->query;
-      if ($result["status"] == "resolved") {
+      if ((string) @$result["status"] == "resolved") {
         return $result;
       } else {
         return NULL;
