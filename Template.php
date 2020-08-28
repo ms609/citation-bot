@@ -3263,7 +3263,7 @@ final class Template {
       }
       if (  $shortest < 3
          && strlen($test_dat) > 0
-         && similar_text($closest, $test_dat) / strlen($test_dat) > 0.4
+         && ((float) similar_text($closest, $test_dat) / (float) strlen($test_dat)) > 0.4
          && ($shortest + 1 < $shortish  // No close competitor
              || strlen($closest) > strlen($comp)
             )
@@ -3478,12 +3478,12 @@ final class Template {
           $comp = $parameter;
         }
       }
-      $str_len = strlen($p->param);
+      $str_len = (float) strlen($p->param);
 
       // Account for short words...
       if ($str_len < 4) {
-        $shortest *= ($str_len / (similar_text($p->param, $closest) ? similar_text($p->param, $closest) : 0.001));
-        $shortish *= ($str_len / (similar_text($p->param, $comp) ? similar_text($p->param, $comp) : 0.001));
+        $shortest *= ($str_len / ((bool) similar_text($p->param, $closest) ? (float) similar_text($p->param, $closest) : 0.001));
+        $shortish *= ($str_len / ((bool) similar_text($p->param, $comp) ? (float) similar_text($p->param, $comp) : 0.001));
       }
       
       if (in_array($p->param, $parameter_dead)) {
@@ -3492,7 +3492,7 @@ final class Template {
         $p->param = $closest;
         report_inline("replaced with $closest (likelihood " . (string)round(24.0 - $shortest,1) . "/24)"); // Scale arbitrarily re-based by adding 12 so users are more impressed by size of similarity
       } else {
-        $similarity = similar_text($p->param, $closest) / strlen($p->param);
+        $similarity = (float) similar_text($p->param, $closest) / (float) strlen($p->param);
         if ($similarity > 0.6) {
           $p->param = $closest;
           report_inline("replaced with $closest (similarity " . (string)(round(24.0 * $similarity, 1)) . "/24)"); // Scale arbitrarily re-based by multiplying by 2 so users are more impressed by size of similarity
