@@ -3128,11 +3128,11 @@ final class Template {
             case "U": $endnote_parameter = "url";        break;
             case "V": $endnote_parameter = "volume";     break;
             case "@": // ISSN / ISBN
-              if (preg_match("~@\s*([\d\-]{9,}[\dxX])~", $endnote_datum), $matches)) {
+              if (preg_match("~@\s*([\d\-]{9,}[\dxX])~", $endnote_line), $matches)) {
                 $endnote_datum = $matches[1];
                 $endnote_parameter = "isbn";
                 break;
-              } elseif (preg_match("~@\s*(\d{4}\-?\d{3}[\dxX])~", $endnote_datum), $matches)) {
+              } elseif (preg_match("~@\s*(\d{4}\-?\d{3}[\dxX])~", $endnote_line), $matches)) {
                 $endnote_datum = $matches[1];
                 $endnote_parameter = "issn";
                 break;
