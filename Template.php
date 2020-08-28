@@ -287,12 +287,12 @@ final class Template {
   public function fix_rogue_etal() : void {
     if ($this->blank(DISPLAY_AUTHORS)) {
       $i = 2;
-      while (!$this->blank(['author' . $i, 'last' . $i])) {
+      while (!$this->blank(['author' . (string) $i, 'last' . $i])) {
         $i = $i + 1;
       }
       $i = $i - 1;
-      if (preg_match('~^et\.? ?al\.?$~i', $this->get('author' . $i))) $this->rename('author' . $i, 'display-authors', 'etal');
-      if (preg_match('~^et\.? ?al\.?$~i', $this->get('last'   . $i))) $this->rename('last'   . $i, 'display-authors', 'etal');
+      if (preg_match('~^et\.? ?al\.?$~i', $this->get('author' . (string) $i))) $this->rename('author' . (string) $i, 'display-authors', 'etal');
+      if (preg_match('~^et\.? ?al\.?$~i', $this->get('last'   . (string) $i))) $this->rename('last'   . (string) $i, 'display-authors', 'etal');
     }
   }
   
@@ -686,14 +686,14 @@ final class Template {
         if ($value=='HEP Lib.Web') $value = 'High Energy Physics Libraries Webzine'; // should be array
         if (preg_match('~Conference Proceedings.*IEEE.*IEEE~', $value)) return FALSE;
         if (!$this->blank(['booktitle', 'book-title'])) return FALSE;
-        if (in_array(strtolower(sanitize_string($this->get('journal'))), BAD_TITLES ) === TRUE) $this->forget('journal'); // Update to real data
+        if (in_array(strtolower(sanitize_string($this->get('journal'))), BAD_TITLES)) $this->forget('journal'); // Update to real data
         if (preg_match('~^(?:www\.|)rte.ie$~i', $value)) $value = 'RTÉ News'; // Russian special case code
         if ($this->wikiname() === 'cite book' && $this->has('chapter') && $this->has('title') && $this->has('series')) return FALSE;
         if ($this->has('title') && str_equivalent($this->get('title'), $value)) return FALSE; // Messed up already or in database
-        if (!$this->blank(array_merge(['agency','publisher'],WORK_ALIASES)) && in_array(strtolower($value), DUBIOUS_JOURNALS) === TRUE) return FALSE; // non-journals that are probably same as agency or publisher that come from zotero
+        if (!$this->blank(array_merge(['agency','publisher'],WORK_ALIASES)) && in_array(strtolower($value), DUBIOUS_JOURNALS)) return FALSE; // non-journals that are probably same as agency or publisher that come from zotero
         if ($this->get($param_name) === 'none' || $this->blank(["journal", "periodical", "encyclopedia", "encyclopaedia", "newspaper", "magazine", "contribution"])) {
-          if (in_array(strtolower(sanitize_string($value)), HAS_NO_VOLUME) === TRUE) $this->forget("volume") ; // No volumes, just issues.
-          if (in_array(strtolower(sanitize_string($value)), BAD_TITLES ) === TRUE) return FALSE;
+          if (in_array(strtolower(sanitize_string($value)), HAS_NO_VOLUME)) $this->forget("volume") ; // No volumes, just issues.
+          if (in_array(strtolower(sanitize_string($value)), BAD_TITLES )) return FALSE;
           $value = wikify_external_text(title_case($value));
           if ($this->has('series') && str_equivalent($this->get('series'), $value)) return FALSE ;
           if ($this->has('work')) {
@@ -778,7 +778,7 @@ final class Template {
       ### (page, volume etc) ###
       
       case 'title':
-        if (in_array(strtolower(sanitize_string($value)), BAD_TITLES ) === TRUE) return FALSE;
+        if (in_array(strtolower(sanitize_string($value)), BAD_TITLES )) return FALSE;
         if ($this->blank($param_name) || in_array($this->get($param_name),
                                            ['Archived copy', "{title}", 'ScienceDirect', 'Google Books', 'None'])
                                       || (stripos($this->get($param_name), 'EZProxy') !== FALSE && stripos($value, 'EZProxy') === FALSE)) {
@@ -825,7 +825,7 @@ final class Template {
           if(substr($temp_string, 0, 2) === "[[" && substr($temp_string, -2) === "]]") {  // Wikilinked journal title 
                $temp_string = substr(substr($temp_string, 2), 0, -2); // Remove [[ and ]]
           }
-          if (in_array($temp_string, HAS_NO_VOLUME) === TRUE ) {
+          if (in_array($temp_string, HAS_NO_VOLUME)) {
             // This journal has no volume.  This is really the issue number
             return $this->add_if_new('issue', $value);
           } else {
@@ -1210,7 +1210,7 @@ final class Template {
       $author_parts  = explode(" ", $author);
       $author_ending = end($author_parts);
       $name_as_publisher = trim($forename . ' ' . $author);
-      if (in_array(strtolower($author_ending), PUBLISHER_ENDINGS) === TRUE
+      if (in_array(strtolower($author_ending), PUBLISHER_ENDINGS)
           || stripos($check_against, $name_as_publisher) !== FALSE) {
         $this->add_if_new('publisher' , $name_as_publisher);
       } else {
@@ -2273,7 +2273,7 @@ final class Template {
       $i = 0;
       if (isset($record->author)) {
        foreach ($record->author as $author) {
-        $this->add_if_new('author' . ++$i, $author);
+        $this->add_if_new('author' . (string) ++$i, $author);
        }
       }
       if (isset($record->pub)) {
@@ -2337,7 +2337,7 @@ final class Template {
        $i = 0;
        if (isset($record->author)) {
         foreach ($record->author as $author) {
-         $this->add_if_new('author' . ++$i, $author);
+         $this->add_if_new('author' . (string) ++$i, $author);
         }
        }
       }
@@ -2788,7 +2788,7 @@ final class Template {
           // @codeCoverageIgnoreStart
           if($response_code > 400) {  // Generally 400 and below are okay, includes redirects too though
             $this->forget('url');
-            report_warning("Open access URL gave response code " . $response_code . " from oiDOI API for doi: " . echoable($doi));
+            report_warning("Open access URL gave response code " . (string) $response_code . " from oiDOI API for doi: " . echoable($doi));
             return 'nothing';
           }
           // @codeCoverageIgnoreEnd
@@ -3007,7 +3007,7 @@ final class Template {
     $i = 0;
     if ($this->blank(array_merge(EDITOR1_ALIASES, AUTHOR1_ALIASES, ['publisher']))) { // Too many errors in gBook database to add to existing data.   Only add if blank.
       foreach ($xml->dc___creator as $author) {
-        $this->validate_and_add('author' . ++$i, str_replace("___", ":", (string) $author), '', '', TRUE);
+        $this->validate_and_add('author' . (string) ++$i, str_replace("___", ":", (string) $author), '', '', TRUE);
       }
     }
     
@@ -3114,7 +3114,7 @@ final class Template {
           $endnote_datum = substr($endnote_line, 2); // cut line type and leading space
           switch ($endnote_linetype) {
             case "A": 
-              $this->add_if_new('author' . ++$endnote_authors, format_author($endnote_datum));
+              $this->add_if_new('author' . (string) ++$endnote_authors, format_author($endnote_datum));
               $dat = trim(str_replace("\n%$endnote_line", "", "\n" . $dat));
               $endnote_parameter = FALSE;
               break;
@@ -3495,7 +3495,7 @@ final class Template {
         $similarity = similar_text($p->param, $closest) / strlen($p->param);
         if ($similarity > 0.6) {
           $p->param = $closest;
-          report_inline("replaced with $closest (similarity " . (round(2 * 12 * $similarity, 1)) . "/24)"); // Scale arbitrarily re-based by multiplying by 2 so users are more impressed by size of similarity
+          report_inline("replaced with $closest (similarity " . (string)(round(2 * 12 * $similarity, 1)) . "/24)"); // Scale arbitrarily re-based by multiplying by 2 so users are more impressed by size of similarity
         } else {
           report_inline("could not be replaced with confidence.  Please check the citation yourself.");
         }
@@ -4163,12 +4163,12 @@ final class Template {
              $title = preg_replace("~\]\]~", "", $title);
           } elseif (strpos($title, '{{!}}') === FALSE) { // Convert a single link to a title-link
              if (preg_match(REGEXP_PLAIN_WIKILINK, $title, $matches)) {
-               if (strlen($matches[1]) > (0.7 * strlen($title))) {  // Only add as title-link if a large part of title text
+               if (strlen($matches[1]) > (0.7 * (float) strlen($title))) {  // Only add as title-link if a large part of title text
                  $title = '[[' . $matches[1] . "|" . str_replace(array("[[", "]]"), "", $title) . ']]';
                }
              } elseif (preg_match(REGEXP_PIPED_WIKILINK, $title, $matches) &&
                        strpos($title, ':') === FALSE) { // Avoid touching inter-wiki links
-               if (strlen($matches[0]) > (0.7 * strlen($title))) {  // Only add as title-link if a large part of title text
+               if (strlen($matches[0]) > (0.7 * (float) strlen($title))) {  // Only add as title-link if a large part of title text
                 // TODO - this is not correct  $title = '[[' . $matches[1] . '|' . str_replace(array("[[", "]]"), "", $title) . ']]';
                }
              }
@@ -4586,7 +4586,7 @@ final class Template {
           if(substr($temp_string, 0, 2) === "[[" && substr($temp_string, -2) === "]]") {  // Wikilinked journal title 
                $temp_string = substr(substr($temp_string, 2), 0, -2); // Remove [[ and ]]
           }
-          if (in_array($temp_string, HAS_NO_VOLUME) === TRUE ) {
+          if (in_array($temp_string, HAS_NO_VOLUME)) {
             if ($this->blank(ISSUE_ALIASES)) {
               $this->rename('volume', 'issue');
             } else {
@@ -5075,7 +5075,7 @@ final class Template {
               $this->forget($param);
               $authors = split_authors($val_base);
               foreach ($authors as $i => $author_name) {
-                $this->add_if_new('author' . ((int) $i + 1), format_author($author_name));
+                $this->add_if_new('author' . (string)((int) $i + 1), format_author($author_name));
               }
             }
           }

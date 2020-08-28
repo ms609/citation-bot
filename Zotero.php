@@ -537,7 +537,7 @@ public static function process_zotero_response(string $zotero_response, Template
   }
   $i = 0;
   while (isset($result->author[$i])) {
-      if (author_is_human(@$result->author[$i][0] . ' ' . @$result->author[$i][1])) $template->validate_and_add('author' . ($i+1), (string) @$result->author[$i][1], (string) @$result->author[$i][0],
+      if (author_is_human(@$result->author[$i][0] . ' ' . @$result->author[$i][1])) $template->validate_and_add('author' . (string)($i+1), (string) @$result->author[$i][1], (string) @$result->author[$i][0],
                                       isset($result->rights) ? (string) $result->rights : '', FALSE);
       $i++;
   }
@@ -603,13 +603,13 @@ public static function process_zotero_response(string $zotero_response, Template
         if (isset($result->creators[$i]->firstName) && isset($result->creators[$i]->lastName)) {
           switch ($creatorType) {
             case 'author':
-              $authorParam = 'author' . ++$author_i;
+              $authorParam = 'author' . (string) ++$author_i;
               break;
             case 'editor':
-              $authorParam = 'editor' . ++$editor_i;
+              $authorParam = 'editor' . (string) ++$editor_i;
               break;
             case 'translator':
-              $authorParam = 'translator' . ++$translator_i;
+              $authorParam = 'translator' . (string) ++$translator_i;
               break;
             default:                                                               // @codeCoverageIgnore
               report_minor_error("Unrecognized creator type: " . $creatorType);    // @codeCoverageIgnore

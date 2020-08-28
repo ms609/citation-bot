@@ -367,7 +367,7 @@ function adsabs_api(array $ids, array $templates, string $identifier) : bool {
     $i = 0;
     if (isset($record->author)) {
      foreach ($record->author as $author) {
-      $this_template->add_if_new("author" . ++$i, $author, 'adsabs');
+      $this_template->add_if_new("author" . (string) ++$i, $author, 'adsabs');
      }
     }
     if (isset($record->pub)) {
