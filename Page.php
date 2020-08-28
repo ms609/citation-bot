@@ -503,7 +503,7 @@ class Page {
         $this->page_error = TRUE;
         report_minor_error('Regular expression failure in ' . htmlspecialchars($this->title) . ' when extracting ' . $class . 's');
         if ($class === "Template") {
-          echo "The following text might help you figure out where the error on the page is (Look for lone { and } characters) <p>\n\n" . echoable($text) . "\n\n<p>";
+          echo "<p>\n\n The following text might help you figure out where the error on the page is (Look for lone { and } characters) <p>\n\n" . echoable($text) . "\n\n<p>";
         }
         // @codeCoverageIgnoreEnd
     }
