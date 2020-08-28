@@ -4090,7 +4090,7 @@ final class Template {
             return;
           }
           foreach (NON_PUBLISHERS as $not_publisher) {
-            if (strpos($publisher, $not_publisher) !== FALSE) {
+            if (stripos($publisher, $not_publisher) !== FALSE) {
               $this->forget($param);
               return;
             }
@@ -4539,7 +4539,7 @@ final class Template {
           if ($this->wikiname() === 'cite book') {
             $publisher = strtolower($this->get($param));
             foreach (NON_PUBLISHERS as $not_publisher) {
-              if (strpos($publisher, $not_publisher) !== FALSE) {
+              if (stripos($publisher, $not_publisher) !== FALSE) {
                 $this->forget($param);
                 return;
               }
