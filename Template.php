@@ -3138,8 +3138,8 @@ final class Template {
                 break;
               }
             case "R": // Resource identifier... *may* be DOI but probably isn't always.
-              if (extract_doi($endnote_datum)[1]) {
-                $endnote_datum = extract_doi($endnote_datum)[1];
+              if ($matches = extract_doi($endnote_datum)[1]) {
+                $endnote_datum = $matches;
                 $endnote_parameter = 'doi';
                 break;
               }
