@@ -3111,7 +3111,7 @@ final class Template {
         $endnote_authors = 0;
         foreach ($endnote_test as $endnote_line) {
           $endnote_linetype = substr($endnote_line, 0, 1);
-          $endnote_datum = substr($endnote_line, 2); // cut line type and leading space
+          $endnote_datum = trim(substr($endnote_line, 2)); // cut line type and leading space
           switch ($endnote_linetype) {
             case "A": 
               $this->add_if_new('author' . (string) ++$endnote_authors, format_author($endnote_datum));
@@ -3128,15 +3128,18 @@ final class Template {
             case "U": $endnote_parameter = "url";        break;
             case "V": $endnote_parameter = "volume";     break;
             case "@": // ISSN / ISBN
-              if (preg_match("~@\s*[\d\-]{9,}[\dxX]~", $endnote_line)) {
+              if (preg_match("~@\s*([\d\-]{9,}[\dxX])~", $endnote_datum), $matches)) {
+                $endnote_datum = $matches[1];
                 $endnote_parameter = "isbn";
                 break;
-              } elseif (preg_match("~@\s*\d{4}\-?\d{3}[\dxX]~", $endnote_line)) {
+              } elseif (preg_match("~@\s*(\d{4}\-?\d{3}[\dxX])~", $endnote_datum), $matches)) {
+                $endnote_datum = $matches[1];
                 $endnote_parameter = "issn";
                 break;
               }
             case "R": // Resource identifier... *may* be DOI but probably isn't always.
               if (extract_doi($endnote_datum)[1]) {
+                $endnote_datum = extract_doi($endnote_datum)[1];
                 $endnote_parameter = 'doi';
                 break;
               }
@@ -3149,7 +3152,7 @@ final class Template {
               $endnote_parameter = FALSE;
           }
           if ($endnote_parameter) {
-            $this->add_if_new($endnote_parameter, trim(substr($endnote_line, 2)));
+            $this->add_if_new($endnote_parameter, $endnote_datum);
             $dat = trim(str_replace("\n%$endnote_line", "", "\n$dat"));
           }
         }
