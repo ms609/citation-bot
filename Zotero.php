@@ -143,7 +143,7 @@ public static function drop_urls_that_match_dois(array $templates) : void {
          CURLOPT_RETURNTRANSFER => TRUE,
          CURLOPT_COOKIEFILE => "",
          CURLOPT_AUTOREFERER => TRUE,
-         URLOPT_USERAGENT => 'Citation_bot; citations@tools.wmflabs.org']);
+         CURLOPT_USERAGENT => 'Citation_bot; citations@tools.wmflabs.org']);
   foreach ($templates as $template) {
     $doi = $template->get_without_comments_and_placeholders('doi');
     if ($template->has('url')) {
