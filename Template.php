@@ -3139,23 +3139,28 @@ final class Template {
               if (preg_match("~@\s*([\d\-]{9,}[\dxX])~", $endnote_line, $matches)) {
                 $endnote_datum = $matches[1];
                 $endnote_parameter = "isbn";
-                break;
               } elseif (preg_match("~@\s*(\d{4}\-?\d{3}[\dxX])~", $endnote_line, $matches)) {
                 $endnote_datum = $matches[1];
                 $endnote_parameter = "issn";
-                break;
+              } else {
+                $endnote_parameter = FALSE;
               }
+              break;
             case "R": // Resource identifier... *may* be DOI but probably isn't always.
               if ($matches = extract_doi($endnote_datum)[1]) {
                 $endnote_datum = $matches;
                 $endnote_parameter = 'doi';
-                break;
+              } else {
+                $endnote_parameter = FALSE;
               }
+              break;
             case "8": // Date
             case "0": // Citation type
             case "X": // Abstract
             case "M": // Object identifier
               $dat = trim(str_replace("\n%$endnote_line", "", "\n" . $dat));
+              $endnote_parameter = FALSE;
+              break;
             default:
               $endnote_parameter = FALSE;
           }
