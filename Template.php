@@ -1522,7 +1522,7 @@ final class Template {
         // Need to encode the sici bit that follows sici?sici= [10 characters]
         $encoded_url = substr($url, 0, $sici_pos + 10) . urlencode(urldecode(substr($url, $sici_pos + 10)));
         $ch = curl_init($encoded_url);
-        curl_setopt($ch,
+        curl_setopt_array($ch,
               [CURLOPT_HEADER => 1,
                CURLOPT_NOBODY => 1,
                CURLOPT_RETURNTRANSFER => TRUE,
@@ -4480,7 +4480,7 @@ final class Template {
             }
             if (preg_match("~^https?://proquest\.umi\.com/.*$~", $this->get($param), $matches)) {
                  $ch = curl_init();
-                 curl_setopt_arrau($ch,
+                 curl_setopt_array($ch,
                          [CURLOPT_FOLLOWLOCATION => TRUE,
                           CURLOPT_MAXREDIRS => 20,
                           CURLOPT_CONNECTTIMEOUT => 4,
