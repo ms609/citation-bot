@@ -908,9 +908,10 @@ final class Template {
             }
             if ($param_name !== "pages") $this->forget('pages'); // Forget others -- sometimes we upgrade page=123 to pages=123-456
             if ($param_name !== "page")  $this->forget('page');
-            if ($param_name !== "pp")    $this->forget('pp');
-            if ($param_name !== "p")     $this->forget('p');
-            if ($param_name !== "at")    $this->forget('at');
+            // Forget ones we never even add
+            $this->forget('pp');
+            $this->forget('p');
+            $this->forget('at');
 
             $param_key = $this->get_param_key($param_name);
             if (!is_null($param_key)) {
@@ -1911,14 +1912,13 @@ final class Template {
     // They already allow some fuzziness in matches
     if ($data['journal'] || $data['issn']) {
       $url = "https://www.crossref.org/openurl/?noredirect=TRUE&pid=" . CROSSREFUSERNAME
-           . ($data['title'] ? "&atitle=" . urlencode($data['title']) : '')
-           . ($data['author'] ? "&aulast=" . urlencode($data['author']) : '')
-           . ($data['start_page'] ? "&spage=" . urlencode($data['start_page']) : '')
-           . ($data['end_page'] ? "&epage=" . urlencode($data['end_page']) : '')
-           . ($data['year'] ? "&date=" . urlencode($data['year']) : '')
-           . ($data['volume'] ? "&volume=" . urlencode($data['volume']) : '')
-           . ($data['issn'] ? ("&issn=" . $data['issn'])
-                            : ($data['journal'] ? "&title=" . urlencode($data['journal']) : ''));
+           . ($data['title']      ? "&atitle=" . urlencode($data['title'])      : '')
+           . ($data['author']     ? "&aulast=" . urlencode($data['author'])     : '')
+           . ($data['start_page'] ? "&spage="  . urlencode($data['start_page']) : '')
+           . ($data['end_page']   ? "&epage="  . urlencode($data['end_page'])   : '')
+           . ($data['year']       ? "&date="   . urlencode($data['year'])       : '')
+           . ($data['volume']     ? "&volume=" . urlencode($data['volume'])     : '')
+           . ($data['issn']       ? "&issn="   . urlencode($data['issn'])       : "&title=" . urlencode($data['journal']));
       $result = @simplexml_load_file($url);
       if ($result === FALSE) {
         report_warning("Error loading simpleXML file from CrossRef.");  // @codeCoverageIgnore
@@ -3267,7 +3267,7 @@ final class Template {
       if (  $shortest < 3
          && strlen($test_dat) > 0
          && ((float) similar_text($closest, $test_dat) / (float) strlen($test_dat)) > 0.4
-         && ($shortest + 1 < $shortish  // No close competitor
+         && ($shortest + 1.0 < $shortish  // No close competitor
              || strlen($closest) > strlen($comp)
             )
       ) {
