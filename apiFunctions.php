@@ -251,14 +251,14 @@ function adsabs_api(array $ids, array $templates, string $identifier) : bool {
   try {
     report_action("Expanding from BibCodes via AdsAbs API");
     $ch = curl_init();
-    curl_setopt($ch, CURLOPT_URL, $adsabs_url);
-    curl_setopt($ch, CURLOPT_USERAGENT, 'Citation_bot; citations@tools.wmflabs.org');
-    curl_setopt($ch, CURLOPT_HTTPHEADER, array('Content-Type: big-query/csv', 
-      'Authorization: Bearer ' . PHP_ADSABSAPIKEY));
-    curl_setopt($ch, CURLOPT_RETURNTRANSFER, TRUE);
-    curl_setopt($ch, CURLOPT_HEADER, TRUE);
-    curl_setopt($ch, CURLOPT_CUSTOMREQUEST, 'POST');
-    curl_setopt($ch, CURLOPT_POSTFIELDS, "$identifier\n" . str_replace("%0A", "\n", urlencode(implode("\n", $ids))));
+    curl_setopt_array($ch,
+             [CURLOPT_URL => $adsabs_url,
+              CURLOPT_USERAGENT => 'Citation_bot; citations@tools.wmflabs.org',
+              CURLOPT_HTTPHEADER => ['Content-Type: big-query/csv', 'Authorization: Bearer ' . PHP_ADSABSAPIKEY],
+              CURLOPT_RETURNTRANSFER => TRUE,
+              CURLOPT_HEADER => TRUE,
+              CURLOPT_CUSTOMREQUEST => 'POST',
+              CURLOPT_POSTFIELDS => "$identifier\n" . str_replace("%0A", "\n", urlencode(implode("\n", $ids)))]);
     $return = (string) @curl_exec($ch);
     if ($return == "") {
       // @codeCoverageIgnoreStart
@@ -566,10 +566,11 @@ function query_crossref(string $doi) : ?object {
   $doi = str_replace(DOI_URL_DECODE, DOI_URL_ENCODE, $doi);
   $url = "https://www.crossref.org/openurl/?pid=" . CROSSREFUSERNAME . "&id=doi:$doi&noredirect=TRUE";
   $ch = curl_init();
-  curl_setopt($ch, CURLOPT_HEADER, 0);
-  curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
-  curl_setopt($ch, CURLOPT_URL, $url);
-  curl_setopt($ch, CURLOPT_USERAGENT, 'Citation_bot; citations@tools.wmflabs.org');
+  curl_setopt_array($ch,
+            [CURLOPT_HEADER => 0,
+             CURLOPT_RETURNTRANSFER =>  1,
+             CURLOPT_URL =>  $url,
+             CURLOPT_USERAGENT => 'Citation_bot; citations@tools.wmflabs.org']);
   for ($i = 0; $i < 2; $i++) {
     $raw_xml = (string) @curl_exec($ch);
     if (!$raw_xml) {
@@ -621,11 +622,12 @@ function expand_doi_with_dx(Template $template, string $doi) : bool {
      };
      if (!$doi) return FALSE;
      $ch = curl_init();
-     curl_setopt($ch, CURLOPT_USERAGENT, 'Citation_bot; citations@tools.wmflabs.org');
-     curl_setopt($ch, CURLOPT_URL,'https://doi.org/' . $doi);
-     curl_setopt($ch, CURLOPT_HTTPHEADER, array("Accept: application/vnd.citationstyles.csl+json"));
-     curl_setopt($ch, CURLOPT_RETURNTRANSFER, TRUE);
-     curl_setopt($ch, CURLOPT_FOLLOWLOCATION, TRUE);
+     curl_setopt_array($ch,
+             [CURLOPT_USERAGENT => 'Citation_bot; citations@tools.wmflabs.org',
+              CURLOPT_URL => 'https://doi.org/' . $doi,
+              CURLOPT_HTTPHEADER => ["Accept: application/vnd.citationstyles.csl+json"],
+              CURLOPT_RETURNTRANSFER => TRUE,
+              CURLOPT_FOLLOWLOCATION => TRUE]);
      try {
        $data = (string) @curl_exec($ch);
      } catch (Exception $e) {                    // @codeCoverageIgnoreStart
@@ -790,10 +792,11 @@ function expand_by_jstor(Template $template) : bool {
   if (strpos($jstor, ' ') !== FALSE) return FALSE ; // Comment/template found
   if (substr($jstor, 0, 1) === 'i') return FALSE ; // We do not want i12342 kind
   $ch = curl_init();
-  curl_setopt($ch, CURLOPT_HEADER, 0);
-  curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
-  curl_setopt($ch, CURLOPT_URL, 'https://www.jstor.org/citation/ris/' . $jstor);
-  curl_setopt($ch, CURLOPT_USERAGENT, 'Citation_bot; citations@tools.wmflabs.org');
+  curl_setopt_array($ch,
+           [CURLOPT_HEADER => 0,
+            CURLOPT_RETURNTRANSFER => 1,
+            CURLOPT_URL => 'https://www.jstor.org/citation/ris/' . $jstor,
+            CURLOPT_USERAGENT => 'Citation_bot; citations@tools.wmflabs.org']);
   $dat = (string) @curl_exec($ch);
   curl_close($ch);
   if ($dat == '') {
@@ -1084,9 +1087,10 @@ function get_semanticscholar_license(string $s2cid) : ?bool {
 
 function expand_templates_from_archives(array $templates) : void { // This is done very late as a latch ditch effort
   $ch = curl_init();
-  curl_setopt($ch, CURLOPT_HEADER, 0);
-  curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
-  curl_setopt($ch, CURLOPT_USERAGENT, 'Citation_bot; citations@tools.wmflabs.org');
+  curl_setopt_array($ch,
+          [CURLOPT_HEADER => 0,
+           CURLOPT_RETURNTRANSFER => 1,
+           CURLOPT_USERAGENT => 'Citation_bot; citations@tools.wmflabs.org']);
   foreach ($templates as $template) {
     if ($template->blank(['title', 'chapter', 'series']) &&
         !$template->blank(['archive-url', 'archive-url']) &&

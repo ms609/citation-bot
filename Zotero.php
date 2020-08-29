@@ -19,14 +19,15 @@ final class Zotero {
   protected static int $zotero_failures_count = 0;
 
 private static function set_default_ch_zotero() : void {
-  curl_setopt(self::$zotero_ch, CURLOPT_URL, ZOTERO_ROOT);
-  curl_setopt(self::$zotero_ch, CURLOPT_CUSTOMREQUEST, "POST");
-  curl_setopt(self::$zotero_ch, CURLOPT_HTTPHEADER, ['Content-Type: text/plain']);
-  curl_setopt(self::$zotero_ch, CURLOPT_RETURNTRANSFER, TRUE);
-  curl_setopt(self::$zotero_ch, CURLOPT_USERAGENT, 'Citation_bot; citations@tools.wmflabs.org');
-  // Defaults used in TRAVIS overiden below when deployed
-  curl_setopt(self::$zotero_ch, CURLOPT_CONNECTTIMEOUT, 10);
-  curl_setopt(self::$zotero_ch, CURLOPT_TIMEOUT, 45);
+  curl_setopt_array(self::$zotero_ch,
+        [CURLOPT_URL => ZOTERO_ROOT,
+         CURLOPT_CUSTOMREQUEST => "POST",
+         CURLOPT_HTTPHEADER => ['Content-Type: text/plain'],
+         CURLOPT_RETURNTRANSFER => TRUE,
+         CURLOPT_USERAGENT => 'Citation_bot; citations@tools.wmflabs.org',
+         // Defaults used in TRAVIS overiden below when deployed
+         CURLOPT_CONNECTTIMEOUT => 10,
+         CURLOPT_TIMEOUT => 45]);
 }
 
 public static function block_zotero() : void {
@@ -99,9 +100,10 @@ public static function query_url_api_class(array $ids, array $templates) : void 
 
 public static function query_ieee_webpages(array $templates) : void {
   $ch_ieee = curl_init();
-  curl_setopt($ch_ieee, CURLOPT_RETURNTRANSFER, TRUE);
-  curl_setopt($ch_ieee, CURLOPT_HEADER, FALSE);
-  curl_setopt($ch_ieee, CURLOPT_USERAGENT, 'Citation_bot; citations@tools.wmflabs.org');
+  curl_setopt_array($ch_ieee,
+         [CURLOPT_RETURNTRANSFER => TRUE,
+          CURLOPT_HEADER => FALSE,
+          CURLOPT_USERAGENT => 'Citation_bot; citations@tools.wmflabs.org']);
   
   foreach (['url', 'chapter-url', 'chapterurl'] as $kind) {
    foreach ($templates as $template) {
@@ -136,14 +138,15 @@ public static function query_ieee_webpages(array $templates) : void {
 public static function drop_urls_that_match_dois(array $templates) : void {
   // Now that we have expanded URLs, try to lose them
   $ch = curl_init();
-  curl_setopt($ch, CURLOPT_FOLLOWLOCATION, TRUE);
-  curl_setopt($ch, CURLOPT_MAXREDIRS, 20); // No infinite loops for us, 20 for Elsivier and Springer websites
-  curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, 4); 
-  curl_setopt($ch, CURLOPT_TIMEOUT, 15);
-  curl_setopt($ch, CURLOPT_RETURNTRANSFER, TRUE);
-  curl_setopt($ch, CURLOPT_COOKIEFILE, "");
-  curl_setopt($ch, CURLOPT_AUTOREFERER, TRUE);
-  curl_setopt($ch, CURLOPT_USERAGENT, 'Citation_bot; citations@tools.wmflabs.org');
+  curl_setopt_array($ch,
+        [CURLOPT_FOLLOWLOCATION => TRUE,
+         CURLOPT_MAXREDIRS => 20, // No infinite loops for us, 20 for Elsivier and Springer websites
+         CURLOPT_CONNECTTIMEOUT =>  4, 
+         CURLOPT_TIMEOUT => 5,
+         CURLOPT_RETURNTRANSFER => TRUE,
+         CURLOPT_COOKIEFILE => "",
+         CURLOPT_AUTOREFERER => TRUE,
+         CURLOPT_USERAGENT => 'Citation_bot; citations@tools.wmflabs.org']);
   foreach ($templates as $template) {
     $doi = $template->get_without_comments_and_placeholders('doi');
     if ($template->has('url')) {

@@ -41,10 +41,11 @@ $edit_summary_end = "| Suggested by " . $api->get_the_user() . " | All pages lin
 
 $url = API_ROOT . '?action=parse&prop=links&format=json&page=' . $page_name;
 $ch = curl_init();
-curl_setopt($ch, CURLOPT_HEADER, 0);
-curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
-curl_setopt($ch, CURLOPT_URL, $url);
-curl_setopt($ch, CURLOPT_USERAGENT, 'Citation_bot; citations@tools.wmflabs.org');
+curl_setopt_array($ch,
+      [CURLOPT_HEADER => 0,
+       CURLOPT_RETURNTRANSFER =>  1,
+       CURLOPT_URL => $url,
+       CURLOPT_USERAGENT => 'Citation_bot; citations@tools.wmflabs.org']);
 $json = (string) @curl_exec($ch);
 curl_close($ch);
 if ($json == '') {
