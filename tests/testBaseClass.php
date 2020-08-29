@@ -183,31 +183,37 @@ abstract class testBaseClass extends PHPUnit\Framework\TestCase {
   
   // We hate buffers - makes debugging harder
   public static function assertSame($expected, $actual, string $message = '') : void {
+    $trace = debug_backtrace(); $name = $trace[2]['function']; echo "\n" . date("h:i:s") . '  ' . $name . '  ' .  $expected . "\n";
     parent::assertSame($expected,  $actual, $message);
     ob_flush();
   }
 
   public static function assertEquals($expected, $actual, string $message = '') : void {
+    $trace = debug_backtrace(); $name = $trace[2]['function']; echo "\n" . date("h:i:s") . '  ' . $name . '  ' .  $expected . "\n";
     parent::assertEquals($expected,  $actual, $message);
     ob_flush();
   }
 
   public static function assertTrue($condition, string $message = '') : void {
+    $trace = debug_backtrace(); $name = $trace[2]['function']; echo "\n" . date("h:i:s") . '  ' . $name . '  ' .  $expected . "\n";
     parent::assertTrue($condition, $message);
     ob_flush();
   }
 
   public static function assertFalse($condition, string $message = '') : void {
+    $trace = debug_backtrace(); $name = $trace[2]['function']; echo "\n" . date("h:i:s") . '  ' . $name . '  ' .  $expected . "\n";
     parent::assertFalse($condition, $message);
     ob_flush();
   }
 
   public static function assertNull($condition, string $message = '') : void {
+    $trace = debug_backtrace(); $name = $trace[2]['function']; echo "\n" . date("h:i:s") . '  ' . $name . '  ' .  $expected . "\n";
     parent::assertNull($condition, $message);
     ob_flush();
   }
 
   public static function assertNotNull($condition, string $message = '') : void {
+    $trace = debug_backtrace(); $name = $trace[2]['function']; echo "\n" . date("h:i:s") . '  ' . $name . '  ' .  $expected . "\n";
     parent::assertNotNull($condition, $message);
     ob_flush();
   }
