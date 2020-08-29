@@ -254,11 +254,11 @@ function adsabs_api(array $ids, array $templates, string $identifier) : bool {
     curl_setopt_array($ch,
              [CURLOPT_URL => $adsabs_url,
               CURLOPT_USERAGENT => 'Citation_bot; citations@tools.wmflabs.org',
-              CURLOPT_HTTPHEADER => array('Content-Type: big-query/csv', 'Authorization: Bearer ' . PHP_ADSABSAPIKEY),
+              CURLOPT_HTTPHEADER => ['Content-Type: big-query/csv', 'Authorization: Bearer ' . PHP_ADSABSAPIKEY],
               CURLOPT_RETURNTRANSFER => TRUE,
               CURLOPT_HEADER => TRUE,
               CURLOPT_CUSTOMREQUEST => 'POST',
-              CURLOPT_POSTFIELDS => "$identifier\n" . str_replace("%0A", "\n", urlencode(implode("\n", $ids))]);
+              CURLOPT_POSTFIELDS => "$identifier\n" . str_replace("%0A", "\n", urlencode(implode("\n", $ids)))]);
     $return = (string) @curl_exec($ch);
     if ($return == "") {
       // @codeCoverageIgnoreStart
@@ -625,7 +625,7 @@ function expand_doi_with_dx(Template $template, string $doi) : bool {
      curl_setopt_array($ch,
              [CURLOPT_USERAGENT => 'Citation_bot; citations@tools.wmflabs.org',
               CURLOPT_URL => 'https://doi.org/' . $doi,
-              CURLOPT_HTTPHEADER => array("Accept: application/vnd.citationstyles.csl+json"),
+              CURLOPT_HTTPHEADER => ["Accept: application/vnd.citationstyles.csl+json"],
               CURLOPT_RETURNTRANSFER => TRUE,
               CURLOPT_FOLLOWLOCATION => TRUE]);
      try {
