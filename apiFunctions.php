@@ -254,7 +254,7 @@ function adsabs_api(array $ids, array $templates, string $identifier) : bool {
     curl_setopt_array($ch,
              [CURLOPT_URL => $adsabs_url,
               CURLOPT_USERAGENT => 'Citation_bot; citations@tools.wmflabs.org');
-              CURLOPT_HTTPHEADER => array('Content-Type: big-query/csv', 'Authorization: Bearer ' . PHP_ADSABSAPIKEY)),
+              CURLOPT_HTTPHEADER => array('Content-Type: big-query/csv', 'Authorization: Bearer ' . PHP_ADSABSAPIKEY),
               CURLOPT_RETURNTRANSFER => TRUE,
               CURLOPT_HEADER => TRUE,
               CURLOPT_CUSTOMREQUEST => 'POST',
