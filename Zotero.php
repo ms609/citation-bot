@@ -15,9 +15,8 @@ final class Zotero {
   protected static $zotero_ch;
   protected static $zotero_failures_count = 0;
 
-private static function make_ch_zotero() : void {
-  if (is_resource(self::$zotero_ch)) return;
-  self::$zotero_ch = curl_init(ZOTERO_ROOT);
+private static function set_default_ch_zotero() : void {
+  curl_setopt(self::$zotero_ch, CURLOPT_URL, ZOTERO_ROOT);
   curl_setopt(self::$zotero_ch, CURLOPT_CUSTOMREQUEST, "POST");
   curl_setopt(self::$zotero_ch, CURLOPT_HTTPHEADER, ['Content-Type: text/plain']);
   curl_setopt(self::$zotero_ch, CURLOPT_RETURNTRANSFER, TRUE);
@@ -37,7 +36,10 @@ public static function unblock_zotero() : void {
 
 public static function query_url_api_class(array $ids, array $templates) : void {
   if (!SLOW_MODE) return; // Zotero takes time
-  self::make_ch_zotero();
+  if (!is_resource(self::$zotero_ch)) {
+     self::$zotero_ch = curl_init();
+     self::set_default_ch_zotero();
+  }
 
   if (!TRAVIS) { // try harder in tests
     // @codeCoverageIgnoreStart
@@ -242,7 +244,10 @@ private static function zotero_request(string $url) : string {
   }
   if (self::$zotero_failures_count > self::ZOTERO_GIVE_UP) return self::ERROR_DONE;
 
-  self::make_ch_zotero();
+  if (!is_resource(self::$zotero_ch)) {
+     self::$zotero_ch = curl_init();
+     self::set_default_ch_zotero();
+  }
   curl_setopt(self::$zotero_ch, CURLOPT_POSTFIELDS, $url);
   
   $zotero_response = (string) @curl_exec(self::$zotero_ch);
