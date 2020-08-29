@@ -69,9 +69,8 @@ if (isset($_GET['oauth_verifier']) && isset($_SESSION['request_key']) && isset($
         $_SESSION['access_key'] = $accessToken->key;
         $_SESSION['access_secret'] = $accessToken->secret;
         unset($_SESSION['request_key']);unset($_SESSION['request_secret']);
-        if (isset($_GET['return'])) { // Data verification - avoid evil data
-           $go_here = trim((string) $_GET['return']);
-           if (preg_match('~^https?://(?:citations\.toolforge\.org|tools\.wmflabs\.org/citations|meta\.wikimedia\.org)/[^ ]+$~i', $go_here)) return_to_sender($go_here);
+        if (isset($_GET['return'])) {
+           return_to_sender(trim((string) $_GET['return']));
         }
         return_to_sender();
    }
