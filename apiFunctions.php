@@ -626,7 +626,7 @@ function expand_doi_with_dx(Template $template, string $doi) : bool {
              [CURLOPT_USERAGENT => 'Citation_bot; citations@tools.wmflabs.org',
               CURLOPT_URL => 'https://doi.org/' . $doi,
               CURLOPT_HTTPHEADER => array("Accept: application/vnd.citationstyles.csl+json"),
-              CURLOPT_RETURNTRANSFER => TRUE);
+              CURLOPT_RETURNTRANSFER => TRUE,
               CURLOPT_FOLLOWLOCATION => TRUE]);
      try {
        $data = (string) @curl_exec($ch);
