@@ -1912,13 +1912,13 @@ final class Template {
     // They already allow some fuzziness in matches
     if ($data['journal'] || $data['issn']) {
       $url = "https://www.crossref.org/openurl/?noredirect=TRUE&pid=" . CROSSREFUSERNAME
-           . ($data['title'] ? "&atitle=" . urlencode($data['title']) : '')
-           . ($data['author'] ? "&aulast=" . urlencode($data['author']) : '')
-           . ($data['start_page'] ? "&spage=" . urlencode($data['start_page']) : '')
-           . ($data['end_page'] ? "&epage=" . urlencode($data['end_page']) : '')
-           . ($data['year'] ? "&date=" . urlencode($data['year']) : '')
-           . ($data['volume'] ? "&volume=" . urlencode($data['volume']) : '')
-           . ($data['issn'] ? ("&issn=" . $data['issn']) : ("&title=" . urlencode($data['journal']));
+           . ($data['title']      ? "&atitle=" . urlencode($data['title'])      : '')
+           . ($data['author']     ? "&aulast=" . urlencode($data['author'])     : '')
+           . ($data['start_page'] ? "&spage="  . urlencode($data['start_page']) : '')
+           . ($data['end_page']   ? "&epage="  . urlencode($data['end_page'])   : '')
+           . ($data['year']       ? "&date="   . urlencode($data['year'])       : '')
+           . ($data['volume']     ? "&volume=" . urlencode($data['volume'])     : '')
+           . ($data['issn']       ? "&issn="   . urlencode($data['issn'])       : "&title=" . urlencode($data['journal']);
       $result = @simplexml_load_file($url);
       if ($result === FALSE) {
         report_warning("Error loading simpleXML file from CrossRef.");  // @codeCoverageIgnore
