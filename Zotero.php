@@ -37,7 +37,7 @@ public static function unblock_zotero() : void {
 
 public static function query_url_api_class(array $ids, array $templates) : void {
   if (!SLOW_MODE) return; // Zotero takes time
-  if (!is_resource(self::$zotero_ch)) {
+  if (!is_resource(self::$zotero_ch)) { // When closed will return FALSE
      self::$zotero_ch = curl_init();
      self::set_default_ch_zotero();
   }
