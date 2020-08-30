@@ -22,6 +22,8 @@ function death_time(string $err) : void {
 }
 
 function return_to_sender(string $where = 'https://citations.toolforge.org/') : void {
+  // Only could be Tainted if OAuth server itself was hacked
+  // @psalm-taint-escape text
   header("Location: " . $where);
   exit(0);
 }
