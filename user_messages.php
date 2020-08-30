@@ -51,9 +51,13 @@ function quietly(callable $function, string $text) : void { // Stuff suppressed 
   }
 }
 
-// @psalm-pure
+/**
+ * @psalm-pure
+ */
 function echoable(?string $string) : string {
-  // @psalm-taint-escape html
+  /**
+   * @psalm-taint-escape html
+   */
   $string = (string) $string;
   return HTML_OUTPUT ? htmlspecialchars($string) : $string;
 }
