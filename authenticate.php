@@ -78,7 +78,7 @@ if (isset($_GET['oauth_verifier']) && isset($_SESSION['request_key']) && isset($
         $_SESSION['access_secret'] = $accessToken->secret;
         unset($_SESSION['request_key']);unset($_SESSION['request_secret']);
         if (isset($_GET['return'])) {
-           return_to_sender(trim((string) $_GET['return']));
+           return_to_sender((string) $_GET['return']);
         }
         return_to_sender();
    }
@@ -114,5 +114,3 @@ try {
 }
 catch (Throwable $e) { ; }
 death_time("Unable to initiate OAuth.");
-
-
