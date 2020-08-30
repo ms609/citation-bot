@@ -5711,11 +5711,17 @@ final class Template {
       } else {   
         return $this->add_if_new('journal', $the_name); // Might be newspaper, hard to tell.
       }
-    } elseif (preg_match('~<title>(.*)</title>~', $html, $matches)) {     // @codeCoverageIgnore
-      // Sometime just get [WorldCat.org]
-      report_minor_error('unexpected title from ISSN ' . echoable($issn) . ' : ' . echoable($matches[1])); // @codeCoverageIgnore
+      // @codeCoverageIgnoreStart
+    } elseif (preg_match('~<title>(.*)</title>~', $html, $matches)) {
+      $wonky = trim($matches[1]);
+      if ($wonky === "[WorldCat.org]") {
+        report_info('WorldCat temporarily unresponsive');
+      } else {
+        report_minor_error('unexpected title from ISSN ' . echoable($issn) . ' : ' . echoable($wonky);
+      }
     }
-    return FALSE; // @codeCoverageIgnore
+    return FALSE;
+    // @codeCoverageIgnoreEnd
   }
     
   private function is_book_series(string $param) : bool {
