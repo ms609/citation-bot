@@ -21,9 +21,14 @@ function death_time(string $err) : void {
   exit('<!DOCTYPE html><html lang="en" dir="ltr"><head><title>Authentifcation System Failure</title></head><body>' . $err . '</body></html>');
 }
 
+/**
+ * @psalm-pure
+ */
 function return_to_sender(string $where = 'https://citations.toolforge.org/') : void {
   // Only could be Tainted if OAuth server itself was hacked
-  // @psalm-taint-escape text
+  /**
+   * @psalm-taint-escape text
+   */
   header("Location: " . $where);
   exit(0);
 }
