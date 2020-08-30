@@ -132,8 +132,8 @@ abstract class testBaseClass extends PHPUnit\Framework\TestCase {
   }
   
   protected function process_citation(string $text) : Template {
-    $this->assertEquals('{{', mb_substr($text, 0, 2));
-    $this->assertEquals('}}', mb_substr($text, -2));
+    $this->assertSame('{{', mb_substr($text, 0, 2));
+    $this->assertSame('}}', mb_substr($text, -2));
     $page = new TestPage();
     $page->parse_text($text);
     $page->expand_text();
