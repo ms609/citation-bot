@@ -2247,7 +2247,9 @@ final class Template {
 	 $old_one = $this->get('bibcode');
          $this->add_if_new('bibcode_nosearch', (string) $record->bibcode);
 	 if ($this->get('bibcode') === $old_one) return FALSE; // Extra paranoid code to 100% guarantee no infinite loop as code evolves
-         /* @suppress PhanPossiblyInfiniteRecursionSameParams */
+         /*
+          * @suppress PhanPossiblyInfiniteRecursionSameParams
+          */
          return $this->expand_by_adsabs();
       }
       
