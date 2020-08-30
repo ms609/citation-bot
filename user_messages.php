@@ -54,7 +54,7 @@ function quietly(callable $function, string $text) : void { // Stuff suppressed 
 function echoable(?string $string) : string {
   $string = (string) $string;
   // @psalm-taint-escape html
-  return HTML_OUTPUT ? htmlspecialchars($string) : escapeshellcmd($string);
+  return HTML_OUTPUT ? htmlspecialchars($string) : $string;
 }
 
 function pubmed_link(string $identifier, string $pm) : string {
