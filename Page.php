@@ -360,8 +360,8 @@ class Page {
     $this->replace_object($musicality);
     $this->replace_object($mathematics);
     $this->replace_object($chemistry);
-    $this->replace_object($comments);
     $this->replace_object($nowiki);
+    $this->replace_object($comments);
 
     if (stripos($this->text, 'CITATION_BOT_PLACEHOLDER') !== FALSE) {
       $this->text = $this->start_text;                                  // @codeCoverageIgnore
