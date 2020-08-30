@@ -183,13 +183,15 @@ abstract class testBaseClass extends PHPUnit\Framework\TestCase {
   
   // We hate buffers - makes debugging harder
   public static function assertSame($expected, $actual, string $message = '') : void {
-    if ($expected !== '}}' && $expected !== '{{') $trace = debug_backtrace(); $name = $trace[2]['function']; echo "\n" . date("h:i:s") . '  ' . $name . "\n";
+    if ($expected !== '}}' && $expected !== '{{') {
+      $trace = debug_backtrace(); $name = $trace[2]['function']; echo "\n" . date("h:i:s") . '  ' . $name . "    " . $expected . "\n";
+    }
     parent::assertSame($expected,  $actual, $message);
     ob_flush();
   }
 
   public static function assertEquals($expected, $actual, string $message = '') : void {
-    $trace = debug_backtrace(); $name = $trace[2]['function']; echo "\n" . date("h:i:s") . '  ' . $name . "\n";
+    $trace = debug_backtrace(); $name = $trace[2]['function']; echo "\n" . date("h:i:s") . '  ' . $name . "    " . $expected . "\n";
     parent::assertEquals($expected,  $actual, $message);
     ob_flush();
   }
