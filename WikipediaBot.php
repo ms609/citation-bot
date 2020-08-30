@@ -15,9 +15,9 @@ require_once("constants.php");
 
 final class WikipediaBot {
 
-  private $consumer
-  private $token
-  private $ch
+  private $consumer;
+  private $token;
+  private $ch;
   private $the_user = '';
   private static $last_WikipediaBot;
 
