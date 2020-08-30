@@ -55,8 +55,7 @@ $array = @json_decode($json, TRUE);
 if ($array === FALSE || !isset($array['parse']['links']) || !is_array($array['parse']['links'])) {
   report_error(' Error interpreting page list - perhaps page requested does not even exist');
 }
-/* @suppress PhanTypeArraySuspiciousNullable */
-$links = $array['parse']['links'];
+$links = $array['parse']['links']; // @phan-suppress-current-line PhanTypeArraySuspiciousNullable
 $pages_in_category = [];
 foreach($links as $link) {
     if (isset($link['exists']) && ($link['ns'] == 0 || $link['ns'] == 118)) {  // normal and draft articles only
