@@ -191,7 +191,6 @@ abstract class testBaseClass extends PHPUnit\Framework\TestCase {
   }
 
   public static function assertEquals($expected, $actual, string $message = '') : void {
-    $trace = debug_backtrace(); $name = $trace[2]['function']; echo "\n" . date("h:i:s") . '  ' . $name . "    " . $expected . "\n";
     parent::assertEquals($expected,  $actual, $message);
     ob_flush();
   }
