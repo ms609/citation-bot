@@ -628,7 +628,7 @@ function expand_doi_with_dx(Template $template, string $doi) : bool {
               CURLOPT_HTTPHEADER => ["Accept: application/vnd.citationstyles.csl+json"],
               CURLOPT_RETURNTRANSFER => TRUE,
               CURLOPT_FOLLOWLOCATION => TRUE,
-              CURLOPT_TIMEOUT => 30L]); // can take a long time when nothing to be found 
+              CURLOPT_TIMEOUT => 30]); // can take a long time when nothing to be found 
      try {
        $data = (string) @curl_exec($ch);
      } catch (Exception $e) {                    // @codeCoverageIgnoreStart
