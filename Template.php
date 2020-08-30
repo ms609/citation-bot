@@ -5709,7 +5709,7 @@ final class Template {
       if ($this->wikiname() === 'cite magazine') {
         return $this->add_if_new('magazine', $the_name);  // @codeCoverageIgnore
       } else {   
-        return $this->add_if_new('journal', $the_name); // Might be newspaper, hard to tell.
+        return $this->add_if_new('journal', $the_name);   // Might be newspaper, hard to tell.
       }
       // @codeCoverageIgnoreStart
     } elseif (preg_match('~<title>(.*)</title>~', $html, $matches)) {
@@ -5717,7 +5717,7 @@ final class Template {
       if ($wonky === "[WorldCat.org]") {
         report_info('WorldCat temporarily unresponsive');
       } else {
-        report_minor_error('unexpected title from ISSN ' . echoable($issn) . ' : ' . echoable($wonky);
+        report_minor_error('unexpected title from ISSN ' . echoable($issn) . ' : ' . echoable($wonky));
       }
     }
     return FALSE;
