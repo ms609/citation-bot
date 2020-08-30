@@ -10,8 +10,6 @@
     strictBinaryOperands="true"
     allowStringToStandInForClass="true"
     findUnusedVariablesAndParams="true"
-    ignoreInternalFunctionFalseReturn="false"
-    ignoreInternalFunctionNullReturn="false"
     runTaintAnalysis="false"
 >
     <projectFiles>
