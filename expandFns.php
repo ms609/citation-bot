@@ -168,6 +168,7 @@ function wikify_external_text(string $title) : string {
   }
 
   for ($i = 0; $i < count($replacement); $i++) {
+    /* @suppress PhanTypePossiblyInvalidDimOffset */
     $title = str_replace($placeholder[$i], $replacement[$i], $title);
   }
   return $title; 
