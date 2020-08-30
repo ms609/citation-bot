@@ -28,7 +28,7 @@ final class expandFnsTest extends testBaseClass {
                         title_capitalization("THIS `A` JOURNAL mittEilUngen", TRUE));
     $this->assertSame('[Johsnon And me]', title_capitalization('[Johsnon And me]', TRUE)); // Do not touch links
     $this->assertSame('This is robert www',  title_capitalization('This is robert www' , TRUE));
-    $this->assertSame('This is robert html', title_capitalization('This is robert html', TRUE));
+    $this->assertSame('This is robert http', title_capitalization('This is robert http', TRUE));
   }
   
   public function testFrenchCapitalization() : void {
