@@ -5715,9 +5715,9 @@ final class Template {
     } elseif (preg_match('~<title>(.*)</title>~', $html, $matches)) {
       $wonky = trim($matches[1]);
       if ($wonky === "[WorldCat.org]") {
-        report_info('WorldCat temporarily unresponsive');
+        report_info('WorldCat temporarily unresponsive or does not have Title for ISSN ' .  echoable($issn));
       } else {
-        report_minor_error('unexpected title from ISSN ' . echoable($issn) . ' : ' . echoable($wonky));
+        report_minor_error('Unexpected title from WorldCat for ISSN ' . echoable($issn) . ' : ' . echoable($wonky));
       }
     }
     return FALSE;
