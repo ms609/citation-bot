@@ -27,8 +27,8 @@ final class expandFnsTest extends testBaseClass {
     $this->assertSame("THIS 'A' JOURNAL mittEilUngen", 
                         title_capitalization("THIS `A` JOURNAL mittEilUngen", TRUE));
     $this->assertSame('[Johsnon And me]', title_capitalization('[Johsnon And me]', TRUE)); // Do not touch links
-    // TODO $this->assertSame('This is robert www',  title_capitalization('This is robert www' , TRUE));
-    // TODO $this->assertSame('This is robert html', title_capitalization('This is robert html', TRUE));
+    $this->assertSame('This is robert www',  title_capitalization('This is robert www' , TRUE));
+    $this->assertSame('This is robert http', title_capitalization('This is robert http', TRUE));
   }
   
   public function testFrenchCapitalization() : void {
@@ -42,9 +42,9 @@ final class expandFnsTest extends testBaseClass {
   
   public function testITS() : void {
     $this->assertSame(                     "Keep case of its Its and ITS",
-                        title_capitalization("Keep case of its Its and ITS", TRUE));
+                      title_capitalization("Keep case of its Its and ITS", TRUE));
     $this->assertSame(                     "ITS Keep case of its Its and ITS",
-                        title_capitalization("ITS Keep case of its Its and ITS", TRUE));
+                      title_capitalization("ITS Keep case of its Its and ITS", TRUE));
   }
     
   public function testExtractDoi() : void {
