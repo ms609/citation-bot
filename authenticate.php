@@ -29,6 +29,7 @@ function return_to_sender(string $where = 'https://citations.toolforge.org/') : 
   /**
    * @psalm-taint-escape text
    */
+  $where = trim($where);
   header("Location: " . $where);
   exit(0);
 }
