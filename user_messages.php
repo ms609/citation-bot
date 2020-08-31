@@ -10,7 +10,6 @@ function html_echo(string $text, string $alternate_text='') : void {
 
 function user_notice(string $symbol, string $class, string $text) : void {
   static $last_time = 0;
-  /** @psalm-suppress RedundantCondition */ /* PSALM thinks TRAVIS cannot be FALSE */
   if (!TRAVIS) {
     // @codeCoverageIgnoreStart
     /** @psalm-suppress TypeDoesNotContainType */ /* PSALM thinks HTML_OUTPUT cannot be false */
@@ -39,6 +38,7 @@ function report_inline(string $text) : void { if (!TRAVIS) echo " $text"; }
 function report_error(string $text) : void { report_warning($text); trigger_error($text, E_USER_ERROR); exit(0); } // call report_warning to give users a message before we die
 function report_minor_error(string $text) : void {  // For things we want to error in tests, but continue on Wikipedia
   // @codeCoverageIgnoreStart
+  /** @psalm-suppress RedundantCondition */ /* PSALM thinks TRAVIS cannot be FALSE */
   if (TRAVIS) {
     report_error($text);
   } else {
