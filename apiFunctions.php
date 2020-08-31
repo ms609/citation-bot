@@ -155,7 +155,7 @@ function arxiv_api(array $ids, array $templates) : bool {
     return FALSE;                                 // @codeCoverageIgnore
   }
   if ((string)$xml->entry->title === "Error") {
-      report_warning("arXiv search failed; please report error: " . (string)$xml->entry->summary);
+      report_minor_error("arXiv search failed; please report error: " . (string)$xml->entry->summary);
       return FALSE;
   }
   
@@ -199,6 +199,9 @@ function arxiv_api(array $ids, array $templates) : bool {
       parse_plain_text_reference($journal_data, $this_template, TRUE);
     }
     $this_template = next($templates);
+  }
+  if ($this_template !== FALSE) {
+    report_minor_error('Unexpected error in arxiv_api()'); 
   }
   return TRUE;
 }
