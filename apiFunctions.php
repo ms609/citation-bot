@@ -414,7 +414,8 @@ function adsabs_api(array $ids, array $templates, string $identifier) : bool {
   return TRUE;
 }
 
-function query_doi_api(array $ids, array $templates) : bool {
+/** @psalm-suppress UnusedParam */
+function query_doi_api(array $ids, array $templates) : bool { // $id not used yet
   foreach ($templates as $template) {
     expand_by_doi($template);
   }
@@ -769,7 +770,8 @@ function is_doi_works(string $doi) : ?bool {
   return TRUE; // Lead somewhere
 }
 
-function query_jstor_api(array $ids, array $templates) : bool {
+/** @psalm-suppress UnusedParam */
+function query_jstor_api(array $ids, array $templates) : bool { // $ids not used yet
   $return = FALSE;
   foreach ($templates as $template) {
     if (expand_by_jstor($template)) $return = TRUE;

@@ -498,7 +498,8 @@ class Page {
         $objects[] = $obj;
       }
     }
-    if ($preg_ok === FALSE) { // Something went wrong.  Often from bad wiki-text.
+    /** @psalm-suppress TypeDoesNotContainType */
+    if ($preg_ok === FALSE) { // Something went wrong.  Often from bad wiki-text.  Generally, preg_match() cannot return FALSE, so supress psalm
         // PHP 5 segmentation faults. PHP 7.0 returns FALSE
         // @codeCoverageIgnoreStart
         $this->page_error = TRUE;
