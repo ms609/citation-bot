@@ -381,6 +381,6 @@ final class PageTest extends testBaseClass {
       Zotero::block_zotero();
       $this->assertTrue(FALSE); // prevent us from git committing with a website included
     }
-    $this->assertTrue(TRUE);
+    $this->assertTrue(FALSE); // DO NOT COMMIT THIS BRANCH
   }
 }
