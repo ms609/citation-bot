@@ -301,7 +301,7 @@ final class Template {
   public function record_api_usage(string $api, string $param) : void {
     $param = array($param);
     foreach ($param as $p) {
-      /** @psalm-suppress PossiblyUndefinedArrayOffset, PossiblyNullArgument */
+      /** @psalm-suppress all */
       if (!in_array($p, $this->used_by_api[$api])) $this->used_by_api[$api][] = $p;
     }
   }
@@ -3601,7 +3601,7 @@ final class Template {
        // Remove misleading stuff -- comments of "NONE" etc mean nothing!
        // Cannot call forget, since it will not remove items with comments in it
        $key = $this->get_param_key('postscript');
-       //** @psalm-suppress PossiblyNullArrayOffset */
+       /** @psalm-suppress PossiblyNullArrayOffset */
        unset($this->param[$key]); // Key cannot be NULL because of get() call above
        report_forget('Dropping postscript that is only a comment');
        return;

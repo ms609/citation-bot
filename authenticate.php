@@ -38,7 +38,7 @@ catch (Throwable $e) {
 }
 
 try {
-  $conf->setConsumer(new Consumer(getenv('PHP_WP_OAUTH_CONSUMER'), getenv('PHP_WP_OAUTH_SECRET')));
+  $conf->setConsumer(new Consumer((string) getenv('PHP_WP_OAUTH_CONSUMER'), (string) getenv('PHP_WP_OAUTH_SECRET')));
   $client = new Client($conf);
   unset($conf);
 }
