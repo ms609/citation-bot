@@ -17,6 +17,7 @@ final class Zotero {
   protected static int $zotero_failures_count = 0;
 
 private static function set_default_ch_zotero() : void {
+  /** @psalm-suppress PossiblyNullArgument */
   curl_setopt_array(self::$zotero_ch,
         [CURLOPT_URL => ZOTERO_ROOT,
          CURLOPT_CUSTOMREQUEST => "POST",
