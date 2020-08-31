@@ -237,7 +237,8 @@ public static function drop_urls_that_match_dois(array $templates) : void {
     }
   }
   curl_close($ch);
-  @strtok('',''); // Free internal buffers
+  /** @psalm-suppress UnusedFunctionCall */
+  @strtok('',''); // Free internal buffers with empty unused call
 }
 
 private static function zotero_request(string $url) : string {

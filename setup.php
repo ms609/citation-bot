@@ -44,6 +44,7 @@ if (!TRAVIS) {
 if (file_exists('env.php')) {
   // Set the environment variables with putenv(). Remember to set permissions (not readable!)
   ob_start();
+  /** @psalm-suppress MissingFile */
   include_once('env.php');
   $env_output = trim(str_replace(['Reading authentication tokens from tools.wmflabs.org.',
                                   'Reading authentication tokens from tools.wmflabs.org-dev.',
