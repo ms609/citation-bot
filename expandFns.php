@@ -54,6 +54,7 @@ function sanitize_doi(string $doi) : string {
         preg_match('~^(10\.1093/ref:odnb.+)(?:/odnb.+)$~', $doi, $match) ||
         preg_match('~^(10\.1093/ww.+)(?:/ww.+)$~', $doi, $match) ||
         preg_match('~^(10\.1093/anb.+)(?:/anb.+)$~', $doi, $match)) {
+       /** @psalm-suppress UndefinedVariable */
        $doi = $match[1];
     }
   }
@@ -429,7 +430,7 @@ function title_capitalization(string $in, bool $caps_after_punctuation) : string
     $matches_in = $matches_in[0];
     $matches_out = $matches_out[0];
     /** @psalm-suppress UnusedVariable */
-    foreach ($matches_in as $key => $value) { // $value will not be used directly
+    foreach ($matches_in as $key => $value) {
       if ($matches_in[$key][0] != $matches_out[$key][0]  &&
           $matches_in[$key][1] == $matches_out[$key][1]) {
         $new_case = mb_substr_replace($new_case, trim($matches_in[$key][0]), $matches_out[$key][1], 3);
