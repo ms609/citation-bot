@@ -17,6 +17,7 @@ final class WikipediaBot {
 
   private $consumer;
   private $token;
+  /** @var resource $ch */
   private $ch;
   private $the_user = '';
   private static $last_WikipediaBot;
@@ -44,6 +45,7 @@ final class WikipediaBot {
 
     if ($no_user) {
       $this->the_user = '';
+      /** @psalm-suppress RedundantCondition */ /* PSALM thinks TRAVIS cannot be FALSE */
     } elseif (TRAVIS) {
       $this->the_user = 'Citation_bot';
     } else {
@@ -248,6 +250,7 @@ final class WikipediaBot {
         report_error("Write error: We encountered a captcha, so can't be properly logged in.");
       } elseif ($result->edit->result == "Success") {
         // Need to check for this string whereever our behaviour is dependant on the success or failure of the write operation
+        /** @psalm-suppress TypeDoesNotContainType */ /* PSALM thinks HTML_OUTPUT cannot be false */ // TODO - fix https://github.com/vimeo/psalm/issues/4024
         if (HTML_OUTPUT) {
           report_inline("\n <span style='reddish'>Written to <a href='" 
           . WIKI_ROOT . "?title=" . urlencode($myPage->title) . "'>" 

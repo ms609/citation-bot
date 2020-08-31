@@ -9,7 +9,7 @@ $category = isset($_REQUEST["cat"]) ? (string) $_REQUEST["cat"] : (string) @$arg
 $category = trim($category);
 
 if (strtolower(substr($category, 0, 9)) == 'category:') $category = trim(substr($category, 9));
-
+/** @psalm-suppress RedundantCondition */ /* PSALM thinks HTML_OUTPUT cannot be FALSE */
 if (HTML_OUTPUT) {
 ?>
 <!DOCTYPE html>
