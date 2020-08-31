@@ -2366,6 +2366,7 @@ final class Template {
     
     try {
       $ch = curl_init();
+      /** @psalm-suppress RedundantCondition */ /* PSALM thinks TRAVIS cannot be FALSE */
       $adsabs_url = "https://" . (TRAVIS ? 'qa' : 'api')
                   . ".adsabs.harvard.edu/v1/search/query"
                   . "?q=$options&fl=arxiv_class,author,bibcode,doi,doctype,identifier,"

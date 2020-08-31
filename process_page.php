@@ -6,6 +6,7 @@ declare(strict_types=1);
 require_once('setup.php');
 
 $api = new WikipediaBot();
+/** @psalm-suppress RedundantCondition */ /* PSALM thinks HTML_OUTPUT cannot be FALSE */
 if (HTML_OUTPUT) {?>
 <!DOCTYPE html>
 <html lang="en" dir="ltr">
@@ -58,6 +59,7 @@ if (isset($_REQUEST["edit"]) && $_REQUEST["edit"]) {
 }
 if (!isset($ON)) {
   $ON = isset($argv[2]);
+  /** @psalm-suppress RedundantCondition */ /* PSALM thinks HTML_OUTPUT cannot be FALSE */
   if (HTML_OUTPUT) {
      $edit_summary_end = $edit_summary_end . "| via #UCB_webform ";  // Assuming
   } else {

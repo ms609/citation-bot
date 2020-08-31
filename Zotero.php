@@ -13,7 +13,7 @@ final class Zotero {
   private const ERROR_DONE = 'ERROR_DONE'; 
   protected static int $zotero_announced;
   /** @var resource|null $zotero_ch */
-  protected static $zotero_ch = NULL;
+  protected static $zotero_ch;
   protected static int $zotero_failures_count = 0;
 
 private static function set_default_ch_zotero() : void {
