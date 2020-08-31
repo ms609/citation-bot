@@ -17,7 +17,7 @@ final class WikipediaBot {
 
   private Consumer $consumer;
   private Token $token;
-	/** @var ?resource $ch */
+  /** @var resource $ch */
   private $ch;
   private string $the_user = '';
   private static ?self $last_WikipediaBot;
