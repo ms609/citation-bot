@@ -23,9 +23,11 @@ final class Template {
   public const PLACEHOLDER_TEXT = '# # # CITATION_BOT_PLACEHOLDER_TEMPLATE %s # # #';
   public const REGEXP = ['~\{\{[^\{\}\|]+\}\}~su', '~\{\{[^\{\}]+\}\}~su', '~\{\{(?>[^\{]|\{[^\{])+?\}\}~su'];  // Please see https://stackoverflow.com/questions/1722453/need-to-prevent-php-regex-segfault for discussion of atomic regex
   public const TREAT_IDENTICAL_SEPARATELY = FALSE;
-  private const MAGIC_STRING = 'CITATION_BOT_PLACEHOLDER_URL_POINTER_'; 
+  private const MAGIC_STRING = 'CITATION_BOT_PLACEHOLDER_URL_POINTER_';
+  /** @psalm-suppress PropertyNotSetInConstructor */
   public $all_templates;  // Points to list of all the Template() on the Page() including this one.  It can only be set by the page class after all templates are made
   public $date_style = DATES_WHATEVER;  // Will get from the page
+  /** @psalm-suppress PropertyNotSetInConstructor */
   protected $rawtext;  // Must start out as unset
   public $last_searched_doi = '';
   protected $example_param = '';
@@ -298,7 +300,10 @@ final class Template {
   
   public function record_api_usage(string $api, string $param) : void {
     $param = array($param);
-    foreach ($param as $p) if (!in_array($p, $this->used_by_api[$api])) $this->used_by_api[$api][] = $p;
+    foreach ($param as $p) {
+      /** @psalm-suppress PossiblyUndefinedArrayOffset, PossiblyNullArgument */
+      if (!in_array($p, $this->used_by_api[$api])) $this->used_by_api[$api][] = $p;
+    }
   }
   
   public function api_has_used(string $api, array $param) : bool {
@@ -3596,7 +3601,8 @@ final class Template {
        // Remove misleading stuff -- comments of "NONE" etc mean nothing!
        // Cannot call forget, since it will not remove items with comments in it
        $key = $this->get_param_key('postscript');
-       unset($this->param[$key]);
+       //** @psalm-suppress PossiblyNullArrayOffset */
+       unset($this->param[$key]); // Key cannot be NULL because of get() call above
        report_forget('Dropping postscript that is only a comment');
        return;
     }
