@@ -54,6 +54,7 @@ function sanitize_doi(string $doi) : string {
         preg_match('~^(10\.1093/ref:odnb.+)(?:/odnb.+)$~', $doi, $match) ||
         preg_match('~^(10\.1093/ww.+)(?:/ww.+)$~', $doi, $match) ||
         preg_match('~^(10\.1093/anb.+)(?:/anb.+)$~', $doi, $match)) {
+       /** @psalm-suppress UndefinedVariable */
        $doi = $match[1];
     }
   }
