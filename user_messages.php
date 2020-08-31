@@ -11,8 +11,7 @@ function user_notice(string $symbol, string $class, string $text) : void {
   static $last_time = 0;
   if (!TRAVIS) {
     // @codeCoverageIgnoreStart
-    echo "\n " . (HTML_OUTPUT ? "<span class='$class'>" : "")
-     . "$symbol $text" . (HTML_OUTPUT ? "</span>" : "");
+    echo "\n " . (HTML_OUTPUT ? "<span class='$class'>" : "") . $symbol . $text . (HTML_OUTPUT ? "</span>" : "");
     if (FLUSHING_OKAY) {
       $now = microtime(TRUE);
       if (in_array($class, array('phase', 'subitem', 'warning')) || 10 < ($now - $last_time)) {
