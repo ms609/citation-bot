@@ -251,6 +251,7 @@ function adsabs_api(array $ids, array $templates, string $identifier) : bool {
   if ($NONE_IS_INCOMPLETE) return FALSE;
   
   // API docs at https://github.com/adsabs/adsabs-dev-api/blob/master/Search_API.ipynb
+  /** @psalm-suppress RedundantCondition */ /* PSALM thinks TRAVIS cannot be FALSE */
   $adsabs_url = "https://" . (TRAVIS ? 'qa' : 'api')
               . ".adsabs.harvard.edu/v1/search/bigquery?q=*:*"
               . "&fl=arxiv_class,author,bibcode,doi,doctype,identifier,"
@@ -720,6 +721,7 @@ function expand_doi_with_dx(Template $template, string $doi) : bool {
        $try_to_add_it('title', @$json['title']);
      } else {
        $try_to_add_it('title', @$json['title']);                                                 // @codeCoverageIgnore
+       /** @psalm-suppress RedundantCondition */ /* PSALM thinks TRAVIS cannot be FALSE */
        if (TRAVIS) print_r($json);                                                               // @codeCoverageIgnore
        report_minor_error('dx.doi.org returned unexpected data type for ' . doi_link($doi));     // @codeCoverageIgnore
      }
