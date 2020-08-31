@@ -301,7 +301,6 @@ final class Template {
   public function record_api_usage(string $api, string $param) : void {
     $param = array($param);
     foreach ($param as $p) {
-      /** @psalm-suppress all */
       if (!in_array($p, $this->used_by_api[$api])) $this->used_by_api[$api][] = $p;
     }
   }
