@@ -4,7 +4,7 @@ declare(strict_types=1);
 require_once("constants.php");
 
 function html_echo(string $text, string $alternate_text='') : void {
-  /** @psalm-suppress TypeDoesNotContainType */ /* PSALM thinks HTML_OUTPUT cannot be false */
+  /** @psalm-suppress TypeDoesNotContainType */ /* PSALM thinks HTML_OUTPUT and TRAVIS cannot be false */
   if (!TRAVIS) echo HTML_OUTPUT ? $text : $alternate_text;
 }
 
