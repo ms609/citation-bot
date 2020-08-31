@@ -9,9 +9,11 @@ function html_echo(string $text, string $alternate_text='') : void {
 
 function user_notice(string $symbol, string $class, string $text) : void {
   static $last_time = 0;
+  /** @psalm-suppress RedundantCondition */ /* PSALM thinks TRAVIS cannot be FALSE */
   if (!TRAVIS) {
     // @codeCoverageIgnoreStart
     echo "\n " . (HTML_OUTPUT ? "<span class='$class'>" : "") . $symbol . $text . (HTML_OUTPUT ? "</span>" : "");
+    /** @psalm-suppress RedundantCondition */ /* PSALM thinks FLUSHING_OKAY cannot be FALSE */
     if (FLUSHING_OKAY) {
       $now = microtime(TRUE);
       if (in_array($class, array('phase', 'subitem', 'warning')) || 10 < ($now - $last_time)) {
