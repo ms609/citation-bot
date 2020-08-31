@@ -43,11 +43,11 @@ final class WikipediaBot {
     if (!getenv('PHP_OAUTH_ACCESS_TOKEN'))    report_error("PHP_OAUTH_ACCESS_TOKEN not set");
     if (!getenv('PHP_OAUTH_ACCESS_SECRET'))   report_error("PHP_OAUTH_ACCESS_SECRET not set");
 
-    if ($no_user) {
-      $this->the_user = '';
-      /** @psalm-suppress RedundantCondition */ /* PSALM thinks TRAVIS cannot be FALSE */
-    } elseif (TRAVIS) {
+    /** @psalm-suppress RedundantCondition */  /* PSALM thinks TRAVIS cannot be FALSE */
+    if (TRAVIS) {
       $this->the_user = 'Citation_bot';
+    } elseif ($no_user) {
+      $this->the_user = '';
     } else {
       $this->authenticate_user();  // @codeCoverageIgnore
     }
