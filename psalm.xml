@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 <psalm
-    errorLevel="3"
+    errorLevel="6"
     resolveFromConfigFile="true"
     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
     xmlns="https://getpsalm.org/schema/config"
@@ -11,6 +11,7 @@
     allowStringToStandInForClass="true"
     findUnusedVariablesAndParams="true"
     runTaintAnalysis="false"
+    findUnusedPsalmSuppress="true"
 >
     <projectFiles>
         <file name="Comment.php" />
