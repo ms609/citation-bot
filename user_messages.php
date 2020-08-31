@@ -51,13 +51,10 @@ function quietly(callable $function, string $text) : void { // Stuff suppressed 
   }
 }
 
-/**
- * @psalm-pure
- */
+// special flags to mark this function as making all untrustworhy input magically safe to output
+/** @psalm-pure */
 function echoable(?string $string) : string {
-  /**
-   * @psalm-taint-escape html
-   */
+  /** @psalm-taint-escape html */
   $string = (string) $string;
   return HTML_OUTPUT ? htmlspecialchars($string) : $string;
 }
