@@ -616,7 +616,7 @@ function expand_doi_with_dx(Template $template, string $doi) : bool {
      // https://www.doi.org/registration_agencies.html  https://www.doi.org/RA_Coverage.html List of all ten doi granting agencies - many do not do journals
      // Examples of DOI usage   https://www.doi.org/demos.html
      if (strpos($doi, '10.2307') === 0) return FALSE; // jstor API is better
-     /** @param array|string|null|int $data */
+     /** @param array|string|null|int $data */ /** @psalm-suppress MissingClosureParamType */
      $try_to_add_it = function(string $name, $data) use($template) : bool {
        if ($template->has($name)) return FALSE; // Not worth updating based upon DX
        if (is_null($data)) return FALSE;
