@@ -5,7 +5,7 @@ const TEMPLATES_WE_PROCESS = array('citation', 'cite arxiv', 'cite book', 'cite 
                              'cite paper', 'cite', 'citebook', 'citejournal', 'citeweb', 'citepaper', 'citation journal',
                              'cite publication', 'cite citeseerx', 'cite website', 'cite dictionary', 'cite chapter');
 const TEMPLATES_WE_SLIGHTLY_PROCESS = array('cite news', 'cite newspaper', 'cite conference', 'cite article', 'citenews');
-const TEMPLATES_WE_BARELY_PROCESS = array('cite thesis', 'cite press release', 'cite report');
+const TEMPLATES_WE_BARELY_PROCESS = array('cite thesis', 'cite press release', 'cite report', 'cite biorxiv');
 const TEMPLATES_WE_RENAME  = array('cite arxiv', 'cite book', 'cite document', 'cite journal', 'cite web', 'cite work', 'cite article', 'cite paper', 'cite website');
 const ALL_URL_TYPES = array('url', 'article-url', 'chapter-url', 'chapterurl', 'conference-url', 'conferenceurl',
                   'contribution-url', 'contributionurl', 'entry-url', 'event-url', 'eventurl', 'lay-url',
