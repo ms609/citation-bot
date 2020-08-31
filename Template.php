@@ -308,6 +308,7 @@ final class Template {
   
   public function api_has_used(string $api, array $param) : bool {
     if (!isset($this->used_by_api[$api])) report_error("Invalid API: $api");
+    /** @psalm-suppress all */
     return (bool) count(array_intersect($param, $this->used_by_api[$api]));
   }
   
