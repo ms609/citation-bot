@@ -45,7 +45,8 @@ final class WikipediaBot {
 
     if ($no_user) {
       $this->the_user = '';
-      /** @psalm-suppress RedundantCondition */ /* PSALM thinks TRAVIS cannot be FALSE */
+      /* PSALM thinks TRAVIS cannot be FALSE */
+      /** @psalm-suppress RedundantCondition */
     } elseif (TRAVIS) {
       $this->the_user = 'Citation_bot';
     } else {
