@@ -25,11 +25,6 @@ function death_time(string $err) : void {
  * @psalm-pure
  */
 function return_to_sender(string $where = 'https://citations.toolforge.org/') : void {
-  // Only could be Tainted if OAuth server itself was hacked
-  /**
-   * @psalm-taint-escape text
-   */
-  $where = trim($where);
   header("Location: " . $where);
   exit(0);
 }
@@ -78,7 +73,10 @@ if (isset($_GET['oauth_verifier']) && isset($_SESSION['request_key']) && isset($
         $_SESSION['access_secret'] = $accessToken->secret;
         unset($_SESSION['request_key']);unset($_SESSION['request_secret']);
         if (isset($_GET['return'])) {
-           return_to_sender((string) $_GET['return']);
+           // This could only be tainted input if OAuth server itself was hacked, so flag as safe
+           /** @psalm-taint-escape text */
+           $where = trim((string) $_GET['return']);
+           return_to_sender($where);
         }
         return_to_sender();
    }
