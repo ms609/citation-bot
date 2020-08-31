@@ -44,20 +44,15 @@ function report_minor_error(string $text) : void {  // For things we want to err
   // @codeCoverageIgnoreEnd
 }
 
-
 function quietly(callable $function, string $text) : void { // Stuff suppressed when running on the command line
   if (HTML_OUTPUT || TRAVIS) {
     $function($text);
   }
 }
 
-/**
- * @psalm-pure
- */
+// special flags to mark this function as making all untrustworthy input magically safe to output
 function echoable(?string $string) : string {
-  /**
-   * @psalm-taint-escape html
-   */
+  /** @psalm-taint-escape html */
   $string = (string) $string;
   return HTML_OUTPUT ? htmlspecialchars($string) : $string;
 }
