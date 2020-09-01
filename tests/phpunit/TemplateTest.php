@@ -891,6 +891,12 @@ final class TemplateTest extends testBaseClass {
     $this->assertSame('New york TiMES', $expanded->get2('work'));
   }
  
+  public function testRemoveWikilinks0() : void {
+    $expanded = $this->process_citation("{{Cite journal|title=[[Pure Evil]]}}");
+    $this->assertSame('[[Pure Evil]]', $expanded->get2('title'));
+    $expanded = $this->process_citation("{{Cite journal|title=[[Pure Evil|Pure Evil]]}}");  // Bot bug made these for a while
+    $this->assertSame('[[Pure Evil]]', $expanded->get2('title'));
+  }
   public function testRemoveWikilinks1() : void {
     $expanded = $this->process_citation("{{Cite journal|author1=[[Pure Evil]]}}");
     $this->assertSame('[[Pure Evil]]', $expanded->get2('author1'));

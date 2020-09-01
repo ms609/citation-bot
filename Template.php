@@ -4192,7 +4192,9 @@ final class Template {
                }
              } elseif (preg_match(REGEXP_PIPED_WIKILINK, $title, $matches) &&
                        strpos($title, ':') === FALSE) { // Avoid touching inter-wiki links
-               if (strlen($matches[0]) > (0.7 * (float) strlen($title))) {  // Only add as title-link if a large part of title text
+               if (($matches[1] == $matches[2]) && ($title == $matches[0])) {
+                   $title = '[[' . $matches[1]  . ']]'; // Clean up double links
+               } elseif (strlen($matches[0]) > (0.7 * (float) strlen($title))) {  // Only add as title-link if a large part of title text
                 // TODO - this is not correct  $title = '[[' . $matches[1] . '|' . str_replace(array("[[", "]]"), "", $title) . ']]';
                }
              }
