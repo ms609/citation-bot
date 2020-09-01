@@ -4187,7 +4187,7 @@ final class Template {
              $title = preg_replace("~\]\]~", "", $title);
           } elseif (strpos($title, '{{!}}') === FALSE) { // Convert a single link to a title-link
              if (preg_match(REGEXP_PLAIN_WIKILINK, $title, $matches)) {
-               if (strlen($matches[1]) > (0.7 * (float) strlen($title))) {  // Only add as title-link if a large part of title text
+               if (strlen($matches[1]) > (0.7 * (float) strlen($title)) && ($title != '[[' . matches[1] . ']]')) {  // Only add as title-link if a large part of title text
                  $title = '[[' . $matches[1] . "|" . str_replace(array("[[", "]]"), "", $title) . ']]';
                }
              } elseif (preg_match(REGEXP_PIPED_WIKILINK, $title, $matches) &&
