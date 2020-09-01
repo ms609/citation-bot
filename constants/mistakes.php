@@ -5,6 +5,7 @@ const COMMON_MISTAKES = array ( // Common mistakes that aren't picked up by the 
   "albumlink"       =>  "titlelink",
   "artist"          =>  "others",
   "authorurl"       =>  "authorlink",
+  "bioRxiv"         =>  "biorxiv",
   "co-author"       =>  "coauthor",
   "co-authors"      =>  "coauthors",
   "dio"             =>  "doi",
