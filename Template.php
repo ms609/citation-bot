@@ -1595,7 +1595,7 @@ final class Template {
               return $this->add_if_new('pmc', $match[1] . $match[2]);
             }
           }
-          $this->forget($url_type);
+          if (stripos($url, "table") === FALSE) $this->forget($url_type);
         } 
         return $this->add_if_new('pmc', $match[1] . $match[2]);
       } elseif (preg_match("~^https?://(?:www\.|)europepmc\.org/articles?/pmc/?(\d{4,})~i", $url, $match)  ||
