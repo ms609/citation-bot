@@ -1000,6 +1000,16 @@ final class TemplateTest extends testBaseClass {
     $this->assertNull($expanded->get2('author1-link'));
     $this->assertSame('[[Pure {{!}} Evil]]', $expanded->get2('last1'));
   }
+  public function testRemoveWikilinks7c() : void {
+    $text = "{{Cite journal|last=[[Nelarine Cornelius|Cornelius]]|first= [[Nelarine Cornelius|Nelarine]]|last2= Todres|first2= Mathew|last3= Janjuha-Jivraj|first3= Shaheena|last4= Woods|first4= Adrian|last5= Wallace|first5= James|date= 2008|title= Corporate Social Responsibility and the Social Enterprise|jstor= 25482219|journal= Journal of Business Ethics|volume= 81|issue= 2|pages= 355–370|doi= 10.1007/s10551-007-9500-7|s2cid= 154580752|url = <!-- dsfasdfds -->}}";
+    $expanded = $this->process_citation($text);
+    $this->assertNull($expanded->get2('last'));
+    $this->assertNull($expanded->get2('first'));
+    $this->assertSame('Cornelius', $expanded->get2('last1'));
+    $this->assertSame('Nelarine', $expanded->get2('first1'));
+    $this->assertSame('Nelarine Cornelius', $expanded->get2('author1-link'));
+  }
+ 
  
   public function testRemoveWikilinks8() : void {
     $expanded = $this->process_citation("{{Cite journal|title=[[Pure Evil and Pure Evil and Pure Evil]] and Hoser}}");
