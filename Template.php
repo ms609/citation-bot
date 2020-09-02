@@ -3769,6 +3769,9 @@ final class Template {
                     $this->add_if_new('author' . $pmatch[2] . '-link', $matches[1]);
                     $did_something = TRUE;
                   }
+                  if ($pmatch[2] === '1' && $this->set('first')) {
+                    $this->rename('first', 'first1');
+                  }
                   if ($did_something && strpos($this->get('first' . $pmatch[2]), '[') !==FALSE) { // Clean up links in first names
                     $the_author = $this->get('first' . $pmatch[2]);
                     if (preg_match(REGEXP_PLAIN_WIKILINK, $the_author, $matches)) {
