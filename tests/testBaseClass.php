@@ -6,11 +6,11 @@ require_once(__DIR__ . '/../setup.php');
 abstract class testBaseClass extends PHPUnit\Framework\TestCase {
   // Change these to temporarily disable sets of tests======================
   private $testing_skip_zotero = FALSE;                                           //
-  private $testing_skip_bibcode= TRUE;                                           //
-  private $testing_skip_google = TRUE;                                           //
-  private $testing_skip_wiki   = TRUE;                                           //
-  private $testing_skip_dx     = TRUE;                                           //
-  private $testing_skip_arxiv  = TRUE;                                           //
+  private $testing_skip_bibcode= TRUE;                                           // TODO - save search quota
+  private $testing_skip_google = FALSE;                                           //
+  private $testing_skip_wiki   = FALSE;                                           //
+  private $testing_skip_dx     = FALSE;                                           //
+  private $testing_skip_arxiv  = FALSE;                                           //
   // =======================================================================
   
   function __construct() {
