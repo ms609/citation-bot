@@ -22,7 +22,7 @@ const PUBLISHERS_ARE_WORKS = array('the san diego union-tribune', 'forbes', 'sal
                                    'the star', 'washington post', 'the washington post', 'the tribune',
                                    'los angeles times', 'la times', 'the la times', 'htmlgiant'); // LOWER CASE!
 
-const DUBIOUS_JOURNALS = array('fda', 'reuters', 'associated press', 'ap', 'ap wire'); // Things we add, but only if publisher and agency are both blank
+const DUBIOUS_JOURNALS = array('fda', 'reuters', 'associated press', 'ap', 'ap wire', 'report'); // Things we add, but only if publisher and agency are both blank
 
 const NATURE_FAILS = TRUE;  // Nature dropped the ball for now TODO - https://dx.doi.org/10.1111/j.1572-0241.2006.00844.x
 
@@ -39,7 +39,7 @@ const BAD_TITLES = array("unknown", "missing", "arxiv e-prints", "arxiv mathemat
                          "the article you have been looking for has expired and is not longer available on our system. this is due to newswire licensing terms.",
                          "openid transaction in progress", 'download limit exceeded', 'privacy settings',
                          "untitled-1", "untitled-2", "professional paper", "zbmath",
-                         "theses and dissertations available from proquest", "proquest ebook central");
+                         "theses and dissertations available from proquest", "proquest ebook central", "report");
 const IN_PRESS_ALIASES = array("in press", "inpress", "pending", "published", 
                                "published online", "no-no", "n/a", "online ahead of print", 
                                "unpublished", "unknown", "tba", "forthcoming", "in the press", 
