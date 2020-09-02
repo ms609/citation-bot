@@ -3769,6 +3769,9 @@ final class Template {
                     $this->add_if_new('author' . $pmatch[2] . '-link', $matches[1]);
                     $did_something = TRUE;
                   }
+                  if ($pmatch[2] === '1' && $this->has('first')) {
+                    $this->rename('first', 'first1');
+                  }
                   if ($did_something && strpos($this->get('first' . $pmatch[2]), '[') !==FALSE) { // Clean up links in first names
                     $the_author = $this->get('first' . $pmatch[2]);
                     if (preg_match(REGEXP_PLAIN_WIKILINK, $the_author, $matches)) {
@@ -4192,7 +4195,9 @@ final class Template {
                }
              } elseif (preg_match(REGEXP_PIPED_WIKILINK, $title, $matches) &&
                        strpos($title, ':') === FALSE) { // Avoid touching inter-wiki links
-               if (strlen($matches[0]) > (0.7 * (float) strlen($title))) {  // Only add as title-link if a large part of title text
+               if (($matches[1] == $matches[2]) && ($title == $matches[0])) {
+                   $title = '[[' . $matches[1]  . ']]'; // Clean up double links
+               } elseif (strlen($matches[0]) > (0.7 * (float) strlen($title))) {  // Only add as title-link if a large part of title text
                 // TODO - this is not correct  $title = '[[' . $matches[1] . '|' . str_replace(array("[[", "]]"), "", $title) . ']]';
                }
              }
