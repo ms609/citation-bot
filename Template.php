@@ -4893,6 +4893,9 @@ final class Template {
             foreach (['location', 'place', 'publisher', 'publication-place', 'publicationplace'] as $to_drop) {
               if ($this->blank($to_drop)) $this->forget($to_drop);
             }
+          } elseif (in_array(strtolower($this->get('journal')), array_merge(NON_PUBLISHERS, BAD_TITLES, DUBIOUS_JOURNALS))) {
+            report_forget('Citation has chapter/ISBN already, dropping dubrious Journal title: '  echoable($this->get('journal')));
+            $this->forget('journal');
           } else {
             report_warning(echoable('Citation should probably not have journal = ' . $this->get('journal')
             . ' as well as chapter / ISBN ' . $this->get('chapter') . ' ' .  $this->get('isbn')));
