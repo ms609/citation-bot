@@ -691,6 +691,7 @@ final class Template {
         if ($value=='HEP Lib.Web') $value = 'High Energy Physics Libraries Webzine'; // should be array
         if (preg_match('~Conference Proceedings.*IEEE.*IEEE~', $value)) return FALSE;
         if (!$this->blank(['booktitle', 'book-title'])) return FALSE;
+        if (in_array(strtolower(sanitize_string($value)), BAD_TITLES )) return FALSE;
         if (in_array(strtolower(sanitize_string($this->get('journal'))), BAD_TITLES)) $this->forget('journal'); // Update to real data
         if (preg_match('~^(?:www\.|)rte.ie$~i', $value)) $value = 'RTÉ News'; // Russian special case code
         if ($this->wikiname() === 'cite book' && $this->has('chapter') && $this->has('title') && $this->has('series')) return FALSE;
@@ -698,7 +699,6 @@ final class Template {
         if (!$this->blank(array_merge(['agency','publisher'],WORK_ALIASES)) && in_array(strtolower($value), DUBIOUS_JOURNALS)) return FALSE; // non-journals that are probably same as agency or publisher that come from zotero
         if ($this->get($param_name) === 'none' || $this->blank(["journal", "periodical", "encyclopedia", "encyclopaedia", "newspaper", "magazine", "contribution"])) {
           if (in_array(strtolower(sanitize_string($value)), HAS_NO_VOLUME)) $this->forget("volume") ; // No volumes, just issues.
-          if (in_array(strtolower(sanitize_string($value)), BAD_TITLES )) return FALSE;
           $value = wikify_external_text(title_case($value));
           if ($this->has('series') && str_equivalent($this->get('series'), $value)) return FALSE ;
           if ($this->has('work')) {
@@ -4698,7 +4698,7 @@ final class Template {
             $this->set($param, $value);
           }
           if (!preg_match("~^[A-Za-z ]+\-~", $value) && mb_ereg(REGEXP_TO_EN_DASH, $value)
-              && can_safely_modify_dashes($value)) {
+              && can_safely_modify_dashes($value) && ($pmatch[1] !== 'page')) {
             $this->mod_dashes = TRUE;
             report_modification("Upgrading to en-dash in " . echoable($param) .
                   " parameter");
@@ -4706,14 +4706,18 @@ final class Template {
             $this->set($param, $value);
           }
           if (   (mb_substr_count($value, "–") === 1) // Exactly one EN_DASH.  
-              && can_safely_modify_dashes($value)) { 
-            $the_dash = (int) mb_strpos($value, "–"); // ALL must be mb_ functions because of long dash
-            $part1 = trim(mb_substr($value, 0, $the_dash));
-            $part2 = trim(mb_substr($value, $the_dash + 1));
-            if ($part1 === $part2) {
-              $this->set($param, $part1);
-            } elseif (is_numeric($part1) && is_numeric($part2)) {
-              $this->set($param, $part1 . "–" . $part2); // Remove any extra spaces
+              && can_safely_modify_dashes($value)) {
+            if ($pmatch[1] === 'page') { 
+              report_warning('Perhaps page= of ' . echoable($value) . ' is actually a page range.  If so, change to pages=, otherwise change minus sign to {{endash}}');
+            } else {
+              $the_dash = (int) mb_strpos($value, "–"); // ALL must be mb_ functions because of long dash
+              $part1 = trim(mb_substr($value, 0, $the_dash));
+              $part2 = trim(mb_substr($value, $the_dash + 1));
+              if ($part1 === $part2) {
+                $this->set($param, $part1);
+              } elseif (is_numeric($part1) && is_numeric($part2)) {
+                $this->set($param, $part1 . "–" . $part2); // Remove any extra spaces
+              }
             }
           }
           if (strpos($this->get($param), '&') === FALSE) {
@@ -4893,6 +4897,9 @@ final class Template {
             foreach (['location', 'place', 'publisher', 'publication-place', 'publicationplace'] as $to_drop) {
               if ($this->blank($to_drop)) $this->forget($to_drop);
             }
+          } elseif (in_array(strtolower($this->get('journal')), array_merge(NON_PUBLISHERS, BAD_TITLES, DUBIOUS_JOURNALS))) {
+            report_forget('Citation has chapter/ISBN already, dropping dubious Journal title: ' . echoable($this->get('journal')));
+            $this->forget('journal');
           } else {
             report_warning(echoable('Citation should probably not have journal = ' . $this->get('journal')
             . ' as well as chapter / ISBN ' . $this->get('chapter') . ' ' .  $this->get('isbn')));

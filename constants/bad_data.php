@@ -15,7 +15,7 @@ const NON_HUMAN_AUTHORS = array('collaborat', 'reporter', 'journalist', 'corresp
                                 'dept of ', 'college', 'center for', 'office of', 'editor', 
                                 'world news', 'national news', 'eyewitness');
 const BAD_PUBLISHERS = array('london', 'edinburgi', 'edinburgh', 'no publisher', 'no publisher given',
-                             'no publisher specified', 'unknown', 'publisher not identified');
+                             'no publisher specified', 'unknown', 'publisher not identified', 'report');
 
 const PUBLISHERS_ARE_WORKS = array('the san diego union-tribune', 'forbes', 'salon', 'san jose mercury news', 'new york times',
                                    'the new york times', 'daily news online', 'daily news', 'the sun', 'the times',
@@ -39,7 +39,7 @@ const BAD_TITLES = array("unknown", "missing", "arxiv e-prints", "arxiv mathemat
                          "the article you have been looking for has expired and is not longer available on our system. this is due to newswire licensing terms.",
                          "openid transaction in progress", 'download limit exceeded', 'privacy settings',
                          "untitled-1", "untitled-2", "professional paper", "zbmath",
-                         "theses and dissertations available from proquest", "proquest ebook central");
+                         "theses and dissertations available from proquest", "proquest ebook central", "report");
 const IN_PRESS_ALIASES = array("in press", "inpress", "pending", "published", 
                                "published online", "no-no", "n/a", "online ahead of print", 
                                "unpublished", "unknown", "tba", "forthcoming", "in the press", 
