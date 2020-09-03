@@ -4698,7 +4698,7 @@ final class Template {
             $this->set($param, $value);
           }
           if (!preg_match("~^[A-Za-z ]+\-~", $value) && mb_ereg(REGEXP_TO_EN_DASH, $value)
-              && can_safely_modify_dashes($value)) {
+              && can_safely_modify_dashes($value) && ($pmatch[1] !== 'page')) {
             $this->mod_dashes = TRUE;
             report_modification("Upgrading to en-dash in " . echoable($param) .
                   " parameter");
@@ -4706,14 +4706,18 @@ final class Template {
             $this->set($param, $value);
           }
           if (   (mb_substr_count($value, "–") === 1) // Exactly one EN_DASH.  
-              && can_safely_modify_dashes($value)) { 
-            $the_dash = (int) mb_strpos($value, "–"); // ALL must be mb_ functions because of long dash
-            $part1 = trim(mb_substr($value, 0, $the_dash));
-            $part2 = trim(mb_substr($value, $the_dash + 1));
-            if ($part1 === $part2) {
-              $this->set($param, $part1);
-            } elseif (is_numeric($part1) && is_numeric($part2)) {
-              $this->set($param, $part1 . "–" . $part2); // Remove any extra spaces
+              && can_safely_modify_dashes($value)) {
+            if ($pmatch[1] === 'page') { 
+              report_warning('Perhaps page= of ' . echoable($value) . ' is actually a page range.  If so, change to pages=, otherwise change minus sign to {{endash}}');
+            } else {
+              $the_dash = (int) mb_strpos($value, "–"); // ALL must be mb_ functions because of long dash
+              $part1 = trim(mb_substr($value, 0, $the_dash));
+              $part2 = trim(mb_substr($value, $the_dash + 1));
+              if ($part1 === $part2) {
+                $this->set($param, $part1);
+              } elseif (is_numeric($part1) && is_numeric($part2)) {
+                $this->set($param, $part1 . "–" . $part2); // Remove any extra spaces
+              }
             }
           }
           if (strpos($this->get($param), '&') === FALSE) {
