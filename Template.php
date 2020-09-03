@@ -4708,7 +4708,7 @@ final class Template {
           if (   (mb_substr_count($value, "–") === 1) // Exactly one EN_DASH.  
               && can_safely_modify_dashes($value)) {
             if ($pmatch[1] === 'page') { 
-              report_warning('Perhaps page= number of ' . echoable($value) . ' is actually a page range.  If so, change to pages=, otherwise change minus sign to {{endash}}');
+              report_warning('Perhaps page= of ' . echoable($value) . ' is actually a page range.  If so, change to pages=, otherwise change minus sign to {{endash}}');
             } else {
               $the_dash = (int) mb_strpos($value, "–"); // ALL must be mb_ functions because of long dash
               $part1 = trim(mb_substr($value, 0, $the_dash));
