@@ -433,6 +433,7 @@ final class WikipediaBot {
     curl_setopt_array($ch, [
       CURLOPT_HEADER => 0,
       CURLOPT_RETURNTRANSFER => TRUE,
+      CURLOPT_TIMEOUT => 20,
       CURLOPT_USERAGENT => 'Citation_bot; citations@tools.wmflabs.org',
       CURLOPT_URL => API_ROOT . '?action=query&usprop=blockinfo&format=json&list=users&ususers=' . urlencode(str_replace(" ", "_", $user))
     ]);

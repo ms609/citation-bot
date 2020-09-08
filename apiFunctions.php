@@ -262,6 +262,7 @@ function adsabs_api(array $ids, array $templates, string $identifier) : bool {
     $ch = curl_init();
     curl_setopt_array($ch,
              [CURLOPT_URL => $adsabs_url,
+              CURLOPT_TIMEOUT => 20,
               CURLOPT_USERAGENT => 'Citation_bot; citations@tools.wmflabs.org',
               CURLOPT_HTTPHEADER => ['Content-Type: big-query/csv', 'Authorization: Bearer ' . PHP_ADSABSAPIKEY],
               CURLOPT_RETURNTRANSFER => TRUE,
@@ -580,6 +581,7 @@ function query_crossref(string $doi) : ?object {
             [CURLOPT_HEADER => 0,
              CURLOPT_RETURNTRANSFER =>  1,
              CURLOPT_URL =>  $url,
+             CURLOPT_TIMEOUT => 15,
              CURLOPT_USERAGENT => 'Citation_bot; citations@tools.wmflabs.org']);
   for ($i = 0; $i < 2; $i++) {
     $raw_xml = (string) @curl_exec($ch);
@@ -806,6 +808,7 @@ function expand_by_jstor(Template $template) : bool {
   curl_setopt_array($ch,
            [CURLOPT_HEADER => 0,
             CURLOPT_RETURNTRANSFER => 1,
+            CURLOPT_TIMEOUT => 15,
             CURLOPT_URL => 'https://www.jstor.org/citation/ris/' . $jstor,
             CURLOPT_USERAGENT => 'Citation_bot; citations@tools.wmflabs.org']);
   $dat = (string) @curl_exec($ch);
@@ -1101,6 +1104,7 @@ function expand_templates_from_archives(array $templates) : void { // This is do
   curl_setopt_array($ch,
           [CURLOPT_HEADER => 0,
            CURLOPT_RETURNTRANSFER => 1,
+           CURLOPT_TIMEOUT => 25,
            CURLOPT_USERAGENT => 'Citation_bot; citations@tools.wmflabs.org']);
   foreach ($templates as $template) {
     if ($template->blank(['title', 'chapter', 'series']) &&

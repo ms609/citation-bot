@@ -43,6 +43,7 @@ $url = API_ROOT . '?action=parse&prop=links&format=json&page=' . $page_name;
 $ch = curl_init();
 curl_setopt_array($ch,
       [CURLOPT_HEADER => 0,
+       CURLOPT_TIMEOUT => 45,
        CURLOPT_RETURNTRANSFER =>  1,
        CURLOPT_URL => $url,
        CURLOPT_USERAGENT => 'Citation_bot; citations@tools.wmflabs.org']);

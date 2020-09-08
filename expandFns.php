@@ -660,6 +660,7 @@ function check_doi_for_jstor(string $doi, Template $template) : void {
   $ch = curl_init($test_url);
   curl_setopt_array($ch,
           [CURLOPT_RETURNTRANSFER => TRUE,
+           CURLOPT_TIMEOUT => 10,
            CURLOPT_USERAGENT => 'Citation_bot; citations@tools.wmflabs.org']);
   $ris = (string) @curl_exec($ch);
   $httpCode = (int) @curl_getinfo($ch, CURLINFO_HTTP_CODE);

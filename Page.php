@@ -76,6 +76,7 @@ class Page {
               [CURLOPT_HEADER => 0,
                CURLOPT_USERAGENT => 'Citation_bot; citations@tools.wmflabs.org',
                CURLOPT_RETURNTRANSFER => 1,
+               CURLOPT_TIMEOUT => 20,
                CURLOPT_URL => WIKI_ROOT . '?' . http_build_query(['title' => $title, 'action' =>'raw'])]);
     $this->text = (string) @curl_exec($ch);
     curl_close($ch);
