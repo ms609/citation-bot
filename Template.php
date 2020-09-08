@@ -1409,6 +1409,7 @@ final class Template {
           curl_setopt_array($ch,
                    [CURLOPT_HEADER => 0,
                     CURLOPT_RETURNTRANSFER => 1,
+                    CURLOPT_TIMEOUT => 15,
                     CURLOPT_URL => 'https://www.jstor.org/citation/ris/' . $matches[1],
                     CURLOPT_USERAGENT => 'Citation_bot; citations@tools.wmflabs.org']);
           $dat = (string) @curl_exec($ch);
@@ -1531,6 +1532,7 @@ final class Template {
               [CURLOPT_HEADER => 1,
                CURLOPT_NOBODY => 1,
                CURLOPT_RETURNTRANSFER => TRUE,
+               CURLOPT_TIMEOUT => 15,
                CURLOPT_USERAGENT => 'Citation_bot; citations@tools.wmflabs.org']);
         if (@curl_exec($ch)) {
           $redirect_url = (string) @curl_getinfo($ch, CURLINFO_REDIRECT_URL);
@@ -1587,6 +1589,7 @@ final class Template {
             $ch = curl_init($test_url);
             curl_setopt_array($ch,
                       [CURLOPT_RETURNTRANSFER => TRUE,
+                       CURLOPT_TIMEOUT => 15,
                        CURLOPT_USERAGENT => 'Citation_bot; citations@tools.wmflabs.org']);
             @curl_exec($ch);
             $httpCode = (int) @curl_getinfo($ch, CURLINFO_HTTP_CODE);
@@ -2375,6 +2378,7 @@ final class Template {
                [CURLOPT_HTTPHEADER => ['Authorization: Bearer ' . PHP_ADSABSAPIKEY],
                 CURLOPT_RETURNTRANSFER => TRUE,
                 CURLOPT_HEADER => TRUE,
+                CURLOPT_TIMEOUT => 20,
                 CURLOPT_USERAGENT => 'Citation_bot; citations@tools.wmflabs.org',
                 CURLOPT_URL => $adsabs_url]);
       $return = (string) @curl_exec($ch);
@@ -2671,6 +2675,7 @@ final class Template {
             [CURLOPT_HEADER => 0,
              CURLOPT_RETURNTRANSFER => 1,
              CURLOPT_URL => $url,
+             CURLOPT_TIMEOUT => 10,
              CURLOPT_USERAGENT => 'Citation_bot; citations@tools.wmflabs.org']);
     $json = (string) @curl_exec($ch);
     curl_close($ch);
@@ -2854,6 +2859,7 @@ final class Template {
                    [CURLOPT_USERAGENT => 'Citation_bot; citations@tools.wmflabs.org',
                     CURLOPT_HEADER => 0,
                     CURLOPT_RETURNTRANSFER => 1,
+                    CURLOPT_TIMEOUT => 15,
                     CURLOPT_URL => $google_book_url]);
         $google_content = (string) @curl_exec($ch);
         curl_close($ch);
@@ -2881,6 +2887,7 @@ final class Template {
         curl_setopt_array($ch,
                [CURLOPT_HEADER => 0,
                 CURLOPT_RETURNTRANSFER => 1,
+                CURLOPT_TIMEOUT => 15,
                 CURLOPT_USERAGENT => 'Citation_bot; citations@tools.wmflabs.org',
                 CURLOPT_URL => "https://www.googleapis.com/books/v1/volumes?q=" . $url_token . "&key=" . PHP_GOOGLEKEY]);
         $string = (string) @curl_exec($ch);
@@ -2994,6 +3001,7 @@ final class Template {
            [CURLOPT_USERAGENT => 'Citation_bot; citations@tools.wmflabs.org',
             CURLOPT_HEADER => 0,
             CURLOPT_RETURNTRANSFER => 1,
+            CURLOPT_TIMEOUT => 15,
             CURLOPT_URL => $google_book_url]);
     $data = (string) @curl_exec($ch);
     curl_close($ch);
@@ -3838,6 +3846,7 @@ final class Template {
               $ch = curl_init($test_url);
               curl_setopt_array($ch,
                        [CURLOPT_RETURNTRANSFER => TRUE,
+                        CURLOPT_TIMEOUT => 25,
                         CURLOPT_USERAGENT => 'Citation_bot; citations@tools.wmflabs.org']);
               @curl_exec($ch);
               $httpCode = (int) @curl_getinfo($ch, CURLINFO_HTTP_CODE);
@@ -4501,7 +4510,7 @@ final class Template {
                          [CURLOPT_FOLLOWLOCATION => TRUE,
                           CURLOPT_MAXREDIRS => 20,
                           CURLOPT_CONNECTTIMEOUT => 4,
-                          CURLOPT_TIMEOUT => 15,
+                          CURLOPT_TIMEOUT => 25,
                           CURLOPT_RETURNTRANSFER => TRUE,
                           CURLOPT_COOKIEFILE => "",
                           CURLOPT_USERAGENT => 'Citation_bot; citations@tools.wmflabs.org',
@@ -5580,6 +5589,15 @@ final class Template {
      if (!in_array($param, ['volume','issue','number'])) {
        report_error('volume_issue_demix ' . echoable($param)); // @codeCoverageIgnore
      }
+     if ($param === 'issue') {
+         $the_issue = 'issue';
+     } elseif ($param === 'number') {
+         $the_issue = 'number';
+     } elseif ($param === 'volume' && $this->has('number')) {
+         $the_issue = 'number';
+     } else {
+         $the_issue = 'issue';
+     }
      $data = trim($data);
      if (preg_match("~^(\d+)\s*\((\d+(-|–|\–|\{\{ndash\}\})?\d*)\)$~", $data, $matches) ||
               preg_match("~^(?:vol\. |Volume |vol |)(\d+)[,\s]\s*(?:no\.|number|issue|Iss.|no )\s*(\d+(-|–|\–|\{\{ndash\}\})?\d*)$~i", $data, $matches) ||
@@ -5593,17 +5611,17 @@ final class Template {
          if ($possible_issue === $this->get('date')) return;
          if ($param == 'volume') {
             if ($this->blank(ISSUE_ALIASES)) {
-              $this->add_if_new('issue', $possible_issue);
+              $this->add_if_new($the_issue, $possible_issue);
               $this->set('volume', $possible_volume);
             } elseif ($this->get('issue') === $possible_issue || $this->get('number') === $possible_issue) {
               $this->set('volume', $possible_volume);
             }
          } else {
             if ($this->blank('volume')) {
-              $this->set('issue', $possible_issue);
+              $this->set($the_issue, $possible_issue);
               $this->add_if_new('volume', $possible_volume);
             } elseif ($this->get('volume') === $possible_volume) {
-              $this->set('issue', $possible_issue);
+              $this->set($the_issue, $possible_issue);
             }
          }
      } elseif (preg_match('~^\((\d+)\)\.?$~', $data, $matches)) {
@@ -5770,6 +5788,11 @@ final class Template {
         if (preg_match('~page/?[01]?$~i', $url)) return FALSE;
         return TRUE;
       }
+      return FALSE;
+    }
+    if (stripos($url, 'wp-content')) { // Private websites are hard to judge
+      if (stripos($url, 'chapter') || stripos($url, 'section')) return TRUE;
+      if (stripos($url, 'pages') && !preg_match('~[^\d]1[-–]~u', $url)) return TRUE;
       return FALSE;
     }
     if ($force) return TRUE;

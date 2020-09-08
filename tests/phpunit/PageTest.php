@@ -368,6 +368,7 @@ final class PageTest extends testBaseClass {
       curl_setopt_array($ch,
            [CURLOPT_HEADER => 0,
             CURLOPT_RETURNTRANSFER => 1,
+            CURLOPT_TIMEOUT => 30,
             CURLOPT_USERAGENT => 'Citation_bot; citations@tools.wmflabs.org',
             CURLOPT_URL => WIKI_ROOT . '?title=' . $bad_page . '&action=raw']);
       $text = curl_exec($ch);
