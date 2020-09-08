@@ -5773,6 +5773,11 @@ final class Template {
       }
       return FALSE;
     }
+    if (stripos($url, 'wp-content')) { // Private websites are hard to judge
+      if (stripos($url, 'chapter') || strpos($url, 'section ')) return TRUE;
+      if (stripos($url, 'pages') && !preg_match('~[^\d]1[-–]~u', $url)) return TRUE;
+      return FALSE;
+    }
     if ($force) return TRUE;
     // Only do a few select website unless we just converted to cite book from cite journal
     if (strpos($url, 'archive.org')) return TRUE;
