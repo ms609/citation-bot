@@ -5580,6 +5580,15 @@ final class Template {
      if (!in_array($param, ['volume','issue','number'])) {
        report_error('volume_issue_demix ' . echoable($param)); // @codeCoverageIgnore
      }
+     if ($param === 'issue') {
+         $the_issue = 'issue';
+     } elseif ($param === 'number') {
+         $the_issue = 'number';
+     } elseif ($param === 'volume' && $this->has('number')) {
+         $the_issue = 'number';
+     } else {
+         $the_issue = 'issue';
+     }
      $data = trim($data);
      if (preg_match("~^(\d+)\s*\((\d+(-|–|\–|\{\{ndash\}\})?\d*)\)$~", $data, $matches) ||
               preg_match("~^(?:vol\. |Volume |vol |)(\d+)[,\s]\s*(?:no\.|number|issue|Iss.|no )\s*(\d+(-|–|\–|\{\{ndash\}\})?\d*)$~i", $data, $matches) ||
@@ -5593,20 +5602,19 @@ final class Template {
          if ($possible_issue === $this->get('date')) return;
          if ($param == 'volume') {
             if ($this->blank(ISSUE_ALIASES)) {
-              $this->add_if_new('issue', $possible_issue);
+              $this->add_if_new($the_issue, $possible_issue);
               $this->set('volume', $possible_volume);
             } elseif ($this->get('issue') === $possible_issue || $this->get('number') === $possible_issue) {
               $this->set('volume', $possible_volume);
             }
          } else {
             if ($this->blank('volume')) {
-              $this->set('issue', $possible_issue);
+              $this->set($the_issue, $possible_issue);
               $this->add_if_new('volume', $possible_volume);
             } elseif ($this->get('volume') === $possible_volume) {
-              $this->set('issue', $possible_issue);
+              $this->set($the_issue, $possible_issue);
             }
          }
-         if($this->has('issue')) $this->forget('number');
      } elseif (preg_match('~^\((\d+)\)\.?$~', $data, $matches)) {
        $this->set($param, $matches[1]);
        return;
