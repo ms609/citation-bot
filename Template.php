@@ -2790,6 +2790,14 @@ final class Template {
             (stripos($oa_hostname, 'doi.org') !== FALSE)) {
           return 'have free';
        }
+       preg_match("~^https?://([^\/]+)/~", $oa_url . '/', $match);
+       $new_host_name = str_replace('www.', '', strtolower((string) @$match[1]));
+       foreach (ALL_URL_TYPES as $old_url) {
+            if (preg_match("~^https?://([^\/]+)/~", (string) $this->get($old_url), $match)) {
+                $old_host_name = str_replace('www.', '', strtolower($match[1]));
+                if ($old_host_name === $new_host_name) return 'have free';
+            }
+       }     
         $this->add_if_new('url', $oa_url);  // Will check for PMCs etc hidden in URL
         if ($this->has('url')) {  // The above line might have eaten the URL and upgraded it
           $headers_test = @get_headers($this->get('url'), 1);
