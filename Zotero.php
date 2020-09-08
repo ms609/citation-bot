@@ -12,7 +12,6 @@ final class Zotero {
   private const ZOTERO_SKIPS = 100;
   private const ERROR_DONE = 'ERROR_DONE'; 
   protected static $zotero_announced;
-  /** @var resource|null $zotero_ch */
   protected static $zotero_ch;
   protected static $zotero_failures_count = 0;
 
@@ -102,6 +101,7 @@ public static function query_ieee_webpages(array $templates) : void {
   curl_setopt_array($ch_ieee,
          [CURLOPT_RETURNTRANSFER => TRUE,
           CURLOPT_HEADER => FALSE,
+          CURLOPT_TIMEOUT => 15,
           CURLOPT_USERAGENT => 'Citation_bot; citations@tools.wmflabs.org']);
   
   foreach (['url', 'chapter-url', 'chapterurl'] as $kind) {
