@@ -8,6 +8,9 @@ We use phpunit in Travis CI to test code; please write testcase examples for new
 It is helpful if each testcase example describes the specific function that it is trying
 to test.
 
+## Quality verification
+All code is run through several tests.  The primary test is a suite of example pages and citation templates.  There are a variety of static code analysis pre-tests that look for common errors.  One test verifies that the code at least looks like valid PHP 8.0. The "PHP psalm Taint" uses a security tainted data test to make sure that all "untrusted input" (data from wikipedia pages) is output wrapped with the echoable() function.  This is not done for security, but for proper output formatting in a web browser.
+
 ## Submitting changes
 
 Please send a [GitHub Pull Request](https://github.com/ms609/citation-bot/pull/new/master) with a clear list of what you've done (read more about [pull requests](https://help.github.com/articles/about-pull-requests/)).
