@@ -5606,6 +5606,7 @@ final class Template {
               $this->set('issue', $possible_issue);
             }
          }
+         if($this->has('issue')) $this->forget('number');
      } elseif (preg_match('~^\((\d+)\)\.?$~', $data, $matches)) {
        $this->set($param, $matches[1]);
        return;
