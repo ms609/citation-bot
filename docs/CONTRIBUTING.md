@@ -35,6 +35,7 @@ Always write a clear log message for your commits. One-line messages are fine fo
   * All code is verified to be valid PHP 7.3, and 8.0 according to static analysis
   * All code is verified to be valid PHP 7.3 at runtime
   * We want 100% code coverage with untestable code flagged in the source -- such as code that handles error conditions.  See the file apiFunctions.php for lots of examples of non-coverage code.
+  * All curl_init() calls must also set CURLOPT_TIMEOUT to something reasonable for the importance of the data and the speed of the website
 
 ## Bot output conventions
 The bot reports its activity to users using:
