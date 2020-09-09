@@ -1,12 +1,6 @@
 <?php
 declare(strict_types=1);
 @session_start();
-if (isset($_SESSION['citation_bot_user_id']) && is_string($_SESSION['citation_bot_user_id'])) {
-  $the_example_user = @htmlspecialchars($_SESSION['citation_bot_user_id']);
-}
-if (empty($the_example_user)) {
-  $the_example_user = 'YourUserID';
-}
 ?>
 <!DOCTYPE html>
 <html lang="en" dir="ltr">
@@ -61,7 +55,14 @@ if (empty($the_example_user)) {
       <a href="https://github.com/ms609/citation-bot" title="GitHub repository">Source code</a>
     </p>
     <p>
-    Your Wikipedia user name will be included in the edit, such as "Suggested&nbsp;by&nbsp;<?php echo $the_example_user ?>"
+    Your Wikipedia user name will be included in the edit, such as "Suggested&nbsp;by&nbsp;
+  <?php
+  if (isset($_SESSION['citation_bot_user_id'])) {
+     echo (string) @htmlspecialchars((string) $_SESSION['citation_bot_user_id']);
+   } else {
+     echo 'YourUserID';
+   }
+   ?>"
     </p>
   </footer>
 </body>
