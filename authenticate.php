@@ -18,12 +18,16 @@ function death_time(string $err) : void {
   unset($_SESSION['citation_bot_user_id']);
   unset($_SESSION['request_key']);
   unset($_SESSION['request_secret']);     
-  exit('<!DOCTYPE html><html lang="en" dir="ltr"><head><title>Authentifcation System Failure</title></head><body>' . $err . '</body></html>');
+  exit('<!DOCTYPE html><html lang="en" dir="ltr"><head><title>Authentifcation System Failure</title></head><body>' . htmlspecialchars($err) . '</body></html>');
 }
 
 function return_to_sender(string $where = 'https://citations.toolforge.org/') : void {
   header("Location: " . $where);
   exit(0);
+}
+
+if(session_status() !== PHP_SESSION_ACTIVE) {
+  death_time("Citation Bot could not create a session");
 }
 
 if (!getenv('PHP_WP_OAUTH_CONSUMER') || !getenv('PHP_WP_OAUTH_SECRET')) {
