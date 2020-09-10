@@ -45,7 +45,7 @@ public static function query_url_api_class(array $ids, array $templates) : void 
 
   if (!TRAVIS) { // try harder in tests
     // @codeCoverageIgnoreStart
-    curl_setopt(self::$zotero_ch, CURLOPT_CONNECTTIMEOUT, 1);
+    curl_setopt(self::$zotero_ch, CURLOPT_CONNECTTIMEOUT, 3);
     $url_count = 0;
     foreach ($templates as $template) {
      if (!$template->blank(['url', 'chapter-url', 'chapterurl'])) {
@@ -141,7 +141,7 @@ public static function drop_urls_that_match_dois(array $templates) : void {
         [CURLOPT_FOLLOWLOCATION => TRUE,
          CURLOPT_MAXREDIRS => 20, // No infinite loops for us, 20 for Elsivier and Springer websites
          CURLOPT_CONNECTTIMEOUT =>  4, 
-         CURLOPT_TIMEOUT => 5,
+         CURLOPT_TIMEOUT => 20,
          CURLOPT_RETURNTRANSFER => TRUE,
          CURLOPT_COOKIEFILE => "",
          CURLOPT_AUTOREFERER => TRUE,

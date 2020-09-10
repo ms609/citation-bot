@@ -1438,7 +1438,7 @@ final class Template {
        return FALSE;
     }
 
-    if (preg_match("~^https?://(?:(?:dx\.|)doi\.org|doi\.library\.ubc\.ca)/([^\?]*)~i", $url, $match)) {
+    if (preg_match("~^https?://(?:(?:dx\.|www\.|)doi\.org|doi\.library\.ubc\.ca)/([^\?]*)~i", $url, $match)) {
       if ($this->has('doi')) {
         if (str_i_same($this->get('doi'), $match[1])) {
          if (is_null($url_sent)) {
