@@ -27,10 +27,6 @@ private static function set_default_ch_zotero() : void {
          CURLOPT_CONNECTTIMEOUT => 10,
          CURLOPT_TIMEOUT => 45]);
 }
-   
-public static function close_ch_zotero() : void {
-  if (is_resource(self::$zotero_ch)) @curl_close(self::$zotero_ch);  
-}
 
 public static function block_zotero() : void {
   self::$zotero_failures_count = 1000000;  
