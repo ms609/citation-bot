@@ -5358,7 +5358,7 @@ T1 - This is the Title }}';
 
   public function testNoBibcodesForBookReview() : void {
    $this->requires_bibcode(function() : void {  // don't add isbn. It causes early exit
-    $text = "{{cite book |title=Churchill's Bomb: How the United States Overtook Britain in the First Nuclear Arms Race |publisher=X|location=X|lccn=X|olcn=X}}";
+    $text = "{{cite book |title=Churchill's Bomb: How the United States Overtook Britain in the First Nuclear Arms Race |publisher=X|location=X|lccn=X|oclc=X}}";
     $expanded = $this->make_citation($text);
     $expanded->expand_by_adsabs(); // Won't expand because of bookish stuff
     $this->assertNull($expanded->get2('bibcode'));
