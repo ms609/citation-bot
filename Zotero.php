@@ -266,6 +266,9 @@ public static function drop_urls_that_match_dois(array $templates) : void {
        } elseif (!$template->blank_other_than_comments('arxiv')) {
           report_forget("Existing proxy URL resulting from equivalent arxiv; dropping URL");
           $template->forget($url_kind);
+       } elseif (!$template->blank_other_than_comments('bibcode')) {
+          report_forget("Existing proxy URL resulting from equivalent bibcode; dropping URL");
+          $template->forget($url_kind);
        }
     }
   }
