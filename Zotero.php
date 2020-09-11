@@ -260,6 +260,12 @@ public static function drop_urls_that_match_dois(array $templates) : void {
        } elseif (!$template->blank_other_than_comments('lccn')) {
           report_forget("Existing proxy URL resulting from equivalent lccn; dropping URL");
           $template->forget($url_kind);
+       } elseif (!$template->blank_other_than_comments('jstor')) {
+          report_forget("Existing proxy URL resulting from equivalent jstor; dropping URL");
+          $template->forget($url_kind);
+       } elseif (!$template->blank_other_than_comments('arxiv')) {
+          report_forget("Existing proxy URL resulting from equivalent arxiv; dropping URL");
+          $template->forget($url_kind);
        }
     }
   }
