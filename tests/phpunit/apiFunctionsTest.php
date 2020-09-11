@@ -241,7 +241,7 @@ final class apiFunctionsTest extends testBaseClass {
     $this->requires_dx(function() : void {
      $expanded = $this->make_citation('{{Cite journal}}');
      expand_doi_with_dx($expanded, '10.2788/14231');
-     $this->assertSame('{{Cite journal}}', $expanded->parsed_text());
+     $this->assertSame('{{Cite journal|year = 2007|last1 = Vogt|first1 = Jürgen|last2 = Foisneau|first2 = Stéphanie|title = European river and catchment database, version 2.0 (CCM2) : Analysis tools|publisher = Publications Office}}', $expanded->parsed_text());
     });
   }
   
