@@ -2207,15 +2207,17 @@ final class Template {
       }
     }
     
-    if ($result->numFound != 1 && $this->has('journal')) {
+    if ($result->numFound != 1 && ($this->has('journal') || $this->has('issn'))) {
       $journal = $this->get('journal');
       // try partial search using bibcode components:
       $pages = $this->page_range();
-      $result = $this->query_adsabs("pub:" . urlencode('"' . remove_brackets($journal) . '"')
+      if ($pages) return FALSE;
+      if ($this->blank('volume') && !$this->year()) return FALSE;
+      $result = $this->query_adsabs(
+          ($this->has('journal') ? "pub:" . urlencode('"' . remove_brackets($journal) . '"') : "&fq=issn:" . urlencode($this->get('issn')))
         . ($this->year() ? ("&fq=year:" . urlencode($this->year())) : '')
-        . ($this->has('issn') ? ("&fq=issn:" . urlencode($this->get('issn'))) : '')
         . ($this->has('volume') ? ("&fq=volume:" . urlencode('"' . $this->get('volume') . '"')) : '')
-        . ($pages ? ("&fq=page:" . urlencode('"' . $pages[1] . '"')) : '')
+        . ("&fq=page:" . urlencode('"' . $pages[1] . '"'))
       );
       if ($result->numFound == 0 || !isset($result->docs[0]->pub)) {
         report_inline('no record retrieved.');    // @codeCoverageIgnore
