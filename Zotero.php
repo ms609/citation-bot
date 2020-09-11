@@ -237,6 +237,22 @@ public static function drop_urls_that_match_dois(array $templates) : void {
           }
        }
     }
+    $url = $template->get($url_kind);
+    if ($url && !$template->profoundly_incomplete() && str_ireplace(PROXY_HOSTS_TO_DROP,'', $url) !== $url) {
+       if (!$template->blank_other_than_comments('pmc')) {
+          report_forget("Existing proxy URL resulting from equivalent PMC; dropping URL");
+          $template->forget($url_kind);
+       } elseif (!$template->blank_other_than_comments('pmid')) {
+          report_forget("Existing proxy URL resulting from equivalent pmid; dropping URL");
+          $template->forget($url_kind);
+       } elseif (!$template->blank_other_than_comments('isbn')) {
+          report_forget("Existing proxy URL resulting from equivalent isbn; dropping URL");
+          $template->forget($url_kind);
+       } elseif (!$template->blank_other_than_comments('s2cid')) {
+          report_forget("Existing proxy URL resulting from equivalent s2cid; dropping URL");
+          $template->forget($url_kind);
+       }
+    }
   }
   curl_close($ch);
   /** @psalm-suppress UnusedFunctionCall */
