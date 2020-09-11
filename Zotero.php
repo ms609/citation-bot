@@ -251,9 +251,6 @@ public static function drop_urls_that_match_dois(array $templates) : void {
        } elseif (!$template->blank_other_than_comments('s2cid')) {
           report_forget("Existing proxy URL resulting from equivalent s2cid; dropping URL");
           $template->forget($url_kind);
-       } elseif (!$template->blank_other_than_comments('issn')) {
-          report_forget("Existing proxy URL resulting from equivalent ISSN; dropping URL");
-          $template->forget($url_kind);
        } elseif (!$template->blank_other_than_comments('oclc')) {
           report_forget("Existing proxy URL resulting from equivalent oclc; dropping URL");
           $template->forget($url_kind);
