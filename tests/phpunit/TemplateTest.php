@@ -5219,7 +5219,7 @@ T1 - This is the Title }}';
    public function testSemanticscholar2() : void {
      $text = '{{cite web|url=https://www.semanticscholar.org/paper/The-Holdridge-life-zones-of-the-conterminous-United-Lugo-Brown/406120529d907d0c7bf96125b83b930ba56f29e4}}';
      $template = $this->process_citation($text);
-     $this->assertSame('10.1046/j.1365-2699.1999.00329.x', $template->get2('doi'));
+     $this->assertSame('10.1046/j.1365-2699.1999.00329.x', strtolower($template->get2('doi')));
      $this->assertSame('cite journal', $template->wikiname());
      $this->assertNull($template->get2('s2cid-access'));
      $this->assertSame('11733879', $template->get2('s2cid')); 
