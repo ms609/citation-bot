@@ -5761,6 +5761,8 @@ final class Template {
       $wonky = trim($matches[1]);
       if ($wonky === "[WorldCat.org]") {
         report_info('WorldCat temporarily unresponsive or does not have Title for ISSN ' .  echoable($issn));
+      } elseif (preg_match('~^(.+)\. \(Newspaper, \d{4}\) \[WorldCat.org\]$~', $wonky, $matches)) {
+        return $this->add_if_new('newspaper', trim($matches[1]));
       } else {
         report_minor_error('Unexpected title from WorldCat for ISSN ' . echoable($issn) . ' : ' . echoable($wonky));
       }
