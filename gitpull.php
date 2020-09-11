@@ -1,3 +1,6 @@
+<?php
+@header("Access-Control-Allow-Origin: *"); //This is ok because the API is not authenticated
+?>
 <!DOCTYPE html><html lang="en" dir="ltr"><head><title>Git Pull</title></head><body><pre>
 <?php
 if (mkdir('git_pull.lock', 0700)) {
