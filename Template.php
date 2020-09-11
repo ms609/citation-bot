@@ -2211,7 +2211,7 @@ final class Template {
       $journal = $this->get('journal');
       // try partial search using bibcode components:
       $pages = $this->page_range();
-      if ($pages) return FALSE;
+      if (!$pages) return FALSE;
       if ($this->blank('volume') && !$this->year()) return FALSE;
       $result = $this->query_adsabs(
           ($this->has('journal') ? "pub:" . urlencode('"' . remove_brackets($journal) . '"') : "&fq=issn:" . urlencode($this->get('issn')))
