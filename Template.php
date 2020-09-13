@@ -2936,7 +2936,7 @@ final class Template {
       if (strpos($url, "#")) {
         $url_parts = explode("#", $url);
         $url = $url_parts[0];
-        $hash = "#" . $url_parts[1];
+        $hash = $url_parts[1];
       }
       $url_parts = explode("&", str_replace("?", "&", $url));
       $url = "https://books.google.com/books?id=" . $gid[1];
@@ -2973,6 +2973,7 @@ final class Template {
       if (preg_match('~^(.*)&$~', $hash, $matcher) ){
         $hash = $matcher[1];
       }
+      if ($hash) $hash = "#" . $hash;
   /**    if (strpos($hash, 'v=onepage') !== FALSE) {
         if (!str_i_same($hash, '#v=onepage')) {
           $removed_redundant++;
