@@ -2964,7 +2964,7 @@ final class Template {
             $removed_redundant++;
         }
       }
-      if (strpos($hash, 'v=onepage') !== FALSE) {
+  /**    if (strpos($hash, 'v=onepage') !== FALSE) {
         if (!str_i_same($hash, '#v=onepage')) {
           $removed_redundant++;
           $removed_parts .= substr(str_ireplace('v=onepage', '', $hash), 1);
@@ -2977,7 +2977,7 @@ final class Template {
           $removed_parts .= substr(str_ireplace('v=snippet', '', $hash), 1);
         }
         $hash = '#v=snippet';
-      }
+      } **/
       $url = $url . $hash;
       if (preg_match('~^(https://books\.google\.com/books\?id=[^#^&]+)(?:&printsec=frontcover|)(?:#v=onepage|v=snippet|)$~', $url, $matches)) {
          $url = $matches[1]; // URL Just wants the landing page
