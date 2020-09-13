@@ -2964,6 +2964,15 @@ final class Template {
             $removed_redundant++;
         }
       }
+      $hash = '&' . trim($hash) . '&';
+      $hash = str_replace(['&f=false', '&f=true', 'v=onepage'], ['','',''], $hash); // onepage is default
+      $hash = str_replace(['&q&', '&q=&', '&&&&', '&&&', '&&'], ['&', '&', '&', '&', '&'], $hash);
+      if (preg_match('~^&(.*)$~', $hash, $matcher) ){
+        $hash = $matcher[1];
+      }
+      if (preg_match('~^(.*)&$~', $hash, $matcher) ){
+        $hash = $matcher[1];
+      }
   /**    if (strpos($hash, 'v=onepage') !== FALSE) {
         if (!str_i_same($hash, '#v=onepage')) {
           $removed_redundant++;
