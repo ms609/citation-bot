@@ -249,6 +249,7 @@ class Page {
       } elseif (in_array($this_template->wikiname(), TEMPLATES_WE_SLIGHTLY_PROCESS)) {
         array_push($our_templates_slight, $this_template);
         $this_template->get_identifiers_from_url();
+        $this_template->expand_by_google_books();
         $this_template->tidy();
         if ($this_template->wikiname() === 'cite conference') array_push($our_templates_conferences, $this_template);
         array_push($our_templates_ieee, $this_template);
@@ -265,6 +266,7 @@ class Page {
           $this_template->set('magazine', straighten_quotes(trim($this_template->get('magazine'))));
         }
         $this_template->get_identifiers_from_url();
+        $this_template->expand_by_google_books();
         $this_template->tidy();
       }
     }
