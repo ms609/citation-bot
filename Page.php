@@ -265,6 +265,7 @@ class Page {
           $this_template->set('magazine', straighten_quotes(trim($this_template->get('magazine'))));
         }
         $this_template->get_identifiers_from_url();
+        $this_template->expand_by_google_books();
         $this_template->tidy();
       }
     }
