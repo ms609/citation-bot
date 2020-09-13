@@ -1911,7 +1911,7 @@ T1 - This is the Title }}';
     $this->assertNull($expanded->get2('author'));
     $this->assertNull($expanded->get2('author1'));
     $this->assertNull($expanded->get2('authors'));
-    $this->assertSame('https://books.google.com/books?id=p-IDAAAAMBAJ&lpg=PA195&dq=Popular%20Science%201930%20plane%20%22Popular%20Mechanics%22&pg=PA194#v=onepage', $expanded->get2('url'));
+    $this->assertSame('https://books.google.com/books?id=p-IDAAAAMBAJ&lpg=PA195&dq=Popular%20Science%201930%20plane%20%22Popular%20Mechanics%22&pg=PA194#v=onepage&q&f=true', $expanded->get2('url'));
   }
  
   public function testHearst2 () : void {
@@ -1923,7 +1923,7 @@ T1 - This is the Title }}';
     $this->assertNull($expanded->get2('author'));
     $this->assertNull($expanded->get2('author1'));
     $this->assertNull($expanded->get2('authors'));
-    $this->assertSame('https://books.google.com/books?id=p-IDAAAAMBAJ&lpg=PA195&dq=Popular%20Science%201930%20plane%20%22Popular%20Mechanics%22&pg=PA194#v=snippet', $expanded->get2('url'));
+    $this->assertSame('https://books.google.com/books?id=p-IDAAAAMBAJ&lpg=PA195&dq=Popular%20Science%201930%20plane%20%22Popular%20Mechanics%22&pg=PA194#v=snippet&q&f=true', $expanded->get2('url'));
   }
        
   public function testInternalCaps() : void { // checks for title formating in tidy() not breaking things
