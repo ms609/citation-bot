@@ -3464,6 +3464,7 @@ final class Template {
     $parameters_used[] = $p->param;
   }
 
+  $parameter_list = array_diff($parameter_list, $mistake_keys); // This way it does not contain "URL", but only "url"
   $unused_parameters = array_diff($parameter_list, $parameters_used);
 
   $i = 0;
