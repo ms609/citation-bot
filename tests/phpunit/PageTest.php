@@ -375,7 +375,7 @@ final class PageTest extends testBaseClass {
       curl_close($ch);
       $page = new TestPage();
       $page->parse_text($text);
-      AdsAbsControl::turn_on();
+      AdsAbsControl::back_on();
       Zotero::unblock_zotero();
       $page->expand_text();
       AdsAbsControl::give_up();
