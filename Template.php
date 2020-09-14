@@ -5798,7 +5798,7 @@ final class Template {
     if ($this->blank('chapter')) return FALSE;
     if (strpos($this->get('chapter'), '[') !== FALSE) return FALSE;
     $url = $this->get('url');
-    if (stripos($url, 'google.com') && !strpos($this->get('url'), 'pg=')) return FALSE; // Do not move books without page numbers
+    if (stripos($url, 'google') && !strpos($this->get('url'), 'pg=')) return FALSE; // Do not move books without page numbers
     if (stripos($url, 'archive.org/details/isbn')) return FALSE;
     if (stripos($url, 'page_id=0')) return FALSE;
     if (stripos($url, 'page=0')) return FALSE;
