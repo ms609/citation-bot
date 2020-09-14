@@ -56,6 +56,7 @@ const COMMON_MISTAKES = array ( // Common mistakes that aren't picked up by the 
   "publisherid"     =>  "id",
   "titleyear"       =>  "origyear",
   "translators"     =>  "translator",
+  "URL"             =>  "url",
   "vol"             =>  "volume",
   "Vol"             =>  "volume",
   "Vol."            =>  "volume",
