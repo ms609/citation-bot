@@ -2936,7 +2936,7 @@ final class Template {
       if (strpos($url, "#")) {
         $url_parts = explode("#", $url);
         $url = $url_parts[0];
-        $hash = "#" . $url_parts[1];
+        $hash = $url_parts[1];
       }
       $url_parts = explode("&", str_replace("?", "&", $url));
       $url = "https://books.google.com/books?id=" . $gid[1];
@@ -2964,7 +2964,17 @@ final class Template {
             $removed_redundant++;
         }
       }
-      if (strpos($hash, 'v=onepage') !== FALSE) {
+      $hash = '&' . trim($hash) . '&';
+      $hash = str_replace(['&f=false', '&f=true', 'v=onepage'], ['','',''], $hash); // onepage is default
+      $hash = str_replace(['&q&', '&q=&', '&&&&', '&&&', '&&'], ['&', '&', '&', '&', '&'], $hash);
+      if (preg_match('~^&(.*)$~', $hash, $matcher) ){
+        $hash = $matcher[1];
+      }
+      if (preg_match('~^(.*)&$~', $hash, $matcher) ){
+        $hash = $matcher[1];
+      }
+      if ($hash) $hash = "#" . $hash;
+  /**    if (strpos($hash, 'v=onepage') !== FALSE) {
         if (!str_i_same($hash, '#v=onepage')) {
           $removed_redundant++;
           $removed_parts .= substr(str_ireplace('v=onepage', '', $hash), 1);
@@ -2977,7 +2987,7 @@ final class Template {
           $removed_parts .= substr(str_ireplace('v=snippet', '', $hash), 1);
         }
         $hash = '#v=snippet';
-      }
+      } **/
       $url = $url . $hash;
       if (preg_match('~^(https://books\.google\.com/books\?id=[^#^&]+)(?:&printsec=frontcover|)(?:#v=onepage|v=snippet|)$~', $url, $matches)) {
          $url = $matches[1]; // URL Just wants the landing page
@@ -3454,6 +3464,7 @@ final class Template {
     $parameters_used[] = $p->param;
   }
 
+  $parameter_list = array_diff($parameter_list, $mistake_keys); // This way it does not contain "URL", but only "url"
   $unused_parameters = array_diff($parameter_list, $parameters_used);
 
   $i = 0;
@@ -4607,7 +4618,9 @@ final class Template {
               $this->forget('via');
             } elseif (in_array($this->wikiname(), ['cite arxiv', 'cite biorxiv', 'cite citeseerx', 'cite ssrn'])) { 
               $this->forget('via');
-            } elseif ($this->has('pmc') || $this->has('pmid') || ($this->has('doi') && $this->blank(DOI_BROKEN_ALIASES))) {
+            } elseif ($this->has('pmc') || $this->has('pmid') || ($this->has('doi') && $this->blank(DOI_BROKEN_ALIASES)) ||
+                      $this->has('jstor') || $this->has('arxiv') || $this->has('isbn') || ($this->has('issn') && $this->has('title')) ||
+                      $this->has('oclc') || $this->has('lccn') || $this->has('bibcode')) {
               $via = trim(strtolower($this->get('via')));
               if (in_array($via, ['', 'project muse', 'wiley', 'springer', 'questia', 'elsevier', 'wiley online library',
                                   'wiley interscience', 'interscience', 'sciencedirect', 'science direct', 'ebscohost',
@@ -5785,7 +5798,7 @@ final class Template {
     if ($this->blank('chapter')) return FALSE;
     if (strpos($this->get('chapter'), '[') !== FALSE) return FALSE;
     $url = $this->get('url');
-    if (stripos($url, 'google.com') && !strpos($this->get('url'), 'pg=')) return FALSE; // Do not move books without page numbers
+    if (stripos($url, 'google') && !strpos($this->get('url'), 'pg=')) return FALSE; // Do not move books without page numbers
     if (stripos($url, 'archive.org/details/isbn')) return FALSE;
     if (stripos($url, 'page_id=0')) return FALSE;
     if (stripos($url, 'page=0')) return FALSE;

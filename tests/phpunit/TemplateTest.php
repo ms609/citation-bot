@@ -1124,7 +1124,7 @@ final class TemplateTest extends testBaseClass {
      // Fake bibcoce otherwise we'll find a bibcode
      $text = '{{cite journal| p=546 |doi=10.1103/PhysRev.57.546|title=Nuclear Fission of Separated Uranium Isotopes |journal=Physical Review |volume=57 |issue=6 |year=1940 |last1=Nier |first1=Alfred O. |last2=Booth |first2=E. T. |last3=Dunning |first3=J. R. |last4=Grosse |first4=A. V. |bibcode=XXXXXXXXXXXXX}}';
      $expanded = $this->process_citation($text);
-     $this->assertSame($text, $expanded->parsed_text());
+     $this->assertSame($text, str_replace(' page=546 ', ' p=546 ', $expanded->parsed_text()));
    }
 
   public function testLastVersusAuthor() : void {
@@ -1470,6 +1470,13 @@ final class TemplateTest extends testBaseClass {
       $prepared = $this->prepare_citation($text);
       $prepared->final_tidy();
       $this->assertSame($text, $prepared->parsed_text());
+  }
+ 
+  public function testFixCAPSJunk() : void {
+      $text = '{{citation|URL=X}}';
+      $prepared = $this->process_citation($text);
+      $this->assertSame('X', $prepared->get('url'));
+      $this->assertNull($prepared->get2('URL'));
   }
 
   public function testBadPunctuation1() : void {
@@ -1911,7 +1918,7 @@ T1 - This is the Title }}';
     $this->assertNull($expanded->get2('author'));
     $this->assertNull($expanded->get2('author1'));
     $this->assertNull($expanded->get2('authors'));
-    $this->assertSame('https://books.google.com/books?id=p-IDAAAAMBAJ&lpg=PA195&dq=Popular%20Science%201930%20plane%20%22Popular%20Mechanics%22&pg=PA194#v=onepage', $expanded->get2('url'));
+    $this->assertSame('https://books.google.com/books?id=p-IDAAAAMBAJ&lpg=PA195&dq=Popular%20Science%201930%20plane%20%22Popular%20Mechanics%22&pg=PA194', $expanded->get2('url'));
   }
  
   public function testHearst2 () : void {
@@ -5358,7 +5365,7 @@ T1 - This is the Title }}';
 
   public function testNoBibcodesForBookReview() : void {
    $this->requires_bibcode(function() : void {  // don't add isbn. It causes early exit
-    $text = "{{cite book |title=Churchill's Bomb: How the United States Overtook Britain in the First Nuclear Arms Race |publisher=X|location=X|lccn=X|olcn=X}}";
+    $text = "{{cite book |title=Churchill's Bomb: How the United States Overtook Britain in the First Nuclear Arms Race |publisher=X|location=X|lccn=X|oclc=X}}";
     $expanded = $this->make_citation($text);
     $expanded->expand_by_adsabs(); // Won't expand because of bookish stuff
     $this->assertNull($expanded->get2('bibcode'));
