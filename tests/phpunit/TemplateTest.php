@@ -1471,6 +1471,13 @@ final class TemplateTest extends testBaseClass {
       $prepared->final_tidy();
       $this->assertSame($text, $prepared->parsed_text());
   }
+ 
+  public function testFixCAPSJunk() : void {
+      $text = '{{citation|URL=X}}';
+      $prepared = $this->process_citation($text);
+      $this->assertSame('X', $prepared->get('url'));
+      $this->assertNull($prepared->get('URL'));
+  }
 
   public function testBadPunctuation1() : void {
       $text = '{{citation|title=:: Huh ::}}';
