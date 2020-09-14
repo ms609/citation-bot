@@ -1124,7 +1124,7 @@ final class TemplateTest extends testBaseClass {
      // Fake bibcoce otherwise we'll find a bibcode
      $text = '{{cite journal| p=546 |doi=10.1103/PhysRev.57.546|title=Nuclear Fission of Separated Uranium Isotopes |journal=Physical Review |volume=57 |issue=6 |year=1940 |last1=Nier |first1=Alfred O. |last2=Booth |first2=E. T. |last3=Dunning |first3=J. R. |last4=Grosse |first4=A. V. |bibcode=XXXXXXXXXXXXX}}';
      $expanded = $this->process_citation($text);
-     $this->assertSame($text, $expanded->parsed_text());
+     $this->assertSame($text, str_replace(' page=546 ', ' p=546 ', $expanded->parsed_text());
    }
 
   public function testLastVersusAuthor() : void {
@@ -1476,7 +1476,7 @@ final class TemplateTest extends testBaseClass {
       $text = '{{citation|URL=X}}';
       $prepared = $this->process_citation($text);
       $this->assertSame('X', $prepared->get('url'));
-      $this->assertNull($prepared->get('URL'));
+      $this->assertNull($prepared->get2('URL'));
   }
 
   public function testBadPunctuation1() : void {
