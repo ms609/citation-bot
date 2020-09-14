@@ -233,7 +233,7 @@ class Page {
       return FALSE;
     }
     for ($i = 0; $i < count($all_templates); $i++) {
-       $all_templates[$i]->all_templates = $all_templates;
+       $all_templates[$i]->all_templates = & $all_templates; // Pointer to avoid MASSSIVE memory leak on crazy pages
        $all_templates[$i]->date_style = $this->date_style;
     }
     $our_templates = array();
@@ -478,6 +478,7 @@ class Page {
   }
   
   public function extract_object(string $class) : array {
+    $match = ['', '']; // Avoid PHP memory leak bug by intializing it
     $i = 0;
     $text = $this->text;
     $regexp_in = $class::REGEXP;
