@@ -233,7 +233,7 @@ class Page {
       return FALSE;
     }
     for ($i = 0; $i < count($all_templates); $i++) {
-       $all_templates[$i]->all_templates = $all_templates;
+       $all_templates[$i]->all_templates = & $all_templates; // Pointer to save memory
        $all_templates[$i]->date_style = $this->date_style;
     }
     $our_templates = array();
