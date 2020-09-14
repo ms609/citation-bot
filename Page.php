@@ -478,6 +478,7 @@ class Page {
   }
   
   public function extract_object(string $class) : array {
+    $match = ['', '']; // Avoid PHP memory leak bug by intializing it
     $i = 0;
     $text = $this->text;
     $regexp_in = $class::REGEXP;
