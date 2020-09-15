@@ -3649,7 +3649,7 @@ final class Template {
     // Note: Parameters are treated in alphabetical order, except where one
     // case necessarily continues from the previous (without a return).
     $matches = ['', '']; // prevent memory leak in some PHP versions
-    $pmatch = ['', '']; // prevent memory leak in some PHP versions
+    $pmatch = ['', '', '', '']; // prevent memory leak in some PHP versions
     $match = ['', '']; // prevent memory leak in some PHP versions
 
     if (!$param) return;
@@ -3785,7 +3785,7 @@ final class Template {
           if ($pmatch[2] && $this->has('first' . $pmatch[2]) && $this->blank('last' . $pmatch[2])) {
             $this->rename('author' . $pmatch[2], 'last' . $pmatch[2]);
             $pmatch[1] = 'last';
-            $param = 'last' . $pmatch[2];
+            // $param = 'last' . $pmatch[2];
             return;
           }
           // No return here
