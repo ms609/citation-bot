@@ -2858,7 +2858,7 @@ final class Template {
   protected function expand_by_google_books_inner(string $url_type) : bool {
     $gid = ['', '']; // prevent memory leak in some PHP versions
     $google_results = ['', '']; // prevent memory leak in some PHP versions
-    $matcher= ['', '']; // prevent memory leak in some PHP versions
+    $matcher = ['', '']; // prevent memory leak in some PHP versions
     $matches = ['', '']; // prevent memory leak in some PHP versions
     if ($url_type) {
       $url = $this->get($url_type);
