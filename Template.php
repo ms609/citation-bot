@@ -417,9 +417,8 @@ final class Template {
   public function add_if_new(string $param_name, string $value, string $api = '') : bool {
     $match = ['', '']; // prevent memory leak in some PHP versions
     $auNo = ['', '']; // prevent memory leak in some PHP versions
-    $oldpagneos = ['', '', '']; // prevent memory leak in some PHP versions
+    $oldpagenos = ['', '', '']; // prevent memory leak in some PHP versions
     $newpagenos = ['', '', '']; // prevent memory leak in some PHP versions
-    $matches = ['', '']; // prevent memory leak in some PHP versions
     $value = trim($value);
     $param_name = trim($param_name); // Pure paranoia
     if ($value == '') {
@@ -1205,6 +1204,7 @@ final class Template {
   }
 
   public function validate_and_add(string $author_param, string $author, string $forename, string $check_against, bool $add_even_if_existing) : void {
+    $match = ['', '']; // prevent memory leak in some PHP versions
     if (!$add_even_if_existing && ($this->initial_author_params || $this->had_initial_editor)) return; // Zotero does not know difference betwee editors and authors often
     if (in_array(strtolower($author), BAD_AUTHORS) === FALSE && author_is_human($author) && author_is_human($forename)) {
       while(preg_match('~^(.*)\s[\S]+@~', ' ' . $author, $match) || // Remove emails 
@@ -2379,7 +2379,7 @@ final class Template {
   // URL-ENCODED search strings, separated by (unencoded) ampersands.
   // Surround search terms in (url-encoded) ""s, i.e. doi:"10.1038/bla(bla)bla"
   protected function query_adsabs(string $options) : object {
-    $rate_limit = ['', '']; // prevent memory leak in some PHP versions
+    $rate_limit = [['', '', ''], ['', '', ''], ['', '', '']]; // prevent memory leak in some PHP versions
     // API docs at https://github.com/adsabs/adsabs-dev-api/blob/master/Search_API.ipynb
     if (AdsAbsControl::gave_up_yet()) return (object) array('numFound' => 0);
     if (!PHP_ADSABSAPIKEY) return (object) array('numFound' => 0);
@@ -3785,7 +3785,10 @@ final class Template {
           if ($pmatch[2] && $this->has('first' . $pmatch[2]) && $this->blank('last' . $pmatch[2])) {
             $this->rename('author' . $pmatch[2], 'last' . $pmatch[2]);
             $pmatch[1] = 'last';
-            // $param = 'last' . $pmatch[2];
+            /**
+              * @psalm-suppress UnusedVariable
+              */
+            $param = 'last' . $pmatch[2];
             return;
           }
           // No return here
@@ -4585,6 +4588,9 @@ final class Template {
             $this->rename('url', 'chapter-url');
             $this->rename('format', 'chapter-format');
             $this->rename('url-access', 'chapter-url-access');
+            /**
+              * @psalm-suppress UnusedVariable
+              */
             $param = 'chapter-url';
           }
           return;
