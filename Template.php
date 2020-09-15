@@ -3474,6 +3474,29 @@ final class Template {
     }
   }
 
+  public function correct_param_mistakes() : void {
+  // It will correct any that appear to be mistyped in minor templates
+  if (empty($this->param)) return ;
+  $mistake_corrections = array_values(COMMON_MISTAKES);
+  $mistake_keys = array_keys(COMMON_MISTAKES);
+
+  foreach ($this->param as $p) {
+    if (strlen($p->param) > 0) {
+      $mistake_id = array_search($p->param, $mistake_keys);
+      if ($mistake_id) {
+        $new = $mistake_corrections[$mistake_id];
+        if ($this->blank($new)) {
+           $p->param = $new;
+           report_modification('replaced with ' . echoable($new) . ' (common mistakes list)');
+        }
+        continue;
+      }
+    }
+  }
+}
+
+
+  
   protected function correct_param_spelling() : void {
   // check each parameter name against the list of accepted names (loaded in expand.php).
   // It will correct any that appear to be mistyped.
