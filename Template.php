@@ -3785,7 +3785,7 @@ final class Template {
           if ($pmatch[2] && $this->has('first' . $pmatch[2]) && $this->blank('last' . $pmatch[2])) {
             $this->rename('author' . $pmatch[2], 'last' . $pmatch[2]);
             $pmatch[1] = 'last';
-            /** @psalm-suppress UnusedVariable */
+            /** @psalm-suppress all */
             $param = 'last' . $pmatch[2];
             return;
           }
@@ -4586,7 +4586,7 @@ final class Template {
             $this->rename('url', 'chapter-url');
             $this->rename('format', 'chapter-format');
             $this->rename('url-access', 'chapter-url-access');
-            /** @psalm-suppress UnusedVariable */
+            /** @psalm-suppress all */
             $param = 'chapter-url';
           }
           return;
