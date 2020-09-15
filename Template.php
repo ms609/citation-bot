@@ -419,8 +419,8 @@ final class Template {
     $auNo = ['', '']; // prevent memory leak in some PHP versions
     $oldpagnos = ['', '']; // prevent memory leak in some PHP versions
     $newpagenos = ['', '']; // prevent memory leak in some PHP versions
-    $bibcode= ['', '']; // prevent memory leak in some PHP versions
-    $arxiv_id= ['', '']; // prevent memory leak in some PHP versions
+    $bibcode = ['', '']; // prevent memory leak in some PHP versions
+    $arxiv_id = ['', '']; // prevent memory leak in some PHP versions
     $matches = ['', '']; // prevent memory leak in some PHP versions
     $value = trim($value);
     $param_name = trim($param_name); // Pure paranoia
