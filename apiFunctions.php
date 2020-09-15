@@ -25,6 +25,8 @@ final class AdsAbsControl {
 
 
 function entrez_api(array $ids, array $templates, string $db) : bool {
+  $match = ['', '']; // prevent memory leak in some PHP versions
+  $names = ['', '']; // prevent memory leak in some PHP versions
   if (!count($ids)) return FALSE;
   $url = "https://eutils.ncbi.nlm.nih.gov/entrez/eutils/esummary.fcgi?tool=WikipediaCitationBot&email=martins+pubmed@gmail.com&db=$db&id=" 
                . implode(',', $ids);
@@ -135,6 +137,8 @@ function expand_arxiv_templates (array $templates) : bool {
 }
 
 function arxiv_api(array $ids, array $templates) : bool {
+  $names = ['', '']; // prevent memory leak in some PHP versions
+  $match = ['', '']; // prevent memory leak in some PHP versions
   if (count($ids) == 0) return FALSE;
   report_action("Getting data from arXiv API");
   $context = stream_context_create(array(
@@ -212,6 +216,7 @@ function arxiv_api(array $ids, array $templates) : bool {
 }
 
 function adsabs_api(array $ids, array $templates, string $identifier) : bool {
+  $rate_limit = ['', '']; // prevent memory leak in some PHP versions
   if (AdsAbsControl::gave_up_yet()) return FALSE;
   if (!PHP_ADSABSAPIKEY) return FALSE;
   if (count($ids) == 0) return FALSE;
@@ -433,6 +438,7 @@ function query_doi_api(array $ids, array $templates) : bool { // $id not used ye
 }
 
 function expand_by_doi(Template $template, bool $force = FALSE) : bool {
+  $matches = ['', '']; // prevent memory leak in some PHP versions
   // Because it can recover rarely used parameters such as editors, series & isbn, 
   // there will be few instances where it could not in principle be profitable to 
   // run this function, so we don't check this first.
@@ -790,6 +796,7 @@ function query_jstor_api(array $ids, array $templates) : bool { // $ids not used
 }
 
 function expand_by_jstor(Template $template) : bool {
+  $match = ['', '']; // prevent memory leak in some PHP versions
   if ($template->incomplete() === FALSE) return FALSE;
   if ($template->has('jstor')) {
      $jstor = trim($template->get('jstor'));
@@ -876,6 +883,8 @@ function expand_by_jstor(Template $template) : bool {
 // This routine is actually not used much, since we often get a DOI and thus do not need to parse this thankfully
 // Do not add a new regex without adding a test too in TemplateTest.php
 function parse_plain_text_reference(string $journal_data, Template $this_template, bool $upgrade_years = FALSE ) : void {
+      $matches = ['', '']; // prevent memory leak in some PHP versions
+      $match = ['', '']; // prevent memory leak in some PHP versions
       $journal_data = trim($journal_data);
       if ($journal_data === "") return;
       $arxiv_journal=FALSE;
@@ -1100,6 +1109,7 @@ function get_semanticscholar_license(string $s2cid) : ?bool {
 }
 
 function expand_templates_from_archives(array $templates) : void { // This is done very late as a latch ditch effort
+  $match = ['', '']; // prevent memory leak in some PHP versions
   $ch = curl_init();
   curl_setopt_array($ch,
           [CURLOPT_HEADER => 0,
