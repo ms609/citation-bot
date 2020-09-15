@@ -417,10 +417,8 @@ final class Template {
   public function add_if_new(string $param_name, string $value, string $api = '') : bool {
     $match = ['', '']; // prevent memory leak in some PHP versions
     $auNo = ['', '']; // prevent memory leak in some PHP versions
-    $oldpagnos = ['', '']; // prevent memory leak in some PHP versions
-    $newpagenos = ['', '']; // prevent memory leak in some PHP versions
-    $bibcode = ['', '']; // prevent memory leak in some PHP versions
-    $arxiv_id = ['', '']; // prevent memory leak in some PHP versions
+    $oldpagneos = ['', '', '']; // prevent memory leak in some PHP versions
+    $newpagenos = ['', '', '']; // prevent memory leak in some PHP versions
     $matches = ['', '']; // prevent memory leak in some PHP versions
     $value = trim($value);
     $param_name = trim($param_name); // Pure paranoia
@@ -1244,6 +1242,9 @@ final class Template {
   // it looks for a parameter before adding the url.
   public function get_identifiers_from_url(?string $url_sent = NULL) : bool {
     $matches = ['', '']; // prevent memory leak in some PHP versions
+    $bibcode = ['', '']; // prevent memory leak in some PHP versions
+    $arxiv_id = ['', '']; // prevent memory leak in some PHP versions
+    $match = ['', '']; // prevent memory leak in some PHP versions
     if (is_null($url_sent)) {
        // Chapter URLs are generally better than URLs for the whole book.
         if ($this->has('url') && $this->has('chapterurl')) {
@@ -5193,7 +5194,6 @@ final class Template {
  *   in various ways
  ********************************************************/
   protected function display_authors() : int {
-    $matches = ['', '']; // prevent memory leak in some PHP versions
     if (($da = $this->get('display-authors')) == '') {
       $da = $this->get('displayauthors');
     }
@@ -5201,6 +5201,7 @@ final class Template {
   }
 
   protected function number_of_authors() : int {
+    $matches = ['', '']; // prevent memory leak in some PHP versions
     $max = 0;
     foreach ($this->param as $p) {
       if (preg_match('~(?:author|last|first|forename|initials|surname|given)(\d+)~', $p->param, $matches)) {
