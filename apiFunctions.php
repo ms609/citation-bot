@@ -731,26 +731,48 @@ function expand_doi_with_dx(Template $template, string $doi) : bool {
 }
 
 function doi_active(string $doi) : ?bool {
-  static $cache = [];
-  if (!isset($cache[$doi]) || is_null($cache[$doi])) {
-    $works = doi_works($doi);
-    if (is_null($works)) {
-      $cache[$doi] = NULL;        // @codeCoverageIgnore
-    } elseif ($works === FALSE) {
-      $cache[$doi] = FALSE;
-    } else { // TRUE
-      $cache[$doi] = is_doi_active($doi);
-    }
+  // Greatly speed-up by having one array of each kind and only look for hash keys, not values
+  static $cache_good = [];
+  static $cache_bad  = [];
+  if (isset($cache_good[$doi])) return TRUE;
+  if (isset($cache_bad[$doi]))  return FALSE;
+  $works = doi_works($doi);
+  if ($works === NULL) {
+    return NULL; // @codeCoverageIgnore
   }
-  return $cache[$doi];
+  if ($works === FALSE) {
+    $cache_bad[$doi] = TRUE;
+    return FALSE;
+  }
+  // DX.DOI.ORG works, but does crossref?
+  $works = is_doi_active($doi);
+  if ($works === NULL) {
+    return NULL; // @codeCoverageIgnore
+  }
+  if ($works === FALSE) {
+    $cache_bad[$doi] = TRUE;
+    return FALSE;
+  }
+  $cache_good[$doi] = TRUE;
+  return TRUE;
 }
 
 function doi_works(string $doi) : ?bool {
-  static $cache = [];
-  if (!isset($cache[$doi]) || is_null($cache[$doi])) {
-    $cache[$doi] = is_doi_works($doi);
+  // Greatly speed-up by having one array of each kind and only look for hash keys, not values
+  static $cache_good = [];
+  static $cache_bad  = [];
+  if (isset($cache_good[$doi])) return TRUE;
+  if (isset($cache_bad[$doi]))  return FALSE;
+  $works = is_doi_works($doi);
+  if ($works === NULL) {
+    return NULL; // @codeCoverageIgnore
   }
-  return $cache[$doi];
+  if ($works === FALSE) {
+    $cache_bad[$doi] = TRUE;
+    return FALSE;
+  }
+  $cache_good[$doi] = TRUE;
+  return TRUE;
 }
 
 function is_doi_active(string $doi) : ?bool {
