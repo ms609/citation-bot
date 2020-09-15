@@ -3484,8 +3484,11 @@ final class Template {
     if (strlen($p->param) > 0) {
       $mistake_id = array_search($p->param, $mistake_keys);
       if ($mistake_id) {
-        $p->param = $mistake_corrections[$mistake_id];
-        report_modification('replaced with ' . echoable($mistake_corrections[$mistake_id]) . ' (common mistakes list)');
+        $new = $mistake_corrections[$mistake_id];
+        if ($this->blank($new)) {
+           $p->param = $new;
+           report_modification('replaced with ' . echoable($new) . ' (common mistakes list)');
+        }
         continue;
       }
     }
