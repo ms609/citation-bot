@@ -56,6 +56,7 @@ final class Template {
   }
   
   public function parse_text(string $text) : void {
+    $spacing = ['', '']; // prevent memory leak in some PHP versions
     if (isset($this->rawtext)) {
         report_error("Template already initialized; call new Template() before calling Template::parse_text()"); // @codeCoverageIgnore
     }
@@ -414,6 +415,13 @@ final class Template {
    *
    */
   public function add_if_new(string $param_name, string $value, string $api = '') : bool {
+    $match = ['', '']; // prevent memory leak in some PHP versions
+    $auNo = ['', '']; // prevent memory leak in some PHP versions
+    $oldpagnos = ['', '']; // prevent memory leak in some PHP versions
+    $newpagenos = ['', '']; // prevent memory leak in some PHP versions
+    $bibcode= ['', '']; // prevent memory leak in some PHP versions
+    $arxiv_id= ['', '']; // prevent memory leak in some PHP versions
+    $matches= ['', '']; // prevent memory leak in some PHP versions
     $value = trim($value);
     $param_name = trim($param_name); // Pure paranoia
     if ($value == '') {
@@ -1235,6 +1243,7 @@ final class Template {
   // This is also called when adding a URL with add_if_new, in which case
   // it looks for a parameter before adding the url.
   public function get_identifiers_from_url(?string $url_sent = NULL) : bool {
+    $matches = ['', '']; // prevent memory leak in some PHP versions
     if (is_null($url_sent)) {
        // Chapter URLs are generally better than URLs for the whole book.
         if ($this->has('url') && $this->has('chapterurl')) {
@@ -1872,6 +1881,7 @@ final class Template {
   }
 
   protected function get_doi_from_text() : void {
+    $match = ['', '']; // prevent memory leak in some PHP versions
     if ($this->blank('doi') && preg_match('~10\.\d{4}/[^&\s\|\}\{]*~', urldecode($this->parsed_text()), $match)) {
       if (stripos($this->rawtext, 'oxforddnb.com') !== FALSE) return; // generally bad, and not helpful
       if (strpos($this->rawtext, '10.1093') !== FALSE) return; // generally bad, and not helpful
@@ -2047,6 +2057,7 @@ final class Template {
   }
 
   protected function do_pumbed_query(array $terms) : array {
+  $matches= ['', '']; // prevent memory leak in some PHP versions
   /* do_query
    *
    * Searches pubmed based on terms provided in an array.
@@ -2141,6 +2152,7 @@ final class Template {
   }
 
   public function expand_by_adsabs() : bool {
+    $doi = ['', '']; // prevent memory leak in some PHP versions
     // API docs at https://github.com/adsabs/adsabs-dev-api
     if (!SLOW_MODE && $this->blank('bibcode')) {
      report_info("Skipping AdsAbs API: not in slow mode"); // @codeCoverageIgnore
@@ -2339,6 +2351,7 @@ final class Template {
   }
   
   protected function expand_book_adsabs() : bool {
+    $matches = ['', '']; // prevent memory leak in some PHP versions
     $return = FALSE;
     $result = $this->query_adsabs("bibcode:" . urlencode('"' . $this->get('bibcode') . '"'));
     if ($result->numFound == 1) {
@@ -2365,6 +2378,7 @@ final class Template {
   // URL-ENCODED search strings, separated by (unencoded) ampersands.
   // Surround search terms in (url-encoded) ""s, i.e. doi:"10.1038/bla(bla)bla"
   protected function query_adsabs(string $options) : object {
+    $rate_limit = ['', '']; // prevent memory leak in some PHP versions
     // API docs at https://github.com/adsabs/adsabs-dev-api/blob/master/Search_API.ipynb
     if (AdsAbsControl::gave_up_yet()) return (object) array('numFound' => 0);
     if (!PHP_ADSABSAPIKEY) return (object) array('numFound' => 0);
@@ -2477,6 +2491,7 @@ final class Template {
   }
   
   public function expand_by_RIS(string &$dat, bool $add_url) : void { // Pass by pointer to wipe this data when called from use_unnamed_params()
+    $match = ['', '']; // prevent memory leak in some PHP versions
     $ris_review    = FALSE;
     $ris_issn      = FALSE;
     $ris_publisher = FALSE;
@@ -2629,6 +2644,7 @@ final class Template {
   }
 
   protected function use_sici() : bool {
+    $sici = ['', '']; // prevent memory leak in some PHP versions
     if (preg_match(REGEXP_SICI, urldecode($this->parsed_text()), $sici)) {
       quietly('report_action', "Extracting information from SICI");
       $this->add_if_new('issn', $sici[1]); // Check whether journal is set in add_if_new
@@ -2671,6 +2687,8 @@ final class Template {
   }
 
   public function get_unpaywall_url(string $doi) : string {
+    $match = ['', '']; // prevent memory leak in some PHP versions
+    $matches = ['', '']; // prevent memory leak in some PHP versions
     $url = "https://api.unpaywall.org/v2/$doi?email=" . CROSSREFUSERNAME;
     $ch = curl_init();
     curl_setopt_array($ch,
@@ -2838,6 +2856,10 @@ final class Template {
   }
   
   protected function expand_by_google_books_inner(string $url_type) : bool {
+    $gid = ['', '']; // prevent memory leak in some PHP versions
+    $google_results = ['', '']; // prevent memory leak in some PHP versions
+    $matcher= ['', '']; // prevent memory leak in some PHP versions
+    $matches = ['', '']; // prevent memory leak in some PHP versions
     if ($url_type) {
       $url = $this->get($url_type);
     } else {
@@ -3015,6 +3037,7 @@ final class Template {
   }
 
   protected function google_book_details(string $gid) : bool {
+    $match = ['', '']; // prevent memory leak in some PHP versions
     $google_book_url = "https://books.google.com/books/feeds/volumes/" . $gid;
     $ch = curl_init();
     curl_setopt_array($ch,
@@ -3066,11 +3089,6 @@ final class Template {
     $google_date = tidy_date($google_date);
     $this->add_if_new('date', $google_date);
     // Don't set 'pages' parameter, as this refers to the CITED pages, not the page count of the book.
-    // foreach ($xml->dc___format as $format) {
-    //   if (preg_match("~([\d\-]+)~", $format, $matches)) {
-    //      $this->add_if_new('pages', '1–' . (string) $matches[0]); // If we did add the total pages, then we should include the whole range
-    //   }
-    // }
     return TRUE;
   }
 
@@ -3086,6 +3104,8 @@ final class Template {
   }
 
   protected function use_unnamed_params() : void {
+    $matches = ['', '']; // prevent memory leak in some PHP versions
+    $match = ['', '']; // prevent memory leak in some PHP versions
     if (empty($this->param)) return;
     
     $param_occurrences = array();
@@ -3368,6 +3388,8 @@ final class Template {
   }
 
   protected function id_to_param(): void {
+    $match = ['', '']; // prevent memory leak in some PHP versions
+    $matches = ['', '']; // prevent memory leak in some PHP versions
     $id = $this->get('id');
     if (trim($id)) {
       report_action("Trying to convert ID parameter to parameterized identifiers.");
@@ -3454,6 +3476,7 @@ final class Template {
   protected function correct_param_spelling() : void {
   // check each parameter name against the list of accepted names (loaded in expand.php).
   // It will correct any that appear to be mistyped.
+  $match = ['', '']; // prevent memory leak in some PHP versions
   if (empty($this->param)) return ;
   $parameter_list = PARAMETER_LIST;
   $parameter_dead = DEAD_PARAMETERS;
@@ -3564,6 +3587,7 @@ final class Template {
   }
 
   public function change_name_to(string $new_name, bool $rename_cite_book = TRUE) : void {
+    $spacing = ['', '']; // prevent memory leak in some PHP versions
     if (strpos($this->get('doi'), '10.1093') !== FALSE && $this->wikiname() !== 'cite web') return;
     if (bad_10_1093_doi($this->get('doi'))) return;
     if ($this->wikiname() === 'cite book' && !$this->blank_other_than_comments(CHAPTER_ALIASES)) {
@@ -3623,7 +3647,10 @@ final class Template {
   public function tidy_parameter(string $param) : void {
     // Note: Parameters are treated in alphabetical order, except where one
     // case necessarily continues from the previous (without a return).
-    
+    $matches = ['', '']; // prevent memory leak in some PHP versions
+    $pmatch = ['', '']; // prevent memory leak in some PHP versions
+    $match = ['', '']; // prevent memory leak in some PHP versions
+
     if (!$param) return;
     
     if ($param === 'postscript' && $this->wikiname() !== 'citation' &&
@@ -4809,6 +4836,8 @@ final class Template {
   }
   
   public function final_tidy() : void {
+    $matches = ['', '']; // prevent memory leak in some PHP versions
+    $spacing = ['', '']; // prevent memory leak in some PHP versions
     if ($this->should_be_processed()) {
       // Sometimes title and chapter come from different databases
       if ($this->has('chapter') && ($this->get('chapter') === $this->get('title'))) {  // Leave only one
@@ -4997,6 +5026,8 @@ final class Template {
   }
   
   public function verify_doi() : bool {
+    $match = ['', '']; // prevent memory leak in some PHP versions
+    $matches = ['', '']; // prevent memory leak in some PHP versions
     $doi = $this->get_without_comments_and_placeholders('doi');
     if (!$doi) return FALSE;
     if ($this->doi_valid) return TRUE;
@@ -5162,6 +5193,7 @@ final class Template {
  *   in various ways
  ********************************************************/
   protected function display_authors() : int {
+    $matches = ['', '']; // prevent memory leak in some PHP versions
     if (($da = $this->get('display-authors')) == '') {
       $da = $this->get('displayauthors');
     }
@@ -5205,6 +5237,7 @@ final class Template {
   public function initial_author_params() : array { return $this->initial_author_params; }
   
   protected function first_surname() : string {
+    $first_author = ['', '']; // prevent memory leak in some PHP versions
     // Fetch the surname of the first author only
     if (preg_match("~[^.,;\s]{2,}~u", $this->first_author(), $first_author)) {
       return $first_author[0];
@@ -5224,6 +5257,7 @@ final class Template {
   }
   
   protected function year() : string {
+    $matches = ['', '']; // prevent memory leak in some PHP versions
     if ($this->has('year')) {
       return $this->get('year');
     }
@@ -5243,6 +5277,7 @@ final class Template {
   public function name() : string {return trim($this->name);}
 
   protected function page_range() : ?array {
+    $pagenos = ['', '']; // prevent memory leak in some PHP versions
     preg_match("~(\w?\w?\d+\w?\w?)(?:\D+(\w?\w?\d+\w?\w?))?~", $this->page(), $pagenos);
     return $pagenos;
   }
@@ -5425,6 +5460,7 @@ final class Template {
     $this->forgetter($par, TRUE);
   }
   private function forgetter(string $par, bool $echo_forgetting) : void { // Do not call this function directly
+   $spacing = ['', '']; // prevent memory leak in some PHP versions
    if (!$this->blank($par)) { // do not remove all this other stuff if blank
     if ($par == 'url') {
       if ($this->blank(array_diff(ALL_URL_TYPES, array($par)))) {
@@ -5594,6 +5630,7 @@ final class Template {
   }
   
   protected function get_inline_doi_from_title() : void {
+     $match = ['', '']; // prevent memory leak in some PHP versions
      if (preg_match("~(?:\s)*(?:# # # CITATION_BOT_PLACEHOLDER_TEMPLATE )(\d+)(?: # # #)(?:\s)*~", $this->get('title'), $match)) {
        if ($inline_doi = $this->all_templates[$match[1]]->inline_doi_information()) {
          if ($this->add_if_new('doi', trim($inline_doi[0]))) { // Add doi
@@ -5608,6 +5645,7 @@ final class Template {
   }
   
   protected function volume_issue_demix(string $data, string $param) : void {
+     $matches = ['', '']; // prevent memory leak in some PHP versions
      if ($param === 'year') return;
      if (!in_array($param, ['volume','issue','number'])) {
        report_error('volume_issue_demix ' . echoable($param)); // @codeCoverageIgnore
@@ -5755,6 +5793,7 @@ final class Template {
   }
   
   public function use_issn() : bool {
+    $matches = ['', '']; // prevent memory leak in some PHP versions
     if ($this->blank('issn')) return FALSE; // Nothing to use
     if (!$this->blank(WORK_ALIASES)) return FALSE; // Nothing to add
     $issn = $this->get('issn');
