@@ -1,5 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <phpunit xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" stopOnError="false" xsi:noNamespaceSchemaLocation="https://schema.phpunit.de/9.3/phpunit.xsd">
+  <testsuites>
+    <testsuite name="TestSuite">
+      <directory suffix=".php">./tests/phpunit</directory>
+    </testsuite>
+  </testsuites>
   <coverage>
     <include>
       <directory suffix=".php">.</directory>
@@ -22,10 +27,5 @@
       <clover outputFile="clover.xml"/>
     </report>
   </coverage>
-  <testsuites>
-    <testsuite name="TestSuite">
-      <directory suffix=".php">./tests/phpunit</directory>
-    </testsuite>
-  </testsuites>
   <logging/>
 </phpunit>
