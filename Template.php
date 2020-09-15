@@ -421,7 +421,7 @@ final class Template {
     $newpagenos = ['', '']; // prevent memory leak in some PHP versions
     $bibcode= ['', '']; // prevent memory leak in some PHP versions
     $arxiv_id= ['', '']; // prevent memory leak in some PHP versions
-    $matches= ['', '']; // prevent memory leak in some PHP versions
+    $matches = ['', '']; // prevent memory leak in some PHP versions
     $value = trim($value);
     $param_name = trim($param_name); // Pure paranoia
     if ($value == '') {
@@ -2057,7 +2057,7 @@ final class Template {
   }
 
   protected function do_pumbed_query(array $terms) : array {
-  $matches= ['', '']; // prevent memory leak in some PHP versions
+  $matches = ['', '']; // prevent memory leak in some PHP versions
   /* do_query
    *
    * Searches pubmed based on terms provided in an array.
