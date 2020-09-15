@@ -98,6 +98,8 @@ public static function query_url_api_class(array $ids, array $templates) : void 
 }
 
 public static function query_ieee_webpages(array $templates) : void {
+  $matches_url = ['', '']; // prevent memory leak in some PHP versions
+  $matches = ['', '']; // prevent memory leak in some PHP versions
   $ch_ieee = curl_init();
   curl_setopt_array($ch_ieee,
          [CURLOPT_RETURNTRANSFER => TRUE,
@@ -350,6 +352,7 @@ public static function expand_by_zotero(Template $template, ?string $url = NULL)
 }
 
 public static function process_zotero_response(string $zotero_response, Template $template, string $url, string $url_kind, int $access_date) : bool {
+  $matches = ['', '']; // prevent memory leak in some PHP versions
   if ($zotero_response === self::ERROR_DONE) return FALSE;  // Error message already printed in zotero_request()
  
   switch (trim($zotero_response)) {
@@ -685,6 +688,7 @@ public static function process_zotero_response(string $zotero_response, Template
 }
 
 public static function url_simplify(string $url) : string {
+  $matches = ['', '']; // prevent memory leak in some PHP versions
   $url = str_replace('/action/captchaChallenge?redirectUri=', '', $url);
   $url = urldecode($url);
   // IEEE is annoying

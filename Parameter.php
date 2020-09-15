@@ -17,6 +17,9 @@ final class Parameter {
  * PIPE_PLACEHOLDER (usually '%%CITATION_BOT_PIPE_PLACEHOLDER%%') before this is called.
  */
   public function parse_text(string $text) : void {
+    $match = ['', '']; // prevent memory leak in some PHP versions
+    $pre_eq = ['', '']; // prevent memory leak in some PHP versions
+    $post_eq = ['', '']; // prevent memory leak in some PHP versions
     $text = str_replace(PIPE_PLACEHOLDER, '|', $text);
     $split = explode('=', $text, 2);
     // Split the text before the '=' into constituent parts:
@@ -64,8 +67,7 @@ final class Parameter {
  */
   public function parsed_text() : string {
     if ($this->param && empty($this->eq)) {              // code used to do this
-      report_minor_error('Missing equals in parameter'); // @codeCoverageIgnore
-      $this->eq = ' = ';                                 // @codeCoverageIgnore
+      report_error('Missing equals in parameter');       // @codeCoverageIgnore
     }
     return $this->pre . $this->param . $this->eq . $this->val . $this->post;
   }
