@@ -740,8 +740,8 @@ function doi_active(string $doi) : ?bool {
   // Greatly speed-up by having one array of each kind and only look for hash keys, not values
   static $cache_good = [];
   static $cache_bad  = [];
-  if (isset($cache_good[$doi])) return TRUE;
-  if (isset($cache_bad[$doi]))  return FALSE;
+  if (array_key_exists($doi, $cache_good)) return TRUE;
+  if (array_key_exists($doi, $cache_bad))  return FALSE;
   $works = doi_works($doi);
   if ($works === NULL) {
     return NULL; // @codeCoverageIgnore
@@ -767,8 +767,8 @@ function doi_works(string $doi) : ?bool {
   // Greatly speed-up by having one array of each kind and only look for hash keys, not values
   static $cache_good = [];
   static $cache_bad  = [];
-  if (isset($cache_good[$doi])) return TRUE;
-  if (isset($cache_bad[$doi]))  return FALSE;
+  if (array_key_exists($doi, $cache_good)) return TRUE;
+  if (array_key_exists($doi, $cache_bad))  return FALSE;
   $works = is_doi_works($doi);
   if ($works === NULL) {
     return NULL; // @codeCoverageIgnore
