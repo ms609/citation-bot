@@ -25,7 +25,7 @@ $page = new Page();
 $page->parse_text($t->parsed_text());
 $page->expand_text();
 
-echo("\n\n" . htmlspecialchars('<ref>' . $page->parsed_text() . '</ref>'));
+echo("\n\n<ref>" . htmlspecialchars($page->parsed_text()) . '</ref>');
 ?>
 
 </pre></body></html>
