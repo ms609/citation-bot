@@ -92,7 +92,7 @@ ob_flush();
          report_warning("Write failed.");
       }
     } else {
-      report_phase($page->parsed_text() ? "No changes required. \n\n    # # # " : 'Blank page. \n\n    # # # ");
+      report_phase($page->parsed_text() ? "No changes required. \n\n    # # # " : "Blank page. \n\n    # # # ");
     }
   }
   echo ("\n Done all " . (string) count($pages_in_category) . " pages linked from " . echoable($page_name) . " \n");
