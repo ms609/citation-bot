@@ -17,7 +17,7 @@ function user_notice(string $symbol, string $class, string $text) : void {
     /** @psalm-suppress RedundantCondition */ /* PSALM thinks FLUSHING_OKAY cannot be FALSE */
     if (FLUSHING_OKAY) {
       $now = microtime(TRUE);
-      if (in_array($class, array('phase', 'subitem', 'warning')) || 10 < ($now - $last_time)) {
+      if (in_array($class, array('phase', 'subitem', 'warning')) || 3 < ($now - $last_time)) {
         $last_time = $now;
         ob_flush();
       }
