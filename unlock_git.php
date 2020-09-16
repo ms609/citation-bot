@@ -1,6 +1,3 @@
-<?php
-@header("Access-Control-Allow-Origin: *"); //This is ok because the API is not authenticated
-?>
 <!DOCTYPE html><html lang="en" dir="ltr"><head><title>Unlocker</title></head><body><pre>
 <?php
 ob_implicit_flush();
