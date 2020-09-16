@@ -1,4 +1,4 @@
-<!DOCTYPE html><html lang="en" dir="ltr"><head><title>Git Pull</title></head><body><pre>
+<!DOCTYPE html><html lang="en" dir="ltr"><head><title>Git Pull</title><meta http-equiv="Content-Type" content="text/html; charset=utf-8" /></head><body><pre>
 <?php
 ob_implicit_flush();
 if (mkdir('git_pull.lock', 0700)) {

@@ -30,7 +30,7 @@ if (strpos((string) @$_SERVER['PHP_SELF'], '/gadgetapi.php') === FALSE) {
 if (isset($_REQUEST["slow"]) || TRAVIS || (isset($argv[2]) && $argv[2] === '--slow')) {
   define("SLOW_MODE", TRUE);
 } elseif (isset($argv[2])) {
-  exit("Unexpected text on the command.  Only --slow is valid second argument.  Found: " . $argv[2]);
+  exit("Unexpected text on the command.  Only --slow is valid second argument.");
 } else {
   define("SLOW_MODE", FALSE);
 }
@@ -38,6 +38,11 @@ if (isset($_REQUEST["slow"]) || TRAVIS || (isset($argv[2]) && $argv[2] === '--sl
 //Optimisation
 ob_implicit_flush();
 if (!TRAVIS) {
+    if (FLUSHING_OKAY) {
+      while (ob_get_level()) {
+        ob_end_clean(); // Paranoid
+      }
+    }
     ob_start();
 }
 
