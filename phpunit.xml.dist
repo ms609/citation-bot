@@ -1,31 +1,31 @@
 <?xml version="1.0" encoding="UTF-8"?>
-
-<phpunit stopOnError="false">
+<phpunit xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" stopOnError="false" xsi:noNamespaceSchemaLocation="https://schema.phpunit.de/9.3/phpunit.xsd">
   <testsuites>
     <testsuite name="TestSuite">
       <directory suffix=".php">./tests/phpunit</directory>
     </testsuite>
   </testsuites>
-  <filter>
-    <whitelist>
+  <coverage>
+    <include>
       <directory suffix=".php">.</directory>
-      <exclude>
-        <directory>./constants</directory>
-        <directory>./tests</directory>
-        <file>./constants.php</file>
-        <file>./process_page.php</file>
-        <file>./gitpull.php</file>
-        <file>./unlock_git.php</file>
-        <file>./category.php</file>
-        <file>./linked_pages.php</file>
-        <file>./authenticate.php</file>
-        <file>./restart.php</file>
-        <file>./setup.php</file>
-        <file>./index.php</file>
-      </exclude>
-    </whitelist>
-  </filter>
-  <logging>
-    <log type="coverage-clover" target="clover.xml"/>
-  </logging>
+    </include>
+    <exclude>
+      <directory>./constants</directory>
+      <directory>./tests</directory>
+      <file>./constants.php</file>
+      <file>./process_page.php</file>
+      <file>./gitpull.php</file>
+      <file>./unlock_git.php</file>
+      <file>./category.php</file>
+      <file>./linked_pages.php</file>
+      <file>./authenticate.php</file>
+      <file>./restart.php</file>
+      <file>./setup.php</file>
+      <file>./index.php</file>
+    </exclude>
+    <report>
+      <clover outputFile="clover.xml"/>
+    </report>
+  </coverage>
+  <logging/>
 </phpunit>

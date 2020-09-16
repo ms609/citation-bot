@@ -1479,6 +1479,28 @@ final class TemplateTest extends testBaseClass {
       $this->assertNull($prepared->get2('URL'));
   }
 
+  public function testFixCAPSJunk2() : void {
+      $text = '{{cite news|URL=X}}';
+      $prepared = $this->process_citation($text);
+      $this->assertSame('X', $prepared->get('url'));
+      $this->assertNull($prepared->get2('URL'));
+  }
+ 
+  public function testFixCAPSJunk3() : void {
+      $text = '{{cite news|URL=X|url=Y}}';
+      $prepared = $this->process_citation($text);
+      $this->assertSame('Y', $prepared->get('url'));
+      $this->assertSame('X', $prepared->get('URL'));
+  }
+ 
+  public function testFixCAPSJunk4() : void {
+      $text = '{{cite journal|URL=X|url=Y}}';
+      $prepared = $this->process_citation($text);
+      $this->assertSame('Y', $prepared->get('url'));
+      $this->assertNull($prepared->get2('URL'));
+      $this->assertSame('X', $prepared->get('DUPLICATE_url'));
+  }
+ 
   public function testBadPunctuation1() : void {
       $text = '{{citation|title=:: Huh ::}}';
       $prepared = $this->make_citation($text);
