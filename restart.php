@@ -3,7 +3,7 @@
 ob_implicit_flush();
 if (password_verify($_REQUEST['p'], '$2y$10$UOmZtkKs1X17vE/mmbfVgOiy0ZAkXnxa9UxFO97cFX8ioiJZpZ96S')) {
   /** @psalm-suppress ForbiddenCode */
-  echo htmlspecialchars(shell_exec ("webservice restart 2>&1"));
+  echo htmlspecialchars((string) shell_exec("webservice restart 2>&1"));
 }
 ?>
 PHP done </pre></body></html>
