@@ -73,7 +73,7 @@ report_info("List of pages to be done: \n");
 foreach ($pages_in_category as $page_title) {
   report_info(echoable($page_title . "\n"));
 }
-ob_flush();ob_flush();
+ob_flush();
 
   $page = new Page();
   foreach ($pages_in_category as $page_title) {
