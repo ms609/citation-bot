@@ -3,7 +3,6 @@ declare(strict_types=1);
 // outputs a Wikipedia reference from a DOI 
 // usage: https://citations.toolforge.org/generate_template.php?doi=<DOI>
 @session_start();
-@header("Access-Control-Allow-Origin: *"); //This is ok because the API is not authenticated
 ?>
 
 <!DOCTYPE html><html lang="en" dir="ltr"><head><title>Make a Template</title></head><body><pre>
