@@ -3,7 +3,8 @@ declare(strict_types=1);
 // outputs a Wikipedia reference from a DOI 
 // usage: https://citations.toolforge.org/generate_template.php?doi=<DOI>
 @session_start();
-@header("Access-Control-Allow-Origin: *"); //This is ok because the API is not authenticated
+@header( 'Content-type: text/html; charset=utf-8' );
+@header("Content-Encoding: None", TRUE);
 ?>
 
 <!DOCTYPE html><html lang="en" dir="ltr"><head><title>Make a Template</title></head><body><pre>
@@ -26,7 +27,7 @@ $page = new Page();
 $page->parse_text($t->parsed_text());
 $page->expand_text();
 
-echo("\n\n" . htmlspecialchars('<ref>' . $page->parsed_text() . '</ref>'));
+echo("\n\n<ref>" . htmlspecialchars($page->parsed_text()) . '</ref>');
 ?>
 
 </pre></body></html>
