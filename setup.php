@@ -38,6 +38,11 @@ if (isset($_REQUEST["slow"]) || TRAVIS || (isset($argv[2]) && $argv[2] === '--sl
 //Optimisation
 ob_implicit_flush();
 if (!TRAVIS) {
+    if (FLUSHING_OKAY) {
+      while (ob_get_level()) {
+        ob_end_clean(); // Paranoid
+      }
+    }
     ob_start();
 }
 
