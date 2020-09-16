@@ -6,38 +6,15 @@ branches:
 language: php
 matrix:           ###### ONLY ONE WITH FULL TESTING WITH IS 7.3 OTHERS ARE ALL STATIC ANALYSIS ONLY ######
   include:
-    - stage: pretest
-    - php: 7.3
-      name: "PHP Security 7.3 no oauth"
-      before_script:
-        - composer config minimum-stability dev
-        - composer config prefer-stable true
-        - composer require --dev designsecurity/progpilot
-      script: ./vendor/bin/progpilot constants/*.php constants.php    user_messages.php  Parameter.php expandFns.php  NameTools.php  Zotero.php apiFunctions.php Comment.php  Template.php WikipediaBot.php setup.php Page.php category.php generate_template.php gitpull.php linked_pages.php process_page.php  authenticate.php unlock_git.php
-    - php: 7.4
-      name: "PHP Security 7.4 no oauth"
-      before_script:
-        - composer config minimum-stability dev
-        - composer config prefer-stable true
-        - composer require --dev designsecurity/progpilot
-      script: ./vendor/bin/progpilot constants/*.php constants.php    user_messages.php  Parameter.php expandFns.php  NameTools.php  Zotero.php apiFunctions.php Comment.php  Template.php WikipediaBot.php setup.php Page.php category.php generate_template.php gitpull.php linked_pages.php process_page.php  authenticate.php unlock_git.php
     - php: 7.3
       name: "PHP Security 7.3"
       before_script:
         - composer config minimum-stability dev
         - composer config prefer-stable true
         - composer require mediawiki/oauthclient:1.1.0
-        - composer require --dev designsecurity/progpilot
-      script: ./vendor/bin/progpilot constants/*.php constants.php    user_messages.php  Parameter.php expandFns.php  NameTools.php  Zotero.php apiFunctions.php Comment.php  Template.php WikipediaBot.php setup.php Page.php category.php generate_template.php gitpull.php linked_pages.php process_page.php  authenticate.php unlock_git.php
-    - php: 7.4
-      name: "PHP Security 7.4"
-      before_script:
-        - composer config minimum-stability dev
-        - composer config prefer-stable true
-        - composer require mediawiki/oauthclient:1.1.0
-        - composer require --dev designsecurity/progpilot
-      script: ./vendor/bin/progpilot constants/*.php constants.php    user_messages.php  Parameter.php expandFns.php  NameTools.php  Zotero.php apiFunctions.php Comment.php  Template.php WikipediaBot.php setup.php Page.php category.php generate_template.php gitpull.php linked_pages.php process_page.php  authenticate.php unlock_git.php
-    
+        - composer require --dev designsecurity/progpilot # constants/*.php constants.php    user_messages.php  Parameter.php expandFns.php  NameTools.php  Zotero.php apiFunctions.php Comment.php Template.php WikipediaBot.php setup.php Page.php  
+      script: ./vendor/bin/progpilot  category.php generate_template.php gitpull.php linked_pages.php process_page.php  authenticate.php unlock_git.php
+   
 
 git:
   depth: 222
