@@ -3,7 +3,7 @@ dist: trusty
 branches:
   except: release
 
-
+language: php
 matrix:           ###### ONLY ONE WITH FULL TESTING WITH IS 7.3 OTHERS ARE ALL STATIC ANALYSIS ONLY ######
   include:
     - stage: pretest
