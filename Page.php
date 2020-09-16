@@ -248,6 +248,7 @@ class Page {
         $this_template->prepare();
       } elseif (in_array($this_template->wikiname(), TEMPLATES_WE_SLIGHTLY_PROCESS)) {
         array_push($our_templates_slight, $this_template);
+        $this_template->correct_param_mistakes();
         $this_template->get_identifiers_from_url();
         $this_template->expand_by_google_books();
         $this_template->tidy();
@@ -255,6 +256,7 @@ class Page {
         array_push($our_templates_ieee, $this_template);
       } elseif (in_array($this_template->wikiname(), TEMPLATES_WE_BARELY_PROCESS)) { // No capitalization of thesis, etc.
         array_push($our_templates_slight, $this_template);
+        $this_template->correct_param_mistakes();
         $this_template->get_identifiers_from_url();
         $this_template->tidy();
       } elseif ($this_template->wikiname() == 'cite magazine') {
@@ -265,6 +267,7 @@ class Page {
         if ($this_template->has('magazine')) {
           $this_template->set('magazine', straighten_quotes(trim($this_template->get('magazine'))));
         }
+        $this_template->correct_param_mistakes();
         $this_template->get_identifiers_from_url();
         $this_template->expand_by_google_books();
         $this_template->tidy();

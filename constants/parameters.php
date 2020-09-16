@@ -10,7 +10,7 @@ const TEMPLATES_WE_RENAME  = array('cite arxiv', 'cite book', 'cite document', '
 const ALL_URL_TYPES = array('url', 'article-url', 'chapter-url', 'chapterurl', 'conference-url', 'conferenceurl',
                   'contribution-url', 'contributionurl', 'entry-url', 'event-url', 'eventurl', 'lay-url',
                   'layurl', 'map-url', 'mapurl', 'section-url', 'sectionurl', 'transcript-url',
-                  'transcripturl');
+                  'transcripturl', 'URL');
 
 const AUTHOR_PARAMETERS = array(
     1  => array('surname'  , 'forename'  , 'initials'  , 'first'  , 'last'  , 'author', 
