@@ -14,7 +14,6 @@ function user_notice(string $symbol, string $class, string $text) : void {
     // @codeCoverageIgnoreStart
     /** @psalm-suppress TypeDoesNotContainType */ /* PSALM thinks HTML_OUTPUT cannot be false */
     echo "\n " . (HTML_OUTPUT ? "<span class='$class'>" : "") . $symbol . $text . (HTML_OUTPUT ? "</span>" : "");
-    /** @psalm-suppress RedundantCondition */ /* PSALM thinks FLUSHING_OKAY cannot be FALSE */
     if (FLUSHING_OKAY && ob_get_level()) {
       $now = microtime(TRUE);
       if (in_array($class, array('phase', 'subitem', 'warning')) || 3 < ($now - $last_time)) {
