@@ -17,7 +17,7 @@ This is some basic documentation about what this bot is and how some of the part
 
 This is more properly a bot-gadget-tool combination. The parts are:
 
-* DOIBot, found in index.php (web frontend) and process_page.php (information is
+* DOIBot, found in index.html (web frontend) and process_page.php (information is
   POSTed to this and it does the citation expansion; backend). This automatically
   posts a new page revision with expanded citations and thus requires a bot account.
   All activity takes place on Tool Labs.
