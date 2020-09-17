@@ -118,7 +118,7 @@ function entrez_api(array $ids, array $templates, string $db) : bool {
 
 function query_bibcode_api(array $bibcodes, array & $templates) : bool { return adsabs_api($bibcodes, $templates, 'bibcode'); }  // Pointer to save memory
 
-function expand_arxiv_templates (array $templates) : bool {
+function expand_arxiv_templates (array & $templates) : bool {  // Pointer to save memory
   $ids = array();
   $arxiv_templates = array();
   foreach ($templates as $this_template) {
@@ -136,7 +136,7 @@ function expand_arxiv_templates (array $templates) : bool {
   return arxiv_api($ids, $arxiv_templates);
 }
 
-function arxiv_api(array $ids, array $templates) : bool {
+function arxiv_api(array $ids, array & $templates) : bool {  // Pointer to save memory
   $names = ['', '']; // prevent memory leak in some PHP versions
   $match = ['', '']; // prevent memory leak in some PHP versions
   if (count($ids) == 0) return FALSE;
@@ -215,7 +215,7 @@ function arxiv_api(array $ids, array $templates) : bool {
   return TRUE;
 }
 
-function adsabs_api(array $ids, array $templates, string $identifier) : bool {
+function adsabs_api(array $ids, array & $templates, string $identifier) : bool {  // Pointer to save memory
   $rate_limit = [['', '', ''], ['', '', ''], ['', '', '']]; // prevent memory leak in some PHP versions
   if (AdsAbsControl::gave_up_yet()) return FALSE;
   if (!PHP_ADSABSAPIKEY) return FALSE;
@@ -809,7 +809,7 @@ function is_doi_works(string $doi) : ?bool {
 }
 
 /** @psalm-suppress UnusedParam */
-function query_jstor_api(array $ids, array $templates) : bool { // $ids not used yet
+function query_jstor_api(array $ids, array & $templates) : bool { // $ids not used yet   // Pointer to save memory
   $return = FALSE;
   foreach ($templates as $template) {
     if (expand_by_jstor($template)) $return = TRUE;
