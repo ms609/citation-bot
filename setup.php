@@ -40,10 +40,11 @@ ob_implicit_flush();
 if (!TRAVIS) {
     if (FLUSHING_OKAY) {
       while (ob_get_level()) {
-        ob_end_clean(); // Paranoid
+        ob_end_flush();
       }
+      // ob_start(); // Current webserver buffers everything enough already
     } else {
-      ob_start();  // only buffer in gadget - webserver buffers everything else
+      ob_start();
     }
 }
 
