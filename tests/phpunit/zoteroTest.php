@@ -654,18 +654,20 @@ final class ZoteroTest extends testBaseClass {
    public function testUseArchive() : void {
     $text = '{{cite journal|archive-url=https://web.archive.org/web/20160418061734/http://www.weimarpedia.de/index.php?id=1&tx_wpj_pi1%5barticle%5d=104&tx_wpj_pi1%5baction%5d=show&tx_wpj_pi1%5bcontroller%5d=article&cHash=0fc8834241a91f8cb7d6f1c91bc93489}}';
     $template = $this->make_citation($text);
-    expand_templates_from_archives(array($template));
+    $tmp_array = array($template);
+    expand_templates_from_archives($tmp_array);
     for ($x = 0; $x <= 10; $x++) {
       if ($template->get2('title') == NULL) {
         sleep(2); // Sometimes fails for no good reason
-        expand_templates_from_archives(array($template));
+        expand_templates_from_archives($tmp_array);
       }
     }
     $this->assertSame('Goethe-Schiller-Denkmal - Weimarpedia', $template->get2('title'));
     
     $text = '{{cite journal|series=Xarchive-url=https://web.archive.org/web/20160418061734/http://www.weimarpedia.de/index.php?id=1&tx_wpj_pi1%5barticle%5d=104&tx_wpj_pi1%5baction%5d=show&tx_wpj_pi1%5bcontroller%5d=article&cHash=0fc8834241a91f8cb7d6f1c91bc93489}}';
     $template = $this->make_citation($text);
-    expand_templates_from_archives(array($template));
+    $tmp_array = array($template);
+    expand_templates_from_archives($tmp_array);
     $this->assertNull($template->get2('title'));
   }
  
