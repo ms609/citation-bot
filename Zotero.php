@@ -36,7 +36,7 @@ public static function unblock_zotero() : void {
   self::$zotero_failures_count = 0;  
 }
 
-public static function query_url_api_class(array $ids, array $templates) : void {
+public static function query_url_api_class(array $ids, array & $templates) : void { // Pointer to save memory
   if (!SLOW_MODE) return; // Zotero takes time
   if (!is_resource(self::$zotero_ch)) { // When closed will return FALSE
      self::$zotero_ch = curl_init();
@@ -96,7 +96,7 @@ public static function query_url_api_class(array $ids, array $templates) : void 
   }
 }
 
-public static function query_ieee_webpages(array $templates) : void {
+public static function query_ieee_webpages(array & $templates) : void {  // Pointer to save memory
   $matches_url = ['', '']; // prevent memory leak in some PHP versions
   $matches = ['', '']; // prevent memory leak in some PHP versions
   $ch_ieee = curl_init();
@@ -136,7 +136,7 @@ public static function query_ieee_webpages(array $templates) : void {
   curl_close($ch_ieee);
 }
 
-public static function drop_urls_that_match_dois(array $templates) : void {
+public static function drop_urls_that_match_dois(array & $templates) : void {  // Pointer to save memory
   // Now that we have expanded URLs, try to lose them
   $ch = curl_init();
   curl_setopt_array($ch,
@@ -306,7 +306,7 @@ private static function zotero_request(string $url) : string {
   return $zotero_response;
 }
 
-public static function expand_by_zotero(Template $template, ?string $url = NULL) : bool {
+public static function expand_by_zotero(Template & $template, ?string $url = NULL) : bool {  // Pointer to save memory
   $access_date = 0;
   $url_kind = '';
   if (is_null($url)) {
@@ -350,7 +350,7 @@ public static function expand_by_zotero(Template $template, ?string $url = NULL)
   return self::process_zotero_response($zotero_response, $template, $url, $url_kind, $access_date);
 }
 
-public static function process_zotero_response(string $zotero_response, Template $template, string $url, string $url_kind, int $access_date) : bool {
+public static function process_zotero_response(string $zotero_response, & Template $template, string $url, string $url_kind, int $access_date) : bool {  // Pointer to save memory
   $matches = ['', '']; // prevent memory leak in some PHP versions
   if ($zotero_response === self::ERROR_DONE) return FALSE;  // Error message already printed in zotero_request()
  
