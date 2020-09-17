@@ -248,12 +248,13 @@ final class Template {
             }
           }
           if ($bad_data) {
+            $this_array = [$this];
             if ($this->has('doi') && doi_active($this->get('doi'))) {
               expand_by_doi($this);
             } elseif ($this->has('pmid')) {
-              query_pmid_api(array($this->get('pmid')), array($this));
+              query_pmid_api(array($this->get('pmid')), $this_array);
             } elseif ($this->has('pmc')) {
-              query_pmc_api(array($this->get('pmc')), array($this));
+              query_pmc_api(array($this->get('pmc')), $this_array);
             } elseif ($this->has('jstor')) {
               expand_by_jstor($this);
             }
