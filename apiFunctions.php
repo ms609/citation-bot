@@ -23,6 +23,7 @@ final class AdsAbsControl {
   }
 }
 
+
 function entrez_api(array $ids, array & $templates, string $db) : bool {   // Pointer to save memory
   $match = ['', '']; // prevent memory leak in some PHP versions
   $names = ['', '']; // prevent memory leak in some PHP versions
