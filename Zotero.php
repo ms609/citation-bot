@@ -306,7 +306,7 @@ private static function zotero_request(string $url) : string {
   return $zotero_response;
 }
 
-public static function expand_by_zotero(Template & $template, ?string $url = NULL) : bool {  // Pointer to save memory
+public static function expand_by_zotero(Template $template, ?string $url = NULL) : bool {
   $access_date = 0;
   $url_kind = '';
   if (is_null($url)) {
@@ -350,7 +350,7 @@ public static function expand_by_zotero(Template & $template, ?string $url = NUL
   return self::process_zotero_response($zotero_response, $template, $url, $url_kind, $access_date);
 }
 
-public static function process_zotero_response(string $zotero_response, Template & $template, string $url, string $url_kind, int $access_date) : bool {  // Pointer to save memory
+public static function process_zotero_response(string $zotero_response, Template $template, string $url, string $url_kind, int $access_date) : bool {
   $matches = ['', '']; // prevent memory leak in some PHP versions
   if ($zotero_response === self::ERROR_DONE) return FALSE;  // Error message already printed in zotero_request()
  
