@@ -4,7 +4,7 @@ declare(strict_types=1);
  * Page contains methods that will do most of the higher-level work of expanding citations
  * on the wikipage associated with the Page object.
  * Provides functions to read, parse, expand text (using Template and Comment)
- * handle collected page modifications, and save the edited page textarra
+ * handle collected page modifications, and save the edited page text
  * to the wiki.
  */
 
