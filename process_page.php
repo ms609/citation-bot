@@ -102,7 +102,6 @@ foreach (array_unique(explode('|', $pages)) as $page_title) {
       echo "\n # Proposed code for " . echoable($page_title) . ', which you have asked the bot to commit with edit summary ' . echoable($my_page->edit_summary()) . "<br><pre>";
       echo echoable($my_page->parsed_text());
       echo "</pre>";
-      ob_flush();
   ?>
   <form method="post" action="process_page.php">
     <input type="hidden" name="page" value="<?php echo $page_title;?>" />
@@ -123,7 +122,6 @@ if (strpos($pages, '|') !== FALSE) {
   $final_edit_overview .= "\n\n" . ' To get the best results, see our helpful <a href="https://en.wikipedia.org/wiki/User:Citation_bot/use">user guides</a>' . "\n\n";
   html_echo($final_edit_overview, '');
 }
-ob_end_flush();
 ?>
     </pre>
     <footer>
