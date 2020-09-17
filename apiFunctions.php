@@ -6,8 +6,8 @@ require_once("user_messages.php");
 require_once("Template.php");
 require_once("NameTools.php");
 
-function query_pmid_api (array $pmids, array $templates) : bool { return entrez_api($pmids, $templates, 'pubmed'); }
-function query_pmc_api  (array $pmcs, array $templates) : bool { return entrez_api($pmcs,  $templates, 'pmc'); }
+function query_pmid_api (array $pmids, array & $templates) : bool { return entrez_api($pmids, $templates, 'pubmed'); }  // Pointer to save memory
+function query_pmc_api  (array $pmcs, array & $templates) : bool { return entrez_api($pmcs,  $templates, 'pmc'); } // Pointer to save memory
 
 final class AdsAbsControl {
   private static int $counter = 0;
@@ -116,7 +116,7 @@ function entrez_api(array $ids, array $templates, string $db) : bool {
   return TRUE;
 }
 
-function query_bibcode_api(array $bibcodes, array $templates) : bool { return adsabs_api($bibcodes, $templates, 'bibcode'); }
+function query_bibcode_api(array $bibcodes, array & $templates) : bool { return adsabs_api($bibcodes, $templates, 'bibcode'); }  // Pointer to save memory
 
 function expand_arxiv_templates (array $templates) : bool {
   $ids = array();
@@ -430,7 +430,7 @@ function adsabs_api(array $ids, array $templates, string $identifier) : bool {
 }
 
 /** @psalm-suppress UnusedParam */
-function query_doi_api(array $ids, array $templates) : bool { // $id not used yet
+function query_doi_api(array $ids, array & $templates) : bool { // $id not used yet  // Pointer to save memory
   foreach ($templates as $template) {
     expand_by_doi($template);
   }
@@ -1130,7 +1130,7 @@ function get_semanticscholar_license(string $s2cid) : ?bool {
     return FALSE;
 }
 
-function expand_templates_from_archives(array $templates) : void { // This is done very late as a latch ditch effort
+function expand_templates_from_archives(array & $templates) : void { // This is done very late as a latch ditch effort  // Pointer to save memory
   $match = ['', '']; // prevent memory leak in some PHP versions
   $ch = curl_init();
   curl_setopt_array($ch,

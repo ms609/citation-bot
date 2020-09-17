@@ -113,7 +113,7 @@ class Page {
   // $api_function: string naming a function (specified in apiFunctions.php) 
   //                that takes the value of $templates->get($identifier) as an array;
   //                returns key-value array of items to be set, if new, in each template.
-  public function expand_templates_from_identifier(string $identifier, array $templates) : void {
+  public function expand_templates_from_identifier(string $identifier, array & $templates) : void { // Pointer to save memory
     $ids = array();
     switch ($identifier) {
       case 'pmid': 
@@ -299,7 +299,8 @@ class Page {
         $no_arxiv = $this_template->blank('arxiv');
         $this_template->expand_by_adsabs(); // Try to get a bibcode
         if (!$this_template->blank('arxiv') && $no_arxiv) {  // Added an arXiv.  Stuff to learn and sometimes even find a DOI -- VERY RARE
-          expand_arxiv_templates([$this_template]);     // @codeCoverageIgnore
+          $tmp_array = [$this_template];          // @codeCoverageIgnore
+          expand_arxiv_templates($tmp_array);     // @codeCoverageIgnore
         }
       }
       $this_template->get_open_access_url();
@@ -521,7 +522,7 @@ class Page {
     return $objects;
   }
 
-  protected function replace_object (array $objects) : void {
+  protected function replace_object (array & $objects) : void {  // Pointer to save memory
     $i = count($objects);
     if ($objects) foreach (array_reverse($objects) as $obj)
       $this->text = str_ireplace(sprintf($obj::PLACEHOLDER_TEXT, --$i), $obj->parsed_text(), $this->text); // Case insensitive, since comment placeholder might get title case, etc.

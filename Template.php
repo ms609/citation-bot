@@ -248,12 +248,13 @@ final class Template {
             }
           }
           if ($bad_data) {
+            $this_array = [$this];
             if ($this->has('doi') && doi_active($this->get('doi'))) {
               expand_by_doi($this);
             } elseif ($this->has('pmid')) {
-              query_pmid_api(array($this->get('pmid')), array($this));
+              query_pmid_api(array($this->get('pmid')), $this_array);
             } elseif ($this->has('pmc')) {
-              query_pmc_api(array($this->get('pmc')), array($this));
+              query_pmc_api(array($this->get('pmc')), $this_array);
             } elseif ($this->has('jstor')) {
               expand_by_jstor($this);
             }
@@ -2635,12 +2636,13 @@ final class Template {
  
   public function expand_by_pubmed(bool $force = FALSE) : void {
     if (!$force && !$this->incomplete()) return;
+    $this_array = [$this];
     if ($pm = $this->get('pmid')) {
       report_action('Checking ' . pubmed_link('pmid', $pm) . ' for more details');
-      query_pmid_api(array($pm), array($this));
+      query_pmid_api(array($pm), $this_array);
     } elseif ($pm = $this->get('pmc')) {
       report_action('Checking ' . pubmed_link('pmc', $pm) . ' for more details');
-      query_pmc_api(array($pm), array($this));
+      query_pmc_api(array($pm), $this_array);
     }
   }
 

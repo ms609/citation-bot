@@ -71,12 +71,6 @@ foreach($links as $link) {
 $pages_in_category = array_unique($pages_in_category);
 if (empty($pages_in_category)) report_error('No links to expand found');
 
-report_info("List of pages to be done: \n");
-foreach ($pages_in_category as $page_title) {
-  report_info(echoable($page_title . "\n"));
-}
-ob_flush();
-
   $page = new Page();
   foreach ($pages_in_category as $page_title) {
     // $page->expand_text will take care of this notice if we are in HTML mode.
