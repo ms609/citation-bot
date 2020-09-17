@@ -136,7 +136,7 @@ function expand_arxiv_templates (array $templates) : bool {
   return arxiv_api($ids, $arxiv_templates);
 }
 
-function arxiv_api(array $ids, array $templates) : bool {
+function arxiv_api(array $ids, array & $templates) : bool {  // Pointer to save memory
   $names = ['', '']; // prevent memory leak in some PHP versions
   $match = ['', '']; // prevent memory leak in some PHP versions
   if (count($ids) == 0) return FALSE;
