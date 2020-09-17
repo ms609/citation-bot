@@ -128,7 +128,7 @@ function expand_arxiv_templates (array & $templates) : bool {  // Pointer to sav
     $eprint = str_ireplace("arXiv:", "", $this_template->get('eprint') . $this_template->get('arxiv'));
     if ($eprint) {
       $ids[] = $eprint;
-      $arxiv_templates = $this_template;
+      $arxiv_templates[] = $this_template;
     }
   }
   return arxiv_api($ids, $arxiv_templates);
