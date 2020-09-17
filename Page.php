@@ -299,7 +299,8 @@ class Page {
         $no_arxiv = $this_template->blank('arxiv');
         $this_template->expand_by_adsabs(); // Try to get a bibcode
         if (!$this_template->blank('arxiv') && $no_arxiv) {  // Added an arXiv.  Stuff to learn and sometimes even find a DOI -- VERY RARE
-          expand_arxiv_templates([$this_template]);     // @codeCoverageIgnore
+          $tmp_array = [$this_template];          // @codeCoverageIgnore
+          expand_arxiv_templates($tmp_array);     // @codeCoverageIgnore
         }
       }
       $this_template->get_open_access_url();
