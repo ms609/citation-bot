@@ -49,60 +49,70 @@ final class ZoteroTest extends testBaseClass {
   public function testDropSomeProxies() : void {
     $text = "{{cite journal|doi=X|journal=X|title=X|last1=X|first1=X|volume=X|issue=X|year=X|url=proxy.libraries}}";
     $template = $this->make_citation($text);
-    Zotero::drop_urls_that_match_dois([$template]);
+    $tmp_array = [$template];
+    Zotero::drop_urls_that_match_dois($tmp_array);
     $this->assertNull($template->get2('url'));
     
     $text = "{{cite journal|doi=X|journal=X|title=X|last1=X|first1=X|volume=X|issue=X|year=X|url=http://www.sciencedirect.com/science/article/B1234-13241234-343242/}}";
     $template = $this->make_citation($text);
-    Zotero::drop_urls_that_match_dois([$template]);
+    $tmp_array = [$template];
+    Zotero::drop_urls_that_match_dois($tmp_array);
     $this->assertNull($template->get2('url'));
     
     $text = "{{cite journal|doi=X|journal=X|title=X|last1=X|first1=X|volume=X|issue=X|year=X|url=http://www.sciencedirect.com/science/article/pii/2222}}";
     $template = $this->make_citation($text);
-    Zotero::drop_urls_that_match_dois([$template]);
+    $tmp_array = [$template];
+    Zotero::drop_urls_that_match_dois($tmp_array);
     $this->assertNull($template->get2('url'));
 
     $text = "{{cite journal|doi=X|journal=X|title=X|last1=X|first1=X|volume=X|issue=X|year=X|url=http://www.springerlink.com/content/s}}";
     $template = $this->make_citation($text);
-    Zotero::drop_urls_that_match_dois([$template]);
+    $tmp_array = [$template];
+    Zotero::drop_urls_that_match_dois($tmp_array);
     $this->assertNull($template->get2('url'));
    
     $text = "{{cite journal|doi=X|journal=X|title=X|last1=X|first1=X|volume=X|issue=X|year=X|url=http://insights.ovid.com/pubmed|pmid=2222}}";
     $template = $this->make_citation($text);
-    Zotero::drop_urls_that_match_dois([$template]);
+    $tmp_array = [$template];
+    Zotero::drop_urls_that_match_dois($tmp_array);
     $this->assertNull($template->get2('url'));
    
     $text = "{{cite journal|doi=X|journal=X|title=X|last1=X|first1=X|volume=X|issue=X|year=X|url=http://cnn.com/|doi-access=free|url-status=dead|doi=10.0000/10000}}";
     $template = $this->make_citation($text);
-    Zotero::drop_urls_that_match_dois([$template]);
+    $tmp_array = [$template];
+    Zotero::drop_urls_that_match_dois($tmp_array);
     $this->assertNull($template->get2('url'));
    }
 
    public function testDropSomeEquivURLS2() : void {
     $text = "{{cite journal|pmc=XYZ|doi=X|journal=X|title=X|last1=X|first1=X|volume=X|issue=X|year=X|url=http://iopscience.iop.org/324234}}";
     $template = $this->make_citation($text);
-    Zotero::drop_urls_that_match_dois([$template]);
+    $tmp_array = [$template];
+    Zotero::drop_urls_that_match_dois($tmp_array);
     $this->assertNull($template->get2('url'));
    }
 
    public function testDropSomeProxies3() : void {  
     $text = "{{cite journal|doi=X|journal=X|title=X|last1=X|first1=X|volume=X|issue=X|year=X|url=http://journals.lww.com/3243243}}";
     $template = $this->make_citation($text);
-    Zotero::drop_urls_that_match_dois([$template]);
+    $tmp_array = [$template];
+    Zotero::drop_urls_that_match_dois($tmp_array);
     $this->assertNull($template->get2('url'));
    }
 
    public function testDropSomeProxies4() : void {
     $text = "{{cite journal|doi=X|journal=X|title=X|last1=X|first1=X|volume=X|issue=X|year=X|url=http://wkhealth.com/3243243}}";
     $template = $this->make_citation($text);
-    Zotero::drop_urls_that_match_dois([$template]);
+    $tmp_array = [$template];
+    Zotero::drop_urls_that_match_dois($tmp_array);
     $this->assertNull($template->get2('url'));
    }
 
    public function testDropSomeURLEquivs5() : void {
     $text = "{{cite journal|pmc=XYZ|doi=X|journal=X|title=X|last1=X|first1=X|volume=X|issue=X|year=X|url=http://bmj.com/cgi/pmidlookup/sss|pmid=333}}";
     $template = $this->make_citation($text);
-    Zotero::drop_urls_that_match_dois([$template]);
+    $tmp_array = [$template];
+    Zotero::drop_urls_that_match_dois($tmp_array);
     $this->assertNull($template->get2('url'));
   }
  
@@ -636,25 +646,28 @@ final class ZoteroTest extends testBaseClass {
   public function testRemoveURLthatRedirects() : void { // This URL is a redirect -- tests code that does that
     $text = '{{cite journal|pmc=XYZ|doi=10.1021/acs.analchem.8b04567|url=http://shortdoi.org/gf7sqt|pmid=30741529|pmc=6526953|title=ISiCLE: A Quantum Chemistry Pipeline for Establishing in Silico Collision Cross Section Libraries|journal=Analytical Chemistry|volume=91|issue=7|pages=4346–4356|year=2019|last1=Colby|first1=Sean M.|last2=Thomas|first2=Dennis G.|last3=Nuñez|first3=Jamie R.|last4=Baxter|first4=Douglas J.|last5=Glaesemann|first5=Kurt R.|last6=Brown|first6=Joseph M.|last7=Pirrung|first7=Meg A.|last8=Govind|first8=Niranjan|last9=Teeguarden|first9=Justin G.|last10=Metz|first10=Thomas O.|last11=Renslow|first11=Ryan S.}}';
     $template = $this->make_citation($text);
-    Zotero::drop_urls_that_match_dois(array($template));
+    $tmp_array = [$template];
+    Zotero::drop_urls_that_match_dois($tmp_array);
     $this->assertNull($template->get2('url'));
   }
  
    public function testUseArchive() : void {
     $text = '{{cite journal|archive-url=https://web.archive.org/web/20160418061734/http://www.weimarpedia.de/index.php?id=1&tx_wpj_pi1%5barticle%5d=104&tx_wpj_pi1%5baction%5d=show&tx_wpj_pi1%5bcontroller%5d=article&cHash=0fc8834241a91f8cb7d6f1c91bc93489}}';
     $template = $this->make_citation($text);
-    expand_templates_from_archives(array($template));
+    $tmp_array = array($template);
+    expand_templates_from_archives($tmp_array);
     for ($x = 0; $x <= 10; $x++) {
       if ($template->get2('title') == NULL) {
         sleep(2); // Sometimes fails for no good reason
-        expand_templates_from_archives(array($template));
+        expand_templates_from_archives($tmp_array);
       }
     }
     $this->assertSame('Goethe-Schiller-Denkmal - Weimarpedia', $template->get2('title'));
     
     $text = '{{cite journal|series=Xarchive-url=https://web.archive.org/web/20160418061734/http://www.weimarpedia.de/index.php?id=1&tx_wpj_pi1%5barticle%5d=104&tx_wpj_pi1%5baction%5d=show&tx_wpj_pi1%5bcontroller%5d=article&cHash=0fc8834241a91f8cb7d6f1c91bc93489}}';
     $template = $this->make_citation($text);
-    expand_templates_from_archives(array($template));
+    $tmp_array = array($template);
+    expand_templates_from_archives($tmp_array);
     $this->assertNull($template->get2('title'));
   }
  
