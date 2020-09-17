@@ -6,8 +6,8 @@ require_once("user_messages.php");
 require_once("Template.php");
 require_once("NameTools.php");
 
-function query_pmid_api (array $pmids, array $templates) : bool { return entrez_api($pmids, $templates, 'pubmed'); }
-function query_pmc_api  (array $pmcs, array $templates) : bool { return entrez_api($pmcs,  $templates, 'pmc'); }
+function query_pmid_api (array $pmids, array & $templates) : bool { return entrez_api($pmids, $templates, 'pubmed'); }  // Pointer to save memory
+function query_pmc_api  (array $pmcs, array & $templates) : bool { return entrez_api($pmcs,  $templates, 'pmc'); } // Pointer to save memory
 
 final class AdsAbsControl {
   private static $counter = 0;
@@ -24,7 +24,7 @@ final class AdsAbsControl {
 }
 
 
-function entrez_api(array $ids, array $templates, string $db) : bool {
+function entrez_api(array $ids, array & $templates, string $db) : bool {  // Pointer to save memory 
   $match = ['', '']; // prevent memory leak in some PHP versions
   $names = ['', '']; // prevent memory leak in some PHP versions
   if (!count($ids)) return FALSE;
@@ -116,9 +116,9 @@ function entrez_api(array $ids, array $templates, string $db) : bool {
   return TRUE;
 }
 
-function query_bibcode_api(array $bibcodes, array $templates) : bool { return adsabs_api($bibcodes, $templates, 'bibcode'); }
+function query_bibcode_api(array $bibcodes, array & $templates) : bool { return adsabs_api($bibcodes, $templates, 'bibcode'); }  // Pointer to save memory
 
-function expand_arxiv_templates (array $templates) : bool {
+function expand_arxiv_templates (array & $templates) : bool {  // Pointer to save memory
   $ids = array();
   $arxiv_templates = array();
   foreach ($templates as $this_template) {
@@ -136,7 +136,7 @@ function expand_arxiv_templates (array $templates) : bool {
   return arxiv_api($ids, $arxiv_templates);
 }
 
-function arxiv_api(array $ids, array $templates) : bool {
+function arxiv_api(array $ids, array & $templates) : bool {  // Pointer to save memory
   $names = ['', '']; // prevent memory leak in some PHP versions
   $match = ['', '']; // prevent memory leak in some PHP versions
   if (count($ids) == 0) return FALSE;
@@ -215,7 +215,7 @@ function arxiv_api(array $ids, array $templates) : bool {
   return TRUE;
 }
 
-function adsabs_api(array $ids, array $templates, string $identifier) : bool {
+function adsabs_api(array $ids, array & $templates, string $identifier) : bool {  // Pointer to save memory
   $rate_limit = [['', '', ''], ['', '', ''], ['', '', '']]; // prevent memory leak in some PHP versions
   if (AdsAbsControl::gave_up_yet()) return FALSE;
   if (!PHP_ADSABSAPIKEY) return FALSE;
@@ -430,14 +430,14 @@ function adsabs_api(array $ids, array $templates, string $identifier) : bool {
 }
 
 /** @psalm-suppress UnusedParam */
-function query_doi_api(array $ids, array $templates) : bool { // $id not used yet
+function query_doi_api(array $ids, array & $templates) : bool { // $id not used yet  // Pointer to save memory
   foreach ($templates as $template) {
     expand_by_doi($template);
   }
   return TRUE;
 }
 
-function expand_by_doi(Template $template, bool $force = FALSE) : bool {
+function expand_by_doi(Template & $template, bool $force = FALSE) : bool {  // Pointer to save memory
   $matches = ['', '']; // prevent memory leak in some PHP versions
   // Because it can recover rarely used parameters such as editors, series & isbn, 
   // there will be few instances where it could not in principle be profitable to 
@@ -619,7 +619,7 @@ function query_crossref(string $doi) : ?object {
   return NULL;                                                                       // @codeCoverageIgnore
 }
 
-function expand_doi_with_dx(Template $template, string $doi) : bool {
+function expand_doi_with_dx(Template & $template, string $doi) : bool {  // Pointer to save memory
      // See https://crosscite.org/docs.html for discussion of API we are using -- not all agencies resolve the same way
      // https://api.crossref.org/works/$doi can be used to find out the agency
      // https://www.doi.org/registration_agencies.html  https://www.doi.org/RA_Coverage.html List of all ten doi granting agencies - many do not do journals
@@ -809,7 +809,7 @@ function is_doi_works(string $doi) : ?bool {
 }
 
 /** @psalm-suppress UnusedParam */
-function query_jstor_api(array $ids, array $templates) : bool { // $ids not used yet
+function query_jstor_api(array $ids, array & $templates) : bool { // $ids not used yet  // Pointer to save memory
   $return = FALSE;
   foreach ($templates as $template) {
     if (expand_by_jstor($template)) $return = TRUE;
@@ -817,7 +817,7 @@ function query_jstor_api(array $ids, array $templates) : bool { // $ids not used
   return $return;
 }
 
-function expand_by_jstor(Template $template) : bool {
+function expand_by_jstor(Template & $template) : bool {  // Pointer to save memory
   $match = ['', '']; // prevent memory leak in some PHP versions
   if ($template->incomplete() === FALSE) return FALSE;
   if ($template->has('jstor')) {
@@ -904,7 +904,7 @@ function expand_by_jstor(Template $template) : bool {
 
 // This routine is actually not used much, since we often get a DOI and thus do not need to parse this thankfully
 // Do not add a new regex without adding a test too in TemplateTest.php
-function parse_plain_text_reference(string $journal_data, Template $this_template, bool $upgrade_years = FALSE ) : void {
+function parse_plain_text_reference(string $journal_data, Template & $this_template, bool $upgrade_years = FALSE ) : void {  // Pointer to save memory
       $matches = ['', '']; // prevent memory leak in some PHP versions
       $match = ['', '']; // prevent memory leak in some PHP versions
       $journal_data = trim($journal_data);
@@ -1130,7 +1130,7 @@ function get_semanticscholar_license(string $s2cid) : ?bool {
     return FALSE;
 }
 
-function expand_templates_from_archives(array $templates) : void { // This is done very late as a latch ditch effort
+function expand_templates_from_archives(array & $templates) : void { // This is done very late as a latch ditch effort  // Pointer to save memory
   $match = ['', '']; // prevent memory leak in some PHP versions
   $ch = curl_init();
   curl_setopt_array($ch,
