@@ -39,7 +39,7 @@ function entrez_api(array $ids, array & $templates, string $db) : bool {   // Po
   }
  
   foreach (array_keys($ids) as $i) {
-    $templates[$i]->record_api_usage('entrez', $db == 'pubmed' ? 'pmid' : 'pmc');
+    ((Template) $templates[$i])->record_api_usage('entrez', $db == 'pubmed' ? 'pmid' : 'pmc');
   }
   if (isset($xml->DocSum->Item) && count($xml->DocSum->Item) > 0) foreach($xml->DocSum as $document) {
     report_info("Found match for $db identifier " . $document->Id);
@@ -48,7 +48,7 @@ function entrez_api(array $ids, array & $templates, string $db) : bool {   // Po
       report_warning("Pubmed returned an identifier, [" . $document->Id . "] that we didn't search for.");   // @codeCoverageIgnore
       continue;                                                                                              // @codeCoverageIgnore
     }
-    $this_template = $templates[$template_key];
+    $this_template = & (Template) $templates[$template_key];
  
     foreach ($document->Item as $item) {
       if (preg_match("~10\.\d{4}/[^\s\"']*~", (string) $item, $match)) {
