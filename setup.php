@@ -40,10 +40,12 @@ ob_implicit_flush();
 if (!TRAVIS) {
     if (FLUSHING_OKAY) {
       while (ob_get_level()) {
-        ob_end_clean(); // Paranoid
+        ob_end_flush();
       }
+      // ob_start(); // Current webserver buffers everything enough already
+    } else {
+      ob_start();
     }
-    ob_start();
 }
 
 if (file_exists('env.php')) {
