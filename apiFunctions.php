@@ -809,7 +809,7 @@ function is_doi_works(string $doi) : ?bool {
 }
 
 /** @psalm-suppress UnusedParam */
-function query_jstor_api(array $ids, array $templates) : bool { // $ids not used yet
+function query_jstor_api(array $ids, array  & $templates) : bool { // $ids not used yet   // Pointer to save memory
   $return = FALSE;
   foreach ($templates as $template) {
     if (expand_by_jstor($template)) $return = TRUE;
