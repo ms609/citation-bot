@@ -2939,7 +2939,7 @@ final class Template {
               report_info("No results for Google API search " . echoable($url_token));
             }
             // @codeCoverageIgnoreStart
-          } elseif (isset($result->error->reason) && $result->error->reason === 'rateLimitExceeded')) {
+          } elseif (isset($result->error->reason) && $result->error->reason === 'rateLimitExceeded') {
             report_warning("Google Books API reported error out of queries for the day");
           } elseif (isset($result->error)) {
             report_warning("Google Books API reported error: " . echoable(print_r($result->error->errors, TRUE)));
