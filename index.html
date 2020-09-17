@@ -1,9 +1,3 @@
-<?php
-declare(strict_types=1);
-@session_start();
-@header( 'Content-type: text/html; charset=utf-8' );
-@header("Content-Encoding: None", TRUE);
-?>
 <!DOCTYPE html>
 <html lang="en" dir="ltr">
 <head>
@@ -57,14 +51,7 @@ declare(strict_types=1);
       <a href="https://github.com/ms609/citation-bot" title="GitHub repository">Source code</a>
     </p>
     <p>
-    Your Wikipedia user name will be included in the edit, such as "Suggested&nbsp;by&nbsp;
-  <?php
-  if (isset($_SESSION['citation_bot_user_id'])) {
-     echo (string) @htmlspecialchars((string) $_SESSION['citation_bot_user_id']);
-   } else {
-     echo 'YourUserID';
-   }
-   ?>"
+    Your Wikipedia user name will be included in the edit, such as "Suggested&nbsp;by&nbsp; YourUserID"
     </p>
   </footer>
 </body>

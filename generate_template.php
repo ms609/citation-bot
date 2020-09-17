@@ -2,7 +2,6 @@
 declare(strict_types=1);
 // outputs a Wikipedia reference from a DOI 
 // usage: https://citations.toolforge.org/generate_template.php?doi=<DOI>
-@session_start();
 @header( 'Content-type: text/html; charset=utf-8' );
 @header("Content-Encoding: None", TRUE);
 ?>
