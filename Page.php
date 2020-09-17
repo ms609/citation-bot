@@ -31,7 +31,7 @@ class Page {
       $this->construct_modifications_array();
   }
 
-  public function get_text_from(string $title, WikipediaBot & $api) : bool { // Pointer to save memory
+  public function get_text_from(string $title, WikipediaBot $api) : bool {
     $this->construct_modifications_array(); // Could be new page
 
     $details = $api->fetch(['action'=>'query', 
@@ -456,7 +456,7 @@ class Page {
     return $auto_summary . "| You can [[WP:UCB|use this bot]] yourself. [[WP:DBUG|Report bugs here]]. ";
   }
 
-  public function write(WikipediaBot & $api, string $edit_summary_end = '') : bool {  // Pointer to save memory
+  public function write(WikipediaBot $api, string $edit_summary_end = '') : bool {
     if ($this->allow_bots()) {
       throttle(10);
       if ($api->write_page($this->title, $this->text,
