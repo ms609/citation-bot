@@ -24,7 +24,7 @@ final class AdsAbsControl {
 }
 
 
-function entrez_api(array $ids, array & $templates, string $db) : bool {  // Pointer to save memory 
+function entrez_api(array $ids, array $templates, string $db) : bool {
   $match = ['', '']; // prevent memory leak in some PHP versions
   $names = ['', '']; // prevent memory leak in some PHP versions
   if (!count($ids)) return FALSE;
@@ -118,7 +118,7 @@ function entrez_api(array $ids, array & $templates, string $db) : bool {  // Poi
 
 function query_bibcode_api(array $bibcodes, array & $templates) : bool { return adsabs_api($bibcodes, $templates, 'bibcode'); }  // Pointer to save memory
 
-function expand_arxiv_templates (array & $templates) : bool {  // Pointer to save memory
+function expand_arxiv_templates (array $templates) : bool {
   $ids = array();
   $arxiv_templates = array();
   foreach ($templates as $this_template) {
@@ -136,7 +136,7 @@ function expand_arxiv_templates (array & $templates) : bool {  // Pointer to sav
   return arxiv_api($ids, $arxiv_templates);
 }
 
-function arxiv_api(array $ids, array & $templates) : bool {  // Pointer to save memory
+function arxiv_api(array $ids, array $templates) : bool {
   $names = ['', '']; // prevent memory leak in some PHP versions
   $match = ['', '']; // prevent memory leak in some PHP versions
   if (count($ids) == 0) return FALSE;
@@ -215,7 +215,7 @@ function arxiv_api(array $ids, array & $templates) : bool {  // Pointer to save 
   return TRUE;
 }
 
-function adsabs_api(array $ids, array & $templates, string $identifier) : bool {  // Pointer to save memory
+function adsabs_api(array $ids, array $templates, string $identifier) : bool {
   $rate_limit = [['', '', ''], ['', '', ''], ['', '', '']]; // prevent memory leak in some PHP versions
   if (AdsAbsControl::gave_up_yet()) return FALSE;
   if (!PHP_ADSABSAPIKEY) return FALSE;
@@ -437,7 +437,7 @@ function query_doi_api(array $ids, array & $templates) : bool { // $id not used 
   return TRUE;
 }
 
-function expand_by_doi(Template & $template, bool $force = FALSE) : bool {  // Pointer to save memory
+function expand_by_doi(Template $template, bool $force = FALSE) : bool {
   $matches = ['', '']; // prevent memory leak in some PHP versions
   // Because it can recover rarely used parameters such as editors, series & isbn, 
   // there will be few instances where it could not in principle be profitable to 
@@ -619,7 +619,7 @@ function query_crossref(string $doi) : ?object {
   return NULL;                                                                       // @codeCoverageIgnore
 }
 
-function expand_doi_with_dx(Template & $template, string $doi) : bool {  // Pointer to save memory
+function expand_doi_with_dx(Template $template, string $doi) : bool {
      // See https://crosscite.org/docs.html for discussion of API we are using -- not all agencies resolve the same way
      // https://api.crossref.org/works/$doi can be used to find out the agency
      // https://www.doi.org/registration_agencies.html  https://www.doi.org/RA_Coverage.html List of all ten doi granting agencies - many do not do journals
@@ -809,7 +809,7 @@ function is_doi_works(string $doi) : ?bool {
 }
 
 /** @psalm-suppress UnusedParam */
-function query_jstor_api(array $ids, array & $templates) : bool { // $ids not used yet  // Pointer to save memory
+function query_jstor_api(array $ids, array $templates) : bool { // $ids not used yet
   $return = FALSE;
   foreach ($templates as $template) {
     if (expand_by_jstor($template)) $return = TRUE;
@@ -817,7 +817,7 @@ function query_jstor_api(array $ids, array & $templates) : bool { // $ids not us
   return $return;
 }
 
-function expand_by_jstor(Template & $template) : bool {  // Pointer to save memory
+function expand_by_jstor(Template $template) : bool {
   $match = ['', '']; // prevent memory leak in some PHP versions
   if ($template->incomplete() === FALSE) return FALSE;
   if ($template->has('jstor')) {
@@ -904,7 +904,7 @@ function expand_by_jstor(Template & $template) : bool {  // Pointer to save memo
 
 // This routine is actually not used much, since we often get a DOI and thus do not need to parse this thankfully
 // Do not add a new regex without adding a test too in TemplateTest.php
-function parse_plain_text_reference(string $journal_data, Template & $this_template, bool $upgrade_years = FALSE ) : void {  // Pointer to save memory
+function parse_plain_text_reference(string $journal_data, Template $this_template, bool $upgrade_years = FALSE ) : void {
       $matches = ['', '']; // prevent memory leak in some PHP versions
       $match = ['', '']; // prevent memory leak in some PHP versions
       $journal_data = trim($journal_data);
