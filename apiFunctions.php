@@ -37,10 +37,7 @@ function entrez_api(array $ids, array $templates, string $db) : bool {
     report_warning("Error in PubMed search: No response from Entrez server");    // @codeCoverageIgnore
     return FALSE;                                                                // @codeCoverageIgnore
   }
- 
-  foreach (array_keys($ids) as $i) {
-    $templates[$i]->record_api_usage('entrez', $db == 'pubmed' ? 'pmid' : 'pmc');
-  }
+
   if (isset($xml->DocSum->Item) && count($xml->DocSum->Item) > 0) foreach($xml->DocSum as $document) {
     report_info("Found match for $db identifier " . $document->Id);
     $template_key = array_search($document->Id, $ids);
@@ -49,6 +46,7 @@ function entrez_api(array $ids, array $templates, string $db) : bool {
       continue;                                                                                              // @codeCoverageIgnore
     }
     $this_template = $templates[$template_key];
+    $this_template->record_api_usage('entrez', $db == 'pubmed' ? 'pmid' : 'pmc');
  
     foreach ($document->Item as $item) {
       if (preg_match("~10\.\d{4}/[^\s\"']*~", (string) $item, $match)) {
@@ -129,8 +127,8 @@ function expand_arxiv_templates (array & $templates) : bool {  // Pointer to sav
     }
     $eprint = str_ireplace("arXiv:", "", $this_template->get('eprint') . $this_template->get('arxiv'));
     if ($eprint) {
-      array_push($ids, $eprint);
-      array_push($arxiv_templates, $this_template);
+      $ids[] = $eprint;
+      $arxiv_templates[] = $this_template;
     }
   }
   return arxiv_api($ids, $arxiv_templates);

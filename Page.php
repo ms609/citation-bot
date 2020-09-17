@@ -244,23 +244,23 @@ class Page {
     for ($i = 0; $i < count($all_templates); $i++) {
       $this_template = $all_templates[$i];
       if (in_array($this_template->wikiname(), TEMPLATES_WE_PROCESS)) {
-        $our_templates[] = & $this_template; // Pointer to save memory
+        $our_templates[] = $this_template;
         $this_template->prepare();
       } elseif (in_array($this_template->wikiname(), TEMPLATES_WE_SLIGHTLY_PROCESS)) {
-        $our_templates_slight[] = & $this_template; // Pointer to save memory
+        $our_templates_slight[] = $this_template;
         $this_template->correct_param_mistakes();
         $this_template->get_identifiers_from_url();
         $this_template->expand_by_google_books();
         $this_template->tidy();
-        if ($this_template->wikiname() === 'cite conference') $our_templates_conferences[] = & $this_template; // Pointer to save memory
-        $our_templates_ieee[] = & $this_template;  // Pointer to save memory
+        if ($this_template->wikiname() === 'cite conference') $our_templates_conferences[] = $this_template;
+        $our_templates_ieee[] = $this_template;
       } elseif (in_array($this_template->wikiname(), TEMPLATES_WE_BARELY_PROCESS)) { // No capitalization of thesis, etc.
-        $our_templates_slight[] = & $this_template;  // Pointer to save memory
+        $our_templates_slight[] = $this_template;
         $this_template->correct_param_mistakes();
         $this_template->get_identifiers_from_url();
         $this_template->tidy();
       } elseif ($this_template->wikiname() == 'cite magazine') {
-        $our_templates_slight[] = & $this_template; // Pointer to save memory
+        $our_templates_slight[] = $this_template;
         if ($this_template->blank('magazine') && $this_template->has('work')) {
             $this_template->rename('work', 'magazine');
         }
