@@ -39,11 +39,12 @@ if (isset($_REQUEST["slow"]) || TRAVIS || (isset($argv[2]) && $argv[2] === '--sl
 ob_implicit_flush();
 if (!TRAVIS) {
     if (FLUSHING_OKAY) {
-      while (ob_get_level()) {
-        ob_end_clean(); // Paranoid
+      while (ob_get_level()) {	
+        ob_end_clean(); // Paranoid	
       }
+    } else {
+      ob_start();  // only buffer in gadget - webserver buffers everything else
     }
-    ob_start();
 }
 
 if (file_exists('env.php')) {
