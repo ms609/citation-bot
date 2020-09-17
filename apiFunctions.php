@@ -130,7 +130,7 @@ function expand_arxiv_templates (array $templates) : bool {
     $eprint = str_ireplace("arXiv:", "", $this_template->get('eprint') . $this_template->get('arxiv'));
     if ($eprint) {
       $ids[] = $eprint;
-      $arxiv_templates[] = & $this_template);  // Pointer to save memory
+      $arxiv_templates[] = & $this_template;  // Pointer to save memory
     }
   }
   return arxiv_api($ids, $arxiv_templates);
