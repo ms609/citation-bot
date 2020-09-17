@@ -24,10 +24,15 @@ final class AdsAbsControl {
 }
 
 
-function entrez_api(array $ids, array $templates, string $db) : bool {
+function entrez_api(array $ids, array & $templates, string $db) : bool {   // Pointer to save memory
   $match = ['', '']; // prevent memory leak in some PHP versions
   $names = ['', '']; // prevent memory leak in some PHP versions
   if (!count($ids)) return FALSE;
+    
+  $get_template = function(int $template_key) use($templates) : Template { // Only exists to make static tools understand this is a Template() type
+       return $templates[$template_key];
+  };
+  
   $url = "https://eutils.ncbi.nlm.nih.gov/entrez/eutils/esummary.fcgi?tool=WikipediaCitationBot&email=martins+pubmed@gmail.com&db=$db&id=" 
                . implode(',', $ids);
   report_action("Using $db API to retrieve publication details: ");
@@ -45,7 +50,7 @@ function entrez_api(array $ids, array $templates, string $db) : bool {
       report_warning("Pubmed returned an identifier, [" . $document->Id . "] that we didn't search for.");   // @codeCoverageIgnore
       continue;                                                                                              // @codeCoverageIgnore
     }
-    $this_template = $templates[$template_key];
+    $this_template = $get_template($template_key);
     $this_template->record_api_usage('entrez', $db == 'pubmed' ? 'pmid' : 'pmc');
  
     foreach ($document->Item as $item) {
