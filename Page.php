@@ -31,7 +31,7 @@ class Page {
       $this->construct_modifications_array();
   }
 
-  public function get_text_from(string $title, WikipediaBot $api) : bool {
+  public function get_text_from(string $title, WikipediaBot & $api) : bool { // Pointer to save memory
     $this->construct_modifications_array(); // Could be new page
 
     $details = $api->fetch(['action'=>'query', 
@@ -113,7 +113,7 @@ class Page {
   // $api_function: string naming a function (specified in apiFunctions.php) 
   //                that takes the value of $templates->get($identifier) as an array;
   //                returns key-value array of items to be set, if new, in each template.
-  public function expand_templates_from_identifier(string $identifier, array $templates) : void {
+  public function expand_templates_from_identifier(string $identifier, array & $templates) : void { // Pointer to save memory
     $ids = array();
     switch ($identifier) {
       case 'pmid': 
@@ -455,7 +455,7 @@ class Page {
     return $auto_summary . "| You can [[WP:UCB|use this bot]] yourself. [[WP:DBUG|Report bugs here]]. ";
   }
 
-  public function write(WikipediaBot $api, string $edit_summary_end = '') : bool {
+  public function write(WikipediaBot & $api, string $edit_summary_end = '') : bool {  // Pointer to save memory
     if ($this->allow_bots()) {
       throttle(10);
       if ($api->write_page($this->title, $this->text,
@@ -521,7 +521,7 @@ class Page {
     return $objects;
   }
 
-  protected function replace_object (array $objects) : void {
+  protected function replace_object (array & $objects) : void {  // Pointer to save memory
     $i = count($objects);
     if ($objects) foreach (array_reverse($objects) as $obj)
       $this->text = str_ireplace(sprintf($obj::PLACEHOLDER_TEXT, --$i), $obj->parsed_text(), $this->text); // Case insensitive, since comment placeholder might get title case, etc.
