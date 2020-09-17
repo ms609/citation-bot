@@ -50,7 +50,7 @@ function entrez_api(array $ids, array & $templates, string $db) : bool {   // Po
       report_warning("Pubmed returned an identifier, [" . $document->Id . "] that we didn't search for.");   // @codeCoverageIgnore
       continue;                                                                                              // @codeCoverageIgnore
     }
-    $this_template = $get_template[$template_key];
+    $this_template = $get_template($template_key);
     $this_template->record_api_usage('entrez', $db == 'pubmed' ? 'pmid' : 'pmc');
  
     foreach ($document->Item as $item) {
