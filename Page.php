@@ -504,7 +504,7 @@ class Page {
         }
         $exploded = $treat_identical_separately ? explode($match[0], $text, 2) : explode($match[0], $text);
         $text = implode(sprintf($placeholder_text, $i++), $exploded);
-        $objects[] = $obj;
+        $objects[] = & $obj; // Pointer to save memory
       }
     }
     /** @psalm-suppress TypeDoesNotContainType */
