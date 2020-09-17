@@ -4,7 +4,7 @@ declare(strict_types=1);
  * Page contains methods that will do most of the higher-level work of expanding citations
  * on the wikipage associated with the Page object.
  * Provides functions to read, parse, expand text (using Template and Comment)
- * handle collected page modifications, and save the edited page text
+ * handle collected page modifications, and save the edited page textarra
  * to the wiki.
  */
 
@@ -244,23 +244,23 @@ class Page {
     for ($i = 0; $i < count($all_templates); $i++) {
       $this_template = $all_templates[$i];
       if (in_array($this_template->wikiname(), TEMPLATES_WE_PROCESS)) {
-        array_push($our_templates, $this_template);
+        $our_templates[] = $this_template;
         $this_template->prepare();
       } elseif (in_array($this_template->wikiname(), TEMPLATES_WE_SLIGHTLY_PROCESS)) {
-        array_push($our_templates_slight, $this_template);
+        $our_templates_slight[] = $this_template;
         $this_template->correct_param_mistakes();
         $this_template->get_identifiers_from_url();
         $this_template->expand_by_google_books();
         $this_template->tidy();
-        if ($this_template->wikiname() === 'cite conference') array_push($our_templates_conferences, $this_template);
-        array_push($our_templates_ieee, $this_template);
+        if ($this_template->wikiname() === 'cite conference') $our_templates_conferences[] = $this_template;
+        $our_templates_ieee[] = $this_template;
       } elseif (in_array($this_template->wikiname(), TEMPLATES_WE_BARELY_PROCESS)) { // No capitalization of thesis, etc.
-        array_push($our_templates_slight, $this_template);
+        $our_templates_slight[] = $this_template;
         $this_template->correct_param_mistakes();
         $this_template->get_identifiers_from_url();
         $this_template->tidy();
       } elseif ($this_template->wikiname() == 'cite magazine') {
-        array_push($our_templates_slight, $this_template);
+        $our_templates_slight[] = $this_template;
         if ($this_template->blank('magazine') && $this_template->has('work')) {
             $this_template->rename('work', 'magazine');
         }
