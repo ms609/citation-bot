@@ -67,7 +67,8 @@ final class ZoteroTest extends testBaseClass {
 
     $text = "{{cite journal|doi=X|journal=X|title=X|last1=X|first1=X|volume=X|issue=X|year=X|url=http://www.springerlink.com/content/s}}";
     $template = $this->make_citation($text);
-    Zotero::drop_urls_that_match_dois([$template]);
+    $tmp_array = [$template];
+    Zotero::drop_urls_that_match_dois($tmp_array);
     $this->assertNull($template->get2('url'));
    
     $text = "{{cite journal|doi=X|journal=X|title=X|last1=X|first1=X|volume=X|issue=X|year=X|url=http://insights.ovid.com/pubmed|pmid=2222}}";
