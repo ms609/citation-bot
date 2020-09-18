@@ -747,13 +747,13 @@ function doi_active(string $doi) : ?bool {
   $dummy = unserialize(serialize($cache_good));
   $mem = memory_get_usage();
   unset($dummy);
-  $size = abs($mem - $old);
+  $size = (string) abs($mem - $old);
   echo "\n doi_active good: " . $size . "\n";
   $old = memory_get_usage();
   $dummy = unserialize(serialize($cache_bad));
   $mem = memory_get_usage();
   unset($dummy);
-  $size = abs($mem - $old);
+  $size = (string) abs($mem - $old);
   echo "\n doi_active bad: " . $size . "\n";
   
   if (array_key_exists($doi, $cache_good)) return TRUE;
@@ -787,13 +787,13 @@ function doi_works(string $doi) : ?bool {
   $dummy = unserialize(serialize($cache_good));
   $mem = memory_get_usage();
   unset($dummy);
-  $size = abs($mem - $old);
+  $size = (string) abs($mem - $old);
   echo "\n doi_works good: " . $size . "\n";
   $old = memory_get_usage();
   $dummy = unserialize(serialize($cache_bad));
   $mem = memory_get_usage();
   unset($dummy);
-  $size = abs($mem - $old);
+  $size = (string) abs($mem - $old);
   echo "\n doi_works bad: " . $size . "\n";
 
   if (array_key_exists($doi, $cache_good)) return TRUE;
