@@ -115,7 +115,7 @@ foreach (array_unique(explode('|', $pages)) as $page_title) {
       report_phase($my_page->parsed_text() ? 'No changes required.' : 'Blank page');
       $final_edit_overview .= "\n No changes needed. " . "<a href=" . WIKI_ROOT . "?title=" . urlencode($page_title) . ">" . echoable($page_title) . "</a>";
     }
-    if (HTML_OUTPUT) echo "\n" . '</pre><pre id="botOutput">' . "\n";
+    html_echo("\n" . '</pre><pre id="botOutput">' . "\n", "\n");
   } else {
     echo "\n Page      '" . htmlspecialchars($page_title) . "' not found.";
   }
