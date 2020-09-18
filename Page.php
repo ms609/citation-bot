@@ -232,8 +232,8 @@ class Page {
       $this->text = $this->start_text;
       return FALSE;
     }
+    Template::$all_templates = & $all_templates; // Pointer to avoid MASSSIVE memory leak on crazy pages
     for ($i = 0; $i < count($all_templates); $i++) {
-       $all_templates[$i]->all_templates = & $all_templates; // Pointer to avoid MASSSIVE memory leak on crazy pages
        $all_templates[$i]->date_style = $this->date_style;
     }
     $our_templates = array();
@@ -376,9 +376,7 @@ class Page {
     }
 
     // remove circular memory reference that makes garbage collection hard (all templates have an array of all templates)
-    for ($i = 0; $i < count($all_templates); $i++) {
-       unset($all_templates[$i]->all_templates);
-    }
+    unset(Template::$all_templates);
     unset($all_templates);
 
     // we often just fix Journal caps, so must be case sensitive compare
