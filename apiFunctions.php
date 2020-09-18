@@ -745,12 +745,15 @@ function doi_active(string $doi) : ?bool {
   static $cache_bad  = [];
   if (array_key_exists($doi, $cache_good)) return TRUE;
   if (array_key_exists($doi, $cache_bad))  return FALSE;
+  // For really long category runs
+  if (count($cache_bad) > 15000) $cache_bad = [];
+  if (count($cache_good) > 15000) $cache_good = [];
   $works = doi_works($doi);
   if ($works === NULL) {
     return NULL; // @codeCoverageIgnore
   }
   if ($works === FALSE) {
-    $cache_bad[$doi] = TRUE;
+    // $cache_bad[$doi] = TRUE; do not store to save memory
     return FALSE;
   }
   // DX.DOI.ORG works, but does crossref?
@@ -772,6 +775,9 @@ function doi_works(string $doi) : ?bool {
   static $cache_bad  = [];
   if (array_key_exists($doi, $cache_good)) return TRUE;
   if (array_key_exists($doi, $cache_bad))  return FALSE;
+  // For really long category runs
+  if (count($cache_bad) > 15000) $cache_bad = [];
+  if (count($cache_good) > 15000) $cache_good = [];
   $works = is_doi_works($doi);
   if ($works === NULL) {
     return NULL; // @codeCoverageIgnore

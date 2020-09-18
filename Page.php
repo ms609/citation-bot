@@ -142,7 +142,6 @@ class Page {
   
   public function expand_text() : bool {
     $this->page_error = FALSE;
-    date_default_timezone_set('UTC');
     $this->announce_page();
     if (!$this->text) {
       report_warning("No text retrieved.\n");
@@ -357,29 +356,35 @@ class Page {
         }
       }
     }
-    $this->replace_object($all_templates);
-
-    $this->text = preg_replace('~(\{\{[Cc]ite ODNB\s*\|[^\{\}\_]+_?[^\{\}\_]+\}\}\s*)\{\{ODNBsub\}\}~u', '$1', $this->text); // Allow only one underscore to shield us from MATH etc.
-    $this->text = preg_replace('~(\{\{[Cc]ite ODNB\s*\|[^\{\}\_]*ref ?= ?\{\{sfn[^\{\}\_]+\}\}[^\{\}\_]*\}\}\s*)\{\{ODNBsub\}\}~u', '$1', $this->text); // Allow a ref={{sfn in the template
     
-    $this->replace_object($singlebrack);
-    $this->replace_object($preformated);
-    $this->replace_object($musicality);
-    $this->replace_object($mathematics);
-    $this->replace_object($chemistry);
-    $this->replace_object($nowiki);
-    $this->replace_object($comments);
-
-    if (stripos($this->text, 'CITATION_BOT_PLACEHOLDER') !== FALSE) {
-      $this->text = $this->start_text;                                  // @codeCoverageIgnore
-      report_error('CITATION_BOT_PLACEHOLDER found after processing');  // @codeCoverageIgnore
-    }
-
+    // Release memory ASAP
+    unset($our_templates);
+    unset($our_templates_slight);
+    unset($our_templates_conferences);
+    unset($our_templates_ieee);
+    
+    $this->replace_object($all_templates);
     // remove circular memory reference that makes garbage collection hard (all templates have an array of all templates)
     for ($i = 0; $i < count($all_templates); $i++) {
        unset($all_templates[$i]->all_templates);
     }
     unset($all_templates);
+
+    $this->text = preg_replace('~(\{\{[Cc]ite ODNB\s*\|[^\{\}\_]+_?[^\{\}\_]+\}\}\s*)\{\{ODNBsub\}\}~u', '$1', $this->text); // Allow only one underscore to shield us from MATH etc.
+    $this->text = preg_replace('~(\{\{[Cc]ite ODNB\s*\|[^\{\}\_]*ref ?= ?\{\{sfn[^\{\}\_]+\}\}[^\{\}\_]*\}\}\s*)\{\{ODNBsub\}\}~u', '$1', $this->text); // Allow a ref={{sfn in the template
+    
+    $this->replace_object($singlebrack); unset($singlebrack);
+    $this->replace_object($preformated); unset($preformated);
+    $this->replace_object($musicality); unset($musicality);
+    $this->replace_object($mathematics); unset($mathematics);
+    $this->replace_object($chemistry); unset($chemistry);
+    $this->replace_object($nowiki); unset($nowiki);
+    $this->replace_object($comments); unset($comments);
+
+    if (stripos($this->text, 'CITATION_BOT_PLACEHOLDER') !== FALSE) {
+      $this->text = $this->start_text;                                  // @codeCoverageIgnore
+      report_error('CITATION_BOT_PLACEHOLDER found after processing');  // @codeCoverageIgnore
+    }
 
     // we often just fix Journal caps, so must be case sensitive compare
     // Avoid minor edits - gadget API will make these changes, since it does not check return code

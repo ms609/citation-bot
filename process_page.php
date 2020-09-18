@@ -69,6 +69,8 @@ if (!isset($ON)) {
   }
 }
 
+$my_page = new Page();
+
 foreach (array_unique(explode('|', $pages)) as $page_title) {
 
   if (trim($page_title) === '') {  // Default is to edit Wikipedia's main page if user just clicks button.  Let's not even try
@@ -77,7 +79,6 @@ foreach (array_unique(explode('|', $pages)) as $page_title) {
   }
   // $page->expand_text will take care of this notice if we are in HTML mode.
   html_echo('', "\n\n\n*** Processing page '" . echoable($page_title) . "' : " . date("H:i:s") . "\n");
-  $my_page = new Page();
   if ($my_page->get_text_from($page_title, $api)) {
     $text_expanded = $my_page->expand_text();
     if ($text_expanded && $ON) {
@@ -114,6 +115,7 @@ foreach (array_unique(explode('|', $pages)) as $page_title) {
       report_phase($my_page->parsed_text() ? 'No changes required.' : 'Blank page');
       $final_edit_overview .= "\n No changes needed. " . "<a href=" . WIKI_ROOT . "?title=" . urlencode($page_title) . ">" . echoable($page_title) . "</a>";
     }
+    html_echo("\n" . '</pre><pre id="botOutput">' . "\n", "\n");
   } else {
     echo "\n Page      '" . htmlspecialchars($page_title) . "' not found.";
   }
