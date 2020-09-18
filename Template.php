@@ -25,7 +25,7 @@ final class Template {
   public const TREAT_IDENTICAL_SEPARATELY = FALSE;
   private const MAGIC_STRING = 'CITATION_BOT_PLACEHOLDER_URL_POINTER_';
   /** @psalm-suppress PropertyNotSetInConstructor */
-  public $all_templates;  // Points to list of all the Template() on the Page() including this one.  It can only be set by the page class after all templates are made
+  public static $all_templates;  // Points to list of all the Template() on the Page() including this one.  It can only be set by the page class after all templates are made
   public $date_style = DATES_WHATEVER;  // Will get from the page
   /** @psalm-suppress PropertyNotSetInConstructor */
   protected $rawtext;  // Must start out as unset
@@ -3407,7 +3407,7 @@ final class Template {
     }
     if (preg_match_all('~' . sprintf(Self::PLACEHOLDER_TEXT, '(\d+)') . '~', $id, $matches)) {
       for ($i = 0; $i < count($matches[1]); $i++) {
-        $subtemplate = $this->all_templates[$matches[1][$i]];
+        $subtemplate = Self::all_templates[$matches[1][$i]];
         $subtemplate_name = $subtemplate->wikiname();
         switch($subtemplate_name) {            
           case "arxiv":
@@ -5661,7 +5661,7 @@ final class Template {
   protected function get_inline_doi_from_title() : void {
      $match = ['', '']; // prevent memory leak in some PHP versions
      if (preg_match("~(?:\s)*(?:# # # CITATION_BOT_PLACEHOLDER_TEMPLATE )(\d+)(?: # # #)(?:\s)*~", $this->get('title'), $match)) {
-       if ($inline_doi = $this->all_templates[$match[1]]->inline_doi_information()) {
+       if ($inline_doi = Self::all_templates[$match[1]]->inline_doi_information()) {
          if ($this->add_if_new('doi', trim($inline_doi[0]))) { // Add doi
            $this->set('title', trim($inline_doi[1]));
            quietly('report_modification', "Converting inline DOI to DOI parameter");
