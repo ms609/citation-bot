@@ -742,7 +742,7 @@ function expand_doi_with_dx(Template $template, string $doi) : bool {
 function doi_active(string $doi) : ?bool {
   // Greatly speed-up by having one array of each kind and only look for hash keys, not values
   static $cache_good = [];
-  static $cache_bad  = []; 
+  static $cache_bad  = [];
   if (array_key_exists($doi, $cache_good)) return TRUE;
   if (array_key_exists($doi, $cache_bad))  return FALSE;
   $works = doi_works($doi);
