@@ -70,6 +70,10 @@ foreach($links as $link) {
 }
 $pages_in_category = array_unique($pages_in_category);
 if (empty($pages_in_category)) report_error('No links to expand found');
+if (WikipediaBot::NonStandardMode()) {
+  print_r($pages_in_category);
+  exit(0);
+}
 
   $page = new Page();
   foreach ($pages_in_category as $page_title) {
@@ -90,6 +94,7 @@ if (empty($pages_in_category)) report_error('No links to expand found');
     } else {
       report_phase($page->parsed_text() ? "No changes required. \n\n    # # # " : "Blank page. \n\n    # # # ");
     }
+    echo "\n" . '</pre><pre id="botOutput">' . "\n";
   }
   echo ("\n Done all " . (string) count($pages_in_category) . " pages linked from " . echoable($page_name) . " \n");
 ?>
