@@ -487,6 +487,7 @@ final class WikipediaBot {
       }
       $this->the_user = $user;
       $_SESSION['citation_bot_user_id'] = $this->the_user;
+      session_write_close(); // Done with the session
       return;
      }
      catch (Throwable $e) { ; }
