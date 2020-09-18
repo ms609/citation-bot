@@ -231,8 +231,8 @@ class Page {
       $this->text = $this->start_text;
       return FALSE;
     }
-    Template::$all_templates = & $all_templates; // Pointer to avoid MASSSIVE memory leak on crazy pages
     for ($i = 0; $i < count($all_templates); $i++) {
+       $all_templates[$i]->all_templates = & $all_templates; // Pointer to avoid MASSSIVE memory leak on crazy pages
        $all_templates[$i]->date_style = $this->date_style;
     }
     $our_templates = array();
@@ -365,7 +365,9 @@ class Page {
     
     $this->replace_object($all_templates);
     // remove circular memory reference that makes garbage collection hard (all templates have an array of all templates)
-    unset(Template::$all_templates);
+    for ($i = 0; $i < count($all_templates); $i++) {
+       unset($all_templates[$i]->all_templates);
+    }
     unset($all_templates);
 
     $this->text = preg_replace('~(\{\{[Cc]ite ODNB\s*\|[^\{\}\_]+_?[^\{\}\_]+\}\}\s*)\{\{ODNBsub\}\}~u', '$1', $this->text); // Allow only one underscore to shield us from MATH etc.
@@ -383,7 +385,6 @@ class Page {
       $this->text = $this->start_text;                                  // @codeCoverageIgnore
       report_error('CITATION_BOT_PLACEHOLDER found after processing');  // @codeCoverageIgnore
     }
-
 
     // we often just fix Journal caps, so must be case sensitive compare
     // Avoid minor edits - gadget API will make these changes, since it does not check return code
