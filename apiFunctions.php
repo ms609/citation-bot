@@ -745,6 +745,7 @@ function doi_active(string $doi) : ?bool {
   static $cache_bad  = [];
   if (array_key_exists($doi, $cache_good)) return TRUE;
   if (array_key_exists($doi, $cache_bad))  return FALSE;
+  // For really long category runs
   if (count($cache_bad) > 15000) $cache_bad = [];
   if (count($cache_good) > 15000) $cache_good = [];
   $works = doi_works($doi);
