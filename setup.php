@@ -61,6 +61,7 @@ if (file_exists('env.php')) {
                                  ['', '', '', '', '', ''], ob_get_contents()));
   if ($env_output) {
     ob_end_flush();  // Something unexpected, so print it out
+    unset($env_output);
   } else {
     ob_end_clean();
   }

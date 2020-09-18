@@ -55,10 +55,12 @@ if ($json == '') {
   report_error(' Error getting page list');
 }    
 $array = @json_decode($json, TRUE);
+unset($json);
 if ($array === FALSE || !isset($array['parse']['links']) || !is_array($array['parse']['links'])) {
   report_error(' Error interpreting page list - perhaps page requested does not even exist');
 }
 $links = $array['parse']['links']; // @phan-suppress-current-line PhanTypeArraySuspiciousNullable
+unset($array);
 $pages_in_category = [];
 foreach($links as $link) {
     if (isset($link['exists']) && ($link['ns'] == 0 || $link['ns'] == 118)) {  // normal and draft articles only
@@ -68,6 +70,7 @@ foreach($links as $link) {
         }
     }
 }
+unset($links);
 $pages_in_category = array_unique($pages_in_category);
 if (empty($pages_in_category)) report_error('No links to expand found');
 
