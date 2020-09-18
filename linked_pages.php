@@ -69,6 +69,7 @@ foreach($links as $link) {
     }
 }
 $pages_in_category = array_unique($pages_in_category);
+if (empty($pages_in_category)) report_error('No links to expand found');
 
   $page = new Page();
   foreach ($pages_in_category as $page_title) {
