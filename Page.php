@@ -379,6 +379,10 @@ class Page {
        unset($all_templates[$i]->all_templates);
     }
     unset($all_templates);
+    unset($our_templates);
+    unset($our_templates_slight);
+    unset($our_templates_conferences);
+    unset($our_templates_ieee);
 
     // we often just fix Journal caps, so must be case sensitive compare
     // Avoid minor edits - gadget API will make these changes, since it does not check return code
