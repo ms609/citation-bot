@@ -90,6 +90,7 @@ if (empty($pages_in_category)) report_error('No links to expand found');
     } else {
       report_phase($page->parsed_text() ? "No changes required. \n\n    # # # " : "Blank page. \n\n    # # # ");
     }
+    echo "\n" . '</pre><pre id="botOutput">' . "\n";
   }
   echo ("\n Done all " . (string) count($pages_in_category) . " pages linked from " . echoable($page_name) . " \n");
 ?>
