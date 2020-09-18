@@ -142,7 +142,6 @@ class Page {
   
   public function expand_text() : bool {
     $this->page_error = FALSE;
-    date_default_timezone_set('UTC');
     $this->announce_page();
     if (!$this->text) {
       report_warning("No text retrieved.\n");
