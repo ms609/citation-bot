@@ -743,6 +743,19 @@ function doi_active(string $doi) : ?bool {
   // Greatly speed-up by having one array of each kind and only look for hash keys, not values
   static $cache_good = [];
   static $cache_bad  = [];
+  $old = memory_get_usage();
+  $dummy = unserialize(serialize($cache_good));
+  $mem = memory_get_usage();
+  unset($dummy);
+  $size = abs($mem - $old);
+  echo "\n doi_active good: " . $size . "\n";
+  $old = memory_get_usage();
+  $dummy = unserialize(serialize($cache_bad));
+  $mem = memory_get_usage();
+  unset($dummy);
+  $size = abs($mem - $old);
+  echo "\n doi_active bad: " . $size . "\n";
+  
   if (array_key_exists($doi, $cache_good)) return TRUE;
   if (array_key_exists($doi, $cache_bad))  return FALSE;
   $works = doi_works($doi);
@@ -770,6 +783,19 @@ function doi_works(string $doi) : ?bool {
   // Greatly speed-up by having one array of each kind and only look for hash keys, not values
   static $cache_good = [];
   static $cache_bad  = [];
+  $old = memory_get_usage();
+  $dummy = unserialize(serialize($cache_good));
+  $mem = memory_get_usage();
+  unset($dummy);
+  $size = abs($mem - $old);
+  echo "\n doi_works good: " . $size . "\n";
+  $old = memory_get_usage();
+  $dummy = unserialize(serialize($cache_bad));
+  $mem = memory_get_usage();
+  unset($dummy);
+  $size = abs($mem - $old);
+  echo "\n doi_works bad: " . $size . "\n";
+
   if (array_key_exists($doi, $cache_good)) return TRUE;
   if (array_key_exists($doi, $cache_bad))  return FALSE;
   $works = is_doi_works($doi);
