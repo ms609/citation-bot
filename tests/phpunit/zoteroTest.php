@@ -91,7 +91,7 @@ final class ZoteroTest extends testBaseClass {
     $template = $this->make_citation($text);
     $tmp_array = [$template];
     Zotero::drop_urls_that_match_dois($tmp_array);
-    $this->assertNotNull($template->get2('url'));
+    $this->assertNull($template->get2('url'));
    }
 
    public function testDropSomeEquivURLS2() : void {
@@ -649,7 +649,7 @@ final class ZoteroTest extends testBaseClass {
     $zotero_data[0] = (object) array('title' => 'Geometry of the Welch bounds', 'itemType' => 'journalArticle', 'DOI' => '10.1016/j.laa.2012.05.036');
     $zotero_response = json_encode($zotero_data);
     $this->assertTrue(Zotero::process_zotero_response($zotero_response, $template, $url, $url_kind, $access_date));
-    $this->assertNull($template->get2('url')); // Drop when gets doi
+    $this->assertNotNull($template->get2('url')); // Used to drop when gets doi
     $this->assertSame('10.1016/j.laa.2012.05.036', $template->get2('doi'));
   }
 
