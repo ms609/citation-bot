@@ -273,31 +273,31 @@ final class TemplateTest extends testBaseClass {
   public function testGroveMusic1() : void {
     $text = '{{cite web |url=https://doi.org/10.1093/gmo/9781561592630.article.J441700 |title=Tatum, Art(hur, Jr.) (jazz) |last1=Howlett |first1=Felicity | website=Grove Music Online |publisher=Oxford University Press |date=2002 |access-date=November 20, 2018 |url-access=subscription|via=Grove Music Online}}';
     $template = $this->process_citation($text);
-    $this->assertSame('{{cite document |title=Tatum, Art(hur, Jr.) (jazz) |last1=Howlett |first1=Felicity | work=Grove Music Online |publisher=Oxford University Press |date=2002 |doi=10.1093/gmo/9781561592630.article.J441700 }}', $template->parsed_text());
+    $this->assertSame('{{cite web |url=https://doi.org/10.1093/gmo/9781561592630.article.J441700 |title=Tatum, Art(hur, Jr.) (jazz) |last1=Howlett |first1=Felicity | work=Grove Music Online |publisher=Oxford University Press |date=2002 |doi=10.1093/gmo/9781561592630.article.J441700 }}', $template->parsed_text());
   }
  
   public function testGroveMusic2() : void {
     $text = '{{cite web |url=https://doi.org/10.1093/gmo/9781561592630.article.J441700 |title=Tatum, Art(hur, Jr.) (jazz) |last1=Howlett |first1=Felicity | website=Grove Music Online |publisher=Oxford University Press |date=2002|via=Grove Music Online}}';
     $template = $this->process_citation($text);
-    $this->assertSame('{{cite document |title=Tatum, Art(hur, Jr.) (jazz) |last1=Howlett |first1=Felicity | work=Grove Music Online |publisher=Oxford University Press |date=2002|doi=10.1093/gmo/9781561592630.article.J441700 }}', $template->parsed_text());
+    $this->assertSame('{{cite web |url=https://doi.org/10.1093/gmo/9781561592630.article.J441700 |url=https://doi.org/10.1093/gmo/9781561592630.article.J441700 |title=Tatum, Art(hur, Jr.) (jazz) |last1=Howlett |first1=Felicity | work=Grove Music Online |publisher=Oxford University Press |date=2002|doi=10.1093/gmo/9781561592630.article.J441700 }}', $template->parsed_text());
   }
  
   public function testGroveMusic3() : void {
     $text = '{{cite web |url=https://doi.org/10.1093/gmo/9781561592630.article.J441700 |title=Tatum, Art(hur, Jr.) (jazz) |last1=Howlett |first1=Felicity |publisher=Oxford University Press |date=2002|via=Grove Music Online}}';
     $template = $this->process_citation($text);
-    $this->assertSame('{{cite document |title=Tatum, Art(hur, Jr.) (jazz) |last1=Howlett |first1=Felicity |publisher=Oxford University Press |date=2002|doi=10.1093/gmo/9781561592630.article.J441700 |work=Grove Music Online}}', $template->parsed_text());
+    $this->assertSame('{{cite web |url=https://doi.org/10.1093/gmo/9781561592630.article.J441700 |title=Tatum, Art(hur, Jr.) (jazz) |last1=Howlett |first1=Felicity |publisher=Oxford University Press |date=2002|doi=10.1093/gmo/9781561592630.article.J441700 |work=Grove Music Online}}', $template->parsed_text());
   }
  
   public function testGroveMusic4() : void {
     $text = '{{cite web |url=https://doi.org/=10.1093/gmo/9781561592630.article.J441700 |title=Tatum, Art(hur, Jr.) (jazz) |last1=Howlett |first1=Felicity |publisher=Oxford University Press |date=2002|website=Grove Music Online}}';
     $template = $this->process_citation($text);
-    $this->assertSame('{{cite document |title=Tatum, Art(hur, Jr.) (jazz) |last1=Howlett |first1=Felicity |publisher=Oxford University Press |date=2002|work=Grove Music Online|doi=10.1093/gmo/9781561592630.article.J441700 }}', $template->parsed_text());
+    $this->assertSame('{{cite web |url=https://doi.org/=10.1093/gmo/9781561592630.article.J441700 |title=Tatum, Art(hur, Jr.) (jazz) |last1=Howlett |first1=Felicity |publisher=Oxford University Press |date=2002|work=Grove Music Online|doi=10.1093/gmo/9781561592630.article.J441700 }}', $template->parsed_text());
   }
  
   public function testGroveMusic5() : void {
     $text = '{{cite web |url=https://doi.org/10.1093/gmo/9781561592630.article.J441700 |title=Tatum, Art(hur, Jr.) (jazz) |last1=Howlett |first1=Felicity |publisher=Oxford University Press |date=2002|website=Grove Music Online|via=The Dog Farm}}';
     $template = $this->process_citation($text);
-    $this->assertSame('{{cite document |title=Tatum, Art(hur, Jr.) (jazz) |last1=Howlett |first1=Felicity |publisher=Oxford University Press |date=2002|work=Grove Music Online via The Dog Farm|doi=10.1093/gmo/9781561592630.article.J441700 }}', $template->parsed_text());
+    $this->assertSame('{{cite web |url=https://doi.org/10.1093/gmo/9781561592630.article.J441700 |title=Tatum, Art(hur, Jr.) (jazz) |last1=Howlett |first1=Felicity |publisher=Oxford University Press |date=2002|work=Grove Music Online via The Dog Farm|doi=10.1093/gmo/9781561592630.article.J441700 }}', $template->parsed_text());
   }
   
   public function testTidyLastFirts() : void {
@@ -326,7 +326,7 @@ final class TemplateTest extends testBaseClass {
     $text = '{{cite journal|url=https://academic.oup.com/zoolinnean/advance-article-abstract/doi/10.1093/zoolinnean/zly047/5049994}}';
     $expanded = $this->process_citation($text);
     $this->assertSame('10.1093/zoolinnean/zly047', $expanded->get2('doi'));
-    $this->assertNull($expanded->get2('url'));
+    $this->assertNotNull($expanded->get2('url'));
   }
  
    public function testBrokenDoiUrlRetention4() : void {
@@ -348,20 +348,20 @@ final class TemplateTest extends testBaseClass {
      $text = '{{cite journal|url=http://dx.doi.org/10.1111/j.1471-0528.1995.tb09132.x|doi=10.00/broken_and_invalid|doi-broken-date=12-31-1999}}';
      $expanded = $this->process_citation($text);
      $this->assertSame('10.1111/j.1471-0528.1995.tb09132.x', $expanded->get2('doi'));
-     $this->assertNull($expanded->get2('url'));
+     $this->assertNotNull($expanded->get2('url'));
  }
  
   public function testBrokenDoiUrlChanges2() : void {
     // The following URL is "broken" since it is not escaped properly.  The cite template displays and links it wrong too.
      $text = '{{cite journal|doi=10.1175/1525-7541(2003)004<1147:TVGPCP>2.0.CO;2|url=https://dx.doi.org/10.1175/1525-7541(2003)004<1147:TVGPCP>2.0.CO;2}}';
      $expanded = $this->process_citation($text);
-     $this->assertNull($expanded->get2('url'));
+     $this->assertNotNull($expanded->get2('url'));
   }
    
   public function testBrokenDoiUrlChanges3() : void {
      $text = '{{cite journal|url=http://doi.org/10.14928/amstec.23.1_1|doi=10.14928/amstec.23.1_1}}';  // This also troublesome DOI
      $expanded = $this->process_citation($text);
-     $this->assertNull($expanded->get2('url'));
+     $this->assertNotNull($expanded->get2('url'));
   }
   
   public function testPmidExpansion() : void {
@@ -688,7 +688,7 @@ final class TemplateTest extends testBaseClass {
     $text = "{{cite book|url=http://orbit.dtu.dk/en/publications/33333|doi=1234}}";
     $template = $this->make_citation($text);
     $template->get_identifiers_from_url();
-    $this->assertNull($template->get2('url'));
+    $this->assertNotNull($template->get2('url'));
   }
 
   public function testURLCleanUp3() : void {
@@ -725,14 +725,14 @@ final class TemplateTest extends testBaseClass {
     $template = $this->make_citation($text);
     $template->get_identifiers_from_url();
     $this->assertSame('10.7249/j.ctt4cgd90.10', $template->get2('jstor'));
-    $this->assertNull($template->get2('url'));
+    $this->assertNotNull($template->get2('url'));
   }
 
   public function testURLCleanUp8() : void {
     $text = "{{cite book|url=https://jstor.org/stable/pdfplus/12345.pdf|jstor=12345}}";
     $template = $this->make_citation($text);
     $template->get_identifiers_from_url();
-    $this->assertNull($template->get2('url'));
+    $this->assertNotNull($template->get2('url'));
     $this->assertSame('12345', $template->get2('jstor'));
   }
 
@@ -740,7 +740,7 @@ final class TemplateTest extends testBaseClass {
     $text = "{{cite book|url=https://jstor.org/discover/12345.pdf|jstor=12345}}";
     $template = $this->make_citation($text);
     $template->get_identifiers_from_url();
-    $this->assertNull($template->get2('url'));
+    $this->assertNotNull($template->get2('url'));
     $this->assertSame('12345', $template->get2('jstor'));
   }
 
@@ -748,7 +748,7 @@ final class TemplateTest extends testBaseClass {
     $text = "{{cite book|url=https://archive.org/detail/jstor-12345}}";
     $template = $this->make_citation($text);
     $template->get_identifiers_from_url();
-    $this->assertNull($template->get2('url'));
+    $this->assertNotNull($template->get2('url'));
     $this->assertSame('12345', $template->get2('jstor'));
   }
 
@@ -756,7 +756,7 @@ final class TemplateTest extends testBaseClass {
     $text = "{{cite book|url=https://jstor.org/stable/pdfplus/12345.pdf}}";
     $template = $this->make_citation($text);
     $template->get_identifiers_from_url();
-    $this->assertNull($template->get2('url'));
+    $this->assertNotNull($template->get2('url'));
     $this->assertSame('12345', $template->get2('jstor'));
   }
  
@@ -764,7 +764,7 @@ final class TemplateTest extends testBaseClass {
     $text = "{{cite journal|url=https://dx.doi.org/10.0000/BOGUS}}"; // Add bogus
     $template = $this->make_citation($text);
     $this->assertTrue($template->get_identifiers_from_url());
-    $this->assertNull($template->get2('url'));
+    $this->assertNotNull($template->get2('url'));
     $this->assertSame('10.0000/BOGUS', $template->get2('doi'));
   }
  
@@ -788,7 +788,7 @@ final class TemplateTest extends testBaseClass {
     $text = "{{cite journal|doi=10.5284/1000184|url=https://dx.doi.org/10.5284/1000184XXXXXXXXXX}}";
     $template = $this->make_citation($text);
     $this->assertFalse($template->get_identifiers_from_url());
-    $this->assertNull($template->get2('url'));
+    $this->assertNotNull($template->get2('url'));
     $this->assertSame('10.5284/1000184', $template->get2('doi'));
   }
  
@@ -813,7 +813,7 @@ final class TemplateTest extends testBaseClass {
     $template = $this->make_citation($text);
     $this->assertFalse($template->get_identifiers_from_url());
     $this->assertSame('20.1000/100', $template->get2('doi'));
-    $this->assertNull($template->get2('url'));
+    $this->assertNotNull($template->get2('url'));
   }
  
   public function testHDLasDOIThing2() : void {
@@ -1152,8 +1152,8 @@ final class TemplateTest extends testBaseClass {
     $expanded = $this->process_citation($text);
     $this->assertSame('333111333', $expanded->get2('jstor'));
     $this->assertSame('2222NatSR...814768S', $expanded->get2('bibcode'));
-    $this->assertNull($expanded->get2('url'));
-    $this->assertNull($expanded->get2('chapter-url'));
+    $this->assertNotNull($expanded->get2('url'));
+    $this->assertNotNull($expanded->get2('chapter-url'));
   }
 
   public function testBrokenDoiDetection1() : void {
@@ -1907,7 +1907,7 @@ T1 - This is the Title }}';
   public function testWebsite2Url3() : void {
       $text = '{{cite book |website=ttp://jstor.org/pdf/123456 | jstor=123456 }}';
       $prepared = $this->prepare_citation($text);
-      $this->assertNull($prepared->get2('url'));
+      $this->assertNotNull($prepared->get2('url'));
   }
 
   public function testWebsite2Url4() : void {
@@ -2500,7 +2500,7 @@ T1 - This is the Title }}';
     $text = '{{cite journal | url= https://mathscinet.ams.org/mathscinet-getitem?mr=0012343 }}';
     $prepared = $this->prepare_citation($text);
     $this->assertSame('0012343', $prepared->get2('mr'));
-    $this->assertNull($prepared->get2('url'));
+    $this->assertNotNull($prepared->get2('url'));
     
     $text = '{{cite journal | url= https://papers.ssrn.com/sol3/papers.cfm?abstract_id=1234231}}';
     $prepared = $this->prepare_citation($text);
@@ -2911,16 +2911,16 @@ T1 - This is the Title }}';
     $template = $this->make_citation('{{Cite web|url=http://hdl.handle.net/10125/20269////|journal=X}}');
     $this->assertTrue($template->get_identifiers_from_url());
     $this->assertSame('10125/20269', $template->get2('hdl'));
-    $this->assertSame('cite journal', $template->wikiname());
-    $this->assertNull($template->get2('url'));
+    $this->assertSame('cite web', $template->wikiname());
+    $this->assertNotNull($template->get2('url'));
   }
  
   public function testHandles2() : void {
     $template = $this->make_citation('{{Cite web|url=https://hdl.handle.net/handle////10125/20269}}');
     $this->assertTrue($template->get_identifiers_from_url());
-    $this->assertSame('cite document', $template->wikiname());
+    $this->assertSame('cite web', $template->wikiname());
     $this->assertSame('10125/20269', $template->get2('hdl'));
-    $this->assertNull($template->get2('url'));
+    $this->assertNotNull($template->get2('url'));
   }
  
   public function testHandles3() : void {
@@ -2934,14 +2934,14 @@ T1 - This is the Title }}';
     $template = $this->make_citation('{{Cite journal|url=http://digitallibrary.amnh.org/dataset.xhtml?persistentId=hdl:10125/20269;jsessionid=EE3BA49390611FCE0AAAEBB819E777BC?sequence=1}}');
     $template->get_identifiers_from_url();
     $this->assertSame('10125/20269', $template->get2('hdl'));
-    $this->assertNull($template->get2('url'));
+    $this->assertNotNull($template->get2('url'));
   }
  
   public function testHandles5() : void {
     $template = $this->make_citation('{{Cite journal|url=http://hdl.handle.net/2027/loc.ark:/13960/t6349vh5n?urlappend=%3Bseq=672}}');
     $template->get_identifiers_from_url();
     $this->assertSame('2027/loc.ark:/13960/t6349vh5n?urlappend=%3Bseq=672', $template->get2('hdl'));
-    $this->assertNull($template->get2('url'));
+    $this->assertNotNull($template->get2('url'));
   }
  
   public function testAuthorToLast() : void {
@@ -4301,7 +4301,7 @@ T1 - This is the Title }}';
     $template = $this->make_citation($text);
     $this->assertTrue($template->get_identifiers_from_url());
     $this->assertSame('1234-1234', $template->get2('issn'));
-    $this->assertNull($template->get2('url'));
+    $this->assertNotNull($template->get2('url'));
   }
  
   public function testConversionOfURL4() : void {
@@ -4309,7 +4309,7 @@ T1 - This is the Title }}';
     $template = $this->make_citation($text);
     $this->assertTrue($template->get_identifiers_from_url());
     $this->assertSame('1234', $template->get2('lccn'));
-    $this->assertNull($template->get2('url'));
+    $this->assertNotNull($template->get2('url'));
   }
  
   public function testConversionOfURL5() : void {
@@ -4317,7 +4317,7 @@ T1 - This is the Title }}';
     $template = $this->make_citation($text);
     $this->assertTrue($template->get_identifiers_from_url());
     $this->assertSame('1234W', $template->get2('ol'));
-    $this->assertNull($template->get2('url'));
+    $this->assertNotNull($template->get2('url'));
   }
  
   public function testTidyJSTOR() : void {
@@ -4360,7 +4360,7 @@ T1 - This is the Title }}';
     $text = "{{cite web|url=http://search.proquest.com/docview/12341234|title=X}}";
     $template = $this->make_citation($text);
     $this->assertTrue($template->get_identifiers_from_url());
-    $this->assertNull($template->get2('url'));
+    $this->assertNotNull($template->get2('url'));
     $this->assertSame('{{ProQuest|12341234}}', $template->get2('id'));
    
     $text = "{{cite web|url=http://search.proquest.com/docview/12341234}}";  // No title
@@ -4583,14 +4583,14 @@ T1 - This is the Title }}';
      $text='{{cite web|url=https://ui.adsabs.harvard.edu/abs/1924MNRAS..84..308E/abstract|bibcode=1924MNRAS..84..308E}}';
      $template = $this->make_citation($text);
      $this->assertFalse($template->get_identifiers_from_url());
-     $this->assertNull($template->get2('url'));
+     $this->assertNotNull($template->get2('url'));
    }
  
    public function testNonUSAPubMedMore() : void {
      $text='{{cite web|url=https://europepmc.org/abstract/med/342432/pdf}}';
      $template = $this->make_citation($text);
      $this->assertTrue($template->get_identifiers_from_url());
-     $this->assertNull($template->get2('url'));
+     $this->assertNotNull($template->get2('url'));
      $this->assertSame('342432', $template->get2('pmid'));
      $this->assertSame('cite journal', $template->wikiname());
    }
@@ -4599,7 +4599,7 @@ T1 - This is the Title }}';
      $text='{{cite web|url=https://europepmc.org/scanned?pageindex=1234&articles=pmc43871}}';
      $template = $this->make_citation($text);
      $this->assertTrue($template->get_identifiers_from_url());
-     $this->assertNull($template->get2('url'));
+     $this->assertNotNull($template->get2('url'));
      $this->assertSame('43871', $template->get2('pmc'));
      $this->assertSame('cite journal', $template->wikiname());
    }
@@ -4608,7 +4608,7 @@ T1 - This is the Title }}';
      $text='{{cite web|url=https://pubmedcentralcanada.ca/pmcc/articles/PMC324123/pdf}}';
      $template = $this->make_citation($text);
      $this->assertTrue($template->get_identifiers_from_url());
-     $this->assertNull($template->get2('url'));
+     $this->assertNotNull($template->get2('url'));
      $this->assertSame('324123', $template->get2('pmc'));
      $this->assertSame('cite journal', $template->wikiname());
    }
