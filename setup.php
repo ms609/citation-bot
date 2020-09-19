@@ -36,7 +36,7 @@ if (isset($_REQUEST["slow"]) || TRAVIS || (isset($argv[2]) && $argv[2] === '--sl
 }
 
 //Optimisation
-ini_set('output_buffering', false);
+ini_set('output_buffering', '0');
 ob_implicit_flush();
 if (!TRAVIS) {
     if (FLUSHING_OKAY) {
