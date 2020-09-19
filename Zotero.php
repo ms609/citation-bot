@@ -209,7 +209,7 @@ public static function drop_urls_that_match_dois(array & $templates) : void {  /
        } elseif ($template->get('doi-access') === 'free' && $template->get('url-status') === 'dead' && $url_kind === 'url') {
           report_forget("Existing free DOI; dropping dead URL");
           $template->forget($url_kind);
-       } elseif (FALSE && $template->has('pmc')) { // SEP 2020
+       } elseif (FALSE && $template->get('doi-access') === 'free') {
           curl_setopt($ch, CURLOPT_URL, "https://dx.doi.org/" . urlencode($doi));
           if (@curl_exec($ch)) {
             $redirectedUrl_doi = curl_getinfo($ch, CURLINFO_EFFECTIVE_URL);  // Final URL
@@ -240,7 +240,7 @@ public static function drop_urls_that_match_dois(array & $templates) : void {  /
        }
     }
     $url = $template->get($url_kind);
-    if (FALSE $url && !$template->profoundly_incomplete() && str_ireplace(PROXY_HOSTS_TO_DROP,'', $url) !== $url) { // SEP 2020 TODO
+    if (FALSE && $url && !$template->profoundly_incomplete() && str_ireplace(PROXY_HOSTS_TO_DROP,'', $url) !== $url) { // SEP 2020 TODO
        if (!$template->blank_other_than_comments('pmc')) {
           report_forget("Existing proxy URL resulting from equivalent PMC; dropping URL");
           $template->forget($url_kind);
