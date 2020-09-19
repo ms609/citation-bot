@@ -37,12 +37,16 @@ if (isset($_REQUEST["slow"]) || TRAVIS || (isset($argv[2]) && $argv[2] === '--sl
 
 //Optimisation
 ini_set('output_buffering', '0');
+ini_set('zlib.output_compression', '0');
+ini_set('implicit_flush', '1');
 ob_implicit_flush();
 if (!TRAVIS) {
     if (FLUSHING_OKAY) {
       while (ob_get_level()) {
         ob_end_flush();
       }
+      if (HTML_OUTPUT) echo str_pad("\n", 8096); // send 8K to the browser fast
+      flush();
       ob_start(); // will flush every three seconds or on "critical" printouts
     } else {
       ob_start();
