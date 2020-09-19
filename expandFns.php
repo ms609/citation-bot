@@ -475,7 +475,7 @@ function throttle (int $min_interval) : void {
   if ($phase < $cycles) {
     return;
   } else {
-    $phase = O;
+    $phase = 0;
     $min_interval =  $min_interval * $cycles;
   }
  
