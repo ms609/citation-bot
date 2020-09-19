@@ -8,6 +8,7 @@ if (file_exists('git_pull.lock')) exit('GIT pull in progress');
  */
 
 ini_set("user_agent", "Citation_bot; citations@tools.wmflabs.org");
+ini_set('output_buffering', false);
 include_once('./vendor/autoload.php');
 
 define("TRAVIS", (bool) getenv('TRAVIS'));
