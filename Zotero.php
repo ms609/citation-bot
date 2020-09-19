@@ -179,7 +179,10 @@ public static function drop_urls_that_match_dois(array & $templates) : void {  /
         (strpos($doi, '10.1093/') === FALSE) &&
         $template->blank(DOI_BROKEN_ALIASES))
     {
-       if (str_ireplace(PROXY_HOSTS_TO_DROP,'', $url) !== $url) {
+       if (str_ireplace(PROXY_HOSTS_TO_DROP,'', $url) !== $url && $template->get('doi-access') === 'free') {
+          report_forget("Existing proxy URL resulting from equivalent free DOI; dropping URL");
+          $template->forget($url_kind);
+       } elseif (str_ireplace(PROXY_HOSTS_TO_ALWAYS_DROP,'', $url) !== $url) {
           report_forget("Existing proxy URL resulting from equivalent DOI; fixing URL");
           $template->set($url_kind, "https://dx.doi.org/" . urlencode($doi));
        } elseif (preg_match('~www.sciencedirect.com/science/article/B[^/\-]*\-[^/\-]+\-[^/\-]+/~', $url)) {
@@ -240,34 +243,34 @@ public static function drop_urls_that_match_dois(array & $templates) : void {  /
        }
     }
     $url = $template->get($url_kind);
-    if (FALSE && $url && !$template->profoundly_incomplete() && str_ireplace(PROXY_HOSTS_TO_DROP,'', $url) !== $url) { // SEP 2020 TODO
+    if ($url && !$template->profoundly_incomplete() && str_ireplace(PROXY_HOSTS_TO_ALWAYS_DROP,'', $url) !== $url) {
        if (!$template->blank_other_than_comments('pmc')) {
           report_forget("Existing proxy URL resulting from equivalent PMC; dropping URL");
           $template->forget($url_kind);
        } elseif (!$template->blank_other_than_comments('pmid')) {
-          report_forget("Existing proxy URL resulting from equivalent pmid; dropping URL");
-          $template->forget($url_kind);
+          // SEP 2020 report_forget("Existing proxy URL resulting from equivalent pmid; dropping URL");
+          // SEP 2020 $template->forget($url_kind);
        } elseif (!$template->blank_other_than_comments('isbn')) {
-          report_forget("Existing proxy URL resulting from equivalent isbn; dropping URL");
-          $template->forget($url_kind);
+          // SEP 2020 report_forget("Existing proxy URL resulting from equivalent isbn; dropping URL");
+          // SEP 2020 $template->forget($url_kind);
        } elseif (!$template->blank_other_than_comments('s2cid')) {
-          report_forget("Existing proxy URL resulting from equivalent s2cid; dropping URL");
-          $template->forget($url_kind);
+          // SEP 2020 report_forget("Existing proxy URL resulting from equivalent s2cid; dropping URL");
+          // SEP 2020 $template->forget($url_kind);
        } elseif (!$template->blank_other_than_comments('oclc')) {
-          report_forget("Existing proxy URL resulting from equivalent oclc; dropping URL");
-          $template->forget($url_kind);
+          // SEP 2020 report_forget("Existing proxy URL resulting from equivalent oclc; dropping URL");
+          // SEP 2020 $template->forget($url_kind);
        } elseif (!$template->blank_other_than_comments('lccn')) {
-          report_forget("Existing proxy URL resulting from equivalent lccn; dropping URL");
-          $template->forget($url_kind);
+          // SEP 2020 report_forget("Existing proxy URL resulting from equivalent lccn; dropping URL");
+          // SEP 2020 $template->forget($url_kind);
        } elseif (!$template->blank_other_than_comments('jstor')) {
-          report_forget("Existing proxy URL resulting from equivalent jstor; dropping URL");
-          $template->forget($url_kind);
+          // SEP 2020 report_forget("Existing proxy URL resulting from equivalent jstor; dropping URL");
+          // SEP 2020 $template->forget($url_kind);
        } elseif (!$template->blank_other_than_comments('arxiv')) {
-          report_forget("Existing proxy URL resulting from equivalent arxiv; dropping URL");
-          $template->forget($url_kind);
+          // SEP 2020 report_forget("Existing proxy URL resulting from equivalent arxiv; dropping URL");
+          // SEP 2020 $template->forget($url_kind);
        } elseif (!$template->blank_other_than_comments('bibcode')) {
-          report_forget("Existing proxy URL resulting from equivalent bibcode; dropping URL");
-          $template->forget($url_kind);
+          // SEP 2020 report_forget("Existing proxy URL resulting from equivalent bibcode; dropping URL");
+          // SEP 2020 $template->forget($url_kind);
        }
     }
   }
