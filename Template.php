@@ -1609,7 +1609,7 @@ final class Template {
               return $this->add_if_new('pmc', $match[1] . $match[2]);
             }
           }
-          // SEP 2020 if (stripos($url, "table") === FALSE) $this->forget($url_type);
+          if (stripos($url, "table") === FALSE) $this->forget($url_type); // This is the same as PMC auto-link
         } 
         return $this->add_if_new('pmc', $match[1] . $match[2]);
       } elseif (preg_match("~^https?://(?:www\.|)europepmc\.org/articles?/pmc/?(\d{4,})~i", $url, $match)  ||
@@ -1619,7 +1619,7 @@ final class Template {
           quietly('report_modification', "Converting Europe URL to PMC parameter");
         }
         if (is_null($url_sent) && stripos($url, ".pdf") === FALSE) {
-          // SEP 2020 $this->forget($url_type);
+           $this->forget($url_type); // This is same as PMC-auto-link
         }
         return $this->add_if_new('pmc', $match[1]);
       } elseif (preg_match("~^https?://(?:www\.|)europepmc\.org/(?:abstract|articles?)/med/(\d{4,})~i", $url, $match)) {
@@ -1635,7 +1635,7 @@ final class Template {
         if ($this->wikiname() === 'cite web') $this->change_name_to('cite journal');
         quietly('report_modification', "Converting Canadian URL to PMC parameter");
         if (is_null($url_sent)) {
-          // SEP 2020 $this->forget($url_type);  // Always do this conversion, since website is gone!
+            $this->forget($url_type);  // Always do this conversion, since website is gone!
         }
         return $this->add_if_new('pmc', $match[1]);
       } elseif (preg_match("~^https?://citeseerx\.ist\.psu\.edu/viewdoc/(?:summary|download)(?:\;jsessionid=[^\?]+|)\?doi=([0-9.]*)(?:&.+)?~", $url, $match)) {
@@ -1684,7 +1684,9 @@ final class Template {
       } elseif (preg_match('~^http.+ncbi\.nlm\.nih\.gov/entrez/eutils/elink.fcgi\?.+tool=sumsearch\.org.+id=(\d+)$~', $url, $match)) {
         if ($url_sent) return FALSE;   // Many do not work
         if ($this->blank(['doi', 'pmc'])) return FALSE;  // This is a redirect to the publisher, not pubmed
-        if ($match[1] == $this->get('pmc') || $match[1] == $this->get('pmid')) {
+        if ($match[1] == $this->get('pmc') {
+           $this->forget($url_type); // Same as PMC-auto-link
+        } elseif ($match[1] == $this->get('pmid')) {
            // SEP 2020 $this->forget($url_type);
         }
         return FALSE;
