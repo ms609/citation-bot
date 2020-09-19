@@ -1452,9 +1452,9 @@ final class Template {
     if (preg_match("~^https?://(?:(?:dx\.|www\.|)doi\.org|doi\.library\.ubc\.ca)/([^\?]*)~i", $url, $match)) {
       if ($this->has('doi')) {
         if (str_i_same($this->get('doi'), $match[1])) {
-         if (is_null($url_sent)) {
-          // SEP 2020 quietly('report_modification', "URL is hard-coded DOI; removing since we already have DOI paramter");
-          // SEP 2020 $this->forget($url_type);
+         if (is_null($url_sent) && $this->get('doi-access') === 'free') {
+          quietly('report_modification', "URL is hard-coded DOI; removing since we already have free DOI paramter");
+          $this->forget($url_type);
          }
          return FALSE;
         }
@@ -1471,7 +1471,7 @@ final class Template {
         }
         if (!doi_works($match[1]) && doi_works($this->get('doi'))) {
           if (is_null($url_sent)) {
-            // SEP 2020 $this->forget($url_type);
+             // SEP 2020 $this->forget($url_type);
           }
           return FALSE;
         }
