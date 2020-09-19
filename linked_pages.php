@@ -34,6 +34,8 @@ $api = new WikipediaBot();
     <pre id="botOutput">
 <?php
 
+html_echo("\n" . str_pad("", 8096) . "\n", ''); // send 8K to the browser to try to get it to display something 
+
 check_blocked();
 
 $page_name = str_replace(' ', '_', trim((string) @$_REQUEST['page']));
