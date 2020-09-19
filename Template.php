@@ -1314,8 +1314,12 @@ final class Template {
     }
     // Abstract only websites
     if (preg_match('~orbit.dtu.dk/en/publications~', $url)) { // This file path only
-       if (is_null($url_sent) && !$this->blank(['doi', 'pmid', 'pmc'])) {
-         // SEP 2020 $this->forget($url_type); // Remove it
+       if (is_null($url_sent)) {
+         if ($this->has('pmc')) {
+            $this->forget($url_type); // Remove it to make room for free-link
+         } elseif ($this->has('doi') && $this->get('doi-access') === 'free') {
+            $this->forget($url_type); // Remove it to make room for free-link
+         }
        }
        return FALSE;
     }
