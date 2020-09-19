@@ -45,6 +45,8 @@ if (!TRAVIS) {
       while (ob_get_level()) {
         ob_end_flush();
       }
+      if (HTML_OUTPUT) echo str_pad("\n", 8096); // send 8K to the browser fast
+      flush();
       ob_start(); // will flush every three seconds or on "critical" printouts
     } else {
       ob_start();
