@@ -470,8 +470,7 @@ class Page {
         return TRUE;          // @codeCoverageIgnore
       } elseif (!TRAVIS) {
         // @codeCoverageIgnoreStart
-        throttle(10);
-        sleep(10);  // could be database being locked
+        throttle(10);  // could be database being locked
         report_info("Trying to write again after waiting");
         return $api->write_page($this->title, $this->text,
               $this->edit_summary() . $edit_summary_end,
