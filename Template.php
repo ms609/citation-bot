@@ -1688,7 +1688,7 @@ final class Template {
       } elseif (preg_match('~^http.+ncbi\.nlm\.nih\.gov/entrez/eutils/elink.fcgi\?.+tool=sumsearch\.org.+id=(\d+)$~', $url, $match)) {
         if ($url_sent) return FALSE;   // Many do not work
         if ($this->blank(['doi', 'pmc'])) return FALSE;  // This is a redirect to the publisher, not pubmed
-        if ($match[1] == $this->get('pmc') {
+        if ($match[1] == $this->get('pmc')) {
            $this->forget($url_type); // Same as PMC-auto-link
         } elseif ($match[1] == $this->get('pmid')) {
            // SEP 2020 $this->forget($url_type);
