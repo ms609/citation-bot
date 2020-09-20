@@ -46,8 +46,15 @@ html_echo("\n" . str_pad("", 8096) . "\n", ''); // send 8K to the browser to try
 check_blocked();
 
 $page_name = str_replace(' ', '_', trim((string) @$_REQUEST['page']));
-if ($page_name == '') report_error('Nothing requested');
-if (strlen($page_name) >256) report_error('Possible invalid page');
+if ($page_name == '') {
+  report_warning('Nothing requested');
+  exit("\n </pre></body></html>");
+}
+
+if (strlen($page_name) > 256)  {
+  report_warning('Possible invalid page');
+  exit("\n </pre></body></html>");
+}
 $edit_summary_end = "| Suggested by " . $api->get_the_user() . " | All pages linked from cached copy of $page_name | via #UCB_webform_linked";
 
 $url = API_ROOT . '?action=parse&prop=links&format=json&page=' . $page_name;
@@ -61,12 +68,14 @@ curl_setopt_array($ch,
 $json = (string) @curl_exec($ch);
 curl_close($ch);
 if ($json == '') {
-  report_error(' Error getting page list');
-}    
+  report_warning(' Error getting page list');
+  exit("\n </pre></body></html>");
+}
 $array = @json_decode($json, TRUE);
 unset($json);
 if ($array === FALSE || !isset($array['parse']['links']) || !is_array($array['parse']['links'])) {
-  report_error(' Error interpreting page list - perhaps page requested does not even exist');
+  report_warning(' Error interpreting page list - perhaps page requested does not even exist');
+  exit("\n </pre></body></html>");
 }
 $links = $array['parse']['links']; // @phan-suppress-current-line PhanTypeArraySuspiciousNullable
 unset($array);
@@ -81,9 +90,13 @@ foreach($links as $link) {
 }
 unset($links);
 $pages_in_category = array_unique($pages_in_category);
-if (empty($pages_in_category)) report_error('No links to expand found');
+if (empty($pages_in_category)) {
+  report_warning('No links to expand found');
+  exit("\n </pre></body></html>");
+}
   if (count($pages_in_category) > 1000) {
-    report_error('Number of links is huge.  Cancelling run.  Listen to Obi-Wan Kenobi:  You want to go home and rethink your life.');
+    report_warning('Number of links is huge.  Cancelling run.  Listen to Obi-Wan Kenobi:  You want to go home and rethink your life.');
+    exit("\n </pre></body></html>");
   }
 
   $page = new Page();
@@ -107,8 +120,7 @@ if (empty($pages_in_category)) report_error('No links to expand found');
     }
     echo "\n" . '</pre><pre id="botOutput">' . "\n";
   }
-  echo ("\n Done all " . (string) count($pages_in_category) . " pages linked from " . echoable($page_name) . " \n");
+  echo ("\n Done all " . (string) count($pages_in_category) . " pages linked from " . echoable($page_name) . " \n  # # # \n </pre></body></html>");
 ?>
- # # #</pre></body></html>
 
 
