@@ -38,6 +38,9 @@ if (HTML_OUTPUT) {?>
 
 html_echo("\n" . str_pad("", 8096) . "\n", ''); // send 8K to the browser to try to get it to display something 
 check_blocked();
+?>
+      
+<?php
 
 $edit_summary_end = "| Suggested by " . $api->get_the_user() . " ";
 $final_edit_overview = "";
