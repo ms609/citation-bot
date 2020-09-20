@@ -40,6 +40,8 @@ if (HTML_OUTPUT) {
 <?php
 }
 
+html_echo("\n" . str_pad("", 8096) . "\n", ''); // send 8K to the browser to try to get it to display something 
+
 check_blocked();
 
 $edit_summary_end = "| Suggested by " . $api->get_the_user() . " | [[Category:$category]] | via #UCB_Category ";

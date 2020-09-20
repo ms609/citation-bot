@@ -469,6 +469,16 @@ function remove_brackets(string $string) : string {
 
 function throttle (int $min_interval) : void {
   static $last_write_time = 0;
+  static $phase = 0;
+  $cycles = 3; // average over this many cycles
+  $phase = $phase + 1;
+  if ($phase < $cycles) {
+    return;
+  } else {
+    $phase = 0;
+    $min_interval =  $min_interval * $cycles;
+  }
+ 
   $time_since_last_write = time() - $last_write_time;
   if ($time_since_last_write < $min_interval) {
     $time_to_pause = floor($min_interval - $time_since_last_write);
