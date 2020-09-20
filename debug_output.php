@@ -12,6 +12,7 @@ ob_implicit_flush();
 while (ob_get_level()) {
  ob_end_flush();
 }
+echo("\n" . str_pad("", 8096) . "\n", '')
 
 echo "Wait 6</p>\n";
 sleep(2);
