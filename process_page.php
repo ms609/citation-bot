@@ -36,11 +36,7 @@ if (HTML_OUTPUT) {?>
 <?php
 }
 
-html_echo("\n" . str_pad("", 8096) . "\n", ''); // send 8K to the browser to try to get it to display something 
 check_blocked();
-?>
-      
-<?php
 
 $edit_summary_end = "| Suggested by " . $api->get_the_user() . " ";
 $final_edit_overview = "";
@@ -119,7 +115,7 @@ foreach (array_unique(explode('|', $pages)) as $page_title) {
       report_phase($my_page->parsed_text() ? 'No changes required.' : 'Blank page');
       $final_edit_overview .= "\n No changes needed. " . "<a href=" . WIKI_ROOT . "?title=" . urlencode($page_title) . ">" . echoable($page_title) . "</a>";
     }
-    html_echo("\n" . '</pre><pre id="botOutput">' . "\n", "\n");
+    echo "\n";
   } else {
     echo "\n Page      '" . htmlspecialchars($page_title) . "' not found.";
   }
