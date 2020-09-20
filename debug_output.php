@@ -6,7 +6,7 @@ error_reporting(E_ALL^E_NOTICE);
 @header('Pragma: no-cache');
 @header('Expires: 0');
 ?>
-<!DOCTYPE html><html lang="en" dir="ltr"><head><title>DEBUG CACHE</title></head><body><pre>
+<!DOCTYPE html><html lang="en" dir="ltr"><head><title>DEBUG CACHE</title></head><body><main>X</main><div>Y</div><pre>
 <?php
 ob_implicit_flush();
 while (ob_get_level()) {
@@ -25,7 +25,7 @@ sleep(2);
 /** @psalm-suppress ForbiddenCode */
 @shell_exec("/usr/bin/sync 2>&1 /dev/null");
 
-echo "Wait 3</p>\n";
+echo "</pre><pre>Wait 3</p>\n";
 sleep(2);
 
 echo "Wait 2</p>\n";
