@@ -105,3 +105,4 @@ if ($category) {
 }
 html_echo(' # # #</pre><footer><a href="./" title="Use Citation Bot again">Another</a>?</footer></body></html>', "\n");
 exit(0);
+?>
