@@ -213,7 +213,7 @@ public static function drop_urls_that_match_dois(array & $templates) : void {  /
        } elseif ($template->get('doi-access') === 'free' && $template->get('url-status') === 'dead' && $url_kind === 'url') {
           report_forget("Existing free DOI; dropping dead URL");
           $template->forget($url_kind);
-       } elseif (FALSE && $template->get('doi-access') === 'free') {
+       } elseif (FALSE && $template->get('doi-access') === 'free') {   // TODO - should this be turned back on?
           curl_setopt($ch, CURLOPT_URL, "https://dx.doi.org/" . urlencode($doi));
           if (@curl_exec($ch)) {
             $redirectedUrl_doi = curl_getinfo($ch, CURLINFO_EFFECTIVE_URL);  // Final URL
