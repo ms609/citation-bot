@@ -22,6 +22,7 @@ sleep(2);
 echo "Wait 4</p>\n";
 sleep(2);
 
+/** @psalm-suppress ForbiddenCode */
 @shell_exec("/usr/bin/sync 2>&1 /dev/null")
 
 echo "Wait 3</p>\n";
@@ -33,6 +34,6 @@ sleep(2);
 echo "Wait 1</p>\n";
 sleep(2);
 
-echo "Script done</p>"
+echo "Script done</p>";
 ?>
 </pre></body></html>
