@@ -75,6 +75,9 @@ foreach($links as $link) {
 unset($links);
 $pages_in_category = array_unique($pages_in_category);
 if (empty($pages_in_category)) report_error('No links to expand found');
+  if (count($pages_in_category) > 1000) {
+    report_error('Number of links is huge.  Cancelling run.  Listen to Obi-Wan Kenobi:  You want to go home and rethink your life.');
+  }
 
   $page = new Page();
   foreach ($pages_in_category as $page_title) {
