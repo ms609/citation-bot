@@ -391,6 +391,7 @@ class Page {
     $caps_ok = array('lccn', 'isbn', 'doi');
     $last_first_in  = array(' last=',  ' last =',  '|last=',  '|last =',  ' first=',  ' first =',  '|first=',  '|first =');
     $last_first_out = array(' last1=', ' last1 =', '|last1=', '|last1 =', ' first1=', ' first1 =', '|first1=', '|first1 =');
+    echo "\n" . gc_collect_cycles() . "\n";
     return strcmp(str_replace($last_first_in, $last_first_out, str_ireplace($caps_ok, $caps_ok, $this->text)),
                   str_replace($last_first_in, $last_first_out,str_ireplace($caps_ok, $caps_ok, $this->start_text))) != 0;
   }
