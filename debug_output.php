@@ -23,7 +23,7 @@ echo "Wait 4</p>\n";
 sleep(2);
 
 /** @psalm-suppress ForbiddenCode */
-@shell_exec("/usr/bin/sync 2>&1 /dev/null")
+@shell_exec("/usr/bin/sync 2>&1 /dev/null");
 
 echo "Wait 3</p>\n";
 sleep(2);
