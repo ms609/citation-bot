@@ -7,6 +7,8 @@ error_reporting(E_ALL^E_NOTICE);
 @header('Cache-Control: no-cache, no-store, must-revalidate');
 @header('Pragma: no-cache');
 @header('Expires: 0');
+@header_remove("Transfer-Encoding");
+flush();
 ?>
 <!DOCTYPE html><html lang="en" dir="ltr"><head><title>DEBUG CACHE</title></head><body><main>X</main><div>Y</div><pre>
 <?php
@@ -15,14 +17,17 @@ while (ob_get_level()) {
  ob_end_flush();
 }
 echo("\n" . str_pad("", 80096) . "\n");
+if(headers_sent()) echo "HOSER\n";
 flush();
 echo "Wait 6</p>\n";
 sleep(2);
 flush();
 echo "Wait 5</p>\n";
+if(headers_sent()) echo "HOSER\n";
 sleep(2);
 flush();
 echo "Wait 4</p>\n";
+if(headers_sent()) echo "HOSER\n";
 sleep(2);
 flush();
 /** @psalm-suppress ForbiddenCode */
@@ -32,11 +37,17 @@ echo "</pre><pre>Wait 3</p>\n";
 sleep(2);
 flush();
 echo "Wait 2</p>\n";
+if(headers_sent()) echo "HOSER\n";
 sleep(2);
 flush();
 echo "Wait 1</p>\n";
+if(headers_sent()) echo "HOSER\n";
 sleep(2);
 flush();
 echo "Script done</p>";
+if(headers_sent()) echo "HOSER\n";
+var_dump(headers_list());
+if(headers_sent()) echo "HOSER\n";
 ?>
 </pre></body></html>
+
