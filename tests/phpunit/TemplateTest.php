@@ -5230,7 +5230,7 @@ T1 - This is the Title }}';
      $this->assertSame('Woodley, George (bap. 1786, d. 1846)', $template->get2('title'));
      $this->assertNotNull($template->get2('url'));
      $this->assertSame('10.1093/ref:odnb/29929', $template->get2('doi'));
-     $this->assertNotNull($template->get2('publisher'));
+     $this->assertNull($template->get2('publisher'));
   }
     // Now with caps in wikiname
    public function testOxfordTemplate2() : void {
@@ -5240,7 +5240,7 @@ T1 - This is the Title }}';
      $this->assertSame('Woodley, George (bap. 1786, d. 1846)', $template->get2('title'));
      $this->assertNotNull($template->get2('url'));
      $this->assertSame('10.1093/ref:odnb/29929', $template->get2('doi'));
-     $this->assertNotNull($template->get2('publisher'));
+     $this->assertNull($template->get2('publisher'));
   }
  
   public function testSemanticscholar1() : void {
@@ -5322,7 +5322,7 @@ T1 - This is the Title }}';
      $text = '{{cite web|url=http://doi.org/10.1063/1.2833100 |url-access=Tested}}';
      $template = $this->make_citation($text);
      $template->get_identifiers_from_url();
-     $this->assertNotNull($template->get2('doi-access'));
+     $this->assertNull($template->get2('doi-access'));
      $this->assertNotNull($template->get2('url-access'));
   }
  
