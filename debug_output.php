@@ -7,6 +7,8 @@ error_reporting(E_ALL^E_NOTICE);
 @header('Cache-Control: no-cache, no-store, must-revalidate');
 @header('Pragma: no-cache');
 @header('Expires: 0');
+@header_remove("Transfer-Encoding");
+flush();
 ?>
 <!DOCTYPE html><html lang="en" dir="ltr"><head><title>DEBUG CACHE</title></head><body><main>X</main><div>Y</div><pre>
 <?php
