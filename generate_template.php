@@ -31,3 +31,4 @@ $page->expand_text();
 
 echo("\n\n<ref>" . htmlspecialchars($page->parsed_text()) . "</ref>\n\n</pre></body></html>");
 
+?>
