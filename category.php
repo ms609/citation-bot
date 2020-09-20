@@ -64,6 +64,7 @@ if ($category) {
   shuffle($pages_in_category);
   $page = new Page();
   foreach ($pages_in_category as $page_title) {
+    gc_collect_cycles();
     // $page->expand_text will take care of this notice if we are in HTML mode.
     html_echo('', "\n\n\n*** Processing page '" . echoable($page_title) . "' : " . date("H:i:s") . "\n");
     if ($page->get_text_from($page_title, $api) && $page->expand_text()) {
