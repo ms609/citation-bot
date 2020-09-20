@@ -15,28 +15,28 @@ while (ob_get_level()) {
  ob_end_flush();
 }
 echo("\n" . str_pad("", 8096) . "\n");
-
+flush();
 echo "Wait 6</p>\n";
 sleep(2);
-
+flush();
 echo "Wait 5</p>\n";
 sleep(2);
-
+flush();
 echo "Wait 4</p>\n";
 sleep(2);
-
+flush();
 /** @psalm-suppress ForbiddenCode */
 @shell_exec("/usr/bin/sync 2>&1 /dev/null");
-
+flush();
 echo "</pre><pre>Wait 3</p>\n";
 sleep(2);
-
+flush();
 echo "Wait 2</p>\n";
 sleep(2);
-
+flush();
 echo "Wait 1</p>\n";
 sleep(2);
-
+flush();
 echo "Script done</p>";
 ?>
 </pre></body></html>
