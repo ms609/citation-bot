@@ -21,7 +21,6 @@ final class PageTest extends testBaseClass {
 
   public function testPageChangeSummary31() : void {
       $page = $this->process_page('<ref>http://onlinelibrary.wiley.com/doi/10.1111/j.1475-4983.2012.01203.x</ref>');
-      $this->assertFalse(strpos($page->parsed_text(), 'onlinelibrary.wiley.com')); // URL is gone
       $this->assertSame('Alter: template type. Add: pages, issue, volume, journal, year, title, doi, author pars. 1-2. Removed URL that duplicated unique identifier. Converted bare reference to cite template. Formatted [[WP:ENDASH|dashes]]. | You can [[WP:UCB|use this bot]] yourself. [[WP:DBUG|Report bugs here]]. ', $page->edit_summary());                
   }
  
