@@ -1,3 +1,8 @@
+<?php
+@header('Cache-Control: no-cache, no-store, must-revalidate');
+@header('Pragma: no-cache');
+@header('Expires: 0');
+?>
 <!DOCTYPE html><html lang="en" dir="ltr"><head><title>Unlocker</title></head><body><pre>
 <?php
 ob_implicit_flush();
