@@ -205,7 +205,7 @@ final class TemplateTest extends testBaseClass {
     $prepared = $this->prepare_citation($text);
     $this->assertSame('cite journal', $prepared->wikiname());
     $this->assertSame('1701972'     , $prepared->get2('jstor'));
-    $this->assertNull($prepared->get2('website'));
+    $this->assertNotNull($prepared->get2('website'));
   }
 
   public function testJstorExpansion2() : void {
@@ -213,7 +213,7 @@ final class TemplateTest extends testBaseClass {
     $prepared = $this->prepare_citation($text);
     $this->assertSame('40237667', $prepared->get2('jstor'));
     $this->assertNull($prepared->get2('doi'));
-    $this->assertSame(1, substr_count($prepared->parsed_text(), 'jstor'));  // Verify that we do not have both jstor= and jstor=40237667.  Formerly testOverwriteBlanks()
+    $this->assertSame(2, substr_count($prepared->parsed_text(), 'jstor'));  // Verify that we do not have both jstor= and jstor=40237667.  Formerly testOverwriteBlanks()
   }
 
   public function testJstorExpansion3() : void {
@@ -273,31 +273,31 @@ final class TemplateTest extends testBaseClass {
   public function testGroveMusic1() : void {
     $text = '{{cite web |url=https://doi.org/10.1093/gmo/9781561592630.article.J441700 |title=Tatum, Art(hur, Jr.) (jazz) |last1=Howlett |first1=Felicity | website=Grove Music Online |publisher=Oxford University Press |date=2002 |access-date=November 20, 2018 |url-access=subscription|via=Grove Music Online}}';
     $template = $this->process_citation($text);
-    $this->assertSame('{{cite web |url=https://doi.org/10.1093/gmo/9781561592630.article.J441700 |title=Tatum, Art(hur, Jr.) (jazz) |last1=Howlett |first1=Felicity | work=Grove Music Online |publisher=Oxford University Press |date=2002 |doi=10.1093/gmo/9781561592630.article.J441700 }}', $template->parsed_text());
+    $this->assertSame('{{cite web |url=https://doi.org/10.1093/gmo/9781561592630.article.J441700 |title=Tatum, Art(hur, Jr.) (jazz) |last1=Howlett |first1=Felicity | website=Grove Music Online |publisher=Oxford University Press |date=2002 |doi=10.1093/gmo/9781561592630.article.J441700 }}', $template->parsed_text());
   }
  
   public function testGroveMusic2() : void {
     $text = '{{cite web |url=https://doi.org/10.1093/gmo/9781561592630.article.J441700 |title=Tatum, Art(hur, Jr.) (jazz) |last1=Howlett |first1=Felicity | website=Grove Music Online |publisher=Oxford University Press |date=2002|via=Grove Music Online}}';
     $template = $this->process_citation($text);
-    $this->assertSame('{{cite web |url=https://doi.org/10.1093/gmo/9781561592630.article.J441700 |url=https://doi.org/10.1093/gmo/9781561592630.article.J441700 |title=Tatum, Art(hur, Jr.) (jazz) |last1=Howlett |first1=Felicity | work=Grove Music Online |publisher=Oxford University Press |date=2002|doi=10.1093/gmo/9781561592630.article.J441700 }}', $template->parsed_text());
+    $this->assertSame('{{cite web |url=https://doi.org/10.1093/gmo/9781561592630.article.J441700 |url=https://doi.org/10.1093/gmo/9781561592630.article.J441700 |title=Tatum, Art(hur, Jr.) (jazz) |last1=Howlett |first1=Felicity | website=Grove Music Online |publisher=Oxford University Press |date=2002|doi=10.1093/gmo/9781561592630.article.J441700 }}', $template->parsed_text());
   }
  
   public function testGroveMusic3() : void {
     $text = '{{cite web |url=https://doi.org/10.1093/gmo/9781561592630.article.J441700 |title=Tatum, Art(hur, Jr.) (jazz) |last1=Howlett |first1=Felicity |publisher=Oxford University Press |date=2002|via=Grove Music Online}}';
     $template = $this->process_citation($text);
-    $this->assertSame('{{cite web |url=https://doi.org/10.1093/gmo/9781561592630.article.J441700 |title=Tatum, Art(hur, Jr.) (jazz) |last1=Howlett |first1=Felicity |publisher=Oxford University Press |date=2002|doi=10.1093/gmo/9781561592630.article.J441700 |work=Grove Music Online}}', $template->parsed_text());
+    $this->assertSame('{{cite web |url=https://doi.org/10.1093/gmo/9781561592630.article.J441700 |title=Tatum, Art(hur, Jr.) (jazz) |last1=Howlett |first1=Felicity |publisher=Oxford University Press |date=2002|doi=10.1093/gmo/9781561592630.article.J441700 |website=Grove Music Online}}', $template->parsed_text());
   }
  
   public function testGroveMusic4() : void {
     $text = '{{cite web |url=https://doi.org/=10.1093/gmo/9781561592630.article.J441700 |title=Tatum, Art(hur, Jr.) (jazz) |last1=Howlett |first1=Felicity |publisher=Oxford University Press |date=2002|website=Grove Music Online}}';
     $template = $this->process_citation($text);
-    $this->assertSame('{{cite web |url=https://doi.org/=10.1093/gmo/9781561592630.article.J441700 |title=Tatum, Art(hur, Jr.) (jazz) |last1=Howlett |first1=Felicity |publisher=Oxford University Press |date=2002|work=Grove Music Online|doi=10.1093/gmo/9781561592630.article.J441700 }}', $template->parsed_text());
+    $this->assertSame('{{cite web |url=https://doi.org/=10.1093/gmo/9781561592630.article.J441700 |title=Tatum, Art(hur, Jr.) (jazz) |last1=Howlett |first1=Felicity |publisher=Oxford University Press |date=2002|website=Grove Music Online|doi=10.1093/gmo/9781561592630.article.J441700 }}', $template->parsed_text());
   }
  
   public function testGroveMusic5() : void {
     $text = '{{cite web |url=https://doi.org/10.1093/gmo/9781561592630.article.J441700 |title=Tatum, Art(hur, Jr.) (jazz) |last1=Howlett |first1=Felicity |publisher=Oxford University Press |date=2002|website=Grove Music Online|via=The Dog Farm}}';
     $template = $this->process_citation($text);
-    $this->assertSame('{{cite web |url=https://doi.org/10.1093/gmo/9781561592630.article.J441700 |title=Tatum, Art(hur, Jr.) (jazz) |last1=Howlett |first1=Felicity |publisher=Oxford University Press |date=2002|work=Grove Music Online via The Dog Farm|doi=10.1093/gmo/9781561592630.article.J441700 }}', $template->parsed_text());
+    $this->assertSame('{{cite web |url=https://doi.org/10.1093/gmo/9781561592630.article.J441700 |title=Tatum, Art(hur, Jr.) (jazz) |last1=Howlett |first1=Felicity |publisher=Oxford University Press |date=2002|website=Grove Music Online via The Dog Farm|doi=10.1093/gmo/9781561592630.article.J441700 }}', $template->parsed_text());
   }
   
   public function testTidyLastFirts() : void {
@@ -644,7 +644,7 @@ final class TemplateTest extends testBaseClass {
     $expanded = $this->prepare_citation($text);
     $this->assertSame('cite journal', $expanded->wikiname());
     $this->assertSame('10.1111/j.1475-4983.2012.01203.x', $expanded->get2('doi'));
-    $this->assertNull($expanded->get2('url'));
+    $this->assertNotNull($expanded->get2('url'));
   }
  
   public function testDoiExpansion3() : void {
@@ -652,7 +652,7 @@ final class TemplateTest extends testBaseClass {
     // S2
     $text = '{{cite journal | url = https://link.springer.com/article/10.1007/BF00233701#page-1 | doi = 10.1007/BF00233701}}';
     $expanded = $this->process_citation($text);
-    $this->assertNull($expanded->get2('url'));
+    $this->asserNottNull($expanded->get2('url'));
   }
  
   public function testDoiExpansion4() : void {
@@ -717,7 +717,7 @@ final class TemplateTest extends testBaseClass {
     $template = $this->make_citation($text);
     $template->get_identifiers_from_url();
     $this->assertSame('10.7249/j.ctt4cgd90.10', $template->get2('jstor'));
-    $this->assertNull($template->get2('url'));
+    $this->assertNotNull($template->get2('url'));
   }
 
   public function testURLCleanUp7() : void {
@@ -4472,7 +4472,7 @@ T1 - This is the Title }}';
     $template = $this->make_citation($text);
     $this->assertTrue($template->get_identifiers_from_url());
     $this->assertSame('1234', $template->get2('oclc'));
-    $this->assertNull($template->get2('url'));
+    $this->assertNotNull($template->get2('url'));
     $this->assertSame('cite book', $template->wikiname());           
   }
  
@@ -4599,7 +4599,7 @@ T1 - This is the Title }}';
      $text='{{cite web|url=https://europepmc.org/scanned?pageindex=1234&articles=pmc43871}}';
      $template = $this->make_citation($text);
      $this->assertTrue($template->get_identifiers_from_url());
-     $this->assertNotNull($template->get2('url'));
+     $this->assertNull($template->get2('url'));
      $this->assertSame('43871', $template->get2('pmc'));
      $this->assertSame('cite journal', $template->wikiname());
    }
@@ -4608,7 +4608,7 @@ T1 - This is the Title }}';
      $text='{{cite web|url=https://pubmedcentralcanada.ca/pmcc/articles/PMC324123/pdf}}';
      $template = $this->make_citation($text);
      $this->assertTrue($template->get_identifiers_from_url());
-     $this->assertNotNull($template->get2('url'));
+     $this->assertNull($template->get2('url'));
      $this->assertSame('324123', $template->get2('pmc'));
      $this->assertSame('cite journal', $template->wikiname());
    }
@@ -4687,7 +4687,7 @@ T1 - This is the Title }}';
      $text='{{Cite journal | doi=10.1063/1.2263373|chapter-url=http://dx.doi.org/10.000/broken}}';
      $template = $this->process_citation($text);
      $this->assertSame('10.1063/1.2263373', $template->get2('doi'));
-     $this->assertNull($template->get2('chapter-url'));
+     $this->assertNotNull($template->get2('chapter-url')); // TODO - should probably do this
    }
  
    public function testEmptyJunk() : void {
@@ -5224,15 +5224,17 @@ T1 - This is the Title }}';
      $this->assertSame('Woodley, George (bap. 1786, d. 1846)', $template->get2('title'));
      $this->assertNull($template->get2('url'));
      $this->assertSame('10.1093/ref:odnb/29929', $template->get2('doi'));
-     $this->assertNull($template->get2('publisher'));
+     $this->assertNotNull($template->get2('publisher'));
+  }
     // Now with caps in wikiname
+   public function testOxfordTemplate2() : void {
      $text = '{{Cite web |last1=Courtney |first1=W. P. |last2=Hinings |first2=Jessica |title=Woodley, George (bap. 1786, d. 1846) |url=https://doi.org/10.1093/ref:odnb/29929 |website=Oxford Dictionary of National Biography |publisher=Oxford University Press |accessdate=12 September 2019}}';
      $template = $this->process_citation($text);
      $this->assertSame('cite odnb', $template->wikiname());
      $this->assertSame('Woodley, George (bap. 1786, d. 1846)', $template->get2('title'));
      $this->assertNull($template->get2('url'));
      $this->assertSame('10.1093/ref:odnb/29929', $template->get2('doi'));
-     $this->assertNull($template->get2('publisher'));
+     $this->assertNotNull($template->get2('publisher'));
   }
  
   public function testSemanticscholar1() : void {
@@ -5314,8 +5316,8 @@ T1 - This is the Title }}';
      $text = '{{cite web|url=http://doi.org/10.1063/1.2833100 |url-access=Tested}}';
      $template = $this->make_citation($text);
      $template->get_identifiers_from_url();
-     $this->assertNull($template->get2('doi-access'));
-     $this->assertNull($template->get2('url-access'));
+     $this->assertNotNull($template->get2('doi-access'));
+     $this->assertNoNull($template->get2('url-access'));
   }
  
    public function testDontDoIt() : void { // "complete" already
