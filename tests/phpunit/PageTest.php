@@ -22,6 +22,7 @@ final class PageTest extends testBaseClass {
             CURLOPT_USERAGENT => 'Citation_bot; citations@tools.wmflabs.org',
             CURLOPT_URL => WIKI_ROOT . '?title=' . $bad_page . '&action=raw']);
       $text = curl_exec($ch);
+      $text = $text . $text;
       curl_close($ch);
       $page = new TestPage();
       $page->parse_text($text);
