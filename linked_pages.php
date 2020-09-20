@@ -3,6 +3,9 @@ declare(strict_types=1);
 @session_start();
 @header( 'Content-type: text/html; charset=utf-8' );
 @header("Content-Encoding: None", TRUE);
+@header('Cache-Control: no-cache, no-store, must-revalidate');
+@header('Pragma: no-cache');
+@header('Expires: 0');
 
 require_once('setup.php');
 
@@ -34,6 +37,12 @@ $api = new WikipediaBot();
     <pre id="botOutput">
 <?php
 
+html_echo("\n" . str_pad("", 8096) . "\n", ''); // send 8K to the browser to try to get it to display something
+// Dropping out of PHP helps force PHP to flush ALL buffers
+?>
+</pre><pre id="botOutput">
+<?php
+
 check_blocked();
 
 $page_name = str_replace(' ', '_', trim((string) @$_REQUEST['page']));
@@ -55,10 +64,12 @@ if ($json == '') {
   report_error(' Error getting page list');
 }    
 $array = @json_decode($json, TRUE);
+unset($json);
 if ($array === FALSE || !isset($array['parse']['links']) || !is_array($array['parse']['links'])) {
   report_error(' Error interpreting page list - perhaps page requested does not even exist');
 }
 $links = $array['parse']['links']; // @phan-suppress-current-line PhanTypeArraySuspiciousNullable
+unset($array);
 $pages_in_category = [];
 foreach($links as $link) {
     if (isset($link['exists']) && ($link['ns'] == 0 || $link['ns'] == 118)) {  // normal and draft articles only
@@ -68,8 +79,12 @@ foreach($links as $link) {
         }
     }
 }
+unset($links);
 $pages_in_category = array_unique($pages_in_category);
 if (empty($pages_in_category)) report_error('No links to expand found');
+  if (count($pages_in_category) > 1000) {
+    report_error('Number of links is huge.  Cancelling run.  Listen to Obi-Wan Kenobi:  You want to go home and rethink your life.');
+  }
 
   $page = new Page();
   foreach ($pages_in_category as $page_title) {

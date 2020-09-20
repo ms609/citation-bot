@@ -118,7 +118,7 @@ public static function query_ieee_webpages(array & $templates) : void {  // Poin
           if (count($dois) === 1) {
             if ($template->add_if_new('doi', $dois[0])) {
               if (strpos($template->get('doi'), $matches_url[1]) !== FALSE && doi_works($template->get('doi'))) {
-                $template->forget($kind);  // It is one of those DOIs with the document number in it
+                // SEP 2020 $template->forget($kind);  // It is one of those DOIs with the document number in it
               }
             }
           }
@@ -169,8 +169,8 @@ public static function drop_urls_that_match_dois(array & $templates) : void {  /
         !preg_match(REGEXP_DOI_ISSN_ONLY, $doi) &&
         $template->blank(DOI_BROKEN_ALIASES) &&
         preg_match("~^https?://ieeexplore\.ieee\.org/document/\d{5,}/?$~", $url) && strpos($doi, '10.1109') === 0) {
-          report_forget("Existing IEEE resulting from equivalent DOI; dropping URL");
-          $template->forget($url_kind);
+          // SEP 2020 report_forget("Existing IEEE resulting from equivalent DOI; dropping URL");
+          // SEP 2020 $template->forget($url_kind);
     }
     
     if ($doi &&
@@ -180,37 +180,40 @@ public static function drop_urls_that_match_dois(array & $templates) : void {  /
         (strpos($doi, '10.1093/') === FALSE) &&
         $template->blank(DOI_BROKEN_ALIASES))
     {
-       if (str_ireplace(PROXY_HOSTS_TO_DROP,'', $url) !== $url) {
-          report_forget("Existing proxy URL resulting from equivalent DOI; dropping URL");
+       if (str_ireplace(PROXY_HOSTS_TO_DROP,'', $url) !== $url && $template->get('doi-access') === 'free') {
+          report_forget("Existing proxy URL resulting from equivalent free DOI; dropping URL");
           $template->forget($url_kind);
+       } elseif (str_ireplace(PROXY_HOSTS_TO_ALWAYS_DROP,'', $url) !== $url) {
+          report_forget("Existing proxy URL resulting from equivalent DOI; fixing URL");
+          $template->set($url_kind, "https://dx.doi.org/" . urlencode($doi));
        } elseif (preg_match('~www.sciencedirect.com/science/article/B[^/\-]*\-[^/\-]+\-[^/\-]+/~', $url)) {
-          report_forget("Existing Invalid ScienceDirect URL when DOI is present; dropping URL");
-          $template->forget($url_kind);
+          report_forget("Existing Invalid ScienceDirect URL when DOI is present; fixing URL");
+          $template->set($url_kind, "https://dx.doi.org/" . urlencode($doi));
        } elseif (preg_match('~www.sciencedirect.com/science/article/pii/\S{0,16}$~i', $url)) { // Too Short
-          report_forget("Existing Invalid ScienceDirect URL when DOI is present; dropping URL");
-          $template->forget($url_kind);
+          report_forget("Existing Invalid ScienceDirect URL when DOI is present; fixing URL");
+          $template->set($url_kind, "https://dx.doi.org/" . urlencode($doi));
        } elseif (preg_match('~www.springerlink.com/content~i', $url)) { // Dead website
-          report_forget("Existing Invalid Springer Link URL when DOI is present; dropping URL");
-          $template->forget($url_kind);
+          report_forget("Existing Invalid Springer Link URL when DOI is present; fixing URL");
+          $template->set($url_kind, "https://dx.doi.org/" . urlencode($doi));
        } elseif (str_ireplace('insights.ovid.com/pubmed','', $url) !== $url && $template->has('pmid')) {
-          report_forget("Existing OVID URL resulting from equivalent PMID and DOI; dropping URL");
-          $template->forget($url_kind);
+          // SEP 2020 report_forget("Existing OVID URL resulting from equivalent PMID and DOI; dropping URL");
+          // SEP 2020 $template->forget($url_kind);
        } elseif ($template->has('pmc') && str_ireplace('iopscience.iop.org','', $url) !== $url) {
-          report_forget("Existing IOP URL resulting from equivalent DOI; dropping URL");
-          $template->forget($url_kind);
+          // SEP 2020 report_forget("Existing IOP URL resulting from equivalent DOI; dropping URL");
+          // SEP 2020 $template->forget($url_kind);
        } elseif (str_ireplace('journals.lww.com','', $url) !== $url) {
-          report_forget("Existing Outdated LWW URL resulting from equivalent DOI; dropping URL");
-          $template->forget($url_kind);
+          report_forget("Existing Outdated LWW URL resulting from equivalent DOI; fixing URL");
+          $template->set($url_kind, "https://dx.doi.org/" . urlencode($doi));
        } elseif (str_ireplace('wkhealth.com','', $url) !== $url) {
-          report_forget("Existing Outdated WK Health URL resulting from equivalent DOI; dropping URL");
-          $template->forget($url_kind);
+          report_forget("Existing Outdated WK Health URL resulting from equivalent DOI; fixing URL");
+          $template->set($url_kind, "https://dx.doi.org/" . urlencode($doi));
        } elseif ($template->has('pmc') && str_ireplace('bmj.com/cgi/pmidlookup','', $url) !== $url && $template->has('pmid')) {
-          report_forget("Existing The BMJ URL resulting from equivalent PMID and DOI; dropping URL");
-          $template->forget($url_kind);
+          // SEP 2020 report_forget("Existing The BMJ URL resulting from equivalent PMID and DOI; dropping URL");
+          // SEP 2020 $template->forget($url_kind);
        } elseif ($template->get('doi-access') === 'free' && $template->get('url-status') === 'dead' && $url_kind === 'url') {
           report_forget("Existing free DOI; dropping dead URL");
           $template->forget($url_kind);
-       } elseif ($template->has('pmc')) {
+       } elseif (FALSE && $template->get('doi-access') === 'free') {
           curl_setopt($ch, CURLOPT_URL, "https://dx.doi.org/" . urlencode($doi));
           if (@curl_exec($ch)) {
             $redirectedUrl_doi = curl_getinfo($ch, CURLINFO_EFFECTIVE_URL);  // Final URL
@@ -241,34 +244,34 @@ public static function drop_urls_that_match_dois(array & $templates) : void {  /
        }
     }
     $url = $template->get($url_kind);
-    if ($url && !$template->profoundly_incomplete() && str_ireplace(PROXY_HOSTS_TO_DROP,'', $url) !== $url) {
+    if ($url && !$template->profoundly_incomplete() && str_ireplace(PROXY_HOSTS_TO_ALWAYS_DROP,'', $url) !== $url) {
        if (!$template->blank_other_than_comments('pmc')) {
           report_forget("Existing proxy URL resulting from equivalent PMC; dropping URL");
           $template->forget($url_kind);
        } elseif (!$template->blank_other_than_comments('pmid')) {
-          report_forget("Existing proxy URL resulting from equivalent pmid; dropping URL");
-          $template->forget($url_kind);
+          // SEP 2020 report_forget("Existing proxy URL resulting from equivalent pmid; dropping URL");
+          // SEP 2020 $template->forget($url_kind);
        } elseif (!$template->blank_other_than_comments('isbn')) {
-          report_forget("Existing proxy URL resulting from equivalent isbn; dropping URL");
-          $template->forget($url_kind);
+          // SEP 2020 report_forget("Existing proxy URL resulting from equivalent isbn; dropping URL");
+          // SEP 2020 $template->forget($url_kind);
        } elseif (!$template->blank_other_than_comments('s2cid')) {
-          report_forget("Existing proxy URL resulting from equivalent s2cid; dropping URL");
-          $template->forget($url_kind);
+          // SEP 2020 report_forget("Existing proxy URL resulting from equivalent s2cid; dropping URL");
+          // SEP 2020 $template->forget($url_kind);
        } elseif (!$template->blank_other_than_comments('oclc')) {
-          report_forget("Existing proxy URL resulting from equivalent oclc; dropping URL");
-          $template->forget($url_kind);
+          // SEP 2020 report_forget("Existing proxy URL resulting from equivalent oclc; dropping URL");
+          // SEP 2020 $template->forget($url_kind);
        } elseif (!$template->blank_other_than_comments('lccn')) {
-          report_forget("Existing proxy URL resulting from equivalent lccn; dropping URL");
-          $template->forget($url_kind);
+          // SEP 2020 report_forget("Existing proxy URL resulting from equivalent lccn; dropping URL");
+          // SEP 2020 $template->forget($url_kind);
        } elseif (!$template->blank_other_than_comments('jstor')) {
-          report_forget("Existing proxy URL resulting from equivalent jstor; dropping URL");
-          $template->forget($url_kind);
+          // SEP 2020 report_forget("Existing proxy URL resulting from equivalent jstor; dropping URL");
+          // SEP 2020 $template->forget($url_kind);
        } elseif (!$template->blank_other_than_comments('arxiv')) {
-          report_forget("Existing proxy URL resulting from equivalent arxiv; dropping URL");
-          $template->forget($url_kind);
+          // SEP 2020 report_forget("Existing proxy URL resulting from equivalent arxiv; dropping URL");
+          // SEP 2020 $template->forget($url_kind);
        } elseif (!$template->blank_other_than_comments('bibcode')) {
-          report_forget("Existing proxy URL resulting from equivalent bibcode; dropping URL");
-          $template->forget($url_kind);
+          // SEP 2020 report_forget("Existing proxy URL resulting from equivalent bibcode; dropping URL");
+          // SEP 2020 $template->forget($url_kind);
        }
     }
   }
@@ -505,8 +508,8 @@ public static function process_zotero_response(string $zotero_response, Template
       if (stripos($url, 'jstor')) check_doi_for_jstor($template->get('doi'), $template);
       if (!$template->incomplete() && doi_active($template->get('doi')) && !preg_match(REGEXP_DOI_ISSN_ONLY, $template->get('doi')) && $url_kind != '') {
           if ((str_ireplace(CANONICAL_PUBLISHER_URLS, '', $template->get($url_kind)) != $template->get($url_kind))) { // This is the use a replace to see if a substring is present trick
-            report_forget("Existing canonical URL resulting in equivalent DOI; dropping URL");
-            $template->forget($url_kind);
+            // SEP 2020 report_forget("Existing canonical URL resulting in equivalent DOI; dropping URL");
+            // SEP 2020 $template->forget($url_kind);
           }
       }
       if (!$template->profoundly_incomplete()) return TRUE;

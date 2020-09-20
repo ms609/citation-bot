@@ -89,11 +89,14 @@ const CANONICAL_PUBLISHER_URLS = array ('elsevier.com', 'springer.com', 'science
                                 //  Below are sites that are simply DOI resolvers, like dx.doi.org
                                 'doi.library.ubc.ca');
 
+const PROXY_HOSTS_TO_ALWAYS_DROP = array('proxy.libraries', 'proxy.lib.', '.ezproxy.', '-ezproxy.', '/ezproxy.',
+                                  '.serialssolutions.com', '.ebscohost.com', 'findarticles.com'); // Drop these if there is a valid DOI
+
 const PROXY_HOSTS_TO_DROP = array('proxy.libraries', 'proxy.lib.', '.ezproxy.', '-ezproxy.', '/ezproxy.',
                                   '.serialssolutions.com', '.ebscohost.com', 'linkinghub.elsevier.com',
                                   'doi.library.ubc.ca', 'ingentaconnect.com/content', 'sciencedirect.com/science?_ob',
                                   'informaworld.com/smpp', '.search.serialssolutions.com', 'doi.apa.org',
-                                  'onlinelibrary.wiley.com/resolve/openurl', 'findarticles.com', 'psycnet.apa.org'); // Drop these if there is a valid DOI
+                                  'onlinelibrary.wiley.com/resolve/openurl', 'findarticles.com', 'psycnet.apa.org'); // Drop these if there is a valid FREE DOI
 
 const WEB_NEWSPAPERS = array('bbc news', 'bbc', 'news.bbc.co.uk', 'bbc sports', 'bbc sport', 'www.bbc.co.uk');
 
