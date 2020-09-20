@@ -71,7 +71,11 @@ if (file_exists('env.php')) {
 }
 
 mb_internal_encoding('UTF-8');
-ini_set("memory_limit", "196M");
+if (TRAVIS) {
+  ini_set("memory_limit", "256M"); // Taint analysis and such eat memory
+} else {
+  ini_set("memory_limit", "128M");
+}
 date_default_timezone_set('UTC');
 
 /** @psalm-suppress UnusedFunctionCall */
