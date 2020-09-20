@@ -3,6 +3,9 @@ declare(strict_types=1);
 try {
  @header("Access-Control-Allow-Origin: *"); //This is ok because the API is not authenticated
  @header("Content-Type: text/json");
+ @header('Cache-Control: no-cache, no-store, must-revalidate');
+ @header('Pragma: no-cache');
+ @header('Expires: 0');
 
  //Set up tool requirements
  require_once('setup.php');

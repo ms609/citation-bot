@@ -4,6 +4,9 @@ declare(strict_types=1);
 // usage: https://citations.toolforge.org/generate_template.php?doi=<DOI>
 @header( 'Content-type: text/html; charset=utf-8' );
 @header("Content-Encoding: None", TRUE);
+@header('Cache-Control: no-cache, no-store, must-revalidate');
+@header('Pragma: no-cache');
+@header('Expires: 0');
 ?>
 
 <!DOCTYPE html><html lang="en" dir="ltr"><head><title>Make a Template</title></head><body><pre>
