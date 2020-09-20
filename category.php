@@ -89,6 +89,7 @@ if ($category) {
       echo "\n\n    # # # ";
       $final_edit_overview .= "\n No changes needed. " . "<a href=" . WIKI_ROOT . "?title=" . urlencode($page_title) . ">" . echoable($page_title) . "</a>";
     }
+    gc_collect_cycles();
     echo "\n";
   }
   echo ("\n Done all " . (string) count($pages_in_category) . " pages in Category:" . echoable($category) . ". \n");
