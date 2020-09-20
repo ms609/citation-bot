@@ -112,6 +112,7 @@ if (empty($pages_in_category)) {
     } else {
       report_phase($page->parsed_text() ? "No changes required. \n\n    # # # " : "Blank page. \n\n    # # # ");
     }
+    gc_collect_cycles();
     echo "\n";
   }
   echo ("\n Done all " . (string) count($pages_in_category) . " pages linked from " . echoable($page_name) . " \n  # # # \n </pre></body></html>");
