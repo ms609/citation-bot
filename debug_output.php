@@ -2,6 +2,8 @@
 declare(strict_types=1);
 @session_start();
 error_reporting(E_ALL^E_NOTICE);
+@header( 'Content-type: text/html; charset=utf-8' );
+@header("Content-Encoding: None", TRUE);
 @header('Cache-Control: no-cache, no-store, must-revalidate');
 @header('Pragma: no-cache');
 @header('Expires: 0');
@@ -12,7 +14,7 @@ ob_implicit_flush();
 while (ob_get_level()) {
  ob_end_flush();
 }
-echo("\n" . str_pad("", 8096) . "\n", '');
+echo("\n" . str_pad("", 8096) . "\n"), '');
 
 echo "Wait 6</p>\n";
 sleep(2);
