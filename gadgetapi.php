@@ -15,6 +15,7 @@ try {
 
  //Expand text from postvars
  $page = new Page();
+ gc_collect_cycles();
  $page->parse_text($originalText);
  $page->expand_text();
  $newText = $page->parsed_text();
