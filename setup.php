@@ -40,12 +40,13 @@ ini_set('output_buffering', '0');
 ini_set('zlib.output_compression', '0');
 ini_set('implicit_flush', '1');
 ob_implicit_flush();
+flush();
 if (!TRAVIS) {
     if (FLUSHING_OKAY) {
       while (ob_get_level()) {
         ob_end_flush();
       }
-      ob_start(); // will flush every three seconds or on "critical" printouts
+      ob_start(); // will flush every five seconds or on "critical" printouts
     } else {
       ob_start();
     }
