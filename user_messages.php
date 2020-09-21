@@ -16,10 +16,9 @@ function user_notice(string $symbol, string $class, string $text) : void {
     echo "\n " . (HTML_OUTPUT ? "<span class='$class'>" : "") . $symbol . $text . (HTML_OUTPUT ? "</span>" : "");
     if (FLUSHING_OKAY && ob_get_level()) {
       $now = microtime(TRUE);
-      if (in_array($class, array('phase', 'subitem', 'warning')) || 3 < ($now - $last_time)) {
+      if (in_array($class, array('phase', 'subitem', 'warning')) || 5 < ($now - $last_time)) {
         $last_time = $now;
         ob_flush();
-        flush();
       }
     }
     // @codeCoverageIgnoreEnd
