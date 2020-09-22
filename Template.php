@@ -3716,6 +3716,7 @@ final class Template {
         $this->set($param, preg_replace('~^[:,;](?!:)~u', '', $this->get($param)));  // Remove leading commas, colons, and semi-colons
         $this->set($param, preg_replace('~&#x2013;~u', '&ndash;', $this->get($param)));
         $this->set($param, preg_replace('~&#x2014;~u', '&mdash;', $this->get($param)));
+        $this->set($param, preg_replace('~(?<!\&)&[Aa]mp;(?!&)~u', '&', $this->get($param))); // &Amp; => & but not if next character is & or previous character is ;
       
         // Remove final semi-colon from a few items
         if ((in_array($param, ['date', 'year', 'location', 'publisher', 'issue', 'number', 'page', 'pages', 'pp', 'p', 'volume']) ||

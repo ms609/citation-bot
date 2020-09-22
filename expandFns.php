@@ -163,6 +163,9 @@ function wikify_external_text(string $title) : string {
     $title = preg_replace_callback('~(?:<i>)([^<]+)(?:</i>)~iu',
       function (array $matches) : string {return ("''" . $matches[1] . "''");},
       $title);
+    $title = preg_replace_callback('~(?:<italics>)([^<]+)(?:</italics>)~iu',
+      function (array $matches) : string {return ("''" . $matches[1] . "''");},
+      $title);
   }
 
   if (mb_substr($title, -1) == '.') {
