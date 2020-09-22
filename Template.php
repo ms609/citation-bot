@@ -2973,7 +2973,7 @@ final class Template {
         $url = $url_parts[0];
         $hash = $url_parts[1];
       }
-      if (preg_match("~google\.([^/]+)~", $url, )) {
+      if (preg_match("~google\.([^/]+)~", $url, $matched)) {
         $country = $matched[1];
         if (!in_array($country, ['com', 'co.uk', 'com.au', 'ca'])) { // Dominant English speaking places
           $country = 'com';
