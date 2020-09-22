@@ -2867,6 +2867,7 @@ final class Template {
   
   protected function expand_by_google_books_inner(string $url_type) : bool {
     $gid = ['', '']; // prevent memory leak in some PHP versions
+    $matched = ['', '']; // prevent memory leak in some PHP versions
     $google_results = ['', '']; // prevent memory leak in some PHP versions
     $matcher = ['', '']; // prevent memory leak in some PHP versions
     $matches = ['', '']; // prevent memory leak in some PHP versions
@@ -2972,8 +2973,16 @@ final class Template {
         $url = $url_parts[0];
         $hash = $url_parts[1];
       }
+      if (preg_match("~google\.([^/]+)~", $url, )) {
+        $country = $matched[1];
+        if (!in_array($country, ['com', 'co.uk', 'com.au', 'ca'])) { // Dominant English speaking places
+          $country = 'com';
+        }
+      } else {
+        $country = 'com'; // Should never happen
+      }
       $url_parts = explode("&", str_replace("?", "&", $url));
-      $url = "https://books.google.com/books?id=" . $gid[1];
+      $url = "https://books.google." . $country . "/books?id=" . $gid[1];
       foreach ($url_parts as $part) {
         $part_start = explode("=", $part);
         switch ($part_start[0]) {
