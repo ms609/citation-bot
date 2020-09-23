@@ -99,5 +99,4 @@ require_once('Template.php');
 require_once('Page.php');
 require_once('user_messages.php');
 
-Zotero::block_zotero();  // TODO - block until fixed
 
