@@ -13,13 +13,17 @@ try {
  $originalText = (string) $_POST['text'];
  $editSummary = (string) $_POST['summary'];
 
- //Expand text from postvars
- $page = new Page();
- gc_collect_cycles();
- $page->parse_text($originalText);
- $page->expand_text();
- $newText = $page->parsed_text();
- if ($newText == "") $newText = $originalText; // Something went very wrong
+ if (trim($originalText) != '') {
+  //Expand text from postvars
+  $page = new Page();
+  gc_collect_cycles();
+  $page->parse_text($originalText);
+  $page->expand_text();
+  $newText = $page->parsed_text();
+  if ($newText == "") $newText = $originalText; // Something went very wrong
+ } else {
+  $newText = $originalText;
+ }
 
  //Modify edit summary to identify bot-assisted edits
  if ($newText !== $originalText) {
