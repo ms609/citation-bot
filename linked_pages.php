@@ -37,12 +37,6 @@ $api = new WikipediaBot();
     <pre id="botOutput">
 <?php
 
-html_echo("\n" . str_pad("", 8096) . "\n", ''); // send 8K to the browser to try to get it to display something
-// Dropping out of PHP helps force PHP to flush ALL buffers
-?>
-</pre><pre id="botOutput">
-<?php
-
 check_blocked();
 
 $page_name = str_replace(' ', '_', trim((string) @$_REQUEST['page']));
@@ -101,6 +95,7 @@ if (empty($pages_in_category)) {
 
   $page = new Page();
   foreach ($pages_in_category as $page_title) {
+    gc_collect_cycles();
     // $page->expand_text will take care of this notice if we are in HTML mode.
     html_echo('', "\n\n\n*** Processing page '" . echoable($page_title) . "' : " . date("H:i:s") . "\n");
     if ($page->get_text_from($page_title, $api) && $page->expand_text()) {
@@ -118,7 +113,7 @@ if (empty($pages_in_category)) {
     } else {
       report_phase($page->parsed_text() ? "No changes required. \n\n    # # # " : "Blank page. \n\n    # # # ");
     }
-    echo "\n" . '</pre><pre id="botOutput">' . "\n";
+    echo "\n";
   }
   echo ("\n Done all " . (string) count($pages_in_category) . " pages linked from " . echoable($page_name) . " \n  # # # \n </pre></body></html>");
 ?>

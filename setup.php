@@ -40,12 +40,13 @@ ini_set('output_buffering', '0');
 ini_set('zlib.output_compression', '0');
 ini_set('implicit_flush', '1');
 ob_implicit_flush();
+flush();
 if (!TRAVIS) {
     if (FLUSHING_OKAY) {
       while (ob_get_level()) {
         ob_end_flush();
       }
-      ob_start(); // will flush every three seconds or on "critical" printouts
+      ob_start(); // will flush every five seconds or on "critical" printouts
     } else {
       ob_start();
     }
@@ -71,11 +72,7 @@ if (file_exists('env.php')) {
 }
 
 mb_internal_encoding('UTF-8');
-if (TRAVIS) {
-  ini_set("memory_limit", "256M"); // Taint analysis and such eat memory
-} else {
-  ini_set("memory_limit", "128M");
-}
+ini_set("memory_limit", "200M"); // Needed for "Skin Cancer" and other large pages and for "TAINT" analysis
 date_default_timezone_set('UTC');
 
 /** @psalm-suppress UnusedFunctionCall */
@@ -101,4 +98,6 @@ require_once('apiFunctions.php');
 require_once('Template.php');
 require_once('Page.php');
 require_once('user_messages.php');
+
+Zotero::block_zotero();  // TODO - block until fixed
 
