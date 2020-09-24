@@ -13,8 +13,13 @@ try {
  $originalText = (string) $_POST['text'];
  $editSummary = (string) $_POST['summary'];
 
+ if (strlen(trim($originalText)) < 4) {
+   throw new Exception('tiny');
+ }
+
  //Expand text from postvars
  $page = new Page();
+ gc_collect_cycles();
  $page->parse_text($originalText);
  $page->expand_text();
  $newText = $page->parsed_text();

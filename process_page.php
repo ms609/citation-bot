@@ -36,19 +36,26 @@ if (HTML_OUTPUT) {?>
 <?php
 }
 
-html_echo("\n" . str_pad("", 8096) . "\n", ''); // send 8K to the browser to try to get it to display something 
 check_blocked();
-?>
-      
-<?php
 
 $edit_summary_end = "| Suggested by " . $api->get_the_user() . " ";
 $final_edit_overview = "";
 
-$pages = isset($_REQUEST["page"]) ? (string) $_REQUEST["page"] : (string) @$argv[1];
+if (isset($argv[1])) {
+  $pages = (string) $argv[1];
+} elseif (isset($_GET["page"])) {
+  $pages = (string) $_GET["page"];
+  if (strpos($pages, '|') !== FALSE) {
+    report_error('We do not support multiple pages passed as part of the URL anymore. Use the webform.');
+  }
+} elseif (isset($_POST["page"])) {
+  $pages = (string) $_POST["page"];
+} else {
+  $pages = ''; // Errors out below
+}
 
 if (isset($_REQUEST["edit"]) && $_REQUEST["edit"]) {		
-  $ON = TRUE;
+   $ON = TRUE;
    if ($_REQUEST["edit"] == 'automated_tools') {
       $edit_summary_end = $edit_summary_end . "| via #UCB_automated_tools ";
    } elseif ($_REQUEST["edit"] == 'toolbar') {
@@ -76,6 +83,7 @@ if (!isset($ON)) {
 $my_page = new Page();
 
 foreach (array_unique(explode('|', $pages)) as $page_title) {
+  gc_collect_cycles();
 
   if (trim($page_title) === '') {  // Default is to edit Wikipedia's main page if user just clicks button.  Let's not even try
      echo "\n\n No page given.  <a href='./' title='Main interface'>Specify one here</a>. \n\n";
@@ -109,7 +117,7 @@ foreach (array_unique(explode('|', $pages)) as $page_title) {
       echo "</pre>";
   ?>
   <form method="post" action="process_page.php">
-    <input type="hidden" name="page" value="<?php echo $page_title;?>" />
+    <input type="hidden" name="page" value="<?php echo htmlspecialchars($page_title);?>" />
     <input type="hidden" name="edit" value="webform" />
     <input type="hidden" name="slow" value="<?php echo (string) SLOW_MODE;?>" />
     <input type="submit" value="Submit edits" />
@@ -119,7 +127,7 @@ foreach (array_unique(explode('|', $pages)) as $page_title) {
       report_phase($my_page->parsed_text() ? 'No changes required.' : 'Blank page');
       $final_edit_overview .= "\n No changes needed. " . "<a href=" . WIKI_ROOT . "?title=" . urlencode($page_title) . ">" . echoable($page_title) . "</a>";
     }
-    html_echo("\n" . '</pre><pre id="botOutput">' . "\n", "\n");
+    echo "\n";
   } else {
     echo "\n Page      '" . htmlspecialchars($page_title) . "' not found.";
   }

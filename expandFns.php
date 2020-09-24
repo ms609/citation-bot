@@ -163,6 +163,9 @@ function wikify_external_text(string $title) : string {
     $title = preg_replace_callback('~(?:<i>)([^<]+)(?:</i>)~iu',
       function (array $matches) : string {return ("''" . $matches[1] . "''");},
       $title);
+    $title = preg_replace_callback('~(?:<italics>)([^<]+)(?:</italics>)~iu',
+      function (array $matches) : string {return ("''" . $matches[1] . "''");},
+      $title);
   }
 
   if (mb_substr($title, -1) == '.') {
@@ -470,7 +473,7 @@ function remove_brackets(string $string) : string {
 function throttle (int $min_interval) : void {
   static $last_write_time = 0;
   static $phase = 0;
-  $cycles = 3; // average over this many cycles
+  $cycles = 6; // average over this many cycles
   $phase = $phase + 1;
   if ($phase < $cycles) {
     return;

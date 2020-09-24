@@ -9,7 +9,7 @@ declare(strict_types=1);
 
 require_once('setup.php');
 $api = new WikipediaBot();
-$category = isset($_REQUEST["cat"]) ? (string) $_REQUEST["cat"] : (string) @$argv[1];
+$category = isset($_POST["cat"]) ? (string) $_POST["cat"] : (string) @$argv[1];
 
 $category = trim($category);
 
@@ -43,12 +43,6 @@ if (HTML_OUTPUT) {
 <?php
 }
 
-html_echo("\n" . str_pad("", 8096) . "\n", ''); // send 8K to the browser to try to get it to display something 
-// Dropping out of PHP helps force PHP to flush ALL buffers
-?>
-</pre><pre id="botOutput">
-<?php
-
 check_blocked();
 
 $edit_summary_end = "| Suggested by " . $api->get_the_user() . " | [[Category:$category]] | via #UCB_Category ";
@@ -70,6 +64,7 @@ if ($category) {
   shuffle($pages_in_category);
   $page = new Page();
   foreach ($pages_in_category as $page_title) {
+    gc_collect_cycles();
     // $page->expand_text will take care of this notice if we are in HTML mode.
     html_echo('', "\n\n\n*** Processing page '" . echoable($page_title) . "' : " . date("H:i:s") . "\n");
     if ($page->get_text_from($page_title, $api) && $page->expand_text()) {
@@ -95,13 +90,21 @@ if ($category) {
       echo "\n\n    # # # ";
       $final_edit_overview .= "\n No changes needed. " . "<a href=" . WIKI_ROOT . "?title=" . urlencode($page_title) . ">" . echoable($page_title) . "</a>";
     }
-    html_echo("\n" . '</pre><pre id="botOutput">' . "\n", "\n");
+    echo "\n";
   }
   echo ("\n Done all " . (string) count($pages_in_category) . " pages in Category:" . echoable($category) . ". \n");
   $final_edit_overview .= "\n\n" . ' To get the best results, see our helpful <a href="https://en.wikipedia.org/wiki/User:Citation_bot/use">user guides</a>' . "\n\n";
   html_echo($final_edit_overview, '');
 } else {
-  echo ("You must specify a category.  Try appending ?cat=Blah+blah to the URL, or Category_name at the command line.");
+  if (isset($argv[1])) {
+    echo ("You must specify a category on the command line.");
+  } elseif (isset($_POST["cat"])) {
+    echo ("You must specify a valid category on the webform.");
+  } elseif (isset($_GET["cat"])) {
+    echo ("You must specify a category on the webform.  We do not support using as a parameter to the php file anymore");
+  } else {
+    echo ("You must specify a category using the API");
+  }
 }
 html_echo(' # # #</pre><footer><a href="./" title="Use Citation Bot again">Another</a>?</footer></body></html>', "\n");
 exit(0);
