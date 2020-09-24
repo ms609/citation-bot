@@ -50,6 +50,8 @@ if (isset($argv[1])) {
   }
 } elseif (isset($_POST["page"])) {
   $pages = (string) $_POST["page"];
+} else {
+  $pages = ''; // Errors out below
 }
 
 if (isset($_REQUEST["edit"]) && $_REQUEST["edit"]) {		
