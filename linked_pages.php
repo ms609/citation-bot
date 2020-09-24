@@ -39,9 +39,13 @@ $api = new WikipediaBot();
 
 check_blocked();
 
-$page_name = str_replace(' ', '_', trim((string) @$_REQUEST['page']));
+$page_name = str_replace(' ', '_', trim((string) @$_POST['linkpage']));
 if ($page_name == '') {
-  report_warning('Nothing requested');
+  if (isset($_GET['page'])) {
+    report_warning('Use the webform.  Passing pages via URL not supported anymore.');
+  } else {
+    report_warning('Nothing requested');
+  }
   exit("\n </pre></body></html>");
 }
 
