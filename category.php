@@ -9,7 +9,7 @@ declare(strict_types=1);
 
 require_once('setup.php');
 $api = new WikipediaBot();
-$category = isset($_REQUEST["cat"]) ? (string) $_REQUEST["cat"] : (string) @$argv[1];
+$category = isset($_POST["cat"]) ? (string) $_POST["cat"] : (string) @$argv[1];
 
 $category = trim($category);
 
@@ -96,7 +96,15 @@ if ($category) {
   $final_edit_overview .= "\n\n" . ' To get the best results, see our helpful <a href="https://en.wikipedia.org/wiki/User:Citation_bot/use">user guides</a>' . "\n\n";
   html_echo($final_edit_overview, '');
 } else {
-  echo ("You must specify a category.  Try appending ?cat=Blah+blah to the URL, or Category_name at the command line.");
+  if (isset($argv[1])) {
+    echo ("You must specify a category on the command line.");
+  } elseif (isset($_POST["cat"])) {
+    echo ("You must specify a valid category on the webform.");
+  } elseif (isset($_GET["cat"])) {
+    echo ("You must specify a category on the webform.  We do not support using as a parameter to the php file anymore");
+  } else {
+    echo ("You must specify a category using the API");
+  }
 }
 html_echo(' # # #</pre><footer><a href="./" title="Use Citation Bot again">Another</a>?</footer></body></html>', "\n");
 exit(0);
