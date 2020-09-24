@@ -117,7 +117,7 @@ foreach (array_unique(explode('|', $pages)) as $page_title) {
       echo "</pre>";
   ?>
   <form method="post" action="process_page.php">
-    <input type="hidden" name="page" value="<?php echo $page_title;?>" />
+    <input type="hidden" name="page" value="<?php echo echoable($page_title);?>" />
     <input type="hidden" name="edit" value="webform" />
     <input type="hidden" name="slow" value="<?php echo (string) SLOW_MODE;?>" />
     <input type="submit" value="Submit edits" />
