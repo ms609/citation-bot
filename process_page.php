@@ -41,10 +41,19 @@ check_blocked();
 $edit_summary_end = "| Suggested by " . $api->get_the_user() . " ";
 $final_edit_overview = "";
 
-$pages = isset($_REQUEST["page"]) ? (string) $_REQUEST["page"] : (string) @$argv[1];
+if (isset($argv[1])) {
+  $pages = (string) $argv[1];
+} elseif (isset($_GET["page"])) {
+  $pages = (string) $_GET["page"];
+  if (strpos($pages, '|') !== FALSE) {
+    report_error('We do not support multiple pages passed as part of the URL anymore. Use the webform.');
+  }
+} elseif (isset($_POST["page"])) {
+  $pages = (string) $_POST["page"];
+}
 
 if (isset($_REQUEST["edit"]) && $_REQUEST["edit"]) {		
-  $ON = TRUE;
+   $ON = TRUE;
    if ($_REQUEST["edit"] == 'automated_tools') {
       $edit_summary_end = $edit_summary_end . "| via #UCB_automated_tools ";
    } elseif ($_REQUEST["edit"] == 'toolbar') {
