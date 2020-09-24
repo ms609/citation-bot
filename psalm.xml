@@ -13,6 +13,7 @@
     runTaintAnalysis="false"
 >
     <projectFiles>
+        <file name="setup.php" />
         <file name="Comment.php" />
         <file name="NameTools.php" />
         <file name="Page.php" />
