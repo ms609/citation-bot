@@ -13,9 +13,9 @@ try {
  $originalText = (string) $_POST['text'];
  $editSummary = (string) $_POST['summary'];
 
+ //Expand text from postvars
+ $page = new Page();
  if (trim($originalText) != '') {
-  //Expand text from postvars
-  $page = new Page();
   gc_collect_cycles();
   $page->parse_text($originalText);
   $page->expand_text();
