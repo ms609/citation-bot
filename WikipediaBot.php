@@ -53,7 +53,6 @@ final class WikipediaBot {
     }
     $this->consumer = new Consumer((string) getenv('PHP_OAUTH_CONSUMER_TOKEN'), (string) getenv('PHP_OAUTH_CONSUMER_SECRET'));
     $this->token = new Token((string) getenv('PHP_OAUTH_ACCESS_TOKEN'), (string) getenv('PHP_OAUTH_ACCESS_SECRET'));
-    if (isset(self::$last_WikipediaBot)) unset(self::$last_WikipediaBot);
     self::$last_WikipediaBot = $this;
   }
   
