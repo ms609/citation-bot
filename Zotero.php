@@ -247,30 +247,6 @@ public static function drop_urls_that_match_dois(array & $templates) : void {  /
        if (!$template->blank_other_than_comments('pmc')) {
           report_forget("Existing proxy URL resulting from equivalent PMC; dropping URL");
           $template->forget($url_kind);
-       } elseif (!$template->blank_other_than_comments('pmid')) {
-          // SEP 2020 report_forget("Existing proxy URL resulting from equivalent pmid; dropping URL");
-          // SEP 2020 $template->forget($url_kind);
-       } elseif (!$template->blank_other_than_comments('isbn')) {
-          // SEP 2020 report_forget("Existing proxy URL resulting from equivalent isbn; dropping URL");
-          // SEP 2020 $template->forget($url_kind);
-       } elseif (!$template->blank_other_than_comments('s2cid')) {
-          // SEP 2020 report_forget("Existing proxy URL resulting from equivalent s2cid; dropping URL");
-          // SEP 2020 $template->forget($url_kind);
-       } elseif (!$template->blank_other_than_comments('oclc')) {
-          // SEP 2020 report_forget("Existing proxy URL resulting from equivalent oclc; dropping URL");
-          // SEP 2020 $template->forget($url_kind);
-       } elseif (!$template->blank_other_than_comments('lccn')) {
-          // SEP 2020 report_forget("Existing proxy URL resulting from equivalent lccn; dropping URL");
-          // SEP 2020 $template->forget($url_kind);
-       } elseif (!$template->blank_other_than_comments('jstor')) {
-          // SEP 2020 report_forget("Existing proxy URL resulting from equivalent jstor; dropping URL");
-          // SEP 2020 $template->forget($url_kind);
-       } elseif (!$template->blank_other_than_comments('arxiv')) {
-          // SEP 2020 report_forget("Existing proxy URL resulting from equivalent arxiv; dropping URL");
-          // SEP 2020 $template->forget($url_kind);
-       } elseif (!$template->blank_other_than_comments('bibcode')) {
-          // SEP 2020 report_forget("Existing proxy URL resulting from equivalent bibcode; dropping URL");
-          // SEP 2020 $template->forget($url_kind);
        }
     }
   }
