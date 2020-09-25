@@ -36,6 +36,7 @@ abstract class testBaseClass extends PHPUnit\Framework\TestCase {
     
     AdsAbsControl::give_up();
     Zotero::block_zotero();
+    $this->check_memory();
   }
 
   protected function requires_secrets(callable $function) : void {
@@ -46,6 +47,7 @@ abstract class testBaseClass extends PHPUnit\Framework\TestCase {
     } else {
       $function();
     }
+    $this->check_memory();
   }
   
   protected function requires_google(callable $function) : void {
@@ -56,6 +58,7 @@ abstract class testBaseClass extends PHPUnit\Framework\TestCase {
     } else {
       $function();
     }
+    $this->check_memory();
   }
 
   protected function requires_dx(callable $function) : void {
@@ -66,6 +69,7 @@ abstract class testBaseClass extends PHPUnit\Framework\TestCase {
     } else {
       $function();
     }
+    $this->check_memory();
   }
     
   protected function requires_arxiv(callable $function) : void {
@@ -76,6 +80,7 @@ abstract class testBaseClass extends PHPUnit\Framework\TestCase {
     } else {
       $function();
     }
+    $this->check_memory();
   }
 
   // Only routines that absolutely need bibcode access since we are limited 
@@ -94,6 +99,7 @@ abstract class testBaseClass extends PHPUnit\Framework\TestCase {
         AdsAbsControl::give_up();
       }
     }
+    $this->check_memory();
   }
 
   // allows us to turn off zoreto tests
@@ -112,9 +118,11 @@ abstract class testBaseClass extends PHPUnit\Framework\TestCase {
         Zotero::block_zotero();
       }
     }
+    $this->check_memory();
   } 
   
   protected function make_citation(string $text) : Template {
+    $this->check_memory();
     $this->assertSame('{{', mb_substr($text, 0, 2));
     $this->assertSame('}}', mb_substr($text, -2));
     $template = new Template();
@@ -123,6 +131,7 @@ abstract class testBaseClass extends PHPUnit\Framework\TestCase {
   }
   
   protected function prepare_citation(string $text) : Template {
+    $this->check_memory();
     $this->assertSame('{{', mb_substr($text, 0, 2));
     $this->assertSame('}}', mb_substr($text, -2));
     $template = new Template();
@@ -132,6 +141,7 @@ abstract class testBaseClass extends PHPUnit\Framework\TestCase {
   }
   
   protected function process_citation(string $text) : Template {
+    $this->check_memory();
     $this->assertSame('{{', mb_substr($text, 0, 2));
     $this->assertSame('}}', mb_substr($text, -2));
     $page = new TestPage();
@@ -144,6 +154,7 @@ abstract class testBaseClass extends PHPUnit\Framework\TestCase {
   }
     
   protected function process_page(string $text) : TestPage { // Only used if more than just a citation template
+    $this->check_memory();
     $page = new TestPage();
     $page->parse_text($text);
     $page->expand_text();
@@ -151,12 +162,14 @@ abstract class testBaseClass extends PHPUnit\Framework\TestCase {
   }
 
   protected function parameter_parse_text_helper(string $text) : Parameter {
+    $this->check_memory();
     $parameter = new Parameter();
     $parameter->parse_text($text);
     return $parameter;
   }
 
   protected function getDateAndYear(Template $input) : ?string {
+    $this->check_memory();
     // Generates string that makes debugging easy and will throw error
     if (is_null($input->get2('year'))) return $input->get2('date') ; // Might be null too
     if (is_null($input->get2('date'))) return $input->get2('year') ;
@@ -164,6 +177,7 @@ abstract class testBaseClass extends PHPUnit\Framework\TestCase {
   }
 
   protected function expand_via_zotero(string $text) :  Template {
+    $this->check_memory();
     $expanded = $this->make_citation($text);
     Zotero::expand_by_zotero($expanded);
     $expanded->tidy();
@@ -171,6 +185,7 @@ abstract class testBaseClass extends PHPUnit\Framework\TestCase {
   }
  
   protected function reference_to_template(string $text) : Template {
+    $this->check_memory();
     $matches = ['', '']; // prevent memory leak in some PHP versions
     $text=trim($text);
     if (preg_match("~^(?:<(?:\s*)ref[^>]*?>)(.*)(?:<\s*?\/\s*?ref(?:\s*)>)$~i", $text, $matches)) {
@@ -180,5 +195,16 @@ abstract class testBaseClass extends PHPUnit\Framework\TestCase {
     } else {
       trigger_error('Non-reference passsed to reference_to_template: ' . $text);
     }
+  }
+  
+  protected function check_memory() {
+    ob_flush();
+    $free_stuff = gc_collect_cycles();
+    if ( $free_stuff) {
+       echo("Freed " . (string) $free_stuff . " objects in GC cycle\n" ); 
+       debug_print_backtrace(0,6);
+       echo "\n\n"
+    }
+    ob_flush();
   }
 }
