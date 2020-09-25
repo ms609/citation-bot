@@ -10,6 +10,7 @@ require_once(__DIR__ . '/../testBaseClass.php');
 final class expandFnsTest extends testBaseClass {
 
   public function testCapitalization() : void {
+          $this->check_memory();
     $this->assertSame('Molecular and Cellular Biology', 
                         title_capitalization(title_case('Molecular and cellular biology'), TRUE));
     $this->assertSame('z/Journal', 
@@ -32,6 +33,7 @@ final class expandFnsTest extends testBaseClass {
   }
   
   public function testFrenchCapitalization() : void {
+          $this->check_memory();
     $this->assertSame("L'Aerotecnica",
                         title_capitalization(title_case("L'Aerotecnica"), TRUE));
     $this->assertSame("Phénomènes d'Évaporation d'Hydrologie",
@@ -41,6 +43,7 @@ final class expandFnsTest extends testBaseClass {
   }
   
   public function testITS() : void {
+          $this->check_memory();
     $this->assertSame(                     "Keep case of its Its and ITS",
                       title_capitalization("Keep case of its Its and ITS", TRUE));
     $this->assertSame(                     "ITS Keep case of its Its and ITS",
@@ -48,6 +51,7 @@ final class expandFnsTest extends testBaseClass {
   }
     
   public function testExtractDoi() : void {
+          $this->check_memory();
     $this->assertSame('10.1111/j.1475-4983.2012.01203.x', 
                         extract_doi('http://onlinelibrary.wiley.com/doi/10.1111/j.1475-4983.2012.01203.x/full')[1]);
     $this->assertSame('10.1111/j.1475-4983.2012.01203.x', 
@@ -61,6 +65,7 @@ final class expandFnsTest extends testBaseClass {
   }
   
   public function testSanitizeDoi() : void {
+          $this->check_memory();
     $this->assertSame('10.1111/j.1475-4983.2012.01203.x', sanitize_doi('10.1111/j.1475-4983.2012.01203.x'));
     $this->assertSame('10.1111/j.1475-4983.2012.01203.x', sanitize_doi('10.1111/j.1475-4983.2012.01203.x.')); // extra dot
     $this->assertSame('10.1111/j.1475-4983.2012.01203.x', sanitize_doi('10.1111/j.1475-4983.2012.01203.'));  // Missing x after dot
@@ -68,6 +73,7 @@ final class expandFnsTest extends testBaseClass {
   }
   
   public function testTidyDate() : void {
+          $this->check_memory();
     $this->assertSame('2014', tidy_date('maanantai 14. heinäkuuta 2014'));
     $this->assertSame('2012-04-20', tidy_date('2012年4月20日 星期五'));
     $this->assertSame('2011-05-10', tidy_date('2011-05-10T06:34:00-0400'));
@@ -88,10 +94,12 @@ final class expandFnsTest extends testBaseClass {
   }
   
   public function testRemoveComments() : void {
+          $this->check_memory();
     $this->assertSame('ABC', remove_comments('A<!-- -->B# # # CITATION_BOT_PLACEHOLDER_COMMENT 33 # # #C'));
   }
 
   public function testJstorInDo() : void {
+          $this->check_memory();
     $template = $this->prepare_citation('{{cite journal|jstor=}}');
     $doi = '10.2307/3241423?junk'; // test 10.2307 code and ? code
     check_doi_for_jstor($doi, $template);
@@ -99,6 +107,7 @@ final class expandFnsTest extends testBaseClass {
   }
 
   public function test_titles_are_dissimilar_LONG() : void {
+          $this->check_memory();
     $big1 = "asdfgtrewxcvbnjy67rreffdsffdsgfbdfni goreinagoidfhgaodusfhaoleghwc89foxyehoif2faewaeifhajeowhf;oaiwehfa;ociboes;";
     $big1 = $big1 . $big1 .$big1 .$big1 .$big1 ;
     $big2 = $big1 . "X"; // stuff...X
@@ -109,11 +118,13 @@ final class expandFnsTest extends testBaseClass {
   }
   
   public function test_titles_are_similar_ticks() : void {
+          $this->check_memory();
     $this->assertSame('ejscriptgammaramshg', strip_diacritics('ɞɟɡɣɤɥɠ'));
     $this->assertTrue(titles_are_similar('ɞɟɡɣɤɥɠ', 'ejscriptgammaramshg'));
   }
 
   public function testArrowAreQuotes() : void {
+          $this->check_memory();
     $text = "This » That";
     $this->assertSame($text,straighten_quotes($text));
     $text = "X«Y»Z";
@@ -125,6 +136,7 @@ final class expandFnsTest extends testBaseClass {
   }
 
   public function testMathInTitle() : void {
+          $this->check_memory();
     // This MML code comes from a real CrossRef search of DOI 10.1016/j.newast.2009.05.001
     // $text_math is the correct final output
     $text_math = 'Spectroscopic analysis of the candidate <math><mrow>ß</mrow></math> Cephei star <math><mrow>s</mrow></math> Cas: Atmospheric characterization and line-profile variability';
@@ -135,30 +147,38 @@ final class expandFnsTest extends testBaseClass {
   }
   
   public function testTrailingPeriods1() : void {
+          $this->check_memory();
     $this->assertSame('In the X.Y.', wikify_external_text('In the X.Y.'));
   }
   public function testTrailingPeriods2() : void {
+          $this->check_memory();
     $this->assertSame('In the X. Y.', wikify_external_text('In the X. Y.'));
   }
   public function testTrailingPeriods3() : void {
+          $this->check_memory();
     $this->assertSame('In the X. And Y', wikify_external_text('In the X. and Y.'));
   }
   public function testTrailingPeriods4() : void {
+          $this->check_memory();
     $this->assertSame('A.B.C.', wikify_external_text('A.B.C.'));
    }
   public function testTrailingPeriods5() : void {
+          $this->check_memory();
     $this->assertSame('Blahy', wikify_external_text('Blahy.'));
   }
   public function testTrailingPeriods6() : void {
+          $this->check_memory();
     $this->assertSame('Blahy', wikify_external_text('Blahy............'));
   }
   
   public function testBrackets() : void {
+          $this->check_memory();
     $this->assertSame("ABC",remove_brackets('{}{}{A[][][][][]B()(){}[]][][[][C][][][[()()'));
   }
   
   // The X prevents first character caps
   public function testCapitalization_lots_more() : void { // Double check that constants are in order when we sort - paranoid
+          $this->check_memory();
     $this->assertSame('X BJPsych', title_capitalization(title_case('X Bjpsych'), TRUE));
     $this->assertSame('X delle', title_capitalization(title_case('X delle'), TRUE));
     $this->assertSame('X IEEE', title_capitalization(title_case('X Ieee'), TRUE));
@@ -170,6 +190,7 @@ final class expandFnsTest extends testBaseClass {
     $this->assertSame('X BJOG', title_capitalization(title_case('X Bjog'), TRUE));
   }
   public function testCapitalization_lots_more2() : void {
+          $this->check_memory();
     $this->assertSame('X e-Neuroforum', title_capitalization(title_case('X E-Neuroforum'), TRUE));
     $this->assertSame('X eGEMs', title_capitalization(title_case('X Egems'), TRUE));
     $this->assertSame('X eNeuro', title_capitalization(title_case('X Eneuro'), TRUE));
@@ -179,6 +200,7 @@ final class expandFnsTest extends testBaseClass {
     $this->assertSame('X JABS : Journal of Applied Biological Sciences', title_capitalization(title_case('X Jabs : Journal of Applied Biological Sciences'), TRUE));
   }
   public function testCapitalization_lots_more3() : void {
+          $this->check_memory();
     $this->assertSame('X La Trobe', title_capitalization(title_case('X La Trobe'), TRUE));
     $this->assertSame('X MERIP', title_capitalization(title_case('X Merip'), TRUE));
     $this->assertSame('X mSystems', title_capitalization(title_case('X MSystems'), TRUE));
@@ -186,6 +208,7 @@ final class expandFnsTest extends testBaseClass {
     $this->assertSame('X PNAS', title_capitalization(title_case('X Pnas'), TRUE));
   }
   public function testCapitalization_lots_more4() : void {
+          $this->check_memory();
     $this->assertSame('X Srp Arh Celok Lek', title_capitalization(title_case('X SRP Arh Celok Lek'), TRUE));
     $this->assertSame('X Time Out London', title_capitalization(title_case('X Time out London'), TRUE));
     $this->assertSame('X z/Journal', title_capitalization(title_case('X Z/journal'), TRUE));
@@ -193,6 +216,7 @@ final class expandFnsTest extends testBaseClass {
   }
   
   public function testThrottle() : void { // Just runs over the code and basically does nothing
+          $this->check_memory();
     $this->assertNull(throttle(1));
     $this->assertNull(throttle(3));
   }
