@@ -206,13 +206,13 @@ public static function drop_urls_that_match_dois(array & $templates) : void {  /
        } elseif (str_ireplace('wkhealth.com','', $url) !== $url) {
           report_forget("Existing Outdated WK Health URL resulting from equivalent DOI; fixing URL");
           $template->set($url_kind, "https://dx.doi.org/" . urlencode($doi));
-       } elseif ($template->has('pmc') && str_ireplace('bmj.com/cgi/pmidlookup','', $url) !== $url && $template->has('pmid')) {
-          // SEP 2020 report_forget("Existing The BMJ URL resulting from equivalent PMID and DOI; dropping URL");
-          // SEP 2020 $template->forget($url_kind);
+       } elseif ($template->has('pmc') && str_ireplace('bmj.com/cgi/pmidlookup','', $url) !== $url && $template->has('pmid') && $template->get('doi-access') === 'free' && stripos($url, 'pdf') === FALSE)
+          report_forget("Existing The BMJ URL resulting from equivalent PMID and free DOI; dropping URL");
+          $template->forget($url_kind);
        } elseif ($template->get('doi-access') === 'free' && $template->get('url-status') === 'dead' && $url_kind === 'url') {
           report_forget("Existing free DOI; dropping dead URL");
           $template->forget($url_kind);
-       } elseif (FALSE && $template->get('doi-access') === 'free') {   // TODO - should this be turned back on?
+       } elseif (stripos($url, 'pdf') === FALSE && $template->get('doi-access') === 'free' && $template->has('pmc')) {
           curl_setopt($ch, CURLOPT_URL, "https://dx.doi.org/" . urlencode($doi));
           if (@curl_exec($ch)) {
             $redirectedUrl_doi = curl_getinfo($ch, CURLINFO_EFFECTIVE_URL);  // Final URL
@@ -225,7 +225,7 @@ public static function drop_urls_that_match_dois(array & $templates) : void {  /
             }
             if (stripos($url_short, $redirectedUrl_doi) !== FALSE ||
                 stripos($redirectedUrl_doi, $url_short) !== FALSE) {
-               report_forget("Existing canonical URL resulting from equivalent DOI; dropping URL");
+               report_forget("Existing canonical URL resulting from equivalent free DOI; dropping URL");
                $template->forget($url_kind);
             } else { // See if $url redirects
                curl_setopt($ch, CURLOPT_URL, $url);
@@ -234,7 +234,7 @@ public static function drop_urls_that_match_dois(array & $templates) : void {  /
                   $redirectedUrl_url = self::url_simplify($redirectedUrl_url);
                   if (stripos($redirectedUrl_url, $redirectedUrl_doi) !== FALSE ||
                       stripos($redirectedUrl_doi, $redirectedUrl_url) !== FALSE) {
-                    report_forget("Existing canonical URL resulting from equivalent DOI; dropping URL");
+                    report_forget("Existing canonical URL resulting from equivalent free DOI; dropping URL");
                     $template->forget($url_kind);
                   }
                }
