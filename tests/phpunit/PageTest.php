@@ -65,4 +65,5 @@ final class PageTest extends testBaseClass {
     $after_time = microtime(TRUE);
     echo("Afterr process page Freed " . (string) $free_stuff . " objects in GC cylce that took " . (string) ($after_time-$before_time) . " seconds\n" );
       $this->assertTrue(FALSE); // prevent us from git committing with a website included
+  }
 }
