@@ -197,7 +197,7 @@ abstract class testBaseClass extends PHPUnit\Framework\TestCase {
     }
   }
   
-  protected function check_memory() {
+  public function check_memory() {
     $free_stuff = gc_collect_cycles();
     if ( $free_stuff) {
        echo("Freed " . (string) $free_stuff . " objects in GC cycle\n" ); 
