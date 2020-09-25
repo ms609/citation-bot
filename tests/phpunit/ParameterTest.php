@@ -10,6 +10,7 @@ require_once(__DIR__ . '/../testBaseClass.php');
 final class ParameterTest extends testBaseClass {
 
   public function testValueWithPipeAndTrailingNewline() : void {
+          $this->check_memory();
     $text = "last1 = [[:en:Bigwig# # # CITATION_BOT_PLACEHOLDER_PIPE # # #SomeoneFamous]]\n";
     $parameter = $this->parameter_parse_text_helper($text);
 
@@ -20,12 +21,14 @@ final class ParameterTest extends testBaseClass {
     $this->assertSame("\n", $parameter->post);
   }
   public function testParameterWithNoParamName() : void {
+          $this->check_memory();
     $text = " = no param name";
     $parameter = $this->parameter_parse_text_helper($text);
     $this->assertSame(' = ', $parameter->eq);
   }
 
   public function testBlankValueWithSpacesLeadingSpaceTrailingNewline() : void {
+          $this->check_memory();
     $text = " first1 = \n";
     $parameter = $this->parameter_parse_text_helper($text);
 
@@ -37,6 +40,7 @@ final class ParameterTest extends testBaseClass {
   }
 
   public function testBlankValueWithSpacesAndTrailingNewline() : void {
+          $this->check_memory();
     $text = "first2 = \n";
     $parameter = $this->parameter_parse_text_helper($text);
 
@@ -48,6 +52,7 @@ final class ParameterTest extends testBaseClass {
   }
 
   public function testBlankValueWithPreEqSpaceAndTrailingNewline() : void {
+          $this->check_memory();
     $text = "first3 =\n";
     $parameter = $this->parameter_parse_text_helper($text);
 
@@ -59,6 +64,7 @@ final class ParameterTest extends testBaseClass {
   }
 
   public function testBlankValueWithPostEqSpaceAndTrailingNewline() : void {
+          $this->check_memory();
     $text = "first4= \n";
     $parameter = $this->parameter_parse_text_helper($text);
 
@@ -70,6 +76,7 @@ final class ParameterTest extends testBaseClass {
   }
 
   public function testBlankValueNoSpacesTrailingNewline() : void {
+          $this->check_memory();
     $text = "first5=\n";
     $parameter = $this->parameter_parse_text_helper($text);
 
@@ -81,6 +88,7 @@ final class ParameterTest extends testBaseClass {
   }
 
   public function testBlankValueNoEquals() : void {
+          $this->check_memory();
     $text = "first6 \n";
     $parameter = $this->parameter_parse_text_helper($text);
 
@@ -92,6 +100,7 @@ final class ParameterTest extends testBaseClass {
   }
   
   public function testNoEqualsAddStuff() : void {
+          $this->check_memory();
     $text = "{{cite web|cnn}}";
     $template = $this->make_citation($text);
     $this->assertSame('{{cite web|cnn}}', $template->parsed_text());
@@ -100,6 +109,7 @@ final class ParameterTest extends testBaseClass {
   }
 
   public function testBlankValueNonBreakingSpaces() : void {
+          $this->check_memory();
     $text = " first7 = \n";
     $parameter = $this->parameter_parse_text_helper($text);
 
@@ -111,6 +121,7 @@ final class ParameterTest extends testBaseClass {
   }
 
   public function testMultilinevalueTrailingNewline() : void {
+          $this->check_memory();
     $text = "param=multiline\nvalue\n";
     $parameter = $this->parameter_parse_text_helper($text);
 
@@ -122,6 +133,7 @@ final class ParameterTest extends testBaseClass {
   }
 
   public function testMultilineParamTrailingNewline() : void {
+          $this->check_memory();
     $text = "multiline\nparam=\n";
     $parameter = $this->parameter_parse_text_helper($text);
 
@@ -133,6 +145,7 @@ final class ParameterTest extends testBaseClass {
   }
 
   public function testHasProtectedCommentInValue() : void {
+          $this->check_memory();
     $text = "archivedate= 24 April 2008 # # # Citation bot : comment placeholder 0 # # #";
     $parameter = $this->parameter_parse_text_helper($text);
 
@@ -144,6 +157,7 @@ final class ParameterTest extends testBaseClass {
   }
   
   public function testHasUnreplacedCommentInValue() : void {
+          $this->check_memory();
     $text = "archivedate= 9 August 2006 <!--DASHBot-->";
     $parameter = $this->parameter_parse_text_helper($text);
 
