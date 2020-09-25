@@ -10,6 +10,7 @@ require_once(__DIR__ . '/../testBaseClass.php');
 final class constantsTest extends testBaseClass {
 
   public function testConstantsDefined() : void {
+          $this->check_memory();
     $this->assertSame(count(UCFIRST_JOURNAL_ACRONYMS), count(JOURNAL_ACRONYMS));
     for ($i = 0; $i < sizeof(JOURNAL_ACRONYMS); $i++) {
       $this->assertSame(trim(JOURNAL_ACRONYMS[$i]), trim(title_capitalization(ucwords(trim(UCFIRST_JOURNAL_ACRONYMS[$i])), TRUE)));
@@ -44,6 +45,7 @@ final class constantsTest extends testBaseClass {
   }
   
   public function testImplicitConstants() : void {
+          $this->check_memory();
     // Consonants
     $this->assertSame('X', title_capitalization('x', TRUE));
     $this->assertSame('Xz', title_capitalization('xz', TRUE));
@@ -62,6 +64,7 @@ final class constantsTest extends testBaseClass {
   }
   
   public function testConstantsOrder() : void {
+          $this->check_memory();
     $acronyms = JOURNAL_ACRONYMS; sort($acronyms, SORT_STRING | SORT_FLAG_CASE);
     $expected = current($acronyms);
     foreach (JOURNAL_ACRONYMS as $actual) {
@@ -71,6 +74,7 @@ final class constantsTest extends testBaseClass {
   }
   
   public function testAllLowerCase() : void {
+          $this->check_memory();
     $big_array = array_merge(HAS_NO_VOLUME, BAD_ACCEPTED_MANUSCRIPT_TITLES, BAD_AUTHORS,
                              PUBLISHER_ENDINGS, BAD_TITLES, IN_PRESS_ALIASES, NON_PUBLISHERS,
                              JOURNAL_IS_BOOK_SERIES);
@@ -80,6 +84,7 @@ final class constantsTest extends testBaseClass {
   }
   
   public function testAtoZ() : void {
+          $this->check_memory();
     $leader = TRUE;
     $start_alpha = '/* The following will be automatically updated to alphabetical order */';
     $end_alpha = '/* The above will be automatically updated to alphabetical order */';
@@ -136,6 +141,7 @@ final class constantsTest extends testBaseClass {
   }
   
  public function testWhiteList() : void {
+         $this->check_memory();
       $we_failed = FALSE;
       
       $our_original_whitelist = PARAMETER_LIST;
@@ -191,6 +197,7 @@ final class constantsTest extends testBaseClass {
   }
   
   public function testWhiteListNotBlacklisted() : void {
+          $this->check_memory();
     $whitelist = array_merge(DEAD_PARAMETERS, PARAMETER_LIST);
     $orig = '';
     $new = '';
@@ -211,6 +218,7 @@ final class constantsTest extends testBaseClass {
   }
   
   public function testDead() : void {
+          $this->check_memory();
     $overlap = array_intersect(DEAD_PARAMETERS, PARAMETER_LIST);
     if (empty($overlap)) {
       $this->assertTrue(TRUE);
