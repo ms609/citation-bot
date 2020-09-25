@@ -19,16 +19,22 @@ try {
 
  //Expand text from postvars
  $page = new Page();
- gc_collect_cycles();
+ // TEMPORARY TODO FOR TESTING ONLY gc_collect_cycles();
  $page->parse_text($originalText);
  $page->expand_text();
  $newText = $page->parsed_text();
- if ($newText == "") $newText = $originalText; // Something went very wrong
+ if ($newText == "") {
+   $newText = $originalText; // Something went very wrong
+   $bot_edit_summary = '';
+ } else {
+   $bot_edit_summary = $page->edit_summary();
+ }
+ unset($page);
 
  //Modify edit summary to identify bot-assisted edits
  if ($newText !== $originalText) {
    if ($editSummary) $editSummary .= ' | '; // Add pipe if already something there.
-   $editSummary .=  str_replace('use this bot', 'use this tool', $page->edit_summary()) . '| via #UCB_Gadget ';
+   $editSummary .=  str_replace('use this bot', 'use this tool', $bot_edit_summary) . '| via #UCB_Gadget ';
  }
 
  ob_end_clean();
