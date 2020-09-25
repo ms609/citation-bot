@@ -201,7 +201,7 @@ abstract class testBaseClass extends PHPUnit\Framework\TestCase {
     $free_stuff = gc_collect_cycles();
     if ( $free_stuff) {
        echo("Freed " . (string) $free_stuff . " objects in GC cycle\n" ); 
-       debug_print_backtrace(0,6);
+       debug_print_backtrace(0,3);
        echo "\n\n";
     }
   }
