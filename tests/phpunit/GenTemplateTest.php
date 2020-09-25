@@ -24,4 +24,9 @@ final class GenTemplateTest extends testBaseClass {
       $this->assertTrue((bool) strpos($template_text, 'Cite journal'));
    $this->check_memory();
   }
+ 
+   public function testGenTemplateMemCheck() : void {
+      $this->assertTrue(TRUE);
+      $this->check_memory();
+   }
 }
