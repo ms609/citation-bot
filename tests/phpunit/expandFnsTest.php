@@ -194,6 +194,12 @@ final class expandFnsTest extends testBaseClass {
   
   public function testThrottle() : void { // Just runs over the code and basically does nothing
     $this->assertNull(throttle(1));
-    $this->assertNull(throttle(3));
+    $this->assertNull(throttle(1));
+    $this->assertNull(throttle(1));
+    $this->assertNull(throttle(1));
+    $this->assertNull(throttle(1));
+    $this->assertNull(throttle(1));
+    $this->assertNull(throttle(1));
+    $this->assertNull(throttle(1));
   }
 }
