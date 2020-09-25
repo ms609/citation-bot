@@ -182,6 +182,7 @@ final class PageTest extends testBaseClass {
       $this->assertSame($text, $page->parsed_text());
       $this->assertSame(FALSE, $page->write($api, "Testing bot write function"));
    });
+  }
    
   public function testNobots3() : void {
      $this->requires_secrets(function() : void {
