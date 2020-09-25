@@ -25,10 +25,13 @@ foreach ($_GET as $param=>$value) {
   $t->set($param, $value);
 }
 
+$text = $t->parsed_text();
+unset($t); // Trying to minimize maximum memory usage
 $page = new Page();
-$page->parse_text($t->parsed_text());
+$page->parse_text($text);
 $page->expand_text();
-
-echo("\n\n<ref>" . htmlspecialchars($page->parsed_text()) . "</ref>\n\n</pre></body></html>");
+$text = htmlspecialchars($page->parsed_text());
+unset($page);
+echo("\n\n<ref>" . $text . "</ref>\n\n</pre></body></html>");
 
 ?>
