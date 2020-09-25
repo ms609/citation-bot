@@ -30,7 +30,7 @@ final class gadgetTest extends testBaseClass {
 
   public function testGadgetMem() : void {
         $this->check_memory();
-         $this->assertSame("X","X")
+         $this->assertSame("X","X");
   }
 
 }
