@@ -4997,7 +4997,6 @@ T1 - This is the Title }}';
      $text = '{{cite journal|last=THIS_IS_BOGUS_TEST_DATA|pages=4346–43563413241234|title=ISiCLE: A Quantum Chemistry Pipeline for Establishing in Silico Collision Cross Section Libraries|journal=Analytical Chemistry|volume=91|issue=7|year=2019}}';
      $template = $this->make_citation($text);
      $template->get_doi_from_crossref();
-     return; // TODO
      $this->assertSame('10.1021/acs.analchem.8b04567', $template->get2('doi'));
    }
  
@@ -5221,7 +5220,7 @@ T1 - This is the Title }}';
      $text = '{{cite journal|doi=0.5240/7B2F-ED76-31F6-8CFB-4DB9-M}}'; // Not in crossref, and no meta data in DX.DOI.ORG
      $template = $this->make_citation($text);
      $template->verify_doi();
-     // TODO website is down $this->assertSame('10.5240/7B2F-ED76-31F6-8CFB-4DB9-M', $template->get2('doi'));
+     $this->assertSame('10.5240/7B2F-ED76-31F6-8CFB-4DB9-M', $template->get2('doi'));
   }
  
   public function testOxfordTemplate() : void {
