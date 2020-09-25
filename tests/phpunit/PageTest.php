@@ -101,6 +101,12 @@ final class PageTest extends testBaseClass {
       $page = $this->process_page($text);
       $text = '{{Use mdy dates}}{{Use dmy dates}}{{cite web}}';
       $page = $this->process_page($text);
+      $text = '{{dmy}}{{cite web}}';
+      $page = $this->process_page($text);
+      $text = '{{mdy}}{{cite web}}';
+      $page = $this->process_page($text);
+      $text = '{{mdy}}{{dmy}}{{cite web}}';
+      $page = $this->process_page($text);
       $this->assertNull(NULL);
   }
  
@@ -172,6 +178,15 @@ final class PageTest extends testBaseClass {
      $this->requires_secrets(function() : void {
       $api = new WikipediaBot();
       $text = '{{cite thesis|url=https://mathscinet.ams.org/mathscinet-getitem?mr=1234}}{{bots|allow=not_you}}';
+      $page = $this->process_page($text);
+      $this->assertSame($text, $page->parsed_text());
+      $this->assertSame(FALSE, $page->write($api, "Testing bot write function"));
+   });
+   
+  public function testNobots3() : void {
+     $this->requires_secrets(function() : void {
+      $api = new WikipediaBot();
+      $text = '{{cite thesis|url=https://mathscinet.ams.org/mathscinet-getitem?mr=1234}}{{pp-full}}';
       $page = $this->process_page($text);
       $this->assertSame($text, $page->parsed_text());
       $this->assertSame(FALSE, $page->write($api, "Testing bot write function"));
