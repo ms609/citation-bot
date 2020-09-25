@@ -260,13 +260,14 @@ private static function zotero_request(string $url) : string {
     self::$zotero_failures_count = self::$zotero_failures_count - 1;                            // @codeCoverageIgnore
     if (self::ZOTERO_GIVE_UP == self::$zotero_failures_count) self::$zotero_failures_count = 0; // @codeCoverageIgnore
   }
-  if (self::$zotero_failures_count > self::ZOTERO_GIVE_UP) return self::ERROR_DONE;
 
   if (!is_resource(self::$zotero_ch)) {
      self::$zotero_ch = curl_init();
      self::set_default_ch_zotero();
   }
   curl_setopt(self::$zotero_ch, CURLOPT_POSTFIELDS, $url);
+   
+  if (self::$zotero_failures_count > self::ZOTERO_GIVE_UP) return self::ERROR_DONE;
   
   $zotero_response = (string) @curl_exec(self::$zotero_ch);
   if ($zotero_response == '') {
