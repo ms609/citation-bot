@@ -49,12 +49,12 @@ final class PageTest extends testBaseClass {
   public function testPageChangeSummary8() : void {
       $page = $this->process_page('{{cite journal|chapter-url=https://mathscinet.ams.org/mathscinet-getitem?mr=1234|title=mr=1234}}');
       $this->assertSame('{{cite journal|url=https://mathscinet.ams.org/mathscinet-getitem?mr=1234|title=mr=1234|mr = 1234}}', $page->parsed_text());
-      $this->assertSame('Add: mr, url. Removed URL that duplicated unique identifier. Some additions/deletions were actually parameter name changes. | You can [[WP:UCB|use this bot]] yourself. [[WP:DBUG|Report bugs here]]. ', $page->edit_summary());
+      $this->assertSame('Add: mr, url. Removed proxy or dead URL that duplicated free-DOI or unique identifier. Some additions/deletions were actually parameter name changes. | You can [[WP:UCB|use this bot]] yourself. [[WP:DBUG|Report bugs here]]. ', $page->edit_summary());
   }
   public function testPageChangeSummary9() : void {
       $page = $this->process_page('{{cite journal|chapterurl=https://mathscinet.ams.org/mathscinet-getitem?mr=1234|title=mr=1234}}');
       $this->assertSame('{{cite journal|url=https://mathscinet.ams.org/mathscinet-getitem?mr=1234|title=mr=1234|mr = 1234}}', $page->parsed_text());
-      $this->assertSame('Add: mr, url. Removed URL that duplicated unique identifier. Some additions/deletions were actually parameter name changes. | You can [[WP:UCB|use this bot]] yourself. [[WP:DBUG|Report bugs here]]. ', $page->edit_summary());
+      $this->assertSame('Add: mr, url. Removed proxy or dead URL that duplicated free-DOI or unique identifier. Some additions/deletions were actually parameter name changes. | You can [[WP:UCB|use this bot]] yourself. [[WP:DBUG|Report bugs here]]. ', $page->edit_summary());
   }
    
   public function testPageChangeSummary10() : void {
@@ -69,7 +69,7 @@ final class PageTest extends testBaseClass {
  
   public function testPageChangeSummary12() : void {
       $page = $this->process_page('{{cite journal|chapter-url=http://www.facebook.com/|title=X|journal=Y}}');
-      $this->assertSame('Add: url. Removed URL that duplicated unique identifier. Some additions/deletions were actually parameter name changes. | You can [[WP:UCB|use this bot]] yourself. [[WP:DBUG|Report bugs here]]. ', $page->edit_summary());
+      $this->assertSame('Add: url. Removed proxy or dead URL that duplicated free-DOI or unique identifier. Some additions/deletions were actually parameter name changes. | You can [[WP:UCB|use this bot]] yourself. [[WP:DBUG|Report bugs here]]. ', $page->edit_summary());
   }
  
   public function testPageChangeSummary13() : void {
@@ -100,6 +100,12 @@ final class PageTest extends testBaseClass {
       $text = '{{Use mdy dates}}{{cite web}}';
       $page = $this->process_page($text);
       $text = '{{Use mdy dates}}{{Use dmy dates}}{{cite web}}';
+      $page = $this->process_page($text);
+      $text = '{{dmy}}{{cite web}}';
+      $page = $this->process_page($text);
+      $text = '{{mdy}}{{cite web}}';
+      $page = $this->process_page($text);
+      $text = '{{mdy}}{{dmy}}{{cite web}}';
       $page = $this->process_page($text);
       $this->assertNull(NULL);
   }
@@ -172,6 +178,16 @@ final class PageTest extends testBaseClass {
      $this->requires_secrets(function() : void {
       $api = new WikipediaBot();
       $text = '{{cite thesis|url=https://mathscinet.ams.org/mathscinet-getitem?mr=1234}}{{bots|allow=not_you}}';
+      $page = $this->process_page($text);
+      $this->assertSame($text, $page->parsed_text());
+      $this->assertSame(FALSE, $page->write($api, "Testing bot write function"));
+   });
+  }
+   
+  public function testNobots3() : void {
+     $this->requires_secrets(function() : void {
+      $api = new WikipediaBot();
+      $text = '{{cite thesis|url=https://mathscinet.ams.org/mathscinet-getitem?mr=1234}}{{pp-full}}';
       $page = $this->process_page($text);
       $this->assertSame($text, $page->parsed_text());
       $this->assertSame(FALSE, $page->write($api, "Testing bot write function"));
@@ -332,7 +348,7 @@ final class PageTest extends testBaseClass {
       $this->assertSame('1234', $expanded->get2('mr'));
   }
  
-  public function testNobots3() : void {
+  public function testNobots4() : void {
       $text = '{{cite thesis|url=https://mathscinet.ams.org/mathscinet-getitem?mr=1234}}{{bots|allow=Citation Bot}}';
       $page = $this->process_page($text);
       $this->assertSame('{{cite thesis|url=https://mathscinet.ams.org/mathscinet-getitem?mr=1234|mr = 1234}}{{bots|allow=Citation Bot}}', $page->parsed_text());

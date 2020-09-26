@@ -111,6 +111,13 @@ require_once(__DIR__ . '/../testBaseClass.php');
      });
     }
    
+    public function testNonStandardWikiBotClass() : void {
+     $this->requires_secrets(function() : void {
+      $api = new WikipediaBot(TRUE);
+      $this->assertTrue(TRUE); // Just verify no crash
+     });
+    }
+   
     public function testIsValidUser() : void {
       $result = WikipediaBot::is_valid_user('Smith609');
       $this->assertSame(TRUE, $result);

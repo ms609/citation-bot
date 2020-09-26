@@ -63,8 +63,8 @@ if ($category) {
   }
   shuffle($pages_in_category);
   $page = new Page();
+  gc_collect_cycles();
   foreach ($pages_in_category as $page_title) {
-    gc_collect_cycles();
     // $page->expand_text will take care of this notice if we are in HTML mode.
     html_echo('', "\n\n\n*** Processing page '" . echoable($page_title) . "' : " . date("H:i:s") . "\n");
     if ($page->get_text_from($page_title, $api) && $page->expand_text()) {
@@ -103,7 +103,7 @@ if ($category) {
   } elseif (isset($_GET["cat"])) {
     echo ("You must specify a category on the webform.  We do not support using as a parameter to the php file anymore");
   } else {
-    echo ("You must specify a category using the API");
+    echo ("You must specify a category using the API -- OR -- category got lost during initial authorization ");
   }
 }
 html_echo(' # # #</pre><footer><a href="./" title="Use Citation Bot again">Another</a>?</footer></body></html>', "\n");
