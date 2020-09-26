@@ -4049,9 +4049,7 @@ final class Template {
                     || mb_substr($periodical, -2) !== "]]"
                     || mb_substr_count($periodical, '[[') !== 1 
                     || mb_substr_count($periodical, ']]') !== 1)
-                    && (stripos($periodical, 'Publications of') === FALSE )
-                    && (stripos($periodical, 'Journal of the') === FALSE )
-                    )
+                    && !preg_match('~^(?:the |)(?:Publications|Publication|journal|Transactions|letters|annals|Bulletin|reports|history) of the ~i', $periodical)
           {
               $this->set($param, preg_replace(REGEXP_PLAIN_WIKILINK, "$1", $periodical));
               $this->set($param, preg_replace(REGEXP_PIPED_WIKILINK, "$2", $this->get($param)));
