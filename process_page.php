@@ -51,6 +51,7 @@ if (isset($argv[1])) {
 } elseif (isset($_POST["page"])) {
   $pages = (string) $_POST["page"];
 } else {
+  report_warning('Nothing requested -- OR -- pages got lost during initial authorization ');
   $pages = ''; // Errors out below
 }
 
