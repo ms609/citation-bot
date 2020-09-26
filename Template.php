@@ -4058,7 +4058,7 @@ final class Template {
           $periodical = trim($this->get($param));
           if (substr($periodical, 0, 1) !== "[" && substr($periodical, -1) !== "]") {  
             if ((strlen($periodical) - mb_strlen($periodical)) < 9 ) { // eight or fewer UTF-8 stuff
-               if (str_ireplace(OBVIOUS_FOREIGN_WORDS, '', ' ' . $periodical . ' ') == ' ' . $periodical . ' ') $periodical = ucwords($periodical); // Found NO foreign words/phrase
+               if (str_ireplace(OBVIOUS_FOREIGN_WORDS, '', ' ' . $periodical . ' ') == ' ' . $periodical . ' ') $periodical = title_case($periodical); // Found NO foreign words/phrase
                $this->set($param, title_capitalization($periodical, TRUE));
             }
           } else {
@@ -4066,7 +4066,7 @@ final class Template {
               $periodical = $matches[1];
               $periodical = str_replace("’", "'", $periodical); // Fix quotes for links
               $this->set($param, '[[' . $periodical . ']]');
-              $new_periodical = title_capitalization(ucwords($periodical), TRUE);
+              $new_periodical = title_capitalization(title_case($periodical), TRUE);
               if (str_ireplace(OBVIOUS_FOREIGN_WORDS, '', ' ' . $periodical . ' ') == ' ' . $periodical . ' ' &&
                   str_replace(['(', ')'], '', $periodical) == $periodical &&
                   $new_periodical != $periodical) {
@@ -4085,7 +4085,7 @@ final class Template {
               if (preg_match("~^[\'\"]+([^\'\"]+)[\'\"]+$~", $human_text, $matches)) { // Remove quotes
                 $human_text = $matches[1];
               }
-              $new_linked_text = title_capitalization(ucwords($linked_text), TRUE);
+              $new_linked_text = title_capitalization(title_case($linked_text), TRUE);
               if (str_ireplace(OBVIOUS_FOREIGN_WORDS, '', ' ' . $linked_text . ' ') == ' ' . $linked_text . ' ' &&
                 str_replace(['(', ')'], '', $linked_text ) == $linked_text &&
                 $new_linked_text != $linked_text) {
