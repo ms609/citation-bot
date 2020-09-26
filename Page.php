@@ -401,6 +401,9 @@ class Page {
     if (count($this->modifications["changeonly"]) !== 0) {
       $auto_summary .= "Alter: " . implode(", ", $this->modifications["changeonly"]) . ". ";
     }
+    if (strpos('url', implode(" ", $this->modifications["changeonly"])) !== FALSE) {
+      $auto_summary .= "URLs might have been internationalized/anonymized. ";
+    }
     if (count($this->modifications['additions']) !== 0) {
       $addns = $this->modifications["additions"];
       $auto_summary .= "Add: ";
