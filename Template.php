@@ -4045,10 +4045,11 @@ final class Template {
             $this->change_name_to('cite journal');
           }
           
-          if ( mb_substr($periodical, 0, 2) !== "[["   // Only remove partial wikilinks
+          if (( mb_substr($periodical, 0, 2) !== "[["   // Only remove partial wikilinks
                     || mb_substr($periodical, -2) !== "]]"
                     || mb_substr_count($periodical, '[[') !== 1 
-                    || mb_substr_count($periodical, ']]') !== 1
+                    || mb_substr_count($periodical, ']]') !== 1)
+                    && !preg_match('~^(?:the |)(?:Publications|Publication|journal|Transactions|letters|annals|Bulletin|reports|history) of the ~i', $periodical)
                     )
           {
               $this->set($param, preg_replace(REGEXP_PLAIN_WIKILINK, "$1", $periodical));
