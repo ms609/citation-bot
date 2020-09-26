@@ -4050,6 +4050,7 @@ final class Template {
                     || mb_substr_count($periodical, '[[') !== 1 
                     || mb_substr_count($periodical, ']]') !== 1)
                     && (stripos($periodical, 'Publications of') === FALSE )
+                    && (stripos($periodical, 'Journal of the') === FALSE )
                     )
           {
               $this->set($param, preg_replace(REGEXP_PLAIN_WIKILINK, "$1", $periodical));
