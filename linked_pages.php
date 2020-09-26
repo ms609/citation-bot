@@ -44,7 +44,7 @@ if ($page_name == '') {
   if (isset($_GET['page'])) {
     report_warning('Use the webform.  Passing pages via URL not supported anymore.');
   } else {
-    report_warning('Nothing requested');
+    report_warning('Nothing requested -- OR -- page name got lost during initial authorization ');
   }
   exit("\n </pre></body></html>");
 }
