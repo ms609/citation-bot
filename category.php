@@ -103,7 +103,7 @@ if ($category) {
   } elseif (isset($_GET["cat"])) {
     echo ("You must specify a category on the webform.  We do not support using as a parameter to the php file anymore");
   } else {
-    echo ("You must specify a category using the API -- OR -- category got lost during initial authorization '");
+    echo ("You must specify a category using the API -- OR -- category got lost during initial authorization ");
   }
 }
 html_echo(' # # #</pre><footer><a href="./" title="Use Citation Bot again">Another</a>?</footer></body></html>', "\n");
