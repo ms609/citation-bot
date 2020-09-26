@@ -21,6 +21,7 @@
       <file>./authenticate.php</file>
       <file>./restart.php</file>
       <file>./setup.php</file>
+      <file>./php_info.php</file>
     </exclude>
     <report>
       <clover outputFile="clover.xml"/>

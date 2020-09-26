@@ -207,13 +207,13 @@ public static function drop_urls_that_match_dois(array & $templates) : void {  /
        } elseif (str_ireplace('wkhealth.com','', $url) !== $url) {
           report_forget("Existing Outdated WK Health URL resulting from equivalent DOI; fixing URL");
           $template->set($url_kind, "https://dx.doi.org/" . urlencode($doi));
-       } elseif ($template->has('pmc') && str_ireplace('bmj.com/cgi/pmidlookup','', $url) !== $url && $template->has('pmid')) {
-          // SEP 2020 report_forget("Existing The BMJ URL resulting from equivalent PMID and DOI; dropping URL");
-          // SEP 2020 $template->forget($url_kind);
+       } elseif ($template->has('pmc') && str_ireplace('bmj.com/cgi/pmidlookup','', $url) !== $url && $template->has('pmid') && $template->get('doi-access') === 'free' && stripos($url, 'pdf') === FALSE) {
+          report_forget("Existing The BMJ URL resulting from equivalent PMID and free DOI; dropping URL");
+          $template->forget($url_kind);
        } elseif ($template->get('doi-access') === 'free' && $template->get('url-status') === 'dead' && $url_kind === 'url') {
           report_forget("Existing free DOI; dropping dead URL");
           $template->forget($url_kind);
-       } elseif (FALSE && $template->get('doi-access') === 'free') {   // TODO - should this be turned back on?
+       } elseif (stripos($url, 'pdf') === FALSE && $template->get('doi-access') === 'free' && $template->has('pmc')) {
           curl_setopt($ch, CURLOPT_URL, "https://dx.doi.org/" . urlencode($doi));
           if (@curl_exec($ch)) {
             $redirectedUrl_doi = curl_getinfo($ch, CURLINFO_EFFECTIVE_URL);  // Final URL
@@ -226,7 +226,7 @@ public static function drop_urls_that_match_dois(array & $templates) : void {  /
             }
             if (stripos($url_short, $redirectedUrl_doi) !== FALSE ||
                 stripos($redirectedUrl_doi, $url_short) !== FALSE) {
-               report_forget("Existing canonical URL resulting from equivalent DOI; dropping URL");
+               report_forget("Existing canonical URL resulting from equivalent free DOI; dropping URL");
                $template->forget($url_kind);
             } else { // See if $url redirects
                curl_setopt($ch, CURLOPT_URL, $url);
@@ -235,7 +235,7 @@ public static function drop_urls_that_match_dois(array & $templates) : void {  /
                   $redirectedUrl_url = self::url_simplify($redirectedUrl_url);
                   if (stripos($redirectedUrl_url, $redirectedUrl_doi) !== FALSE ||
                       stripos($redirectedUrl_doi, $redirectedUrl_url) !== FALSE) {
-                    report_forget("Existing canonical URL resulting from equivalent DOI; dropping URL");
+                    report_forget("Existing canonical URL resulting from equivalent free DOI; dropping URL");
                     $template->forget($url_kind);
                   }
                }
@@ -248,30 +248,6 @@ public static function drop_urls_that_match_dois(array & $templates) : void {  /
        if (!$template->blank_other_than_comments('pmc')) {
           report_forget("Existing proxy URL resulting from equivalent PMC; dropping URL");
           $template->forget($url_kind);
-       } elseif (!$template->blank_other_than_comments('pmid')) {
-          // SEP 2020 report_forget("Existing proxy URL resulting from equivalent pmid; dropping URL");
-          // SEP 2020 $template->forget($url_kind);
-       } elseif (!$template->blank_other_than_comments('isbn')) {
-          // SEP 2020 report_forget("Existing proxy URL resulting from equivalent isbn; dropping URL");
-          // SEP 2020 $template->forget($url_kind);
-       } elseif (!$template->blank_other_than_comments('s2cid')) {
-          // SEP 2020 report_forget("Existing proxy URL resulting from equivalent s2cid; dropping URL");
-          // SEP 2020 $template->forget($url_kind);
-       } elseif (!$template->blank_other_than_comments('oclc')) {
-          // SEP 2020 report_forget("Existing proxy URL resulting from equivalent oclc; dropping URL");
-          // SEP 2020 $template->forget($url_kind);
-       } elseif (!$template->blank_other_than_comments('lccn')) {
-          // SEP 2020 report_forget("Existing proxy URL resulting from equivalent lccn; dropping URL");
-          // SEP 2020 $template->forget($url_kind);
-       } elseif (!$template->blank_other_than_comments('jstor')) {
-          // SEP 2020 report_forget("Existing proxy URL resulting from equivalent jstor; dropping URL");
-          // SEP 2020 $template->forget($url_kind);
-       } elseif (!$template->blank_other_than_comments('arxiv')) {
-          // SEP 2020 report_forget("Existing proxy URL resulting from equivalent arxiv; dropping URL");
-          // SEP 2020 $template->forget($url_kind);
-       } elseif (!$template->blank_other_than_comments('bibcode')) {
-          // SEP 2020 report_forget("Existing proxy URL resulting from equivalent bibcode; dropping URL");
-          // SEP 2020 $template->forget($url_kind);
        }
     }
   }
@@ -285,13 +261,14 @@ private static function zotero_request(string $url) : string {
     self::$zotero_failures_count = self::$zotero_failures_count - 1;                            // @codeCoverageIgnore
     if (self::ZOTERO_GIVE_UP == self::$zotero_failures_count) self::$zotero_failures_count = 0; // @codeCoverageIgnore
   }
-  if (self::$zotero_failures_count > self::ZOTERO_GIVE_UP) return self::ERROR_DONE;
 
   if (!is_resource(self::$zotero_ch)) {
      self::$zotero_ch = curl_init();
      self::set_default_ch_zotero();
   }
   curl_setopt(self::$zotero_ch, CURLOPT_POSTFIELDS, $url);
+   
+  if (self::$zotero_failures_count > self::ZOTERO_GIVE_UP) return self::ERROR_DONE;
   
   $zotero_response = (string) @curl_exec(self::$zotero_ch);
   if ($zotero_response == '') {

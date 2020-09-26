@@ -51,6 +51,7 @@ if (isset($argv[1])) {
 } elseif (isset($_POST["page"])) {
   $pages = (string) $_POST["page"];
 } else {
+  report_warning('Nothing requested -- OR -- pages got lost during initial authorization ');
   $pages = ''; // Errors out below
 }
 
@@ -81,9 +82,9 @@ if (!isset($ON)) {
 }
 
 $my_page = new Page();
+gc_collect_cycles();
 
 foreach (array_unique(explode('|', $pages)) as $page_title) {
-  gc_collect_cycles();
 
   if (trim($page_title) === '') {  // Default is to edit Wikipedia's main page if user just clicks button.  Let's not even try
      echo "\n\n No page given.  <a href='./' title='Main interface'>Specify one here</a>. \n\n";
@@ -117,7 +118,7 @@ foreach (array_unique(explode('|', $pages)) as $page_title) {
       echo "</pre>";
   ?>
   <form method="post" action="process_page.php">
-    <input type="hidden" name="page" value="<?php echo htmlspecialchars($page_title);?>" />
+    <input type="hidden" name="page" value="<?php echo urlencode(str_replace(' ', '_', $page_title));?>" />
     <input type="hidden" name="edit" value="webform" />
     <input type="hidden" name="slow" value="<?php echo (string) SLOW_MODE;?>" />
     <input type="submit" value="Submit edits" />

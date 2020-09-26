@@ -158,7 +158,7 @@ const OBVIOUS_FOREIGN_WORDS = array(" Abhandlungen ", " Actes ", " Annales ", " 
            " Archiwa ", " Biblioteki  ", " Muzea ", " Kościelne ", " Zbornik ",			   
            " Radova ", " Filozofskog  ", " Fakulteta ", " Prištini ", " Mém. ", " Elektriceskaja ",
 	   " Teplovoznaja ", " Tjaga ", " Aarbøger ",  " Oldkyndighed ", " Histori ", " Les Publications ",
-           "ische ", "histoire ", " ancienne ");
+           "ische ", "histoire ", " ancienne ", " d'");
  
 const MAP_DIACRITICS = array("À"=>"A", "Á"=>"A", "Â"=>"A", "Ã"=>"A",
 	"Ä"=>"A", "Å"=>"A", "Æ"=>"AE", "Ç"=>"C", "È"=>"E", "É"=>"E",

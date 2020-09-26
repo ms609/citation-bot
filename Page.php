@@ -429,7 +429,7 @@ class Page {
         if (strpos($auto_summary, 'chapter-url') !== FALSE) {
           $auto_summary .= "Removed or converted URL. ";
         } else {
-          $auto_summary .= "Removed URL that duplicated unique identifier. ";
+          $auto_summary .= "Removed proxy or dead URL that duplicated free-DOI or unique identifier. ";
         }
         unset($this->modifications["deletions"][$pos]);
     }

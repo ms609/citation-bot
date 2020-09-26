@@ -1,6 +1,9 @@
 <?php
 declare(strict_types=1);
-if (file_exists('git_pull.lock')) exit('GIT pull in progress');
+if (file_exists('git_pull.lock')) {
+  sleep(5);
+  exit("\n GIT pull in progress - please retry again in a moment \n\n </pre></body></html>");
+}
 
 /*
  * setup.php sets up the environment
