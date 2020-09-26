@@ -3039,7 +3039,7 @@ final class Template {
     }
     if (preg_match("~^(.+\.google\.com/books/edition/_/)([a-zA-Z0-9]+)(\?.+|)$~", (string) $url, $gid)) {
       if ($url_type && $gid[3] === '?hl=en') {
-        report_forget('Standardized Google Books URL');
+        report_forget('Anonymized/Standardized/Denationalized Google Books URL');
         $this->set($url_type, $gid[1] . $gid[2]);
       }
       $this->google_book_details($gid[2]);
