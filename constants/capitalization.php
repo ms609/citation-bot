@@ -17,7 +17,7 @@ const LC_SMALL_WORDS = array(/* The following will be automatically updated to a
           " PNAS ", " PS: ", " R&D ", " RNA ", " RTÉ ", " S&P ", " SAE ", " SpringerPlus ", 
           " SSRN ", " TCI: ", " the ", " then ", " till ", " to ", " UK ", " um ", " und ", 
           " up ", " USA ", " van ", " vir ", " von ", " voor ", " when ", " with ", " within ", 
-          " woor ", " y ", " zu ", " zum ", " zur ", /* The above will be automatically updated to alphabetical order */ 
+          " woor ", " y ", " zu ", " zum ", " zur ", " M.D. ", " D.C.L. ", " D.D.S. ", " D.M.D. ", " D.P.M. " , " M.S. ", " M.A. ", " D.Sc. ", " Ph.D. ", " P.E. ", " D.Div. ", /* The above will be automatically updated to alphabetical order */ 
           // After this line we list exceptions that need re-capitalizing after they have been decapitalized.
           " El Dorado ", " Las Vegas ", " Los Angeles ", " N Y ", " U S A ");
 
@@ -38,7 +38,7 @@ const UC_SMALL_WORDS = array(/* The following will be automatically updated to a
           " Pnas ", " Ps: ", " R&d ", " Rna ", " Rté ", " S&p ", " Sae ", " Springerplus ", 
           " Ssrn ", " Tci: ", " The ", " Then ", " Till ", " To ", " Uk ", " Um ", " Und ", 
           " Up ", " Usa ", " Van ", " Vir ", " Von ", " Voor ", " When ", " With ", " Within ", 
-          " Woor ", " Y ", " Zu ", " Zum ", " Zur ", /* The above will be automatically updated to alphabetical order */ 
+          " Woor ", " Y ", " Zu ", " Zum ", " Zur ", " M.d. ", " D.c.l. ", " D.d.s. ", " D.m.d. ", " D.p.m. " , " M.s. ", " M.a. ", " D.sc. ", " Ph.d. ", " P.e. ", " D.div. ", /* The above will be automatically updated to alphabetical order */ 
           // After this line we list exceptions that need re-capitalizing after they have been decapitalized.
           " el Dorado ", " las Vegas ", " los Angeles ", " N y ", " U S a ");
           // For ones that start with lower-case, include both ELife and Elife versions in misspelled array
