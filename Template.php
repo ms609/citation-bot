@@ -5834,6 +5834,8 @@ final class Template {
     $matches = ['', '']; // prevent memory leak in some PHP versions
     if ($this->blank('issn')) return FALSE; // Nothing to use
     if (!$this->blank(WORK_ALIASES)) return FALSE; // Nothing to add
+    if ($this->has('series')) return FALSE; // Dangerous risk of duplication and most likely a series of "books"
+    if ($this->wikiname() === 'cite book' && $this->has('isbn')) return FALSE; // Probably a series of "books"
     $issn = $this->get('issn');
     if ($issn === '9999-9999') return FALSE; // Fake test suite data
     if (!preg_match('~^\d{4}.?\d{3}[0-9xX]$~u', $issn)) return FALSE;
