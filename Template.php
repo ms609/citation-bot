@@ -3008,6 +3008,7 @@ final class Template {
         $hash = $matcher[1];
       }
       if ($hash) $hash = "#" . $hash;
+  // TODO - move hash parameters to before the hash
   /**    if (strpos($hash, 'v=onepage') !== FALSE) {
         if (!str_i_same($hash, '#v=onepage')) {
           $removed_redundant++;
