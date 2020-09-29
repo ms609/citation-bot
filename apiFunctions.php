@@ -71,7 +71,7 @@ function entrez_api(array $ids, array & $templates, string $db) : bool {   // Po
           foreach ($item->Item as $subItem) {
             $subItem = (string) $subItem;
             if (preg_match('~^\d~', $subItem)) {
-              break; // Author started with a number, skip all remaining authors
+              break; // Author started with a number, skip all remaining authors. // @codeCoverageIgnore
             } elseif (author_is_human($subItem)) {
               $jr_test = junior_test($subItem);
               $subItem = $jr_test[0];
@@ -213,7 +213,7 @@ function arxiv_api(array $ids, array & $templates) : bool {  // Pointer to save 
     $this_template = next($templates);
   }
   if ($this_template !== FALSE) {
-    report_minor_error('Unexpected error in arxiv_api()'); 
+    report_minor_error('Unexpected error in arxiv_api()');   // @codeCoverageIgnore
   }
   return TRUE;
 }
