@@ -9,7 +9,7 @@ abstract class testBaseClass extends PHPUnit\Framework\TestCase {
   private $testing_skip_bibcode= TRUE;                                           // TODO - save searches
   private $testing_skip_google = FALSE;                                           //
   private $testing_skip_wiki   = FALSE;                                           //
-  private $testing_skip_dx     = FALSE;                                           //
+  private $testing_skip_dx     = TRUE;                                           // TODO - down partially
   private $testing_skip_arxiv  = FALSE;                                           //
   // =======================================================================
   
