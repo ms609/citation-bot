@@ -3668,6 +3668,13 @@ T1 - This is the Title }}';
     $this->assertNull($template->get2('id'));
    }
  
+    public function testTidy74c() : void {
+    $text = "{{cite web|journal=openid transaction in progress|isbn=1234|chapter=X|title=Y}}";
+    $template = $this->make_citation($text);
+    $template->final_tidy();
+    $this->assertNull($template->get2('journal'));
+   }
+
    public function testTidy75() : void {
     $text = "{{cite web|url=developers.google.com|publisher=the google hive mind}}";
     $template = $this->make_citation($text);
