@@ -1034,7 +1034,7 @@ final class Template {
              $this->forget($alias);
           }
         }
-        // Swich any that are set to doi-broken-date
+        // Switch any that are set to doi-broken-date
         if ($this->blank('doi-broken-date')) {
           foreach (array_diff(DOI_BROKEN_ALIASES, ['doi-broken-date']) as $alias) {
             $this->rename($alias, 'doi-broken-date');
