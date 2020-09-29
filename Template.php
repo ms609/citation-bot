@@ -2976,33 +2976,16 @@ final class Template {
       $url = "https://books.google.com/books?id=" . $gid[1];
       foreach ($url_parts as $part) {
         $part_start = explode("=", $part);
+        if ($part_start[0] === 'text')     $part_start[0] = 'dq';
+        if ($part_start[0] === 'keywords') $part_start[0] = 'q';
+        if ($part_start[0] === 'page')     $part_start[0] = 'pg';  
         switch ($part_start[0]) {
           case "dq": case "pg": case "lpg": case "q": case "printsec": case "cd": case "vq": case "jtp":
             if ($part_start[1] == '') {
                 $removed_redundant++;
+                $removed_parts .= $part;
             } else {
-                $url .= "&" . $part;
-            }
-            break;
-          case "text":
-            if ($part_start[1] == '') {
-                $removed_redundant++;
-            } else {
-               $url .= "&dq=" . $part_start[1];
-            }
-            break;
-          case "keywords":
-            if ($part_start[1] == '') {
-                $removed_redundant++;
-            } else {
-               $url .= "&q=" . $part_start[1];
-            }
-            break;
-          case "page":
-            if ($part_start[1] == '') {
-                $removed_redundant++;
-            } else {
-               $url .= "&p=" . $part_start[1];
+                $url .= "&" . $part_start[0] . '=' . $part_start[1];
             }
             break;
           case "id":
