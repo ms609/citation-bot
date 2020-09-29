@@ -4100,14 +4100,14 @@ T1 - This is the Title }}';
   }
  
   public function testAddBrokenDateFormat1() : void {
-    $text = "{{cite journal}}";
+    $text = "{{cite journal|doi=10.3222/XXXXXXXxxxxxx}}";
     $template = $this->make_citation($text);
     $this->assertTrue($template->add_if_new('doi-broken-date', '1 DEC 2019'));
     $this->assertSame('1 DEC 2019', $template->get2('doi-broken-date'));
   }
 
   public function testAddBrokenDateFormat2() : void {
-    $text = "{{cite journal}}";
+    $text = "{{cite journal|doi=10.3222/XXXXXXXxxxxxx}}";
     $template = $this->make_citation($text);
     $template->date_style = DATES_MDY;
     $this->assertTrue($template->add_if_new('doi-broken-date', '1 DEC 2019'));
@@ -4115,7 +4115,7 @@ T1 - This is the Title }}';
   }
  
   public function testAddBrokenDateFormat3() : void {
-    $text = "{{cite journal}}";
+    $text = "{{cite journal|doi=10.3222/XXXXXXXxxxxxx}}";
     $template = $this->make_citation($text);
     $template->date_style = DATES_DMY;
     $this->assertTrue($template->add_if_new('doi-broken-date', '1 DEC 2019'));
