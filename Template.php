@@ -3010,8 +3010,9 @@ final class Template {
           case "as": case "useragent": case "as_brr": case "hl":
           case "ei": case "ots": case "sig": case "source": case "lr": case "ved":
           case "gs_lcp": case "sxsrf": case "gfe_rd": case "gws_rd":
-          case "sa": case "oi": case "ct": case "client": case "redir_esc";
-          case "buy": case "edge": case "zoom": case "img": case "printspec": // List of parameters known to be safe to remove
+          case "sa": case "oi": case "ct": case "client": case "redir_esc":
+          case "callback": case "jscmd": case "bibkeys":
+          case "buy": case "edge": case "zoom": case "img": // List of parameters known to be safe to remove
           default:
             if ($removed_redundant !== 0) $removed_parts .= $part; // http://blah-blah is first parameter and it is not actually dropped
             $removed_redundant++;
