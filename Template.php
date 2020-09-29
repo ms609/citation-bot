@@ -1034,7 +1034,7 @@ final class Template {
              $this->forget($alias);
           }
         }
-        // Swich any that are set to doi-broken-date
+        // Switch any that are set to doi-broken-date
         if ($this->blank('doi-broken-date')) {
           foreach (array_diff(DOI_BROKEN_ALIASES, ['doi-broken-date']) as $alias) {
             $this->rename($alias, 'doi-broken-date');
@@ -3011,6 +3011,7 @@ final class Template {
         $hash = $matcher[1];
       }
       if ($hash) $hash = "#" . $hash;
+  // TODO - move hash parameters to before the hash
   /**    if (strpos($hash, 'v=onepage') !== FALSE) {
         if (!str_i_same($hash, '#v=onepage')) {
           $removed_redundant++;

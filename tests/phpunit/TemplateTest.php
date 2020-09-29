@@ -2353,38 +2353,58 @@ T1 - This is the Title }}';
     $this->assertSame('10.1038/nature10000', $expanded->get2('doi'));
   } 
   
-  public function testPagesDash() : void {
+  public function testPagesDash1() : void {
     $text = '{{cite journal|pages=1-2|title=do change}}';
     $prepared = $this->prepare_citation($text);
     $this->assertSame('1–2', $prepared->get2('pages'));
-    
+  }
+ 
+  public function testPagesDash2() : void {
     $text = '{{cite journal|at=1-2|title=do not change}}';
     $prepared = $this->prepare_citation($text);
     $this->assertSame('1-2', $prepared->get2('at'));
-    
+  }
+ 
+  public function testPagesDash3() : void {
     $text = '{{cite journal|pages=[http://bogus.bogus/1–2/ 1–2]|title=do not change }}';
     $prepared = $this->prepare_citation($text);
     $this->assertSame('[http://bogus.bogus/1–2/ 1–2]', $prepared->get2('pages'));
-
+  }
+ 
+  public function testPagesDash4() : void {
     $text = '{{Cite journal|pages=15|doi=10.1016/j.biocontrol.2014.06.004}}';
     $expanded = $this->process_citation($text);
     $this->assertSame('15–22', $expanded->get2('pages')); // Converted should use long dashes
-
+  }
+ 
+  public function testPagesDash5() : void {
     $text = '{{Cite journal|doi=10.1007/s11746-998-0245-y|at=pp.425–439, see Table&nbsp;2 p.&nbsp;426 for tempering temperatures}}';
     $expanded = $this->process_citation($text);
     $this->assertSame('pp.425–439, see Table&nbsp;2 p.&nbsp;426 for tempering temperatures', $expanded->get2('at')); // Leave complex at=
-
+  }
+ 
+  public function testPagesDash6() : void {
     $text = '{{cite book|pages=See [//books.google.com/books?id=-_rxBwAAQBAJ&pg=PA107 107]}}';
     $expanded = $this->process_citation($text); // Do not change this hidden URL
     $this->assertSame('See [//books.google.com/books?id=-_rxBwAAQBAJ&pg=PA107 107]', $expanded->get2('pages'));
-   
+  }
+ 
+  public function testPagesDash7() : void {
     $text = '{{cite book|pages=[//books.google.com/books?id=-_rxBwAAQBAJ&pg=PA107 107]}}';
     $expanded = $this->process_citation($text); // Do not change dashes in this hidden URL, but upgrade URL to real one
     $this->assertSame('[https://books.google.com/books?id=-_rxBwAAQBAJ&pg=PA107 107]', $expanded->get2('pages'));
-   
+  }
+ 
+  public function testPagesDash8() : void {
     $text = '{{cite journal|pages=AB-2|title=do change}}';
     $prepared = $this->prepare_citation($text);
     $this->assertSame('AB-2', $prepared->get2('pages'));
+  }
+ 
+  public function testPagesDash9() : void {
+    $text = '{{cite journal|page=1-2|title=do change}}';
+    $prepared = $this->prepare_citation($text);
+    $this->assertSame('1-2', $prepared->get2('page')); // With no change, but will give warning to user
   }
  
   public function testBogusPageRanges() : void {  // Just keep incrementing year when test ages out
@@ -3648,6 +3668,13 @@ T1 - This is the Title }}';
     $this->assertNull($template->get2('id'));
    }
  
+    public function testTidy74c() : void {
+    $text = "{{cite web|journal=openid transaction in progress|isbn=1234|chapter=X|title=Y}}";
+    $template = $this->make_citation($text);
+    $template->final_tidy();
+    $this->assertNull($template->get2('journal'));
+   }
+
    public function testTidy75() : void {
     $text = "{{cite web|url=developers.google.com|publisher=the google hive mind}}";
     $template = $this->make_citation($text);
@@ -4071,7 +4098,30 @@ T1 - This is the Title }}';
     $this->assertTrue($template->add_if_new('doi-broken-date', '1 DEC 2019'));
     $this->assertNull($template->get2('doi'));
   }
+ 
+  public function testAddBrokenDateFormat1() : void {
+    $text = "{{cite journal|doi=10.3222/XXXXXXXxxxxxx}}";
+    $template = $this->make_citation($text);
+    $this->assertTrue($template->add_if_new('doi-broken-date', '1 DEC 2019'));
+    $this->assertSame('1 DEC 2019', $template->get2('doi-broken-date'));
+  }
 
+  public function testAddBrokenDateFormat2() : void {
+    $text = "{{cite journal|doi=10.3222/XXXXXXXxxxxxx}}";
+    $template = $this->make_citation($text);
+    $template->date_style = DATES_MDY;
+    $this->assertTrue($template->add_if_new('doi-broken-date', '1 DEC 2019'));
+    $this->assertSame('December 1, 2019', $template->get2('doi-broken-date'));
+  }
+ 
+  public function testAddBrokenDateFormat3() : void {
+    $text = "{{cite journal|doi=10.3222/XXXXXXXxxxxxx}}";
+    $template = $this->make_citation($text);
+    $template->date_style = DATES_DMY;
+    $this->assertTrue($template->add_if_new('doi-broken-date', '1 DEC 2019'));
+    $this->assertSame('1 December 2019', $template->get2('doi-broken-date'));
+  }
+ 
   public function testNotBrokenDOI() : void {
     $text = "{{cite journal|doi-broken-date = # # # CITATION_BOT_PLACEHOLDER_COMMENT # # # }}";
     $template = $this->make_citation($text);
