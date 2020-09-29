@@ -14,7 +14,7 @@ try {
  $editSummary = (string) $_POST['summary'];
 
  if (strlen(trim($originalText)) < 4) {
-   throw new Exception('tiny');
+   throw new Exception('tiny');  // @codeCoverageIgnore
  }
 
  //Expand text from postvars

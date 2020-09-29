@@ -262,8 +262,8 @@ private static function zotero_request(string $url) : string {
   }
 
   if (!is_resource(self::$zotero_ch)) {
-     self::$zotero_ch = curl_init();
-     self::set_default_ch_zotero();
+     self::$zotero_ch = curl_init();   // @codeCoverageIgnore
+     self::set_default_ch_zotero();    // @codeCoverageIgnore
   }
   curl_setopt(self::$zotero_ch, CURLOPT_POSTFIELDS, $url);
    
