@@ -2857,27 +2857,24 @@ final class Template {
   public function expand_by_google_books() : bool {
     if ($this->has('doi') && doi_active($this->get('doi'))) return FALSE;
     foreach (['url', 'chapterurl', 'chapter-url'] as $url_type) {
-      if (stripos($this->get($url_type), 'books.google') !== FALSE || 
-          stripos($this->get($url_type), 'google.com/books/edition') !== FALSE) {
-         if ($this->expand_by_google_books_inner($url_type)) return TRUE;
-      }
+       if ($this->expand_by_google_books_inner($url_type, TRUE)) return TRUE;
     }
-    return $this->expand_by_google_books_inner('');
+    return $this->expand_by_google_books_inner('', TRUE);
   }
   
-  protected function expand_by_google_books_inner(string $url_type) : bool {
+  protected function expand_by_google_books_inner(string $url_type, bool $use_it) : bool {
     $gid = ['', '']; // prevent memory leak in some PHP versions
     $google_results = ['', '']; // prevent memory leak in some PHP versions
     $matcher = ['', '']; // prevent memory leak in some PHP versions
     $matches = ['', '']; // prevent memory leak in some PHP versions
     if ($url_type) {
       $url = $this->get($url_type);
+      if (!$url) return FALSE;
+      if (!preg_match("~books\.google\.[\w\.]+/.*\bid=([\w\d\-]+)~", $url, $gid) &&
+          !preg_match("~\.google\.com/books/edition/_/([a-zA-Z0-9]+)(?:\?.+|)$~", $url, $gid)) {
+         return FALSE;  // Got nothing usable
+      }
     } else {
-      $url = '';
-    }
-    if (!$url || !(preg_match("~books\.google\.[\w\.]+/.*\bid=([\w\d\-]+)~", $url, $gid) ||
-                   preg_match("~\.google\.com/books/edition/_/([a-zA-Z0-9]+)(?:\?.+|)$~", $url, $gid))
-       ) { // No Google URL yet.
       $google_books_worked = FALSE ;
       $isbn = $this->get('isbn');
       $lccn = $this->get('lccn');
@@ -3034,7 +3031,7 @@ final class Template {
         }
         $this->set($url_type, $url);
       }
-      $this->google_book_details($gid[1]);
+      if ($use_it) $this->google_book_details($gid[1]);
       return TRUE;
     }
     if (preg_match("~^(.+\.google\.com/books/edition/_/)([a-zA-Z0-9]+)(\?.+|)$~", (string) $url, $gid)) {
@@ -3042,7 +3039,7 @@ final class Template {
         report_forget('Anonymized/Standardized/Denationalized Google Books URL');
         $this->set($url_type, $gid[1] . $gid[2]);
       }
-      $this->google_book_details($gid[2]);
+      if ($use_it) $this->google_book_details($gid[2]);
       return TRUE;
     }
     return FALSE;
