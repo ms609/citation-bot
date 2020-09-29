@@ -2875,6 +2875,7 @@ final class Template {
          return FALSE;  // Got nothing usable
       }
     } else {
+      $url = '';
       $google_books_worked = FALSE ;
       $isbn = $this->get('isbn');
       $lccn = $this->get('lccn');
