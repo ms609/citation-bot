@@ -2978,13 +2978,32 @@ final class Template {
         $part_start = explode("=", $part);
         switch ($part_start[0]) {
           case "dq": case "pg": case "lpg": case "q": case "printsec": case "cd": case "vq": case "jtp":
-            $url .= "&" . $part;
+            if ($part_start[1] == '') {
+                $removed_redundant++;
+            } else {
+                $url .= "&" . $part;
+            }
             break;
           case "text":
-            $url .= "&dq=" . $part_start[1];
+            if ($part_start[1] == '') {
+                $removed_redundant++;
+            } else {
+               $url .= "&dq=" . $part_start[1];
+            }
             break;
           case "keywords":
-            $url .= "&q=" . $part_start[1];
+            if ($part_start[1] == '') {
+                $removed_redundant++;
+            } else {
+               $url .= "&q=" . $part_start[1];
+            }
+            break;
+          case "page":
+            if ($part_start[1] == '') {
+                $removed_redundant++;
+            } else {
+               $url .= "&p=" . $part_start[1];
+            }
             break;
           case "id":
             break; // Don't "remove redundant"
