@@ -3018,6 +3018,10 @@ final class Template {
           $removed_parts .= '&lpg=' . $book_array['lpg'];
           unset($book_array['lpg']);
       }
+      if (isset($book_array['vq']) && !isset($book_array['q']) && !isset($book_array['dq'])) {
+          $book_array['q'] = $book_array['vq'];
+          unset($book_array['vq']);
+      }
       if (isset($book_array['q']) && isset($book_array['dq'])) { // Q wins over DQ
           $removed_redundant++;
           $removed_parts .= '&dq=' . $book_array['dq'];
@@ -3028,13 +3032,16 @@ final class Template {
           unset($book_array['dq']);
       }   
       if (preg_match('~^&(.*)$~', $hash, $matcher) ){
-        $hash = $matcher[1];
+          $hash = $matcher[1];
       }
       if (preg_match('~^(.*)&$~', $hash, $matcher) ){
-        $hash = $matcher[1];
+          $hash = $matcher[1];
       }
-      foreach ($book_array as $key => $value) {
-          $url .= '&' . $key . '=' . $value;
+      if (isset($book_array['q'])){
+          $url .= '&q=' . $book_array['q'];
+      }
+      if (isset($book_array['pg'])){
+          $url .= '&pg=' . $book_array['pg'];
       }
       if ($hash) {
          $hash = "#" . $hash;
