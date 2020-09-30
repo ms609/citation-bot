@@ -3010,18 +3010,18 @@ final class Template {
       $hash = str_replace(['&q&', '&q=&', '&&&&', '&&&', '&&'], ['&', '&', '&', '&', '&'], $hash);
       if (preg_match('~(&q=[^&]+)&~', $hash, $matcher)) {
           $hash = str_replace($matcher[1], '', $hash);
-          if (isset($book_array('q'))) $removed_parts .= '&q=' . $book_array('q');
-          $book_array('q') = urlencode(urldecode(substr($matcher[1], 3)));
+          if (isset($book_array['q'])) $removed_parts .= '&q=' . $book_array['q'];
+          $book_array['q'] = urlencode(urldecode(substr($matcher[1], 3)));
       }
-      if (isset($book_array('pg')) && isset($book_array('lpg'))) {
+      if (isset($book_array['pg']) && isset($book_array['lpg'])) {
           $removed_redundant++;
-          $removed_parts .= '&lpg=' . $book_array('lpg');
-          unset($book_array('lpg'));
+          $removed_parts .= '&lpg=' . $book_array['lpg'];
+          unset($book_array['lpg']);
       }
-      if (isset($book_array('q')) && isset($book_array('dq'))) {
+      if (isset($book_array['q']) && isset($book_array['dq'])) {
           $removed_redundant++;
-          $removed_parts .= '&dq=' . $book_array('dq');
-          unset($book_array('dq'));
+          $removed_parts .= '&dq=' . $book_array['dq'];
+          unset($book_array['dq']);
       }
       if (preg_match('~^&(.*)$~', $hash, $matcher) ){
         $hash = $matcher[1];
