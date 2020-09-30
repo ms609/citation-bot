@@ -3011,18 +3011,22 @@ final class Template {
       if (preg_match('~(&q=[^&]+)&~', $hash, $matcher)) {
           $hash = str_replace($matcher[1], '', $hash);
           if (isset($book_array['q'])) $removed_parts .= '&q=' . $book_array['q'];
-          $book_array['q'] = urlencode(urldecode(substr($matcher[1], 3)));
+          $book_array['q'] = urlencode(urldecode(substr($matcher[1], 3)));           // #q= wins over &q= before # sign
       }
-      if (isset($book_array['pg']) && isset($book_array['lpg'])) {
+      if (isset($book_array['pg']) && isset($book_array['lpg'])) { // PG wins over LPG
           $removed_redundant++;
           $removed_parts .= '&lpg=' . $book_array['lpg'];
           unset($book_array['lpg']);
       }
-      if (isset($book_array['q']) && isset($book_array['dq'])) {
+      if (isset($book_array['q']) && isset($book_array['dq'])) { // Q wins over DQ
           $removed_redundant++;
           $removed_parts .= '&dq=' . $book_array['dq'];
           unset($book_array['dq']);
       }
+      if (isset($book_array['dq'])) {      // Prefer Q to DQ
+          $book_array['q'] = $book_array['dq'];
+          unset($book_array['dq']);
+      }   
       if (preg_match('~^&(.*)$~', $hash, $matcher) ){
         $hash = $matcher[1];
       }
@@ -3036,8 +3040,7 @@ final class Template {
          $hash = "#" . $hash;
          $removed_parts .= $hash;
          $removed_redundant++;
-      }
-      // CLEANED UP, so do not add $url = $url . $hash;
+      }     // CLEANED UP, so do not add $url = $url . $hash;
       if (preg_match('~^(https://books\.google\.com/books\?id=[^#^&]+)(?:&printsec=frontcover|)(?:#v=onepage|v=snippet|)$~', $url, $matches)) {
          $url = $matches[1]; // URL Just wants the landing page
       }
