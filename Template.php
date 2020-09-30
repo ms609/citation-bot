@@ -1034,7 +1034,7 @@ final class Template {
              $this->forget($alias);
           }
         }
-        // Swich any that are set to doi-broken-date
+        // Switch any that are set to doi-broken-date
         if ($this->blank('doi-broken-date')) {
           foreach (array_diff(DOI_BROKEN_ALIASES, ['doi-broken-date']) as $alias) {
             $this->rename($alias, 'doi-broken-date');
@@ -2855,29 +2855,31 @@ final class Template {
   }
   
   public function expand_by_google_books() : bool {
+    // TODO - this is wasteful to normalize twice
+    foreach (ALL_URL_TYPES as $url_type) {
+       $this->expand_by_google_books_inner($url_type, FALSE);
+    }    
     if ($this->has('doi') && doi_active($this->get('doi'))) return FALSE;
     foreach (['url', 'chapterurl', 'chapter-url'] as $url_type) {
-      if (stripos($this->get($url_type), 'books.google') !== FALSE || 
-          stripos($this->get($url_type), 'google.com/books/edition') !== FALSE) {
-         if ($this->expand_by_google_books_inner($url_type)) return TRUE;
-      }
+       if ($this->expand_by_google_books_inner($url_type, TRUE)) return TRUE;
     }
-    return $this->expand_by_google_books_inner('');
+    return $this->expand_by_google_books_inner('', TRUE);
   }
   
-  protected function expand_by_google_books_inner(string $url_type) : bool {
+  protected function expand_by_google_books_inner(string $url_type, bool $use_it) : bool {
     $gid = ['', '']; // prevent memory leak in some PHP versions
     $google_results = ['', '']; // prevent memory leak in some PHP versions
     $matcher = ['', '']; // prevent memory leak in some PHP versions
     $matches = ['', '']; // prevent memory leak in some PHP versions
     if ($url_type) {
       $url = $this->get($url_type);
+      if (!$url) return FALSE;
+      if (!preg_match("~books\.google\.[\w\.]+/.*\bid=([\w\d\-]+)~", $url, $gid) &&
+          !preg_match("~\.google\.com/books/edition/_/([a-zA-Z0-9]+)(?:\?.+|)$~", $url, $gid)) {
+         return FALSE;  // Got nothing usable
+      }
     } else {
       $url = '';
-    }
-    if (!$url || !(preg_match("~books\.google\.[\w\.]+/.*\bid=([\w\d\-]+)~", $url, $gid) ||
-                   preg_match("~\.google\.com/books/edition/_/([a-zA-Z0-9]+)(?:\?.+|)$~", $url, $gid))
-       ) { // No Google URL yet.
       $google_books_worked = FALSE ;
       $isbn = $this->get('isbn');
       $lccn = $this->get('lccn');
@@ -2974,55 +2976,80 @@ final class Template {
       }
       $url_parts = explode("&", str_replace("?", "&", $url));
       $url = "https://books.google.com/books?id=" . $gid[1];
+      $book_array = array();
       foreach ($url_parts as $part) {
         $part_start = explode("=", $part);
+        if ($part_start[0] === 'text')     $part_start[0] = 'dq';
+        if ($part_start[0] === 'keywords') $part_start[0] = 'q';
+        if ($part_start[0] === 'page')     $part_start[0] = 'pg';
         switch ($part_start[0]) {
           case "dq": case "pg": case "lpg": case "q": case "printsec": case "cd": case "vq": case "jtp":
-            $url .= "&" . $part;
-            break;
-          case "text":
-            $url .= "&dq=" . $part_start[1];
-            break;
-          case "keywords":
-            $url .= "&q=" . $part_start[1];
+            if ($part_start[1] == '') {
+                $removed_redundant++;
+                $removed_parts .= $part;
+            } else {
+                $book_array[$part_start[0]] = $part_start[1];
+            }
             break;
           case "id":
             break; // Don't "remove redundant"
           case "as": case "useragent": case "as_brr": case "hl":
           case "ei": case "ots": case "sig": case "source": case "lr": case "ved":
           case "gs_lcp": case "sxsrf": case "gfe_rd": case "gws_rd":
-          case "sa": case "oi": case "ct": case "client": case "redir_esc";
-          case "buy": case "edge": case "zoom": case "img": case "printspec": // List of parameters known to be safe to remove
+          case "sa": case "oi": case "ct": case "client": case "redir_esc":
+          case "callback": case "jscmd": case "bibkeys":
+          case "buy": case "edge": case "zoom": case "img": // List of parameters known to be safe to remove
           default:
             if ($removed_redundant !== 0) $removed_parts .= $part; // http://blah-blah is first parameter and it is not actually dropped
             $removed_redundant++;
         }
       }
+      // Clean up hash first
       $hash = '&' . trim($hash) . '&';
       $hash = str_replace(['&f=false', '&f=true', 'v=onepage'], ['','',''], $hash); // onepage is default
       $hash = str_replace(['&q&', '&q=&', '&&&&', '&&&', '&&'], ['&', '&', '&', '&', '&'], $hash);
+      if (preg_match('~(&q=[^&]+)&~', $hash, $matcher)) {
+          $hash = str_replace($matcher[1], '', $hash);
+          if (isset($book_array['q'])) $removed_parts .= '&q=' . $book_array['q'];
+          $book_array['q'] = urlencode(urldecode(substr($matcher[1], 3)));           // #q= wins over &q= before # sign
+      }
+      if (isset($book_array['vq']) && !isset($book_array['q']) && !isset($book_array['dq'])) { // VQ loses to Q and VQ
+          $book_array['q'] = $book_array['vq'];
+          unset($book_array['vq']);
+      }
+      if (isset($book_array['q']) && isset($book_array['dq'])) { // Q wins over DQ
+          $removed_redundant++;
+          $removed_parts .= '&dq=' . $book_array['dq'];
+          unset($book_array['dq']);
+      } elseif (isset($book_array['dq'])) {      // Prefer Q parameters to DQ
+          $book_array['q'] = $book_array['dq'];
+          unset($book_array['dq']);
+      }
+      if (isset($book_array['pg']) && isset($book_array['lpg'])) { // PG wins over LPG
+          $removed_redundant++;
+          $removed_parts .= '&lpg=' . $book_array['lpg'];
+          unset($book_array['lpg']);
+      }
       if (preg_match('~^&(.*)$~', $hash, $matcher) ){
-        $hash = $matcher[1];
+          $hash = $matcher[1];
       }
       if (preg_match('~^(.*)&$~', $hash, $matcher) ){
-        $hash = $matcher[1];
+          $hash = $matcher[1];
       }
-      if ($hash) $hash = "#" . $hash;
-  /**    if (strpos($hash, 'v=onepage') !== FALSE) {
-        if (!str_i_same($hash, '#v=onepage')) {
-          $removed_redundant++;
-          $removed_parts .= substr(str_ireplace('v=onepage', '', $hash), 1);
-        }
-        $hash = '#v=onepage';
+      if (isset($book_array['q'])){
+          $url .= '&q=' . $book_array['q'];
       }
-      if (strpos($hash, 'v=snippet') !== FALSE) {
-        if (!str_i_same($hash, '#v=snippet')) {
-          $removed_redundant++;
-          $removed_parts .= substr(str_ireplace('v=snippet', '', $hash), 1);
-        }
-        $hash = '#v=snippet';
-      } **/
-      $url = $url . $hash;
+      if (isset($book_array['pg'])){
+          $url .= '&pg=' . $book_array['pg'];
+      }
+      if (isset($book_array['lpg'])){
+          $url .= '&lpg=' . $book_array['lpg'];
+      }
+      if ($hash) {
+         $hash = "#" . $hash;
+         $removed_parts .= $hash;
+         $removed_redundant++;
+      }     // CLEANED UP, so do not add $url = $url . $hash;
       if (preg_match('~^(https://books\.google\.com/books\?id=[^#^&]+)(?:&printsec=frontcover|)(?:#v=onepage|v=snippet|)$~', $url, $matches)) {
          $url = $matches[1]; // URL Just wants the landing page
       }
@@ -3034,15 +3061,15 @@ final class Template {
         }
         $this->set($url_type, $url);
       }
-      $this->google_book_details($gid[1]);
+      if ($use_it) $this->google_book_details($gid[1]);
       return TRUE;
     }
     if (preg_match("~^(.+\.google\.com/books/edition/_/)([a-zA-Z0-9]+)(\?.+|)$~", (string) $url, $gid)) {
       if ($url_type && $gid[3] === '?hl=en') {
-        report_forget('Standardized Google Books URL');
+        report_forget('Anonymized/Standardized/Denationalized Google Books URL');
         $this->set($url_type, $gid[1] . $gid[2]);
       }
-      $this->google_book_details($gid[2]);
+      if ($use_it) $this->google_book_details($gid[2]);
       return TRUE;
     }
     return FALSE;
@@ -4045,10 +4072,11 @@ final class Template {
             $this->change_name_to('cite journal');
           }
           
-          if ( mb_substr($periodical, 0, 2) !== "[["   // Only remove partial wikilinks
+          if (( mb_substr($periodical, 0, 2) !== "[["   // Only remove partial wikilinks
                     || mb_substr($periodical, -2) !== "]]"
                     || mb_substr_count($periodical, '[[') !== 1 
-                    || mb_substr_count($periodical, ']]') !== 1
+                    || mb_substr_count($periodical, ']]') !== 1)
+                    && !preg_match('~^(?:the |)(?:Publications|Publication|journal|Transactions|letters|annals|Bulletin|reports|history) of the ~i', $periodical)
                     )
           {
               $this->set($param, preg_replace(REGEXP_PLAIN_WIKILINK, "$1", $periodical));
@@ -5833,6 +5861,8 @@ final class Template {
     $matches = ['', '']; // prevent memory leak in some PHP versions
     if ($this->blank('issn')) return FALSE; // Nothing to use
     if (!$this->blank(WORK_ALIASES)) return FALSE; // Nothing to add
+    if ($this->has('series')) return FALSE; // Dangerous risk of duplication and most likely a series of "books"
+    if ($this->wikiname() === 'cite book' && $this->has('isbn')) return FALSE; // Probably a series of "books"
     $issn = $this->get('issn');
     if ($issn === '9999-9999') return FALSE; // Fake test suite data
     if (!preg_match('~^\d{4}.?\d{3}[0-9xX]$~u', $issn)) return FALSE;
