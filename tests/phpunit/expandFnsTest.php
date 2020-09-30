@@ -10,25 +10,39 @@ require_once(__DIR__ . '/../testBaseClass.php');
 final class expandFnsTest extends testBaseClass {
 
   public function testCapitalization() : void {
-    $this->assertSame('Molecular and Cellular Biology', 
+    $this->assertSame('Molecular and Cellular Biology',
                         title_capitalization(title_case('Molecular and cellular biology'), TRUE));
-    $this->assertSame('z/Journal', 
+    $this->assertSame('z/Journal',
                         title_capitalization(title_case('z/Journal'), TRUE));
     $this->assertSame('The Journal of Journals', // The, not the
                         title_capitalization('The Journal Of Journals', TRUE));
     $this->assertSame('A Journal of Chemistry A',
                         title_capitalization('A Journal of Chemistry A', TRUE));
     $this->assertSame('A Journal of Chemistry E',
-                        title_capitalization('A Journal of Chemistry E', TRUE));                      
-    $this->assertSame('This a Journal', 
+                        title_capitalization('A Journal of Chemistry E', TRUE));
+  }
+  public function testCapitalization2() : void {
+    $this->assertSame('This a Journal',
                         title_capitalization('THIS A JOURNAL', TRUE));
-    $this->assertSame('This a Journal', 
+    $this->assertSame('This a Journal',
                         title_capitalization('THIS A JOURNAL', TRUE));
-    $this->assertSame("THIS 'A' JOURNAL mittEilUngen", 
+    $this->assertSame("THIS 'A' JOURNAL mittEilUngen",
                         title_capitalization("THIS `A` JOURNAL mittEilUngen", TRUE));
+  }
+  public function testCapitalization3() : void {
     $this->assertSame('[Johsnon And me]', title_capitalization('[Johsnon And me]', TRUE)); // Do not touch links
-    $this->assertSame('This is robert www',  title_capitalization('This is robert www' , TRUE));
-    $this->assertSame('This is robert http', title_capitalization('This is robert http', TRUE));
+  }
+  public function testCapitalization4() : void {
+    $this->assertSame('This is robert WWW',  title_capitalization('This is robert www' , TRUE));
+  }
+  public function testCapitalization5() : void {
+    $this->assertSame('This is robert http://', title_capitalization('This is robert http://', TRUE));
+  }
+  public function testCapitalization6() : void {
+    $this->assertSame('This is robert www.',  title_capitalization('This is robert www.' , TRUE));
+  }
+  public function testCapitalization7() : void {
+    $this->assertSame('This is robert www-',  title_capitalization('This is robert www-' , TRUE));
   }
   
   public function testFrenchCapitalization() : void {

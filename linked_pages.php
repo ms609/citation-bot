@@ -47,6 +47,9 @@ if ($page_name == '') {
     report_warning('Nothing requested -- OR -- page name got lost during initial authorization ');
   }
   exit("\n </pre></body></html>");
+} elseif (substr($page_name, 0, 5) !== 'User:' && !in_array($api->get_the_user(), ['Headbomb', 'AManWithNoPlan'])) { // Do not let people run willy-nilly
+  report_warning('API only intended for User generated pages for fixing specific issues ');
+  exit("\n </pre></body></html>");
 }
 
 if (strlen($page_name) > 256)  {

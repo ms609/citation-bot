@@ -71,7 +71,7 @@ function entrez_api(array $ids, array & $templates, string $db) : bool {   // Po
           foreach ($item->Item as $subItem) {
             $subItem = (string) $subItem;
             if (preg_match('~^\d~', $subItem)) {
-              break; // Author started with a number, skip all remaining authors
+              break; // Author started with a number, skip all remaining authors. // @codeCoverageIgnore
             } elseif (author_is_human($subItem)) {
               $jr_test = junior_test($subItem);
               $subItem = $jr_test[0];
@@ -166,7 +166,7 @@ function arxiv_api(array $ids, array & $templates) : bool {  // Pointer to save 
       if (stripos($the_error, 'incorrect id format for') !== FALSE) {
         report_warning("arXiv search failed: " . $the_error);
       } else {
-        report_minor_error("arXiv search failed - please report the error: " . $the_error);
+        report_minor_error("arXiv search failed - please report the error: " . $the_error);  // @codeCoverageIgnore
       }
       return FALSE;
   }
@@ -213,7 +213,7 @@ function arxiv_api(array $ids, array & $templates) : bool {  // Pointer to save 
     $this_template = next($templates);
   }
   if ($this_template !== FALSE) {
-    report_minor_error('Unexpected error in arxiv_api()'); 
+    report_minor_error('Unexpected error in arxiv_api()');   // @codeCoverageIgnore
   }
   return TRUE;
 }
@@ -746,8 +746,8 @@ function doi_active(string $doi) : ?bool {
   if (array_key_exists($doi, $cache_good)) return TRUE;
   if (array_key_exists($doi, $cache_bad))  return FALSE;
   // For really long category runs
-  if (count($cache_bad) > 1500) $cache_bad = [];
-  if (count($cache_good) > 1500) $cache_good = [];
+  if (count($cache_bad) > 3500) $cache_bad = [];
+  if (count($cache_good) > 3500) $cache_good = [];
   $works = doi_works($doi);
   if ($works === NULL) {
     return NULL; // @codeCoverageIgnore
@@ -776,8 +776,8 @@ function doi_works(string $doi) : ?bool {
   if (array_key_exists($doi, $cache_good)) return TRUE;
   if (array_key_exists($doi, $cache_bad))  return FALSE;
   // For really long category runs
-  if (count($cache_bad) > 1500) $cache_bad = [];
-  if (count($cache_good) > 1500) $cache_good = [];
+  if (count($cache_bad) > 3500) $cache_bad = [];
+  if (count($cache_good) > 3500) $cache_good = [];
   $works = is_doi_works($doi);
   if ($works === NULL) {
     return NULL; // @codeCoverageIgnore

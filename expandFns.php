@@ -332,6 +332,9 @@ function straighten_quotes(string $str) : string { // (?<!\') and (?!\') means t
 // ============================================= Capitalization functions ======================================
 
 function title_case(string $text) :string {
+  if (stripos($text, 'www.') !== FALSE || stripos($text, 'www-') !== FALSE || stripos($text, 'http://') !== FALSE) {
+     return $text; // Who knows - duplicate code below
+  }
   return mb_convert_case($text, MB_CASE_TITLE, "UTF-8");
 }
 
@@ -350,8 +353,8 @@ function title_capitalization(string $in, bool $caps_after_punctuation) : string
                        // Changing case may break links (e.g. [[Journal YZ|J. YZ]] etc.)
   }
   
-  if (stripos($new_case, 'www') !== FALSE || stripos($new_case, 'http') !== FALSE) {
-     return $new_case; // Who knows
+  if (stripos($new_case, 'www.') !== FALSE || stripos($new_case, 'www-') !== FALSE || stripos($new_case, 'http://') !== FALSE) {
+     return $new_case; // Who knows - duplicate code above
   }
 
   if ($new_case == mb_strtoupper($new_case) 
