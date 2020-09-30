@@ -2976,18 +2976,19 @@ final class Template {
       }
       $url_parts = explode("&", str_replace("?", "&", $url));
       $url = "https://books.google.com/books?id=" . $gid[1];
+      $book_array = array();
       foreach ($url_parts as $part) {
         $part_start = explode("=", $part);
         if ($part_start[0] === 'text')     $part_start[0] = 'dq';
         if ($part_start[0] === 'keywords') $part_start[0] = 'q';
-        if ($part_start[0] === 'page')     $part_start[0] = 'pg';  
+        if ($part_start[0] === 'page')     $part_start[0] = 'pg';
         switch ($part_start[0]) {
           case "dq": case "pg": case "lpg": case "q": case "printsec": case "cd": case "vq": case "jtp":
             if ($part_start[1] == '') {
                 $removed_redundant++;
                 $removed_parts .= $part;
             } else {
-                $url .= "&" . $part_start[0] . '=' . $part_start[1];
+                $book_array[$part_start[0]] = $part_start[1];
             }
             break;
           case "id":
@@ -3003,32 +3004,52 @@ final class Template {
             $removed_redundant++;
         }
       }
+      // Clean up hash first
       $hash = '&' . trim($hash) . '&';
       $hash = str_replace(['&f=false', '&f=true', 'v=onepage'], ['','',''], $hash); // onepage is default
       $hash = str_replace(['&q&', '&q=&', '&&&&', '&&&', '&&'], ['&', '&', '&', '&', '&'], $hash);
+      if (preg_match('~(&q=[^&]+)&~', $hash, $matcher)) {
+          $hash = str_replace($matcher[1], '', $hash);
+          if (isset($book_array['q'])) $removed_parts .= '&q=' . $book_array['q'];
+          $book_array['q'] = urlencode(urldecode(substr($matcher[1], 3)));           // #q= wins over &q= before # sign
+      }
+      if (isset($book_array['vq']) && !isset($book_array['q']) && !isset($book_array['dq'])) { // VQ loses to Q and VQ
+          $book_array['q'] = $book_array['vq'];
+          unset($book_array['vq']);
+      }
+      if (isset($book_array['q']) && isset($book_array['dq'])) { // Q wins over DQ
+          $removed_redundant++;
+          $removed_parts .= '&dq=' . $book_array['dq'];
+          unset($book_array['dq']);
+      } elseif (isset($book_array['dq'])) {      // Prefer Q parameters to DQ
+          $book_array['q'] = $book_array['dq'];
+          unset($book_array['dq']);
+      }
+      if (isset($book_array['pg']) && isset($book_array['lpg'])) { // PG wins over LPG
+          $removed_redundant++;
+          $removed_parts .= '&lpg=' . $book_array['lpg'];
+          unset($book_array['lpg']);
+      }
       if (preg_match('~^&(.*)$~', $hash, $matcher) ){
-        $hash = $matcher[1];
+          $hash = $matcher[1];
       }
       if (preg_match('~^(.*)&$~', $hash, $matcher) ){
-        $hash = $matcher[1];
+          $hash = $matcher[1];
       }
-      if ($hash) $hash = "#" . $hash;
-  // TODO - move hash parameters to before the hash
-  /**    if (strpos($hash, 'v=onepage') !== FALSE) {
-        if (!str_i_same($hash, '#v=onepage')) {
-          $removed_redundant++;
-          $removed_parts .= substr(str_ireplace('v=onepage', '', $hash), 1);
-        }
-        $hash = '#v=onepage';
+      if (isset($book_array['q'])){
+          $url .= '&q=' . $book_array['q'];
       }
-      if (strpos($hash, 'v=snippet') !== FALSE) {
-        if (!str_i_same($hash, '#v=snippet')) {
-          $removed_redundant++;
-          $removed_parts .= substr(str_ireplace('v=snippet', '', $hash), 1);
-        }
-        $hash = '#v=snippet';
-      } **/
-      $url = $url . $hash;
+      if (isset($book_array['pg'])){
+          $url .= '&pg=' . $book_array['pg'];
+      }
+      if (isset($book_array['lpg'])){
+          $url .= '&lpg=' . $book_array['lpg'];
+      }
+      if ($hash) {
+         $hash = "#" . $hash;
+         $removed_parts .= $hash;
+         $removed_redundant++;
+      }     // CLEANED UP, so do not add $url = $url . $hash;
       if (preg_match('~^(https://books\.google\.com/books\?id=[^#^&]+)(?:&printsec=frontcover|)(?:#v=onepage|v=snippet|)$~', $url, $matches)) {
          $url = $matches[1]; // URL Just wants the landing page
       }
