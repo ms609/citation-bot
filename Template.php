@@ -2976,18 +2976,19 @@ final class Template {
       }
       $url_parts = explode("&", str_replace("?", "&", $url));
       $url = "https://books.google.com/books?id=" . $gid[1];
+      $book_array = array();
       foreach ($url_parts as $part) {
         $part_start = explode("=", $part);
         if ($part_start[0] === 'text')     $part_start[0] = 'dq';
         if ($part_start[0] === 'keywords') $part_start[0] = 'q';
-        if ($part_start[0] === 'page')     $part_start[0] = 'pg';  
+        if ($part_start[0] === 'page')     $part_start[0] = 'pg';
         switch ($part_start[0]) {
           case "dq": case "pg": case "lpg": case "q": case "printsec": case "cd": case "vq": case "jtp":
             if ($part_start[1] == '') {
                 $removed_redundant++;
                 $removed_parts .= $part;
             } else {
-                $url .= "&" . $part_start[0] . '=' . $part_start[1];
+                $book_array($part_start[0]) = $part_start[1];
             }
             break;
           case "id":
@@ -3003,32 +3004,40 @@ final class Template {
             $removed_redundant++;
         }
       }
+      // Clean up hash first
       $hash = '&' . trim($hash) . '&';
       $hash = str_replace(['&f=false', '&f=true', 'v=onepage'], ['','',''], $hash); // onepage is default
       $hash = str_replace(['&q&', '&q=&', '&&&&', '&&&', '&&'], ['&', '&', '&', '&', '&'], $hash);
+      if (preg_match('~(&q=[^&]+)&~', $hash, $matcher)) {
+          $hash = str_replace($matcher[1], '', $hash);
+          $removed_parts .= (string) @$book_array('q')
+          $book_array('q') = urlencode(urldecode(substr($matcher[1], 3)));
+      }
+      if (isset($book_array('pg')) && isset($book_array('lpg'))) {
+          $removed_redundant++;
+          $removed_parts .= '&lpg=' . $book_array('lpg');
+          unset($book_array('lpg'));
+      }
+      if (isset($book_array('q')) && isset($book_array('dq'))) {
+          $removed_redundant++;
+          $removed_parts .= '&dq=' . $book_array('dq');
+          unset($book_array('dq'));
+      }
       if (preg_match('~^&(.*)$~', $hash, $matcher) ){
         $hash = $matcher[1];
       }
       if (preg_match('~^(.*)&$~', $hash, $matcher) ){
         $hash = $matcher[1];
       }
-      if ($hash) $hash = "#" . $hash;
-  // TODO - move hash parameters to before the hash
-  /**    if (strpos($hash, 'v=onepage') !== FALSE) {
-        if (!str_i_same($hash, '#v=onepage')) {
-          $removed_redundant++;
-          $removed_parts .= substr(str_ireplace('v=onepage', '', $hash), 1);
-        }
-        $hash = '#v=onepage';
+      foreach ($book_array as $key => $value) {
+          $url .= '&' . $key . '=' . $value;
       }
-      if (strpos($hash, 'v=snippet') !== FALSE) {
-        if (!str_i_same($hash, '#v=snippet')) {
-          $removed_redundant++;
-          $removed_parts .= substr(str_ireplace('v=snippet', '', $hash), 1);
-        }
-        $hash = '#v=snippet';
-      } **/
-      $url = $url . $hash;
+      if ($hash) {
+         $hash = "#" . $hash;
+         $removed_parts .= $hash;
+         $removed_redundant++;
+      }
+      // CLEANED UP, so do not add $url = $url . $hash;
       if (preg_match('~^(https://books\.google\.com/books\?id=[^#^&]+)(?:&printsec=frontcover|)(?:#v=onepage|v=snippet|)$~', $url, $matches)) {
          $url = $matches[1]; // URL Just wants the landing page
       }
