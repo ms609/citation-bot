@@ -3013,12 +3013,7 @@ final class Template {
           if (isset($book_array['q'])) $removed_parts .= '&q=' . $book_array['q'];
           $book_array['q'] = urlencode(urldecode(substr($matcher[1], 3)));           // #q= wins over &q= before # sign
       }
-      if (isset($book_array['pg']) && isset($book_array['lpg'])) { // PG wins over LPG
-          $removed_redundant++;
-          $removed_parts .= '&lpg=' . $book_array['lpg'];
-          unset($book_array['lpg']);
-      }
-      if (isset($book_array['vq']) && !isset($book_array['q']) && !isset($book_array['dq'])) {
+      if (isset($book_array['vq']) && !isset($book_array['q']) && !isset($book_array['dq'])) { // VQ loses to Q and VQ
           $book_array['q'] = $book_array['vq'];
           unset($book_array['vq']);
       }
@@ -3026,11 +3021,15 @@ final class Template {
           $removed_redundant++;
           $removed_parts .= '&dq=' . $book_array['dq'];
           unset($book_array['dq']);
-      }
-      if (isset($book_array['dq'])) {      // Prefer Q to DQ
+      } elseif (isset($book_array['dq'])) {      // Prefer Q parameters to DQ
           $book_array['q'] = $book_array['dq'];
           unset($book_array['dq']);
-      }   
+      }
+      if (isset($book_array['pg']) && isset($book_array['lpg'])) { // PG wins over LPG
+          $removed_redundant++;
+          $removed_parts .= '&lpg=' . $book_array['lpg'];
+          unset($book_array['lpg']);
+      }
       if (preg_match('~^&(.*)$~', $hash, $matcher) ){
           $hash = $matcher[1];
       }
