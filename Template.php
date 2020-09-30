@@ -3043,6 +3043,9 @@ final class Template {
       if (isset($book_array['pg'])){
           $url .= '&pg=' . $book_array['pg'];
       }
+      if (isset($book_array['lpg'])){
+          $url .= '&lpg=' . $book_array['lpg'];
+      }
       if ($hash) {
          $hash = "#" . $hash;
          $removed_parts .= $hash;
