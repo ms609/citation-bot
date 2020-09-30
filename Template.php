@@ -2988,7 +2988,7 @@ final class Template {
                 $removed_redundant++;
                 $removed_parts .= $part;
             } else {
-                $book_array($part_start[0]) = $part_start[1];
+                $book_array[$part_start[0]] = $part_start[1];
             }
             break;
           case "id":
