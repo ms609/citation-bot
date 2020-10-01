@@ -474,6 +474,7 @@ function remove_brackets(string $string) : string {
 // ============================================= Wikipedia functions ======================================
 
 function throttle (int $min_interval) : void {
+  if (WikipediaBot::NonStandardMode()) return;
   static $last_write_time = 0;
   static $phase = 0;
   $cycles = 6; // average over this many cycles
