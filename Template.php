@@ -4085,7 +4085,10 @@ final class Template {
           $periodical = trim($this->get($param));
           if (substr($periodical, 0, 1) !== "[" && substr($periodical, -1) !== "]") {  
             if ((strlen($periodical) - mb_strlen($periodical)) < 9 ) { // eight or fewer UTF-8 stuff
-               if (str_ireplace(OBVIOUS_FOREIGN_WORDS, '', ' ' . $periodical . ' ') == ' ' . $periodical . ' ') $periodical = ucwords($periodical); // Found NO foreign words/phrase
+               if (str_ireplace(OBVIOUS_FOREIGN_WORDS, '', ' ' . $periodical . ' ') == ' ' . $periodical . ' ' &&
+                   strip_diacritics($periodical) === $periodical) {
+                      $periodical = ucwords($periodical); // Found NO foreign words/phrase
+               }
                $this->set($param, title_capitalization($periodical, TRUE));
             }
           } else {
