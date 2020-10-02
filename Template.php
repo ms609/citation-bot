@@ -2260,7 +2260,11 @@ final class Template {
       $record = $result->docs[0];
       if (isset($record->year) && $this->year()) {
         $diff = abs((int)$record->year - (int)$this->year()); // Check for book reviews (fuzzy >2 for arxiv data)
-        if ($diff > 2 || ($this->has('doi') && $diff !== 0)) return FALSE;
+        $today = (int) date("Y");
+        if ($diff > 2)                                    return FALSE;
+        if (($record->year < $today - 5)  && $diff > 1)   return FALSE;
+        if (($record->year < $today - 10) && $diff !== 0) return FALSE;
+        if ($this->has('doi')             && $diff !== 0) return FALSE; 
       }
       
       if ($this->has('title') && titles_are_dissimilar($this->get('title'), $record->title[0]) 
@@ -2289,6 +2293,7 @@ final class Template {
         if($this->has('oclc'))      $book_count += 1;
         if($this->has('lccn'))      $book_count += 2;
         if($this->has('journal'))   $book_count -= 2;
+        if(isset($record->year) && $this->year() && ((int)$record->year !== (int)$this->year())) $book_count += 1;
         if($this->wikiname() === 'cite book') $book_count += 3;
         if($book_count > 3) {
           report_info("Suspect that BibCode " . bibcode_link((string) $record->bibcode) . " is book review.  Rejecting.");
