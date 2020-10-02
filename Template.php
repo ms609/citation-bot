@@ -384,9 +384,9 @@ final class Template {
     ));
   }
   
-	/**
- 	* @param string[]|string $param
- 	*/
+  /**
+  * @param string[]|string $param
+  */
   public function blank($param) : bool { // Accepts arrays of strings and string
     if (!$param) report_error('NULL passed to blank()');
     if (empty($this->param)) return TRUE;
@@ -396,9 +396,9 @@ final class Template {
     }
     return TRUE;
   }
-	/**
- 	* @param string[]|string $param
- 	*/
+  /**
+  * @param string[]|string $param
+  */
   public function blank_other_than_comments($param) : bool { // Accepts arrays of strings and string
     if (!$param) report_error('NULL passed to blank_other_than_comments()');
     if (empty($this->param)) return TRUE;
@@ -1051,7 +1051,7 @@ final class Template {
             } elseif ($this->date_style === DATES_DMY) {
                $value = date('j F Y', $time);
             }
-        }		    
+        }
         if ($this->blank(DOI_BROKEN_ALIASES)) {
           return $this->add($param_name, $value);
         }
@@ -1389,8 +1389,8 @@ final class Template {
          $this->set($url_type, $url); // Update URL with cleaner one
        }     
     }
-    if (stripos($url, 'plants.jstor.org') !== FALSE) {	
-      return FALSE; # Plants database, not journal	
+    if (stripos($url, 'plants.jstor.org') !== FALSE) {
+      return FALSE; # Plants database, not journal
     }
     // https://www.jstor.org.stuff/proxy/stuff/stable/10.2307/3347357 and such
     // Optional 0- at front.
@@ -2274,9 +2274,9 @@ final class Template {
       }
       
       if (strpos((string) $record->bibcode, 'book') !== FALSE) {  // Found a book.  Need special code
-	 $old_one = $this->get('bibcode');
+         $old_one = $this->get('bibcode');
          $this->add_if_new('bibcode_nosearch', (string) $record->bibcode);
-	 if ($this->get('bibcode') === $old_one) return FALSE; // Extra paranoid code to 100% guarantee no infinite loop as code evolves
+         if ($this->get('bibcode') === $old_one) return FALSE; // Extra paranoid code to 100% guarantee no infinite loop as code evolves
          return $this->expand_by_adsabs(); // @phan-suppress-current-line PhanPossiblyInfiniteRecursionSameParams
       }
       
@@ -2827,7 +2827,7 @@ final class Template {
                 if ($old_host_name === $new_host_name) return 'have free';
             }
        }
-	$has_url_already = $this->has('url');
+        $has_url_already = $this->has('url');
         $this->add_if_new('url', $oa_url);  // Will check for PMCs etc hidden in URL
         if ($this->has('url') && !$has_url_already) {  // The above line might have eaten the URL and upgraded it
           $headers_test = @get_headers($this->get('url'), 1);
