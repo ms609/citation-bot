@@ -55,7 +55,7 @@ if (isset($argv[1])) {
   $pages = ''; // Errors out below
 }
 
-if (isset($_REQUEST["edit"]) && $_REQUEST["edit"]) {		
+if (isset($_REQUEST["edit"]) && $_REQUEST["edit"]) {
    $ON = TRUE;
    if ($_REQUEST["edit"] == 'automated_tools') {
       $edit_summary_end = $edit_summary_end . "| via #UCB_automated_tools ";
