@@ -12,7 +12,7 @@ $api = new WikipediaBot();
 $category = isset($_POST["cat"]) ? (string) $_POST["cat"] : (string) @$argv[1];
 $category = trim($category);
 if ($category === '' && isset($_GET["cat"])) {
-   $maybe = urldecode((string) $_GET["cat"]);
+   $maybe = (string) $_GET["cat"];
    if (in_array($maybe, ['CS1 errors: DOI' , 'CS1 maint: PMC format'])) $category = $maybe;
 }
 
