@@ -2996,7 +2996,7 @@ final class Template {
         if ($part_start[0] === 'keywords') $part_start[0] = 'q';
         if ($part_start[0] === 'page')     $part_start[0] = 'pg';
         switch ($part_start[0]) {
-          case "dq": case "pg": case "lpg": case "q": case "printsec": case "cd": case "vq": case "jtp":
+          case "dq": case "pg": case "lpg": case "q": case "printsec": case "cd": case "vq": case "jtp": case "sitesec":
             if ($part_start[1] == '') {
                 $removed_redundant++;
                 $removed_parts .= $part;
@@ -3048,6 +3048,22 @@ final class Template {
       }
       if (preg_match('~^(.*)&$~', $hash, $matcher) ){
           $hash = $matcher[1];
+      }
+      if (isset($book_array['q'])){
+        if (stripos($book_array['q'], 'isbn') === 0 ||
+            stripos($book_array['q'], 'subject:') === 0 ||
+            stripos($book_array['q'], 'inauthor:') === 0 ||
+            stripos($book_array['q'], 'inpublisher:') === 0) {
+          unset($book_array['q']);
+        }
+      }
+      if (isset($book_array['sitesec'])) { // Overrides all other setting
+        if (strtolower($book_array['sitesec']) === 'reviews') {
+          $url .= '&sitesec=reviews';
+          unset($book_array['q']);
+          unset($book_array['pg']);
+          unset($book_array['lpg']);
+        }
       }
       if (isset($book_array['q'])){
           $url .= '&q=' . $book_array['q'];
