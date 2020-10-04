@@ -88,7 +88,13 @@ final class Template {
     if ($trim_name === 'Citepaper') $this->name = $spacing[1] . 'Cite paper' . $spacing[2];
     if ($trim_name === 'citation journal') $this->name = $spacing[1] . 'cite journal' . $spacing[2];
     if ($trim_name === 'Citation journal') $this->name = $spacing[1] . 'Cite journal' . $spacing[2];
-   
+    if (strpos($trim_name, "_") !== FALSE) {
+      $tmp_name = str_replace("_", " ", $trim_name);
+      if (in_array(strtolower($tmp_name), array_merge(TEMPLATES_WE_PROCESS, TEMPLATES_WE_SLIGHTLY_PROCESS, TEMPLATES_WE_BARELY_PROCESS, TEMPLATES_WE_RENAME))) {
+         $this->name = $spacing[1] . str_replace("_", " ", $trim_name) . $spacing[2];
+      }
+    }
+
     if (substr($this->wikiname(),0,5) === 'cite ' || $this->wikiname() === 'citation') {
       if (preg_match('~< */? *ref *>~i', $this->rawtext)) {
          report_warning('reference within citation template: most likely unclosed template.  ' . "\n" . $this->rawtext . "\n");
