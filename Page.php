@@ -271,7 +271,7 @@ class Page {
         $this_template->get_identifiers_from_url();
         $this_template->expand_by_google_books();
         $this_template->tidy();
-      } ($this_template->wikiname() == 'cite lsa') {
+      } elseif ($this_template->wikiname() == 'cite lsa') {
         $this_template->clean_google_books();
       }
     }
