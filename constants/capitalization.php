@@ -83,13 +83,13 @@ const JOURNAL_ACRONYMS = array(/* The following will be automatically updated to
           " PalZ ", " PeerJ ", " PharmSci ", " PhytoKeys ", " Pis'ma v Astronomicheskii ", 
           " PLOS ", " PLOS ", " PLOS ", " PLOS ", " PLOS ", " PLOS ONE ", " PNAS ", " Proceedings of the IRE ", 
           " Protein Eng Des Sel ", " Prz ", " Prz. ", " Published in: ", " RNA ", " S.A.P.I.EN.S ", 
-          " SCALACS ", " Sch ", " Scr. ", " SICOT-J ", " Srp Arh Celok Lek ", " Star Trek: The Official Monthly Magazine ", 
+          " SCALACS ", " Sch ", " Scr. ", " SICOT-J ", " Srp Arh Celok Lek ", " Star Trek: The Official Monthly Magazine ", " STD & AIDS ",
           " STDs ", " Série A ", " TAPPI Journal ", " Tellus A ", " The De Paulia ", " The EMBO Journal ", 
           " Time Off Magazine ", " Time Out London ", " tot de ", " Transactions and archaeological record of the Cardiganshire Antiquarian Society ", 
           " U.S. ", " U.S.A. ", " U.S.A. ", " uHealth ", " uHealth ", " UNED Research Journal ", 
           " USGS ", " v Astronomicheskii Zhurna ", " WRIR ", " z/Journal ", " z/Journal ", 
           " zbMATH ", " Zeitschrift für Geologische Wissenschaften ", " Zeitschrift für Physik A Hadrons and Nuclei ", 
-          " Zeitschrift für Physik A: Hadrons and Nuclei ", " ZooKeys ", "STD & AIDS", 
+          " Zeitschrift für Physik A: Hadrons and Nuclei ", " ZooKeys ", 
           /* The above will be automatically updated to alphabetical order */ 
 );
 const UCFIRST_JOURNAL_ACRONYMS = array(/* The following will be automatically updated to alphabetical order */
@@ -130,13 +130,13 @@ const UCFIRST_JOURNAL_ACRONYMS = array(/* The following will be automatically up
           " Palaios ", " Palz ", " Peerj ", " Pharmsci ", " Phytokeys ", " Pis'ma V Astronomicheskii ", 
           " PLoS ", " PLos ", " PloS ", " Plos ", " plos ", " PLOS One ", " Pnas ", " Proceedings of the Ire ", 
           " Protein Eng des Sel ", " PRZ ", " PRZ. ", " Published In: ", " Rna ", " S.a.p.i.en.s ", 
-          " Scalacs ", " SCH ", " SCR. ", " Sicot-J ", " SRP Arh Celok Lek ", " Star Trek: The Official Monthly Magazine ", 
+          " Scalacs ", " SCH ", " SCR. ", " Sicot-J ", " SRP Arh Celok Lek ", " Star Trek: The Official Monthly Magazine ", " STD & Aids ",
           " STDS ", " Série a ", " Tappi Journal ", " Tellus a ", " The de Paulia ", " The Embo Journal ", 
           " Time off Magazine ", " Time Out London ", " Tot de ", " Transactions and Archaeological Record of the Cardiganshire Antiquarian Society ", 
           " U.s. ", " U.S.a. ", " U.s.a ", " UHealth ", " Uhealth ", " Uned Research Journal ", 
           " Usgs ", " V Astronomicheskii Zhurna ", " Wrir ", " Z/Journal ", " Z/journal ", 
           " ZbMATH ", " Zeitschrift Für Geologische Wissenschaften ", " Zeitschrift für Physik a Hadrons and Nuclei ", 
-          " Zeitschrift Für Physik a: Hadrons And Nuclei ", " Zookeys ", "STD & Aids", 
+          " Zeitschrift Für Physik a: Hadrons And Nuclei ", " Zookeys ",
           /* The above will be automatically updated to alphabetical order */ 
 );
 const OBVIOUS_FOREIGN_WORDS = array(" Abhandlungen ", " Actes ", " Annales ", " Archiv ", " Archives de ",
