@@ -2861,6 +2861,12 @@ final class Template {
     return 'nothing';
   }
   
+  public function clean_google_books() : void {
+    foreach (ALL_URL_TYPES as $url_type) {
+       $this->expand_by_google_books_inner($url_type, FALSE);
+    }    
+  }
+  
   public function expand_by_google_books() : bool {
     // TODO - this is wasteful to normalize twice
     foreach (ALL_URL_TYPES as $url_type) {
