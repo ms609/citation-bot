@@ -80,6 +80,8 @@ final class Template {
     if ($trim_name === 'Citejournal') $this->name = $spacing[1] . 'Cite journal' . $spacing[2];
     if ($trim_name === 'citeweb') $this->name = $spacing[1] . 'cite web' . $spacing[2];
     if ($trim_name === 'Citeweb') $this->name = $spacing[1] . 'Cite web' . $spacing[2];
+    if ($trim_name === 'cite url') $this->name = $spacing[1] . 'cite web' . $spacing[2];
+    if ($trim_name === 'Cite url') $this->name = $spacing[1] . 'Cite web' . $spacing[2];
     if ($trim_name === 'citenews') $this->name = $spacing[1] . 'cite news' . $spacing[2];
     if ($trim_name === 'Citenews') $this->name = $spacing[1] . 'Cite news' . $spacing[2];
     if ($trim_name === 'citepaper') $this->name = $spacing[1] . 'cite paper' . $spacing[2];
@@ -2859,6 +2861,12 @@ final class Template {
     return 'nothing';
   }
   
+  public function clean_google_books() : void {
+    foreach (ALL_URL_TYPES as $url_type) {
+       $this->expand_by_google_books_inner($url_type, FALSE);
+    }    
+  }
+  
   public function expand_by_google_books() : bool {
     // TODO - this is wasteful to normalize twice
     foreach (ALL_URL_TYPES as $url_type) {
@@ -2988,7 +2996,7 @@ final class Template {
         if ($part_start[0] === 'keywords') $part_start[0] = 'q';
         if ($part_start[0] === 'page')     $part_start[0] = 'pg';
         switch ($part_start[0]) {
-          case "dq": case "pg": case "lpg": case "q": case "printsec": case "cd": case "vq": case "jtp":
+          case "dq": case "pg": case "lpg": case "q": case "printsec": case "cd": case "vq": case "jtp": case "sitesec":
             if ($part_start[1] == '') {
                 $removed_redundant++;
                 $removed_parts .= $part;
@@ -3040,6 +3048,22 @@ final class Template {
       }
       if (preg_match('~^(.*)&$~', $hash, $matcher) ){
           $hash = $matcher[1];
+      }
+      if (isset($book_array['q'])){
+        if (stripos($book_array['q'], 'isbn') === 0 ||
+            stripos($book_array['q'], 'subject:') === 0 ||
+            stripos($book_array['q'], 'inauthor:') === 0 ||
+            stripos($book_array['q'], 'inpublisher:') === 0) {
+          unset($book_array['q']);
+        }
+      }
+      if (isset($book_array['sitesec'])) { // Overrides all other setting
+        if (strtolower($book_array['sitesec']) === 'reviews') {
+          $url .= '&sitesec=reviews';
+          unset($book_array['q']);
+          unset($book_array['pg']);
+          unset($book_array['lpg']);
+        }
       }
       if (isset($book_array['q'])){
           $url .= '&q=' . $book_array['q'];

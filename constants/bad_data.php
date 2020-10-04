@@ -90,7 +90,7 @@ const CANONICAL_PUBLISHER_URLS = array ('elsevier.com', 'springer.com', 'science
                                 'doi.library.ubc.ca');
 
 const PROXY_HOSTS_TO_ALWAYS_DROP = array('proxy.libraries', 'proxy.lib.', '.ezproxy.', '-ezproxy.', '/ezproxy.',
-                                  '.serialssolutions.com', '.ebscohost.com', 'findarticles.com'); // Drop these if there is a valid DOI
+                                  '.serialssolutions.com', 'search.ebscohost.com', 'findarticles.com'); // Drop these if there is a valid DOI
 
 const PROXY_HOSTS_TO_DROP = array('proxy.libraries', 'proxy.lib.', '.ezproxy.', '-ezproxy.', '/ezproxy.',
                                   '.serialssolutions.com', '.ebscohost.com', 'linkinghub.elsevier.com',
