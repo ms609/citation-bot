@@ -231,6 +231,11 @@ final class PageTest extends testBaseClass {
   public function testUrlReferencesWithText1() : void {
       $text = "<ref>Jarman, D. (1983). [https://www.jstor.org/discover/10.2307/962034?uid=3738032&amp;uid=373072751&amp;uid=2&amp;uid=3&amp;uid=60&amp;sid=21102523353593 Alban Berg, Wilhelm Fliess and the Secret Programme of the Violin Concerto]. ''The Musical Times'' Vol. 124, No. 1682 (Apr. 1983), pp. 218–223</ref>";
       $page = $this->process_page($text);
+      // order can vary from time to time depending upon APIs
+      if ('<ref>{{Cite journal|url=https://www.jstor.org/stable/962034?uid=3738032&amp;uid=373072751&amp;uid=2&amp;uid=3&amp;uid=60&amp;sid=21102523353593|jstor=962034|title=Alban Berg, Wilhelm Fliess and the Secret Programme of the Violin Concerto|last1=Jarman|first1=Douglas|journal=The Musical Times|year=1983|volume=124|issue=1682|pages=218–223|doi=10.2307/962034}}</ref>' === $page->parsed_text()) {
+        $this->assertTrue(TRUE);
+        return;
+      }
       $this->assertSame('<ref>{{Cite journal|url=https://www.jstor.org/stable/962034?uid=3738032&amp;uid=373072751&amp;uid=2&amp;uid=3&amp;uid=60&amp;sid=21102523353593|jstor=962034|doi=10.2307/962034|title=Alban Berg, Wilhelm Fliess and the Secret Programme of the Violin Concerto|year=1983|last1=Jarman|first1=Douglas|journal=The Musical Times|volume=124|issue=1682|pages=218–223}}</ref>', $page->parsed_text());
   }
   
