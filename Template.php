@@ -72,6 +72,13 @@ final class Template {
     // Clean up outdated redirects
     preg_match("~^(\s*).*\b(\s*)$~", $this->name, $spacing);
     $trim_name = trim($this->name);
+    if (strpos($trim_name, "_") !== FALSE) {
+      $tmp_name = str_replace("_", " ", $trim_name);
+      if (in_array(strtolower($tmp_name), array_merge(TEMPLATES_WE_PROCESS, TEMPLATES_WE_SLIGHTLY_PROCESS, TEMPLATES_WE_BARELY_PROCESS, TEMPLATES_WE_RENAME))) {
+         $this->name = $spacing[1] . str_replace("_", " ", $trim_name) . $spacing[2];
+         $trim_name = str_replace("_", " ", $trim_name);
+      }
+    }
     if ($trim_name === 'cite') $this->name = $spacing[1] . 'citation' . $spacing[2];
     if ($trim_name === 'Cite') $this->name = $spacing[1] . 'Citation' . $spacing[2];
     if ($trim_name === 'citebook') $this->name = $spacing[1] . 'cite book' . $spacing[2];
@@ -88,12 +95,8 @@ final class Template {
     if ($trim_name === 'Citepaper') $this->name = $spacing[1] . 'Cite paper' . $spacing[2];
     if ($trim_name === 'citation journal') $this->name = $spacing[1] . 'cite journal' . $spacing[2];
     if ($trim_name === 'Citation journal') $this->name = $spacing[1] . 'Cite journal' . $spacing[2];
-    if (strpos($trim_name, "_") !== FALSE) {
-      $tmp_name = str_replace("_", " ", $trim_name);
-      if (in_array(strtolower($tmp_name), array_merge(TEMPLATES_WE_PROCESS, TEMPLATES_WE_SLIGHTLY_PROCESS, TEMPLATES_WE_BARELY_PROCESS, TEMPLATES_WE_RENAME))) {
-         $this->name = $spacing[1] . str_replace("_", " ", $trim_name) . $spacing[2];
-      }
-    }
+    if ($trim_name === 'cite new') $this->name = $spacing[1] . 'cite news' . $spacing[2];
+    if ($trim_name === 'Cite new') $this->name = $spacing[1] . 'Cite news' . $spacing[2];
 
     if (substr($this->wikiname(),0,5) === 'cite ' || $this->wikiname() === 'citation') {
       if (preg_match('~< */? *ref *>~i', $this->rawtext)) {
