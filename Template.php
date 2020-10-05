@@ -2876,7 +2876,7 @@ final class Template {
     $matches = ['', '', '']; // prevent memory leak in some PHP versions
     foreach (ALL_URL_TYPES as $url_type) {
        $this->expand_by_google_books_inner($url_type, FALSE);
-       if ($this->has($url_type) && preg_match('~^https?://books\.google\.([^/]+)/books\?((?:isbn|vid)=.+)$~', $this->get($url_type), $matches) {
+       if ($this->has($url_type) && preg_match('~^https?://books\.google\.([^/]+)/books\?((?:isbn|vid)=.+)$~', $this->get($url_type), $matches)) {
          if ($matches[1] !== 'com') {
            $this->set($url_type, 'https://books.google.com/books?' . $matches[2]);
          }
