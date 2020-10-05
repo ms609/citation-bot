@@ -1,6 +1,6 @@
 <?php
 declare(strict_types=1);
-const TEMPLATES_WE_PROCESS = array('citation', 'cite arxiv', 'cite book', 'cite document', 
+const TEMPLATES_WE_PROCESS = array('citation', 'cite arxiv', 'cite book', 'cite books', 'cite document', 
                              'cite encyclopaedia', 'cite encyclopedia', 'cite journal', 'cite web', 'cite work',
                              'cite paper', 'cite', 'citebook', 'citejournal', 'citeweb', 'cite url', 'citepaper', 'citation journal',
                              'cite publication', 'cite citeseerx', 'cite website', 'cite dictionary', 'cite chapter');
