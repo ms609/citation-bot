@@ -2873,16 +2873,20 @@ final class Template {
   }
   
   public function clean_google_books() : void {
+    $matches = ['', '', '']; // prevent memory leak in some PHP versions
     foreach (ALL_URL_TYPES as $url_type) {
        $this->expand_by_google_books_inner($url_type, FALSE);
-    }    
+       if ($this->has($url_type) && preg_match('~^https?://books\.google\.([^/]+)/books\?((?:isbn|vid)=.+)$~', $this->get($url_type), $matches)) {
+         if ($matches[1] !== 'com') {
+           $this->set($url_type, 'https://books.google.com/books?' . $matches[2]);
+         }
+       }
+    }
   }
   
   public function expand_by_google_books() : bool {
     // TODO - this is wasteful to normalize twice
-    foreach (ALL_URL_TYPES as $url_type) {
-       $this->expand_by_google_books_inner($url_type, FALSE);
-    }    
+    $this->clean_google_books();
     if ($this->has('doi') && doi_active($this->get('doi'))) return FALSE;
     foreach (['url', 'chapterurl', 'chapter-url'] as $url_type) {
        if ($this->expand_by_google_books_inner($url_type, TRUE)) return TRUE;
