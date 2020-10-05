@@ -2893,8 +2893,8 @@ final class Template {
     if ($url_type) {
       $url = $this->get($url_type);
       if (!$url) return FALSE;
-      if (!preg_match("~books\.google\.[\w\.]+/.*\bid=([\w\d\-]+)~", $url, $gid) &&
-          !preg_match("~\.google\.com/books/edition/_/([a-zA-Z0-9]+)(?:\?.+|)$~", $url, $gid)) {
+      if (!preg_match("~[Bb]ooks\.[Gg]oogle\.[\w\.]+/.*\bid=([\w\d\-]+)~", $url, $gid) &&
+          !preg_match("~\.[Gg]oogle\.com/books/edition/_/([a-zA-Z0-9]+)(?:\?.+|)$~", $url, $gid)) {
          return FALSE;  // Got nothing usable
       }
     } else {
@@ -2926,7 +2926,7 @@ final class Template {
                     CURLOPT_URL => $google_book_url]);
         $google_content = (string) @curl_exec($ch);
         curl_close($ch);
-        if ($google_content && preg_match_all('~books\.google\.com/books\?id=(............)&amp~', $google_content, $google_results)) {
+        if ($google_content && preg_match_all('~[Bb]ooks\.[Gg]oogle\.com/books\?id=(............)&amp~', $google_content, $google_results)) {
           $google_results = $google_results[1];
           $google_results = array_unique($google_results);
           if (count($google_results) === 1) {
@@ -2982,7 +2982,7 @@ final class Template {
       }
     }
     // Now we parse a Google Books URL
-    if ($url && preg_match("~books\.google\.[\w\.]+/.*\bid=([\w\d\-]+)~", $url, $gid)) {
+    if ($url && preg_match("~[Bb]ooks\.[Gg]oogle\.[\w\.]+/.*\bid=([\w\d\-]+)~", $url, $gid)) {
       $orig_book_url = $url;
       $removed_redundant = 0;
       $hash = '';
