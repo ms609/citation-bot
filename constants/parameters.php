@@ -3,7 +3,8 @@ declare(strict_types=1);
 const TEMPLATES_WE_PROCESS = array('citation', 'cite arxiv', 'cite book', 'cite books', 'cite document', 
                              'cite encyclopaedia', 'cite encyclopedia', 'cite journal', 'cite web', 'cite work',
                              'cite paper', 'cite', 'citebook', 'citejournal', 'citeweb', 'cite url', 'citepaper', 'citation journal',
-                             'cite publication', 'cite citeseerx', 'cite website', 'cite dictionary', 'cite chapter', 'web cite');
+                             'cite publication', 'cite citeseerx', 'cite website', 'cite dictionary', 'cite chapter', 'web cite', 'book cite',
+                             'book reference');
 const TEMPLATES_WE_SLIGHTLY_PROCESS = array('cite news', 'cite newspaper', 'cite conference', 'cite article', 'citenews', 'cite new');
 const TEMPLATES_WE_BARELY_PROCESS = array('cite thesis', 'cite press release', 'cite report', 'cite biorxiv');
 const TEMPLATES_WE_RENAME  = array('cite arxiv', 'cite book', 'cite document', 'cite journal', 'cite web', 'cite work', 'cite article', 'cite paper', 'cite website');
