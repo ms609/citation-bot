@@ -1808,9 +1808,14 @@ final class Template {
           if (is_null($url_sent)) {
              // SEP 2020 $this->forget($url_type);
           }
+          if (is_array(@$headers_test['Location'])) {
+            $the_header_loc = (string) $headers_test['Location'][0];
+          } else {
+            $the_header_loc = (string) @$headers_test['Location'];
+          }
           if (preg_match('~^([^/]+/[^/]+)/.*$~', $handle, $matches)   // Might be padded with stuff
-            && stripos($headers_test['Location'], $handle) === FALSE
-            && stripos($headers_test['Location'], $matches[1]) !== FALSE) {  // Too long ones almost never resolve, but I seen at least one
+            && stripos($the_header_loc, $handle) === FALSE
+            && stripos($the_header_loc, $matches[1]) !== FALSE) {  // Too long ones almost never resolve, but I seen at least one
               $handle = $matches[1]; // @codeCoverageIgnore
           }
           return $this->add_if_new('hdl', $handle);
@@ -3022,7 +3027,7 @@ final class Template {
         if ($part_start[0] === 'page')     $part_start[0] = 'pg';
         switch ($part_start[0]) {
           case "dq": case "pg": case "lpg": case "q": case "printsec": case "cd": case "vq": case "jtp": case "sitesec":
-            if ($part_start[1] == '') {
+            if (!isset($part_start[1]) || $part_start[1] == '') {
                 $removed_redundant++;
                 $removed_parts .= $part;
             } else {
@@ -5939,7 +5944,7 @@ final class Template {
       $wonky = trim($matches[1]);
       if ($wonky === "[WorldCat.org]") {
         report_info('WorldCat temporarily unresponsive or does not have Title for ISSN ' .  echoable($issn));
-      } elseif (preg_match('~^(.+)\. \(Newspaper, \d{4}\) \[WorldCat.org\]$~', $wonky, $matches)) {
+      } elseif (preg_match('~^(.+)\. \(e?Newspaper, \d{4}\) \[WorldCat.org\]$~', $wonky, $matches)) {
         return $this->add_if_new('newspaper', trim($matches[1]));
       } else {
         report_minor_error('Unexpected title from WorldCat for ISSN ' . echoable($issn) . ' : ' . echoable($wonky));
