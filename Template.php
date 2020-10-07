@@ -1804,6 +1804,7 @@ final class Template {
           if (is_null($url_sent)) {
              // SEP 2020 $this->forget($url_type);
           }
+          @print_r(@$headers_test['Location']);
           if (preg_match('~^([^/]+/[^/]+)/.*$~', $handle, $matches)   // Might be padded with stuff
             && stripos($headers_test['Location'], $handle) === FALSE
             && stripos($headers_test['Location'], $matches[1]) !== FALSE) {  // Too long ones almost never resolve, but I seen at least one
@@ -5935,7 +5936,7 @@ final class Template {
       $wonky = trim($matches[1]);
       if ($wonky === "[WorldCat.org]") {
         report_info('WorldCat temporarily unresponsive or does not have Title for ISSN ' .  echoable($issn));
-      } elseif (preg_match('~^(.+)\. \(Newspaper, \d{4}\) \[WorldCat.org\]$~', $wonky, $matches)) {
+      } elseif (preg_match('~^(.+)\. \(?:e?Newspaper, \d{4}\) \[WorldCat.org\]$~', $wonky, $matches)) {
         return $this->add_if_new('newspaper', trim($matches[1]));
       } else {
         report_minor_error('Unexpected title from WorldCat for ISSN ' . echoable($issn) . ' : ' . echoable($wonky));
