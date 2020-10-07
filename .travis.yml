@@ -6,74 +6,13 @@ branches:
 language: php
 matrix:           ###### ONLY ONE WITH FULL TESTING WITH IS 7.3 OTHERS ARE ALL STATIC ANALYSIS ONLY ######
   include:
-    - stage: pretest
-      php: nightly
-      name: "Quick PHP 8.0 syntax check"
-      script: '! find . -type f -name "*.php" -exec php -d error_reporting=32767 -l {} \; 2>&1 >&- | grep "^"'
-    - php: 7.3
-      name: "PHP Lint test"
-      before_script:  
-        - travis_retry composer self-update
-        - composer require overtrue/phplint --dev -vvv
-      script: ./vendor/bin/phplint --exclude=vendor --no-interaction -vv ./
-    - php: 7.3
-      name: "PHP phpstan"
-      before_script:
-        - travis_retry composer self-update
-        - composer require --dev phpstan/phpstan # below split out to save memory
-      script: php ./vendor/bin/phpstan --no-interaction analyse --memory-limit=2G constants/*.php  Parameter.php user_messages.php constants.php expandFns.php Zotero.php apiFunctions.php NameTools.php Comment.php Page.php WikipediaBot.php Template.php setup.php category.php generate_template.php linked_pages.php unlock_git.php process_page.php authenticate.php
-    - php: 7.3
-      name: "PHP phan"
-      before_script:
-        - travis_retry composer self-update
-        - composer require --dev phan/phan:3.x
-        - composer require mediawiki/oauthclient:1.1.0
-      script: php ./vendor/bin/phan --allow-polyfill-parser constants/*.php constants.php    user_messages.php  Parameter.php expandFns.php  NameTools.php  Zotero.php apiFunctions.php Comment.php  Template.php WikipediaBot.php setup.php Page.php category.php generate_template.php gitpull.php linked_pages.php process_page.php  authenticate.php unlock_git.php
-    - php: 7.3
-      name: "PHP psalm"
-      before_script:
-        - travis_retry composer self-update
-        - composer require mediawiki/oauthclient:1.1.0
-        - composer require --dev vimeo/psalm
-      script: php ./vendor/bin/psalm
-    - php: 7.3
-      name: "PHP psalm Taint"
-      before_script:
-        - travis_retry composer self-update
-        - composer require mediawiki/oauthclient:1.1.0
-        - composer require --dev vimeo/psalm
-      script: php ./vendor/bin/psalm --taint-analysis
-    - php: 7.3
-      name: "PHP Design Security"
-      before_script:
-        - travis_retry composer self-update
-        - composer config minimum-stability dev
-        - composer config prefer-stable true
-        - composer require mediawiki/oauthclient:1.1.0
-        - composer require --dev designsecurity/progpilot
-      script: ./vendor/bin/progpilot  category.php generate_template.php gitpull.php linked_pages.php process_page.php authenticate.php unlock_git.php
-    - stage: test
       name: "Full test with PHP 7.3"
       php: 7.3
       before_script:  
         - travis_retry composer self-update
         - composer require mediawiki/oauthclient:1.1.0
         - '! find . -type f -name "*.php" -exec php -d error_reporting=32767 -l {} \; 2>&1 >&- | grep "^"'
-      script: phpunit --coverage-clover coverage.xml
-      after_success: bash <(curl -s https://codecov.io/bash)
-    - stage: deploy-to-master
-      name: "Update WM toolforge servers"
-      if: branch = master AND type != pull_request
-      php: 7.3
-      script:
-        - wget -O- https://citations.toolforge.org/gitpull.php
-    - stage: deploy-to-development
-      name: "Update VM toolforge test servers"
-      if: branch = development AND type != pull_request
-      php: 7.3
-      script:
-        - wget -O- https://citations-dev.toolforge.org/gitpull.php
-
+      script: phpunit
 git:
   depth: 222
   
