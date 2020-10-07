@@ -93,6 +93,8 @@ final class Template {
     if ($trim_name === 'Citejournal') $this->name = $spacing[1] . 'Cite journal' . $spacing[2];
     if ($trim_name === 'citeweb') $this->name = $spacing[1] . 'cite web' . $spacing[2];
     if ($trim_name === 'Citeweb') $this->name = $spacing[1] . 'Cite web' . $spacing[2];
+    if ($trim_name === 'cite-web') $this->name = $spacing[1] . 'cite web' . $spacing[2];
+    if ($trim_name === 'Cite-web') $this->name = $spacing[1] . 'Cite web' . $spacing[2];
     if ($trim_name === 'cit web') $this->name = $spacing[1] . 'cite web' . $spacing[2];
     if ($trim_name === 'Cit web') $this->name = $spacing[1] . 'Cite web' . $spacing[2];
     if ($trim_name === 'cite url') $this->name = $spacing[1] . 'cite web' . $spacing[2];
@@ -101,6 +103,8 @@ final class Template {
     if ($trim_name === 'Web cite') $this->name = $spacing[1] . 'Cite web' . $spacing[2];
     if ($trim_name === 'book cite') $this->name = $spacing[1] . 'cite book' . $spacing[2];
     if ($trim_name === 'Book cite') $this->name = $spacing[1] . 'Cite book' . $spacing[2];
+    if ($trim_name === 'cite-book') $this->name = $spacing[1] . 'cite book' . $spacing[2];
+    if ($trim_name === 'Cite-book') $this->name = $spacing[1] . 'Cite book' . $spacing[2];
     if ($trim_name === 'citenews') $this->name = $spacing[1] . 'cite news' . $spacing[2];
     if ($trim_name === 'Citenews') $this->name = $spacing[1] . 'Cite news' . $spacing[2];
     if ($trim_name === 'citepaper') $this->name = $spacing[1] . 'cite paper' . $spacing[2];
