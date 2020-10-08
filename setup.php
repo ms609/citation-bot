@@ -75,7 +75,7 @@ if (file_exists('env.php')) {
 }
 
 mb_internal_encoding('UTF-8');
-ini_set("memory_limit", "200M"); // Needed for "Skin Cancer" and other large pages and for "TAINT" analysis
+ini_set("memory_limit", "300M"); // Needed for "Skin Cancer" and other large pages and for "TAINT" analysis
 date_default_timezone_set('UTC');
 
 /** @psalm-suppress UnusedFunctionCall */

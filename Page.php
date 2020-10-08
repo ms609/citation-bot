@@ -259,7 +259,7 @@ class Page {
         $this_template->correct_param_mistakes();
         $this_template->get_identifiers_from_url();
         $this_template->tidy();
-      } elseif ($this_template->wikiname() == 'cite magazine') {
+      } elseif ($this_template->wikiname() == 'cite magazine' || $this_template->wikiname() == 'cite periodical') {
         $our_templates_slight[] = $this_template;
         if ($this_template->blank('magazine') && $this_template->has('work')) {
             $this_template->rename('work', 'magazine');
