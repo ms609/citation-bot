@@ -72,23 +72,48 @@ final class Template {
     // Clean up outdated redirects
     preg_match("~^(\s*).*\b(\s*)$~", $this->name, $spacing);
     $trim_name = trim($this->name);
+    if (strpos($trim_name, "_") !== FALSE) {
+      $tmp_name = str_replace("_", " ", $trim_name);
+      if (in_array(strtolower($tmp_name), array_merge(TEMPLATES_WE_PROCESS, TEMPLATES_WE_SLIGHTLY_PROCESS, TEMPLATES_WE_BARELY_PROCESS, TEMPLATES_WE_RENAME))) {
+         $this->name = $spacing[1] . str_replace("_", " ", $trim_name) . $spacing[2];
+         $trim_name = str_replace("_", " ", $trim_name);
+      }
+    }
     if ($trim_name === 'cite') $this->name = $spacing[1] . 'citation' . $spacing[2];
     if ($trim_name === 'Cite') $this->name = $spacing[1] . 'Citation' . $spacing[2];
     if ($trim_name === 'citebook') $this->name = $spacing[1] . 'cite book' . $spacing[2];
     if ($trim_name === 'Citebook') $this->name = $spacing[1] . 'Cite book' . $spacing[2];
+    if ($trim_name === 'cit book') $this->name = $spacing[1] . 'cite book' . $spacing[2];
+    if ($trim_name === 'Cit book') $this->name = $spacing[1] . 'Cite book' . $spacing[2];
+    if ($trim_name === 'cite books') $this->name = $spacing[1] . 'cite book' . $spacing[2];
+    if ($trim_name === 'Cite books') $this->name = $spacing[1] . 'Cite book' . $spacing[2];
+    if ($trim_name === 'book reference') $this->name = $spacing[1] . 'cite book' . $spacing[2];
+    if ($trim_name === 'Book reference') $this->name = $spacing[1] . 'Cite book' . $spacing[2];
     if ($trim_name === 'citejournal') $this->name = $spacing[1] . 'cite journal' . $spacing[2];
     if ($trim_name === 'Citejournal') $this->name = $spacing[1] . 'Cite journal' . $spacing[2];
     if ($trim_name === 'citeweb') $this->name = $spacing[1] . 'cite web' . $spacing[2];
     if ($trim_name === 'Citeweb') $this->name = $spacing[1] . 'Cite web' . $spacing[2];
+    if ($trim_name === 'cite-web') $this->name = $spacing[1] . 'cite web' . $spacing[2];
+    if ($trim_name === 'Cite-web') $this->name = $spacing[1] . 'Cite web' . $spacing[2];
+    if ($trim_name === 'cit web') $this->name = $spacing[1] . 'cite web' . $spacing[2];
+    if ($trim_name === 'Cit web') $this->name = $spacing[1] . 'Cite web' . $spacing[2];
     if ($trim_name === 'cite url') $this->name = $spacing[1] . 'cite web' . $spacing[2];
     if ($trim_name === 'Cite url') $this->name = $spacing[1] . 'Cite web' . $spacing[2];
+    if ($trim_name === 'web cite') $this->name = $spacing[1] . 'cite web' . $spacing[2];
+    if ($trim_name === 'Web cite') $this->name = $spacing[1] . 'Cite web' . $spacing[2];
+    if ($trim_name === 'book cite') $this->name = $spacing[1] . 'cite book' . $spacing[2];
+    if ($trim_name === 'Book cite') $this->name = $spacing[1] . 'Cite book' . $spacing[2];
+    if ($trim_name === 'cite-book') $this->name = $spacing[1] . 'cite book' . $spacing[2];
+    if ($trim_name === 'Cite-book') $this->name = $spacing[1] . 'Cite book' . $spacing[2];
     if ($trim_name === 'citenews') $this->name = $spacing[1] . 'cite news' . $spacing[2];
     if ($trim_name === 'Citenews') $this->name = $spacing[1] . 'Cite news' . $spacing[2];
     if ($trim_name === 'citepaper') $this->name = $spacing[1] . 'cite paper' . $spacing[2];
     if ($trim_name === 'Citepaper') $this->name = $spacing[1] . 'Cite paper' . $spacing[2];
     if ($trim_name === 'citation journal') $this->name = $spacing[1] . 'cite journal' . $spacing[2];
     if ($trim_name === 'Citation journal') $this->name = $spacing[1] . 'Cite journal' . $spacing[2];
-   
+    if ($trim_name === 'cite new') $this->name = $spacing[1] . 'cite news' . $spacing[2];
+    if ($trim_name === 'Cite new') $this->name = $spacing[1] . 'Cite news' . $spacing[2];
+
     if (substr($this->wikiname(),0,5) === 'cite ' || $this->wikiname() === 'citation') {
       if (preg_match('~< */? *ref *>~i', $this->rawtext)) {
          report_warning('reference within citation template: most likely unclosed template.  ' . "\n" . $this->rawtext . "\n");
@@ -1787,9 +1812,14 @@ final class Template {
           if (is_null($url_sent)) {
              // SEP 2020 $this->forget($url_type);
           }
+          if (is_array(@$headers_test['Location'])) {
+            $the_header_loc = (string) $headers_test['Location'][0];
+          } else {
+            $the_header_loc = (string) @$headers_test['Location'];
+          }
           if (preg_match('~^([^/]+/[^/]+)/.*$~', $handle, $matches)   // Might be padded with stuff
-            && stripos($headers_test['Location'], $handle) === FALSE
-            && stripos($headers_test['Location'], $matches[1]) !== FALSE) {  // Too long ones almost never resolve, but I seen at least one
+            && stripos($the_header_loc, $handle) === FALSE
+            && stripos($the_header_loc, $matches[1]) !== FALSE) {  // Too long ones almost never resolve, but I seen at least one
               $handle = $matches[1]; // @codeCoverageIgnore
           }
           return $this->add_if_new('hdl', $handle);
@@ -2862,16 +2892,20 @@ final class Template {
   }
   
   public function clean_google_books() : void {
+    $matches = ['', '', '']; // prevent memory leak in some PHP versions
     foreach (ALL_URL_TYPES as $url_type) {
        $this->expand_by_google_books_inner($url_type, FALSE);
-    }    
+       if ($this->has($url_type) && preg_match('~^https?://books\.google\.([^/]+)/books\?((?:isbn|vid)=.+)$~', $this->get($url_type), $matches)) {
+         if ($matches[1] !== 'com') {
+           $this->set($url_type, 'https://books.google.com/books?' . $matches[2]);
+         }
+       }
+    }
   }
   
   public function expand_by_google_books() : bool {
     // TODO - this is wasteful to normalize twice
-    foreach (ALL_URL_TYPES as $url_type) {
-       $this->expand_by_google_books_inner($url_type, FALSE);
-    }    
+    $this->clean_google_books();
     if ($this->has('doi') && doi_active($this->get('doi'))) return FALSE;
     foreach (['url', 'chapterurl', 'chapter-url'] as $url_type) {
        if ($this->expand_by_google_books_inner($url_type, TRUE)) return TRUE;
@@ -2887,8 +2921,8 @@ final class Template {
     if ($url_type) {
       $url = $this->get($url_type);
       if (!$url) return FALSE;
-      if (!preg_match("~books\.google\.[\w\.]+/.*\bid=([\w\d\-]+)~", $url, $gid) &&
-          !preg_match("~\.google\.com/books/edition/_/([a-zA-Z0-9]+)(?:\?.+|)$~", $url, $gid)) {
+      if (!preg_match("~[Bb]ooks\.[Gg]oogle\.[\w\.]+/.*\bid=([\w\d\-]+)~", $url, $gid) &&
+          !preg_match("~\.[Gg]oogle\.com/books/edition/_/([a-zA-Z0-9]+)(?:\?.+|)$~", $url, $gid)) {
          return FALSE;  // Got nothing usable
       }
     } else {
@@ -2920,7 +2954,7 @@ final class Template {
                     CURLOPT_URL => $google_book_url]);
         $google_content = (string) @curl_exec($ch);
         curl_close($ch);
-        if ($google_content && preg_match_all('~books\.google\.com/books\?id=(............)&amp~', $google_content, $google_results)) {
+        if ($google_content && preg_match_all('~[Bb]ooks\.[Gg]oogle\.com/books\?id=(............)&amp~', $google_content, $google_results)) {
           $google_results = $google_results[1];
           $google_results = array_unique($google_results);
           if (count($google_results) === 1) {
@@ -2976,7 +3010,7 @@ final class Template {
       }
     }
     // Now we parse a Google Books URL
-    if ($url && preg_match("~books\.google\.[\w\.]+/.*\bid=([\w\d\-]+)~", $url, $gid)) {
+    if ($url && preg_match("~[Bb]ooks\.[Gg]oogle\.[\w\.]+/.*\bid=([\w\d\-]+)~", $url, $gid)) {
       $orig_book_url = $url;
       $removed_redundant = 0;
       $hash = '';
@@ -2997,7 +3031,7 @@ final class Template {
         if ($part_start[0] === 'page')     $part_start[0] = 'pg';
         switch ($part_start[0]) {
           case "dq": case "pg": case "lpg": case "q": case "printsec": case "cd": case "vq": case "jtp": case "sitesec":
-            if ($part_start[1] == '') {
+            if (!isset($part_start[1]) || $part_start[1] == '') {
                 $removed_redundant++;
                 $removed_parts .= $part;
             } else {
@@ -4480,7 +4514,7 @@ final class Template {
                     $this->forget($param);
                  }
               return;
-          } elseif (preg_match("~^https?://(?:www\.|)bloomberg\.com/tosv2\.html\?vid=&uuid=(?:.+)&url=([a-zA-Z0-9=]+)$~", $this->get($param), $matches)) {
+          } elseif (preg_match("~^https?://(?:www\.|)bloomberg\.com/tosv2\.html\?vid=&uuid=(?:.+)&url=([a-zA-Z0-9/\+]+=*)$~", $this->get($param), $matches)) {
              if (base64_decode($matches[1])) { 
                quietly('report_modification', "Decoding Bloomberg URL.");
                $this->set($param, 'https://www.bloomberg.com' .  base64_decode($matches[1]));
@@ -5914,7 +5948,7 @@ final class Template {
       $wonky = trim($matches[1]);
       if ($wonky === "[WorldCat.org]") {
         report_info('WorldCat temporarily unresponsive or does not have Title for ISSN ' .  echoable($issn));
-      } elseif (preg_match('~^(.+)\. \(Newspaper, \d{4}\) \[WorldCat.org\]$~', $wonky, $matches)) {
+      } elseif (preg_match('~^(.+)\. \(e?Newspaper, \d{4}\) \[WorldCat.org\]$~', $wonky, $matches)) {
         return $this->add_if_new('newspaper', trim($matches[1]));
       } else {
         report_minor_error('Unexpected title from WorldCat for ISSN ' . echoable($issn) . ' : ' . echoable($wonky));
