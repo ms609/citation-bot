@@ -13,10 +13,17 @@ const ALL_URL_TYPES = array('url', 'article-url', 'chapter-url', 'chapterurl', '
                   'layurl', 'map-url', 'mapurl', 'section-url', 'sectionurl', 'transcript-url',
                   'transcripturl', 'URL');
 
+// TODO - add these to the next TWO arrays - "1" is done:
+//      'author-given#',
+//      'author#-given',
+//      'author-surname#',
+//      'author#-surname',
+//      ‘given#’
 const AUTHOR_PARAMETERS = array(
     1  => array('surname'  , 'forename'  , 'initials'  , 'first'  , 'last'  , 'author', 
                 'vauthors', 'authors', 'author-last', 'author-first',
-                'surname1' , 'forename1' , 'initials1' , 'first1' , 'last1' , 'author1',  'author1-last',  'author-last1',  'author1-first',  'author-first1'),
+                'surname1' , 'forename1' , 'initials1' , 'first1' , 'last1' , 'author1',  'author1-last',  'author-last1',  'author1-first',  'author-first1',
+                'given', 'given1', 'author-given', 'author-given1', 'author1-given', 'author1-surname', 'author1-surname', 'author-surname'),
     2  => array('surname2' , 'forename2' , 'initials2' , 'first2' , 'last2' , 'author2',  'author2-last',  'author-last2',  'author2-first',  'author-first2', 'coauthors', 'coauthor'),
     3  => array('surname3' , 'forename3' , 'initials3' , 'first3' , 'last3' , 'author3',  'author3-last',  'author-last3',  'author3-first',  'author-first3'),
     4  => array('surname4' , 'forename4' , 'initials4' , 'first4' , 'last4' , 'author4',  'author4-last',  'author-last4',  'author4-first',  'author-first4'),
@@ -118,7 +125,8 @@ const AUTHOR_PARAMETERS = array(
 );
 
 const FLATTENED_AUTHOR_PARAMETERS = array('surname', 'forename', 'initials', 'others',
-    'first', 'last', 'author', 'authors', 'vauthors', 'author-last', 'author-first', 
+    'first', 'last', 'author', 'authors', 'vauthors', 'author-last', 'author-first',
+    'given', 'given1', 'author-given', 'author-given1', 'author1-given', 'author1-surname', 'author1-surname', 'author-surname'
     'surname1' , 'forename1' , 'initials1' , 'first1' , 'last1' , 'author1' , 'author1-last',  'author-last1',  'author1-first',  'author-first1',
     'surname2' , 'forename2' , 'initials2' , 'first2' , 'last2' , 'author2' , 'author2-last',  'author-last2',  'author2-first',  'author-first2', 'coauthors', 'coauthor',
     'surname3' , 'forename3' , 'initials3' , 'first3' , 'last3' , 'author3' , 'author3-last',  'author-last3',  'author3-first',  'author-first3',
@@ -228,8 +236,8 @@ const CHAPTER_ALIASES = ['chapter', 'contribution', 'article', 'entry', 'section
 const DISPLAY_AUTHORS = ['display-authors', 'displayauthors'];
 const DISPLAY_EDITORS = ['display-editors', 'displayeditors'];
 const DOI_BROKEN_ALIASES = ['doi-broken', 'doi_brokendate', 'doi-broken-date', 'doi_inactivedate', 'doi-inactive-date'];
-const AUTHOR1_ALIASES = ['last1', 'last', 'author', 'author1', 'vauthor', 'surname1', 'surname'];
-const FORENAME1_ALIASES = ['first1', 'first', 'author', 'author1', 'given', 'given1'];
+const AUTHOR1_ALIASES = ['last1', 'last', 'author', 'author1', 'vauthor', 'surname1', 'surname', 'author1-surname', 'author1-surname', 'author-surname'];
+const FORENAME1_ALIASES = ['first1', 'first', 'author', 'author1', 'given', 'given1', 'author-given', 'author-given1', 'author1-given'];
 const EDITOR1_ALIASES = ['editor1', 'editor', 'editor-last', 'editor1-last', 'editor-last1', 'veditor', 'editor1-surname', 'editor1-given', 'editor-surname', 'editor-given', 'editor-surname1', 'editor-given1'];
 const ISSUE_ALIASES = ['issue', 'number'];
 const PAGE_ALIASES = ['page', 'pages', 'pp', 'p', 'at'];
@@ -273,24 +281,24 @@ const PARAMETER_LIST = array(
 'contributor-surname#', 'country', 'country-code', 'credits', 'date',
 'degree', 'department', 'description', 'df', 'dictionary', 
 'display-authors', 'display-contributors', 'display-editors',
-'display-interviewers', 'display-translators', 'displayauthors', 'displayeditors', 
-'docket', 'doi', 'doi-access', 'doi-broken', 'doi-broken-date', 'doi-inactive-date', 
+'display-interviewers', 'display-translators', 'displayauthors', 
+'docket', 'doi', 'doi-access', 'doi-broken-date',
 'edition', 'editor', 'editor#', 'editor#-first', 
 'editor#-given', 'editor#-last', 'editor#-link', 'editor#-mask', 'editor#-surname', 
-'editor#link', 'editor#mask', 'editor-first', 'editor-first#',
+'editor#link', 'editor-first', 'editor-first#',
 'editor-given', 'editor-given#', 'editor-last', 'editor-last#', 'editor-link', 
 'editor-link#', 'editor-mask', 'editor-mask#',
 'editor-surname', 'editor-surname#',
-'editorlink', 'editorlink#', 'editormask', 'editormask#', 'editors', 
-'eissn', 'embargo', 'encyclopaedia', 'encyclopedia',
+'editorlink', 'editorlink#', 'editors', 
+'eissn', 'encyclopaedia', 'encyclopedia',
 'entry', 'entry-format', 'entry-url', 'entry-url-access', 'episode', 'episode-link', 
 'episodelink', 'eprint', 'event', 'event-format', 'event-url', 'eventurl', 'fdate', 
 'first', 'first#', 'format', 'gdate', 'given', 'given#', 'hdl', 'hdl-access', 'host', 'host#',
-'id', 'ignore-isbn-error', 'ignoreisbnerror', 'inset', 'institution', 
+'id', 'ignore-isbn-error', 'inset', 'institution', 
 'interviewer', 'interviewer#', 'interviewer#-first', 'interviewer#-last', 
 'interviewer#-link', 'interviewer#-mask', 'interviewer-first', 'interviewer-first#', 
 'interviewer-last', 'interviewer-last#', 'interviewer-link', 'interviewer-link#', 
-'interviewer-mask', 'interviewer-mask#', 'interviewerlink', 'interviewermask', 
+'interviewer-mask', 'interviewer-mask#', 'interviewermask', 
 'invent#', 'inventor', 'inventor#', 'inventor#-first', 
 'inventor#-given', 'inventor#-last', 'inventor#-link', 'inventor#-surname', 
 'inventor#link', 'inventor-first', 'inventor-first#', 'inventor-given', 
@@ -303,7 +311,7 @@ const PARAMETER_LIST = array(
 'lccn', 'location', 'magazine', 'mailing-list', 'mailinglist', 'map', 'map-format', 
 'map-url', 'map-url-access', 'mapurl', 'medium', 'message-id', 'minutes', 'mode', 'mr', 
 'name-list-format', 'network', 'newsgroup', 'newspaper', 
-'no-cat', 'no-pp', 'no-tracking', 'nocat', 'nopp', 'notracking', 
+'no-pp', 'no-tracking', 'nocat', 'nopp'
 'number', 'oclc', 'ol', 'ol-access', 'orig-year', 'origyear', 'osti', 'osti-access', 
 'others', 'p', 'page', 'pages', 'patent-number', 'people', 'periodical', 
 'place', 'pmc', 'pmid', 'postscript', 'pp', 'pridate',
@@ -314,7 +322,7 @@ const PARAMETER_LIST = array(
 'script-periodical', 'script-section', 'script-title', 'script-website', 'script-work',
 'season', 'section', 'section-format', 'section-url', 'section-url-access', 
 'sections', 'sectionurl', 'series', 'series-link', 'series-no', 
-'series-number', 'series-separator', 'serieslink', 'seriesno', 'seriesnumber', 
+'series-number', 'serieslink', 'seriesno', 'seriesnumber', 
 'sheet', 'sheets', 'ssrn', 'station', 'status', 'subject', 'subject#', 
 'subject#-link', 'subject#link', 'subject-link', 'subject-link#', 'subjectlink', 
 'subjectlink#', 'surname', 'surname#', 'template-doc-demo', 
@@ -338,6 +346,34 @@ const PARAMETER_LIST = array(
      'editors#', 'ended', 'in', 'interviewers', 'lay-summary', 'month', 'name-separator',
      'p-prefix', 'pp-prefix', 'program', 'registration', 'separator',
      'subscription', 'author_separator', 'coauthors', 'urldate',
-     'isbn2', 'isbn3', 'isbn4', 'isbn5', 'isbn6', 'isbn7', 'deadlink');
+     'isbn2', 'isbn3', 'isbn4', 'isbn5', 'isbn6', 'isbn7', 'deadlink', 'displayeditors',
+     'doi-broken', 'doi-inactive-date', 'editormask', 'editor#mask', 'editormask#',
+     'embargo', 'ignoreisbnerror', 'interviewerlink', 'interviewermask', 'no-cat'
+     'notracking', 'series-separator',
+     'author-given',
+     'author-surname',
+     'display-subjects',
+     'interviewer-given',
+     'interviewer-surname',
+     'name-list-style',
+     'orig-date',
+     'pmc-embargo-date',
+     'quote-page',
+     'quote-pages',
+     'script-quote',
+     'subject-mask',
+     'trans-quote',
+     'author-given#',
+     'author#-given',
+     'author-surname#',
+     'author#-surname',
+     'interviewer-given#',
+     'interviewer#-given',
+     'interviewer-surname#',
+     'interviewer#-surname',
+     'subject-mask#',
+     'subject#-mask');
 
-    
+
+
+     'audio-visual
