@@ -202,7 +202,7 @@ final class constantsTest extends testBaseClass {
                           ['author1',  'editor1',  'date',             'date',            'location',          'location',         'url ',         'url '       , '| page = Z123Z ', '| pages = Z123Z ', '| url = Z123Z ', '| biorxiv = Z123Z ', '| arxiv = Z123Z ', '| doi = Z123Z '], $text); // Stuff that get "fixed"
       $text = str_replace(['| access-date = Z123Z ', '| accessdate = Z123Z ', '| doi-broken = Z123Z ', '| doi-broken-date = Z123Z ', '| doi-inactive-date = Z123Z '], '', $text);
       $text = str_replace(['displayeditors', 'editor1mask', 'editormask1', 'interviewerlink', 'interviewermask', 'no-cat', 'notracking', 'interviewermask'],
-                          ['display-editors', 'editor-mask', 'editor-mask1', 'interviewer-link', 'interviewer-mask', 'nocat', 'no-tracking', 'interviewer-mask', $text);
+                          ['display-editors', 'editor-mask', 'editor-mask1', 'interviewer-link', 'interviewer-mask', 'nocat', 'no-tracking', 'interviewer-mask'], $text);
       if (!str_i_same($text, $prepared->parsed_text())) {
          $orig .= $text;
          $new .= $prepared->parsed_text();
