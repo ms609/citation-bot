@@ -126,7 +126,7 @@ const AUTHOR_PARAMETERS = array(
 
 const FLATTENED_AUTHOR_PARAMETERS = array('surname', 'forename', 'initials', 'others',
     'first', 'last', 'author', 'authors', 'vauthors', 'author-last', 'author-first',
-    'given', 'given1', 'author-given', 'author-given1', 'author1-given', 'author1-surname', 'author1-surname', 'author-surname'
+    'given', 'given1', 'author-given', 'author-given1', 'author1-given', 'author1-surname', 'author1-surname', 'author-surname',
     'surname1' , 'forename1' , 'initials1' , 'first1' , 'last1' , 'author1' , 'author1-last',  'author-last1',  'author1-first',  'author-first1',
     'surname2' , 'forename2' , 'initials2' , 'first2' , 'last2' , 'author2' , 'author2-last',  'author-last2',  'author2-first',  'author-first2', 'coauthors', 'coauthor',
     'surname3' , 'forename3' , 'initials3' , 'first3' , 'last3' , 'author3' , 'author3-last',  'author-last3',  'author3-first',  'author-first3',
