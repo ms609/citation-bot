@@ -373,5 +373,5 @@ const PARAMETER_LIST = array(
      'isbn2', 'isbn3', 'isbn4', 'isbn5', 'isbn6', 'isbn7', 'deadlink', 'displayeditors',
      'doi-broken', 'doi-inactive-date', 'editormask', 'editor#mask', 'editormask#',
      'embargo', 'ignoreisbnerror', 'interviewerlink', 'interviewermask', 'no-cat',
-     'notracking', 'series-separator'0;
+     'notracking', 'series-separator');
 
