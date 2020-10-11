@@ -217,7 +217,7 @@ final class constantsTest extends testBaseClass {
       $this->assertTrue(TRUE);
     } else {
       print_r($overlap);
-      $this->assertNull('testDead Failed');
+      $this->assertNull('testDead Failed - see error array directly above');
     }
   }
 }
