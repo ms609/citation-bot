@@ -137,8 +137,6 @@ final class constantsTest extends testBaseClass {
   
  public function testWhiteList() : void {
       $we_failed = FALSE;
-      return;
-      // TODO - NEEDS DONE!!!!!
       $our_original_whitelist = PARAMETER_LIST;
       $our_whitelist = array_unique($our_original_whitelist);
       $our_whitelist_sorted = $our_whitelist;
