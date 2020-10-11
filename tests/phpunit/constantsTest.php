@@ -220,4 +220,41 @@ final class constantsTest extends testBaseClass {
       $this->assertNull('testDead Failed - see error array directly above');
     }
   }
+  
+  public function testAuthorsFlat() {
+    $failed = FALSE;
+    $test_flat = [];
+    foreach (AUTHOR_PARAMETERS as $array) {
+      foreach ($array as $param) {
+        $test_flat[] = $param;
+      }
+    }
+    $flat = FLATTENED_AUTHOR_PARAMETERS;
+    $extra_flat = array_diff($flat, $test_flat);
+    $missing_flat = array_diff($test_flat, $flat);
+    
+    if (!empty($extra_flat)) {
+       echo 'missing these in the AUTHOR_PARAMETERS array:';
+       print_r($extra_flat);
+       $failed = TRUE;
+    }
+    if (!empty($missing_flat)) {
+       echo 'missing these in the FLATTENED_AUTHOR_PARAMETERS array:';
+       print_r($missing_flat);
+       echo "\n expected \n";
+       print_r($test_flat);
+       $failed = TRUE;
+    }
+    if (count($flat) !== count(array_unique($flat))) {
+       echo 'duplicate entries in the FLATTENED_AUTHOR_PARAMETERS array:';
+       $flat = sort($flat);
+       $last = 'XXXXXXXX';
+       foreach ($flat as $param) {
+         if ($param === $last) echo "\n" . $param . "\n";
+         $last = $param;
+       }
+       $failed = TRUE;
+    } 
+    $this->assertFalse($failed);
+  }
 }
