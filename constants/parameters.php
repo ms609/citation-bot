@@ -337,19 +337,7 @@ const PARAMETER_LIST = array(
 'translator-last', 'translator-last#', 'translator-link', 'translator-link#', 
 'translator-mask', 'translator-mask#', 'translator-surname', 'translator-surname#', 
 'type', 'url', 'url-access', 'url-status', 'vauthors', 'veditors', 'version', 'via', 'volume',
-'website', 'work', 'year', 'zbl');
-
- const DEAD_PARAMETERS = array('PPPrefix', 'PPrefix', 'Ref', 'albumlink', 'albumtype',
-     'author-format', 'author-name-separator', 'author-separator', 'authors#', 'began', 'call-sign',
-     'chapter-link', 'city', 'coauthor', 'day', 'dead-url', 'deadurl',
-     'editor-format', 'editor-name-separator', 'editor-separator', 'editorformat',
-     'editors#', 'ended', 'in', 'interviewers', 'lay-summary', 'month', 'name-separator',
-     'p-prefix', 'pp-prefix', 'program', 'registration', 'separator',
-     'subscription', 'author_separator', 'coauthors', 'urldate',
-     'isbn2', 'isbn3', 'isbn4', 'isbn5', 'isbn6', 'isbn7', 'deadlink', 'displayeditors',
-     'doi-broken', 'doi-inactive-date', 'editormask', 'editor#mask', 'editormask#',
-     'embargo', 'ignoreisbnerror', 'interviewerlink', 'interviewermask', 'no-cat',
-     'notracking', 'series-separator',
+'website', 'work', 'year', 'zbl',
      'author-given',
      'author-surname',
      'display-subjects',
@@ -374,4 +362,16 @@ const PARAMETER_LIST = array(
      'subject-mask#',
      'subject#-mask',
      'audio-visual');
+
+ const DEAD_PARAMETERS = array('PPPrefix', 'PPrefix', 'Ref', 'albumlink', 'albumtype',
+     'author-format', 'author-name-separator', 'author-separator', 'authors#', 'began', 'call-sign',
+     'chapter-link', 'city', 'coauthor', 'day', 'dead-url', 'deadurl',
+     'editor-format', 'editor-name-separator', 'editor-separator', 'editorformat',
+     'editors#', 'ended', 'in', 'interviewers', 'lay-summary', 'month', 'name-separator',
+     'p-prefix', 'pp-prefix', 'program', 'registration', 'separator',
+     'subscription', 'author_separator', 'coauthors', 'urldate',
+     'isbn2', 'isbn3', 'isbn4', 'isbn5', 'isbn6', 'isbn7', 'deadlink', 'displayeditors',
+     'doi-broken', 'doi-inactive-date', 'editormask', 'editor#mask', 'editormask#',
+     'embargo', 'ignoreisbnerror', 'interviewerlink', 'interviewermask', 'no-cat',
+     'notracking', 'series-separator'0;
 
