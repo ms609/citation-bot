@@ -234,20 +234,20 @@ final class constantsTest extends testBaseClass {
     $missing_flat = array_diff($test_flat, $flat);
     
     if (!empty($extra_flat)) {
-       echo 'missing these in the AUTHOR_PARAMETERS array:';
+       echo "\n\n missing these in the AUTHOR_PARAMETERS array:\n";
        print_r($extra_flat);
        $failed = TRUE;
     }
     if (!empty($missing_flat)) {
-       echo 'missing these in the FLATTENED_AUTHOR_PARAMETERS array:';
+       echo "\n\n missing these in the FLATTENED_AUTHOR_PARAMETERS array:\n";
        print_r($missing_flat);
        echo "\n expected \n";
        print_r($test_flat);
        $failed = TRUE;
     }
     if (count($flat) !== count(array_unique($flat))) {
-       echo 'duplicate entries in the FLATTENED_AUTHOR_PARAMETERS array:';
-       $flat = sort($flat);
+       echo "\n\n duplicate entries in the FLATTENED_AUTHOR_PARAMETERS array:\n";
+       sort($flat);
        $last = 'XXXXXXXX';
        foreach ($flat as $param) {
          if ($param === $last) echo "\n" . $param . "\n";
