@@ -97,6 +97,10 @@ final class Template {
     if ($trim_name === 'Cite-web') $this->name = $spacing[1] . 'Cite web' . $spacing[2];
     if ($trim_name === 'cit web') $this->name = $spacing[1] . 'cite web' . $spacing[2];
     if ($trim_name === 'Cit web') $this->name = $spacing[1] . 'Cite web' . $spacing[2];
+    if ($trim_name === 'cit journal') $this->name = $spacing[1] . 'cite journal' . $spacing[2];
+    if ($trim_name === 'Cit journal') $this->name = $spacing[1] . 'Cite journal' . $spacing[2];
+    if ($trim_name === 'cit news') $this->name = $spacing[1] . 'cite news' . $spacing[2];
+    if ($trim_name === 'Cit news') $this->name = $spacing[1] . 'Cite news' . $spacing[2];
     if ($trim_name === 'cite url') $this->name = $spacing[1] . 'cite web' . $spacing[2];
     if ($trim_name === 'Cite url') $this->name = $spacing[1] . 'Cite web' . $spacing[2];
     if ($trim_name === 'web cite') $this->name = $spacing[1] . 'cite web' . $spacing[2];
