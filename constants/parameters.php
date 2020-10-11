@@ -372,8 +372,6 @@ const PARAMETER_LIST = array(
      'interviewer-surname#',
      'interviewer#-surname',
      'subject-mask#',
-     'subject#-mask');
+     'subject#-mask',
+     'audio-visual');
 
-
-
-     'audio-visual
