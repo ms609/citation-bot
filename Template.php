@@ -4318,8 +4318,9 @@ final class Template {
             }
             $all_urls = strtolower($all_urls);
             if (strpos($all_urls, '/dp/') !== FALSE && strpos($all_urls, '/feature/') === FALSE && strpos($all_urls, '/exec/obidos/') === FALSE) {
-            $this->forget($param);
-            return;
+              $this->forget($param);
+              return;
+            }
           }
           if (str_replace(array('[', ' ', ']'), '', $publisher) == 'google') {
             $this->forget($param);
