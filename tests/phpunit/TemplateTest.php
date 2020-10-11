@@ -1606,6 +1606,12 @@ final class TemplateTest extends testBaseClass {
   public function testDropAmazon() : void {
     $text = '{{Cite journal | publisher=amazon.com}}';
     $expanded = $this->process_citation($text);
+    $this->assertNotNull($expanded->get2('publisher'));
+    $text = '{{Cite journal | publisher=amazon.com|url=https://www.amazon.com/stuff}}';
+    $expanded = $this->process_citation($text);
+    $this->assertNotNull($expanded->get2('publisher'));
+    $text = '{{Cite journal | publisher=amazon.com|url=https://www.amazon.com/dp/}}';
+    $expanded = $this->process_citation($text);
     $this->assertNull($expanded->get2('publisher'));
   }
     
