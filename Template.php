@@ -4306,6 +4306,17 @@ final class Template {
               return;
             }
           }
+          // It might not be a product/book, but a "top 100" list
+          if (strtolower(str_replace(array('[', ' ', ']'), '', $publisher)) === 'amazon.com') {
+            $all_urls = '';
+            foreach (ALL_URL_TYPES as $a_url_type) {
+              $all_urls .= $this->get($a_url_type);
+            }
+            $all_urls = strtolower($all_urls);
+            if (strpos($all_urls, '/dp/') !== FALSE && strpos($all_urls, '/feature/') === FALSE && strpos($all_urls, '/exec/obidos/') === FALSE) {
+            $this->forget($param);
+            return;
+          }
           if (str_replace(array('[', ' ', ']'), '', $publisher) == 'google') {
             $this->forget($param);
           }
@@ -4759,6 +4770,10 @@ final class Template {
                 return;
               }
             }
+            if (stripos($publisher, 'amazon') !== FALSE) {
+              $this->forget($param);
+              return;
+            }
           }
           return;
           
@@ -5089,7 +5104,7 @@ final class Template {
             foreach (['location', 'place', 'publisher', 'publication-place', 'publicationplace'] as $to_drop) {
               if ($this->blank($to_drop)) $this->forget($to_drop);
             }
-          } elseif (in_array(strtolower($this->get('journal')), array_merge(NON_PUBLISHERS, BAD_TITLES, DUBIOUS_JOURNALS))) {
+          } elseif (in_array(strtolower($this->get('journal')), array_merge(NON_PUBLISHERS, BAD_TITLES, DUBIOUS_JOURNALS, ['amazon.com']))) {
             report_forget('Citation has chapter/ISBN already, dropping dubious Journal title: ' . echoable($this->get('journal')));
             $this->forget('journal');
           } else {
