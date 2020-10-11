@@ -311,7 +311,7 @@ const PARAMETER_LIST = array(
 'lccn', 'location', 'magazine', 'mailing-list', 'mailinglist', 'map', 'map-format', 
 'map-url', 'map-url-access', 'mapurl', 'medium', 'message-id', 'minutes', 'mode', 'mr', 
 'name-list-format', 'network', 'newsgroup', 'newspaper', 
-'no-pp', 'no-tracking', 'nocat', 'nopp'
+'no-pp', 'no-tracking', 'nocat', 'nopp',
 'number', 'oclc', 'ol', 'ol-access', 'orig-year', 'origyear', 'osti', 'osti-access', 
 'others', 'p', 'page', 'pages', 'patent-number', 'people', 'periodical', 
 'place', 'pmc', 'pmid', 'postscript', 'pp', 'pridate',
