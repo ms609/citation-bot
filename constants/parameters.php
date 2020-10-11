@@ -17,7 +17,7 @@ const AUTHOR_PARAMETERS = array(
     1  => array('surname'  , 'forename'  , 'initials'  , 'first'  , 'last'  , 'author', 
                 'vauthors', 'authors', 'author-last', 'author-first',
                 'surname1' , 'forename1' , 'initials1' , 'first1' , 'last1' , 'author1',  'author1-last',  'author-last1',  'author1-first',  'author-first1',
-                'given', 'given1', 'author-given', 'author-given1', 'author1-given', 'author1-surname', 'author1-surname', 'author-surname'),
+                'given', 'given1', 'author-given', 'author-given1', 'author1-given', 'author-surname1', 'author1-surname', 'author-surname'),
 2=>array('surname2','forename2','initials2','first2','last2','author2','author2-last','author-last2','author2-first','author-first2','author-given2','author2-given','given2','author-surname2','author2-surname','coauthors','coauthor','others'),
 3=>array('surname3','forename3','initials3','first3','last3','author3','author3-last','author-last3','author3-first','author-first3','author-given3','author3-given','given3','author-surname3','author3-surname'),
 4=>array('surname4','forename4','initials4','first4','last4','author4','author4-last','author-last4','author4-first','author-first4','author-given4','author4-given','given4','author-surname4','author4-surname'),
@@ -119,7 +119,7 @@ const AUTHOR_PARAMETERS = array(
 );
 const FLATTENED_AUTHOR_PARAMETERS = array('surname', 'forename', 'initials', 'others',
     'first', 'last', 'author', 'authors', 'vauthors', 'author-last', 'author-first',
-    'given', 'given1', 'author-given', 'author-given1', 'author1-given', 'author1-surname', 'author1-surname', 'author-surname',
+    'given', 'given1', 'author-given', 'author-given1', 'author1-given', 'author-surname1', 'author1-surname', 'author-surname',
     'surname1' , 'forename1' , 'initials1' , 'first1' , 'last1' , 'author1' , 'author1-last',  'author-last1',  'author1-first',  'author-first1',
 'surname2','forename2','initials2','first2','last2','author2','author2-last','author-last2','author2-first','author-first2','author-given2','author2-given','given2','author-surname2','author2-surname','coauthors','coauthor',
 'surname3','forename3','initials3','first3','last3','author3','author3-last','author-last3','author3-first','author-first3','author-given3','author3-given','given3','author-surname3','author3-surname',
