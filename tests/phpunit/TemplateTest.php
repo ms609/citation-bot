@@ -3846,8 +3846,6 @@ T1 - This is the Title }}';
     $template = $this->make_citation($text);
     $this->assertTrue($template->add_if_new('display-editors', '3'));
     $this->assertSame('3', $template->get2('display-editors'));
-    $this->assertFalse($template->add_if_new('displayeditors', '2'));
-    $this->assertNull($template->get2('displayeditors'));
   }
 
   public function testArchiveDate() : void {
