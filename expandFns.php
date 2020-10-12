@@ -331,7 +331,7 @@ function straighten_quotes(string $str) : string { // (?<!\') and (?!\') means t
 
 // ============================================= Capitalization functions ======================================
 
-function title_case(string $text) :string {
+function title_case(string $text) : string {
   if (stripos($text, 'www.') !== FALSE || stripos($text, 'www-') !== FALSE || stripos($text, 'http://') !== FALSE) {
      return $text; // Who knows - duplicate code below
   }
@@ -500,7 +500,7 @@ function throttle (int $min_interval) : void {
 
 // ============================================= Data processing functions ======================================
 
-function tidy_date(string $string) :string {
+function tidy_date(string $string) : string {
   $matches = ['', '']; // prevent memory leak in some PHP versions
   $string=trim($string);
   if (stripos($string, 'Invalid') !== FALSE) return '';
