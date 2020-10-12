@@ -56,7 +56,7 @@ if (strlen($page_name) > 256)  {
   report_warning('Possible invalid page');
   exit("\n </pre></body></html>");
 }
-$edit_summary_end = "| Suggested by " . $api->get_the_user() . " | All pages linked from cached copy of $page_name | via #UCB_webform_linked";
+$edit_summary_end = "| Suggested by " . $api->get_the_user() . " | All pages linked from cached copy of $page_name | via #UCB_webform_linked ";
 
 $url = API_ROOT . '?action=parse&prop=links&format=json&page=' . $page_name;
 $ch = curl_init();
@@ -102,13 +102,16 @@ if (empty($pages_in_category)) {
 
   $page = new Page();
   gc_collect_cycles();
+  $done = 0;
+  $total = count($pages_in_category);
   foreach ($pages_in_category as $page_title) {
+    $done++;
     // $page->expand_text will take care of this notice if we are in HTML mode.
     html_echo('', "\n\n\n*** Processing page '" . echoable($page_title) . "' : " . date("H:i:s") . "\n");
     if ($page->get_text_from($page_title, $api) && $page->expand_text()) {
       report_phase("Writing to " . echoable($page_title) . '... ');
       $attempts = 0;
-      while (!$page->write($api, $edit_summary_end) && $attempts < MAX_TRIES) ++$attempts;
+      while (!$page->write($api, $edit_summary_end . (string) $done . '/' . (string) $total . ' ') && $attempts < MAX_TRIES) ++$attempts;
       if ($attempts < MAX_TRIES) {
         html_echo(
         "\n  <a href=" . WIKI_ROOT . "?title=" . urlencode($page_title) . "&diff=prev&oldid="
