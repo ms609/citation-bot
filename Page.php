@@ -476,6 +476,7 @@ class Page {
             $auto_summary .= 'Remove Template type redirect. ';
             break;
          }
+      }
     }
     if (!$auto_summary) {
       $auto_summary = "Misc citation tidying. ";
