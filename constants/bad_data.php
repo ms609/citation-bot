@@ -47,7 +47,7 @@ const IN_PRESS_ALIASES = array("in press", "inpress", "pending", "published",
 const NON_JOURNAL_BIBCODES = array('arXiv', 'gr.qc', 'hep.ex', 'hep.lat', 'hep.ph', 'hep.th', 'astro.ph',
                                    'math', 'nucl.ex', 'nucl.th', 'physics', 'quant.ph', 'alg.geom',
                                    'cond.mat', 'cs.', 'econ.', 'eess.', 'nlin.');
-const NON_PUBLISHERS = ['books.google', 'google books', 'google news', 'google.co', 'amazon.com', 'google book',
+const NON_PUBLISHERS = ['books.google', 'google books', 'google news', 'google.co', 'google book',
                         'zenodo', 'archive.org', 'citeseerx.ist.psu.edu', 'archive.fo', 'archive.today',
                         'hdl.handle.net', 'pub med', 'researchgate']; // Google Inc is a valid publisher, however.
 const BAD_ZOTERO_TITLES = ['Browse publications', 'Central Authentication Service', 'http://', 'https://',
