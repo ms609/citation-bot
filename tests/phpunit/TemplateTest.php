@@ -2042,7 +2042,7 @@ T1 - This is the Title }}';
     $title = $expanded->get2('title');
     $title = str_replace('‐', '-', $title); // Dashes vary
     $title = str_replace("'", "", $title);  // Sometimes there, sometime not
-    $this->assertSame("The macro- and microfossil record of the Cambrian priapulid Ottoia", $expanded->get2('title'));
+    $this->assertSame("The macro- and microfossil record of the Cambrian priapulid Ottoia", $title);
   }
   
   public function testSpeciesCaps() : void {
