@@ -83,9 +83,11 @@ if (!isset($ON)) {
 
 $my_page = new Page();
 gc_collect_cycles();
-
-foreach (array_unique(explode('|', $pages)) as $page_title) {
-
+$pages_to_do = array_unique(explode('|', $pages));
+$done = 0;
+$total = count($pages_to_do);
+foreach ($pages_to_do as $page_title) {
+  $done++;
   if (trim($page_title) === '') {  // Default is to edit Wikipedia's main page if user just clicks button.  Let's not even try
      echo "\n\n No page given.  <a href='./' title='Main interface'>Specify one here</a>. \n\n";
      continue;
@@ -96,7 +98,12 @@ foreach (array_unique(explode('|', $pages)) as $page_title) {
     $text_expanded = $my_page->expand_text();
     if ($text_expanded && $ON) {
       $attempts = 0;
-      while (!$my_page->write($api, $edit_summary_end) && $attempts < MAX_TRIES) ++$attempts;
+      if ($total > 1) {
+        $extra_end = (string) $done . '/' . (string) $total . ' ';
+      } else {
+        $extra_end = '';
+      }
+      while (!$my_page->write($api, $edit_summary_end . $extra_end) && $attempts < MAX_TRIES) ++$attempts;
       if ($attempts < MAX_TRIES ) {
         $last_rev = urlencode($api->get_last_revision($page_title));
         html_echo(

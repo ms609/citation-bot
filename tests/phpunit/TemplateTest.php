@@ -1606,6 +1606,12 @@ final class TemplateTest extends testBaseClass {
   public function testDropAmazon() : void {
     $text = '{{Cite journal | publisher=amazon.com}}';
     $expanded = $this->process_citation($text);
+    $this->assertNotNull($expanded->get2('publisher'));
+    $text = '{{Cite journal | publisher=amazon.com|url=https://www.amazon.com/stuff}}';
+    $expanded = $this->process_citation($text);
+    $this->assertNotNull($expanded->get2('publisher'));
+    $text = '{{Cite journal | publisher=amazon.com|url=https://www.amazon.com/dp/}}';
+    $expanded = $this->process_citation($text);
     $this->assertNull($expanded->get2('publisher'));
   }
     
@@ -3840,8 +3846,6 @@ T1 - This is the Title }}';
     $template = $this->make_citation($text);
     $this->assertTrue($template->add_if_new('display-editors', '3'));
     $this->assertSame('3', $template->get2('display-editors'));
-    $this->assertFalse($template->add_if_new('displayeditors', '2'));
-    $this->assertNull($template->get2('displayeditors'));
   }
 
   public function testArchiveDate() : void {

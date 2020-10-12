@@ -137,7 +137,6 @@ final class constantsTest extends testBaseClass {
   
  public function testWhiteList() : void {
       $we_failed = FALSE;
-      
       $our_original_whitelist = PARAMETER_LIST;
       $our_whitelist = array_unique($our_original_whitelist);
       $our_whitelist_sorted = $our_whitelist;
@@ -202,6 +201,8 @@ final class constantsTest extends testBaseClass {
       $text = str_replace(['authors1', 'editors1', 'publication-date', 'publicationdate', 'publication-place', 'publicationplace', 'chapter-url ', 'chapterurl ', '| p = Z123Z ',    '| pp = Z123Z ',    '| URL = Z123Z ', '| bioRxiv = Z123Z ', '| ARXIV = Z123Z ', '| DOI = Z123Z '],  // Put spaces on end to not change chapter-url-access and such
                           ['author1',  'editor1',  'date',             'date',            'location',          'location',         'url ',         'url '       , '| page = Z123Z ', '| pages = Z123Z ', '| url = Z123Z ', '| biorxiv = Z123Z ', '| arxiv = Z123Z ', '| doi = Z123Z '], $text); // Stuff that get "fixed"
       $text = str_replace(['| access-date = Z123Z ', '| accessdate = Z123Z ', '| doi-broken = Z123Z ', '| doi-broken-date = Z123Z ', '| doi-inactive-date = Z123Z '], '', $text);
+      $text = str_replace(['displayeditors', 'editor1mask', 'editormask1', 'interviewerlink', 'interviewermask', 'no-cat', 'notracking', 'interviewermask'],
+                          ['display-editors', 'editor-mask', 'editor-mask1', 'interviewer-link', 'interviewer-mask', 'nocat', 'no-tracking', 'interviewer-mask'], $text);
       if (!str_i_same($text, $prepared->parsed_text())) {
          $orig .= $text;
          $new .= $prepared->parsed_text();
@@ -216,7 +217,44 @@ final class constantsTest extends testBaseClass {
       $this->assertTrue(TRUE);
     } else {
       print_r($overlap);
-      $this->assertNull('testDead Failed');
+      $this->assertNull('testDead Failed - see error array directly above');
     }
+  }
+  
+  public function testAuthorsFlat() {
+    $failed = FALSE;
+    $test_flat = [];
+    foreach (AUTHOR_PARAMETERS as $array) {
+      foreach ($array as $param) {
+        $test_flat[] = $param;
+      }
+    }
+    $flat = FLATTENED_AUTHOR_PARAMETERS;
+    $extra_flat = array_diff($flat, $test_flat);
+    $missing_flat = array_diff($test_flat, $flat);
+    
+    if (!empty($extra_flat)) {
+       echo "\n\n missing these in the AUTHOR_PARAMETERS array:\n";
+       print_r($extra_flat);
+       $failed = TRUE;
+    }
+    if (!empty($missing_flat)) {
+       echo "\n\n missing these in the FLATTENED_AUTHOR_PARAMETERS array:\n";
+       print_r($missing_flat);
+       echo "\n expected \n";
+       print_r($test_flat);
+       $failed = TRUE;
+    }
+    if (count($flat) !== count(array_unique($flat))) {
+       echo "\n\n duplicate entries in the FLATTENED_AUTHOR_PARAMETERS array:\n";
+       sort($flat);
+       $last = 'XXXXXXXX';
+       foreach ($flat as $param) {
+         if ($param === $last) echo "\n" . $param . "\n";
+         $last = $param;
+       }
+       $failed = TRUE;
+    } 
+    $this->assertFalse($failed);
   }
 }
