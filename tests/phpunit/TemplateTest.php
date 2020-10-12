@@ -2039,7 +2039,11 @@ T1 - This is the Title }}';
   public function testTitleItalics(){
     $text = '{{cite journal|doi=10.1111/pala.12168}}';
     $expanded = $this->process_citation($text);
-    $this->assertSame("The macro- and microfossil record of the Cambrian priapulid ''Ottoia''", $expanded->get2('title'));
+    if (strpos($expanded->get2('title'), "'") !== FALSE) {
+      $this->assertSame("The macro- and microfossil record of the Cambrian priapulid ''Ottoia''", $expanded->get2('title'));
+    } else {
+      $this->assertSame("The macro- and microfossil record of the Cambrian priapulid Ottoia", $expanded->get2('title'));
+    }
   }
   
   public function testSpeciesCaps() : void {
