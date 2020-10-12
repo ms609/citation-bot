@@ -1902,7 +1902,7 @@ final class Template {
              // SEP 2020 $this->forget($url_type);
           }
           return $this->add_if_new('ol', $match[1]);
-      } elseif (preg_match("~^https?://search\.proquest\.com/docview/(\d{4,})$~i", $url, $match) && $this->has('title')) {
+      } elseif (preg_match("~^https?://search\.proquest\.com/docview/(\d{4,})$~i", $url, $match) && $this->has('title') && $this->blank('id')) {
         if ($this->append_to('id', '{{ProQuest|' . $match[1] . '}}')) {  
           quietly('report_modification', 'Converting URL to ProQuest parameter');
           if (is_null($url_sent)) {
