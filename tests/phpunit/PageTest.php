@@ -389,7 +389,7 @@ final class PageTest extends testBaseClass {
   public function testCiteLSA() : void {
     $text = "{{Cite LSA|url=https://books.google.uk.co/books?id=to0yXzq_EkQC&pg=}}";
     $page = $this->process_page($text);
-    $this->assertSame("{{Cite LSA|url=https://books.google.com/books?id=to0yXzq_EkQC}}", $output);
+    $this->assertSame("{{Cite LSA|url=https://books.google.com/books?id=to0yXzq_EkQC}}", $page->parsed_text());
     $this->assertSame('What does it say', $page->edit_summary());
   }
  
