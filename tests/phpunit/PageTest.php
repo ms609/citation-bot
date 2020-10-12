@@ -390,7 +390,7 @@ final class PageTest extends testBaseClass {
     $text = "{{Cite LSA|url=https://books.google.uk.co/books?id=to0yXzq_EkQC&pg=}}";
     $page = $this->process_page($text);
     $this->assertSame("{{Cite LSA|url=https://books.google.com/books?id=to0yXzq_EkQC}}", $page->parsed_text());
-    $this->assertSame('What does it say', $page->edit_summary());
+    $this->assertSame('Misc citation tidying. | You can [[WP:UCB|use this bot]] yourself. [[WP:DBUG|Report bugs here]]. ', $page->edit_summary());
   }
  
   public function testBadPage() : void {  // Use this when debugging pages that crash the bot
