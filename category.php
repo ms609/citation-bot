@@ -67,13 +67,16 @@ if ($category) {
   shuffle($pages_in_category);
   $page = new Page();
   gc_collect_cycles();
+  $done = 0;
+  $total = count($pages_in_category);
   foreach ($pages_in_category as $page_title) {
+    $done++;
     // $page->expand_text will take care of this notice if we are in HTML mode.
     html_echo('', "\n\n\n*** Processing page '" . echoable($page_title) . "' : " . date("H:i:s") . "\n");
     if ($page->get_text_from($page_title, $api) && $page->expand_text()) {
       report_phase("Writing to " . echoable($page_title) . '... ');
       $attempts = 0;
-      while (!$page->write($api, $edit_summary_end) && $attempts < MAX_TRIES) ++$attempts;
+      while (!$page->write($api, $edit_summary_end . (string) $done . '/' . (string) $total . ' ') && $attempts < MAX_TRIES) ++$attempts;
       if ($attempts < MAX_TRIES ) {
         $last_rev = urlencode($api->get_last_revision($page_title));
         html_echo(
