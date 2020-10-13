@@ -4199,6 +4199,9 @@ final class Template {
               $periodical  = '[[' . $linked_text . '|' . $human_text . ']]';
               $this->set($param, $periodical);
             }
+          } else {
+             $periodical = straighten_quotes($periodical); // No links
+             $this->set($param, $periodical);
           }
           if ($this->wikiname() === 'cite arxiv') $this->change_name_to('cite journal');
           if ($this->is_book_series($param)) {
