@@ -654,10 +654,10 @@ function prior_parameters(string $par, array $list=array()) : array {
     case 'arxiv': case 'eprint': case 'class' : return prior_parameters('pmc', $list);
     case 'bibcode':                   return prior_parameters('arxiv', array_merge(['eprint', 'class'], $list));
     case 'hdl':                       return prior_parameters('bibcode', $list);
-    case 'isbn': case 'biorxiv': case 'citeseerx': case 'jfm': case 'zbl': case 'mr': case 'osti': case 'ssrn': case 'rfc': case 'citeseerx':
+    case 'isbn': case 'biorxiv': case 'citeseerx': case 'jfm': case 'zbl': case 'mr': case 'osti': case 'ssrn': case 'rfc':
        return prior_parameters('hdl', $list);
     case 'lccn': case 'issn': case 'ol': case 'oclc': case 'asin': case 's2cid':
-       return prior_parameters('isbn', array_merge(['biorxiv', 'citeseerx', 'jfm', 'zbl', 'mr', 'osti', 'ssrn', 'rfc', 'citeseerx'], $list));
+       return prior_parameters('isbn', array_merge(['biorxiv', 'citeseerx', 'jfm', 'zbl', 'mr', 'osti', 'ssrn', 'rfc'], $list));
     case 'url':
         return prior_parameters('lccn', array_merge(['issn', 'ol', 'oclc', 'asin', 's2cid'], $list));
     case 'archive-url': case 'archiveurl': case 'accessdate': case 'access-date': return prior_parameters('url', $list);
