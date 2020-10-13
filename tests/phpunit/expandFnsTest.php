@@ -205,15 +205,18 @@ final class expandFnsTest extends testBaseClass {
     $this->assertSame('X z/Journal', title_capitalization(title_case('X Z/journal'), TRUE));
     $this->assertSame('X ZooKeys', title_capitalization(title_case('X zookeys'), TRUE));
   }
+
+  public function testCapitalization_lots_more5() : void {
+    $this->assertSame('Www', title_case('www'));
+    $this->assertSame('www.', title_case('www.'));
+    $this->assertSame('http://', title_case('http://'));
+    $this->assertSame('abx www-x', title_case('abx www-x'));
+    $this->assertSame('Hello There', title_case('hello there'));
+  }
   
   public function testThrottle() : void { // Just runs over the code and basically does nothing
-    $this->assertNull(throttle(1));
-    $this->assertNull(throttle(1));
-    $this->assertNull(throttle(1));
-    $this->assertNull(throttle(1));
-    $this->assertNull(throttle(1));
-    $this->assertNull(throttle(1));
-    $this->assertNull(throttle(1));
-    $this->assertNull(throttle(1));
+    for ($x = 0; $x <= 20; $x++) {
+      $this->assertNull(throttle(1));
+    }
   }
 }
