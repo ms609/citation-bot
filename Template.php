@@ -1203,8 +1203,13 @@ final class Template {
         }
         return FALSE;
          
-      case 'zbl': case 'location': case 'jstor': case 'oclc': case 'mr': case 'titlelink': case 'lccn':
-      case 'ssrn': case 'ol': case 'jfm': case 'osti': case 'biorxiv': case 'citeseerx': case 'hdl':
+      case 'zbl': case 'location': case 'jstor': case 'oclc': case 'mr': case 'lccn': case 'hdl':
+      case 'ssrn': case 'ol': case 'jfm': case 'osti': case 'biorxiv': case 'citeseerx':
+        if ($this->blank($param_name)) {
+          return $this->add($param_name, sanitize_string($value));
+        }
+        return FALSE;
+        
       case (bool) preg_match('~author(?:\d{1,}|)-link~', $param_name):
         if ($this->blank($param_name)) {
           return $this->add($param_name, sanitize_string($value));
@@ -1226,7 +1231,7 @@ final class Template {
 
       default:  // We want to make sure we understand what we are adding
         // @codeCoverageIgnoreStart
-        report_minor_error('Unexpected parameter: ' . echoable($param_name) . ' trying to be set to ' . echoable($value));
+        report_error('Unexpected parameter: ' . echoable($param_name) . ' trying to be set to ' . echoable($value));
         if ($this->blank($param_name)) {
           return $this->add($param_name, sanitize_string($value));
         }
