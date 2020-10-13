@@ -1203,8 +1203,13 @@ final class Template {
         }
         return FALSE;
          
-      case 'zbl': case 'location': case 'jstor': case 'oclc': case 'mr': case 'titlelink': case 'lccn':
-      case 'ssrn': case 'ol': case 'jfm': case 'osti': case 'biorxiv': case 'citeseerx': case 'hdl':
+      case 'zbl': case 'location': case 'jstor': case 'oclc': case 'mr': case 'lccn': case 'hdl':
+      case 'ssrn': case 'ol': case 'jfm': case 'osti': case 'biorxiv': case 'citeseerx':
+        if ($this->blank($param_name)) {
+          return $this->add($param_name, sanitize_string($value));
+        }
+        return FALSE;
+        
       case (bool) preg_match('~author(?:\d{1,}|)-link~', $param_name):
         if ($this->blank($param_name)) {
           return $this->add($param_name, sanitize_string($value));
@@ -1226,7 +1231,7 @@ final class Template {
 
       default:  // We want to make sure we understand what we are adding
         // @codeCoverageIgnoreStart
-        report_minor_error('Unexpected parameter: ' . echoable($param_name) . ' trying to be set to ' . echoable($value));
+        report_error('Unexpected parameter: ' . echoable($param_name) . ' trying to be set to ' . echoable($value));
         if ($this->blank($param_name)) {
           return $this->add($param_name, sanitize_string($value));
         }
@@ -4198,6 +4203,9 @@ final class Template {
               // We assume that human text is some kind of abreviations that we really don't wan to mess with
               $periodical  = '[[' . $linked_text . '|' . $human_text . ']]';
               $this->set($param, $periodical);
+            } elseif (substr_count($periodical, ']') === 0 && substr_count($periodical, '[') === 0) { // No links
+             $periodical = straighten_quotes($periodical);
+             $this->set($param, $periodical);
             }
           }
           if ($this->wikiname() === 'cite arxiv') $this->change_name_to('cite journal');
