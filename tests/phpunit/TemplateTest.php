@@ -1856,6 +1856,10 @@ T1 - This is the Title }}';
     $text = "{{cite book|isbn=Hello Brother}}";
     $prepared = $this->prepare_citation($text);
     $this->assertSame('Hello Brother', $prepared->get2('isbn')); // Rubbish unchanged
+   
+    $text = "{{cite book|isbn=184309164x 978324132412}}";
+    $prepared = $this->prepare_citation($text);
+    $this->assertSame('184309164x 978324132412', $prepared->get2('isbn'));  // Do not dash between multiple ISBNs
   }
    
   public function testEtAl() : void {
