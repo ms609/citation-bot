@@ -32,12 +32,11 @@ matrix:           ###### ONLY ONE WITH FULL TESTING WITH IS 7.3 OTHERS ARE ALL S
     - php: 7.4
       name: "PHP psalm"
       before_script:
-        - travis_retry composer self-update
-        - composer require mediawiki/oauthclient:1.1.0
-        - composer require --dev vimeo/psalm
+       - travis_retry composer self-update
+       - composer require mediawiki/oauthclient:1.1.0
+       - composer require --dev vimeo/psalm
       script: php ./vendor/bin/psalm --show-info=true --find-unused-psalm-suppress
     - php: 7.4
-
       name: "PHP psalm Taint"
       before_script:
         - travis_retry composer self-update
