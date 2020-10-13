@@ -2,6 +2,7 @@
 declare(strict_types=1);
 
 const COMMON_MISTAKES = array ( // Common mistakes that aren't picked up by the levenshtein approach
+  "PADDING=THE ARRAY" => "PADDING=THE ARRAY", // using zero element is a bad idea
   "ASIN"            =>  "asin",
   "EISSN"           =>  "eissn",
   "HDL"             =>  "hdl",
