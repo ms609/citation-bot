@@ -3445,7 +3445,7 @@ final class Template {
             )
       ) {
         // remove leading spaces or hyphens (which may have been typoed for an equals)
-        if (preg_match("~^[ -+]*(.+)~", substr($dat, strlen($closest)), $match)) {
+        if (preg_match("~^[ -+]*(.+)~", (string) substr($dat, strlen($closest)), $match)) { // Cast to string, in case false is given
           $this->add_if_new($closest, $match[1]/* . " [$shortest / $comp = $shortish]"*/);
           $dat = trim(preg_replace('~^.*' . preg_quote($match[1]) . '~', '', $dat));
         }
