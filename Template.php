@@ -1902,8 +1902,8 @@ final class Template {
              // SEP 2020 $this->forget($url_type);
           }
           return $this->add_if_new('ol', $match[1]);
-      } elseif (preg_match("~^https?://search\.proquest\.com/docview/(\d{4,})$~i", $url, $match) && $this->has('title')) {
-        if ($this->append_to('id', '{{ProQuest|' . $match[1] . '}}')) {  
+      } elseif (preg_match("~^https?://search\.proquest\.com/docview/(\d{4,})$~i", $url, $match) && $this->has('title') && $this->blank('id')) {
+        if ($this->add_if_new('id', '{{ProQuest|' . $match[1] . '}}')) {  
           quietly('report_modification', 'Converting URL to ProQuest parameter');
           if (is_null($url_sent)) {
              // SEP 2020 $this->forget($url_type);
@@ -5750,6 +5750,8 @@ final class Template {
 
   protected function isbn10Toisbn13(string $isbn10, bool $ignore_year = FALSE) : string {
     $isbn10 = trim($isbn10);  // Remove leading and trailing spaces
+    $test = str_replace(array('—', '?', '–', '-', '?', ' '), '', $isbn10);
+    if (strlen($test) < 10 || strlen ($test) > 13) return $isbn10;
     if (preg_match("~^[0-9Xx ]+$~", $isbn10) === 1) { // Uses spaces
       $isbn10 = str_replace(' ', '-', $isbn10);
     }
