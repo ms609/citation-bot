@@ -5374,6 +5374,18 @@ T1 - This is the Title }}';
      $this->assertSame('R. J.', $template->get2('first1'));
      $this->assertNull($template->get2('author1'));
   }
+ 
+  public function testRFCadd() : void {
+     $text = '{{cite journal}}';
+     $template = $this->process_citation($text);
+     $this->assertTrue($template->add_if_new('rfc', '1234'));
+  }
+ 
+  public function testHDLadd() : void {
+     $text = '{{cite journal}}';
+     $template = $this->process_citation($text);
+     $this->assertTrue($template->add_if_new('hdl', '1234'));
+  }
 
   public function testSaveAccessType() : void {
      $text = '{{cite web|url=http://doi.org/10.1063/1.2833100 |url-access=Tested}}';
