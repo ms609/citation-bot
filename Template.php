@@ -4198,9 +4198,8 @@ final class Template {
               // We assume that human text is some kind of abreviations that we really don't wan to mess with
               $periodical  = '[[' . $linked_text . '|' . $human_text . ']]';
               $this->set($param, $periodical);
-            }
-          } else {
-             $periodical = straighten_quotes($periodical); // No links
+            } elseif (substr_count($periodical, ']') === 0 && substr_count($periodical, '[') === 0) { // No links
+             $periodical = straighten_quotes($periodical);
              $this->set($param, $periodical);
           }
           if ($this->wikiname() === 'cite arxiv') $this->change_name_to('cite journal');
