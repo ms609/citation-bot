@@ -461,6 +461,23 @@ class Page {
     if ($this->modifications["names"]) {
       $auto_summary .= 'Some additions/deletions were actually parameter name changes. ';
     }
+    if (substr_count($this->text, '978') > substr_count($this->start_text, '978')) {
+      $auto_summary .= 'Correct ISBN10 to ISBN13. ';
+    }
+    if (stripos($auto_summary, 'template') !== FALSE) {
+      foreach (['cite|', 'Cite|', 'citebook', 'Citebook', 'cit book', 'Cit book', 'cite books', 'Cite books',
+                'book reference', 'Book reference', 'citejournal', 'Citejournal', 'citeweb', 'Citeweb',
+                'cite-web', 'Cite-web', 'cit web', 'Cit web', 'cit journal', 'Cit journal',
+                'cit news', 'Cit news', 'cite url', 'Cite url', 'web cite', 'Web cite',
+                'book cite', 'Book cite', 'cite-book', 'Cite-book', 'citenews', 'Citenews',
+                'citepaper', 'Citepaper', 'cite new|', 'cite new|', 'citation journal', 'Citation journal',
+                'cite new |', 'cite new |', 'cite |', 'Cite |'] as $try_me) {
+         if (substr_count($this->text, $try_me) < substr_count($this->start_text, $try_me)) {
+            $auto_summary .= 'Remove Template type redirect. ';
+            break;
+         }
+      }
+    }
     if (!$auto_summary) {
       $auto_summary = "Misc citation tidying. ";
     }
