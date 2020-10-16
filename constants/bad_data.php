@@ -2,7 +2,9 @@
 declare(strict_types=1);
 // Some data we get from outside sources is bad or at least mis-defined
 // Use lower case for all of these, and then compare to a lower cased version
-const HAS_NO_VOLUME = array("zookeys", "studia hibernica", "analecta hibernica", "british art studies", "der spiegel", "international astronomical union circular", "yale french studies");  // Some journals have issues only, no volume numbers
+const HAS_NO_VOLUME = array("zookeys", "studia hibernica", "analecta hibernica", "british art studies", "der spiegel",
+                            "international astronomical union circular", "yale french studies", "capjournal",
+                            "cap journal");  // Some journals have issues only, no volume numbers
 const BAD_ACCEPTED_MANUSCRIPT_TITLES = array("oup accepted manuscript", "placeholder for bad pdf file", 
                                              "placeholder", "symbolic placeholder", "[placeholder]", 
                                              "placeholder for arabic language transliteration");
