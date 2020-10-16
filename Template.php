@@ -135,7 +135,7 @@ final class Template {
       }
       
       // Save editor information for special handling
-      if (in_array($p->param, EDITOR1_ALIASES) && $p->val) {
+      if (in_array($p->param, FIRST_EDITOR_ALIASES) && $p->val) {
         $this->had_initial_editor = TRUE;
       }
       if ($p->param === 'veditors' && $p->val) $this->had_initial_editor = TRUE;
@@ -529,7 +529,7 @@ final class Template {
         $value = str_replace(array(",;", " and;", " and ", " ;", "  ", "+", "*"), array(";", ";", " ", ";", " ", "", ""), $value);
         $value = trim(straighten_quotes($value));
 
-        if ($this->blank(AUTHOR1_ALIASES)) {
+        if ($this->blank(FIRST_AUTHOR_ALIASES)) {
           if (strpos($value, ',')) {
             $au = explode(',', $value);
             $this->add('last' . (substr($param_name, -1) == '1' ? '1' : ''), sanitize_string(format_Surname($au[0])));
@@ -542,7 +542,7 @@ final class Template {
 
       case "first": case "first1":
        $value = trim(straighten_quotes($value));
-       if ($this->blank(FORENAME1_ALIASES)) {
+       if ($this->blank(FIRST_FORNAME_ALIASES)) {
           if (mb_substr($value, -1) === '.') { // Do not lose last period
              $value = sanitize_string($value) . '.';
           } else {
