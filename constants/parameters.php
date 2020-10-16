@@ -228,17 +228,17 @@ const CHAPTER_ALIASES = ['chapter', 'contribution', 'article', 'entry', 'section
 const DISPLAY_AUTHORS = ['display-authors', 'displayauthors'];
 const DISPLAY_EDITORS = ['display-editors', 'displayeditors'];
 const DOI_BROKEN_ALIASES = ['doi-broken', 'doi_brokendate', 'doi-broken-date', 'doi_inactivedate', 'doi-inactive-date'];
-const AUTHOR1_ALIASES = ['last1', 'last', 'author', 'author1', 'vauthor', 'surname1', 'surname', 'author1-surname', 'author1-surname', 'author-surname'];
-const FORENAME1_ALIASES = ['first1', 'first', 'author', 'author1', 'given', 'given1', 'author-given', 'author-given1', 'author1-given'];
-const EDITOR1_ALIASES = ['editor1', 'editor', 'editor-last', 'editor1-last', 'editor-last1', 'veditor', 'editor1-surname', 'editor1-given', 'editor-surname', 'editor-given', 'editor-surname1', 'editor-given1'];
+const FIRST_AUTHOR_ALIASES = ['last1', 'last', 'author', 'author1', 'vauthor', 'surname1', 'surname', 'author1-surname', 'author1-surname', 'author-surname'];
+const FIRST_FORENAME_ALIASES = ['first1', 'first', 'author', 'author1', 'given', 'given1', 'author-given', 'author-given1', 'author1-given'];
+const FIRST_EDITOR_ALIASES = ['editor1', 'editor', 'editor-last', 'editor1-last', 'editor-last1', 'veditor', 'editor1-surname', 'editor1-given', 'editor-surname', 'editor-given', 'editor-surname1', 'editor-given1'];
 const ISSUE_ALIASES = ['issue', 'number'];
 const PAGE_ALIASES = ['page', 'pages', 'pp', 'p', 'at'];
 const TIME_ALIASES = ['date', 'year'];
 const WORK_ALIASES = ['work', 'journal', 'newspaper', 'magazine', 'periodical', 'website', 'encyclopedia', 'encyclopaedia']; 
 
 const ALL_ALIASES = [TITLE_LINK_ALIASES, ARXIV_ALIASES, COAUTHOR_ALIASES, CHAPTER_ALIASES,
-              DISPLAY_AUTHORS, DISPLAY_EDITORS, DOI_BROKEN_ALIASES, AUTHOR1_ALIASES,
-              FORENAME1_ALIASES, EDITOR1_ALIASES, ISSUE_ALIASES, PAGE_ALIASES,
+              DISPLAY_AUTHORS, DISPLAY_EDITORS, DOI_BROKEN_ALIASES, FIRST_AUTHOR_ALIASES,
+              FIRST_FORENAME_ALIASES, FIRST_EDITOR_ALIASES, ISSUE_ALIASES, PAGE_ALIASES,
               TIME_ALIASES, WORK_ALIASES, FLATTENED_AUTHOR_PARAMETERS];
 
 // Includes many parameters usually from templates that we do not modify such as {{cite patent}}, because

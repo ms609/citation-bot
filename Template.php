@@ -135,7 +135,7 @@ final class Template {
       }
       
       // Save editor information for special handling
-      if (in_array($p->param, EDITOR1_ALIASES) && $p->val) {
+      if (in_array($p->param, FIRST_EDITOR_ALIASES) && $p->val) {
         $this->had_initial_editor = TRUE;
       }
       if ($p->param === 'veditors' && $p->val) $this->had_initial_editor = TRUE;
@@ -529,7 +529,7 @@ final class Template {
         $value = str_replace(array(",;", " and;", " and ", " ;", "  ", "+", "*"), array(";", ";", " ", ";", " ", "", ""), $value);
         $value = trim(straighten_quotes($value));
 
-        if ($this->blank(AUTHOR1_ALIASES)) {
+        if ($this->blank(FIRST_AUTHOR_ALIASES)) {
           if (strpos($value, ',')) {
             $au = explode(',', $value);
             $this->add('last' . (substr($param_name, -1) == '1' ? '1' : ''), sanitize_string(format_Surname($au[0])));
@@ -542,7 +542,7 @@ final class Template {
 
       case "first": case "first1":
        $value = trim(straighten_quotes($value));
-       if ($this->blank(FORENAME1_ALIASES)) {
+       if ($this->blank(FIRST_FORENAME_ALIASES)) {
           if (mb_substr($value, -1) === '.') { // Do not lose last period
              $value = sanitize_string($value) . '.';
           } else {
@@ -2413,7 +2413,7 @@ final class Template {
       $record = $result->docs[0];
       if (isset($record->year)) $this->add_if_new('year', preg_replace("~\D~", "", (string) $record->year));
       if (isset($record->title)) $this->add_if_new('title', (string) $record->title[0]);
-      if ($this->blank(array_merge(EDITOR1_ALIASES, AUTHOR1_ALIASES, ['publisher']))) { // Avoid re-adding editors as authors, etc.
+      if ($this->blank(array_merge(FIRST_EDITOR_ALIASES, FIRST_AUTHOR_ALIASES, ['publisher']))) { // Avoid re-adding editors as authors, etc.
        $i = 0;
        if (isset($record->author)) {
         foreach ($record->author as $author) {
@@ -3181,7 +3181,7 @@ final class Template {
     $this->add_if_new('isbn', $isbn);
     
     $i = 0;
-    if ($this->blank(array_merge(EDITOR1_ALIASES, AUTHOR1_ALIASES, ['publisher']))) { // Too many errors in gBook database to add to existing data.   Only add if blank.
+    if ($this->blank(array_merge(FIRST_EDITOR_ALIASES, FIRST_AUTHOR_ALIASES, ['publisher']))) { // Too many errors in gBook database to add to existing data.   Only add if blank.
       foreach ($xml->dc___creator as $author) {
         $this->validate_and_add('author' . (string) ++$i, str_replace("___", ":", (string) $author), '', '', TRUE);
       }
