@@ -13,6 +13,26 @@ const ALL_URL_TYPES = array('url', 'article-url', 'chapter-url', 'chapterurl', '
                   'layurl', 'map-url', 'mapurl', 'section-url', 'sectionurl', 'transcript-url',
                   'transcripturl', 'URL');
 
+const TITLE_LINK_ALIASES = ['title-link', 'titlelink'];
+const ARXIV_ALIASES = ['arxiv', 'eprint'];
+const COAUTHOR_ALIASES = ['coauthor', 'coauthors'];
+const CHAPTER_ALIASES = ['chapter', 'contribution', 'article', 'entry', 'section'];
+const DISPLAY_AUTHORS = ['display-authors', 'displayauthors'];
+const DISPLAY_EDITORS = ['display-editors', 'displayeditors'];
+const DOI_BROKEN_ALIASES = ['doi-broken', 'doi_brokendate', 'doi-broken-date', 'doi_inactivedate', 'doi-inactive-date'];
+const AUTHOR1_ALIASES = ['last1', 'last', 'author', 'author1', 'vauthor', 'surname1', 'surname', 'author1-surname', 'author1-surname', 'author-surname'];
+const FORENAME1_ALIASES = ['first1', 'first', 'author', 'author1', 'given', 'given1', 'author-given', 'author-given1', 'author1-given'];
+const EDITOR1_ALIASES = ['editor1', 'editor', 'editor-last', 'editor1-last', 'editor-last1', 'veditor', 'editor1-surname', 'editor1-given', 'editor-surname', 'editor-given', 'editor-surname1', 'editor-given1'];
+const ISSUE_ALIASES = ['issue', 'number'];
+const PAGE_ALIASES = ['page', 'pages', 'pp', 'p', 'at'];
+const TIME_ALIASES = ['date', 'year'];
+const WORK_ALIASES = ['work', 'journal', 'newspaper', 'magazine', 'periodical', 'website', 'encyclopedia', 'encyclopaedia']; 
+
+const ALL_ALIASES = [TITLE_LINK_ALIASES, ARXIV_ALIASES, COAUTHOR_ALIASES, CHAPTER_ALIASES,
+              DISPLAY_AUTHORS, DISPLAY_EDITORS, DOI_BROKEN_ALIASES, AUTHOR1_ALIASES,
+              FORENAME1_ALIASES, EDITOR1_ALIASES, ISSUE_ALIASES, PAGE_ALIASES,
+              TIME_ALIASES, WORK_ALIASES, FLATTENED_AUTHOR_PARAMETERS];
+
 const AUTHOR_PARAMETERS = array(
     1  => array('surname'  , 'forename'  , 'initials'  , 'first'  , 'last'  , 'author', 
                 'vauthors', 'authors', 'author-last', 'author-first',
@@ -220,26 +240,6 @@ const FLATTENED_AUTHOR_PARAMETERS = array('surname', 'forename', 'initials', 'ot
 'surname98','forename98','initials98','first98','last98','author98','author98-last','author-last98','author98-first','author-first98','author-given98','author98-given','given98','author-surname98','author98-surname',
 'surname99','forename99','initials99','first99','last99','author99','author99-last','author-last99','author99-first','author-first99','author-given99','author99-given','given99','author-surname99','author99-surname'
 );
-
-const TITLE_LINK_ALIASES = ['title-link', 'titlelink'];
-const ARXIV_ALIASES = ['arxiv', 'eprint'];
-const COAUTHOR_ALIASES = ['coauthor', 'coauthors'];
-const CHAPTER_ALIASES = ['chapter', 'contribution', 'article', 'entry', 'section'];
-const DISPLAY_AUTHORS = ['display-authors', 'displayauthors'];
-const DISPLAY_EDITORS = ['display-editors', 'displayeditors'];
-const DOI_BROKEN_ALIASES = ['doi-broken', 'doi_brokendate', 'doi-broken-date', 'doi_inactivedate', 'doi-inactive-date'];
-const AUTHOR1_ALIASES = ['last1', 'last', 'author', 'author1', 'vauthor', 'surname1', 'surname', 'author1-surname', 'author1-surname', 'author-surname'];
-const FORENAME1_ALIASES = ['first1', 'first', 'author', 'author1', 'given', 'given1', 'author-given', 'author-given1', 'author1-given'];
-const EDITOR1_ALIASES = ['editor1', 'editor', 'editor-last', 'editor1-last', 'editor-last1', 'veditor', 'editor1-surname', 'editor1-given', 'editor-surname', 'editor-given', 'editor-surname1', 'editor-given1'];
-const ISSUE_ALIASES = ['issue', 'number'];
-const PAGE_ALIASES = ['page', 'pages', 'pp', 'p', 'at'];
-const TIME_ALIASES = ['date', 'year'];
-const WORK_ALIASES = ['work', 'journal', 'newspaper', 'magazine', 'periodical', 'website', 'encyclopedia', 'encyclopaedia']; 
-
-const ALL_ALIASES = [TITLE_LINK_ALIASES, ARXIV_ALIASES, COAUTHOR_ALIASES, CHAPTER_ALIASES,
-              DISPLAY_AUTHORS, DISPLAY_EDITORS, DOI_BROKEN_ALIASES, AUTHOR1_ALIASES,
-              FORENAME1_ALIASES, EDITOR1_ALIASES, ISSUE_ALIASES, PAGE_ALIASES,
-              TIME_ALIASES, WORK_ALIASES, FLATTENED_AUTHOR_PARAMETERS];
 
 // Includes many parameters usually from templates that we do not modify such as {{cite patent}}, because
 // that information can also be presented using the generic {{citation}} template, which we do modify.
