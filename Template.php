@@ -542,7 +542,7 @@ final class Template {
 
       case "first": case "first1":
        $value = trim(straighten_quotes($value));
-       if ($this->blank(FIRST_FORNAME_ALIASES)) {
+       if ($this->blank(FIRST_FORENAME_ALIASES)) {
           if (mb_substr($value, -1) === '.') { // Do not lose last period
              $value = sanitize_string($value) . '.';
           } else {
