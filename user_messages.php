@@ -5,12 +5,12 @@ require_once("constants.php");
 
 function html_echo(string $text, string $alternate_text='') : void {
   /** @psalm-suppress TypeDoesNotContainType */ /* PSALM thinks HTML_OUTPUT and TRAVIS cannot be false */
-  if (!TRAVIS) echo HTML_OUTPUT ? $text : $alternate_text;
+  if (TRUE || !TRAVIS) echo HTML_OUTPUT ? $text : $alternate_text;
 }
 
 function user_notice(string $symbol, string $class, string $text) : void {
   static $last_time = 0;
-  if (!TRAVIS) {
+  if (TRUE || !TRAVIS) {
     // @codeCoverageIgnoreStart
     /** @psalm-suppress TypeDoesNotContainType */ /* PSALM thinks HTML_OUTPUT cannot be false */
     echo "\n " . (HTML_OUTPUT ? "<span class='$class'>" : "") . $symbol . $text . (HTML_OUTPUT ? "</span>" : "");
