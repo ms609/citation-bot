@@ -2308,6 +2308,10 @@ final class Template {
         if ($this->has('doi')             && $diff !== 0) return FALSE; 
       }
       
+      if (!isset($record->title[0])) {
+        report_info("Database entry did not have a title");       // @codeCoverageIgnore
+        return FALSE;                                             // @codeCoverageIgnore
+      }
       if ($this->has('title') && titles_are_dissimilar($this->get('title'), $record->title[0]) 
          && !in_array($this->get('title'), ['Archived copy', "{title}", 'ScienceDirect', "Google Books", "None"])) { // Verify the title matches.  We get some strange mis-matches {
         report_info("Similar title not found in database");       // @codeCoverageIgnore
