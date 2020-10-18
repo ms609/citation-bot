@@ -724,7 +724,7 @@ final class Template {
         }
         return FALSE;
         
-      case 'periodical': case 'journal': case 'newspaper':
+      case 'periodical': case 'journal': case 'newspaper': case 'magazine':
         if ($value=='HEP Lib.Web') $value = 'High Energy Physics Libraries Webzine'; // should be array
         if (preg_match('~Conference Proceedings.*IEEE.*IEEE~', $value)) return FALSE;
         if (!$this->blank(['booktitle', 'book-title'])) return FALSE;
