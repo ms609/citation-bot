@@ -12,7 +12,7 @@ final class PageTest extends testBaseClass {
  
  
   public function testBadPage1() : void {  // Use this when debugging pages that crash the bot
-    $bad_page = 'Power Mac G4 Cube' //  Replace with page name when debugging
+    $bad_page = 'Power Mac G4 Cube'; //  Replace with page name when debugging
     $bad_page = urlencode(str_replace(' ', '_', $bad_page));
     if ($bad_page !== "") {
       $ch = curl_init();
