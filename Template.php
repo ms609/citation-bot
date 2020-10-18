@@ -4078,6 +4078,11 @@ final class Template {
           if ($this->blank($param)) return;
           if ($this->wikiname() == 'cite web') $this->change_name_to('cite arxiv');
           return;
+
+        case 'encyclopedia': case 'encyclopeadia':
+          if ($this->blank($param)) return;
+          if ($this->wikiname() == 'cite web') $this->change_name_to('cite encyclopedia');
+          return;
           
         case 'format': // clean up bot's old (pre-2018-09-18) edits
           if ($this->get($param) === 'Accepted manuscript' ||
