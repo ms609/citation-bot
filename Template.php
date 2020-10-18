@@ -2308,6 +2308,10 @@ final class Template {
         if ($this->has('doi')             && $diff !== 0) return FALSE; 
       }
       
+      if (!isset($record->title[0]) || !isset($record->bibcode)) {
+        report_info("Database entry not complete");       // @codeCoverageIgnore
+        return FALSE;                                     // @codeCoverageIgnore
+      }
       if ($this->has('title') && titles_are_dissimilar($this->get('title'), $record->title[0]) 
          && !in_array($this->get('title'), ['Archived copy', "{title}", 'ScienceDirect', "Google Books", "None"])) { // Verify the title matches.  We get some strange mis-matches {
         report_info("Similar title not found in database");       // @codeCoverageIgnore
@@ -2377,9 +2381,9 @@ final class Template {
           unset($record->issue);
          }
        }
-      $this->add_if_new('volume', (string) @$record->volume);
-      $this->add_if_new('issue', (string) @$record->issue);
-      $this->add_if_new('year', preg_replace("~\D~", "", (string) @$record->year));
+      if (isset($record->volume)) $this->add_if_new('volume', (string) $record->volume);
+      if (isset($record->issue))  $this->add_if_new('issue', (string) $record->issue);
+      if (isset($record->year))   $this->add_if_new('year', preg_replace("~\D~", "", (string) $record->year));
       if (isset($record->page)) {
         $this->add_if_new('pages', implode('–', $record->page));
       }
