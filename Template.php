@@ -3236,7 +3236,7 @@ final class Template {
           $this->param[$duplicate_pos]->val = $par->val;
         }
         array_unshift($duplicated_parameters, $duplicate_pos);
-        array_unshift($duplicate_identical, ($par->val == $this->param[$duplicate_pos]->val));
+        array_unshift($duplicate_identical, (mb_strtolower(trim((string) $par->val)) === mb_strtolower(trim((string) $this->param[$duplicate_pos]->val)))); // Drop duplicates that differ only by case
       }
       $param_occurrences[$par->param] = $pointer;
     }
@@ -4349,7 +4349,7 @@ final class Template {
             $this->forget($param);
           }
           if ($this->blank(WORK_ALIASES)) {
-            if (in_array(str_replace(array('[', ']', '"', "'"), '', $publisher), PUBLISHERS_ARE_WORKS)) {
+            if (in_array(str_replace(array('[', ']', '"', "'", 'www.'), '', $publisher), PUBLISHERS_ARE_WORKS)) {
                $this->rename($param, 'work'); // Don't think about which work it is
             }
           }
