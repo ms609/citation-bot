@@ -375,6 +375,13 @@ function title_capitalization(string $in, bool $caps_after_punctuation) : string
   $new_case = mb_substr($new_case, 1, -1); // Remove added spaces
 
   $new_case = mb_substr(str_replace(UC_SMALL_WORDS, LC_SMALL_WORDS, " " . $new_case . " "), 1, -1);
+  foreach(UC_SMALL_WORDS as $key=>$value) {
+    $upper = UC_SMALL_WORDS[$key];
+    $lower = LC_SMALL_WORDS[$key];
+    foreach ([': ', ', ', '. ', '; '] as $char) {
+       $new_case = str_replace(mb_substr($upper, 0, -1) . $char, mb_substr($lower, 0, -1) . $char, $new_case);
+    }
+  }
 
   if ($caps_after_punctuation || (substr_count($in, '.') / strlen($in)) > .07) {
     // When there are lots of periods, then they probably mark abbrev.s, not sentence ends
