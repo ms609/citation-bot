@@ -3236,7 +3236,7 @@ final class Template {
           $this->param[$duplicate_pos]->val = $par->val;
         }
         array_unshift($duplicated_parameters, $duplicate_pos);
-        array_unshift($duplicate_identical, ($par->val == $this->param[$duplicate_pos]->val));
+        array_unshift($duplicate_identical, (mb_strtolower(trim($par->val)) == mb_strtolower(trim($this->param[$duplicate_pos]->val)))); // Drop duplicates that differ only by case
       }
       $param_occurrences[$par->param] = $pointer;
     }
