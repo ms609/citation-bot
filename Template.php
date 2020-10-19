@@ -4349,7 +4349,7 @@ final class Template {
             $this->forget($param);
           }
           if ($this->blank(WORK_ALIASES)) {
-            if (in_array(str_replace(array('[', ']', '"', "'"), '', $publisher), PUBLISHERS_ARE_WORKS)) {
+            if (in_array(str_replace(array('[', ']', '"', "'", 'www.'), '', $publisher), PUBLISHERS_ARE_WORKS)) {
                $this->rename($param, 'work'); // Don't think about which work it is
             }
           }
