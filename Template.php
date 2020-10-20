@@ -2152,7 +2152,7 @@ final class Template {
         }
       } elseif ($term === "year") {
         $key = 'Publication Date';
-        if (($val = $this->year()) || ($val = $this->get('date'))) {
+        if ($val = $this->year()) {
           $query .= " AND (" . str_replace("%E2%80%93", "-", urlencode($val)) . "[$key])";
         }
       } elseif ($term === "doi") {
@@ -3274,13 +3274,14 @@ final class Template {
       }
     }
     $blank_count = 0;
-    foreach ($this->param as $param_key => &$p) { // Protect them from being overwritten
+    foreach ($this->param as &$p) { // Protect them from being overwritten
       if (empty($p->param)) {
         $p->param = 'CITATION_BOT_PLACEHOLDER_EMPTY_' . (string) $blank_count++;
         $p->eq = ' = ';
       }
     }
-    foreach ($this->param as $param_key => &$p) {
+    unset ($p); // Destroy pointer to be safe
+    foreach ($this->param as &$p) {
       if (stripos($p->param, 'CITATION_BOT_PLACEHOLDER_EMPTY') === FALSE) continue;
       $dat = $p->val;
       $endnote_test = explode("\n%", "\n" . $dat);
@@ -3494,12 +3495,14 @@ final class Template {
       }
       $p->val = trim($dat, " \t\0\x0B");
     }
+    unset ($p); // Destroy pointer to be safe
     foreach ($this->param as $param_key => &$p) {
       if (stripos($p->param, 'CITATION_BOT_PLACEHOLDER_EMPTY') === FALSE) continue;
       $p->param = '';
       $p->eq = '';
       if($p->val == '') unset($this->param[$param_key]);
     }
+    unset ($p); // Destroy pointer to be safe
   }
 
   protected function id_to_param(): void {
@@ -3628,9 +3631,7 @@ final class Template {
   $parameter_list = array_diff($parameter_list, $mistake_keys); // This way it does not contain "URL", but only "url"
   $unused_parameters = array_diff($parameter_list, $parameters_used);
 
-  $i = 0;
   foreach ($this->param as $p) {
-    ++$i;
 
     if ((strlen($p->param) > 0) &&
         !(in_array(preg_replace('~\d+~', '#', $p->param), $parameter_list) || in_array($p->param, $parameter_list)) && // Some parameters have actual numbers in them
