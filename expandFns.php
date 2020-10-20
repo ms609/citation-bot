@@ -375,7 +375,7 @@ function title_capitalization(string $in, bool $caps_after_punctuation) : string
   $new_case = mb_substr($new_case, 1, -1); // Remove added spaces
 
   $new_case = mb_substr(str_replace(UC_SMALL_WORDS, LC_SMALL_WORDS, " " . $new_case . " "), 1, -1);
-  foreach(UC_SMALL_WORDS as $key=>$value) {
+  foreach(UC_SMALL_WORDS as $key=>$_value) {
     $upper = UC_SMALL_WORDS[$key];
     $lower = LC_SMALL_WORDS[$key];
     foreach ([': ', ', ', '. ', '; '] as $char) {
