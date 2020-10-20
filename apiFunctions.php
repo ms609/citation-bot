@@ -6,8 +6,8 @@ require_once("user_messages.php");
 require_once("Template.php");
 require_once("NameTools.php");
 
-function query_pmid_api (array $pmids, array & $templates) : bool { return entrez_api($pmids, $templates, 'pubmed'); }  // Pointer to save memory
-function query_pmc_api  (array $pmcs, array & $templates) : bool { return entrez_api($pmcs,  $templates, 'pmc'); } // Pointer to save memory
+function query_pmid_api (array $pmids, array &$templates) : bool { return entrez_api($pmids, $templates, 'pubmed'); }  // Pointer to save memory
+function query_pmc_api  (array $pmcs, array &$templates) : bool { return entrez_api($pmcs,  $templates, 'pmc'); } // Pointer to save memory
 
 final class AdsAbsControl {
   private static $counter = 0;
@@ -24,7 +24,7 @@ final class AdsAbsControl {
 }
 
 
-function entrez_api(array $ids, array & $templates, string $db) : bool {   // Pointer to save memory
+function entrez_api(array $ids, array &$templates, string $db) : bool {   // Pointer to save memory
   $match = ['', '']; // prevent memory leak in some PHP versions
   $names = ['', '']; // prevent memory leak in some PHP versions
   if (!count($ids)) return FALSE;
@@ -119,9 +119,9 @@ function entrez_api(array $ids, array & $templates, string $db) : bool {   // Po
   return TRUE;
 }
 
-function query_bibcode_api(array $bibcodes, array & $templates) : bool { return adsabs_api($bibcodes, $templates, 'bibcode'); }  // Pointer to save memory
+function query_bibcode_api(array $bibcodes, array &$templates) : bool { return adsabs_api($bibcodes, $templates, 'bibcode'); }  // Pointer to save memory
 
-function expand_arxiv_templates (array & $templates) : bool {  // Pointer to save memory
+function expand_arxiv_templates (array &$templates) : bool {  // Pointer to save memory
   $ids = array();
   $arxiv_templates = array();
   foreach ($templates as $this_template) {
@@ -139,7 +139,7 @@ function expand_arxiv_templates (array & $templates) : bool {  // Pointer to sav
   return arxiv_api($ids, $arxiv_templates);
 }
 
-function arxiv_api(array $ids, array & $templates) : bool {  // Pointer to save memory
+function arxiv_api(array $ids, array &$templates) : bool {  // Pointer to save memory
   $names = ['', '']; // prevent memory leak in some PHP versions
   $match = ['', '']; // prevent memory leak in some PHP versions
   if (count($ids) == 0) return FALSE;
@@ -218,7 +218,7 @@ function arxiv_api(array $ids, array & $templates) : bool {  // Pointer to save 
   return TRUE;
 }
 
-function adsabs_api(array $ids, array & $templates, string $identifier) : bool {  // Pointer to save memory
+function adsabs_api(array $ids, array &$templates, string $identifier) : bool {  // Pointer to save memory
   $rate_limit = [['', '', ''], ['', '', ''], ['', '', '']]; // prevent memory leak in some PHP versions
   if (AdsAbsControl::gave_up_yet()) return FALSE;
   if (!PHP_ADSABSAPIKEY) return FALSE;
@@ -433,7 +433,7 @@ function adsabs_api(array $ids, array & $templates, string $identifier) : bool {
 }
 
 /** @psalm-suppress UnusedParam */
-function query_doi_api(array $ids, array & $templates) : bool { // $id not used yet  // Pointer to save memory
+function query_doi_api(array $ids, array &$templates) : bool { // $id not used yet  // Pointer to save memory
   foreach ($templates as $template) {
     expand_by_doi($template);
   }
@@ -819,7 +819,7 @@ function is_doi_works(string $doi) : ?bool {
 }
 
 /** @psalm-suppress UnusedParam */
-function query_jstor_api(array $ids, array & $templates) : bool { // $ids not used yet   // Pointer to save memory
+function query_jstor_api(array $ids, array &$templates) : bool { // $ids not used yet   // Pointer to save memory
   $return = FALSE;
   foreach ($templates as $template) {
     if (expand_by_jstor($template)) $return = TRUE;
@@ -1138,7 +1138,7 @@ function get_semanticscholar_license(string $s2cid) : ?bool {
     return FALSE;
 }
 
-function expand_templates_from_archives(array & $templates) : void { // This is done very late as a latch ditch effort  // Pointer to save memory
+function expand_templates_from_archives(array &$templates) : void { // This is done very late as a latch ditch effort  // Pointer to save memory
   $match = ['', '']; // prevent memory leak in some PHP versions
   $ch = curl_init();
   curl_setopt_array($ch,
