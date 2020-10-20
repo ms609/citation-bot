@@ -45,10 +45,10 @@ final class expandFnsTest extends testBaseClass {
     $this->assertSame('This is robert www-',  title_capitalization('This is robert www-' , TRUE));
   }
   public function testCapitalization8() : void {
-    $this->assertSame('I the Los Vegas.  Trip.',  title_capitalization('I the los vegas.  Trip.' , TRUE));
-    $this->assertSame('I the Los Vegas,  Trip.',  title_capitalization('I the los vegas,  Trip.' , TRUE));
-    $this->assertSame('I the Los Vegas:  Trip.',  title_capitalization('I the los vegas:  Trip.' , TRUE));
-    $this->assertSame('I the Los Vegas;  Trip.',  title_capitalization('I the los vegas;  Trip.' , TRUE));
+    $this->assertSame('I the Los Vegas.  Trip.',  title_capitalization('I the los Vegas.  Trip.' , TRUE));
+    $this->assertSame('I the Los Vegas,  Trip.',  title_capitalization('I the los Vegas,  Trip.' , TRUE));
+    $this->assertSame('I the Los Vegas:  Trip.',  title_capitalization('I the los Vegas:  Trip.' , TRUE));
+    $this->assertSame('I the Los Vegas;  Trip.',  title_capitalization('I the los Vegas;  Trip.' , TRUE));
     $this->assertSame('I the los Vegas...Trip.',  title_capitalization('I the los Vegas...Trip.' , TRUE));
   }
   
