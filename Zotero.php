@@ -3,7 +3,7 @@ declare(strict_types=1);
 
 require_once("constants.php");
 
-function query_url_api(array $ids, array & $templates) : void {  // Pointer to save memory
+function query_url_api(array $ids, array &$templates) : void {  // Pointer to save memory
    Zotero::query_url_api_class($ids, $templates);
 }
 
@@ -37,7 +37,7 @@ public static function unblock_zotero() : void {
   self::$zotero_failures_count = 0;  
 }
 
-public static function query_url_api_class(array $ids, array & $templates) : void { // Pointer to save memory
+public static function query_url_api_class(array $ids, array &$templates) : void { // Pointer to save memory
   if (!SLOW_MODE) return; // Zotero takes time
   if (!is_resource(self::$zotero_ch)) { // When closed will return FALSE
      self::$zotero_ch = curl_init();
@@ -97,7 +97,7 @@ public static function query_url_api_class(array $ids, array & $templates) : voi
   }
 }
 
-public static function query_ieee_webpages(array & $templates) : void {  // Pointer to save memory
+public static function query_ieee_webpages(array &$templates) : void {  // Pointer to save memory
   $matches_url = ['', '']; // prevent memory leak in some PHP versions
   $matches = ['', '']; // prevent memory leak in some PHP versions
   $ch_ieee = curl_init();
@@ -137,7 +137,7 @@ public static function query_ieee_webpages(array & $templates) : void {  // Poin
   curl_close($ch_ieee);
 }
 
-public static function drop_urls_that_match_dois(array & $templates) : void {  // Pointer to save memory
+public static function drop_urls_that_match_dois(array &$templates) : void {  // Pointer to save memory
   // Now that we have expanded URLs, try to lose them
   $ch = curl_init();
   curl_setopt_array($ch,

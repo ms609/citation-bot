@@ -113,7 +113,7 @@ class Page {
   // $api_function: string naming a function (specified in apiFunctions.php) 
   //                that takes the value of $templates->get($identifier) as an array;
   //                returns key-value array of items to be set, if new, in each template.
-  public function expand_templates_from_identifier(string $identifier, array & $templates) : void { // Pointer to save memory
+  public function expand_templates_from_identifier(string $identifier, array &$templates) : void { // Pointer to save memory
     $ids = array();
     switch ($identifier) {
       case 'pmid': 
@@ -232,7 +232,7 @@ class Page {
       return FALSE;
     }
     for ($i = 0; $i < count($all_templates); $i++) {
-       $all_templates[$i]->all_templates = & $all_templates; // Pointer to avoid MASSSIVE memory leak on crazy pages
+       $all_templates[$i]->all_templates = &$all_templates; // Pointer to avoid MASSSIVE memory leak on crazy pages
        $all_templates[$i]->date_style = $this->date_style;
     }
     $our_templates = array();
@@ -549,7 +549,7 @@ class Page {
     return $objects;
   }
 
-  protected function replace_object (array & $objects) : void {  // Pointer to save memory
+  protected function replace_object (array &$objects) : void {  // Pointer to save memory
     $i = count($objects);
     if ($objects) foreach (array_reverse($objects) as $obj)
       $this->text = str_ireplace(sprintf($obj::PLACEHOLDER_TEXT, --$i), $obj->parsed_text(), $this->text); // Case insensitive, since comment placeholder might get title case, etc.
