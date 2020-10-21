@@ -118,6 +118,21 @@ final class Template {
     if ($trim_name === 'cite new') $this->name = $spacing[1] . 'cite news' . $spacing[2];
     if ($trim_name === 'Cite new') $this->name = $spacing[1] . 'Cite news' . $spacing[2];
 
+    if ($trim_name === 'cite article') {
+      if ($this->blank(['journal', 'pmid', 'pmd', 'doi'])) {
+        $this->name = $spacing[1] . 'cite news' . $spacing[2];
+      } else {
+        $this->name = $spacing[1] . 'cite journal' . $spacing[2];
+      }
+    }
+    if ($trim_name === 'Cite article') {
+      if ($this->blank(['journal', 'pmid', 'pmd', 'doi'])) {
+        $this->name = $spacing[1] . 'Cite news' . $spacing[2];
+      } else {
+        $this->name = $spacing[1] . 'Cite journal' . $spacing[2];
+      }
+    }   
+    
     if (substr($this->wikiname(),0,5) === 'cite ' || $this->wikiname() === 'citation') {
       if (preg_match('~< */? *ref *>~i', $this->rawtext)) {
          report_warning('reference within citation template: most likely unclosed template.  ' . "\n" . $this->rawtext . "\n");
