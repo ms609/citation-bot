@@ -118,6 +118,45 @@ final class Template {
     if ($trim_name === 'cite new') $this->name = $spacing[1] . 'cite news' . $spacing[2];
     if ($trim_name === 'Cite new') $this->name = $spacing[1] . 'Cite news' . $spacing[2];
 
+    // Cite article is actually cite news, but often used for journal by mistake - fix
+    if ($trim_name === 'cite article') {
+      if ($this->blank(['journal', 'pmid', 'pmd', 'doi'])) {
+        $this->name = $spacing[1] . 'cite news' . $spacing[2];
+      } else {
+        $this->name = $spacing[1] . 'cite journal' . $spacing[2];
+      }
+    }
+    if ($trim_name === 'Cite article') {
+      if ($this->blank(['journal', 'pmid', 'pmd', 'doi'])) {
+        $this->name = $spacing[1] . 'Cite news' . $spacing[2];
+      } else {
+        $this->name = $spacing[1] . 'Cite journal' . $spacing[2];
+      }
+    }
+    // Cite article is actually cite journal, but often used for other things by mistake - fix what we can
+    if ($trim_name === 'cite document') {
+      if (strpos($this->get('doi'), '/978-') !== FALSE) {
+        $this->name = $spacing[1] . 'cite book' . $spacing[2];
+      } elseif (!$this->blank(['journal', 'pmid', 'pmd', 'doi'])) {
+        $this->name = $spacing[1] . 'cite journal' . $spacing[2];
+      } elseif (!$this->blank(['newspaper'])) {
+        $this->name = $spacing[1] . 'cite news' . $spacing[2];
+      } elseif ($this->has('chapter') || $this->has('isbn')) {
+        $this->name = $spacing[1] . 'cite book' . $spacing[2];
+      }
+    }
+    if ($trim_name === 'Cite document') {
+      if (strpos($this->get('doi'), '/978-') !== FALSE) {
+        $this->name = $spacing[1] . 'Cite book' . $spacing[2];
+      } elseif (!$this->blank(['journal', 'pmid', 'pmd', 'doi'])) {
+        $this->name = $spacing[1] . 'Cite journal' . $spacing[2];
+      } elseif (!$this->blank(['newspaper'])) {
+        $this->name = $spacing[1] . 'Cite news' . $spacing[2];
+      } elseif ($this->has('chapter') || $this->has('isbn')) {
+        $this->name = $spacing[1] . 'Cite book' . $spacing[2];
+      }
+    } 
+    
     if (substr($this->wikiname(),0,5) === 'cite ' || $this->wikiname() === 'citation') {
       if (preg_match('~< */? *ref *>~i', $this->rawtext)) {
          report_warning('reference within citation template: most likely unclosed template.  ' . "\n" . $this->rawtext . "\n");
