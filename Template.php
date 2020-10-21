@@ -135,20 +135,24 @@ final class Template {
     }
     // Cite article is actually cite journal, but often used for other things by mistake - fix what we can
     if ($trim_name === 'cite document') {
-      if (!$this->blank(['journal', 'pmid', 'pmd', 'doi'])) {
+      if (strpos($this->get('doi'), '/978-') !== FALSE) {
+        $this->name = $spacing[1] . 'cite book' . $spacing[2];
+      } elseif (!$this->blank(['journal', 'pmid', 'pmd', 'doi'])) {
         $this->name = $spacing[1] . 'cite journal' . $spacing[2];
       } elseif (!$this->blank(['newspaper'])) {
         $this->name = $spacing[1] . 'cite news' . $spacing[2];
-      } elseif ($this->has('chapter')) {
+      } elseif ($this->has('chapter') || $this->has('isbn')) {
         $this->name = $spacing[1] . 'cite book' . $spacing[2];
       }
     }
     if ($trim_name === 'Cite document') {
-      if (!$this->blank(['journal', 'pmid', 'pmd', 'doi'])) {
+      if (strpos($this->get('doi'), '/978-') !== FALSE) {
+        $this->name = $spacing[1] . 'Cite book' . $spacing[2];
+      } elseif (!$this->blank(['journal', 'pmid', 'pmd', 'doi'])) {
         $this->name = $spacing[1] . 'Cite journal' . $spacing[2];
       } elseif (!$this->blank(['newspaper'])) {
         $this->name = $spacing[1] . 'Cite news' . $spacing[2];
-      } elseif ($this->has('chapter')) {
+      } elseif ($this->has('chapter') || $this->has('isbn')) {
         $this->name = $spacing[1] . 'Cite book' . $spacing[2];
       }
     } 
