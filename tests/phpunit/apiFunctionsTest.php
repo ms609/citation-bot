@@ -241,8 +241,12 @@ final class apiFunctionsTest extends testBaseClass {
     $this->requires_dx(function() : void {
      $expanded = $this->make_citation('{{Cite journal}}');
      expand_doi_with_dx($expanded, '10.2788/14231');
-     $this->assertSame('{{Cite journal|year = 2007|last1 = Vogt|first1 = Jürgen|last2 = Foisneau|first2 = Stéphanie|title = European river and catchment database, version 2.0 (CCM2) : Analysis tools|publisher = Publications Office}}', $expanded->parsed_text());
-    });
+     if ($expanded->has('author1')) {
+       $this->assertSame('{{Cite journal|year = 2007|author1 = European Commission. Joint Research Centre. Institute for Environment Sustainability|last2 = Vogt|first2 = Jürgen|last3 = Foisneau|first3 = Stéphanie|title = European river and catchment database, version 2.0 (CCM2) : Analysis tools|publisher = Publications Office}}', $expanded->parsed_text());
+     } else {
+       $this->assertSame('{{Cite journal|year = 2007|last1 = Vogt|first1 = Jürgen|last2 = Foisneau|first2 = Stéphanie|title = European river and catchment database, version 2.0 (CCM2) : Analysis tools|publisher = Publications Office}}', $expanded->parsed_text());
+     }
+     });
   }
   
   public function testComplexCrossRef() : void {
