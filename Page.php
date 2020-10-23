@@ -571,6 +571,9 @@ class Page {
     if (preg_match('~\{\{pp-full\}\}~i', $this->text)) { // NO ONE can edit this page
       return FALSE;
     }
+    if (preg_match('~\{\{pp *(?:|\|.+)\}\}~i', $this->text)) { // Only admins can edit this page
+      return FALSE;
+    }
     // from https://en.wikipedia.org/wiki/Template:Bots
     $bot_username = '(?:Citation|DOI)[ _]bot';
     if (preg_match('~\{\{(nobots|bots\|allow=none|bots\|deny=all|bots\|optout=all|bots\|deny=.*?'.$bot_username.'.*?)\}\}~iS',$this->text)) {

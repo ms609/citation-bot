@@ -120,14 +120,14 @@ final class Template {
 
     // Cite article is actually cite news, but often used for journal by mistake - fix
     if ($trim_name === 'cite article') {
-      if ($this->blank(['journal', 'pmid', 'pmd', 'doi'])) {
+      if ($this->blank(['journal', 'pmid', 'pmc', 'doi', 's2cid', 'citeseerx'])) {
         $this->name = $spacing[1] . 'cite news' . $spacing[2];
       } else {
         $this->name = $spacing[1] . 'cite journal' . $spacing[2];
       }
     }
     if ($trim_name === 'Cite article') {
-      if ($this->blank(['journal', 'pmid', 'pmd', 'doi'])) {
+      if ($this->blank(['journal', 'pmid', 'pmc', 'doi', 's2cid', 'citeseerx'])) {
         $this->name = $spacing[1] . 'Cite news' . $spacing[2];
       } else {
         $this->name = $spacing[1] . 'Cite journal' . $spacing[2];
@@ -137,7 +137,7 @@ final class Template {
     if ($trim_name === 'cite document') {
       if (strpos($this->get('doi'), '/978-') !== FALSE) {
         $this->name = $spacing[1] . 'cite book' . $spacing[2];
-      } elseif (!$this->blank(['journal', 'pmid', 'pmd', 'doi'])) {
+      } elseif (!$this->blank(['journal', 'pmid', 'pmc', 'doi', 's2cid', 'citeseerx'])) {
         $this->name = $spacing[1] . 'cite journal' . $spacing[2];
       } elseif (!$this->blank(['newspaper'])) {
         $this->name = $spacing[1] . 'cite news' . $spacing[2];
@@ -148,7 +148,7 @@ final class Template {
     if ($trim_name === 'Cite document') {
       if (strpos($this->get('doi'), '/978-') !== FALSE) {
         $this->name = $spacing[1] . 'Cite book' . $spacing[2];
-      } elseif (!$this->blank(['journal', 'pmid', 'pmd', 'doi'])) {
+      } elseif (!$this->blank(['journal', 'pmid', 'pmc', 'doi', 's2cid', 'citeseerx'])) {
         $this->name = $spacing[1] . 'Cite journal' . $spacing[2];
       } elseif (!$this->blank(['newspaper'])) {
         $this->name = $spacing[1] . 'Cite news' . $spacing[2];
