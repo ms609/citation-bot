@@ -4295,6 +4295,12 @@ final class Template {
             }
           }
           return;
+          
+        case 'mr':
+          if (preg_match("~mr(\d+)$~i", $this->get($param), $matches)) {
+             $this->set($param, $matches[1]);
+          }
+          return;
         
         case 'others': case 'day': case 'month':  // Bad idea to have in general
           if ($this->blank($param)) $this->forget($param);
