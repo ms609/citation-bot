@@ -847,7 +847,7 @@ final class Template {
         }
         return FALSE;
 
-      case 'chapter': case 'contribution':
+      case 'chapter': case 'contribution': case 'article': case 'section': //  We do not add article/section, but sometimes found floating in a template
         if (!$this->blank(['booktitle', 'book-title']) && $this->has('title')) return FALSE;
         if ($this->blank(CHAPTER_ALIASES)) {
           return $this->add($param_name, wikify_external_text($value));
@@ -4293,6 +4293,12 @@ final class Template {
             if (preg_match('~^\d\d\d\d$~', $this->get($param))) { // Only if a year, might contain text like "originally was...."
               $this->rename($param, 'year');
             }
+          }
+          return;
+          
+        case 'mr':
+          if (preg_match("~mr(\d+)$~i", $this->get($param), $matches)) {
+             $this->set($param, $matches[1]);
           }
           return;
         
