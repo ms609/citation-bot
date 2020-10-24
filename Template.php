@@ -257,7 +257,7 @@ final class Template {
           }
       }
       // Clean up bad data
-      if (in_array($this->get('title')), [ "Bloomberg - Are you a robot?", "Page not found"])) {
+      if (in_array($this->get('title'), [ "Bloomberg - Are you a robot?", "Page not found"])) {
           $this->forget('title'); 
       }
       if ($this->get('title') === "Wayback Machine" && !$this->blank(['archive-url', 'archiveurl'])) {
