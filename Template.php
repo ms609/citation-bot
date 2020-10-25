@@ -4849,6 +4849,9 @@ final class Template {
               return;
             }
           }
+          if ($this->blank('agency') && in_array(strtolower(str_replace(array('[', ']', '.'), '', $this->get($param))), ['reuters', 'associated press'])) {
+            $this->rename($param, 'agency');
+          }
           return;
           
         case 'via':   // Should just remove all 'via' with no url, but do not want to make people angry
