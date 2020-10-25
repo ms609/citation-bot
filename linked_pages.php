@@ -8,7 +8,6 @@ declare(strict_types=1);
 @header('Expires: 0');
 
 require_once('setup.php');
-
 $api = new WikipediaBot();
 
 ?>
@@ -23,7 +22,7 @@ $api = new WikipediaBot();
   <link rel="copyright" href="https://www.gnu.org/copyleft/fdl.html" />
   <link rel="stylesheet" type="text/css" href="css/results.css" />
   </head>
-  <body>
+<body>
   <header>
     <p>Follow <a href="https://en.wikipedia.org/wiki/User:Citation_bot">Citation&nbsp;bot</a>&rsquo;s&nbsp;progress&nbsp;below.</p>
     <p>
@@ -34,7 +33,7 @@ $api = new WikipediaBot();
     </p>
   </header>
 
-    <pre id="botOutput">
+  <pre id="botOutput">
 <?php
 
 check_blocked();
@@ -57,6 +56,7 @@ if (strlen($page_name) > 256)  {
   exit("\n </pre></body></html>");
 }
 $edit_summary_end = "| Suggested by " . $api->get_the_user() . " | All pages linked from cached copy of $page_name | via #UCB_webform_linked ";
+$final_edit_overview = "";
 
 $url = API_ROOT . '?action=parse&prop=links&format=json&page=' . $page_name;
 $ch = curl_init();
@@ -117,15 +117,18 @@ if (empty($pages_in_category)) {
         "\n  <a href=" . WIKI_ROOT . "?title=" . urlencode($page_title) . "&diff=prev&oldid="
         . $api->get_last_revision($page_title) . ">diff</a>" .
         " | <a href=" . WIKI_ROOT . "?title=" . urlencode($page_title) . "&action=history>history</a>", ".");
+        $final_edit_overview .=
+          "\n [ <a href=" . WIKI_ROOT . "?title=" . urlencode($page_title) . "&diff=prev&oldid="
+        . $last_rev . ">diff</a>" .
       } else {
-         report_warning("Write failed.");
+        report_warning("Write failed.");
+        $final_edit_overview .= "\n Write failed.      " . "<a href=" . WIKI_ROOT . "?title=" . urlencode($page_title) . ">" . echoable($page_title) . "</a>";
       }
     } else {
       report_phase($page->parsed_text() ? "No changes required. \n\n    # # # " : "Blank page. \n\n    # # # ");
+       $final_edit_overview .= "\n No changes needed. " . "<a href=" . WIKI_ROOT . "?title=" . urlencode($page_title) . ">" . echoable($page_title) . "</a>";
     }
     echo "\n";
   }
-  echo ("\n Done all " . (string) count($pages_in_category) . " pages linked from " . echoable($page_name) . " \n  # # # \n </pre></body></html>");
+  echo ("\n Done all " . (string) count($pages_in_category) . " pages linked from " . echoable($page_name) . " \n  # # #" . $final_edit_overview  . "\n </pre></body></html>");
 ?>
-
-
