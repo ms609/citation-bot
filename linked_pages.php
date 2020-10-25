@@ -130,5 +130,5 @@ if (empty($pages_in_category)) {
     }
     echo "\n";
   }
-  echo ("\n Done all " . (string) count($pages_in_category) . " pages linked from " . echoable($page_name) . " \n  # # #" . $final_edit_overview  . "\n </pre></body></html>");
+  echo ("\n Done all " . (string) count($pages_in_category) . " pages linked from " . echoable($page_name) . " \n  # # # \n" . $final_edit_overview  . "\n </pre></body></html>");
 ?>
