@@ -4854,7 +4854,7 @@ final class Template {
             foreach (ALL_URL_TYPES as $thingy) {
               $the_url .= $this->get($thingy);
             }
-            if (stripos($the_url, 'reuters.com') === FALSE && stripos($the_url, 'apnews.com') === FALSE)) {
+            if (stripos($the_url, 'reuters.com') === FALSE && stripos($the_url, 'apnews.com') === FALSE) {
                $this->rename($param, 'agency');
             }
           }
