@@ -4850,7 +4850,13 @@ final class Template {
             }
           }
           if ($this->blank('agency') && in_array(strtolower(str_replace(array('[', ']', '.'), '', $this->get($param))), ['reuters', 'associated press'])) {
-            $this->rename($param, 'agency');
+            $the_url = '';
+            foreach (ALL_URL_TYPES as $thingy) {
+              $the_url .= $this->get($thingy);
+            }
+            if (stripos($the_url, 'reuters.com') === FALSE && stripos($the_url, 'apnews.com') === FALSE) {
+               $this->rename($param, 'agency');
+            }
           }
           return;
           
