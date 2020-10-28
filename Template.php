@@ -3918,7 +3918,6 @@ final class Template {
             $this->forget($param);
           }
           return;
-
           
         case 'agency':
           if (in_array($this->get('agency'), ['United States Food and Drug Administration',
@@ -3929,7 +3928,19 @@ final class Template {
                 ['United States Department of Health and Human Services', 'California Tobacco Control Program', ''])) {
             $this->forget('publisher');
             $this->rename('agency', 'publisher'); // A single user messed this up on a lot of pages with "agency"
+            return;
           }
+          // Undo some bad bot edits
+          if ($this->blank(WORK_ALIASES) && in_array(strtolower(str_replace(array('[', ']', '.'), '', $this->get($param))), ['reuters', 'associated press'])) {
+            $the_url = '';
+            foreach (ALL_URL_TYPES as $thingy) {
+              $the_url .= $this->get($thingy);
+            }
+            if (stripos($the_url, 'reuters.com') !== FALSE || stripos($the_url, 'apnews.com') !== FALSE) {
+               $this->rename($param, 'work');
+            }
+          }  
+          
           return;
           
         case 'arxiv':
