@@ -22,7 +22,7 @@ require_once("NameTools.php");
 final class Template {
   public const PLACEHOLDER_TEXT = '# # # CITATION_BOT_PLACEHOLDER_TEMPLATE %s # # #';
   public const REGEXP = ['~\{\{[^\{\}\|]+\}\}~su', '~\{\{[^\{\}]+\}\}~su', '~\{\{(?>[^\{]|\{[^\{])+?\}\}~su'];  // Please see https://stackoverflow.com/questions/1722453/need-to-prevent-php-regex-segfault for discussion of atomic regex
-  public const TREAT_IDENTICAL_SEPARATELY = FALSE;
+  public const TREAT_IDENTICAL_SEPARATELY = FALSE;  // This is safe because templates are the last thing we do AND we do not directly edit $all_templates that are sub-templates - we might remove them, but do not change their content directly
   private const MAGIC_STRING = 'CITATION_BOT_PLACEHOLDER_URL_POINTER_';
   /** @psalm-suppress PropertyNotSetInConstructor */
   public $all_templates;  // Points to list of all the Template() on the Page() including this one.  It can only be set by the page class after all templates are made
@@ -257,6 +257,12 @@ final class Template {
           }
       }
       // Clean up bad data
+      if (in_array($this->get('title'), [ "Bloomberg - Are you a robot?", "Page not found"])) {
+          $this->forget('title'); 
+      }
+      if ($this->get('title') === "Wayback Machine" && !$this->blank(['archive-url', 'archiveurl'])) {
+          $this->forget('title');
+      }
       if (!$this->blank(['pmc', 'pmid', 'doi', 'jstor'])) { // Have some good data
           $the_title   = $this->get('title');
           $the_journal = $this->get('journal');
@@ -3912,7 +3918,6 @@ final class Template {
             $this->forget($param);
           }
           return;
-
           
         case 'agency':
           if (in_array($this->get('agency'), ['United States Food and Drug Administration',
@@ -3923,7 +3928,19 @@ final class Template {
                 ['United States Department of Health and Human Services', 'California Tobacco Control Program', ''])) {
             $this->forget('publisher');
             $this->rename('agency', 'publisher'); // A single user messed this up on a lot of pages with "agency"
+            return;
           }
+          // Undo some bad bot edits
+          if ($this->blank(WORK_ALIASES) && in_array(strtolower(str_replace(array('[', ']', '.'), '', $this->get($param))), ['reuters', 'associated press'])) {
+            $the_url = '';
+            foreach (ALL_URL_TYPES as $thingy) {
+              $the_url .= $this->get($thingy);
+            }
+            if (stripos($the_url, 'reuters.com') !== FALSE || stripos($the_url, 'apnews.com') !== FALSE) {
+               $this->rename($param, 'work');
+            }
+          }  
+          
           return;
           
         case 'arxiv':
@@ -4841,6 +4858,15 @@ final class Template {
             if (stripos($publisher, 'amazon') !== FALSE) {
               $this->forget($param);
               return;
+            }
+          }
+          if ($this->blank('agency') && in_array(strtolower(str_replace(array('[', ']', '.'), '', $this->get($param))), ['reuters', 'associated press'])) {
+            $the_url = '';
+            foreach (ALL_URL_TYPES as $thingy) {
+              $the_url .= $this->get($thingy);
+            }
+            if (stripos($the_url, 'reuters.com') === FALSE && stripos($the_url, 'apnews.com') === FALSE) {
+               $this->rename($param, 'agency');
             }
           }
           return;
