@@ -3564,7 +3564,7 @@ final class Template {
       $the_data = $match[2];
       $the_all  = $match[0];
       if ($the_type != 'doi' && preg_match("~^([^\]]+)\]+$~", $the_data, $matches)) {
-        $the_data = $matches[1]'
+        $the_data = $matches[1];
       }
       $this->add_if_new($the_type, $the_data);
       $id = str_replace($the_all, '', $id);
