@@ -3559,7 +3559,7 @@ final class Template {
     } else {
       return;
     }
-    while (preg_match("~\b(PMID|DOI|ISBN|ISSN|ARXIV|LCCN)[\s:]*(\d[\d\s\-]*+[^\s\}\{\|,;]*)(?:[,;] )?~iu", $id, $match)) {
+    while (preg_match("~\b(PMID|DOI|ISBN|ISSN|ARXIV|LCCN)[\s:]*(\d[\d\s\-]*+[^\s\}\{\|,;\[\]]*)(?:[,;] )?~iu", $id, $match)) {
       $this->add_if_new(strtolower($match[1]), $match[2]);
       $id = str_replace($match[0], '', $id);
     }
