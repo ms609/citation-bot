@@ -3560,8 +3560,14 @@ final class Template {
       return;
     }
     while (preg_match("~\b(PMID|DOI|ISBN|ISSN|ARXIV|LCCN)[\s:]*(\d[\d\s\-]*+[^\s\}\{\|,;]*)(?:[,;] )?~iu", $id, $match)) {
-      $this->add_if_new(strtolower($match[1]), $match[2]);
-      $id = str_replace($match[0], '', $id);
+      $the_type = strtolower($match[1]);
+      $the_data = $match[2];
+      $the_all  = $match[0];
+      if ($the_type != 'doi' && preg_match("~^([^\]]+)\]+$~", $the_data, $matches)) {
+        $the_data = $matches[1];
+      }
+      $this->add_if_new($the_type, $the_data);
+      $id = str_replace($the_all, '', $id);
     }
     if (preg_match_all('~' . sprintf(Self::PLACEHOLDER_TEXT, '(\d+)') . '~', $id, $matches)) {
       for ($i = 0; $i < count($matches[1]); $i++) {
