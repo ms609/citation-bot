@@ -183,16 +183,6 @@ final class PageTest extends testBaseClass {
       $this->assertSame(FALSE, $page->write($api, "Testing bot write function"));
    });
   }
-   
-  public function testNobots3() : void {
-     $this->requires_secrets(function() : void {
-      $api = new WikipediaBot();
-      $text = '{{cite thesis|url=https://mathscinet.ams.org/mathscinet-getitem?mr=1234}}{{pp-full}}';
-      $page = $this->process_page($text);
-      $this->assertSame($text, $page->parsed_text());
-      $this->assertSame(FALSE, $page->write($api, "Testing bot write function"));
-   });
-  }
  
   public function testEmptyPage() : void {
       foreach (['', '  ', " \n ", '  move along, nothing to see here ', '  move along, nothing to see here {{}} ', ' }}}}{{{{ ', '{{{{}}', '{{{{    }}', '{{{{}}}}}}}}'] as $text) {
