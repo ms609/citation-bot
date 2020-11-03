@@ -1492,6 +1492,13 @@ final class Template {
          $this->set($url_type, $url); // Update URL with cleaner one
        }
     }
+    // Remove &ved= from URLS
+    if (preg_match('~^https://www\.jstor\.org/stable/(.+)(?:&ved=)~i', $url, $matches)) {
+       $url = 'https://www.jstor.org/stable/' . $matches[1] ;
+       if (is_null($url_sent)) {
+         $this->set($url_type, $url); // Update URL with cleaner one
+       }
+    }
     
     if (preg_match('~^https?://(?:www\.|)jstor\.org/stable/(?:pdf|pdfplus)/(.+)\.pdf$~i', $url, $matches) ||
         preg_match('~^https?://(?:www\.|)jstor\.org/tc/accept\?origin=(?:\%2F|/)stable(?:\%2F|/)pdf(?:\%2F|/)(\d{3,})\.pdf$~i', $url, $matches)) {
