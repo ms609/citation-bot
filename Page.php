@@ -72,14 +72,15 @@ class Page {
     if (isset($details->protection) && !empty($details->protection)) {
        $the_protections = (array) $details->protection;
        foreach ($the_protections as $protects) {
-         if (isset($protects->type) && $protects->type == "edit" && isset($protects->level)) {
-           if (in_array((string) $protects->level, ["autoconfirmed", "extendedconfirmed"])) {
+         if (isset($protects->type) && (string) $protects->type === "edit" && isset($protects->level)) {
+           $the_level = (string) $protects->level;
+           if (in_array($the_level, ["autoconfirmed", "extendedconfirmed"])) {
              ;  // We are good
-           } elseif (in_array((string) $protects->level, ["sysop", "templateeditor"])) {
+           } elseif (in_array($the_level, ["sysop", "templateeditor"])) {
              report_warning("Page is protected.");
              return FALSE;
            } else {
-             report_minor_error("Unexpected protection status: " . $protects->level);
+             report_minor_error("Unexpected protection status: " . $the_level);
            }
          }
        }
