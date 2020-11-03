@@ -68,6 +68,23 @@ class Page {
        report_warning("Could not even get the page title.");  // @codeCoverageIgnore
        return FALSE;                                          // @codeCoverageIgnore
     }
+    
+    if (isset($details->protection) && !empty($details->protection))) {
+       $the_protections = (array) $details->protection;
+       foreach ($the_protections as $protects) {
+         if (isset($protects->type) && $protects->type == "edit" && isset($protects->level)) {
+           if (in_array((string) $protects->level, ["autoconfirmed", "extendedconfirmed"])) {
+             ;  // We are good
+           } elseif (in_array((string) $protects->level, ["sysop", "templateeditor"])) {
+             report_warning("Page is protected.");
+             return FALSE;
+           } else {
+             report_minor_error("Unexpected protection status: " . $protects->level);
+           }
+         }
+       }
+    }
+
     $this->title = (string) $details->title;
     $this->lastrevid = (int) $details->lastrevid ;
 
