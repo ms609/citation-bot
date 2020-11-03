@@ -1492,8 +1492,8 @@ final class Template {
          $this->set($url_type, $url); // Update URL with cleaner one
        }
     }
-    // Remove &ved= from URLS
-    if (preg_match('~^https://www\.jstor\.org/stable/(.+)(?:&ved=)~i', $url, $matches)) {
+    // Remove junk from URLs
+    while (preg_match('~^https://www\.jstor\.org/stable/(.+)(?:&ved=|&usg=|%3Fseq%3D1|\?seq=)~i', $url, $matches)) {
        $url = 'https://www.jstor.org/stable/' . $matches[1] ;
        if (is_null($url_sent)) {
          $this->set($url_type, $url); // Update URL with cleaner one
