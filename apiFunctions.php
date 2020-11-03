@@ -582,7 +582,7 @@ function expand_by_doi(Template $template, bool $force = FALSE) : bool {
 }
 
 function query_crossref(string $doi) : ?object {
-  if (strpos($doi, '10.2307') === 1) return NULL; // jstor API is better
+  if (strpos($doi, '10.2307') === 0) return NULL; // jstor API is better
   $doi = str_replace(DOI_URL_DECODE, DOI_URL_ENCODE, $doi);
   $url = "https://www.crossref.org/openurl/?pid=" . CROSSREFUSERNAME . "&id=doi:$doi&noredirect=TRUE";
   $ch = curl_init();
