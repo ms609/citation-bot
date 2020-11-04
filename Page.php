@@ -68,6 +68,24 @@ class Page {
        report_warning("Could not even get the page title.");  // @codeCoverageIgnore
        return FALSE;                                          // @codeCoverageIgnore
     }
+    
+    if (isset($details->protection) && !empty($details->protection)) {
+       $the_protections = (array) $details->protection;
+       foreach ($the_protections as $protects) {
+         if (isset($protects->type) && (string) $protects->type === "edit" && isset($protects->level)) {
+           $the_level = (string) $protects->level;
+           if (in_array($the_level, ["autoconfirmed", "extendedconfirmed"])) {
+             ;  // We are good
+           } elseif (in_array($the_level, ["sysop", "templateeditor"])) {
+             report_warning("Page is protected.");
+             return FALSE;
+           } else {
+             report_minor_error("Unexpected protection status: " . $the_level);
+           }
+         }
+       }
+    }
+
     $this->title = (string) $details->title;
     $this->lastrevid = (int) $details->lastrevid ;
 
@@ -568,12 +586,6 @@ class Page {
   }
   
   protected function allow_bots() : bool {
-    if (preg_match('~\{\{pp-full\}\}~i', $this->text)) { // NO ONE can edit this page
-      return FALSE;
-    }
-    if (preg_match('~\{\{pp *(?:|\|.+)\}\}~i', $this->text)) { // Only admins can edit this page
-      return FALSE;
-    }
     // from https://en.wikipedia.org/wiki/Template:Bots
     $bot_username = '(?:Citation|DOI)[ _]bot';
     if (preg_match('~\{\{(nobots|bots\|allow=none|bots\|deny=all|bots\|optout=all|bots\|deny=.*?'.$bot_username.'.*?)\}\}~iS',$this->text)) {
