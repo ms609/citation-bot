@@ -68,7 +68,7 @@ class Page {
        report_warning("Could not even get the page title.");  // @codeCoverageIgnore
        return FALSE;                                          // @codeCoverageIgnore
     }
-    
+    print_r($details);
     if (isset($details->protection) && !empty($details->protection)) {
        print_r($details->protection);
        $the_protections = (array) $details->protection;
