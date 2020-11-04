@@ -40,7 +40,7 @@ final class PageTest extends testBaseClass {
     if ($bad_page !== "") {
       $api = new WikipediaBot();
       $page = new TestPage();
-      $page->get_text_from($text, $api);
+      $page->get_text_from($bad_page, $api);
       AdsAbsControl::back_on();
       Zotero::unblock_zotero();
       $page->expand_text();
