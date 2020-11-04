@@ -402,4 +402,21 @@ final class PageTest extends testBaseClass {
     }
     $this->assertTrue(TRUE);
   }
+ 
+  public function testBadPage2() : void {  // Use this when debugging pages that crash the bot using API to get page
+    $bad_page = ""; //  Replace with page name when debugging
+    $bad_page = urlencode(str_replace(' ', '_', $bad_page));
+    if ($bad_page !== "") {
+      $api = new WikipediaBot();
+      $page = new TestPage();
+      $page->get_text_from($text, $api);
+      AdsAbsControl::back_on();
+      Zotero::unblock_zotero();
+      $page->expand_text();
+      AdsAbsControl::give_up();
+      Zotero::block_zotero();
+      $this->assertTrue(FALSE); // prevent us from git committing with a website included
+    }
+    $this->assertTrue(TRUE);
+  }
 }
