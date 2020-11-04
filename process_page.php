@@ -67,6 +67,8 @@ if (isset($_REQUEST["edit"]) && $_REQUEST["edit"]) {
       $edit_summary_end = $edit_summary_end . "| via #UCB_Headbomb ";
    } elseif ($_REQUEST["edit"] == 'Smith609') {
       $edit_summary_end = $edit_summary_end . "| via #UCB_Smith609 ";
+   } elseif ($_REQUEST["edit"] == 'arXiv') {
+      $edit_summary_end = $edit_summary_end . "| via #UCB_arXiv ";
    } else {
       $edit_summary_end = $edit_summary_end . "| via #UCB_Other ";
    }
