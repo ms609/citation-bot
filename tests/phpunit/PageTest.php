@@ -50,4 +50,21 @@ final class PageTest extends testBaseClass {
     }
     $this->assertTrue(TRUE);
   }
+ 
+  public function testBadPage3() : void {  // Use this when debugging pages that crash the bot
+    $bad_page = "Al-Qa'im (Abbasid caliph at Baghdad)"; //  Replace with page name when debugging
+    $bad_page = str_replace(' ', '_', $bad_page); // Try without encoding
+    if ($bad_page !== "") {
+      $api = new WikipediaBot();
+      $page = new TestPage();
+      $page->get_text_from($bad_page, $api);
+      AdsAbsControl::back_on();
+      Zotero::unblock_zotero();
+      $page->expand_text();
+      AdsAbsControl::give_up();
+      Zotero::block_zotero();
+      $this->assertTrue(FALSE); // prevent us from git committing with a website included
+    }
+    $this->assertTrue(TRUE);
+  }
 }
