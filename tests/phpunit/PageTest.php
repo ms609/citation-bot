@@ -77,12 +77,21 @@ final class PageTest extends testBaseClass {
       $this->assertSame('Alter: template type. Add: chapter. Removed parameters. | You can [[WP:UCB|use this bot]] yourself. [[WP:DBUG|Report bugs here]]. ', $page->edit_summary());
   }
  
-  public function testBotRead() : void {
+  public function testBotReadblocked() : void {
    $this->requires_secrets(function() : void {
       $page = new TestPage();
       $api = new WikipediaBot();
       $page->get_text_from('User:Blocked Testing Account/readtest', $api);
-      $this->assertSame('This page tests bots', $page->parsed_text());
+      $this->assertSame('', $page->parsed_text()); // We will not read anything since it is blocked!
+   });
+  }
+ 
+  public function testBotRead() : void {
+   $this->requires_secrets(function() : void {
+      $page = new TestPage();
+      $api = new WikipediaBot();
+      $page->get_text_from('User:Citation_bot', $api);
+      $this->assertTrue(strlen($page->parsed_text()) > 200);
    });
   }
  
@@ -393,6 +402,23 @@ final class PageTest extends testBaseClass {
       curl_close($ch);
       $page = new TestPage();
       $page->parse_text($text);
+      AdsAbsControl::back_on();
+      Zotero::unblock_zotero();
+      $page->expand_text();
+      AdsAbsControl::give_up();
+      Zotero::block_zotero();
+      $this->assertTrue(FALSE); // prevent us from git committing with a website included
+    }
+    $this->assertTrue(TRUE);
+  }
+ 
+  public function testBadPage2() : void {  // Use this when debugging pages that crash the bot using API to get page
+    $bad_page = ""; //  Replace with page name when debugging
+    $bad_page = str_replace(' ', '_', $bad_page);
+    if ($bad_page !== "") {
+      $api = new WikipediaBot();
+      $page = new TestPage();
+      $page->get_text_from($bad_page, $api);
       AdsAbsControl::back_on();
       Zotero::unblock_zotero();
       $page->expand_text();

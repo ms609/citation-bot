@@ -35,7 +35,7 @@ class Page {
     $this->construct_modifications_array(); // Could be new page
 
     $details = $api->fetch(['action'=>'query', 
-      'prop'=>'info', 'titles'=> $title, 'curtimestamp'=>'true'], 'GET');
+      'prop'=>'info', 'titles'=> $title, 'curtimestamp'=>'true', 'inprop' => 'protection'], 'GET');
     
     if (!isset($details->query)) {
       // @codeCoverageIgnoreStart
