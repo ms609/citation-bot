@@ -405,7 +405,7 @@ final class PageTest extends testBaseClass {
  
   public function testBadPage2() : void {  // Use this when debugging pages that crash the bot using API to get page
     $bad_page = ""; //  Replace with page name when debugging
-    $bad_page = urlencode(str_replace(' ', '_', $bad_page));
+    $bad_page = str_replace(' ', '_', $bad_page);
     if ($bad_page !== "") {
       $api = new WikipediaBot();
       $page = new TestPage();
