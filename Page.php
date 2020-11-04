@@ -70,8 +70,11 @@ class Page {
     }
     
     if (isset($details->protection) && !empty($details->protection)) {
+       print_r($details->protection);
        $the_protections = (array) $details->protection;
+       print_r($the_protections);
        foreach ($the_protections as $protects) {
+         print_r($protects);
          if (isset($protects->type) && (string) $protects->type === "edit" && isset($protects->level)) {
            $the_level = (string) $protects->level;
            if (in_array($the_level, ["autoconfirmed", "extendedconfirmed"])) {
