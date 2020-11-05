@@ -49,7 +49,98 @@ final class TemplateTest extends testBaseClass {
     $expanded = $this->process_citation($text);
     $this->assertSame($text, $expanded->parsed_text());
   }
+ 
+  public function testDashedTemplate() : void {
+    $text = "{{cite_news}}";
+    $expanded = $this->process_citation($text);
+    $this->assertSame("{{cite news}}", $expanded->parsed_text());
+  }
+ 
+  public function testTemplateConvertComplex() : void {
+    $text = "{{cite article}}";
+    $expanded = $this->process_citation($text);
+    $this->assertSame("{{cite news}}", $expanded->parsed_text());
+   
+    $text = "{{cite article|journal=X}}";
+    $expanded = $this->process_citation($text);
+    $this->assertSame("{{cite journal|journal=X}}", $expanded->parsed_text());
+   
+    $text = "{{Cite article}}";
+    $expanded = $this->process_citation($text);
+    $this->assertSame("{{Cite news}}", $expanded->parsed_text());
+   
+    $text = "{{Cite article|journal=X}}";
+    $expanded = $this->process_citation($text);
+    $this->assertSame("{{Cite journal|journal=X}}", $expanded->parsed_text());
+  }
+ 
+  public function testTemplateConvertComplex2() : void {
+    $text = "{{cite document}}";
+    $expanded = $this->process_citation($text);
+    $this->assertSame("{{cite document}}", $expanded->parsed_text());
+   
+    $text = "{{cite document|doi=XXX/978-XXX}}";
+    $expanded = $this->process_citation($text);
+    $this->assertSame("cite book", $expanded->wikiname());
+   
+    $text = "{{cite document|journal=X}}";
+    $expanded = $this->process_citation($text);
+    $this->assertSame("cite journal", $expanded->wikiname());
+   
+    $text = "{{cite document|newspaper=X}}";
+    $expanded = $this->process_citation($text);
+    $this->assertSame("cite news", $expanded->wikiname());
+   
+    $text = "{{cite document|chapter=X}}";
+    $expanded = $this->process_citation($text);
+    $this->assertSame("cite book", $expanded->wikiname());
+   
+   
+    $text = "{{Cite document}}";
+    $expanded = $this->process_citation($text);
+    $this->assertSame("{{Cite document}}", $expanded->parsed_text());
+   
+    $text = "{{Cite document|doi=XXX/978-XXX}}";
+    $expanded = $this->process_citation($text);
+    $this->assertSame("cite book", $expanded->wikiname());
+   
+    $text = "{{Cite document|journal=X}}";
+    $expanded = $this->process_citation($text);
+    $this->assertSame("cite journal", $expanded->wikiname());
+   
+    $text = "{{Cite document|newspaper=X}}";
+    $expanded = $this->process_citation($text);
+    $this->assertSame("cite news", $expanded->wikiname());
+   
+    $text = "{{Cite document|chapter=X}}";
+    $expanded = $this->process_citation($text);
+    $this->assertSame("cite book", $expanded->wikiname());
+  }
 
+  public function testPureGarbage1() : void {
+    $text = "{{cite journal|title=Bloomberg - Are you a robot?}}";
+    $expanded = $this->process_citation($text);
+    $this->assertSame("{{cite journal}}", $expanded->parsed_text());
+  }
+ 
+  public function testPureGarbage2() : void {
+    $text = "{{cite journal|title=Wayback Machine}}";
+    $expanded = $this->process_citation($text);
+    $this->assertSame($text, $expanded->parsed_text());
+  }
+ 
+  public function testPureGarbage3() : void {
+    $text = "{{cite journal|title=Wayback Machine|archive-url=XXX}}";
+    $expanded = $this->process_citation($text);
+    $this->assertNull($expanded->get2('title'));
+  }
+ 
+  public function testTheNation() : void {
+    $text = "{{cite journal|issn=0027-8378}}";
+    $expanded = $this->process_citation($text);
+    $this->assertSame('The Nation', $expanded->get2('journal'));
+  }
+   
   public function testNoGoonUTF8() : void {
     $text = "{{cite news |date=びっくり１位 白鴎|title=阪神びっくり１位 白鴎大・大山、鉄人魂の持ち主だ|journal=鉄人魂}}";
     $expanded = $this->process_citation($text);
