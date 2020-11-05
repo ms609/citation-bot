@@ -19,7 +19,7 @@ final class PageTest extends testBaseClass {
             CURLOPT_RETURNTRANSFER => 1,
             CURLOPT_TIMEOUT => 30,
             CURLOPT_USERAGENT => 'Citation_bot; citations@tools.wmflabs.org',
-            CURLOPT_URL => WIKI_ROOT . '?title=' . $bad_page . '&action=raw']);
+            CURLOPT_URL => WIKI_ROOT . '?title=User:AManWithNoPlan/sandbox4&oldid=987206407&action=raw']);
       $text = curl_exec($ch);
       curl_close($ch);
       $page = new TestPage();
