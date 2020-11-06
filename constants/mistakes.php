@@ -68,6 +68,7 @@ const COMMON_MISTAKES = array ( // Common mistakes that aren't picked up by the 
   "ibsn"            =>  "isbn",
   "ibsn2"           =>  "isbn",
   "lastn"           =>  "last2",
+  "local"           =>  "location",
   "part"            =>  "issue",
   "no"              =>  "issue",
   "No"              =>  "issue",
