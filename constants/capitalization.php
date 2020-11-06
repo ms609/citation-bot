@@ -8,7 +8,7 @@ const LC_SMALL_WORDS = array(/* The following will be automatically updated to a
           " D.D.S. ", " D.Div. ", " D.M.D. ", " D.P.M. " , " M.S. ", " D.Sc. ", " da ", 
           " dans ", " das ", " DC ", " de ", " dei ", " del ", " della ", " delle ", " dem ", 
           " den ", " der ", " des ", " di ", " die ", " DNA ", " do ", " du ", " e ", " ed ", 
-          " ee ", " ein ", " eine ", " einen ", " el ", " else ", " EMBO ", " en ", " et ", 
+          " ee ", " ein ", " eine ", " einen ", " el ", " else ", " EMBO ", " en ", " EPJ ", " et ", 
           " FASEB ", " FDA ", " FEBS ", " FEMS ", " for ", " from ", " för ", " für ", 
           " HIV ", " HIV/AIDS ", " HLA ", " HTMLGIANT ", " IBM ", " ICES ", " IEEE ", " if ", 
           " ILR ", " in ", " into ", " is ", " its ", " JAMA ", " JAMA: ", " la ", " las ", 
@@ -30,7 +30,7 @@ const UC_SMALL_WORDS = array(/* The following will be automatically updated to a
           " D.d.s. ", " D.div. ", " D.m.d. ", " D.p.m. " , " M.s. ", " D.sc. ", " Da ", 
           " Dans ", " Das ", " Dc ", " De ", " Dei ", " Del ", " Della ", " Delle ", " Dem ", 
           " Den ", " Der ", " Des ", " Di ", " Die ", " Dna ", " Do ", " Du ", " E ", " Ed ", 
-          " Ee ", " Ein ", " Eine ", " Einen ", " El ", " Else ", " Embo ", " En ", " Et ", 
+          " Ee ", " Ein ", " Eine ", " Einen ", " El ", " Else ", " Embo ", " En ", " Epj ", " Et ", 
           " Faseb ", " Fda ", " Febs ", " Fems ", " For ", " From ", " För ", " Für ", 
           " Hiv ", " Hiv/Aids ", " Hla ", " Htmlgiant ", " Ibm ", " Ices ", " Ieee ", " If ", 
           " Ilr ", " In ", " Into ", " Is ", " Its ", " Jama ", " Jama: ", " La ", " Las ", 
@@ -47,7 +47,7 @@ const UC_SMALL_WORDS = array(/* The following will be automatically updated to a
           // For ones that start with lower-case, include both ELife and Elife versions in misspelled array
 const JOURNAL_ACRONYMS = array(/* The following will be automatically updated to alphabetical order */
           " (BBA) ", " (online ed.) ", " AAPOS ", " AAPS ", " ACS ", " Algebra i Analiz ", 
-          " Angew Chem Int Ed ", " APS Division ", " Arch Dis Child Fetal Neonatal Ed ", 
+          " Angew Chem Int Ed ", " Applied ", " APS Division ", " Arch Dis Child Fetal Neonatal Ed ", 
           " ASAIO ", " ASME AES ", " ASME MTD ", " Avtomatika i Telemekhanika ", " B/gcvs ", 
           " B/gcvs ", " B/gcvs ", " BioEssays ", " bioRxiv ", " bioRxiv ", " BJOG ", " BMJ ", 
           " CBD Ubiquitin ", " CFSK-DT ", " ChemBioChem ", " ChemCatChem ", " ChemElectroChem ", 
@@ -94,7 +94,7 @@ const JOURNAL_ACRONYMS = array(/* The following will be automatically updated to
 );
 const UCFIRST_JOURNAL_ACRONYMS = array(/* The following will be automatically updated to alphabetical order */
           " (Bba) ", " (online Ed.) ", " Aapos ", " Aaps ", " Acs ", " Algebra I Analiz ", 
-          " Angew Chem Int ed ", " Aps Division ", " Arch Dis Child Fetal Neonatal ed ", 
+          " Angew Chem Int ed ", " Appiled ", " Aps Division ", " Arch Dis Child Fetal Neonatal ed ", 
           " Asaio ", " Asme Aes ", " Asme MTD ", " Avtomatika I Telemekhanika ", " B/GCVS ", 
           " B/Gcvs ", " b/gcvs ", " Bioessays ", " BioRxiv ", " Biorxiv ", " Bjog ", " Bmj ", 
           " Cbd Ubiquitin ", " CFSK-Dt ", " Chembiochem ", " Chemcatchem ", " Chemelectrochem ", 
