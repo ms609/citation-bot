@@ -1,17 +1,19 @@
-<?php 
-$constant_files = glob('constants/*.php');
-foreach ($constant_files as $file) {
-    require($file);   
-}
-
-define('HOME', dirname(__FILE__) . '/');
+<?php
+declare(strict_types=1);
+// all new constant files need listed here
+require_once('constants/bad_data.php');
+require_once('constants/capitalization.php');
+require_once('constants/math.php');
+require_once('constants/mistakes.php');
+require_once('constants/namespaces.php');
+require_once('constants/parameters.php');  
+require_once('constants/regular_expressions.php');
 
 const PIPE_PLACEHOLDER = '# # # CITATION_BOT_PLACEHOLDER_PIPE # # #';
 const TEMP_PLACEHOLDER = "# # # CITATION_BOT_PLACEHOLDER_TEMPORARY %s # # #";
 const WIKI_ROOT = "https://en.wikipedia.org/w/index.php";
 const API_ROOT = "https://en.wikipedia.org/w/api.php"; // wiki's API endpoint
-const TOOLFORGE_IP = '208.80.155.131';
-const BRACESPACE = "!BOTCODE-spaceBeforeTheBrace";
+const ZOTERO_ROOT = "https://translation-server.toolforge.org/web";
 
 //Common replacements
 const HTML_DECODE = array("[", "]", "<", ">", " ");
@@ -26,6 +28,8 @@ const DOT_DECODE = array("/", "[", "{", "}", "]", "<", ">", ";", "(", ")");
 const DOI_URL_ENCODE = array("%23", "%3C", "%3E");
 const DOI_URL_DECODE = array("#", "<", ">");
 
-const DATES_WHATEVER = FALSE; // PHP has no native enum
+const DATES_WHATEVER = 0;
 const DATES_MDY      = 1;
 const DATES_DMY      = 2;
+
+const CROSSREFUSERNAME = 'martins@gmail.com';

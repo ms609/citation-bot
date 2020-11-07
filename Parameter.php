@@ -1,19 +1,25 @@
 <?php
+declare(strict_types=1);
 /*
  * Parameter includes parsing functions to extract parameters, values, and metadata
  * from templates.
  */
 
+require_once('user_messages.php');
+require_once('constants.php');
+
 final class Parameter {
-  public $pre, $param, $eq, $val, $post;
+  public $pre = '', $param = '', $eq = '', $val = '', $post = '';
 
 /*
  * Breaks a citation template down to component parts.
  * Expects that any instances of "|" in $text will have been replaced with
- * PIPE_PLACEHOLDER (usually '%%CITATION_BOT_PIPE_PLACEHOLDER%%' and set
- * in expandFns.php) before this function is called.
+ * PIPE_PLACEHOLDER (usually '%%CITATION_BOT_PIPE_PLACEHOLDER%%') before this is called.
  */
-  public function parse_text($text) {
+  public function parse_text(string $text) : void {
+    $match = ['', '']; // prevent memory leak in some PHP versions
+    $pre_eq = ['', '']; // prevent memory leak in some PHP versions
+    $post_eq = ['', '']; // prevent memory leak in some PHP versions
     $text = str_replace(PIPE_PLACEHOLDER, '|', $text);
     $split = explode('=', $text, 2);
     // Split the text before the '=' into constituent parts:
@@ -35,7 +41,7 @@ final class Parameter {
         $this->eq    = $pre_eq[3] . '=' . $post_eq[1];
       }
       $this->post  = $post_eq[3];
-      $this->set_value($post_eq[2]);
+      $this->val   = $post_eq[2];
     } elseif ($pre_eq) {
       $this->pre  = $pre_eq[1];
       $this->val  = $pre_eq[2];
@@ -44,36 +50,24 @@ final class Parameter {
       $this->val  = $text;
     }
     // Comments before parameter names
-    if (preg_match('~^# # # CITATION_BOT_PLACEHOLDER_COMMENT \d+ # # #(?:\s*)~i', $this->param, $match)) {
+    if (preg_match('~^# # # CITATION_BOT_PLACEHOLDER_COMMENT \d+ # # #(?:\s*)~isu', $this->param, $match)) {
       $this->pre = $this->pre . $match[0];
       $this->param = str_replace($match[0], '', $this->param);
     }
     // Comments after parameter names
-    if (preg_match('~(?:\s*)# # # CITATION_BOT_PLACEHOLDER_COMMENT \d+ # # #$~i', $this->param, $match)) {
+    if (preg_match('~(?:\s*)# # # CITATION_BOT_PLACEHOLDER_COMMENT \d+ # # #$~isu', $this->param, $match)) {
       $this->eq = $match[0] . $this->eq;
       $this->param = str_replace($match[0], '', $this->param);
     }
-  }
 
-  protected function set_value($value) {
-    switch ($this->param) {
-      case 'pages':
-        if (stripos($value, 'http') === FALSE && mb_stripos($value, 'CITATION_BOT_PLACEHOLDER_COMMENT') === FALSE) {
-          $value = mb_ereg_replace(REGEXP_TO_EN_DASH, REGEXP_EN_DASH, $value);
-        }
-      default:
-        $this->val = $value;
-    }
   }
 
 /*
  * Returns a string with, for example, 'param1 = value1 | param2 = value2, etc.'
- * FIXME: might be better named "join_parsed_text" or similar to make it clear what
- * this function does to the parsed text.
  */
-  public function parsed_text() {
-    if ($this->param && empty($this->eq)) {
-      $this->eq = ' = ';
+  public function parsed_text() : string {
+    if ($this->param && empty($this->eq)) {              // code used to do this
+      report_error('Missing equals in parameter');       // @codeCoverageIgnore
     }
     return $this->pre . $this->param . $this->eq . $this->val . $this->post;
   }

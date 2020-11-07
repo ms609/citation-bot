@@ -1,5 +1,5 @@
 {
     "require": {
-        "mediawiki/oauthclient": "^0.1.2"
+        "mediawiki/oauthclient": ">=1.1.0"
     }
 }

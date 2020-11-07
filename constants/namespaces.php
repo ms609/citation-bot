@@ -1,4 +1,6 @@
 <?php
+declare(strict_types=1);
+
 const NAMESPACES = Array(
   -2 => 'Media',
   -1 => 'Special',

@@ -1,63 +1,97 @@
 <?php
-  
-function html_echo($text, $alternate_text='') {
-  if (!getenv('TRAVIS')) echo HTML_OUTPUT ? $text : $alternate_text;
+declare(strict_types=1);
+
+require_once("constants.php");
+
+function html_echo(string $text, string $alternate_text='') : void {
+  /** @psalm-suppress TypeDoesNotContainType */ /* PSALM thinks HTML_OUTPUT and TRAVIS cannot be false */
+  if (!TRAVIS) echo HTML_OUTPUT ? $text : $alternate_text;
 }
 
-function user_notice($symbol, $class, $text) {
-  if (!getenv('TRAVIS')) {
-    echo "\n " . (HTML_OUTPUT ? "<span class='$class'>" : "")
-     . "$symbol $text" . (HTML_OUTPUT ? "</span>" : "");
+function user_notice(string $symbol, string $class, string $text) : void {
+  static $last_time = 0;
+  if (!TRAVIS) {
+    // @codeCoverageIgnoreStart
+    /** @psalm-suppress TypeDoesNotContainType */ /* PSALM thinks HTML_OUTPUT cannot be false */
+    echo "\n " . (HTML_OUTPUT ? "<span class='$class'>" : "") . $symbol . $text . (HTML_OUTPUT ? "</span>" : "");
+    if (FLUSHING_OKAY && ob_get_level()) {
+      $now = microtime(TRUE);
+      if (in_array($class, array('phase', 'subitem', 'warning')) || 5 < ($now - $last_time)) {
+        $last_time = $now;
+        ob_flush();
+      }
+    }
+    // @codeCoverageIgnoreEnd
   }
-  if (in_array($class, array('phase', 'subitem', 'warning')) && FLUSHING_OKAY) ob_flush();
 }
 
-function report_phase($text)  { user_notice("\n>", "phase", $text); }
-function report_action($text)  { user_notice(">", "subitem", $text); }
-function report_info($text)  { user_notice("  >", "subsubitem", $text); }
-function report_inaction($text)  { user_notice("  .", "boring", $text); }
-function report_warning($text) { user_notice("  !", "warning", $text); }
-function report_modification($text) { user_notice("  ~", "changed", $text); }
-function report_add($text) { user_notice("  +", "added", $text); }
-function report_forget($text) { user_notice("  -", "removed", $text); }
-function report_inline($text) { if (!getenv('TRAVIS')) echo " $text"; }
+function report_phase(string $text) : void { user_notice("\n>", "phase", $text); }
+function report_action(string $text) : void { user_notice(">", "subitem", $text); }
+function report_info(string $text) : void { user_notice("  >", "subsubitem", $text); }
+function report_inaction(string $text) : void { user_notice("  .", "boring", $text); }
+function report_warning(string $text) : void  { user_notice("  !", "warning", $text); }
+function report_modification(string $text) : void { user_notice("  ~", "changed", $text); }
+function report_add(string $text) : void { user_notice("  +", "added", $text); }
+function report_forget(string $text) : void { user_notice("  -", "removed", $text); }
+function report_inline(string $text) : void { if (!TRAVIS) echo " $text"; }
+function report_error(string $text) : void { report_warning($text); trigger_error($text, E_USER_ERROR); exit(0); } // call report_warning to give users a message before we die
+function report_minor_error(string $text) : void {  // For things we want to error in tests, but continue on Wikipedia
+  // @codeCoverageIgnoreStart
+  /** @psalm-suppress RedundantCondition */ /* PSALM thinks TRAVIS cannot be FALSE */
+  if (TRAVIS) {
+    report_error($text);
+  } else {
+    report_warning($text);
+  }
+  // @codeCoverageIgnoreEnd
+}
 
-function quietly($function = report_info, $text) {
-  if (defined('VERBOSE') || HTML_OUTPUT ) {
+function quietly(callable $function, string $text) : void { // Stuff suppressed when running on the command line
+  /** @psalm-suppress TypeDoesNotContainType */ /* PSALM thinks HTML_OUTPUT cannot be false */
+  if (HTML_OUTPUT || TRAVIS) {
     $function($text);
   }
 }
 
-function safely_echo ($string) {
-  echo echoable($string);
-}
-
-function echoable($string) {
+// special flags to mark this function as making all untrustworthy input magically safe to output
+function echoable(?string $string) : string {
+  /** @psalm-taint-escape html */
+  $string = (string) $string;
+  /** @psalm-suppress TypeDoesNotContainType */ /* PSALM thinks HTML_OUTPUT cannot be false */
   return HTML_OUTPUT ? htmlspecialchars($string) : $string;
 }
 
-function pubmed_link($identifier, $pm) {
+function pubmed_link(string $identifier, string $pm) : string {
+  /** @psalm-suppress TypeDoesNotContainType */ /* PSALM thinks HTML_OUTPUT cannot be false */
   return HTML_OUTPUT 
-       ? '<a href="https://www.ncbi.nlm.nih.gov/pubmed/' . urlencode($pm) . '" target="_blank">'
-         . strtoupper($identifier) . ' ' . $pm . "</a>"
+       ? '<a href="https://www.ncbi.nlm.nih.gov/pubmed/' . urlencode($pm) . '" target="_blank">' . strtoupper($identifier) . ' ' . $pm . "</a>"   // @codeCoverageIgnore
        : strtoupper($identifier) . ' ' . $pm;
 }
 
-function bibcode_link($id) {
+function bibcode_link(string $id) : string {
+  /** @psalm-suppress TypeDoesNotContainType */ /* PSALM thinks HTML_OUTPUT cannot be false */
   return HTML_OUTPUT
-    ? '<a href="http://adsabs.harvard.edu/abs/' . urlencode($id) . '" target="_blank">'
-      . $id . '</a>'
+    ? '<a href="https://ui.adsabs.harvard.edu/abs/' . urlencode($id) . '" target="_blank">' . $id . '</a>'   // @codeCoverageIgnore
     : $id;
 }
 
-function doi_link($doi) {
+function doi_link(string $doi) : string {
+  /** @psalm-suppress TypeDoesNotContainType */ /* PSALM thinks HTML_OUTPUT cannot be false */
   return HTML_OUTPUT
-    ? '<a href="http://dx.doi.org/' . urlencode($doi) . '" target="_blank">' . $doi . '</a>'
+    ? '<a href="https://dx.doi.org/' . urlencode($doi) . '" target="_blank">' . $doi . '</a>'      // @codeCoverageIgnore
     : $doi;
 }
 
-function jstor_link($id) {
+function jstor_link(string $id) : string {
+  /** @psalm-suppress TypeDoesNotContainType */ /* PSALM thinks HTML_OUTPUT cannot be false */
   return HTML_OUTPUT
-    ? '<a href="https://www.jstor.org/citation/ris/' . urlencode($id) . '" target="_blank">JSTOR ' . $id . '</a>'
+    ? '<a href="https://www.jstor.org/citation/ris/' . urlencode($id) . '" target="_blank">JSTOR ' . $id . '</a>'    // @codeCoverageIgnore
     : "JSTOR $id";
+}
+
+function wiki_link(string $page) : string {
+  /** @psalm-suppress TypeDoesNotContainType */ /* PSALM thinks HTML_OUTPUT cannot be false */
+  return HTML_OUTPUT
+    ? '<a href="' . WIKI_ROOT . '?title=' . urlencode(str_replace(' ', '_', $page)) . '" target="_blank">Wikipedia page: ' . $page . '</a>'    // @codeCoverageIgnore
+    : "Wikipedia page : $page";
 }

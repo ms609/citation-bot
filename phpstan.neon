@@ -1,0 +1,9 @@
+parameters:
+	level: 3
+	checkMissingIterableValueType: false  # Do not care that arrays do not have types - PHP does not support, it is only a comment
+	dynamicConstantNames:
+		- HTML_OUTPUT
+		- SLOW_MODE
+		- NATURE_FAILS
+		- FLUSHING_OKAY
+		- TRAVIS

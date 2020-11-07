@@ -1,24 +1,18 @@
 <?php
-// Local changes seem to accumulate in capitalization.php, preventing a pull
-exec ("git checkout constants/capitalization.php", $output); 
-exec ("git pull", $output, $return_var);
-#exec ("git fetch --all", $output, $return_var); // Doesn't seem to do much...
-?><pre>
-<?php foreach($output as $line) print "$line \n"; ?>
-</pre>
-<?php if ($return_var) {
-  echo "Returned error code $return_var";
-  if ($return_var == 1) {
-    echo "\n<br /> Check that there are no uncommitted changes on the server.";
-  }
+@header('Cache-Control: no-cache, no-store, must-revalidate');
+@header('Pragma: no-cache');
+@header('Expires: 0');
+?>
+<!DOCTYPE html><html lang="en" dir="ltr"><head><title>Git Pull</title><meta http-equiv="Content-Type" content="text/html; charset=utf-8" /></head><body><pre>
+<?php
+ob_implicit_flush();
+if (mkdir('git_pull.lock', 0700)) {
+  // Fetch only updates .git, so it is very safe. That is the first half of pull. So do it as own command
+  /** @psalm-suppress ForbiddenCode */
+  echo htmlspecialchars((string) shell_exec("/usr/bin/git fetch 2>&1 ; /usr/bin/git pull 2>&1"));
+  rmdir('git_pull.lock') ;
 } else {
-  echo "Successfully updated from Git repository.";
+  echo 'lock file exists -- aborting ';
 }
 ?>
-<pre>
-<?php
-unset($output);
-exec("git show --oneline -s", $output, $return_var);
-foreach ($output as $line) print "$line \n";
-?>
-</pre>
+</pre></body></html>

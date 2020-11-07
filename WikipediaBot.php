@@ -1,85 +1,110 @@
 <?php
+declare(strict_types=1);
+// This library did the edits as the users in https://github.com/ms609/citation-bot/blob/439dc557d1c56c9a71b30a9c51e37234ff710dad/WikipediaBot.php
 // To use the oauthclient library, run:
 // composer require mediawiki/oauthclient
+use MediaWiki\OAuthClient\Client;
+use MediaWiki\OAuthClient\ClientConfig;
 use MediaWiki\OAuthClient\Consumer;
 use MediaWiki\OAuthClient\Token;
 use MediaWiki\OAuthClient\Request;
 use MediaWiki\OAuthClient\SignatureMethod\HmacSha1;
 
-class WikipediaBot {
-  
-  protected $consumer, $token, $ch;
-  
-  function __construct() {
-    if (!getenv('PHP_OAUTH_CONSUMER_TOKEN') && file_exists('env.php')) {
-      // An opportunity to set the PHP_OAUTH_ environment variables used in this function,
-      // if they are not set already. Remember to set permissions (not readable!)
-      include_once('env.php'); 
+require_once('user_messages.php');
+require_once("constants.php");
+
+final class WikipediaBot {
+
+  private $consumer;
+  private $token;
+  /** @var resource $ch */
+  private $ch;
+  private $the_user = '';
+  private static $last_WikipediaBot;  // This leads what looks like a circular memory-leak in the test suite, but not in real-life
+
+  function __construct(bool $no_user = FALSE) {
+    $this->ch = curl_init();
+    curl_setopt_array($this->ch, [
+        CURLOPT_FAILONERROR => TRUE, // This is a little paranoid, but we don't have trouble yet, and should deal with i
+        CURLOPT_FOLLOWLOCATION => TRUE,
+        CURLOPT_MAXREDIRS => 5,
+        CURLOPT_HEADER => 0, // Don't include header in output
+        CURLOPT_RETURNTRANSFER => TRUE,
+        CURLOPT_CONNECTTIMEOUT => 2,
+        CURLOPT_TIMEOUT => 20,
+        CURLOPT_COOKIESESSION => TRUE,
+        CURLOPT_COOKIEFILE => 'cookie.txt',
+        CURLOPT_COOKIEJAR => 'cookiejar.txt',
+        CURLOPT_USERAGENT => 'Citation_bot; citations@tools.wmflabs.org'
+    ]);
+    // setup.php must already be run at this point
+    if (!getenv('PHP_OAUTH_CONSUMER_TOKEN'))  report_error("PHP_OAUTH_CONSUMER_TOKEN not set");
+    if (!getenv('PHP_OAUTH_CONSUMER_SECRET')) report_error("PHP_OAUTH_CONSUMER_SECRET not set");
+    if (!getenv('PHP_OAUTH_ACCESS_TOKEN'))    report_error("PHP_OAUTH_ACCESS_TOKEN not set");
+    if (!getenv('PHP_OAUTH_ACCESS_SECRET'))   report_error("PHP_OAUTH_ACCESS_SECRET not set");
+
+    /** @psalm-suppress RedundantCondition */  /* PSALM thinks TRAVIS cannot be FALSE */
+    if (TRAVIS) {
+      $this->the_user = 'Citation_bot';
+    } elseif ($no_user) {           // @codeCoverageIgnore
+      $this->the_user = '';         // @codeCoverageIgnore
+    } else {
+      $this->authenticate_user();  // @codeCoverageIgnore
     }
-    if (!getenv('PHP_OAUTH_CONSUMER_TOKEN')) trigger_error("PHP_OAUTH_CONSUMER_TOKEN not set", E_USER_ERROR);
-    if (!getenv('PHP_OAUTH_ACCESS_TOKEN')) trigger_error("PHP_OAUTH_ACCESS_TOKEN not set", E_USER_ERROR);
-    $this->consumer = new Consumer(getenv('PHP_OAUTH_CONSUMER_TOKEN'), getenv('PHP_OAUTH_CONSUMER_SECRET'));
-    $this->token = new Token(getenv('PHP_OAUTH_ACCESS_TOKEN'), getenv('PHP_OAUTH_ACCESS_SECRET'));
+    $this->consumer = new Consumer((string) getenv('PHP_OAUTH_CONSUMER_TOKEN'), (string) getenv('PHP_OAUTH_CONSUMER_SECRET'));
+    $this->token = new Token((string) getenv('PHP_OAUTH_ACCESS_TOKEN'), (string) getenv('PHP_OAUTH_ACCESS_SECRET'));
+    self::$last_WikipediaBot = $this;
   }
   
   function __destruct() {
-    if ($this->ch) curl_close($this->ch);
+    curl_close($this->ch);
   }
   
-  public function username() {
-    $userQuery = $this->fetch(['action' => 'query', 'meta' => 'userinfo']);
-    return (isset($userQuery->query->userinfo->name)) ? $userQuery->query->userinfo->name : FALSE;
+  public function username() : string {
+    $userQuery = $this->fetch(['action' => 'query', 'meta' => 'userinfo'], 'GET');
+    return (isset($userQuery->query->userinfo->name)) ? $userQuery->query->userinfo->name : '';
   }
   
-  private function ret_okay($response) {
-    if ($response === CURLE_HTTP_RETURNED_ERROR) {
-      trigger_error("Curl encountered HTTP response error", E_USER_ERROR);
+  public function get_the_user() : string {
+    if ($this->the_user == '') {
+      report_error('User Not Set');         // @codeCoverageIgnore
+    }
+    return $this->the_user; // Might or might not match the above
+  }
+  
+  private function ret_okay(?object $response) : bool {
+    if (is_null($response)) {
+      report_minor_error('Wikipedia responce was not decoded.');  // @codeCoverageIgnore
+      return FALSE;                                               // @codeCoverageIgnore
     }
     if (isset($response->error)) {
-      if ($response->error->code == 'blocked') {
-        trigger_error('Account "' . $this->username() . 
-        '" or this IP is blocked from editing.', E_USER_ERROR); // Yes, Travis CI IPs are blocked, even to logged in users.
+      // @codeCoverageIgnoreStart
+      if ((string) $response->error->code == 'blocked') { // Travis CI IPs are blocked, even to logged in users.
+        report_error('Account "' . $this->username() .  '" or this IP is blocked from editing.');
+      } elseif (strpos((string) $response->error->info, 'The database has been automatically locked') !== FALSE) {
+        report_minor_error('Wikipedia database Locked.  Aborting changes for this page.  Will sleep and move on.');
+        sleep(10);
+        return TRUE;
+      } elseif (strpos((string) $response->error->info, 'abusefilter-warning-predatory') !== FALSE) {
+        report_minor_error('Wikipedia page contains predatory references.  Aborting changes for this page.  Will sleep and move on.');
+        return TRUE;
+      } elseif (strpos((string) $response->error->info, 'protected') !== FALSE) {
+        report_minor_error('Wikipedia page is protected from editing.  Aborting changes for this page.  Will sleep and move on.');
+        return TRUE;
       } else {
-        trigger_error('API call failed: ' . $response->error->info, E_USER_ERROR);
+        report_minor_error('API call failed: ' . (string) $response->error->info);
       }
       return FALSE;
+      // @codeCoverageIgnoreEnd
     }
     return TRUE;
   }
   
-  private function reset_curl() {
-    if (!$this->ch) {
-      $this->ch = curl_init();
-    }
-    return curl_setopt_array($this->ch, [
-        CURLOPT_FAILONERROR => TRUE, // #TODO Remove this line once debugging complete
-        CURLOPT_FOLLOWLOCATION => TRUE,
-        CURLOPT_MAXREDIRS => 5,
-        CURLOPT_HEADER => FALSE, // Don't include header in output
-        CURLOPT_HTTPGET => TRUE, // Reset to default GET
-        CURLOPT_RETURNTRANSFER => TRUE,
-        
-        CURLOPT_CONNECTTIMEOUT => 2,
-        CURLOPT_TIMEOUT => 20,
-        
-        CURLOPT_COOKIESESSION => TRUE,
-        CURLOPT_COOKIEFILE => 'cookie.txt',
-        CURLOPT_COOKIEJAR => 'cookiejar.txt',
-        CURLOPT_URL => API_ROOT,
-        CURLOPT_USERAGENT => 'Citation bot'
-      ]);
-  }
-  
-  public function fetch($params, $method = 'GET') {
-    if (!$this->reset_curl()) {
-      curl_close($this->ch);
-      trigger_error('Could not initialize CURL resource: ' .
-        echoable(curl_error($this->ch)), E_USER_ERROR);
-      return FALSE;
-    }
+  public function fetch(array $params, string $method, int $depth = 1) : ?object {
+    if ($depth > 1) sleep($depth);
+    if ($depth > 5) return NULL;
     $params['format'] = 'json';
-    
-  
+     
     $request = Request::fromConsumerAndToken($this->consumer, $this->token, $method, API_ROOT, $params);
     $request->signRequest(new HmacSha1(), $this->consumer, $this->token);
     $authenticationHeader = $request->toHeader();
@@ -89,148 +114,167 @@ class WikipediaBot {
         case 'get':
           $url = API_ROOT . '?' . http_build_query($params);            
           curl_setopt_array($this->ch, [
+            CURLOPT_HTTPGET => TRUE,
             CURLOPT_URL => $url,
             CURLOPT_HTTPHEADER => [$authenticationHeader],
           ]);
           set_time_limit(45);
-          $data = curl_exec($this->ch);
+          $data = (string) @curl_exec($this->ch);
           if (!$data) {
-            trigger_error("Curl error: " . echoable(curl_error($this->ch)), E_USER_NOTICE);
-            return FALSE;
+            report_error("Curl error: " . echoable(curl_error($this->ch)));        // @codeCoverageIgnore
+            return NULL;                                                           // @codeCoverageIgnore
           }
           $ret = @json_decode($data);
           set_time_limit(120);
           if (isset($ret->error->code) && $ret->error->code == 'assertuserfailed') {
+            // @codeCoverageIgnoreStart
             unset($data);
             unset($ret);
-            return $this->fetch($params, $method);
+            return $this->fetch($params, $method, $depth+1);
+            // @codeCoverageIgnoreEnd
           }
-          return ($this->ret_okay($ret)) ? $ret : FALSE;
+          return ($this->ret_okay($ret)) ? $ret : NULL;
           
         case 'post':
           curl_setopt_array($this->ch, [
             CURLOPT_POST => TRUE,
             CURLOPT_POSTFIELDS => http_build_query($params),
             CURLOPT_HTTPHEADER => [$authenticationHeader],
+            CURLOPT_URL => API_ROOT
           ]);
           set_time_limit(45);
-          $data = curl_exec($this->ch);
+          $data = (string) @curl_exec($this->ch);
           if ( !$data ) {
-            report_warning("Curl error: " . echoable(curl_error($this->ch)));
-            exit(0);
+            report_error("Curl error: " . echoable(curl_error($this->ch)));     // @codeCoverageIgnore
           }
           $ret = @json_decode($data);
           set_time_limit(120);    
-          if (isset($ret->error) && $ret->error->code == 'assertuserfailed') {
+          if (isset($ret->error) && (
+            (string) $ret->error->code === 'assertuserfailed' ||
+            stripos((string) $ret->error->info, 'The database has been automatically locked') !== FALSE ||
+            stripos((string) $ret->error->info, 'abusefilter-warning-predatory') !== FALSE ||
+            stripos((string) $ret->error->info, 'protected') !== FALSE)
+          ) {
+            // @codeCoverageIgnoreStart
             unset($data);
             unset($ret);
-            return $this->fetch($params, $method);
+            return $this->fetch($params, $method, $depth+1);
+            // @codeCoverageIgnoreEnd
           }
-          return ($this->ret_okay($ret)) ? $ret : FALSE;
-          
-        report_warning("Unrecognized method."); // @codecov ignore - will only be hit if error in our code
-        return FALSE;
+          return ($this->ret_okay($ret)) ? $ret : NULL;
+
+        default:  // will only be hit if error in our code
+          report_error("Unrecognized method in Fetch."); // @codeCoverageIgnore
       }
-    } catch(OAuthException $E) {
+    } catch(Exception $E) {
       report_warning("Exception caught!\n");
-      report_info("Response: ". $E->lastResponse);
+      report_info("Response: ". $E->getMessage());
     }
-    return FALSE;
+    return NULL;
   }
   
-  public function write_page($page, $text, $editSummary, $lastRevId = NULL, $startedEditing = NULL) {
-    $response = $this->fetch(array(
+  public function write_page(string $page, string $text, string $editSummary, int $lastRevId, string $startedEditing) : bool {
+    $response = $this->fetch([
             'action' => 'query',
             'prop' => 'info|revisions',
             'rvprop' => 'timestamp',
             'meta' => 'tokens',
             'titles' => $page
-          ));
+          ], 'GET');
     
     if (!$response) {
-      trigger_error("Write request failed", E_USER_WARNING);
-      return FALSE;
+      report_error("Write request failed");     // @codeCoverageIgnore
     }
     if (isset($response->warnings)) {
+      // @codeCoverageIgnoreStart
       if (isset($response->warnings->prop)) {
-        trigger_error((string) $response->warnings->prop->{'*'}, E_USER_WARNING);
+        report_error((string) $response->warnings->prop->{'*'});
       }
       if (isset($response->warnings->info)) {
-        trigger_error((string) $response->warnings->info->{'*'}, E_USER_WARNING);
+        report_error((string) $response->warnings->info->{'*'});
       }
+      // @codeCoverageIgnoreEnd
     }
     if (!isset($response->batchcomplete)) {
-      trigger_error("Write request triggered no response from server", E_USER_WARNING);
-      return FALSE;
+      report_error("Write request triggered no response from server");   // @codeCoverageIgnore
     }
     
+    if (!isset($response->query->pages)) {
+      report_error("Pages array is non-existent.  Aborting.");   // @codeCoverageIgnore
+    }
     $myPage = reset($response->query->pages); // reset gives first element in list
     
     if (!isset($myPage->lastrevid)) {
-      trigger_error("Page seems not to exist. Aborting.", E_USER_WARNING);
-      return FALSE;
+      report_error("Page seems not to exist. Aborting.");   // @codeCoverageIgnore
     }
     $baseTimeStamp = $myPage->revisions[0]->timestamp;
     
-    if ((!is_null($lastRevId) && $myPage->lastrevid != $lastRevId)
-     || (!is_null($startedEditing) && strtotime($baseTimeStamp) > strtotime($startedEditing))) {
-      trigger_error("Possible edit conflict detected. Aborting.", E_USER_WARNING);
-      return FALSE;
+    if (($lastRevId != 0 && $myPage->lastrevid != $lastRevId)
+     || ($startedEditing != '' && strtotime($baseTimeStamp) > strtotime($startedEditing))) {
+      report_minor_error("Possible edit conflict detected. Aborting.");      // @codeCoverageIgnore
+      return FALSE;                                                          // @codeCoverageIgnore
     }
     if (stripos($text, "CITATION_BOT_PLACEHOLDER") != FALSE)  {
-      trigger_error("\n ! Placeholder left escaped in text. Aborting.", E_USER_ERROR);
-      return FALSE;
+      report_minor_error("\n ! Placeholder left escaped in text. Aborting.");  // @codeCoverageIgnore
+      return FALSE;                                                            // @codeCoverageIgnore
     }
     
     // No obvious errors; looks like we're good to go ahead and edit
+    $auth_token = $response->query->tokens->csrftoken; // Citation bot tokens
     $submit_vars = array(
         "action" => "edit",
         "title" => $page,
         "text" => $text,
         "summary" => $editSummary,
-        "minor" => "1",
+        "notminor" => "1",
         "bot" => "1",
         "basetimestamp" => $baseTimeStamp,
         "starttimestamp" => $startedEditing,
         #"md5"       => hash('md5', $data), // removed by MS because I can't figure out how to make the hash of the UTF-8 encoded string that I send match that generated by the server.
         "watchlist" => "nochange",
         "format" => "json",
-        'token' => $response->query->tokens->csrftoken,
+        'token' => $auth_token,
     );
     $result = $this->fetch($submit_vars, 'POST');
     
     if (isset($result->error)) {
-      trigger_error("Write error: " . 
+      // @codeCoverageIgnoreStart
+      report_error("Write error: " . 
                     echoable(strtoupper($result->error->code)) . ": " . 
                     str_replace(array("You ", " have "), array("This bot ", " has "), 
-                    echoable($result->error->info)), E_USER_ERROR);
-      return FALSE;
+                    echoable($result->error->info)));
+      // @codeCoverageIgnoreEnd
     } elseif (isset($result->edit)) {
+      // @codeCoverageIgnoreStart
       if (isset($result->edit->captcha)) {
-        trigger_error("Write error: We encountered a captcha, so can't be properly logged in.", E_USER_ERROR);
-        return FALSE;
+        report_error("Write error: We encountered a captcha, so can't be properly logged in.");
       } elseif ($result->edit->result == "Success") {
         // Need to check for this string whereever our behaviour is dependant on the success or failure of the write operation
+        /** @psalm-suppress TypeDoesNotContainType */ /* PSALM thinks HTML_OUTPUT cannot be false */ // TODO - fix https://github.com/vimeo/psalm/issues/4024
         if (HTML_OUTPUT) {
-          echo "\n <span style='reddish'>Written to <a href='" 
+          report_inline("\n <span style='reddish'>Written to <a href='" 
           . WIKI_ROOT . "?title=" . urlencode($myPage->title) . "'>" 
-          . echoable($myPage->title) . '</a></span>';
+          . echoable($myPage->title) . '</a></span>');
+        } else {
+          report_inline("\n Written to " . echoable($myPage->title) . ". \n");
         }
-        else echo "\n Written to " . echoable($myPage->title) . '.  ';
         return TRUE;
       } elseif (isset($result->edit->result)) {
         report_warning(echoable('Attempt to write page returned error: ' .  $result->edit->result));
         return FALSE;
       }
+      // @codeCoverageIgnoreEnd
     } else {
-      trigger_error("Unhandled write error.  Please copy this output and " .
-                    "<a href='https://github.com/ms609/citation-bot/issues/new'>" .
-                    "report a bug.</a>", E_USER_ERROR);
-      return FALSE;
+      // @codeCoverageIgnoreStart
+      if (!TRAVIS) report_error("Unhandled write error.  Please copy this output and " .
+                    "<a href='https://en.wikipedia.org/wiki/User_talk:Citation_bot'>" .
+                    "report a bug.</a>.  There is no need to report the database being locked unless it continues to be a problem. ");
+      // @codeCoverageIgnoreEnd
     }
+    return FALSE;
   }
   
-  public function category_members($cat){
+  public function category_members(string $cat) : array {
     $list = [];
     $vars = [
       "cmtitle" => "Category:$cat", // Don't URLencode.
@@ -244,11 +288,16 @@ class WikipediaBot {
       $res = $this->fetch($vars, 'POST');
       if (isset($res->query->categorymembers)) {
         foreach ($res->query->categorymembers as $page) {
-          // We probably only want to visit pages in the main namespace.  Remove any talk: etc at the start of the page name.
-          $list[] = str_replace(array('_talk:', ' talk:'), ':', (string) $page->title); 
+          // We probably only want to visit pages in the main namespace
+          if (stripos($page->title, 'talk:') === FALSE &&
+              stripos($page->title, 'Template:') === FALSE &&
+              stripos($page->title, 'Special:') === FALSE &&
+              stripos($page->title, 'Wikipedia:') === FALSE) {
+            $list[] = $page->title;
+          }
         }
       } else {
-        trigger_error('Error reading API from ' . echoable($url) . "\n\n", E_USER_WARNING);
+        report_error('Error reading API for category ' . echoable($cat) . "\n\n");   // @codeCoverageIgnore
       }
       $vars["cmcontinue"] = isset($res->continue) ? $res->continue->cmcontinue : FALSE;
     } while ($vars["cmcontinue"]);
@@ -257,27 +306,26 @@ class WikipediaBot {
   }
   
   // Returns an array; Array ("title1", "title2" ... );
-  public function what_transcludes($template, $namespace = 99){
+  public function what_transcludes(string $template, int $namespace = 99) : array {
     $titles = $this->what_transcludes_2($template, $namespace);
     return $titles["title"];
   }
 
-  protected function what_transcludes_2($template, $namespace = 99) {
-    
+  protected function what_transcludes_2(string $template, int $namespace = 99) : array {
     $vars = Array (
       "action" => "query",
       "list" => "embeddedin",
       "eilimit" => "5000",
       "eititle" => "Template:" . $template,
-      "einamespace" => ($namespace==99)?"":$namespace,
+      "einamespace" => ($namespace==99)?"":(string)$namespace,
     );
     $list = ['title' => NULL];
     
     do {
       set_time_limit(20);
       $res = $this->fetch($vars, 'POST');
-      if (isset($res->query->embeddedin->ei)) {
-        trigger_error('Error reading API from ' . echoable($url), E_USER_NOTICE);
+      if (isset($res->query->embeddedin->ei) || $res == NULL) {
+        report_error('Error reading API for template/namespace: ' . echoable($template) . '/' . echoable(($namespace==99)?"Normal":(string)$namespace));   // @codeCoverageIgnore
       } else {
         foreach($res->query->embeddedin as $page) {
           $list["title"][] = $page->title;
@@ -290,37 +338,28 @@ class WikipediaBot {
     return $list;
   }
 
-  /**
-   * Unused
-   * @codeCoverageIgnore
-   */
-  public function wikititle_encode($in) {
-    return str_replace(DOT_DECODE, DOT_ENCODE, $in);
-  }
-
-  public function get_last_revision($page) {
-    $res = $this->fetch(Array(
+  public function get_last_revision(string $page) : string {
+    $res = $this->fetch([
         "action" => "query",
         "prop" => "revisions",
         "titles" => $page,
-      ));
+      ], 'GET');
     if (!isset($res->query->pages)) {
-        trigger_error("Failed to get article's last revision", E_USER_NOTICE);
-        return FALSE;
+        report_error("Failed to get article's last revision");      // @codeCoverageIgnore
+        return '';                                                  // @codeCoverageIgnore
     }
     $page = reset($res->query->pages);
-    return  (isset($page->revisions[0]->revid) ? $page->revisions[0]->revid : FALSE);
+    return  (isset($page->revisions[0]->revid) ? (string) $page->revisions[0]->revid : '');
   }
 
-  public function get_prefix_index($prefix, $namespace = 0, $start = "") {
+  public function get_prefix_index(string $prefix, int $namespace = 0, string $start = "") : array {
     $page_titles = [];
-    # $page_ids = [];
-    $vars["apfrom"] = $start;
     $vars = ["action" => "query",
       "list" => "allpages",
       "apnamespace" => $namespace,
       "apprefix" => $prefix,
       "aplimit" => "500",
+      "apfrom" => $start
     ];
     
     do {
@@ -332,138 +371,134 @@ class WikipediaBot {
           # $page_ids[] = $page->pageid;
         }
       } else {
-        trigger_error('Error reading API with vars ' . http_build_query($vars), E_USER_NOTICE);
-        if (isset($res->error)) echo $res->error;
+        report_error('Error reading API with vars ' . http_build_query($vars));     // @codeCoverageIgnore
+        if (isset($res->error)) echo $res->error;                                   // @codeCoverageIgnore
       }
       $vars["apfrom"] = isset($res->continue) ? $res->continue->apcontinue : FALSE;
     } while ($vars["apfrom"]);
     set_time_limit(120);
     return $page_titles;
   }
-
-  public function get_namespace($page) {
+  public function get_namespace(string $page) : int {
     $res = $this->fetch([
         "action" => "query",
         "prop" => "info",
         "titles" => $page,
-        ]); 
+        ], 'GET'); 
     if (!isset($res->query->pages)) {
-        report_warning("Failed to get article namespace");
-        return FALSE;
+        report_warning("Failed to get article namespace");       // @codeCoverageIgnore
+        return -99999;                                             // @codeCoverageIgnore
     }
     return (int) reset($res->query->pages)->ns;
   }
-
-  # @return -1 if page does not exist; 0 if exists and not redirect; 1 if is redirect.
-  public function is_redirect($page) {
-    $res = $this->fetch(Array(
+  # @return -1 if page does not exist; 0 if exists and not redirect; 1 if is redirect
+  static public function is_redirect(string $page) : int {
+    $api = isset(self::$last_WikipediaBot) ? self::$last_WikipediaBot : (new WikipediaBot(TRUE));
+    $res = $api->fetch([
         "action" => "query",
         "prop" => "info",
         "titles" => $page,
-        ), 'POST');
+        ], 'POST');
     
     if (!isset($res->query->pages)) {
-        report_warning("Failed to get redirect status");
-        return -1;
+        report_warning("Failed to get redirect status");    // @codeCoverageIgnore
+        return -1;                                          // @codeCoverageIgnore
     }
     $res = reset($res->query->pages);
     return (isset($res->missing) ? -1 : (isset($res->redirect) ? 1 : 0));
   }
-
-  /**
-   * Unused
-   * @codeCoverageIgnore
-   */
-  public function redirect_target($page) {
-    $res = $this->fetch(Array(
+  public function redirect_target(string $page) : ?string {
+    $res = $this->fetch([
         "action" => "query",
         "redirects" => "1",
         "titles" => $page,
-        ), 'POST');
-    if (!isset($res->pages->page)) {
-        report_warning("Failed to get redirect target");
-        return FALSE;
+        ], 'POST');
+    if (!isset($res->query->redirects[0]->to)) {
+        report_warning("Failed to get redirect target");     // @codeCoverageIgnore
+        return NULL;                                         // @codeCoverageIgnore
     }
-    return $xml->pages->page["title"];
+    return (string) $res->query->redirects[0]->to;
   }
-
-  /**
-   * Unused
-   * @codeCoverageIgnore
-   */
-  public function parse_wikitext($text, $title = "API") {
-    $vars = array(
-          'format' => 'json',
-          'action' => 'parse',
-          'text'   => $text,
-          'title'  => $title,
-      );
-    $res = $this->fetch($vars, 'POST');
-    if (!$res) {
-      // Wait a sec and try again
-      sleep(2);
-      $res = $this->fetch($vars, 'POST');
-    }
-    if (!isset($res->parse->text)) {
-      trigger_error("Could not parse text of $title.", E_USER_WARNING);
-      return FALSE;
-    }
-    return $res->parse->text->{"*"};
-  }
-
-  public function namespace_id($name) {
+  public function namespace_id(string $name) : int {
     $lc_name = strtolower($name);
-    return array_key_exists($lc_name, NAMESPACE_ID) ? NAMESPACE_ID[$lc_name] : NULL;
+    return array_key_exists($lc_name, NAMESPACE_ID) ? (int) NAMESPACE_ID[$lc_name] : 0;
   }
-
-  public function namespace_name($id) {
+  public function namespace_name(int $id) : ?string {
     return array_key_exists($id, NAMESPACES) ? NAMESPACES[$id] : NULL;
   }
-
-  // TODO mysql login is failing.
-    /*
-     * unused
-   * @codeCoverageIgnore
-   */
-  public function article_id($page, $namespace = 0) {
-    if (stripos($page, ':')) {
-      $bits = explode(':', $page);
-      if (isset($bits[2])) return NULL; # Too many colons; improperly formatted page name?
-      $namespace = $this->namespace_id($bits[0]);
-      if (is_null($namespace)) return NULL; # unrecognized namespace
-      $page = $bits[1];
-    }
-    $page = addslashes(str_replace(' ', '_', strtoupper($page[0]) . substr($page,1)));
-    $enwiki_db = udbconnect('enwiki_p', 'enwiki.labsdb');
-    if (defined('PHP_VERSION_ID') && (PHP_VERSION_ID >= 50600)) { 
-       $result = NULL; // mysql_query does not exist in PHP 7
-    } else {
-       $result = @mysql_query("SELECT page_id FROM page WHERE page_namespace='" . addslashes($namespace)
-            . "' && page_title='$page'");
-    }
-    if (!$result) {
-      echo @mysql_error();
-      @mysql_close($enwiki_db);
-      return NULL;
-    }
-    $results = @mysql_fetch_array($result, MYSQL_ASSOC);
-    @mysql_close($enwiki_db);
-    if (!$results) return NULL;
-    return $results['page_id'];
+  
+  static public function is_valid_user(string $user) : bool {
+    if (!$user) return FALSE;
+    $ch = curl_init();
+    curl_setopt_array($ch, [
+      CURLOPT_HEADER => 0,
+      CURLOPT_RETURNTRANSFER => TRUE,
+      CURLOPT_TIMEOUT => 20,
+      CURLOPT_USERAGENT => 'Citation_bot; citations@tools.wmflabs.org',
+      CURLOPT_URL => API_ROOT . '?action=query&usprop=blockinfo&format=json&list=users&ususers=' . urlencode(str_replace(" ", "_", $user))
+    ]);
+    $response = (string) @curl_exec($ch);
+    curl_close($ch);
+    if ($response == '') return FALSE;
+    $response = str_replace(array("\r", "\n"), '', $response);  // paranoid
+    if (strpos($response, '"invalid"') !== FALSE) return FALSE; // IP Address and similar stuff
+    if (strpos($response, '"blockid"') !== FALSE) return FALSE; // Valid but blocked
+    if (strpos($response, '"missing"') !== FALSE) return FALSE; // No such account
+    if (strpos($response, '"userid"')  === FALSE) return FALSE; // Double check, should actually never return FALSE here
+    return TRUE;
   }
-
-  /**
-   * Unused
-   * @codeCoverageIgnore
-   */
-  public function touch_page($page) {
-    $text = $this->get_raw_wikitext($page);
-    if ($text) {
-      $this->write_page($page, $text, " Touching page to update categories.  ** THIS EDIT SHOULD PROBABLY BE REVERTED ** as page content will only be changed if there was an edit conflict.");
-      return TRUE;
-    } else {
-      return FALSE;
-    }
+  
+  static public function NonStandardMode() : bool {
+    return !TRAVIS && isset(self::$last_WikipediaBot) && self::$last_WikipediaBot->get_the_user() === 'AManWithNoPlan';
   }
-
+  
+/**
+ * Human interaction needed
+ * @codeCoverageIgnore
+ */
+  private function authenticate_user() : void {
+    if (session_status() !== PHP_SESSION_ACTIVE) report_error('No active session found'); // Tried to create more than one WikipediaBot() instance?!
+    // These would be old and unusable if we are here
+    unset($_SESSION['request_key']);
+    unset($_SESSION['request_secret']);
+    if (isset($_SESSION['citation_bot_user_id'])) {
+      if (is_string($_SESSION['citation_bot_user_id']) && self::is_valid_user($_SESSION['citation_bot_user_id'])) {
+        $this->the_user = $_SESSION['citation_bot_user_id'];
+        @setcookie(session_name(),session_id(),time()+(24*3600)); // 24 hours
+        session_write_close(); // Done with it
+        return;
+      } else {
+        unset($_SESSION['citation_bot_user_id']);
+      }
+    }
+    if (isset($_SESSION['access_key']) && isset($_SESSION['access_secret'])) {
+     try {
+      $user_token = new Token($_SESSION['access_key'], $_SESSION['access_secret']);
+      // Validate the credentials.
+      $conf = new ClientConfig(WIKI_ROOT . '?title=Special:OAuth');
+      if (!getenv('PHP_WP_OAUTH_CONSUMER')) report_error("PHP_WP_OAUTH_CONSUMER not set");
+      if (!getenv('PHP_WP_OAUTH_SECRET'))   report_error("PHP_WP_OAUTH_SECRET not set");
+      $conf->setConsumer(new Consumer((string) getenv('PHP_WP_OAUTH_CONSUMER'), (string) getenv('PHP_WP_OAUTH_SECRET')));
+      $client = new Client($conf);
+      $ident = $client->identify( $user_token );
+      $user = (string) $ident->username;
+      if (!self::is_valid_user($user)) {
+        unset($_SESSION['access_key']);
+        unset($_SESSION['access_secret']);
+        report_error('User is either invalid or blocked on ' . WIKI_ROOT);
+      }
+      $this->the_user = $user;
+      $_SESSION['citation_bot_user_id'] = $this->the_user;
+      session_write_close(); // Done with the session
+      return;
+     }
+     catch (Throwable $e) { ; }
+    }
+    unset($_SESSION['access_key']);
+    unset($_SESSION['access_secret']);
+    $return = urlencode($_SERVER['REQUEST_URI']);
+    session_write_close();
+    @header("Location: authenticate.php?return=" . $return);
+    exit(0);
+  }
 }

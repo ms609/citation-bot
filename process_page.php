@@ -1,6 +1,14 @@
 <?php
-## Set up - including DOT_DECODE array
-define("HTML_OUTPUT", !isset($argv));
+declare(strict_types=1);
+
+@session_start();
+@header( 'Content-type: text/html; charset=utf-8' );
+@header("Content-Encoding: None", TRUE);
+
+require_once('setup.php');
+
+$api = new WikipediaBot();
+/** @psalm-suppress RedundantCondition */ /* PSALM thinks HTML_OUTPUT cannot be FALSE */
 if (HTML_OUTPUT) {?>
 <!DOCTYPE html>
 <html lang="en" dir="ltr">
@@ -15,7 +23,7 @@ if (HTML_OUTPUT) {?>
         </head>
 <body>
   <header>
-    <p>Follow <a href="https://en.wikipedia.org/wiki/User:Citation_bot">Citation&nbsp;bot</a>&rsquo;s progress below.</p>
+    <p>Follow <a href="https://en.wikipedia.org/wiki/User:Citation_bot">Citation&nbsp;bot</a>&rsquo;s&nbsp;progress&nbsp;below.</p>
     <p>
       <a href="https://en.wikipedia.org/wiki/User:Citation_bot/use" target="_blank" title="Using Citation Bot">How&nbsp;to&nbsp;Use&nbsp;/&nbsp;Tips&nbsp;and&nbsp;Tricks</a> |
       <a href="https://en.wikipedia.org/wiki/Special:Contributions/Citation_bot" target="_blank" title="Recent contributions">Bot&rsquo;s&nbsp;recent&nbsp;edits</a> |
@@ -27,66 +35,117 @@ if (HTML_OUTPUT) {?>
 <pre id="botOutput">
 <?php
 }
-require_once("expandFns.php");
-$user = isset($_REQUEST["user"]) ? $_REQUEST["user"] : NULL;
-if (is_valid_user($user)) {
-  echo " Activated by $user. The bot will automatically make edit(s) if it can.\n";
-  $edit_summary_end = " | [[User:$user|$user]]";
+
+check_blocked();
+
+$edit_summary_end = "| Suggested by " . $api->get_the_user() . " ";
+$final_edit_overview = "";
+
+if (isset($argv[1])) {
+  $pages = (string) $argv[1];
+} elseif (isset($_GET["page"])) {
+  $pages = (string) $_GET["page"];
+  if (strpos($pages, '|') !== FALSE) {
+    report_error('We do not support multiple pages passed as part of the URL anymore. Use the webform.');
+  }
+} elseif (isset($_POST["page"])) {
+  $pages = (string) $_POST["page"];
 } else {
-  $edit_summary_end = " | [[WP:UCB|User-activated]].";
+  report_warning('Nothing requested -- OR -- pages got lost during initial authorization ');
+  $pages = ''; // Errors out below
 }
 
-$pages = (isset($argv) && isset($argv[1])) // argv set on command line
-       ? $argv[1] : trim(ucfirst(strip_tags($_REQUEST["page"])));
-if (!isset($ON)) $ON = isset($argv[2]);
+if (isset($_REQUEST["edit"]) && $_REQUEST["edit"]) {
+   $ON = TRUE;
+   if ($_REQUEST["edit"] == 'automated_tools') {
+      $edit_summary_end = $edit_summary_end . "| via #UCB_automated_tools ";
+   } elseif ($_REQUEST["edit"] == 'toolbar') {
+      $edit_summary_end = $edit_summary_end . "| via #UCB_toolbar ";
+   } elseif ($_REQUEST["edit"] == 'webform') {
+      $edit_summary_end = $edit_summary_end . "| via #UCB_webform ";
+   } elseif ($_REQUEST["edit"] == 'Headbomb') {
+      $edit_summary_end = $edit_summary_end . "| via #UCB_Headbomb ";
+   } elseif ($_REQUEST["edit"] == 'Smith609') {
+      $edit_summary_end = $edit_summary_end . "| via #UCB_Smith609 ";
+   } elseif ($_REQUEST["edit"] == 'arXiv') {
+      $edit_summary_end = $edit_summary_end . "| via #UCB_arXiv ";
+   } else {
+      $edit_summary_end = $edit_summary_end . "| via #UCB_Other ";
+   }
+}
+if (!isset($ON)) {
+  $ON = isset($argv[2]);
+  /** @psalm-suppress RedundantCondition */ /* PSALM thinks HTML_OUTPUT cannot be FALSE */
+  if (HTML_OUTPUT) {
+     $edit_summary_end = $edit_summary_end . "| via #UCB_webform ";  // Assuming
+  } else {
+     $edit_summary_end = $edit_summary_end . "| via #UCB_CommandLine ";
+  }
+}
 
-foreach (explode('|', $pages) as $title) {
-
-
-  if (trim($title) === '') {  // Default is to edit Wikipedia's main page if user just clicks button.  Let's not even try
+$my_page = new Page();
+gc_collect_cycles();
+$pages_to_do = array_unique(explode('|', $pages));
+$done = 0;
+$total = count($pages_to_do);
+foreach ($pages_to_do as $page_title) {
+  $done++;
+  if (trim($page_title) === '') {  // Default is to edit Wikipedia's main page if user just clicks button.  Let's not even try
      echo "\n\n No page given.  <a href='./' title='Main interface'>Specify one here</a>. \n\n";
      continue;
   }
-
-  report_phase("Expanding '" . echoable($title) . "'; " . ($ON ? "will" : "won't") . " commit edits.");
-  $my_page = new Page();
-  $api = new WikipediaBot();
-  if ($my_page->get_text_from($title, $api)) {
+  // $page->expand_text will take care of this notice if we are in HTML mode.
+  html_echo('', "\n\n\n*** Processing page '" . echoable($page_title) . "' : " . date("H:i:s") . "\n");
+  if ($my_page->get_text_from($page_title, $api)) {
     $text_expanded = $my_page->expand_text();
     if ($text_expanded && $ON) {
-      while (!$my_page->write($api, $edit_summary_end) && $attempts < 2) {
-        ++$attempts;
+      $attempts = 0;
+      if ($total > 1) {
+        $extra_end = (string) $done . '/' . (string) $total . ' ';
+      } else {
+        $extra_end = '';
       }
-      if ($attempts < 3 ) {
+      while (!$my_page->write($api, $edit_summary_end . $extra_end) && $attempts < MAX_TRIES) ++$attempts;
+      if ($attempts < MAX_TRIES ) {
+        $last_rev = urlencode($api->get_last_revision($page_title));
         html_echo(
-          " <small><a href=" . WIKI_ROOT . "?title=" . urlencode($title) . "&diff=prev&oldid="
-          . urlencode($api->get_last_revision($title)) . ">diff</a> | "
-          . "<a href=" . WIKI_ROOT . "?title=" . urlencode($title) . "&action=history>history</a></small></i>\n\n"
+          "\n <small><a href=" . WIKI_ROOT . "?title=" . urlencode($page_title) . "&diff=prev&oldid="
+          . $last_rev . ">diff</a> | "
+          . "<a href=" . WIKI_ROOT . "?title=" . urlencode($page_title) . "&action=history>history</a></small></i>\n\n"
           , ".");
+        $final_edit_overview .=
+          "\n [ <a href=" . WIKI_ROOT . "?title=" . urlencode($page_title) . "&diff=prev&oldid="
+          . $last_rev . ">diff</a>" .
+          " | <a href=" . WIKI_ROOT . "?title=" . urlencode($page_title) . "&action=history>history</a> ] " . "<a href=" . WIKI_ROOT . "?title=" . urlencode($page_title) . ">" . echoable($page_title) . "</a>";
       } else {
         echo "\n # Failed. Text was:\n" . echoable($my_page->parsed_text());
+        $final_edit_overview .= "\n Write failed.      " . "<a href=" . WIKI_ROOT . "?title=" . urlencode($page_title) . ">" . echoable($page_title) . "</a>";
       }
     } elseif (!$ON && HTML_OUTPUT) {
-      echo "\n # Proposed code for " . echoable($title) . ', which you have asked the bot to commit with edit summary ' . echoable($my_page->edit_summary()) . "<br><pre>";
-      safely_echo($my_page->parsed_text());
+      echo "\n # Proposed code for " . echoable($page_title) . ', which you have asked the bot to commit with edit summary ' . echoable($my_page->edit_summary()) . "<br><pre>";
+      echo echoable($my_page->parsed_text());
       echo "</pre>";
   ?>
   <form method="post" action="process_page.php">
-    <input type="hidden" name="page" value="<?php echo $title;?>" />
-    <input type="hidden" name="user" value="<?php echo $user;?>" />
-    <input type="hidden" name="edit" value="on" />
-    <input type="hidden" name="slow" value="<?php echo $SLOW_MODE;?>" />
+    <input type="hidden" name="page" value="<?php echo urlencode(str_replace(' ', '_', $page_title));?>" />
+    <input type="hidden" name="edit" value="webform" />
+    <input type="hidden" name="slow" value="<?php echo (string) SLOW_MODE;?>" />
     <input type="submit" value="Submit edits" />
   </form>
   <?php
     } else {
       report_phase($my_page->parsed_text() ? 'No changes required.' : 'Blank page');
+      $final_edit_overview .= "\n No changes needed. " . "<a href=" . WIKI_ROOT . "?title=" . urlencode($page_title) . ">" . echoable($page_title) . "</a>";
     }
+    echo "\n";
   } else {
-    echo "\n Page      '" . htmlspecialchars($title) . "' not found.";
+    echo "\n Page      '" . htmlspecialchars($page_title) . "' not found.";
   }
 }
-ob_end_flush();
+if (strpos($pages, '|') !== FALSE) {
+  $final_edit_overview .= "\n\n" . ' To get the best results, see our helpful <a href="https://en.wikipedia.org/wiki/User:Citation_bot/use">user guides</a>' . "\n\n";
+  html_echo($final_edit_overview, '');
+}
 ?>
     </pre>
     <footer>

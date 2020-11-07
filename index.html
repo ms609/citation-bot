@@ -1,52 +1,52 @@
+<!DOCTYPE html>
 <html lang="en" dir="ltr">
-	<head>
-		<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-		<link rel="apple-touch-icon" href="https://en.wikipedia.org/apple-touch-icon.png" />
-		<link rel="copyright" href="https://www.gnu.org/copyleft/fdl.html" />
-    <link rel="stylesheet" type="text/css" href="css/results.css" />
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+  <link rel="apple-touch-icon" href="https://en.wikipedia.org/apple-touch-icon.png" />
+  <link rel="copyright" href="https://www.gnu.org/copyleft/fdl.html" />
+  <link rel="stylesheet" type="text/css" href="css/results.css" />
   <meta content="A bot to automatically tidy and complete citations on Wikipedia, the free encyclopaedia" name="description" />
   <title>
    Citation bot
   </title>   
   <script type="text/javascript" src="js/index.js"></script>
 </head>  
-<body style="direction: ltr;" class="mediawiki ns--1 ltr page-Spezial_Beiträge">
+<body class="mediawiki ns--1 ltr page-Spezial_Beiträge">
   <header>
     <h1>Wikipedia citation bot</h1>
-    <p>Populates empty fields in {{cite journal}} family templates, and 
-    fix other citation issues.</p>
+    <p>Populates empty fields in {{cite journal}} family templates, and fix other citation issues.</p>
   </header>
   <form id="botForm" action="process_page.php" method="post">
     <p>
-      <label for="user">Please enter your Wikipedia username to sign the bot's edits.</label><br />
-      <input name="user" id="user" value="" onchange="SaveUsername();" placeholder="Username" /> 
-      <input type="checkbox" id="saveUsername" name="saveUsername" onchange="SaveUsername();" /> 
-      <label for="saveUsername">Remember?</label>
-    </p>
-    <p>
-      <input type="checkbox" name="slow" checked />
+      <input type="checkbox" name="slow" id="slow" checked />
       <label for="slow">Thorough mode - a slower, but more exhaustive, search. Finds bibcodes and flags "broken" DOIs.</label>
     </p>
     <p>
-      <input type="checkbox" name="edit" checked />
+      <input type="checkbox" name="edit" id="edit" value="webform" checked />
       <label for="edit">Commit edits.  Leave blank to check Wikicode.</label>
     </p>
     <p>
+      <code>Single page:&nbsp;</code>
       <input name="page" id="botPage" value="" placeholder="Page name" />
-      <label for="page">
         <button type="submit" name="pageSubmit" id="PageSubmit" value="Process page" formaction="process_page.php">Process page</button>
-        <img style="display:none" src="img/spinner_18_18.gif" id="PageSpinner" />
+        <img style="display:none" src="img/spinner_18_18.gif" id="PageSpinner" alt="" />
         <br />Separate multiple pages with a pipe (<code>Page 1|Page 2</code>)
-      </label>
     </p>
     <p>– or –</p>
     <p>
       <code>Category:&nbsp;</code>
       <input name="cat" id="botCat" value="" placeholder="Category name" />
-      <label for="cat">
         <button type="submit" name="catSubmit" id="CatSubmit" value="Process category" formaction="category.php">Process pages in category</button>
-        <img style="display:none" src="img/spinner_18_18.gif" id="CatSpinner" />
-      </label><br />
+        <img style="display:none" src="img/spinner_18_18.gif" id="CatSpinner" alt="" />
+        <br />
+    </p>
+    <p>– or –</p>
+    <p>
+      <code>Linked pages:&nbsp;</code>
+      <input name="linkpage" id="botLinked" value="" placeholder="Initial page name" />
+        <button type="submit" name="linkedSubmit" id="LinkedSubmit" value="Process all linked" formaction="linked_pages.php">Process pages linked from</button>
+        <img style="display:none" src="img/spinner_18_18.gif" id="LinkSpinner" alt="" />
+        <br />
     </p>
     <p>
     </p>
@@ -57,6 +57,9 @@
       <a href="https://en.wikipedia.org/wiki/User:Citation_bot/use" title="Using Citation Bot">More details</a> | 
       <a href="https://en.wikipedia.org/wiki/User_talk:Citation_bot" title="Report bugs at Wikipedia">Report bugs</a> |
       <a href="https://github.com/ms609/citation-bot" title="GitHub repository">Source code</a>
+    </p>
+    <p>
+    Your Wikipedia user name will be included in the edit, such as "Suggested&nbsp;by&nbsp;YourUserID"
     </p>
   </footer>
 </body>

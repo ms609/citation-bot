@@ -1,13 +1,15 @@
 [![Build Status](https://travis-ci.org/ms609/citation-bot.svg?branch=master)](https://travis-ci.org/ms609/citation-bot)
 [![codecov](https://codecov.io/gh/ms609/citation-bot/branch/master/graph/badge.svg)](https://codecov.io/gh/ms609/citation-bot)
 [![Project Status: Inactive - The project has reached a stable, usable state but is no longer being actively developed; support/maintenance will be provided as time allows.](https://www.repostatus.org/badges/latest/inactive.svg)](https://www.repostatus.org/#inactive)
+[![License: GPL v3](https://img.shields.io/badge/License-GPLv3-blue.svg)](https://www.gnu.org/licenses/gpl-3.0)
+[![PHP from Travis config](https://img.shields.io/badge/PHP-7.3-blue.svg)](https://www.php.net)
 
 # Citation bot
 
 ## GitHub repository details
 There are one to two main branches of the bot: 
-- The **master** code is implemented at https://tools.wmflabs.org/citations/, and is intended for public use.
-- When needed, the **development** branch is intended for major restructuring and testing, and is implemented at https://tools.wmflabs.org/citations-dev/ .  
+- The **master** code is implemented at https://citations.toolforge.org/, and is intended for public use.
+- When needed, the **development** branch is intended for major restructuring and testing, and is implemented at https://citations-dev.toolforge.org/ .  
 
 ## Overview
 
@@ -21,7 +23,7 @@ This is more properly a bot-gadget-tool combination. The parts are:
   All activity takes place on Tool Labs.
 * Citation expander (:en:Mediawiki:Gadget-citations.js) + gadgetapi.php. This
   is comprises an Ajax front-end in the on-wiki gadget and a PHP backend API.
-* [Generic template](https://github.com/ms609/citation-bot/blob/master/generate_template.php) creates the wiki reference given an identifier (for example given a doi: <https://tools.wmflabs.org/citations/generate_template.php?doi=10.1109/SCAM.2013.6648183>)
+* [Generate template](https://github.com/ms609/citation-bot/blob/master/generate_template.php) creates the wiki reference given an identifier (for example given a doi: <https://citations.toolforge.org/generate_template.php?doi=10.1109/SCAM.2013.6648183>)
 
 Bugs and requested changes are listed here: https://en.wikipedia.org/wiki/User_talk:Citation_bot .
 
@@ -29,18 +31,18 @@ Bugs and requested changes are listed here: https://en.wikipedia.org/wiki/User_t
 
 Basic structure of a Citation bot script:
 * define configuration constants
-* require `expandFns.php`, which will set up the rest of the needed functions
+* require `setup.php`, which will set up the rest of the needed functions
 * use Page functions to fetch/expand/post the page's text
 
 
 A quick tour of the main files:
 * `constants.php`: constants defined
-* `wikiFunctions.php`: functions related to Wikipedia ineractions, including some marked
-   as "untested".
 * `WikipediaBot.php`: functions to facilitate HTTP access to the Wikipedia API.
-* `DOItools.php`: defines text/name functions
-* `expandFns.php`: sets up needed functions, requires most of the other files listed here
-* `apiFunctions.php`: sets up needed functions
+* `NameTools.php`: defines name functions
+* `setup.php`: sets up needed functions, requires most of the other files listed here
+* `expandFns.php`: a variety of functions
+* `apiFunctions.php`: sets up needed functions for expanding pmid/doi/etc
+* `Zotero.php`: URL expansion related functions organized in a static class 
 
 Class files:
 * `Page.php`: Represents an individual page to expand citations on. Key methods are
@@ -63,21 +65,37 @@ Also beware the difference between `else if` and `elseif`.
 
 ## Deployment
 
-The bot requires php >= 5.6, whereas the WMFlabs servers by default (as of 2018) run 5.5.9.
-To access php5.6, one must run the bot as a webservice:
+The bot requires PHP >= 7.3.
+
+To run the bot from a new environment, you will need to create an `env.php` file (if one doesn't already exist) that sets the needed authentication tokens as environment variables. To do this, you can rename `env.php.example` to `env.php`, set the variables in the file, and then make sure the file is not world readable or writable:
+
+    chmod o-rwx env.php
+
+ To run the bot as a webservice from WM Toolforge:
 
     become citations[-dev]
     webservice stop
-    webservice --backend=kubernetes php5.6 start
+    webservice --backend=kubernetes start
 
 Or for testing in the shell:
 
-    webservice --backend=kubernetes php5.6 shell
+    webservice --backend=kubernetes shell
 
 Before entering the k8s shell, it may be necessary to install phpunit 
 (as wget is not available in the k8s shell):
 
     wget https://phar.phpunit.de/phpunit-5.phar
-    webservice --backend=kubernetes php5.6 shell
-    php phpunit-5.phar --bootstrap expandFns.php tests/phpunit/TemplateTest.php
+    webservice --backend=kubernetes shell
+    php phpunit-5.phar tests/phpunit/TemplateTest.php
 
+
+## Dependency services
+
+The bot accesses an instance of the Zotero translation server.  The source code for this server is https://github.com/ms609/translation-server
+
+This can be updated by maintainers logging on to Toolforge, then entering the commands 
+
+    become translation-server
+    npm update
+    webservice restart
+    

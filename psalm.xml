@@ -1,0 +1,43 @@
+<?xml version="1.0"?>
+<psalm
+    errorLevel="4"
+    resolveFromConfigFile="true"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xmlns="https://getpsalm.org/schema/config"
+    xsi:schemaLocation="https://getpsalm.org/schema/config vendor/vimeo/psalm/config.xsd"
+    phpVersion="7.3"
+    autoloader="setup.php"
+    strictBinaryOperands="true"
+    allowStringToStandInForClass="true"
+    findUnusedVariablesAndParams="true"
+    runTaintAnalysis="false"
+>
+    <projectFiles>
+        <file name="setup.php" />
+        <file name="Comment.php" />
+        <file name="NameTools.php" />
+        <file name="Page.php" />
+        <file name="Parameter.php" />
+        <file name="Template.php" />
+        <file name="WikipediaBot.php" />
+        <file name="apiFunctions.php" />
+        <file name="authenticate.php" />
+        <file name="category.php" />
+        <file name="constants.php" />
+        <file name="expandFns.php" />
+        <file name="gadgetapi.php" />
+        <file name="generate_template.php" />
+        <file name="gitpull.php" />
+        <file name="linked_pages.php" />
+        <file name="process_page.php" />
+        <file name="restart.php" />
+        <file name="setup.php" />
+        <file name="unlock_git.php" />
+        <file name="user_messages.php" />
+        <file name="Zotero.php" />
+        <directory name="constants" />
+        <ignoreFiles>
+            <directory name="vendor" />
+        </ignoreFiles>
+    </projectFiles>
+</psalm>

@@ -1,49 +1,45 @@
 <?php
-header("Access-Control-Allow-Origin: *"); //This is ok because the API is not authenticated
-header("Content-Type: text/json");
+declare(strict_types=1);
+try {
+ @header("Access-Control-Allow-Origin: *"); //This is ok because the API is not authenticated
+ @header("Content-Type: text/json");
+ @header('Cache-Control: no-cache, no-store, must-revalidate');
+ @header('Pragma: no-cache');
+ @header('Expires: 0');
 
-// This is needed because the Gadget API expects only JSON back, therefore ALL output from the citation bot is thrown away
-ob_start();
-define("FLUSHING_OKAY", FALSE);
-  
-//Set up tool requirements
-require_once __DIR__ . '/expandFns.php';
+ //Set up tool requirements
+ require_once('setup.php');
 
-$originalText = $_POST['text'];
-$editSummary = $_POST['summary'];
+ $originalText = (string) $_POST['text'];
+ $editSummary = (string) $_POST['summary'];
 
-//Expand text from postvars
-$page = new Page();
-$page->parse_text($originalText);
-$page->expand_text();
+ if (strlen(trim($originalText)) < 4) {
+   throw new Exception('tiny');  // @codeCoverageIgnore
+ }
 
-//Modify edit summary to identify bot-assisted edits
-if ($page->parsed_text() !== $originalText) {
-  $UCB_Assisted = "[[WP:UCB|Assisted by Citation bot]]";
-  if (mb_substr(trim($editSummary),-mb_strlen($UCB_Assisted)) !== $UCB_Assisted ){
-    if ($editSummary) {
-      $editSummary .= " | ";
-    }
-    $editSummary .= $UCB_Assisted;
-  }
-} elseif (!$editSummary) {
-  $editSummary = "";
+ //Expand text from postvars
+ $page = new Page();
+ gc_collect_cycles();
+ $page->parse_text($originalText);
+ $page->expand_text();
+ $newText = $page->parsed_text();
+ if ($newText == "") $newText = $originalText; // Something went very wrong
+
+ //Modify edit summary to identify bot-assisted edits
+ if ($newText !== $originalText) {
+   if ($editSummary) $editSummary .= ' | '; // Add pipe if already something there.
+   $editSummary .=  str_replace('use this bot', 'use this tool', $page->edit_summary()) . '| via #UCB_Gadget ';
+ }
+
+ ob_end_clean();
+
+ $result = array(
+   'expandedtext' => $newText,
+   'editsummary' => $editSummary
+ );
+
+ echo (string) @json_encode($result);
+} catch (Throwable $e) {                          // @codeCoverageIgnore
+ @ob_end_clean();@ob_end_clean();@ob_end_clean(); // @codeCoverageIgnore
+ // Above is paranoid panic code.  So paranoid that we even flush buffers two extra times
 }
-
-if (isset($_REQUEST['debug']) && $_REQUEST['debug']==='1') {
-  $debug_text = ob_get_contents();
-} else {
-  $debug_text = '';
-}
-
-$result = array(
-  'expandedtext' => $page->parsed_text(),
-  'editsummary' => $editSummary,
-  'debug' => $debug_text,
-);
-
-// Throw away all output
-ob_end_clean();
-@ob_end_clean(); @ob_end_clean();  // Other parts of the code might open a buffer
-
-echo @json_encode($result);  // On error returns "FALSE", which makes echo print nothing.  Thus we do not have to check for FALSE
