@@ -1,5 +1,5 @@
 {
-    "name": "Citation_Bot",
+    "name": "ms609/citation-bot",
     "license": "GPL-3.0-or-later",
     "require": {
         "mediawiki/oauthclient": ">=1.1.0"
