@@ -29,7 +29,7 @@ jobs:
 
     - name: Install dependencies
       if: steps.composer-cache.outputs.cache-hit != 'true'
-      run: composer install --prefer-dist --no-progress --no-suggest  --stability dev  overtrue/phplint  phpstan/phpstan   mediawiki/oauthclient:1.1.0  phan/phan:3.x vimeo/psalm designsecurity/progpilot --dev -vvv
+      run: composer config minimum-stability dev && composer install --prefer-dist --no-progress --no-suggest  overtrue/phplint  phpstan/phpstan   mediawiki/oauthclient:1.1.0  phan/phan:3.x vimeo/psalm designsecurity/progpilot --dev -vvv
 
     - name: PHP Lint test
       run: ./vendor/bin/phplint --exclude=vendor --no-interaction -vv ./
