@@ -28,7 +28,7 @@ jobs:
 
 
     - name: confiugre dependecies
-      run: composer install require overtrue/phplint  phpstan/phpstan   mediawiki/oauthclient:1.1.0  phan/phan:3.x vimeo/psalm designsecurity/progpilot
+      run: composer require overtrue/phplint  phpstan/phpstan   mediawiki/oauthclient:1.1.0  phan/phan:3.x vimeo/psalm designsecurity/progpilot
       
     - name: Install dependencies
       if: steps.composer-cache.outputs.cache-hit != 'true'
