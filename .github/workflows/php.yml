@@ -53,7 +53,7 @@ jobs:
       run: ./vendor/bin/progpilot  category.php generate_template.php gitpull.php linked_pages.php process_page.php authenticate.php unlock_git.php
     
     - name: Fast test
-      run: '! find . -type f -name "*.php" -exec php -d error_reporting=32767 -l {} \; 2>&1 >&- | grep "^"'
+      run: find . -type f -name "*.php" -exec php -d error_reporting=32767 -l {} \; 2>&1 >&- | ! grep "^"
       
     - name: Full test with PHP 7.3
       run: phpunit --coverage-clover coverage.xml && /bin/bash <(curl -s https://codecov.io/bash)
