@@ -21,7 +21,6 @@ jobs:
       id: composer-cache
       uses: actions/cache@v2
       with:
-        php-version: '7.3'
         path: vendor
         key: ${{ runner.os }}-php-${{ hashFiles('**/composer.lock') }}
         restore-keys: |
@@ -29,7 +28,7 @@ jobs:
 
     - name: Install dependencies
       if: steps.composer-cache.outputs.cache-hit != 'true'
-      run: composer config minimum-stability dev && composer install --prefer-dist --no-progress --no-suggest  overtrue/phplint  phpstan/phpstan   mediawiki/oauthclient:1.1.0  phan/phan:3.x vimeo/psalm designsecurity/progpilot --dev -vvv
+      run: composer install --prefer-dist --no-progress --no-suggest  overtrue/phplint  phpstan/phpstan   mediawiki/oauthclient:1.1.0  phan/phan:3.x vimeo/psalm designsecurity/progpilot --dev -vvv
 
     - name: PHP Lint test
       run: ./vendor/bin/phplint --exclude=vendor --no-interaction -vv ./
