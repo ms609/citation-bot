@@ -25,8 +25,7 @@ jobs:
         key: ${{ runner.os }}-php-${{ hashFiles('**/composer.lock') }}
         restore-keys: |
           ${{ runner.os }}-php-
-
-
+            
     - name: confiugre composer and dependecies
       run: composer config minimum-stability dev && composer config prefer-stable true && composer require overtrue/phplint  phpstan/phpstan   mediawiki/oauthclient:1.1.0  phan/phan:3.x vimeo/psalm designsecurity/progpilot
       
@@ -53,5 +52,6 @@ jobs:
       run: ./vendor/bin/progpilot  category.php generate_template.php gitpull.php linked_pages.php process_page.php authenticate.php unlock_git.php
       
     - name: Full test with PHP 7.3
+      uses: php-actions/phpunit@v9
       run: phpunit --coverage-clover coverage.xml && /bin/bash <(curl -s https://codecov.io/bash)
       
