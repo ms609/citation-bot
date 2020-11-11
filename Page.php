@@ -80,7 +80,7 @@ class Page {
              report_warning("Page is protected.");
              return FALSE;
            } else {
-             report_minor_error("Unexpected protection status: " . $the_level);
+             report_minor_error("Unexpected protection status: " . $the_level);  // @codeCoverageIgnore
            }
          }
        }
