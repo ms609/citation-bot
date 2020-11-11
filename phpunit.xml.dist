@@ -24,7 +24,7 @@
       <file>./php_info.php</file>
     </exclude>
     <report>
-      <clover outputFile="clover.xml"/>
+      <clover outputFile="coverage.xml"/>
     </report>
   </coverage>
   <logging/>
