@@ -33,9 +33,6 @@ jobs:
     - name: Install dependencies
       if: steps.composer-cache.outputs.cache-hit != 'true'
       run: composer install --prefer-dist  -vvv --no-progress
-      
-    - name: Fast test
-      run: ! find . -type f -name "*.php" -exec php -d error_reporting=32767 -l {} \; 2>&1 >&- | grep "^"
 
     - name: PHP Lint test
       run: ./vendor/bin/phplint --exclude=vendor --no-interaction -vv ./
