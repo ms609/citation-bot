@@ -24,16 +24,6 @@ abstract class testBaseClass extends PHPUnit\Framework\TestCase {
        $this->testing_skip_wiki = TRUE;
     }
 
-    // Main build skips nothing
-    if (getenv('TRAVIS_PULL_REQUEST') === 'false') {
-       $this->testing_skip_zotero = FALSE;
-       $this->testing_skip_bibcode= FALSE;
-       $this->testing_skip_google = FALSE;
-       $this->testing_skip_wiki   = FALSE;
-       $this->testing_skip_dx     = FALSE;
-       $this->testing_skip_arxiv  = FALSE;
-    }
-    
     AdsAbsControl::give_up();
     Zotero::block_zotero();
   }
