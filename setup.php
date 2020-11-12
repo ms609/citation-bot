@@ -13,7 +13,7 @@ if (file_exists('git_pull.lock')) {
 ini_set("user_agent", "Citation_bot; citations@tools.wmflabs.org");
 include_once('./vendor/autoload.php');
 
-define("TRAVIS", (bool) getenv('TRAVIS'));
+define("TRAVIS", (bool) getenv('TRAVIS')); s
 
 if (TRAVIS || isset($argv)) {
   error_reporting(E_ALL);
