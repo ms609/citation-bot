@@ -8,7 +8,7 @@ matrix:           ###### ONLY ONE WITH FULL TESTING WITH IS 7.3 OTHERS ARE ALL S
   include:
     - stage: pretest
       php: nightly
-      name: "Quick PHP 8.0 syntax check"
+      name: "Quick PHP 8.0 syntax check"dfafsdfasdfds
       script: '! find . -type f -name "*.php" -exec php -d error_reporting=32767 -l {} \; 2>&1 >&- | grep "^"'
     - php: 7.3
       name: "PHP Lint test"
