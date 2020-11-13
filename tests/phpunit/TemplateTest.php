@@ -1107,13 +1107,22 @@ final class TemplateTest extends testBaseClass {
     $this->assertNull($expanded->get2('title-link'));
   }
  
-  public function testJournalCapitalization() : void {
+  public function testJournalCapitalization1() : void {
     $expanded = $this->process_citation("{{Cite journal|pmid=9858585}}");
     $this->assertSame('Molecular and Cellular Biology', $expanded->get2('journal'));
+  }
+ 
+  public function testJournalCapitalization2() : void {
     $expanded = $this->process_citation("{{Cite journal|journal=eJournal}}");
     $this->assertSame('eJournal', $expanded->get2('journal'));
+  }
+ 
+  public function testJournalCapitalization3() : void {
     $expanded = $this->process_citation("{{Cite journal|journal=EJournal}}");
     $this->assertSame('eJournal', $expanded->get2('journal'));
+  }
+ 
+  public function testJournalCapitalization4() : void {
     $expanded = $this->process_citation("{{Cite journal|journal=ejournal}}");
     $this->assertSame('eJournal', $expanded->get2('journal'));
   }
