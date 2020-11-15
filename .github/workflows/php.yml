@@ -58,7 +58,7 @@ jobs:
         coverage: pcov
       env:
          PHP_ADSABSAPIKEY: ${{ secrets.PHP_ADSABSAPIKEY }}
-         PHP_GOOGLEKEY: ${{ PHP_GOOGLEKEY }}
+         PHP_GOOGLEKEY: ${{ secrets.PHP_GOOGLEKEY }}
          PHP_OAUTH_CONSUMER_TOKEN: ${{ secrets.PHP_OAUTH_CONSUMER_TOKEN }}
          PHP_OAUTH_ACCESS_TOKEN: ${{ secrets.PHP_OAUTH_ACCESS_TOKEN }}
          PHP_OAUTH_CONSUMER_SECRET: ${{ secrets.PHP_OAUTH_CONSUMER_SECRET }}
