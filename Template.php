@@ -4798,10 +4798,10 @@ final class Template {
                  curl_setopt_array($ch,
                          [CURLOPT_FOLLOWLOCATION => TRUE,
                           CURLOPT_MAXREDIRS => 20,
-                          CURLOPT_CONNECTTIMEOUT => 4,
+                          CURLOPT_CONNECTTIMEOUT => 8,
                           CURLOPT_TIMEOUT => 25,
                           CURLOPT_RETURNTRANSFER => TRUE,
-                          CURLOPT_COOKIEFILE => "",
+                          CURLOPT_COOKIEFILE => 'cookie.txt',
                           CURLOPT_USERAGENT => 'Citation_bot; citations@tools.wmflabs.org',
                           CURLOPT_URL => $matches[0]]);
                  if (@curl_exec($ch)) {
