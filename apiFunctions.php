@@ -47,29 +47,18 @@ function entrez_api(array $ids, array &$templates, string $db) : bool {   // Poi
     report_warning("Error in PubMed search: No response from Entrez server");    // @codeCoverageIgnore
     return FALSE;                                                                // @codeCoverageIgnore
   }
-
-  if (!isset($xml->DocSum->Item) || count($xml->DocSum->Item) == 0) {
-        echo "\n\n\n Looked for and did not find " . $db . " " . $ids[0] . "\n";
-        print_r($xml);
+  
+  if ($ids == ['58796']) {
+     print_r($xml); 
   }
+
+  // A few PMC do not have any data, just pictures of stuff
   if (isset($xml->DocSum->Item) && count($xml->DocSum->Item) > 0) foreach($xml->DocSum as $document) {
+    report_info("Found match for $db identifier " . $document->Id);
     $template_key = array_search($document->Id, $ids);
-    if ($db == 'pubmed') { 
-      if ($template_key === FALSE) {
-        echo "\n\n\n Looked for PMID " . $ids[0] . "\n";
-        print_r($document);
-        report_minor_error("Pubmed returned a PMID identifier, [" . $document->Id . "] that we didn't search for.");   // @codeCoverageIgnore
-        continue;                                                                                                      // @codeCoverageIgnore
-      }
-      report_info("Found match for PMID " . $document->Id);
-    } else { // pmc
-      if ($template_key === FALSE) {
-        echo "\n\n\n Looked for PMC " . $ids[0] . "\n";
-        print_r($document);
-        report_minor_error("Pubmed returned a PMC identifier, [" . $document->Id . "] that we didn't search for.");   // @codeCoverageIgnore
-        continue;                                                                                                     // @codeCoverageIgnore
-      }
-      report_info("Found match for PMC " . $document->Id);
+    if ($template_key === FALSE) {
+      report_minor_error($db . " search returned an identifier, [" . $document->Id . "] that we didn't search for.");   // @codeCoverageIgnore
+      continue;                                                                                                                     // @codeCoverageIgnore
     }
     $this_template = $get_template($template_key);
     $this_template->record_api_usage('entrez', $db == 'pubmed' ? 'pmid' : 'pmc');
