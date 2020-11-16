@@ -47,10 +47,6 @@ function entrez_api(array $ids, array &$templates, string $db) : bool {   // Poi
     report_warning("Error in PubMed search: No response from Entrez server");    // @codeCoverageIgnore
     return FALSE;                                                                // @codeCoverageIgnore
   }
-  
-  if ($ids == ['58796']) {
-     print_r($xml); 
-  }
 
   // A few PMC do not have any data, just pictures of stuff
   if (isset($xml->DocSum->Item) && count($xml->DocSum->Item) > 0) foreach($xml->DocSum as $document) {
@@ -123,15 +119,20 @@ function entrez_api(array $ids, array &$templates, string $db) : bool {   // Poi
             }
           }
           // Special floating PMID code
+          $possible_pmid = [];
           foreach ($item->Item as $subItem) {
             switch ($subItem["Name"]) {
               case "pubmed": case "pmid": case "pmc": case "doi": case "pii":
                 break;
               default:
-                if (preg_match("~^[1-9]\d{4,7}$~", (string) $subItem, $match) {
-                  $this_template->add_if_new('pmid', $match[0], 'entrez');
+                if (preg_match("~^[1-9]\d{4,7}$~", (string) $subItem, $match)) {
+                  $possible_pmid[] = $match[0];
                 }
             }
+          }
+          $possible_pmid = array_unique($possible_pmid);
+          if (count($possible_pmid) === 1) {
+            $this_template->add_if_new('pmid', $possible_pmid[0], 'entrez');
           }
         break;
       }
