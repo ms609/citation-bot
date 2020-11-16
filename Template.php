@@ -693,7 +693,7 @@ final class Template {
             } elseif ($this->date_style === DATES_DMY) {
                $value = date('j F Y', $time);
             }
-            return $this->add($param_name, $value);
+            return $this->add($parsssssam_name, $value);
         }
         return FALSE;
         
