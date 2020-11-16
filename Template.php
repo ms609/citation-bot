@@ -672,19 +672,18 @@ final class Template {
         }
         return FALSE;
       
-      case 'display-authors': case 'displayauthors':
+      case 'display-authors':
         if ($this->blank(DISPLAY_AUTHORS)) {
           return $this->add($param_name, $value);
         }
         return FALSE;
 
-      case 'display-editors': case 'displayeditors':
+      case 'display-editors':
         if ($this->blank(DISPLAY_EDITORS)) {
           return $this->add($param_name, $value);
         }
         return FALSE;
         
-      case 'accessdate':
       case 'access-date':
         if (!$this->blank(['access-date', 'accessdate'])) return FALSE;
         $time = strtotime($value);
@@ -698,7 +697,6 @@ final class Template {
         }
         return FALSE;
         
-      case 'archivedate';
       case 'archive-date':
         if (!$this->blank(['archive-date', 'archivedate'])) return FALSE;
         $time = strtotime($value);
@@ -5437,7 +5435,7 @@ final class Template {
           if (trim($val_base) == "") {
             $this->forget($param);
           }
-          $this->add_if_new('displayauthors', 'etal');
+          $this->add_if_new('display-authors', 'etal');
         }
       }
     }
