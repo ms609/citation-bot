@@ -43,7 +43,8 @@ function entrez_api(array $ids, array &$templates, string $db) : bool {   // Poi
     report_warning("Error in PubMed search: No response from Entrez server");    // @codeCoverageIgnore
     return FALSE;                                                                // @codeCoverageIgnore
   }
-    echo "\n ENTREZ KIND of WORKED : ";
+
+    echo "\n";
     print_r($xml);
     print_r($ids);
     echo "\n ";
@@ -58,7 +59,7 @@ function entrez_api(array $ids, array &$templates, string $db) : bool {   // Poi
       report_info("Found match for PMID " . $document->Id);
     } elseif ($db == 'pmc') {
       $pmc_found = (string) @$document->Item[8]->Item[1];
-      if (preg_match('~^PMC(\d+)$~i', $pmc_found, $match) {
+      if (preg_match('~^PMC(\d+)$~i', $pmc_found, $match)) {
         $pmc_found = $match[1];
         $template_key = array_search($pmc_found, $ids);
         if ($template_key === FALSE) {
