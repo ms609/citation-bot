@@ -131,7 +131,7 @@ function entrez_api(array $ids, array &$templates, string $db) : bool {   // Poi
             }
           }
           $possible_pmid = array_unique($possible_pmid);
-          if (count($possible_pmid) === 1) {
+          if (count($possible_pmid) === 1 && $possible_pmid[0] !== (string) $document->Id) { // Only one and it is not PMC
             $this_template->add_if_new('pmid', $possible_pmid[0], 'entrez');
           }
         break;
