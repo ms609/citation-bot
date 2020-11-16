@@ -48,7 +48,7 @@ function entrez_api(array $ids, array &$templates, string $db) : bool {   // Poi
     return FALSE;                                                                // @codeCoverageIgnore
   }
 
-  if (!isset($xml->DocSum->Item) || count($xml->DocSum->Item) > 0) {
+  if (!isset($xml->DocSum->Item) || count($xml->DocSum->Item) == 0) {
         echo "\n\n\n Looked for and did not find " . $db . " " . $ids[0] . "\n";
         print_r($xml);
   }
