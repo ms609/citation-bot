@@ -672,18 +672,21 @@ final class Template {
         }
         return FALSE;
       
+      case 'displayauthors':
       case 'display-authors':
         if ($this->blank(DISPLAY_AUTHORS)) {
-          return $this->add($param_name, $value);
+          return $this->add('display-authors', $value);
         }
         return FALSE;
 
+      case 'displayeditors':
       case 'display-editors':
         if ($this->blank(DISPLAY_EDITORS)) {
-          return $this->add($param_name, $value);
+          return $this->add('display-editors', $value);
         }
         return FALSE;
         
+      case 'accessdate':
       case 'access-date':
         if (!$this->blank(['access-date', 'accessdate'])) return FALSE;
         $time = strtotime($value);
@@ -693,10 +696,11 @@ final class Template {
             } elseif ($this->date_style === DATES_DMY) {
                $value = date('j F Y', $time);
             }
-            return $this->add($param_name, $value);
+            return $this->add('access-date', $value);
         }
         return FALSE;
         
+      case 'archivedate':
       case 'archive-date':
         if (!$this->blank(['archive-date', 'archivedate'])) return FALSE;
         $time = strtotime($value);
@@ -706,7 +710,7 @@ final class Template {
             } elseif ($this->date_style === DATES_DMY) {
                $value = date('j F Y', $time);
             }
-            return $this->add($param_name, $value);
+            return $this->add('archive-date', $value);
         }
         return FALSE;
       
