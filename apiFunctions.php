@@ -29,7 +29,7 @@ function entrez_api(array $ids, array &$templates, string $db) : bool {   // Poi
   $names = ['', '']; // prevent memory leak in some PHP versions
   if (!count($ids)) return FALSE;
   if ($ids == ['XYZ']) return FALSE; // junk data from test suite
-  if ($ids == ['']) return FALSE; // junk data from test suite
+  if ($ids == ['']) return FALSE; // junky data from test suite
     
   $get_template = function(int $template_key) use($templates) : Template { // Only exists to make static tools understand this is a Template() type
        return $templates[$template_key];
@@ -53,18 +53,15 @@ function entrez_api(array $ids, array &$templates, string $db) : bool {   // Poi
         continue;                                                                                                      // @codeCoverageIgnore
       }
       report_info("Found match for PMID " . $document->Id);
-    } elseif ($db == 'pmc') {
+    } else { // pmc
       $template_key = array_search($document->Id, $ids);
       if ($template_key === FALSE) {
-        print_r($ids);
+        echo "\n\n\n Looked for " . $ids[0] . "\n";
         print_r($xml);
         report_minor_error("Pubmed returned a PMC identifier, [" . $document->Id . "] that we didn't search for.");   // @codeCoverageIgnore
         continue;                                                                                                     // @codeCoverageIgnore
       }
       report_info("Found match for PMC " . $document->Id);
-    } else {
-      report_error("Invalid Entrez type passed in: " . $db);  // @codeCoverageIgnore
-      continue;                                               // @codeCoverageIgnore
     }
     $this_template = $get_template($template_key);
     $this_template->record_api_usage('entrez', $db == 'pubmed' ? 'pmid' : 'pmc');
