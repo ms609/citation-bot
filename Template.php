@@ -684,7 +684,7 @@ final class Template {
         }
         return FALSE;
         
-      case 'accessdate':
+      case 'accedsfadsassdate':
       case 'access-date':
         if (!$this->blank(['access-date', 'accessdate'])) return FALSE;
         $time = strtotime($value);
