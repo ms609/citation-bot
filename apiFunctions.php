@@ -48,19 +48,24 @@ function entrez_api(array $ids, array &$templates, string $db) : bool {   // Poi
     return FALSE;                                                                // @codeCoverageIgnore
   }
 
+  if (!isset($xml->DocSum->Item) || count($xml->DocSum->Item) > 0) {
+        echo "\n\n\n Looked for and did not find " . $db . " " . $ids[0] . "\n";
+        print_r($xml);
+  }
   if (isset($xml->DocSum->Item) && count($xml->DocSum->Item) > 0) foreach($xml->DocSum as $document) {
+    $template_key = array_search($document->Id, $ids);
     if ($db == 'pubmed') { 
-      $template_key = array_search($document->Id, $ids);
       if ($template_key === FALSE) {
+        echo "\n\n\n Looked for PMID " . $ids[0] . "\n";
+        print_r($document);
         report_minor_error("Pubmed returned a PMID identifier, [" . $document->Id . "] that we didn't search for.");   // @codeCoverageIgnore
         continue;                                                                                                      // @codeCoverageIgnore
       }
       report_info("Found match for PMID " . $document->Id);
     } else { // pmc
-      $template_key = array_search($document->Id, $ids);
       if ($template_key === FALSE) {
-        echo "\n\n\n Looked for " . $ids[0] . "\n";
-        print_r($xml);
+        echo "\n\n\n Looked for PMC " . $ids[0] . "\n";
+        print_r($document);
         report_minor_error("Pubmed returned a PMC identifier, [" . $document->Id . "] that we didn't search for.");   // @codeCoverageIgnore
         continue;                                                                                                     // @codeCoverageIgnore
       }
