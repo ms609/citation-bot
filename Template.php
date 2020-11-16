@@ -4807,12 +4807,12 @@ final class Template {
                  if (@curl_exec($ch)) {
                     $redirectedUrl = (string) @curl_getinfo($ch, CURLINFO_EFFECTIVE_URL);  // Final URL
                     echo "\n the URL from proquest: " . $redirectedUrl . "\n";
-                    if (preg_match("~^(https?://search\.proquest\.com/docview/\d{4,})(?:|/abstract.*|/fulltext.*|/preview.*)$~", $redirectedUrl, $matches) ||
-                        preg_match("~^(https?://search\.proquest\.com/openurl/handler/.+)$~", $redirectedUrl, $matches)) {
+                    if (preg_match("~^(https?://.+\.proquest\.com/docview/\d{4,})(?:|/abstract.*|/fulltext.*|/preview.*)$~", $redirectedUrl, $matches) ||
+                        preg_match("~^(https?://.+\.proquest\.com/openurl/handler/.+)$~", $redirectedUrl, $matches)) {
                        $changed = TRUE;
                        $this->set($param, $matches[1]);
                        if (stripos($this->get('id'), 'Proquest Document ID') !== FALSE) $this->forget('id');
-                    } elseif (preg_match("~^https?://search\.proquest\.com(?:|/)$~", $redirectedUrl)) {
+                    } elseif (preg_match("~^https?://.+\.proquest\.com(?:|/)$~", $redirectedUrl)) {
                        $changed = TRUE;
                        report_forget('Proquest.umi.com URL does not work.  Forgetting');
                        $this->forget($param);
