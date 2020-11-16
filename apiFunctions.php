@@ -28,6 +28,7 @@ function entrez_api(array $ids, array &$templates, string $db) : bool {   // Poi
   $match = ['', '']; // prevent memory leak in some PHP versions
   $names = ['', '']; // prevent memory leak in some PHP versions
   if (!count($ids)) return FALSE;
+  if ($ids == ['XYZ']) return FALSE; // junk data from test suite
     
   $get_template = function(int $template_key) use($templates) : Template { // Only exists to make static tools understand this is a Template() type
        return $templates[$template_key];

@@ -146,7 +146,7 @@ public static function drop_urls_that_match_dois(array &$templates) : void {  //
          CURLOPT_CONNECTTIMEOUT =>  4, 
          CURLOPT_TIMEOUT => 20,
          CURLOPT_RETURNTRANSFER => TRUE,
-         CURLOPT_COOKIEFILE => "",
+         CURLOPT_COOKIEFILE => 'cookie.txt',
          CURLOPT_AUTOREFERER => TRUE,
          CURLOPT_USERAGENT => 'Citation_bot; citations@tools.wmflabs.org']);
   foreach ($templates as $template) {

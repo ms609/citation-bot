@@ -8,7 +8,7 @@ const LC_SMALL_WORDS = array(/* The following will be automatically updated to a
           " D.D.S. ", " D.Div. ", " D.M.D. ", " D.P.M. " , " M.S. ", " D.Sc. ", " da ", 
           " dans ", " das ", " DC ", " de ", " dei ", " del ", " della ", " delle ", " dem ", 
           " den ", " der ", " des ", " di ", " die ", " DNA ", " do ", " du ", " e ", " ed ", 
-          " ee ", " ein ", " eine ", " einen ", " el ", " else ", " EMBO ", " en ", " et ", 
+          " ee ", " ein ", " eine ", " einen ", " el ", " else ", " EMBO ", " en ", " EPJ ", " et ", 
           " FASEB ", " FDA ", " FEBS ", " FEMS ", " for ", " from ", " för ", " für ", 
           " HIV ", " HIV/AIDS ", " HLA ", " HTMLGIANT ", " IBM ", " ICES ", " IEEE ", " if ", 
           " ILR ", " in ", " into ", " is ", " its ", " JAMA ", " JAMA: ", " la ", " las ", 
@@ -30,7 +30,7 @@ const UC_SMALL_WORDS = array(/* The following will be automatically updated to a
           " D.d.s. ", " D.div. ", " D.m.d. ", " D.p.m. " , " M.s. ", " D.sc. ", " Da ", 
           " Dans ", " Das ", " Dc ", " De ", " Dei ", " Del ", " Della ", " Delle ", " Dem ", 
           " Den ", " Der ", " Des ", " Di ", " Die ", " Dna ", " Do ", " Du ", " E ", " Ed ", 
-          " Ee ", " Ein ", " Eine ", " Einen ", " El ", " Else ", " Embo ", " En ", " Et ", 
+          " Ee ", " Ein ", " Eine ", " Einen ", " El ", " Else ", " Embo ", " En ", " Epj ", " Et ", 
           " Faseb ", " Fda ", " Febs ", " Fems ", " For ", " From ", " För ", " Für ", 
           " Hiv ", " Hiv/Aids ", " Hla ", " Htmlgiant ", " Ibm ", " Ices ", " Ieee ", " If ", 
           " Ilr ", " In ", " Into ", " Is ", " Its ", " Jama ", " Jama: ", " La ", " Las ", 
@@ -47,7 +47,7 @@ const UC_SMALL_WORDS = array(/* The following will be automatically updated to a
           // For ones that start with lower-case, include both ELife and Elife versions in misspelled array
 const JOURNAL_ACRONYMS = array(/* The following will be automatically updated to alphabetical order */
           " (BBA) ", " (online ed.) ", " AAPOS ", " AAPS ", " ACS ", " Algebra i Analiz ", 
-          " Angew Chem Int Ed ", " APS Division ", " Arch Dis Child Fetal Neonatal Ed ", 
+          " Angew Chem Int Ed ", " Applied ", " APS Division ", " Arch Dis Child Fetal Neonatal Ed ", 
           " ASAIO ", " ASME AES ", " ASME MTD ", " Avtomatika i Telemekhanika ", " B/gcvs ", 
           " B/gcvs ", " B/gcvs ", " BioEssays ", " bioRxiv ", " bioRxiv ", " BJOG ", " BMJ ", 
           " CBD Ubiquitin ", " CFSK-DT ", " ChemBioChem ", " ChemCatChem ", " ChemElectroChem ", 
@@ -66,7 +66,7 @@ const JOURNAL_ACRONYMS = array(/* The following will be automatically updated to
           " FEBS J ", " FEBS J. ", " FEBS Journal ", " Fizika Goreniya i Vzryva ", " Föreningen i Stockholm ", 
           " für anorganische und allgemeine ", " HannahArendt.net ", " History of Science; An Annual Review of Literature ", 
           " HOAJ biology ", " Hoppe-Seyler's ", " hprints ", " Hylli i Dritës ", " i ee ", 
-          " i ee ", " i Teplovoznaja ", " iConference ", " IDCases ", " IEEE/ACM ", " IEEE/ACM ", 
+          " i ee ", " i Teplovoznaja ", " i-Perception ", " iConference ", " IDCases ", " IEEE/ACM ", " IEEE/ACM ", 
           " IFAC-PapersOnLine ", " iJournal ", " iJournal ", " im Gesundheitswesen ", " InfoWorld ", 
           " Inside Higher Ed ", " iPhone ", " iScience ", " iScience ", " ISME ", " ISRN Genetics ", 
           " J Gerontol A Biol Sci Med Sci ", " J Sch Nurs ", " J SIAM ", " J. SIAM ", " JABS : Journal of Applied Biological Sciences ", 
@@ -94,7 +94,7 @@ const JOURNAL_ACRONYMS = array(/* The following will be automatically updated to
 );
 const UCFIRST_JOURNAL_ACRONYMS = array(/* The following will be automatically updated to alphabetical order */
           " (Bba) ", " (online Ed.) ", " Aapos ", " Aaps ", " Acs ", " Algebra I Analiz ", 
-          " Angew Chem Int ed ", " Aps Division ", " Arch Dis Child Fetal Neonatal ed ", 
+          " Angew Chem Int ed ", " Appiled ", " Aps Division ", " Arch Dis Child Fetal Neonatal ed ", 
           " Asaio ", " Asme Aes ", " Asme MTD ", " Avtomatika I Telemekhanika ", " B/GCVS ", 
           " B/Gcvs ", " b/gcvs ", " Bioessays ", " BioRxiv ", " Biorxiv ", " Bjog ", " Bmj ", 
           " Cbd Ubiquitin ", " CFSK-Dt ", " Chembiochem ", " Chemcatchem ", " Chemelectrochem ", 
@@ -113,7 +113,7 @@ const UCFIRST_JOURNAL_ACRONYMS = array(/* The following will be automatically up
           " Febs J ", " Febs J. ", " Febs Journal ", " Fizika Goreniya I Vzryva ", " Föreningen I Stockholm ", 
           " Für Anorganische und Allgemeine ", " Hannaharendt.net ", " History of Science; an Annual Review of Literature ", 
           " Hoaj Biology ", " Hoppe-Seyler´s ", " Hprints ", " Hylli I Dritës ", " I Ee ", 
-          " I ee ", " I Teplovoznaja ", " Iconference ", " Idcases ", " IEEE/Acm ", " Ieee/Acm ", 
+          " I ee ", " I Teplovoznaja ", " I-Perception ", " Iconference ", " Idcases ", " IEEE/Acm ", " Ieee/Acm ", 
           " Ifac-Papersonline ", " IJournal ", " Ijournal ", " Im Gesundheitswesen ", " Infoworld ", 
           " Inside Higher ed ", " Iphone ", " IScience ", " Iscience ", " Isme ", " Isrn Genetics ", 
           " J Gerontol a Biol Sci Med Sci ", " J SCH Nurs ", " J Siam ", " J. Siam ", " Jabs : Journal of Applied Biological Sciences ", 
@@ -242,3 +242,4 @@ const MAP_DIACRITICS = array("À"=>"A", "Á"=>"A", "Â"=>"A", "Ã"=>"A",
     "ʑ"=>"z", "ʒ"=>"ezh", "ʓ"=>"ezh", "ʚ"=>"e", "ʞ"=>"k", "ʠ"=>"q",
     "ʣ"=>"dz", "ʤ"=>"dezh", "ʥ"=>"dz", "ʦ"=>"ts", "ʧ"=>"tesh",
     "ʨ"=>"tc", "ʩ"=>"feng", "ʪ"=>"ls", "ʫ"=>"lz", "ʮ"=>"h", "ʯ"=>"h");
+

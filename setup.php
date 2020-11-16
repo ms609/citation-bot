@@ -13,7 +13,7 @@ if (file_exists('git_pull.lock')) {
 ini_set("user_agent", "Citation_bot; citations@tools.wmflabs.org");
 include_once('./vendor/autoload.php');
 
-define("TRAVIS", (bool) getenv('TRAVIS'));
+define("TRAVIS", (bool) getenv('CI')); // Not just TRAVIS, but GitHub actions set this to true
 
 if (TRAVIS || isset($argv)) {
   error_reporting(E_ALL);
@@ -76,7 +76,7 @@ if (file_exists('env.php')) {
 }
 
 mb_internal_encoding('UTF-8');
-ini_set("memory_limit", "300M"); // Needed for "Skin Cancer" and other large pages and for "TAINT" analysis
+ini_set("memory_limit", "512M"); // Needed for "Skin Cancer" and other large pages
 date_default_timezone_set('UTC');
 
 /** @psalm-suppress UnusedFunctionCall */
