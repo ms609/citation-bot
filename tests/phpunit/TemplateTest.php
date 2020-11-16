@@ -4885,19 +4885,19 @@ T1 - This is the Title }}';
     public function testFloaters2() : void {
      $text='{{Cite journal | url=http://www.apple.com/ |access date 12 December 1990 }}';
      $template = $this->process_citation($text);
-     $this->assertSame('12 December 1990', $template->get2('accessdate'));
+     $this->assertSame('12 December 1990', $template->get2('access-date'));
    }
  
     public function testFloaters3() : void {
      $text='{{Cite journal | url=http://www.apple.com/ |access date 12 December 1990 |accessdate=}}';
      $template = $this->process_citation($text);
-     $this->assertSame('12 December 1990', $template->get2('accessdate'));
+     $this->assertSame('12 December 1990', $template->get2('access-date'));
    }
  
     public function testFloaters4() : void {
      $text='{{Cite journal | url=http://www.apple.com/ |access date 12 December 1990 | accessdate = 3 May 1999 }}';
      $template = $this->process_citation($text);
-     $this->assertSame('3 May 1999', $template->get2('accessdate'));
+     $this->assertSame('3 May 1999', $template->get2('access-date'));
    }
  
     public function testFloaters5() : void {
