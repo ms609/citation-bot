@@ -122,6 +122,17 @@ function entrez_api(array $ids, array &$templates, string $db) : bool {   // Poi
                 }
             }
           }
+          // Special floating PMID code
+          foreach ($item->Item as $subItem) {
+            switch ($subItem["Name"]) {
+              case "pubmed": case "pmid": case "pmc": case "doi": case "pii":
+                break;
+              default:
+                if (preg_match("~^[1-9]\d{4,7}$~", (string) $subItem, $match) {
+                  $this_template->add_if_new('pmid', $match[0], 'entrez');
+                }
+            }
+          }
         break;
       }
     }
