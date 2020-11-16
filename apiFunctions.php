@@ -40,17 +40,15 @@ function entrez_api(array $ids, array &$templates, string $db) : bool {   // Poi
   
   $xml = @simplexml_load_file($url);
   if (!is_object($xml)) {
-    echo "\n ENTREZ ERROR : ";
-    print_r($xml);
-    print_r($ids);
-    echo "\n ";
     report_warning("Error in PubMed search: No response from Entrez server");    // @codeCoverageIgnore
     return FALSE;                                                                // @codeCoverageIgnore
   }
+  if ($db == 'pmc') {
     echo "\n ENTREZ KIND of WORKED : ";
     print_r($xml);
     print_r($ids);
     echo "\n ";
+  }
   if (isset($xml->DocSum->Item) && count($xml->DocSum->Item) > 0) foreach($xml->DocSum as $document) {
     report_info("Found match for $db identifier " . $document->Id);
     $template_key = array_search($document->Id, $ids);
