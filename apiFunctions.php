@@ -44,8 +44,9 @@ function entrez_api(array $ids, array &$templates, string $db) : bool {   // Poi
   
   $xml = @simplexml_load_file($url);
   if ($ids == ['9858585']) {
-    echo "\n\n DEBUG \n";
+    echo "\n\n DEBUG \n" . $url . "\n\n";
     print_r($xml);
+    echo "\n";
   }
   if (!is_object($xml)) {
     report_warning("Error in PubMed search: No response from Entrez server");    // @codeCoverageIgnore
