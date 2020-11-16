@@ -34,7 +34,6 @@ final class WikipediaBot {
         CURLOPT_TIMEOUT => 20,
         CURLOPT_COOKIESESSION => TRUE,
         CURLOPT_COOKIEFILE => 'cookie.txt',
-        CURLOPT_COOKIEJAR => 'cookiejar.txt',
         CURLOPT_USERAGENT => 'Citation_bot; citations@tools.wmflabs.org'
     ]);
     // setup.php must already be run at this point

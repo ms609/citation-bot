@@ -12,7 +12,15 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-    - uses: actions/checkout@v2
+    - name: Checkout Repo
+      uses: actions/checkout@v2
+
+    - name: Setup PHP 7.3 with PCOV
+      uses: shivammathur/setup-php@v2
+      with:
+        php-version: '7.3'
+        ini-values: pcov.directory=.
+        coverage: pcov
 
     - name: Validate composer.json and composer.lock
       run: composer validate
@@ -25,9 +33,9 @@ jobs:
         key: ${{ runner.os }}-php-${{ hashFiles('**/composer.lock') }}
         restore-keys: |
           ${{ runner.os }}-php-
-            
+
     - name: confiugre composer and dependecies
-      run: composer config minimum-stability dev && composer config prefer-stable true && composer require overtrue/phplint  phpstan/phpstan   mediawiki/oauthclient:1.1.0  phan/phan:3.x vimeo/psalm designsecurity/progpilot
+      run: composer config minimum-stability dev && composer config prefer-stable true && composer require overtrue/phplint  phpstan/phpstan   mediawiki/oauthclient:1.1.0  phan/phan:3.x vimeo/psalm designsecurity/progpilot phpunit/phpunit ^9
       
     - name: Install dependencies
       if: steps.composer-cache.outputs.cache-hit != 'true'
@@ -51,9 +59,19 @@ jobs:
     - name: PHP Design Security
       run: ./vendor/bin/progpilot  category.php generate_template.php gitpull.php linked_pages.php process_page.php authenticate.php unlock_git.php
       
-    - name: Full test with PHP 7.3
-      uses: php-actions/phpunit@v9
-      
+    - name: Full test with PHP
+      env:
+         PHP_ADSABSAPIKEY: ${{ secrets.PHP_ADSABSAPIKEY }}
+         PHP_GOOGLEKEY: ${{ secrets.PHP_GOOGLEKEY }}
+         PHP_OAUTH_CONSUMER_TOKEN: ${{ secrets.PHP_OAUTH_CONSUMER_TOKEN }}
+         PHP_OAUTH_ACCESS_TOKEN: ${{ secrets.PHP_OAUTH_ACCESS_TOKEN }}
+         PHP_OAUTH_CONSUMER_SECRET: ${{ secrets.PHP_OAUTH_CONSUMER_SECRET }}
+         PHP_OAUTH_ACCESS_SECRET: ${{ secrets.PHP_OAUTH_ACCESS_SECRET }}
+         PHP_WP_OAUTH_SECRET: ${{ secrets.PHP_WP_OAUTH_SECRET }}
+         PHP_S2APIKEY: ${{ secrets.PHP_S2APIKEY }}
+         PHP_WP_OAUTH_CONSUMER: ${{ secrets.PHP_WP_OAUTH_CONSUMER }}
+      run: ./vendor/bin/phpunit --coverage-clover coverage.xml
+
     - name: Code Coverage
       run: /bin/bash <(curl -s https://codecov.io/bash)
       

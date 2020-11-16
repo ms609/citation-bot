@@ -672,19 +672,18 @@ final class Template {
         }
         return FALSE;
       
-      case 'display-authors': case 'displayauthors':
+      case 'display-authors':
         if ($this->blank(DISPLAY_AUTHORS)) {
           return $this->add($param_name, $value);
         }
         return FALSE;
 
-      case 'display-editors': case 'displayeditors':
+      case 'display-editors':
         if ($this->blank(DISPLAY_EDITORS)) {
           return $this->add($param_name, $value);
         }
         return FALSE;
         
-      case 'accedsfadsassdate':
       case 'access-date':
         if (!$this->blank(['access-date', 'accessdate'])) return FALSE;
         $time = strtotime($value);
@@ -698,7 +697,6 @@ final class Template {
         }
         return FALSE;
         
-      case 'archivedate';
       case 'archive-date':
         if (!$this->blank(['archive-date', 'archivedate'])) return FALSE;
         $time = strtotime($value);
@@ -4798,20 +4796,20 @@ final class Template {
                  curl_setopt_array($ch,
                          [CURLOPT_FOLLOWLOCATION => TRUE,
                           CURLOPT_MAXREDIRS => 20,
-                          CURLOPT_CONNECTTIMEOUT => 4,
+                          CURLOPT_CONNECTTIMEOUT => 8,
                           CURLOPT_TIMEOUT => 25,
                           CURLOPT_RETURNTRANSFER => TRUE,
-                          CURLOPT_COOKIEFILE => "",
+                          CURLOPT_COOKIEFILE => 'cookie.txt',
                           CURLOPT_USERAGENT => 'Citation_bot; citations@tools.wmflabs.org',
                           CURLOPT_URL => $matches[0]]);
                  if (@curl_exec($ch)) {
                     $redirectedUrl = (string) @curl_getinfo($ch, CURLINFO_EFFECTIVE_URL);  // Final URL
-                    if (preg_match("~^(https?://search\.proquest\.com/docview/\d{4,})(?:|/abstract.*|/fulltext.*|/preview.*)$~", $redirectedUrl, $matches) ||
-                        preg_match("~^(https?://search\.proquest\.com/openurl/handler/.+)$~", $redirectedUrl, $matches)) {
+                    if (preg_match("~^https?://.+(\.proquest\.com/docview/\d{4,})(?:|/abstract.*|/fulltext.*|/preview.*)$~", $redirectedUrl, $matches) ||
+                        preg_match("~^https?://.+(\.proquest\.com/openurl/handler/.+)$~", $redirectedUrl, $matches)) {
                        $changed = TRUE;
-                       $this->set($param, $matches[1]);
+                       $this->set($param, 'https://search' . $matches[1]);
                        if (stripos($this->get('id'), 'Proquest Document ID') !== FALSE) $this->forget('id');
-                    } elseif (preg_match("~^https?://search\.proquest\.com(?:|/)$~", $redirectedUrl)) {
+                    } elseif (preg_match("~^https?://.+\.proquest\.com(?:|/)$~", $redirectedUrl)) {
                        $changed = TRUE;
                        report_forget('Proquest.umi.com URL does not work.  Forgetting');
                        $this->forget($param);
@@ -5437,7 +5435,7 @@ final class Template {
           if (trim($val_base) == "") {
             $this->forget($param);
           }
-          $this->add_if_new('displayauthors', 'etal');
+          $this->add_if_new('display-authors', 'etal');
         }
       }
     }
