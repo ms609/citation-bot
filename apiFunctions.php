@@ -44,7 +44,7 @@ function entrez_api(array $ids, array &$templates, string $db) : bool {   // Poi
     report_warning("Error in PubMed search: No response from Entrez server");    // @codeCoverageIgnore
     return FALSE;                                                                // @codeCoverageIgnore
   }
-  
+
   if (isset($xml->DocSum->Item) && count($xml->DocSum->Item) > 0) foreach($xml->DocSum as $document) {
     if ($db == 'pubmed') { 
       $template_key = array_search($document->Id, $ids);
