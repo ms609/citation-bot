@@ -73,6 +73,7 @@ function entrez_api(array $ids, array &$templates, string $db) : bool {   // Poi
       }
     } else {
       report_error("Invalid Entrez type passed in: " . $db);  // @codeCoverageIgnore
+      continue;                                               // @codeCoverageIgnore
     }
     $this_template = $get_template($template_key);
     $this_template->record_api_usage('entrez', $db == 'pubmed' ? 'pmid' : 'pmc');
