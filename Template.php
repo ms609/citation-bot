@@ -3535,7 +3535,7 @@ final class Template {
         $dat = trim(str_replace($match[0], '', $dat));
       }
       if (preg_match("~^access date[ :]+(.+)$~i", $dat, $match)) {
-        if ($this->add_if_new('accessdate', $match[1])) {
+        if ($this->add_if_new('access-date', $match[1])) {
           $dat = trim(str_replace($match[0], '', $dat));
         }
       }
