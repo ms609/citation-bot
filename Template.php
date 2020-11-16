@@ -4806,6 +4806,7 @@ final class Template {
                           CURLOPT_URL => $matches[0]]);
                  if (@curl_exec($ch)) {
                     $redirectedUrl = (string) @curl_getinfo($ch, CURLINFO_EFFECTIVE_URL);  // Final URL
+                    echo "\n the URL from proquest: " . $redirectedUrl . "\n";
                     if (preg_match("~^(https?://search\.proquest\.com/docview/\d{4,})(?:|/abstract.*|/fulltext.*|/preview.*)$~", $redirectedUrl, $matches) ||
                         preg_match("~^(https?://search\.proquest\.com/openurl/handler/.+)$~", $redirectedUrl, $matches)) {
                        $changed = TRUE;
@@ -4816,6 +4817,8 @@ final class Template {
                        report_forget('Proquest.umi.com URL does not work.  Forgetting');
                        $this->forget($param);
                     }
+                 } else {
+                    echo "\n PROQEST: " . curl_error($ch) . "\n";
                  }
                  curl_close($ch);
             }
