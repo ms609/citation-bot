@@ -1967,7 +1967,7 @@ T1 - This is the Title }}';
     $prepared = $this->prepare_citation($text);
     $this->assertSame('Albertstein, Alfred A.', $prepared->first_author());
     $this->assertSame('Charlie C.', $prepared->get2('first3'));
-    $this->assertSame('etal', $prepared->get2('displayauthors'));
+    $this->assertSame('etal', $prepared->get2('displayadfasduthors'));
   }
  
   public function testEtAlAsAuthor() : void {
