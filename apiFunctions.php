@@ -43,18 +43,35 @@ function entrez_api(array $ids, array &$templates, string $db) : bool {   // Poi
     report_warning("Error in PubMed search: No response from Entrez server");    // @codeCoverageIgnore
     return FALSE;                                                                // @codeCoverageIgnore
   }
-  if ($db == 'pmc') {
     echo "\n ENTREZ KIND of WORKED : ";
     print_r($xml);
     print_r($ids);
     echo "\n ";
-  }
+  
   if (isset($xml->DocSum->Item) && count($xml->DocSum->Item) > 0) foreach($xml->DocSum as $document) {
-    report_info("Found match for $db identifier " . $document->Id);
-    $template_key = array_search($document->Id, $ids);
-    if ($template_key === FALSE) {
-      report_warning("Pubmed returned an identifier, [" . $document->Id . "] that we didn't search for.");   // @codeCoverageIgnore
-      continue;                                                                                              // @codeCoverageIgnore
+    if ($db == 'pubmed') { 
+      $template_key = array_search($document->Id, $ids);
+      if ($template_key === FALSE) {
+        report_minor_error("Pubmed returned a PMID identifier, [" . $document->Id . "] that we didn't search for.");   // @codeCoverageIgnore
+        continue;                                                                                                      // @codeCoverageIgnore
+      }
+      report_info("Found match for PMID " . $document->Id);
+    } elseif ($db == 'pmc') {
+      $pmc_found = (string) @$document->Item[8]->Item[1];
+      if (preg_match('~^PMC(\d+)$~i', $pmc_found, $match) {
+        $pmc_found = $match[1];
+        $template_key = array_search($pmc_found, $ids);
+        if ($template_key === FALSE) {
+          report_minor_error("Pubmed returned a PMC identifier, [" . $pmc_found . "] that we didn't search for.");   // @codeCoverageIgnore
+          continue;                                                                                                  // @codeCoverageIgnore
+        }
+        report_info("Found match for PMC " . $pmc_found);
+      } else {
+        report_minor_error("Pubmed returned PMC record with no PMC");
+        continue;
+      }
+    } else {
+      report_error("Invalid Entrez type passed in: " . $db);  // @codeCoverageIgnore
     }
     $this_template = $get_template($template_key);
     $this_template->record_api_usage('entrez', $db == 'pubmed' ? 'pmid' : 'pmc');
