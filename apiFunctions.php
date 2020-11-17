@@ -44,7 +44,7 @@ function entrez_api(array $ids, array &$templates, string $db) : bool {   // Poi
   
   libxml_use_internal_errors(true);
   $xml = @simplexml_load_file($url);
-  if (!$xml) {
+  if (!is_object($xml)) {
     echo "\n\n DEBUG \n" . $url . "\n\n";
     print_r(libxml_get_errors());
     echo "\n";
@@ -53,8 +53,12 @@ function entrez_api(array $ids, array &$templates, string $db) : bool {   // Poi
   libxml_use_internal_errors(false);
   
   if (!is_object($xml)) {
-    report_warning("Error in PubMed search: No response from Entrez server");    // @codeCoverageIgnore
-    return FALSE;                                                                // @codeCoverageIgnore
+    sleep(2);
+    $xml = @simplexml_load_file($url);
+    if (!is_object($xml)) {
+      report_warning("Error in PubMed search: No response from Entrez server");
+      return FALSE;
+    }
   }
 
   // A few PMC do not have any data, just pictures of stuff
