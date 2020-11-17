@@ -29,7 +29,11 @@ function entrez_api(array $ids, array &$templates, string $db) : bool {   // Poi
   $names = ['', '']; // prevent memory leak in some PHP versions
   if (!count($ids)) return FALSE;
   if ($ids == ['XYZ']) return FALSE; // junk data from test suite
-    
+  if ($ids == ['']) return FALSE; // junk data from test suite
+  if ($db !== 'pubmed' && $db !== 'pmc') {
+    report_error("Invalid Entrez type passed in: " . $db);  // @codeCoverageIgnore
+  }
+  
   $get_template = function(int $template_key) use($templates) : Template { // Only exists to make static tools understand this is a Template() type
        return $templates[$template_key];
   };
@@ -39,18 +43,23 @@ function entrez_api(array $ids, array &$templates, string $db) : bool {   // Poi
   report_action("Using $db API to retrieve publication details: ");
   
   $xml = @simplexml_load_file($url);
-  dsfadsfadsfs
+  
   if (!is_object($xml)) {
-    report_warning("Error in PubMed search: No response from Entrez server");    // @codeCoverageIgnore
-    return FALSE;                                                                // @codeCoverageIgnore
+    sleep(2);
+    $xml = @simplexml_load_file($url);
+    if (!is_object($xml)) {
+      report_warning("Error in PubMed search: No response from Entrez server");
+      return FALSE;
+    }
   }
 
+  // A few PMC do not have any data, just pictures of stuff
   if (isset($xml->DocSum->Item) && count($xml->DocSum->Item) > 0) foreach($xml->DocSum as $document) {
     report_info("Found match for $db identifier " . $document->Id);
     $template_key = array_search($document->Id, $ids);
     if ($template_key === FALSE) {
-      report_warning("Pubmed returned an identifier, [" . $document->Id . "] that we didn't search for.");   // @codeCoverageIgnore
-      continue;                                                                                              // @codeCoverageIgnore
+      report_minor_error($db . " search returned an identifier, [" . $document->Id . "] that we didn't search for.");   // @codeCoverageIgnore
+      continue;                                                                                                                     // @codeCoverageIgnore
     }
     $this_template = $get_template($template_key);
     $this_template->record_api_usage('entrez', $db == 'pubmed' ? 'pmid' : 'pmc');
@@ -113,6 +122,22 @@ function entrez_api(array $ids, array &$templates, string $db) : bool {   // Poi
                   $this_template->add_if_new('pmc', substr($match[0], 3), 'entrez');
                 }
             }
+          }
+          // Special floating PMID code
+          $possible_pmid = [];
+          foreach ($item->Item as $subItem) {
+            switch ($subItem["Name"]) {
+              case "pubmed": case "pmid": case "pmc": case "doi": case "pii":
+                break;
+              default:
+                if (preg_match("~^[1-9]\d{4,7}$~", (string) $subItem, $match)) {
+                  $possible_pmid[] = $match[0];
+                }
+            }
+          }
+          $possible_pmid = array_unique($possible_pmid);
+          if (count($possible_pmid) === 1 && $possible_pmid[0] !== (string) $document->Id) { // Only one and it is not PMC
+            $this_template->add_if_new('pmid', $possible_pmid[0], 'entrez');
           }
         break;
       }
