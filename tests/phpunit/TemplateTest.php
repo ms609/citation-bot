@@ -1967,7 +1967,7 @@ T1 - This is the Title }}';
     $prepared = $this->prepare_citation($text);
     $this->assertSame('Albertstein, Alfred A.', $prepared->first_author());
     $this->assertSame('Charlie C.', $prepared->get2('first3'));
-    $this->assertSame('etal', $prepared->get2('displayauthors'));
+    $this->assertSame('etal', $prepared->get2('display-authors'));
   }
  
   public function testEtAlAsAuthor() : void {
@@ -4336,7 +4336,7 @@ T1 - This is the Title }}';
     $template = $this->make_citation($text);
     $template->handle_et_al();
     $this->assertSame('John', $template->get2('author'));
-    $this->assertSame('etal', $template->get2('displayauthors'));
+    $this->assertSame('etal', $template->get2('display-authors'));
   }
  
   public function testAddingEtAl() : void {
@@ -4345,7 +4345,7 @@ T1 - This is the Title }}';
     $template->set('authors', 'et al');
     $template->tidy_parameter('authors');
     $this->assertNull($template->get2('authors'));
-    $this->assertSame('etal', $template->get2('displayauthors'));
+    $this->assertSame('etal', $template->get2('display-authors'));
     $this->assertNull($template->get2('author'));
   }
  
@@ -4356,7 +4356,7 @@ T1 - This is the Title }}';
     $template->tidy_parameter('author');
     $this->assertNull($template->get2('author'));
     $this->assertNull($template->get2('authors'));
-    $this->assertSame('etal', $template->get2('displayauthors'));
+    $this->assertSame('etal', $template->get2('display-authors'));
   }
  
   public function testCiteTypeWarnings1() : void {
@@ -4575,7 +4575,7 @@ T1 - This is the Title }}';
     $template->handle_et_al();
     $this->assertSame('Joe', $template->get2('author'));
     $this->assertNull($template->get2('authors'));
-    $this->assertSame('etal', $template->get2('displayauthors'));
+    $this->assertSame('etal', $template->get2('display-authors'));
   }
  
    public function testCiteTypeWarnings3() : void {
@@ -4885,19 +4885,20 @@ T1 - This is the Title }}';
     public function testFloaters2() : void {
      $text='{{Cite journal | url=http://www.apple.com/ |access date 12 December 1990 }}';
      $template = $this->process_citation($text);
-     $this->assertSame('12 December 1990', $template->get2('accessdate'));
+     $this->assertSame('12 December 1990', $template->get2('access-date'));
    }
  
     public function testFloaters3() : void {
      $text='{{Cite journal | url=http://www.apple.com/ |access date 12 December 1990 |accessdate=}}';
      $template = $this->process_citation($text);
-     $this->assertSame('12 December 1990', $template->get2('accessdate'));
+     $this->assertSame('12 December 1990', $template->get2('access-date'));
    }
  
     public function testFloaters4() : void {
      $text='{{Cite journal | url=http://www.apple.com/ |access date 12 December 1990 | accessdate = 3 May 1999 }}';
      $template = $this->process_citation($text);
      $this->assertSame('3 May 1999', $template->get2('accessdate'));
+     $this->assertNull($template->get2('access-date'));
    }
  
     public function testFloaters5() : void {
