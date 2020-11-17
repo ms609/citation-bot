@@ -39,6 +39,7 @@ function entrez_api(array $ids, array &$templates, string $db) : bool {   // Poi
   report_action("Using $db API to retrieve publication details: ");
   
   $xml = @simplexml_load_file($url);
+  sdfadsfdsfadsfadsafsd
   if (!is_object($xml)) {
     report_warning("Error in PubMed search: No response from Entrez server");    // @codeCoverageIgnore
     return FALSE;                                                                // @codeCoverageIgnore
