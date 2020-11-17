@@ -42,12 +42,16 @@ function entrez_api(array $ids, array &$templates, string $db) : bool {   // Poi
                . implode(',', $ids);
   report_action("Using $db API to retrieve publication details: ");
   
+  libxml_use_internal_errors(true);
   $xml = @simplexml_load_file($url);
-  if ($ids == ['9858585']) {
+  if (!$xml) {
     echo "\n\n DEBUG \n" . $url . "\n\n";
-    print_r($xml);
+    print_r(libxml_get_errors());
     echo "\n";
   }
+  libxml_clear_errors();
+  libxml_use_internal_errors(false);
+  
   if (!is_object($xml)) {
     report_warning("Error in PubMed search: No response from Entrez server");    // @codeCoverageIgnore
     return FALSE;                                                                // @codeCoverageIgnore
