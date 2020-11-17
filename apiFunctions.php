@@ -43,9 +43,14 @@ function entrez_api(array $ids, array &$templates, string $db) : bool {   // Poi
   report_action("Using $db API to retrieve publication details: ");
   
   $xml = @simplexml_load_file($url);
+  
   if (!is_object($xml)) {
-    report_warning("Error in PubMed search: No response from Entrez server");    // @codeCoverageIgnore
-    return FALSE;                                                                // @codeCoverageIgnore
+    sleep(2);
+    $xml = @simplexml_load_file($url);
+    if (!is_object($xml)) {
+      report_warning("Error in PubMed search: No response from Entrez server");
+      return FALSE;
+    }
   }
 
   // A few PMC do not have any data, just pictures of stuff
