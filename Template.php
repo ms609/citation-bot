@@ -784,7 +784,7 @@ final class Template {
         if ($this->has('title') && str_equivalent($this->get('title'), $value)) return FALSE; // Messed up already or in database
         if (!$this->blank(array_merge(['agency','publisher'],WORK_ALIASES)) && in_array(strtolower($value), DUBIOUS_JOURNALS)) return FALSE; // non-journals that are probably same as agency or publisher that come from zotero
         if ($this->get($param_name) === 'none' || $this->blank(["journal", "periodical", "encyclopedia", "encyclopaedia", "newspaper", "magazine", "contribution"])) {
-          if (in_array(strtolower(sanitize_string($value)), HAS_NO_VOLUME)) $this->forget("volume") ; // No volumes, just issues.
+          if (in_array(strtolower(sanitize_string($value)), HAS_NO_VOLUME)) $this->forget('volume') ; // No volumes, just issues.
           $value = wikify_external_text(title_case($value));
           if ($this->has('series') && str_equivalent($this->get('series'), $value)) return FALSE ;
           if ($this->has('work')) {
