@@ -5585,6 +5585,15 @@ final class Template {
         $this->tidy_parameter($new_param);
       }
     }
+    if ($old_param === 'title' && $new_param === 'chapter' && $this->has('url') && $this->blank(['chapter-url', 'chapterurl'])) {
+      $this->rename('url', 'chapter-url');
+    } elseif ($old_param === 'chapter' && $new_param === 'title' && $this->blank('url')) {
+        if ($this->has('chapter-url')) {
+      $this->rename('chapter-url', 'url');
+      } elseif ($this->has('chapterurl')) {
+        $this->rename('chapterurl', 'url');
+      }
+    }
   }
 
   public function get(string $name) : string {
