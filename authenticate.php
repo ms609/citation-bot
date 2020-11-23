@@ -80,7 +80,7 @@ if (isset($_GET['oauth_verifier']) && isset($_SESSION['request_key']) && isset($
         unset($_SESSION['request_key']);unset($_SESSION['request_secret']);
         if (isset($_GET['return'])) {
            // This could only be tainted input if OAuth server itself was hacked, so flag as safe
-           /** @psalm-taint-escape text */
+           /** @psalm-taint-escape TaintedHeader */
            $where = trim((string) $_GET['return']);
            return_to_sender($where);
         }
