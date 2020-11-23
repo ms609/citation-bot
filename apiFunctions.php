@@ -1,10 +1,10 @@
 <?php
 declare(strict_types=1);
 
-require_once("constants.php");
-require_once("user_messages.php");
-require_once("Template.php");
-require_once("NameTools.php");
+require_once("constants.php");        // @codeCoverageIgnore
+require_once("user_messages.php");    // @codeCoverageIgnore
+require_once("Template.php");         // @codeCoverageIgnore
+require_once("NameTools.php");        // @codeCoverageIgnore
 
 function query_pmid_api (array $pmids, array &$templates) : bool { return entrez_api($pmids, $templates, 'pubmed'); }  // Pointer to save memory
 function query_pmc_api  (array $pmcs, array &$templates) : bool { return entrez_api($pmcs,  $templates, 'pmc'); } // Pointer to save memory
@@ -48,8 +48,8 @@ function entrez_api(array $ids, array &$templates, string $db) : bool {   // Poi
     sleep(2);
     $xml = @simplexml_load_file($url);
     if (!is_object($xml)) {
-      report_warning("Error in PubMed search: No response from Entrez server");
-      return FALSE;
+      report_warning("Error in PubMed search: No response from Entrez server");   // @codeCoverageIgnore
+      return FALSE;                                                               // @codeCoverageIgnore
     }
   }
 
@@ -59,7 +59,7 @@ function entrez_api(array $ids, array &$templates, string $db) : bool {   // Poi
     $template_key = array_search($document->Id, $ids);
     if ($template_key === FALSE) {
       report_minor_error($db . " search returned an identifier, [" . $document->Id . "] that we didn't search for.");   // @codeCoverageIgnore
-      continue;                                                                                                                     // @codeCoverageIgnore
+      continue;                                                                                                         // @codeCoverageIgnore
     }
     $this_template = $get_template($template_key);
     $this_template->record_api_usage('entrez', $db == 'pubmed' ? 'pmid' : 'pmc');
@@ -81,8 +81,8 @@ function entrez_api(array $ids, array &$templates, string $db) : bool {   // Poi
           $i = 0;
           foreach ($item->Item as $subItem) {
             $subItem = (string) $subItem;
-            if (preg_match('~^\d~', $subItem)) {
-              break; // Author started with a number, skip all remaining authors. // @codeCoverageIgnore
+            if (preg_match('~^\d~', $subItem)) { // Author started with a number, skip all remaining authors.
+              break;   // @codeCoverageIgnore
             } elseif (author_is_human($subItem)) {
               $jr_test = junior_test($subItem);
               $subItem = $jr_test[0];
