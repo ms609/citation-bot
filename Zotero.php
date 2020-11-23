@@ -1,7 +1,7 @@
 <?php
 declare(strict_types=1);
 
-require_once("constants.php");
+require_once("constants.php");  // @codeCoverageIgnore 
 
 function query_url_api(array $ids, array &$templates) : void {  // Pointer to save memory
    Zotero::query_url_api_class($ids, $templates);
