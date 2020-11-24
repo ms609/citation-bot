@@ -480,7 +480,7 @@ class Page {
       $auto_summary .= 'Some additions/deletions were actually parameter name changes. ';
     }
     if (substr_count($this->text, '978') > substr_count($this->start_text, '978')) {
-      $auto_summary .= 'Correct ISBN10 to ISBN13. ';
+      $auto_summary .= 'Upgrade ISBN10 to ISBN13. ';
     }
     if (stripos($auto_summary, 'template') !== FALSE) {
       foreach (['cite|', 'Cite|', 'citebook', 'Citebook', 'cit book', 'Cit book', 'cite books', 'Cite books',
