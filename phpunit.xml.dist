@@ -12,6 +12,7 @@
     <exclude>
       <directory>./constants</directory>
       <directory>./tests</directory>
+      <directory>./vendor</directory>
       <file>./constants.php</file>
       <file>./process_page.php</file>
       <file>./gitpull.php</file>
