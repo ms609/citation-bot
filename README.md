@@ -81,13 +81,7 @@ Or for testing in the shell:
 
     webservice --backend=kubernetes shell
 
-Before entering the k8s shell, it may be necessary to install phpunit 
-(as wget is not available in the k8s shell):
-
-    wget https://phar.phpunit.de/phpunit-5.phar
-    webservice --backend=kubernetes shell
-    php phpunit-5.phar tests/phpunit/TemplateTest.php
-
+Before entering the k8s shell, it may be necessary to install phpunit (as wget is not available in the k8s shell).
 
 ## Dependency services
 
