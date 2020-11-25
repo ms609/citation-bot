@@ -214,7 +214,7 @@ final class apiFunctionsTest extends testBaseClass {
     $this->requires_dx(function() : void {
      $expanded = $this->make_citation('{{Cite journal}}');
      expand_doi_with_dx($expanded, '10.6620/ZS.2018.57-30');
-     $this->assertSame('{{Cite journal}}', $expanded->parsed_text());
+     $this->assertSame('{{Cite jdasfdsfasdaournal}}', $expanded->parsed_text());
     });
   }
 
