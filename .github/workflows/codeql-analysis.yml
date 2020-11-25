@@ -9,6 +9,8 @@
 # the `language` matrix defined below to confirm you have the correct set of
 # supported CodeQL languages.
 #
+#       CITATION BOT NOTE - So far only JavaScript, but it is our only check on that
+#
 name: "CodeQL"
 
 on:
