@@ -8,13 +8,13 @@ declare(strict_types=1);
  * to the wiki.
  */
 
-require_once('Comment.php');
-require_once('Template.php');
-require_once('apiFunctions.php');
-require_once('expandFns.php');
-require_once('user_messages.php');
-require_once('Zotero.php');
-require_once("constants.php");
+require_once('Comment.php');       // @codeCoverageIgnore 
+require_once('Template.php');      // @codeCoverageIgnore 
+require_once('apiFunctions.php');  // @codeCoverageIgnore 
+require_once('expandFns.php');     // @codeCoverageIgnore 
+require_once('user_messages.php'); // @codeCoverageIgnore 
+require_once('Zotero.php');        // @codeCoverageIgnore 
+require_once("constants.php");     // @codeCoverageIgnore 
 
 class Page {
 
@@ -480,7 +480,7 @@ class Page {
       $auto_summary .= 'Some additions/deletions were actually parameter name changes. ';
     }
     if (substr_count($this->text, '978') > substr_count($this->start_text, '978')) {
-      $auto_summary .= 'Correct ISBN10 to ISBN13. ';
+      $auto_summary .= 'Upgrade ISBN10 to ISBN13. ';
     }
     if (stripos($auto_summary, 'template') !== FALSE) {
       foreach (['cite|', 'Cite|', 'citebook', 'Citebook', 'cit book', 'Cit book', 'cite books', 'Cite books',
