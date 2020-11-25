@@ -1,4 +1,4 @@
-name: PHP Static Tests
+name: Bot Test Suite
 
 on:
   push:
