@@ -3258,6 +3258,11 @@ final class Template {
         }
     }
     $google_date = tidy_date($google_date);
+    if (preg_match('~^(\d{4})$~', $google_date, $match) || preg_match('~^(\d{4})[ \:\,\.]~', $google_date, $match) || preg_match('~ (\d{4})$~', $google_date, $match)) {
+      $now = (integer) date("Y");
+      $goo = (integer) $match[1];
+      if ($now < $goo) return TRUE; // leave now
+    }
     $this->add_if_new('date', $google_date);
     // Don't set 'pages' parameter, as this refers to the CITED pages, not the page count of the book.
     return TRUE;
