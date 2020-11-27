@@ -3258,6 +3258,12 @@ final class Template {
         }
     }
     $google_date = tidy_date($google_date);
+    $now = (integer) date("Y");
+    // Some publishers give next year always for OLD stuff
+    $next_year = (string) ($now + 1);
+    $next2_year = (string) ($now + 2);
+    if (strpos($google_date, $next_year) !== FALSE) return TRUE;
+    if (strpos($google_date, $next2_year) !== FALSE) return TRUE;
     $this->add_if_new('date', $google_date);
     // Don't set 'pages' parameter, as this refers to the CITED pages, not the page count of the book.
     return TRUE;
