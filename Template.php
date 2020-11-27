@@ -372,9 +372,9 @@ final class Template {
         }
       }
       // Do it this way to avoid massive N*M work load (N=size of $param and M=size of $drop_me_maybe) which happens when checking if each one is blank
-      foreach ($this->param as $p) {
+      foreach ($this->param as $key => $p) {
         if (@$p->val === '' && in_array(@$p->param, $drop_me_maybe)) {
-           $this->forget($p->param);
+           unset($this->param[$key]);
         }
       }
     }
@@ -5282,9 +5282,9 @@ final class Template {
         }
       }
       // Do it this way to avoid massive N*M work load (N=size of $param and M=size of $drop_me_maybe) which happens when checking if each one is blank
-      foreach ($this->param as $p) {
+      foreach ($this->param as $key => $p) {
         if (@$p->val === '' && in_array(@$p->param, $drop_me_maybe)) {
-           $this->forget($p->param);
+           unset($this->param[$key]);
         }
       }
     }
