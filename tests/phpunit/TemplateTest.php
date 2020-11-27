@@ -323,13 +323,21 @@ final class TemplateTest extends testBaseClass {
     $text = '{{cite journal | url = https://www-jstor-org.school.edu/stable/10.7249/mg1078a.10?seq=1#metadata_info_tab_contents }}';
     $expanded = $this->process_citation($text);
     $this->assertSame('10.7249/mg1078a.10', $expanded->get2('jstor'));
-   
   }
 
   public function testDrop10_2307() : void {
     $text = "{{Cite journal | jstor=10.2307/40237667}}";  // This should get cleaned up in tidy
     $prepared = $this->prepare_citation($text);
     $this->assertSame('40237667', $prepared->get2('jstor'));
+  }
+
+  public function testDropWeirdJunk() : void {
+    $text = "{{cite web |title=Left Handed Incandescent Light Bulbs?|last=|first=|date=24 March 2011 |publisher=eLightBulbs |last1=Eisenbraun|first1=Blair|accessdate=27 July 2016}}";
+    $expanded = $this->process_citation($text);
+    $this->assertNull($expanded->get2('last'));
+    $this->assertNull($expanded->get2('first'));
+    $this->assertSame('Blair', $expanded->get2('first1'));
+    $this->assertSame('Eisenbraun', $expanded->get2('last1'));
   }
 
    public function testRISJstorExpansion() : void {
