@@ -336,8 +336,8 @@ final class TemplateTest extends testBaseClass {
     $expanded = $this->process_citation($text);
     $this->assertNull($expanded->get2('last'));
     $this->assertNull($expanded->get2('first'));
-    $this->assertSame('Eisenbraun', $expanded->get2('last1'));
     $this->assertSame('Blair', $expanded->get2('first1'));
+    $this->assertSame('Eisenbraun', $expanded->get2('last1'));
   }
 
    public function testRISJstorExpansion() : void {
