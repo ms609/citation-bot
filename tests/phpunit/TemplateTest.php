@@ -334,8 +334,8 @@ final class TemplateTest extends testBaseClass {
   public function testDropWeirdJunk() : void {
     $text = "{{cite web |title=Left Handed Incandescent Light Bulbs?|last=|first=|date=24 March 2011 |publisher=eLightBulbs |last1=Eisenbraun|first1=Blair|accessdate=27 July 2016}}";
     $expanded = $this->process_citation($text);
-    $this->assertNull('10.7249/mg1078a.10', $expanded->get2('last'));
-    $this->assertNull('10.7249/mg1078a.10', $expanded->get2('first'));
+    $this->assertNull($expanded->get2('last'));
+    $this->assertNull($expanded->get2('first'));
     $this->assertSame('Eisenbraun', $prepared->get2('last1'));
     $this->assertSame('Blair', $prepared->get2('first1'));
   }
