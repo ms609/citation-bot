@@ -16,4 +16,6 @@ return [
     'directory_list' => [
         '.', 'tests/', 'tests/phpunit', 'vendor/'
     ],
+    
+    dfsads
 ];
