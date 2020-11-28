@@ -1,4 +1,4 @@
-name: PHP Composer
+name: Bot Test Suite
 
 on:
   push:
@@ -35,29 +35,11 @@ jobs:
           ${{ runner.os }}-php-
 
     - name: confiugre composer and dependecies
-      run: composer config minimum-stability dev && composer config prefer-stable true && composer require overtrue/phplint  phpstan/phpstan   mediawiki/oauthclient:1.1.0  phan/phan:3.x vimeo/psalm designsecurity/progpilot phpunit/phpunit ^9
+      run: composer config minimum-stability dev && composer config prefer-stable true && composer require mediawiki/oauthclient:1.1.0  phpunit/phpunit ^9
       
     - name: Install dependencies
       if: steps.composer-cache.outputs.cache-hit != 'true'
       run: composer install --prefer-dist  -vvv --no-progress
-
-    - name: PHP Lint test
-      run: ./vendor/bin/phplint --exclude=vendor --no-interaction -vv ./
-
-    - name: PHP phpstan
-      run: php ./vendor/bin/phpstan --no-interaction analyse --memory-limit=2G constants/*.php  Parameter.php user_messages.php constants.php expandFns.php Zotero.php apiFunctions.php NameTools.php Comment.php Page.php WikipediaBot.php Template.php setup.php category.php generate_template.php linked_pages.php unlock_git.php process_page.php authenticate.php
-
-    - name: PHP phan
-      run: php ./vendor/bin/phan --allow-polyfill-parser constants/*.php constants.php    user_messages.php  Parameter.php expandFns.php  NameTools.php  Zotero.php apiFunctions.php Comment.php  Template.php WikipediaBot.php setup.php Page.php category.php generate_template.php gitpull.php linked_pages.php process_page.php  authenticate.php unlock_git.php
-
-    - name: PHP psalm
-      run: php ./vendor/bin/psalm
-      
-    - name: PHP psalm Taint
-      run: php ./vendor/bin/psalm --taint-analysis
-      
-    - name: PHP Design Security
-      run: ./vendor/bin/progpilot  category.php generate_template.php gitpull.php linked_pages.php process_page.php authenticate.php unlock_git.php
       
     - name: Full test with PHP
       env:
