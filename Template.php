@@ -230,6 +230,21 @@ final class Template {
 
   public function prepare() : void {
     if ($this->should_be_processed()) {
+      // Remove empty duplicates
+      if (!empty($this->param)) {
+        $drop_me_maybe = array();
+        foreach (ALL_ALIASES as $alias_list) {
+          if (!$this->blank($alias_list)) { // At least one is set
+            $drop_me_maybe = array_merge($drop_me_maybe, $alias_list);
+          }
+        }
+        // Do it this way to avoid massive N*M work load (N=size of $param and M=size of $drop_me_maybe) which happens when checking if each one is blank
+        foreach ($this->param as $key => $p) {
+          if (@$p->val === '' && in_array(@$p->param, $drop_me_maybe)) {
+             unset($this->param[$key]);
+          }
+        }
+      }
       $this->get_inline_doi_from_title();
       $this->parameter_names_to_lowercase();
       $this->use_unnamed_params();
@@ -3258,6 +3273,12 @@ final class Template {
         }
     }
     $google_date = tidy_date($google_date);
+    $now = (integer) date("Y");
+    // Some publishers give next year always for OLD stuff
+    $next_year = (string) ($now + 1);
+    $next2_year = (string) ($now + 2);
+    if (strpos($google_date, $next_year) !== FALSE) return TRUE;
+    if (strpos($google_date, $next2_year) !== FALSE) return TRUE;
     $this->add_if_new('date', $google_date);
     // Don't set 'pages' parameter, as this refers to the CITED pages, not the page count of the book.
     return TRUE;
@@ -5262,9 +5283,9 @@ final class Template {
         }
       }
       // Do it this way to avoid massive N*M work load (N=size of $param and M=size of $drop_me_maybe) which happens when checking if each one is blank
-      foreach ($this->param as $p) {
+      foreach ($this->param as $key => $p) {
         if (@$p->val === '' && in_array(@$p->param, $drop_me_maybe)) {
-           $this->forget($p->param);
+           unset($this->param[$key]);
         }
       }
     }

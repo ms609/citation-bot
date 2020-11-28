@@ -235,12 +235,13 @@ const FIRST_EDITOR_ALIASES = ['editor1', 'editor', 'editor-last', 'editor1-last'
 const ISSUE_ALIASES = ['issue', 'number'];
 const PAGE_ALIASES = ['page', 'pages', 'pp', 'p', 'at'];
 const TIME_ALIASES = ['date', 'year'];
-const WORK_ALIASES = ['work', 'journal', 'newspaper', 'magazine', 'periodical', 'website', 'encyclopedia', 'encyclopaedia']; 
+const WORK_ALIASES = ['work', 'journal', 'newspaper', 'magazine', 'periodical', 'website', 'encyclopedia', 'encyclopaedia'];
+const ACCESS_ALIASES = ['accessdate', 'access-date'];
 
 const ALL_ALIASES = [TITLE_LINK_ALIASES, ARXIV_ALIASES, COAUTHOR_ALIASES, CHAPTER_ALIASES,
               DISPLAY_AUTHORS, DISPLAY_EDITORS, DOI_BROKEN_ALIASES, FIRST_AUTHOR_ALIASES,
               FIRST_FORENAME_ALIASES, FIRST_EDITOR_ALIASES, ISSUE_ALIASES, PAGE_ALIASES,
-              TIME_ALIASES, WORK_ALIASES, FLATTENED_AUTHOR_PARAMETERS];
+              TIME_ALIASES, WORK_ALIASES, FLATTENED_AUTHOR_PARAMETERS, ACCESS_ALIASES];
 
 // Includes many parameters usually from templates that we do not modify such as {{cite patent}}, because
 // that information can also be presented using the generic {{citation}} template, which we do modify.
