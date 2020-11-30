@@ -338,6 +338,9 @@ final class Template {
             } elseif (preg_match('~.+(?: Volume| Vol\.| V. | Number| No\.| Num\.| Issue ).*\d+.*page.*\d+~i', $the_title)) {
               $this->rename('title', 'CITATION_BOT_PLACEHOLDER_title');
               $bad_data = TRUE;
+            } elseif (preg_match('~^\[No title found\]$~i', $the_title)) {
+              $this->rename('title', 'CITATION_BOT_PLACEHOLDER_title');
+              $bad_data = TRUE;
             }
           }
           if ($bad_data) {
