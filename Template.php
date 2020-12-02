@@ -119,6 +119,14 @@ final class Template {
     if ($trim_name === 'Citation journal') $this->name = $spacing[1] . 'Cite journal' . $spacing[2];
     if ($trim_name === 'cite new') $this->name = $spacing[1] . 'cite news' . $spacing[2];
     if ($trim_name === 'Cite new') $this->name = $spacing[1] . 'Cite news' . $spacing[2];
+    if ($trim_name === 'cite Web') $this->name = $spacing[1] . 'cite web' . $spacing[2];
+    if ($trim_name === 'Cite Web') $this->name = $spacing[1] . 'Cite web' . $spacing[2];
+    if ($trim_name === 'cite Journal') $this->name = $spacing[1] . 'cite journal' . $spacing[2];
+    if ($trim_name === 'Cite Journal') $this->name = $spacing[1] . 'Cite journal' . $spacing[2];
+    if ($trim_name === 'cite Book') $this->name = $spacing[1] . 'cite book' . $spacing[2];
+    if ($trim_name === 'Cite Book') $this->name = $spacing[1] . 'Cite book' . $spacing[2];
+    if ($trim_name === 'cite News') $this->name = $spacing[1] . 'cite news' . $spacing[2];
+    if ($trim_name === 'Cite News') $this->name = $spacing[1] . 'Cite news' . $spacing[2];
 
     // Cite article is actually cite news, but often used for journal by mistake - fix
     if ($trim_name === 'cite article') {
@@ -336,6 +344,9 @@ final class Template {
               $this->rename('title', 'CITATION_BOT_PLACEHOLDER_title');
               $bad_data = TRUE; 
             } elseif (preg_match('~.+(?: Volume| Vol\.| V. | Number| No\.| Num\.| Issue ).*\d+.*page.*\d+~i', $the_title)) {
+              $this->rename('title', 'CITATION_BOT_PLACEHOLDER_title');
+              $bad_data = TRUE;
+            } elseif (preg_match('~^\[No title found\]$~i', $the_title)) {
               $this->rename('title', 'CITATION_BOT_PLACEHOLDER_title');
               $bad_data = TRUE;
             }
