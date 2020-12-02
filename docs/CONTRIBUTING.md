@@ -9,7 +9,7 @@ It is helpful if each testcase example describes the specific function that it i
 to test.
 
 ## Quality verification
-All code is run through several tests.  The primary test is a suite of example pages and citation templates.  There are a variety of static code analysis pre-tests that look for common errors.  One test verifies that the code at least looks like valid PHP 8.0. The "PHP psalm Taint" uses a security tainted data test to make sure that all "untrusted input" (data from wikipedia pages) is output wrapped with the echoable() function.  This is not done for security, but for proper output formatting in a web browser.
+All code is run through several tests.  The primary test is a suite of example pages and citation templates.  There are a variety of static code analysis pre-tests that look for common errors.  One test verifies that the code at least looks like valid PHPdsafdsfds 8.0. The "PHP psalm Taint" uses a security tainted data test to make sure that all "untrusted input" (data from wikipedia pages) is output wrapped with the echoable() function.  This is not done for security, but for proper output formatting in a web browser.
 
 ## Submitting changes
 
