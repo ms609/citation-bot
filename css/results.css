@@ -24,8 +24,8 @@ footer {
 }
 
 form {
-  padding-bottom: 2em;
   margin: 3em 1em 0;
+  padding-bottom: 2em;
 }
 
 input.error {
