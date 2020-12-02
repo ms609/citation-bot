@@ -1,13 +1,13 @@
  header, footer {
-  background-color: #eed; 
-  padding: 0.5em 1em;
+  background-color: #eed;
   margin: -9px;
+  padding: 0.5em 1em;
   text-align: center;
   text-decoration: none;
 }
 
 header, footer, form {
-  font-family: 'Gill Sans', 'Gill Sans MT', Arial, 'sans serif'; 
+  font-family: 'Gill Sans', 'Gill Sans MT', Arial, 'sans serif';
 }
 
 header {
@@ -15,11 +15,11 @@ header {
 }
 
 footer {
-  margin-top: 3em;
-  border-top: 1px solid #335;
-  box-shadow: 0 50vh 0 50vh #eed;
   background: #eed url('../img/Powered-by-Toolforge.png') no-repeat right;
   background-position-y: 20px;
+  border-top: 1px solid #335;
+  box-shadow: 0 50vh 0 50vh #eed;
+  margin-top: 3em;
   min-height: 80px;
 }
 
@@ -37,11 +37,11 @@ header a, footer a { text-decoration: none; }
 
 a { color: #0773b3; }
 
-span.warning    { color: #d36027; } 
 span.added      { color: #02a074; font-weight: bold;}
-span.removed    { color: #e79f26; font-weight: bold;}
+span.boring     { color: #bbb; }
 span.changed    { color: #5eb3e5; font-weight: bold;}
 span.reddish    { color: #cc79a7; }
+span.removed    { color: #e79f26; font-weight: bold;}
 span.subitem    { color: #666; }
-span.boring     { color: #bbb; }
 span.subsubitem { color: #999; }
+span.warning    { color: #d36027; }
