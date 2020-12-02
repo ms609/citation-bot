@@ -9,7 +9,7 @@ It is helpful if each testcase example describes the specific function that it i
 to test.
 
 ## Quality verification
-All code is run through several tests.  The primary test is a suite of example pages and citation templates.  There are a variety of static code analysis pre-tests that look for common errors.  One test verifies that the code at least looks like valid PHP 8.0. The "PHP psalm Taint" uses a security tainted data test to make sure that all "untrusted input" (data from wikipedia pages) is output wrapped with the echoable() function.  This is not done for security, but for proper output formatting in a web browser.
+All code is run through several tests.  The primary test is a suite of example pages and citation templates.  There are a variety of static code analysis tests that look for common errors.  The security tainted data tests make sure that all "untrusted input" (data from wikipedia pages) is output wrapped with the echoable() function: this is not done for security, but for proper output formatting in a web browser.  The GitHub provided CodeQL test suite is also enabled, but that does not support PHP yet, so it just checks the one JavaScript file.
 
 ## Submitting changes
 
@@ -32,10 +32,10 @@ Always write a clear log message for your commits. One-line messages are fine fo
   * We prefer `elseif` to `else if`
   * We prefer `curl` to `file_get_contents` for easier debugging and greater control
   * We use `echo` and `exit` for normal code, and `print` and `die` for debug code that is intended to be removed later
-  * All code is verified to be valid PHP 7.3, and 8.0 according to static analysis
-  * All code is verified to be valid PHP 7.3 at runtime
+  * All code is verified to be valid PHP 7.3
   * We want 100% code coverage with untestable code flagged in the source -- such as code that handles error conditions.  See the file apiFunctions.php for lots of examples of non-coverage code.
   * All curl_init() calls must also set CURLOPT_TIMEOUT to something reasonable for the importance of the data and the speed of the website
+  * error_reporting(E_ALL) and declare(strict_types=1) are both set
 
 ## Bot output conventions
 The bot reports its activity to users using:
