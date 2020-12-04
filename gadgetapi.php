@@ -33,6 +33,7 @@ try {
 
  ob_end_clean();
 
+ /** @psalm-taint-escape html */
  $result = array(
    'expandedtext' => $newText,
    'editsummary' => $editSummary
