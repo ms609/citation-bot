@@ -2972,7 +2972,7 @@ final class Template {
        preg_match("~^https?://([^\/]+)/~", $oa_url . '/', $match);
        $new_host_name = str_replace('www.', '', strtolower((string) @$match[1]));
        foreach (ALL_URL_TYPES as $old_url) {
-            if (preg_match("~^https?://([^\/]+)/~", (string) $this->get($old_url), $match)) {
+            if (preg_match("~^https?://([^\/]+)/~", $this->get($old_url), $match)) {
                 $old_host_name = str_replace('www.', '', strtolower($match[1]));
                 if ($old_host_name === $new_host_name) return 'have free';
             }
@@ -4110,6 +4110,7 @@ final class Template {
         case 'bibcode':
           if ($this->blank($param)) return;
           $bibcode_journal = substr($this->get($param), 4);
+          if ($bibcode_journal === FALSE) return;
           foreach (NON_JOURNAL_BIBCODES as $exception) {
             if (substr($bibcode_journal, 0, strlen($exception)) == $exception) return;
           }
@@ -5104,10 +5105,10 @@ final class Template {
           return;
           
         case 'website':
-          if (($this->wikiname() === 'cite book') && (str_i_same((string)$this->get($param), 'google.com') ||
-                                                      str_i_same((string)$this->get($param), 'Google Books') ||
-                                                      str_i_same((string)$this->get($param), 'Google Book') ||
-                                                         stripos((string)$this->get($param), 'Books.google.') === 0)) {
+          if (($this->wikiname() === 'cite book') && (str_i_same($this->get($param), 'google.com') ||
+                                                      str_i_same($this->get($param), 'Google Books') ||
+                                                      str_i_same($this->get($param), 'Google Book') ||
+                                                         stripos($this->get($param), 'Books.google.') === 0)) {
             $this->forget($param);
           }
           if (stripos($this->get($param), 'archive.org') !== FALSE &&
@@ -5139,6 +5140,7 @@ final class Template {
   public function tidy() : void {
     // Should only be run once (perhaps when template is first loaded)
     // Future tidying should occur when parameters are added using tidy_parameter.
+    // Called in final_tidy when the template type is changed
     foreach ($this->param as $param) {
       $this->tidy_parameter($param->param);
     }
@@ -5148,6 +5150,9 @@ final class Template {
     $matches = ['', '']; // prevent memory leak in some PHP versions
     $spacing = ['', '']; // prevent memory leak in some PHP versions
     if ($this->should_be_processed()) {
+      if ($this->initial_name !== $this->name) {
+         $this->tidy();
+      }
       // Sometimes title and chapter come from different databases
       if ($this->has('chapter') && ($this->get('chapter') === $this->get('title'))) {  // Leave only one
         if ($this->wikiname() === 'cite book' || $this->has('isbn')) {
