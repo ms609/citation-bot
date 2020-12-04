@@ -5141,8 +5141,14 @@ final class Template {
     // Should only be run once (perhaps when template is first loaded)
     // Future tidying should occur when parameters are added using tidy_parameter.
     // Called in final_tidy when the template type is changed
+    $orig = $this->parsed_text();  
     foreach ($this->param as $param) {
       $this->tidy_parameter($param->param);
+    }
+    if ($orig !== $this->parsed_text()) {
+      foreach ($this->param as $param) {
+        $this->tidy_parameter($param->param);
+      }
     }
   }
   
