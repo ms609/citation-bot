@@ -4092,6 +4092,7 @@ final class Template {
         case 'bibcode':
           if ($this->blank($param)) return;
           $bibcode_journal = substr($this->get($param), 4);
+          if ($bibcode_journal === FALSE) return;
           foreach (NON_JOURNAL_BIBCODES as $exception) {
             if (substr($bibcode_journal, 0, strlen($exception)) == $exception) return;
           }
