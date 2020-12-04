@@ -396,7 +396,7 @@ final class Template {
                  !preg_match('~^https?://[^/]+/?$~', $url) &&       // Ignore just a hostname
                preg_match (REGEXP_IS_URL, $url) === 1) {
                $this->rename($possible, 'CITATION_BOT_PLACEHOLDER_possible');
-               get_identifiers_from_url($url);
+               $this->get_identifiers_from_url($url);
                if ($this->has($possible)) {
                  $this->forget('CITATION_BOT_PLACEHOLDER_possible');
                } else {
