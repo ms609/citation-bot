@@ -386,6 +386,24 @@ final class Template {
           }
         }
         $this->tidy();
+        // Fix up URLs hiding in identifiers
+        foreach (['issn', 'oclc', 'pmc', 'doi', 'pmid', 'jstor', 'arxiv', 'zbl', 'oclc', 'mr',
+                  'lccn', 'hdl', 'ssrn', 'ol', 'jfm', 'osti', 'biorxiv', 'citeseerx', 'hdl'] as $possible) {
+          if ($this->has($possible)) {
+             $url = $this->get($possible);
+             if (stripos($url, 'CITATION_BOT') === FALSE &&
+                 filter_var($url, FILTER_VALIDATE_URL) !== FALSE &&
+                 !preg_match('~^https?://[^/]+/?$~', $url) &&       // Ignore just a hostname
+               preg_match (REGEXP_IS_URL, $url) === 1) {
+               $this->rename($possible, 'CITATION_BOT_PLACEHOLDER_possible');
+               $this->get_identifiers_from_url($url);
+               if ($this->has($possible)) {
+                 $this->forget('CITATION_BOT_PLACEHOLDER_possible');
+               } else {
+                 $this->rename('CITATION_BOT_PLACEHOLDER_possible', $possible);                }
+             }
+          }
+        }
     } elseif ($this->wikiname() == 'cite magazine' &&  $this->blank('magazine') && $this->has_but_maybe_blank('work')) { 
       // This is all we do with cite magazine
       $this->rename('work', 'magazine');
