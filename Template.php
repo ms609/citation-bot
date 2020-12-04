@@ -5121,6 +5121,7 @@ final class Template {
   public function tidy() : void {
     // Should only be run once (perhaps when template is first loaded)
     // Future tidying should occur when parameters are added using tidy_parameter.
+    // Called in final_tidy when the template type is changed
     foreach ($this->param as $param) $this->tidy_parameter($param->param);
   }
   
@@ -5128,6 +5129,9 @@ final class Template {
     $matches = ['', '']; // prevent memory leak in some PHP versions
     $spacing = ['', '']; // prevent memory leak in some PHP versions
     if ($this->should_be_processed()) {
+      if ($this->initial_name !== $this->name) {
+         $this->tidy();
+      }
       // Sometimes title and chapter come from different databases
       if ($this->has('chapter') && ($this->get('chapter') === $this->get('title'))) {  // Leave only one
         if ($this->wikiname() === 'cite book' || $this->has('isbn')) {
