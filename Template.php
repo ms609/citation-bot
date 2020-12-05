@@ -5123,7 +5123,7 @@ final class Template {
           return;
          
         case 'publicationplace': case 'publication-place':
-          if ($this->blank(['location', 'place'])) {
+          if ($this->blank(['location', 'place', 'conference']) && $this->wikiname() !== 'cite conference') { // A conference might have a location and a pulisher address
             $this->rename($param, 'location'); // This should only be used when 'location'/'place' is being used to describe where is was physically written, i.e. location=Vacationing in France|publication-place=New York
           }
           return;
