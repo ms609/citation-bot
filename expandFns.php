@@ -635,7 +635,8 @@ function prior_parameters(string $par, array $list=array()) : array {
       case 'last': case 'surname': case 'author':
         return array('first' . $before, 'forename' . $before, 'initials' . $before, 'author' . $before);
       default:
-        return array_merge(FLATTENED_AUTHOR_PARAMETERS, array($match[1] . $before));
+        $base = $match[1] . $before;
+        return array_merge(FLATTENED_AUTHOR_PARAMETERS, array($base, $base . '-last', $base . '-first'));
     }
   }
   switch ($par) {
