@@ -64,7 +64,7 @@ function entrez_api(array $ids, array &$templates, string $db) : bool {   // Poi
     $this_template = $get_template($template_key);
     $this_template->record_api_usage('entrez', $db == 'pubmed' ? 'pmid' : 'pmc');
  
-    echo "\n\n"
+    echo "\n\n";
     
     foreach ($document->Item as $item) {
       if (preg_match("~10\.\d{4}/[^\s\"']*~", (string) $item, $match)) {
@@ -151,7 +151,7 @@ function entrez_api(array $ids, array &$templates, string $db) : bool {   // Poi
       }
     }
   }
-      echo "\n\n"
+      echo "\n\n";
   return TRUE;
 }
 
