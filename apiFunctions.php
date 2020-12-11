@@ -69,6 +69,10 @@ function entrez_api(array $ids, array &$templates, string $db) : bool {   // Poi
         $this_template->add_if_new('doi', $match[0], 'entrez');
       }
       switch ($item["Name"]) {
+        echo "\n\n" . $item["Name"] . ":\n";
+        print_r($item);
+        echo (string) $item;
+        echo "\n";
                 case "Title":   $this_template->add_if_new('title',  str_replace(array("[", "]"), "", (string) $item), 'entrez'); // add_if_new will format the title
         break;  case "PubDate": preg_match("~(\d+)\s*(\w*)~", (string) $item, $match);
                                 $this_template->add_if_new('year', (string) $match[1], 'entrez');
