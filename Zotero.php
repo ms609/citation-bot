@@ -290,7 +290,7 @@ public static function expand_by_zotero(Template $template, ?string $url = NULL)
   $access_date = 0;
   $url_kind = '';
   if (is_null($url)) {
-     if (in_array((string) $template->get('url-status'),  ['usurped', 'unfit', 'dead'])) return FALSE;
+     if (in_array($template->get('url-status'),  ['usurped', 'unfit', 'dead'])) return FALSE;
      $access_date = (int) strtotime(tidy_date($template->get('accessdate') . ' ' . $template->get('access-date')));
      $archive_date = (int) strtotime(tidy_date($template->get('archivedate') . ' ' . $template->get('archive-date')));
      if ($access_date && $archive_date) {
