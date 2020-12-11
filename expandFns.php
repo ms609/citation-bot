@@ -732,5 +732,5 @@ function can_safely_modify_dashes(string $value) : bool {
 }
 
 function str_i_same(string $str1, string $str2) : bool {
-   return (bool) (0 === strcasecmp((string) $str1, (string) $str2));
+   return (0 === strcasecmp($str1, $str2));
 }
