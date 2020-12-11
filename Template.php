@@ -202,7 +202,7 @@ final class Template {
         if (substr_count($example, '=') !== 1) $example = 'param = val';
         if (substr_count($example, "\n") > 1 ) $example = 'param = val';
     }
-    $this->example_param = (string) $example;
+    $this->example_param = $example;
   }
 
   // Re-assemble parsed template into string
@@ -985,7 +985,7 @@ final class Template {
         return FALSE;
       
       case "page": case "pages":
-        if (in_array((string) $value, ['0', '0-0', '0–0'], TRUE)) return FALSE;  // Reject bogus zero page number
+        if (in_array($value, ['0', '0-0', '0–0'], TRUE)) return FALSE;  // Reject bogus zero page number
         if ($this->has('at')) return FALSE;  // Leave at= alone.  People often use that for at=See figure 17 on page......
         if (preg_match('~^\d+$~', $value) && intval($value) > 1000000) return FALSE;  // Sometimes get HUGE values
         $pages_value = $this->get('pages');
@@ -3240,7 +3240,7 @@ final class Template {
       if ($use_it) $this->google_book_details($gid[1]);
       return TRUE;
     }
-    if (preg_match("~^(.+\.google\.com/books/edition/_/)([a-zA-Z0-9]+)(\?.+|)$~", (string) $url, $gid)) {
+    if (preg_match("~^(.+\.google\.com/books/edition/_/)([a-zA-Z0-9]+)(\?.+|)$~", $url, $gid)) {
       if ($url_type && $gid[3] === '?hl=en') {
         report_forget('Anonymized/Standardized/Denationalized Google Books URL');
         $this->set($url_type, $gid[1] . $gid[2]);
@@ -5731,19 +5731,19 @@ final class Template {
   
   public function set(string $par, string $val) : bool {
     if ($par === '') report_error('NULL parameter passed to set with value of ' . echoable($val));
-    if (mb_stripos($this->get((string) $par), 'CITATION_BOT_PLACEHOLDER_COMMENT') !== FALSE) {
+    if (mb_stripos($this->get($par), 'CITATION_BOT_PLACEHOLDER_COMMENT') !== FALSE) {
       return FALSE;
     }
     if (($pos = $this->get_param_key((string) $par)) !== NULL) {
-      $this->param[$pos]->val = (string) $val;
+      $this->param[$pos]->val = $val;
       return TRUE;
     }
     $p = new Parameter();
     $p->parse_text((string) $this->example_param); // cast to make static analysis happy
-    $p->param = (string) $par;
-    $p->val = (string) $val;
+    $p->param = $par;
+    $p->val = $val;
     
-    $insert_after = prior_parameters((string) $par);
+    $insert_after = prior_parameters($par);
     $prior_pos_best = -1;
     foreach (array_reverse($insert_after) as $after) {
       if (($after_key = $this->get_param_key($after)) !== NULL) {

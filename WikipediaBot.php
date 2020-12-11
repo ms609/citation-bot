@@ -420,7 +420,7 @@ final class WikipediaBot {
   }
   public function namespace_id(string $name) : int {
     $lc_name = strtolower($name);
-    return array_key_exists($lc_name, NAMESPACE_ID) ? (int) NAMESPACE_ID[$lc_name] : 0;
+    return array_key_exists($lc_name, NAMESPACE_ID) ? NAMESPACE_ID[$lc_name] : 0;
   }
   public function namespace_name(int $id) : ?string {
     return array_key_exists($id, NAMESPACES) ? NAMESPACES[$id] : NULL;
