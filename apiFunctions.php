@@ -64,15 +64,19 @@ function entrez_api(array $ids, array &$templates, string $db) : bool {   // Poi
     $this_template = $get_template($template_key);
     $this_template->record_api_usage('entrez', $db == 'pubmed' ? 'pmid' : 'pmc');
  
+    echo "\n\n"
+    
     foreach ($document->Item as $item) {
       if (preg_match("~10\.\d{4}/[^\s\"']*~", (string) $item, $match)) {
         $this_template->add_if_new('doi', $match[0], 'entrez');
       }
-      switch ($item["Name"]) {
-        echo "\n\n" . $item["Name"] . ":\n";
+      
+        echo $item["Name"] . ":\n";
         print_r($item);
         echo (string) $item;
         echo "\n";
+      
+      switch ($item["Name"]) {
                 case "Title":   $this_template->add_if_new('title',  str_replace(array("[", "]"), "", (string) $item), 'entrez'); // add_if_new will format the title
         break;  case "PubDate": preg_match("~(\d+)\s*(\w*)~", (string) $item, $match);
                                 $this_template->add_if_new('year', (string) $match[1], 'entrez');
@@ -147,6 +151,7 @@ function entrez_api(array $ids, array &$templates, string $db) : bool {   // Poi
       }
     }
   }
+      echo "\n\n"
   return TRUE;
 }
 
