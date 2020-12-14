@@ -3,7 +3,7 @@
 @header('Pragma: no-cache');
 @header('Expires: 0');
 ?>
-<!DOCTYPE html><html lang="en" dir="ltr"><head><title>Git Pull</title><meta http-equiv="Content-Type" content="text/html; charset=utf-8" /></head><body><pre>
+<!DOCTYPE html><html lang="en" dir="ltr"><head><title>Git Pull</title><meta http-equiv="Content-Type" content="text/html; charset=utf-8" /></head><body><main><pre>
 <?php
 ob_implicit_flush();
 if (mkdir('git_pull.lock', 0700)) {
@@ -15,4 +15,4 @@ if (mkdir('git_pull.lock', 0700)) {
   echo 'lock file exists -- aborting ';
 }
 ?>
-</pre></body></html>
+</pre></main></body></html>
