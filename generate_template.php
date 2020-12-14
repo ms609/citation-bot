@@ -9,7 +9,7 @@ declare(strict_types=1);
 @header('Expires: 0');
 ?>
 
-<!DOCTYPE html><html lang="en" dir="ltr"><head><title>Make a Template</title></head><body><pre>
+<!DOCTYPE html><html lang="en" dir="ltr"><head><title>Make a Template</title></head><body><main><pre>
 
 <?php
 require_once('setup.php');
@@ -29,6 +29,6 @@ $page = new Page();
 $page->parse_text($t->parsed_text());
 $page->expand_text();
 
-echo("\n\n<ref>" . htmlspecialchars($page->parsed_text()) . "</ref>\n\n</pre></body></html>");
+echo("\n\n<ref>" . htmlspecialchars($page->parsed_text()) . "</ref>\n\n</pre></main></body></html>");
 
 ?>
