@@ -3,7 +3,7 @@
 @header('Pragma: no-cache');
 @header('Expires: 0');
 ?>
-<!DOCTYPE html><html lang="en" dir="ltr"><head><title>Unlocker</title></head><body><pre>
+<!DOCTYPE html><html lang="en" dir="ltr"><head><title>Unlocker</title></head><body><main><pre>
 <?php
 ob_implicit_flush();
 echo phpversion() . "\n";
@@ -29,5 +29,5 @@ sleep(1);
 if (!file_exists('git_pull.lock')) exit("Lock file gone</pre></body></html>");
 rmdir('git_pull.lock') ;
 if (file_exists('git_pull.lock'))  exit("Lock file not gone</pre></body></html>");
-echo "Script done</p></pre></body></html>"
+echo "Script done</p></pre></main></body></html>"
 ?>
