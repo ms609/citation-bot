@@ -16,6 +16,7 @@
     <h1>Wikipedia citation bot</h1>
     <p>Populates empty fields in {{cite journal}} family templates, and fix other citation issues.</p>
   </header>
+  <main>
   <form id="botForm" action="process_page.php" method="post">
     <p>
       <input type="checkbox" name="slow" id="slow" checked />
@@ -26,7 +27,7 @@
       <label for="edit">Commit edits.  Leave blank to check Wikicode.</label>
     </p>
     <p>
-      <code>Single page:&nbsp;</code>
+      <label for="Single page"<code>Single page:&nbsp;</code></label>
       <input name="page" id="botPage" value="" placeholder="Page name" />
         <button type="submit" name="pageSubmit" id="PageSubmit" value="Process page" formaction="process_page.php">Process page</button>
         <img style="display:none" src="img/spinner_18_18.gif" id="PageSpinner" alt="" />
@@ -34,7 +35,7 @@
     </p>
     <p>– or –</p>
     <p>
-      <code>Category:&nbsp;</code>
+      <label for="Category name"><code>Category:&nbsp;</code></label>
       <input name="cat" id="botCat" value="" placeholder="Category name" />
         <button type="submit" name="catSubmit" id="CatSubmit" value="Process category" formaction="category.php">Process pages in category</button>
         <img style="display:none" src="img/spinner_18_18.gif" id="CatSpinner" alt="" />
@@ -42,7 +43,7 @@
     </p>
     <p>– or –</p>
     <p>
-      <code>Linked pages:&nbsp;</code>
+      <label for="Linked pages"><code>Linked pages:&nbsp;</code></label>
       <input name="linkpage" id="botLinked" value="" placeholder="Initial page name" />
         <button type="submit" name="linkedSubmit" id="LinkedSubmit" value="Process all linked" formaction="linked_pages.php">Process pages linked from</button>
         <img style="display:none" src="img/spinner_18_18.gif" id="LinkSpinner" alt="" />
@@ -51,6 +52,7 @@
     <p>
     </p>
   </form>
+  </main>
   <footer>  
     <p>Maintained by <a href="https://en.wikipedia.org/wiki/User:Smith609">Martin Smith</a>.</p>
     <p>
