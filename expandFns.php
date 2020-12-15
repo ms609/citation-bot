@@ -234,9 +234,7 @@ function str_remove_irrelevant_bits(string $str) : string {
   $str = preg_replace('~\d+ Volume Set$~i', '', $str);  // Ullmann's Encyclopedia of Industrial Chemistry, 40 Volume Set
   $str = preg_replace('~^Retracted~i', '', $str);
   $str = preg_replace('~\d?\d? ?The ?sequence ?of ?\S+ ?has ?been ?deposited ?in ?the ?GenBank ?database ?under ?accession ?number ?\S+ ?\d?~i', '', $str);
-  
-  
- afsddsaasdfsdafds
+  $str = preg_replace('~(?:\:\.\,)? ?(?:an|the) official publication of the.+$~i', '', $str);
   $str = trim($str);
   $str = strip_diacritics($str);
   return $str;
@@ -638,7 +636,8 @@ function prior_parameters(string $par, array $list=array()) : array {
       case 'last': case 'surname': case 'author':
         return array('first' . $before, 'forename' . $before, 'initials' . $before, 'author' . $before);
       default:
-        return array_merge(FLATTENED_AUTHOR_PARAMETERS, array($match[1] . $before));
+        $base = $match[1] . $before;
+        return array_merge(FLATTENED_AUTHOR_PARAMETERS, array($base, $base . '-last', $base . '-first'));
     }
   }
   switch ($par) {
@@ -734,5 +733,5 @@ function can_safely_modify_dashes(string $value) : bool {
 }
 
 function str_i_same(string $str1, string $str2) : bool {
-   return (bool) (0 === strcasecmp((string) $str1, (string) $str2));
+   return (0 === strcasecmp($str1, $str2));
 }

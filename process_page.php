@@ -31,7 +31,7 @@ if (HTML_OUTPUT) {?>
       <a href="https://github.com/ms609/citation-bot" target="_blank" title="GitHub repository">Source&nbsp;code</a>
     </p>
   </header>
-
+  <main>
 <pre id="botOutput">
 <?php
 }
@@ -148,6 +148,7 @@ if (strpos($pages, '|') !== FALSE) {
 }
 ?>
     </pre>
+    </main>
     <footer>
       <a href="./" title="Use Citation Bot again">Another&nbsp;page</a>?
     </footer>

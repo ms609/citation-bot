@@ -202,7 +202,7 @@ final class Template {
         if (substr_count($example, '=') !== 1) $example = 'param = val';
         if (substr_count($example, "\n") > 1 ) $example = 'param = val';
     }
-    $this->example_param = (string) $example;
+    $this->example_param = $example;
   }
 
   // Re-assemble parsed template into string
@@ -386,6 +386,24 @@ final class Template {
           }
         }
         $this->tidy();
+        // Fix up URLs hiding in identifiers
+        foreach (['issn', 'oclc', 'pmc', 'doi', 'pmid', 'jstor', 'arxiv', 'zbl', 'oclc', 'mr',
+                  'lccn', 'hdl', 'ssrn', 'ol', 'jfm', 'osti', 'biorxiv', 'citeseerx', 'hdl'] as $possible) {
+          if ($this->has($possible)) {
+             $url = $this->get($possible);
+             if (stripos($url, 'CITATION_BOT') === FALSE &&
+                 filter_var($url, FILTER_VALIDATE_URL) !== FALSE &&
+                 !preg_match('~^https?://[^/]+/?$~', $url) &&       // Ignore just a hostname
+               preg_match (REGEXP_IS_URL, $url) === 1) {
+               $this->rename($possible, 'CITATION_BOT_PLACEHOLDER_possible');
+               $this->get_identifiers_from_url($url);
+               if ($this->has($possible)) {
+                 $this->forget('CITATION_BOT_PLACEHOLDER_possible');
+               } else {
+                 $this->rename('CITATION_BOT_PLACEHOLDER_possible', $possible);                }
+             }
+          }
+        }
     } elseif ($this->wikiname() == 'cite magazine' &&  $this->blank('magazine') && $this->has_but_maybe_blank('work')) { 
       // This is all we do with cite magazine
       $this->rename('work', 'magazine');
@@ -967,7 +985,7 @@ final class Template {
         return FALSE;
       
       case "page": case "pages":
-        if (in_array((string) $value, ['0', '0-0', '0–0'], TRUE)) return FALSE;  // Reject bogus zero page number
+        if (in_array($value, ['0', '0-0', '0–0'], TRUE)) return FALSE;  // Reject bogus zero page number
         if ($this->has('at')) return FALSE;  // Leave at= alone.  People often use that for at=See figure 17 on page......
         if (preg_match('~^\d+$~', $value) && intval($value) > 1000000) return FALSE;  // Sometimes get HUGE values
         $pages_value = $this->get('pages');
@@ -2954,7 +2972,7 @@ final class Template {
        preg_match("~^https?://([^\/]+)/~", $oa_url . '/', $match);
        $new_host_name = str_replace('www.', '', strtolower((string) @$match[1]));
        foreach (ALL_URL_TYPES as $old_url) {
-            if (preg_match("~^https?://([^\/]+)/~", (string) $this->get($old_url), $match)) {
+            if (preg_match("~^https?://([^\/]+)/~", $this->get($old_url), $match)) {
                 $old_host_name = str_replace('www.', '', strtolower($match[1]));
                 if ($old_host_name === $new_host_name) return 'have free';
             }
@@ -3222,7 +3240,7 @@ final class Template {
       if ($use_it) $this->google_book_details($gid[1]);
       return TRUE;
     }
-    if (preg_match("~^(.+\.google\.com/books/edition/_/)([a-zA-Z0-9]+)(\?.+|)$~", (string) $url, $gid)) {
+    if (preg_match("~^(.+\.google\.com/books/edition/_/)([a-zA-Z0-9]+)(\?.+|)$~", $url, $gid)) {
       if ($url_type && $gid[3] === '?hl=en') {
         report_forget('Anonymized/Standardized/Denationalized Google Books URL');
         $this->set($url_type, $gid[1] . $gid[2]);
@@ -4092,6 +4110,7 @@ final class Template {
         case 'bibcode':
           if ($this->blank($param)) return;
           $bibcode_journal = substr($this->get($param), 4);
+          if ($bibcode_journal === FALSE) return;
           foreach (NON_JOURNAL_BIBCODES as $exception) {
             if (substr($bibcode_journal, 0, strlen($exception)) == $exception) return;
           }
@@ -5086,10 +5105,10 @@ final class Template {
           return;
           
         case 'website':
-          if (($this->wikiname() === 'cite book') && (str_i_same((string)$this->get($param), 'google.com') ||
-                                                      str_i_same((string)$this->get($param), 'Google Books') ||
-                                                      str_i_same((string)$this->get($param), 'Google Book') ||
-                                                         stripos((string)$this->get($param), 'Books.google.') === 0)) {
+          if (($this->wikiname() === 'cite book') && (str_i_same($this->get($param), 'google.com') ||
+                                                      str_i_same($this->get($param), 'Google Books') ||
+                                                      str_i_same($this->get($param), 'Google Book') ||
+                                                         stripos($this->get($param), 'Books.google.') === 0)) {
             $this->forget($param);
           }
           if (stripos($this->get($param), 'archive.org') !== FALSE &&
@@ -5104,7 +5123,7 @@ final class Template {
           return;
          
         case 'publicationplace': case 'publication-place':
-          if ($this->blank(['location', 'place'])) {
+          if ($this->blank(['location', 'place', 'conference']) && $this->wikiname() !== 'cite conference') { // A conference might have a location and a pulisher address
             $this->rename($param, 'location'); // This should only be used when 'location'/'place' is being used to describe where is was physically written, i.e. location=Vacationing in France|publication-place=New York
           }
           return;
@@ -5121,13 +5140,25 @@ final class Template {
   public function tidy() : void {
     // Should only be run once (perhaps when template is first loaded)
     // Future tidying should occur when parameters are added using tidy_parameter.
-    foreach ($this->param as $param) $this->tidy_parameter($param->param);
+    // Called in final_tidy when the template type is changed
+    $orig = $this->parsed_text();  
+    foreach ($this->param as $param) {
+      $this->tidy_parameter($param->param);
+    }
+    if ($orig !== $this->parsed_text()) {
+      foreach ($this->param as $param) {
+        $this->tidy_parameter($param->param);
+      }
+    }
   }
   
   public function final_tidy() : void {
     $matches = ['', '']; // prevent memory leak in some PHP versions
     $spacing = ['', '']; // prevent memory leak in some PHP versions
     if ($this->should_be_processed()) {
+      if ($this->initial_name !== $this->name) {
+         $this->tidy();
+      }
       // Sometimes title and chapter come from different databases
       if ($this->has('chapter') && ($this->get('chapter') === $this->get('title'))) {  // Leave only one
         if ($this->wikiname() === 'cite book' || $this->has('isbn')) {
@@ -5700,19 +5731,19 @@ final class Template {
   
   public function set(string $par, string $val) : bool {
     if ($par === '') report_error('NULL parameter passed to set with value of ' . echoable($val));
-    if (mb_stripos($this->get((string) $par), 'CITATION_BOT_PLACEHOLDER_COMMENT') !== FALSE) {
+    if (mb_stripos($this->get($par), 'CITATION_BOT_PLACEHOLDER_COMMENT') !== FALSE) {
       return FALSE;
     }
     if (($pos = $this->get_param_key((string) $par)) !== NULL) {
-      $this->param[$pos]->val = (string) $val;
+      $this->param[$pos]->val = $val;
       return TRUE;
     }
     $p = new Parameter();
     $p->parse_text((string) $this->example_param); // cast to make static analysis happy
-    $p->param = (string) $par;
-    $p->val = (string) $val;
+    $p->param = $par;
+    $p->val = $val;
     
-    $insert_after = prior_parameters((string) $par);
+    $insert_after = prior_parameters($par);
     $prior_pos_best = -1;
     foreach (array_reverse($insert_after) as $after) {
       if (($after_key = $this->get_param_key($after)) !== NULL) {
