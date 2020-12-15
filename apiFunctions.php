@@ -71,7 +71,7 @@ function entrez_api(array $ids, array &$templates, string $db) : bool {   // Poi
       switch ($item["Name"]) {
                 case "Title":   $this_template->add_if_new('title',  str_replace(array("[", "]"), "", (string) $item), 'entrez'); // add_if_new will format the title
         break;  case "PubDate": preg_match("~(\d+)\s*(\w*)~", (string) $item, $match);
-                                $this_template->add_if_new('year', (string) $match[1], 'entrez');
+                                $this_template->add_if_new('year', (string) @$match[1], 'entrez');
         break;  case "FullJournalName": $this_template->add_if_new('journal',  ucwords((string) $item), 'entrez'); // add_if_new will format the title
         break;  case "Volume":  $this_template->add_if_new('volume', (string) $item, 'entrez');
         break;  case "Issue":   $this_template->add_if_new('issue', (string) $item, 'entrez');

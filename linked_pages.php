@@ -32,7 +32,7 @@ $api = new WikipediaBot();
       <a href="https://github.com/ms609/citation-bot" target="_blank" title="GitHub repository">Source&nbsp;code</a>
     </p>
   </header>
-
+  <main>
   <pre id="botOutput">
 <?php
 
@@ -132,5 +132,5 @@ if (empty($pages_in_category)) {
     }
     echo "\n";
   }
-  echo ("\n Done all " . (string) count($pages_in_category) . " pages linked from " . echoable($page_name) . " \n  # # # \n" . $final_edit_overview  . "\n </pre></body></html>");
+  echo ("\n Done all " . (string) count($pages_in_category) . " pages linked from " . echoable($page_name) . " \n  # # # \n" . $final_edit_overview  . "\n </pre></main></body></html>");
 ?>
