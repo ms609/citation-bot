@@ -79,6 +79,7 @@ final class Template {
          $trim_name = str_replace("_", " ", $trim_name);
       }
     }
+    // Find these with this on all the various types https://en.wikipedia.org/w/index.php?title=Special:WhatLinksHere/Template:Citation&hidelinks=1&hidetrans=1
     $fix_it = [['cite', 'citation'],
                ['Cite', 'Citation'],
                ['citebook', 'cite book'],
@@ -181,7 +182,10 @@ final class Template {
                ['Cite page', 'Cite book'],
                ['cite page', 'cite book'],
                ['Cite publication', 'Cite book'],
-               ['cite publication', 'cite book']];
+               ['cite publication', 'cite book'],
+               ['Citeencyclopedia', 'Cite encyclopedia'],
+               ['citeencyclopedia', 'cite encyclopedia'],
+               ];
     foreach ($fix_it as $trial) {
       if ($trim_name === $trial[0]) {
         $this->name = $spacing[1] . $trial[1] . $spacing[2];
