@@ -181,8 +181,8 @@ final class Template {
                ['Cite publication', 'Cite book'],
                ['cite publication', 'cite book']];
     foreach ($fix_it as $trial) {
-      if ($trim_name === $trial[1]) {
-        $this->name = $spacing[1] . $trial[2] . $spacing[2];
+      if ($trim_name === $trial[0]) {
+        $this->name = $spacing[1] . $trial[1] . $spacing[2];
         break;
       }
     }
