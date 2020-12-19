@@ -113,6 +113,8 @@ final class Template {
                ['Cite-book', 'Cite book'],
                ['citenews', 'cite news'],
                ['Citenews', 'Cite news'],
+               ['cite-news', 'cite news'],
+               ['Cite-news', 'Cite news'],
                ['citepaper', 'cite paper'],
                ['Citepaper', 'Cite paper'],
                ['citation journal', 'cite journal'],
