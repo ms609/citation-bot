@@ -5,7 +5,7 @@ const TEMPLATES_WE_PROCESS = array('citation', 'cite arxiv', 'cite book', 'cite 
                              'cite paper', 'cite', 'citebook', 'citejournal', 'citeweb', 'cite url', 'citepaper', 'citation journal',
                              'cite publication', 'cite citeseerx', 'cite website', 'cite dictionary', 'cite chapter', 'web cite', 'book cite',
                              'book reference', 'cit web', 'cit book', 'cite-book', 'cite-web', 'cit journal', 'cit news',
-                             'web reference', 'cite citation');
+                             'web reference', 'cite citation', 'cite contribution');
 const TEMPLATES_WE_SLIGHTLY_PROCESS = array('cite news', 'cite newspaper', 'cite conference', 'cite article', 'citenews', 'cite new');
 const TEMPLATES_WE_BARELY_PROCESS = array('cite thesis', 'cite press release', 'cite report', 'cite biorxiv');
 const TEMPLATES_WE_RENAME  = array('cite arxiv', 'cite book', 'cite document', 'cite journal', 'cite web', 'cite work', 'cite article', 'cite paper', 'cite website');
