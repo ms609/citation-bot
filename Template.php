@@ -127,6 +127,8 @@ final class Template {
     if ($trim_name === 'Cite Book') $this->name = $spacing[1] . 'Cite book' . $spacing[2];
     if ($trim_name === 'cite News') $this->name = $spacing[1] . 'cite news' . $spacing[2];
     if ($trim_name === 'Cite News') $this->name = $spacing[1] . 'Cite news' . $spacing[2];
+    if ($trim_name === 'cite citation') $this->name = $spacing[1] . 'citation' . $spacing[2];
+    if ($trim_name === 'Cite citation') $this->name = $spacing[1] . 'Citation' . $spacing[2];
 
     // Cite article is actually cite news, but often used for journal by mistake - fix
     if ($trim_name === 'cite article') {
