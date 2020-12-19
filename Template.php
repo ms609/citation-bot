@@ -79,56 +79,113 @@ final class Template {
          $trim_name = str_replace("_", " ", $trim_name);
       }
     }
-    if ($trim_name === 'cite') $this->name = $spacing[1] . 'citation' . $spacing[2];
-    if ($trim_name === 'Cite') $this->name = $spacing[1] . 'Citation' . $spacing[2];
-    if ($trim_name === 'citebook') $this->name = $spacing[1] . 'cite book' . $spacing[2];
-    if ($trim_name === 'Citebook') $this->name = $spacing[1] . 'Cite book' . $spacing[2];
-    if ($trim_name === 'cit book') $this->name = $spacing[1] . 'cite book' . $spacing[2];
-    if ($trim_name === 'Cit book') $this->name = $spacing[1] . 'Cite book' . $spacing[2];
-    if ($trim_name === 'cite books') $this->name = $spacing[1] . 'cite book' . $spacing[2];
-    if ($trim_name === 'Cite books') $this->name = $spacing[1] . 'Cite book' . $spacing[2];
-    if ($trim_name === 'book reference') $this->name = $spacing[1] . 'cite book' . $spacing[2];
-    if ($trim_name === 'Book reference') $this->name = $spacing[1] . 'Cite book' . $spacing[2];
-    if ($trim_name === 'web reference') $this->name = $spacing[1] . 'cite web' . $spacing[2];
-    if ($trim_name === 'Web reference') $this->name = $spacing[1] . 'Cite web' . $spacing[2];
-    if ($trim_name === 'citejournal') $this->name = $spacing[1] . 'cite journal' . $spacing[2];
-    if ($trim_name === 'Citejournal') $this->name = $spacing[1] . 'Cite journal' . $spacing[2];
-    if ($trim_name === 'citeweb') $this->name = $spacing[1] . 'cite web' . $spacing[2];
-    if ($trim_name === 'Citeweb') $this->name = $spacing[1] . 'Cite web' . $spacing[2];
-    if ($trim_name === 'cite-web') $this->name = $spacing[1] . 'cite web' . $spacing[2];
-    if ($trim_name === 'Cite-web') $this->name = $spacing[1] . 'Cite web' . $spacing[2];
-    if ($trim_name === 'cit web') $this->name = $spacing[1] . 'cite web' . $spacing[2];
-    if ($trim_name === 'Cit web') $this->name = $spacing[1] . 'Cite web' . $spacing[2];
-    if ($trim_name === 'cit journal') $this->name = $spacing[1] . 'cite journal' . $spacing[2];
-    if ($trim_name === 'Cit journal') $this->name = $spacing[1] . 'Cite journal' . $spacing[2];
-    if ($trim_name === 'cit news') $this->name = $spacing[1] . 'cite news' . $spacing[2];
-    if ($trim_name === 'Cit news') $this->name = $spacing[1] . 'Cite news' . $spacing[2];
-    if ($trim_name === 'cite url') $this->name = $spacing[1] . 'cite web' . $spacing[2];
-    if ($trim_name === 'Cite url') $this->name = $spacing[1] . 'Cite web' . $spacing[2];
-    if ($trim_name === 'web cite') $this->name = $spacing[1] . 'cite web' . $spacing[2];
-    if ($trim_name === 'Web cite') $this->name = $spacing[1] . 'Cite web' . $spacing[2];
-    if ($trim_name === 'book cite') $this->name = $spacing[1] . 'cite book' . $spacing[2];
-    if ($trim_name === 'Book cite') $this->name = $spacing[1] . 'Cite book' . $spacing[2];
-    if ($trim_name === 'cite-book') $this->name = $spacing[1] . 'cite book' . $spacing[2];
-    if ($trim_name === 'Cite-book') $this->name = $spacing[1] . 'Cite book' . $spacing[2];
-    if ($trim_name === 'citenews') $this->name = $spacing[1] . 'cite news' . $spacing[2];
-    if ($trim_name === 'Citenews') $this->name = $spacing[1] . 'Cite news' . $spacing[2];
-    if ($trim_name === 'citepaper') $this->name = $spacing[1] . 'cite paper' . $spacing[2];
-    if ($trim_name === 'Citepaper') $this->name = $spacing[1] . 'Cite paper' . $spacing[2];
-    if ($trim_name === 'citation journal') $this->name = $spacing[1] . 'cite journal' . $spacing[2];
-    if ($trim_name === 'Citation journal') $this->name = $spacing[1] . 'Cite journal' . $spacing[2];
-    if ($trim_name === 'cite new') $this->name = $spacing[1] . 'cite news' . $spacing[2];
-    if ($trim_name === 'Cite new') $this->name = $spacing[1] . 'Cite news' . $spacing[2];
-    if ($trim_name === 'cite Web') $this->name = $spacing[1] . 'cite web' . $spacing[2];
-    if ($trim_name === 'Cite Web') $this->name = $spacing[1] . 'Cite web' . $spacing[2];
-    if ($trim_name === 'cite Journal') $this->name = $spacing[1] . 'cite journal' . $spacing[2];
-    if ($trim_name === 'Cite Journal') $this->name = $spacing[1] . 'Cite journal' . $spacing[2];
-    if ($trim_name === 'cite Book') $this->name = $spacing[1] . 'cite book' . $spacing[2];
-    if ($trim_name === 'Cite Book') $this->name = $spacing[1] . 'Cite book' . $spacing[2];
-    if ($trim_name === 'cite News') $this->name = $spacing[1] . 'cite news' . $spacing[2];
-    if ($trim_name === 'Cite News') $this->name = $spacing[1] . 'Cite news' . $spacing[2];
-    if ($trim_name === 'cite citation') $this->name = $spacing[1] . 'citation' . $spacing[2];
-    if ($trim_name === 'Cite citation') $this->name = $spacing[1] . 'Citation' . $spacing[2];
+    $fix_it = [['cite', 'citation'],
+               ['Cite', 'Citation'],
+               ['citebook', 'cite book'],
+               ['Citebook', 'Cite book'],
+               ['cit book', 'cite book'],
+               ['Cit book', 'Cite book'],
+               ['cite books', 'cite book'],
+               ['Cite books', 'Cite book'],
+               ['book reference', 'cite book'],
+               ['Book reference', 'Cite book'],
+               ['web reference', 'cite web'],
+               ['Web reference', 'Cite web'],
+               ['citejournal', 'cite journal'],
+               ['Citejournal', 'Cite journal'],
+               ['citeweb', 'cite web'],
+               ['Citeweb', 'Cite web'],
+               ['cite-web', 'cite web'],
+               ['Cite-web', 'Cite web'],
+               ['cit web', 'cite web'],
+               ['Cit web', 'Cite web'],
+               ['cit journal', 'cite journal'],
+               ['Cit journal', 'Cite journal'],
+               ['cit news', 'cite news'],
+               ['Cit news', 'Cite news'],
+               ['cite url', 'cite web'],
+               ['Cite url', 'Cite web'],
+               ['web cite', 'cite web'],
+               ['Web cite', 'Cite web'],
+               ['book cite', 'cite book'],
+               ['Book cite', 'Cite book'],
+               ['cite-book', 'cite book'],
+               ['Cite-book', 'Cite book'],
+               ['citenews', 'cite news'],
+               ['Citenews', 'Cite news'],
+               ['citepaper', 'cite paper'],
+               ['Citepaper', 'Cite paper'],
+               ['citation journal', 'cite journal'],
+               ['Citation journal', 'Cite journal'],
+               ['cite new', 'cite news'],
+               ['Cite new', 'Cite news'],
+               ['cite Web', 'cite web'],
+               ['Cite Web', 'Cite web'],
+               ['cite Journal', 'cite journal'],
+               ['Cite Journal', 'Cite journal'],
+               ['cite Book', 'cite book'],
+               ['Cite Book', 'Cite book'],
+               ['cite News', 'cite news'],
+               ['Cite News', 'Cite news'],
+               ['cite citation', 'citation'],
+               ['Cite citation', 'Citation'],
+               ['Cite n', 'Cite news'],
+               ['cite n', 'cite news'],
+               ['Citation news', 'Cite news'],
+               ['citation news', 'cite news'],
+               ['C news', 'Cite news'],
+               ['c news', 'cite news'],
+               ['Cute news', 'Cite news'],
+               ['cute news', 'cite news'],
+               ['Cite news2', 'Cite news'],
+               ['cite news2', 'cite news'],
+               ['Citar notícia', 'Cite news'],
+               ['citar notícia', 'cite news'],
+               ['뉴스 인용', 'Cite news'],
+               ['Cite study', 'Citation'],
+               ['cite study', 'citation'],
+               ['Vcite2 journal', 'Cite journal'],
+               ['vcite2 journal', 'cite journal'],
+               ['Web link', 'Cite web'],
+               ['web link', 'cite web'],
+               ['Citweb', 'Cite web'],
+               ['citweb', 'cite web'],
+               ['Citat web', 'Cite web'],
+               ['citat web', 'cite web'],
+               ['Cite we', 'Cite web'],
+               ['cite we', 'cite web'],
+               ['Cite w', 'Cite web'],
+               ['cite w', 'cite web'],
+               ['Cite wb', 'Cite web'],
+               ['cite wb', 'cite web'],
+               ['Cite web.', 'Cite web'],
+               ['cite web.', 'cite web'],
+               ['Cw', 'Cite web'],
+               ['cw', 'cite web'],
+               ['C web', 'Cite web'],
+               ['c web', 'cite web'],
+               ['Cita web', 'Cite web'],
+               ['cita web', 'cite web'],
+               ['Cite webpage', 'Cite web'],
+               ['cite webpage', 'cite web'],
+               ['Weblink', 'Cite web'],
+               ['weblink', 'cite web'],
+               ['Cite blog', 'Cite web'],
+               ['cite blog', 'cite web'],
+               ['Web_citation', 'Cite web'],
+               ['web citation', 'cite web'],
+               ['Cite website', 'Cite web'],
+               ['cite website', 'cite web'],
+               ['Cite page', 'Cite book'],
+               ['cite page', 'cite book'],
+               ['Cite publication', 'Cite book'],
+               ['cite publication', 'cite book']];
+    foreach ($fix_it as $trial) {
+      if ($trim_name === $trial[0]) {
+        $this->name = $spacing[1] . $trial[1] . $spacing[2];
+        break;
+      }
+    }
 
     // Cite article is actually cite news, but often used for journal by mistake - fix
     if ($trim_name === 'cite article') {
