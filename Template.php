@@ -175,7 +175,7 @@ final class Template {
                ['weblink', 'cite web'],
                ['Cite blog', 'Cite web'],
                ['cite blog', 'cite web'],
-               ['Web_citation', 'Cite web'],
+               ['Web citation', 'Cite web'],
                ['web citation', 'cite web'],
                ['Cite website', 'Cite web'],
                ['cite website', 'cite web'],
