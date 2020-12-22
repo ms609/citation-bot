@@ -2676,7 +2676,7 @@ final class Template {
           return (object) array('numFound' => 0);                                    // @codeCoverageIgnore
         }
       } else {
-        throw new Exception("Headers do not contain rate limit information:\n" . $header, 5000); // @codeCoverageIgnore
+        report_warning("Headers do not contain rate limit information: This is unexpected.");  // @codeCoverageIgnore
       }
       if (!is_object($decoded)) {
         throw new Exception("Could not decode API response:\n" . $body, 5000);   // @codeCoverageIgnore
