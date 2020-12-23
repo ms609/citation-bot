@@ -30,7 +30,9 @@ const PUBLISHERS_ARE_WORKS = array('the san diego union-tribune', 'forbes', 'sal
                                    'cbs sports', 'national journal', 'foxnews', 'the hill', 'nationaljournal.com',
                                    'the huffington post', 'the times digital archive', 'belmontstakes.com', 'the times archives',
                                    'new york times.com', 'news shopper', 'birmingham post', 'the independent',
-                                   'rediff.com', 'squashplayer.co.uk', 'fixtures live', 'the star online'); // LOWER CASE!  WWW not there too! 
+                                   'rediff.com', 'squashplayer.co.uk', 'fixtures live', 'the star online',
+                                   'oneindia', 'international business times', 'the hindu', 'daily news and analysis',
+                                   'nfl.com', 'foxsports.com'); // LOWER CASE!  WWW not there too! 
 
 const DUBIOUS_JOURNALS = array('fda', 'reuters', 'associated press', 'ap', 'ap wire', 'report'); // Things we add, but only if publisher and agency are both blank
 
