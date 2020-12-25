@@ -2254,16 +2254,12 @@ final class Template {
       if ($results[1] == 1) return $results;
     }
     if ($this->has('title') && $this->first_surname()) {
-      $results = $this->do_pumbed_query(array("title", "surname"));
-      if ($results[1] == 1) return $results;
-      if ($results[1] > 1) {
-        $results = $this->do_pumbed_query(array("title", "surname", "year"));
+        $results = $this->do_pumbed_query(array("title", "surname", "year", "volume"));
         if ($results[1] == 1) return $results;
         if ($results[1] > 1) {
           $results = $this->do_pumbed_query(array("title", "surname", "year", "volume", "issue"));
           if ($results[1] == 1) return $results;
         }
-      }
     }
     $results = [];
     $results[1] = 0;
