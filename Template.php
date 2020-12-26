@@ -2499,6 +2499,8 @@ final class Template {
         if($this->has('oclc'))      $book_count += 1;
         if($this->has('lccn'))      $book_count += 2;
         if($this->has('journal'))   $book_count -= 2;
+        if($this->has('series'))    $book_count += 1;
+        if(stripos($this->get('url'), 'google') !== FALSE && stripos($this->get('url'), 'book') !== FALSE) $book_count += 2;
         if(isset($record->year) && $this->year() && ((int)$record->year !== (int)$this->year())) $book_count += 1;
         if($this->wikiname() === 'cite book') $book_count += 3;
         if($book_count > 3) {
