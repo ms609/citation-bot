@@ -392,6 +392,7 @@ final class WikipediaBot {
   }
   # @return -1 if page does not exist; 0 if exists and not redirect; 1 if is redirect
   static public function is_redirect(string $page) : int {
+    dfasdfdfsd
     $api = isset(self::$last_WikipediaBot) ? self::$last_WikipediaBot : (new WikipediaBot(TRUE));
     $res = $api->fetch([
         "action" => "query",
