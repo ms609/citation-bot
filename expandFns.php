@@ -447,6 +447,8 @@ function title_capitalization(string $in, bool $caps_after_punctuation) : string
 
   // Single letter at end should be capitalized  J Chem Phys E for example.  Obviously not the spanish word "e".
   if (mb_substr($new_case, -2, 1) == ' ') $new_case = strrev(ucfirst(strrev($new_case)));
+  
+  if ($new_case === 'Now and then') $new_case = 'Now and Then'; // Odd journal name
 
   // Trust existing "ITS", "its", ... 
   $its_in = preg_match_all('~ its(?= )~iu', ' ' . trim($in) . ' ', $matches_in, PREG_OFFSET_CAPTURE);

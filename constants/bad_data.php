@@ -25,10 +25,16 @@ const PUBLISHERS_ARE_WORKS = array('the san diego union-tribune', 'forbes', 'sal
                                    'los angeles times', 'la times', 'the la times', 'htmlgiant',
                                    'sandiegouniontribune.com', 'forbes.com', 'salon.com', 'mercurynews.com', 'nytimes.com',
                                    'thedailynewsonline.com', 'thesun.com', 'thetimes.com', 'thestar.com',
-                                   'washingtonpost.com', 'thetribune.com', 'latimes.com', 'htmlgiant.com', 'bbc news',
+                                   'washingtonpost.com', 'thetribune.com', 'latimes.com', 'htmlgiant.com',
                                    'the guardian', 'fox sports', 'mlb.com', 'espn.com', 'forbes media',
                                    'cbs sports', 'national journal', 'foxnews', 'the hill', 'nationaljournal.com',
-                                   'the huffington post'); // LOWER CASE!  WWW not there too! 
+                                   'the huffington post', 'the times digital archive', 'belmontstakes.com', 'the times archives',
+                                   'new york times.com', 'news shopper', 'birmingham post', 'the independent',
+                                   'rediff.com', 'squashplayer.co.uk', 'fixtures live', 'the star online',
+                                   'oneindia', 'international business times', 'the hindu', 'daily news and analysis',
+                                   'nfl.com', 'foxsports.com', 'the new yorker', 'findlaw.com', 'newsmax',
+                                   'washtimes.com', 'washington times', 'findlaw',
+                                   'stripes', 'arizona daily star', 'the times of india'); // LOWER CASE!  WWW not there too! 
 
 const DUBIOUS_JOURNALS = array('fda', 'reuters', 'associated press', 'ap', 'ap wire', 'report'); // Things we add, but only if publisher and agency are both blank
 

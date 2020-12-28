@@ -386,14 +386,19 @@ final class WikipediaBot {
         ], 'GET'); 
     if (!isset($res->query->pages)) {
         report_warning("Failed to get article namespace");       // @codeCoverageIgnore
-        return -99999;                                             // @codeCoverageIgnore
+        return -99999;                                           // @codeCoverageIgnore
     }
     return (int) reset($res->query->pages)->ns;
   }
   # @return -1 if page does not exist; 0 if exists and not redirect; 1 if is redirect
   static public function is_redirect(string $page) : int {
-    dfasdfdfsd
-    $api = isset(self::$last_WikipediaBot) ? self::$last_WikipediaBot : (new WikipediaBot(TRUE));
+    if (isset(self::$last_WikipediaBot)) {
+      $api = self::$last_WikipediaBot;
+    } elseif (getenv('PHP_OAUTH_CONSUMER_TOKEN')) {
+      $api = new WikipediaBot(TRUE);
+    } else {
+      return 0; // This is when we are in TRAVIS but have no secret keys.  // @codeCoverageIgnore
+    }
     $res = $api->fetch([
         "action" => "query",
         "prop" => "info",
