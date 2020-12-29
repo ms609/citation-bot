@@ -185,6 +185,10 @@ final class Template {
                ['cite publication', 'cite book'],
                ['Citeencyclopedia', 'Cite encyclopedia'],
                ['citeencyclopedia', 'cite encyclopedia'],
+               ['Cita pubblicazione', 'Cite journal'],
+               ['cita pubblicazione', 'cite journal'],
+               ['Citace elektronické monografie', 'Cite web'],
+               ['citace elektronické monografie', 'cite web'],
                ];
     foreach ($fix_it as $trial) {
       if ($trim_name === $trial[0]) {
