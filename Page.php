@@ -99,8 +99,8 @@ class Page {
     $this->text = (string) @curl_exec($ch);
     curl_close($ch);
     if ($this->text == '') {
-       report_warning('Unable to get anything for ' . $title . ' from ' . WIKI_ROOT);    // @codeCoverageIgnore
-       return FALSE;                                                                     // @codeCoverageIgnore
+       report_warning('Page '  . $title . ' from ' . WIKI_ROOT . ' appears to be empty ');    // @codeCoverageIgnore
+       return FALSE;                                                                          // @codeCoverageIgnore
     }
     $this->start_text = $this->text;
     $this->set_date_pattern();
