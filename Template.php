@@ -3190,7 +3190,7 @@ final class Template {
       }
     }
     if ($url && preg_match("~[Ee]ncrypted\.[Gg]oogle\.com\/book.*\bid=([\w\d\-]+)~", $url, $gid)) {
-      $url = "https://books.google.com/books?id=" . $gid[1];
+      $url = "https://books.google.com/?id=" . $gid[1];
     }
     // Now we parse a Google Books URL
     if ($url && preg_match("~[Bb]ooks\.[Gg]oogle\.[\w\.]+/.*\bid=([\w\d\-]+)~", $url, $gid)) {
