@@ -3190,7 +3190,7 @@ final class Template {
       }
     }
     // Now we parse a Google Books URL
-    if ($url && (preg_match("~[Bb]ooks\.[Gg]oogle\.[\w\.]+/.*\bid=([\w\d\-]+)~", $url, $gid) || preg_match("~[Ee]ncrypted\.[Gg]oogle\.[\w\.]+books.*\bid=([\w\d\-]+)~", $url, $gid))) {
+    if ($url && (preg_match("~[Bb]ooks\.[Gg]oogle\.[\w\.]+/.*\bid=([\w\d\-]+)~", $url, $gid) || preg_match("~[Ee]ncrypted\.[Gg]oogle\..+book.*\bid=([\w\d\-]+)~", $url, $gid))) {
       $orig_book_url = $url;
       $removed_redundant = 0;
       $hash = '';
