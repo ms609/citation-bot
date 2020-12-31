@@ -5190,12 +5190,14 @@ final class Template {
           return;
          
         case 'publicationplace': case 'publication-place':
+          return; // TODO - WAITING ON DISCUSSION
           if ($this->blank(['location', 'place', 'conference']) && $this->wikiname() !== 'cite conference') { // A conference might have a location and a pulisher address
             $this->rename($param, 'location'); // This should only be used when 'location'/'place' is being used to describe where is was physically written, i.e. location=Vacationing in France|publication-place=New York
           }
           return;
           
         case 'publication-date': case 'publicationdate':
+          return; // TODO - WAITING ON DISCUSSION
           if ($this->blank(['year', 'date'])) {
             $this->rename($param, 'date'); // When date and year are blank, this is displayed as date.  So convert
           }
