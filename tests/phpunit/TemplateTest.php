@@ -1547,7 +1547,7 @@ final class TemplateTest extends testBaseClass {
       $text = '{{citation|publicationdate=2000|date=1999}}';
       $prepared = $this->prepare_citation($text);
       $prepared->final_tidy();
-      $this->assertSame($text, $prepared->parsed_text());
+      $this->assertSame('{{citation|publication-date=2000|date=1999}}', $prepared->parsed_text());
   }
 
   public function testChangeParamaters5() : void {
