@@ -76,7 +76,7 @@ const JOURNAL_ACRONYMS = array(/* The following will be automatically updated to
           " Journal of the A.I.E.E. ", " Journal of the IEST ", " Journal sur ", " Jpn ", 
           " Jpn. ", " La Trobe ", " Latina/o ", " Ltd ", " mAbs ", " mAbs ", " mBio ", 
           " mBio ", " Med Sch ", " MedChemComm ", " Meddelelser om Grønland ", " Meddelelser om Grønland, ", 
-          " MERIP ", " Methods in Molecular Biology ", " mHealth ", " mHealth ", " MicrobiologyOpen ", 
+          " MERIP ", " Methods in Molecular Biology ", " mHealth ", " mHealth ", " MicrobiologyOpen ", " Mikologiya i Fitopatologiya ", 
           " MIS Quarterly ", " Molecular and Cellular Biology ", " Montana The Magazine of Western History ", 
           " mSphere ", " mSphere ", " mSystems ", " mSystems ", " MycoKeys ", " n.paradoxa ", 
           " NASA Tech Briefs ", " Nauka i Zhizn ", " NBER ", " NDT & E International ", 
@@ -128,7 +128,7 @@ const UCFIRST_JOURNAL_ACRONYMS = array(/* The following will be automatically up
           " JPN. ", " la Trobe ", " Latina/O ", " LTD ", " MAbs ", " Mabs ", " MBio ", 
           " Mbio ", " Med SCH ", " Medchemcomm ", " Meddelelser Om Grønland ", " Meddelelser Om Grønland, ", 
           " Merip ", " Methods in Molecular Biology (Clifton, N.j.) ", " MHealth ", " Mhealth ", 
-          " Microbiologyopen ", " Mis Quarterly ", " Molecular and Cellular Biology ", 
+          " Microbiologyopen ", " Mikologiya I Fitopatologiya ", " Mis Quarterly ", " Molecular and Cellular Biology ", 
           " Montana the Magazine of Western History ", " MSphere ", " Msphere ", " MSystems ", 
           " Msystems ", " Mycokeys ", " N.Paradoxa ", " Nasa Tech Briefs ", " Nauka I Zhizn ", 
           " Nber ", " NDT & e International ", " Neuroreport ", " Notes of the Aas ", " NY Forskning I Grammatik ", 
@@ -170,7 +170,7 @@ const OBVIOUS_FOREIGN_WORDS = array(" Abhandlungen ", " Actes ", " Annales ", " 
            " Archiwa ", " Biblioteki  ", " Muzea ", " Kościelne ", " Zbornik ",
            " Radova ", " Filozofskog  ", " Fakulteta ", " Prištini ", " Mém. ", " Elektriceskaja ",
            " Teplovoznaja ", " Tjaga ", " Aarbøger ",  " Oldkyndighed ", " Histori ", " Les Publications ",
-           "ische ", "histoire ", " ancienne ", " d'", "http://", "www.", "www-");
+           "ische ", "histoire ", " ancienne ", " d'", "http://", "www.", "www-", " Mikologiya ", " Fitopatologiya ");
  
 const MAP_DIACRITICS = array("À"=>"A", "Á"=>"A", "Â"=>"A", "Ã"=>"A",
     "Ä"=>"A", "Å"=>"A", "Æ"=>"AE", "Ç"=>"C", "È"=>"E", "É"=>"E",
