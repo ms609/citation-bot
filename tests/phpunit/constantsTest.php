@@ -201,8 +201,8 @@ final class constantsTest extends testBaseClass {
       $text = str_replace(['authors1', 'editors1', 'publication-date', 'publicationdate',  'publication-place', 'publicationplace', 'chapter-url ', 'chapterurl ', '| p = Z123Z ',    '| pp = Z123Z ',    '| URL = Z123Z ', '| bioRxiv = Z123Z ', '| ARXIV = Z123Z ', '| DOI = Z123Z '],  // Put spaces on end to not change chapter-url-access and such
                           ['author1',  'editor1',  'publication-date', 'publication-date', 'publication-place', 'publication-place', 'url ',        'url '       , '| page = Z123Z ', '| pages = Z123Z ', '| url = Z123Z ', '| biorxiv = Z123Z ', '| arxiv = Z123Z ', '| doi = Z123Z '], $text); // Stuff that get "fixed"
       $text = str_replace(['| access-date = Z123Z ', '| accessdate = Z123Z ', '| doi-broken = Z123Z ', '| doi-broken-date = Z123Z ', '| doi-inactive-date = Z123Z '], '', $text);
-      $text = str_replace(['displayeditors', 'editor1mask', 'editormask1', 'interviewerlink', 'interviewermask', 'no-cat', 'notracking', 'interviewermask', 'albumlink'],
-                          ['display-editors', 'editor-mask', 'editor-mask1', 'interviewer-link', 'interviewer-mask', 'nocat', 'no-tracking', 'interviewer-mask', 'titlelink'], $text);
+      $text = str_replace(['displayeditors',  'editor1mask', 'editormask1',  'interviewerlink',  'interviewermask',  'no-cat', 'notracking',  'interviewermask',  'albumlink', 'ISBN13', 'isbn13'],
+                          ['display-editors', 'editor-mask', 'editor-mask1', 'interviewer-link', 'interviewer-mask', 'nocat',  'no-tracking', 'interviewer-mask', 'titlelink', 'isbn',   'isbn'], $text);
       if (!str_i_same($text, $prepared->parsed_text())) {
          $orig .= $text;
          $new .= $prepared->parsed_text();
