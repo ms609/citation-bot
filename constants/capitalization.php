@@ -46,7 +46,7 @@ const UC_SMALL_WORDS = array(/* The following will be automatically updated to a
           " el Dorado ", " las Vegas ", " los Angeles ", " N y ", " U S a ");
           // For ones that start with lower-case, include both ELife and Elife versions in misspelled array
 const JOURNAL_ACRONYMS = array(/* The following will be automatically updated to alphabetical order */
-          " (BBA) ", " (online ed.) ", " AAPOS ", " AAPS ", " ACS ", " Algebra i Analiz ", 
+          " (BBA) ", " (online ed.) ", " AAPOS ", " AAPS ", " ACM SIGGRAPH ", " ACS ", " Algebra i Analiz ", 
           " Angew Chem Int Ed ", " Applied ", " APS Division ", " Arch Dis Child Fetal Neonatal Ed ", 
           " ASAIO ", " ASME AES ", " ASME MTD ", " Avtomatika i Telemekhanika ", " B/gcvs ", 
           " B/gcvs ", " B/gcvs ", " Bild am Sonntag ", " BioEssays ", " bioRxiv ", " bioRxiv ", 
@@ -70,7 +70,7 @@ const JOURNAL_ACRONYMS = array(/* The following will be automatically updated to
           " i ee ", " i Teplovoznaja ", " i-Perception ", " iConference ", " IDCases ", 
           " IEEE/ACM ", " IEEE/ACM ", " IFAC-PapersOnLine ", " iJournal ", " iJournal ", 
           " im Gesundheitswesen ", " InfoWorld ", " Inside Higher Ed ", " iPhone ", " iScience ", 
-          " iScience ", " ISME ", " ISRN Genetics ", " J Gerontol A Biol Sci Med Sci ", 
+          " iScience ", " ISME ", " ISRN AIDS ", " ISRN Genetics ", " J Gerontol A Biol Sci Med Sci ", 
           " J Sch Nurs ", " J SIAM ", " J. SIAM ", " JABS : Journal of Applied Biological Sciences ", 
           " JAMA Psychiatry ", " JMIR ", " JNCI: Journal ", " Journal of Materials Chemistry A ", 
           " Journal of the A.I.E.E. ", " Journal of the IEST ", " Journal sur ", " Jpn ", 
@@ -97,7 +97,7 @@ const JOURNAL_ACRONYMS = array(/* The following will be automatically updated to
           " ZooKeys ", /* The above will be automatically updated to alphabetical order */ 
 );
 const UCFIRST_JOURNAL_ACRONYMS = array(/* The following will be automatically updated to alphabetical order */
-          " (Bba) ", " (online Ed.) ", " Aapos ", " Aaps ", " Acs ", " Algebra I Analiz ", 
+          " (Bba) ", " (online Ed.) ", " Aapos ", " Aaps ", " ACM Siggraph ", " Acs ", " Algebra I Analiz ", 
           " Angew Chem Int ed ", " Appiled ", " Aps Division ", " Arch Dis Child Fetal Neonatal ed ", 
           " Asaio ", " Asme Aes ", " Asme MTD ", " Avtomatika I Telemekhanika ", " B/GCVS ", 
           " B/Gcvs ", " b/gcvs ", " Bild Am Sonntag ", " Bioessays ", " BioRxiv ", " Biorxiv ", 
@@ -121,7 +121,7 @@ const UCFIRST_JOURNAL_ACRONYMS = array(/* The following will be automatically up
           " I ee ", " I Teplovoznaja ", " I-Perception ", " Iconference ", " Idcases ", 
           " IEEE/Acm ", " Ieee/Acm ", " Ifac-Papersonline ", " IJournal ", " Ijournal ", 
           " Im Gesundheitswesen ", " Infoworld ", " Inside Higher ed ", " Iphone ", " IScience ", 
-          " Iscience ", " Isme ", " Isrn Genetics ", " J Gerontol a Biol Sci Med Sci ", 
+          " Iscience ", " Isme ", " Isrn Aids ", " Isrn Genetics ", " J Gerontol a Biol Sci Med Sci ", 
           " J SCH Nurs ", " J Siam ", " J. Siam ", " Jabs : Journal of Applied Biological Sciences ", 
           " Jama Psychiatry ", " Jmir ", " Jnci: Journal ", " Journal of Materials Chemistry A ", 
           " Journal of the A.i.i.e ", " Journal of the Iest ", " Journal Sur ", " JPN ", 
