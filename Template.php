@@ -5166,7 +5166,7 @@ final class Template {
             $this->set($param, $this->get($param) . '.');
           }
 
-          if ($param === 'page' || $param === 'pages')) {
+          if ($param === 'page' || $param === 'pages') {
             if (preg_match("~^pg\.? +(\d+)$~i", $this->get($param), $matches) || preg_match("~^pg\.? +(\d+–\d+)$~iu", $this->get($param), $matches)) {
               $this->set($param, $matches[1]);
             }
