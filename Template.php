@@ -5165,6 +5165,12 @@ final class Template {
           if (mb_substr($this->get($param), -4) === ' etc') {
             $this->set($param, $this->get($param) . '.');
           }
+
+          if ($param === 'page' || $param === 'pages')) {
+            if (preg_match("~^pg\.? +(\d+)$~i", $this->get($param), $matches) || preg_match("~^pg\.? +(\d+–\d+)$~iu", $this->get($param), $matches)) {
+              $this->set($param, $matches[1]);
+            }
+          }
           return;
           
         case 'postscript':  // postscript=. is the default in CS1 templates.  It literally does nothing.
