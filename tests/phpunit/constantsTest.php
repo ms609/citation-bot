@@ -205,6 +205,8 @@ final class constantsTest extends testBaseClass {
                           ['display-editors', 'editor-mask', 'editor-mask1', 'interviewer-link', 'interviewer-mask', 'nocat',  'no-tracking', 'interviewer-mask', 'titlelink', 'isbn',   'isbn'], $text);
       $text = str_replace(['editor1link',  'editorlink1',  'subjectlink1'],
                           ['editor1-link', 'editor1-link', 'subject-link1'], $text);
+      $text = str_replace(['archivedate',  'archiveurl',  'booktitle'],
+                          ['archive-date', 'archive-url', 'book-title'], $text);
                           
       if (!str_i_same($text, $prepared->parsed_text())) {
          $orig .= $text;
