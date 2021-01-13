@@ -347,5 +347,5 @@ const PARAMETER_LIST = array(
      'notracking', 'series-separator', 'authormask', 'displayauthors',
      ' editor#link', 'editorlink', 'editorlink#', 'editors', 'event-format', 'event-url',
      'eventurl', 'ignore-isbn-error', 'last-author-amp', 'lastauthoramp', 'nocat',
-     'seriesnumber', 'subject#link', 'subjectlink', 'subjectlink#');
+     'seriesnumber', 'subjectlink', 'subjectlink#');
 
