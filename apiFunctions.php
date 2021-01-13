@@ -58,10 +58,6 @@ function entrez_api(array $ids, array &$templates, string $db) : bool {   // Poi
    report_info("Found match for $db identifier " . $document->Id);
    foreach($ids as $template_key => $an_id) { // Cannot use array_search since that only returns first
    if ($an_id == $document->Id) {
-    if ($template_key === FALSE) {
-      report_minor_error($db . " search returned an identifier, [" . $document->Id . "] that we didn't search for.");   // @codeCoverageIgnore
-      continue;                                                                                                         // @codeCoverageIgnore
-    }
     $this_template = $get_template($template_key);
     $this_template->record_api_usage('entrez', $db == 'pubmed' ? 'pmid' : 'pmc');
  
