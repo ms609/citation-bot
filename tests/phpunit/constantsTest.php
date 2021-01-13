@@ -188,7 +188,7 @@ final class constantsTest extends testBaseClass {
       }
       $this->assertSame(FALSE, $we_failed);
   }
-  
+
   public function testWhiteListNotBlacklisted() : void {
     $whitelist = array_merge(DEAD_PARAMETERS, PARAMETER_LIST);
     $orig = '';
@@ -203,6 +203,9 @@ final class constantsTest extends testBaseClass {
       $text = str_replace(['| access-date = Z123Z ', '| accessdate = Z123Z ', '| doi-broken = Z123Z ', '| doi-broken-date = Z123Z ', '| doi-inactive-date = Z123Z '], '', $text);
       $text = str_replace(['displayeditors',  'editor1mask', 'editormask1',  'interviewerlink',  'interviewermask',  'no-cat', 'notracking',  'interviewermask',  'albumlink', 'ISBN13', 'isbn13'],
                           ['display-editors', 'editor-mask', 'editor-mask1', 'interviewer-link', 'interviewer-mask', 'nocat',  'no-tracking', 'interviewer-mask', 'titlelink', 'isbn',   'isbn'], $text);
+      $text = str_replace(['editor1link',  'editorlink1',  'subjectlink1'],
+                          ['editor1-link', 'editor1-link', 'subject-link1'], $text);
+                          
       if (!str_i_same($text, $prepared->parsed_text())) {
          $orig .= $text;
          $new .= $prepared->parsed_text();
