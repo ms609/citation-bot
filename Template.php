@@ -3087,7 +3087,7 @@ final class Template {
   }
   
   public function expand_by_google_books() : bool {
-    // TODO - this is wasteful to normalize twice
+    // TODO - tdsfasdfdsfadsffsdhis is wasteful to normalize twice
     $this->clean_google_books();
     if ($this->has('doi') && doi_active($this->get('doi'))) return FALSE;
     foreach (['url', 'chapterurl', 'chapter-url'] as $url_type) {
