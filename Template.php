@@ -3087,7 +3087,6 @@ final class Template {
   }
   
   public function expand_by_google_books() : bool {
-    // TODO - this is wasteful to normalize twice
     $this->clean_google_books();
     if ($this->has('doi') && doi_active($this->get('doi'))) return FALSE;
     foreach (['url', 'chapterurl', 'chapter-url'] as $url_type) {
@@ -4618,8 +4617,6 @@ final class Template {
                        strpos($title, ':') === FALSE) { // Avoid touching inter-wiki links
                if (($matches[1] == $matches[2]) && ($title == $matches[0])) {
                    $title = '[[' . $matches[1]  . ']]'; // Clean up double links
-               } elseif (strlen($matches[0]) > (0.7 * (float) strlen($title))) {  // Only add as title-link if a large part of title text
-                // TODO - this is not correct  $title = '[[' . $matches[1] . '|' . str_replace(array("[[", "]]"), "", $title) . ']]';
                }
              }
           }
@@ -5199,17 +5196,17 @@ final class Template {
           return;
          
         case 'publicationplace': case 'publication-place':
-          return; // TODO - WAITING ON DISCUSSION
-          if ($this->blank(['location', 'place', 'conference']) && $this->wikiname() !== 'cite conference') { // A conference might have a location and a pulisher address
-            $this->rename($param, 'location'); // This should only be used when 'location'/'place' is being used to describe where is was physically written, i.e. location=Vacationing in France|publication-place=New York
-          }
+          // TODO - WAITING ON DISCUSSION
+          // if ($this->blank(['location', 'place', 'conference']) && $this->wikiname() !== 'cite conference') { // A conference might have a location and a pulisher address
+          //  $this->rename($param, 'location'); // This should only be used when 'location'/'place' is being used to describe where is was physically written, i.e. location=Vacationing in France|publication-place=New York
+          // }
           return;
           
         case 'publication-date': case 'publicationdate':
-          return; // TODO - WAITING ON DISCUSSION
-          if ($this->blank(['year', 'date'])) {
-            $this->rename($param, 'date'); // When date and year are blank, this is displayed as date.  So convert
-          }
+          // TODO - WAITING ON DISCUSSION
+          // if ($this->blank(['year', 'date'])) {
+          //   $this->rename($param, 'date'); // When date and year are blank, this is displayed as date.  So convert
+          // }
           return;
       }
     }
