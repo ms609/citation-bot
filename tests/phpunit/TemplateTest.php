@@ -624,7 +624,7 @@ final class TemplateTest extends testBaseClass {
   }
 
   public function testAmazonExpansion3() : void {
-    $text = "{{Cite web | url=https://www.amazon.com/Gold-Toe-Metropolitan-Dress-Three/dp/B0002TV0K8 | accessdate=2012-04-20 | title=Gold Toe Men's Metropolitan Dress Sock (Pack of Three Pairs) at Amazon Men's Clothing store}}";
+    $text = "{{Cite web | url=https://www.amazon.com/Gold-Toe-Metropolitan-Dress-Three/dp/B0002TV0K8 | access-date=2012-04-20 | title=Gold Toe Men's Metropolitan Dress Sock (Pack of Three Pairs) at Amazon Men's Clothing store}}";
     $expanded = $this->process_citation($text);
     $this->assertSame($text, $expanded->parsed_text());  // We do not touch this kind of URL
   }
@@ -1216,7 +1216,7 @@ final class TemplateTest extends testBaseClass {
   public function testLeaveArchiveURL() : void {
     $text = '{{cite book |chapterurl=http://faculty.haas.berkeley.edu/shapiro/thicket.pdf|isbn=978-0-262-60041-5|archiveurl=https://web.archive.org/web/20070704074830/http://faculty.haas.berkeley.edu/shapiro/thicket.pdf }}';
     $expanded = $this->process_citation($text);
-    $this->assertSame('https://web.archive.org/web/20070704074830/http://faculty.haas.berkeley.edu/shapiro/thicket.pdf', $expanded->get2('archiveurl'));
+    $this->assertSame('https://web.archive.org/web/20070704074830/http://faculty.haas.berkeley.edu/shapiro/thicket.pdf', $expanded->get2('archive-url'));
   }
 
   public function testScriptTitle() : void {
@@ -2568,10 +2568,10 @@ T1 - This is the Title }}';
   public function testAccessDates() : void {
     $text = '{{cite book |date=March 12, 1913 |title=Session Laws of the State of Washington, 1913 |chapter=Chapter 65: Classifying Public Highways |page=221 |chapter-url=http://leg.wa.gov/CodeReviser/documents/sessionlaw/1913c65.pdf |publisher=Washington State Legislature |accessdate=August 30, 2018}}';
     $expanded = $this->process_citation($text);
-    $this->assertNotNull($expanded->get2('accessdate'));
+    $this->assertNotNull($expanded->get2('access-date'));
     $text = '{{cite book |date=March 12, 1913 |title=Session Laws of the State of Washington, 1913 |chapter=Chapter 65: Classifying Public Highways |page=221 |chapterurl=http://leg.wa.gov/CodeReviser/documents/sessionlaw/1913c65.pdf |publisher=Washington State Legislature |accessdate=August 30, 2018}}';
     $expanded = $this->process_citation($text);
-    $this->assertNotNull($expanded->get2('accessdate'));
+    $this->assertNotNull($expanded->get2('access-date'));
   }
 
   public function testIgnoreUnkownCiteTemplates() : void {
@@ -4905,8 +4905,8 @@ T1 - This is the Title }}';
     public function testFloaters4() : void {
      $text='{{Cite journal | url=http://www.apple.com/ |access date 12 December 1990 | accessdate = 3 May 1999 }}';
      $template = $this->process_citation($text);
-     $this->assertSame('3 May 1999', $template->get2('accessdate'));
-     $this->assertNull($template->get2('access-date'));
+     $this->assertSame('3 May 1999', $template->get2('access-date'));
+     $this->assertNull($template->get2('accessdate'));
    }
  
     public function testFloaters5() : void {
