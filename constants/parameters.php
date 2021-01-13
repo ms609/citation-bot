@@ -344,7 +344,7 @@ const PARAMETER_LIST = array(
      'isbn2', 'isbn3', 'isbn4', 'isbn5', 'isbn6', 'isbn7', 'deadlink', 'displayeditors',
      'doi-broken', 'doi-inactive-date', 'editormask', 'editor#mask', 'editormask#',
      'embargo', 'ignoreisbnerror', 'interviewerlink', 'interviewermask', 'no-cat',
-     'notracking', 'series-separator', 'author#mask', 'authormask', 'authormask', 'displayauthors',
+     'notracking', 'series-separator', 'authormask', 'displayauthors',
      ' editor#link', 'editorlink', 'editorlink#', 'editors', 'event-format', 'event-url',
      'eventurl', 'ignore-isbn-error', 'last-author-amp', 'lastauthoramp', 'nocat',
      'seriesnumber', 'subject#link', 'subjectlink', 'subjectlink#');
