@@ -117,4 +117,8 @@ const COMMON_MISTAKES = array ( // Common mistakes that aren't picked up by the 
   "publicationplace"     =>  "publication-place", 
   "publicationdate"      =>  "publication-date", 
   "chapterurl"      =>  "chapter-url",
+  "booktitle"       =>  "book-title",
+  "accessdate"      =>  "access-date",
+  "archivedate"     =>  "archive-date",
+  "archiveurl"      =>  "archive-url",
 );
