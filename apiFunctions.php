@@ -55,8 +55,9 @@ function entrez_api(array $ids, array &$templates, string $db) : bool {   // Poi
 
   // A few PMC do not have any data, just pictures of stuff
   if (isset($xml->DocSum->Item) && count($xml->DocSum->Item) > 0) foreach($xml->DocSum as $document) {
-    report_info("Found match for $db identifier " . $document->Id);
-    $template_key = array_search($document->Id, $ids);
+   report_info("Found match for $db identifier " . $document->Id);
+   foreach($ids as $template_key => $an_id) { // Cannot use array_search since that only returns first
+   if ($an_id == $document->Id) {
     if ($template_key === FALSE) {
       report_minor_error($db . " search returned an identifier, [" . $document->Id . "] that we didn't search for.");   // @codeCoverageIgnore
       continue;                                                                                                         // @codeCoverageIgnore
@@ -142,6 +143,8 @@ function entrez_api(array $ids, array &$templates, string $db) : bool {   // Poi
         break;
       }
     }
+   }
+   }
   }
   return TRUE;
 }
@@ -354,7 +357,7 @@ function adsabs_api(array $ids, array &$templates, string $identifier) : bool { 
         // @codeCoverageIgnoreEnd
       }
     } else {
-      report_warning("Headers do not contain rate limit information: This is unexpected.");  // @codeCoverageIgnore
+      ; // report_warning("Headers do not contain rate limit information: This is unexpected.");  // @codeCoverageIgnore
     }
     if (!is_object($decoded)) {
       throw new Exception("Could not decode API response:\n" . $body, 5000);  // @codeCoverageIgnore
@@ -406,7 +409,9 @@ function adsabs_api(array $ids, array &$templates, string $identifier) : bool { 
   foreach ($response->docs as $record) {
     report_info("Found match for bibcode " . bibcode_link($record->bibcode));
     $matched_ids[] = $record->bibcode;
-    $this_template = $templates[array_search((string) $record->bibcode, $ids)];
+    foreach($ids as $template_key => $an_id) { // Cannot use array_search since that only returns first
+    if ($an_id === (string) $record->bibcode) {
+    $this_template = $templates[$template_key];
     $this_template->record_api_usage('adsabs', 'bibcode');
     $this_template->add_if_new("title", (string) $record->title[0], 'adsabs'); // add_if_new will format the title text and check for unknown
     $i = 0;
@@ -450,6 +455,8 @@ function adsabs_api(array $ids, array &$templates, string $identifier) : bool { 
            $this_template->add_if_new('arxiv', substr($recid, 6), 'adsabs');
         }
       }
+    }
+    }
     }
   }
   $unmatched_ids = array_diff($ids, $matched_ids);

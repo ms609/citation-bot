@@ -1525,7 +1525,7 @@ final class TemplateTest extends testBaseClass {
       $text = '{{citation|publicationplace=Home}}';
       $prepared = $this->prepare_citation($text);
       $prepared->final_tidy();
-      $this->assertSame('{{citation|location=Home}}', $prepared->parsed_text());
+      $this->assertSame('{{citation|publication-place=Home}}', $prepared->parsed_text());
   }
 
   public function testChangeParamaters2() : void {
@@ -1540,14 +1540,14 @@ final class TemplateTest extends testBaseClass {
       $text = '{{citation|publicationdate=2000}}';
       $prepared = $this->prepare_citation($text);
       $prepared->final_tidy();
-      $this->assertSame('{{citation|date=2000}}', $prepared->parsed_text());
+      $this->assertSame('{{citation|publication-date=2000}}', $prepared->parsed_text());
   }
 
   public function testChangeParamaters4() : void {
       $text = '{{citation|publicationdate=2000|date=1999}}';
       $prepared = $this->prepare_citation($text);
       $prepared->final_tidy();
-      $this->assertSame($text, $prepared->parsed_text());
+      $this->assertSame('{{citation|publication-date=2000|date=1999}}', $prepared->parsed_text());
   }
 
   public function testChangeParamaters5() : void {

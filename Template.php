@@ -185,6 +185,10 @@ final class Template {
                ['cite publication', 'cite book'],
                ['Citeencyclopedia', 'Cite encyclopedia'],
                ['citeencyclopedia', 'cite encyclopedia'],
+               ['Cita pubblicazione', 'Cite journal'],
+               ['cita pubblicazione', 'cite journal'],
+               ['Citace elektronické monografie', 'Cite web'],
+               ['citace elektronické monografie', 'cite web'],
                ];
     foreach ($fix_it as $trial) {
       if ($trim_name === $trial[0]) {
@@ -1167,6 +1171,7 @@ final class Template {
       case 'doi':
         if ($value == '10.5284/1000184') return FALSE; // This is a DOI for an entire database, not anything within it
         if ($value == '10.1267/science.040579197') return FALSE; // PMID test doi
+        if (stripos($value, '10.5779/hypothesis') === 0) return FALSE; // SPAM took over
         if (substr($value, 0, 8) == '10.5555/') return FALSE ; // Test DOI prefix.  NEVER will work
         if (stripos($value, '10.1093/law:epil') === 0) return FALSE; // Those do not work
         if (stripos($value, '10.1093/oi/authority') === 0) return FALSE; // Those do not work
@@ -2500,6 +2505,8 @@ final class Template {
         if($this->has('lccn'))      $book_count += 2;
         if($this->has('journal'))   $book_count -= 2;
         if($this->has('series'))    $book_count += 1;
+        if($this->has('edition'))   $book_count += 2;
+        if($this->has('asin'))      $book_count += 2;
         if(stripos($this->get('url'), 'google') !== FALSE && stripos($this->get('url'), 'book') !== FALSE) $book_count += 2;
         if(isset($record->year) && $this->year() && ((int)$record->year !== (int)$this->year())) $book_count += 1;
         if($this->wikiname() === 'cite book') $book_count += 3;
@@ -2674,7 +2681,7 @@ final class Template {
           return (object) array('numFound' => 0);                                    // @codeCoverageIgnore
         }
       } else {
-        report_warning("Headers do not contain rate limit information: This is unexpected.");  // @codeCoverageIgnore
+        ; // report_warning("Headers do not contain rate limit information: This is unexpected.");  // @codeCoverageIgnore
       }
       if (!is_object($decoded)) {
         throw new Exception("Could not decode API response:\n" . $body, 5000);   // @codeCoverageIgnore
@@ -3097,7 +3104,7 @@ final class Template {
     if ($url_type) {
       $url = $this->get($url_type);
       if (!$url) return FALSE;
-      if (!preg_match("~[Bb]ooks\.[Gg]oogle\.[\w\.]+/.*\bid=([\w\d\-]+)~", $url, $gid) &&
+      if (!preg_match("~(?:[Bb]ooks|[Ee]ncrypted)\.[Gg]oogle\.[\w\.]+/.*\bid=([\w\d\-]+)~", $url, $gid) &&
           !preg_match("~\.[Gg]oogle\.com/books/edition/_/([a-zA-Z0-9]+)(?:\?.+|)$~", $url, $gid)) {
          return FALSE;  // Got nothing usable
       }
@@ -3186,7 +3193,7 @@ final class Template {
       }
     }
     // Now we parse a Google Books URL
-    if ($url && preg_match("~[Bb]ooks\.[Gg]oogle\.[\w\.]+/.*\bid=([\w\d\-]+)~", $url, $gid)) {
+    if ($url && (preg_match("~[Bb]ooks\.[Gg]oogle\.[\w\.]+/.*\bid=([\w\d\-]+)~", $url, $gid) || preg_match("~[Ee]ncrypted\.[Gg]oogle\..+book.*\bid=([\w\d\-]+)~", $url, $gid))) {
       $orig_book_url = $url;
       $removed_redundant = 0;
       $hash = '';
@@ -4165,7 +4172,7 @@ final class Template {
               }
             }
             if (!$pmatch[2] && $pmatch[1] === 'last' && !$this->blank(['first1', 'first2', 'last2'])) {
-              $this->rename('last', 'last1');
+              if ($this->blank('last1'))  $this->rename('last', 'last1');
               if ($this->blank('first1')) $this->rename('first', 'first1');
             }
             return;
@@ -5158,6 +5165,12 @@ final class Template {
           if (mb_substr($this->get($param), -4) === ' etc') {
             $this->set($param, $this->get($param) . '.');
           }
+
+          if ($param === 'page' || $param === 'pages') {
+            if (preg_match("~^pg\.? +(\d+)$~i", $this->get($param), $matches) || preg_match("~^pg\.? +(\d+–\d+)$~iu", $this->get($param), $matches)) {
+              $this->set($param, $matches[1]);
+            }
+          }
           return;
           
         case 'postscript':  // postscript=. is the default in CS1 templates.  It literally does nothing.
@@ -5186,12 +5199,14 @@ final class Template {
           return;
          
         case 'publicationplace': case 'publication-place':
+          return; // TODO - WAITING ON DISCUSSION
           if ($this->blank(['location', 'place', 'conference']) && $this->wikiname() !== 'cite conference') { // A conference might have a location and a pulisher address
             $this->rename($param, 'location'); // This should only be used when 'location'/'place' is being used to describe where is was physically written, i.e. location=Vacationing in France|publication-place=New York
           }
           return;
           
         case 'publication-date': case 'publicationdate':
+          return; // TODO - WAITING ON DISCUSSION
           if ($this->blank(['year', 'date'])) {
             $this->rename($param, 'date'); // When date and year are blank, this is displayed as date.  So convert
           }
