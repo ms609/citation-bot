@@ -237,11 +237,15 @@ const PAGE_ALIASES = ['page', 'pages', 'pp', 'p', 'at'];
 const TIME_ALIASES = ['date', 'year'];
 const WORK_ALIASES = ['work', 'journal', 'newspaper', 'magazine', 'periodical', 'website', 'encyclopedia', 'encyclopaedia'];
 const ACCESS_ALIASES = ['accessdate', 'access-date'];
+const ISBN_ALIASES = ['ISBN', 'isbn13', 'ISBN13', 'isbn'];
+const LANG_ALIASES = ['language', 'lang'];
+const TYPE_ALIASES = ['medium', 'type'];
 
 const ALL_ALIASES = [TITLE_LINK_ALIASES, ARXIV_ALIASES, COAUTHOR_ALIASES, CHAPTER_ALIASES,
               DISPLAY_AUTHORS, DISPLAY_EDITORS, DOI_BROKEN_ALIASES, FIRST_AUTHOR_ALIASES,
               FIRST_FORENAME_ALIASES, FIRST_EDITOR_ALIASES, ISSUE_ALIASES, PAGE_ALIASES,
-              TIME_ALIASES, WORK_ALIASES, FLATTENED_AUTHOR_PARAMETERS, ACCESS_ALIASES];
+              TIME_ALIASES, WORK_ALIASES, FLATTENED_AUTHOR_PARAMETERS, ACCESS_ALIASES,
+              ISBN_ALIASES, LANG_ALIASES, TYPE_ALIASES];
 
 // Includes many parameters usually from templates that we do not modify such as {{cite patent}}, because
 // that information can also be presented using the generic {{citation}} template, which we do modify.
@@ -255,10 +259,10 @@ const PARAMETER_LIST = array(
   'article', 'article-format', 'article-url', 'article-url-access', 'arxiv', 'asin',
   'asin-tld', 'assign', 'assign#', 'assignee', 'at', 'audio-visual', 'author', 'author#',
   'author#-first', 'author#-given', 'author#-last', 'author#-link', 'author#-mask',
-  'author#-surname', 'author#link', 'author#mask', 'author-first', 'author-first#',
+  'author#-surname', 'author#link', 'author-first', 'author-first#',
   'author-given', 'author-given#', 'author-last', 'author-last#', 'author-link',
   'author-link#', 'author-mask', 'author-mask#', 'author-surname', 'author-surname#',
-  'authorlink', 'authorlink#', 'authormask', 'authormask#', 'authors', 'bibcode',
+  'authorlink', 'authorlink#', 'authors', 'bibcode',
   'bibcode-access', 'biorxiv', 'book-title', 'booktitle', 'cartography', 'chapter',
   'chapter-format', 'chapter-url', 'chapter-url-access', 'chapterurl',
   'citation_bot_placeholder_bare_url', 'citeseerx', 'class', 'collaboration',
@@ -272,17 +276,17 @@ const PARAMETER_LIST = array(
   'contributor-surname#', 'country', 'country-code', 'credits', 'date', 'degree',
   'department', 'description', 'df', 'dictionary', 'display-authors',
   'display-contributors', 'display-editors', 'display-interviewers',
-  'display-subjects', 'display-translators', 'displayauthors', 'docket', 'doi',
+  'display-subjects', 'display-translators', 'docket', 'doi',
   'doi-access', 'doi-broken-date', 'edition', 'editor', 'editor#', 'editor#-first',
   'editor#-given', 'editor#-last', 'editor#-link', 'editor#-mask', 'editor#-surname',
-  'editor#link', 'editor-first', 'editor-first#', 'editor-given', 'editor-given#',
+  'editor-first', 'editor-first#', 'editor-given', 'editor-given#',
   'editor-last', 'editor-last#', 'editor-link', 'editor-link#', 'editor-mask',
-  'editor-mask#', 'editor-surname', 'editor-surname#', 'editorlink', 'editorlink#',
-  'editors', 'eissn', 'encyclopaedia', 'encyclopedia', 'entry', 'entry-format',
+  'editor-mask#', 'editor-surname', 'editor-surname#',
+  'eissn', 'encyclopaedia', 'encyclopedia', 'entry', 'entry-format',
   'entry-url', 'entry-url-access', 'episode', 'episode-link', 'episodelink', 'eprint',
-  'event', 'event-format', 'event-url', 'eventurl', 'fdate', 'first', 'first#',
+  'event', 'fdate', 'first', 'first#',
   'format', 'gdate', 'given', 'given#', 'hdl', 'hdl-access', 'host', 'host#', 'id',
-  'ignore-isbn-error', 'inset', 'institution', 'interviewer', 'interviewer#',
+  'inset', 'institution', 'interviewer', 'interviewer#',
   'interviewer#-first', 'interviewer#-given', 'interviewer#-last', 'interviewer#-link',
   'interviewer#-mask', 'interviewer#-surname', 'interviewer-first', 'interviewer-first#',
   'interviewer-given', 'interviewer-given#', 'interviewer-last', 'interviewer-last#',
@@ -294,12 +298,12 @@ const PARAMETER_LIST = array(
   'inventor-link', 'inventor-link#', 'inventor-surname', 'inventor-surname#',
   'inventorlink', 'inventorlink#', 'isbn', 'isbn13', 'ismn', 'issn', 'issue',
   'issue-date', 'jfm', 'journal', 'jstor', 'jstor-access', 'lang', 'language',
-  'last', 'last#', 'last-author-amp', 'lastauthoramp', 'lay-date', 'lay-format',
+  'last', 'last#', 'lay-date', 'lay-format',
   'lay-source', 'lay-url', 'laydate', 'laysource', 'layurl', 'lccn', 'location',
   'magazine', 'mailing-list', 'mailinglist', 'map', 'map-format', 'map-url',
   'map-url-access', 'mapurl', 'medium', 'message-id', 'minutes', 'mode', 'mr',
   'name-list-format', 'name-list-style', 'network', 'newsgroup', 'newspaper',
-  'no-pp', 'no-tracking', 'nocat', 'nopp', 'number', 'oclc', 'ol', 'ol-access',
+  'no-pp', 'no-tracking', 'nopp', 'number', 'oclc', 'ol', 'ol-access',
   'orig-date', 'orig-year', 'origyear', 'osti', 'osti-access', 'others', 'p',
   'page', 'pages', 'patent-number', 'people', 'periodical', 'place', 'pmc',
   'pmc-embargo-date', 'pmid', 'postscript', 'pp', 'pridate', 'pubdate',
@@ -311,11 +315,10 @@ const PARAMETER_LIST = array(
   'script-quote', 'script-section', 'script-title', 'script-website',
   'script-work', 'season', 'section', 'section-format', 'section-url',
   'section-url-access', 'sections', 'sectionurl', 'series', 'series-link',
-  'series-no', 'series-number', 'serieslink', 'seriesno', 'seriesnumber',
+  'series-no', 'series-number', 'serieslink', 'seriesno',
   'sheet', 'sheets', 'ssrn', 'station', 'status', 'subject', 'subject#',
-  'subject#-link', 'subject#-mask', 'subject#link', 'subject-link',
-  'subject-link#', 'subject-mask', 'subject-mask#', 'subjectlink',
-  'subjectlink#', 'surname', 'surname#', 'template-doc-demo', 'time',
+  'subject#-link', 'subject#-mask', 'subject-link', 'subject-link#', 'subject-mask', 'subject-mask#',
+  'surname', 'surname#', 'template-doc-demo', 'time',
   'time-caption', 'timecaption', 'title', 'title-link', 'titlelink',
   'trans-article', 'trans-chapter', 'trans-contribution', 'trans-entry',
   'trans-journal', 'trans-magazine', 'trans-map', 'trans-newspaper',
@@ -341,5 +344,8 @@ const PARAMETER_LIST = array(
      'isbn2', 'isbn3', 'isbn4', 'isbn5', 'isbn6', 'isbn7', 'deadlink', 'displayeditors',
      'doi-broken', 'doi-inactive-date', 'editormask', 'editor#mask', 'editormask#',
      'embargo', 'ignoreisbnerror', 'interviewerlink', 'interviewermask', 'no-cat',
-     'notracking', 'series-separator');
+     'notracking', 'series-separator', 'author#mask', 'authormask', 'authormask', 'displayauthors',
+     ' editor#link', 'editorlink', 'editorlink#', 'editors', 'event-format', 'event-url',
+     'eventurl', 'ignore-isbn-error', 'last-author-amp', 'lastauthoramp', 'nocat',
+     'seriesnumber', 'subject#link', 'subjectlink', 'subjectlink#');
 
