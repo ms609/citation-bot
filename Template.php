@@ -5987,7 +5987,40 @@ final class Template {
     // Do not call ISSN to issn "Added issn, deleted ISSN"
     $old = array_change_key_case($old, CASE_LOWER);
     $new = array_change_key_case($new, CASE_LOWER);
-    
+    // TODO : use an array
+    if (isset($old['accessdate'])) {
+      $old['access-date'] = $old['accessdate'];
+      unset($old['accessdate']);
+    }
+    if (isset($old['archivedate'])) {
+      $old['archive-date'] = $old['archivedate'];
+      unset($old['archivedate']);
+    }
+    if (isset($old['archiveurl'])) {
+      $old['archive-url'] = $old['archiveurl'];
+      unset($old['archiveurl']);
+    }
+    if (isset($old['chapterurl'])) {
+      $old['chapter-url'] = $old['chapterurl'];
+      unset($old['chapterurl']);
+    }
+    if (isset($new['accessdate'])) {
+      $new['access-date'] = $new['accessdate'];
+      unset($new['accessdate']);
+    }
+    if (isset($new['archivedate'])) {
+      $new['archive-date'] = $new['archivedate'];
+      unset($new['archivedate']);
+    }
+    if (isset($new['archiveurl'])) {
+      $new['archive-url'] = $new['archiveurl'];
+      unset($new['archiveurl']);
+    }
+    if (isset($new['chapterurl'])) {
+      $new['chapter-url'] = $new['chapterurl'];
+      unset($new['chapterurl']);
+    }
+
     $ret['modifications'] = array_keys(array_diff_assoc($new, $old));
     $ret['additions'] = array_diff(array_keys($new), array_keys($old));
     $ret['deletions'] = array_diff(array_keys($old), array_keys($new));
