@@ -207,7 +207,9 @@ final class constantsTest extends testBaseClass {
                           ['editor1-link', 'editor1-link', 'subject-link1'], $text);
       $text = str_replace(['archivedate',  'archiveurl',  'booktitle'],
                           ['archive-date', 'archive-url', 'book-title'], $text);
-                          
+      if ($prepared->get('doi') === 'Z123Z') {
+        $prepared->forget('doi-broken-date');
+      }
       if (!str_i_same($text, $prepared->parsed_text())) {
          $orig .= $text;
          $new .= $prepared->parsed_text();
