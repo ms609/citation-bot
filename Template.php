@@ -4597,7 +4597,8 @@ final class Template {
                 && mb_substr($title, -1)   === "'"
                 && mb_substr_count($title, "'") == 2)
           ) {
-            $title = mb_substr($title, 1, -1);   // Remove quotes -- if only one set that wraps entire title
+            report_warning("The quotes around the title are most likely an editors error: " . mb_substr($title, 1, -1));
+            // TODO - no always right $title = mb_substr($title, 1, -1);   // Remove quotes -- if only one set that wraps entire title
           }
           // Messed up cases:   [[sdfsad] or [dsfasdf]]
           if (preg_match('~^\[\[([^\]\[\|]+)\]$~', $title, $matches) ||
