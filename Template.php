@@ -4016,6 +4016,9 @@ final class Template {
           if (($matches[1] !== $matches[3]) || ($param !== 'title' && $param !== 'chapter' && $param !== 'publisher')) {
             $this->set($param, $matches[2]);
          }
+        } // Now onto italics and bold
+        if (preg_match("~^\'\'([^\'\"]+)\'\'$~u", $this->get($param), $matches) || preg_match("~^\'\'\'([^\'\"]+)\'\'\'$~u", $this->get($param), $matches)) {
+           $this->set($param, $matches[1]);
         }
 
         // Non-breaking spaces at ends
@@ -4598,7 +4601,6 @@ final class Template {
                 && mb_substr_count($title, "'") == 2)
           ) {
             report_warning("The quotes around the title are most likely an editors error: " . mb_substr($title, 1, -1));
-            // TODO - no always right $title = mb_substr($title, 1, -1);   // Remove quotes -- if only one set that wraps entire title
           }
           // Messed up cases:   [[sdfsad] or [dsfasdf]]
           if (preg_match('~^\[\[([^\]\[\|]+)\]$~', $title, $matches) ||
