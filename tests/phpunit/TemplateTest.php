@@ -2696,7 +2696,25 @@ T1 - This is the Title }}';
   public function testRemoveQuotes() : void {
     $text = '{{cite journal|title="Strategic Acupuncture"}}';
     $prepared = $this->prepare_citation($text);
-    $this->assertSame('Strategic Acupuncture', $prepared->get2('title'));  
+    $this->assertSame('"Strategic Acupuncture"', $prepared->get2('title'));  
+  }
+ 
+  public function testRemoveQuotes2() : void {
+    $text = "{{cite journal|title='Strategic Acupuncture'}}";
+    $prepared = $this->prepare_citation($text);
+    $this->assertSame("'Strategic Acupuncture'", $prepared->get2('title'));  
+  }
+ 
+  public function testRemoveQuotes3() : void {
+    $text = "{{cite journal|title=''Strategic Acupuncture''}}";
+    $prepared = $this->prepare_citation($text);
+    $this->assertSame("Strategic Acupuncture", $prepared->get2('title'));  
+  }
+ 
+  public function testRemoveQuotes4() : void {
+    $text = "{{cite journal|title='''Strategic Acupuncture'''}}";
+    $prepared = $this->prepare_citation($text);
+    $this->assertSame("Strategic Acupuncture", $prepared->get2('title'));  
   }
   
   public function testTrimResearchGate() : void {
