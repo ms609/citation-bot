@@ -4017,7 +4017,7 @@ final class Template {
             $this->set($param, $matches[2]);
          }
         } // Now onto italics and bold
-        if (preg_match("~^\'\'([^\'\"]+)\'\'$~u", $this->get($param), $matches) || preg_match("~^\'\'\'([^\'\"]+)\'\'\'$~u", $this->get($param), $matches)) {
+        if (preg_match("~^\'\'([^\']+)\'\'$~u", $this->get($param), $matches) || preg_match("~^\'\'\'([^\']+)\'\'\'$~u", $this->get($param), $matches)) {
            $this->set($param, $matches[1]);
         }
 
