@@ -4949,6 +4949,10 @@ final class Template {
                  }
                  curl_close($ch);
             }
+            if (preg_match("~^(.+)/se-./?$~", $this->get($param), $matches)) {
+              $this->set($param, $matches[1]);
+              $changed = TRUE;
+            }
             if ($changed) report_info("Normalized ProQuest URL");
           }
           if ($param === 'url' && $this->wikiname() === 'cite book' && $this->should_url2chapter(FALSE)) {            
