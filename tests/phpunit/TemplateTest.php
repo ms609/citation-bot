@@ -3918,6 +3918,20 @@ T1 - This is the Title }}';
     $this->assertSame("https://go.gale.com/ps/retrieve.do?tabID=T002&resultListType=RESULT_LIST&searchResultsType=SingleTab&searchType=BasicSearchForm&currentPosition=1&docId=GALE|A493733315&docType=Article&sort=Relevance&contentSegment=ZGPP-MOD1&prodId=ITOF&contentSet=GALE|A493733315&searchId=R2&userGroupName=nysl_ca_unionc&inPS=true", $template->get2('url'));
    }
  
+   public function testTidy89() : void {
+    $text = "{{cite web|asin=0671748750}}";
+    $template = $this->make_citation($text);
+    $template->tidy_parameter('asin');
+    $this->assertSame("0671748750", $template->get2('isbn'));
+    $this->assertNull($template->get2('asin'));
+    
+    $text = "{{cite web|asin=6371748750}}";
+    $template = $this->make_citation($text);
+    $template->tidy_parameter('asin');
+    $this->assertSame("6371748750", $template->get2('asin'));
+    $this->assertNull($template->get2('isbn'));
+   }
+ 
   public function testIncomplete() : void {
     $text = "{{cite book|url=http://perma-archives.org/pqd1234|isbn=Xxxx|title=xxx|issue=a|volume=x}}"; // Non-date website
     $template = $this->make_citation($text);
