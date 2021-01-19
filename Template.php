@@ -4334,6 +4334,19 @@ final class Template {
           }
           $this->forget('asin');
           return;
+
+        case 'asin':
+          if ($this->blank($param)) return;
+          if ($this->has('isbn')) return;
+          $value = $this->get($param)
+          if (preg_match("~^\d~", $value) && substr($value, 0, 2) !== '63') { // 630 and 631 ones are not ISBNs, so block all of 63*
+            $possible_isbn = sanitize_string($value);
+            $possible_isbn13 = $this->isbn10Toisbn13($possible_isbn, TRUE);
+            if ($possible_isbn !== $possible_isbn13) { // It is an ISBN
+              $this->rename('asin', 'isbn', $this->isbn10Toisbn13($possible_isbn));
+            }
+          }
+          return;
           
         case 'journal':
         case 'periodical':
