@@ -4338,7 +4338,7 @@ final class Template {
         case 'asin':
           if ($this->blank($param)) return;
           if ($this->has('isbn')) return;
-          $value = $this->get($param)
+          $value = $this->get($param);
           if (preg_match("~^\d~", $value) && substr($value, 0, 2) !== '63') { // 630 and 631 ones are not ISBNs, so block all of 63*
             $possible_isbn = sanitize_string($value);
             $possible_isbn13 = $this->isbn10Toisbn13($possible_isbn, TRUE);
