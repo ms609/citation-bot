@@ -152,7 +152,8 @@ final class WikipediaBot {
             (string) $ret->error->code === 'assertuserfailed' ||
             stripos((string) $ret->error->info, 'The database has been automatically locked') !== FALSE ||
             stripos((string) $ret->error->info, 'abusefilter-warning-predatory') !== FALSE ||
-            stripos((string) $ret->error->info, 'protected') !== FALSE)
+            stripos((string) $ret->error->info, 'protected') !== FALSE ||
+            stripos((string) $ret->error->info, 'Nonce already used') !== FALSE)
           ) {
             // @codeCoverageIgnoreStart
             unset($data);
