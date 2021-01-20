@@ -1037,7 +1037,7 @@ final class TemplateTest extends testBaseClass {
     $expanded = $this->process_citation("{{Cite journal|title=[[Dark]] Lord of the [[Sith (Star Wars)|Sith]] [[Pure Evil]]}}");
     $this->assertSame('Dark Lord of the Sith Pure Evil', $expanded->get2('title'));
   }
-  public function testRemoveWikilinks3c() : void { // TODO - bring this back ?????
+  public function testRemoveWikilinks3c() : void {
     $expanded = $this->process_citation("{{Cite journal|title=Dark Lord of the [[Sith (Star Wars)|Sith]] Pure Evil}}");
     $this->assertSame('Dark Lord of the [[Sith (Star Wars)|Sith]] Pure Evil', $expanded->get2('title'));
     $this->assertNull($expanded->get2('title-link'));
@@ -4894,7 +4894,7 @@ T1 - This is the Title }}';
      $text='{{Cite journal | doi=10.1063/1.2263373|chapter-url=http://dx.doi.org/10.000/broken}}';
      $template = $this->process_citation($text);
      $this->assertSame('10.1063/1.2263373', $template->get2('doi'));
-     $this->assertNotNull($template->get2('chapter-url')); // TODO - should probably do this
+     $this->assertNotNull($template->get2('chapter-url'));
    }
  
    public function testEmptyJunk() : void {
