@@ -4246,12 +4246,14 @@ final class Template {
                return;
             }
           }
-          if (!doi_works($doi)) {
-            $this->verify_doi();
-            $doi = $this->get($param);
-          }
-          if (!doi_works($doi)) {  
-            $this->set($param, sanitize_doi($doi));
+          if ($doi === $this->get3('doi')) {
+            if (!doi_works($doi)) {
+              $this->verify_doi();
+              $doi = $this->get($param);
+            }
+            if (!doi_works($doi)) {  
+              $this->set($param, sanitize_doi($doi));
+            }
           }
           if (!preg_match(REGEXP_DOI_ISSN_ONLY, $doi)) $this->change_name_to('cite journal', FALSE);
           if (preg_match('~^10\.2307/(\d+)$~', $this->get_without_comments_and_placeholders('doi'))) {
@@ -5792,6 +5794,17 @@ final class Template {
       }
     }
     return NULL;
+  }
+  
+  public function get3(string $name) : string {  // like get() only includes (( ))
+    foreach ($this->param as $parameter_i) {
+      if ($parameter_i->param === $name) {
+        if ($parameter_i->val === NULL) $parameter_i->val = ''; // Clean up
+        $the_val = $parameter_i->val;
+        return $the_val;
+      }
+    }
+    return '';
   }
 
   public function has_but_maybe_blank(string $name) : bool {
