@@ -4976,6 +4976,8 @@ T1 - This is the Title }}';
      $template = $this->process_citation($text);
      $this->assertNull($template->get2('doi-broken-date'));
      $this->assertNotNull($template->get2('journal'));
+     $this->assertSame('10.51134/sod.2013.039', $template->get2('doi'));
+     $this->assertSame('((10.51134/sod.2013.039 ))', $template->get3('doi'));
    }
  
    public function testIDconvert1() : void {
