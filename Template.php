@@ -4214,6 +4214,7 @@ final class Template {
         case 'doi':
           $doi = $this->get($param);
           if (!$doi) return;
+          if ($doi != $this->get3('doi')) return;
           if ($doi == '10.1267/science.040579197') {
             // This is a bogus DOI from the PMID example file
             $this->forget('doi');
@@ -4246,14 +4247,12 @@ final class Template {
                return;
             }
           }
-          if ($doi === $this->get3('doi')) {
-            if (!doi_works($doi)) {
-              $this->verify_doi();
-              $doi = $this->get($param);
-            }
-            if (!doi_works($doi)) {  
-              $this->set($param, sanitize_doi($doi));
-            }
+          if (!doi_works($doi)) {
+            $this->verify_doi();
+            $doi = $this->get($param);
+          }
+          if (!doi_works($doi)) {  
+            $this->set($param, sanitize_doi($doi));
           }
           if (!preg_match(REGEXP_DOI_ISSN_ONLY, $doi)) $this->change_name_to('cite journal', FALSE);
           if (preg_match('~^10\.2307/(\d+)$~', $this->get_without_comments_and_placeholders('doi'))) {
