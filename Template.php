@@ -5762,23 +5762,33 @@ final class Template {
   }
 
   public function get(string $name) : string {
+    $matches = ['', '']; // prevent memory leak in some PHP versions
     // NOTE $this->param and $p->param are different and refer to different types!
     // $this->param is an array of Parameter objects
     // $parameter_i->param is the parameter name within the Parameter object
     foreach ($this->param as $parameter_i) {
       if ($parameter_i->param === $name) {
         if ($parameter_i->val === NULL) $parameter_i->val = ''; // Clean up
-          return $parameter_i->val;
+        $the_val = $parameter_i->val;
+        if (preg_match("~^\(\((.*)\)\)$~", $the_val, $matches)) {
+          $the_val = trim($matches[1]);
+        }
+        return $the_val;
       }
     }
     return '';
   }
   // This one is used in the test suite to distinguish there-but-blank vs not-there-at-all
   public function get2(string $name) : ?string {
+    $matches = ['', '']; // prevent memory leak in some PHP versions
     foreach ($this->param as $parameter_i) {
       if ($parameter_i->param === $name) {
         if ($parameter_i->val === NULL) $parameter_i->val = ''; // Clean up
-          return $parameter_i->val;
+        $the_val = $parameter_i->val;
+        if (preg_match("~^\(\((.*)\)\)$~", $the_val, $matches)) {
+          $the_val = trim($matches[1]);
+        }
+        return $the_val;
       }
     }
     return NULL;
