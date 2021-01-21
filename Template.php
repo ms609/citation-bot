@@ -1660,7 +1660,7 @@ final class Template {
     }
 
     if (preg_match("~^https?://(?:(?:dx\.|www\.|)doi\.org|doi\.library\.ubc\.ca)/([^\?]*)~i", $url, $match)) {
-      if ($this->has('doi')) {
+      if ($this->has('doi') && $this->get('doi') == $this->get3('doi')) {
         if (str_i_same($this->get('doi'), $match[1])) {
          if (is_null($url_sent) && $this->get('doi-access') === 'free') {
           quietly('report_modification', "URL is hard-coded DOI; removing since we already have free DOI paramter");
