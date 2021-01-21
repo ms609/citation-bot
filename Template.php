@@ -3987,6 +3987,7 @@ final class Template {
     if (mb_stripos($this->get($param), 'CITATION_BOT_PLACEHOLDER_COMMENT') !== FALSE) {
       return;  // We let comments block the bot
     }
+    if ($this->get($param) != $this->get3($param)) return;
     
     if($this->has($param)) {
       if (stripos($param, 'separator') === FALSE &&  // lone punctuation valid
@@ -4214,7 +4215,6 @@ final class Template {
         case 'doi':
           $doi = $this->get($param);
           if (!$doi) return;
-          if ($doi != $this->get3('doi')) return;
           if ($doi == '10.1267/science.040579197') {
             // This is a bogus DOI from the PMID example file
             $this->forget('doi');
@@ -5856,6 +5856,9 @@ final class Template {
   public function set(string $par, string $val) : bool {
     if ($par === '') report_error('NULL parameter passed to set with value of ' . echoable($val));
     if (mb_stripos($this->get($par), 'CITATION_BOT_PLACEHOLDER_COMMENT') !== FALSE) {
+      return FALSE;
+    }
+    if ($this->get($par) != $this->get3($par)) {
       return FALSE;
     }
     if (($pos = $this->get_param_key((string) $par)) !== NULL) {
