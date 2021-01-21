@@ -1672,6 +1672,7 @@ final class Template {
         if (is_null($url_sent)) {
          report_warning('doi.org URL does not match existing DOI paramter, investigating...');
         }
+        if ($this->get('doi') != $this->get3('doi')) return FALSE;
         if (doi_works($match[1]) && !doi_works($this->get('doi'))) {
           $this->set('doi', $match[1]);
           if (is_null($url_sent)) {
@@ -3987,6 +3988,7 @@ final class Template {
     if (mb_stripos($this->get($param), 'CITATION_BOT_PLACEHOLDER_COMMENT') !== FALSE) {
       return;  // We let comments block the bot
     }
+    if ($this->get($param) != $this->get3($param)) return;
     
     if($this->has($param)) {
       if (stripos($param, 'separator') === FALSE &&  // lone punctuation valid
@@ -5793,6 +5795,17 @@ final class Template {
     }
     return NULL;
   }
+  
+  public function get3(string $name) : string {  // like get() only includes (( ))
+    foreach ($this->param as $parameter_i) {
+      if ($parameter_i->param === $name) {
+        if ($parameter_i->val === NULL) $parameter_i->val = ''; // Clean up
+        $the_val = $parameter_i->val;
+        return $the_val;
+      }
+    }
+    return '';
+  }
 
   public function has_but_maybe_blank(string $name) : bool {
     foreach ($this->param as $parameter_i) {
@@ -5844,6 +5857,9 @@ final class Template {
   public function set(string $par, string $val) : bool {
     if ($par === '') report_error('NULL parameter passed to set with value of ' . echoable($val));
     if (mb_stripos($this->get($par), 'CITATION_BOT_PLACEHOLDER_COMMENT') !== FALSE) {
+      return FALSE;
+    }
+    if ($this->get($par) != $this->get3($par)) {
       return FALSE;
     }
     if (($pos = $this->get_param_key((string) $par)) !== NULL) {
