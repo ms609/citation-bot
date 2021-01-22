@@ -4018,9 +4018,9 @@ final class Template {
           if (($matches[1] !== $matches[3]) || ($param !== 'title' && $param !== 'chapter' && $param !== 'publisher')) {
             $this->set($param, $matches[2]);
          }
-        } // Now onto italics and bold
-        if (preg_match("~^\'\'([^\']+)\'\'$~u", $this->get($param), $matches) || preg_match("~^\'\'\'([^\']+)\'\'\'$~u", $this->get($param), $matches)) {
-           $this->set($param, $matches[1]);
+        }
+        if (preg_match("~^\'\'\'([^\']+)\'\'\'$~u", $this->get($param), $matches)) {
+           $this->set($param, $matches[1]); // Remove bold
         }
 
         // Non-breaking spaces at ends
