@@ -826,6 +826,19 @@ final class Template {
             return $this->add('archive-date', $value);
         }
         return FALSE;
+        
+      case 'pmc-embargo-date':
+        if (!$this->blank('pmc-embargo-date')) return FALSE;
+        $time = strtotime($value);
+        if ($time) {
+            if ($this->date_style === DATES_MDY) {
+               $value = date('F j, Y', $time);
+            } elseif ($this->date_style === DATES_DMY) {
+               $value = date('j F Y', $time);
+            }
+            return $this->add('pmc-embargo-date', $value);
+        }
+        return FALSE;
       
       ### DATE AND YEAR ###
       
