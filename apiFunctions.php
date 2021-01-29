@@ -110,6 +110,11 @@ function entrez_api(array $ids, array &$templates, string $db) : bool {   // Poi
                 preg_match("~\d+~", (string) $subItem, $match);
                 $this_template->add_if_new('pmc', $match[0], 'entrez');
                 break;
+              case "pmcid":
+                if (preg_match("~embargo-date: ?(.+);?$~", (string) $subItem, $match)) {
+                   $this_template->add_if_new('pmc-embargo-date', $match[1], 'entrez');
+                }
+                break;
               case "doi": case "pii":
               default:
                 if (preg_match("~10\.\d{4}/[^\s\"']*~", (string) $subItem, $match)) {
