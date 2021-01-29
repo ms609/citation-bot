@@ -827,18 +827,9 @@ final class Template {
         }
         return FALSE;
         
-      case 'pmc-embargo-date':
+      case 'pmc-embargo-date': // Must come in formatted right!
         if (!$this->blank('pmc-embargo-date')) return FALSE;
-        $time = strtotime($value);
-        if ($time) {
-            if ($this->date_style === DATES_MDY) {
-               $value = date('F j, Y', $time);
-            } elseif ($this->date_style === DATES_DMY) {
-               $value = date('j F Y', $time);
-            }
-            return $this->add('pmc-embargo-date', $value);
-        }
-        return FALSE;
+        return $this->add('pmc-embargo-date', $value);
       
       ### DATE AND YEAR ###
       
