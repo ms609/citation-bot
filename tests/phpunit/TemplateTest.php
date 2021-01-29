@@ -1435,7 +1435,7 @@ final class TemplateTest extends testBaseClass {
       
     $text = "{{cite book|authorlinux=X}}";
     $expanded = $this->process_citation($text);
-    $this->assertSame('{{cite book|authorlink=X}}', $expanded->parsed_text());
+    $this->assertSame('{{cite book|author-link=X}}', $expanded->parsed_text());
       
     $text = "{{cite book|authorlinks33=X}}";
     $expanded = $this->process_citation($text);
@@ -1562,7 +1562,7 @@ final class TemplateTest extends testBaseClass {
       $text = '{{citation|origyear=2000|date=1999}}';
       $prepared = $this->prepare_citation($text);
       $prepared->final_tidy();
-      $this->assertSame($text, $prepared->parsed_text()); 
+      $this->assertSame('{{citation|orig-year=2000|date=1999}}', $prepared->parsed_text()); 
  }
 
   public function testDropDuplicates1() : void {
@@ -1702,7 +1702,8 @@ final class TemplateTest extends testBaseClass {
   public function testOrigYearHandling() : void {
       $text = '{{cite book |year=2009 | origyear = 2000 }}';
       $prepared = $this->process_citation($text);
-      $this->assertSame('2000', $prepared->get2('origyear'));
+      $this->assertSame('2000', $prepared->get2('orig-year'));
+      $this->assertNull($prepared->get2('origyear'));
       $this->assertSame('2009', $this->getDateAndYear($prepared));
       
       $text = '{{cite book | origyear = 2000 }}';
