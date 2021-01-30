@@ -111,8 +111,9 @@ function entrez_api(array $ids, array &$templates, string $db) : bool {   // Poi
                 $this_template->add_if_new('pmc', $match[0], 'entrez');
                 break;
               case "pmcid":
-                if (preg_match("~embargo-date: ?(.+);$~", (string) $subItem, $match)) {
-                   $this_template->add_if_new('pmc-embargo-date', $match[1], 'entrez');
+                if (preg_match("~embargo-date: ?(\d{4})\/(\d{2})\/(\d{2})~", (string) $subItem, $match)) {
+                   $date_emb = date("F j, Y", mktime(0, 0, 0, $match[2], $match[3], $match[1]));
+                   $this_template->add_if_new('pmc-embargo-date', $date_emb, 'entrez');
                 }
                 break;
               case "doi": case "pii":
