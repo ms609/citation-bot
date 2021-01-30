@@ -112,7 +112,7 @@ function entrez_api(array $ids, array &$templates, string $db) : bool {   // Poi
                 break;
               case "pmcid":
                 if (preg_match("~embargo-date: ?(\d{4})\/(\d{2})\/(\d{2})~", (string) $subItem, $match)) {
-                   $date_emb = date("F j, Y", mktime(0, 0, 0, $match[2], $match[3], $match[1]));
+                   $date_emb = date("F j, Y", mktime(0, 0, 0, (int) $match[2], (int) $match[3], (int) $match[1]));
                    $this_template->add_if_new('pmc-embargo-date', $date_emb, 'entrez');
                 }
                 break;
