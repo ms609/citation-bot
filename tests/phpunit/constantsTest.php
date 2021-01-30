@@ -207,6 +207,8 @@ final class constantsTest extends testBaseClass {
                           ['editor1-link', 'editor1-link', 'subject-link1'], $text);
       $text = str_replace(['archivedate',  'archiveurl',  'booktitle'],
                           ['archive-date', 'archive-url', 'book-title'], $text);
+      $text = str_replace(['titlelink',  'nocat',       'nocat',       'authorlink',  'conferenceurl',  'contributionurl',  'laydate',  'laysource',  'layurl',  'origyear',  'sectionurl',  'seriesno',  'timecaption',  'titlelink'],
+                          ['title-link', 'no-tracking', 'no-tracking', 'author-link', 'conference-url', 'contribution-url', 'lay-date', 'lay-source', 'lay-url', 'orig-year', 'section-url', 'series-no', 'time-caption', 'title-link'], $text);
       if ($prepared->get('doi') === 'Z123Z') {
         $prepared->forget('doi-broken-date');
       }
