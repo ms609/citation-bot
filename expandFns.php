@@ -498,6 +498,10 @@ function throttle (int $min_interval) : void {
  
   $time_since_last_write = time() - $last_write_time;
   if ($time_since_last_write < $min_interval) {
+    gc_collect_cycles(); // do something useful 
+  }
+  $time_since_last_write = time() - $last_write_time;
+  if ($time_since_last_write < $min_interval) {
     $time_to_pause = floor($min_interval - $time_since_last_write);
     report_warning("Throttling: waiting $time_to_pause seconds...");
     for ($i = 0; $i < $time_to_pause; $i++) {
