@@ -640,6 +640,7 @@ final class TestPage extends Page {
   // Functions for use in testing context only
   
   function __construct() {
+    gc_collect_cycles();
     $trace = debug_backtrace();
     $name = $trace[2]['function'];
     $this->title = empty($name) ? 'Test Page' : $name;
