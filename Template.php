@@ -4277,6 +4277,12 @@ final class Template {
           
         case 'doi-broken': case 'doi_brokendate': case 'doi-broken-date': case 'doi_inactivedate': case 'doi-inactive-date':
           if ($this->blank('doi')) $this->forget($param);
+          if (preg_match('~^10.1093\/oi\/authority\.\d{10,}$~', $this->get('doi')) &&
+              preg_match('~oxfordreference.com\/view\/10.1093\/oi\/authority\.\d{10,}~', $this->get('url')) &&
+              !doi_works($this->get('doi'))) {
+            $this->forget('doi');
+            $this->forget($param);
+          }
           return;
           
         case 'edition':
