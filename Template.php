@@ -829,6 +829,10 @@ final class Template {
         
       case 'pmc-embargo-date': // Must come in formatted right!
         if (!$this->blank('pmc-embargo-date')) return FALSE;
+        if (!preg_match('~2\d\d\d~', $value)) return FALSE; // 2000 or later
+        $new_date=strtotime($value);
+        $now_date=strtotime('now');
+        if ($now_date > $new_date) return FALSE;
         return $this->add('pmc-embargo-date', $value);
       
       ### DATE AND YEAR ###
