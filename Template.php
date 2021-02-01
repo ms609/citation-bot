@@ -4259,7 +4259,21 @@ final class Template {
           if (!doi_works($doi)) {  
             $this->set($param, sanitize_doi($doi));
           }
-          if (!preg_match(REGEXP_DOI_ISSN_ONLY, $doi)) $this->change_name_to('cite journal', FALSE);
+          if (preg_match('~^10.1093\/oi\/authority\.\d{10,}$~', $doi) &&
+              preg_match('~oxfordreference.com\/view\/10.1093\/oi\/authority\.\d{10,}~', $this->get('url')) &&
+              !doi_works($doi)) {
+            $this->forget('doi');
+            return;
+          } elseif (preg_match('~^10\.1093\/law\:epil\/9780199231690\/law\-9780199231690$~', $doi) &&
+              preg_match('~ouplaw.com\/view\/10\.1093/law\:epil\/9780199231690\/law\-9780199231690~', $this->get('url')) &&
+              !doi_works($doi)) {
+            $this->forget('doi');
+            return;
+          }
+          if (stripos($doi, '10.1093/law:epil') === 0 || stripos($doi, '10.1093/oi/authority') === 0) {
+            return;
+          }
+          if (!preg_match(REGEXP_DOI_ISSN_ONLY, $doi) && doi_works($doi)) $this->change_name_to('cite journal', FALSE);
           if (preg_match('~^10\.2307/(\d+)$~', $this->get_without_comments_and_placeholders('doi'))) {
             $this->add_if_new('jstor', substr($this->get_without_comments_and_placeholders('doi'), 8));
           }
@@ -4277,17 +4291,6 @@ final class Template {
           
         case 'doi-broken': case 'doi_brokendate': case 'doi-broken-date': case 'doi_inactivedate': case 'doi-inactive-date':
           if ($this->blank('doi')) $this->forget($param);
-          if (preg_match('~^10.1093\/oi\/authority\.\d{10,}$~', $this->get('doi')) &&
-              preg_match('~oxfordreference.com\/view\/10.1093\/oi\/authority\.\d{10,}~', $this->get('url')) &&
-              !doi_works($this->get('doi'))) {
-            $this->forget('doi');
-            $this->forget($param);
-          } elseif (preg_match('~^10\.1093\/law\:epil\/9780199231690\/law\-9780199231690$~', $this->get('doi')) &&
-              preg_match('~ouplaw.com\/view\/10\.1093/law\:epil\/9780199231690\/law\-9780199231690~', $this->get('url')) &&
-              !doi_works($this->get('doi'))) {
-            $this->forget('doi');
-            $this->forget($param);
-          }
           return;
           
         case 'edition':
