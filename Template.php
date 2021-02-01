@@ -4268,7 +4268,7 @@ final class Template {
               !doi_works($doi)) {
             $this->forget('doi');
             return;
-          } elseif (preg_match('~^10\.1093\/law\:epil\/9780199231690\/law\-9780199231690$~', $doi) &&
+          } elseif (preg_match('~^10\.1093\/law\:epil\/9780199231690\/law\-9780199231690~', $doi) &&
               preg_match('~ouplaw.com\/view\/10\.1093/law\:epil\/9780199231690\/law\-9780199231690~', $this->get('url')) &&
               !doi_works($doi)) {
             $this->forget('doi');
