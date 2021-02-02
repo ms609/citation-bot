@@ -5472,11 +5472,14 @@ final class Template {
   }
   
   public function verify_doi() : bool {
+    static $last_doi = '';
     $match = ['', '']; // prevent memory leak in some PHP versions
     $matches = ['', '']; // prevent memory leak in some PHP versions
     $doi = $this->get_without_comments_and_placeholders('doi');
     if (!$doi) return FALSE;
     if ($this->doi_valid) return TRUE;
+    if ($last_doi === $doi) return FALSE; // Do not try again and again
+    $last_doi = $doi;
     report_info("Checking that DOI " . echoable($doi) . " is operational...");
 
     $trial = array();
