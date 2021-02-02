@@ -408,7 +408,8 @@ final class TemplateTest extends testBaseClass {
   public function testBrokenDoiUrlRetention1() : void {
     $text = '{{cite journal|url=http://opil.ouplaw.com/view/10.1093/law:epil/9780199231690/law-9780199231690-e1301|title=Israel, Occupied Territories|publisher=|doi=10.1093/law:epil/9780199231690/law-9780199231690-e1301|doi-broken-date=2018-07-07}}';
     $expanded = $this->process_citation($text);
-    $this->assertNotNull($expanded->get2('doi-broken-date'));
+    $this->assertNull($expanded->get2('doi-broken-date'));
+    $this->assertNull($expanded->get2('doi'));
     $this->assertNotNull($expanded->get2('url'));
   }
  
