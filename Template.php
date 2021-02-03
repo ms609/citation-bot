@@ -1259,7 +1259,7 @@ final class Template {
         }
         $existing = strtotime($this->get('doi-broken-date'));
         $the_new  = strtotime($value);
-        if (($existing === FALSE) || ($existing + 2592000 < $the_new) || (2592000 + $the_new < $existing)) { // A month difference
+        if (($existing === FALSE) || ($existing + (2*2592000) < $the_new) || ((2592000*2) + $the_new < $existing)) { // Two month difference
            return $this->add($param_name, $value);
         }
         return FALSE;
