@@ -10,7 +10,8 @@ const TEMPLATES_WE_SLIGHTLY_PROCESS = array('cite news', 'cite newspaper', 'cite
 const TEMPLATES_WE_BARELY_PROCESS = array('cite thesis', 'cite press release', 'cite report', 'cite biorxiv');
 const TEMPLATES_WE_RENAME  = array('cite arxiv', 'cite book', 'cite document', 'cite journal', 'cite web', 'cite work', 'cite article', 'cite paper', 'cite website');
 const TEMPLATES_WE_CHAPTER_URL = array('new cambridge medieval history', 'setton-a history of the crusades', 'new cambridge medieval history',
-                                       'the cambridge history of iran', 'the buwayhid dynasty in iraq');
+                                       'the cambridge history of iran', 'the buwayhid dynasty in iraq', 'the cambridge history of egypt',
+                                       'the history of al-tabari', 'the prophet and the age of the caliphates');
 const ALL_URL_TYPES = array('url', 'article-url', 'chapter-url', 'chapterurl', 'conference-url', 'conferenceurl',
                   'contribution-url', 'contributionurl', 'entry-url', 'event-url', 'eventurl', 'lay-url',
                   'layurl', 'map-url', 'mapurl', 'section-url', 'sectionurl', 'transcript-url',
