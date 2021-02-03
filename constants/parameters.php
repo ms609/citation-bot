@@ -18,7 +18,7 @@ const TEMPLATES_WE_CHAPTER_URL = array('new cambridge medieval history', 'setton
                                        'history of taron', 'the muslims of medieval italy', 'emperor michael palaeologus and the west',
                                        'arts of armenia', 'a history of palestine, 634–1099', 'baghdad during the abbasid caliphate',
                                        'baghdad during the abbasid caliphate', 'the cambridge history of china', 'cambridge history of iran',
-                                       'essays on the latin orient');
+                                       'essays on the latin orient', 'cambridge history of egypt');
 const ALL_URL_TYPES = array('url', 'article-url', 'chapter-url', 'chapterurl', 'conference-url', 'conferenceurl',
                   'contribution-url', 'contributionurl', 'entry-url', 'event-url', 'eventurl', 'lay-url',
                   'layurl', 'map-url', 'mapurl', 'section-url', 'sectionurl', 'transcript-url',
