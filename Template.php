@@ -5478,10 +5478,12 @@ final class Template {
     $doi = $this->get_without_comments_and_placeholders('doi');
     if (!$doi) return FALSE;
     if ($this->doi_valid) return TRUE;
-    if ($last_doi === $doi) return FALSE; // Do not try again and again
-    $last_doi = $doi;
-    report_info("Checking that DOI " . echoable($doi) . " is operational...");
-
+    if ($last_doi === $doi) {
+      report_info("Rechecking if DOI " . echoable($doi) . " is operational...");  // Sometimes we get NULL, so check again for FALSE/TRUE
+    } else {
+      $last_doi = $doi;
+      report_info("Checking that DOI " . echoable($doi) . " is operational...");
+    }
     $trial = array();
     $trial[] = $doi;
     // DOI not correctly formatted
