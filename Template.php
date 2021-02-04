@@ -4507,6 +4507,22 @@ final class Template {
           if ($this->blank($param)) $this->forget($param);
           return;
 
+        case 'pmc-embargo-date':
+          if ($this->blank($param)) {
+            return;
+          }
+          $value = $this->get($param);
+          if (!preg_match('~2\d\d\d~', $value) {
+            $this->forget($param);
+            return;
+          }
+          $pmc_date=strtotime($value);
+          $now_date=strtotime('now') - 86400; // Pad one day for paranoia
+          if ($now_date > $pmc_date) {
+            $this->forget($param);
+          }
+          return;
+          
         case 'pmc':
           if (preg_match("~pmc(\d+)$~i", $this->get($param), $matches)) {
              $this->set($param, $matches[1]);
@@ -5372,6 +5388,7 @@ final class Template {
             $this->change_name_to('cite document');
          }
       }
+      if ($this->blank('pmc-embargo-date')) $this->forget('pmc-embargo-date'); // Do at the very end, so we do not delete it, then add it later in a different position
     }
     if ($this->wikiname() === 'cite arxiv' && $this->get_without_comments_and_placeholders('doi')) {
       $this->change_name_to('cite journal');
