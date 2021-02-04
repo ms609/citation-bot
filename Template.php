@@ -4512,7 +4512,7 @@ final class Template {
             return;
           }
           $value = $this->get($param);
-          if (!preg_match('~2\d\d\d~', $value) {
+          if (!preg_match('~2\d\d\d~', $value)) {
             $this->forget($param);
             return;
           }
