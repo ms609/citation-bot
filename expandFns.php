@@ -90,7 +90,7 @@ function extract_doi(string $text) : array {
     }
     if (doi_works($doi_candidate)) $doi = $doi_candidate;
     if (!doi_works($doi) && !doi_works(sanitize_doi($doi))) { // Reject URLS like ...../25.10.2015/2137303/default.htm
-      if (preg_match("~/[0-3][0-9]\." . preg_quote($doi) . "~", $text) {
+      if (preg_match("~/[0-3][0-9]\." . preg_quote($doi) . "~", $text)) {
         return array(FALSE, FALSE);
       }
     }
