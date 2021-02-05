@@ -89,6 +89,7 @@ function extract_doi(string $text) : array {
       $doi_candidate = substr($doi_candidate, 0, $last_delimiter);
     }
     if (doi_works($doi_candidate)) $doi = $doi_candidate;
+    CONFLICT
     return array($match[0], sanitize_doi($doi));
   }
   return array(FALSE, FALSE);
