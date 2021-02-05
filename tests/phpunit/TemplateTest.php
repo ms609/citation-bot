@@ -408,7 +408,8 @@ final class TemplateTest extends testBaseClass {
   public function testBrokenDoiUrlRetention1() : void {
     $text = '{{cite journal|url=http://opil.ouplaw.com/view/10.1093/law:epil/9780199231690/law-9780199231690-e1301|title=Israel, Occupied Territories|publisher=|doi=10.1093/law:epil/9780199231690/law-9780199231690-e1301|doi-broken-date=2018-07-07}}';
     $expanded = $this->process_citation($text);
-    $this->assertNotNull($expanded->get2('doi-broken-date'));
+    $this->assertNull($expanded->get2('doi-broken-date'));
+    $this->assertNull($expanded->get2('doi'));
     $this->assertNotNull($expanded->get2('url'));
   }
  
@@ -624,7 +625,7 @@ final class TemplateTest extends testBaseClass {
   }
 
   public function testAmazonExpansion3() : void {
-    $text = "{{Cite web | url=https://www.amazon.com/Gold-Toe-Metropolitan-Dress-Three/dp/B0002TV0K8 | accessdate=2012-04-20 | title=Gold Toe Men's Metropolitan Dress Sock (Pack of Three Pairs) at Amazon Men's Clothing store}}";
+    $text = "{{Cite web | url=https://www.amazon.com/Gold-Toe-Metropolitan-Dress-Three/dp/B0002TV0K8 | access-date=2012-04-20 | title=Gold Toe Men's Metropolitan Dress Sock (Pack of Three Pairs) at Amazon Men's Clothing store}}";
     $expanded = $this->process_citation($text);
     $this->assertSame($text, $expanded->parsed_text());  // We do not touch this kind of URL
   }
@@ -1037,7 +1038,7 @@ final class TemplateTest extends testBaseClass {
     $expanded = $this->process_citation("{{Cite journal|title=[[Dark]] Lord of the [[Sith (Star Wars)|Sith]] [[Pure Evil]]}}");
     $this->assertSame('Dark Lord of the Sith Pure Evil', $expanded->get2('title'));
   }
-  public function testRemoveWikilinks3c() : void { // TODO - bring this back ?????
+  public function testRemoveWikilinks3c() : void {
     $expanded = $this->process_citation("{{Cite journal|title=Dark Lord of the [[Sith (Star Wars)|Sith]] Pure Evil}}");
     $this->assertSame('Dark Lord of the [[Sith (Star Wars)|Sith]] Pure Evil', $expanded->get2('title'));
     $this->assertNull($expanded->get2('title-link'));
@@ -1216,7 +1217,7 @@ final class TemplateTest extends testBaseClass {
   public function testLeaveArchiveURL() : void {
     $text = '{{cite book |chapterurl=http://faculty.haas.berkeley.edu/shapiro/thicket.pdf|isbn=978-0-262-60041-5|archiveurl=https://web.archive.org/web/20070704074830/http://faculty.haas.berkeley.edu/shapiro/thicket.pdf }}';
     $expanded = $this->process_citation($text);
-    $this->assertSame('https://web.archive.org/web/20070704074830/http://faculty.haas.berkeley.edu/shapiro/thicket.pdf', $expanded->get2('archiveurl'));
+    $this->assertSame('https://web.archive.org/web/20070704074830/http://faculty.haas.berkeley.edu/shapiro/thicket.pdf', $expanded->get2('archive-url'));
   }
 
   public function testScriptTitle() : void {
@@ -1562,7 +1563,7 @@ final class TemplateTest extends testBaseClass {
       $text = '{{citation|origyear=2000|date=1999}}';
       $prepared = $this->prepare_citation($text);
       $prepared->final_tidy();
-      $this->assertSame($text, $prepared->parsed_text()); 
+      $this->assertSame('{{citation|orig-year=2000|date=1999}}', $prepared->parsed_text()); 
  }
 
   public function testDropDuplicates1() : void {
@@ -1702,7 +1703,8 @@ final class TemplateTest extends testBaseClass {
   public function testOrigYearHandling() : void {
       $text = '{{cite book |year=2009 | origyear = 2000 }}';
       $prepared = $this->process_citation($text);
-      $this->assertSame('2000', $prepared->get2('origyear'));
+      $this->assertSame('2000', $prepared->get2('orig-year'));
+      $this->assertNull($prepared->get2('origyear'));
       $this->assertSame('2009', $this->getDateAndYear($prepared));
       
       $text = '{{cite book | origyear = 2000 }}';
@@ -2568,10 +2570,10 @@ T1 - This is the Title }}';
   public function testAccessDates() : void {
     $text = '{{cite book |date=March 12, 1913 |title=Session Laws of the State of Washington, 1913 |chapter=Chapter 65: Classifying Public Highways |page=221 |chapter-url=http://leg.wa.gov/CodeReviser/documents/sessionlaw/1913c65.pdf |publisher=Washington State Legislature |accessdate=August 30, 2018}}';
     $expanded = $this->process_citation($text);
-    $this->assertNotNull($expanded->get2('accessdate'));
+    $this->assertNotNull($expanded->get2('access-date'));
     $text = '{{cite book |date=March 12, 1913 |title=Session Laws of the State of Washington, 1913 |chapter=Chapter 65: Classifying Public Highways |page=221 |chapterurl=http://leg.wa.gov/CodeReviser/documents/sessionlaw/1913c65.pdf |publisher=Washington State Legislature |accessdate=August 30, 2018}}';
     $expanded = $this->process_citation($text);
-    $this->assertNotNull($expanded->get2('accessdate'));
+    $this->assertNotNull($expanded->get2('access-date'));
   }
 
   public function testIgnoreUnkownCiteTemplates() : void {
@@ -2696,7 +2698,25 @@ T1 - This is the Title }}';
   public function testRemoveQuotes() : void {
     $text = '{{cite journal|title="Strategic Acupuncture"}}';
     $prepared = $this->prepare_citation($text);
-    $this->assertSame('Strategic Acupuncture', $prepared->get2('title'));  
+    $this->assertSame('"Strategic Acupuncture"', $prepared->get2('title'));  
+  }
+ 
+  public function testRemoveQuotes2() : void {
+    $text = "{{cite journal|title='Strategic Acupuncture'}}";
+    $prepared = $this->prepare_citation($text);
+    $this->assertSame("'Strategic Acupuncture'", $prepared->get2('title'));  
+  }
+ 
+  public function testRemoveQuotes3() : void {
+    $text = "{{cite journal|title=''Strategic Acupuncture''}}";
+    $prepared = $this->prepare_citation($text);
+    $this->assertSame("''Strategic Acupuncture''", $prepared->get2('title'));  
+  }
+ 
+  public function testRemoveQuotes4() : void {
+    $text = "{{cite journal|title='''Strategic Acupuncture'''}}";
+    $prepared = $this->prepare_citation($text);
+    $this->assertSame("Strategic Acupuncture", $prepared->get2('title'));  
   }
   
   public function testTrimResearchGate() : void {
@@ -3900,6 +3920,20 @@ T1 - This is the Title }}';
     $this->assertSame("https://go.gale.com/ps/retrieve.do?tabID=T002&resultListType=RESULT_LIST&searchResultsType=SingleTab&searchType=BasicSearchForm&currentPosition=1&docId=GALE|A493733315&docType=Article&sort=Relevance&contentSegment=ZGPP-MOD1&prodId=ITOF&contentSet=GALE|A493733315&searchId=R2&userGroupName=nysl_ca_unionc&inPS=true", $template->get2('url'));
    }
  
+   public function testTidy89() : void {
+    $text = "{{cite web|asin=0671748750}}";
+    $template = $this->make_citation($text);
+    $template->tidy_parameter('asin');
+    $this->assertSame("0671748750", $template->get2('isbn'));
+    $this->assertNull($template->get2('asin'));
+    
+    $text = "{{cite web|asin=6371748750}}";
+    $template = $this->make_citation($text);
+    $template->tidy_parameter('asin');
+    $this->assertSame("6371748750", $template->get2('asin'));
+    $this->assertNull($template->get2('isbn'));
+   }
+ 
   public function testIncomplete() : void {
     $text = "{{cite book|url=http://perma-archives.org/pqd1234|isbn=Xxxx|title=xxx|issue=a|volume=x}}"; // Non-date website
     $template = $this->make_citation($text);
@@ -4862,7 +4896,7 @@ T1 - This is the Title }}';
      $text='{{Cite journal | doi=10.1063/1.2263373|chapter-url=http://dx.doi.org/10.000/broken}}';
      $template = $this->process_citation($text);
      $this->assertSame('10.1063/1.2263373', $template->get2('doi'));
-     $this->assertNotNull($template->get2('chapter-url')); // TODO - should probably do this
+     $this->assertNotNull($template->get2('chapter-url'));
    }
  
    public function testEmptyJunk() : void {
@@ -4905,8 +4939,8 @@ T1 - This is the Title }}';
     public function testFloaters4() : void {
      $text='{{Cite journal | url=http://www.apple.com/ |access date 12 December 1990 | accessdate = 3 May 1999 }}';
      $template = $this->process_citation($text);
-     $this->assertSame('3 May 1999', $template->get2('accessdate'));
-     $this->assertNull($template->get2('access-date'));
+     $this->assertSame('3 May 1999', $template->get2('access-date'));
+     $this->assertNull($template->get2('accessdate'));
    }
  
     public function testFloaters5() : void {
@@ -4937,6 +4971,15 @@ T1 - This is the Title }}';
      $text='{{Cite journal |  p 33 junk|page=}}';
      $template = $this->process_citation($text);
      $this->assertSame('33', $template->get2('page'));
+   }
+ 
+   public function testSuppressWarnings() : void {
+     $text='{{Cite journal |doi=((10.51134/sod.2013.039 )) }}';
+     $template = $this->process_citation($text);
+     $this->assertNull($template->get2('doi-broken-date'));
+     $this->assertNotNull($template->get2('journal'));
+     $this->assertSame('10.51134/sod.2013.039', $template->get2('doi'));
+     $this->assertSame('((10.51134/sod.2013.039 ))', $template->get3('doi'));
    }
  
    public function testIDconvert1() : void {
