@@ -826,6 +826,14 @@ final class Template {
             return $this->add('archive-date', $value);
         }
         return FALSE;
+        
+      case 'pmc-embargo-date': // Must come in formatted right!
+        if (!$this->blank('pmc-embargo-date')) return FALSE;
+        if (!preg_match('~2\d\d\d~', $value)) return FALSE; // 2000 or later
+        $new_date=strtotime($value);
+        $now_date=strtotime('now');
+        if ($now_date > $new_date) return FALSE;
+        return $this->add('pmc-embargo-date', $value);
       
       ### DATE AND YEAR ###
       
@@ -1251,7 +1259,7 @@ final class Template {
         }
         $existing = strtotime($this->get('doi-broken-date'));
         $the_new  = strtotime($value);
-        if (($existing === FALSE) || ($existing + 2592000 < $the_new) || (2592000 + $the_new < $existing)) { // A month difference
+        if (($existing === FALSE) || ($existing + (2*2592000) < $the_new) || ((2592000*2) + $the_new < $existing)) { // Two month difference
            return $this->add($param_name, $value);
         }
         return FALSE;
@@ -1672,6 +1680,7 @@ final class Template {
         if (is_null($url_sent)) {
          report_warning('doi.org URL does not match existing DOI paramter, investigating...');
         }
+        if ($this->get('doi') != $this->get3('doi')) return FALSE;
         if (doi_works($match[1]) && !doi_works($this->get('doi'))) {
           $this->set('doi', $match[1]);
           if (is_null($url_sent)) {
@@ -3987,6 +3996,7 @@ final class Template {
     if (mb_stripos($this->get($param), 'CITATION_BOT_PLACEHOLDER_COMMENT') !== FALSE) {
       return;  // We let comments block the bot
     }
+    if ($this->get($param) != $this->get3($param)) return;
     
     if($this->has($param)) {
       if (stripos($param, 'separator') === FALSE &&  // lone punctuation valid
@@ -4011,10 +4021,14 @@ final class Template {
         }
       
         // Remove quotes, if only at start and end -- In the case of title, leave them unless they are messed up
-        if (preg_match("~^([\'\"]+)([^\'\"]+)([\'\"]+)$~u", $this->get($param), $matches)) {
+        // Do not do titles of non-books, since they sometimes have quotes in the actual one
+        if (($param !== 'title' || $this->has('chapter')) && preg_match("~^([\'\"]+)([^\'\"]+)([\'\"]+)$~u", $this->get($param), $matches)) {
           if (($matches[1] !== $matches[3]) || ($param !== 'title' && $param !== 'chapter' && $param !== 'publisher')) {
             $this->set($param, $matches[2]);
          }
+        }
+        if (preg_match("~^\'\'\'([^\']+)\'\'\'$~u", $this->get($param), $matches)) {
+           $this->set($param, $matches[1]); // Remove bold
         }
 
         // Non-breaking spaces at ends
@@ -4242,8 +4256,28 @@ final class Template {
                return;
             }
           }
-          $this->set($param, sanitize_doi($doi));
-          if (!preg_match(REGEXP_DOI_ISSN_ONLY, $doi)) $this->change_name_to('cite journal', FALSE);
+          if (!doi_works($doi)) {
+            $this->verify_doi();
+            $doi = $this->get($param);
+          }
+          if (!doi_works($doi)) {  
+            $this->set($param, sanitize_doi($doi));
+          }
+          if (preg_match('~^10.1093\/oi\/authority\.\d{10,}$~', $doi) &&
+              preg_match('~oxfordreference.com\/view\/10.1093\/oi\/authority\.\d{10,}~', $this->get('url')) &&
+              !doi_works($doi)) {
+            $this->forget('doi');
+            return;
+          } elseif (preg_match('~^10\.1093\/law\:epil\/9780199231690\/law\-9780199231690~', $doi) &&
+              preg_match('~ouplaw.com\/view\/10\.1093/law\:epil\/9780199231690\/law\-9780199231690~', $this->get('url')) &&
+              !doi_works($doi)) {
+            $this->forget('doi');
+            return;
+          }
+          if (stripos($doi, '10.1093/law:epil') === 0 || stripos($doi, '10.1093/oi/authority') === 0) {
+            return;
+          }
+          if (!preg_match(REGEXP_DOI_ISSN_ONLY, $doi) && doi_works($doi)) $this->change_name_to('cite journal', FALSE);
           if (preg_match('~^10\.2307/(\d+)$~', $this->get_without_comments_and_placeholders('doi'))) {
             $this->add_if_new('jstor', substr($this->get_without_comments_and_placeholders('doi'), 8));
           }
@@ -4323,6 +4357,19 @@ final class Template {
             $this->change_name_to('cite book');
           }
           $this->forget('asin');
+          return;
+
+        case 'asin':
+          if ($this->blank($param)) return;
+          if ($this->has('isbn')) return;
+          $value = $this->get($param);
+          if (preg_match("~^\d~", $value) && substr($value, 0, 2) !== '63') { // 630 and 631 ones are not ISBNs, so block all of 63*
+            $possible_isbn = sanitize_string($value);
+            $possible_isbn13 = $this->isbn10Toisbn13($possible_isbn, TRUE);
+            if ($possible_isbn !== $possible_isbn13) { // It is an ISBN
+              $this->rename('asin', 'isbn', $this->isbn10Toisbn13($possible_isbn));
+            }
+          }
           return;
           
         case 'journal':
@@ -4460,6 +4507,22 @@ final class Template {
           if ($this->blank($param)) $this->forget($param);
           return;
 
+        case 'pmc-embargo-date':
+          if ($this->blank($param)) {
+            return;
+          }
+          $value = $this->get($param);
+          if (!preg_match('~2\d\d\d~', $value)) {
+            $this->forget($param);
+            return;
+          }
+          $pmc_date=strtotime($value);
+          $now_date=strtotime('now') - 86400; // Pad one day for paranoia
+          if ($now_date > $pmc_date) {
+            $this->forget($param);
+          }
+          return;
+          
         case 'pmc':
           if (preg_match("~pmc(\d+)$~i", $this->get($param), $matches)) {
              $this->set($param, $matches[1]);
@@ -4590,7 +4653,7 @@ final class Template {
                 && mb_substr($title, -1)   === "'"
                 && mb_substr_count($title, "'") == 2)
           ) {
-            $title = mb_substr($title, 1, -1);   // Remove quotes -- if only one set that wraps entire title
+            report_warning("The quotes around the title are most likely an editors error: " . mb_substr($title, 1, -1));
           }
           // Messed up cases:   [[sdfsad] or [dsfasdf]]
           if (preg_match('~^\[\[([^\]\[\|]+)\]$~', $title, $matches) ||
@@ -4938,6 +5001,10 @@ final class Template {
                     }
                  }
                  curl_close($ch);
+            }
+            if (preg_match("~^(.+)/se-./?$~", $this->get($param), $matches)) {
+              $this->set($param, $matches[1]);
+              $changed = TRUE;
             }
             if ($changed) report_info("Normalized ProQuest URL");
           }
@@ -5321,6 +5388,7 @@ final class Template {
             $this->change_name_to('cite document');
          }
       }
+      if ($this->blank('pmc-embargo-date')) $this->forget('pmc-embargo-date'); // Do at the very end, so we do not delete it, then add it later in a different position
     }
     if ($this->wikiname() === 'cite arxiv' && $this->get_without_comments_and_placeholders('doi')) {
       $this->change_name_to('cite journal');
@@ -5421,13 +5489,18 @@ final class Template {
   }
   
   public function verify_doi() : bool {
+    static $last_doi = '';
     $match = ['', '']; // prevent memory leak in some PHP versions
     $matches = ['', '']; // prevent memory leak in some PHP versions
     $doi = $this->get_without_comments_and_placeholders('doi');
     if (!$doi) return FALSE;
     if ($this->doi_valid) return TRUE;
-    report_info("Checking that DOI " . echoable($doi) . " is operational...");
-
+    if ($last_doi === $doi) {
+      report_info("Rechecking if DOI " . echoable($doi) . " is operational...");  // Sometimes we get NULL, so check again for FALSE/TRUE
+    } else {
+      $last_doi = $doi;
+      report_info("Checking that DOI " . echoable($doi) . " is operational...");
+    }
     $trial = array();
     $trial[] = $doi;
     // DOI not correctly formatted
@@ -5735,26 +5808,47 @@ final class Template {
   }
 
   public function get(string $name) : string {
+    $matches = ['', '']; // prevent memory leak in some PHP versions
     // NOTE $this->param and $p->param are different and refer to different types!
     // $this->param is an array of Parameter objects
     // $parameter_i->param is the parameter name within the Parameter object
     foreach ($this->param as $parameter_i) {
       if ($parameter_i->param === $name) {
         if ($parameter_i->val === NULL) $parameter_i->val = ''; // Clean up
-          return $parameter_i->val;
+        $the_val = $parameter_i->val;
+        if (preg_match("~^\(\((.*)\)\)$~", $the_val, $matches)) {
+          $the_val = trim($matches[1]);
+        }
+        return $the_val;
       }
     }
     return '';
   }
   // This one is used in the test suite to distinguish there-but-blank vs not-there-at-all
   public function get2(string $name) : ?string {
+    $matches = ['', '']; // prevent memory leak in some PHP versions
     foreach ($this->param as $parameter_i) {
       if ($parameter_i->param === $name) {
         if ($parameter_i->val === NULL) $parameter_i->val = ''; // Clean up
-          return $parameter_i->val;
+        $the_val = $parameter_i->val;
+        if (preg_match("~^\(\((.*)\)\)$~", $the_val, $matches)) {
+          $the_val = trim($matches[1]);
+        }
+        return $the_val;
       }
     }
     return NULL;
+  }
+  
+  public function get3(string $name) : string {  // like get() only includes (( ))
+    foreach ($this->param as $parameter_i) {
+      if ($parameter_i->param === $name) {
+        if ($parameter_i->val === NULL) $parameter_i->val = ''; // Clean up
+        $the_val = $parameter_i->val;
+        return $the_val;
+      }
+    }
+    return '';
   }
 
   public function has_but_maybe_blank(string $name) : bool {
@@ -5807,6 +5901,9 @@ final class Template {
   public function set(string $par, string $val) : bool {
     if ($par === '') report_error('NULL parameter passed to set with value of ' . echoable($val));
     if (mb_stripos($this->get($par), 'CITATION_BOT_PLACEHOLDER_COMMENT') !== FALSE) {
+      return FALSE;
+    }
+    if ($this->get($par) != $this->get3($par)) {
       return FALSE;
     }
     if (($pos = $this->get_param_key((string) $par)) !== NULL) {
@@ -5987,7 +6084,40 @@ final class Template {
     // Do not call ISSN to issn "Added issn, deleted ISSN"
     $old = array_change_key_case($old, CASE_LOWER);
     $new = array_change_key_case($new, CASE_LOWER);
-    
+    // TODO : use an array
+    if (isset($old['accessdate'])) {
+      $old['access-date'] = $old['accessdate'];
+      unset($old['accessdate']);
+    }
+    if (isset($old['archivedate'])) {
+      $old['archive-date'] = $old['archivedate'];
+      unset($old['archivedate']);
+    }
+    if (isset($old['archiveurl'])) {
+      $old['archive-url'] = $old['archiveurl'];
+      unset($old['archiveurl']);
+    }
+    if (isset($old['chapterurl'])) {
+      $old['chapter-url'] = $old['chapterurl'];
+      unset($old['chapterurl']);
+    }
+    if (isset($new['accessdate'])) {
+      $new['access-date'] = $new['accessdate'];
+      unset($new['accessdate']);
+    }
+    if (isset($new['archivedate'])) {
+      $new['archive-date'] = $new['archivedate'];
+      unset($new['archivedate']);
+    }
+    if (isset($new['archiveurl'])) {
+      $new['archive-url'] = $new['archiveurl'];
+      unset($new['archiveurl']);
+    }
+    if (isset($new['chapterurl'])) {
+      $new['chapter-url'] = $new['chapterurl'];
+      unset($new['chapterurl']);
+    }
+
     $ret['modifications'] = array_keys(array_diff_assoc($new, $old));
     $ret['additions'] = array_diff(array_keys($new), array_keys($old));
     $ret['deletions'] = array_diff(array_keys($old), array_keys($new));

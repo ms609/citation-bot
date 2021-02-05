@@ -12,7 +12,6 @@ final class ZoteroTest extends testBaseClass {
   public function testZoteroExpansion_biorxiv() : void {
     $text = '{{Cite journal| biorxiv=326363 }}';
     $expanded = $this->process_citation($text);
-    return; // TODO - Down for while
     $this->assertSame('Sunbeam: An extensible pipeline for analyzing metagenomic sequencing experiments', $expanded->get2('title'));
     $text = '{{Cite journal| biorxiv=326363 |doi=10.0000/Rubbish_bot_failure_test}}';
     $expanded = $this->process_citation($text);
@@ -686,7 +685,6 @@ final class ZoteroTest extends testBaseClass {
    $text = '{{Cite journal|doi=.3233/PRM-140291}}';
    $expanded = $this->make_citation($text);
    $expanded->verify_doi();
-   return; // TODO - turn back on once it works again
    $this->assertSame('10.3233/PRM-140291', $expanded->get2('doi'));
    $this->requires_zotero(function() : void {
     $text = '{{Cite journal|doi=10.3233/PRM-140291}}'; // mEDRA DOI - they do not provide RIS information from dx.doi.org

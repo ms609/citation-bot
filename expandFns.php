@@ -74,7 +74,7 @@ function extract_doi(string $text) : array {
         $text, $match)) {
     $doi = $match[1];
     if (preg_match(
-          "~^(.*?)(/abstract|/e?pdf|/full|/figure|</span>|[\s\|\"\?]|</).*+$~",
+          "~^(.*?)(/abstract|/e?pdf|/full|/figure|/default|</span>|[\s\|\"\?]|</).*+$~",
           $doi, $new_match)
         ) {
       $doi = $new_match[1];
@@ -89,7 +89,11 @@ function extract_doi(string $text) : array {
       $doi_candidate = substr($doi_candidate, 0, $last_delimiter);
     }
     if (doi_works($doi_candidate)) $doi = $doi_candidate;
-    CONFLICT
+    if (!doi_works($doi) && !doi_works(sanitize_doi($doi))) { // Reject URLS like ...../25.10.2015/2137303/default.htm
+      if (preg_match("~/[0-3][0-9]\." . preg_quote($doi) . "~", $text)) {
+        return array(FALSE, FALSE);
+      }
+    }
     return array($match[0], sanitize_doi($doi));
   }
   return array(FALSE, FALSE);
@@ -497,6 +501,10 @@ function throttle (int $min_interval) : void {
     $min_interval =  $min_interval * $cycles;
   }
  
+  $time_since_last_write = time() - $last_write_time;
+  if ($time_since_last_write < $min_interval) {
+    gc_collect_cycles(); // do something useful 
+  }
   $time_since_last_write = time() - $last_write_time;
   if ($time_since_last_write < $min_interval) {
     $time_to_pause = floor($min_interval - $time_since_last_write);

@@ -110,6 +110,12 @@ function entrez_api(array $ids, array &$templates, string $db) : bool {   // Poi
                 preg_match("~\d+~", (string) $subItem, $match);
                 $this_template->add_if_new('pmc', $match[0], 'entrez');
                 break;
+              case "pmcid":
+                if (preg_match("~embargo-date: ?(\d{4})\/(\d{2})\/(\d{2})~", (string) $subItem, $match)) {
+                   $date_emb = date("F j, Y", mktime(0, 0, 0, (int) $match[2], (int) $match[3], (int) $match[1]));
+                   $this_template->add_if_new('pmc-embargo-date', $date_emb, 'entrez');
+                }
+                break;
               case "doi": case "pii":
               default:
                 if (preg_match("~10\.\d{4}/[^\s\"']*~", (string) $subItem, $match)) {
@@ -777,8 +783,8 @@ function doi_active(string $doi) : ?bool {
   if (array_key_exists($doi, $cache_good)) return TRUE;
   if (array_key_exists($doi, $cache_bad))  return FALSE;
   // For really long category runs
-  if (count($cache_bad) > 3500) $cache_bad = [];
-  if (count($cache_good) > 3500) $cache_good = [];
+  if (count($cache_bad) > 5500) $cache_bad = [];
+  if (count($cache_good) > 5500) $cache_good = [];
   $works = doi_works($doi);
   if ($works === NULL) {
     return NULL; // @codeCoverageIgnore
@@ -807,8 +813,8 @@ function doi_works(string $doi) : ?bool {
   if (array_key_exists($doi, $cache_good)) return TRUE;
   if (array_key_exists($doi, $cache_bad))  return FALSE;
   // For really long category runs
-  if (count($cache_bad) > 3500) $cache_bad = [];
-  if (count($cache_good) > 3500) $cache_good = [];
+  if (count($cache_bad) > 5500) $cache_bad = [];
+  if (count($cache_good) > 5500) $cache_good = [];
   $works = is_doi_works($doi);
   if ($works === NULL) {
     return NULL; // @codeCoverageIgnore

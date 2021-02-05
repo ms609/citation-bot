@@ -152,7 +152,8 @@ final class WikipediaBot {
             (string) $ret->error->code === 'assertuserfailed' ||
             stripos((string) $ret->error->info, 'The database has been automatically locked') !== FALSE ||
             stripos((string) $ret->error->info, 'abusefilter-warning-predatory') !== FALSE ||
-            stripos((string) $ret->error->info, 'protected') !== FALSE)
+            stripos((string) $ret->error->info, 'protected') !== FALSE ||
+            stripos((string) $ret->error->info, 'Nonce already used') !== FALSE)
           ) {
             // @codeCoverageIgnoreStart
             unset($data);
@@ -248,8 +249,7 @@ final class WikipediaBot {
       if (isset($result->edit->captcha)) {
         report_error("Write error: We encountered a captcha, so can't be properly logged in.");
       } elseif ($result->edit->result == "Success") {
-        // Need to check for this string whereever our behaviour is dependant on the success or failure of the write operation
-        /** @psalm-suppress TypeDoesNotContainType */ /* PSALM thinks HTML_OUTPUT cannot be false */ // TODO - fix https://github.com/vimeo/psalm/issues/4024
+        // Need to check for this string wherever our behaviour is dependant on the success or failure of the write operation
         if (HTML_OUTPUT) {
           report_inline("\n <span style='reddish'>Written to <a href='" 
           . WIKI_ROOT . "?title=" . urlencode($myPage->title) . "'>" 
