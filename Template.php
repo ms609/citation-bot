@@ -189,6 +189,10 @@ final class Template {
                ['cita pubblicazione', 'cite journal'],
                ['Citace elektronické monografie', 'Cite web'],
                ['citace elektronické monografie', 'cite web'],
+               ['GroveOnline', 'Cite Grove'],
+               ['Groveonline', 'Cite Grove'],
+               ['groveOnline', 'Cite Grove'],
+               ['groveonline', 'Cite Grove'],
                ];
     foreach ($fix_it as $trial) {
       if ($trim_name === $trial[0]) {
