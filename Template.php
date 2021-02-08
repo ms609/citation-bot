@@ -4955,7 +4955,7 @@ final class Template {
                  report_info("Remove proxy from ProQuest URL");
                  if ($this->has('via') && stripos($this->get('via'), 'library') !== FALSE) $this->forget('via');
                  if ($this->has('via') && stripos($this->get('via'), 'proquest') === FALSE) $this->forget('via');
-               }https://search-proquest-xaaa.orc.scoolaid.net/docview/279586075/BB299A12B434FF7PQ/102?accountid=699
+               }
             } elseif (preg_match("~^(?:http.+/login\?url=|)https?://(?:0\-|)search.proquest.+scoolaid\.net(|/[^/]+)/docview/(.+)$~", $this->get($param), $matches)) {
                  $this->set($param, 'https://search.proquest.com' . $matches[1] . '/docview/' . $matches[2]);
                  report_info("Remove proxy from ProQuest URL");
