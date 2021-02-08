@@ -4619,6 +4619,19 @@ final class Template {
             if (in_array(str_replace(array('[', ']', '"', "'", 'www.'), '', $publisher), PUBLISHERS_ARE_WORKS)) {
                $this->rename($param, 'work'); // Don't think about which work it is
             }
+          } elseif ($this->has('website')) {
+            if (in_array(str_replace(array('[', ']', '"', "'", 'www.'), '', $publisher), PUBLISHERS_ARE_WORKS)) {
+               $webby = strtolower(str_replace(array('[', ']', '"', "'", 'www.', 'the ', '.com', ' '), '', $this->get('website')));
+               $pubby = strtolower(str_replace(array('[', ']', '"', "'", 'www.', 'the ', '.com', ' '), '', $publisher));
+               if ($webby === $pubby) {
+                 if (stripos($this->get('website'), 'www') === 0 ||
+                     strpos($publisher, '[') !== FALSE ||
+                     strpos($this->get('website'), '[') === FALSE) {
+                    $this->forget('website');
+                    $this->rename($param, 'work');
+                 }
+               }
+            }
           }
           if (!$this->blank(['eprint', 'arxiv']) &&
               strtolower($publisher) == 'arxiv') {
