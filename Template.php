@@ -4626,7 +4626,7 @@ final class Template {
           } elseif ($this->has('website')) {
             if (in_array(str_replace(array('[', ']', '"', "'", 'www.'), '', $publisher), PUBLISHERS_ARE_WORKS)) {
                $webby = str_replace(array('[', ']', '"', "'", 'www.', 'the ', '.com', ' '), '', strtolower($this->get('website')));
-               $pubby = str_replace(array('[', ']', '"', "'", 'www.', 'the ', '.com', ' '), '', $publisher);
+               $pubby = str_replace(array('[', ']', '"', "'", 'www.', 'the ', '.com', '  company', ' '), '', $publisher);
                if ($webby === $pubby) {
                  if (stripos($this->get('website'), 'www') === 0 ||
                      strpos($publisher, '[') !== FALSE ||
