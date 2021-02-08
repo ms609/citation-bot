@@ -4608,16 +4608,20 @@ final class Template {
           }
           if (str_replace(array('[', ' ', ']'), '', $publisher) == 'google') {
             $this->forget($param);
+            return;
           }
           if (strtolower($this->get('journal')) === $publisher) {
             $this->forget($param);
+            return;
           }
           if (strtolower($this->get('newspaper')) === $publisher) {
             $this->forget($param);
+            return;
           }
           if ($this->blank(WORK_ALIASES)) {
             if (in_array(str_replace(array('[', ']', '"', "'", 'www.'), '', $publisher), PUBLISHERS_ARE_WORKS)) {
                $this->rename($param, 'work'); // Don't think about which work it is
+               return;
             }
           } elseif ($this->has('website')) {
             if (in_array(str_replace(array('[', ']', '"', "'", 'www.'), '', $publisher), PUBLISHERS_ARE_WORKS)) {
@@ -4629,10 +4633,21 @@ final class Template {
                      strpos($this->get('website'), '[') === FALSE) {
                     $this->forget('website');
                     $this->rename($param, 'work');
+                    return;
                  }
                }
             }
+          } elseif (in_array(str_replace(array('[', ']', '"', "'", 'www.'), '', $publisher), PUBLISHERS_ARE_WORKS)) {
+            $pubby = str_replace(array('the ', ' company'), '', $publisher);
+            foreach (WORK_ALIASES as $work) {
+              $worky = str_replace(array('the ', ' company'), '', strtolower($this->get($work)));
+              if ($worky === $pubby) {
+                 $this->forget($param);
+                 return;
+              }
+            }
           }
+          
           if (!$this->blank(['eprint', 'arxiv']) &&
               strtolower($publisher) == 'arxiv') {
               $this->forget($param);
