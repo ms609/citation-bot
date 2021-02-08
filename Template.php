@@ -4626,7 +4626,7 @@ final class Template {
           } elseif ($this->has('website')) {
             if (in_array(str_replace(array('[', ']', '"', "'", 'www.'), '', $publisher), PUBLISHERS_ARE_WORKS)) {
                $webby = str_replace(array('[', ']', '"', "'", 'www.', 'the ', '.com', ' '), '', strtolower($this->get('website')));
-               $pubby = str_replace(array('[', ']', '"', "'", 'www.', 'the ', '.com', '  company', ' '), '', $publisher);
+               $pubby = str_replace(array('[', ']', '"', "'", 'www.', 'the ', '.com', ' '), '', $publisher);
                if ($webby === $pubby) {
                  if (stripos($this->get('website'), 'www') === 0 ||
                      strpos($publisher, '[') !== FALSE ||
@@ -4638,7 +4638,7 @@ final class Template {
                }
             }
           }
-          if (in_array(str_replace(array('[', ']', '"', "'", 'www.'), '', $publisher), PUBLISHERS_ARE_WORKS)) {
+          if (in_array(str_replace(array('[', ']', '"', "'", 'www.', ' company'), '', $publisher), PUBLISHERS_ARE_WORKS)) {
             $pubby = str_replace(array('the ', ' company'), '', $publisher);
             foreach (WORK_ALIASES as $work) {
               $worky = str_replace(array('the ', ' company'), '', strtolower($this->get($work)));
