@@ -4637,7 +4637,8 @@ final class Template {
                  }
                }
             }
-          } elseif (in_array(str_replace(array('[', ']', '"', "'", 'www.'), '', $publisher), PUBLISHERS_ARE_WORKS)) {
+          }
+          if (in_array(str_replace(array('[', ']', '"', "'", 'www.'), '', $publisher), PUBLISHERS_ARE_WORKS)) {
             $pubby = str_replace(array('the ', ' company'), '', $publisher);
             foreach (WORK_ALIASES as $work) {
               $worky = str_replace(array('the ', ' company'), '', strtolower($this->get($work)));
