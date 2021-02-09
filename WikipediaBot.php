@@ -183,29 +183,35 @@ final class WikipediaBot {
           ], 'GET');
     
     if (!$response) {
-      report_error("Write request failed");     // @codeCoverageIgnore
+      report_minor_error("Write request failed");     // @codeCoverageIgnore
+      return FALSE;                                   // @codeCoverageIgnore
     }
     if (isset($response->warnings)) {
       // @codeCoverageIgnoreStart
       if (isset($response->warnings->prop)) {
-        report_error((string) $response->warnings->prop->{'*'});
+        report_minor_error((string) $response->warnings->prop->{'*'});
+        return FALSE;
       }
       if (isset($response->warnings->info)) {
-        report_error((string) $response->warnings->info->{'*'});
+        report_minor_error((string) $response->warnings->info->{'*'});
+        return FALSE;
       }
       // @codeCoverageIgnoreEnd
     }
     if (!isset($response->batchcomplete)) {
-      report_error("Write request triggered no response from server");   // @codeCoverageIgnore
+      report_minor_error("Write request triggered no response from server");   // @codeCoverageIgnore
+      return FALSE;                                                            // @codeCoverageIgnore
     }
     
     if (!isset($response->query->pages)) {
-      report_error("Pages array is non-existent.  Aborting.");   // @codeCoverageIgnore
+      report_minor_error("Pages array is non-existent.  Aborting.");   // @codeCoverageIgnore
+      return FALSE;                                                    // @codeCoverageIgnore
     }
     $myPage = reset($response->query->pages); // reset gives first element in list
     
     if (!isset($myPage->lastrevid)) {
-      report_error("Page seems not to exist. Aborting.");   // @codeCoverageIgnore
+      report_minor_error("Page seems not to exist. Aborting.");   // @codeCoverageIgnore
+      return FALSE;                                               // @codeCoverageIgnore
     }
     $baseTimeStamp = $myPage->revisions[0]->timestamp;
     
@@ -239,10 +245,11 @@ final class WikipediaBot {
     
     if (isset($result->error)) {
       // @codeCoverageIgnoreStart
-      report_error("Write error: " . 
+      report_minor_error("Write error: " . 
                     echoable(strtoupper($result->error->code)) . ": " . 
                     str_replace(array("You ", " have "), array("This bot ", " has "), 
                     echoable($result->error->info)));
+      return FALSE;
       // @codeCoverageIgnoreEnd
     } elseif (isset($result->edit)) {
       // @codeCoverageIgnoreStart
