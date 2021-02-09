@@ -489,24 +489,26 @@ function remove_brackets(string $string) : string {
 // ============================================= Wikipedia functions ======================================
 
 function throttle (int $min_interval) : void {
-  if (WikipediaBot::NonStandardMode()) {
-    $min_interval = intdiv($min_interval, 2);
-  }
   static $last_write_time = 0;
   static $phase = 0;
-  $cycles = 8; // average over this many cycles
+  static $gc_counter = 0;
+  $cycles = intdiv(180, $min_interval); // average over three minutes
   $phase = $phase + 1;
+  $gc_counter = $gc_counter + 1;
+  
+  if ($gc_counter > 128) {
+    $gc_counter = 0;
+    gc_collect_cycles();
+  }
+
   if ($phase < $cycles) {
     return;
   } else {
     $phase = 0;
+    if (WikipediaBot::NonStandardMode()) $min_interval = intdiv($min_interval, 2);
     $min_interval =  $min_interval * $cycles;
   }
- 
-  $time_since_last_write = time() - $last_write_time;
-  if ($time_since_last_write < $min_interval) {
-    gc_collect_cycles(); // do something useful 
-  }
+
   $time_since_last_write = time() - $last_write_time;
   if ($time_since_last_write < $min_interval) {
     $time_to_pause = floor($min_interval - $time_since_last_write);
