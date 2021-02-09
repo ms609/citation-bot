@@ -203,13 +203,13 @@ final class WikipediaBot {
       return FALSE;                                                            // @codeCoverageIgnore
     }
     
-    if (!isset($response->query->pages)) {
+    if (!isset($response->query) || !isset($response->query->pages)) {
       report_minor_error("Pages array is non-existent.  Aborting.");   // @codeCoverageIgnore
       return FALSE;                                                    // @codeCoverageIgnore
     }
     $myPage = reset($response->query->pages); // reset gives first element in list
     
-    if (!isset($myPage->lastrevid)) {
+    if (!isset($myPage->lastrevid) || !isset($myPage->revisions[0]) || !isset($myPage->revisions[0]->timestamp || !isset($myPage->title))) {
       report_minor_error("Page seems not to exist. Aborting.");   // @codeCoverageIgnore
       return FALSE;                                               // @codeCoverageIgnore
     }
