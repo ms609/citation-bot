@@ -193,6 +193,10 @@ final class Template {
                ['Groveonline', 'Cite Grove'],
                ['groveOnline', 'Cite Grove'],
                ['groveonline', 'Cite Grove'],
+               ['NewGroveJazz2002', 'Cite NewGroveJazz2002'],
+               ['newGroveJazz2002', 'Cite NewGroveJazz2002'],
+               ['NewGrove1980', 'Cite NewGrove1980'],
+               ['newGrove1980', 'Cite NewGrove1980'],
                ];
     foreach ($fix_it as $trial) {
       if ($trim_name === $trial[0]) {
