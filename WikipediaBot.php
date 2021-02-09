@@ -225,7 +225,7 @@ final class WikipediaBot {
       report_minor_error("\n ! Placeholder left escaped in text. Aborting.");  // @codeCoverageIgnore
       return FALSE;                                                            // @codeCoverageIgnore
     }
-    if (!isset($response) || !isset($response->query) || !isset($response->query->token) ||
+    if (!isset($response->query) || !isset($response->query->tokens) ||
         !isset($response->query->tokens->csrftoken)) {
       report_minor_error("Responce object was invalid.  Aborting. ");  // @codeCoverageIgnore
       return FALSE;                                                    // @codeCoverageIgnore
