@@ -209,7 +209,8 @@ final class WikipediaBot {
     }
     $myPage = reset($response->query->pages); // reset gives first element in list
     
-    if (!isset($myPage->lastrevid) || !isset($myPage->revisions[0]) || !isset($myPage->revisions[0]->timestamp) || !isset($myPage->title)) {
+    if (!isset($myPage->lastrevid) || !isset($myPage->revisions) || !isset($myPage->revisions[0]) ||
+        !isset($myPage->revisions[0]->timestamp) || !isset($myPage->title)) {
       report_minor_error("Page seems not to exist. Aborting.");   // @codeCoverageIgnore
       return FALSE;                                               // @codeCoverageIgnore
     }
@@ -223,6 +224,11 @@ final class WikipediaBot {
     if (stripos($text, "CITATION_BOT_PLACEHOLDER") != FALSE)  {
       report_minor_error("\n ! Placeholder left escaped in text. Aborting.");  // @codeCoverageIgnore
       return FALSE;                                                            // @codeCoverageIgnore
+    }
+    if (!isset($response) || !isset($response->query) || !isset($response->query->token) ||
+        !isset($response->query->tokens->csrftoken)) {
+      report_minor_error("Responce object was invalid.  Aborting. ");  // @codeCoverageIgnore
+      return FALSE;                                                    // @codeCoverageIgnore
     }
     
     // No obvious errors; looks like we're good to go ahead and edit
