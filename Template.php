@@ -4926,6 +4926,21 @@ final class Template {
                 }
               }
           }
+          if (preg_match('~^(https://www\.oxforddnb\.com/.+)\;jsessionid~', $this->get($param), $matches)) {
+               $this->set($param, $matches[1]);
+          }
+          if (preg_match('~^https://www\.oxforddnb\.com/view/10\.1093/ref:odnb/9780198614128\.001\.0001/odnb\-9780198614128\-e\-(\d+)$~', $this->get($param), $matches)) {
+              $new_doi = '10.1093/ref:odnb/' . $matches[1];
+              if (doi_works($new_doi)) {
+                if ($this->has('doi') && $this->has('doi-broken-date')) {
+                    $this->set('doi', '');
+                    $this->forget('doi-broken-date')
+                    $this->add_if_new('doi', $new_doi);
+                 } elseif ($this->blank('doi')) {
+                    $this->add_if_new('doi', $new_doi);
+                }
+              }
+          }
           if (preg_match('~^https?://([^/]+)/~', $this->get($param), $matches)) { 
              $the_host = $matches[1];
           } else {
