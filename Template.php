@@ -4940,6 +4940,12 @@ final class Template {
                     $this->add_if_new('doi', $new_doi);
                 }
               }
+              $the_title = $this->get('title');
+              if (preg_match('~^(.+) \- Oxford Dictionary of National Biography$~', $the_title, $matches) ||
+                  preg_match('~^(.+) # # # CITATION_BOT_PLACEHOLDER_TEMPLATE \d+ # # # Oxford Dictionary of National Biography$~', $the_title, $matches) ||
+                  preg_match('~^(.+)  Oxford Dictionary of National Biography$~', $the_title, $matches)) {
+                $this->set('title', trim($matches[1]));
+              }
           }
           if (preg_match('~^https?://([^/]+)/~', $this->get($param), $matches)) { 
              $the_host = $matches[1];
