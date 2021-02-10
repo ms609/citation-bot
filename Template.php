@@ -189,6 +189,14 @@ final class Template {
                ['cita pubblicazione', 'cite journal'],
                ['Citace elektronické monografie', 'Cite web'],
                ['citace elektronické monografie', 'cite web'],
+               ['GroveOnline', 'Cite Grove'],
+               ['Groveonline', 'Cite Grove'],
+               ['groveOnline', 'Cite Grove'],
+               ['groveonline', 'Cite Grove'],
+               ['NewGroveJazz2002', 'Cite NewGroveJazz2002'],
+               ['newGroveJazz2002', 'Cite NewGroveJazz2002'],
+               ['NewGrove1980', 'Cite NewGrove1980'],
+               ['newGrove1980', 'Cite NewGrove1980'],
                ];
     foreach ($fix_it as $trial) {
       if ($trim_name === $trial[0]) {
@@ -4604,18 +4612,47 @@ final class Template {
           }
           if (str_replace(array('[', ' ', ']'), '', $publisher) == 'google') {
             $this->forget($param);
+            return;
           }
           if (strtolower($this->get('journal')) === $publisher) {
             $this->forget($param);
+            return;
           }
           if (strtolower($this->get('newspaper')) === $publisher) {
             $this->forget($param);
+            return;
           }
           if ($this->blank(WORK_ALIASES)) {
             if (in_array(str_replace(array('[', ']', '"', "'", 'www.'), '', $publisher), PUBLISHERS_ARE_WORKS)) {
                $this->rename($param, 'work'); // Don't think about which work it is
+               return;
+            }
+          } elseif ($this->has('website')) {
+            if (in_array(str_replace(array('[', ']', '"', "'", 'www.'), '', $publisher), PUBLISHERS_ARE_WORKS)) {
+               $webby = str_replace(array('[', ']', '"', "'", 'www.', 'the ', '.com', ' '), '', strtolower($this->get('website')));
+               $pubby = str_replace(array('[', ']', '"', "'", 'www.', 'the ', '.com', ' '), '', $publisher);
+               if ($webby === $pubby) {
+                 if (stripos($this->get('website'), 'www') === 0 ||
+                     strpos($publisher, '[') !== FALSE ||
+                     strpos($this->get('website'), '[') === FALSE) {
+                    $this->forget('website');
+                    $this->rename($param, 'work');
+                    return;
+                 }
+               }
             }
           }
+          if (in_array(str_replace(array('[', ']', '"', "'", 'www.', ' company'), '', $publisher), PUBLISHERS_ARE_WORKS)) {
+            $pubby = str_replace(array('the ', ' company'), '', $publisher);
+            foreach (WORK_ALIASES as $work) {
+              $worky = str_replace(array('the ', ' company'), '', strtolower($this->get($work)));
+              if ($worky === $pubby) {
+                 $this->forget($param);
+                 return;
+              }
+            }
+          }
+          
           if (!$this->blank(['eprint', 'arxiv']) &&
               strtolower($publisher) == 'arxiv') {
               $this->forget($param);
@@ -4956,6 +4993,11 @@ final class Template {
                  if ($this->has('via') && stripos($this->get('via'), 'library') !== FALSE) $this->forget('via');
                  if ($this->has('via') && stripos($this->get('via'), 'proquest') === FALSE) $this->forget('via');
                }
+            } elseif (preg_match("~^(?:http.+/login\?url=|)https?://(?:0\-|)search.proquest.+scoolaid\.net(|/[^/]+)/docview/(.+)$~", $this->get($param), $matches)) {
+                 $this->set($param, 'https://search.proquest.com' . $matches[1] . '/docview/' . $matches[2]);
+                 report_info("Remove proxy from ProQuest URL");
+                 if ($this->has('via') && stripos($this->get('via'), 'library') !== FALSE) $this->forget('via');
+                 if ($this->has('via') && stripos($this->get('via'), 'proquest') === FALSE) $this->forget('via');
             }
             $changed = FALSE;
             if (preg_match("~^https?://search.proquest.com/(.+)/docview/(.+)$~", $this->get($param), $matches)) {

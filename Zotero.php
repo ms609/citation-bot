@@ -11,7 +11,7 @@ final class Zotero {
   private const ZOTERO_GIVE_UP = 5;
   private const ZOTERO_SKIPS = 100;
   private const ERROR_DONE = 'ERROR_DONE'; 
-  protected static int $zotero_announced;
+  protected static int $zotero_announced = 0;
   /** @var resource|null $zotero_ch */
   protected static $zotero_ch;
   protected static int $zotero_failures_count = 0;

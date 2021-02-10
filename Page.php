@@ -506,7 +506,13 @@ class Page {
   }
 
   public function write(WikipediaBot $api, string $edit_summary_end = '') : bool {
+    static $failures = array(FALSE, FALSE, FALSE, FALSE, FALSE);
     if ($this->allow_bots()) {
+      $failures[0] = $failures[1];
+      $failures[1] = $failures[2];
+      $failures[2] = $failures[3];
+      $failures[3] = $failures[4];
+      $failures[4] = FALSE;
       throttle(9);
       if ($api->write_page($this->title, $this->text,
               $this->edit_summary() . $edit_summary_end,
@@ -516,9 +522,18 @@ class Page {
         // @codeCoverageIgnoreStart
         sleep(9);  // could be database being locked
         report_info("Trying to write again after waiting");
-        return $api->write_page($this->title, $this->text,
+        $return = $api->write_page($this->title, $this->text,
               $this->edit_summary() . $edit_summary_end,
               $this->lastrevid, $this->read_at);
+         if ($return) {
+           return TRUE;
+         } else {
+           $failures[4] = TRUE;
+           if ($failures[0] && $failures[1] && $failures[2] && $failures[3] && $failures[4]) {
+              report_error("Five failures in a row -- shutting down the bot");
+           }
+           return FALSE;
+         }
         // @codeCoverageIgnoreEnd
       } else {
         return FALSE;
