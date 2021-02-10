@@ -4934,7 +4934,7 @@ final class Template {
               if (doi_works($new_doi)) {
                 if ($this->has('doi') && $this->has('doi-broken-date')) {
                     $this->set('doi', '');
-                    $this->forget('doi-broken-date')
+                    $this->forget('doi-broken-date');
                     $this->add_if_new('doi', $new_doi);
                  } elseif ($this->blank('doi')) {
                     $this->add_if_new('doi', $new_doi);
