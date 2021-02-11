@@ -4943,7 +4943,8 @@ final class Template {
               $the_title = $this->get('title');
               if (preg_match('~^(.+) \- Oxford Dictionary of National Biography$~', $the_title, $matches) ||
                   preg_match('~^(.+) # # # CITATION_BOT_PLACEHOLDER_TEMPLATE \d+ # # # Oxford Dictionary of National Biography$~', $the_title, $matches) ||
-                  preg_match('~^(.+)  Oxford Dictionary of National Biography$~', $the_title, $matches)) {
+                  preg_match('~^(.+)  Oxford Dictionary of National Biography$~', $the_title, $matches) ||
+                  preg_match('~^(.+) &#\d+; Oxford Dictionary of National Biography$~', $the_title, $matches)) {
                 $this->set('title', trim($matches[1]));
               }
           }
