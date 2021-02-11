@@ -2908,6 +2908,7 @@ final class Template {
     if (!$this->blank(DOI_BROKEN_ALIASES)) return;
     $doi = $this->get_without_comments_and_placeholders('doi');
     if (!$doi) return;
+    if (strpos($doi, '10.1093/') === 0) return;
     $return = $this->get_unpaywall_url($doi);
     $this->get_semanticscholar_url($doi, $return);
   }
