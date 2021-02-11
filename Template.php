@@ -4935,6 +4935,9 @@ final class Template {
               if (!doi_works($new_doi)) {
                 $new_doi = '10.1093/odnb/' . $matches[1];
               }
+              if (!doi_works($new_doi)) {
+                $new_doi = '10.1093/odnb/9780198614128.013.' . $matches[1];
+              }
               if (doi_works($new_doi)) {
                 if ($this->has('doi') && $this->has('doi-broken-date')) {
                     $this->set('doi', '');
