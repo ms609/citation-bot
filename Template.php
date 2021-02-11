@@ -5589,6 +5589,9 @@ final class Template {
       $trial[] = $match[1];
       $trial[] = $match[2];
     }
+    if (preg_match("~^10\.1093/ww/9780199540891\.001\.0001/ww\-9780199540884\-e\-(\d+)$~", $doi, $match)) {
+      $trial[] = '10.1093/ww/9780199540884.013.U' . $match[1];
+    }
     $replacements = array ("&lt;" => "<", "&gt;" => ">");
     if (preg_match("~&[lg]t;~", $doi)) {
       $trial[] = str_replace(array_keys($replacements), $replacements, $doi);
