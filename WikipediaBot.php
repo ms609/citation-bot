@@ -100,8 +100,8 @@ final class WikipediaBot {
   }
   
   public function fetch(array $params, string $method, int $depth = 1) : ?object {
-    if ($depth > 1) sleep($depth);
-    if ($depth > 5) return NULL;
+    if ($depth > 1) sleep($depth+2);
+    if ($depth > 4) return NULL;
     $params['format'] = 'json';
      
     $request = Request::fromConsumerAndToken($this->consumer, $this->token, $method, API_ROOT, $params);
@@ -357,8 +357,8 @@ final class WikipediaBot {
         "titles" => $page,
       ], 'GET');
     if (!isset($res->query->pages)) {
-        report_error("Failed to get article's last revision");      // @codeCoverageIgnore
-        return '';                                                  // @codeCoverageIgnore
+        report_minor_error("Failed to get article's last revision");      // @codeCoverageIgnore
+        return '';                                                        // @codeCoverageIgnore
     }
     $page = reset($res->query->pages);
     return  (isset($page->revisions[0]->revid) ? (string) $page->revisions[0]->revid : '');
