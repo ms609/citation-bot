@@ -18,7 +18,8 @@ function user_notice(string $symbol, string $class, string $text) : void {
       $now = microtime(TRUE);
       if (in_array($class, array('phase', 'subitem', 'warning')) || 5 < ($now - $last_time)) {
         $last_time = $now;
-        trigger_error('', E_USER_NOTICE);
+        ob_flush();
+        trigger_error(' ', E_USER_WARNING);
         ob_flush();
       }
     }
