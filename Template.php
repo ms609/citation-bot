@@ -6547,5 +6547,6 @@ final class Template {
             }
           }
       }
+    }
   }
 }
