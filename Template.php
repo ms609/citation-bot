@@ -6484,4 +6484,68 @@ final class Template {
     if (strpos($url, 'www.sciencedirect.com/science/article')) return TRUE;
     return FALSE;
   }
+  
+  public function clean_cite_odnb() {
+    $matches = ['', ''];
+    if ($this->has('url')) {
+      while (preg_match('~^(https?://www\.oxforddnb\.com/.+)(?:\;jsession|\?rskey|\#)~', $this->get('url'), $matches)) {
+         $this->set('url', $matches[1]);
+      }
+    }
+    if ($this->has('doi')) {
+      $doi = $this->get('doi');
+      if (doi_works($doi) === FALSE) {
+        if (preg_match("~^10\.1093/(?:odnb/|ref:odnb|odnb/9780198614128\.013\.)(\d+)$~", $doi, $matches)) {
+          $try1 = '10.1093/ref:odnb/' . $matches[1];
+          $try2 = '10.1093/odnb/' . $matches[1];
+          $try3 = '10.1093/odnb/9780198614128.013.' . $matches[1];
+          if (doi_works($try1)) {
+            $this->set('doi', $try1);
+          } elseif (doi_works($try2)) {
+            $this->set('doi', $try2);
+          } elseif (doi_works($try3)) {
+            $this->set('doi', $try3);
+          }
+        }
+      }
+      if ($this->has('id')) {
+          $doi = $this->get('doi');
+          $try1 = '10.1093/ref:odnb/' . $this->get('id');
+          $try2 = '10.1093/odnb/' . $this->get('id');
+          $try3 = '10.1093/odnb/9780198614128.013.' . $this->get('id');
+          if (doi_works($try1) !== FALSE) {
+            return; // Template does this
+          } elseif (doi_works($try2)) {
+            if ($doi === '') {
+              $this->rename('id', 'doi', $try2);
+              return;
+            } elseif ($doi === $try2) {
+              $this->forget('id');
+              return;
+            } elseif (doi_works($doi)) {
+              $this->forget('id');
+              return;
+            } else {
+              $this->forget('doi');
+              $this->rename('id', 'doi', $try2);
+              return;
+            }
+          } elseif (doi_works($try3)) {
+            if ($doi === '') {
+              $this->rename('id', 'doi', $try3);
+              return;
+            } elseif ($doi === $try3) {
+              $this->forget('id');
+              return;
+            } elseif (doi_works($doi)) {
+              $this->forget('id');
+              return;
+            } else {
+              $this->forget('doi');
+              $this->rename('id', 'doi', $try3);
+              return;
+            }
+          }
+      }
+  }
 }
