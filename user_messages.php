@@ -8,7 +8,7 @@ function html_echo(string $text, string $alternate_text='') : void {
   if (!TRAVIS) echo HTML_OUTPUT ? $text : $alternate_text;
 }
 
-function ignore_this($errno, $errstr, $errfile, $errline) : void ;
+function ignore_this($errno, $errstr, $errfile, $errline) : void {} ;
 
 function user_notice(string $symbol, string $class, string $text) : void {
   static $last_time = 0;
