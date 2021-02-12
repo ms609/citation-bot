@@ -6508,7 +6508,8 @@ final class Template {
           }
         }
       }
-      if ($this->has('id')) {
+    }
+    if ($this->has('id')) {
           $doi = $this->get('doi');
           $try1 = '10.1093/ref:odnb/' . $this->get('id');
           $try2 = '10.1093/odnb/' . $this->get('id');
@@ -6547,6 +6548,5 @@ final class Template {
             }
           }
       }
-    }
   }
 }
