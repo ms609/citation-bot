@@ -44,6 +44,10 @@ ini_set('zlib.output_compression', '0');
 ini_set('implicit_flush', '1');
 ini_set('responseBufferLimit', '0');
 ini_set('OutputBufferSize', '0');
+ini_set('proxy_buffering', 'off');
+ini_set('gzip', 'off');
+ini_set('output_handler', '');
+
 ob_implicit_flush();
 flush();
 if (!TRAVIS) {
