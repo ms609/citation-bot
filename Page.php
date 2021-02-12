@@ -294,6 +294,8 @@ class Page {
         $this_template->tidy();
       } elseif ($this_template->wikiname() == 'cite lsa') {
         $this_template->clean_google_books();
+      } elseif ($this_template->wikiname() == 'cite odnb') {
+        $this_template->clean_cite_odnb();
       }
     }
     // BATCH API CALLS
