@@ -19,7 +19,7 @@ function user_notice(string $symbol, string $class, string $text) : void {
       if (in_array($class, array('phase', 'subitem', 'warning')) || 5 < ($now - $last_time)) {
         $last_time = $now;
         ob_flush();
-        trigger_error(' ', E_USER_ERROR);
+        trigger_error(' ', E_USER_WARNING);
       }
     }
     // @codeCoverageIgnoreEnd
