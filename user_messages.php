@@ -8,6 +8,8 @@ function html_echo(string $text, string $alternate_text='') : void {
   if (!TRAVIS) echo HTML_OUTPUT ? $text : $alternate_text;
 }
 
+function ignore_this() : void ;
+
 function user_notice(string $symbol, string $class, string $text) : void {
   static $last_time = 0;
   if (!TRAVIS) {
@@ -19,7 +21,9 @@ function user_notice(string $symbol, string $class, string $text) : void {
       if (in_array($class, array('phase', 'subitem', 'warning')) || 5 < ($now - $last_time)) {
         $last_time = $now;
         ob_flush();
-        trigger_error(' ', E_USER_WARNING);
+        set_error_handler (ignore_this, E_USER_ERROR);
+        trigger_error(' ', E_USER_ERROR);
+        restore_error_handler();
       }
     }
     // @codeCoverageIgnoreEnd
