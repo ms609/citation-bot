@@ -2403,7 +2403,7 @@ final class Template {
     if ($this->has('bibcode') && strpos($this->get('bibcode'), 'book') !== FALSE) {
       return $this->expand_book_adsabs();
     }
-  
+    if (strpos($this->get('doi'), '10.1093/') === 0) return FALSE;
     report_action("Checking AdsAbs database");
     if ($this->has('bibcode')) {
       $result = $this->query_adsabs("identifier:" . urlencode('"' . $this->get('bibcode') . '"'));
