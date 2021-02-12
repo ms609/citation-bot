@@ -46,7 +46,6 @@ ini_set('responseBufferLimit', '0');
 ini_set('OutputBufferSize', '0');
 ini_set('proxy_buffering', 'off');
 ini_set('gzip', 'off');
-ini_set('output_handler', '');
 
 ob_implicit_flush();
 flush();
