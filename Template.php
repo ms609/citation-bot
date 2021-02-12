@@ -388,7 +388,7 @@ final class Template {
               $the_chapter = '';
               $bad_data = TRUE;
           }
-          if (str_i_same($the_journal, 'Biochimica et Biophysica Acta')) { // Only part of the journal name
+          if (str_i_same($the_journal, 'Biochimica et Biophysica Acta') || str_i_same($the_journal, '[[Biochimica et Biophysica Acta]]')) { // Only part of the journal name
               $this->rename('journal', 'CITATION_BOT_PLACEHOLDER_journal');
               $the_journal = '';
               $bad_data = TRUE;
