@@ -4758,6 +4758,10 @@ final class Template {
               $this->forget($param); // Forget "save it now" archives.  They are rubbish
               return;
           }
+          if (preg_match('~^https?://web\.archive\.org/web/.+https://www\.bloomberg\.com/tosv2\.html~', $this->get($param))) {
+              $this->forget($param);
+              return;
+          }
           if (preg_match('~^(https?://(?:www\.|)webcitation\.org/)([0-9a-zA-Z]{9})(?:|\?url=.*)$~', $this->get($param), $matches)) {
               // $this->set($param, $matches[1] . $matches[2]); // The url part is actually NOT binding, but other wikipedia bots check it
               if ($this->blank(['archive-date', 'archivedate'])) {
