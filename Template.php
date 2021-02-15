@@ -4671,6 +4671,12 @@ final class Template {
             case 'yes': case 'y': case 'true': case 'no': case 'n': case 'false': $this->forget($param);
           }
           return;
+          
+        case 'ref':
+          if ($this->blank($param) || $this->get($param) === 'harv') {
+            $this->forget($param);
+          }
+          return;
 
         case 'series':
           if (str_equivalent($this->get($param), $this->get('work'))) $this->forget('work');
