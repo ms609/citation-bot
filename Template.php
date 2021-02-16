@@ -371,8 +371,8 @@ final class Template {
           $the_chapter = $this->get('chapter');
           $the_volume  = $this->get('volume');
           $the_issue   = $this->get('issue');
-          $ths_page    = $this->get('page');
-          $ths_pages   = $this->get('pages');
+          $the_page    = $this->get('page');
+          $the_pages   = $this->get('pages');
           $bad_data = FALSE;
           if ($the_pages === '0' || $the_pages === 'null') {
               $this->rename('pages', 'CITATION_BOT_PLACEHOLDER_pages');
