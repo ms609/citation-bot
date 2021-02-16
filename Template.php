@@ -369,22 +369,46 @@ final class Template {
           $the_title   = $this->get('title');
           $the_journal = $this->get('journal');
           $the_chapter = $this->get('chapter');
+          $the_volume  = $this->get('volume');
+          $the_issue   = $this->get('issue');
+          $ths_page    = $this->get('page');
+          $ths_pages   = $this->get('pages');
           $bad_data = FALSE;
+          if ($the_pages === '0' || $the_pages === 'null') {
+              $this->rename('pages', 'CITATION_BOT_PLACEHOLDER_pages');
+              $the_pages = '';
+              $bad_data = TRUE;
+          }
+          if ($the_page === '0' || $the_page === 'null') {
+              $this->rename('page', 'CITATION_BOT_PLACEHOLDER_page');
+              $the_page = '';
+              $bad_data = TRUE;
+          }
+          if ($the_volume === '0' || $the_volume === 'null') {
+              $this->rename('volume', 'CITATION_BOT_PLACEHOLDER_volume');
+              $the_volume = '';
+              $bad_data = TRUE;
+          }
+          if ($the_issue === '0' || $the_issue === 'null' || $the_issue === 'ja') {
+              $this->rename('issue', 'CITATION_BOT_PLACEHOLDER_issue');
+              $the_issue = '';
+              $bad_data = TRUE;
+          }
           if (strlen($the_title) > 15 && strpos($the_title, ' ') !== FALSE &&
               mb_strtoupper($the_title) === $the_title && strpos($the_title, 'CITATION') === FALSE) {
-              $this->rename('title', 'CITATION_BOT_PLACEHOLDER_title'); // ALL UPPER CASE
+              $this->rename('title', 'CITATION_BOT_PLACEHOLDER_title');
               $the_title = '';
               $bad_data = TRUE;
           }
           if (strlen($the_journal) > 15 && strpos($the_journal, ' ') !== FALSE &&
               mb_strtoupper($the_journal) === $the_journal && strpos($the_journal, 'CITATION') === FALSE) {
-              $this->rename('journal', 'CITATION_BOT_PLACEHOLDER_journal'); // ALL UPPER CASE
+              $this->rename('journal', 'CITATION_BOT_PLACEHOLDER_journal');
               $the_journal = '';
               $bad_data = TRUE;
           }
           if (strlen($the_chapter) > 15 && strpos($the_chapter, ' ') !== FALSE &&
               mb_strtoupper($the_chapter) === $the_chapter && strpos($the_chapter, 'CITATION') === FALSE) {
-              $this->rename('chapter', 'CITATION_BOT_PLACEHOLDER_chapter'); // ALL UPPER CASE
+              $this->rename('chapter', 'CITATION_BOT_PLACEHOLDER_chapter');
               $the_chapter = '';
               $bad_data = TRUE;
           }
@@ -458,6 +482,34 @@ final class Template {
                 $this->forget('CITATION_BOT_PLACEHOLDER_chapter');
               } else {
                 $this->rename('CITATION_BOT_PLACEHOLDER_chapter', 'chapter');
+              }
+            }
+            if ($this->has('CITATION_BOT_PLACEHOLDER_issue')) {
+              if ($this->has('issue')) {
+                $this->forget('CITATION_BOT_PLACEHOLDER_issue');
+              } else {
+                $this->rename('CITATION_BOT_PLACEHOLDER_issue', 'issue');
+              }
+            }
+            if ($this->has('CITATION_BOT_PLACEHOLDER_volume')) {
+              if ($this->has('volume')) {
+                $this->forget('CITATION_BOT_PLACEHOLDER_volume');
+              } else {
+                $this->rename('CITATION_BOT_PLACEHOLDER_volume', 'volume');
+              }
+            }
+            if ($this->has('CITATION_BOT_PLACEHOLDER_page')) {
+              if ($this->has('page') || $this->has('pages')) {
+                $this->forget('CITATION_BOT_PLACEHOLDER_page');
+              } else {
+                $this->rename('CITATION_BOT_PLACEHOLDER_page', 'page');
+              }
+            }
+            if ($this->has('CITATION_BOT_PLACEHOLDER_pages')) {
+              if ($this->has('page') || $this->has('pages')) {
+                $this->forget('CITATION_BOT_PLACEHOLDER_pages');
+              } else {
+                $this->rename('CITATION_BOT_PLACEHOLDER_pages', 'pages');
               }
             }
           }
