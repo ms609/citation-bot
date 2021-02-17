@@ -55,7 +55,7 @@ if (strlen($page_name) > 256)  {
   report_warning('Possible invalid page');
   exit("\n </pre></body></html>");
 }
-$edit_summary_end = "| Suggested by " . $api->get_the_user() . " | All pages linked from cached copy of $page_name | via #UCB_webform_linked ";
+$edit_summary_end = "| Suggested by " . $api->get_the_user() . " | Pages linked from cached $page_name | via #UCB_webform_linked ";
 $final_edit_overview = "";
 
 $url = API_ROOT . '?action=parse&prop=links&format=json&page=' . $page_name;
