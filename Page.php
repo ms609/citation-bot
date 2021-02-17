@@ -515,7 +515,7 @@ class Page {
     if (!$auto_summary) {
       $auto_summary = "Misc citation tidying. ";
     }
-    return $auto_summary . "| You can [[WP:UCB|use this bot]] yourself. [[WP:DBUG|Report bugs here]]. ";
+    return $auto_summary . "| [[WP:UCB|Use this bot]] yourself. [[WP:DBUG|Report bugs]]. ";
   }
 
   public function write(WikipediaBot $api, string $edit_summary_end = '') : bool {
