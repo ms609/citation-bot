@@ -750,22 +750,4 @@ function can_safely_modify_dashes(string $value) : bool {
 function str_i_same(string $str1, string $str2) : bool {
    return (0 === strcasecmp($str1, $str2));
 }
-
-function generateRandomString($length = 1000) {
-    $characters = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
-    $charactersLength = strlen($characters);
-    $randomString = '';
-    for ($i = 0; $i < $length; $i++) {
-        $randomString .= $characters[rand(0, $charactersLength - 1)];
-    }
-    return $randomString;
-}
-function echo_massive_comment() {
-   echo "<-- \n";
-   for ($x = 0; $x <= 128; $x++) {
-       echo generateRandomString() . "\n";
-   }
-   echo "--> \n";
-}
-  
   
