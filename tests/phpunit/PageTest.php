@@ -369,7 +369,7 @@ final class PageTest extends testBaseClass {
    $text='{{Cite ODNB|title=Pierrepoint, Albert, (1905–1992)|ref=harv}}{{Yup}}{{ODNBsub}}';
    $page = $this->process_page($text);
    $this->assertSame($text, $page->parsed_text()); // template in the way
-  }[[WP:UCB|Use this bot]] yourself. [[WP:DBUG|Report bugs]]
+  }
  
   public function testBadWikiTextPage() : void {
       $text = "{{cite journal|doi=10.2307/962034}}{{cite journal|<ref></ref>doi=10.2307/962034}}";
