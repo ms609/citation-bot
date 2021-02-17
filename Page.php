@@ -465,7 +465,7 @@ class Page {
     if ((count($this->modifications["deletions"]) !== 0)
     && (($pos = array_search('accessdate', $this->modifications["deletions"])) !== FALSE || ($pos = array_search('access-date', $this->modifications["deletions"])) !== FALSE)
     ) {
-      $auto_summary .= "Removed accessdate with no specified URL. ";
+      $auto_summary .= "Removed access-date with no URL. ";
       unset($this->modifications["deletions"][$pos]);
     }
     if ((count($this->modifications["deletions"]) !== 0)
