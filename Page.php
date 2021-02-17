@@ -428,22 +428,33 @@ class Page {
       $auto_summary .= "Alter: " . implode(", ", $this->modifications["changeonly"]) . ". ";
     }
     if (strpos(implode(" ", $this->modifications["changeonly"]), 'url') !== FALSE) {
-      $auto_summary .= "URLs might have been internationalized/anonymized. ";
+      $auto_summary .= "URLs might have been anonymized. ";
     }
     if (count($this->modifications['additions']) !== 0) {
       $addns = $this->modifications["additions"];
       $auto_summary .= "Add: ";
       $min_au = 9999;
       $max_au = 0;
+      $min_ed = 9999;
+      $max_ed = 0;
       while ($add = array_pop($addns)) {
-        if (preg_match('~(?:author|last|first)(\d+)~', $add, $match)) {
+        if (preg_match('~editor[^\d]*(\d+)~', $add, $match)) {
+          if ($match[1] < $min_ed) $min_ed = $match[1];
+          if ($match[1] > $max_ed) $max_ed = $match[1];
+        elseif (preg_match('~(?:author|last|first)(\d+)~', $add, $match)) {
           if ($match[1] < $min_au) $min_au = $match[1];
           if ($match[1] > $max_au) $max_au = $match[1];
-        } else $auto_summary .= $add . ', ';
+        } else {
+          $auto_summary .= $add . ', ';
+        }
       }
       if ($max_au) {
-        $auto_summary .= "author pars. $min_au-$max_au. ";
-      } else {
+        $auto_summary .= "authors $min_au-$max_au. ";
+      }
+      if ($max_ed) {
+        $auto_summary .= "editors $min_ed-$max_ed. ";
+      }
+      if (!$max_ed && !$max_au) {
         $auto_summary = substr($auto_summary, 0, -2) . '. ';
       }
     }
