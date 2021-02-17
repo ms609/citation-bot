@@ -66,7 +66,6 @@ if ($category) {
   }
   shuffle($pages_in_category);
   $page = new Page();
-  echo_massive_comment();
   gc_collect_cycles();
   $done = 0;
   $total = count($pages_in_category);
