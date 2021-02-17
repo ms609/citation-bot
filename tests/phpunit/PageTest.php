@@ -21,12 +21,12 @@ final class PageTest extends testBaseClass {
 
   public function testPageChangeSummary31() : void {
       $page = $this->process_page('<ref>http://onlinelibrary.wiley.com/doi/10.1111/j.1475-4983.2012.01203.x</ref>');
-      $this->assertSame('Alter: template type. Add: pages, issue, volume, journal, year, title, doi, author pars. 1-2. Converted bare reference to cite template. Formatted [[WP:ENDASH|dashes]]. | You can [[WP:UCB|use this bot]] yourself. [[WP:DBUG|Report bugs here]]. ', $page->edit_summary());                
+      $this->assertSame('Alter: template type. Add: pages, issue, volume, journal, year, title, doi, authors 1-2. Converted bare reference to cite template. Formatted [[WP:ENDASH|dashes]]. | You can [[WP:UCB|use this bot]] yourself. [[WP:DBUG|Report bugs here]]. ', $page->edit_summary());                
   }
  
   public function testPageChangeSummary32() : void { // Mixture of droping chapter-url and moving URL to chapter-url.  Bogus template content
       $page = $this->process_page('{{cite book|chapter=X|chapter-url= https://mathscinet.ams.org/mathscinet-getitem?mr=2320282|last1=X|last2=X|first1=X|first2=X |url= https://books.google.com/books?id=to0yXzq_EkQC&pg=PP154|title=Y|isbn=XXX|year=XXX}}');
-      $this->assertSame('Add: mr, date. Removed parameters. Some additions/deletions were actually parameter name changes. | You can [[WP:UCB|use this bot]] yourself. [[WP:DBUG|Report bugs here]]. ', $page->edit_summary());                
+      $this->assertSame('Add: mr, date. Removed parameters. Some additions/deletions were parameter name changes. | You can [[WP:UCB|use this bot]] yourself. [[WP:DBUG|Report bugs here]]. ', $page->edit_summary());                
   }
 
   public function testPageChangeSummary4() : void {
@@ -49,12 +49,12 @@ final class PageTest extends testBaseClass {
   public function testPageChangeSummary8() : void {
       $page = $this->process_page('{{cite journal|chapter-url=https://mathscinet.ams.org/mathscinet-getitem?mr=1234|title=mr=1234}}');
       $this->assertSame('{{cite journal|url=https://mathscinet.ams.org/mathscinet-getitem?mr=1234|title=mr=1234|mr = 1234}}', $page->parsed_text());
-      $this->assertSame('Add: mr, url. Removed proxy or dead URL that duplicated free-DOI or unique identifier. Some additions/deletions were actually parameter name changes. | You can [[WP:UCB|use this bot]] yourself. [[WP:DBUG|Report bugs here]]. ', $page->edit_summary());
+      $this->assertSame('Add: mr, url. Removed proxy or dead URL that duplicated free-DOI or unique identifier. | You can [[WP:UCB|use this bot]] yourself. [[WP:DBUG|Report bugs here]]. ', $page->edit_summary());
   }
   public function testPageChangeSummary9() : void {
       $page = $this->process_page('{{cite journal|chapterurl=https://mathscinet.ams.org/mathscinet-getitem?mr=1234|title=mr=1234}}');
       $this->assertSame('{{cite journal|url=https://mathscinet.ams.org/mathscinet-getitem?mr=1234|title=mr=1234|mr = 1234}}', $page->parsed_text());
-      $this->assertSame('Add: mr, url. Removed proxy or dead URL that duplicated free-DOI or unique identifier. Some additions/deletions were actually parameter name changes. | You can [[WP:UCB|use this bot]] yourself. [[WP:DBUG|Report bugs here]]. ', $page->edit_summary());
+      $this->assertSame('Add: mr, url. Removed proxy or dead URL that duplicated free-DOI or unique identifier. | You can [[WP:UCB|use this bot]] yourself. [[WP:DBUG|Report bugs here]]. ', $page->edit_summary());
   }
    
   public function testPageChangeSummary10() : void {
@@ -64,17 +64,17 @@ final class PageTest extends testBaseClass {
  
   public function testPageChangeSummary11() : void {
       $page = $this->process_page('{{cite journal|accessdate=12 Nov 2000}}');
-      $this->assertSame('Removed accessdate with no specified URL. | You can [[WP:UCB|use this bot]] yourself. [[WP:DBUG|Report bugs here]]. ', $page->edit_summary());
+      $this->assertSame('Removed access-date with no URL. | You can [[WP:UCB|use this bot]] yourself. [[WP:DBUG|Report bugs here]]. ', $page->edit_summary());
   }
  
   public function testPageChangeSummary12() : void {
       $page = $this->process_page('{{cite journal|chapter-url=http://www.facebook.com/|title=X|journal=Y}}');
-      $this->assertSame('Add: url. Removed proxy or dead URL that duplicated free-DOI or unique identifier. Some additions/deletions were actually parameter name changes. | You can [[WP:UCB|use this bot]] yourself. [[WP:DBUG|Report bugs here]]. ', $page->edit_summary());
+      $this->assertSame('Add: url. Removed proxy or dead URL that duplicated free-DOI or unique identifier. | You can [[WP:UCB|use this bot]] yourself. [[WP:DBUG|Report bugs here]]. ', $page->edit_summary());
   }
  
   public function testPageChangeSummary13() : void {
       $page = $this->process_page('{{cite journal|notestitle=X}}');
-      $this->assertSame('Alter: template type. Add: chapter. Removed parameters. | You can [[WP:UCB|use this bot]] yourself. [[WP:DBUG|Report bugs here]]. ', $page->edit_summary());
+      $this->assertSame('Alter: template type. | You can [[WP:UCB|use this bot]] yourself. [[WP:DBUG|Report bugs here]]. ', $page->edit_summary());
   }
  
   public function testBotReadblocked() : void {
