@@ -441,7 +441,7 @@ class Page {
         if (preg_match('~editor[^\d]*(\d+)~', $add, $match)) {
           if ($match[1] < $min_ed) $min_ed = $match[1];
           if ($match[1] > $max_ed) $max_ed = $match[1];
-        elseif (preg_match('~(?:author|last|first)(\d+)~', $add, $match)) {
+        } elseif (preg_match('~(?:author|last|first)(\d+)~', $add, $match)) {
           if ($match[1] < $min_au) $min_au = $match[1];
           if ($match[1] > $max_au) $max_au = $match[1];
         } else {
@@ -507,7 +507,7 @@ class Page {
                 'citepaper', 'Citepaper', 'cite new|', 'cite new|', 'citation journal', 'Citation journal',
                 'cite new |', 'cite new |', 'cite |', 'Cite |'] as $try_me) {
          if (substr_count($this->text, $try_me) < substr_count($this->start_text, $try_me)) {
-            $auto_summary .= 'Remove Template type redirect. ';
+            $auto_summary .= 'Removed Template redirect. ';
             break;
          }
       }
