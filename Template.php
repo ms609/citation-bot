@@ -6233,8 +6233,7 @@ final class Template {
       $mistake_id = array_search($old_name, $mistake_keys);
       if ($mistake_id !== FALSE) {
         if ($this->should_be_processed()) $this->mod_names = TRUE; // 99.99% of the time this is true
-        $new_name = $mistake_corrections[$mistake_id];
-        $old_name = $new_name;
+        $old_name = $mistake_corrections[$mistake_id];
       }
     }
     unset($old_name);
@@ -6242,8 +6241,7 @@ final class Template {
     foreach ($new as &$old_name) { // Pointer
       $mistake_id = array_search($old_name, $mistake_keys);
       if ($mistake_id !== FALSE) {
-        $new_name = $mistake_corrections[$mistake_id];
-        $old_name = $new_name;
+        $old_name = $mistake_corrections[$mistake_id];
       }
     }
     unset($old_name);
