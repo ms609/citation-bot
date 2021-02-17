@@ -762,7 +762,7 @@ function generateRandomString($length = 1000) {
 }
 function echo_massive_comment() {
    echo "<-- \n";
-   for ($x = 0; $x <= 30; $x++) {
+   for ($x = 0; $x <= 128; $x++) {
        echo generateRandomString() . "\n";
    }
    echo "--> \n";
