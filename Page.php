@@ -492,8 +492,8 @@ class Page {
       ? "Formatted [[WP:ENDASH|dashes]]. "
       : ""
     );
-    if ($this->modifications["names"]) {
-      $auto_summary .= 'Some additions/deletions were actually parameter name changes. ';
+    if (count($this->modifications["deletions"]) !== 0 && count($this->modifications["additions"]) !== 0 && $this->modifications["names"]) {
+      $auto_summary .= 'Some additions/deletions were parameter name changes. ';
     }
     if (substr_count($this->text, '978') > substr_count($this->start_text, '978')) {
       $auto_summary .= 'Upgrade ISBN10 to ISBN13. ';
