@@ -100,6 +100,8 @@ if (empty($pages_in_category)) {
     exit("\n </pre></body></html>");
   }
 
+  echo_massive_comment();
+
   $page = new Page();
   gc_collect_cycles();
   $done = 0;
