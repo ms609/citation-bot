@@ -6229,22 +6229,22 @@ final class Template {
     
     $mistake_corrections = array_values(COMMON_MISTAKES);
     $mistake_keys = array_keys(COMMON_MISTAKES);
-    foreach ($old as &$old_name) { // Pointer
+    foreach ($old as $old_name => $old_data) {
       $mistake_id = array_search($old_name, $mistake_keys);
       if ($mistake_id !== FALSE) {
         if ($this->should_be_processed()) $this->mod_names = TRUE; // 99.99% of the time this is true
-        $old_name = $mistake_corrections[$mistake_id];
+        $old[$mistake_corrections[$mistake_id]] = $old_data;
+        unset($old[$old_name]);
       }
     }
-    unset($old_name);
     // 99.99% of the time does nothing, since they should already be switched, but do it just in case
-    foreach ($new as &$old_name) { // Pointer
+    foreach ($new as $old_name => $old_data) {
       $mistake_id = array_search($old_name, $mistake_keys);
       if ($mistake_id !== FALSE) {
-        $old_name = $mistake_corrections[$mistake_id];
+        $new[$mistake_corrections[$mistake_id]] = $old_data;
+        unset($new[$old_name]);
       }
     }
-    unset($old_name);
 
     $ret['modifications'] = array_keys(array_diff_assoc($new, $old));
     $ret['additions'] = array_diff(array_keys($new), array_keys($old));
