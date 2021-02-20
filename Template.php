@@ -4930,6 +4930,11 @@ final class Template {
               quietly('report_modification', "Unmasking Proquest eBook URL.");
               $this->set($param, 'https://public.ebookcentral.proquest.com/choice/publicfullrecord.aspx?p=' . $matches[1] . $matches[2]);
           }
+          
+          if (preg_match("~ebscohost.com.*AN=(\d+)$~", $this->get($param), $matches)) {
+             $this->set($param, 'http://connection.ebscohost.com/c/articles/' . $matches[1]);
+          }
+          
           // Proxy stuff
           if (stripos($this->get($param), 'proxy') !== FALSE) { // Look for proxy first for speed, this list will grow and grow
               // Use dots, not \. since it might match dot or dash
