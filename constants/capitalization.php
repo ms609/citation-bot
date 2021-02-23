@@ -74,7 +74,7 @@ const JOURNAL_ACRONYMS = array(/* The following will be automatically updated to
           " J Sch Nurs ", " J SIAM ", " J. SIAM ", " JABS : Journal of Applied Biological Sciences ", 
           " JAMA Psychiatry ", " JMIR ", " JNCI: Journal ", " Journal of Materials Chemistry A ", 
           " Journal of the A.I.E.E. ", " Journal of the IEST ", " Journal sur ", " Jpn ", 
-          " Jpn. ", " La Trobe ", " Latina/o ", " Ltd ", " MAA Focus", " mAbs ", " mAbs ", " mBio ", 
+          " Jpn. ", " La Trobe ", " Latina/o ", " Ltd ", " MAA Focus ", " mAbs ", " mAbs ", " mBio ", 
           " mBio ", " Med Sch ", " MedChemComm ", " Meddelelser om Grønland ", " Meddelelser om Grønland, ", 
           " MERIP ", " Methods in Molecular Biology ", " mHealth ", " mHealth ", " MicrobiologyOpen ", " Mikologiya i Fitopatologiya ", 
           " MIS Quarterly ", " Molecular and Cellular Biology ", " Montana The Magazine of Western History ", 
