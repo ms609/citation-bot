@@ -46,7 +46,7 @@ const UC_SMALL_WORDS = array(/* The following will be automatically updated to a
           " el Dorado ", " las Vegas ", " los Angeles ", " N y ", " U S a ");
           // For ones that start with lower-case, include both ELife and Elife versions in misspelled array
 const JOURNAL_ACRONYMS = array(/* The following will be automatically updated to alphabetical order */
-          " (BBA) ", " (online ed.) ", " AAPOS ", " AAPS ", " ACM SIGGRAPH ", " ACS ", " Algebra i Analiz ", 
+          " (and the Middle East) ", " (BBA) ", " (online ed.) ", " AAPOS ", " AAPS ", " ACM SIGGRAPH ", " ACS ", " Algebra i Analiz ", 
           " Angew Chem Int Ed ", " Applied ", " APS Division ", " Arch Dis Child Fetal Neonatal Ed ", 
           " ASAIO ", " ASME AES ", " ASME MTD ", " Avtomatika i Telemekhanika ", " B/gcvs ", 
           " B/gcvs ", " B/gcvs ", " Bild am Sonntag ", " BioEssays ", " bioRxiv ", " bioRxiv ", 
@@ -74,7 +74,7 @@ const JOURNAL_ACRONYMS = array(/* The following will be automatically updated to
           " J Sch Nurs ", " J SIAM ", " J. SIAM ", " JABS : Journal of Applied Biological Sciences ", 
           " JAMA Psychiatry ", " JMIR ", " JNCI: Journal ", " Journal of Materials Chemistry A ", 
           " Journal of the A.I.E.E. ", " Journal of the IEST ", " Journal sur ", " Jpn ", 
-          " Jpn. ", " La Trobe ", " Latina/o ", " Ltd ", " mAbs ", " mAbs ", " mBio ", 
+          " Jpn. ", " La Trobe ", " Latina/o ", " Ltd ", " MAA Focus", " mAbs ", " mAbs ", " mBio ", 
           " mBio ", " Med Sch ", " MedChemComm ", " Meddelelser om Grønland ", " Meddelelser om Grønland, ", 
           " MERIP ", " Methods in Molecular Biology ", " mHealth ", " mHealth ", " MicrobiologyOpen ", " Mikologiya i Fitopatologiya ", 
           " MIS Quarterly ", " Molecular and Cellular Biology ", " Montana The Magazine of Western History ", 
@@ -88,7 +88,7 @@ const JOURNAL_ACRONYMS = array(/* The following will be automatically updated to
           " SCALACS ", " Sch ", " Scr. ", " SICOT-J ", " Srp Arh Celok Lek ", " Star Trek: The Official Monthly Magazine ", 
           " STD & AIDS ", " STDs ", " Série A ", " Tae Kwon Do Times ", " TAPPI Journal ", 
           " Tellus A ", " The Annals of the American Academy ", " The De Paulia ", " The EMBO Journal ", 
-          " Tidsskr Nor Laegeforen ", " Tidsskr Nor Læggeforen ", " Time Off Magazine ", " Time Out London ", " tot de ", 
+          " Tidsskr Nor Laegeforen ", " Tidsskr Nor Lægeforen ", " Time Off Magazine ", " Time Out London ", " tot de ", 
           " Transactions and archaeological record of the Cardiganshire Antiquarian Society ", 
           " U.S. ", " U.S.A. ", " U.S.A. ", " uHealth ", " uHealth ", " UNED Research Journal ", 
           " USGS ", " v Astronomicheskii Zhurna ", " WRIR ", " z/Journal ", " z/Journal ", 
@@ -97,7 +97,7 @@ const JOURNAL_ACRONYMS = array(/* The following will be automatically updated to
           " ZooKeys ", /* The above will be automatically updated to alphabetical order */ 
 );
 const UCFIRST_JOURNAL_ACRONYMS = array(/* The following will be automatically updated to alphabetical order */
-          " (Bba) ", " (online Ed.) ", " Aapos ", " Aaps ", " ACM Siggraph ", " Acs ", " Algebra I Analiz ", 
+          " (And the Middle East) ", " (Bba) ", " (online Ed.) ", " Aapos ", " Aaps ", " ACM Siggraph ", " Acs ", " Algebra I Analiz ", 
           " Angew Chem Int ed ", " Appiled ", " Aps Division ", " Arch Dis Child Fetal Neonatal ed ", 
           " Asaio ", " Asme Aes ", " Asme MTD ", " Avtomatika I Telemekhanika ", " B/GCVS ", 
           " B/Gcvs ", " b/gcvs ", " Bild Am Sonntag ", " Bioessays ", " BioRxiv ", " Biorxiv ", 
@@ -125,7 +125,7 @@ const UCFIRST_JOURNAL_ACRONYMS = array(/* The following will be automatically up
           " J SCH Nurs ", " J Siam ", " J. Siam ", " Jabs : Journal of Applied Biological Sciences ", 
           " Jama Psychiatry ", " Jmir ", " Jnci: Journal ", " Journal of Materials Chemistry A ", 
           " Journal of the A.i.i.e ", " Journal of the Iest ", " Journal Sur ", " JPN ", 
-          " JPN. ", " la Trobe ", " Latina/O ", " LTD ", " MAbs ", " Mabs ", " MBio ", 
+          " JPN. ", " la Trobe ", " Latina/O ", " LTD ", " Maa Focus ", " MAbs ", " Mabs ", " MBio ", 
           " Mbio ", " Med SCH ", " Medchemcomm ", " Meddelelser Om Grønland ", " Meddelelser Om Grønland, ", 
           " Merip ", " Methods in Molecular Biology (Clifton, N.j.) ", " MHealth ", " Mhealth ", 
           " Microbiologyopen ", " Mikologiya I Fitopatologiya ", " Mis Quarterly ", " Molecular and Cellular Biology ", 
@@ -140,7 +140,7 @@ const UCFIRST_JOURNAL_ACRONYMS = array(/* The following will be automatically up
           " SCH ", " SCR. ", " Sicot-J ", " SRP Arh Celok Lek ", " Star Trek: The Official Monthly Magazine ", 
           " STD & Aids ", " STDS ", " Série a ", " Tae Kwon do Times ", " Tappi Journal ", 
           " Tellus a ", " The ANNALS of the American Academy ", " The de Paulia ", " The Embo Journal ", 
-          " Tidsskr nor Laeeforen ", " Tidsskr nor Læggeforen ", " Time off Magazine ", " Time Out London ", " Tot de ", 
+          " Tidsskr nor Laegeforen ", " Tidsskr nor Lægeforen ", " Time off Magazine ", " Time Out London ", " Tot de ", 
           " Transactions and Archaeological Record of the Cardiganshire Antiquarian Society ", 
           " U.s. ", " U.S.a. ", " U.s.a ", " UHealth ", " Uhealth ", " Uned Research Journal ", 
           " Usgs ", " V Astronomicheskii Zhurna ", " Wrir ", " Z/Journal ", " Z/journal ", 
