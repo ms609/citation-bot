@@ -1370,7 +1370,7 @@ final class TemplateTest extends testBaseClass {
   }
  
   public function testVoidHandling() : void {
-    $text = "{{Void| dsafadsfadsfdsa {{cite journal|pmid=4543532}} fdsafsd  }}";
+    $text = "{{ Void | dsafadsfadsfdsa {{cite journal|pmid=4543532| quote={{cite journal|pmid=4543531}} }} fdsafsd  }}";
     $expanded_page = $this->process_page($text);
     $this->assertSame($text, $expanded_page->parsed_text());
   }
