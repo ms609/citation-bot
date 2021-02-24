@@ -6608,7 +6608,8 @@ final class Template {
   
   public function block_modifications() : void {
      $tmp = $this->parsed_text();
-     unset($this->rawtext);  // So we do not get an error when we parse a second time
+     // So we do not get an error when we parse a second time
+     unset($this->rawtext);  // @phan-suppress-current-line PhanTypeObjectUnsetDeclaredProperty
      $this->parse_text($tmp);
   }
 }
