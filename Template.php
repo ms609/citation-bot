@@ -69,14 +69,6 @@ final class Template {
       $this->name = substr($text, 2, -2);
     }
     $this->initial_name = $this->name;
-    if (strtolower(trim($this->name)) === 'void') { // Should be just like a comment, BUT this code will not stop the normalization of the hidden template
-      while (preg_match_all('~' . sprintf(Self::PLACEHOLDER_TEXT, '(\d+)') . '~', $this->rawtext, $matches)) {
-        for ($i = 0; $i < count($matches[1]); $i++) {
-          $subtemplate = $this->all_templates[$matches[1][$i]];
-          $this->rawtext = str_replace($matches[0][$i], $subtemplate->parsed_text(), $this->rawtext);
-        }
-      }
-    }
     // Clean up outdated redirects
     preg_match("~^(\s*).*\b(\s*)$~", $this->name, $spacing);
     $trim_name = trim($this->name);
