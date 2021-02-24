@@ -8,13 +8,13 @@ declare(strict_types=1);
  * to the wiki.
  */
 
-require_once('Comment.php');       // @codeCoverageIgnore 
-require_once('Template.php');      // @codeCoverageIgnore 
-require_once('apiFunctions.php');  // @codeCoverageIgnore 
-require_once('expandFns.php');     // @codeCoverageIgnore 
-require_once('user_messages.php'); // @codeCoverageIgnore 
-require_once('Zotero.php');        // @codeCoverageIgnore 
-require_once("constants.php");     // @codeCoverageIgnore 
+require_once('Comment.php');       // @codeCoverageIgnore
+require_once('Template.php');      // @codeCoverageIgnore
+require_once('apiFunctions.php');  // @codeCoverageIgnore
+require_once('expandFns.php');     // @codeCoverageIgnore
+require_once('user_messages.php'); // @codeCoverageIgnore
+require_once('Zotero.php');        // @codeCoverageIgnore
+require_once("constants.php");     // @codeCoverageIgnore
 
 class Page {
 
@@ -252,6 +252,11 @@ class Page {
     for ($i = 0; $i < count($all_templates); $i++) {
        $all_templates[$i]->all_templates = &$all_templates; // Pointer to avoid MASSSIVE memory leak on crazy pages
        $all_templates[$i]->date_style = $this->date_style;
+    }
+    for ($i = 0; $i < count($all_templates); $i++) {
+      if ($all_templates[$i]->wikiname() === 'void') {
+        $all_templates[$i]->block_modifications();
+      }
     }
     $our_templates = array();
     $our_templates_slight = array();
