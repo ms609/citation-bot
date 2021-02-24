@@ -69,8 +69,8 @@ final class Template {
       $this->name = substr($text, 2, -2);
     }
     $this->initial_name = $this->name;
-    if (strtolower(trim($this->name)) === 'void') { // Just like a comment -- Will not stop the normalization of template type though!
-      while (preg_match_all('~' . sprintf(Self::PLACEHOLDER_TEXT, '(\d+)') . '~', $id, $matches)) {
+    if (strtolower(trim($this->name)) === 'void') { // Just like a comment -- Will not stop the normalization of the hidden template type though!
+      while (preg_match_all('~' . sprintf(Self::PLACEHOLDER_TEXT, '(\d+)') . '~', $this->rawtext, $matches)) {
         for ($i = 0; $i < count($matches[1]); $i++) {
           $subtemplate = $this->all_templates[$matches[1][$i]];
           $this->rawtext = str_replace($matches[0][$i], $subtemplate->parsed_text(), $this->rawtext);
