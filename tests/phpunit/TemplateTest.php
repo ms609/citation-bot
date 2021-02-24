@@ -1368,6 +1368,12 @@ final class TemplateTest extends testBaseClass {
     $expanded_page = $this->process_page($text);
     $this->assertSame($text, $expanded_page->parsed_text());
   }
+ 
+  public function testVoidHandling() : void {
+    $text = "{{Void| dsafadsfadsfdsa {{cite journal|pmid=4543532}} fdsafsd  }}";
+    $expanded_page = $this->process_page($text);
+    $this->assertSame($text, $expanded_page->parsed_text());
+  }
   
   public function testDoi2PMID() : void {
     $text = "{{cite journal|doi=10.1073/pnas.171325998}}";
