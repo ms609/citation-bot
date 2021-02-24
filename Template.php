@@ -6606,8 +6606,14 @@ final class Template {
       }
   }
   
-  public function block_modifications() : void {
+  public function block_modifications() : void { // {{void}} should be just like a comment, BUT this code will not stop the normalization of the hidden template which has already been done
      $tmp = $this->parsed_text();
+     while (preg_match_all('~' . sprintf(Self::PLACEHOLDER_TEXT, '(\d+)') . '~', $tmp, $matches)) {	
+       for ($i = 0; $i < count($matches[1]); $i++) {	
+         $subtemplate = $this->all_templates[$matches[1][$i]];	
+         $tmp = str_replace($matches[0][$i], $subtemplate->parsed_text(), $tmp);	
+       }	
+     }	
      // So we do not get an error when we parse a second time
      unset($this->rawtext);  // @phan-suppress-current-line PhanTypeObjectUnsetDeclaredProperty
      $this->parse_text($tmp);
