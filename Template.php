@@ -69,8 +69,8 @@ final class Template {
       $this->name = substr($text, 2, -2);
     }
     $this->initial_name = $this->name;
-    if (strtolower(trim($this->name)) === 'void') { // Just like a comment -- Will not stop the normalization of the hidden template type though!
-      while (preg_match_all('~' . sprintf(Self::PLACEHOLDER_TEXT, '(\d+)') . '~', $this->rawtext, $matches)) {
+    if (strtolower(trim($this->name)) === 'void') { // Just like a comment -- Will not stop the normalization of template type though!
+      while (preg_match_all('~' . sprintf(Self::PLACEHOLDER_TEXT, '(\d+)') . '~', $id, $matches)) {
         for ($i = 0; $i < count($matches[1]); $i++) {
           $subtemplate = $this->all_templates[$matches[1][$i]];
           $this->rawtext = str_replace($matches[0][$i], $subtemplate->parsed_text(), $this->rawtext);
@@ -4150,12 +4150,15 @@ final class Template {
             return;
           }
           // Undo some bad bot edits
-          if ($this->blank(WORK_ALIASES) && in_array(strtolower(str_replace(array('[', ']', '.'), '', $this->get($param))), ['reuters', 'associated press'])) {
+          if ($this->blank(WORK_ALIASES) &&
+              in_array(strtolower(str_replace(array('[', ']', '.'), '', $this->get($param))),
+                       ['reuters', 'associated press', 'united press international', 'yonhap news agency'])) {
             $the_url = '';
             foreach (ALL_URL_TYPES as $thingy) {
               $the_url .= $this->get($thingy);
             }
-            if (stripos($the_url, 'reuters.com') !== FALSE || stripos($the_url, 'apnews.com') !== FALSE) {
+            if (stripos($the_url, 'reuters.com') !== FALSE || stripos($the_url, 'apnews.com') !== FALSE ||
+                stripos($the_url, 'yna.co.kr') !== FALSE || stripos($the_url, 'upi.com')) {
                $this->rename($param, 'work');
             }
           }  
