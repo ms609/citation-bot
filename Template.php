@@ -292,6 +292,7 @@ final class Template {
         $this->forget(strtolower('CITATION_BOT_PLACEHOLDER_BARE_URL'));
       }
     }
+    if ($this->wikiname() === 'void') return $this->rawtext;  // It is like a comment
     return '{{' . $this->name . $this->join_params() . '}}';
   }
 
