@@ -362,7 +362,7 @@ final class Template {
       if (in_array($this->get('title'), [ "Bloomberg - Are you a robot?", "Page not found"])) {
           $this->forget('title'); 
       }
-      if ($this->get('title') === "Wayback Machine" && !$this->blank(['archive-url', 'archiveurl'])) {
+      if (($this->get('title') === "Wayback Machine" || $this->get('title') === "Internet Archive Wayback Machine") && !$this->blank(['archive-url', 'archiveurl'])) {
           $this->forget('title');
       }
       if (!$this->blank(['pmc', 'pmid', 'doi', 'jstor'])) { // Have some good data
