@@ -79,7 +79,7 @@ const BAD_ZOTERO_TITLES = ['Browse publications', 'Central Authentication Servic
                                  'Error 404', 'EZProxy', 'EBSCOhost Login', '404 - Not Found', '404!',
                                  'Temporarily Unavailable', ' has expired', 'not longer available',
                                  'Article expired', 'This is due to newswire licensing terms',
-                                 'OpenId transaction in progress', 'Download Limit Exceeded',
+                                 'OpenId transaction in progress', 'Download Limit Exceeded', 'Internet Archive Wayback Machine',
                                  'Url（アドレス）が変わりました', '404エラ', 'お探しのページは見つかりませんでした',
                                  'privacy settings', 'cookie settings', 'WebCite query', 'Ой!',
                                  'Untitled-1', 'Untitled-2', 'Untitled-3', 'Untitled-4', 'Untitled-5',
