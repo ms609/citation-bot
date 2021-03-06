@@ -1,8 +1,8 @@
 <?php
 declare(strict_types=1);
 @session_start();
-@header( 'Content-type: text/html; charset=utf-8' );
-@header("Content-Encoding: None", TRUE);
+@header('Content-type: text/html; charset=utf-8');
+@header('Content-Encoding: None', TRUE);
 @header('Cache-Control: no-cache, no-store, must-revalidate');
 @header('Pragma: no-cache');
 @header('Expires: 0');
@@ -96,7 +96,7 @@ if (empty($pages_in_category)) {
   exit("\n </pre></body></html>");
 }
   if (count($pages_in_category) > 2000) {
-    report_warning('Number of links is huge.  Cancelling run.  Listen to Obi-Wan Kenobi:  You want to go home and rethink your life.');
+    report_warning('Number of links is huge (' . (string) count($pages_in_category) . ')  Cancelling run.  Listen to Obi-Wan Kenobi:  You want to go home and rethink your life.');
     exit("\n </pre></body></html>");
   }
 
