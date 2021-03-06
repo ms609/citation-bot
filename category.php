@@ -1,8 +1,8 @@
 <?php
 declare(strict_types=1);
 @session_start();
-@header( 'Content-type: text/html; charset=utf-8' );
-@header("Content-Encoding: None", TRUE);
+@header('Content-type: text/html; charset=utf-8');
+@header('Content-Encoding: None', TRUE);
 @header('Cache-Control: no-cache, no-store, must-revalidate');
 @header('Pragma: no-cache');
 @header('Expires: 0');
@@ -60,7 +60,7 @@ if ($category) {
   }
   $pages_in_category = array_unique($pages_in_category); // Paranoid
   if (count($pages_in_category) > 2000 ) {
-    echo('Category is huge.  Cancelling run. Pick a smaller category.  Listen to Obi-Wan Kenobi:  You want to go home and rethink your life.');
+    echo('Category is huge (' . (string) count($pages_in_category) . ')  Cancelling run. Pick a smaller category.  Listen to Obi-Wan Kenobi:  You want to go home and rethink your life.');
     html_echo(' </pre></body></html>', "\n");
     exit(0);
   }
