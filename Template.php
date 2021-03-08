@@ -516,7 +516,7 @@ final class Template {
         }
         $this->tidy();
         // Fix up URLs hiding in identifiers
-        foreach (['issn', 'oclc', 'pmc', 'doi', 'pmid', 'jstor', 'arxiv', 'zbl', 'oclc', 'mr',
+        foreach (['issn', 'oclc', 'pmc', 'doi', 'pmid', 'jstor', 'arxiv', 'zbl', 'mr',
                   'lccn', 'hdl', 'ssrn', 'ol', 'jfm', 'osti', 'biorxiv', 'citeseerx', 'hdl'] as $possible) {
           if ($this->has($possible)) {
              $url = $this->get($possible);
@@ -3216,6 +3216,7 @@ final class Template {
           }
         }
       }
+      /** https://www.googleapis.com/books/v1/volumes?q=oclc:61313128 and such gives bogus results now.  Also, we run out of searches really fast.
       if ( !$google_books_worked && PHP_GOOGLEKEY) { // Try Google API instead 
         if ($isbn) {
           $url_token = "isbn:" . $isbn;
@@ -3260,7 +3261,7 @@ final class Template {
             // @codeCoverageIgnoreEnd
         }
       }
-    }
+    } **/
     // Now we parse a Google Books URL
     if ($url && (preg_match("~[Bb]ooks\.[Gg]oogle\.[\w\.]+/.*\bid=([\w\d\-]+)~", $url, $gid) || preg_match("~[Ee]ncrypted\.[Gg]oogle\..+book.*\bid=([\w\d\-]+)~", $url, $gid))) {
       $orig_book_url = $url;
