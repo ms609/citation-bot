@@ -3219,7 +3219,7 @@ final class Template {
       /** https://www.googleapis.com/books/v1/volumes?q=oclc:61313128 and such gives bogus results now.  Also, we run out of searches really fast.
       if ( !$google_books_worked && PHP_GOOGLEKEY) { // Try Google API instead 
         if ($isbn) {
-          $url_token = "isbn:" . $isbn;
+          return FALSE; // ISBN did not work, so give up
         } elseif ($oclc) {
           $url_token = "oclc:" . $oclc;
         } elseif ($lccn) {
