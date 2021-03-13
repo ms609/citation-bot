@@ -441,6 +441,8 @@ function adsabs_api(array $ids, array &$templates, string $identifier) : bool { 
        unset($record->page);
        unset($record->volume);
        unset($record->issue);
+      } elseif (preg_match('~[^A-Za-z]~', (string) $record->page)) { // Do not trust anything with letters
+       unset($record->page);
       }
     }
     $this_template->add_if_new("volume", (string) @$record->volume, 'adsabs');
