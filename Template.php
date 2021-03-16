@@ -4923,8 +4923,6 @@ final class Template {
                quietly('report_modification', "Decoding Bloomberg URL.");
                $this->set($param, 'https://www.bloomberg.com' .  base64_decode($matches[1]));
              }
-          } elseif (preg_match("~^(https?://news\.google\.com/newspapers\S+)&sjid=[^#&=]+(&\S+)$~i", $this->get($param), $matches)) {
-              $this->set($param, $matches[1] . $matches[2]);
           } elseif (preg_match("~^https?://.*ebookcentral.proquest.+/lib/.+docID(?:%3D|=)(\d+)(|#.*|&.*)(?:|\.)$~i", $this->get($param), $matches)) {
               if ($matches[2] === '#' || $matches[2] === '#goto_toc' || $matches[2] === '&' ||
                   $matches[2] === '&query=' || $matches[2] === '&query=#' || preg_match('~^&tm=\d*$~', $matches[2])) {
