@@ -3833,12 +3833,14 @@ T1 - This is the Title }}';
     $this->assertSame('Google Inc.', $template->get2('publisher'));
    }
  
+ /**
    public function testTidy76() : void {
     $text = "{{cite news |url=https://news.google.com/newspapers?id=rPZVAAAAIBAJ&sjid=4-EDAAAAIBAJ&pg=4073%2C7051142 |newspaper=Eugene Register-Guard |location=Oregon |last=Withers |first=Bud |title=Bend baseball bounces back |date=June 23, 1978 |page=1D }}";
     $template = $this->make_citation($text);
     $template->tidy_parameter('url');
     $this->assertSame('https://news.google.com/newspapers?id=rPZVAAAAIBAJ&pg=4073%2C7051142', $template->get2('url'));
    }
+   **/
  
    public function testTidy77() : void {
     $text = "{{cite journal |pages=Pages: 1-2 }}";
