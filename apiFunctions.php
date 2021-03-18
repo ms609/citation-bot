@@ -686,7 +686,8 @@ function expand_doi_with_dx(Template $template, string $doi) : bool {
               CURLOPT_HTTPHEADER => ["Accept: application/vnd.citationstyles.csl+json"],
               CURLOPT_RETURNTRANSFER => TRUE,
               CURLOPT_FOLLOWLOCATION => TRUE,
-              CURLOPT_TIMEOUT => 30]); // can take a long time when nothing to be found 
+              CURLOPT_TIMEOUT => 30]); // can take a long time when nothing to be found
+     report_action("Querying dx.doi.org: doi:" . doi_link($doi));
      try {
        $data = (string) @curl_exec($ch);
      } catch (Exception $e) {                    // @codeCoverageIgnoreStart
@@ -701,7 +702,6 @@ function expand_doi_with_dx(Template $template, string $doi) : bool {
      }
      $json = @json_decode($data, TRUE);
      if($json == FALSE) return FALSE;
-     report_action("Querying dx.doi.org: doi:" . doi_link($doi));
      // BE WARNED:  this code uses the "@$var" method.
      // If the variable is not set, then PHP just passes NULL, then that is interpreted as a empty string
      if ($template->blank(['date', 'year'])) {
