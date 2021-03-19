@@ -2,7 +2,7 @@
 declare(strict_types=1);
 const LC_SMALL_WORDS = array(/* The following will be automatically updated to alphabetical order */
           " AAOHN ", " AAP ", " AAUP ", " ABC ", " AC ", " ACM ", " AGU ", " AI ", " AIAA ", 
-          " AIP ", " AJHG ", " al ", " an ", " and ", " and then ", " as ", " at ", " at ", 
+          " AIP ", " AJHG ", " al ", " an ", " and ", " and then ", " AOAC ", " as ", " at ", " at ", 
           " aus ", " av ", " BBA ", " BBC ", " be ", " bei ", " BJPsych ", " BMC ", " BMJ ", 
           " but ", " by ", " CBC ", " CNS ", " d'un ", " d'une ", " D.C. ", " D.C.L. ", 
           " D.D.S. ", " D.Div. ", " D.M.D. ", " D.P.M. " , " M.S. ", " D.Sc. ", " da ", 
@@ -24,7 +24,7 @@ const LC_SMALL_WORDS = array(/* The following will be automatically updated to a
           " El Dorado ", " Las Vegas ", " Los Angeles ", " N Y ", " U S A ");
 const UC_SMALL_WORDS = array(/* The following will be automatically updated to alphabetical order */
           " Aaohn ", " Aap ", " Aaup ", " Abc ", " Ac ", " Acm ", " Agu ", " Ai ", " Aiaa ", 
-          " Aip ", " Ajhg ", " Al ", " An ", " And ", " and Then ", " As ", " At ", " At ", 
+          " Aip ", " Ajhg ", " Al ", " An ", " And ", " and Then ", " Aoac ", " As ", " At ", " At ", 
           " Aus ", " Av ", " Bba ", " Bbc ", " Be ", " Bei ", " Bjpsych ", " Bmc ", " Bmj ", 
           " But ", " By ", " Cbc ", " Cns ", " D'un ", " D'une ", " D.c. ", " D.c.l. ", 
           " D.d.s. ", " D.div. ", " D.m.d. ", " D.p.m. " , " M.s. ", " D.sc. ", " Da ", 
