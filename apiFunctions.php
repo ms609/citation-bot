@@ -213,7 +213,7 @@ function arxiv_api(array $ids, array &$templates) : bool {  // Pointer to save m
         $the_arxiv_title = $this_template->get('title');
         $this_template->set('title', '');
         expand_by_doi($this_template);
-        if ($this->blank('title')) $this_template->set('title', $the_arxiv_title);
+        if ($this_template->blank('title')) $this_template->set('title', $the_arxiv_title);
         unset($the_arxiv_title);
       } else {
         expand_by_doi($this_template);
