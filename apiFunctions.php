@@ -208,7 +208,16 @@ function arxiv_api(array $ids, array &$templates) : bool {  // Pointer to save m
     $i = 0;
     report_info("Found match for arXiv " . $ids[$i]);
     if ($this_template->add_if_new("doi", (string) $entry->arxivdoi, 'arxiv')) {
-      expand_by_doi($this_template);
+      if ($this_template->blank(['journal', 'volume', 'issue']) && $this_template->has('title')) {
+        // Move outdated/bad arXiv title out of the way
+        $the_arxiv_title = $this_template->get('title');
+        $this_template->set('title', '');
+        expand_by_doi($this_template);
+        if ($this->blank('title')) $this_template->set('title', $the_arxiv_title);
+        unset($the_arxiv_title);
+      } else {
+        expand_by_doi($this_template);
+      }
     }
     foreach ($entry->author as $auth) {
       $i++;
