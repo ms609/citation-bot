@@ -208,7 +208,16 @@ function arxiv_api(array $ids, array &$templates) : bool {  // Pointer to save m
     $i = 0;
     report_info("Found match for arXiv " . $ids[$i]);
     if ($this_template->add_if_new("doi", (string) $entry->arxivdoi, 'arxiv')) {
-      expand_by_doi($this_template);
+      if ($this_template->blank(['journal', 'volume', 'issue']) && $this_template->has('title')) {
+        // Move outdated/bad arXiv title out of the way
+        $the_arxiv_title = $this_template->get('title');
+        $this_template->set('title', '');
+        expand_by_doi($this_template);
+        if ($this_template->blank('title')) $this_template->set('title', $the_arxiv_title);
+        unset($the_arxiv_title);
+      } else {
+        expand_by_doi($this_template);
+      }
     }
     foreach ($entry->author as $auth) {
       $i++;
@@ -441,6 +450,8 @@ function adsabs_api(array $ids, array &$templates, string $identifier) : bool { 
        unset($record->page);
        unset($record->volume);
        unset($record->issue);
+      } elseif (preg_match('~[^A-Za-z]~', (string) $record->page)) { // Do not trust anything with letters
+       unset($record->page);
       }
     }
     $this_template->add_if_new("volume", (string) @$record->volume, 'adsabs');
@@ -684,7 +695,8 @@ function expand_doi_with_dx(Template $template, string $doi) : bool {
               CURLOPT_HTTPHEADER => ["Accept: application/vnd.citationstyles.csl+json"],
               CURLOPT_RETURNTRANSFER => TRUE,
               CURLOPT_FOLLOWLOCATION => TRUE,
-              CURLOPT_TIMEOUT => 30]); // can take a long time when nothing to be found 
+              CURLOPT_TIMEOUT => 30]); // can take a long time when nothing to be found
+     report_action("Querying dx.doi.org: doi:" . doi_link($doi));
      try {
        $data = (string) @curl_exec($ch);
      } catch (Exception $e) {                    // @codeCoverageIgnoreStart
@@ -699,7 +711,6 @@ function expand_doi_with_dx(Template $template, string $doi) : bool {
      }
      $json = @json_decode($data, TRUE);
      if($json == FALSE) return FALSE;
-     report_action("Querying dx.doi.org: doi:" . doi_link($doi));
      // BE WARNED:  this code uses the "@$var" method.
      // If the variable is not set, then PHP just passes NULL, then that is interpreted as a empty string
      if ($template->blank(['date', 'year'])) {

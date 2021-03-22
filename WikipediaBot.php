@@ -30,11 +30,11 @@ final class WikipediaBot {
         CURLOPT_MAXREDIRS => 5,
         CURLOPT_HEADER => 0, // Don't include header in output
         CURLOPT_RETURNTRANSFER => TRUE,
-        CURLOPT_CONNECTTIMEOUT => 2,
+        CURLOPT_CONNECTTIMEOUT => 15,
         CURLOPT_TIMEOUT => 20,
         CURLOPT_COOKIESESSION => TRUE,
         CURLOPT_COOKIEFILE => 'cookie.txt',
-        CURLOPT_USERAGENT => 'Citation_bot; citations@tools.wmflabs.org'
+        CURLOPT_USERAGENT => 'Citation_bot; citations@tools.wmflabs.org',
     ]);
     // setup.php must already be run at this point
     if (!getenv('PHP_OAUTH_CONSUMER_TOKEN'))  report_error("PHP_OAUTH_CONSUMER_TOKEN not set");
@@ -100,8 +100,8 @@ final class WikipediaBot {
   }
   
   public function fetch(array $params, string $method, int $depth = 1) : ?object {
-    if ($depth > 1) sleep($depth);
-    if ($depth > 5) return NULL;
+    if ($depth > 1) sleep($depth+2);
+    if ($depth > 4) return NULL;
     $params['format'] = 'json';
      
     $request = Request::fromConsumerAndToken($this->consumer, $this->token, $method, API_ROOT, $params);
@@ -120,7 +120,7 @@ final class WikipediaBot {
           set_time_limit(45);
           $data = (string) @curl_exec($this->ch);
           if (!$data) {
-            report_error("Curl error: " . echoable(curl_error($this->ch)));        // @codeCoverageIgnore
+            report_minor_error("Curl error: " . echoable(curl_error($this->ch)));  // @codeCoverageIgnore
             return NULL;                                                           // @codeCoverageIgnore
           }
           $ret = @json_decode($data);
@@ -144,7 +144,7 @@ final class WikipediaBot {
           set_time_limit(45);
           $data = (string) @curl_exec($this->ch);
           if ( !$data ) {
-            report_error("Curl error: " . echoable(curl_error($this->ch)));     // @codeCoverageIgnore
+            report_minor_error("Curl error: " . echoable(curl_error($this->ch)));     // @codeCoverageIgnore
           }
           $ret = @json_decode($data);
           set_time_limit(120);    
@@ -357,8 +357,8 @@ final class WikipediaBot {
         "titles" => $page,
       ], 'GET');
     if (!isset($res->query->pages)) {
-        report_error("Failed to get article's last revision");      // @codeCoverageIgnore
-        return '';                                                  // @codeCoverageIgnore
+        report_minor_error("Failed to get article's last revision");      // @codeCoverageIgnore
+        return '';                                                        // @codeCoverageIgnore
     }
     $page = reset($res->query->pages);
     return  (isset($page->revisions[0]->revid) ? (string) $page->revisions[0]->revid : '');

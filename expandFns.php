@@ -261,6 +261,8 @@ function de_wikify(string $string) : string {
 }
 
 function titles_are_dissimilar(string $inTitle, string $dbTitle) : bool {
+        // Blow away junk from OLD stuff
+        $inTitle = preg_replace ("~# # # CITATION_BOT_PLACEHOLDER_[A-Z]+ \d+ # # #~isu", ' ' , $inTitle);
         // always decode new data
         $dbTitle = titles_simple(mb_convert_encoding(html_entity_decode($dbTitle), "HTML-ENTITIES", 'UTF-8'));
         // old data both decoded and not
@@ -299,6 +301,10 @@ function titles_simple(string $inTitle) : string {
         $inTitle = straighten_quotes(mb_strtolower((string) $inTitle));
         $inTitle = preg_replace("~(?: |-|—|–|â€™|â€”|â€“)~u", "", $inTitle);
         $inTitle = str_replace(array("\n", "\r", "\t", "&#8208;", ":", "&ndash;", "&mdash;", "&ndash", "&mdash"), "", $inTitle);
+        // Retracted
+        $inTitle = preg_replace("~\[RETRACTED\]~ui", "", $inTitle);
+        $inTitle = preg_replace("~\(RETRACTED\)~ui", "", $inTitle);
+        $inTitle = preg_replace("~RETRACTED~ui", "", $inTitle);
         // Drop normal quotes
         $inTitle = str_replace(array("'", '"'), "", $inTitle);
         // Strip trailing periods
@@ -750,3 +756,4 @@ function can_safely_modify_dashes(string $value) : bool {
 function str_i_same(string $str1, string $str2) : bool {
    return (0 === strcasecmp($str1, $str2));
 }
+  

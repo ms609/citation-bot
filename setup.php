@@ -39,9 +39,14 @@ if (isset($_REQUEST["slow"]) || TRAVIS || (isset($argv[2]) && $argv[2] === '--sl
 }
 
 //Optimisation
-ini_set('output_buffering', '0');
+ini_set('output_buffering', 'off');
 ini_set('zlib.output_compression', '0');
 ini_set('implicit_flush', '1');
+ini_set('responseBufferLimit', '0');
+ini_set('OutputBufferSize', '0');
+ini_set('proxy_buffering', 'off');
+ini_set('gzip', 'off');
+
 ob_implicit_flush();
 flush();
 if (!TRAVIS) {

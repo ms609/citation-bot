@@ -4,7 +4,7 @@ declare(strict_types=1);
 // Use lower case for all of these, and then compare to a lower cased version
 const HAS_NO_VOLUME = array("zookeys", "studia hibernica", "analecta hibernica", "british art studies", "der spiegel",
                             "international astronomical union circular", "yale french studies", "capjournal",
-                            "cap journal");  // Some journals have issues only, no volume numbers
+                            "cap journal", "phytokeys");  // Some journals have issues only, no volume numbers
 const BAD_ACCEPTED_MANUSCRIPT_TITLES = array("oup accepted manuscript", "placeholder for bad pdf file", 
                                              "placeholder", "symbolic placeholder", "[placeholder]", 
                                              "placeholder for arabic language transliteration");
@@ -34,7 +34,9 @@ const PUBLISHERS_ARE_WORKS = array('the san diego union-tribune', 'forbes', 'sal
                                    'oneindia', 'international business times', 'the hindu', 'daily news and analysis',
                                    'nfl.com', 'foxsports.com', 'the new yorker', 'findlaw.com', 'newsmax',
                                    'washtimes.com', 'washington times', 'findlaw',
-                                   'stripes', 'arizona daily star', 'the times of india'); // LOWER CASE!  WWW not there too! 
+                                   'stripes', 'arizona daily star', 'the times of india',
+                                   // WP:CITALICSRFC and MOS:ITALICWEBCITE  ?????     'abc news', 'nbc news', 'cbs news', 'bbc news'
+                                  ); // LOWER CASE!  WWW not there too! 
 
 const DUBIOUS_JOURNALS = array('fda', 'reuters', 'associated press', 'ap', 'ap wire', 'report'); // Things we add, but only if publisher and agency are both blank
 
@@ -77,7 +79,7 @@ const BAD_ZOTERO_TITLES = ['Browse publications', 'Central Authentication Servic
                                  'Error 404', 'EZProxy', 'EBSCOhost Login', '404 - Not Found', '404!',
                                  'Temporarily Unavailable', ' has expired', 'not longer available',
                                  'Article expired', 'This is due to newswire licensing terms',
-                                 'OpenId transaction in progress', 'Download Limit Exceeded',
+                                 'OpenId transaction in progress', 'Download Limit Exceeded', 'Internet Archive Wayback Machine',
                                  'Url（アドレス）が変わりました', '404エラ', 'お探しのページは見つかりませんでした',
                                  'privacy settings', 'cookie settings', 'WebCite query', 'Ой!',
                                  'Untitled-1', 'Untitled-2', 'Untitled-3', 'Untitled-4', 'Untitled-5',

@@ -1,8 +1,8 @@
 <?php
 declare(strict_types=1);
 @session_start();
-@header( 'Content-type: text/html; charset=utf-8' );
-@header("Content-Encoding: None", TRUE);
+@header('Content-type: text/html; charset=utf-8');
+@header('Content-Encoding: None', TRUE);
 @header('Cache-Control: no-cache, no-store, must-revalidate');
 @header('Pragma: no-cache');
 @header('Expires: 0');
@@ -55,7 +55,7 @@ if (strlen($page_name) > 256)  {
   report_warning('Possible invalid page');
   exit("\n </pre></body></html>");
 }
-$edit_summary_end = "| Suggested by " . $api->get_the_user() . " | All pages linked from cached copy of $page_name | via #UCB_webform_linked ";
+$edit_summary_end = "| Suggested by " . $api->get_the_user() . " | Pages linked from cached $page_name | via #UCB_webform_linked ";
 $final_edit_overview = "";
 
 $url = API_ROOT . '?action=parse&prop=links&format=json&page=' . $page_name;
@@ -95,8 +95,8 @@ if (empty($pages_in_category)) {
   report_warning('No links to expand found');
   exit("\n </pre></body></html>");
 }
-  if (count($pages_in_category) > 1000 && !WikipediaBot::NonStandardMode()) {
-    report_warning('Number of links is huge.  Cancelling run.  Listen to Obi-Wan Kenobi:  You want to go home and rethink your life.');
+  if (count($pages_in_category) > 2000) {
+    report_warning('Number of links is huge (' . (string) count($pages_in_category) . ')  Cancelling run.  Listen to Obi-Wan Kenobi:  You want to go home and rethink your life.');
     exit("\n </pre></body></html>");
   }
 

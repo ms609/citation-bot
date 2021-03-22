@@ -8,13 +8,13 @@ declare(strict_types=1);
  * to the wiki.
  */
 
-require_once('Comment.php');       // @codeCoverageIgnore 
-require_once('Template.php');      // @codeCoverageIgnore 
-require_once('apiFunctions.php');  // @codeCoverageIgnore 
-require_once('expandFns.php');     // @codeCoverageIgnore 
-require_once('user_messages.php'); // @codeCoverageIgnore 
-require_once('Zotero.php');        // @codeCoverageIgnore 
-require_once("constants.php");     // @codeCoverageIgnore 
+require_once('Comment.php');       // @codeCoverageIgnore
+require_once('Template.php');      // @codeCoverageIgnore
+require_once('apiFunctions.php');  // @codeCoverageIgnore
+require_once('expandFns.php');     // @codeCoverageIgnore
+require_once('user_messages.php'); // @codeCoverageIgnore
+require_once('Zotero.php');        // @codeCoverageIgnore
+require_once("constants.php");     // @codeCoverageIgnore
 
 class Page {
 
@@ -253,6 +253,11 @@ class Page {
        $all_templates[$i]->all_templates = &$all_templates; // Pointer to avoid MASSSIVE memory leak on crazy pages
        $all_templates[$i]->date_style = $this->date_style;
     }
+    for ($i = 0; $i < count($all_templates); $i++) {
+      if ($all_templates[$i]->wikiname() === 'void') {
+        $all_templates[$i]->block_modifications();
+      }
+    }
     $our_templates = array();
     $our_templates_slight = array();
     $our_templates_conferences = array();
@@ -294,6 +299,8 @@ class Page {
         $this_template->tidy();
       } elseif ($this_template->wikiname() == 'cite lsa') {
         $this_template->clean_google_books();
+      } elseif ($this_template->wikiname() == 'cite odnb') {
+        $this_template->clean_cite_odnb();
       }
     }
     // BATCH API CALLS
@@ -413,8 +420,8 @@ class Page {
     // we often just fix Journal caps, so must be case sensitive compare
     // Avoid minor edits - gadget API will make these changes, since it does not check return code
     $caps_ok = array('lccn', 'isbn', 'doi');
-    $last_first_in  = array(' last=',  ' last =',  '|last=',  '|last =',  ' first=',  ' first =',  '|first=',  '|first =');
-    $last_first_out = array(' last1=', ' last1 =', '|last1=', '|last1 =', ' first1=', ' first1 =', '|first1=', '|first1 =');
+    $last_first_in  = array(' last=',  ' last =',  '|last=',  '|last =',  ' first=',  ' first =',  '|first=',  '|first =',  'accessdate',  'archivedate',  'archiveurl',  'origyear');
+    $last_first_out = array(' last1=', ' last1 =', '|last1=', '|last1 =', ' first1=', ' first1 =', '|first1=', '|first1 =', 'access-date', 'archive-date', 'archive-url', 'orig-year');
     return strcmp(str_replace($last_first_in, $last_first_out, str_ireplace($caps_ok, $caps_ok, $this->text)),
                   str_replace($last_first_in, $last_first_out,str_ireplace($caps_ok, $caps_ok, $this->start_text))) != 0;
   }
@@ -426,22 +433,33 @@ class Page {
       $auto_summary .= "Alter: " . implode(", ", $this->modifications["changeonly"]) . ". ";
     }
     if (strpos(implode(" ", $this->modifications["changeonly"]), 'url') !== FALSE) {
-      $auto_summary .= "URLs might have been internationalized/anonymized. ";
+      $auto_summary .= "URLs might have been anonymized. ";
     }
     if (count($this->modifications['additions']) !== 0) {
       $addns = $this->modifications["additions"];
       $auto_summary .= "Add: ";
       $min_au = 9999;
       $max_au = 0;
+      $min_ed = 9999;
+      $max_ed = 0;
       while ($add = array_pop($addns)) {
-        if (preg_match('~(?:author|last|first)(\d+)~', $add, $match)) {
+        if (preg_match('~editor[^\d]*(\d+)~', $add, $match)) {
+          if ($match[1] < $min_ed) $min_ed = $match[1];
+          if ($match[1] > $max_ed) $max_ed = $match[1];
+        } elseif (preg_match('~(?:author|last|first)(\d+)~', $add, $match)) {
           if ($match[1] < $min_au) $min_au = $match[1];
           if ($match[1] > $max_au) $max_au = $match[1];
-        } else $auto_summary .= $add . ', ';
+        } else {
+          $auto_summary .= $add . ', ';
+        }
       }
       if ($max_au) {
-        $auto_summary .= "author pars. $min_au-$max_au. ";
-      } else {
+        $auto_summary .= "authors $min_au-$max_au. ";
+      }
+      if ($max_ed) {
+        $auto_summary .= "editors $min_ed-$max_ed. ";
+      }
+      if (!$max_ed && !$max_au) {
         $auto_summary = substr($auto_summary, 0, -2) . '. ';
       }
     }
@@ -463,7 +481,7 @@ class Page {
     if ((count($this->modifications["deletions"]) !== 0)
     && (($pos = array_search('accessdate', $this->modifications["deletions"])) !== FALSE || ($pos = array_search('access-date', $this->modifications["deletions"])) !== FALSE)
     ) {
-      $auto_summary .= "Removed accessdate with no specified URL. ";
+      $auto_summary .= "Removed access-date with no URL. ";
       unset($this->modifications["deletions"][$pos]);
     }
     if ((count($this->modifications["deletions"]) !== 0)
@@ -479,10 +497,13 @@ class Page {
       ? "Formatted [[WP:ENDASH|dashes]]. "
       : ""
     );
-    if ($this->modifications["names"]) {
-      $auto_summary .= 'Some additions/deletions were actually parameter name changes. ';
+    if (count($this->modifications["deletions"]) !== 0 && count($this->modifications["additions"]) !== 0 && $this->modifications["names"]) {
+      $auto_summary .= 'Some additions/deletions were parameter name changes. ';
     }
-    if (substr_count($this->text, '978') > substr_count($this->start_text, '978')) {
+    $isbn978_added = substr_count($this->text, '978') - substr_count($this->start_text, '978');
+    $isbn_added = (substr_count($this->text, 'isbn') + substr_count($this->text, 'ISBN')) -
+                  (substr_count($this->start_text, 'isbn') + substr_count($this->start_text, 'ISBN'));
+    if (($isbn978_added > 0) && ($isbn978_added > $isbn_added)) { // Still will get false positives for isbn=blank converted to isbn=978......
       $auto_summary .= 'Upgrade ISBN10 to ISBN13. ';
     }
     if (stripos($auto_summary, 'template') !== FALSE) {
@@ -494,7 +515,7 @@ class Page {
                 'citepaper', 'Citepaper', 'cite new|', 'cite new|', 'citation journal', 'Citation journal',
                 'cite new |', 'cite new |', 'cite |', 'Cite |'] as $try_me) {
          if (substr_count($this->text, $try_me) < substr_count($this->start_text, $try_me)) {
-            $auto_summary .= 'Remove Template type redirect. ';
+            $auto_summary .= 'Removed Template redirect. ';
             break;
          }
       }
@@ -502,7 +523,7 @@ class Page {
     if (!$auto_summary) {
       $auto_summary = "Misc citation tidying. ";
     }
-    return $auto_summary . "| You can [[WP:UCB|use this bot]] yourself. [[WP:DBUG|Report bugs here]]. ";
+    return $auto_summary . "| [[WP:UCB|Use this bot]]. [[WP:DBUG|Report bugs]]. ";
   }
 
   public function write(WikipediaBot $api, string $edit_summary_end = '') : bool {

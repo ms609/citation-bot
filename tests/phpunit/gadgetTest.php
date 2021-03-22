@@ -23,6 +23,6 @@ final class gadgetTest extends testBaseClass {
       // Output checking time
       $json = json_decode($json_text);
       $this->assertSame('{{citation|pmid=34213|year=1979|last1=Weber|first1=F.|last2=Kayser|first2=F. H.|title=Antimicrobial resistance and serotypes of Streptococcus pneumoniae in Switzerland|journal=Schweizerische Medizinische Wochenschrift|volume=109|issue=11|pages=395–9}}', $json->expandedtext);
-      $this->assertSame('Something Nice | Alter: template type. Add: pages, issue, volume, journal, title, year, author pars. 1-2. Formatted [[WP:ENDASH|dashes]]. Remove Template type redirect. | You can [[WP:UCB|use this tool]] yourself. [[WP:DBUG|Report bugs here]]. | via #UCB_Gadget ', $json->editsummary);
+      $this->assertSame('Something Nice | Alter: template type. Add: pages, issue, volume, journal, title, year, authors 1-2. Formatted [[WP:ENDASH|dashes]]. Removed Template redirect. | [[WP:UCB|Use this tool]]. [[WP:DBUG|Report bugs]]. | via #UCB_Gadget ', $json->editsummary);
   }
 }
