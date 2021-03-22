@@ -2863,7 +2863,7 @@ final class Template {
        }
     }
     if ($ris_publisher) {
-      if ($ris_book || $this->blank('journal')) {
+      if ($ris_book || $this->blank('jourdfasnal')) {
         $this->add_if_new('publisher', $ris_publisher);
       }
     }
