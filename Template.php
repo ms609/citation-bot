@@ -6540,7 +6540,7 @@ final class Template {
     return FALSE;
   }
   
-  public function clean_cite_odnb() {
+  public function clean_cite_odnb() : void {
     $matches = ['', ''];
     if ($this->has('url')) {
       while (preg_match('~^(https?://www\.oxforddnb\.com/.+)(?:\;jsession|\?rskey|\#)~', $this->get('url'), $matches)) {
