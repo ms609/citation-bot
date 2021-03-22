@@ -261,6 +261,8 @@ function de_wikify(string $string) : string {
 }
 
 function titles_are_dissimilar(string $inTitle, string $dbTitle) : bool {
+        // Blow away junk from OLD stuff
+        $inTitle = preg_replace ("~# # # CITATION_BOT_PLACEHOLDER_[A-Z]+ \d+ # # #~isu", ' ' , $inTitle);
         // always decode new data
         $dbTitle = titles_simple(mb_convert_encoding(html_entity_decode($dbTitle), "HTML-ENTITIES", 'UTF-8'));
         // old data both decoded and not
@@ -299,6 +301,10 @@ function titles_simple(string $inTitle) : string {
         $inTitle = straighten_quotes(mb_strtolower((string) $inTitle));
         $inTitle = preg_replace("~(?: |-|—|–|â€™|â€”|â€“)~u", "", $inTitle);
         $inTitle = str_replace(array("\n", "\r", "\t", "&#8208;", ":", "&ndash;", "&mdash;", "&ndash", "&mdash"), "", $inTitle);
+        // Retracted
+        $inTitle = preg_replace("~\[RETRACTED\]~ui", "", $inTitle);
+        $inTitle = preg_replace("~\(RETRACTED\)~ui", "", $inTitle);
+        $inTitle = preg_replace("~RETRACTED~ui", "", $inTitle);
         // Drop normal quotes
         $inTitle = str_replace(array("'", '"'), "", $inTitle);
         // Strip trailing periods
@@ -489,22 +495,26 @@ function remove_brackets(string $string) : string {
 // ============================================= Wikipedia functions ======================================
 
 function throttle (int $min_interval) : void {
-  if (WikipediaBot::NonStandardMode()) return;
   static $last_write_time = 0;
   static $phase = 0;
-  $cycles = 6; // average over this many cycles
+  static $gc_counter = 0;
+  $cycles = intdiv(180, $min_interval); // average over three minutes
   $phase = $phase + 1;
+  $gc_counter = $gc_counter + 1;
+  
+  if ($gc_counter > 128) {
+    $gc_counter = 0;
+    gc_collect_cycles();
+  }
+
   if ($phase < $cycles) {
     return;
   } else {
     $phase = 0;
+    if (WikipediaBot::NonStandardMode()) $min_interval = intdiv($min_interval, 2);
     $min_interval =  $min_interval * $cycles;
   }
- 
-  $time_since_last_write = time() - $last_write_time;
-  if ($time_since_last_write < $min_interval) {
-    gc_collect_cycles(); // do something useful 
-  }
+
   $time_since_last_write = time() - $last_write_time;
   if ($time_since_last_write < $min_interval) {
     $time_to_pause = floor($min_interval - $time_since_last_write);
@@ -746,3 +756,4 @@ function can_safely_modify_dashes(string $value) : bool {
 function str_i_same(string $str1, string $str2) : bool {
    return (0 === strcasecmp($str1, $str2));
 }
+  

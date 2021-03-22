@@ -34,6 +34,7 @@ const COMMON_MISTAKES = array ( // Common mistakes that aren't picked up by the 
   "dio"             =>  "doi",
   "director"        =>  "others",
   "display_authors" =>  "display-authors",
+  "displayauthors"  =>  "display-authors",
   "displayeditors"  =>  "display-editors",
   "doi_brokendate"  =>  "doi-broken-date",
   "doi_inactivedate"=>  "doi-broken-date",

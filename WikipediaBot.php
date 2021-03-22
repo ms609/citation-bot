@@ -30,11 +30,11 @@ final class WikipediaBot {
         CURLOPT_MAXREDIRS => 5,
         CURLOPT_HEADER => 0, // Don't include header in output
         CURLOPT_RETURNTRANSFER => TRUE,
-        CURLOPT_CONNECTTIMEOUT => 2,
+        CURLOPT_CONNECTTIMEOUT => 15,
         CURLOPT_TIMEOUT => 20,
         CURLOPT_COOKIESESSION => TRUE,
         CURLOPT_COOKIEFILE => 'cookie.txt',
-        CURLOPT_USERAGENT => 'Citation_bot; citations@tools.wmflabs.org'
+        CURLOPT_USERAGENT => 'Citation_bot; citations@tools.wmflabs.org',
     ]);
     // setup.php must already be run at this point
     if (!getenv('PHP_OAUTH_CONSUMER_TOKEN'))  report_error("PHP_OAUTH_CONSUMER_TOKEN not set");
@@ -100,8 +100,8 @@ final class WikipediaBot {
   }
   
   public function fetch(array $params, string $method, int $depth = 1) : ?object {
-    if ($depth > 1) sleep($depth);
-    if ($depth > 5) return NULL;
+    if ($depth > 1) sleep($depth+2);
+    if ($depth > 4) return NULL;
     $params['format'] = 'json';
      
     $request = Request::fromConsumerAndToken($this->consumer, $this->token, $method, API_ROOT, $params);
@@ -120,7 +120,7 @@ final class WikipediaBot {
           set_time_limit(45);
           $data = (string) @curl_exec($this->ch);
           if (!$data) {
-            report_error("Curl error: " . echoable(curl_error($this->ch)));        // @codeCoverageIgnore
+            report_minor_error("Curl error: " . echoable(curl_error($this->ch)));  // @codeCoverageIgnore
             return NULL;                                                           // @codeCoverageIgnore
           }
           $ret = @json_decode($data);
@@ -144,7 +144,7 @@ final class WikipediaBot {
           set_time_limit(45);
           $data = (string) @curl_exec($this->ch);
           if ( !$data ) {
-            report_error("Curl error: " . echoable(curl_error($this->ch)));     // @codeCoverageIgnore
+            report_minor_error("Curl error: " . echoable(curl_error($this->ch)));     // @codeCoverageIgnore
           }
           $ret = @json_decode($data);
           set_time_limit(120);    
@@ -183,29 +183,36 @@ final class WikipediaBot {
           ], 'GET');
     
     if (!$response) {
-      report_error("Write request failed");     // @codeCoverageIgnore
+      report_minor_error("Write request failed");     // @codeCoverageIgnore
+      return FALSE;                                   // @codeCoverageIgnore
     }
     if (isset($response->warnings)) {
       // @codeCoverageIgnoreStart
       if (isset($response->warnings->prop)) {
-        report_error((string) $response->warnings->prop->{'*'});
+        report_minor_error((string) $response->warnings->prop->{'*'});
+        return FALSE;
       }
       if (isset($response->warnings->info)) {
-        report_error((string) $response->warnings->info->{'*'});
+        report_minor_error((string) $response->warnings->info->{'*'});
+        return FALSE;
       }
       // @codeCoverageIgnoreEnd
     }
     if (!isset($response->batchcomplete)) {
-      report_error("Write request triggered no response from server");   // @codeCoverageIgnore
+      report_minor_error("Write request triggered no response from server");   // @codeCoverageIgnore
+      return FALSE;                                                            // @codeCoverageIgnore
     }
     
-    if (!isset($response->query->pages)) {
-      report_error("Pages array is non-existent.  Aborting.");   // @codeCoverageIgnore
+    if (!isset($response->query) || !isset($response->query->pages)) {
+      report_minor_error("Pages array is non-existent.  Aborting.");   // @codeCoverageIgnore
+      return FALSE;                                                    // @codeCoverageIgnore
     }
     $myPage = reset($response->query->pages); // reset gives first element in list
     
-    if (!isset($myPage->lastrevid)) {
-      report_error("Page seems not to exist. Aborting.");   // @codeCoverageIgnore
+    if (!isset($myPage->lastrevid) || !isset($myPage->revisions) || !isset($myPage->revisions[0]) ||
+        !isset($myPage->revisions[0]->timestamp) || !isset($myPage->title)) {
+      report_minor_error("Page seems not to exist. Aborting.");   // @codeCoverageIgnore
+      return FALSE;                                               // @codeCoverageIgnore
     }
     $baseTimeStamp = $myPage->revisions[0]->timestamp;
     
@@ -217,6 +224,11 @@ final class WikipediaBot {
     if (stripos($text, "CITATION_BOT_PLACEHOLDER") != FALSE)  {
       report_minor_error("\n ! Placeholder left escaped in text. Aborting.");  // @codeCoverageIgnore
       return FALSE;                                                            // @codeCoverageIgnore
+    }
+    if (!isset($response->query) || !isset($response->query->tokens) ||
+        !isset($response->query->tokens->csrftoken)) {
+      report_minor_error("Responce object was invalid.  Aborting. ");  // @codeCoverageIgnore
+      return FALSE;                                                    // @codeCoverageIgnore
     }
     
     // No obvious errors; looks like we're good to go ahead and edit
@@ -239,10 +251,11 @@ final class WikipediaBot {
     
     if (isset($result->error)) {
       // @codeCoverageIgnoreStart
-      report_error("Write error: " . 
+      report_minor_error("Write error: " . 
                     echoable(strtoupper($result->error->code)) . ": " . 
                     str_replace(array("You ", " have "), array("This bot ", " has "), 
                     echoable($result->error->info)));
+      return FALSE;
       // @codeCoverageIgnoreEnd
     } elseif (isset($result->edit)) {
       // @codeCoverageIgnoreStart
@@ -344,8 +357,8 @@ final class WikipediaBot {
         "titles" => $page,
       ], 'GET');
     if (!isset($res->query->pages)) {
-        report_error("Failed to get article's last revision");      // @codeCoverageIgnore
-        return '';                                                  // @codeCoverageIgnore
+        report_minor_error("Failed to get article's last revision");      // @codeCoverageIgnore
+        return '';                                                        // @codeCoverageIgnore
     }
     $page = reset($res->query->pages);
     return  (isset($page->revisions[0]->revid) ? (string) $page->revisions[0]->revid : '');
