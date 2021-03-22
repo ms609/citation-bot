@@ -550,7 +550,7 @@ class Page {
            return TRUE;
          } else {
            $failures[4] = TRUE;
-           if ($failures[0] && $failures[1] && $failures[2] && $failures[3] && $failures[4]) {
+           if ($failures[0] && $failures[1] && $failures[2] && $failures[3]) {
               report_error("Five failures in a row -- shutting down the bot");
            }
            return FALSE;
