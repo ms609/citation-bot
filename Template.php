@@ -3760,6 +3760,10 @@ final class Template {
     } else {
       return;
     }
+    if ($id === "<small></small>" || $id === "<small> </small>") {
+      $this->forget('id');
+      return;
+    }
     while (preg_match("~\b(PMID|DOI|ISBN|ISSN|ARXIV|LCCN)[\s:]*(\d[\d\s\-]*+[^\s\}\{\|,;]*)(?:[,;] )?~iu", $id, $match)) {
       $the_type = strtolower($match[1]);
       $the_data = $match[2];
@@ -3840,6 +3844,10 @@ final class Template {
       $this->set('id', $id);
     } else {
       $this->forget('id');
+    }
+    if ($id === "<small></small>" || $id === "<small> </small>") {
+      $this->forget('id');
+      return;
     }
   }
 
