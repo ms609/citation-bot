@@ -5666,6 +5666,9 @@ final class Template {
         // Or is this extra punctuation copied in?
         $trial[] = substr($doi, 0, -1);
     }
+    if (substr($doi, -4) === '</a>' || substr($doi, -4) === '</A>') {
+      $trial[] = substr($doi, 0, -4);
+    }
     if (substr($doi, 0, 3) != "10.") {
       if (substr($doi, 0, 2) === "0.") {
         $trial[] = "1" . $doi;
