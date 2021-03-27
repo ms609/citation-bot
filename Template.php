@@ -1319,7 +1319,7 @@ final class Template {
         }
         $existing = strtotime($this->get('doi-broken-date'));
         $the_new  = strtotime($value);
-        if (($existing === FALSE) || ($existing + (4*2592000) < $the_new) || ((2592000*4) + $the_new < $existing)) { // Four month difference
+        if (($existing === FALSE) || ($existing + (6*2592000) < $the_new) || ((2592000*6) + $the_new < $existing)) { // Six months of difference
            return $this->add($param_name, $value);
         }
         return FALSE;
