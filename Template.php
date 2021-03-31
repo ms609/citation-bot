@@ -3998,7 +3998,12 @@ final class Template {
     && ($rename_cite_book || $this->wikiname() != 'cite book')
     ) {
       if ($new_name === 'cite arxiv') {
-        if (!$this->blank(['website','displayauthors','display-authors','access-date','accessdate'])) return; // Unsupported parameters
+        if (!$this->blank(array_merge(['website','displayauthors','display-authors','access-date','accessdate'
+                          'translator', 'translator1','translator1-first', 'translator1-given',
+                           'translator1-last','translator1-surname', 'translator-first',
+                           'translator-first1', 'translator-given', 'translator-given1', 'translator-last',
+                           'translator-last1','translator-surname', 'translator-surname1',
+                           'display-editors','displayeditors'], FIRST_EDITOR_ALIASES))) return; // Unsupported parameters
         $new_name = 'cite arXiv';  // Without the capital X is the alias
       }
       preg_match("~^(\s*).*\b(\s*)$~", $this->name, $spacing);
