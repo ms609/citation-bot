@@ -3998,8 +3998,8 @@ final class Template {
     && ($rename_cite_book || $this->wikiname() != 'cite book')
     ) {
       if ($new_name === 'cite arxiv') {
-        if (!$this->blank(array_merge(['website','displayauthors','display-authors','access-date','accessdate'
-                          'translator', 'translator1','translator1-first', 'translator1-given',
+        if (!$this->blank(array_merge(['website','displayauthors','display-authors','access-date','accessdate',
+                           'translator', 'translator1','translator1-first', 'translator1-given',
                            'translator1-last','translator1-surname', 'translator-first',
                            'translator-first1', 'translator-given', 'translator-given1', 'translator-last',
                            'translator-last1','translator-surname', 'translator-surname1',
