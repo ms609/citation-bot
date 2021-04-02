@@ -170,7 +170,8 @@ const OBVIOUS_FOREIGN_WORDS = array(" Abhandlungen ", " Actes ", " Annales ", " 
            " Archiwa ", " Biblioteki  ", " Muzea ", " Kościelne ", " Zbornik ",
            " Radova ", " Filozofskog  ", " Fakulteta ", " Prištini ", " Mém. ", " Elektriceskaja ",
            " Teplovoznaja ", " Tjaga ", " Aarbøger ",  " Oldkyndighed ", " Histori ", " Les Publications ",
-           "ische ", "histoire ", " ancienne ", " d'", "http://", "www.", "www-", " Mikologiya ", " Fitopatologiya ");
+           "ische ", "histoire ", " ancienne ", " d'", "http://", "www.", "www-", " Mikologiya ", " Fitopatologiya ",
+           " filmski ", " ljetopis ");
  
 const MAP_DIACRITICS = array("À"=>"A", "Á"=>"A", "Â"=>"A", "Ã"=>"A",
     "Ä"=>"A", "Å"=>"A", "Æ"=>"AE", "Ç"=>"C", "È"=>"E", "É"=>"E",
