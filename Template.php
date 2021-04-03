@@ -2286,7 +2286,7 @@ final class Template {
         foreach ($Items as $item) {
            if ($item['Name'] == 'Title') {
                $new_title = str_replace(array("[", "]"), "", (string) $item);
-               foreach (['chapter', 'title', 'series'] as $possible) {
+               foreach (['chapter', 'title', 'series', 'trans-title'] as $possible) {
                  if ($this->has($possible) && titles_are_similar($this->get($possible), $new_title)) {
                    $this->add_if_new('pmid', $results[0]);
                    return;
