@@ -11,7 +11,7 @@ const LC_SMALL_WORDS = array(/* The following will be automatically updated to a
           " ee ", " eEarth ", " ein ", " eine ", " einen ", " el ", " else ", " EMBO ", " en ", " EPJ ", 
           " et ", " FASEB ", " FDA ", " FEBS ", " FEMS ", " for ", " from ", " för ", 
           " für ", " HIV ", " HIV/AIDS ", " HLA ", " HTMLGIANT ", " IBM ", " ICES ", " IEEE ", 
-          " if ", " ILR ", " in ", " into ", " is ", " its ", " JAMA ", " JAMA: ", " la ", 
+          " if ", " ILR ", " in ", " INFLIBNET ", " into ", " is ", " its ", " JAMA ", " JAMA: ", " la ", 
           " las ", " le ", " les ", " los ", " M.A. ", " M.D. ", " medRxiv ", " mit ", " MNRAS ", " mot ", 
           " N.Y. ", " N.Y.) ", " NASA ", " NEJM ", " non ", " nor ", " NRC ", " NY ", " NYC ", 
           " NYT ", " NZ ", " och ", " OECD ", " of ", " off ", " og ", " on ", " or ", 
@@ -33,7 +33,7 @@ const UC_SMALL_WORDS = array(/* The following will be automatically updated to a
           " Ee ", " Eearth ", " Ein ", " Eine ", " Einen ", " El ", " Else ", " Embo ", " En ", " Epj ", 
           " Et ", " Faseb ", " Fda ", " Febs ", " Fems ", " For ", " From ", " För ", 
           " Für ", " Hiv ", " Hiv/Aids ", " Hla ", " Htmlgiant ", " Ibm ", " Ices ", " Ieee ", 
-          " If ", " Ilr ", " In ", " Into ", " Is ", " Its ", " Jama ", " Jama: ", " La ", 
+          " If ", " Ilr ", " In ", " Inflibnet ", " Into ", " Is ", " Its ", " Jama ", " Jama: ", " La ", 
           " Las ", " Le ", " Les ", " Los ", " M.a. ", " M.d. ", " Medrxiv ", " Mit ", " Mnras ", " Mot ", 
           " N.y. ", " N.y.) ", " Nasa ", " Nejm ", " Non ", " Nor ", " Nrc ", " Ny ", " Nyc ", 
           " Nyt ", " Nz ", " Och ", " Oecd ", " Of ", " Off ", " Og ", " On ", " Or ", 
@@ -46,7 +46,7 @@ const UC_SMALL_WORDS = array(/* The following will be automatically updated to a
           " el Dorado ", " las Vegas ", " los Angeles ", " N y ", " U S a ");
           // For ones that start with lower-case, include both ELife and Elife versions in misspelled array
 const JOURNAL_ACRONYMS = array(/* The following will be automatically updated to alphabetical order */
-          " (and the Middle East) ", " (BBA) ", " (online ed.) ", " AAPOS ", " AAPS ", " ACM SIGGRAPH ", " ACS ", " Algebra i Analiz ", 
+          " (and the Middle East) ", " (BBA) ", " (online ed.) ", " AAPOS ", " AAPS ", " ACM SIGGRAPH ", " ACS ", " AJNR. ", " Algebra i Analiz ", 
           " Angew Chem Int Ed ", " Applied ", " APS Division ", " Arch Dis Child Fetal Neonatal Ed ", 
           " ASAIO ", " ASME AES ", " ASME MTD ", " Avtomatika i Telemekhanika ", " B/gcvs ", 
           " B/gcvs ", " B/gcvs ", " Bild am Sonntag ", " BioEssays ", " bioRxiv ", " bioRxiv ", 
@@ -97,7 +97,7 @@ const JOURNAL_ACRONYMS = array(/* The following will be automatically updated to
           " ZooKeys ", /* The above will be automatically updated to alphabetical order */ 
 );
 const UCFIRST_JOURNAL_ACRONYMS = array(/* The following will be automatically updated to alphabetical order */
-          " (And the Middle East) ", " (Bba) ", " (online Ed.) ", " Aapos ", " Aaps ", " ACM Siggraph ", " Acs ", " Algebra I Analiz ", 
+          " (And the Middle East) ", " (Bba) ", " (online Ed.) ", " Aapos ", " Aaps ", " ACM Siggraph ", " Acs ", " Ajnr. ", " Algebra I Analiz ", 
           " Angew Chem Int ed ", " Appiled ", " Aps Division ", " Arch Dis Child Fetal Neonatal ed ", 
           " Asaio ", " Asme Aes ", " Asme MTD ", " Avtomatika I Telemekhanika ", " B/GCVS ", 
           " B/Gcvs ", " b/gcvs ", " Bild Am Sonntag ", " Bioessays ", " BioRxiv ", " Biorxiv ", 
