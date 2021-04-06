@@ -1185,6 +1185,21 @@ final class Template {
             $this->forget('p');
             $this->forget('at');
 
+            if (preg_match("~^(\d+)[-–—‒]+(\d+)$~u", $value, $newpagenos)) {
+                $first_page = (int) $newpagenos[1];
+                $last_page  = (int) $newpagenos[2];
+                if ($last_page < $first_page) { // 2342-5 istead of 2342-2345
+                   if ($last_page < 10) {
+                     $last_page = $last_page + (10 * (int)($first_page/10));
+                   } else {
+                     $last_page = $last_page + (100 * (int)($first_page/100));
+                   }
+                   if ($last_page > $first_page) { // Paranoid
+                     $value = (string) $first_page . "–" . (string) $last_page;
+                   }
+                }
+            }
+
             $param_key = $this->get_param_key($param_name);
             if (!is_null($param_key)) {
               $this->param[$param_key]->val = sanitize_string($value); // Minimize template changes (i.e. location) when upgrading from page=123 to pages=123-456
