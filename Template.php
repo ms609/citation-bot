@@ -5090,6 +5090,18 @@ final class Template {
                 }
               }
           }
+          if (preg_match('~^https?://www\.oxfordartonline\.com/(?:groveart/)?view/10\.1093/gao/9781884446054\.001\.0001/oao\-9781884446054\-e\-7000(\d+)$~', $this->get($param), $matches)) {
+              $new_doi = '10.1093/gao/9781884446054.article.T' . $matches[1];
+              if (doi_works($new_doi)) {
+                if ($this->has('doi') && $this->has('doi-broken-date')) {
+                    $this->set('doi', '');
+                    $this->forget('doi-broken-date');
+                    $this->add_if_new('doi', $new_doi);
+                 } elseif ($this->blank('doi')) {
+                    $this->add_if_new('doi', $new_doi);
+                }
+              }
+          }
           
           while (preg_match('~^(https?://www\.ukwhoswho\.com/.+)(?:\;jsession|\?rskey|\#|/version/\d+)~', $this->get($param), $matches)) {
                $this->set($param, $matches[1]);
