@@ -5142,7 +5142,7 @@ final class Template {
               }
           }
 
-          if (preg_match('~^https?://www\.oxfordmusiconline\.com/(?:grovemusic/|)(?:view|abstract)/10\.1093/gmo/9781561592630\.001\.0001/omo-9781561592630-e-00000(\d+)$~', $this->get($param), $matches)) {
+          if (preg_match('~^https?://www\.oxfordmusiconline\.com/(?:grovemusic/|)(?:grovemusic/|)(?:grovemusic/|)(?:view|abstract)/10\.1093/gmo/9781561592630\.001\.0001/omo-9781561592630-e-00000(\d+)$~', $this->get($param), $matches)) {
               $new_doi = '10.1093/gmo/9781561592630.article.' . $matches[1];
               if (doi_works($new_doi)) {
                 if ($this->has('doi') && $this->has('doi-broken-date')) {
@@ -5155,7 +5155,7 @@ final class Template {
               }
           }
           
-          if (preg_match('~^https?://www\.oxfordmusiconline\.com/(?:grovemusic/|)(?:view|abstract)/10\.1093/gmo/9781561592630\.001\.0001/omo-9781561592630-e-100(\d+)$~', $this->get($param), $matches)) {
+          if (preg_match('~^https?://www\.oxfordmusiconline\.com/(?:grovemusic/|)(?:grovemusic/|)(?:grovemusic/|)(?:view|abstract)/10\.1093/gmo/9781561592630\.001\.0001/omo-9781561592630-e-100(\d+)$~', $this->get($param), $matches)) {
               $new_doi = '10.1093/gmo/9781561592630.article.A' . $matches[1];
               if (doi_works($new_doi)) {
                 if ($this->has('doi') && $this->has('doi-broken-date')) {
@@ -5168,7 +5168,7 @@ final class Template {
               }
           }
           
-          if (preg_match('~^https?://www\.oxfordmusiconline\.com/(?:grovemusic/|)(?:view|abstract)/10\.1093/gmo/9781561592630\.001\.0001/omo-9781561592630-e-5000(\d+)$~', $this->get($param), $matches)) {
+          if (preg_match('~^https?://www\.oxfordmusiconline\.com/(?:grovemusic/|)(?:grovemusic/|)(?:grovemusic/|)(?:view|abstract)/10\.1093/gmo/9781561592630\.001\.0001/omo-9781561592630-e-5000(\d+)$~', $this->get($param), $matches)) {
               $new_doi = '10.1093/gmo/9781561592630.article.O' . $matches[1];
               if (doi_works($new_doi)) {
                 if ($this->has('doi') && $this->has('doi-broken-date')) {
@@ -5181,7 +5181,7 @@ final class Template {
               }
           }
           
-          if (preg_match('~^https?://www\.oxfordmusiconline\.com/(?:grovemusic/|)(?:view|abstract)/10\.1093/gmo/9781561592630\.001\.0001/omo-9781561592630-e-400(\d+)$~', $this->get($param), $matches)) {
+          if (preg_match('~^https?://www\.oxfordmusiconline\.com/(?:grovemusic/|)(?:grovemusic/|)(?:grovemusic/|)(?:view|abstract)/10\.1093/gmo/9781561592630\.001\.0001/omo-9781561592630-e-400(\d+)$~', $this->get($param), $matches)) {
               $new_doi = '10.1093/gmo/9781561592630.article.L' . $matches[1];
               if (doi_works($new_doi)) {
                 if ($this->has('doi') && $this->has('doi-broken-date')) {
@@ -5194,7 +5194,7 @@ final class Template {
               }
           }
           
-          if (preg_match('~^https?://www\.oxfordmusiconline\.com/(?:grovemusic/|)(?:view|abstract)/10\.1093/gmo/9781561592630\.001\.0001/omo-9781561592630-e-2000(\d+)$~', $this->get($param), $matches)) {
+          if (preg_match('~^https?://www\.oxfordmusiconline\.com/(?:grovemusic/|)(?:grovemusic/|)(?:grovemusic/|)(?:view|abstract)/10\.1093/gmo/9781561592630\.001\.0001/omo-9781561592630-e-2000(\d+)$~', $this->get($param), $matches)) {
               $new_doi = '10.1093/gmo/9781561592630.article.J' . $matches[1];
               if (doi_works($new_doi)) {
                 if ($this->has('doi') && $this->has('doi-broken-date')) {
