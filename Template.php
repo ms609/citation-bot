@@ -5145,6 +5145,26 @@ final class Template {
                 }
               }
           }
+          
+          if (preg_match('~^https?://latinamericanhistory\.oxfordre\.com(/view.+)$~")) {
+               $this->set($param, 'https://oxfordre.com/latinamericanhistory' . $matches[1]);
+          }
+      
+          while (preg_match('~^(https?://oxfordre\.com/.+)(?:\;jsession|\?rskey|\#|/version/\d+)~', $this->get($param), $matches)) {
+               $this->set($param, $matches[1]);
+          }
+          if (preg_match('~^https?://oxfordre\.com/latinamericanhistory/view/10\.1093/acrefore/9780199366439\.001\.0001/acrefore\-9780199366439\-e\-(\d+)$~', $this->get($param), $matches)) {
+              $new_doi = '10.1093/acrefore/9780199366439.013.' . $matches[1];
+              if (doi_works($new_doi)) {
+                if ($this->has('doi') && $this->has('doi-broken-date')) {
+                    $this->set('doi', '');
+                    $this->forget('doi-broken-date');
+                    $this->add_if_new('doi', $new_doi);
+                 } elseif ($this->blank('doi')) {
+                    $this->add_if_new('doi', $new_doi);
+                }
+              }
+          }
 
           if (preg_match('~^https?://([^/]+)/~', $this->get($param), $matches)) { 
              $the_host = $matches[1];
