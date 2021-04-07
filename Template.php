@@ -5079,7 +5079,7 @@ final class Template {
               }
           }
 
-          if (preg_match('~^https?://www\.anb\.org/view/10\.1093/anb/9780198606697\.001\.0001/anb\-9780198606697\-e\-(\d+)$~', $this->get($param), $matches)) {
+          if (preg_match('~^https?://www\.anb\.org/(?:view|abstract)/10\.1093/anb/9780198606697\.001\.0001/anb\-9780198606697\-e\-(\d+)$~', $this->get($param), $matches)) {
               $new_doi = '10.1093/anb/9780198606697.article.' . $matches[1];
               if (doi_works($new_doi)) {
                 if ($this->has('doi') && $this->has('doi-broken-date')) {
@@ -5128,7 +5128,7 @@ final class Template {
               }
           }
 
-          if (preg_match('~^https?://www\.ukwhoswho\.com/view/10\.1093/ww/9780199540884\.001\.0001/ww\-9780199540884\-e\-(\d+)$~', $this->get($param), $matches)) {
+          if (preg_match('~^https?://www\.ukwhoswho\.com/(?:view|abstract)/10\.1093/ww/9780199540884\.001\.0001/ww\-9780199540884\-e\-(\d+)$~', $this->get($param), $matches)) {
               $new_doi = '10.1093/ww/9780199540884.013.U' . $matches[1];
               if (doi_works($new_doi)) {
                 if ($this->has('doi') && $this->has('doi-broken-date')) {
@@ -5141,7 +5141,7 @@ final class Template {
               }
           }
 
-          if (preg_match('~^https?://www\.oxfordmusiconline\.com/(?:grovemusic/|)view/10\.1093/gmo/9781561592630\.001\.0001/omo-9781561592630-e-00000(\d+)$~', $this->get($param), $matches)) {
+          if (preg_match('~^https?://www\.oxfordmusiconline\.com/(?:grovemusic/|)(?:view|abstract)/10\.1093/gmo/9781561592630\.001\.0001/omo-9781561592630-e-00000(\d+)$~', $this->get($param), $matches)) {
               $new_doi = '10.1093/gmo/9781561592630.article.' . $matches[1];
               if (doi_works($new_doi)) {
                 if ($this->has('doi') && $this->has('doi-broken-date')) {
@@ -5154,7 +5154,7 @@ final class Template {
               }
           }
           
-          if (preg_match('~^https?://oxfordre\.com/latinamericanhistory/view/10\.1093/acrefore/9780199366439\.001\.0001/acrefore\-9780199366439\-e\-(\d+)$~', $this->get($param), $matches)) {
+          if (preg_match('~^https?://oxfordre\.com/latinamericanhistory/(?:view|abstract)/10\.1093/acrefore/9780199366439\.001\.0001/acrefore\-9780199366439\-e\-(\d+)$~', $this->get($param), $matches)) {
               $new_doi = '10.1093/acrefore/9780199366439.013.' . $matches[1];
               if (doi_works($new_doi)) {
                 if ($this->has('doi') && $this->has('doi-broken-date')) {
