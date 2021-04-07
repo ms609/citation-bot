@@ -5090,7 +5090,7 @@ final class Template {
                 }
               }
           }
-          if (preg_match('~^https?://www\.oxfordartonline\.com/(?:groveart/)?view/10\.1093/gao/9781884446054\.001\.0001/oao\-9781884446054\-e\-7000(\d+)$~', $this->get($param), $matches)) {
+          if (preg_match('~^https?://www\.oxfordartonline\.com/(?:groveart/|)(?:view|abstract)/10\.1093/gao/9781884446054\.001\.0001/oao\-9781884446054\-e\-7000(\d+)$~', $this->get($param), $matches)) {
               $new_doi = '10.1093/gao/9781884446054.article.T' . $matches[1];
               if (doi_works($new_doi)) {
                 if ($this->has('doi') && $this->has('doi-broken-date')) {
@@ -5108,6 +5108,22 @@ final class Template {
           }
           if (preg_match('~^https?://www\.ukwhoswho\.com/view/10\.1093/ww/9780199540884\.001\.0001/ww\-9780199540884\-e\-(\d+)$~', $this->get($param), $matches)) {
               $new_doi = '10.1093/ww/9780199540884.013.U' . $matches[1];
+              if (doi_works($new_doi)) {
+                if ($this->has('doi') && $this->has('doi-broken-date')) {
+                    $this->set('doi', '');
+                    $this->forget('doi-broken-date');
+                    $this->add_if_new('doi', $new_doi);
+                 } elseif ($this->blank('doi')) {
+                    $this->add_if_new('doi', $new_doi);
+                }
+              }
+          }
+          
+          while (preg_match('~^(https?://www\.oxfordmusiconline\.com/.+)(?:\;jsession|\?rskey|\#|/version/\d+)~', $this->get($param), $matches)) {
+               $this->set($param, $matches[1]);
+          }
+          if (preg_match('~^https?://www\.oxfordmusiconline\.com/(?:grovemusic/|)view/10\.1093/gmo/9781561592630\.001\.0001/omo-9781561592630-e-00000(\d+)$~', $this->get($param), $matches)) {
+              $new_doi = '10.1093/gmo/9781561592630.article.' . $matches[1];
               if (doi_works($new_doi)) {
                 if ($this->has('doi') && $this->has('doi-broken-date')) {
                     $this->set('doi', '');
