@@ -5078,7 +5078,7 @@ final class Template {
           while (preg_match('~^(https?://www\.oxfordartonline\.com/.+)(?:\;jsession|\?rskey|\#|/version/\d+)~', $this->get($param), $matches)) {
                $this->set($param, $matches[1]);
           }
-          if (preg_match('~^https?://www\.oxfordartonline\.com/benezit/view/10\.1093/benz/9780199773787\.001\.0001/acref-9780199773787\-e\-(\d+)$~', $this->get($param), $matches)) {
+          if (preg_match('~^https?://www\.oxfordartonline\.com/(?:benezit/|)view/10\.1093/benz/9780199773787\.001\.0001/acref-9780199773787\-e\-(\d+)$~', $this->get($param), $matches)) {
               $new_doi = '10.1093/benz/9780199773787.article.B' . $matches[1];
               if (doi_works($new_doi)) {
                 if ($this->has('doi') && $this->has('doi-broken-date')) {
