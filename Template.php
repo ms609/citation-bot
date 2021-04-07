@@ -5030,9 +5030,29 @@ final class Template {
                 }
               }
           }
-          while (preg_match('~^(https?://www\.oxforddnb\.com/.+)(?:\;jsession|\?rskey|\#|/version/\d+)~', $this->get($param), $matches)) {
+          
+          if (preg_match('~^https?://latinamericanhistory\.oxfordre\.com(/view.+)$~', $this->get($param), $matches)) {
+               $this->set($param, 'https://oxfordre.com/latinamericanhistory' . $matches[1]);
+          }
+          while (preg_match('~^(https?://www\.oxforddnb\.com/.+)(?:\;jsession|\?result=|\?rskey|\#|/version/\d+)~', $this->get($param), $matches)) {
                $this->set($param, $matches[1]);
           }
+          while (preg_match('~^(https?://www\.anb\.org/.+)(?:\;jsession|\?result=|\?rskey|\#|/version/\d+)~', $this->get($param), $matches)) {
+               $this->set($param, $matches[1]);
+          }
+          while (preg_match('~^(https?://www\.oxfordartonline\.com/.+)(?:\;jsession|\?result=|\?rskey|\#|/version/\d+)~', $this->get($param), $matches)) {
+               $this->set($param, $matches[1]);
+          }
+          while (preg_match('~^(https?://www\.ukwhoswho\.com/.+)(?:\;jsession|\?result=|\?rskey|\#|/version/\d+)~', $this->get($param), $matches)) {
+               $this->set($param, $matches[1]);
+          }
+          while (preg_match('~^(https?://www\.oxfordmusiconline\.com/.+)(?:\;jsession|\?result=|\?rskey|\#|/version/\d+)~', $this->get($param), $matches)) {
+               $this->set($param, $matches[1]);
+          }
+          while (preg_match('~^(https?://oxfordre\.com/.+)(?:\;jsession|\?result=|\?rskey|\#|/version/\d+)~', $this->get($param), $matches)) {
+               $this->set($param, $matches[1]);
+          }
+          
           if (preg_match('~^https?://www\.oxforddnb\.com/view/10\.1093/(?:ref:|)odnb/9780198614128\.001\.0001/odnb\-9780198614128\-e\-(\d+)$~', $this->get($param), $matches)) {
               $new_doi = '10.1093/ref:odnb/' . $matches[1];
               if (!doi_works($new_doi)) {
@@ -5059,9 +5079,6 @@ final class Template {
               }
           }
 
-          while (preg_match('~^(https?://www\.anb\.org/.+)(?:\;jsession|\?rskey|\#|/version/\d+)~', $this->get($param), $matches)) {
-               $this->set($param, $matches[1]);
-          }
           if (preg_match('~^https?://www\.anb\.org/view/10\.1093/anb/9780198606697\.001\.0001/anb\-9780198606697\-e\-(\d+)$~', $this->get($param), $matches)) {
               $new_doi = '10.1093/anb/9780198606697.article.' . $matches[1];
               if (doi_works($new_doi)) {
@@ -5075,9 +5092,6 @@ final class Template {
               }
           }
           
-          while (preg_match('~^(https?://www\.oxfordartonline\.com/.+)(?:\;jsession|\?rskey|\#|/version/\d+)~', $this->get($param), $matches)) {
-               $this->set($param, $matches[1]);
-          }
           if (preg_match('~^https?://www\.oxfordartonline\.com/(?:benezit/|)(?:view|abstract)/10\.1093/benz/9780199773787\.001\.0001/acref-9780199773787\-e\-(\d+)$~', $this->get($param), $matches)) {
               $new_doi = '10.1093/benz/9780199773787.article.B' . $matches[1];
               if (doi_works($new_doi)) {
@@ -5113,10 +5127,7 @@ final class Template {
                 }
               }
           }
-          
-          while (preg_match('~^(https?://www\.ukwhoswho\.com/.+)(?:\;jsession|\?rskey|\#|/version/\d+)~', $this->get($param), $matches)) {
-               $this->set($param, $matches[1]);
-          }
+
           if (preg_match('~^https?://www\.ukwhoswho\.com/view/10\.1093/ww/9780199540884\.001\.0001/ww\-9780199540884\-e\-(\d+)$~', $this->get($param), $matches)) {
               $new_doi = '10.1093/ww/9780199540884.013.U' . $matches[1];
               if (doi_works($new_doi)) {
@@ -5129,10 +5140,7 @@ final class Template {
                 }
               }
           }
-          
-          while (preg_match('~^(https?://www\.oxfordmusiconline\.com/.+)(?:\;jsession|\?rskey|\#|/version/\d+)~', $this->get($param), $matches)) {
-               $this->set($param, $matches[1]);
-          }
+
           if (preg_match('~^https?://www\.oxfordmusiconline\.com/(?:grovemusic/|)view/10\.1093/gmo/9781561592630\.001\.0001/omo-9781561592630-e-00000(\d+)$~', $this->get($param), $matches)) {
               $new_doi = '10.1093/gmo/9781561592630.article.' . $matches[1];
               if (doi_works($new_doi)) {
@@ -5146,13 +5154,6 @@ final class Template {
               }
           }
           
-          if (preg_match('~^https?://latinamericanhistory\.oxfordre\.com(/view.+)$~', $this->get($param), $matches)) {
-               $this->set($param, 'https://oxfordre.com/latinamericanhistory' . $matches[1]);
-          }
-      
-          while (preg_match('~^(https?://oxfordre\.com/.+)(?:\;jsession|\?rskey|\#|/version/\d+)~', $this->get($param), $matches)) {
-               $this->set($param, $matches[1]);
-          }
           if (preg_match('~^https?://oxfordre\.com/latinamericanhistory/view/10\.1093/acrefore/9780199366439\.001\.0001/acrefore\-9780199366439\-e\-(\d+)$~', $this->get($param), $matches)) {
               $new_doi = '10.1093/acrefore/9780199366439.013.' . $matches[1];
               if (doi_works($new_doi)) {
