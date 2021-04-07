@@ -5058,6 +5058,55 @@ final class Template {
                 $this->set('title', trim($matches[1]));
               }
           }
+
+          while (preg_match('~^(https?://www\.anb\.org/.+)(?:\;jsession|\?rskey|\#|/version/\d+)~', $this->get($param), $matches)) {
+               $this->set($param, $matches[1]);
+          }
+          if (preg_match('~^https?://www\.anb\.org/view/10\.1093/anb/9780198606697\.001\.0001/anb\-9780198606697\-e\-(\d+)$~', $this->get($param), $matches)) {
+              $new_doi = '10.1093/anb/9780198606697.article.' . $matches[1];
+              if (doi_works($new_doi)) {
+                if ($this->has('doi') && $this->has('doi-broken-date')) {
+                    $this->set('doi', '');
+                    $this->forget('doi-broken-date');
+                    $this->add_if_new('doi', $new_doi);
+                 } elseif ($this->blank('doi')) {
+                    $this->add_if_new('doi', $new_doi);
+                }
+              }
+          }
+          
+          while (preg_match('~^(https?://www\.oxfordartonline\.com/.+)(?:\;jsession|\?rskey|\#|/version/\d+)~', $this->get($param), $matches)) {
+               $this->set($param, $matches[1]);
+          }
+          if (preg_match('~^https?://www\.oxfordartonline\.com/benezit/view/10\.1093/benz/9780199773787\.001\.0001/acref-9780199773787\-e\-(\d+)$~', $this->get($param), $matches)) {
+              $new_doi = '10.1093/benz/9780199773787.article.B' . $matches[1];
+              if (doi_works($new_doi)) {
+                if ($this->has('doi') && $this->has('doi-broken-date')) {
+                    $this->set('doi', '');
+                    $this->forget('doi-broken-date');
+                    $this->add_if_new('doi', $new_doi);
+                 } elseif ($this->blank('doi')) {
+                    $this->add_if_new('doi', $new_doi);
+                }
+              }
+          }
+          
+          while (preg_match('~^(https?://www\.ukwhoswho\.com/.+)(?:\;jsession|\?rskey|\#|/version/\d+)~', $this->get($param), $matches)) {
+               $this->set($param, $matches[1]);
+          }
+          if (preg_match('~^https?://www\.ukwhoswho\.com/view/10\.1093/ww/9780199540884\.001\.0001/ww\-9780199540884\-e\-(\d+)$~', $this->get($param), $matches)) {
+              $new_doi = '10.1093/ww/9780199540884.013.U' . $matches[1];
+              if (doi_works($new_doi)) {
+                if ($this->has('doi') && $this->has('doi-broken-date')) {
+                    $this->set('doi', '');
+                    $this->forget('doi-broken-date');
+                    $this->add_if_new('doi', $new_doi);
+                 } elseif ($this->blank('doi')) {
+                    $this->add_if_new('doi', $new_doi);
+                }
+              }
+          }
+
           if (preg_match('~^https?://([^/]+)/~', $this->get($param), $matches)) { 
              $the_host = $matches[1];
           } else {
