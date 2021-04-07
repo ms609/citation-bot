@@ -5146,7 +5146,7 @@ final class Template {
               }
           }
           
-          if (preg_match('~^https?://latinamericanhistory\.oxfordre\.com(/view.+)$~', $matches)) {
+          if (preg_match('~^https?://latinamericanhistory\.oxfordre\.com(/view.+)$~', $this->get($param), $matches)) {
                $this->set($param, 'https://oxfordre.com/latinamericanhistory' . $matches[1]);
           }
       
