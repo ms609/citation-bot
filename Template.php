@@ -5034,22 +5034,22 @@ final class Template {
           if (preg_match('~^https?://latinamericanhistory\.oxfordre\.com(/view.+)$~', $this->get($param), $matches)) {
                $this->set($param, 'https://oxfordre.com/latinamericanhistory' . $matches[1]);
           }
-          while (preg_match('~^(https?://www\.oxforddnb\.com/.+)(?:\;jsession|\?result=|\?rskey|\#|/version/\d+)~', $this->get($param), $matches)) {
+          while (preg_match('~^(https?://www\.oxforddnb\.com/.+)(?:\?p=email|\;jsession|\?result=|\?rskey|\#|/version/\d+)~', $this->get($param), $matches)) {
                $this->set($param, $matches[1]);
           }
-          while (preg_match('~^(https?://www\.anb\.org/.+)(?:\;jsession|\?result=|\?rskey|\#|/version/\d+)~', $this->get($param), $matches)) {
+          while (preg_match('~^(https?://www\.anb\.org/.+)(?:\?p=email|\;jsession|\?result=|\?rskey|\#|/version/\d+)~', $this->get($param), $matches)) {
                $this->set($param, $matches[1]);
           }
-          while (preg_match('~^(https?://www\.oxfordartonline\.com/.+)(?:\;jsession|\?result=|\?rskey|\#|/version/\d+)~', $this->get($param), $matches)) {
+          while (preg_match('~^(https?://www\.oxfordartonline\.com/.+)(?:\?p=email|\;jsession|\?result=|\?rskey|\#|/version/\d+)~', $this->get($param), $matches)) {
                $this->set($param, $matches[1]);
           }
-          while (preg_match('~^(https?://www\.ukwhoswho\.com/.+)(?:\;jsession|\?result=|\?rskey|\#|/version/\d+)~', $this->get($param), $matches)) {
+          while (preg_match('~^(https?://www\.ukwhoswho\.com/.+)(?:\?p=email|\;jsession|\?result=|\?rskey|\#|/version/\d+)~', $this->get($param), $matches)) {
                $this->set($param, $matches[1]);
           }
-          while (preg_match('~^(https?://www\.oxfordmusiconline\.com/.+)(?:\;jsession|\?result=|\?rskey|\#|/version/\d+)~', $this->get($param), $matches)) {
+          while (preg_match('~^(https?://www\.oxfordmusiconline\.com/.+)(?:\?p=email|\;jsession|\?result=|\?rskey|\#|/version/\d+)~', $this->get($param), $matches)) {
                $this->set($param, $matches[1]);
           }
-          while (preg_match('~^(https?://oxfordre\.com/.+)(?:\;jsession|\?result=|\?rskey|\#|/version/\d+)~', $this->get($param), $matches)) {
+          while (preg_match('~^(https?://oxfordre\.com/.+)(?:\?p=email|\;jsession|\?result=|\?rskey|\#|/version/\d+)~', $this->get($param), $matches)) {
                $this->set($param, $matches[1]);
           }
           
