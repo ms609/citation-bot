@@ -90,7 +90,7 @@ $done = 0;
 $total = count($pages_to_do);
 
 if ($total > MAX_PAGES) {
-   report_error('Number of pages is huge (' . (string)$total . ')  Cancelling run.  Listen to Obi-Wan Kenobi:  You want to go home and rethink your life.');
+   report_error('Number of pages is huge (' . (string)$total . ')  Cancelling run (must be smaller than ' . (string) MAX_PAGES . ').  Listen to Obi-Wan Kenobi:  You want to go home and rethink your life.');
 }
 
 foreach ($pages_to_do as $page_title) {
