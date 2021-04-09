@@ -5049,7 +5049,7 @@ final class Template {
           while (preg_match('~^(https?://www\.oxfordmusiconline\.com/.+)(?:\?print|\?p=email|\;jsession|\?result=|\?rskey|\#|/version/\d+)~', $this->get($param), $matches)) {
                $this->set($param, $matches[1]);
           }
-          while (preg_match('~^(https?://(?:classics.|)oxfordre\.com/.+)(?:\?print|\?p=email|\;jsession|\?result=|\?rskey|\#|/version/\d+)~', $this->get($param), $matches)) {
+          while (preg_match('~^(https?://(?:classics\.|latinamericanhistory\.|psychology\.|)oxfordre\.com/.+)(?:\?print|\?p=email|\;jsession|\?result=|\?rskey|\#|/version/\d+)~', $this->get($param), $matches)) {
                $this->set($param, $matches[1]);
           }
           while (preg_match('~^(https?://oxfordaasc\.com/.+)(?:\?print|\?p=email|\;jsession|\?result=|\?rskey|\#|/version/\d+)~', $this->get($param), $matches)) {
@@ -5241,6 +5241,19 @@ final class Template {
           
           if (preg_match('~^https?://(?:|classics\.)oxfordre\.com/(?:|classics/)view/10\.1093/acrefore/9780199381135\.001\.0001/acrefore\-9780199381135\-e\-(\d+)$~', $this->get($param), $matches)) {
               $new_doi = '10.1093/acrefore/9780199381135.013.' . $matches[1];
+              if (doi_works($new_doi)) {
+                if ($this->has('doi') && $this->has('doi-broken-date')) {
+                    $this->set('doi', '');
+                    $this->forget('doi-broken-date');
+                    $this->add_if_new('doi', $new_doi);
+                 } elseif ($this->blank('doi')) {
+                    $this->add_if_new('doi', $new_doi);
+                }
+              }
+          }
+          
+          if (preg_match('~^https?://(?:|psychology\.)oxfordre\.com/(?:|psychology/)view/10\.1093/acrefore/9780190236557\.001\.0001/acrefore\-9780190236557\-e\-(\d+)$~', $this->get($param), $matches)) {
+              $new_doi = '10.1093/acrefore/9780190236557.013.' . $matches[1];
               if (doi_works($new_doi)) {
                 if ($this->has('doi') && $this->has('doi-broken-date')) {
                     $this->set('doi', '');
