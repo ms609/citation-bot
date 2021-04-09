@@ -89,7 +89,7 @@ $pages_to_do = array_unique(explode('|', $pages));
 $done = 0;
 $total = count($pages_to_do);
 
-if ($total > 2000) {
+if ($total > MAX_PAGES) {
    report_error('Number of pages is huge (' . (string)$total . ')  Cancelling run.  Listen to Obi-Wan Kenobi:  You want to go home and rethink your life.');
 }
 
