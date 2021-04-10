@@ -1092,6 +1092,7 @@ final class Template {
       case 'volume':
         if ($this->blank($param_name) || str_i_same('in press', $this->get($param_name))) {
           if ($value == '0') return FALSE;
+          if ($value == 'Online First') return FALSE;
           if ($value == '1') { // dubious
             if (bad_10_1093_doi($this->get('doi'))) return FALSE;
             if (stripos($this->rawtext, 'oxforddnb') !== FALSE) return FALSE;
@@ -1112,6 +1113,7 @@ final class Template {
       
       case 'issue':
         if ($value == '0') return FALSE;
+        if ($value == 'Online First') return FALSE;
         if ($this->blank(ISSUE_ALIASES) || str_i_same('in press', $this->get($param_name))) {
           if ($value == '1') { // dubious
             if (bad_10_1093_doi($this->get('doi'))) return FALSE;
@@ -5528,6 +5530,10 @@ final class Template {
           return;
         case 'volume':
           if ($this->blank($param)) return;
+          if ($this->get($param) === 'Online First') {
+            $this->forget($param);
+            return;
+          }
           $temp_string = strtolower($this->get('journal')) ;
           if(substr($temp_string, 0, 2) === "[[" && substr($temp_string, -2) === "]]") {  // Wikilinked journal title 
                $temp_string = substr(substr($temp_string, 2), 0, -2); // Remove [[ and ]]
@@ -5566,7 +5572,11 @@ final class Template {
         case 'issue':
         case 'number':
           if ($this->blank($param)) return;
-          $value = trim($this->get($param));
+          $value = $this->get($param);
+          if ($value === 'Online First') {
+            $this->forget($param);
+            return;
+          }
           if ($param === 'issue' || $param === 'number') {
             if (preg_match('~^(?:iss\.|iss|issue|number|num|num\.|no|no:|no\.)\s*(\d+)$~i', $value, $matches)) {
               $value = $matches[1];
