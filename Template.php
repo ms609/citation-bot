@@ -280,6 +280,10 @@ final class Template {
         if (substr_count($example, "\n") > 1 ) $example = 'param = val';
     }
     $this->example_param = $example;
+    
+    if (in_array($this->wikiname(), TEMPLATES_WE_HARV)) {
+      $this->tidy_parameter('ref'); // Remove ref=harv or empty ref=
+    }
   }
 
   // Re-assemble parsed template into string
