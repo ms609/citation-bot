@@ -95,8 +95,8 @@ if (empty($pages_in_category)) {
   report_warning('No links to expand found');
   exit("\n </pre></body></html>");
 }
-  if (count($pages_in_category) > 2000) {
-    report_warning('Number of links is huge (' . (string) count($pages_in_category) . ')  Cancelling run.  Listen to Obi-Wan Kenobi:  You want to go home and rethink your life.');
+  if (count($pages_in_category) > MAX_PAGES) {
+    report_warning('Number of links is huge (' . (string) count($pages_in_category) . ')  Cancelling run (maximum size is ' . (string) MAX_PAGES . ').  Listen to Obi-Wan Kenobi:  You want to go home and rethink your life.');
     exit("\n </pre></body></html>");
   }
 

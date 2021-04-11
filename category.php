@@ -59,8 +59,8 @@ if ($category) {
     exit(0);
   }
   $pages_in_category = array_unique($pages_in_category); // Paranoid
-  if (count($pages_in_category) > 2000 ) {
-    echo('Category is huge (' . (string) count($pages_in_category) . ')  Cancelling run. Pick a smaller category.  Listen to Obi-Wan Kenobi:  You want to go home and rethink your life.');
+  if (count($pages_in_category) > (MAX_PAGES * 2) ) {
+    echo('Category is huge (' . (string) count($pages_in_category) . ')  Cancelling run. Pick a smaller category (maximum size is ' . (string)(MAX_PAGES * 2) . ').  Listen to Obi-Wan Kenobi:  You want to go home and rethink your life.');
     html_echo(' </pre></body></html>', "\n");
     exit(0);
   }

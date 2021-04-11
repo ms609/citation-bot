@@ -227,4 +227,6 @@ const COMMON_MISTAKES = array ( // Common mistakes that aren't picked up by the 
   "sectionurl"      =>  "section-url",
   "seriesno"        =>  "series-no",
   "nopp"            =>  "no-pp",
+  "authorlink"      =>  "author-link",
+  "airdate"         =>  "air-date"
 );

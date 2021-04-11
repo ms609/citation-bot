@@ -420,8 +420,8 @@ class Page {
     // we often just fix Journal caps, so must be case sensitive compare
     // Avoid minor edits - gadget API will make these changes, since it does not check return code
     $caps_ok = array('lccn', 'isbn', 'doi');
-    $last_first_in  = array(' last=',  ' last =',  '|last=',  '|last =',  ' first=',  ' first =',  '|first=',  '|first =',  'accessdate',  'archivedate',  'archiveurl',  'origyear');
-    $last_first_out = array(' last1=', ' last1 =', '|last1=', '|last1 =', ' first1=', ' first1 =', '|first1=', '|first1 =', 'access-date', 'archive-date', 'archive-url', 'orig-year');
+    $last_first_in  = array(' last=',  ' last =',  '|last=',  '|last =',  ' first=',  ' first =',  '|first=',  '|first =',  'accessdate',  'archivedate',  'archiveurl',  'origyear', 'authorlink');
+    $last_first_out = array(' last1=', ' last1 =', '|last1=', '|last1 =', ' first1=', ' first1 =', '|first1=', '|first1 =', 'access-date', 'archive-date', 'archive-url', 'orig-year','author-link');
     return strcmp(str_replace($last_first_in, $last_first_out, str_ireplace($caps_ok, $caps_ok, $this->text)),
                   str_replace($last_first_in, $last_first_out,str_ireplace($caps_ok, $caps_ok, $this->start_text))) != 0;
   }
@@ -550,7 +550,7 @@ class Page {
            return TRUE;
          } else {
            $failures[4] = TRUE;
-           if ($failures[0] && $failures[1] && $failures[2] && $failures[3] && $failures[4]) {
+           if ($failures[0] && $failures[1] && $failures[2] && $failures[3]) {
               report_error("Five failures in a row -- shutting down the bot");
            }
            return FALSE;
