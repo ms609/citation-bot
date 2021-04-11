@@ -400,7 +400,7 @@ function adsabs_api(array $ids, array &$templates, string $identifier) : bool { 
       report_warning(sprintf("Error %d in adsabs_api: %s",
                     $e->getCode(), $e->getMessage()));
     }
-    if (isset($ch)) @curl_close($ch); // Some code paths have it closed, others do not
+    @curl_close($ch); // Some code paths have it closed, others do not
     return TRUE;
   }
   // @codeCoverageIgnoreEnd
@@ -521,7 +521,7 @@ function expand_by_doi(Template $template, bool $force = FALSE) : bool {
         } else {
            $new_roman = FALSE;
         }
-        foreach (['chapter', 'title', 'series'] as $possible) {
+        foreach (['chapter', 'title', 'series', 'trans-title'] as $possible) {
           if ($template->has($possible)) {
             $old = $template->get($possible);
             if (preg_match('~^(.................+)[\.\?]\s+([IVX]+)\.\s.+$~i', $old, $matches)) {
@@ -547,7 +547,7 @@ function expand_by_doi(Template $template, bool $force = FALSE) : bool {
           }
         }
         if (isset($crossRef->series_title)) {
-          foreach (['chapter', 'title'] as $possible) { // Series === series could easily be false possitive
+          foreach (['chapter', 'title', 'trans-title'] as $possible) { // Series === series could easily be false possitive
             if ($template->has($possible) && titles_are_similar($template->get($possible), (string) $crossRef->series_title)) {
                 $bad_data = FALSE;
                 break;
@@ -926,7 +926,7 @@ function expand_by_jstor(Template $template) : bool {
         case "T2":
         case "BT":
           $new_title = trim($ris_part[1]);
-          foreach (['chapter', 'title', 'series'] as $possible) {
+          foreach (['chapter', 'title', 'series', 'trans-title'] as $possible) {
             if ($template->has($possible) && titles_are_similar($template->get($possible), $new_title)) {
               $bad_data = FALSE;
             }
