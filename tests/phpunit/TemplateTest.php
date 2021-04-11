@@ -1442,7 +1442,7 @@ final class TemplateTest extends testBaseClass {
       
     $text = "{{cite book|authorlinux=X}}";
     $expanded = $this->process_citation($text);
-    $this->assertSame('{{cite book|authorlink=X}}', $expanded->parsed_text());
+    $this->assertSame('{{cite book|authosdfasdfdsrlink=X}}', $expanded->parsed_text());
       
     $text = "{{cite book|authorlinks33=X}}";
     $expanded = $this->process_citation($text);
