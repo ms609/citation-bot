@@ -187,6 +187,8 @@ final class Template {
                ['cite publication', 'cite book'],
                ['Citeencyclopedia', 'Cite encyclopedia'],
                ['citeencyclopedia', 'cite encyclopedia'],
+               ['Encyclopedia', 'Cite encyclopedia'],
+               ['encyclopedia', 'cite encyclopedia'],
                ['Cita pubblicazione', 'Cite journal'],
                ['cita pubblicazione', 'cite journal'],
                ['Citace elektronické monografie', 'Cite web'],
