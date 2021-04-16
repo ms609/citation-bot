@@ -4091,7 +4091,7 @@ final class Template {
        return;
     }
     
-    if (mb_stripos($this->get($param), 'CITATION_BOT_PLACEHOLDER_COMMENT') !== FALSE || $param === 'ref') {
+    if (mb_stripos($this->get($param), 'CITATION_BOT_PLACEHOLDER_COMMENT') !== FALSE && $param !== 'ref') {
       return;  // We let comments block the bot
     }
     if ($this->get($param) != $this->get3($param)) return;
@@ -6336,7 +6336,7 @@ final class Template {
   
   public function set(string $par, string $val) : bool {
     if ($par === '') report_error('NULL parameter passed to set with value of ' . echoable($val));
-    if (mb_stripos($this->get($par), 'CITATION_BOT_PLACEHOLDER_COMMENT') !== FALSE) {
+    if (mb_stripos($this->get($par), 'CITATION_BOT_PLACEHOLDER_COMMENT') !== FALSE && $par !== 'ref') {
       return FALSE;
     }
     if ($this->get($par) != $this->get3($par)) {
