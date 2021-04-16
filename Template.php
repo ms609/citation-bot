@@ -4091,7 +4091,7 @@ final class Template {
        return;
     }
     
-    if (mb_stripos($this->get($param), 'CITATION_BOT_PLACEHOLDER_COMMENT') !== FALSE) {
+    if (mb_stripos($this->get($param), 'CITATION_BOT_PLACEHOLDER_COMMENT') !== FALSE || $param === 'ref') {
       return;  // We let comments block the bot
     }
     if ($this->get($param) != $this->get3($param)) return;
@@ -4765,8 +4765,11 @@ final class Template {
           return;
           
         case 'ref':
-          if ($this->blank($param) || $this->get($param) === 'harv') {
+          $content = $this->get($param);
+          if ($content === '' || $content === 'harv') {
             $this->forget($param);
+          } elseif (preg_match('~^harv( *# # # CITATION_BOT_PLACEHOLDER_COMMENT.*?# # #)$~sui', $content, $matches) {
+            $this->set($param, $matches[1]); // Sometimes it is ref=harv <!-- {{harvid|....}} -->
           }
           return;
 
