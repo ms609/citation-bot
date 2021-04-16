@@ -25,7 +25,9 @@ const TEMPLATES_WE_HARV = array('cite iucn', 'cite odnb', 'cite dnb', 'dnb', 'dn
                                 'cite central park history', 'schafer-more-classic', 'cite grove', 'eb1911', 'odnbweb', 'cite eb9', 'cite dcb',
                                 'encyclopaedia islamica', 'goldberg-amtrak', 'hilton-amtrak', 'solomon-sp-passenger', 'wayner - car names, numbers, consists',
                                 'wayner - car names, numbers, consists', 'cite lotep', 'cite lives of the eminent philosophers',
-                                'cite av media notes');
+                                'cite av media notes', 'gilliland', 'cox-upper darby', 'oxford dictionary of late antiquity', 
+                                'cite notitia parliamentaria', 'encyclopaedia iIslamica', 'historyofparliament', 'lewis-shortline-1986',
+                                'lewis-shortline-1991');
 const ALL_URL_TYPES = array('url', 'article-url', 'chapter-url', 'chapterurl', 'conference-url', 'conferenceurl',
                   'contribution-url', 'contributionurl', 'entry-url', 'event-url', 'eventurl', 'lay-url',
                   'layurl', 'map-url', 'mapurl', 'section-url', 'sectionurl', 'transcript-url',
