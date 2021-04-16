@@ -29,7 +29,8 @@ const TEMPLATES_WE_HARV = array('cite iucn', 'cite odnb', 'cite dnb', 'dnb', 'dn
                                 'cite notitia parliamentaria', 'encyclopaedia iIslamica', 'historyofparliament', 'lewis-shortline-1986',
                                 'lewis-shortline-1991', 'cite podcast', 'oxford dictionary of late antiquity', 'duke-rdc',
                                 'lynch-new haven passenger', 'schwieterman-leaves-eastern', 'amtrak by the numbers', 'cite amcyc',
-                                'historic environment scotland', 'cite lotep');
+                                'historic environment scotland', 'cite lotep', 'zimmermann-burlington', 'shaughnessy-dh', 'reynolds-bo',
+                                'sanders-heartland', 'cite av media');
 const ALL_URL_TYPES = array('url', 'article-url', 'chapter-url', 'chapterurl', 'conference-url', 'conferenceurl',
                   'contribution-url', 'contributionurl', 'entry-url', 'event-url', 'eventurl', 'lay-url',
                   'layurl', 'map-url', 'mapurl', 'section-url', 'sectionurl', 'transcript-url',
