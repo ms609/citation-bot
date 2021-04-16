@@ -21,7 +21,9 @@ const TEMPLATES_WE_CHAPTER_URL = array('new cambridge medieval history', 'setton
                                        'essays on the latin orient', 'cambridge history of egypt');
 const TEMPLATES_WE_HARV = array('cite iucn', 'cite odnb', 'cite dnb', 'dnb', 'dnbie', 'cite americana', 'cite eb1911', 'cite techreport',
                                 'cite wikisource', 'ei2', 'encyclopaedia of islam, new edition', 'ei3', 'encyclopaedia of islam, three',
-                                'cite catholic encyclopedia', 'cathency', 'cite ce1913');
+                                'cite catholic encyclopedia', 'cathency', 'cite ce1913', 'cite danfs', 'new american cyclopedia', 'cite power broker',
+                                'cite central park history', 'schafer-more-classic', 'cite grove', 'eb1911', 'odnbweb', 'cite eb9', 'cite dcb',
+                                'encyclopaedia islamica');
 const ALL_URL_TYPES = array('url', 'article-url', 'chapter-url', 'chapterurl', 'conference-url', 'conferenceurl',
                   'contribution-url', 'contributionurl', 'entry-url', 'event-url', 'eventurl', 'lay-url',
                   'layurl', 'map-url', 'mapurl', 'section-url', 'sectionurl', 'transcript-url',
