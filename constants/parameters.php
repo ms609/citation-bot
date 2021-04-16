@@ -23,7 +23,9 @@ const TEMPLATES_WE_HARV = array('cite iucn', 'cite odnb', 'cite dnb', 'dnb', 'dn
                                 'cite wikisource', 'ei2', 'encyclopaedia of islam, new edition', 'ei3', 'encyclopaedia of islam, three',
                                 'cite catholic encyclopedia', 'cathency', 'cite ce1913', 'cite danfs', 'new american cyclopedia', 'cite power broker',
                                 'cite central park history', 'schafer-more-classic', 'cite grove', 'eb1911', 'odnbweb', 'cite eb9', 'cite dcb',
-                                'encyclopaedia islamica');
+                                'encyclopaedia islamica', 'goldberg-amtrak', 'hilton-amtrak', 'solomon-sp-passenger', 'wayner - car names, numbers, consists',
+                                'wayner - car names, numbers, consists', 'cite lotep', 'cite lives of the eminent philosophers',
+                                'cite av media notes');
 const ALL_URL_TYPES = array('url', 'article-url', 'chapter-url', 'chapterurl', 'conference-url', 'conferenceurl',
                   'contribution-url', 'contributionurl', 'entry-url', 'event-url', 'eventurl', 'lay-url',
                   'layurl', 'map-url', 'mapurl', 'section-url', 'sectionurl', 'transcript-url',
