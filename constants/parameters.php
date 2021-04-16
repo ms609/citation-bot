@@ -37,7 +37,11 @@ const TEMPLATES_WE_HARV = array('cite iucn', 'cite odnb', 'cite dnb', 'dnb', 'dn
                                 'solomon-american diesel', 'solomon-emd f-unit', 'solomon-emd locomotives',
                                 'solomon-vintage diesel', 'solomon-north american locomotives', 'cite sep',
                                 'wegman-illustrated', 'zimmermann-santa fe', 'glischinski-santa fe', 'disraeliref', 'cite map',
-                                'taber-dlw-19th', 'taber-dlw-20th-1', 'book-hills-power from steam', 'cite danfs');
+                                'taber-dlw-19th', 'taber-dlw-20th-1', 'book-hills-power from steam', 'cite danfs', 'cite liner notes',
+                                'setton-a history of the crusades', "cite appletons'", 'cite dnb12', 'cite newsletter',
+                                'the cambridge history of iran', 'drury historical guide 1985', 'cite dgrbm', 'cite nie',
+                                'herr-ln');
+
 const ALL_URL_TYPES = array('url', 'article-url', 'chapter-url', 'chapterurl', 'conference-url', 'conferenceurl',
                   'contribution-url', 'contributionurl', 'entry-url', 'event-url', 'eventurl', 'lay-url',
                   'layurl', 'map-url', 'mapurl', 'section-url', 'sectionurl', 'transcript-url',
