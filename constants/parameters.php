@@ -30,7 +30,14 @@ const TEMPLATES_WE_HARV = array('cite iucn', 'cite odnb', 'cite dnb', 'dnb', 'dn
                                 'lewis-shortline-1991', 'cite podcast', 'oxford dictionary of late antiquity', 'duke-rdc',
                                 'lynch-new haven passenger', 'schwieterman-leaves-eastern', 'amtrak by the numbers', 'cite amcyc',
                                 'historic environment scotland', 'cite lotep', 'zimmermann-burlington', 'shaughnessy-dh', 'reynolds-bo',
-                                'sanders-heartland', 'cite av media', 'murray-illinois central', 'schafer-streamliners');
+                                'sanders-heartland', 'cite av media', 'murray-illinois central', 'schafer-streamliners',
+                                'cite letter', 'cite dgrg', 'cite interview', 'cite dnbsupp', '1922 locomotive cyclopedia',
+                                'foster-field guide', 'solomon-ge and emd', 'pinkepank diesel spotters guide 2',
+                                'solomon-electro-motive', 'middleton-electrified-2nd', 'schafer-vintage diesel',
+                                'solomon-american diesel', 'solomon-emd f-unit', 'solomon-emd locomotives',
+                                'solomon-vintage diesel', 'solomon-north american locomotives', 'cite sep',
+                                'wegman-illustrated', 'zimmermann-santa fe', 'glischinski-santa fe', 'disraeliref', 'cite map',
+                                'taber-dlw-19th', 'taber-dlw-20th-1', 'book-hills-power from steam', 'cite danfs');
 const ALL_URL_TYPES = array('url', 'article-url', 'chapter-url', 'chapterurl', 'conference-url', 'conferenceurl',
                   'contribution-url', 'contributionurl', 'entry-url', 'event-url', 'eventurl', 'lay-url',
                   'layurl', 'map-url', 'mapurl', 'section-url', 'sectionurl', 'transcript-url',
