@@ -86,6 +86,8 @@ final class Template {
                ['Citebook', 'Cite book'],
                ['cit book', 'cite book'],
                ['Cit book', 'Cite book'],
+               ['cite ebook', 'cite book'],
+               ['Cite ebook', 'Cite book'],
                ['cite books', 'cite book'],
                ['Cite books', 'Cite book'],
                ['book reference', 'cite book'],
