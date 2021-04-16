@@ -47,9 +47,7 @@ function report_minor_error(string $text) : void {  // For things we want to err
 
 function quietly(callable $function, string $text) : void { // Stuff suppressed when running on the command line
   /** @psalm-suppress TypeDoesNotContainType */ /* PSALM thinks HTML_OUTPUT cannot be false */
-  if (HTML_OUTPUT || TRAVIS) {
     $function($text);
-  }
 }
 
 // special flags to mark this function as making all untrustworthy input magically safe to output
