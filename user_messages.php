@@ -5,12 +5,11 @@ require_once("constants.php");   // @codeCoverageIgnore
 
 function html_echo(string $text, string $alternate_text='') : void {
   /** @psalm-suppress TypeDoesNotContainType */ /* PSALM thinks HTML_OUTPUT and TRAVIS cannot be false */
-  if (!TRAVIS) echo HTML_OUTPUT ? $text : $alternate_text;
+  echo HTML_OUTPUT ? $text : $alternate_text;
 }
 
 function user_notice(string $symbol, string $class, string $text) : void {
   static $last_time = 0;
-  if (!TRAVIS) {
     // @codeCoverageIgnoreStart
     /** @psalm-suppress TypeDoesNotContainType */ /* PSALM thinks HTML_OUTPUT cannot be false */
     echo "\n " . (HTML_OUTPUT ? "<span class='$class'>" : "") . $symbol . $text . (HTML_OUTPUT ? "</span>" : "");
@@ -22,7 +21,6 @@ function user_notice(string $symbol, string $class, string $text) : void {
       }
     }
     // @codeCoverageIgnoreEnd
-  }
 }
 
 function report_phase(string $text) : void { user_notice("\n>", "phase", $text); }
@@ -33,7 +31,7 @@ function report_warning(string $text) : void  { user_notice("  !", "warning", $t
 function report_modification(string $text) : void { user_notice("  ~", "changed", $text); }
 function report_add(string $text) : void { user_notice("  +", "added", $text); }
 function report_forget(string $text) : void { user_notice("  -", "removed", $text); }
-function report_inline(string $text) : void { if (!TRAVIS) echo " $text"; }
+function report_inline(string $text) : void {echo " $text"; }
 // call report_warning to give users a message before we die
 function report_error(string $text) : void { report_warning($text); exit(999); } // @codeCoverageIgnore 
 function report_minor_error(string $text) : void {  // For things we want to error in tests, but continue on Wikipedia
