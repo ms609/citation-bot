@@ -27,7 +27,9 @@ const TEMPLATES_WE_HARV = array('cite iucn', 'cite odnb', 'cite dnb', 'dnb', 'dn
                                 'wayner - car names, numbers, consists', 'cite lotep', 'cite lives of the eminent philosophers',
                                 'cite av media notes', 'gilliland', 'cox-upper darby', 'oxford dictionary of late antiquity', 
                                 'cite notitia parliamentaria', 'encyclopaedia iIslamica', 'historyofparliament', 'lewis-shortline-1986',
-                                'lewis-shortline-1991');
+                                'lewis-shortline-1991', 'cite podcast', 'oxford dictionary of late antiquity', 'duke-rdc',
+                                'lynch-new haven passenger', 'schwieterman-leaves-eastern', 'amtrak by the numbers', 'cite amcyc',
+                                'historic environment scotland', 'cite lotep');
 const ALL_URL_TYPES = array('url', 'article-url', 'chapter-url', 'chapterurl', 'conference-url', 'conferenceurl',
                   'contribution-url', 'contributionurl', 'entry-url', 'event-url', 'eventurl', 'lay-url',
                   'layurl', 'map-url', 'mapurl', 'section-url', 'sectionurl', 'transcript-url',
