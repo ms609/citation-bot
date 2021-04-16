@@ -126,6 +126,8 @@ final class Template {
                ['Cite new', 'Cite news'],
                ['cite Web', 'cite web'],
                ['Cite Web', 'Cite web'],
+               ['cite media', 'cite AV media'],
+               ['Cite media', 'Cite AV media'],
                ['cite Journal', 'cite journal'],
                ['Cite Journal', 'Cite journal'],
                ['cite Book', 'cite book'],
