@@ -51,7 +51,12 @@ const TEMPLATES_WE_HARV = array('cite iucn', 'cite odnb', 'cite dnb', 'dnb', 'dn
                                 'williams-philadelphia', 'downey-chicago', 'hilton narrow gauge', 'kratville-ssl',
                                 'cite dissertation', 'cite jewish encyclopedia', 'cudahy-hudson', 'williams-philadelphia',
                                 'holton-reading-1', 'coates-reading', 'williams-philadelphia', 'cite afm', 'churella-prr-1',
-                                'cudahy-hudson');
+                                'cudahy-hudson', 'cite bdcc', 'canadabio', 'gillham-waterloo-city', 'cite aia5', 'scribbins-hiawatha',
+                                'solomon-masterpieces', 'cite episode', 'taber-dlw-20th-2', 'bbkl', 'burch electric traction',
+                                'cite ssrn', 'lsi', 'linguistic survey of india', 'yenne-chiefs', 'schafer-classic-railroads-3',
+                                'cite morningside', 'cite newspaper the times', 'kratville-ssl', 'cite cem', 'mactutor biography',
+                                'clementsmcmahon-gsr locomotives', 'vennac', 'lynch-penn central', 'meints-companies',
+                                'meints-lines', 'scribbins-remembered');
 
 const ALL_URL_TYPES = array('url', 'article-url', 'chapter-url', 'chapterurl', 'conference-url', 'conferenceurl',
                   'contribution-url', 'contributionurl', 'entry-url', 'event-url', 'eventurl', 'lay-url',
