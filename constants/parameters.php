@@ -59,7 +59,9 @@ const TEMPLATES_WE_HARV = array('cite iucn', 'cite odnb', 'cite dnb', 'dnb', 'dn
                                 'meints-lines', 'scribbins-remembered', 'burch electric traction', 'staufer-pennsy power ii', 
                                 'volkmer-pennsy-electric', 'staufer-pennsy', 'cudahy-hudson', 'middleton-prr-under-wire', 
                                 'bezilla-prr-electric-traction', 'dunbar-railroads', 'meints-companies', 'oxford dictionary of byzantium', 
-                                'dlmf');
+                                'dlmf', 'mlcc', 'cite episode', 'dnb12', 'cite sbdel', 'nhle', 'london gazette', 'odb', 'maiken-night trains', 
+                                'solomon-up', 'welsh-pullman', 'welsh-up', 'eminent scotsmen', 'cite dab', 'cite act', 'cite je1906', 
+                                'lewis-shortline-1996', 'cite speech');
 
 const ALL_URL_TYPES = array('url', 'article-url', 'chapter-url', 'chapterurl', 'conference-url', 'conferenceurl',
                   'contribution-url', 'contributionurl', 'entry-url', 'event-url', 'eventurl', 'lay-url',
