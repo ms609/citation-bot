@@ -65,7 +65,8 @@ const TEMPLATES_WE_HARV = array('cite iucn', 'cite odnb', 'cite dnb', 'dnb', 'dn
                                 'schafer-classic', 'welsh-broadway', 'feis', 'schafer-american passenger train', 'msw3 hystricognathi', 
                                 'encyclopedia of north american railroads', 'dunn-comeng-5', 'cudahy-subways', 'cite dnbie',
                                 'bonnett practical rail engineering', 'solomon-amtrak', 'cox-dixie', 'holton-reading-2', 'cite irishbio', 
-                                'cite film', 'sowl', 'cite IETF');
+                                'cite film', 'sowl', 'cite IETF', 'cite manhmaps', 'ndb', 'cite adb', 'cite ogn', 'dgrbm', 'greenlaw-via rail', 
+                                'cite newsgroup');
 
 const ALL_URL_TYPES = array('url', 'article-url', 'chapter-url', 'chapterurl', 'conference-url', 'conferenceurl',
                   'contribution-url', 'contributionurl', 'entry-url', 'event-url', 'eventurl', 'lay-url',
