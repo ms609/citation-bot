@@ -56,7 +56,10 @@ const TEMPLATES_WE_HARV = array('cite iucn', 'cite odnb', 'cite dnb', 'dnb', 'dn
                                 'cite ssrn', 'lsi', 'linguistic survey of india', 'yenne-chiefs', 'schafer-classic-railroads-3',
                                 'cite morningside', 'cite newspaper the times', 'kratville-ssl', 'cite cem', 'mactutor biography',
                                 'clementsmcmahon-gsr locomotives', 'vennac', 'lynch-penn central', 'meints-companies',
-                                'meints-lines', 'scribbins-remembered');
+                                'meints-lines', 'scribbins-remembered', 'Burch Electric Traction', 'Staufer-Pennsy Power II', 
+                                'Volkmer-Pennsy-Electric', 'Staufer-Pennsy', 'Cudahy-Hudson', 'Middleton-PRR-Under-Wire', 
+                                'Bezilla-PRR-Electric-Traction', 'Dunbar-Railroads', 'Meints-Companies', 'Oxford Dictionary of Byzantium', 
+                                'dlmf');
 
 const ALL_URL_TYPES = array('url', 'article-url', 'chapter-url', 'chapterurl', 'conference-url', 'conferenceurl',
                   'contribution-url', 'contributionurl', 'entry-url', 'event-url', 'eventurl', 'lay-url',
