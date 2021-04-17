@@ -40,7 +40,9 @@ const TEMPLATES_WE_HARV = array('cite iucn', 'cite odnb', 'cite dnb', 'dnb', 'dn
                                 'taber-dlw-19th', 'taber-dlw-20th-1', 'book-hills-power from steam', 'cite danfs', 'cite liner notes',
                                 'setton-a history of the crusades', "cite appletons'", 'cite dnb12', 'cite newsletter',
                                 'the cambridge history of iran', 'drury historical guide 1985', 'cite dgrbm', 'cite nie',
-                                'herr-ln');
+                                'herr-ln', 'complete book of north american railroading', 'catholic', 'gilliland', 'cite eb1922', 
+                                'cite audb', 'cite serial', 'solomon-csx', 'skeptoid', 'colledge', 'cite nuttall', 
+                                'citar tese', 'sbdel', 'australian dictionary of biography', 'cyclopaedia 1728');
 
 const ALL_URL_TYPES = array('url', 'article-url', 'chapter-url', 'chapterurl', 'conference-url', 'conferenceurl',
                   'contribution-url', 'contributionurl', 'entry-url', 'event-url', 'eventurl', 'lay-url',
