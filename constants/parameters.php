@@ -47,7 +47,11 @@ const TEMPLATES_WE_HARV = array('cite iucn', 'cite odnb', 'cite dnb', 'dnb', 'dn
                                 'sanders-indiana', 'cite biblica', 'white - american railroad freight car', 
                                 'hilton-interurban', 'middleton-interurban', 'butt-stations', 'solomon-modern diesel', 
                                 'mcdonnell-locomotives-2nd', 'cite gotham', '1911', 'scribbins-400-2008', 'catholic encyclopedia', 
-                                'cite video');
+                                'cite video', 'ivey-marquette', 'michigan railroad commission', 'cite hidden waters nyc',
+                                'williams-philadelphia', 'downey-chicago', 'hilton narrow gauge', 'kratville-ssl',
+                                'cite dissertation', 'cite jewish encyclopedia', 'cudahy-hudson', 'williams-philadelphia',
+                                'holton-reading-1', 'coates-reading', 'williams-philadelphia', 'cite afm', 'churella-prr-1',
+                                'cudahy-hudson');
 
 const ALL_URL_TYPES = array('url', 'article-url', 'chapter-url', 'chapterurl', 'conference-url', 'conferenceurl',
                   'contribution-url', 'contributionurl', 'entry-url', 'event-url', 'eventurl', 'lay-url',
