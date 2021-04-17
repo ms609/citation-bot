@@ -61,7 +61,9 @@ const TEMPLATES_WE_HARV = array('cite iucn', 'cite odnb', 'cite dnb', 'dnb', 'dn
                                 'bezilla-prr-electric-traction', 'dunbar-railroads', 'meints-companies', 'oxford dictionary of byzantium', 
                                 'dlmf', 'mlcc', 'cite episode', 'dnb12', 'cite sbdel', 'nhle', 'london gazette', 'odb', 'maiken-night trains', 
                                 'solomon-up', 'welsh-pullman', 'welsh-up', 'eminent scotsmen', 'cite dab', 'cite act', 'cite je1906', 
-                                'lewis-shortline-1996', 'cite speech');
+                                'lewis-shortline-1996', 'cite speech', 'holt-northwest', 'grant-railco', 'johnston-streamliner', 
+                                'schafer-classic', 'welsh-broadway', 'feis', 'schafer-american passenger train', 'msw3 hystricognathi', 
+                                'encyclopedia of north american railroads', 'dunn-comeng-5', 'cudahy-subways', 'cite dnbie');
 
 const ALL_URL_TYPES = array('url', 'article-url', 'chapter-url', 'chapterurl', 'conference-url', 'conferenceurl',
                   'contribution-url', 'contributionurl', 'entry-url', 'event-url', 'eventurl', 'lay-url',
