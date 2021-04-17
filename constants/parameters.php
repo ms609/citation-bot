@@ -42,7 +42,12 @@ const TEMPLATES_WE_HARV = array('cite iucn', 'cite odnb', 'cite dnb', 'dnb', 'dn
                                 'the cambridge history of iran', 'drury historical guide 1985', 'cite dgrbm', 'cite nie',
                                 'herr-ln', 'complete book of north american railroading', 'catholic', 'gilliland', 'cite eb1922', 
                                 'cite audb', 'cite serial', 'solomon-csx', 'skeptoid', 'colledge', 'cite nuttall', 
-                                'citar tese', 'sbdel', 'australian dictionary of biography', 'cyclopaedia 1728');
+                                'citar tese', 'sbdel', 'australian dictionary of biography', 'cyclopaedia 1728',
+                                'dnb cite', 'rfk6.1 ', 'schafer-classic-railroads-1', 'springer', 'holland-classic',
+                                'sanders-indiana', 'cite biblica', 'white - american railroad freight car', 
+                                'hilton-interurban', 'middleton-interurban', 'butt-stations', 'solomon-modern diesel', 
+                                'mcdonnell-locomotives-2nd', 'cite gotham', '1911', 'scribbins-400-2008', 'catholic encyclopedia', 
+                                'cite video');
 
 const ALL_URL_TYPES = array('url', 'article-url', 'chapter-url', 'chapterurl', 'conference-url', 'conferenceurl',
                   'contribution-url', 'contributionurl', 'entry-url', 'event-url', 'eventurl', 'lay-url',
