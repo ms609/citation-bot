@@ -26,7 +26,7 @@ const TEMPLATES_WE_HARV = array('cite iucn', 'cite odnb', 'cite dnb', 'dnb', 'dn
                                 'encyclopaedia islamica', 'goldberg-amtrak', 'hilton-amtrak', 'solomon-sp-passenger', 'wayner - car names, numbers, consists',
                                 'wayner - car names, numbers, consists', 'cite lotep', 'cite lives of the eminent philosophers',
                                 'cite av media notes', 'gilliland', 'cox-upper darby', 'oxford dictionary of late antiquity', 
-                                'cite notitia parliamentaria', 'encyclopaedia iIslamica', 'historyofparliament', 'lewis-shortline-1986',
+                                'cite notitia parliamentaria', 'historyofparliament', 'lewis-shortline-1986',
                                 'lewis-shortline-1991', 'cite podcast', 'oxford dictionary of late antiquity', 'duke-rdc',
                                 'lynch-new haven passenger', 'schwieterman-leaves-eastern', 'amtrak by the numbers', 'cite amcyc',
                                 'historic environment scotland', 'cite lotep', 'zimmermann-burlington', 'shaughnessy-dh', 'reynolds-bo',
@@ -56,9 +56,9 @@ const TEMPLATES_WE_HARV = array('cite iucn', 'cite odnb', 'cite dnb', 'dnb', 'dn
                                 'cite ssrn', 'lsi', 'linguistic survey of india', 'yenne-chiefs', 'schafer-classic-railroads-3',
                                 'cite morningside', 'cite newspaper the times', 'kratville-ssl', 'cite cem', 'mactutor biography',
                                 'clementsmcmahon-gsr locomotives', 'vennac', 'lynch-penn central', 'meints-companies',
-                                'meints-lines', 'scribbins-remembered', 'Burch Electric Traction', 'Staufer-Pennsy Power II', 
-                                'Volkmer-Pennsy-Electric', 'Staufer-Pennsy', 'Cudahy-Hudson', 'Middleton-PRR-Under-Wire', 
-                                'Bezilla-PRR-Electric-Traction', 'Dunbar-Railroads', 'Meints-Companies', 'Oxford Dictionary of Byzantium', 
+                                'meints-lines', 'scribbins-remembered', 'burch electric traction', 'staufer-pennsy power ii', 
+                                'volkmer-pennsy-electric', 'staufer-pennsy', 'cudahy-hudson', 'middleton-prr-under-wire', 
+                                'bezilla-prr-electric-traction', 'dunbar-railroads', 'meints-companies', 'oxford dictionary of byzantium', 
                                 'dlmf');
 
 const ALL_URL_TYPES = array('url', 'article-url', 'chapter-url', 'chapterurl', 'conference-url', 'conferenceurl',
