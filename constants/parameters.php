@@ -67,7 +67,8 @@ const TEMPLATES_WE_HARV = array('cite iucn', 'cite odnb', 'cite dnb', 'dnb', 'dn
                                 'bonnett practical rail engineering', 'solomon-amtrak', 'cox-dixie', 'holton-reading-2', 'cite irishbio', 
                                 'cite film', 'sowl', 'cite IETF', 'cite manhmaps', 'ndb', 'cite adb', 'cite ogn', 'dgrbm', 'greenlaw-via rail', 
                                 'cite newsgroup', 'the history of al-tabari', 'cite newgenbio', 'white-passenger-1985', 
-                                'saunders-merging lines', 'dorin-north western', 'cambridge history of iran', 'quick-stations', 'irs-el');
+                                'saunders-merging lines', 'dorin-north western', 'cambridge history of iran', 'quick-stations', 'irs-el',
+                                'cite bede he');
 
 const ALL_URL_TYPES = array('url', 'article-url', 'chapter-url', 'chapterurl', 'conference-url', 'conferenceurl',
                   'contribution-url', 'contributionurl', 'entry-url', 'event-url', 'eventurl', 'lay-url',
