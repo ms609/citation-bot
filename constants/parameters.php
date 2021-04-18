@@ -68,7 +68,7 @@ const TEMPLATES_WE_HARV = array('cite iucn', 'cite odnb', 'cite dnb', 'dnb', 'dn
                                 'cite film', 'sowl', 'cite IETF', 'cite manhmaps', 'ndb', 'cite adb', 'cite ogn', 'dgrbm', 'greenlaw-via rail', 
                                 'cite newsgroup', 'the history of al-tabari', 'cite newgenbio', 'white-passenger-1985', 
                                 'saunders-merging lines', 'dorin-north western', 'cambridge history of iran', 'quick-stations', 'irs-el',
-                                'cite bede he');
+                                'cite bede he', 'cite court');
 
 const ALL_URL_TYPES = array('url', 'article-url', 'chapter-url', 'chapterurl', 'conference-url', 'conferenceurl',
                   'contribution-url', 'contributionurl', 'entry-url', 'event-url', 'eventurl', 'lay-url',
