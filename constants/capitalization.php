@@ -17,7 +17,7 @@ const LC_SMALL_WORDS = array(/* The following will be automatically updated to a
           " NYT ", " NZ ", " och ", " OECD ", " of ", " off ", " og ", " on ", " or ", 
           " over ", " P.E. ", " PCR ", " per ", " Ph.D. ", " PMLA ", " PNAS ", " PS: ", 
           " R&D ", " RNA ", " RTÉ ", " S&P ", " SAE ", " SpringerPlus ", " SSRN ", " TCI: ", 
-          " TESOL ", " the ", " then ", " till ", " to ", " UK ", " um ", " und ", " up ", 
+          " TESOL ", " the ", " then ", " till ", " to ", " UK ", " um ", " und ", " unserer ", " up ", 
           " USA ", " van ", " vir ", " von ", " voor ", " when ", " with ", " within ", 
           " woor ", " y ", " zu ", " zum ", " zur ", /* The above will be automatically updated to alphabetical order */ 
           // After this line we list exceptions that need re-capitalizing after they have been decapitalized.
@@ -39,7 +39,7 @@ const UC_SMALL_WORDS = array(/* The following will be automatically updated to a
           " Nyt ", " Nz ", " Och ", " Oecd ", " Of ", " Off ", " Og ", " On ", " Or ", 
           " Over ", " P.e. ", " Pcr ", " Per ", " Ph.d. ", " Pmla ", " Pnas ", " Ps: ", 
           " R&d ", " Rna ", " Rté ", " S&p ", " Sae ", " Springerplus ", " Ssrn ", " Tci: ", 
-          " Tesol ", " The ", " Then ", " Till ", " To ", " Uk ", " Um ", " Und ", " Up ", 
+          " Tesol ", " The ", " Then ", " Till ", " To ", " Uk ", " Um ", " Und ", " Unserer ", " Up ", 
           " Usa ", " Van ", " Vir ", " Von ", " Voor ", " When ", " With ", " Within ", 
           " Woor ", " Y ", " Zu ", " Zum ", " Zur ", /* The above will be automatically updated to alphabetical order */ 
           // After this line we list exceptions that need re-capitalizing after they have been decapitalized.
