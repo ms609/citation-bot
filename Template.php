@@ -86,6 +86,8 @@ final class Template {
                ['Citebook', 'Cite book'],
                ['cit book', 'cite book'],
                ['Cit book', 'Cite book'],
+               ['cite ebook', 'cite book'],
+               ['Cite ebook', 'Cite book'],
                ['cite books', 'cite book'],
                ['Cite books', 'Cite book'],
                ['book reference', 'cite book'],
@@ -124,6 +126,8 @@ final class Template {
                ['Cite new', 'Cite news'],
                ['cite Web', 'cite web'],
                ['Cite Web', 'Cite web'],
+               ['cite media', 'cite AV media'],
+               ['Cite media', 'Cite AV media'],
                ['cite Journal', 'cite journal'],
                ['Cite Journal', 'Cite journal'],
                ['cite Book', 'cite book'],
@@ -185,6 +189,8 @@ final class Template {
                ['cite publication', 'cite book'],
                ['Citeencyclopedia', 'Cite encyclopedia'],
                ['citeencyclopedia', 'cite encyclopedia'],
+               ['Encyclopedia', 'Cite encyclopedia'],
+               ['encyclopedia', 'cite encyclopedia'],
                ['Cita pubblicazione', 'Cite journal'],
                ['cita pubblicazione', 'cite journal'],
                ['Citace elektronické monografie', 'Cite web'],
@@ -4089,7 +4095,7 @@ final class Template {
        return;
     }
     
-    if (mb_stripos($this->get($param), 'CITATION_BOT_PLACEHOLDER_COMMENT') !== FALSE) {
+    if (mb_stripos($this->get($param), 'CITATION_BOT_PLACEHOLDER_COMMENT') !== FALSE && $param !== 'ref') {
       return;  // We let comments block the bot
     }
     if ($this->get($param) != $this->get3($param)) return;
@@ -4763,8 +4769,11 @@ final class Template {
           return;
           
         case 'ref':
-          if ($this->blank($param) || $this->get($param) === 'harv') {
+          $content = strtolower($this->get($param));
+          if ($content === '' || $content === 'harv') {
             $this->forget($param);
+          } elseif (preg_match('~^harv( *# # # CITATION_BOT_PLACEHOLDER_COMMENT.*?# # #)$~sui', $content, $matches)) {
+            $this->set($param, $matches[1]); // Sometimes it is ref=harv <!-- {{harvid|....}} -->
           }
           return;
 
@@ -6331,7 +6340,7 @@ final class Template {
   
   public function set(string $par, string $val) : bool {
     if ($par === '') report_error('NULL parameter passed to set with value of ' . echoable($val));
-    if (mb_stripos($this->get($par), 'CITATION_BOT_PLACEHOLDER_COMMENT') !== FALSE) {
+    if (mb_stripos($this->get($par), 'CITATION_BOT_PLACEHOLDER_COMMENT') !== FALSE && $par !== 'ref') {
       return FALSE;
     }
     if ($this->get($par) != $this->get3($par)) {
