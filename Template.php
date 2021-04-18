@@ -4769,7 +4769,7 @@ final class Template {
           return;
           
         case 'ref':
-          $content = $this->get($param);
+          $content = strtolower($this->get($param));
           if ($content === '' || $content === 'harv') {
             $this->forget($param);
           } elseif (preg_match('~^harv( *# # # CITATION_BOT_PLACEHOLDER_COMMENT.*?# # #)$~sui', $content, $matches)) {
