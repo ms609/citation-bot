@@ -5359,12 +5359,12 @@ final class Template {
             }
           }
           if (stripos($this->get($param), 'proquest') !== FALSE) {
-            if (preg_match("~^(?:http.+/login/?\?url=|)https?://(?:0\-|)search.proquest.com[^/]+(|/[^/]+)/docview/(.+)$~", $this->get($param), $matches)) {
+            if (preg_match("~^(?:http.+/login/?\?url=|)https?://(?:0\-|)search.proquest.com[^/]+(|/[^/]+)+/docview/(.+)$~", $this->get($param), $matches)) {
                  $this->set($param, 'https://search.proquest.com' . $matches[1] . '/docview/' . $matches[2]);
                  report_info("Remove proxy from ProQuest URL");
                  if ($this->has('via') && stripos($this->get('via'), 'library') !== FALSE) $this->forget('via');
                  if ($this->has('via') && stripos($this->get('via'), 'proquest') === FALSE) $this->forget('via');
-            } elseif (preg_match("~^(?:http.+/login/?\?url=|)https?://(?:0\-|)www.proquest.com[^/]+(|/[^/]+)/docview/(.+)$~", $this->get($param), $matches)) {
+            } elseif (preg_match("~^(?:http.+/login/?\?url=|)https?://(?:0\-|)www.proquest.com[^/]+(|/[^/]+)+/docview/(.+)$~", $this->get($param), $matches)) {
                  $this->set($param, 'https://www.proquest.com' . $matches[1] . '/docview/' . $matches[2]);
                  report_info("Remove proxy from ProQuest URL");
                  if ($this->has('via') && stripos($this->get('via'), 'library') !== FALSE) $this->forget('via');
@@ -5376,7 +5376,7 @@ final class Template {
                  if ($this->has('via') && stripos($this->get('via'), 'library') !== FALSE) $this->forget('via');
                  if ($this->has('via') && stripos($this->get('via'), 'proquest') === FALSE) $this->forget('via');
                }
-            } elseif (preg_match("~^(?:http.+/login/?\?url=|)https?://(?:0\-|)search.proquest.+scoolaid\.net(|/[^/]+)/docview/(.+)$~", $this->get($param), $matches)) {
+            } elseif (preg_match("~^(?:http.+/login/?\?url=|)https?://(?:0\-|)search.proquest.+scoolaid\.net(|/[^/]+)+/docview/(.+)$~", $this->get($param), $matches)) {
                  $this->set($param, 'https://search.proquest.com' . $matches[1] . '/docview/' . $matches[2]);
                  report_info("Remove proxy from ProQuest URL");
                  if ($this->has('via') && stripos($this->get('via'), 'library') !== FALSE) $this->forget('via');
