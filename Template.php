@@ -5357,12 +5357,6 @@ final class Template {
                  if ($this->has('via') && stripos($this->get('via'), 'library') !== FALSE) $this->forget('via');
                  if ($this->has('via') && stripos($this->get('via'), 'gale') === FALSE) $this->forget('via');
             }
-            if (preg_match("~^(https?://(?:go|link)\.galegroup\.com/.*)&u=[^&]*(&.*|)$~", $this->get($param), $matches)) {
-                 $this->set($param, $matches[1] . $matches[2]);
-                 report_info("Remove University ID from Gale URL");
-                 if ($this->has('via') && stripos($this->get('via'), 'library') !== FALSE) $this->forget('via');
-                 if ($this->has('via') && stripos($this->get('via'), 'gale') === FALSE) $this->forget('via');
-            }
           }
           if (stripos($this->get($param), 'proquest') !== FALSE) {
             if (preg_match("~^(?:http.+/login\?url=|)https?://(?:0\-|)search.proquest.com[^/]+(|/[^/]+)/docview/(.+)$~", $this->get($param), $matches)) {
