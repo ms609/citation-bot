@@ -698,7 +698,7 @@ final class Template {
       return FALSE;  // We let comments block the bot
     }
     
-    if (array_key_exists($param_name, COMMON_MISTAKES)) {
+    if (array_key_exists($param_name, array(COMMON_MISTAKES)) || array_key_exists($param_name, array(COMMON_MISTAKES_TOOL))) {
       report_error("Attempted to add invalid parameter: " . echoable($param_name)); // @codeCoverageIgnore
     }
     
@@ -3881,8 +3881,13 @@ final class Template {
   public function correct_param_mistakes() : void {
   // It will correct any that appear to be mistyped in minor templates
   if (empty($this->param)) return ;
-  $mistake_corrections = array_values(COMMON_MISTAKES);
-  $mistake_keys = array_keys(COMMON_MISTAKES);
+  if (FLUSHING_OKAY) {
+    $the_list = COMMON_MISTAKES;
+  } else {
+    $the_list = array_merge(COMMON_MISTAKES, COMMON_MISTAKES_TOOL); // Clean these with gadget
+  }
+  $mistake_corrections = array_values($the_list);
+  $mistake_keys = array_keys($the_list);
 
   foreach ($this->param as $p) {
     if (strlen($p->param) > 0) {
