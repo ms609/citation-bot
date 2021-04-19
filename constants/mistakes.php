@@ -215,9 +215,6 @@ const COMMON_MISTAKES = array ( // Common mistakes that aren't picked up by the 
   "publicationdate"   =>  "publication-date", 
   "chapterurl"      =>  "chapter-url",
   "booktitle"       =>  "book-title",
-  "accessdate"      =>  "access-date",
-  "archivedate"     =>  "archive-date",
-  "archiveurl"      =>  "archive-url",
   "conferenceurl"   =>  "conference-url",
   "timecaption"     =>  "time-caption",
   "contributionurl" =>  "contribution-url",
@@ -230,3 +227,9 @@ const COMMON_MISTAKES = array ( // Common mistakes that aren't picked up by the 
   "authorlink"      =>  "author-link",
   "airdate"         =>  "air-date"
 );
+
+const COMMON_MISTAKES_TOOL = array(
+  "accessdate"      =>  "access-date",
+  "archivedate"     =>  "archive-date",
+  "archiveurl"      =>  "archive-url");
+
