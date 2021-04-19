@@ -2173,7 +2173,7 @@ final class Template {
              // SEP 2020 $this->forget($url_type);
           }
           return $this->add_if_new('ol', $match[1]);
-      } elseif (preg_match("~^https?://search\.proquest\.com/docview/(\d{4,})$~i", $url, $match) && $this->has('title') && $this->blank('id')) {
+      } elseif (preg_match("~^https?://(?:search|www)\.proquest\.com/docview/(\d{4,})$~i", $url, $match) && $this->has('title') && $this->blank('id')) {
         if ($this->add_if_new('id', '{{ProQuest|' . $match[1] . '}}')) {  
           quietly('report_modification', 'Converting URL to ProQuest parameter');
           if (is_null($url_sent)) {
@@ -5364,6 +5364,11 @@ final class Template {
                  report_info("Remove proxy from ProQuest URL");
                  if ($this->has('via') && stripos($this->get('via'), 'library') !== FALSE) $this->forget('via');
                  if ($this->has('via') && stripos($this->get('via'), 'proquest') === FALSE) $this->forget('via');
+            } elseif (preg_match("~^(?:http.+/login\?url=|)https?://(?:0\-|)www.proquest.com[^/]+(|/[^/]+)/docview/(.+)$~", $this->get($param), $matches)) {
+                 $this->set($param, 'https://www.proquest.com' . $matches[1] . '/docview/' . $matches[2]);
+                 report_info("Remove proxy from ProQuest URL");
+                 if ($this->has('via') && stripos($this->get('via'), 'library') !== FALSE) $this->forget('via');
+                 if ($this->has('via') && stripos($this->get('via'), 'proquest') === FALSE) $this->forget('via');
             } elseif (preg_match('~^https?://(.*)proquest.umi.com(.*)/(pqd.+)$~', $this->get($param), $matches)) {
                if ($matches[1] || $matches[2]) {
                  $this->set($param, 'http://proquest.umi.com/' . $matches[3]);
@@ -5384,17 +5389,35 @@ final class Template {
                  $this->set($param, 'https://search.proquest.com/docview/' . $matches[2]); // Remove specific search engine
               }
             }
+            if (preg_match("~^https?://www.proquest.com/(.+)/docview/(.+)$~", $this->get($param), $matches)) {
+              if ($matches[1] != 'dissertations') {
+                 $changed = TRUE;
+                 $this->set($param, 'https://www.proquest.com/docview/' . $matches[2]); // Remove specific search engine
+              }
+            }
             if (preg_match("~^https?://search\.proquest\.com/docview/(.+)/(?:abstract|fulltext|preview|page).*$~i", $this->get($param), $matches)) {
                  $changed = TRUE;
                  $this->set($param, 'https://search.proquest.com/docview/' . $matches[1]); // You have to login to get that
+            }
+            if (preg_match("~^https?://www\.proquest\.com/docview/(.+)/(?:abstract|fulltext|preview|page).*$~i", $this->get($param), $matches)) {
+                 $changed = TRUE;
+                 $this->set($param, 'https://www.proquest.com/docview/' . $matches[1]); // You have to login to get that
             }
             if (preg_match("~^https?://search\.proquest\.com/docview/(.+)\?.+$~", $this->get($param), $matches)) {
                  $changed = TRUE;
                  $this->set($param, 'https://search.proquest.com/docview/' . $matches[1]); // User specific information
             }
+            if (preg_match("~^https?://www\.proquest\.com/docview/(.+)\?.+$~", $this->get($param), $matches)) {
+                 $changed = TRUE;
+                 $this->set($param, 'https://www.proquest.com/docview/' . $matches[1]); // User specific information
+            }
             if (preg_match("~^https?://search\.proquest\.com/docview/([0-9]+)/[0-9A-Z]+/[0-9]+\??$~", $this->get($param), $matches)) {
                  $changed = TRUE;
                  $this->set($param, 'https://search.proquest.com/docview/' . $matches[1]); // User specific information
+            }
+            if (preg_match("~^https?://www\.proquest\.com/docview/([0-9]+)/[0-9A-Z]+/[0-9]+\??$~", $this->get($param), $matches)) {
+                 $changed = TRUE;
+                 $this->set($param, 'https://www.proquest.com/docview/' . $matches[1]); // User specific information
             }
             if (preg_match("~^https?://proquest\.umi\.com/.*$~", $this->get($param), $matches)) {
                  $ch = curl_init();
