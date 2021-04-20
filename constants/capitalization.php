@@ -84,7 +84,7 @@ const JOURNAL_ACRONYMS = array(/* The following will be automatically updated to
           " Ocean Science Journal : Osj ", " PAJ: A Journal of Performance and Art ", " PALAIOS ", 
           " PalAsiatica ", " PalZ ", " PeerJ ", " PharmSci ", " PhytoKeys ", " Pis'ma v Astronomicheskii ", 
           " PLOS ", " PLOS ", " PLOS ", " PLOS ", " PLOS ", " PLOS ONE ", " PNAS ", " Proceedings of the IRE ", 
-          " Protein Eng Des Sel ", " Prz ", " Prz. ", " Published in: ", " RNA ", " S.A.P.I.EN.S ", 
+          " Protein Eng Des Sel ", " Prz ", " Prz. ", " Published in: ", " RNA ", " S.A.P.I.EN.S ", " Saggiatore musicale ",
           " SCALACS ", " Sch ", " Scr. ", " SICOT-J ", " Srp Arh Celok Lek ", " Star Trek: The Official Monthly Magazine ", 
           " STD & AIDS ", " STDs ", " Série A ", " Tae Kwon Do Times ", " TAPPI Journal ", 
           " Tellus A ", " The Annals of the American Academy ", " The De Paulia ", " The EMBO Journal ", 
@@ -136,7 +136,7 @@ const UCFIRST_JOURNAL_ACRONYMS = array(/* The following will be automatically up
           " Palaios ", " Palasiatica ", " Palz ", " Peerj ", " Pharmsci ", " Phytokeys ", 
           " Pis'ma V Astronomicheskii ", " PLoS ", " PLos ", " PloS ", " Plos ", " plos ", 
           " PLOS One ", " Pnas ", " Proceedings of the Ire ", " Protein Eng des Sel ", 
-          " PRZ ", " PRZ. ", " Published In: ", " Rna ", " S.a.p.i.en.s ", " Scalacs ", 
+          " PRZ ", " PRZ. ", " Published In: ", " Rna ", " S.a.p.i.en.s ", " Saggiatore Musicale ", " Scalacs ", 
           " SCH ", " SCR. ", " Sicot-J ", " SRP Arh Celok Lek ", " Star Trek: The Official Monthly Magazine ", 
           " STD & Aids ", " STDS ", " Série a ", " Tae Kwon do Times ", " Tappi Journal ", 
           " Tellus a ", " The ANNALS of the American Academy ", " The de Paulia ", " The Embo Journal ", 
@@ -171,7 +171,7 @@ const OBVIOUS_FOREIGN_WORDS = array(" Abhandlungen ", " Actes ", " Annales ", " 
            " Radova ", " Filozofskog  ", " Fakulteta ", " Prištini ", " Mém. ", " Elektriceskaja ",
            " Teplovoznaja ", " Tjaga ", " Aarbøger ",  " Oldkyndighed ", " Histori ", " Les Publications ",
            "ische ", "histoire ", " ancienne ", " d'", "http://", "www.", "www-", " Mikologiya ", " Fitopatologiya ",
-           " filmski ", " ljetopis ");
+           " filmski ", " ljetopis ", " Saggiatore ", " musicale ");
  
 const MAP_DIACRITICS = array("À"=>"A", "Á"=>"A", "Â"=>"A", "Ã"=>"A",
     "Ä"=>"A", "Å"=>"A", "Æ"=>"AE", "Ç"=>"C", "È"=>"E", "É"=>"E",
