@@ -384,22 +384,22 @@ final class Template {
           $the_page    = $this->get('page');
           $the_pages   = $this->get('pages');
           $bad_data = FALSE;
-          if ($the_pages === '0' || $the_pages === 'null') {
+          if ($the_pages === '0' || $the_pages === 'null' || $the_pages === 'n/a') {
               $this->rename('pages', 'CITATION_BOT_PLACEHOLDER_pages');
               $the_pages = '';
               $bad_data = TRUE;
           }
-          if ($the_page === '0' || $the_page === 'null') {
+          if ($the_page === '0' || $the_page === 'null' || $the_page === 'n/a') {
               $this->rename('page', 'CITATION_BOT_PLACEHOLDER_page');
               $the_page = '';
               $bad_data = TRUE;
           }
-          if ($the_volume === '0' || $the_volume === 'null') {
+          if ($the_volume === '0' || $the_volume === 'null' || $the_volume === 'n/a') {
               $this->rename('volume', 'CITATION_BOT_PLACEHOLDER_volume');
               $the_volume = '';
               $bad_data = TRUE;
           }
-          if ($the_issue === '0' || $the_issue === 'null' || $the_issue === 'ja') {
+          if ($the_issue === '0' || $the_issue === 'null' || $the_issue === 'ja' || $the_issue === 'n/a') {
               $this->rename('issue', 'CITATION_BOT_PLACEHOLDER_issue');
               $the_issue = '';
               $bad_data = TRUE;
