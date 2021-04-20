@@ -3694,14 +3694,14 @@ T1 - This is the Title }}';
     $text = "{{cite journal|url=https://go.galegroup.com/STUFF&u=UNIV&date=1234}}";
     $template = $this->make_citation($text);
     $template->tidy_parameter('url');
-    $this->assertSame('https://go.galegroup.com/STUFF&date=1234', $template->get2('url'));
+    $this->assertSame('https://go.galegroup.com/STUFF&u=UNIV&date=1234', $template->get2('url'));
   }
 
   public function testTidy65() : void {
     $text = "{{cite journal|url=https://link.galegroup.com/STUFF&u=UNIV&date=1234}}";
     $template = $this->make_citation($text);
     $template->tidy_parameter('url');
-    $this->assertSame('https://link.galegroup.com/STUFF&date=1234', $template->get2('url'));
+    $this->assertSame('https://link.galegroup.com/STUFF&u=UNIV&date=1234', $template->get2('url'));
   }
  
   public function testTidy66() : void {
