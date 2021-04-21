@@ -5797,6 +5797,12 @@ final class Template {
           $this->forget(strtolower('CITATION_BOT_PLACEHOLDER_BARE_URL'));
         }
       }
+      if ($this->get('issue') === 'n/a' && preg_match('~^\d+$~', $this->get('volume'))) {
+        $this->forget('issue');
+      }
+      if ($this->get('volume') === 'n/a' && preg_match('~^\d+$~', $this->get('issue'))) {
+        $this->forget('volume');
+      }
       if ($this->has('doi') && $this->has('issue') && ($this->get('issue') == $this->get('volume')) && // Issue = Volume and not NULL
         ($this->get('issue') == $this->get_without_comments_and_placeholders('issue')) &&
         ($this->get('volume') == $this->get_without_comments_and_placeholders('volume'))) { // No comments to flag problems
