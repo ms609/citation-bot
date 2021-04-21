@@ -698,7 +698,7 @@ final class Template {
       return FALSE;  // We let comments block the bot
     }
     
-    if (array_key_exists($param_name, array(COMMON_MISTAKES)) || array_key_exists($param_name, array(COMMON_MISTAKES_TOOL))) {
+    if (array_key_exists($param_name, COMMON_MISTAKES) || array_key_exists($param_name, COMMON_MISTAKES_TOOL)) {
       report_error("Attempted to add invalid parameter: " . echoable($param_name)); // @codeCoverageIgnore
     }
     
