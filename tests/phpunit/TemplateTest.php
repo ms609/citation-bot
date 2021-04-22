@@ -40,6 +40,13 @@ final class TemplateTest extends testBaseClass {
     $prepared = $this->prepare_citation($text_in);
     $this->assertSame($text_in, $prepared->parsed_text());
   }
+ 
+  public function testLotsOfFloaters6() : void {
+    $text_in = "{{cite journal| url=http://www.cnn.com | accessdate 24 Nov 2020}}";
+    $prepared = $this->prepare_citation($text_in);
+    $this->assertSame('24 Nov 2020', $prepared->get2('access-date'));
+    $this->assertNull($prepared->get2('accessdate'));
+  }
 
   public function testParameterWithNoParameters() : void {
     $text = "{{Cite web | text without equals sign  }}";
