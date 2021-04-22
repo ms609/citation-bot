@@ -1217,7 +1217,7 @@ final class TemplateTest extends testBaseClass {
   public function testLeaveArchiveURL() : void {
     $text = '{{cite book |chapterurl=http://faculty.haas.berkeley.edu/shapiro/thicket.pdf|isbn=978-0-262-60041-5|archiveurl=https://web.archive.org/web/20070704074830/http://faculty.haas.berkeley.edu/shapiro/thicket.pdf }}';
     $expanded = $this->process_citation($text);
-    $this->assertSame('https://web.archive.org/web/20070704074830/http://faculty.haas.berkeley.edu/shapiro/thicket.pdf', $expanded->get2('archive-url'));
+    $this->assertSame('https://web.archive.org/web/20070704074830/http://faculty.haas.berkeley.edu/shapiro/thicket.pdf', $expanded->get2('archiveurl'));
   }
 
   public function testScriptTitle() : void {
