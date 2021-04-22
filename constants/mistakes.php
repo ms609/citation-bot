@@ -27,7 +27,6 @@ const COMMON_MISTAKES = array ( // Common mistakes that aren't picked up by the 
   "albumlink"       =>  "title-link",
   "titlelink"       =>  "title-link",
   "artist"          =>  "others",
-  "authorurl"       =>  "author-link",
   "bioRxiv"         =>  "biorxiv",
   "co-author"       =>  "coauthor",
   "co-authors"      =>  "coauthors",
@@ -231,5 +230,6 @@ const COMMON_MISTAKES = array ( // Common mistakes that aren't picked up by the 
 const COMMON_MISTAKES_TOOL = array(
   "accessdate"      =>  "access-date",
   "archivedate"     =>  "archive-date",
-  "archiveurl"      =>  "archive-url");
+  "archiveurl"      =>  "archive-url",
+  "authorurl"       =>  "author-link",);
 
