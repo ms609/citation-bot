@@ -705,7 +705,7 @@ final class Template {
     // We have to map these, since sometimes we get floating accessdat and such
     $mistake_id = array_search($param_name, COMMON_MISTAKES_TOOL);
     if ($mistake_id !== FALSE) {
-        $param_name = $mistake_corrections[$mistake_id];
+        $param_name = COMMON_MISTAKES_TOOL[$mistake_id];
     }
     
     if ($api) $this->record_api_usage($api, $param_name);
