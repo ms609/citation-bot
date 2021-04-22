@@ -45,7 +45,7 @@ final class TemplateTest extends testBaseClass {
     $text_in = "{{cite journal| url=http://www.cnn.com | accessdate 24 Nov 2020}}";
     $prepared = $this->prepare_citation($text_in);
     $this->assertSame('24 Nov 2020', $prepared->get2('access-date'));
-    $this->assertNull($prepared->get('accessdate'));
+    $this->assertNull($prepared->get2('accessdate'));
   }
 
   public function testParameterWithNoParameters() : void {
