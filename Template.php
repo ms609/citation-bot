@@ -1463,7 +1463,7 @@ final class Template {
         return FALSE;
          
       case 'zbl': case 'location': case 'jstor': case 'oclc': case 'mr': case 'lccn': case 'hdl':
-      case 'ssrn': case 'ol': case 'jfm': case 'osti': case 'biorxiv': case 'citeseerx': case: 'via':
+      case 'ssrn': case 'ol': case 'jfm': case 'osti': case 'biorxiv': case 'citeseerx': case 'via':
         if ($this->blank($param_name)) {
           return $this->add($param_name, sanitize_string($value));
         }
