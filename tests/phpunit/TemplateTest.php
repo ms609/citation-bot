@@ -1442,7 +1442,7 @@ final class TemplateTest extends testBaseClass {
       
     $text = "{{cite book|authorlinux=X}}";
     $expanded = $this->process_citation($text);
-    $this->assertSame('{{cite book|author-link=X}}', $expanded->parsed_text());
+    $this->assertSame('{{cite book|authorlink=X}}', $expanded->parsed_text());
       
     $text = "{{cite book|authorlinks33=X}}";
     $expanded = $this->process_citation($text);
@@ -1569,7 +1569,7 @@ final class TemplateTest extends testBaseClass {
       $text = '{{citation|origyear=2000|date=1999}}';
       $prepared = $this->prepare_citation($text);
       $prepared->final_tidy();
-      $this->assertSame('{{citation|orig-year=2000|date=1999}}', $prepared->parsed_text()); 
+      $this->assertSame('{{citation|origyear=2000|date=1999}}', $prepared->parsed_text()); 
  }
 
   public function testDropDuplicates1() : void {
@@ -1709,8 +1709,8 @@ final class TemplateTest extends testBaseClass {
   public function testOrigYearHandling() : void {
       $text = '{{cite book |year=2009 | origyear = 2000 }}';
       $prepared = $this->process_citation($text);
-      $this->assertSame('2000', $prepared->get2('orig-year'));
-      $this->assertNull($prepared->get2('origyear'));
+      $this->assertSame('2000', $prepared->get2('origyear'));
+      $this->assertNull($prepared->get2('orig-year'));
       $this->assertSame('2009', $this->getDateAndYear($prepared));
       
       $text = '{{cite book | origyear = 2000 }}';
@@ -2576,10 +2576,10 @@ T1 - This is the Title }}';
   public function testAccessDates() : void {
     $text = '{{cite book |date=March 12, 1913 |title=Session Laws of the State of Washington, 1913 |chapter=Chapter 65: Classifying Public Highways |page=221 |chapter-url=http://leg.wa.gov/CodeReviser/documents/sessionlaw/1913c65.pdf |publisher=Washington State Legislature |accessdate=August 30, 2018}}';
     $expanded = $this->process_citation($text);
-    $this->assertNotNull($expanded->get2('access-date'));
+    $this->assertNotNull($expanded->get2('accessdate'));
     $text = '{{cite book |date=March 12, 1913 |title=Session Laws of the State of Washington, 1913 |chapter=Chapter 65: Classifying Public Highways |page=221 |chapterurl=http://leg.wa.gov/CodeReviser/documents/sessionlaw/1913c65.pdf |publisher=Washington State Legislature |accessdate=August 30, 2018}}';
     $expanded = $this->process_citation($text);
-    $this->assertNotNull($expanded->get2('access-date'));
+    $this->assertNotNull($expanded->get2('accessdate'));
   }
 
   public function testIgnoreUnkownCiteTemplates() : void {
