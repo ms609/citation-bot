@@ -198,7 +198,6 @@ const COMMON_MISTAKES = array ( // Common mistakes that aren't picked up by the 
   "pp."             =>  "pages",
   "publisherid"     =>  "id",
   "titleyear"       =>  "orig-year",
-  "origyear"        =>  "orig-year",
   "translators"     =>  "translator",
   "URL"             =>  "url",
   "vol"             =>  "volume",
@@ -222,14 +221,15 @@ const COMMON_MISTAKES = array ( // Common mistakes that aren't picked up by the 
   "layurl"          =>  "lay-url",
   "sectionurl"      =>  "section-url",
   "seriesno"        =>  "series-no",
-  "nopp"            =>  "no-pp",
-  "authorlink"      =>  "author-link",
-  "airdate"         =>  "air-date"
+  "nopp"            =>  "no-pp"
 );
 
 const COMMON_MISTAKES_TOOL = array(
   "accessdate"      =>  "access-date",
   "archivedate"     =>  "archive-date",
   "archiveurl"      =>  "archive-url",
-  "authorurl"       =>  "author-link",);
+  "authorurl"       =>  "author-link",
+  "authorlink"      =>  "author-link",
+  "origyear"        =>  "orig-year",
+  "airdate"         =>  "air-date");
 
