@@ -698,8 +698,13 @@ final class Template {
       return FALSE;  // We let comments block the bot
     }
     
-    if (array_key_exists($param_name, COMMON_MISTAKES) || array_key_exists($param_name, COMMON_MISTAKES_TOOL)) {
+    if (array_key_exists($param_name, COMMON_MISTAKES)) {
       report_error("Attempted to add invalid parameter: " . echoable($param_name)); // @codeCoverageIgnore
+    }
+    if (array_key_exists($param_name, COMMON_MISTAKES_TOOL)) {
+      echo $param_name;
+      report_error("Attempted to add invalid parameter: " . echoable($param_name)); // @codeCoverageIgnore
+      exit(99);
     }
     
     if ($api) $this->record_api_usage($api, $param_name);
