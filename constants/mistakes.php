@@ -221,14 +221,14 @@ const COMMON_MISTAKES = array ( // Common mistakes that aren't picked up by the 
   "layurl"          =>  "lay-url",
   "sectionurl"      =>  "section-url",
   "seriesno"        =>  "series-no",
-  "nopp"            =>  "no-pp"
+  "nopp"            =>  "no-pp",
+  "authorurl"       =>  "author-link",
 );
 
 const COMMON_MISTAKES_TOOL = array(
   "accessdate"      =>  "access-date",
   "archivedate"     =>  "archive-date",
   "archiveurl"      =>  "archive-url",
-  "authorurl"       =>  "author-link",
   "authorlink"      =>  "author-link",
   "origyear"        =>  "orig-year",
   "airdate"         =>  "air-date");
