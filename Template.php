@@ -3882,13 +3882,8 @@ final class Template {
   public function correct_param_mistakes() : void {
   // It will correct any that appear to be mistyped in minor templates
   if (empty($this->param)) return ;
-  if (FLUSHING_OKAY) {
-    $the_list = COMMON_MISTAKES;
-  } else {
-    $the_list = array_merge(COMMON_MISTAKES, COMMON_MISTAKES_TOOL); // Clean these with gadget
-  }
-  $mistake_corrections = array_values($the_list);
-  $mistake_keys = array_keys($the_list);
+  $mistake_corrections = array_values(COMMON_MISTAKES);
+  $mistake_keys = array_keys(COMMON_MISTAKES);
 
   foreach ($this->param as $p) {
     if (strlen($p->param) > 0) {
