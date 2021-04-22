@@ -1463,7 +1463,7 @@ final class Template {
         return FALSE;
          
       case 'zbl': case 'location': case 'jstor': case 'oclc': case 'mr': case 'lccn': case 'hdl':
-      case 'ssrn': case 'ol': case 'jfm': case 'osti': case 'biorxiv': case 'citeseerx':
+      case 'ssrn': case 'ol': case 'jfm': case 'osti': case 'biorxiv': case 'citeseerx': case 'via':
         if ($this->blank($param_name)) {
           return $this->add($param_name, sanitize_string($value));
         }
@@ -4654,7 +4654,7 @@ final class Template {
             $this->forget($param);
             if ($this->blank('via')) {
               $this_big_url = $this->get('url') . $this->get('thesis-url') . $this->get('thesisurl') . $this->get('chapter-url') . $this->get('chapterurl');
-              if (stripos($this_big_url, 'proquest') !== FALSE) $this->add('via', 'ProQuest');
+              if (stripos($this_big_url, 'proquest') !== FALSE) $this->add_if_new('via', 'ProQuest');
             }
             return;
           }
