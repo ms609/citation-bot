@@ -19,6 +19,7 @@ const TEMPLATES_WE_CHAPTER_URL = array('new cambridge medieval history', 'setton
                                        'arts of armenia', 'a history of palestine, 634–1099', 'baghdad during the abbasid caliphate',
                                        'baghdad during the abbasid caliphate', 'the cambridge history of china', 'cambridge history of iran',
                                        'essays on the latin orient', 'cambridge history of egypt');
+const TEMPLATES_VCITE = array('vcite book', 'vcite conference', 'vcite journal', 'vcite news', 'vcite web');
 const TEMPLATES_WE_HARV = array('cite iucn', 'cite odnb', 'cite dnb', 'dnb', 'dnbie', 'cite americana', 'cite eb1911', 'cite techreport',
                                 'cite wikisource', 'ei2', 'encyclopaedia of islam, new edition', 'ei3', 'encyclopaedia of islam, three',
                                 'cite catholic encyclopedia', 'cathency', 'cite ce1913', 'cite danfs', 'new american cyclopedia', 'cite power broker',
