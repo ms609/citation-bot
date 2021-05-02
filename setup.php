@@ -97,7 +97,7 @@ function check_blocked() : void {
 
 function unlock_user() : void {
  @session_start();
- @unset($_SESSION['big_and_busy']);     
+ unset($_SESSION['big_and_busy']);     
  @session_write_close();
 }
 
