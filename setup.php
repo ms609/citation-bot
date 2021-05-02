@@ -109,15 +109,22 @@ function check_overused(WikipediaBot $api) : void {
  echo "Debug 2\n ";  
  $user_lock_file_pointer = @fopen($user_lock_file , "r+");
  echo "Debug 3\n ";
- if (!@flock($user_lock_file_pointer, LOCK_EX|LOCK_NB, $blocked)) {
+ if ($user_lock_file_pointer === FALSE) echo "Debug 4\n ";
+ echo "Debug 5\n ";
+ $locked = @flock($user_lock_file_pointer, LOCK_EX|LOCK_NB, $blocked);
+ echo "Debug 6\n ";
+ if (!$locked) {
    if ($blocked) {
       exit('</pre><div style="text-align:center"><h1>Run blocked by your existing run lock file ' .$user_lock_file . '.</h1></div></footer></body></html>');
    }  else {
       exit('</pre><div style="text-align:center"><h1>Run blocked by unexpected lock error with file' .$user_lock_file . '.</h1></div></footer></body></html>');
    }
  }
+ echo "Debug 7\n ";
  if (!is_callable('unlock_user'))  exit('</pre><div style="text-align:center"><h1>Callable error.</h1></div></footer></body></html>');
+ echo "Debug 8\n ";
  register_shutdown_function('unlock_user');
+ echo "Debug 9\n ";
 }
 
 define("MAX_TRIES", 2);
