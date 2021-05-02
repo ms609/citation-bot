@@ -97,16 +97,16 @@ function check_blocked() : void {
 
 function unlock_user(): void {
  global $user_lock_file_pointer;
- flock($user_lock_file_pointer, LOCK_UN);
- fclose($user_lock_file_pointer);
+ @flock($user_lock_file_pointer, LOCK_UN);
+ @fclose($user_lock_file_pointer);
 }
 
 function check_overused(WikipediaBot $api) : void {
  if (TRAVIS) return;
  global $user_lock_file_pointer;
- $user_lock_file = "lock." . base64_encode($api->get_the_user()) . ".txt";
- $user_lock_file_pointer = fopen($user_lock_file , "r+");
- if (!flock($user_lock_file_pointer, LOCK_EX|LOCK_NB, $blocked)) {
+ $user_lock_file = str_replace('=', '', "lock." . base64_encode($api->get_the_user()) . ".txt");
+ $user_lock_file_pointer = @fopen($user_lock_file , "r+");
+ if (!@flock($user_lock_file_pointer, LOCK_EX|LOCK_NB, $blocked)) {
    if ($blocked) {
       exit('</pre><div style="text-align:center"><h1>Run blocked by your existing run lock file ' .$user_lock_file . '.</h1></div></footer></body></html>');
    }  else {
