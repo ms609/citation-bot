@@ -105,7 +105,7 @@ function check_overused(WikipediaBot $api) : void {
  if (TRAVIS) return;
  global $user_lock_file_pointer;
  echo "Debug 1\n ";
- $user_lock_file = str_replace('=', '', "lock." . base64_encode($api->get_the_user()) . ".txt");
+ $user_lock_file = str_replace('=', '', "/tmp/lock." . base64_encode($api->get_the_user()) . ".txt");
  echo "Debug 2\n ";  
  $user_lock_file_pointer = @fopen($user_lock_file , "r+");
  echo "Debug 3\n ";
