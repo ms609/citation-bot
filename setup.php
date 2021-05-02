@@ -101,7 +101,7 @@ function unlock_user() : void {
  @session_write_close();
 }
 
-function check_overused(WikipediaBot $api) : void {
+function check_overused() : void {
  if (TRAVIS) return;
  echo "Debug 1\n ";
  @session_start();
