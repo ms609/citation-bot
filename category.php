@@ -47,6 +47,7 @@ if (HTML_OUTPUT) {
 }
 
 check_blocked();
+check_overused();
 
 $edit_summary_end = "| Suggested by " . $api->get_the_user() . " | [[Category:$category]] | via #UCB_Category ";
 $final_edit_overview = "";
