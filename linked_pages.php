@@ -37,7 +37,7 @@ $api = new WikipediaBot();
 <?php
 
 check_blocked();
-check_overused();
+check_overused($api);
 
 $page_name = str_replace(' ', '_', trim((string) @$_POST['linkpage']));
 if ($page_name == '') {
