@@ -101,7 +101,7 @@ function unlock_user(): void {
  fclose($user_lock_file_pointer);
 }
 
-function check_overused() : void {
+function check_overused(WikipediaBot $api) : void {
  if (TRAVIS) return;
  global $user_lock_file_pointer;
  $user_lock_file = "lock." . base64_encode($api->get_the_user()) . ".txt";
