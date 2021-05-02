@@ -103,19 +103,13 @@ function unlock_user() : void {
 
 function check_overused() : void {
  if (TRAVIS) return;
- echo "Debug 1\n ";
  @session_start();
- echo "Debug 3\n ";
  if (isset($_SESSION['big_and_busy'])) {
    exit('</pre><div style="text-align:center"><h1>Run blocked by your existing big run.</h1></div></footer></body></html>');
  }
- echo "Debug 3\n ";
  $_SESSION['big_and_busy'] = TRUE;
- echo "Debug 4\n ";
  @session_write_close();
- echo "Debug 8\n ";
  register_shutdown_function('unlock_user');
- echo "Debug 9\n ";
 }
 
 define("MAX_TRIES", 2);
