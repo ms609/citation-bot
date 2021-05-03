@@ -161,5 +161,5 @@ if (strpos($pages, '|') !== FALSE) {
   </body>
 </html>
 <?php
-unlock_user_and_exit();
+unlock_user_and_quit();
 ?>
