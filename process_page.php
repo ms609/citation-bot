@@ -84,7 +84,6 @@ if (!isset($ON)) {
 }
 
 $my_page = new Page();
-gc_collect_cycles();
 $pages_to_do = array_unique(explode('|', $pages));
 $done = 0;
 $total = count($pages_to_do);
@@ -94,6 +93,7 @@ if ($total > MAX_PAGES) {
 }
 if ($total > BIG_RUN) check_overused();
 
+gc_collect_cycles();
 foreach ($pages_to_do as $page_title) {
   $done++;
   if (trim($page_title) === '') {  // Default is to edit Wikipedia's main page if user just clicks button.  Let's not even try
