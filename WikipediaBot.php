@@ -514,7 +514,6 @@ final class WikipediaBot {
     }
     unset($_SESSION['access_key']);
     unset($_SESSION['access_secret']);
-    unset($_SESSION['big_and_busy']); // Paranoia
     $return = urlencode($_SERVER['REQUEST_URI']);
     session_write_close();
     @header("Location: authenticate.php?return=" . $return);
