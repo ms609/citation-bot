@@ -6838,6 +6838,7 @@ final class Template {
   }
   
   private function should_url2chapter(bool $force) : bool {
+    $matches = ['', '']; // prevent memory leak in some PHP versions
     if ($this->has('chapterurl')) return FALSE;
     if ($this->has('chapter-url')) return FALSE;
     if ($this->has('trans-chapter')) return FALSE;
@@ -6850,6 +6851,9 @@ final class Template {
     if (stripos($url, 'page=0')) return FALSE;
     if (substr($url, -2) === '_0') return FALSE;
     if (preg_match('~archive\.org/details/[^/]+$~', $url)) return FALSE;
+    if (preg_match('~archive\.org/details/.+/page/n(\d+)~', $url, $matches)) {
+      if ((int) $matches[1] < 16) return FALSE; // Assume early in the book - title page, etc
+    }
     if (stripos($url, 'PA1') && !preg_match('~PA1[0-9]~i', $url)) return FALSE;
     if (stripos($url, 'PA0')) return FALSE;
     if ($this->get_without_comments_and_placeholders('chapter') == '') return FALSE;
