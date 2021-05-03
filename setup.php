@@ -87,12 +87,18 @@ function check_blocked() : void {
 }
 
 function unlock_user_and_exit() : void {
- if (defined('BIG_JOB_MODE')) {
+ if (FALSE && defined('BIG_JOB_MODE')) {
    @session_start();
    unset($_SESSION['big_and_busy']);     
    @session_write_close();
  }
  exit(0);
+}
+
+function unlock_user() : void {
+  @session_start();
+  unset($_SESSION['big_and_busy']);     
+  @session_write_close();
 }
 
 function check_overused() : void {
@@ -103,6 +109,7 @@ function check_overused() : void {
  @session_start();
  $_SESSION['big_and_busy'] = 'BLOCK3';
  define('BIG_JOB_MODE', 'YES');
+ register_shutdown_function('unlock_user');
  @session_write_close();
 }
 
