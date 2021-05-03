@@ -475,7 +475,7 @@ class Page {
         if (strpos($auto_summary, 'chapter-url') !== FALSE) {
           $auto_summary .= "Removed or converted URL. ";
         } else {
-          $auto_summary .= "Removed proxy or dead URL that duplicated free-DOI or unique identifier. ";
+          $auto_summary .= "Removed proxy/dead URL that duplicated identifier. ";
         }
         unset($this->modifications["deletions"][$pos]);
     }
@@ -488,7 +488,7 @@ class Page {
     if ((count($this->modifications["deletions"]) !== 0)
     && ($pos = array_search(strtolower('CITATION_BOT_PLACEHOLDER_BARE_URL'), $this->modifications["deletions"])) !== FALSE
     ) {
-      $auto_summary .= "Converted bare reference to cite template. ";
+      $auto_summary .= "Changed bare reference to CS1/2. ";
       unset($this->modifications["deletions"][$pos]);
     }
     $auto_summary .= ((count($this->modifications["deletions"]) !==0)
