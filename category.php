@@ -47,7 +47,6 @@ if (HTML_OUTPUT) {
 }
 
 check_blocked();
-check_overused();
 
 $edit_summary_end = "| Suggested by " . $api->get_the_user() . " | [[Category:$category]] | via #UCB_Category ";
 $final_edit_overview = "";
@@ -70,6 +69,7 @@ if ($category) {
     html_echo(' </pre></body></html>', "\n");
     exit();
   }
+  if (count($pages_in_category) > BIG_RUN) check_overused();
   $page = new Page();
   gc_collect_cycles();
   $done = 0;
