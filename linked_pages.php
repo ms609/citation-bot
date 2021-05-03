@@ -37,7 +37,6 @@ $api = new WikipediaBot();
 <?php
 
 check_blocked();
-check_overused();
 
 $page_name = str_replace(' ', '_', trim((string) @$_POST['linkpage']));
 if ($page_name == '') {
@@ -107,6 +106,8 @@ if (empty($pages_in_category)) {
     echo("\n </pre></body></html>");
     exit();
   }
+
+  if (count($pages_in_category) > BIG_RUN) check_overused();
 
   $page = new Page();
   gc_collect_cycles();
