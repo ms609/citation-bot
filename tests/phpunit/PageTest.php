@@ -359,14 +359,14 @@ final class PageTest extends testBaseClass {
   public function testODNB() : void {
    $text='{{Cite ODNB|title=Pierrepoint, Albert, (1905–1992)|ref=harv}} {{ODNBsub}}';
    $page = $this->process_page($text);
-   $this->assertSame('{{Cite ODNB|title=Pierrepoint, Albert, (1905–1992)|ref=harv}} ', $page->parsed_text());
-   $text='{{Cite ODNB|title=Pierrepoint, Albert,_(1905–1992)|ref=harv}} {{ODNBsub}}';
+   $this->assertSame('{{Cite ODNB|title=Pierrepoint, Albert, (1905–1992)}} ', $page->parsed_text());
+   $text='{{Cite ODNB|title=Pierrepoint, Albert,_(1905–1992)}} {{ODNBsub}}';
    $page = $this->process_page($text);
-   $this->assertSame('{{Cite ODNB|title=Pierrepoint, Albert,_(1905–1992)|ref=harv}} ', $page->parsed_text());
-   $text='{{Cite ODNB|title=Pierrepoint,_Albert,_(1905–1992)|ref=harv}} {{ODNBsub}}';
+   $this->assertSame('{{Cite ODNB|title=Pierrepoint, Albert,_(1905–1992)}} ', $page->parsed_text());
+   $text='{{Cite ODNB|title=Pierrepoint,_Albert,_(1905–1992)}} {{ODNBsub}}';
    $page = $this->process_page($text);
    $this->assertSame($text, $page->parsed_text()); // two underscores
-   $text='{{Cite ODNB|title=Pierrepoint, Albert, (1905–1992)|ref=harv}}{{Yup}}{{ODNBsub}}';
+   $text='{{Cite ODNB|title=Pierrepoint, Albert, (1905–1992)}}{{Yup}}{{ODNBsub}}';
    $page = $this->process_page($text);
    $this->assertSame($text, $page->parsed_text()); // template in the way
   }

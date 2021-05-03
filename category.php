@@ -56,15 +56,20 @@ if ($category) {
   if (empty($pages_in_category)) {
     echo('Category appears to be empty');
     html_echo(' </pre></body></html>', "\n");
-    exit(0);
+    exit();
   }
   $pages_in_category = array_unique($pages_in_category); // Paranoid
+  shuffle($pages_in_category);
+   
+  if (WikipediaBot::NonStandardMode()) {
+     $pages_in_category = array_slice($pages_in_category, 0, (MAX_PAGES * 2));
+  }
   if (count($pages_in_category) > (MAX_PAGES * 2) ) {
     echo('Category is huge (' . (string) count($pages_in_category) . ')  Cancelling run. Pick a smaller category (maximum size is ' . (string)(MAX_PAGES * 2) . ').  Listen to Obi-Wan Kenobi:  You want to go home and rethink your life.');
     html_echo(' </pre></body></html>', "\n");
-    exit(0);
+    exit();
   }
-  shuffle($pages_in_category);
+  if (count($pages_in_category) > BIG_RUN) check_overused();
   $page = new Page();
   gc_collect_cycles();
   $done = 0;
@@ -113,5 +118,5 @@ if ($category) {
   }
 }
 html_echo(' # # #</pre><footer><a href="./" title="Use Citation Bot again">Another</a>?</footer></body></html>', "\n");
-exit(0);
+exit();
 ?>

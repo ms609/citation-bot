@@ -92,6 +92,7 @@ $total = count($pages_to_do);
 if ($total > MAX_PAGES) {
    report_error('Number of pages is huge (' . (string)$total . ')  Cancelling run (maximum size is ' . (string) MAX_PAGES . ').  Listen to Obi-Wan Kenobi:  You want to go home and rethink your life.');
 }
+if ($total > BIG_RUN) check_overused();
 
 foreach ($pages_to_do as $page_title) {
   $done++;
@@ -159,3 +160,6 @@ if (strpos($pages, '|') !== FALSE) {
     </footer>
   </body>
 </html>
+<?php
+exit();
+?>
