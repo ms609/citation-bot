@@ -95,14 +95,17 @@ function check_blocked() : void {
   if (!TRAVIS && ! WikipediaBot::is_valid_user('Citation_bot')) exit('</pre><div style="text-align:center"><h1>The Citation Bot is currently blocked because of disagreement over its usage.</h1><br/><h2><a href="https://en.wikipedia.org/wiki/User_talk:Citation_bot" title="Join the discussion" target="_blank">Please join in the discussion</a></h2></div><footer><a href="./" title="Use Citation Bot again">Another&nbsp;page</a>?</footer></body></html>');
 }
 
-function unlock_user() : void {
- ini_set('session.use_only_cookies', '0');
- ini_set('session.use_cookies', '0');
- ini_set('session.use_trans_sid', '0');
- ini_set('session.cache_limiter', '');
- @session_start();
- unset($_SESSION['big_and_busy']);     
- @session_write_close();
+function unlock_user_and_exit() : void {
+ if (BIG_JOB_MODE) {
+   // ini_set('session.use_only_cookies', '0');
+   // ini_set('session.use_cookies', '0');
+   // ini_set('session.use_trans_sid', '0');
+   // ini_set('session.cache_limiter', '');
+   @session_start();
+   unset($_SESSION['big_and_busy']);     
+   @session_write_close();
+ }
+ exit(0);
 }
 
 function check_overused() : void {
@@ -110,9 +113,9 @@ function check_overused() : void {
  if (isset($_SESSION['big_and_busy'])) {
    exit('</pre><div style="text-align:center"><h1>Run blocked by your existing big run.</h1></div></footer></body></html>');
  }
- register_shutdown_function('unlock_user');
  @session_start();
  $_SESSION['big_and_busy'] = 'TRUE';
+ define('BIG_JOB_MODE', TRUE);
  @session_write_close();
 }
 
