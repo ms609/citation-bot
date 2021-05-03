@@ -96,6 +96,10 @@ function check_blocked() : void {
 }
 
 function unlock_user() : void {
+ ini_set('session.use_only_cookies', false);
+ ini_set('session.use_cookies', false);
+ ini_set('session.use_trans_sid', false);
+ ini_set('session.cache_limiter', null);
  @session_start();
  unset($_SESSION['big_and_busy']);     
  @session_write_close();
@@ -103,12 +107,12 @@ function unlock_user() : void {
 
 function check_overused() : void {
  if (TRAVIS) return;
- @session_start();
  if (isset($_SESSION['big_and_busy'])) {
    exit('</pre><div style="text-align:center"><h1>Run blocked by your existing big run.</h1></div></footer></body></html>');
  }
- $_SESSION['big_and_busy'] = 'TRUE';
  register_shutdown_function('unlock_user');
+ @session_start();
+ $_SESSION['big_and_busy'] = 'TRUE';
  @session_write_close();
 }
 
