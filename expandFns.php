@@ -502,6 +502,8 @@ function throttle (int $min_interval) : void {
   $phase = $phase + 1;
   $gc_counter = $gc_counter + 1;
   
+  if ($last_write_time === 0) $last_write_time = time();
+  
   if ($gc_counter > 128) {
     $gc_counter = 0;
     gc_collect_cycles();
@@ -511,7 +513,6 @@ function throttle (int $min_interval) : void {
     return;
   } else {
     $phase = 0;
-    if (WikipediaBot::NonStandardMode()) $min_interval = intdiv($min_interval, 2);
     $min_interval =  $min_interval * $cycles;
   }
 
