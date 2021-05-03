@@ -107,9 +107,9 @@ function check_overused() : void {
  if (isset($_SESSION['big_and_busy'])) {
    exit('</pre><div style="text-align:center"><h1>Run blocked by your existing big run.</h1></div></footer></body></html>');
  }
- $_SESSION['big_and_busy'] = TRUE;
- @session_write_close();
+ $_SESSION['big_and_busy'] = 'TRUE';
  register_shutdown_function('unlock_user');
+ @session_write_close();
 }
 
 define("MAX_TRIES", 2);

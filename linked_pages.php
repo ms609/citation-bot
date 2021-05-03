@@ -134,4 +134,5 @@ if (empty($pages_in_category)) {
     echo "\n";
   }
   echo ("\n Done all " . (string) count($pages_in_category) . " pages linked from " . echoable($page_name) . " \n  # # # \n" . $final_edit_overview  . "\n </pre></main></body></html>");
+  exit(0);
 ?>
