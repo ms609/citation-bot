@@ -33,7 +33,7 @@ if (strpos((string) @$_SERVER['PHP_SELF'], '/gadgetapi.php') === FALSE) {
 if (isset($_REQUEST["slow"]) || TRAVIS || (isset($argv[2]) && $argv[2] === '--slow')) {
   define("SLOW_MODE", TRUE);
 } elseif (isset($argv[2])) {
-  exit("Unexpected text on the command.  Only --slow is valid second argument.");
+  unlock_user_and_quit("Unexpected text on the command.  Only --slow is valid second argument.");
 } else {
   define("SLOW_MODE", FALSE);
 }
@@ -86,7 +86,7 @@ function check_blocked() : void {
   if (!TRAVIS && ! WikipediaBot::is_valid_user('Citation_bot')) exit('</pre><div style="text-align:center"><h1>The Citation Bot is currently blocked because of disagreement over its usage.</h1><br/><h2><a href="https://en.wikipedia.org/wiki/User_talk:Citation_bot" title="Join the discussion" target="_blank">Please join in the discussion</a></h2></div><footer><a href="./" title="Use Citation Bot again">Another&nbsp;page</a>?</footer></body></html>');
 }
 
-function unlock_user_and_exit() : void {
+function unlock_user_and_quit() : void {
  if (defined('BIG_JOB_MODE')) {
    @session_start();
    unset($_SESSION['big_and_busy']);     
@@ -98,7 +98,7 @@ function unlock_user_and_exit() : void {
 function check_overused() : void {
  if (TRAVIS) return;
  if (isset($_SESSION['big_and_busy']) && $_SESSION['big_and_busy'] === 'BLOCK3') {
-   exit('</pre><div style="text-align:center"><h1>Run blocked by your existing big run.</h1></div></footer></body></html>');
+   unlock_user_and_quit('</pre><div style="text-align:center"><h1>Run blocked by your existing big run.</h1></div></footer></body></html>');
  }
  @session_start();
  $_SESSION['big_and_busy'] = 'BLOCK3';
