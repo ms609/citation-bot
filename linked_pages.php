@@ -41,7 +41,7 @@ check_blocked();
 $page_name = str_replace(' ', '_', trim((string) @$_POST['linkpage']));
 if ($page_name == '') {
   if (isset($_GET['page'])) {
-    report_warning('Use the webform.  Passing pages via URL not supported anymore.');
+    report_warning('Use the webform.  Passing pages in the URL not supported anymore.');
   } else {
     report_warning('Nothing requested -- OR -- page name got lost during initial authorization ');
   }
@@ -58,7 +58,7 @@ if (strlen($page_name) > 256)  {
   echo("\n </pre></body></html>");
   exit();
 }
-$edit_summary_end = "| Suggested by " . $api->get_the_user() . " | Linked from $page_name | via #UCB_webform_linked ";
+$edit_summary_end = "| Suggested by " . $api->get_the_user() . " | Linked from $page_name | #UCB_webform_linked ";
 $final_edit_overview = "";
 
 $url = API_ROOT . '?action=parse&prop=links&format=json&page=' . $page_name;
