@@ -152,7 +152,6 @@ if (strpos($pages, '|') !== FALSE) {
   $final_edit_overview .= "\n\n" . ' To get the best results, see our helpful <a href="https://en.wikipedia.org/wiki/User:Citation_bot/use">user guides</a>' . "\n\n";
   html_echo($final_edit_overview, '');
 }
-exit(0);
 ?>
     </pre>
     </main>
@@ -161,3 +160,6 @@ exit(0);
     </footer>
   </body>
 </html>
+<?php
+exit(0);
+?>
