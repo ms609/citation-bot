@@ -118,6 +118,7 @@ require_once('Page.php');
 require_once('user_messages.php');
 
 define("MAX_PAGES", 1250);
+define("BIG_RUN", 9);
 
 Zotero::block_zotero();  // TODO - block until fixed
 
