@@ -290,6 +290,11 @@ final class Template {
     if (in_array($this->wikiname(), TEMPLATES_WE_HARV)) {
       $this->tidy_parameter('ref'); // Remove ref=harv or empty ref=
     }
+    if (in_array($this->wikiname(), TEMPLATES_VCITE)) {
+      if ($this->has('doi')) {
+        if ($this->verify_doi()) $this->forget('doi-broken-date');
+      }
+    }
   }
 
   // Re-assemble parsed template into string
@@ -384,22 +389,22 @@ final class Template {
           $the_page    = $this->get('page');
           $the_pages   = $this->get('pages');
           $bad_data = FALSE;
-          if ($the_pages === '0' || $the_pages === 'null') {
+          if ($the_pages === '0' || $the_pages === 'null' || $the_pages === 'n/a') {
               $this->rename('pages', 'CITATION_BOT_PLACEHOLDER_pages');
               $the_pages = '';
               $bad_data = TRUE;
           }
-          if ($the_page === '0' || $the_page === 'null') {
+          if ($the_page === '0' || $the_page === 'null' || $the_page === 'n/a') {
               $this->rename('page', 'CITATION_BOT_PLACEHOLDER_page');
               $the_page = '';
               $bad_data = TRUE;
           }
-          if ($the_volume === '0' || $the_volume === 'null') {
+          if ($the_volume === '0' || $the_volume === 'null' || $the_volume === 'n/a') {
               $this->rename('volume', 'CITATION_BOT_PLACEHOLDER_volume');
               $the_volume = '';
               $bad_data = TRUE;
           }
-          if ($the_issue === '0' || $the_issue === 'null' || $the_issue === 'ja') {
+          if ($the_issue === '0' || $the_issue === 'null' || $the_issue === 'ja' || $the_issue === 'n/a') {
               $this->rename('issue', 'CITATION_BOT_PLACEHOLDER_issue');
               $the_issue = '';
               $bad_data = TRUE;
@@ -700,6 +705,12 @@ final class Template {
     
     if (array_key_exists($param_name, COMMON_MISTAKES)) {
       report_error("Attempted to add invalid parameter: " . echoable($param_name)); // @codeCoverageIgnore
+    }
+    
+    // We have to map these, since sometimes we get floating accessdat and such
+    $mistake_id = array_search($param_name, COMMON_MISTAKES_TOOL);
+    if ($mistake_id !== FALSE) {
+        $param_name = COMMON_MISTAKES_TOOL[$mistake_id];
     }
     
     if ($api) $this->record_api_usage($api, $param_name);
@@ -1145,6 +1156,7 @@ final class Template {
            || mb_stripos($all_page_values, 'table') !== FALSE
            || mb_stripos($all_page_values, 'footnote') !== FALSE
            || mb_stripos($all_page_values, 'endnote') !== FALSE
+           || mb_stripos($all_page_values, 'article') !== FALSE
            || mb_stripos($all_page_values, 'CITATION_BOT_PLACEHOLDER') !== FALSE) { // A comment or template will block the bot
            return FALSE;
         }
@@ -1462,7 +1474,7 @@ final class Template {
         return FALSE;
          
       case 'zbl': case 'location': case 'jstor': case 'oclc': case 'mr': case 'lccn': case 'hdl':
-      case 'ssrn': case 'ol': case 'jfm': case 'osti': case 'biorxiv': case 'citeseerx':
+      case 'ssrn': case 'ol': case 'jfm': case 'osti': case 'biorxiv': case 'citeseerx': case 'via':
         if ($this->blank($param_name)) {
           return $this->add($param_name, sanitize_string($value));
         }
@@ -2173,7 +2185,7 @@ final class Template {
              // SEP 2020 $this->forget($url_type);
           }
           return $this->add_if_new('ol', $match[1]);
-      } elseif (preg_match("~^https?://search\.proquest\.com/docview/(\d{4,})$~i", $url, $match) && $this->has('title') && $this->blank('id')) {
+      } elseif (preg_match("~^https?://(?:search|www)\.proquest\.com/docview/(\d{4,})$~i", $url, $match) && $this->has('title') && $this->blank('id')) {
         if ($this->add_if_new('id', '{{ProQuest|' . $match[1] . '}}')) {  
           quietly('report_modification', 'Converting URL to ProQuest parameter');
           if (is_null($url_sent)) {
@@ -4653,7 +4665,7 @@ final class Template {
             $this->forget($param);
             if ($this->blank('via')) {
               $this_big_url = $this->get('url') . $this->get('thesis-url') . $this->get('thesisurl') . $this->get('chapter-url') . $this->get('chapterurl');
-              if (stripos($this_big_url, 'proquest') !== FALSE) $this->add('via', 'ProQuest');
+              if (stripos($this_big_url, 'proquest') !== FALSE) $this->add_if_new('via', 'ProQuest');
             }
             return;
           }
@@ -4864,6 +4876,14 @@ final class Template {
               return;
           }
           if (preg_match('~^https?://web\.archive\.org/web/.+https://www\.bloomberg\.com/tosv2\.html~', $this->get($param))) {
+              $this->forget($param);
+              return;
+          }
+          if (preg_match('~https://apis\.google\.com/js/plusone\.js$~', $this->get($param))) {
+              $this->forget($param);
+              return;
+          }
+          if (preg_match('~https://www\.google\-analytics\.com/ga\.js$~', $this->get($param))) {
               $this->forget($param);
               return;
           }
@@ -5357,16 +5377,15 @@ final class Template {
                  if ($this->has('via') && stripos($this->get('via'), 'library') !== FALSE) $this->forget('via');
                  if ($this->has('via') && stripos($this->get('via'), 'gale') === FALSE) $this->forget('via');
             }
-            if (preg_match("~^(https?://(?:go|link)\.galegroup\.com/.*)&u=[^&]*(&.*|)$~", $this->get($param), $matches)) {
-                 $this->set($param, $matches[1] . $matches[2]);
-                 report_info("Remove University ID from Gale URL");
-                 if ($this->has('via') && stripos($this->get('via'), 'library') !== FALSE) $this->forget('via');
-                 if ($this->has('via') && stripos($this->get('via'), 'gale') === FALSE) $this->forget('via');
-            }
           }
           if (stripos($this->get($param), 'proquest') !== FALSE) {
-            if (preg_match("~^(?:http.+/login\?url=|)https?://(?:0\-|)search.proquest.com[^/]+(|/[^/]+)/docview/(.+)$~", $this->get($param), $matches)) {
+            if (preg_match("~^(?:http.+/login/?\?url=|)https?://(?:0\-|)search.proquest.com[^/]+(|/[^/]+)+/docview/(.+)$~", $this->get($param), $matches)) {
                  $this->set($param, 'https://search.proquest.com' . $matches[1] . '/docview/' . $matches[2]);
+                 report_info("Remove proxy from ProQuest URL");
+                 if ($this->has('via') && stripos($this->get('via'), 'library') !== FALSE) $this->forget('via');
+                 if ($this->has('via') && stripos($this->get('via'), 'proquest') === FALSE) $this->forget('via');
+            } elseif (preg_match("~^(?:http.+/login/?\?url=|)https?://(?:0\-|)www.proquest.com[^/]+(|/[^/]+)+/docview/(.+)$~", $this->get($param), $matches)) {
+                 $this->set($param, 'https://www.proquest.com' . $matches[1] . '/docview/' . $matches[2]);
                  report_info("Remove proxy from ProQuest URL");
                  if ($this->has('via') && stripos($this->get('via'), 'library') !== FALSE) $this->forget('via');
                  if ($this->has('via') && stripos($this->get('via'), 'proquest') === FALSE) $this->forget('via');
@@ -5377,7 +5396,7 @@ final class Template {
                  if ($this->has('via') && stripos($this->get('via'), 'library') !== FALSE) $this->forget('via');
                  if ($this->has('via') && stripos($this->get('via'), 'proquest') === FALSE) $this->forget('via');
                }
-            } elseif (preg_match("~^(?:http.+/login\?url=|)https?://(?:0\-|)search.proquest.+scoolaid\.net(|/[^/]+)/docview/(.+)$~", $this->get($param), $matches)) {
+            } elseif (preg_match("~^(?:http.+/login/?\?url=|)https?://(?:0\-|)search.proquest.+scoolaid\.net(|/[^/]+)+/docview/(.+)$~", $this->get($param), $matches)) {
                  $this->set($param, 'https://search.proquest.com' . $matches[1] . '/docview/' . $matches[2]);
                  report_info("Remove proxy from ProQuest URL");
                  if ($this->has('via') && stripos($this->get('via'), 'library') !== FALSE) $this->forget('via');
@@ -5390,17 +5409,35 @@ final class Template {
                  $this->set($param, 'https://search.proquest.com/docview/' . $matches[2]); // Remove specific search engine
               }
             }
+            if (preg_match("~^https?://www.proquest.com/(.+)/docview/(.+)$~", $this->get($param), $matches)) {
+              if ($matches[1] != 'dissertations') {
+                 $changed = TRUE;
+                 $this->set($param, 'https://www.proquest.com/docview/' . $matches[2]); // Remove specific search engine
+              }
+            }
             if (preg_match("~^https?://search\.proquest\.com/docview/(.+)/(?:abstract|fulltext|preview|page).*$~i", $this->get($param), $matches)) {
                  $changed = TRUE;
                  $this->set($param, 'https://search.proquest.com/docview/' . $matches[1]); // You have to login to get that
+            }
+            if (preg_match("~^https?://www\.proquest\.com/docview/(.+)/(?:abstract|fulltext|preview|page).*$~i", $this->get($param), $matches)) {
+                 $changed = TRUE;
+                 $this->set($param, 'https://www.proquest.com/docview/' . $matches[1]); // You have to login to get that
             }
             if (preg_match("~^https?://search\.proquest\.com/docview/(.+)\?.+$~", $this->get($param), $matches)) {
                  $changed = TRUE;
                  $this->set($param, 'https://search.proquest.com/docview/' . $matches[1]); // User specific information
             }
+            if (preg_match("~^https?://www\.proquest\.com/docview/(.+)\?.+$~", $this->get($param), $matches)) {
+                 $changed = TRUE;
+                 $this->set($param, 'https://www.proquest.com/docview/' . $matches[1]); // User specific information
+            }
             if (preg_match("~^https?://search\.proquest\.com/docview/([0-9]+)/[0-9A-Z]+/[0-9]+\??$~", $this->get($param), $matches)) {
                  $changed = TRUE;
                  $this->set($param, 'https://search.proquest.com/docview/' . $matches[1]); // User specific information
+            }
+            if (preg_match("~^https?://www\.proquest\.com/docview/([0-9]+)/[0-9A-Z]+/[0-9]+\??$~", $this->get($param), $matches)) {
+                 $changed = TRUE;
+                 $this->set($param, 'https://www.proquest.com/docview/' . $matches[1]); // User specific information
             }
             if (preg_match("~^https?://proquest\.umi\.com/.*$~", $this->get($param), $matches)) {
                  $ch = curl_init();
@@ -5778,6 +5815,12 @@ final class Template {
         if ($this->has('title') || $this->has('chapter')) {
           $this->forget(strtolower('CITATION_BOT_PLACEHOLDER_BARE_URL'));
         }
+      }
+      if ($this->get('issue') === 'n/a' && preg_match('~^\d+$~', $this->get('volume'))) {
+        $this->forget('issue');
+      }
+      if ($this->get('volume') === 'n/a' && preg_match('~^\d+$~', $this->get('issue'))) {
+        $this->forget('volume');
       }
       if ($this->has('doi') && $this->has('issue') && ($this->get('issue') == $this->get('volume')) && // Issue = Volume and not NULL
         ($this->get('issue') == $this->get_without_comments_and_placeholders('issue')) &&
@@ -6623,7 +6666,7 @@ final class Template {
      }
      $data = trim($data);
      if (preg_match("~^(\d+)\s*\((\d+(-|–|\–|\{\{ndash\}\})?\d*)\)$~", $data, $matches) ||
-              preg_match("~^(?:vol\. |Volume |vol |)(\d+)[,\s]\s*(?:no\.|number|issue|Iss.|no )\s*(\d+(-|–|\–|\{\{ndash\}\})?\d*)$~i", $data, $matches) ||
+              preg_match("~^(?:vol\. |Volume |vol |vol\.)(\d+)[,\s]\s*(?:no\.|number|issue|Iss.|no )\s*(\d+(-|–|\–|\{\{ndash\}\})?\d*)$~i", $data, $matches) ||
               preg_match("~^(\d+)\.(\d+)$~i", $data, $matches) ||
               preg_match("~^Vol\.?(\d+)\((\d+)\)$~", $data, $matches)
          ) {

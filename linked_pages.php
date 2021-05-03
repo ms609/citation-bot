@@ -45,15 +45,18 @@ if ($page_name == '') {
   } else {
     report_warning('Nothing requested -- OR -- page name got lost during initial authorization ');
   }
-  exit("\n </pre></body></html>");
+  echo("\n </pre></body></html>");
+  exit();
 } elseif (substr($page_name, 0, 5) !== 'User:' && !in_array($api->get_the_user(), ['Headbomb', 'AManWithNoPlan'])) { // Do not let people run willy-nilly
   report_warning('API only intended for User generated pages for fixing specific issues ');
-  exit("\n </pre></body></html>");
+  echo("\n </pre></body></html>");
+  exit();
 }
 
 if (strlen($page_name) > 256)  {
   report_warning('Possible invalid page');
-  exit("\n </pre></body></html>");
+  echo("\n </pre></body></html>");
+  exit();
 }
 $edit_summary_end = "| Suggested by " . $api->get_the_user() . " | Pages linked from cached $page_name | via #UCB_webform_linked ";
 $final_edit_overview = "";
@@ -70,13 +73,15 @@ $json = (string) @curl_exec($ch);
 curl_close($ch);
 if ($json == '') {
   report_warning(' Error getting page list');
-  exit("\n </pre></body></html>");
+  echo("\n </pre></body></html>");
+  exit();
 }
 $array = @json_decode($json, TRUE);
 unset($json);
 if ($array === FALSE || !isset($array['parse']['links']) || !is_array($array['parse']['links'])) {
   report_warning(' Error interpreting page list - perhaps page requested does not even exist');
-  exit("\n </pre></body></html>");
+  echo("\n </pre></body></html>");
+  exit();
 }
 $links = $array['parse']['links']; // @phan-suppress-current-line PhanTypeArraySuspiciousNullable
 unset($array);
@@ -93,12 +98,16 @@ unset($links);
 $pages_in_category = array_unique($pages_in_category);
 if (empty($pages_in_category)) {
   report_warning('No links to expand found');
-  exit("\n </pre></body></html>");
+  echo("\n </pre></body></html>");
+  exit();
 }
   if (count($pages_in_category) > MAX_PAGES) {
     report_warning('Number of links is huge (' . (string) count($pages_in_category) . ')  Cancelling run (maximum size is ' . (string) MAX_PAGES . ').  Listen to Obi-Wan Kenobi:  You want to go home and rethink your life.');
-    exit("\n </pre></body></html>");
+    echo("\n </pre></body></html>");
+    exit();
   }
+
+  if (count($pages_in_category) > BIG_RUN) check_overused();
 
   $page = new Page();
   gc_collect_cycles();
@@ -133,4 +142,5 @@ if (empty($pages_in_category)) {
     echo "\n";
   }
   echo ("\n Done all " . (string) count($pages_in_category) . " pages linked from " . echoable($page_name) . " \n  # # # \n" . $final_edit_overview  . "\n </pre></main></body></html>");
+  exit();
 ?>

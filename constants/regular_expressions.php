@@ -30,7 +30,8 @@ const HANDLES_HOSTS = array('hdl.handle.net', 'kb.osu.edu', 'repositorio.aemet.e
                             'dataverse.scholarsportal.info', 'idus.us.es', 'dspace.library.uu.nl',
                             'dspace.mit.edu', 'digital.csic.es', 'apps.who.int', 'repository.si.edu',
                             'lume.ufrgs.br', 'digitallibrary.amnh.org', 'hdl.cqu.edu.au', 'repository.bilkent.edu.tr',
-                            'digital.library.wisc.edu', 'www.territorystories.nt.gov.au', 'repository.up.ac.za');
+                            'digital.library.wisc.edu', 'www.territorystories.nt.gov.au', 'repository.up.ac.za',
+                            'researchonline.federation.edu.au');
 // Order here could matter
 // YOU MUST escape the RegEx
 const HANDLES_PATHS = array('/dspace/bitstream/handle/', '/msf/handle/', '/vital/access/HandleResolver/',
@@ -38,4 +39,5 @@ const HANDLES_PATHS = array('/dspace/bitstream/handle/', '/msf/handle/', '/vital
                             '/dspace/handle/', '/handle2/', '/xmlui/handle/', '/iris/handle/',
                             '/repository/bitstream/handle/', '/repository/handle/', 
                             '/tools/dspace/load/\?file=/repository/bitstream/handle/',
-                            '/xmlui/bitstream/handle/', '/jspui/handle/', '/jspui/bitstream/');
+                            '/xmlui/bitstream/handle/', '/jspui/handle/', '/jspui/bitstream/',
+                            '/vital/access/HandleResolver/');

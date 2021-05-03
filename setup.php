@@ -38,15 +38,6 @@ if (isset($_REQUEST["slow"]) || TRAVIS || (isset($argv[2]) && $argv[2] === '--sl
   define("SLOW_MODE", FALSE);
 }
 
-//Optimisation
-ini_set('output_buffering', 'off');
-ini_set('zlib.output_compression', '0');
-ini_set('implicit_flush', '1');
-ini_set('responseBufferLimit', '0');
-ini_set('OutputBufferSize', '0');
-ini_set('proxy_buffering', 'off');
-ini_set('gzip', 'off');
-
 ob_implicit_flush();
 flush();
 if (!TRAVIS) {
@@ -95,6 +86,24 @@ function check_blocked() : void {
   if (!TRAVIS && ! WikipediaBot::is_valid_user('Citation_bot')) exit('</pre><div style="text-align:center"><h1>The Citation Bot is currently blocked because of disagreement over its usage.</h1><br/><h2><a href="https://en.wikipedia.org/wiki/User_talk:Citation_bot" title="Join the discussion" target="_blank">Please join in the discussion</a></h2></div><footer><a href="./" title="Use Citation Bot again">Another&nbsp;page</a>?</footer></body></html>');
 }
 
+function unlock_user() : void {
+  @session_start();
+  unset($_SESSION['big_and_busy']);     
+  @session_write_close();
+}
+
+function check_overused() : void {
+ if (TRAVIS) return;
+ if (isset($_SESSION['big_and_busy']) && $_SESSION['big_and_busy'] === 'BLOCK3') {
+   exit('</pre><div style="text-align:center"><h1>Run blocked by your existing big run.</h1></div></footer></body></html>');
+ }
+ @session_start();
+ $_SESSION['big_and_busy'] = 'BLOCK3';
+ define('BIG_JOB_MODE', 'YES');
+ register_shutdown_function('unlock_user');
+ @session_write_close();
+}
+
 define("MAX_TRIES", 2);
 require_once('constants.php');
 require_once('NameTools.php');
@@ -109,4 +118,5 @@ require_once('Page.php');
 require_once('user_messages.php');
 
 define("MAX_PAGES", 1250);
+define("BIG_RUN", 4);
 

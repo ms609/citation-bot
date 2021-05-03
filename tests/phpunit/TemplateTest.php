@@ -40,6 +40,13 @@ final class TemplateTest extends testBaseClass {
     $prepared = $this->prepare_citation($text_in);
     $this->assertSame($text_in, $prepared->parsed_text());
   }
+ 
+  public function testLotsOfFloaters6() : void {
+    $text_in = "{{cite journal| url=http://www.cnn.com | accessdate 24 Nov 2020}}";
+    $prepared = $this->prepare_citation($text_in);
+    $this->assertSame('24 Nov 2020', $prepared->get2('access-date'));
+    $this->assertNull($prepared->get2('accessdate'));
+  }
 
   public function testParameterWithNoParameters() : void {
     $text = "{{Cite web | text without equals sign  }}";
@@ -1217,7 +1224,7 @@ final class TemplateTest extends testBaseClass {
   public function testLeaveArchiveURL() : void {
     $text = '{{cite book |chapterurl=http://faculty.haas.berkeley.edu/shapiro/thicket.pdf|isbn=978-0-262-60041-5|archiveurl=https://web.archive.org/web/20070704074830/http://faculty.haas.berkeley.edu/shapiro/thicket.pdf }}';
     $expanded = $this->process_citation($text);
-    $this->assertSame('https://web.archive.org/web/20070704074830/http://faculty.haas.berkeley.edu/shapiro/thicket.pdf', $expanded->get2('archive-url'));
+    $this->assertSame('https://web.archive.org/web/20070704074830/http://faculty.haas.berkeley.edu/shapiro/thicket.pdf', $expanded->get2('archiveurl'));
   }
 
   public function testScriptTitle() : void {
@@ -1442,7 +1449,7 @@ final class TemplateTest extends testBaseClass {
       
     $text = "{{cite book|authorlinux=X}}";
     $expanded = $this->process_citation($text);
-    $this->assertSame('{{cite book|author-link=X}}', $expanded->parsed_text());
+    $this->assertSame('{{cite book|authorlink=X}}', $expanded->parsed_text());
       
     $text = "{{cite book|authorlinks33=X}}";
     $expanded = $this->process_citation($text);
@@ -1569,7 +1576,7 @@ final class TemplateTest extends testBaseClass {
       $text = '{{citation|origyear=2000|date=1999}}';
       $prepared = $this->prepare_citation($text);
       $prepared->final_tidy();
-      $this->assertSame('{{citation|orig-year=2000|date=1999}}', $prepared->parsed_text()); 
+      $this->assertSame('{{citation|origyear=2000|date=1999}}', $prepared->parsed_text()); 
  }
 
   public function testDropDuplicates1() : void {
@@ -1709,8 +1716,8 @@ final class TemplateTest extends testBaseClass {
   public function testOrigYearHandling() : void {
       $text = '{{cite book |year=2009 | origyear = 2000 }}';
       $prepared = $this->process_citation($text);
-      $this->assertSame('2000', $prepared->get2('orig-year'));
-      $this->assertNull($prepared->get2('origyear'));
+      $this->assertSame('2000', $prepared->get2('origyear'));
+      $this->assertNull($prepared->get2('orig-year'));
       $this->assertSame('2009', $this->getDateAndYear($prepared));
       
       $text = '{{cite book | origyear = 2000 }}';
@@ -2576,10 +2583,10 @@ T1 - This is the Title }}';
   public function testAccessDates() : void {
     $text = '{{cite book |date=March 12, 1913 |title=Session Laws of the State of Washington, 1913 |chapter=Chapter 65: Classifying Public Highways |page=221 |chapter-url=http://leg.wa.gov/CodeReviser/documents/sessionlaw/1913c65.pdf |publisher=Washington State Legislature |accessdate=August 30, 2018}}';
     $expanded = $this->process_citation($text);
-    $this->assertNotNull($expanded->get2('access-date'));
+    $this->assertNotNull($expanded->get2('accessdate'));
     $text = '{{cite book |date=March 12, 1913 |title=Session Laws of the State of Washington, 1913 |chapter=Chapter 65: Classifying Public Highways |page=221 |chapterurl=http://leg.wa.gov/CodeReviser/documents/sessionlaw/1913c65.pdf |publisher=Washington State Legislature |accessdate=August 30, 2018}}';
     $expanded = $this->process_citation($text);
-    $this->assertNotNull($expanded->get2('access-date'));
+    $this->assertNotNull($expanded->get2('accessdate'));
   }
 
   public function testIgnoreUnkownCiteTemplates() : void {
@@ -3694,14 +3701,14 @@ T1 - This is the Title }}';
     $text = "{{cite journal|url=https://go.galegroup.com/STUFF&u=UNIV&date=1234}}";
     $template = $this->make_citation($text);
     $template->tidy_parameter('url');
-    $this->assertSame('https://go.galegroup.com/STUFF&date=1234', $template->get2('url'));
+    $this->assertSame('https://go.galegroup.com/STUFF&u=UNIV&date=1234', $template->get2('url'));
   }
 
   public function testTidy65() : void {
     $text = "{{cite journal|url=https://link.galegroup.com/STUFF&u=UNIV&date=1234}}";
     $template = $this->make_citation($text);
     $template->tidy_parameter('url');
-    $this->assertSame('https://link.galegroup.com/STUFF&date=1234', $template->get2('url'));
+    $this->assertSame('https://link.galegroup.com/STUFF&u=UNIV&date=1234', $template->get2('url'));
   }
  
   public function testTidy66() : void {
@@ -4947,8 +4954,8 @@ T1 - This is the Title }}';
     public function testFloaters4() : void {
      $text='{{Cite journal | url=http://www.apple.com/ |access date 12 December 1990 | accessdate = 3 May 1999 }}';
      $template = $this->process_citation($text);
-     $this->assertSame('3 May 1999', $template->get2('access-date'));
-     $this->assertNull($template->get2('accessdate'));
+     $this->assertSame('3 May 1999', $template->get2('accessdate'));
+     $this->assertNull($template->get2('access-date'));
    }
  
     public function testFloaters5() : void {

@@ -14,9 +14,9 @@ function user_notice(string $symbol, string $class, string $text) : void {
     // @codeCoverageIgnoreStart
     /** @psalm-suppress TypeDoesNotContainType */ /* PSALM thinks HTML_OUTPUT cannot be false */
     echo "\n " . (HTML_OUTPUT ? "<span class='$class'>" : "") . $symbol . $text . (HTML_OUTPUT ? "</span>" : "");
-    if (FLUSHING_OKAY && ob_get_level()) {
+    if (FLUSHING_OKAY && ob_get_level() && !defined('BIG_JOB_MODE')) {
       $now = microtime(TRUE);
-      if (in_array($class, array('phase', 'subitem', 'warning')) dfasf fds|| 5 < ($now - $last_time)) {
+      if (5 < ($now - $last_time)) {
         $last_time = $now;
         ob_flush();
       }
@@ -35,7 +35,7 @@ function report_add(string $text) : void { user_notice("  +", "added", $text); }
 function report_forget(string $text) : void { user_notice("  -", "removed", $text); }
 function report_inline(string $text) : void { if (!TRAVIS) echo " $text"; }
 // call report_warning to give users a message before we die
-function report_error(string $text) : void { report_warning($text); exit(999); } // @codeCoverageIgnore 
+function report_error(string $text) : void { report_warning($text); exit(); } // @codeCoverageIgnore 
 function report_minor_error(string $text) : void {  // For things we want to error in tests, but continue on Wikipedia
   // @codeCoverageIgnoreStart
   /** @psalm-suppress RedundantCondition */ /* PSALM thinks TRAVIS cannot be FALSE */
