@@ -101,9 +101,9 @@ function unlock_user_and_exit() : void {
    ini_set('session.use_cookies', '0');
    ini_set('session.use_trans_sid', '0');
    ini_set('session.cache_limiter', '');
-   @session_start();
+   session_start();
    unset($_SESSION['big_and_busy']);     
-   @session_write_close();
+   session_write_close();
  }
  exit(0);
 }
