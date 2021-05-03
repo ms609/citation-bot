@@ -86,15 +86,6 @@ function check_blocked() : void {
   if (!TRAVIS && ! WikipediaBot::is_valid_user('Citation_bot')) exit('</pre><div style="text-align:center"><h1>The Citation Bot is currently blocked because of disagreement over its usage.</h1><br/><h2><a href="https://en.wikipedia.org/wiki/User_talk:Citation_bot" title="Join the discussion" target="_blank">Please join in the discussion</a></h2></div><footer><a href="./" title="Use Citation Bot again">Another&nbsp;page</a>?</footer></body></html>');
 }
 
-function unlock_user_and_exit() : void {
- if (FALSE && defined('BIG_JOB_MODE')) {
-   @session_start();
-   unset($_SESSION['big_and_busy']);     
-   @session_write_close();
- }
- exit(0);
-}
-
 function unlock_user() : void {
   @session_start();
   unset($_SESSION['big_and_busy']);     
