@@ -87,7 +87,7 @@ function check_blocked() : void {
 }
 
 function unlock_user_and_exit() : void {
- if (defined(BIG_JOB_MODE)) {
+ if (defined('BIG_JOB_MODE')) {
    ini_set('session.use_only_cookies', '0');
    ini_set('session.use_cookies', '0');
    ini_set('session.use_trans_sid', '0');
@@ -101,11 +101,11 @@ function unlock_user_and_exit() : void {
 
 function check_overused() : void {
  if (TRAVIS) return;
- if (isset($_SESSION['big_and_busy']) && $_SESSION['big_and_busy'] === 'BLOCK6') {
+ if (isset($_SESSION['big_and_busy']) && $_SESSION['big_and_busy'] === 'BLOCK1') {
    exit('</pre><div style="text-align:center"><h1>Run blocked by your existing big run.</h1></div></footer></body></html>');
  }
  @session_start();
- $_SESSION['big_and_busy'] = 'BLOCK6';
+ $_SESSION['big_and_busy'] = 'BLOCK1';
  define('BIG_JOB_MODE', 'YES');
  @session_write_close();
 }
