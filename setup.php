@@ -38,15 +38,6 @@ if (isset($_REQUEST["slow"]) || TRAVIS || (isset($argv[2]) && $argv[2] === '--sl
   define("SLOW_MODE", FALSE);
 }
 
-//Optimisation
-ini_set('output_buffering', 'off');
-ini_set('zlib.output_compression', '0');
-ini_set('implicit_flush', '1');
-ini_set('responseBufferLimit', '0');
-ini_set('OutputBufferSize', '0');
-ini_set('proxy_buffering', 'off');
-ini_set('gzip', 'off');
-
 ob_implicit_flush();
 flush();
 if (!TRAVIS) {
@@ -110,11 +101,11 @@ function unlock_user_and_exit() : void {
 
 function check_overused() : void {
  if (TRAVIS) return;
- if (isset($_SESSION['big_and_busy']) && $_SESSION['big_and_busy'] === 'BLOCK3') {
+ if (isset($_SESSION['big_and_busy']) && $_SESSION['big_and_busy'] === 'BLOCK4') {
    exit('</pre><div style="text-align:center"><h1>Run blocked by your existing big run.</h1></div></footer></body></html>');
  }
  @session_start();
- $_SESSION['big_and_busy'] = 'BLOCK3';
+ $_SESSION['big_and_busy'] = 'BLOCK4';
  define('BIG_JOB_MODE', 'YES');
  @session_write_close();
 }
