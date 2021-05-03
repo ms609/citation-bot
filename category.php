@@ -71,9 +71,9 @@ if ($category) {
   }
   if (count($pages_in_category) > BIG_RUN) check_overused();
   $page = new Page();
-  gc_collect_cycles();
   $done = 0;
   $total = count($pages_in_category);
+  gc_collect_cycles();
   foreach ($pages_in_category as $page_title) {
     $done++;
     // $page->expand_text will take care of this notice if we are in HTML mode.
