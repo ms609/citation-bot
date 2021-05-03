@@ -58,7 +58,7 @@ if (strlen($page_name) > 256)  {
   echo("\n </pre></body></html>");
   exit();
 }
-$edit_summary_end = "| Suggested by " . $api->get_the_user() . " | Pages linked from cached $page_name | via #UCB_webform_linked ";
+$edit_summary_end = "| Suggested by " . $api->get_the_user() . " | Linked from $page_name | via #UCB_webform_linked ";
 $final_edit_overview = "";
 
 $url = API_ROOT . '?action=parse&prop=links&format=json&page=' . $page_name;
