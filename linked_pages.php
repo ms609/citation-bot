@@ -47,17 +47,17 @@ if ($page_name == '') {
     report_warning('Nothing requested -- OR -- page name got lost during initial authorization ');
   }
   echo("\n </pre></body></html>");
-  exit(0);
+  unlock_user_and_exit();
 } elseif (substr($page_name, 0, 5) !== 'User:' && !in_array($api->get_the_user(), ['Headbomb', 'AManWithNoPlan'])) { // Do not let people run willy-nilly
   report_warning('API only intended for User generated pages for fixing specific issues ');
   echo("\n </pre></body></html>");
-  exit(0);
+  unlock_user_and_exit();
 }
 
 if (strlen($page_name) > 256)  {
   report_warning('Possible invalid page');
   echo("\n </pre></body></html>");
-  exit(0);
+  unlock_user_and_exit();
 }
 $edit_summary_end = "| Suggested by " . $api->get_the_user() . " | Pages linked from cached $page_name | via #UCB_webform_linked ";
 $final_edit_overview = "";
@@ -75,14 +75,14 @@ curl_close($ch);
 if ($json == '') {
   report_warning(' Error getting page list');
   echo("\n </pre></body></html>");
-  exit(0);
+  unlock_user_and_exit();
 }
 $array = @json_decode($json, TRUE);
 unset($json);
 if ($array === FALSE || !isset($array['parse']['links']) || !is_array($array['parse']['links'])) {
   report_warning(' Error interpreting page list - perhaps page requested does not even exist');
   echo("\n </pre></body></html>");
-  exit(0);
+  unlock_user_and_exit();
 }
 $links = $array['parse']['links']; // @phan-suppress-current-line PhanTypeArraySuspiciousNullable
 unset($array);
@@ -100,12 +100,12 @@ $pages_in_category = array_unique($pages_in_category);
 if (empty($pages_in_category)) {
   report_warning('No links to expand found');
   echo("\n </pre></body></html>");
-  exit(0);
+  unlock_user_and_exit();
 }
   if (count($pages_in_category) > MAX_PAGES) {
     report_warning('Number of links is huge (' . (string) count($pages_in_category) . ')  Cancelling run (maximum size is ' . (string) MAX_PAGES . ').  Listen to Obi-Wan Kenobi:  You want to go home and rethink your life.');
     echo("\n </pre></body></html>");
-    exit(0);
+    unlock_user_and_exit();
   }
 
   $page = new Page();
@@ -141,5 +141,5 @@ if (empty($pages_in_category)) {
     echo "\n";
   }
   echo ("\n Done all " . (string) count($pages_in_category) . " pages linked from " . echoable($page_name) . " \n  # # # \n" . $final_edit_overview  . "\n </pre></main></body></html>");
-  exit(0);
+  unlock_user_and_exit();
 ?>

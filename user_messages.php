@@ -35,7 +35,7 @@ function report_add(string $text) : void { user_notice("  +", "added", $text); }
 function report_forget(string $text) : void { user_notice("  -", "removed", $text); }
 function report_inline(string $text) : void { if (!TRAVIS) echo " $text"; }
 // call report_warning to give users a message before we die
-function report_error(string $text) : void { report_warning($text); exit(0); } // @codeCoverageIgnore 
+function report_error(string $text) : void { report_warning($text); unlock_user_and_exit(); } // @codeCoverageIgnore 
 function report_minor_error(string $text) : void {  // For things we want to error in tests, but continue on Wikipedia
   // @codeCoverageIgnoreStart
   /** @psalm-suppress RedundantCondition */ /* PSALM thinks TRAVIS cannot be FALSE */
