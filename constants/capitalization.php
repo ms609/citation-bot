@@ -74,7 +74,7 @@ const JOURNAL_ACRONYMS = array(/* The following will be automatically updated to
           " J Sch Nurs ", " J SIAM ", " J. SIAM ", " JABS : Journal of Applied Biological Sciences ", 
           " JAMA Psychiatry ", " JMIR ", " JNCI: Journal ", " Journal of Materials Chemistry A ", 
           " Journal of the A.I.E.E. ", " Journal of the IEST ", " Journal sur ", " Jpn ", 
-          " Jpn. ", " La Trobe ", " Latina/o ", " Ltd ", " MAA Focus ", " mAbs ", " mAbs ", " mBio ", 
+          " Jpn. ", " Le Monde artiste ", " La Trobe ", " Latina/o ", " Ltd ", " MAA Focus ", " mAbs ", " mAbs ", " mBio ", 
           " mBio ", " Med Sch ", " MedChemComm ", " Meddelelser om Grønland ", " Meddelelser om Grønland, ", 
           " MERIP ", " Methods in Molecular Biology ", " mHealth ", " mHealth ", " MicrobiologyOpen ", " Mikologiya i Fitopatologiya ", 
           " MIS Quarterly ", " Molecular and Cellular Biology ", " Montana The Magazine of Western History ", 
@@ -125,7 +125,7 @@ const UCFIRST_JOURNAL_ACRONYMS = array(/* The following will be automatically up
           " J SCH Nurs ", " J Siam ", " J. Siam ", " Jabs : Journal of Applied Biological Sciences ", 
           " Jama Psychiatry ", " Jmir ", " Jnci: Journal ", " Journal of Materials Chemistry A ", 
           " Journal of the A.i.i.e ", " Journal of the Iest ", " Journal Sur ", " JPN ", 
-          " JPN. ", " la Trobe ", " Latina/O ", " LTD ", " Maa Focus ", " MAbs ", " Mabs ", " MBio ", 
+          " JPN. ", " Le Monde Artiste ", " la Trobe ", " Latina/O ", " LTD ", " Maa Focus ", " MAbs ", " Mabs ", " MBio ", 
           " Mbio ", " Med SCH ", " Medchemcomm ", " Meddelelser Om Grønland ", " Meddelelser Om Grønland, ", 
           " Merip ", " Methods in Molecular Biology (Clifton, N.j.) ", " MHealth ", " Mhealth ", 
           " Microbiologyopen ", " Mikologiya I Fitopatologiya ", " Mis Quarterly ", " Molecular and Cellular Biology ", 
@@ -171,7 +171,7 @@ const OBVIOUS_FOREIGN_WORDS = array(" Abhandlungen ", " Actes ", " Annales ", " 
            " Radova ", " Filozofskog  ", " Fakulteta ", " Prištini ", " Mém. ", " Elektriceskaja ",
            " Teplovoznaja ", " Tjaga ", " Aarbøger ",  " Oldkyndighed ", " Histori ", " Les Publications ",
            "ische ", "histoire ", " ancienne ", " d'", "http://", "www.", "www-", " Mikologiya ", " Fitopatologiya ",
-           " filmski ", " ljetopis ", " Saggiatore ", " musicale ");
+           " filmski ", " ljetopis ", " Saggiatore ", " musicale ", " artiste ", " Le Monde ");
  
 const MAP_DIACRITICS = array("À"=>"A", "Á"=>"A", "Â"=>"A", "Ã"=>"A",
     "Ä"=>"A", "Å"=>"A", "Æ"=>"AE", "Ç"=>"C", "È"=>"E", "É"=>"E",
