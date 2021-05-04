@@ -5070,6 +5070,10 @@ final class Template {
           if (preg_match('~^https?://latinamericanhistory\.oxfordre\.com(/.+)$~', $this->get($param), $matches)) {
                $this->set($param, 'https://oxfordre.com/latinamericanhistory' . $matches[1]);
           }
+          if (preg_match('~^https?://africanhistory\.oxfordre\.com(/.+)$~', $this->get($param), $matches)) {
+               $this->set($param, 'https://oxfordre.com/africanhistory' . $matches[1]);
+          }
+          
           while (preg_match('~^(https?://www\.oxforddnb\.com/.+)(?:\?print|\?p=email|\;jsession|\?result=|\?rskey|\#|/version/\d+)~', $this->get($param), $matches)) {
                $this->set($param, $matches[1]);
           }
