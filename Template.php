@@ -4786,6 +4786,14 @@ final class Template {
               }
             }
           }
+          foreach (WORK_ALIASES as $work) {
+              $worky = strtolower($this->get($work));
+              if (in_array($worky, array('los angeles times', 'the new york times', 'new york times', 'huffington post', 'the daily telegraph'))) { // TODO - create constant array of works that do not need a publisher
+                 $this->forget($param);
+                 return;
+              }
+          }
+          
           return;
           
         case 'quotes':
