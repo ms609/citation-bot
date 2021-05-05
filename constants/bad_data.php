@@ -34,7 +34,8 @@ const PUBLISHERS_ARE_WORKS = array('the san diego union-tribune', 'forbes', 'sal
                                    'oneindia', 'international business times', 'the hindu', 'daily news and analysis',
                                    'nfl.com', 'foxsports.com', 'the new yorker', 'findlaw.com', 'newsmax',
                                    'washtimes.com', 'washington times', 'findlaw', 'new york times magazine',
-                                   'stripes', 'arizona daily star', 'the times of india', 'the times-news', 'san diego union tribune'
+                                   'stripes', 'arizona daily star', 'the times of india', 'the times-news', 'san diego union tribune',
+                                   'the star (malaysia)', 'utusan malaysia', 'daily news, sri lanka'
                                    // WP:CITALICSRFC and MOS:ITALICWEBCITE  ?????     'abc news', 'nbc news', 'cbs news', 'bbc news'
                                   ); // LOWER CASE!  WWW not there too! 
 
