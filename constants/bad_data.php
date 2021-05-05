@@ -26,15 +26,15 @@ const PUBLISHERS_ARE_WORKS = array('the san diego union-tribune', 'forbes', 'sal
                                    'sandiegouniontribune.com', 'forbes.com', 'salon.com', 'mercurynews.com', 'nytimes.com',
                                    'thedailynewsonline.com', 'thesun.com', 'thetimes.com', 'thestar.com',
                                    'washingtonpost.com', 'thetribune.com', 'latimes.com', 'htmlgiant.com',
-                                   'the guardian', 'fox sports', 'mlb.com', 'espn.com', 'forbes media',
+                                   'the guardian', 'fox sports', 'mlb.com', 'espn.com', 'forbes media', 'forbes online',
                                    'cbs sports', 'national journal', 'foxnews', 'the hill', 'nationaljournal.com',
                                    'the huffington post', 'the times digital archive', 'belmontstakes.com', 'the times archives',
                                    'new york times.com', 'news shopper', 'birmingham post', 'the independent',
                                    'rediff.com', 'squashplayer.co.uk', 'fixtures live', 'the star online',
                                    'oneindia', 'international business times', 'the hindu', 'daily news and analysis',
                                    'nfl.com', 'foxsports.com', 'the new yorker', 'findlaw.com', 'newsmax',
-                                   'washtimes.com', 'washington times', 'findlaw',
-                                   'stripes', 'arizona daily star', 'the times of india',
+                                   'washtimes.com', 'washington times', 'findlaw', 'new york times magazine',
+                                   'stripes', 'arizona daily star', 'the times of india', 'the times-news'
                                    // WP:CITALICSRFC and MOS:ITALICWEBCITE  ?????     'abc news', 'nbc news', 'cbs news', 'bbc news'
                                   ); // LOWER CASE!  WWW not there too! 
 
