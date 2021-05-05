@@ -937,7 +937,6 @@ function expand_by_jstor(Template $template) : bool {
       }
     }
     if ($bad_data) { // Now for TI: T1 existing titles (title followed by sub-title)
-      $ris = explode("\n", html_entity_decode($dat, ENT_COMPAT | ENT_HTML401, 'UTF-8'));
       $new_title = ': ';
       foreach ($ris as $ris_line) {
         $ris_part = explode(" - ", $ris_line . " ");
