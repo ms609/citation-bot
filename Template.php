@@ -4763,9 +4763,9 @@ final class Template {
             }
           }
           if (in_array(str_replace(array('[', ']', '"', "'", 'www.', ' company'), '', $publisher), PUBLISHERS_ARE_WORKS)) {
-            $pubby = str_replace(array('the ', ' company'), '', $publisher);
+            $pubby = str_replace(array('the ', ' company', ' digital archive', ' communications llc'), '', $publisher);
             foreach (WORK_ALIASES as $work) {
-              $worky = str_replace(array('the ', ' company'), '', strtolower($this->get($work)));
+              $worky = str_replace(array('the ', ' company', ' digital archive', ' communications llc'), '', strtolower($this->get($work)));
               if ($worky === $pubby) {
                  $this->forget($param);
                  return;
