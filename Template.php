@@ -4592,6 +4592,10 @@ final class Template {
               $this->forget($param);
             }
           }
+          if ($this->get($param) === 'The New Yorker')) {
+            $this->rename($param, 'magazine');
+            $this->change_name_to('cite magazine'); // TODO : Make into an array
+          }
           return;
         
         case 'jstor':
