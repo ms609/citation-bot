@@ -5536,6 +5536,9 @@ final class Template {
             $this->forget('work');
             return;
           }
+          if ($this->get('work') === 'The Times Digital Archive') {
+            $this->set('work', 'The Times');
+          }
           switch ($this->wikiname()) {
             case 'cite book': $work_becomes = 'title'; break;
             case 'cite journal': $work_becomes = 'journal'; break;
