@@ -64,18 +64,19 @@ if ($category) {
   if (WikipediaBot::NonStandardMode()) {
      $pages_in_category = array_slice($pages_in_category, 0, (MAX_PAGES * 2));
   }
-  if (count($pages_in_category) > (MAX_PAGES * 2) ) {
-    echo('Category is huge (' . (string) count($pages_in_category) . ')  Cancelling run. Pick a smaller category (maximum size is ' . (string)(MAX_PAGES * 2) . ').  Listen to Obi-Wan Kenobi:  You want to go home and rethink your life.');
+  $total = count($pages_in_category);
+  if ($total > (MAX_PAGES * 2) ) {
+    echo('Category is huge (' . (string) $total . ')  Cancelling run. Pick a smaller category (maximum size is ' . (string)(MAX_PAGES * 2) . ').  Listen to Obi-Wan Kenobi:  You want to go home and rethink your life.');
     html_echo(' </pre></body></html>', "\n");
     exit();
   }
-  if (count($pages_in_category) > BIG_RUN) check_overused();
+  if ($total > BIG_RUN) check_overused();
   $page = new Page();
   $done = 0;
-  $total = count($pages_in_category);
+
   gc_collect_cycles();
   foreach ($pages_in_category as $page_title) {
-    sleep(1);
+    if ($total > BIG_RUN) sleep(1);
     $done++;
     // $page->expand_text will take care of this notice if we are in HTML mode.
     html_echo('', "\n\n\n*** Processing page '" . echoable($page_title) . "' : " . date("H:i:s") . "\n");
@@ -104,7 +105,7 @@ if ($category) {
     }
     echo "\n";
   }
-  echo ("\n Done all " . (string) count($pages_in_category) . " pages in Category:" . echoable($category) . ". \n");
+  echo ("\n Done all " . (string) $total . " pages in Category:" . echoable($category) . ". \n");
   $final_edit_overview .= "\n\n" . ' To get the best results, see our helpful <a href="https://en.wikipedia.org/wiki/User:Citation_bot/use">user guides</a>' . "\n\n";
   html_echo($final_edit_overview, '');
 } else {
