@@ -107,15 +107,16 @@ if (empty($pages_in_category)) {
     exit();
   }
 
-  if (count($pages_in_category) > BIG_RUN) check_overused();
+  $total = count($pages_in_category);
+  if ($total > BIG_RUN) check_overused();
 
   $page = new Page();
   $done = 0;
-  $total = count($pages_in_category);
+
   gc_collect_cycles();
   foreach ($pages_in_category as $page_title) {
     $done++;
-    sleep(1);
+    if ($total > BIG_RUN) sleep(1);
     // $page->expand_text will take care of this notice if we are in HTML mode.
     html_echo('', "\n\n\n*** Processing page '" . echoable($page_title) . "' : " . date("H:i:s") . "\n");
     if ($page->get_text_from($page_title, $api) && $page->expand_text()) {
