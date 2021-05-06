@@ -4780,7 +4780,9 @@ final class Template {
           
           if ($publisher === 'the times digital archive') {
             foreach (WORK_ALIASES as $work) {
-              if (stripos($this->get($work), 'the times') !== FALSE) {
+              if (stripos($this->get($work), 'the times') !== FALSE ||
+                  stripos($this->get($work), 'times (london') !== FALSE ||
+                  stripos($this->get($work), 'times [london') !== FALSE) {
                  $this->forget($param);
                  return;
               }
