@@ -4778,6 +4778,10 @@ final class Template {
               $this->forget($param);
           }
           
+          if ($publisher === 'the times digital archive.') {
+            $this->set($param, 'The Times Digital Archive');
+            $publisher = 'the times digital archive';
+          }
           if ($publisher === 'the times digital archive') {
             foreach (WORK_ALIASES as $work) {
               if (stripos($this->get($work), 'the times') !== FALSE ||
