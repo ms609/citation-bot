@@ -1359,7 +1359,7 @@ final class Template {
         }
         $existing = strtotime($this->get('doi-broken-date'));
         $the_new  = strtotime($value);
-        if (WikipediaBot::NonStandardMode() || ($existing === FALSE) || ($existing + (6*2592000) < $the_new) || ((2592000*6) + $the_new < $existing)) { // Six months of difference
+        if (($existing === FALSE) || ($existing + (6*2592000) < $the_new) || ((2592000*6) + $the_new < $existing)) { // Six months of difference
            return $this->add($param_name, $value);
         }
         return FALSE;
