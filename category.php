@@ -64,12 +64,12 @@ if ($category) {
   if (WikipediaBot::NonStandardMode()) {
      $pages_in_category = array_slice($pages_in_category, 0, (MAX_PAGES * 2));
   }
-  if (count($pages_in_category) > (MAX_PAGES * 2) ) {
-    echo('Category is huge (' . (string) count($pages_in_category) . ')  Cancelling run. Pick a smaller category (maximum size is ' . (string)(MAX_PAGES * 2) . ').  Listen to Obi-Wan Kenobi:  You want to go home and rethink your life.');
+  $total = count($pages_in_category);
+  if ($total > (MAX_PAGES * 2) ) {
+    echo('Category is huge (' . (string) $total . ')  Cancelling run. Pick a smaller category (maximum size is ' . (string)(MAX_PAGES * 2) . ').  Listen to Obi-Wan Kenobi:  You want to go home and rethink your life.');
     html_echo(' </pre></body></html>', "\n");
     exit();
   }
-  $total = count($pages_in_category);
   if ($total > BIG_RUN) check_overused();
   $page = new Page();
   $done = 0;
