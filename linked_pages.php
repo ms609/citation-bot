@@ -101,13 +101,12 @@ if (empty($pages_in_category)) {
   echo("\n </pre></body></html>");
   exit();
 }
-  if (count($pages_in_category) > MAX_PAGES) {
-    report_warning('Number of links is huge (' . (string) count($pages_in_category) . ')  Cancelling run (maximum size is ' . (string) MAX_PAGES . ').  Listen to Obi-Wan Kenobi:  You want to go home and rethink your life.');
+  $total = count($pages_in_category);
+  if ($total > MAX_PAGES) {
+    report_warning('Number of links is huge (' . (string) $total . ')  Cancelling run (maximum size is ' . (string) MAX_PAGES . ').  Listen to Obi-Wan Kenobi:  You want to go home and rethink your life.');
     echo("\n </pre></body></html>");
     exit();
   }
-
-  $total = count($pages_in_category);
   if ($total > BIG_RUN) check_overused();
 
   $page = new Page();
@@ -143,6 +142,6 @@ if (empty($pages_in_category)) {
     }
     echo "\n";
   }
-  echo ("\n Done all " . (string) count($pages_in_category) . " pages linked from " . echoable($page_name) . " \n  # # # \n" . $final_edit_overview  . "\n </pre></main></body></html>");
+  echo ("\n Done all " . (string) $total . " pages linked from " . echoable($page_name) . " \n  # # # \n" . $final_edit_overview  . "\n </pre></main></body></html>");
   exit();
 ?>
