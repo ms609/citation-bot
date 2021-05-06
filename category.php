@@ -105,7 +105,7 @@ if ($category) {
     }
     echo "\n";
   }
-  echo ("\n Done all " . (string) count($pages_in_category) . " pages in Category:" . echoable($category) . ". \n");
+  echo ("\n Done all " . (string) $total . " pages in Category:" . echoable($category) . ". \n");
   $final_edit_overview .= "\n\n" . ' To get the best results, see our helpful <a href="https://en.wikipedia.org/wiki/User:Citation_bot/use">user guides</a>' . "\n\n";
   html_echo($final_edit_overview, '');
 } else {
