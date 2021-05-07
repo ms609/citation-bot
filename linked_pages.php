@@ -45,17 +45,17 @@ if ($page_name == '') {
   } else {
     report_warning('Nothing requested -- OR -- page name got lost during initial authorization ');
   }
-  echo("\n </pre><footer><a href="./" title="Use Citation Bot again">Another</a>?</footer></body></html>");
+  echo("\n" . ' </pre><footer><a href="./" title="Use Citation Bot again">Another</a>?</footer></body></html>');
   exit();
 } elseif (substr($page_name, 0, 5) !== 'User:' && !in_array($api->get_the_user(), ['Headbomb', 'AManWithNoPlan'])) { // Do not let people run willy-nilly
   report_warning('API only intended for User generated pages for fixing specific issues ');
-  echo("\n </pre><footer><a href="./" title="Use Citation Bot again">Another</a>?</footer></body></html>");
+  echo("\n" . ' </pre><footer><a href="./" title="Use Citation Bot again">Another</a>?</footer></body></html>');
   exit();
 }
 
 if (strlen($page_name) > 256)  {
   report_warning('Possible invalid page');
-  echo("\n </pre><footer><a href="./" title="Use Citation Bot again">Another</a>?</footer></body></html>");
+  echo("\n" . ' </pre><footer><a href="./" title="Use Citation Bot again">Another</a>?</footer></body></html>');
   exit();
 }
 $edit_summary_end = "| Suggested by " . $api->get_the_user() . " | Linked from $page_name | #UCB_webform_linked ";
@@ -73,7 +73,7 @@ $json = (string) @curl_exec($ch);
 curl_close($ch);
 if ($json == '') {
   report_warning(' Error getting page list');
-  echo("\n </pre><footer><a href="./" title="Use Citation Bot again">Another</a>?</footer></body></html>");
+  echo("\n" . ' </pre><footer><a href="./" title="Use Citation Bot again">Another</a>?</footer></body></html>');
   exit();
 }
 $array = @json_decode($json, TRUE);
