@@ -4792,6 +4792,23 @@ final class Template {
               }
             }
           }
+          if ($publisher === 'the washington post' ||
+              $publisher === 'washington post' ||
+              $publisher === 'the washington post company' ||
+              $publisher === 'the washington post websites' ||
+              $publisher === 'washington post websites') {
+            foreach (WORK_ALIASES as $work) {
+              if (stripos($this->get($work), 'the washington post') !== FALSE ||
+                  stripos($this->get($work), 'washington post') !== FALSE ||
+                  stripos($this->get($work), 'washingtonpost.com') !== FALSE) {
+                 $this->forget($param);
+                 if (stripos($this->get($work), 'washingtonpost.com') !== FALSE) {
+                   $this->set($work, 'Washington Post');
+                 }
+                 return;
+              }
+            }
+          }
           foreach (WORK_ALIASES as $work) {
               $worky = strtolower($this->get($work));
               if (in_array($worky, array('los angeles times', 'the new york times', 'new york times', 'huffington post', 'the daily telegraph'))) { // TODO - create constant array of works that do not need a publisher
