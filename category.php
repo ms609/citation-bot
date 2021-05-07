@@ -55,7 +55,7 @@ if ($category) {
   $pages_in_category = $api->category_members($category);
   if (empty($pages_in_category)) {
     echo('Category appears to be empty');
-    html_echo(' </pre></body></html>', "\n");
+    html_echo(' </pre><footer><a href="./" title="Use Citation Bot again">Another</a>?</footer></body></html>', "\n");
     exit();
   }
   $pages_in_category = array_unique($pages_in_category); // Paranoid
@@ -67,7 +67,7 @@ if ($category) {
   $total = count($pages_in_category);
   if ($total > (MAX_PAGES * 2) ) {
     echo('Category is huge (' . (string) $total . ')  Cancelling run. Pick a smaller category (maximum size is ' . (string)(MAX_PAGES * 2) . ').  Listen to Obi-Wan Kenobi:  You want to go home and rethink your life.');
-    html_echo(' </pre></body></html>', "\n");
+    html_echo(' </pre><footer><a href="./" title="Use Citation Bot again">Another</a>?</footer></body></html>', "\n");
     exit();
   }
   if ($total > BIG_RUN) check_overused();
