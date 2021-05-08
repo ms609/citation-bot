@@ -4829,6 +4829,29 @@ final class Template {
               return;
             }
           }
+          
+          if ($publisher === 'nyt' ||
+              $publisher === 'nytc' ||
+              $publisher === 'the new york times' ||
+              $publisher === 'new york times' ||
+              $publisher === 'the new york times (subscription required)') {
+            foreach (WORK_ALIASES as $work) {
+              if (stripos($this->get($work), 'new york times') !== FALSE ||
+                  stripos($this->get($work), 'nytimes.com') !== FALSE) {
+                 $this->forget($param);
+                 if (stripos($this->get($work), 'nytimes.com') !== FALSE) {
+                   $this->set($work, 'New York Times');
+                 }
+                 return;
+              }
+            }
+            if ($this->get('work') === 'Local') {
+              $this->forget('work');
+              $this->rename($param, 'work');
+              return;
+            }
+          }
+          
           foreach (WORK_ALIASES as $work) {
               $worky = strtolower($this->get($work));
               $worky = str_replace(array("[[" , "]]"), "", $worky);
