@@ -4792,14 +4792,20 @@ final class Template {
               }
             }
           }
+          if ($this->blank('via') && $publisher === 'the washington post – via legacy.com') {
+            $publisher = 'the washington post';
+            $this->set($param, 'The Washington Post');
+            $this->set('via', 'Legacy.com');
+          }
           if ($publisher === 'the washington post' ||
               $publisher === 'washington post' ||
               $publisher === 'the washington post company' ||
               $publisher === 'the washington post websites' ||
-              $publisher === 'washington post websites') {
+              $publisher === 'washington post websites' ||
+              $publisher === 'wpc' ||
+              $publisher === 'the washington post (subscription required)') {
             foreach (WORK_ALIASES as $work) {
-              if (stripos($this->get($work), 'the washington post') !== FALSE ||
-                  stripos($this->get($work), 'washington post') !== FALSE ||
+              if (stripos($this->get($work), 'washington post') !== FALSE ||
                   stripos($this->get($work), 'washingtonpost.com') !== FALSE) {
                  $this->forget($param);
                  if (stripos($this->get($work), 'washingtonpost.com') !== FALSE) {
@@ -4807,6 +4813,11 @@ final class Template {
                  }
                  return;
               }
+            }
+            if ($this->get('work') === 'Local') {
+              $this->forget('work');
+              $this->rename($param, 'work');
+              return;
             }
           }
           foreach (WORK_ALIASES as $work) {
