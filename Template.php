@@ -4762,6 +4762,15 @@ final class Template {
                }
             }
           }
+          if ($publisher === 'nytc') {
+            $publisher = 'new york times company';
+          }
+          if ($publisher === 'nyt') {
+            $publisher = 'new york times';
+          }
+          if ($publisher === 'wpc') {
+            $publisher = 'washington post company';
+          }
           if (in_array(str_replace(array('[', ']', '"', "'", 'www.', ' company'), '', $publisher), PUBLISHERS_ARE_WORKS)) {
             $pubby = str_replace(array('the ', ' company', ' digital archive', ' communications llc'), '', $publisher);
             foreach (WORK_ALIASES as $work) {
