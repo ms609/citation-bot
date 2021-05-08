@@ -4803,7 +4803,7 @@ final class Template {
           }
           if ($this->blank('via') && $publisher === 'the washington post – via legacy.com') {
             $publisher = 'the washington post';
-            $this->set($param, 'The Washington Post');
+            $this->set($param, '[[The Washington Post]]');
             $this->set('via', 'Legacy.com');
           }
           if ($publisher === 'the washington post' ||
@@ -4818,7 +4818,7 @@ final class Template {
                   stripos($this->get($work), 'washingtonpost.com') !== FALSE) {
                  $this->forget($param);
                  if (stripos($this->get($work), 'washingtonpost.com') !== FALSE) {
-                   $this->set($work, 'Washington Post');
+                   $this->set($work, '[[The Washington Post]]');
                  }
                  return;
               }
@@ -4840,7 +4840,7 @@ final class Template {
                   stripos($this->get($work), 'nytimes.com') !== FALSE) {
                  $this->forget($param);
                  if (stripos($this->get($work), 'nytimes.com') !== FALSE) {
-                   $this->set($work, 'New York Times');
+                   $this->set($work, '[[The New York Times]]');
                  }
                  return;
               }
