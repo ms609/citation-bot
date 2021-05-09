@@ -4339,6 +4339,18 @@ final class Template {
           if ($this->blank('date') && $this->has('year')) $this->forget('date');
           return;
           
+        case 'dead-url': case 'deadurl':
+          $the_data = strtolower($this->get($param));
+          if (in_array($the_data, ['y', 'yes', 'dead'])) {
+            $this->rename($param, 'url-status', 'dead');
+            $this->forget($param);
+          }
+          if (in_array($the_data, ['n', 'no', 'live', 'alive'])) {
+            $this->rename($param, 'url-status', 'live');
+            $this->forget($param);
+          }
+          return;
+
         case 'doi':
           $doi = $this->get($param);
           if (!$doi) return;
