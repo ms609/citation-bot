@@ -225,7 +225,12 @@ const COMMON_MISTAKES = array ( // Common mistakes that aren't picked up by the 
   "authorurl"       =>  "author-link",
   "titre"           =>  "title",
   "consulté"        =>  "access-date",
-  "autho"           =>  "author"
+  "autho"           =>  "author",
+  "accesdate"       =>  "accessdate",
+  "autore"          =>  "authors",
+  "accessed"        =>  "accessdate",
+  "titolo"          =>  "title",
+  "rivista"         =>  "magazine",
 );
 
 const COMMON_MISTAKES_TOOL = array(
