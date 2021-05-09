@@ -223,6 +223,9 @@ const COMMON_MISTAKES = array ( // Common mistakes that aren't picked up by the 
   "seriesno"        =>  "series-no",
   "nopp"            =>  "no-pp",
   "authorurl"       =>  "author-link",
+  "titre"           =>  "title",
+  "consulté"        =>  "access-date",
+  "autho"           =>  "author"
 );
 
 const COMMON_MISTAKES_TOOL = array(
