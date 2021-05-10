@@ -232,6 +232,8 @@ const COMMON_MISTAKES = array ( // Common mistakes that aren't picked up by the 
   "titolo"          =>  "title",
   "rivista"         =>  "magazine",
   "année"           =>  "year",
+  "autor"           =>  "author",
+  "titlu"          =>  "title",
 );
 
 const COMMON_MISTAKES_TOOL = array(
