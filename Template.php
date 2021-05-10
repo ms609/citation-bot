@@ -94,6 +94,8 @@ final class Template {
                ['Book reference', 'Cite book'],
                ['web reference', 'cite web'],
                ['Web reference', 'Cite web'],
+               ['Conference reference', 'Cite conference'];
+               ['conference reference', 'cite conference'];
                ['citejournal', 'cite journal'],
                ['Citejournal', 'Cite journal'],
                ['citeweb', 'cite web'],
