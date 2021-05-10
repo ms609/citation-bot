@@ -412,5 +412,5 @@ const PARAMETER_LIST = array(
      'eventurl', 'ignore-isbn-error', 'last-author-amp', 'lastauthoramp', 'nocat',
      'seriesnumber', 'subjectlink', 'subjectlink#', 'conferenceurl', 'contributionurl',
      'laydate', 'laysource', 'layurl', 'name-list-format', 'sectionurl', 'seriesno',
-     'timecaption', 'titlelink');
+     'timecaption', 'titlelink', 'ref name');
 
