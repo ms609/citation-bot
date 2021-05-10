@@ -412,19 +412,22 @@ final class Template {
               $bad_data = TRUE;
           }
           if (strlen($the_title) > 15 && strpos($the_title, ' ') !== FALSE &&
-              mb_strtoupper($the_title) === $the_title && strpos($the_title, 'CITATION') === FALSE) {
+              mb_strtoupper($the_title) === $the_title && strpos($the_title, 'CITATION') === FALSE &&
+              mb_check_encoding($the_title, 'ASCII')) {
               $this->rename('title', 'CITATION_BOT_PLACEHOLDER_title');
               $the_title = '';
               $bad_data = TRUE;
           }
           if (strlen($the_journal) > 15 && strpos($the_journal, ' ') !== FALSE &&
-              mb_strtoupper($the_journal) === $the_journal && strpos($the_journal, 'CITATION') === FALSE) {
+              mb_strtoupper($the_journal) === $the_journal && strpos($the_journal, 'CITATION') === FALSE &&
+              mb_check_encoding($the_journal, 'ASCII')) {
               $this->rename('journal', 'CITATION_BOT_PLACEHOLDER_journal');
               $the_journal = '';
               $bad_data = TRUE;
           }
           if (strlen($the_chapter) > 15 && strpos($the_chapter, ' ') !== FALSE &&
-              mb_strtoupper($the_chapter) === $the_chapter && strpos($the_chapter, 'CITATION') === FALSE) {
+              mb_strtoupper($the_chapter) === $the_chapter && strpos($the_chapter, 'CITATION') === FALSE &&
+              mb_check_encoding($the_chapter, 'ASCII')) {
               $this->rename('chapter', 'CITATION_BOT_PLACEHOLDER_chapter');
               $the_chapter = '';
               $bad_data = TRUE;
