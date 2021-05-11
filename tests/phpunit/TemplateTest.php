@@ -2781,7 +2781,7 @@ T1 - This is the Title }}';
    
     $text = '{{cite web|url=http://ebookcentral-proquest-com.libproxy.berkeley.edu/lib/claremont/detail.action?docID=123456#goto_toc}}';
     $page = $this->process_page($text);
-    $this->assertSame('URLs might have been anonymized. | [[WP:UCB|Use this bot]]. [[WP:DBUG|Report bugs]]. ', $page->edit_summary());
+    $this->assertSame('Alter: url. URLs might have been anonymized. | [[WP:UCB|Use this bot]]. [[WP:DBUG|Report bugs]]. ', $page->edit_summary());
   }
 
   public function testTrimGoogleStuff() : void {
@@ -5032,7 +5032,7 @@ T1 - This is the Title }}';
     
      $text='{{Cite journal|pmc-embargo-date=}}';
      $template = $this->process_citation($text);
-     $this->assertSame('', $template->get2('pmc-embargo-date'));
+     $this->assertNull($template->get2('pmc-embargo-date'));
     
      $text='{{Cite journal}}';
      $template = $this->make_citation($text);
