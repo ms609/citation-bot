@@ -390,6 +390,12 @@ final class PageTest extends testBaseClass {
     $this->assertSame('Misc citation tidying. | [[WP:UCB|Use this bot]]. [[WP:DBUG|Report bugs]]. ', $page->edit_summary());
   }
  
+  public function testChapterUrlLots() : void {
+    $text = "{{new cambridge medieval history|chapterurl=https://cnn.com}}";
+    $page = $this->process_page($text);
+    $this->assertSame("{{new cambridge medieval history|chapter-url=https://cnn.com}}", $page->parsed_text());
+  }
+ 
   public function testBadPage() : void {  // Use this when debugging pages that crash the bot
     $bad_page = ""; //  Replace with page name when debugging
     $bad_page = urlencode(str_replace(' ', '_', $bad_page));
