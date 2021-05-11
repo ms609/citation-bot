@@ -404,6 +404,21 @@ final class PageTest extends testBaseClass {
     $this->assertSame('Misc citation tidying. | [[WP:UCB|Use this bot]]. [[WP:DBUG|Report bugs]]. ', $page->edit_summary());
   }
  
+  public function testRefHarv() : void {
+    $text = "{{cite iucn|ref=harv}}";
+    $page = $this->process_page($text);
+    $this->assertSame("{{cite iucn}}", $page->parsed_text());
+    $this->assertSame('Misc citation tidying. | [[WP:UCB|Use this bot]]. [[WP:DBUG|Report bugs]]. ', $page->edit_summary());
+  }
+ 
+  public function testRefHlank() : void {
+    $text = "{{cite iucn|ref=}}";
+    $page = $this->process_page($text);
+    $this->assertSame("{{cite iucn}}", $page->parsed_text());
+    $this->assertSame('Misc citation tidying. | [[WP:UCB|Use this bot]]. [[WP:DBUG|Report bugs]]. ', $page->edit_summary());
+  }
+  
+ 
   public function testBadPage() : void {  // Use this when debugging pages that crash the bot
     $bad_page = ""; //  Replace with page name when debugging
     $bad_page = urlencode(str_replace(' ', '_', $bad_page));
