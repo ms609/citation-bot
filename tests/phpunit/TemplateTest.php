@@ -5015,7 +5015,7 @@ T1 - This is the Title }}';
    public function testAddEditorFalse() : void {
      $text='{{Cite journal |display-editors = 5 }}';
      $template = $this->make_citation($text);
-     $this->assertFalse($template->add_if_new('displayeditors', '5'));
+     $this->assertFalse($template->add_if_new('display-editors', '5'));
    }
                         
    public function testPMCEmbargo() : void {
