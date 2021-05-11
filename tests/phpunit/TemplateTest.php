@@ -1094,7 +1094,7 @@ final class TemplateTest extends testBaseClass {
     $expanded = $this->process_citation("{{Cite journal|last2=[[Pure Evil|Approximate Physics]]}}");
     $this->assertSame('Approximate Physics', $expanded->get2('last2'));
     $this->assertSame('Pure Evil', $expanded->get2('author2-link'));
-    $this->assertFalse($expanded->add('author2-link', 'will not add'));
+    $this->assertFalse($expanded->add_if_new('author2-link', 'will not add'));
   }
  
   public function testRemoveWikilinks7() : void {
@@ -1987,7 +1987,7 @@ T1 - This is the Title }}';
    
     $text = "{{cite book|isbn=0-9749009-0-7|url=https://books.google.com/books?id=to0yXzq_EkQC|year=2019}}";
     $page = $this->process_page($text);
-    $this->assertSame('Misc citation tidying. | [[WP:UCB|Use this bot]]. [[WP:DBUG|Report bugs]]. ', $page->edit_summary());
+    $this->assertSame('Alter: isbn. Add: title, authors 1-2. Upgrade ISBN10 to ISBN13. | [[WP:UCB|Use this bot]]. [[WP:DBUG|Report bugs]]. ', $page->edit_summary());
   }
    
   public function testEtAl() : void {
@@ -2172,7 +2172,7 @@ T1 - This is the Title }}';
   public function testZooKeysAddIssue() : void {
       $text = '{{Cite journal|journal=[[ZooKeys]]}}';
       $expanded = $this->make_citation($text);
-      $this->assertTru($expanded->add_if_new('volume', '33'));
+      $this->assertTrue($expanded->add_if_new('volume', '33'));
       $this->assertNull($expanded->get2('volume'));
       $this->assertSame('33', $expanded->get2('issue'));
   }
@@ -2776,8 +2776,11 @@ T1 - This is the Title }}';
     $this->assertSame('https://public.ebookcentral.proquest.com/choice/publicfullrecord.aspx?p=123456&query=&ppg=35', $prepared->get2('url'));
    
     $text = '{{cite web|url=http://ebookcentral-proquest-com.libproxy.berkeley.edu/lib/claremont/detail.action?docID=123456#goto_toc}}';
-    $page = $this->process_citation($text);
-    $this->assertSame('https://public.ebookcentral.proquest.com/choice/publicfullrecord.aspx?p=123456', $page->get2('url'));
+    $prepared = $this->prepare_citation($text);
+    $this->assertSame('https://public.ebookcentral.proquest.com/choice/publicfullrecord.aspx?p=123456', $prepared->get2('url'));
+   
+    $text = '{{cite web|url=http://ebookcentral-proquest-com.libproxy.berkeley.edu/lib/claremont/detail.action?docID=123456#goto_toc}}';
+    $page = $this->process_page($text);
     $this->assertSame('URLs might have been anonymized. | [[WP:UCB|Use this bot]]. [[WP:DBUG|Report bugs]]. ', $page->edit_summary());
   }
 
@@ -5025,11 +5028,11 @@ T1 - This is the Title }}';
     
      $text='{{Cite journal|pmc-embargo-date=January 22, 2090}}';
      $template = $this->process_citation($text);
-     $this->asserSame('January 22, 2090', $template->get2('pmc-embargo-date'));
+     $this->assertSame('January 22, 2090', $template->get2('pmc-embargo-date'));
     
      $text='{{Cite journal|pmc-embargo-date=}}';
      $template = $this->process_citation($text);
-     $this->asserSame('', $template->get2('pmc-embargo-date'));
+     $this->assertSame('', $template->get2('pmc-embargo-date'));
     
      $text='{{Cite journal}}';
      $template = $this->make_citation($text);

@@ -391,7 +391,7 @@ final class PageTest extends testBaseClass {
   }
  
   public function testChapterUrlLots() : void {
-    $text = "{{new cambridge medieval history|chapterurl=https://cnn.com}}";
+    $text = "{{new cambridge medieval history|chapterurl=https://cnn.com|chapter=XYX}}";
     $page = $this->process_page($text);
     $this->assertSame("{{new cambridge medieval history|chapter-url=https://cnn.com}}", $page->parsed_text());
     $this->assertSame('Misc citation tidying. | [[WP:UCB|Use this bot]]. [[WP:DBUG|Report bugs]]. ', $page->edit_summary());
@@ -401,7 +401,7 @@ final class PageTest extends testBaseClass {
     $text = "{{cite book|chapter-url=https://pep-web.org|title=X}}";
     $page = $this->process_page($text);
     $this->assertSame("{{cite book|url=https://pep-web.org|title=X}}", $page->parsed_text());
-    $this->assertSame('Misc citation tidying. | [[WP:UCB|Use this bot]]. [[WP:DBUG|Report bugs]]. ', $page->edit_summary());
+    $this->assertSame('Add: url. Removed proxy/dead URL that duplicated identifier. | [[WP:UCB|Use this bot]]. [[WP:DBUG|Report bugs]]. ', $page->edit_summary());
   }
  
   public function testRefHarv() : void {
