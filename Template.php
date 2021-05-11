@@ -1776,14 +1776,14 @@ final class Template {
       if ($this->has('doi')) {
         if (str_i_same($this->get('doi'), $match[1])) {
          if (is_null($url_sent) && $this->get('doi-access') === 'free') {
-          quietly('report_modification', "URL is hard-coded DOI; removing since we already have free DOI paramter");
+          quietly('report_modification', "URL is hard-coded DOI; removing since we already have free DOI parameter");
           $this->forget($url_type);
          }
          return FALSE;
         }
         // The DOIs do not match
         if (is_null($url_sent)) {
-         report_warning('doi.org URL does not match existing DOI paramter, investigating...');
+         report_warning('doi.org URL does not match existing DOI parameter, investigating...');
         }
         if ($this->get('doi') != $this->get3('doi')) return FALSE;
         if (doi_works($match[1]) && !doi_works($this->get('doi'))) {
