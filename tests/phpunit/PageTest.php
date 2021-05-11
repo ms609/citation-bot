@@ -393,7 +393,7 @@ final class PageTest extends testBaseClass {
   public function testChapterUrlLots() : void {
     $text = "{{new cambridge medieval history|chapterurl=https://cnn.com|chapter=XYX}}";
     $page = $this->process_page($text);
-    $this->assertSame("{{new cambridge medieval history|chapter-url=https://cnn.com}}", $page->parsed_text());
+    $this->assertSame("{{new cambridge medieval history|chapter-url=https://cnn.com|chapter=XYX}}", $page->parsed_text());
     $this->assertSame('Misc citation tidying. | [[WP:UCB|Use this bot]]. [[WP:DBUG|Report bugs]]. ', $page->edit_summary());
   }
  
