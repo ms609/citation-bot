@@ -1983,6 +1983,10 @@ T1 - This is the Title }}';
     $text = "{{cite book|isbn=184309164x 978324132412}}";
     $prepared = $this->prepare_citation($text);
     $this->assertSame('184309164x 978324132412', $prepared->get2('isbn'));  // Do not dash between multiple ISBNs
+   
+    $text = "{{cite book|isbn=0-9749009-0-7|url=https://books.google.com/books?id=to0yXzq_EkQC|year=2019}}";
+    $page = $this->process_page($text);
+    $this->assertSame('Misc citation tidying. | [[WP:UCB|Use this bot]]. [[WP:DBUG|Report bugs]]. ', $page->edit_summary());
   }
    
   public function testEtAl() : void {
