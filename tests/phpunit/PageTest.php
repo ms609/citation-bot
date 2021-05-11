@@ -394,6 +394,14 @@ final class PageTest extends testBaseClass {
     $text = "{{new cambridge medieval history|chapterurl=https://cnn.com}}";
     $page = $this->process_page($text);
     $this->assertSame("{{new cambridge medieval history|chapter-url=https://cnn.com}}", $page->parsed_text());
+    $this->assertSame('Misc citation tidying. | [[WP:UCB|Use this bot]]. [[WP:DBUG|Report bugs]]. ', $page->edit_summary());
+  }
+ 
+  public function testChapterUrlChanges() : void {
+    $text = "{{cite book|chapter-url=https://pep-web.org|title=X}}";
+    $page = $this->process_page($text);
+    $this->assertSame("{{cite book|url=https://pep-web.org|title=X}}", $page->parsed_text());
+    $this->assertSame('Misc citation tidying. | [[WP:UCB|Use this bot]]. [[WP:DBUG|Report bugs]]. ', $page->edit_summary());
   }
  
   public function testBadPage() : void {  // Use this when debugging pages that crash the bot
