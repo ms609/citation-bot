@@ -1094,6 +1094,7 @@ final class TemplateTest extends testBaseClass {
     $expanded = $this->process_citation("{{Cite journal|last2=[[Pure Evil|Approximate Physics]]}}");
     $this->assertSame('Approximate Physics', $expanded->get2('last2'));
     $this->assertSame('Pure Evil', $expanded->get2('author2-link'));
+    $this->assertFalse($expanded->add('author2-link', 'will not add'));
   }
  
   public function testRemoveWikilinks7() : void {
@@ -1983,6 +1984,10 @@ T1 - This is the Title }}';
     $text = "{{cite book|isbn=184309164x 978324132412}}";
     $prepared = $this->prepare_citation($text);
     $this->assertSame('184309164x 978324132412', $prepared->get2('isbn'));  // Do not dash between multiple ISBNs
+   
+    $text = "{{cite book|isbn=0-9749009-0-7|url=https://books.google.com/books?id=to0yXzq_EkQC|year=2019}}";
+    $page = $this->process_page($text);
+    $this->assertSame('Misc citation tidying. | [[WP:UCB|Use this bot]]. [[WP:DBUG|Report bugs]]. ', $page->edit_summary());
   }
    
   public function testEtAl() : void {
@@ -2161,6 +2166,15 @@ T1 - This is the Title }}';
       $expanded->tidy_parameter('doi');
       $this->assertNull($expanded->get2('journal'));
       $this->assertNull($expanded->get2('issue'));
+  }
+ 
+
+  public function testZooKeysAddIssue() : void {
+      $text = '{{Cite journal|journal=[[ZooKeys]]}}';
+      $expanded = $this->make_citation($text);
+      $this->assertTru($expanded->add_if_new('volume', '33'));
+      $this->assertNull($expanded->get2('volume'));
+      $this->assertSame('33', $expanded->get2('issue'));
   }
  
   public function testTitleItalics(){
@@ -4998,6 +5012,44 @@ T1 - This is the Title }}';
      $this->assertSame('((10.51134/sod.2013.039 ))', $template->get3('doi'));
    }
  
+   public function testAddEditorFalse() : void {
+     $text='{{Cite journal |display-editors = 5 }}';
+     $template = $this->make_citation($text);
+     $this->assertFalse($template->add_if_new('displayeditors', '5'));
+   }
+                        
+   public function testPMCEmbargo() : void {
+     $text='{{Cite journal|pmc-embargo-date=January 22, 2020}}';
+     $template = $this->process_citation($text);
+     $this->assertNull($template->get2('pmc-embargo-date'));
+    
+     $text='{{Cite journal|pmc-embargo-date=January 22, 2090}}';
+     $template = $this->process_citation($text);
+     $this->asserSame('January 22, 2090', $template->get2('pmc-embargo-date'));
+    
+     $text='{{Cite journal|pmc-embargo-date=}}';
+     $template = $this->process_citation($text);
+     $this->asserSame('', $template->get2('pmc-embargo-date'));
+    
+     $text='{{Cite journal}}';
+     $template = $this->make_citation($text);
+     $this->assertFalse($template->add_if_new('pmc-embargo-date', 'November 15, 1990'));
+     $this->assertFalse($template->add_if_new('pmc-embargo-date', 'November 15, 2010'));
+     $this->assertFalse($template->add_if_new('pmc-embargo-date', 'November 15, 3010'));
+     $this->assertTrue($template->add_if_new('pmc-embargo-date', 'November 15, 2090'));
+     $this->assertFalse($template->add_if_new('pmc-embargo-date', 'November 15, 2080'));
+   }
+
+   public function testOnlineFirst() : void {
+     $text='{{Cite journal|volume=Online First}}';
+     $template = $this->process_citation($text);
+     $this->assertNull($template->get2('volume'));
+    
+     $text='{{Cite journal|issue=Online First}}';
+     $template = $this->process_citation($text);
+     $this->assertNull($template->get2('issue'));
+   }
+ 
    public function testIDconvert1() : void {
      $text='{{Cite journal | id = {{ASIN|3333|country=eu}} }}';
      $template = $this->process_citation($text);
@@ -5084,6 +5136,24 @@ T1 - This is the Title }}';
      $text = '{{cite journal|id={{isbn}} {{oclc}} {{jstor}} {{arxiv}} }}';
      $page = $this->process_page($text);
      $this->assertSame('{{cite journal}}', $page->parsed_text());
+    }
+ 
+    public function testIDconvert12() : void {
+     $text = '{{cite journal|id=<small></small>}}';
+     $page = $this->process_page($text);
+     $this->assertSame('{{cite journal}}', $page->parsed_text());
+     $text = '{{cite journal|id=<small> </small>}}';
+     $page = $this->process_page($text);
+     $this->assertSame('{{cite journal}}', $page->parsed_text());
+    }
+ 
+    public function testIDconvert13() : void {
+     $text = '{{cite journal|id=<small>{{MR|396410}}</small>}}';
+     $page = $this->process_page($text);
+     $this->assertSame('{{cite journal|mr=396410}}', $page->parsed_text());
+     $text = '{{cite journal|id=<small> </small>{{MR|396410}}}}';
+     $page = $this->process_page($text);
+     $this->assertSame('{{cite journal|mr=396410}}', $page->parsed_text());
     }
  
    public function testCAPS() : void {
@@ -5233,6 +5303,13 @@ T1 - This is the Title }}';
      $text = '{{cite journal|ARXIV=|TITLE=|LAST1=|JOURNAL=}}';
      $template = $this->process_citation($text);
      $this->assertSame(strtolower($text), $template->parsed_text());
+   }
+ 
+   public function testTidyTAXON() : void {
+     $text = '{{cite journal|journal=TAXON}}';
+     $template = $this->make_citation($text);
+     $template->tidy_parameter('journal');
+     $this->assertSame('Taxon', $template->get2('journal'));
    }
  
    public function testRemoveBadPublisher() : void {
