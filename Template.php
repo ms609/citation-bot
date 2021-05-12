@@ -6931,14 +6931,14 @@ final class Template {
     if ($this->wikiname() === 'cite book' && $this->has('isbn')) return FALSE; // Probably a series of "books"
     $issn = $this->get('issn');
     // @codeCoverageIgnoreBegin
-    if ($issn === '0140-0460') {
-      return $this->add_if_new('newspaper', '[[The Times]]');
+    if ($issn === '0140-0460') { // Must use set to avoid escaping the [[ and ]]
+      return $this->set('newspaper', '[[The Times]]');
     } elseif ($issn === '0190-8286') {
-      return $this->add_if_new('newspaper', '[[The Washington Post]]');
+      return $this->set('newspaper', '[[The Washington Post]]');
     } elseif ($issn === '0362-4331') {
-      return $this->add_if_new('newspaper', '[[The New York Times]]');
+      return $this->set('newspaper', '[[The New York Times]]');
     } elseif ($issn === '0163-089X' || $issn === '1092-0935') {
-      return $this->add_if_new('newspaper', '[[The Wall Street Journal]]');
+      return $this->set('newspaper', '[[The Wall Street Journal]]');
     } 
     // TODO Add more common ones that fail
     // @codeCoverageIgnoreEnd
