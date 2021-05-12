@@ -6930,6 +6930,18 @@ final class Template {
     if ($this->has('series')) return FALSE; // Dangerous risk of duplication and most likely a series of "books"
     if ($this->wikiname() === 'cite book' && $this->has('isbn')) return FALSE; // Probably a series of "books"
     $issn = $this->get('issn');
+    // @codeCoverageIgnoreBegin
+    if ($issn === '0140-0460') {
+      return $this->add_if_new('newspaper', '[[The Times]]');
+    } elseif ($issn === '0190-8286') {
+      return $this->add_if_new('newspaper', '[[The Washington Post]]');
+    } elseif ($issn === '0362-4331') {
+      return $this->add_if_new('newspaper', '[[The New York Times]]');
+    } elseif ($issn === '0163-089X' || $issn === '1092-0935') {
+      return $this->add_if_new('newspaper', '[[The Wall Street Journal]]');
+    } 
+    // TODO Add more common ones that fail
+    // @codeCoverageIgnoreEnd
     if ($issn === '9999-9999') return FALSE; // Fake test suite data
     if (!preg_match('~^\d{4}.?\d{3}[0-9xX]$~u', $issn)) return FALSE;
     $html = @file_get_contents('https://www.worldcat.org/issn/' . $issn);
