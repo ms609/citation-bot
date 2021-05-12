@@ -628,7 +628,7 @@ class Page {
   
   protected function allow_bots() : bool {
     // from https://en.wikipedia.org/wiki/Template:Bots
-    $bot_username = '(?:Citation|DOI)[ _]bot';
+    $bot_username = 'Citation[ _]bot';
     if (preg_match('~\{\{(nobots|bots\|allow=none|bots\|deny=all|bots\|optout=all|bots\|deny=.*?'.$bot_username.'.*?)\}\}~iS',$this->text)) {
       return FALSE;
     }
