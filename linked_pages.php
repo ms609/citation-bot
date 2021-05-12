@@ -102,7 +102,7 @@ if (empty($pages_in_category)) {
   exit();
 }
   $total = count($pages_in_category);
-  if ($total > MAX_PAGES && !WikipediaBot::NonStandardMode()) {
+  if ($total > MAX_PAGES) {
     report_warning('Number of links is huge (' . (string) $total . ')  Cancelling run (maximum size is ' . (string) MAX_PAGES . ').  Listen to Obi-Wan Kenobi:  You want to go home and rethink your life.');
     echo('</pre><footer><a href="./" title="Use Citation Bot again">Another</a>?</footer></body></html>');
     exit();
