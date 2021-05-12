@@ -100,7 +100,7 @@ const JOURNAL_ACRONYMS = array(/* The following will be automatically updated to
           " USGS ", " v Astronomicheskii Zhurna ", " WRIR ", " z/Journal ", " z/Journal ", 
           " zbMATH ", " Zeitschrift für Geologische Wissenschaften ", " Zeitschrift für Physik A Hadrons and Nuclei ", 
           " Zeitschrift für Physik A: Hadrons and Nuclei ", " Znanosti i Umjetnosti ", 
-          " ZooKeys ", /* The above will be automatically updated to alphabetical order */ 
+          " ZooKeys ", " Combinatorial Math. and Combinatorial " /* The above will be automatically updated to alphabetical order */ 
 );
 const UCFIRST_JOURNAL_ACRONYMS = array(/* The following will be automatically updated to alphabetical order */
           " (And the Middle East) ", " (Bba) ", " (online Ed.) ", " Aapos ", " Aaps ", 
@@ -155,7 +155,7 @@ const UCFIRST_JOURNAL_ACRONYMS = array(/* The following will be automatically up
           " Usgs ", " V Astronomicheskii Zhurna ", " Wrir ", " Z/Journal ", " Z/journal ", 
           " ZbMATH ", " Zeitschrift Für Geologische Wissenschaften ", " Zeitschrift für Physik a Hadrons and Nuclei ", 
           " Zeitschrift Für Physik a: Hadrons And Nuclei ", " Znanosti I Umjetnosti ", 
-          " Zookeys ", /* The above will be automatically updated to alphabetical order */ 
+          " Zookeys ", " Combinatorial Math. And Combinatorial " /* The above will be automatically updated to alphabetical order */ 
 );
 const OBVIOUS_FOREIGN_WORDS = array(" Abhandlungen ", " Actes ", " Annales ", " Archiv ", " Archives de ",
            " Archives du  ", " Archives des ", " Beiträge ", " Berichten ", " Blätter ", " Bulletin de ",
