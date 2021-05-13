@@ -5423,6 +5423,19 @@ final class Template {
               }
           }
           
+          if (preg_match('~^https?://(?:|politics\.)oxfordre\.com/(?:|politics/)view/10\.1093/acrefore/9780190228637\.001\.0001/acrefore\-9780190228637\-e\-(\d+)$~', $this->get($param), $matches)) {
+              $new_doi = '10.1093/acrefore/9780190228637.013.' . $matches[1];
+              if (doi_works($new_doi)) {
+                if ($this->has('doi') && $this->has('doi-broken-date')) {
+                    $this->set('doi', '');
+                    $this->forget('doi-broken-date');
+                    $this->add_if_new('doi', $new_doi);
+                 } elseif ($this->blank('doi')) {
+                    $this->add_if_new('doi', $new_doi);
+                }
+              }
+          }
+          
           if (preg_match('~^https?://oxford\.universitypressscholarship\.com/(?:view|abstract)/10\.1093/oso/(\d{13})\.001\.0001/oso\-(\d{13})\-chapter\-(\d+)$~', $this->get($param), $matches)) {
             if ($matches[1] === $matches[2]) {
               $new_doi = '10.1093/oso/' . $matches[1] . '.003.' . str_pad($matches[3], 4, "0", STR_PAD_LEFT);
