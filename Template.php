@@ -4876,8 +4876,6 @@ final class Template {
               }
             }
             
-            Mercury News
-            
             if ($this->get('work') === 'Local') {
               $this->forget('work');
               $this->rename($param, 'work');
