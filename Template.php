@@ -4862,6 +4862,7 @@ final class Template {
                  return;
               }
             }
+          }
             
           if ($publisher === 'san jose mercury news' ||
               $publisher === 'san jose mercury-news') {
