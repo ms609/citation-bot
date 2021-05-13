@@ -4862,6 +4862,22 @@ final class Template {
                  return;
               }
             }
+            
+          if ($publisher === 'san jose mercury news' ||
+              $publisher === 'san jose mercury-news') {
+            foreach (WORK_ALIASES as $work) {
+              if (stripos($this->get($work), 'mercurynews.com') !== FALSE ||
+                  stripos($this->get($work), 'mercury news') !== FALSE) {
+                 $this->forget($param);
+                 if (stripos($this->get($work), 'mercurynews.com') !== FALSE) {
+                   $this->set($work, '[[San Jose Mercury News]]');
+                 }
+                 return;
+              }
+            }
+            
+            Mercury News
+            
             if ($this->get('work') === 'Local') {
               $this->forget('work');
               $this->rename($param, 'work');
