@@ -4905,7 +4905,10 @@ final class Template {
             }
           }
           
-          if ($publisher === 'forbes media llc') {
+          if ($publisher === 'forbes media llc' ||
+              $publisher === 'forbes media, llc' ||
+              $publisher === 'forbes media, llc.' ||
+              $publisher === 'forbes media llc.') {
             $publisher = 'forbes media';
             $this->set($param, 'Forbes Media');
           }
