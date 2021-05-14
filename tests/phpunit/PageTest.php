@@ -420,7 +420,7 @@ final class PageTest extends testBaseClass {
   
  
   public function testBadPage() : void {  // Use this when debugging pages that crash the bot
-    $bad_page = ""; //  Replace with page name when debugging
+    $bad_page = "1998_Russian_financial_crisis"; //  Replace with page name when debugging
     $bad_page = urlencode(str_replace(' ', '_', $bad_page));
     if ($bad_page !== "") {
       $ch = curl_init();
