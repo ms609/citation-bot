@@ -244,7 +244,6 @@ class Page {
      }
     // TEMPLATES
     $singlebrack = $this->extract_object('SingleBracket');
-    if (WikipediaBot::NonStandardMode()) $this->text = str_replace('{{harvid||}}', '', $this->text); //TODO - remove
     $all_templates = $this->extract_object('Template');
     if ($this->page_error) {
       $this->text = $this->start_text;
