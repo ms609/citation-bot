@@ -4922,6 +4922,7 @@ final class Template {
           }
           if ($publisher === 'forbes.com llc' ||
               $publisher === 'forbes.com' ||
+              $publisher === 'forbes.com llc™' ||
               $publisher === 'forbes.com llc.') {
             $publisher = 'forbes';
             $this->set($param, 'Forbes');
@@ -4939,7 +4940,7 @@ final class Template {
               $publisher === 'forbes.com' ||
               $publisher === 'forbes media') {
             foreach (WORK_ALIASES as $work) {
-              if (stripos($this->get($work), 'forbes')) {
+              if (stripos($this->get($work), 'forbes') !== FALSE) {
                  $this->forget($param);
                  if (stripos($this->get($work), 'forbes.com') !== FALSE) {
                    $this->set($work, '[[Forbes]]');
