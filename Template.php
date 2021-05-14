@@ -4947,6 +4947,11 @@ final class Template {
                  }
                  return;
               }
+              if ($this->blank('agency')) {
+                if (stripos($this->get($work), 'AFX News') !== FALSE) {
+                  $this->rename($param, 'agency');
+                }
+              }
             }
           }
 
