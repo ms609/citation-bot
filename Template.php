@@ -4888,9 +4888,11 @@ final class Template {
               $publisher === 'san diego union tribune') {
             foreach (WORK_ALIASES as $work) {
               if (stripos($this->get($work), 'sandiegouniontribune.com') !== FALSE ||
+                  stripos($this->get($work), 'SignOnSanDiego.com') !== FALSE ||
                   stripos($this->get($work), 'san diego union') !== FALSE) {
                  $this->forget($param);
-                 if (stripos($this->get($work), 'sandiegouniontribune.com') !== FALSE) {
+                 if (stripos($this->get($work), 'sandiegouniontribune.com') !== FALSE ||
+                     stripos($this->get($work), 'SignOnSanDiego.com') !== FALSE) {
                    $this->set($work, '[[The San Diego Union-Tribune]]');
                  }
                  return;
