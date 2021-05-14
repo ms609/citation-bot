@@ -4920,6 +4920,12 @@ final class Template {
             $publisher = 'forbes';
             $this->set($param, 'Forbes');
           }
+          if ($publisher === 'forbes.com llc' ||
+              $publisher === 'forbes.com' ||
+              $publisher === 'forbes.com llc.') {
+            $publisher = 'forbes';
+            $this->set($param, 'Forbes');
+          }
           if ($publisher === 'forbes publishing' ||
               $publisher === 'forbes publishing company' ||
               $publisher === 'forbes publishing co' ||
