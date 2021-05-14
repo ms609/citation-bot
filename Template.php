@@ -4876,6 +4876,26 @@ final class Template {
                  return;
               }
             }
+          }
+          if ($publisher === 'the san diego union-tribune, llc' ||
+              $publisher === 'the san diego union tribune, llc') {
+            $publisher = 'the san diego union-tribune';
+            $this->set($param, 'The San Diego Union-Tribune');
+          }
+          if ($publisher === 'the san diego union-tribune' ||
+              $publisher === 'the san diego union tribune' ||
+              $publisher === 'san diego union-tribune' ||
+              $publisher === 'san diego union tribune') {
+            foreach (WORK_ALIASES as $work) {
+              if (stripos($this->get($work), 'sandiegouniontribune.com') !== FALSE ||
+                  stripos($this->get($work), 'san diego union') !== FALSE) {
+                 $this->forget($param);
+                 if (stripos($this->get($work), 'sandiegouniontribune.com') !== FALSE) {
+                   $this->set($work, '[[The San Diego Union-Tribune]]');
+                 }
+                 return;
+              }
+            }
             
             if ($this->get('work') === 'Local') {
               $this->forget('work');
