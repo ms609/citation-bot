@@ -4948,7 +4948,27 @@ final class Template {
                  return;
               }
             }
-          }  
+          }
+
+          if ($publisher === 'la times' ||
+              $publisher === 'latimes' ||
+              $publisher === 'latimes.com' ||
+              $publisher === 'the la times' ||
+              $publisher === 'los angeles times' ||
+              $publisher === 'the los angeles times' ||
+              $publisher === 'los angeles times media group') {
+            foreach (WORK_ALIASES as $work) {
+              if (stripos($this->get($work), 'latimes') !== FALSE ||
+                  stripos($this->get($work), 'os angeles times') !== FALSE) {
+                 $this->forget($param);
+                 if (stripos($this->get($work), 'latimes.com') !== FALSE) {
+                   $this->set($work, '[[Los Angeles Times]]');
+                 }
+                 return;
+              }
+            }
+          } 
+          
           foreach (WORK_ALIASES as $work) {
               $worky = strtolower($this->get($work));
               $worky = str_replace(array("[[" , "]]"), "", $worky);
