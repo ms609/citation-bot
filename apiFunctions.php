@@ -10,7 +10,7 @@ function query_pmid_api (array $pmids, array &$templates) : bool { return entrez
 function query_pmc_api  (array $pmcs, array &$templates) : bool { return entrez_api($pmcs,  $templates, 'pmc'); } // Pointer to save memory
 
 final class AdsAbsControl {
-  private static $counter = 0;
+  private static int $counter = 0;
   public static function gave_up_yet() : bool {
     self::$counter = max(self::$counter - 1, 0);
     return (self::$counter != 0);
