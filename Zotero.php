@@ -17,7 +17,7 @@ final class Zotero {
   protected static int $zotero_failures_count = 0;
 
 private static function set_default_ch_zotero() : void {
-  /** @psalm-suppress PossiblyNullArgument */
+  /** @psalm-suppress PossiblyNullArgument */ CONFLICT
   if ( USE_CITOID ) {
         curl_setopt_array(self::$zotero_ch,
             [CURLOPT_URL => CITOID_ZOTERO,
