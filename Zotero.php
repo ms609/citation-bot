@@ -17,15 +17,26 @@ final class Zotero {
 
 private static function set_default_ch_zotero() : void {
   /** @psalm-suppress PossiblyNullArgument */
-  curl_setopt_array(self::$zotero_ch,
-        [CURLOPT_URL => ZOTERO_ROOT,
-         CURLOPT_CUSTOMREQUEST => "POST",
-         CURLOPT_HTTPHEADER => ['Content-Type: text/plain'],
-         CURLOPT_RETURNTRANSFER => TRUE,
-         CURLOPT_USERAGENT => 'Citation_bot; citations@tools.wmflabs.org',
-         // Defaults used in TRAVIS overiden below when deployed
-         CURLOPT_CONNECTTIMEOUT => 10,
-         CURLOPT_TIMEOUT => 45]);
+  if ( USE_CITOID ) {
+        curl_setopt_array(self::$zotero_ch,
+            [CURLOPT_URL => CITOID_ZOTERO,
+            CURLOPT_HTTPHEADER => ['accept: application/json; charset=utf-8'],
+            CURLOPT_RETURNTRANSFER => TRUE,
+            CURLOPT_USERAGENT => 'Citation_bot; citations@tools.wmflabs.org',
+            // Defaults used in TRAVIS overiden below when deployed
+            CURLOPT_CONNECTTIMEOUT => 10,
+            CURLOPT_TIMEOUT => 45]);
+  } else {
+        curl_setopt_array(self::$zotero_ch,
+            [CURLOPT_URL => ZOTERO_ROOT,
+            CURLOPT_CUSTOMREQUEST => "POST",
+            CURLOPT_HTTPHEADER => ['Content-Type: text/plain'],
+            CURLOPT_RETURNTRANSFER => TRUE,
+            CURLOPT_USERAGENT => 'Citation_bot; citations@tools.wmflabs.org',
+            // Defaults used in TRAVIS overiden below when deployed
+            CURLOPT_CONNECTTIMEOUT => 10,
+            CURLOPT_TIMEOUT => 45]);
+    }
 }
 
 public static function block_zotero() : void {
@@ -265,7 +276,11 @@ private static function zotero_request(string $url) : string {
      self::$zotero_ch = curl_init();   // @codeCoverageIgnore
      self::set_default_ch_zotero();    // @codeCoverageIgnore
   }
-  curl_setopt(self::$zotero_ch, CURLOPT_POSTFIELDS, $url);
+  if ( USE_CITOID ) {
+     curl_setopt(self::$zotero_ch, CURLOPT_URL, CITOID_ZOTERO . urlencode($url));
+  } else {
+     curl_setopt(self::$zotero_ch, CURLOPT_POSTFIELDS, $url);
+  }
    
   if (self::$zotero_failures_count > self::ZOTERO_GIVE_UP) return self::ERROR_DONE;
   
