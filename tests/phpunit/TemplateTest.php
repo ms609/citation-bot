@@ -3117,7 +3117,11 @@ T1 - This is the Title }}';
  
   public function testHandles2() : void {
     $template = $this->make_citation('{{Cite web|url=https://hdl.handle.net/handle////10125/20269}}');
-    $this->assertTrue($template->get_identifiers_from_url());
+    $template->get_identifiers_from_url();
+    if ('10125/20269' !== $template->get2('hdl')) {
+     sleep(5);
+     $template->get_identifiers_from_url(); // This test is finicky sometimes
+    }
     $this->assertSame('cite web', $template->wikiname());
     $this->assertSame('10125/20269', $template->get2('hdl'));
     $this->assertNotNull($template->get2('url'));
