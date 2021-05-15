@@ -1347,27 +1347,21 @@ final class TemplateTest extends testBaseClass {
     $this->assertSame('10393/XXXXXX', $expanded->get2('hdl')); // This basically runs through a bunch of code to return 'have free'
     $this->assertNull($expanded->get2('url'));
   }
-
-  public function testSemanticScholar() : void {
-   $text = "{{cite journal|doi=10.5555/555555}}";
+  
+  // Test Unpaywall URL gets added
+  // DOI gets an URL on BHL 
+  public function testUnPaywall1() : void {
+   $text = "{{cite journal|doi=10.1206/0003-0082(2006)3508[1:EEALSF]2.0.CO;2}}";
    $template = $this->make_citation($text);
-   $return = $template->get_unpaywall_url($template->get2('doi'));
-   $this->assertSame('nothing', $return);
-   $this->assertNull($template->get2('url'));
+   $template->get_unpaywall_url($template->get2('doi'));
+   $this->assertNotNull($template->get2('url'));
   }
   
-  public function testUnPaywall1() : void {
-   $text = "{{cite journal}}";
-   $template = $this->make_citation($text);
-   $template->get_semanticscholar_url('10.1145/358589.358596', '');
-   $this->assertNull($template->get2('url'));
-   $this->assertSame('10.1145/358589.358596', $template->get2('doi'));
-  }
-
+  // Test Unpaywall OA URL does not get added when doi-access=free
   public function testUnPaywall2() : void {
    $text = "{{cite journal|doi=10.1145/358589.358596|doi-access=free}}";
    $template = $this->make_citation($text);
-   $template->get_semanticscholar_url($template->get2('doi'), '');
+   $template->get_unpaywall_url($template->get2('doi'));
    $this->assertNull($template->get2('url'));
   }
  

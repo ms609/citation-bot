@@ -3070,7 +3070,9 @@ final class Template {
         }
         if (!$oa_url) return 'nothing';
 
-        if (stripos($oa_url, 'semanticscholar.org') !== FALSE) return 'semanticscholar';  // Limit semanticscholar to licenced only - use API call instead
+        // SemanticScholar was removed from Unpaywall in early 2021
+        // https://groups.google.com/g/unpaywall/c/rDOoIgGMxuk/m/5r99PxyPBQAJ
+        // if (stripos($oa_url, 'semanticscholar.org') !== FALSE) return 'semanticscholar';  // Limit semanticscholar to licenced only - use API call instead
         if (stripos($oa_url, 'citeseerx') !== FALSE) return 'citeseerx'; //is currently blacklisted due to copyright concerns
         if ($this->get('url')) {
             if ($this->get('url') !== $oa_url) $this->get_identifiers_from_url($oa_url);  // Maybe we can get a new link type
