@@ -18,7 +18,7 @@ jobs:
     - name: Setup PHP 7.3 with PCOV
       uses: shivammathur/setup-php@v2
       with:
-        php-version: '7.3'
+        php-version: '8.0'
         ini-values: pcov.directory=.
         coverage: pcov
 
