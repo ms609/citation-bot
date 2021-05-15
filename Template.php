@@ -4908,6 +4908,7 @@ final class Template {
           if ($publisher === 'forbes media llc' ||
               $publisher === 'forbes media, llc' ||
               $publisher === 'forbes media, llc.' ||
+              $publisher === 'forbes (forbes media)' ||         
               $publisher === 'forbes media llc.') {
             $publisher = 'forbes media';
             $this->set($param, 'Forbes Media');
@@ -4915,7 +4916,9 @@ final class Template {
           if ($publisher === 'forbes inc' ||
               $publisher === 'forbes inc.' ||
               $publisher === 'forbes, inc' ||
-              $publisher === 'forbes, inc.'
+              $publisher === 'forbes, inc.' ||
+              $publisher === 'forbes.' ||
+              $publisher === 'forbes ny'
              ) {
             $publisher = 'forbes';
             $this->set($param, 'Forbes');
@@ -4938,6 +4941,7 @@ final class Template {
           if ($publisher === 'forbes publishing' ||
               $publisher === 'forbes' ||
               $publisher === 'forbes.com' ||
+              $publisher === 'forbes magazine' ||
               $publisher === 'forbes media') {
             foreach (WORK_ALIASES as $work) {
               if (stripos($this->get($work), 'forbes') !== FALSE) {
@@ -4948,7 +4952,8 @@ final class Template {
                  return;
               }
               if ($this->blank('agency')) {
-                if (stripos($this->get($work), 'AFX News') !== FALSE) {
+                if (stripos($this->get($work), 'AFX News') !== FALSE ||
+                    stripos($this->get($work), 'Thomson Financial News') !== FALSE) {
                   $this->rename($work, 'agency');
                 }
               }
@@ -4977,7 +4982,7 @@ final class Template {
           foreach (WORK_ALIASES as $work) {
               $worky = strtolower($this->get($work));
               $worky = str_replace(array("[[" , "]]"), "", $worky);
-              if (in_array($worky, array('los angeles times', 'new york times magazine', 'the new york times', 'new york times', 'huffington post', 'the daily telegraph', 'forbes.com'))) { // TODO - create constant array of works that do not need a publisher
+              if (in_array($worky, array('los angeles times', 'new york times magazine', 'the new york times', 'new york times', 'huffington post', 'the daily telegraph', 'forbes.com', 'forbes magazine'))) { // TODO - create constant array of works that do not need a publisher
                  $this->forget($param);
                  return;
               }
