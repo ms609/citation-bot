@@ -3129,7 +3129,7 @@ T1 - This is the Title }}';
   }
  
   public function testHandles4() : void {
-    $template = $this->make_citation('{{Cite journal|url=http://digitallibrary.amnh.org/dataset.xhtml?persistentId=hdl:10125/20269;jsessionid=EE3BA49390611FCE0AAAEBB819E777BC?sequence=1}}');
+    $template = $this->make_citation('{{Cite journal|url=https://scholarspace.manoa.hawaii.edu/handle/10125/20269}}');
     $template->get_identifiers_from_url();
     $this->assertSame('10125/20269', $template->get2('hdl'));
     $this->assertNotNull($template->get2('url'));
