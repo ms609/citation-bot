@@ -5543,7 +5543,6 @@ T1 - This is the Title }}';
   }
 
    public function testVerifyDOI11() : void {
-     return; // TODO - that website is down
      $text = '{{cite journal|doi=10.1175/1525-7541(2003)004&lt;1147:TVGPCP&gt;2.0.CO;2}}';
      $template = $this->make_citation($text);
      $template->verify_doi();
