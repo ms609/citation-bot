@@ -5,7 +5,7 @@ require_once(__DIR__ . '/../setup.php');
 
 abstract class testBaseClass extends PHPUnit\Framework\TestCase {
   // Change these to temporarily disable sets of tests======================
-  private $testing_skip_zotero = FALSE;                                           // TODO - broken
+  private $testing_skip_zotero = FALSE;                                           //
   private $testing_skip_bibcode= FALSE;                                           //
   private $testing_skip_google = TRUE;                                            // API turned off for now.  Gave bad resutls.
   private $testing_skip_wiki   = FALSE;                                           //
@@ -88,7 +88,6 @@ abstract class testBaseClass extends PHPUnit\Framework\TestCase {
 
   // Allows us to turn off Zotero tests
   protected function requires_zotero(callable $function) : void {
-  /*
     if ($this->testing_skip_zotero) {
       echo 'Z';
       ob_flush();
@@ -103,7 +102,6 @@ abstract class testBaseClass extends PHPUnit\Framework\TestCase {
         Zotero::block_zotero();
       }
     }
-    */
   } 
   
   protected function make_citation(string $text) : Template {
