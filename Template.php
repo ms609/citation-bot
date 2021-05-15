@@ -3070,9 +3070,7 @@ final class Template {
         }
         if (!$oa_url) return 'nothing';
 
-        // SemanticScholar was removed from Unpaywall in early 2021
-        // https://groups.google.com/g/unpaywall/c/rDOoIgGMxuk/m/5r99PxyPBQAJ
-        // if (stripos($oa_url, 'semanticscholar.org') !== FALSE) return 'semanticscholar';  // Limit semanticscholar to licenced only - use API call instead
+        if (stripos($oa_url, 'semanticscholar.org') !== FALSE) return 'semanticscholar';  // Limit semanticscholar to licenced only - use API call instead (avoid blacklisting)
         if (stripos($oa_url, 'citeseerx') !== FALSE) return 'citeseerx'; //is currently blacklisted due to copyright concerns
         if ($this->get('url')) {
             if ($this->get('url') !== $oa_url) $this->get_identifiers_from_url($oa_url);  // Maybe we can get a new link type
@@ -4909,6 +4907,7 @@ final class Template {
           if ($publisher === 'forbes media llc' ||
               $publisher === 'forbes media, llc' ||
               $publisher === 'forbes media, llc.' ||
+              $publisher === 'forbes (forbes media)' ||         
               $publisher === 'forbes media llc.') {
             $publisher = 'forbes media';
             $this->set($param, 'Forbes Media');
@@ -4916,7 +4915,9 @@ final class Template {
           if ($publisher === 'forbes inc' ||
               $publisher === 'forbes inc.' ||
               $publisher === 'forbes, inc' ||
-              $publisher === 'forbes, inc.'
+              $publisher === 'forbes, inc.' ||
+              $publisher === 'forbes.' ||
+              $publisher === 'forbes ny'
              ) {
             $publisher = 'forbes';
             $this->set($param, 'Forbes');
@@ -4939,6 +4940,7 @@ final class Template {
           if ($publisher === 'forbes publishing' ||
               $publisher === 'forbes' ||
               $publisher === 'forbes.com' ||
+              $publisher === 'forbes magazine' ||
               $publisher === 'forbes media') {
             foreach (WORK_ALIASES as $work) {
               if (stripos($this->get($work), 'forbes') !== FALSE) {
@@ -4949,13 +4951,27 @@ final class Template {
                  return;
               }
               if ($this->blank('agency')) {
-                if (stripos($this->get($work), 'AFX News') !== FALSE) {
+                if (stripos($this->get($work), 'AFX News') !== FALSE ||
+                    stripos($this->get($work), 'Thomson Financial News') !== FALSE) {
                   $this->rename($work, 'agency');
                 }
               }
             }
           }
 
+          
+          if ($publisher === 'la times' ||
+              $publisher === 'latimes' ||
+              $publisher === 'latimes.com' ||
+              $publisher === 'the la times' ||
+              $publisher === 'the los angeles times') {
+            $publisher = 'los angeles times';
+            if (strpos($this->get($param), '[') !== FALSE) {
+              $this->set($param, '[[Los Angeles Times]]');
+            } else {
+              $this->set($param, 'Los Angeles Times');
+            }
+          }
           if ($publisher === 'la times' ||
               $publisher === 'latimes' ||
               $publisher === 'latimes.com' ||
@@ -4965,7 +4981,7 @@ final class Template {
               $publisher === 'los angeles times media group') {
             foreach (WORK_ALIASES as $work) {
               if (stripos($this->get($work), 'latimes') !== FALSE ||
-                  stripos($this->get($work), 'os angeles times') !== FALSE) {
+                  stripos($this->get($work), 'los angeles times') !== FALSE) {
                  $this->forget($param);
                  if (stripos($this->get($work), 'latimes.com') !== FALSE) {
                    $this->set($work, '[[Los Angeles Times]]');
@@ -4978,7 +4994,7 @@ final class Template {
           foreach (WORK_ALIASES as $work) {
               $worky = strtolower($this->get($work));
               $worky = str_replace(array("[[" , "]]"), "", $worky);
-              if (in_array($worky, array('los angeles times', 'new york times magazine', 'the new york times', 'new york times', 'huffington post', 'the daily telegraph', 'forbes.com'))) { // TODO - create constant array of works that do not need a publisher
+              if (in_array($worky, array('los angeles times', 'new york times magazine', 'the new york times', 'new york times', 'huffington post', 'the daily telegraph', 'forbes.com', 'forbes magazine'))) { // TODO - create constant array of works that do not need a publisher
                  $this->forget($param);
                  return;
               }

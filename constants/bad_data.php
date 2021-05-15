@@ -22,7 +22,7 @@ const BAD_PUBLISHERS = array('london', 'edinburgi', 'edinburgh', 'no publisher',
 const PUBLISHERS_ARE_WORKS = array('the san diego union-tribune', 'forbes', 'salon', 'san jose mercury news', 'san jose mercury-news', 'new york times',
                                    'the new york times', 'daily news online', 'daily news', 'the sun', 'the times',
                                    'the star', 'washington post', 'the washington post', 'the tribune',
-                                   'los angeles times', 'la times', 'the la times', 'htmlgiant',
+                                   'los angeles times', 'la times', 'the la times', 'htmlgiant', 'the los angeles times',
                                    'sandiegouniontribune.com', 'forbes.com', 'salon.com', 'mercurynews.com', 'nytimes.com',
                                    'thedailynewsonline.com', 'thesun.com', 'thetimes.com', 'thestar.com',
                                    'washingtonpost.com', 'thetribune.com', 'latimes.com', 'htmlgiant.com',
@@ -40,7 +40,9 @@ const PUBLISHERS_ARE_WORKS = array('the san diego union-tribune', 'forbes', 'sal
                                    'anchorage daily news', 'palm beach daily news', 'daily news egypt', 'the daily news egypt',
                                    'daily news latino', 'forbes méxico', 'forbes mexico', 'forbes india', 'forbesmiddleeast',
                                    'forbes middle east', 'forbes russia', 'forbes.ru', 'forbes afrique', 'forbes magazine',
-                                   'forbes asia', 'forbes israel', 'forbes global 2000', 'forbes china'
+                                   'forbes asia', 'forbes israel', 'forbes global 2000', 'forbes china', '[[forbes]] (Russia)',
+                                   'forbes việt nam', 'forbes vietnam', 'forbes viet nam', 'forbes contributor blogs',
+                                   'the baltimore sun'
                                    // WP:CITALICSRFC and MOS:ITALICWEBCITE  ?????     'abc news', 'nbc news', 'cbs news', 'bbc news'
                                   ); // LOWER CASE!  WWW not there too! 
 
