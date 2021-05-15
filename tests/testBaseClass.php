@@ -86,8 +86,9 @@ abstract class testBaseClass extends PHPUnit\Framework\TestCase {
     }
   }
 
-  // allows us to turn off zoreto tests
+  // Allows us to turn off Zotero tests
   protected function requires_zotero(callable $function) : void {
+  /*
     if ($this->testing_skip_zotero) {
       echo 'Z';
       ob_flush();
@@ -102,6 +103,7 @@ abstract class testBaseClass extends PHPUnit\Framework\TestCase {
         Zotero::block_zotero();
       }
     }
+    */
   } 
   
   protected function make_citation(string $text) : Template {

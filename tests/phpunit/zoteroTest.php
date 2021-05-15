@@ -8,12 +8,17 @@ declare(strict_types=1);
 require_once(__DIR__ . '/../testBaseClass.php');
  
 final class ZoteroTest extends testBaseClass {
- 
-  public function testZoteroExpansion_biorxiv() : void {
-    $text = '{{Cite journal| biorxiv=326363 }}';
+
+  // Check that Zotero is doing something on a stable URL
+  // Extracting the title should be the easiest thing
+  public function testZoteroExpansion_doi() : void {
+    $text = '{{Cite journal| url=https://doi.org/10.1371/journal.pcbi.1000204 }}';
     $expanded = $this->process_citation($text);
-    $this->assertSame('Sunbeam: An extensible pipeline for analyzing metagenomic sequencing experiments', $expanded->get2('title'));
-    $text = '{{Cite journal| biorxiv=326363 |doi=10.0000/Rubbish_bot_failure_test}}';
+    $this->assertNotNull($expanded->get2('title'));
+  }
+
+  public function testZoteroExpansion_biorxiv() : void {
+    $text = '{{Cite journal| url = https://doi.org/10.1101/326363  }}';
     $expanded = $this->process_citation($text);
     $this->assertSame('Sunbeam: An extensible pipeline for analyzing metagenomic sequencing experiments', $expanded->get2('title'));
   }
