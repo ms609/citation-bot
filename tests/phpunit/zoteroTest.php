@@ -8,7 +8,7 @@ declare(strict_types=1);
 require_once(__DIR__ . '/../testBaseClass.php');
 
 final class ZoteroTest extends testBaseClass {
-CONCLIFCT
+ 
   public function testZoteroExpansion_biorxiv() : void {
     $text = '{{Cite journal| biorxiv=326363 }}';
     $expanded = $this->process_citation($text);
