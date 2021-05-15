@@ -14,6 +14,7 @@ const TEMP_PLACEHOLDER = "# # # CITATION_BOT_PLACEHOLDER_TEMPORARY %s # # #";
 const WIKI_ROOT = "https://en.wikipedia.org/w/index.php";
 const API_ROOT = "https://en.wikipedia.org/w/api.php"; // wiki's API endpoint
 const ZOTERO_ROOT = "https://translation-server.toolforge.org/web";
+const CITOID_ZOTERO = "https://en.wikipedia.org/api/rest_v1/data/citation/zotero/";
 
 //Common replacements
 const HTML_DECODE = array("[", "]", "<", ">", " ");
