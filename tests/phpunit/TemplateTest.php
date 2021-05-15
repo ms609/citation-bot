@@ -1753,7 +1753,7 @@ final class TemplateTest extends testBaseClass {
    }
 
   public function testGoogleBooksExpansionNEW() : void {
-    $text = "{{Cite web | url=https://www.google.com/books/edition/_/SjpSkzjIzfsC?hl=en}}";
+    $text = "{{Cite book | url=https://www.google.com/books/edition/_/SjpSkzjIzfsC?hl=en}}";
     $expanded = $this->process_citation($text);
     $this->assertSame('cite book', $expanded->wikiname());
     $this->assertSame('https://www.google.com/books/edition/_/SjpSkzjIzfsC', $expanded->get2('url'));
