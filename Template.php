@@ -4965,7 +4965,9 @@ final class Template {
               $publisher === 'latimes' ||
               $publisher === 'latimes.com' ||
               $publisher === 'the la times' ||
-              $publisher === 'the los angeles times') {
+              $publisher === 'the los angeles times' ||
+              $publisher === '[[los angeles times]] (latimes.com)'
+             ) {
             $publisher = 'los angeles times';
             if (strpos($this->get($param), '[') !== FALSE) {
               $this->set($param, '[[Los Angeles Times]]');
