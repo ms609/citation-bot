@@ -86,7 +86,7 @@ abstract class testBaseClass extends PHPUnit\Framework\TestCase {
     }
   }
 
-  // Allows us to turn off Zotero tests
+  // Allows us to turn off Zotero tests CONFLICT
   protected function requires_zotero(callable $function) : void {
     if ($this->testing_skip_zotero) {
       echo 'Z';
