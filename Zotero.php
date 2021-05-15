@@ -12,7 +12,7 @@ final class Zotero {
   private const ZOTERO_SKIPS = 100;
   private const ERROR_DONE = 'ERROR_DONE'; 
   protected static int $zotero_announced = 0;
-  protected static ?CurlHandle $zotero_ch = NULL;
+  protected static ?CurlHandle $zotero_ch;
   protected static int $zotero_failures_count = 0;
 
 private static function set_default_ch_zotero() : void {
