@@ -1,7 +1,7 @@
 <?php
 declare(strict_types=1);
 /*
- * Template has methods to handle most aspects of citation template
+ * Template has methods to handle most aspects of citation template\
  * parsing, handling, and expansion.
  *
  * Of particular note:
@@ -4949,7 +4949,7 @@ final class Template {
               }
               if ($this->blank('agency')) {
                 if (stripos($this->get($work), 'AFX News') !== FALSE) {
-                  $this->rename($param, 'agency');
+                  $this->rename($work, 'agency');
                 }
               }
             }
