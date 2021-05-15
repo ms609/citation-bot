@@ -4960,6 +4960,19 @@ final class Template {
             }
           }
 
+          
+          if ($publisher === 'la times' ||
+              $publisher === 'latimes' ||
+              $publisher === 'latimes.com' ||
+              $publisher === 'the la times' ||
+              $publisher === 'the los angeles times') {
+            $publisher = 'los angeles times';
+            if (strpos($this->get($param), '[') !== FALSE) {
+              $this->set($param, '[[Los Angeles Times]]');
+            } else {
+              $this->set($param, 'Los Angeles Times');
+            }
+          }
           if ($publisher === 'la times' ||
               $publisher === 'latimes' ||
               $publisher === 'latimes.com' ||
@@ -4969,7 +4982,7 @@ final class Template {
               $publisher === 'los angeles times media group') {
             foreach (WORK_ALIASES as $work) {
               if (stripos($this->get($work), 'latimes') !== FALSE ||
-                  stripos($this->get($work), 'os angeles times') !== FALSE) {
+                  stripos($this->get($work), 'los angeles times') !== FALSE) {
                  $this->forget($param);
                  if (stripos($this->get($work), 'latimes.com') !== FALSE) {
                    $this->set($work, '[[Los Angeles Times]]');
