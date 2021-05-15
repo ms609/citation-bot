@@ -4985,7 +4985,7 @@ final class Template {
               if (stripos($this->get($work), 'latimes') !== FALSE ||
                   stripos($this->get($work), 'los angeles times') !== FALSE) {
                  $this->forget($param);
-                 if (stripos($this->get($work), 'latimes.com') !== FALSE) {
+                 if (stripos($this->get($work), 'latimes') !== FALSE) {
                    $this->set($work, '[[Los Angeles Times]]');
                  }
                  return;
@@ -5759,6 +5759,11 @@ final class Template {
           if ($this->get('work') === 'The Times Digital Archive') {
             $this->set('work', '[[The Times]]');
           }
+          if (strtolower($this->get('work')) === 'latimes' ||
+              strtolower($this->get('work')) === 'latimes.com') {
+            $this->set('work', 'Los Angeles Times');
+          }
+          
           switch ($this->wikiname()) {
             case 'cite book': $work_becomes = 'title'; break;
             case 'cite journal': $work_becomes = 'journal'; break;
@@ -5998,6 +6003,13 @@ final class Template {
             if (str_i_same($this->get($param), 'arxiv')) {
               $this->forget($param);
             }
+          }
+          if (strtolower($this->get($param)) === 'latimes' ||
+              strtolower($this->get($param)) === 'latimes.com') {
+            $this->set($param, '[[Los Angeles Times]]');
+          }
+          if ($this->get($param) === 'The Times Digital Archive') {
+            $this->set($param, '[[The Times]]');
           }
           return;
          
