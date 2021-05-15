@@ -22,7 +22,7 @@ private static function set_default_ch_zotero() : void {
         [CURLOPT_URL => ZOTERO_ROOT,
          CURLOPT_CUSTOMREQUEST => "POST",
          CURLOPT_HTTPHEADER => ['Content-Type: text/plain'],
-         CURLOPT_RETURNTRANSFER => TRUE,
+         CURLOPT_RETURNTRANSFER => TRUE, CONFLICT
          CURLOPT_USERAGENT => 'Citation_bot; citations@tools.wmflabs.org',
          // Defaults used in TRAVIS overiden below when deployed
          CURLOPT_CONNECTTIMEOUT => 10,
