@@ -1347,6 +1347,14 @@ final class TemplateTest extends testBaseClass {
     $this->assertSame('10393/XXXXXX', $expanded->get2('hdl')); // This basically runs through a bunch of code to return 'have free'
     $this->assertNull($expanded->get2('url'));
   }
+
+  public function testSemanticScholar() : void {
+   $text = "{{cite journal|doi=10.5555/555555}}";
+   $template = $this->make_citation($text);
+   $return = $template->get_unpaywall_url($template->get2('doi'));
+   $this->assertSame('nothing', $return);
+   $this->assertNull($template->get2('url'));
+  }
   
   // Test Unpaywall URL gets added
   // DOI gets an URL on BHL 
