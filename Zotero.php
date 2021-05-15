@@ -16,8 +16,9 @@ final class Zotero {
   protected static $zotero_failures_count = 0;
 
 private static function set_default_ch_zotero() : void {
-  /** @psalm-suppress PossiblyNullArgument */
+  /** @phan-suppress-next-line PhanRedundantCondition */
   if ( USE_CITOID ) {
+        /** @psalm-suppress PossiblyNullArgument */ 
         curl_setopt_array(self::$zotero_ch,
             [CURLOPT_URL => CITOID_ZOTERO,
             CURLOPT_HTTPHEADER => ['accept: application/json; charset=utf-8'],
@@ -27,6 +28,7 @@ private static function set_default_ch_zotero() : void {
             CURLOPT_CONNECTTIMEOUT => 10,
             CURLOPT_TIMEOUT => 45]);
   } else {
+        /** @psalm-suppress PossiblyNullArgument */ 
         curl_setopt_array(self::$zotero_ch,
             [CURLOPT_URL => ZOTERO_ROOT,
             CURLOPT_CUSTOMREQUEST => "POST",
@@ -276,6 +278,7 @@ private static function zotero_request(string $url) : string {
      self::$zotero_ch = curl_init();   // @codeCoverageIgnore
      self::set_default_ch_zotero();    // @codeCoverageIgnore
   }
+  /** @phan-suppress-next-line PhanRedundantCondition */
   if ( USE_CITOID ) {
      curl_setopt(self::$zotero_ch, CURLOPT_URL, CITOID_ZOTERO . urlencode($url));
   } else {
