@@ -1356,7 +1356,7 @@ final class TemplateTest extends testBaseClass {
    $template->get_unpaywall_url($template->get2('doi'));
    $this->assertNotNull($template->get2('url'));
   }
-  
+
   // Test Unpaywall OA URL does not get added when doi-access=free
   public function testUnPaywall2() : void {
    $text = "{{cite journal|doi=10.1145/358589.358596|doi-access=free}}";
