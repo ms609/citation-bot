@@ -19,22 +19,30 @@ const NON_HUMAN_AUTHORS = array('collaborat', 'reporter', 'journalist', 'corresp
 const BAD_PUBLISHERS = array('london', 'edinburgi', 'edinburgh', 'no publisher', 'no publisher given',
                              'no publisher specified', 'unknown', 'publisher not identified', 'report');
 
-const PUBLISHERS_ARE_WORKS = array('the san diego union-tribune', 'forbes', 'salon', 'san jose mercury news', 'new york times',
+const PUBLISHERS_ARE_WORKS = array('the san diego union-tribune', 'forbes', 'salon', 'san jose mercury news', 'san jose mercury-news', 'new york times',
                                    'the new york times', 'daily news online', 'daily news', 'the sun', 'the times',
                                    'the star', 'washington post', 'the washington post', 'the tribune',
-                                   'los angeles times', 'la times', 'the la times', 'htmlgiant',
+                                   'los angeles times', 'la times', 'the la times', 'htmlgiant', 'the los angeles times',
                                    'sandiegouniontribune.com', 'forbes.com', 'salon.com', 'mercurynews.com', 'nytimes.com',
                                    'thedailynewsonline.com', 'thesun.com', 'thetimes.com', 'thestar.com',
                                    'washingtonpost.com', 'thetribune.com', 'latimes.com', 'htmlgiant.com',
-                                   'the guardian', 'fox sports', 'mlb.com', 'espn.com', 'forbes media',
+                                   'the guardian', 'fox sports', 'mlb.com', 'espn.com', 'forbes media', 'forbes online',
                                    'cbs sports', 'national journal', 'foxnews', 'the hill', 'nationaljournal.com',
                                    'the huffington post', 'the times digital archive', 'belmontstakes.com', 'the times archives',
                                    'new york times.com', 'news shopper', 'birmingham post', 'the independent',
                                    'rediff.com', 'squashplayer.co.uk', 'fixtures live', 'the star online',
                                    'oneindia', 'international business times', 'the hindu', 'daily news and analysis',
                                    'nfl.com', 'foxsports.com', 'the new yorker', 'findlaw.com', 'newsmax',
-                                   'washtimes.com', 'washington times', 'findlaw',
-                                   'stripes', 'arizona daily star', 'the times of india',
+                                   'washtimes.com', 'washington times', 'findlaw', 'new york times magazine',
+                                   'stripes', 'arizona daily star', 'the times of india', 'the times-news', 'san diego union tribune',
+                                   'the star (malaysia)', 'utusan malaysia', 'daily news, sri lanka', 'daily news & analysis',
+                                   'new york daily news', 'new york daily news', 'daily news (new york)', 
+                                   'anchorage daily news', 'palm beach daily news', 'daily news egypt', 'the daily news egypt',
+                                   'daily news latino', 'forbes méxico', 'forbes mexico', 'forbes india', 'forbesmiddleeast',
+                                   'forbes middle east', 'forbes russia', 'forbes.ru', 'forbes afrique', 'forbes magazine',
+                                   'forbes asia', 'forbes israel', 'forbes global 2000', 'forbes china', '[[forbes]] (Russia)',
+                                   'forbes việt nam', 'forbes vietnam', 'forbes viet nam', 'forbes contributor blogs',
+                                   'the baltimore sun'
                                    // WP:CITALICSRFC and MOS:ITALICWEBCITE  ?????     'abc news', 'nbc news', 'cbs news', 'bbc news'
                                   ); // LOWER CASE!  WWW not there too! 
 
@@ -97,7 +105,8 @@ const CANONICAL_PUBLISHER_URLS = array ('elsevier.com', 'springer.com', 'science
                                 'amjbot.org', 'gsapubs.org', 'jwildlifedis.org', 'msptm.org', 'nrcresearchpress.',
                                 'fundacionmenteclara.org.ar', 'iopscience.iop.org', 'bmj.com/cgi/pmidlookup',
                                 'sciencemag.org', 'doi.apa.org', 'psycnet.apa.org', 'journals.upress.ufl.edu',
-                                'clinchem.org', 'cell.com', 'aeaweb.org',
+                                'clinchem.org', 'cell.com', 'aeaweb.org', 'chestpubs.org', 'journal.chestnet.org',
+                                'chestjournal.org',
                                 //  Below are journal search engines
                                 '.serialssolutions.com', '.ebscohost.com',
                                 //  Below are proxys

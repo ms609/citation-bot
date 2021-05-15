@@ -48,14 +48,14 @@ if (HTML_OUTPUT) {
 
 check_blocked();
 
-$edit_summary_end = "| Suggested by " . $api->get_the_user() . " | [[Category:$category]] | via #UCB_Category ";
+$edit_summary_end = "| Suggested by " . $api->get_the_user() . " | [[Category:$category]] | #UCB_Category ";
 $final_edit_overview = "";
 
 if ($category) {
   $pages_in_category = $api->category_members($category);
   if (empty($pages_in_category)) {
     echo('Category appears to be empty');
-    html_echo(' </pre></body></html>', "\n");
+    html_echo(' </pre><footer><a href="./" title="Use Citation Bot again">Another</a>?</footer></body></html>', "\n");
     exit();
   }
   $pages_in_category = array_unique($pages_in_category); // Paranoid
@@ -64,16 +64,17 @@ if ($category) {
   if (WikipediaBot::NonStandardMode()) {
      $pages_in_category = array_slice($pages_in_category, 0, (MAX_PAGES * 2));
   }
-  if (count($pages_in_category) > (MAX_PAGES * 2) ) {
-    echo('Category is huge (' . (string) count($pages_in_category) . ')  Cancelling run. Pick a smaller category (maximum size is ' . (string)(MAX_PAGES * 2) . ').  Listen to Obi-Wan Kenobi:  You want to go home and rethink your life.');
-    html_echo(' </pre></body></html>', "\n");
+  $total = count($pages_in_category);
+  if ($total > (MAX_PAGES * 2) ) {
+    echo('Category is huge (' . (string) $total . ')  Cancelling run. Pick a smaller category (maximum size is ' . (string)(MAX_PAGES * 2) . ').  Listen to Obi-Wan Kenobi:  You want to go home and rethink your life.');
+    html_echo(' </pre><footer><a href="./" title="Use Citation Bot again">Another</a>?</footer></body></html>', "\n");
     exit();
   }
-  if (count($pages_in_category) > BIG_RUN) check_overused();
+  if ($total > BIG_RUN) check_overused();
   $page = new Page();
-  gc_collect_cycles();
   $done = 0;
-  $total = count($pages_in_category);
+
+  gc_collect_cycles();
   foreach ($pages_in_category as $page_title) {
     $done++;
     // $page->expand_text will take care of this notice if we are in HTML mode.
@@ -103,7 +104,7 @@ if ($category) {
     }
     echo "\n";
   }
-  echo ("\n Done all " . (string) count($pages_in_category) . " pages in Category:" . echoable($category) . ". \n");
+  echo ("\n Done all " . (string) $total . " pages in Category:" . echoable($category) . ". \n");
   $final_edit_overview .= "\n\n" . ' To get the best results, see our helpful <a href="https://en.wikipedia.org/wiki/User:Citation_bot/use">user guides</a>' . "\n\n";
   html_echo($final_edit_overview, '');
 } else {

@@ -58,33 +58,32 @@ if (isset($argv[1])) {
 if (isset($_REQUEST["edit"]) && $_REQUEST["edit"]) {
    $ON = TRUE;
    if ($_REQUEST["edit"] == 'automated_tools') {
-      $edit_summary_end = $edit_summary_end . "| via #UCB_automated_tools ";
+      $edit_summary_end = $edit_summary_end . "| #UCB_automated_tools ";
    } elseif ($_REQUEST["edit"] == 'toolbar') {
-      $edit_summary_end = $edit_summary_end . "| via #UCB_toolbar ";
+      $edit_summary_end = $edit_summary_end . "| #UCB_toolbar ";
    } elseif ($_REQUEST["edit"] == 'webform') {
-      $edit_summary_end = $edit_summary_end . "| via #UCB_webform ";
+      $edit_summary_end = $edit_summary_end . "| #UCB_webform ";
    } elseif ($_REQUEST["edit"] == 'Headbomb') {
-      $edit_summary_end = $edit_summary_end . "| via #UCB_Headbomb ";
+      $edit_summary_end = $edit_summary_end . "| #UCB_Headbomb ";
    } elseif ($_REQUEST["edit"] == 'Smith609') {
-      $edit_summary_end = $edit_summary_end . "| via #UCB_Smith609 ";
+      $edit_summary_end = $edit_summary_end . "| #UCB_Smith609 ";
    } elseif ($_REQUEST["edit"] == 'arXiv') {
-      $edit_summary_end = $edit_summary_end . "| via #UCB_arXiv ";
+      $edit_summary_end = $edit_summary_end . "| #UCB_arXiv ";
    } else {
-      $edit_summary_end = $edit_summary_end . "| via #UCB_Other ";
+      $edit_summary_end = $edit_summary_end . "| #UCB_Other ";
    }
 }
 if (!isset($ON)) {
   $ON = isset($argv[2]);
   /** @psalm-suppress RedundantCondition */ /* PSALM thinks HTML_OUTPUT cannot be FALSE */
   if (HTML_OUTPUT) {
-     $edit_summary_end = $edit_summary_end . "| via #UCB_webform ";  // Assuming
+     $edit_summary_end = $edit_summary_end . "| #UCB_webform ";  // Assuming
   } else {
-     $edit_summary_end = $edit_summary_end . "| via #UCB_CommandLine ";
+     $edit_summary_end = $edit_summary_end . "| #UCB_CommandLine ";
   }
 }
 
 $my_page = new Page();
-gc_collect_cycles();
 $pages_to_do = array_unique(explode('|', $pages));
 $done = 0;
 $total = count($pages_to_do);
@@ -94,6 +93,7 @@ if ($total > MAX_PAGES) {
 }
 if ($total > BIG_RUN) check_overused();
 
+gc_collect_cycles();
 foreach ($pages_to_do as $page_title) {
   $done++;
   if (trim($page_title) === '') {  // Default is to edit Wikipedia's main page if user just clicks button.  Let's not even try

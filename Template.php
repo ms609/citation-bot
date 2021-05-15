@@ -1,7 +1,7 @@
 <?php
 declare(strict_types=1);
 /*
- * Template has methods to handle most aspects of citation template
+ * Template has methods to handle most aspects of citation template\
  * parsing, handling, and expansion.
  *
  * Of particular note:
@@ -94,6 +94,8 @@ final class Template {
                ['Book reference', 'Cite book'],
                ['web reference', 'cite web'],
                ['Web reference', 'Cite web'],
+               ['Conference reference', 'Cite conference'],
+               ['conference reference', 'cite conference'],
                ['citejournal', 'cite journal'],
                ['Citejournal', 'Cite journal'],
                ['citeweb', 'cite web'],
@@ -410,19 +412,22 @@ final class Template {
               $bad_data = TRUE;
           }
           if (strlen($the_title) > 15 && strpos($the_title, ' ') !== FALSE &&
-              mb_strtoupper($the_title) === $the_title && strpos($the_title, 'CITATION') === FALSE) {
+              mb_strtoupper($the_title) === $the_title && strpos($the_title, 'CITATION') === FALSE &&
+              mb_check_encoding($the_title, 'ASCII')) {
               $this->rename('title', 'CITATION_BOT_PLACEHOLDER_title');
               $the_title = '';
               $bad_data = TRUE;
           }
           if (strlen($the_journal) > 15 && strpos($the_journal, ' ') !== FALSE &&
-              mb_strtoupper($the_journal) === $the_journal && strpos($the_journal, 'CITATION') === FALSE) {
+              mb_strtoupper($the_journal) === $the_journal && strpos($the_journal, 'CITATION') === FALSE &&
+              mb_check_encoding($the_journal, 'ASCII')) {
               $this->rename('journal', 'CITATION_BOT_PLACEHOLDER_journal');
               $the_journal = '';
               $bad_data = TRUE;
           }
           if (strlen($the_chapter) > 15 && strpos($the_chapter, ' ') !== FALSE &&
-              mb_strtoupper($the_chapter) === $the_chapter && strpos($the_chapter, 'CITATION') === FALSE) {
+              mb_strtoupper($the_chapter) === $the_chapter && strpos($the_chapter, 'CITATION') === FALSE &&
+              mb_check_encoding($the_chapter, 'ASCII')) {
               $this->rename('chapter', 'CITATION_BOT_PLACEHOLDER_chapter');
               $the_chapter = '';
               $bad_data = TRUE;
@@ -1283,6 +1288,7 @@ final class Template {
         if (stripos($value, '10.1093/law:epil') === 0) return FALSE; // Those do not work
         if (stripos($value, '10.1093/oi/authority') === 0) return FALSE; // Those do not work
         if (stripos($value, '10.1111/j.1572-0241') === 0 && NATURE_FAILS) return FALSE;
+        if (stripos($value, '10.10520/') === 0 && !doi_works($value)) return FALSE; // Has doi in the URL, but is not a doi
         if (preg_match(REGEXP_DOI, $value, $match)) {
           if ($this->blank($param_name)) {
             if ($this->wikiname() === 'cite arxiv') $this->change_name_to('cite journal');
@@ -1718,7 +1724,7 @@ final class Template {
        }
     }
     // Remove junk from URLs
-    while (preg_match('~^https://www\.jstor\.org/stable/(.+)(?:&ved=|&usg=|%3Fseq%3D1|\?seq=)~i', $url, $matches)) {
+    while (preg_match('~^https?://www\.jstor\.org/stable/(.+)(?:&ved=|&usg=|%3Fseq%3D1|\?seq=|\?uid=)~i', $url, $matches)) {
        $url = 'https://www.jstor.org/stable/' . $matches[1] ;
        if (is_null($url_sent)) {
          $this->set($url_type, $url); // Update URL with cleaner one
@@ -1770,14 +1776,14 @@ final class Template {
       if ($this->has('doi')) {
         if (str_i_same($this->get('doi'), $match[1])) {
          if (is_null($url_sent) && $this->get('doi-access') === 'free') {
-          quietly('report_modification', "URL is hard-coded DOI; removing since we already have free DOI paramter");
+          quietly('report_modification', "URL is hard-coded DOI; removing since we already have free DOI parameter");
           $this->forget($url_type);
          }
          return FALSE;
         }
         // The DOIs do not match
         if (is_null($url_sent)) {
-         report_warning('doi.org URL does not match existing DOI paramter, investigating...');
+         report_warning('doi.org URL does not match existing DOI parameter, investigating...');
         }
         if ($this->get('doi') != $this->get3('doi')) return FALSE;
         if (doi_works($match[1]) && !doi_works($this->get('doi'))) {
@@ -3064,7 +3070,7 @@ final class Template {
         }
         if (!$oa_url) return 'nothing';
 
-        if (stripos($oa_url, 'semanticscholar.org') !== FALSE) return 'semanticscholar';  // Limit semanticscholar to licenced only - use API call instead
+        if (stripos($oa_url, 'semanticscholar.org') !== FALSE) return 'semanticscholar';  // Limit semanticscholar to licenced only - use API call instead (avoid blacklisting)
         if (stripos($oa_url, 'citeseerx') !== FALSE) return 'citeseerx'; //is currently blacklisted due to copyright concerns
         if ($this->get('url')) {
             if ($this->get('url') !== $oa_url) $this->get_identifiers_from_url($oa_url);  // Maybe we can get a new link type
@@ -3075,7 +3081,6 @@ final class Template {
         if (str_ireplace(CANONICAL_PUBLISHER_URLS, '', $host_name) !== $host_name) return 'publisher'; // Its the publisher
         if (stripos($oa_url, 'bioone.org/doi') !== FALSE) return 'publisher';
         if (stripos($oa_url, 'gateway.isiknowledge.com') !== FALSE) return 'nothing';
-        if (stripos($oa_url, 'biodiversitylibrary') !== FALSE) return 'publisher';
         if (stripos($oa_url, 'orbit.dtu.dk/en/publications') !== FALSE) return 'nothing'; // Abstract only
         // Check if free location is already linked
         if(($this->has('pmc') &&
@@ -4338,6 +4343,18 @@ final class Template {
           if ($this->blank('date') && $this->has('year')) $this->forget('date');
           return;
           
+        case 'dead-url': case 'deadurl':
+          $the_data = strtolower($this->get($param));
+          if (in_array($the_data, ['y', 'yes', 'dead'])) {
+            $this->rename($param, 'url-status', 'dead');
+            $this->forget($param);
+          }
+          if (in_array($the_data, ['n', 'no', 'live', 'alive'])) {
+            $this->rename($param, 'url-status', 'live');
+            $this->forget($param);
+          }
+          return;
+
         case 'doi':
           $doi = $this->get($param);
           if (!$doi) return;
@@ -4591,6 +4608,10 @@ final class Template {
               $this->forget($param);
             }
           }
+          if ($this->get($param) === 'The New Yorker') { // TODO : Make into an array
+            $this->change_name_to('cite magazine');
+            $this->rename($param, 'magazine');
+          }
           return;
         
         case 'jstor':
@@ -4757,10 +4778,19 @@ final class Template {
                }
             }
           }
+          if ($publisher === 'nytc') {
+            $publisher = 'new york times company';
+          }
+          if ($publisher === 'nyt') {
+            $publisher = 'new york times';
+          }
+          if ($publisher === 'wpc') {
+            $publisher = 'washington post company';
+          }
           if (in_array(str_replace(array('[', ']', '"', "'", 'www.', ' company'), '', $publisher), PUBLISHERS_ARE_WORKS)) {
-            $pubby = str_replace(array('the ', ' company'), '', $publisher);
+            $pubby = str_replace(array('the ', ' company', ' digital archive', ' communications llc'), '', $publisher);
             foreach (WORK_ALIASES as $work) {
-              $worky = str_replace(array('the ', ' company'), '', strtolower($this->get($work)));
+              $worky = str_replace(array('the ', ' company', ' digital archive', ' communications llc'), '', strtolower($this->get($work)));
               if ($worky === $pubby) {
                  $this->forget($param);
                  return;
@@ -4772,6 +4802,211 @@ final class Template {
               strtolower($publisher) == 'arxiv') {
               $this->forget($param);
           }
+          
+          if ($publisher === 'the times digital archive.') {
+            $this->set($param, 'The Times Digital Archive');
+            $publisher = 'the times digital archive';
+          }
+          if ($publisher === 'the times digital archive') {
+            foreach (WORK_ALIASES as $work) {
+              if (stripos($this->get($work), 'the times') !== FALSE ||
+                  stripos($this->get($work), 'times (london') !== FALSE ||
+                  stripos($this->get($work), 'times [london') !== FALSE) {
+                 $this->forget($param);
+                 return;
+              }
+            }
+          }
+          if ($this->blank('via') && $publisher === 'the washington post – via legacy.com') {
+            $publisher = 'the washington post';
+            $this->set($param, '[[The Washington Post]]');
+            $this->set('via', 'Legacy.com');
+          }
+          if ($publisher === 'the washington post' ||
+              $publisher === 'washington post' ||
+              $publisher === 'the washington post company' ||
+              $publisher === 'the washington post websites' ||
+              $publisher === 'washington post websites' ||
+              $publisher === 'wpc' ||
+              $publisher === 'the washington post (subscription required)') {
+            foreach (WORK_ALIASES as $work) {
+              if (stripos($this->get($work), 'washington post') !== FALSE ||
+                  stripos($this->get($work), 'washingtonpost.com') !== FALSE) {
+                 $this->forget($param);
+                 if (stripos($this->get($work), 'washingtonpost.com') !== FALSE) {
+                   $this->set($work, '[[The Washington Post]]');
+                 }
+                 return;
+              }
+            }
+            if ($this->get('work') === 'Local') {
+              $this->forget('work');
+              $this->rename($param, 'work');
+              return;
+            }
+          }
+          
+          if ($publisher === 'nyt' ||
+              $publisher === 'nytc' ||
+              $publisher === 'the new york times' ||
+              $publisher === 'new york times' ||
+              $publisher === 'the new york times (subscription required)') {
+            foreach (WORK_ALIASES as $work) {
+              if (stripos($this->get($work), 'new york times') !== FALSE ||
+                  stripos($this->get($work), 'nytimes.com') !== FALSE) {
+                 $this->forget($param);
+                 if (stripos($this->get($work), 'nytimes.com') !== FALSE) {
+                   $this->set($work, '[[The New York Times]]');
+                 }
+                 return;
+              }
+            }
+          }
+            
+          if ($publisher === 'san jose mercury news' ||
+              $publisher === 'san jose mercury-news') {
+            foreach (WORK_ALIASES as $work) {
+              if (stripos($this->get($work), 'mercurynews.com') !== FALSE ||
+                  stripos($this->get($work), 'mercury news') !== FALSE) {
+                 $this->forget($param);
+                 if (stripos($this->get($work), 'mercurynews.com') !== FALSE) {
+                   $this->set($work, '[[San Jose Mercury News]]');
+                 }
+                 return;
+              }
+            }
+          }
+          if ($publisher === 'the san diego union-tribune, llc' ||
+              $publisher === 'the san diego union tribune, llc') {
+            $publisher = 'the san diego union-tribune';
+            $this->set($param, 'The San Diego Union-Tribune');
+          }
+          if ($publisher === 'the san diego union-tribune' ||
+              $publisher === 'the san diego union tribune' ||
+              $publisher === 'san diego union-tribune' ||
+              $publisher === 'san diego union tribune') {
+            foreach (WORK_ALIASES as $work) {
+              if (stripos($this->get($work), 'sandiegouniontribune.com') !== FALSE ||
+                  stripos($this->get($work), 'SignOnSanDiego.com') !== FALSE ||
+                  stripos($this->get($work), 'san diego union') !== FALSE) {
+                 $this->forget($param);
+                 if (stripos($this->get($work), 'sandiegouniontribune.com') !== FALSE ||
+                     stripos($this->get($work), 'SignOnSanDiego.com') !== FALSE) {
+                   $this->set($work, '[[The San Diego Union-Tribune]]');
+                 }
+                 return;
+              }
+            }
+            if ($this->get('work') === 'Local') {
+              $this->forget('work');
+              $this->rename($param, 'work');
+              return;
+            }
+          }
+          
+          if ($publisher === 'forbes media llc' ||
+              $publisher === 'forbes media, llc' ||
+              $publisher === 'forbes media, llc.' ||
+              $publisher === 'forbes (forbes media)' ||         
+              $publisher === 'forbes media llc.') {
+            $publisher = 'forbes media';
+            $this->set($param, 'Forbes Media');
+          }
+          if ($publisher === 'forbes inc' ||
+              $publisher === 'forbes inc.' ||
+              $publisher === 'forbes, inc' ||
+              $publisher === 'forbes, inc.' ||
+              $publisher === 'forbes.' ||
+              $publisher === 'forbes ny'
+             ) {
+            $publisher = 'forbes';
+            $this->set($param, 'Forbes');
+          }
+          if ($publisher === 'forbes.com llc' ||
+              $publisher === 'forbes.com' ||
+              $publisher === 'forbes.com llc™' ||
+              $publisher === 'forbes.com llc.') {
+            $publisher = 'forbes';
+            $this->set($param, 'Forbes');
+          }
+          if ($publisher === 'forbes publishing' ||
+              $publisher === 'forbes publishing company' ||
+              $publisher === 'forbes publishing co' ||
+              $publisher === 'forbes publishing co.'
+             ) {
+            $publisher = 'forbes publishing';
+            $this->set($param, 'Forbes Publishing');
+          }
+          if ($publisher === 'forbes publishing' ||
+              $publisher === 'forbes' ||
+              $publisher === 'forbes.com' ||
+              $publisher === 'forbes magazine' ||
+              $publisher === 'forbes media') {
+            foreach (WORK_ALIASES as $work) {
+              if (stripos($this->get($work), 'forbes') !== FALSE) {
+                 $this->forget($param);
+                 if (stripos($this->get($work), 'forbes.com') !== FALSE) {
+                   $this->set($work, '[[Forbes]]');
+                 }
+                 return;
+              }
+              if ($this->blank('agency')) {
+                if (stripos($this->get($work), 'AFX News') !== FALSE ||
+                    stripos($this->get($work), 'Thomson Financial News') !== FALSE) {
+                  $this->rename($work, 'agency');
+                }
+              }
+            }
+          }
+
+          
+          if ($publisher === 'la times' ||
+              $publisher === 'latimes' ||
+              $publisher === 'latimes.com' ||
+              $publisher === 'the la times' ||
+              $publisher === 'the los angeles times' ||
+              $publisher === '[[los angeles times]] (latimes.com)'
+             ) {
+            $publisher = 'los angeles times';
+            if (strpos($this->get($param), '[') !== FALSE) {
+              $this->set($param, '[[Los Angeles Times]]');
+            } else {
+              $this->set($param, 'Los Angeles Times');
+            }
+          }
+          if ($publisher === 'la times' ||
+              $publisher === 'latimes' ||
+              $publisher === 'latimes.com' ||
+              $publisher === 'the la times' ||
+              $publisher === 'los angeles times' ||
+              $publisher === 'the los angeles times' ||
+              $publisher === 'los angeles times media group') {
+            foreach (WORK_ALIASES as $work) {
+              if (stripos($this->get($work), 'latimes') !== FALSE ||
+                  stripos($this->get($work), 'los angeles times') !== FALSE) {
+                 $this->forget($param);
+                 if (stripos($this->get($work), 'latimes') !== FALSE) {
+                   $this->set($work, '[[Los Angeles Times]]');
+                 }
+                 return;
+              }
+              if ($this->blank('via')) {
+                if (stripos($this->get($work), 'laweekly') !== FALSE) {
+                  $this->rename($work, 'via');
+                }
+              }
+            }
+          }
+          
+          foreach (WORK_ALIASES as $work) {
+              $worky = strtolower($this->get($work));
+              $worky = str_replace(array("[[" , "]]"), "", $worky);
+              if (in_array($worky, array('los angeles times', 'new york times magazine', 'the new york times', 'new york times', 'huffington post', 'the daily telegraph', 'forbes.com', 'forbes magazine'))) { // TODO - create constant array of works that do not need a publisher
+                 $this->forget($param);
+                 return;
+              }
+          }
+          
           return;
           
         case 'quotes':
@@ -5069,28 +5304,32 @@ final class Template {
           if (preg_match('~^https?://latinamericanhistory\.oxfordre\.com(/.+)$~', $this->get($param), $matches)) {
                $this->set($param, 'https://oxfordre.com/latinamericanhistory' . $matches[1]);
           }
-          while (preg_match('~^(https?://www\.oxforddnb\.com/.+)(?:\?print|\?p=email|\;jsession|\?result=|\?rskey|\#|/version/\d+)~', $this->get($param), $matches)) {
+          if (preg_match('~^https?://africanhistory\.oxfordre\.com(/.+)$~', $this->get($param), $matches)) {
+               $this->set($param, 'https://oxfordre.com/africanhistory' . $matches[1]);
+          }
+          
+          while (preg_match('~^(https?://www\.oxforddnb\.com/.+)(?:\?print|\?p=email|\;jsession|\?result=|\?rskey|\#|/version/\d+|\?backToResults)~', $this->get($param), $matches)) {
                $this->set($param, $matches[1]);
           }
-          while (preg_match('~^(https?://www\.anb\.org/.+)(?:\?print|\?p=email|\;jsession|\?result=|\?rskey|\#|/version/\d+)~', $this->get($param), $matches)) {
+          while (preg_match('~^(https?://www\.anb\.org/.+)(?:\?print|\?p=email|\;jsession|\?result=|\?rskey|\#|/version/\d+|\?backToResults)~', $this->get($param), $matches)) {
                $this->set($param, $matches[1]);
           }
-          while (preg_match('~^(https?://www\.oxfordartonline\.com/.+)(?:\?print|\?p=email|\;jsession|\?result=|\?rskey|\#|/version/\d+)~', $this->get($param), $matches)) {
+          while (preg_match('~^(https?://www\.oxfordartonline\.com/.+)(?:\?print|\?p=email|\;jsession|\?result=|\?rskey|\#|/version/\d+|\?backToResults)~', $this->get($param), $matches)) {
                $this->set($param, $matches[1]);
           }
-          while (preg_match('~^(https?://www\.ukwhoswho\.com/.+)(?:\?print|\?p=email|\;jsession|\?result=|\?rskey|\#|/version/\d+)~', $this->get($param), $matches)) {
+          while (preg_match('~^(https?://www\.ukwhoswho\.com/.+)(?:\?print|\?p=email|\;jsession|\?result=|\?rskey|\#|/version/\d+|\?backToResults)~', $this->get($param), $matches)) {
                $this->set($param, $matches[1]);
           }
-          while (preg_match('~^(https?://www\.oxfordmusiconline\.com/.+)(?:\?print|\?p=email|\;jsession|\?result=|\?rskey|\#|/version/\d+)~', $this->get($param), $matches)) {
+          while (preg_match('~^(https?://www\.oxfordmusiconline\.com/.+)(?:\?print|\?p=email|\;jsession|\?result=|\?rskey|\#|/version/\d+|\?backToResults)~', $this->get($param), $matches)) {
                $this->set($param, $matches[1]);
           }
-          while (preg_match('~^(https?://(?:classics\.|latinamericanhistory\.|psychology\.|)oxfordre\.com/.+)(?:\?print|\?p=email|\;jsession|\?result=|\?rskey|\#|/version/\d+)~', $this->get($param), $matches)) {
+          while (preg_match('~^(https?://(?:classics\.|latinamericanhistory\.|psychology\.|)oxfordre\.com/.+)(?:\?print|\?p=email|\;jsession|\?result=|\?rskey|\#|/version/\d+|\?backToResults)~', $this->get($param), $matches)) {
                $this->set($param, $matches[1]);
           }
-          while (preg_match('~^(https?://oxfordaasc\.com/.+)(?:\?print|\?p=email|\;jsession|\?result=|\?rskey|\#|/version/\d+)~', $this->get($param), $matches)) {
+          while (preg_match('~^(https?://oxfordaasc\.com/.+)(?:\?print|\?p=email|\;jsession|\?result=|\?rskey|\#|/version/\d+|\?backToResults)~', $this->get($param), $matches)) {
                $this->set($param, $matches[1]);
           }
-          while (preg_match('~^(https?://oxford\.universitypressscholarship\.com/.+)(?:\?print|\?p=email|\;jsession|\?result=|\?rskey|\#|/version/\d+)~', $this->get($param), $matches)) {
+          while (preg_match('~^(https?://oxford\.universitypressscholarship\.com/.+)(?:\?print|\?p=email|\;jsession|\?result=|\?rskey|\#|/version/\d+|\?backToResults)~', $this->get($param), $matches)) {
                $this->set($param, $matches[1]);
           }
           
@@ -5274,6 +5513,19 @@ final class Template {
               }
           }
           
+          if (preg_match('~^https?://oxfordre\.com/africanhistory/(?:view|abstract)/10\.1093/acrefore/9780190277734\.001\.0001/acrefore\-9780190277734\-e\-(\d+)$~', $this->get($param), $matches)) {
+              $new_doi = '10.1093/acrefore/9780190277734.013.' . $matches[1];
+              if (doi_works($new_doi)) {
+                if ($this->has('doi') && $this->has('doi-broken-date')) {
+                    $this->set('doi', '');
+                    $this->forget('doi-broken-date');
+                    $this->add_if_new('doi', $new_doi);
+                 } elseif ($this->blank('doi')) {
+                    $this->add_if_new('doi', $new_doi);
+                }
+              }
+          }
+
           if (preg_match('~^https?://(?:|classics\.)oxfordre\.com/(?:|classics/)view/10\.1093/acrefore/9780199381135\.001\.0001/acrefore\-9780199381135\-e\-(\d+)$~', $this->get($param), $matches)) {
               $new_doi = '10.1093/acrefore/9780199381135.013.' . $matches[1];
               if (doi_works($new_doi)) {
@@ -5289,6 +5541,19 @@ final class Template {
           
           if (preg_match('~^https?://(?:|psychology\.)oxfordre\.com/(?:|psychology/)view/10\.1093/acrefore/9780190236557\.001\.0001/acrefore\-9780190236557\-e\-(\d+)$~', $this->get($param), $matches)) {
               $new_doi = '10.1093/acrefore/9780190236557.013.' . $matches[1];
+              if (doi_works($new_doi)) {
+                if ($this->has('doi') && $this->has('doi-broken-date')) {
+                    $this->set('doi', '');
+                    $this->forget('doi-broken-date');
+                    $this->add_if_new('doi', $new_doi);
+                 } elseif ($this->blank('doi')) {
+                    $this->add_if_new('doi', $new_doi);
+                }
+              }
+          }
+          
+          if (preg_match('~^https?://(?:|politics\.)oxfordre\.com/(?:|politics/)view/10\.1093/acrefore/9780190228637\.001\.0001/acrefore\-9780190228637\-e\-(\d+)$~', $this->get($param), $matches)) {
+              $new_doi = '10.1093/acrefore/9780190228637.013.' . $matches[1];
               if (doi_works($new_doi)) {
                 if ($this->has('doi') && $this->has('doi-broken-date')) {
                     $this->set('doi', '');
@@ -5491,6 +5756,14 @@ final class Template {
             $this->forget('work');
             return;
           }
+          if ($this->get('work') === 'The Times Digital Archive') {
+            $this->set('work', '[[The Times]]');
+          }
+          if (strtolower($this->get('work')) === 'latimes' ||
+              strtolower($this->get('work')) === 'latimes.com') {
+            $this->set('work', 'Los Angeles Times');
+          }
+          
           switch ($this->wikiname()) {
             case 'cite book': $work_becomes = 'title'; break;
             case 'cite journal': $work_becomes = 'journal'; break;
@@ -5730,6 +6003,13 @@ final class Template {
             if (str_i_same($this->get($param), 'arxiv')) {
               $this->forget($param);
             }
+          }
+          if (strtolower($this->get($param)) === 'latimes' ||
+              strtolower($this->get($param)) === 'latimes.com') {
+            $this->set($param, '[[Los Angeles Times]]');
+          }
+          if ($this->get($param) === 'The Times Digital Archive') {
+            $this->set($param, '[[The Times]]');
           }
           return;
          
@@ -6666,7 +6946,7 @@ final class Template {
      }
      $data = trim($data);
      if (preg_match("~^(\d+)\s*\((\d+(-|–|\–|\{\{ndash\}\})?\d*)\)$~", $data, $matches) ||
-              preg_match("~^(?:vol\. |Volume |vol |vol\.)(\d+)[,\s]\s*(?:no\.|number|issue|Iss.|no )\s*(\d+(-|–|\–|\{\{ndash\}\})?\d*)$~i", $data, $matches) ||
+              preg_match("~^(?:vol\. |Volume |vol |vol\.|)(\d+)[,\s]\s*(?:no\.|number|issue|Iss.|no )\s*(\d+(-|–|\–|\{\{ndash\}\})?\d*)$~i", $data, $matches) ||
               preg_match("~^(\d+)\.(\d+)$~i", $data, $matches) ||
               preg_match("~^Vol\.?(\d+)\((\d+)\)$~", $data, $matches)
          ) {
@@ -6804,6 +7084,18 @@ final class Template {
     if ($this->has('series')) return FALSE; // Dangerous risk of duplication and most likely a series of "books"
     if ($this->wikiname() === 'cite book' && $this->has('isbn')) return FALSE; // Probably a series of "books"
     $issn = $this->get('issn');
+    // @codeCoverageIgnoreBegin
+    if ($issn === '0140-0460') { // Must use set to avoid escaping the [[ and ]]
+      return $this->set('newspaper', '[[The Times]]');
+    } elseif ($issn === '0190-8286') {
+      return $this->set('newspaper', '[[The Washington Post]]');
+    } elseif ($issn === '0362-4331') {
+      return $this->set('newspaper', '[[The New York Times]]');
+    } elseif ($issn === '0163-089X' || $issn === '1092-0935') {
+      return $this->set('newspaper', '[[The Wall Street Journal]]');
+    } 
+    // TODO Add more common ones that fail
+    // @codeCoverageIgnoreEnd
     if ($issn === '9999-9999') return FALSE; // Fake test suite data
     if (!preg_match('~^\d{4}.?\d{3}[0-9xX]$~u', $issn)) return FALSE;
     $html = @file_get_contents('https://www.worldcat.org/issn/' . $issn);
@@ -6838,6 +7130,7 @@ final class Template {
   }
   
   private function should_url2chapter(bool $force) : bool {
+    $matches = ['', '']; // prevent memory leak in some PHP versions
     if ($this->has('chapterurl')) return FALSE;
     if ($this->has('chapter-url')) return FALSE;
     if ($this->has('trans-chapter')) return FALSE;
@@ -6850,6 +7143,9 @@ final class Template {
     if (stripos($url, 'page=0')) return FALSE;
     if (substr($url, -2) === '_0') return FALSE;
     if (preg_match('~archive\.org/details/[^/]+$~', $url)) return FALSE;
+    if (preg_match('~archive\.org/details/.+/page/n(\d+)~', $url, $matches)) {
+      if ((int) $matches[1] < 16) return FALSE; // Assume early in the book - title page, etc
+    }
     if (stripos($url, 'PA1') && !preg_match('~PA1[0-9]~i', $url)) return FALSE;
     if (stripos($url, 'PA0')) return FALSE;
     if ($this->get_without_comments_and_placeholders('chapter') == '') return FALSE;

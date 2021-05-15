@@ -41,24 +41,24 @@ check_blocked();
 $page_name = str_replace(' ', '_', trim((string) @$_POST['linkpage']));
 if ($page_name == '') {
   if (isset($_GET['page'])) {
-    report_warning('Use the webform.  Passing pages via URL not supported anymore.');
+    report_warning('Use the webform.  Passing pages in the URL not supported anymore.');
   } else {
     report_warning('Nothing requested -- OR -- page name got lost during initial authorization ');
   }
-  echo("\n </pre></body></html>");
+  echo(' </pre><footer><a href="./" title="Use Citation Bot again">Another</a>?</footer></body></html>');
   exit();
 } elseif (substr($page_name, 0, 5) !== 'User:' && !in_array($api->get_the_user(), ['Headbomb', 'AManWithNoPlan'])) { // Do not let people run willy-nilly
   report_warning('API only intended for User generated pages for fixing specific issues ');
-  echo("\n </pre></body></html>");
+  echo(' </pre><footer><a href="./" title="Use Citation Bot again">Another</a>?</footer></body></html>');
   exit();
 }
 
 if (strlen($page_name) > 256)  {
   report_warning('Possible invalid page');
-  echo("\n </pre></body></html>");
+  echo(' </pre><footer><a href="./" title="Use Citation Bot again">Another</a>?</footer></body></html>');
   exit();
 }
-$edit_summary_end = "| Suggested by " . $api->get_the_user() . " | Pages linked from cached $page_name | via #UCB_webform_linked ";
+$edit_summary_end = "| Suggested by " . $api->get_the_user() . " | Linked from $page_name | #UCB_webform_linked ";
 $final_edit_overview = "";
 
 $url = API_ROOT . '?action=parse&prop=links&format=json&page=' . $page_name;
@@ -73,14 +73,14 @@ $json = (string) @curl_exec($ch);
 curl_close($ch);
 if ($json == '') {
   report_warning(' Error getting page list');
-  echo("\n </pre></body></html>");
+  echo(' </pre><footer><a href="./" title="Use Citation Bot again">Another</a>?</footer></body></html>');
   exit();
 }
 $array = @json_decode($json, TRUE);
 unset($json);
 if ($array === FALSE || !isset($array['parse']['links']) || !is_array($array['parse']['links'])) {
   report_warning(' Error interpreting page list - perhaps page requested does not even exist');
-  echo("\n </pre></body></html>");
+  echo('</pre><footer><a href="./" title="Use Citation Bot again">Another</a>?</footer></body></html>');
   exit();
 }
 $links = $array['parse']['links']; // @phan-suppress-current-line PhanTypeArraySuspiciousNullable
@@ -98,35 +98,33 @@ unset($links);
 $pages_in_category = array_unique($pages_in_category);
 if (empty($pages_in_category)) {
   report_warning('No links to expand found');
-  echo("\n </pre></body></html>");
+  echo('</pre><footer><a href="./" title="Use Citation Bot again">Another</a>?</footer></body></html>');
   exit();
 }
-  if (count($pages_in_category) > MAX_PAGES) {
-    report_warning('Number of links is huge (' . (string) count($pages_in_category) . ')  Cancelling run (maximum size is ' . (string) MAX_PAGES . ').  Listen to Obi-Wan Kenobi:  You want to go home and rethink your life.');
-    echo("\n </pre></body></html>");
+  $total = count($pages_in_category);
+  if ($total > MAX_PAGES) {
+    report_warning('Number of links is huge (' . (string) $total . ')  Cancelling run (maximum size is ' . (string) MAX_PAGES . ').  Listen to Obi-Wan Kenobi:  You want to go home and rethink your life.');
+    echo('</pre><footer><a href="./" title="Use Citation Bot again">Another</a>?</footer></body></html>');
     exit();
   }
-
-  if (count($pages_in_category) > BIG_RUN) check_overused();
+  if ($total > BIG_RUN) check_overused();
 
   $page = new Page();
-  gc_collect_cycles();
   $done = 0;
-  $total = count($pages_in_category);
+
+  gc_collect_cycles();
   foreach ($pages_in_category as $page_title) {
     $done++;
-    // $page->expand_text will take care of this notice if we are in HTML mode.
-    html_echo('', "\n\n\n*** Processing page '" . echoable($page_title) . "' : " . date("H:i:s") . "\n");
     if ($page->get_text_from($page_title, $api) && $page->expand_text()) {
       report_phase("Writing to " . echoable($page_title) . '... ');
       $attempts = 0;
       while (!$page->write($api, $edit_summary_end . (string) $done . '/' . (string) $total . ' ') && $attempts < MAX_TRIES) ++$attempts;
       if ($attempts < MAX_TRIES) {
         $last_rev = $api->get_last_revision($page_title);
-        html_echo(
+        echo(
         "\n  <a href=" . WIKI_ROOT . "?title=" . urlencode($page_title) . "&diff=prev&oldid="
         . $last_rev . ">diff</a>" .
-        " | <a href=" . WIKI_ROOT . "?title=" . urlencode($page_title) . "&action=history>history</a>", ".");
+        " | <a href=" . WIKI_ROOT . "?title=" . urlencode($page_title) . "&action=history>history</a>");
         $final_edit_overview .=
           "\n [ <a href=" . WIKI_ROOT . "?title=" . urlencode($page_title) . "&diff=prev&oldid="
         . $last_rev . ">diff</a>" .
@@ -141,6 +139,6 @@ if (empty($pages_in_category)) {
     }
     echo "\n";
   }
-  echo ("\n Done all " . (string) count($pages_in_category) . " pages linked from " . echoable($page_name) . " \n  # # # \n" . $final_edit_overview  . "\n </pre></main></body></html>");
+  echo ("\n Done all " . (string) $total . " pages linked from " . echoable($page_name) . " \n  # # # \n" . $final_edit_overview  . ' </pre><footer><a href="./" title="Use Citation Bot again">Another</a>?</footer></body></html>');
   exit();
 ?>

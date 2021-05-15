@@ -475,7 +475,7 @@ class Page {
         if (strpos($auto_summary, 'chapter-url') !== FALSE) {
           $auto_summary .= "Removed or converted URL. ";
         } else {
-          $auto_summary .= "Removed proxy or dead URL that duplicated free-DOI or unique identifier. ";
+          $auto_summary .= "Removed proxy/dead URL that duplicated identifier. ";
         }
         unset($this->modifications["deletions"][$pos]);
     }
@@ -488,7 +488,7 @@ class Page {
     if ((count($this->modifications["deletions"]) !== 0)
     && ($pos = array_search(strtolower('CITATION_BOT_PLACEHOLDER_BARE_URL'), $this->modifications["deletions"])) !== FALSE
     ) {
-      $auto_summary .= "Converted bare reference to cite template. ";
+      $auto_summary .= "Changed bare reference to CS1/2. ";
       unset($this->modifications["deletions"][$pos]);
     }
     $auto_summary .= ((count($this->modifications["deletions"]) !==0)
@@ -535,7 +535,7 @@ class Page {
       $failures[2] = $failures[3];
       $failures[3] = $failures[4];
       $failures[4] = FALSE;
-      throttle(9);
+      throttle(10); // This is only writing.  Not pages that are left unchanged
       if ($api->write_page($this->title, $this->text,
               $this->edit_summary() . $edit_summary_end,
               $this->lastrevid, $this->read_at)) {
@@ -628,7 +628,7 @@ class Page {
   
   protected function allow_bots() : bool {
     // from https://en.wikipedia.org/wiki/Template:Bots
-    $bot_username = '(?:Citation|DOI)[ _]bot';
+    $bot_username = 'Citation[ _]bot';
     if (preg_match('~\{\{(nobots|bots\|allow=none|bots\|deny=all|bots\|optout=all|bots\|deny=.*?'.$bot_username.'.*?)\}\}~iS',$this->text)) {
       return FALSE;
     }

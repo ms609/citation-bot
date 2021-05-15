@@ -14,6 +14,7 @@ ini_set("user_agent", "Citation_bot; citations@tools.wmflabs.org");
 include_once('./vendor/autoload.php');
 
 define("TRAVIS", (bool) getenv('CI')); // Not just TRAVIS, but GitHub actions set this to true
+define("USE_CITOID", TRUE); // Define which Zotero to use
 
 if (TRAVIS || isset($argv)) {
   error_reporting(E_ALL);
@@ -117,8 +118,7 @@ require_once('Template.php');
 require_once('Page.php');
 require_once('user_messages.php');
 
-define("MAX_PAGES", 1250);
-define("BIG_RUN", 4);
+define("MAX_PAGES", 2100);
+define("BIG_RUN", 3);
 
-Zotero::block_zotero();  // TODO - block until fixed
 

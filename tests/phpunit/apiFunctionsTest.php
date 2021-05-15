@@ -211,6 +211,7 @@ final class apiFunctionsTest extends testBaseClass {
 
   // http://doi.airiti.com/
   public function testExpansion_doi_not_from_crossref_airiti_journal() : void {
+    return; // TODO - seems down
     $this->requires_dx(function() : void {
      $expanded = $this->make_citation('{{Cite journal}}');
      expand_doi_with_dx($expanded, '10.6620/ZS.2018.57-30');
