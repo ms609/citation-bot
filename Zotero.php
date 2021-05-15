@@ -17,7 +17,7 @@ final class Zotero {
 
 private static function set_default_ch_zotero() : void {
   /** @psalm-suppress PossiblyNullArgument */
-  if ( CITOID_ZOTERO ) {
+  if ( USE_CITOID ) {
         curl_setopt_array(self::$zotero_ch,
             [CURLOPT_URL => CITOID_ZOTERO,
             CURLOPT_HTTPHEADER => ['accept: application/json; charset=utf-8'],
@@ -276,7 +276,7 @@ private static function zotero_request(string $url) : string {
      self::$zotero_ch = curl_init();   // @codeCoverageIgnore
      self::set_default_ch_zotero();    // @codeCoverageIgnore
   }
-  if ( CITOID_ZOTERO ) {
+  if ( USE_CITOID ) {
      curl_setopt(self::$zotero_ch, CURLOPT_URL, CITOID_ZOTERO . $url);
   } else {
      curl_setopt(self::$zotero_ch, CURLOPT_POSTFIELDS, $url);
