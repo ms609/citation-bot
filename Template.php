@@ -22,26 +22,27 @@ require_once("NameTools.php");
 final class Template {
   public const PLACEHOLDER_TEXT = '# # # CITATION_BOT_PLACEHOLDER_TEMPLATE %s # # #';
   public const REGEXP = ['~\{\{[^\{\}\|]+\}\}~su', '~\{\{[^\{\}]+\}\}~su', '~\{\{(?>[^\{]|\{[^\{])+?\}\}~su'];  // Please see https://stackoverflow.com/questions/1722453/need-to-prevent-php-regex-segfault for discussion of atomic regex
+  /** @psalm-suppress PropertyNotSetInConstructor */
   public const TREAT_IDENTICAL_SEPARATELY = FALSE;  // This is safe because templates are the last thing we do AND we do not directly edit $all_templates that are sub-templates - we might remove them, but do not change their content directly
   private const MAGIC_STRING = 'CITATION_BOT_PLACEHOLDER_URL_POINTER_';
   /** @psalm-suppress PropertyNotSetInConstructor */
-  public $all_templates;  // Points to list of all the Template() on the Page() including this one.  It can only be set by the page class after all templates are made
-  public $date_style = DATES_WHATEVER;  // Will get from the page
+  public array $all_templates;  // Points to list of all the Template() on the Page() including this one.  It can only be set by the page class after all templates are made
+  public int $date_style = DATES_WHATEVER;  // Will get from the page
   /** @psalm-suppress PropertyNotSetInConstructor */
-  protected $rawtext;  // Must start out as unset
-  public $last_searched_doi = '';
-  protected $example_param = '';
-  protected $name = '';
-  protected $param = array();
-  protected $initial_param = array();
-  protected $initial_author_params = array();
-  protected $initial_name = '';
-  protected $doi_valid = FALSE;
-  protected $had_initial_editor = FALSE;
-  protected $mod_dashes = FALSE;
-  protected $mod_names = FALSE;
-  protected $no_initial_doi = FALSE;
-  protected $used_by_api = array(
+  protected string $rawtext;  // Must start out as unset
+  public string $last_searched_doi = '';
+  protected string $example_param = '';
+  protected string $name = '';
+  protected array $param = array();
+  protected array $initial_param = array();
+  protected array $initial_author_params = array();
+  protected string $initial_name = '';
+  protected bool $doi_valid = FALSE;
+  protected bool $had_initial_editor = FALSE;
+  protected bool $mod_dashes = FALSE;
+  protected bool $mod_names = FALSE;
+  protected bool $no_initial_doi = FALSE;
+  protected array $used_by_api = array(  
                'adsabs'   => array(),
                'arxiv'    => array(),
                'crossref' => array(),
