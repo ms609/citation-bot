@@ -2077,7 +2077,7 @@ final class Template {
           if (preg_match('~^(.+)\?urlappend=~', $handle, $matches)) {  // should we shorten it
             usleep(100000);
             $test_url = "https://hdl.handle.net/" . $handle;
-            $headers_test = @get_headers($test_url, 1);
+            $headers_test = @get_headers($test_url, TRUE);
             if ($headers_test === FALSE || empty($headers_test['Location'])) {
                $handle = $matches[1];
             }
@@ -2099,7 +2099,7 @@ final class Template {
           // Verify that it works as a hdl
           $test_url = "https://hdl.handle.net/" . $handle;
           usleep(20000);
-          $headers_test = @get_headers($test_url, 1);
+          $headers_test = @get_headers($test_url, TRUE);
           if ($headers_test === FALSE) return FALSE; // hdl.handle.net is down
           if (empty($headers_test['Location'])) return FALSE; // does not resolve
           quietly('report_modification', "Converting URL to HDL parameter");
@@ -3165,7 +3165,7 @@ final class Template {
         $has_url_already = $this->has('url');
         $this->add_if_new('url', $oa_url);  // Will check for PMCs etc hidden in URL
         if ($this->has('url') && !$has_url_already) {  // The above line might have eaten the URL and upgraded it
-          $headers_test = @get_headers($this->get('url'), 1);
+          $headers_test = @get_headers($this->get('url'), TRUE);
           // @codeCoverageIgnoreStart
           if($headers_test ===FALSE) {
             $this->forget('url');
