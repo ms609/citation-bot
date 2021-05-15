@@ -256,7 +256,7 @@ final class PageTest extends testBaseClass {
       $page = $this->process_page($text);
       $this->assertSame('<ref>{{Cite journal|url=http://onlinelibrary.wiley.com/doi/10.1002/1097-0185(20000701)259:3%3C312::AID-AR80%3E3.0.CO;2-X/full|doi=10.1002/1097-0185(20000701)259:3<312::AID-AR80>3.0.CO;2-X|title=Histo-physiology of the scent-marking glands of the penile pad, anal pouch, and the forefoot in the aardwolf (Proteles cristatus)|year=2000|last1=Stoeckelhuber|first1=Mechthild|last2=Sliwa|first2=Alexander|last3=Welsch|first3=Ulrich|journal=The Anatomical Record|volume=259|issue=3|pages=312–326|pmid=10861364}}</ref>', $page->parsed_text());
   }
-  
+
   public function testUrlReferencesWithText6() : void {
       $text = "<ref>Emma Ambrose, Cas Mudde (2015). ''[http://www.tandfonline.com/doi/abs/10.1080/13537113.2015.1032033 Canadian Multiculturalism and the Absence of the Far Right]'' Nationalism and Ethnic Politics Vol. 21 Iss. 2.</ref>";
       $page = $this->process_page($text);
@@ -311,7 +311,7 @@ final class PageTest extends testBaseClass {
       $page = $this->process_page($text);
       $this->assertSame('<ref>{{cite web}}</ref><ref>{{cite web}}</ref><ref>{{Cite journal|url=http://doi.acm.org/10.1145/358589.358596|doi = 10.1145/358589.358596|title = Improving computer program readability to aid modification|year = 1982|last1 = Elshoff|first1 = James L.|last2 = Marcotty|first2 = Michael|journal = Communications of the ACM|volume = 25|issue = 8|pages = 512–521}}</ref>', $page->parsed_text());
   }
- 
+   
    public function testUrlReferencesWithText15() : void {
       $text = "<ref>[http://doi.acm.org/10.1145/358589.358596 http://doi.acm.org/10.1145/358589.3585964444]</ref>";
       $text = $text . $text;
