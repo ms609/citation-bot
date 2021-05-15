@@ -277,7 +277,7 @@ private static function zotero_request(string $url) : string {
      self::set_default_ch_zotero();    // @codeCoverageIgnore
   }
   if ( USE_CITOID ) {
-     curl_setopt(self::$zotero_ch, CURLOPT_URL, CITOID_ZOTERO . $url);
+     curl_setopt(self::$zotero_ch, CURLOPT_URL, CITOID_ZOTERO . urlencode($url));
   } else {
      curl_setopt(self::$zotero_ch, CURLOPT_POSTFIELDS, $url);
   }
