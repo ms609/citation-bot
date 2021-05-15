@@ -3081,7 +3081,6 @@ final class Template {
         if (str_ireplace(CANONICAL_PUBLISHER_URLS, '', $host_name) !== $host_name) return 'publisher'; // Its the publisher
         if (stripos($oa_url, 'bioone.org/doi') !== FALSE) return 'publisher';
         if (stripos($oa_url, 'gateway.isiknowledge.com') !== FALSE) return 'nothing';
-        CONFLICT
         if (stripos($oa_url, 'orbit.dtu.dk/en/publications') !== FALSE) return 'nothing'; // Abstract only
         // Check if free location is already linked
         if(($this->has('pmc') &&
@@ -4965,7 +4964,9 @@ final class Template {
               $publisher === 'latimes' ||
               $publisher === 'latimes.com' ||
               $publisher === 'the la times' ||
-              $publisher === 'the los angeles times') {
+              $publisher === 'the los angeles times' ||
+              $publisher === '[[los angeles times]] (latimes.com)'
+             ) {
             $publisher = 'los angeles times';
             if (strpos($this->get($param), '[') !== FALSE) {
               $this->set($param, '[[Los Angeles Times]]');
