@@ -853,10 +853,10 @@ function is_doi_works(string $doi) : ?bool {
   $context = stream_context_create(array(
            'ssl' => ['verify_peer' => FALSE, 'verify_peer_name' => FALSE, 'allow_self_signed' => TRUE]
          )); // Allow crudy cheap journals
-  $headers_test = @get_headers("https://dx.doi.org/" . urlencode($doi), 1, $context);
+  $headers_test = @get_headers("https://dx.doi.org/" . urlencode($doi), TRUE, $context);
   if ($headers_test === FALSE) {
      sleep(1);                                                                            // @codeCoverageIgnore
-     $headers_test = @get_headers("https://dx.doi.org/" . urlencode($doi), 1, $context);  // @codeCoverageIgnore
+     $headers_test = @get_headers("https://dx.doi.org/" . urlencode($doi), TRUE, $context);  // @codeCoverageIgnore
   }
   if ($headers_test === FALSE) return NULL; // most likely bad, but will recheck again an again
   $response = $headers_test[0];
