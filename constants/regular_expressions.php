@@ -31,7 +31,7 @@ const HANDLES_HOSTS = array('hdl.handle.net', 'kb.osu.edu', 'repositorio.aemet.e
                             'dspace.mit.edu', 'digital.csic.es', 'apps.who.int', 'repository.si.edu',
                             'lume.ufrgs.br', 'digitallibrary.amnh.org', 'hdl.cqu.edu.au', 'repository.bilkent.edu.tr',
                             'digital.library.wisc.edu', 'www.territorystories.nt.gov.au', 'repository.up.ac.za',
-                            'researchonline.federation.edu.au');
+                            'researchonline.federation.edu.au', 'scholarspace.manoa.hawaii.edu');
 // Order here could matter
 // YOU MUST escape the RegEx
 const HANDLES_PATHS = array('/dspace/bitstream/handle/', '/msf/handle/', '/vital/access/HandleResolver/',
