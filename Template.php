@@ -4988,8 +4988,13 @@ final class Template {
                  }
                  return;
               }
+              if ($this->blank('via')) {
+                if (stripos($this->get($work), 'laweekly') !== FALSE) {
+                  $this->rename($work, 'via');
+                }
+              }
             }
-          } 
+          }
           
           foreach (WORK_ALIASES as $work) {
               $worky = strtolower($this->get($work));
