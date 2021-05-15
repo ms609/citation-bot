@@ -305,13 +305,13 @@ final class PageTest extends testBaseClass {
       $page = $this->process_page($text);
       $this->assertSame($text, $page->parsed_text());
   }
-
+  
   public function testUrlReferencesWithText14() : void {
       $text = "<ref>{{cite web}}</ref><ref>{{cite web}}</ref><ref>James L. Elshoff, Michael Marcotty, [http://doi.acm.org/10.1145/358589.358596 Improving computer program readability to aid modification], Communications of the ACM, v.25 n.8, p.512-521, Aug 1982.</ref>";
       $page = $this->process_page($text);
       $this->assertSame('<ref>{{cite web}}</ref><ref>{{cite web}}</ref><ref>{{Cite journal|url=http://doi.acm.org/10.1145/358589.358596|doi = 10.1145/358589.358596|title = Improving computer program readability to aid modification|year = 1982|last1 = Elshoff|first1 = James L.|last2 = Marcotty|first2 = Michael|journal = Communications of the ACM|volume = 25|issue = 8|pages = 512–521}}</ref>', $page->parsed_text());
   }
-   
+
    public function testUrlReferencesWithText15() : void {
       $text = "<ref>[http://doi.acm.org/10.1145/358589.358596 http://doi.acm.org/10.1145/358589.3585964444]</ref>";
       $text = $text . $text;
