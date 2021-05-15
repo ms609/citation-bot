@@ -1753,7 +1753,7 @@ final class TemplateTest extends testBaseClass {
    }
 
   public function testGoogleBooksExpansionNEW() : void {
-    $text = "{{Cite book | url=https://www.google.com/books/edition/_/SjpSkzjIzfsC?hl=en}}";
+    $text = "{{Cite web | url=https://www.google.com/books/edition/_/SjpSkzjIzfsC?hl=en}}";
     $expanded = $this->process_citation($text);
     $this->assertSame('cite book', $expanded->wikiname());
     $this->assertSame('https://www.google.com/books/edition/_/SjpSkzjIzfsC', $expanded->get2('url'));
@@ -3121,7 +3121,14 @@ T1 - This is the Title }}';
     $this->assertSame('http://hdl.handle.net/handle/10125/dfsjladsflhdsfaewfsdfjhasjdfhldsaflkdshkafjhsdjkfhdaskljfhdsjklfahsdafjkldashafldsfhjdsa_TEST_DATA_FOR_BOT_TO_FAIL_ON', $template->get2('url'));
     $this->assertNull($template->get2('hdl'));
   }
-
+ 
+  public function testHandles4() : void {
+    $template = $this->make_citation('{{Cite journal|url=https://scholarspace.manoa.hawaii.edu/handle/10125/20269}}');
+    $template->get_identifiers_from_url();
+    $this->assertSame('10125/20269', $template->get2('hdl'));
+    $this->assertNotNull($template->get2('url'));
+  }
+ 
   public function testHandles5() : void {
     $template = $this->make_citation('{{Cite journal|url=http://hdl.handle.net/2027/loc.ark:/13960/t6349vh5n?urlappend=%3Bseq=672}}');
     $template->get_identifiers_from_url();
