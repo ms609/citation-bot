@@ -768,7 +768,7 @@ final class ZoteroTest extends testBaseClass {
    $this->requires_zotero(function() : void {
     $text = '{{Cite journal| rfc=6679 }}';
     $expanded = $this->process_citation($text);
-    $this->assertSame('Explicit Congestion Notification (ECN) for RTP over UDP', $expanded->get2('title'));
+    $this->assertSame('rfc6679', $expanded->get2('title'));
    });
   }
   
