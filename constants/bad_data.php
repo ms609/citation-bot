@@ -40,7 +40,7 @@ const PUBLISHERS_ARE_WORKS = array('the san diego union-tribune', 'forbes', 'sal
                                    'anchorage daily news', 'palm beach daily news', 'daily news egypt', 'the daily news egypt',
                                    'daily news latino', 'forbes méxico', 'forbes mexico', 'forbes india', 'forbesmiddleeast',
                                    'forbes middle east', 'forbes russia', 'forbes.ru', 'forbes afrique', 'forbes magazine',
-                                   'forbes asia'
+                                   'forbes asia', 'forbes israel', 'forbes global 2000', 'forbes china'
                                    // WP:CITALICSRFC and MOS:ITALICWEBCITE  ?????     'abc news', 'nbc news', 'cbs news', 'bbc news'
                                   ); // LOWER CASE!  WWW not there too! 
 
