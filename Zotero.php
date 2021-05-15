@@ -17,7 +17,7 @@ final class Zotero {
   protected static int $zotero_failures_count = 0;
 
 private static function set_default_ch_zotero() : void {
-  /** @phan-suppress-next-line PhanRedundantCondition */ /** @phpstan-ignore-next-line */
+  /** @phan-suppress-next-line PhanRedundantCondition */CONFLICT /** @phpstan-ignore-next-line */
   if ( USE_CITOID ) {
         /** @psalm-suppress PossiblyNullArgument */ 
         curl_setopt_array(self::$zotero_ch,
