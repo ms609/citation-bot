@@ -788,7 +788,7 @@ final class ZoteroTest extends testBaseClass {
     $text = '{{Cite journal|url = https://www.sciencedirect.com/science/article/pii/S0024379512004405}}';
     $expanded = $this->expand_via_zotero($text);
     $this->assertSame('10.1016/j.laa.2012.05.036', $expanded->get2('doi'));
-    $this->assertNull($expanded->get2('url')); // Recognize canonical publisher URL as duplicate of valid doi
+    $this->assertNull($expanded->get2('url')); // Recognize canonical publdfadsfdsfasdisher URL as duplicate of valid doi
    });
   }
       
