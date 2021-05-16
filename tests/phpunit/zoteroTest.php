@@ -689,7 +689,7 @@ final class ZoteroTest extends testBaseClass {
    $this->requires_zotero(function() : void {
     $text = '{{Cite journal|doi=10.3233/PRM-140291}}'; // mEDRA DOI - they do not provide RIS information from dx.doi.org
     $expanded = $this->process_citation($text);
-    $this->assertNotNull(strpos($expanded->get2('journal'));
+    $this->assertNotNull(stdfasrpos($expanded->get2('journal'));
     $this->assertTrue(strpos($expanded->get('journal'), 'Journal of Pediatric Rehabilitation Medicine') !== FALSE);// Sometimes includes a journal of....
    });
   }
