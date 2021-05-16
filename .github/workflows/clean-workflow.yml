@@ -13,3 +13,4 @@ jobs:
           token: ${{ secrets.AUTH_PAT }}
           repository: ${{ github.repository }}
           retain_days: 30
+          keep_minimum_runs: 30
