@@ -663,7 +663,7 @@ final class Template {
     if (empty($this->param)) return TRUE;
     if (!is_array($param)) $param = array($param);
     foreach ($this->param as $p) {
-      if (in_array($p->param, $param) && trim($p->val) != '' && !str_i_same('Epub ahead of print', $p->val)) return FALSE;
+      if (in_array($p->param, $param) && trim($p->val) !== '' && !str_i_same('Epub ahead of print', $p->val)) return FALSE;
     }
     return TRUE;
   }
@@ -726,9 +726,9 @@ final class Template {
     }
 
     if ($param_name !== 's2cid') {
-     if (substr($param_name, -4) > 0 || substr($param_name, -3) > 0 || substr($param_name, -2) > 30) {
+     if ((int) substr($param_name, -4) > 0 || (int) substr($param_name, -3) > 0 || (int) substr($param_name, -2) > 30) {
       // Stop at 30 authors - or page codes will become cluttered! 
-      if ($this->get('last29') || $this->get('author29') || $this->get('surname29')) $this->add_if_new('display-authors', '1');
+      if ((bool) $this->get('last29') || (bool) $this->get('author29') || (bool) $this->get('surname29')) $this->add_if_new('display-authors', '1');
       return FALSE;
      }
     }
