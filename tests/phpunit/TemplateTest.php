@@ -2182,7 +2182,7 @@ T1 - This is the Title }}';
   public function testTitleItalics(){
     $text = '{{cite journal|doi=10.1111/pala.12168}}';
     $expanded = $this->process_citation($text);
-    $title = $expanded->get2('title');
+    $title = $expanded->get('title');
     $title = str_replace('‐', '-', $title); // Dashes vary
     $title = str_replace("'", "", $title);  // Sometimes there, sometime not
     $this->assertSame("The macro- and microfossil record of the Cambrian priapulid Ottoia", $title);
@@ -2192,12 +2192,12 @@ T1 - This is the Title }}';
     $text = '{{Cite journal | doi = 10.1007%2Fs001140100225}}';
     $expanded = $this->process_citation($text);
     $this->assertSame(str_replace(' ', '', "Crypticmammalianspecies:Anewspeciesofwhiskeredbat(''Myotisalcathoe''n.sp.)inEurope"), 
-                        str_replace(' ', '', $expanded->get2('title')));
+                        str_replace(' ', '', $expanded->get('title')));
     $text = '{{Cite journal | url = http://onlinelibrary.wiley.com/doi/10.1111/j.1550-7408.2002.tb00224.x/full}}';
     // Should be able to drop /full from DOI in URL
     $expanded = $this->process_citation($text);
     $this->assertSame(str_replace(' ', '', "''Cryptosporidiumhominis''n.sp.(Apicomplexa:Cryptosporidiidae)fromHomosapiens"),
-                        str_replace(' ', '', $expanded->get2('title'))); // Can't get Homo sapiens, can get nsp.
+                        str_replace(' ', '', $expanded->get('title'))); // Can't get Homo sapiens, can get nsp.
   }   
     
   public function testSICI() : void {
@@ -5586,14 +5586,14 @@ T1 - This is the Title }}';
      $this->assertSame('53378830', $template->get2('s2cid')); 
      $this->assertNull($template->get2('s2cid-access'));
      $this->assertSame('cite journal', $template->wikiname());
-     $this->assertSame('10.1093/ser/mwp005', strtolower($template->get2('doi')));
+     $this->assertSame('10.1093/ser/mwp005', strtolower($template->get('doi')));
      // $this->assertSame('http://www.lisdatacenter.org/wps/liswps/480.pdf', $template->get2('url')); // OA URL
   }
  
    public function testSemanticscholar2() : void {
      $text = '{{cite web|url=https://www.semanticscholar.org/paper/The-Holdridge-life-zones-of-the-conterminous-United-Lugo-Brown/406120529d907d0c7bf96125b83b930ba56f29e4}}';
      $template = $this->process_citation($text);
-     $this->assertSame('10.1046/j.1365-2699.1999.00329.x', strtolower($template->get2('doi')));
+     $this->assertSame('10.1046/j.1365-2699.1999.00329.x', strtolower($template->get('doi')));
      $this->assertSame('cite journal', $template->wikiname());
      $this->assertNull($template->get2('s2cid-access'));
      $this->assertSame('11733879', $template->get2('s2cid')); 
