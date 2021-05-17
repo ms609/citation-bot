@@ -4361,7 +4361,7 @@ final class Template {
             return;
           }
           if (!$this->blank(['lay-url', 'layurl'])) return;
-          if (preg_match('~^https?://[^ ]+$~', $this->get($param)) {
+          if (preg_match('~^https?://[^ ]+$~', $this->get($param))) {
             $this->rename($param, 'lay-url');
           }
           return;
