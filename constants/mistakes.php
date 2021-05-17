@@ -49,6 +49,7 @@ const COMMON_MISTAKES = array ( // Common mistakes that aren't picked up by the 
   "ed8"             =>  "editor8",
   "ed9"             =>  "editor9",
   "ed10"            =>  "editor10",
+  "editorlink"      =>  "editor-link",
   "editorlink1"     =>  "editor1-link",
   "editorlink2"     =>  "editor2-link",
   "editorlink3"     =>  "editor3-link",
