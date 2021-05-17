@@ -708,8 +708,8 @@ final class Template {
       return FALSE;  // We let comments block the bot
     }
     
-    if (array_key_exists($param_name, COMMON_MISTAKES)) {
-      report_error("Attempted to add invalid parameter: " . echoable($param_name)); // @codeCoverageIgnore
+    if (array_key_exists($param_name, COMMON_MISTAKES)) { // This is not an error, since sometimes the floating text code finds odd stuff
+      report_minor_error("Attempted to add invalid parameter: " . echoable($param_name)); // @codeCoverageIgnore
     }
     
     // We have to map these, since sometimes we get floating accessdat and such
@@ -1505,12 +1505,12 @@ final class Template {
         }
         return FALSE;
 
-      default:  // We want to make sure we understand what we are adding
+      default:  // We want to make sure we understand what we are adding - sometimes we find odd floating parameters
         // @codeCoverageIgnoreStart
-        report_error('Unexpected parameter: ' . echoable($param_name) . ' trying to be set to ' . echoable($value));
-        if ($this->blank($param_name)) {
-          return $this->add($param_name, sanitize_string($value));
-        }
+        report_minor_error('Unexpected parameter: ' . echoable($param_name) . ' trying to be set to ' . echoable($value));
+        // if ($this->blank($param_name)) {
+        //  return $this->add($param_name, sanitize_string($value));
+        // }
         return FALSE;
         // @codeCoverageIgnoreEnd
     }
