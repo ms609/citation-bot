@@ -4355,6 +4355,18 @@ final class Template {
           }
           return;
 
+        case 'last-author-amp': case 'lastauthoramp':
+          $the_data = strtolower($this->get($param));
+          if (in_array($the_data, ['n', 'no', 'false'])) {
+            $this->forget($param);
+            return;
+          }
+          if (in_array($the_data, ['y', 'yes', 'true'])) {
+            $this->rename($param, 'name-list-style', 'amp');
+            $this->forget($param);
+          }
+          return;
+
         case 'laysummary': case 'lay-summary':
           if ($this->blank($param)) {
             $this->forget($param);
