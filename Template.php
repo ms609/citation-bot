@@ -4355,6 +4355,17 @@ final class Template {
           }
           return;
 
+        case 'laysummary': case 'lay-summary':
+          if ($this->blank($param)) {
+            $this->forget($param);
+            return;
+          }
+          if (!$this->blank(['lay-url', 'layurl'])) return;
+          if (preg_match('~^https?://[^ ]+$~', $this->get($param)) {
+            $this->rename($param, 'lay-url');
+          }
+          return;
+          
         case 'doi':
           $doi = $this->get($param);
           if (!$doi) return;
