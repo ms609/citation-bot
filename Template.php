@@ -2222,6 +2222,7 @@ final class Template {
       // This is quite a broad match, so we need to ensure that no baggage has been tagged on to the end of the URL.
       $doi = preg_replace("~(\.x)/(?:\w+)~", "$1", $match[0]);
       $doi = extract_doi($doi)[1];
+      if ($doi === FALSE) return; // Found nothing
       if ($this->has('quote') && strpos($this->get('quote'), $doi) !== FALSE) return;
       if (doi_active($doi)) $this->add_if_new('doi', $doi);
     }
