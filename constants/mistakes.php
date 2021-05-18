@@ -32,6 +32,7 @@ const COMMON_MISTAKES = array ( // Common mistakes that aren't picked up by the 
   "co-authors"      =>  "coauthors",
   "dio"             =>  "doi",
   "director"        =>  "others",
+  "editors"         =>  "editor",
   "display_authors" =>  "display-authors",
   "displayauthors"  =>  "display-authors",
   "displayeditors"  =>  "display-editors",
