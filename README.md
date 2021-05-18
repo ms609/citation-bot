@@ -97,4 +97,4 @@ This can be updated by maintainers logging on to Toolforge, then entering the co
     npm update
     webservice restart
     
-In order to reduce complexity, the code currently uses a Wikipedia hosted and managed server instead.
+In order to reduce complexity, the code currently uses a Wikipedia hosted and managed server instead at https://en.wikipedia.org/api/rest_v1/#/Citation/getCitation.
