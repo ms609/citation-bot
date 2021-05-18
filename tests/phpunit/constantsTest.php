@@ -205,8 +205,8 @@ final class constantsTest extends testBaseClass {
                           ['display-editors', 'editor-mask', 'editor-mask1', 'interviewer-link', 'interviewer-mask', 'nocat',  'no-tracking', 'interviewer-mask', 'titlelink', 'isbn',   'isbn'], $text);
       $text = str_replace(['editor1link',  'editorlink1',  'subjectlink1'],
                           ['editor1-link', 'editor1-link', 'subject-link1'], $text);
-      $text = str_replace(['booktitle',  'nopp',  'displayauthors',  'city'],
-                          ['book-title', 'no-pp', 'display-authors', 'location'], $text);
+      $text = str_replace(['booktitle',  'nopp',  'displayauthors',  'city',     'editorlink'],
+                          ['book-title', 'no-pp', 'display-authors', 'location', 'editor-link'], $text);
       $text = str_replace(['titlelink',  'nocat',       'nocat',       ' embargo',          'conferenceurl',  'contributionurl',  'laydate',  'laysource',  'layurl',  'sectionurl',  'seriesno',  'timecaption',  'titlelink'],
                           ['title-link', 'no-tracking', 'no-tracking', ' pmc-embargo-date', 'conference-url', 'contribution-url', 'lay-date', 'lay-source', 'lay-url', 'section-url', 'series-no', 'time-caption', 'title-link'], $text);
       if ($prepared->get('doi') === 'Z123Z') {
