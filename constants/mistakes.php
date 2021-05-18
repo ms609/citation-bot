@@ -322,7 +322,9 @@ const COMMON_MISTAKES = array ( // Common mistakes that aren't picked up by the 
   "wkautore3"       =>  "author-link3",
   "coauther"        =>  "coauthor",
   "city"            =>  "location",
-  "link"            =>  "url"
+  "link"            =>  "url",
+  "home"            =>  "work",
+  "homelanguage"    =>  "language",  
 );
 
 const COMMON_MISTAKES_TOOL = array(
