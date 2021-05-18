@@ -2089,6 +2089,7 @@ final class Template {
           }
           // Safety check
           if (strlen($handle) < 6 || strpos($handle, '/') === FALSE) return FALSE;
+          if (strpos($handle, '123456789') === 0) return FALSE;
 
           $the_question = strpos($handle, '?');
           if ($the_question !== FALSE) {
