@@ -639,6 +639,7 @@ public static function process_zotero_response(string $zotero_response, Template
         
       case 'videoRecording':
       case 'film':
+      case 'audioRecording';     // @codeCoverageIgnore
       case 'presentation';     // @codeCoverageIgnore
       case 'computerProgram';  // @codeCoverageIgnore
         // Nothing special that we know of yet
