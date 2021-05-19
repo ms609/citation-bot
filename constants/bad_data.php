@@ -123,7 +123,7 @@ const PROXY_HOSTS_TO_DROP = array('proxy.libraries', 'proxy.lib.', '.ezproxy.', 
                                   'informaworld.com/smpp', '.search.serialssolutions.com', 'doi.apa.org',
                                   'onlinelibrary.wiley.com/resolve/openurl', 'findarticles.com', 'psycnet.apa.org'); // Drop these if there is a valid FREE DOI
 
-const WEB_NEWSPAPERS = array('bbc news', 'bbc', 'news.bbc.co.uk', 'bbc sports', 'bbc sport', 'www.bbc.co.uk');
+const WEB_NEWSPAPERS = array('bbc news', 'bbc', 'news.bbc.co.uk', 'bbc sports', 'bbc sport', 'www.bbc.co.uk', 'the economist');
 
 const NO_DATE_WEBSITES = array('wikipedia.org', 'web.archive.org', 'perma-archives.org', 'webarchive.proni.gov.uk', 'perma.cc',
                               'wayback', 'web.archive.bibalex.org', 'web.petabox.bibalex.org', 'webharvest.gov', 'archive.wikiwix.com',
