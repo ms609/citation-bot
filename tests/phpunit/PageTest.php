@@ -354,6 +354,9 @@ final class PageTest extends testBaseClass {
       $text = '{{cite thesis|url=https://mathscinet.ams.org/mathscinet-getitem?mr=1234}}{{bots|allow=none}}';
       $page = $this->process_page($text);
       $this->assertSame($text, $page->parsed_text());
+      $text = '{{cite thesis|url=https://mathscinet.ams.org/mathscinet-getitem?mr=1234}}{{bots|allow=BobsCoolBot}}';
+      $page = $this->process_page($text);
+      $this->assertSame($text, $page->parsed_text());
   }
  
   public function testODNB() : void {
