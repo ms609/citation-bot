@@ -4760,7 +4760,7 @@ final class Template {
             return;
           }
           if (stripos($publisher, 'google') !== FALSE) {
-            $this_host = (string) parse_url($this->get('url'), PHP_URL_HOST));
+            $this_host = (string) parse_url($this->get('url'), PHP_URL_HOST);
             if (stripos($this_host, 'google') === FALSE ||
                 stripos($this_host, 'blog')   !== FALSE ||
                 stripos($this_host, 'github') !== FALSE){
