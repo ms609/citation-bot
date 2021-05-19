@@ -5,7 +5,7 @@ require_once("constants.php");   // @codeCoverageIgnore
 
 function html_echo(string $text, string $alternate_text='') : void {
   /** @psalm-suppress TypeDoesNotContainType */ /* PSALM thinks HTML_OUTPUT and TRAVIS cannot be false */
-  if (!TRAVIS) echo HTML_OUTPUT ? $text : $alternate_text;
+  if (!TRAVIS) echo HTML_OUTPUT ? $text : $alternate_text; // @codeCoverageIgnore 
 }
 
 function user_notice(string $symbol, string $class, string $text) : void {
