@@ -984,7 +984,7 @@ final class TemplateTest extends testBaseClass {
   public function testPublisherRemoval() : void {
     foreach (array('Google News Archive', '[[Google]]', 'Google News',
                    'Google.com', '[[Google News]]') as $publisher) {
-      $text = "{{cite journal | publisher = $publisher}}";
+      $text = "{{cite journal | publisher = $publisher|url=http://google/}}";
       $prepared = $this->prepare_citation($text);
       $this->assertNull($prepared->get2('publisher'));
     }
