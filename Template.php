@@ -12,12 +12,14 @@ declare(strict_types=1);
  * to find information that can be added to existing citations.
  */
 
+// @codeCoverageIgnoreBegin
 require_once('Parameter.php');
 require_once('expandFns.php');
 require_once('user_messages.php');
 require_once('apiFunctions.php');
 require_once("constants.php");
 require_once("NameTools.php");
+// @codeCoverageIgnoreEnd
 
 final class Template {
   public const PLACEHOLDER_TEXT = '# # # CITATION_BOT_PLACEHOLDER_TEMPLATE %s # # #';

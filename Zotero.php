@@ -29,7 +29,7 @@ private static function set_default_ch_zotero() : void {
             CURLOPT_TIMEOUT => 45]);
   } else {
         /** @psalm-suppress PossiblyNullArgument */ 
-        curl_setopt_array(self::$zotero_ch,
+        curl_setopt_array(self::$zotero_ch,  // @codeCoverageIgnore
             [CURLOPT_URL => ZOTERO_ROOT,
             CURLOPT_CUSTOMREQUEST => "POST",
             CURLOPT_HTTPHEADER => ['Content-Type: text/plain'],
@@ -170,8 +170,8 @@ public static function drop_urls_that_match_dois(array &$templates) : void {  //
        $url = $template->get('chapter-url');
        $url_kind = 'chapter-url';
     } elseif ($template->has('chapterurl')) {
-       $url = $template->get('chapterurl');
-       $url_kind = 'chapterurl';
+       $url = $template->get('chapterurl'); // @codeCoverageIgnore
+       $url_kind = 'chapterurl';            // @codeCoverageIgnore
     } else {
        $url = '';
        $url_kind = '';
@@ -282,7 +282,7 @@ private static function zotero_request(string $url) : string {
   if ( USE_CITOID ) {
      curl_setopt(self::$zotero_ch, CURLOPT_URL, CITOID_ZOTERO . urlencode($url));
   } else {
-     curl_setopt(self::$zotero_ch, CURLOPT_POSTFIELDS, $url);
+     curl_setopt(self::$zotero_ch, CURLOPT_POSTFIELDS, $url);    // @codeCoverageIgnore 
   }
    
   if (self::$zotero_failures_count > self::ZOTERO_GIVE_UP) return self::ERROR_DONE;
