@@ -4755,6 +4755,19 @@ final class Template {
             $this->set($param, 'Google Inc.');  // Case when Google actually IS a publisher
             return;
           }
+          if (stripos($this->get('url'), 'support.google.com') !== FALSE && stripos($publisher, 'google') !== FALSE)  {
+            $this->set($param, 'Google Inc.');  // Case when Google actually IS a publisher
+            return;
+          }
+          if (stripos($publisher, 'google') !== FALSE) {
+            $this_host = (string) parse_url($this->get('url'), PHP_URL_HOST));
+            if (stripos($this_host, 'google') === FALSE ||
+                stripos($this_host, 'blog')   !== FALSE ||
+                stripos($this_host, 'github') !== FALSE){
+              return; // Case when Google actually IS a publisher
+            }
+          }
+          
           foreach (NON_PUBLISHERS as $not_publisher) {
             if (stripos($publisher, $not_publisher) !== FALSE) {
               $this->forget($param);
