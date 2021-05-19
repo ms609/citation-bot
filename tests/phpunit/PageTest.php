@@ -266,7 +266,7 @@ final class PageTest extends testBaseClass {
   public function testUrlReferencesWithText7() : void {
       $text = "<ref>Gregory, T. Ryan. (2008). [https://link.springer.com/article/10.1007/s12052-007-0001-z ''Evolution as Fact, Theory, and Path'']. ''Evolution: Education and Outreach'' 1 (1): 46–52.</ref>";
       $page = $this->process_page($text);
-      $this->assertSame('<ref>{{Cite journal|url=https://link.springer.com/article/10.1007/s12052-007-0001-z|doi = 10.1007/s12052-007-0001-z|title = Evolution as Fact, Theory, and Path|year = 2008|last1 = Gregory|first1 = T. Ryan|journal = Evolution: Education and Outreach|volume = 1|pages = 46–52|s2cid = 19788314}}}</ref>', $page->parsed_text());
+      $this->assertSame('<ref>{{Cite journal|url=https://link.springer.com/article/10.1007/s12052-007-0001-z|doi = 10.1007/s12052-007-0001-z|title = Evolution as Fact, Theory, and Path|year = 2008|last1 = Gregory|first1 = T. Ryan|journal = Evolution: Education and Outreach|volume = 1|pages = 46–52|s2cid = 19788314}}</ref>', $page->parsed_text());
   }
  
   public function testUrlReferencesWithText8() : void {
