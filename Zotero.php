@@ -494,13 +494,13 @@ public static function process_zotero_response(string $zotero_response, Template
       $result->extra = trim(str_replace(trim($matches[0]), '', $result->extra));           // @codeCoverageIgnore
     }
     if (preg_match('~\s(Google-Books-ID: \S+)\s~i', ' ' . $result->extra . ' ', $matches)) { // We don't use it
-      $result->extra = trim(str_replace(trim($matches[0]), '', $result->extra));
+      $result->extra = trim(str_replace(trim($matches[0]), '', $result->extra));           // @codeCoverageIgnore
     }
     if (preg_match('~\s(ISSN: \S+)\s~i', ' ' . $result->extra . ' ', $matches)) { // We don't use it
-      $result->extra = trim(str_replace(trim($matches[0]), '', $result->extra));
+      $result->extra = trim(str_replace(trim($matches[0]), '', $result->extra));           // @codeCoverageIgnore
     }
     if (trim($result->extra) !== '') {
-      report_minor_error("Unhandled extra data: " . $result->extra); // @codeCoverageIgnore
+      report_minor_error("Unhandled extra data: " . $result->extra);                       // @codeCoverageIgnore
     }
   } 
   
