@@ -42,7 +42,7 @@ jobs:
       run: composer install --prefer-dist  -vvv --no-progress
       
     - name: Full test with PHP
-      env:
+      with:
          PHP_ADSABSAPIKEY: ${{ secrets.PHP_ADSABSAPIKEY }}
          PHP_GOOGLEKEY: ${{ secrets.PHP_GOOGLEKEY }}
          PHP_OAUTH_CONSUMER_TOKEN: ${{ secrets.PHP_OAUTH_CONSUMER_TOKEN }}
