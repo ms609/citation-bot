@@ -131,7 +131,39 @@ final class ZoteroTest extends testBaseClass {
     Zotero::drop_urls_that_match_dois($tmp_array);
     $this->assertNotNull($template->get2('url'));
   }
+  
+   public function testDropSomeURLEquivs6() : void {
+    $text = "{{cite journal|pmc=XYZ|doi=X|journal=X|title=X|last1=X|first1=X|volume=X|issue=X|year=X|url=http://bmj.com/cgi/pmidlookup/sss|pmid=333|pmc=123|doc-access=free}}";
+    $template = $this->make_citation($text);
+    $tmp_array = [$template];
+    Zotero::drop_urls_that_match_dois($tmp_array);
+    $this->assertNull($template->get2('url'));
+  }
+  
+   public function testDropSomeURLEquivs7() : void {
+    $text = "{{cite journal|pmc=XYZ|doi=X|journal=X|title=X|last1=X|first1=X|volume=X|issue=X|year=X|url=http://xyz.serialssolutions.com'.com/cgi/sss|pmid=333}}";
+    $template = $this->make_citation($text);
+    $tmp_array = [$template];
+    Zotero::drop_urls_that_match_dois($tmp_array);
+    $this->assertNull($template->get2('url'));
+  }
+  
+  public function testDropSomeURLEquivs8() : void {
+    $text = "{{cite journal|pmc=XYZ|journal=X|title=X|last1=X|first1=X|volume=X|issue=X|year=X|url=http://xyz.serialssolutions.com'.com/cgi/sss|pmid=333}}";
+    $template = $this->make_citation($text);
+    $tmp_array = [$template];
+    Zotero::drop_urls_that_match_dois($tmp_array);
+    $this->assertNull($template->get2('url'));
+  }
  
+   public function testDropSomeURLEquivs9() : void {
+    $text = "{{cite journal|url=https://pubs.acs.org/doi/10.1021/acs.analchem.8b04567|doi=10.1021/acs.analchem.8b04567|pmid=30741529|pmc=6526953|title=ISiCLE: A Quantum Chemistry Pipeline for Establishing in Silico Collision Cross Section Libraries|journal=Analytical Chemistry|volume=91|issue=7|pages=4346–4356|year=2019|last1=Colby|first1=Sean M.|last2=Thomas|first2=Dennis G.|last3=Nuñez|first3=Jamie R.|last4=Baxter|first4=Douglas J.|last5=Glaesemann|first5=Kurt R.|last6=Brown|first6=Joseph M.|last7=Pirrung|first7=Meg A.|last8=Govind|first8=Niranjan|last9=Teeguarden|first9=Justin G.|last10=Metz|first10=Thomas O.|last11=Renslow|first11=Ryan S.}}";
+    $template = $this->make_citation($text);
+    $tmp_array = [$template];
+    Zotero::drop_urls_that_match_dois($tmp_array);
+    $this->assertNull($template->get2('url'));
+  }
+  
   public function testSimpleIEEE() : void {
     $url = "http://ieeexplore.ieee.org/arnumber=123456789";
     $url = Zotero::url_simplify($url);
