@@ -9,6 +9,12 @@ require_once(__DIR__ . '/../testBaseClass.php');
 
 final class constantsTest extends testBaseClass {
 
+  protected function setUp(): void {
+   if (BAD_PAGE_HTTP !== '' || BAD_PAGE_API !== '') {
+     $this->markTestSkipped();
+   }
+  }
+
   public function testConstantsDefined() : void {
     $this->assertSame(count(UCFIRST_JOURNAL_ACRONYMS), count(JOURNAL_ACRONYMS));
     for ($i = 0; $i < sizeof(JOURNAL_ACRONYMS); $i++) {
