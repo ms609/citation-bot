@@ -4,7 +4,13 @@ declare(strict_types=1);
 require_once(__DIR__ . '/../testBaseClass.php');
 
 final class apiFunctionsTest extends testBaseClass {
-  
+
+  protected function setUp(): void {
+   if (BAD_PAGE_HTTP !== '' || BAD_PAGE_API !== '') {
+     $this->markTestSkipped();
+   }
+  }
+
   public function testAdsabsApi() : void {
     $this->requires_bibcode(function() : void {
       $bibcodes = [
