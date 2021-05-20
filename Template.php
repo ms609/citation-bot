@@ -4882,9 +4882,15 @@ final class Template {
                  return;
               }
             }
-            if ($this->get('work') === 'Local') {
-              $this->forget('work');
-              $this->rename($param, 'work');
+            if (in_array(strtolower($this->get('work')), array('local', 'editorial', 'internation', 'national',
+                'communication', 'letter to the editor', 'review', 'coronavirus', 'race & reckoning',
+                'politics', 'opinion', 'opinions','investigations', 'tech', 'technology', 'world',
+                'sports', 'world', 'arts & entertainment', 'arts', 'entertainment', 'u.s.', 'n.y.',
+                'business', 'science', 'health', 'books', 'style', 'food', 'travel', 'real estate',
+                'magazine', 'economy', 'markets', 'life & arts')) &&
+                $this->blank('department')) {
+                $this->rename('work', 'department');
+                $this->rename($param, 'work');
               return;
             }
           }
