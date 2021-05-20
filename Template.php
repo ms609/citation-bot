@@ -4884,10 +4884,11 @@ final class Template {
             }
             if (in_array(strtolower($this->get('work')), array('local', 'editorial', 'internation', 'national',
                 'communication', 'letter to the editor', 'review', 'coronavirus', 'race & reckoning',
-                'politics', 'opinion', 'opinions','investigations', 'tech', 'technology', 'world',
+                'politics', 'opinion', 'opinions', 'investigations', 'tech', 'technology', 'world',
                 'sports', 'world', 'arts & entertainment', 'arts', 'entertainment', 'u.s.', 'n.y.',
                 'business', 'science', 'health', 'books', 'style', 'food', 'travel', 'real estate',
-                'magazine', 'economy', 'markets', 'life & arts')) &&
+                'magazine', 'economy', 'markets', 'life & arts', 'uk news', 'world news', 'health news',
+                'lifestyle', 'photos', 'education', 'arts', 'life', 'puzzles')) &&
                 $this->blank('department')) {
                 $this->rename('work', 'department');
                 $this->rename($param, 'work');
