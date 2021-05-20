@@ -199,16 +199,16 @@ public static function drop_urls_that_match_dois(array &$templates) : void {  //
           $template->forget($url_kind);
        } elseif (str_ireplace(PROXY_HOSTS_TO_ALWAYS_DROP,'', $url) !== $url) {
           report_forget("Existing proxy URL resulting from equivalent DOI; fixing URL");
-          $template->set($url_kind, "https://dx.doi.org/" . urlencode($doi));
+          $template->set($url_kind, "https://dx.doi.org/" . doi_encode($doi));
        } elseif (preg_match('~www.sciencedirect.com/science/article/B[^/\-]*\-[^/\-]+\-[^/\-]+/~', $url)) {
           report_forget("Existing Invalid ScienceDirect URL when DOI is present; fixing URL");
-          $template->set($url_kind, "https://dx.doi.org/" . urlencode($doi));
+          $template->set($url_kind, "https://dx.doi.org/" . doi_encode($doi));
        } elseif (preg_match('~www.sciencedirect.com/science/article/pii/\S{0,16}$~i', $url)) { // Too Short
           report_forget("Existing Invalid ScienceDirect URL when DOI is present; fixing URL");
-          $template->set($url_kind, "https://dx.doi.org/" . urlencode($doi));
+          $template->set($url_kind, "https://dx.doi.org/" . doi_encode($doi));
        } elseif (preg_match('~www.springerlink.com/content~i', $url)) { // Dead website
           report_forget("Existing Invalid Springer Link URL when DOI is present; fixing URL");
-          $template->set($url_kind, "https://dx.doi.org/" . urlencode($doi));
+          $template->set($url_kind, "https://dx.doi.org/" . doi_encode($doi));
        } elseif (str_ireplace('insights.ovid.com/pubmed','', $url) !== $url && $template->has('pmid')) {
           // SEP 2020 report_forget("Existing OVID URL resulting from equivalent PMID and DOI; dropping URL");
           // SEP 2020 $template->forget($url_kind);
@@ -217,10 +217,10 @@ public static function drop_urls_that_match_dois(array &$templates) : void {  //
           // SEP 2020 $template->forget($url_kind);
        } elseif (str_ireplace('journals.lww.com','', $url) !== $url) {
           report_forget("Existing Outdated LWW URL resulting from equivalent DOI; fixing URL");
-          $template->set($url_kind, "https://dx.doi.org/" . urlencode($doi));
+          $template->set($url_kind, "https://dx.doi.org/" . doi_encode($doi));
        } elseif (str_ireplace('wkhealth.com','', $url) !== $url) {
           report_forget("Existing Outdated WK Health URL resulting from equivalent DOI; fixing URL");
-          $template->set($url_kind, "https://dx.doi.org/" . urlencode($doi));
+          $template->set($url_kind, "https://dx.doi.org/" . doi_encode($doi));
        } elseif ($template->has('pmc') && str_ireplace('bmj.com/cgi/pmidlookup','', $url) !== $url && $template->has('pmid') && $template->get('doi-access') === 'free' && stripos($url, 'pdf') === FALSE) {
           report_forget("Existing The BMJ URL resulting from equivalent PMID and free DOI; dropping URL");
           $template->forget($url_kind);
