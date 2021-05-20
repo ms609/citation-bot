@@ -1,4 +1,4 @@
-name: Bot Test Suite
+name: Bot Full Test Suite
 
 on:
   push:
