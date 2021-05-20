@@ -47,6 +47,15 @@ final class TemplateTest extends testBaseClass {
     $this->assertSame('24 Nov 2020', $prepared->get2('access-date'));
     $this->assertNull($prepared->get2('accessdate'));
   }
+ 
+  public function testLotsMagazines() : void {
+    $text_in = "{{cite journal| journal=The New Yorker}}";
+    $prepared = $this->process_citation($text_in);
+    $this->assertSame('{{cite magazine| magazine=The New Yorker}}', $prepared->parsed_text());
+    $text_in = "{{cite journal| periodical=The Economist}}";
+    $prepared = $this->process_citation($text_in);
+    $this->assertSame('{{cite news| newspaper=The Economist}}', $prepared->parsed_text());
+  }
 
   public function testParameterWithNoParameters() : void {
     $text = "{{Cite web | text without equals sign  }}";
