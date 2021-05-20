@@ -97,7 +97,7 @@ final class expandFnsTest extends testBaseClass {
     $this->assertSame('143242342342', sanitize_doi('143242342342.')); // Rubbish with trailing dot, just remove it
     $this->assertSame('143242342342', sanitize_doi('143242342342#page_scan_tab_contents'));
     $this->assertSame('143242342342', sanitize_doi('143242342342;jsessionid'));
-    $this->assertSame('143242342342', sanitize_doi('143242342342/summary/short'));
+    $this->assertSame('143242342342', sanitize_doi('143242342342/summary'));
   }
   
   public function testTidyDate() : void {
