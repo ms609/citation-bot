@@ -4438,8 +4438,9 @@ final class Template {
           if (stripos($doi, '10.1093/law:epil') === 0 || stripos($doi, '10.1093/oi/authority') === 0) {
             return;
           }
-          if (!preg_match(REGEXP_DOI_ISSN_ONLY, $doi) && doi_works($doi)) {
-            if (str_replace(array('Amphibian Species of the World', 'an Online Reference', 'An Online Reference'), '', $periodical) === $periodical) { // TODO make a constant array
+          if (!preg_match(REGEXP_DOI_ISSN_ONLY, $doi) && doi_works($doi) && !in_array(strtolower($doi), array('10.5531/db.vz.0001')) { // TODO make a constant area
+            $the_journal = $this->get('journal') . $this->get('work') . $this->get('periodical');
+            if (str_replace(array('Amphibian Species of the World', 'an Online Reference', 'An Online Reference'), '', $the_journal) === $the_journal) { // TODO make a constant array
               $this->change_name_to('cite journal', FALSE);
             }
           }
