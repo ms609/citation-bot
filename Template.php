@@ -4438,7 +4438,11 @@ final class Template {
           if (stripos($doi, '10.1093/law:epil') === 0 || stripos($doi, '10.1093/oi/authority') === 0) {
             return;
           }
-          if (!preg_match(REGEXP_DOI_ISSN_ONLY, $doi) && doi_works($doi)) $this->change_name_to('cite journal', FALSE);
+          if (!preg_match(REGEXP_DOI_ISSN_ONLY, $doi) && doi_works($doi)) {
+            if (str_replace(array('Amphibian Species of the World', 'an Online Reference', 'An Online Reference'), '', $periodical) === $periodical) { // TODO make a constant array
+              $this->change_name_to('cite journal', FALSE);
+            }
+          }
           if (preg_match('~^10\.2307/(\d+)$~', $this->get_without_comments_and_placeholders('doi'))) {
             $this->add_if_new('jstor', substr($this->get_without_comments_and_placeholders('doi'), 8));
           }
