@@ -33,7 +33,7 @@ abstract class testBaseClass extends PHPUnit\Framework\TestCase {
 
   protected function requires_secrets(callable $function) : void {
     if ($this->testing_skip_wiki) {
-      echo 'S';
+      echo 'A'; // For API
       ob_flush();
       $this->assertNull(NULL);
     } else {
