@@ -83,7 +83,7 @@ function bibcode_link(string $id) : string {
 function doi_link(string $doi) : string {
   /** @psalm-suppress TypeDoesNotContainType */ /* PSALM thinks HTML_OUTPUT cannot be false */
   return HTML_OUTPUT
-    ? '<a href="https://dx.doi.org/' . urlencode($doi) . '" target="_blank">' . $doi . '</a>'      // @codeCoverageIgnore
+    ? '<a href="https://dx.doi.org/' . doi_encode($doi) . '" target="_blank">' . $doi . '</a>'      // @codeCoverageIgnore
     : $doi;
 }
 
