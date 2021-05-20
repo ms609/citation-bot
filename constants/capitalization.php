@@ -49,7 +49,7 @@ const UC_SMALL_WORDS = array(/* The following will be automatically updated to a
           // For ones that start with lower-case, include both ELife and Elife versions in misspelled array
 const JOURNAL_ACRONYMS = array(/* The following will be automatically updated to alphabetical order */
           " (and the Middle East) ", " (BBA) ", " (online ed.) ", " AAPOS ", " AAPS ", 
-          " ACM SIGGRAPH ", " ACS ", " AJNR. ", " Algebra i Analiz ", " Angew Chem Int Ed ", 
+          " ACM SIGGRAPH ", " ACS ", " AJNR. ", " Algebra i Analiz ", " Angew Chem Int Ed ", " Amphibian Species of the World: an Online Reference. ", 
           " AOAC International ", " Applied ", " APS Division ", " Arch Dis Child Fetal Neonatal Ed ", 
           " ASAIO ", " ASME AES ", " ASME MTD ", " Avtomatika i Telemekhanika ", " B/gcvs ", 
           " B/gcvs ", " B/gcvs ", " Bild am Sonntag ", " BioEssays ", " bioRxiv ", " bioRxiv ", 
@@ -104,7 +104,7 @@ const JOURNAL_ACRONYMS = array(/* The following will be automatically updated to
 );
 const UCFIRST_JOURNAL_ACRONYMS = array(/* The following will be automatically updated to alphabetical order */
           " (And the Middle East) ", " (Bba) ", " (online Ed.) ", " Aapos ", " Aaps ", 
-          " ACM Siggraph ", " Acs ", " Ajnr. ", " Algebra I Analiz ", " Angew Chem Int ed ", 
+          " ACM Siggraph ", " Acs ", " Ajnr. ", " Algebra I Analiz ", " Angew Chem Int ed ", " Amphibian Species of the World: An Online Reference. ",
           " AOAC INTERNATIONAL ", " Appiled ", " Aps Division ", " Arch Dis Child Fetal Neonatal ed ", 
           " Asaio ", " Asme Aes ", " Asme MTD ", " Avtomatika I Telemekhanika ", " B/GCVS ", 
           " B/Gcvs ", " b/gcvs ", " Bild Am Sonntag ", " Bioessays ", " BioRxiv ", " Biorxiv ", 
