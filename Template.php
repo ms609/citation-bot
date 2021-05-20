@@ -12,7 +12,7 @@ declare(strict_types=1);
  * to find information that can be added to existing citations.
  */
 
-// @codeCoverageIgnoreBegin
+// @codeCoverageIgnoreStart
 require_once('Parameter.php');
 require_once('expandFns.php');
 require_once('user_messages.php');
@@ -7144,7 +7144,7 @@ final class Template {
     if ($this->has('series')) return FALSE; // Dangerous risk of duplication and most likely a series of "books"
     if ($this->wikiname() === 'cite book' && $this->has('isbn')) return FALSE; // Probably a series of "books"
     $issn = $this->get('issn');
-    // @codeCoverageIgnoreBegin
+    // @codeCoverageIgnoreStart
     if ($issn === '0140-0460') { // Must use set to avoid escaping the [[ and ]]
       return $this->set('newspaper', '[[The Times]]');
     } elseif ($issn === '0190-8286') {
