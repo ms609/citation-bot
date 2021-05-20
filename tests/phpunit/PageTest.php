@@ -125,6 +125,12 @@ final class PageTest extends testBaseClass {
       $this->assertNull(NULL);
   }
  
+  public function testOverwriteTestPage() : void {
+      $page = new TestPage();
+      $page->overwrite_text('Dogs');
+      $this->assertSame('Dogs', $page->parsed_text());
+  }
+ 
   public function testBotReadRedirect() : void {
    $this->requires_secrets(function() : void {
       $page = new TestPage();
