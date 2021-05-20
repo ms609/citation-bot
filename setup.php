@@ -96,7 +96,8 @@ function unlock_user() : void {
 function check_overused() : void {
  if (TRAVIS) return;
  if (isset($_SESSION['big_and_busy']) && $_SESSION['big_and_busy'] === 'BLOCK3') {
-   exit('</pre><div style="text-align:center"><h1>Run blocked by your existing big run.</h1></div></footer></body></html>');
+   echo('</pre><div style="text-align:center"><h1>Run blocked by your existing big run.</h1></div><footer><a href="./" title="Use Citation Bot again">Another</a>?</footer></body></html>');
+   exit();
  }
  @session_start();
  $_SESSION['big_and_busy'] = 'BLOCK3';
