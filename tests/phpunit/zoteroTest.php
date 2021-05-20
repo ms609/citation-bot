@@ -141,11 +141,11 @@ final class ZoteroTest extends testBaseClass {
   }
   
    public function testDropSomeURLEquivs7() : void {
-    $text = "{{cite journal|pmc=XYZ|doi=X|journal=X|title=X|last1=X|first1=X|volume=X|issue=X|year=X|url=http://xyz.serialssolutions.com/cgi/sss|pmid=333}}";
+    $text = "{{cite journal|pmc=XYZ|doi=XDOI|journal=X|title=X|last1=X|first1=X|volume=X|issue=X|year=X|url=http://xyz.serialssolutions.com/cgi/sss|pmid=333}}";
     $template = $this->make_citation($text);
     $tmp_array = [$template];
     Zotero::drop_urls_that_match_dois($tmp_array);
-    $this->assertNull($template->get2('url'));
+    $this->assertSame('https://dx.doi.org/XDOI', $template->get2('url'));
   }
   
   public function testDropSomeURLEquivs8() : void {
