@@ -4638,6 +4638,9 @@ final class Template {
           if ($this->get($param) === 'The New Yorker') { // TODO : Make into an array
             $this->change_name_to('cite magazine');
             $this->rename($param, 'magazine');
+          } elseif ($this->get($param) === 'The Economist') { // TODO : Make into an array
+            $this->change_name_to('cite news');
+            $this->rename($param, 'newspaper');
           }
           return;
         
