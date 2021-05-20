@@ -28,8 +28,9 @@ private static function set_default_ch_zotero() : void {
             CURLOPT_CONNECTTIMEOUT => 10,
             CURLOPT_TIMEOUT => 45]);
   } else {
+        // @codeCoverageIgnoreBegin
         /** @psalm-suppress PossiblyNullArgument */ 
-        curl_setopt_array(self::$zotero_ch,  // @codeCoverageIgnore
+        curl_setopt_array(self::$zotero_ch,
             [CURLOPT_URL => ZOTERO_ROOT,
             CURLOPT_CUSTOMREQUEST => "POST",
             CURLOPT_HTTPHEADER => ['Content-Type: text/plain'],
@@ -38,6 +39,7 @@ private static function set_default_ch_zotero() : void {
             // Defaults used in TRAVIS overiden below when deployed
             CURLOPT_CONNECTTIMEOUT => 10,
             CURLOPT_TIMEOUT => 45]);
+        // @codeCoverageIgnoreEnd
     }
 }
 
