@@ -4359,6 +4359,10 @@ final class Template {
           }
           return;
 
+        case 'df':
+          if ($this->blank('df')) $this->forget('df');
+          return;
+
         case 'last-author-amp': case 'lastauthoramp':
           $the_data = strtolower($this->get($param));
           if (in_array($the_data, ['n', 'no', 'false'])) {
