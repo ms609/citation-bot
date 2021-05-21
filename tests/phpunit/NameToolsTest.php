@@ -8,6 +8,13 @@ declare(strict_types=1);
 require_once(__DIR__ . '/../testBaseClass.php');
 
 final class doiToolsTest extends testBaseClass {
+
+  protected function setUp(): void {
+   if (BAD_PAGE_HTTP !== '' || BAD_PAGE_API !== '') {
+     $this->markTestSkipped();
+   }
+  }
+
   public function testFormatMultipleAuthors1() : void {
     $authors = 'M.A. Smith, Smith M.A., Smith MA., Martin A. Smith, MA Smith, Martin Smith'; // unparsable gibberish formatted in many ways--basically exists to check for code changes
     $result=format_multiple_authors($authors);

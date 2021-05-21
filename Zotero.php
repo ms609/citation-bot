@@ -28,6 +28,7 @@ private static function set_default_ch_zotero() : void {
             CURLOPT_CONNECTTIMEOUT => 10,
             CURLOPT_TIMEOUT => 45]);
   } else {
+        // @codeCoverageIgnoreBegin
         /** @psalm-suppress PossiblyNullArgument */ 
         curl_setopt_array(self::$zotero_ch,
             [CURLOPT_URL => ZOTERO_ROOT,
@@ -38,6 +39,7 @@ private static function set_default_ch_zotero() : void {
             // Defaults used in TRAVIS overiden below when deployed
             CURLOPT_CONNECTTIMEOUT => 10,
             CURLOPT_TIMEOUT => 45]);
+        // @codeCoverageIgnoreEnd
     }
 }
 
@@ -170,8 +172,8 @@ public static function drop_urls_that_match_dois(array &$templates) : void {  //
        $url = $template->get('chapter-url');
        $url_kind = 'chapter-url';
     } elseif ($template->has('chapterurl')) {
-       $url = $template->get('chapterurl');
-       $url_kind = 'chapterurl';
+       $url = $template->get('chapterurl'); // @codeCoverageIgnore
+       $url_kind = 'chapterurl';            // @codeCoverageIgnore
     } else {
        $url = '';
        $url_kind = '';
@@ -197,16 +199,16 @@ public static function drop_urls_that_match_dois(array &$templates) : void {  //
           $template->forget($url_kind);
        } elseif (str_ireplace(PROXY_HOSTS_TO_ALWAYS_DROP,'', $url) !== $url) {
           report_forget("Existing proxy URL resulting from equivalent DOI; fixing URL");
-          $template->set($url_kind, "https://dx.doi.org/" . urlencode($doi));
+          $template->set($url_kind, "https://dx.doi.org/" . doi_encode($doi));
        } elseif (preg_match('~www.sciencedirect.com/science/article/B[^/\-]*\-[^/\-]+\-[^/\-]+/~', $url)) {
           report_forget("Existing Invalid ScienceDirect URL when DOI is present; fixing URL");
-          $template->set($url_kind, "https://dx.doi.org/" . urlencode($doi));
+          $template->set($url_kind, "https://dx.doi.org/" . doi_encode($doi));
        } elseif (preg_match('~www.sciencedirect.com/science/article/pii/\S{0,16}$~i', $url)) { // Too Short
           report_forget("Existing Invalid ScienceDirect URL when DOI is present; fixing URL");
-          $template->set($url_kind, "https://dx.doi.org/" . urlencode($doi));
+          $template->set($url_kind, "https://dx.doi.org/" . doi_encode($doi));
        } elseif (preg_match('~www.springerlink.com/content~i', $url)) { // Dead website
           report_forget("Existing Invalid Springer Link URL when DOI is present; fixing URL");
-          $template->set($url_kind, "https://dx.doi.org/" . urlencode($doi));
+          $template->set($url_kind, "https://dx.doi.org/" . doi_encode($doi));
        } elseif (str_ireplace('insights.ovid.com/pubmed','', $url) !== $url && $template->has('pmid')) {
           // SEP 2020 report_forget("Existing OVID URL resulting from equivalent PMID and DOI; dropping URL");
           // SEP 2020 $template->forget($url_kind);
@@ -215,10 +217,10 @@ public static function drop_urls_that_match_dois(array &$templates) : void {  //
           // SEP 2020 $template->forget($url_kind);
        } elseif (str_ireplace('journals.lww.com','', $url) !== $url) {
           report_forget("Existing Outdated LWW URL resulting from equivalent DOI; fixing URL");
-          $template->set($url_kind, "https://dx.doi.org/" . urlencode($doi));
+          $template->set($url_kind, "https://dx.doi.org/" . doi_encode($doi));
        } elseif (str_ireplace('wkhealth.com','', $url) !== $url) {
           report_forget("Existing Outdated WK Health URL resulting from equivalent DOI; fixing URL");
-          $template->set($url_kind, "https://dx.doi.org/" . urlencode($doi));
+          $template->set($url_kind, "https://dx.doi.org/" . doi_encode($doi));
        } elseif ($template->has('pmc') && str_ireplace('bmj.com/cgi/pmidlookup','', $url) !== $url && $template->has('pmid') && $template->get('doi-access') === 'free' && stripos($url, 'pdf') === FALSE) {
           report_forget("Existing The BMJ URL resulting from equivalent PMID and free DOI; dropping URL");
           $template->forget($url_kind);
@@ -282,7 +284,7 @@ private static function zotero_request(string $url) : string {
   if ( USE_CITOID ) {
      curl_setopt(self::$zotero_ch, CURLOPT_URL, CITOID_ZOTERO . urlencode($url));
   } else {
-     curl_setopt(self::$zotero_ch, CURLOPT_POSTFIELDS, $url);
+     curl_setopt(self::$zotero_ch, CURLOPT_POSTFIELDS, $url);    // @codeCoverageIgnore 
   }
    
   if (self::$zotero_failures_count > self::ZOTERO_GIVE_UP) return self::ERROR_DONE;
@@ -337,6 +339,11 @@ public static function expand_by_zotero(Template $template, ?string $url = NULL)
   $bad_url = implode('|', ZOTERO_AVOID_REGEX);
   if(preg_match("~^https?://(?:www\.|)(?:" . $bad_url . ")~i", $url)) return FALSE; 
 
+  // Is it actually a URL.  Zotero will search for non-url things too!
+  if (filter_var($url, FILTER_VALIDATE_URL) === FALSE) return FALSE; // PHP does not like it
+  if (preg_match('~^https?://[^/]+/?$~', $url) === 1) return FALSE; // Just a host name
+  if (preg_match(REGEXP_IS_URL, $url) !== 1) return FALSE;  // See https://mathiasbynens.be/demo/url-regex/  This regex is more exact than validator.  We only spend time on this after quick and dirty check is passed
+   
   if (self::$zotero_announced === 1) {
     report_action("Using Zotero translation server to retrieve details from URLs.");
     self::$zotero_announced = 0;
@@ -486,8 +493,14 @@ public static function process_zotero_response(string $zotero_response, Template
     if (preg_match('~\s(original-date: \S+)\s~i', ' ' . $result->extra . ' ', $matches)) { // We don't use it
       $result->extra = trim(str_replace(trim($matches[0]), '', $result->extra));           // @codeCoverageIgnore
     }
+    if (preg_match('~\s(Google-Books-ID: \S+)\s~i', ' ' . $result->extra . ' ', $matches)) { // We don't use it
+      $result->extra = trim(str_replace(trim($matches[0]), '', $result->extra));           // @codeCoverageIgnore
+    }
+    if (preg_match('~\s(ISSN: \S+)\s~i', ' ' . $result->extra . ' ', $matches)) { // We don't use it
+      $result->extra = trim(str_replace(trim($matches[0]), '', $result->extra));           // @codeCoverageIgnore
+    }
     if (trim($result->extra) !== '') {
-      report_minor_error("Unhandled extra data: " . $result->extra); // @codeCoverageIgnore
+      report_minor_error("Unhandled extra data: " . $result->extra);                       // @codeCoverageIgnore
     }
   } 
   
@@ -628,6 +641,7 @@ public static function process_zotero_response(string $zotero_response, Template
         
       case 'videoRecording':
       case 'film':
+      case 'audioRecording';     // @codeCoverageIgnore
       case 'presentation';     // @codeCoverageIgnore
       case 'computerProgram';  // @codeCoverageIgnore
         // Nothing special that we know of yet

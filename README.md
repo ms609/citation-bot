@@ -1,4 +1,4 @@
-[![Build Status](https://github.com/ms609/citation-bot/workflows/Bot%20Test%20Suite/badge.svg)](https://github.com/ms609/citation-bot/actions?query=workflow%3A%22Bot+Test+Suite%22)
+[![Build Status](https://github.com/ms609/citation-bot/workflows/Bot%20Full%20Test%20Suite/badge.svg)](https://github.com/ms609/citation-bot/actions?query=workflow%3A%22Bot+Full+Test+Suite%22)
 [![Build Status](https://github.com/ms609/citation-bot/workflows/CodeQL/badge.svg)](https://github.com/ms609/citation-bot/actions?query=workflow%3A%22CodeQL%22)
 [![Build Status](https://github.com/ms609/citation-bot/workflows/PHP%20Static%20Tests/badge.svg)](https://github.com/ms609/citation-bot/actions?query=workflow%3A%22PHP+Static+Tests%22)
 [![codecov](https://codecov.io/gh/ms609/citation-bot/branch/master/graph/badge.svg)](https://codecov.io/gh/ms609/citation-bot)
@@ -97,3 +97,4 @@ This can be updated by maintainers logging on to Toolforge, then entering the co
     npm update
     webservice restart
     
+In order to reduce complexity, the code currently uses a Wikipedia hosted and managed server instead at https://en.wikipedia.org/api/rest_v1/#/Citation/getCitation.

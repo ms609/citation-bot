@@ -49,7 +49,7 @@ const UC_SMALL_WORDS = array(/* The following will be automatically updated to a
           // For ones that start with lower-case, include both ELife and Elife versions in misspelled array
 const JOURNAL_ACRONYMS = array(/* The following will be automatically updated to alphabetical order */
           " (and the Middle East) ", " (BBA) ", " (online ed.) ", " AAPOS ", " AAPS ", 
-          " ACM SIGGRAPH ", " ACS ", " AJNR. ", " Algebra i Analiz ", " Angew Chem Int Ed ", 
+          " ACM SIGGRAPH ", " ACS ", " AJNR. ", " Algebra i Analiz ", " Angew Chem Int Ed ", " Amphibian Species of the World: an Online Reference. ", 
           " AOAC International ", " Applied ", " APS Division ", " Arch Dis Child Fetal Neonatal Ed ", 
           " ASAIO ", " ASME AES ", " ASME MTD ", " Avtomatika i Telemekhanika ", " B/gcvs ", 
           " B/gcvs ", " B/gcvs ", " Bild am Sonntag ", " BioEssays ", " bioRxiv ", " bioRxiv ", 
@@ -57,7 +57,7 @@ const JOURNAL_ACRONYMS = array(/* The following will be automatically updated to
           " ChemElectroChem ", " ChemistryOpen ", " ChemistrySelect ", " ChemistryViews ", 
           " ChemMedChem ", " ChemPhotoChem ", " ChemPhysChem ", " ChemPlusChem ", " ChemSusChem ", 
           " ChemSystemsChem ", " CMAJ ", " Combinatorial Math. and Combinatorial ", " CommLaw ", 
-          " CrystEngComm ", " dell'Accademia ", " Des. ", " Drug Des Devel Ther ", " Dtsch ", 
+          " CrystEngComm ", " dell'Accademia ", " Des. ", " Disease-a-Month ", " Drug Des Devel Ther ", " Dtsch ", 
           " Dtsch. ", " e-Collaboration ", " e-Journal ", " e-Journal ", " e-Neuroforum ", 
           " e-Neuroforum ", " e-Print ", " e-Print ", " e-Prints ", " e-Prints ", " E: ", 
           " Early Modern Japan: an Interdisciplinary Journal ", " EBioMedicine ", " ecancermedicalscience ", 
@@ -104,7 +104,7 @@ const JOURNAL_ACRONYMS = array(/* The following will be automatically updated to
 );
 const UCFIRST_JOURNAL_ACRONYMS = array(/* The following will be automatically updated to alphabetical order */
           " (And the Middle East) ", " (Bba) ", " (online Ed.) ", " Aapos ", " Aaps ", 
-          " ACM Siggraph ", " Acs ", " Ajnr. ", " Algebra I Analiz ", " Angew Chem Int ed ", 
+          " ACM Siggraph ", " Acs ", " Ajnr. ", " Algebra I Analiz ", " Angew Chem Int ed ", " Amphibian Species of the World: An Online Reference. ",
           " AOAC INTERNATIONAL ", " Appiled ", " Aps Division ", " Arch Dis Child Fetal Neonatal ed ", 
           " Asaio ", " Asme Aes ", " Asme MTD ", " Avtomatika I Telemekhanika ", " B/GCVS ", 
           " B/Gcvs ", " b/gcvs ", " Bild Am Sonntag ", " Bioessays ", " BioRxiv ", " Biorxiv ", 
@@ -112,7 +112,7 @@ const UCFIRST_JOURNAL_ACRONYMS = array(/* The following will be automatically up
           " Chemelectrochem ", " Chemistryopen ", " Chemistryselect ", " Chemistryviews ", 
           " Chemmedchem ", " Chemphotochem ", " Chemphyschem ", " Chempluschem ", " Chemsuschem ", 
           " Chemsystemschem ", " Cmaj ", " Combinatorial Math. And Combinatorial ", " Commlaw ", 
-          " Crystengcomm ", " Dell'Accademia ", " des. ", " Drug des Devel Ther ", " DTSCH ", 
+          " Crystengcomm ", " Dell'Accademia ", " des. ", " Disease-A-Month ", " Drug des Devel Ther ", " DTSCH ", 
           " DTSCH. ", " E-Collaboration ", " E-Journal ", " E-journal ", " E-Neuroforum ", 
           " E-neuroforum ", " E-Print ", " E-print ", " E-Prints ", " E-prints ", " e: ", 
           " Early Modern Japan: An Interdisciplinary Journal ", " Ebiomedicine ", " Ecancermedicalscience ", 

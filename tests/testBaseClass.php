@@ -3,6 +3,9 @@ declare(strict_types=1);
 
 require_once(__DIR__ . '/../setup.php');
 
+define("BAD_PAGE_HTTP", "");
+define("BAD_PAGE_API", "");
+
 abstract class testBaseClass extends PHPUnit\Framework\TestCase {
   // Change these to temporarily disable sets of tests======================
   private $testing_skip_zotero = FALSE;                                           //
@@ -30,7 +33,7 @@ abstract class testBaseClass extends PHPUnit\Framework\TestCase {
 
   protected function requires_secrets(callable $function) : void {
     if ($this->testing_skip_wiki) {
-      echo 'S';
+      echo 'A'; // For API
       ob_flush();
       $this->assertNull(NULL);
     } else {
