@@ -4439,9 +4439,9 @@ final class Template {
             return;
           }
           if (!preg_match(REGEXP_DOI_ISSN_ONLY, $doi) && doi_works($doi)) {
-           if(!in_array(strtolower($doi), array('10.5531/db.vz.0001'))) { // TODO make a constant array
+           if(!in_array(strtolower($doi), NON_JOURNAL_DOIS)) {
             $the_journal = $this->get('journal') . $this->get('work') . $this->get('periodical');
-            if (str_replace(array('Amphibian Species of the World', 'an Online Reference', 'An Online Reference'), '', $the_journal) === $the_journal) { // TODO make a constant array
+            if (str_replace(NON_JOURNALS, '', $the_journal) === $the_journal) {
               $this->change_name_to('cite journal', FALSE);
             }
            }
@@ -4642,10 +4642,10 @@ final class Template {
               $this->forget($param);
             }
           }
-          if ($this->get($param) === 'The New Yorker') { // TODO : Make into an array
+          if (in_array(strtolower($this->get($param), ARE_MAGAZINES)) {
             $this->change_name_to('cite magazine');
             $this->rename($param, 'magazine');
-          } elseif ($this->get($param) === 'The Economist') { // TODO : Make into an array
+          } elseif in_array(strtolower($this->get($param), ARE_NEWSPAPERS)) {
             $this->change_name_to('cite news');
             $this->rename($param, 'newspaper');
           }
@@ -5058,7 +5058,7 @@ final class Template {
           foreach (WORK_ALIASES as $work) {
               $worky = strtolower($this->get($work));
               $worky = str_replace(array("[[" , "]]"), "", $worky);
-              if (in_array($worky, array('los angeles times', 'new york times magazine', 'the new york times', 'new york times', 'huffington post', 'the daily telegraph', 'forbes.com', 'forbes magazine'))) { // TODO - create constant array of works that do not need a publisher
+              if (in_array($worky, NO_PUBLISHER_NEEDED)) {
                  $this->forget($param);
                  return;
               }
