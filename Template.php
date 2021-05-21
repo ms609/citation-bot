@@ -4342,6 +4342,14 @@ final class Template {
             $this->change_name_to('cite book');
           }
           return;
+
+        case 'class':
+           if ($this->blank('class')) {
+              if ($this->wikiname !== 'cite arxiv' && !$this->blank(array('doi', 'pmid', 'pmc', 'journal', 'series', 'isbn'))) {
+                 $this->forget('class');
+              }
+           }
+           return;
     
         case 'date':
           if ($this->blank('date') && $this->has('year')) $this->forget('date');
