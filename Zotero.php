@@ -28,7 +28,7 @@ private static function set_default_ch_zotero() : void {
             CURLOPT_CONNECTTIMEOUT => 10,
             CURLOPT_TIMEOUT => 45]);
   } else {
-        // @codeCoverageIgnoreBegin
+        // @codeCoverageIgnoreStart
         /** @psalm-suppress PossiblyNullArgument */ 
         curl_setopt_array(self::$zotero_ch,
             [CURLOPT_URL => ZOTERO_ROOT,
