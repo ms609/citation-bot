@@ -4345,7 +4345,7 @@ final class Template {
 
         case 'class':
            if ($this->blank('class')) {
-              if ($this->wikiname !== 'cite arxiv' && !$this->blank(array('doi', 'pmid', 'pmc', 'journal', 'series', 'isbn'))) {
+              if ($this->wikiname() !== 'cite arxiv' && !$this->blank(array('doi', 'pmid', 'pmc', 'journal', 'series', 'isbn'))) {
                  $this->forget('class');
               }
            }
