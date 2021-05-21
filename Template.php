@@ -4642,10 +4642,10 @@ final class Template {
               $this->forget($param);
             }
           }
-          if (in_array(strtolower($this->get($param), ARE_MAGAZINES)) {
+          if (in_array(strtolower($this->get($param)), ARE_MAGAZINES)) {
             $this->change_name_to('cite magazine');
             $this->rename($param, 'magazine');
-          } elseif in_array(strtolower($this->get($param), ARE_NEWSPAPERS)) {
+          } elseif (in_array(strtolower($this->get($param)), ARE_NEWSPAPERS)) {
             $this->change_name_to('cite news');
             $this->rename($param, 'newspaper');
           }
