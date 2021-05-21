@@ -1,4 +1,4 @@
-name: Bot Test Suite
+name: Bot Full Test Suite
 
 on:
   push:
@@ -46,12 +46,12 @@ jobs:
          PHP_ADSABSAPIKEY: ${{ secrets.PHP_ADSABSAPIKEY }}
          PHP_GOOGLEKEY: ${{ secrets.PHP_GOOGLEKEY }}
          PHP_OAUTH_CONSUMER_TOKEN: ${{ secrets.PHP_OAUTH_CONSUMER_TOKEN }}
-         PHP_OAUTH_ACCESS_TOKEN: ${{ secrets.PHP_OAUTH_ACCESS_TOKEN }}
          PHP_OAUTH_CONSUMER_SECRET: ${{ secrets.PHP_OAUTH_CONSUMER_SECRET }}
+         PHP_OAUTH_ACCESS_TOKEN: ${{ secrets.PHP_OAUTH_ACCESS_TOKEN }}
          PHP_OAUTH_ACCESS_SECRET: ${{ secrets.PHP_OAUTH_ACCESS_SECRET }}
          PHP_WP_OAUTH_SECRET: ${{ secrets.PHP_WP_OAUTH_SECRET }}
-         PHP_S2APIKEY: ${{ secrets.PHP_S2APIKEY }}
          PHP_WP_OAUTH_CONSUMER: ${{ secrets.PHP_WP_OAUTH_CONSUMER }}
+         PHP_S2APIKEY: ${{ secrets.PHP_S2APIKEY }}
       run: ./vendor/bin/phpunit --coverage-clover coverage.xml
 
     - name: Code Coverage

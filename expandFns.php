@@ -758,3 +758,8 @@ function str_i_same(string $str1, string $str2) : bool {
    return (0 === strcasecmp($str1, $str2));
 }
   
+function doi_encode (string $doi) : string {
+    $doi = urlencode($doi);
+    $doi = str_replace('%2F', '/', $doi);
+    return $doi;
+}

@@ -123,7 +123,7 @@ const PROXY_HOSTS_TO_DROP = array('proxy.libraries', 'proxy.lib.', '.ezproxy.', 
                                   'informaworld.com/smpp', '.search.serialssolutions.com', 'doi.apa.org',
                                   'onlinelibrary.wiley.com/resolve/openurl', 'findarticles.com', 'psycnet.apa.org'); // Drop these if there is a valid FREE DOI
 
-const WEB_NEWSPAPERS = array('bbc news', 'bbc', 'news.bbc.co.uk', 'bbc sports', 'bbc sport', 'www.bbc.co.uk');
+const WEB_NEWSPAPERS = array('bbc news', 'bbc', 'news.bbc.co.uk', 'bbc sports', 'bbc sport', 'www.bbc.co.uk', 'the economist');
 
 const NO_DATE_WEBSITES = array('wikipedia.org', 'web.archive.org', 'perma-archives.org', 'webarchive.proni.gov.uk', 'perma.cc',
                               'wayback', 'web.archive.bibalex.org', 'web.petabox.bibalex.org', 'webharvest.gov', 'archive.wikiwix.com',
@@ -154,6 +154,14 @@ const NON_JOURNAL_WEBSITES = array('cnn.com/', 'foxnews.com/', 'msnbc.com/', 'nb
                                    'surgeongeneral.gov/', 'www.rte.ie/', 'plato.stanford.edu/', 'britannica.com/'); 
                                    // Just a list of ones that are obvious.  Add ones that time-out as we find them
                                    // bbm.ca is short enough that we add /bbm.ca/ and .bbm.ca/ since we don't want to grab too many sites
+
+const NON_JOURNAL_DOIS = array('10.5531/db.vz.0001'); // lowercase exact matches
+const NON_JOURNALS = array('Amphibian Species of the World', 'an Online Reference', 'An Online Reference'); // Case-sensitive sub-string
+const ARE_MAGAZINES = array('the new yorker'); // lowercase axact matches
+const ARE_NEWSPAPERS = array('the economist'); // lowercase axact matches
+const NO_PUBLISHER_NEEDED = array('los angeles times', 'new york times magazine', 'the new york times',
+                                   'new york times', 'huffington post', 'the daily telegraph', 'forbes.com',
+                                   'forbes magazine'); // lowercase axact matches
 
 const ENCYCLOPEDIA_WEB = array('plato.stanford.edu', 'britannica.com');
 

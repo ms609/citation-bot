@@ -12,12 +12,14 @@ declare(strict_types=1);
  * to find information that can be added to existing citations.
  */
 
+// @codeCoverageIgnoreStart
 require_once('Parameter.php');
 require_once('expandFns.php');
 require_once('user_messages.php');
 require_once('apiFunctions.php');
 require_once("constants.php");
 require_once("NameTools.php");
+// @codeCoverageIgnoreEnd
 
 final class Template {
   public const PLACEHOLDER_TEXT = '# # # CITATION_BOT_PLACEHOLDER_TEMPLATE %s # # #';
@@ -708,8 +710,8 @@ final class Template {
       return FALSE;  // We let comments block the bot
     }
     
-    if (array_key_exists($param_name, COMMON_MISTAKES)) {
-      report_error("Attempted to add invalid parameter: " . echoable($param_name)); // @codeCoverageIgnore
+    if (array_key_exists($param_name, COMMON_MISTAKES)) { // This is not an error, since sometimes the floating text code finds odd stuff
+      report_minor_error("Attempted to add invalid parameter: " . echoable($param_name)); // @codeCoverageIgnore
     }
     
     // We have to map these, since sometimes we get floating accessdat and such
@@ -1505,12 +1507,12 @@ final class Template {
         }
         return FALSE;
 
-      default:  // We want to make sure we understand what we are adding
+      default:  // We want to make sure we understand what we are adding - sometimes we find odd floating parameters
         // @codeCoverageIgnoreStart
-        report_error('Unexpected parameter: ' . echoable($param_name) . ' trying to be set to ' . echoable($value));
-        if ($this->blank($param_name)) {
-          return $this->add($param_name, sanitize_string($value));
-        }
+        report_minor_error('Unexpected parameter: ' . echoable($param_name) . ' trying to be set to ' . echoable($value));
+        // if ($this->blank($param_name)) {
+        //  return $this->add($param_name, sanitize_string($value));
+        // }
         return FALSE;
         // @codeCoverageIgnoreEnd
     }
@@ -2089,6 +2091,7 @@ final class Template {
           }
           // Safety check
           if (strlen($handle) < 6 || strpos($handle, '/') === FALSE) return FALSE;
+          if (strpos($handle, '123456789') === 0) return FALSE;
 
           $the_question = strpos($handle, '?');
           if ($the_question !== FALSE) {
@@ -2222,6 +2225,7 @@ final class Template {
       // This is quite a broad match, so we need to ensure that no baggage has been tagged on to the end of the URL.
       $doi = preg_replace("~(\.x)/(?:\w+)~", "$1", $match[0]);
       $doi = extract_doi($doi)[1];
+      if ($doi === FALSE) return; // Found nothing
       if ($this->has('quote') && strpos($this->get('quote'), $doi) !== FALSE) return;
       if (doi_active($doi)) $this->add_if_new('doi', $doi);
     }
@@ -4355,6 +4359,29 @@ final class Template {
           }
           return;
 
+        case 'last-author-amp': case 'lastauthoramp':
+          $the_data = strtolower($this->get($param));
+          if (in_array($the_data, ['n', 'no', 'false'])) {
+            $this->forget($param);
+            return;
+          }
+          if (in_array($the_data, ['y', 'yes', 'true'])) {
+            $this->rename($param, 'name-list-style', 'amp');
+            $this->forget($param);
+          }
+          return;
+
+        case 'laysummary': case 'lay-summary':
+          if ($this->blank($param)) {
+            $this->forget($param);
+            return;
+          }
+          if (!$this->blank(['lay-url', 'layurl'])) return;
+          if (preg_match('~^https?://[^ ]+$~', $this->get($param))) {
+            $this->rename($param, 'lay-url');
+          }
+          return;
+          
         case 'doi':
           $doi = $this->get($param);
           if (!$doi) return;
@@ -4411,7 +4438,14 @@ final class Template {
           if (stripos($doi, '10.1093/law:epil') === 0 || stripos($doi, '10.1093/oi/authority') === 0) {
             return;
           }
-          if (!preg_match(REGEXP_DOI_ISSN_ONLY, $doi) && doi_works($doi)) $this->chaCONFLICT nge_name_to('cite journal', FALSE);
+          if (!preg_match(REGEXP_DOI_ISSN_ONLY, $doi) && doi_works($doi)) {
+           if(!in_array(strtolower($doi), NON_JOURNAL_DOIS)) {
+            $the_journal = $this->get('journal') . $this->get('work') . $this->get('periodical');
+            if (str_replace(NON_JOURNALS, '', $the_journal) === $the_journal) {
+              $this->change_name_to('cite journal', FALSE);
+            }
+           }
+          }
           if (preg_match('~^10\.2307/(\d+)$~', $this->get_without_comments_and_placeholders('doi'))) {
             $this->add_if_new('jstor', substr($this->get_without_comments_and_placeholders('doi'), 8));
           }
@@ -4608,9 +4642,12 @@ final class Template {
               $this->forget($param);
             }
           }
-          if ($this->get($param) === 'The New Yorker') { // TODO : Make into an array
+          if (in_array(strtolower($this->get($param)), ARE_MAGAZINES)) {
             $this->change_name_to('cite magazine');
             $this->rename($param, 'magazine');
+          } elseif (in_array(strtolower($this->get($param)), ARE_NEWSPAPERS)) {
+            $this->change_name_to('cite news');
+            $this->rename($param, 'newspaper');
           }
           return;
         
@@ -4728,6 +4765,19 @@ final class Template {
             $this->set($param, 'Google Inc.');  // Case when Google actually IS a publisher
             return;
           }
+          if (stripos($this->get('url'), 'support.google.com') !== FALSE && stripos($publisher, 'google') !== FALSE)  {
+            $this->set($param, 'Google Inc.');  // Case when Google actually IS a publisher
+            return;
+          }
+          if (stripos($publisher, 'google') !== FALSE) {
+            $this_host = (string) parse_url($this->get('url'), PHP_URL_HOST);
+            if (stripos($this_host, 'google') === FALSE ||
+                stripos($this_host, 'blog')   !== FALSE ||
+                stripos($this_host, 'github') !== FALSE){
+              return; // Case when Google actually IS a publisher
+            }
+          }
+          
           foreach (NON_PUBLISHERS as $not_publisher) {
             if (stripos($publisher, $not_publisher) !== FALSE) {
               $this->forget($param);
@@ -4839,9 +4889,16 @@ final class Template {
                  return;
               }
             }
-            if ($this->get('work') === 'Local') {
-              $this->forget('work');
-              $this->rename($param, 'work');
+            if (in_array(strtolower($this->get('work')), array('local', 'editorial', 'internation', 'national',
+                'communication', 'letter to the editor', 'review', 'coronavirus', 'race & reckoning',
+                'politics', 'opinion', 'opinions', 'investigations', 'tech', 'technology', 'world',
+                'sports', 'world', 'arts & entertainment', 'arts', 'entertainment', 'u.s.', 'n.y.',
+                'business', 'science', 'health', 'books', 'style', 'food', 'travel', 'real estate',
+                'magazine', 'economy', 'markets', 'life & arts', 'uk news', 'world news', 'health news',
+                'lifestyle', 'photos', 'education', 'arts', 'life', 'puzzles')) &&
+                $this->blank('department')) {
+                $this->rename('work', 'department');
+                $this->rename($param, 'work');
               return;
             }
           }
@@ -5001,7 +5058,7 @@ final class Template {
           foreach (WORK_ALIASES as $work) {
               $worky = strtolower($this->get($work));
               $worky = str_replace(array("[[" , "]]"), "", $worky);
-              if (in_array($worky, array('los angeles times', 'new york times magazine', 'the new york times', 'new york times', 'huffington post', 'the daily telegraph', 'forbes.com', 'forbes magazine'))) { // TODO - create constant array of works that do not need a publisher
+              if (in_array($worky, NO_PUBLISHER_NEEDED)) {
                  $this->forget($param);
                  return;
               }
@@ -6034,11 +6091,21 @@ final class Template {
     // Should only be run once (perhaps when template is first loaded)
     // Future tidying should occur when parameters are added using tidy_parameter.
     // Called in final_tidy when the template type is changed
+    // We do this again when anything changes - up to three times
     $orig = $this->parsed_text();  
     foreach ($this->param as $param) {
       $this->tidy_parameter($param->param);
     }
-    if ($orig !== $this->parsed_text()) {
+    $new = $this->parsed_text();
+    if ($orig !== $new) {
+      $orig = $new;
+      foreach ($this->param as $param) {
+        $this->tidy_parameter($param->param);
+      }
+    }
+    $new = $this->parsed_text();
+    if ($orig !== $new) {
+      $orig = $new;
       foreach ($this->param as $param) {
         $this->tidy_parameter($param->param);
       }
@@ -7084,7 +7151,7 @@ final class Template {
     if ($this->has('series')) return FALSE; // Dangerous risk of duplication and most likely a series of "books"
     if ($this->wikiname() === 'cite book' && $this->has('isbn')) return FALSE; // Probably a series of "books"
     $issn = $this->get('issn');
-    // @codeCoverageIgnoreBegin
+    // @codeCoverageIgnoreStart
     if ($issn === '0140-0460') { // Must use set to avoid escaping the [[ and ]]
       return $this->set('newspaper', '[[The Times]]');
     } elseif ($issn === '0190-8286') {

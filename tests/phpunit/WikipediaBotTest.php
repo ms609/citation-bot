@@ -8,7 +8,13 @@ declare(strict_types=1);
 require_once(__DIR__ . '/../testBaseClass.php');
  
   final class WikipediaBotTest extends testBaseClass {
-      
+
+    protected function setUp(): void {
+     if (BAD_PAGE_HTTP !== '' || BAD_PAGE_API !== '') {
+       $this->markTestSkipped();
+     }
+    }
+
     public function testLoggedInUser() : void {
      $this->requires_secrets(function() : void {
       $api = new WikipediaBot();

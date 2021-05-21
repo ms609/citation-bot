@@ -32,6 +32,7 @@ const COMMON_MISTAKES = array ( // Common mistakes that aren't picked up by the 
   "co-authors"      =>  "coauthors",
   "dio"             =>  "doi",
   "director"        =>  "others",
+  "editors"         =>  "editor",
   "display_authors" =>  "display-authors",
   "displayauthors"  =>  "display-authors",
   "displayeditors"  =>  "display-editors",
@@ -49,6 +50,7 @@ const COMMON_MISTAKES = array ( // Common mistakes that aren't picked up by the 
   "ed8"             =>  "editor8",
   "ed9"             =>  "editor9",
   "ed10"            =>  "editor10",
+  "editorlink"      =>  "editor-link",
   "editorlink1"     =>  "editor1-link",
   "editorlink2"     =>  "editor2-link",
   "editorlink3"     =>  "editor3-link",
@@ -319,7 +321,10 @@ const COMMON_MISTAKES = array ( // Common mistakes that aren't picked up by the 
   "wkautore2"       =>  "author-link2",
   "wkautore3"       =>  "author-link3",
   "coauther"        =>  "coauthor",
-  "city"            =>  "location"
+  "city"            =>  "location",
+  "link"            =>  "url",
+  "home"            =>  "work",
+  "homelanguage"    =>  "language",  
 );
 
 const COMMON_MISTAKES_TOOL = array(

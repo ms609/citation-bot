@@ -8,7 +8,13 @@ declare(strict_types=1);
 require_once(__DIR__ . '/../testBaseClass.php');
  
 final class TemplateTest extends testBaseClass {
- 
+
+  protected function setUp(): void {
+   if (BAD_PAGE_HTTP !== '' || BAD_PAGE_API !== '') {
+     $this->markTestSkipped();
+   }
+  }
+
   public function testLotsOfFloaters() : void {
     $text_in = "{{cite journal|issue 3 volume 5 | title Love|journal Dog|series Not mine today|chapter cows|this is random stuff | 123-4567-890 }}";
     $text_out= "{{cite book|this is random stuff |issue = 3|volume = 5|title = Love|chapter = Cows|journal = Dog|series = Not mine today|isbn = 123-4567-890}}";
@@ -46,6 +52,15 @@ final class TemplateTest extends testBaseClass {
     $prepared = $this->prepare_citation($text_in);
     $this->assertSame('24 Nov 2020', $prepared->get2('access-date'));
     $this->assertNull($prepared->get2('accessdate'));
+  }
+ 
+  public function testLotsMagazines() : void {
+    $text_in = "{{cite journal| journal=The New Yorker}}";
+    $prepared = $this->process_citation($text_in);
+    $this->assertSame('{{cite magazine| magazine=The New Yorker}}', $prepared->parsed_text());
+    $text_in = "{{cite journal| periodical=The Economist}}";
+    $prepared = $this->process_citation($text_in);
+    $this->assertSame('{{cite news| newspaper=The Economist}}', $prepared->parsed_text());
   }
 
   public function testParameterWithNoParameters() : void {
@@ -984,7 +999,7 @@ final class TemplateTest extends testBaseClass {
   public function testPublisherRemoval() : void {
     foreach (array('Google News Archive', '[[Google]]', 'Google News',
                    'Google.com', '[[Google News]]') as $publisher) {
-      $text = "{{cite journal | publisher = $publisher}}";
+      $text = "{{cite journal | publisher = $publisher|url=http://google/}}";
       $prepared = $this->prepare_citation($text);
       $this->assertNull($prepared->get2('publisher'));
     }
@@ -3119,7 +3134,7 @@ T1 - This is the Title }}';
     $template = $this->make_citation('{{Cite web|url=https://hdl.handle.net/handle////10125/20269}}');
     $template->get_identifiers_from_url();
     if ('10125/20269' !== $template->get2('hdl')) {
-     sleep(5);
+     sleep(15);
      $template->get_identifiers_from_url(); // This test is finicky sometimes
     }
     $this->assertSame('cite web', $template->wikiname());

@@ -9,6 +9,12 @@ require_once(__DIR__ . '/../testBaseClass.php');
 
 final class expandFnsTest extends testBaseClass {
 
+  protected function setUp(): void {
+   if (BAD_PAGE_HTTP !== '' || BAD_PAGE_API !== '') {
+     $this->markTestSkipped();
+   }
+  }
+
   public function testCapitalization() : void {
     $this->assertSame('Molecular and Cellular Biology',
                         title_capitalization(title_case('Molecular and cellular biology'), TRUE));
@@ -79,13 +85,19 @@ final class expandFnsTest extends testBaseClass {
                         extract_doi('http://www.oxfordreference.com/view/10.1093/acref/9780199204632.001.0001/acref-9780199204632-e-4022')[1]);
     $this->assertSame('10.1038/nature11111', 
                         extract_doi('http://www.oxfordreference.com/view/10.1038/nature11111/figures#display.aspx?quest=solve&problem=punctuation')[1]);
+    $the_return = extract_doi('https://somenewssite.com/date/25.10.2015/2137303/default.htm'); // 10.2015/2137303 looks like a DOI
+    $this->assertFalse($the_return[0]);
+    $this->assertFalse($the_return[1]);
   }
   
   public function testSanitizeDoi() : void {
     $this->assertSame('10.1111/j.1475-4983.2012.01203.x', sanitize_doi('10.1111/j.1475-4983.2012.01203.x'));
     $this->assertSame('10.1111/j.1475-4983.2012.01203.x', sanitize_doi('10.1111/j.1475-4983.2012.01203.x.')); // extra dot
     $this->assertSame('10.1111/j.1475-4983.2012.01203.x', sanitize_doi('10.1111/j.1475-4983.2012.01203.'));  // Missing x after dot
-    $this->assertSame('143242342342', sanitize_doi('143242342342.')); // Rubbish with trailing dot, just remove it 
+    $this->assertSame('143242342342', sanitize_doi('143242342342.')); // Rubbish with trailing dot, just remove it
+    $this->assertSame('143242342342', sanitize_doi('143242342342#page_scan_tab_contents'));
+    $this->assertSame('143242342342', sanitize_doi('143242342342;jsessionid'));
+    $this->assertSame('143242342342', sanitize_doi('143242342342/summary'));
   }
   
   public function testTidyDate() : void {
@@ -222,7 +234,7 @@ final class expandFnsTest extends testBaseClass {
   }
   
   public function testThrottle() : void { // Just runs over the code and basically does nothing
-    for ($x = 0; $x <= 20; $x++) {
+    for ($x = 0; $x <= 155; $x++) {
       $this->assertNull(throttle(1));
     }
   }
