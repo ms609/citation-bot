@@ -512,6 +512,7 @@ function throttle (int $min_interval) : void {
   if ($phase < $cycles) {
     return;
   } else {
+    // @codeCoverageIgnoreStart
     $phase = 0;
     $min_interval =  $min_interval * $cycles;
   }
@@ -526,6 +527,7 @@ function throttle (int $min_interval) : void {
     }
   }
   $last_write_time = time();
+  // @codeCoverageIgnoreEnd
 }
 
 // ============================================= Data processing functions ======================================
