@@ -155,6 +155,14 @@ const NON_JOURNAL_WEBSITES = array('cnn.com/', 'foxnews.com/', 'msnbc.com/', 'nb
                                    // Just a list of ones that are obvious.  Add ones that time-out as we find them
                                    // bbm.ca is short enough that we add /bbm.ca/ and .bbm.ca/ since we don't want to grab too many sites
 
+const NON_JOURNAL_DOIS = array('10.5531/db.vz.0001'); // lowercase exact matches
+const NON_JOURNALS = array('Amphibian Species of the World', 'an Online Reference', 'An Online Reference'); // Case-sensitive sub-string
+const ARE_MAGAZINES = array('the new yorker'); // lowercase axact matches
+const ARE_NEWSPAPERS = array('the economist'); // lowercase axact matches
+const NO_PUBLISHER_NEEDED = array('los angeles times', 'new york times magazine', 'the new york times',
+                                   'new york times', 'huffington post', 'the daily telegraph', 'forbes.com',
+                                   'forbes magazine'); // lowercase axact matches
+
 const ENCYCLOPEDIA_WEB = array('plato.stanford.edu', 'britannica.com');
 
 const GOOD_10_1093_DOIS = array( // March 2019 list
