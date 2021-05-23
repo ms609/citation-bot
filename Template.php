@@ -5377,11 +5377,11 @@ final class Template {
                $this->set($param, 'https://oxfordre.com/africanhistory' . $matches[1]);
           }
           
-          if (preg_match('~^(https?://(?:[\.+]|)oxfordre\.com/)([^/]+)/([^/]+)/([^/]+)/(.+)$~', $this->get($param), $matches)) {
+          if (preg_match('~^(https?://(?:[\.+]|)oxfordre\.com)/([^/]+)/([^/]+)/([^/]+)/(.+)$~', $this->get($param), $matches)) {
             if ($matches[2] === $matches[3] && $matches[2] === $matches[4]) {
-              $this->set($param, $matches[1] . $matches[2] . $matches[5]);
+              $this->set($param, $matches[1] . '/' . $matches[2] . '/' . $matches[5]);
             } elseif ($matches[2] === $matches[3]) {
-              $this->set($param, $matches[1] . $matches[2] . $matches[4] . $matches[5]);
+              $this->set($param, $matches[1] . '/' . $matches[2] . '/' . $matches[4] . '/' . $matches[5]);
             }
           }
           
