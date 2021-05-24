@@ -5379,8 +5379,11 @@ final class Template {
           }
           if (preg_match('~^https?://internationalstudies\.oxfordre\.com(/.+)$~', $this->get($param), $matches)) {
                $this->set($param, 'https://oxfordre.com/internationalstudies' . $matches[1]);
-          }          
-          
+          }
+          if (preg_match('~^https?://climatescience\.oxfordre\.com(/.+)$~', $this->get($param), $matches)) {
+               $this->set($param, 'https://oxfordre.com/climatescience' . $matches[1]);
+          }
+
           if (preg_match('~^(https?://(?:[\.+]|)oxfordre\.com)/([^/]+)/([^/]+)/([^/]+)/(.+)$~', $this->get($param), $matches)) {
             if ($matches[2] === $matches[3] && $matches[2] === $matches[4]) {
               $this->set($param, $matches[1] . '/' . $matches[2] . '/' . $matches[5]);
@@ -5624,6 +5627,19 @@ final class Template {
           
           if (preg_match('~^https?://oxfordre\.com/internationalstudies/(?:view|abstract)/10\.1093/acrefore/9780190846626\.001\.0001/acrefore\-9780190846626\-e\-(\d+)$~', $this->get($param), $matches)) {
               $new_doi = '10.1093/acrefore/9780190846626.013.' . $matches[1];
+              if (doi_works($new_doi)) {
+                if ($this->has('doi') && $this->has('doi-broken-date')) {
+                    $this->set('doi', '');
+                    $this->forget('doi-broken-date');
+                    $this->add_if_new('doi', $new_doi);
+                 } elseif ($this->blank('doi')) {
+                    $this->add_if_new('doi', $new_doi);
+                }
+              }
+          }
+          
+          if (preg_match('~^https?://oxfordre\.com/climatescience/(?:view|abstract)/10\.1093/acrefore/9780190228620\.001\.0001/acrefore\-9780190228620\-e\-(\d+)$~', $this->get($param), $matches)) {
+              $new_doi = '10.1093/acrefore/9780190228620.013.' . $matches[1];
               if (doi_works($new_doi)) {
                 if ($this->has('doi') && $this->has('doi-broken-date')) {
                     $this->set('doi', '');
