@@ -3137,6 +3137,10 @@ T1 - This is the Title }}';
      sleep(15);
      $template->get_identifiers_from_url(); // This test is finicky sometimes
     }
+    if ('10125/20269' !== $template->get2('hdl')) {
+     sleep(15);
+     $template->get_identifiers_from_url(); // This test is finicky sometimes
+    }
     $this->assertSame('cite web', $template->wikiname());
     $this->assertSame('10125/20269', $template->get2('hdl'));
     $this->assertNotNull($template->get2('url'));
