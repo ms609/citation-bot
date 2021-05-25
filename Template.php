@@ -420,7 +420,7 @@ final class Template {
               $the_title = '';
               $bad_data = TRUE;
           }
-          if ($the_title === 'none' || $the_title === '[No title found]' || $the_title === 'Archived copy') {
+          if ($the_title === 'null' || $the_title === '[No title found]' || $the_title === 'Archived copy') { // title=none is often because title is "reviewed work....
               $this->rename('title', 'CITATION_BOT_PLACEHOLDER_title');
               $the_title = '';
               $bad_data = TRUE;
