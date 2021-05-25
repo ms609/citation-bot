@@ -5431,6 +5431,7 @@ final class Template {
                 $new_doi = '10.1093/odnb/9780198614128.013.' . $matches[1];
               }
               if (doi_works($new_doi)) {
+                $this->add_if_new('isbn', '978-0-19-861412-8');
                 if ($this->has('doi') && $this->has('doi-broken-date')) {
                     $this->set('doi', '');
                     $this->forget('doi-broken-date');
@@ -5451,6 +5452,7 @@ final class Template {
           if (preg_match('~^https?://www\.anb\.org/(?:view|abstract)/10\.1093/anb/9780198606697\.001\.0001/anb\-9780198606697\-e\-(\d+)$~', $this->get($param), $matches)) {
               $new_doi = '10.1093/anb/9780198606697.article.' . $matches[1];
               if (doi_works($new_doi)) {
+                $this->add_if_new('isbn', '978-0-19-860669-7');
                 if ($this->has('doi') && $this->has('doi-broken-date')) {
                     $this->set('doi', '');
                     $this->forget('doi-broken-date');
@@ -5464,6 +5466,7 @@ final class Template {
           if (preg_match('~^https?://www\.oxfordartonline\.com/(?:benezit/|)(?:view|abstract)/10\.1093/benz/9780199773787\.001\.0001/acref-9780199773787\-e\-(\d+)$~', $this->get($param), $matches)) {
               $new_doi = '10.1093/benz/9780199773787.article.B' . $matches[1];
               if (doi_works($new_doi)) {
+                $this->add_if_new('isbn', '978-0-19-977378-7');
                 if ($this->has('doi') && $this->has('doi-broken-date')) {
                     $this->set('doi', '');
                     $this->forget('doi-broken-date');
@@ -5476,6 +5479,7 @@ final class Template {
           if (preg_match('~^https?://www\.oxfordartonline\.com/(?:groveart/|)(?:view|abstract)/10\.1093/gao/9781884446054\.001\.0001/oao\-9781884446054\-e\-7000(\d+)$~', $this->get($param), $matches)) {
               $new_doi = '10.1093/gao/9781884446054.article.T' . $matches[1];
               if (doi_works($new_doi)) {
+                $this->add_if_new('isbn', '978-1-884446-05-4');
                 if ($this->has('doi') && $this->has('doi-broken-date')) {
                     $this->set('doi', '');
                     $this->forget('doi-broken-date');
@@ -5488,6 +5492,7 @@ final class Template {
           if (preg_match('~^https?://www\.oxfordartonline\.com/(?:groveart/|)(?:view|abstract)/10\.1093/gao/9781884446054\.001\.0001/oao\-9781884446054\-e\-700(\d+)$~', $this->get($param), $matches)) {
               $new_doi = '10.1093/gao/9781884446054.article.T' . $matches[1];
               if (doi_works($new_doi)) {
+                $this->add_if_new('isbn', '978-1-884446-05-4');
                 if ($this->has('doi') && $this->has('doi-broken-date')) {
                     $this->set('doi', '');
                     $this->forget('doi-broken-date');
@@ -5497,10 +5502,11 @@ final class Template {
                 }
               }
           }
-          // ONLY in meta-data : todo - verify that it works later.  10.1093/oao/9781884446054.013.8000020158. https://www.oxfordartonline.com/groveart/view/10.1093/gao/9781884446054.001.0001/oao-9781884446054-e-8000020158
+          // ONLY in meta-data : TODO - verify that it works later.  10.1093/oao/9781884446054.013.8000020158. https://www.oxfordartonline.com/groveart/view/10.1093/gao/9781884446054.001.0001/oao-9781884446054-e-8000020158
           if (preg_match('~^https?://www\.oxfordartonline\.com/(?:groveart/|)(?:view|abstract)/10\.1093/gao/9781884446054\.001\.0001/oao\-9781884446054\-e\-(80\d+)$~', $this->get($param), $matches)) {
               $new_doi = '10.1093/oao/9781884446054.013.' . $matches[1];
               if (doi_works($new_doi)) {
+                $this->add_if_new('isbn', '978-1-884446-05-4');
                 if ($this->has('doi') && $this->has('doi-broken-date')) {
                     $this->set('doi', '');
                     $this->forget('doi-broken-date');
@@ -5514,6 +5520,7 @@ final class Template {
           if (preg_match('~^https?://oxfordaasc\.com/view/10\.1093/acref/9780195301731\.001\.0001/acref\-9780195301731\-e\-(\d+)$~', $this->get($param), $matches)) {
               $new_doi = '10.1093/acref/9780195301731.013.' . $matches[1];
               if (doi_works($new_doi)) {
+                $this->add_if_new('isbn', '978-0-19-530173-1');
                 if ($this->has('doi') && $this->has('doi-broken-date')) {
                     $this->set('doi', '');
                     $this->forget('doi-broken-date');
@@ -5527,6 +5534,7 @@ final class Template {
           if (preg_match('~^https?://www\.ukwhoswho\.com/(?:view|abstract)/10\.1093/ww/9780199540884\.001\.0001/ww\-9780199540884\-e\-(\d+)$~', $this->get($param), $matches)) {
               $new_doi = '10.1093/ww/9780199540884.013.U' . $matches[1];
               if (doi_works($new_doi)) {
+                $this->add_if_new('isbn', '978-0-19-954088-4');
                 if ($this->has('doi') && $this->has('doi-broken-date')) {
                     $this->set('doi', '');
                     $this->forget('doi-broken-date');
@@ -5540,6 +5548,7 @@ final class Template {
           if (preg_match('~^https?://www\.oxfordmusiconline\.com/(?:grovemusic/|)(?:grovemusic/|)(?:grovemusic/|)(?:view|abstract)/10\.1093/gmo/9781561592630\.001\.0001/omo-9781561592630-e-00000(\d+)$~', $this->get($param), $matches)) {
               $new_doi = '10.1093/gmo/9781561592630.article.' . $matches[1];
               if (doi_works($new_doi)) {
+                $this->add_if_new('isbn', '978-1-56159-263-0');
                 if ($this->has('doi') && $this->has('doi-broken-date')) {
                     $this->set('doi', '');
                     $this->forget('doi-broken-date');
@@ -5553,6 +5562,7 @@ final class Template {
           if (preg_match('~^https?://www\.oxfordmusiconline\.com/(?:grovemusic/|)(?:grovemusic/|)(?:grovemusic/|)(?:view|abstract)/10\.1093/gmo/9781561592630\.001\.0001/omo-9781561592630-e-100(\d+)$~', $this->get($param), $matches)) {
               $new_doi = '10.1093/gmo/9781561592630.article.A' . $matches[1];
               if (doi_works($new_doi)) {
+                $this->add_if_new('isbn', '978-1-56159-263-0');
                 if ($this->has('doi') && $this->has('doi-broken-date')) {
                     $this->set('doi', '');
                     $this->forget('doi-broken-date');
@@ -5566,6 +5576,7 @@ final class Template {
           if (preg_match('~^https?://www\.oxfordmusiconline\.com/(?:grovemusic/|)(?:grovemusic/|)(?:grovemusic/|)(?:view|abstract)/10\.1093/gmo/9781561592630\.001\.0001/omo-9781561592630-e-5000(\d+)$~', $this->get($param), $matches)) {
               $new_doi = '10.1093/gmo/9781561592630.article.O' . $matches[1];
               if (doi_works($new_doi)) {
+                $this->isbn('isbn', '978-1-56159-263-0');
                 if ($this->has('doi') && $this->has('doi-broken-date')) {
                     $this->set('doi', '');
                     $this->forget('doi-broken-date');
@@ -5579,6 +5590,7 @@ final class Template {
           if (preg_match('~^https?://www\.oxfordmusiconline\.com/(?:grovemusic/|)(?:grovemusic/|)(?:grovemusic/|)(?:view|abstract)/10\.1093/gmo/9781561592630\.001\.0001/omo-9781561592630-e-400(\d+)$~', $this->get($param), $matches)) {
               $new_doi = '10.1093/gmo/9781561592630.article.L' . $matches[1];
               if (doi_works($new_doi)) {
+                $this->add_if_new('isbn', '978-1-56159-263-0');
                 if ($this->has('doi') && $this->has('doi-broken-date')) {
                     $this->set('doi', '');
                     $this->forget('doi-broken-date');
@@ -5592,6 +5604,7 @@ final class Template {
           if (preg_match('~^https?://www\.oxfordmusiconline\.com/(?:grovemusic/|)(?:grovemusic/|)(?:grovemusic/|)(?:view|abstract)/10\.1093/gmo/9781561592630\.001\.0001/omo-9781561592630-e-2000(\d+)$~', $this->get($param), $matches)) {
               $new_doi = '10.1093/gmo/9781561592630.article.J' . $matches[1];
               if (doi_works($new_doi)) {
+                $this->add_if_new('isbn', '978-1-56159-263-0');
                 if ($this->has('doi') && $this->has('doi-broken-date')) {
                     $this->set('doi', '');
                     $this->forget('doi-broken-date');
@@ -5605,6 +5618,7 @@ final class Template {
           if (preg_match('~^https?://oxfordre\.com/latinamericanhistory/(?:view|abstract)/10\.1093/acrefore/9780199366439\.001\.0001/acrefore\-9780199366439\-e\-(\d+)$~', $this->get($param), $matches)) {
               $new_doi = '10.1093/acrefore/9780199366439.013.' . $matches[1];
               if (doi_works($new_doi)) {
+                $this->add_if_new('isbn', '978-0-19-936643-9');
                 if ($this->has('doi') && $this->has('doi-broken-date')) {
                     $this->set('doi', '');
                     $this->forget('doi-broken-date');
@@ -5618,6 +5632,7 @@ final class Template {
           if (preg_match('~^https?://oxfordre\.com/africanhistory/(?:view|abstract)/10\.1093/acrefore/9780190277734\.001\.0001/acrefore\-9780190277734\-e\-(\d+)$~', $this->get($param), $matches)) {
               $new_doi = '10.1093/acrefore/9780190277734.013.' . $matches[1];
               if (doi_works($new_doi)) {
+                $this->add_if_new('isbn', '978-0-19-027773-4');
                 if ($this->has('doi') && $this->has('doi-broken-date')) {
                     $this->set('doi', '');
                     $this->forget('doi-broken-date');
@@ -5631,6 +5646,7 @@ final class Template {
           if (preg_match('~^https?://oxfordre\.com/internationalstudies/(?:view|abstract)/10\.1093/acrefore/9780190846626\.001\.0001/acrefore\-9780190846626\-e\-(\d+)$~', $this->get($param), $matches)) {
               $new_doi = '10.1093/acrefore/9780190846626.013.' . $matches[1];
               if (doi_works($new_doi)) {
+                $this->add_if_new('isbn', '978-0-19-084662-6');
                 if ($this->has('doi') && $this->has('doi-broken-date')) {
                     $this->set('doi', '');
                     $this->forget('doi-broken-date');
@@ -5644,6 +5660,7 @@ final class Template {
           if (preg_match('~^https?://oxfordre\.com/climatescience/(?:view|abstract)/10\.1093/acrefore/9780190228620\.001\.0001/acrefore\-9780190228620\-e\-(\d+)$~', $this->get($param), $matches)) {
               $new_doi = '10.1093/acrefore/9780190228620.013.' . $matches[1];
               if (doi_works($new_doi)) {
+                $this->add_if_new('isbn', '978-0-19-022862-0');
                 if ($this->has('doi') && $this->has('doi-broken-date')) {
                     $this->set('doi', '');
                     $this->forget('doi-broken-date');
@@ -5657,6 +5674,7 @@ final class Template {
           if (preg_match('~^https?://oxfordre\.com/religion/(?:view|abstract)/10\.1093/acrefore/9780199340378\.001\.0001/acrefore\-9780199340378\-e\-(\d+)$~', $this->get($param), $matches)) {
               $new_doi = '10.1093/acrefore/9780199340378.013.' . $matches[1];
               if (doi_works($new_doi)) {
+                $this->add_if_new('isbn', '978-0-19-934037-8');
                 if ($this->has('doi') && $this->has('doi-broken-date')) {
                     $this->set('doi', '');
                     $this->forget('doi-broken-date');
@@ -5670,6 +5688,7 @@ final class Template {
           if (preg_match('~^https?://oxfordre\.com/anthropology/(?:view|abstract)/10\.1093/acrefore/9780190854584\.001\.0001/acrefore\-9780190854584\-e\-(\d+)$~', $this->get($param), $matches)) {
               $new_doi = '10.1093/acrefore/9780190854584.013.' . $matches[1];
               if (doi_works($new_doi)) {
+                $this->add_if_new('isbn', '978-0-19-085458-4');
                 if ($this->has('doi') && $this->has('doi-broken-date')) {
                     $this->set('doi', '');
                     $this->forget('doi-broken-date');
@@ -5683,6 +5702,7 @@ final class Template {
           if (preg_match('~^https?://(?:|classics\.)oxfordre\.com/(?:|classics/)view/10\.1093/acrefore/9780199381135\.001\.0001/acrefore\-9780199381135\-e\-(\d+)$~', $this->get($param), $matches)) {
               $new_doi = '10.1093/acrefore/9780199381135.013.' . $matches[1];
               if (doi_works($new_doi)) {
+                $this->add_if_new('isbn', '978-0-19-938113-5');
                 if ($this->has('doi') && $this->has('doi-broken-date')) {
                     $this->set('doi', '');
                     $this->forget('doi-broken-date');
@@ -5696,6 +5716,7 @@ final class Template {
           if (preg_match('~^https?://(?:|psychology\.)oxfordre\.com/(?:|psychology/)view/10\.1093/acrefore/9780190236557\.001\.0001/acrefore\-9780190236557\-e\-(\d+)$~', $this->get($param), $matches)) {
               $new_doi = '10.1093/acrefore/9780190236557.013.' . $matches[1];
               if (doi_works($new_doi)) {
+                $this->add_if_new('isbn', '978-0-19-023655-7');
                 if ($this->has('doi') && $this->has('doi-broken-date')) {
                     $this->set('doi', '');
                     $this->forget('doi-broken-date');
@@ -5709,6 +5730,7 @@ final class Template {
           if (preg_match('~^https?://(?:|politics\.)oxfordre\.com/(?:|politics/)view/10\.1093/acrefore/9780190228637\.001\.0001/acrefore\-9780190228637\-e\-(\d+)$~', $this->get($param), $matches)) {
               $new_doi = '10.1093/acrefore/9780190228637.013.' . $matches[1];
               if (doi_works($new_doi)) {
+                $this->add_if_new('isbn', '978-0-19-022863-7');
                 if ($this->has('doi') && $this->has('doi-broken-date')) {
                     $this->set('doi', '');
                     $this->forget('doi-broken-date');
@@ -5721,6 +5743,7 @@ final class Template {
           
           if (preg_match('~^https?://oxford\.universitypressscholarship\.com/(?:view|abstract)/10\.1093/oso/(\d{13})\.001\.0001/oso\-(\d{13})\-chapter\-(\d+)$~', $this->get($param), $matches)) {
             if ($matches[1] === $matches[2]) {
+              $this->add_if_new('isbn', $matches[1]);
               $new_doi = '10.1093/oso/' . $matches[1] . '.003.' . str_pad($matches[3], 4, "0", STR_PAD_LEFT);
               if (doi_works($new_doi)) {
                 if ($this->has('doi') && $this->has('doi-broken-date')) {
@@ -5736,6 +5759,7 @@ final class Template {
           
           if (preg_match('~^https?://oxford\.universitypressscholarship\.com/(?:view|abstract)/10\.1093/oso/(\d{13})\.001\.0001/oso\-(\d{13})$~', $this->get($param), $matches)) {
             if ($matches[1] === $matches[2]) {
+              $this->add_if_new('isbn', $matches[1]);
               $new_doi = '10.1093/oso/' . $matches[1] . '001.0001';
               if (doi_works($new_doi)) {
                 if ($this->has('doi') && $this->has('doi-broken-date')) {
