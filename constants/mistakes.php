@@ -324,7 +324,11 @@ const COMMON_MISTAKES = array ( // Common mistakes that aren't picked up by the 
   "city"            =>  "location",
   "link"            =>  "url",
   "home"            =>  "work",
-  "homelanguage"    =>  "language",  
+  "homelanguage"    =>  "language",
+  "episodelink"     =>  "episode-link",
+  "mailinglist"     =>  "mailing-list",
+  "mapurl"          =>  "map-url",
+  "serieslink"      =>  "series-link",
 );
 
 const COMMON_MISTAKES_TOOL = array(
