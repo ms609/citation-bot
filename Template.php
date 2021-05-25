@@ -420,6 +420,11 @@ final class Template {
               $the_title = '';
               $bad_data = TRUE;
           }
+          if ($the_title === 'none' || $the_title === '[No title found]' || $the_title === 'Archived copy') {
+              $this->rename('title', 'CITATION_BOT_PLACEHOLDER_title');
+              $the_title = '';
+              $bad_data = TRUE;
+          }
           if (strlen($the_journal) > 15 && strpos($the_journal, ' ') !== FALSE &&
               mb_strtoupper($the_journal) === $the_journal && strpos($the_journal, 'CITATION') === FALSE &&
               mb_check_encoding($the_journal, 'ASCII')) {
