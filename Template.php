@@ -1425,6 +1425,9 @@ final class Template {
       case 'isbn';
         if ($this->blank($param_name)) { 
           $value = $this->isbn10Toisbn13($value);
+          if (strlen($value) === 13 && substr($value, 0, 6) === '978019') { // Oxford
+             $value = '978-0-19-' . substr($value, 6, 6) . '-' . substr($value, 12, 1);
+          }
           if (strlen($value) > 19) return FALSE; // Two ISBNs
           return $this->add($param_name, $value);
         }
