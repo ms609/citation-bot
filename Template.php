@@ -5781,6 +5781,23 @@ final class Template {
             }
           }
 
+          if (preg_match('~^https?://(?:www\.|)oxfordhandbooks\.com/(?:view|abstract)/10\.1093/oxfordhb/(\d{13})\.001\.0001/oxfordhb\-(\d{13})-e-(\d+)$~', $this->get($param), $matches)) {
+            if ($matches[1] === $matches[2]) {
+              $this->add_if_new('isbn', $matches[1]);
+              $new_doi = '10.1093/oxfordhb/' . $matches[1] . '.013.' . $matches[3];
+              if (doi_works($new_doi)) {
+                $this->add_if_new('isbn', $matches[1]);
+                if ($this->has('doi') && $this->has('doi-broken-date')) {
+                    $this->set('doi', '');
+                    $this->forget('doi-broken-date');
+                    $this->add_if_new('doi', $new_doi);
+                 } elseif ($this->blank('doi')) {
+                    $this->add_if_new('doi', $new_doi);
+                }
+              }
+            }
+          }
+
           if (preg_match('~^https?://([^/]+)/~', $this->get($param), $matches)) { 
              $the_host = $matches[1];
           } else {
