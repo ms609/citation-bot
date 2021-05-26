@@ -615,9 +615,13 @@ function expand_by_doi(Template $template, bool $force = FALSE) : bool {
       }
       if ($template->blank("page")) {
         if ($crossRef->last_page && (strcmp((string) $crossRef->first_page, (string) $crossRef->last_page) !== 0)) {
-          $template->add_if_new("pages", $crossRef->first_page . "-" . $crossRef->last_page, 'crossref'); //replaced by an endash later in script
+          if (strpos((string) $crossRef->first_page . (string) $crossRef->last_page, '-') === FALSE) { // Very rarely get stuff like volume/issue/year added to pages 
+            $template->add_if_new("pages", $crossRef->first_page . "-" . $crossRef->last_page, 'crossref'); //replaced by an endash later in script
+          }
         } else {
-          $template->add_if_new("pages", (string) $crossRef->first_page, 'crossref');
+          if (strpos((string) $crossRef->first_page, '-') === FALSE) { // Very rarely get stuff like volume/issue/year added to pages 
+            $template->add_if_new("pages", (string) $crossRef->first_page, 'crossref');
+          }
         }
       }
     } else {
