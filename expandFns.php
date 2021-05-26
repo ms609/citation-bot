@@ -295,6 +295,8 @@ function titles_simple(string $inTitle) : string {
         $inTitle = preg_replace('~ Online$~iu', '', $inTitle);
         // Strip trailing (Third Edition)
         $inTitle = preg_replace('~\([^\s\(\)]+ Edition\)^~iu', '', $inTitle);
+        // Strip leading International Symposium on 
+        $inTitle = preg_replace('~^International Symposium on ~iu', '', $inTitle);
         // Strip leading the
         $inTitle = preg_replace('~^The ~iu', '', $inTitle);
         // Reduce punctuation
