@@ -106,7 +106,7 @@ const CANONICAL_PUBLISHER_URLS = array ('elsevier.com', 'springer.com', 'science
                                 'fundacionmenteclara.org.ar', 'iopscience.iop.org', 'bmj.com/cgi/pmidlookup',
                                 'sciencemag.org', 'doi.apa.org', 'psycnet.apa.org', 'journals.upress.ufl.edu',
                                 'clinchem.org', 'cell.com', 'aeaweb.org', 'chestpubs.org', 'journal.chestnet.org',
-                                'chestjournal.org',
+                                'chestjournal.org', 'biomedcentral.com', 'journals.royalsociety.org',
                                 //  Below are journal search engines
                                 '.serialssolutions.com', '.ebscohost.com',
                                 //  Below are proxys
@@ -115,7 +115,7 @@ const CANONICAL_PUBLISHER_URLS = array ('elsevier.com', 'springer.com', 'science
                                 'doi.library.ubc.ca');
 
 const PROXY_HOSTS_TO_ALWAYS_DROP = array('proxy.libraries', 'proxy.lib.', '.ezproxy.', '-ezproxy.', '/ezproxy.',
-                                  '.serialssolutions.com', 'search.ebscohost.com', 'findarticles.com'); // Drop these if there is a valid DOI
+                                  '.serialssolutions.com', 'search.ebscohost.com', 'findarticles.com', 'journals.royalsociety.org'); // Drop these if there is a valid DOI
 
 const PROXY_HOSTS_TO_DROP = array('proxy.libraries', 'proxy.lib.', '.ezproxy.', '-ezproxy.', '/ezproxy.',
                                   '.serialssolutions.com', '.ebscohost.com', 'linkinghub.elsevier.com',
