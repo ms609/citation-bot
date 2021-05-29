@@ -421,13 +421,8 @@ class Page {
     // we often just fix Journal caps, so must be case sensitive compare
     // Avoid minor edits - gadget API will make these changes, since it does not check return code
     $caps_ok = array('lccn', 'isbn', 'doi');
-    if (strpos($this->start_text, 'ite news ') !== FALSE || strpos($this->start_text, 'ite news|') !== FALSE) {
-      $last_first_in  = array(' last=',  ' last =',  '|last=',  '|last =',  ' first=',  ' first =',  '|first=',  '|first =');
-      $last_first_out = array(' last1=', ' last1 =', '|last1=', '|last1 =', ' first1=', ' first1 =', '|first1=', '|first1 =');
-    } else {
-      $last_first_in  = array(' last=',  ' last =',  '|last=',  '|last =',  ' first=',  ' first =',  '|first=',  '|first =', 'cite newspaper', 'Cite newspaper');
-      $last_first_out = array(' last1=', ' last1 =', '|last1=', '|last1 =', ' first1=', ' first1 =', '|first1=', '|first1 =','cite news',      'Cite news');
-    }
+    $last_first_in  = array(' last=',  ' last =',  '|last=',  '|last =',  ' first=',  ' first =',  '|first=',  '|first =', 'cite newspaper', 'Cite newspaper');
+    $last_first_out = array(' last1=', ' last1 =', '|last1=', '|last1 =', ' first1=', ' first1 =', '|first1=', '|first1 =','cite news',      'Cite news');
     return strcmp(str_replace($last_first_in, $last_first_out, str_ireplace($caps_ok, $caps_ok, $this->text)),
                   str_replace($last_first_in, $last_first_out, str_ireplace($caps_ok, $caps_ok, $this->start_text))) != 0;
   }
