@@ -119,7 +119,7 @@ require_once('Template.php');
 require_once('Page.php');
 require_once('user_messages.php');
 
-define("MAX_PAGES", 12200);
+define("MAX_PAGES", 2200);
 define("BIG_RUN", 3);
 
 
