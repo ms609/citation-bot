@@ -5820,7 +5820,7 @@ final class Template {
             $new_doi = '10.1093/med/9780199592548.003.' . str_pad($matches[1], 4, "0", STR_PAD_LEFT);
             if (doi_works($new_doi)) {
               $this->add_if_new('isbn', '978-0-19-959254-8');
-              if ($this->has('doi') && $this->has('doi-broken-date')) {
+              if ($this->has('doi') && ($this->has('doi-broken-date') || $this->get('doi') === '10.1093/med/9780199592548.001.0001')) {
                   $this->set('doi', '');
                   $this->forget('doi-broken-date');
                   $this->add_if_new('doi', $new_doi);
