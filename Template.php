@@ -1055,9 +1055,9 @@ final class Template {
              $this->rename('publisher', $param_name);
              return TRUE;
           }
-          if ($param_name === 'journal' && $this->has('website')) { // alias for journal.  Distinction between newspaper and magazine and websites are not clear to zotero
+          if ($this->has('website')) {
              if (str_equivalent($this->get('website'), $value)) {
-               $this->rename('website', $param_name);
+               if ($param_name === 'journal) $this->rename('website', $param_name);  // alias for journal.  Distinction between newspaper and magazine and websites are not clear to zotero
              } elseif (preg_match('~^\[.+\]$~', $this->get('website'))) {
                $this->rename('website', $param_name); // existing data is linked
              } else {
