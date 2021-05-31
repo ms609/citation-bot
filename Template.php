@@ -4673,10 +4673,14 @@ final class Template {
               $this->forget($param);
             }
           }
-          if (in_array(strtolower($this->get($param)), ARE_MAGAZINES)) {
+          $the_param = $this->get($param);
+          if (preg_match(REGEXP_PLAIN_WIKILINK, $the_param, $matches) || preg_match(REGEXP_PIPED_WIKILINK, $the_param, $matches)) {
+              $the_param = $matches[1]; // Always the wikilink for easier standardization
+          }
+          if (in_array(strtolower($the_param), ARE_MAGAZINES)) {
             $this->change_name_to('cite magazine');
             $this->rename($param, 'magazine');
-          } elseif (in_array(strtolower($this->get($param)), ARE_NEWSPAPERS)) {
+          } elseif (in_array(strtolower($the_param), ARE_NEWSPAPERS)) {
             $this->change_name_to('cite news');
             $this->rename($param, 'newspaper');
           }
