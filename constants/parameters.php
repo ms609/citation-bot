@@ -414,5 +414,5 @@ const PARAMETER_LIST = array(
      'laydate', 'laysource', 'layurl', 'name-list-format', 'sectionurl', 'seriesno',
      'timecaption', 'titlelink', 'ref name', 'ISBN13', 'booktitle', 'chapterurl', 'episodelink',
      'isbn13', 'mailinglist', 'mapurl', 'nopp', 'publicationdate', 'publicationplace',
-     'serieslink');
+     'serieslink', 'sid', 'år');
 
