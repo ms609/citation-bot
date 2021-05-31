@@ -205,6 +205,8 @@ final class Template {
                ['Chú thích báo', 'Cite news'],
                ['chú thích web', 'cite web'],
                ['chú thích báo', 'cite news'],
+               ['tidskriftsref', 'cite journal'],
+               ['Tidskriftsref', 'Cite journal'],
                ['Tidningsref', 'Cite news'],
                ['tidningsref', 'cite news'],
                ['GroveOnline', 'Cite Grove'],
