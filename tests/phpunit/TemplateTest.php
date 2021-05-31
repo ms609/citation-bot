@@ -4187,7 +4187,7 @@ T1 - This is the Title }}';
     $text = "{{cite journal|website=xyz}}";
     $template = $this->make_citation($text);
     $this->assertTrue($template->add_if_new('newspaper', 'Junk and stuff'));
-    $this->assertNull($template->get2('website'));
+    $this->assertNull($template->parsed_text());
     $this->assertSame('Junk and Stuff', $template->get2('newspaper'));
   }
  
