@@ -340,7 +340,8 @@ const COMMON_MISTAKES = array ( // Common mistakes that aren't picked up by the 
   "rubrik"          =>  "title",
   "utgivare"        =>  "publisher",
   "tidskrift"       =>  "journal",
-  "efternamn"       =>  "last"
+  "efternamn"       =>  "last",
+  "år"              =>  "year"
 );
 
 const COMMON_MISTAKES_TOOL = array(
