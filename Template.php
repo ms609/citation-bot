@@ -710,6 +710,7 @@ final class Template {
     $newpagenos = ['', '', '']; // prevent memory leak in some PHP versions
     $value = trim($value);
     $param_name = trim($param_name); // Pure paranoia
+    report_info('ADDING ' . $param_name . ' ' . $value);
     if ($value == '') {
       return FALSE;
     }
@@ -4054,6 +4055,7 @@ final class Template {
 
   public function change_name_to(string $new_name, bool $rename_cite_book = TRUE) : void {
     $spacing = ['', '']; // prevent memory leak in some PHP versions
+        report_info('CHANGING ' . $new_name);
     if (strpos($this->get('doi'), '10.1093') !== FALSE && $this->wikiname() !== 'cite web') return;
     if (bad_10_1093_doi($this->get('doi'))) return;
     if ($this->wikiname() === 'cite book' && !$this->blank_other_than_comments(CHAPTER_ALIASES)) {
