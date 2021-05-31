@@ -329,6 +329,7 @@ const COMMON_MISTAKES = array ( // Common mistakes that aren't picked up by the 
   "mailinglist"     =>  "mailing-list",
   "mapurl"          =>  "map-url",
   "serieslink"      =>  "series-link",
+  "başlık"          => "title",
 );
 
 const COMMON_MISTAKES_TOOL = array(
