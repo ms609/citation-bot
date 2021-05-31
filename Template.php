@@ -1014,7 +1014,7 @@ final class Template {
           if ($this->has('series') && str_equivalent($this->get('series'), $value)) return FALSE ;
           if ($this->has('work')) {
             if (str_equivalent($this->get('work'), $value)) {
-              $this->rename('work', $param_name);
+              if ($param_name === 'journal') $this->rename('work', $param_name); // Distinction between newspaper and magazine and websites are not clear to zotero
               if (!$this->blank(['pmc', 'doi', 'pmid'])) $this->forget('issn');
               return TRUE;
             } else {
