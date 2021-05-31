@@ -4680,9 +4680,11 @@ final class Template {
           if (in_array(strtolower($the_param), ARE_MAGAZINES)) {
             $this->change_name_to('cite magazine');
             $this->rename($param, 'magazine');
+            return;
           } elseif (in_array(strtolower($the_param), ARE_NEWSPAPERS)) {
             $this->change_name_to('cite news');
             $this->rename($param, 'newspaper');
+            return;
           }
           return;
         
@@ -6273,22 +6275,38 @@ final class Template {
                                                       str_i_same($this->get($param), 'Google Book') ||
                                                          stripos($this->get($param), 'Books.google.') === 0)) {
             $this->forget($param);
+            return;
           }
           if (stripos($this->get($param), 'archive.org') !== FALSE &&
               stripos($this->get('url') . $this->get('chapter-url') . $this->get('chapterurl'), 'archive.org') === FALSE) {
             $this->forget($param);
+            return;
           }
           if (($this->wikiname() === 'cite arxiv') || $this->has('eprint') || $this->has('arxiv')) {
             if (str_i_same($this->get($param), 'arxiv')) {
               $this->forget($param);
+              return;
             }
           }
           if (strtolower($this->get($param)) === 'latimes' ||
               strtolower($this->get($param)) === 'latimes.com') {
             $this->set($param, '[[Los Angeles Times]]');
+            return;
           }
           if ($this->get($param) === 'The Times Digital Archive') {
             $this->set($param, '[[The Times]]');
+            return;
+          }
+          $the_param = $this->get($param);
+          if (preg_match(REGEXP_PLAIN_WIKILINK, $the_param, $matches) || preg_match(REGEXP_PIPED_WIKILINK, $the_param, $matches)) {
+              $the_param = $matches[1]; // Always the wikilink for easier standardization
+          }
+          if (in_array(strtolower($the_param), ARE_MAGAZINES)) {
+            $this->change_name_to('cite magazine');
+            $this->rename($param, 'magazine');
+          } elseif (in_array(strtolower($the_param), ARE_NEWSPAPERS)) {
+            $this->change_name_to('cite news');
+            $this->rename($param, 'newspaper');
           }
           return;
          
