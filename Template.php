@@ -1055,7 +1055,7 @@ final class Template {
              $this->rename('publisher', $param_name);
              return TRUE;
           }
-          if ($this->has('website')) { // alias for journal
+          if ($param_name === 'journal' && $this->has('website')) { // alias for journal.  Distinction between newspaper and magazine and websites are not clear to zotero
              if (str_equivalent($this->get('website'), $value)) {
                $this->rename('website', $param_name);
              } elseif (preg_match('~^\[.+\]$~', $this->get('website'))) {
