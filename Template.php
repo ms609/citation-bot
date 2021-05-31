@@ -205,6 +205,8 @@ final class Template {
                ['Chú thích báo', 'Cite news'],
                ['chú thích web', 'cite web'],
                ['chú thích báo', 'cite news'],
+               ['Tidningsref', 'Cite news'],
+               ['tidningsref', 'cite news'],
                ['GroveOnline', 'Cite Grove'],
                ['Groveonline', 'Cite Grove'],
                ['groveOnline', 'Cite Grove'],
