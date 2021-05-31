@@ -76,9 +76,13 @@ function entrez_api(array $ids, array &$templates, string $db) : bool {   // Poi
         break;  case "PmId":    $this_template->add_if_new('pmid', (string) $item, 'entrez');
         break;  case "AuthorList":
           $i = 0;
-          foreach ($item->Item as $subItem) {
+          foreach ($item->Item as $key => $subItem) {
             $subItem = (string) $subItem;
             if (preg_match('~^\d~', $subItem)) { // Author started with a number, skip all remaining authors.
+              break;   // @codeCoverageIgnore
+            } elseif ( "CollectiveName" === (string) $key) { // This is often really long string of gibberish
+              break;   // @codeCoverageIgnore
+            } elseif (strlen($subItem) > 100)) ;
               break;   // @codeCoverageIgnore
             } elseif (author_is_human($subItem)) {
               $jr_test = junior_test($subItem);
