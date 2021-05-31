@@ -1390,7 +1390,7 @@ final class Template {
           if ($this->date_style === DATES_MDY) {
                $value = 'May 31, 2021';
           }
-          return $this->add($param_name, );
+          return $this->add($param_name, $value);
         }
         return FALSE;
       
