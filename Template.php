@@ -3021,8 +3021,6 @@ final class Template {
     if (preg_match(REGEXP_SICI, urldecode($this->parsed_text()), $sici)) {
       quietly('report_action', "Extracting information from SICI");
       $this->add_if_new('issn', $sici[1]); // Check whether journal is set in add_if_new
-      //if ($this->blank('year') && $this->blank('month') && $sici[3]) $this->set('month', date("M", mktime(0, 0, 0, $sici[3], 1, 2005)));
-      //if ($this->blank('day') && is("month") && $sici[4]) set ("day", $sici[4]);
       $this->add_if_new('year', (string) (int) $sici[2]);
       $this->add_if_new('volume', (string) (int) $sici[5]);
       if ($sici[6]) $this->add_if_new('issue', (string) (int) $sici[6]);
@@ -4393,7 +4391,7 @@ final class Template {
           if (!preg_match('~^\d*$~', $day)) return;
           if (!preg_match('~^[a-zA-Z]+$~', $month)) return;
           if (!preg_match('~^\d{4}$~', $year)) return;
-          $new_date =  trim($day . ' ' . $month . ' ' . $year;
+          $new_date =  trim($day . ' ' . $month . ' ' . $year);
           $this->forget('day');
           $this->rename($param, 'date', $new_date);
           return;
