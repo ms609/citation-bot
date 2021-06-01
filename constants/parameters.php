@@ -77,6 +77,8 @@ const ALL_URL_TYPES = array('url', 'article-url', 'chapter-url', 'chapterurl', '
                   'layurl', 'map-url', 'mapurl', 'section-url', 'sectionurl', 'transcript-url',
                   'transcripturl', 'URL');
 
+const DATES_TO_CLEAN = array('air-date', 'airdate', 'archive-date', 'archivedate', 'date', 'pmc-embargo-date', 'publication-date', 'lay-date');
+
 const AUTHOR_PARAMETERS = array(
     1  => array('surname'  , 'forename'  , 'initials'  , 'first'  , 'last'  , 'author', 
                 'vauthors', 'authors', 'author-last', 'author-first',
