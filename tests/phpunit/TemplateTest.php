@@ -2171,6 +2171,12 @@ T1 - This is the Title }}';
     $this->assertSame('May 3, 2000', $prepared->get2('date'));
   }
  
+  public function testCleanDates6b(): void {
+    $text = '{{cite journal|date=May 03, 2000}}';
+    $prepared = $this->prepare_citation($text);
+    $this->assertSame('May 3, 2000', $prepared->get2('date'));
+  }
+ 
   public function testCleanDates7(): void {
     $text = '{{cite journal|date=May 3 1980}}';
     $prepared = $this->prepare_citation($text);
