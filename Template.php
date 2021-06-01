@@ -4387,7 +4387,13 @@ final class Template {
             return;
           }
           if ($this->has('date') || $this->blank('year')) return;
-          $new_date =  trim($this->get('day') . ' ' . $this->get('month') . ' ' . $this->get('year'));
+          $day = $this->get('day');
+          $month = $this->get('month');
+          $year = $this->get('year');
+          if (!preg_match('~^\d*$~', $day)) return;
+          if (!preg_match('~^[a-zA-Z]+$~', $month)) return;
+          if (!preg_match('~^\d{4}$~', $year)) return;
+          $new_date =  trim($day . ' ' . $month . ' ' . $year;
           $this->forget('day');
           $this->rename($param, 'date', $new_date);
           return;
@@ -4739,7 +4745,11 @@ final class Template {
           }
           return;
         
-        case 'others': case 'day':  // Bad idea to have in general
+        case 'day':  // Bad idea to have in general
+          if ($this->blank($param)) $this->forget($param);
+          return;
+          
+        case 'others':  // Bad idea to have in general
           if ($this->blank($param)) $this->forget($param);
           return;
 
