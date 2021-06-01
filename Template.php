@@ -6523,7 +6523,7 @@ final class Template {
        // Remove blank stuff that will most likely never get filled in
        $this->forget('issue');
        $this->forget('journal');
-    }
+    }CONFLICT
     if (preg_match('~^10\.1093/ref\:odnb/\d+$~', $this->get('doi')) &&
         $this->has('title') &&
         $this->wikiname() !== 'cite encyclopedia' && 
