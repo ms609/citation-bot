@@ -7614,13 +7614,13 @@ final class Template {
     if (preg_match('~^([A-Z][a-z]+ \d{1,2})( \d{4})$~', $input, $matches)) { // Missing comma in format which requires it
       return $matches[1] . ',' . $matches[2]; 
     }
-    if (preg_match('~^Collected[\s\:]+(?:|[A-Z][a-z]+ )(\d{4})$~', $input, $matches)) { // Collected 1999 stuff
+    if (preg_match('~^Collected[\s\:]+((?:|[A-Z][a-z]+ )\d{4})$~', $input, $matches)) { // Collected 1999 stuff
       return $matches[1]; 
     }
-    if (preg_match('~^Effective[\s\:]+(?:|[A-Z][a-z]+ )(\d{4})$~', $input, $matches)) { // Effective 1999 stuff
+    if (preg_match('~^Effective[\s\:]+((?:|[A-Z][a-z]+ )\d{4})$~', $input, $matches)) { // Effective 1999 stuff
       return $matches[1]; 
     }
-    if (preg_match('~^(\d{4})\s*(?:&|ang)\s*(\d{4})$~', $input, $matches)) { // &/and between years
+    if (preg_match('~^(\d{4})\s*(?:&|and)\s*(\d{4})$~', $input, $matches)) { // &/and between years
       $first = (int) $matches[1];
       $second = (int) $matches[2];
       if ($second === $first+1) {
