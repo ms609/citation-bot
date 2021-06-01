@@ -6567,6 +6567,9 @@ final class Template {
             $drop_me_maybe = array_merge($drop_me_maybe, $alias_list);
           }
         }
+        if (!$this->incomplete()) {
+          $drop_me_maybe = array_merge($drop_me_maybe, LOTS_OF_EDITORS);  // Always drop empty editors at end, if "complete"
+        }
         // Do it this way to avoid massive N*M work load (N=size of $param and M=size of $drop_me_maybe) which happens when checking if each one is blank
         foreach ($this->param as $key => $p) {
          if (@$p->val === '' && in_array(@$p->param, $drop_me_maybe)) {
