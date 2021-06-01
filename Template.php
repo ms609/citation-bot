@@ -359,6 +359,17 @@ final class Template {
           }
         }
       }
+      foreach (DATES_TO_CLEAN as $date) {
+        if ($this->has($date)) {
+          $input = $this->get($date);
+          if (stripos($input, 'citation') === FALSE) {
+            $output = $this->clean_dates($input);
+            if ($input !== $output) {
+              $this->set($date, $output);
+            }
+          }
+        }
+      }
       $this->get_inline_doi_from_title();
       $this->parameter_names_to_lowercase();
       $this->use_unnamed_params();
@@ -7566,6 +7577,44 @@ final class Template {
             }
           }
       }
+  }
+  
+  public function clean_dates(string $input) : string { // See https://en.wikipedia.org/wiki/Help:CS1_errors#bad_date
+    $matches = ['', ''];
+    $months_seasons = array('January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December', 'Winter', 'Spring', 'Summer', 'Fall', 'Autumn');
+    $input = str_ireplace($months_seasons, $months_seasons, $input); // capitalization
+    if (preg_match('~^(\d{4})[\-\/](\d{4})$~', $input, $matches)) { // Hyphen or slash in date range (use en dash)
+      return $matches[1] . '–' . $matches[2]; 
+    }    
+    if (preg_match('~^([A-Z][a-z]+)[\-\/]([A-Z][a-z]+) (\d{4})$~', $input, $matches)) { // Slash or hyphen in date range (use en dash)
+      return $matches[1] . '–' . $matches[2] . ' ' . $matches[3]; 
+    }
+    if (preg_match('~^([A-Z][a-z]+ \d{4})[\-\–]([A-Z][a-z]+ \d{4})$~', $input, $matches)) { // Missing space around en dash for range of full dates
+      return $matches[1] . ' – ' . $matches[2]; 
+    }   
+    if (preg_match('~^([A-Z][a-z]+), (\d{4})$~', $input, $matches)) { // Comma with month/season and year
+      return $matches[1] . ' ' . $matches[2]; 
+    }
+    if (preg_match('~^([A-Z][a-z]+), (\d{4})[\-\–](\d{4})$~', $input, $matches)) { // Comma with month/season and years
+      return $matches[1] . ' ' . $matches[2] . '–' . $matches[3];
+    }
+    if (preg_match('~^([A-Z][a-z]+) 0(\d),? (\d{4})$~', $input, $matches)) { // Zero-padding	
+      return $matches[1] . ' ' . $matches[2] . ', ' . $matches[3]; 
+    }
+    if (preg_match('~^([A-Z][a-z]+ \d{1,2})( \d{4})$~', $input, $matches)) { // Missing comma in format which requires it
+      return $matches[1] . ',' . $matches[2]; 
+    }
+    if (preg_match('~^Collected[\s\:]+(\d{4})$~', $input, $matches)) { // Collected 1999 stuff
+      return $matches[1]; 
+    }
+    if (preg_match('~^(\d{4})\-(\d{2})$~', $input, $matches)) { // 2020-12 i.e. backwards
+      $year = $matches[1];
+      $month = (int) $matches[2];
+      if ($month > 0 && $month < 13) {
+        return $months_seasons[$month-1] . ' ' . $year;
+      }
+    }
+    return $input;
   }
   
   public function block_modifications() : void { // {{void}} should be just like a comment, BUT this code will not stop the normalization of the hidden template which has already been done

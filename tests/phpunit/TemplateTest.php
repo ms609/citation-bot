@@ -2135,6 +2135,72 @@ T1 - This is the Title }}';
     $this->assertSame('Synthetic studies on β-lactam antibiotics. Part 10. Synthesis of 7β-&#91;2-carboxy-2-(4-hydroxyphenyl)acetamido&#93;-7.alpha.-methoxy-3-&#91;&#91;(1-methyl-1H-tetrazol-5-yl)thio&#93;methyl&#93;-1-oxa-1-dethia-3-cephem-4-carboxylic acid disodium salt (6059-S) and its related 1-oxacephems', $expanded->get2('title'));
   }
   
+  public function testCleanDates1(): void {
+    $text = '{{cite journal|date=FebruARY 2000}}';
+    $prepared = $this->prepare_citation($text);
+    $this->assertSame('February 2000', $prepared->get2('date'));
+  }
+ 
+  public function testCleanDates2(): void {
+    $text = '{{cite journal|date=1800-2000}}';
+    $prepared = $this->prepare_citation($text);
+    $this->assertSame('1800–2000', $prepared->get2('date'));
+  }
+ 
+  public function testCleanDates3(): void {
+    $text = '{{cite journal|date=January-FEBRUARY 2001}}';
+    $prepared = $this->prepare_citation($text);
+    $this->assertSame('January–February 2001', $prepared->get2('date'));
+  }
+ 
+  public function testCleanDates4(): void {
+    $text = '{{cite journal|date=January 1999-February 2000}}';
+    $prepared = $this->prepare_citation($text);
+    $this->assertSame('January 1999 – February 2000', $prepared->get2('date'));
+  }
+
+  public function testCleanDates5(): void {
+    $text = '{{cite journal|date=Spring, 2000}}';
+    $prepared = $this->prepare_citation($text);
+    $this->assertSame('Spring 2000', $prepared->get2('date'));
+  }
+ 
+  public function testCleanDates6(): void {
+    $text = '{{cite journal|date=May 03 2000}}';
+    $prepared = $this->prepare_citation($text);
+    $this->assertSame('May 3, 2000', $prepared->get2('date'));
+  }
+ 
+  public function testCleanDates6b(): void {
+    $text = '{{cite journal|date=May 03, 2000}}';
+    $prepared = $this->prepare_citation($text);
+    $this->assertSame('May 3, 2000', $prepared->get2('date'));
+  }
+ 
+  public function testCleanDates7(): void {
+    $text = '{{cite journal|date=May 3 1980}}';
+    $prepared = $this->prepare_citation($text);
+    $this->assertSame('May 3, 1980', $prepared->get2('date'));
+  }
+ 
+  public function testCleanDates8(): void {
+    $text = '{{cite journal|date=Collected 2010}}';
+    $prepared = $this->prepare_citation($text);
+    $this->assertSame('2010', $prepared->get2('date'));
+  }
+
+  public function testCleanDates9(): void {
+    $text = '{{cite journal|date=1980-03}}';
+    $prepared = $this->prepare_citation($text);
+    $this->assertSame('March 1980', $prepared->get2('date'));
+  }
+ 
+  public function testCleanDates10(): void {
+    $text = '{{cite journal|date=1999-13}}';
+    $prepared = $this->prepare_citation($text);
+    $this->assertSame('1999-13', $prepared->get2('date'));
+  }
+ 
   public function testZooKeys() : void {
    $this->requires_secrets(function() : void {
     $text = '{{Cite journal|doi=10.3897/zookeys.445.7778}}';
