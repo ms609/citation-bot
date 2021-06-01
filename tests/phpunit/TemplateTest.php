@@ -2201,6 +2201,32 @@ T1 - This is the Title }}';
     $this->assertSame('1999-13', $prepared->get2('date'));
   }
  
+  public function testCleanDates11(): void {
+    $text = '{{cite journal|date=0001-11-30}}';
+    $prepared = $this->prepare_citation($text);
+    $this->assertSame('', $prepared->get2('date'));
+  }
+ 
+   public function testCleanDates12(): void {
+    $text = '{{cite journal|date=1960/ed}}';
+    $prepared = $this->prepare_citation($text);
+    $this->assertSame('1960', $prepared->get2('date'));
+  }
+ 
+   public function testCleanDates13(): void {
+    $text = '{{cite journal|date=First published 1960}}';
+    $prepared = $this->prepare_citation($text);
+    $this->assertSame('1960', $prepared->get2('date'));
+    
+    $text = '{{cite journal|date=First published in 1960}}';
+    $prepared = $this->prepare_citation($text);
+    $this->assertSame('1960', $prepared->get2('date'));
+    
+    $text = '{{cite journal|date=First published in: 1960}}';
+    $prepared = $this->prepare_citation($text);
+    $this->assertSame('1960', $prepared->get2('date'));
+  }
+ 
   public function testZooKeys() : void {
    $this->requires_secrets(function() : void {
     $text = '{{Cite journal|doi=10.3897/zookeys.445.7778}}';
