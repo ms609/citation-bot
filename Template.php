@@ -359,6 +359,17 @@ final class Template {
           }
         }
       }
+      foreach (DATES_TO_CLEAN as $date) {
+        if ($this->has($date)) {
+          $input = $this->get($date);
+          if (stripos($input, 'citation') === FALSE) {
+            $output = $this->clean_dates($input);
+            if ($input !== $output) {
+              $this->set($date, $output);
+            }
+          }
+        }
+      }
       $this->get_inline_doi_from_title();
       $this->parameter_names_to_lowercase();
       $this->use_unnamed_params();
