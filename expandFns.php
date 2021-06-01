@@ -90,8 +90,10 @@ function extract_doi(string $text) : array {
     }
     if (doi_works($doi_candidate)) $doi = $doi_candidate;
     if (!doi_works($doi) && !doi_works(sanitize_doi($doi))) { // Reject URLS like ...../25.10.2015/2137303/default.htm
-      if (preg_match("~/[0-3][0-9]\." . preg_quote($doi) . "~", $text)) {
-        return array(FALSE, FALSE);
+      if (preg_match('~^10\.([12]\d{3})\/~', $doi, $match)) {
+        if (preg_match("~[0-3][0-9]\.10\." .$match[1] . "~", $text)) {
+          return array(FALSE, FALSE);
+        }
       }
     }
     return array($match[0], sanitize_doi($doi));
