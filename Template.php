@@ -7568,6 +7568,34 @@ final class Template {
       }
   }
   
+  public function clean_dates(string $input) : string { // See https://en.wikipedia.org/wiki/Help:CS1_errors#bad_date
+    $matches = ['', ''];
+    $months_seasons = array('January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December', 'Winter', 'Spring', 'Summer', 'Fall', 'Autumn');
+    $input = str_ireplace($months_seasons, $months_seasons, $input); // capitalization
+    if (preg_match('~^(\d{4})[\-\/](\d{4})$~', $input, $matches)) { // Hyphen or slash in date range (use en dash)
+      return $matches[1] . '–' . $matches[2]; 
+    }    
+    if (preg_match('~^([A-Z][a-z]+)[\-\/]([A-Z][a-z]+) (\d{4})$~', $input, $matches)) { // Slash or hyphen in date range (use en dash)
+      return $matches[1] . '–' . $matches[2] . ' ' . $matches[3]; 
+    }
+    if (preg_match('~^([A-Z][a-z]+ \d{4})[\-\–]([A-Z][a-z]+ \d{4})$~', $input, $matches)) { // Missing space around en dash for range of full dates
+      return $matches[1] . ' – ' . $matches[2]; 
+    }   
+    if (preg_match('~^([A-Z][a-z]+), (\d{4})$~', $input, $matches)) { // Comma with month/season and year
+      return $matches[1] . ' ' . $matches[2]; 
+    }
+    if (preg_match('~^([A-Z][a-z]+), (\d{4})[\-\–](\d{4})$~', $input, $matches)) { // Comma with month/season and years
+      return $matches[1] . ' ' . $matches[2] . '–' . $matches[3];
+    }
+    if (preg_match('~^([A-Z][a-z]+ )0(\d, \d{4})$~', $input, $matches)) { // Zero-padding	
+      return $matches[1] . $matches[2]; 
+    }
+    if (preg_match('~^([A-Z][a-z]+ \d{1,2})( \d{4})$~', $input, $matches)) { // Missing comma in format which requires it
+      return $matches[1] . ',' . $matches[2]; 
+    }
+    return $input;
+  }
+  
   public function block_modifications() : void { // {{void}} should be just like a comment, BUT this code will not stop the normalization of the hidden template which has already been done
      $tmp = $this->parsed_text();
      while (preg_match_all('~' . sprintf(Self::PLACEHOLDER_TEXT, '(\d+)') . '~', $tmp, $matches)) {	
