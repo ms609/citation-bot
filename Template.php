@@ -7598,8 +7598,8 @@ final class Template {
     if (preg_match('~^([A-Z][a-z]+), (\d{4})[\-\–](\d{4})$~', $input, $matches)) { // Comma with month/season and years
       return $matches[1] . ' ' . $matches[2] . '–' . $matches[3];
     }
-    if (preg_match('~^([A-Z][a-z]+ )0(\d, \d{4})$~', $input, $matches)) { // Zero-padding	
-      return $matches[1] . $matches[2]; 
+    if (preg_match('~^([A-Z][a-z]+) 0(\d),? (\d{4})$~', $input, $matches)) { // Zero-padding	
+      return $matches[1] . ' ' . $matches[2] . ', ' . $matches[3]; 
     }
     if (preg_match('~^([A-Z][a-z]+ \d{1,2})( \d{4})$~', $input, $matches)) { // Missing comma in format which requires it
       return $matches[1] . ',' . $matches[2]; 
