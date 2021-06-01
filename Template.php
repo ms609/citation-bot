@@ -4381,6 +4381,17 @@ final class Template {
           if ($this->blank('date') && $this->has('year')) $this->forget('date');
           return;
           
+        case 'month':
+          if ($this->blank($param)) {
+            $this->forget($param);
+            return;
+          }
+          if ($this->has('date') || $this->blank('year')) return;
+          $new_date =  trim($this->get('day') . ' ' . $this->get('month') . ' ' . $this->get('year'));
+          $this->forget('day');
+          $this->rename($param, 'date', $new_date);
+          return;
+          
         case 'dead-url': case 'deadurl':
           $the_data = strtolower($this->get($param));
           if (in_array($the_data, ['y', 'yes', 'dead'])) {
@@ -4728,7 +4739,7 @@ final class Template {
           }
           return;
         
-        case 'others': case 'day': case 'month':  // Bad idea to have in general
+        case 'others': case 'day':  // Bad idea to have in general
           if ($this->blank($param)) $this->forget($param);
           return;
 
