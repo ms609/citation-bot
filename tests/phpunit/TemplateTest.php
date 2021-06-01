@@ -2213,18 +2213,52 @@ T1 - This is the Title }}';
     $this->assertSame('1960', $prepared->get2('date'));
   }
  
-   public function testCleanDates13(): void {
+   public function testCleanDates13a(): void {
     $text = '{{cite journal|date=First published 1960}}';
     $prepared = $this->prepare_citation($text);
     $this->assertSame('1960', $prepared->get2('date'));
-    
+  }
+ 
+   public function testCleanDates13b(): void {
     $text = '{{cite journal|date=First published in 1960}}';
     $prepared = $this->prepare_citation($text);
     $this->assertSame('1960', $prepared->get2('date'));
-    
+  }
+ 
+   public function testCleanDates13c(): void {
     $text = '{{cite journal|date=First published in: 1960}}';
     $prepared = $this->prepare_citation($text);
     $this->assertSame('1960', $prepared->get2('date'));
+  }
+ 
+  public function testCleanDates14(): void {
+    $text = '{{cite journal|date=Effective spring 2021}}';
+    $prepared = $this->prepare_citation($text);
+    $this->assertSame('Spring 2021', $prepared->get2('date'));
+  }
+ 
+  public function testCleanDates15a(): void {
+    $text = '{{cite journal|date=2001 & 2002}}';
+    $prepared = $this->prepare_citation($text);
+    $this->assertSame('2001–2002', $prepared->get2('date'));
+  }
+ 
+  public function testCleanDates15b(): void {
+    $text = '{{cite journal|date=2001 and 2002}}';
+    $prepared = $this->prepare_citation($text);
+    $this->assertSame('2001–2002', $prepared->get2('date'));
+  }
+ 
+  public function testCleanDates15c(): void {
+    $text = '{{cite journal|date=2001 & 2003}}';
+    $prepared = $this->prepare_citation($text);
+    $this->assertSame('2001 & 2003', $prepared->get2('date'));
+  }
+ 
+  public function testCleanDates15d(): void {
+    $text = '{{cite journal|date=2001 and 2004}}';
+    $prepared = $this->prepare_citation($text);
+    $this->assertSame('2001 and 2004', $prepared->get2('date'));
   }
  
   public function testZooKeys() : void {

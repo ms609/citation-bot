@@ -7587,7 +7587,7 @@ final class Template {
     if ($input === '0001-11-30') return '';
     $months_seasons = array('January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December', 'Winter', 'Spring', 'Summer', 'Fall', 'Autumn');
     $input = str_ireplace($months_seasons, $months_seasons, $input); // capitalization
-    if (preg_match('~^(\d{4})[\-\/](\d{4})$~', $input, $matches)) { // Hyphen or slash in date range (use en dash)
+    if (preg_match('~^(\d{4})[\-\/](\d{4})$~', $input, $matches)) { // Hyphen or slash in year range (use en dash)
       return $matches[1] . '–' . $matches[2]; 
     } 
     if (preg_match('~^(\d{4})\/ed$~i', $input, $matches)) { // 2002/ed
@@ -7614,8 +7614,18 @@ final class Template {
     if (preg_match('~^([A-Z][a-z]+ \d{1,2})( \d{4})$~', $input, $matches)) { // Missing comma in format which requires it
       return $matches[1] . ',' . $matches[2]; 
     }
-    if (preg_match('~^Collected[\s\:]+(?:|[A-Z][a-z]+ )(\d{4})$~', $input, $matches)) { // Collected 1999 stuff
+    if (preg_match('~^Collected[\s\:]+((?:|[A-Z][a-z]+ )\d{4})$~', $input, $matches)) { // Collected 1999 stuff
       return $matches[1]; 
+    }
+    if (preg_match('~^Effective[\s\:]+((?:|[A-Z][a-z]+ )\d{4})$~', $input, $matches)) { // Effective 1999 stuff
+      return $matches[1]; 
+    }
+    if (preg_match('~^(\d{4})\s*(?:&|and)\s*(\d{4})$~', $input, $matches)) { // &/and between years
+      $first = (int) $matches[1];
+      $second = (int) $matches[2];
+      if ($second === $first+1) {
+        return $matches[1] . '–' . $matches[2];
+      }
     }
     if (preg_match('~^(\d{4})\-(\d{2})$~', $input, $matches)) { // 2020-12 i.e. backwards
       $year = $matches[1];
