@@ -7607,7 +7607,7 @@ final class Template {
     if (preg_match('~^([A-Z][a-z]+ \d{1,2})( \d{4})$~', $input, $matches)) { // Missing comma in format which requires it
       return $matches[1] . ',' . $matches[2]; 
     }
-    if (preg_match('~^Collected[\s\:]+(\d{4})$~', $input, $matches)) { // Collected 1999 stuff
+    if (preg_match('~^Collected[\s\:]+(?:|[A-Z][a-z]+ )(\d{4})$~', $input, $matches)) { // Collected 1999 stuff
       return $matches[1]; 
     }
     if (preg_match('~^(\d{4})\-(\d{2})$~', $input, $matches)) { // 2020-12 i.e. backwards
