@@ -7584,11 +7584,18 @@ final class Template {
   
   public function clean_dates(string $input) : string { // See https://en.wikipedia.org/wiki/Help:CS1_errors#bad_date
     $matches = ['', ''];
+    if ($input === '0001-11-30') return '';
     $months_seasons = array('January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December', 'Winter', 'Spring', 'Summer', 'Fall', 'Autumn');
     $input = str_ireplace($months_seasons, $months_seasons, $input); // capitalization
     if (preg_match('~^(\d{4})[\-\/](\d{4})$~', $input, $matches)) { // Hyphen or slash in date range (use en dash)
       return $matches[1] . '–' . $matches[2]; 
-    }    
+    } 
+    if (preg_match('~^(\d{4})\/ed$~i', $input, $matches)) { // 2002/ed
+      return $matches[1]; 
+    }
+    if (preg_match('~^First published(?: |\: | in | in\: | in\:)(\d{4})$~i', $input, $matches)) { // First published: 2002
+      return $matches[1]; 
+    }
     if (preg_match('~^([A-Z][a-z]+)[\-\/]([A-Z][a-z]+) (\d{4})$~', $input, $matches)) { // Slash or hyphen in date range (use en dash)
       return $matches[1] . '–' . $matches[2] . ' ' . $matches[3]; 
     }
