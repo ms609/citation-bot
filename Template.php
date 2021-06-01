@@ -1,7 +1,7 @@
 <?php
 declare(strict_types=1);
 /*
- * Template has methods to handle most aspects of citation template\
+ * Template has methods to handle most aspects of citation template
  * parsing, handling, and expansion.
  *
  * Of particular note:
@@ -6479,29 +6479,28 @@ final class Template {
          }
       }
       if ($this->blank('pmc-embargo-date')) $this->forget('pmc-embargo-date'); // Do at the very end, so we do not delete it, then add it later in a different position
-    }
-    if ($this->wikiname() === 'cite arxiv' && $this->get_without_comments_and_placeholders('doi')) {
-      $this->change_name_to('cite journal');
-    }
-    if ($this->wikiname() === 'cite arxiv' && $this->has('bibcode')) {
-      $this->forget('bibcode'); // Not supported and 99% of the time just a arxiv bibcode anyway
-    }
-    if ($this->wikiname() === 'citation') { // Special CS2 code goes here
-      if (!$this->blank_other_than_comments('title') && !$this->blank_other_than_comments('chapter') && !$this->blank_other_than_comments(WORK_ALIASES)) { // Invalid combination
+      if ($this->wikiname() === 'cite arxiv' && $this->get_without_comments_and_placeholders('doi')) {
+        $this->change_name_to('cite journal');
+      }
+      if ($this->wikiname() === 'cite arxiv' && $this->has('bibcode')) {
+        $this->forget('bibcode'); // Not supported and 99% of the time just a arxiv bibcode anyway
+      }
+      if ($this->wikiname() === 'citation') { // Special CS2 code goes here
+       if (!$this->blank_other_than_comments('title') && !$this->blank_other_than_comments('chapter') && !$this->blank_other_than_comments(WORK_ALIASES)) { // Invalid combination
           report_info('CS2 template has incompatible parameters.  Changing to CS1 cite book. Please verify.');
           if ($this->name === 'citation') { // Need special code to keep caps the same
             $this->name = 'cite book';
           } else {
             $this->name = 'Cite book';
           }
+       }
       }
-    }
-    if (!$this->blank(DOI_BROKEN_ALIASES) && $this->has('jstor') &&
+      if (!$this->blank(DOI_BROKEN_ALIASES) && $this->has('jstor') &&
         (strpos($this->get('doi'), '10.2307') === 0 ||  $this->get('doi') == $this->get('jstor'))) {
-      $this->forget('doi'); // Forget DOI that is really jstor, if it is broken
-      foreach (DOI_BROKEN_ALIASES as $alias) $this->forget($alias);
-    }
-    if ($this->has('journal')) {  // Do this at the very end of work in case we change type/etc during expansion
+       $this->forget('doi'); // Forget DOI that is really jstor, if it is broken
+       foreach (DOI_BROKEN_ALIASES as $alias) $this->forget($alias);
+      }
+      if ($this->has('journal')) {  // Do this at the very end of work in case we change type/etc during expansion
           if ($this->blank(['chapter', 'isbn'])) {
             // Avoid renaming between cite journal and cite book
             $this->change_name_to('cite journal');
@@ -6518,54 +6517,54 @@ final class Template {
             report_warning(echoable('Citation should probably not have journal = ' . $this->get('journal')
             . ' as well as chapter / ISBN ' . $this->get('chapter') . ' ' .  $this->get('isbn')));
           }
-    }
-    if ($this->wikiname() === 'cite book' && $this->blank(['issue', 'journal'])) {
+      }
+      if ($this->wikiname() === 'cite book' && $this->blank(['issue', 'journal'])) {
        // Remove blank stuff that will most likely never get filled in
        $this->forget('issue');
        $this->forget('journal');
-    }
-    if (preg_match('~^10\.1093/ref\:odnb/\d+$~', $this->get('doi')) &&
+      }
+      if (preg_match('~^10\.1093/ref\:odnb/\d+$~', $this->get('doi')) &&
         $this->has('title') &&
         $this->wikiname() !== 'cite encyclopedia' && 
         $this->wikiname() !== 'cite encyclopaedia') {
-      preg_match("~^(\s*).*\b(\s*)$~", $this->name, $spacing);
-      if (substr($this->name,0,1) === 'c') {
+       preg_match("~^(\s*).*\b(\s*)$~", $this->name, $spacing);
+       if (substr($this->name,0,1) === 'c') {
         $this->name = $spacing[1] . 'cite ODNB' . $spacing[2];
-      } else {
+       } else {
         $this->name = $spacing[1] . 'Cite ODNB' . $spacing[2];
-      }
-      foreach (array_diff(WORK_ALIASES, array('encyclopedia','encyclopaedia')) as $worker) {
+       }
+       foreach (array_diff(WORK_ALIASES, array('encyclopedia','encyclopaedia')) as $worker) {
         $this->forget($worker);
+       }
+       if (stripos($this->get('publisher'), 'oxford') !== FALSE) $this->forget('publisher');
       }
-      if (stripos($this->get('publisher'), 'oxford') !== FALSE) $this->forget('publisher');
-    }
-    if (preg_match('~^10\.1093/~', $this->get('doi')) &&
+      if (preg_match('~^10\.1093/~', $this->get('doi')) &&
         $this->has('title') &&
         ($this->wikiname() === 'cite web' || $this->wikiname() === 'cite journal') &&
         $this->blank(WORK_ALIASES) && $this->blank('url')) {
-      preg_match("~^(\s*).*\b(\s*)$~", $this->name, $spacing);
-      if (substr($this->name,0,1) === 'c') {
-        $this->name = $spacing[1] . 'cite document' . $spacing[2];
-      } else {
-        $this->name = $spacing[1] . 'Cite document' . $spacing[2];
-      }
-    }
-    if (!empty($this->param)) {
-      $drop_me_maybe = array();
-      foreach (ALL_ALIASES as $alias_list) {
-        if (!$this->blank($alias_list)) { // At least one is set
-          $drop_me_maybe = array_merge($drop_me_maybe, $alias_list);
+        preg_match("~^(\s*).*\b(\s*)$~", $this->name, $spacing);
+        if (substr($this->name,0,1) === 'c') {
+          $this->name = $spacing[1] . 'cite document' . $spacing[2];
+        } else {
+          $this->name = $spacing[1] . 'Cite document' . $spacing[2];
         }
       }
-      // Do it this way to avoid massive N*M work load (N=size of $param and M=size of $drop_me_maybe) which happens when checking if each one is blank
-      foreach ($this->param as $key => $p) {
-        if (@$p->val === '' && in_array(@$p->param, $drop_me_maybe)) {
+      if (!empty($this->param)) {
+        $drop_me_maybe = array();
+        foreach (ALL_ALIASES as $alias_list) {
+          if (!$this->blank($alias_list)) { // At least one is set
+            $drop_me_maybe = array_merge($drop_me_maybe, $alias_list);
+          }
+        }
+        // Do it this way to avoid massive N*M work load (N=size of $param and M=size of $drop_me_maybe) which happens when checking if each one is blank
+        foreach ($this->param as $key => $p) {
+         if (@$p->val === '' && in_array(@$p->param, $drop_me_maybe)) {
            unset($this->param[$key]);
+         }
         }
       }
-    }
-    if (!empty($this->param)) { // Forget author-link and such that have no such author
-      foreach ($this->param as $p) {
+      if (!empty($this->param)) { // Forget author-link and such that have no such author
+       foreach ($this->param as $p) {
         $alias = $p->param;
         if ($alias != NULL && $this->blank($alias)) {
           if (preg_match('~^author(\d+)\-?link$~', $alias, $matches) || preg_match('~^author\-?link(\d+)$~', $alias, $matches)) {
@@ -6574,6 +6573,7 @@ final class Template {
             }
           }
         }
+       }
       }
     }
   }
