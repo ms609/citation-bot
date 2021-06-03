@@ -48,9 +48,13 @@ final class WikipediaBot {
     $this->consumer = new Consumer((string) getenv('PHP_OAUTH_CONSUMER_TOKEN'), (string) getenv('PHP_OAUTH_CONSUMER_SECRET'));
     $this->bot_token = new Token((string) getenv('PHP_OAUTH_ACCESS_TOKEN'), (string) getenv('PHP_OAUTH_ACCESS_SECRET'));
     if (!EDIT_AS_BOT) {
+       echo "DEBUG 1\n";
        $conf = new ClientConfig(WIKI_ROOT . '?title=Special:OAuth');
+       echo "DEBUG 2\n";
        $conf->setConsumer($this->consumer);
+       echo "DEBUG 3\n";
        $this->user_client = new Client($conf);
+       echo "DEBUG 4\n";
     }
 
     /** @psalm-suppress RedundantCondition */  /* PSALM thinks TRAVIS cannot be FALSE */
@@ -118,6 +122,7 @@ final class WikipediaBot {
     if (EDIT_AS_BOT) {
       $token = $this->bot_token;
     } else {
+      echo "DEBUG 5\n";
       $token = $this->user_token;
     }
     $request = Request::fromConsumerAndToken($this->consumer, $token, $method, API_ROOT, $params);
@@ -251,10 +256,12 @@ final class WikipediaBot {
     if (EDIT_AS_BOT) {
        $auth_token = $response->query->tokens->csrftoken;
     } else {
+      echo "DEBUG 6\n";
       $auth_token = json_decode( $this->user_client->makeOAuthCall(
         $this->user_token,
        'https://en.wikipedia.org/w/api.php?action=query&meta=tokens&format=json'
        ) )->query->tokens->csrftoken;
+      echo "DEBUG 7\n";
     }
     $submit_vars = array(
         "action" => "edit",
