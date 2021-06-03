@@ -17,7 +17,6 @@ final class WikipediaBot {
 
   private $consumer;
   private $bot_token;
-  private $client;
   private $user_token;
   /** @var resource $ch */
   private $ch;
@@ -237,7 +236,7 @@ final class WikipediaBot {
     }
     
     // No obvious errors; looks like we're good to go ahead and edit
-    $auth_token = $response->query->tokens->csrftoken; // Citation bot tokens
+    $auth_token = $response->query->tokens->csrftoken;
     $submit_vars = array(
         "action" => "edit",
         "title" => $page,
@@ -502,8 +501,8 @@ final class WikipediaBot {
       if (!getenv('PHP_WP_OAUTH_CONSUMER')) report_error("PHP_WP_OAUTH_CONSUMER not set");
       if (!getenv('PHP_WP_OAUTH_SECRET'))   report_error("PHP_WP_OAUTH_SECRET not set");
       $conf->setConsumer(new Consumer((string) getenv('PHP_WP_OAUTH_CONSUMER'), (string) getenv('PHP_WP_OAUTH_SECRET')));
-      $this->client = new Client($conf);
-      $ident = $this->client->identify( $this->user_token );
+      $client = new Client($conf);
+      $ident = $client->identify( $this->user_token );
       $user = (string) $ident->username;
       if (!self::is_valid_user($user)) {
         unset($_SESSION['access_key']);
