@@ -1,6 +1,7 @@
 <?php
 declare(strict_types=1);
 // This library did the edits as the users in https://github.com/ms609/citation-bot/blob/439dc557d1c56c9a71b30a9c51e37234ff710dad/WikipediaBot.php
+// You can compare that too https://github.com/ms609/citation-bot/blob/10f13b5094e21949e2406e125d1608ecfa9b523e/WikipediaBot.php
 // To use the oauthclient library, run:
 // composer require mediawiki/oauthclient
 use MediaWiki\OAuthClient\Client;
@@ -48,7 +49,7 @@ final class WikipediaBot {
     $this->bot_token = new Token((string) getenv('PHP_OAUTH_ACCESS_TOKEN'), (string) getenv('PHP_OAUTH_ACCESS_SECRET'));
     if (!EDIT_AS_BOT) {
        $conf = new ClientConfig(WIKI_ROOT . '?title=Special:OAuth');
-       $conf->setConsumer(new Consumer((string) getenv('PHP_WP_OAUTH_CONSUMER'), (string) getenv('PHP_WP_OAUTH_SECRET')));
+       $conf->setConsumer($this->consumer);
        $this->user_client = new Client($conf);
     }
 
