@@ -16,8 +16,9 @@ require_once("constants.php");      // @codeCoverageIgnore
 
 final class WikipediaBot {
 
-  private $consumer;
+  private $bot_consumer;
   private $bot_token;
+  private $user_consumer;
   private $user_client;
   private $user_token;
   /** @var resource $ch */
@@ -45,14 +46,14 @@ final class WikipediaBot {
     if (!getenv('PHP_OAUTH_ACCESS_TOKEN'))    report_error("PHP_OAUTH_ACCESS_TOKEN not set");
     if (!getenv('PHP_OAUTH_ACCESS_SECRET'))   report_error("PHP_OAUTH_ACCESS_SECRET not set");
 
-    $this->consumer = new Consumer((string) getenv('PHP_OAUTH_CONSUMER_TOKEN'), (string) getenv('PHP_OAUTH_CONSUMER_SECRET'));
+    $this->bot_consumer = new Consumer((string) getenv('PHP_OAUTH_CONSUMER_TOKEN'), (string) getenv('PHP_OAUTH_CONSUMER_SECRET'));
     $this->bot_token = new Token((string) getenv('PHP_OAUTH_ACCESS_TOKEN'), (string) getenv('PHP_OAUTH_ACCESS_SECRET'));
     if (!EDIT_AS_BOT) {
-       $this->consumer = new Consumer((string) getenv('PHP_WP_OAUTH_CONSUMER'), (string) getenv('PHP_WP_OAUTH_SECRET'));
+       $this->user_consumer = new Consumer((string) getenv('PHP_WP_OAUTH_CONSUMER'), (string) getenv('PHP_WP_OAUTH_SECRET'));
        echo "DEBUG 1\n";
        $conf = new ClientConfig(WIKI_ROOT . '?title=Special:OAuth');
        echo "DEBUG 2\n";
-       $conf->setConsumer($this->consumer);
+       $conf->setConsumer($this->user_consumer);
        echo "DEBUG 3\n";
        $this->user_client = new Client($conf);
        echo "DEBUG 4\n";
@@ -120,19 +121,22 @@ final class WikipediaBot {
     if ($depth > 4) return NULL;
     $params['format'] = 'json';
 
-    if (EDIT_AS_BOT) {
-      $token = $this->bot_token;
-    } else {
-      echo "DEBUG 5\n";
+    echo "DEBUG 5A\n";
+    $token = $this->bot_token;
+    $consumer = $this->bot_consumer;
+    if (!EDIT_AS_BOT) {
+      echo "DEBUG 5B\n";
       $token = $this->bot_token;
       if ($params["action"] === "edit") {
+          echo "DEBUG 5C\n";
          $token = $this->user_token;
+         $consumer = $this->user_consumer;
       }
     }
     if (!EDIT_AS_BOT) echo "DEBUG 6\n";
-    $request = Request::fromConsumerAndToken($this->consumer, $token, $method, API_ROOT, $params);
+    $request = Request::fromConsumerAndToken($consumer, $token, $method, API_ROOT, $params);
     if (!EDIT_AS_BOT) echo "DEBUG 7\n";
-    $request->signRequest(new HmacSha1(), $this->consumer, $token);
+    $request->signRequest(new HmacSha1(), $consumer, $token);
     if (!EDIT_AS_BOT) echo "DEBUG 8\n";
     $authenticationHeader = $request->toHeader();
     if (!EDIT_AS_BOT) echo "DEBUG 9\n";
