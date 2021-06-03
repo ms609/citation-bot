@@ -324,7 +324,24 @@ const COMMON_MISTAKES = array ( // Common mistakes that aren't picked up by the 
   "city"            =>  "location",
   "link"            =>  "url",
   "home"            =>  "work",
-  "homelanguage"    =>  "language",  
+  "homelanguage"    =>  "language",
+  "episodelink"     =>  "episode-link",
+  "mailinglist"     =>  "mailing-list",
+  "mapurl"          =>  "map-url",
+  "serieslink"      =>  "series-link",
+  "başlık"          =>  "title",
+  "språk"           =>  "language",
+  "datum"           =>  "date",
+  "arkivdatum"      =>  "archive-date",
+  "arkivurl"        =>  "archive-url",
+  "hämtdatum"       =>  "access-date",
+  "tidning"         =>  "newspaper",
+  "författare"      =>  "author",
+  "rubrik"          =>  "title",
+  "utgivare"        =>  "publisher",
+  "tidskrift"       =>  "journal",
+  "efternamn"       =>  "last",
+  "år"              =>  "year"
 );
 
 const COMMON_MISTAKES_TOOL = array(

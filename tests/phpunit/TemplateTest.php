@@ -2135,6 +2135,132 @@ T1 - This is the Title }}';
     $this->assertSame('Synthetic studies on β-lactam antibiotics. Part 10. Synthesis of 7β-&#91;2-carboxy-2-(4-hydroxyphenyl)acetamido&#93;-7.alpha.-methoxy-3-&#91;&#91;(1-methyl-1H-tetrazol-5-yl)thio&#93;methyl&#93;-1-oxa-1-dethia-3-cephem-4-carboxylic acid disodium salt (6059-S) and its related 1-oxacephems', $expanded->get2('title'));
   }
   
+  public function testCleanDates1(): void {
+    $text = '{{cite journal|date=FebruARY 2000}}';
+    $prepared = $this->prepare_citation($text);
+    $this->assertSame('February 2000', $prepared->get2('date'));
+  }
+ 
+  public function testCleanDates2(): void {
+    $text = '{{cite journal|date=1800-2000}}';
+    $prepared = $this->prepare_citation($text);
+    $this->assertSame('1800–2000', $prepared->get2('date'));
+  }
+ 
+  public function testCleanDates3(): void {
+    $text = '{{cite journal|date=January-FEBRUARY 2001}}';
+    $prepared = $this->prepare_citation($text);
+    $this->assertSame('January–February 2001', $prepared->get2('date'));
+  }
+ 
+  public function testCleanDates4(): void {
+    $text = '{{cite journal|date=January 1999-February 2000}}';
+    $prepared = $this->prepare_citation($text);
+    $this->assertSame('January 1999 – February 2000', $prepared->get2('date'));
+  }
+
+  public function testCleanDates5(): void {
+    $text = '{{cite journal|date=Spring, 2000}}';
+    $prepared = $this->prepare_citation($text);
+    $this->assertSame('Spring 2000', $prepared->get2('date'));
+  }
+ 
+  public function testCleanDates6(): void {
+    $text = '{{cite journal|date=May 03 2000}}';
+    $prepared = $this->prepare_citation($text);
+    $this->assertSame('May 3, 2000', $prepared->get2('date'));
+  }
+ 
+  public function testCleanDates6b(): void {
+    $text = '{{cite journal|date=May 03, 2000}}';
+    $prepared = $this->prepare_citation($text);
+    $this->assertSame('May 3, 2000', $prepared->get2('date'));
+  }
+ 
+  public function testCleanDates7(): void {
+    $text = '{{cite journal|date=May 3 1980}}';
+    $prepared = $this->prepare_citation($text);
+    $this->assertSame('May 3, 1980', $prepared->get2('date'));
+  }
+ 
+  public function testCleanDates8(): void {
+    $text = '{{cite journal|date=Collected 2010}}';
+    $prepared = $this->prepare_citation($text);
+    $this->assertSame('2010', $prepared->get2('date'));
+  }
+
+  public function testCleanDates9(): void {
+    $text = '{{cite journal|date=1980-03}}';
+    $prepared = $this->prepare_citation($text);
+    $this->assertSame('March 1980', $prepared->get2('date'));
+  }
+ 
+  public function testCleanDates10(): void {
+    $text = '{{cite journal|date=1999-13}}';
+    $prepared = $this->prepare_citation($text);
+    $this->assertSame('1999-13', $prepared->get2('date'));
+  }
+ 
+  public function testCleanDates11(): void {
+    $text = '{{cite journal|date=0001-11-30}}';
+    $prepared = $this->prepare_citation($text);
+    $this->assertSame('', $prepared->get2('date'));
+  }
+ 
+   public function testCleanDates12(): void {
+    $text = '{{cite journal|date=1960/ed}}';
+    $prepared = $this->prepare_citation($text);
+    $this->assertSame('1960', $prepared->get2('date'));
+  }
+ 
+   public function testCleanDates13a(): void {
+    $text = '{{cite journal|date=First published 1960}}';
+    $prepared = $this->prepare_citation($text);
+    $this->assertSame('1960', $prepared->get2('date'));
+  }
+ 
+   public function testCleanDates13b(): void {
+    $text = '{{cite journal|date=First published in 1960}}';
+    $prepared = $this->prepare_citation($text);
+    $this->assertSame('1960', $prepared->get2('date'));
+  }
+ 
+   public function testCleanDates13c(): void {
+    $text = '{{cite journal|date=First published in: 1960}}';
+    $prepared = $this->prepare_citation($text);
+    $this->assertSame('1960', $prepared->get2('date'));
+  }
+ 
+  public function testCleanDates14(): void {
+    $text = '{{cite journal|date=Effective spring 2021}}';
+    $prepared = $this->prepare_citation($text);
+    $this->assertSame('Spring 2021', $prepared->get2('date'));
+  }
+ 
+  public function testCleanDates15a(): void {
+    $text = '{{cite journal|date=2001 & 2002}}';
+    $prepared = $this->prepare_citation($text);
+    $this->assertSame('2001–2002', $prepared->get2('date'));
+  }
+ 
+  public function testCleanDates15b(): void {
+    $text = '{{cite journal|date=2001 and 2002}}';
+    $prepared = $this->prepare_citation($text);
+    $this->assertSame('2001–2002', $prepared->get2('date'));
+  }
+ 
+  public function testCleanDates15c(): void {
+    $text = '{{cite journal|date=2001 & 2003}}';
+    $prepared = $this->prepare_citation($text);
+    $this->assertSame('2001 & 2003', $prepared->get2('date'));
+  }
+ 
+  public function testCleanDates15d(): void {
+    $text = '{{cite journal|date=2001 and 2004}}';
+    $prepared = $this->prepare_citation($text);
+    $this->assertSame('2001 and 2004', $prepared->get2('date'));
+  }
+ 
   public function testZooKeys() : void {
    $this->requires_secrets(function() : void {
     $text = '{{Cite journal|doi=10.3897/zookeys.445.7778}}';
@@ -3137,6 +3263,10 @@ T1 - This is the Title }}';
      sleep(15);
      $template->get_identifiers_from_url(); // This test is finicky sometimes
     }
+    if ('10125/20269' !== $template->get2('hdl')) {
+     sleep(15);
+     $template->get_identifiers_from_url(); // This test is finicky sometimes
+    }
     $this->assertSame('cite web', $template->wikiname());
     $this->assertSame('10125/20269', $template->get2('hdl'));
     $this->assertNotNull($template->get2('url'));
@@ -3878,15 +4008,6 @@ T1 - This is the Title }}';
     $template->tidy_parameter('publisher');
     $this->assertSame('Google Inc.', $template->get2('publisher'));
    }
- 
- /**
-   public function testTidy76() : void {
-    $text = "{{cite news |url=https://news.google.com/newspapers?id=rPZVAAAAIBAJ&sjid=4-EDAAAAIBAJ&pg=4073%2C7051142 |newspaper=Eugene Register-Guard |location=Oregon |last=Withers |first=Bud |title=Bend baseball bounces back |date=June 23, 1978 |page=1D }}";
-    $template = $this->make_citation($text);
-    $template->tidy_parameter('url');
-    $this->assertSame('https://news.google.com/newspapers?id=rPZVAAAAIBAJ&pg=4073%2C7051142', $template->get2('url'));
-   }
-   **/
  
    public function testTidy77() : void {
     $text = "{{cite journal |pages=Pages: 1-2 }}";
