@@ -17,7 +17,7 @@ final class WikipediaBot {
 
   private $consumer;
   private $bot_token;
-  private $client;
+  private $user_client;
   private $user_token;
   /** @var resource $ch */
   private $ch;
@@ -46,6 +46,11 @@ final class WikipediaBot {
 
     $this->consumer = new Consumer((string) getenv('PHP_OAUTH_CONSUMER_TOKEN'), (string) getenv('PHP_OAUTH_CONSUMER_SECRET'));
     $this->bot_token = new Token((string) getenv('PHP_OAUTH_ACCESS_TOKEN'), (string) getenv('PHP_OAUTH_ACCESS_SECRET'));
+    if (!EDIT_AS_BOT) {
+       $conf = new ClientConfig(WIKI_ROOT . '?title=Special:OAuth');
+       $conf->setConsumer($this->consumer);
+       $this->user_client = new Client($conf);
+    }
 
     /** @psalm-suppress RedundantCondition */  /* PSALM thinks TRAVIS cannot be FALSE */
     if (TRAVIS) {
@@ -108,9 +113,14 @@ final class WikipediaBot {
     if ($depth > 1) sleep($depth+2);
     if ($depth > 4) return NULL;
     $params['format'] = 'json';
-     
-    $request = Request::fromConsumerAndToken($this->consumer, $this->bot_token, $method, API_ROOT, $params);
-    $request->signRequest(new HmacSha1(), $this->consumer, $this->bot_token);
+    
+    if (EDIT_AS_BOT) {
+      $request = Request::fromConsumerAndToken($this->consumer, $this->bot_token, $method, API_ROOT, $params);
+      $request->signRequest(new HmacSha1(), $this->consumer, $this->bot_token);
+    } else {
+      $request = Request::fromConsumerAndToken($this->consumer, $this->user_token, $method, API_ROOT, $params);
+      $request->signRequest(new HmacSha1(), $this->consumer, $this->user_token);
+    }
     $authenticationHeader = $request->toHeader();
     
     try {
@@ -237,7 +247,14 @@ final class WikipediaBot {
     }
     
     // No obvious errors; looks like we're good to go ahead and edit
-    $auth_token = $response->query->tokens->csrftoken; // Citation bot tokens
+    if (EDIT_AS_BOT) {
+       $auth_token = $response->query->tokens->csrftoken;
+    } else {
+      $auth_token = json_decode( $this->user_client->makeOAuthCall(
+        $this->user_token,
+       'https://en.wikipedia.org/w/api.php?action=query&meta=tokens&format=json'
+       ) )->query->tokens->csrftoken;
+    }
     $submit_vars = array(
         "action" => "edit",
         "title" => $page,
@@ -488,8 +505,10 @@ final class WikipediaBot {
       if (is_string($_SESSION['citation_bot_user_id']) && self::is_valid_user($_SESSION['citation_bot_user_id'])) {
         $this->the_user = $_SESSION['citation_bot_user_id'];
         @setcookie(session_name(),session_id(),time()+(24*3600)); // 24 hours
-        session_write_close(); // Done with it
-        return;
+        if (EDIT_AS_BOT) {
+          session_write_close(); // Done with it
+          return;
+        }
       } else {
         unset($_SESSION['citation_bot_user_id']);
       }
@@ -502,8 +521,8 @@ final class WikipediaBot {
       if (!getenv('PHP_WP_OAUTH_CONSUMER')) report_error("PHP_WP_OAUTH_CONSUMER not set");
       if (!getenv('PHP_WP_OAUTH_SECRET'))   report_error("PHP_WP_OAUTH_SECRET not set");
       $conf->setConsumer(new Consumer((string) getenv('PHP_WP_OAUTH_CONSUMER'), (string) getenv('PHP_WP_OAUTH_SECRET')));
-      $this->client = new Client($conf);
-      $ident = $this->client->identify( $this->user_token );
+      $client = new Client($conf);
+      $ident = $client->identify( $this->user_token );
       $user = (string) $ident->username;
       if (!self::is_valid_user($user)) {
         unset($_SESSION['access_key']);
