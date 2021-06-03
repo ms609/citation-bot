@@ -125,9 +125,13 @@ final class WikipediaBot {
       echo "DEBUG 5\n";
       $token = $this->user_token;
     }
+    if (!EDIT_AS_BOT) echo "DEBUG 6\n";
     $request = Request::fromConsumerAndToken($this->consumer, $token, $method, API_ROOT, $params);
+    if (!EDIT_AS_BOT) echo "DEBUG 7\n";
     $request->signRequest(new HmacSha1(), $this->consumer, $token);
+    if (!EDIT_AS_BOT) echo "DEBUG 8\n";
     $authenticationHeader = $request->toHeader();
+    if (!EDIT_AS_BOT) echo "DEBUG 9\n";
     
     try {
       switch (strtolower($method)) {
@@ -195,6 +199,7 @@ final class WikipediaBot {
   }
   
   public function write_page(string $page, string $text, string $editSummary, int $lastRevId, string $startedEditing) : bool {
+    if (!EDIT_AS_BOT) echo "DEBUG 10\n";
     $response = $this->fetch([
             'action' => 'query',
             'prop' => 'info|revisions',
@@ -202,6 +207,7 @@ final class WikipediaBot {
             'meta' => 'tokens',
             'titles' => $page
           ], 'GET');
+    if (!EDIT_AS_BOT) echo "DEBUG 11\n";
     
     if (!$response) {
       report_minor_error("Write request failed");     // @codeCoverageIgnore
@@ -256,12 +262,12 @@ final class WikipediaBot {
     if (EDIT_AS_BOT) {
        $auth_token = $response->query->tokens->csrftoken;
     } else {
-      echo "DEBUG 6\n";
+      echo "DEBUG 61\n";
       $auth_token = json_decode( $this->user_client->makeOAuthCall(
         $this->user_token,
        'https://en.wikipedia.org/w/api.php?action=query&meta=tokens&format=json'
        ) )->query->tokens->csrftoken;
-      echo "DEBUG 7\n";
+      echo "DEBUG 62\n";
     }
     $submit_vars = array(
         "action" => "edit",
