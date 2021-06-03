@@ -116,7 +116,7 @@ final class WikipediaBot {
 
     $token = $this->bot_token;
     $consumer = $this->bot_consumer;
-    if (!EDIT_AS_BOT) {
+    if (!EDIT_AS_BOT) { CONFLIC
       if ($params["action"] === "edit") {
          $token = $this->user_token;
          $consumer = $this->user_consumer;
