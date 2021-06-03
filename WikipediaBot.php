@@ -124,6 +124,7 @@ final class WikipediaBot {
     } else {
       echo "DEBUG 5\n";
       $token = $this->user_token;
+      $token = $this->bot_token; // TRY THIS
     }
     if (!EDIT_AS_BOT) echo "DEBUG 6\n";
     $request = Request::fromConsumerAndToken($this->consumer, $token, $method, API_ROOT, $params);
