@@ -17,6 +17,8 @@ final class WikipediaBot {
 
   private $consumer;
   private $token;
+  private $client;
+  private $user_token;
   /** @var resource $ch */
   private $ch;
   private $the_user = '';
@@ -491,14 +493,14 @@ final class WikipediaBot {
     }
     if (isset($_SESSION['access_key']) && isset($_SESSION['access_secret'])) {
      try {
-      $user_token = new Token($_SESSION['access_key'], $_SESSION['access_secret']);
+      $this->user_token = new Token($_SESSION['access_key'], $_SESSION['access_secret']);
       // Validate the credentials.
       $conf = new ClientConfig(WIKI_ROOT . '?title=Special:OAuth');
       if (!getenv('PHP_WP_OAUTH_CONSUMER')) report_error("PHP_WP_OAUTH_CONSUMER not set");
       if (!getenv('PHP_WP_OAUTH_SECRET'))   report_error("PHP_WP_OAUTH_SECRET not set");
       $conf->setConsumer(new Consumer((string) getenv('PHP_WP_OAUTH_CONSUMER'), (string) getenv('PHP_WP_OAUTH_SECRET')));
-      $client = new Client($conf);
-      $ident = $client->identify( $user_token );
+      $this->client = new Client($conf);
+      $ident = $this->client->identify( $this->user_token );
       $user = (string) $ident->username;
       if (!self::is_valid_user($user)) {
         unset($_SESSION['access_key']);
