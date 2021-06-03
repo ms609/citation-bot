@@ -560,6 +560,9 @@ public static function process_zotero_response(string $zotero_response, Template
     $result->title = preg_replace('~ \- ProQuest\.?~i', '', (string) $result->title);
   }
   
+  if (strpos($url, 'biodiversitylibrary.org') !== FALSE) {
+    unset($result->publisher); // Not reliably set
+  }
   if (isset($result->bookTitle)) {
     $template->add_if_new('title', (string) $result->bookTitle);
     if (isset($result->title))      $template->add_if_new('chapter',   (string) $result->title);
