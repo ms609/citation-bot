@@ -50,13 +50,9 @@ final class WikipediaBot {
     $this->bot_token = new Token((string) getenv('PHP_OAUTH_ACCESS_TOKEN'), (string) getenv('PHP_OAUTH_ACCESS_SECRET'));
     if (!EDIT_AS_BOT) {
        $this->user_consumer = new Consumer((string) getenv('PHP_WP_OAUTH_CONSUMER'), (string) getenv('PHP_WP_OAUTH_SECRET'));
-       echo "DEBUG 1\n";
        $conf = new ClientConfig(WIKI_ROOT . '?title=Special:OAuth');
-       echo "DEBUG 2\n";
        $conf->setConsumer($this->user_consumer);
-       echo "DEBUG 3\n";
        $this->user_client = new Client($conf);
-       echo "DEBUG 4\n";
     }
 
     /** @psalm-suppress RedundantCondition */  /* PSALM thinks TRAVIS cannot be FALSE */
@@ -121,25 +117,18 @@ final class WikipediaBot {
     if ($depth > 4) return NULL;
     $params['format'] = 'json';
 
-    echo "DEBUG 5A\n";
     $token = $this->bot_token;
     $consumer = $this->bot_consumer;
     if (!EDIT_AS_BOT) {
-      echo "DEBUG 5B\n";
       $token = $this->bot_token;
       if ($params["action"] === "edit") {
-          echo "DEBUG 5C\n";
          $token = $this->user_token;
          $consumer = $this->user_consumer;
       }
     }
-    if (!EDIT_AS_BOT) echo "DEBUG 6\n";
     $request = Request::fromConsumerAndToken($consumer, $token, $method, API_ROOT, $params);
-    if (!EDIT_AS_BOT) echo "DEBUG 7\n";
     $request->signRequest(new HmacSha1(), $consumer, $token);
-    if (!EDIT_AS_BOT) echo "DEBUG 8\n";
     $authenticationHeader = $request->toHeader();
-    if (!EDIT_AS_BOT) echo "DEBUG 9\n";
     
     try {
       switch (strtolower($method)) {
@@ -207,7 +196,6 @@ final class WikipediaBot {
   }
   
   public function write_page(string $page, string $text, string $editSummary, int $lastRevId, string $startedEditing) : bool {
-    if (!EDIT_AS_BOT) echo "DEBUG 10\n";
     $response = $this->fetch([
             'action' => 'query',
             'prop' => 'info|revisions',
@@ -215,7 +203,6 @@ final class WikipediaBot {
             'meta' => 'tokens',
             'titles' => $page
           ], 'GET');
-    if (!EDIT_AS_BOT) echo "DEBUG 11\n";
     
     if (!$response) {
       report_minor_error("Write request failed");     // @codeCoverageIgnore
@@ -270,12 +257,10 @@ final class WikipediaBot {
     if (EDIT_AS_BOT) {
        $auth_token = $response->query->tokens->csrftoken;
     } else {
-      echo "DEBUG 61\n";
       $auth_token = json_decode( $this->user_client->makeOAuthCall(
         $this->user_token,
        'https://en.wikipedia.org/w/api.php?action=query&meta=tokens&format=json'
        ) )->query->tokens->csrftoken;
-      echo "DEBUG 62\n";
     }
     $submit_vars = array(
         "action" => "edit",
