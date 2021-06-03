@@ -113,7 +113,7 @@ final class WikipediaBot {
     if ($depth > 1) sleep($depth+2);
     if ($depth > 4) return NULL;
     $params['format'] = 'json';
-    
+
     if (EDIT_AS_BOT) {
       $token = $this->bot_token;
     } else {
