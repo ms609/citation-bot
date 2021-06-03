@@ -123,9 +123,9 @@ final class WikipediaBot {
       $token = $this->bot_token;
     } else {
       echo "DEBUG 5\n";
-      $token = $this->bot_token; // TRY THIS
+      $token = $this->bot_token;
       if ($params["action"] === "edit") {
-         $token = $this->user_token;
+         // Try this $token = $this->user_token;
       }
     }
     if (!EDIT_AS_BOT) echo "DEBUG 6\n";
