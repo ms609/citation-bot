@@ -48,7 +48,7 @@ final class WikipediaBot {
     $this->bot_token = new Token((string) getenv('PHP_OAUTH_ACCESS_TOKEN'), (string) getenv('PHP_OAUTH_ACCESS_SECRET'));
     if (!EDIT_AS_BOT) {
        $conf = new ClientConfig(WIKI_ROOT . '?title=Special:OAuth');
-       $conf->setConsumer($this->consumer);
+       $conf->setConsumer(new Consumer((string) getenv('PHP_WP_OAUTH_CONSUMER'), (string) getenv('PHP_WP_OAUTH_SECRET')));
        $this->user_client = new Client($conf);
     }
 
