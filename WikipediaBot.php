@@ -117,7 +117,7 @@ final class WikipediaBot {
     if (EDIT_AS_BOT) {
       $token = $this->bot_token;
     } else {
-      $token = $this->user_token);
+      $token = $this->user_token;
     }
     $request = Request::fromConsumerAndToken($this->consumer, $token, $method, API_ROOT, $params);
     $request->signRequest(new HmacSha1(), $this->consumer, $token);
