@@ -44,16 +44,19 @@ final class WikipediaBot {
     if (!getenv('PHP_OAUTH_ACCESS_TOKEN'))    report_error("PHP_OAUTH_ACCESS_TOKEN not set");
     if (!getenv('PHP_OAUTH_ACCESS_SECRET'))   report_error("PHP_OAUTH_ACCESS_SECRET not set");
 
+    $this->consumer = new Consumer((string) getenv('PHP_OAUTH_CONSUMER_TOKEN'), (string) getenv('PHP_OAUTH_CONSUMER_SECRET'));
+    $this->bot_token = new Token((string) getenv('PHP_OAUTH_ACCESS_TOKEN'), (string) getenv('PHP_OAUTH_ACCESS_SECRET'));
+
     /** @psalm-suppress RedundantCondition */  /* PSALM thinks TRAVIS cannot be FALSE */
     if (TRAVIS) {
       $this->the_user = 'Citation_bot';
+      $this->user_token = $this->bot_token;
     } elseif ($no_user) {           // @codeCoverageIgnore
       $this->the_user = '';         // @codeCoverageIgnore
+      $this->user_token = $this->bot_token;
     } else {
       $this->authenticate_user();  // @codeCoverageIgnore
     }
-    $this->consumer = new Consumer((string) getenv('PHP_OAUTH_CONSUMER_TOKEN'), (string) getenv('PHP_OAUTH_CONSUMER_SECRET'));
-    $this->bot_token = new Token((string) getenv('PHP_OAUTH_ACCESS_TOKEN'), (string) getenv('PHP_OAUTH_ACCESS_SECRET'));
     self::$last_WikipediaBot = $this;
   }
   
