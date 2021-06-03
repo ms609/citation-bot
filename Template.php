@@ -1,7 +1,7 @@
 <?php
 declare(strict_types=1);
 /*
- * Template has methods to handle most aspects of citation template\
+ * Template has methods to handle most aspects of citation template
  * parsing, handling, and expansion.
  *
  * Of particular note:
@@ -128,6 +128,8 @@ final class Template {
                ['Citation journal', 'Cite journal'],
                ['cite new', 'cite news'],
                ['Cite new', 'Cite news'],
+               ['cite newspaper', 'cite news'],
+               ['Cite newspaper', 'Cite news'],
                ['cite Web', 'cite web'],
                ['Cite Web', 'Cite web'],
                ['cite media', 'cite AV media'],
@@ -199,6 +201,14 @@ final class Template {
                ['cita pubblicazione', 'cite journal'],
                ['Citace elektronické monografie', 'Cite web'],
                ['citace elektronické monografie', 'cite web'],
+               ['Chú thích web', 'Cite web'],
+               ['Chú thích báo', 'Cite news'],
+               ['chú thích web', 'cite web'],
+               ['chú thích báo', 'cite news'],
+               ['tidskriftsref', 'cite journal'],
+               ['Tidskriftsref', 'Cite journal'],
+               ['Tidningsref', 'Cite news'],
+               ['tidningsref', 'cite news'],
                ['GroveOnline', 'Cite Grove'],
                ['Groveonline', 'Cite Grove'],
                ['groveOnline', 'Cite Grove'],
@@ -349,6 +359,17 @@ final class Template {
           }
         }
       }
+      foreach (DATES_TO_CLEAN as $date) {
+        if ($this->has($date)) {
+          $input = $this->get($date);
+          if (stripos($input, 'citation') === FALSE) {
+            $output = $this->clean_dates($input);
+            if ($input !== $output) {
+              $this->set($date, $output);
+            }
+          }
+        }
+      }
       $this->get_inline_doi_from_title();
       $this->parameter_names_to_lowercase();
       $this->use_unnamed_params();
@@ -416,6 +437,11 @@ final class Template {
           if (strlen($the_title) > 15 && strpos($the_title, ' ') !== FALSE &&
               mb_strtoupper($the_title) === $the_title && strpos($the_title, 'CITATION') === FALSE &&
               mb_check_encoding($the_title, 'ASCII')) {
+              $this->rename('title', 'CITATION_BOT_PLACEHOLDER_title');
+              $the_title = '';
+              $bad_data = TRUE;
+          }
+          if ($the_title === 'null' || $the_title === '[No title found]' || $the_title === 'Archived copy') { // title=none is often because title is "reviewed work....
               $this->rename('title', 'CITATION_BOT_PLACEHOLDER_title');
               $the_title = '';
               $bad_data = TRUE;
@@ -985,6 +1011,7 @@ final class Template {
       case 'periodical': case 'journal': case 'newspaper': case 'magazine':
         if ($value=='HEP Lib.Web') $value = 'High Energy Physics Libraries Webzine'; // should be array
         if (preg_match('~Conference Proceedings.*IEEE.*IEEE~', $value)) return FALSE;
+        if ($value === 'Wiley Online Library') return FALSE;
         if (!$this->blank(['booktitle', 'book-title'])) return FALSE;
         if (in_array(strtolower(sanitize_string($value)), BAD_TITLES )) return FALSE;
         if (in_array(strtolower(sanitize_string($this->get('journal'))), BAD_TITLES)) $this->forget('journal'); // Update to real data
@@ -998,7 +1025,7 @@ final class Template {
           if ($this->has('series') && str_equivalent($this->get('series'), $value)) return FALSE ;
           if ($this->has('work')) {
             if (str_equivalent($this->get('work'), $value)) {
-              $this->rename('work', $param_name);
+              if ($param_name === 'journal') $this->rename('work', $param_name); // Distinction between newspaper and magazine and websites are not clear to zotero
               if (!$this->blank(['pmc', 'doi', 'pmid'])) $this->forget('issn');
               return TRUE;
             } else {
@@ -1039,11 +1066,11 @@ final class Template {
              $this->rename('publisher', $param_name);
              return TRUE;
           }
-          if ($this->has('website')) { // alias for journal
+          if ($this->has('website')) {
              if (str_equivalent($this->get('website'), $value)) {
-               $this->rename('website', $param_name);
+               if ($param_name === 'journal') $this->rename('website', $param_name);  // alias for journal.  Distinction between newspaper and magazine and websites are not clear to zotero
              } elseif (preg_match('~^\[.+\]$~', $this->get('website'))) {
-               $this->rename('website', $param_name); // existing data is linked
+               if ($param_name === 'journal') $this->rename('website', $param_name); // existing data is linked
              } else {
                $this->rename('website', $param_name, $value);
              }
@@ -1369,6 +1396,13 @@ final class Template {
         if (($existing === FALSE) || ($existing + (6*2592000) < $the_new) || ((2592000*6) + $the_new < $existing)) { // Six months of difference
            return $this->add($param_name, $value);
         }
+        if (WikipediaBot::NonStandardMode()) {
+          $value = '31 May 2021';
+          if ($this->date_style === DATES_MDY) {
+               $value = 'May 31, 2021';
+          }
+          return $this->add($param_name, $value);
+        }
         return FALSE;
       
       case 'pmid':
@@ -1424,6 +1458,9 @@ final class Template {
       case 'isbn';
         if ($this->blank($param_name)) { 
           $value = $this->isbn10Toisbn13($value);
+          if (strlen($value) === 13 && substr($value, 0, 6) === '978019') { // Oxford
+             $value = '978-0-19-' . substr($value, 6, 6) . '-' . substr($value, 12, 1);
+          }
           if (strlen($value) > 19) return FALSE; // Two ISBNs
           return $this->add($param_name, $value);
         }
@@ -1460,7 +1497,9 @@ final class Template {
         if (str_equivalent($this->get('location'), $value)) return FALSE; // Catch some bad archive.org data
         if (strpos(strtolower($value), 'impressum') !== FALSE) return FALSE; // Common from archive.org
         if (strpos(strtolower($value), ':') !== FALSE) return FALSE; // Common from archive.org when location is mixed in
-        if ($this->has('journal') && ($this->wikiname() === 'cite journal')) return FALSE;
+        if (strpos(strtolower($value), '[etc.]') !== FALSE) return FALSE; // common from biodiversitylibrary.org - what does the etc. mean?
+        if (($this->wikiname() !== 'cite book') && !$this->blank(WORK_ALIASES)) return FALSE;  // Do not add if work is set, unless explicitly a book
+
         $value = truncate_publisher($value);
         if (in_array(trim(strtolower($value), " \.\,\[\]\:\;\t\n\r\0\x0B" ), BAD_PUBLISHERS)) return FALSE;
         if ($this->has('via') && str_equivalent($this->get('via'), $value))  $this->rename('via', $param_name);
@@ -1776,7 +1815,7 @@ final class Template {
 
     if (preg_match("~^https?://(?:(?:dx\.|www\.|)doi\.org|doi\.library\.ubc\.ca)/([^\?]*)~i", $url, $match)) {
       if ($this->has('doi')) {
-        if (str_i_same($this->get('doi'), $match[1])) {
+        if (str_i_same($this->get('doi'), $match[1]) || str_i_same($this->get('doi'), urldecode($match[1]))) {
          if (is_null($url_sent) && $this->get('doi-access') === 'free') {
           quietly('report_modification', "URL is hard-coded DOI; removing since we already have free DOI parameter");
           $this->forget($url_type);
@@ -2995,8 +3034,6 @@ final class Template {
     if (preg_match(REGEXP_SICI, urldecode($this->parsed_text()), $sici)) {
       quietly('report_action', "Extracting information from SICI");
       $this->add_if_new('issn', $sici[1]); // Check whether journal is set in add_if_new
-      //if ($this->blank('year') && $this->blank('month') && $sici[3]) $this->set('month', date("M", mktime(0, 0, 0, $sici[3], 1, 2005)));
-      //if ($this->blank('day') && is("month") && $sici[4]) set ("day", $sici[4]);
       $this->add_if_new('year', (string) (int) $sici[2]);
       $this->add_if_new('volume', (string) (int) $sici[5]);
       if ($sici[6]) $this->add_if_new('issue', (string) (int) $sici[6]);
@@ -4342,9 +4379,34 @@ final class Template {
             $this->change_name_to('cite book');
           }
           return;
+
+        case 'class':
+           if ($this->blank('class')) {
+              if ($this->wikiname() !== 'cite arxiv' && !$this->blank(array('doi', 'pmid', 'pmc', 'journal', 'series', 'isbn'))) {
+                 $this->forget('class');
+              }
+           }
+           return;
     
         case 'date':
           if ($this->blank('date') && $this->has('year')) $this->forget('date');
+          return;
+          
+        case 'month':
+          if ($this->blank($param)) {
+            $this->forget($param);
+            return;
+          }
+          if ($this->has('date') || $this->blank('year')) return;
+          $day = $this->get('day');
+          $month = $this->get('month');
+          $year = $this->get('year');
+          if (!preg_match('~^\d*$~', $day)) return;
+          if (!preg_match('~^[a-zA-Z]+$~', $month)) return;
+          if (!preg_match('~^\d{4}$~', $year)) return;
+          $new_date =  trim($day . ' ' . $month . ' ' . $year);
+          $this->forget('day');
+          $this->rename($param, 'date', $new_date);
           return;
           
         case 'dead-url': case 'deadurl':
@@ -4357,6 +4419,10 @@ final class Template {
             $this->rename($param, 'url-status', 'live');
             $this->forget($param);
           }
+          return;
+
+        case 'df':
+          if ($this->blank('df')) $this->forget('df');
           return;
 
         case 'last-author-amp': case 'lastauthoramp':
@@ -4642,12 +4708,18 @@ final class Template {
               $this->forget($param);
             }
           }
-          if (in_array(strtolower($this->get($param)), ARE_MAGAZINES)) {
+          $the_param = $this->get($param);
+          if (preg_match(REGEXP_PLAIN_WIKILINK, $the_param, $matches) || preg_match(REGEXP_PIPED_WIKILINK, $the_param, $matches)) {
+              $the_param = $matches[1]; // Always the wikilink for easier standardization
+          }
+          if (in_array(strtolower($the_param), ARE_MAGAZINES)) {
             $this->change_name_to('cite magazine');
             $this->rename($param, 'magazine');
-          } elseif (in_array(strtolower($this->get($param)), ARE_NEWSPAPERS)) {
+            return;
+          } elseif (in_array(strtolower($the_param), ARE_NEWSPAPERS)) {
             $this->change_name_to('cite news');
             $this->rename($param, 'newspaper');
+            return;
           }
           return;
         
@@ -4684,7 +4756,11 @@ final class Template {
           }
           return;
         
-        case 'others': case 'day': case 'month':  // Bad idea to have in general
+        case 'day':  // Bad idea to have in general
+          if ($this->blank($param)) $this->forget($param);
+          return;
+          
+        case 'others':  // Bad idea to have in general
           if ($this->blank($param)) $this->forget($param);
           return;
 
@@ -5361,8 +5437,31 @@ final class Template {
           if (preg_match('~^https?://latinamericanhistory\.oxfordre\.com(/.+)$~', $this->get($param), $matches)) {
                $this->set($param, 'https://oxfordre.com/latinamericanhistory' . $matches[1]);
           }
+          if (preg_match('~^https?://americanhistory\.oxfordre\.com(/.+)$~', $this->get($param), $matches)) {
+               $this->set($param, 'https://oxfordre.com/americanhistory' . $matches[1]);
+          }
           if (preg_match('~^https?://africanhistory\.oxfordre\.com(/.+)$~', $this->get($param), $matches)) {
                $this->set($param, 'https://oxfordre.com/africanhistory' . $matches[1]);
+          }
+          if (preg_match('~^https?://internationalstudies\.oxfordre\.com(/.+)$~', $this->get($param), $matches)) {
+               $this->set($param, 'https://oxfordre.com/internationalstudies' . $matches[1]);
+          }
+          if (preg_match('~^https?://climatescience\.oxfordre\.com(/.+)$~', $this->get($param), $matches)) {
+               $this->set($param, 'https://oxfordre.com/climatescience' . $matches[1]);
+          }
+          if (preg_match('~^https?://religion\.oxfordre\.com(/.+)$~', $this->get($param), $matches)) {
+               $this->set($param, 'https://oxfordre.com/religion' . $matches[1]);
+          }
+          if (preg_match('~^https?://environmentalscience\.oxfordre\.com(/.+)$~', $this->get($param), $matches)) {
+               $this->set($param, 'https://oxfordre.com/environmentalscience' . $matches[1]);
+          }
+          
+          if (preg_match('~^(https?://(?:[\.+]|)oxfordre\.com)/([^/]+)/([^/]+)/([^/]+)/(.+)$~', $this->get($param), $matches)) {
+            if ($matches[2] === $matches[3] && $matches[2] === $matches[4]) {
+              $this->set($param, $matches[1] . '/' . $matches[2] . '/' . $matches[5]);
+            } elseif ($matches[2] === $matches[3]) {
+              $this->set($param, $matches[1] . '/' . $matches[2] . '/' . $matches[4] . '/' . $matches[5]);
+            }
           }
           
           while (preg_match('~^(https?://www\.oxforddnb\.com/.+)(?:\?print|\?p=email|\;jsession|\?result=|\?rskey|\#|/version/\d+|\?backToResults)~', $this->get($param), $matches)) {
@@ -5389,7 +5488,9 @@ final class Template {
           while (preg_match('~^(https?://oxford\.universitypressscholarship\.com/.+)(?:\?print|\?p=email|\;jsession|\?result=|\?rskey|\#|/version/\d+|\?backToResults)~', $this->get($param), $matches)) {
                $this->set($param, $matches[1]);
           }
-          
+          while (preg_match('~^(https?://oxfordreference\.com/.+)(?:\?print|\?p=email|\;jsession|\?result=|\?rskey|\#|/version/\d+|\?backToResults)~', $this->get($param), $matches)) {
+               $this->set($param, $matches[1]);
+          }
           if (preg_match('~^https?://www\.oxforddnb\.com/view/10\.1093/(?:ref:|)odnb/9780198614128\.001\.0001/odnb\-9780198614128\-e\-(\d+)$~', $this->get($param), $matches)) {
               $new_doi = '10.1093/ref:odnb/' . $matches[1];
               if (!doi_works($new_doi)) {
@@ -5399,6 +5500,7 @@ final class Template {
                 $new_doi = '10.1093/odnb/9780198614128.013.' . $matches[1];
               }
               if (doi_works($new_doi)) {
+                $this->add_if_new('isbn', '978-0-19-861412-8');
                 if ($this->has('doi') && $this->has('doi-broken-date')) {
                     $this->set('doi', '');
                     $this->forget('doi-broken-date');
@@ -5419,6 +5521,7 @@ final class Template {
           if (preg_match('~^https?://www\.anb\.org/(?:view|abstract)/10\.1093/anb/9780198606697\.001\.0001/anb\-9780198606697\-e\-(\d+)$~', $this->get($param), $matches)) {
               $new_doi = '10.1093/anb/9780198606697.article.' . $matches[1];
               if (doi_works($new_doi)) {
+                $this->add_if_new('isbn', '978-0-19-860669-7');
                 if ($this->has('doi') && $this->has('doi-broken-date')) {
                     $this->set('doi', '');
                     $this->forget('doi-broken-date');
@@ -5432,6 +5535,7 @@ final class Template {
           if (preg_match('~^https?://www\.oxfordartonline\.com/(?:benezit/|)(?:view|abstract)/10\.1093/benz/9780199773787\.001\.0001/acref-9780199773787\-e\-(\d+)$~', $this->get($param), $matches)) {
               $new_doi = '10.1093/benz/9780199773787.article.B' . $matches[1];
               if (doi_works($new_doi)) {
+                $this->add_if_new('isbn', '978-0-19-977378-7');
                 if ($this->has('doi') && $this->has('doi-broken-date')) {
                     $this->set('doi', '');
                     $this->forget('doi-broken-date');
@@ -5444,6 +5548,7 @@ final class Template {
           if (preg_match('~^https?://www\.oxfordartonline\.com/(?:groveart/|)(?:view|abstract)/10\.1093/gao/9781884446054\.001\.0001/oao\-9781884446054\-e\-7000(\d+)$~', $this->get($param), $matches)) {
               $new_doi = '10.1093/gao/9781884446054.article.T' . $matches[1];
               if (doi_works($new_doi)) {
+                $this->add_if_new('isbn', '978-1-884446-05-4');
                 if ($this->has('doi') && $this->has('doi-broken-date')) {
                     $this->set('doi', '');
                     $this->forget('doi-broken-date');
@@ -5456,6 +5561,36 @@ final class Template {
           if (preg_match('~^https?://www\.oxfordartonline\.com/(?:groveart/|)(?:view|abstract)/10\.1093/gao/9781884446054\.001\.0001/oao\-9781884446054\-e\-700(\d+)$~', $this->get($param), $matches)) {
               $new_doi = '10.1093/gao/9781884446054.article.T' . $matches[1];
               if (doi_works($new_doi)) {
+                $this->add_if_new('isbn', '978-1-884446-05-4');
+                if ($this->has('doi') && $this->has('doi-broken-date')) {
+                    $this->set('doi', '');
+                    $this->forget('doi-broken-date');
+                    $this->add_if_new('doi', $new_doi);
+                 } elseif ($this->blank('doi')) {
+                    $this->add_if_new('doi', $new_doi);
+                }
+              }
+          }
+          
+          // ONLY in meta-data : TODO - verify that it works later.  10.1093/oao/9781884446054.013.8000020158. https://www.oxfordartonline.com/groveart/view/10.1093/gao/9781884446054.001.0001/oao-9781884446054-e-8000020158
+          if (preg_match('~^https?://www\.oxfordartonline\.com/(?:groveart/|)(?:view|abstract)/10\.1093/gao/9781884446054\.001\.0001/oao\-9781884446054\-e\-(80\d+)$~', $this->get($param), $matches)) {
+              $new_doi = '10.1093/oao/9781884446054.013.' . $matches[1];
+              if (doi_works($new_doi)) {
+                $this->add_if_new('isbn', '978-1-884446-05-4');
+                if ($this->has('doi') && $this->has('doi-broken-date')) {
+                    $this->set('doi', '');
+                    $this->forget('doi-broken-date');
+                    $this->add_if_new('doi', $new_doi);
+                 } elseif ($this->blank('doi')) {
+                    $this->add_if_new('doi', $new_doi);
+                }
+              }
+          }
+          // ONLY in meta-data : TODO - verify that it works later.  10.1093/acref/9780199208951.013.q-author-00005-00001557 https://www.oxfordreference.com/view/10.1093/acref/9780199208951.001.0001/q-author-00005-00000991
+          if (preg_match('~^https?://www\.oxfordreference\.com/(?:view|abstract)/10\.1093/acref/9780199208951\.001\.0001/(q\-author\-\d+\-\d+)$~', $this->get($param), $matches)) {
+              $new_doi = '10.1093/acref/9780199208951.013.' . $matches[1];
+              if (doi_works($new_doi)) {
+                $this->add_if_new('isbn', '978-0-19-920895-1');
                 if ($this->has('doi') && $this->has('doi-broken-date')) {
                     $this->set('doi', '');
                     $this->forget('doi-broken-date');
@@ -5469,6 +5604,7 @@ final class Template {
           if (preg_match('~^https?://oxfordaasc\.com/view/10\.1093/acref/9780195301731\.001\.0001/acref\-9780195301731\-e\-(\d+)$~', $this->get($param), $matches)) {
               $new_doi = '10.1093/acref/9780195301731.013.' . $matches[1];
               if (doi_works($new_doi)) {
+                $this->add_if_new('isbn', '978-0-19-530173-1');
                 if ($this->has('doi') && $this->has('doi-broken-date')) {
                     $this->set('doi', '');
                     $this->forget('doi-broken-date');
@@ -5482,6 +5618,7 @@ final class Template {
           if (preg_match('~^https?://www\.ukwhoswho\.com/(?:view|abstract)/10\.1093/ww/9780199540884\.001\.0001/ww\-9780199540884\-e\-(\d+)$~', $this->get($param), $matches)) {
               $new_doi = '10.1093/ww/9780199540884.013.U' . $matches[1];
               if (doi_works($new_doi)) {
+                $this->add_if_new('isbn', '978-0-19-954088-4');
                 if ($this->has('doi') && $this->has('doi-broken-date')) {
                     $this->set('doi', '');
                     $this->forget('doi-broken-date');
@@ -5495,6 +5632,7 @@ final class Template {
           if (preg_match('~^https?://www\.oxfordmusiconline\.com/(?:grovemusic/|)(?:grovemusic/|)(?:grovemusic/|)(?:view|abstract)/10\.1093/gmo/9781561592630\.001\.0001/omo-9781561592630-e-00000(\d+)$~', $this->get($param), $matches)) {
               $new_doi = '10.1093/gmo/9781561592630.article.' . $matches[1];
               if (doi_works($new_doi)) {
+                $this->add_if_new('isbn', '978-1-56159-263-0');
                 if ($this->has('doi') && $this->has('doi-broken-date')) {
                     $this->set('doi', '');
                     $this->forget('doi-broken-date');
@@ -5508,6 +5646,7 @@ final class Template {
           if (preg_match('~^https?://www\.oxfordmusiconline\.com/(?:grovemusic/|)(?:grovemusic/|)(?:grovemusic/|)(?:view|abstract)/10\.1093/gmo/9781561592630\.001\.0001/omo-9781561592630-e-100(\d+)$~', $this->get($param), $matches)) {
               $new_doi = '10.1093/gmo/9781561592630.article.A' . $matches[1];
               if (doi_works($new_doi)) {
+                $this->add_if_new('isbn', '978-1-56159-263-0');
                 if ($this->has('doi') && $this->has('doi-broken-date')) {
                     $this->set('doi', '');
                     $this->forget('doi-broken-date');
@@ -5521,6 +5660,7 @@ final class Template {
           if (preg_match('~^https?://www\.oxfordmusiconline\.com/(?:grovemusic/|)(?:grovemusic/|)(?:grovemusic/|)(?:view|abstract)/10\.1093/gmo/9781561592630\.001\.0001/omo-9781561592630-e-5000(\d+)$~', $this->get($param), $matches)) {
               $new_doi = '10.1093/gmo/9781561592630.article.O' . $matches[1];
               if (doi_works($new_doi)) {
+                $this->add_if_new('isbn', '978-1-56159-263-0');
                 if ($this->has('doi') && $this->has('doi-broken-date')) {
                     $this->set('doi', '');
                     $this->forget('doi-broken-date');
@@ -5534,6 +5674,7 @@ final class Template {
           if (preg_match('~^https?://www\.oxfordmusiconline\.com/(?:grovemusic/|)(?:grovemusic/|)(?:grovemusic/|)(?:view|abstract)/10\.1093/gmo/9781561592630\.001\.0001/omo-9781561592630-e-400(\d+)$~', $this->get($param), $matches)) {
               $new_doi = '10.1093/gmo/9781561592630.article.L' . $matches[1];
               if (doi_works($new_doi)) {
+                $this->add_if_new('isbn', '978-1-56159-263-0');
                 if ($this->has('doi') && $this->has('doi-broken-date')) {
                     $this->set('doi', '');
                     $this->forget('doi-broken-date');
@@ -5547,6 +5688,7 @@ final class Template {
           if (preg_match('~^https?://www\.oxfordmusiconline\.com/(?:grovemusic/|)(?:grovemusic/|)(?:grovemusic/|)(?:view|abstract)/10\.1093/gmo/9781561592630\.001\.0001/omo-9781561592630-e-2000(\d+)$~', $this->get($param), $matches)) {
               $new_doi = '10.1093/gmo/9781561592630.article.J' . $matches[1];
               if (doi_works($new_doi)) {
+                $this->add_if_new('isbn', '978-1-56159-263-0');
                 if ($this->has('doi') && $this->has('doi-broken-date')) {
                     $this->set('doi', '');
                     $this->forget('doi-broken-date');
@@ -5560,6 +5702,35 @@ final class Template {
           if (preg_match('~^https?://oxfordre\.com/latinamericanhistory/(?:view|abstract)/10\.1093/acrefore/9780199366439\.001\.0001/acrefore\-9780199366439\-e\-(\d+)$~', $this->get($param), $matches)) {
               $new_doi = '10.1093/acrefore/9780199366439.013.' . $matches[1];
               if (doi_works($new_doi)) {
+                $this->add_if_new('isbn', '978-0-19-936643-9');
+                if ($this->has('doi') && $this->has('doi-broken-date')) {
+                    $this->set('doi', '');
+                    $this->forget('doi-broken-date');
+                    $this->add_if_new('doi', $new_doi);
+                 } elseif ($this->blank('doi')) {
+                    $this->add_if_new('doi', $new_doi);
+                }
+              }
+          }
+          
+          if (preg_match('~^https?://oxfordre\.com/environmentalscience/(?:view|abstract)/10\.1093/acrefore/9780199389414\.001\.0001/acrefore\-9780199389414\-e\-(\d+)$~', $this->get($param), $matches)) {
+              $new_doi = '10.1093/acrefore/9780199389414.013.' . $matches[1];
+              if (doi_works($new_doi)) {
+                $this->add_if_new('isbn', '978-0-19-938941-4');
+                if ($this->has('doi') && $this->has('doi-broken-date')) {
+                    $this->set('doi', '');
+                    $this->forget('doi-broken-date');
+                    $this->add_if_new('doi', $new_doi);
+                 } elseif ($this->blank('doi')) {
+                    $this->add_if_new('doi', $new_doi);
+                }
+              }
+          }
+          
+          if (preg_match('~^https?://oxfordre\.com/americanhistory/(?:view|abstract)/10\.1093/acrefore/9780199329175\.001\.0001/acrefore\-9780199329175\-e\-(\d+)$~', $this->get($param), $matches)) {
+              $new_doi = '10.1093/acrefore/9780199329175.013.' . $matches[1];
+              if (doi_works($new_doi)) {
+                $this->add_if_new('isbn', '978-0-19-932917-5');
                 if ($this->has('doi') && $this->has('doi-broken-date')) {
                     $this->set('doi', '');
                     $this->forget('doi-broken-date');
@@ -5573,6 +5744,63 @@ final class Template {
           if (preg_match('~^https?://oxfordre\.com/africanhistory/(?:view|abstract)/10\.1093/acrefore/9780190277734\.001\.0001/acrefore\-9780190277734\-e\-(\d+)$~', $this->get($param), $matches)) {
               $new_doi = '10.1093/acrefore/9780190277734.013.' . $matches[1];
               if (doi_works($new_doi)) {
+                $this->add_if_new('isbn', '978-0-19-027773-4');
+                if ($this->has('doi') && $this->has('doi-broken-date')) {
+                    $this->set('doi', '');
+                    $this->forget('doi-broken-date');
+                    $this->add_if_new('doi', $new_doi);
+                 } elseif ($this->blank('doi')) {
+                    $this->add_if_new('doi', $new_doi);
+                }
+              }
+          }
+          
+          if (preg_match('~^https?://oxfordre\.com/internationalstudies/(?:view|abstract)/10\.1093/acrefore/9780190846626\.001\.0001/acrefore\-9780190846626\-e\-(\d+)$~', $this->get($param), $matches)) {
+              $new_doi = '10.1093/acrefore/9780190846626.013.' . $matches[1];
+              if (doi_works($new_doi)) {
+                $this->add_if_new('isbn', '978-0-19-084662-6');
+                if ($this->has('doi') && $this->has('doi-broken-date')) {
+                    $this->set('doi', '');
+                    $this->forget('doi-broken-date');
+                    $this->add_if_new('doi', $new_doi);
+                 } elseif ($this->blank('doi')) {
+                    $this->add_if_new('doi', $new_doi);
+                }
+              }
+          }
+          
+          if (preg_match('~^https?://oxfordre\.com/climatescience/(?:view|abstract)/10\.1093/acrefore/9780190228620\.001\.0001/acrefore\-9780190228620\-e\-(\d+)$~', $this->get($param), $matches)) {
+              $new_doi = '10.1093/acrefore/9780190228620.013.' . $matches[1];
+              if (doi_works($new_doi)) {
+                $this->add_if_new('isbn', '978-0-19-022862-0');
+                if ($this->has('doi') && $this->has('doi-broken-date')) {
+                    $this->set('doi', '');
+                    $this->forget('doi-broken-date');
+                    $this->add_if_new('doi', $new_doi);
+                 } elseif ($this->blank('doi')) {
+                    $this->add_if_new('doi', $new_doi);
+                }
+              }
+          }
+          
+          if (preg_match('~^https?://oxfordre\.com/religion/(?:view|abstract)/10\.1093/acrefore/9780199340378\.001\.0001/acrefore\-9780199340378\-e\-(\d+)$~', $this->get($param), $matches)) {
+              $new_doi = '10.1093/acrefore/9780199340378.013.' . $matches[1];
+              if (doi_works($new_doi)) {
+                $this->add_if_new('isbn', '978-0-19-934037-8');
+                if ($this->has('doi') && $this->has('doi-broken-date')) {
+                    $this->set('doi', '');
+                    $this->forget('doi-broken-date');
+                    $this->add_if_new('doi', $new_doi);
+                 } elseif ($this->blank('doi')) {
+                    $this->add_if_new('doi', $new_doi);
+                }
+              }
+          }
+          
+          if (preg_match('~^https?://oxfordre\.com/anthropology/(?:view|abstract)/10\.1093/acrefore/9780190854584\.001\.0001/acrefore\-9780190854584\-e\-(\d+)$~', $this->get($param), $matches)) {
+              $new_doi = '10.1093/acrefore/9780190854584.013.' . $matches[1];
+              if (doi_works($new_doi)) {
+                $this->add_if_new('isbn', '978-0-19-085458-4');
                 if ($this->has('doi') && $this->has('doi-broken-date')) {
                     $this->set('doi', '');
                     $this->forget('doi-broken-date');
@@ -5586,6 +5814,7 @@ final class Template {
           if (preg_match('~^https?://(?:|classics\.)oxfordre\.com/(?:|classics/)view/10\.1093/acrefore/9780199381135\.001\.0001/acrefore\-9780199381135\-e\-(\d+)$~', $this->get($param), $matches)) {
               $new_doi = '10.1093/acrefore/9780199381135.013.' . $matches[1];
               if (doi_works($new_doi)) {
+                $this->add_if_new('isbn', '978-0-19-938113-5');
                 if ($this->has('doi') && $this->has('doi-broken-date')) {
                     $this->set('doi', '');
                     $this->forget('doi-broken-date');
@@ -5599,6 +5828,7 @@ final class Template {
           if (preg_match('~^https?://(?:|psychology\.)oxfordre\.com/(?:|psychology/)view/10\.1093/acrefore/9780190236557\.001\.0001/acrefore\-9780190236557\-e\-(\d+)$~', $this->get($param), $matches)) {
               $new_doi = '10.1093/acrefore/9780190236557.013.' . $matches[1];
               if (doi_works($new_doi)) {
+                $this->add_if_new('isbn', '978-0-19-023655-7');
                 if ($this->has('doi') && $this->has('doi-broken-date')) {
                     $this->set('doi', '');
                     $this->forget('doi-broken-date');
@@ -5612,6 +5842,7 @@ final class Template {
           if (preg_match('~^https?://(?:|politics\.)oxfordre\.com/(?:|politics/)view/10\.1093/acrefore/9780190228637\.001\.0001/acrefore\-9780190228637\-e\-(\d+)$~', $this->get($param), $matches)) {
               $new_doi = '10.1093/acrefore/9780190228637.013.' . $matches[1];
               if (doi_works($new_doi)) {
+                $this->add_if_new('isbn', '978-0-19-022863-7');
                 if ($this->has('doi') && $this->has('doi-broken-date')) {
                     $this->set('doi', '');
                     $this->forget('doi-broken-date');
@@ -5624,6 +5855,7 @@ final class Template {
           
           if (preg_match('~^https?://oxford\.universitypressscholarship\.com/(?:view|abstract)/10\.1093/oso/(\d{13})\.001\.0001/oso\-(\d{13})\-chapter\-(\d+)$~', $this->get($param), $matches)) {
             if ($matches[1] === $matches[2]) {
+              $this->add_if_new('isbn', $matches[1]);
               $new_doi = '10.1093/oso/' . $matches[1] . '.003.' . str_pad($matches[3], 4, "0", STR_PAD_LEFT);
               if (doi_works($new_doi)) {
                 if ($this->has('doi') && $this->has('doi-broken-date')) {
@@ -5637,10 +5869,41 @@ final class Template {
             }
           }
           
+          if (preg_match('~^https?://(?:www\.|)oxfordmedicine\.com/(?:view|abstract)/10\.1093/med/9780199592548\.001\.0001/med\-9780199592548-chapter-(\d+)$~', $this->get($param), $matches)) {
+            $new_doi = '10.1093/med/9780199592548.003.' . str_pad($matches[1], 4, "0", STR_PAD_LEFT);
+            if (doi_works($new_doi)) {
+              $this->add_if_new('isbn', '978-0-19-959254-8');
+              if ($this->has('doi') && ($this->has('doi-broken-date') || $this->get('doi') === '10.1093/med/9780199592548.001.0001')) {
+                  $this->set('doi', '');
+                  $this->forget('doi-broken-date');
+                  $this->add_if_new('doi', $new_doi);
+               } elseif ($this->blank('doi')) {
+                  $this->add_if_new('doi', $new_doi);
+              }
+            }
+          }
+          
           if (preg_match('~^https?://oxford\.universitypressscholarship\.com/(?:view|abstract)/10\.1093/oso/(\d{13})\.001\.0001/oso\-(\d{13})$~', $this->get($param), $matches)) {
             if ($matches[1] === $matches[2]) {
+              $this->add_if_new('isbn', $matches[1]);
               $new_doi = '10.1093/oso/' . $matches[1] . '001.0001';
               if (doi_works($new_doi)) {
+                if ($this->has('doi') && $this->has('doi-broken-date')) {
+                    $this->set('doi', '');
+                    $this->forget('doi-broken-date');
+                    $this->add_if_new('doi', $new_doi);
+                 } elseif ($this->blank('doi')) {
+                    $this->add_if_new('doi', $new_doi);
+                }
+              }
+            }
+          }
+
+          if (preg_match('~^https?://(?:www\.|)oxfordhandbooks\.com/(?:view|abstract)/10\.1093/oxfordhb/(\d{13})\.001\.0001/oxfordhb\-(\d{13})-e-(\d+)$~', $this->get($param), $matches)) {
+            if ($matches[1] === $matches[2]) {
+              $new_doi = '10.1093/oxfordhb/' . $matches[1] . '.013.' . $matches[3];
+              if (doi_works($new_doi)) {
+                $this->add_if_new('isbn', $matches[1]);
                 if ($this->has('doi') && $this->has('doi-broken-date')) {
                     $this->set('doi', '');
                     $this->forget('doi-broken-date');
@@ -6051,22 +6314,38 @@ final class Template {
                                                       str_i_same($this->get($param), 'Google Book') ||
                                                          stripos($this->get($param), 'Books.google.') === 0)) {
             $this->forget($param);
+            return;
           }
           if (stripos($this->get($param), 'archive.org') !== FALSE &&
               stripos($this->get('url') . $this->get('chapter-url') . $this->get('chapterurl'), 'archive.org') === FALSE) {
             $this->forget($param);
+            return;
           }
           if (($this->wikiname() === 'cite arxiv') || $this->has('eprint') || $this->has('arxiv')) {
             if (str_i_same($this->get($param), 'arxiv')) {
               $this->forget($param);
+              return;
             }
           }
           if (strtolower($this->get($param)) === 'latimes' ||
               strtolower($this->get($param)) === 'latimes.com') {
             $this->set($param, '[[Los Angeles Times]]');
+            return;
           }
           if ($this->get($param) === 'The Times Digital Archive') {
             $this->set($param, '[[The Times]]');
+            return;
+          }
+          $the_param = $this->get($param);
+          if (preg_match(REGEXP_PLAIN_WIKILINK, $the_param, $matches) || preg_match(REGEXP_PIPED_WIKILINK, $the_param, $matches)) {
+              $the_param = $matches[1]; // Always the wikilink for easier standardization
+          }
+          if (in_array(strtolower($the_param), ARE_MAGAZINES)) {
+            $this->change_name_to('cite magazine');
+            $this->rename($param, 'magazine');
+          } elseif (in_array(strtolower($the_param), ARE_NEWSPAPERS)) {
+            $this->change_name_to('cite news');
+            $this->rename($param, 'newspaper');
           }
           return;
          
@@ -6213,29 +6492,28 @@ final class Template {
          }
       }
       if ($this->blank('pmc-embargo-date')) $this->forget('pmc-embargo-date'); // Do at the very end, so we do not delete it, then add it later in a different position
-    }
-    if ($this->wikiname() === 'cite arxiv' && $this->get_without_comments_and_placeholders('doi')) {
-      $this->change_name_to('cite journal');
-    }
-    if ($this->wikiname() === 'cite arxiv' && $this->has('bibcode')) {
-      $this->forget('bibcode'); // Not supported and 99% of the time just a arxiv bibcode anyway
-    }
-    if ($this->wikiname() === 'citation') { // Special CS2 code goes here
-      if (!$this->blank_other_than_comments('title') && !$this->blank_other_than_comments('chapter') && !$this->blank_other_than_comments(WORK_ALIASES)) { // Invalid combination
+      if ($this->wikiname() === 'cite arxiv' && $this->get_without_comments_and_placeholders('doi')) {
+        $this->change_name_to('cite journal');
+      }
+      if ($this->wikiname() === 'cite arxiv' && $this->has('bibcode')) {
+        $this->forget('bibcode'); // Not supported and 99% of the time just a arxiv bibcode anyway
+      }
+      if ($this->wikiname() === 'citation') { // Special CS2 code goes here
+       if (!$this->blank_other_than_comments('title') && !$this->blank_other_than_comments('chapter') && !$this->blank_other_than_comments(WORK_ALIASES)) { // Invalid combination
           report_info('CS2 template has incompatible parameters.  Changing to CS1 cite book. Please verify.');
           if ($this->name === 'citation') { // Need special code to keep caps the same
             $this->name = 'cite book';
           } else {
             $this->name = 'Cite book';
           }
+       }
       }
-    }
-    if (!$this->blank(DOI_BROKEN_ALIASES) && $this->has('jstor') &&
+      if (!$this->blank(DOI_BROKEN_ALIASES) && $this->has('jstor') &&
         (strpos($this->get('doi'), '10.2307') === 0 ||  $this->get('doi') == $this->get('jstor'))) {
-      $this->forget('doi'); // Forget DOI that is really jstor, if it is broken
-      foreach (DOI_BROKEN_ALIASES as $alias) $this->forget($alias);
-    }
-    if ($this->has('journal')) {  // Do this at the very end of work in case we change type/etc during expansion
+       $this->forget('doi'); // Forget DOI that is really jstor, if it is broken
+       foreach (DOI_BROKEN_ALIASES as $alias) $this->forget($alias);
+      }
+      if ($this->has('journal')) {  // Do this at the very end of work in case we change type/etc during expansion
           if ($this->blank(['chapter', 'isbn'])) {
             // Avoid renaming between cite journal and cite book
             $this->change_name_to('cite journal');
@@ -6252,54 +6530,57 @@ final class Template {
             report_warning(echoable('Citation should probably not have journal = ' . $this->get('journal')
             . ' as well as chapter / ISBN ' . $this->get('chapter') . ' ' .  $this->get('isbn')));
           }
-    }
-    if ($this->wikiname() === 'cite book' && $this->blank(['issue', 'journal'])) {
+      }
+      if ($this->wikiname() === 'cite book' && $this->blank(['issue', 'journal'])) {
        // Remove blank stuff that will most likely never get filled in
        $this->forget('issue');
        $this->forget('journal');
-    }
-    if (preg_match('~^10\.1093/ref\:odnb/\d+$~', $this->get('doi')) &&
+      }
+      if (preg_match('~^10\.1093/ref\:odnb/\d+$~', $this->get('doi')) &&
         $this->has('title') &&
         $this->wikiname() !== 'cite encyclopedia' && 
         $this->wikiname() !== 'cite encyclopaedia') {
-      preg_match("~^(\s*).*\b(\s*)$~", $this->name, $spacing);
-      if (substr($this->name,0,1) === 'c') {
+       preg_match("~^(\s*).*\b(\s*)$~", $this->name, $spacing);
+       if (substr($this->name,0,1) === 'c') {
         $this->name = $spacing[1] . 'cite ODNB' . $spacing[2];
-      } else {
+       } else {
         $this->name = $spacing[1] . 'Cite ODNB' . $spacing[2];
-      }
-      foreach (array_diff(WORK_ALIASES, array('encyclopedia','encyclopaedia')) as $worker) {
+       }
+       foreach (array_diff(WORK_ALIASES, array('encyclopedia','encyclopaedia')) as $worker) {
         $this->forget($worker);
+       }
+       if (stripos($this->get('publisher'), 'oxford') !== FALSE) $this->forget('publisher');
       }
-      if (stripos($this->get('publisher'), 'oxford') !== FALSE) $this->forget('publisher');
-    }
-    if (preg_match('~^10\.1093/~', $this->get('doi')) &&
+      if (preg_match('~^10\.1093/~', $this->get('doi')) &&
         $this->has('title') &&
         ($this->wikiname() === 'cite web' || $this->wikiname() === 'cite journal') &&
         $this->blank(WORK_ALIASES) && $this->blank('url')) {
-      preg_match("~^(\s*).*\b(\s*)$~", $this->name, $spacing);
-      if (substr($this->name,0,1) === 'c') {
-        $this->name = $spacing[1] . 'cite document' . $spacing[2];
-      } else {
-        $this->name = $spacing[1] . 'Cite document' . $spacing[2];
-      }
-    }
-    if (!empty($this->param)) {
-      $drop_me_maybe = array();
-      foreach (ALL_ALIASES as $alias_list) {
-        if (!$this->blank($alias_list)) { // At least one is set
-          $drop_me_maybe = array_merge($drop_me_maybe, $alias_list);
+        preg_match("~^(\s*).*\b(\s*)$~", $this->name, $spacing);
+        if (substr($this->name,0,1) === 'c') {
+          $this->name = $spacing[1] . 'cite document' . $spacing[2];
+        } else {
+          $this->name = $spacing[1] . 'Cite document' . $spacing[2];
         }
       }
-      // Do it this way to avoid massive N*M work load (N=size of $param and M=size of $drop_me_maybe) which happens when checking if each one is blank
-      foreach ($this->param as $key => $p) {
-        if (@$p->val === '' && in_array(@$p->param, $drop_me_maybe)) {
+      if (!empty($this->param)) {
+        $drop_me_maybe = array();
+        foreach (ALL_ALIASES as $alias_list) {
+          if (!$this->blank($alias_list)) { // At least one is set
+            $drop_me_maybe = array_merge($drop_me_maybe, $alias_list);
+          }
+        }
+        if (!$this->incomplete()) {
+          $drop_me_maybe = array_merge($drop_me_maybe, LOTS_OF_EDITORS);  // Always drop empty editors at end, if "complete"
+        }
+        // Do it this way to avoid massive N*M work load (N=size of $param and M=size of $drop_me_maybe) which happens when checking if each one is blank
+        foreach ($this->param as $key => $p) {
+         if (@$p->val === '' && in_array(@$p->param, $drop_me_maybe)) {
            unset($this->param[$key]);
+         }
         }
       }
-    }
-    if (!empty($this->param)) { // Forget author-link and such that have no such author
-      foreach ($this->param as $p) {
+      if (!empty($this->param)) { // Forget author-link and such that have no such author
+       foreach ($this->param as $p) {
         $alias = $p->param;
         if ($alias != NULL && $this->blank($alias)) {
           if (preg_match('~^author(\d+)\-?link$~', $alias, $matches) || preg_match('~^author\-?link(\d+)$~', $alias, $matches)) {
@@ -6308,6 +6589,7 @@ final class Template {
             }
           }
         }
+       }
       }
     }
   }
@@ -7300,6 +7582,61 @@ final class Template {
             }
           }
       }
+  }
+  
+  public function clean_dates(string $input) : string { // See https://en.wikipedia.org/wiki/Help:CS1_errors#bad_date
+    $matches = ['', ''];
+    if ($input === '0001-11-30') return '';
+    $months_seasons = array('January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December', 'Winter', 'Spring', 'Summer', 'Fall', 'Autumn');
+    $input = str_ireplace($months_seasons, $months_seasons, $input); // capitalization
+    if (preg_match('~^(\d{4})[\-\/](\d{4})$~', $input, $matches)) { // Hyphen or slash in year range (use en dash)
+      return $matches[1] . '–' . $matches[2]; 
+    } 
+    if (preg_match('~^(\d{4})\/ed$~i', $input, $matches)) { // 2002/ed
+      return $matches[1]; 
+    }
+    if (preg_match('~^First published(?: |\: | in | in\: | in\:)(\d{4})$~i', $input, $matches)) { // First published: 2002
+      return $matches[1]; 
+    }
+    if (preg_match('~^([A-Z][a-z]+)[\-\/]([A-Z][a-z]+) (\d{4})$~', $input, $matches)) { // Slash or hyphen in date range (use en dash)
+      return $matches[1] . '–' . $matches[2] . ' ' . $matches[3]; 
+    }
+    if (preg_match('~^([A-Z][a-z]+ \d{4})[\-\–]([A-Z][a-z]+ \d{4})$~', $input, $matches)) { // Missing space around en dash for range of full dates
+      return $matches[1] . ' – ' . $matches[2]; 
+    }   
+    if (preg_match('~^([A-Z][a-z]+), (\d{4})$~', $input, $matches)) { // Comma with month/season and year
+      return $matches[1] . ' ' . $matches[2]; 
+    }
+    if (preg_match('~^([A-Z][a-z]+), (\d{4})[\-\–](\d{4})$~', $input, $matches)) { // Comma with month/season and years
+      return $matches[1] . ' ' . $matches[2] . '–' . $matches[3];
+    }
+    if (preg_match('~^([A-Z][a-z]+) 0(\d),? (\d{4})$~', $input, $matches)) { // Zero-padding	
+      return $matches[1] . ' ' . $matches[2] . ', ' . $matches[3]; 
+    }
+    if (preg_match('~^([A-Z][a-z]+ \d{1,2})( \d{4})$~', $input, $matches)) { // Missing comma in format which requires it
+      return $matches[1] . ',' . $matches[2]; 
+    }
+    if (preg_match('~^Collected[\s\:]+((?:|[A-Z][a-z]+ )\d{4})$~', $input, $matches)) { // Collected 1999 stuff
+      return $matches[1]; 
+    }
+    if (preg_match('~^Effective[\s\:]+((?:|[A-Z][a-z]+ )\d{4})$~', $input, $matches)) { // Effective 1999 stuff
+      return $matches[1]; 
+    }
+    if (preg_match('~^(\d{4})\s*(?:&|and)\s*(\d{4})$~', $input, $matches)) { // &/and between years
+      $first = (int) $matches[1];
+      $second = (int) $matches[2];
+      if ($second === $first+1) {
+        return $matches[1] . '–' . $matches[2];
+      }
+    }
+    if (preg_match('~^(\d{4})\-(\d{2})$~', $input, $matches)) { // 2020-12 i.e. backwards
+      $year = $matches[1];
+      $month = (int) $matches[2];
+      if ($month > 0 && $month < 13) {
+        return $months_seasons[$month-1] . ' ' . $year;
+      }
+    }
+    return $input;
   }
   
   public function block_modifications() : void { // {{void}} should be just like a comment, BUT this code will not stop the normalization of the hidden template which has already been done

@@ -76,9 +76,13 @@ function entrez_api(array $ids, array &$templates, string $db) : bool {   // Poi
         break;  case "PmId":    $this_template->add_if_new('pmid', (string) $item, 'entrez');
         break;  case "AuthorList":
           $i = 0;
-          foreach ($item->Item as $subItem) {
+          foreach ($item->Item as $key => $subItem) {
             $subItem = (string) $subItem;
             if (preg_match('~^\d~', $subItem)) { // Author started with a number, skip all remaining authors.
+              break;   // @codeCoverageIgnore
+            } elseif ( "CollectiveName" === (string) $key) { // This is often really long string of gibberish
+              break;   // @codeCoverageIgnore
+            } elseif (strlen($subItem) > 100) {
               break;   // @codeCoverageIgnore
             } elseif (author_is_human($subItem)) {
               $jr_test = junior_test($subItem);
@@ -615,9 +619,13 @@ function expand_by_doi(Template $template, bool $force = FALSE) : bool {
       }
       if ($template->blank("page")) {
         if ($crossRef->last_page && (strcmp((string) $crossRef->first_page, (string) $crossRef->last_page) !== 0)) {
-          $template->add_if_new("pages", $crossRef->first_page . "-" . $crossRef->last_page, 'crossref'); //replaced by an endash later in script
+          if (strpos((string) $crossRef->first_page . (string) $crossRef->last_page, '-') === FALSE) { // Very rarely get stuff like volume/issue/year added to pages 
+            $template->add_if_new("pages", $crossRef->first_page . "-" . $crossRef->last_page, 'crossref'); //replaced by an endash later in script
+          }
         } else {
-          $template->add_if_new("pages", (string) $crossRef->first_page, 'crossref');
+          if (strpos((string) $crossRef->first_page, '-') === FALSE) { // Very rarely get stuff like volume/issue/year added to pages 
+            $template->add_if_new("pages", (string) $crossRef->first_page, 'crossref');
+          }
         }
       }
     } else {

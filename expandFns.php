@@ -41,7 +41,7 @@ function sanitize_doi(string $doi) : string {
   }
   if ($pos = (int) strrpos($doi, '/')) {
    $extension = (string) substr($doi, $pos);
-   if (in_array(strtolower($extension), array('/abstract', '/full', '/pdf', '/epdf', '/asset/', '/summary', '/short'))) {
+   if (in_array(strtolower($extension), array('/abstract', '/full', '/pdf', '/epdf', '/asset/', '/summary', '/short', '/meta'))) {
       $doi = (string) substr($doi, 0, $pos);
    }
   }
@@ -90,8 +90,10 @@ function extract_doi(string $text) : array {
     }
     if (doi_works($doi_candidate)) $doi = $doi_candidate;
     if (!doi_works($doi) && !doi_works(sanitize_doi($doi))) { // Reject URLS like ...../25.10.2015/2137303/default.htm
-      if (preg_match("~/[0-3][0-9]\." . preg_quote($doi) . "~", $text)) {
-        return array(FALSE, FALSE);
+      if (preg_match('~^10\.([12]\d{3})~', $doi, $new_match)) {
+        if (preg_match("~[0-3][0-9]\.10\." . $new_match[1] . "~", $text)) {
+          return array(FALSE, FALSE);
+        }
       }
     }
     return array($match[0], sanitize_doi($doi));
@@ -295,6 +297,8 @@ function titles_simple(string $inTitle) : string {
         $inTitle = preg_replace('~ Online$~iu', '', $inTitle);
         // Strip trailing (Third Edition)
         $inTitle = preg_replace('~\([^\s\(\)]+ Edition\)^~iu', '', $inTitle);
+        // Strip leading International Symposium on 
+        $inTitle = preg_replace('~^International Symposium on ~iu', '', $inTitle);
         // Strip leading the
         $inTitle = preg_replace('~^The ~iu', '', $inTitle);
         // Reduce punctuation
@@ -512,6 +516,7 @@ function throttle (int $min_interval) : void {
   if ($phase < $cycles) {
     return;
   } else {
+    // @codeCoverageIgnoreStart
     $phase = 0;
     $min_interval =  $min_interval * $cycles;
   }
@@ -526,6 +531,7 @@ function throttle (int $min_interval) : void {
     }
   }
   $last_write_time = time();
+  // @codeCoverageIgnoreEnd
 }
 
 // ============================================= Data processing functions ======================================

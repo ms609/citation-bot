@@ -29,7 +29,7 @@ private static function set_default_ch_zotero() : void {
             CURLOPT_CONNECTTIMEOUT => 10,
             CURLOPT_TIMEOUT => 45]);
   } else {
-        // @codeCoverageIgnoreBegin
+        // @codeCoverageIgnoreStart
         /** @psalm-suppress PossiblyNullArgument */ 
         curl_setopt_array(self::$zotero_ch,
             [CURLOPT_URL => ZOTERO_ROOT,
@@ -500,6 +500,9 @@ public static function process_zotero_response(string $zotero_response, Template
     if (preg_match('~\s(ISSN: \S+)\s~i', ' ' . $result->extra . ' ', $matches)) { // We don't use it
       $result->extra = trim(str_replace(trim($matches[0]), '', $result->extra));           // @codeCoverageIgnore
     }
+    if (preg_match('~\s(Page Version ID: \S+)\s~i', ' ' . $result->extra . ' ', $matches)) { // We don't use it
+      $result->extra = trim(str_replace(trim($matches[0]), '', $result->extra));           // @codeCoverageIgnore
+    }
     if (trim($result->extra) !== '') {
       report_minor_error("Unhandled extra data: " . $result->extra);                       // @codeCoverageIgnore
     }
@@ -561,6 +564,9 @@ public static function process_zotero_response(string $zotero_response, Template
     $result->title = preg_replace('~ \- ProQuest\.?~i', '', (string) $result->title);
   }
   
+  if (strpos($url, 'biodiversitylibrary.org') !== FALSE) {
+    unset($result->publisher); // Not reliably set
+  }
   if (isset($result->bookTitle)) {
     $template->add_if_new('title', (string) $result->bookTitle);
     if (isset($result->title))      $template->add_if_new('chapter',   (string) $result->title);
@@ -642,9 +648,11 @@ public static function process_zotero_response(string $zotero_response, Template
         
       case 'videoRecording':
       case 'film':
-      case 'audioRecording';     // @codeCoverageIgnore
+      case 'audioRecording';   // @codeCoverageIgnore
       case 'presentation';     // @codeCoverageIgnore
       case 'computerProgram';  // @codeCoverageIgnore
+          // Do not change type. This seems to include things that will just make people angry if we change type to encyclopedia
+      case 'encyclopediaArticle';  // @codeCoverageIgnore
         // Nothing special that we know of yet
         break;
 
