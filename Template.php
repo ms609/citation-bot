@@ -1497,6 +1497,7 @@ final class Template {
         if (str_equivalent($this->get('location'), $value)) return FALSE; // Catch some bad archive.org data
         if (strpos(strtolower($value), 'impressum') !== FALSE) return FALSE; // Common from archive.org
         if (strpos(strtolower($value), ':') !== FALSE) return FALSE; // Common from archive.org when location is mixed in
+        if (strpos(strtolower($value), '[etc.]') !== FALSE) return FALSE; // common from biodiversitylibrary.org - what does the etc. mean?
         if ($this->has('journal') && ($this->wikiname() === 'cite journal')) return FALSE;
         $value = truncate_publisher($value);
         if (in_array(trim(strtolower($value), " \.\,\[\]\:\;\t\n\r\0\x0B" ), BAD_PUBLISHERS)) return FALSE;
