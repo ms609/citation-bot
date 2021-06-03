@@ -15,6 +15,7 @@ include_once('./vendor/autoload.php');
 
 define("TRAVIS", (bool) getenv('CI')); // Not just TRAVIS, but GitHub actions set this to true
 define("USE_CITOID", TRUE); // Define which Zotero to use
+define("EDIT_AS_BOT", TRUE);
 
 if (TRAVIS || isset($argv)) {
   error_reporting(E_ALL);
