@@ -45,7 +45,7 @@ final class WikipediaBot {
 
     $this->bot_consumer = new Consumer((string) getenv('PHP_OAUTH_CONSUMER_TOKEN'), (string) getenv('PHP_OAUTH_CONSUMER_SECRET'));
     $this->bot_token = new Token((string) getenv('PHP_OAUTH_ACCESS_TOKEN'), (string) getenv('PHP_OAUTH_ACCESS_SECRET'));
-    if (!EDIT_AS_BOT) { /** @phpstan-ignore-line */
+    if (!EDIT_AS_BOT) {
        $this->user_consumer = new Consumer((string) getenv('PHP_WP_OAUTH_CONSUMER'), (string) getenv('PHP_WP_OAUTH_SECRET'));
        $conf = new ClientConfig(WIKI_ROOT . '?title=Special:OAuth');
        $conf->setConsumer($this->user_consumer);
@@ -116,7 +116,7 @@ final class WikipediaBot {
 
     $token = $this->bot_token;
     $consumer = $this->bot_consumer;
-    if (!EDIT_AS_BOT) { /** @phpstan-ignore-line */
+    if (!EDIT_AS_BOT) {
       if ($params["action"] === "edit") {
          $token = $this->user_token;
          $consumer = $this->user_consumer;
@@ -250,7 +250,7 @@ final class WikipediaBot {
     }
     
     // No obvious errors; looks like we're good to go ahead and edit
-    if (EDIT_AS_BOT) { /** @phpstan-ignore-line */
+    if (EDIT_AS_BOT) {
        $auth_token = $response->query->tokens->csrftoken;
     } else {
       $auth_token = json_decode( $this->user_client->makeOAuthCall(
@@ -500,7 +500,7 @@ final class WikipediaBot {
  * @codeCoverageIgnore
  */
   private function authenticate_user() : void {
-    if (session_status() !== PHP_SESSION_ACTIVE) report_error('No active session found'); // Tried to create more than one WikipediaBot() instance?!
+    if (session_status() !== PHP_SESSION_ACTIVE) report_error('No active session found');
     // These would be old and unusable if we are here
     unset($_SESSION['request_key']);
     unset($_SESSION['request_secret']);
@@ -508,7 +508,7 @@ final class WikipediaBot {
       if (is_string($_SESSION['citation_bot_user_id']) && self::is_valid_user($_SESSION['citation_bot_user_id'])) {
         $this->the_user = $_SESSION['citation_bot_user_id'];
         @setcookie(session_name(),session_id(),time()+(24*3600)); // 24 hours
-        if (EDIT_AS_BOT) { /** @phpstan-ignore-line */
+        if (EDIT_AS_BOT) {
           session_write_close(); // Done with it
           return;
         }
