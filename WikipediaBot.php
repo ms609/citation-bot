@@ -115,12 +115,12 @@ final class WikipediaBot {
     $params['format'] = 'json';
     
     if (EDIT_AS_BOT) {
-      $request = Request::fromConsumerAndToken($this->consumer, $this->bot_token, $method, API_ROOT, $params);
-      $request->signRequest(new HmacSha1(), $this->consumer, $this->bot_token);
+      $token = $this->bot_token;
     } else {
-      $request = Request::fromConsumerAndToken($this->consumer, $this->user_token, $method, API_ROOT, $params);
-      $request->signRequest(new HmacSha1(), $this->consumer, $this->user_token);
+      $token = $this->user_token);
     }
+    $request = Request::fromConsumerAndToken($this->consumer, $token, $method, API_ROOT, $params);
+    $request->signRequest(new HmacSha1(), $this->consumer, $token);
     $authenticationHeader = $request->toHeader();
     
     try {
