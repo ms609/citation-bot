@@ -1498,8 +1498,8 @@ final class Template {
         if (strpos(strtolower($value), 'impressum') !== FALSE) return FALSE; // Common from archive.org
         if (strpos(strtolower($value), ':') !== FALSE) return FALSE; // Common from archive.org when location is mixed in
         if (strpos(strtolower($value), '[etc.]') !== FALSE) return FALSE; // common from biodiversitylibrary.org - what does the etc. mean?
-        if ($this->wikiname() !== 'citation' && $this->wikiname() !== 'cite book') return FALSE; // Only add to books
-        if (($this->wikiname() === 'citation') && !$this->blank(WORK_ALIASES)) return FALSE;  // Do not add it work is set, unless explicitly a book
+        if (($this->wikiname() !== 'cite book') && !$this->blank(WORK_ALIASES)) return FALSE;  // Do not add if work is set, unless explicitly a book
+
         $value = truncate_publisher($value);
         if (in_array(trim(strtolower($value), " \.\,\[\]\:\;\t\n\r\0\x0B" ), BAD_PUBLISHERS)) return FALSE;
         if ($this->has('via') && str_equivalent($this->get('via'), $value))  $this->rename('via', $param_name);
