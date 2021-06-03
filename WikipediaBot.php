@@ -107,9 +107,10 @@ final class WikipediaBot {
     if ($depth > 1) sleep($depth+2);
     if ($depth > 4) return NULL;
     $params['format'] = 'json';
-     
-    $request = Request::fromConsumerAndToken($this->consumer, $this->bot_token, $method, API_ROOT, $params);
-    $request->signRequest(new HmacSha1(), $this->consumer, $this->bot_token);
+
+    $token = $this->bot_token;
+    $request = Request::fromConsumerAndToken($this->consumer, $token, $method, API_ROOT, $params);
+    $request->signRequest(new HmacSha1(), $this->consumer, $token);
     $authenticationHeader = $request->toHeader();
     
     try {
