@@ -16,7 +16,7 @@ require_once("constants.php");      // @codeCoverageIgnore
 final class WikipediaBot {
 
   private $consumer;
-  private $token;
+  private $bot_token;
   private $client;
   private $user_token;
   /** @var resource $ch */
@@ -53,7 +53,7 @@ final class WikipediaBot {
       $this->authenticate_user();  // @codeCoverageIgnore
     }
     $this->consumer = new Consumer((string) getenv('PHP_OAUTH_CONSUMER_TOKEN'), (string) getenv('PHP_OAUTH_CONSUMER_SECRET'));
-    $this->token = new Token((string) getenv('PHP_OAUTH_ACCESS_TOKEN'), (string) getenv('PHP_OAUTH_ACCESS_SECRET'));
+    $this->bot_token = new Token((string) getenv('PHP_OAUTH_ACCESS_TOKEN'), (string) getenv('PHP_OAUTH_ACCESS_SECRET'));
     self::$last_WikipediaBot = $this;
   }
   
@@ -106,8 +106,8 @@ final class WikipediaBot {
     if ($depth > 4) return NULL;
     $params['format'] = 'json';
      
-    $request = Request::fromConsumerAndToken($this->consumer, $this->token, $method, API_ROOT, $params);
-    $request->signRequest(new HmacSha1(), $this->consumer, $this->token);
+    $request = Request::fromConsumerAndToken($this->consumer, $this->bot_token, $method, API_ROOT, $params);
+    $request->signRequest(new HmacSha1(), $this->consumer, $this->bot_token);
     $authenticationHeader = $request->toHeader();
     
     try {
