@@ -4866,9 +4866,9 @@ T1 - This is the Title }}';
    }
  
    public function testRefComment() : void {
-    $text = "{{cite web|ref=harv <!-- {{harvid|....}} -->}}";
+    $text = "{{cite web|ref=harv <!--  -->}}";
     $template = $this->process_citation($text);
-    $this->assertSame('<!-- {{harvid|....}} -->', $template->get2('ref'));
+    $this->assertSame('<!--  -->', $template->get2('ref'));
    }           
               
    public function testCleanBloomArchives() : void {
