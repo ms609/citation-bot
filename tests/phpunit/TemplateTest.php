@@ -4629,8 +4629,8 @@ T1 - This is the Title }}';
     $this->assertNull($template->get2('doi'));
   }
  
-  public function testTidyOIDOI() : void {
-    $text = "{{cite web|doi=10.1093/oi/authority.9876543210|url=http://oxfordreference.com/view/10.1093/oi/authority.9876543210}}";
+  public function testTidyEPILDOI() : void {
+    $text = "{{cite web|doi=10.1093/oi/authority.9876543210|url=http://opil.ouplaw.com/view/10.1093/law:epil/9780199231690/law-9780199231690-e1206|doi=10.1093/law:epil/9780199231690/law-9780199231690-e1206}}";
     $template = $this->make_citation($text);
     $template->tidy_parameter('doi');
     $this->assertNull($template->get2('doi'));
