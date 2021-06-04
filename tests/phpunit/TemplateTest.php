@@ -5201,16 +5201,16 @@ T1 - This is the Title }}';
     $template = $this->make_citation($text);
     $template->tidy_parameter('url');
     $this->assertSame('10.1093/oso/9780198814122.003.0005', $template->get2('doi'));
-    $this->assertSame('978-0-19881412-2', $template->get2('isbn'));
+    $this->assertSame('978-0-19-881412-2', $template->get2('isbn'));
     $this->assertNull($template->get2('doi-broken-date'));
    }
  
    public function testOxHandbookDOIs() : void {
-    $text = "{{cite web|url=https://www.oxfordhandbooks.com/view/10.1093/oxfordhb/9780190628925.001.0001/oxfordhb-9780190628925-e-9|doi=10.5555/dummy|doi-broken-date=Y}}";
+    $text = "{{cite web|url=https://www.oxfordhandbooks.com/view/10.1093/oxfordhb/9780198824633.001.0001/oxfordhb-9780198824633-e-1|doi=10.5555/dummy|doi-broken-date=Y}}";
     $template = $this->make_citation($text);
     $template->tidy_parameter('url');
-    $this->assertSame('10.1093/oxfordhb/9780190628925.013.9', $template->get2('doi'));
-    $this->assertSame('978-0-19062892-5', $template->get2('isbn'));
+    $this->assertSame('10.1093/oxfordhb/9780198824633.013.1', $template->get2('doi'));
+    $this->assertSame('978-0-19-882463-3', $template->get2('isbn'));
     $this->assertNull($template->get2('doi-broken-date'));
    }  
         
