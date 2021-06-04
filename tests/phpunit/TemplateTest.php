@@ -4824,14 +4824,14 @@ T1 - This is the Title }}';
   }
 
   public function testTidyLATimes1() : void {
-    $text = "{{cite web|publisher=the la times}}";
+    $text = "{{cite web|publisher=the la times|work=This is a work that stays}}";
     $template = $this->make_citation($text);
     $template->tidy_parameter('publisher');
     $this->assertSame('Los Angeles Times', $template->get2('publisher'));
   }
  
   public function testTidyLATimes2() : void {
-    $text = "{{cite web|publisher=[[the la times]]}}";
+    $text = "{{cite web|publisher=[[the la times]]|work=This is a work that stays}}";
     $template = $this->make_citation($text);
     $template->tidy_parameter('publisher');
     $this->assertSame('[[Los Angeles Times]]', $template->get2('publisher'));
