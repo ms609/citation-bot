@@ -4647,21 +4647,21 @@ T1 - This is the Title }}';
     $text = "{{cite web|publisher=[[XYZ|X]]}}";
     $template = $this->make_citation($text);
     $template->tidy_parameter('publisher');
-    $this->assertSame('X', $template->get2('publisher'))
+    $this->assertSame('X', $template->get2('publisher'));
   }
 
   public function testTidyPublisherGoogleSupport() : void {
     $text = "{{cite web|publisher=google hive mind|url=support.google.com}}";
     $template = $this->make_citation($text);
     $template->tidy_parameter('publisher');
-    $this->assertSame('Google Inc.', $template->get2('publisher'))
+    $this->assertSame('Google Inc.', $template->get2('publisher'));
   }
 
   public function testTidyPublisherGoogleBlog() : void {
     $text = "{{cite web|publisher=google land hive mind|url=http://github.com}}";
     $template = $this->make_citation($text);
     $template->tidy_parameter('publisher');
-    $this->assertSame('google land hive mind', $template->get2('publisher'))
+    $this->assertSame('google land hive mind', $template->get2('publisher'));
   }
 
   public function testTidyPublisherAndWebsite() : void {
