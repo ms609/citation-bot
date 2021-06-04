@@ -5450,7 +5450,7 @@ final class Template {
           }
           
           if (preg_match('~^https?://(latinamericanhistory|classics|psychology|americanhistory|africanhistory|internationalstudies|climatescience|religion|environmentalscience|politics)\.oxfordre\.com(/.+)$~', $this->get($param), $matches)) {
-               $this->set($param, 'https://oxfordre.com/' . $matches[1] . '/' . $matches[2]);
+               $this->set($param, 'https://oxfordre.com/' . $matches[1] . $matches[2]);
           }
 
           if (preg_match('~^(https?://(?:[\.+]|)oxfordre\.com)/([^/]+)/([^/]+)/([^/]+)/(.+)$~', $this->get($param), $matches)) {
