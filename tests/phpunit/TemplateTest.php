@@ -5029,7 +5029,7 @@ T1 - This is the Title }}';
     $template = $this->make_citation($text);
     $template->tidy_parameter('url');
     $this->assertSame('10.1093/ww/9780199540884.013.U37305', $template->get2('doi'));
-    $this->assertSame('978-0-19954089-1', $template->get2('isbn'));
+    $this->assertSame('978-0-19-954089-1', $template->get2('isbn'));
     $this->assertNull($template->get2('doi-broken-date'));
    }  
  
