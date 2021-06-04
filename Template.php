@@ -3531,8 +3531,16 @@ final class Template {
     // Some publishers give next year always for OLD stuff
     $next_year = (string) ($now + 1);
     $next2_year = (string) ($now + 2);
-    if (strpos($google_date, $next_year) !== FALSE) return TRUE;
+    $next3_year = (string) ($now + 3);
+    $next4_year = (string) ($now + 4);
+    if (strpos($google_date, $next_year)  !== FALSE) return TRUE;
     if (strpos($google_date, $next2_year) !== FALSE) return TRUE;
+    if (strpos($google_date, $next3_year) !== FALSE) return TRUE;
+    if (strpos($google_date, $next4_year) !== FALSE) return TRUE;
+    if ($this->has('isbn')) { // Assume this is recent, and any old date is bogus
+      if (preg_match('~1[0-8]\d\d~', $google_date)) return TRUE;
+      if (!preg_match('~[12]\d\d\d~', $google_date)) return TRUE;
+    }
     $this->add_if_new('date', $google_date);
     // Don't set 'pages' parameter, as this refers to the CITED pages, not the page count of the book.
     return TRUE;
