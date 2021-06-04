@@ -4644,10 +4644,11 @@ T1 - This is the Title }}';
   }
  
   public function testTidyPublisherLinks() : void {
-    $text = "{{cite web|publisher=[[XYZ|X]]}}";
+    $text = "{{cite web|publisher=[[XYZ|X]]|journal=X}}";
     $template = $this->make_citation($text);
     $template->tidy_parameter('publisher');
-    $this->assertSame('X', $template->get2('publisher'));
+    $this->assertSame('[[XYZ|X]]', $template->get2('journal'));
+    $this->assertNull($template->get2('publisher'));
   }
 
   public function testTidyPublisherGoogleSupport() : void {
@@ -4806,17 +4807,19 @@ T1 - This is the Title }}';
     $this->assertSame('[[Forbes]]', $template->get2('website'));
   }
  
-  public function testTidyForbesandAgency() : void {
+  public function testTidyForbesandAgency1() : void {
     $text = "{{cite web|publisher=forbes publishing|website=AFX News}}";
     $template = $this->make_citation($text);
     $template->tidy_parameter('publisher');
     $this->assertSame('Forbes Publishing', $template->get2('publisher'));
     $this->assertSame('AFX News', $template->get2('agency'));
-   
+  }
+ 
+  public function testTidyForbesandAgency2() : void {
     $text = "{{cite web|publisher=forbes.com|website=Thomson Financial News}}";
     $template = $this->make_citation($text);
     $template->tidy_parameter('publisher');
-    $this->assertSame('forbes.com', $template->get2('publisher'));
+    $this->assertSame('Forbes', $template->get2('publisher'));
     $this->assertSame('Thomson Financial News', $template->get2('agency'));
   }
 
@@ -4960,7 +4963,7 @@ T1 - This is the Title }}';
           
 
    public function testOxforddnbDOIs() : void {
-    $text = "{{cite web|url=https://www.oxforddnb.com/view/10.1093/ref:odnb/9780198614128.001.0001/odnb-9780198614128-e-33369|doi=X|doi-broken-date=Y}}";
+    $text = "{{cite web|url=https://www.oxforddnb.com/view/10.1093/ref:odnb/9780198614128.001.0001/odnb-9780198614128-e-33369|doi=10.5555/dummy|doi-broken-date=Y}}";
     $template = $this->make_citation($text);
     $template->tidy_parameter('url');
     $this->assertSame('10.1093/ref:odnb/33369', $template->get2('doi'));
@@ -4977,7 +4980,7 @@ T1 - This is the Title }}';
    }       
        
    public function testANBDOIs() : void {
-    $text = "{{cite web|url=https://www.anb.org/view/10.1093/anb/9780198606697.001.0001/anb-9780198606697-e-1800262|doi=X|doi-broken-date=Y}}";
+    $text = "{{cite web|url=https://www.anb.org/view/10.1093/anb/9780198606697.001.0001/anb-9780198606697-e-1800262|doi=10.5555/dummy|doi-broken-date=Y}}";
     $template = $this->make_citation($text);
     $template->tidy_parameter('url');
     $this->assertSame('10.1093/anb/9780198606697.article.1800262', $template->get2('doi'));
@@ -4986,7 +4989,7 @@ T1 - This is the Title }}';
    }
     
    public function testArtDOIs() : void {
-    $text = "{{cite web|url=https://www.oxfordartonline.com/benezit/view/10.1093/benz/9780199773787.001.0001/acref-9780199773787-e-00183827|doi=X|doi-broken-date=Y}}";
+    $text = "{{cite web|url=https://www.oxfordartonline.com/benezit/view/10.1093/benz/9780199773787.001.0001/acref-9780199773787-e-00183827|doi=10.5555/dummy|doi-broken-date=Y}}";
     $template = $this->make_citation($text);
     $template->tidy_parameter('url');
     $this->assertSame('10.1093/benz/9780199773787.article.B00183827', $template->get2('doi'));
@@ -4995,7 +4998,7 @@ T1 - This is the Title }}';
    }
 
    public function testGroveDOIs() : void {
-    $text = "{{cite web|url=https://www.oxfordartonline.com/groveart/view/10.1093/gao/9781884446054.001.0001/oao-9781884446054-e-7000082129|doi=X|doi-broken-date=Y}}";
+    $text = "{{cite web|url=https://www.oxfordartonline.com/groveart/view/10.1093/gao/9781884446054.001.0001/oao-9781884446054-e-7000082129|doi=10.5555/dummy|doi-broken-date=Y}}";
     $template = $this->make_citation($text);
     $template->tidy_parameter('url');
     $this->assertSame('10.1093/gao/9781884446054.article.T082129', $template->get2('doi'));
@@ -5004,7 +5007,7 @@ T1 - This is the Title }}';
    }
 
    public function testGroveDOIs2() : void {
-    $text = "{{cite web|url=https://www.oxfordartonline.com/groveart/view/10.1093/gao/9781884446054.001.0001/oao-9781884446054-e-7002085714|doi=X|doi-broken-date=Y}}";
+    $text = "{{cite web|url=https://www.oxfordartonline.com/groveart/view/10.1093/gao/9781884446054.001.0001/oao-9781884446054-e-7002085714|doi=10.5555/dummy|doi-broken-date=Y}}";
     $template = $this->make_citation($text);
     $template->tidy_parameter('url');
     $this->assertSame('10.1093/gao/9781884446054.article.T2085714', $template->get2('doi'));
@@ -5013,7 +5016,7 @@ T1 - This is the Title }}';
    }
 
    public function testAASCDOIs() : void {
-    $text = "{{cite web|url=https://oxfordaasc.com/view/10.1093/acref/9780195301731.001.0001/acref-9780195301731-e-41463|doi=X|doi-broken-date=Y}}";
+    $text = "{{cite web|url=https://oxfordaasc.com/view/10.1093/acref/9780195301731.001.0001/acref-9780195301731-e-41463|doi=10.5555/dummy|doi-broken-date=Y}}";
     $template = $this->make_citation($text);
     $template->tidy_parameter('url');
     $this->assertSame('10.1093/acref/9780195301731.013.41463', $template->get2('doi'));
@@ -5022,16 +5025,16 @@ T1 - This is the Title }}';
    }    
 
    public function testWhoWhoDOIs() : void {
-    $text = "{{cite web|url=https://www.ukwhoswho.com/view/10.1093/ww/9780199540891.001.0001/ww-9780199540884-e-37305|doi=X|doi-broken-date=Y}}";
+    $text = "{{cite web|url=https://www.ukwhoswho.com/view/10.1093/ww/9780199540891.001.0001/ww-9780199540884-e-37305|doi=10.5555/dummy|doi-broken-date=Y}}";
     $template = $this->make_citation($text);
     $template->tidy_parameter('url');
     $this->assertSame('10.1093/ww/9780199540884.013.U37305', $template->get2('doi'));
-    $this->assertSame('978-0-19-954088-4', $template->get2('isbn'));
+    $this->assertSame('978-0-19954089-1', $template->get2('isbn'));
     $this->assertNull($template->get2('doi-broken-date'));
    }  
  
    public function testMusicDOIs() : void {
-    $text = "{{cite web|url=https://www.oxfordmusiconline.com/grovemusic/view/10.1093/gmo/9781561592630.001.0001/omo-9781561592630-e-0000040055|doi=X|doi-broken-date=Y}}";
+    $text = "{{cite web|url=https://www.oxfordmusiconline.com/grovemusic/view/10.1093/gmo/9781561592630.001.0001/omo-9781561592630-e-0000040055|doi=10.5555/dummy|doi-broken-date=Y}}";
     $template = $this->make_citation($text);
     $template->tidy_parameter('url');
     $this->assertSame('10.1093/gmo/9781561592630.article.40055', $template->get2('doi'));
@@ -5040,7 +5043,7 @@ T1 - This is the Title }}';
    }  
 
    public function testMusicDOIsA() : void {
-    $text = "{{cite web|url=https://www.oxfordmusiconline.com/grovemusic/view/10.1093/gmo/9781561592630.001.0001/omo-9781561592630-e-1002242442|doi=X|doi-broken-date=Y}}";
+    $text = "{{cite web|url=https://www.oxfordmusiconline.com/grovemusic/view/10.1093/gmo/9781561592630.001.0001/omo-9781561592630-e-1002242442|doi=10.5555/dummy|doi-broken-date=Y}}";
     $template = $this->make_citation($text);
     $template->tidy_parameter('url');
     $this->assertSame('10.1093/gmo/9781561592630.article.A2242442', $template->get2('doi'));
@@ -5049,7 +5052,7 @@ T1 - This is the Title }}';
    } 
  
    public function testMusicDOIsO() : void {
-    $text = "{{cite web|url=https://www.oxfordmusiconline.com/grovemusic/view/10.1093/gmo/9781561592630.001.0001/omo-9781561592630-e-0000001497|doi=X|doi-broken-date=Y}}";
+    $text = "{{cite web|url=https://www.oxfordmusiconline.com/grovemusic/view/10.1093/gmo/9781561592630.001.0001/omo-9781561592630-e-0000001497|doi=10.5555/dummy|doi-broken-date=Y}}";
     $template = $this->make_citation($text);
     $template->tidy_parameter('url');
     $this->assertSame('10.1093/gmo/9781561592630.article.01497', $template->get2('doi'));
@@ -5058,7 +5061,7 @@ T1 - This is the Title }}';
    } 
 
    public function testMusicDOIsL() : void {
-    $text = "{{cite web|url=https://www.oxfordmusiconline.com/grovemusic/view/10.1093/gmo/9781561592630.001.0001/omo-9781561592630-e-4002232256|doi=X|doi-broken-date=Y}}";
+    $text = "{{cite web|url=https://www.oxfordmusiconline.com/grovemusic/view/10.1093/gmo/9781561592630.001.0001/omo-9781561592630-e-4002232256|doi=10.5555/dummy|doi-broken-date=Y}}";
     $template = $this->make_citation($text);
     $template->tidy_parameter('url');
     $this->assertSame('10.1093/gmo/9781561592630.article.L2232256', $template->get2('doi'));
@@ -5067,7 +5070,7 @@ T1 - This is the Title }}';
    }
  
    public function testMusicDOIsJ() : void {
-    $text = "{{cite web|url=https://www.oxfordmusiconline.com/grovemusic/view/10.1093/gmo/9781561592630.001.0001/omo-9781561592630-e-2000095300|doi=X|doi-broken-date=Y}}";
+    $text = "{{cite web|url=https://www.oxfordmusiconline.com/grovemusic/view/10.1093/gmo/9781561592630.001.0001/omo-9781561592630-e-2000095300|doi=10.5555/dummy|doi-broken-date=Y}}";
     $template = $this->make_citation($text);
     $template->tidy_parameter('url');
     $this->assertSame('10.1093/gmo/9781561592630.article.J095300', $template->get2('doi'));
@@ -5076,7 +5079,7 @@ T1 - This is the Title }}';
    }
  
    public function testLatinDOIs() : void {
-    $text = "{{cite web|url=https://oxfordre.com/latinamericanhistory/view/10.1093/acrefore/9780199366439.001.0001/acrefore-9780199366439-e-2|doi=X|doi-broken-date=Y}}";
+    $text = "{{cite web|url=https://oxfordre.com/latinamericanhistory/view/10.1093/acrefore/9780199366439.001.0001/acrefore-9780199366439-e-2|doi=10.5555/dummy|doi-broken-date=Y}}";
     $template = $this->make_citation($text);
     $template->tidy_parameter('url');
     $this->assertSame('10.1093/acrefore/9780199366439.013.2', $template->get2('doi'));
@@ -5086,7 +5089,7 @@ T1 - This is the Title }}';
  
  
    public function testEnvDOIs() : void {
-    $text = "{{cite web|url=https://oxfordre.com/environmentalscience/view/10.1093/acrefore/9780199389414.001.0001/acrefore-9780199389414-e-224|doi=X|doi-broken-date=Y}}";
+    $text = "{{cite web|url=https://oxfordre.com/environmentalscience/view/10.1093/acrefore/9780199389414.001.0001/acrefore-9780199389414-e-224|doi=10.5555/dummy|doi-broken-date=Y}}";
     $template = $this->make_citation($text);
     $template->tidy_parameter('url');
     $this->assertSame('10.1093/acrefore/9780199389414.013.224', $template->get2('doi'));
@@ -5095,7 +5098,7 @@ T1 - This is the Title }}';
    } 
 
    public function testAmHistDOIs() : void {
-    $text = "{{cite web|url=https://oxfordre.com/view/10.1093/acrefore/9780199329175.001.0001/acrefore-9780199329175-e-17|doi=X|doi-broken-date=Y}}";
+    $text = "{{cite web|url=https://oxfordre.com/view/10.1093/acrefore/9780199329175.001.0001/acrefore-9780199329175-e-17|doi=10.5555/dummy|doi-broken-date=Y}}";
     $template = $this->make_citation($text);
     $template->tidy_parameter('url');
     $this->assertSame('10.1093/acrefore/9780199329175.013.17', $template->get2('doi'));
@@ -5104,7 +5107,7 @@ T1 - This is the Title }}';
    }    
 
    public function testAfHistDOIs() : void {
-    $text = "{{cite web|url=https://oxfordre.com/africanhistory/view/10.1093/acrefore/9780190277734.001.0001/acrefore-9780190277734-e-191|doi=X|doi-broken-date=Y}}";
+    $text = "{{cite web|url=https://oxfordre.com/africanhistory/view/10.1093/acrefore/9780190277734.001.0001/acrefore-9780190277734-e-191|doi=10.5555/dummy|doi-broken-date=Y}}";
     $template = $this->make_citation($text);
     $template->tidy_parameter('url');
     $this->assertSame('10.1093/acrefore/9780190277734.013.191', $template->get2('doi'));
@@ -5113,7 +5116,7 @@ T1 - This is the Title }}';
    }     
 
    public function testIntStudDOIs() : void {
-    $text = "{{cite web|url=https://oxfordre.com/view/10.1093/acrefore/9780190846626.001.0001/acrefore-9780190846626-e-39|doi=X|doi-broken-date=Y}}";
+    $text = "{{cite web|url=https://oxfordre.com/view/10.1093/acrefore/9780190846626.001.0001/acrefore-9780190846626-e-39|doi=10.5555/dummy|doi-broken-date=Y}}";
     $template = $this->make_citation($text);
     $template->tidy_parameter('url');
     $this->assertSame('10.1093/acrefore/9780190846626.013.39', $template->get2('doi'));
@@ -5122,7 +5125,7 @@ T1 - This is the Title }}';
    }
            
    public function testClimateDOIs() : void {
-    $text = "{{cite web|url=https://oxfordre.com/climatescience/view/10.1093/acrefore/9780190228620.001.0001/acrefore-9780190228620-e-699|doi=X|doi-broken-date=Y}}";
+    $text = "{{cite web|url=https://oxfordre.com/climatescience/view/10.1093/acrefore/9780190228620.001.0001/acrefore-9780190228620-e-699|doi=10.5555/dummy|doi-broken-date=Y}}";
     $template = $this->make_citation($text);
     $template->tidy_parameter('url');
     $this->assertSame('10.1093/acrefore/9780190228620.013.699', $template->get2('doi'));
@@ -5131,7 +5134,7 @@ T1 - This is the Title }}';
    }
            
    public function testReligionDOIs() : void {
-    $text = "{{cite web|url=https://oxfordre.com/religion/view/10.1093/acrefore/9780199340378.001.0001/acrefore-9780199340378-e-568|doi=X|doi-broken-date=Y}}";
+    $text = "{{cite web|url=https://oxfordre.com/religion/view/10.1093/acrefore/9780199340378.001.0001/acrefore-9780199340378-e-568|doi=10.5555/dummy|doi-broken-date=Y}}";
     $template = $this->make_citation($text);
     $template->tidy_parameter('url');
     $this->assertSame('10.1093/acrefore/9780199340378.013.568', $template->get2('doi'));
@@ -5140,7 +5143,7 @@ T1 - This is the Title }}';
    }
            
    public function testAnthroDOIs() : void {
-    $text = "{{cite web|url=https://oxfordre.com/anthropology/view/10.1093/acrefore/9780190854584.001.0001/acrefore-9780190854584-e-45|doi=X|doi-broken-date=Y}}";
+    $text = "{{cite web|url=https://oxfordre.com/anthropology/view/10.1093/acrefore/9780190854584.001.0001/acrefore-9780190854584-e-45|doi=10.5555/dummy|doi-broken-date=Y}}";
     $template = $this->make_citation($text);
     $template->tidy_parameter('url');
     $this->assertSame('10.1093/acrefore/9780190854584.013.45', $template->get2('doi'));
@@ -5149,7 +5152,7 @@ T1 - This is the Title }}';
    }
  
    public function testClassicsDOIs() : void {
-    $text = "{{cite web|url=https://oxfordre.com/classics/view/10.1093/acrefore/9780199381135.001.0001/acrefore-9780199381135-e-7023|doi=X|doi-broken-date=Y}}";
+    $text = "{{cite web|url=https://oxfordre.com/classics/view/10.1093/acrefore/9780199381135.001.0001/acrefore-9780199381135-e-7023|doi=10.5555/dummy|doi-broken-date=Y}}";
     $template = $this->make_citation($text);
     $template->tidy_parameter('url');
     $this->assertSame('10.1093/acrefore/9780199381135.013.7023', $template->get2('doi'));
@@ -5158,7 +5161,7 @@ T1 - This is the Title }}';
    }
  
    public function testPsychDOIs() : void {
-    $text = "{{cite web|url=https://oxfordre.com/psychology/view/10.1093/acrefore/9780190236557.001.0001/acrefore-9780190236557-e-384|doi=X|doi-broken-date=Y}}";
+    $text = "{{cite web|url=https://oxfordre.com/psychology/view/10.1093/acrefore/9780190236557.001.0001/acrefore-9780190236557-e-384|doi=10.5555/dummy|doi-broken-date=Y}}";
     $template = $this->make_citation($text);
     $template->tidy_parameter('url');
     $this->assertSame('10.1093/acrefore/9780190236557.013.384', $template->get2('doi'));
@@ -5167,7 +5170,7 @@ T1 - This is the Title }}';
    }     
            
    public function testPoliDOIs() : void {
-    $text = "{{cite web|url=https://oxfordre.com/politics/view/10.1093/acrefore/9780190228637.001.0001/acrefore-9780190228637-e-181|doi=X|doi-broken-date=Y}}";
+    $text = "{{cite web|url=https://oxfordre.com/politics/view/10.1093/acrefore/9780190228637.001.0001/acrefore-9780190228637-e-181|doi=10.5555/dummy|doi-broken-date=Y}}";
     $template = $this->make_citation($text);
     $template->tidy_parameter('url');
     $this->assertSame('10.1093/acrefore/9780190228637.013.181', $template->get2('doi'));
@@ -5176,7 +5179,7 @@ T1 - This is the Title }}';
    }     
 
    public function testOxPressDOIs() : void {
-    $text = "{{cite web|url=https://oxford.universitypressscholarship.com/view/10.1093/oso/9780190124786.001.0001/oso-9780190124786|doi=X|doi-broken-date=Y}}";
+    $text = "{{cite web|url=https://oxford.universitypressscholarship.com/view/10.1093/oso/9780190124786.001.0001/oso-9780190124786|doi=10.5555/dummy|doi-broken-date=Y}}";
     $template = $this->make_citation($text);
     $template->tidy_parameter('url');
     $this->assertSame('10.1093/oso/9780190124786.001.0001', $template->get2('doi'));
@@ -5185,25 +5188,25 @@ T1 - This is the Title }}';
    }      
            
    public function testMedDOIs() : void {
-    $text = "{{cite web|url=https://oxfordmedicine.com/view/10.1093/med/9780199592548.001.0001/med-9780199592548-chapter-199|doi=X|doi-broken-date=Y}}";
+    $text = "{{cite web|url=https://oxfordmedicine.com/view/10.1093/med/9780199592548.001.0001/med-9780199592548-chapter-199|doi=10.5555/dummy|doi-broken-date=Y}}";
     $template = $this->make_citation($text);
     $template->tidy_parameter('url');
-    $this->assertSame('10.1093/med/9780199592548.001.0001', $template->get2('doi'));
+    $this->assertSame('10.1093/med/9780199592548.003.0199', $template->get2('doi'));
     $this->assertSame('978-0-19-959254-8', $template->get2('isbn'));
     $this->assertNull($template->get2('doi-broken-date'));
    }
  
    public function testUnPressScholDOIs() : void {
-    $text = "{{cite web|url=https://oxford.universitypressscholarship.com/view/10.1093/oso/9780198814122.001.0001/oso-9780198814122-chapter-5|doi=X|doi-broken-date=Y}}";
+    $text = "{{cite web|url=https://oxford.universitypressscholarship.com/view/10.1093/oso/9780198814122.001.0001/oso-9780198814122-chapter-5|doi=10.5555/dummy|doi-broken-date=Y}}";
     $template = $this->make_citation($text);
     $template->tidy_parameter('url');
-    $this->assertSame('10.1093/oso/9780198814122.001.0001', $template->get2('doi'));
+    $this->assertSame('10.1093/oso/9780198814122.003.0005', $template->get2('doi'));
     $this->assertSame('978-0-19881412-2', $template->get2('isbn'));
     $this->assertNull($template->get2('doi-broken-date'));
    }
  
    public function testOxHandbookDOIs() : void {
-    $text = "{{cite web|url=https://www.oxfordhandbooks.com/view/10.1093/oxfordhb/9780190628925.001.0001/oxfordhb-9780190628925-e-9|doi=X|doi-broken-date=Y}}";
+    $text = "{{cite web|url=https://www.oxfordhandbooks.com/view/10.1093/oxfordhb/9780190628925.001.0001/oxfordhb-9780190628925-e-9|doi=10.5555/dummy|doi-broken-date=Y}}";
     $template = $this->make_citation($text);
     $template->tidy_parameter('url');
     $this->assertSame('10.1093/oxfordhb/9780190628925.013.9', $template->get2('doi'));
