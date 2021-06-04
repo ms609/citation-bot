@@ -4538,7 +4538,677 @@ T1 - This is the Title }}';
     $this->assertTrue(isset($ret['dashes']));
     $this->assertTrue(isset($ret['names']));
   }
+ 
+  public function testTidyMR() : void {
+    $text = "{{cite web|mr=mr2343}}";
+    $template = $this->make_citation($text);
+    $template->tidy_parameter('mr');
+    $this->assertSame('2343', $template->get2('mr'));
+  }
+ 
+  public function testTidyAgency() : void {
+    $text = "{{cite web|agency=associated press|url=apnews.com}}";
+    $template = $this->make_citation($text);
+    $template->tidy_parameter('agency');
+    $this->assertSame('associated press', $template->get2('work'));
+    $this->assertNull($template->get2('agency'));
+  }
+ 
+  public function testTidyClass() : void {
+    $text = "{{cite web|class=|series=X}}";
+    $template = $this->make_citation($text);
+    $template->tidy_parameter('class');
+    $this->assertNull($template->get2('class'));
+  }
 
+   public function testTidyMonth() : void {
+    $text = "{{cite web|day=3|month=Dec|year=2000}}";
+    $template = $this->make_citation($text);
+    $template->tidy_parameter('month');
+    $this->assertNull($template->get2('day'));
+    $this->assertNull($template->get2('month'));
+    $this->assertSame('3 Dec 2000', $template->get2('date'));
+    
+    $text = "{{cite web|month=Dec|year=2000}}";
+    $template = $this->make_citation($text);
+    $template->tidy_parameter('month');
+    $this->assertNull($template->get2('day'));
+    $this->assertNull($template->get2('month'));
+    $this->assertSame('Dec 2000', $template->get2('date'));
+  }
+ 
+  public function testTidyDeadurl() : void {
+    $text = "{{cite web|deadurl=y}}";
+    $template = $this->make_citation($text);
+    $template->tidy_parameter('deadurl');
+    $this->assertNull($template->get2('deadurl'));
+    $this->assertNull($template->get2('dead-url'));
+    $this->assertSame('dead', $template->get2('url-status'));
+   
+    $text = "{{cite web|dead-url=alive}}";
+    $template = $this->make_citation($text);
+    $template->tidy_parameter('dead-url');
+    $this->assertNull($template->get2('deadurl'));
+    $this->assertNull($template->get2('dead-url'));
+    $this->assertSame('live', $template->get2('url-status'));
+  }
+
+  public function testTidyLastAmp() : void {
+    $text = "{{cite web|lastauthoramp=false}}";
+    $template = $this->make_citation($text);
+    $template->tidy_parameter('lastauthoramp');
+    $this->assertNull($template->get2('last-author-amp'));
+    $this->assertNull($template->get2('lastauthoramp'));
+    $this->assertNull($template->get2('name-list-style'));
+    
+    $text = "{{cite web|last-author-amp=yes}}";
+    $template = $this->make_citation($text);
+    $template->tidy_parameter('last-author-amp');
+    $this->assertNull($template->get2('last-author-amp'));
+    $this->assertNull($template->get2('lastauthoramp'));
+    $this->assertSame('amp', $template->get2('name-list-style'));
+  }
+
+  public function testTidyLaySummary() : void {
+    $text = "{{cite web|laysummary=}}";
+    $template = $this->make_citation($text);
+    $template->tidy_parameter('laysummary');
+    $this->assertNull($template->get2('laysummary'));
+    
+    $text = "{{cite web|lay-summary=http://cnn.com/}}";
+    $template = $this->make_citation($text);
+    $template->tidy_parameter('lay-summary');
+    $this->assertNull($template->get2('lay-summary'));
+    $this->assertSame('http://cnn.com/', $template->get2('lay-url'));
+  }
+ 
+  public function testTidyOIDOI() : void {
+    $text = "{{cite web|doi=10.1093/oi/authority.9876543210|url=http://oxfordreference.com/view/10.1093/oi/authority.9876543210}}";
+    $template = $this->make_citation($text);
+    $template->tidy_parameter('doi');
+    $this->assertNull($template->get2('doi'));
+  }
+ 
+  public function testTidyOIDOI() : void {
+    $text = "{{cite web|doi=10.1093/oi/authority.9876543210|url=http://oxfordreference.com/view/10.1093/oi/authority.9876543210}}";
+    $template = $this->make_citation($text);
+    $template->tidy_parameter('doi');
+    $this->assertNull($template->get2('doi'));
+  }
+ 
+  public function testTidyPeriodicalQuotes() : void {
+    $text = "{{cite web|journal=‘X’}";
+    $template = $this->make_citation($text);
+    $template->tidy_parameter('journal');
+    $this->assertSame("'X'", $template->get2('journal'));
+  }
+ 
+  public function testTidyPublisherLinks() : void {
+    $text = "{{cite web|publisher=[[XYZ|X]]}}";
+    $template = $this->make_citation($text);
+    $template->tidy_parameter('publisher');
+    $this->assertSame('X', $template->get2('publisher'))
+  }
+
+  public function testTidyPublisherGoogleSupport() : void {
+    $text = "{{cite web|publisher=google hive mind|url=support.google.com}}";
+    $template = $this->make_citation($text);
+    $template->tidy_parameter('publisher');
+    $this->assertSame('Google Inc.', $template->get2('publisher'))
+  }
+
+  public function testTidyPublisherGoogleBlog() : void {
+    $text = "{{cite web|publisher=google land hive mind|url=http://github.com}}";
+    $template = $this->make_citation($text);
+    $template->tidy_parameter('publisher');
+    $this->assertSame('google land hive mind', $template->get2('publisher'))
+  }
+
+  public function testTidyPublisherAndWebsite() : void {
+    $text = "{{cite web|publisher=New York Times|website=www.newyorktimes.com}}";
+    $template = $this->make_citation($text);
+    $template->tidy_parameter('publisher');
+    $this->assertSame('New York Times', $template->get2('work'));
+    $this->assertNull($template->get2('publisher'));
+    $this->assertNull($template->get2('website'));
+  }
+
+  public function testTidyPublisherAndWorks() : void {
+    $text = "{{cite web|publisher=new york times digital archive|journal=new york times communications llc}}";
+    $template = $this->make_citation($text);
+    $template->tidy_parameter('publisher');
+    $this->assertSame('new york times communications llc', $template->get2('journal'));
+    $this->assertNull($template->get2('publisher'));
+  }
+
+  public function testTidyTimesArchive() : void {
+    $text = "{{cite web|publisher=the times digital archive.}}";
+    $template = $this->make_citation($text);
+    $template->tidy_parameter('publisher');
+    $this->assertSame('The Times Digital Archive', $template->get2('publisher'));
+  }
+           
+  public function testTidyTimesArchiveAndWork() : void {
+    $text = "{{cite web|publisher=the times digital archive|newspaper=the times}}";
+    $template = $this->make_citation($text);
+    $template->tidy_parameter('publisher');
+    $this->assertNull($template->get2('publisher'));
+  }
+
+  public function testTidyWPandLegacy() : void {
+    $text = "{{cite web|publisher=the washington post – via legacy.com}}";
+    $template = $this->make_citation($text);
+    $template->tidy_parameter('publisher');
+    $this->assertSame('Legacy.com', $template->get2('via'));
+    $this->assertSame('[[The Washington Post]]', $template->get2('publisher'));
+  }
+ 
+  public function testTidyWPandWork() : void {
+    $text = "{{cite web|publisher=the washington post websites|website=washingtonpost.com}}";
+    $template = $this->make_citation($text);
+    $template->tidy_parameter('publisher');
+    $this->assertNull($template->get2('publisher'));
+    $this->assertSame('[[The Washington Post]]', $template->get2('website'));
+   
+    $text = "{{cite web|publisher=the washington post websites|website=washington post}}";
+    $template = $this->make_citation($text);
+    $template->tidy_parameter('publisher');
+    $this->assertNull($template->get2('publisher'));
+    $this->assertSame('washington post', $template->get2('website'));
+  }
+ 
+  public function testTidyWPandDepartment() : void {
+    $text = "{{cite web|publisher=the washington post|work=entertainment}}";
+    $template = $this->make_citation($text);
+    $template->tidy_parameter('publisher');
+    $this->assertSame('entertainment', $template->get2('department'));
+    $this->assertNull($template->get2('publisher'));
+    $this->assertSame('the washington post', $template->get2('work'));
+  }
+ 
+  public function testTidySDandDepartment() : void {
+    $text = "{{cite web|publisher=san diego union tribune|work=entertainment}}";
+    $template = $this->make_citation($text);
+    $template->tidy_parameter('publisher');
+    $this->assertSame('entertainment', $template->get2('department'));
+    $this->assertNull($template->get2('publisher'));
+    $this->assertSame('san diego union tribune', $template->get2('work'));
+  }
+
+  public function testTidyNYTandWorks() : void {
+    $text = "{{cite web|publisher=the new york times (subscription required)|website=new york times website}}";
+    $template = $this->make_citation($text);
+    $template->tidy_parameter('publisher');
+    $this->assertNull($template->get2('publisher'));
+    $this->assertSame('new york times website', $template->get2('website'));
+   
+    $text = "{{cite web|publisher=the new york times|website=nytimes.com}}";
+    $template = $this->make_citation($text);
+    $template->tidy_parameter('publisher');
+    $this->assertNull($template->get2('publisher'));
+    $this->assertSame('[[The New York Times]]', $template->get2('website'));
+  }
+                    
+  public function testTidySJMNandWorks() : void {
+    $text = "{{cite web|publisher=san jose mercury news|website=mercury news}}";
+    $template = $this->make_citation($text);
+    $template->tidy_parameter('publisher');
+    $this->assertNull($template->get2('publisher'));
+    $this->assertSame('mercury news', $template->get2('website'));
+   
+    $text = "{{cite web|publisher=san jose mercury-news|website=mercurynews.com}}";
+    $template = $this->make_citation($text);
+    $template->tidy_parameter('publisher');
+    $this->assertNull($template->get2('publisher'));
+    $this->assertSame('[[San Jose Mercury News]]', $template->get2('website'));
+  }
+      
+  public function testTidySDllc() : void {
+    $text = "{{cite web|publisher=the san diego union tribune, LLC}}";
+    $template = $this->make_citation($text);
+    $template->tidy_parameter('publisher');
+    $this->assertSame('The San Diego Union-Tribune', $template->get2('publisher'));
+  }
+
+  public function testTidyForbes() : void {
+    $text = "{{cite web|publisher=forbes (forbes Media)}}";
+    $template = $this->make_citation($text);
+    $template->tidy_parameter('publisher');
+    $this->assertSame('Forbes Media', $template->get2('publisher'));
+   
+    $text = "{{cite web|publisher=Forbes, inc.}}";
+    $template = $this->make_citation($text);
+    $template->tidy_parameter('publisher');
+    $this->assertSame('Forbes', $template->get2('publisher'));
+   
+    $text = "{{cite web|publisher=forbes.com llc™}}";
+    $template = $this->make_citation($text);
+    $template->tidy_parameter('publisher');
+    $this->assertSame('Forbes', $template->get2('publisher'));
+   
+    $text = "{{cite web|publisher=forbes publishing company}}";
+    $template = $this->make_citation($text);
+    $template->tidy_parameter('publisher');
+    $this->assertSame('Forbes Publishing', $template->get2('publisher'));
+  }       
+
+  public function testTidyForbesandWorks() : void {
+    $text = "{{cite web|publisher=forbes publishing|website=forbes website}}";
+    $template = $this->make_citation($text);
+    $template->tidy_parameter('publisher');
+    $this->assertNull($template->get2('publisher'));
+    $this->assertSame('forbes website', $template->get2('website'));
+   
+    $text = "{{cite web|publisher=forbes.com|website=forbes.com}}";
+    $template = $this->make_citation($text);
+    $template->tidy_parameter('publisher');
+    $this->assertNull($template->get2('publisher'));
+    $this->assertSame('[[Forbes]]', $template->get2('website'));
+  }
+ 
+  public function testTidyForbesandAgency() : void {
+    $text = "{{cite web|publisher=forbes publishing|website=AFX News}}";
+    $template = $this->make_citation($text);
+    $template->tidy_parameter('publisher');
+    $this->assertSame('forbes publishing', $template->get2('publisher'));
+    $this->assertSame('AFX News', $template->get2('agency'));
+   
+    $text = "{{cite web|publisher=forbes.com|website=Thomson Financial News}}";
+    $template = $this->make_citation($text);
+    $template->tidy_parameter('publisher');
+    $this->assertSame('forbes.com', $template->get2('publisher'));
+    $this->assertSame('Thomson Financial News', $template->get2('agency'));
+  }
+
+  public function testTidyLATimes() : void {
+    $text = "{{cite web|publisher=the la times}}";
+    $template = $this->make_citation($text);
+    $template->tidy_parameter('publisher');
+    $this->assertSame('Los Angeles Times', $template->get2('publisher'));
+
+    $text = "{{cite web|publisher=[[the la times]]}}";
+    $template = $this->make_citation($text);
+    $template->tidy_parameter('publisher');
+    $this->assertSame('[[Los Angeles Times]]', $template->get2('publisher'));
+  }  
+              
+
+  public function testTidyLAandWorks() : void {
+    $text = "{{cite web|publisher=Los Angeles Times|website=los angeles times and stuff}}";
+    $template = $this->make_citation($text);
+    $template->tidy_parameter('publisher');
+    $this->assertNull($template->get2('publisher'));
+    $this->assertSame('los angeles times and stuff', $template->get2('website'));
+   
+    $text = "{{cite web|publisher=Los Angeles Times|website=latimes.com}}";
+    $template = $this->make_citation($text);
+    $template->tidy_parameter('publisher');
+    $this->assertNull($template->get2('publisher'));
+    $this->assertSame('[[Los Angeles Times]]', $template->get2('website'));
+  }          
+
+   public function testLAandVia() : void {
+    $text = "{{cite web|publisher=Los Angeles Times|website=laweekly.com}}";
+    $template = $this->make_citation($text);
+    $template->tidy_parameter('publisher');
+    $this->assertSame('Los Angeles Times', $template->get2('publisher'));
+    $this->assertSame('laweekly.com', $template->get2('via'));
+   }
+              
+   public function testNoPublisherNeeded() : void {
+    $text = "{{cite web|publisher=This is Just Random Stuff|website=new york times magazine}}";
+    $template = $this->make_citation($text);
+    $template->tidy_parameter('publisher');
+    $this->assertNull($template->get2('publisher'));
+    $this->assertSame('new york times magazine', $template->get2('website'));
+   }
+ 
+   public function testRefComment() : void {
+    $text = "{{cite web|ref=harv <!-- {{harvid|....}} -->}}";
+    $template = $this->process_citation($text);
+    $this->assertSame('<!-- {{harvid|....}} -->', $template->get2('ref'));
+   }           
+              
+   public function testCleanBloomArchives() : void {
+    $text = "{{cite web|archive-url=https://web.archive.org/web/434132432/https://www.bloomberg.com/tosv2.html?1}}";
+    $template = $this->make_citation($text);
+    $template->tidy_parameter('archive-url');
+    $this->assertNull($template->get2('archive-url'));
+   }
+ 
+   public function testCleanGoogleArchives() : void {
+    $text = "{{cite web|archive-url=https://web.archive.org/web/434132432/https://apis.google.com/js/plusone.js}}";
+    $template = $this->make_citation($text);
+    $template->tidy_parameter('archive-url');
+    $this->assertNull($template->get2('archive-url'));
+    
+    $text = "{{cite web|archive-url=https://web.archive.org/web/434132432/https://www.google-analytics.com/ga.js}}";
+    $template = $this->make_citation($text);
+    $template->tidy_parameter('archive-url');
+    $this->assertNull($template->get2('archive-url'));
+   }        
+           
+   public function testCleanebscohost() : void {
+    $text = "{{cite web|url=ebscohost.com?AN=1234}}";
+    $template = $this->make_citation($text);
+    $template->tidy_parameter('url');
+    $this->assertSame('http://connection.ebscohost.com/c/articles/1234', $template->get2('url'));
+   }                
+
+   public function testNormalizeOxford() : void {
+    $text = "{{cite web|url=http://latinamericanhistory.oxfordre.com/XYZ}}";
+    $template = $this->make_citation($text);
+    $template->tidy_parameter('url');
+    $this->assertSame('https://oxfordre.com/latinamericanhistory/XYZ', $template->get2('url'));
+   } 
+
+   public function testShortenOxford() : void {
+    $text = "{{cite web|url=https://oxfordre.com/latinamericanhistory/latinamericanhistory/latinamericanhistory/XYZ}}";
+    $template = $this->make_citation($text);
+    $template->tidy_parameter('url');
+    $this->assertSame('https://oxfordre.com/latinamericanhistory/XYZ', $template->get2('url'));
+   }
+
+   public function testAnonymizeOxford() : void {
+    $text = "{{cite web|url=https://www.oxforddnb.com/X;jsession?print}}";
+    $template = $this->make_citation($text);
+    $template->tidy_parameter('url');
+    $this->assertSame('https://www.oxforddnb.com/X', $template->get2('url'));
+    
+    $text = "{{cite web|url=https://www.anb.org/x;jsession?print}}";
+    $template = $this->make_citation($text);
+    $template->tidy_parameter('url');
+    $this->assertSame('https://www.anb.org/x', $template->get2('url'));
+    
+    $text = "{{cite web|url=https://www.oxfordartonline.com/Y;jsession?print}}";
+    $template = $this->make_citation($text);
+    $template->tidy_parameter('url');
+    $this->assertSame('https://www.oxfordartonline.com/Y', $template->get2('url'));
+    
+    $text = "{{cite web|url=https://www.ukwhoswho.com/z;jsession?print}}";
+    $template = $this->make_citation($text);
+    $template->tidy_parameter('url');
+    $this->assertSame('https://www.ukwhoswho.com/z', $template->get2('url'));
+    
+    $text = "{{cite web|url=https://www.oxfordmusiconline.com/z;jsession?print}}";
+    $template = $this->make_citation($text);
+    $template->tidy_parameter('url');
+    $this->assertSame('https://www.oxfordmusiconline.com/z', $template->get2('url'));
+    
+    $text = "{{cite web|url=https://oxfordre.com/z;jsession?print}}";
+    $template = $this->make_citation($text);
+    $template->tidy_parameter('url');
+    $this->assertSame('https://oxfordre.com/z', $template->get2('url'));
+    
+    $text = "{{cite web|url=https://oxfordaasc.com/z;jsession?print}}";
+    $template = $this->make_citation($text);
+    $template->tidy_parameter('url');
+    $this->assertSame('https://oxfordaasc.com/z', $template->get2('url'));
+    
+    $text = "{{cite web|url=https://oxfordreference.com/z;jsession?print}}";
+    $template = $this->make_citation($text);
+    $template->tidy_parameter('url');
+    $this->assertSame('https://oxfordreference.com/z', $template->get2('url'));
+    
+    $text = "{{cite web|url=https://oxford.universitypressscholarship.com/z;jsession?print}}";
+    $template = $this->make_citation($text);
+    $template->tidy_parameter('url');
+    $this->assertSame('https://oxford.universitypressscholarship.com/z', $template->get2('url'));
+   }       
+          
+
+   public function testOxforddnbDOIs() : void {
+    $text = "{{cite web|url=https://www.oxforddnb.com/view/10.1093/ref:odnb/9780198614128.001.0001/odnb-9780198614128-e-33369|doi=X|doi-broken-date=Y}}";
+    $template = $this->make_citation($text);
+    $template->tidy_parameter('url');
+    $this->assertSame('10.1093/ref:odnb/33369', $template->get2('doi'));
+    $this->assertSame('978-0-19-861412-8', $template->get2('isbn'));
+    $this->assertNull('doi-broken-date');
+    
+    $text = "{{cite web|url=https://www.oxforddnb.com/view/10.1093/odnb/9780198614128.001.0001/odnb-9780198614128-e-108196|doi=X|doi-broken-date=Y|title=Joe Blow - Oxford Dictionary of National Biography}}";
+    $template = $this->make_citation($text);
+    $template->tidy_parameter('url');
+    $this->assertSame('10.1093/odnb/9780198614128.013.108196', $template->get2('doi'));
+    $this->assertSame('978-0-19-861412-8', $template->get2('isbn'));
+    $this->assertSame('Joe Blow', $template->get2('title'));
+    $this->assertNull('doi-broken-date');
+   }       
+       
+   public function testANBDOIs() : void {
+    $text = "{{cite web|url=https://www.anb.org/view/10.1093/anb/9780198606697.001.0001/anb-9780198606697-e-1800262|doi=X|doi-broken-date=Y}}";
+    $template = $this->make_citation($text);
+    $template->tidy_parameter('url');
+    $this->assertSame('10.1093/anb/9780198606697.article.1800262', $template->get2('doi'));
+    $this->assertSame('978-0-19-860669-7', $template->get2('isbn'));
+    $this->assertNull('doi-broken-date');
+   }
+    
+   public function testArtDOIs() : void {
+    $text = "{{cite web|url=https://www.oxfordartonline.com/benezit/view/10.1093/benz/9780199773787.001.0001/acref-9780199773787-e-00183827|doi=X|doi-broken-date=Y}}";
+    $template = $this->make_citation($text);
+    $template->tidy_parameter('url');
+    $this->assertSame('10.1093/benz/9780199773787.article.B00183827', $template->get2('doi'));
+    $this->assertSame('978-0-19-977378-7', $template->get2('isbn'));
+    $this->assertNull('doi-broken-date');
+   }
+
+   public function testGroveDOIs() : void {
+    $text = "{{cite web|url=https://www.oxfordartonline.com/groveart/view/10.1093/gao/9781884446054.001.0001/oao-9781884446054-e-7000082129|doi=X|doi-broken-date=Y}}";
+    $template = $this->make_citation($text);
+    $template->tidy_parameter('url');
+    $this->assertSame('10.1093/gao/9781884446054.article.T082129', $template->get2('doi'));
+    $this->assertSame('978-1-884446-05-4', $template->get2('isbn'));
+    $this->assertNull('doi-broken-date');
+   }
+
+   public function testGroveDOIs2() : void {
+    $text = "{{cite web|url=https://www.oxfordartonline.com/groveart/view/10.1093/gao/9781884446054.001.0001/oao-9781884446054-e-7002085714|doi=X|doi-broken-date=Y}}";
+    $template = $this->make_citation($text);
+    $template->tidy_parameter('url');
+    $this->assertSame('10.1093/gao/9781884446054.article.T2085714', $template->get2('doi'));
+    $this->assertSame('978-1-884446-05-4', $template->get2('isbn'));
+    $this->assertNull('doi-broken-date');
+   }
+
+   public function testAASCDOIs() : void {
+    $text = "{{cite web|url=https://oxfordaasc.com/view/10.1093/acref/9780195301731.001.0001/acref-9780195301731-e-41463|doi=X|doi-broken-date=Y}}";
+    $template = $this->make_citation($text);
+    $template->tidy_parameter('url');
+    $this->assertSame('10.1093/acref/9780195301731.013.41463', $template->get2('doi'));
+    $this->assertSame('978-0-19-530173-1', $template->get2('isbn'));
+    $this->assertNull('doi-broken-date');
+   }    
+
+   public function testWhoWhoDOIs() : void {
+    $text = "{{cite web|url=https://www.ukwhoswho.com/view/10.1093/ww/9780199540891.001.0001/ww-9780199540884-e-37305|doi=X|doi-broken-date=Y}}";
+    $template = $this->make_citation($text);
+    $template->tidy_parameter('url');
+    $this->assertSame('10.1093/ww/9780199540884.013.U37305', $template->get2('doi'));
+    $this->assertSame('978-0-19-954088-4', $template->get2('isbn'));
+    $this->assertNull('doi-broken-date');
+   }  
+ 
+   public function testMusicDOIs() : void {
+    $text = "{{cite web|url=https://www.oxfordmusiconline.com/grovemusic/view/10.1093/gmo/9781561592630.001.0001/omo-9781561592630-e-0000040055|doi=X|doi-broken-date=Y}}";
+    $template = $this->make_citation($text);
+    $template->tidy_parameter('url');
+    $this->assertSame('10.1093/gmo/9781561592630.article.40055', $template->get2('doi'));
+    $this->assertSame('978-1-56159-263-0', $template->get2('isbn'));
+    $this->assertNull('doi-broken-date');
+   }  
+
+   public function testMusicDOIsA() : void {
+    $text = "{{cite web|url=https://www.oxfordmusiconline.com/grovemusic/view/10.1093/gmo/9781561592630.001.0001/omo-9781561592630-e-1002242442|doi=X|doi-broken-date=Y}}";
+    $template = $this->make_citation($text);
+    $template->tidy_parameter('url');
+    $this->assertSame('10.1093/gmo/9781561592630.article.A2242442', $template->get2('doi'));
+    $this->assertSame('978-1-56159-263-0', $template->get2('isbn'));
+    $this->assertNull('doi-broken-date');
+   } 
+ 
+   public function testMusicDOIsO() : void {
+    $text = "{{cite web|url=https://www.oxfordmusiconline.com/grovemusic/view/10.1093/gmo/9781561592630.001.0001/omo-9781561592630-e-0000001497|doi=X|doi-broken-date=Y}}";
+    $template = $this->make_citation($text);
+    $template->tidy_parameter('url');
+    $this->assertSame('10.1093/gmo/9781561592630.article.01497', $template->get2('doi'));
+    $this->assertSame('978-1-56159-263-0', $template->get2('isbn'));
+    $this->assertNull('doi-broken-date');
+   } 
+
+   public function testMusicDOIsL() : void {
+    $text = "{{cite web|url=https://www.oxfordmusiconline.com/grovemusic/view/10.1093/gmo/9781561592630.001.0001/omo-9781561592630-e-4002232256|doi=X|doi-broken-date=Y}}";
+    $template = $this->make_citation($text);
+    $template->tidy_parameter('url');
+    $this->assertSame('10.1093/gmo/9781561592630.article.L2232256', $template->get2('doi'));
+    $this->assertSame('978-1-56159-263-0', $template->get2('isbn'));
+    $this->assertNull('doi-broken-date');
+   }
+ 
+   public function testMusicDOIsJ() : void {
+    $text = "{{cite web|url=https://www.oxfordmusiconline.com/grovemusic/view/10.1093/gmo/9781561592630.001.0001/omo-9781561592630-e-2000095300|doi=X|doi-broken-date=Y}}";
+    $template = $this->make_citation($text);
+    $template->tidy_parameter('url');
+    $this->assertSame('10.1093/gmo/9781561592630.article.J095300', $template->get2('doi'));
+    $this->assertSame('978-1-56159-263-0', $template->get2('isbn'));
+    $this->assertNull('doi-broken-date');
+   }
+ 
+   public function testLatinDOIs() : void {
+    $text = "{{cite web|url=https://oxfordre.com/latinamericanhistory/view/10.1093/acrefore/9780199366439.001.0001/acrefore-9780199366439-e-2|doi=X|doi-broken-date=Y}}";
+    $template = $this->make_citation($text);
+    $template->tidy_parameter('url');
+    $this->assertSame('10.1093/acrefore/9780199366439.013.2', $template->get2('doi'));
+    $this->assertSame('978-0-19-936643-9', $template->get2('isbn'));
+    $this->assertNull('doi-broken-date');
+   }
+ 
+ 
+   public function testEnvDOIs() : void {
+    $text = "{{cite web|url=https://oxfordre.com/environmentalscience/view/10.1093/acrefore/9780199389414.001.0001/acrefore-9780199389414-e-224|doi=X|doi-broken-date=Y}}";
+    $template = $this->make_citation($text);
+    $template->tidy_parameter('url');
+    $this->assertSame('10.1093/acrefore/9780199389414.013.224', $template->get2('doi'));
+    $this->assertSame('978-0-19-938941-4', $template->get2('isbn'));
+    $this->assertNull('doi-broken-date');
+   } 
+
+   public function testAmHistDOIs() : void {
+    $text = "{{cite web|url=https://oxfordre.com/view/10.1093/acrefore/9780199329175.001.0001/acrefore-9780199329175-e-17|doi=X|doi-broken-date=Y}}";
+    $template = $this->make_citation($text);
+    $template->tidy_parameter('url');
+    $this->assertSame('10.1093/acrefore/9780199329175.013.17', $template->get2('doi'));
+    $this->assertSame('978-0-19-932917-5', $template->get2('isbn'));
+    $this->assertNull('doi-broken-date');
+   }    
+
+   public function testAfHistDOIs() : void {
+    $text = "{{cite web|url=https://oxfordre.com/africanhistory/view/10.1093/acrefore/9780190277734.001.0001/acrefore-9780190277734-e-191|doi=X|doi-broken-date=Y}}";
+    $template = $this->make_citation($text);
+    $template->tidy_parameter('url');
+    $this->assertSame('10.1093/acrefore/9780190277734.013.191', $template->get2('doi'));
+    $this->assertSame('978-0-19-027773-4', $template->get2('isbn'));
+    $this->assertNull('doi-broken-date');
+   }     
+
+   public function testIntStudDOIs() : void {
+    $text = "{{cite web|url=https://oxfordre.com/view/10.1093/acrefore/9780190846626.001.0001/acrefore-9780190846626-e-39|doi=X|doi-broken-date=Y}}";
+    $template = $this->make_citation($text);
+    $template->tidy_parameter('url');
+    $this->assertSame('10.1093/acrefore/9780190846626.013.39', $template->get2('doi'));
+    $this->assertSame('978-0-19-084662-6', $template->get2('isbn'));
+    $this->assertNull('doi-broken-date');
+   }
+           
+   public function testClimateDOIs() : void {
+    $text = "{{cite web|url=https://oxfordre.com/climatescience/view/10.1093/acrefore/9780190228620.001.0001/acrefore-9780190228620-e-699|doi=X|doi-broken-date=Y}}";
+    $template = $this->make_citation($text);
+    $template->tidy_parameter('url');
+    $this->assertSame('10.1093/acrefore/9780190228620.013.699', $template->get2('doi'));
+    $this->assertSame('978-0-19-022862-0', $template->get2('isbn'));
+    $this->assertNull('doi-broken-date');
+   }
+           
+   public function testReligionDOIs() : void {
+    $text = "{{cite web|url=https://oxfordre.com/religion/view/10.1093/acrefore/9780199340378.001.0001/acrefore-9780199340378-e-568|doi=X|doi-broken-date=Y}}";
+    $template = $this->make_citation($text);
+    $template->tidy_parameter('url');
+    $this->assertSame('10.1093/acrefore/9780199340378.013.568', $template->get2('doi'));
+    $this->assertSame('978-0-19-934037-8', $template->get2('isbn'));
+    $this->assertNull('doi-broken-date');
+   }
+           
+   public function testAnthroDOIs() : void {
+    $text = "{{cite web|url=https://oxfordre.com/anthropology/view/10.1093/acrefore/9780190854584.001.0001/acrefore-9780190854584-e-45|doi=X|doi-broken-date=Y}}";
+    $template = $this->make_citation($text);
+    $template->tidy_parameter('url');
+    $this->assertSame('10.1093/acrefore/9780190854584.013.45', $template->get2('doi'));
+    $this->assertSame('978-0-19-085458-4', $template->get2('isbn'));
+    $this->assertNull('doi-broken-date');
+   }
+ 
+   public function testClassicsDOIs() : void {
+    $text = "{{cite web|url=https://oxfordre.com/classics/view/10.1093/acrefore/9780199381135.001.0001/acrefore-9780199381135-e-7023|doi=X|doi-broken-date=Y}}";
+    $template = $this->make_citation($text);
+    $template->tidy_parameter('url');
+    $this->assertSame('10.1093/acrefore/9780199381135.013.7023', $template->get2('doi'));
+    $this->assertSame('978-0-19-938113-5', $template->get2('isbn'));
+    $this->assertNull('doi-broken-date');
+   }
+ 
+   public function testPsychDOIs() : void {
+    $text = "{{cite web|url=https://oxfordre.com/psychology/view/10.1093/acrefore/9780190236557.001.0001/acrefore-9780190236557-e-384|doi=X|doi-broken-date=Y}}";
+    $template = $this->make_citation($text);
+    $template->tidy_parameter('url');
+    $this->assertSame('10.1093/acrefore/9780190236557.013.384', $template->get2('doi'));
+    $this->assertSame('978-0-19-023655-7', $template->get2('isbn'));
+    $this->assertNull('doi-broken-date');
+   }     
+           
+   public function testPoliDOIs() : void {
+    $text = "{{cite web|url=https://oxfordre.com/politics/view/10.1093/acrefore/9780190228637.001.0001/acrefore-9780190228637-e-181|doi=X|doi-broken-date=Y}}";
+    $template = $this->make_citation($text);
+    $template->tidy_parameter('url');
+    $this->assertSame('10.1093/acrefore/9780190228637.013.181', $template->get2('doi'));
+    $this->assertSame('978-0-19-022863-7', $template->get2('isbn'));
+    $this->assertNull('doi-broken-date');
+   }     
+
+   public function testOxPressDOIs() : void {
+    $text = "{{cite web|url=https://oxford.universitypressscholarship.com/view/10.1093/oso/9780190124786.001.0001/oso-9780190124786|doi=X|doi-broken-date=Y}}";
+    $template = $this->make_citation($text);
+    $template->tidy_parameter('url');
+    $this->assertSame('10.1093/oso/9780190124786.001.0001', $template->get2('doi'));
+    $this->assertSame('978-0-19-012478-6', $template->get2('isbn'));
+    $this->assertNull('doi-broken-date');
+   }      
+           
+   public function testMedDOIs() : void {
+    $text = "{{cite web|url=https://oxfordmedicine.com/view/10.1093/med/9780199592548.001.0001/med-9780199592548-chapter-199|doi=X|doi-broken-date=Y}}";
+    $template = $this->make_citation($text);
+    $template->tidy_parameter('url');
+    $this->assertSame('10.1093/med/9780199592548.001.0001', $template->get2('doi'));
+    $this->assertSame('978-0-19-959254-8', $template->get2('isbn'));
+    $this->assertNull('doi-broken-date');
+   }
+ 
+   public function testUnPressScholDOIs() : void {
+    $text = "{{cite web|url=https://oxford.universitypressscholarship.com/view/10.1093/oso/9780198814122.001.0001/oso-9780198814122-chapter-5|doi=X|doi-broken-date=Y}}";
+    $template = $this->make_citation($text);
+    $template->tidy_parameter('url');
+    $this->assertSame('10.1093/oso/9780198814122.001.0001', $template->get2('doi'));
+    $this->assertSame('978-0-19881412-2', $template->get2('isbn'));
+    $this->assertNull('doi-broken-date');
+   }
+ 
+   public function testOxHandbookDOIs() : void {
+    $text = "{{cite web|url=https://www.oxfordhandbooks.com/view/10.1093/oxfordhb/9780190628925.001.0001/oxfordhb-9780190628925-e-9|doi=X|doi-broken-date=Y}}";
+    $template = $this->make_citation($text);
+    $template->tidy_parameter('url');
+    $this->assertSame('10.1093/oxfordhb/9780190628925.013.9', $template->get2('doi'));
+    $this->assertSame('978-0-19062892-5', $template->get2('isbn'));
+    $this->assertNull('doi-broken-date');
+   }  
+        
   public function testAuthors1() : void {
     $text = "{{cite web|title=X}}";
     $template = $this->make_citation($text);
