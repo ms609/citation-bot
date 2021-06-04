@@ -4921,7 +4921,7 @@ final class Template {
           if ($publisher === 'wpc') {
             $publisher = 'washington post company';
           }
-          if (in_array(str_replace(array('[', ']', '"', "'", 'www.', ' company'), '', $publisher), PUBLISHERS_ARE_WORKS)) {
+          if (in_array(str_replace(array('[', ']', '"', "'", 'www.', ' company', ' digital archive', ' communications llc'), '', $publisher), PUBLISHERS_ARE_WORKS)) {
             $pubby = str_replace(array('the ', ' company', ' digital archive', ' communications llc'), '', $publisher);
             foreach (WORK_ALIASES as $work) {
               $worky = str_replace(array('the ', ' company', ' digital archive', ' communications llc'), '', strtolower($this->get($work)));
@@ -5883,7 +5883,7 @@ final class Template {
           if (preg_match('~^https?://oxford\.universitypressscholarship\.com/(?:view|abstract)/10\.1093/oso/(\d{13})\.001\.0001/oso\-(\d{13})$~', $this->get($param), $matches)) {
             if ($matches[1] === $matches[2]) {
               $this->add_if_new('isbn', $matches[1]);
-              $new_doi = '10.1093/oso/' . $matches[1] . '001.0001';
+              $new_doi = '10.1093/oso/' . $matches[1] . '.001.0001';
               if (doi_works($new_doi)) {
                 if ($this->has('doi') && $this->has('doi-broken-date')) {
                     $this->set('doi', '');
