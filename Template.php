@@ -5630,10 +5630,10 @@ final class Template {
               }
           }
 
-          if (preg_match('~^https?://www\.ukwhoswho\.com/(?:view|abstract)/10\.1093/ww/9780199540884\.001\.0001/ww\-9780199540884\-e\-(\d+)$~', $this->get($param), $matches)) {
-              $new_doi = '10.1093/ww/9780199540884.013.U' . $matches[1];
+          if (preg_match('~^https?://www\.ukwhoswho\.com/(?:view|abstract)/10\.1093/ww/(9780199540891|9780199540884)\.001\.0001/ww\-9780199540884\-e\-(\d+)$~', $this->get($param), $matches)) {
+              $new_doi = '10.1093/ww/9780199540884.013.U' . $matches[2];
               if (doi_works($new_doi)) {
-                $this->add_if_new('isbn', '978-0-19-954088-4');
+                $this->add_if_new('isbn', $matches[1]);
                 if ($this->has('doi') && $this->has('doi-broken-date')) {
                     $this->set('doi', '');
                     $this->forget('doi-broken-date');
