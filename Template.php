@@ -5449,28 +5449,10 @@ final class Template {
               }
           }
           
-          if (preg_match('~^https?://latinamericanhistory\.oxfordre\.com(/.+)$~', $this->get($param), $matches)) {
-               $this->set($param, 'https://oxfordre.com/latinamericanhistory' . $matches[1]);
+          if (preg_match('~^https?://(latinamericanhistory|classics|psychology|americanhistory|africanhistory|internationalstudies|climatescience|religion|environmentalscience|politics)\.oxfordre\.com(/.+)$~', $this->get($param), $matches)) {
+               $this->set($param, 'https://oxfordre.com/' . $matches[1] . $matches[2]);
           }
-          if (preg_match('~^https?://americanhistory\.oxfordre\.com(/.+)$~', $this->get($param), $matches)) {
-               $this->set($param, 'https://oxfordre.com/americanhistory' . $matches[1]);
-          }
-          if (preg_match('~^https?://africanhistory\.oxfordre\.com(/.+)$~', $this->get($param), $matches)) {
-               $this->set($param, 'https://oxfordre.com/africanhistory' . $matches[1]);
-          }
-          if (preg_match('~^https?://internationalstudies\.oxfordre\.com(/.+)$~', $this->get($param), $matches)) {
-               $this->set($param, 'https://oxfordre.com/internationalstudies' . $matches[1]);
-          }
-          if (preg_match('~^https?://climatescience\.oxfordre\.com(/.+)$~', $this->get($param), $matches)) {
-               $this->set($param, 'https://oxfordre.com/climatescience' . $matches[1]);
-          }
-          if (preg_match('~^https?://religion\.oxfordre\.com(/.+)$~', $this->get($param), $matches)) {
-               $this->set($param, 'https://oxfordre.com/religion' . $matches[1]);
-          }
-          if (preg_match('~^https?://environmentalscience\.oxfordre\.com(/.+)$~', $this->get($param), $matches)) {
-               $this->set($param, 'https://oxfordre.com/environmentalscience' . $matches[1]);
-          }
-          
+
           if (preg_match('~^(https?://(?:[\.+]|)oxfordre\.com)/([^/]+)/([^/]+)/([^/]+)/(.+)$~', $this->get($param), $matches)) {
             if ($matches[2] === $matches[3] && $matches[2] === $matches[4]) {
               $this->set($param, $matches[1] . '/' . $matches[2] . '/' . $matches[5]);
@@ -5494,7 +5476,7 @@ final class Template {
           while (preg_match('~^(https?://www\.oxfordmusiconline\.com/.+)(?:\?print|\?p=email|\;jsession|\?result=|\?rskey|\#|/version/\d+|\?backToResults)~', $this->get($param), $matches)) {
                $this->set($param, $matches[1]);
           }
-          while (preg_match('~^(https?://(?:classics\.|latinamericanhistory\.|psychology\.|)oxfordre\.com/.+)(?:\?print|\?p=email|\;jsession|\?result=|\?rskey|\#|/version/\d+|\?backToResults)~', $this->get($param), $matches)) {
+          while (preg_match('~^(https?://oxfordre\.com/.+)(?:\?print|\?p=email|\;jsession|\?result=|\?rskey|\#|/version/\d+|\?backToResults)~', $this->get($param), $matches)) {
                $this->set($param, $matches[1]);
           }
           while (preg_match('~^(https?://oxfordaasc\.com/.+)(?:\?print|\?p=email|\;jsession|\?result=|\?rskey|\#|/version/\d+|\?backToResults)~', $this->get($param), $matches)) {
