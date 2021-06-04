@@ -216,12 +216,13 @@ final class apiFunctionsTest extends testBaseClass {
   }    
 
   // http://doi.airiti.com/
+  // They allow you to easily find the RA, but they seem to no longer do meta-data http://www.airitischolar.com/doi/WhichRA/index.jsp
   public function testExpansion_doi_not_from_crossref_airiti_journal() : void {
-    return; // TODO - seems down
     $this->requires_dx(function() : void {
      $expanded = $this->make_citation('{{Cite journal}}');
      expand_doi_with_dx($expanded, '10.6620/ZS.2018.57-30');
-     $this->assertSame('{{Cite journal|year = 2018|volume = 無|issue = 57|author1 = Jun Aoyama|author2 = Sam Wouthuyzen|author3 = Michael J. Miller|author4 = Hagi Y. Sugeha|author5 = Mari Kuroki|author6 = Shun Watanabe|author7 = Augy Syahailatua|author8 = Fadly Y. Tantu|author9 = Seishi Hagihara|author10 = Triyanto|author11 = Tsuguo Otake|author12 = Katsumi Tsukamoto|title = Reproductive Ecology and Biodiversity of Freshwater Eels around Sulawesi Island Indonesia|journal = Zoological Studies}}', $expanded->parsed_text());
+     $this->assertSame('{{Cite journal}}', $expanded->parsed_text());
+     // this used to work $this->assertSame('{{Cite journal|year = 2018|volume = 無|issue = 57|author1 = Jun Aoyama|author2 = Sam Wouthuyzen|author3 = Michael J. Miller|author4 = Hagi Y. Sugeha|author5 = Mari Kuroki|author6 = Shun Watanabe|author7 = Augy Syahailatua|author8 = Fadly Y. Tantu|author9 = Seishi Hagihara|author10 = Triyanto|author11 = Tsuguo Otake|author12 = Katsumi Tsukamoto|title = Reproductive Ecology and Biodiversity of Freshwater Eels around Sulawesi Island Indonesia|journal = Zoological Studies}}', $expanded->parsed_text());
     });
   }
 
