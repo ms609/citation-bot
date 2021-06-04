@@ -5714,7 +5714,7 @@ final class Template {
               }
           }
           
-          if (preg_match('~^https?://oxfordre\.com/latinamericanhistory/(?:view|abstract)/10\.1093/acrefore/9780199366439\.001\.0001/acrefore\-9780199366439\-e\-(\d+)$~', $this->get($param), $matches)) {
+          if (preg_match('~^https?://oxfordre\.com/(?:|latinamericanhistory/)(?:view|abstract)/10\.1093/acrefore/9780199366439\.001\.0001/acrefore\-9780199366439\-e\-(\d+)$~', $this->get($param), $matches)) {
               $new_doi = '10.1093/acrefore/9780199366439.013.' . $matches[1];
               if (doi_works($new_doi)) {
                 $this->add_if_new('isbn', '978-0-19-936643-9');
@@ -5728,7 +5728,7 @@ final class Template {
               }
           }
           
-          if (preg_match('~^https?://oxfordre\.com/environmentalscience/(?:view|abstract)/10\.1093/acrefore/9780199389414\.001\.0001/acrefore\-9780199389414\-e\-(\d+)$~', $this->get($param), $matches)) {
+          if (preg_match('~^https?://oxfordre\.com/(?:|environmentalscience/)(?:view|abstract)/10\.1093/acrefore/9780199389414\.001\.0001/acrefore\-9780199389414\-e\-(\d+)$~', $this->get($param), $matches)) {
               $new_doi = '10.1093/acrefore/9780199389414.013.' . $matches[1];
               if (doi_works($new_doi)) {
                 $this->add_if_new('isbn', '978-0-19-938941-4');
@@ -5742,7 +5742,7 @@ final class Template {
               }
           }
           
-          if (preg_match('~^https?://oxfordre\.com/americanhistory/(?:view|abstract)/10\.1093/acrefore/9780199329175\.001\.0001/acrefore\-9780199329175\-e\-(\d+)$~', $this->get($param), $matches)) {
+          if (preg_match('~^https?://oxfordre\.com/(?:|americanhistory/)(?:view|abstract)/10\.1093/acrefore/9780199329175\.001\.0001/acrefore\-9780199329175\-e\-(\d+)$~', $this->get($param), $matches)) {
               $new_doi = '10.1093/acrefore/9780199329175.013.' . $matches[1];
               if (doi_works($new_doi)) {
                 $this->add_if_new('isbn', '978-0-19-932917-5');
@@ -5756,7 +5756,7 @@ final class Template {
               }
           }
           
-          if (preg_match('~^https?://oxfordre\.com/africanhistory/(?:view|abstract)/10\.1093/acrefore/9780190277734\.001\.0001/acrefore\-9780190277734\-e\-(\d+)$~', $this->get($param), $matches)) {
+          if (preg_match('~^https?://oxfordre\.com/(?:|africanhistory/)(?:view|abstract)/10\.1093/acrefore/9780190277734\.001\.0001/acrefore\-9780190277734\-e\-(\d+)$~', $this->get($param), $matches)) {
               $new_doi = '10.1093/acrefore/9780190277734.013.' . $matches[1];
               if (doi_works($new_doi)) {
                 $this->add_if_new('isbn', '978-0-19-027773-4');
@@ -5770,7 +5770,7 @@ final class Template {
               }
           }
           
-          if (preg_match('~^https?://oxfordre\.com/internationalstudies/(?:view|abstract)/10\.1093/acrefore/9780190846626\.001\.0001/acrefore\-9780190846626\-e\-(\d+)$~', $this->get($param), $matches)) {
+          if (preg_match('~^https?://oxfordre\.com/(?:|internationalstudies/)(?:view|abstract)/10\.1093/acrefore/9780190846626\.001\.0001/acrefore\-9780190846626\-e\-(\d+)$~', $this->get($param), $matches)) {
               $new_doi = '10.1093/acrefore/9780190846626.013.' . $matches[1];
               if (doi_works($new_doi)) {
                 $this->add_if_new('isbn', '978-0-19-084662-6');
@@ -5784,7 +5784,7 @@ final class Template {
               }
           }
           
-          if (preg_match('~^https?://oxfordre\.com/climatescience/(?:view|abstract)/10\.1093/acrefore/9780190228620\.001\.0001/acrefore\-9780190228620\-e\-(\d+)$~', $this->get($param), $matches)) {
+          if (preg_match('~^https?://oxfordre\.com/(?:|climatescience/)(?:view|abstract)/10\.1093/acrefore/9780190228620\.001\.0001/acrefore\-9780190228620\-e\-(\d+)$~', $this->get($param), $matches)) {
               $new_doi = '10.1093/acrefore/9780190228620.013.' . $matches[1];
               if (doi_works($new_doi)) {
                 $this->add_if_new('isbn', '978-0-19-022862-0');
@@ -5798,7 +5798,7 @@ final class Template {
               }
           }
           
-          if (preg_match('~^https?://oxfordre\.com/religion/(?:view|abstract)/10\.1093/acrefore/9780199340378\.001\.0001/acrefore\-9780199340378\-e\-(\d+)$~', $this->get($param), $matches)) {
+          if (preg_match('~^https?://oxfordre\.com/(?:|religion/)(?:view|abstract)/10\.1093/acrefore/9780199340378\.001\.0001/acrefore\-9780199340378\-e\-(\d+)$~', $this->get($param), $matches)) {
               $new_doi = '10.1093/acrefore/9780199340378.013.' . $matches[1];
               if (doi_works($new_doi)) {
                 $this->add_if_new('isbn', '978-0-19-934037-8');
@@ -5812,7 +5812,7 @@ final class Template {
               }
           }
           
-          if (preg_match('~^https?://oxfordre\.com/anthropology/(?:view|abstract)/10\.1093/acrefore/9780190854584\.001\.0001/acrefore\-9780190854584\-e\-(\d+)$~', $this->get($param), $matches)) {
+          if (preg_match('~^https?://oxfordre\.com/(?:|anthropology/)(?:view|abstract)/10\.1093/acrefore/9780190854584\.001\.0001/acrefore\-9780190854584\-e\-(\d+)$~', $this->get($param), $matches)) {
               $new_doi = '10.1093/acrefore/9780190854584.013.' . $matches[1];
               if (doi_works($new_doi)) {
                 $this->add_if_new('isbn', '978-0-19-085458-4');
@@ -5826,7 +5826,7 @@ final class Template {
               }
           }
 
-          if (preg_match('~^https?://(?:|classics\.)oxfordre\.com/(?:|classics/)view/10\.1093/acrefore/9780199381135\.001\.0001/acrefore\-9780199381135\-e\-(\d+)$~', $this->get($param), $matches)) {
+          if (preg_match('~^https?://oxfordre\.com/(?:|classics/)(?:view|abstract)/10\.1093/acrefore/9780199381135\.001\.0001/acrefore\-9780199381135\-e\-(\d+)$~', $this->get($param), $matches)) {
               $new_doi = '10.1093/acrefore/9780199381135.013.' . $matches[1];
               if (doi_works($new_doi)) {
                 $this->add_if_new('isbn', '978-0-19-938113-5');
@@ -5840,7 +5840,7 @@ final class Template {
               }
           }
           
-          if (preg_match('~^https?://(?:|psychology\.)oxfordre\.com/(?:|psychology/)view/10\.1093/acrefore/9780190236557\.001\.0001/acrefore\-9780190236557\-e\-(\d+)$~', $this->get($param), $matches)) {
+          if (preg_match('~^https?://oxfordre\.com/(?:|psychology/)(?:view|abstract)/10\.1093/acrefore/9780190236557\.001\.0001/acrefore\-9780190236557\-e\-(\d+)$~', $this->get($param), $matches)) {
               $new_doi = '10.1093/acrefore/9780190236557.013.' . $matches[1];
               if (doi_works($new_doi)) {
                 $this->add_if_new('isbn', '978-0-19-023655-7');
@@ -5854,7 +5854,7 @@ final class Template {
               }
           }
           
-          if (preg_match('~^https?://(?:|politics\.)oxfordre\.com/(?:|politics/)view/10\.1093/acrefore/9780190228637\.001\.0001/acrefore\-9780190228637\-e\-(\d+)$~', $this->get($param), $matches)) {
+          if (preg_match('~^https?://oxfordre\.com/(?:|politics/)(?:view|abstract)/10\.1093/acrefore/9780190228637\.001\.0001/acrefore\-9780190228637\-e\-(\d+)$~', $this->get($param), $matches)) {
               $new_doi = '10.1093/acrefore/9780190228637.013.' . $matches[1];
               if (doi_works($new_doi)) {
                 $this->add_if_new('isbn', '978-0-19-022863-7');
