@@ -1396,13 +1396,6 @@ final class Template {
         if (($existing === FALSE) || ($existing + (6*2592000) < $the_new) || ((2592000*6) + $the_new < $existing)) { // Six months of difference
            return $this->add($param_name, $value);
         }
-        if (WikipediaBot::NonStandardMode()) {
-          $value = '31 May 2021';
-          if ($this->date_style === DATES_MDY) {
-               $value = 'May 31, 2021';
-          }
-          return $this->add($param_name, $value);
-        }
         return FALSE;
       
       case 'pmid':
