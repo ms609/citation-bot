@@ -96,6 +96,10 @@ function author_is_human(string $author) : bool {
     || preg_match("~[A-Z]{3}~", $author)
     || substr(strtolower($author),-4) === " inc"
     || substr(strtolower($author),-5) === " inc."
+    || substr(strtolower($author),-4) === " llc"
+    || substr(strtolower($author),-5) === " llc."
+    || substr(strtolower($author),-5) === " book"
+    || substr(strtolower($author),-5) === " books"
     || substr_count($author, ' ') > 3 // Even if human, hard to format
   ) {
     return FALSE;
