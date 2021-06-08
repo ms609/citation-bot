@@ -6144,7 +6144,7 @@ final class Template {
             } elseif ($this->has('pmc') || $this->has('pmid') || ($this->has('doi') && $this->blank(DOI_BROKEN_ALIASES)) ||
                       $this->has('jstor') || $this->has('arxiv') || $this->has('isbn') || ($this->has('issn') && $this->has('title')) ||
                       $this->has('oclc') || $this->has('lccn') || $this->has('bibcode')) {
-              $via = trim(strtolower($this->get('via')));
+              $via = trim(str_replace(array('[',']'),'', strtolower($this->get('via'))));
               if (in_array($via, ['', 'project muse', 'wiley', 'springer', 'questia', 'elsevier', 'wiley online library',
                                   'wiley interscience', 'interscience', 'sciencedirect', 'science direct', 'ebscohost',
                                   'proquest', 'google scholar', 'google', 'bing', 'yahoo'])) 
