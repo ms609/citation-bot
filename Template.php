@@ -1736,6 +1736,12 @@ final class Template {
          $this->set($url_type, $url); // Update URL with cleaner one
        }     
     }
+    if (preg_match("~^(https?://\S*jstor.org\S*)\?origin=~", $url, $matches)) {
+       $url = $matches[1];
+       if (is_null($url_sent)) {
+         $this->set($url_type, $url); // Update URL with cleaner one
+       }     
+    }
     if (stripos($url, 'plants.jstor.org') !== FALSE) {
       return FALSE; # Plants database, not journal
     }
