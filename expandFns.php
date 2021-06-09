@@ -274,13 +274,6 @@ function titles_are_dissimilar(string $inTitle, string $dbTitle) : bool {
           }
         }
         // always decode new data
-        if ($POSSIBLEinTitle === NULL) {
-          echo "\n\n\n BAD TITLE:::::" . $inTitle . ":::::\n";
-          echo ((string) preg_replace ("~# # # CITATION_BOT_PLACEHOLDER_[A-Z]+ \d+ # # #~iu", ' ' , $inTitle)) . "\n\n\n";
-          echo ((string) preg_replace ("~# # # CITATION_BOT_PLACEHOLDER_[A-Z]+ \d+ # # #~i", ' ' , $inTitle)) . "\n\n\n";
-        } else {
-          $inTitle = $POSSIBLEinTitle;
-        }
         $dbTitle = titles_simple(mb_convert_encoding(html_entity_decode($dbTitle), "HTML-ENTITIES", 'UTF-8'));
         // old data both decoded and not
         $inTitle2 = titles_simple($inTitle);
