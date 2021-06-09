@@ -264,7 +264,15 @@ function de_wikify(string $string) : string {
 
 function titles_are_dissimilar(string $inTitle, string $dbTitle) : bool {
         // Blow away junk from OLD stuff
-        $POSSIBLEinTitle = preg_replace ("~# # # CITATION_BOT_PLACEHOLDER_[A-Z]+ \d+ # # #~isu", ' ' , $inTitle);
+        if (stripos($inTitle, 'CITATION_BOT_PLACEHOLDER_') !== FALSE) {
+          $possible = preg_replace("~# # # CITATION_BOT_PLACEHOLDER_[A-Z]+ \d+ # # #~isu", ' ' , $inTitle);
+          if ($possible !== NULL) {
+             $inTitle = $possible;
+          } else {
+            $inTitle = preg_replace("~# # # CITATION_BOT_PLACEHOLDER_[A-Z]+ \d+ # # #~i", ' ' , $inTitle);
+            if ($inTitle === NULL) return TRUE;
+          }
+        }
         // always decode new data
         if ($POSSIBLEinTitle === NULL) {
           echo "\n\n\n BAD TITLE:::::" . $inTitle . ":::::\n";
