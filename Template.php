@@ -6513,7 +6513,8 @@ final class Template {
        }
       }
       if (!$this->blank(DOI_BROKEN_ALIASES) && $this->has('jstor') &&
-        (strpos($this->get('doi'), '10.2307') === 0 ||  $this->get('doi') == $this->get('jstor'))) {
+        (strpos($this->get('doi'), '10.2307') === 0 || $this->get('doi') === $this->get('jstor') ||
+         substr($this->get('doi'), 0, -2) === $this->get('jstor') || substr($this->get('doi'), 0, -3) === $this->get('jstor'))) {
        $this->forget('doi'); // Forget DOI that is really jstor, if it is broken
        foreach (DOI_BROKEN_ALIASES as $alias) $this->forget($alias);
       }
