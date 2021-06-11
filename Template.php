@@ -5270,7 +5270,7 @@ final class Template {
               $this->forget($param);
               return;
           }
-          if (preg_match('~https://meta\.wikimedia\.org/w/inde\x.php\?title\=Special\:UserLogin~', $this->get($param))) {
+          if (preg_match('~https://meta\.wikimedia\.org/w/index\.php\?title\=Special\:UserLogin~', $this->get($param))) {
               $this->forget($param);
               return;
           }
