@@ -1711,10 +1711,11 @@ final class Template {
           return FALSE;
        }
        $this->add_if_new('s2cid', $s2cid);
-       if (is_null($url_sent) && $this->has('pmc')) {
-         // SEP 2020 report_info('Removed Converted Semantic Scholar URL that blocked PMC URL');
-         // SEP 2020 $this->forget($url_type);
-         return TRUE;
+       if (is_null($url_sent) && stripos($url, 'pdf') === FALSE) {
+         if ($this->has_good_free_copy()) {
+           $this->forget($url_type);
+           return TRUE;
+         }
        }
        if (is_null($url_sent) && get_semanticscholar_license($s2cid) === FALSE) {
          report_warning('Should probably remove un-licensed Semantic Scholar URL that was converted to S2CID parameter');
@@ -1778,7 +1779,7 @@ final class Template {
         preg_match('~^https?://(?:www\.|)jstor\.org/tc/accept\?origin=(?:\%2F|/)stable(?:\%2F|/)pdf(?:\%2F|/)(\d{3,})\.pdf$~i', $url, $matches)) {
        if ($matches[1] == $this->get('jstor')) {
          if (is_null($url_sent)) {
-           // SEP 2020 $this->forget($url_type);
+           if ($this->has_good_free_copy()) $this->forget($url_type);
          }
          return FALSE;
        } elseif ($this->blank('jstor')) {
@@ -1796,21 +1797,21 @@ final class Template {
               stripos($dat, 'Block Reference') === FALSE &&
               stripos($dat, 'A problem occurred trying to deliver RIS data') === FALSE &&
               substr_count($dat, '-') > 3) { // It is actually a working JSTOR.  Not sure if all PDF links are done right
-            // SEP 2020 if (is_null($url_sent)) $this->forget($url_type);
+            if (is_null($url_sent) && $this->has_good_free_copy()) $this->forget($url_type);
             return $this->add_if_new('jstor', $matches[1]);
           }
         }
     }
     if ($this->has('jstor') && preg_match('~^https?://(?:www\.|)jstor\.org/(?:stable|discover)/(?:|pdf/)' . $this->get('jstor') . '(?:|\.pdf)$~i', $url)) {
        if (is_null($url_sent)) {
-         // SEP 2020 $this->forget($url_type);
+         if ($this->has_good_free_copy()) $this->forget($url_type);
        }
        return FALSE;
     }
     if (preg_match('~^https?://(?:www\.|)archive\.org/detail/jstor\-(\d{5,})$~i', $url, $matches)) {
        $this->add_if_new('jstor', $matches[1]);
        if (is_null($url_sent)) {
-         // SEP 2020 $this->forget($url_type);
+         if ($this->has_good_free_copy()) $this->forget($url_type);
        }
        return FALSE;
     }
@@ -1832,22 +1833,22 @@ final class Template {
         if (doi_works($match[1]) && !doi_works($this->get('doi'))) {
           $this->set('doi', $match[1]);
           if (is_null($url_sent)) {
-            // SEP 2020 $this->forget($url_type);
+            if ($this->has_good_free_copy()) $this->forget($url_type);
           }
           return TRUE;
         }
         if (!doi_works($match[1]) && doi_works($this->get('doi'))) {
           if (is_null($url_sent)) {
-             // SEP 2020 $this->forget($url_type);
+             if ($this->has_good_free_copy()) $this->forget($url_type);
           }
           return FALSE;
         }
         return FALSE; // Both valid or both invalid (could be legit if chapter and book are different DOIs
       }
       if ($this->add_if_new('doi', urldecode($match[1]))) { // Will expand from DOI when added
-        if (is_null($url_sent)) {
-          // SEP 2020 quietly('report_modification', "URL is hard-coded DOI; converting to use DOI parameter.");
-          // SEP 2020 $this->forget($url_type);
+        if (is_null($url_sent) && $this->has_good_free_copy()) {
+          quietly('report_modification', "URL is hard-coded DOI; converting to use DOI parameter.");
+          $this->forget($url_type);
         }
         return TRUE;
       } else {
@@ -1860,13 +1861,15 @@ final class Template {
       $old_jstor = $this->get('jstor');
       if (stripos($url, 'jstor')) check_doi_for_jstor($doi, $this);
       if (is_null($url_sent) && $old_jstor !== $this->get('jstor') && stripos($url, 'pdf') === FALSE) {
-         // SEP 2020 $this->forget($url_type);
+         if ($this->has_good_free_copy()) $this->forget($url_type);
       }
       $this->tidy_parameter('doi'); // Sanitize DOI before comparing
       if ($this->has('doi') && mb_stripos($doi, $this->get('doi')) === 0) { // DOIs are case-insensitive
         if (doi_works($doi) && is_null($url_sent) && mb_strpos(strtolower($url), ".pdf") === FALSE && !preg_match(REGEXP_DOI_ISSN_ONLY, $doi)) {
-          // SEP 2020 report_forget("Recognized existing DOI in URL; dropping URL");
-          // SEP 2020 $this->forget($url_type);
+          if ($this->has_good_free_copy()) {
+             report_forget("Recognized existing DOI in URL; dropping URL");
+             $this->forget($url_type);
+          }
         }
         return FALSE;  // URL matched existing DOI, so we did not use it
       }
@@ -1874,8 +1877,10 @@ final class Template {
         if (doi_active($doi)) {
           if (is_null($url_sent)) {
             if (mb_strpos(strtolower($url), ".pdf") === FALSE && !preg_match(REGEXP_DOI_ISSN_ONLY, $doi)) {
-              // SEP 2020 report_forget("Recognized DOI in URL; dropping URL");
-              // SEP 2020 $this->forget($url_type);
+              if ($this->has_good_free_copy()) {
+                report_forget("Recognized DOI in URL; dropping URL");
+                $this->forget($url_type);
+              }
             } else {
               report_info("Recognized DOI in URL.  Leaving *.pdf URL.");
             }
@@ -1890,8 +1895,10 @@ final class Template {
       $this->tidy_parameter('doi'); // Sanitize DOI before comparing
       if (mb_stripos($url, $this->get('doi')) !== FALSE) { // DOIs are case-insensitive
         if (doi_works($this->get('doi')) && is_null($url_sent) && mb_strpos(strtolower($url), ".pdf") === FALSE && not_bad_10_1093_doi($this->get('doi')) && !preg_match(REGEXP_DOI_ISSN_ONLY, $this->get('doi'))) {
-          // SEP 2020 report_forget("Recognized existing DOI in URL; dropping URL");
-          // SEP 2020 $this->forget($url_type);
+          if ($this->has_good_free_copy()) {
+             report_forget("Recognized existing DOI in URL; dropping URL");
+             $this->forget($url_type);
+          }
         }
         return FALSE;  // URL matched existing DOI, so we did not use it
       }
@@ -1929,7 +1936,7 @@ final class Template {
       if (preg_match("~^/(?:\w+/)*(\d{5,})[^\d%\-]*(?:\?|$)~", substr($url, (int) stripos($url, 'jstor.org') + 9), $match) ||
                 preg_match("~^https?://(?:www\.)?jstor\.org\S+(?:stable|discovery)/(?:10\.7591/|)(\d{5,}|(?:j|J|histirel|jeductechsoci|saoa)\.[a-zA-Z0-9\.]+)$~", $url, $match)) {
         if (is_null($url_sent)) {
-          // SEP 2020 $this->forget($url_type);
+          if ($this->has_good_free_copy()) $this->forget($url_type);
         }
         if ($this->get('jstor')) {
           quietly('report_inaction', "Not using redundant URL (jstor parameter set)");
@@ -1947,11 +1954,11 @@ final class Template {
         if ($this->blank('bibcode')) {
           quietly('report_modification', "Converting url to bibcode parameter");
           if (is_null($url_sent)) {
-            // SEP 2020 $this->forget($url_type);
+            if ($this->has_good_free_copy()) $this->forget($url_type);
           }
           return $this->add_if_new('bibcode', urldecode($bibcode[1]));
         } elseif (is_null($url_sent) && urldecode($bibcode[1]) === $this->get('bibcode')) {
-          // SEP 2020 $this->forget($url_type);
+          if ($this->has_good_free_copy()) $this->forget($url_type);
         }
         
       } elseif (preg_match("~^https?://(?:www\.|)pubmedcentral\.nih\.gov/articlerender.fcgi\?.*\bartid=(\d{4,})"
@@ -1995,7 +2002,7 @@ final class Template {
           quietly('report_modification', "Converting Europe URL to PMID parameter");
         }
         if (is_null($url_sent)) {
-            // SEP 2020 $this->forget($url_type);
+            if ($this->has_good_free_copy()) $this->forget($url_type);
         }
         return $this->add_if_new('pmid', $match[1]);
       } elseif (preg_match("~^https?://(?:www\.|)pubmedcentralcanada\.ca/pmcc/articles/PMC(\d{4,})(?:|/.*)$~i", $url, $match)) {
@@ -2009,7 +2016,7 @@ final class Template {
         quietly('report_modification', "URL is hard-coded citeseerx; converting to use citeseerx parameter.");
         if ($this->wikiname() === 'cite web') $this->change_name_to('cite journal');
         if (is_null($url_sent)) {
-          // SEP 2020 $this->forget($url_type);
+          if ($this->has_good_free_copy()) $this->forget($url_type);
         }
         return $this->add_if_new('citeseerx', urldecode($match[1])); // We cannot parse these at this time
         
@@ -2024,7 +2031,7 @@ final class Template {
           quietly('report_modification', "Converting URL to arXiv parameter");
           $ret = $this->add_if_new('arxiv', $arxiv_id[0]); // Have to add before forget to get cite type right
           if (is_null($url_sent)) {
-            // SEP 2020 $this->forget($url_type);
+            if ($this->has_good_free_copy()) $this->forget($url_type);
           }
           return $ret;
         }
@@ -2043,7 +2050,7 @@ final class Template {
         }
         quietly('report_modification', "Converting URL to PMID parameter");
         if (is_null($url_sent)) {
-          // SEP 2020 $this->forget($url_type);
+          if ($this->has_good_free_copy()) $this->forget($url_type);
         }
         if ($this->wikiname() === 'cite web') $this->change_name_to('cite journal');
         return $this->add_if_new('pmid', $match[1]);
@@ -2054,7 +2061,7 @@ final class Template {
         if ($match[1] == $this->get('pmc')) {
            $this->forget($url_type); // Same as PMC-auto-link
         } elseif ($match[1] == $this->get('pmid')) {
-           // SEP 2020 $this->forget($url_type);
+           if ($this->has_good_free_copy()) $this->forget($url_type);
         }
         return FALSE;
         
@@ -2147,7 +2154,7 @@ final class Template {
           if (empty($headers_test['Location'])) return FALSE; // does not resolve
           quietly('report_modification', "Converting URL to HDL parameter");
           if (is_null($url_sent)) {
-             // SEP 2020 $this->forget($url_type);
+             if ($this->has_good_free_copy()) $this->forget($url_type);
           }
           if (is_array(@$headers_test['Location'])) {
             $the_header_loc = (string) $headers_test['Location'][0];
@@ -2164,42 +2171,42 @@ final class Template {
           quietly('report_modification', "Converting URL to ZBL parameter");
           if ($this->wikiname() === 'cite web') $this->change_name_to('cite journal');  // Better template choice.  Often journal/paper
           if (is_null($url_sent)) {
-             // SEP 2020 $this->forget($url_type);
+             if ($this->has_good_free_copy()) $this->forget($url_type);
           }
           return $this->add_if_new('zbl', $match[1]);
       } elseif (preg_match("~^https?://zbmath\.org/\?format=complete&q=an:([0-9][0-9]\.[0-9][0-9][0-9][0-9]\.[0-9][0-9])~i", $url, $match)) {
           quietly('report_modification', "Converting URL to JFM parameter");
           if ($this->wikiname() === 'cite web') $this->change_name_to('cite journal');  // Better template choice.  Often journal/paper
           if (is_null($url_sent)) {
-             // SEP 2020 $this->forget($url_type);
+             if ($this->has_good_free_copy()) $this->forget($url_type);
           }
           return $this->add_if_new('jfm', $match[1]);
       } elseif (preg_match("~^https?://mathscinet\.ams\.org/mathscinet-getitem\?mr=([0-9]+)~i", $url, $match)) {
           quietly('report_modification', "Converting URL to MR parameter");
           if ($this->wikiname() === 'cite web') $this->change_name_to('cite journal');  // Better template choice.  Often journal/paper
           if (is_null($url_sent)) {
-             // SEP 2020 $this->forget($url_type);
+             // SEP 2020 $this->forget($url_type); This points to a review and not the article
           }
           return $this->add_if_new('mr', $match[1]);
       } elseif (preg_match("~^https?://papers\.ssrn\.com(?:/sol3/papers\.cfm\?abstract_id=|/abstract=)([0-9]+)~i", $url, $match)) {
           quietly('report_modification', "Converting URL to SSRN parameter");
           if ($this->wikiname() === 'cite web') $this->change_name_to('cite journal'); // Better template choice.  Often journal/paper
           if (is_null($url_sent)) {
-             // SEP 2020 $this->forget($url_type);
+             if ($this->has_good_free_copy()) $this->forget($url_type);
           }
           return $this->add_if_new('ssrn', $match[1]);
       } elseif (preg_match("~^https?://(?:www\.|)osti\.gov/(?:scitech/|)(?:biblio/|)(?:purl/|)([0-9]+)(?:\.pdf|)~i", $url, $match)) {
           quietly('report_modification', "Converting URL to OSTI parameter");
           if ($this->wikiname() === 'cite web') $this->change_name_to('cite journal');  // Better template choice.  Often journal/paper
           if (is_null($url_sent)) {
-             // SEP 2020 $this->forget($url_type);
+             if ($this->has_good_free_copy()) $this->forget($url_type);
           }
           return $this->add_if_new('osti', $match[1]);
       } elseif (preg_match("~^https?://(?:www\.|)osti\.gov/energycitations/product\.biblio\.jsp\?osti_id=([0-9]+)~i", $url, $match)) {
           quietly('report_modification', "Converting URL to OSTI parameter");
           if ($this->wikiname() === 'cite web') $this->change_name_to('cite journal');  // Better template choice.  Often journal/paper
           if (is_null($url_sent)) {
-             // SEP 2020 $this->forget($url_type);
+             if ($this->has_good_free_copy()) $this->forget($url_type);
           }
           return $this->add_if_new('osti', $match[1]);
       } elseif (preg_match("~^https?://(?:www\.|)worldcat\.org(?:/title/\S+)?/oclc/([0-9]+)~i", $url, $match)) {
@@ -2239,7 +2246,7 @@ final class Template {
         if ($this->add_if_new('id', '{{ProQuest|' . $match[1] . '}}')) {  
           quietly('report_modification', 'Converting URL to ProQuest parameter');
           if (is_null($url_sent)) {
-             // SEP 2020 $this->forget($url_type);
+             if ($this->has_good_free_copy()) $this->forget($url_type);
           }
           return TRUE;
         } else {
@@ -7648,6 +7655,14 @@ final class Template {
       }
     }
     return $input;
+  }
+  
+  public function has_good_free_copy() : bool { // GOOD is critical - must title link - TODO add more if jstor-access or hdl-access title-link
+    if (($this->has('pmc') && $this->blank('pmc-embargo-date')) ||
+        ($this->has('doi') && $this->get('doi-access') === 'free' && $this->blank(DOI_BROKEN_ALIASES))) {
+       return TRUE;
+    }
+    return FALSE;
   }
   
   public function block_modifications() : void { // {{void}} should be just like a comment, BUT this code will not stop the normalization of the hidden template which has already been done
