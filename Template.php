@@ -1021,6 +1021,7 @@ final class Template {
         if (!$this->blank(array_merge(['agency','publisher'],WORK_ALIASES)) && in_array(strtolower($value), DUBIOUS_JOURNALS)) return FALSE; // non-journals that are probably same as agency or publisher that come from zotero
         if ($this->get($param_name) === 'none' || $this->blank(["journal", "periodical", "encyclopedia", "encyclopaedia", "newspaper", "magazine", "contribution"])) {
           if (in_array(strtolower(sanitize_string($value)), HAS_NO_VOLUME)) $this->forget('volume') ; // No volumes, just issues.
+          if (in_array(strtolower(sanitize_string($value)), HAS_NO_ISSUE))  { $this->forget('issue'); $this->forget('number')} ; // No issues, just volumes
           $value = wikify_external_text(title_case($value));
           if ($this->has('series') && str_equivalent($this->get('series'), $value)) return FALSE ;
           if ($this->has('work')) {
@@ -1165,6 +1166,13 @@ final class Template {
       case 'issue':
         if ($value == '0') return FALSE;
         if ($value == 'Online First') return FALSE;
+        $temp_string = strtolower($this->get('journal')) ;
+        if(substr($temp_string, 0, 2) === "[[" && substr($temp_string, -2) === "]]") {  // Wikilinked journal title 
+           $temp_string = substr(substr($temp_string, 2), 0, -2); // Remove [[ and ]]
+        }
+        if (in_array($temp_string, HAS_NO_ISSUE)) {
+          return $this->add_if_new('volume', $value);
+        }
         if ($this->blank(ISSUE_ALIASES) || str_i_same('in press', $this->get($param_name))) {
           if ($value == '1') { // dubious
             if (bad_10_1093_doi($this->get('doi'))) return FALSE;
@@ -6259,6 +6267,18 @@ final class Template {
           if ($this->blank($param)) {
              $this->forget($param);
              return;
+          }
+          $temp_string = strtolower($this->get('journal')) ;
+          if(substr($temp_string, 0, 2) === "[[" && substr($temp_string, -2) === "]]") {  // Wikilinked journal title 
+               $temp_string = substr(substr($temp_string, 2), 0, -2); // Remove [[ and ]]
+          }
+          if (in_array($temp_string, HAS_NO_ISSUE)) {
+            if ($this->blank('volume')) {
+              $this->rename($param, 'volume');
+            } else {
+              $this->forget($param);
+            }
+            return;
           }
           // No break here: pages, issue and year (the previous case) should be treated in this fashion.
         case 'pages': case 'page': case 'pp': # And case 'year': case 'issue':, following from previous
