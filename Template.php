@@ -1983,7 +1983,7 @@ final class Template {
               return $this->add_if_new('pmc', $match[1] . $match[2]);
             }
           }
-          if (stripos($url, "table") === FALSE) $this->forget($url_type); // This is the same as PMC auto-link
+          if (stripos(str_replace("printable", "", $url), "table") === FALSE) $this->forget($url_type); // This is the same as PMC auto-link
         } 
         return $this->add_if_new('pmc', $match[1] . $match[2]);
       } elseif (preg_match("~^https?://(?:www\.|)europepmc\.org/articles?/pmc/?(\d{4,})~i", $url, $match)  ||
