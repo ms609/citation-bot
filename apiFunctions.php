@@ -774,8 +774,7 @@ function expand_doi_with_dx(Template $template, string $doi) : bool {
        $try_to_add_it('location', @$json['publisher-location']);
        $try_to_add_it('publisher', @$json['publisher']);
        if (!isset($json['categories']['1']) &&
-           ($template->wikiname() === 'citation' || $template->wikiname() === 'cite book') &&
-           $template->blank(['journal', 'chapter', 'magazine', 'periodical'])){
+           (($template->wikiname() === 'cite book') || $template->blank(WORK_ALIASES))) { // No journal/magazine set and can convert to book
           $try_to_add_it('chapter', @$json['categories']['0']);  // Not really right, but there is no cite data set template
        }
      } elseif (@$json['type'] == '') {  // Add what we can where we can
