@@ -4559,7 +4559,7 @@ final class Template {
               $this->set('issue', $matches[1]);
             }
           }
-          if (doi_works($doi) && (strpos($doi, '10.3389/' === 0 || strpos($doi, '10.3390/' === 0)) {
+          if (doi_works($doi) && (strpos($doi, '10.3389/') === 0 || strpos($doi, '10.3390/') === 0)) {
             $this->add_if_new('doi-access', 'free');
           }
           return;
