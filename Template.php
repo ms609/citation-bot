@@ -1349,6 +1349,11 @@ final class Template {
           }
         }
         return FALSE;
+        
+      case 'doi-access':
+        if ($this->blank('doi') || $this->has($param_name)) return FALSE;
+        $this->add($param_name, $value);
+        return TRUE;
       
       case 's2cid':
         if ($this->blank(['s2cid', 'S2CID'])) {
@@ -4553,6 +4558,9 @@ final class Template {
             } else {
               $this->set('issue', $matches[1]);
             }
+          }
+          if (doi_works($doi) && (strpos($doi, '10.3389/' === 0 || strpos($doi, '10.3390/' === 0)) {
+            $this->add_if_new('doi-access', 'free');
           }
           return;
           
