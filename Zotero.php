@@ -227,6 +227,14 @@ public static function drop_urls_that_match_dois(array &$templates) : void {  //
        } elseif ($template->get('doi-access') === 'free' && $template->get('url-status') === 'dead' && $url_kind === 'url') {
           report_forget("Existing free DOI; dropping dead URL");
           $template->forget($url_kind);
+       } elseif (doi_active($template->get('doi')) &&
+                 !preg_match(REGEXP_DOI_ISSN_ONLY, $template->get('doi')) &&
+                 $url_kind != '' &&
+                 (str_ireplace(CANONICAL_PUBLISHER_URLS, '', $template->get($url_kind)) != $template->get($url_kind)) &&
+                 $template->has_good_free_copy() &&
+                 (stripos($template->get($url_kind), 'pdf') === FALSE)) {
+          report_forget("Existing canonical URL resulting in equivalent free DOI/pmc; dropping URL");
+          $template->forget($url_kind);
        } elseif (stripos($url, 'pdf') === FALSE && $template->get('doi-access') === 'free' && $template->has('pmc')) {
           curl_setopt($ch, CURLOPT_URL, "https://dx.doi.org/" . urlencode($doi));
           if (@curl_exec($ch)) {
@@ -516,12 +524,6 @@ public static function process_zotero_response(string $zotero_response, Template
       $template->add_if_new('doi', $possible_doi);
       expand_by_doi($template);
       if (stripos($url, 'jstor')) check_doi_for_jstor($template->get('doi'), $template);
-      if (!$template->incomplete() && doi_active($template->get('doi')) && !preg_match(REGEXP_DOI_ISSN_ONLY, $template->get('doi')) && $url_kind != '') {
-          if ((str_ireplace(CANONICAL_PUBLISHER_URLS, '', $template->get($url_kind)) != $template->get($url_kind))) { // This is the use a replace to see if a substring is present trick
-            // SEP 2020 report_forget("Existing canonical URL resulting in equivalent DOI; dropping URL");
-            // SEP 2020 $template->forget($url_kind);
-          }
-      }
       if (!$template->profoundly_incomplete()) return TRUE;
     }
   }
