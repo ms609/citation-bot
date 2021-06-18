@@ -5,6 +5,7 @@ declare(strict_types=1);
 const HAS_NO_VOLUME = array("zookeys", "studia hibernica", "analecta hibernica", "british art studies", "der spiegel",
                             "international astronomical union circular", "yale french studies", "capjournal",
                             "cap journal", "phytokeys");  // Some journals have issues only, no volume numbers
+const HAS_NO_ISSUE = array("special papers in palaeontology");  // Some journals have volumes only, no issue numbers
 const BAD_ACCEPTED_MANUSCRIPT_TITLES = array("oup accepted manuscript", "placeholder for bad pdf file", 
                                              "placeholder", "symbolic placeholder", "[placeholder]", 
                                              "placeholder for arabic language transliteration");
@@ -18,6 +19,8 @@ const NON_HUMAN_AUTHORS = array('collaborat', 'reporter', 'journalist', 'corresp
                                 'world news', 'national news', 'eyewitness', 'information', 'business');
 const BAD_PUBLISHERS = array('london', 'edinburgi', 'edinburgh', 'no publisher', 'no publisher given',
                              'no publisher specified', 'unknown', 'publisher not identified', 'report');
+
+const ARE_WORKS = array('medrxiv'); // Things with dois that should be {{cite document|work=THIS}}
 
 const PUBLISHERS_ARE_WORKS = array('the san diego union-tribune', 'forbes', 'salon', 'san jose mercury news', 'san jose mercury-news', 'new york times',
                                    'the new york times', 'daily news online', 'daily news', 'the sun', 'the times',
@@ -107,6 +110,7 @@ const CANONICAL_PUBLISHER_URLS = array ('elsevier.com', 'springer.com', 'science
                                 'sciencemag.org', 'doi.apa.org', 'psycnet.apa.org', 'journals.upress.ufl.edu',
                                 'clinchem.org', 'cell.com', 'aeaweb.org', 'chestpubs.org', 'journal.chestnet.org',
                                 'chestjournal.org', 'biomedcentral.com', 'journals.royalsociety.org',
+                                'mdpi.com', 'frontiersin.org',
                                 //  Below are journal search engines
                                 '.serialssolutions.com', '.ebscohost.com',
                                 //  Below are proxys
@@ -139,6 +143,7 @@ const ZOTERO_AVOID_REGEX = array("twitter\.",               // This should be {{
                                  "pep\-web\.org",           // Does not parse very well at all
                                  "ezproxy", "arkive\.org", "bloomberg\.com/tosv2.html",  // Junk
                                  "worldcat\.org",           // Should use parameters and google instead
+                                 "kyobobook\.co\.kr",       // Bookstore that give junk
                                  "facebook\.com");          // login and junk
 const NON_JOURNAL_WEBSITES = array('cnn.com/', 'foxnews.com/', 'msnbc.com/', 'nbcnews.com/', 'abcnews.com/', 'cbs.com/', 
                                    'cbsnews.com/', 'abc.com/', 'bbc.com/', 'bbc.co.uk/', 'apnews.com/',
@@ -157,7 +162,7 @@ const NON_JOURNAL_WEBSITES = array('cnn.com/', 'foxnews.com/', 'msnbc.com/', 'nb
 
 const NON_JOURNAL_DOIS = array('10.5531/db.vz.0001'); // lowercase exact matches
 const NON_JOURNALS = array('Amphibian Species of the World', 'an Online Reference', 'An Online Reference'); // Case-sensitive sub-string
-const ARE_MAGAZINES = array('the new yorker', 'the new republic', 'new republic'); // lowercase axact matches
+const ARE_MAGAZINES = array('the new yorker', 'the new republic', 'new republic', 'expedition magazine'); // lowercase axact matches
 const ARE_NEWSPAPERS = array('the economist'); // lowercase axact matches
 const NO_PUBLISHER_NEEDED = array('los angeles times', 'new york times magazine', 'the new york times',
                                    'new york times', 'huffington post', 'the daily telegraph', 'forbes.com',

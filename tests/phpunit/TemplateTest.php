@@ -5052,10 +5052,10 @@ T1 - This is the Title }}';
    } 
  
    public function testMusicDOIsO() : void {
-    $text = "{{cite web|url=https://www.oxfordmusiconline.com/grovemusic/view/10.1093/gmo/9781561592630.001.0001/omo-9781561592630-e-0000001497|doi=10.5555/dummy|doi-broken-date=Y}}";
+    $text = "{{cite web|url=https://www.oxfordmusiconline.com/grovemusic/view/10.1093/gmo/9781561592630.001.0001/omo-9781561592630-e-5000008391|doi=10.5555/dummy|doi-broken-date=Y}}";
     $template = $this->make_citation($text);
     $template->tidy_parameter('url');
-    $this->assertSame('10.1093/gmo/9781561592630.article.01497', $template->get2('doi'));
+    $this->assertSame('10.1093/gmo/9781561592630.article.O008391', $template->get2('doi'));
     $this->assertSame('978-1-56159-263-0', $template->get2('isbn'));
     $this->assertNull($template->get2('doi-broken-date'));
    } 

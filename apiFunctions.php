@@ -682,6 +682,8 @@ function expand_doi_with_dx(Template $template, string $doi) : bool {
      // https://api.crossref.org/works/$doi can be used to find out the agency
      // https://www.doi.org/registration_agencies.html  https://www.doi.org/RA_Coverage.html List of all ten doi granting agencies - many do not do journals
      // Examples of DOI usage   https://www.doi.org/demos.html
+     // This basically does this:
+     // curl -LH "Accept: application/vnd.citationstyles.csl+json" https://dx.doi.org/10.5524/100077
      if (strpos($doi, '10.2307') === 0) return FALSE; // jstor API is better
      if (strpos($doi, '10.24436') === 0) return FALSE; // They have horrible meta-data
      /** @param array|string|null|int $data */ /** @psalm-suppress MissingClosureParamType */
@@ -771,7 +773,10 @@ function expand_doi_with_dx(Template $template, string $doi) : bool {
        $try_to_add_it('title', @$json['title']);
        $try_to_add_it('location', @$json['publisher-location']);
        $try_to_add_it('publisher', @$json['publisher']);
-       if (!isset($json['categories']['1'])) $try_to_add_it('chapter', @$json['categories']['0']);  // Not really right, but there is no cite data set template
+       if (!isset($json['categories']['1']) &&
+           (($template->wikiname() === 'cite book') || $template->blank(WORK_ALIASES))) { // No journal/magazine set and can convert to book
+          $try_to_add_it('chapter', @$json['categories']['0']);  // Not really right, but there is no cite data set template
+       }
      } elseif (@$json['type'] == '') {  // Add what we can where we can
        $try_to_add_it('title', @$json['title']);
        $try_to_add_it('location', @$json['publisher-location']);
@@ -847,7 +852,7 @@ function doi_works(string $doi) : ?bool {
 }
 
 function is_doi_active(string $doi) : ?bool {
-  $headers_test = @get_headers("https://api.crossref.org/works/" . urlencode($doi));
+  $headers_test = @get_headers("https://api.crossref.org/works/" . doi_encode($doi));
   if ($headers_test === FALSE) return NULL; // most likely bad, but will recheck again an again
   $response = $headers_test[0];
   if (stripos($response, '200 OK') !== FALSE) return TRUE;
@@ -861,10 +866,10 @@ function is_doi_works(string $doi) : ?bool {
   $context = stream_context_create(array(
            'ssl' => ['verify_peer' => FALSE, 'verify_peer_name' => FALSE, 'allow_self_signed' => TRUE]
          )); // Allow crudy cheap journals
-  $headers_test = @get_headers("https://dx.doi.org/" . urlencode($doi), TRUE, $context);
+  $headers_test = @get_headers("https://dx.doi.org/" . doi_encode($doi), TRUE, $context);
   if ($headers_test === FALSE) {
      sleep(1);                                                                            // @codeCoverageIgnore
-     $headers_test = @get_headers("https://dx.doi.org/" . urlencode($doi), TRUE, $context);  // @codeCoverageIgnore
+     $headers_test = @get_headers("https://dx.doi.org/" . doi_encode($doi), TRUE, $context);  // @codeCoverageIgnore
   }
   if ($headers_test === FALSE) return NULL; // most likely bad, but will recheck again an again
   $response = $headers_test[0];
