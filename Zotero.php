@@ -580,7 +580,12 @@ public static function process_zotero_response(string $zotero_response, Template
   }
 
   if ( isset($result->issue))            $template->add_if_new('issue'  , (string) $result->issue);
-  if ( isset($result->pages))            $template->add_if_new('pages'  , (string) $result->pages);
+  if ( isset($result->pages)) {
+     $pos_pages = (string) $result->pages;
+     if (preg_match('~\d~', $pos_pages) && !preg_match('~\d+\.\d+.\d+~', $pos_pages)) { // At least one number but not a dotted number from medRxiv 
+        $template->add_if_new('pages'  , $pos_pages);
+     }
+  }
   if (isset($result->itemType) && $result->itemType == 'newspaperArticle') {
     if ( isset($result->publicationTitle)) $template->add_if_new('newspaper', (string) $result->publicationTitle);
   } else {
