@@ -4107,6 +4107,9 @@ final class Template {
     if ($this->wikiname() === 'cite book' && !$this->blank_other_than_comments(CHAPTER_ALIASES)) {
       return; // Changing away leads to error
     }
+    if ($this->wikiname() === 'cite document' && in_array(strtolower($this->get('work')), ARE_WORKS)) {
+      return; // Things with DOIs that are works
+    }
     $new_name = strtolower(trim($new_name)); // Match wikiname() output and cite book below
     if ($new_name === $this->wikiname()) return;
     if (in_array($this->wikiname(), TEMPLATES_WE_RENAME)
@@ -4757,7 +4760,7 @@ final class Template {
             $this->change_name_to('cite news');
             $this->rename($param, 'newspaper');
             return;
-          } elseif (in_array(strtolower($the_param), ['medrxiv'])) {
+          } elseif (in_array(strtolower($the_param), ARE_WORKS)) {
             $this->rename($param, 'CITATION_BOT_HOLDS_WORK');
             $this->change_name_to('cite document');
             $this->rename('CITATION_BOT_HOLDS_WORK', 'work');
