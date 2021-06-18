@@ -105,7 +105,7 @@ public static function query_url_api_class(array $ids, array &$templates) : void
        if ($template->has('doi')) {
          $doi = $template->get('doi');
          if (!doi_active($doi) && doi_works($doi) && !preg_match(REGEXP_DOI_ISSN_ONLY, $doi)) {
-           self::expand_by_zotero($template, 'https://dx.doi.org/' . urlencode($doi));  // DOIs without meta-data
+           self::expand_by_zotero($template, 'https://dx.doi.org/' . doi_encode($doi));  // DOIs without meta-data
          }
        }
   }
