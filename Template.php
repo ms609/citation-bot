@@ -4758,8 +4758,9 @@ final class Template {
             $this->rename($param, 'newspaper');
             return;
           } elseif (in_array(strtolower($the_param), ['medrxiv'])) {
+            $this->rename($param, 'CITATION_BOT_HOLDS_WORK');
             $this->change_name_to('cite document');
-            $this->rename($param, 'work');
+            $this->rename('CITATION_BOT_HOLDS_WORK', 'work');
             return;
           }
           return;
