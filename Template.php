@@ -1021,6 +1021,7 @@ final class Template {
         if (!$this->blank(array_merge(['agency','publisher'],WORK_ALIASES)) && in_array(strtolower($value), DUBIOUS_JOURNALS)) return FALSE; // non-journals that are probably same as agency or publisher that come from zotero
         if ($this->get($param_name) === 'none' || $this->blank(["journal", "periodical", "encyclopedia", "encyclopaedia", "newspaper", "magazine", "contribution"])) {
           if (in_array(strtolower(sanitize_string($value)), HAS_NO_VOLUME)) $this->forget('volume') ; // No volumes, just issues.
+          if (in_array(strtolower(sanitize_string($value)), HAS_NO_ISSUE))  { $this->forget('issue'); $this->forget('number'); } ; // No issues, just volumes
           $value = wikify_external_text(title_case($value));
           if ($this->has('series') && str_equivalent($this->get('series'), $value)) return FALSE ;
           if ($this->has('work')) {
@@ -1165,6 +1166,13 @@ final class Template {
       case 'issue':
         if ($value == '0') return FALSE;
         if ($value == 'Online First') return FALSE;
+        $temp_string = strtolower($this->get('journal')) ;
+        if(substr($temp_string, 0, 2) === "[[" && substr($temp_string, -2) === "]]") {  // Wikilinked journal title 
+           $temp_string = substr(substr($temp_string, 2), 0, -2); // Remove [[ and ]]
+        }
+        if (in_array($temp_string, HAS_NO_ISSUE)) {
+          return $this->add_if_new('volume', $value);
+        }
         if ($this->blank(ISSUE_ALIASES) || str_i_same('in press', $this->get($param_name))) {
           if ($value == '1') { // dubious
             if (bad_10_1093_doi($this->get('doi'))) return FALSE;
@@ -1318,6 +1326,9 @@ final class Template {
         if (stripos($value, '10.1093/oi/authority') === 0) return FALSE; // Those do not work
         if (stripos($value, '10.1111/j.1572-0241') === 0 && NATURE_FAILS) return FALSE;
         if (stripos($value, '10.10520/') === 0 && !doi_works($value)) return FALSE; // Has doi in the URL, but is not a doi
+        if (stripos($value, '10.1967/') === 0 && !doi_works($value)) return FALSE; // Retired DOIs
+        if (stripos($value, '10.3316/informit.') === 0 && !doi_works($value)) return FALSE; // These do not seem to work - TODO watch https://dx.doi.org/10.3316/informit.550258516430914 
+        if (stripos($value, '10.3316/ielapa.') === 0 && !doi_works($value)) return FALSE; // These do not seem to work - TODO watch   https://dx.doi.org/10.3316/ielapa.347150294724689
         if (preg_match(REGEXP_DOI, $value, $match)) {
           if ($this->blank($param_name)) {
             if ($this->wikiname() === 'cite arxiv') $this->change_name_to('cite journal');
@@ -1338,6 +1349,11 @@ final class Template {
           }
         }
         return FALSE;
+        
+      case 'doi-access':
+        if ($this->blank('doi') || $this->has($param_name)) return FALSE;
+        $this->add($param_name, $value);
+        return TRUE;
       
       case 's2cid':
         if ($this->blank(['s2cid', 'S2CID'])) {
@@ -1395,13 +1411,6 @@ final class Template {
         $the_new  = strtotime($value);
         if (($existing === FALSE) || ($existing + (6*2592000) < $the_new) || ((2592000*6) + $the_new < $existing)) { // Six months of difference
            return $this->add($param_name, $value);
-        }
-        if (WikipediaBot::NonStandardMode()) {
-          $value = '31 May 2021';
-          if ($this->date_style === DATES_MDY) {
-               $value = 'May 31, 2021';
-          }
-          return $this->add($param_name, $value);
         }
         return FALSE;
       
@@ -1715,10 +1724,11 @@ final class Template {
           return FALSE;
        }
        $this->add_if_new('s2cid', $s2cid);
-       if (is_null($url_sent) && $this->has('pmc')) {
-         // SEP 2020 report_info('Removed Converted Semantic Scholar URL that blocked PMC URL');
-         // SEP 2020 $this->forget($url_type);
-         return TRUE;
+       if (is_null($url_sent) && stripos($url, 'pdf') === FALSE) {
+         if ($this->has_good_free_copy()) {
+           $this->forget($url_type);
+           return TRUE;
+         }
        }
        if (is_null($url_sent) && get_semanticscholar_license($s2cid) === FALSE) {
          report_warning('Should probably remove un-licensed Semantic Scholar URL that was converted to S2CID parameter');
@@ -1737,6 +1747,12 @@ final class Template {
        }     
     }
     if (preg_match("~^(https?://\S*jstor.org\S*)\?refreqid=~", $url, $matches)) {
+       $url = $matches[1];
+       if (is_null($url_sent)) {
+         $this->set($url_type, $url); // Update URL with cleaner one
+       }     
+    }
+    if (preg_match("~^(https?://\S*jstor.org\S*)\?origin=~", $url, $matches)) {
        $url = $matches[1];
        if (is_null($url_sent)) {
          $this->set($url_type, $url); // Update URL with cleaner one
@@ -1776,7 +1792,7 @@ final class Template {
         preg_match('~^https?://(?:www\.|)jstor\.org/tc/accept\?origin=(?:\%2F|/)stable(?:\%2F|/)pdf(?:\%2F|/)(\d{3,})\.pdf$~i', $url, $matches)) {
        if ($matches[1] == $this->get('jstor')) {
          if (is_null($url_sent)) {
-           // SEP 2020 $this->forget($url_type);
+           if ($this->has_good_free_copy()) $this->forget($url_type);
          }
          return FALSE;
        } elseif ($this->blank('jstor')) {
@@ -1794,21 +1810,21 @@ final class Template {
               stripos($dat, 'Block Reference') === FALSE &&
               stripos($dat, 'A problem occurred trying to deliver RIS data') === FALSE &&
               substr_count($dat, '-') > 3) { // It is actually a working JSTOR.  Not sure if all PDF links are done right
-            // SEP 2020 if (is_null($url_sent)) $this->forget($url_type);
+            if (is_null($url_sent) && $this->has_good_free_copy()) $this->forget($url_type);
             return $this->add_if_new('jstor', $matches[1]);
           }
         }
     }
     if ($this->has('jstor') && preg_match('~^https?://(?:www\.|)jstor\.org/(?:stable|discover)/(?:|pdf/)' . $this->get('jstor') . '(?:|\.pdf)$~i', $url)) {
        if (is_null($url_sent)) {
-         // SEP 2020 $this->forget($url_type);
+         if ($this->has_good_free_copy()) $this->forget($url_type);
        }
        return FALSE;
     }
     if (preg_match('~^https?://(?:www\.|)archive\.org/detail/jstor\-(\d{5,})$~i', $url, $matches)) {
        $this->add_if_new('jstor', $matches[1]);
        if (is_null($url_sent)) {
-         // SEP 2020 $this->forget($url_type);
+         if ($this->has_good_free_copy()) $this->forget($url_type);
        }
        return FALSE;
     }
@@ -1830,22 +1846,22 @@ final class Template {
         if (doi_works($match[1]) && !doi_works($this->get('doi'))) {
           $this->set('doi', $match[1]);
           if (is_null($url_sent)) {
-            // SEP 2020 $this->forget($url_type);
+            if ($this->has_good_free_copy()) $this->forget($url_type);
           }
           return TRUE;
         }
         if (!doi_works($match[1]) && doi_works($this->get('doi'))) {
           if (is_null($url_sent)) {
-             // SEP 2020 $this->forget($url_type);
+             if ($this->has_good_free_copy()) $this->forget($url_type);
           }
           return FALSE;
         }
         return FALSE; // Both valid or both invalid (could be legit if chapter and book are different DOIs
       }
       if ($this->add_if_new('doi', urldecode($match[1]))) { // Will expand from DOI when added
-        if (is_null($url_sent)) {
-          // SEP 2020 quietly('report_modification', "URL is hard-coded DOI; converting to use DOI parameter.");
-          // SEP 2020 $this->forget($url_type);
+        if (is_null($url_sent) && $this->has_good_free_copy()) {
+          quietly('report_modification', "URL is hard-coded DOI; converting to use DOI parameter.");
+          $this->forget($url_type);
         }
         return TRUE;
       } else {
@@ -1858,13 +1874,15 @@ final class Template {
       $old_jstor = $this->get('jstor');
       if (stripos($url, 'jstor')) check_doi_for_jstor($doi, $this);
       if (is_null($url_sent) && $old_jstor !== $this->get('jstor') && stripos($url, 'pdf') === FALSE) {
-         // SEP 2020 $this->forget($url_type);
+         if ($this->has_good_free_copy()) $this->forget($url_type);
       }
       $this->tidy_parameter('doi'); // Sanitize DOI before comparing
       if ($this->has('doi') && mb_stripos($doi, $this->get('doi')) === 0) { // DOIs are case-insensitive
         if (doi_works($doi) && is_null($url_sent) && mb_strpos(strtolower($url), ".pdf") === FALSE && !preg_match(REGEXP_DOI_ISSN_ONLY, $doi)) {
-          // SEP 2020 report_forget("Recognized existing DOI in URL; dropping URL");
-          // SEP 2020 $this->forget($url_type);
+          if ($this->has_good_free_copy()) {
+             report_forget("Recognized existing DOI in URL; dropping URL");
+             $this->forget($url_type);
+          }
         }
         return FALSE;  // URL matched existing DOI, so we did not use it
       }
@@ -1872,8 +1890,10 @@ final class Template {
         if (doi_active($doi)) {
           if (is_null($url_sent)) {
             if (mb_strpos(strtolower($url), ".pdf") === FALSE && !preg_match(REGEXP_DOI_ISSN_ONLY, $doi)) {
-              // SEP 2020 report_forget("Recognized DOI in URL; dropping URL");
-              // SEP 2020 $this->forget($url_type);
+              if ($this->has_good_free_copy()) {
+                report_forget("Recognized DOI in URL; dropping URL");
+                $this->forget($url_type);
+              }
             } else {
               report_info("Recognized DOI in URL.  Leaving *.pdf URL.");
             }
@@ -1888,8 +1908,10 @@ final class Template {
       $this->tidy_parameter('doi'); // Sanitize DOI before comparing
       if (mb_stripos($url, $this->get('doi')) !== FALSE) { // DOIs are case-insensitive
         if (doi_works($this->get('doi')) && is_null($url_sent) && mb_strpos(strtolower($url), ".pdf") === FALSE && not_bad_10_1093_doi($this->get('doi')) && !preg_match(REGEXP_DOI_ISSN_ONLY, $this->get('doi'))) {
-          // SEP 2020 report_forget("Recognized existing DOI in URL; dropping URL");
-          // SEP 2020 $this->forget($url_type);
+          if ($this->has_good_free_copy()) {
+             report_forget("Recognized existing DOI in URL; dropping URL");
+             $this->forget($url_type);
+          }
         }
         return FALSE;  // URL matched existing DOI, so we did not use it
       }
@@ -1927,7 +1949,7 @@ final class Template {
       if (preg_match("~^/(?:\w+/)*(\d{5,})[^\d%\-]*(?:\?|$)~", substr($url, (int) stripos($url, 'jstor.org') + 9), $match) ||
                 preg_match("~^https?://(?:www\.)?jstor\.org\S+(?:stable|discovery)/(?:10\.7591/|)(\d{5,}|(?:j|J|histirel|jeductechsoci|saoa)\.[a-zA-Z0-9\.]+)$~", $url, $match)) {
         if (is_null($url_sent)) {
-          // SEP 2020 $this->forget($url_type);
+          if ($this->has_good_free_copy()) $this->forget($url_type);
         }
         if ($this->get('jstor')) {
           quietly('report_inaction', "Not using redundant URL (jstor parameter set)");
@@ -1945,11 +1967,11 @@ final class Template {
         if ($this->blank('bibcode')) {
           quietly('report_modification', "Converting url to bibcode parameter");
           if (is_null($url_sent)) {
-            // SEP 2020 $this->forget($url_type);
+            if ($this->has_good_free_copy()) $this->forget($url_type);
           }
           return $this->add_if_new('bibcode', urldecode($bibcode[1]));
         } elseif (is_null($url_sent) && urldecode($bibcode[1]) === $this->get('bibcode')) {
-          // SEP 2020 $this->forget($url_type);
+          if ($this->has_good_free_copy()) $this->forget($url_type);
         }
         
       } elseif (preg_match("~^https?://(?:www\.|)pubmedcentral\.nih\.gov/articlerender.fcgi\?.*\bartid=(\d{4,})"
@@ -1974,7 +1996,7 @@ final class Template {
               return $this->add_if_new('pmc', $match[1] . $match[2]);
             }
           }
-          if (stripos($url, "table") === FALSE) $this->forget($url_type); // This is the same as PMC auto-link
+          if (stripos(str_replace("printable", "", $url), "table") === FALSE) $this->forget($url_type); // This is the same as PMC auto-link
         } 
         return $this->add_if_new('pmc', $match[1] . $match[2]);
       } elseif (preg_match("~^https?://(?:www\.|)europepmc\.org/articles?/pmc/?(\d{4,})~i", $url, $match)  ||
@@ -1993,7 +2015,7 @@ final class Template {
           quietly('report_modification', "Converting Europe URL to PMID parameter");
         }
         if (is_null($url_sent)) {
-            // SEP 2020 $this->forget($url_type);
+            if ($this->has_good_free_copy()) $this->forget($url_type);
         }
         return $this->add_if_new('pmid', $match[1]);
       } elseif (preg_match("~^https?://(?:www\.|)pubmedcentralcanada\.ca/pmcc/articles/PMC(\d{4,})(?:|/.*)$~i", $url, $match)) {
@@ -2007,7 +2029,7 @@ final class Template {
         quietly('report_modification', "URL is hard-coded citeseerx; converting to use citeseerx parameter.");
         if ($this->wikiname() === 'cite web') $this->change_name_to('cite journal');
         if (is_null($url_sent)) {
-          // SEP 2020 $this->forget($url_type);
+          if ($this->has_good_free_copy()) $this->forget($url_type);
         }
         return $this->add_if_new('citeseerx', urldecode($match[1])); // We cannot parse these at this time
         
@@ -2022,7 +2044,7 @@ final class Template {
           quietly('report_modification', "Converting URL to arXiv parameter");
           $ret = $this->add_if_new('arxiv', $arxiv_id[0]); // Have to add before forget to get cite type right
           if (is_null($url_sent)) {
-            // SEP 2020 $this->forget($url_type);
+            if ($this->has_good_free_copy()) $this->forget($url_type);
           }
           return $ret;
         }
@@ -2041,7 +2063,7 @@ final class Template {
         }
         quietly('report_modification', "Converting URL to PMID parameter");
         if (is_null($url_sent)) {
-          // SEP 2020 $this->forget($url_type);
+          if ($this->has_good_free_copy()) $this->forget($url_type);
         }
         if ($this->wikiname() === 'cite web') $this->change_name_to('cite journal');
         return $this->add_if_new('pmid', $match[1]);
@@ -2052,7 +2074,7 @@ final class Template {
         if ($match[1] == $this->get('pmc')) {
            $this->forget($url_type); // Same as PMC-auto-link
         } elseif ($match[1] == $this->get('pmid')) {
-           // SEP 2020 $this->forget($url_type);
+           if ($this->has_good_free_copy()) $this->forget($url_type);
         }
         return FALSE;
         
@@ -2145,7 +2167,7 @@ final class Template {
           if (empty($headers_test['Location'])) return FALSE; // does not resolve
           quietly('report_modification', "Converting URL to HDL parameter");
           if (is_null($url_sent)) {
-             // SEP 2020 $this->forget($url_type);
+             if ($this->has_good_free_copy()) $this->forget($url_type);
           }
           if (is_array(@$headers_test['Location'])) {
             $the_header_loc = (string) $headers_test['Location'][0];
@@ -2162,42 +2184,42 @@ final class Template {
           quietly('report_modification', "Converting URL to ZBL parameter");
           if ($this->wikiname() === 'cite web') $this->change_name_to('cite journal');  // Better template choice.  Often journal/paper
           if (is_null($url_sent)) {
-             // SEP 2020 $this->forget($url_type);
+             if ($this->has_good_free_copy()) $this->forget($url_type);
           }
           return $this->add_if_new('zbl', $match[1]);
       } elseif (preg_match("~^https?://zbmath\.org/\?format=complete&q=an:([0-9][0-9]\.[0-9][0-9][0-9][0-9]\.[0-9][0-9])~i", $url, $match)) {
           quietly('report_modification', "Converting URL to JFM parameter");
           if ($this->wikiname() === 'cite web') $this->change_name_to('cite journal');  // Better template choice.  Often journal/paper
           if (is_null($url_sent)) {
-             // SEP 2020 $this->forget($url_type);
+             if ($this->has_good_free_copy()) $this->forget($url_type);
           }
           return $this->add_if_new('jfm', $match[1]);
       } elseif (preg_match("~^https?://mathscinet\.ams\.org/mathscinet-getitem\?mr=([0-9]+)~i", $url, $match)) {
           quietly('report_modification', "Converting URL to MR parameter");
           if ($this->wikiname() === 'cite web') $this->change_name_to('cite journal');  // Better template choice.  Often journal/paper
           if (is_null($url_sent)) {
-             // SEP 2020 $this->forget($url_type);
+             // SEP 2020 $this->forget($url_type); This points to a review and not the article
           }
           return $this->add_if_new('mr', $match[1]);
       } elseif (preg_match("~^https?://papers\.ssrn\.com(?:/sol3/papers\.cfm\?abstract_id=|/abstract=)([0-9]+)~i", $url, $match)) {
           quietly('report_modification', "Converting URL to SSRN parameter");
           if ($this->wikiname() === 'cite web') $this->change_name_to('cite journal'); // Better template choice.  Often journal/paper
           if (is_null($url_sent)) {
-             // SEP 2020 $this->forget($url_type);
+             if ($this->has_good_free_copy()) $this->forget($url_type);
           }
           return $this->add_if_new('ssrn', $match[1]);
       } elseif (preg_match("~^https?://(?:www\.|)osti\.gov/(?:scitech/|)(?:biblio/|)(?:purl/|)([0-9]+)(?:\.pdf|)~i", $url, $match)) {
           quietly('report_modification', "Converting URL to OSTI parameter");
           if ($this->wikiname() === 'cite web') $this->change_name_to('cite journal');  // Better template choice.  Often journal/paper
           if (is_null($url_sent)) {
-             // SEP 2020 $this->forget($url_type);
+             if ($this->has_good_free_copy()) $this->forget($url_type);
           }
           return $this->add_if_new('osti', $match[1]);
       } elseif (preg_match("~^https?://(?:www\.|)osti\.gov/energycitations/product\.biblio\.jsp\?osti_id=([0-9]+)~i", $url, $match)) {
           quietly('report_modification', "Converting URL to OSTI parameter");
           if ($this->wikiname() === 'cite web') $this->change_name_to('cite journal');  // Better template choice.  Often journal/paper
           if (is_null($url_sent)) {
-             // SEP 2020 $this->forget($url_type);
+             if ($this->has_good_free_copy()) $this->forget($url_type);
           }
           return $this->add_if_new('osti', $match[1]);
       } elseif (preg_match("~^https?://(?:www\.|)worldcat\.org(?:/title/\S+)?/oclc/([0-9]+)~i", $url, $match)) {
@@ -2237,7 +2259,7 @@ final class Template {
         if ($this->add_if_new('id', '{{ProQuest|' . $match[1] . '}}')) {  
           quietly('report_modification', 'Converting URL to ProQuest parameter');
           if (is_null($url_sent)) {
-             // SEP 2020 $this->forget($url_type);
+             if ($this->has_good_free_copy()) $this->forget($url_type);
           }
           return TRUE;
         } else {
@@ -3510,7 +3532,7 @@ final class Template {
     $this->add_if_new('isbn', $isbn);
     
     $i = 0;
-    if ($this->blank(array_merge(FIRST_EDITOR_ALIASES, FIRST_AUTHOR_ALIASES, ['publisher']))) { // Too many errors in gBook database to add to existing data.   Only add if blank.
+    if ($this->blank(array_merge(FIRST_EDITOR_ALIASES, FIRST_AUTHOR_ALIASES, ['publisher', 'journal', 'magazine', 'periodical']))) { // Too many errors in gBook database to add to existing data.   Only add if blank.
       foreach ($xml->dc___creator as $author) {
         $this->validate_and_add('author' . (string) ++$i, str_replace("___", ":", (string) $author), '', '', TRUE);
       }
@@ -4085,6 +4107,9 @@ final class Template {
     if ($this->wikiname() === 'cite book' && !$this->blank_other_than_comments(CHAPTER_ALIASES)) {
       return; // Changing away leads to error
     }
+    if ($this->wikiname() === 'cite document' && in_array(strtolower($this->get('work')), ARE_WORKS)) {
+      return; // Things with DOIs that are works
+    }
     $new_name = strtolower(trim($new_name)); // Match wikiname() output and cite book below
     if ($new_name === $this->wikiname()) return;
     if (in_array($this->wikiname(), TEMPLATES_WE_RENAME)
@@ -4495,6 +4520,10 @@ final class Template {
             $this->verify_doi();
             $doi = $this->get($param);
           }
+          if (!doi_works($doi) && strpos($doi, '10.1111/j.1475-4983.' . $this->year()) === 0) {
+            $this->forget('doi');  // Special Papers in Palaeontology - they do not work
+            return;
+          }
           if (!doi_works($doi)) {  
             $this->set($param, sanitize_doi($doi));
           }
@@ -4532,6 +4561,9 @@ final class Template {
             } else {
               $this->set('issue', $matches[1]);
             }
+          }
+          if (doi_works($doi) && (strpos($doi, '10.3389/') === 0 || strpos($doi, '10.3390/') === 0)) {
+            $this->add_if_new('doi-access', 'free');
           }
           return;
           
@@ -4727,6 +4759,11 @@ final class Template {
           } elseif (in_array(strtolower($the_param), ARE_NEWSPAPERS)) {
             $this->change_name_to('cite news');
             $this->rename($param, 'newspaper');
+            return;
+          } elseif (in_array(strtolower($the_param), ARE_WORKS)) {
+            $this->rename($param, 'CITATION_BOT_HOLDS_WORK');
+            $this->change_name_to('cite document');
+            $this->rename('CITATION_BOT_HOLDS_WORK', 'work');
             return;
           }
           return;
@@ -5270,6 +5307,10 @@ final class Template {
               $this->forget($param);
               return;
           }
+          if (preg_match('~https://meta\.wikimedia\.org/w/index\.php\?title\=Special\:UserLogin~', $this->get($param))) {
+              $this->forget($param);
+              return;
+          }
           if (preg_match('~^(https?://(?:www\.|)webcitation\.org/)([0-9a-zA-Z]{9})(?:|\?url=.*)$~', $this->get($param), $matches)) {
               // $this->set($param, $matches[1] . $matches[2]); // The url part is actually NOT binding, but other wikipedia bots check it
               if ($this->blank(['archive-date', 'archivedate'])) {
@@ -5460,6 +5501,13 @@ final class Template {
               $this->set($param, $matches[1] . '/' . $matches[2] . '/' . $matches[4] . '/' . $matches[5]);
             }
           }
+          if (preg_match('~^(https?://(?:[\.+]|)oxfordmusiconline\.com)/([^/]+)/([^/]+)/([^/]+)/(.+)$~', $this->get($param), $matches)) {
+            if ($matches[2] === $matches[3] && $matches[2] === $matches[4]) {
+              $this->set($param, $matches[1] . '/' . $matches[2] . '/' . $matches[5]);
+            } elseif ($matches[2] === $matches[3]) {
+              $this->set($param, $matches[1] . '/' . $matches[2] . '/' . $matches[4] . '/' . $matches[5]);
+            }
+          }
           
           while (preg_match('~^(https?://www\.oxforddnb\.com/.+)(?:\?print|\?p=email|\;jsession|\?result=|\?rskey|\#|/version/\d+|\?backToResults)~', $this->get($param), $matches)) {
                $this->set($param, $matches[1]);
@@ -5626,7 +5674,7 @@ final class Template {
               }
           }
 
-          if (preg_match('~^https?://www\.oxfordmusiconline\.com/(?:grovemusic/|)(?:grovemusic/|)(?:grovemusic/|)(?:view|abstract)/10\.1093/gmo/9781561592630\.001\.0001/omo-9781561592630-e-00000(\d+)$~', $this->get($param), $matches)) {
+          if (preg_match('~^https?://www\.oxfordmusiconline\.com/(?:grovemusic/|)(?:view|abstract)/10\.1093/gmo/9781561592630\.001\.0001/omo-9781561592630-e-00000(\d+)$~', $this->get($param), $matches)) {
               $new_doi = '10.1093/gmo/9781561592630.article.' . $matches[1];
               if (doi_works($new_doi)) {
                 $this->add_if_new('isbn', '978-1-56159-263-0');
@@ -5640,7 +5688,7 @@ final class Template {
               }
           }
           
-          if (preg_match('~^https?://www\.oxfordmusiconline\.com/(?:grovemusic/|)(?:grovemusic/|)(?:grovemusic/|)(?:view|abstract)/10\.1093/gmo/9781561592630\.001\.0001/omo-9781561592630-e-100(\d+)$~', $this->get($param), $matches)) {
+          if (preg_match('~^https?://www\.oxfordmusiconline\.com/(?:grovemusic/|)(?:view|abstract)/10\.1093/gmo/9781561592630\.001\.0001/omo-9781561592630-e-100(\d+)$~', $this->get($param), $matches)) {
               $new_doi = '10.1093/gmo/9781561592630.article.A' . $matches[1];
               if (doi_works($new_doi)) {
                 $this->add_if_new('isbn', '978-1-56159-263-0');
@@ -5654,7 +5702,7 @@ final class Template {
               }
           }
           
-          if (preg_match('~^https?://www\.oxfordmusiconline\.com/(?:grovemusic/|)(?:grovemusic/|)(?:grovemusic/|)(?:view|abstract)/10\.1093/gmo/9781561592630\.001\.0001/omo-9781561592630-e-5000(\d+)$~', $this->get($param), $matches)) {
+          if (preg_match('~^https?://www\.oxfordmusiconline\.com/(?:grovemusic/|)(?:view|abstract)/10\.1093/gmo/9781561592630\.001\.0001/omo-9781561592630-e-5000(\d+)$~', $this->get($param), $matches)) {
               $new_doi = '10.1093/gmo/9781561592630.article.O' . $matches[1];
               if (doi_works($new_doi)) {
                 $this->add_if_new('isbn', '978-1-56159-263-0');
@@ -5668,7 +5716,7 @@ final class Template {
               }
           }
           
-          if (preg_match('~^https?://www\.oxfordmusiconline\.com/(?:grovemusic/|)(?:grovemusic/|)(?:grovemusic/|)(?:view|abstract)/10\.1093/gmo/9781561592630\.001\.0001/omo-9781561592630-e-400(\d+)$~', $this->get($param), $matches)) {
+          if (preg_match('~^https?://www\.oxfordmusiconline\.com/(?:grovemusic/|)(?:view|abstract)/10\.1093/gmo/9781561592630\.001\.0001/omo-9781561592630-e-400(\d+)$~', $this->get($param), $matches)) {
               $new_doi = '10.1093/gmo/9781561592630.article.L' . $matches[1];
               if (doi_works($new_doi)) {
                 $this->add_if_new('isbn', '978-1-56159-263-0');
@@ -5682,7 +5730,7 @@ final class Template {
               }
           }
           
-          if (preg_match('~^https?://www\.oxfordmusiconline\.com/(?:grovemusic/|)(?:grovemusic/|)(?:grovemusic/|)(?:view|abstract)/10\.1093/gmo/9781561592630\.001\.0001/omo-9781561592630-e-2000(\d+)$~', $this->get($param), $matches)) {
+          if (preg_match('~^https?://www\.oxfordmusiconline\.com/(?:grovemusic/|)(?:view|abstract)/10\.1093/gmo/9781561592630\.001\.0001/omo-9781561592630-e-2000(\d+)$~', $this->get($param), $matches)) {
               $new_doi = '10.1093/gmo/9781561592630.article.J' . $matches[1];
               if (doi_works($new_doi)) {
                 $this->add_if_new('isbn', '978-1-56159-263-0');
@@ -6143,7 +6191,7 @@ final class Template {
             } elseif ($this->has('pmc') || $this->has('pmid') || ($this->has('doi') && $this->blank(DOI_BROKEN_ALIASES)) ||
                       $this->has('jstor') || $this->has('arxiv') || $this->has('isbn') || ($this->has('issn') && $this->has('title')) ||
                       $this->has('oclc') || $this->has('lccn') || $this->has('bibcode')) {
-              $via = trim(strtolower($this->get('via')));
+              $via = trim(str_replace(array('[',']'),'', strtolower($this->get('via'))));
               if (in_array($via, ['', 'project muse', 'wiley', 'springer', 'questia', 'elsevier', 'wiley online library',
                                   'wiley interscience', 'interscience', 'sciencedirect', 'science direct', 'ebscohost',
                                   'proquest', 'google scholar', 'google', 'bing', 'yahoo'])) 
@@ -6235,6 +6283,18 @@ final class Template {
           if ($this->blank($param)) {
              $this->forget($param);
              return;
+          }
+          $temp_string = strtolower($this->get('journal')) ;
+          if(substr($temp_string, 0, 2) === "[[" && substr($temp_string, -2) === "]]") {  // Wikilinked journal title 
+               $temp_string = substr(substr($temp_string, 2), 0, -2); // Remove [[ and ]]
+          }
+          if (in_array($temp_string, HAS_NO_ISSUE)) {
+            if ($this->blank('volume')) {
+              $this->rename($param, 'volume');
+            } else {
+              $this->forget($param);
+            }
+            return;
           }
           // No break here: pages, issue and year (the previous case) should be treated in this fashion.
         case 'pages': case 'page': case 'pp': # And case 'year': case 'issue':, following from previous
@@ -6506,7 +6566,8 @@ final class Template {
        }
       }
       if (!$this->blank(DOI_BROKEN_ALIASES) && $this->has('jstor') &&
-        (strpos($this->get('doi'), '10.2307') === 0 ||  $this->get('doi') == $this->get('jstor'))) {
+        (strpos($this->get('doi'), '10.2307') === 0 || $this->get('doi') === $this->get('jstor') ||
+         substr($this->get('doi'), 0, -2) === $this->get('jstor') || substr($this->get('doi'), 0, -3) === $this->get('jstor'))) {
        $this->forget('doi'); // Forget DOI that is really jstor, if it is broken
        foreach (DOI_BROKEN_ALIASES as $alias) $this->forget($alias);
       }
@@ -7634,6 +7695,14 @@ final class Template {
       }
     }
     return $input;
+  }
+  
+  public function has_good_free_copy() : bool { // GOOD is critical - must title link - TODO add more if jstor-access or hdl-access title-link
+    if (($this->has('pmc') && $this->blank('pmc-embargo-date') && preg_match('~^\d+$~', $this->get('pmc'))) ||
+        ($this->has('doi') && $this->get('doi-access') === 'free' && $this->blank(DOI_BROKEN_ALIASES) && doi_works($this->get('doi')))) {
+       return TRUE;
+    }
+    return FALSE;
   }
   
   public function block_modifications() : void { // {{void}} should be just like a comment, BUT this code will not stop the normalization of the hidden template which has already been done

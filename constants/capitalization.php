@@ -81,7 +81,7 @@ const JOURNAL_ACRONYMS = array(/* The following will be automatically updated to
           " Journal of the A.I.E.E. ", " Journal of the IEST ", " Journal sur ", " Jpn ", 
           " Jpn. ", " La Trobe ", " Latina/o ", " Le Monde artiste ", " Ltd ", " MAA Focus ", 
           " mAbs ", " mAbs ", " mBio ", " mBio ", " Med Sch ", " MedChemComm ", " Meddelelser om Grønland ", 
-          " Meddelelser om Grønland, ", " MERIP ", " Methods in Molecular Biology ", " mHealth ", 
+          " Meddelelser om Grønland, ", " medRxiv ", " MERIP ", " Methods in Molecular Biology ", " mHealth ", 
           " mHealth ", " MicrobiologyOpen ", " Mikologiya i Fitopatologiya ", " MIS Quarterly ", 
           " Molecular and Cellular Biology ", " Montana The Magazine of Western History ", 
           " mSphere ", " mSphere ", " mSystems ", " mSystems ", " MycoKeys ", " n.paradoxa ", 
@@ -137,7 +137,7 @@ const UCFIRST_JOURNAL_ACRONYMS = array(/* The following will be automatically up
           " Journal of the A.i.i.e ", " Journal of the Iest ", " Journal Sur ", " JPN ", 
           " JPN. ", " la Trobe ", " Latina/O ", " Le Monde Artiste ", " LTD ", " Maa Focus ", 
           " MAbs ", " Mabs ", " MBio ", " Mbio ", " Med SCH ", " Medchemcomm ", " Meddelelser Om Grønland ", 
-          " Meddelelser Om Grønland, ", " Merip ", " Methods in Molecular Biology (Clifton, N.j.) ", 
+          " Meddelelser Om Grønland, ", " MedRxiv ", " Merip ", " Methods in Molecular Biology (Clifton, N.j.) ", 
           " MHealth ", " Mhealth ", " Microbiologyopen ", " Mikologiya I Fitopatologiya ", 
           " Mis Quarterly ", " Molecular and Cellular Biology ", " Montana the Magazine of Western History ", 
           " MSphere ", " Msphere ", " MSystems ", " Msystems ", " Mycokeys ", " N.Paradoxa ", 
@@ -183,7 +183,8 @@ const OBVIOUS_FOREIGN_WORDS = array(" Abhandlungen ", " Actes ", " Annales ", " 
            " Teplovoznaja ", " Tjaga ", " Aarbøger ",  " Oldkyndighed ", " Histori ", " Les Publications ",
            "ische ", "histoire ", " ancienne ", " d'", "http://", "www.", "www-", " Mikologiya ", " Fitopatologiya ",
            " filmski ", " ljetopis ", " Saggiatore ", " musicale ", " artiste ", " Le Monde ",
-           " univerzitet ", " Pravni ", " Fakultet " X);
+           " univerzitet ", " Pravni ", " Fakultet ", " Gazeta ", " Caminhos ", " de Ferro ",
+           " Jornal ", " comboios ", " Público ", " Revista ", " Olhar ");
  
 const MAP_DIACRITICS = array("À"=>"A", "Á"=>"A", "Â"=>"A", "Ã"=>"A",
     "Ä"=>"A", "Å"=>"A", "Æ"=>"AE", "Ç"=>"C", "È"=>"E", "É"=>"E",

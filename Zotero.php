@@ -106,7 +106,7 @@ public static function query_url_api_class(array $ids, array &$templates) : void
        if ($template->has('doi')) {
          $doi = $template->get('doi');
          if (!doi_active($doi) && doi_works($doi) && !preg_match(REGEXP_DOI_ISSN_ONLY, $doi)) {
-           self::expand_by_zotero($template, 'https://dx.doi.org/' . urlencode($doi));  // DOIs without meta-data
+           self::expand_by_zotero($template, 'https://dx.doi.org/' . $doi);  // DOIs without meta-data
          }
        }
   }
@@ -228,8 +228,16 @@ public static function drop_urls_that_match_dois(array &$templates) : void {  //
        } elseif ($template->get('doi-access') === 'free' && $template->get('url-status') === 'dead' && $url_kind === 'url') {
           report_forget("Existing free DOI; dropping dead URL");
           $template->forget($url_kind);
+       } elseif (doi_active($template->get('doi')) &&
+                 !preg_match(REGEXP_DOI_ISSN_ONLY, $template->get('doi')) &&
+                 $url_kind != '' &&
+                 (str_ireplace(CANONICAL_PUBLISHER_URLS, '', $template->get($url_kind)) != $template->get($url_kind)) &&
+                 $template->has_good_free_copy() &&
+                 (stripos($template->get($url_kind), 'pdf') === FALSE)) {
+          report_forget("Existing canonical URL resulting in equivalent free DOI/pmc; dropping URL");
+          $template->forget($url_kind);
        } elseif (stripos($url, 'pdf') === FALSE && $template->get('doi-access') === 'free' && $template->has('pmc')) {
-          curl_setopt($ch, CURLOPT_URL, "https://dx.doi.org/" . urlencode($doi));
+          curl_setopt($ch, CURLOPT_URL, "https://dx.doi.org/" . doi_encode($doi));
           if (@curl_exec($ch)) {
             $redirectedUrl_doi = curl_getinfo($ch, CURLINFO_EFFECTIVE_URL);  // Final URL
             if (stripos($redirectedUrl_doi, 'cookie') !== FALSE) break;
@@ -517,12 +525,6 @@ public static function process_zotero_response(string $zotero_response, Template
       $template->add_if_new('doi', $possible_doi);
       expand_by_doi($template);
       if (stripos($url, 'jstor')) check_doi_for_jstor($template->get('doi'), $template);
-      if (!$template->incomplete() && doi_active($template->get('doi')) && !preg_match(REGEXP_DOI_ISSN_ONLY, $template->get('doi')) && $url_kind != '') {
-          if ((str_ireplace(CANONICAL_PUBLISHER_URLS, '', $template->get($url_kind)) != $template->get($url_kind))) { // This is the use a replace to see if a substring is present trick
-            // SEP 2020 report_forget("Existing canonical URL resulting in equivalent DOI; dropping URL");
-            // SEP 2020 $template->forget($url_kind);
-          }
-      }
       if (!$template->profoundly_incomplete()) return TRUE;
     }
   }
@@ -579,7 +581,12 @@ public static function process_zotero_response(string $zotero_response, Template
   }
 
   if ( isset($result->issue))            $template->add_if_new('issue'  , (string) $result->issue);
-  if ( isset($result->pages))            $template->add_if_new('pages'  , (string) $result->pages);
+  if ( isset($result->pages)) {
+     $pos_pages = (string) $result->pages;
+     if (preg_match('~\d~', $pos_pages) && !preg_match('~\d+\.\d+.\d+~', $pos_pages)) { // At least one number but not a dotted number from medRxiv 
+        $template->add_if_new('pages'  , $pos_pages);
+     }
+  }
   if (isset($result->itemType) && $result->itemType == 'newspaperArticle') {
     if ( isset($result->publicationTitle)) $template->add_if_new('newspaper', (string) $result->publicationTitle);
   } else {
