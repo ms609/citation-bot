@@ -183,7 +183,7 @@ const OBVIOUS_FOREIGN_WORDS = array(" Abhandlungen ", " Actes ", " Annales ", " 
            " Teplovoznaja ", " Tjaga ", " Aarbøger ",  " Oldkyndighed ", " Histori ", " Les Publications ",
            "ische ", "histoire ", " ancienne ", " d'", "http://", "www.", "www-", " Mikologiya ", " Fitopatologiya ",
            " filmski ", " ljetopis ", " Saggiatore ", " musicale ", " artiste ", " Le Monde ",
-           " univerzitet ", " Pravni ", " Fakultet ");
+           " univerzitet ", " Pravni ", " Fakultet " X);
  
 const MAP_DIACRITICS = array("À"=>"A", "Á"=>"A", "Â"=>"A", "Ã"=>"A",
     "Ä"=>"A", "Å"=>"A", "Æ"=>"AE", "Ç"=>"C", "È"=>"E", "É"=>"E",
