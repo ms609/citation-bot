@@ -1353,8 +1353,6 @@ final class Template {
       case 'doi-access':
         if ($this->blank('doi') || $this->has($param_name)) return FALSE;
         $this->add($param_name, $value);
-        $an_array_of_this = array($this); // Because passed as pointer, must be a variable
-        if ($value === 'free') Zotero::drop_urls_that_match_dois($an_array_of_this);
         return TRUE;
       
       case 's2cid':
