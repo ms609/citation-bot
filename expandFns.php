@@ -45,6 +45,7 @@ function sanitize_doi(string $doi) : string {
       $doi = (string) substr($doi, 0, $pos);
    }
   }
+  $doi = str_replace('//', '/', $doi);
   // And now for 10.1093 URLs
   // The add chapter/page stuff after the DOI in the URL and it looks like part of the DOI to us
   // Things like 10.1093/oxfordhb/9780199552238.001.0001/oxfordhb-9780199552238-e-003 and 10.1093/acprof:oso/9780195304923.001.0001/acprof-9780195304923-chapter-7
