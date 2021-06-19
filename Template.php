@@ -1353,6 +1353,7 @@ final class Template {
       case 'doi-access':
         if ($this->blank('doi') || $this->has($param_name)) return FALSE;
         $this->add($param_name, $value);
+        if ($value === 'free') drop_urls_that_match_dois(array($this));
         return TRUE;
       
       case 's2cid':
@@ -4562,7 +4563,9 @@ final class Template {
               $this->set('issue', $matches[1]);
             }
           }
-          if (doi_works($doi) && (strpos($doi, '10.3389/') === 0 || strpos($doi, '10.3390/') === 0)) {
+          if (doi_works($doi) && (strpos($doi, '10.3389/') === 0 ||
+                                  strpos($doi, '10.3390/') === 0 ||
+                                  strpos($doi, '10.1155/') === 0)) {
             $this->add_if_new('doi-access', 'free');
           }
           return;
