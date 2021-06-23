@@ -488,6 +488,20 @@ function title_capitalization(string $in, bool $caps_after_punctuation) : string
       }
     }
   }
+  // Trust existing "DOS", "dos", ... 
+  $its_in = preg_match_all('~ dos(?= )~iu', ' ' . trim($in) . ' ', $matches_in, PREG_OFFSET_CAPTURE);
+  $new_case = trim($new_case);
+  $its_out = preg_match_all('~ dos(?= )~iu', ' ' . $new_case . ' ', $matches_out, PREG_OFFSET_CAPTURE);
+  if ($its_in === $its_out && $its_in != 0) {
+    $matches_in = $matches_in[0];
+    $matches_out = $matches_out[0];
+    foreach ($matches_in as $key => $_value) {
+      if ($matches_in[$key][0] != $matches_out[$key][0]  &&
+          $matches_in[$key][1] == $matches_out[$key][1]) {
+        $new_case = mb_substr_replace($new_case, trim($matches_in[$key][0]), $matches_out[$key][1], 3);
+      }
+    }
+  }
   return $new_case;
 }
 
