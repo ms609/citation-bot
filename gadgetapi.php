@@ -33,7 +33,10 @@ try {
 
  ob_end_clean();
 
- /** @psalm-taint-escape html */
+ /**
+   * @psalm-taint-escape html
+   * @psalm-taint-escape has_quotes
+   */
  $result = array(
    'expandedtext' => $newText,
    'editsummary' => $editSummary
