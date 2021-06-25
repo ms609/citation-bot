@@ -145,7 +145,7 @@ foreach ($pages_to_do as $page_title) {
     }
     echo "\n";
   } else {
-    echo "\n Page      '" . htmlspecialchars($page_title) . "' not found.";
+    echo "\n Page      '" . echoable($page_title) . "' not found.";
   }
 }
 if (strpos($pages, '|') !== FALSE) {
