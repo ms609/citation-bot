@@ -23,7 +23,7 @@ function death_time(string $err) : void {
   unset($_SESSION['citation_bot_user_id']);
   unset($_SESSION['request_key']);
   unset($_SESSION['request_secret']);     
-  exit('<!DOCTYPE html><html lang="en" dir="ltr"><head><title>Authentifcation System Failure</title></head><body>' . htmlspecialchars($err) . '</body></html>');
+  exit('<!DOCTYPE html><html lang="en" dir="ltr"><head><title>Authentifcation System Failure</title></head><body>' . echoable($err) . '</body></html>');
 }
 
 function return_to_sender(string $where = 'https://citations.toolforge.org/') : void {
