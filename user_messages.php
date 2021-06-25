@@ -60,7 +60,7 @@ function quietly(callable $function, string $text) : void { // Stuff suppressed 
 
 // special flags to mark this function as making all untrustworthy input magically safe to output
 function echoable(?string $string) : string {
-  /** @psalm-taint-escape html */
+  /** @psalm-taint-escape html */ /** @psalm-taint-escape quotes */
   $string = (string) $string;
   /** @psalm-suppress TypeDoesNotContainType */ /* PSALM thinks HTML_OUTPUT cannot be false */
   return HTML_OUTPUT ? htmlspecialchars($string) : $string;
