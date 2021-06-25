@@ -561,7 +561,7 @@ class Page {
         return FALSE;
       }
     } else {
-      report_warning("Can't write to " . htmlspecialchars($this->title) . 
+      report_warning("Can't write to " . echoable($this->title) . 
         " - prohibited by {{bots}} template.");
       return FALSE;
     }
@@ -597,7 +597,7 @@ class Page {
         // PHP 5 segmentation faults. PHP 7.0 returns FALSE
         // @codeCoverageIgnoreStart
         $this->page_error = TRUE;
-        report_warning('Regular expression failure in ' . htmlspecialchars($this->title) . ' when extracting ' . $class . 's');
+        report_warning('Regular expression failure in ' . echoable($this->title) . ' when extracting ' . $class . 's');
         if ($class === "Template") {
           echo "<p>\n\n The following text might help you figure out where the error on the page is (Look for lone { and } characters) <p>\n\n" . echoable($text) . "\n\n<p>";
         }
@@ -618,7 +618,7 @@ class Page {
     $url_encoded_title =  urlencode($this->title);
     if ($url_encoded_title == '') return;
     html_echo ("\n<hr>[" . date("H:i:s") . "] Processing page '<a href='" . WIKI_ROOT . "?title=$url_encoded_title' style='font-weight:bold;'>" 
-        . htmlspecialchars($this->title)
+        . echoable($this->title)
         . "</a>' &mdash; <a href='" . WIKI_ROOT . "?title=$url_encoded_title"
         . "&action=edit' style='font-weight:bold;'>edit</a>&mdash;<a href='" . WIKI_ROOT . "?title=$url_encoded_title"
         . "&action=history' style='font-weight:bold;'>history</a> <script type='text/javascript'>"
