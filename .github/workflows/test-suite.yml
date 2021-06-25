@@ -18,7 +18,7 @@ jobs:
     - name: Setup PHP 7.3 with PCOV
       uses: shivammathur/setup-php@v2
       with:
-        php-version: '7.3'
+        php-version: '8.0'
         ini-values: pcov.directory=.
         coverage: pcov
 
@@ -35,7 +35,7 @@ jobs:
           ${{ runner.os }}-php-
 
     - name: confiugre composer and dependecies
-      run: composer config minimum-stability dev && composer config prefer-stable true && composer require mediawiki/oauthclient:1.1.0  phpunit/phpunit ^9
+      run: composer config minimum-stability dev && composer config prefer-stable true && composer require mediawiki/oauthclient:dev-master  phpunit/phpunit ^9
       
     - name: Install dependencies
       if: steps.composer-cache.outputs.cache-hit != 'true'

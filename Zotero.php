@@ -11,12 +11,12 @@ final class Zotero {
   private const ZOTERO_GIVE_UP = 5;
   private const ZOTERO_SKIPS = 100;
   private const ERROR_DONE = 'ERROR_DONE'; 
-  protected static $zotero_announced = 0;
-  protected static $zotero_ch;
-  protected static $zotero_failures_count = 0;
+  protected static int $zotero_announced = 0;
+  protected static ?CurlHandle $zotero_ch;
+  protected static int $zotero_failures_count = 0;
 
 private static function set_default_ch_zotero() : void {
-  /** @phan-suppress-next-line PhanRedundantCondition */
+  /** @phan-suppress-next-line PhanRedundantCondition */  /** @phpstan-ignore-next-line */
   if ( USE_CITOID ) {
         /** @psalm-suppress PossiblyNullArgument */ 
         curl_setopt_array(self::$zotero_ch,
@@ -53,7 +53,7 @@ public static function unblock_zotero() : void {
 
 public static function query_url_api_class(array $ids, array &$templates) : void { // Pointer to save memory
   if (!SLOW_MODE) return; // Zotero takes time
-  if (!is_resource(self::$zotero_ch)) { // When closed will return FALSE
+  if (!isset(self::$zotero_ch)) {
      self::$zotero_ch = curl_init();
      self::set_default_ch_zotero();
   }
@@ -288,11 +288,11 @@ private static function zotero_request(string $url) : string {
     if (self::ZOTERO_GIVE_UP == self::$zotero_failures_count) self::$zotero_failures_count = 0; // @codeCoverageIgnore
   }
 
-  if (!is_resource(self::$zotero_ch)) {
+  if (!isset(self::$zotero_ch)) {
      self::$zotero_ch = curl_init();   // @codeCoverageIgnore
      self::set_default_ch_zotero();    // @codeCoverageIgnore
   }
-  /** @phan-suppress-next-line PhanRedundantCondition */
+  /** @phan-suppress-next-line PhanRedundantCondition */  /** @phpstan-ignore-next-line */
   if ( USE_CITOID ) {
      curl_setopt(self::$zotero_ch, CURLOPT_URL, CITOID_ZOTERO . urlencode($url));
   } else {

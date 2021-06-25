@@ -13,15 +13,14 @@ require_once("constants.php");      // @codeCoverageIgnore
 
 final class WikipediaBot {
 
-  private $bot_consumer;
-  private $bot_token;
-  private $user_consumer;
-  private $user_client;
-  private $user_token;
-  /** @var resource $ch */
-  private $ch;
-  private $the_user = '';
-  private static $last_WikipediaBot;  // This leads what looks like a circular memory-leak in the test suite, but not in real-life
+  private Consumer $bot_consumer;
+  private Token $bot_token;
+  private Consumer $user_consumer;
+  private Client $user_client;
+  private Token $user_token;
+  private CurlHandle $ch;
+  private string $the_user = '';
+  private static ?self $last_WikipediaBot;  // This leads what looks like a circular memory-leak in the test suite, but not in real-life
 
   function __construct(bool $no_user = FALSE) {
     $this->ch = curl_init();

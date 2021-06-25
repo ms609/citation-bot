@@ -10,7 +10,7 @@ function query_pmid_api (array $pmids, array &$templates) : bool { return entrez
 function query_pmc_api  (array $pmcs, array &$templates) : bool { return entrez_api($pmcs,  $templates, 'pmc'); } // Pointer to save memory
 
 final class AdsAbsControl {
-  private static $counter = 0;
+  private static int $counter = 0;
   public static function gave_up_yet() : bool {
     self::$counter = max(self::$counter - 1, 0);
     return (self::$counter != 0);
@@ -866,10 +866,10 @@ function is_doi_works(string $doi) : ?bool {
   $context = stream_context_create(array(
            'ssl' => ['verify_peer' => FALSE, 'verify_peer_name' => FALSE, 'allow_self_signed' => TRUE]
          )); // Allow crudy cheap journals
-  $headers_test = @get_headers("https://dx.doi.org/" . doi_encode($doi), 1, $context);
+  $headers_test = @get_headers("https://dx.doi.org/" . doi_encode($doi), TRUE, $context);
   if ($headers_test === FALSE) {
      sleep(1);                                                                            // @codeCoverageIgnore
-     $headers_test = @get_headers("https://dx.doi.org/" . doi_encode($doi), 1, $context);  // @codeCoverageIgnore
+     $headers_test = @get_headers("https://dx.doi.org/" . doi_encode($doi), TRUE, $context);  // @codeCoverageIgnore
   }
   if ($headers_test === FALSE) return NULL; // most likely bad, but will recheck again an again
   $response = $headers_test[0];
