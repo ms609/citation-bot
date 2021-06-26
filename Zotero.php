@@ -234,7 +234,7 @@ public static function drop_urls_that_match_dois(array &$templates) : void {  //
                  $template->has_good_free_copy() &&
                  (stripos($template->get($url_kind), 'pdf') === FALSE)) {
           report_forget("Existing canonical URL resulting in equivalent free DOI/pmc; dropping URL");
-          if ($url_kind === 'url' && $template->get('doi-access') === 'free' && $template->blank(TITLE_LINK_ALIASES)) {
+          if (FALSE && $url_kind === 'url' && $template->get('doi-access') === 'free' && $template->blank(TITLE_LINK_ALIASES)) {
              $template->rename('url', 'title-link', 'doi');
           } else {
              $template->forget($url_kind);  
