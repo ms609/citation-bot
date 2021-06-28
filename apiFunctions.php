@@ -466,6 +466,7 @@ function adsabs_api(array $ids, array &$templates, string $identifier) : bool { 
       if (preg_match('~^[\-\–\d]+$~u', $dum)) {
         $this_template->add_if_new("pages", $dum, 'adsabs');
       }
+      unset($record->page);
     }
     if (isset($record->identifier)) { // Sometimes arXiv is in journal (see above), sometimes here in identifier
       foreach ($record->identifier as $recid) {
