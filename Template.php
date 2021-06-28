@@ -2734,7 +2734,11 @@ final class Template {
       if (isset($record->issue))  $this->add_if_new('issue', (string) $record->issue);
       if (isset($record->year))   $this->add_if_new('year', preg_replace("~\D~", "", (string) $record->year));
       if (isset($record->page)) {
-        $this->add_if_new('pages', implode('–', $record->page));
+        $dum = implode('–', $record->page);
+        if (preg_match('~^[\-\–\d]+$~u', $dum)) {
+          $this->add_if_new('pages', $dum);
+        }
+        unset($record->page);
       }
       if (isset($record->identifier)) { // Sometimes arXiv is in journal (see above), sometimes here in identifier
         foreach ($record->identifier as $recid) {
