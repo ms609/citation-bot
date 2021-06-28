@@ -462,7 +462,10 @@ function adsabs_api(array $ids, array &$templates, string $identifier) : bool { 
     $this_template->add_if_new("issue", (string) @$record->issue, 'adsabs');
     $this_template->add_if_new("year", preg_replace("~\D~", "", (string) @$record->year), 'adsabs');
     if (isset($record->page)) {
-      $this_template->add_if_new("pages", implode('–', $record->page), 'adsabs');
+      $dum = implode('–', $record->page);
+      if (preg_match('~^[\-\–\d]+$~u', $dum)) {
+        $this_template->add_if_new("pages", $dum, 'adsabs');
+      }
     }
     if (isset($record->identifier)) { // Sometimes arXiv is in journal (see above), sometimes here in identifier
       foreach ($record->identifier as $recid) {
