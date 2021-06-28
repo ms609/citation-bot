@@ -2736,7 +2736,7 @@ final class Template {
       if (isset($record->page)) {
         $dum = implode('–', $record->page);
         if (preg_match('~^[\-\–\d]+$~u', $dum)) {
-          $this->add_if_new("pages", $dum);
+          $this->add_if_new('pages', $dum);
         }
         unset($record->page);
       }
