@@ -512,49 +512,49 @@ final class Template {
               expand_by_jstor($this);
             }
             if ($this->has('CITATION_BOT_PLACEHOLDER_journal')) {
-              if ($this->has('journal')) {
+              if ($this->has('journal') && $this->get('journal') !== $this->get('CITATION_BOT_PLACEHOLDER_journal')) {
                 $this->forget('CITATION_BOT_PLACEHOLDER_journal');
               } else {
                 $this->rename('CITATION_BOT_PLACEHOLDER_journal', 'journal');
               }
             }
             if ($this->has('CITATION_BOT_PLACEHOLDER_title')) {
-              if ($this->has('title')) {
+              if ($this->has('title') && $this->get('title') !== $this->get('CITATION_BOT_PLACEHOLDER_title')) {
                 $this->forget('CITATION_BOT_PLACEHOLDER_title');
               } else {
                 $this->rename('CITATION_BOT_PLACEHOLDER_title', 'title');
               }
             }
             if ($this->has('CITATION_BOT_PLACEHOLDER_chapter')) {
-              if ($this->has('chapter')) {
+              if ($this->has('chapter') && $this->get('chapter') !== $this->get('CITATION_BOT_PLACEHOLDER_chapter')) {
                 $this->forget('CITATION_BOT_PLACEHOLDER_chapter');
               } else {
                 $this->rename('CITATION_BOT_PLACEHOLDER_chapter', 'chapter');
               }
             }
             if ($this->has('CITATION_BOT_PLACEHOLDER_issue')) {
-              if ($this->has('issue')) {
+              if ($this->has('issue') && $this->get('issue') !== $this->get('CITATION_BOT_PLACEHOLDER_issue')) {
                 $this->forget('CITATION_BOT_PLACEHOLDER_issue');
               } else {
                 $this->rename('CITATION_BOT_PLACEHOLDER_issue', 'issue');
               }
             }
             if ($this->has('CITATION_BOT_PLACEHOLDER_volume')) {
-              if ($this->has('volume')) {
+              if ($this->has('volume') && $this->get('volume') !== $this->get('CITATION_BOT_PLACEHOLDER_volume')) {
                 $this->forget('CITATION_BOT_PLACEHOLDER_volume');
               } else {
                 $this->rename('CITATION_BOT_PLACEHOLDER_volume', 'volume');
               }
             }
             if ($this->has('CITATION_BOT_PLACEHOLDER_page')) {
-              if ($this->has('page') || $this->has('pages')) {
+              if (($this->has('page') || $this->has('pages')) && ($this->get('page') . $this->get('pages') !== $this->get('CITATION_BOT_PLACEHOLDER_page'))) {
                 $this->forget('CITATION_BOT_PLACEHOLDER_page');
               } else {
                 $this->rename('CITATION_BOT_PLACEHOLDER_page', 'page');
               }
             }
             if ($this->has('CITATION_BOT_PLACEHOLDER_pages')) {
-              if ($this->has('page') || $this->has('pages')) {
+              if (($this->has('page') || $this->has('pages')) && ($this->get('page') . $this->get('pages') !== $this->get('CITATION_BOT_PLACEHOLDER_pages'))) {
                 $this->forget('CITATION_BOT_PLACEHOLDER_pages');
               } else {
                 $this->rename('CITATION_BOT_PLACEHOLDER_pages', 'pages');
