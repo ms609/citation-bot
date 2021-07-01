@@ -314,7 +314,7 @@ function titles_simple(string $inTitle) : string {
         $inTitle = preg_replace('~^The ~iu', '', $inTitle);
         // Reduce punctuation
         $inTitle = straighten_quotes(mb_strtolower((string) $inTitle));
-        $inTitle = preg_replace("~(?: |-|—|–|â€™|â€”|â€“)~u", "", $inTitle);
+        $inTitle = preg_replace("~(?: |‐|−|-|—|–|â€™|â€”|â€“)~u", "", $inTitle);
         $inTitle = str_replace(array("\n", "\r", "\t", "&#8208;", ":", "&ndash;", "&mdash;", "&ndash", "&mdash"), "", $inTitle);
         // Retracted
         $inTitle = preg_replace("~\[RETRACTED\]~ui", "", $inTitle);
