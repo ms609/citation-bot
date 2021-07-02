@@ -514,7 +514,8 @@ final class Template {
               expand_by_jstor($this);
             }
             if ($this->has('CITATION_BOT_PLACEHOLDER_journal')) {
-              if ($this->has('journal') && $this->get('journal') !== $this->get('CITATION_BOT_PLACEHOLDER_journal')) {
+              if ($this->has('journal') && $this->get('journal') !== $this->get('CITATION_BOT_PLACEHOLDER_journal') &&
+                  '[[' . $this->get('journal') . ']]' !== $this->get('CITATION_BOT_PLACEHOLDER_journal')) {
                 $this->forget('CITATION_BOT_PLACEHOLDER_journal');
               } else {
                 $this->rename('CITATION_BOT_PLACEHOLDER_journal', 'journal');
