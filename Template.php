@@ -399,7 +399,9 @@ final class Template {
           }
       }
       // Clean up bad data
-      if (in_array($this->get('title'), [ "Bloomberg - Are you a robot?", "Page not found"])) {
+      if (in_array($this->get('title'), [ "Bloomberg - Are you a robot?", "Page not found",
+                                         "Breaking News, Analysis, Politics, Blogs, News Photos, Video, Tech Reviews",
+                                         "Breaking News, Analysis, Politics, Blogs, News Photos, Video, Tech Reviews - TIME.com"])) {
           $this->forget('title'); 
       }
       if (($this->get('title') === "Wayback Machine" || $this->get('title') === "Internet Archive Wayback Machine") && !$this->blank(['archive-url', 'archiveurl'])) {
@@ -490,9 +492,6 @@ final class Template {
               $this->rename('title', 'CITATION_BOT_PLACEHOLDER_title');
               $bad_data = TRUE;
             } elseif ($the_title === 'Shibboleth Authentication Request') {
-              $this->rename('title', 'CITATION_BOT_PLACEHOLDER_title');
-              $bad_data = TRUE;
-            } elseif ($the_title === 'Breaking News, Analysis, Politics, Blogs, News Photos, Video, Tech Reviews') {
               $this->rename('title', 'CITATION_BOT_PLACEHOLDER_title');
               $bad_data = TRUE;
             } elseif (preg_match('~.+(?: Volume| Vol\.| V. | Number| No\.| Num\.| Issue ).*\d+.*page.*\d+~i', $the_title)) {
