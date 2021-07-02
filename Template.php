@@ -343,6 +343,17 @@ final class Template {
   }
 
   public function prepare() : void {
+    if (in_array($this->wikiname(), TEMPLATES_WE_PROCESS) || in_array($this->wikiname(), TEMPLATES_WE_SLIGHTLY_PROCESS)) {
+      // Clean up bad data
+      if (in_array($this->get('title'), [ "Bloomberg - Are you a robot?", "Page not found",
+                                         "Breaking News, Analysis, Politics, Blogs, News Photos, Video, Tech Reviews",
+                                         "Breaking News, Analysis, Politics, Blogs, News Photos, Video, Tech Reviews - TIME.com"])) {
+          $this->forget('title'); 
+      }
+      if (($this->get('title') === "Wayback Machine" || $this->get('title') === "Internet Archive Wayback Machine") && !$this->blank(['archive-url', 'archiveurl'])) {
+          $this->forget('title');
+      }
+    }
     if ($this->should_be_processed()) {
       // Remove empty duplicates
       if (!empty($this->param)) {
@@ -397,15 +408,6 @@ final class Template {
           if ($this->use_sici()) {
             report_action("Found and used SICI");
           }
-      }
-      // Clean up bad data
-      if (in_array($this->get('title'), [ "Bloomberg - Are you a robot?", "Page not found",
-                                         "Breaking News, Analysis, Politics, Blogs, News Photos, Video, Tech Reviews",
-                                         "Breaking News, Analysis, Politics, Blogs, News Photos, Video, Tech Reviews - TIME.com"])) {
-          $this->forget('title'); 
-      }
-      if (($this->get('title') === "Wayback Machine" || $this->get('title') === "Internet Archive Wayback Machine") && !$this->blank(['archive-url', 'archiveurl'])) {
-          $this->forget('title');
       }
       if (!$this->blank(['pmc', 'pmid', 'doi', 'jstor'])) { // Have some good data
           $the_title   = $this->get('title');
