@@ -271,6 +271,7 @@ class Page {
       } elseif (in_array($this_template->wikiname(), TEMPLATES_WE_SLIGHTLY_PROCESS)) {
         $our_templates_slight[] = $this_template;
         $this_template->correct_param_mistakes();
+        $this_template->prepare(); // does very little
         $this_template->get_identifiers_from_url();
         $this_template->expand_by_google_books();
         $this_template->tidy();
@@ -294,6 +295,7 @@ class Page {
           $this_template->set('magazine', straighten_quotes(trim($this_template->get('magazine'))));
         }
         $this_template->correct_param_mistakes();
+        $this_template->prepare(); // does very little
         $this_template->get_identifiers_from_url();
         $this_template->expand_by_google_books();
         $this_template->tidy();
