@@ -488,10 +488,13 @@ final class Template {
               $bad_data = TRUE;
             } elseif (substr($the_title, 0, 12) == 'IEEE Xplore ') {
               $this->rename('title', 'CITATION_BOT_PLACEHOLDER_title');
-              $bad_data = TRUE; 
-            } elseif ($the_title == 'Shibboleth Authentication Request') {
+              $bad_data = TRUE;
+            } elseif ($the_title === 'Shibboleth Authentication Request') {
               $this->rename('title', 'CITATION_BOT_PLACEHOLDER_title');
-              $bad_data = TRUE; 
+              $bad_data = TRUE;
+            } elseif ($the_title === 'Breaking News, Analysis, Politics, Blogs, News Photos, Video, Tech Reviews') {
+              $this->rename('title', 'CITATION_BOT_PLACEHOLDER_title');
+              $bad_data = TRUE;
             } elseif (preg_match('~.+(?: Volume| Vol\.| V. | Number| No\.| Num\.| Issue ).*\d+.*page.*\d+~i', $the_title)) {
               $this->rename('title', 'CITATION_BOT_PLACEHOLDER_title');
               $bad_data = TRUE;
