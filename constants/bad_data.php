@@ -166,7 +166,7 @@ const NON_JOURNAL_WEBSITES = array('cnn.com/', 'foxnews.com/', 'msnbc.com/', 'nb
 
 const NON_JOURNAL_DOIS = array('10.5531/db.vz.0001'); // lowercase exact matches
 const NON_JOURNALS = array('Amphibian Species of the World', 'an Online Reference', 'An Online Reference'); // Case-sensitive sub-string
-const ARE_MAGAZINES = array('the new yorker', 'the new republic', 'new republic', 'expedition magazine'); // lowercase axact matches
+const ARE_MAGAZINES = array('the new yorker', 'the new republic', 'new republic', 'expedition magazine', 'wired', 'wired uk'); // lowercase axact matches
 const ARE_NEWSPAPERS = array('the economist'); // lowercase axact matches
 const NO_PUBLISHER_NEEDED = array('los angeles times', 'new york times magazine', 'the new york times',
                                    'new york times', 'huffington post', 'the daily telegraph', 'forbes.com',
