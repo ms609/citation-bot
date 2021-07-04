@@ -5051,7 +5051,49 @@ final class Template {
               }
             }
           }
-            
+
+          if ($publisher === 'the guardian' ||
+              $publisher === 'the guardian media' ||
+              $publisher === 'the guardian media group') {
+            foreach (WORK_ALIASES as $work) {
+              if (stripos($this->get($work), 'The Guardian') !== FALSE ||
+                  stripos($this->get($work), 'theguardian.com') !== FALSE) {
+                 $this->forget($param);
+                 if (stripos($this->get($work), 'theguardian.com') !== FALSE) {
+                   $this->set($work, '[[The Guardian]]');
+                 }
+                 return;
+              }
+            }
+          }
+
+          if ($publisher === 'the economist' ||
+              $publisher === 'the economist group') {
+            foreach (WORK_ALIASES as $work) {
+              if (stripos($this->get($work), 'the economist') !== FALSE ||
+                  stripos($this->get($work), 'economist.com') !== FALSE) {
+                 $this->forget($param);
+                 if (stripos($this->get($work), 'economist.com') !== FALSE) {
+                   $this->set($work, '[[The Economist]]');
+                 }
+                 return;
+              }
+            }
+          }
+
+          if ($publisher === 'news uk') {
+            foreach (WORK_ALIASES as $work) {
+              if (stripos($this->get($work), 'the times') !== FALSE ||
+                  stripos($this->get($work), 'thetimes.co.uk') !== FALSE) {
+                 $this->forget($param);
+                 if (stripos($this->get($work), 'thetimes.co.uk') !== FALSE) {
+                   $this->set($work, '[[The Times]]|');
+                 }
+                 return;
+              }
+            }
+          }
+          
           if ($publisher === 'san jose mercury news' ||
               $publisher === 'san jose mercury-news') {
             foreach (WORK_ALIASES as $work) {
