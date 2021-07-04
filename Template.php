@@ -5054,7 +5054,9 @@ final class Template {
 
           if ($publisher === 'the guardian' ||
               $publisher === 'the guardian media' ||
-              $publisher === 'the guardian media group') {
+              $publisher === 'the guardian media group' ||
+              $publisher === 'guardian media' ||
+              $publisher === 'guardian media group') {
             foreach (WORK_ALIASES as $work) {
               if (stripos($this->get($work), 'The Guardian') !== FALSE ||
                   stripos($this->get($work), 'theguardian.com') !== FALSE) {
