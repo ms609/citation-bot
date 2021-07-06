@@ -7417,6 +7417,7 @@ final class Template {
          if (preg_match("~^\d{4}.\d{4}$~", $possible_issue)) return; // Range of years
          if ($possible_issue === $this->get('year')) return;
          if ($possible_issue === $this->get('date')) return;
+         if ($this->year() !== '' && strpos($possible_issue, $this->year()) !== FALSE) return;
          if (preg_match('~\d{4}~', $possible_issue)) return; // probably a year or range of years
          if ($param == 'volume') {
             if ($this->blank(ISSUE_ALIASES)) {
