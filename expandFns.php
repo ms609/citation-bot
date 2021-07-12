@@ -632,7 +632,7 @@ function tidy_date(string $string) : string {
     $day = date('d', $time);
     $year = intval(date('Y', $time));
     if ($year < -2000 || $year > (int)date("Y") + 10) return ''; // We got an invalid year
-    if ($year < 3 && $year > -3) return '';
+    if ($year < 100 && $year > -100) return '';
     if ($day == '01') { // Probably just got month and year
       $string = date('F Y', $time);
     } else {
