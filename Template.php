@@ -4181,7 +4181,14 @@ final class Template {
     $pmatch = ['', '', '', '']; // prevent memory leak in some PHP versions
     $match = ['', '']; // prevent memory leak in some PHP versions
 
+    
+
+    
     if (!$param) return;
+    
+    
+    echo "\n 1 tidy of parameter: " . $param . "  " . $this->get($param) . "\n";
+   
     
     if ($param === 'postscript' && $this->wikiname() !== 'citation' &&
         preg_match('~^(?:# # # CITATION_BOT_PLACEHOLDER_COMMENT \d+ # # #)\s*(?:# # # CITATION_BOT_PLACEHOLDER_TEMPLATE \d+ # # #|)$~i', $this->get('postscript'))) {
@@ -4193,12 +4200,24 @@ final class Template {
        report_forget('Dropping postscript that is only a comment');
        return;
     }
-    
+        
+    echo "\n 2 tidy of parameter: " . $param . "  " . $this->get($param) . "\n";
+   
+
     if (mb_stripos($this->get($param), 'CITATION_BOT_PLACEHOLDER_COMMENT') !== FALSE && $param !== 'ref') {
       return;  // We let comments block the bot
     }
-    if ($this->get($param) != $this->get3($param)) return;
     
+        
+    echo "\n 3 tidy of parameter: " . $param . "  " . $this->get($param) . "\n";
+   
+
+    
+    if ($this->get($param) != $this->get3($param)) return;
+        
+    echo "\n 4 tidy of parameter: " . $param . "  " . $this->get($param) . "\n";
+   
+
     if($this->has($param)) {
       if (stripos($param, 'separator') === FALSE &&  // lone punctuation valid
           stripos($param, 'postscript') === FALSE &&  // periods valid
@@ -4213,14 +4232,20 @@ final class Template {
         $this->set($param, preg_replace('~&#x2013;~u', '&ndash;', $this->get($param)));
         $this->set($param, preg_replace('~&#x2014;~u', '&mdash;', $this->get($param)));
         $this->set($param, preg_replace('~(?<!\&)&[Aa]mp;(?!&)~u', '&', $this->get($param))); // &Amp; => & but not if next character is & or previous character is ;
-      
+          
+    echo "\n 5 tidy of parameter: " . $param . "  " . $this->get($param) . "\n";
+   
+
         // Remove final semi-colon from a few items
         if ((in_array($param, ['date', 'year', 'location', 'publisher', 'issue', 'number', 'page', 'pages', 'pp', 'p', 'volume']) ||
            in_array($param, FLATTENED_AUTHOR_PARAMETERS))
           && strpos($this->get($param), '&') === FALSE) {
          $this->set($param, preg_replace('~;$~u', '', $this->get($param)));
         }
-      
+          
+    echo "\n 6 tidy of parameter: " . $param . "  " . $this->get($param) . "\n";
+   
+
         // Remove quotes, if only at start and end -- In the case of title, leave them unless they are messed up
         // Do not do titles of non-books, since they sometimes have quotes in the actual one
         if (($param !== 'title' || $this->has('chapter')) && preg_match("~^([\'\"]+)([^\'\"]+)([\'\"]+)$~u", $this->get($param), $matches)) {
@@ -4228,20 +4253,44 @@ final class Template {
             $this->set($param, $matches[2]);
          }
         }
+            
+    echo "\n 7 tidy of parameter: " . $param . "  " . $this->get($param) . "\n";
+   
+
         if (preg_match("~^\'\'\'([^\']+)\'\'\'$~u", $this->get($param), $matches)) {
            $this->set($param, $matches[1]); // Remove bold
         }
+    
+    echo "\n 8 tidy of parameter: " . $param . "  " . $this->get($param) . "\n";
+   
 
         // Non-breaking spaces at ends
         $this->set($param, trim($this->get($param), " \t\n\r\0\x0B"));
         while (preg_match("~^&nbsp;(.+)$~u", $this->get($param), $matches)) {
           $this->set($param, trim($matches[1], " \t\n\r\0\x0B"));
         }
+        
+            
+    echo "\n 9 tidy of parameter: " . $param . "  " . $this->get($param) . "\n";
+   
+
+        
         while (preg_match("~^(.+)&nbsp;$~u", $this->get($param), $matches)) {
           $this->set($param, trim($matches[1], " \t\n\r\0\x0B"));
         }
+        
+            
+    echo "\n 10 tidy of parameter: " . $param . "  " . $this->get($param) . "\n";
+   
+
+        
         $this->set($param, preg_replace('~\x{00AD}~u', '', $this->get($param))); // Remove soft hyphen
       }
+      
+          
+    echo "\n 11 tidy of parameter: " . $param . "  " . $this->get($param) . "\n";
+   
+
     }
  
     if (!preg_match('~^(\D+)(\d*)(\D*)$~', $param, $pmatch)) {
@@ -6287,26 +6336,49 @@ final class Template {
           return;
           
         case 'year':
+              
+    echo "\n 20 tidy of parameter: " . $param . "  " . $this->get($param) . "\n";
+   
+
           if ($this->blank($param)) {
             if ($this->has('date')) $this->forget('year');
             return;
           }
+                        
+    echo "\n 21 tidy of parameter: " . $param . "  " . $this->get($param) . "\n";
+   
           if (preg_match("~\d\d*\-\d\d*\-\d\d*~", $this->get('year'))) { // We have more than one dash, must not be range of years.
+                          
+    echo "\n 22 tidy of parameter: " . $param . "  " . $this->get($param) . "\n";
+   
              if ($this->blank('date')) $this->rename('year', 'date');
              $this->forget('year');
              return;
           }
+                        
+    echo "\n 23 tidy of parameter: " . $param . "  " . $this->get($param) . "\n";
+   
+          
           if (preg_match("~[A-Za-z][A-Za-z][A-Za-z]~", $this->get('year'))) { // At least three letters
              if ($this->blank('date')) $this->rename('year', 'date');
              $this->forget('year');
+                          
+    echo "\n 24 tidy of parameter: " . $param . "  " . $this->get($param) . "\n";
+   
              return;
           }
           if (preg_match("~^(\d{4})\.$~", $this->get($param), $matches)) {
              $this->set($param, $matches[1]); // trailing period
+                          
+    echo "\n 25 tidy of parameter: " . $param . "  " . $this->get($param) . "\n";
+   
              return;
           }
           if ($this->get($param) === 'n.d.') return; // Special no-date code that citation template recognize.
           // Issue should follow year with no break.  [A bit of redundant execution but simpler.]
+                        
+    echo "\n 26 tidy of parameter: " . $param . "  " . $this->get($param) . "\n";
+   
         case 'issue':
         case 'number':
           if ($this->blank($param)) return;
@@ -6327,32 +6399,66 @@ final class Template {
               $this->forget($param); // Was all zeros
             }
           }
+                        
+    echo "\n 27 tidy of parameter: " . $param . "  " . $this->get($param) . "\n";
+   
           if ($value) {
             $this->set($param, $value);
           } else {
+            
+                          
+    echo "\n 28 tidy of parameter: " . $param . "  " . $this->get($param) . "\n";
+   
             if (!$this->blank($param)) $this->forget($param);
             return;
           }
+                        
+    echo "\n 29 tidy of parameter: " . $param . "  " . $this->get($param) . "\n";
+   
           $this->volume_issue_demix($this->get($param), $param);
           if ($this->blank($param)) {
              $this->forget($param);
              return;
           }
+                        
+    echo "\n 30 tidy of parameter: " . $param . "  " . $this->get($param) . "\n";
+   
           $temp_string = strtolower($this->get('journal')) ;
           if(substr($temp_string, 0, 2) === "[[" && substr($temp_string, -2) === "]]") {  // Wikilinked journal title 
                $temp_string = substr(substr($temp_string, 2), 0, -2); // Remove [[ and ]]
           }
+                        
+    echo "\n 31 tidy of parameter: " . $param . "  " . $this->get($param) . "\n";
+   
+   
           if (in_array($temp_string, HAS_NO_ISSUE)) {
             if ($this->blank('volume')) {
+              
               $this->rename($param, 'volume');
+                                      
+    echo "\n 32 tidy of parameter: " . $param . "  " . $this->get($param) . "\n";
+   
+   
             } else {
               $this->forget($param);
+                                      
+    echo "\n 33 tidy of parameter: " . $param . "  " . $this->get($param) . "\n";
+   
+   
             }
             return;
           }
+                                  
+    echo "\n 34 tidy of parameter: " . $param . "  " . $this->get($param) . "\n";
+   
+   
           // No break here: pages, issue and year (the previous case) should be treated in this fashion.
         case 'pages': case 'page': case 'pp': # And case 'year': case 'issue':, following from previous
           $value = $this->get($param);
+                                  
+    echo "\n 35 tidy of parameter: " . $param . "  " . $this->get($param) . "\n";
+   
+   
           if (str_i_same('null', $value)) {
             $this->forget($param);
             return;
@@ -6373,6 +6479,10 @@ final class Template {
             $value = $matches[1];
             $this->set($param, $value);
           }
+                                  
+    echo "\n 36 tidy of parameter: " . $param . "  " . $this->get($param) . "\n";
+   
+   
           if (!preg_match("~^[A-Za-z ]+\-~", $value) && mb_ereg(REGEXP_TO_EN_DASH, $value)
               && can_safely_modify_dashes($value) && ($pmatch[1] !== 'page')) {
             $this->mod_dashes = TRUE;
@@ -6483,11 +6593,9 @@ final class Template {
     // Called in final_tidy when the template type is changed
     // We do this again when anything changes - up to three times
     $orig = $this->parsed_text();
-              echo $this->get('year') . " 1 \n";
     foreach ($this->param as $param) {
       $this->tidy_parameter($param->param);
     }
-              echo $this->get('year') . " 2 \n";
     $new = $this->parsed_text();
     if ($orig !== $new) {
       $orig = $new;
@@ -6495,16 +6603,13 @@ final class Template {
         $this->tidy_parameter($param->param);
       }
     }
-              echo $this->get('year') . " 3 \n";
     $new = $this->parsed_text();
-              echo $this->get('year') . " 4 \n";
     if ($orig !== $new) {
       $orig = $new;
       foreach ($this->param as $param) {
         $this->tidy_parameter($param->param);
       }
     }
-              echo $this->get('year') . " 5 \n";
   }
   
   public function final_tidy() : void {
