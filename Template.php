@@ -354,6 +354,7 @@ final class Template {
           $this->forget('title');
       }
     }
+    echo $this->get('year') . " 1 \n";
     if ($this->should_be_processed()) {
       // Remove empty duplicates
       if (!empty($this->param)) {
@@ -370,6 +371,7 @@ final class Template {
           }
         }
       }
+          echo $this->get('year') . " 2 \n";
       foreach (DATES_TO_CLEAN as $date) {
         if ($this->has($date)) {
           $input = $this->get($date);
@@ -381,15 +383,17 @@ final class Template {
           }
         }
       }
+                echo $this->get('year') . " 3 \n";
       $this->get_inline_doi_from_title();
       $this->parameter_names_to_lowercase();
       $this->use_unnamed_params();
       $this->get_identifiers_from_url();
       $this->id_to_param();
+                echo $this->get('year') . " 4 \n";
       $this->correct_param_spelling();
       $this->get_doi_from_text();
       $this->fix_rogue_etal();
-      
+                echo $this->get('year') . " 5 \n";
       switch ($this->wikiname()) {
         case "cite arxiv":
            // Forget dates so that DOI can update with publication date, not ARXIV date
@@ -409,6 +413,7 @@ final class Template {
             report_action("Found and used SICI");
           }
       }
+                echo $this->get('year') . " 6 \n";
       if (!$this->blank(['pmc', 'pmid', 'doi', 'jstor'])) { // Have some good data
           $the_title   = $this->get('title');
           $the_journal = $this->get('journal');
@@ -567,7 +572,9 @@ final class Template {
             }
           }
         }
+                echo $this->get('year') . " 7 \n";
         $this->tidy();
+                echo $this->get('year') . " 8 \n";
         // Fix up URLs hiding in identifiers
         foreach (['issn', 'oclc', 'pmc', 'doi', 'pmid', 'jstor', 'arxiv', 'zbl', 'mr',
                   'lccn', 'hdl', 'ssrn', 'ol', 'jfm', 'osti', 'biorxiv', 'citeseerx', 'hdl'] as $possible) {
@@ -586,10 +593,12 @@ final class Template {
              }
           }
         }
+                echo $this->get('year') . " 9 \n";
     } elseif ($this->wikiname() == 'cite magazine' &&  $this->blank('magazine') && $this->has_but_maybe_blank('work')) { 
       // This is all we do with cite magazine
       $this->rename('work', 'magazine');
     }
+              echo $this->get('year') . " 10 \n";
   }
   
   public function fix_rogue_etal() : void {
