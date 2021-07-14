@@ -6343,7 +6343,7 @@ final class Template {
           if(substr($temp_string, 0, 2) === "[[" && substr($temp_string, -2) === "]]") {  // Wikilinked journal title 
                $temp_string = substr(substr($temp_string, 2), 0, -2); // Remove [[ and ]]
           }
-          if (in_array($temp_string, HAS_NO_ISSUE)) {
+          if ($param === 'issue' && in_array($temp_string, HAS_NO_ISSUE)) {
             if ($this->blank('volume')) {
               $this->rename($param, 'volume');
             } else {
