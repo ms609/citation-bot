@@ -6620,6 +6620,15 @@ final class Template {
           }
        }
       }
+      if ($this->wikiname() === 'cite web') {
+       if (!$this->blank_other_than_comments('title') && !$this->blank_other_than_comments('chapter')) {
+          if ($this->name === 'cite web') { // Need special code to keep caps the same
+            $this->name = 'cite book';
+          } else {
+            $this->name = 'Cite book';
+          }
+       }
+      }
       if (!$this->blank(DOI_BROKEN_ALIASES) && $this->has('jstor') &&
         (strpos($this->get('doi'), '10.2307') === 0 || $this->get('doi') === $this->get('jstor') ||
          substr($this->get('doi'), 0, -2) === $this->get('jstor') || substr($this->get('doi'), 0, -3) === $this->get('jstor'))) {
