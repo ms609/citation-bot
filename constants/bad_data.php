@@ -69,7 +69,8 @@ const BAD_TITLES = array("unknown", "missing", "arxiv e-prints", "arxiv mathemat
                          "theses and dissertations available from proquest", "proquest ebook central", "report",
                          "bloomberg - are you a robot?", "page not found",
                          "breaking news, analysis, politics, blogs, news photos, video, tech reviews",
-                         "breaking news, analysis, politics, blogs, news photos, video, tech reviews - time.com"
+                         "breaking news, analysis, politics, blogs, news photos, video, tech reviews - time.com",
+                         "redirect notice"
                         );
 const IN_PRESS_ALIASES = array("in press", "inpress", "pending", "published", 
                                "published online", "no-no", "n/a", "online ahead of print", 
