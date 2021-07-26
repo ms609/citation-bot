@@ -572,7 +572,7 @@ public static function process_zotero_response(string $zotero_response, Template
   if (strpos($url, 'biodiversitylibrary.org') !== FALSE) {
     unset($result->publisher); // Not reliably set
   }
-  if (isset($result->title) && $result->title === 'Cultural Advice' && strpos('edu.au', $url) !== FALSE) {
+  if (isset($result->title) && $result->title === 'Cultural Advice' && strpos($url, 'edu.au') !== FALSE) {
       unset($result->title); // A warning, not a title
   }
   if (isset($result->bookTitle)) {
