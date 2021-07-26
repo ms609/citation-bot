@@ -4416,6 +4416,11 @@ final class Template {
               $this->forget('chapter'); 
               return; // Nonsense to have both.
             }
+            if ('Cultural Advice' === $this->get('chapter') &&
+                strpos($this->get('url') . $this->get('chatper-url'), 'adb.anu.edu.au') !== FALSE) {
+              $this->forget('chapter'); 
+              return;
+            }
           }
           if ($this->has('chapter') && $this->blank(['journal', 'bibcode', 'jstor', 'pmid'])) {
             $this->change_name_to('cite book');
