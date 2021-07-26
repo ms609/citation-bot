@@ -4417,7 +4417,7 @@ final class Template {
               return; // Nonsense to have both.
             }
             if ('Cultural Advice' === $this->get('chapter') &&
-                strpos($this->get('url') . $this->get('chatper-url'), 'adb.anu.edu.au') !== FALSE) {
+                strpos($this->get('url') . $this->get('chapter-url'), 'adb.anu.edu.au') !== FALSE) {
               $this->forget('chapter'); 
               return;
             }
