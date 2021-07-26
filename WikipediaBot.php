@@ -300,9 +300,10 @@ final class WikipediaBot {
       // @codeCoverageIgnoreEnd
     } else {
       // @codeCoverageIgnoreStart
-      if (!TRAVIS) report_error("Unhandled write error.  Please copy this output and " .
+      report_warning("Unhandled write error.  Please copy this output and " .
                     "<a href='https://en.wikipedia.org/wiki/User_talk:Citation_bot'>" .
-                    "report a bug.</a>.  There is no need to report the database being locked unless it continues to be a problem. ");
+                    "report a bug</a>.  There is no need to report the database being locked unless it continues to be a problem. ");
+      sleep(15);
       // @codeCoverageIgnoreEnd
     }
     return FALSE;
