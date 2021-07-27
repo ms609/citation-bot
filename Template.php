@@ -6485,7 +6485,7 @@ final class Template {
           if (preg_match(REGEXP_IS_URL, $the_param) !== 1) return; // complete
           if ($this->has('url')) {
              $url = $this->get('url');
-             if (strpos($the_param, $url) === 0) $this->forget($param);
+             if (strpos($url, $the_param) === 0) $this->forget($param);
           } else {
              $this->rename($param, 'url');
           }
