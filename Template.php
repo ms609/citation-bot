@@ -4458,7 +4458,7 @@ final class Template {
           
         case 'dead-url': case 'deadurl':
           $the_data = strtolower($this->get($param));
-          if (in_array($the_data, ['y', 'yes', 'dead'])) {
+          if (in_array($the_data, ['y', 'yes', 'dead', 'si', 'sì'])) {
             $this->rename($param, 'url-status', 'dead');
             $this->forget($param);
           }
@@ -4470,7 +4470,12 @@ final class Template {
           
         case 'url-status':
           $the_data = strtolower($this->get($param));
-          if (in_array($the_data, ['y', 'yes', 'n', 'no'])) {
+          if (in_array($the_data, ['y', 'yes', 'si', 'sì'])) {
+            $this->rename($param, 'url-status', 'dead');
+            $this->forget($param);
+          }
+          if (in_array($the_data, ['n', 'no', 'alive'])) {
+            $this->rename($param, 'url-status', 'live');
             $this->forget($param);
           }
           return;
