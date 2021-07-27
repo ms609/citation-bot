@@ -4467,6 +4467,13 @@ final class Template {
             $this->forget($param);
           }
           return;
+          
+        case 'url-status':
+          $the_data = strtolower($this->get($param));
+          if (in_array($the_data, ['y', 'yes', 'n', 'no'])) {
+            $this->forget($param);
+          }
+          return;
 
         case 'df':
           if ($this->blank('df')) $this->forget('df');
