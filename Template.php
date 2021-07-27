@@ -6477,6 +6477,16 @@ final class Template {
             $this->rename($param, 'newspaper');
           }
           return;
+          
+        case 'location':
+          // Check if it is a URL
+          if ($this->has('url')) return;
+          $the_param = $this->get($param);
+          if (filter_var($the_param, FILTER_VALIDATE_URL) === FALSE) return; // Fast
+          if (preg_match('~^https?://[^/]+/?$~', $the_param) === 1) return; // Just a host name
+          if (preg_match(REGEXP_IS_URL, $the_param) !== 1) return; // complete
+          $this->rename($param, 'url');
+          return;
          
         case 'publicationplace': case 'publication-place':
           // TODO - WAITING ON DISCUSSION
