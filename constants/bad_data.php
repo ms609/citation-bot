@@ -11,14 +11,14 @@ const BAD_ACCEPTED_MANUSCRIPT_TITLES = array("oup accepted manuscript", "placeho
                                              "placeholder for arabic language transliteration", "article not found");
 const BAD_AUTHORS = array("unknown", "missing", "- -.", "- -", "no authorship indicated", "no authorship", "no author",
                            "no authors", "no author indicated", "no authorship indicated", "dk eyewitness", "united states",
-                           "great britain", "indiatoday");
+                           "great britain", "indiatoday", "natural history museum bern");
 const NON_HUMAN_AUTHORS = array('collaborat', 'reporter', 'journalist', 'correspondent', 'anchor', 'staff', 'foreign',
                                 'national', 'endowment', ' for the ', 'humanities', 'committee', 'group',
                                 'society', ' of america', 'association', ' at the ', 'board of ', 'communications',
                                 'corporation', 'incorporated', 'editorial', 'university', 'dept. of', 'department',
                                 'dept of ', 'college', 'center for', 'office of', 'editor', 
                                 'world news', 'national news', 'eyewitness', 'information', 'business', 'bureau',
-                                'us census', 'indiatoday');
+                                'us census', 'indiatoday', 'natural history', 'museum');
 const BAD_PUBLISHERS = array('london', 'edinburgi', 'edinburgh', 'no publisher', 'no publisher given',
                              'no publisher specified', 'unknown', 'publisher not identified', 'report');
 
