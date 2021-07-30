@@ -533,7 +533,7 @@ function throttle (int $min_interval) : void {
   
   if ($last_write_time === 0) $last_write_time = time();
   
-  if ($gc_counter > 128) {
+  if ($gc_counter > 64) {
     $gc_counter = 0;
     gc_collect_cycles();
   }
