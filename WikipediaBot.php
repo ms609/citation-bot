@@ -282,7 +282,8 @@ final class WikipediaBot {
     } elseif (isset($result->edit)) {
       // @codeCoverageIgnoreStart
       if (isset($result->edit->captcha)) {
-        report_error("Write error: We encountered a captcha, so can't be properly logged in.");
+        report_minor_error("Write error: We encountered a captcha, so can't be properly logged in.");
+        return FALSE;
       } elseif ($result->edit->result == "Success") {
         // Need to check for this string wherever our behaviour is dependant on the success or failure of the write operation
         if (HTML_OUTPUT) {
