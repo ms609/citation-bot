@@ -161,6 +161,7 @@ function expand_arxiv_templates (array &$templates) : bool {  // Pointer to save
   $ids = array();
   $arxiv_templates = array();
   foreach ($templates as $this_template) {
+    set_time_limit(120);
     if ($this_template->wikiname() == 'cite arxiv') {
       $this_template->rename('arxiv', 'eprint');
     } else {
@@ -1234,6 +1235,7 @@ function expand_templates_from_archives(array &$templates) : void { // This is d
            CURLOPT_TIMEOUT => 25,
            CURLOPT_USERAGENT => 'Citation_bot; citations@tools.wmflabs.org']);
   foreach ($templates as $template) {
+    set_time_limit(120);
     if ($template->blank(['title', 'chapter', 'series']) &&
         !$template->blank(['archive-url', 'archive-url']) &&
         $template->blank(WORK_ALIASES)) {
