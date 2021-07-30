@@ -2298,6 +2298,7 @@ final class Template {
   }
 
   public function get_doi_from_crossref() : bool {
+    set_time_limit(120);
     if ($this->has('doi')) {
       return TRUE;
     }
@@ -2365,6 +2366,7 @@ final class Template {
   }
   
   public function get_doi_from_semanticscholar() : bool {
+    set_time_limit(120);
     if ($this->has('doi')) {
       return TRUE;
     }
@@ -2380,6 +2382,7 @@ final class Template {
   }
 
   public function find_pmid() : void {
+    set_time_limit(120);
     if (!$this->blank('pmid')) return;
     report_action("Searching PubMed... ");
     $results = $this->query_pubmed();
@@ -3074,6 +3077,7 @@ final class Template {
   }
 
   public function get_open_access_url() : void {
+    set_time_limit(120);
     if (!$this->blank(DOI_BROKEN_ALIASES)) return;
     $doi = $this->get_without_comments_and_placeholders('doi');
     if (!$doi) return;
@@ -3273,6 +3277,7 @@ final class Template {
   }
   
   public function expand_by_google_books() : bool {
+    set_time_limit(120); 
     $this->clean_google_books();
     if ($this->has('doi') && doi_active($this->get('doi'))) return FALSE;
     foreach (['url', 'chapterurl', 'chapter-url'] as $url_type) {
