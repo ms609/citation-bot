@@ -236,11 +236,7 @@ public static function drop_urls_that_match_dois(array &$templates) : void {  //
                  $template->has_good_free_copy() &&
                  (stripos($template->get($url_kind), 'pdf') === FALSE)) {
           report_forget("Existing canonical URL resulting in equivalent free DOI/pmc; dropping URL");
-          if (FALSE && $url_kind === 'url' && $template->get('doi-access') === 'free' && $template->blank(TITLE_LINK_ALIASES)) {
-             $template->rename('url', 'title-link', 'doi');
-          } else {
-             $template->forget($url_kind);  
-          }
+          $template->forget($url_kind);  
        } elseif (stripos($url, 'pdf') === FALSE && $template->get('doi-access') === 'free' && $template->has('pmc')) {
           curl_setopt($ch, CURLOPT_URL, "https://dx.doi.org/" . doi_encode($doi));
           if (@curl_exec($ch)) {
