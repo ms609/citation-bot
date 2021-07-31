@@ -343,7 +343,8 @@ const COMMON_MISTAKES = array ( // Common mistakes that aren't picked up by the 
   "efternamn"       =>  "last",
   "år"              =>  "year",
   "jator"           =>  "jstor",
-  "jastor"          =>  "jstor"
+  "jastor"          =>  "jstor",
+  "date-access"     =>  "access-date"
 );
 
 const COMMON_MISTAKES_TOOL = array(

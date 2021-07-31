@@ -187,7 +187,7 @@ final class apiFunctionsTest extends testBaseClass {
     $this->requires_dx(function() : void {
      $expanded = $this->make_citation('{{Cite journal}}');
      expand_doi_with_dx($expanded, '10.11467/isss2003.7.1_11');
-     $this->assertSame('{{Cite journal|year = 2009|volume = 7|last1 = 竹本|first1 = 賢太郎|last2 = 川東|first2 = 正美|last3 = 久保|first3 = 信行|last4 = 左近|first4 = 多喜男|title = 大学におけるWebメールとターミナルサービスの研究|publisher = 標準化研究学会}}',$expanded->parsed_text());
+     $this->assertSame('{{Cite journal|year = 2009|volume = 7|last1 = 竹本|first1 = 賢太郎|last2 = 川東|first2 = 正美|last3 = 久保|first3 = 信行|last4 = 左近|first4 = 多喜男|title = 大学におけるWebメールとターミナルサービスの研究|journal = Society for Standardization Studies}}', $expanded->parsed_text());
     });
   }
 

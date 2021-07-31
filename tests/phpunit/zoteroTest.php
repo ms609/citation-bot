@@ -841,7 +841,7 @@ final class ZoteroTest extends testBaseClass {
  
   public function testZoteroExpansionNYT() : void {
    $this->requires_zotero(function() : void {
-    $text = '{{Cite journal|url =https://www.nytimes.com/2018/06/11/technology/net-neutrality-repeal.html}}';
+    $text = '{{Cite web|url =https://www.nytimes.com/2018/06/11/technology/net-neutrality-repeal.html}}';
     $expanded = $this->expand_via_zotero($text);
     $this->assertSame("Net Neutrality Has Officially Been Repealed. Here's How That Could Affect You", $expanded->get2('title'));
     $this->assertSame('Keith', $expanded->get2('first1')); // Would be tidied to 'first' in final_parameter_tudy

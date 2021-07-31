@@ -4194,6 +4194,12 @@ T1 - This is the Title }}';
     $this->assertNull($template->get2('archive-date'));
   }
  
+  public function testIssuesOnly() : void {
+    $text = "{{cite journal |last=Rauhut |first=O.W. |year=2004 |title=The interrelationships and evolution of basal theropod dinosaurs |journal=Special Papers in Palaeontology |volume=69 |pages=213}}";
+    $template = $this->process_citation($text); // Does not drop year - terrible bug
+    $this->assertSame($text, $template->parsed_text());
+  }
+ 
   public function testAccessDate1() : void {
     $text = "{{cite journal|url=XXX}}";
     $template = $this->make_citation($text);
