@@ -13,7 +13,8 @@ $category = isset($_POST["cat"]) ? (string) $_POST["cat"] : (string) @$argv[1];
 $category = trim($category);
 if ($category === '' && isset($_GET["cat"])) {
    $maybe = (string) $_GET["cat"];
-   if (in_array($maybe, ['CS1 errors: DOI' , 'CS1 maint: PMC format', 'CS1 maint: MR format', 'Articles with missing Cite arXiv inputs'])) $category = $maybe;
+   if (in_array($maybe, ['CS1 errors: DOI' , 'CS1 maint: PMC format', 'CS1 maint: MR format', 'Articles with missing Cite arXiv inputs',
+                         'CS1 maint: PMC embargo expired', 'CS1 maint: ref=harv'])) $category = $maybe;
 }
 
 if (strtolower(substr($category, 0, 9)) == 'category:') $category = trim(substr($category, 9));

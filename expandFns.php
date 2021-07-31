@@ -45,6 +45,7 @@ function sanitize_doi(string $doi) : string {
       $doi = (string) substr($doi, 0, $pos);
    }
   }
+  $doi = str_replace('//', '/', $doi);
   // And now for 10.1093 URLs
   // The add chapter/page stuff after the DOI in the URL and it looks like part of the DOI to us
   // Things like 10.1093/oxfordhb/9780199552238.001.0001/oxfordhb-9780199552238-e-003 and 10.1093/acprof:oso/9780195304923.001.0001/acprof-9780195304923-chapter-7
@@ -235,6 +236,8 @@ function str_remove_irrelevant_bits(string $str) : string {
   $str = str_ireplace(array('Proceedings', 'Proceeding', 'Symposium', 'Huffington ', 'the Journal of ', 'nytimes.com'   , '& '  , '(Clifton, N.J.)'),
                       array('Proc',        'Proc',       'Sym',       'Huff ',       'journal of ',     'New York Times', 'and ', ''), $str);
   $str = str_ireplace(array('<sub>', '<sup>', '<i>', '<b>', '</sub>', '</sup>', '</i>', '</b>'), '', $str);
+  $str = str_ireplace(array('SpringerVerlag', 'Springer Verlag Springer', 'Springer Verlag', 'Springer Springer'),
+                      array('Springer',       'Springer',                 'Springer',        'Springer'         ), $str);
   $str = straighten_quotes($str);
   $str = str_replace("′","'", $str);
   $str = preg_replace('~\(Incorporating .*\)$~i', '', $str);  // Physical Chemistry Chemical Physics (Incorporating Faraday Transactions)
@@ -311,7 +314,7 @@ function titles_simple(string $inTitle) : string {
         $inTitle = preg_replace('~^The ~iu', '', $inTitle);
         // Reduce punctuation
         $inTitle = straighten_quotes(mb_strtolower((string) $inTitle));
-        $inTitle = preg_replace("~(?: |-|—|–|â€™|â€”|â€“)~u", "", $inTitle);
+        $inTitle = preg_replace("~(?: |‐|−|-|—|–|â€™|â€”|â€“)~u", "", $inTitle);
         $inTitle = str_replace(array("\n", "\r", "\t", "&#8208;", ":", "&ndash;", "&mdash;", "&ndash", "&mdash"), "", $inTitle);
         // Retracted
         $inTitle = preg_replace("~\[RETRACTED\]~ui", "", $inTitle);
@@ -487,6 +490,20 @@ function title_capitalization(string $in, bool $caps_after_punctuation) : string
       }
     }
   }
+  // Trust existing "DOS", "dos", ... 
+  $its_in = preg_match_all('~ dos(?= )~iu', ' ' . trim($in) . ' ', $matches_in, PREG_OFFSET_CAPTURE);
+  $new_case = trim($new_case);
+  $its_out = preg_match_all('~ dos(?= )~iu', ' ' . $new_case . ' ', $matches_out, PREG_OFFSET_CAPTURE);
+  if ($its_in === $its_out && $its_in != 0) {
+    $matches_in = $matches_in[0];
+    $matches_out = $matches_out[0];
+    foreach ($matches_in as $key => $_value) {
+      if ($matches_in[$key][0] != $matches_out[$key][0]  &&
+          $matches_in[$key][1] == $matches_out[$key][1]) {
+        $new_case = mb_substr_replace($new_case, trim($matches_in[$key][0]), $matches_out[$key][1], 3);
+      }
+    }
+  }
   return $new_case;
 }
 
@@ -516,7 +533,7 @@ function throttle (int $min_interval) : void {
   
   if ($last_write_time === 0) $last_write_time = time();
   
-  if ($gc_counter > 128) {
+  if ($gc_counter > 64) {
     $gc_counter = 0;
     gc_collect_cycles();
   }
@@ -580,6 +597,7 @@ function tidy_date(string $string) : string {
   $string = preg_replace('~^Date published \(~', '', $string); // seen this
   // https://stackoverflow.com/questions/29917598/why-does-0000-00-00-000000-return-0001-11-30-000000
   if (strpos($string, '0001-11-30') !== FALSE) return '';
+  if (strpos($string, '1969-12-31') !== FALSE) return '';
   if (str_i_same('19xx', $string)) return ''; //archive.org gives this if unknown
   if (preg_match('~^\d{4} \d{4}\-\d{4}$~', $string)) return ''; // si.edu
   if (preg_match('~^(\d\d?)/(\d\d?)/(\d{4})$~', $string, $matches)) { // dates with slashes 
@@ -614,7 +632,7 @@ function tidy_date(string $string) : string {
     $day = date('d', $time);
     $year = intval(date('Y', $time));
     if ($year < -2000 || $year > (int)date("Y") + 10) return ''; // We got an invalid year
-    if ($year < 3 && $year > -3) return '';
+    if ($year < 100 && $year > -100) return '';
     if ($day == '01') { // Probably just got month and year
       $string = date('F Y', $time);
     } else {

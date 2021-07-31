@@ -161,6 +161,7 @@ function expand_arxiv_templates (array &$templates) : bool {  // Pointer to save
   $ids = array();
   $arxiv_templates = array();
   foreach ($templates as $this_template) {
+    set_time_limit(120);
     if ($this_template->wikiname() == 'cite arxiv') {
       $this_template->rename('arxiv', 'eprint');
     } else {
@@ -462,7 +463,11 @@ function adsabs_api(array $ids, array &$templates, string $identifier) : bool { 
     $this_template->add_if_new("issue", (string) @$record->issue, 'adsabs');
     $this_template->add_if_new("year", preg_replace("~\D~", "", (string) @$record->year), 'adsabs');
     if (isset($record->page)) {
-      $this_template->add_if_new("pages", implode('–', $record->page), 'adsabs');
+      $dum = implode('–', $record->page);
+      if (preg_match('~^[\-\–\d]+$~u', $dum)) {
+        $this_template->add_if_new("pages", $dum, 'adsabs');
+      }
+      unset($record->page);
     }
     if (isset($record->identifier)) { // Sometimes arXiv is in journal (see above), sometimes here in identifier
       foreach ($record->identifier as $recid) {
@@ -1230,6 +1235,7 @@ function expand_templates_from_archives(array &$templates) : void { // This is d
            CURLOPT_TIMEOUT => 25,
            CURLOPT_USERAGENT => 'Citation_bot; citations@tools.wmflabs.org']);
   foreach ($templates as $template) {
+    set_time_limit(120);
     if ($template->blank(['title', 'chapter', 'series']) &&
         !$template->blank(['archive-url', 'archive-url']) &&
         $template->blank(WORK_ALIASES)) {

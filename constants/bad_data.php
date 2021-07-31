@@ -4,19 +4,21 @@ declare(strict_types=1);
 // Use lower case for all of these, and then compare to a lower cased version
 const HAS_NO_VOLUME = array("zookeys", "studia hibernica", "analecta hibernica", "british art studies", "der spiegel",
                             "international astronomical union circular", "yale french studies", "capjournal",
-                            "cap journal", "phytokeys");  // Some journals have issues only, no volume numbers
+                            "cap journal", "phytokeys", "starinar", "balcanica", "american museum novitates");  // Some journals have issues only, no volume numbers
 const HAS_NO_ISSUE = array("special papers in palaeontology");  // Some journals have volumes only, no issue numbers
 const BAD_ACCEPTED_MANUSCRIPT_TITLES = array("oup accepted manuscript", "placeholder for bad pdf file", 
                                              "placeholder", "symbolic placeholder", "[placeholder]", 
-                                             "placeholder for arabic language transliteration");
+                                             "placeholder for arabic language transliteration", "article not found");
 const BAD_AUTHORS = array("unknown", "missing", "- -.", "- -", "no authorship indicated", "no authorship", "no author",
-                           "no authors", "no author indicated", "no authorship indicated", "dk eyewitness", "united states", "great britain");
+                           "no authors", "no author indicated", "no authorship indicated", "dk eyewitness", "united states",
+                           "great britain", "indiatoday", "natural history museum bern");
 const NON_HUMAN_AUTHORS = array('collaborat', 'reporter', 'journalist', 'correspondent', 'anchor', 'staff', 'foreign',
                                 'national', 'endowment', ' for the ', 'humanities', 'committee', 'group',
                                 'society', ' of america', 'association', ' at the ', 'board of ', 'communications',
                                 'corporation', 'incorporated', 'editorial', 'university', 'dept. of', 'department',
                                 'dept of ', 'college', 'center for', 'office of', 'editor', 
-                                'world news', 'national news', 'eyewitness', 'information', 'business');
+                                'world news', 'national news', 'eyewitness', 'information', 'business', 'bureau',
+                                'us census', 'indiatoday', 'natural history', 'museum');
 const BAD_PUBLISHERS = array('london', 'edinburgi', 'edinburgh', 'no publisher', 'no publisher given',
                              'no publisher specified', 'unknown', 'publisher not identified', 'report');
 
@@ -66,7 +68,12 @@ const BAD_TITLES = array("unknown", "missing", "arxiv e-prints", "arxiv mathemat
                          "the article you have been looking for has expired and is not longer available on our system. this is due to newswire licensing terms.",
                          "openid transaction in progress", 'download limit exceeded', 'privacy settings',
                          "untitled-1", "untitled-2", "professional paper", "zbmath",
-                         "theses and dissertations available from proquest", "proquest ebook central", "report");
+                         "theses and dissertations available from proquest", "proquest ebook central", "report",
+                         "bloomberg - are you a robot?", "page not found",
+                         "breaking news, analysis, politics, blogs, news photos, video, tech reviews",
+                         "breaking news, analysis, politics, blogs, news photos, video, tech reviews - time.com",
+                         "redirect notice"
+                        );
 const IN_PRESS_ALIASES = array("in press", "inpress", "pending", "published", 
                                "published online", "no-no", "n/a", "online ahead of print", 
                                "unpublished", "unknown", "tba", "forthcoming", "in the press", 
@@ -132,7 +139,8 @@ const WEB_NEWSPAPERS = array('bbc news', 'bbc', 'news.bbc.co.uk', 'bbc sports', 
 const NO_DATE_WEBSITES = array('wikipedia.org', 'web.archive.org', 'perma-archives.org', 'webarchive.proni.gov.uk', 'perma.cc',
                               'wayback', 'web.archive.bibalex.org', 'web.petabox.bibalex.org', 'webharvest.gov', 'archive.wikiwix.com',
                               'archive.is', 'archive-it.org', 'nationalarchives.gov.uk', 'freezepage.com', 'webcitation.org',
-                              'waybackmachine.org', 'siarchives.si.edu', 'gutenberg.org', 'archive.fo', 'archive.today');
+                              'waybackmachine.org', 'siarchives.si.edu', 'gutenberg.org', 'archive.fo', 'archive.today',
+                              'oireachtas.ie');
 
 const ZOTERO_AVOID_REGEX = array("twitter\.",               // This should be {{cite tweet}}
                                  "youtube\.", "youtu\.be",  // This should be {{cite AV media}}
@@ -162,7 +170,10 @@ const NON_JOURNAL_WEBSITES = array('cnn.com/', 'foxnews.com/', 'msnbc.com/', 'nb
 
 const NON_JOURNAL_DOIS = array('10.5531/db.vz.0001'); // lowercase exact matches
 const NON_JOURNALS = array('Amphibian Species of the World', 'an Online Reference', 'An Online Reference'); // Case-sensitive sub-string
-const ARE_MAGAZINES = array('the new yorker', 'the new republic', 'new republic', 'expedition magazine'); // lowercase axact matches
+const ARE_MAGAZINES = array('the new yorker', 'the new republic', 'new republic', 'expedition magazine', 'wired', 'wired uk',
+                           'computer gaming world', 'edge', 'edge (magazine)', 'pc gamer', 'game informer', 'pc gamer uk',
+                           'wired (magazine)'
+                           ); // lowercase axact matches
 const ARE_NEWSPAPERS = array('the economist'); // lowercase axact matches
 const NO_PUBLISHER_NEEDED = array('los angeles times', 'new york times magazine', 'the new york times',
                                    'new york times', 'huffington post', 'the daily telegraph', 'forbes.com',

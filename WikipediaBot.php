@@ -110,6 +110,7 @@ final class WikipediaBot {
   }
   
   public function fetch(array $params, string $method, int $depth = 1) : ?object {
+    set_time_limit(120);
     if ($depth > 1) sleep($depth+2);
     if ($depth > 4) return NULL;
     $params['format'] = 'json';
@@ -133,14 +134,12 @@ final class WikipediaBot {
             CURLOPT_URL => $url,
             CURLOPT_HTTPHEADER => [$authenticationHeader],
           ]);
-          set_time_limit(45);
           $data = (string) @curl_exec($this->ch);
           if (!$data) {
             report_minor_error("Curl error: " . echoable(curl_error($this->ch)));  // @codeCoverageIgnore
             return NULL;                                                           // @codeCoverageIgnore
           }
           $ret = @json_decode($data);
-          set_time_limit(120);
           if (isset($ret->error->code) && $ret->error->code == 'assertuserfailed') {
             // @codeCoverageIgnoreStart
             unset($data);
@@ -157,13 +156,11 @@ final class WikipediaBot {
             CURLOPT_HTTPHEADER => [$authenticationHeader],
             CURLOPT_URL => API_ROOT
           ]);
-          set_time_limit(45);
           $data = (string) @curl_exec($this->ch);
           if ( !$data ) {
             report_minor_error("Curl error: " . echoable(curl_error($this->ch)));     // @codeCoverageIgnore
           }
-          $ret = @json_decode($data);
-          set_time_limit(120);    
+          $ret = @json_decode($data); 
           if (isset($ret->error) && (
             (string) $ret->error->code === 'assertuserfailed' ||
             stripos((string) $ret->error->info, 'The database has been automatically locked') !== FALSE ||
@@ -282,7 +279,8 @@ final class WikipediaBot {
     } elseif (isset($result->edit)) {
       // @codeCoverageIgnoreStart
       if (isset($result->edit->captcha)) {
-        report_error("Write error: We encountered a captcha, so can't be properly logged in.");
+        report_minor_error("Write error: We encountered a captcha, so can't be properly logged in.");
+        return FALSE;
       } elseif ($result->edit->result == "Success") {
         // Need to check for this string wherever our behaviour is dependant on the success or failure of the write operation
         if (HTML_OUTPUT) {
@@ -300,9 +298,10 @@ final class WikipediaBot {
       // @codeCoverageIgnoreEnd
     } else {
       // @codeCoverageIgnoreStart
-      if (!TRAVIS) report_error("Unhandled write error.  Please copy this output and " .
+      report_warning("Unhandled write error.  Please copy this output and " .
                     "<a href='https://en.wikipedia.org/wiki/User_talk:Citation_bot'>" .
-                    "report a bug.</a>.  There is no need to report the database being locked unless it continues to be a problem. ");
+                    "report a bug</a>.  There is no need to report the database being locked unless it continues to be a problem. ");
+      sleep(15);
       // @codeCoverageIgnoreEnd
     }
     return FALSE;
@@ -318,7 +317,6 @@ final class WikipediaBot {
     ];
     
     do {
-      set_time_limit(8);
       $res = $this->fetch($vars, 'POST');
       if (isset($res->query->categorymembers)) {
         foreach ($res->query->categorymembers as $page) {
@@ -335,7 +333,6 @@ final class WikipediaBot {
       }
       $vars["cmcontinue"] = isset($res->continue) ? $res->continue->cmcontinue : FALSE;
     } while ($vars["cmcontinue"]);
-    set_time_limit(120);
     return $list;
   }
   
@@ -356,7 +353,6 @@ final class WikipediaBot {
     $list = ['title' => NULL];
     
     do {
-      set_time_limit(20);
       $res = $this->fetch($vars, 'POST');
       if (isset($res->query->embeddedin->ei) || $res == NULL) {
         report_error('Error reading API for template/namespace: ' . echoable($template) . '/' . echoable(($namespace==99)?"Normal":(string)$namespace));   // @codeCoverageIgnore
@@ -368,7 +364,6 @@ final class WikipediaBot {
       }
       $vars["eicontinue"] = isset($res->continue) ? (string) $res->continue->eicontinue : FALSE;
     } while ($vars["eicontinue"]);
-    set_time_limit(120);
     return $list;
   }
 
@@ -397,7 +392,6 @@ final class WikipediaBot {
     ];
     
     do {
-      set_time_limit(10);
       $res = $this->fetch($vars, 'POST');
       if ($res && !isset($res->error) && isset($res->query->allpages)) {
         foreach ($res->query->allpages as $page) {
@@ -410,7 +404,6 @@ final class WikipediaBot {
       }
       $vars["apfrom"] = isset($res->continue) ? $res->continue->apcontinue : FALSE;
     } while ($vars["apfrom"]);
-    set_time_limit(120);
     return $page_titles;
   }
   public function get_namespace(string $page) : int {

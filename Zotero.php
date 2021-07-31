@@ -124,6 +124,7 @@ public static function query_ieee_webpages(array &$templates) : void {  // Point
   
   foreach (['url', 'chapter-url', 'chapterurl'] as $kind) {
    foreach ($templates as $template) {
+    set_time_limit(120);
     if ($template->blank('doi') && preg_match("~^https://ieeexplore\.ieee\.org/document/(\d{5,})$~", $template->get($kind), $matches_url)) {
        usleep(100000); // 0.10 seconds
        curl_setopt($ch_ieee, CURLOPT_URL, $template->get($kind));
@@ -235,7 +236,11 @@ public static function drop_urls_that_match_dois(array &$templates) : void {  //
                  $template->has_good_free_copy() &&
                  (stripos($template->get($url_kind), 'pdf') === FALSE)) {
           report_forget("Existing canonical URL resulting in equivalent free DOI/pmc; dropping URL");
-          $template->forget($url_kind);
+          if (FALSE && $url_kind === 'url' && $template->get('doi-access') === 'free' && $template->blank(TITLE_LINK_ALIASES)) {
+             $template->rename('url', 'title-link', 'doi');
+          } else {
+             $template->forget($url_kind);  
+          }
        } elseif (stripos($url, 'pdf') === FALSE && $template->get('doi-access') === 'free' && $template->has('pmc')) {
           curl_setopt($ch, CURLOPT_URL, "https://dx.doi.org/" . doi_encode($doi));
           if (@curl_exec($ch)) {
@@ -569,6 +574,9 @@ public static function process_zotero_response(string $zotero_response, Template
   if (strpos($url, 'biodiversitylibrary.org') !== FALSE) {
     unset($result->publisher); // Not reliably set
   }
+  if (isset($result->title) && $result->title === 'Cultural Advice' && strpos($url, 'edu.au') !== FALSE) {
+      unset($result->title); // A warning, not a title
+  }
   if (isset($result->bookTitle)) {
     $template->add_if_new('title', (string) $result->bookTitle);
     if (isset($result->title))      $template->add_if_new('chapter',   (string) $result->title);
@@ -638,7 +646,15 @@ public static function process_zotero_response(string $zotero_response, Template
         }
         break;      
       case 'newspaperArticle':
-        $template->change_name_to('cite news'); 
+        if ($template->wikiname() === 'cite web') {
+           $test_data = $template->get('work') . $template->get('website') .
+                        $template->get('url') . $template->get('chapter-url') .
+                        $template->get('title') . $template->get('encyclopedia') .
+                        $template->get('encyclopædia') . $url; // Some things get called "news" in error
+           if (str_ireplace(['.gov', 'encyclopedia', 'encyclopædia'], '', $test_data) === $test_data) {
+              $template->change_name_to('cite news');
+           }
+        }
         break;
       case 'webpage':
       case 'blogPost':

@@ -133,6 +133,7 @@ class Page {
   //                returns key-value array of items to be set, if new, in each template.
   public function expand_templates_from_identifier(string $identifier, array &$templates) : void { // Pointer to save memory
     $ids = array();
+    set_time_limit(120);
     switch ($identifier) {
       case 'pmid': 
       case 'pmc':     $api = 'entrez';   break;
@@ -159,6 +160,7 @@ class Page {
   }
   
   public function expand_text() : bool {
+    set_time_limit(120);
     $this->page_error = FALSE;
     $this->announce_page();
     if (!$this->text) {
@@ -173,6 +175,7 @@ class Page {
     $mathematics = $this->extract_object('Mathematics');
     $musicality  = $this->extract_object('Musicscores');
     $preformated = $this->extract_object('Preformated');
+    set_time_limit(120);
     if (!$this->allow_bots()) {
       report_warning("Page marked with {{nobots}} template.  Skipping.");
       $this->text = $this->start_text;
@@ -243,8 +246,10 @@ class Page {
                       );
      }
     // TEMPLATES
+    set_time_limit(120);
     $singlebrack = $this->extract_object('SingleBracket');
     $all_templates = $this->extract_object('Template');
+    set_time_limit(120);
     if ($this->page_error) {
       $this->text = $this->start_text;
       return FALSE;
@@ -264,6 +269,7 @@ class Page {
     $our_templates_ieee = array();
     report_phase('Remedial work to prepare citations');
     for ($i = 0; $i < count($all_templates); $i++) {
+      set_time_limit(120);
       $this_template = $all_templates[$i];
       if (in_array($this_template->wikiname(), TEMPLATES_WE_PROCESS)) {
         $our_templates[] = $this_template;
@@ -271,6 +277,7 @@ class Page {
       } elseif (in_array($this_template->wikiname(), TEMPLATES_WE_SLIGHTLY_PROCESS)) {
         $our_templates_slight[] = $this_template;
         $this_template->correct_param_mistakes();
+        $this_template->prepare(); // does very little
         $this_template->get_identifiers_from_url();
         $this_template->expand_by_google_books();
         $this_template->tidy();
@@ -294,6 +301,7 @@ class Page {
           $this_template->set('magazine', straighten_quotes(trim($this_template->get('magazine'))));
         }
         $this_template->correct_param_mistakes();
+        $this_template->prepare(); // does very little
         $this_template->get_identifiers_from_url();
         $this_template->expand_by_google_books();
         $this_template->tidy();
@@ -314,13 +322,13 @@ class Page {
     $this->expand_templates_from_identifier('jstor',   $our_templates);
     $this->expand_templates_from_identifier('doi',     $our_templates);
     expand_arxiv_templates($our_templates);
-    set_time_limit(120);
     $this->expand_templates_from_identifier('url',     $our_templates);
     Zotero::query_ieee_webpages($our_templates_ieee);
     Zotero::query_ieee_webpages($our_templates);
     
     report_phase('Expand individual templates by API calls');
     for ($i = 0; $i < count($our_templates); $i++) {
+      set_time_limit(120);
       $this_template = $our_templates[$i];
       $this_template->expand_by_google_books();
       $this_template->get_doi_from_crossref();
@@ -388,7 +396,7 @@ class Page {
         }
       }
     }
-    
+    set_time_limit(120);
     // Release memory ASAP
     unset($our_templates);
     unset($our_templates_slight);
@@ -398,6 +406,7 @@ class Page {
     $this->replace_object($all_templates);
     // remove circular memory reference that makes garbage collection hard (all templates have an array of all templates)
     for ($i = 0; $i < count($all_templates); $i++) {
+       set_time_limit(120);
        unset($all_templates[$i]->all_templates);
     }
     unset($all_templates);
@@ -405,6 +414,7 @@ class Page {
     $this->text = preg_replace('~(\{\{[Cc]ite ODNB\s*\|[^\{\}\_]+_?[^\{\}\_]+\}\}\s*)\{\{ODNBsub\}\}~u', '$1', $this->text); // Allow only one underscore to shield us from MATH etc.
     $this->text = preg_replace('~(\{\{[Cc]ite ODNB\s*\|[^\{\}\_]*ref ?= ?\{\{sfn[^\{\}\_]+\}\}[^\{\}\_]*\}\}\s*)\{\{ODNBsub\}\}~u', '$1', $this->text); // Allow a ref={{sfn in the template
     
+    set_time_limit(120);
     $this->replace_object($singlebrack); unset($singlebrack);
     $this->replace_object($preformated); unset($preformated);
     $this->replace_object($musicality); unset($musicality);
@@ -412,7 +422,8 @@ class Page {
     $this->replace_object($chemistry); unset($chemistry);
     $this->replace_object($nowiki); unset($nowiki);
     $this->replace_object($comments); unset($comments);
-
+    set_time_limit(120);
+    
     if (stripos($this->text, 'CITATION_BOT_PLACEHOLDER') !== FALSE) {
       $this->text = $this->start_text;                                  // @codeCoverageIgnore
       report_error('CITATION_BOT_PLACEHOLDER found after processing');  // @codeCoverageIgnore
@@ -561,7 +572,7 @@ class Page {
         return FALSE;
       }
     } else {
-      report_warning("Can't write to " . htmlspecialchars($this->title) . 
+      report_warning("Can't write to " . echoable($this->title) . 
         " - prohibited by {{bots}} template.");
       return FALSE;
     }
@@ -597,9 +608,9 @@ class Page {
         // PHP 5 segmentation faults. PHP 7.0 returns FALSE
         // @codeCoverageIgnoreStart
         $this->page_error = TRUE;
-        report_warning('Regular expression failure in ' . htmlspecialchars($this->title) . ' when extracting ' . $class . 's');
+        report_warning('Regular expression failure in ' . echoable($this->title) . ' when extracting ' . $class . 's');
         if ($class === "Template") {
-          echo "<p>\n\n The following text might help you figure out where dsafdfdsafthe error on the page is (Look for lone { and } characters) <p>\n\n" . echoable($text) . "\n\n<p>";
+          echo "<p>\n\n The following text might help you figure out where the <b>error on the page</b> is (Look for lone { and } characters)</h1>\n\n" . echoable($text) . "\n\n<p>";
         }
         report_minor_error("Report this problem please");
         // @codeCoverageIgnoreEnd
@@ -618,7 +629,7 @@ class Page {
     $url_encoded_title =  urlencode($this->title);
     if ($url_encoded_title == '') return;
     html_echo ("\n<hr>[" . date("H:i:s") . "] Processing page '<a href='" . WIKI_ROOT . "?title=$url_encoded_title' style='font-weight:bold;'>" 
-        . htmlspecialchars($this->title)
+        . echoable($this->title)
         . "</a>' &mdash; <a href='" . WIKI_ROOT . "?title=$url_encoded_title"
         . "&action=edit' style='font-weight:bold;'>edit</a>&mdash;<a href='" . WIKI_ROOT . "?title=$url_encoded_title"
         . "&action=history' style='font-weight:bold;'>history</a> <script type='text/javascript'>"
