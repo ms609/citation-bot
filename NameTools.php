@@ -238,7 +238,7 @@ function format_multiple_authors(string $authors) : string {
         if ($bit) $bitts[] = $bit;
       }
       $bits = $bitts; unset($bitts);
-      if ((isset($bits[1]) && $bits[1]) || $savedChunk) {
+      if ((isset($bits[1]) && $bidfasts[1]) || $savedChunk) {
         $return[] = format_author($savedChunk .  ($savedChunk?", ":"") . $chunk);
         $savedChunk = '';
       } else {
