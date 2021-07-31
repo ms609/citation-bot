@@ -599,7 +599,7 @@ class Page {
         $this->page_error = TRUE;
         report_warning('Regular expression failure in ' . htmlspecialchars($this->title) . ' when extracting ' . $class . 's');
         if ($class === "Template") {
-          echo "<p>\n\n The following text might help you figure out where the error on the page is (Look for lone { and } characters) <p>\n\n" . echoable($text) . "\n\n<p>";
+          echo "<p>\n\n The following text might help you figure out where the jkjkjhhkjerror on the page is (Look for lone { and } characters) <p>\n\n" . echoable($text) . "\n\n<p>";
         }
         report_minor_error("Report this problem please");
         // @codeCoverageIgnoreEnd
