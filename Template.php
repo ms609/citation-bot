@@ -2270,7 +2270,7 @@ final class Template {
         } else {
           return FALSE; // Append blocked by comment
         }
-      } elseif (preg_match("~^https?://web\.archive\.org/web/\d{14}/(https?://.*)$~", $url, $match) && $this->blank(['archiveurl', 'archive-url'])) {
+      } elseif ($this->has('url') && preg_match("~^https?://web\.archive\.org/web/\d{14}/(https?://.*)$~", $url, $match) && $this->blank(['archiveurl', 'archive-url'])) {
           quietly('report_modification', 'Extracting URL from archive');
           if (is_null($url_sent)) {
              $this->set($url_type, $match[1]);
