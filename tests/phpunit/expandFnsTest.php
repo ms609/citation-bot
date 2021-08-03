@@ -148,13 +148,22 @@ final class expandFnsTest extends testBaseClass {
 
   public function testArrowAreQuotes() : void {
     $text = "This » That";
-    $this->assertSame($text,straighten_quotes($text));
+    $this->assertSame($text,straighten_quotes($text, TRUE));
     $text = "X«Y»Z";
-    $this->assertSame('X"Y"Z',straighten_quotes($text));
+    $this->assertSame('X"Y"Z',straighten_quotes($text, TRUE));
     $text = "This › That";
-    $this->assertSame($text,straighten_quotes($text));
+    $this->assertSame($text,straighten_quotes($text, TRUE));
     $text = "X‹Y›Z";
-    $this->assertSame("X'Y'Z",straighten_quotes($text));
+    $this->assertSame("X'Y'Z",straighten_quotes($text, TRUE));
+    
+    $text = "This » That";
+    $this->assertSame($text,straighten_quotes($text, FALSE));
+    $text = "X«Y»Z";
+    $this->assertSame($text,straighten_quotes($text, FALSE));
+    $text = "This › That";
+    $this->assertSame($text,straighten_quotes($text, FALSE));
+    $text = "X‹Y›Z";
+    $this->assertSame("X'Y'Z",straighten_quotes($text, FALSE));
   }
 
   public function testMathInTitle() : void {
