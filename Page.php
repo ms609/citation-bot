@@ -298,7 +298,7 @@ class Page {
             $this_template->rename('work', 'magazine');
         }
         if ($this_template->has('magazine')) {
-          $this_template->set('magazine', straighten_quotes(trim($this_template->get('magazine'), TRUE)));
+          $this_template->set('magazine', straighten_quotes(trim($this_template->get('magazine')), TRUE));
         }
         $this_template->correct_param_mistakes();
         $this_template->prepare(); // does very little
