@@ -6718,7 +6718,6 @@ final class Template {
              $this->forget($worker);
           }  
        }
-       $this->forget('dictionary');
       }
       if (preg_match('~^10\.1093/~', $this->get('doi')) &&
         $this->has('title') &&
