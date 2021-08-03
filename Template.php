@@ -806,7 +806,7 @@ final class Template {
       ### AUTHORS
       case "author": case "author1": case "last1": case "last": case "authors":
         $value = str_replace(array(",;", " and;", " and ", " ;", "  ", "+", "*"), array(";", ";", " ", ";", " ", "", ""), $value);
-        $value = trim(straighten_quotes($value));
+        $value = trim(straighten_quotes($value, TRUE));
 
         if ($this->blank(FIRST_AUTHOR_ALIASES)) {
           if (strpos($value, ',')) {
@@ -820,7 +820,7 @@ final class Template {
         return FALSE;
 
       case "first": case "first1":
-       $value = trim(straighten_quotes($value));
+       $value = trim(straighten_quotes($value, TRUE));
        if ($this->blank(FIRST_FORENAME_ALIASES)) {
           if (mb_substr($value, -1) === '.') { // Do not lose last period
              $value = sanitize_string($value) . '.';
@@ -2478,7 +2478,7 @@ final class Template {
       if ($term === "title") {
        if ($data = $this->get_without_comments_and_placeholders('title')) {
         $key = 'Title';
-        $data = straighten_quotes($data);
+        $data = straighten_quotes($data, TRUE);
         $data = str_replace([';', ',', ':', '.', '?', '!', '&', '/', '(', ')', '[', ']', '{', '}', '"', "'", '|', '\\'],
                             [' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '], $data);
         $data = strip_diacritics($data);
@@ -2522,7 +2522,7 @@ final class Template {
               $val = $matches[2];    // @codeCoverageIgnore
           }
           $val = strip_diacritics($val);
-          $val = straighten_quotes($val);
+          $val = straighten_quotes($val, TRUE);
           $query .= " AND (" . str_replace("%E2%80%93", "-", urlencode($val)) . "[$key])";
         }
       }
@@ -4769,7 +4769,7 @@ final class Template {
               $periodical  = '[[' . $linked_text . '|' . $human_text . ']]';
               $this->set($param, $periodical);
             } elseif (substr_count($periodical, ']') === 0 && substr_count($periodical, '[') === 0) { // No links
-             $periodical = straighten_quotes($periodical);
+             $periodical = straighten_quotes($periodical, TRUE);
              $this->set($param, $periodical);
             }
           }
@@ -5304,7 +5304,7 @@ final class Template {
         case 'title':
           if ($this->blank($param)) return;
           $title = $this->get($param);
-          $title = straighten_quotes($title);
+          $title = straighten_quotes($title, FALSE);
           if ((   mb_substr($title, 0, 1) === '"'
                && mb_substr($title, -1)   === '"'
                && mb_substr_count($title, '"') == 2)
