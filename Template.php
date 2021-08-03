@@ -6713,7 +6713,7 @@ final class Template {
         $this->forget($worker);
        }
        if (stripos($this->get('publisher'), 'oxford') !== FALSE) $this->forget('publisher');
-       if ($this->has('doi') && doi_works($this->get('doi'))) {
+       if (doi_works($this->get('doi'))) {
           foreach (ALL_URL_TYPES as $worker) {
              $this->forget($worker);
           }  
