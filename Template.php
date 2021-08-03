@@ -6028,7 +6028,7 @@ final class Template {
               $new_doi = '10.1093/oxfordhb/' . $matches[1] . '.013.' . $matches[3];
               if (doi_works($new_doi)) {
                 $this->add_if_new('isbn', $matches[1]);
-                if ($this->has('doi') && $this->has('doi-broken-date')) {
+                if (($this->has('doi') && $this->has('doi-broken-date')) || ($this->get('doi') === '10.1093/oxfordhb/9780199552238.001.0001')) {
                     $this->set('doi', '');
                     $this->forget('doi-broken-date');
                     $this->add_if_new('doi', $new_doi);
