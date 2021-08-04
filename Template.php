@@ -4249,7 +4249,9 @@ final class Template {
         $this->set($param, preg_replace('~\x{00AD}~u', '', $this->get($param))); // Remove soft hyphen
       }
     }
- 
+    if (in_array(strtolower($param), ['series', 'journal', 'newspaper']) && $this->has($param)) {
+      $this->set($param, preg_replace('~[™|®]$~u', '', $this->get($param))); // remove trailing TM/(R)
+    }
     if (!preg_match('~^(\D+)(\d*)(\D*)$~', $param, $pmatch)) {
       report_minor_error("Unrecognized parameter name format in " . echoable($param));  // @codeCoverageIgnore
       return;                                                              // @codeCoverageIgnore
