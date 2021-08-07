@@ -6757,7 +6757,9 @@ final class Template {
         }
        }
       }
-      $this->tidy_parameter('via'); // Via is troublesome
+    } elseif (in_array($this->wikiname(), TEMPLATES_WE_SLIGHTLY_PROCESS)) {
+      $this->tidy_parameter('publisher');
+      $this->tidy_parameter('via');
     }
   }
   
