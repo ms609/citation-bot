@@ -6757,6 +6757,7 @@ final class Template {
         }
        }
       }
+      $this->tidy_parameter('via'); // Via is troublesome
     }
   }
   
