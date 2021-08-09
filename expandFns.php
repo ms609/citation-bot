@@ -247,6 +247,7 @@ function str_remove_irrelevant_bits(string $str) : string {
   $str = preg_replace('~(?:\:\.\,)? ?(?:an|the) official publication of the.+$~i', '', $str);
   $str = trim($str);
   $str = strip_diacritics($str);
+  $str = str_replace('�', 'X', $str);
   return $str;
 }
 
