@@ -224,6 +224,7 @@ function truncate_publisher(string $p) : string {
 function str_remove_irrelevant_bits(string $str) : string {
   if ($str == '') return '';
   $str = trim($str);
+  $str = str_replace('�', 'X', $str);
   $str = preg_replace(REGEXP_PLAIN_WIKILINK, "$1", $str);   // Convert [[X]] wikilinks into X
   $str = preg_replace(REGEXP_PIPED_WIKILINK, "$2", $str);   // Convert [[Y|X]] wikilinks into X
   $str = trim($str);
@@ -247,7 +248,6 @@ function str_remove_irrelevant_bits(string $str) : string {
   $str = preg_replace('~(?:\:\.\,)? ?(?:an|the) official publication of the.+$~i', '', $str);
   $str = trim($str);
   $str = strip_diacritics($str);
-  $str = str_replace('�', 'X', $str);
   return $str;
 }
 
