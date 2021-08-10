@@ -66,8 +66,8 @@ if ($category) {
      $pages_in_category = array_slice($pages_in_category, 0, intval(MAX_PAGES / 2));
   }
   $total = count($pages_in_category);
-  if ($total > (MAX_PAGES * 2) ) {
-    echo('Category is huge (' . (string) $total . ')  Cancelling run. Pick a smaller category (maximum size is ' . (string)(MAX_PAGES * 2) . ').  Listen to Obi-Wan Kenobi:  You want to go home and rethink your life.');
+  if ($total > intval(MAX_PAGES / 2)) {
+    echo('Category is huge (' . (string) $total . ')  Cancelling run. Pick a smaller category (maximum size is ' . (string) intval(MAX_PAGES / 2) . ').  Listen to Obi-Wan Kenobi:  You want to go home and rethink your life.');
     html_echo(' </pre><footer><a href="./" title="Use Citation Bot again">Another</a>?</footer></body></html>', "\n");
     exit();
   }
