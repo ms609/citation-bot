@@ -224,6 +224,7 @@ function truncate_publisher(string $p) : string {
 function str_remove_irrelevant_bits(string $str) : string {
   if ($str == '') return '';
   $str = trim($str);
+  $str = str_replace('�', 'X', $str);
   $str = preg_replace(REGEXP_PLAIN_WIKILINK, "$1", $str);   // Convert [[X]] wikilinks into X
   $str = preg_replace(REGEXP_PIPED_WIKILINK, "$2", $str);   // Convert [[Y|X]] wikilinks into X
   $str = trim($str);
@@ -238,7 +239,7 @@ function str_remove_irrelevant_bits(string $str) : string {
   $str = str_ireplace(array('<sub>', '<sup>', '<i>', '<b>', '</sub>', '</sup>', '</i>', '</b>'), '', $str);
   $str = str_ireplace(array('SpringerVerlag', 'Springer Verlag Springer', 'Springer Verlag', 'Springer Springer'),
                       array('Springer',       'Springer',                 'Springer',        'Springer'         ), $str);
-  $str = straighten_quotes($str);
+  $str = straighten_quotes($str, TRUE);
   $str = str_replace("′","'", $str);
   $str = preg_replace('~\(Incorporating .*\)$~i', '', $str);  // Physical Chemistry Chemical Physics (Incorporating Faraday Transactions)
   $str = preg_replace('~\d+ Volume Set$~i', '', $str);  // Ullmann's Encyclopedia of Industrial Chemistry, 40 Volume Set
@@ -313,7 +314,7 @@ function titles_simple(string $inTitle) : string {
         // Strip leading the
         $inTitle = preg_replace('~^The ~iu', '', $inTitle);
         // Reduce punctuation
-        $inTitle = straighten_quotes(mb_strtolower((string) $inTitle));
+        $inTitle = straighten_quotes(mb_strtolower((string) $inTitle), TRUE);
         $inTitle = preg_replace("~(?: |‐|−|-|—|–|â€™|â€”|â€“)~u", "", $inTitle);
         $inTitle = str_replace(array("\n", "\r", "\t", "&#8208;", ":", "&ndash;", "&mdash;", "&ndash", "&mdash"), "", $inTitle);
         // Retracted
@@ -334,7 +335,7 @@ function strip_diacritics (string $input) : string {
     return str_replace(array_keys(MAP_DIACRITICS), array_values(MAP_DIACRITICS), $input);
 }
 
-function straighten_quotes(string $str) : string { // (?<!\') and (?!\') means that it cannot have a single quote right before or after it
+function straighten_quotes(string $str, bool $do_more) : string { // (?<!\') and (?!\') means that it cannot have a single quote right before or after it
   // These Regex can die on Unicode because of backward looking
   if ($str === '') return '';
   $str2 = preg_replace('~(?<!\')&#821[679];|&#39;|&#x201[89];|[\x{FF07}\x{2018}-\x{201B}`]|&[rl]s?[b]?quo;(?!\')~u', "'", $str);
@@ -349,8 +350,13 @@ function straighten_quotes(string $str) : string { // (?<!\') and (?!\') means t
   if ($str2 !== NULL) $str = $str2;
   if((mb_strpos($str, '&raquo;')  !== FALSE && mb_strpos($str, '&laquo;')  !== FALSE) ||
      (mb_strpos($str, '\x{00AB}') !== FALSE && mb_strpos($str, '\x{00AB}') !== FALSE) ||
-     (mb_strpos($str, '«')        !== FALSE && mb_strpos($str, '»')        !== FALSE)) { // Only replace double angle quotes if some of both
-     $str2 = preg_replace('~&[lr]aquo;|[\x{00AB}\x{00BB}]|[«»]~u', '"', $str);            // Websites tiles: Jobs » Iowa » Cows » Ames
+     (mb_strpos($str, '«')        !== FALSE && mb_strpos($str, '»')        !== FALSE)) { // Only replace double angle quotes if some of both // Websites tiles: Jobs » Iowa » Cows » Ames
+     if ($do_more){
+       $str2 = preg_replace('~&[lr]aquo;|[\x{00AB}\x{00BB}]|[«»]~u', '"', $str);
+     } else { // Only outer funky quotes, not inner quotes
+       $str2 = preg_replace('~^[&laquo;|&raquo;|\x{00AB}|\x{00BB}|«|»]~u' , '"', $str);
+       $str2 = preg_replace( '~[&laquo;|&raquo;|\x{00AB}|\x{00BB}|«|»]$~u', '"', $str2);
+     }
      if ($str2 !== NULL) $str = $str2;
   }
   return $str;
@@ -374,7 +380,7 @@ function title_capitalization(string $in, bool $caps_after_punctuation) : string
   $matches_in = ['', '']; // prevent memory leak in some PHP versions
   $matches_out = ['', '']; // prevent memory leak in some PHP versions
   // Use 'straight quotes' per WP:MOS
-  $new_case = straighten_quotes(trim($in));
+  $new_case = straighten_quotes(trim($in), FALSE);
   if (mb_substr($new_case, 0, 1) === "[" && mb_substr($new_case, -1) === "]") {
      return $new_case; // We ignore wikilinked names and URL linked since who knows what's going on there.
                        // Changing case may break links (e.g. [[Journal YZ|J. YZ]] etc.)

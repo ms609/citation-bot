@@ -615,6 +615,10 @@ public static function process_zotero_response(string $zotero_response, Template
                                       isset($result->rights) ? (string) $result->rights : '', FALSE);
       $i++;
   }
+   
+  if (stripos($url, 'sfdb.org') !== FALSE && $template->blank(WORK_ALIASES)) {
+     $template->add_if_new('website', 'sfdb.org');
+  }
   
   // see https://www.mediawiki.org/wiki/Citoid/itemTypes
   if (isset($result->itemType)) {

@@ -146,15 +146,37 @@ final class expandFnsTest extends testBaseClass {
     $this->assertTrue(titles_are_similar('ɞɟɡɣɤɥɠ', 'ejscriptgammaramshg'));
   }
 
-  public function testArrowAreQuotes() : void {
+  public function testArrowAreQuotes1() : void {
     $text = "This » That";
-    $this->assertSame($text,straighten_quotes($text));
+    $this->assertSame($text,straighten_quotes($text, TRUE));
+  }
+  public function testArrowAreQuotes2() : void {
     $text = "X«Y»Z";
-    $this->assertSame('X"Y"Z',straighten_quotes($text));
+    $this->assertSame('X"Y"Z',straighten_quotes($text, TRUE));
+  }
+  public function testArrowAreQuotes3() : void {
     $text = "This › That";
-    $this->assertSame($text,straighten_quotes($text));
+    $this->assertSame($text,straighten_quotes($text, TRUE));
+  }
+  public function testArrowAreQuotes4() : void {
     $text = "X‹Y›Z";
-    $this->assertSame("X'Y'Z",straighten_quotes($text));
+    $this->assertSame("X'Y'Z",straighten_quotes($text, TRUE));
+  }
+  public function testArrowAreQuotes5() : void {
+    $text = "This » That";
+    $this->assertSame($text,straighten_quotes($text, FALSE));
+  }
+  public function testArrowAreQuotes6() : void {
+    $text = "X«Y»Z";
+    $this->assertSame($text,straighten_quotes($text, FALSE));
+  }
+  public function testArrowAreQuotes7() : void {
+    $text = "This › That";
+    $this->assertSame($text,straighten_quotes($text, FALSE));
+  }
+  public function testArrowAreQuotes8() : void {
+    $text = "X‹Y›Z";
+    $this->assertSame("X'Y'Z",straighten_quotes($text, FALSE));
   }
 
   public function testMathInTitle() : void {

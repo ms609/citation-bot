@@ -128,12 +128,14 @@ final class Template {
                ['Citation journal', 'Cite journal'],
                ['cite new', 'cite news'],
                ['Cite new', 'Cite news'],
-               ['cite newspaper', 'cite news'],
-               ['Cite newspaper', 'Cite news'],
+               // ['cite newspaper', 'cite news'],
+               // ['Cite newspaper', 'Cite news'],
                ['cite Web', 'cite web'],
                ['Cite Web', 'Cite web'],
                ['cite media', 'cite AV media'],
                ['Cite media', 'Cite AV media'],
+               ['cite av media', 'cite AV media'],
+               ['Cite av media', 'Cite AV media'],
                ['cite Journal', 'cite journal'],
                ['Cite Journal', 'Cite journal'],
                ['cite Book', 'cite book'],
@@ -806,7 +808,7 @@ final class Template {
       ### AUTHORS
       case "author": case "author1": case "last1": case "last": case "authors":
         $value = str_replace(array(",;", " and;", " and ", " ;", "  ", "+", "*"), array(";", ";", " ", ";", " ", "", ""), $value);
-        $value = trim(straighten_quotes($value));
+        $value = trim(straighten_quotes($value, TRUE));
 
         if ($this->blank(FIRST_AUTHOR_ALIASES)) {
           if (strpos($value, ',')) {
@@ -820,7 +822,7 @@ final class Template {
         return FALSE;
 
       case "first": case "first1":
-       $value = trim(straighten_quotes($value));
+       $value = trim(straighten_quotes($value, TRUE));
        if ($this->blank(FIRST_FORENAME_ALIASES)) {
           if (mb_substr($value, -1) === '.') { // Do not lose last period
              $value = sanitize_string($value) . '.';
@@ -859,7 +861,7 @@ final class Template {
       case "author18": case "author28": case "author38": case "author48": case "author58": case "author68": case "author78": case "author88": case "author98":
       case "author19": case "author29": case "author39": case "author49": case "author59": case "author69": case "author79": case "author89": case "author99":
         $value = str_replace(array(",;", " and;", " and ", " ;", "  ", "+", "*"), array(";", ";", " ", ";", " ", "", ""), $value);
-        $value = trim(straighten_quotes($value));
+        $value = trim(straighten_quotes($value, TRUE));
 
         if ($this->blank(array_merge(COAUTHOR_ALIASES, ["last$auNo", "author$auNo"]))
           && strpos($this->get('author') . $this->get('authors'), ' and ') === FALSE
@@ -885,7 +887,7 @@ final class Template {
       case "first70": case "first71": case "first72": case "first73": case "first74": case "first75": case "first76": case "first77": case "first78": case "first79":
       case "first80": case "first81": case "first82": case "first83": case "first84": case "first85": case "first86": case "first87": case "first88": case "first89":
       case "first90": case "first91": case "first92": case "first93": case "first94": case "first95": case "first96": case "first97": case "first98": case "first99":
-        $value = trim(straighten_quotes($value));
+        $value = trim(straighten_quotes($value, TRUE));
 
         if ($this->blank(array_merge(COAUTHOR_ALIASES, [$param_name, "author" . $auNo]))
                 && under_two_authors($this->get('author'))) {
@@ -2270,9 +2272,9 @@ final class Template {
         } else {
           return FALSE; // Append blocked by comment
         }
-      } elseif (preg_match("~^https?://web\.archive\.org/web/\d{14}/(https?://.*)$~", $url, $match) && $this->blank(['archiveurl', 'archive-url'])) {
-          quietly('report_modification', 'Extracting URL from archive');
+      } elseif (($this->has('chapterurl') || $this->has('chapte-rurl') || $this->has('url') || ($url_type === 'url') || ($url_type === 'chapterurl')  || ($url_type === 'chapter-url')) && preg_match("~^https?://web\.archive\.org/web/\d{14}/(https?://.*)$~", $url, $match) && $this->blank(['archiveurl', 'archive-url'])) {
           if (is_null($url_sent)) {
+             quietly('report_modification', 'Extracting URL from archive');
              $this->set($url_type, $match[1]);
              $this->add_if_new('archive-url', $match[0]);
              return FALSE; // We really got nothing
@@ -2478,7 +2480,7 @@ final class Template {
       if ($term === "title") {
        if ($data = $this->get_without_comments_and_placeholders('title')) {
         $key = 'Title';
-        $data = straighten_quotes($data);
+        $data = straighten_quotes($data, TRUE);
         $data = str_replace([';', ',', ':', '.', '?', '!', '&', '/', '(', ')', '[', ']', '{', '}', '"', "'", '|', '\\'],
                             [' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '], $data);
         $data = strip_diacritics($data);
@@ -2522,7 +2524,7 @@ final class Template {
               $val = $matches[2];    // @codeCoverageIgnore
           }
           $val = strip_diacritics($val);
-          $val = straighten_quotes($val);
+          $val = straighten_quotes($val, TRUE);
           $query .= " AND (" . str_replace("%E2%80%93", "-", urlencode($val)) . "[$key])";
         }
       }
@@ -4249,7 +4251,9 @@ final class Template {
         $this->set($param, preg_replace('~\x{00AD}~u', '', $this->get($param))); // Remove soft hyphen
       }
     }
- 
+    if (in_array(strtolower($param), ['series', 'journal', 'newspaper']) && $this->has($param)) {
+      $this->set($param, preg_replace('~[™|®]$~u', '', $this->get($param))); // remove trailing TM/(R)
+    }
     if (!preg_match('~^(\D+)(\d*)(\D*)$~', $param, $pmatch)) {
       report_minor_error("Unrecognized parameter name format in " . echoable($param));  // @codeCoverageIgnore
       return;                                                              // @codeCoverageIgnore
@@ -4769,7 +4773,7 @@ final class Template {
               $periodical  = '[[' . $linked_text . '|' . $human_text . ']]';
               $this->set($param, $periodical);
             } elseif (substr_count($periodical, ']') === 0 && substr_count($periodical, '[') === 0) { // No links
-             $periodical = straighten_quotes($periodical);
+             $periodical = straighten_quotes($periodical, TRUE);
              $this->set($param, $periodical);
             }
           }
@@ -5304,7 +5308,7 @@ final class Template {
         case 'title':
           if ($this->blank($param)) return;
           $title = $this->get($param);
-          $title = straighten_quotes($title);
+          $title = straighten_quotes($title, FALSE);
           if ((   mb_substr($title, 0, 1) === '"'
                && mb_substr($title, -1)   === '"'
                && mb_substr_count($title, '"') == 2)
@@ -6028,7 +6032,7 @@ final class Template {
               $new_doi = '10.1093/oxfordhb/' . $matches[1] . '.013.' . $matches[3];
               if (doi_works($new_doi)) {
                 $this->add_if_new('isbn', $matches[1]);
-                if ($this->has('doi') && $this->has('doi-broken-date')) {
+                if (($this->has('doi') && $this->has('doi-broken-date')) || ($this->get('doi') === '10.1093/oxfordhb/9780199552238.001.0001')) {
                     $this->set('doi', '');
                     $this->forget('doi-broken-date');
                     $this->add_if_new('doi', $new_doi);
@@ -6713,6 +6717,7 @@ final class Template {
         $this->forget($worker);
        }
        if (stripos($this->get('publisher'), 'oxford') !== FALSE) $this->forget('publisher');
+       $this->forget('dictionary');
       }
       if (preg_match('~^10\.1093/~', $this->get('doi')) &&
         $this->has('title') &&
@@ -6754,6 +6759,9 @@ final class Template {
         }
        }
       }
+    } elseif (in_array($this->wikiname(), TEMPLATES_WE_SLIGHTLY_PROCESS)) {
+      $this->tidy_parameter('publisher');
+      $this->tidy_parameter('via');
     }
   }
   

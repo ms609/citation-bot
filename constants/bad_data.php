@@ -103,7 +103,8 @@ const BAD_ZOTERO_TITLES = ['Browse publications', 'Central Authentication Servic
                                  'Untitled-1', 'Untitled-2', 'Untitled-3', 'Untitled-4', 'Untitled-5',
                                  'Untitled-6', 'Untitled-7', 'Untitled-8', 'Untitled-9', 'Are you a robot',
                                  'Aanmelden of registreren om te bekijken', 'register to view', 'being redirected',
-                                 'has been registered', 'Aanmelden bij Facebook', 'Einloggen'];
+                                 'has been registered', 'Aanmelden bij Facebook', 'Einloggen', 'The Times & the Sunday Times',
+                                 'Login • Instagram'];
 
 const CANONICAL_PUBLISHER_URLS = array ('elsevier.com', 'springer.com', 'sciencedirect.com', 'tandfonline.com',
                                 'taylorandfrancis.com', 'wiley.com', 'sagepub.com', 'sagepublications.com',
