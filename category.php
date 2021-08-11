@@ -63,7 +63,7 @@ if ($category) {
   shuffle($pages_in_category);
    
   if (WikipediaBot::NonStandardMode()) {
-     $pages_in_category = array_slice($pages_in_category, 0, (MAX_PAGES * 2));
+    CONFLICT $pages_in_category = array_slice($pages_in_category, 0, (MAX_PAGES * 2));
   }
   $total = count($pages_in_category);
   if ($total > (MAX_PAGES * 2) ) {
