@@ -153,7 +153,10 @@ const ZOTERO_AVOID_REGEX = array("twitter\.",               // This should be {{
                                  "ezproxy", "arkive\.org", "bloomberg\.com/tosv2.html",  // Junk
                                  "worldcat\.org",           // Should use parameters and google instead
                                  "kyobobook\.co\.kr",       // Bookstore that give junk
-                                 "facebook\.com");          // login and junk
+                                 "facebook\.com",           // login and junk
+                                 "leighrayment\.com",       // highjacked
+                                 "seapower\-digital\.com",  // highjacked
+                                 );
 const NON_JOURNAL_WEBSITES = array('cnn.com/', 'foxnews.com/', 'msnbc.com/', 'nbcnews.com/', 'abcnews.com/', 'cbs.com/', 
                                    'cbsnews.com/', 'abc.com/', 'bbc.com/', 'bbc.co.uk/', 'apnews.com/',
                                    '.ap.org/', 'nytimes.com/', 'theguardian.com/', 'washingtonpost.com/',
