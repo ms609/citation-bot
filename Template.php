@@ -4605,6 +4605,16 @@ final class Template {
                                  )) {
             $this->add_if_new('doi-access', 'free');
           }
+          if (doi_works($doi) && (strpos($doi, '10.1073/pnas') === 0)) {
+            $template_year = $this->year();
+            if ($template_year !== '') { 
+              $template_year = (int) $template_year;
+              $year = (int) date("Y");
+              if (($template_year + 1) < $year){ // At least one year old, up to three
+                $this->add_if_new('doi-access', 'free');
+              }
+            }
+          }       
           return;
           
         case 'doi-broken': case 'doi_brokendate': case 'doi-broken-date': case 'doi_inactivedate': case 'doi-inactive-date':
