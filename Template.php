@@ -1068,6 +1068,9 @@ final class Template {
              if (stripos($value, ' post') !== FALSE && stripos($this->get('via'), 'post') !== FALSE) {
                $this->forget('via'); // eliminate via= that matches newspaper mostly
              }
+             if (stripos($value, ' bloomberg') !== FALSE && stripos($this->get('via'), 'bloomberg') !== FALSE) {
+               $this->forget('via'); // eliminate via= that matches newspaper mostly
+             }
           }
           if (($param_name === 'newspaper' || $param_name === 'journal') && $this->has('publisher') && str_equivalent($this->get('publisher'), $value)
                   && $this->blank('website')) { // Website is an alias for newspaper/work/journal, and did not check above
