@@ -193,6 +193,12 @@ class Page {
                       function(array $matches) : string {return $matches[1] . '{{Cite web|url=' . $matches[3] . '|' . strtolower('CITATION_BOT_PLACEHOLDER_BARE_URL') .'=' . base64_encode($matches[2]) . '}}' . $matches[4] ;},
                       $this->text
                       );
+    // Ones like <ref>https://www.nytimes.com/{{Bare URL inline|date=April 2016}}</ref>
+    $this->text = preg_replace_callback(
+                      "~(<(?:\s*)ref[^>]*?>)(\s*\[?(https?:\/\/[^ >}{\]\[]+?)\]?\s*{{Bare URL inline\|date=[a-zA-Z0-9 ]+}})(<\s*?\/\s*?ref(?:\s*)>)~i",
+                      function(array $matches) : string {return $matches[1] . '{{Cite web|url=' . $matches[3] . '|' . strtolower('CITATION_BOT_PLACEHOLDER_BARE_URL') .'=' . base64_encode($matches[2]) . '}}' . $matches[4] ;},
+                      $this->text
+                      );
     // Examples: <ref>http://www.../index.html</ref>; <ref>[http://www.../index.html]</ref>
     $this->text = preg_replace_callback(   // Ones like <ref>http://www.../index.html</ref> or <ref>[http://www.../index.html]</ref>
                       "~(<(?:\s*)ref[^>]*?>)(\s*\[?(https?:\/\/[^ >}{\]\[]+?)\]?\s*)(<\s*?\/\s*?ref(?:\s*)>)~i",
