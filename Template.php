@@ -4604,7 +4604,10 @@ final class Template {
                                   strpos($doi, '10.3390/') === 0 ||
                                   strpos($doi, '10.1155/') === 0 ||
                                   strpos($doi, '10.1371/journal.pone') === 0 ||
-                                  strpos($doi, '10.3897/zookeys') === 0
+                                  strpos($doi, '10.3897/zookeys') === 0 ||
+                                  strpos($doi, '10.1016/j.jbc.') === 0 ||
+                                  strpos($doi, '10.1016/S0021-9258') === 0 ||
+                                  strpos($doi, '10.1074/jbc.') === 0 
                                  )) {
             $this->add_if_new('doi-access', 'free');
           }
