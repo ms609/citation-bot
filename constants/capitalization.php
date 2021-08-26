@@ -17,7 +17,7 @@ const LC_SMALL_WORDS = array(/* The following will be automatically updated to a
           " NASA ", " NEJM ", " non ", " nor ", " NRC ", " NY ", " NYC ", " NYT ", " NZ ", 
           " och ", " OECD ", " of ", " off ", " og ", " on ", " or ", " over ", " P.E. ", 
           " PCR ", " per ", " Ph.D. ", " PMLA ", " PNAS ", " PS: ", " R&D ", " RNA ", " RTÉ ", 
-          " S&P ", " SAE ", " SpringerPlus ", " SSRN ", " TCI: ", "te ", " TESOL ", " the ", " then ", 
+          " S&P ", " SAE ", " SpringerPlus ", " SSRN ", " TCI: ", " te ", " TESOL ", " the ", " then ", 
           " till ", " to ", " UK ", " um ", " und ", " unserer ", " up ", " USA ", " van ", 
           " vir ", " von ", " voor ", " when ", " with ", " within ", " woor ", " y ", 
           " zu ", " zum ", " zur ", /* The above will be automatically updated to alphabetical order */ 
