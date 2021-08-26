@@ -156,6 +156,7 @@ const ZOTERO_AVOID_REGEX = array("twitter\.",               // This should be {{
                                  "facebook\.com",           // login and junk
                                  "leighrayment\.com",       // highjacked
                                  "seapower\-digital\.com",  // highjacked
+                                 "scholarlycommons\.pacific\.edu\/euler\-works", // returns journal reference to works, not the actual work
                                  );
 const NON_JOURNAL_WEBSITES = array('cnn.com/', 'foxnews.com/', 'msnbc.com/', 'nbcnews.com/', 'abcnews.com/', 'cbs.com/', 
                                    'cbsnews.com/', 'abc.com/', 'bbc.com/', 'bbc.co.uk/', 'apnews.com/',
