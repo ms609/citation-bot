@@ -178,6 +178,14 @@ final class expandFnsTest extends testBaseClass {
     $text = "X‹Y›Z";
     $this->assertSame("X'Y'Z",straighten_quotes($text, FALSE));
   }
+  public function testArrowAreQuotes9() : void {
+    $text = "«XY»Z";
+    $this->assertSame($text,straighten_quotes($text, FALSE));
+  }
+  public function testArrowAreQuotes10() : void {
+    $text = "«XY»Z";
+    $this->assertSame('"XY"Z',straighten_quotes($text, TRUE));
+  }
 
   public function testMathInTitle() : void {
     // This MML code comes from a real CrossRef search of DOI 10.1016/j.newast.2009.05.001

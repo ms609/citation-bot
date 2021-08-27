@@ -354,8 +354,14 @@ function straighten_quotes(string $str, bool $do_more) : string { // (?<!\') and
      if ($do_more){
        $str2 = preg_replace('~&[lr]aquo;|[\x{00AB}\x{00BB}]|[«»]~u', '"', $str);
      } else { // Only outer funky quotes, not inner quotes
-       $str2 = preg_replace('~^[&laquo;|&raquo;|\x{00AB}|\x{00BB}|«|»]~u' , '"', $str);
-       $str2 = preg_replace( '~[&laquo;|&raquo;|\x{00AB}|\x{00BB}|«|»]$~u', '"', $str2);
+       if (preg_match('~^[&laquo;|&raquo;|\x{00AB}|\x{00BB}|«|»]~u', $str) &&
+           preg_match( '~[&laquo;|&raquo;|\x{00AB}|\x{00BB}|«|»]$~u', $str) // Only if there is an outer quote on both ends
+       ) {
+         $str2 = preg_replace('~^[&laquo;|&raquo;|\x{00AB}|\x{00BB}|«|»]~u' , '"', $str);
+         $str2 = preg_replace( '~[&laquo;|&raquo;|\x{00AB}|\x{00BB}|«|»]$~u', '"', $str2);
+       } else {
+         $str2 = $str; // No change
+       }
      }
      if ($str2 !== NULL) $str = $str2;
   }

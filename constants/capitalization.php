@@ -3,7 +3,7 @@ declare(strict_types=1);
 const LC_SMALL_WORDS = array(/* The following will be automatically updated to alphabetical order */
           " AAOHN ", " AAP ", " AAUP ", " ABC ", " AC ", " ACM ", " AGU ", " AI ", " AIAA ", 
           " AIChE ", " AIP ", " AJHG ", " al ", " an ", " and ", " and then ", " AOAC ", 
-          " as ", " at ", " at ", " aus ", " av ", " BBA ", " BBC ", " be ", " bei ", " BJPsych ", 
+          " as ", " ASLIB ", " at ", " at ", " aus ", " av ", " BBA ", " BBC ", " be ", " bei ", " BJPsych ", 
           " BMC ", " BMJ ", " but ", " by ", " CBC ", " CNS ", " d'un ", " d'une ", " D.C. ", 
           " D.C.L. ", " D.D.S. ", " D.Div. ", " D.M.D. ", " D.P.M. " , " M.S. ", " D.Sc. ", 
           " da ", " dans ", " das ", " DC ", " de ", " dei ", " del ", " della ", " delle ", 
@@ -17,7 +17,7 @@ const LC_SMALL_WORDS = array(/* The following will be automatically updated to a
           " NASA ", " NEJM ", " non ", " nor ", " NRC ", " NY ", " NYC ", " NYT ", " NZ ", 
           " och ", " OECD ", " of ", " off ", " og ", " on ", " or ", " over ", " P.E. ", 
           " PCR ", " per ", " Ph.D. ", " PMLA ", " PNAS ", " PS: ", " R&D ", " RNA ", " RTÉ ", 
-          " S&P ", " SAE ", " SpringerPlus ", CONFLICT" SSRN ", " TCI: ", " TESOL ", " the ", " then ", 
+          " S&P ", " SAE ", " SpringerPlus ", " SSRN ", " TCI: ", " te ", " TESOL ", " the ", " then ", 
           " till ", " to ", " UK ", " um ", " und ", " unserer ", " up ", " USA ", " van ", 
           " vir ", " von ", " voor ", " when ", " with ", " within ", " woor ", " y ", 
           " zu ", " zum ", " zur ", /* The above will be automatically updated to alphabetical order */ 
@@ -26,7 +26,7 @@ const LC_SMALL_WORDS = array(/* The following will be automatically updated to a
 const UC_SMALL_WORDS = array(/* The following will be automatically updated to alphabetical order */
           " Aaohn ", " Aap ", " Aaup ", " Abc ", " Ac ", " Acm ", " Agu ", " Ai ", " Aiaa ", 
           " Aiche ", " Aip ", " Ajhg ", " Al ", " An ", " And ", " and Then ", " Aoac ", 
-          " As ", " At ", " At ", " Aus ", " Av ", " Bba ", " Bbc ", " Be ", " Bei ", " Bjpsych ", 
+          " As ", " Aslib ", " At ", " At ", " Aus ", " Av ", " Bba ", " Bbc ", " Be ", " Bei ", " Bjpsych ", 
           " Bmc ", " Bmj ", " But ", " By ", " Cbc ", " Cns ", " D'un ", " D'une ", " D.c. ", 
           " D.c.l. ", " D.d.s. ", " D.div. ", " D.m.d. ", " D.p.m. " , " M.s. ", " D.sc. ", 
           " Da ", " Dans ", " Das ", " Dc ", " De ", " Dei ", " Del ", " Della ", " Delle ", 
@@ -40,7 +40,7 @@ const UC_SMALL_WORDS = array(/* The following will be automatically updated to a
           " Nasa ", " Nejm ", " Non ", " Nor ", " Nrc ", " Ny ", " Nyc ", " Nyt ", " Nz ", 
           " Och ", " Oecd ", " Of ", " Off ", " Og ", " On ", " Or ", " Over ", " P.e. ", 
           " Pcr ", " Per ", " Ph.d. ", " Pmla ", " Pnas ", " Ps: ", " R&d ", " Rna ", " Rté ", 
-          " S&p ", " Sae ", " Springerplus ", " Ssrn ", " Tci: ", " Tesol ", " The ", " Then ", 
+          " S&p ", " Sae ", " Springerplus ", " Ssrn ", " Tci: ", " Te ", " Tesol ", " The ", " Then ", 
           " Till ", " To ", " Uk ", " Um ", " Und ", " Unserer ", " Up ", " Usa ", " Van ", 
           " Vir ", " Von ", " Voor ", " When ", " With ", " Within ", " Woor ", " Y ", 
           " Zu ", " Zum ", " Zur ", /* The above will be automatically updated to alphabetical order */ 
@@ -72,7 +72,7 @@ const JOURNAL_ACRONYMS = array(/* The following will be automatically updated to
           " ePub ", " ePub ", " ePub) ", " eScholarship ", " EuroIntervention ", " eVolo ", 
           " eVolo ", " eWeek ", " eWeek ", " FASEB J ", " FASEB J. ", " FEBS J ", " FEBS J. ", 
           " FEBS Journal ", " Fizika Goreniya i Vzryva ", " Föreningen i Stockholm ", 
-          " für anorganische und allgemeine ", " HannahArendt.net ", " History of Science; An Annual Review of Literature ", 
+          " für anorganische und allgemeine ", " Gigiena i Sanitariia ", " HannahArendt.net ", " History of Science; An Annual Review of Literature ", 
           " HOAJ biology ", " Hoppe-Seyler's ", " hprints ", " Hylli i Dritës ", " i ee ", 
           " i ee ", " i Teplovoznaja ", " i-Perception ", " iConference ", " IDCases ", 
           " IEEE/ACM ", " IEEE/ACM ", " IFAC-PapersOnLine ", " iJournal ", " iJournal ", 
@@ -131,7 +131,7 @@ const UCFIRST_JOURNAL_ACRONYMS = array(/* The following will be automatically up
           " EPub ", " Epub ", " EPub) ", " Escholarship ", " Eurointervention ", " EVolo ", 
           " Evolo ", " EWeek ", " Eweek ", " Faseb J ", " Faseb J. ", " Febs J ", " Febs J. ", 
           " Febs Journal ", " Fizika Goreniya I Vzryva ", " Föreningen I Stockholm ", 
-          " Für Anorganische und Allgemeine ", " Hannaharendt.net ", " History of Science; an Annual Review of Literature ", 
+          " Für Anorganische und Allgemeine ", " Gigiena I Sanitariia ", " Hannaharendt.net ", " History of Science; an Annual Review of Literature ", 
           " Hoaj Biology ", " Hoppe-Seyler´s ", " Hprints ", " Hylli I Dritës ", " I Ee ", 
           " I ee ", " I Teplovoznaja ", " I-Perception ", " Iconference ", " Idcases ", 
           " IEEE/Acm ", " Ieee/Acm ", " Ifac-Papersonline ", " IJournal ", " Ijournal ", 

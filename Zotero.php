@@ -299,7 +299,14 @@ private static function zotero_request(string $url) : string {
    
   if (self::$zotero_failures_count > self::ZOTERO_GIVE_UP) return self::ERROR_DONE;
   
+  usleep(100000*(1+self::$zotero_failures_count)); // 0.10 seconds delay throttle
   $zotero_response = (string) @curl_exec(self::$zotero_ch);
+  if ($zotero_response == '') {
+     // @codeCoverageIgnoreStart
+     sleep(2);
+     $zotero_response = (string) @curl_exec(self::$zotero_ch);
+     // @codeCoverageIgnoreEnd
+  }
   if ($zotero_response == '') {
     // @codeCoverageIgnoreStart
     report_warning(curl_error(self::$zotero_ch) . "   For URL: " . $url);
@@ -592,7 +599,14 @@ public static function process_zotero_response(string $zotero_response, Template
      }
   }
   if (isset($result->itemType) && $result->itemType == 'newspaperArticle') {
-    if ( isset($result->publicationTitle)) $template->add_if_new('newspaper', (string) $result->publicationTitle);
+    if ( isset($result->publicationTitle)) {
+       $new_title = (string) $result->publicationTitle;
+       if ($new_title === 'United States Census Bureau') { // TODO - make an array
+          $template->add_if_new('publisher', $new_title);
+       } else {
+          $template->add_if_new('newspaper', $new_title);
+       }
+    }
   } else {
     if ( isset($result->publicationTitle)) {
       if ((!$template->has('title') || !$template->has('chapter')) && // Do not add if already has title and chapter
