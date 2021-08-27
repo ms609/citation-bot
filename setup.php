@@ -111,6 +111,7 @@ function check_overused() : void {
 
 function check_killed() : void {
  if (TRAVIS) return;
+ if(!defined('BIG_JOB_MODE')) return;
  @session_start();
  if (isset($_SESSION['kill_the_big_job'])) {
    unset($_SESSION['kill_the_big_job']);
