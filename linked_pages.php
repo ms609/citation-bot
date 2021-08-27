@@ -114,6 +114,7 @@ if (empty($pages_in_category)) {
 
   gc_collect_cycles();
   foreach ($pages_in_category as $page_title) {
+    check_killed();
     $done++;
     if ($page->get_text_from($page_title, $api) && $page->expand_text()) {
       report_phase("Writing to " . echoable($page_title) . '... ');
