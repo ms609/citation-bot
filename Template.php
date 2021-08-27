@@ -1068,6 +1068,9 @@ final class Template {
              if (stripos($value, ' post') !== FALSE && stripos($this->get('via'), 'post') !== FALSE) {
                $this->forget('via'); // eliminate via= that matches newspaper mostly
              }
+             if (stripos($value, ' bloomberg') !== FALSE && stripos($this->get('via'), 'bloomberg') !== FALSE) {
+               $this->forget('via'); // eliminate via= that matches newspaper mostly
+             }
           }
           if (($param_name === 'newspaper' || $param_name === 'journal') && $this->has('publisher') && str_equivalent($this->get('publisher'), $value)
                   && $this->blank('website')) { // Website is an alias for newspaper/work/journal, and did not check above
@@ -4600,10 +4603,24 @@ final class Template {
           if (doi_works($doi) && (strpos($doi, '10.3389/') === 0 ||
                                   strpos($doi, '10.3390/') === 0 ||
                                   strpos($doi, '10.1155/') === 0 ||
-                                  strpos($doi, '10.3897/zookeys') === 0
+                                  strpos($doi, '10.1371/journal.pone') === 0 ||
+                                  strpos($doi, '10.3897/zookeys') === 0 ||
+                                  strpos($doi, '10.1016/j.jbc.') === 0 ||
+                                  strpos($doi, '10.1016/S0021-9258') === 0 ||
+                                  strpos($doi, '10.1074/jbc.') === 0 
                                  )) {
             $this->add_if_new('doi-access', 'free');
           }
+          if (doi_works($doi) && (strpos($doi, '10.1073/pnas') === 0)) {
+            $template_year = $this->year();
+            if ($template_year !== '') { 
+              $template_year = (int) $template_year;
+              $year = (int) date("Y");
+              if (($template_year + 1) < $year){ // At least one year old, up to three
+                $this->add_if_new('doi-access', 'free');
+              }
+            }
+          }       
           return;
           
         case 'doi-broken': case 'doi_brokendate': case 'doi-broken-date': case 'doi_inactivedate': case 'doi-inactive-date':
