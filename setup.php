@@ -109,6 +109,18 @@ function check_overused() : void {
  @session_write_close();
 }
 
+function check_killed() : void {
+ if (TRAVIS) return;
+ @session_start();
+ if (isset($_SESSION['kill_the_big_job'])) {
+   unset($_SESSION['kill_the_big_job']);
+   @session_write_close();
+   echo('</pre><div style="text-align:center"><h1>Run killed as requested.</h1></div><footer><a href="./" title="Use Citation Bot again">Another</a>?</footer></body></html>');
+   exit();
+ }
+ @session_write_close();
+}
+
 define("MAX_TRIES", 2);
 require_once('constants.php');
 require_once('NameTools.php');
