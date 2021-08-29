@@ -4515,7 +4515,7 @@ T1 - This is the Title }}';
     $template = $this->make_citation($text);
     $template->rename('work', 'work');
     $template->rename('work', 'work', 'new');
-    $this->assertSame('New', $template->get2('work'));
+    $this->assertSame('new', $template->get2('work'));
   }
  
   public function testRenameSpecialCases2() : void {
