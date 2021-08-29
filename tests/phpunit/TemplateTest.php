@@ -4510,20 +4510,23 @@ T1 - This is the Title }}';
     $this->assertSame('# # CITATION_BOT_PLACEHOLDER_COMMENT # #', $template->get2('work'));
   }
       
-  public function testRenameSpecialCases() : void {
+  public function testRenameSpecialCases1() : void {
     $text = "{{cite web|id=x}}";
     $template = $this->make_citation($text);
     $template->rename('work', 'work');
     $template->rename('work', 'work', 'new');
-    $this->assertSame('new', $template->get2('work'));
-   
+    $this->assertSame('New', $template->get2('work'));
+  }
+ 
+  public function testRenameSpecialCases2() : void {
     $text = "{{cite web|id=x}}";
     $template = $this->make_citation($text);
     $template->rename('work', 'journal');
     $template->rename('work', 'journal', 'new');
-    $this->assertSame('new', $template->get2('journal'));
-
+    $this->assertSame('New', $template->get2('journal'));
+  }
  
+  public function testRenameSpecialCases3() : void {
     $text = "{{cite web}}"; // param will be null
     $template = $this->make_citation($text);
     $template->rename('work', 'journal');
