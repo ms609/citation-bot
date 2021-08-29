@@ -1661,7 +1661,7 @@ final class Template {
           if (filter_var($url, FILTER_VALIDATE_URL) === FALSE) return FALSE; // PHP does not like it
           if (preg_match (REGEXP_IS_URL, $url) !== 1) return FALSE;  // See https://mathiasbynens.be/demo/url-regex/  This regex is more exact than validator.  We only spend time on this after quick and dirty check is passed
           if (preg_match ('~^https?://[^/]+/?$~', $url) === 1) return FALSE; // Just a host name
-          $this->rename('website', 'url'); // Rename it first, so that parameters stay in same order
+          $this->rename('website', 'url'); // Change name it first, so that parameters stay in same order
           $this->set('url', $url);
           $url_type = 'url';
           quietly('report_modification', "website is actually HTTP URL; converting to use url parameter.");
@@ -7053,7 +7053,7 @@ final class Template {
   // Amend parameters
   public function rename(string $old_param, string $new_param, ?string $new_value = NULL) : void {
     if (empty($this->param)) return;
-    if ($old_param == $new_param) {
+    if ($old_param === $new_param) {
        if ($new_value !== NULL) {
            $this->set($new_param, $new_value);
            return;
@@ -7069,7 +7069,7 @@ final class Template {
     }
     if ($have_nothing) {
        if ($new_value !== NULL) {
-          $this->set($new_param, $new_value);
+          $this->add_if_new($new_param, $new_value);
           return;
        }
        return;
@@ -7096,14 +7096,19 @@ final class Template {
         $this->tidy_parameter($new_param);
       }
     }
-    if ($old_param === 'title' && $new_param === 'chapter' && $this->has('url') && $this->blank(['chapter-url', 'chapterurl'])) {
+    if ($old_param === 'url' && $new_param === 'chapter-url') {
+      $this->rename('urlaccess', 'chapter-url-access');
+      $this->rename('url-access', 'chapter-url-access');
+    } elseif ($old_param === 'chapter-url' && $new_param === 'url') {
+        $this->rename('chapter-url-access', 'url-access');
+    } elseif ($old_param === 'chapterurl' && $new_param === 'url') {
+        $this->rename('chapter-url-access', 'url-access');
+    }
+    if ($old_param === 'title' && $new_param === 'chapter') {
       $this->rename('url', 'chapter-url');
-    } elseif ($old_param === 'chapter' && $new_param === 'title' && $this->blank('url')) {
-      if ($this->has('chapter-url')) {
-        $this->rename('chapter-url', 'url');
-      } elseif ($this->has('chapterurl')) {
-        $this->rename('chapterurl', 'url');
-      }
+    } elseif ($old_param === 'chapter' && $new_param === 'title') {
+      $this->rename('chapter-url', 'url');
+      $this->rename('chapterurl', 'url');
     }
   }
 
