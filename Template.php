@@ -6772,6 +6772,9 @@ final class Template {
         }
        }
       }
+      if ($this->get('newspaper') === 'Reuters') {
+        $this->rename('newspaper', 'work');
+      }
     } elseif (in_array($this->wikiname(), TEMPLATES_WE_SLIGHTLY_PROCESS)) {
       $this->tidy_parameter('publisher');
       $this->tidy_parameter('via');
