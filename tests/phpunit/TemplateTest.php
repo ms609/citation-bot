@@ -6,7 +6,7 @@ declare(strict_types=1);
  */
 
 require_once(__DIR__ . '/../testBaseClass.php');
- 
+ testRenameSpecialCases
 final class TemplateTest extends testBaseClass {
 
   protected function setUp(): void {
@@ -4510,7 +4510,7 @@ T1 - This is the Title }}';
     $this->assertSame('# # CITATION_BOT_PLACEHOLDER_COMMENT # #', $template->get2('work'));
   }
       
-  public function testRenameSpecialCases() : void {
+  public function testRenameSpecialCasesCDFASDFADS() : void {
     $text = "{{cite web|id=x}}";
     $template = $this->make_citation($text);
     $template->rename('work', 'work');
