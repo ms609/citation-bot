@@ -4162,8 +4162,6 @@ final class Template {
       // so we use chapter-url so that the template is well rendered afterwards
       if ($this->should_url2chapter(TRUE)) { 
         $this->rename('url', 'chapter-url');
-        $this->rename('format', 'chapter-format');
-        $this->rename('url-access', 'chapter-url-access');
       } elseif (!$this->blank(['chapter-url','chapterurl']) && (str_i_same($this->get('chapter-url'), $this->get('url')))) {
         $this->forget('url');
       }  // otherwise they are differnt urls
@@ -6203,8 +6201,6 @@ final class Template {
           }
           if ($param === 'url' && $this->wikiname() === 'cite book' && $this->should_url2chapter(FALSE)) {            
             $this->rename('url', 'chapter-url');
-            $this->rename('format', 'chapter-format');
-            $this->rename('url-access', 'chapter-url-access');
             // Comment out because "never used"  $param = 'chapter-url';
             return;
           }
@@ -7099,12 +7095,11 @@ final class Template {
     if ($old_param === 'url' && $new_param === 'chapter-url') {
       $this->rename('urlaccess', 'chapter-url-access');
       $this->rename('url-access', 'chapter-url-access');
-    } elseif ($old_param === 'chapter-url' && $new_param === 'url') {
+      $this->rename('format', 'chapter-format');
+    } elseif (($old_param === 'chapter-url' || $old_param === 'chapterurl') && $new_param === 'url') {
         $this->rename('chapter-url-access', 'url-access');
-    } elseif ($old_param === 'chapterurl' && $new_param === 'url') {
-        $this->rename('chapter-url-access', 'url-access');
-    }
-    if ($old_param === 'title' && $new_param === 'chapter') {
+        $this->rename('chapter-format', 'format');
+    } elseif ($old_param === 'title' && $new_param === 'chapter') {
       $this->rename('url', 'chapter-url');
     } elseif ($old_param === 'chapter' && $new_param === 'title') {
       $this->rename('chapter-url', 'url');
@@ -7312,12 +7307,8 @@ final class Template {
     if ($par == 'chapter' && $this->blank('url')) {
       if($this->has('chapter-url')) {
         $this->rename('chapter-url', 'url');
-        $this->rename('chapter-format', 'format');
-        $this->rename('chapter-url-access', 'url-access');
       } elseif ($this->has('chapterurl')) {
         $this->rename('chapterurl', 'url');
-        $this->rename('chapter-format', 'format');
-        $this->rename('chapter-url-access', 'url-access');
       }
     }
     if ($par == 'chapter-url' || $par == 'chapterurl') {
