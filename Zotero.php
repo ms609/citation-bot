@@ -485,7 +485,7 @@ public static function process_zotero_response(string $zotero_response, Template
    }
   }
    
-  if (preg_match("~^([^\]]+)\|([^\]]+)\| ?THE DAILY STAR$~i', @$result->title, $matches)) {
+  if (preg_match('~^([^\]]+)\|([^\]]+)\| ?THE DAILY STAR$~i', @$result->title, $matches)) {
     $result->title = $matches[1];
     $result->publicationTitle = 'The Daily Star';
   }
