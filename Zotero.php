@@ -199,6 +199,9 @@ public static function drop_urls_that_match_dois(array &$templates) : void {  //
        if (str_ireplace(PROXY_HOSTS_TO_DROP,'', $url) !== $url && $template->get('doi-access') === 'free') {
           report_forget("Existing proxy URL resulting from equivalent free DOI; dropping URL");
           $template->forget($url_kind);
+       } elseif (str_ireplace(PROXY_HOSTS_TO_ALWAYS_DROP,'', $url) !== $url && $template->get('doi-access') === 'free') {
+          report_forget("Existing proxy URL resulting from equivalent free DOI; dropping URL");
+          $template->forget($url_kind);
        } elseif (str_ireplace(PROXY_HOSTS_TO_ALWAYS_DROP,'', $url) !== $url) {
           report_forget("Existing proxy URL resulting from equivalent DOI; fixing URL");
           $template->set($url_kind, "https://dx.doi.org/" . doi_encode($doi));
