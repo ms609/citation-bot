@@ -6593,7 +6593,6 @@ final class Template {
         $this->tidy_parameter('journal');
         $this->tidy_parameter('title');
         $this->tidy_parameter('chapter');
-        $this->tidy_parameter('url');
       }
       // "Work is a troublesome parameter
       if ($this->has_but_maybe_blank('work') && $this->blank('work')) { // Have work=, but it is blank
