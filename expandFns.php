@@ -286,9 +286,9 @@ function titles_are_dissimilar(string $inTitle, string $dbTitle) : bool {
         $dbTitle = strip_diacritics($dbTitle);
         $inTitle = strip_diacritics($inTitle);
         $inTitle2 = strip_diacritics($inTitle2);
-        $inTitle  = str_replace([" ", "<strong>", "</strong>", "<em>", "</em>", "&nbsp", "&"], "", $inTitle);
-        $inTitle2 = str_replace([" ", "<strong>", "</strong>", "<em>", "</em>", "&nbsp", "&"], "", $inTitle2);
-        $dbTitle  = str_replace([" ", "<strong>", "</strong>", "<em>", "</em>", "&nbsp", "&"], "", $dbTitle);
+        $inTitle  = str_replace([" ", "<strong>", "</strong>", "<em>", "</em>", "&nbsp", "&", "'", ",", ".", ";", '"'], "", $inTitle);
+        $inTitle2 = str_replace([" ", "<strong>", "</strong>", "<em>", "</em>", "&nbsp", "&", "'", ",", ".", ";", '"'], "", $inTitle2);
+        $dbTitle  = str_replace([" ", "<strong>", "</strong>", "<em>", "</em>", "&nbsp", "&", "'", ",", ".", ";", '"'], "", $dbTitle);
   // This will convert &delta into delta
         return ((strlen($inTitle) > 254 || strlen($dbTitle) > 254)
               ? (strlen($inTitle) != strlen($dbTitle)
