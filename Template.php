@@ -6586,12 +6586,14 @@ final class Template {
         }
       }
       // Double check these troublesome "journals"
-      if ($this->is_book_series('journal') || $this->is_book_series('series') ||
-          $this->is_book_series('chapter') || $this->is_book_series('title')) {
+      if (($this->is_book_series('journal') || $this->is_book_series('series') ||
+           $this->is_book_series('chapter') || $this->is_book_series('title')) || 
+          ($this->wikiname() !== 'cite book' && $this->wikiname() !== 'citation' && $this->has('chapter'))) {
         $this->tidy_parameter('series');
         $this->tidy_parameter('journal');
         $this->tidy_parameter('title');
         $this->tidy_parameter('chapter');
+        $this->tidy_parameter('url');
       }
       // "Work is a troublesome parameter
       if ($this->has_but_maybe_blank('work') && $this->blank('work')) { // Have work=, but it is blank
