@@ -588,6 +588,16 @@ public static function process_zotero_response(string $zotero_response, Template
   if (isset($result->title) && $result->title === 'Cultural Advice' && strpos($url, 'edu.au') !== FALSE) {
       unset($result->title); // A warning, not a title
   }
+  if ($template->has('title')) {
+     if(isset($result->title) && titles_are_similar($template->get('title'), (string) $result->title)) {
+        unset($result->title);
+     }
+  }
+  if ($template->has('chapter')) {
+     if(isset($result->title) && titles_are_similar($template->get('chapter'), (string) $result->title)) {
+        unset($result->title);
+     }
+  }
   if (isset($result->bookTitle)) {
     $template->add_if_new('title', (string) $result->bookTitle);
     if (isset($result->title))      $template->add_if_new('chapter',   (string) $result->title);
