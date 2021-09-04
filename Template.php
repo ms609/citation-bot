@@ -6776,6 +6776,10 @@ final class Template {
       if ($this->get('newspaper') === 'Reuters') {
         $this->rename('newspaper', 'work');
       }
+      if ($this->wikiname() === 'cite journal' && $this->has('chapter')) { // At least avoid a template error
+        $this->change_name_to('cite book');
+      }
+      
     } elseif (in_array($this->wikiname(), TEMPLATES_WE_SLIGHTLY_PROCESS)) {
       $this->tidy_parameter('publisher');
       $this->tidy_parameter('via');
