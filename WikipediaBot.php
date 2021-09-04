@@ -471,6 +471,10 @@ final class WikipediaBot {
       CURLOPT_URL => API_ROOT . '?action=query&usprop=blockinfo&format=json&list=users&ususers=' . urlencode(str_replace(" ", "_", $user))
     ]);
     $response = (string) @curl_exec($ch);
+    if ($response == '' || (strpos($response, '"userid"')  === FALSE)) { // try again if weird
+      sleep(5);
+      $response = (string) @curl_exec($ch);
+    }
     curl_close($ch);
     if ($response == '') return FALSE;
     $response = str_replace(array("\r", "\n"), '', $response);  // paranoid
