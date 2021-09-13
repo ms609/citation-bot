@@ -7376,6 +7376,7 @@ final class Template {
   }
 
   public function modifications() : array {
+    if ($this->has(strtolower('CITATION_BOT_PLACEHOLDER_BARE_URL'))) $this->parsed_text(); // force possible dropping
     if ($this->has(strtolower('CITATION_BOT_PLACEHOLDER_BARE_URL'))) return array();
     $new = array();
     $ret = array();
