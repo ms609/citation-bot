@@ -7376,6 +7376,11 @@ final class Template {
   }
 
   public function modifications() : array {
+    if ($this->has(strtolower('CITATION_BOT_PLACEHOLDER_BARE_URL'))) {
+      if ($this->has('title') || $this->has('chapter')) {
+        $this->forget(strtolower('CITATION_BOT_PLACEHOLDER_BARE_URL'));
+      }
+    }
     if ($this->has(strtolower('CITATION_BOT_PLACEHOLDER_BARE_URL'))) return array();
     $new = array();
     $ret = array();
