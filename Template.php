@@ -3477,6 +3477,7 @@ final class Template {
           unset($book_array['q']);
           unset($book_array['pg']);
           unset($book_array['lpg']);
+          unset($book_array['article_id']);
         }
       }
       if (isset($book_array['q'])){
@@ -3487,6 +3488,9 @@ final class Template {
       }
       if (isset($book_array['lpg'])){
           $url .= '&lpg=' . $book_array['lpg'];
+      }
+      if (isset($book_array['article_id'])){
+          $url .= '&article_id=' . $book_array['article_id'];
       }
       if ($hash) {
          $hash = "#" . $hash;
