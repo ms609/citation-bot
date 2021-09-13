@@ -376,6 +376,7 @@ class Page {
 
       // Record any modifications that have been made:
       $template_mods = $this_template->modifications();
+      print_r($template_mods);
       foreach (array_keys($template_mods) as $key) {
         if (!isset($this->modifications[$key])) {
           $this->modifications[$key] = $template_mods[$key];                     // @codeCoverageIgnore
@@ -391,6 +392,7 @@ class Page {
       $this_template = $our_templates_slight[$i];
       // Record any modifications that have been made:
       $template_mods = $this_template->modifications();
+      print_r($template_mods);
       foreach (array_keys($template_mods) as $key) {
         if (!isset($this->modifications[$key])) {
           $this->modifications[$key] = $template_mods[$key];                     // @codeCoverageIgnore
@@ -447,6 +449,7 @@ class Page {
   public function edit_summary() : string {
     $match = ['', '']; // prevent memory leak in some PHP versions
     $auto_summary = "";
+    print_r($this->modifications);
     if (count($this->modifications["changeonly"]) !== 0) {
       $auto_summary .= "Alter: " . implode(", ", $this->modifications["changeonly"]) . ". ";
     }
