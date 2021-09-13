@@ -7376,8 +7376,14 @@ final class Template {
   }
 
   public function modifications() : array {
-    if ($this->has(strtolower('CITATION_BOT_PLACEHOLDER_BARE_URL'))) $this->parsed_text(); // force possible dropping
-    if ($this->has(strtolower('CITATION_BOT_PLACEHOLDER_BARE_URL'))) return array();
+    if ($this->has(strtolower('CITATION_BOT_PLACEHOLDER_BARE_URL'))) {
+      if ($this->has('title') || $this->has('chapter')) {
+        $this->forget(strtolower('CITATION_BOT_PLACEHOLDER_BARE_URL'));
+        return array('deletions' => array('CITATION_BOT_PLACEHOLDER_BARE_URL'));
+      } else {
+        return array();
+      }
+    }
     $new = array();
     $ret = array();
     foreach ($this->param as $p) {
