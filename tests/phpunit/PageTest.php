@@ -83,12 +83,6 @@ final class PageTest extends testBaseClass {
       $this->assertSame('Alter: template type. | [[WP:UCB|Use this bot]]. [[WP:DBUG|Report bugs]]. ', $page->edit_summary());
   }
  
-  public function testPageChangeSummary14() : void {
-      $page = $this->process_page('{{cite journal|editor1 bob|editor2 cow|editor3 son|editor22 jane}}');
-      $this->assertSame('{{cite journal|editor1=bob|editor2=cow|editor3=son|editor22=jane}}', $page->parsed_text());
-      $this->assertSame('Add: editors 1-22. | [[WP:UCB|Use this bot]]. [[WP:DBUG|Report bugs]]. ', $page->edit_summary());
-  }
- 
   public function testBotReadblocked() : void {
    $this->requires_secrets(function() : void {
       $page = new TestPage();
