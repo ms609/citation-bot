@@ -271,7 +271,7 @@ final class expandFnsTest extends testBaseClass {
     $this->assertSame('Hello There', title_case('hello there'));
   }
   
-  public function testCapitalization_lots_more5() : void {
+  public function testCapitalization_lots_more6() : void {
     $this->assertSame('The DOS is Faster', title_capitalization('The DOS is Faster'));
     $this->assertSame('The dos is Faster', title_capitalization('The dos is Faster'));
   }
