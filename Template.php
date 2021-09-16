@@ -3778,7 +3778,7 @@ final class Template {
       }
 
       $shortest = -1;
-      $parameter_list = PARAMETER_LIST;
+      $parameter_list = array_reverse(PARAMETER_LIST);
       $test_dat = '';
       $shortish = -1;
       $comp = '';
