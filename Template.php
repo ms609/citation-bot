@@ -3778,11 +3778,21 @@ final class Template {
       }
 
       $shortest = -1;
-      $parameter_list = array_reverse(PARAMETER_LIST);
       $test_dat = '';
       $shortish = -1;
       $comp = '';
       $closest = '';
+      $parameter_list = array();
+      foreach (PARAMETER_LIST as $parameter) {
+        if (strpos($parameter, '#') === FALSE) {
+          $parameter_list[] = $parameter;
+        } else {
+          for ($i = 1; $i < 99; $i++) {
+            $parameter_list[] = str_replace('#', (string) $i, $parameter);
+          }
+        }
+      }
+      $parameter_list = array_reverse($parameter_list); // Longer things first
       
       foreach ($parameter_list as $parameter) {
         if ((strpos($parameter, '#') === FALSE) && ($parameter === strtolower($parameter)) && preg_match('~^(' . preg_quote($parameter) . '(?: -|:| )\s*)~iu', $dat, $match)) { // Avoid adding "URL" instead of "url"
