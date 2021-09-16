@@ -273,9 +273,9 @@ function titles_are_dissimilar(string $inTitle, string $dbTitle) : bool {
           $possible = preg_replace("~# # # CITATION_BOT_PLACEHOLDER_[A-Z]+ \d+ # # #~isu", ' ' , $inTitle);
           if ($possible !== NULL) {
              $inTitle = $possible;
-          } else {
-            $inTitle = preg_replace("~# # # CITATION_BOT_PLACEHOLDER_[A-Z]+ \d+ # # #~i", ' ' , $inTitle);
-            if ($inTitle === NULL) return TRUE;
+          } else { // When PHP fails with unicode, try withou it 
+            $inTitle = preg_replace("~# # # CITATION_BOT_PLACEHOLDER_[A-Z]+ \d+ # # #~i", ' ' , $inTitle);  // @codeCoverageIgnore
+            if ($inTitle === NULL) return TRUE;                                                             // @codeCoverageIgnore
           }
         }
         // always decode new data
