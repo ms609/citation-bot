@@ -3785,7 +3785,7 @@ final class Template {
       $closest = '';
       
       foreach ($parameter_list as $parameter) {
-        if (($parameter === strtolower($parameter)) && preg_match('~^(' . preg_quote($parameter) . '[ \-:]\s*)~iu', $dat, $match)) { // Avoid adding "URL" instead of "url"
+        if ((strpos($parameter, '#') === FALSE) && ($parameter === strtolower($parameter)) && preg_match('~^(' . preg_quote($parameter) . '(?: -|:| )\s*)~iu', $dat, $match)) { // Avoid adding "URL" instead of "url"
           $parameter_value = trim(mb_substr($dat, mb_strlen($match[1])));
           report_add("Found " . echoable($parameter) . " floating around in template; converted to parameter");
           $this->add_if_new($parameter, $parameter_value);
