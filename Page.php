@@ -146,7 +146,9 @@ class Page {
       if (in_array($templates[$i]->wikiname(), TEMPLATES_WE_PROCESS)) {
         if ($templates[$i]->has($identifier)
         && !$templates[$i]->api_has_used($api, equivalent_parameters($identifier))) {
-          $ids[$i] = $templates[$i]->get_without_comments_and_placeholders($identifier);
+          if (($api !== 'adsabs') || $templates[$i]->incomplete() || $templates[$i]->blank('doi')) { // Avoid some bibcode searches
+            $ids[$i] = $templates[$i]->get_without_comments_and_placeholders($identifier);
+          }
         }
       }
     }
