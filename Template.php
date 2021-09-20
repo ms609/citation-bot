@@ -4155,7 +4155,7 @@ final class Template {
                            'translator1-last','translator1-surname', 'translator-first',
                            'translator-first1', 'translator-given', 'translator-given1', 'translator-last',
                            'translator-last1','translator-surname', 'translator-surname1',
-                           'display-editors','displayeditors'], FIRST_EDITOR_ALIASES))) return; // Unsupported parameters
+                           'display-editors','displayeditors','url'], FIRST_EDITOR_ALIASES))) return; // Unsupported parameters
         $new_name = 'cite arXiv';  // Without the capital X is the alias
       }
       preg_match("~^(\s*).*\b(\s*)$~", $this->name, $spacing);
