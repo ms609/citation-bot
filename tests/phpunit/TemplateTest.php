@@ -5685,10 +5685,10 @@ T1 - This is the Title }}';
      $text='{{cite web|url=http://arxiv.org/X/abs/3XXX41222342343242}}';
      $template = $this->make_citation($text);
      $this->assertFalse($template->get_identifiers_from_url());
-     $this->assertSame('cite arxiv', $template->wikiname());
      $this->assertNull($template->get2('arxiv'));
      $this->assertNull($template->get2('eprint'));
      $this->assertSame('http://arxiv.org/X/abs/3XXX41222342343242', $template->get2('url'));
+     $this->assertSame('cite arxiv', $template->wikiname());
    }
  
    public function testArchiveAsURL() : void {
