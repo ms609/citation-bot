@@ -194,7 +194,15 @@ final class expandFnsTest extends testBaseClass {
     $text = "‹Y›";
     $this->assertSame("'Y'",straighten_quotes($text, TRUE));
   }
-
+  public function testArrowAreQuotes13() : void {
+    $text = '«Lastronaute» du vox pop de Guy Nantel était candidat aux élections fédérales... et a perdu';
+    $this->assertSame($text,straighten_quotes($text, FALSE));
+  }
+  public function testArrowAreQuotes14() : void {
+    $text = '«Lastronaute» du vox pop de Guy Nantel était candidat aux élections fédérales... et a perdu';
+    $this->assertSame('"Lastronaute" du vox pop de Guy Nantel était candidat aux élections fédérales... et a perdu'straighten_quotes($text, TRUE));
+  } 
+ 
   public function testMathInTitle() : void {
     // This MML code comes from a real CrossRef search of DOI 10.1016/j.newast.2009.05.001
     // $text_math is the correct final output
