@@ -7498,6 +7498,7 @@ final class Template {
      if (!in_array($param, ['volume','issue','number'])) {
        report_error('volume_issue_demix ' . echoable($param)); // @codeCoverageIgnore
      }
+     if (in_array($this->wikiname(), ['cite encyclopaedia', 'cite encyclopedia'])) return;
      if ($param === 'issue') {
          $the_issue = 'issue';
      } elseif ($param === 'number') {
