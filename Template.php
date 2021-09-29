@@ -4821,7 +4821,7 @@ final class Template {
           if (preg_match(REGEXP_PLAIN_WIKILINK, $the_param, $matches) || preg_match(REGEXP_PIPED_WIKILINK, $the_param, $matches)) {
               $the_param = $matches[1]; // Always the wikilink for easier standardization
           }
-          if (in_array(strtolower($the_param), ARE_MAGAZINES)) {
+          if (in_array(strtolower($the_param), ARE_MAGAZINES) && $this->blank(['pmc','doi','pmid'])) {
             $this->change_name_to('cite magazine');
             $this->rename($param, 'magazine');
             return;
