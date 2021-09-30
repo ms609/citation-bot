@@ -199,6 +199,7 @@ function sanitize_string(string $str) : string {
   // ought only be applied to newly-found data.
   if ($str == '') return '';
   if (strtolower(trim($str)) == 'science (new york, n.y.)') return 'Science';
+  if (preg_match('~^\[http.+\]$~', $str)) return $str; // It is a link out
   $replacement = [];
   $placeholder = [];
   $math_templates_present = preg_match_all("~<\s*math\s*>.*<\s*/\s*math\s*>~", $str, $math_hits);
