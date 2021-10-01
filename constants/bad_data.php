@@ -179,8 +179,9 @@ const NON_JOURNALS = array('Amphibian Species of the World', 'an Online Referenc
 const ARE_MAGAZINES = array('the new yorker', 'the new republic', 'new republic', 'expedition magazine', 'wired', 'wired uk',
                            'computer gaming world', 'edge', 'edge (magazine)', 'pc gamer', 'game informer', 'pc gamer uk',
                            'wired (magazine)', 'time', 'life', 'time (magazine)', 'life (magazine)', 'billboard',
-                           'billboard (magazine)', 'rolling stone'
+                           'billboard (magazine)', 'rolling stone', 'mcv/develop'
                            ); // lowercase axact matches
+const ARE_MANY_THINGS = array('pc gamer', 'gamestar', 'rock paper shotgun'); // lowercase axact matches
 const ARE_NEWSPAPERS = array('the economist', 'la times', 'toronto sun', 'washington post'); // lowercase axact matches
 const NO_PUBLISHER_NEEDED = array('los angeles times', 'new york times magazine', 'the new york times',
                                    'new york times', 'huffington post', 'the daily telegraph', 'forbes.com',
