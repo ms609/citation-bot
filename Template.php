@@ -4135,9 +4135,16 @@ final class Template {
   }
 
   public function change_name_to(string $new_name, bool $rename_cite_book = TRUE) : void {
-    $spacing = ['', '']; // prevent memory leak in some PHP versions
+    $spacing = ['', '']; $matches = ['', '']; // prevent memory leak in some PHP versions
     if (strpos($this->get('doi'), '10.1093') !== FALSE && $this->wikiname() !== 'cite web') return;
     if (bad_10_1093_doi($this->get('doi'))) return;
+    foreach (WORK_ALIASES as $work) {
+      $worky = strtolower($this->get($work));
+      if (preg_match(REGEXP_PLAIN_WIKILINK, $worky, $matches) || preg_match(REGEXP_PIPED_WIKILINK, $worky, $matches)) {
+        $worky = $matches[1]; // Always the wikilink for easier standardization
+      }
+      if (in_array($worky, ARE_MANY_THINGS)) return;
+    }
     if ($this->wikiname() === 'cite book' && !$this->blank_other_than_comments(CHAPTER_ALIASES)) {
       return; // Changing away leads to error
     }
