@@ -199,6 +199,9 @@ public static function drop_urls_that_match_dois(array &$templates) : void {  //
        if (str_ireplace(PROXY_HOSTS_TO_DROP,'', $url) !== $url && $template->get('doi-access') === 'free') {
           report_forget("Existing proxy URL resulting from equivalent free DOI; dropping URL");
           $template->forget($url_kind);
+       } elseif (str_ireplace(PROXY_HOSTS_TO_ALWAYS_DROP,'', $url) !== $url && $template->get('doi-access') === 'free') {
+          report_forget("Existing proxy URL resulting from equivalent free DOI; dropping URL");
+          $template->forget($url_kind);
        } elseif (str_ireplace(PROXY_HOSTS_TO_ALWAYS_DROP,'', $url) !== $url) {
           report_forget("Existing proxy URL resulting from equivalent DOI; fixing URL");
           $template->set($url_kind, "https://dx.doi.org/" . doi_encode($doi));
@@ -484,6 +487,11 @@ public static function process_zotero_response(string $zotero_response, Template
       }
    }
   }
+   
+  if (preg_match('~^([^\]]+)\|([^\]]+)\| ?THE DAILY STAR$~i', @$result->title, $matches)) {
+    $result->title = $matches[1];
+    $result->publicationTitle = 'The Daily Star';
+  }
   
   if (isset($result->extra)) { // [extra] => DOI: 10.1038/546031a has been seen in the wild
     if (preg_match('~\sdoi:\s?([^\s]+)\s~i', ' ' . $result->extra . ' ', $matches)) {
@@ -580,6 +588,16 @@ public static function process_zotero_response(string $zotero_response, Template
   if (isset($result->title) && $result->title === 'Cultural Advice' && strpos($url, 'edu.au') !== FALSE) {
       unset($result->title); // A warning, not a title
   }
+  if ($template->has('title')) {
+     if(isset($result->title) && titles_are_similar($template->get('title'), (string) $result->title)) {
+        unset($result->title);
+     }
+  }
+  if ($template->has('chapter')) {
+     if(isset($result->title) && titles_are_similar($template->get('chapter'), (string) $result->title)) {
+        unset($result->title);
+     }
+  }
   if (isset($result->bookTitle)) {
     $template->add_if_new('title', (string) $result->bookTitle);
     if (isset($result->title))      $template->add_if_new('chapter',   (string) $result->title);
@@ -672,6 +690,7 @@ public static function process_zotero_response(string $zotero_response, Template
         break;
       case 'webpage':
       case 'blogPost':
+      case 'document':
         
         break; // Could be a journal article or a genuine web page.
         

@@ -4510,20 +4510,23 @@ T1 - This is the Title }}';
     $this->assertSame('# # CITATION_BOT_PLACEHOLDER_COMMENT # #', $template->get2('work'));
   }
       
-  public function testRenameSpecialCases() : void {
+  public function testRenameSpecialCases1() : void {
     $text = "{{cite web|id=x}}";
     $template = $this->make_citation($text);
     $template->rename('work', 'work');
     $template->rename('work', 'work', 'new');
     $this->assertSame('new', $template->get2('work'));
-   
+  }
+ 
+  public function testRenameSpecialCases2() : void {
     $text = "{{cite web|id=x}}";
     $template = $this->make_citation($text);
     $template->rename('work', 'journal');
     $template->rename('work', 'journal', 'new');
-    $this->assertSame('new', $template->get2('journal'));
-
+    $this->assertSame('New', $template->get2('journal'));
+  }
  
+  public function testRenameSpecialCases3() : void {
     $text = "{{cite web}}"; // param will be null
     $template = $this->make_citation($text);
     $template->rename('work', 'journal');
@@ -5682,10 +5685,10 @@ T1 - This is the Title }}';
      $text='{{cite web|url=http://arxiv.org/X/abs/3XXX41222342343242}}';
      $template = $this->make_citation($text);
      $this->assertFalse($template->get_identifiers_from_url());
-     $this->assertSame('cite arxiv', $template->wikiname());CONFLICT
      $this->assertNull($template->get2('arxiv'));
      $this->assertNull($template->get2('eprint'));
      $this->assertSame('http://arxiv.org/X/abs/3XXX41222342343242', $template->get2('url'));
+     $this->assertSame('cite web', $template->wikiname());
    }
  
    public function testArchiveAsURL() : void {

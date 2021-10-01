@@ -186,7 +186,23 @@ final class expandFnsTest extends testBaseClass {
     $text = "«XY»Z";
     $this->assertSame('"XY"Z',straighten_quotes($text, TRUE));
   }
-
+  public function testArrowAreQuotes11() : void {
+    $text = "«Y»";
+    $this->assertSame('"Y"',straighten_quotes($text, TRUE));
+  }
+  public function testArrowAreQuotes12() : void {
+    $text = "‹Y›";
+    $this->assertSame("'Y'",straighten_quotes($text, TRUE));
+  }
+  public function testArrowAreQuotes13() : void {
+    $text = '«Lastronaute» du vox pop de Guy Nantel était candidat aux élections fédérales... et a perdu';
+    $this->assertSame($text,straighten_quotes($text, FALSE));
+  }
+  public function testArrowAreQuotes14() : void {
+    $text = '«Lastronaute» du vox pop de Guy Nantel était candidat aux élections fédérales... et a perdu';
+    $this->assertSame('"Lastronaute" du vox pop de Guy Nantel était candidat aux élections fédérales... et a perdu', straighten_quotes($text, TRUE));
+  } 
+ 
   public function testMathInTitle() : void {
     // This MML code comes from a real CrossRef search of DOI 10.1016/j.newast.2009.05.001
     // $text_math is the correct final output
@@ -261,6 +277,11 @@ final class expandFnsTest extends testBaseClass {
     $this->assertSame('http://', title_case('http://'));
     $this->assertSame('abx www-x', title_case('abx www-x'));
     $this->assertSame('Hello There', title_case('hello there'));
+  }
+  
+  public function testCapitalization_lots_more6() : void {
+    $this->assertSame('The DOS is Faster', title_capitalization('The DOS is Faster', TRUE));
+    $this->assertSame('The dos is Faster', title_capitalization('The dos is Faster', TRUE));
   }
   
   public function testThrottle() : void { // Just runs over the code and basically does nothing

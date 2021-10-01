@@ -838,11 +838,11 @@ function doi_active(string $doi) : ?bool {
 function doi_works(string $doi) : ?bool {
   // Greatly speed-up by having one array of each kind and only look for hash keys, not values
   static $cache_good = [];
-  static $cache_bad  = [];
+  static $cache_bad  = ['10.1126/science']; // This results from over-truncating other DOIs and it oddly works
   if (array_key_exists($doi, $cache_good)) return TRUE;
   if (array_key_exists($doi, $cache_bad))  return FALSE;
   // For really long category runs
-  if (count($cache_bad) > 5500) $cache_bad = [];
+  if (count($cache_bad) > 5500) $cache_bad = ['10.1126/science'];
   if (count($cache_good) > 5500) $cache_good = [];
   $works = is_doi_works($doi);
   if ($works === NULL) {

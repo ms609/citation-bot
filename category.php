@@ -79,6 +79,7 @@ if ($category) {
 
   gc_collect_cycles();
   foreach ($pages_in_category as $page_title) {
+    check_killed();
     $done++;
     // $page->expand_text will take care of this notice if we are in HTML mode.
     html_echo('', "\n\n\n*** Processing page '" . echoable($page_title) . "' : " . date("H:i:s") . "\n");

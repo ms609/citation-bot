@@ -323,6 +323,7 @@ final class WikipediaBot {
           if (stripos($page->title, 'talk:') === FALSE &&
               stripos($page->title, 'Template:') === FALSE &&
               stripos($page->title, 'Special:') === FALSE &&
+              stripos($page->title, 'Draft:') === FALSE &&
               stripos($page->title, 'Wikipedia:') === FALSE) {
             $list[] = $page->title;
           }
@@ -470,6 +471,10 @@ final class WikipediaBot {
       CURLOPT_URL => API_ROOT . '?action=query&usprop=blockinfo&format=json&list=users&ususers=' . urlencode(str_replace(" ", "_", $user))
     ]);
     $response = (string) @curl_exec($ch);
+    if ($response == '' || (strpos($response, '"userid"')  === FALSE)) { // try again if weird
+      sleep(5);
+      $response = (string) @curl_exec($ch);
+    }
     curl_close($ch);
     if ($response == '') return FALSE;
     $response = str_replace(array("\r", "\n"), '', $response);  // paranoid
@@ -520,7 +525,7 @@ final class WikipediaBot {
       if (!self::is_valid_user($user)) {
         unset($_SESSION['access_key']);
         unset($_SESSION['access_secret']);
-        report_error('User is either invalid or blocked on ' . WIKI_ROOT);
+        report_error('User is either invalid or blocked on ' . WIKI_ROOT . ' according to ' . API_ROOT . '?action=query&usprop=blockinfo&format=json&list=users&ususers=' . urlencode(str_replace(" ", "_", $user)));
       }
       $this->the_user = $user;
       $_SESSION['citation_bot_user_id'] = $this->the_user;
