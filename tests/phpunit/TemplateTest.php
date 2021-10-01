@@ -5688,7 +5688,7 @@ T1 - This is the Title }}';
      $this->assertNull($template->get2('arxiv'));
      $this->assertNull($template->get2('eprint'));
      $this->assertSame('http://arxiv.org/X/abs/3XXX41222342343242', $template->get2('url'));
-     $this->assertSame('cite arxiv', $template->wikiname());
+     $this->assertSame('cite web', $template->wikiname());
    }
  
    public function testArchiveAsURL() : void {
