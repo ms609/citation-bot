@@ -1330,6 +1330,7 @@ final class Template {
       case 'doi':
         if ($value == '10.5284/1000184') return FALSE; // This is a DOI for an entire database, not anything within it
         if ($value == '10.1267/science.040579197') return FALSE; // PMID test doi
+        if ($value == '10.1126/science') return FALSE; // This results from over-truncating other DOIs and it oddly works
         if (stripos($value, '10.5779/hypothesis') === 0) return FALSE; // SPAM took over
         if (substr($value, 0, 8) == '10.5555/') return FALSE ; // Test DOI prefix.  NEVER will work
         if (stripos($value, '10.1093/law:epil') === 0) return FALSE; // Those do not work
@@ -1661,7 +1662,7 @@ final class Template {
           if (filter_var($url, FILTER_VALIDATE_URL) === FALSE) return FALSE; // PHP does not like it
           if (preg_match (REGEXP_IS_URL, $url) !== 1) return FALSE;  // See https://mathiasbynens.be/demo/url-regex/  This regex is more exact than validator.  We only spend time on this after quick and dirty check is passed
           if (preg_match ('~^https?://[^/]+/?$~', $url) === 1) return FALSE; // Just a host name
-          $this->rename('website', 'url'); // Rename it first, so that parameters stay in same order
+          $this->rename('website', 'url'); // Change name it first, so that parameters stay in same order
           $this->set('url', $url);
           $url_type = 'url';
           quietly('report_modification', "website is actually HTTP URL; converting to use url parameter.");
@@ -3409,7 +3410,7 @@ final class Template {
         if ($part_start[0] === 'keywords') $part_start[0] = 'q';
         if ($part_start[0] === 'page')     $part_start[0] = 'pg';
         switch ($part_start[0]) {
-          case "dq": case "pg": case "lpg": case "q": case "printsec": case "cd": case "vq": case "jtp": case "sitesec":
+          case "dq": case "pg": case "lpg": case "q": case "printsec": case "cd": case "vq": case "jtp": case "sitesec": case "article_id":
             if (!isset($part_start[1]) || $part_start[1] == '') {
                 $removed_redundant++;
                 $removed_parts .= $part;
@@ -3476,6 +3477,7 @@ final class Template {
           unset($book_array['q']);
           unset($book_array['pg']);
           unset($book_array['lpg']);
+          unset($book_array['article_id']);
         }
       }
       if (isset($book_array['q'])){
@@ -3486,6 +3488,9 @@ final class Template {
       }
       if (isset($book_array['lpg'])){
           $url .= '&lpg=' . $book_array['lpg'];
+      }
+      if (isset($book_array['article_id'])){
+          $url .= '&article_id=' . $book_array['article_id'];
       }
       if ($hash) {
          $hash = "#" . $hash;
@@ -3773,14 +3778,24 @@ final class Template {
       }
 
       $shortest = -1;
-      $parameter_list = PARAMETER_LIST;
       $test_dat = '';
       $shortish = -1;
       $comp = '';
       $closest = '';
+      $parameter_list = array();
+      foreach (PARAMETER_LIST as $parameter) {
+        if (strpos($parameter, '#') === FALSE) {
+          $parameter_list[] = $parameter;
+        } else {
+          for ($i = 1; $i < 99; $i++) {
+            $parameter_list[] = str_replace('#', (string) $i, $parameter);
+          }
+        }
+      }
+      $parameter_list = array_reverse($parameter_list); // Longer things first
       
       foreach ($parameter_list as $parameter) {
-        if (($parameter === strtolower($parameter)) && preg_match('~^(' . preg_quote($parameter) . '[ \-:]\s*)~iu', $dat, $match)) { // Avoid adding "URL" instead of "url"
+        if ((strpos($parameter, '#') === FALSE) && ($parameter === strtolower($parameter)) && preg_match('~^(' . preg_quote($parameter) . '(?: -|:| )\s*)~iu', $dat, $match)) { // Avoid adding "URL" instead of "url"
           $parameter_value = trim(mb_substr($dat, mb_strlen($match[1])));
           report_add("Found " . echoable($parameter) . " floating around in template; converted to parameter");
           $this->add_if_new($parameter, $parameter_value);
@@ -4120,9 +4135,16 @@ final class Template {
   }
 
   public function change_name_to(string $new_name, bool $rename_cite_book = TRUE) : void {
-    $spacing = ['', '']; // prevent memory leak in some PHP versions
+    $spacing = ['', '']; $matches = ['', '']; // prevent memory leak in some PHP versions
     if (strpos($this->get('doi'), '10.1093') !== FALSE && $this->wikiname() !== 'cite web') return;
     if (bad_10_1093_doi($this->get('doi'))) return;
+    foreach (WORK_ALIASES as $work) {
+      $worky = strtolower($this->get($work));
+      if (preg_match(REGEXP_PLAIN_WIKILINK, $worky, $matches) || preg_match(REGEXP_PIPED_WIKILINK, $worky, $matches)) {
+        $worky = $matches[1]; // Always the wikilink for easier standardization
+      }
+      if (in_array($worky, ARE_MANY_THINGS)) return;
+    }
     if ($this->wikiname() === 'cite book' && !$this->blank_other_than_comments(CHAPTER_ALIASES)) {
       return; // Changing away leads to error
     }
@@ -4140,7 +4162,7 @@ final class Template {
                            'translator1-last','translator1-surname', 'translator-first',
                            'translator-first1', 'translator-given', 'translator-given1', 'translator-last',
                            'translator-last1','translator-surname', 'translator-surname1',
-                           'display-editors','displayeditors'], FIRST_EDITOR_ALIASES))) return; // Unsupported parameters
+                           'display-editors','displayeditors','url'], FIRST_EDITOR_ALIASES))) return; // Unsupported parameters
         $new_name = 'cite arXiv';  // Without the capital X is the alias
       }
       preg_match("~^(\s*).*\b(\s*)$~", $this->name, $spacing);
@@ -4162,8 +4184,6 @@ final class Template {
       // so we use chapter-url so that the template is well rendered afterwards
       if ($this->should_url2chapter(TRUE)) { 
         $this->rename('url', 'chapter-url');
-        $this->rename('format', 'chapter-format');
-        $this->rename('url-access', 'chapter-url-access');
       } elseif (!$this->blank(['chapter-url','chapterurl']) && (str_i_same($this->get('chapter-url'), $this->get('url')))) {
         $this->forget('url');
       }  // otherwise they are differnt urls
@@ -4808,7 +4828,7 @@ final class Template {
           if (preg_match(REGEXP_PLAIN_WIKILINK, $the_param, $matches) || preg_match(REGEXP_PIPED_WIKILINK, $the_param, $matches)) {
               $the_param = $matches[1]; // Always the wikilink for easier standardization
           }
-          if (in_array(strtolower($the_param), ARE_MAGAZINES)) {
+          if (in_array(strtolower($the_param), ARE_MAGAZINES) && $this->blank(['pmc','doi','pmid'])) {
             $this->change_name_to('cite magazine');
             $this->rename($param, 'magazine');
             return;
@@ -6203,8 +6223,6 @@ final class Template {
           }
           if ($param === 'url' && $this->wikiname() === 'cite book' && $this->should_url2chapter(FALSE)) {            
             $this->rename('url', 'chapter-url');
-            $this->rename('format', 'chapter-format');
-            $this->rename('url-access', 'chapter-url-access');
             // Comment out because "never used"  $param = 'chapter-url';
             return;
           }
@@ -6590,8 +6608,9 @@ final class Template {
         }
       }
       // Double check these troublesome "journals"
-      if ($this->is_book_series('journal') || $this->is_book_series('series') ||
-          $this->is_book_series('chapter') || $this->is_book_series('title')) {
+      if (($this->is_book_series('journal') || $this->is_book_series('series') ||
+           $this->is_book_series('chapter') || $this->is_book_series('title')) || 
+          ($this->wikiname() !== 'cite book' && $this->wikiname() !== 'citation' && $this->has('chapter'))) {
         $this->tidy_parameter('series');
         $this->tidy_parameter('journal');
         $this->tidy_parameter('title');
@@ -6775,6 +6794,15 @@ final class Template {
           }
         }
        }
+      }
+      if ($this->get('newspaper') === 'Reuters') {
+        $this->rename('newspaper', 'work');
+      }
+      if (($this->wikiname() === 'cite journal' || $this->wikiname() === 'cite document') && $this->has('chapter') && $this->blank('title')) {
+        $this->rename('chapter', 'title');
+      }
+      if (($this->wikiname() === 'cite journal' || $this->wikiname() === 'cite document') && $this->has('chapter')) { // At least avoid a template error
+        $this->change_name_to('cite book');
       }
     } elseif (in_array($this->wikiname(), TEMPLATES_WE_SLIGHTLY_PROCESS)) {
       $this->tidy_parameter('publisher');
@@ -7053,7 +7081,7 @@ final class Template {
   // Amend parameters
   public function rename(string $old_param, string $new_param, ?string $new_value = NULL) : void {
     if (empty($this->param)) return;
-    if ($old_param == $new_param) {
+    if ($old_param === $new_param) {
        if ($new_value !== NULL) {
            $this->set($new_param, $new_value);
            return;
@@ -7069,7 +7097,7 @@ final class Template {
     }
     if ($have_nothing) {
        if ($new_value !== NULL) {
-          $this->set($new_param, $new_value);
+          $this->add_if_new($new_param, $new_value);
           return;
        }
        return;
@@ -7096,14 +7124,18 @@ final class Template {
         $this->tidy_parameter($new_param);
       }
     }
-    if ($old_param === 'title' && $new_param === 'chapter' && $this->has('url') && $this->blank(['chapter-url', 'chapterurl'])) {
+    if ($old_param === 'url' && $new_param === 'chapter-url') {
+      $this->rename('urlaccess', 'chapter-url-access');
+      $this->rename('url-access', 'chapter-url-access');
+      $this->rename('format', 'chapter-format');
+    } elseif (($old_param === 'chapter-url' || $old_param === 'chapterurl') && $new_param === 'url') {
+        $this->rename('chapter-url-access', 'url-access');
+        $this->rename('chapter-format', 'format');
+    } elseif ($old_param === 'title' && $new_param === 'chapter') {
       $this->rename('url', 'chapter-url');
-    } elseif ($old_param === 'chapter' && $new_param === 'title' && $this->blank('url')) {
-      if ($this->has('chapter-url')) {
-        $this->rename('chapter-url', 'url');
-      } elseif ($this->has('chapterurl')) {
-        $this->rename('chapterurl', 'url');
-      }
+    } elseif ($old_param === 'chapter' && $new_param === 'title') {
+      $this->rename('chapter-url', 'url');
+      $this->rename('chapterurl', 'url');
     }
   }
 
@@ -7307,12 +7339,8 @@ final class Template {
     if ($par == 'chapter' && $this->blank('url')) {
       if($this->has('chapter-url')) {
         $this->rename('chapter-url', 'url');
-        $this->rename('chapter-format', 'format');
-        $this->rename('chapter-url-access', 'url-access');
       } elseif ($this->has('chapterurl')) {
         $this->rename('chapterurl', 'url');
-        $this->rename('chapter-format', 'format');
-        $this->rename('chapter-url-access', 'url-access');
       }
     }
     if ($par == 'chapter-url' || $par == 'chapterurl') {
@@ -7369,6 +7397,11 @@ final class Template {
   }
 
   public function modifications() : array {
+    if ($this->has(strtolower('CITATION_BOT_PLACEHOLDER_BARE_URL'))) {
+      if ($this->has('title') || $this->has('chapter')) {
+        $this->forget(strtolower('CITATION_BOT_PLACEHOLDER_BARE_URL'));
+      }
+    }
     if ($this->has(strtolower('CITATION_BOT_PLACEHOLDER_BARE_URL'))) return array();
     $new = array();
     $ret = array();
@@ -7472,6 +7505,7 @@ final class Template {
      if (!in_array($param, ['volume','issue','number'])) {
        report_error('volume_issue_demix ' . echoable($param)); // @codeCoverageIgnore
      }
+     if (in_array($this->wikiname(), ['cite encyclopaedia', 'cite encyclopedia'])) return;
      if ($param === 'issue') {
          $the_issue = 'issue';
      } elseif ($param === 'number') {
@@ -7589,7 +7623,7 @@ final class Template {
           case "oq": case "rls": case "sourceid": case "ved":
           case "aqs": case "gs_l": case "uact": case "tbo": case "tbs":
           case "num": case "redir_esc": case "gs_lcp": case "sxsrf":
-          case "gfe_rd": case "gws_rd": case "rlz":
+          case "gfe_rd": case "gws_rd": case "rlz": case "sclient":
              break;
           case "rct":
              if (str_i_same($part_start[1], 'j')) break;  // default

@@ -95,6 +95,7 @@ if ($total > BIG_RUN) check_overused();
 
 gc_collect_cycles();
 foreach ($pages_to_do as $page_title) {
+  check_killed();
   $done++;
   if (trim($page_title) === '') {  // Default is to edit Wikipedia's main page if user just clicks button.  Let's not even try
      echo "\n\n No page given.  <a href='./' title='Main interface'>Specify one here</a>. \n\n";

@@ -72,7 +72,7 @@ const BAD_TITLES = array("unknown", "missing", "arxiv e-prints", "arxiv mathemat
                          "bloomberg - are you a robot?", "page not found",
                          "breaking news, analysis, politics, blogs, news photos, video, tech reviews",
                          "breaking news, analysis, politics, blogs, news photos, video, tech reviews - time.com",
-                         "redirect notice"
+                         "redirect notice", "oxford music online"
                         );
 const IN_PRESS_ALIASES = array("in press", "inpress", "pending", "published", 
                                "published online", "no-no", "n/a", "online ahead of print", 
@@ -104,7 +104,7 @@ const BAD_ZOTERO_TITLES = ['Browse publications', 'Central Authentication Servic
                                  'Untitled-6', 'Untitled-7', 'Untitled-8', 'Untitled-9', 'Are you a robot',
                                  'Aanmelden of registreren om te bekijken', 'register to view', 'being redirected',
                                  'has been registered', 'Aanmelden bij Facebook', 'Einloggen', 'The Times & the Sunday Times',
-                                 'Login • Instagram'];
+                                 'Login • Instagram', 'subscriber to read'];
 
 const CANONICAL_PUBLISHER_URLS = array ('elsevier.com', 'springer.com', 'sciencedirect.com', 'tandfonline.com',
                                 'taylorandfrancis.com', 'wiley.com', 'sagepub.com', 'sagepublications.com',
@@ -157,6 +157,7 @@ const ZOTERO_AVOID_REGEX = array("twitter\.",               // This should be {{
                                  "leighrayment\.com",       // highjacked
                                  "seapower\-digital\.com",  // highjacked
                                  "scholarlycommons\.pacific\.edu\/euler\-works", // returns journal reference to works, not the actual work
+                                 "miar\.ub\.edu\/issn", // ISSN description, not actually the journal
                                  );
 const NON_JOURNAL_WEBSITES = array('cnn.com/', 'foxnews.com/', 'msnbc.com/', 'nbcnews.com/', 'abcnews.com/', 'cbs.com/', 
                                    'cbsnews.com/', 'abc.com/', 'bbc.com/', 'bbc.co.uk/', 'apnews.com/',
@@ -177,9 +178,11 @@ const NON_JOURNAL_DOIS = array('10.5531/db.vz.0001'); // lowercase exact matches
 const NON_JOURNALS = array('Amphibian Species of the World', 'an Online Reference', 'An Online Reference'); // Case-sensitive sub-string
 const ARE_MAGAZINES = array('the new yorker', 'the new republic', 'new republic', 'expedition magazine', 'wired', 'wired uk',
                            'computer gaming world', 'edge', 'edge (magazine)', 'pc gamer', 'game informer', 'pc gamer uk',
-                           'wired (magazine)'
+                           'wired (magazine)', 'time', 'life', 'time (magazine)', 'life (magazine)', 'billboard',
+                           'billboard (magazine)', 'rolling stone', 'mcv/develop'
                            ); // lowercase axact matches
-const ARE_NEWSPAPERS = array('the economist'); // lowercase axact matches
+const ARE_MANY_THINGS = array('pc gamer', 'gamestar', 'rock paper shotgun'); // lowercase axact matches.  These are things that are both websites and newspapers
+const ARE_NEWSPAPERS = array('the economist', 'la times', 'toronto sun', 'washington post'); // lowercase axact matches
 const NO_PUBLISHER_NEEDED = array('los angeles times', 'new york times magazine', 'the new york times',
                                    'new york times', 'huffington post', 'the daily telegraph', 'forbes.com',
                                    'forbes magazine'); // lowercase axact matches

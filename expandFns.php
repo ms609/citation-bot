@@ -18,6 +18,7 @@ function sanitize_doi(string $doi) : string {
     }
   }
   $doi = preg_replace('~^https?://d?x?\.?doi\.org/~i', '', $doi); // Strip URL part if present
+  $doi = preg_replace('~^/?d?x?\.?doi\.org/~i', '', $doi);
   $doi = preg_replace('~^doi:~i', '', $doi); // Strip doi: part if present
   $doi = str_replace("+" , "%2B", $doi); // plus signs are valid DOI characters, but in URLs are "spaces"
   $doi = str_replace(HTML_ENCODE_DOI, HTML_DECODE_DOI, trim(urldecode($doi)));
@@ -198,6 +199,7 @@ function sanitize_string(string $str) : string {
   // ought only be applied to newly-found data.
   if ($str == '') return '';
   if (strtolower(trim($str)) == 'science (new york, n.y.)') return 'Science';
+  if (preg_match('~^\[http.+\]$~', $str)) return $str; // It is a link out
   $replacement = [];
   $placeholder = [];
   $math_templates_present = preg_match_all("~<\s*math\s*>.*<\s*/\s*math\s*>~", $str, $math_hits);
@@ -272,9 +274,9 @@ function titles_are_dissimilar(string $inTitle, string $dbTitle) : bool {
           $possible = preg_replace("~# # # CITATION_BOT_PLACEHOLDER_[A-Z]+ \d+ # # #~isu", ' ' , $inTitle);
           if ($possible !== NULL) {
              $inTitle = $possible;
-          } else {
-            $inTitle = preg_replace("~# # # CITATION_BOT_PLACEHOLDER_[A-Z]+ \d+ # # #~i", ' ' , $inTitle);
-            if ($inTitle === NULL) return TRUE;
+          } else { // When PHP fails with unicode, try withou it 
+            $inTitle = preg_replace("~# # # CITATION_BOT_PLACEHOLDER_[A-Z]+ \d+ # # #~i", ' ' , $inTitle);  // @codeCoverageIgnore
+            if ($inTitle === NULL) return TRUE;                                                             // @codeCoverageIgnore
           }
         }
         // always decode new data
@@ -285,9 +287,9 @@ function titles_are_dissimilar(string $inTitle, string $dbTitle) : bool {
         $dbTitle = strip_diacritics($dbTitle);
         $inTitle = strip_diacritics($inTitle);
         $inTitle2 = strip_diacritics($inTitle2);
-        $inTitle  = str_replace([" ", "<strong>", "</strong>", "<em>", "</em>", "&nbsp", "&"], "", $inTitle);
-        $inTitle2 = str_replace([" ", "<strong>", "</strong>", "<em>", "</em>", "&nbsp", "&"], "", $inTitle2);
-        $dbTitle  = str_replace([" ", "<strong>", "</strong>", "<em>", "</em>", "&nbsp", "&"], "", $dbTitle);
+        $inTitle  = str_replace([" ", "<strong>", "</strong>", "<em>", "</em>", "&nbsp", "&", "'", ",", ".", ";", '"'], "", $inTitle);
+        $inTitle2 = str_replace([" ", "<strong>", "</strong>", "<em>", "</em>", "&nbsp", "&", "'", ",", ".", ";", '"'], "", $inTitle2);
+        $dbTitle  = str_replace([" ", "<strong>", "</strong>", "<em>", "</em>", "&nbsp", "&", "'", ",", ".", ";", '"'], "", $dbTitle);
   // This will convert &delta into delta
         return ((strlen($inTitle) > 254 || strlen($dbTitle) > 254)
               ? (strlen($inTitle) != strlen($dbTitle)
@@ -354,11 +356,11 @@ function straighten_quotes(string $str, bool $do_more) : string { // (?<!\') and
      if ($do_more){
        $str2 = preg_replace('~&[lr]aquo;|[\x{00AB}\x{00BB}]|[«»]~u', '"', $str);
      } else { // Only outer funky quotes, not inner quotes
-       if (preg_match('~^[&laquo;|&raquo;|\x{00AB}|\x{00BB}|«|»]~u', $str) &&
-           preg_match( '~[&laquo;|&raquo;|\x{00AB}|\x{00BB}|«|»]$~u', $str) // Only if there is an outer quote on both ends
+       if (preg_match('~^(?:&laquo;|&raquo;|\x{00AB}|\x{00BB}|«|»)~u', $str) &&
+           preg_match( '~(?:&laquo;|&raquo;|\x{00AB}|\x{00BB}|«|»)$~u', $str) // Only if there is an outer quote on both ends
        ) {
-         $str2 = preg_replace('~^[&laquo;|&raquo;|\x{00AB}|\x{00BB}|«|»]~u' , '"', $str);
-         $str2 = preg_replace( '~[&laquo;|&raquo;|\x{00AB}|\x{00BB}|«|»]$~u', '"', $str2);
+         $str2 = preg_replace('~^(?:&laquo;|&raquo;|\x{00AB}|\x{00BB}|«|»)~u' , '"', $str);
+         $str2 = preg_replace( '~(?:&laquo;|&raquo;|\x{00AB}|\x{00BB}|«|»)$~u', '"', $str2);
        } else {
          $str2 = $str; // No change
        }
