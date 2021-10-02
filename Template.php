@@ -16,7 +16,6 @@ declare(strict_types=1);
 require_once 'Parameter.php';
 require_once 'expandFns.php';
 require_once 'user_messages.php';
-require_once 'apiFunctions.php';
 require_once "constants.php";
 require_once "NameTools.php";
 // @codeCoverageIgnoreEnd
