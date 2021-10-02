@@ -5,7 +5,7 @@ declare(strict_types=1);
  * Tests for Zotero.php - some of these work even when zotero fails because they check for the absence of bad data
  */
 
-require_once(__DIR__ . '/../testBaseClass.php');
+require_once __DIR__ . '/../testBaseClass.php';
 
 final class ZoteroTest extends testBaseClass {
 
