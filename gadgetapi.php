@@ -8,7 +8,7 @@ try {
  @header('Expires: 0');
 
  //Set up tool requirements
- require_once('setup.php');
+ require_once 'setup.php';
 
  $originalText = (string) $_POST['text'];
  $editSummary = (string) $_POST['summary'];

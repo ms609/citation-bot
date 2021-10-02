@@ -11,7 +11,7 @@ if (file_exists('git_pull.lock')) {
  */
 
 ini_set("user_agent", "Citation_bot; citations@tools.wmflabs.org");
-include_once('./vendor/autoload.php');
+include_once './vendor/autoload.php';
 
 define("TRAVIS", (bool) getenv('CI')); // Not just TRAVIS, but GitHub actions set this to true
 define("USE_CITOID", TRUE); // Define which Zotero to use
@@ -87,7 +87,10 @@ define("PHP_GOOGLEKEY", (string) getenv("PHP_GOOGLEKEY"));
 define("PHP_S2APIKEY", (string) getenv("PHP_S2APIKEY"));
 
 function check_blocked() : void {
-  if (!TRAVIS && ! WikipediaBot::is_valid_user('Citation_bot')) exit('</pre><div style="text-align:center"><h1>The Citation Bot is currently blocked because of disagreement over its usage.</h1><br/><h2><a href="https://en.wikipedia.org/wiki/User_talk:Citation_bot" title="Join the discussion" target="_blank">Please join in the discussion</a></h2></div><footer><a href="./" title="Use Citation Bot again">Another&nbsp;page</a>?</footer></body></html>');
+  if (!TRAVIS && ! WikipediaBot::is_valid_user('Citation_bot')) {
+    echo '</pre><div style="text-align:center"><h1>The Citation Bot is currently blocked because of disagreement over its usage.</h1><br/><h2><a href="https://en.wikipedia.org/wiki/User_talk:Citation_bot" title="Join the discussion" target="_blank">Please join in the discussion</a></h2></div><footer><a href="./" title="Use Citation Bot again">Another&nbsp;page</a>?</footer></body></html>';
+    exit();
+  }
 }
 
 function unlock_user() : void {
@@ -99,7 +102,7 @@ function unlock_user() : void {
 function check_overused() : void {
  if (TRAVIS) return;
  if (isset($_SESSION['big_and_busy']) && $_SESSION['big_and_busy'] === 'BLOCK3') {
-   echo('</pre><div style="text-align:center"><h1>Run blocked by your existing big run.</h1></div><footer><a href="./" title="Use Citation Bot again">Another</a>?</footer></body></html>');
+   echo '</pre><div style="text-align:center"><h1>Run blocked by your existing big run.</h1></div><footer><a href="./" title="Use Citation Bot again">Another</a>?</footer></body></html>';
    exit();
  }
  @session_start();
@@ -116,24 +119,24 @@ function check_killed() : void {
  if (isset($_SESSION['kill_the_big_job'])) {
    unset($_SESSION['kill_the_big_job']);
    @session_write_close();
-   echo('</pre><div style="text-align:center"><h1>Run killed as requested.</h1></div><footer><a href="./" title="Use Citation Bot again">Another</a>?</footer></body></html>');
+   echo '</pre><div style="text-align:center"><h1>Run killed as requested.</h1></div><footer><a href="./" title="Use Citation Bot again">Another</a>?</footer></body></html>';
    exit();
  }
  @session_write_close();
 }
 
 define("MAX_TRIES", 2);
-require_once('constants.php');
-require_once('NameTools.php');conflict
-require_once('expandFns.php');
-require_once('Zotero.php');
-require_once('Parameter.php');
-require_once('Comment.php');
-require_once('WikipediaBot.php');
-require_once('apiFunctions.php');
-require_once('Template.php');
-require_once('Page.php');
-require_once('user_messages.php');
+require_once 'constants.php';
+require_once 'Comment.php';
+require_once 'user_messages.php';
+require_once 'NameTools.php';
+require_once 'WikipediaBot.php';
+require_once 'Parameter.php';
+require_once 'expandFns.php';
+require_once 'Template.php';
+require_once 'Zotero.php';
+require_once 'apiFunctions.php';
+require_once 'Page.php';
 
 define("MAX_PAGES", 2200);
 define("BIG_RUN", 3);
