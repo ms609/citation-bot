@@ -8,8 +8,8 @@ use MediaWiki\OAuthClient\Token;
 use MediaWiki\OAuthClient\Request;
 use MediaWiki\OAuthClient\SignatureMethod\HmacSha1;
 
-require_once('user_messages.php');  // @codeCoverageIgnore
-require_once("constants.php");      // @codeCoverageIgnore
+require_once 'user_messages.php';  // @codeCoverageIgnore
+require_once "constants.php";      // @codeCoverageIgnore
 
 final class WikipediaBot {
 
