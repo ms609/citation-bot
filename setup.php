@@ -127,16 +127,16 @@ function check_killed() : void {
 
 define("MAX_TRIES", 2);
 require_once 'constants.php';
-require_once 'NameTools.php';
-require_once 'expandFns.php';
-require_once 'Zotero.php';
-require_once 'Parameter.php';
 require_once 'Comment.php';
-require_once 'WikipediaBot.php';
-require_once 'apiFunctions.php';
-require_once 'Template.php';
-require_once 'Page.php';
 require_once 'user_messages.php';
+require_once 'NameTools.php';
+require_once 'WikipediaBot.php';
+require_once 'Parameter.php';
+require_once 'expandFns.php';
+require_once 'Template.php';
+require_once 'Zotero.php';
+require_once 'apiFunctions.php';
+require_once 'Page.php';
 
 define("MAX_PAGES", 2200);
 define("BIG_RUN", 3);
