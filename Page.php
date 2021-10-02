@@ -8,13 +8,13 @@ declare(strict_types=1);
  * to the wiki.
  */
 
-require_once('Comment.php');       // @codeCoverageIgnore
-require_once('Template.php');      // @codeCoverageIgnore
-require_once('apiFunctions.php');  // @codeCoverageIgnore
-require_once('expandFns.php');     // @codeCoverageIgnore
-require_once('user_messages.php'); // @codeCoverageIgnore
-require_once('Zotero.php');        // @codeCoverageIgnore
-require_once("constants.php");     // @codeCoverageIgnore
+require_once 'Comment.php';       // @codeCoverageIgnore
+require_once 'Template.php';      // @codeCoverageIgnore
+require_once 'apiFunctions.php';  // @codeCoverageIgnore
+require_once 'expandFns.php';     // @codeCoverageIgnore
+require_once 'user_messages.php'; // @codeCoverageIgnore
+require_once 'Zotero.php';        // @codeCoverageIgnore
+require_once "constants.php";     // @codeCoverageIgnore
 
 class Page {
 

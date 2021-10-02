@@ -12,7 +12,7 @@ declare(strict_types=1);
 <!DOCTYPE html><html lang="en" dir="ltr"><head><title>Make a Template</title></head><body><main><pre>
 
 <?php
-require_once('setup.php');
+require_once 'setup.php';
 
 $t = new Template();
 $t->parse_text('{{Cite web}}');
@@ -29,6 +29,6 @@ $page = new Page();
 $page->parse_text($t->parsed_text());
 $page->expand_text();
 
-echo("\n\n<ref>" . echoable($page->parsed_text()) . "</ref>\n\n</pre></main></body></html>");
+echo "\n\n<ref>" . echoable($page->parsed_text()) . "</ref>\n\n</pre></main></body></html>";
 
 ?>

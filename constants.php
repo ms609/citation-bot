@@ -1,13 +1,13 @@
 <?php
 declare(strict_types=1);
 // all new constant files need listed here
-require_once('constants/bad_data.php');
-require_once('constants/capitalization.php');
-require_once('constants/math.php');
-require_once('constants/mistakes.php');
-require_once('constants/namespaces.php');
-require_once('constants/parameters.php');  
-require_once('constants/regular_expressions.php');
+require_once 'constants/bad_data.php';
+require_once 'constants/capitalization.php';
+require_once 'constants/math.php';
+require_once 'constants/mistakes.php';
+require_once 'constants/namespaces.php';
+require_once 'constants/parameters.php';  
+require_once 'constants/regular_expressions.php';
 
 const PIPE_PLACEHOLDER = '# # # CITATION_BOT_PLACEHOLDER_PIPE # # #';
 const TEMP_PLACEHOLDER = "# # # CITATION_BOT_PLACEHOLDER_TEMPORARY %s # # #";

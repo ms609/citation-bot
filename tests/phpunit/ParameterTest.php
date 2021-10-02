@@ -5,7 +5,7 @@ declare(strict_types=1);
  * Tests for Parameter.php.
  */
 
-require_once(__DIR__ . '/../testBaseClass.php');
+require_once __DIR__ . '/../testBaseClass.php';
 
 final class ParameterTest extends testBaseClass {
 

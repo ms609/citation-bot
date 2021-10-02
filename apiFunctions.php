@@ -1,10 +1,10 @@
 <?php
 declare(strict_types=1);
 
-require_once("constants.php");        // @codeCoverageIgnore
-require_once("user_messages.php");    // @codeCoverageIgnore
-require_once("Template.php");         // @codeCoverageIgnore
-require_once("NameTools.php");        // @codeCoverageIgnore
+require_once "constants.php";        // @codeCoverageIgnore
+require_once "user_messages.php";    // @codeCoverageIgnore
+require_once "Template.php";         // @codeCoverageIgnore
+require_once "NameTools.php";        // @codeCoverageIgnore
 
 function query_pmid_api (array $pmids, array &$templates) : bool { return entrez_api($pmids, $templates, 'pubmed'); }  // Pointer to save memory
 function query_pmc_api  (array $pmcs, array &$templates) : bool { return entrez_api($pmcs,  $templates, 'pmc'); } // Pointer to save memory
@@ -803,93 +803,6 @@ function expand_doi_with_dx(Template $template, string $doi) : bool {
        report_minor_error('dx.doi.org returned unexpected data type for ' . doi_link($doi));     // @codeCoverageIgnore
      }
      return TRUE;
-}
-
-function doi_active(string $doi) : ?bool {
-  // Greatly speed-up by having one array of each kind and only look for hash keys, not values
-  static $cache_good = [];
-  static $cache_bad  = [];
-  if (array_key_exists($doi, $cache_good)) return TRUE;
-  if (array_key_exists($doi, $cache_bad))  return FALSE;
-  // For really long category runs
-  if (count($cache_bad) > 5500) $cache_bad = [];
-  if (count($cache_good) > 5500) $cache_good = [];
-  $works = doi_works($doi);
-  if ($works === NULL) {
-    return NULL; // @codeCoverageIgnore
-  }
-  if ($works === FALSE) {
-    // $cache_bad[$doi] = TRUE; do not store to save memory
-    return FALSE;
-  }
-  // DX.DOI.ORG works, but does crossref?
-  $works = is_doi_active($doi);
-  if ($works === NULL) {
-    return NULL; // @codeCoverageIgnore
-  }
-  if ($works === FALSE) {
-    $cache_bad[$doi] = TRUE;
-    return FALSE;
-  }
-  $cache_good[$doi] = TRUE;
-  return TRUE;
-}
-
-function doi_works(string $doi) : ?bool {
-  // Greatly speed-up by having one array of each kind and only look for hash keys, not values
-  static $cache_good = [];
-  static $cache_bad  = ['10.1126/science']; // This results from over-truncating other DOIs and it oddly works
-  if (array_key_exists($doi, $cache_good)) return TRUE;
-  if (array_key_exists($doi, $cache_bad))  return FALSE;
-  // For really long category runs
-  if (count($cache_bad) > 5500) $cache_bad = ['10.1126/science'];
-  if (count($cache_good) > 5500) $cache_good = [];
-  $works = is_doi_works($doi);
-  if ($works === NULL) {
-    return NULL; // @codeCoverageIgnore
-  }
-  if ($works === FALSE) {
-    $cache_bad[$doi] = TRUE;
-    return FALSE;
-  }
-  $cache_good[$doi] = TRUE;
-  return TRUE;
-}
-
-function is_doi_active(string $doi) : ?bool {
-  $headers_test = @get_headers("https://api.crossref.org/works/" . doi_encode($doi));
-  if ($headers_test === FALSE) return NULL; // most likely bad, but will recheck again an again
-  $response = $headers_test[0];
-  if (stripos($response, '200 OK') !== FALSE) return TRUE;
-  if (stripos($response, '404 Not Found') !== FALSE) return FALSE;
-  report_warning("CrossRef server error loading headers for DOI " . echoable($doi) . ": $response");  // @codeCoverageIgnore
-  return NULL;                                                                                        // @codeCoverageIgnore
-}
-
-function is_doi_works(string $doi) : ?bool {
-  if (strpos($doi, '10.1111/j.1572-0241') === 0 && NATURE_FAILS) return FALSE;
-  $context = stream_context_create(array(
-           'ssl' => ['verify_peer' => FALSE, 'verify_peer_name' => FALSE, 'allow_self_signed' => TRUE]
-         )); // Allow crudy cheap journals
-  $headers_test = @get_headers("https://dx.doi.org/" . doi_encode($doi), TRUE, $context);
-  if ($headers_test === FALSE) {
-     sleep(1);                                                                            // @codeCoverageIgnore
-     $headers_test = @get_headers("https://dx.doi.org/" . doi_encode($doi), TRUE, $context);  // @codeCoverageIgnore
-  }
-  if ($headers_test === FALSE) return NULL; // most likely bad, but will recheck again an again
-  $response = $headers_test[0];
-  if (empty($headers_test['Location'])) return FALSE; // leads nowhere
-  if (stripos($response, '404 Not Found') !== FALSE) return FALSE; // leads to 404
-  return TRUE; // Lead somewhere
-}
-
-/** @psalm-suppress UnusedParam */
-function query_jstor_api(array $ids, array &$templates) : bool { // $ids not used yet   // Pointer to save memory
-  $return = FALSE;
-  foreach ($templates as $template) {
-    if (expand_by_jstor($template)) $return = TRUE;
-  }
-  return $return;
 }
 
 function expand_by_jstor(Template $template) : bool {
