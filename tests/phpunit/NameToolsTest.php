@@ -7,7 +7,7 @@ declare(strict_types=1);
 
 require_once __DIR__ . '/../testBaseClass.php';
 
-final class doiToolsTest extends testBaseClass {
+final class NameToolsTest extends testBaseClass {
 
   protected function setUp(): void {
    if (BAD_PAGE_HTTP !== '' || BAD_PAGE_API !== '') {
