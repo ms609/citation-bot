@@ -45,17 +45,17 @@ if ($page_name == '') {
   } else {
     report_warning('Nothing requested -- OR -- page name got lost during initial authorization ');
   }
-  echo(' </pre><footer><a href="./" title="Use Citation Bot again">Another</a>?</footer></body></html>');
+  echo ' </pre><footer><a href="./" title="Use Citation Bot again">Another</a>?</footer></body></html>';
   exit();
 } elseif (substr($page_name, 0, 5) !== 'User:' && !in_array($api->get_the_user(), ['Headbomb', 'AManWithNoPlan'])) { // Do not let people run willy-nilly
   report_warning('API only intended for User generated pages for fixing specific issues ');
-  echo(' </pre><footer><a href="./" title="Use Citation Bot again">Another</a>?</footer></body></html>');
+  echo ' </pre><footer><a href="./" title="Use Citation Bot again">Another</a>?</footer></body></html>';
   exit();
 }
 
 if (strlen($page_name) > 256)  {
   report_warning('Possible invalid page');
-  echo(' </pre><footer><a href="./" title="Use Citation Bot again">Another</a>?</footer></body></html>');
+  echo ' </pre><footer><a href="./" title="Use Citation Bot again">Another</a>?</footer></body></html>';
   exit();
 }
 $edit_summary_end = "| Suggested by " . $api->get_the_user() . " | Linked from $page_name | #UCB_webform_linked ";
@@ -73,14 +73,14 @@ $json = (string) @curl_exec($ch);
 curl_close($ch);
 if ($json == '') {
   report_warning(' Error getting page list');
-  echo(' </pre><footer><a href="./" title="Use Citation Bot again">Another</a>?</footer></body></html>');
+  echo ' </pre><footer><a href="./" title="Use Citation Bot again">Another</a>?</footer></body></html>';
   exit();
 }
 $array = @json_decode($json, TRUE);
 unset($json);
 if ($array === FALSE || !isset($array['parse']['links']) || !is_array($array['parse']['links'])) {
   report_warning(' Error interpreting page list - perhaps page requested does not even exist');
-  echo('</pre><footer><a href="./" title="Use Citation Bot again">Another</a>?</footer></body></html>');
+  echo '</pre><footer><a href="./" title="Use Citation Bot again">Another</a>?</footer></body></html>';
   exit();
 }
 $links = $array['parse']['links']; // @phan-suppress-current-line PhanTypeArraySuspiciousNullable
@@ -98,13 +98,13 @@ unset($links);
 $pages_in_category = array_unique($pages_in_category);
 if (empty($pages_in_category)) {
   report_warning('No links to expand found');
-  echo('</pre><footer><a href="./" title="Use Citation Bot again">Another</a>?</footer></body></html>');
+  echo '</pre><footer><a href="./" title="Use Citation Bot again">Another</a>?</footer></body></html>';
   exit();
 }
   $total = count($pages_in_category);
   if ($total > MAX_PAGES) {
     report_warning('Number of links is huge (' . (string) $total . ')  Cancelling run (maximum size is ' . (string) MAX_PAGES . ').  Listen to Obi-Wan Kenobi:  You want to go home and rethink your life.');
-    echo('</pre><footer><a href="./" title="Use Citation Bot again">Another</a>?</footer></body></html>');
+    echo '</pre><footer><a href="./" title="Use Citation Bot again">Another</a>?</footer></body></html>';
     exit();
   }
   if ($total > BIG_RUN) check_overused();
@@ -122,10 +122,10 @@ if (empty($pages_in_category)) {
       while (!$page->write($api, $edit_summary_end . (string) $done . '/' . (string) $total . ' ') && $attempts < MAX_TRIES) ++$attempts;
       if ($attempts < MAX_TRIES) {
         $last_rev = $api->get_last_revision($page_title);
-        echo(
+        echo
         "\n  <a href=" . WIKI_ROOT . "?title=" . urlencode($page_title) . "&diff=prev&oldid="
         . $last_rev . ">diff</a>" .
-        " | <a href=" . WIKI_ROOT . "?title=" . urlencode($page_title) . "&action=history>history</a>");
+        " | <a href=" . WIKI_ROOT . "?title=" . urlencode($page_title) . "&action=history>history</a>";
         $final_edit_overview .=
           "\n [ <a href=" . WIKI_ROOT . "?title=" . urlencode($page_title) . "&diff=prev&oldid="
         . $last_rev . ">diff</a>" .
@@ -140,6 +140,6 @@ if (empty($pages_in_category)) {
     }
     echo "\n";
   }
-  echo ("\n Done all " . (string) $total . " pages linked from " . echoable($page_name) . " \n  # # # \n" . $final_edit_overview  . ' </pre><footer><a href="./" title="Use Citation Bot again">Another</a>?</footer></body></html>');
+  echo "\n Done all " . (string) $total . " pages linked from " . echoable($page_name) . " \n  # # # \n" . $final_edit_overview  . ' </pre><footer><a href="./" title="Use Citation Bot again">Another</a>?</footer></body></html>';
   exit();
 ?>
