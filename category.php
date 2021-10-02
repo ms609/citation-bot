@@ -55,7 +55,7 @@ $final_edit_overview = "";
 if ($category) {
   $pages_in_category = $api->category_members($category);
   if (empty($pages_in_category)) {
-    echo('Category appears to be empty');
+    echo 'Category appears to be empty';
     html_echo(' </pre><footer><a href="./" title="Use Citation Bot again">Another</a>?</footer></body></html>', "\n");
     exit();
   }
@@ -64,12 +64,12 @@ if ($category) {
 
   $total = count($pages_in_category);
   if ($total > intval(MAX_PAGES / 4)) {
-    echo('Category is huge (' . (string) $total . ')  Cancelling run. Pick a smaller category (maximum size is ' . (string) intval(MAX_PAGES / 4) . ').  Listen to Obi-Wan Kenobi:  You want to go home and rethink your life.');
-    echo("\n\n");
+    echo 'Category is huge (' . (string) $total . ')  Cancelling run. Pick a smaller category (maximum size is ' . (string) intval(MAX_PAGES / 4) . ').  Listen to Obi-Wan Kenobi:  You want to go home and rethink your life.';
+    echo "\n\n";
      foreach ($pages_in_category as $page_title) {
        html_echo((string) $page_title . "\n");
     }
-    echo("\n\n");
+    echo "\n\n";
     html_echo(' </pre><footer><a href="./" title="Use Citation Bot again">Another</a>?</footer></body></html>', "\n");
     exit();
   }
@@ -108,18 +108,18 @@ if ($category) {
     }
     echo "\n";
   }
-  echo ("\n Done all " . (string) $total . " pages in Category:" . echoable($category) . ". \n");
+  echo "\n Done all " . (string) $total . " pages in Category:" . echoable($category) . ". \n";
   $final_edit_overview .= "\n\n" . ' To get the best results, see our helpful <a href="https://en.wikipedia.org/wiki/User:Citation_bot/use">user guides</a>' . "\n\n";
   html_echo($final_edit_overview, '');
 } else {
   if (isset($argv[1])) {
-    echo ("You must specify a category on the command line.");
+    echo "You must specify a category on the command line.";
   } elseif (isset($_POST["cat"])) {
-    echo ("You must specify a valid category on the webform.");
+    echo "You must specify a valid category on the webform.";
   } elseif (isset($_GET["cat"])) {
-    echo ("You must specify a category on the webform.  We do not support using as a parameter to the php file anymore");
+    echo "You must specify a category on the webform.  We do not support using as a parameter to the php file anymore";
   } else {
-    echo ("You must specify a category using the API -- OR -- category got lost during initial authorization ");
+    echo "You must specify a category using the API -- OR -- category got lost during initial authorization ";
   }
 }
 html_echo(' # # #</pre><footer><a href="./" title="Use Citation Bot again">Another</a>?</footer></body></html>', "\n");
