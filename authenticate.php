@@ -7,7 +7,7 @@ declare(strict_types=1);
 @header('Pragma: no-cache');
 @header('Expires: 0');
 
-require_once('setup.php');
+require_once 'setup.php';
 
 // To use the oauthclient library, run:
 // composer require mediawiki/oauthclient
