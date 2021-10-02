@@ -1,8 +1,8 @@
 <?php
 declare(strict_types=1);
 
-require_once("constants.php");      // @codeCoverageIgnore
-require_once("apiFunctions.php");   // @codeCoverageIgnore
+require_once "constants.php";      // @codeCoverageIgnore
+require_once "apiFunctions.php";   // @codeCoverageIgnore
 
 // ============================================= DOI functions ======================================
 function sanitize_doi(string $doi) : string {
