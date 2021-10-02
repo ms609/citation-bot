@@ -124,7 +124,7 @@ function check_killed() : void {
 
 define("MAX_TRIES", 2);
 require_once('constants.php');
-require_once('NameTools.php');
+require_once('NameTools.php');CONCLICT
 require_once('expandFns.php');
 require_once('Zotero.php');
 require_once('Parameter.php');
