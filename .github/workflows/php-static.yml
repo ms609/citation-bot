@@ -35,7 +35,7 @@ jobs:
           ${{ runner.os }}-php-
 
     - name: confiugre composer and dependecies
-      run: composer config minimum-stability dev && composer config prefer-stable true && composer require overtrue/phplint  phpstan/phpstan   mediawiki/oauthclient:dev-master  phan/phan ^5 vimeo/psalm designsecurity/progpilot phpunit/phpunit ^9
+      run: composer config minimum-stability dev && composer config prefer-stable true && composer require overtrue/phplint  phpstan/phpstan   mediawiki/oauthclient:dev-master  phan/phan:4.1.0 vimeo/psalm designsecurity/progpilot phpunit/phpunit ^9
       
     - name: Install dependencies
       if: steps.composer-cache.outputs.cache-hit != 'true'
