@@ -5,8 +5,8 @@ declare(strict_types=1);
  * from templates.
  */
 
-require_once('user_messages.php');  // @codeCoverageIgnore
-require_once('constants.php');      // @codeCoverageIgnore
+require_once 'user_messages.php';  // @codeCoverageIgnore
+require_once 'constants.php';      // @codeCoverageIgnore
 
 final class Parameter {
   public $pre = '', $param = '', $eq = '', $val = '', $post = '';

@@ -11,7 +11,7 @@ if (file_exists('git_pull.lock')) {
  */
 
 ini_set("user_agent", "Citation_bot; citations@tools.wmflabs.org");
-include_once('./vendor/autoload.php');
+include_once './vendor/autoload.php';
 
 define("TRAVIS", (bool) getenv('CI')); // Not just TRAVIS, but GitHub actions set this to true
 define("USE_CITOID", TRUE); // Define which Zotero to use
