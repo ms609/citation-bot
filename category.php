@@ -7,7 +7,7 @@ declare(strict_types=1);
 @header('Pragma: no-cache');
 @header('Expires: 0');
 
-require_once('setup.php');
+require_once 'setup.php';
 $api = new WikipediaBot();
 $category = isset($_POST["cat"]) ? (string) $_POST["cat"] : (string) @$argv[1];
 $category = trim($category);
