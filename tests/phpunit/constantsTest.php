@@ -238,6 +238,30 @@ final class constantsTest extends testBaseClass {
     }
   }
   
+  public function testMagazinesAndNot() : void {
+    $overlap = array_intersect(ARE_MAGAZINES, ARE_MANY_THINGS);
+    if (empty($overlap)) {
+      $this->assertTrue(TRUE);
+    } else {
+      print_r($overlap);
+      $this->assertNull('testMagazinesAndNot Failed - see error array directly above');
+    }
+    $overlap = array_intersect(ARE_MAGAZINES, ARE_NEWSPAPERS);
+    if (empty($overlap)) {
+      $this->assertTrue(TRUE);
+    } else {
+      print_r($overlap);
+      $this->assertNull('testMagazinesAndNot Failed - see error array directly above');
+    }
+    $overlap = array_intersect(ARE_MANY_THINGS, ARE_NEWSPAPERS);
+    if (empty($overlap)) {
+      $this->assertTrue(TRUE);
+    } else {
+      print_r($overlap);
+      $this->assertNull('testMagazinesAndNot Failed - see error array directly above');
+    }
+  }
+  
   public function testAuthorsFlat() {
     $failed = FALSE;
     $test_flat = [];

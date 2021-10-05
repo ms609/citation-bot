@@ -25,6 +25,7 @@ final class AdsAbsControl {
 
 
 function entrez_api(array $ids, array &$templates, string $db) : bool {   // Pointer to save memory
+  set_time_limit(120);
   $match = ['', '']; // prevent memory leak in some PHP versions
   $names = ['', '']; // prevent memory leak in some PHP versions
   if (!count($ids)) return FALSE;
@@ -161,7 +162,6 @@ function expand_arxiv_templates (array &$templates) : bool {  // Pointer to save
   $ids = array();
   $arxiv_templates = array();
   foreach ($templates as $this_template) {
-    set_time_limit(120);
     if ($this_template->wikiname() == 'cite arxiv') {
       $this_template->rename('arxiv', 'eprint');
     } else {
@@ -177,6 +177,7 @@ function expand_arxiv_templates (array &$templates) : bool {  // Pointer to save
 }
 
 function arxiv_api(array $ids, array &$templates) : bool {  // Pointer to save memory
+  set_time_limit(120);
   $names = ['', '']; // prevent memory leak in some PHP versions
   $match = ['', '']; // prevent memory leak in some PHP versions
   if (count($ids) == 0) return FALSE;
@@ -265,6 +266,7 @@ function arxiv_api(array $ids, array &$templates) : bool {  // Pointer to save m
 }
 
 function adsabs_api(array $ids, array &$templates, string $identifier) : bool {  // Pointer to save memory
+  set_time_limit(120);
   $rate_limit = [['', '', ''], ['', '', ''], ['', '', '']]; // prevent memory leak in some PHP versions
   if (AdsAbsControl::gave_up_yet()) return FALSE;
   if (!PHP_ADSABSAPIKEY) return FALSE;
@@ -497,6 +499,7 @@ function query_doi_api(array $ids, array &$templates) : bool { // $id not used y
 }
 
 function expand_by_doi(Template $template, bool $force = FALSE) : bool {
+  set_time_limit(120);
   $matches = ['', '']; // prevent memory leak in some PHP versions
   // Because it can recover rarely used parameters such as editors, series & isbn, 
   // there will be few instances where it could not in principle be profitable to 
@@ -643,6 +646,7 @@ function expand_by_doi(Template $template, bool $force = FALSE) : bool {
 
 function query_crossref(string $doi) : ?object {
   if (strpos($doi, '10.2307') === 0) return NULL; // jstor API is better
+  set_time_limit(120);
   $doi = str_replace(DOI_URL_DECODE, DOI_URL_ENCODE, $doi);
   $url = "https://www.crossref.org/openurl/?pid=" . CROSSREFUSERNAME . "&id=doi:$doi&noredirect=TRUE";
   $ch = curl_init();
@@ -691,6 +695,7 @@ function expand_doi_with_dx(Template $template, string $doi) : bool {
      // curl -LH "Accept: application/vnd.citationstyles.csl+json" https://dx.doi.org/10.5524/100077
      if (strpos($doi, '10.2307') === 0) return FALSE; // jstor API is better
      if (strpos($doi, '10.24436') === 0) return FALSE; // They have horrible meta-data
+     set_time_limit(120);
      /** @param array|string|null|int $data */ /** @psalm-suppress MissingClosureParamType */
      $try_to_add_it = function(string $name, $data) use($template) : bool {
        if ($template->has($name)) return FALSE; // Not worth updating based upon DX
@@ -806,6 +811,7 @@ function expand_doi_with_dx(Template $template, string $doi) : bool {
 }
 
 function expand_by_jstor(Template $template) : bool {
+  set_time_limit(120);
   $match = ['', '']; // prevent memory leak in some PHP versions
   if ($template->incomplete() === FALSE) return FALSE;
   if ($template->has('jstor')) {
@@ -1140,6 +1146,7 @@ function get_semanticscholar_license(string $s2cid) : ?bool {
 }
 
 function expand_templates_from_archives(array &$templates) : void { // This is done very late as a latch ditch effort  // Pointer to save memory
+  set_time_limit(120);
   $match = ['', '']; // prevent memory leak in some PHP versions
   $ch = curl_init();
   curl_setopt_array($ch,

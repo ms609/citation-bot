@@ -196,6 +196,7 @@ public static function drop_urls_that_match_dois(array &$templates) : void {  //
         (strpos($doi, '10.1093/') === FALSE) &&
         $template->blank(DOI_BROKEN_ALIASES))
     {
+       set_time_limit(120);
        if (str_ireplace(PROXY_HOSTS_TO_DROP,'', $url) !== $url && $template->get('doi-access') === 'free') {
           report_forget("Existing proxy URL resulting from equivalent free DOI; dropping URL");
           $template->forget($url_kind);
@@ -284,6 +285,7 @@ public static function drop_urls_that_match_dois(array &$templates) : void {  //
 }
 
 private static function zotero_request(string $url) : string {
+  set_time_limit(120);
   if (self::$zotero_failures_count > self::ZOTERO_GIVE_UP) {
     self::$zotero_failures_count = self::$zotero_failures_count - 1;                            // @codeCoverageIgnore
     if (self::ZOTERO_GIVE_UP == self::$zotero_failures_count) self::$zotero_failures_count = 0; // @codeCoverageIgnore

@@ -58,6 +58,7 @@ final class Template {
   }
   
   public function parse_text(string $text) : void {
+    set_time_limit(120);
     $spacing = ['', '']; // prevent memory leak in some PHP versions
     if (isset($this->rawtext)) {
         report_error("Template already initialized; call new Template() before calling Template::parse_text()"); // @codeCoverageIgnore
@@ -345,6 +346,7 @@ final class Template {
   }
 
   public function prepare() : void {
+    set_time_limit(120);
     if (in_array($this->wikiname(), TEMPLATES_WE_PROCESS) || in_array($this->wikiname(), TEMPLATES_WE_SLIGHTLY_PROCESS)) {
       // Clean up bad data
       if (in_array($this->get('title'), [ "Bloomberg - Are you a robot?", "Page not found",
@@ -1615,6 +1617,7 @@ final class Template {
   // This is also called when adding a URL with add_if_new, in which case
   // it looks for a parameter before adding the url.
   public function get_identifiers_from_url(?string $url_sent = NULL) : bool {
+    set_time_limit(120);
     $matches = ['', '']; // prevent memory leak in some PHP versions
     $bibcode = ['', '']; // prevent memory leak in some PHP versions
     $arxiv_id = ['', '']; // prevent memory leak in some PHP versions
@@ -2289,6 +2292,7 @@ final class Template {
   }
 
   protected function get_doi_from_text() : void {
+    set_time_limit(120);
     $match = ['', '']; // prevent memory leak in some PHP versions
     if ($this->blank('doi') && preg_match('~10\.\d{4}/[^&\s\|\}\{]*~', urldecode($this->parsed_text()), $match)) {
       if (stripos($this->rawtext, 'oxforddnb.com') !== FALSE) return; // generally bad, and not helpful
@@ -2465,7 +2469,8 @@ final class Template {
   }
 
   protected function do_pumbed_query(array $terms) : array {
-  $matches = ['', '']; // prevent memory leak in some PHP versions
+    set_time_limit(120);
+    $matches = ['', '']; // prevent memory leak in some PHP versions
   /* do_query
    *
    * Searches pubmed based on terms provided in an array.
@@ -2560,6 +2565,7 @@ final class Template {
   }
 
   public function expand_by_adsabs() : bool {
+    set_time_limit(120);
     $doi = ['', '']; // prevent memory leak in some PHP versions
     // API docs at https://github.com/adsabs/adsabs-dev-api
     if (!SLOW_MODE && $this->blank('bibcode')) {
@@ -2776,6 +2782,7 @@ final class Template {
   }
   
   protected function expand_book_adsabs() : bool {
+    set_time_limit(120);
     $matches = ['', '']; // prevent memory leak in some PHP versions
     $return = FALSE;
     $result = $this->query_adsabs("bibcode:" . urlencode('"' . $this->get('bibcode') . '"'));
@@ -2803,6 +2810,7 @@ final class Template {
   // URL-ENCODED search strings, separated by (unencoded) ampersands.
   // Surround search terms in (url-encoded) ""s, i.e. doi:"10.1038/bla(bla)bla"
   protected function query_adsabs(string $options) : object {
+    set_time_limit(120);
     $rate_limit = [['', '', ''], ['', '', ''], ['', '', '']]; // prevent memory leak in some PHP versions
     // API docs at https://github.com/adsabs/adsabs-dev-api/blob/master/Search_API.ipynb
     if (AdsAbsControl::gave_up_yet()) return (object) array('numFound' => 0);
@@ -3083,7 +3091,6 @@ final class Template {
   }
 
   public function get_open_access_url() : void {
-    set_time_limit(120);
     if (!$this->blank(DOI_BROKEN_ALIASES)) return;
     $doi = $this->get_without_comments_and_placeholders('doi');
     if (!$doi) return;
@@ -3093,6 +3100,7 @@ final class Template {
   }
 
   public function get_semanticscholar_url(string $doi, string $unpay) : void { // $unpay is unused right now
+   set_time_limit(120);
    if(      $this->has('pmc') ||
             ($this->has('doi') && $this->get('doi-access') === 'free') ||
             ($this->has('jstor') && $this->get('jstor-access') === 'free')
@@ -3113,6 +3121,7 @@ final class Template {
   }
 
   public function get_unpaywall_url(string $doi) : string {
+    set_time_limit(120);
     $match = ['', '']; // prevent memory leak in some PHP versions
     $matches = ['', '']; // prevent memory leak in some PHP versions
     $url = "https://api.unpaywall.org/v2/$doi?email=" . CROSSREFUSERNAME;
@@ -3283,7 +3292,6 @@ final class Template {
   }
   
   public function expand_by_google_books() : bool {
-    set_time_limit(120); 
     $this->clean_google_books();
     if ($this->has('doi') && doi_active($this->get('doi'))) return FALSE;
     foreach (['url', 'chapterurl', 'chapter-url'] as $url_type) {
@@ -3293,6 +3301,7 @@ final class Template {
   }
   
   protected function expand_by_google_books_inner(string $url_type, bool $use_it) : bool {
+    set_time_limit(120);
     $gid = ['', '']; // prevent memory leak in some PHP versions
     $google_results = ['', '']; // prevent memory leak in some PHP versions
     $matcher = ['', '']; // prevent memory leak in some PHP versions
@@ -3523,6 +3532,7 @@ final class Template {
   }
 
   protected function google_book_details(string $gid) : bool {
+    set_time_limit(120);
     $match = ['', '']; // prevent memory leak in some PHP versions
     $google_book_url = "https://books.google.com/books/feeds/volumes/" . $gid;
     $ch = curl_init();
@@ -3901,6 +3911,7 @@ final class Template {
   }
 
   protected function id_to_param(): void {
+    set_time_limit(120);
     $match = ['', '']; // prevent memory leak in some PHP versions
     $matches = ['', '']; // prevent memory leak in some PHP versions
     $id = $this->get('id');
@@ -4026,6 +4037,7 @@ final class Template {
   protected function correct_param_spelling() : void {
   // check each parameter name against the list of accepted names (loaded in expand.php).
   // It will correct any that appear to be mistyped.
+  set_time_limit(120);
   $match = ['', '']; // prevent memory leak in some PHP versions
   if (empty($this->param)) return ;
   $parameter_list = PARAMETER_LIST;
@@ -4206,6 +4218,7 @@ final class Template {
   }
   
   public function tidy_parameter(string $param) : void {
+    set_time_limit(120);
     // Note: Parameters are treated in alphabetical order, except where one
     // case necessarily continues from the previous (without a return).
     $matches = ['', '']; // prevent memory leak in some PHP versions
@@ -6584,6 +6597,7 @@ final class Template {
   }
   
   public function final_tidy() : void {
+    set_time_limit(120);
     $matches = ['', '']; // prevent memory leak in some PHP versions
     $spacing = ['', '']; // prevent memory leak in some PHP versions
     if ($this->should_be_processed()) {
@@ -6811,6 +6825,7 @@ final class Template {
   }
   
   public function verify_doi() : bool {
+    set_time_limit(120);
     static $last_doi = '';
     $match = ['', '']; // prevent memory leak in some PHP versions
     $matches = ['', '']; // prevent memory leak in some PHP versions
