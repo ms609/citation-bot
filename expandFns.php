@@ -391,6 +391,9 @@ function titles_are_dissimilar(string $inTitle, string $dbTitle) : bool {
 }
 
 function titles_simple(string $inTitle) : string {
+        // Leading Chapter # -   Use callback to make sure there are a few characters after this
+        $inTitle = preg_replace_callback('~^(?:Chapter \d+ \- )(.....+)~iu',
+            function (array $matches) : string {return ($matches[1]);}, trim($inTitle));
         // Trailing "a review"
         $inTitle = preg_replace('~(?:\: | |\:)a review$~iu', '', trim($inTitle));
         // Strip trailing Online

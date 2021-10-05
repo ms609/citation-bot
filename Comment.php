@@ -5,7 +5,7 @@ declare(strict_types=1);
  * Contains constants and text-parsing functions for wikitext comments.
  */
 
-// Do not PLACEHOLDER_TEXT, there are lots of REGEX and stripos() calls in the code
+// Do not ever remove CITATION_BOT_PLACEHOLDER from strings, there are lots of REGEX and stripos() calls in the code
 
 abstract class WikiThings {
   public const TREAT_IDENTICAL_SEPARATELY = FALSE;  // These contents of theses items never get edited, so this is safe
