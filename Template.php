@@ -2564,12 +2564,14 @@ final class Template {
   }
 
   public function expand_by_adsabs() : bool {
+    static needs_told = TRUE;
     set_time_limit(120);
     $doi = ['', '']; // prevent memory leak in some PHP versions
     // API docs at https://github.com/adsabs/adsabs-dev-api
     if (!SLOW_MODE && $this->blank('bibcode')) {
-     report_info("Skipping AdsAbs API: not in slow mode"); // @codeCoverageIgnore
-     return FALSE;                                         // @codeCoverageIgnore
+     if (needs_told) report_info("Skipping search for new bibcodes in slow mode"); // @codeCoverageIgnore
+     needs_told = FALSE;                                                           // @codeCoverageIgnore
+     return FALSE;                                                                 // @codeCoverageIgnore
     }
     if ($this->has('bibcode') && !$this->incomplete() && $this->has('doi')) {
       return FALSE; // Don't waste a query
