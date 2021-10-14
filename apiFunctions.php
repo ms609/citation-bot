@@ -757,6 +757,7 @@ function expand_doi_with_dx(Template $template, string $doi) : bool {
         unset($json['container-title']);   // @codeCoverageIgnore
      }
      if (@$json['type'] == 'article-journal' ||
+         @$json['type'] == 'journal-article' ||
          @$json['type'] == 'article' ||
          (@$json['type'] == '' && (isset($json['container-title']) || isset($json['issn']['0'])))) {
        $try_to_add_it('journal', @$json['container-title']);
@@ -773,7 +774,8 @@ function expand_doi_with_dx(Template $template, string $doi) : bool {
        $try_to_add_it('chapter', @$json['original-title']);      // @codeCoverageIgnore
        $try_to_add_it('location', @$json['publisher-location']); // @codeCoverageIgnore
        $try_to_add_it('publisher', @$json['publisher']);         // @codeCoverageIgnore
-     } elseif (@$json['type'] == 'chapter') {
+     } elseif (@$json['type'] == 'chapter' ||
+               @$json['type'] == 'book-chapter') {
        $try_to_add_it('title', @$json['container-title']);
        $try_to_add_it('chapter', @$json['title']);
        $try_to_add_it('location', @$json['publisher-location']);
