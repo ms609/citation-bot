@@ -773,7 +773,7 @@ function expand_doi_with_dx(Template $template, string $doi) : bool {
        $try_to_add_it('chapter', @$json['original-title']);      // @codeCoverageIgnore
        $try_to_add_it('location', @$json['publisher-location']); // @codeCoverageIgnore
        $try_to_add_it('publisher', @$json['publisher']);         // @codeCoverageIgnore
-     } elseif (@$json['type'] == 'chapter') {
+     } elseif (@$json['type'] == 'chapter') {CONFLICT
        $try_to_add_it('title', @$json['container-title']);
        $try_to_add_it('chapter', @$json['title']);
        $try_to_add_it('location', @$json['publisher-location']);
