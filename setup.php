@@ -99,7 +99,7 @@ function unlock_user() : void {
   @session_write_close();
 }
 
-function sig_handler($signo) : void {
+function sig_handler(CONFLICT $signo) : void {
   exit(); 
 }
 
