@@ -99,7 +99,7 @@ function unlock_user() : void {
   @session_write_close();
 }
 
-function sig_handler(CONFLICT $signo) : void {
+function sig_handler(int $signo) : void {
   exit(); 
 }
 
@@ -114,7 +114,7 @@ function check_overused() : void {
  define('BIG_JOB_MODE', 'YES');
  register_shutdown_function('unlock_user');
  @session_write_close();
- pcntl_signal(SIGTERM, "sig_handler"); // By default does not can exit()
+ pcntl_signal(SIGTERM, "sig_handler"); // By default SIGTERM does not call exit()
 }
 
 function check_killed() : void {
