@@ -1022,6 +1022,7 @@ final class Template {
         if ($value === 'Wiley Online Library') return FALSE;
         if (!$this->blank(['booktitle', 'book-title'])) return FALSE;
         if (in_array(strtolower(sanitize_string($value)), BAD_TITLES )) return FALSE;
+        if ($param_name === 'journal' && in_array(strtolower($value), ARE_MANY_THINGS)) $param_name = 'website';
         if (in_array(strtolower(sanitize_string($this->get('journal'))), BAD_TITLES)) $this->forget('journal'); // Update to real data
         if (preg_match('~^(?:www\.|)rte.ie$~i', $value)) $value = 'RTÉ News'; // Russian special case code
         if ($this->wikiname() === 'cite book' && $this->has('chapter') && $this->has('title') && $this->has('series')) return FALSE;
