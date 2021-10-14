@@ -1033,7 +1033,7 @@ final class Template {
           $value = wikify_external_text(title_case($value));
           if ($this->has('series') && str_equivalent($this->get('series'), $value)) return FALSE ;
           if ($this->has('work')) {
-            if (str_equivalent($this->get('work'), $value)) {
+            if (str_equivalent($this->get('work'), $value) && !in_array(strtolower($value), ARE_MANY_THINGS)) {
               if ($param_name === 'journal') $this->rename('work', $param_name); // Distinction between newspaper and magazine and websites are not clear to zotero
               if (!$this->blank(['pmc', 'doi', 'pmid'])) $this->forget('issn');
               return TRUE;
@@ -1083,7 +1083,7 @@ final class Template {
                if ($param_name === 'journal') $this->rename('website', $param_name);  // alias for journal.  Distinction between newspaper and magazine and websites are not clear to zotero
              } elseif (preg_match('~^\[.+\]$~', $this->get('website'))) {
                if ($param_name === 'journal') $this->rename('website', $param_name); // existing data is linked
-             } else {
+             } elseif (!in_array(strtolower($value), ARE_MANY_THINGS)) {
                $this->rename('website', $param_name, $value);
              }
              return TRUE;
