@@ -51,6 +51,8 @@ const PUBLISHERS_ARE_WORKS = array('the san diego union-tribune', 'forbes', 'sal
                                    // WP:CITALICSRFC and MOS:ITALICWEBCITE  ?????     'abc news', 'nbc news', 'cbs news', 'bbc news'
                                   ); // LOWER CASE!  WWW not there too! 
 
+const WORKS_ARE_PUBLISHERS = array('united states census bureau'); // LOWER CASE!
+
 const DUBIOUS_JOURNALS = array('fda', 'reuters', 'associated press', 'ap', 'ap wire', 'report'); // Things we add, but only if publisher and agency are both blank
 
 const NATURE_FAILS = TRUE;  // Nature dropped the ball for now TODO - https://dx.doi.org/10.1111/j.1572-0241.2006.00844.x
