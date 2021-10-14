@@ -12,6 +12,7 @@ function user_notice(string $symbol, string $class, string $text) : void {
   static $last_time = 0;
   if (!TRAVIS) {
     // @codeCoverageIgnoreStart
+    if (defined('BIG_JOB_MODE') && in_array($class, array("boring", "removed", "added", "changed", "subsubitem"))) return;
     /** @psalm-suppress TypeDoesNotContainType */ /* PSALM thinks HTML_OUTPUT cannot be false */
     echo "\n " . (HTML_OUTPUT ? "<span class='$class'>" : "") . $symbol . $text . (HTML_OUTPUT ? "</span>" : "");
     if (FLUSHING_OKAY && ob_get_level() && !defined('BIG_JOB_MODE')) {

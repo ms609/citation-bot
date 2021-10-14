@@ -99,6 +99,10 @@ function unlock_user() : void {
   @session_write_close();
 }
 
+function sig_handler($signo) : void {
+  exit(); 
+}
+
 function check_overused() : void {
  if (TRAVIS) return;
  if (isset($_SESSION['big_and_busy']) && $_SESSION['big_and_busy'] === 'BLOCK3') {
@@ -110,6 +114,7 @@ function check_overused() : void {
  define('BIG_JOB_MODE', 'YES');
  register_shutdown_function('unlock_user');
  @session_write_close();
+ pcntl_signal(SIGTERM, "sig_handler"); // By default does not can exit()
 }
 
 function check_killed() : void {
