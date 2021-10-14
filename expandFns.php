@@ -646,10 +646,11 @@ function throttle (int $min_interval) : void {
   } else {
     // @codeCoverageIgnoreStart
     $phase = 0;
-    $min_interval =  $min_interval * $cycles;
+    $min_interval = $min_interval * $cycles;
   }
 
   $time_since_last_write = time() - $last_write_time;
+  if ($time_since_last_write < 0) $time_since_last_write = 0; // Super paranoid, this would be a freeze point
   if ($time_since_last_write < $min_interval) {
     $time_to_pause = floor($min_interval - $time_since_last_write);
     report_warning("Throttling: waiting $time_to_pause seconds...");
