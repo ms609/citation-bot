@@ -123,7 +123,7 @@ final class apiFunctionsTest extends testBaseClass {
     $this->requires_dx(function() : void {
      $expanded = $this->make_citation('{{Cite journal}}');
      expand_doi_with_dx($expanded, '10.1002/0470841559.ch1');  // This is cross-ref doi, so for DX DOI expansion
-     $this->assertSame('{{Cite book|year = 2003|isbn = 0471975141|title = Internetworking LANs and WANs|chapter = Network Concepts|publisher = John Wiley & Sons|location = Chichester, UK}}', $expanded->parsed_text());
+     $this->assertSame('{{Cite book|year = 2003|title = Internetworking LANs and WANs|chapter = Network Concepts|publisher = John Wiley & Sons|location = Chichester, UK}}', $expanded->parsed_text());
     });
   }
   
