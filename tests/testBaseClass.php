@@ -3,7 +3,7 @@ declare(strict_types=1);
 
 require_once __DIR__ . '/../setup.php';
 
-define("BAD_PAGE_HTTP", "");
+define("BAD_PAGE_HTTP", "List of organisms named after famous people (born before 1900)");
 define("BAD_PAGE_API", "");
 
 abstract class testBaseClass extends PHPUnit\Framework\TestCase {
