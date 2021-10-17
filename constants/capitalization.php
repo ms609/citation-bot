@@ -49,7 +49,7 @@ const UC_SMALL_WORDS = array(/* The following will be automatically updated to a
           // For ones that start with lower-case, include both ELife and Elife versions in misspelled array
 const JOURNAL_ACRONYMS = array(/* The following will be automatically updated to alphabetical order */
           " (and the Middle East) ", " (BBA) ", " (online ed.) ", " AAPOS ", " AAPS ", 
-          " ACM SIGGRAPH ", " ACS ", " AJNR. ", " Algebra i Analiz ", " Amphibian Species of the World: an Online Reference. ", 
+          " ACM SIGGRAPH ", " ACS ", " AIDS & Behavior ", " AIDS and Behavior ", " AJNR. ", " Algebra i Analiz ", " Amphibian Species of the World: an Online Reference. ", 
           " Angew Chem Int Ed ", " AOAC International ", " Applied ", " APS Division ", 
           " Arch Dis Child Fetal Neonatal Ed ", " Arctic ", " ASAIO ", " ASME AES ", " ASME MTD ", 
           " Avtomatika i Telemekhanika ", " B/gcvs ", " B/gcvs ", " B/gcvs ", " Bild am Sonntag ", 
@@ -109,7 +109,7 @@ const JOURNAL_ACRONYMS = array(/* The following will be automatically updated to
 );
 const UCFIRST_JOURNAL_ACRONYMS = array(/* The following will be automatically updated to alphabetical order */
           " (And the Middle East) ", " (Bba) ", " (online Ed.) ", " Aapos ", " Aaps ", 
-          " ACM Siggraph ", " Acs ", " Ajnr. ", " Algebra I Analiz ", " Amphibian Species of the World: An Online Reference. ", 
+          " ACM Siggraph ", " Acs ", " Aids & Behavior ", " Aids and Behavior ", " Ajnr. ", " Algebra I Analiz ", " Amphibian Species of the World: An Online Reference. ", 
           " Angew Chem Int ed ", " AOAC INTERNATIONAL ", " Appiled ", " Aps Division ", 
           " Arch Dis Child Fetal Neonatal ed ", " ARCTIC ", " Asaio ", " Asme Aes ", " Asme MTD ", 
           " Avtomatika I Telemekhanika ", " B/GCVS ", " B/Gcvs ", " b/gcvs ", " Bild Am Sonntag ", 
