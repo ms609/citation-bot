@@ -15,25 +15,29 @@ final class expandFnsTest extends testBaseClass {
    }
   }
 
-  public function testCapitalization() : void {
-    $this->assertSame('Molecular and Cellular Biology',
-                        title_capitalization(title_case('Molecular and cellular biology'), TRUE));
-    $this->assertSame('z/Journal',
-                        title_capitalization(title_case('z/Journal'), TRUE));
-    $this->assertSame('The Journal of Journals', // The, not the
-                        title_capitalization('The Journal Of Journals', TRUE));
-    $this->assertSame('A Journal of Chemistry A',
-                        title_capitalization('A Journal of Chemistry A', TRUE));
-    $this->assertSame('A Journal of Chemistry E',
-                        title_capitalization('A Journal of Chemistry E', TRUE));
+  public function testCapitalization1a() : void {
+    $this->assertSame('Molecular and Cellular Biology', title_capitalization(title_case('Molecular and cellular biology'), TRUE));
   }
-  public function testCapitalization2() : void {
-    $this->assertSame('This a Journal',
-                        title_capitalization('THIS A JOURNAL', TRUE));
-    $this->assertSame('This a Journal',
-                        title_capitalization('THIS A JOURNAL', TRUE));
-    $this->assertSame("THIS 'A' JOURNAL mittEilUngen",
-                        title_capitalization("THIS `A` JOURNAL mittEilUngen", TRUE));
+  public function testCapitalization1b() : void {
+    $this->assertSame('z/Journal', title_capitalization(title_case('z/Journal'), TRUE));
+  }
+  public function testCapitalization1c() : void {
+    $this->assertSame('The Journal of Journals', title_capitalization('The Journal Of Journals', TRUE));
+  }
+  public function testCapitalization1d) : void {
+    $this->assertSame('A Journal of Chemistry A', title_capitalization('A Journal of Chemistry A', TRUE));
+  }
+  public function testCapitalization1e() : void {
+    $this->assertSame('A Journal of Chemistry E', title_capitalization('A Journal of Chemistry E', TRUE));
+  }
+  public function testCapitalization2a() : void {
+    $this->assertSame('This a Journal', title_capitalization('THIS A JOURNAL', TRUE));
+  }
+  public function testCapitalization2b() : void {
+    $this->assertSame('This a Journal', title_capitalization('THIS A JOURNAL', TRUE));
+  }
+  public function testCapitalization2c() : void {
+    $this->assertSame("THIS 'A' JOURNAL mittEilUngen", title_capitalization("THIS `A` JOURNAL mittEilUngen", TRUE));
   }
   public function testCapitalization3() : void {
     $this->assertSame('[Johsnon And me]', title_capitalization('[Johsnon And me]', TRUE)); // Do not touch links
@@ -50,21 +54,30 @@ final class expandFnsTest extends testBaseClass {
   public function testCapitalization7() : void {
     $this->assertSame('This is robert www-',  title_capitalization('This is robert www-' , TRUE));
   }
-  public function testCapitalization8() : void {
+  public function testCapitalization8a() : void {
     $this->assertSame('I the Las Vegas.  Trip.',  title_capitalization('I the las Vegas.  Trip.' , TRUE));
+  }
+  public function testCapitalization8b() : void {
     $this->assertSame('I the Las Vegas,  Trip.',  title_capitalization('I the las Vegas,  Trip.' , TRUE));
+  }
+  public function testCapitalization8c : void {
     $this->assertSame('I the Las Vegas:  Trip.',  title_capitalization('I the las Vegas:  Trip.' , TRUE));
+  }
+  public function testCapitalization8d() : void {
     $this->assertSame('I the Las Vegas;  Trip.',  title_capitalization('I the las Vegas;  Trip.' , TRUE));
+  }
+  public function testCapitalization8e() : void {
     $this->assertSame('I the las Vegas...Trip.',  title_capitalization('I the las Vegas...Trip.' , TRUE));
   }
   
-  public function testFrenchCapitalization() : void {
-    $this->assertSame("L'Aerotecnica",
-                        title_capitalization(title_case("L'Aerotecnica"), TRUE));
-    $this->assertSame("Phénomènes d'Évaporation d'Hydrologie",
-                        title_capitalization(title_case("Phénomènes d'Évaporation d’hydrologie"), TRUE));
-    $this->assertSame("D'Hydrologie Phénomènes d'Évaporation d'Hydrologie l'Aerotecnica",
-                        title_capitalization("D'Hydrologie Phénomènes d&#x2019;Évaporation d&#8217;Hydrologie l&rsquo;Aerotecnica", TRUE));
+  public function testFrenchCapitalization1() : void {
+    $this->assertSame("L'Aerotecnica", title_capitalization(title_case("L'Aerotecnica"), TRUE));
+  }
+  public function testFrenchCapitalization2() : void {
+    $this->assertSame("Phénomènes d'Évaporation d'Hydrologie", title_capitalization(title_case("Phénomènes d'Évaporation d’hydrologie"), TRUE));
+  }
+  public function testFrenchCapitalization3() : void {
+    $this->assertSame("D'Hydrologie Phénomènes d'Évaporation d'Hydrologie l'Aerotecnica", title_capitalization("D'Hydrologie Phénomènes d&#x2019;Évaporation d&#8217;Hydrologie l&rsquo;Aerotecnica", TRUE));
   }
   
   public function testITS() : void {
@@ -75,47 +88,50 @@ final class expandFnsTest extends testBaseClass {
   }
     
   public function testExtractDoi() : void {
-    $this->assertSame('10.1111/j.1475-4983.2012.01203.x', 
-                        extract_doi('http://onlinelibrary.wiley.com/doi/10.1111/j.1475-4983.2012.01203.x/full')[1]);
-    $this->assertSame('10.1111/j.1475-4983.2012.01203.x', 
-                        extract_doi('http://onlinelibrary.wiley.com/doi/10.1111/j.1475-4983.2012.01203.x/abstract')[1]);
-    $this->assertSame('10.1016/j.physletb.2010.03.064', 
-                        extract_doi(' 10.1016%2Fj.physletb.2010.03.064')[1]);
-    $this->assertSame('10.1093/acref/9780199204632.001.0001', 
-                        extract_doi('http://www.oxfordreference.com/view/10.1093/acref/9780199204632.001.0001/acref-9780199204632-e-4022')[1]);
-    $this->assertSame('10.1038/nature11111', 
-                        extract_doi('http://www.oxfordreference.com/view/10.1038/nature11111/figures#display.aspx?quest=solve&problem=punctuation')[1]);
+    $this->assertSame('10.1111/j.1475-4983.2012.01203.x', extract_doi('http://onlinelibrary.wiley.com/doi/10.1111/j.1475-4983.2012.01203.x/full')[1]);
+    $this->assertSame('10.1111/j.1475-4983.2012.01203.x', extract_doi('http://onlinelibrary.wiley.com/doi/10.1111/j.1475-4983.2012.01203.x/abstract')[1]);
+    $this->assertSame('10.1016/j.physletb.2010.03.064', extract_doi(' 10.1016%2Fj.physletb.2010.03.064')[1]);
+    $this->assertSame('10.1093/acref/9780199204632.001.0001', extract_doi('http://www.oxfordreference.com/view/10.1093/acref/9780199204632.001.0001/acref-9780199204632-e-4022')[1]);
+    $this->assertSame('10.1038/nature11111', extract_doi('http://www.oxfordreference.com/view/10.1038/nature11111/figures#display.aspx?quest=solve&problem=punctuation')[1]);
     $the_return = extract_doi('https://somenewssite.com/date/25.10.2015/2137303/default.htm'); // 10.2015/2137303 looks like a DOI
     $this->assertFalse($the_return[0]);
     $this->assertFalse($the_return[1]);
   }
   
-  public function testSanitizeDoi() : void {
+  public function testSanitizeDoi1() : void {
     $this->assertSame('10.1111/j.1475-4983.2012.01203.x', sanitize_doi('10.1111/j.1475-4983.2012.01203.x'));
     $this->assertSame('10.1111/j.1475-4983.2012.01203.x', sanitize_doi('10.1111/j.1475-4983.2012.01203.x.')); // extra dot
     $this->assertSame('10.1111/j.1475-4983.2012.01203.x', sanitize_doi('10.1111/j.1475-4983.2012.01203.'));  // Missing x after dot
+  }
+  public function testSanitizeDoi2() : void {
     $this->assertSame('143242342342', sanitize_doi('143242342342.')); // Rubbish with trailing dot, just remove it
     $this->assertSame('143242342342', sanitize_doi('143242342342#page_scan_tab_contents'));
     $this->assertSame('143242342342', sanitize_doi('143242342342;jsessionid'));
     $this->assertSame('143242342342', sanitize_doi('143242342342/summary'));
   }
   
-  public function testTidyDate() : void {
+  public function testTidyDate1() : void {
     $this->assertSame('2014', tidy_date('maanantai 14. heinäkuuta 2014'));
     $this->assertSame('2012-04-20', tidy_date('2012年4月20日 星期五'));
     $this->assertSame('2011-05-10', tidy_date('2011-05-10T06:34:00-0400'));
     $this->assertSame('July 2014', tidy_date('2014-07-01T23:50:00Z, 2014-07-01'));
     $this->assertSame('', tidy_date('۱۳۸۶/۱۰/۰۴ - ۱۱:۳۰'));
+  }
+  public function testTidyDate2() : void {
     $this->assertSame('2014-01-24', tidy_date('01/24/2014 16:01:06'));
     $this->assertSame('2011-11-30', tidy_date('30/11/2011 12:52:08'));
     $this->assertSame('2011'      , tidy_date('05/11/2011 12:52:08'));
     $this->assertSame('2011-11-11', tidy_date('11/11/2011 12:52:08'));
     $this->assertSame('2018-10-21', tidy_date('Date published (2018-10-21'));
     $this->assertSame('2008-04-29', tidy_date('07:30 , 04.29.08'));
+  }
+  public function testTidyDate3() : void {
     $this->assertSame('', tidy_date('-0001-11-30T00:00:00+00:00'));
     $this->assertSame('', tidy_date('22/22/2010'));  // That is not valid date code
     $this->assertSame('', tidy_date('The date is 88 but not three')); // Not a date, but has some numbers
     $this->assertSame('2016-10-03', tidy_date('3 October, 2016')); // evil comma
+  }
+  public function testTidyDate4() : void {
     $this->assertSame('22 October 1999 – 22 September 2000', tidy_date('1999-10-22 - 2000-09-22'));
     $this->assertSame('22 October – 22 September 1999', tidy_date('1999-10-22 - 1999-09-22'));
   }
