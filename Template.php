@@ -6376,6 +6376,14 @@ final class Template {
               $this->forget('volume');
             }
           }
+          // Remove leading zeroes
+          $value = $this->get($param);
+          if ($value !== '') {
+            $value = preg_replace('~^0+~', '', $value);
+            if ($value === '') {
+              $this->forget($param); // Was all zeros
+            }
+          }
           $this->volume_issue_demix($this->get($param), $param);
           return;
           
