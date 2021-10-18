@@ -74,13 +74,14 @@ final class apiFunctionsTest extends testBaseClass {
     $this->assertSame($text, $page->parsed_text($text));
   }
   
-  public function testArxivDateUpgradeSeesDate() : void {
+  public function testArxivDateUpgradeSeesDate1() : void {
    $this->requires_arxiv(function() : void {
       $text = '{{Cite journal|date=September 2010|doi=10.1016/j.physletb.2010.08.018|arxiv=1006.4000}}';
       $expanded = $this->process_citation($text);
       $this->assertSame('September 2010', $expanded->get2('date'));
       $this->assertNull($expanded->get2('year'));
-      
+   }
+   public function testArxivDateUpgradeSeesDate2() : void {
       $text = '{{Cite journal|date=September 2009|doi=10.1016/j.physletb.2010.08.018|arxiv=1006.4000}}';
       $expanded = $this->process_citation($text);
       $this->assertNull($expanded->get2('date'));
@@ -315,12 +316,13 @@ final class apiFunctionsTest extends testBaseClass {
      $this->assertSame($text, $template->parsed_text());
   }
   
-  public function testCrossRefAddSeries() : void {
+  public function testCrossRefAddSeries1() : void {
      $text = "{{Cite book | doi = 10.1063/1.2833100| title = A Transient Semi-Metallic Layer in Detonating Nitromethane}}";
      $template = $this->process_citation($text);
      $this->assertSame("AIP Conference Proceedings", $template->get2('series'));
-    
-    // Next is kind of messed up, but "matches" enough to expand
+  }
+  public function testCrossRefAddSeries2() : void {
+    // Kind of messed up, but "matches" enough to expand
      $text = "{{Cite book | doi = 10.1063/1.2833100| title = AIP Conference Proceedings}}";
      $template = $this->process_citation($text);
      $this->assertSame("2008", $template->get2('year'));
