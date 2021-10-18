@@ -80,8 +80,10 @@ final class apiFunctionsTest extends testBaseClass {
       $expanded = $this->process_citation($text);
       $this->assertSame('September 2010', $expanded->get2('date'));
       $this->assertNull($expanded->get2('year'));
-   }
-   public function testArxivDateUpgradeSeesDate2() : void {
+    });
+  }
+  public function testArxivDateUpgradeSeesDate2() : void {
+   $this->requires_arxiv(function() : void {
       $text = '{{Cite journal|date=September 2009|doi=10.1016/j.physletb.2010.08.018|arxiv=1006.4000}}';
       $expanded = $this->process_citation($text);
       $this->assertNull($expanded->get2('date'));
