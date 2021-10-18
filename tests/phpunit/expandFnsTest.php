@@ -24,7 +24,7 @@ final class expandFnsTest extends testBaseClass {
   public function testCapitalization1c() : void {
     $this->assertSame('The Journal of Journals', title_capitalization('The Journal Of Journals', TRUE));
   }
-  public function testCapitalization1d) : void {
+  public function testCapitalization1d() : void {
     $this->assertSame('A Journal of Chemistry A', title_capitalization('A Journal of Chemistry A', TRUE));
   }
   public function testCapitalization1e() : void {
