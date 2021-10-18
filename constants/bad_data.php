@@ -182,7 +182,7 @@ const NON_JOURNALS = array('Amphibian Species of the World', 'an Online Referenc
 const ARE_MAGAZINES = array('the new yorker', 'the new republic', 'new republic', 'expedition magazine', 'wired', 'wired uk',
                            'computer gaming world', 'edge', 'edge (magazine)', 'game informer', 'pc gamer uk',
                            'wired (magazine)', 'time', 'life', 'time (magazine)', 'life (magazine)', 'billboard',
-                           'billboard (magazine)', 'rolling stone', 'mcv/develop'
+                           'billboard (magazine)', 'rolling stone', 'mcv/develop', 'vanity fair'
                            ); // lowercase axact matches
 const ARE_MANY_THINGS = array('pc gamer', 'gamestar', 'rock paper shotgun', 'mcv', 'rock, paper, shotgun'); // lowercase axact matches.  These are things that are both websites and newspapers
 const ARE_NEWSPAPERS = array('the economist', 'la times', 'toronto sun', 'washington post'); // lowercase axact matches
