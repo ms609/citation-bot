@@ -6796,6 +6796,7 @@ final class Template {
           $this->name = $spacing[1] . 'Cite document' . $spacing[2];
         }
       }
+      $this->tidy_parameter('doi'); // might be free, and freedom is date dependent for some journals
       if (!empty($this->param)) {
         $drop_me_maybe = array();
         foreach (ALL_ALIASES as $alias_list) {
