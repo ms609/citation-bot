@@ -6426,6 +6426,14 @@ T1 - This is the Title }}';
      $this->assertNull($template->get2('publisher'));
   }
  
+  public function testCiteODNB() : void {
+     $text = '{{Cite ODNB|url=https://www.oxforddnb.com/view/10.1093/ref:odnb/9780198614128.001.0001/odnb-9780198614128-e-74876;jsession=XYZ|doi=wrong_stuff|id=74876}}';
+     $template = $this->process_citation($text);
+     $this->assertSame('10.1093/ref:odnb/74876', $template->get2('doi'));
+     $this->assertSame('74876', $template->get2('id'));
+     $this->assertSame('https://www.oxforddnb.com/view/10.1093/ref:odnb/9780198614128.001.0001/odnb-9780198614128-e-74876', $template->get2('url'));
+  }
+ 
   public function testSemanticscholar1() : void {
      $text = '{{cite web|url=https://semanticscholar.org/paper/861fc89e94d8564adc670fbd35c48b2d2f487704}}';
      $template = $this->process_citation($text);
