@@ -425,8 +425,8 @@ final class WikipediaBot {
       $api = self::$last_WikipediaBot;
     } elseif (getenv('PHP_OAUTH_CONSUMER_TOKEN')) {
       $api = new WikipediaBot(TRUE);
-    } else {
-      return 0; // This is when we are in TRAVIS but have no secret keys.  // @codeCoverageIgnore
+    } else {      // This is when we are in TRAVIS but have no secret keys.
+      return 0;   // @codeCoverageIgnore
     }
     $res = $api->fetch([
         "action" => "query",
