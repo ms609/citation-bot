@@ -109,12 +109,15 @@ require_once __DIR__ . '/../testBaseClass.php';
      });
     }
    
-    public function testNonStandardMode() : void {
+    public function testGetUserName() : void {
      $this->requires_secrets(function() : void {
       $api = new WikipediaBot(); // Make sure one exists
       $this->assertSame('Citation_bot', $api->get_the_user());
-      $this->assertFalse(WikipediaBot::NonStandardMode());
      });
+    }
+   
+    public function testNonStandardMode() : void {
+      $this->assertFalse(WikipediaBot::NonStandardMode());
     }
    
     public function testNonStandardWikiBotClass() : void {
