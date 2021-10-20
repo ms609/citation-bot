@@ -453,11 +453,11 @@ final class WikipediaBot {
     }
     return (string) $res->query->redirects[0]->to;
   }
-  public function namespace_id(string $name) : int {
+  static public function namespace_id(string $name) : int {
     $lc_name = strtolower($name);
     return array_key_exists($lc_name, NAMESPACE_ID) ? NAMESPACE_ID[$lc_name] : 0;
   }
-  public function namespace_name(int $id) : ?string {
+  static public function namespace_name(int $id) : ?string {
     return array_key_exists($id, NAMESPACES) ? NAMESPACES[$id] : NULL;
   }
   
