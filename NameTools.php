@@ -1,7 +1,7 @@
 <?php
 declare(strict_types=1);
 
-require_once "constants.php";    // @codeCoverageIgnore 
+require_once 'constants.php';    // @codeCoverageIgnore 
 
 /* junior_test - tests a name for a Junior appellation
  *  Input: $name - the name to be tested
