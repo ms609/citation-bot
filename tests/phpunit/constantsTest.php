@@ -68,7 +68,8 @@ final class constantsTest extends testBaseClass {
   }
   
   public function testConstantsOrder() : void {
-    $acronyms = JOURNAL_ACRONYMS; sort($acronyms, SORT_STRING | SORT_FLAG_CASE);
+    $acronyms = JOURNAL_ACRONYMS;
+    sort($acronyms, SORT_STRING | SORT_FLAG_CASE);
     $expected = current($acronyms);
     foreach (JOURNAL_ACRONYMS as $actual) {
       $this->assertSame(strtolower($expected), strtolower($actual));
@@ -303,21 +304,18 @@ final class constantsTest extends testBaseClass {
     $flat = NON_JOURNAL_WEBSITES;
     sort($flat);
     $failed = FALSE;
+    $last = 'XXXXXXXX';
     foreach ($flat as $param) {
       if (substr($param, -1) !== '/') {
          $failed = TRUE;
          echo "\n\n Missing end slash in NON_JOURNAL_WEBSITES: " . $param . "\n\n";
       }
+      if ($param === $last) {
+        $failed = TRUE;
+        echo "\n\n Duplicate entry in NON_JOURNAL_WEBSITES: " . $param . "\n\n";
+      }
+      $last = $param;
     }
-    if (count($flat) !== count(array_unique($flat))) {
-       echo "\n\n duplicate entries in the NON_JOURNAL_WEBSITES array:\n";
-       $last = 'XXXXXXXX';
-       foreach ($flat as $param) {
-         if ($param === $last) echo "\n" . $param . "\n";
-         $last = $param;
-       }
-       $failed = TRUE;
-    } 
     $this->assertFalse($failed);
   }
 }
