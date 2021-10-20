@@ -318,6 +318,10 @@ final class constantsTest extends testBaseClass {
          $failed = TRUE;
          echo "\n\n Invalid hostname in NON_JOURNAL_WEBSITES: " . $param . "\n\n";
       }
+      if (strpos($param, ' ') !== FALSE) {
+         $failed = TRUE;
+         echo "\n\n Whitespace in NON_JOURNAL_WEBSITES: " . $param . "\n\n";
+      }
       $last = $param;
     }
     $this->assertFalse($failed);
