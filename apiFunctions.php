@@ -1,10 +1,10 @@
 <?php
 declare(strict_types=1);
 
-require_once "constants.php";        // @codeCoverageIgnore
-require_once "user_messages.php";    // @codeCoverageIgnore
-require_once "Template.php";         // @codeCoverageIgnore
-require_once "NameTools.php";        // @codeCoverageIgnore
+require_once 'constants.php';        // @codeCoverageIgnore
+require_once 'user_messages.php';    // @codeCoverageIgnore
+require_once 'Template.php';         // @codeCoverageIgnore
+require_once 'NameTools.php';        // @codeCoverageIgnore
 
 function query_pmid_api (array $pmids, array &$templates) : bool { return entrez_api($pmids, $templates, 'pubmed'); }  // Pointer to save memory
 function query_pmc_api  (array $pmcs, array &$templates) : bool { return entrez_api($pmcs,  $templates, 'pmc'); } // Pointer to save memory
