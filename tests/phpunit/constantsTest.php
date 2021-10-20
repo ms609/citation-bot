@@ -318,7 +318,7 @@ final class constantsTest extends testBaseClass {
          $failed = TRUE;
          echo "\n\n Invalid hostname in NON_JOURNAL_WEBSITES: " . $param . "\n\n";
       }
-      if (preg_match('~\s~', $param) !== FALSE) {
+      if (preg_match('~\s~', $param) !== 0) {
          $failed = TRUE;
          echo "\n\n Whitespace in NON_JOURNAL_WEBSITES: " . $param . "\n\n";
       }
