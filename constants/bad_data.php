@@ -330,20 +330,16 @@ const NON_JOURNAL_WEBSITES = array('cnn.com/', 'msnbc.com/', 'nbcnews.com/', 'cb
                                    '.yy.com/', '/yy.com/', 'yandex.ru/', 'chaturbate.com/', 'apple.com/', 'aparat.com/',
                                    'tmall.com/', 'taobao.com/', '360.cn/', '.al.com/', '/al.com/', '.mic.com/', '/mic.com/',
                                    '.nj.com/', '/nj.com/', '.time.com/', '/time.com/', '/rt.com/', '.rt.com/', 'abc.net.au/',
-                                   'abcnews.go.com/', 'bleacherreport.com/', 'boston.com/', 'bostonglobe.com/',
-                                   'businessinsider.com/', 'buzzfeed.com/', 'cbsnews.com/', 'chicagotribune.com/',
-                                   'chron.com/', 'cnbc.com/', 'dailymail.co.uk	', 'dallasnews.com/', 'elitedaily.com/',
-                                   'engadget.com/', 'examiner.com/', 'express.co.uk/', 'forbes.com/', 'freep.com/',
-                                   'gawker.com/', 'huffingtonpost.com/', 'independent.co.uk/', 'mashable.com/',
-                                   'mirror.co.uk/', 'mlive.com/', 'news.com.au/', 'npr.org/', 'nydailynews.com/',
-                                   'nypost.com/', 'nytimes.com/', 'salon.com/', 'sfgate.com/', 'slate.com/', 'techcrunch.com/',
-                                   'telegraph.co.uk/', 'theatlantic.com/', 'theblaze.com/', 'thedailybeast.com/', 'theguardian.com/',
-                                   'thesun.co.uk/', 'upworthy.com/', 'usatoday.com/', 'usnews.com/', 'vice.com/', 'vox.com/',
+                                   'bleacherreport.com/', 'boston.com/', 'bostonglobe.com/',
+                                   'chicagotribune.com/',
+                                   'chron.com/', 'dallasnews.com/', 'elitedaily.com/',
+                                   'freep.com/', 'mlive.com/', 'news.com.au/', 
+                                   'sfgate.com/', 'upworthy.com/', 
                                    'defense-blog.com/', 'globalissues.org/', 'thecipherbrief.com/', 'indiatimes.com/',
-                                   'ndtv.com/', '/dw.com/', '.dw.com/', 'sputniknews.com/', 'cbc.ca/', 'euronews.com/',
-                                   'smh.com.au/', 'france24.com/', 'news.sky.com/', 'scmp.com/', 'news24.com/', 'ctvnews.ca/',
-                                   'channelnewsassia.com/', 'globalnews.ca/', 'seattletimes.com/', 'azcentral.com/', 'snopes.com/',
-                                   'rawstory.com/', 'thestar.com/', 'todayonline.com/', 'dailytelegraph.com/'
+                                   'ndtv.com/', '/dw.com/', '.dw.com/', 'cbc.ca/', 'euronews.com/',
+                                   'france24.com/', 'news.sky.com/', 'news24.com/', 'ctvnews.ca/',
+                                   'channelnewsassia.com/', 'globalnews.ca/', 'seattletimes.com/', 'azcentral.com/',
+                                   'thestar.com/', 'todayonline.com/', 'dailytelegraph.com/'
                                    ); 
                                    // Just a list of ones that are obvious.  Add ones that time-out as we find them
                                    // bbm.ca is short enough that we add /bbm.ca/ and .bbm.ca/ since we don't want to grab too many sites
