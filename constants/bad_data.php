@@ -328,7 +328,7 @@ const NON_JOURNAL_WEBSITES = array('cnn.com/', 'msnbc.com/', 'nbcnews.com/', 'cb
                                    'google.com.hk/', 'msn.com/', 'microsoft.com/', 'bing.com/', 'bongacams.com/',
                                    'twitch.tv/', 'naver.com/', 'aliexpress.com/', 'adobe.com/', 'ebay.com/', 'tianya.cn/',
                                    '.yy.com/', '/yy.com/', 'yandex.ru/', 'chaturbate.com/', 'apple.com/', 'aparat.com/',
-                                   'tmall.com/', 'taobao.com/', '360.cn/', , '.al.com/', '/al.com/', '.mic.com/', '/mic.com/',
+                                   'tmall.com/', 'taobao.com/', '360.cn/', '.al.com/', '/al.com/', '.mic.com/', '/mic.com/',
                                    '.nj.com/', '/nj.com/', '.time.com/', '/time.com/', '/rt.com/', '.rt.com/', 'abc.net.au/',
                                    'abcnews.go.com/', 'bleacherreport.com/', 'boston.com/', 'bostonglobe.com/',
                                    'businessinsider.com/', 'buzzfeed.com/', 'cbsnews.com/', 'chicagotribune.com/',
