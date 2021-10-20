@@ -218,11 +218,11 @@ final class expandFnsTest extends testBaseClass {
     $text = "‹Y›";
     $this->assertSame("'Y'",straighten_quotes($text, FALSE));
   }
-  public function testArrowAreQuotes13() : void {
+  public function testArrowAreQuotes15() : void {
     $text = '«Lastronaute» du vox pop de Guy Nantel était candidat aux élections fédérales... et a perdu';
     $this->assertSame($text,straighten_quotes($text, FALSE));
   }
-  public function testArrowAreQuotes14() : void {
+  public function testArrowAreQuotes16() : void {
     $text = '«Lastronaute» du vox pop de Guy Nantel était candidat aux élections fédérales... et a perdu';
     $this->assertSame('"Lastronaute" du vox pop de Guy Nantel était candidat aux élections fédérales... et a perdu', straighten_quotes($text, TRUE));
   } 
