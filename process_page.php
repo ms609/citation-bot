@@ -2,8 +2,8 @@
 declare(strict_types=1);
 
 @session_start();
-@header( 'Content-type: text/html; charset=utf-8' );
-@header("Content-Encoding: None", TRUE);
+@header('Content-type: text/html; charset=utf-8');
+@header('Content-Encoding: None');
 
 require_once 'setup.php';
 

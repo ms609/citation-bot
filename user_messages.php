@@ -1,7 +1,7 @@
 <?php
 declare(strict_types=1);
 
-require_once "constants.php";   // @codeCoverageIgnore
+require_once 'constants.php';   // @codeCoverageIgnore
 
 function html_echo(string $text, string $alternate_text='') : void {
   /** @psalm-suppress TypeDoesNotContainType */ /* PSALM thinks HTML_OUTPUT and TRAVIS cannot be false */
