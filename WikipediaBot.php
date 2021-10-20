@@ -26,7 +26,7 @@ final class WikipediaBot {
   function __construct(bool $no_user = FALSE) {
     $this->ch = curl_init();
     curl_setopt_array($this->ch, [
-        CURLOPT_FAILONERROR => TRUE, // This is a little paranoid, but we don't have trouble yet, and should deal with i
+        CURLOPT_FAILONERROR => TRUE, // This is a little paranoid - see https://curl.se/libcurl/c/CURLOPT_FAILONERROR.html
         CURLOPT_FOLLOWLOCATION => TRUE,
         CURLOPT_MAXREDIRS => 5,
         CURLOPT_HEADER => 0, // Don't include header in output
@@ -425,8 +425,8 @@ final class WikipediaBot {
       $api = self::$last_WikipediaBot;
     } elseif (getenv('PHP_OAUTH_CONSUMER_TOKEN')) {
       $api = new WikipediaBot(TRUE);
-    } else {
-      return 0; // This is when we are in TRAVIS but have no secret keys.  // @codeCoverageIgnore
+    } else {      // This is when we are in TRAVIS but have no secret keys.
+      return 0;   // @codeCoverageIgnore
     }
     $res = $api->fetch([
         "action" => "query",
@@ -453,11 +453,11 @@ final class WikipediaBot {
     }
     return (string) $res->query->redirects[0]->to;
   }
-  public function namespace_id(string $name) : int {
+  static public function namespace_id(string $name) : int {
     $lc_name = strtolower($name);
     return array_key_exists($lc_name, NAMESPACE_ID) ? NAMESPACE_ID[$lc_name] : 0;
   }
-  public function namespace_name(int $id) : ?string {
+  static public function namespace_name(int $id) : ?string {
     return array_key_exists($id, NAMESPACES) ? NAMESPACES[$id] : NULL;
   }
   

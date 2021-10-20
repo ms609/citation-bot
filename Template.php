@@ -1022,6 +1022,7 @@ final class Template {
         if ($value === 'Wiley Online Library') return FALSE;
         if (!$this->blank(['booktitle', 'book-title'])) return FALSE;
         if (in_array(strtolower(sanitize_string($value)), BAD_TITLES )) return FALSE;
+        if ($param_name === 'journal' && in_array(strtolower($value), ARE_MANY_THINGS)) $param_name = 'website';
         if (in_array(strtolower(sanitize_string($this->get('journal'))), BAD_TITLES)) $this->forget('journal'); // Update to real data
         if (preg_match('~^(?:www\.|)rte.ie$~i', $value)) $value = 'RTÉ News'; // Russian special case code
         if ($this->wikiname() === 'cite book' && $this->has('chapter') && $this->has('title') && $this->has('series')) return FALSE;
@@ -6375,6 +6376,14 @@ final class Template {
               $this->forget('volume');
             }
           }
+          // Remove leading zeroes
+          $value = $this->get($param);
+          if ($value !== '') {
+            $value = preg_replace('~^0+~', '', $value);
+            if ($value === '') {
+              $this->forget($param); // Was all zeros
+            }
+          }
           $this->volume_issue_demix($this->get($param), $param);
           return;
           
@@ -6795,6 +6804,7 @@ final class Template {
           $this->name = $spacing[1] . 'Cite document' . $spacing[2];
         }
       }
+      $this->tidy_parameter('doi'); // might be free, and freedom is date dependent for some journals
       if (!empty($this->param)) {
         $drop_me_maybe = array();
         foreach (ALL_ALIASES as $alias_list) {

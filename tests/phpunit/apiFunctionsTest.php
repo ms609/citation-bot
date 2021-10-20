@@ -74,13 +74,16 @@ final class apiFunctionsTest extends testBaseClass {
     $this->assertSame($text, $page->parsed_text($text));
   }
   
-  public function testArxivDateUpgradeSeesDate() : void {
+  public function testArxivDateUpgradeSeesDate1() : void {
    $this->requires_arxiv(function() : void {
       $text = '{{Cite journal|date=September 2010|doi=10.1016/j.physletb.2010.08.018|arxiv=1006.4000}}';
       $expanded = $this->process_citation($text);
       $this->assertSame('September 2010', $expanded->get2('date'));
       $this->assertNull($expanded->get2('year'));
-      
+    });
+  }
+  public function testArxivDateUpgradeSeesDate2() : void {
+   $this->requires_arxiv(function() : void {
       $text = '{{Cite journal|date=September 2009|doi=10.1016/j.physletb.2010.08.018|arxiv=1006.4000}}';
       $expanded = $this->process_citation($text);
       $this->assertNull($expanded->get2('date'));
@@ -123,7 +126,7 @@ final class apiFunctionsTest extends testBaseClass {
     $this->requires_dx(function() : void {
      $expanded = $this->make_citation('{{Cite journal}}');
      expand_doi_with_dx($expanded, '10.1002/0470841559.ch1');  // This is cross-ref doi, so for DX DOI expansion
-     $this->assertSame('{{Cite book|year = 2003|isbn = 0471975141|title = Internetworking LANs and WANs|chapter = Network Concepts|publisher = John Wiley & Sons|location = Chichester, UK}}', $expanded->parsed_text());
+     $this->assertSame('{{Cite book|year = 2003|title = Internetworking LANs and WANs|chapter = Network Concepts|publisher = John Wiley & Sons|location = Chichester, UK}}', $expanded->parsed_text());
     });
   }
   
@@ -240,7 +243,7 @@ final class apiFunctionsTest extends testBaseClass {
     $this->requires_dx(function() : void {
      $expanded = $this->make_citation('{{Cite journal}}');
      expand_doi_with_dx($expanded, '10.3743/KOSIM.2011.28.2.117');
-     $this->assertSame('{{Cite journal|year = 2011|volume = 28|issue = 2|journal = 정보관리학회지|title = Kscd를 활용한 국내 과학기술자의 해외 학술지 인용행태 연구}}', $expanded->parsed_text());
+     $this->assertSame('{{Cite journal|year = 2011|volume = 28|issue = 2|journal = Journal of the Korean Society for Information Management|title = Citing Behavior of Korean Scientists on Foreign Journals in KSCD}}', $expanded->parsed_text());
     });
   }
   
@@ -315,12 +318,13 @@ final class apiFunctionsTest extends testBaseClass {
      $this->assertSame($text, $template->parsed_text());
   }
   
-  public function testCrossRefAddSeries() : void {
+  public function testCrossRefAddSeries1() : void {
      $text = "{{Cite book | doi = 10.1063/1.2833100| title = A Transient Semi-Metallic Layer in Detonating Nitromethane}}";
      $template = $this->process_citation($text);
      $this->assertSame("AIP Conference Proceedings", $template->get2('series'));
-    
-    // Next is kind of messed up, but "matches" enough to expand
+  }
+  public function testCrossRefAddSeries2() : void {
+    // Kind of messed up, but "matches" enough to expand
      $text = "{{Cite book | doi = 10.1063/1.2833100| title = AIP Conference Proceedings}}";
      $template = $this->process_citation($text);
      $this->assertSame("2008", $template->get2('year'));

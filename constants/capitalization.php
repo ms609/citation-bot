@@ -49,7 +49,8 @@ const UC_SMALL_WORDS = array(/* The following will be automatically updated to a
           // For ones that start with lower-case, include both ELife and Elife versions in misspelled array
 const JOURNAL_ACRONYMS = array(/* The following will be automatically updated to alphabetical order */
           " (and the Middle East) ", " (BBA) ", " (online ed.) ", " AAPOS ", " AAPS ", 
-          " ACM SIGGRAPH ", " ACS ", " AJNR. ", " Algebra i Analiz ", " Amphibian Species of the World: an Online Reference. ", 
+          " ACM SIGGRAPH ", " ACS ", " AIDS & Behavior ", " AIDS and Behavior ", " AIMS Microbiology ", " AJNR. ", " Algebra i Analiz ",
+          " Amphibian Species of the World: an Online Reference. ", 
           " Angew Chem Int Ed ", " AOAC International ", " Applied ", " APS Division ", 
           " Arch Dis Child Fetal Neonatal Ed ", " Arctic ", " ASAIO ", " ASME AES ", " ASME MTD ", 
           " Avtomatika i Telemekhanika ", " B/gcvs ", " B/gcvs ", " B/gcvs ", " Bild am Sonntag ", 
@@ -90,7 +91,7 @@ const JOURNAL_ACRONYMS = array(/* The following will be automatically updated to
           " mSphere ", " mSphere ", " mSystems ", " mSystems ", " MycoKeys ", " n.paradoxa ", 
           " NASA Tech Briefs ", " Nauka i Zhizn ", " NBER ", " NDT & E International ", 
           " NeuroImage ", " NeuroReport ", " Notes of the AAS ", " Now and Then: ", " Ny Forskning i Grammatik ", 
-          " Nyt Tidsskrift ", " Ocean Science Journal : Osj ", " PAJ: A Journal of Performance and Art ", 
+          " Nyt Tidsskrift ", " Obsidian II ", " Ocean Science Journal : Osj ", " PAJ: A Journal of Performance and Art ", 
           " PALAIOS ", " PalAsiatica ", " PalZ ", " PeerJ ", " PharmSci ", " PhytoKeys ", 
           " Pis'ma v Astronomicheskii ", " PLOS ", " PLOS ", " PLOS ", " PLOS ", " PLOS ", 
           " PLOS ONE ", " PNAS ", " Proceedings of the IRE ", " Protein Eng Des Sel ", 
@@ -109,7 +110,8 @@ const JOURNAL_ACRONYMS = array(/* The following will be automatically updated to
 );
 const UCFIRST_JOURNAL_ACRONYMS = array(/* The following will be automatically updated to alphabetical order */
           " (And the Middle East) ", " (Bba) ", " (online Ed.) ", " Aapos ", " Aaps ", 
-          " ACM Siggraph ", " Acs ", " Ajnr. ", " Algebra I Analiz ", " Amphibian Species of the World: An Online Reference. ", 
+          " ACM Siggraph ", " Acs ", " Aids & Behavior ", " Aids and Behavior ", " Aims Microbiology ", " Ajnr. ", " Algebra I Analiz ",
+          " Amphibian Species of the World: An Online Reference. ", 
           " Angew Chem Int ed ", " AOAC INTERNATIONAL ", " Appiled ", " Aps Division ", 
           " Arch Dis Child Fetal Neonatal ed ", " ARCTIC ", " Asaio ", " Asme Aes ", " Asme MTD ", 
           " Avtomatika I Telemekhanika ", " B/GCVS ", " B/Gcvs ", " b/gcvs ", " Bild Am Sonntag ", 
@@ -150,7 +152,7 @@ const UCFIRST_JOURNAL_ACRONYMS = array(/* The following will be automatically up
           " MSphere ", " Msphere ", " MSystems ", " Msystems ", " Mycokeys ", " N.Paradoxa ", 
           " Nasa Tech Briefs ", " Nauka I Zhizn ", " Nber ", " NDT & e International ", 
           " Neuroimage ", " Neuroreport ", " Notes of the Aas ", " Now and then: ", " NY Forskning I Grammatik ", 
-          " NYT Tidsskrift ", " Ocean Science Journal : Osj ", " Paj: A Journal of Performance and Art ", 
+          " NYT Tidsskrift ", " Obsidian Ii ", " Ocean Science Journal : Osj ", " Paj: A Journal of Performance and Art ", 
           " Palaios ", " Palasiatica ", " Palz ", " Peerj ", " Pharmsci ", " Phytokeys ", 
           " Pis'ma V Astronomicheskii ", " PLoS ", " PLos ", " PloS ", " Plos ", " plos ", 
           " PLOS One ", " Pnas ", " Proceedings of the Ire ", " Protein Eng des Sel ", 

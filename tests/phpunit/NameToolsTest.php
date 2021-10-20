@@ -138,43 +138,64 @@ final class NameToolsTest extends testBaseClass {
      $this->assertSame('Abxxxc Xyzd D. Dddss', $result);
    }
 
-   public function testJunior() : void {
+   public function testJunior1() : void {
        $text = ""; // Empty string should work
        $result = junior_test($text);
        $this->assertSame("", $result[0]);
        $this->assertSame("", $result[1]);
+   }
+   public function testJunior2() : void {
        $text = "Smith";
        $result = junior_test($text);
        $this->assertSame("Smith", $result[0]);
        $this->assertSame("", $result[1]);
+   }
+   public function testJunior3() : void {
        $text = "Smith Jr.";
        $result = junior_test($text);
        $this->assertSame("Smith", $result[0]);
        $this->assertSame(" Jr.", $result[1]);
+   }
+   public function testJunior4() : void {
        $text = "Smith Jr";
        $result = junior_test($text);
        $this->assertSame("Smith", $result[0]);
        $this->assertSame(" Jr", $result[1]);
+   }
+   public function testJunior5() : void {
        $text = "Smith, Jr.";
        $result = junior_test($text);
        $this->assertSame("Smith", $result[0]);
        $this->assertSame(" Jr.", $result[1]);
+   }
+   public function testJunior6() : void {
        $text = "Smith, Jr";
        $result = junior_test($text);
        $this->assertSame("Smith", $result[0]);
        $this->assertSame(" Jr", $result[1]);
+   }
+   public function testJunior7() : void {
        $text = "Ewing JR"; // My name is J.R. Ewing, but you can call me J.R.
        $result = junior_test($text);
        $this->assertSame("Ewing JR", $result[0]);
        $this->assertSame("", $result[1]);
   }
 
-  public function testFormat() : void { // Random extra code coverage tests
+  // Random extra code coverage tests
+  public function testFormat1() : void {
     $this->assertSame('& a. Johnson', format_surname('& A. Johnson'));
+  }
+  public function testFormat2() : void {
     $this->assertSame('Johnson; Smith', format_surname('Johnson; Smith'));
+  }
+  public function testFormat3() : void {
     $this->assertSame('', format_author(''));
     $this->assertSame('', format_multiple_authors(''));
+  }
+  public function testFormat4() : void {
     $this->assertSame('John, Bob; Kim, Billy', format_multiple_authors('John,Bob,Kim,Billy'));
+  }
+  public function testFormat5() : void {
     $this->assertSame('Johnson, A. B. C. D. E. F. G', format_author('A. B. C. D. E. F. G. Johnson'));
   }
 }

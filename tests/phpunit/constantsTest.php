@@ -68,7 +68,8 @@ final class constantsTest extends testBaseClass {
   }
   
   public function testConstantsOrder() : void {
-    $acronyms = JOURNAL_ACRONYMS; sort($acronyms, SORT_STRING | SORT_FLAG_CASE);
+    $acronyms = JOURNAL_ACRONYMS;
+    sort($acronyms, SORT_STRING | SORT_FLAG_CASE);
     $expected = current($acronyms);
     foreach (JOURNAL_ACRONYMS as $actual) {
       $this->assertSame(strtolower($expected), strtolower($actual));
@@ -79,7 +80,7 @@ final class constantsTest extends testBaseClass {
   public function testAllLowerCase() : void {
     $big_array = array_merge(HAS_NO_VOLUME, BAD_ACCEPTED_MANUSCRIPT_TITLES, BAD_AUTHORS,
                              PUBLISHER_ENDINGS, BAD_TITLES, IN_PRESS_ALIASES, NON_PUBLISHERS,
-                             JOURNAL_IS_BOOK_SERIES, HAS_NO_ISSUE);
+                             JOURNAL_IS_BOOK_SERIES, HAS_NO_ISSUE, WORKS_ARE_PUBLISHERS);
     foreach ($big_array as $actual) {
       $this->assertSame(strtolower($actual), $actual);
     }
@@ -296,6 +297,33 @@ final class constantsTest extends testBaseClass {
        }
        $failed = TRUE;
     } 
+    $this->assertFalse($failed);
+  }
+  
+  public function testNonJournalList() {
+    $flat = NON_JOURNAL_WEBSITES;
+    sort($flat);
+    $failed = FALSE;
+    $last = 'XXXXXXXX';
+    foreach ($flat as $param) {
+      if (substr($param, -1) !== '/') {
+         $failed = TRUE;
+         echo "\n\n Missing end slash in NON_JOURNAL_WEBSITES: " . $param . "\n\n";
+      }
+      if ($param === $last) {
+        $failed = TRUE;
+        echo "\n\n Duplicate entry in NON_JOURNAL_WEBSITES: " . $param . "\n\n";
+      }
+      if (strpos($param, '.') === FALSE) {
+         $failed = TRUE;
+         echo "\n\n Invalid hostname in NON_JOURNAL_WEBSITES: " . $param . "\n\n";
+      }
+      if (preg_match('~\s~', $param) !== 0) {
+         $failed = TRUE;
+         echo "\n\n Whitespace in NON_JOURNAL_WEBSITES: " . $param . "\n\n";
+      }
+      $last = $param;
+    }
     $this->assertFalse($failed);
   }
 }

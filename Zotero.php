@@ -622,7 +622,7 @@ public static function process_zotero_response(string $zotero_response, Template
   if (isset($result->itemType) && $result->itemType == 'newspaperArticle') {
     if ( isset($result->publicationTitle)) {
        $new_title = (string) $result->publicationTitle;
-       if ($new_title === 'United States Census Bureau') { // TODO - make an array
+       if (in_array(strtolower($new_title), WORKS_ARE_PUBLISHERS)) {
           $template->add_if_new('publisher', $new_title);
        } else {
           $template->add_if_new('newspaper', $new_title);

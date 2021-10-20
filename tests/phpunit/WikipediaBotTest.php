@@ -41,7 +41,7 @@ require_once __DIR__ . '/../testBaseClass.php';
      $this->requires_secrets(function() : void {
       $api = new WikipediaBot();
       $namespace = $api->get_namespace('Template:Cite journal');
-      $this->assertSame($api->namespace_id('Template'), $namespace);
+      $this->assertSame(WikipediaBot::namespace_id('Template'), $namespace);
       $results = $api->get_prefix_index('Cite jo', $namespace); // too many results if we just use 'Cite'
       $this->assertTrue(array_search('Template:Cite journal', $results) !== FALSE);
       $results = $api->get_prefix_index("If we retrieve anything here, it's an error", $namespace);
@@ -78,8 +78,8 @@ require_once __DIR__ . '/../testBaseClass.php';
       foreach ($namespaces->query->namespaces as $ns) {
         $ns_name = isset($ns->canonical)? $ns->canonical : '';
         $ns_id = $ns->id;
-        $this->assertSame($ns_id, $api->namespace_id($ns_name));
-        $this->assertSame($ns_name, $api->namespace_name($ns_id));
+        $this->assertSame($ns_id, WikipediaBot::namespace_id($ns_name));
+        $this->assertSame($ns_name, WikipediaBot::namespace_name($ns_id));
       }
       
       /*
@@ -109,12 +109,15 @@ require_once __DIR__ . '/../testBaseClass.php';
      });
     }
    
-    public function testNonStandardMode() : void {
+    public function testGetUserName() : void {
      $this->requires_secrets(function() : void {
       $api = new WikipediaBot(); // Make sure one exists
       $this->assertSame('Citation_bot', $api->get_the_user());
-      $this->assertFalse(WikipediaBot::NonStandardMode());
      });
+    }
+   
+    public function testNonStandardMode() : void {
+      $this->assertFalse(WikipediaBot::NonStandardMode());
     }
    
     public function testNonStandardWikiBotClass() : void {
