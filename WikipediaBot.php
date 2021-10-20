@@ -26,7 +26,7 @@ final class WikipediaBot {
   function __construct(bool $no_user = FALSE) {
     $this->ch = curl_init();
     curl_setopt_array($this->ch, [
-        CURLOPT_FAILONERROR => TRUE, // This is a little paranoid, but we don't have trouble yet, and should deal with i
+        CURLOPT_FAILONERROR => TRUE, // This is a little paranoid - see https://curl.se/libcurl/c/CURLOPT_FAILONERROR.html
         CURLOPT_FOLLOWLOCATION => TRUE,
         CURLOPT_MAXREDIRS => 5,
         CURLOPT_HEADER => 0, // Don't include header in output
