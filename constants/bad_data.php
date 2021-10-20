@@ -175,7 +175,28 @@ const NON_JOURNAL_WEBSITES = array('cnn.com/', 'foxnews.com/', 'msnbc.com/', 'nb
                                    'yourentertainmentnow.com/', 'shows.ctv.ca/' ,'toronto.com/', 'fda.gov/',
                                    'surgeongeneral.gov/', 'www.rte.ie/', 'plato.stanford.edu/', 'britannica.com/',
                                    'gameinformer.com/', 'mcvuk.com/', 'rockpapershotgun.com/',
-                                   'lemonde.fr/', '.ft.com/', 'bloomberg.com/', 'pcgamer.com/', 'mynintendonews.com/'                              
+                                   'lemonde.fr/', '.ft.com/', 'bloomberg.com/', 'pcgamer.com/', 'mynintendonews.com/',
+                                   'arstechnica.com/', 'bluesnews.com/', 'gamingbolt.com/', 'nintendoworldreport.com/',
+                                   'pcgamesn.com/', 'pocketgamer.com/', 'purexbox.com/', 'pushsquare.com/',
+                                   'toucharcade.com/', 'adventuregamers.com/', 'justadventure.com/', 'rpgamer.com/',
+                                   'rpgfan.com/', 'rpgsite.net/', 'wargamer.com/', 'scmp.com/', 'cnet.com/',
+                                   'engadget.com/', 'techradar.com/', 'dotesports.com/', 'sportsbusinessjournal.com/',
+                                   'heroesneverdie.com/', 'invenglobal.com/', 'metabomb.net/', 'redbull.com/',
+                                   'theflyingcourier.com/', 'riftherald.com/', 'upcomer.com/', 'metacritic.com/',
+                                   'mlg.com/', 'majornelson.com/', 'primagames.com/', 'playstation.com/',
+                                   'digitallydownloaded.net/', 'easyallies.com/', 'gamesradar.com/', 'egmnow.com/',
+                                   'eurogamer.net/', 'gameinformer.com/', 'gamerevolution.com/', 'gamespot.com/',
+                                   'gamezone.com/', 'gamesradar.com/', 'gematsu.com/', 'hardcoregamer.com/',
+                                   'hardcoregaming101.net/', '.ign.com/', 'kotaku.com/', 'polygon.com/',
+                                   'siliconera.com/', 'shacknews.com/', '.svg.com/', 'variety.com/', 'venturebeat.com/',
+                                   'vg247.com/', 'videogameschronicle.com/', 'videogamer.com/', '4gamer.net/',
+                                   'comptiq.com/', 'dengekionline.com/', 'famitsu.com/', 'gamekult.com/',
+                                   'gameswirtschaft.de/', 'gamer.nl/', 'thegamesmachine.it/', 'hobbyconsolas.com/',
+                                   'watch.impress.co.jp/', 'itmedia.co.jp/', 'jeuxvideo.com/', 'm-create.com/',
+                                   'pu.nl/', 'digit.in/', 'chart-track.co.uk/', 'elspa.com/', 'gamedeveloper.com/',
+                                   'gamesindustry.biz/', 'gamestudies.org/', 'mcvuk.com/', 'the-magicbox.com/',
+                                   'amr.abime.net/', 'gamestar.de/', 'arcade-museum.com/', 'nintendoforcemagazine.com/',
+                                   'nintendolife.com/', 'denofgeek.com/'
                                   ); 
                                    // Just a list of ones that are obvious.  Add ones that time-out as we find them
                                    // bbm.ca is short enough that we add /bbm.ca/ and .bbm.ca/ since we don't want to grab too many sites
