@@ -298,4 +298,26 @@ final class constantsTest extends testBaseClass {
     } 
     $this->assertFalse($failed);
   }
+  
+  public function testNonJournalList() {
+    $flat = NON_JOURNAL_WEBSITES;
+    sort($flat);
+    $failed = FALSE;
+    foreach ($flat as $param) {
+      if (substr($param, -1) !== '/') {
+         $failed = TRUE;
+         echo "\n\n Missing end slash in NON_JOURNAL_WEBSITES: " . $param . "\n\n";
+      }
+    }
+    if (count($flat) !== count(array_unique($flat))) {
+       echo "\n\n duplicate entries in the NON_JOURNAL_WEBSITES array:\n";
+       $last = 'XXXXXXXX';
+       foreach ($flat as $param) {
+         if ($param === $last) echo "\n" . $param . "\n";
+         $last = $param;
+       }
+       $failed = TRUE;
+    } 
+    $this->assertFalse($failed);
+  }
 }
