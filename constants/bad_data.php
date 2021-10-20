@@ -232,7 +232,7 @@ const NON_JOURNAL_WEBSITES = array('cnn.com/', 'msnbc.com/', 'nbcnews.com/', 'cb
                                    'frontpagemagazine.com/', 'ft.com/', 'fundinguniverse.com/', 'gamasutra.com/',
                                    'gamerankings.com/', 'gawker.com/', 'geni.com/', 'genius.com/',
                                    'gizmodo.com/', 'glitchwave.com/', 'globalresearch.ca/', 'globalresearch.org/',
-                                   'globalsecurity.org/', 'globaltimes.cn/', 'goodreads.com/', 'google.com/', 'grubstreet.com/',
+                                   'globalsecurity.org/', 'globaltimes.cn/', 'goodreads.com/', 'grubstreet.com/',
                                    'guardian.co.uk/', 'guinnessworldrecords.com/', 'haaretz.co.il/', 'haaretz.com/',
                                    'hansard.millbanksystems.com/', 'heatst.com/', 'heavy.com/',
                                    'hispantv.com/', 'hispantv.ir/', 'history.com/', 'hk.appledaily.com/', 'hollywoodreporter.com/',
@@ -322,14 +322,13 @@ const NON_JOURNAL_WEBSITES = array('cnn.com/', 'msnbc.com/', 'nbcnews.com/', 'cb
                                    'wordpress.com/', 'worldnetdaily.com/', 'worldometers.info/', 'wsj.com/', 'wsws.org/',
                                    'www.insider.com/', 'xbiz.com/', 'xinhuanet.com/', 'youtube.com/', 'zdnet.com/',
                                    'zerohedge.com/', 'zoominfo.com/', '/qq.com/', '.qq.com/', 'yahoo.com/', '.jd.com/',
-                                   '/jd.com/', 'weibo.com/', 'sina.com.cn/', 'xinhuanet.com/', 'reddit.com/', 'netflix.com/',
+                                   '/jd.com/', 'weibo.com/', 'sina.com.cn/', 'netflix.com/',
                                    'panda.tv/', 'zhanqi.tv/', 'okezone.com/', 'office.com/', 'instagram.com/', 
-                                   '.vk.com/', '/vk.com/', 'csdn.net/', 'shopify.com/', 'yahoo.co.jp/', 'google.com/',
+                                   '.vk.com/', '/vk.com/', 'csdn.net/', 'shopify.com/', 'yahoo.co.jp/', '.google.com/',
                                    'google.com.hk/', 'msn.com/', 'microsoft.com/', 'bing.com/', 'bongacams.com/',
-                                   'twitch.tv/', 'naver.com/', 'aliexpress.com/', 'adobe.com/', 'ebay.com/',
-                                   'amazon.in/', 'huanqiu.com/', 'twitter.com/', 'amazon.co.jp/', 'tianya.cn/',
+                                   'twitch.tv/', 'naver.com/', 'aliexpress.com/', 'adobe.com/', 'ebay.com/', 'tianya.cn/',
                                    '.yy.com/', '/yy.com/', 'yandex.ru/', 'chaturbate.com/', 'apple.com/', 'aparat.com/',
-                                   'tmall.com/', 'taobao.com/', '360.cn'
+                                   'tmall.com/', 'taobao.com/', '360.cn/'
                                   ); 
                                    // Just a list of ones that are obvious.  Add ones that time-out as we find them
                                    // bbm.ca is short enough that we add /bbm.ca/ and .bbm.ca/ since we don't want to grab too many sites
