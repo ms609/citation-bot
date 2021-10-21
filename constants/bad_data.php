@@ -343,7 +343,7 @@ const NON_JOURNAL_WEBSITES = array('cnn.com/', 'msnbc.com/', 'nbcnews.com/', 'cb
                                    'philly.com/', 'billingsgazette.com/', 'congress.gov/', 'cbslocal.com/', 'uscourts.gov/',
                                    'suntimes.com/', 'house.gov/', '.fec.gov/', 'newsbank.com/', 'archives.gov/',
                                    'interfax.com.ua/', 'fivethirtyeight.com/', 'forward.com/', 'galegroup.com/',
-                                   'defense.gov/', 'turner.com/', '.newsbank.com/', 'marist.edu/', 'mashable.com/',
+                                   'defense.gov/', 'turner.com/', '.newsbank.com/', 'marist.edu/',
                                    'loc.gov/', 'tennessean.com/', 'supremecourt.gov/', 'startribune.com/',
                                    'rollcall.com/', 'opensecrets.org/', 'newspapers.com/', 'miamiherald.com/',
                                    'marketwatch.com/', 'cornell.edu/', 'law.com/', 'khronos.org/', 'justice.gov/',
