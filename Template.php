@@ -5558,7 +5558,7 @@ final class Template {
           if (preg_match("~ebscohost.com.*AN=(\d+)$~", $this->get($param), $matches)) {
              $this->set($param, 'http://connection.ebscohost.com/c/articles/' . $matches[1]);
           }
-          if (preg_match("~https?://www\.britishnewspaperarchive\.co\.uk/account/register.+viewer\%252fbl\%252f(\d+)%252f(\d+)%252f(\d+)%252f(\d+)\&~', $this->get($param), $matches)) {
+          if (preg_match("~https?://www\.britishnewspaperarchive\.co\.uk/account/register.+viewer\%252fbl\%252f(\d+)%252f(\d+)%252f(\d+)%252f(\d+)\&~", $this->get($param), $matches)) {
              $this->set($param, 'https://www.britishnewspaperarchive.co.uk/viewer/bl/' . $matches[1] . '/' . $matches[2] . '/' . $matches[3] . '/' .$matches[4]);
           }
           
