@@ -350,11 +350,13 @@ final class Template {
       // Clean up bad data
       if (in_array($this->get('title'), [ "Bloomberg - Are you a robot?", "Page not found",
                                          "Breaking News, Analysis, Politics, Blogs, News Photos, Video, Tech Reviews",
-                                         "Breaking News, Analysis, Politics, Blogs, News Photos, Video, Tech Reviews - TIME.com"])) {
-          $this->forget('title'); 
+                                         "Breaking News, Analysis, Politics, Blogs, News Photos, Video, Tech Reviews - TIME.com",
+                                         "Register &#124; British Newspaper Archive"
+                                        ])) {
+          $this->set('title', '');
       }
       if (($this->get('title') === "Wayback Machine" || $this->get('title') === "Internet Archive Wayback Machine") && !$this->blank(['archive-url', 'archiveurl'])) {
-          $this->forget('title');
+          $this->set('title', '');
       }
     }
     if ($this->should_be_processed()) {
