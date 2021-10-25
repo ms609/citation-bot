@@ -5438,6 +5438,10 @@ final class Template {
               $this->forget($param);
               return;
           }
+          if (preg_match('~https?://www\.britishnewspaperarchive\.co\.uk/account/register~', $this->get($param))) {
+              $this->forget($param);
+              return;
+          }
           if (preg_match('~https://www\.google\-analytics\.com/ga\.js$~', $this->get($param))) {
               $this->forget($param);
               return;
