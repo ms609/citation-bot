@@ -386,6 +386,13 @@ final class Template {
           }
         }
       }
+      if ($this->get('last') === 'Archive' || $this->get('last1') === 'Archive') {
+        if ($this->get('first2') === 'Get author RSS' || ($this->get('first2') === 'Email the' && $this->get('last2') === 'Author')) {
+          foreach (FLATTENED_AUTHOR_PARAMETERS as $author) {
+            $this->forget($author);
+          }
+        }
+      }
       $this->get_inline_doi_from_title();
       $this->parameter_names_to_lowercase();
       $this->use_unnamed_params();
