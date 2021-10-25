@@ -6568,7 +6568,7 @@ final class Template {
             $this->change_name_to('cite news');
             $this->rename($param, 'newspaper');
           }
-          if ($the_param === 'www.britishnewspaperarchive.co.uk' && $this->blank('via')) {
+          if ((strtolower($the_param) === 'www.britishnewspaperarchive.co.uk' || strtolower($the_param) === 'britishnewspaperarchive.co.uk') && $this->blank('via')) {
             $this->set($param, '[[British Newspaper Archive]]');
             $this->rename($param, 'via');
           }
