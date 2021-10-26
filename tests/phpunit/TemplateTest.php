@@ -143,7 +143,7 @@ final class TemplateTest extends testBaseClass {
   public function testPureGarbage1() : void {
     $text = "{{cite journal|title=Bloomberg - Are you a robot?}}";
     $expanded = $this->process_citation($text);
-    $this->assertSame("{{cite journal}}", $expanded->parsed_text());
+    $this->assertSame("{{cite journal|title=}}", $expanded->parsed_text());
   }
  
   public function testPureGarbage2() : void {
@@ -155,7 +155,7 @@ final class TemplateTest extends testBaseClass {
   public function testPureGarbage3() : void {
     $text = "{{cite journal|title=Wayback Machine|archive-url=XXX}}";
     $expanded = $this->process_citation($text);
-    $this->assertNull($expanded->get2('title'));
+    $this->assertSame('', $expanded->get2('title'));
   }
  
   public function testTheNation() : void {

@@ -163,6 +163,8 @@ const ZOTERO_AVOID_REGEX = array("twitter\.",               // This should be {{
                                  "seapower\-digital\.com",  // highjacked
                                  "scholarlycommons\.pacific\.edu\/euler\-works", // returns journal reference to works, not the actual work
                                  "miar\.ub\.edu\/issn", // ISSN description, not actually the journal
+                                 "britishnewspaperarchive\.co\.uk", // Requires registration
+                                 "PressReader\.com", // Bad titles
                                  );
 const NON_JOURNAL_WEBSITES = array('cnn.com/', 'msnbc.com/', 'nbcnews.com/', 'cbs.com/', 
                                    'cbsnews.com/', 'abc.com/', 'nytimes.com/',
@@ -229,7 +231,7 @@ const NON_JOURNAL_WEBSITES = array('cnn.com/', 'msnbc.com/', 'nbcnews.com/', 'cb
                                    'fair.org/', 'familysearch.org/', 'famousbirthdays.com/', 'fandom.com/',
                                    'findagrave.com/', 'findarticles.com/', 'findmypast.co.uk/', 'flickr.com/',
                                    'forbes.com/', 'foxbusiness.com/', 'foxnews.com/', 'frontpagemag.com/',
-                                   'frontpagemagazine.com/', 'ft.com/', 'fundinguniverse.com/', 'gamasutra.com/',
+                                   'frontpagemagazine.com/', '/ft.com/', 'fundinguniverse.com/', 'gamasutra.com/',
                                    'gamerankings.com/', 'gawker.com/', 'geni.com/', 'genius.com/',
                                    'gizmodo.com/', 'glitchwave.com/', 'globalresearch.ca/', 'globalresearch.org/',
                                    'globalsecurity.org/', 'globaltimes.cn/', 'goodreads.com/', 'grubstreet.com/',
@@ -331,15 +333,26 @@ const NON_JOURNAL_WEBSITES = array('cnn.com/', 'msnbc.com/', 'nbcnews.com/', 'cb
                                    'tmall.com/', 'taobao.com/', '360.cn/', '.al.com/', '/al.com/', '.mic.com/', '/mic.com/',
                                    '.nj.com/', '/nj.com/', '.time.com/', '/time.com/', '/rt.com/', '.rt.com/', 'abc.net.au/',
                                    'bleacherreport.com/', 'boston.com/', 'bostonglobe.com/',
-                                   'chicagotribune.com/',
-                                   'chron.com/', 'dallasnews.com/', 'elitedaily.com/',
-                                   'freep.com/', 'mlive.com/', 'news.com.au/', 
-                                   'sfgate.com/', 'upworthy.com/', 
+                                   'chicagotribune.com/', 'whitehouse.gov/', 'whitehousehistory.org/', 'senate.gov/',
+                                   'chron.com/', 'dallasnews.com/', 'elitedaily.com/', 'tampabay.com/',
+                                   'freep.com/', 'mlive.com/', 'news.com.au/', 'texastribune.org/',
+                                   'sfgate.com/', 'upworthy.com/', 'upi.com/', 'timesofisrael.com/',
                                    'defense-blog.com/', 'globalissues.org/', 'thecipherbrief.com/', 'indiatimes.com/',
                                    'ndtv.com/', '/dw.com/', '.dw.com/', 'cbc.ca/', 'euronews.com/',
                                    'france24.com/', 'news.sky.com/', 'news24.com/', 'ctvnews.ca/',
                                    'channelnewsassia.com/', 'globalnews.ca/', 'seattletimes.com/', 'azcentral.com/',
-                                   'thestar.com/', 'todayonline.com/', 'dailytelegraph.com/'
+                                   'thestar.com/', 'todayonline.com/', 'dailytelegraph.com/', 'sun-sentinel.com/',
+                                   'philly.com/', 'billingsgazette.com/', 'congress.gov/', 'cbslocal.com/', 'uscourts.gov/',
+                                   'suntimes.com/', 'house.gov/', '.fec.gov/', 'newsbank.com/', 'archives.gov/',
+                                   'interfax.com.ua/', 'fivethirtyeight.com/', 'forward.com/', 'galegroup.com/',
+                                   'defense.gov/', 'turner.com/', '.newsbank.com/', 'marist.edu/',
+                                   'loc.gov/', 'tennessean.com/', 'supremecourt.gov/', 'startribune.com/',
+                                   'rollcall.com/', 'opensecrets.org/', 'newspapers.com/', 'miamiherald.com/',
+                                   'marketwatch.com/', 'cornell.edu/', 'law.com/', 'khronos.org/', 'justice.gov/',
+                                   'jsonline.com/', 'jpost.com/', 'ipsos.com/', 'investors.com/', 'inquirer.com/',
+                                   'gpo.gov/', 'govinfo.gov/', 'federalregister.gov/', 'factcheck.org/', 'desmoinesregister.com/',
+                                   'courtlistener.com/', 'c-span.org/', '.ajc.com/', '/ajc.com/', 'theweek.com/',
+                                   'socialblade.com/', 'poll.qu.edu/'
                                    ); 
                                    // Just a list of ones that are obvious.  Add ones that time-out as we find them
                                    // bbm.ca is short enough that we add /bbm.ca/ and .bbm.ca/ since we don't want to grab too many sites
