@@ -351,11 +351,13 @@ final class Template {
       // Clean up bad data
       if (in_array($this->get('title'), [ "Bloomberg - Are you a robot?", "Page not found",
                                          "Breaking News, Analysis, Politics, Blogs, News Photos, Video, Tech Reviews",
-                                         "Breaking News, Analysis, Politics, Blogs, News Photos, Video, Tech Reviews - TIME.com"])) {
-          $this->forget('title'); 
+                                         "Breaking News, Analysis, Politics, Blogs, News Photos, Video, Tech Reviews - TIME.com",
+                                         "Register &#124; British Newspaper Archive"
+                                        ])) {
+          $this->set('title', '');
       }
       if (($this->get('title') === "Wayback Machine" || $this->get('title') === "Internet Archive Wayback Machine") && !$this->blank(['archive-url', 'archiveurl'])) {
-          $this->forget('title');
+          $this->set('title', '');
       }
     }
     if ($this->should_be_processed()) {
@@ -385,7 +387,16 @@ final class Template {
           }
         }
       }
-      CONFLICT
+      if ($this->get('last') === 'Archive' || $this->get('last1') === 'Archive') {
+        if ($this->get('first2') === 'Get author RSS' ||
+            $this->get('first3') === 'Get author RSS' ||
+            $this->get('first4') === 'Get author RSS' ||
+            ($this->get('first2') === 'Email the' && $this->get('last2') === 'Author')) {
+          foreach (FLATTENED_AUTHOR_PARAMETERS as $author) {
+            $this->forget($author);
+          }
+        }
+      }
       $this->get_inline_doi_from_title();
       $this->parameter_names_to_lowercase();
       $this->use_unnamed_params();
@@ -5440,6 +5451,10 @@ final class Template {
               $this->forget($param);
               return;
           }
+          if (preg_match('~https?://www\.britishnewspaperarchive\.co\.uk/account/register~', $this->get($param))) {
+              $this->forget($param);
+              return;
+          }
           if (preg_match('~https://www\.google\-analytics\.com/ga\.js$~', $this->get($param))) {
               $this->forget($param);
               return;
@@ -5559,6 +5574,9 @@ final class Template {
           
           if (preg_match("~ebscohost.com.*AN=(\d+)$~", $this->get($param), $matches)) {
              $this->set($param, 'http://connection.ebscohost.com/c/articles/' . $matches[1]);
+          }
+          if (preg_match("~https?://www\.britishnewspaperarchive\.co\.uk/account/register.+viewer\%252fbl\%252f(\d+)\%252f(\d+)\%252f(\d+)\%252f(\d+)(?:\&|\%253f)~", $this->get($param), $matches)) {
+             $this->set($param, 'https://www.britishnewspaperarchive.co.uk/viewer/bl/' . $matches[1] . '/' . $matches[2] . '/' . $matches[3] . '/' .$matches[4]);
           }
           
           // Proxy stuff
@@ -6560,6 +6578,10 @@ final class Template {
           } elseif (in_array(strtolower($the_param), ARE_NEWSPAPERS)) {
             $this->change_name_to('cite news');
             $this->rename($param, 'newspaper');
+          }
+          if ((strtolower($the_param) === 'www.britishnewspaperarchive.co.uk' || strtolower($the_param) === 'britishnewspaperarchive.co.uk') && $this->blank('via')) {
+            $this->set($param, '[[British Newspaper Archive]]');
+            $this->rename($param, 'via');
           }
           return;
           
