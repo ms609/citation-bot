@@ -16,9 +16,9 @@ const LC_SMALL_WORDS = array(/* The following will be automatically updated to a
           " M.A. ", " M.D. ", " medRxiv ", " mit ", " MNRAS ", " mot ", " N.Y. ", " N.Y.) ", 
           " NASA ", " NEJM ", " non ", " nor ", " NRC ", " NY ", " NYC ", " NYT ", " NZ ", 
           " och ", " OECD ", " of ", " off ", " og ", " on ", " or ", " over ", " P.E. ", 
-          " PC ", " PCR ", " per ", " Ph.D. ", " PMLA ", " PNAS ", " PS: ", " R&D ", " RNA ", " RTÉ ", 
+          " PC ", " PCR ", " per ", " PhD ", " Ph.D. ", " PMLA ", " PNAS ", " PS: ", " R&D ", " RNA ", " RTÉ ", 
           " S&P ", " SAE ", " SpringerPlus ", " SSRN ", " TAPPI ", " TCI: ", " te ", " TESOL ", " the ", " then ", 
-          " till ", " to ", " UK ", " um ", " und ", " unserer ", " up ", " USA ", " van ", 
+          " till ", " to ", " UCLA ", " UK ", " um ", " und ", " unserer ", " up ", " USA ", " van ", 
           " vir ", " von ", " voor ", " when ", " with ", " within ", " woor ", " y ", 
           " zu ", " zum ", " zur ", /* The above will be automatically updated to alphabetical order */ 
           // After this line we list exceptions that need re-capitalizing after they have been decapitalized.
@@ -39,9 +39,9 @@ const UC_SMALL_WORDS = array(/* The following will be automatically updated to a
           " M.a. ", " M.d. ", " Medrxiv ", " Mit ", " Mnras ", " Mot ", " N.y. ", " N.y.) ", 
           " Nasa ", " Nejm ", " Non ", " Nor ", " Nrc ", " Ny ", " Nyc ", " Nyt ", " Nz ", 
           " Och ", " Oecd ", " Of ", " Off ", " Og ", " On ", " Or ", " Over ", " P.e. ", 
-          " Pc ", " Pcr ", " Per ", " Ph.d. ", " Pmla ", " Pnas ", " Ps: ", " R&d ", " Rna ", " Rté ", 
+          " Pc ", " Pcr ", " Per ", " PHD ", " Ph.d. ", " Pmla ", " Pnas ", " Ps: ", " R&d ", " Rna ", " Rté ", 
           " S&p ", " Sae ", " Springerplus ", " Ssrn ", " Tappi ", " Tci: ", " Te ", " Tesol ", " The ", " Then ", 
-          " Till ", " To ", " Uk ", " Um ", " Und ", " Unserer ", " Up ", " Usa ", " Van ", 
+          " Till ", " To ", " Ucla ", " Uk ", " Um ", " Und ", " Unserer ", " Up ", " Usa ", " Van ", 
           " Vir ", " Von ", " Voor ", " When ", " With ", " Within ", " Woor ", " Y ", 
           " Zu ", " Zum ", " Zur ", /* The above will be automatically updated to alphabetical order */ 
           // After this line we list exceptions that need re-capitalizing after they have been decapitalized.
