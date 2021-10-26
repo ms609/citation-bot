@@ -1434,8 +1434,17 @@ final class Template {
         }
         $existing = strtotime($this->get('doi-broken-date'));
         $the_new  = strtotime($value);
-        if (($existing === FALSE) || ($existing + (6*2592000) < $the_new) || ((2592000*6) + $the_new < $existing)) { // Six months of difference
+        if (($existing === FALSE) || ($existing + (7*2592000) < $the_new) || ((2592000*7) + $the_new < $existing)) { // Seven months of difference
            return $this->add($param_name, $value);
+        }
+        // TODO : delete this code once all the old categories are run over an re-checked & change above back to 6 months
+        $halloween = strtotime("23:59:59 31 October 2021");
+        if (($the_new > $halloween) && ($existing < $halloween)) {
+            if ($this->date_style === DATES_MDY) {
+               return $this->add($param_name, 'October 31, 2021');
+            } else {
+               return $this->add($param_name, '31 October 2021');
+            }
         }
         return FALSE;
       
