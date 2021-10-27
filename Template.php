@@ -6900,7 +6900,7 @@ final class Template {
                str_ireplace(HOSTS_TO_NOT_ADD, '', $hostname) === $hostname
              ) {
              foreach (HOSTNAME_MAP as $i_key => $i_value) {
-               if ($hostname === $i_key) {
+               if (str_ireplace('www.', '', $hostname) === $i_key) {
                  $hostname = $i_value;
                }
              }
