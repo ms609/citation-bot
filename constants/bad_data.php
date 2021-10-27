@@ -255,6 +255,7 @@ const HOSTNAME_MAP  = array('public.ebookcentral.proquest.com' => '[[ProQuest]]'
                             'thestar.com' => '[[Toronto Star]]',
                             'tennessean.com' => '[[The Tennessean]]',
                             'startribune.com' => '[[Star Tribune]]',
+                            'www.comedy.co.uk' => '[[British Comedy Guide]]',
                            );
 
 const NO_DATE_WEBSITES = array('wikipedia.org', 'web.archive.org', 'perma-archives.org', 'webarchive.proni.gov.uk', 'perma.cc',
