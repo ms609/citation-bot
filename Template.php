@@ -6902,9 +6902,10 @@ final class Template {
              foreach (HOSTNAME_MAP as $i_key => $i_value) {
                if (str_ireplace('www.', '', $hostname) === $i_key) {
                  $hostname = $i_value;
+                 $this->add_if_new('website', $hostname);
                }
              }
-             $this->add_if_new('website', $hostname);
+             // TODO - this seems to be disliked, they might change their mind: $this->add_if_new('website', $hostname);
            }
         }
       }
