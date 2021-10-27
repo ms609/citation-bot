@@ -1588,6 +1588,12 @@ final class Template {
           return TRUE;
         }
         return FALSE;
+        
+      case 'website':
+        if ($this->blank(WORK_ALIASES)) {
+          return $this->add($param_name, $value); // Do NOT Sanitize
+        }
+        return FALSE;
 
       default:  // We want to make sure we understand what we are adding - sometimes we find odd floating parameters
         // @codeCoverageIgnoreStart
@@ -6890,8 +6896,14 @@ final class Template {
            $hostname = $matches[1];
            if (str_ireplace(CANONICAL_PUBLISHER_URLS, '', $hostname) === $hostname &&
                str_ireplace(PROXY_HOSTS_TO_ALWAYS_DROP, '', $hostname) === $hostname &&
-               str_ireplace(PROXY_HOSTS_TO_DROP, '', $hostname) === $hostname
+               str_ireplace(PROXY_HOSTS_TO_DROP, '', $hostname) === $hostname &&
+               str_ireplace(HOSTS_TO_NOT_ADD, '', $hostname) === $hostname
              ) {
+             foreach (HOSTNAME_MAP as $i_key => $i_value) {
+               if ($hostname === $i_key) {
+                 $hostname = $i_value;
+               }
+             }
              $this->add_if_new('website', $hostname);
            }
         }
