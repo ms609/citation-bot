@@ -72,6 +72,7 @@ const TEMPLATES_WE_HARV = array('cite iucn', 'cite odnb', 'cite dnb', 'dnb', 'dn
                                 'cite bede he', 'cite court', 'google books', 'date', 'cite arnold hague convoy database',
                                 'cite ahcd', 'me-ref', 'slomon-new york central', 'cite archive');
 
+// 'url' must be the first element, it is assumed elsewhere in the code
 const ALL_URL_TYPES = array('url', 'article-url', 'chapter-url', 'chapterurl', 'conference-url', 'conferenceurl',
                   'contribution-url', 'contributionurl', 'entry-url', 'event-url', 'eventurl', 'lay-url',
                   'layurl', 'map-url', 'mapurl', 'section-url', 'sectionurl', 'transcript-url',
