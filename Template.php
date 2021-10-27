@@ -1588,6 +1588,12 @@ final class Template {
           return TRUE;
         }
         return FALSE;
+        
+      case 'website':
+        if ($this->blank(WORK_ALIASES)) {
+          return $this->add($param_name, $value); // Do NOT Sanitize
+        }
+        return FALSE;
 
       default:  // We want to make sure we understand what we are adding - sometimes we find odd floating parameters
         // @codeCoverageIgnoreStart
@@ -6874,6 +6880,34 @@ final class Template {
       }
       if (($this->wikiname() === 'cite journal' || $this->wikiname() === 'cite document') && $this->has('chapter')) { // At least avoid a template error
         $this->change_name_to('cite book');
+      }
+      if ($this->wikiname() === 'cite web' &&
+          $this->blank(WORK_ALIASES) &&
+          $this->blank(['publisher', 'via', 'pmc', 'pmid', 'doi', 'mr', 'asin', 'issn', 'eissn', 'hdl', 'id', 'isbn', 'jfm', 'jstor', 'oclc', 'ol', 'osti', 's2cid', 'ssrn', 'zbl', 'citeseerx', 'arxiv', 'eprint', 'biorxiv']) &&
+          $this->blank(array_diff_key(ALL_URL_TYPES, [0 => 'url'])) &&
+          $this->has('url')
+          ) {
+        $url = $this->get('url');
+        if (stripos($url, 'CITATION_BOT') === FALSE &&
+            filter_var($url, FILTER_VALIDATE_URL) !== FALSE &&
+            !preg_match('~^https?://[^/]+/?$~', $url) &&       // Ignore just a hostname
+            preg_match (REGEXP_IS_URL, $url) === 1) {
+           preg_match('~^https?://([^/]+)/~', $url, $matches);
+           $hostname = $matches[1];
+           if (str_ireplace(CANONICAL_PUBLISHER_URLS, '', $hostname) === $hostname &&
+               str_ireplace(PROXY_HOSTS_TO_ALWAYS_DROP, '', $hostname) === $hostname &&
+               str_ireplace(PROXY_HOSTS_TO_DROP, '', $hostname) === $hostname &&
+               str_ireplace(HOSTS_TO_NOT_ADD, '', $hostname) === $hostname
+             ) {
+             foreach (HOSTNAME_MAP as $i_key => $i_value) {
+               if (str_ireplace('www.', '', $hostname) === $i_key) {
+                 $hostname = $i_value;
+                 $this->add_if_new('website', $hostname);
+               }
+             }
+             // TODO - this seems to be disliked, they might change their mind: $this->add_if_new('website', $hostname);
+           }
+        }
       }
     } elseif (in_array($this->wikiname(), TEMPLATES_WE_SLIGHTLY_PROCESS)) {
       $this->tidy_parameter('publisher');
