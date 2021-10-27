@@ -6875,6 +6875,12 @@ final class Template {
       if (($this->wikiname() === 'cite journal' || $this->wikiname() === 'cite document') && $this->has('chapter')) { // At least avoid a template error
         $this->change_name_to('cite book');
       }
+      if ($this->wikiname() === 'cite web' &&
+          $this->blank(WORK_ALIASES) &&
+          $this->blank(['publisher', 'via', 'pmc', 'pmid', 'doi', 'mr', 'asin', 'hdl', 'id', 'isbn', 'jfm', 'jstor', 'oclc', 'ol', 'osti', 's2cid', 'ssrn', 'zbl', 'citeseerx', 'arxiv', 'eprint', 'biorxiv']) &&
+          $this->blank(array_diff_key(ALL_URL_TYPES, [0 => 'url'])) {
+            // TODO - do stuff to add CNN etc to 'website'
+      }
     } elseif (in_array($this->wikiname(), TEMPLATES_WE_SLIGHTLY_PROCESS)) {
       $this->tidy_parameter('publisher');
       $this->tidy_parameter('via');
