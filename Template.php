@@ -6878,8 +6878,20 @@ final class Template {
       if ($this->wikiname() === 'cite web' &&
           $this->blank(WORK_ALIASES) &&
           $this->blank(['publisher', 'via', 'pmc', 'pmid', 'doi', 'mr', 'asin', 'hdl', 'id', 'isbn', 'jfm', 'jstor', 'oclc', 'ol', 'osti', 's2cid', 'ssrn', 'zbl', 'citeseerx', 'arxiv', 'eprint', 'biorxiv']) &&
-          $this->blank(array_diff_key(ALL_URL_TYPES, [0 => 'url'])) {
-            // TODO - do stuff to add CNN etc to 'website'
+          $this->blank(array_diff_key(ALL_URL_TYPES, [0 => 'url'])) &&
+          $this->has('url')
+          ) {
+        $url = $this->get('url');
+        if (stripos($url, 'CITATION_BOT') === FALSE &&
+            filter_var($url, FILTER_VALIDATE_URL) !== FALSE &&
+            !preg_match('~^https?://[^/]+/?$~', $url) &&       // Ignore just a hostname
+            preg_match (REGEXP_IS_URL, $url) === 1) {
+           preg_match('~^https?://([^/]+)/~', $url, $matches);
+           $hostname = $matches[1];
+           if (str_ireplace(array_merge(CANONICAL_PUBLISHER_URLS, PROXY_HOSTS_TO_ALWAYS_DROP, PROXY_HOSTS_TO_DROP), '', $hostname) === $hostname)) {
+             $this->add_if_new('website', $hostname);
+           }
+        }
       }
     } elseif (in_array($this->wikiname(), TEMPLATES_WE_SLIGHTLY_PROCESS)) {
       $this->tidy_parameter('publisher');
