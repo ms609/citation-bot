@@ -655,7 +655,7 @@ final class TemplateTest extends testBaseClass {
   }
 
   public function testAmazonExpansion3() : void {
-    $text = "{{Cite web | url=https://www.amazon.com/Gold-Toe-Metropolitan-Dress-Three/dp/B0002TV0K8 | access-date=2012-04-20 | title=Gold Toe Men's Metropolitan Dress Sock (Pack of Three Pairs) at Amazon Men's Clothing store}}";
+    $text = "{{Cite web | url=https://www.amazon.com/Gold-Toe-Metropolitan-Dress-Three/dp/B0002TV0K8 | access-date=2012-04-20 | title=Gold Toe Men's Metropolitan Dress Sock (Pack of Three Pairs) at Amazon Men's Clothing store| website=www.amazon.com }}}}";
     $expanded = $this->process_citation($text);
     $this->assertSame($text, $expanded->parsed_text());  // We do not touch this kind of URL
   }
@@ -2950,7 +2950,7 @@ T1 - This is the Title }}';
   public function testTrimProquestEbook5() : void {
     $text = '{{cite web|url=http://ebookcentral-proquest-com.libproxy.berkeley.edu/lib/claremont/detail.action?docID=123456#goto_toc}}';
     $page = $this->process_page($text);
-    $this->assertSame('Alter: url. URLs might have been anonymized. | [[WP:UCB|Use this bot]]. [[WP:DBUG|Report bugs]]. ', $page->edit_summary());
+    $this->assertSame('Alter: url. URLs might have been anonymized. Add: website. | [[WP:UCB|Use this bot]]. [[WP:DBUG|Report bugs]]. ', $page->edit_summary());
   }
 
   public function testTrimGoogleStuff() : void {
