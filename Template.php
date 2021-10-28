@@ -6881,7 +6881,7 @@ final class Template {
       if (($this->wikiname() === 'cite journal' || $this->wikiname() === 'cite document') && $this->has('chapter')) { // At least avoid a template error
         $this->change_name_to('cite book');
       }
-      if ($this->wikiname() === 'cite web' &&
+      if (($this->wikiname() === 'cite web' || $this->wikiname() === 'cite news') &&
           $this->blank(WORK_ALIASES) &&
           $this->blank(['publisher', 'via', 'pmc', 'pmid', 'doi', 'mr', 'asin', 'issn', 'eissn', 'hdl', 'id', 'isbn', 'jfm', 'jstor', 'oclc', 'ol', 'osti', 's2cid', 'ssrn', 'zbl', 'citeseerx', 'arxiv', 'eprint', 'biorxiv']) &&
           $this->blank(array_diff_key(ALL_URL_TYPES, [0 => 'url'])) &&
@@ -6905,7 +6905,8 @@ final class Template {
                  $this->add_if_new('website', $i_value);
                }
              }
-             // TODO - this seems to be disliked, they might change their mind: $this->add_if_new('website', $hostname);
+             // TODO - this seems to be disliked, they might change their mind:
+             // if ($this->wikiname() === 'cite web') $this->add_if_new('website', $hostname);
            }
         }
       }
