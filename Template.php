@@ -6899,10 +6899,10 @@ final class Template {
                str_ireplace(PROXY_HOSTS_TO_DROP, '', $hostname) === $hostname &&
                str_ireplace(HOSTS_TO_NOT_ADD, '', $hostname) === $hostname
              ) {
+             $hostname_test = (string) preg_replace('~^(m\.|www\.)~', '', $hostname);
              foreach (HOSTNAME_MAP as $i_key => $i_value) {
-               if (str_ireplace('www.', '', $hostname) === $i_key) {
-                 $hostname = $i_value;
-                 $this->add_if_new('website', $hostname);
+               if ($hostname_test === $i_key) {
+                 $this->add_if_new('website', $i_value);
                }
              }
              // TODO - this seems to be disliked, they might change their mind: $this->add_if_new('website', $hostname);
