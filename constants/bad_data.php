@@ -289,6 +289,8 @@ const HOSTNAME_MAP  = array('public.ebookcentral.proquest.com' => '[[ProQuest]]'
                             'fuse.tv' => '[[Fuse (TV channel)]]',
                             'collider.com' => '[[Collider (website)]]',
                             'space.com' => '[[Space.com]]',
+                            'github.com' => '[[GitHub]]',
+                            'strategicmanagementinsight.com' => 'StrategicManagementInsight.com',
                            );
 
 const NO_DATE_WEBSITES = array('wikipedia.org', 'web.archive.org', 'perma-archives.org', 'webarchive.proni.gov.uk', 'perma.cc',
