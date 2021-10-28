@@ -75,7 +75,7 @@ const BAD_TITLES = array("unknown", "missing", "arxiv e-prints", "arxiv mathemat
                          "bloomberg - are you a robot?", "page not found",
                          "breaking news, analysis, politics, blogs, news photos, video, tech reviews",
                          "breaking news, analysis, politics, blogs, news photos, video, tech reviews - time.com",
-                         "redirect notice", "oxford music online"
+                         "redirect notice", "oxford music online", "trove - archived webpage"
                         );
 const IN_PRESS_ALIASES = array("in press", "inpress", "pending", "published", 
                                "published online", "no-no", "n/a", "online ahead of print", 
@@ -257,13 +257,45 @@ const HOSTNAME_MAP  = array('public.ebookcentral.proquest.com' => '[[ProQuest]]'
                             'startribune.com' => '[[Star Tribune]]',
                             'www.comedy.co.uk' => '[[British Comedy Guide]]',
                             'legacy.com' => '[[Legacy.com]]',
+                            'slantmagazine.com' => '[[Slant Magazine]]',
+                            'nme.com' => '[[NME]]',
+                            'eurokdj.com' => 'Eurodance Encyclopaedia',
+                            'videostatic.com' => 'VideoStatic',
+                            'discogs.com' => '[[Discogs]]',
+                            'musicnotes.com' => 'Musicnotes',
+                            'amazon.com' => 'Amazon',
+                            'amazon.de' => 'Amazon Germany',
+                            'amazon.co.uk' => 'Amazon UK',
+                            'tophit.ru' => '[[Tophit]]',
+                            'acharts.us' => 'αCharts',
+                            'bet.com' => '[[BET]]',
+                            'mtv.com' => '[[MTV]]',
+                            'ultratop.be' => '[[Ultratop]]',
+                            'billboard.com' => '[[Billboard (magazine)]]',
+                            'officialcharts.com' => '[[OfficialCharts.com)]]',
+                            'loudwire.com' => '[[Loudwire]]',
+                            'altpress.com' => '[[Alternative Press (magazine)]]',
+                            'noise11.com' => 'noise11.com',
+                            'bac-lac.gc.ca' => '[[Library and Archives Canada]]',
+                            'itunes.apple.com' => '[[iTunes]]',
+                            'cdjapan.co.jp' => 'CDJapan',
+                            'rocksmith.ubi.com' => 'Rocksmith+',
+                            'setlist.fm' => 'setlist.fm',
+                            'digitalspy.co.uk' => '[[Digital Spy]]',
+                            'digitalspy.com' => '[[Digital Spy]]',
+                            'buzzjack.com' => 'BuzzJack',
+                            'open.spotify.com' => '[[Spotify]]',
+                            'whosampled.com' => '[[WhoSampled]]',
+                            'fuse.tv' => '[[Fuse (TV channel)]]',
+                            'collider.com' => '[[Collider (website)]]',
+                            'space.com' => '[[Space.com]]',
                            );
 
 const NO_DATE_WEBSITES = array('wikipedia.org', 'web.archive.org', 'perma-archives.org', 'webarchive.proni.gov.uk', 'perma.cc',
                               'wayback', 'web.archive.bibalex.org', 'web.petabox.bibalex.org', 'webharvest.gov', 'archive.wikiwix.com',
                               'archive.is', 'archive-it.org', 'nationalarchives.gov.uk', 'freezepage.com', 'webcitation.org',
                               'waybackmachine.org', 'siarchives.si.edu', 'gutenberg.org', 'archive.fo', 'archive.today',
-                              'oireachtas.ie');
+                              'oireachtas.ie', 'webarchive.nla.gov.au');
 
 const ZOTERO_AVOID_REGEX = array("twitter\.",               // This should be {{cite tweet}}
                                  "youtube\.", "youtu\.be",  // This should be {{cite AV media}}
