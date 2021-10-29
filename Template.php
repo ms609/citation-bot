@@ -227,6 +227,11 @@ final class Template {
       }
     }
 
+    // TODO Remove once used
+    if ($this->get('website') === '[[OfficialCharts.com)]]') {
+      $this->set('website', '[[OfficialCharts.com]]');
+    }
+    
     // Cite article is actually cite news, but often used for journal by mistake - fix
     if ($trim_name === 'cite article') {
       if ($this->blank(['journal', 'pmid', 'pmc', 'doi', 's2cid', 'citeseerx'])) {
