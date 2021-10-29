@@ -3287,13 +3287,18 @@ final class Template {
                 if ($old_host_name === $new_host_name) return 'have free';
             }
        }
-        $has_url_already = $this->has('url');
-        $this->add_if_new('url', $oa_url);  // Will check for PMCs etc hidden in URL
-        if ($this->has('url') && !$has_url_already) {  // The above line might have eaten the URL and upgraded it
-          $headers_test = @get_headers($this->get('url'), 1);
+        if (preg_match('~^10\.\d+/9[\-\d]+_+\d+~', $doi)) {
+          $url_type = 'chapter-url';
+        } else {
+          $url_type = 'url';
+        }
+        $has_url_already = $this->has($url_type);
+        $this->add_if_new($url_type, $oa_url);  // Will check for PMCs etc hidden in URL
+        if ($this->has($url_type) && !$has_url_already) {  // The above line might have eaten the URL and upgraded it
+          $headers_test = @get_headers($this->get($url_type), 1);
           // @codeCoverageIgnoreStart
           if($headers_test ===FALSE) {
-            $this->forget('url');
+            $this->forget($url_type);
             report_warning("Open access URL was was unreachable from Unpaywall API for doi: " . echoable($doi));
             return 'nothing';
           }
@@ -3301,7 +3306,7 @@ final class Template {
           $response_code = intval(substr($headers_test[0], 9, 3));
           // @codeCoverageIgnoreStart
           if($response_code > 400) {  // Generally 400 and below are okay, includes redirects too though
-            $this->forget('url');
+            $this->forget($url_type);
             report_warning("Open access URL gave response code " . (string) $response_code . " from oiDOI API for doi: " . echoable($doi));
             return 'nothing';
           }
