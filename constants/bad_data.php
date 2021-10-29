@@ -539,7 +539,7 @@ const NON_JOURNAL_WEBSITES = array('cnn.com/', 'msnbc.com/', 'nbcnews.com/', 'cb
 const NON_JOURNAL_DOIS = array('10.5531/db.vz.0001'); // lowercase exact matches
 const NON_JOURNALS = array('Amphibian Species of the World', 'an Online Reference', 'An Online Reference'); // Case-sensitive sub-string
 const ARE_MAGAZINES = array('the new yorker', 'the new republic', 'new republic', 'expedition magazine', 'wired', 'wired uk',
-                           'computer gaming world', 'edge', 'edge (magazine)', 'game informer', 'pc gamer uk',
+                           'computer gaming world', 'edge (magazine)', 'game informer', 'pc gamer uk',
                            'wired (magazine)', 'time', 'life', 'time (magazine)', 'life (magazine)', 'billboard',
                            'billboard (magazine)', 'rolling stone', 'mcv/develop', 'vanity fair'
                            ); // lowercase axact matches
