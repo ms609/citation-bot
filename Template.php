@@ -3287,7 +3287,7 @@ final class Template {
                 if ($old_host_name === $new_host_name) return 'have free';
             }
        }
-        if (preg_match('~^10\.\d+/9[\-\d]+_+\d+~', $doi)) {
+        if (preg_match('~^10\.\d+/9[\-\d]+_+\d+~', $doi) && $this->has('chapter')) {
           $url_type = 'chapter-url';
         } else {
           $url_type = 'url';
