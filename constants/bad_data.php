@@ -291,6 +291,34 @@ const HOSTNAME_MAP  = array('public.ebookcentral.proquest.com' => '[[ProQuest]]'
                             'space.com' => '[[Space.com]]',
                             'github.com' => '[[GitHub]]',
                             'strategicmanagementinsight.com' => 'StrategicManagementInsight.com',
+                            'edge-online.com'  => 'Edge',
+                            'boxlifemagazine.com'  => 'BoxLife',
+                            'hroarr.com'  => 'HROARR',
+                            'mensfitness.co.uk'  => "Men's Fitness",
+                            'riaa.com'  => '[[Recording Industry Association of America]]',
+                            'secondhandsongs.com'  => 'SecondHandSongs',
+                            'alfred.com'  => 'Alfred Music',
+                            'capitalxtra.com'  => 'Capital XTRA',
+                            'theboot.com'  => 'The Boot',
+                            'ew.com'  => '[[Entertainment Weekly]]',
+                            'antena3.com'  => '[[Antena 3 (Spanish TV channel)]]',
+                            'complex.com'  => '[[Complex Networks]]',
+                            'articles.latimes.com'  => '[[Los Angeles Times]]',
+                            'providencephoenix.com'  => 'Providence Phoenix',
+                            'queenvault.com'  => 'Queen Vault',
+                            'classicbands.com'  => 'ClassicBands.com',
+                            'seenews.com'  => 'SeeNews',
+                            'mtv.de'  => 'MTV Germany',
+                            'eurogamer.net'  => '[[Eurogamer]]',
+                            'happygamer.com'  => 'Happy Gamer',
+                            'polygon.com'  => '[[Polygon (website)]]',
+                            'edweek.org'  => '[[Education Week]]',
+                            'hotnewhiphop.com'  => 'HNHH',
+                            'beatport.com'  => '[[Beatport]]',
+                            'pitchfork.com'  => '[[Pitchfork (website)]]',
+                            'sheetmusicnow.com'  => 'Sheet Music Now',
+                            'mayoclinic.org'  => '[[Mayo Clinic]]',
+                            'elitefts.com'  => 'elitefts',
                            );
 
 const NO_DATE_WEBSITES = array('wikipedia.org', 'web.archive.org', 'perma-archives.org', 'webarchive.proni.gov.uk', 'perma.cc',
@@ -515,7 +543,7 @@ const ARE_MAGAZINES = array('the new yorker', 'the new republic', 'new republic'
                            'wired (magazine)', 'time', 'life', 'time (magazine)', 'life (magazine)', 'billboard',
                            'billboard (magazine)', 'rolling stone', 'mcv/develop', 'vanity fair'
                            ); // lowercase axact matches
-const ARE_MANY_THINGS = array('pc gamer', 'gamestar', 'rock paper shotgun', 'mcv', 'rock, paper, shotgun'); // lowercase axact matches.  These are things that are both websites and newspapers
+const ARE_MANY_THINGS = array('pc gamer', 'gamestar', 'rock paper shotgun', 'mcv', 'rock, paper, shotgun', 'edge'); // lowercase axact matches.  These are things that are both websites and newspapers
 const ARE_NEWSPAPERS = array('the economist', 'la times', 'toronto sun', 'washington post'); // lowercase axact matches
 const NO_PUBLISHER_NEEDED = array('los angeles times', 'new york times magazine', 'the new york times',
                                    'new york times', 'huffington post', 'the daily telegraph', 'forbes.com',
