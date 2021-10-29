@@ -220,9 +220,7 @@ public static function drop_urls_that_match_dois(array &$templates) : void {  //
           // SEP 2020 $template->forget($url_kind);
        } elseif ($template->has('pmc') && str_ireplace('iopscience.iop.org','', $url) !== $url) {
           // SEP 2020 report_forget("Existing IOP URL resulting from equivalent DOI; dropping URL");
-          // SEP 2020 $template->forget($url_kind);
-       } elseif (str_ireplace('journals.lww.com','', $url) !== $url) {
-          report_forget("Existing Outdated LWW URL resulting from equivalent DOI; fixing URL");
+          // SEP 2020 $template->forget($url_kind);;
           $template->set($url_kind, "https://dx.doi.org/" . doi_encode($doi));
        } elseif (str_ireplace('wkhealth.com','', $url) !== $url) {
           report_forget("Existing Outdated WK Health URL resulting from equivalent DOI; fixing URL");
