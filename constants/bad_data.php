@@ -319,6 +319,8 @@ const HOSTNAME_MAP  = array('public.ebookcentral.proquest.com' => '[[ProQuest]]'
                             'sheetmusicnow.com'  => 'Sheet Music Now',
                             'mayoclinic.org'  => '[[Mayo Clinic]]',
                             'elitefts.com'  => 'elitefts',
+                            'loc.gov'  => '[[Library of Congress]]',
+                            'livescience.com' => '[[Live Science]]',
                            );
 
 const NO_DATE_WEBSITES = array('wikipedia.org', 'web.archive.org', 'perma-archives.org', 'webarchive.proni.gov.uk', 'perma.cc',
