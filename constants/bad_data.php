@@ -156,7 +156,7 @@ const HOSTNAME_MAP  = array('public.ebookcentral.proquest.com' => '[[ProQuest]]'
                             'abc.com' => '[[American Broadcasting Company]]',
                             'nytimes.com' => '[[The New York Times]]',
                             'newyorker.com' => '[[The New Yorker]]',
-                            'independent.co.uk' => '[[The Independent]]',
+                            'independent.co.uk' => '[[Independent.co.uk]]',
                             'cnbc.com' => '[[CNBC]]',
                             'theatlantic.com' => '[[The Atlantic]]',
                             'jpl.nasa.gov' => '[[Jet Propulsion Laboratory]]',
