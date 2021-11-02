@@ -320,7 +320,9 @@ const HOSTNAME_MAP  = array('public.ebookcentral.proquest.com' => '[[ProQuest]]'
                             'mayoclinic.org'  => '[[Mayo Clinic]]',
                             'elitefts.com'  => 'elitefts',
                             'loc.gov'  => '[[Library of Congress]]',
-                            'livescience.com' => '[[Live Science]]',
+                            'livescience.com'  => '[[Live Science]]',
+                            'insider.com'  => '[[Insider.com]]',
+                            'latino.foxnews.com'  => '[[Fox News]]',
                            ); // Be warned, some website host a seperate sunday edition, etc.  Be careful and when in doubt link to hostname
 
 const NO_DATE_WEBSITES = array('wikipedia.org', 'web.archive.org', 'perma-archives.org', 'webarchive.proni.gov.uk', 'perma.cc',
