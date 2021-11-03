@@ -357,7 +357,7 @@ public static function expand_by_zotero(Template $template, ?string $url = NULL)
   if(stripos($url, 'CITATION_BOT_PLACEHOLDER') !== FALSE) return FALSE; // That's a bad url
   
   $bad_url = implode('|', ZOTERO_AVOID_REGEX);
-  if(preg_match("~^https?://(?:www\.|)(?:" . $bad_url . ")~i", $url)) return FALSE; 
+  if(preg_match("~^https?://(?:www\.|m\.|)(?:" . $bad_url . ")~i", $url)) return FALSE; 
 
   // Is it actually a URL.  Zotero will search for non-url things too!
   if (filter_var($url, FILTER_VALIDATE_URL) === FALSE) return FALSE; // PHP does not like it
