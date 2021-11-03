@@ -16,8 +16,8 @@ declare(strict_types=1);
 require_once 'Parameter.php';
 require_once 'expandFns.php';
 require_once 'user_messages.php';
-require_once "constants.php";
-require_once "NameTools.php";
+require_once 'constants.php';
+require_once 'NameTools.php';
 // @codeCoverageIgnoreEnd
 
 final class Template {
@@ -1032,6 +1032,7 @@ final class Template {
         if ($value=='HEP Lib.Web') $value = 'High Energy Physics Libraries Webzine'; // should be array
         if (preg_match('~Conference Proceedings.*IEEE.*IEEE~', $value)) return FALSE;
         if ($value === 'Wiley Online Library') return FALSE;
+        if ($value === 'Dissertations, Theses, and Capstone Projects') return FALSE;
         if (!$this->blank(['booktitle', 'book-title'])) return FALSE;
         if (in_array(strtolower(sanitize_string($value)), BAD_TITLES )) return FALSE;
         if (in_array(strtolower($value), ARE_MANY_THINGS)) {
