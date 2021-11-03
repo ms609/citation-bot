@@ -107,7 +107,7 @@ const BAD_ZOTERO_TITLES = ['Browse publications', 'Central Authentication Servic
                                  'Untitled-6', 'Untitled-7', 'Untitled-8', 'Untitled-9', 'Are you a robot',
                                  'Aanmelden of registreren om te bekijken', 'register to view', 'being redirected',
                                  'has been registered', 'Aanmelden bij Facebook', 'Einloggen', 'The Times & the Sunday Times',
-                                 'Login • Instagram', 'subscriber to read'];
+                                 'Login • Instagram', 'subscriber to read', 'has now officially closed'];
 
 const CANONICAL_PUBLISHER_URLS = array ('elsevier.com', 'springer.com', 'sciencedirect.com', 'tandfonline.com',
                                 'taylorandfrancis.com', 'wiley.com', 'sagepub.com', 'sagepublications.com',
@@ -329,7 +329,7 @@ const NO_DATE_WEBSITES = array('wikipedia.org', 'web.archive.org', 'perma-archiv
                               'wayback', 'web.archive.bibalex.org', 'web.petabox.bibalex.org', 'webharvest.gov', 'archive.wikiwix.com',
                               'archive.is', 'archive-it.org', 'nationalarchives.gov.uk', 'freezepage.com', 'webcitation.org',
                               'waybackmachine.org', 'siarchives.si.edu', 'gutenberg.org', 'archive.fo', 'archive.today',
-                              'oireachtas.ie', 'webarchive.nla.gov.au');
+                              'oireachtas.ie', 'webarchive.nla.gov.au', 'ebooks.adelaide.edu.au');
 
 const ZOTERO_AVOID_REGEX = array("twitter\.",               // This should be {{cite tweet}}
                                  "youtube\.", "youtu\.be",  // This should be {{cite AV media}}
@@ -347,7 +347,8 @@ const ZOTERO_AVOID_REGEX = array("twitter\.",               // This should be {{
                                  "scholarlycommons\.pacific\.edu\/euler\-works", // returns journal reference to works, not the actual work
                                  "miar\.ub\.edu\/issn", // ISSN description, not actually the journal
                                  "britishnewspaperarchive\.co\.uk", // Requires registration
-                                 "PressReader\.com", // Bad titles
+                                 "pressreader\.com", // Bad titles
+                                 "ebooks\.adelaide\.edu\.au", // Dead
                                  );
 const NON_JOURNAL_WEBSITES = array('cnn.com/', 'msnbc.com/', 'nbcnews.com/', 'cbs.com/', 
                                    'cbsnews.com/', 'abc.com/', 'nytimes.com/',
