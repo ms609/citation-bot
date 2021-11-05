@@ -250,6 +250,7 @@ const HOSTNAME_MAP  = array('public.ebookcentral.proquest.com' => '[[ProQuest]]'
                             'bostonglobe.com' => '[[The Boston Globe]]',
                             'bleacherreport.com' => '[[Bleacher Report]]',
                             'timesofisrael.com' => '[[The Times of Israel]]',
+                            'jewishweek.timesofisrael.com' => '[[The Jewish Week]]',
                             'miamiherald.com' => '[[Miami Herald]]',
                             'desmoinesregister.com' => '[[The Des Moines Register]]',
                             'thestar.com' => '[[Toronto Star]]',
