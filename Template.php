@@ -1445,6 +1445,7 @@ final class Template {
            return $this->add($param_name, $value);
         }
         // TODO : delete this code once all the old categories are run over an re-checked & change above back to 6 months
+        /**
         $halloween = strtotime("23:59:59 31 October 2021");
         if (($the_new > $halloween) && ($existing < $halloween)) {
             if ($this->date_style === DATES_MDY) {
@@ -1453,6 +1454,7 @@ final class Template {
                return $this->add($param_name, '31 October 2021');
             }
         }
+        **/
         return FALSE;
       
       case 'pmid':
