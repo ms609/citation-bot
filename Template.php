@@ -4825,7 +4825,7 @@ final class Template {
                }
                $this->set($param, title_capitalization($periodical, TRUE));
             }
-          } else {
+          } elseif (strpos($periodical, ":") !== 2) { // Avoid inter-wiki links
             if (preg_match(REGEXP_PLAIN_WIKILINK, $periodical, $matches)) {
               $periodical = $matches[1];
               $periodical = str_replace("’", "'", $periodical); // Fix quotes for links
