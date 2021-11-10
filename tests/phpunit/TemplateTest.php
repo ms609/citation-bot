@@ -1795,7 +1795,43 @@ final class TemplateTest extends testBaseClass {
     $expanded = $this->process_citation($text);
     $this->assertSame('https://books.google.com/books?id=SjpSkzjIzfsC', $expanded->get2('url'));
    }
+ 
+   public function testGoogleBooksExpansion3() : void {
+    $text = "{{Cite web | url=https://books.google.com/books?id=SjpSkzjIzfsC&dq=HUH}}";
+    $expanded = $this->process_citation($text);
+    $this->assertSame('WHAT', $expanded->get2('url'));
+   }
+ 
+   public function testGoogleBooksExpansion4() : void {
+    $text = "{{Cite web | url=https://books.google.com/books?id=SjpSkzjIzfsC&q=HUH}}";
+    $expanded = $this->process_citation($text);
+    $this->assertSame('WHAT', $expanded->get2('url'));
+   }
+ 
+   public function testGoogleBooksExpansion5() : void {
+    $text = "{{Cite web | url=https://books.google.com/books?id=SjpSkzjIzfsC&dq=HUH&pg=213}}";
+    $expanded = $this->process_citation($text);
+    $this->assertSame('WHAT', $expanded->get2('url'));
+   }
+ 
+   public function testGoogleBooksExpansion6() : void {
+    $text = "{{Cite web | url=https://books.google.com/books?id=SjpSkzjIzfsC#&dq=HUH&pg=213}}";
+    $expanded = $this->process_citation($text);
+    $this->assertSame('WHAT', $expanded->get2('url'));
+   }
 
+   public function testGoogleBooksExpansion7() : void {
+    $text = "{{Cite web | url=https://books.google.com/books?id=Sw4EAAAAMBAJ&pg=PT12&dq=%22The+Dennis+James+Carnival%22#v=onepage}}";
+    $expanded = $this->process_citation($text);
+    $this->assertSame('WHAT', $expanded->get2('url'));
+   }
+ 
+   public function testGoogleBooksExpansion8() : void {
+    $text = "{{Cite web | url=https://books.google.com/books?id=w8KztFy6QYwC&dq=%22philip+loeb+had+been+blacklisted%22+%22Goldbergs,+The+(Situation+Comedy)%22&pg=PA545#pgview=full}}";
+    $expanded = $this->process_citation($text);
+    $this->assertSame('WHAT', $expanded->get2('url'));
+   }
+ 
   public function testGoogleBooksExpansionNEW() : void {
     $text = "{{Cite web | url=https://www.google.com/books/edition/_/SjpSkzjIzfsC?hl=en}}";
     $expanded = $this->process_citation($text);
