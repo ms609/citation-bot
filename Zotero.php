@@ -121,7 +121,11 @@ public static function query_ieee_webpages(array &$templates) : void {  // Point
          [CURLOPT_RETURNTRANSFER => TRUE,
           CURLOPT_HEADER => FALSE,
           CURLOPT_TIMEOUT => 15,
-          CURLOPT_USERAGENT => 'CitatiCONFLICTon_bot; citations@tools.wmflabs.org']);
+          CURLOPT_FOLLOWLOCATION => TRUE,
+          CURLOPT_MAXREDIRS => 10,
+          CURLOPT_CONNECTTIMEOUT => 8,
+          CURLOPT_COOKIEFILE => 'cookie.txt',
+          CURLOPT_USERAGENT => 'curl/7.55.1']); // IEEE now requires JavaScript, unless you specify curl
   
   foreach (['url', 'chapter-url', 'chapterurl'] as $kind) {
    foreach ($templates as $template) {
@@ -221,9 +225,7 @@ public static function drop_urls_that_match_dois(array &$templates) : void {  //
           // SEP 2020 $template->forget($url_kind);
        } elseif ($template->has('pmc') && str_ireplace('iopscience.iop.org','', $url) !== $url) {
           // SEP 2020 report_forget("Existing IOP URL resulting from equivalent DOI; dropping URL");
-          // SEP 2020 $template->forget($url_kind);
-       } elseif (str_ireplace('journals.lww.com','', $url) !== $url) {
-          report_forget("Existing Outdated LWW URL resulting from equivalent DOI; fixing URL");
+          // SEP 2020 $template->forget($url_kind);;
           $template->set($url_kind, "https://dx.doi.org/" . doi_encode($doi));
        } elseif (str_ireplace('wkhealth.com','', $url) !== $url) {
           report_forget("Existing Outdated WK Health URL resulting from equivalent DOI; fixing URL");
@@ -360,7 +362,7 @@ public static function expand_by_zotero(Template $template, ?string $url = NULL)
   if(stripos($url, 'CITATION_BOT_PLACEHOLDER') !== FALSE) return FALSE; // That's a bad url
   
   $bad_url = implode('|', ZOTERO_AVOID_REGEX);
-  if(preg_match("~^https?://(?:www\.|)(?:" . $bad_url . ")~i", $url)) return FALSE; 
+  if(preg_match("~^https?://(?:www\.|m\.|)(?:" . $bad_url . ")~i", $url)) return FALSE; 
 
   // Is it actually a URL.  Zotero will search for non-url things too!
   if (filter_var($url, FILTER_VALIDATE_URL) === FALSE) return FALSE; // PHP does not like it
