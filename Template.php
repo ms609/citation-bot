@@ -3542,6 +3542,9 @@ final class Template {
       if (isset($book_array['q'])){
           $url .= '&q=' . $book_array['q'];
       }
+      if (isset($book_array['dq'])){
+          $url .= '&dq=' . $book_array['dq'];
+      }
       if (isset($book_array['pg'])){
           $url .= '&pg=' . $book_array['pg'];
       }
