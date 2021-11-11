@@ -113,6 +113,7 @@ public static function query_url_api_class(array $ids, array &$templates) : void
 }
 
 public static function query_ieee_webpages(array &$templates) : void {  // Pointer to save memory
+   echo "\n IN query_ieee_webpages\n";
   $matches_url = ['', '']; // prevent memory leak in some PHP versions
   $matches = ['', '']; // prevent memory leak in some PHP versions
   $ch_ieee = curl_init();
@@ -123,13 +124,16 @@ public static function query_ieee_webpages(array &$templates) : void {  // Point
           CURLOPT_USERAGENT => 'Citation_bot; citations@tools.wmflabs.org']);
   
   foreach (['url', 'chapter-url', 'chapterurl'] as $kind) {
+        echo "\n IN LOOP for $kind \n";
    foreach ($templates as $template) {
+              echo "\n IN LOOP for templates with URL $template->get($kind) \n";
     set_time_limit(120);
     if ($template->blank('doi') && preg_match("~^https://ieeexplore\.ieee\.org/document/(\d{5,})$~", $template->get($kind), $matches_url)) {
+        echo "\n IN IF for URL wo DOI \n";
        usleep(100000); // 0.10 seconds
        curl_setopt($ch_ieee, CURLOPT_URL, $template->get($kind));
        $return = (string) @curl_exec($ch_ieee);
-       echo $return;
+       echo " \n RETURN IS $return \n";
        if ($return !== "" && preg_match_all('~"doi":"(10\.\d{4}/[^\s"]+)"~', $return, $matches, PREG_PATTERN_ORDER)) {
           $dois = array_unique($matches[1]);
           if (count($dois) === 1) {
@@ -141,9 +145,11 @@ public static function query_ieee_webpages(array &$templates) : void {  // Point
           }
        }
     } elseif ($template->has('doi') && preg_match("~^https://ieeexplore\.ieee\.org/document/(\d{5,})$~", $template->get($kind), $matches_url) && doi_works($template->get('doi'))) {
+               echo "\n IN IF for URL with DOI \n";
        usleep(100000); // 0.10 seconds
        curl_setopt($ch_ieee, CURLOPT_URL, $template->get($kind));
        $return = (string) @curl_exec($ch_ieee);
+       echo " \n RETURN IS $return \n";
        if ($return != "" && strpos($return, "<title> -  </title>") !== FALSE) {
          report_forget("Existing IEEE no longer works - dropping URL"); // @codeCoverageIgnore
          $template->forget($kind);                                      // @codeCoverageIgnore
