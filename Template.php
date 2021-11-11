@@ -16,8 +16,8 @@ declare(strict_types=1);
 require_once 'Parameter.php';
 require_once 'expandFns.php';
 require_once 'user_messages.php';
-require_once "constants.php";
-require_once "NameTools.php";
+require_once 'constants.php';
+require_once 'NameTools.php';
 // @codeCoverageIgnoreEnd
 
 final class Template {
@@ -227,7 +227,7 @@ final class Template {
         break;
       }
     }
-
+    
     // Cite article is actually cite news, but often used for journal by mistake - fix
     if ($trim_name === 'cite article') {
       if ($this->blank(['journal', 'pmid', 'pmc', 'doi', 's2cid', 'citeseerx'])) {
@@ -1033,9 +1033,16 @@ final class Template {
         if ($value=='HEP Lib.Web') $value = 'High Energy Physics Libraries Webzine'; // should be array
         if (preg_match('~Conference Proceedings.*IEEE.*IEEE~', $value)) return FALSE;
         if ($value === 'Wiley Online Library') return FALSE;
+        if ($value === 'Dissertations, Theses, and Capstone Projects') return FALSE;
         if (!$this->blank(['booktitle', 'book-title'])) return FALSE;
         if (in_array(strtolower(sanitize_string($value)), BAD_TITLES )) return FALSE;
-        if ($param_name === 'journal' && in_array(strtolower($value), ARE_MANY_THINGS)) $param_name = 'website';
+        if (in_array(strtolower($value), ARE_MANY_THINGS)) {
+          if ($this->wikiname() === 'cite news' && $param_name === 'newspaper') {
+            ; // Only time we trust zotero on these (people already said news)
+          } else {
+            $param_name = 'website';
+          }
+        }
         if (in_array(strtolower(sanitize_string($this->get('journal'))), BAD_TITLES)) $this->forget('journal'); // Update to real data
         if (preg_match('~^(?:www\.|)rte.ie$~i', $value)) $value = 'RTÉ News'; // Russian special case code
         if ($this->wikiname() === 'cite book' && $this->has('chapter') && $this->has('title') && $this->has('series')) return FALSE;
@@ -1435,9 +1442,20 @@ final class Template {
         }
         $existing = strtotime($this->get('doi-broken-date'));
         $the_new  = strtotime($value);
-        if (($existing === FALSE) || ($existing + (6*2592000) < $the_new) || ((2592000*6) + $the_new < $existing)) { // Six months of difference
+        if (($existing === FALSE) || ($existing + (7*2592000) < $the_new) || ((2592000*7) + $the_new < $existing)) { // Seven months of difference
            return $this->add($param_name, $value);
         }
+        // TODO : delete this code once all the old categories are run over an re-checked & change above back to 6 months
+        /**
+        $halloween = strtotime("23:59:59 31 October 2021");
+        if (($the_new > $halloween) && ($existing < $halloween)) {
+            if ($this->date_style === DATES_MDY) {
+               return $this->add($param_name, 'October 31, 2021');
+            } else {
+               return $this->add($param_name, '31 October 2021');
+            }
+        }
+        **/
         return FALSE;
       
       case 'pmid':
@@ -1578,6 +1596,12 @@ final class Template {
         if ($this->blank($param_name)) {
           $this->add($param_name, $value);
           return TRUE;
+        }
+        return FALSE;
+        
+      case 'website':
+        if ($this->blank(WORK_ALIASES)) {
+          return $this->add($param_name, $value); // Do NOT Sanitize
         }
         return FALSE;
 
@@ -3267,13 +3291,18 @@ final class Template {
                 if ($old_host_name === $new_host_name) return 'have free';
             }
        }
-        $has_url_already = $this->has('url');
-        $this->add_if_new('url', $oa_url);  // Will check for PMCs etc hidden in URL
-        if ($this->has('url') && !$has_url_already) {  // The above line might have eaten the URL and upgraded it
-          $headers_test = @get_headers($this->get('url'), TRUE);
+        if (preg_match('~^10\.\d+/9[\-\d]+_+\d+~', $doi) && $this->has('chapter')) {
+          $url_type = 'chapter-url';
+        } else {
+          $url_type = 'url';
+        }
+        $has_url_already = $this->has($url_type);
+        $this->add_if_new($url_type, $oa_url);  // Will check for PMCs etc hidden in URL
+        if ($this->has($url_type) && !$has_url_already) {  // The above line might have eaten the URL and upgraded it
+          $headers_test = @get_headers($this->get($url_type), 1);
           // @codeCoverageIgnoreStart
           if($headers_test ===FALSE) {
-            $this->forget('url');
+            $this->forget($url_type);
             report_warning("Open access URL was was unreachable from Unpaywall API for doi: " . echoable($doi));
             return 'nothing';
           }
@@ -3281,7 +3310,7 @@ final class Template {
           $response_code = intval(substr($headers_test[0], 9, 3));
           // @codeCoverageIgnoreStart
           if($response_code > 400) {  // Generally 400 and below are okay, includes redirects too though
-            $this->forget('url');
+            $this->forget($url_type);
             report_warning("Open access URL gave response code " . (string) $response_code . " from oiDOI API for doi: " . echoable($doi));
             return 'nothing';
           }
@@ -3461,8 +3490,20 @@ final class Template {
       $hash = str_replace(['&q&', '&q=&', '&&&&', '&&&', '&&'], ['&', '&', '&', '&', '&'], $hash);
       if (preg_match('~(&q=[^&]+)&~', $hash, $matcher)) {
           $hash = str_replace($matcher[1], '', $hash);
-          if (isset($book_array['q'])) $removed_parts .= '&q=' . $book_array['q'];
-          $book_array['q'] = urlencode(urldecode(substr($matcher[1], 3)));           // #q= wins over &q= before # sign
+          if (isset($book_array['q'])) {
+            $removed_parts .= '&q=' . $book_array['q'];
+            $book_array['q'] = urlencode(urldecode(substr($matcher[1], 3)));           // #q= wins over &q= before # sign
+          } elseif (isset($book_array['dq'])) {
+            $removed_parts .= '&dq=' . $book_array['dq'];
+            $book_array['dq'] = urlencode(urldecode(substr($matcher[1], 3)));
+          } else {
+            $book_array['q'] = urlencode(urldecode(substr($matcher[1], 3)));
+          }
+      }
+      if (preg_match('~(&dq=[^&]+)&~', $hash, $matcher)) {
+          $hash = str_replace($matcher[1], '', $hash);
+          if (isset($book_array['dq'])) $removed_parts .= '&dq=' . $book_array['dq'];
+          $book_array['dq'] = urlencode(urldecode(substr($matcher[1], 3)));           // #dq= wins over &dq= before # sign
       }
       if (isset($book_array['vq']) && !isset($book_array['q']) && !isset($book_array['dq'])) { // VQ loses to Q and VQ
           $book_array['q'] = $book_array['vq'];
@@ -3473,8 +3514,10 @@ final class Template {
           $removed_parts .= '&dq=' . $book_array['dq'];
           unset($book_array['dq']);
       } elseif (isset($book_array['dq'])) {      // Prefer Q parameters to DQ
+        if (!isset($book_array['pg']) && !isset($book_array['lpg'])) { // DQ requires that a page be set
           $book_array['q'] = $book_array['dq'];
           unset($book_array['dq']);
+        }
       }
       if (isset($book_array['pg']) && isset($book_array['lpg'])) { // PG wins over LPG
           $removed_redundant++;
@@ -3506,6 +3549,9 @@ final class Template {
       }
       if (isset($book_array['q'])){
           $url .= '&q=' . $book_array['q'];
+      }
+      if (isset($book_array['dq'])){
+          $url .= '&dq=' . $book_array['dq'];
       }
       if (isset($book_array['pg'])){
           $url .= '&pg=' . $book_array['pg'];
@@ -4797,7 +4843,7 @@ final class Template {
                }
                $this->set($param, title_capitalization($periodical, TRUE));
             }
-          } else {
+          } elseif (strpos($periodical, ":") !== 2) { // Avoid inter-wiki links
             if (preg_match(REGEXP_PLAIN_WIKILINK, $periodical, $matches)) {
               $periodical = $matches[1];
               $periodical = str_replace("’", "'", $periodical); // Fix quotes for links
@@ -6866,6 +6912,35 @@ final class Template {
       }
       if (($this->wikiname() === 'cite journal' || $this->wikiname() === 'cite document') && $this->has('chapter')) { // At least avoid a template error
         $this->change_name_to('cite book');
+      }
+      if (($this->wikiname() === 'cite web' || $this->wikiname() === 'cite news') &&
+          $this->blank(WORK_ALIASES) &&
+          $this->blank(['publisher', 'via', 'pmc', 'pmid', 'doi', 'mr', 'asin', 'issn', 'eissn', 'hdl', 'id', 'isbn', 'jfm', 'jstor', 'oclc', 'ol', 'osti', 's2cid', 'ssrn', 'zbl', 'citeseerx', 'arxiv', 'eprint', 'biorxiv']) &&
+          $this->blank(array_diff_key(ALL_URL_TYPES, [0 => 'url'])) &&
+          $this->has('url')
+          ) {
+        $url = $this->get('url');
+        if (stripos($url, 'CITATION_BOT') === FALSE &&
+            filter_var($url, FILTER_VALIDATE_URL) !== FALSE &&
+            !preg_match('~^https?://[^/]+/?$~', $url) &&       // Ignore just a hostname
+            preg_match (REGEXP_IS_URL, $url) === 1) {
+           preg_match('~^https?://([^/]+)/~', $url, $matches);
+           $hostname = $matches[1];
+           if (str_ireplace(CANONICAL_PUBLISHER_URLS, '', $hostname) === $hostname &&
+               str_ireplace(PROXY_HOSTS_TO_ALWAYS_DROP, '', $hostname) === $hostname &&
+               str_ireplace(PROXY_HOSTS_TO_DROP, '', $hostname) === $hostname &&
+               str_ireplace(HOSTS_TO_NOT_ADD, '', $hostname) === $hostname
+             ) {
+             $hostname_test = (string) preg_replace('~^(m\.|www\.)~', '', $hostname);
+             foreach (HOSTNAME_MAP as $i_key => $i_value) {
+               if ($hostname_test === $i_key) {
+                 $this->add_if_new('website', $i_value);
+               }
+             }
+             // TODO - this seems to be disliked, they might change their mind:
+             // if ($this->wikiname() === 'cite web') $this->add_if_new('website', $hostname);
+           }
+        }
       }
     } elseif (in_array($this->wikiname(), TEMPLATES_WE_SLIGHTLY_PROCESS)) {
       $this->tidy_parameter('publisher');

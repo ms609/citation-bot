@@ -657,7 +657,7 @@ final class TemplateTest extends testBaseClass {
   public function testAmazonExpansion3() : void {
     $text = "{{Cite web | url=https://www.amazon.com/Gold-Toe-Metropolitan-Dress-Three/dp/B0002TV0K8 | access-date=2012-04-20 | title=Gold Toe Men's Metropolitan Dress Sock (Pack of Three Pairs) at Amazon Men's Clothing store}}";
     $expanded = $this->process_citation($text);
-    $this->assertSame($text, $expanded->parsed_text());  // We do not touch this kind of URL
+    $this->assertSame("{{Cite web | url=https://www.amazon.com/Gold-Toe-Metropolitan-Dress-Three/dp/B0002TV0K8 | access-date=2012-04-20 | title=Gold Toe Men's Metropolitan Dress Sock (Pack of Three Pairs) at Amazon Men's Clothing store| website=Amazon }}", $expanded->parsed_text());  // We do not touch this kind of URL other than adding website
   }
 
   public function testAmazonExpansion4() : void {
@@ -1795,7 +1795,43 @@ final class TemplateTest extends testBaseClass {
     $expanded = $this->process_citation($text);
     $this->assertSame('https://books.google.com/books?id=SjpSkzjIzfsC', $expanded->get2('url'));
    }
+ 
+   public function testGoogleBooksExpansion3() : void {
+    $text = "{{Cite web | url=https://books.google.com/books?id=SjpSkzjIzfsC&dq=HUH}}";
+    $expanded = $this->process_citation($text);
+    $this->assertSame('https://books.google.com/books?id=SjpSkzjIzfsC&q=HUH', $expanded->get2('url'));
+   }
+ 
+   public function testGoogleBooksExpansion4() : void {
+    $text = "{{Cite web | url=https://books.google.com/books?id=SjpSkzjIzfsC&q=HUH}}";
+    $expanded = $this->process_citation($text);
+    $this->assertSame('https://books.google.com/books?id=SjpSkzjIzfsC&q=HUH', $expanded->get2('url'));
+   }
+ 
+   public function testGoogleBooksExpansion5() : void {
+    $text = "{{Cite web | url=https://books.google.com/books?id=SjpSkzjIzfsC&dq=HUH&pg=213}}";
+    $expanded = $this->process_citation($text);
+    $this->assertSame('https://books.google.com/books?id=SjpSkzjIzfsC&dq=HUH&pg=213', $expanded->get2('url'));
+   }
+ 
+   public function testGoogleBooksExpansion6() : void {
+    $text = "{{Cite web | url=https://books.google.com/books?id=SjpSkzjIzfsC#&dq=HUH&pg=213}}";
+    $expanded = $this->process_citation($text);
+    $this->assertSame('https://books.google.com/books?id=SjpSkzjIzfsC&q=%3DHUH', $expanded->get2('url'));
+   }
 
+   public function testGoogleBooksExpansion7() : void {
+    $text = "{{Cite web | url=https://books.google.com/books?id=Sw4EAAAAMBAJ&pg=PT12&dq=%22The+Dennis+James+Carnival%22#v=onepage}}";
+    $expanded = $this->process_citation($text);
+    $this->assertSame('https://books.google.com/books?id=Sw4EAAAAMBAJ&dq=%22The+Dennis+James+Carnival%22&pg=PT12', $expanded->get2('url'));
+   }
+ 
+   public function testGoogleBooksExpansion8() : void {
+    $text = "{{Cite web | url=https://books.google.com/books?id=w8KztFy6QYwC&dq=%22philip+loeb+had+been+blacklisted%22+%22Goldbergs,+The+(Situation+Comedy)%22&pg=PA545#pgview=full}}";
+    $expanded = $this->process_citation($text);
+    $this->assertSame('https://books.google.com/books?id=w8KztFy6QYwC&dq=%22philip+loeb+had+been+blacklisted%22+%22Goldbergs,+The+(Situation+Comedy)%22&pg=PA545', $expanded->get2('url'));
+   }
+ 
   public function testGoogleBooksExpansionNEW() : void {
     $text = "{{Cite web | url=https://www.google.com/books/edition/_/SjpSkzjIzfsC?hl=en}}";
     $expanded = $this->process_citation($text);
@@ -2115,7 +2151,7 @@ T1 - This is the Title }}';
     $this->assertNull($expanded->get2('author'));
     $this->assertNull($expanded->get2('author1'));
     $this->assertNull($expanded->get2('authors'));
-    $this->assertSame('https://books.google.com/books?id=p-IDAAAAMBAJ&q=Popular%20Science%201930%20plane%20%22Popular%20Mechanics%22&pg=PA194', $expanded->get2('url'));
+    $this->assertSame('https://books.google.com/books?id=p-IDAAAAMBAJ&dq=Popular%20Science%201930%20plane%20%22Popular%20Mechanics%22&pg=PA194', $expanded->get2('url'));
   }
  
   public function testHearst2 () : void {
@@ -2127,7 +2163,7 @@ T1 - This is the Title }}';
     $this->assertNull($expanded->get2('author'));
     $this->assertNull($expanded->get2('author1'));
     $this->assertNull($expanded->get2('authors'));
-    $this->assertSame('https://books.google.com/books?id=p-IDAAAAMBAJ&q=Popular%20Science%201930%20plane%20%22Popular%20Mechanics%22&pg=PA194', $expanded->get2('url'));
+    $this->assertSame('https://books.google.com/books?id=p-IDAAAAMBAJ&dq=Popular%20Science%201930%20plane%20%22Popular%20Mechanics%22&pg=PA194', $expanded->get2('url'));
   }
        
   public function testInternalCaps() : void { // checks for title formating in tidy() not breaking things
@@ -2950,7 +2986,7 @@ T1 - This is the Title }}';
   public function testTrimProquestEbook5() : void {
     $text = '{{cite web|url=http://ebookcentral-proquest-com.libproxy.berkeley.edu/lib/claremont/detail.action?docID=123456#goto_toc}}';
     $page = $this->process_page($text);
-    $this->assertSame('Alter: url. URLs might have been anonymized. | [[WP:UCB|Use this bot]]. [[WP:DBUG|Report bugs]]. ', $page->edit_summary());
+    $this->assertSame('Alter: url. URLs might have been anonymized. Add: website. | [[WP:UCB|Use this bot]]. [[WP:DBUG|Report bugs]]. ', $page->edit_summary());
   }
 
   public function testTrimGoogleStuff() : void {

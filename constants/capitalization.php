@@ -18,7 +18,7 @@ const LC_SMALL_WORDS = array(/* The following will be automatically updated to a
           " och ", " OECD ", " of ", " off ", " og ", " on ", " or ", " over ", " P.E. ", 
           " PC ", " PCR ", " per ", " Ph.D. ", " PMLA ", " PNAS ", " PS: ", " R&D ", " RNA ", " RTÉ ", 
           " S&P ", " SAE ", " SpringerPlus ", " SSRN ", " TAPPI ", " TCI: ", " te ", " TESOL ", " the ", " then ", 
-          " till ", " to ", " UK ", " um ", " und ", " unserer ", " up ", " USA ", " van ", 
+          " till ", " to ", " UCLA ", " UK ", " um ", " und ", " unserer ", " up ", " USA ", " van ", 
           " vir ", " von ", " voor ", " when ", " with ", " within ", " woor ", " y ", 
           " zu ", " zum ", " zur ", /* The above will be automatically updated to alphabetical order */ 
           // After this line we list exceptions that need re-capitalizing after they have been decapitalized.
@@ -41,7 +41,7 @@ const UC_SMALL_WORDS = array(/* The following will be automatically updated to a
           " Och ", " Oecd ", " Of ", " Off ", " Og ", " On ", " Or ", " Over ", " P.e. ", 
           " Pc ", " Pcr ", " Per ", " Ph.d. ", " Pmla ", " Pnas ", " Ps: ", " R&d ", " Rna ", " Rté ", 
           " S&p ", " Sae ", " Springerplus ", " Ssrn ", " Tappi ", " Tci: ", " Te ", " Tesol ", " The ", " Then ", 
-          " Till ", " To ", " Uk ", " Um ", " Und ", " Unserer ", " Up ", " Usa ", " Van ", 
+          " Till ", " To ", " Ucla ", " Uk ", " Um ", " Und ", " Unserer ", " Up ", " Usa ", " Van ", 
           " Vir ", " Von ", " Voor ", " When ", " With ", " Within ", " Woor ", " Y ", 
           " Zu ", " Zum ", " Zur ", /* The above will be automatically updated to alphabetical order */ 
           // After this line we list exceptions that need re-capitalizing after they have been decapitalized.
@@ -92,10 +92,10 @@ const JOURNAL_ACRONYMS = array(/* The following will be automatically updated to
           " NASA Tech Briefs ", " Nauka i Zhizn ", " NBER ", " NDT & E International ", 
           " NeuroImage ", " NeuroReport ", " Notes of the AAS ", " Now and Then: ", " Ny Forskning i Grammatik ", 
           " Nyt Tidsskrift ", " Obsidian II ", " Ocean Science Journal : Osj ", " PAJ: A Journal of Performance and Art ", 
-          " PALAIOS ", " PalAsiatica ", " PalZ ", " PeerJ ", " PharmSci ", " PhytoKeys ", 
+          " PALAIOS ", " PalAsiatica ", " PalZ ", " PeerJ ", " PharmSci ", " PhD ", " PhytoKeys ", 
           " Pis'ma v Astronomicheskii ", " PLOS ", " PLOS ", " PLOS ", " PLOS ", " PLOS ", 
           " PLOS ONE ", " PNAS ", " Proceedings of the IRE ", " Protein Eng Des Sel ", 
-          " Prz ", " Prz. ", " Published in: ", " RNA ", " S.A.P.I.EN.S ", " S.A.P.I.EN.S. ", " Saggiatore musicale ", 
+          " Prz ", " Prz. ", " Published in: ", " Revista del Museo de La Plata ", " RNA ", " S.A.P.I.EN.S ", " S.A.P.I.EN.S. ", " Saggiatore musicale ", 
           " SCALACS ", " Sch ", " Scr. ", " SIAM Journal on ", " SIAM Review ", " SICOT-J ", 
           " Srp Arh Celok Lek ", " Star Trek: The Official Monthly Magazine ", " STD & AIDS ", 
           " STDs ", " Série A ", " Tae Kwon Do Times ", " TAPPI Journal ", " Tellus A ", 
@@ -153,10 +153,10 @@ const UCFIRST_JOURNAL_ACRONYMS = array(/* The following will be automatically up
           " Nasa Tech Briefs ", " Nauka I Zhizn ", " Nber ", " NDT & e International ", 
           " Neuroimage ", " Neuroreport ", " Notes of the Aas ", " Now and then: ", " NY Forskning I Grammatik ", 
           " NYT Tidsskrift ", " Obsidian Ii ", " Ocean Science Journal : Osj ", " Paj: A Journal of Performance and Art ", 
-          " Palaios ", " Palasiatica ", " Palz ", " Peerj ", " Pharmsci ", " Phytokeys ", 
+          " Palaios ", " Palasiatica ", " Palz ", " Peerj ", " Pharmsci ", " PHD ", " Phytokeys ", 
           " Pis'ma V Astronomicheskii ", " PLoS ", " PLos ", " PloS ", " Plos ", " plos ", 
           " PLOS One ", " Pnas ", " Proceedings of the Ire ", " Protein Eng des Sel ", 
-          " PRZ ", " PRZ. ", " Published In: ", " Rna ", " S.a.p.i.en.s ", " S.a.p.i.en.s. ", " Saggiatore Musicale ", 
+          " PRZ ", " PRZ. ", " Published In: ", " Revista del Museo de la Plata ", " Rna ", " S.a.p.i.en.s ", " S.a.p.i.en.s. ", " Saggiatore Musicale ", 
           " Scalacs ", " SCH ", " SCR. ", " Siam Journal on ", " Siam Review ", " Sicot-J ", 
           " SRP Arh Celok Lek ", " Star Trek: The Official Monthly Magazine ", " STD & Aids ", 
           " STDS ", " Série a ", " Tae Kwon do Times ", " Tappi Journal ", " Tellus a ", 
@@ -194,7 +194,7 @@ const OBVIOUS_FOREIGN_WORDS = array(" Abhandlungen ", " Actes ", " Annales ", " 
            "ische ", "histoire ", " ancienne ", " d'", "http://", "www.", "www-", " Mikologiya ", " Fitopatologiya ",
            " filmski ", " ljetopis ", " Saggiatore ", " musicale ", " artiste ", " Le Monde ",
            " univerzitet ", " Pravni ", " Fakultet ", " Gazeta ", " Caminhos ", " de Ferro ",
-           " Jornal ", " comboios ", " Público ", " Revista ", " Olhar ");
+           " Jornal ", " comboios ", " Público ", " Revista ", " Olhar ", " Soudobé ", " dějiny ");
  
 const MAP_DIACRITICS = array("À"=>"A", "Á"=>"A", "Â"=>"A", "Ã"=>"A",
     "Ä"=>"A", "Å"=>"A", "Æ"=>"AE", "Ç"=>"C", "È"=>"E", "É"=>"E",

@@ -1,4 +1,3 @@
-tests/phpunit/CurrentTest.php
 cookie*.txt
 clover.xml
 **/private*

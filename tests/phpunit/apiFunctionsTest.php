@@ -243,7 +243,7 @@ final class apiFunctionsTest extends testBaseClass {
     $this->requires_dx(function() : void {
      $expanded = $this->make_citation('{{Cite journal}}');
      expand_doi_with_dx($expanded, '10.3743/KOSIM.2011.28.2.117');
-     $this->assertSame('{{Cite journal|year = 2011|volume = 28|issue = 2|journal = Journal of the Korean Society for Information Management|title = Citing Behavior of Korean Scientists on Foreign Journals in KSCD}}', $expanded->parsed_text());
+     $this->assertSame('{{Cite journal|year = 2011|volume = 28|issue = 2|last1 = Kim|first1 = Byung-Kyu|last2 = Kang|first2 = Mu-Yeong|last3 = Choi|first3 = Seon-Heui|last4 = Kim|first4 = Soon-Young|last5 = You|first5 = Beom-Jong|last6 = Shin|first6 = Jae-Do|title = Citing Behavior of Korean Scientists on Foreign Journals in KSCD|journal = Journal of the Korean Society for Information Management}}', $expanded->parsed_text());
     });
   }
   
