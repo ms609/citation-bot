@@ -121,6 +121,10 @@ public static function query_ieee_webpages(array &$templates) : void {  // Point
          [CURLOPT_RETURNTRANSFER => TRUE,
           CURLOPT_HEADER => FALSE,
           CURLOPT_TIMEOUT => 15,
+          CURLOPT_FOLLOWLOCATION => TRUE,
+          CURLOPT_MAXREDIRS => 10,
+          CURLOPT_CONNECTTIMEOUT => 8,
+          CURLOPT_COOKIEFILE => 'cookie.txt',
           CURLOPT_USERAGENT => 'Citation_bot; citations@tools.wmflabs.org']);
   
   foreach (['url', 'chapter-url', 'chapterurl'] as $kind) {
