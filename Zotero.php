@@ -126,7 +126,7 @@ public static function query_ieee_webpages(array &$templates) : void {  // Point
   foreach (['url', 'chapter-url', 'chapterurl'] as $kind) {
         echo "\n IN LOOP for $kind \n";
    foreach ($templates as $template) {
-              echo "\n IN LOOP for templates with URL $template->get($kind) \n";
+              echo "\n IN LOOP for templates with URL " . $template->get($kind) . " \n";
     set_time_limit(120);
     if ($template->blank('doi') && preg_match("~^https://ieeexplore\.ieee\.org/document/(\d{5,})$~", $template->get($kind), $matches_url)) {
         echo "\n IN IF for URL wo DOI \n";
