@@ -3299,7 +3299,7 @@ final class Template {
         $has_url_already = $this->has($url_type);
         $this->add_if_new($url_type, $oa_url);  // Will check for PMCs etc hidden in URL
         if ($this->has($url_type) && !$has_url_already) {  // The above line might have eaten the URL and upgraded it
-          $headers_test = @get_headers($this->get($url_type), 1);
+          $headers_test = @get_headers($this->get($url_type), TRUE);
           // @codeCoverageIgnoreStart
           if($headers_test ===FALSE) {
             $this->forget($url_type);
