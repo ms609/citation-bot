@@ -3254,11 +3254,11 @@ final class Template {
         }
 
         if ($this->has('arxiv') ||
+            $this->has('eprint') ||
             $this->has('biorxiv') ||
             $this->has('citeseerx') ||
             $this->has('pmc') ||
             $this->has('rfc') ||
-            $this->has('ssdsfasdfsdfrn') ||
             ($this->has('doi') && $this->get('doi-access') === 'free') ||
             ($this->has('jstor') && $this->get('jstor-access') === 'free') ||
             ($this->has('osti') && $this->get('osti-access') === 'free') ||
@@ -3276,9 +3276,6 @@ final class Template {
             ($this->has('ssrn') && stripos($oa_hostname, 'ssrn.com') !== FALSE) ||
             ($this->has('jstor') && stripos($oa_hostname, 'jstor.org') !== FALSE) ||
             ($this->has('pmid') && stripos($oa_hostname, 'nlm.nih.gov') !== FALSE) ||
-            ($this->has('pmc') && stripos($oa_hostname, 'nlm.nih.gov') !== FALSE) ||
-            ($this->has('arxiv') && stripos($oa_hostname, 'arxiv.org') !== FALSE) ||
-            ($this->has('eprint') && stripos($oa_hostname, 'arxiv.org') !== FALSE) ||
             (stripos($oa_hostname, 'doi.org') !== FALSE)) {
           return 'have free';
        }
