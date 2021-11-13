@@ -107,7 +107,8 @@ const BAD_ZOTERO_TITLES = ['Browse publications', 'Central Authentication Servic
                                  'Untitled-6', 'Untitled-7', 'Untitled-8', 'Untitled-9', 'Are you a robot',
                                  'Aanmelden of registreren om te bekijken', 'register to view', 'being redirected',
                                  'has been registered', 'Aanmelden bij Facebook', 'Einloggen', 'The Times & the Sunday Times',
-                                 'Login • Instagram', 'subscriber to read', 'has now officially closed'];
+                                 'Login • Instagram', 'subscriber to read', 'has now officially closed',
+                                 'An Error Has Occured', 'an error has occurred'];
 
 const CANONICAL_PUBLISHER_URLS = array ('elsevier.com', 'springer.com', 'sciencedirect.com', 'tandfonline.com',
                                 'taylorandfrancis.com', 'wiley.com', 'sagepub.com', 'sagepublications.com',
