@@ -711,6 +711,7 @@ public static function process_zotero_response(string $zotero_response, Template
       case 'audioRecording';   // @codeCoverageIgnore
       case 'presentation';     // @codeCoverageIgnore
       case 'computerProgram';  // @codeCoverageIgnore
+      case 'forumPost';        // @codeCoverageIgnore
           // Do not change type. This seems to include things that will just make people angry if we change type to encyclopedia
       case 'encyclopediaArticle';  // @codeCoverageIgnore
         // Nothing special that we know of yet
