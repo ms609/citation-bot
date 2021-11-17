@@ -103,7 +103,7 @@ const JOURNAL_ACRONYMS = array(/* The following will be automatically updated to
           " The New Yorker ", " Tidsskr Nor Laegeforen ", " Tidsskr Nor Lægeforen ", " Time Off Magazine ", 
           " Time Out London ", " tot de ", " Transactions and archaeological record of the Cardiganshire Antiquarian Society ", 
           " U.S. ", " U.S.A. ", " U.S.A. ", " UBV Data ", " uHealth ", " uHealth ", " UNED Research Journal ", 
-          " USGS ", " v Astronomicheskii Zhurna ", " WRIR ", " z/Journal ", " z/Journal ", 
+          " USGS ", " v Astronomicheskii Zhurna ", " We Proceeded On ", " WRIR ", " z/Journal ", " z/Journal ", 
           " zbMATH ", " Zeitschrift für Geologische Wissenschaften ", " Zeitschrift für Physik A Hadrons and Nuclei ", 
           " Zeitschrift für Physik A: Hadrons and Nuclei ", " Znanosti i Umjetnosti ", 
           " ZooKeys ", /* The above will be automatically updated to alphabetical order */ 
@@ -164,7 +164,7 @@ const UCFIRST_JOURNAL_ACRONYMS = array(/* The following will be automatically up
           " The New Yorker (Serial) ", " Tidsskr nor Laegeforen ", " Tidsskr nor Lægeforen ", 
           " Time off Magazine ", " Time Out London ", " Tot de ", " Transactions and Archaeological Record of the Cardiganshire Antiquarian Society ", 
           " U.s. ", " U.S.a. ", " U.s.a ", " Ubv Data ", " UHealth ", " Uhealth ", " Uned Research Journal ", 
-          " Usgs ", " V Astronomicheskii Zhurna ", " Wrir ", " Z/Journal ", " Z/journal ", 
+          " Usgs ", " V Astronomicheskii Zhurna ", " We Proceeded on ", " Wrir ", " Z/Journal ", " Z/journal ", 
           " ZbMATH ", " Zeitschrift Für Geologische Wissenschaften ", " Zeitschrift für Physik a Hadrons and Nuclei ", 
           " Zeitschrift Für Physik a: Hadrons And Nuclei ", " Znanosti I Umjetnosti ", 
           " Zookeys ", /* The above will be automatically updated to alphabetical order */ 
