@@ -30,12 +30,13 @@ final class CrashTest extends testBaseClass {
       AdsAbsControl::give_up();
       Zotero::block_zotero();
       $parsed =  $page->parsed_text();
+      // Echoing directly drops lines in the testing system
+      unset($text);
+      unset($page);
       echo "\n\n\n\n";
-      $separator = "\r\n";
-      $line = strtok($parsed, $separator);
-      while ($line !== false) {
-        echo $line . "\n";
-        $line = strtok( $separator );
+      $output = explode("\n\r", $parsed);
+      foreach ($output as $line) {
+         echo $line . "\n";
       }
       echo "\n\n\n\n";
       $this->assertTrue(FALSE); // prevent us from git committing with a website included
