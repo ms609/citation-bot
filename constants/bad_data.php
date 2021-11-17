@@ -48,7 +48,7 @@ const PUBLISHERS_ARE_WORKS = array('the san diego union-tribune', 'forbes', 'sal
                                    'forbes middle east', 'forbes russia', 'forbes.ru', 'forbes afrique', 'forbes magazine',
                                    'forbes asia', 'forbes israel', 'forbes global 2000', 'forbes china', '[[forbes]] (Russia)',
                                    'forbes việt nam', 'forbes vietnam', 'forbes viet nam', 'forbes contributor blogs',
-                                   'the baltimore sun'
+                                   'the baltimore sun', 'nba.com', 
                                    // WP:CITALICSRFC and MOS:ITALICWEBCITE  ?????     'abc news', 'nbc news', 'cbs news', 'bbc news'
                                   ); // LOWER CASE!  WWW not there too! 
 
@@ -325,6 +325,12 @@ const HOSTNAME_MAP  = array('public.ebookcentral.proquest.com' => '[[ProQuest]]'
                             'livescience.com'  => '[[Live Science]]',
                             'insider.com'  => '[[Insider.com]]',
                             'latino.foxnews.com'  => '[[Fox News]]',
+                            'dw.com'  => '[[Deutsche Welle]]',
+                            'rnz.co.nz'  => '[[Radio New Zealand]]',
+                            'pro-football-reference.com'  => '[[Pro-Football-Reference.com]]',
+                            'nba.com' => '[[NBA.com]]',
+                            'mlb.com' => '[[MLB.com]]',
+                            'nfl.com' => '[[NFL.com]]',
                            ); // Be warned, some website host a seperate sunday edition, etc.  Be careful and when in doubt link to hostname
 
 const NO_DATE_WEBSITES = array('wikipedia.org', 'web.archive.org', 'perma-archives.org', 'webarchive.proni.gov.uk', 'perma.cc',
@@ -357,7 +363,7 @@ const NON_JOURNAL_WEBSITES = array('cnn.com/', 'msnbc.com/', 'nbcnews.com/', 'cb
                                    'newyorker.com/', 'independent.co.uk/', 'cnbc.com/',
                                    'theatlantic.com/', '-news.co.uk/', 'news.google.com/', 'jpl.nasa.gov/',
                                    'gsfc.nasa.gov/', 'solarsystem.nasa.gov/', 'latimes.com/',
-                                   'reuters.com/', 'dailynews.com/', 
+                                   'reuters.com/', 'dailynews.com/', 'nba.com/', 'mlb.com/',
                                    'newsweek.com/', 'monitor.com/', 'observer.com/', '.pbs.org/', '.bbm.ca/', '/bbm.ca/',
                                    'mediaincanada.com/', 'cbspressexpress.com/', 'zap2it.com/',
                                    'yourentertainmentnow.com/', 'shows.ctv.ca/' ,'toronto.com/', 'fda.gov/',
@@ -376,7 +382,7 @@ const NON_JOURNAL_WEBSITES = array('cnn.com/', 'msnbc.com/', 'nbcnews.com/', 'cb
                                    'eurogamer.net/', 'gamerevolution.com/', 'gamespot.com/',
                                    'gamezone.com/', 'gamesradar.com/', 'gematsu.com/', 'hardcoregamer.com/',
                                    'hardcoregaming101.net/', '.ign.com/', 'kotaku.com/',
-                                   'siliconera.com/', 'shacknews.com/', '.svg.com/',
+                                   'siliconera.com/', 'shacknews.com/', '.svg.com/', 'pro-football-reference.com/',
                                    'vg247.com/', 'videogameschronicle.com/', 'videogamer.com/', '4gamer.net/',
                                    'comptiq.com/', 'dengekionline.com/', 'famitsu.com/', 'gamekult.com/',
                                    'gameswirtschaft.de/', 'gamer.nl/', 'thegamesmachine.it/', 'hobbyconsolas.com/',
@@ -422,7 +428,7 @@ const NON_JOURNAL_WEBSITES = array('cnn.com/', 'msnbc.com/', 'nbcnews.com/', 'cb
                                    'gizmodo.com/', 'glitchwave.com/', 'globalresearch.ca/', 'globalresearch.org/',
                                    'globalsecurity.org/', 'globaltimes.cn/', 'goodreads.com/', 'grubstreet.com/',
                                    'guardian.co.uk/', 'guinnessworldrecords.com/', 'haaretz.co.il/', 'haaretz.com/',
-                                   'hansard.millbanksystems.com/', 'heatst.com/', 'heavy.com/',
+                                   'hansard.millbanksystems.com/', 'heatst.com/', 'heavy.com/', 'nfl.com',
                                    'hispantv.com/', 'hispantv.ir/', 'history.com/', 'hk.appledaily.com/', 'hollywoodreporter.com/',
                                    'hopenothate.org.uk/', 'screenrant.com/', 'huanqiu.com/', 'huffingtonpost.ca/',
                                    'huffingtonpost.co.uk/', 'huffingtonpost.com/', 'huffingtonpost.com.au/',
