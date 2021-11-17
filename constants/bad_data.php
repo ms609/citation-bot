@@ -428,7 +428,7 @@ const NON_JOURNAL_WEBSITES = array('cnn.com/', 'msnbc.com/', 'nbcnews.com/', 'cb
                                    'gizmodo.com/', 'glitchwave.com/', 'globalresearch.ca/', 'globalresearch.org/',
                                    'globalsecurity.org/', 'globaltimes.cn/', 'goodreads.com/', 'grubstreet.com/',
                                    'guardian.co.uk/', 'guinnessworldrecords.com/', 'haaretz.co.il/', 'haaretz.com/',
-                                   'hansard.millbanksystems.com/', 'heatst.com/', 'heavy.com/', 'nfl.com',
+                                   'hansard.millbanksystems.com/', 'heatst.com/', 'heavy.com/', 'nfl.com/',
                                    'hispantv.com/', 'hispantv.ir/', 'history.com/', 'hk.appledaily.com/', 'hollywoodreporter.com/',
                                    'hopenothate.org.uk/', 'screenrant.com/', 'huanqiu.com/', 'huffingtonpost.ca/',
                                    'huffingtonpost.co.uk/', 'huffingtonpost.com/', 'huffingtonpost.com.au/',
