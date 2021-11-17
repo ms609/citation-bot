@@ -34,7 +34,7 @@ final class CrashTest extends testBaseClass {
       $separator = "\r\n";
       $line = strtok($parsed, $separator);
       while ($line !== false) {
-        echo $line;
+        echo $line . "\n";
         $line = strtok( $separator );
       }
       echo "\n\n\n\n";
