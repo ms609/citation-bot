@@ -308,7 +308,9 @@ final class expandFnsTest extends testBaseClass {
     $this->assertSame('The dos is Faster', title_capitalization('The dos is Faster', TRUE));
     $this->assertSame('The DoS is Faster', title_capitalization('The DoS is Faster', TRUE));
     $this->assertSame('The dOs is Faster', title_capitalization('The dOs is Faster', TRUE));
-    $this->assertSame('The DOS Dos is Faster', title_capitalization('The DOS Dos is Faster', TRUE));
+    $this->assertSame('The DOS Dos dOs is Faster', title_capitalization('The DOS Dos dOs is Faster', TRUE));
+    $this->assertSame('The DOS Dos dOs is Faster', title_capitalization('The DOS Dos dOs is Faster', FALSE));
+    $this->assertSame('The DOs is Faster', title_capitalization('The DOs is faster', TRUE));
   }
   
   public function testThrottle() : void { // Just runs over the code and basically does nothing
