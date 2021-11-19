@@ -31,7 +31,7 @@ if (HTML_OUTPUT) {
   <meta name="keywords" content="User:DOI bot,Citation, citation bot,Digital object identifier,wikipedia,cite journal" />
   <link rel="apple-touch-icon" href="https://en.wikipedia.org/apple-touch-icon.png" />
   <link rel="copyright" href="https://www.gnu.org/copyleft/fdl.html" />
-  <link rel="stylesheet" type="text/css" href="css/results.css" />
+  <link rel="stylesheet" type="text/css" href="results.css" />
   </head>
 <body>
   <header>
