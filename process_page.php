@@ -19,7 +19,7 @@ if (HTML_OUTPUT) {?>
                 <link rel="apple-touch-icon" href="https://en.wikipedia.org/apple-touch-icon.png" />
                 <link rel="copyright" href="https://www.gnu.org/copyleft/fdl.html" />
                 <title>Citation bot: Preparing to run</title>
-                <link rel="stylesheet" type="text/css" href="css/results.css" />
+                <link rel="stylesheet" type="text/css" href="results.css" />
         </head>
 <body>
   <header>
