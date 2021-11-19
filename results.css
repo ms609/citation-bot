@@ -1,4 +1,4 @@
- header, footer {
+header, footer {
   background-color: #eed;
   margin: -9px;
   padding: 0.5em 1em;
@@ -15,7 +15,7 @@ header {
 }
 
 footer {
-  background: #eed url('../img/Powered-by-Toolforge.png') no-repeat right;
+  background: #eed url('Powered-by-Toolforge.png') no-repeat right;
   background-position-y: 20px;
   border-top: 1px solid #335;
   box-shadow: 0 50vh 0 50vh #eed;
