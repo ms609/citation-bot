@@ -4414,10 +4414,10 @@ final class Template {
               mb_substr_count($the_author, ']]') === 1 &&
               strpos($the_author, 'CITATION_BOT') === FALSE &&
               strpos($the_author, '{{!}}') === FALSE) {  // Has a normal wikilink
-         //   if (preg_match(REGEXP_PLAIN_WIKILINK, $the_author, $matches)) {
+         //   if (preg_match(REGEXP_PLAIN_WIKILINK_ONLY, $the_author, $matches)) {
          //     $this->set($param, $matches[1]);
          //     $this->add_if_new($param . '-link', $matches[1]);
-         //   } elseif (preg_match(REGEXP_PIPED_WIKILINK, $the_author, $matches)) {
+         //   } elseif (preg_match(REGEXP_PIPED_WIKILINK_ONLY, $the_author, $matches)) {
          //     $this->set($param, $matches[2]);
          //     $this->add_if_new($param . '-link', $matches[1]);
          //   }
@@ -4469,11 +4469,11 @@ final class Template {
                  strpos($the_author, 'CITATION_BOT') === FALSE &&
                  strpos($the_author, '{{!}}') === FALSE) {  // Has a normal wikilink
                    $did_something = FALSE;
-                   if (preg_match(REGEXP_PLAIN_WIKILINK, $the_author, $matches)) {
+                   if (preg_match(REGEXP_PLAIN_WIKILINK_ONLY, $the_author, $matches)) {
                     $this->set($param, $matches[1]);
                     $this->add_if_new('author' . $pmatch[2] . '-link', $matches[1]);
                     $did_something = TRUE;
-                   } elseif (preg_match(REGEXP_PIPED_WIKILINK, $the_author, $matches)) {
+                   } elseif (preg_match(REGEXP_PIPED_WIKILINK_ONLY, $the_author, $matches)) {
                     $this->set($param, $matches[2]);
                     $this->add_if_new('author' . $pmatch[2] . '-link', $matches[1]);
                     $did_something = TRUE;
@@ -4483,9 +4483,9 @@ final class Template {
                   }
                   if ($did_something && strpos($this->get('first' . $pmatch[2]), '[') !==FALSE) { // Clean up links in first names
                     $the_author = $this->get('first' . $pmatch[2]);
-                    if (preg_match(REGEXP_PLAIN_WIKILINK, $the_author, $matches)) {
+                    if (preg_match(REGEXP_PLAIN_WIKILINK_ONLY, $the_author, $matches)) {
                       $this->set('first' . $pmatch[2], $matches[1]);
-                    } elseif (preg_match(REGEXP_PIPED_WIKILINK, $the_author, $matches)) {
+                    } elseif (preg_match(REGEXP_PIPED_WIKILINK_ONLY, $the_author, $matches)) {
                       $this->set('first' . $pmatch[2], $matches[2]);
                     }
                   }
@@ -4840,7 +4840,7 @@ final class Template {
                $this->set($param, title_capitalization($periodical, TRUE));
             }
           } elseif (strpos($periodical, ":") !== 2) { // Avoid inter-wiki links
-            if (preg_match(REGEXP_PLAIN_WIKILINK, $periodical, $matches)) {
+            if (preg_match(REGEXP_PLAIN_WIKILINK_ONLY, $periodical, $matches)) {
               $periodical = $matches[1];
               $periodical = str_replace("’", "'", $periodical); // Fix quotes for links
               $this->set($param, '[[' . $periodical . ']]');
@@ -4857,7 +4857,7 @@ final class Template {
                    }
                  }
               }
-            } elseif (preg_match(REGEXP_PIPED_WIKILINK, $periodical, $matches)) {
+            } elseif (preg_match(REGEXP_PIPED_WIKILINK_ONLY, $periodical, $matches)) {
               $linked_text = str_replace("’", "'", $matches[1]); // Fix quotes for links
               $human_text  = $matches[2];
               if (preg_match("~^[\'\"]+([^\'\"]+)[\'\"]+$~", $human_text, $matches)) { // Remove quotes
@@ -5447,7 +5447,7 @@ final class Template {
                if (strlen($matches[1]) > (0.7 * (float) strlen($title)) && ($title != '[[' . $matches[1] . ']]')) {  // Only add as title-link if a large part of title text
                  $title = '[[' . $matches[1] . "|" . str_replace(array("[[", "]]"), "", $title) . ']]';
                }
-             } elseif (preg_match(REGEXP_PIPED_WIKILINK, $title, $matches) &&
+             } elseif (preg_match(REGEXP_PIPED_WIKILINK_ONLY, $title, $matches) &&
                        strpos($title, ':') === FALSE) { // Avoid touching inter-wiki links
                if (($matches[1] == $matches[2]) && ($title == $matches[0])) {
                    $title = '[[' . $matches[1]  . ']]'; // Clean up double links
