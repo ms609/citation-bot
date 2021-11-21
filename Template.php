@@ -242,9 +242,9 @@ final class Template {
         $this->name = $spacing[1] . 'Cite journal' . $spacing[2];
       }
     }
-    // Cite article is actually cite journal, but often used for other things by mistake - fix what we can
+    // Cite document is actually cite journal, but often used for other things by mistake - fix what we can
     if ($trim_name === 'cite document') {
-      if (strpos($this->get('doi'), '/978-') !== FALSE) {
+      if (strpos($this->get('doi'), '/978-') !== FALSE || strpos($this->get('doi'), '/978019') !== FALSE) {
         $this->name = $spacing[1] . 'cite book' . $spacing[2];
       } elseif (!$this->blank(['journal', 'pmid', 'pmc', 'doi', 's2cid', 'citeseerx'])) {
         $this->name = $spacing[1] . 'cite journal' . $spacing[2];
@@ -255,7 +255,7 @@ final class Template {
       }
     }
     if ($trim_name === 'Cite document') {
-      if (strpos($this->get('doi'), '/978-') !== FALSE) {
+      if (strpos($this->get('doi'), '/978-') !== FALSE || strpos($this->get('doi'), '/978019') !== FALSE) {
         $this->name = $spacing[1] . 'Cite book' . $spacing[2];
       } elseif (!$this->blank(['journal', 'pmid', 'pmc', 'doi', 's2cid', 'citeseerx'])) {
         $this->name = $spacing[1] . 'Cite journal' . $spacing[2];
@@ -6801,6 +6801,10 @@ final class Template {
          } else {
             $this->change_name_to('cite document');
          }
+      }
+      if ($this->wikiname() === 'cite document' &&
+          strpos($this->get('isbn'), '978-0-19-') === 0)
+         $this->change_name_to('cite book');
       }
       if ($this->blank('pmc-embargo-date')) $this->forget('pmc-embargo-date'); // Do at the very end, so we do not delete it, then add it later in a different position
       if ($this->wikiname() === 'cite arxiv' && $this->get_without_comments_and_placeholders('doi')) {
