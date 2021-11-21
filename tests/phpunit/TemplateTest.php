@@ -1060,7 +1060,7 @@ final class TemplateTest extends testBaseClass {
   }
   public function testRemoveWikilinks2e() : void {
     $expanded = $this->process_citation("{{cite journal |journal= Journal of the [[Royal Asiatic Society Hong Kong Branch]]}}");
-    $this->assertSame('Journal of the [[Royal Asiatic Society Hong Kong Branch]', $expanded->get2('journal'));
+    $this->assertSame('Journal of the [[Royal Asiatic Society Hong Kong Branch]]', $expanded->get2('journal'));
   }
  
   public function testRemoveWikilinks3() : void {
