@@ -6882,10 +6882,18 @@ final class Template {
         ($this->wikiname() === 'cite web' || $this->wikiname() === 'cite journal') &&
         $this->blank(WORK_ALIASES) && $this->blank('url')) {
         preg_match("~^(\s*).*\b(\s*)$~", $this->name, $spacing);
-        if (substr($this->name,0,1) === 'c') {
-          $this->name = $spacing[1] . 'cite document' . $spacing[2];
+        if ($this->has('chapter')) {
+          if (substr($this->name,0,1) === 'c') {
+            $this->name = $spacing[1] . 'cite book' . $spacing[2];
+          } else {
+            $this->name = $spacing[1] . 'Cite book' . $spacing[2];
+          }
         } else {
-          $this->name = $spacing[1] . 'Cite document' . $spacing[2];
+          if (substr($this->name,0,1) === 'c') {
+            $this->name = $spacing[1] . 'cite document' . $spacing[2];
+          } else {
+            $this->name = $spacing[1] . 'Cite document' . $spacing[2];
+          }
         }
       }
       $this->tidy_parameter('doi'); // might be free, and freedom is date dependent for some journals
