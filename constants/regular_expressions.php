@@ -1,8 +1,10 @@
 <?php 
 declare(strict_types=1);
 const REGEXP_PLAIN_WIKILINK = '~\[\[([^|\[\]]+?)\]\]~';
+const REGEXP_PLAIN_WIKILINK_ONLY = '~^\[\[([^|\[\]]+?)\]\]$~';
 // Matches: [1], target; [2], display text
 const REGEXP_PIPED_WIKILINK = '~\[\[([^|\[\]]+?)\|([^|\[\]]+?)\]\]~';
+const REGEXP_PIPED_WIKILINK_ONLY = '~^\[\[([^|\[\]]+?)\|([^|\[\]]+?)\]\]$~';
 const REGEXP_TO_EN_DASH = "--?|\&mdash;|\xe2\x80\x94|\?\?\?"; // regexp for replacing to ndashes using mb_ereg_replace
 const REGEXP_EN_DASH = "\xe2\x80\x93"; // regexp for replacing to ndashes using mb_ereg_replace
 
