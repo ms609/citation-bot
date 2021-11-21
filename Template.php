@@ -6803,7 +6803,7 @@ final class Template {
          }
       }
       if ($this->wikiname() === 'cite document' &&
-          strpos($this->get('isbn'), '978-0-19-') === 0)
+          strpos($this->get('isbn'), '978-0-19-') === 0) {
          $this->change_name_to('cite book');
       }
       if ($this->blank('pmc-embargo-date')) $this->forget('pmc-embargo-date'); // Do at the very end, so we do not delete it, then add it later in a different position
