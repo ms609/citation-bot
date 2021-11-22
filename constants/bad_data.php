@@ -544,7 +544,8 @@ const NON_JOURNAL_WEBSITES = array('cnn.com/', 'msnbc.com/', 'nbcnews.com/', 'cb
                                    'jsonline.com/', 'jpost.com/', 'ipsos.com/', 'investors.com/', 'inquirer.com/',
                                    'gpo.gov/', 'govinfo.gov/', 'federalregister.gov/', 'factcheck.org/', 'desmoinesregister.com/',
                                    'courtlistener.com/', 'c-span.org/', '.ajc.com/', '/ajc.com/', 'theweek.com/',
-                                   'socialblade.com/', 'poll.qu.edu/'
+                                   'socialblade.com/', 'poll.qu.edu/', 'spacecom\.mil/', 'planet4589\.org/',
+                                   'nasa\.gov/', 'skyrocket\.de/', 'space\.com/', 'unoosa\.org/', 'yuzhnoye\.com/',
                                    ); 
                                    // Just a list of ones that are obvious.  Add ones that time-out as we find them
                                    // bbm.ca is short enough that we add /bbm.ca/ and .bbm.ca/ since we don't want to grab too many sites
