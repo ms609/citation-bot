@@ -294,6 +294,15 @@ final class TemplateTest extends testBaseClass {
     $this->assertSame("{{Citation |page=2}}", $expanded->parsed_text());
   }
 
+  public function testCleanUpTemplates4() : void {
+    $text = "{{Cite  web |page=2}}";
+    $expanded = $this->process_citation($text);
+    $this->assertSame("{{Cite web |page=2}}", $expanded->parsed_text());
+    $text = "{{cite  web |page=2}}";
+    $expanded = $this->process_citation($text);
+    $this->assertSame("{{cite web |page=2}}", $expanded->parsed_text());
+  }
+ 
   public function testUseUnusedData() : void {
     $text = "{{Cite web | http://google.com | title  I am a title | auhtor = Other, A. N. | issue- 9 | vol. 22 pp. 5-6 }}";
     $prepared = $this->prepare_citation($text);
