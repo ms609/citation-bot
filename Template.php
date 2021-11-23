@@ -226,7 +226,9 @@ final class Template {
         break;
       }
     }
-    
+    if (strpos($this->name, 'Cite  ') === 0 || strpos($this->name, 'cite  ') === 0) {
+      $this->name = substr_replace($this->name, 'ite ', 1, 5);
+    }
     // Cite article is actually cite news, but often used for journal by mistake - fix
     if ($trim_name === 'cite article') {
       if ($this->blank(['journal', 'pmid', 'pmc', 'doi', 's2cid', 'citeseerx'])) {
