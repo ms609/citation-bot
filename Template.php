@@ -1211,7 +1211,9 @@ final class Template {
             if (stripos($this->rawtext, 'escholarship.org') !== FALSE) return FALSE;
           }     
           return $this->add($param_name, $value);
-        } elseif ($this->get('issue') . $this->get('number') == '1' && $value != '1' && $this->blank('volume')) {
+        } elseif ($this->get('issue') . $this->get('number') === '1' && $value != '1' && $this->blank('volume')) {
+          if ($param_name === 'issue' && $this->has('number')) $this->rename('number', 'issue');
+          if ($param_name === 'number' && $this->has('issue')) $this->rename('issue', 'number');
           $this->set($param_name, $value);  // Updating bad data
           return TRUE;
         }
