@@ -753,7 +753,11 @@ final class Template {
     if (str_i_same($value, 'null')) { // Hopeully name is not actually null
       return FALSE;
     }
-    
+
+    if (str_i_same($value, 'n/a')) {
+      return FALSE;
+    }
+
     if (mb_stripos($this->get($param_name), 'CITATION_BOT_PLACEHOLDER_COMMENT') !== FALSE) {
       return FALSE;  // We let comments block the bot
     }
