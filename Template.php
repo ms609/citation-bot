@@ -226,7 +226,9 @@ final class Template {
         break;
       }
     }
-    
+    if (strpos($this->name, 'Cite  ') === 0 || strpos($this->name, 'cite  ') === 0) {
+      $this->name = substr_replace($this->name, 'ite ', 1, 5);
+    }
     // Cite article is actually cite news, but often used for journal by mistake - fix
     if ($trim_name === 'cite article') {
       if ($this->blank(['journal', 'pmid', 'pmc', 'doi', 's2cid', 'citeseerx'])) {
@@ -242,9 +244,9 @@ final class Template {
         $this->name = $spacing[1] . 'Cite journal' . $spacing[2];
       }
     }
-    // Cite article is actually cite journal, but often used for other things by mistake - fix what we can
+    // Cite document is actually cite journal, but often used for other things by mistake - fix what we can
     if ($trim_name === 'cite document') {
-      if (strpos($this->get('doi'), '/978-') !== FALSE) {
+      if (strpos($this->get('doi'), '/978-') !== FALSE || strpos($this->get('doi'), '/978019') !== FALSE || strpos($this->get('isbn'), '978-0-19') === 0 || strpos($this->get('isbn'), '978019') === 0) {
         $this->name = $spacing[1] . 'cite book' . $spacing[2];
       } elseif (!$this->blank(['journal', 'pmid', 'pmc', 'doi', 's2cid', 'citeseerx'])) {
         $this->name = $spacing[1] . 'cite journal' . $spacing[2];
@@ -255,7 +257,7 @@ final class Template {
       }
     }
     if ($trim_name === 'Cite document') {
-      if (strpos($this->get('doi'), '/978-') !== FALSE) {
+      if (strpos($this->get('doi'), '/978-') !== FALSE || strpos($this->get('doi'), '/978019') !== FALSE || strpos($this->get('isbn'), '978-0-19') === 0 || strpos($this->get('isbn'), '978019') === 0) {
         $this->name = $spacing[1] . 'Cite book' . $spacing[2];
       } elseif (!$this->blank(['journal', 'pmid', 'pmc', 'doi', 's2cid', 'citeseerx'])) {
         $this->name = $spacing[1] . 'Cite journal' . $spacing[2];
@@ -1211,7 +1213,9 @@ final class Template {
             if (stripos($this->rawtext, 'escholarship.org') !== FALSE) return FALSE;
           }     
           return $this->add($param_name, $value);
-        } elseif ($this->get('issue') . $this->get('number') == '1' && $value != '1' && $this->blank('volume')) {
+        } elseif ($this->get('issue') . $this->get('number') === '1' && $value != '1' && $this->blank('volume')) {
+          if ($param_name === 'issue' && $this->has('number')) $this->rename('number', 'issue');
+          if ($param_name === 'number' && $this->has('issue')) $this->rename('issue', 'number');
           $this->set($param_name, $value);  // Updating bad data
           return TRUE;
         }
@@ -4414,10 +4418,10 @@ final class Template {
               mb_substr_count($the_author, ']]') === 1 &&
               strpos($the_author, 'CITATION_BOT') === FALSE &&
               strpos($the_author, '{{!}}') === FALSE) {  // Has a normal wikilink
-         //   if (preg_match(REGEXP_PLAIN_WIKILINK, $the_author, $matches)) {
+         //   if (preg_match(REGEXP_PLAIN_WIKILINK_ONLY, $the_author, $matches)) {
          //     $this->set($param, $matches[1]);
          //     $this->add_if_new($param . '-link', $matches[1]);
-         //   } elseif (preg_match(REGEXP_PIPED_WIKILINK, $the_author, $matches)) {
+         //   } elseif (preg_match(REGEXP_PIPED_WIKILINK_ONLY, $the_author, $matches)) {
          //     $this->set($param, $matches[2]);
          //     $this->add_if_new($param . '-link', $matches[1]);
          //   }
@@ -4469,11 +4473,11 @@ final class Template {
                  strpos($the_author, 'CITATION_BOT') === FALSE &&
                  strpos($the_author, '{{!}}') === FALSE) {  // Has a normal wikilink
                    $did_something = FALSE;
-                   if (preg_match(REGEXP_PLAIN_WIKILINK, $the_author, $matches)) {
+                   if (preg_match(REGEXP_PLAIN_WIKILINK_ONLY, $the_author, $matches)) {
                     $this->set($param, $matches[1]);
                     $this->add_if_new('author' . $pmatch[2] . '-link', $matches[1]);
                     $did_something = TRUE;
-                   } elseif (preg_match(REGEXP_PIPED_WIKILINK, $the_author, $matches)) {
+                   } elseif (preg_match(REGEXP_PIPED_WIKILINK_ONLY, $the_author, $matches)) {
                     $this->set($param, $matches[2]);
                     $this->add_if_new('author' . $pmatch[2] . '-link', $matches[1]);
                     $did_something = TRUE;
@@ -4483,9 +4487,9 @@ final class Template {
                   }
                   if ($did_something && strpos($this->get('first' . $pmatch[2]), '[') !==FALSE) { // Clean up links in first names
                     $the_author = $this->get('first' . $pmatch[2]);
-                    if (preg_match(REGEXP_PLAIN_WIKILINK, $the_author, $matches)) {
+                    if (preg_match(REGEXP_PLAIN_WIKILINK_ONLY, $the_author, $matches)) {
                       $this->set('first' . $pmatch[2], $matches[1]);
-                    } elseif (preg_match(REGEXP_PIPED_WIKILINK, $the_author, $matches)) {
+                    } elseif (preg_match(REGEXP_PIPED_WIKILINK_ONLY, $the_author, $matches)) {
                       $this->set('first' . $pmatch[2], $matches[2]);
                     }
                   }
@@ -4840,7 +4844,7 @@ final class Template {
                $this->set($param, title_capitalization($periodical, TRUE));
             }
           } elseif (strpos($periodical, ":") !== 2) { // Avoid inter-wiki links
-            if (preg_match(REGEXP_PLAIN_WIKILINK, $periodical, $matches)) {
+            if (preg_match(REGEXP_PLAIN_WIKILINK_ONLY, $periodical, $matches)) {
               $periodical = $matches[1];
               $periodical = str_replace("’", "'", $periodical); // Fix quotes for links
               $this->set($param, '[[' . $periodical . ']]');
@@ -4857,7 +4861,7 @@ final class Template {
                    }
                  }
               }
-            } elseif (preg_match(REGEXP_PIPED_WIKILINK, $periodical, $matches)) {
+            } elseif (preg_match(REGEXP_PIPED_WIKILINK_ONLY, $periodical, $matches)) {
               $linked_text = str_replace("’", "'", $matches[1]); // Fix quotes for links
               $human_text  = $matches[2];
               if (preg_match("~^[\'\"]+([^\'\"]+)[\'\"]+$~", $human_text, $matches)) { // Remove quotes
@@ -5447,7 +5451,7 @@ final class Template {
                if (strlen($matches[1]) > (0.7 * (float) strlen($title)) && ($title != '[[' . $matches[1] . ']]')) {  // Only add as title-link if a large part of title text
                  $title = '[[' . $matches[1] . "|" . str_replace(array("[[", "]]"), "", $title) . ']]';
                }
-             } elseif (preg_match(REGEXP_PIPED_WIKILINK, $title, $matches) &&
+             } elseif (preg_match(REGEXP_PIPED_WIKILINK_ONLY, $title, $matches) &&
                        strpos($title, ':') === FALSE) { // Avoid touching inter-wiki links
                if (($matches[1] == $matches[2]) && ($title == $matches[0])) {
                    $title = '[[' . $matches[1]  . ']]'; // Clean up double links
@@ -6099,6 +6103,20 @@ final class Template {
               $new_doi = '10.1093/acrefore/9780190228637.013.' . $matches[1];
               if (doi_works($new_doi)) {
                 $this->add_if_new('isbn', '978-0-19-022863-7');
+                if ($this->has('doi') && $this->has('doi-broken-date')) {
+                    $this->set('doi', '');
+                    $this->forget('doi-broken-date');
+                    $this->add_if_new('doi', $new_doi);
+                 } elseif ($this->blank('doi')) {
+                    $this->add_if_new('doi', $new_doi);
+                }
+              }
+          }
+          
+          if (preg_match('~^https?://oxfordre\.com/(?:|literature/)(?:view|abstract)/10\.1093/acrefore/9780190201098\.001\.0001/acrefore\-9780190201098\-e\-(\d+)$~', $this->get($param), $matches)) {
+              $new_doi = '10.1093/acrefore/9780190201098.013.' . $matches[1];
+              if (doi_works($new_doi)) {
+                $this->add_if_new('isbn', '978-0-19-020109-8');
                 if ($this->has('doi') && $this->has('doi-broken-date')) {
                     $this->set('doi', '');
                     $this->forget('doi-broken-date');
@@ -6788,6 +6806,10 @@ final class Template {
             $this->change_name_to('cite document');
          }
       }
+      if (($this->wikiname() === 'cite document' || $this->wikiname() === 'cite journal' || $this->wikiname() === 'cite web') &&
+          (strpos($this->get('isbn'), '978-0-19') === 0 || strpos($this->get('isbn'), '978019') === 0 || strpos($this->get('isbn'), '978-019') === 0)) {
+         $this->change_name_to('cite book');
+      }
       if ($this->blank('pmc-embargo-date')) $this->forget('pmc-embargo-date'); // Do at the very end, so we do not delete it, then add it later in a different position
       if ($this->wikiname() === 'cite arxiv' && $this->get_without_comments_and_placeholders('doi')) {
         $this->change_name_to('cite journal');
@@ -6864,10 +6886,18 @@ final class Template {
         ($this->wikiname() === 'cite web' || $this->wikiname() === 'cite journal') &&
         $this->blank(WORK_ALIASES) && $this->blank('url')) {
         preg_match("~^(\s*).*\b(\s*)$~", $this->name, $spacing);
-        if (substr($this->name,0,1) === 'c') {
-          $this->name = $spacing[1] . 'cite document' . $spacing[2];
+        if ($this->has('chapter')) {
+          if (substr($this->name,0,1) === 'c') {
+            $this->name = $spacing[1] . 'cite book' . $spacing[2];
+          } else {
+            $this->name = $spacing[1] . 'Cite book' . $spacing[2];
+          }
         } else {
-          $this->name = $spacing[1] . 'Cite document' . $spacing[2];
+          if (substr($this->name,0,1) === 'c') {
+            $this->name = $spacing[1] . 'cite document' . $spacing[2];
+          } else {
+            $this->name = $spacing[1] . 'Cite document' . $spacing[2];
+          }
         }
       }
       $this->tidy_parameter('doi'); // might be free, and freedom is date dependent for some journals
