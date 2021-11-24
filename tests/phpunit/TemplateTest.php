@@ -295,10 +295,10 @@ final class TemplateTest extends testBaseClass {
   }
 
   public function testCleanUpTemplates4() : void {
-    $text = "{{Cite  web |page=2}}";
+    $text = "{{Cite  web |p=2}}";
     $expanded = $this->process_citation($text);
     $this->assertSame("{{Cite web |page=2}}", $expanded->parsed_text());
-    $text = "{{cite  web |page=2}}";
+    $text = "{{cite  web |p=2}}";
     $expanded = $this->process_citation($text);
     $this->assertSame("{{cite web |page=2}}", $expanded->parsed_text());
   }
