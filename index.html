@@ -4,12 +4,12 @@
   <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
   <link rel="apple-touch-icon" href="https://en.wikipedia.org/apple-touch-icon.png" />
   <link rel="copyright" href="https://www.gnu.org/copyleft/fdl.html" />
-  <link rel="stylesheet" type="text/css" href="css/results.css" />
+  <link rel="stylesheet" type="text/css" href="results.css" />
   <meta content="A bot to automatically tidy and complete citations on Wikipedia, the free encyclopaedia" name="description" />
   <title>
    Citation bot
   </title>   
-  <script type="text/javascript" src="js/index.js"></script>
+  <script type="text/javascript" src="index.js"></script>
 </head>  
 <body class="mediawiki ns--1 ltr page-Spezial_Beiträge">
   <header>
@@ -29,7 +29,7 @@
       <label for="botPage"><code>Single page:&nbsp;</code></label>
       <input name="page" id="botPage" value="" placeholder="Page name" />
         <button type="submit" name="pageSubmit" id="PageSubmit" value="Process page" formaction="process_page.php">Process page</button>
-        <img style="display:none" src="img/spinner_18_18.gif" id="PageSpinner" alt="" />
+        <img style="display:none" src="spinner_18_18.gif" id="PageSpinner" alt="" />
         <br />Separate multiple pages with a pipe (<code>Page 1|Page 2</code>)
     </p>
     <p>– or –</p>
@@ -37,7 +37,7 @@
       <label for="botCat"><code>Category:&nbsp;</code></label>
       <input name="cat" id="botCat" value="" placeholder="Category name" />
         <button type="submit" name="catSubmit" id="CatSubmit" value="Process category" formaction="category.php">Process pages in category</button>
-        <img style="display:none" src="img/spinner_18_18.gif" id="CatSpinner" alt="" />
+        <img style="display:none" src="spinner_18_18.gif" id="CatSpinner" alt="" />
         <br />
     </p>
     <p>– or –</p>
@@ -45,7 +45,7 @@
       <label for="botLinked"><code>Linked pages:&nbsp;</code></label>
       <input name="linkpage" id="botLinked" value="" placeholder="Initial page name" />
         <button type="submit" name="linkedSubmit" id="LinkedSubmit" value="Process all linked" formaction="linked_pages.php">Process pages linked from</button>
-        <img style="display:none" src="img/spinner_18_18.gif" id="LinkSpinner" alt="" />
+        <img style="display:none" src="spinner_18_18.gif" id="LinkSpinner" alt="" />
         <br />
     </p>
     <p>

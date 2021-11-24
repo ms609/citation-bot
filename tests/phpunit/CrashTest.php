@@ -29,6 +29,18 @@ final class CrashTest extends testBaseClass {
       $page->expand_text();
       AdsAbsControl::give_up();
       Zotero::block_zotero();
+      echo "\n\n\n\n";
+      $text = $page->parsed_text();
+      unset($page);
+      $text = str_replace("\r", "\n", $text);
+      $text = str_replace(["\n\n\n\n", "\n\n\n", "\n\n"], ["\r\r\r\n", "\r\r\n", "\r\n"], $text); // Protect multiple line feeds
+      $line = strtok($text, "\n");
+      while ($line !== false) {
+        $line = str_replace("\r", "\n", $line);
+        echo $line . "\n";
+        $line = strtok("\n");
+      }
+      echo "\n\n\n\n";
       $this->assertTrue(FALSE); // prevent us from git committing with a website included
     }
     $this->assertTrue(TRUE);

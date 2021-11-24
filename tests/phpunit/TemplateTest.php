@@ -294,6 +294,15 @@ final class TemplateTest extends testBaseClass {
     $this->assertSame("{{Citation |page=2}}", $expanded->parsed_text());
   }
 
+  public function testCleanUpTemplates4() : void {
+    $text = "{{Cite  web |p=2}}";
+    $expanded = $this->process_citation($text);
+    $this->assertSame("{{Cite web |page=2}}", $expanded->parsed_text());
+    $text = "{{cite  web |p=2}}";
+    $expanded = $this->process_citation($text);
+    $this->assertSame("{{cite web |page=2}}", $expanded->parsed_text());
+  }
+ 
   public function testUseUnusedData() : void {
     $text = "{{Cite web | http://google.com | title  I am a title | auhtor = Other, A. N. | issue- 9 | vol. 22 pp. 5-6 }}";
     $prepared = $this->prepare_citation($text);
@@ -1058,7 +1067,11 @@ final class TemplateTest extends testBaseClass {
     $this->assertSame('[[Pure Evil]]', $expanded->get2('title'));
     $this->assertNull($expanded->get2('title-link'));
   }
-
+  public function testRemoveWikilinks2e() : void {
+    $expanded = $this->process_citation("{{cite journal |journal= Journal of the [[Royal Asiatic Society Hong Kong Branch]]}}");
+    $this->assertSame('Journal of the [[Royal Asiatic Society Hong Kong Branch]]', $expanded->get2('journal'));
+  }
+ 
   public function testRemoveWikilinks3() : void {
     $expanded = $this->process_citation("{{Cite journal|title=[[Pure Evil|Approximate Physics]]}}");
     $this->assertSame('[[Pure Evil|Approximate Physics]]', $expanded->get2('title'));
