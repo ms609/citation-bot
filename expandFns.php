@@ -395,15 +395,19 @@ function titles_simple(string $inTitle) : string {
         $inTitle = str_replace('�', '', $inTitle);
         echo "\n IN :" . $inTitle . "\n";
         // Leading Chapter # -   Use callback to make sure there are a few characters after this
-        $inTitle = preg_replace_callback('~^(?:Chapter \d+ \- )(.....+)~iu',
+        $inTitle2 = preg_replace_callback('~^(?:Chapter \d+ \- )(.....+)~iu',
             function (array $matches) : string {return ($matches[1]);}, trim($inTitle));
+        if ($inTitle2 !== NULL) $inTitle = $inTitle2;
         // Trailing "a review"
         echo "\n OUT :" . (string) $inTitle . "\n";
         $inTitle = preg_replace('~(?:\: | |\:)a review$~iu', '', trim($inTitle));
+        echo "\n OUT :" . (string) $inTitle . "\n";
         // Strip trailing Online
         $inTitle = preg_replace('~ Online$~iu', '', $inTitle);
+        echo "\n OUT :" . (string) $inTitle . "\n";
         // Strip trailing (Third Edition)
         $inTitle = preg_replace('~\([^\s\(\)]+ Edition\)^~iu', '', $inTitle);
+        echo "\n OUT :" . (string) $inTitle . "\n";
         // Strip leading International Symposium on 
         $inTitle = preg_replace('~^International Symposium on ~iu', '', $inTitle);
         // Strip leading the
