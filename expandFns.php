@@ -392,41 +392,53 @@ function titles_are_dissimilar(string $inTitle, string $dbTitle) : bool {
 }
 
 function titles_simple(string $inTitle) : string {
-        $inTitle = str_replace('�', '', $inTitle);
         echo "\n IN :" . $inTitle . "\n";
+        // Failure leads to null or empty strings!!!!
         // Leading Chapter # -   Use callback to make sure there are a few characters after this
-        $inTitle2 = preg_replace_callback('~^(?:Chapter \d+ \- )(.....+)~iu',
+        $inTitle2 = (string) preg_replace_callback('~^(?:Chapter \d+ \- )(.....+)~iu',
             function (array $matches) : string {return ($matches[1]);}, trim($inTitle));
-        if ($inTitle2 !== NULL) $inTitle = $inTitle2;
+        if ($inTitle2 !== "") $inTitle = $inTitle2;
         // Trailing "a review"
-        echo "\n OUT :" . (string) $inTitle . "\n";
-        $inTitle = preg_replace('~(?:\: | |\:)a review$~iu', '', trim($inTitle));
-        echo "\n OUT :" . (string) $inTitle . "\n";
+        $inTitle2 = (string) preg_replace('~(?:\: | |\:)a review$~iu', '', trim($inTitle));
+        if ($inTitle2 !== "") $inTitle = $inTitle2;
         // Strip trailing Online
-        $inTitle = preg_replace('~ Online$~iu', '', $inTitle);
-        echo "\n OUT :" . (string) $inTitle . "\n";
+        $inTitle2 = (string) preg_replace('~ Online$~iu', '', $inTitle);
+        if ($inTitle2 !== "") $inTitle = $inTitle2;
         // Strip trailing (Third Edition)
-        $inTitle = preg_replace('~\([^\s\(\)]+ Edition\)^~iu', '', $inTitle);
-        echo "\n OUT :" . (string) $inTitle . "\n";
+        $inTitle2 = (string) preg_replace('~\([^\s\(\)]+ Edition\)^~iu', '', $inTitle);
+        if ($inTitle2 !== "") $inTitle = $inTitle2;
         // Strip leading International Symposium on 
-        $inTitle = preg_replace('~^International Symposium on ~iu', '', $inTitle);
+        $inTitle2 = (string) preg_replace('~^International Symposium on ~iu', '', $inTitle);
+        if ($inTitle2 !== "") $inTitle = $inTitle2;
         // Strip leading the
-        $inTitle = preg_replace('~^The ~iu', '', $inTitle);
+        $inTitle2 = (string) preg_replace('~^The ~iu', '', $inTitle);
+        if ($inTitle2 !== "") $inTitle = $inTitle2;
         // Reduce punctuation
+        echo "\n OUT :" . (string) $inTitle . "\n";
         $inTitle = straighten_quotes(mb_strtolower((string) $inTitle), TRUE);
-        $inTitle = preg_replace("~(?: |‐|−|-|—|–|â€™|â€”|â€“)~u", "", $inTitle);
+        $inTitle2 = (string) preg_replace("~(?: |‐|−|-|—|–|â€™|â€”|â€“)~u", "", $inTitle);
+        if ($inTitle2 !== "") $inTitle = $inTitle2;
         $inTitle = str_replace(array("\n", "\r", "\t", "&#8208;", ":", "&ndash;", "&mdash;", "&ndash", "&mdash"), "", $inTitle);
+        echo "\n OUT :" . (string) $inTitle . "\n";
         // Retracted
-        $inTitle = preg_replace("~\[RETRACTED\]~ui", "", $inTitle);
-        $inTitle = preg_replace("~\(RETRACTED\)~ui", "", $inTitle);
-        $inTitle = preg_replace("~RETRACTED~ui", "", $inTitle);
+        $inTitle2 = (string) preg_replace("~\[RETRACTED\]~ui", "", $inTitle);
+        if ($inTitle2 !== "") $inTitle = $inTitle2;
+        $inTitle2 = (string) preg_replace("~\(RETRACTED\)~ui", "", $inTitle);
+        if ($inTitle2 !== "") $inTitle = $inTitle2;
+        $inTitle2 = (string) preg_replace("~RETRACTED~ui", "", $inTitle);
+        if ($inTitle2 !== "") $inTitle = $inTitle2;
+        echo "\n OUT :" . (string) $inTitle . "\n";
         // Drop normal quotes
         $inTitle = str_replace(array("'", '"'), "", $inTitle);
+        echo "\n OUT :" . (string) $inTitle . "\n";
         // Strip trailing periods
         $inTitle = trim(rtrim($inTitle, '.'));
+        echo "\n OUT :" . (string) $inTitle . "\n";
         // greek
         $inTitle = strip_diacritics($inTitle);
+        echo "\n OUT :" . (string) $inTitle . "\n";
         $inTitle = str_remove_irrelevant_bits($inTitle);
+        echo "\n OUT :" . (string) $inTitle . "\n";
         return $inTitle;
 }
 
