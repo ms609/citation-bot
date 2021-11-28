@@ -392,6 +392,7 @@ function titles_are_dissimilar(string $inTitle, string $dbTitle) : bool {
 }
 
 function titles_simple(string $inTitle) : string {
+        $inTitle = str_replace('�', '', $inTitle);
         echo "\n IN :" . $inTitle . "\n";
         // Leading Chapter # -   Use callback to make sure there are a few characters after this
         $inTitle = preg_replace_callback('~^(?:Chapter \d+ \- )(.....+)~iu',
