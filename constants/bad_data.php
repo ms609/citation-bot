@@ -331,6 +331,8 @@ const HOSTNAME_MAP  = array('public.ebookcentral.proquest.com' => '[[ProQuest]]'
                             'nba.com' => '[[NBA.com]]',
                             'mlb.com' => '[[MLB.com]]',
                             'nfl.com' => '[[NFL.com]]',
+                            'showbuzzdaily.com' => '[[Showbuzzdaily.com]]',
+                            'ratingsryan.com' => 'Ratings Ryan',
                            ); // Be warned, some website host a seperate sunday edition, etc.  Be careful and when in doubt link to hostname
 
 const NO_DATE_WEBSITES = array('wikipedia.org', 'web.archive.org', 'perma-archives.org', 'webarchive.proni.gov.uk', 'perma.cc',
