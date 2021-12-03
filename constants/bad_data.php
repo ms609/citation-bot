@@ -273,7 +273,7 @@ const HOSTNAME_MAP  = array('public.ebookcentral.proquest.com' => '[[ProQuest]]'
                             'bet.com' => '[[BET]]',
                             'mtv.com' => '[[MTV]]',
                             'ultratop.be' => '[[Ultratop]]',
-                            'billboard.com' => '[[Billboard (magazine)]]',
+                            'billboard.com' => '[[Billboard (magazine)|Billboard]]',
                             'officialcharts.com' => '[[OfficialCharts.com]]',
                             'loudwire.com' => '[[Loudwire]]',
                             'altpress.com' => '[[Alternative Press (magazine)|Alternative Press]]',
@@ -288,7 +288,7 @@ const HOSTNAME_MAP  = array('public.ebookcentral.proquest.com' => '[[ProQuest]]'
                             'buzzjack.com' => 'BuzzJack',
                             'open.spotify.com' => '[[Spotify]]',
                             'whosampled.com' => '[[WhoSampled]]',
-                            'fuse.tv' => '[[Fuse (TV channel)]]',
+                            'fuse.tv' => '[[Fuse (TV channel)|Fuse]]',
                             'collider.com' => '[[Collider (website)|Collider]]',
                             'space.com' => '[[Space.com]]',
                             'github.com' => '[[GitHub]]',
@@ -333,6 +333,9 @@ const HOSTNAME_MAP  = array('public.ebookcentral.proquest.com' => '[[ProQuest]]'
                             'nfl.com' => '[[NFL.com]]',
                             'showbuzzdaily.com' => '[[Showbuzzdaily.com]]',
                             'ratingsryan.com' => 'Ratings Ryan',
+                            'vanityfair.com' => '[[Vanity Fair (magazine)|Vanity Fair]]',
+                            'songlines.co.uk' => '[[Songlines (magazine)|Songlines]]',
+                            
                            ); // Be warned, some website host a seperate sunday edition, etc.  Be careful and when in doubt link to hostname
 
 const NO_DATE_WEBSITES = array('wikipedia.org', 'web.archive.org', 'perma-archives.org', 'webarchive.proni.gov.uk', 'perma.cc',
