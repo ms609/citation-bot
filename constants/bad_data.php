@@ -551,6 +551,7 @@ const NON_JOURNAL_WEBSITES = array('cnn.com/', 'msnbc.com/', 'nbcnews.com/', 'cb
                                    'courtlistener.com/', 'c-span.org/', '.ajc.com/', '/ajc.com/', 'theweek.com/',
                                    'socialblade.com/', 'poll.qu.edu/', 'spacecom\.mil/', 'planet4589\.org/',
                                    'nasa\.gov/', 'skyrocket\.de/', 'space\.com/', 'unoosa\.org/', 'yuzhnoye\.com/',
+                                   'ballotpedia\.org/"
                                    ); 
                                    // Just a list of ones that are obvious.  Add ones that time-out as we find them
                                    // bbm.ca is short enough that we add /bbm.ca/ and .bbm.ca/ since we don't want to grab too many sites
@@ -562,7 +563,7 @@ const ARE_MAGAZINES = array('the new yorker', 'the new republic', 'new republic'
                            'wired (magazine)', 'time', 'life', 'time (magazine)', 'life (magazine)', 'billboard',
                            'billboard (magazine)', 'rolling stone', 'mcv/develop', 'vanity fair'
                            ); // lowercase axact matches
-const ARE_MANY_THINGS = array('pc gamer', 'gamestar', 'rock paper shotgun', 'mcv', 'rock, paper, shotgun', 'edge'); // lowercase axact matches.  These are things that are both websites and newspapers
+const ARE_MANY_THINGS = array('pc gamer', 'gamestar', 'rock paper shotgun', 'mcv', 'rock, paper, shotgun', 'edge', 'ballotpedia'); // lowercase axact matches.  These are things that are both websites and newspapers
 const ARE_NEWSPAPERS = array('the economist', 'la times', 'toronto sun', 'washington post'); // lowercase axact matches
 const NO_PUBLISHER_NEEDED = array('los angeles times', 'new york times magazine', 'the new york times',
                                    'new york times', 'huffington post', 'the daily telegraph', 'forbes.com',
