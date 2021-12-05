@@ -619,9 +619,11 @@ function title_capitalization(string $in, bool $caps_after_punctuation) : string
       }
     }
   }
-  // Special cases
+  // Special cases - Only if the full title
   if ($new_case === 'Bioscience') {
-    $new_case = 'BioScience'; // Only if the full title
+    $new_case = 'BioScience';
+  } elseif ($new_case === 'Aids') {
+    $new_case = 'AIDS';
   }
   return $new_case;
 }
