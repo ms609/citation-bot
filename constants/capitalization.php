@@ -49,7 +49,7 @@ const UC_SMALL_WORDS = array(/* The following will be automatically updated to a
           // For ones that start with lower-case, include both ELife and Elife versions in misspelled array
 const JOURNAL_ACRONYMS = array(/* The following will be automatically updated to alphabetical order */
           " (and the Middle East) ", " (BBA) ", " (online ed.) ", " AAPOS ", " AAPS ", 
-          " ACM SIGGRAPH ", " ACS ", " AIDS & Behavior ", " AIDS and Behavior ", " AIMS Microbiology ", " AJNR. ", " Algebra i Analiz ", " Algebra i Logika "
+          " ACM SIGGRAPH ", " ACS ", " AIDS & Behavior ", " AIDS and Behavior ", " AIMS Microbiology ", " AJNR. ", " Algebra i Analiz ", " Algebra i Logika ",
           " Amphibian Species of the World: an Online Reference. ", 
           " Angew Chem Int Ed ", " AOAC International ", " Applied ", " APS Division ", 
           " Arch Dis Child Fetal Neonatal Ed ", " Arctic ", " ASAIO ", " ASME AES ", " ASME MTD ", 
