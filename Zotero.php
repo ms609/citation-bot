@@ -493,6 +493,13 @@ public static function process_zotero_response(string $zotero_response, Template
         return FALSE;
       }
    }
+   // Specific bad data that is correctable
+   $tester = strtolower($result->publicationTitle);
+   if ($tester === 'nationalpost') {
+      $result->publicationTitle = 'National Post';
+   } elseif ($tester === 'financialpost') {
+      $result->publicationTitle = 'Financial Post';
+   }
   }
    
   if (preg_match('~^([^\]]+)\|([^\]]+)\| ?THE DAILY STAR$~i', @$result->title, $matches)) {
