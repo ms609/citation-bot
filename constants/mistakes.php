@@ -352,6 +352,7 @@ const COMMON_MISTAKES_TOOL = array(
   "archivedate"     =>  "archive-date",
   "archiveurl"      =>  "archive-url",
   "authorlink"      =>  "author-link",
-  "origyear"        =>  "orig-year",
+  "origyear"        =>  "orig-date",
+  "origdate"        =>  "orig-date",
   "airdate"         =>  "air-date");
 
