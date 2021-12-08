@@ -3585,7 +3585,7 @@ final class Template {
       if ($use_it) $this->google_book_details($gid[1]);
       return TRUE;
     }
-    if (preg_match("~^(.+\.google\.com/books/edition/_/)([a-zA-Z0-9]+)(\?.+|)$~", $url, $gid)) {
+    if (preg_match("~^(.+\.google\.com/books/edition/[^\/]+/)([a-zA-Z0-9]+)(\?.+|)$~", $url, $gid)) {
       if ($url_type && $gid[3] === '?hl=en') {
         report_forget('Anonymized/Standardized/Denationalized Google Books URL');
         $this->set($url_type, $gid[1] . $gid[2]);
