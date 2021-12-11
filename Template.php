@@ -4309,11 +4309,13 @@ final class Template {
     if ($this->get($param) != $this->get3($param)) return;
     
     if($this->has($param)) {
-      if (stripos($param, 'separator') === FALSE &&  // lone punctuation valid
+      if (stripos($param, 'separator') === FALSE &&   // lone punctuation valid
           stripos($param, 'postscript') === FALSE &&  // periods valid
-          stripos($param, 'url') === FALSE &&  // all characters are valid
-          stripos($param, 'quot') === FALSE && // someone might have formatted the quote
-          stripos($param, 'link') === FALSE) {  // inter-wiki links
+          stripos($param, 'url') === FALSE &&         // all characters are valid
+          stripos($param, 'quot') === FALSE &&        // someone might have formatted the quote
+          stripos($param, 'link') === FALSE &&        // inter-wiki links
+          ($param !== 'title' || strlen($this->get($param)) > 3)  // Avoid tiny titles that might be a smiley face
+         ) {
         $this->set($param, preg_replace('~[\x{2000}-\x{200A}\x{00A0}\x{202F}\x{205F}\x{3000}]~u', ' ', $this->get($param))); // Non-standard spaces
         $this->set($param, preg_replace('~[\t\n\r\0\x0B]~u', ' ', $this->get($param))); // tabs, linefeeds, null bytes
         $this->set($param, preg_replace('~  +~u', ' ', $this->get($param))); // multiple spaces
