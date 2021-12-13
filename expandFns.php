@@ -68,7 +68,6 @@ function is_doi_active(string $doi) : ?bool {
 
 function is_doi_works(string $doi) : ?bool {
   if (strpos($doi, '10.1111/j.1572-0241') === 0 && NATURE_FAILS) return FALSE;
-  if (preg_match('~^10\.1038/nature\d{5}$~i', $doi) && NATURE_FAILS2) return FALSE;
   $context = stream_context_create(array(
            'ssl' => ['verify_peer' => FALSE, 'verify_peer_name' => FALSE, 'allow_self_signed' => TRUE]
          )); // Allow crudy cheap journals
@@ -77,6 +76,7 @@ function is_doi_works(string $doi) : ?bool {
      sleep(1);                                                                            // @codeCoverageIgnore
      $headers_test = @get_headers("https://dx.doi.org/" . doi_encode($doi), 1, $context);  // @codeCoverageIgnore
   }
+  if (preg_match('~^10\.1038/nature\d{5}$~i', $doi) && NATURE_FAILS2 && $headers_test === FALSE) return FALSE;
   if ($headers_test === FALSE) return NULL; // most likely bad, but will recheck again an again
   $response = $headers_test[0];
   if (empty($headers_test['Location'])) return FALSE; // leads nowhere
