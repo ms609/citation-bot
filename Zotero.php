@@ -357,6 +357,21 @@ public static function expand_by_zotero(Template $template, ?string $url = NULL)
      } else {
        return FALSE;
      }
+     if (preg_match('~^https?://(?:dx\.|)doi\.org~i', $url)) {
+        return FALSE;
+     }
+     if (preg_match('~^https?://semanticscholar\.org~i', $url)) {
+        return FALSE;
+     }
+     if (preg_match(REGEXP_BIBCODE, urldecode($url))) {
+        return FALSE;
+     }
+     if (preg_match("~^https?://citeseerx\.ist\.psu\.edu~i", $url)) {
+        return FALSE;
+     }
+     if (preg_match("~\barxiv\.org/.*(?:pdf|abs|ftp/arxiv/papers/\d{4})/(.+?)(?:\.pdf)?$~i", $url)) {
+        return FALSE;
+     }     
   }
 
   if (!$template->profoundly_incomplete($url)) return FALSE; // Only risk unvetted data if there's little good data to sully
