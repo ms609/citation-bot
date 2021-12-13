@@ -56,7 +56,7 @@ const WORKS_ARE_PUBLISHERS = array('united states census bureau'); // LOWER CASE
 
 const DUBIOUS_JOURNALS = array('fda', 'reuters', 'associated press', 'ap', 'ap wire', 'report'); // Things we add, but only if publisher and agency are both blank
 
-const NATURE_FAILS = TRUE;  // Nature dropped the ball for now TODO - https://dx.doi.org/10.1111/j.1572-0241.2006.00844.x should point to https://journals.lww.com/ajg/Abstract/2006/11000/Proton_Pump_Inhibitor_Therapy_for_Suspected.31.aspx
+const NATURE_FAILSx= TRUE;  // Nature dropped the ball for now TODO - https://dx.doi.org/10.1111/j.1572-0241.2006.00844.x should point to https://journals.lww.com/ajg/Abstract/2006/11000/Proton_Pump_Inhibitor_Therapy_for_Suspected.31.aspx
 
 // Catch 'authors' such as "hearst magazines", "time inc", "nielsen business media, inc"
 // Ordered alphabetically.
