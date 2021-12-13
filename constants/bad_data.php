@@ -339,6 +339,7 @@ const HOSTNAME_MAP  = array('public.ebookcentral.proquest.com' => '[[ProQuest]]'
                             'songlines.co.uk' => '[[Songlines (magazine)|Songlines]]',
                             'abc.net.au' => '[[Australian Broadcasting Corporation]]',
                             'espnscrum.com' => '[[ESPNscrum]]',
+                            'thestatesman.com' => '[[The Statesman (India)|The Statesman]]',
                            ); // Be warned, some website host a seperate sunday edition, etc.  Be careful and when in doubt link to hostname
 
 const NO_DATE_WEBSITES = array('wikipedia.org', 'web.archive.org', 'perma-archives.org', 'webarchive.proni.gov.uk', 'perma.cc',
