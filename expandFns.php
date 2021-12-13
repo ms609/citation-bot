@@ -68,15 +68,21 @@ function is_doi_active(string $doi) : ?bool {
 
 function is_doi_works(string $doi) : ?bool {
   if (strpos($doi, '10.1111/j.1572-0241') === 0 && NATURE_FAILS) return FALSE;
+  echo "\n 90 TIME " . time() . " \n";
   $context = stream_context_create(array(
            'ssl' => ['verify_peer' => FALSE, 'verify_peer_name' => FALSE, 'allow_self_signed' => TRUE]
          )); // Allow crudy cheap journals
   $headers_test = @get_headers("https://dx.doi.org/" . doi_encode($doi), 1, $context);
+    echo "\n 91 TIME " . time() . " \n";
   if ($headers_test === FALSE) {
+      echo "\n 92 TIME " . time() . " \n";
      sleep(1);                                                                            // @codeCoverageIgnore
      $headers_test = @get_headers("https://dx.doi.org/" . doi_encode($doi), 1, $context);  // @codeCoverageIgnore
+      echo "\n 93 TIME " . time() . " \n";
   }
+    echo "\n 94 TIME " . time() . " \n";
   if ($headers_test === FALSE) return NULL; // most likely bad, but will recheck again an again
+    echo "\n 95 TIME " . time() . " \n";
   $response = $headers_test[0];
   if (empty($headers_test['Location'])) return FALSE; // leads nowhere
   if (stripos($response, '404 Not Found') !== FALSE) return FALSE; // leads to 404
