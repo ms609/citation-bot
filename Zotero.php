@@ -365,10 +365,6 @@ public static function expand_by_zotero(Template $template, ?string $url = NULL)
      }
      if (preg_match(REGEXP_BIBCODE, urldecode($url))) {
         return FALSE;
-     }     
-     if (preg_match("~^https?://(?:www\.|)pubmedcentral\.nih\.gov"
-                      . "|^https?://(?:www\.|)ncbi\.nlm\.nih\.gov~i", $url)) {
-        return FALSE;
      }
      if (preg_match("~^https?://citeseerx\.ist\.psu\.edu~i", $url)) {
         return FALSE;
