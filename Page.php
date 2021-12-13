@@ -171,12 +171,15 @@ class Page {
     }
 
     // COMMENTS AND NOWIKI ETC. //
+    echo "\n 1 TIME " . time() . " \n";
+    
     $comments    = $this->extract_object('Comment');
     $nowiki      = $this->extract_object('Nowiki');
     $chemistry   = $this->extract_object('Chemistry');
     $mathematics = $this->extract_object('Mathematics');
     $musicality  = $this->extract_object('Musicscores');
     $preformated = $this->extract_object('Preformated');
+        echo "\n 2 TIME " . time() . " \n";
     set_time_limit(120);
     if (!$this->allow_bots()) {
       report_warning("Page marked with {{nobots}} template.  Skipping.");
@@ -254,6 +257,7 @@ class Page {
                       );
      }
     // TEMPLATES
+        echo "\n 3 TIME " . time() . " \n";
     set_time_limit(120);
     $singlebrack = $this->extract_object('SingleBracket');
     $all_templates = $this->extract_object('Template');
@@ -271,10 +275,12 @@ class Page {
         $all_templates[$i]->block_modifications();
       }
     }
+        echo "\n 4 TIME " . time() . " \n";
     $our_templates = array();
     $our_templates_slight = array();
     $our_templates_conferences = array();
     $our_templates_ieee = array();
+         echo "\n 5 TIME " . time() . " \n";
     report_phase('Remedial work to prepare citations');
     for ($i = 0; $i < count($all_templates); $i++) {
       set_time_limit(120);
@@ -320,28 +326,44 @@ class Page {
         $this_template->clean_cite_odnb();
       }
     }
+        echo "\n 6 TIME " . time() . " \n";
     // BATCH API CALLS
     report_phase('Consult APIs to expand templates');
     set_time_limit(120);
     $this->expand_templates_from_identifier('doi',     $our_templates);  // Do DOIs first!  Try again later for added DOIs
+        echo "\n 7 TIME " . time() . " \n";
     $this->expand_templates_from_identifier('pmid',    $our_templates);
+        echo "\n 8 TIME " . time() . " \n";
     $this->expand_templates_from_identifier('pmc',     $our_templates);
+        echo "\n 9 TIME " . time() . " \n";
     $this->expand_templates_from_identifier('bibcode', $our_templates);
+        echo "\n 10 TIME " . time() . " \n";
     $this->expand_templates_from_identifier('jstor',   $our_templates);
+        echo "\n 11 TIME " . time() . " \n";
     $this->expand_templates_from_identifier('doi',     $our_templates);
+        echo "\n 12 TIME " . time() . " \n";
     expand_arxiv_templates($our_templates);
+        echo "\n 13 TIME " . time() . " \n";
     $this->expand_templates_from_identifier('url',     $our_templates);
+        echo "\n 14 TIME " . time() . " \n";
     Zotero::query_ieee_webpages($our_templates_ieee);
+        echo "\n 15 TIME " . time() . " \n";
     Zotero::query_ieee_webpages($our_templates);
+        echo "\n 16 TIME " . time() . " \n";
     
     report_phase('Expand individual templates by API calls');
     for ($i = 0; $i < count($our_templates); $i++) {
       set_time_limit(120);
       $this_template = $our_templates[$i];
+              echo "\n 17 TIME " . time() . " \n";
       $this_template->expand_by_google_books();
+              echo "\n 18 TIME " . time() . " \n";
       $this_template->get_doi_from_crossref();
+              echo "\n 19 TIME " . time() . " \n";
       $this_template->get_doi_from_semanticscholar();
+              echo "\n 20 TIME " . time() . " \n";
       $this_template->find_pmid();
+              echo "\n 21 TIME " . time() . " \n";
       if ($this_template->blank('bibcode')) {
         $no_arxiv = $this_template->blank('arxiv');
         $this_template->expand_by_adsabs(); // Try to get a bibcode
@@ -350,12 +372,17 @@ class Page {
           expand_arxiv_templates($tmp_array);     // @codeCoverageIgnore
         }
       }
+              echo "\n 22 TIME " . time() . " \n";
       $this_template->get_open_access_url();
+              echo "\n 23 TIME " . time() . " \n";
     }
     $this->expand_templates_from_identifier('doi',     $our_templates);
     set_time_limit(120);
+            echo "\n 24 TIME " . time() . " \n";
     Zotero::drop_urls_that_match_dois($our_templates);
+                echo "\n 25 TIME " . time() . " \n";
     Zotero::drop_urls_that_match_dois($our_templates_conferences);
+                echo "\n 26 TIME " . time() . " \n";
     
     // Last ditch usage of ISSN - This could mean running the bot again will add more things
     $issn_templates = array_merge(TEMPLATES_WE_PROCESS, TEMPLATES_WE_SLIGHTLY_PROCESS, ['cite magazine']);
@@ -365,8 +392,9 @@ class Page {
         $this_template->use_issn();
       }
     }
+                echo "\n 27 TIME " . time() . " \n";
     expand_templates_from_archives($our_templates);
-
+            echo "\n 28 TIME " . time() . " \n";
     report_phase('Remedial work to clean up templates');
     for ($i = 0; $i < count($our_templates); $i++) {
       $this_template = $our_templates[$i];
@@ -374,8 +402,9 @@ class Page {
       if (!$this_template->initial_author_params()) {
         $this_template->handle_et_al();
       }
+                  echo "\n 29 TIME " . time() . " \n";
       $this_template->final_tidy();
-
+            echo "\n 30 TIME " . time() . " \n";
       // Record any modifications that have been made:
       $template_mods = $this_template->modifications();
       foreach (array_keys($template_mods) as $key) {
@@ -389,6 +418,7 @@ class Page {
         }
       }
     }
+                echo "\n 31 TIME " . time() . " \n";
     for ($i = 0; $i < count($our_templates_slight); $i++) {
       $this_template = $our_templates_slight[$i];
       // Record any modifications that have been made:
@@ -404,13 +434,14 @@ class Page {
         }
       }
     }
+                echo "\n 32 TIME " . time() . " \n";
     set_time_limit(120);
     // Release memory ASAP
     unset($our_templates);
     unset($our_templates_slight);
     unset($our_templates_conferences);
     unset($our_templates_ieee);
-    
+                echo "\n 33 TIME " . time() . " \n";
     $this->replace_object($all_templates);
     // remove circular memory reference that makes garbage collection hard (all templates have an array of all templates)
     for ($i = 0; $i < count($all_templates); $i++) {
@@ -418,10 +449,10 @@ class Page {
        unset($all_templates[$i]->all_templates);
     }
     unset($all_templates);
-
+            echo "\n 34 TIME " . time() . " \n";
     $this->text = preg_replace('~(\{\{[Cc]ite ODNB\s*\|[^\{\}\_]+_?[^\{\}\_]+\}\}\s*)\{\{ODNBsub\}\}~u', '$1', $this->text); // Allow only one underscore to shield us from MATH etc.
     $this->text = preg_replace('~(\{\{[Cc]ite ODNB\s*\|[^\{\}\_]*ref ?= ?\{\{sfn[^\{\}\_]+\}\}[^\{\}\_]*\}\}\s*)\{\{ODNBsub\}\}~u', '$1', $this->text); // Allow a ref={{sfn in the template
-    
+                echo "\n 35 TIME " . time() . " \n";
     set_time_limit(120);
     $this->replace_object($singlebrack); unset($singlebrack);
     $this->replace_object($preformated); unset($preformated);
@@ -431,17 +462,18 @@ class Page {
     $this->replace_object($nowiki); unset($nowiki);
     $this->replace_object($comments); unset($comments);
     set_time_limit(120);
-    
+                echo "\n 36 TIME " . time() . " \n";
     if (stripos($this->text, 'CITATION_BOT_PLACEHOLDER') !== FALSE) {
       $this->text = $this->start_text;                                  // @codeCoverageIgnore
       report_error('CITATION_BOT_PLACEHOLDER found after processing');  // @codeCoverageIgnore
     }
-
+            echo "\n 37 TIME " . time() . " \n";
     // we often just fix Journal caps, so must be case sensitive compare
     // Avoid minor edits - gadget API will make these changes, since it does not check return code
     $caps_ok = array('lccn', 'isbn', 'doi');
     $last_first_in  = array(' last=',  ' last =',  '|last=',  '|last =',  ' first=',  ' first =',  '|first=',  '|first =', 'cite newspaper', 'Cite newspaper', '| format=PDF ', '| format = PDF ', '|format=PDF ', '|format = PDF ', '| format=PDF', '| format = PDF', '|format=PDF', '|format = PDF', 'Cite  ', 'Cite ', 'cite  ', 'cite ');
     $last_first_out = array(' last1=', ' last1 =', '|last1=', '|last1 =', ' first1=', ' first1 =', '|first1=', '|first1 =','cite news',      'Cite news',      '',              '',                '',              '',              '',             '',               '',            '',              'Cite'  , 'Cite' , 'cite'  , 'cite' );
+                echo "\n 38 TIME " . time() . " \n";
     return strcmp(str_replace($last_first_in, $last_first_out, str_ireplace($caps_ok, $caps_ok, $this->text)),
                   str_replace($last_first_in, $last_first_out, str_ireplace($caps_ok, $caps_ok, $this->start_text))) != 0;
   }
