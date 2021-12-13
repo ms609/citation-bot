@@ -347,6 +347,7 @@ final class Template {
   }
 
   public function prepare() : void {
+             echo "\n 60 TIME " . time() . " \n";
     set_time_limit(120);
     if (in_array($this->wikiname(), TEMPLATES_WE_PROCESS) || in_array($this->wikiname(), TEMPLATES_WE_SLIGHTLY_PROCESS)) {
       // Clean up bad data
@@ -361,6 +362,7 @@ final class Template {
           $this->set('title', '');
       }
     }
+                 echo "\n 61 TIME " . time() . " \n";
     if ($this->should_be_processed()) {
       // Remove empty duplicates
       if (!empty($this->param)) {
@@ -377,6 +379,7 @@ final class Template {
           }
         }
       }
+                   echo "\n 62 TIME " . time() . " \n";
       foreach (DATES_TO_CLEAN as $date) {
         if ($this->has($date)) {
           $input = $this->get($date);
@@ -388,6 +391,7 @@ final class Template {
           }
         }
       }
+                   echo "\n 63 TIME " . time() . " \n";
       if ($this->get('last') === 'Archive' || $this->get('last1') === 'Archive') {
         if ($this->get('first2') === 'Get author RSS' ||
             $this->get('first3') === 'Get author RSS' ||
@@ -406,7 +410,7 @@ final class Template {
       $this->correct_param_spelling();
       $this->get_doi_from_text();
       $this->fix_rogue_etal();
-      
+                   echo "\n 64 TIME " . time() . " \n";
       switch ($this->wikiname()) {
         case "cite arxiv":
            // Forget dates so that DOI can update with publication date, not ARXIV date
@@ -426,6 +430,7 @@ final class Template {
             report_action("Found and used SICI");
           }
       }
+                   echo "\n 65 TIME " . time() . " \n";
       if (!$this->blank(['pmc', 'pmid', 'doi', 'jstor'])) { // Have some good data
           $the_title   = $this->get('title');
           $the_journal = $this->get('journal');
@@ -584,7 +589,9 @@ final class Template {
             }
           }
         }
+                   echo "\n 66 TIME " . time() . " \n";
         $this->tidy();
+                   echo "\n 67 TIME " . time() . " \n";
         // Fix up URLs hiding in identifiers
         foreach (['issn', 'oclc', 'pmc', 'doi', 'pmid', 'jstor', 'arxiv', 'zbl', 'mr',
                   'lccn', 'hdl', 'ssrn', 'ol', 'jfm', 'osti', 'biorxiv', 'citeseerx', 'hdl'] as $possible) {
@@ -4620,6 +4627,7 @@ final class Template {
           return;
           
         case 'doi':
+                           echo "\n 74 TIME " . time() . " \n";
           $doi = $this->get($param);
           if (!$doi) return;
           if ($doi == '10.1267/science.040579197') {
@@ -4632,6 +4640,7 @@ final class Template {
             $this->forget('doi');
             return;
           }
+          echo "\n 75 TIME " . time() . " \n";
           if (substr($doi, 0, 8) == '10.5555/') { // Test DOI prefix.  NEVER will work
             $this->forget('doi');
             if ($this->blank('url')) {
@@ -4654,14 +4663,17 @@ final class Template {
                return;
             }
           }
+          echo "\n 76 TIME " . time() . " \n";
           if (!doi_works($doi)) {
             $this->verify_doi();
             $doi = $this->get($param);
           }
+          echo "\n 77 TIME " . time() . " \n";
           if (!doi_works($doi) && strpos($doi, '10.1111/j.1475-4983.' . $this->year()) === 0) {
             $this->forget('doi');  // Special Papers in Palaeontology - they do not work
             return;
           }
+          echo "\n 78 TIME " . time() . " \n";
           if (!doi_works($doi)) {  
             $this->set($param, sanitize_doi($doi));
           }
@@ -4676,6 +4688,7 @@ final class Template {
             $this->forget('doi');
             return;
           }
+          echo "\n 79 TIME " . time() . " \n";
           if (stripos($doi, '10.1093/law:epil') === 0 || stripos($doi, '10.1093/oi/authority') === 0) {
             return;
           }
@@ -4687,6 +4700,7 @@ final class Template {
             }
            }
           }
+          echo "\n 80 TIME " . time() . " \n";
           if (preg_match('~^10\.2307/(\d+)$~', $this->get_without_comments_and_placeholders('doi'))) {
             $this->add_if_new('jstor', substr($this->get_without_comments_and_placeholders('doi'), 8));
           }
@@ -4700,6 +4714,7 @@ final class Template {
               $this->set('issue', $matches[1]);
             }
           }
+          echo "\n 81 TIME " . time() . " \n";
           if (doi_works($doi) && (strpos($doi, '10.3389/') === 0 ||
                                   strpos($doi, '10.3390/') === 0 ||
                                   strpos($doi, '10.1155/') === 0 ||
@@ -4711,6 +4726,7 @@ final class Template {
                                  )) {
             $this->add_if_new('doi-access', 'free');
           }
+          echo "\n 82 TIME " . time() . " \n";
           if (doi_works($doi) && (strpos($doi, '10.1073/pnas') === 0)) {
             $template_year = $this->year();
             if ($template_year !== '') { 
@@ -4720,7 +4736,8 @@ final class Template {
                 $this->add_if_new('doi-access', 'free');
               }
             }
-          }       
+          }   
+          echo "\n 83 TIME " . time() . " \n";
           return;
           
         case 'doi-broken': case 'doi_brokendate': case 'doi-broken-date': case 'doi_inactivedate': case 'doi-inactive-date':
@@ -6691,9 +6708,11 @@ final class Template {
     // Called in final_tidy when the template type is changed
     // We do this again when anything changes - up to three times
     $orig = $this->parsed_text();  
+                 echo "\n 69 TIME " . time() . " \n";
     foreach ($this->param as $param) {
       $this->tidy_parameter($param->param);
     }
+                 echo "\n 70 TIME " . time() . " \n";
     $new = $this->parsed_text();
     if ($orig !== $new) {
       $orig = $new;
@@ -6701,6 +6720,7 @@ final class Template {
         $this->tidy_parameter($param->param);
       }
     }
+                 echo "\n 71 TIME " . time() . " \n";
     $new = $this->parsed_text();
     if ($orig !== $new) {
       $orig = $new;
@@ -6708,6 +6728,7 @@ final class Template {
         $this->tidy_parameter($param->param);
       }
     }
+                     echo "\n 72 TIME " . time() . " \n";
   }
   
   public function final_tidy() : void {
