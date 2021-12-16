@@ -3189,11 +3189,6 @@ final class Template {
           return 'publisher';
         }
         if (!isset($best_location->evidence)) return 'nothing';
-        // This bug report is now closed (https://github.com/Impactstory/oadoi/issues/121)
-        // if (@$best_location->evidence == 'oa repository (via OAI-PMH title and first author match)' ) {
-        //   report_warning("Ignored a low-quality OA match on a repository via OAI-PMH for DOI: " . echoable($doi)); // @codeCoverageIgnore
-        //   return 'unreliable';                                                                                     // @codeCoverageIgnore
-        // }
         if (isset($oa->journal_name) && $oa->journal_name == "Cochrane Database of Systematic Reviews" ) {
           report_warning("Ignored a OA from Cochrane Database of Systematic Reviews for DOI: " . echoable($doi)); // @codeCoverageIgnore
           return 'unreliable';                                                                                    // @codeCoverageIgnore
@@ -3295,10 +3290,13 @@ final class Template {
                 if ($old_host_name === $new_host_name) return 'have free';
             }
        }
-        if (preg_match('~^10\.\d+/9[\-\d]+_+\d+~', $doi) && $this->has('chapter')) {
-          $url_type = 'chapter-url';
-        } else {
-          $url_type = 'url';
+        $url_type = 'url'
+        if ($this->has('chapter') {
+          if ( preg_match('~^10\.\d+/9[\-\d]+_+\d+~', $doi) ||
+              (strpos($oa_url, 'eprints') !== FALSE) ||
+              (strpos($oa_url, 'chapter') !== FALSE) {
+            $url_type = 'chapter-url';
+          }
         }
         $has_url_already = $this->has($url_type);
         $this->add_if_new($url_type, $oa_url);  // Will check for PMCs etc hidden in URL
