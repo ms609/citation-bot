@@ -6405,6 +6405,19 @@ final class Template {
                $this->rename($param, 'agency');
             }
           }
+          $the_param = $this->get($param);
+          if (preg_match(REGEXP_PLAIN_WIKILINK, $the_param, $matches) || preg_match(REGEXP_PIPED_WIKILINK, $the_param, $matches)) {
+              $the_param = $matches[1]; // Always the wikilink for easier standardization
+          }
+          if (in_array(strtolower($the_param), ARE_MAGAZINES) && $this->blank(['pmc','doi','pmid'])) {
+            $this->change_name_to('cite magazine');
+            $this->rename($param, 'magazine');
+            return;
+          } elseif (in_array(strtolower($the_param), ARE_NEWSPAPERS)) {
+            $this->change_name_to('cite news');
+            $this->rename($param, 'newspaper');
+            return;
+          }
           return;
           
         case 'via':   // Should just remove all 'via' with no url, but do not want to make people angry
