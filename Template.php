@@ -3290,11 +3290,11 @@ final class Template {
                 if ($old_host_name === $new_host_name) return 'have free';
             }
        }
-        $url_type = 'url'
-        if ($this->has('chapter') {
+        $url_type = 'url';
+        if ($this->has('chapter')) {
           if ( preg_match('~^10\.\d+/9[\-\d]+_+\d+~', $doi) ||
               (strpos($oa_url, 'eprints') !== FALSE) ||
-              (strpos($oa_url, 'chapter') !== FALSE) {
+              (strpos($oa_url, 'chapter') !== FALSE)) {
             $url_type = 'chapter-url';
           }
         }
