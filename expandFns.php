@@ -58,6 +58,10 @@ function doi_works(string $doi) : ?bool {
 
 function is_doi_active(string $doi) : ?bool {
   $headers_test = @get_headers("https://api.crossref.org/works/" . doi_encode($doi));
+  if ($headers_test === FALSE) {
+    sleep(2);                                                                           // @codeCoverageIgnore
+    $headers_test = @get_headers("https://api.crossref.org/works/" . doi_encode($doi)); // @codeCoverageIgnore
+  }
   if ($headers_test === FALSE) return NULL; // most likely bad, but will recheck again an again
   $response = $headers_test[0];
   if (stripos($response, '200 OK') !== FALSE) return TRUE;
@@ -73,7 +77,7 @@ function is_doi_works(string $doi) : ?bool {
          )); // Allow crudy cheap journals
   $headers_test = @get_headers("https://dx.doi.org/" . doi_encode($doi), 1, $context);
   if ($headers_test === FALSE) {
-     sleep(1);                                                                            // @codeCoverageIgnore
+     sleep(2);                                                                             // @codeCoverageIgnore
      $headers_test = @get_headers("https://dx.doi.org/" . doi_encode($doi), 1, $context);  // @codeCoverageIgnore
   }
   if (preg_match('~^10\.1038/nature\d{5}$~i', $doi) && NATURE_FAILS2 && $headers_test === FALSE) return FALSE;
