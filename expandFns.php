@@ -83,8 +83,15 @@ function is_doi_works(string $doi) : ?bool {
   if (preg_match('~^10\.1038/nature\d{5}$~i', $doi) && NATURE_FAILS2 && $headers_test === FALSE) return FALSE;
   if ($headers_test === FALSE) return NULL; // most likely bad, but will recheck again an again
   $response = $headers_test[0];
-  if (empty($headers_test['Location'])) return FALSE; // leads nowhere
-  if (stripos($response, '404 Not Found') !== FALSE) return FALSE; // leads to 404
+  if (empty($headers_test['Location'])) {
+    echo "\n". $doi ."\n";
+    print_r($headers_test);
+    return FALSE; // leads nowhere
+  }
+  if (stripos($response, '404 Not Found') !== FALSE) {
+    echo "\n". $doi ."\n" . $response . "\n";
+    return FALSE; // leads to 404
+  }
   return TRUE; // Lead somewhere
 }
 
