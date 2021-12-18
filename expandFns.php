@@ -73,12 +73,13 @@ function is_doi_active(string $doi) : ?bool {
 function is_doi_works(string $doi) : ?bool {
   if (strpos($doi, '10.1111/j.1572-0241') === 0 && NATURE_FAILS) return FALSE;
   $context = stream_context_create(array(
-           'ssl' => ['verify_peer' => FALSE, 'verify_peer_name' => FALSE, 'allow_self_signed' => TRUE]
+           'ssl' => ['verify_peer' => FALSE, 'verify_peer_name' => FALSE, 'allow_self_signed' => TRUE],
+           'http' => ['ignore_errors' => true, 'max_redirects' => 40]
          )); // Allow crudy cheap journals
-  $headers_test = @get_headers("https://dx.doi.org/" . doi_encode($doi), 1, $context);
+  $headers_test = @get_headers("https://doi.org/" . doi_encode($doi), 1, $context);
   if ($headers_test === FALSE) {
-     sleep(2);                                                                             // @codeCoverageIgnore
-     $headers_test = @get_headers("https://dx.doi.org/" . doi_encode($doi), 1, $context);  // @codeCoverageIgnore
+     sleep(2);                                                                          // @codeCoverageIgnore
+     $headers_test = @get_headers("https://doi.org/" . doi_encode($doi), 1, $context);  // @codeCoverageIgnore
   }
   if (preg_match('~^10\.1038/nature\d{5}$~i', $doi) && NATURE_FAILS2 && $headers_test === FALSE) return FALSE;
   if ($headers_test === FALSE) return NULL; // most likely bad, but will recheck again an again
