@@ -4794,7 +4794,7 @@ final class Template {
           if (preg_match('~^(\d{4})(\d{3}[\dxX])$~', $this->get($param), $matches)) {
             $this->set($param, $matches[1] . '-' . strtoupper($matches[2])); // Add dash
           }
-          if (preg_match('~^\d{4}\-\d{3}x$~', $this->get($param)) {
+          if (preg_match('~^\d{4}\-\d{3}x$~', $this->get($param))) {
             $this->set($param, strtoupper($this->get($param))); // Uppercase X
           }
           return;   
