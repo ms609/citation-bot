@@ -4791,7 +4791,7 @@ final class Template {
         case 'eissn':
           if ($this->blank($param)) return;
           $this->set($param, preg_replace('~\s?[\-\–]+\s?~', '-', $this->get($param))); // a White space next to a dash or bad dash
-          if (preg_match('~^(\d{4})(\d{3}[\dxX])$~', $this->get($param), $matches)) {
+          if (preg_match('~^(\d{4})\s?(\d{3}[\dxX])$~', $this->get($param), $matches)) {
             $this->set($param, $matches[1] . '-' . strtoupper($matches[2])); // Add dash
           }
           if (preg_match('~^\d{4}\-\d{3}x$~', $this->get($param))) {
