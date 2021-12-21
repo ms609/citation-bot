@@ -135,7 +135,7 @@ function sanitize_doi(string $doi) : string {
   }
   if ($pos = (int) strrpos($doi, '/')) {
    $extension = (string) substr($doi, $pos);
-   if (in_array(strtolower($extension), array('/abstract', '/full', '/pdf', '/epdf', '/asset/', '/summary', '/short', '/meta'))) {
+   if (in_array(strtolower($extension), array('/abstract', '/full', '/pdf', '/epdf', '/asset/', '/summary', '/short', '/meta', '/html'))) {
       $doi = (string) substr($doi, 0, $pos);
    }
   }
@@ -625,6 +625,11 @@ function title_capitalization(string $in, bool $caps_after_punctuation) : string
       }
     }
   }
+  // Part XII:
+  $new_case = preg_replace_callback(
+    "~ part ([xvil]+): ~iu",
+    function (array $matches) : string {return " Part " . strtoupper($matches[1]) . ": ";},
+    $new_case);
   // Special cases - Only if the full title
   if ($new_case === 'Bioscience') {
     $new_case = 'BioScience';
