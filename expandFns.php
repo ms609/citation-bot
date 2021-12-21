@@ -625,10 +625,14 @@ function title_capitalization(string $in, bool $caps_after_punctuation) : string
       }
     }
   }
-  // Part XII:
+  // Part XII: Roman numerals
   $new_case = preg_replace_callback(
     "~ part ([xvil]+): ~iu",
     function (array $matches) : string {return " Part " . strtoupper($matches[1]) . ": ";},
+    $new_case);
+  $new_case = preg_replace_callback(
+    "~ part ([xvi]+) ~iu",
+    function (array $matches) : string {return " Part " . strtoupper($matches[1]) . " ";},
     $new_case);
   // Special cases - Only if the full title
   if ($new_case === 'Bioscience') {
