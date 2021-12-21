@@ -3334,6 +3334,9 @@ final class Template {
            $this->set($url_type, 'https://books.google.com/books?' . $matches[2]);
          }
        }
+       if ($this->has($url_type) && preg_match('~^https?://books\.google\.[^/]+/booksid=(.+)$~', $this->get($url_type), $matches)) {
+         $this->set($url_type, 'https://books.google.com/books?id=' . $matches[2]);
+       }
     }
   }
   
