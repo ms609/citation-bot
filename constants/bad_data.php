@@ -110,7 +110,10 @@ const BAD_ZOTERO_TITLES = ['Browse publications', 'Central Authentication Servic
                                  'Aanmelden of registreren om te bekijken', 'register to view', 'being redirected',
                                  'has been registered', 'Aanmelden bij Facebook', 'Einloggen', 'The Times & the Sunday Times',
                                  'Login • Instagram', 'subscriber to read', 'has now officially closed',
-                                 'An Error Has Occured', 'an error has occurred', 'YouTube, a Google company'];
+                                 'An Error Has Occured', 'an error has occurred', 'YouTube, a Google company',
+                                 'Seite nicht gefunden', 'Página no encontrada', 'الصفحة غير موجودة', '找不到网页',
+                                 'страница не найдена', 'Page non trouvée',
+                                  ];
 
 const CANONICAL_PUBLISHER_URLS = array ('elsevier.com', 'springer.com', 'sciencedirect.com', 'tandfonline.com',
                                 'taylorandfrancis.com', 'wiley.com', 'sagepub.com', 'sagepublications.com',
