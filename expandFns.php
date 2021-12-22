@@ -81,11 +81,14 @@ function is_doi_works(string $doi) : ?bool {
      sleep(2);                                                                          // @codeCoverageIgnore
      $headers_test = @get_headers("https://doi.org/" . doi_encode($doi), 1, $context);  // @codeCoverageIgnore
   }
+  if ($headers_test === FALSE || empty($headers_test['Location']) || stripos($headers_test[0], '404 Not Found') !== FALSE) {
+     sleep(5);                                                                          // @codeCoverageIgnore
+     $headers_test = @get_headers("https://doi.org/" . doi_encode($doi), 1, $context);  // @codeCoverageIgnore
+  }
   if (preg_match('~^10\.1038/nature\d{5}$~i', $doi) && NATURE_FAILS2 && $headers_test === FALSE) return FALSE;
-  if ($headers_test === FALSE) return NULL; // most likely bad, but will recheck again an again
-  $response = $headers_test[0];
+  if ($headers_test === FALSE) return NULL; // most likely bad, but will recheck again and again
   if (empty($headers_test['Location'])) return FALSE; // leads nowhere
-  if (stripos($response, '404 Not Found') !== FALSE) return FALSE; // leads to 404
+  if (stripos($headers_test[0], '404 Not Found') !== FALSE) return FALSE; // leads to 404
   return TRUE; // Lead somewhere
 }
 
