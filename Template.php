@@ -219,6 +219,8 @@ final class Template {
                ['newGroveJazz2002', 'Cite NewGroveJazz2002'],
                ['NewGrove1980', 'Cite NewGrove1980'],
                ['newGrove1980', 'Cite NewGrove1980'],
+               ['citar livro', 'cite book'],
+               ['Citar livro', 'Cite book'],
                ];
     foreach ($fix_it as $trial) {
       if ($trim_name === $trial[0]) {
