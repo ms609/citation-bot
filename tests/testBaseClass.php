@@ -3,7 +3,7 @@ declare(strict_types=1);
 
 require_once __DIR__ . '/../setup.php';
 
-define("BAD_PAGE_HTTP", "Lake Tauca");
+define("BAD_PAGE_HTTP", "User:AManWithNoPlan/sandbox10");
 define("BAD_PAGE_API", "");
 
 abstract class testBaseClass extends PHPUnit\Framework\TestCase {
