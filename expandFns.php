@@ -77,6 +77,7 @@ function is_doi_works(string $doi) : ?bool {
            'http' => ['ignore_errors' => true, 'max_redirects' => 40]
          )); // Allow crudy cheap journals
   $headers_test = @get_headers("https://doi.org/" . doi_encode($doi), 1, $context);
+  print_r($headers_test);
   if ($headers_test === FALSE) {
      sleep(2);                                                                          // @codeCoverageIgnore
      $headers_test = @get_headers("https://doi.org/" . doi_encode($doi), 1, $context);  // @codeCoverageIgnore
@@ -89,6 +90,7 @@ function is_doi_works(string $doi) : ?bool {
      $headers_test = @get_headers("https://doi.org/" . doi_encode($doi), 1, $context);  // @codeCoverageIgnore
      if ($headers_test === FALSE) return FALSE; /** We trust previous failure **/       // @codeCoverageIgnore
   }
+    print_r($headers_test);
   if (preg_match('~^10\.1038/nature\d{5}$~i', $doi) && NATURE_FAILS2 && $headers_test === FALSE) return FALSE;
   if ($headers_test === FALSE) return NULL; // most likely bad, but will recheck again and again
   if (empty($headers_test['Location'])) return FALSE; // leads nowhere
