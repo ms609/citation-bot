@@ -3531,6 +3531,10 @@ final class Template {
           $removed_parts .= '&lpg=' . $book_array['lpg'];
           unset($book_array['lpg']);
       }
+      if (!isset($book_array['pg']) && isset($book_array['lpg'])) { // LPG by itself does not work
+          $book_array['pg'] = $book_array['lpg'];
+          unset($book_array['lpg']);
+      }
       if (preg_match('~^&(.*)$~', $hash, $matcher) ){
           $hash = $matcher[1];
       }
