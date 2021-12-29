@@ -323,6 +323,7 @@ final class WikipediaBot {
           // We probably only want to visit pages in the main & draft namespace
           if (stripos($page->title, 'talk:') === FALSE &&
               stripos($page->title, 'Special:') === FALSE &&
+              stripos($page->title, '/doc') === FALSE &&
               stripos($page->title, 'Wikipedia:') === FALSE) {
             $list[] = $page->title;
           }
