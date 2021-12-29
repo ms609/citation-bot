@@ -3332,14 +3332,17 @@ final class Template {
   public function clean_google_books() : void {
     $matches = ['', '', '']; // prevent memory leak in some PHP versions
     foreach (ALL_URL_TYPES as $url_type) {
+       if ($this->has($url_type) && preg_match('~^https?://books\.google\.[^/]+/booksid=(.+)$~', $this->get($url_type), $matches)) {
+         $this->set($url_type, 'https://books.google.com/books?id=' . $matches[1]);
+       }
+       if ($this->has($url_type) && preg_match('~^https?://books\.google\.com/\?id=(.+)$~', $this->get($url_type), $matches)) {
+         $this->set($url_type, 'https://books.google.com/books?id=' . $matches[1]);
+       }
        $this->expand_by_google_books_inner($url_type, FALSE);
        if ($this->has($url_type) && preg_match('~^https?://books\.google\.([^/]+)/books\?((?:isbn|vid)=.+)$~', $this->get($url_type), $matches)) {
          if ($matches[1] !== 'com') {
            $this->set($url_type, 'https://books.google.com/books?' . $matches[2]);
          }
-       }
-       if ($this->has($url_type) && preg_match('~^https?://books\.google\.[^/]+/booksid=(.+)$~', $this->get($url_type), $matches)) {
-         $this->set($url_type, 'https://books.google.com/books?id=' . $matches[1]);
        }
     }
   }
