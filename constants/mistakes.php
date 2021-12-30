@@ -297,6 +297,7 @@ const COMMON_MISTAKES = array ( // Common mistakes that aren't picked up by the 
   "nome2"           =>  "first2",
   "nome3"           =>  "first3",
   "numero"          =>  "issue",
+  "numéro"          =>  "issue",
   "obra"            =>  "work",
   "página"          =>  "page",
   "páginas"         =>  "pages",
