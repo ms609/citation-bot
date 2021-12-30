@@ -4287,6 +4287,7 @@ final class Template {
     if ($name === 'cite newspaper') $name = 'cite news';
     if ($name === 'cite website') $name = 'cite web';
     if ($name === 'cite paper') $name = 'cite journal';
+    if ($name === 'cite contribution') $name = 'cite encyclopedia';
     return $name ;
   }
   
