@@ -350,6 +350,7 @@ const COMMON_MISTAKES = array ( // Common mistakes that aren't picked up by the 
   "ville"           =>  "location",
   "titre chapitre"  =>  "chapter",
   "pages totales"   =>  "pages",
+  "format électronique" =>  "format",
 );
 
 const COMMON_MISTAKES_TOOL = array(
