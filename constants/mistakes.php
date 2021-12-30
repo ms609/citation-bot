@@ -347,7 +347,8 @@ const COMMON_MISTAKES = array ( // Common mistakes that aren't picked up by the 
   "jastor"          =>  "jstor",
   "date-access"     =>  "access-date",
   "titre ouvrage"   =>  "work",
-  "ville"           =>  "location"
+  "ville"           =>  "location",
+  "titre chapitre"  =>  "chapter",
 );
 
 const COMMON_MISTAKES_TOOL = array(
