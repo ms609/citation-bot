@@ -324,6 +324,7 @@ final class WikipediaBot {
           if (stripos($page->title, 'talk:') === FALSE &&
               stripos($page->title, 'Special:') === FALSE &&
               stripos($page->title, '/doc') === FALSE &&
+              stripos($page->title, 'Template:') === FALSE &&
               stripos($page->title, 'Wikipedia:') === FALSE) {
             $list[] = $page->title;
           }
