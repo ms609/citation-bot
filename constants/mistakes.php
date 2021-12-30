@@ -349,6 +349,7 @@ const COMMON_MISTAKES = array ( // Common mistakes that aren't picked up by the 
   "titre ouvrage"   =>  "work",
   "ville"           =>  "location",
   "titre chapitre"  =>  "chapter",
+  "pages totales"   =>  "pages",
 );
 
 const COMMON_MISTAKES_TOOL = array(
