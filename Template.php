@@ -3575,7 +3575,7 @@ final class Template {
       if (isset($book_array['lpg'])){
           $url .= '&lpg=' . $book_array['lpg'];
       }
-      if (isset($book_array['article_id'])){
+      if (isset($book_array['article_id']) && !isset($book_array['dq'])){
           $url .= '&article_id=' . $book_array['article_id'] . '#v=onepage'; // Explicit onepage needed for these
       }
       if ($hash) {
