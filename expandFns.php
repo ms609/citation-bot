@@ -42,8 +42,8 @@ function doi_works(string $doi) : ?bool {
   if (array_key_exists($doi, $cache_good)) return TRUE;
   if (array_key_exists($doi, $cache_bad))  return FALSE;
   // For really long category runs
-  if (count($cache_bad) > 5500) $cache_bad = ['10.1126/science', ''];
-  if (count($cache_good) > 5500) $cache_good = [];
+  if (count($cache_bad) > 500) $cache_bad = ['10.1126/science', ''];
+  if (count($cache_good) > 9500) $cache_good = [];
   $works = is_doi_works($doi);
   if ($works === NULL) {
     return NULL; // @codeCoverageIgnore
@@ -58,6 +58,10 @@ function doi_works(string $doi) : ?bool {
 
 function is_doi_active(string $doi) : ?bool {
   $headers_test = @get_headers("https://api.crossref.org/works/" . doi_encode($doi));
+  if ($headers_test === FALSE) {
+    sleep(2);                                                                           // @codeCoverageIgnore
+    $headers_test = @get_headers("https://api.crossref.org/works/" . doi_encode($doi)); // @codeCoverageIgnore
+  }
   if ($headers_test === FALSE) return NULL; // most likely bad, but will recheck again an again
   $response = $headers_test[0];
   if (stripos($response, '200 OK') !== FALSE) return TRUE;
@@ -69,17 +73,26 @@ function is_doi_active(string $doi) : ?bool {
 function is_doi_works(string $doi) : ?bool {
   if (strpos($doi, '10.1111/j.1572-0241') === 0 && NATURE_FAILS) return FALSE;
   $context = stream_context_create(array(
-           'ssl' => ['verify_peer' => FALSE, 'verify_peer_name' => FALSE, 'allow_self_signed' => TRUE]
+           'ssl' => ['verify_peer' => FALSE, 'verify_peer_name' => FALSE, 'allow_self_signed' => TRUE],
+           'http' => ['ignore_errors' => true, 'max_redirects' => 40]
          )); // Allow crudy cheap journals
-  $headers_test = @get_headers("https://dx.doi.org/" . doi_encode($doi), 1, $context);
+  $headers_test = @get_headers("https://doi.org/" . doi_encode($doi), 1, $context);
   if ($headers_test === FALSE) {
-     sleep(1);                                                                            // @codeCoverageIgnore
-     $headers_test = @get_headers("https://dx.doi.org/" . doi_encode($doi), 1, $context);  // @codeCoverageIgnore
+     sleep(2);                                                                          // @codeCoverageIgnore
+     $headers_test = @get_headers("https://doi.org/" . doi_encode($doi), 1, $context);  // @codeCoverageIgnore
   }
-  if ($headers_test === FALSE) return NULL; // most likely bad, but will recheck again an again
-  $response = $headers_test[0];
+  if ($headers_test === FALSE) {
+     sleep(5);                                                                          // @codeCoverageIgnore
+     $headers_test = @get_headers("https://doi.org/" . doi_encode($doi), 1, $context);  // @codeCoverageIgnore
+  } elseif (empty($headers_test['Location']) || stripos($headers_test[0], '404 Not Found') !== FALSE) {
+     sleep(5);                                                                          // @codeCoverageIgnore
+     $headers_test = @get_headers("https://doi.org/" . doi_encode($doi), 1, $context);  // @codeCoverageIgnore
+     if ($headers_test === FALSE) return FALSE; /** We trust previous failure **/       // @codeCoverageIgnore
+  }
+  if (preg_match('~^10\.1038/nature\d{5}$~i', $doi) && NATURE_FAILS2 && $headers_test === FALSE) return FALSE;
+  if ($headers_test === FALSE) return NULL; // most likely bad, but will recheck again and again
   if (empty($headers_test['Location'])) return FALSE; // leads nowhere
-  if (stripos($response, '404 Not Found') !== FALSE) return FALSE; // leads to 404
+  if (stripos($headers_test[0], '404 Not Found') !== FALSE) return FALSE; // leads to 404
   return TRUE; // Lead somewhere
 }
 
@@ -129,7 +142,7 @@ function sanitize_doi(string $doi) : string {
   }
   if ($pos = (int) strrpos($doi, '/')) {
    $extension = (string) substr($doi, $pos);
-   if (in_array(strtolower($extension), array('/abstract', '/full', '/pdf', '/epdf', '/asset/', '/summary', '/short', '/meta'))) {
+   if (in_array(strtolower($extension), array('/abstract', '/full', '/pdf', '/epdf', '/asset/', '/summary', '/short', '/meta', '/html'))) {
       $doi = (string) substr($doi, 0, $pos);
    }
   }
@@ -392,27 +405,38 @@ function titles_are_dissimilar(string $inTitle, string $dbTitle) : bool {
 }
 
 function titles_simple(string $inTitle) : string {
+        // Failure leads to null or empty strings!!!!
         // Leading Chapter # -   Use callback to make sure there are a few characters after this
-        $inTitle = preg_replace_callback('~^(?:Chapter \d+ \- )(.....+)~iu',
+        $inTitle2 = (string) preg_replace_callback('~^(?:Chapter \d+ \- )(.....+)~iu',
             function (array $matches) : string {return ($matches[1]);}, trim($inTitle));
+        if ($inTitle2 !== "") $inTitle = $inTitle2;
         // Trailing "a review"
-        $inTitle = preg_replace('~(?:\: | |\:)a review$~iu', '', trim($inTitle));
+        $inTitle2 = (string) preg_replace('~(?:\: | |\:)a review$~iu', '', trim($inTitle));
+        if ($inTitle2 !== "") $inTitle = $inTitle2;
         // Strip trailing Online
-        $inTitle = preg_replace('~ Online$~iu', '', $inTitle);
+        $inTitle2 = (string) preg_replace('~ Online$~iu', '', $inTitle);
+        if ($inTitle2 !== "") $inTitle = $inTitle2;
         // Strip trailing (Third Edition)
-        $inTitle = preg_replace('~\([^\s\(\)]+ Edition\)^~iu', '', $inTitle);
+        $inTitle2 = (string) preg_replace('~\([^\s\(\)]+ Edition\)^~iu', '', $inTitle);
+        if ($inTitle2 !== "") $inTitle = $inTitle2;
         // Strip leading International Symposium on 
-        $inTitle = preg_replace('~^International Symposium on ~iu', '', $inTitle);
+        $inTitle2 = (string) preg_replace('~^International Symposium on ~iu', '', $inTitle);
+        if ($inTitle2 !== "") $inTitle = $inTitle2;
         // Strip leading the
-        $inTitle = preg_replace('~^The ~iu', '', $inTitle);
+        $inTitle2 = (string) preg_replace('~^The ~iu', '', $inTitle);
+        if ($inTitle2 !== "") $inTitle = $inTitle2;
         // Reduce punctuation
         $inTitle = straighten_quotes(mb_strtolower((string) $inTitle), TRUE);
-        $inTitle = preg_replace("~(?: |‐|−|-|—|–|â€™|â€”|â€“)~u", "", $inTitle);
+        $inTitle2 = (string) preg_replace("~(?: |‐|−|-|—|–|â€™|â€”|â€“)~u", "", $inTitle);
+        if ($inTitle2 !== "") $inTitle = $inTitle2;
         $inTitle = str_replace(array("\n", "\r", "\t", "&#8208;", ":", "&ndash;", "&mdash;", "&ndash", "&mdash"), "", $inTitle);
         // Retracted
-        $inTitle = preg_replace("~\[RETRACTED\]~ui", "", $inTitle);
-        $inTitle = preg_replace("~\(RETRACTED\)~ui", "", $inTitle);
-        $inTitle = preg_replace("~RETRACTED~ui", "", $inTitle);
+        $inTitle2 = (string) preg_replace("~\[RETRACTED\]~ui", "", $inTitle);
+        if ($inTitle2 !== "") $inTitle = $inTitle2;
+        $inTitle2 = (string) preg_replace("~\(RETRACTED\)~ui", "", $inTitle);
+        if ($inTitle2 !== "") $inTitle = $inTitle2;
+        $inTitle2 = (string) preg_replace("~RETRACTED~ui", "", $inTitle);
+        if ($inTitle2 !== "") $inTitle = $inTitle2;
         // Drop normal quotes
         $inTitle = str_replace(array("'", '"'), "", $inTitle);
         // Strip trailing periods
@@ -607,6 +631,21 @@ function title_capitalization(string $in, bool $caps_after_punctuation) : string
         $new_case = mb_substr_replace($new_case, trim($matches_in[$key][0]), $matches_out[$key][1], 3);
       }
     }
+  }
+  // Part XII: Roman numerals
+  $new_case = preg_replace_callback(
+    "~ part ([xvil]+): ~iu",
+    function (array $matches) : string {return " Part " . strtoupper($matches[1]) . ": ";},
+    $new_case);
+  $new_case = preg_replace_callback(
+    "~ part ([xvi]+) ~iu",
+    function (array $matches) : string {return " Part " . strtoupper($matches[1]) . " ";},
+    $new_case);
+  // Special cases - Only if the full title
+  if ($new_case === 'Bioscience') {
+    $new_case = 'BioScience';
+  } elseif ($new_case === 'Aids') {
+    $new_case = 'AIDS';
   }
   return $new_case;
 }

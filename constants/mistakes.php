@@ -297,6 +297,7 @@ const COMMON_MISTAKES = array ( // Common mistakes that aren't picked up by the 
   "nome2"           =>  "first2",
   "nome3"           =>  "first3",
   "numero"          =>  "issue",
+  "numéro"          =>  "issue",
   "obra"            =>  "work",
   "página"          =>  "page",
   "páginas"         =>  "pages",
@@ -344,7 +345,12 @@ const COMMON_MISTAKES = array ( // Common mistakes that aren't picked up by the 
   "år"              =>  "year",
   "jator"           =>  "jstor",
   "jastor"          =>  "jstor",
-  "date-access"     =>  "access-date"
+  "date-access"     =>  "access-date",
+  "titre ouvrage"   =>  "work",
+  "ville"           =>  "location",
+  "titre chapitre"  =>  "chapter",
+  "pages totales"   =>  "pages",
+  "format électronique" =>  "format",
 );
 
 const COMMON_MISTAKES_TOOL = array(
@@ -352,6 +358,7 @@ const COMMON_MISTAKES_TOOL = array(
   "archivedate"     =>  "archive-date",
   "archiveurl"      =>  "archive-url",
   "authorlink"      =>  "author-link",
-  "origyear"        =>  "orig-year",
+  "origyear"        =>  "orig-date",
+  "origdate"        =>  "orig-date",
   "airdate"         =>  "air-date");
 

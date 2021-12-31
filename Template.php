@@ -124,6 +124,8 @@ final class Template {
                ['Cite-news', 'Cite news'],
                ['citepaper', 'cite paper'],
                ['Citepaper', 'Cite paper'],
+               ['cite chapter', 'cite book'],
+               ['Cite chapter', 'Cite book'],
                ['citation journal', 'cite journal'],
                ['Citation journal', 'Cite journal'],
                ['cite new', 'cite news'],
@@ -219,6 +221,8 @@ final class Template {
                ['newGroveJazz2002', 'Cite NewGroveJazz2002'],
                ['NewGrove1980', 'Cite NewGrove1980'],
                ['newGrove1980', 'Cite NewGrove1980'],
+               ['citar livro', 'cite book'],
+               ['Citar livro', 'Cite book'],
                ];
     foreach ($fix_it as $trial) {
       if ($trim_name === $trial[0]) {
@@ -753,7 +757,11 @@ final class Template {
     if (str_i_same($value, 'null')) { // Hopeully name is not actually null
       return FALSE;
     }
-    
+
+    if (str_i_same($value, 'n/a')) {
+      return FALSE;
+    }
+
     if (mb_stripos($this->get($param_name), 'CITATION_BOT_PLACEHOLDER_COMMENT') !== FALSE) {
       return FALSE;  // We let comments block the bot
     }
@@ -3185,11 +3193,6 @@ final class Template {
           return 'publisher';
         }
         if (!isset($best_location->evidence)) return 'nothing';
-        // This bug report is now closed (https://github.com/Impactstory/oadoi/issues/121)
-        // if (@$best_location->evidence == 'oa repository (via OAI-PMH title and first author match)' ) {
-        //   report_warning("Ignored a low-quality OA match on a repository via OAI-PMH for DOI: " . echoable($doi)); // @codeCoverageIgnore
-        //   return 'unreliable';                                                                                     // @codeCoverageIgnore
-        // }
         if (isset($oa->journal_name) && $oa->journal_name == "Cochrane Database of Systematic Reviews" ) {
           report_warning("Ignored a OA from Cochrane Database of Systematic Reviews for DOI: " . echoable($doi)); // @codeCoverageIgnore
           return 'unreliable';                                                                                    // @codeCoverageIgnore
@@ -3291,10 +3294,13 @@ final class Template {
                 if ($old_host_name === $new_host_name) return 'have free';
             }
        }
-        if (preg_match('~^10\.\d+/9[\-\d]+_+\d+~', $doi) && $this->has('chapter')) {
-          $url_type = 'chapter-url';
-        } else {
-          $url_type = 'url';
+        $url_type = 'url';
+        if ($this->has('chapter')) {
+          if ( preg_match('~^10\.\d+/9[\-\d]+_+\d+~', $doi) ||
+              (strpos($oa_url, 'eprints') !== FALSE) ||
+              (strpos($oa_url, 'chapter') !== FALSE)) {
+            $url_type = 'chapter-url';
+          }
         }
         $has_url_already = $this->has($url_type);
         $this->add_if_new($url_type, $oa_url);  // Will check for PMCs etc hidden in URL
@@ -3326,6 +3332,12 @@ final class Template {
   public function clean_google_books() : void {
     $matches = ['', '', '']; // prevent memory leak in some PHP versions
     foreach (ALL_URL_TYPES as $url_type) {
+       if ($this->has($url_type) && preg_match('~^https?://books\.google\.[^/]+/booksid=(.+)$~', $this->get($url_type), $matches)) {
+         $this->set($url_type, 'https://books.google.com/books?id=' . $matches[1]);
+       }
+       if ($this->has($url_type) && preg_match('~^https?://books\.google\.com/\?id=(.+)$~', $this->get($url_type), $matches)) {
+         $this->set($url_type, 'https://books.google.com/books?id=' . $matches[1]);
+       }
        $this->expand_by_google_books_inner($url_type, FALSE);
        if ($this->has($url_type) && preg_match('~^https?://books\.google\.([^/]+)/books\?((?:isbn|vid)=.+)$~', $this->get($url_type), $matches)) {
          if ($matches[1] !== 'com') {
@@ -3524,6 +3536,10 @@ final class Template {
           $removed_parts .= '&lpg=' . $book_array['lpg'];
           unset($book_array['lpg']);
       }
+      if (!isset($book_array['pg']) && isset($book_array['lpg'])) { // LPG by itself does not work
+          $book_array['pg'] = $book_array['lpg'];
+          unset($book_array['lpg']);
+      }
       if (preg_match('~^&(.*)$~', $hash, $matcher) ){
           $hash = $matcher[1];
       }
@@ -3560,7 +3576,10 @@ final class Template {
           $url .= '&lpg=' . $book_array['lpg'];
       }
       if (isset($book_array['article_id'])){
-          $url .= '&article_id=' . $book_array['article_id'] . CONFLICT'#v=onepage'; // Explicit onepage needed for these
+          $url .= '&article_id=' . $book_array['article_id'];
+          if (!isset($book_array['dq'])) {
+            $url .= '#v=onepage'; // Explicit onepage needed for these
+          }
       }
       if ($hash) {
          $hash = "#" . $hash;
@@ -3581,7 +3600,7 @@ final class Template {
       if ($use_it) $this->google_book_details($gid[1]);
       return TRUE;
     }
-    if (preg_match("~^(.+\.google\.com/books/edition/_/)([a-zA-Z0-9]+)(\?.+|)$~", $url, $gid)) {
+    if (preg_match("~^(.+\.google\.com/books/edition/[^\/]+/)([a-zA-Z0-9]+)(\?.+|)$~", $url, $gid)) {
       if ($url_type && $gid[3] === '?hl=en') {
         report_forget('Anonymized/Standardized/Denationalized Google Books URL');
         $this->set($url_type, $gid[1] . $gid[2]);
@@ -4271,6 +4290,7 @@ final class Template {
     if ($name === 'cite newspaper') $name = 'cite news';
     if ($name === 'cite website') $name = 'cite web';
     if ($name === 'cite paper') $name = 'cite journal';
+    if ($name === 'cite contribution') $name = 'cite encyclopedia';
     return $name ;
   }
   
@@ -4305,11 +4325,13 @@ final class Template {
     if ($this->get($param) != $this->get3($param)) return;
     
     if($this->has($param)) {
-      if (stripos($param, 'separator') === FALSE &&  // lone punctuation valid
+      if (stripos($param, 'separator') === FALSE &&   // lone punctuation valid
           stripos($param, 'postscript') === FALSE &&  // periods valid
-          stripos($param, 'url') === FALSE &&  // all characters are valid
-          stripos($param, 'quot') === FALSE && // someone might have formatted the quote
-          stripos($param, 'link') === FALSE) {  // inter-wiki links
+          stripos($param, 'url') === FALSE &&         // all characters are valid
+          stripos($param, 'quot') === FALSE &&        // someone might have formatted the quote
+          stripos($param, 'link') === FALSE &&        // inter-wiki links
+          ($param !== 'title' || strlen($this->get($param)) > 3)  // Avoid tiny titles that might be a smiley face
+         ) {
         $this->set($param, preg_replace('~[\x{2000}-\x{200A}\x{00A0}\x{202F}\x{205F}\x{3000}]~u', ' ', $this->get($param))); // Non-standard spaces
         $this->set($param, preg_replace('~[\t\n\r\0\x0B]~u', ' ', $this->get($param))); // tabs, linefeeds, null bytes
         $this->set($param, preg_replace('~  +~u', ' ', $this->get($param))); // multiple spaces
@@ -4782,6 +4804,18 @@ final class Template {
           }
           $this->forget('asin');
           return;
+          
+        case 'issn':
+        case 'eissn':
+          if ($this->blank($param)) return;
+          $this->set($param, preg_replace('~\s?[\-\–]+\s?~', '-', $this->get($param))); // a White space next to a dash or bad dash
+          if (preg_match('~^(\d{4})\s?(\d{3}[\dxX])$~', $this->get($param), $matches)) {
+            $this->set($param, $matches[1] . '-' . strtoupper($matches[2])); // Add dash
+          }
+          if (preg_match('~^\d{4}\-\d{3}x$~', $this->get($param))) {
+            $this->set($param, strtoupper($this->get($param))); // Uppercase X
+          }
+          return;   
 
         case 'asin':
           if ($this->blank($param)) return;
@@ -6399,6 +6433,19 @@ final class Template {
                $this->rename($param, 'agency');
             }
           }
+          $the_param = $this->get($param);
+          if (preg_match(REGEXP_PLAIN_WIKILINK, $the_param, $matches) || preg_match(REGEXP_PIPED_WIKILINK, $the_param, $matches)) {
+              $the_param = $matches[1]; // Always the wikilink for easier standardization
+          }
+          if (in_array(strtolower($the_param), ARE_MAGAZINES) && $this->blank(['pmc','doi','pmid'])) {
+            $this->change_name_to('cite magazine');
+            $this->rename($param, 'magazine');
+            return;
+          } elseif (in_array(strtolower($the_param), ARE_NEWSPAPERS)) {
+            $this->change_name_to('cite news');
+            $this->rename($param, 'newspaper');
+            return;
+          }
           return;
           
         case 'via':   // Should just remove all 'via' with no url, but do not want to make people angry
@@ -7684,6 +7731,8 @@ final class Template {
      if (preg_match("~^(\d+)\s*\((\d+(-|–|\–|\{\{ndash\}\})?\d*)\)$~", $data, $matches) ||
               preg_match("~^(?:vol\. |Volume |vol |vol\.|)(\d+)[,\s]\s*(?:no\.|number|issue|Iss.|no )\s*(\d+(-|–|\–|\{\{ndash\}\})?\d*)$~i", $data, $matches) ||
               preg_match("~^(\d+)\.(\d+)$~i", $data, $matches) ||
+              preg_match("~^(\d+)\((\d+\/\d+)\)$~i", $data, $matches) ||
+              preg_match("~^(\d+) \((\d+ Suppl \d+)\)$~i", $data, $matches) ||
               preg_match("~^Vol\.?(\d+)\((\d+)\)$~", $data, $matches)
          ) {
          $possible_volume=$matches[1];
