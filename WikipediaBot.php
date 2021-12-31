@@ -319,11 +319,11 @@ final class WikipediaBot {
       $res = $this->fetch($vars, 'POST');
       if (isset($res->query->categorymembers)) {
         foreach ($res->query->categorymembers as $page) {
-          // We probably only want to visit pages in the main namespace
+          // We probably only want to visit pages in the main & draft namespace
           if (stripos($page->title, 'talk:') === FALSE &&
-              stripos($page->title, 'Template:') === FALSE &&
               stripos($page->title, 'Special:') === FALSE &&
-              stripos($page->title, 'Draft:') === FALSE &&
+              stripos($page->title, '/doc') === FALSE &&
+              stripos($page->title, 'Template:') === FALSE &&
               stripos($page->title, 'Wikipedia:') === FALSE) {
             $list[] = $page->title;
           }

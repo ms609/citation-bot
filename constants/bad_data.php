@@ -12,14 +12,14 @@ const BAD_ACCEPTED_MANUSCRIPT_TITLES = array("oup accepted manuscript", "placeho
                                              "placeholder for arabic language transliteration", "article not found");
 const BAD_AUTHORS = array("unknown", "missing", "- -.", "- -", "no authorship indicated", "no authorship", "no author",
                            "no authors", "no author indicated", "no authorship indicated", "dk eyewitness", "united states",
-                           "great britain", "indiatoday", "natural history museum bern");
+                           "great britain", "indiatoday", "natural history museum bern", "daily sabah");
 const NON_HUMAN_AUTHORS = array('collaborat', 'reporter', 'journalist', 'correspondent', 'anchor', 'staff', 'foreign',
                                 'national', 'endowment', ' for the ', 'humanities', 'committee', 'group',
                                 'society', ' of america', 'association', ' at the ', 'board of ', 'communications',
                                 'corporation', 'incorporated', 'editorial', 'university', 'dept. of', 'department',
                                 'dept of ', 'college', 'center for', 'office of', 'editor', 
                                 'world news', 'national news', 'eyewitness', 'information', 'business', 'bureau',
-                                'us census', 'indiatoday', 'natural history', 'museum');
+                                'us census', 'indiatoday', 'natural history', 'museum', '試験所');
 const BAD_PUBLISHERS = array('london', 'edinburgi', 'edinburgh', 'no publisher', 'no publisher given',
                              'no publisher specified', 'unknown', 'publisher not identified', 'report');
 
@@ -56,7 +56,9 @@ const WORKS_ARE_PUBLISHERS = array('united states census bureau'); // LOWER CASE
 
 const DUBIOUS_JOURNALS = array('fda', 'reuters', 'associated press', 'ap', 'ap wire', 'report'); // Things we add, but only if publisher and agency are both blank
 
-const NATURE_FAILS = TRUE;  // Nature dropped the ball for now TODO - https://dx.doi.org/10.1111/j.1572-0241.2006.00844.x should point to https://journals.lww.com/ajg/Abstract/2006/11000/Proton_Pump_Inhibitor_Therapy_for_Suspected.31.aspx
+const NATURE_FAILS  = TRUE;  // Nature dropped the ball for now TODO - https://dx.doi.org/10.1111/j.1572-0241.2006.00844.x should point to https://journals.lww.com/ajg/Abstract/2006/11000/Proton_Pump_Inhibitor_Therapy_for_Suspected.31.aspx
+const NATURE_FAILS2 = TRUE;  // Nature dropped the ball for now TODO - https://dx.doi.org/10.1038/nature05009 should point to https://journals.lww.com/ajg/Abstract/2006/11000/Proton_Pump_Inhibitor_Therapy_for_Suspected.31.aspx
+
 
 // Catch 'authors' such as "hearst magazines", "time inc", "nielsen business media, inc"
 // Ordered alphabetically.
@@ -108,7 +110,10 @@ const BAD_ZOTERO_TITLES = ['Browse publications', 'Central Authentication Servic
                                  'Aanmelden of registreren om te bekijken', 'register to view', 'being redirected',
                                  'has been registered', 'Aanmelden bij Facebook', 'Einloggen', 'The Times & the Sunday Times',
                                  'Login • Instagram', 'subscriber to read', 'has now officially closed',
-                                 'An Error Has Occured', 'an error has occurred'];
+                                 'An Error Has Occured', 'an error has occurred', 'YouTube, a Google company',
+                                 'Seite nicht gefunden', 'Página no encontrada', 'الصفحة غير موجودة', '找不到网页',
+                                 'страница не найдена', 'Page non trouvée',
+                                  ];
 
 const CANONICAL_PUBLISHER_URLS = array ('elsevier.com', 'springer.com', 'sciencedirect.com', 'tandfonline.com',
                                 'taylorandfrancis.com', 'wiley.com', 'sagepub.com', 'sagepublications.com',
@@ -141,7 +146,7 @@ const PROXY_HOSTS_TO_DROP = array('proxy.libraries', 'proxy.lib.', '.ezproxy.', 
                                   'onlinelibrary.wiley.com/resolve/openurl', 'findarticles.com', 'psycnet.apa.org',
                                   'delivery.acm.org'); // Drop these if there is a valid FREE DOI
 
-const WEB_NEWSPAPERS = array('bbc news', 'bbc', 'news.bbc.co.uk', 'bbc sports', 'bbc sport', 'www.bbc.co.uk', 'the economist');
+const WEB_NEWSPAPERS = array('bbc news', 'bbc', 'news.bbc.co.uk', 'bbc sports', 'bbc sport', 'www.bbc.co.uk', 'the economist', 'washington post', 'the washington post');
 
 const HOSTS_TO_NOT_ADD  = array('this.fails', 'www.ncbi.nlm.nih.gov', 'dx.doi.org', 'doi.org');
 
@@ -273,7 +278,7 @@ const HOSTNAME_MAP  = array('public.ebookcentral.proquest.com' => '[[ProQuest]]'
                             'bet.com' => '[[BET]]',
                             'mtv.com' => '[[MTV]]',
                             'ultratop.be' => '[[Ultratop]]',
-                            'billboard.com' => '[[Billboard (magazine)]]',
+                            'billboard.com' => '[[Billboard (magazine)|Billboard]]',
                             'officialcharts.com' => '[[OfficialCharts.com]]',
                             'loudwire.com' => '[[Loudwire]]',
                             'altpress.com' => '[[Alternative Press (magazine)|Alternative Press]]',
@@ -288,7 +293,7 @@ const HOSTNAME_MAP  = array('public.ebookcentral.proquest.com' => '[[ProQuest]]'
                             'buzzjack.com' => 'BuzzJack',
                             'open.spotify.com' => '[[Spotify]]',
                             'whosampled.com' => '[[WhoSampled]]',
-                            'fuse.tv' => '[[Fuse (TV channel)]]',
+                            'fuse.tv' => '[[Fuse (TV channel)|Fuse]]',
                             'collider.com' => '[[Collider (website)|Collider]]',
                             'space.com' => '[[Space.com]]',
                             'github.com' => '[[GitHub]]',
@@ -331,16 +336,24 @@ const HOSTNAME_MAP  = array('public.ebookcentral.proquest.com' => '[[ProQuest]]'
                             'nba.com' => '[[NBA.com]]',
                             'mlb.com' => '[[MLB.com]]',
                             'nfl.com' => '[[NFL.com]]',
+                            'showbuzzdaily.com' => '[[Showbuzzdaily.com]]',
+                            'ratingsryan.com' => 'Ratings Ryan',
+                            'vanityfair.com' => '[[Vanity Fair (magazine)|Vanity Fair]]',
+                            'songlines.co.uk' => '[[Songlines (magazine)|Songlines]]',
+                            'abc.net.au' => '[[Australian Broadcasting Corporation]]',
+                            'espnscrum.com' => '[[ESPNscrum]]',
+                            'thestatesman.com' => '[[The Statesman (India)|The Statesman]]',
+                            'dailysabah.com' => '[[Daily Sabah]]',
                            ); // Be warned, some website host a seperate sunday edition, etc.  Be careful and when in doubt link to hostname
 
 const NO_DATE_WEBSITES = array('wikipedia.org', 'web.archive.org', 'perma-archives.org', 'webarchive.proni.gov.uk', 'perma.cc',
                               'wayback', 'web.archive.bibalex.org', 'web.petabox.bibalex.org', 'webharvest.gov', 'archive.wikiwix.com',
                               'archive.is', 'archive-it.org', 'nationalarchives.gov.uk', 'freezepage.com', 'webcitation.org',
-                              'waybackmachine.org', 'siarchives.si.edu', 'gutenberg.org', 'archive.fo', 'archive.today',
-                              'oireachtas.ie', 'webarchive.nla.gov.au', 'ebooks.adelaide.edu.au');
+                              'waybackmachine.org', 'siarchives.si.edu', 'gutenberg.org', 'archive.fo', 'archive.today', 'archive.ph',
+                              'oireachtas.ie', 'webarchive.nla.gov.au', 'ebooks.adelaide.edu.au', 'archive.md', 'imdb.com');
 
 const ZOTERO_AVOID_REGEX = array("twitter\.",               // This should be {{cite tweet}}
-                                 "youtube\.", "youtu\.be",  // This should be {{cite AV media}}
+                                 // Zotero seems to be doing better now "youtube\.", "youtu\.be",
                                  "books\.google\.",         // We have special google books code
                                  "google\.com/search",      // Google search results
                                  "jstor\.org/stable/",      // We have special jstor code
@@ -546,6 +559,7 @@ const NON_JOURNAL_WEBSITES = array('cnn.com/', 'msnbc.com/', 'nbcnews.com/', 'cb
                                    'courtlistener.com/', 'c-span.org/', '.ajc.com/', '/ajc.com/', 'theweek.com/',
                                    'socialblade.com/', 'poll.qu.edu/', 'spacecom\.mil/', 'planet4589\.org/',
                                    'nasa\.gov/', 'skyrocket\.de/', 'space\.com/', 'unoosa\.org/', 'yuzhnoye\.com/',
+                                   'ballotpedia\.org/',
                                    ); 
                                    // Just a list of ones that are obvious.  Add ones that time-out as we find them
                                    // bbm.ca is short enough that we add /bbm.ca/ and .bbm.ca/ since we don't want to grab too many sites
@@ -557,8 +571,8 @@ const ARE_MAGAZINES = array('the new yorker', 'the new republic', 'new republic'
                            'wired (magazine)', 'time', 'life', 'time (magazine)', 'life (magazine)', 'billboard',
                            'billboard (magazine)', 'rolling stone', 'mcv/develop', 'vanity fair'
                            ); // lowercase axact matches
-const ARE_MANY_THINGS = array('pc gamer', 'gamestar', 'rock paper shotgun', 'mcv', 'rock, paper, shotgun', 'edge'); // lowercase axact matches.  These are things that are both websites and newspapers
-const ARE_NEWSPAPERS = array('the economist', 'la times', 'toronto sun', 'washington post'); // lowercase axact matches
+const ARE_MANY_THINGS = array('pc gamer', 'gamestar', 'rock paper shotgun', 'mcv', 'rock, paper, shotgun', 'edge', 'ballotpedia', 'npr'); // lowercase axact matches.  These are things that are both websites and newspapers
+const ARE_NEWSPAPERS = array('the economist', 'la times', 'toronto sun', 'washington post', 'the washington post'); // lowercase axact matches
 const NO_PUBLISHER_NEEDED = array('los angeles times', 'new york times magazine', 'the new york times',
                                    'new york times', 'huffington post', 'the daily telegraph', 'forbes.com',
                                    'forbes magazine'); // lowercase axact matches
