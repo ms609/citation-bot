@@ -318,7 +318,7 @@ class Page {
         $this_template->forget('ref'); // Common parameter that does not actually work
       } elseif ($this_template->wikiname() == 'cite court') {
         $this_template->clean_google_books();
-      } elseif ($this_template->wikiname() == 'cite odnb') {
+      } elseif ($this_template->wikiname() == 'cite odnb' || (strpos($this_template->wikiname(), 'vcite ') === 0)) {
         $this_template->clean_cite_odnb();
       }
     }
