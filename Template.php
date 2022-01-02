@@ -7838,6 +7838,7 @@ final class Template {
           case "aqs": case "gs_l": case "uact": case "tbo": case "tbs":
           case "num": case "redir_esc": case "gs_lcp": case "sxsrf":
           case "gfe_rd": case "gws_rd": case "rlz": case "sclient":
+          case "prmd":
              break;
           case "rct":
              if (str_i_same($part_start[1], 'j')) break;  // default
