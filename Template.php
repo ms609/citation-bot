@@ -7846,6 +7846,10 @@ final class Template {
           case "gfe_rd": case "gws_rd": case "rlz": case "sclient":
           case "prmd":
              break;
+          case "btnG":
+             if ($part_start[1] == "" || str_i_same($part_start[1], 'Search')) break;
+             $url .=  $part . "&" ;
+             break;
           case "rct":
              if (str_i_same($part_start[1], 'j')) break;  // default
              $url .=  $part . "&" ;
