@@ -3517,7 +3517,13 @@ final class Template {
           if (isset($book_array['dq'])) $removed_parts .= '&dq=' . $book_array['dq'];
           $book_array['dq'] = urlencode(urldecode(substr($matcher[1], 3)));           // #dq= wins over &dq= before # sign
       }
-      if (isset($book_array['vq']) && !isset($book_array['q']) && !isset($book_array['dq'])) { // VQ loses to Q and VQ
+      if (isset($book_array['vq']) && !isset($book_array['q']) && !isset($book_array['dq'])) {
+          $book_array['q'] = $book_array['vq'];
+          unset($book_array['vq']);
+      }
+      if (isset($book_array['vq']) && isset($book_array['pg'])) { // VQ wins if and only if a page is set
+          unset($book_array['q']);
+          unset($book_array['dq']);
           $book_array['q'] = $book_array['vq'];
           unset($book_array['vq']);
       }
