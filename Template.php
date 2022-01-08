@@ -8102,6 +8102,8 @@ final class Template {
   }
   
   public function has_good_free_copy() : bool { // GOOD is critical - must title link - TODO add more if jstor-access or hdl-access title-link
+    $this->tidy_parameter('pmc');
+    $this->tidy_parameter('pmc-embargo-date');
     if (($this->has('pmc') && $this->blank('pmc-embargo-date') && preg_match('~^\d+$~', $this->get('pmc'))) ||
         ($this->has('doi') && $this->get('doi-access') === 'free' && $this->blank(DOI_BROKEN_ALIASES) && doi_works($this->get('doi')))) {
        return TRUE;
