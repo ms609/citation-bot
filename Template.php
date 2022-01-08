@@ -6396,7 +6396,11 @@ final class Template {
           }
           if (strtolower($this->get('work')) === 'latimes' ||
               strtolower($this->get('work')) === 'latimes.com') {
-            $this->set('work', 'Los Angeles Times');
+            $this->set('work', '[[Los Angeles Times]]');
+          }
+          if (strtolower($this->get('work')) === 'nytimes' ||
+              strtolower($this->get('work')) === 'nytimes.com') {
+            $this->set('work', '[[The New York Times]]');
           }
           
           switch ($this->wikiname()) {
@@ -6680,6 +6684,12 @@ final class Template {
             $this->set($param, '[[Los Angeles Times]]');
             return;
           }
+          if (strtolower($this->get($param)) === 'nytimes' ||
+              strtolower($this->get($param)) === 'nytimes.com') {
+            $this->set($param, '[[The New York Times]]');
+            return;
+          }
+
           if ($this->get($param) === 'The Times Digital Archive') {
             $this->set($param, '[[The Times]]');
             return;
