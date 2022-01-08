@@ -279,7 +279,7 @@ const HOSTNAME_MAP  = array('public.ebookcentral.proquest.com' => '[[ProQuest]]'
                             'mtv.com' => '[[MTV]]',
                             'ultratop.be' => '[[Ultratop]]',
                             'billboard.com' => '[[Billboard (magazine)|Billboard]]',
-                            'officialcharts.com' => '[[OfficialCharts.com]]',
+                            'officialcharts.com' => '[[Official Charts Company|Official Charts]]',
                             'loudwire.com' => '[[Loudwire]]',
                             'altpress.com' => '[[Alternative Press (magazine)|Alternative Press]]',
                             'noise11.com' => 'noise11.com',
