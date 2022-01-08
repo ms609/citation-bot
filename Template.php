@@ -4419,19 +4419,20 @@ final class Template {
             $this->rename('agency', 'publisher'); // A single user messed this up on a lot of pages with "agency"
             return;
           }
-          // Undo some bad bot edits
+          // Undo some bad bot/human edits
           if ($this->blank(WORK_ALIASES) &&
               in_array(strtolower(str_replace(array('[', ']', '.'), '', $this->get($param))),
-                       ['reuters', 'associated press', 'united press international', 'yonhap news agency'])) {
+                       ['reuters', 'associated press', 'united press international', 'yonhap news agency', 'official charts company'])) {
             $the_url = '';
             foreach (ALL_URL_TYPES as $thingy) {
               $the_url .= $this->get($thingy);
             }
             if (stripos($the_url, 'reuters.com') !== FALSE || stripos($the_url, 'apnews.com') !== FALSE ||
-                stripos($the_url, 'yna.co.kr') !== FALSE || stripos($the_url, 'upi.com')) {
+                stripos($the_url, 'yna.co.kr') !== FALSE || stripos($the_url, 'upi.com') !== FALSE || 
+                stripos($the_url, 'officialcharts.com') !== FALSE) {
                $this->rename($param, 'work');
             }
-          }  
+          }
           
           return;
           
