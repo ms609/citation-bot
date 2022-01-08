@@ -1971,7 +1971,7 @@ final class Template {
       if (mb_stripos($url, $this->get('doi')) !== FALSE) { // DOIs are case-insensitive
         if (doi_works($this->get('doi')) && is_null($url_sent) && mb_strpos(strtolower($url), ".pdf") === FALSE && not_bad_10_1093_doi($this->get('doi')) && !preg_match(REGEXP_DOI_ISSN_ONLY, $this->get('doi'))) {
           if ($this->has_good_free_copy()) {
-             report_forget("Recognized existing DOI in URL; dropping URL");
+             report_forget("Recognized the existing DOI in URL; dropping URL");
              $this->forget($url_type);
           }
         }
