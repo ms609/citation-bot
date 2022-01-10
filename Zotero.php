@@ -485,6 +485,7 @@ public static function process_zotero_response(string $zotero_response, Template
         return FALSE;
       }
   }
+  if (isset($result->bookTitle) && $result->bookTitle === 'undefined') unset($result->bookTitle); // S2 without journals
   if (isset($result->bookTitle)) {
    foreach (array_merge(BAD_ACCEPTED_MANUSCRIPT_TITLES, IN_PRESS_ALIASES) as $bad_title ) {
       if (str_i_same($result->bookTitle, $bad_title)) {
