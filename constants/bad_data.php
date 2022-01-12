@@ -112,7 +112,7 @@ const BAD_ZOTERO_TITLES = ['Browse publications', 'Central Authentication Servic
                                  'Login • Instagram', 'subscriber to read', 'has now officially closed',
                                  'An Error Has Occured', 'an error has occurred', 'YouTube, a Google company',
                                  'Seite nicht gefunden', 'Página no encontrada', 'الصفحة غير موجودة', '找不到网页',
-                                 'страница не найдена', 'Page non trouvée', 'An error occured!', 'An error occurred!',
+                                 'страница не найдена', 'Page non trouvée', 'An error occured',
                                   ];
 
 const CANONICAL_PUBLISHER_URLS = array ('elsevier.com', 'springer.com', 'sciencedirect.com', 'tandfonline.com',
