@@ -2981,6 +2981,8 @@ final class Template {
     $ris_book      = FALSE;
     $ris_fullbook  = FALSE;
     $has_T2        = FALSE;
+    $bad_EP        = FALSE;
+    $bad_SP        = FALSE;
     // Convert &#x__; to characters
     $ris = explode("\n", html_entity_decode($dat, ENT_COMPAT | ENT_HTML401, 'UTF-8'));
     $ris_authors = 0;
@@ -3000,6 +3002,10 @@ final class Template {
         }
       } elseif (trim($ris_part[0]) == "T2") {
         $has_T2 = TRUE;
+      } elseif (trim($ris_part[0]) == "SP" && (trim($ris_part[1]) === 'i' || trim($ris_part[1]) === '1')) {
+        $bad_SP = TRUE;
+      } elseif (trim($ris_part[0]) == "EP" && preg_match('~^\d{3,}$~', trim($ris_part[1]))) {
+        $bad_EP = TRUE;
       }
     }
 
@@ -3094,7 +3100,7 @@ final class Template {
       }
     }
     if ($ris_review) $this->add_if_new('title', trim($ris_review));  // Do at end in case we have real title
-    if (isset($start_page)) { // Have to do at end since might get end pages before start pages
+    if (isset($start_page) && (!$BAD_EP || !$BAD_SP)) { // Have to do at end since might get end pages before start pages
       if (isset($end_page) && ($start_page != $end_page)) {
          $this->add_if_new('pages', $start_page . '–' . $end_page);
       } else {
