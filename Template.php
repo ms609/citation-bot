@@ -223,6 +223,8 @@ final class Template {
                ['newGrove1980', 'Cite NewGrove1980'],
                ['citar livro', 'cite book'],
                ['Citar livro', 'Cite book'],
+               ['Cite press', 'Cite press release'],
+               ['cite press', 'cite press release'],
                ];
     foreach ($fix_it as $trial) {
       if ($trim_name === $trial[0]) {
