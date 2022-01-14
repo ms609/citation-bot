@@ -5,7 +5,7 @@ declare(strict_types=1);
 const HAS_NO_VOLUME = array("zookeys", "studia hibernica", "analecta hibernica", "british art studies", "der spiegel",
                             "international astronomical union circular", "yale french studies", "capjournal",
                             "cap journal", "phytokeys", "starinar", "balcanica", "american museum novitates",
-                            "european journal of taxonomy");  // Some journals have issues only, no volume numbers
+                            "european journal of taxonomy", "oceanic linguistics special publications");  // Some journals have issues only, no volume numbers
 const HAS_NO_ISSUE = array("special papers in palaeontology");  // Some journals have volumes only, no issue numbers
 const BAD_ACCEPTED_MANUSCRIPT_TITLES = array("oup accepted manuscript", "placeholder for bad pdf file", 
                                              "placeholder", "symbolic placeholder", "[placeholder]", 
@@ -644,4 +644,5 @@ const JOURNAL_IS_BOOK_SERIES = array('methods of molecular biology' , 'methods m
                                      'advances in pharmacology (san diego, calif )',
                                      'advances in pharmacology', 'inorganic syntheses',
                                      'advances in enzymology and related areas of molecular biology',
-                                     'studies in bilingualism', 'antibiotics and chemotherapy');
+                                     'studies in bilingualism', 'antibiotics and chemotherapy',
+                                     'oceanic linguistics special publications');
