@@ -4262,8 +4262,8 @@ final class Template {
     }
     $new_name = strtolower(trim($new_name)); // Match wikiname() output and cite book below
     if ($new_name === $this->wikiname()) return;
-    if (in_array($this->wikiname(), TEMPLATES_WE_RENAME)
-    && ($rename_cite_book || $this->wikiname() != 'cite book')
+    if ((in_array($this->wikiname(), TEMPLATES_WE_RENAME) && ($rename_cite_book || $this->wikiname() != 'cite book')) 
+        || ($this->wikiname() === 'cite news' && $new_name === 'cite magazine')
     ) {
       if ($new_name === 'cite arxiv') {
         if (!$this->blank(array_merge(['website','displayauthors','display-authors','access-date','accessdate',
