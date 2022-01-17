@@ -147,5 +147,12 @@ final class ParameterTest extends testBaseClass {
     $this->assertSame("9 August 2006 <!--DASHBot-->", $parameter->val);
     $this->assertSame("", $parameter->post);
   }
+
+  public function testMistakeWithSpaceAndAccent() : void {
+    $text = "{{citation|format électronique=Joe}}";
+    $template = $this->process_citation($text);
+    $this->assertSame('{{citation|format=Joe}}', $template->parsed_text());
+  }
+  
 }
 
