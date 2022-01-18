@@ -259,6 +259,12 @@ final class Template {
                ['Cite film', 'Cite AV media'],
                ['cite movie', 'cite AV media'],
                ['Cite movie', 'Cite AV media'],
+               ['cite dvd', 'cite AV media'],
+               ['Cite dvd', 'Cite AV media'],
+               ['cite DVD', 'cite AV media'],
+               ['Cite DVD', 'Cite AV media'],
+               ['cite image', 'cite AV media'],
+               ['Cite image', 'Cite AV media'],
                ];
     foreach ($fix_it as $trial) {
       if ($trim_name === $trial[0]) {
