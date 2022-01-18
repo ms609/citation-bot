@@ -3624,7 +3624,7 @@ final class Template {
       }
       if (isset($book_array['article_id'])){
           $url .= '&article_id=' . $book_array['article_id'];
-          if (!isset($book_array['dq'] && isset($book_array['q'])) {
+          if (!isset($book_array['dq']) && isset($book_array['q'])) {
             $url .= '#v=onepage'; // Explicit onepage needed for these
           }
       }
