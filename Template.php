@@ -269,6 +269,22 @@ final class Template {
                ['Cite radio', 'Cite AV media'],
                ['cite movie', 'cite AV media'],
                ['Cite movie', 'Cite AV media'],
+               ['Vcite press release', 'Cite press release'],
+               ['vcite press release', 'cite press release'],
+               ['Cite media release', 'Cite press release'],
+               ['cite media release', 'cite press release'],
+               ['Cite press-release', 'Cite press release'],
+               ['cite press-release', 'cite press release'],
+               ['Cite pr', 'Cite press release'],
+               ['cite pr', 'cite press release'],
+               ['Cite news release', 'Cite press release'],
+               ['cite news releasd', 'cite press release'],
+               ['Cite Press release', 'Cite press release'],
+               ['cite Press release', 'cite press release'],
+               ['Cite press release.', 'Cite press release'],
+               ['cite press release.', 'cite press release'],
+               ['Cite pressrelease', 'Cite press release'],
+               ['cite pressrelease', 'cite press release'],
                ];
     foreach ($fix_it as $trial) {
       if ($trim_name === $trial[0]) {
