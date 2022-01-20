@@ -1952,6 +1952,13 @@ final class Template {
        }
        return FALSE;
     }
+    
+    if (preg_match('~^https?(://(?:0-www.|www.|)worldcat(?:libraries|)\.org.+)\&referer=brief_results$~i', $url, $matches)) {
+       $url = 'https' . $matches[1];
+       if (is_null($url_sent)) {
+         $this->set($url_type, $url); // Update URL with cleaner one
+       }
+    }
 
     if (preg_match("~^https?://(?:(?:dx\.|www\.|)doi\.org|doi\.library\.ubc\.ca)/([^\?]*)~i", $url, $match)) {
       if ($this->has('doi')) {
