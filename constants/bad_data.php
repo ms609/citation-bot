@@ -114,6 +114,7 @@ const BAD_ZOTERO_TITLES = ['Browse publications', 'Central Authentication Servic
                                  'An Error Has Occured', 'an error has occurred', 'YouTube, a Google company',
                                  'Seite nicht gefunden', 'Página no encontrada', 'الصفحة غير موجودة', '找不到网页',
                                  'страница не найдена', 'Page non trouvée', 'An error occured',
+                                 'Compare Payday Loans', 'Find the Best Loan Deal', '..::.. Error',
                                   ];
 
 const CANONICAL_PUBLISHER_URLS = array ('elsevier.com', 'springer.com', 'sciencedirect.com', 'tandfonline.com',
