@@ -29,7 +29,7 @@ function ValidateForm() {
       submitButton.disabled = "disabled";
       return false;
     }
-    document.getElementById("CatSpinner").style.display = "inline-block";
+    document.getElementById("LinkSpinner").style.display = "inline-block";
   }
   document.getElementById("PageSubmit").disabled = "disabled";
   document.getElementById("CatSubmit").disabled = "disabled";
