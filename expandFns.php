@@ -454,6 +454,7 @@ function strip_diacritics (string $input) : string {
 function straighten_quotes(string $str, bool $do_more) : string { // (?<!\') and (?!\') means that it cannot have a single quote right before or after it
   // These Regex can die on Unicode because of backward looking
   if ($str === '') return '';
+  $str = str_replace('Hawaiʻi', 'CITATION_BOT_PLACEHOLDER_HAWAII', $str);
   $str2 = preg_replace('~(?<!\')&#821[679];|&#39;|&#x201[89];|[\x{FF07}\x{2018}-\x{201B}`]|&[rl]s?[b]?quo;(?!\')~u', "'", $str);
   if ($str2 !== NULL) $str = $str2;
   if((mb_strpos($str, '&rsaquo;') !== FALSE && mb_strpos($str, '&[lsaquo;')  !== FALSE) ||
@@ -481,6 +482,7 @@ function straighten_quotes(string $str, bool $do_more) : string { // (?<!\') and
      }
      if ($str2 !== NULL) $str = $str2;
   }
+  $str = str_replace('CITATION_BOT_PLACEHOLDER_HAWAII', 'Hawaiʻi', $str);
   return $str;
 }
 
