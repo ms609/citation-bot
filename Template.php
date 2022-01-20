@@ -278,7 +278,7 @@ final class Template {
                ['Cite pr', 'Cite press release'],
                ['cite pr', 'cite press release'],
                ['Cite news release', 'Cite press release'],
-               ['cite news releasd', 'cite press release'],
+               ['cite news release', 'cite press release'],
                ['Cite Press release', 'Cite press release'],
                ['cite Press release', 'cite press release'],
                ['Cite press release.', 'Cite press release'],
