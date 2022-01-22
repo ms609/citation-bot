@@ -786,8 +786,10 @@ public static function process_zotero_response(string $zotero_response, Template
               $authorParam = '';                                                   // @codeCoverageIgnore
           }
          if ($authorParam && author_is_human($result->creators[$i]->firstName . ' ' . $result->creators[$i]->lastName)) {
-                        $template->validate_and_add($authorParam, (string) $result->creators[$i]->lastName, (string) $result->creators[$i]->firstName,
-                        isset($result->rights) ? (string) $result->rights : '', FALSE);
+            if (strtolower((string) $result->creators[$i]->lastName ) === 'published') $result->creators[$i]->lastName  ='';
+            if (strtolower((string) $result->creators[$i]->firstName) === 'published') $result->creators[$i]->firstName ='';
+            $template->validate_and_add($authorParam, (string) $result->creators[$i]->lastName, (string) $result->creators[$i]->firstName,
+            isset($result->rights) ? (string) $result->rights : '', FALSE);
          }
         }
         $i++;
