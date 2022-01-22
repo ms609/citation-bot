@@ -426,6 +426,21 @@ final class Template {
       if (($this->get('title') === "Wayback Machine" || $this->get('title') === "Internet Archive Wayback Machine") && !$this->blank(['archive-url', 'archiveurl'])) {
           $this->set('title', '');
       }
+      if ($this->get('last1') === 'Published') {
+        $this->forget('last1');
+        if ($this->has('first1')) {
+          $this->rename('first1', 'author1');
+        } elseif ($this->has('first')) {
+          $this->rename('first', 'author1');
+        }
+      } elseif ($this->get('last') === 'Published') {
+        $this->forget('last');
+        if ($this->has('first1')) {
+          $this->rename('first1', 'author1');
+        } elseif ($this->has('first')) {
+          $this->rename('first', 'author1');
+        }
+      }
     }
     if ($this->should_be_processed()) {
       // Remove empty duplicates
