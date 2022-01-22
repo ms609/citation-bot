@@ -679,6 +679,7 @@ public static function process_zotero_response(string $zotero_response, Template
   $i = 0;
   while (isset($result->author[$i])) {
       if (@$result->author[$i][1] === 'published' || @$result->author[$i][1] === 'Published') unset($result->author[$i][1]);
+      if (@$result->author[$i][0] === 'published' || @$result->author[$i][0] === 'Published') unset($result->author[$i][0]);
       $i++;
   }
   unset($i);
