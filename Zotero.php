@@ -675,6 +675,13 @@ public static function process_zotero_response(string $zotero_response, Template
   &&   strpos($result->volume, "(") === FALSE ) $template->add_if_new('volume', (string) $result->volume);
   if ( isset($result->date) && strlen($result->date)>3)$template->add_if_new('date', tidy_date($result->date));
   if ( isset($result->series) && stripos($url, 'portal.acm.org')===FALSE)  $template->add_if_new('series' , (string) $result->series);
+  // Sometimes zotero lists the last name as "published" and puts the whole name in the first place
+  $i = 0;
+  while (isset($result->author[$i])) {
+      if (@$result->author[$i][1] === 'published' || @$result->author[$i][1] === 'Published') unset($result->author[$i][1]);
+      $i++;
+  }
+  unset($i);
   if ( isset($result->author[0]) && !isset($result->author[1]) &&
       !author_is_human(@$result->author[0][0] . ' ' . @$result->author[0][1])) {
     unset($result->author[0]); // Do not add a single non-human author
@@ -685,6 +692,7 @@ public static function process_zotero_response(string $zotero_response, Template
                                       isset($result->rights) ? (string) $result->rights : '', FALSE);
       $i++;
   }
+  unset($i);
    
   if (stripos($url, 'sfdb.org') !== FALSE && $template->blank(WORK_ALIASES)) {
      $template->add_if_new('website', 'sfdb.org');
