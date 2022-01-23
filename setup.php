@@ -42,11 +42,7 @@ if (isset($_REQUEST["slow"]) || TRAVIS || (isset($argv[2]) && $argv[2] === '--sl
   define("SLOW_MODE", FALSE);
 }
 
-if (isset($_REQUEST["surname"])) {
-  define("SURNAME", TRUE);
-} else {
-  define("SURNAME", FALSE);
-}
+define("SURNAME", FALSE);
 ob_implicit_flush();
 flush();
 if (!TRAVIS) {
