@@ -2466,25 +2466,28 @@ T1 - This is the Title }}';
     $this->assertSame('cite arxiv', $prepared->wikiname());
   }
  
-  public function testArxivDocumentBibcodeCode() : void {
+  public function testArxivDocumentBibcodeCode1() : void {
     $text = "{{cite arxiv| arxiv=1234|bibcode=abc}}";
     $template = $this->make_citation($text);
     $template->change_name_to('cite journal');
     $template->final_tidy();
     $this->assertSame('cite web', $template->wikiname());
     $this->assertNull($template->get2('bibcode'));    
-   
+  }
+  public function testArxivDocumentBibcodeCode2() : void {
     $text = "{{cite journal}}";
     $template = $this->make_citation($text);
     $template->final_tidy();
     $this->assertSame('cite journal', $template->wikiname());
-   
+  }
+  public function testArxivDocumentBibcodeCode3() : void {
     $text = "{{cite web}}";
     $template = $this->make_citation($text);
     $template->change_name_to('cite journal');
     $template->final_tidy();
     $this->assertSame('cite document', $template->wikiname());
-   
+  }
+  public function testArxivDocumentBibcodeCode4() : void {
     $text = "{{cite web|eprint=xxx}}";
     $template = $this->make_citation($text);
     $template->change_name_to('cite journal');
@@ -4811,7 +4814,7 @@ T1 - This is the Title }}';
     $template->tidy_parameter('publisher');
     $this->assertSame('entertainment', $template->get2('department'));
     $this->assertNull($template->get2('publisher'));
-    $this->assertSame('the washington post', $template->get2('work'));
+    $this->assertSame('the washington post', $template->get2('newspaper'));
   }
  
   public function testTidySDandDepartment() : void {
