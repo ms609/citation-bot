@@ -4,15 +4,16 @@ declare(strict_types=1);
 require_once 'constants.php';      // @codeCoverageIgnore
 require_once 'Template.php';      // @codeCoverageIgnore
 
+
 // ============================================= DOI functions ======================================
 function doi_active(string $doi) : ?bool {
   // Greatly speed-up by having one array of each kind and only look for hash keys, not values
   static $cache_good = [];
-  static $cache_bad  = ['10.1126/science' => TRUE, '' => TRUE]; // This results from over-truncating other DOIs and it oddly works
+  static $cache_bad  = BAD_DOI_ARRAY;
   if (array_key_exists($doi, $cache_good)) return TRUE;
   if (array_key_exists($doi, $cache_bad))  return FALSE;
   // For really long category runs
-  if (count($cache_bad) > 500) $cache_bad = ['10.1126/science' => TRUE, '' => TRUE];
+  if (count($cache_bad) > 500) $cache_bad = BAD_DOI_ARRAY;
   if (count($cache_good) > 9500) $cache_good = [];
   $works = doi_works($doi);
   if ($works === NULL) {
@@ -38,11 +39,11 @@ function doi_active(string $doi) : ?bool {
 function doi_works(string $doi) : ?bool {
   // Greatly speed-up by having one array of each kind and only look for hash keys, not values
   static $cache_good = [];
-  static $cache_bad  = ['10.1126/science' => TRUE, '' => TRUE]; // This results from over-truncating other DOIs and it oddly works
+  static $cache_bad  = BAD_DOI_ARRAY;
   if (array_key_exists($doi, $cache_good)) return TRUE;
   if (array_key_exists($doi, $cache_bad))  return FALSE;
   // For really long category runs
-  if (count($cache_bad) > 500) $cache_bad = ['10.1126/science' => TRUE, '' => TRUE];
+  if (count($cache_bad) > 500) $cache_bad = BAD_DOI_ARRAY;
   if (count($cache_good) > 9500) $cache_good = [];
   $works = is_doi_works($doi);
   if ($works === NULL) {
