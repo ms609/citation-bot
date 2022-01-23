@@ -417,9 +417,9 @@ final class Template {
     if (SURNAME) {
       foreach ($this->param as $param) {
         $the_param=$param->param;
-        if (strpos('given', $the_param) !== FALSE) {
+        if (strpos($the_param, 'given') !== FALSE) {
           $this->rename($the_param, str_replace('given', 'first', $the_param));
-        } elseif (strpos('surname', $the_param) !== FALSE) {
+        } elseif (strpos($the_param, 'surname') !== FALSE) {
           $this->rename($the_param, str_replace('surname', 'last', $the_param));
         }
       }
