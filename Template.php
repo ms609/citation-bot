@@ -6960,7 +6960,7 @@ final class Template {
          if ($this->has('arxiv') || $this->has('eprint')) {
             $this->change_name_to('cite arxiv');
          } else {
-            $this->change_name_to('cite document');
+            $this->change_name_to($this->initial_name);
          }
       }
       if (($this->wikiname() === 'cite document' || $this->wikiname() === 'cite journal' || $this->wikiname() === 'cite web') &&
