@@ -85,6 +85,7 @@ public static function query_url_api_class(array $ids, array &$templates) : void
       curl_setopt(self::$zotero_ch, CURLOPT_TIMEOUT, 10);  // @codeCoverageIgnore
   }
   self::$zotero_announced = 2;
+  echo "HERE\n";
   foreach ($templates as $template) {
        if ($template->has('biorxiv')) {
          if ($template->blank('doi')) {
@@ -96,7 +97,9 @@ public static function query_url_api_class(array $ids, array &$templates) : void
          }
        }
        $doi = $template->get('doi');
+     echo "HERE2\n";
        if (!doi_active($doi)) {
+               echo "HERE3\n";
          if ($template->has('citeseerx')) self::expand_by_zotero($template, 'http://citeseerx.ist.psu.edu/viewdoc/summary?doi=' . $template->get('citeseerx'));
          if ($template->has('hdl'))       self::expand_by_zotero($template, 'https://hdl.handle.net/' . $template->get('hdl'));
          //  Has a CAPCHA --  if ($template->has('jfm'))       self::expand_by_zotero($template, 'https://zbmath.org/?format=complete&q=an:' . $template->get('jfm'));
@@ -334,6 +337,7 @@ private static function zotero_request(string $url) : string {
 }
 
 public static function expand_by_zotero(Template $template, ?string $url = NULL) : bool {
+  echo "HERE5\n";
   $access_date = 0;
   $url_kind = '';
   if (is_null($url)) {
@@ -373,19 +377,21 @@ public static function expand_by_zotero(Template $template, ?string $url = NULL)
         return FALSE;
      }     
   }
-
+  echo "HERE6\n";
   if (!$template->profoundly_incomplete($url)) return FALSE; // Only risk unvetted data if there's little good data to sully
-  
+    echo "HERE7\n";
   if(stripos($url, 'CITATION_BOT_PLACEHOLDER') !== FALSE) return FALSE; // That's a bad url
-  
+    echo "HERE8\n";
   $bad_url = implode('|', ZOTERO_AVOID_REGEX);
   if(preg_match("~^https?://(?:www\.|m\.|)(?:" . $bad_url . ")~i", $url)) return FALSE; 
-
+  echo "HERE9\n";
   // Is it actually a URL.  Zotero will search for non-url things too!
   if (filter_var($url, FILTER_VALIDATE_URL) === FALSE) return FALSE; // PHP does not like it
+     echo "HERE10\n";
   if (preg_match('~^https?://[^/]+/?$~', $url) === 1) return FALSE; // Just a host name
+     echo "HERE11\n";
   if (preg_match(REGEXP_IS_URL, $url) !== 1) return FALSE;  // See https://mathiasbynens.be/demo/url-regex/  This regex is more exact than validator.  We only spend time on this after quick and dirty check is passed
-   
+          echo "HERE12\n";
   if (self::$zotero_announced === 1) {
     report_action("Using Zotero translation server to retrieve details from URLs.");
     self::$zotero_announced = 0;
@@ -393,14 +399,17 @@ public static function expand_by_zotero(Template $template, ?string $url = NULL)
     report_action("Using Zotero translation server to retrieve details from identifiers.");
     self::$zotero_announced = 0;
   }
+        echo "HERE13\n";
   $zotero_response = self::zotero_request($url);
+   print_r($zotero_response);
+        echo "HERE14\n";
   return self::process_zotero_response($zotero_response, $template, $url, $url_kind, $access_date);
 }
 
 public static function process_zotero_response(string $zotero_response, Template $template, string $url, string $url_kind, int $access_date) : bool {
   $matches = ['', '']; // prevent memory leak in some PHP versions
   if ($zotero_response === self::ERROR_DONE) return FALSE;  // Error message already printed in zotero_request()
- 
+        echo "HERE20\n";
   switch (trim($zotero_response)) {
     case '':
       report_info("Nothing returned for URL $url");
@@ -418,7 +427,7 @@ public static function process_zotero_response(string $zotero_response, Template
       report_info("An error occurred during translation for URL ". $url);
       return FALSE;
   }
-  
+        echo "HERE21\n";
   if (strpos($zotero_response, '502 Bad Gateway') !== FALSE) {
     report_warning("Bad Gateway error for URL ". $url);
     return FALSE;
@@ -427,7 +436,10 @@ public static function process_zotero_response(string $zotero_response, Template
     report_warning("Temporarily Unavailable error for URL ". $url);  // @codeCoverageIgnore
     return FALSE;                                                    // @codeCoverageIgnore
   }
+           echo "HERE22\n";
   $zotero_data = @json_decode($zotero_response, FALSE);
+   print_r($zotero_data);
+        echo "HERE23\n";
   if (!isset($zotero_data)) {
     report_warning("Could not parse JSON for URL ". $url . ": " . $zotero_response);
     return FALSE;
