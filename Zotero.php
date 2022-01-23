@@ -454,7 +454,18 @@ public static function process_zotero_response(string $zotero_response, Template
     report_info("Could not resolve URL ". $url);
     return FALSE;
   }
-  
+  // Remove unused stuff.  TODO - Is there any value in these:
+  unset($result->abstractNote);
+  unset($result->version);
+  unset($result->accessDate);
+  unset($result->libraryCatalog);
+  unset($result->url);
+  unset($result->tags);
+  unset($result->key);
+  unset($result->websiteTitle);
+  unset($result->journalAbbreviation);
+  unset($result->ISSN);
+
   // Reject if we find more than 5 or more than 10% of the characters are �.  This means that character
   // set was not correct in Zotero and nothing is good.  We allow a couple of � for German umlauts that arer easily fixable by humans.
   // We also get a lot of % and $ if the encoding was something like iso-2022-jp and converted wrong
