@@ -611,7 +611,7 @@ final class TemplateTest extends testBaseClass {
   public function testPMCExpansion2() : void {
     $text = "{{Cite web | url = https://www.ncbi.nlm.nih.gov/pmc/articles/PMC2491514/pdf/annrcse01476-0076.pdf}}";
     $expanded = $this->process_citation($text);
-    $this->assertSame('cite journal', $expanded->wikiname());
+    $this->assertSame('cite web', $expanded->wikiname());
     $this->assertSame('https://www.ncbi.nlm.nih.gov/pmc/articles/PMC2491514/pdf/annrcse01476-0076.pdf', $expanded->get2('url'));
     $this->assertSame('2491514', $expanded->get2('pmc'));
   }
@@ -2471,7 +2471,7 @@ T1 - This is the Title }}';
     $template = $this->make_citation($text);
     $template->change_name_to('cite journal');
     $template->final_tidy();
-    $this->assertSame('cite arxiv', $template->wikiname());
+    $this->assertSame('cite web', $template->wikiname());
     $this->assertNull($template->get2('bibcode'));    
    
     $text = "{{cite journal}}";
