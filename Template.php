@@ -414,6 +414,16 @@ final class Template {
 
   public function prepare() : void {
     set_time_limit(120);
+    if (SURNAME) {
+      foreach ($this->param as $param) {
+        $the_param=$param->param;
+        if (strpos($the_param, 'given') !== FALSE) {
+          $this->rename($the_param, str_replace('given', 'first', $the_param));
+        } elseif (strpos($the_param, 'surname') !== FALSE) {
+          $this->rename($the_param, str_replace('surname', 'last', $the_param));
+        }
+      }
+    }
     if (in_array($this->wikiname(), TEMPLATES_WE_PROCESS) || in_array($this->wikiname(), TEMPLATES_WE_SLIGHTLY_PROCESS)) {
       // Clean up bad data
       if (in_array($this->get('title'), [ "Bloomberg - Are you a robot?", "Page not found",
