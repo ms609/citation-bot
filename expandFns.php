@@ -8,7 +8,7 @@ require_once 'Template.php';      // @codeCoverageIgnore
 function doi_active(string $doi) : ?bool {
   // Greatly speed-up by having one array of each kind and only look for hash keys, not values
   static $cache_good = [];
-  static $cache_bad  = [];
+  static $cache_bad  = [CONFLIG];
   if (array_key_exists($doi, $cache_good)) return TRUE;
   if (array_key_exists($doi, $cache_bad))  return FALSE;
   // For really long category runs
