@@ -6756,6 +6756,10 @@ final class Template {
           return;
           
         case 'website':
+          if ($this->get($param) === 'Undefined' || $this->get($param) === 'undefined') {
+             $this->forget($param);
+            return;
+          }
           if (($this->wikiname() === 'cite book') && (str_i_same($this->get($param), 'google.com') ||
                                                       str_i_same($this->get($param), 'Google Books') ||
                                                       str_i_same($this->get($param), 'Google Book') ||
