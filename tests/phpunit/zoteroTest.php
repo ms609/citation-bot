@@ -317,7 +317,7 @@ final class zoteroTest extends testBaseClass {
     $zotero_data[0] = (object) array('title' => 'Billy', 'itemType' => 'journalArticle');
     $zotero_response = json_encode($zotero_data);
     $this->assertTrue(Zotero::process_zotero_response($zotero_response, $template, $url, $url_kind, $access_date));
-    $this->assertSame('cite journal', $template->wikiname());
+    $this->assertSame('cite web', $template->wikiname()); // Does not change because no work parameter is set
     $this->assertSame('Billy', $template->get2('title'));
    }
    
