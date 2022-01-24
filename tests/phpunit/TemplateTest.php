@@ -2471,7 +2471,7 @@ T1 - This is the Title }}';
     $template = $this->make_citation($text);
     $template->change_name_to('cite journal');
     $template->final_tidy();
-    $this->assertSame('cite web', $template->wikiname());
+    $this->assertSame('cite arxiv', $template->wikiname());
     $this->assertNull($template->get2('bibcode'));    
   }
   public function testArxivDocumentBibcodeCode2() : void {
@@ -2485,7 +2485,7 @@ T1 - This is the Title }}';
     $template = $this->make_citation($text);
     $template->change_name_to('cite journal');
     $template->final_tidy();
-    $this->assertSame('cite document', $template->wikiname());
+    $this->assertSame('cite web', $template->wikiname());
   }
   public function testArxivDocumentBibcodeCode4() : void {
     $text = "{{cite web|eprint=xxx}}";
