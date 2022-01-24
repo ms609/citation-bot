@@ -498,6 +498,7 @@ public static function process_zotero_response(string $zotero_response, Template
   }
   if ($test_data === '404') return FALSE;
   if (isset($result->bookTitle) && strtolower($result->bookTitle) === 'undefined') unset($result->bookTitle); // S2 without journals
+  if (isset($result->publicationTitle) && strtolower($result->publicationTitle) === 'undefined') unset($result->publicationTitle); // S2 without journals
   if (isset($result->bookTitle)) {
    foreach (array_merge(BAD_ACCEPTED_MANUSCRIPT_TITLES, IN_PRESS_ALIASES) as $bad_title ) {
       if (str_i_same($result->bookTitle, $bad_title)) {
@@ -726,7 +727,7 @@ public static function process_zotero_response(string $zotero_response, Template
       case 'journalArticle':
       case 'conferencePaper':
       case 'report':  // ssrn uses this
-        if($template->wikiname() == 'cite web' && str_ireplace(NON_JOURNAL_WEBSITES, '', $url) === $url) {
+        if($template->wikiname() == 'cite web' && str_ireplace(NON_JOURNAL_WEBSITES, '', $url) === $url && !$template->blank(WORK_ALIASES)) {
           $template->change_name_to('cite journal');
         }
         break;
