@@ -4943,10 +4943,16 @@ final class Template {
           }
           if (str_equivalent($this->get($param), $this->get('work'))) $this->forget('work');
 
-          if (strtolower($this->name) === 'cite paper' && $param === 'journal') {
+          if (strtolower($this->name) === 'cite paper' && $param === 'journal' && !$this->blank_other_than_comments($param)) {
              if ($this->name === 'cite paper') {
                $this->name = 'cite journal';
              } elseif ($this->name === 'Cite paper') {
+               $this->name = 'Cite journal';
+             }
+          } elseif (strtolower($this->name) === 'cite document' && $param === 'journal' && !$this->blank_other_than_comments($param)) {
+             if ($this->name === 'cite document') {
+               $this->name = 'cite journal';
+             } elseif ($this->name === 'Cite document') {
                $this->name = 'Cite journal';
              }
           }
