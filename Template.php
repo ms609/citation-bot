@@ -314,11 +314,15 @@ final class Template {
     if ($trim_name === 'cite paper') {
       if (!$this->blank_other_than_comments('journal')) {
         $this->name = $spacing[1] . 'cite journal' . $spacing[2];
+      } elseif ($this->blank(WORK_ALIASES) && $this->has('url')) {
+        $this->name = $spacing[1] . 'cite web' . $spacing[2];
       }
     }
     if ($trim_name === 'Cite paper') {
       if (!$this->blank_other_than_comments('journal')) {
         $this->name = $spacing[1] . 'Cite journal' . $spacing[2];
+      } elseif ($this->blank(WORK_ALIASES) && $this->has('url')) {
+        $this->name = $spacing[1] . 'Cite web' . $spacing[2];
       }
     }
     
