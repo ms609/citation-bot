@@ -336,6 +336,8 @@ final class Template {
         $this->name = $spacing[1] . 'cite news' . $spacing[2];
       } elseif ($this->has('chapter') || $this->has('isbn')) {
         $this->name = $spacing[1] . 'cite book' . $spacing[2];
+      } elseif ($this->blank(WORK_ALIASES) && $this->has('url')) {
+        $this->name = $spacing[1] . 'cite web' . $spacing[2];
       }
     }
     if ($trim_name === 'Cite document') {
@@ -347,6 +349,8 @@ final class Template {
         $this->name = $spacing[1] . 'Cite news' . $spacing[2];
       } elseif ($this->has('chapter') || $this->has('isbn')) {
         $this->name = $spacing[1] . 'Cite book' . $spacing[2];
+      } elseif ($this->blank(WORK_ALIASES) && $this->has('url')) {
+        $this->name = $spacing[1] . 'Cite web' . $spacing[2];
       }
     }
     
