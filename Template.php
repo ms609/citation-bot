@@ -292,7 +292,7 @@ final class Template {
         break;
       }
     }
-    if (strpos($this->name, 'Cite  ') === 0 || strpos($this->name, 'cite  ') === 0) {
+    while (strpos($this->name, 'Cite  ') === 0 || strpos($this->name, 'cite  ') === 0) {
       $this->name = substr_replace($this->name, 'ite ', 1, 5);
     }
     // Cite article is actually cite news, but often used for journal by mistake - fix
