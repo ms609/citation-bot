@@ -310,6 +310,18 @@ final class Template {
         $this->name = $spacing[1] . 'Cite journal' . $spacing[2];
       }
     }
+    // Cite paper is really cite journal
+    if ($trim_name === 'cite paper') {
+      if (!$this->blank_other_than_comments('journal')) {
+        $this->name = $spacing[1] . 'cite journal' . $spacing[2];
+      }
+    }
+    if ($trim_name === 'Cite paper') {
+      if (!$this->blank_other_than_comments('journal')) {
+        $this->name = $spacing[1] . 'Cite journal' . $spacing[2];
+      }
+    }
+    
     // Cite document is actually cite journal, but often used for other things by mistake - fix what we can
     if ($trim_name === 'cite document') {
       if (strpos($this->get('doi'), '/978-') !== FALSE || strpos($this->get('doi'), '/978019') !== FALSE || strpos($this->get('isbn'), '978-0-19') === 0 || strpos($this->get('isbn'), '978019') === 0) {
@@ -332,7 +344,7 @@ final class Template {
       } elseif ($this->has('chapter') || $this->has('isbn')) {
         $this->name = $spacing[1] . 'Cite book' . $spacing[2];
       }
-    } 
+    }
     
     if (substr($this->wikiname(),0,5) === 'cite ' || $this->wikiname() === 'citation') {
       if (preg_match('~< */? *ref *>~i', $this->rawtext)) {
@@ -4943,19 +4955,6 @@ final class Template {
           }
           if (str_equivalent($this->get($param), $this->get('work'))) $this->forget('work');
 
-          if (strtolower($this->name) === 'cite paper' && $param === 'journal' && !$this->blank_other_than_comments($param)) {
-             if ($this->name === 'cite paper') {
-               $this->name = 'cite journal';
-             } elseif ($this->name === 'Cite paper') {
-               $this->name = 'Cite journal';
-             }
-          } elseif (strtolower($this->name) === 'cite document' && $param === 'journal' && !$this->blank_other_than_comments($param)) {
-             if ($this->name === 'cite document') {
-               $this->name = 'cite journal';
-             } elseif ($this->name === 'Cite document') {
-               $this->name = 'Cite journal';
-             }
-          }
           $periodical = trim($this->get($param));
           // Special odd cases go here
           if ($periodical === 'TAXON') { // All caps that should not be
