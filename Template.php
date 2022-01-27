@@ -327,7 +327,7 @@ final class Template {
         $this->name = $spacing[1] . 'cite book' . $spacing[2];
       } elseif (!$this->blank_other_than_comments('chapter') || !$this->blank_other_than_comments('isbn')) {
         $this->name = $spacing[1] . 'cite book' . $spacing[2];
-      } elseif (!$this->blank_other_than_comments(['journal', 'pmid', 'pmc', 'doi', 's2cid', 'citeseerx'])) {
+      } elseif (!$this->blank_other_than_comments(['journal', 'pmid', 'pmc', 'doi'])) {
         $this->name = $spacing[1] . 'cite journal' . $spacing[2];
       } else {
         $this->name = $spacing[1] . 'cite document' . $spacing[2];
@@ -349,7 +349,7 @@ final class Template {
         $this->name = $spacing[1] . 'Cite book' . $spacing[2];
       } elseif (!$this->blank_other_than_comments('chapter') || !$this->blank_other_than_comments('isbn')) {
         $this->name = $spacing[1] . 'Cite book' . $spacing[2];
-      } elseif (!$this->blank_other_than_comments(['journal', 'pmid', 'pmc', 'doi', 's2cid', 'citeseerx'])) {
+      } elseif (!$this->blank_other_than_comments(['journal', 'pmid', 'pmc', 'doi'])) {
         $this->name = $spacing[1] . 'Cite journal' . $spacing[2];
       } else {
         $this->name = $spacing[1] . 'Cite document' . $spacing[2];
