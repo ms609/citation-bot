@@ -80,7 +80,7 @@ const BAD_TITLES = array("unknown", "missing", "arxiv e-prints", "arxiv mathemat
                          "bloomberg - are you a robot?", "page not found",
                          "breaking news, analysis, politics, blogs, news photos, video, tech reviews",
                          "breaking news, analysis, politics, blogs, news photos, video, tech reviews - time.com",
-                         "redirect notice", "oxford music online", "trove - archived webpage"
+                         "redirect notice", "oxford music online", "trove - archived webpage", "pagina inicia",
                         );
 const IN_PRESS_ALIASES = array("in press", "inpress", "pending", "published", 
                                "published online", "no-no", "n/a", "online ahead of print", 
@@ -116,7 +116,7 @@ const BAD_ZOTERO_TITLES = ['Browse publications', 'Central Authentication Servic
                                  'An Error Has Occured', 'an error has occurred', 'YouTube, a Google company',
                                  'Seite nicht gefunden', 'Página no encontrada', 'الصفحة غير موجودة', '找不到网页',
                                  'страница не найдена', 'Page non trouvée', 'An error occured',
-                                 'Compare Payday Loans', 'Find the Best Loan Deal', '..::.. Error',
+                                 'Compare Payday Loans', 'Find the Best Loan Deal', '..::.. Error', "Pagina inicia",
                                   ];
 
 const CANONICAL_PUBLISHER_URLS = array ('elsevier.com', 'springer.com', 'sciencedirect.com', 'tandfonline.com',
