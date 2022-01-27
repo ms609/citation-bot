@@ -309,13 +309,13 @@ final class Template {
       } else {
         $this->name = $spacing[1] . 'Cite journal' . $spacing[2];
       }
-      // Cite paper is really cite journal
-    } elseif ($trim_name === 'cite paper') {
+      // Cite paper and Cite document are really cite journal
+    } elseif ($trim_name === 'cite paper' || $trim_name === 'cite document') {
       if (!$this->blank_other_than_comments('journal')) {
         $this->name = $spacing[1] . 'cite journal' . $spacing[2];
       } elseif (!$this->blank_other_than_comments('newspaper')) {
         $this->name = $spacing[1] . 'cite news' . $spacing[2];
-      } elseif ($this->blank(WORK_ALIASES) && $this->has('url')) {
+      } elseif ($this->blank_other_than_comments(WORK_ALIASES) && $this->has('url')) {
         $this->name = $spacing[1] . 'cite web' . $spacing[2];
       } elseif (!$this->blank_other_than_comments('website') && $this->has('url')) {
         $this->name = $spacing[1] . 'cite web' . $spacing[2];
@@ -323,13 +323,21 @@ final class Template {
         $this->name = $spacing[1] . 'cite magazine' . $spacing[2];
       } elseif (!$this->blank_other_than_comments(['encyclopedia', 'encyclopaedia'])) {
         $this->name = $spacing[1] . 'cite encyclopedia' . $spacing[2];
+      } elseif (strpos($this->get('doi'), '/978-') !== FALSE || strpos($this->get('doi'), '/978019') !== FALSE || strpos($this->get('isbn'), '978-0-19') === 0 || strpos($this->get('isbn'), '978019') === 0) {
+        $this->name = $spacing[1] . 'cite book' . $spacing[2];
+      } elseif (!$this->blank_other_than_comments('chapter') || !$this->blank_other_than_comments('isbn')) {
+        $this->name = $spacing[1] . 'cite book' . $spacing[2];
+      } elseif (!$this->blank_other_than_comments(['journal', 'pmid', 'pmc', 'doi', 's2cid', 'citeseerx'])) {
+        $this->name = $spacing[1] . 'cite journal' . $spacing[2];
+      } else {
+        $this->name = $spacing[1] . 'cite document' . $spacing[2];
       }
-    } elseif ($trim_name === 'Cite paper') {
+    } elseif ($trim_name === 'Cite paper' || $trim_name === 'Cite document') {
       if (!$this->blank_other_than_comments('journal')) {
         $this->name = $spacing[1] . 'Cite journal' . $spacing[2];
       } elseif (!$this->blank_other_than_comments('newspaper')) {
         $this->name = $spacing[1] . 'Cite news' . $spacing[2];
-      } elseif ($this->blank(WORK_ALIASES) && $this->has('url')) {
+      } elseif ($this->blank_other_than_comments(WORK_ALIASES) && $this->has('url')) {
         $this->name = $spacing[1] . 'Cite web' . $spacing[2];
       } elseif (!$this->blank_other_than_comments('website') && $this->has('url')) {
         $this->name = $spacing[1] . 'Cite web' . $spacing[2];
@@ -337,31 +345,14 @@ final class Template {
         $this->name = $spacing[1] . 'Cite magazine' . $spacing[2];
       } elseif (!$this->blank_other_than_comments(['encyclopedia', 'encyclopaedia'])) {
         $this->name = $spacing[1] . 'Cite encyclopedia' . $spacing[2];
-      }
-      // Cite document is actually cite journal, but often used for other things by mistake - fix what we can
-    } elseif ($trim_name === 'cite document') {
-      if (strpos($this->get('doi'), '/978-') !== FALSE || strpos($this->get('doi'), '/978019') !== FALSE || strpos($this->get('isbn'), '978-0-19') === 0 || strpos($this->get('isbn'), '978019') === 0) {
-        $this->name = $spacing[1] . 'cite book' . $spacing[2];
-      } elseif (!$this->blank(['journal', 'pmid', 'pmc', 'doi', 's2cid', 'citeseerx'])) {
-        $this->name = $spacing[1] . 'cite journal' . $spacing[2];
-      } elseif (!$this->blank(['newspaper'])) {
-        $this->name = $spacing[1] . 'cite news' . $spacing[2];
-      } elseif ($this->has('chapter') || $this->has('isbn')) {
-        $this->name = $spacing[1] . 'cite book' . $spacing[2];
-      } elseif ($this->blank(WORK_ALIASES) && $this->has('url')) {
-        $this->name = $spacing[1] . 'cite web' . $spacing[2];
-      }
-    } elseif ($trim_name === 'Cite document') {
-      if (strpos($this->get('doi'), '/978-') !== FALSE || strpos($this->get('doi'), '/978019') !== FALSE || strpos($this->get('isbn'), '978-0-19') === 0 || strpos($this->get('isbn'), '978019') === 0) {
+      } elseif (strpos($this->get('doi'), '/978-') !== FALSE || strpos($this->get('doi'), '/978019') !== FALSE || strpos($this->get('isbn'), '978-0-19') === 0 || strpos($this->get('isbn'), '978019') === 0) {
         $this->name = $spacing[1] . 'Cite book' . $spacing[2];
-      } elseif (!$this->blank(['journal', 'pmid', 'pmc', 'doi', 's2cid', 'citeseerx'])) {
+      } elseif (!$this->blank_other_than_comments('chapter') || !$this->blank_other_than_comments('isbn')) {
+        $this->name = $spacing[1] . 'Cite book' . $spacing[2];
+      } elseif (!$this->blank_other_than_comments(['journal', 'pmid', 'pmc', 'doi', 's2cid', 'citeseerx'])) {
         $this->name = $spacing[1] . 'Cite journal' . $spacing[2];
-      } elseif (!$this->blank(['newspaper'])) {
-        $this->name = $spacing[1] . 'Cite news' . $spacing[2];
-      } elseif ($this->has('chapter') || $this->has('isbn')) {
-        $this->name = $spacing[1] . 'Cite book' . $spacing[2];
-      } elseif ($this->blank(WORK_ALIASES) && $this->has('url')) {
-        $this->name = $spacing[1] . 'Cite web' . $spacing[2];
+      } else {
+        $this->name = $spacing[1] . 'Cite document' . $spacing[2];
       }
     }
     
