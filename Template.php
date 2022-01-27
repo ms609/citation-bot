@@ -317,6 +317,12 @@ final class Template {
         $this->name = $spacing[1] . 'cite news' . $spacing[2];
       } elseif ($this->blank(WORK_ALIASES) && $this->has('url')) {
         $this->name = $spacing[1] . 'cite web' . $spacing[2];
+      } elseif (!$this->blank_other_than_comments('website') && $this->has('url')) {
+        $this->name = $spacing[1] . 'cite web' . $spacing[2];
+      } elseif (!$this->blank_other_than_comments('magazine')) {
+        $this->name = $spacing[1] . 'cite magazine' . $spacing[2];
+      } elseif (!$this->blank_other_than_comments(['encyclopedia', 'encyclopaedia'])) {
+        $this->name = $spacing[1] . 'cite encyclopedia' . $spacing[2];
       }
     } elseif ($trim_name === 'Cite paper') {
       if (!$this->blank_other_than_comments('journal')) {
@@ -325,6 +331,12 @@ final class Template {
         $this->name = $spacing[1] . 'Cite news' . $spacing[2];
       } elseif ($this->blank(WORK_ALIASES) && $this->has('url')) {
         $this->name = $spacing[1] . 'Cite web' . $spacing[2];
+      } elseif (!$this->blank_other_than_comments('website') && $this->has('url')) {
+        $this->name = $spacing[1] . 'Cite web' . $spacing[2];
+      } elseif (!$this->blank_other_than_comments('magazine')) {
+        $this->name = $spacing[1] . 'Cite magazine' . $spacing[2];
+      } elseif (!$this->blank_other_than_comments(['encyclopedia', 'encyclopaedia'])) {
+        $this->name = $spacing[1] . 'Cite encyclopedia' . $spacing[2];
       }
       // Cite document is actually cite journal, but often used for other things by mistake - fix what we can
     } elseif ($trim_name === 'cite document') {
