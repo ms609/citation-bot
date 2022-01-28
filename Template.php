@@ -1501,7 +1501,6 @@ final class Template {
       case 's2cid':
         if ($this->blank(['s2cid', 'S2CID'])) {
           $this->add($param_name, $value);
-          if ($this->wikiname() === 'cite web') $this->change_name_to('cite journal');
           $this->get_doi_from_semanticscholar();
           return TRUE;
         }
@@ -2195,9 +2194,11 @@ final class Template {
         return $this->add_if_new('pmc', $match[1]);
       } elseif (preg_match("~^https?://citeseerx\.ist\.psu\.edu/viewdoc/(?:summary|download)(?:\;jsessionid=[^\?]+|)\?doi=([0-9.]*)(?:&.+)?~", $url, $match)) {
         quietly('report_modification', "URL is hard-coded citeseerx; converting to use citeseerx parameter.");
-        if ($this->wikiname() === 'cite web') $this->change_name_to('cite journal');
         if (is_null($url_sent)) {
-          if ($this->has_good_free_copy()) $this->forget($url_type);
+          if ($this->has_good_free_copy()) {
+            $this->forget($url_type);
+            if ($this->wikiname() === 'cite web') $this->change_name_to('cite journal');
+          }
         }
         return $this->add_if_new('citeseerx', urldecode($match[1])); // We cannot parse these at this time
         
@@ -2350,44 +2351,53 @@ final class Template {
           return $this->add_if_new('hdl', $handle);
       } elseif (preg_match("~^https?://zbmath\.org/\?format=complete&q=an:([0-9][0-9][0-9][0-9]\.[0-9][0-9][0-9][0-9][0-9])~i", $url, $match)) {
           quietly('report_modification', "Converting URL to ZBL parameter");
-          if ($this->wikiname() === 'cite web') $this->change_name_to('cite journal');  // Better template choice.  Often journal/paper
           if (is_null($url_sent)) {
-             if ($this->has_good_free_copy()) $this->forget($url_type);
+             if ($this->has_good_free_copy()) {
+               $this->forget($url_type);
+               if ($this->wikiname() === 'cite web') $this->change_name_to('cite journal');
+             }
           }
           return $this->add_if_new('zbl', $match[1]);
       } elseif (preg_match("~^https?://zbmath\.org/\?format=complete&q=an:([0-9][0-9]\.[0-9][0-9][0-9][0-9]\.[0-9][0-9])~i", $url, $match)) {
           quietly('report_modification', "Converting URL to JFM parameter");
-          if ($this->wikiname() === 'cite web') $this->change_name_to('cite journal');  // Better template choice.  Often journal/paper
           if (is_null($url_sent)) {
-             if ($this->has_good_free_copy()) $this->forget($url_type);
+             if ($this->has_good_free_copy()) {
+               $this->forget($url_type);
+               if ($this->wikiname() === 'cite web') $this->change_name_to('cite journal');
+             }
           }
           return $this->add_if_new('jfm', $match[1]);
       } elseif (preg_match("~^https?://mathscinet\.ams\.org/mathscinet-getitem\?mr=([0-9]+)~i", $url, $match)) {
           quietly('report_modification', "Converting URL to MR parameter");
-          if ($this->wikiname() === 'cite web') $this->change_name_to('cite journal');  // Better template choice.  Often journal/paper
           if (is_null($url_sent)) {
              // SEP 2020 $this->forget($url_type); This points to a review and not the article
           }
           return $this->add_if_new('mr', $match[1]);
       } elseif (preg_match("~^https?://papers\.ssrn\.com(?:/sol3/papers\.cfm\?abstract_id=|/abstract=)([0-9]+)~i", $url, $match)) {
           quietly('report_modification', "Converting URL to SSRN parameter");
-          if ($this->wikiname() === 'cite web') $this->change_name_to('cite journal'); // Better template choice.  Often journal/paper
           if (is_null($url_sent)) {
-             if ($this->has_good_free_copy()) $this->forget($url_type);
+             if ($this->has_good_free_copy()) {
+               $this->forget($url_type);
+               if ($this->wikiname() === 'cite web') $this->change_name_to('cite journal');
+             }
           }
           return $this->add_if_new('ssrn', $match[1]);
       } elseif (preg_match("~^https?://(?:www\.|)osti\.gov/(?:scitech/|)(?:biblio/|)(?:purl/|)([0-9]+)(?:\.pdf|)~i", $url, $match)) {
           quietly('report_modification', "Converting URL to OSTI parameter");
-          if ($this->wikiname() === 'cite web') $this->change_name_to('cite journal');  // Better template choice.  Often journal/paper
           if (is_null($url_sent)) {
-             if ($this->has_good_free_copy()) $this->forget($url_type);
+             if ($this->has_good_free_copy()) {
+               $this->forget($url_type);
+               if ($this->wikiname() === 'cite web') $this->change_name_to('cite journal');
+             }
           }
           return $this->add_if_new('osti', $match[1]);
       } elseif (preg_match("~^https?://(?:www\.|)osti\.gov/energycitations/product\.biblio\.jsp\?osti_id=([0-9]+)~i", $url, $match)) {
           quietly('report_modification', "Converting URL to OSTI parameter");
-          if ($this->wikiname() === 'cite web') $this->change_name_to('cite journal');  // Better template choice.  Often journal/paper
           if (is_null($url_sent)) {
-             if ($this->has_good_free_copy()) $this->forget($url_type);
+             if ($this->has_good_free_copy()) {
+               $this->forget($url_type);
+               if ($this->wikiname() === 'cite web') $this->change_name_to('cite journal');
+             }
           }
           return $this->add_if_new('osti', $match[1]);
       } elseif (preg_match("~^https?://(?:www\.|)worldcat\.org(?:/title/\S+)?/oclc/([0-9]+)~i", $url, $match)) {
