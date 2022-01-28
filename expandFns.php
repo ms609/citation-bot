@@ -4,7 +4,7 @@ declare(strict_types=1);
 require_once 'constants.php';      // @codeCoverageIgnore
 require_once 'Template.php';      // @codeCoverageIgnore
 
-const MIN_DX_TIME = 20000;
+const MIN_DX_TIME = 2*10000; // Hundreths of seconds
 
 // ============================================= DOI functions ======================================
 function doi_active(string $doi) : ?bool {
