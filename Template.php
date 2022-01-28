@@ -285,6 +285,14 @@ final class Template {
                ['cite press release.', 'cite press release'],
                ['Cite pressrelease', 'Cite press release'],
                ['cite pressrelease', 'cite press release'],
+               ['Cite standard', 'Cite techreport'],
+               ['cite standard', 'cite techreport'],
+               ['Cite technical report', 'Cite techreport'],
+               ['cite technical report', 'cite techreport'], 
+               ['Cite tech report', 'Cite techreport'],
+               ['cite tech report', 'cite techreport'], 
+               ['Techrep reference', 'Cite techreport'],
+               ['techrep reference', 'cite techreport'], 
                ];
     foreach ($fix_it as $trial) {
       if ($trim_name === $trial[0]) {
