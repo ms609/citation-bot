@@ -2309,7 +2309,7 @@ final class Template {
             usleep(100000);
             $test_url = "https://hdl.handle.net/" . $handle;
             $headers_test = @get_headers($test_url, 1);
-            if ($headers_test === FALSE)) {
+            if ($headers_test === FALSE) {
                sleep(3);
                $headers_test = @get_headers($test_url, 1);
             }
@@ -2336,7 +2336,7 @@ final class Template {
           $test_url = "https://hdl.handle.net/" . $handle;
           usleep(20000);
           $headers_test = @get_headers($test_url, 1);
-          if ($headers_test === FALSE)) {
+          if ($headers_test === FALSE) {
              sleep(3);
              $headers_test = @get_headers($test_url, 1);
           }
