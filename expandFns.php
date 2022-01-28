@@ -74,7 +74,7 @@ function is_doi_active(string $doi) : ?bool {
 
 function throttle_dx () : void {
   static $last = -MIN_DX_TIME;
-  $now = microtime(TRUE);
+  $now = microtime();
   $left = MIN_DX_TIME - ($now - $last);
   if ($left > 0 && $left < MIN_DX_TIME) usleep($left); // less than min_time is paranoia, but do not want an inifinite delay
   $last = $now;
