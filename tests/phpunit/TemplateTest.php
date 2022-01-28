@@ -2847,7 +2847,7 @@ T1 - This is the Title }}';
   public function testEmptyCitations() : void {
     $text = 'bad things like {{cite journal}}{{cite book|||}}{{cite arxiv}}{{cite web}} should not crash bot'; // bot removed pipes
     $expanded = $this->process_page($text);
-    $this->assertSame('bad things like {{cite journal}}{{cite book}}{{cite arxiv}}{{cite web}} should not crash bot', $expanded->parsed_text());
+    $this->assertSame('bad things like {{cite journal}}{{cite book}}{{cite arXiv}}{{cite web}} should not crash bot', $expanded->parsed_text());
   }
 
   public function testLatexMathInTitle() : void { // This contains Math stuff that should be z~10, but we just verify that we do not make it worse at this time.  See https://tex.stackexchange.com/questions/55701/how-do-i-write-sim-approximately-with-the-correct-spacing
