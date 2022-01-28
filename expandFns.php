@@ -72,11 +72,11 @@ function is_doi_active(string $doi) : ?bool {
 }
 
 function throttle_dx () : void {
-  const MIN_TIME = 10000.0;
-  static $last = -MIN_TIME;
+  $min_time = 10000.0;
+  static $last = -$min_time;
   $now = microtime(TRUE);
-  $left = MIN_TIME - ($now - $last);
-  if ($left > 0 && $left < MIN_TIME) usleep($left); // less than min_time is paranoia, but do not want an inifinite delay
+  $left = $min_time - ($now - $last);
+  if ($left > 0 && $left < $min_time) usleep($left); // less than min_time is paranoia, but do not want an inifinite delay
   $last = $now;
 }
 
