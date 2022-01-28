@@ -2288,7 +2288,7 @@ final class Template {
               break;
             }
           }
-          if (!$handle1) return FALSE;
+          if ($handle1 === FALSE) return FALSE;
           // file path
           $handle = FALSE;
           foreach (HANDLES_PATHS as $handle_path) {
@@ -2297,7 +2297,7 @@ final class Template {
               break;
             }
           }
-          if (!$handle) return FALSE;
+          if ($handle === FALSE) return FALSE;
           // Trim off session stuff - urlappend seems to be used for page numbers and such
           while (preg_match('~^(.+)(?:/browse\?|;jsessionid|;sequence=|\?sequence=|&isAllowed=|&origin=|&rd=|\?value=|&type=|/browse-title|&submit_browse=|\%3Bui=embed)~',
                                 $handle, $matches)) {
@@ -2309,6 +2309,10 @@ final class Template {
             usleep(100000);
             $test_url = "https://hdl.handle.net/" . $handle;
             $headers_test = @get_headers($test_url, 1);
+            if ($headers_test === FALSE)) {
+               sleep(3);
+               $headers_test = @get_headers($test_url, 1);
+            }
             if ($headers_test === FALSE || empty($headers_test['Location'])) {
                $handle = $matches[1];
             }
@@ -2332,6 +2336,10 @@ final class Template {
           $test_url = "https://hdl.handle.net/" . $handle;
           usleep(20000);
           $headers_test = @get_headers($test_url, 1);
+          if ($headers_test === FALSE)) {
+             sleep(3);
+             $headers_test = @get_headers($test_url, 1);
+          }
           if ($headers_test === FALSE) return FALSE; // hdl.handle.net is down
           if (empty($headers_test['Location'])) return FALSE; // does not resolve
           quietly('report_modification', "Converting URL to HDL parameter");
