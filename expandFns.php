@@ -4,6 +4,7 @@ declare(strict_types=1);
 require_once 'constants.php';      // @codeCoverageIgnore
 require_once 'Template.php';      // @codeCoverageIgnore
 
+const MIN_DX_TIME = 20000;
 
 // ============================================= DOI functions ======================================
 function doi_active(string $doi) : ?bool {
@@ -72,11 +73,10 @@ function is_doi_active(string $doi) : ?bool {
 }
 
 function throttle_dx () : void {
-  $min_time = 10000.0;
-  static $last = -$min_time;
+  static $last = -MIN_DX_TIME;
   $now = microtime(TRUE);
-  $left = $min_time - ($now - $last);
-  if ($left > 0 && $left < $min_time) usleep($left); // less than min_time is paranoia, but do not want an inifinite delay
+  $left = MIN_DX_TIME - ($now - $last);
+  if ($left > 0 && $left < MIN_DX_TIME) usleep($left); // less than min_time is paranoia, but do not want an inifinite delay
   $last = $now;
 }
 
