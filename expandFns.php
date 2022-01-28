@@ -71,8 +71,18 @@ function is_doi_active(string $doi) : ?bool {
   return NULL;                                                                                        // @codeCoverageIgnore
 }
 
+function throttle_dx () : void {
+  const MIN_TIME = 10000.0;
+  static $last = -MIN_TIME;
+  $now = microtime(TRUE);
+  $left = MIN_TIME - ($now - $last);
+  if ($left > 0 && $left < MIN_TIME) usleep($left); // less than min_time is paranoia, but do not want an inifinite delay
+  $last = $now;
+}
+
 function is_doi_works(string $doi) : ?bool {
   if (strpos($doi, '10.1111/j.1572-0241') === 0 && NATURE_FAILS) return FALSE;
+  throttle_dx();
   $context = stream_context_create(array(
            'ssl' => ['verify_peer' => FALSE, 'verify_peer_name' => FALSE, 'allow_self_signed' => TRUE],
            'http' => ['ignore_errors' => true, 'max_redirects' => 40]
