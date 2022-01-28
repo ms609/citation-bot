@@ -4,8 +4,6 @@ declare(strict_types=1);
 require_once 'constants.php';      // @codeCoverageIgnore
 require_once 'Template.php';      // @codeCoverageIgnore
 
-const MIN_DX_TIME = 2*10000; // Hundreths of seconds
-
 // ============================================= DOI functions ======================================
 function doi_active(string $doi) : ?bool {
   // Greatly speed-up by having one array of each kind and only look for hash keys, not values
@@ -73,10 +71,10 @@ function is_doi_active(string $doi) : ?bool {
 }
 
 function throttle_dx () : void {
-  static $last = -MIN_DX_TIME;
+  static $last = -20000;
   $now = microtime();
-  $left = MIN_DX_TIME - ($now - $last);
-  if ($left > 0 && $left < MIN_DX_TIME) usleep($left); // less than min_time is paranoia, but do not want an inifinite delay
+  $left = 20000 - ($now - $last);
+  if ($left > 0 && $left < 20000) usleep($left); // less than min_time is paranoia, but do not want an inifinite delay
   $last = $now;
 }
 
