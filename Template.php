@@ -4679,13 +4679,17 @@ final class Template {
          //   }
           }
           if ($this->blank('agency') && in_array(strtolower($the_author), ['associated press', 'reuters'])) {
-            $this->rename('author', 'agency');
+            $this->rename('author' . $pmatch[2], 'agency');
             if ($pmatch[2] == '1' || $pmatch[2] == '') {
               $this->forget('author-link');
               $this->forget('authorlink');
               $this->forget('author-link1');
               $this->forget('authorlink1');
               $this->forget('author1-link');
+            } else {
+              $this->forget('author-link' . $pmatch[2]);
+              $this->forget('authorlink' . $pmatch[2]);
+              $this->forget('author' . $pmatch[2] . '-link');
             }
             return;
           }
