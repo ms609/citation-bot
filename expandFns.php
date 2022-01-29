@@ -72,7 +72,7 @@ function is_doi_active(string $doi) : ?bool {
 
 function throttle_dx () : void {
   static $last = 0.0;
-  $min_time = 20000.0;
+  $min_time = 40000.0;
   $now = microtime(TRUE);
   $left = (int) ($min_time - ($now - $last));
   if ($left > 0 && $left < $min_time) usleep($left); // less than min_time is paranoia, but do not want an inifinite delay
@@ -84,7 +84,7 @@ function is_doi_works(string $doi) : ?bool {
   throttle_dx();
   $context = stream_context_create(array(
            'ssl' => ['verify_peer' => FALSE, 'verify_peer_name' => FALSE, 'allow_self_signed' => TRUE],
-           'http' => ['ignore_errors' => true, 'max_redirects' => 40]
+           'http' => ['ignore_errors' => TRUE, 'max_redirects' => 40, 'timeout' => 20.0, 'follow_location' => 1]
          )); // Allow crudy cheap journals
   $headers_test = @get_headers("https://doi.org/" . doi_encode($doi), 1, $context);
   if ($headers_test === FALSE) {
