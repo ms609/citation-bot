@@ -455,7 +455,18 @@ public static function process_zotero_response(string $zotero_response, Template
     report_info("Could not resolve URL ". $url);
     return FALSE;
   }
-  
+  // Remove unused stuff.  TODO - Is there any value in these:
+  unset($result->abstractNote);
+  unset($result->version);
+  unset($result->accessDate);
+  unset($result->libraryCatalog);
+  unset($result->url);
+  unset($result->tags);
+  unset($result->key);
+  unset($result->websiteTitle);
+  unset($result->journalAbbreviation);
+  unset($result->ISSN);
+
   // Reject if we find more than 5 or more than 10% of the characters are �.  This means that character
   // set was not correct in Zotero and nothing is good.  We allow a couple of � for German umlauts that arer easily fixable by humans.
   // We also get a lot of % and $ if the encoding was something like iso-2022-jp and converted wrong
@@ -486,6 +497,9 @@ public static function process_zotero_response(string $zotero_response, Template
         return FALSE;
       }
   }
+  if ($test_data === '404') return FALSE;
+  if (isset($result->bookTitle) && strtolower($result->bookTitle) === 'undefined') unset($result->bookTitle); // S2 without journals
+  if (isset($result->publicationTitle) && strtolower($result->publicationTitle) === 'undefined') unset($result->publicationTitle); // S2 without journals
   if (isset($result->bookTitle)) {
    foreach (array_merge(BAD_ACCEPTED_MANUSCRIPT_TITLES, IN_PRESS_ALIASES) as $bad_title ) {
       if (str_i_same($result->bookTitle, $bad_title)) {
@@ -674,6 +688,14 @@ public static function process_zotero_response(string $zotero_response, Template
   &&   strpos($result->volume, "(") === FALSE ) $template->add_if_new('volume', (string) $result->volume);
   if ( isset($result->date) && strlen($result->date)>3)$template->add_if_new('date', tidy_date($result->date));
   if ( isset($result->series) && stripos($url, 'portal.acm.org')===FALSE)  $template->add_if_new('series' , (string) $result->series);
+  // Sometimes zotero lists the last name as "published" and puts the whole name in the first place
+  $i = 0;
+  while (isset($result->author[$i])) {
+      if (@$result->author[$i][1] === 'published' || @$result->author[$i][1] === 'Published') unset($result->author[$i][1]);
+      if (@$result->author[$i][0] === 'published' || @$result->author[$i][0] === 'Published') unset($result->author[$i][0]);
+      $i++;
+  }
+  unset($i);
   if ( isset($result->author[0]) && !isset($result->author[1]) &&
       !author_is_human(@$result->author[0][0] . ' ' . @$result->author[0][1])) {
     unset($result->author[0]); // Do not add a single non-human author
@@ -684,6 +706,7 @@ public static function process_zotero_response(string $zotero_response, Template
                                       isset($result->rights) ? (string) $result->rights : '', FALSE);
       $i++;
   }
+  unset($i);
    
   if (stripos($url, 'sfdb.org') !== FALSE && $template->blank(WORK_ALIASES)) {
      $template->add_if_new('website', 'sfdb.org');
@@ -705,7 +728,7 @@ public static function process_zotero_response(string $zotero_response, Template
       case 'journalArticle':
       case 'conferencePaper':
       case 'report':  // ssrn uses this
-        if($template->wikiname() == 'cite web' && str_ireplace(NON_JOURNAL_WEBSITES, '', $url) === $url) {
+        if($template->wikiname() == 'cite web' && str_ireplace(NON_JOURNAL_WEBSITES, '', $url) === $url && !$template->blank(WORK_ALIASES)) {
           $template->change_name_to('cite journal');
         }
         break;
@@ -776,8 +799,10 @@ public static function process_zotero_response(string $zotero_response, Template
               $authorParam = '';                                                   // @codeCoverageIgnore
           }
          if ($authorParam && author_is_human($result->creators[$i]->firstName . ' ' . $result->creators[$i]->lastName)) {
-                        $template->validate_and_add($authorParam, (string) $result->creators[$i]->lastName, (string) $result->creators[$i]->firstName,
-                        isset($result->rights) ? (string) $result->rights : '', FALSE);
+            if (strtolower((string) $result->creators[$i]->lastName ) === 'published') $result->creators[$i]->lastName  ='';
+            if (strtolower((string) $result->creators[$i]->firstName) === 'published') $result->creators[$i]->firstName ='';
+            $template->validate_and_add($authorParam, (string) $result->creators[$i]->lastName, (string) $result->creators[$i]->firstName,
+            isset($result->rights) ? (string) $result->rights : '', FALSE);
          }
         }
         $i++;

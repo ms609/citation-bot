@@ -223,6 +223,158 @@ final class Template {
                ['newGrove1980', 'Cite NewGrove1980'],
                ['citar livro', 'cite book'],
                ['Citar livro', 'Cite book'],
+               ['Citace monografie', 'cite book'],
+               ['citace monografie', 'Cite book'],
+               ['Bokref', 'cite book'],
+               ['bokref', 'Cite book'],
+               ['Cite press', 'Cite press release'],
+               ['cite press', 'cite press release'],
+               ['cite media', 'cite AV media'],
+               ['Cite media', 'Cite AV media'],
+               ['cite audio', 'cite AV media'],
+               ['Cite audio', 'Cite AV media'],
+               ['vcite video', 'cite AV media'],
+               ['Vcite video', 'Cite AV media'],
+               ['cite music video', 'cite AV media'],
+               ['Cite music video', 'Cite AV media'],
+               ['cite visual', 'cite AV media'],
+               ['Cite visual', 'Cite AV media'],
+               ['cite cd', 'cite AV media'],
+               ['Cite cd', 'Cite AV media'],
+               ['citevideo', 'cite AV media'],
+               ['Citevideo', 'Cite AV media'],
+               ['cite AV Media', 'cite AV media'],
+               ['Cite AV Media', 'Cite AV media'],
+               ['cite song', 'cite AV media'],
+               ['Cite song', 'Cite AV media'],
+               ['cite AVMedia', 'cite AV media'],
+               ['Cite AVMedia', 'Cite AV media'],
+               ['cita víde', 'cite AV media'],
+               ['Cita víde', 'Cite AV media'],
+               ['cite Youtube', 'cite AV media'],
+               ['Cite Youtube', 'Cite AV media'],
+               ['cite AV', 'cite AV media'],
+               ['Cite AV', 'Cite AV media'],
+               ['cite YouTube', 'cite AV media'],
+               ['Cite YouTube', 'Cite AV media'],
+               ['cite documentary', 'cite AV media'],
+               ['Cite documentary', 'Cite AV media'],
+               ['cite film', 'cite AV media'],
+               ['Cite film', 'Cite AV media'],
+               ['cite movie', 'cite AV media'],
+               ['Cite movie', 'Cite AV media'],
+               ['cite dvd', 'cite AV media'],
+               ['Cite dvd', 'Cite AV media'],
+               ['cite DVD', 'cite AV media'],
+               ['Cite DVD', 'Cite AV media'],
+               ['cite image', 'cite AV media'],
+               ['Cite image', 'Cite AV media'],
+               ['cite radio', 'cite AV media'],
+               ['Cite radio', 'Cite AV media'],
+               ['cite movie', 'cite AV media'],
+               ['Cite movie', 'Cite AV media'],
+               ['Vcite press release', 'Cite press release'],
+               ['vcite press release', 'cite press release'],
+               ['Cite media release', 'Cite press release'],
+               ['cite media release', 'cite press release'],
+               ['Cite press-release', 'Cite press release'],
+               ['cite press-release', 'cite press release'],
+               ['Cite pr', 'Cite press release'],
+               ['cite pr', 'cite press release'],
+               ['Cite news release', 'Cite press release'],
+               ['cite news release', 'cite press release'],
+               ['Cite Press release', 'Cite press release'],
+               ['cite Press release', 'cite press release'],
+               ['Cite press release.', 'Cite press release'],
+               ['cite press release.', 'cite press release'],
+               ['Cite pressrelease', 'Cite press release'],
+               ['cite pressrelease', 'cite press release'],
+               ['Cite standard', 'Cite techreport'],
+               ['cite standard', 'cite techreport'],
+               ['Cite technical report', 'Cite techreport'],
+               ['cite technical report', 'cite techreport'], 
+               ['Cite tech report', 'Cite techreport'],
+               ['cite tech report', 'cite techreport'], 
+               ['Techrep reference', 'Cite techreport'],
+               ['techrep reference', 'cite techreport'],
+               ['Cite abstract', 'Cite journal'],
+               ['cite abstract', 'cite journal'],
+               ['Cytuj_pismo', 'Cite journal'],
+               ['cytuj_pismo', 'cite journal'],
+               ['Citace periodika', 'Cite journal'],
+               ['citace periodika', 'cite journal'],
+               ['Cite dissertation', 'Cite thesis'],
+               ['cite dissertation', 'cite thesis'],
+               ['Citar tese', 'Cite thesis'],
+               ['citar tese', 'cite thesis'],
+               ['Cite SSRN', 'Cite ssrn'],
+               ['cite SSRN', 'cite ssrn'],
+               ['Cite plaque', 'Cite sign'],
+               ['cite plaque', 'cite sign'],
+               ['Cite usenet', 'Cite newsgroup'],
+               ['cite usenet', 'cite newsgroup'],
+               ['Cite Usenet', 'Cite newsgroup'],
+               ['cite Usenet', 'cite newsgroup'],
+               ['Navedi novice', 'Cite news'],
+               ['navedi novice', 'cite news'],   
+               ['Cite maps', 'Cite map'],
+               ['cite maps', 'cite map'],
+               ['Cite biorxiv', 'Cite bioRxiv'],
+               ['cite biorxiv', 'cite bioRxiv'],
+               ['Cite list', 'Cite mailing list'],
+               ['cite list', 'cite mailing list'],
+               ['Cite mailinglist', 'Cite mailing list'],
+               ['cite mailinglist', 'cite mailing list'],
+               ['Cite ArXiv', 'Cite arXiv'],
+               ['cite ArXiv', 'cite arXiv'],
+               ['Cite arxiv', 'Cite arXiv'],
+               ['cite arxiv', 'cite arXiv'],
+               ['Cite av media notes', 'Cite AV media notes'],
+               ['cite av media notes', 'cite AV media notes'],
+               ['Cite DVD-notes', 'Cite AV media notes'],
+               ['cite DVD-notes', 'cite AV media notes'],
+               ['Cite album notes', 'Cite AV media notes'],
+               ['cite album notes', 'cite AV media notes'],
+               ['Cite album-notes', 'Cite AV media notes'],
+               ['cite album-notes', 'cite AV media notes'],
+               ['Liner notes', 'Cite AV media notes'],
+               ['liner notes', 'cite AV media notes'],
+               ['Cite liner notes', 'Cite AV media notes'],
+               ['cite liner notes', 'cite AV media notes'],
+               ['Vcite album-notes', 'Cite AV media notes'],
+               ['vcite album-notes', 'cite AV media notes'],
+               ['Cite music release notes', 'Cite AV media notes'],
+               ['cite music release notes', 'cite AV media notes'],
+               ['Cite dvd-notes', 'Cite AV media notes'],
+               ['cite dvd-notes', 'cite AV media notes'],
+               ['Cite DVD notes', 'Cite AV media notes'],
+               ['cite DVD notes', 'cite AV media notes'],
+               ['Cite citeseerx', 'Cite CiteSeerX'],
+               ['cite citeseerx', 'cite CiteSeerX'],
+               ['Cite citeseer', 'Cite CiteSeerX'],
+               ['cite citeseer', 'cite CiteSeerX'],
+               ['Cite CiteSeer', 'Cite CiteSeerX'],
+               ['cite CiteSeer', 'cite CiteSeerX'],
+               ['Cite proceedings', 'Cite conference'],
+               ['cite proceedings', 'cite conference'],
+               ['Cite presentation', 'Cite conference'],
+               ['cite presentation', 'cite conference'],
+               ['Cite mag', 'Cite magazine'],
+               ['cite mag', 'cite magazine'],
+               ['Cite magazine article', 'Cite magazine'],
+               ['cite magazine article', 'cite magazine'],
+               ['Cite Magazine', 'Cite magazine'],
+               ['cite Magazine', 'cite magazine'],
+               ['Cite show', 'Cite episode'],
+               ['cite show', 'cite episode'],
+               ['Vcite episode', 'Cite episode'],
+               ['vcite episode', 'cite episode'], 
+               ['Vancite episode', 'Cite episode'],
+               ['vancite episode', 'cite episode'],
+               ['Cite Episode', 'Cite episode'],
+               ['cite Episode', 'cite episode'],
+               ['Cite encyclopædia', 'Cite encyclopedia'],
+               ['cite encyclopædia', 'cite encyclopedia'],
                ];
     foreach ($fix_it as $trial) {
       if ($trim_name === $trial[0]) {
@@ -230,9 +382,10 @@ final class Template {
         break;
       }
     }
-    if (strpos($this->name, 'Cite  ') === 0 || strpos($this->name, 'cite  ') === 0) {
+    while (strpos($this->name, 'Cite  ') === 0 || strpos($this->name, 'cite  ') === 0) {
       $this->name = substr_replace($this->name, 'ite ', 1, 5);
     }
+    $trim_name = trim($this->name); // Update if changed above
     // Cite article is actually cite news, but often used for journal by mistake - fix
     if ($trim_name === 'cite article') {
       if ($this->blank(['journal', 'pmid', 'pmc', 'doi', 's2cid', 'citeseerx'])) {
@@ -240,37 +393,58 @@ final class Template {
       } else {
         $this->name = $spacing[1] . 'cite journal' . $spacing[2];
       }
-    }
-    if ($trim_name === 'Cite article') {
+    } elseif ($trim_name === 'Cite article') {
       if ($this->blank(['journal', 'pmid', 'pmc', 'doi', 's2cid', 'citeseerx'])) {
         $this->name = $spacing[1] . 'Cite news' . $spacing[2];
       } else {
         $this->name = $spacing[1] . 'Cite journal' . $spacing[2];
       }
-    }
-    // Cite document is actually cite journal, but often used for other things by mistake - fix what we can
-    if ($trim_name === 'cite document') {
-      if (strpos($this->get('doi'), '/978-') !== FALSE || strpos($this->get('doi'), '/978019') !== FALSE || strpos($this->get('isbn'), '978-0-19') === 0 || strpos($this->get('isbn'), '978019') === 0) {
-        $this->name = $spacing[1] . 'cite book' . $spacing[2];
-      } elseif (!$this->blank(['journal', 'pmid', 'pmc', 'doi', 's2cid', 'citeseerx'])) {
+      // Cite paper and Cite document are really cite journal
+    } elseif ($trim_name === 'cite paper' || $trim_name === 'cite document') {
+      if (!$this->blank_other_than_comments('journal')) {
         $this->name = $spacing[1] . 'cite journal' . $spacing[2];
-      } elseif (!$this->blank(['newspaper'])) {
+      } elseif (!$this->blank_other_than_comments('newspaper')) {
         $this->name = $spacing[1] . 'cite news' . $spacing[2];
-      } elseif ($this->has('chapter') || $this->has('isbn')) {
+//      } elseif ($this->blank_other_than_comments(WORK_ALIASES) && $this->has('url')) {
+//        $this->name = $spacing[1] . 'cite web' . $spacing[2];
+      } elseif (!$this->blank_other_than_comments('website') && $this->has('url')) {
+        $this->name = $spacing[1] . 'cite web' . $spacing[2];
+      } elseif (!$this->blank_other_than_comments('magazine')) {
+        $this->name = $spacing[1] . 'cite magazine' . $spacing[2];
+      } elseif (!$this->blank_other_than_comments(['encyclopedia', 'encyclopaedia'])) {
+        $this->name = $spacing[1] . 'cite encyclopedia' . $spacing[2];
+      } elseif (strpos($this->get('doi'), '/978-') !== FALSE || strpos($this->get('doi'), '/978019') !== FALSE || strpos($this->get('isbn'), '978-0-19') === 0 || strpos($this->get('isbn'), '978019') === 0) {
         $this->name = $spacing[1] . 'cite book' . $spacing[2];
+      } elseif (!$this->blank_other_than_comments('chapter') || !$this->blank_other_than_comments('isbn')) {
+        $this->name = $spacing[1] . 'cite book' . $spacing[2];
+      } elseif (!$this->blank_other_than_comments(['journal', 'pmid', 'pmc'])) {
+        $this->name = $spacing[1] . 'cite journal' . $spacing[2];
+      } else {
+        $this->name = $spacing[1] . 'cite document' . $spacing[2];
+      }
+    } elseif ($trim_name === 'Cite paper' || $trim_name === 'Cite document') {
+      if (!$this->blank_other_than_comments('journal')) {
+        $this->name = $spacing[1] . 'Cite journal' . $spacing[2];
+      } elseif (!$this->blank_other_than_comments('newspaper')) {
+        $this->name = $spacing[1] . 'Cite news' . $spacing[2];
+//      } elseif ($this->blank_other_than_comments(WORK_ALIASES) && $this->has('url')) {
+//        $this->name = $spacing[1] . 'Cite web' . $spacing[2];
+      } elseif (!$this->blank_other_than_comments('website') && $this->has('url')) {
+        $this->name = $spacing[1] . 'Cite web' . $spacing[2];
+      } elseif (!$this->blank_other_than_comments('magazine')) {
+        $this->name = $spacing[1] . 'Cite magazine' . $spacing[2];
+      } elseif (!$this->blank_other_than_comments(['encyclopedia', 'encyclopaedia'])) {
+        $this->name = $spacing[1] . 'Cite encyclopedia' . $spacing[2];
+      } elseif (strpos($this->get('doi'), '/978-') !== FALSE || strpos($this->get('doi'), '/978019') !== FALSE || strpos($this->get('isbn'), '978-0-19') === 0 || strpos($this->get('isbn'), '978019') === 0) {
+        $this->name = $spacing[1] . 'Cite book' . $spacing[2];
+      } elseif (!$this->blank_other_than_comments('chapter') || !$this->blank_other_than_comments('isbn')) {
+        $this->name = $spacing[1] . 'Cite book' . $spacing[2];
+      } elseif (!$this->blank_other_than_comments(['journal', 'pmid', 'pmc'])) {
+        $this->name = $spacing[1] . 'Cite journal' . $spacing[2];
+      } else {
+        $this->name = $spacing[1] . 'Cite document' . $spacing[2];
       }
     }
-    if ($trim_name === 'Cite document') {
-      if (strpos($this->get('doi'), '/978-') !== FALSE || strpos($this->get('doi'), '/978019') !== FALSE || strpos($this->get('isbn'), '978-0-19') === 0 || strpos($this->get('isbn'), '978019') === 0) {
-        $this->name = $spacing[1] . 'Cite book' . $spacing[2];
-      } elseif (!$this->blank(['journal', 'pmid', 'pmc', 'doi', 's2cid', 'citeseerx'])) {
-        $this->name = $spacing[1] . 'Cite journal' . $spacing[2];
-      } elseif (!$this->blank(['newspaper'])) {
-        $this->name = $spacing[1] . 'Cite news' . $spacing[2];
-      } elseif ($this->has('chapter') || $this->has('isbn')) {
-        $this->name = $spacing[1] . 'Cite book' . $spacing[2];
-      }
-    } 
     
     if (substr($this->wikiname(),0,5) === 'cite ' || $this->wikiname() === 'citation') {
       if (preg_match('~< */? *ref *>~i', $this->rawtext)) {
@@ -363,6 +537,21 @@ final class Template {
       }
       if (($this->get('title') === "Wayback Machine" || $this->get('title') === "Internet Archive Wayback Machine") && !$this->blank(['archive-url', 'archiveurl'])) {
           $this->set('title', '');
+      }
+      if ($this->get('last1') === 'Published' || $this->get('last1') === 'published') {
+        $this->forget('last1');
+        if ($this->has('first1')) {
+          $this->rename('first1', 'author1');
+        } elseif ($this->has('first')) {
+          $this->rename('first', 'author1');
+        }
+      } elseif ($this->get('last') === 'Published' || $this->get('last') === 'published') {
+        $this->forget('last');
+        if ($this->has('first1')) {
+          $this->rename('first1', 'author1');
+        } elseif ($this->has('first')) {
+          $this->rename('first', 'author1');
+        }
       }
     }
     if ($this->should_be_processed()) {
@@ -1402,7 +1591,6 @@ final class Template {
       case 's2cid':
         if ($this->blank(['s2cid', 'S2CID'])) {
           $this->add($param_name, $value);
-          if ($this->wikiname() === 'cite web') $this->change_name_to('cite journal');
           $this->get_doi_from_semanticscholar();
           return TRUE;
         }
@@ -1890,6 +2078,13 @@ final class Template {
        }
        return FALSE;
     }
+    
+    if (preg_match('~^https?(://(?:0-www.|www.|)worldcat(?:libraries|)\.org.+)\&referer=brief_results$~i', $url, $matches)) {
+       $url = 'https' . $matches[1];
+       if (is_null($url_sent)) {
+         $this->set($url_type, $url); // Update URL with cleaner one
+       }
+    }
 
     if (preg_match("~^https?://(?:(?:dx\.|www\.|)doi\.org|doi\.library\.ubc\.ca)/([^\?]*)~i", $url, $match)) {
       if ($this->has('doi')) {
@@ -1971,7 +2166,7 @@ final class Template {
       if (mb_stripos($url, $this->get('doi')) !== FALSE) { // DOIs are case-insensitive
         if (doi_works($this->get('doi')) && is_null($url_sent) && mb_strpos(strtolower($url), ".pdf") === FALSE && not_bad_10_1093_doi($this->get('doi')) && !preg_match(REGEXP_DOI_ISSN_ONLY, $this->get('doi'))) {
           if ($this->has_good_free_copy()) {
-             report_forget("Recognized existing DOI in URL; dropping URL");
+             report_forget("Recognized the existing DOI in URL; dropping URL");
              $this->forget($url_type);
           }
         }
@@ -2089,9 +2284,11 @@ final class Template {
         return $this->add_if_new('pmc', $match[1]);
       } elseif (preg_match("~^https?://citeseerx\.ist\.psu\.edu/viewdoc/(?:summary|download)(?:\;jsessionid=[^\?]+|)\?doi=([0-9.]*)(?:&.+)?~", $url, $match)) {
         quietly('report_modification', "URL is hard-coded citeseerx; converting to use citeseerx parameter.");
-        if ($this->wikiname() === 'cite web') $this->change_name_to('cite journal');
         if (is_null($url_sent)) {
-          if ($this->has_good_free_copy()) $this->forget($url_type);
+          if ($this->has_good_free_copy()) {
+            $this->forget($url_type);
+            if ($this->wikiname() === 'cite web') $this->change_name_to('cite journal');
+          }
         }
         return $this->add_if_new('citeseerx', urldecode($match[1])); // We cannot parse these at this time
         
@@ -2181,7 +2378,7 @@ final class Template {
               break;
             }
           }
-          if (!$handle1) return FALSE;
+          if ($handle1 === FALSE) return FALSE;
           // file path
           $handle = FALSE;
           foreach (HANDLES_PATHS as $handle_path) {
@@ -2190,7 +2387,7 @@ final class Template {
               break;
             }
           }
-          if (!$handle) return FALSE;
+          if ($handle === FALSE) return FALSE;
           // Trim off session stuff - urlappend seems to be used for page numbers and such
           while (preg_match('~^(.+)(?:/browse\?|;jsessionid|;sequence=|\?sequence=|&isAllowed=|&origin=|&rd=|\?value=|&type=|/browse-title|&submit_browse=|\%3Bui=embed)~',
                                 $handle, $matches)) {
@@ -2202,6 +2399,10 @@ final class Template {
             usleep(100000);
             $test_url = "https://hdl.handle.net/" . $handle;
             $headers_test = @get_headers($test_url, 1);
+            if ($headers_test === FALSE) {
+               sleep(3);
+               $headers_test = @get_headers($test_url, 1);
+            }
             if ($headers_test === FALSE || empty($headers_test['Location'])) {
                $handle = $matches[1];
             }
@@ -2225,6 +2426,10 @@ final class Template {
           $test_url = "https://hdl.handle.net/" . $handle;
           usleep(20000);
           $headers_test = @get_headers($test_url, 1);
+          if ($headers_test === FALSE) {
+             sleep(3);
+             $headers_test = @get_headers($test_url, 1);
+          }
           if ($headers_test === FALSE) return FALSE; // hdl.handle.net is down
           if (empty($headers_test['Location'])) return FALSE; // does not resolve
           quietly('report_modification', "Converting URL to HDL parameter");
@@ -2244,44 +2449,53 @@ final class Template {
           return $this->add_if_new('hdl', $handle);
       } elseif (preg_match("~^https?://zbmath\.org/\?format=complete&q=an:([0-9][0-9][0-9][0-9]\.[0-9][0-9][0-9][0-9][0-9])~i", $url, $match)) {
           quietly('report_modification', "Converting URL to ZBL parameter");
-          if ($this->wikiname() === 'cite web') $this->change_name_to('cite journal');  // Better template choice.  Often journal/paper
           if (is_null($url_sent)) {
-             if ($this->has_good_free_copy()) $this->forget($url_type);
+             if ($this->has_good_free_copy()) {
+               $this->forget($url_type);
+               if ($this->wikiname() === 'cite web') $this->change_name_to('cite journal');
+             }
           }
           return $this->add_if_new('zbl', $match[1]);
       } elseif (preg_match("~^https?://zbmath\.org/\?format=complete&q=an:([0-9][0-9]\.[0-9][0-9][0-9][0-9]\.[0-9][0-9])~i", $url, $match)) {
           quietly('report_modification', "Converting URL to JFM parameter");
-          if ($this->wikiname() === 'cite web') $this->change_name_to('cite journal');  // Better template choice.  Often journal/paper
           if (is_null($url_sent)) {
-             if ($this->has_good_free_copy()) $this->forget($url_type);
+             if ($this->has_good_free_copy()) {
+               $this->forget($url_type);
+               if ($this->wikiname() === 'cite web') $this->change_name_to('cite journal');
+             }
           }
           return $this->add_if_new('jfm', $match[1]);
       } elseif (preg_match("~^https?://mathscinet\.ams\.org/mathscinet-getitem\?mr=([0-9]+)~i", $url, $match)) {
           quietly('report_modification', "Converting URL to MR parameter");
-          if ($this->wikiname() === 'cite web') $this->change_name_to('cite journal');  // Better template choice.  Often journal/paper
           if (is_null($url_sent)) {
              // SEP 2020 $this->forget($url_type); This points to a review and not the article
           }
           return $this->add_if_new('mr', $match[1]);
       } elseif (preg_match("~^https?://papers\.ssrn\.com(?:/sol3/papers\.cfm\?abstract_id=|/abstract=)([0-9]+)~i", $url, $match)) {
           quietly('report_modification', "Converting URL to SSRN parameter");
-          if ($this->wikiname() === 'cite web') $this->change_name_to('cite journal'); // Better template choice.  Often journal/paper
           if (is_null($url_sent)) {
-             if ($this->has_good_free_copy()) $this->forget($url_type);
+             if ($this->has_good_free_copy()) {
+               $this->forget($url_type);
+               if ($this->wikiname() === 'cite web') $this->change_name_to('cite journal');
+             }
           }
           return $this->add_if_new('ssrn', $match[1]);
       } elseif (preg_match("~^https?://(?:www\.|)osti\.gov/(?:scitech/|)(?:biblio/|)(?:purl/|)([0-9]+)(?:\.pdf|)~i", $url, $match)) {
           quietly('report_modification', "Converting URL to OSTI parameter");
-          if ($this->wikiname() === 'cite web') $this->change_name_to('cite journal');  // Better template choice.  Often journal/paper
           if (is_null($url_sent)) {
-             if ($this->has_good_free_copy()) $this->forget($url_type);
+             if ($this->has_good_free_copy()) {
+               $this->forget($url_type);
+               if ($this->wikiname() === 'cite web') $this->change_name_to('cite journal');
+             }
           }
           return $this->add_if_new('osti', $match[1]);
       } elseif (preg_match("~^https?://(?:www\.|)osti\.gov/energycitations/product\.biblio\.jsp\?osti_id=([0-9]+)~i", $url, $match)) {
           quietly('report_modification', "Converting URL to OSTI parameter");
-          if ($this->wikiname() === 'cite web') $this->change_name_to('cite journal');  // Better template choice.  Often journal/paper
           if (is_null($url_sent)) {
-             if ($this->has_good_free_copy()) $this->forget($url_type);
+             if ($this->has_good_free_copy()) {
+               $this->forget($url_type);
+               if ($this->wikiname() === 'cite web') $this->change_name_to('cite journal');
+             }
           }
           return $this->add_if_new('osti', $match[1]);
       } elseif (preg_match("~^https?://(?:www\.|)worldcat\.org(?:/title/\S+)?/oclc/([0-9]+)~i", $url, $match)) {
@@ -2981,6 +3195,8 @@ final class Template {
     $ris_book      = FALSE;
     $ris_fullbook  = FALSE;
     $has_T2        = FALSE;
+    $bad_EP        = FALSE;
+    $bad_SP        = FALSE;
     // Convert &#x__; to characters
     $ris = explode("\n", html_entity_decode($dat, ENT_COMPAT | ENT_HTML401, 'UTF-8'));
     $ris_authors = 0;
@@ -3000,6 +3216,10 @@ final class Template {
         }
       } elseif (trim($ris_part[0]) == "T2") {
         $has_T2 = TRUE;
+      } elseif (trim($ris_part[0]) == "SP" && (trim($ris_part[1]) === 'i' || trim($ris_part[1]) === '1')) {
+        $bad_SP = TRUE;
+      } elseif (trim($ris_part[0]) == "EP" && preg_match('~^\d{3,}$~', trim($ris_part[1]))) {
+        $bad_EP = TRUE;
       }
     }
 
@@ -3094,7 +3314,7 @@ final class Template {
       }
     }
     if ($ris_review) $this->add_if_new('title', trim($ris_review));  // Do at end in case we have real title
-    if (isset($start_page)) { // Have to do at end since might get end pages before start pages
+    if (isset($start_page) && (!$bad_EP || !$bad_SP)) { // Have to do at end since might get end pages before start pages
       if (isset($end_page) && ($start_page != $end_page)) {
          $this->add_if_new('pages', $start_page . '–' . $end_page);
       } else {
@@ -3335,6 +3555,9 @@ final class Template {
        if ($this->has($url_type) && preg_match('~^https?://books\.google\.[^/]+/booksid=(.+)$~', $this->get($url_type), $matches)) {
          $this->set($url_type, 'https://books.google.com/books?id=' . $matches[1]);
        }
+       if ($this->has($url_type) && preg_match('~^https?://books\.google\.[^/]+/(?:books|)\?[qv]id=(.+)$~', $this->get($url_type), $matches)) {
+         $this->set($url_type, 'https://books.google.com/books?id=' . $matches[1]);
+       }
        if ($this->has($url_type) && preg_match('~^https?://books\.google\.com/\?id=(.+)$~', $this->get($url_type), $matches)) {
          $this->set($url_type, 'https://books.google.com/books?id=' . $matches[1]);
        }
@@ -3517,7 +3740,13 @@ final class Template {
           if (isset($book_array['dq'])) $removed_parts .= '&dq=' . $book_array['dq'];
           $book_array['dq'] = urlencode(urldecode(substr($matcher[1], 3)));           // #dq= wins over &dq= before # sign
       }
-      if (isset($book_array['vq']) && !isset($book_array['q']) && !isset($book_array['dq'])) { // VQ loses to Q and VQ
+      if (isset($book_array['vq']) && !isset($book_array['q']) && !isset($book_array['dq'])) {
+          $book_array['q'] = $book_array['vq'];
+          unset($book_array['vq']);
+      }
+      if (isset($book_array['vq']) && isset($book_array['pg'])) { // VQ wins if and only if a page is set
+          unset($book_array['q']);
+          unset($book_array['dq']);
           $book_array['q'] = $book_array['vq'];
           unset($book_array['vq']);
       }
@@ -3577,7 +3806,7 @@ final class Template {
       }
       if (isset($book_array['article_id'])){
           $url .= '&article_id=' . $book_array['article_id'];
-          if (!isset($book_array['dq'])) {
+          if (!isset($book_array['dq']) && isset($book_array['q'])) {
             $url .= '#v=onepage'; // Explicit onepage needed for these
           }
       }
@@ -4245,8 +4474,8 @@ final class Template {
     }
     $new_name = strtolower(trim($new_name)); // Match wikiname() output and cite book below
     if ($new_name === $this->wikiname()) return;
-    if (in_array($this->wikiname(), TEMPLATES_WE_RENAME)
-    && ($rename_cite_book || $this->wikiname() != 'cite book')
+    if ((in_array($this->wikiname(), TEMPLATES_WE_RENAME) && ($rename_cite_book || $this->wikiname() != 'cite book')) 
+        || ($this->wikiname() === 'cite news' && $new_name === 'cite magazine')
     ) {
       if ($new_name === 'cite arxiv') {
         if (!$this->blank(array_merge(['website','displayauthors','display-authors','access-date','accessdate',
@@ -4410,19 +4639,20 @@ final class Template {
             $this->rename('agency', 'publisher'); // A single user messed this up on a lot of pages with "agency"
             return;
           }
-          // Undo some bad bot edits
+          // Undo some bad bot/human edits
           if ($this->blank(WORK_ALIASES) &&
               in_array(strtolower(str_replace(array('[', ']', '.'), '', $this->get($param))),
-                       ['reuters', 'associated press', 'united press international', 'yonhap news agency'])) {
+                       ['reuters', 'associated press', 'united press international', 'yonhap news agency', 'official charts company'])) {
             $the_url = '';
             foreach (ALL_URL_TYPES as $thingy) {
               $the_url .= $this->get($thingy);
             }
             if (stripos($the_url, 'reuters.com') !== FALSE || stripos($the_url, 'apnews.com') !== FALSE ||
-                stripos($the_url, 'yna.co.kr') !== FALSE || stripos($the_url, 'upi.com')) {
+                stripos($the_url, 'yna.co.kr') !== FALSE || stripos($the_url, 'upi.com') !== FALSE || 
+                stripos($the_url, 'officialcharts.com') !== FALSE) {
                $this->rename($param, 'work');
             }
-          }  
+          }
           
           return;
           
@@ -4449,13 +4679,17 @@ final class Template {
          //   }
           }
           if ($this->blank('agency') && in_array(strtolower($the_author), ['associated press', 'reuters'])) {
-            $this->rename('author', 'agency');
+            $this->rename('author' . $pmatch[2], 'agency');
             if ($pmatch[2] == '1' || $pmatch[2] == '') {
               $this->forget('author-link');
               $this->forget('authorlink');
               $this->forget('author-link1');
               $this->forget('authorlink1');
               $this->forget('author1-link');
+            } else {
+              $this->forget('author-link' . $pmatch[2]);
+              $this->forget('authorlink' . $pmatch[2]);
+              $this->forget('author' . $pmatch[2] . '-link');
             }
             return;
           }
@@ -4833,6 +5067,10 @@ final class Template {
         case 'journal':
         case 'periodical':
           if ($this->blank($param)) return;
+          if ($this->get($param) === 'Undefined') {
+             $this->forget($param);
+            return;
+          }
           if (preg_match('~^(|[a-zA-Z0-9][a-zA-Z0-9]+\.)([a-zA-Z0-9][a-zA-Z0-9][a-zA-Z0-9]+)\.(org|net|com)$~', $this->get($param))) {
             $this->rename($param, 'website');
             return;
@@ -6387,7 +6625,11 @@ final class Template {
           }
           if (strtolower($this->get('work')) === 'latimes' ||
               strtolower($this->get('work')) === 'latimes.com') {
-            $this->set('work', 'Los Angeles Times');
+            $this->set('work', '[[Los Angeles Times]]');
+          }
+          if (strtolower($this->get('work')) === 'nytimes' ||
+              strtolower($this->get('work')) === 'nytimes.com') {
+            $this->set('work', '[[The New York Times]]');
           }
           
           switch ($this->wikiname()) {
@@ -6648,6 +6890,10 @@ final class Template {
           return;
           
         case 'website':
+          if ($this->get($param) === 'Undefined' || $this->get($param) === 'undefined') {
+             $this->forget($param);
+            return;
+          }
           if (($this->wikiname() === 'cite book') && (str_i_same($this->get($param), 'google.com') ||
                                                       str_i_same($this->get($param), 'Google Books') ||
                                                       str_i_same($this->get($param), 'Google Book') ||
@@ -6671,6 +6917,12 @@ final class Template {
             $this->set($param, '[[Los Angeles Times]]');
             return;
           }
+          if (strtolower($this->get($param)) === 'nytimes' ||
+              strtolower($this->get($param)) === 'nytimes.com') {
+            $this->set($param, '[[The New York Times]]');
+            return;
+          }
+
           if ($this->get($param) === 'The Times Digital Archive') {
             $this->set($param, '[[The Times]]');
             return;
@@ -6850,7 +7102,7 @@ final class Template {
          if ($this->has('arxiv') || $this->has('eprint')) {
             $this->change_name_to('cite arxiv');
          } else {
-            $this->change_name_to('cite document');
+            $this->change_name_to($this->initial_name);
          }
       }
       if (($this->wikiname() === 'cite document' || $this->wikiname() === 'cite journal' || $this->wikiname() === 'cite web') &&
@@ -7838,6 +8090,11 @@ final class Template {
           case "aqs": case "gs_l": case "uact": case "tbo": case "tbs":
           case "num": case "redir_esc": case "gs_lcp": case "sxsrf":
           case "gfe_rd": case "gws_rd": case "rlz": case "sclient":
+          case "prmd":
+             break;
+          case "btnG":
+             if ($part_start[1] == "" || str_i_same($part_start[1], 'Search')) break;
+             $url .=  $part . "&" ;
              break;
           case "rct":
              if (str_i_same($part_start[1], 'j')) break;  // default
@@ -8078,6 +8335,8 @@ final class Template {
   }
   
   public function has_good_free_copy() : bool { // GOOD is critical - must title link - TODO add more if jstor-access or hdl-access title-link
+    $this->tidy_parameter('pmc');
+    $this->tidy_parameter('pmc-embargo-date');
     if (($this->has('pmc') && $this->blank('pmc-embargo-date') && preg_match('~^\d+$~', $this->get('pmc'))) ||
         ($this->has('doi') && $this->get('doi-access') === 'free' && $this->blank(DOI_BROKEN_ALIASES) && doi_works($this->get('doi')))) {
        return TRUE;

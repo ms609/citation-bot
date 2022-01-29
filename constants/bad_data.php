@@ -6,7 +6,8 @@ const HAS_NO_VOLUME = array("zookeys", "studia hibernica", "analecta hibernica",
                             "international astronomical union circular", "yale french studies", "capjournal",
                             "cap journal", "phytokeys", "starinar", "balcanica", "american museum novitates",
                             "european journal of taxonomy");  // Some journals have issues only, no volume numbers
-const HAS_NO_ISSUE = array("special papers in palaeontology");  // Some journals have volumes only, no issue numbers
+// oceanic linguistics special publications has the problem that issues will not show up within temlpates
+const HAS_NO_ISSUE = array("special papers in palaeontology", "oceanic linguistics special publications");  // Some journals have volumes only, no issue numbers
 const BAD_ACCEPTED_MANUSCRIPT_TITLES = array("oup accepted manuscript", "placeholder for bad pdf file", 
                                              "placeholder", "symbolic placeholder", "[placeholder]", 
                                              "placeholder for arabic language transliteration", "article not found");
@@ -24,6 +25,8 @@ const BAD_PUBLISHERS = array('london', 'edinburgi', 'edinburgh', 'no publisher',
                              'no publisher specified', 'unknown', 'publisher not identified', 'report');
 
 const ARE_WORKS = array('medrxiv'); // Things with dois that should be {{cite document|work=THIS}}
+
+const BAD_DOI_ARRAY = ['10.1126/science' => TRUE, '' => TRUE]; // These result from over-truncating other DOIs and oddly works which is bad
 
 const PUBLISHERS_ARE_WORKS = array('the san diego union-tribune', 'forbes', 'salon', 'san jose mercury news', 'san jose mercury-news', 'new york times',
                                    'the new york times', 'daily news online', 'daily news', 'the sun', 'the times',
@@ -77,7 +80,7 @@ const BAD_TITLES = array("unknown", "missing", "arxiv e-prints", "arxiv mathemat
                          "bloomberg - are you a robot?", "page not found",
                          "breaking news, analysis, politics, blogs, news photos, video, tech reviews",
                          "breaking news, analysis, politics, blogs, news photos, video, tech reviews - time.com",
-                         "redirect notice", "oxford music online", "trove - archived webpage"
+                         "redirect notice", "oxford music online", "trove - archived webpage", "pagina inicia",
                         );
 const IN_PRESS_ALIASES = array("in press", "inpress", "pending", "published", 
                                "published online", "no-no", "n/a", "online ahead of print", 
@@ -112,7 +115,8 @@ const BAD_ZOTERO_TITLES = ['Browse publications', 'Central Authentication Servic
                                  'Login • Instagram', 'subscriber to read', 'has now officially closed',
                                  'An Error Has Occured', 'an error has occurred', 'YouTube, a Google company',
                                  'Seite nicht gefunden', 'Página no encontrada', 'الصفحة غير موجودة', '找不到网页',
-                                 'страница не найдена', 'Page non trouvée',
+                                 'страница не найдена', 'Page non trouvée', 'An error occured',
+                                 'Compare Payday Loans', 'Find the Best Loan Deal', '..::.. Error', "Pagina inicia",
                                   ];
 
 const CANONICAL_PUBLISHER_URLS = array ('elsevier.com', 'springer.com', 'sciencedirect.com', 'tandfonline.com',
@@ -279,7 +283,7 @@ const HOSTNAME_MAP  = array('public.ebookcentral.proquest.com' => '[[ProQuest]]'
                             'mtv.com' => '[[MTV]]',
                             'ultratop.be' => '[[Ultratop]]',
                             'billboard.com' => '[[Billboard (magazine)|Billboard]]',
-                            'officialcharts.com' => '[[OfficialCharts.com]]',
+                            'officialcharts.com' => '[[Official Charts Company|Official Charts]]',
                             'loudwire.com' => '[[Loudwire]]',
                             'altpress.com' => '[[Alternative Press (magazine)|Alternative Press]]',
                             'noise11.com' => 'noise11.com',
@@ -644,4 +648,5 @@ const JOURNAL_IS_BOOK_SERIES = array('methods of molecular biology' , 'methods m
                                      'advances in pharmacology (san diego, calif )',
                                      'advances in pharmacology', 'inorganic syntheses',
                                      'advances in enzymology and related areas of molecular biology',
-                                     'studies in bilingualism', 'antibiotics and chemotherapy');
+                                     'studies in bilingualism', 'antibiotics and chemotherapy',
+                                     'oceanic linguistics special publications');

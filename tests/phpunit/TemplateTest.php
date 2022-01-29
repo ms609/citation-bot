@@ -611,7 +611,7 @@ final class TemplateTest extends testBaseClass {
   public function testPMCExpansion2() : void {
     $text = "{{Cite web | url = https://www.ncbi.nlm.nih.gov/pmc/articles/PMC2491514/pdf/annrcse01476-0076.pdf}}";
     $expanded = $this->process_citation($text);
-    $this->assertSame('cite journal', $expanded->wikiname());
+    $this->assertSame('cite web', $expanded->wikiname());
     $this->assertSame('https://www.ncbi.nlm.nih.gov/pmc/articles/PMC2491514/pdf/annrcse01476-0076.pdf', $expanded->get2('url'));
     $this->assertSame('2491514', $expanded->get2('pmc'));
   }
@@ -1005,14 +1005,31 @@ final class TemplateTest extends testBaseClass {
     $this->assertSame('Verstraete', $expanded->get2('last1'));
   }
  
-  public function testAP_zoterDONFo() : void {
+  public function testAP_1() : void {
     $text = '{{cite web|author=Associated Press |url=https://www.theguardian.com/science/2018/feb/03/scientists-discover-ancient-mayan-city-hidden-under-guatemalan-jungle}}';
     $expanded = $this->process_citation($text);
     $this->assertNull($expanded->get2('author'));
     $this->assertNull($expanded->get2('publisher'));
     $this->assertSame('Associated Press', $expanded->get2('agency'));
   }
-    
+ 
+  public function testAP_2() : void {
+    $text = '{{cite web|author1=Dog|author1-link=X|authorlink2=Z|author2=Associated Press |url=https://www.theguardian.com/science/2018/feb/03/scientists-discover-ancient-mayan-city-hidden-under-guatemalan-jungle}}';
+    $expanded = $this->process_citation($text);
+    $this->assertNull($expanded->get2('author2'));
+    $this->assertNull($expanded->get2('publisher'));
+    $this->assertNull($expanded->get2('authorlink2'));
+    $this->assertSame('Dog', $expanded->get2('author1'));
+    $this->assertSame('X', $expanded->get2('author1-link'));
+    $this->assertSame('Associated Press', $expanded->get2('agency'));
+  }
+ 
+  public function test_doi_not_mark_bad() : void {
+    $text = '{{cite web|doi=10.1093/acref/9780199545568.001.0001}}';
+    $expanded = $this->process_citation($text);
+    $this->assertNull($expanded->get2('doi-broken-date'));
+  }
+
   public function testPublisherRemoval() : void {
     foreach (array('Google News Archive', '[[Google]]', 'Google News',
                    'Google.com', '[[Google News]]') as $publisher) {
@@ -2466,25 +2483,28 @@ T1 - This is the Title }}';
     $this->assertSame('cite arxiv', $prepared->wikiname());
   }
  
-  public function testArxivDocumentBibcodeCode() : void {
+  public function testArxivDocumentBibcodeCode1() : void {
     $text = "{{cite arxiv| arxiv=1234|bibcode=abc}}";
     $template = $this->make_citation($text);
     $template->change_name_to('cite journal');
     $template->final_tidy();
     $this->assertSame('cite arxiv', $template->wikiname());
     $this->assertNull($template->get2('bibcode'));    
-   
+  }
+  public function testArxivDocumentBibcodeCode2() : void {
     $text = "{{cite journal}}";
     $template = $this->make_citation($text);
     $template->final_tidy();
     $this->assertSame('cite journal', $template->wikiname());
-   
+  }
+  public function testArxivDocumentBibcodeCode3() : void {
     $text = "{{cite web}}";
     $template = $this->make_citation($text);
     $template->change_name_to('cite journal');
     $template->final_tidy();
-    $this->assertSame('cite document', $template->wikiname());
-   
+    $this->assertSame('cite web', $template->wikiname());
+  }
+  public function testArxivDocumentBibcodeCode4() : void {
     $text = "{{cite web|eprint=xxx}}";
     $template = $this->make_citation($text);
     $template->change_name_to('cite journal');
@@ -2771,10 +2791,13 @@ T1 - This is the Title }}';
     $this->assertSame('1-2', $prepared->get2('page')); // With no change, but will give warning to user
   }
  
-  public function testBogusPageRanges() : void {  // Just keep incrementing year when test ages out
-    $text = '{{Cite journal| doi = 10.1017/jpa.2018.43|title = New well-preserved scleritomes of Chancelloriida from early Cambrian Guanshan Biota, eastern Yunnan, China|journal = Journal of Paleontology|volume = 92|issue = 6|pages = 1–17|year = 2020|last1 = Zhao|first1 = Jun|last2 = Li|first2 = Guo-Biao|last3 = Selden|first3 = Paul A}}';
+  public function testBogusPageRanges() : void { // Fake year for code that updates page ranges that start with 1
+    $text = '{{Cite journal| year = ' . date("Y") .  '| doi = 10.1017/jpa.2018.43|title = New well-preserved scleritomes of Chancelloriida from early Cambrian Guanshan Biota, eastern Yunnan, China|journal = Journal of Paleontology|volume = 92|issue = 6|pages = 1–17|last1 = Zhao|first1 = Jun|last2 = Li|first2 = Guo-Biao|last3 = Selden|first3 = Paul A}}';
     $expanded = $this->process_citation($text);
     $this->assertSame('955–971', $expanded->get2('pages')); // Converted should use long dashes
+  }
+ 
+  public function testBogusPageRanges2() : void {
     $text = '{{Cite journal| doi = 10.1017/jpa.2018.43|pages = 960}}';
     $expanded = $this->process_citation($text);
     $this->assertSame('960', $expanded->get2('pages')); // Existing page number was within existing range
@@ -2841,7 +2864,7 @@ T1 - This is the Title }}';
   public function testEmptyCitations() : void {
     $text = 'bad things like {{cite journal}}{{cite book|||}}{{cite arxiv}}{{cite web}} should not crash bot'; // bot removed pipes
     $expanded = $this->process_page($text);
-    $this->assertSame('bad things like {{cite journal}}{{cite book}}{{cite arxiv}}{{cite web}} should not crash bot', $expanded->parsed_text());
+    $this->assertSame('bad things like {{cite journal}}{{cite book}}{{cite arXiv}}{{cite web}} should not crash bot', $expanded->parsed_text());
   }
 
   public function testLatexMathInTitle() : void { // This contains Math stuff that should be z~10, but we just verify that we do not make it worse at this time.  See https://tex.stackexchange.com/questions/55701/how-do-i-write-sim-approximately-with-the-correct-spacing
@@ -4808,7 +4831,7 @@ T1 - This is the Title }}';
     $template->tidy_parameter('publisher');
     $this->assertSame('entertainment', $template->get2('department'));
     $this->assertNull($template->get2('publisher'));
-    $this->assertSame('the washington post', $template->get2('work'));
+    $this->assertSame('the washington post', $template->get2('newspaper'));
   }
  
   public function testTidySDandDepartment() : void {
