@@ -1005,14 +1005,31 @@ final class TemplateTest extends testBaseClass {
     $this->assertSame('Verstraete', $expanded->get2('last1'));
   }
  
-  public function testAP_zotero() : void {
+  public function testAP_1() : void {
     $text = '{{cite web|author=Associated Press |url=https://www.theguardian.com/science/2018/feb/03/scientists-discover-ancient-mayan-city-hidden-under-guatemalan-jungle}}';
     $expanded = $this->process_citation($text);
     $this->assertNull($expanded->get2('author'));
     $this->assertNull($expanded->get2('publisher'));
     $this->assertSame('Associated Press', $expanded->get2('agency'));
   }
-    
+ 
+  public function testAP_2() : void {
+    $text = '{{cite web|author1=Dog|author1-link=X|authorlink2=Z|author2=Associated Press |url=https://www.theguardian.com/science/2018/feb/03/scientists-discover-ancient-mayan-city-hidden-under-guatemalan-jungle}}';
+    $expanded = $this->process_citation($text);
+    $this->assertNull($expanded->get2('author2'));
+    $this->assertNull($expanded->get2('publisher'));
+    $this->assertNull($expanded->get2('authorlink2'));
+    $this->assertSame('Dog', $expanded->get2('author1'));
+    $this->assertSame('X', $expanded->get2('author1-link'));
+    $this->assertSame('Associated Press', $expanded->get2('agency'));
+  }
+ 
+  public function test_doi_not_mark_bad() : void {
+    $text = '{{cite web|doi=10.1093/acref/9780199545568.001.0001}}';
+    $expanded = $this->process_citation($text);
+    $this->assertNull($expanded->get2('doi-broken-date'));
+  }
+
   public function testPublisherRemoval() : void {
     foreach (array('Google News Archive', '[[Google]]', 'Google News',
                    'Google.com', '[[Google News]]') as $publisher) {
