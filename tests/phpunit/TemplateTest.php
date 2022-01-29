@@ -1005,7 +1005,7 @@ final class TemplateTest extends testBaseClass {
     $this->assertSame('Verstraete', $expanded->get2('last1'));
   }
  
-  public function testAP_zotero() : void {
+  public function testAP_zoterDONFo() : void {
     $text = '{{cite web|author=Associated Press |url=https://www.theguardian.com/science/2018/feb/03/scientists-discover-ancient-mayan-city-hidden-under-guatemalan-jungle}}';
     $expanded = $this->process_citation($text);
     $this->assertNull($expanded->get2('author'));
