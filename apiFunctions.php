@@ -234,6 +234,7 @@ function arxiv_api(array $ids, array &$templates) : bool {  // Pointer to save m
       } else {
         $this_template->add_if_new("author$i", $name, 'arxiv');
       }
+      if ($this_template->blank(["last$i", "first$i", "author$i"])) $i--;  // Deal with authors that are empty or just a colon as in https://export.arxiv.org/api/query?start=0&max_results=2000&id_list=2112.04678
     }
     $the_title = (string) $entry->title;
     // arXiv fixes these when it sees them

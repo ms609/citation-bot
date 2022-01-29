@@ -8,12 +8,12 @@ require_once 'Template.php';      // @codeCoverageIgnore
 function doi_active(string $doi) : ?bool {
   // Greatly speed-up by having one array of each kind and only look for hash keys, not values
   static $cache_good = [];
-  static $cache_bad  = [];
+  static $cache_bad  = BAD_DOI_ARRAY;
   if (array_key_exists($doi, $cache_good)) return TRUE;
   if (array_key_exists($doi, $cache_bad))  return FALSE;
   // For really long category runs
-  if (count($cache_bad) > 5500) $cache_bad = [];
-  if (count($cache_good) > 5500) $cache_good = [];
+  if (count($cache_bad) > 50) $cache_bad = BAD_DOI_ARRAY;
+  if (count($cache_good) > 9500) $cache_good = [];
   $works = doi_works($doi);
   if ($works === NULL) {
     return NULL; // @codeCoverageIgnore
@@ -38,11 +38,11 @@ function doi_active(string $doi) : ?bool {
 function doi_works(string $doi) : ?bool {
   // Greatly speed-up by having one array of each kind and only look for hash keys, not values
   static $cache_good = [];
-  static $cache_bad  = ['10.1126/science', '']; // This results from over-truncating other DOIs and it oddly works
+  static $cache_bad  = BAD_DOI_ARRAY;
   if (array_key_exists($doi, $cache_good)) return TRUE;
   if (array_key_exists($doi, $cache_bad))  return FALSE;
   // For really long category runs
-  if (count($cache_bad) > 500) $cache_bad = ['10.1126/science', ''];
+  if (count($cache_bad) > 50) $cache_bad = BAD_DOI_ARRAY;
   if (count($cache_good) > 9500) $cache_good = [];
   $works = is_doi_works($doi);
   if ($works === NULL) {
@@ -70,11 +70,21 @@ function is_doi_active(string $doi) : ?bool {
   return NULL;                                                                                        // @codeCoverageIgnore
 }
 
+function throttle_dx () : void {
+  static $last = 0.0;
+  $min_time = 40000.0;
+  $now = microtime(TRUE);
+  $left = (int) ($min_time - ($now - $last));
+  if ($left > 0 && $left < $min_time) usleep($left); // less than min_time is paranoia, but do not want an inifinite delay
+  $last = $now;
+}
+
 function is_doi_works(string $doi) : ?bool {
   if (strpos($doi, '10.1111/j.1572-0241') === 0 && NATURE_FAILS) return FALSE;
+  throttle_dx();
   $context = stream_context_create(array(
-           'ssl' => ['verify_peer' => FALSE, 'verify_peer_name' => FALSE, 'allow_self_signed' => TRUE],
-           'http' => ['ignore_errors' => true, 'max_redirects' => 40]
+           'ssl' => ['verify_peer' => FALSE, 'verify_peer_name' => FALSE, 'allow_self_signed' => TRUE, 'security_level' => 0],
+           'http' => ['ignore_errors' => TRUE, 'max_redirects' => 40, 'timeout' => 20.0, 'follow_location' => 1]
          )); // Allow crudy cheap journals
   $headers_test = @get_headers("https://doi.org/" . doi_encode($doi), TRUE, $context);
   if ($headers_test === FALSE) {
@@ -454,6 +464,7 @@ function strip_diacritics (string $input) : string {
 function straighten_quotes(string $str, bool $do_more) : string { // (?<!\') and (?!\') means that it cannot have a single quote right before or after it
   // These Regex can die on Unicode because of backward looking
   if ($str === '') return '';
+  $str = str_replace('Hawaiʻi', 'CITATION_BOT_PLACEHOLDER_HAWAII', $str);
   $str2 = preg_replace('~(?<!\')&#821[679];|&#39;|&#x201[89];|[\x{FF07}\x{2018}-\x{201B}`]|&[rl]s?[b]?quo;(?!\')~u', "'", $str);
   if ($str2 !== NULL) $str = $str2;
   if((mb_strpos($str, '&rsaquo;') !== FALSE && mb_strpos($str, '&[lsaquo;')  !== FALSE) ||
@@ -481,6 +492,7 @@ function straighten_quotes(string $str, bool $do_more) : string { // (?<!\') and
      }
      if ($str2 !== NULL) $str = $str2;
   }
+  $str = str_replace('CITATION_BOT_PLACEHOLDER_HAWAII', 'Hawaiʻi', $str);
   return $str;
 }
 
