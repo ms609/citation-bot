@@ -12,7 +12,7 @@ function doi_active(string $doi) : ?bool {
   if (array_key_exists($doi, $cache_good)) return TRUE;
   if (array_key_exists($doi, $cache_bad))  return FALSE;
   // For really long category runs
-  if (count($cache_bad) > 500) $cache_bad = BAD_DOI_ARRAY;
+  if (count($cache_bad) > 50) $cache_bad = BAD_DOI_ARRAY;
   if (count($cache_good) > 9500) $cache_good = [];
   $works = doi_works($doi);
   if ($works === NULL) {
@@ -42,7 +42,7 @@ function doi_works(string $doi) : ?bool {
   if (array_key_exists($doi, $cache_good)) return TRUE;
   if (array_key_exists($doi, $cache_bad))  return FALSE;
   // For really long category runs
-  if (count($cache_bad) > 500) $cache_bad = BAD_DOI_ARRAY;
+  if (count($cache_bad) > 50) $cache_bad = BAD_DOI_ARRAY;
   if (count($cache_good) > 9500) $cache_good = [];
   $works = is_doi_works($doi);
   if ($works === NULL) {
