@@ -704,6 +704,7 @@ public static function process_zotero_response(string $zotero_response, Template
       if (author_is_human(@$result->author[$i][0] . ' ' . @$result->author[$i][1])) $template->validate_and_add('author' . (string)($i+1), (string) @$result->author[$i][1], (string) @$result->author[$i][0],
                                       isset($result->rights) ? (string) $result->rights : '', FALSE);
       $i++;
+     if ($template->blank(['author' . (string)($i), 'first' . (string)($i), 'last' . (string)($i)])) break; // Break out if nothing added
   }
   unset($i);
    
@@ -802,6 +803,7 @@ public static function process_zotero_response(string $zotero_response, Template
             if (strtolower((string) $result->creators[$i]->firstName) === 'published') $result->creators[$i]->firstName ='';
             $template->validate_and_add($authorParam, (string) $result->creators[$i]->lastName, (string) $result->creators[$i]->firstName,
             isset($result->rights) ? (string) $result->rights : '', FALSE);
+            if ($template->blank(['author' . (string)($i), 'first' . (string)($i), 'last' . (string)($i)])) break; // Break out if nothing added
          }
         }
         $i++;

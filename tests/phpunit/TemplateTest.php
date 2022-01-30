@@ -1014,13 +1014,17 @@ final class TemplateTest extends testBaseClass {
   }
  
   public function testAP_2() : void {
-    $text = '{{cite web|author1=Dog|author1-link=X|authorlink2=Z|author2=Associated Press |url=https://www.theguardian.com/science/2018/feb/03/scientists-discover-ancient-mayan-city-hidden-under-guatemalan-jungle}}';
+    $text = '{{cite web|author1=Dog|author1-link=X|authorlink2=Z|author2=Associated Press |last3=M|first3=N |url=https://www.theguardian.com/science/2018/feb/03/scientists-discover-ancient-mayan-city-hidden-under-guatemalan-jungle}}';
     $expanded = $this->process_citation($text);
     $this->assertNull($expanded->get2('author2'));
     $this->assertNull($expanded->get2('publisher'));
     $this->assertNull($expanded->get2('authorlink2'));
     $this->assertSame('Dog', $expanded->get2('author1'));
     $this->assertSame('X', $expanded->get2('author1-link'));
+    $this->assertSame('M', $expanded->get2('last2'));
+    $this->assertSame('N', $expanded->get2('first2'));
+    $this->assertNull($expanded->get2('last3'));
+    $this->assertNull($expanded->get2('first3'));
     $this->assertSame('Associated Press', $expanded->get2('agency'));
   }
  
