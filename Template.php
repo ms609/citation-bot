@@ -2379,6 +2379,10 @@ final class Template {
           }
         }
       } elseif (stripos($url, 'handle') !== FALSE || stripos($url, 'persistentId=hdl:') !== FALSE) {
+          $context = stream_context_create(array(
+           'ssl' => ['verify_peer' => FALSE, 'verify_peer_name' => FALSE, 'allow_self_signed' => TRUE, 'security_level' => 0],
+           'http' => ['ignore_errors' => TRUE, 'max_redirects' => 40, 'timeout' => 20.0, 'follow_location' => 1, 'protocol_version' => 1.1,  'header'=> ['Connection: close']]
+           )); // Allow crudy cheap journals  
           // Special case of hdl.handle.net/123/456
           if (preg_match('~^https?://hdl\.handle\.net/(\d{2,}.*/.+)$~', $url, $matches)) {
             $url = 'https://hdl.handle.net/handle/' . $matches[1];
@@ -2411,10 +2415,10 @@ final class Template {
           if (preg_match('~^(.+)\?urlappend=~', $handle, $matches)) {  // should we shorten it
             usleep(100000);
             $test_url = "https://hdl.handle.net/" . $handle;
-            $headers_test = @get_headers($test_url, 1);
+            $headers_test = @get_headers($test_url, 1, $context);
             if ($headers_test === FALSE) {
                sleep(3);
-               $headers_test = @get_headers($test_url, 1);
+               $headers_test = @get_headers($test_url, 1, $context);
             }
             if ($headers_test === FALSE || empty($headers_test['Location'])) {
                $handle = $matches[1];
@@ -2438,10 +2442,10 @@ final class Template {
           // Verify that it works as a hdl
           $test_url = "https://hdl.handle.net/" . $handle;
           usleep(20000);
-          $headers_test = @get_headers($test_url, 1);
+          $headers_test = @get_headers($test_url, 1, $context);
           if ($headers_test === FALSE) {
              sleep(3);
-             $headers_test = @get_headers($test_url, 1);
+             $headers_test = @get_headers($test_url, 1, $context);
           }
           if ($headers_test === FALSE) return FALSE; // hdl.handle.net is down
           if (empty($headers_test['Location'])) return FALSE; // does not resolve
@@ -3538,7 +3542,11 @@ final class Template {
         $has_url_already = $this->has($url_type);
         $this->add_if_new($url_type, $oa_url);  // Will check for PMCs etc hidden in URL
         if ($this->has($url_type) && !$has_url_already) {  // The above line might have eaten the URL and upgraded it
-          $headers_test = @get_headers($this->get($url_type), 1);
+          $context = stream_context_create(array(
+           'ssl' => ['verify_peer' => FALSE, 'verify_peer_name' => FALSE, 'allow_self_signed' => TRUE, 'security_level' => 0],
+           'http' => ['ignore_errors' => TRUE, 'max_redirects' => 40, 'timeout' => 20.0, 'follow_location' => 1, 'protocol_version' => 1.1,  'header'=> ['Connection: close']]
+         )); // Allow crudy cheap journals  
+          $headers_test = @get_headers($this->get($url_type), 1, $context);
           // @codeCoverageIgnoreStart
           if($headers_test ===FALSE) {
             $this->forget($url_type);
