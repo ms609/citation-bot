@@ -39,6 +39,7 @@ final class Template {
   protected string $initial_name = '';
   protected bool $doi_valid = FALSE;
   protected bool $had_initial_editor = FALSE;
+  protected bool $had_initial_publisher = FALSE;
   protected bool $mod_dashes = FALSE;
   protected bool $mod_names = FALSE;
   protected bool $no_initial_doi = FALSE;
@@ -470,6 +471,7 @@ final class Template {
     }
     $this->no_initial_doi = $this->blank('doi');
 
+    if (!$this->blank(['publisher', 'location', 'publication-place', 'place'])) $this->had_initial_publisher = TRUE;
     $example = 'param = val';
     if (isset($this->param[0])) {
         // Use second param as a template if present, in case first pair 
@@ -1738,6 +1740,7 @@ final class Template {
         return FALSE;
       
       case 'publisher':
+        if ($this->had_initial_publisher) return FALSE;
         if (strlen(preg_replace('~[\.\s\d\,]~', '', $value)) < 5) return FALSE; // too few characters 
         if (stripos($value, 'Springer') === 0) $value = 'Springer'; // they add locations often
         if (stripos($value, '[s.n.]') !== FALSE) return FALSE;
@@ -1755,6 +1758,9 @@ final class Template {
         $value = truncate_publisher($value);
         if (in_array(trim(strtolower($value), " \.\,\[\]\:\;\t\n\r\0\x0B" ), BAD_PUBLISHERS)) return FALSE;
         if ($this->has('via') && str_equivalent($this->get('via'), $value))  $this->rename('via', $param_name);
+        if (strtoupper($value) === $value || strtolower($value) === $value) {
+           $value = title_capitalization($value, TRUE);
+        }
         if ($this->blank($param_name)) {
           return $this->add($param_name, $value);
         }
@@ -1772,7 +1778,14 @@ final class Template {
         }
         return FALSE;
          
-      case 'zbl': case 'location': case 'jstor': case 'oclc': case 'mr': case 'lccn': case 'hdl':
+      case 'location':
+        if ($this->had_initial_publisher) return FALSE;
+        if ($this->blank($param_name)) {
+          return $this->add($param_name, sanitize_string($value));
+        }
+        return FALSE;
+
+      case 'zbl': case 'jstor': case 'oclc': case 'mr': case 'lccn': case 'hdl':
       case 'ssrn': case 'ol': case 'jfm': case 'osti': case 'biorxiv': case 'citeseerx': case 'via':
         if ($this->blank($param_name)) {
           return $this->add($param_name, sanitize_string($value));
@@ -3877,7 +3890,9 @@ final class Template {
     $i = 0;
     if ($this->blank(array_merge(FIRST_EDITOR_ALIASES, FIRST_AUTHOR_ALIASES, ['publisher', 'journal', 'magazine', 'periodical']))) { // Too many errors in gBook database to add to existing data.   Only add if blank.
       foreach ($xml->dc___creator as $author) {
+        if (strtolower(str_replace("___", ":", (string) $author)) === "gale group") break;
         $this->validate_and_add('author' . (string) ++$i, str_replace("___", ":", (string) $author), '', '', TRUE);
+        if ($this->blank(['author' . (string) $i, 'first' . (string) $i, 'last' . (string) $i])) $i--; // It did not get added
       }
     }
     
@@ -4559,13 +4574,14 @@ final class Template {
           stripos($param, 'url') === FALSE &&         // all characters are valid
           stripos($param, 'quot') === FALSE &&        // someone might have formatted the quote
           stripos($param, 'link') === FALSE &&        // inter-wiki links
-          ($param !== 'title' || strlen($this->get($param)) > 3)  // Avoid tiny titles that might be a smiley face
+          ($param !== 'chapter' || $param !== 'title' || strlen($this->get($param)) > 4)  // Avoid tiny titles that might be a smiley face
          ) {
         $this->set($param, preg_replace('~[\x{2000}-\x{200A}\x{00A0}\x{202F}\x{205F}\x{3000}]~u', ' ', $this->get($param))); // Non-standard spaces
         $this->set($param, preg_replace('~[\t\n\r\0\x0B]~u', ' ', $this->get($param))); // tabs, linefeeds, null bytes
         $this->set($param, preg_replace('~  +~u', ' ', $this->get($param))); // multiple spaces
         $this->set($param, preg_replace('~(?<!:)[:,]$~u', '', $this->get($param)));   // Remove trailing commas, colons, but not semi-colons--They are HTML encoding stuff
         $this->set($param, preg_replace('~^[:,;](?!:)~u', '', $this->get($param)));  // Remove leading commas, colons, and semi-colons
+        $this->set($param, preg_replace('~^\=+\s*(?![^a-zA-Z0-9])~u', '', $this->get($param)));  // Remove leading ='s sign if in front of letter or number
         $this->set($param, preg_replace('~&#x2013;~u', '&ndash;', $this->get($param)));
         $this->set($param, preg_replace('~&#x2014;~u', '&mdash;', $this->get($param)));
         $this->set($param, preg_replace('~(?<!\&)&[Aa]mp;(?!&)~u', '&', $this->get($param))); // &Amp; => & but not if next character is & or previous character is ;
@@ -4690,6 +4706,16 @@ final class Template {
               $this->forget('author-link' . $pmatch[2]);
               $this->forget('authorlink' . $pmatch[2]);
               $this->forget('author' . $pmatch[2] . '-link');
+            }
+            for ($looper = (int) $pmatch[2] + 1; $looper <= 100 ; $looper++) {
+              $old = (string) $looper;
+              $new = (string) ($looper-1);
+              $this->rename('author' . $old, 'author' . $new);
+              $this->rename('last'   . $old, 'last'   . $new);
+              $this->rename('first'  . $old, 'first'  . $new);
+              $this->rename('author-link' . $old, 'author-link' . $new);
+              $this->rename('authorlink' . $old, 'authorlink' . $new); 
+              $this->rename('author' . $old . '-link', 'author' . $new . '-link'); 
             }
             return;
           }
