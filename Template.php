@@ -4705,6 +4705,16 @@ final class Template {
               $this->forget('authorlink' . $pmatch[2]);
               $this->forget('author' . $pmatch[2] . '-link');
             }
+            for ($looper = (int) $pmatch[2] + 1; $looper <= 100 ; $looper++) {
+              $old = (string) $looper;
+              $new = (string) ($looper-1);
+              $this->rename('author' . $old, 'author' . $new);
+              $this->rename('last'   . $old, 'last'   . $new);
+              $this->rename('first'  . $old, 'first'  . $new);
+              $this->rename('author-link' . $old, 'author-link' . $new);
+              $this->rename('authorlink' . $old, 'authorlink' . $new); 
+              $this->rename('author' . $old . '-link', 'author' . $new . '-link'); 
+            }
             return;
           }
           // Convert authorX to lastX, if firstX is set
