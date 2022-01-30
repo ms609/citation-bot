@@ -3890,9 +3890,10 @@ final class Template {
     $i = 0;
     if ($this->blank(array_merge(FIRST_EDITOR_ALIASES, FIRST_AUTHOR_ALIASES, ['publisher', 'journal', 'magazine', 'periodical']))) { // Too many errors in gBook database to add to existing data.   Only add if blank.
       foreach ($xml->dc___creator as $author) {
+        if (strtolower(str_replace("___", ":", (string) $author)) === "gale group") break;
         $this->validate_and_add('author' . (string) ++$i, str_replace("___", ":", (string) $author), '', '', TRUE);
+        if ($this->blank(['author' . (string) $i, 'first' . (string) $i, 'last' . (string) $i])) $i--; // It did not get added
       }
-      if ($this->blank(['author' . (string) $i, 'first' . (string) $i, 'last' . (string) $i])) $i--; // It did not get added
     }
     
     $google_date = sanitize_string(trim( (string) $xml->dc___date )); // Google often sends us YYYY-MM
