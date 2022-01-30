@@ -1758,7 +1758,9 @@ final class Template {
         $value = truncate_publisher($value);
         if (in_array(trim(strtolower($value), " \.\,\[\]\:\;\t\n\r\0\x0B" ), BAD_PUBLISHERS)) return FALSE;
         if ($this->has('via') && str_equivalent($this->get('via'), $value))  $this->rename('via', $param_name);
-        $value = title_capitalization($value, TRUE);
+        if (strtoupper($value) === $value || strtolower($value) === $value) {
+           $value = title_capitalization($value, TRUE);
+        }
         if ($this->blank($param_name)) {
           return $this->add($param_name, $value);
         }
