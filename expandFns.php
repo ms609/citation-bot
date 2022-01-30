@@ -84,8 +84,8 @@ function is_doi_works(string $doi) : ?bool {
   throttle_dx();
   $context = stream_context_create(array(
            'ssl' => ['verify_peer' => FALSE, 'verify_peer_name' => FALSE, 'allow_self_signed' => TRUE, 'security_level' => 0],
-           'http' => ['ignore_errors' => TRUE, 'max_redirects' => 40, 'timeout' => 20.0, 'follow_location' => 1]
-         )); // Allow crudy cheap journals
+           'http' => ['ignore_errors' => TRUE, 'max_redirects' => 40, 'timeout' => 20.0, 'follow_location' => 1, 'protocol_version' => 1.1,  'header'=> ['Connection: close']]
+         )); // Allow crudy cheap journals  
   $headers_test = @get_headers("https://doi.org/" . doi_encode($doi), TRUE, $context);
   if ($headers_test === FALSE) {
      sleep(2);                                                                          // @codeCoverageIgnore
