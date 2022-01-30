@@ -3890,7 +3890,7 @@ final class Template {
       foreach ($xml->dc___creator as $author) {
         $this->validate_and_add('author' . (string) ++$i, str_replace("___", ":", (string) $author), '', '', TRUE);
       }
-      if ($this->blank(['author' . (string) $i, 'first' . (string) $i, 'last' . (string) $i]) $i--; // It did not get added
+      if ($this->blank(['author' . (string) $i, 'first' . (string) $i, 'last' . (string) $i])) $i--; // It did not get added
     }
     
     $google_date = sanitize_string(trim( (string) $xml->dc___date )); // Google often sends us YYYY-MM
