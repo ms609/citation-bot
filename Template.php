@@ -4574,13 +4574,14 @@ final class Template {
           stripos($param, 'url') === FALSE &&         // all characters are valid
           stripos($param, 'quot') === FALSE &&        // someone might have formatted the quote
           stripos($param, 'link') === FALSE &&        // inter-wiki links
-          ($param !== 'title' || strlen($this->get($param)) > 3)  // Avoid tiny titles that might be a smiley face
+          ($param !== 'chapter' || $param !== 'title' || strlen($this->get($param)) > 4)  // Avoid tiny titles that might be a smiley face
          ) {
         $this->set($param, preg_replace('~[\x{2000}-\x{200A}\x{00A0}\x{202F}\x{205F}\x{3000}]~u', ' ', $this->get($param))); // Non-standard spaces
         $this->set($param, preg_replace('~[\t\n\r\0\x0B]~u', ' ', $this->get($param))); // tabs, linefeeds, null bytes
         $this->set($param, preg_replace('~  +~u', ' ', $this->get($param))); // multiple spaces
         $this->set($param, preg_replace('~(?<!:)[:,]$~u', '', $this->get($param)));   // Remove trailing commas, colons, but not semi-colons--They are HTML encoding stuff
         $this->set($param, preg_replace('~^[:,;](?!:)~u', '', $this->get($param)));  // Remove leading commas, colons, and semi-colons
+        $this->set($param, preg_replace('~^\=+\s*(?![^a-zA-Z0-9])~u', '', $this->get($param)));  // Remove leading ='s sign if in front of letter or number
         $this->set($param, preg_replace('~&#x2013;~u', '&ndash;', $this->get($param)));
         $this->set($param, preg_replace('~&#x2014;~u', '&mdash;', $this->get($param)));
         $this->set($param, preg_replace('~(?<!\&)&[Aa]mp;(?!&)~u', '&', $this->get($param))); // &Amp; => & but not if next character is & or previous character is ;
