@@ -39,6 +39,7 @@ final class Template {
   protected $initial_name = '';
   protected $doi_valid = FALSE;
   protected $had_initial_editor = FALSE;
+  protected $had_initial_publisher = FALSE;
   protected $mod_dashes = FALSE;
   protected $mod_names = FALSE;
   protected $no_initial_doi = FALSE;
@@ -470,6 +471,7 @@ final class Template {
     }
     $this->no_initial_doi = $this->blank('doi');
 
+    if (!$this->blank(['publisher', 'location', 'publication-place', 'place'])) $this->had_initial_publisher = TRUE;
     $example = 'param = val';
     if (isset($this->param[0])) {
         // Use second param as a template if present, in case first pair 
@@ -1738,6 +1740,7 @@ final class Template {
         return FALSE;
       
       case 'publisher':
+        if ($this->had_initial_publisher) return FALSE;
         if (strlen(preg_replace('~[\.\s\d\,]~', '', $value)) < 5) return FALSE; // too few characters 
         if (stripos($value, 'Springer') === 0) $value = 'Springer'; // they add locations often
         if (stripos($value, '[s.n.]') !== FALSE) return FALSE;
@@ -1773,7 +1776,14 @@ final class Template {
         }
         return FALSE;
          
-      case 'zbl': case 'location': case 'jstor': case 'oclc': case 'mr': case 'lccn': case 'hdl':
+      case 'location':
+        if ($this->had_initial_publisher) return FALSE;
+        if ($this->blank($param_name)) {
+          return $this->add($param_name, sanitize_string($value));
+        }
+        return FALSE;
+
+      case 'zbl': case 'jstor': case 'oclc': case 'mr': case 'lccn': case 'hdl':
       case 'ssrn': case 'ol': case 'jfm': case 'osti': case 'biorxiv': case 'citeseerx': case 'via':
         if ($this->blank($param_name)) {
           return $this->add($param_name, sanitize_string($value));
