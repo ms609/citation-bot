@@ -4589,7 +4589,7 @@ final class Template {
         $this->set($param, preg_replace('~  +~u', ' ', $this->get($param))); // multiple spaces
         $this->set($param, preg_replace('~(?<!:)[:,]$~u', '', $this->get($param)));   // Remove trailing commas, colons, but not semi-colons--They are HTML encoding stuff
         $this->set($param, preg_replace('~^[:,;](?!:)~u', '', $this->get($param)));  // Remove leading commas, colons, and semi-colons
-        $this->set($param, preg_replace('~^\=+\s*(?![^a-zA-Z0-9])~u', '', $this->get($param)));  // Remove leading ='s sign if in front of letter or number
+        $this->set($param, preg_replace('~^\=+\s*(?![^a-zA-Z0-9\[\'\"])~u', '', $this->get($param)));  // Remove leading ='s sign if in front of letter or number
         $this->set($param, preg_replace('~&#x2013;~u', '&ndash;', $this->get($param)));
         $this->set($param, preg_replace('~&#x2014;~u', '&mdash;', $this->get($param)));
         $this->set($param, preg_replace('~(?<!\&)&[Aa]mp;(?!&)~u', '&', $this->get($param))); // &Amp; => & but not if next character is & or previous character is ;
