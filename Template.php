@@ -1396,6 +1396,7 @@ final class Template {
         return FALSE;
       
       case 'issue':
+      case 'number':
         if ($value == '0') return FALSE;
         if ($value == 'Online First') return FALSE;
         $temp_string = strtolower($this->get('journal')) ;
