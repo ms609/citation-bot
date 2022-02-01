@@ -2382,7 +2382,7 @@ final class Template {
       } elseif (stripos($url, 'handle') !== FALSE || stripos($url, 'persistentId=hdl:') !== FALSE) {
           $context = stream_context_create(array(
            'ssl' => ['verify_peer' => FALSE, 'verify_peer_name' => FALSE, 'allow_self_signed' => TRUE, 'security_level' => 0],
-           'http' => ['ignore_errors' => TRUE, 'max_redirects' => 40, 'timeout' => 20.0, 'follow_location' => 1, 'protocol_version' => 1.1,  'header'=> ['Connection: close']]
+           'http' => ['ignore_errors' => TRUE, 'max_redirects' => 40, 'timeout' => 20.0, 'follow_location' => 1, 'header'=> ['Connection: close'], "user_agent" => "Citation_bot; citations@tools.wmflabs.org"]
            )); // Allow crudy cheap journals  
           // Special case of hdl.handle.net/123/456
           if (preg_match('~^https?://hdl\.handle\.net/(\d{2,}.*/.+)$~', $url, $matches)) {
@@ -3545,7 +3545,7 @@ final class Template {
         if ($this->has($url_type) && !$has_url_already) {  // The above line might have eaten the URL and upgraded it
           $context = stream_context_create(array(
            'ssl' => ['verify_peer' => FALSE, 'verify_peer_name' => FALSE, 'allow_self_signed' => TRUE, 'security_level' => 0],
-           'http' => ['ignore_errors' => TRUE, 'max_redirects' => 40, 'timeout' => 20.0, 'follow_location' => 1, 'protocol_version' => 1.1,  'header'=> ['Connection: close']]
+           'http' => ['ignore_errors' => TRUE, 'max_redirects' => 40, 'timeout' => 20.0, 'follow_location' => 1,  'header'=> ['Connection: close'], "user_agent" => "Citation_bot; citations@tools.wmflabs.org"]
          )); // Allow crudy cheap journals  
           $headers_test = @get_headers($this->get($url_type), TRUE, $context);
           // @codeCoverageIgnoreStart
@@ -4590,7 +4590,7 @@ final class Template {
         $this->set($param, preg_replace('~  +~u', ' ', $this->get($param))); // multiple spaces
         $this->set($param, preg_replace('~(?<!:)[:,]$~u', '', $this->get($param)));   // Remove trailing commas, colons, but not semi-colons--They are HTML encoding stuff
         $this->set($param, preg_replace('~^[:,;](?!:)~u', '', $this->get($param)));  // Remove leading commas, colons, and semi-colons
-        $this->set($param, preg_replace('~^\=+\s*(?![^a-zA-Z0-9])~u', '', $this->get($param)));  // Remove leading ='s sign if in front of letter or number
+        $this->set($param, preg_replace('~^\=+\s*(?![^a-zA-Z0-9\[\'\"])~u', '', $this->get($param)));  // Remove leading ='s sign if in front of letter or number
         $this->set($param, preg_replace('~&#x2013;~u', '&ndash;', $this->get($param)));
         $this->set($param, preg_replace('~&#x2014;~u', '&mdash;', $this->get($param)));
         $this->set($param, preg_replace('~(?<!\&)&[Aa]mp;(?!&)~u', '&', $this->get($param))); // &Amp; => & but not if next character is & or previous character is ;
