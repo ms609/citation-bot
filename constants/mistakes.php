@@ -351,6 +351,20 @@ const COMMON_MISTAKES = array ( // Common mistakes that aren't picked up by the 
   "titre chapitre"  =>  "chapter",
   "pages totales"   =>  "pages",
   "format électronique" =>  "format",
+  "příjmení" => "last1",
+  "jméno" => "first1",
+  "příjmení1" => "last1",
+  "jméno1" => "first1",
+  "příjmení2" => "last2",
+  "jméno2" => "first2",
+  "příjmení3" => "last3",
+  "jméno3" => "first3",
+  "příjmení4" => "last4",
+  "jméno4" => "first4",
+  "vydavatel" => "publisher",
+  "místo" => "location",
+  "rok" => "year",
+  "strany" => "page",
 );
 
 const COMMON_MISTAKES_TOOL = array(
