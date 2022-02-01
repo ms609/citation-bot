@@ -1397,6 +1397,7 @@ final class Template {
         return FALSE;
       
       case 'issue':
+      case 'number':
         if ($value == '0') return FALSE;
         if ($value == 'Online First') return FALSE;
         $temp_string = strtolower($this->get('journal')) ;
@@ -4583,7 +4584,7 @@ final class Template {
           stripos($param, 'url') === FALSE &&         // all characters are valid
           stripos($param, 'quot') === FALSE &&        // someone might have formatted the quote
           stripos($param, 'link') === FALSE &&        // inter-wiki links
-          ($param !== 'chapter' JUNK || $param !== 'title' || strlen($this->get($param)) > 4)  // Avoid tiny titles that might be a smiley face
+          (($param !== 'chapter' && $param !== 'title') || strlen($this->get($param)) > 4)  // Avoid tiny titles that might be a smiley face
          ) {
         $this->set($param, preg_replace('~[\x{2000}-\x{200A}\x{00A0}\x{202F}\x{205F}\x{3000}]~u', ' ', $this->get($param))); // Non-standard spaces
         $this->set($param, preg_replace('~[\t\n\r\0\x0B]~u', ' ', $this->get($param))); // tabs, linefeeds, null bytes
