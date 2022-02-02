@@ -109,6 +109,7 @@ function is_doi_works(string $doi) : ?bool {
      $headers_test = @get_headers("https://doi.org/" . doi_encode($doi), 1, $context);  // @codeCoverageIgnore
   } elseif (empty($headers_test['Location']) || stripos($headers_test[0], '404 Not Found') !== FALSE || stripos($headers_test[0], 'HTTP/1.1 404') !== FALSE) {
      echo "\n bad header for $doi ::: " .  @$headers_test['Location'] . "  :::  " . @$headers_test[0] . " \n";
+     if ('HTTP/1.1 302 Found' === @$headers_test[0]) print_r($headers_test);
      sleep(5);                                                                          // @codeCoverageIgnore
      $headers_test = @get_headers("https://doi.org/" . doi_encode($doi), 1, $context);  // @codeCoverageIgnore
      if ($headers_test === FALSE) return FALSE; /** We trust previous failure **/       // @codeCoverageIgnore
