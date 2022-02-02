@@ -289,7 +289,7 @@ final class apiFunctionsTest extends testBaseClass {
      $text = "{{cite journal|url=https://jstor.org/stable/832414?seq=1234}}";
      $template = $this->make_citation($text);
      $this->assertTrue(expand_by_jstor($template));
-     $this->assertNull($template->get2('jstor')); // We don't do that here
+     $this->assertSame('832414', $template->get2('jstor'));
    }
   
    public function testJstor2() : void {
