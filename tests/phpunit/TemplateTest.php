@@ -537,7 +537,7 @@ final class TemplateTest extends testBaseClass {
   }
     
   public function testChangeNothing2() : void {
-     $text = '{{cite journal | doi=10.000/broken_real_bad_and_tests_know_it | doi-broken-date = <!-- not broken and the bot is wrong --> }}';
+     $text = '{{cite journal | doi=10.0000/Rubbish_bot_failure_test | doi-broken-date = <!-- not broken and the bot is wrong --> }}';
      $expanded = $this->process_page($text);
      $this->assertSame($text, $expanded->parsed_text());
   }
@@ -899,19 +899,19 @@ final class TemplateTest extends testBaseClass {
   }
  
   public function testURLCleanUp12() : void {
-    $text = "{{cite journal|url=https://dx.doi.org/10.0000/BOGUS}}"; // Add bogus
+    $text = "{{cite journal|url=https://dx.doi.org/10.0000/Rubbish_bot_failure_test}}"; // Add bogus
     $template = $this->make_citation($text);
     $this->assertTrue($template->get_identifiers_from_url());
     $this->assertNotNull($template->get2('url'));
-    $this->assertSame('10.0000/BOGUS', $template->get2('doi'));
+    $this->assertSame('10.0000/Rubbish_bot_failure_test', $template->get2('doi'));
   }
  
   public function testURLCleanUp13() : void {
-    $text = "{{cite journal|url=https://dx.doi.org/10.0000/BOGUS|doi=10.0000/THIS_IS_JUNK_DATA}}"; // Fail to add bogus
+    $text = "{{cite journal|url=https://dx.doi.org/10.0000/BOGUS|doi=10.0000/Rubbish_bot_failure_test}}"; // Fail to add bogus
     $template = $this->make_citation($text);
     $this->assertFalse($template->get_identifiers_from_url());
     $this->assertSame('https://dx.doi.org/10.0000/BOGUS', $template->get2('url'));
-    $this->assertSame('10.0000/THIS_IS_JUNK_DATA', $template->get2('doi'));
+    $this->assertSame('10.0000/Rubbish_bot_failure_test', $template->get2('doi'));
   }
  
   public function testURLCleanUp14() : void {
@@ -5847,14 +5847,14 @@ T1 - This is the Title }}';
    }
  
    public function testReplaceBadDOI() : void {
-     $text='{{Cite journal | doi=10.0000/broken|doi-broken-date=1999}}';
+     $text='{{Cite journal | doi=10.0000/Rubbish_bot_failure_test|doi-broken-date=1999}}';
      $template = $this->make_citation($text);
      $this->assertTrue($template->add_if_new('doi', '10.1063/1.2263373'));
      $this->assertSame('10.1063/1.2263373', $template->get2('doi'));
    }
  
    public function testDropBadDOI() : void {
-     $text='{{Cite journal | doi=10.1063/1.2263373|chapter-url=http://dx.doi.org/10.000/broken}}';
+     $text='{{Cite journal | doi=10.1063/1.2263373|chapter-url=http://dx.doi.org/10.0000/Rubbish_bot_failure_test}}';
      $template = $this->process_citation($text);
      $this->assertSame('10.1063/1.2263373', $template->get2('doi'));
      $this->assertNotNull($template->get2('chapter-url'));
