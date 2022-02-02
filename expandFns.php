@@ -67,6 +67,7 @@ function is_doi_active(string $doi) : ?bool {
   $response = $headers_test[0];
   if (stripos($response, '200 OK') !== FALSE) return TRUE;
   if (stripos($response, '404 Not Found') !== FALSE) return FALSE;
+  if (stripos($response, 'HTTP/1.1 404') !== FALSE) return FALSE;
   report_warning("CrossRef server error loading headers for DOI " . echoable($doi) . ": $response");  // @codeCoverageIgnore
   return NULL;                                                                                        // @codeCoverageIgnore
 }
@@ -85,7 +86,6 @@ function is_doi_works(string $doi) : ?bool {
   if (strpos($doi, '10.1111/j.1572-0241') === 0 && NATURE_FAILS) return FALSE;
   // And now some obvious fails
   if (strpos($doi, '/') === FALSE && stripos($doi, '%2F') === FALSE) return FALSE;
-  if (strpos($doi, '10.') !== 0) return FALSE;
   if (strpos($doi, 'CITATION_BOT_PLACEHOLDER') !== FALSE) return FALSE;
   throttle_dx();
   // Try HTTP 1.0 on first try
@@ -105,7 +105,7 @@ function is_doi_works(string $doi) : ?bool {
   if ($headers_test === FALSE) {
      sleep(5);                                                                          // @codeCoverageIgnore
      $headers_test = @get_headers("https://doi.org/" . doi_encode($doi), 1, $context);  // @codeCoverageIgnore
-  } elseif (empty($headers_test['Location']) || stripos($headers_test[0], '404 Not Found') !== FALSE) {
+  } elseif (empty($headers_test['Location']) || stripos($headers_test[0], '404 Not Found') !== FALSE || stripos($headers_test[0], 'HTTP/1.1 404') !== FALSE) {
      sleep(5);                                                                          // @codeCoverageIgnore
      $headers_test = @get_headers("https://doi.org/" . doi_encode($doi), 1, $context);  // @codeCoverageIgnore
      if ($headers_test === FALSE) return FALSE; /** We trust previous failure **/       // @codeCoverageIgnore
@@ -113,7 +113,7 @@ function is_doi_works(string $doi) : ?bool {
   if (preg_match('~^10\.1038/nature\d{5}$~i', $doi) && NATURE_FAILS2 && $headers_test === FALSE) return FALSE;
   if ($headers_test === FALSE) return NULL; // most likely bad, but will recheck again and again
   if (empty($headers_test['Location'])) return FALSE; // leads nowhere
-  if (stripos($headers_test[0], '404 Not Found') !== FALSE) return FALSE; // leads to 404
+  if (stripos($headers_test[0], '404 Not Found') !== FALSE || stripos($headers_test[0], 'HTTP/1.1 404') !== FALSE) return FALSE; // leads to 404
   return TRUE; // Lead somewhere
 }
 
