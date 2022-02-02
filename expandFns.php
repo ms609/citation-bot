@@ -102,11 +102,11 @@ function is_doi_works(string $doi) : ?bool {
      sleep(5);                                                                          // @codeCoverageIgnore
      $headers_test = @get_headers("https://doi.org/" . doi_encode($doi), 1, $context);  // @codeCoverageIgnore
   } elseif (empty($headers_test['Location']) || stripos($headers_test[0], '404 Not Found') !== FALSE) {
-     echo "\n bad header for $doi --- @$headers_test['Location'] ---- @$headers_test[0] \n";
+     echo "\n bad header for $doi ::: " .  @$headers_test['Location'] . "  :::  " . @$headers_test[0] . " \n";
      sleep(5);                                                                          // @codeCoverageIgnore
      $headers_test = @get_headers("https://doi.org/" . doi_encode($doi), 1, $context);  // @codeCoverageIgnore
      if ($headers_test === FALSE) return FALSE; /** We trust previous failure **/       // @codeCoverageIgnore
-     echo "\n bad header for $doi --- @$headers_test['Location'] ---- @$headers_test[0] \n";
+     echo "\n bad header for $doi ::: " .  @$headers_test['Location'] . "  :::  " . @$headers_test[0] . " \n";
   }
   if (preg_match('~^10\.1038/nature\d{5}$~i', $doi) && NATURE_FAILS2 && $headers_test === FALSE) return FALSE;
   if ($headers_test === FALSE) return NULL; // most likely bad, but will recheck again and again
