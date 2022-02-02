@@ -2421,7 +2421,7 @@ final class Template {
                sleep(3);
                $headers_test = @get_headers($test_url, 1, $context);
             }
-            if ($headers_test === FALSE || empty($headers_test['Location'])) {
+            if ($headers_test === FALSE || (empty($headers_test['Location']) && empty($headers_test['location']))) {
                $handle = $matches[1];
             }
           }
@@ -2449,15 +2449,17 @@ final class Template {
              $headers_test = @get_headers($test_url, 1, $context);
           }
           if ($headers_test === FALSE) return FALSE; // hdl.handle.net is down
-          if (empty($headers_test['Location'])) return FALSE; // does not resolve
+          if (empty($headers_test['Location']) && empty($headers_test['location'])) return FALSE; // does not resolve
           quietly('report_modification', "Converting URL to HDL parameter");
           if (is_null($url_sent)) {
              if ($this->has_good_free_copy()) $this->forget($url_type);
           }
           if (is_array(@$headers_test['Location'])) {
             $the_header_loc = (string) $headers_test['Location'][0];
+          } elseif (is_array(@$headers_test['location'])) {
+            $the_header_loc = (string) $headers_test['location'][0];
           } else {
-            $the_header_loc = (string) @$headers_test['Location'];
+            $the_header_loc = (string) @$headers_test['Location'] . (string) @$headers_test['location'];
           }
           if (preg_match('~^([^/]+/[^/]+)/.*$~', $handle, $matches)   // Might be padded with stuff
             && stripos($the_header_loc, $handle) === FALSE
