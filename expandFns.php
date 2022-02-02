@@ -57,6 +57,7 @@ function doi_works(string $doi) : ?bool {
 }
 
 function is_doi_active(string $doi) : ?bool {
+  CONFLICT
   $headers_test = @get_headers("https://api.crossref.org/works/" . doi_encode($doi));
   if ($headers_test === FALSE) {
     sleep(2);                                                                           // @codeCoverageIgnore
