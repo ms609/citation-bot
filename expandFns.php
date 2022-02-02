@@ -57,7 +57,7 @@ function doi_works(string $doi) : ?bool {
 }
 
 function is_doi_active(string $doi) : ?bool {
-  CONFLICT
+  $doi = trim($doi);
   $headers_test = @get_headers("https://api.crossref.org/works/" . doi_encode($doi));
   if ($headers_test === FALSE) {
     sleep(2);                                                                           // @codeCoverageIgnore
@@ -81,7 +81,12 @@ function throttle_dx () : void {
 }
 
 function is_doi_works(string $doi) : ?bool {
+  $doi = trim($doi);
   if (strpos($doi, '10.1111/j.1572-0241') === 0 && NATURE_FAILS) return FALSE;
+  // And now some obvious fails
+  if (strpos($doi, '/') === FALSE && stripos($doi, '%2F') === FALSE) return FALSE;
+  if (strpos($doi, '10.') !== 0) return FALSE;
+  if (strpos($doi, 'CITATION_BOT_PLACEHOLDER') !== FALSE) return FALSE;
   throttle_dx();
   // Try HTTP 1.0 on first try
   $context_1 = stream_context_create(array(
