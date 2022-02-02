@@ -1411,7 +1411,7 @@ final class TemplateTest extends testBaseClass {
   }
 
   public function testSemanticScholar() : void {
-   $text = "{{cite journal|doi=10.5555/555555}}";
+   $text = "{{cite journal|doi=10.5555/CONLFI}}";
    $template = $this->make_citation($text);
    $return = $template->get_unpaywall_url($template->get2('doi'));
    $this->assertSame('nothing', $return);
