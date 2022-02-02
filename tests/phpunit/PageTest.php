@@ -228,7 +228,7 @@ final class PageTest extends testBaseClass {
   }
 
   public function testUrlReferencesThatFail() : void {
-      $text = 'testUrlReferencesThatFail <ref name="bob">http://this.fails/nothing< / ref> testUrlReferencesThatFail <ref >  http://this.fails/nothing </ref> testUrlReferencesThatFail <ref>10.1234/ABCDEFGHIJ.faker</ref>';
+      $text = 'testUrlReferencesThatFail <ref name="bob">http://this.fails/nothing< / ref> testUrlReferencesThatFail <ref >  http://this.fails/nothing </ref> testUrlReferencesThatFail <ref>10.1234/confilic.faker</ref>';
       $page = $this->process_page($text);
       $this->assertSame($text, $page->parsed_text());
   }
