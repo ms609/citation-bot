@@ -228,7 +228,7 @@ final class PageTest extends testBaseClass {
   }
 
   public function testUrlReferencesThatFail() : void {
-      $text = 'testUrlReferencesThatFail <ref name="bob">http://this.fails/nothing< / ref> testUrlReferencesThatFail <ref >  http://this.fails/nothing </ref> testUrlReferencesThatFail <ref>10.1234/confilic.faker</ref>';
+      $text = 'testUrlReferencesThatFail <ref name="bob">http://this.fails/nothing< / ref> testUrlReferencesThatFail <ref >  http://this.fails/nothing </ref> testUrlReferencesThatFail <ref>10.0000/Rubbish_bot_failure_test</ref>';
       $page = $this->process_page($text);
       $this->assertSame($text, $page->parsed_text());
   }
@@ -307,7 +307,7 @@ final class PageTest extends testBaseClass {
   }
  
   public function testUrlReferencesWithText12() : void {  // One that does not work and returns exact same text
-      $text = "<ref>James L. Elshoff, Michael Marcotty, [http://fake.url/10.1145/358589.FAKER_DOES_NOT_WORK358596 Improving computer program readability to aid modification], Communications of the ACM, v.25 n.8, p.512-521, Aug 1982.</ref>";
+      $text = "<ref>James L. Elshoff, Michael Marcotty, [http://fake.url/10.0000/Rubbish_bot_failure_test Improving computer program readability to aid modification], Communications of the ACM, v.25 n.8, p.512-521, Aug 1982.</ref>";
       $page = $this->process_page($text);
       $this->assertSame($text, $page->parsed_text());
   }

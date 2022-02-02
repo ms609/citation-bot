@@ -478,7 +478,7 @@ final class TemplateTest extends testBaseClass {
  }
 
  public function testBrokenDoiUrlChanges1() : void {
-     $text = '{{cite journal|url=http://dx.doi.org/10.1111/j.1471-0528.1995.tb09132.x|doi=10.00/broken_and_invalid|doi-broken-date=12-31-1999}}';
+     $text = '{{cite journal|url=http://dx.doi.org/10.1111/j.1471-0528.1995.tb09132.x|doi=10.0000/Rubbish_bot_failure_test|doi-broken-date=12-31-1999}}';
      $expanded = $this->process_citation($text);
      $this->assertSame('10.1111/j.1471-0528.1995.tb09132.x', $expanded->get2('doi'));
      $this->assertNotNull($expanded->get2('url'));
