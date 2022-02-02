@@ -2421,7 +2421,7 @@ final class Template {
                sleep(3);
                $headers_test = @get_headers($test_url, 1, $context);
             }
-            if ($headers_test === FALSE || (empty($headers_test['Location'] && empty($headers_test['location']))) {
+            if ($headers_test === FALSE || (empty($headers_test['Location'] && empty($headers_test['location'])) {
                $handle = $matches[1];
             }
           }
