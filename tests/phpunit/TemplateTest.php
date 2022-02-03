@@ -70,7 +70,7 @@ final class TemplateTest extends testBaseClass {
     $prepared = $this->process_citation($text_in);
     $text_in = "{{cite journal| doi=10.26879/983}}";
     $prepared = $this->process_citation($text_in);
-    $text_in = "{{cite journal| doi=10.11646/zootaxa.4686.3.5";
+    $text_in = "{{cite journal| doi=10.11646/zootaxa.4686.3.5}}";
     $prepared = $this->process_citation($text_in);
     $this->assertSame("X", "X");
   }
