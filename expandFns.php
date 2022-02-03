@@ -93,14 +93,14 @@ function is_doi_works(string $doi) : ?bool {
   // TODO this might need updated over time.  See registrant_err_patterns on https://en.wikipedia.org/wiki/Module:Citation/CS1/Identifiers
   if (strpos($registrant, '10.') === 0) { // We have do deal with valid handles in the DOI field grrrr - very rare, so only check actual DOIs
     $registrant = substr($registrant,3);
-    if (preg_match('^[^1-3]\d\d\d\d\.\d\d*$', $registrant)) return FALSE; // 5 digits with subcode (0xxxx, 40000+); accepts: 10000–39999
-    if (preg_match('^[^1-5]\d\d\d\d$', $registrant)) return FALSE;        // 5 digits without subcode (0xxxx, 60000+); accepts: 10000–59999
-    if (preg_match('^[^1-9]\d\d\d\.\d\d*$', $registrant)) return FALSE;   // 4 digits with subcode (0xxx); accepts: 1000–9999
-    if (preg_match('^[^1-9]\d\d\d$', $registrant)) return FALSE;          // 4 digits without subcode (0xxx); accepts: 1000–9999
-    if (preg_match('^\d\d\d\d\d\d+', $registrant)) return FALSE;          // 6 or more digits
-    if (preg_match('^\d\d?\d?$', $registrant)) return FALSE;              // less than 4 digits without subcode (with subcode is legitimate)
+    if (preg_match('~^[^1-3]\d\d\d\d\.\d\d*$~', $registrant)) return FALSE; // 5 digits with subcode (0xxxx, 40000+); accepts: 10000–39999
+    if (preg_match('~^[^1-5]\d\d\d\d$~', $registrant)) return FALSE;        // 5 digits without subcode (0xxxx, 60000+); accepts: 10000–59999
+    if (preg_match('~^[^1-9]\d\d\d\.\d\d*$~', $registrant)) return FALSE;   // 4 digits with subcode (0xxx); accepts: 1000–9999
+    if (preg_match('~^[^1-9]\d\d\d$~', $registrant)) return FALSE;          // 4 digits without subcode (0xxx); accepts: 1000–9999
+    if (preg_match('~^\d\d\d\d\d\d+~', $registrant)) return FALSE;          // 6 or more digits
+    if (preg_match('~^\d\d?\d?$~', $registrant)) return FALSE;              // less than 4 digits without subcode (with subcode is legitimate)
     if ($registrant === '5555') return FALSE;	                            // test registrant will never resolve
-    if (preg_match('[^\d\.]', $registrant)) return FALSE;                 // any character that isn't a digit or a dot
+    if (preg_match('~[^\d\.]~', $registrant)) return FALSE;                 // any character that isn't a digit or a dot
   }
   throttle_dx();
   // Try HTTP 1.0 on first try
