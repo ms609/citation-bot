@@ -6,7 +6,6 @@ declare(strict_types=1);
  */
 
 require_once __DIR__ . '/../testBaseClass.php';
-
 final class zoteroTest extends testBaseClass {
 
   protected function setUp(): void {
@@ -93,7 +92,7 @@ final class zoteroTest extends testBaseClass {
   }
  
   public function testDropSomeProxiesE() : void {
-    $text = "{{cite journal|doi=X|journal=X|title=X|last1=X|first1=X|volume=X|issue=X|year=X|url=http://cnn.com/|doi-access=free|url-status=dead|doi=10.0000/10000}}";
+    $text = "{{cite journal|doi=X|journal=X|title=X|last1=X|first1=X|volume=X|issue=X|year=X|url=http://cnn.com/|doi-access=free|url-status=dead|doi=10.0000/Rubbish_bot_failure_test}}";
     $template = $this->make_citation($text);
     $tmp_array = [$template];
     Zotero::drop_urls_that_match_dois($tmp_array);

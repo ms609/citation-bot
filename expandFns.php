@@ -57,6 +57,7 @@ function doi_works(string $doi) : ?bool {
 }
 
 function is_doi_active(string $doi) : ?bool {
+  $doi = trim($doi);
   $headers_test = @get_headers("https://api.crossref.org/works/" . doi_encode($doi));
   if ($headers_test === FALSE) {
     sleep(2);                                                                           // @codeCoverageIgnore
@@ -66,6 +67,7 @@ function is_doi_active(string $doi) : ?bool {
   $response = $headers_test[0];
   if (stripos($response, '200 OK') !== FALSE) return TRUE;
   if (stripos($response, '404 Not Found') !== FALSE) return FALSE;
+  if (stripos($response, 'HTTP/1.1 404') !== FALSE) return FALSE;
   report_warning("CrossRef server error loading headers for DOI " . echoable($doi) . ": $response");  // @codeCoverageIgnore
   return NULL;                                                                                        // @codeCoverageIgnore
 }
@@ -80,15 +82,34 @@ function throttle_dx () : void {
 }
 
 function is_doi_works(string $doi) : ?bool {
+  $matches = ['', '']; // prevent memory leak in some PHP versions
+  $doi = trim($doi);
   if (strpos($doi, '10.1111/j.1572-0241') === 0 && NATURE_FAILS) return FALSE;
+  // And now some obvious fails
+  if (strpos($doi, '/') === FALSE) return FALSE;
+  if (strpos($doi, 'CITATION_BOT_PLACEHOLDER') !== FALSE) return FALSE;
+  if (!preg_match('~^([^\/]+)\/~', $doi, $matches)) return FALSE;
+  $registrant = $matches[1];
+  // TODO this might need updated over time.  See registrant_err_patterns on https://en.wikipedia.org/wiki/Module:Citation/CS1/Identifiers
+  if (strpos($registrant, '10.') === 0) { // We have do deal with valid handles in the DOI field grrrr - very rare, so only check actual DOIs
+    $registrant = substr($registrant,3);
+    if (preg_match('~^[^1-3]\d\d\d\d\.\d\d*$~', $registrant)) return FALSE; // 5 digits with subcode (0xxxx, 40000+); accepts: 10000–39999
+    if (preg_match('~^[^1-5]\d\d\d\d$~', $registrant)) return FALSE;        // 5 digits without subcode (0xxxx, 60000+); accepts: 10000–59999
+    if (preg_match('~^[^1-9]\d\d\d\.\d\d*$~', $registrant)) return FALSE;   // 4 digits with subcode (0xxx); accepts: 1000–9999
+    if (preg_match('~^[^1-9]\d\d\d$~', $registrant)) return FALSE;          // 4 digits without subcode (0xxx); accepts: 1000–9999
+    if (preg_match('~^\d\d\d\d\d\d+~', $registrant)) return FALSE;          // 6 or more digits
+    if (preg_match('~^\d\d?\d?$~', $registrant)) return FALSE;              // less than 4 digits without subcode (with subcode is legitimate)
+    if ($registrant === '5555') return FALSE;	                            // test registrant will never resolve
+    if (preg_match('~[^\d\.]~', $registrant)) return FALSE;                 // any character that isn't a digit or a dot
+  }
   throttle_dx();
   // Try HTTP 1.0 on first try
   $context_1 = stream_context_create(array(
-           'ssl' => ['verify_peer' => FALSE, 'verify_peer_name' => FALSE, 'allow_self_signed' => TRUE, 'security_level' => 0],
+           'ssl' => ['verify_peer' => FALSE, 'verify_peer_name' => FALSE, 'allow_self_signed' => TRUE, 'security_level' => 0, 'verify_depth' => 0],
            'http' => ['ignore_errors' => TRUE, 'max_redirects' => 40, 'timeout' => 20.0, 'follow_location' => 1,  'header'=> ['Connection: close'], "user_agent" => "Citation_bot; citations@tools.wmflabs.org"]
          )); // Allow crudy cheap journals
   $context = stream_context_create(array(
-           'ssl' => ['verify_peer' => FALSE, 'verify_peer_name' => FALSE, 'allow_self_signed' => TRUE, 'security_level' => 0],
+           'ssl' => ['verify_peer' => FALSE, 'verify_peer_name' => FALSE, 'allow_self_signed' => TRUE, 'security_level' => 0, 'verify_depth' => 0],
            'http' => ['ignore_errors' => TRUE, 'max_redirects' => 40, 'timeout' => 20.0, 'follow_location' => 1, 'protocol_version' => 1.1,  'header'=> ['Connection: close'], "user_agent" => "Citation_bot; citations@tools.wmflabs.org"]
          )); // Allow crudy cheap journals  
   $headers_test = @get_headers("https://doi.org/" . doi_encode($doi), TRUE, $context_1);
@@ -99,15 +120,15 @@ function is_doi_works(string $doi) : ?bool {
   if ($headers_test === FALSE) {
      sleep(5);                                                                          // @codeCoverageIgnore
      $headers_test = @get_headers("https://doi.org/" . doi_encode($doi), TRUE, $context);  // @codeCoverageIgnore
-  } elseif (empty($headers_test['Location']) || stripos($headers_test[0], '404 Not Found') !== FALSE) {
+  } elseif ((empty($headers_test['Location']) && empty($headers_test['location'])) || stripos($headers_test[0], '404 Not Found') !== FALSE || stripos($headers_test[0], 'HTTP/1.1 404') !== FALSE) {
      sleep(5);                                                                          // @codeCoverageIgnore
      $headers_test = @get_headers("https://doi.org/" . doi_encode($doi), TRUE, $context);  // @codeCoverageIgnore
      if ($headers_test === FALSE) return FALSE; /** We trust previous failure **/       // @codeCoverageIgnore
   }
   if (preg_match('~^10\.1038/nature\d{5}$~i', $doi) && NATURE_FAILS2 && $headers_test === FALSE) return FALSE;
   if ($headers_test === FALSE) return NULL; // most likely bad, but will recheck again and again
-  if (empty($headers_test['Location'])) return FALSE; // leads nowhere
-  if (stripos($headers_test[0], '404 Not Found') !== FALSE) return FALSE; // leads to 404
+  if (empty($headers_test['Location']) && empty($headers_test['location'])) return FALSE; // leads nowhere
+  if (stripos($headers_test[0], '404 Not Found') !== FALSE || stripos($headers_test[0], 'HTTP/1.1 404') !== FALSE) return FALSE; // leads to 404
   return TRUE; // Lead somewhere
 }
 
