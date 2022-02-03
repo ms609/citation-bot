@@ -102,8 +102,8 @@ function is_doi_works(string $doi) : ?bool {
      sleep(2);                                                                          // @codeCoverageIgnore
      echo "\n FALSE for $doi\n";
      $e = new \Exception;
-     unset($e);
      var_dump($e->getTraceAsString());
+     unset($e);
      $headers_test = @get_headers("https://doi.org/" . doi_encode($doi), 1, $context);  // @codeCoverageIgnore
   }
   if ($headers_test === FALSE) {
