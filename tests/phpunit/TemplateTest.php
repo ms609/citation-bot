@@ -1542,7 +1542,7 @@ final class TemplateTest extends testBaseClass {
       $expanded = $this->process_citation($text);
       $this->assertSame('978-1234-9583-068', $expanded->get2('isbn'));
       $this->assertSame('1234.5678', $expanded->get2('arxiv'));
-      $this->assertSame('10.1234/bashifbjaksn.ch2', $expanded->get2('doi'));
+      $this->assertSame('10.0000/Rubbish_bot_failure_test', $expanded->get2('doi'));
       $this->assertSame('1234', $expanded->get2('oclc'));
       $this->assertSame('12345', $expanded->get2('ol'));
       $this->assertNotNull($expanded->get2('doi-broken-date'));
@@ -5947,7 +5947,7 @@ T1 - This is the Title }}';
    }
  
    public function testSuppressWarnings() : void {
-     $text='{{Cite journal |doi=((10.0000/Rubbish_bot_failure_test )) }}';
+     $text='{{Cite journal |doi=((10.51134/sod.2013.039 )) }}';
      $template = $this->process_citation($text);
      $this->assertNull($template->get2('doi-broken-date'));
      $this->assertNotNull($template->get2('journal'));
