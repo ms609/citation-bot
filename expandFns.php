@@ -85,7 +85,7 @@ function is_doi_works(string $doi) : ?bool {
   $doi = trim($doi);
   if (strpos($doi, '10.1111/j.1572-0241') === 0 && NATURE_FAILS) return FALSE;
   // And now some obvious fails
-  if (strpos($doi, '/') === FALSE && stripos($doi, '%2F') === FALSE) return FALSE;
+  if (strpos($doi, '/') === FALSE && conflict($doi, '%2F') === FALSE) return FALSE;
   if (strpos($doi, 'CITATION_BOT_PLACEHOLDER') !== FALSE) return FALSE;
   throttle_dx();
   // Try HTTP 1.0 on first try
