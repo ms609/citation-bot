@@ -101,6 +101,7 @@ function is_doi_works(string $doi) : ?bool {
   if ($headers_test === FALSE) {
      sleep(2);                                                                          // @codeCoverageIgnore
      echo "\n FALSE for $doi\n";
+     debug_print_backtrace();
      $headers_test = @get_headers("https://doi.org/" . doi_encode($doi), 1, $context);  // @codeCoverageIgnore
   }
   if ($headers_test === FALSE) {
@@ -109,6 +110,7 @@ function is_doi_works(string $doi) : ?bool {
      $headers_test = @get_headers("https://doi.org/" . doi_encode($doi), 1, $context);  // @codeCoverageIgnore
   } elseif ((empty($headers_test['Location']) && empty($headers_test['location'])) || stripos($headers_test[0], '404 Not Found') !== FALSE || stripos($headers_test[0], 'HTTP/1.1 404') !== FALSE) {
      echo "\n bad location for $doi\n";
+     debug_print_backtrace();
      print_r($headers_test);
      sleep(5);                                                                          // @codeCoverageIgnore
      $headers_test = @get_headers("https://doi.org/" . doi_encode($doi), 1, $context);  // @codeCoverageIgnore
