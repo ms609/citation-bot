@@ -1538,7 +1538,7 @@ final class TemplateTest extends testBaseClass {
   }
        
   public function testId2Param1() : void {
-      $text = '{{cite book |id=ISBN 978-1234-9583-068, DOI 10.1234/bashifbjaksn.ch2, {{arxiv|1234.5678}} {{oclc|12354|4567}} {{oclc|1234}} {{ol|12345}} }}';
+      $text = '{{cite book |id=ISBN 978-1234-9583-068, DOI 10.1234/CONFLICY.ch2, {{arxiv|1234.5678}} {{oclc|12354|4567}} {{oclc|1234}} {{ol|12345}} }}';
       $expanded = $this->process_citation($text);
       $this->assertSame('978-1234-9583-068', $expanded->get2('isbn'));
       $this->assertSame('1234.5678', $expanded->get2('arxiv'));
