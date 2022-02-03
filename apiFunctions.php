@@ -485,7 +485,7 @@ function adsabs_api(array $ids, array &$templates, string $identifier) : bool { 
     }
   }
   $unmatched_ids = array_diff($ids, $matched_ids);
-  if (sizeof($unmatched_ids)) {
+  if (count($unmatched_ids)) {
     report_warning("No match for bibcode identifier: " . implode('; ', $unmatched_ids));  // @codeCoverageIgnore
   }
   return TRUE;
