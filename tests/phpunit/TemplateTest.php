@@ -1526,7 +1526,7 @@ final class TemplateTest extends testBaseClass {
   }
        
   public function testId2Param1() : void {
-      $text = '{{cite book |id=ISBN 978-1234-9583-068, DOI 10.1234/bashifbjaksn.ch2, {{arxiv|1234.5678}} {{oclc|12354|4567}} {{oclc|1234}} {{ol|12345}} }}';
+      $text = '{{cite book |id=ISBN 978-1234-9583-068, DOI 10.0000/Rubbish_bot_failure_test, {{arxiv|1234.5678}} {{oclc|12354|4567}} {{oclc|1234}} {{ol|12345}} }}';
       $expanded = $this->process_citation($text);
       $this->assertSame('978-1234-9583-068', $expanded->get2('isbn'));
       $this->assertSame('1234.5678', $expanded->get2('arxiv'));
@@ -2517,7 +2517,7 @@ T1 - This is the Title }}';
   }
  
   public function testArxivToJournalIfDoi() : void {
-    $text = "{{cite arxiv| eprint=1234|doi=10.0/000}}";
+    $text = "{{cite arxiv| eprint=1234|doi=10.0000/Rubbish_bot_failure_test}}";
     $template = $this->make_citation($text);
     $template->final_tidy();
     $this->assertSame('cite journal', $template->wikiname());  
@@ -4536,14 +4536,14 @@ T1 - This is the Title }}';
   }
  
   public function testAddBrokenDateFormat1() : void {
-    $text = "{{cite journal|doi=10.3222/XXXXXXXxxxxxx}}";
+    $text = "{{cite journal|doi=10.0000/Rubbish_bot_failure_test}}";
     $template = $this->make_citation($text);
     $this->assertTrue($template->add_if_new('doi-broken-date', '1 DEC 2019'));
     $this->assertSame('1 DEC 2019', $template->get2('doi-broken-date'));
   }
 
   public function testAddBrokenDateFormat2() : void {
-    $text = "{{cite journal|doi=10.3222/XXXXXXXxxxxxx}}";
+    $text = "{{cite journal|doi=10.0000/Rubbish_bot_failure_test}}";
     $template = $this->make_citation($text);
     $template->date_style = DATES_MDY;
     $this->assertTrue($template->add_if_new('doi-broken-date', '1 DEC 2019'));
@@ -4551,7 +4551,7 @@ T1 - This is the Title }}';
   }
  
   public function testAddBrokenDateFormat3() : void {
-    $text = "{{cite journal|doi=10.3222/XXXXXXXxxxxxx}}";
+    $text = "{{cite journal|doi=10.0000/Rubbish_bot_failure_test}}";
     $template = $this->make_citation($text);
     $template->date_style = DATES_DMY;
     $this->assertTrue($template->add_if_new('doi-broken-date', '1 DEC 2019'));
@@ -5935,7 +5935,7 @@ T1 - This is the Title }}';
    }
  
    public function testSuppressWarnings() : void {
-     $text='{{Cite journal |doi=((10.51134/sod.2013.039 )) }}';
+     $text='{{Cite journal |doi=((10.0000/Rubbish_bot_failure_test )) }}';
      $template = $this->process_citation($text);
      $this->assertNull($template->get2('doi-broken-date'));
      $this->assertNotNull($template->get2('journal'));
