@@ -63,6 +63,18 @@ final class TemplateTest extends testBaseClass {
     $this->assertSame('{{cite news| newspaper=The Economist}}', $prepared->parsed_text());
   }
 
+   public function testDOIDOIDOID() : void {
+    $text_in = "{{cite journal| doi=10.11646/zootaxa.4878.3.5}}";
+    $prepared = $this->process_citation($text_in);
+    $text_in = "{{cite journal| doi=10.1016/j.cub.2020.05.085}}";
+    $prepared = $this->process_citation($text_in);
+    $text_in = "{{cite journal| doi=10.26879/983}}";
+    $prepared = $this->process_citation($text_in);
+    $text_in = "{{cite journal| doi=10.11646/zootaxa.4686.3.5";
+    $prepared = $this->process_citation($text_in);
+    $this->assertSame("X", "X");
+  }
+ 
   public function testParameterWithNoParameters() : void {
     $text = "{{Cite web | text without equals sign  }}";
     $expanded = $this->process_citation($text);
