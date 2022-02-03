@@ -8,11 +8,11 @@ require_once 'Template.php';      // @codeCoverageIgnore
 function doi_active(string $doi) : ?bool {
   // Greatly speed-up by having one array of each kind and only look for hash keys, not values
   static $cache_good = [];
-  static $cache_bad  = BAD_DOI_ARRAY;
+  static $cache_bad  = [];
   if (isset($cache_good[$doi])) return TRUE;
   if (isset($cache_bad[$doi]))  return FALSE;
   // For really long category runs
-  if (count($cache_bad) > 6) $cache_bad = BAD_DOI_ARRAY;
+  if (count($cache_bad) > 2500) $cache_bad = [];
   if (count($cache_good) > 100000) $cache_good = [];
   $works = doi_works($doi);
   if ($works === NULL) {
@@ -42,7 +42,7 @@ function doi_works(string $doi) : ?bool {
   if (isset($cache_good[$doi])) return TRUE;
   if (isset($cache_bad[$doi]))  return FALSE;
   // For really long category runs
-  if (count($cache_bad) > 6) $cache_bad = BAD_DOI_ARRAY;
+  if (count($cache_bad) > 7) $cache_bad = BAD_DOI_ARRAY;
   if (count($cache_good) > 100000) $cache_good = [];
   $works = is_doi_works($doi);
   if ($works === NULL) {
@@ -66,6 +66,7 @@ function is_doi_active(string $doi) : ?bool {
   if ($headers_test === FALSE) return NULL; // most likely bad, but will recheck again an again
   $response = $headers_test[0];
   if (stripos($response, '200 OK') !== FALSE) return TRUE;
+  if (stripos($response, 'HTTP/1.1 200') !== FALSE) return TRUE;
   if (stripos($response, '404 Not Found') !== FALSE) return FALSE;
   if (stripos($response, 'HTTP/1.1 404') !== FALSE) return FALSE;
   report_warning("CrossRef server error loading headers for DOI " . echoable($doi) . ": $response");  // @codeCoverageIgnore
