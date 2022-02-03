@@ -17,7 +17,7 @@ final class constantsTest extends testBaseClass {
 
   public function testConstantsDefined() : void {
     $this->assertSame(count(UCFIRST_JOURNAL_ACRONYMS), count(JOURNAL_ACRONYMS));
-    for ($i = 0; $i < sizeof(JOURNAL_ACRONYMS); $i++) {
+    for ($i = 0; $i < count(JOURNAL_ACRONYMS); $i++) {
       $this->assertSame(trim(JOURNAL_ACRONYMS[$i]), trim(title_capitalization(ucwords(trim(UCFIRST_JOURNAL_ACRONYMS[$i])), TRUE)));
       // Verify that they are padded with a space
       $this->assertSame   (' ', mb_substr(UCFIRST_JOURNAL_ACRONYMS[$i], -1, 1));
@@ -30,7 +30,7 @@ final class constantsTest extends testBaseClass {
       $this->assertNotEquals(' ', mb_substr(JOURNAL_ACRONYMS[$i],  1, 1));
     }
     $this->assertSame(count(LC_SMALL_WORDS), count(UC_SMALL_WORDS));
-    for ($i = 0; $i < sizeof(LC_SMALL_WORDS); $i++) {
+    for ($i = 0; $i < count(LC_SMALL_WORDS); $i++) {
       // Verify that they match
       if (substr_count(UC_SMALL_WORDS[$i], ' ') === 2 && substr_count(UC_SMALL_WORDS[$i], '&') === 0) {
         $this->assertSame(UC_SMALL_WORDS[$i], mb_convert_case(LC_SMALL_WORDS[$i], MB_CASE_TITLE, "UTF-8"));
