@@ -9,8 +9,8 @@ function doi_active(string $doi) : ?bool {
   // Greatly speed-up by having one array of each kind and only look for hash keys, not values
   static $cache_good = [];
   static $cache_bad  = BAD_DOI_ARRAY;
-  if (array_key_exists($doi, $cache_good)) return TRUE;
-  if (array_key_exists($doi, $cache_bad))  return FALSE;
+  if (isset($cache_good[$doi])) return TRUE;
+  if (isset($cache_bad[$doi]))  return FALSE;
   // For really long category runs
   if (count($cache_bad) > 6) $cache_bad = BAD_DOI_ARRAY;
   if (count($cache_good) > 100000) $cache_good = [];
@@ -39,8 +39,8 @@ function doi_works(string $doi) : ?bool {
   // Greatly speed-up by having one array of each kind and only look for hash keys, not values
   static $cache_good = [];
   static $cache_bad  = BAD_DOI_ARRAY;
-  if (array_key_exists($doi, $cache_good)) return TRUE;
-  if (array_key_exists($doi, $cache_bad))  return FALSE;
+  if (isset($cache_good[$doi])) return TRUE;
+  if (isset($cache_bad[$doi]))  return FALSE;
   // For really long category runs
   if (count($cache_bad) > 6) $cache_bad = BAD_DOI_ARRAY;
   if (count($cache_good) > 100000) $cache_good = [];
