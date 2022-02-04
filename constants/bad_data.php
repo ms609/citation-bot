@@ -374,6 +374,7 @@ const ZOTERO_AVOID_REGEX = array("twitter\.",               // This should be {{
                                  "britishnewspaperarchive\.co\.uk", // Requires registration
                                  "pressreader\.com", // Bad titles
                                  "ebooks\.adelaide\.edu\.au", // Dead
+                                 "tnmaps\.tn\.nic\.in", // maps
                                  );
 const NON_JOURNAL_WEBSITES = array('cnn.com/', 'msnbc.com/', 'nbcnews.com/', 'cbs.com/', 
                                    'cbsnews.com/', 'abc.com/', 'nytimes.com/',
