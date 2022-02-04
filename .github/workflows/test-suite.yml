@@ -34,7 +34,7 @@ jobs:
         restore-keys: |
           ${{ runner.os }}-php-
 
-    - name: confiugre composer and dependecies
+    - name: Configure composer and dependencies
       run: composer config minimum-stability dev && composer config prefer-stable true && composer require mediawiki/oauthclient:1.1.0  phpunit/phpunit
       
     - name: Install dependencies
