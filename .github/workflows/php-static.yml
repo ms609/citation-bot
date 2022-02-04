@@ -34,7 +34,7 @@ jobs:
         restore-keys: |
           ${{ runner.os }}-php-
 
-    - name: confiugre composer and dependecies
+    - name: Configure composer and dependencies
       run: composer config minimum-stability dev && composer config prefer-stable true && composer require overtrue/phplint  phpstan/phpstan   mediawiki/oauthclient:dev-master  phan/phan vimeo/psalm designsecurity/progpilot phpunit/phpunit
       
     - name: Install dependencies
