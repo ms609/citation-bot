@@ -640,12 +640,12 @@ final class Template {
               $the_page = '';
               $bad_data = TRUE;
           }
-          if ($the_volume === '0' || $the_volume === 'null' || $the_volume === 'n/a') {
+          if ($the_volume === '0' || $the_volume === 'null' || $the_volume === 'n/a' || $the_volume === 'Online edition') {
               $this->rename('volume', 'CITATION_BOT_PLACEHOLDER_volume');
               $the_volume = '';
               $bad_data = TRUE;
           }
-          if ($the_issue === '0' || $the_issue === 'null' || $the_issue === 'ja' || $the_issue === 'n/a') {
+          if ($the_issue === '0' || $the_issue === 'null' || $the_issue === 'ja' || $the_issue === 'n/a' || $the_issue === 'Online edition') {
               $this->rename('issue', 'CITATION_BOT_PLACEHOLDER_issue');
               $the_issue = '';
               $bad_data = TRUE;
@@ -2421,7 +2421,7 @@ final class Template {
                sleep(3);
                $headers_test = @get_headers($test_url, 1, $context);
             }
-            if ($headers_test === FALSE || empty($headers_test['Location'])) {
+            if ($headers_test === FALSE || (empty($headers_test['Location']) && empty($headers_test['location']))) {
                $handle = $matches[1];
             }
           }
@@ -2449,15 +2449,17 @@ final class Template {
              $headers_test = @get_headers($test_url, 1, $context);
           }
           if ($headers_test === FALSE) return FALSE; // hdl.handle.net is down
-          if (empty($headers_test['Location'])) return FALSE; // does not resolve
+          if (empty($headers_test['Location']) && empty($headers_test['location'])) return FALSE; // does not resolve
           quietly('report_modification', "Converting URL to HDL parameter");
           if (is_null($url_sent)) {
              if ($this->has_good_free_copy()) $this->forget($url_type);
           }
           if (is_array(@$headers_test['Location'])) {
             $the_header_loc = (string) $headers_test['Location'][0];
+          } elseif (is_array(@$headers_test['location'])) {
+            $the_header_loc = (string) $headers_test['location'][0];
           } else {
-            $the_header_loc = (string) @$headers_test['Location'];
+            $the_header_loc = (string) @$headers_test['Location'] . (string) @$headers_test['location'];
           }
           if (preg_match('~^([^/]+/[^/]+)/.*$~', $handle, $matches)   // Might be padded with stuff
             && stripos($the_header_loc, $handle) === FALSE
