@@ -264,6 +264,7 @@ public static function drop_urls_that_match_dois(array &$templates) : void {  //
                $template->forget($url_kind);
             } else { // See if $url redirects
                curl_setopt($ch, CURLOPT_URL, $url);
+               /** @phpstan-ignore-next-line **/ /** it saves the return value **/
                if (@curl_exec($ch)) {
                   $redirectedUrl_url = curl_getinfo($ch, CURLINFO_EFFECTIVE_URL);
                   $redirectedUrl_url = self::url_simplify($redirectedUrl_url);
