@@ -5097,7 +5097,7 @@ final class Template {
         case 'journal':
         case 'periodical':
           if ($this->blank($param)) return;
-          if ($this->get($param) === 'Undefined') {
+          if ($this->get($param) === 'Undefined' || $this->get($param) === 'Semantic Scholar' || $this->get($param) === '[[Semantic Scholar]]') {
              $this->forget($param);
             return;
           }
