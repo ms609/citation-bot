@@ -107,7 +107,7 @@ final class WikipediaBot {
     }
     return TRUE;
   }
-  
+  conflict
   public function fetch(array $params, string $method, int $depth = 1) : ?object {
     set_time_limit(120);
     if ($depth > 1) sleep($depth+2);
