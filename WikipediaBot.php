@@ -107,7 +107,8 @@ final class WikipediaBot {
     }
     return TRUE;
   }
-  conflict
+  
+  /** @phpstan-impure **/
   public function fetch(array $params, string $method, int $depth = 1) : ?object {
     set_time_limit(120);
     if ($depth > 1) sleep($depth+2);
@@ -185,6 +186,7 @@ final class WikipediaBot {
     return NULL;
   }
   
+  /** @phpstan-impure **/
   public function write_page(string $page, string $text, string $editSummary, int $lastRevId, string $startedEditing) : bool {
     $response = $this->fetch([
             'action' => 'query',
