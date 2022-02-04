@@ -126,6 +126,7 @@ function is_doi_works(string $doi) : ?bool {
      $headers_test = @get_headers("https://doi.org/" . doi_encode($doi), 1, $context);  // @codeCoverageIgnore
      if ($headers_test === FALSE) return FALSE; /** We trust previous failure **/       // @codeCoverageIgnore
   }
+  /** @phpstan-ignore-next-line **/ /** it saves the return value of get_headers **/
   if (preg_match('~^10\.1038/nature\d{5}$~i', $doi) && NATURE_FAILS2 && $headers_test === FALSE) return FALSE;
   if ($headers_test === FALSE) return NULL; // most likely bad, but will recheck again and again
   if (empty($headers_test['Location']) && empty($headers_test['location'])) return FALSE; // leads nowhere
