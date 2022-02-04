@@ -1,10 +1,10 @@
 {
-    "name": "ms609/citation-bot",
-    "license": "GPL-3.0-or-later",
-    "description": "Expands CS1/CS2 citation templates on Wikipedia",
-    "require": {
-        "mediawiki/oauthclient": ">=1.1.0"
-    },
+	"name": "ms609/citation-bot",
+	"license": "GPL-3.0-or-later",
+	"description": "Expands CS1/CS2 citation templates on Wikipedia",
+	"require": {
+		"mediawiki/oauthclient": ">=1.1.0"
+	},
 	"config": {
 		"allow-plugins": {
 			"third-party/required-plugin": true
