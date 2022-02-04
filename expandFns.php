@@ -85,7 +85,6 @@ function throttle_dx () : void {
 function is_doi_works(string $doi) : ?bool {
   $matches = ['', '']; // prevent memory leak in some PHP versions
   $doi = trim($doi);
-  if (strpos($doi, '10.1111/j.1572-0241') === 0 && NATURE_FAILS) return FALSE;
   // And now some obvious fails
   if (strpos($doi, '/') === FALSE) return FALSE;
   if (strpos($doi, 'CITATION_BOT_PLACEHOLDER') !== FALSE) return FALSE;
