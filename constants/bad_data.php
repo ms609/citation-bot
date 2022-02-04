@@ -59,8 +59,6 @@ const WORKS_ARE_PUBLISHERS = array('united states census bureau'); // LOWER CASE
 
 const DUBIOUS_JOURNALS = array('fda', 'reuters', 'associated press', 'ap', 'ap wire', 'report'); // Things we add, but only if publisher and agency are both blank
 
-const NATURE_FAILS2 = TRUE;  // Nature dropped the ball for now TODO - https://dx.doi.org/10.1038/nature05009
-
 // Catch 'authors' such as "hearst magazines", "time inc", "nielsen business media, inc"
 // Ordered alphabetically.
 const PUBLISHER_ENDINGS = ["books", "corporation", 'centre', 'center', 'company', "inc.", "inc", "magazines",
