@@ -249,7 +249,6 @@ public static function drop_urls_that_match_dois(array &$templates) : void {  //
           $template->forget($url_kind);  
        } elseif (stripos($url, 'pdf') === FALSE && $template->get('doi-access') === 'free' && $template->has('pmc')) {
           curl_setopt($ch, CURLOPT_URL, "https://dx.doi.org/" . doi_encode($doi));
-          /** @phpstan-ignore-next-line **/ /** it saves the return value **/
           if (@curl_exec($ch)) {
             $redirectedUrl_doi = curl_getinfo($ch, CURLINFO_EFFECTIVE_URL);  // Final URL
             if (stripos($redirectedUrl_doi, 'cookie') !== FALSE) break;
@@ -266,6 +265,7 @@ public static function drop_urls_that_match_dois(array &$templates) : void {  //
             } else { // See if $url redirects
                curl_setopt($ch, CURLOPT_URL, $url);
                if (@curl_exec($ch)) {
+                  /** @phpstan-ignore-next-line **/ /** it saves the return value **/
                   $redirectedUrl_url = curl_getinfo($ch, CURLINFO_EFFECTIVE_URL);
                   $redirectedUrl_url = self::url_simplify($redirectedUrl_url);
                   if (stripos($redirectedUrl_url, $redirectedUrl_doi) !== FALSE ||
