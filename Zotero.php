@@ -13,6 +13,7 @@ final class Zotero {
   private const ZOTERO_SKIPS = 100;
   private const ERROR_DONE = 'ERROR_DONE'; 
   protected static $zotero_announced = 0;
+  /** @var resource|null $zotero_ch */
   protected static $zotero_ch;
   protected static $zotero_failures_count = 0;
 
@@ -248,6 +249,7 @@ public static function drop_urls_that_match_dois(array &$templates) : void {  //
           $template->forget($url_kind);  
        } elseif (stripos($url, 'pdf') === FALSE && $template->get('doi-access') === 'free' && $template->has('pmc')) {
           curl_setopt($ch, CURLOPT_URL, "https://dx.doi.org/" . doi_encode($doi));
+          /** @phpstan-ignore-next-line **/ /** it saves the return value **/
           if (@curl_exec($ch)) {
             $redirectedUrl_doi = curl_getinfo($ch, CURLINFO_EFFECTIVE_URL);  // Final URL
             if (stripos($redirectedUrl_doi, 'cookie') !== FALSE) break;
