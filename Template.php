@@ -1561,7 +1561,6 @@ final class Template {
         if (substr($value, 0, 8) == '10.5555/') return FALSE ; // Test DOI prefix.  NEVER will work
         if (stripos($value, '10.1093/law:epil') === 0) return FALSE; // Those do not work
         if (stripos($value, '10.1093/oi/authority') === 0) return FALSE; // Those do not work
-        if (stripos($value, '10.1111/j.1572-0241') === 0 && NATURE_FAILS) return FALSE;
         if (stripos($value, '10.10520/') === 0 && !doi_works($value)) return FALSE; // Has doi in the URL, but is not a doi
         if (stripos($value, '10.1967/') === 0 && !doi_works($value)) return FALSE; // Retired DOIs
         if (stripos($value, '10.3316/informit.') === 0 && !doi_works($value)) return FALSE; // These do not seem to work - TODO watch https://dx.doi.org/10.3316/informit.550258516430914 
@@ -4936,12 +4935,6 @@ final class Template {
             }
             return;
           }
-          if (stripos($doi, '10.1111/j.1572-0241') === 0 && NATURE_FAILS) {
-            if (!$this->blank(['pmid', 'pmc', 'jstor'])) {
-               $this->forget('doi');
-               return;
-            }
-          }
           if (!doi_works($doi)) {
             $this->verify_doi();
             $doi = $this->get($param);
@@ -5105,7 +5098,7 @@ final class Template {
         case 'journal':
         case 'periodical':
           if ($this->blank($param)) return;
-          if ($this->get($param) === 'Undefined') {
+          if ($this->get($param) === 'Undefined' || $this->get($param) === 'Semantic Scholar' || $this->get($param) === '[[Semantic Scholar]]') {
              $this->forget($param);
             return;
           }

@@ -4,6 +4,11 @@ parameters:
 	dynamicConstantNames:
 		- HTML_OUTPUT
 		- SLOW_MODE
-		- NATURE_FAILS
 		- FLUSHING_OKAY
 		- TRAVIS
+		- USE_CITOID
+		- EDIT_AS_USER
+		- BIG_JOB_MODE
+		- MAX_TRIES
+		- MAX_PAGES
+		- BIG_RUN

@@ -223,12 +223,6 @@ final class TemplateTest extends testBaseClass {
     $this->assertFalse($expanded->add_if_new('s2cid', 'Z'));
    }
 
-   public function testNatureBad() : void {
-    $text = "{{Cite web|doi=10.1111/j.1572-0241.xxxx|jstor=XYZ}}";
-    $expanded = $this->process_citation($text);
-    $this->assertNull($expanded->get2('doi'));
-   }
- 
    public function testDotInVolumeIssue() : void {
     $text = "{{Cite web|issue=1234.|volume=2341.}}";
     $expanded = $this->process_citation($text);

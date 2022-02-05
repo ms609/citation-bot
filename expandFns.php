@@ -85,7 +85,6 @@ function throttle_dx () : void {
 function is_doi_works(string $doi) : ?bool {
   $matches = ['', '']; // prevent memory leak in some PHP versions
   $doi = trim($doi);
-  if (strpos($doi, '10.1111/j.1572-0241') === 0 && NATURE_FAILS) return FALSE;
   // And now some obvious fails
   if (strpos($doi, '/') === FALSE) return FALSE;
   if (strpos($doi, 'CITATION_BOT_PLACEHOLDER') !== FALSE) return FALSE;
@@ -126,7 +125,7 @@ function is_doi_works(string $doi) : ?bool {
      $headers_test = @get_headers("https://doi.org/" . doi_encode($doi), TRUE, $context);  // @codeCoverageIgnore
      if ($headers_test === FALSE) return FALSE; /** We trust previous failure **/       // @codeCoverageIgnore
   }
-  if (preg_match('~^10\.1038/nature\d{5}$~i', $doi) && NATURE_FAILS2 && $headers_test === FALSE) return FALSE;
+  if (preg_match('~^10\.1038/nature\d{5}$~i', $doi) && $headers_test === FALSE) return FALSE; // Nature dropped the ball for now TODO - https://dx.doi.org/10.1038/nature05009
   if ($headers_test === FALSE) return NULL; // most likely bad, but will recheck again and again
   if (empty($headers_test['Location']) && empty($headers_test['location'])) return FALSE; // leads nowhere
   if (stripos($headers_test[0], '404 Not Found') !== FALSE || stripos($headers_test[0], 'HTTP/1.1 404') !== FALSE) return FALSE; // leads to 404
