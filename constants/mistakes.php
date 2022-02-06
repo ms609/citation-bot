@@ -365,6 +365,21 @@ const COMMON_MISTAKES = array ( // Common mistakes that aren't picked up by the 
   "místo" => "location",
   "rok" => "year",
   "strany" => "page",
+  "sarlavha" => "title",
+  "ism" => "first",
+  "familiya" => "last",
+  "sana" => "date",
+  "nashriyot" => "publisher",
+  "vebsayt" => "website",
+  "yil" => "year",
+  "muharrir" => "editor",
+  "muharrir-havola" => "editor-link",
+  "oy" => "month",
+  "sahifalar" => "pages",
+  "til" => "language",
+  "kirish sanasi" => "access-date",
+  "joylashuv" => "location",
+  "iqtibos" => "quote", 
 );
 
 const COMMON_MISTAKES_TOOL = array(
