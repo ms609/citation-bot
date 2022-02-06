@@ -140,7 +140,7 @@ const UCFIRST_JOURNAL_ACRONYMS = array(/* The following will be automatically up
           " EPub) ", " ESC Heart Failure ", " Escholarship ", " Eurointervention ", " EVolo ", 
           " Evolo ", " EWeek ", " Eweek ", " Faseb J ", " Faseb J. ", " Febs J ", " Febs J. ", 
           " Febs Journal ", " Fizika Goreniya I Vzryva ", " Föreningen I Stockholm ", 
-          " Für Anorganische und Allgemeine ", " Gigiena I Sanitariia ", " Hannaharendt.net ", " Kessenarchäologie ", " HessenARCHÄOLOGIE ",
+          " Für Anorganische und Allgemeine ", " Gigiena I Sanitariia ", " Hannaharendt.net ", " Hessenarchäologie ", " HessenARCHÄOLOGIE ",
           " History of Science; an Annual Review of Literature ", " HIV & Aids ", " HIV and Aids ", " Hoaj Biology ", " Hoppe-Seyler´s ", 
           " Hprints ", " Hylli I Dritës ", " I Ee ", " I ee ", " I Teplovoznaja ", " I-Perception ", 
           " Iconference ", " Idcases ", " IEEE/Acm ", " Ieee/Acm ", " Ifac-Papersonline ", 
