@@ -376,6 +376,10 @@ final class Template {
                ['cite Episode', 'cite episode'],
                ['Cite encyclopædia', 'Cite encyclopedia'],
                ['cite encyclopædia', 'cite encyclopedia'],
+               ['Proquest', 'ProQuest'],
+               ['proquest', 'ProQuest'],
+               ['DOI', 'doi'],
+               ['Doi', 'doi'],
                ];
     foreach ($fix_it as $trial) {
       if ($trim_name === $trial[0]) {
