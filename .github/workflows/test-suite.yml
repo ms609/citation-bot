@@ -35,8 +35,8 @@ jobs:
           ${{ runner.os }}-php-
 
     - name: Configure composer and dependencies
-      run: composer config minimum-stability dev && composer config prefer-stable true && composer require mediawiki/oauthclient:dev-master  phpunit/phpunit
-
+      run: composer config minimum-stability dev && composer config prefer-stable true && composer require mediawiki/oauthclient:1.2.0  phpunit/phpunit
+      
     - name: Install dependencies
       if: steps.composer-cache.outputs.cache-hit != 'true'
       run: composer install --prefer-dist  -vvv --no-progress

@@ -415,6 +415,9 @@ function titles_are_dissimilar(string $inTitle, string $dbTitle) : bool {
             if ($inTitle === NULL) return TRUE;                                                             // @codeCoverageIgnore
           }
         }
+        // Strip diacritics before decode
+        $inTitle = strip_diacritics($inTitle);
+        $dbTitle = strip_diacritics($dbTitle);
         // always decode new data
         $dbTitle = titles_simple(mb_convert_encoding(html_entity_decode($dbTitle), "HTML-ENTITIES", 'UTF-8'));
         // old data both decoded and not
