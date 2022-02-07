@@ -2419,10 +2419,10 @@ final class Template {
           if (preg_match('~^(.+)\?urlappend=~', $handle, $matches)) {  // should we shorten it
             usleep(100000);
             $test_url = "https://hdl.handle.net/" . $handle;
-            $headers_test = @get_headers($test_url, 1, $context);
+            $headers_test = @get_headers($test_url, TRUE, $context);
             if ($headers_test === FALSE) {
                sleep(3);
-               $headers_test = @get_headers($test_url, 1, $context);
+               $headers_test = @get_headers($test_url, TRUE, $context);
             }
             if ($headers_test === FALSE || (empty($headers_test['Location']) && empty($headers_test['location']))) {
                $handle = $matches[1];
@@ -2446,10 +2446,10 @@ final class Template {
           // Verify that it works as a hdl
           $test_url = "https://hdl.handle.net/" . $handle;
           usleep(20000);
-          $headers_test = @get_headers($test_url, 1, $context);
+          $headers_test = @get_headers($test_url, TRUE, $context);
           if ($headers_test === FALSE) {
              sleep(3);
-             $headers_test = @get_headers($test_url, 1, $context);
+             $headers_test = @get_headers($test_url, TRUE, $context);
           }
           if ($headers_test === FALSE) return FALSE; // hdl.handle.net is down
           if (empty($headers_test['Location']) && empty($headers_test['location'])) return FALSE; // does not resolve
@@ -3552,7 +3552,7 @@ final class Template {
            'ssl' => ['verify_peer' => FALSE, 'verify_peer_name' => FALSE, 'allow_self_signed' => TRUE, 'security_level' => 0],
            'http' => ['ignore_errors' => TRUE, 'max_redirects' => 40, 'timeout' => 20.0, 'follow_location' => 1,  'header'=> ['Connection: close'], "user_agent" => "Citation_bot; citations@tools.wmflabs.org"]
          )); // Allow crudy cheap journals  
-          $headers_test = @get_headers($this->get($url_type), 1, $context);
+          $headers_test = @get_headers($this->get($url_type), TRUE, $context);
           // @codeCoverageIgnoreStart
           if($headers_test ===FALSE) {
             $this->forget($url_type);
