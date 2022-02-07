@@ -35,7 +35,7 @@ jobs:
           ${{ runner.os }}-php-
 
     - name: Configure composer and dependencies
-      run: composer config minimum-stability dev && composer config --prefer-source && composer config prefer-stable true && composer require overtrue/phplint  phpstan/phpstan   mediawiki/oauthclient:1.2.0  phan/phan vimeo/psalm designsecurity/progpilot phpunit/phpunit
+      run: composer config minimum-stability dev && composer config prefer-stable true && composer require overtrue/phplint  phpstan/phpstan   mediawiki/oauthclient:1.2.0  phan/phan vimeo/psalm designsecurity/progpilot phpunit/phpunit
       
     - name: Install dependencies
       if: steps.composer-cache.outputs.cache-hit != 'true'
