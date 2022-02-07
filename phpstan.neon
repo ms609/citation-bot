@@ -4,7 +4,6 @@ parameters:
 	dynamicConstantNames:
 		- HTML_OUTPUT
 		- SLOW_MODE
-		- FLUSHING_OKAY
 		- TRAVIS
 		- USE_CITOID
 		- EDIT_AS_USER
