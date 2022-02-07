@@ -528,7 +528,7 @@ class Page {
     $isbn_added = (substr_count($this->text, 'isbn') + substr_count($this->text, 'ISBN')) -
                   (substr_count($this->start_text, 'isbn') + substr_count($this->start_text, 'ISBN'));
     if (($isbn978_added > 0) && ($isbn978_added > $isbn_added)) { // Still will get false positives for isbn=blank converted to isbn=978......
-      $auto_summary .= 'Upgrade ISBN10 to ISBN13. ';
+      $auto_summary .= 'Upgrade ISBN10 to 13. ';
     }
     if (stripos($auto_summary, 'template') !== FALSE) {
       foreach (['cite|', 'Cite|', 'citebook', 'Citebook', 'cit book', 'Cit book', 'cite books', 'Cite books',
