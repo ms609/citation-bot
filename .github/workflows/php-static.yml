@@ -39,7 +39,7 @@ jobs:
       
     - name: Install dependencies
       if: steps.composer-cache.outputs.cache-hit != 'true'
-      run: composer install --prefer-dist  -vvv --no-progress
+      run: composer install --prefer-dist  -vvv --no-progress && pecl install ast-1.0.14
 
     - name: PHP Lint test
       run: ./vendor/bin/phplint --exclude=vendor --no-interaction -vv ./
