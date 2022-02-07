@@ -112,17 +112,17 @@ function is_doi_works(string $doi) : ?bool {
            'ssl' => ['verify_peer' => FALSE, 'verify_peer_name' => FALSE, 'allow_self_signed' => TRUE, 'security_level' => 0, 'verify_depth' => 0],
            'http' => ['ignore_errors' => TRUE, 'max_redirects' => 40, 'timeout' => 20.0, 'follow_location' => 1, 'protocol_version' => 1.1,  'header'=> ['Connection: close'], "user_agent" => "Citation_bot; citations@tools.wmflabs.org"]
          )); // Allow crudy cheap journals  
-  $headers_test = @get_headers("https://doi.org/" . doi_encode($doi), 1, $context_1);
+  $headers_test = @get_headers("https://doi.org/" . doi_encode($doi), TRUE, $context_1);
   if ($headers_test === FALSE) {
      sleep(2);                                                                          // @codeCoverageIgnore
-     $headers_test = @get_headers("https://doi.org/" . doi_encode($doi), 1, $context);  // @codeCoverageIgnore
+     $headers_test = @get_headers("https://doi.org/" . doi_encode($doi), TRUE, $context);  // @codeCoverageIgnore
   }
   if ($headers_test === FALSE) {
      sleep(5);                                                                          // @codeCoverageIgnore
-     $headers_test = @get_headers("https://doi.org/" . doi_encode($doi), 1, $context);  // @codeCoverageIgnore
+     $headers_test = @get_headers("https://doi.org/" . doi_encode($doi), TRUE, $context);  // @codeCoverageIgnore
   } elseif ((empty($headers_test['Location']) && empty($headers_test['location'])) || stripos($headers_test[0], '404 Not Found') !== FALSE || stripos($headers_test[0], 'HTTP/1.1 404') !== FALSE) {
      sleep(5);                                                                          // @codeCoverageIgnore
-     $headers_test = @get_headers("https://doi.org/" . doi_encode($doi), 1, $context);  // @codeCoverageIgnore
+     $headers_test = @get_headers("https://doi.org/" . doi_encode($doi), TRUE, $context);  // @codeCoverageIgnore
      if ($headers_test === FALSE) return FALSE; /** We trust previous failure **/       // @codeCoverageIgnore
   }
   if (preg_match('~^10\.1038/nature\d{5}$~i', $doi) && $headers_test === FALSE) return FALSE; // Nature dropped the ball for now TODO - https://dx.doi.org/10.1038/nature05009
