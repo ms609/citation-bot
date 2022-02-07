@@ -48,7 +48,7 @@ jobs:
       run: php ./vendor/bin/phpstan --no-interaction analyse --memory-limit=2G constants/*.php  Parameter.php user_messages.php constants.php expandFns.php Zotero.php apiFunctions.php NameTools.php Comment.php Page.php WikipediaBot.php Template.php setup.php category.php generate_template.php linked_pages.php unlock_git.php process_page.php authenticate.php
 
     - name: PHP phan
-      run: php ./vendor/bin/phan --allow-polyfill-parser constants/*.php constants.php Comment.php user_messages.php  Parameter.php expandFns.php  NameTools.php WikipediaBot.php Template.php Zotero.php apiFunctions.php Page.php setup.php category.php generate_template.php gitpull.php linked_pages.php process_page.php authenticate.php unlock_git.php
+      run: php ./vendor/bin/phan constants/*.php constants.php Comment.php user_messages.php  Parameter.php expandFns.php  NameTools.php WikipediaBot.php Template.php Zotero.php apiFunctions.php Page.php setup.php category.php generate_template.php gitpull.php linked_pages.php process_page.php authenticate.php unlock_git.php
 
     - name: PHP Design Security
       run: ./vendor/bin/progpilot  category.php generate_template.php gitpull.php linked_pages.php process_page.php authenticate.php unlock_git.php
