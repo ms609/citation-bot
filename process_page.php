@@ -94,8 +94,9 @@ if ($total > MAX_PAGES) {
 if ($total > BIG_RUN) {
   check_overused();
 } else {
-  error_reporting(E_ALL);  // Be more paranoid with short runs to help us find more errors
+  error_reporting(E_ALL);
 }
+if (WikipediaBot::NonStandardMode()) error_reporting(E_ALL);
 
 gc_collect_cycles();
 foreach ($pages_to_do as $page_title) {
