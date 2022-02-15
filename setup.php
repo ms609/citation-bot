@@ -26,6 +26,7 @@ if (TRAVIS || isset($argv)) {
   error_reporting(E_ALL^E_NOTICE);
   define("HTML_OUTPUT", TRUE);
 }
+if (WikipediaBot::NonStandardMode()) error_reporting(E_ALL);
 
 // This is needed because the Gadget API expects only JSON back, therefore ALL output from the citation bot is thrown away
 if (strpos((string) @$_SERVER['PHP_SELF'], '/gadgetapi.php') === FALSE) {
