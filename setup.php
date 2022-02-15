@@ -20,7 +20,6 @@ if (isset($_GET["page"]) && (string) $_GET["page"] === "User:AManWithNoPlan/sand
 }
 
 if (TRAVIS || isset($argv)) {
-  ini_set("display_errors", 1);
   error_reporting(E_ALL);
   define("HTML_OUTPUT", FALSE);
 } else {
