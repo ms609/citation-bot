@@ -16,7 +16,7 @@ if (HTML_OUTPUT) {?>
 <!DOCTYPE html>
 <html lang="en" dir="ltr">
         <head>
-                <meta content="Smith609" name="author">
+                <meta content="Smith609" name="author" />
                 <meta name="keywords" content="User:DOI bot,Citation, citation bot,Digital object identifier,wikipedia,cite journal" />
                 <link rel="copyright" href="https://www.gnu.org/copyleft/fdl.html" />
                 <title>Citation bot: Preparing to run</title>
