@@ -26,7 +26,7 @@ if (HTML_OUTPUT) {
 <html lang="en" dir="ltr">
   <head>
   <title>Citation Bot: running in category mode</title>
-  <link rel="copyright" href="https://www.gnu.org/copyleft/fdl.html" />
+  <link rel="copyright" type="text/html" href="https://www.gnu.org/licenses/gpl-3.0" />
   <link rel="stylesheet" type="text/css" href="results.css" />
   </head>
 <body>
