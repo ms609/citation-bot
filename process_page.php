@@ -17,7 +17,7 @@ if (HTML_OUTPUT) {?>
 <html lang="en" dir="ltr">
         <head>
                 <link rel="copyright" type="text/html" href="https://www.gnu.org/licenses/gpl-3.0" />
-                <title>Citation Bot: Preparing to run</title>
+                <title>Citation Bot: running on pages</title>
                 <link rel="stylesheet" type="text/css" href="results.css" />
         </head>
 <body>
