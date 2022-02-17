@@ -4,6 +4,9 @@ declare(strict_types=1);
 @session_start();
 @header('Content-type: text/html; charset=utf-8');
 @header('Content-Encoding: None');
+@header('Cache-Control: no-cache, no-store, must-revalidate');
+@header('Pragma: no-cache');
+@header('Expires: 0');
 
 require_once 'setup.php';
 
@@ -13,10 +16,8 @@ if (HTML_OUTPUT) {?>
 <!DOCTYPE html>
 <html lang="en" dir="ltr">
         <head>
-                <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
                 <meta content="Smith609" name="author">
                 <meta name="keywords" content="User:DOI bot,Citation, citation bot,Digital object identifier,wikipedia,cite journal" />
-                <link rel="apple-touch-icon" href="https://en.wikipedia.org/apple-touch-icon.png" />
                 <link rel="copyright" href="https://www.gnu.org/copyleft/fdl.html" />
                 <title>Citation bot: Preparing to run</title>
                 <link rel="stylesheet" type="text/css" href="results.css" />
