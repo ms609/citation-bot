@@ -651,7 +651,7 @@ class Page {
   }
   
   protected function allow_bots() : bool {
-    // from https://en.wikipedia.org/wiki/Template:Bots
+    // see {{bots}} and {{nobots}}
     $bot_username = 'Citation[ _]bot';
     if (preg_match('~\{\{(nobots|bots\|allow=none|bots\|deny=all|bots\|optout=all|bots\|deny=.*?'.$bot_username.'.*?)\}\}~iS',$this->text)) {
       return FALSE;
@@ -666,8 +666,7 @@ class Page {
   }
   
   protected function set_date_pattern() : void {
-    // https://en.wikipedia.org/wiki/Template:Use_mdy_dates
-    // https://en.wikipedia.org/wiki/Template:Use_dmy_dates
+    // see {{use_mdy_dates}} and {{use_dmy_dates}}
     $date_style = DATES_WHATEVER;
     if (preg_match('~\{\{Use mdy dates[^\}\{]*\}\}~i',$this->text)) {
       $date_style = DATES_MDY;
