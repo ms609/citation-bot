@@ -251,7 +251,7 @@ final class WikipediaBot {
     if (defined('EDIT_AS_USER')) {
       $auth_token = json_decode( $this->user_client->makeOAuthCall(
         $this->user_token,
-       'https://en.wikipedia.org/w/api.php?action=query&meta=tokens&format=json'
+       API_ROOT . '?action=query&meta=tokens&format=json'
        ) )->query->tokens->csrftoken;
     }
     $submit_vars = array(

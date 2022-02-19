@@ -2089,7 +2089,7 @@ T1 - This is the Title }}';
    
     $text = "{{cite book|isbn=0-9749009-0-7|url=https://books.google.com/books?id=to0yXzq_EkQC|year=2019}}";
     $page = $this->process_page($text);
-    $this->assertSame('Alter: isbn. Add: title, authors 1-2. Upgrade ISBN10 to ISBN13. | [[WP:UCB|Use this bot]]. [[WP:DBUG|Report bugs]]. ', $page->edit_summary());
+    $this->assertSame('Alter: isbn. Add: title, authors 1-2. Upgrade ISBN10 to 13. | [[WP:UCB|Use this bot]]. [[WP:DBUG|Report bugs]]. ', $page->edit_summary());
   }
    
   public function testEtAl() : void {

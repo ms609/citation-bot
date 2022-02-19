@@ -65,10 +65,8 @@ function is_doi_active(string $doi) : ?bool {
   }
   if ($headers_test === FALSE) return NULL; // most likely bad, but will recheck again an again
   $response = $headers_test[0];
-  if (stripos($response, '200 OK') !== FALSE) return TRUE;
-  if (stripos($response, 'HTTP/1.1 200') !== FALSE) return TRUE;
-  if (stripos($response, '404 Not Found') !== FALSE) return FALSE;
-  if (stripos($response, 'HTTP/1.1 404') !== FALSE) return FALSE;
+  if (stripos($response, '200 OK'       ) !== FALSE || stripos($response, 'HTTP/1.1 200') !== FALSE) return TRUE;
+  if (stripos($response, '404 Not Found') !== FALSE || stripos($response, 'HTTP/1.1 404') !== FALSE) return FALSE;
   report_warning("CrossRef server error loading headers for DOI " . echoable($doi) . ": $response");  // @codeCoverageIgnore
   return NULL;                                                                                        // @codeCoverageIgnore
 }
@@ -415,6 +413,9 @@ function titles_are_dissimilar(string $inTitle, string $dbTitle) : bool {
             if ($inTitle === NULL) return TRUE;                                                             // @codeCoverageIgnore
           }
         }
+        // Strip diacritics before decode
+        $inTitle = strip_diacritics($inTitle);
+        $dbTitle = strip_diacritics($dbTitle);
         // always decode new data
         $dbTitle = titles_simple(mb_convert_encoding(html_entity_decode($dbTitle), "HTML-ENTITIES", 'UTF-8'));
         // old data both decoded and not

@@ -528,7 +528,7 @@ class Page {
     $isbn_added = (substr_count($this->text, 'isbn') + substr_count($this->text, 'ISBN')) -
                   (substr_count($this->start_text, 'isbn') + substr_count($this->start_text, 'ISBN'));
     if (($isbn978_added > 0) && ($isbn978_added > $isbn_added)) { // Still will get false positives for isbn=blank converted to isbn=978......
-      $auto_summary .= 'Upgrade ISBN10 to ISBN13. ';
+      $auto_summary .= 'Upgrade ISBN10 to 13. ';
     }
     if (stripos($auto_summary, 'template') !== FALSE) {
       foreach (['cite|', 'Cite|', 'citebook', 'Citebook', 'cit book', 'Cit book', 'cite books', 'Cite books',
@@ -644,14 +644,12 @@ class Page {
         . echoable($this->title)
         . "</a>' &mdash; <a href='" . WIKI_ROOT . "?title=$url_encoded_title"
         . "&action=edit' style='font-weight:bold;'>edit</a>&mdash;<a href='" . WIKI_ROOT . "?title=$url_encoded_title"
-        . "&action=history' style='font-weight:bold;'>history</a> <script type='text/javascript'>"
-        . "document.title=\"Citation bot: '"
-        . str_replace("+", " ", $url_encoded_title) ."'\";</script>", 
+        . "&action=history' style='font-weight:bold;'>history</a> ", 
         "\n[" . date("H:i:s") . "] Processing page " . $this->title . "...\n");
   }
   
   protected function allow_bots() : bool {
-    // from https://en.wikipedia.org/wiki/Template:Bots
+    // see {{bots}} and {{nobots}}
     $bot_username = 'Citation[ _]bot';
     if (preg_match('~\{\{(nobots|bots\|allow=none|bots\|deny=all|bots\|optout=all|bots\|deny=.*?'.$bot_username.'.*?)\}\}~iS',$this->text)) {
       return FALSE;
@@ -666,8 +664,7 @@ class Page {
   }
   
   protected function set_date_pattern() : void {
-    // https://en.wikipedia.org/wiki/Template:Use_mdy_dates
-    // https://en.wikipedia.org/wiki/Template:Use_dmy_dates
+    // see {{use_mdy_dates}} and {{use_dmy_dates}}
     $date_style = DATES_WHATEVER;
     if (preg_match('~\{\{Use mdy dates[^\}\{]*\}\}~i',$this->text)) {
       $date_style = DATES_MDY;
