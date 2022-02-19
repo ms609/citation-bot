@@ -1,5 +1,6 @@
 <?php
 declare(strict_types=1);
+error_reporting(E_ALL);
 if (file_exists('git_pull.lock')) {
   sleep(5);
   exit("\n GIT pull in progress - please retry again in a moment \n\n </pre></body></html>");
@@ -20,10 +21,8 @@ if (isset($_GET["page"]) && (string) $_GET["page"] === "User:AManWithNoPlan/sand
 }
 
 if (TRAVIS || isset($argv)) {
-  error_reporting(E_ALL);
   define("HTML_OUTPUT", FALSE);
 } else {
-  error_reporting(E_ALL^E_NOTICE);
   define("HTML_OUTPUT", TRUE);
 }
 
