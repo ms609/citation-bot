@@ -1128,7 +1128,7 @@ function find_indentifiers_in_urls(Template $template, ?string $url_sent = NULL)
     if ($doi = extract_doi($url)[1]) {
       if (bad_10_1093_doi($doi)) return FALSE;
       $old_jstor = $template->get('jstor');
-      if (stripos($url, 'jstor')) check_doi_for_jstor($doi, $this);
+      if (stripos($url, 'jstor')) check_doi_for_jstor($doi, $template);
       if (is_null($url_sent) && $old_jstor !== $template->get('jstor') && stripos($url, 'pdf') === FALSE) {
          if ($template->has_good_free_copy()) $template->forget($url_type);
       }
