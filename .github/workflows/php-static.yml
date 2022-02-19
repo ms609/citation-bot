@@ -62,6 +62,6 @@ jobs:
     - name: Size limit to make sure search works
       uses: actionsdesk/lfs-warning@v3.1
       with:
-        filesizelimit: 393216b
+        filesizelimit: 393000b
      
       
