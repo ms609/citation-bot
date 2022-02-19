@@ -929,7 +929,7 @@ final class Template {
     return TRUE;
   }
 
-  /* function add_if_new
+  /*
    * Adds a parameter to a template if the parameter and its equivalents are blank
    * $api (string) specifies the API route by which a parameter was found; this will log the
    *      parameter so it is not used to trigger a new search via the same API.
@@ -1574,7 +1574,7 @@ final class Template {
             $this->add('doi', $match[0]);
             return TRUE;
           } elseif (!str_i_same($this->get('doi'), $match[0]) && !$this->blank(DOI_BROKEN_ALIASES) && doi_active($match[0])) {
-            report_action("Replacing non-functional DOI with a functional one");
+            report_action("Replacing non-working DOI with a working one");
             $this->set('doi', $match[0]);
             $this->tidy_parameter('doi');
             return TRUE;
@@ -2759,7 +2759,7 @@ final class Template {
   /* do_query
    *
    * Searches pubmed based on terms provided in an array.
-   * Provide an array of wikipedia parameters which exist in $p, and this function will construct a Pubmed seach query and
+   * Provide an array of wikipedia parameters which exist in $p, and this will construct a Pubmed seach query and
    * return the results as array (first result, # of results)
    */
     $key_index = array(
