@@ -2666,7 +2666,7 @@ final class Template {
     }
   }
 
-  protected function use_sici() : bool {
+  public function use_sici() : bool {
     $sici = ['', '']; // prevent memory leak in some PHP versions
     if (preg_match(REGEXP_SICI, urldecode($this->parsed_text()), $sici)) {
       quietly('report_action', "Extracting information from SICI");
