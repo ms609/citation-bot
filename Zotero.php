@@ -2,7 +2,9 @@
 declare(strict_types=1);
 
 require_once 'constants.php';  // @codeCoverageIgnore
-require_once 'Template.php';   // @codeCoverageIgnore 
+require_once 'Template.php';   // @codeCoverageIgnore
+
+const MAGIC_STRING_URLS = 'CITATION_BOT_PLACEHOLDER_URL_POINTER_';  
 
 function query_url_api(array $ids, array &$templates) : void {  // Pointer to save memory
    Zotero::query_url_api_class($ids, $templates);
@@ -850,7 +852,6 @@ public static function url_simplify(string $url) : string {
 } // End of CLASS
 
 function find_indentifiers_in_urls(Template $template, ?string $url_sent = NULL) : bool {
-    const MAGIC_STRING = 'CITATION_BOT_PLACEHOLDER_URL_POINTER_';  
     set_time_limit(120);
     $matches = ['', '']; // prevent memory leak in some PHP versions
     $bibcode = ['', '']; // prevent memory leak in some PHP versions
@@ -859,11 +860,11 @@ function find_indentifiers_in_urls(Template $template, ?string $url_sent = NULL)
     if (is_null($url_sent)) {
        // Chapter URLs are generally better than URLs for the whole book.
         if ($template->has('url') && $template->has('chapterurl')) {
-           return (bool) ((int) $template->get_identifiers_from_url(MAGIC_STRING . 'chapterurl ') +
-                          (int) $template->get_identifiers_from_url(MAGIC_STRING . 'url '));
+           return (bool) ((int) $template->get_identifiers_from_url(MAGIC_STRING_URLS . 'chapterurl ') +
+                          (int) $template->get_identifiers_from_url(MAGIC_STRING_URLS . 'url '));
         } elseif ($template->has('url') && $template->has('chapter-url')) {
-           return (bool) ((int) $template->get_identifiers_from_url(MAGIC_STRING . 'chapter-url ') +
-                          (int) $template->get_identifiers_from_url(MAGIC_STRING . 'url '));
+           return (bool) ((int) $template->get_identifiers_from_url(MAGIC_STRING_URLS . 'chapter-url ') +
+                          (int) $template->get_identifiers_from_url(MAGIC_STRING_URLS . 'url '));
         } elseif ($template->has('url')) {
            $url = $template->get('url');
            $url_type = 'url';
@@ -907,7 +908,7 @@ function find_indentifiers_in_urls(Template $template, ?string $url_sent = NULL)
           // If no URL or website, nothing to worth with.
           return FALSE;
         }
-    } elseif (preg_match('~^' . MAGIC_STRING . '(\S+) $~', $url_sent, $matches)) {
+    } elseif (preg_match('~^' . MAGIC_STRING_URLS . '(\S+) $~', $url_sent, $matches)) {
       $url_sent = NULL;
       $url_type = $matches[1];
       $url      = $template->get($matches[1]);
