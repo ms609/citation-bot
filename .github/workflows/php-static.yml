@@ -58,9 +58,10 @@ jobs:
       
     - name: PHP psalm
       run: php ./vendor/bin/psalm
-      
 
-      
-
-      
+    - name: Size limit to make sure search works
+      uses: actionsdesk/lfs-warning@v3.1
+      with:
+        filesizelimit: 393000b
+     
       

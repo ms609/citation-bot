@@ -447,7 +447,7 @@ final class zoteroTest extends testBaseClass {
     $text = '{{cite web|id=}}';
     $template = $this->make_citation($text);
     $access_date = 0;
-    $url = 'en.wikipedia.org'; // No date citation
+    $url = NO_DATE_WEBSITES[1];
     $url_kind = '';
     $zotero_data[0] = (object) array('title' => 'Billy', 'itemType' => 'webpage', 'date' => '2010');
     $zotero_response = json_encode($zotero_data);

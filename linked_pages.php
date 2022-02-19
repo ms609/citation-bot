@@ -14,12 +14,8 @@ $api = new WikipediaBot();
 <!DOCTYPE html>
 <html lang="en" dir="ltr">
   <head>
-  <title>Citation bot: Linked page mode</title>
-  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-  <meta content="Smith609" name="author">
-  <meta name="keywords" content="User:DOI bot,Citation, citation bot,Digital object identifier,wikipedia,cite journal" />
-  <link rel="apple-touch-icon" href="https://en.wikipedia.org/apple-touch-icon.png" />
-  <link rel="copyright" href="https://www.gnu.org/copyleft/fdl.html" />
+  <title>Citation Bot: running in linked page mode</title>
+  <link rel="copyright" type="text/html" href="https://www.gnu.org/licenses/gpl-3.0" />
   <link rel="stylesheet" type="text/css" href="results.css" />
   </head>
 <body>
