@@ -9,7 +9,10 @@ It is helpful if each testcase example describes the specific function that it i
 to test.
 
 ## Quality verification
-All code is run through several tests.  The primary test is a suite of example pages and citation templates.  There are a variety of static code analysis tests that look for common errors.  The security tainted data tests make sure that all "untrusted input" (data from wikipedia pages) is output wrapped with the echoable() function: this is not done for security, but for proper output formatting in a web browser.  The GitHub provided CodeQL test suite is also enabled, but that does not support PHP yet, so it just checks the one JavaScript file.  Because files over 384K are not indexed by GitHub, there is a test to check for large files: it will suggest LSF, but do not do that. Template.php is the only file in risk of that right now.
+All code is run through several tests.  The primary test is a suite of example pages and citation templates.  There are a variety of static code analysis tests that look for common errors.
+The security tainted data tests make sure that all "untrusted input" (data from wikipedia pages) is output wrapped with the echoable() function: this is not done for security, but for proper output formatting in a web browser.
+The GitHub provided CodeQL test suite is also enabled, but that does not support PHP yet, so it just checks the one JavaScript file.
+Because files over 384K are not indexed by GitHub, there is a test to check for large files: it will suggest LFS, but do not do that. Template.php is the only file in risk of that right now.
 
 ## Submitting changes
 
