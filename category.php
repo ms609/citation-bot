@@ -106,7 +106,7 @@ if ($category) {
     echo "\n";
   }
   echo "\n Done all " . (string) $total . " pages in Category:" . echoable($category) . ". \n";
-  $final_edit_overview .= "\n\n" . "\n\n";
+  $final_edit_overview .= "\n\n";
   html_echo($final_edit_overview, '');
 } else {
   if (isset($argv[1])) {
