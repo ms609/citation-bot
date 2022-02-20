@@ -31,7 +31,7 @@ if (HTML_OUTPUT) {
   </head>
 <body>
   <header>
-    <p>Follow <a href="https://en.wikipedia.org/wiki/User:Citation_bot">Citation&nbsp;bot</a>&rsquo;s&nbsp;progress&nbsp;below.</p>
+    <p>Follow Citation bots progress below.</p>
     <p>
       <a href="https://en.wikipedia.org/wiki/User:Citation_bot/use" target="_blank" title="Using Citation Bot">How&nbsp;to&nbsp;Use&nbsp;/&nbsp;Tips&nbsp;and&nbsp;Tricks</a> |
       <a href="https://en.wikipedia.org/wiki/Special:Contributions/Citation_bot" target="_blank" title="Recent contributions">Bot&rsquo;s&nbsp;recent&nbsp;edits</a> |
@@ -106,7 +106,7 @@ if ($category) {
     echo "\n";
   }
   echo "\n Done all " . (string) $total . " pages in Category:" . echoable($category) . ". \n";
-  $final_edit_overview .= "\n\n" . ' To get the best results, see our helpful <a href="https://en.wikipedia.org/wiki/User:Citation_bot/use">user guides</a>' . "\n\n";
+  $final_edit_overview .= "\n\n";
   html_echo($final_edit_overview, '');
 } else {
   if (isset($argv[1])) {
