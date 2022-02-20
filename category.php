@@ -31,7 +31,7 @@ if (HTML_OUTPUT) {
   </head>
 <body>
   <header>
-    <p>Follow Citation bot progress below.</p>
+    <p>Follow Citation bots progress below.</p>
     <p>
       <a href="https://en.wikipedia.org/wiki/User:Citation_bot/use" target="_blank" title="Using Citation Bot">How&nbsp;to&nbsp;Use&nbsp;/&nbsp;Tips&nbsp;and&nbsp;Tricks</a> |
       <a href="https://en.wikipedia.org/wiki/Special:Contributions/Citation_bot" target="_blank" title="Recent contributions">Bot&rsquo;s&nbsp;recent&nbsp;edits</a> |
