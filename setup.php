@@ -16,7 +16,6 @@ if (isset($_GET["wiki_base"])){
   if (!in_array($wiki_base, ['en', 'simple'])) {
      exit('Unsupported wiki requested -- aborting');
   }
-  define('EDIT_AS_USER', TRUE);
 } else {
   $wiki_base = 'en';
 }
