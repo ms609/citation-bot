@@ -14,7 +14,7 @@ if (file_exists('git_pull.lock')) {
 if (isset($_GET["wiki_base"])){ 
   $wiki_base = (string) $_GET["wiki_base"];
   if (!in_array($wiki_base, ['en', 'simple'])) {
-     exit('Unsupported wiki requested: ' . htmlencode($wiki_base));
+     exit('Unsupported wiki requested -- aborting');
   }
 } else {
   $wiki_base = 'en';
