@@ -11,6 +11,18 @@ if (file_exists('git_pull.lock')) {
  * Most of the page expansion depends on everything else
  */
 
+if (isset($_GET["wiki_base"])){ 
+  $wiki_base = (string) $_GET["wiki_base"];
+  if (!in_array($wiki_base, ['en', 'simple'])) {
+     exit('Unsupported wiki requested: ' . htmlencode($wiki_base));
+  }
+} else {
+  $wiki_base = 'en';
+}
+define("WIKI_ROOT", 'https://'. $wiki_base . '.wikipedia.org/w/index.php');
+define("API_ROOT", 'https://'. $wiki_base . '.wikipedia.org/w/api.php');
+unset($wiki_base);
+
 ini_set("user_agent", "Citation_bot; citations@tools.wmflabs.org");
 include_once './vendor/autoload.php';
 
