@@ -282,6 +282,7 @@ final class WikipediaBot {
       // @codeCoverageIgnoreStart
       if (isset($result->edit->captcha)) {
         report_minor_error("Write error: We encountered a captcha, so can't be properly logged in.");
+        if (self::NonStandardMode()) html_echo(print_r($result, TRUE));
         return FALSE;
       } elseif ($result->edit->result == "Success") {
         // Need to check for this string wherever our behaviour is dependant on the success or failure of the write operation
