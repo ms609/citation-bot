@@ -53,7 +53,6 @@ if (strlen($page_name) > 256)  {
   exit();
 }
 $edit_summary_end = "| Suggested by " . $api->get_the_user() . " | Linked from $page_name | #UCB_webform_linked ";
-$final_edit_overview = "";
 
 $url = API_ROOT . '?action=parse&prop=links&format=json&page=' . $page_name;
 $ch = curl_init();
