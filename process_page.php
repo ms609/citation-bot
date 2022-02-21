@@ -82,7 +82,7 @@ if (!isset($ON)) {
 
 $pages_to_do = array_unique(explode('|', $pages));
 
-edit_a_category($pages_to_do, $api);
+edit_a_list_of_pages($pages_to_do, $api);
 
 exit();
 ?>
