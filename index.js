@@ -76,7 +76,7 @@ function InitializeForm() {
   document.getElementById("botLinked").oninput= ValidateLinked;
   document.getElementById("CatSubmit").disabled = false;
   document.getElementById("PageSubmit").disabled = false;
-  document.getElementById("linkedSubmit").disabled = false;
+  document.getElementById("LinkedSubmit").disabled = false;
   document.getElementById("PageSpinner").style.display = "none";
   document.getElementById("CatSpinner").style.display = "none";
   document.getElementById("LinkSpinner").style.display = "none";
