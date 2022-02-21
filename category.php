@@ -45,7 +45,6 @@ if (HTML_OUTPUT) {
 check_blocked();
 
 $edit_summary_end = "| Suggested by " . $api->get_the_user() . " | [[Category:$category]] | #UCB_Category ";
-$final_edit_overview = "";
 
 if ($category) {
   $pages_in_category = $api->category_members($category);
