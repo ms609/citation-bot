@@ -100,6 +100,8 @@ final class WikipediaBot {
       } elseif (strpos((string) $response->error->info, 'protected') !== FALSE) {
         report_minor_error('Wikipedia page is protected from editing.  Aborting changes for this page.  Will sleep and move on.');
         return TRUE;
+      } elseif (strpos((string) $response->error->info, 'Wikipedia:Why create an account') !== FALSE) {
+        report_error('The bot is editing as you, and you have not granted that permission.  Go to ' . WIKI_ROOT . '?title=Special:OAuthManageMyGrants/update/230820 and grant Citation Bot "Edit existing pages" rights.');
       } else {
         report_minor_error('API call failed: ' . (string) $response->error->info);
       }
