@@ -36,7 +36,6 @@ if (HTML_OUTPUT) {?>
 check_blocked();
 
 $edit_summary_end = "| Suggested by " . $api->get_the_user() . " ";
-$final_edit_overview = "";
 
 if (isset($argv[1])) {
   $pages = (string) $argv[1];
