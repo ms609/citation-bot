@@ -82,9 +82,10 @@ function InitializeForm() {
   document.getElementById("LinkSpinner").style.display = "none";
   document.getElementById("botPage").value = "";
   document.getElementById("botCat").value = "";
-  document.getElementById("botLinked".value = "";
+  document.getElementById("botLinked").value = "";
   this.classList.remove("error");
 }
 
 window.onload = InitializeForm;
 window.addEventListener('pageshow', InitializeForm);
+
