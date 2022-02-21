@@ -41,7 +41,6 @@ const COMMON_MISTAKES = array ( // Common mistakes that aren't picked up by the 
   "doi-inactive-date" =>  "doi-broken-date",
   "doi-broken"      =>  "doi-broken-date",
   "subjectlink"     =>  "subject-link",
-  "timecaption"     =>  "time-caption",
   "transcripturl"   =>  "transcript-url",
   "ed"              =>  "editor",
   "ed2"             =>  "editor2",
