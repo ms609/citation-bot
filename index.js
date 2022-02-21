@@ -77,3 +77,4 @@ function InitializeForm() {
 }
 
 window.onload = InitializeForm;
+window.onpageshow = InitializeForm;
