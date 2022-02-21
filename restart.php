@@ -2,6 +2,7 @@
 @header('Cache-Control: no-cache, no-store, must-revalidate');
 @header('Pragma: no-cache');
 @header('Expires: 0');
+@header('Content-type: text/html; charset=utf-8');
 ?>
 <!DOCTYPE html><html lang="en" dir="ltr"><head><title>Restart Bot</title></head><body><main><pre>
 <?php
