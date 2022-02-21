@@ -91,7 +91,7 @@ foreach($links as $link) {
 unset($links);
 $pages_in_category = array_unique($pages_in_category);
 
-edit_a_list_of_pages($pages_in_category, $api);
+edit_a_list_of_pages($pages_in_category, $api, $edit_summary_end);
 
 exit();
 ?>
