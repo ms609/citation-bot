@@ -313,13 +313,13 @@ class Page {
         $this_template->get_identifiers_from_url();
         $this_template->expand_by_google_books();
         $this_template->tidy();
-      } elseif ($this_template->wikiname() == 'cite lsa') {
+      } elseif ($this_template->wikiname() === 'cite lsa') {
         $this_template->clean_google_books();
         $this_template->forget('ref'); // Common parameter that does not actually work
-      } elseif ($this_template->wikiname() == 'cite odnb') {
+      } elseif ($this_template->wikiname() === 'cite odnb') {
         $this_template->clean_cite_odnb();
         $this_template->clean_google_books();
-      } elseif ($this_template->wikiname() == 'cite episode') {
+      } elseif ($this_template->wikiname() === 'cite episode' || $this_template->wikiname() === 'cite interview') {
         $this_template->clean_google_books();
         $this_template->correct_param_mistakes();
       } elseif ((strpos($this_template->wikiname(), 'cite ') === 0)  || (strpos($this_template->wikiname(), 'vcite ') === 0)) {
