@@ -2,8 +2,9 @@
 @header('Cache-Control: no-cache, no-store, must-revalidate');
 @header('Pragma: no-cache');
 @header('Expires: 0');
+@header('Content-type: text/html; charset=utf-8');
 ?>
-<!DOCTYPE html><html lang="en" dir="ltr"><head><title>Git Pull</title><meta http-equiv="Content-Type" content="text/html; charset=utf-8" /></head><body><main><pre>
+<!DOCTYPE html><html lang="en" dir="ltr"><head><title>Git Pull</title></head><body><main><pre>
 <?php
 ob_implicit_flush();
 if (mkdir('git_pull.lock', 0700)) {
