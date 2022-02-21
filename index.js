@@ -74,6 +74,13 @@ function InitializeForm() {
   document.getElementById("botPage").oninput  = ValidatePageName;
   document.getElementById("botCat").oninput   = ValidateCategory;
   document.getElementById("botLinked").oninput= ValidateLinked;
+  this.classList.remove("error");
+  document.getElementById("CatSubmit").disabled = false;
+  document.getElementById("PageSubmit").disabled = false;
+  document.getElementById("linkedSubmit").disabled = false;
+  document.getElementById("PageSpinner").style.display = "none";
+  document.getElementById("CatSpinner").style.display = "none";
+  document.getElementById("LinkSpinner").style.display = "none";
 }
 
 window.onload = InitializeForm;
