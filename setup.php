@@ -3,7 +3,7 @@ declare(strict_types=1);
 error_reporting(E_ALL);
 if (file_exists('git_pull.lock')) {
   sleep(5);
-  exit("\n GIT pull in progress - please retry again in a moment \n\n </pre></body></html>");
+  exit("GIT pull in progress - please retry again in a moment");
 }
 
 /*
@@ -14,7 +14,7 @@ if (file_exists('git_pull.lock')) {
 if (isset($_GET["wiki_base"])){ 
   $wiki_base = (string) $_GET["wiki_base"];
   if (!in_array($wiki_base, ['en', 'simple'])) {
-     exit("\n Unsupported wiki requested -- aborting \n\n </pre></body></html>");
+     exit("Unsupported wiki requested - aborting");
   }
 } else {
   $wiki_base = 'en';
