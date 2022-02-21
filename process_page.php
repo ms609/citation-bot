@@ -3,7 +3,6 @@ declare(strict_types=1);
 
 @session_start();
 @header('Content-type: text/html; charset=utf-8');
-@header('Content-Encoding: None');
 @header('Cache-Control: no-cache, no-store, must-revalidate');
 @header('Pragma: no-cache');
 @header('Expires: 0');
