@@ -718,6 +718,28 @@ final class Template {
               $this->rename('title', 'CITATION_BOT_PLACEHOLDER_title');
               $bad_data = TRUE;
             }
+            if ($this->has('coauthors')) {
+              if ($this->has('first'))  $this->rename('first',  'CITATION_BOT_PLACEHOLDER_first');
+              if ($this->has('last'))   $this->rename('last',   'CITATION_BOT_PLACEHOLDER_last');
+              if ($this->has('first1')) $this->rename('first1', 'CITATION_BOT_PLACEHOLDER_first1');
+              if ($this->has('last1'))  $this->rename('last1',  'CITATION_BOT_PLACEHOLDER_last1');
+              if ($this->has('author1'))$this->rename('author1','CITATION_BOT_PLACEHOLDER_author1');
+              if ($this->has('author')) $this->rename('author', 'CITATION_BOT_PLACEHOLDER_author');
+              $this->rename('coauthors', 'CITATION_BOT_PLACEHOLDER_coauthors');
+              if ($this->blank(FLATTENED_AUTHOR_PARAMETERS)) {
+                $initial_author_params_save = $this->initial_author_params;
+                $this->initial_author_params = array();
+                $bad_data = TRUE;
+              } else {
+                if ($this->has('CITATION_BOT_PLACEHOLDER_first'))  $this->rename('CITATION_BOT_PLACEHOLDER_first',  'first');
+                if ($this->has('CITATION_BOT_PLACEHOLDER_last'))   $this->rename('CITATION_BOT_PLACEHOLDER_last',   'last');
+                if ($this->has('CITATION_BOT_PLACEHOLDER_first1')) $this->rename('CITATION_BOT_PLACEHOLDER_first1', 'first1');
+                if ($this->has('CITATION_BOT_PLACEHOLDER_last1'))  $this->rename('CITATION_BOT_PLACEHOLDER_last1',  'last1');
+                if ($this->has('CITATION_BOT_PLACEHOLDER_author1'))$this->rename('CITATION_BOT_PLACEHOLDER_author1','author1');
+                if ($this->has('CITATION_BOT_PLACEHOLDER_author')) $this->rename('CITATION_BOT_PLACEHOLDER_author', 'author');
+                $this->rename('CITATION_BOT_PLACEHOLDER_coauthors', 'coauthors');
+              }
+            }
           }
           if ($bad_data) {
             $this_array = [$this];
@@ -778,6 +800,28 @@ final class Template {
                 $this->forget('CITATION_BOT_PLACEHOLDER_pages');
               } else {
                 $this->rename('CITATION_BOT_PLACEHOLDER_pages', 'pages');
+              }
+            }
+            if ($this->has('CITATION_BOT_PLACEHOLDER_coauthors')) {
+              if ($this->has('last1') || $this->has('author1')) {
+                unset($initial_author_params_save);
+                $this->forget('CITATION_BOT_PLACEHOLDER_first');
+                $this->forget('CITATION_BOT_PLACEHOLDER_last');
+                $this->forget('CITATION_BOT_PLACEHOLDER_first1');
+                $this->forget('CITATION_BOT_PLACEHOLDER_last1');
+                $this->forget('CITATION_BOT_PLACEHOLDER_author1');
+                $this->forget('CITATION_BOT_PLACEHOLDER_author');
+                $this->forget('CITATION_BOT_PLACEHOLDER_coauthors');
+              } else {
+                $this->initial_author_params = $initial_author_params_save;
+                unset($initial_author_params_save);
+                if ($this->has('CITATION_BOT_PLACEHOLDER_first'))   $this->rename('CITATION_BOT_PLACEHOLDER_first',  'first');
+                if ($this->has('CITATION_BOT_PLACEHOLDER_last'))    $this->rename('CITATION_BOT_PLACEHOLDER_last',   'last');
+                if ($this->has('CITATION_BOT_PLACEHOLDER_first1'))  $this->rename('CITATION_BOT_PLACEHOLDER_first1', 'first1');
+                if ($this->has('CITATION_BOT_PLACEHOLDER_last1'))   $this->rename('CITATION_BOT_PLACEHOLDER_last1',  'last1');
+                if ($this->has('CITATION_BOT_PLACEHOLDER_author1')) $this->rename('CITATION_BOT_PLACEHOLDER_author1','author1');
+                if ($this->has('CITATION_BOT_PLACEHOLDER_author'))  $this->rename('CITATION_BOT_PLACEHOLDER_author', 'author');
+                $this->rename('CITATION_BOT_PLACEHOLDER_coauthors', 'coauthors');
               }
             }
           }
