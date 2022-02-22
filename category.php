@@ -60,8 +60,8 @@ if ($category) {
   if ($total > intval(MAX_PAGES / 4)) {
     echo 'Category is huge (' . (string) $total . ')  Cancelling run. Pick a smaller category (maximum size is ' . (string) intval(MAX_PAGES / 4) . ').  Listen to Obi-Wan Kenobi:  You want to go home and rethink your life.';
     echo "\n\n";
-     foreach ($pages_in_category as $page_title) {
-       html_echo(echoable((string) $page_title), '');
+    foreach ($pages_in_category as $page_title) {
+       html_echo(echoable( (string) $page_title));
     }
     echo "\n\n";
     echo ' </pre><footer><a href="./" title="Use Citation Bot again">Another</a>?</footer></body></html>';
