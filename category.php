@@ -9,7 +9,7 @@ declare(strict_types=1);
 require_once 'setup.php';
 
 $api = new WikipediaBot();
-$category = $_POST["cat"];
+$category = isset($_POST["cat"]) ? (string) $_POST["cat"] : (string) @$argv[1];
 $category = trim($category);
 if ($category === '' && isset($_GET["cat"])) {
    $maybe = (string) $_GET["cat"];
@@ -50,7 +50,7 @@ if ($category) {
   $pages_in_category = $api->category_members($category);
   if (empty($pages_in_category)) {
     echo 'Category appears to be empty';
-    echo ' </pre><footer><a href="./" title="Use Citation Bot again">Another</a>?</footer></body></html>';
+    html_echo(' </pre><footer><a href="./" title="Use Citation Bot again">Another</a>?</footer></body></html>', "\n");
     exit();
   }
   $pages_in_category = array_unique($pages_in_category); // Paranoid
@@ -61,10 +61,10 @@ if ($category) {
     echo 'Category is huge (' . (string) $total . ')  Cancelling run. Pick a smaller category (maximum size is ' . (string) intval(MAX_PAGES / 4) . ').  Listen to Obi-Wan Kenobi:  You want to go home and rethink your life.';
     echo "\n\n";
     foreach ($pages_in_category as $page_title) {
-       html_echo(echoable( (string) $page_title));
+       html_echo((string) $page_title . "\n");
     }
     echo "\n\n";
-    echo ' </pre><footer><a href="./" title="Use Citation Bot again">Another</a>?</footer></body></html>';
+    html_echo(' </pre><footer><a href="./" title="Use Citation Bot again">Another</a>?</footer></body></html>', "\n");
     exit();
   }
   edit_a_list_of_pages($pages_in_category, $api, $edit_summary_end);
@@ -76,7 +76,7 @@ if ($category) {
   } else {
     echo "You must specify a category using the API -- OR -- category got lost during initial authorization ";
   }
-  echo ' # # #</pre><footer><a href="./" title="Use Citation Bot again">Another</a>?</footer></body></html>';
+  html_echo(' </pre><footer><a href="./" title="Use Citation Bot again">Another</a>?</footer></body></html>', "\n");
 }
 exit();
 ?>
