@@ -20,26 +20,7 @@ if ($category === '' && isset($_GET["cat"])) {
 if (strtolower(substr($category, 0, 9)) == 'category:') $category = trim(substr($category, 9));
 /** @psalm-suppress RedundantCondition */ /* PSALM thinks HTML_OUTPUT cannot be FALSE */
 if (HTML_OUTPUT) {
-?>
-<!DOCTYPE html>
-<html lang="en" dir="ltr">
-  <head>
-  <title>Citation Bot: running in category mode</title>
-  <link rel="copyright" type="text/html" href="https://www.gnu.org/licenses/gpl-3.0" />
-  <link rel="stylesheet" type="text/css" href="results.css" />
-  </head>
-<body>
-  <header>
-    <p>Follow Citation bots progress below.</p>
-    <p>
-      <a href="https://en.wikipedia.org/wiki/User:Citation_bot/use" target="_blank" title="Using Citation Bot">How&nbsp;to&nbsp;Use&nbsp;/&nbsp;Tips&nbsp;and&nbsp;Tricks</a> |
-      <a href="https://en.wikipedia.org/wiki/User_talk:Citation_bot" title="Report bugs at Wikipedia" target="_blank">Report&nbsp;bugs</a> |
-      <a href="https://github.com/ms609/citation-bot" target="_blank" title="GitHub repository">Source&nbsp;code</a>
-    </p>
-  </header>
-
-  <pre id="botOutput">
-<?php
+  bot_html_header();
 }
 
 check_blocked();
