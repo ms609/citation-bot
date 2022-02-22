@@ -69,7 +69,9 @@ if ($category) {
   }
   edit_a_list_of_pages($pages_in_category, $api, $edit_summary_end);
 } else {
-  if (isset($_POST["cat"])) {
+  if (isset($argv[1])) {
+    echo "You must specify a category on the command line.";
+  } elseif (isset($_POST["cat"])) {
     echo "You must specify a valid category on the webform.";
   } elseif (isset($_GET["cat"])) {
     echo "You must specify a category on the webform.  We do not support using as a parameter to the php file anymore";
