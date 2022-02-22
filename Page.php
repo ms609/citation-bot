@@ -556,7 +556,6 @@ class Page {
       $auto_summary = str_replace('[[WP:ENDASH|dashes]]', 'dashes', $auto_summary);
       $auto_summary = str_replace('[[WP:UCB|Use this bot]]. [[WP:DBUG|Report bugs]]', 'See https://en.wikipedia.org/wiki/WP:DBUG', $auto_summary);
     }
-    define("WIKI_ROOT", 'https://'. $wiki_base . '.wikipedia.org/w/index.php');
     return $auto_summary;
   }
 
