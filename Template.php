@@ -632,6 +632,7 @@ final class Template {
           $the_issue   = $this->get('issue');
           $the_page    = $this->get('page');
           $the_pages   = $this->get('pages');
+          $initial_author_params_save = $this->initial_author_params;
           $bad_data = FALSE;
           if ($the_pages === '0' || $the_pages === 'null' || $the_pages === 'n/a') {
               $this->rename('pages', 'CITATION_BOT_PLACEHOLDER_pages');
@@ -727,7 +728,6 @@ final class Template {
               if ($this->has('author')) $this->rename('author', 'CITATION_BOT_PLACEHOLDER_author');
               $this->rename('coauthors', 'CITATION_BOT_PLACEHOLDER_coauthors');
               if ($this->blank(FLATTENED_AUTHOR_PARAMETERS)) {
-                $initial_author_params_save = $this->initial_author_params;
                 $this->initial_author_params = array();
                 $bad_data = TRUE;
               } else {
@@ -804,7 +804,6 @@ final class Template {
             }
             if ($this->has('CITATION_BOT_PLACEHOLDER_coauthors')) {
               if ($this->has('last1') || $this->has('author1')) {
-                unset($initial_author_params_save);
                 $this->forget('CITATION_BOT_PLACEHOLDER_first');
                 $this->forget('CITATION_BOT_PLACEHOLDER_last');
                 $this->forget('CITATION_BOT_PLACEHOLDER_first1');
@@ -814,7 +813,6 @@ final class Template {
                 $this->forget('CITATION_BOT_PLACEHOLDER_coauthors');
               } else {
                 $this->initial_author_params = $initial_author_params_save;
-                unset($initial_author_params_save);
                 if ($this->has('CITATION_BOT_PLACEHOLDER_first'))   $this->rename('CITATION_BOT_PLACEHOLDER_first',  'first');
                 if ($this->has('CITATION_BOT_PLACEHOLDER_last'))    $this->rename('CITATION_BOT_PLACEHOLDER_last',   'last');
                 if ($this->has('CITATION_BOT_PLACEHOLDER_first1'))  $this->rename('CITATION_BOT_PLACEHOLDER_first1', 'first1');
@@ -825,6 +823,15 @@ final class Template {
               }
             }
           }
+          unset($initial_author_params_save);
+          unset($the_title);
+          unset($the_journal);
+          unset($the_chapter);
+          unset($the_volume);
+          unset($the_issue);
+          unset($the_page);
+          unset($the_pages);
+          unset($bad_data);
         }
         $this->tidy();
         // Fix up URLs hiding in identifiers
