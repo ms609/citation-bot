@@ -45,7 +45,6 @@ if (HTML_OUTPUT) {
 check_blocked();
 
 $edit_summary_end = "| Suggested by " . $api->get_the_user() . " | [[Category:$category]] | #UCB_Category ";
-$final_edit_overview = "";
 
 if ($category) {
   $pages_in_category = $api->category_members($category);
@@ -61,51 +60,14 @@ if ($category) {
   if ($total > intval(MAX_PAGES / 4)) {
     echo 'Category is huge (' . (string) $total . ')  Cancelling run. Pick a smaller category (maximum size is ' . (string) intval(MAX_PAGES / 4) . ').  Listen to Obi-Wan Kenobi:  You want to go home and rethink your life.';
     echo "\n\n";
-     foreach ($pages_in_category as $page_title) {
+    foreach ($pages_in_category as $page_title) {
        html_echo((string) $page_title . "\n");
     }
     echo "\n\n";
     html_echo(' </pre><footer><a href="./" title="Use Citation Bot again">Another</a>?</footer></body></html>', "\n");
     exit();
   }
-  if ($total > BIG_RUN) check_overused();
-  $page = new Page();
-  $done = 0;
-
-  gc_collect_cycles();
-  foreach ($pages_in_category as $page_title) {
-    check_killed();
-    $done++;
-    // $page->expand_text will take care of this notice if we are in HTML mode.
-    html_echo('', "\n\n\n*** Processing page '" . echoable($page_title) . "' : " . date("H:i:s") . "\n");
-    if ($page->get_text_from($page_title, $api) && $page->expand_text()) {
-      report_phase("Writing to " . echoable($page_title) . '... ');
-      $attempts = 0;
-      while (!$page->write($api, $edit_summary_end . (string) $done . '/' . (string) $total . ' ') && $attempts < MAX_TRIES) ++$attempts;
-      if ($attempts < MAX_TRIES ) {
-        $last_rev = urlencode($api->get_last_revision($page_title));
-        html_echo(
-        "\n  <a href=" . WIKI_ROOT . "?title=" . urlencode($page_title) . "&diff=prev&oldid="
-        . $last_rev . ">diff</a>" .
-        " | <a href=" . WIKI_ROOT . "?title=" . urlencode($page_title) . "&action=history>history</a>", ".");
-        $final_edit_overview .=
-          "\n [ <a href=" . WIKI_ROOT . "?title=" . urlencode($page_title) . "&diff=prev&oldid="
-        . $last_rev . ">diff</a>" .
-        " | <a href=" . WIKI_ROOT . "?title=" . urlencode($page_title) . "&action=history>history</a> ] " . "<a href=" . WIKI_ROOT . "?title=" . urlencode($page_title) . ">" . echoable($page_title) . "</a>";
-      } else {
-         report_warning("Write failed.");
-         $final_edit_overview .= "\n Write failed.      " . "<a href=" . WIKI_ROOT . "?title=" . urlencode($page_title) . ">" . echoable($page_title) . "</a>";
-      }
-    } else {
-      report_phase($page->parsed_text() ? 'No changes required.' : 'Blank page');
-      echo "\n\n    # # # ";
-      $final_edit_overview .= "\n No changes needed. " . "<a href=" . WIKI_ROOT . "?title=" . urlencode($page_title) . ">" . echoable($page_title) . "</a>";
-    }
-    echo "\n";
-  }
-  echo "\n Done all " . (string) $total . " pages in Category:" . echoable($category) . ". \n";
-  $final_edit_overview .= "\n\n";
-  html_echo($final_edit_overview, '');
+  edit_a_list_of_pages($pages_in_category, $api, $edit_summary_end);
 } else {
   if (isset($argv[1])) {
     echo "You must specify a category on the command line.";
@@ -116,7 +78,7 @@ if ($category) {
   } else {
     echo "You must specify a category using the API -- OR -- category got lost during initial authorization ";
   }
+  html_echo(' </pre><footer><a href="./" title="Use Citation Bot again">Another</a>?</footer></body></html>', "\n");
 }
-html_echo(' # # #</pre><footer><a href="./" title="Use Citation Bot again">Another</a>?</footer></body></html>', "\n");
 exit();
 ?>

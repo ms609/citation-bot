@@ -978,3 +978,53 @@ function doi_encode (string $doi) : string {
     $doi = str_replace('%2F', '/', $doi);
     return $doi;
 }
+
+function edit_a_list_of_pages(array $pages_in_category, WikipediaBot $api, string $edit_summary_end) {
+  $final_edit_overview = "";
+  if (empty($pages_in_category)) {
+    report_warning('No links to expand found');
+    echo '</pre><footer><a href="./" title="Use Citation Bot again">Another</a>?</footer></body></html>';
+    exit();
+  }
+  $total = count($pages_in_category);
+  if ($total > MAX_PAGES) {
+    report_warning('Number of links is huge (' . (string) $total . ')  Cancelling run (maximum size is ' . (string) MAX_PAGES . ').  Listen to Obi-Wan Kenobi:  You want to go home and rethink your life.');
+    echo '</pre><footer><a href="./" title="Use Citation Bot again">Another</a>?</footer></body></html>';
+    exit();
+  }
+  if ($total > BIG_RUN) check_overused();
+
+  $page = new Page();
+  $done = 0;
+
+  gc_collect_cycles();
+  foreach ($pages_in_category as $page_title) {
+    check_killed();
+    $done++;
+    if ($page->get_text_from($page_title, $api) && $page->expand_text()) {
+      report_phase("Writing to " . echoable($page_title) . '... ');
+      $attempts = 0;
+      while (!$page->write($api, $edit_summary_end . (string) $done . '/' . (string) $total . ' ') && $attempts < MAX_TRIES) ++$attempts;
+      if ($attempts < MAX_TRIES) {
+        $last_rev = $api->get_last_revision($page_title);
+        echo
+        "\n  <a href=" . WIKI_ROOT . "?title=" . urlencode($page_title) . "&diff=prev&oldid="
+        . $last_rev . ">diff</a>" .
+        " | <a href=" . WIKI_ROOT . "?title=" . urlencode($page_title) . "&action=history>history</a>";
+        $final_edit_overview .=
+          "\n [ <a href=" . WIKI_ROOT . "?title=" . urlencode($page_title) . "&diff=prev&oldid="
+        . $last_rev . ">diff</a>" .
+        " | <a href=" . WIKI_ROOT . "?title=" . urlencode($page_title) . "&action=history>history</a> ] " . "<a href=" . WIKI_ROOT . "?title=" . urlencode($page_title) . ">" . echoable($page_title) . "</a>";
+      } else {
+        report_warning("Write failed.");
+        $final_edit_overview .= "\n Write failed.      " . "<a href=" . WIKI_ROOT . "?title=" . urlencode($page_title) . ">" . echoable($page_title) . "</a>";
+      }
+    } else {
+      report_phase($page->parsed_text() ? "No changes required. \n\n    # # # " : "Blank page. \n\n    # # # ");
+       $final_edit_overview .= "\n No changes needed. " . "<a href=" . WIKI_ROOT . "?title=" . urlencode($page_title) . ">" . echoable($page_title) . "</a>";
+    }
+    echo "\n";
+  }
+  echo "\n Done all " . (string) $total . " pages. \n  # # # \n" . $final_edit_overview  . ' </pre><footer><a href="./" title="Use Citation Bot again">Another</a>?</footer></body></html>';
+
+}
