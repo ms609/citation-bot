@@ -11,8 +11,8 @@ if (file_exists('git_pull.lock')) {
  * Most of the page expansion depends on everything else
  */
 
-if (isset($_GET["wiki_base"])){ 
-  $wiki_base = (string) $_GET["wiki_base"];
+if (isset($_REQUEST["wiki_base"])){ 
+  $wiki_base = (string) $_REQUEST["wiki_base"];
   if (!in_array($wiki_base, ['en', 'simple'])) {
      exit("Unsupported wiki requested - aborting");
   }
