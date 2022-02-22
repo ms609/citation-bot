@@ -552,9 +552,7 @@ class Page {
     }
     $auto_summary = $auto_summary . "| [[WP:UCB|Use this bot]]. [[WP:DBUG|Report bugs]]. ";
     if (WIKI_ROOT !== 'https://en.wikipedia.org/w/index.php') {
-      // $root = str_replace('.wikipedia.org/w/index.php', '', str_replace('https://', '', WIKI_ROOT));
-      $auto_summary = str_replace('[[WP:ENDASH|dashes]]', 'dashes', $auto_summary);
-      $auto_summary = str_replace('[[WP:UCB|Use this bot]]. [[WP:DBUG|Report bugs]]', 'See https://en.wikipedia.org/wiki/WP:DBUG', $auto_summary);
+      $auto_summary = str_replace('[[WP:', '[[en:WP:', $auto_summary);
     }
     return $auto_summary;
   }
