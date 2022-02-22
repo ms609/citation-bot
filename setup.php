@@ -3,7 +3,7 @@ declare(strict_types=1);
 error_reporting(E_ALL);
 if (file_exists('git_pull.lock')) {
   sleep(5);
-  exit("<!DOCTYPE html><html lang="en" dir="ltr"><head><title>Citation Bot: error</title></head><body><h1>GIT pull in progress - please retry again in a moment</h1></body></html>");
+  exit('<!DOCTYPE html><html lang="en" dir="ltr"><head><title>Citation Bot: error</title></head><body><h1>GIT pull in progress - please retry again in a moment</h1></body></html>');
 }
 
 /*
@@ -14,7 +14,7 @@ if (file_exists('git_pull.lock')) {
 if (isset($_REQUEST["wiki_base"])){ 
   $wiki_base = (string) $_REQUEST["wiki_base"];
   if (!in_array($wiki_base, ['en', 'simple'])) {
-     exit("<!DOCTYPE html><html lang="en" dir="ltr"><head><title>Citation Bot: error</title></head><body><h1>Unsupported wiki requested - aborting</h1></body></html>");
+     exit('<!DOCTYPE html><html lang="en" dir="ltr"><head><title>Citation Bot: error</title></head><body><h1>Unsupported wiki requested - aborting</h1></body></html>');
   }
 } else {
   $wiki_base = 'en';
