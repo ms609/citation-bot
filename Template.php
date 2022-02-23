@@ -4193,6 +4193,13 @@ final class Template {
             $this->forget($param);
             return;
           }
+          if ($this->has('date')) {
+             if (stripos($this->get('date'), $this->get($param)) !== FALSE) {  // Date has month already
+                $this->forget('month');
+                $this->forget('day')
+                return;
+             }
+          }
           if ($this->has('date') || $this->blank('year')) return;
           $day = $this->get('day');
           $month = $this->get('month');
