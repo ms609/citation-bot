@@ -4196,7 +4196,7 @@ final class Template {
           if ($this->has('date')) {
              if (stripos($this->get('date'), $this->get($param)) !== FALSE) {  // Date has month already
                 $this->forget('month');
-                $this->forget('day')
+                $this->forget('day');
                 return;
              }
           }
