@@ -13,6 +13,7 @@ final class CrashTest extends testBaseClass {
     $bad_page = BAD_PAGE_HTTP;
     $bad_page = urlencode(str_replace(' ', '_', trim($bad_page)));
     if ($bad_page !== "") {
+      define("TRAVIS_PRINT", "YES");
       $ch = curl_init();
       if (strpos($bad_page, 'simple%3A') === 0) {
         $bad_page = str_replace('simple%3A', '', $bad_page);
@@ -58,6 +59,7 @@ final class CrashTest extends testBaseClass {
     $bad_page = BAD_PAGE_API;
     $bad_page = str_replace(' ', '_', $bad_page);
     if ($bad_page !== "") {
+      define("TRAVIS_PRINT", "YES");
       $api = new WikipediaBot();
       $page = new TestPage();
       $page->get_text_from($bad_page, $api);
