@@ -5,12 +5,12 @@ require_once 'constants.php';   // @codeCoverageIgnore
 
 function html_echo(string $text, string $alternate_text='') : void {
   /** @psalm-suppress TypeDoesNotContainType */ /* PSALM thinks HTML_OUTPUT and TRAVIS cannot be false */
-  if (!TRAVIS) echo HTML_OUTPUT ? $text : $alternate_text; // @codeCoverageIgnore 
+  if (!TRAVIS || defined("BAD_PAGE_HTTP") || defined("BAD_PAGE_API")) echo HTML_OUTPUT ? $text : $alternate_text; // @codeCoverageIgnore 
 }
 
 function user_notice(string $symbol, string $class, string $text) : void {
   static $last_time = 0;
-  if (!TRAVIS) {
+  if (!TRAVIS || defined("BAD_PAGE_HTTP") || defined("BAD_PAGE_API")) {
     // @codeCoverageIgnoreStart
     if (defined('BIG_JOB_MODE') && in_array($class, array("boring", "removed", "added", "changed", "subsubitem"))) return;
     /** @psalm-suppress TypeDoesNotContainType */ /* PSALM thinks HTML_OUTPUT cannot be false */
@@ -34,7 +34,7 @@ function report_warning(string $text) : void  { user_notice("  !", "warning", $t
 function report_modification(string $text) : void { user_notice("  ~", "changed", $text); }
 function report_add(string $text) : void { user_notice("  +", "added", $text); }
 function report_forget(string $text) : void { user_notice("  -", "removed", $text); }
-function report_inline(string $text) : void { if (!TRAVIS) echo " $text"; }
+function report_inline(string $text) : void { if (!TRAVIS || defined("BAD_PAGE_HTTP") || defined("BAD_PAGE_API")) echo " $text"; }
 // call report_warning to give users a message before we die
 function report_error(string $text) : void {
   report_warning($text);  // @codeCoverageIgnore 
