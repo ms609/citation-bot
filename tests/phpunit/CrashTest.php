@@ -11,19 +11,26 @@ final class CrashTest extends testBaseClass {
 
   public function testBadPage() : void {  // Use this when debugging pages that crash the bot
     $bad_page = BAD_PAGE_HTTP;
-    $bad_page = urlencode(str_replace(' ', '_', $bad_page));
+    $bad_page = urlencode(str_replace(' ', '_', trim($bad_page)));
     if ($bad_page !== "") {
       $ch = curl_init();
+      if (strpos($bad_page, 'simple%3A') === 0) {
+        $bad_page = str_replace('simple%3A', '', $bad_page);
+        $the_url =  str_replace('en.', 'simple.', WIKI_ROOT) . '?title=' . $bad_page . '&action=raw';
+      } else {
+        $the_url =  WIKI_ROOT . '?title=' . $bad_page . '&action=raw';
+      }
       curl_setopt_array($ch,
            [CURLOPT_HEADER => 0,
             CURLOPT_RETURNTRANSFER => 1,
             CURLOPT_TIMEOUT => 30,
             CURLOPT_USERAGENT => 'Citation_bot; citations@tools.wmflabs.org',
-            CURLOPT_URL => WIKI_ROOT . '?title=' . $bad_page . '&action=raw']);
+            CURLOPT_URL => $the_url]);
       $text = curl_exec($ch);
       curl_close($ch);
       $page = new TestPage();
       $page->parse_text($text);
+      unset($text);
       AdsAbsControl::back_on();
       Zotero::unblock_zotero();
       $page->expand_text();
@@ -33,7 +40,8 @@ final class CrashTest extends testBaseClass {
       $text = $page->parsed_text();
       unset($page);
       $text = str_replace("\r", "\n", $text);
-      $text = str_replace(["\n\n\n\n", "\n\n\n", "\n\n"], ["\r\r\r\n", "\r\r\n", "\r\n"], $text); // Protect multiple line feeds
+      $text = str_replace(["\n\n\n\n\n\n\n", "\n\n\n\n\n\n", "\n\n\n\n\n", "\n\n\n\n", "\n\n\n", "\n\n"], ["\r\r\r\r\r\r\n", "\r\r\r\r\r\n", "\r\r\r\r\n", "\r\r\r\n", "\r\r\n", "\r\n"], $text); // Protect multiple line feeds
+      $text = str_replace("\r\n\r", "\r\r\r", $text);
       $line = strtok($text, "\n");
       while ($line !== false) {
         $line = str_replace("\r", "\n", $line);
