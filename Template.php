@@ -6420,6 +6420,11 @@ final class Template {
       if (($this->is_book_series('journal') || $this->is_book_series('series') ||
            $this->is_book_series('chapter') || $this->is_book_series('title')) ||
           ($this->wikiname() !== 'cite book' && $this->wikiname() !== 'citation' && $this->has('chapter'))) {
+        // Do it twice - since things change
+        $this->tidy_parameter('series');
+        $this->tidy_parameter('journal');
+        $this->tidy_parameter('title');
+        $this->tidy_parameter('chapter');
         $this->tidy_parameter('series');
         $this->tidy_parameter('journal');
         $this->tidy_parameter('title');
