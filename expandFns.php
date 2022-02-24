@@ -1004,7 +1004,12 @@ function edit_a_list_of_pages(array $pages_in_category, WikipediaBot $api, strin
     if ($page->get_text_from($page_title, $api) && $page->expand_text()) {
       report_phase("Writing to " . echoable($page_title) . '... ');
       $attempts = 0;
-      while (!$page->write($api, $edit_summary_end . (string) $done . '/' . (string) $total . ' ') && $attempts < MAX_TRIES) ++$attempts;
+      if ($total === 1) {
+        $edit_sum = $edit_summary_end;
+      } else {
+        $edit_sum = $edit_summary_end . (string) $done . '/' . (string) $total . ' ';
+      }
+      while (!$page->write($api, $edit_sum) && $attempts < MAX_TRIES) ++$attempts;
       if ($attempts < MAX_TRIES) {
         $last_rev = $api->get_last_revision($page_title);
         echo
