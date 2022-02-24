@@ -645,4 +645,5 @@ const JOURNAL_IS_BOOK_SERIES = array('methods of molecular biology' , 'methods m
                                      'advances in pharmacology', 'inorganic syntheses',
                                      'advances in enzymology and related areas of molecular biology',
                                      'studies in bilingualism', 'antibiotics and chemotherapy',
-                                     'oceanic linguistics special publications');
+                                     'oceanic linguistics special publications',
+                                     'progress in brain research');
