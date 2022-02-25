@@ -4144,6 +4144,10 @@ final class Template {
             }
             return;
 
+        case 'author-separator':
+          if (in_array($this->get($param), [',', '.', ';']) $this->forget($param); // Don't mess with weird stuff
+          return;
+          
         case 'bibcode':
           if ($this->blank($param)) return;
           $bibcode_journal = substr($this->get($param), 4);
