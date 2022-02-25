@@ -4143,10 +4143,6 @@ final class Template {
               if ($this->blank('first1')) $this->rename('first', 'first1');
             }
             return;
-
-        case 'author-separator':
-          if (in_array($this->get($param), [',', '.', ';']) $this->forget($param); // Don't mess with weird stuff
-          return;
           
         case 'bibcode':
           if ($this->blank($param)) return;
