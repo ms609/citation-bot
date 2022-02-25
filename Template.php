@@ -745,11 +745,14 @@ final class Template {
             $this_array = [$this];
             if ($this->has('doi') && doi_active($this->get('doi'))) {
               expand_by_doi($this);
-            } elseif ($this->has('pmid')) {
+            }
+            if ($this->has('pmid')) {
               query_pmid_api(array($this->get('pmid')), $this_array);
-            } elseif ($this->has('pmc')) {
+            }
+            if ($this->has('pmc')) {
               query_pmc_api(array($this->get('pmc')), $this_array);
-            } elseif ($this->has('jstor')) {
+            }
+            if ($this->has('jstor')) {
               expand_by_jstor($this);
             }
             if ($this->has('CITATION_BOT_PLACEHOLDER_journal')) {
