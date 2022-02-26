@@ -4208,7 +4208,7 @@ final class Template {
           $month = $this->get('month');
           $year = $this->get('year');
           if (!preg_match('~^\d*$~', $day)) return;
-          if (!preg_match('~^[a-zA-Z]+$~', $month)) return;
+          if (!preg_match('~^[a-zA-Z\–\-]+$~u', $month)) return;
           if (!preg_match('~^\d{4}$~', $year)) return;
           $new_date =  trim($day . ' ' . $month . ' ' . $year);
           $this->forget('day');
