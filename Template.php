@@ -3160,7 +3160,7 @@ final class Template {
           $hash = $matcher[1];
       }
       if (isset($book_array['q'])){
-        if ((stripos($book_array['q'], 'isbn') === 0 && $book_array['q'] !=='ISBN' && $book_array['q'] !== 'isbn' )) || // Sometimes the search is for the term isbn
+        if (((stripos($book_array['q'], 'isbn') === 0) && ($book_array['q'] !=='ISBN') && ($book_array['q'] !== 'isbn')) || // Sometimes the search is for the term isbn
             stripos($book_array['q'], 'subject:') === 0 ||
             stripos($book_array['q'], 'inauthor:') === 0 ||
             stripos($book_array['q'], 'inpublisher:') === 0) {
