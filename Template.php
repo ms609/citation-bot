@@ -3104,13 +3104,20 @@ final class Template {
           $hash = str_replace($matcher[1], '', $hash);
           if (isset($book_array['q'])) {
             $removed_parts .= '&q=' . $book_array['q'];
-            unset($book_array['q']);
-          }
-          if (isset($book_array['dq'])) {
+            $book_array['q'] = urlencode(urldecode(substr($matcher[1], 3)));           // #q= wins over &q= before # sign
+          } elseif (isset($book_array['dq'])) {
             $removed_parts .= '&dq=' . $book_array['dq'];
-            unset($book_array['dq']);
+            $dum_dq = str_replace('+', ' ', urldecode($book_array['dq']));
+            $dum_q  = str_replace('+', ' ', urldecode($matcher[1]));
+            if ($dum_dq === $dum_q) {
+              $book_array['q'] = urlencode(urldecode(substr($matcher[1], 3)));
+              unset($book_array['dq'])
+            } else {
+              $book_array['dq'] = urlencode(urldecode(substr($matcher[1], 3)));
+            }
+          } else {
+            $book_array['q'] = urlencode(urldecode(substr($matcher[1], 3)));
           }
-          $book_array['q'] = urlencode(urldecode(substr($matcher[1], 3)));
       }
       if (preg_match('~(&dq=[^&]+)&~', $hash, $matcher)) {
           $hash = str_replace($matcher[1], '', $hash);
