@@ -3109,7 +3109,7 @@ final class Template {
             $removed_parts .= '&dq=' . $book_array['dq'];
             $dum_dq = str_replace('+', ' ', urldecode($book_array['dq']));
             $dum_q  = str_replace('+', ' ', urldecode(substr($matcher[1], 3)));
-            if ($dum_dq === $dum_q) {
+            if ($dum_dq !== $dum_q) {
               $book_array['q'] = urlencode(urldecode(substr($matcher[1], 3)));
               unset($book_array['dq']);
             } else {
