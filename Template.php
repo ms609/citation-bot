@@ -3080,6 +3080,8 @@ final class Template {
                 $removed_redundant++;
                 $removed_parts .= $part;
             } else {
+                if (isset($part_start[2])) $part_start[1] = $part_start[1] . '=' $part_start[2];
+                if (isset($part_start[3])) $part_start[1] = $part_start[1] . '=' $part_start[3];
                 $book_array[$part_start[0]] = $part_start[1];
             }
             break;
