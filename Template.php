@@ -3108,10 +3108,10 @@ final class Template {
           } elseif (isset($book_array['dq'])) {
             $removed_parts .= '&dq=' . $book_array['dq'];
             $dum_dq = str_replace('+', ' ', urldecode($book_array['dq']));
-            $dum_q  = str_replace('+', ' ', urldecode($matcher[1]));
+            $dum_q  = str_replace('+', ' ', urldecode(substr($matcher[1], 3)));
             if ($dum_dq === $dum_q) {
               $book_array['q'] = urlencode(urldecode(substr($matcher[1], 3)));
-              unset($book_array['dq'])
+              unset($book_array['dq']);
             } else {
               $book_array['dq'] = urlencode(urldecode(substr($matcher[1], 3)));
             }
