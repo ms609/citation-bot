@@ -3169,6 +3169,14 @@ final class Template {
           unset($book_array['q']);
         }
       }
+      if (isset($book_array['dq'])){
+        if (((stripos($book_array['dq'], 'isbn') === 0) && ($book_array['dq'] !=='ISBN') && ($book_array['dq'] !== 'isbn')) || // Sometimes the search is for the term isbn
+            stripos($book_array['dq'], 'subject:') === 0 ||
+            stripos($book_array['dq'], 'inauthor:') === 0 ||
+            stripos($book_array['dq'], 'inpublisher:') === 0) {
+          unset($book_array['dq']);
+        }
+      }
       if (isset($book_array['sitesec'])) { // Overrides all other setting
         if (strtolower($book_array['sitesec']) === 'reviews') {
           $url .= '&sitesec=reviews';
