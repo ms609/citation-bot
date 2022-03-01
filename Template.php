@@ -922,13 +922,14 @@ final class Template {
     }
     if ($this->display_authors() >= $this->number_of_authors()) return TRUE;
     return (!(
-             ($this->has('journal') || $this->has('periodical'))
+             ($this->has('journal') || $this->has('periodical') || $this->has('work') || $this->has('newspaper') || $this->has('magazine'))
           &&  $this->has('volume')
           && ($this->has('issue') || $this->has('number'))
           &&  $this->has('title')
           && ($this->has('date') || $this->has('year'))
           && $two_authors
-          && ($this->get('journal') !== 'none' && $this->get('title') !== 'none'))
+          && $this->get('journal') !== 'none'
+          && $this->get('title') !== 'none'
     ));
   }
 
