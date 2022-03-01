@@ -394,7 +394,12 @@ function str_equivalent(string $str1, string $str2) : bool {
 
 // See also str_equivalent()
 function titles_are_similar(string $title1, string $title2) : bool {
-  return !titles_are_dissimilar($title1, $title2);
+  if (!titles_are_dissimilar($title1, $title2)) return TRUE;
+  // Try again but with funky stuff mapped out of existence
+  $title1 = str_replace('�', '', str_replace(array_keys(MAP_DIACRITICS), '', $title1));
+  $title2 = str_replace('�', '', str_replace(array_keys(MAP_DIACRITICS), '', $title2));
+  if (!titles_are_dissimilar($title1, $title2)) return TRUE;
+  return FALSE;
 }
 
 
