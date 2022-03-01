@@ -891,13 +891,26 @@ final class Template {
   }
 
   public function incomplete() : bool {   // FYI: some references will never be considered complete
+    $possible_extra_authors = $this->get('author') . $this->get('authors') . $this->get('vauthors');
+    if (strpos($possible_extra_authors, ' and ') !== FALSE ||
+        strpos($possible_extra_authors, '; ')    !== FALSE ||
+        strpos($possible_extra_authors, 'et al ')!== FALSE ||
+        strpos($possible_extra_authors, 'et al.')!== FALSE ||
+        strpos($possible_extra_authors, ' et al')!== FALSE ||
+        substr_count($possible_extra_authors, ',') > 3     ||
+        $this->has('author2') || $this->has('last2') || $this->has('surname2')
+    ) {
+        $two_authors = TRUE;
+    } else {
+        $two_authors = FALSE;
+    }  
     if ($this->wikiname() =='cite book' || ($this->wikiname() =='citation' && $this->has('isbn'))) { // Assume book
       if ($this->display_authors() >= $this->number_of_authors()) return TRUE;
       return (!(
               $this->has('isbn')
           &&  $this->has('title')
           && ($this->has('date') || $this->has('year'))
-          && ($this->has('author2') || $this->has('last2') || $this->has('surname2'))
+          && $two_authors
       ));
     }
     // And now everything else
@@ -914,7 +927,7 @@ final class Template {
           && ($this->has('issue') || $this->has('number'))
           &&  $this->has('title')
           && ($this->has('date') || $this->has('year'))
-          && ($this->has('author2') || $this->has('last2') || $this->has('surname2')
+          && $two_authors
           && ($this->get('journal') !== 'none' && $this->get('title') !== 'none'))
     ));
   }
