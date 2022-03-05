@@ -1718,16 +1718,14 @@ final class Template {
            return $this->add($param_name, $value);
         }
         // TODO : delete this code once all the old categories are run over an re-checked & change above back to 6 months
-        /**
-        $halloween = strtotime("23:59:59 31 October 2021");
+        $halloween = strtotime("23:59:59 28 February 2022");
         if (($the_new > $halloween) && ($existing < $halloween)) {
             if ($this->date_style === DATES_MDY) {
-               return $this->add($param_name, 'October 31, 2021');
+               return $this->add($param_name, 'February 28, 2022');
             } else {
-               return $this->add($param_name, '31 October 2021');
+               return $this->add($param_name, '28 February 2022');
             }
         }
-        **/
         return FALSE;
 
       case 'pmid':
