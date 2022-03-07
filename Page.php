@@ -661,7 +661,7 @@ class Page {
   }
   
   protected function allow_bots() : bool {
-    if (defined("BAD_PAGE_HTTP") || defined("BAD_PAGE_API")) {
+    if ((defined("BAD_PAGE_HTTP") && BAD_PAGE_HTTP !== "") || (defined("BAD_PAGE_API") && BAD_PAGE_API !== "")) {
       return TRUE; // When testing the bot on a specific page, allow "editing"
     }
     // see {{bots}} and {{nobots}}
