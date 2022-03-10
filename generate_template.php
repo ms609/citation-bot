@@ -30,4 +30,3 @@ $page->expand_text();
 echo "\n\n" . echoable('<ref>' . $page->parsed_text() . '</ref>') . "\n\n</pre></main></body></html>";
 
 ?>
-
