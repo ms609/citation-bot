@@ -9,14 +9,13 @@ declare(strict_types=1);
 ?>
 
 <!DOCTYPE html><html lang="en" dir="ltr"><head><title>Make a Template</title></head><body><main><pre>
-
 <?php
 require_once 'setup.php';
 
 $t = new Template();
 $t->parse_text('{{Cite web}}');
 if (count($_GET) > 10) exit('Excessive number of parameters passed</pre></body></html>');
-if (count($_GET) === 0) exit('No parameters passed');
+if (count($_GET) === 0) exit('No parameters passed</pre></body></html>');
 foreach ($_GET as $param=>$value) {
   if (strlen($param . $value) > 256) exit('Excessively long parameter passed</pre></body></html>');
   if (strlen($param) == 0) exit('Parameter error</pre></body></html>');
@@ -31,4 +30,4 @@ $page->expand_text();
 echo "\n\n<ref>" . echoable($page->parsed_text()) . "</ref>\n\n</pre></main></body></html>";
 
 ?>
-</pre></body></html>
+
