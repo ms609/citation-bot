@@ -987,7 +987,7 @@ function doi_encode (string $doi) : string {
 function edit_a_list_of_pages(array $pages_in_category, WikipediaBot $api, string $edit_summary_end) {
   $final_edit_overview = "";
   // Remove pages with blank as the name, if present
-  if (($key = array_search("", $pages_in_category)) !== false) {
+  if (($key = array_search("", $pages_in_category)) !== FALSE) {
     unset($pages_in_category[$key]);
   }
   if (empty($pages_in_category)) {
