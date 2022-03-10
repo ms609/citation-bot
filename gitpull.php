@@ -3,10 +3,10 @@
 @header('Pragma: no-cache');
 @header('Expires: 0');
 @header('Content-type: text/html; charset=utf-8');
-?>
-<!DOCTYPE html><html lang="en" dir="ltr"><head><title>Git Pull</title></head><body><main><pre>
-<?php
+
 ob_implicit_flush();
+echo '<!DOCTYPE html><html lang="en" dir="ltr"><head><title>Git Pull</title></head><body><main><pre>';
+
 if (mkdir('git_pull.lock', 0700)) {
   // Fetch only updates .git, so it is very safe. That is the first half of pull. So do it as own command
   /** @psalm-suppress ForbiddenCode */
@@ -15,5 +15,6 @@ if (mkdir('git_pull.lock', 0700)) {
 } else {
   echo 'lock file exists -- aborting ';
 }
+echo '</pre></main></body></html>';
 ?>
-</pre></main></body></html>
+
