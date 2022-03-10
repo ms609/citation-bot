@@ -30,7 +30,7 @@ $edit_summary_end = "| Suggested by " . $api->get_the_user() . " | [[Category:$c
 if ($category) {
   $pages_in_category = $api->category_members($category);
   if (empty($pages_in_category)) {
-    echo 'Category appears to be empty';
+    report_warning('Category appears to be empty');
     html_echo(' </pre><footer><a href="./" title="Use Citation Bot again">Another</a>?</footer></body></html>', "\n");
     exit();
   }
@@ -39,7 +39,7 @@ if ($category) {
 
   $total = count($pages_in_category);
   if ($total > intval(MAX_PAGES / 4)) {
-    echo 'Category is huge (' . (string) $total . ')  Cancelling run. Pick a smaller category (maximum size is ' . (string) intval(MAX_PAGES / 4) . ').  Listen to Obi-Wan Kenobi:  You want to go home and rethink your life.';
+    report_warning( 'Category is huge (' . (string) $total . ')  Cancelling run. Pick a smaller category (maximum size is ' . (string) intval(MAX_PAGES / 4) . ').  Listen to Obi-Wan Kenobi:  You want to go home and rethink your life.');
     echo "\n\n";
     foreach ($pages_in_category as $page_title) {
        html_echo((string) $page_title . "\n");
@@ -53,11 +53,11 @@ if ($category) {
   if (isset($argv[1])) {
     echo "You must specify a category on the command line.";
   } elseif (isset($_POST["cat"])) {
-    echo "You must specify a valid category on the webform.";
+    report_warning("You must specify a valid category on the webform.");
   } elseif (isset($_GET["cat"])) {
-    echo "You must specify a category on the webform.  We do not support using as a parameter to the php file anymore";
+    report_warning("You must specify a category on the webform.  We do not support using as a parameter to the php file anymore");
   } else {
-    echo "You must specify a category using the API -- OR -- category got lost during initial authorization ";
+    report_warning("You must specify a category using the API -- OR -- category got lost during initial authorization ");
   }
   html_echo(' </pre><footer><a href="./" title="Use Citation Bot again">Another</a>?</footer></body></html>', "\n");
 }
