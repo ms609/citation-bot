@@ -7703,6 +7703,11 @@ final class Template {
             }
           }
       }
+      if ($this->has('doi')) {
+          if (doi_works($this->get('doi')) === FALSE) {
+             $this->add_if_new('doi-broken-date', date('Y-m-d'));
+          }
+      }
   }
 
   public function clean_dates(string $input) : string { // See https://en.wikipedia.org/wiki/Help:CS1_errors#bad_date
