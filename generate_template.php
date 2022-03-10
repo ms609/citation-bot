@@ -24,9 +24,10 @@ foreach ($_GET as $param=>$value) {
 
 $page = new Page();
 $page->parse_text($t->parsed_text());
+unset($t);
 $page->expand_text();
 
-echo "\n\n<ref>" . echoable($page->parsed_text()) . "</ref>\n\n</pre></main></body></html>";
+echo "\n\n" . echoable('<ref>' . $page->parsed_text() . '</ref>') . "\n\n</pre></main></body></html>";
 
 ?>
 
