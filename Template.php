@@ -1717,13 +1717,14 @@ final class Template {
         if (($existing === FALSE) || ($existing + (7*2592000) < $the_new) || ((2592000*7) + $the_new < $existing)) { // Seven months of difference
            return $this->add($param_name, $value);
         }
-        // TODO : delete this code once all the old categories are run over an re-checked & change above back to 6 months
-        $halloween = strtotime("23:59:59 27 February 2022");
-        if (($the_new > $halloween) && ($existing < $halloween)) {
+        // TODO : re-checked & change this back to 6 months ago everyone in a while to compact all DOIs
+        $last_day = strtotime("23:59:59 28 February 2022");
+        $check_date = $last_day - 126000;
+        if (($the_new > $last_day) && ($existing < $check_date)) {
             if ($this->date_style === DATES_MDY) {
-               return $this->add($param_name, 'February 28, 2022');
+               return $this->add($param_name, date('F j, Y', $last_day));
             } else {
-               return $this->add($param_name, '28 February 2022');
+               return $this->add($param_name, date('j F Y', $last_day));
             }
         }
         return FALSE;
