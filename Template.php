@@ -7670,42 +7670,37 @@ final class Template {
           $try2 = '10.1093/odnb/' . $this->get('id');
           $try3 = '10.1093/odnb/9780198614128.013.' . $this->get('id');
           if (doi_works($try1) !== FALSE) {
-            return; // Template does this
+            ; // Template does this
           } elseif (doi_works($try2)) {
             if ($doi === '') {
               $this->rename('id', 'doi', $try2);
-              return;
             } elseif ($doi === $try2) {
               $this->forget('id');
-              return;
             } elseif (doi_works($doi)) {
               $this->forget('id');
-              return;
             } else {
               $this->forget('doi');
               $this->rename('id', 'doi', $try2);
-              return;
             }
           } elseif (doi_works($try3)) {
             if ($doi === '') {
               $this->rename('id', 'doi', $try3);
-              return;
             } elseif ($doi === $try3) {
               $this->forget('id');
-              return;
             } elseif (doi_works($doi)) {
               $this->forget('id');
-              return;
             } else {
               $this->forget('doi');
               $this->rename('id', 'doi', $try3);
-              return;
             }
           }
       }
       if ($this->has('doi')) {
-          if (doi_works($this->get('doi')) === FALSE) {
+          $works = doi_works($this->get('doi'));
+          if ($works === FALSE) {
              $this->add_if_new('doi-broken-date', date('Y-m-d'));
+          } elseif ($works === TRUE) {
+             $this->forget('doi-broken-date');
           }
       }
   }
