@@ -4393,6 +4393,21 @@ final class Template {
               }
             }
           }
+          if (preg_match('~^10\.48550/arXiv\.(\S{4}\.\S{5})$~i', $doi, $matches)) {
+            if ($this->blank(ARXIV_ALIASES) {
+              $this->rename('doi', 'eprint', $matches[1]);
+            } elseif ($this->has('eprint')) {
+              $eprint = $this->get('eprint');
+              if ($matches[1] === $eprint) {
+                $this->forget('doi');
+              }
+            } elseif ($this->has('arxiv')) {
+              $eprint = $this->get('arxiv');
+              if ($matches[1] === $eprint) {
+                $this->forget('doi');
+              }
+            }
+          }
           return;
 
         case 'doi-broken': case 'doi_brokendate': case 'doi-broken-date': case 'doi_inactivedate': case 'doi-inactive-date':
