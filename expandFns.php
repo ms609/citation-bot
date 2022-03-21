@@ -394,7 +394,12 @@ function str_equivalent(string $str1, string $str2) : bool {
 
 // See also str_equivalent()
 function titles_are_similar(string $title1, string $title2) : bool {
-  return !titles_are_dissimilar($title1, $title2);
+  if (!titles_are_dissimilar($title1, $title2)) return TRUE;
+  // Try again but with funky stuff mapped out of existence
+  $title1 = str_replace('�', '', str_replace(array_keys(MAP_DIACRITICS), '', $title1));
+  $title2 = str_replace('�', '', str_replace(array_keys(MAP_DIACRITICS), '', $title2));
+  if (!titles_are_dissimilar($title1, $title2)) return TRUE;
+  return FALSE;
 }
 
 
@@ -977,4 +982,85 @@ function doi_encode (string $doi) : string {
     $doi = urlencode($doi);
     $doi = str_replace('%2F', '/', $doi);
     return $doi;
+}
+
+function edit_a_list_of_pages(array $pages_in_category, WikipediaBot $api, string $edit_summary_end) {
+  $final_edit_overview = "";
+  // Remove pages with blank as the name, if present
+  if (($key = array_search("", $pages_in_category)) !== FALSE) {
+    unset($pages_in_category[$key]);
+  }
+  if (empty($pages_in_category)) {
+    report_warning('No links to expand found');
+    echo '</pre><footer><a href="./" title="Use Citation Bot again">Another</a>?</footer></body></html>';
+    exit();
+  }
+  $total = count($pages_in_category);
+  if ($total > MAX_PAGES) {
+    report_warning('Number of links is huge (' . (string) $total . ')  Cancelling run (maximum size is ' . (string) MAX_PAGES . ').  Listen to Obi-Wan Kenobi:  You want to go home and rethink your life.');
+    echo '</pre><footer><a href="./" title="Use Citation Bot again">Another</a>?</footer></body></html>';
+    exit();
+  }
+  if ($total > BIG_RUN) check_overused();
+
+  $page = new Page();
+  $done = 0;
+
+  gc_collect_cycles();
+  foreach ($pages_in_category as $page_title) {
+    check_killed();
+    $done++;
+    if ($page->get_text_from($page_title, $api) && $page->expand_text()) {
+      report_phase("Writing to " . echoable($page_title) . '... ');
+      $attempts = 0;
+      if ($total === 1) {
+        $edit_sum = $edit_summary_end;
+      } else {
+        $edit_sum = $edit_summary_end . (string) $done . '/' . (string) $total . ' ';
+      }
+      while (!$page->write($api, $edit_sum) && $attempts < MAX_TRIES) ++$attempts;
+      if ($attempts < MAX_TRIES) {
+        $last_rev = $api->get_last_revision($page_title);
+        echo
+        "\n  <a href=" . WIKI_ROOT . "?title=" . urlencode($page_title) . "&diff=prev&oldid="
+        . $last_rev . ">diff</a>" .
+        " | <a href=" . WIKI_ROOT . "?title=" . urlencode($page_title) . "&action=history>history</a>";
+        $final_edit_overview .=
+          "\n [ <a href=" . WIKI_ROOT . "?title=" . urlencode($page_title) . "&diff=prev&oldid="
+        . $last_rev . ">diff</a>" .
+        " | <a href=" . WIKI_ROOT . "?title=" . urlencode($page_title) . "&action=history>history</a> ] " . "<a href=" . WIKI_ROOT . "?title=" . urlencode($page_title) . ">" . echoable($page_title) . "</a>";
+      } else {
+        report_warning("Write failed.");
+        $final_edit_overview .= "\n Write failed.      " . "<a href=" . WIKI_ROOT . "?title=" . urlencode($page_title) . ">" . echoable($page_title) . "</a>";
+      }
+    } else {
+      report_phase($page->parsed_text() ? "No changes required. \n\n    # # # " : "Blank page. \n\n    # # # ");
+       $final_edit_overview .= "\n No changes needed. " . "<a href=" . WIKI_ROOT . "?title=" . urlencode($page_title) . ">" . echoable($page_title) . "</a>";
+    }
+    echo "\n";
+  }
+  echo "\n Done all " . (string) $total . " pages. \n  # # # \n" . $final_edit_overview  . ' </pre><footer><a href="./" title="Use Citation Bot again">Another</a>?</footer></body></html>';
+
+}
+
+function bot_html_header() {
+  echo('<!DOCTYPE html>
+<html lang="en" dir="ltr">
+  <head>
+  <title>Citation Bot: running</title>
+  <link rel="copyright" type="text/html" href="https://www.gnu.org/licenses/gpl-3.0" />
+  <link rel="stylesheet" type="text/css" href="results.css" />
+  </head>
+<body>
+  <header>
+    <p>Follow Citation bots progress below.</p>
+    <p>
+      <a href="https://en.wikipedia.org/wiki/User:Citation_bot/use" target="_blank" title="Using Citation Bot">How&nbsp;to&nbsp;Use&nbsp;/&nbsp;Tips&nbsp;and&nbsp;Tricks</a> |
+      <a href="https://en.wikipedia.org/wiki/User_talk:Citation_bot" title="Report bugs at Wikipedia" target="_blank">Report&nbsp;bugs</a> |
+      <a href="https://github.com/ms609/citation-bot" target="_blank" title="GitHub repository">Source&nbsp;code</a>
+    </p>
+  </header>
+
+  <pre id="botOutput">
+   ');
 }

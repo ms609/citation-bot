@@ -633,6 +633,7 @@ final class Template {
           $the_issue   = $this->get('issue');
           $the_page    = $this->get('page');
           $the_pages   = $this->get('pages');
+          $initial_author_params_save = $this->initial_author_params;
           $bad_data = FALSE;
           if ($the_pages === '0' || $the_pages === 'null' || $the_pages === 'n/a') {
               $this->rename('pages', 'CITATION_BOT_PLACEHOLDER_pages');
@@ -719,16 +720,40 @@ final class Template {
               $this->rename('title', 'CITATION_BOT_PLACEHOLDER_title');
               $bad_data = TRUE;
             }
+            if ($this->has('coauthors')) {
+              if ($this->has('first'))  $this->rename('first',  'CITATION_BOT_PLACEHOLDER_first');
+              if ($this->has('last'))   $this->rename('last',   'CITATION_BOT_PLACEHOLDER_last');
+              if ($this->has('first1')) $this->rename('first1', 'CITATION_BOT_PLACEHOLDER_first1');
+              if ($this->has('last1'))  $this->rename('last1',  'CITATION_BOT_PLACEHOLDER_last1');
+              if ($this->has('author1'))$this->rename('author1','CITATION_BOT_PLACEHOLDER_author1');
+              if ($this->has('author')) $this->rename('author', 'CITATION_BOT_PLACEHOLDER_author');
+              $this->rename('coauthors', 'CITATION_BOT_PLACEHOLDER_coauthors');
+              if ($this->blank(FLATTENED_AUTHOR_PARAMETERS)) {
+                $this->initial_author_params = array();
+                $bad_data = TRUE;
+              } else {
+                if ($this->has('CITATION_BOT_PLACEHOLDER_first'))  $this->rename('CITATION_BOT_PLACEHOLDER_first',  'first');
+                if ($this->has('CITATION_BOT_PLACEHOLDER_last'))   $this->rename('CITATION_BOT_PLACEHOLDER_last',   'last');
+                if ($this->has('CITATION_BOT_PLACEHOLDER_first1')) $this->rename('CITATION_BOT_PLACEHOLDER_first1', 'first1');
+                if ($this->has('CITATION_BOT_PLACEHOLDER_last1'))  $this->rename('CITATION_BOT_PLACEHOLDER_last1',  'last1');
+                if ($this->has('CITATION_BOT_PLACEHOLDER_author1'))$this->rename('CITATION_BOT_PLACEHOLDER_author1','author1');
+                if ($this->has('CITATION_BOT_PLACEHOLDER_author')) $this->rename('CITATION_BOT_PLACEHOLDER_author', 'author');
+                $this->rename('CITATION_BOT_PLACEHOLDER_coauthors', 'coauthors');
+              }
+            }
           }
           if ($bad_data) {
             $this_array = [$this];
             if ($this->has('doi') && doi_active($this->get('doi'))) {
               expand_by_doi($this);
-            } elseif ($this->has('pmid')) {
+            }
+            if ($this->has('pmid')) {
               query_pmid_api(array($this->get('pmid')), $this_array);
-            } elseif ($this->has('pmc')) {
+            }
+            if ($this->has('pmc')) {
               query_pmc_api(array($this->get('pmc')), $this_array);
-            } elseif ($this->has('jstor')) {
+            }
+            if ($this->has('jstor')) {
               expand_by_jstor($this);
             }
             if ($this->has('CITATION_BOT_PLACEHOLDER_journal')) {
@@ -781,7 +806,36 @@ final class Template {
                 $this->rename('CITATION_BOT_PLACEHOLDER_pages', 'pages');
               }
             }
+            if ($this->has('CITATION_BOT_PLACEHOLDER_coauthors')) {
+              if ($this->has('last1') || $this->has('author1')) {
+                $this->forget('CITATION_BOT_PLACEHOLDER_first');
+                $this->forget('CITATION_BOT_PLACEHOLDER_last');
+                $this->forget('CITATION_BOT_PLACEHOLDER_first1');
+                $this->forget('CITATION_BOT_PLACEHOLDER_last1');
+                $this->forget('CITATION_BOT_PLACEHOLDER_author1');
+                $this->forget('CITATION_BOT_PLACEHOLDER_author');
+                $this->forget('CITATION_BOT_PLACEHOLDER_coauthors');
+              } else {
+                $this->initial_author_params = $initial_author_params_save;
+                if ($this->has('CITATION_BOT_PLACEHOLDER_first'))   $this->rename('CITATION_BOT_PLACEHOLDER_first',  'first');
+                if ($this->has('CITATION_BOT_PLACEHOLDER_last'))    $this->rename('CITATION_BOT_PLACEHOLDER_last',   'last');
+                if ($this->has('CITATION_BOT_PLACEHOLDER_first1'))  $this->rename('CITATION_BOT_PLACEHOLDER_first1', 'first1');
+                if ($this->has('CITATION_BOT_PLACEHOLDER_last1'))   $this->rename('CITATION_BOT_PLACEHOLDER_last1',  'last1');
+                if ($this->has('CITATION_BOT_PLACEHOLDER_author1')) $this->rename('CITATION_BOT_PLACEHOLDER_author1','author1');
+                if ($this->has('CITATION_BOT_PLACEHOLDER_author'))  $this->rename('CITATION_BOT_PLACEHOLDER_author', 'author');
+                $this->rename('CITATION_BOT_PLACEHOLDER_coauthors', 'coauthors');
+              }
+            }
           }
+          unset($initial_author_params_save);
+          unset($the_title);
+          unset($the_journal);
+          unset($the_chapter);
+          unset($the_volume);
+          unset($the_issue);
+          unset($the_page);
+          unset($the_pages);
+          unset($bad_data);
         }
         $this->tidy();
         // Fix up URLs hiding in identifiers
@@ -838,13 +892,26 @@ final class Template {
   }
 
   public function incomplete() : bool {   // FYI: some references will never be considered complete
+    $possible_extra_authors = $this->get('author') . $this->get('authors') . $this->get('vauthors');
+    if (strpos($possible_extra_authors, ' and ') !== FALSE ||
+        strpos($possible_extra_authors, '; ')    !== FALSE ||
+        strpos($possible_extra_authors, 'et al ')!== FALSE ||
+        strpos($possible_extra_authors, 'et al.')!== FALSE ||
+        strpos($possible_extra_authors, ' et al')!== FALSE ||
+        substr_count($possible_extra_authors, ',') > 3     ||
+        $this->has('author2') || $this->has('last2') || $this->has('surname2')
+    ) {
+        $two_authors = TRUE;
+    } else {
+        $two_authors = FALSE;
+    }  
     if ($this->wikiname() =='cite book' || ($this->wikiname() =='citation' && $this->has('isbn'))) { // Assume book
       if ($this->display_authors() >= $this->number_of_authors()) return TRUE;
       return (!(
               $this->has('isbn')
           &&  $this->has('title')
           && ($this->has('date') || $this->has('year'))
-          && ($this->has('author2') || $this->has('last2') || $this->has('surname2'))
+          && $two_authors
       ));
     }
     // And now everything else
@@ -856,13 +923,14 @@ final class Template {
     }
     if ($this->display_authors() >= $this->number_of_authors()) return TRUE;
     return (!(
-             ($this->has('journal') || $this->has('periodical'))
+             ($this->has('journal') || $this->has('periodical') || $this->has('work') || $this->has('newspaper') || $this->has('magazine'))
           &&  $this->has('volume')
           && ($this->has('issue') || $this->has('number'))
           &&  $this->has('title')
           && ($this->has('date') || $this->has('year'))
-          && ($this->has('author2') || $this->has('last2') || $this->has('surname2')
-          && ($this->get('journal') !== 'none' && $this->get('title') !== 'none'))
+          && $two_authors
+          && $this->get('journal') !== 'none'
+          && $this->get('title') !== 'none'
     ));
   }
 
@@ -1650,17 +1718,16 @@ final class Template {
         if (($existing === FALSE) || ($existing + (7*2592000) < $the_new) || ((2592000*7) + $the_new < $existing)) { // Seven months of difference
            return $this->add($param_name, $value);
         }
-        // TODO : delete this code once all the old categories are run over an re-checked & change above back to 6 months
-        /**
-        $halloween = strtotime("23:59:59 31 October 2021");
-        if (($the_new > $halloween) && ($existing < $halloween)) {
+        // TODO : re-checked & change this back to 6 months ago everyone in a while to compact all DOIs
+        $last_day = strtotime("23:59:59 28 February 2022");
+        $check_date = $last_day - 126000;
+        if (($the_new > $last_day) && ($existing < $check_date)) {
             if ($this->date_style === DATES_MDY) {
-               return $this->add($param_name, 'October 31, 2021');
+               return $this->add($param_name, date('F j, Y', $last_day));
             } else {
-               return $this->add($param_name, '31 October 2021');
+               return $this->add($param_name, date('j F Y', $last_day));
             }
         }
-        **/
         return FALSE;
 
       case 'pmid':
@@ -3027,6 +3094,8 @@ final class Template {
                 $removed_redundant++;
                 $removed_parts .= $part;
             } else {
+                if (isset($part_start[2])) $part_start[1] = $part_start[1] . '=' . $part_start[2];
+                if (isset($part_start[3])) $part_start[1] = $part_start[1] . '=' . $part_start[3];
                 $book_array[$part_start[0]] = $part_start[1];
             }
             break;
@@ -3054,7 +3123,14 @@ final class Template {
             $book_array['q'] = urlencode(urldecode(substr($matcher[1], 3)));           // #q= wins over &q= before # sign
           } elseif (isset($book_array['dq'])) {
             $removed_parts .= '&dq=' . $book_array['dq'];
-            $book_array['dq'] = urlencode(urldecode(substr($matcher[1], 3)));
+            $dum_dq = str_replace('+', ' ', urldecode($book_array['dq']));
+            $dum_q  = str_replace('+', ' ', urldecode(substr($matcher[1], 3)));
+            if ($dum_dq !== $dum_q) {
+              $book_array['q'] = urlencode(urldecode(substr($matcher[1], 3)));
+              unset($book_array['dq']);
+            } else {
+              $book_array['dq'] = urlencode(urldecode(substr($matcher[1], 3)));
+            }
           } else {
             $book_array['q'] = urlencode(urldecode(substr($matcher[1], 3)));
           }
@@ -3100,11 +3176,19 @@ final class Template {
           $hash = $matcher[1];
       }
       if (isset($book_array['q'])){
-        if (stripos($book_array['q'], 'isbn') === 0 ||
+        if (((stripos($book_array['q'], 'isbn') === 0) && ($book_array['q'] !=='ISBN') && ($book_array['q'] !== 'isbn')) || // Sometimes the search is for the term isbn
             stripos($book_array['q'], 'subject:') === 0 ||
             stripos($book_array['q'], 'inauthor:') === 0 ||
             stripos($book_array['q'], 'inpublisher:') === 0) {
           unset($book_array['q']);
+        }
+      }
+      if (isset($book_array['dq'])){
+        if (((stripos($book_array['dq'], 'isbn') === 0) && ($book_array['dq'] !=='ISBN') && ($book_array['dq'] !== 'isbn')) || // Sometimes the search is for the term isbn
+            stripos($book_array['dq'], 'subject:') === 0 ||
+            stripos($book_array['dq'], 'inauthor:') === 0 ||
+            stripos($book_array['dq'], 'inpublisher:') === 0) {
+          unset($book_array['dq']);
         }
       }
       if (isset($book_array['sitesec'])) { // Overrides all other setting
@@ -3885,6 +3969,7 @@ final class Template {
           stripos($param, 'url') === FALSE &&         // all characters are valid
           stripos($param, 'quot') === FALSE &&        // someone might have formatted the quote
           stripos($param, 'link') === FALSE &&        // inter-wiki links
+          $param !== 'trans-title' &&                 // these can be very weird
           (($param !== 'chapter' && $param !== 'title') || strlen($this->get($param)) > 4)  // Avoid tiny titles that might be a smiley face
          ) {
         $this->set($param, preg_replace('~[\x{2000}-\x{200A}\x{00A0}\x{202F}\x{205F}\x{3000}]~u', ' ', $this->get($param))); // Non-standard spaces
@@ -4093,7 +4178,7 @@ final class Template {
               if ($this->blank('first1')) $this->rename('first', 'first1');
             }
             return;
-
+          
         case 'bibcode':
           if ($this->blank($param)) return;
           $bibcode_journal = substr($this->get($param), 4);
@@ -4143,12 +4228,19 @@ final class Template {
             $this->forget($param);
             return;
           }
+          if ($this->has('date')) {
+             if (stripos($this->get('date'), $this->get($param)) !== FALSE) {  // Date has month already
+                $this->forget('month');
+                $this->forget('day');
+                return;
+             }
+          }
           if ($this->has('date') || $this->blank('year')) return;
           $day = $this->get('day');
           $month = $this->get('month');
           $year = $this->get('year');
           if (!preg_match('~^\d*$~', $day)) return;
-          if (!preg_match('~^[a-zA-Z]+$~', $month)) return;
+          if (!preg_match('~^[a-zA-Z\–\-]+$~u', $month)) return;
           if (!preg_match('~^\d{4}$~', $year)) return;
           $new_date =  trim($day . ' ' . $month . ' ' . $year);
           $this->forget('day');
@@ -4302,6 +4394,21 @@ final class Template {
               }
             }
           }
+          if (preg_match('~^10\.48550/arXiv\.(\S{4}\.\S{5})$~i', $doi, $matches)) {
+            if ($this->blank(ARXIV_ALIASES)) {
+              $this->rename('doi', 'eprint', $matches[1]);
+            } elseif ($this->has('eprint')) {
+              $eprint = $this->get('eprint');
+              if ($matches[1] === $eprint) {
+                $this->forget('doi');
+              }
+            } elseif ($this->has('arxiv')) {
+              $eprint = $this->get('arxiv');
+              if ($matches[1] === $eprint) {
+                $this->forget('doi');
+              }
+            }
+          }
           return;
 
         case 'doi-broken': case 'doi_brokendate': case 'doi-broken-date': case 'doi_inactivedate': case 'doi-inactive-date':
@@ -4431,7 +4538,8 @@ final class Template {
                     || mb_substr($periodical, -2) !== "]]"
                     || mb_substr_count($periodical, '[[') !== 1
                     || mb_substr_count($periodical, ']]') !== 1)
-                    && !preg_match('~^(?:the |)(?:Publications|Publication|journal|Transactions|letters|annals|Bulletin|reports|history) of the ~i', $periodical)
+                    && !preg_match('~^(?:the |)(?:publications|publication|journal|transactions|letters|annals|bulletin|reports|history) of the ~i', $periodical)
+                    && !preg_match('~(magazin für |magazin fur |magazine for |section )~i', $periodical)
                     )
           {
               $this->set($param, preg_replace(REGEXP_PLAIN_WIKILINK, "$1", $periodical));
@@ -6363,6 +6471,11 @@ final class Template {
       if (($this->is_book_series('journal') || $this->is_book_series('series') ||
            $this->is_book_series('chapter') || $this->is_book_series('title')) ||
           ($this->wikiname() !== 'cite book' && $this->wikiname() !== 'citation' && $this->has('chapter'))) {
+        // Do it twice - since things change
+        $this->tidy_parameter('series');
+        $this->tidy_parameter('journal');
+        $this->tidy_parameter('title');
+        $this->tidy_parameter('chapter');
         $this->tidy_parameter('series');
         $this->tidy_parameter('journal');
         $this->tidy_parameter('title');
@@ -7575,37 +7688,37 @@ final class Template {
           $try2 = '10.1093/odnb/' . $this->get('id');
           $try3 = '10.1093/odnb/9780198614128.013.' . $this->get('id');
           if (doi_works($try1) !== FALSE) {
-            return; // Template does this
+            ; // Template does this
           } elseif (doi_works($try2)) {
             if ($doi === '') {
               $this->rename('id', 'doi', $try2);
-              return;
             } elseif ($doi === $try2) {
               $this->forget('id');
-              return;
             } elseif (doi_works($doi)) {
               $this->forget('id');
-              return;
             } else {
               $this->forget('doi');
               $this->rename('id', 'doi', $try2);
-              return;
             }
           } elseif (doi_works($try3)) {
             if ($doi === '') {
               $this->rename('id', 'doi', $try3);
-              return;
             } elseif ($doi === $try3) {
               $this->forget('id');
-              return;
             } elseif (doi_works($doi)) {
               $this->forget('id');
-              return;
             } else {
               $this->forget('doi');
               $this->rename('id', 'doi', $try3);
-              return;
             }
+          }
+      }
+      if ($this->has('doi')) {
+          $works = doi_works($this->get('doi'));
+          if ($works === FALSE) {
+             $this->add_if_new('doi-broken-date', date('Y-m-d'));
+          } elseif ($works === TRUE) {
+             $this->forget('doi-broken-date');
           }
       }
   }
