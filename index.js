@@ -74,6 +74,18 @@ function InitializeForm() {
   document.getElementById("botPage").oninput  = ValidatePageName;
   document.getElementById("botCat").oninput   = ValidateCategory;
   document.getElementById("botLinked").oninput= ValidateLinked;
+  document.getElementById("CatSubmit").disabled = false;
+  document.getElementById("PageSubmit").disabled = false;
+  document.getElementById("LinkedSubmit").disabled = false;
+  document.getElementById("PageSpinner").style.display = "none";
+  document.getElementById("CatSpinner").style.display = "none";
+  document.getElementById("LinkSpinner").style.display = "none";
+  document.getElementById("botPage").value = "";
+  document.getElementById("botCat").value = "";
+  document.getElementById("botLinked").value = "";
+  this.classList.remove("error");
 }
 
 window.onload = InitializeForm;
+window.addEventListener('pageshow', InitializeForm);
+

@@ -371,7 +371,7 @@ const ZOTERO_AVOID_REGEX = array("twitter\.",               // This should be {{
                                  "pressreader\.com", // Bad titles
                                  "ebooks\.adelaide\.edu\.au", // Dead
                                  "tnmaps\.tn\.nic\.in", // maps
-                                 fads
+                                 "lincstothepast\.com",
                                  );
 const NON_JOURNAL_WEBSITES = array('cnn.com/', 'msnbc.com/', 'nbcnews.com/', 'cbs.com/', 
                                    'cbsnews.com/', 'abc.com/', 'nytimes.com/',
@@ -572,7 +572,9 @@ const ARE_MAGAZINES = array('the new yorker', 'the new republic', 'new republic'
                            'wired (magazine)', 'time', 'life', 'time (magazine)', 'life (magazine)', 'billboard',
                            'billboard (magazine)', 'rolling stone', 'mcv/develop', 'vanity fair'
                            ); // lowercase axact matches
-const ARE_MANY_THINGS = array('pc gamer', 'gamestar', 'rock paper shotgun', 'mcv', 'rock, paper, shotgun', 'edge', 'ballotpedia', 'npr', 'ballotpedia.org', 'npr.org'); // lowercase axact matches.  These are things that are both websites and newspapers
+const ARE_MANY_THINGS = array('pc gamer', 'gamestar', 'rock paper shotgun', 'mcv', 'rock, paper, shotgun', 'edge',
+                              'ballotpedia', 'npr', 'ballotpedia.org', 'npr.org', 'nih.gov', 'nih', 
+                               'national institutes of health', 'national institutes of health (nih)'); // lowercase axact matches.  These are things that are both websites and newspapers
 const ARE_NEWSPAPERS = array('the economist', 'la times', 'toronto sun', 'washington post', 'the washington post'); // lowercase axact matches
 const NO_PUBLISHER_NEEDED = array('los angeles times', 'new york times magazine', 'the new york times',
                                    'new york times', 'huffington post', 'the daily telegraph', 'forbes.com',
@@ -646,4 +648,5 @@ const JOURNAL_IS_BOOK_SERIES = array('methods of molecular biology' , 'methods m
                                      'advances in pharmacology', 'inorganic syntheses',
                                      'advances in enzymology and related areas of molecular biology',
                                      'studies in bilingualism', 'antibiotics and chemotherapy',
-                                     'oceanic linguistics special publications');
+                                     'oceanic linguistics special publications',
+                                     'progress in brain research');
