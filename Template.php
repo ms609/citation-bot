@@ -4537,7 +4537,8 @@ final class Template {
                     || mb_substr($periodical, -2) !== "]]"
                     || mb_substr_count($periodical, '[[') !== 1
                     || mb_substr_count($periodical, ']]') !== 1)
-                    && !preg_match('~^(?:the |)(?:Publications|Publication|journal|Transactions|letters|annals|Bulletin|reports|history) of the ~i', $periodical)
+                    && !preg_match('~^(?:the |)(?:publications|publication|journal|transactions|letters|annals|bulletin|reports|history) of the ~i', $periodical)
+                    && !preg_match('~(magazin für |magazin fur |magazine for |section )~i', $periodical)
                     )
           {
               $this->set($param, preg_replace(REGEXP_PLAIN_WIKILINK, "$1", $periodical));
