@@ -4394,7 +4394,7 @@ final class Template {
             }
           }
           if (preg_match('~^10\.48550/arXiv\.(\S{4}\.\S{5})$~i', $doi, $matches)) {
-            if ($this->blank(ARXIV_ALIASES) {
+            if ($this->blank(ARXIV_ALIASES)) {
               $this->rename('doi', 'eprint', $matches[1]);
             } elseif ($this->has('eprint')) {
               $eprint = $this->get('eprint');
