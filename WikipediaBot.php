@@ -100,6 +100,8 @@ final class WikipediaBot {
       } elseif (strpos((string) $response->error->info, 'protected') !== FALSE) {
         report_minor_error('Wikipedia page is protected from editing.  Aborting changes for this page.  Will sleep and move on.');
         return TRUE;
+      } elseif (strpos((string) $response->error->info, 'Wikipedia:Why create an account') !== FALSE) {
+        report_error('The bot is editing as you, and you have not granted that permission.  Go to ' . WIKI_ROOT . '?title=Special:OAuthManageMyGrants/update/230820 and grant Citation Bot "Edit existing pages" rights.');
       } else {
         report_minor_error('API call failed: ' . (string) $response->error->info);
       }
@@ -281,8 +283,8 @@ final class WikipediaBot {
     } elseif (isset($result->edit)) {
       // @codeCoverageIgnoreStart
       if (isset($result->edit->captcha)) {
-        report_minor_error("Write error: We encountered a captcha, so can't be properly logged in.");
-        return FALSE;
+        if (self::NonStandardMode()) html_echo(echoable(print_r($result, TRUE)));
+        report_error("Write error: We encountered a captcha, so can't be properly logged in.");
       } elseif ($result->edit->result == "Success") {
         // Need to check for this string wherever our behaviour is dependant on the success or failure of the write operation
         if (HTML_OUTPUT) {

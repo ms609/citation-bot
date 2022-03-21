@@ -12,3 +12,5 @@ parameters:
 		- MAX_TRIES
 		- MAX_PAGES
 		- BIG_RUN
+		- WIKI_ROOT
+		- API_ROOT

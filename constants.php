@@ -1,6 +1,6 @@
 <?php
 declare(strict_types=1);
-// all new constant files need listed here
+// all new constant files needed listed here
 require_once 'constants/bad_data.php';
 require_once 'constants/capitalization.php';
 require_once 'constants/math.php';
@@ -11,8 +11,6 @@ require_once 'constants/regular_expressions.php';
 
 const PIPE_PLACEHOLDER = '# # # CITATION_BOT_PLACEHOLDER_PIPE # # #';
 const TEMP_PLACEHOLDER = "# # # CITATION_BOT_PLACEHOLDER_TEMPORARY %s # # #";
-const WIKI_ROOT = "https://en.wikipedia.org/w/index.php";
-const API_ROOT = "https://en.wikipedia.org/w/api.php"; // wiki's API endpoint
 const ZOTERO_ROOT = "https://translation-server.toolforge.org/web";
 const CITOID_ZOTERO = "https://en.wikipedia.org/api/rest_v1/data/citation/zotero/";
 

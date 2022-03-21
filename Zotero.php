@@ -775,6 +775,8 @@ public static function process_zotero_response(string $zotero_response, Template
       case 'forumPost';        // @codeCoverageIgnore
           // Do not change type. This seems to include things that will just make people angry if we change type to encyclopedia
       case 'encyclopediaArticle';  // @codeCoverageIgnore
+          // Probably tick people off too
+      case 'dictionaryEntry';  // @codeCoverageIgnore
         // Nothing special that we know of yet
         break;
 

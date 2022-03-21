@@ -313,12 +313,15 @@ class Page {
         $this_template->get_identifiers_from_url();
         $this_template->expand_by_google_books();
         $this_template->tidy();
-      } elseif ($this_template->wikiname() == 'cite lsa') {
+      } elseif ($this_template->wikiname() === 'cite lsa') {
         $this_template->clean_google_books();
         $this_template->forget('ref'); // Common parameter that does not actually work
-      } elseif ($this_template->wikiname() == 'cite odnb') {
+      } elseif ($this_template->wikiname() === 'cite odnb') {
         $this_template->clean_cite_odnb();
         $this_template->clean_google_books();
+      } elseif ($this_template->wikiname() === 'cite episode' || $this_template->wikiname() === 'cite interview') {
+        $this_template->clean_google_books();
+        $this_template->correct_param_mistakes();
       } elseif ((strpos($this_template->wikiname(), 'cite ') === 0)  || (strpos($this_template->wikiname(), 'vcite ') === 0)) {
         $this_template->clean_google_books();
         // THIS CATCH ALL NEEDS TO BE LAST IN THE LIST!!!!!!
@@ -443,9 +446,14 @@ class Page {
 
     // we often just fix Journal caps, so must be case sensitive compare
     // Avoid minor edits - gadget API will make these changes, since it does not check return code
-    $caps_ok = array('lccn', 'isbn', 'doi', 'cite arxiv');
+    $caps_ok = array('lccn', 'isbn', 'doi');
     $last_first_in  = array(' last=',  ' last =',  '|last=',  '|last =',  ' first=',  ' first =',  '|first=',  '|first =', 'cite newspaper', 'Cite newspaper', '| format=PDF ', '| format = PDF ', '|format=PDF ', '|format = PDF ', '| format=PDF', '| format = PDF', '|format=PDF', '|format = PDF', 'Cite ', 'cite ');
     $last_first_out = array(' last1=', ' last1 =', '|last1=', '|last1 =', ' first1=', ' first1 =', '|first1=', '|first1 =','cite news',      'Cite news',      '',              '',                '',              '',              '',             '',               '',            '',              'Cite' , 'cite' );
+    if (WIKI_ROOT === 'https://simple.wikipedia.org/w/index.php') { // Backload clean-up
+       $caps_ok = array();
+       $last_first_in  = array();
+       $last_first_out = array();
+    }
     return strcmp(str_replace($last_first_in, $last_first_out, str_ireplace($caps_ok, $caps_ok, $this->text)),
                   str_replace($last_first_in, $last_first_out, str_ireplace($caps_ok, $caps_ok, $this->start_text))) != 0;
   }
@@ -547,7 +555,11 @@ class Page {
     if (!$auto_summary) {
       $auto_summary = "Misc citation tidying. ";
     }
-    return $auto_summary . "| [[WP:UCB|Use this bot]]. [[WP:DBUG|Report bugs]]. ";
+    $auto_summary = $auto_summary . "| [[WP:UCB|Use this bot]]. [[WP:DBUG|Report bugs]]. ";
+    if (WIKI_ROOT !== 'https://en.wikipedia.org/w/index.php') {
+      $auto_summary = str_replace('[[WP:', '[[en:WP:', $auto_summary);
+    }
+    return $auto_summary;
   }
 
   public function write(WikipediaBot $api, string $edit_summary_end = '') : bool {
@@ -649,6 +661,9 @@ class Page {
   }
   
   protected function allow_bots() : bool {
+    if ((defined("BAD_PAGE_HTTP") && BAD_PAGE_HTTP !== "") || (defined("BAD_PAGE_API") && BAD_PAGE_API !== "")) {
+      return TRUE; // When testing the bot on a specific page, allow "editing"
+    }
     // see {{bots}} and {{nobots}}
     $bot_username = 'Citation[ _]bot';
     if (preg_match('~\{\{(nobots|bots\|allow=none|bots\|deny=all|bots\|optout=all|bots\|deny=.*?'.$bot_username.'.*?)\}\}~iS',$this->text)) {
