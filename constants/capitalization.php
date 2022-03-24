@@ -65,7 +65,7 @@ const JOURNAL_ACRONYMS = array(/* The following will be automatically updated to
           " ChemSusChem ", " ChemSystemsChem ", " Chest ", " CLA Journal ", " CMAJ ", " Combinatorial Math. and Combinatorial ", 
           " CommLaw ", " CrystEngComm ", " de la Plata ", " de la Plata ", " de la Plata ", 
           " dell'Accademia ", " Des. ", " Disease-a-Month ", " Drug Des Deliv ", " Drug Des Devel ", 
-          " Dtsch ", " Dtsch. ", " e-Collaboration ", " e-Journal ", " e-Journal ", " e-Neuroforum ", 
+          " Dtsch ", " Dtsch. ", " e-Collabxoration ", " e-Journal ", " e-Journal ", " e-Neuroforum ", 
           " e-Neuroforum ", " e-Print ", " e-Print ", " e-Prints ", " e-Prints ", " e-SPEN ", 
           " e-SPEN ", " e-SPEN, ", " e-SPEN, ", " E. M. Museum ", " E: ", " Early Modern Japan: an Interdisciplinary Journal ", 
           " EBioMedicine ", " ecancermedicalscience ", " eCrypt ", " eCrypt ", " eEarth ", 
