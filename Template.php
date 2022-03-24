@@ -4831,8 +4831,9 @@ final class Template {
           }
 
           if (!$this->blank(['eprint', 'arxiv']) &&
-              strtolower($publisher) == 'arxiv') {
+              strtolower($publisher) === 'arxiv') {
               $this->forget($param);
+              return;
           }
 
           if ($publisher === 'the times digital archive.') {

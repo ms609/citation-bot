@@ -296,12 +296,13 @@ function adsabs_api(array $ids, array &$templates, string $identifier) : bool { 
     }
     return TRUE;
   }
+  // do ones the big API does not do
   foreach ($templates as $template) {
     if ((strpos($template->get('bibcode'), '&') !== false) || (strpos($template->get('bibcode'), 'book') !== false)) {
       $template->expand_by_adsabs(); // This single bibcode API supports bibcodes with & in them, and special book code
     }
   }
-  if (count($ids) == 0) return TRUE; // None left after removing books and & symbol
+
   // Do not do big query if all templates are complete
   $NONE_IS_INCOMPLETE = TRUE;
   foreach ($templates as $template) {
