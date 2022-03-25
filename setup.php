@@ -27,7 +27,7 @@ ini_set("user_agent", "Citation_bot; citations@tools.wmflabs.org");
 include_once './vendor/autoload.php';
 
 define("TRAVIS", (bool) getenv('CI')); // Not just TRAVIS, but GitHub actions set this to true
-define("USE_CITOID", FALSE); // Define which Zotero to use
+define("USE_CITOID", FALSE); // Define which Zotero to use - currently ours does not work, and it out of date
 if (isset($_GET["page"]) && (string) $_GET["page"] === "User:AManWithNoPlan/sandbox3") {
   define('EDIT_AS_USER', TRUE);
 }
