@@ -5341,6 +5341,12 @@ final class Template {
               $this->forget('access-date');
               $this->forget('accessdate');
               $this->add_if_new('doi', '10.1377/forefront.' . $matches[1]);
+              if (strpos($this->get('doi'), 'forefront') !== FALSE) {
+                if (strpos($this->get('archiveurl') . $this->get('archive-url'), 'healthaffairs') !== FALSE) {
+                  $this->forget('archiveurl');
+                  $this->forget('archive-url');
+                }
+              }
           }
           
           // Proxy stuff
@@ -7278,11 +7284,13 @@ final class Template {
         $this->forgetter('archive-date', FALSE);
         $this->forgetter('archivedate', FALSE);
         $this->forgetter('dead-url', FALSE);
+        $this->forgetter('url-status', FALSE);
     }
     if ($par == 'archiveurl' && $this->blank('archive-url')) {
         $this->forgetter('archive-date', FALSE);
         $this->forgetter('archivedate', FALSE);
         $this->forgetter('dead-url', FALSE);
+        $this->forgetter('url-status', FALSE);
     }
     $pos = $this->get_param_key($par);
     if ($pos !== NULL) {
