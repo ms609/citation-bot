@@ -1039,7 +1039,11 @@ function edit_a_list_of_pages(array $pages_in_category, WikipediaBot $api, strin
     }
     echo "\n";
   }
-  echo "\n Done all " . (string) $total . " pages. \n  # # # \n" . $final_edit_overview  . ' </pre><footer><a href="./" title="Use Citation Bot again">Another</a>?</footer></body></html>';
+  if ($total > 1) {
+    echo "\n Done all " . (string) $total . " pages. \n  # # # \n" . $final_edit_overview  . ' </pre><footer><a href="./" title="Use Citation Bot again">Another</a>?</footer></body></html>';
+  } else {
+    echo "\n Done with page.</pre><footer><a href="./" title="Use Citation Bot again">Another</a>?</footer></body></html>';
+  }
 }
 
 function bot_html_header() : void {
