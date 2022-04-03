@@ -344,6 +344,8 @@ const HOSTNAME_MAP  = array('public.ebookcentral.proquest.com' => '[[ProQuest]]'
                             'espnscrum.com' => '[[ESPNscrum]]',
                             'thestatesman.com' => '[[The Statesman (India)|The Statesman]]',
                             'dailysabah.com' => '[[Daily Sabah]]',
+                            'ibm.com' => '[[IBM]]',
+                            'ieee.org' => '[[Institute of Electrical and Electronics Engineers]] (IEEE)',
                            ); // Be warned, some website host a seperate sunday edition, etc.  Be careful and when in doubt link to hostname
 
 const NO_DATE_WEBSITES = array('wikipedia.org', 'web.archive.org', 'perma-archives.org', 'webarchive.proni.gov.uk', 'perma.cc',
