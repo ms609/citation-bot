@@ -719,7 +719,8 @@ final class Template {
               $this->rename('title', 'CITATION_BOT_PLACEHOLDER_title');
               $bad_data = TRUE;
             }
-            if ($this->has('coauthors')) {
+          }
+          if ($this->has('coauthors')) {
               if ($this->has('first'))  $this->rename('first',  'CITATION_BOT_PLACEHOLDER_first');
               if ($this->has('last'))   $this->rename('last',   'CITATION_BOT_PLACEHOLDER_last');
               if ($this->has('first1')) $this->rename('first1', 'CITATION_BOT_PLACEHOLDER_first1');
@@ -739,7 +740,6 @@ final class Template {
                 if ($this->has('CITATION_BOT_PLACEHOLDER_author')) $this->rename('CITATION_BOT_PLACEHOLDER_author', 'author');
                 $this->rename('CITATION_BOT_PLACEHOLDER_coauthors', 'coauthors');
               }
-            }
           }
           if ($bad_data) {
             $this_array = [$this];
