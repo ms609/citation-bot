@@ -543,6 +543,7 @@ function title_case(string $text) : string {
  *      If not, it won't capitalise after : etc.
  */
 function title_capitalization(string $in, bool $caps_after_punctuation) : string {
+  echo " in: " . $in . "\n";
   $matches_in = ['', '']; // prevent memory leak in some PHP versions
   $matches_out = ['', '']; // prevent memory leak in some PHP versions
   // Use 'straight quotes' per WP:MOS
@@ -620,7 +621,9 @@ function title_capitalization(string $in, bool $caps_after_punctuation) : string
     $new_case
   );
 
+  echo " before UC: " . $new_case . "\n";
   $new_case = mb_ucfirst(trim($new_case));
+  echo " after UC: " . $new_case . "\n";
 
   // Solitary 'a' should be lowercase
   $new_case = preg_replace("~(\w\s+)A(\s+\w)~u", "$1a$2", $new_case);
@@ -662,6 +665,7 @@ function title_capitalization(string $in, bool $caps_after_punctuation) : string
       }
     }
   }
+    echo " before DOS: " . $new_case . "\n";
   // Trust existing "DOS", "dos", ... 
   $its_in = preg_match_all('~ dos(?= )~iu', ' ' . trim($in) . ' ', $matches_in, PREG_OFFSET_CAPTURE);
   $new_case = trim($new_case);
@@ -676,6 +680,7 @@ function title_capitalization(string $in, bool $caps_after_punctuation) : string
       }
     }
   }
+    echo " after DOS: " . $new_case . "\n";
   // Part XII: Roman numerals
   $new_case = preg_replace_callback(
     "~ part ([xvil]+): ~iu",
