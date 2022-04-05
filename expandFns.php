@@ -984,7 +984,10 @@ function doi_encode (string $doi) : string {
     return $doi;
 }
 
-// @codeCoverageIgnoreStart
+/**
+ * Only on webpage
+ * @codeCoverageIgnore
+ */
 function edit_a_list_of_pages(array $pages_in_category, WikipediaBot $api, string $edit_summary_end) : void {
   $final_edit_overview = "";
   // Remove pages with blank as the name, if present
@@ -1046,11 +1049,12 @@ function edit_a_list_of_pages(array $pages_in_category, WikipediaBot $api, strin
     echo "\n Done with page." . '</pre><footer><a href="./" title="Use Citation Bot again">Another</a>?</footer></body></html>';
   }
 }
-// @codeCoverageIgnoreEnd
 
 
-
-// @codeCoverageIgnoreStart
+/**
+ * Only on webpage
+ * @codeCoverageIgnore
+ */
 function bot_html_header() : void {
   echo('<!DOCTYPE html>
 <html lang="en" dir="ltr">
@@ -1072,5 +1076,4 @@ function bot_html_header() : void {
   <pre id="botOutput">
    ');
 }
-// @codeCoverageIgnoreEnd
 
