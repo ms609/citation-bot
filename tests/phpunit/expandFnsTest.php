@@ -311,7 +311,7 @@ final class expandFnsTest extends testBaseClass {
     $this->assertSame('The DOS Dos dOs is dos Faster', title_capitalization('The DOS Dos dOs is dos Faster', TRUE));
     $this->assertSame('The DOS Dos dOs is dos Faster', title_capitalization('The DOS Dos dOs is dos Faster', FALSE));
     $this->assertSame('DOS', title_capitalization('DOS', TRUE));
-    $this->assertSame('dos', title_capitalization('dosr', TRUE));
+    $this->assertSame('dos', title_capitalization('dos', TRUE));
     $this->assertSame('DoS', title_capitalization('DoS', TRUE));
     $this->assertSame('dOs', title_capitalization('dOs', TRUE));
   }
