@@ -308,8 +308,8 @@ final class expandFnsTest extends testBaseClass {
     $this->assertSame('The dos is Faster', title_capitalization('The dos is Faster', TRUE));
     $this->assertSame('The DoS is Faster', title_capitalization('The DoS is Faster', TRUE));
     $this->assertSame('The dOs is Faster', title_capitalization('The dOs is Faster', TRUE));
-    $this->assertSame('The DOS Dos dOs is Faster', title_capitalization('The DOS Dos dOs is Faster', TRUE));
-    $this->assertSame('The DOS Dos dOs is Faster', title_capitalization('The DOS Dos dOs is Faster', FALSE));
+    $this->assertSame('The DOS Dos dOs is dos Faster', title_capitalization('The DOS Dos dOs is dos Faster', TRUE));
+    $this->assertSame('The DOS Dos dOs is dos Faster', title_capitalization('The DOS Dos dOs is dos Faster', FALSE));
   }
   
   public function testCapitalization_lots_more7() : void {
