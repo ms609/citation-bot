@@ -75,7 +75,7 @@ const JOURNAL_ACRONYMS = array(/* The following will be automatically updated to
           " EMBO Rep. ", " EMBO Reports ", " eNeuro ", " eNeuro ", " eNeurologicalSci ", 
           " eNeurologicalSci ", " eNeurologicalSci ", " engrXiv ", " EPA Journal ", " ePlasty ", 
           " ePlasty ", " ePrint ", " ePrint ", " ePrints ", " ePrints ", " ePub ", " ePub ", 
-          " ePub) ", " Esc Heart Failure ", " eScholarship ", " EuroIntervention ", " eVolo ", 
+          " ePub) ", " Esc Heart Failure ", " eScholarship ", JUNK " EuroIntervention ", " eVolo ", 
           " eVolo ", " eWeek ", " eWeek ", " FASEB J ", " FASEB J. ", " FEBS J ", " FEBS J. ", 
           " FEBS Journal ", " Fizika Goreniya i Vzryva ", " Föreningen i Stockholm ", 
           " für anorganische und allgemeine ", " Gigiena i Sanitariia ", " HannahArendt.net ", 
