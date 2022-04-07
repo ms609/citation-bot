@@ -719,7 +719,8 @@ final class Template {
               $this->rename('title', 'CITATION_BOT_PLACEHOLDER_title');
               $bad_data = TRUE;
             }
-            if ($this->has('coauthors')) {
+          }
+          if ($this->has('coauthors')) {
               if ($this->has('first'))  $this->rename('first',  'CITATION_BOT_PLACEHOLDER_first');
               if ($this->has('last'))   $this->rename('last',   'CITATION_BOT_PLACEHOLDER_last');
               if ($this->has('first1')) $this->rename('first1', 'CITATION_BOT_PLACEHOLDER_first1');
@@ -739,7 +740,6 @@ final class Template {
                 if ($this->has('CITATION_BOT_PLACEHOLDER_author')) $this->rename('CITATION_BOT_PLACEHOLDER_author', 'author');
                 $this->rename('CITATION_BOT_PLACEHOLDER_coauthors', 'coauthors');
               }
-            }
           }
           if ($bad_data) {
             $this_array = [$this];
@@ -1021,6 +1021,10 @@ final class Template {
     }
 
     if (str_i_same($value, 'n/a')) {
+      return FALSE;
+    }
+
+    if (str_i_same($value, 'undefined')) {
       return FALSE;
     }
 
@@ -5335,7 +5339,20 @@ final class Template {
           if (preg_match("~https?://www\.britishnewspaperarchive\.co\.uk/account/register.+viewer\%252fbl\%252f(\d+)\%252f(\d+)\%252f(\d+)\%252f(\d+)(?:\&|\%253f)~", $this->get($param), $matches)) {
              $this->set($param, 'https://www.britishnewspaperarchive.co.uk/viewer/bl/' . $matches[1] . '/' . $matches[2] . '/' . $matches[3] . '/' .$matches[4]);
           }
-
+          
+          if (preg_match("~^https?://www.healthaffairs.org/do/10.1377/hblog(\d+\.\d+)/full/$~", $this->get($param), $matches)) {
+              $this->set($param, 'https://www.healthaffairs.org/do/10.1377/forefront.' . $matches[1] . '/full/');
+              $this->forget('access-date');
+              $this->forget('accessdate');
+              $this->add_if_new('doi', '10.1377/forefront.' . $matches[1]);
+              if (strpos($this->get('doi'), 'forefront') !== FALSE) {
+                if (strpos($this->get('archiveurl') . $this->get('archive-url'), 'healthaffairs') !== FALSE) {
+                  $this->forget('archiveurl');
+                  $this->forget('archive-url');
+                }
+              }
+          }
+          
           // Proxy stuff
           if (stripos($this->get($param), 'proxy') !== FALSE) { // Look for proxy first for speed, this list will grow and grow
               // Use dots, not \. since it might match dot or dash
@@ -7271,11 +7288,13 @@ final class Template {
         $this->forgetter('archive-date', FALSE);
         $this->forgetter('archivedate', FALSE);
         $this->forgetter('dead-url', FALSE);
+        $this->forgetter('url-status', FALSE);
     }
     if ($par == 'archiveurl' && $this->blank('archive-url')) {
         $this->forgetter('archive-date', FALSE);
         $this->forgetter('archivedate', FALSE);
         $this->forgetter('dead-url', FALSE);
+        $this->forgetter('url-status', FALSE);
     }
     $pos = $this->get_param_key($par);
     if ($pos !== NULL) {
