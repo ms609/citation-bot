@@ -746,7 +746,31 @@ final class zoteroTest extends testBaseClass {
     $this->assertSame($text, $expanded->parsed_text());
    });
   }
+  
+  public function testZoteroExpansionCiteseerxSkipped() : void {
+   $this->requires_zotero(function() : void {
+    $text = '{{Cite journal|url=https://citeseerx.ist.psu.edu/viewdoc/summary?doi=10.1.1.604.9335}}';
+    $expanded = $this->expand_via_zotero($text);
+    $this->assertSame($text, $expanded->parsed_text());
+   });
+  }
+  
+  public function testZoteroExpansionBibcodeSkipped() : void {
+   $this->requires_zotero(function() : void {
+    $text = '{{Cite journal|url=https://ui.adsabs.harvard.edu/abs/2015ConPh..56...35D/abstract}}';
+    $expanded = $this->expand_via_zotero($text);
+    $this->assertSame($text, $expanded->parsed_text());
+   });
+  }
 
+  public function testZoteroExpansionSumSearchSkipped() : void {
+   $this->requires_zotero(function() : void {
+    $text = '{{Cite journal|url=https://ncbi.nlm.nih.gov/entrez/eutils/elink.fcgi?X=tool=sumsearch.org&id=342141323}}';
+    $expanded = $this->expand_via_zotero($text);
+    $this->assertSame($text, $expanded->parsed_text());
+   });
+  }
+  
   public function testZoteroExpansionNRM() : void {
    $this->requires_zotero(function() : void {
     $text = '{{cite journal | url = http://www.nrm.se/download/18.4e32c81078a8d9249800021554/Bengtson2004ESF.pdf}}';
