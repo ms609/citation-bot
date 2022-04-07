@@ -27,7 +27,7 @@ final class PageTest extends testBaseClass {
 
   public function testPageChangeSummary31() : void {
       $page = $this->process_page('<ref>http://onlinelibrary.wiley.com/doi/10.1111/j.1475-4983.2012.01203.x</ref>');
-      $this->assertSame('Alter: template type. Add: pages, issue, volume, journal, year, title, doi, authors 1-2. Changed bare reference to CS1/2. Formatted [[WP:ENDASH|dashes]]. | [[WP:UCB|Use this bot]]. [[WP:DBUG|Report bugs]]. ', $page->edit_summary());                
+      $this->assertSame('Alter: template type. Add: s2cid, pages, issue, volume, journal, year, title, doi, authors 1-2. Changed bare reference to CS1/2. Formatted [[WP:ENDASH|dashes]]. | [[WP:UCB|Use this bot]]. [[WP:DBUG|Report bugs]]. ', $page->edit_summary());                
   }
  
   public function testPageChangeSummary32() : void { // Mixture of droping chapter-url and moving URL to chapter-url.  Bogus template content

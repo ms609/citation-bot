@@ -344,13 +344,16 @@ const HOSTNAME_MAP  = array('public.ebookcentral.proquest.com' => '[[ProQuest]]'
                             'espnscrum.com' => '[[ESPNscrum]]',
                             'thestatesman.com' => '[[The Statesman (India)|The Statesman]]',
                             'dailysabah.com' => '[[Daily Sabah]]',
+                            'ibm.com' => '[[IBM]]',
+                            'ieee.org' => '[[Institute of Electrical and Electronics Engineers]] (IEEE)',
                            ); // Be warned, some website host a seperate sunday edition, etc.  Be careful and when in doubt link to hostname
 
 const NO_DATE_WEBSITES = array('wikipedia.org', 'web.archive.org', 'perma-archives.org', 'webarchive.proni.gov.uk', 'perma.cc',
                               'wayback', 'web.archive.bibalex.org', 'web.petabox.bibalex.org', 'webharvest.gov', 'archive.wikiwix.com',
                               'archive.is', 'archive-it.org', 'nationalarchives.gov.uk', 'freezepage.com', 'webcitation.org',
                               'waybackmachine.org', 'siarchives.si.edu', 'gutenberg.org', 'archive.fo', 'archive.today', 'archive.ph',
-                              'oireachtas.ie', 'webarchive.nla.gov.au', 'ebooks.adelaide.edu.au', 'archive.md', 'imdb.com');
+                              'oireachtas.ie', 'webarchive.nla.gov.au', 'ebooks.adelaide.edu.au', 'archive.md', 'imdb.com',
+                              'apps.des.qld.gov.au', 'billboard.com');
 
 const ZOTERO_AVOID_REGEX = array("twitter\.",               // This should be {{cite tweet}}
                                  // Zotero seems to be doing better now "youtube\.", "youtu\.be",
@@ -561,7 +564,7 @@ const NON_JOURNAL_WEBSITES = array('cnn.com/', 'msnbc.com/', 'nbcnews.com/', 'cb
                                    'courtlistener.com/', 'c-span.org/', '.ajc.com/', '/ajc.com/', 'theweek.com/',
                                    'socialblade.com/', 'poll.qu.edu/', 'spacecom.mil/', 'planet4589.org/',
                                    'nasa.gov/', 'skyrocket.de/', 'space.com/', 'unoosa.org/', 'yuzhnoye.com/',
-                                   ); 
+                                   'sagehens.com/',); 
                                    // Just a list of ones that are obvious.  Add ones that time-out as we find them
                                    // bbm.ca is short enough that we add /bbm.ca/ and .bbm.ca/ since we don't want to grab too many sites
 

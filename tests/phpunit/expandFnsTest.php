@@ -308,8 +308,17 @@ final class expandFnsTest extends testBaseClass {
     $this->assertSame('The dos is Faster', title_capitalization('The dos is Faster', TRUE));
     $this->assertSame('The DoS is Faster', title_capitalization('The DoS is Faster', TRUE));
     $this->assertSame('The dOs is Faster', title_capitalization('The dOs is Faster', TRUE));
-    $this->assertSame('The DOS Dos dOs is Faster', title_capitalization('The DOS Dos dOs is Faster', TRUE));
-    $this->assertSame('The DOS Dos dOs is Faster', title_capitalization('The DOS Dos dOs is Faster', FALSE));
+    $this->assertSame('The DOS Dos dOs is dos Faster', title_capitalization('The DOS Dos dOs is dos Faster', TRUE));
+    $this->assertSame('The DOS Dos dOs is dos Faster', title_capitalization('The DOS Dos dOs is dos Faster', FALSE));
+    $this->assertSame('DOS', title_capitalization('DOS', TRUE));
+    $this->assertSame('dos', title_capitalization('dos', TRUE));
+    $this->assertSame('DoS', title_capitalization('DoS', TRUE));
+    $this->assertSame('dOs', title_capitalization('dOs', TRUE));
+  }
+  
+  public function testCapitalization_lots_more7() : void {
+    $this->assertSame('AIDS', title_capitalization('Aids', TRUE));
+    $this->assertSame('BioScience', title_capitalization('Bioscience', TRUE));
   }
   
   public function testThrottle() : void { // Just runs over the code and basically does nothing
