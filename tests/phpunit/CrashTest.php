@@ -25,7 +25,7 @@ final class CrashTest extends testBaseClass {
            [CURLOPT_HEADER => 0,
             CURLOPT_RETURNTRANSFER => 1,
             CURLOPT_TIMEOUT => 30,
-            CURLOPT_USERAGENT => 'Citation_bot; citations@tools.wmflabs.org',
+            CURLOPT_USERAGENT => BOT_USER_AGENT,
             CURLOPT_URL => $the_url]);
       $text = curl_exec($ch);
       curl_close($ch);
