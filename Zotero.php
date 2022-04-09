@@ -27,7 +27,7 @@ private static function set_default_ch_zotero() : void {
             [CURLOPT_URL => CITOID_ZOTERO,
             CURLOPT_HTTPHEADER => ['accept: application/json; charset=utf-8'],
             CURLOPT_RETURNTRANSFER => TRUE,
-            CURLOPT_USERAGENT => 'Citation_bot; citations@tools.wmflabs.org',
+            CURLOPT_USERAGENT => BOT_USER_AGENT,
             // Defaults used in TRAVIS overiden below when deployed
             CURLOPT_CONNECTTIMEOUT => 10,
             CURLOPT_TIMEOUT => 45]);
@@ -39,7 +39,7 @@ private static function set_default_ch_zotero() : void {
             CURLOPT_CUSTOMREQUEST => "POST",
             CURLOPT_HTTPHEADER => ['Content-Type: text/plain'],
             CURLOPT_RETURNTRANSFER => TRUE,
-            CURLOPT_USERAGENT => 'Citation_bot; citations@tools.wmflabs.org',
+            CURLOPT_USERAGENT => BOT_USER_AGENT,
             // Defaults used in TRAVIS overiden below when deployed
             CURLOPT_CONNECTTIMEOUT => 10,
             CURLOPT_TIMEOUT => 45]);
@@ -174,7 +174,7 @@ public static function drop_urls_that_match_dois(array &$templates) : void {  //
          CURLOPT_RETURNTRANSFER => TRUE,
          CURLOPT_COOKIEFILE => 'cookie.txt',
          CURLOPT_AUTOREFERER => TRUE,
-         CURLOPT_USERAGENT => 'Citation_bot; citations@tools.wmflabs.org']);
+         CURLOPT_USERAGENT => BOT_USER_AGENT]);
   foreach ($templates as $template) {
     $doi = $template->get_without_comments_and_placeholders('doi');
     if ($template->has('url')) {
@@ -1053,7 +1053,7 @@ function find_indentifiers_in_urls(Template $template, ?string $url_sent = NULL)
                     CURLOPT_RETURNTRANSFER => 1,
                     CURLOPT_TIMEOUT => 15,
                     CURLOPT_URL => 'https://www.jstor.org/citation/ris/' . $matches[1],
-                    CURLOPT_USERAGENT => 'Citation_bot; citations@tools.wmflabs.org']);
+                    CURLOPT_USERAGENT => BOT_USER_AGENT]);
           $dat = (string) @curl_exec($ch);
           curl_close($ch);
           if ($dat &&
@@ -1189,7 +1189,7 @@ function find_indentifiers_in_urls(Template $template, ?string $url_sent = NULL)
                CURLOPT_NOBODY => 1,
                CURLOPT_RETURNTRANSFER => TRUE,
                CURLOPT_TIMEOUT => 15,
-               CURLOPT_USERAGENT => 'Citation_bot; citations@tools.wmflabs.org']);
+               CURLOPT_USERAGENT => BOT_USER_AGENT]);
         if (@curl_exec($ch)) {
           $redirect_url = (string) @curl_getinfo($ch, CURLINFO_REDIRECT_URL);
           if (strpos($redirect_url, "jstor.org/stable/")) {
@@ -1246,7 +1246,7 @@ function find_indentifiers_in_urls(Template $template, ?string $url_sent = NULL)
             curl_setopt_array($ch,
                       [CURLOPT_RETURNTRANSFER => TRUE,
                        CURLOPT_TIMEOUT => 15,
-                       CURLOPT_USERAGENT => 'Citation_bot; citations@tools.wmflabs.org']);
+                       CURLOPT_USERAGENT => BOT_USER_AGENT]);
             @curl_exec($ch);
             $httpCode = (int) @curl_getinfo($ch, CURLINFO_HTTP_CODE);
             curl_close($ch);
@@ -1369,7 +1369,7 @@ function find_indentifiers_in_urls(Template $template, ?string $url_sent = NULL)
       } elseif (stripos($url, 'handle') !== FALSE || stripos($url, 'persistentId=hdl:') !== FALSE) {
           $context = stream_context_create(array(
            'ssl' => ['verify_peer' => FALSE, 'verify_peer_name' => FALSE, 'allow_self_signed' => TRUE, 'security_level' => 0],
-           'http' => ['ignore_errors' => TRUE, 'max_redirects' => 40, 'timeout' => 20.0, 'follow_location' => 1, 'header'=> ['Connection: close'], "user_agent" => "Citation_bot; citations@tools.wmflabs.org"]
+           'http' => ['ignore_errors' => TRUE, 'max_redirects' => 40, 'timeout' => 20.0, 'follow_location' => 1, 'header'=> ['Connection: close'], "user_agent" => BOT_USER_AGENT"]
            )); // Allow crudy cheap journals
           // Special case of hdl.handle.net/123/456
           if (preg_match('~^https?://hdl\.handle\.net/(\d{2,}.*/.+)$~', $url, $matches)) {
