@@ -35,7 +35,7 @@ final class WikipediaBot {
         CURLOPT_TIMEOUT => 20,
         CURLOPT_COOKIESESSION => TRUE,
         CURLOPT_COOKIEFILE => 'cookie.txt',
-        CURLOPT_USERAGENT => 'Citation_bot; citations@tools.wmflabs.org',
+        CURLOPT_USERAGENT => BOT_USER_AGENT,
     ]);
     // setup.php must already be run at this point
     if (!getenv('PHP_OAUTH_CONSUMER_TOKEN'))  report_error("PHP_OAUTH_CONSUMER_TOKEN not set");
@@ -472,7 +472,7 @@ final class WikipediaBot {
       CURLOPT_HEADER => 0,
       CURLOPT_RETURNTRANSFER => TRUE,
       CURLOPT_TIMEOUT => 20,
-      CURLOPT_USERAGENT => 'Citation_bot; citations@tools.wmflabs.org',
+      CURLOPT_USERAGENT => BOT_USER_AGENT,
       CURLOPT_URL => API_ROOT . '?action=query&usprop=blockinfo&format=json&list=users&ususers=' . urlencode(str_replace(" ", "_", $user))
     ]);
     $response = (string) @curl_exec($ch);
