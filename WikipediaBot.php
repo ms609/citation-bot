@@ -56,7 +56,8 @@ final class WikipediaBot {
     if (TRAVIS && !$no_user) {
       $this->the_user = 'Citation_bot';
       $this->user_token = $this->bot_token;
-    } elseif ($no_user || isset($argv)) { // $argv means that we will use someones tokens, so no need to put username in edit summary
+      // $argv means that we will use someones tokens, so no need to put username in edit summary.  Stan does not understand that $argv can be set
+    } elseif ($no_user || isset($argv)) {  // @phpstan-ignore-line
       $this->the_user = '';
       $this->user_token = $this->bot_token;
     } else {
