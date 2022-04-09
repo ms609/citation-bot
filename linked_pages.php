@@ -43,7 +43,7 @@ curl_setopt_array($ch,
        CURLOPT_TIMEOUT => 45,
        CURLOPT_RETURNTRANSFER =>  1,
        CURLOPT_URL => $url,
-       CURLOPT_USERAGENT => 'Citation_bot; citations@tools.wmflabs.org']);
+       CURLOPT_USERAGENT => BOT_USER_AGENT]);
 $json = (string) @curl_exec($ch);
 curl_close($ch);
 if ($json == '') {

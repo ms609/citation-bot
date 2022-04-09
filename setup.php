@@ -22,13 +22,14 @@ if (isset($_REQUEST["wiki_base"])){
 define("WIKI_ROOT", 'https://'. $wiki_base . '.wikipedia.org/w/index.php');
 define("API_ROOT", 'https://'. $wiki_base . '.wikipedia.org/w/api.php');
 unset($wiki_base);
+define("BOT_USER_AGENT",  "Citation_bot; citations@tools.wmflabs.org");
 
-ini_set("user_agent", "Citation_bot; citations@tools.wmflabs.org");
+ini_set("user_agent", BOT_USER_AGENT);
 include_once './vendor/autoload.php';
 
 define("TRAVIS", (bool) getenv('CI')); // Not just TRAVIS, but GitHub actions set this to true
-define("USE_CITOID", FALSE); // Define which Zotero to use - currently ours does not work, and it out of date
-if (isset($_GET["page"]) && (string) $_GET["page"] === "User:AManWithNoPlan/sandbox3") {
+define("USE_CITOID", FALSE); // Define which Zotero to use
+if (isset($_REQUEST["page"]) && (string) $_REQUEST["page"] === "User:AManWithNoPlan/sandbox3") {
   define('EDIT_AS_USER', TRUE);
 }
 
