@@ -92,7 +92,7 @@ class Page {
     $ch = curl_init();
     curl_setopt_array($ch,
               [CURLOPT_HEADER => 0,
-               CURLOPT_USERAGENT => 'Citation_bot; citations@tools.wmflabs.org',
+               CURLOPT_USERAGENT => BOT_USER_AGENT,
                CURLOPT_RETURNTRANSFER => 1,
                CURLOPT_TIMEOUT => 20,
                CURLOPT_URL => WIKI_ROOT . '?' . http_build_query(['title' => $title, 'action' =>'raw'])]);
