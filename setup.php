@@ -22,8 +22,9 @@ if (isset($_REQUEST["wiki_base"])){
 define("WIKI_ROOT", 'https://'. $wiki_base . '.wikipedia.org/w/index.php');
 define("API_ROOT", 'https://'. $wiki_base . '.wikipedia.org/w/api.php');
 unset($wiki_base);
+define("BOT_USER_AGENT",  "Citation_bot; citations@tools.wmflabs.org");
 
-ini_set("user_agent", "Citation_bot; citations@tools.wmflabs.org");
+ini_set("user_agent", BOT_USER_AGENT);
 include_once './vendor/autoload.php';
 
 define("TRAVIS", (bool) getenv('CI')); // Not just TRAVIS, but GitHub actions set this to true
