@@ -1169,7 +1169,7 @@ function expand_templates_from_archives(array &$templates) : void { // This is d
           [CURLOPT_HEADER => 0,
            CURLOPT_RETURNTRANSFER => 1,
            CURLOPT_TIMEOUT => 25,
-           CURLOPT_USERAGENT => BOT_USER_AGENT']);
+           CURLOPT_USERAGENT => BOT_USER_AGENT]);
   foreach ($templates as $template) {
     set_time_limit(120);
     if ($template->blank(['title', 'chapter', 'series']) &&
