@@ -2482,7 +2482,7 @@ final class Template {
                 CURLOPT_RETURNTRANSFER => TRUE,
                 CURLOPT_HEADER => TRUE,
                 CURLOPT_TIMEOUT => 20,
-                CURLOPT_USERAGENT => 'Citation_bot; citations@tools.wmflabs.org',
+                CURLOPT_USERAGENT => BOT_USER_AGENT,
                 CURLOPT_URL => $adsabs_url]);
       $return = (string) @curl_exec($ch);
       if (502 === curl_getinfo($ch, CURLINFO_HTTP_CODE)) {
@@ -2791,7 +2791,7 @@ final class Template {
              CURLOPT_RETURNTRANSFER => 1,
              CURLOPT_URL => $url,
              CURLOPT_TIMEOUT => 10,
-             CURLOPT_USERAGENT => 'Citation_bot; citations@tools.wmflabs.org']);
+             CURLOPT_USERAGENT => BOT_USER_AGENT]);
     $json = (string) @curl_exec($ch);
     curl_close($ch);
     if ($json) {
@@ -2917,7 +2917,7 @@ final class Template {
         if ($this->has($url_type) && !$has_url_already) {  // The above line might have eaten the URL and upgraded it
           $context = stream_context_create(array(
            'ssl' => ['verify_peer' => FALSE, 'verify_peer_name' => FALSE, 'allow_self_signed' => TRUE, 'security_level' => 0],
-           'http' => ['ignore_errors' => TRUE, 'max_redirects' => 40, 'timeout' => 20.0, 'follow_location' => 1,  'header'=> ['Connection: close'], "user_agent" => "Citation_bot; citations@tools.wmflabs.org"]
+           'http' => ['ignore_errors' => TRUE, 'max_redirects' => 40, 'timeout' => 20.0, 'follow_location' => 1,  'header'=> ['Connection: close'], "user_agent" => BOT_USER_AGENT]
          )); // Allow crudy cheap journals
           $headers_test = @get_headers($this->get($url_type), 1, $context);
           // @codeCoverageIgnoreStart
@@ -3008,7 +3008,7 @@ final class Template {
         $google_book_url = 'https://www.google.com/search?tbo=p&tbm=bks&q=isbn:' . $isbn;
         $ch = curl_init();
         curl_setopt_array($ch,
-                   [CURLOPT_USERAGENT => 'Citation_bot; citations@tools.wmflabs.org',
+                   [CURLOPT_USERAGENT => BOT_USER_AGENT,
                     CURLOPT_HEADER => 0,
                     CURLOPT_RETURNTRANSFER => 1,
                     CURLOPT_TIMEOUT => 15,
@@ -3041,7 +3041,7 @@ final class Template {
                [CURLOPT_HEADER => 0,
                 CURLOPT_RETURNTRANSFER => 1,
                 CURLOPT_TIMEOUT => 15,
-                CURLOPT_USERAGENT => 'Citation_bot; citations@tools.wmflabs.org',
+                CURLOPT_USERAGENT => BOT_USER_AGENT,
                 CURLOPT_URL => "https://www.googleapis.com/books/v1/volumes?q=" . $url_token . "&key=" . PHP_GOOGLEKEY]);
         $string = (string) @curl_exec($ch);
         curl_close($ch);
@@ -3257,7 +3257,7 @@ final class Template {
     $google_book_url = "https://books.google.com/books/feeds/volumes/" . $gid;
     $ch = curl_init();
     curl_setopt_array($ch,
-           [CURLOPT_USERAGENT => 'Citation_bot; citations@tools.wmflabs.org',
+           [CURLOPT_USERAGENT => BOT_USER_AGENT,
             CURLOPT_HEADER => 0,
             CURLOPT_RETURNTRANSFER => 1,
             CURLOPT_TIMEOUT => 15,
@@ -4322,7 +4322,7 @@ final class Template {
               curl_setopt_array($ch,
                        [CURLOPT_RETURNTRANSFER => TRUE,
                         CURLOPT_TIMEOUT => 25,
-                        CURLOPT_USERAGENT => 'Citation_bot; citations@tools.wmflabs.org']);
+                        CURLOPT_USERAGENT => BOT_USER_AGENT]);
               @curl_exec($ch);
               $httpCode = (int) @curl_getinfo($ch, CURLINFO_HTTP_CODE);
               curl_close($ch);
@@ -6035,7 +6035,7 @@ final class Template {
                           CURLOPT_TIMEOUT => 25,
                           CURLOPT_RETURNTRANSFER => TRUE,
                           CURLOPT_COOKIEFILE => 'cookie.txt',
-                          CURLOPT_USERAGENT => 'Citation_bot; citations@tools.wmflabs.org',
+                          CURLOPT_USERAGENT => BOT_USER_AGENT,
                           CURLOPT_URL => $matches[0]]);
                  if (@curl_exec($ch)) {
                     $redirectedUrl = (string) @curl_getinfo($ch, CURLINFO_EFFECTIVE_URL);  // Final URL
