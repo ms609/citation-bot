@@ -53,11 +53,11 @@ final class WikipediaBot {
     }
 
     /** @psalm-suppress RedundantCondition */  /* PSALM thinks TRAVIS cannot be FALSE */
-    if (TRAVIS) {
+    if (TRAVIS && !$no_user) {
       $this->the_user = 'Citation_bot';
       $this->user_token = $this->bot_token;
-    } elseif ($no_user) {           // @codeCoverageIgnore
-      $this->the_user = '';         // @codeCoverageIgnore
+    } elseif ($no_user || isset($argv)) { // $argv means that we will use someones tokens, so no need to put username in edit summary
+      $this->the_user = '';
       $this->user_token = $this->bot_token;
     } else {
       $this->authenticate_user();  // @codeCoverageIgnore
