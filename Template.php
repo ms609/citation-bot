@@ -760,6 +760,9 @@ final class Template {
             if ($this->has('jstor')) {
               expand_by_jstor($this);
             }
+            if ($this->blank('journal')) {
+              expand_arxiv_templates([$this]);
+            }
             if ($this->has('CITATION_BOT_PLACEHOLDER_journal')) {
               if ($this->has('journal') && $this->get('journal') !== $this->get('CITATION_BOT_PLACEHOLDER_journal') &&
                   '[[' . $this->get('journal') . ']]' !== $this->get('CITATION_BOT_PLACEHOLDER_journal')) {
