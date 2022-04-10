@@ -53,7 +53,7 @@ if ($category) {
   } elseif (isset($_GET["cat"])) {
     report_warning("You must specify the category using the webform.");
   } else {
-    report_warning("Category got lost during initial authorization.");
+    report_warning("Nothing requested -- OR -- category got lost during initial authorization.");
   }
   echo ' </pre><footer><a href="./" title="Use Citation Bot again">Another</a>?</footer></body></html>';
 }
