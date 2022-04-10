@@ -685,6 +685,11 @@ final class Template {
               $the_journal = '';
               $bad_data = TRUE;
           }
+          if (stripos($the_journal, 'arXiv') !== FALSE) {
+              $this->rename('journal', 'CITATION_BOT_PLACEHOLDER_journal');
+              $the_journal = '';
+              $bad_data = TRUE;
+          }
           if ($the_title != '' && stripos($the_title, 'CITATION') === FALSE) {
             if (str_i_same($the_title, $the_journal) &&
                 str_i_same($the_title, $the_chapter)) { // Journal === Title === Chapter INSANE!  Never actually seen
