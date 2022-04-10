@@ -55,7 +55,7 @@ if ($category) {
   } else {
     report_warning("Category got lost during initial authorization.");
   }
-  echo ' </pre><footer><a href="./" title="Use Citation Bot again">Another</a>?</footer></body></html>;
+  echo ' </pre><footer><a href="./" title="Use Citation Bot again">Another</a>?</footer></body></html>';
 }
 exit();
 ?>
