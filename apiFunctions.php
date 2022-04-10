@@ -158,6 +158,7 @@ function entrez_api(array $ids, array &$templates, string $db) : bool {   // Poi
 
 function query_bibcode_api(array $bibcodes, array &$templates) : bool { return adsabs_api($bibcodes, $templates, 'bibcode'); }  // Pointer to save memory
 
+/* @var $templates Template[] */
 function expand_arxiv_templates (array &$templates) : bool {  // Pointer to save memory
   $ids = array();
   $arxiv_templates = array();
