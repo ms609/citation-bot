@@ -624,7 +624,7 @@ final class Template {
             report_action("Found and used SICI");
           }
       }
-      if (!$this->blank(['pmc', 'pmid', 'doi', 'jstor']) || (!$this-blank(['arxiv', 'eprint']) && stripos($this->get('journal'), 'arXiv') !== FALSE)) { // Have some good data
+      if (!$this->blank(['pmc', 'pmid', 'doi', 'jstor']) || (!$this->blank(['arxiv', 'eprint']) && stripos($this->get('journal'), 'arXiv') !== FALSE)) { // Have some good data
           $the_title   = $this->get('title');
           $the_journal = $this->get('journal');
           $the_chapter = $this->get('chapter');
