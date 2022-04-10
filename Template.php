@@ -2051,7 +2051,7 @@ final class Template {
     if ($results[1] == 1) {
       // Double check title if we did not use DOI
       if ($this->has('title') && !in_array('doi', $results[2])) {
-        $url = "https://eutils.ncbi.nlm.nih.gov/entrez/eutils/esummary.fcgi?tool=WikipediaCitationBot&email=martins+pubmed@gmail.com&db=pubmed&id=" . $results[0];
+        $url = "https://eutils.ncbi.nlm.nih.gov/entrez/eutils/esummary.fcgi?tool=WikipediaCitationBot&email=" . PUBMEDUSERNAME . "&db=pubmed&id=" . $results[0];
         usleep(100000); // Wait 1/10 of a second since we just tried
         $xml = @simplexml_load_file($url);
         if ($xml === FALSE) {
@@ -2191,7 +2191,7 @@ final class Template {
       }
     }
     $query = substr($query, 5); // Chop off initial " AND "
-    $url = "https://eutils.ncbi.nlm.nih.gov/entrez/eutils/esearch.fcgi?db=pubmed&tool=WikipediaCitationBot&email=martins+pubmed@gmail.com&term=$query";
+    $url = "https://eutils.ncbi.nlm.nih.gov/entrez/eutils/esearch.fcgi?db=pubmed&tool=WikipediaCitationBot&email=" . PUBMEDUSERNAME . "&term=$query";
     usleep(20000); // Wait 1/50 of a second since we probably just tried
     $xml = @simplexml_load_file($url);
     // @codeCoverageIgnoreStart

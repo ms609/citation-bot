@@ -32,3 +32,4 @@ const DATES_MDY      = 1;
 const DATES_DMY      = 2;
 
 const CROSSREFUSERNAME = 'martins@gmail.com';
+const PUBMEDUSERNAME   = 'martins+pubmed@gmail.com';

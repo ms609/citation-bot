@@ -39,7 +39,7 @@ function entrez_api(array $ids, array &$templates, string $db) : bool {   // Poi
        return $templates[$template_key];
   };
   
-  $url = "https://eutils.ncbi.nlm.nih.gov/entrez/eutils/esummary.fcgi?tool=WikipediaCitationBot&email=martins+pubmed@gmail.com&db=$db&id=" 
+  $url = "https://eutils.ncbi.nlm.nih.gov/entrez/eutils/esummary.fcgi?tool=WikipediaCitationBot&email=" . PUBMEDUSERNAME . "&db=$db&id=" 
                . implode(',', $ids);
   report_action("Using $db API to retrieve publication details: ");
   
