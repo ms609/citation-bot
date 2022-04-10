@@ -761,7 +761,8 @@ final class Template {
               expand_by_jstor($this);
             }
             if ($this->blank('journal')) {
-              $this_array = [$this];
+              $this_array = array();
+              $this_array[] = $this;
               expand_arxiv_templates($this_array);
             }
             if ($this->has('CITATION_BOT_PLACEHOLDER_journal')) {
