@@ -33,3 +33,5 @@ const DATES_DMY      = 2;
 
 const CROSSREFUSERNAME = 'martins@gmail.com';
 const PUBMEDUSERNAME   = 'martins+pubmed@gmail.com';
+
+const GET_THE_HEADERS = 1; // expects 1 in early PHP, and TRUE in newer versions

@@ -2924,7 +2924,7 @@ final class Template {
            'ssl' => ['verify_peer' => FALSE, 'verify_peer_name' => FALSE, 'allow_self_signed' => TRUE, 'security_level' => 0],
            'http' => ['ignore_errors' => TRUE, 'max_redirects' => 40, 'timeout' => 20.0, 'follow_location' => 1,  'header'=> ['Connection: close'], "user_agent" => BOT_USER_AGENT]
          )); // Allow crudy cheap journals
-          $headers_test = @get_headers($this->get($url_type), 1, $context);
+          $headers_test = @get_headers($this->get($url_type), GET_THE_HEADERS, $context);
           // @codeCoverageIgnoreStart
           if($headers_test ===FALSE) {
             $this->forget($url_type);
