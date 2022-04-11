@@ -61,7 +61,7 @@ final class WikipediaBot {
       $this->user_token = $this->bot_token;
       // @codeCoverageIgnoreStart
       // Stan does not understand that $argv can be set
-    } elseif (isset($argv)) {  // @phpstan-ignore-line
+    } elseif (!HTML_OUTPUT) { // Running on the command line
       $this->the_user = ''; // Will edit as user
       $this->user_token = $this->bot_token;
     } else {
