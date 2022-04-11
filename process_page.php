@@ -13,11 +13,12 @@ $api = new WikipediaBot();
 /** @psalm-suppress RedundantCondition */ /* PSALM thinks HTML_OUTPUT cannot be FALSE */
 if (HTML_OUTPUT) {
   bot_html_header();
+  $edit_summary_end = "| Suggested by " . $api->get_the_user() . " ";
+} else {
+  $edit_summary_end = ""; // Username is person who is running the bot
 }
 
 check_blocked();
-
-$edit_summary_end = "| Suggested by " . $api->get_the_user() . " ";
 
 if (isset($argv[1])) {
   $pages = (string) $argv[1];
