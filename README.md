@@ -27,9 +27,9 @@ This is more properly a bot-gadget-tool combination. The parts are:
   All activity takes place on Tool Labs.
 * Citation expander (:en:Mediawiki:Gadget-citations.js) + gadgetapi.php. This
   is comprises an Ajax front-end in the on-wiki gadget and a PHP backend API.
-* [Generate template](https://github.com/ms609/citation-bot/blob/master/generate_template.php) creates the wiki reference given an identifier (for example given a doi: <https://citations.toolforge.org/generate_template.php?doi=10.1109/SCAM.2013.6648183>)
+* `generate_template.php` creates the wiki reference given an identifier (for example given a doi: <https://citations.toolforge.org/generate_template.php?doi=10.1109/SCAM.2013.6648183>)
 
-Bugs and requested changes are listed here: https://en.wikipedia.org/wiki/User_talk:Citation_bot .
+Bugs and requested changes are listed here: https://en.wikipedia.org/wiki/User_talk:Citation_bot.
 
 ## Structure
 
