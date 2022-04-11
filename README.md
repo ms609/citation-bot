@@ -98,3 +98,9 @@ This can be updated by maintainers logging on to Toolforge, then entering the co
     webservice restart
     
 In order to reduce complexity, the code currently uses a Wikipedia hosted and managed server instead at https://en.wikipedia.org/api/rest_v1/#/Citation/getCitation.
+
+## Running on the command line
+In order to run on the command line one needs OAuth tokens as documented in `env.php.example` (there are additional API keys that are needed to run some functions).  Also, change BOT_USER_AGENT in `setup.php' to something else. Then the bot can be run as:
+
+    /usr/bin/php ./process_page.php "Covid Watch|Water|COVID-19_apps" --slow
+
