@@ -2,6 +2,8 @@
 declare(strict_types=1);
 set_time_limit(120);
 ignore_user_abort(FALSE); // Dies if cannot connect back to client
+pcntl_signal(SIGTERM, "sig_handler"); // By default SIGTERM does not call exit()
+
 try {
  @header('Access-Control-Allow-Origin: *'); //This is ok because the API is not authenticated
  @header('Content-Type: text/json');
