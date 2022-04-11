@@ -1403,10 +1403,10 @@ function find_indentifiers_in_urls(Template $template, ?string $url_sent = NULL)
           if (preg_match('~^(.+)\?urlappend=~', $handle, $matches)) {  // should we shorten it
             usleep(100000);
             $test_url = "https://hdl.handle.net/" . $handle;
-            $headers_test = @get_headers($test_url, conflix, $context);
+            $headers_test = @get_headers($test_url, GET_THE_HEADERS, $context);
             if ($headers_test === FALSE) {
                sleep(3);
-               $headers_test = @get_headers($test_url, 1, $context);
+               $headers_test = @get_headers($test_url, GET_THE_HEADERS, $context);
             }
             if ($headers_test === FALSE || (empty($headers_test['Location']) && empty($headers_test['location']))) {
                $handle = $matches[1];
@@ -1430,10 +1430,10 @@ function find_indentifiers_in_urls(Template $template, ?string $url_sent = NULL)
           // Verify that it works as a hdl
           $test_url = "https://hdl.handle.net/" . $handle;
           usleep(20000);
-          $headers_test = @get_headers($test_url, 1, $context);
+          $headers_test = @get_headers($test_url, GET_THE_HEADERS, $context);
           if ($headers_test === FALSE) {
              sleep(3);
-             $headers_test = @get_headers($test_url, 1, $context);
+             $headers_test = @get_headers($test_url, GET_THE_HEADERS, $context);
           }
           if ($headers_test === FALSE) return FALSE; // hdl.handle.net is down
           if (empty($headers_test['Location']) && empty($headers_test['location'])) return FALSE; // does not resolve

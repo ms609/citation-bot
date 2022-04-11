@@ -685,6 +685,11 @@ final class Template {
               $the_journal = '';
               $bad_data = TRUE;
           }
+          if (stripos($the_journal, 'arXiv') !== FALSE) {
+              $this->rename('journal', 'CITATION_BOT_PLACEHOLDER_journal');
+              $the_journal = '';
+              $bad_data = TRUE;
+          }
           if ($the_title != '' && stripos($the_title, 'CITATION') === FALSE) {
             if (str_i_same($the_title, $the_journal) &&
                 str_i_same($the_title, $the_chapter)) { // Journal === Title === Chapter INSANE!  Never actually seen
@@ -2051,7 +2056,7 @@ final class Template {
     if ($results[1] == 1) {
       // Double check title if we did not use DOI
       if ($this->has('title') && !in_array('doi', $results[2])) {
-        $url = "https://eutils.ncbi.nlm.nih.gov/entrez/eutils/esummary.fcgi?tool=WikipediaCitationBot&email=martins+pubmed@gmail.com&db=pubmed&id=" . $results[0];
+        $url = "https://eutils.ncbi.nlm.nih.gov/entrez/eutils/esummary.fcgi?tool=WikipediaCitationBot&email=" . PUBMEDUSERNAME . "&db=pubmed&id=" . $results[0];
         usleep(100000); // Wait 1/10 of a second since we just tried
         $xml = @simplexml_load_file($url);
         if ($xml === FALSE) {
@@ -2191,7 +2196,7 @@ final class Template {
       }
     }
     $query = substr($query, 5); // Chop off initial " AND "
-    $url = "https://eutils.ncbi.nlm.nih.gov/entrez/eutils/esearch.fcgi?db=pubmed&tool=WikipediaCitationBot&email=martins+pubmed@gmail.com&term=$query";
+    $url = "https://eutils.ncbi.nlm.nih.gov/entrez/eutils/esearch.fcgi?db=pubmed&tool=WikipediaCitationBot&email=" . PUBMEDUSERNAME . "&term=$query";
     usleep(20000); // Wait 1/50 of a second since we probably just tried
     $xml = @simplexml_load_file($url);
     // @codeCoverageIgnoreStart
@@ -2919,7 +2924,7 @@ final class Template {
            'ssl' => ['verify_peer' => FALSE, 'verify_peer_name' => FALSE, 'allow_self_signed' => TRUE, 'security_level' => 0],
            'http' => ['ignore_errors' => TRUE, 'max_redirects' => 40, 'timeout' => 20.0, 'follow_location' => 1,  'header'=> ['Connection: close'], "user_agent" => BOT_USER_AGENT]
          )); // Allow crudy cheap journals
-          $headers_test = @get_headers($this->get($url_type), 1, $context);
+          $headers_test = @get_headers($this->get($url_type), GET_THE_HEADERS, $context);
           // @codeCoverageIgnoreStart
           if($headers_test ===FALSE) {
             $this->forget($url_type);

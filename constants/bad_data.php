@@ -113,7 +113,7 @@ const BAD_ZOTERO_TITLES = ['Browse publications', 'Central Authentication Servic
                                  'Seite nicht gefunden', 'Página no encontrada', 'الصفحة غير موجودة', '找不到网页',
                                  'страница не найдена', 'Page non trouvée', 'An error occured',
                                  'Compare Payday Loans', 'Find the Best Loan Deal', '..::.. Error', "Pagina inicia",
-                                  ];
+                                 'Help Center - The Arizona Republic'];
 
 const CANONICAL_PUBLISHER_URLS = array ('elsevier.com', 'springer.com', 'sciencedirect.com', 'tandfonline.com',
                                 'taylorandfrancis.com', 'wiley.com', 'sagepub.com', 'sagepublications.com',
@@ -375,6 +375,7 @@ const ZOTERO_AVOID_REGEX = array("twitter\.",               // This should be {{
                                  "ebooks\.adelaide\.edu\.au", // Dead
                                  "tnmaps\.tn\.nic\.in", // maps
                                  "lincstothepast\.com",
+                                 
                                  );
 const NON_JOURNAL_WEBSITES = array('cnn.com/', 'msnbc.com/', 'nbcnews.com/', 'cbs.com/', 
                                    'cbsnews.com/', 'abc.com/', 'nytimes.com/',

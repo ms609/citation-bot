@@ -13,11 +13,12 @@ $api = new WikipediaBot();
 /** @psalm-suppress RedundantCondition */ /* PSALM thinks HTML_OUTPUT cannot be FALSE */
 if (HTML_OUTPUT) {
   bot_html_header();
+  $edit_summary_end = "| Suggested by " . $api->get_the_user() . " ";
+} else {
+  $edit_summary_end = ""; // Username is person who is running the bot
 }
 
 check_blocked();
-
-$edit_summary_end = "| Suggested by " . $api->get_the_user() . " ";
 
 if (isset($argv[1])) {
   $pages = (string) $argv[1];
@@ -34,34 +35,32 @@ if (isset($argv[1])) {
 }
 
 if (isset($_REQUEST["edit"]) && $_REQUEST["edit"]) {
-   $ON = TRUE;
-   if ($_REQUEST["edit"] == 'automated_tools') {
+   if ($_REQUEST["edit"] === 'automated_tools') {
       $edit_summary_end = $edit_summary_end . "| #UCB_automated_tools ";
-   } elseif ($_REQUEST["edit"] == 'toolbar') {
+   } elseif ($_REQUEST["edit"] === 'toolbar') {
       $edit_summary_end = $edit_summary_end . "| #UCB_toolbar ";
-   } elseif ($_REQUEST["edit"] == 'webform') {
+   } elseif ($_REQUEST["edit"] === 'webform') {
       $edit_summary_end = $edit_summary_end . "| #UCB_webform ";
-   } elseif ($_REQUEST["edit"] == 'Headbomb') {
+   } elseif ($_REQUEST["edit"] === 'Headbomb') {
       $edit_summary_end = $edit_summary_end . "| #UCB_Headbomb ";
-   } elseif ($_REQUEST["edit"] == 'Smith609') {
+   } elseif ($_REQUEST["edit"] === 'Smith609') {
       $edit_summary_end = $edit_summary_end . "| #UCB_Smith609 ";
-   } elseif ($_REQUEST["edit"] == 'arXiv') {
+   } elseif ($_REQUEST["edit"] === 'arXiv') {
       $edit_summary_end = $edit_summary_end . "| #UCB_arXiv ";
    } else {
       $edit_summary_end = $edit_summary_end . "| #UCB_Other ";
    }
-}
-if (!isset($ON)) {
-  $ON = isset($argv[2]);
+} else {
   /** @psalm-suppress RedundantCondition */ /* PSALM thinks HTML_OUTPUT cannot be FALSE */
   if (HTML_OUTPUT) {
-     $edit_summary_end = $edit_summary_end . "| #UCB_webform ";  // Assuming
+     $edit_summary_end = $edit_summary_end . "| #UCB_webform ";
   } else {
      $edit_summary_end = $edit_summary_end . "| #UCB_CommandLine ";
   }
 }
 
 $pages_to_do = array_unique(explode('|', $pages));
+unset($pages);
 
 edit_a_list_of_pages($pages_to_do, $api, $edit_summary_end);
 

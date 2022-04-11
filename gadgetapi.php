@@ -1,6 +1,8 @@
 <?php
 declare(strict_types=1);
 set_time_limit(120);
+ignore_user_abort(FALSE); // Dies if cannot connect back to client
+
 try {
  @header('Access-Control-Allow-Origin: *'); //This is ok because the API is not authenticated
  @header('Content-Type: text/json');
@@ -10,6 +12,7 @@ try {
 
  //Set up tool requirements
  require_once 'setup.php';
+ pcntl_signal(SIGTERM, "sig_handler"); // By default SIGTERM does not call exit()
 
  $originalText = (string) $_POST['text'];
  $editSummary = (string) $_POST['summary'];
@@ -32,6 +35,7 @@ try {
    $editSummary .=  str_replace('Use this bot', 'Use this tool', $page->edit_summary()) . '| #UCB_Gadget ';
  }
 
+ unset($page, $originalText);
  ob_end_clean();
 
  /**

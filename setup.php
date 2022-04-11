@@ -93,6 +93,7 @@ date_default_timezone_set('UTC');
 
 /** @psalm-suppress UnusedFunctionCall */
 stream_context_set_default(['http' => ['timeout' => 20]]);
+ini_set('default_socket_timeout', '20');
 
 define("PHP_ADSABSAPIKEY", (string) getenv("PHP_ADSABSAPIKEY"));
 define("PHP_GOOGLEKEY", (string) getenv("PHP_GOOGLEKEY"));
@@ -106,6 +107,7 @@ function check_blocked() : void {
 }
 
 function unlock_user() : void {
+  if (!HTML_OUTPUT) return;
   @session_start();
   unset($_SESSION['big_and_busy']);     
   @session_write_close();
@@ -116,7 +118,7 @@ function sig_handler(int $signo) : void {
 }
 
 function check_overused() : void {
- if (TRAVIS) return;
+ if (!HTML_OUTPUT) return;
  if (isset($_SESSION['big_and_busy']) && $_SESSION['big_and_busy'] === 'BLOCK3') {
    echo '</pre><div style="text-align:center"><h1>Run blocked by your existing big run.</h1></div><footer><a href="./" title="Use Citation Bot again">Another</a>?</footer></body></html>';
    exit();
@@ -130,7 +132,7 @@ function check_overused() : void {
 }
 
 function check_killed() : void {
- if (TRAVIS) return;
+ if (!HTML_OUTPUT) return;
  if(!defined('BIG_JOB_MODE')) return;
  @session_start();
  if (isset($_SESSION['kill_the_big_job'])) {

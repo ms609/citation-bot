@@ -53,14 +53,20 @@ final class WikipediaBot {
     }
 
     /** @psalm-suppress RedundantCondition */  /* PSALM thinks TRAVIS cannot be FALSE */
-    if (TRAVIS) {
+    if (TRAVIS && !$no_user) {
       $this->the_user = 'Citation_bot';
       $this->user_token = $this->bot_token;
-    } elseif ($no_user) {           // @codeCoverageIgnore
-      $this->the_user = '';         // @codeCoverageIgnore
+    } elseif ($no_user) {
+      $this->the_user = ''; // This is for the gadget case
+      $this->user_token = $this->bot_token;
+      // @codeCoverageIgnoreStart
+      // Stan does not understand that $argv can be set
+    } elseif (!HTML_OUTPUT) { // Running on the command line
+      $this->the_user = ''; // Will edit as user
       $this->user_token = $this->bot_token;
     } else {
-      $this->authenticate_user();  // @codeCoverageIgnore
+      $this->authenticate_user();
+      // @codeCoverageIgnoreEnd
     }
     self::$last_WikipediaBot = $this;
   }
