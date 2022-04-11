@@ -7,6 +7,7 @@ require_once 'Template.php';      // @codeCoverageIgnore
 // ============================================= DOI functions ======================================
 function doi_active(string $doi) : ?bool {
   // Greatly speed-up by having one array of each kind and only look for hash keys, not values
+  static $cache_good = [];
   static $cache_bad  = [];
   if (isset($cache_good[$doi])) return TRUE;
   if (isset($cache_bad[$doi]))  return FALSE;
