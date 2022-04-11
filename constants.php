@@ -33,3 +33,6 @@ const DATES_DMY      = 2;
 
 const CROSSREFUSERNAME = 'martins@gmail.com';
 const PUBMEDUSERNAME   = 'martins+pubmed@gmail.com';
+
+const GET_THE_HEADERS = 1;
+
