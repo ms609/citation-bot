@@ -12,7 +12,7 @@ try {
 
  //Set up tool requirements
  require_once 'setup.php';
- pcntl_signal(SIGTERM, "sig_handler"); // By default SIGTERM does not call exit()
+ if (!TRAVIS) pcntl_signal(SIGTERM, "sig_handler"); // By default SIGTERM does not call exit()
 
  $originalText = (string) $_POST['text'];
  $editSummary = (string) $_POST['summary'];
