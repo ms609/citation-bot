@@ -14,3 +14,5 @@ parameters:
 		- BIG_RUN
 		- WIKI_ROOT
 		- API_ROOT
+		- BOT_USER_AGENT
+		

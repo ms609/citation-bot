@@ -43,7 +43,7 @@ curl_setopt_array($ch,
        CURLOPT_TIMEOUT => 45,
        CURLOPT_RETURNTRANSFER =>  1,
        CURLOPT_URL => $url,
-       CURLOPT_USERAGENT => 'Citation_bot; citations@tools.wmflabs.org']);
+       CURLOPT_USERAGENT => BOT_USER_AGENT]);
 $json = (string) @curl_exec($ch);
 curl_close($ch);
 if ($json == '') {
@@ -52,7 +52,7 @@ if ($json == '') {
   exit();
 }
 $array = @json_decode($json, TRUE);
-unset($json);
+unset($json, $page_name, $url);
 if ($array === FALSE || !isset($array['parse']['links']) || !is_array($array['parse']['links'])) {
   report_warning(' Error interpreting page list - perhaps page requested does not even exist');
   echo '</pre><footer><a href="./" title="Use Citation Bot again">Another</a>?</footer></body></html>';
