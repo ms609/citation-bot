@@ -57,12 +57,12 @@ final class WikipediaBot {
       $this->the_user = 'Citation_bot';
       $this->user_token = $this->bot_token;
     } elseif ($no_user) {
-      $this->the_user = '';
+      $this->the_user = ''; // This is for the gadget case
       $this->user_token = $this->bot_token;
       // @codeCoverageIgnoreStart
       // Stan does not understand that $argv can be set
     } elseif (isset($argv)) {  // @phpstan-ignore-line
-      $this->the_user = 'this user';     
+      $this->the_user = ''; // Will edit as user
       $this->user_token = $this->bot_token;
     } else {
       $this->authenticate_user();
