@@ -46,6 +46,7 @@ if ($category) {
     echo ' </pre><footer><a href="./" title="Use Citation Bot again">Another</a>?</footer></body></html>';
     exit();
   }
+  unset($total, $category);
   edit_a_list_of_pages($pages_in_category, $api, $edit_summary_end);
 } else {
   if (isset($_POST["cat"])) {
