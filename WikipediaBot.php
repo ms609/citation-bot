@@ -35,7 +35,7 @@ final class WikipediaBot {
         CURLOPT_TIMEOUT => 20,
         CURLOPT_COOKIESESSION => TRUE,
         CURLOPT_COOKIEFILE => 'cookie.txt',
-        CURLOPT_USERAGENT => 'Citation_bot; citations@tools.wmflabs.org',
+        CURLOPT_USERAGENT => BOT_USER_AGENT,
     ]);
     // setup.php must already be run at this point
     if (!getenv('PHP_OAUTH_CONSUMER_TOKEN'))  report_error("PHP_OAUTH_CONSUMER_TOKEN not set");
@@ -53,14 +53,20 @@ final class WikipediaBot {
     }
 
     /** @psalm-suppress RedundantCondition */  /* PSALM thinks TRAVIS cannot be FALSE */
-    if (TRAVIS) {
+    if (TRAVIS && !$no_user) {
       $this->the_user = 'Citation_bot';
       $this->user_token = $this->bot_token;
-    } elseif ($no_user) {           // @codeCoverageIgnore
-      $this->the_user = '';         // @codeCoverageIgnore
+    } elseif ($no_user) {
+      $this->the_user = ''; // This is for the gadget case
+      $this->user_token = $this->bot_token;
+      // @codeCoverageIgnoreStart
+      // Stan does not understand that $argv can be set
+    } elseif (!HTML_OUTPUT) { // Running on the command line
+      $this->the_user = ''; // Will edit as user
       $this->user_token = $this->bot_token;
     } else {
-      $this->authenticate_user();  // @codeCoverageIgnore
+      $this->authenticate_user();
+      // @codeCoverageIgnoreEnd
     }
     self::$last_WikipediaBot = $this;
   }
@@ -472,7 +478,7 @@ final class WikipediaBot {
       CURLOPT_HEADER => 0,
       CURLOPT_RETURNTRANSFER => TRUE,
       CURLOPT_TIMEOUT => 20,
-      CURLOPT_USERAGENT => 'Citation_bot; citations@tools.wmflabs.org',
+      CURLOPT_USERAGENT => BOT_USER_AGENT,
       CURLOPT_URL => API_ROOT . '?action=query&usprop=blockinfo&format=json&list=users&ususers=' . urlencode(str_replace(" ", "_", $user))
     ]);
     $response = (string) @curl_exec($ch);

@@ -39,7 +39,7 @@ function entrez_api(array $ids, array &$templates, string $db) : bool {   // Poi
        return $templates[$template_key];
   };
   
-  $url = "https://eutils.ncbi.nlm.nih.gov/entrez/eutils/esummary.fcgi?tool=WikipediaCitationBot&email=martins+pubmed@gmail.com&db=$db&id=" 
+  $url = "https://eutils.ncbi.nlm.nih.gov/entrez/eutils/esummary.fcgi?tool=WikipediaCitationBot&email=" . PUBMEDUSERNAME . "&db=$db&id=" 
                . implode(',', $ids);
   report_action("Using $db API to retrieve publication details: ");
   
@@ -329,7 +329,7 @@ function adsabs_api(array $ids, array &$templates, string $identifier) : bool { 
     curl_setopt_array($ch,
              [CURLOPT_URL => $adsabs_url,
               CURLOPT_TIMEOUT => 20,
-              CURLOPT_USERAGENT => 'Citation_bot; citations@tools.wmflabs.org',
+              CURLOPT_USERAGENT => BOT_USER_AGENT,
               CURLOPT_HTTPHEADER => ['Content-Type: big-query/csv', 'Authorization: Bearer ' . PHP_ADSABSAPIKEY],
               CURLOPT_RETURNTRANSFER => TRUE,
               CURLOPT_HEADER => TRUE,
@@ -665,7 +665,7 @@ function query_crossref(string $doi) : ?object {
              CURLOPT_RETURNTRANSFER =>  1,
              CURLOPT_URL =>  $url,
              CURLOPT_TIMEOUT => 15,
-             CURLOPT_USERAGENT => 'Citation_bot; citations@tools.wmflabs.org']);
+             CURLOPT_USERAGENT => BOT_USER_AGENT]);
   for ($i = 0; $i < 2; $i++) {
     $raw_xml = (string) @curl_exec($ch);
     if (!$raw_xml) {
@@ -720,7 +720,7 @@ function expand_doi_with_dx(Template $template, string $doi) : bool {
      if (!$doi) return FALSE;
      $ch = curl_init();
      curl_setopt_array($ch,
-             [CURLOPT_USERAGENT => 'Citation_bot; citations@tools.wmflabs.org',
+             [CURLOPT_USERAGENT => BOT_USER_AGENT,
               CURLOPT_URL => 'https://doi.org/' . $doi,
               CURLOPT_HTTPHEADER => ["Accept: application/vnd.citationstyles.csl+json"],
               CURLOPT_RETURNTRANSFER => TRUE,
@@ -849,7 +849,7 @@ function expand_by_jstor(Template $template) : bool {
             CURLOPT_RETURNTRANSFER => 1,
             CURLOPT_TIMEOUT => 15,
             CURLOPT_URL => 'https://www.jstor.org/citation/ris/' . $jstor,
-            CURLOPT_USERAGENT => 'Citation_bot; citations@tools.wmflabs.org']);
+            CURLOPT_USERAGENT => BOT_USER_AGENT]);
   $dat = (string) @curl_exec($ch);
   curl_close($ch);
   if ($dat == '') {
@@ -1169,7 +1169,7 @@ function expand_templates_from_archives(array &$templates) : void { // This is d
           [CURLOPT_HEADER => 0,
            CURLOPT_RETURNTRANSFER => 1,
            CURLOPT_TIMEOUT => 25,
-           CURLOPT_USERAGENT => 'Citation_bot; citations@tools.wmflabs.org']);
+           CURLOPT_USERAGENT => BOT_USER_AGENT]);
   foreach ($templates as $template) {
     set_time_limit(120);
     if ($template->blank(['title', 'chapter', 'series']) &&
