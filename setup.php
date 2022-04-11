@@ -93,7 +93,7 @@ date_default_timezone_set('UTC');
 
 /** @psalm-suppress UnusedFunctionCall */
 stream_context_set_default(['http' => ['timeout' => 20]]);
-ini_set('default_socket_timeout', 20);
+ini_set('default_socket_timeout', '20');
 
 define("PHP_ADSABSAPIKEY", (string) getenv("PHP_ADSABSAPIKEY"));
 define("PHP_GOOGLEKEY", (string) getenv("PHP_GOOGLEKEY"));
