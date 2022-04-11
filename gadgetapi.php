@@ -32,6 +32,7 @@ try {
    $editSummary .=  str_replace('Use this bot', 'Use this tool', $page->edit_summary()) . '| #UCB_Gadget ';
  }
 
+ unset($page, $originalText);
  ob_end_clean();
 
  /**
