@@ -136,6 +136,7 @@ final class WikipediaBot {
     try {
       switch (strtolower($method)) {
         case 'get':
+          /** switch to post only for more security & anonymity
           $url = API_ROOT . '?' . http_build_query($params);            
           curl_setopt_array($this->ch, [
             CURLOPT_HTTPGET => TRUE,
@@ -156,7 +157,7 @@ final class WikipediaBot {
             // @codeCoverageIgnoreEnd
           }
           return ($this->ret_okay($ret)) ? $ret : NULL;
-          
+          **/
         case 'post':
           curl_setopt_array($this->ch, [
             CURLOPT_POST => TRUE,
@@ -166,7 +167,8 @@ final class WikipediaBot {
           ]);
           $data = (string) @curl_exec($this->ch);
           if ( !$data ) {
-            report_minor_error("Curl error: " . echoable(curl_error($this->ch)));     // @codeCoverageIgnore
+            report_minor_error("Curl error: " . echoable(curl_error($this->ch)));  // @codeCoverageIgnore
+            return NULL;                                                           // @codeCoverageIgnore
           }
           $ret = @json_decode($data); 
           if (isset($ret->error) && (
