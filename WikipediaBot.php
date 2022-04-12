@@ -515,7 +515,6 @@ final class WikipediaBot {
       if (is_string($_SESSION['citation_bot_user_id']) && self::is_valid_user($_SESSION['citation_bot_user_id'])) {
         $this->the_user = $_SESSION['citation_bot_user_id'];
         @setcookie(session_name(),session_id(),time()+(24*3600)); // 24 hours
-        condlf
         $this->user_token = new Token($_SESSION['access_key'], $_SESSION['access_secret']);
         session_write_close(); // Done with it
         return;
