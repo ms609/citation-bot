@@ -134,59 +134,47 @@ final class WikipediaBot {
     $authenticationHeader = $request->toHeader();
     
     try {
-      switch (strtolower($method)) {
-        case 'get':
-          $url = API_ROOT . '?' . http_build_query($params);            
+      switch ($method) {
+        case 'GET':        
           curl_setopt_array($this->ch, [
             CURLOPT_HTTPGET => TRUE,
-            CURLOPT_URL => $url,
+            CURLOPT_URL => API_ROOT . '?' . http_build_query($params),
             CURLOPT_HTTPHEADER => [$authenticationHeader],
           ]);
-          $data = (string) @curl_exec($this->ch);
-          if (!$data) {
-            report_minor_error("Curl error: " . echoable(curl_error($this->ch)));  // @codeCoverageIgnore
-            return NULL;                                                           // @codeCoverageIgnore
-          }
-          $ret = @json_decode($data);
-          if (isset($ret->error->code) && $ret->error->code == 'assertuserfailed') {
-            // @codeCoverageIgnoreStart
-            unset($data);
-            unset($ret);
-            return $this->fetch($params, $method, $depth+1);
-            // @codeCoverageIgnoreEnd
-          }
-          return ($this->ret_okay($ret)) ? $ret : NULL;
-        case 'post':
+          break;
+
+        case 'POST':
           curl_setopt_array($this->ch, [
             CURLOPT_POST => TRUE,
             CURLOPT_POSTFIELDS => http_build_query($params),
             CURLOPT_HTTPHEADER => [$authenticationHeader],
             CURLOPT_URL => API_ROOT
           ]);
-          $data = (string) @curl_exec($this->ch);
-          if ( !$data ) {
-            report_minor_error("Curl error: " . echoable(curl_error($this->ch)));  // @codeCoverageIgnore
-            return NULL;                                                           // @codeCoverageIgnore
-          }
-          $ret = @json_decode($data); 
-          if (isset($ret->error) && (
-            (string) $ret->error->code === 'assertuserfailed' ||
-            stripos((string) $ret->error->info, 'The database has been automatically locked') !== FALSE ||
-            stripos((string) $ret->error->info, 'abusefilter-warning-predatory') !== FALSE ||
-            stripos((string) $ret->error->info, 'protected') !== FALSE ||
-            stripos((string) $ret->error->info, 'Nonce already used') !== FALSE)
-          ) {
-            // @codeCoverageIgnoreStart
-            unset($data);
-            unset($ret);
-            return $this->fetch($params, $method, $depth+1);
-            // @codeCoverageIgnoreEnd
-          }
-          return ($this->ret_okay($ret)) ? $ret : NULL;
+          break;
 
-        default:  // will only be hit if error in our code
-          report_error("Unrecognized method in Fetch."); // @codeCoverageIgnore
+        default:
+          report_error("Unrecognized method in Fetch: " . $method); // @codeCoverageIgnore
       }
+      $data = (string) @curl_exec($this->ch);
+      if ( !$data ) {
+        report_minor_error("Curl error: " . echoable(curl_error($this->ch)));  // @codeCoverageIgnore
+        return NULL;                                                           // @codeCoverageIgnore
+      }
+      $ret = @json_decode($data); 
+      if (isset($ret->error) && (
+        (string) $ret->error->code === 'assertuserfailed' ||
+        stripos((string) $ret->error->info, 'The database has been automatically locked') !== FALSE ||
+        stripos((string) $ret->error->info, 'abusefilter-warning-predatory') !== FALSE ||
+        stripos((string) $ret->error->info, 'protected') !== FALSE ||
+        stripos((string) $ret->error->info, 'Nonce already used') !== FALSE)
+      ) {
+        // @codeCoverageIgnoreStart
+        unset($data);
+        unset($ret);
+        return $this->fetch($params, $method, $depth+1);
+        // @codeCoverageIgnoreEnd
+      }
+      return ($this->ret_okay($ret)) ? $ret : NULL;
     } catch(Exception $E) {
       report_warning("Exception caught!\n");
       report_info("Response: ". $E->getMessage());
