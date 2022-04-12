@@ -55,15 +55,15 @@ final class WikipediaBot {
     /** @psalm-suppress RedundantCondition */  /* PSALM thinks TRAVIS cannot be FALSE */
     if (TRAVIS && !$no_user) {
       $this->the_user = 'Citation_bot';
-      $this->user_token = $this->bot_token;
+      $this->user_token = new Token("", "");
     } elseif ($no_user) {
-      $this->the_user = ''; // This is for the gadget case
-      $this->user_token = $this->bot_token;
+      $this->the_user = ''; // This is if we call is_redirect() from gadget
+      $this->user_token = new Token("", "");
       // @codeCoverageIgnoreStart
       // Stan does not understand that $argv can be set
-    } elseif (!HTML_OUTPUT) { // Running on the command line
-      $this->the_user = ''; // Will edit as user
-      $this->user_token = $this->bot_token;
+    } elseif (!HTML_OUTPUT) { // Running on the command line, and editing using main tokens
+      $this->the_user = '';
+      $this->user_token = new Token("", "");
     } else {
       $this->authenticate_user();
       // @codeCoverageIgnoreEnd
