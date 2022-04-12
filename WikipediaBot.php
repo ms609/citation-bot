@@ -45,25 +45,27 @@ final class WikipediaBot {
 
     $this->bot_consumer = new Consumer((string) getenv('PHP_OAUTH_CONSUMER_TOKEN'), (string) getenv('PHP_OAUTH_CONSUMER_SECRET'));
     $this->bot_token = new Token((string) getenv('PHP_OAUTH_ACCESS_TOKEN'), (string) getenv('PHP_OAUTH_ACCESS_SECRET'));
+
+    $this->user_token = NULL;
     if (defined('EDIT_AS_USER')) {
        $this->user_consumer = new Consumer((string) getenv('PHP_WP_OAUTH_CONSUMER'), (string) getenv('PHP_WP_OAUTH_SECRET'));
        $conf = new ClientConfig(WIKI_ROOT . '?title=Special:OAuth');
        $conf->setConsumer($this->user_consumer);
        $this->user_client = new Client($conf);
+    } else {
+       $this->user_consumer = NULL;
+       $this->user_client = NULL;
     }
 
     /** @psalm-suppress RedundantCondition */  /* PSALM thinks TRAVIS cannot be FALSE */
     if (TRAVIS && !$no_user) {
       $this->the_user = 'Citation_bot';
-      $this->user_token = $this->bot_token;
     } elseif ($no_user) {
       $this->the_user = ''; // This is for the gadget case
-      $this->user_token = $this->bot_token;
       // @codeCoverageIgnoreStart
       // Stan does not understand that $argv can be set
     } elseif (!HTML_OUTPUT) { // Running on the command line
       $this->the_user = ''; // Will edit as user
-      $this->user_token = $this->bot_token;
     } else {
       $this->authenticate_user();
       // @codeCoverageIgnoreEnd
@@ -513,9 +515,7 @@ final class WikipediaBot {
       if (is_string($_SESSION['citation_bot_user_id']) && self::is_valid_user($_SESSION['citation_bot_user_id'])) {
         $this->the_user = $_SESSION['citation_bot_user_id'];
         @setcookie(session_name(),session_id(),time()+(24*3600)); // 24 hours
-        if (defined('EDIT_AS_USER')) {
-          $this->user_token = new Token($_SESSION['access_key'], $_SESSION['access_secret']);
-        }
+        $this->user_token = new Token($_SESSION['access_key'], $_SESSION['access_secret']);
         session_write_close(); // Done with it
         return;
       } else {
