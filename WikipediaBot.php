@@ -135,7 +135,7 @@ final class WikipediaBot {
     
     try {
       switch (strtolower($method)) {
-        case 'get':
+        case 'avoid':
           $url = API_ROOT . '?' . http_build_query($params);            
           curl_setopt_array($this->ch, [
             CURLOPT_HTTPGET => TRUE,
@@ -158,6 +158,7 @@ final class WikipediaBot {
           return ($this->ret_okay($ret)) ? $ret : NULL;
           
         case 'post':
+        case 'get':
           curl_setopt_array($this->ch, [
             CURLOPT_POST => TRUE,
             CURLOPT_POSTFIELDS => http_build_query($params),
