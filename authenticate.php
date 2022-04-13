@@ -100,7 +100,7 @@ $proto = (
 $host = $_SERVER['HTTP_HOST'];
 $path = $_SERVER['REQUEST_URI'];
 $newcallback = $proto . '://' . $host . $path;
-$oldcallback = str_replace('citations.toolforge.org', 'tools.wmflabs.org/citations', $callback);
+$oldcallback = str_replace('citations.toolforge.org', 'tools.wmflabs.org/citations', $newcallback);
 
 // TODO - tokens specify tools.wmflabs.org/citations, and not the correct newer hostname of citations.toolforge.org
 
