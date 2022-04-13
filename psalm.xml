@@ -35,6 +35,7 @@
         <file name="unlock_git.php" />
         <file name="user_messages.php" />
         <file name="Zotero.php" />
+        <file name="html_headers.php" />
         <directory name="constants" />
         <ignoreFiles>
             <directory name="vendor" />
