@@ -501,7 +501,7 @@ public static function process_zotero_response(string $zotero_response, Template
         return FALSE;
       }
   }
-  if ($test_data === '404') return FALSE;
+  if ($test_data === '404' || $test_data === '/404') return FALSE;
   if (isset($result->bookTitle) && strtolower($result->bookTitle) === 'undefined') unset($result->bookTitle); // S2 without journals
   if (isset($result->publicationTitle) && strtolower($result->publicationTitle) === 'undefined') unset($result->publicationTitle); // S2 without journals
   if (isset($result->bookTitle)) {
