@@ -113,8 +113,13 @@ const BAD_ZOTERO_TITLES = ['Browse publications', 'Central Authentication Servic
                                  'Seite nicht gefunden', 'Página no encontrada', 'الصفحة غير موجودة', '找不到网页',
                                  'страница не найдена', 'Page non trouvée', 'An error occured',
                                  'Compare Payday Loans', 'Find the Best Loan Deal', '..::.. Error', "Pagina inicia",
-                                 'Help Center - The Arizona Republic', '404', '404 ERROR', '404 - URL invalid',
-                                 "404. That's an error", '404 - Page Not Found'];
+                                 'Help Center - The Arizona Republic', '404 ERROR', '404 - URL invalid',
+                                 "404. That's an error", '404 - Page Not Found', 'Página não existe', 
+                                 'This is not the page you requested', 'Page Not Found', '404 - - ',
+                                 '404 &#124; ',  'Missing page', '404 - File or directory not found', '错误页面',
+                                 '404 Page - ', '404: Page Not Found ', '404: PAGE NOT FOUND', '404 Error',
+                                 '404 | ', '页面不存在', 'De pagina is niet gevonden', '404 - ', ' Stranica nije pronađena',
+                                 '404 Page'];
 
 const CANONICAL_PUBLISHER_URLS = array ('elsevier.com', 'springer.com', 'sciencedirect.com', 'tandfonline.com',
                                 'taylorandfrancis.com', 'wiley.com', 'sagepub.com', 'sagepublications.com',
