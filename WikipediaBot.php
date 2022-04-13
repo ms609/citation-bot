@@ -168,8 +168,7 @@ final class WikipediaBot {
         stripos((string) $ret->error->info, 'Nonce already used') !== FALSE)
       ) {
         // @codeCoverageIgnoreStart
-        unset($data);
-        unset($ret);
+        unset($data, $ret, $token, $consumer, $request, $authenticationHeader); // save memory during recursion
         return $this->fetch($params, $method, $depth+1);
         // @codeCoverageIgnoreEnd
       }
