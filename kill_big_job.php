@@ -2,10 +2,8 @@
 declare(strict_types=1);
 set_time_limit(120);
 $started = @session_start();
-@header('Content-type: text/html; charset=utf-8');
-@header('Cache-Control: no-cache, no-store, must-revalidate');
-@header('Pragma: no-cache');
-@header('Expires: 0');
+
+require_once 'html_headers.php';
 
 if (!$started) {
  @session_write_close();
