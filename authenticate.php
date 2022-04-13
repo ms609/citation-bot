@@ -23,7 +23,7 @@ function death_time(string $err) : void {
   unset($_SESSION['citation_bot_user_id']);
   unset($_SESSION['request_key']);
   unset($_SESSION['request_secret']);     
-  exit('<!DOCTYPE html><html lang="en" dir="ltr"><head><title>Authentifcation System Failure</title></head><body>' . echoable($err) . '</body></html>');
+  exit('<!DOCTYPE html><html lang="en" dir="ltr"><head><title>Authentifcation System Failure</title></head><body><main>' . echoable($err) . '</main></body></html>');
 }
 
 function return_to_sender(string $where = 'https://citations.toolforge.org/') : void {
@@ -99,9 +99,13 @@ $proto = (
       ) ? "https" : "http";
 $host = $_SERVER['HTTP_HOST'];
 $path = $_SERVER['REQUEST_URI'];
-$callback = $proto . '://' . $host . $path;
+$newcallback = $proto . '://' . $host . $path;
+$oldcallback = str_replace('citations.toolforge.org', 'tools.wmflabs.org/citations', $callback);
+
+// TODO - tokens specify tools.wmflabs.org/citations, and not the correct newer hostname of citations.toolforge.org
+
 try {
-      $client->setCallback($callback);
+      $client->setCallback($oldcallback);
       list( $authUrl, $token ) = $client->initiate();
       $_SESSION['request_key'] = $token->key; // We will retrieve these from session when the user is sent back
       $_SESSION['request_secret'] = $token->secret;
@@ -109,8 +113,7 @@ try {
 }
 catch (Throwable $e) { ; }
 try {
-      $callback = str_replace('citations.toolforge.org', 'tools.wmflabs.org/citations', $callback);
-      $client->setCallback($callback);
+      $client->setCallback($newcallback);
       list( $authUrl, $token ) = $client->initiate();
       $_SESSION['request_key'] = $token->key;
       $_SESSION['request_secret'] = $token->secret;
