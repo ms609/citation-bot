@@ -713,7 +713,7 @@ public static function process_zotero_response(string $zotero_response, Template
   }
   unset($i);
    
-  if (stripos($url, 'sfdb.org') !== FALSE && $template->blank(WORK_ALIASES)) {
+  if ((stripos($url, '/sfdb.org') !== FALSE || stripos($url, '.sfdb.org') !== FALSE) && $template->blank(WORK_ALIASES)) {
      $template->add_if_new('website', 'sfdb.org');
   }
   
