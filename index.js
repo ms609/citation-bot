@@ -73,7 +73,7 @@ function InitializeForm() {
   document.getElementById("botForm").onsubmit = ValidateForm;
   document.getElementById("botPage").oninput  = ValidatePageName;
   document.getElementById("botCat").oninput   = ValidateCategory;
-  /* document.getElementById("botLinked").oninput= ValidateLinked; */
+  document.getElementById("botLinked").oninput= ValidateLinked;
   document.getElementById("CatSubmit").disabled = false;
   document.getElementById("PageSubmit").disabled = false;
   document.getElementById("LinkedSubmit").disabled = false;
