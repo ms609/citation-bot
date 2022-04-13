@@ -1,9 +1,7 @@
 <?php
 set_time_limit(120);
-@header('Cache-Control: no-cache, no-store, must-revalidate');
-@header('Pragma: no-cache');
-@header('Expires: 0');
-@header('Content-type: text/html; charset=utf-8');
+
+require_once 'html_headers.php';
 
 ob_implicit_flush();
 echo '<!DOCTYPE html><html lang="en" dir="ltr"><head><title>Git Pull</title></head><body><main><pre>';
