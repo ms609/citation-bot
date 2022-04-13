@@ -113,7 +113,8 @@ const BAD_ZOTERO_TITLES = ['Browse publications', 'Central Authentication Servic
                                  'Seite nicht gefunden', 'Página no encontrada', 'الصفحة غير موجودة', '找不到网页',
                                  'страница не найдена', 'Page non trouvée', 'An error occured',
                                  'Compare Payday Loans', 'Find the Best Loan Deal', '..::.. Error', "Pagina inicia",
-                                 'Help Center - The Arizona Republic'];
+                                 'Help Center - The Arizona Republic', '404', '404 ERROR', '404 - URL invalid',
+                                 "404. That's an error", '404 - Page Not Found'];
 
 const CANONICAL_PUBLISHER_URLS = array ('elsevier.com', 'springer.com', 'sciencedirect.com', 'tandfonline.com',
                                 'taylorandfrancis.com', 'wiley.com', 'sagepub.com', 'sagepublications.com',
