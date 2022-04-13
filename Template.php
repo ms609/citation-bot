@@ -6357,7 +6357,7 @@ final class Template {
           }
           if ($this->get($param) === 'sfdb.org') { // Clean up after bad edits
             $url = $this->get('url');
-             if (stripos($url, 'isfdb.org') !== FALSE)) {
+             if (stripos($url, 'isfdb.org') !== FALSE) {
                if (stripos($url, '.isfdb.org') !== FALSE || stripos($url, '/isfdb.org') !== FALSE) {
                  $this->set($param, 'isfdb.org');
                  return;
