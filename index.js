@@ -26,7 +26,7 @@ function ValidateForm() {
   } else if (submitButton.id === "LinkedSubmit") {
     if (botLinked.value.trim() === "") {
       botLinked.classList.add("error");
-      /* submitButton.disabled = "disabled"; */
+      submitButton.disabled = "disabled";
       return false;
     }
     document.getElementById("LinkSpinner").style.display = "inline-block";
