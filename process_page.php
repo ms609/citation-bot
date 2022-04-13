@@ -25,7 +25,7 @@ if (isset($argv[1])) {
 } elseif (isset($_GET["page"])) {
   $pages = (string) $_GET["page"];
   if (strpos($pages, '|') !== FALSE) {
-    report_error('We do not support multiple pages passed as part of the URL anymore. Use the webform.');
+    report_error('Use the webform for multiple pages.');
   }
 } elseif (isset($_POST["page"])) {
   $pages = (string) $_POST["page"];
