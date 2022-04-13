@@ -59,7 +59,6 @@ final class WikipediaBot {
       $this->the_user = ''; // This is if we call is_redirect() from gadget
       $this->user_token = new Token("", "");
       // @codeCoverageIgnoreStart
-      // Stan does not understand that $argv can be set
     } elseif (!HTML_OUTPUT) { // Running on the command line, and editing using main tokens
       $this->the_user = '';
       $this->user_token = new Token("", "");
