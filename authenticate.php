@@ -40,7 +40,7 @@ try {
   $conf = new ClientConfig('https://meta.wikimedia.org/w/index.php?title=Special:OAuth');
 }
 catch (Throwable $e) {
-  death_time("Citation Bot Could not contact meta.wikimedia.org");
+  death_time("Citation Bot Could not contact meta.wikimedia.org"); exit(0); // Exit call makes phpstan happy
 }
 
 try {
@@ -49,7 +49,7 @@ try {
   unset($conf);
 }
 catch (Throwable $e) {
-  death_time("Citation Bot's internal authorization tokens did not work");
+  death_time("Citation Bot's internal authorization tokens did not work"); exit(0); // Exit call makes phpstan happy
 }
 
 // Existing Access Grant - verify that it works since we are here anyway
