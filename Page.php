@@ -31,7 +31,7 @@ class Page {
       $this->construct_modifications_array();
   }
 
-  public function get_text_from(string $title, WikipediaBot $api) : bool {
+  public function get_text_from(string $title) : bool {
     $this->construct_modifications_array(); // Could be new page
 
     $ch = curl_init();
