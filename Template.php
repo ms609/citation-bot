@@ -23,7 +23,6 @@ require_once 'NameTools.php';
 final class Template {
   public const PLACEHOLDER_TEXT = '# # # CITATION_BOT_PLACEHOLDER_TEMPLATE %s # # #';
   public const REGEXP = ['~\{\{[^\{\}\|]+\}\}~su', '~\{\{[^\{\}]+\}\}~su', '~\{\{(?>[^\{]|\{[^\{])+?\}\}~su'];  // Please see https://stackoverflow.com/questions/1722453/need-to-prevent-php-regex-segfault for discussion of atomic regex
-  /** @psalm-suppress PropertyNotSetInConstructor */
   public const TREAT_IDENTICAL_SEPARATELY = FALSE;  // This is safe because templates are the last thing we do AND we do not directly edit $all_templates that are sub-templates - we might remove them, but do not change their content directly
   /** @psalm-suppress PropertyNotSetInConstructor */
   public array $all_templates;  // Points to list of all the Template() on the Page() including this one.  It can only be set by the page class after all templates are made
