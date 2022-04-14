@@ -22,7 +22,8 @@ if (isset($_REQUEST["wiki_base"])){
 define("WIKI_ROOT", 'https://'. $wiki_base . '.wikipedia.org/w/index.php');
 define("API_ROOT", 'https://'. $wiki_base . '.wikipedia.org/w/api.php');
 unset($wiki_base);
-define("BOT_USER_AGENT",  "Citation_bot; citations@tools.wmflabs.org");
+
+require_once 'constants.php';
 
 ini_set("user_agent", BOT_USER_AGENT);
 include_once './vendor/autoload.php';
@@ -145,7 +146,6 @@ function check_killed() : void {
 }
 
 define("MAX_TRIES", 2);
-require_once 'constants.php';
 require_once 'Comment.php';
 require_once 'user_messages.php';
 require_once 'NameTools.php';
