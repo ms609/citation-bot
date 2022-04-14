@@ -45,25 +45,23 @@ final class WikipediaBot {
 
     $this->bot_consumer = new Consumer((string) getenv('PHP_OAUTH_CONSUMER_TOKEN'), (string) getenv('PHP_OAUTH_CONSUMER_SECRET'));
     $this->bot_token = new Token((string) getenv('PHP_OAUTH_ACCESS_TOKEN'), (string) getenv('PHP_OAUTH_ACCESS_SECRET'));
-    if (defined('EDIT_AS_USER')) {
-       $this->user_consumer = new Consumer((string) getenv('PHP_WP_OAUTH_CONSUMER'), (string) getenv('PHP_WP_OAUTH_SECRET'));
-       $conf = new ClientConfig(WIKI_ROOT . '?title=Special:OAuth');
-       $conf->setConsumer($this->user_consumer);
-       $this->user_client = new Client($conf);
-    }
+    // These are only needed if editing as a user
+    $this->user_consumer = new Consumer((string) getenv('PHP_WP_OAUTH_CONSUMER'), (string) getenv('PHP_WP_OAUTH_SECRET'));
+    $conf = new ClientConfig(WIKI_ROOT . '?title=Special:OAuth');
+    $conf->setConsumer($this->user_consumer);
+    $this->user_client = new Client($conf);
 
     /** @psalm-suppress RedundantCondition */  /* PSALM thinks TRAVIS cannot be FALSE */
     if (TRAVIS && !$no_user) {
       $this->the_user = 'Citation_bot';
-      $this->user_token = $this->bot_token;
+      $this->user_token = new Token("", "");
     } elseif ($no_user) {
-      $this->the_user = ''; // This is for the gadget case
-      $this->user_token = $this->bot_token;
+      $this->the_user = ''; // This is if we call is_redirect() from gadget
+      $this->user_token = new Token("", "");
       // @codeCoverageIgnoreStart
-      // Stan does not understand that $argv can be set
-    } elseif (!HTML_OUTPUT) { // Running on the command line
-      $this->the_user = ''; // Will edit as user
-      $this->user_token = $this->bot_token;
+    } elseif (!HTML_OUTPUT) { // Running on the command line, and editing using main tokens
+      $this->the_user = '';
+      $this->user_token = new Token("", "");
     } else {
       $this->authenticate_user();
       // @codeCoverageIgnoreEnd
@@ -135,59 +133,46 @@ final class WikipediaBot {
     $authenticationHeader = $request->toHeader();
     
     try {
-      switch (strtolower($method)) {
-        case 'get':
-          $url = API_ROOT . '?' . http_build_query($params);            
+      switch ($method) {
+        case 'GET':        
           curl_setopt_array($this->ch, [
             CURLOPT_HTTPGET => TRUE,
-            CURLOPT_URL => $url,
+            CURLOPT_URL => API_ROOT . '?' . http_build_query($params),
             CURLOPT_HTTPHEADER => [$authenticationHeader],
           ]);
-          $data = (string) @curl_exec($this->ch);
-          if (!$data) {
-            report_minor_error("Curl error: " . echoable(curl_error($this->ch)));  // @codeCoverageIgnore
-            return NULL;                                                           // @codeCoverageIgnore
-          }
-          $ret = @json_decode($data);
-          if (isset($ret->error->code) && $ret->error->code == 'assertuserfailed') {
-            // @codeCoverageIgnoreStart
-            unset($data);
-            unset($ret);
-            return $this->fetch($params, $method, $depth+1);
-            // @codeCoverageIgnoreEnd
-          }
-          return ($this->ret_okay($ret)) ? $ret : NULL;
-          
-        case 'post':
+          break;
+
+        case 'POST':
           curl_setopt_array($this->ch, [
             CURLOPT_POST => TRUE,
             CURLOPT_POSTFIELDS => http_build_query($params),
             CURLOPT_HTTPHEADER => [$authenticationHeader],
             CURLOPT_URL => API_ROOT
           ]);
-          $data = (string) @curl_exec($this->ch);
-          if ( !$data ) {
-            report_minor_error("Curl error: " . echoable(curl_error($this->ch)));     // @codeCoverageIgnore
-          }
-          $ret = @json_decode($data); 
-          if (isset($ret->error) && (
-            (string) $ret->error->code === 'assertuserfailed' ||
-            stripos((string) $ret->error->info, 'The database has been automatically locked') !== FALSE ||
-            stripos((string) $ret->error->info, 'abusefilter-warning-predatory') !== FALSE ||
-            stripos((string) $ret->error->info, 'protected') !== FALSE ||
-            stripos((string) $ret->error->info, 'Nonce already used') !== FALSE)
-          ) {
-            // @codeCoverageIgnoreStart
-            unset($data);
-            unset($ret);
-            return $this->fetch($params, $method, $depth+1);
-            // @codeCoverageIgnoreEnd
-          }
-          return ($this->ret_okay($ret)) ? $ret : NULL;
+          break;
 
-        default:  // will only be hit if error in our code
-          report_error("Unrecognized method in Fetch."); // @codeCoverageIgnore
+        default:
+          report_error("Unrecognized method in Fetch: " . $method); // @codeCoverageIgnore
       }
+      $data = (string) @curl_exec($this->ch);
+      if ( !$data ) {
+        report_minor_error("Curl error: " . echoable(curl_error($this->ch)));  // @codeCoverageIgnore
+        return NULL;                                                           // @codeCoverageIgnore
+      }
+      $ret = @json_decode($data); 
+      if (isset($ret->error) && (
+        (string) $ret->error->code === 'assertuserfailed' ||
+        stripos((string) $ret->error->info, 'The database has been automatically locked') !== FALSE ||
+        stripos((string) $ret->error->info, 'abusefilter-warning-predatory') !== FALSE ||
+        stripos((string) $ret->error->info, 'protected') !== FALSE ||
+        stripos((string) $ret->error->info, 'Nonce already used') !== FALSE)
+      ) {
+        // @codeCoverageIgnoreStart
+        unset($data, $ret, $token, $consumer, $request, $authenticationHeader); // save memory during recursion
+        return $this->fetch($params, $method, $depth+1);
+        // @codeCoverageIgnoreEnd
+      }
+      return ($this->ret_okay($ret)) ? $ret : NULL;
     } catch(Exception $E) {
       report_warning("Exception caught!\n");
       report_info("Response: ". $E->getMessage());
@@ -513,9 +498,7 @@ final class WikipediaBot {
       if (is_string($_SESSION['citation_bot_user_id']) && self::is_valid_user($_SESSION['citation_bot_user_id'])) {
         $this->the_user = $_SESSION['citation_bot_user_id'];
         @setcookie(session_name(),session_id(),time()+(24*3600)); // 24 hours
-        if (defined('EDIT_AS_USER')) {
-          $this->user_token = new Token($_SESSION['access_key'], $_SESSION['access_secret']);
-        }
+        $this->user_token = new Token($_SESSION['access_key'], $_SESSION['access_secret']);
         session_write_close(); // Done with it
         return;
       } else {

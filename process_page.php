@@ -2,10 +2,8 @@
 declare(strict_types=1);
 set_time_limit(120);
 @session_start();
-@header('Content-type: text/html; charset=utf-8');
-@header('Cache-Control: no-cache, no-store, must-revalidate');
-@header('Pragma: no-cache');
-@header('Expires: 0');
+
+require_once 'html_headers.php';
 
 require_once 'setup.php';
 
@@ -25,7 +23,7 @@ if (isset($argv[1])) {
 } elseif (isset($_GET["page"])) {
   $pages = (string) $_GET["page"];
   if (strpos($pages, '|') !== FALSE) {
-    report_error('We do not support multiple pages passed as part of the URL anymore. Use the webform.');
+    report_error('Use the webform for multiple pages.');
   }
 } elseif (isset($_POST["page"])) {
   $pages = (string) $_POST["page"];
