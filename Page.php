@@ -35,7 +35,7 @@ class Page {
     $this->construct_modifications_array(); // Could be new page
 
     $ch = curl_init();
-    curl_setopt_array($this->ch, [
+    curl_setopt_array($ch, [
         CURLOPT_FAILONERROR => TRUE,
         CURLOPT_FOLLOWLOCATION => TRUE,
         CURLOPT_MAXREDIRS => 5,
@@ -54,7 +54,7 @@ class Page {
             'inprop' => 'protection', 
             'format' => 'json'])
           ]);
-    $data = (string) @curl_exec($this->ch);
+    $data = (string) @curl_exec($ch);
     curl_close($ch);
     $details = @json_decode($data);
     unset($data);
@@ -116,6 +116,8 @@ class Page {
                CURLOPT_USERAGENT => BOT_USER_AGENT,
                CURLOPT_RETURNTRANSFER => 1,
                CURLOPT_TIMEOUT => 20,
+               CURLOPT_COOKIESESSION => TRUE,
+               CURLOPT_COOKIEFILE => 'cookie.txt',
                CURLOPT_URL => WIKI_ROOT . '?' . http_build_query(['title' => $title, 'action' =>'raw'])]);
     $this->text = (string) @curl_exec($ch);
     curl_close($ch);
