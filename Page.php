@@ -331,6 +331,7 @@ class Page {
     report_phase('Consult APIs to expand templates');
     set_time_limit(120);
     $this->expand_templates_from_identifier('doi',     $our_templates);  // Do DOIs first!  Try again later for added DOIs
+    $this->expand_templates_from_identifier('doi',     $our_templates_slight);
     $this->expand_templates_from_identifier('pmid',    $our_templates);
     $this->expand_templates_from_identifier('pmc',     $our_templates);
     $this->expand_templates_from_identifier('bibcode', $our_templates);
