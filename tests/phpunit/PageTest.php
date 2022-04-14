@@ -90,11 +90,13 @@ final class PageTest extends testBaseClass {
   }
  
   public function testBotRead() : void {
+      $page = new TestPage();
       $page->get_text_from('User:Citation_bot');
       $this->assertTrue(strlen($page->parsed_text()) > 200);
   }
  
   public function testBotReadNonExistant() : void {
+      $page = new TestPage();
       $this->assertSame(FALSE, $page->get_text_from('User:Blocked Testing Account/readtest/NOT_REAL_EVER'));
   }
  
@@ -121,14 +123,17 @@ final class PageTest extends testBaseClass {
   }
  
   public function testBotReadRedirect() : void {
+      $page = new TestPage();
       $this->assertSame(FALSE, $page->get_text_from('Wikipedia:UCB'));
   }
 
   public function testBotReadInvalidNamespace() : void {
+      $page = new TestPage();
       $this->assertSame(FALSE, $page->get_text_from('Bogus:UCBdfasdsfasdfd'));
   }
  
   public function testBotReadInvalidPage() : void {
+      $page = new TestPage();
       $this->assertSame(FALSE, $page->get_text_from('.'));
   }
   
