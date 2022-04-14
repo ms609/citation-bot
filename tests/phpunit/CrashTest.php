@@ -61,7 +61,7 @@ final class CrashTest extends testBaseClass {
     if ($bad_page !== "") {
       define("TRAVIS_PRINT", "YES");
       $page = new TestPage();
-      $page->get_text_from($bad_page, $api);
+      $page->get_text_from($bad_page);
       AdsAbsControl::back_on();
       Zotero::unblock_zotero();
       $page->expand_text();
