@@ -52,12 +52,12 @@ class Page {
             'titles'=> $title, 
             'curtimestamp'=>'true', 
             'inprop' => 'protection', 
-            'format' = 'json'])
+            'format' => 'json'])
           ]);
     $data = (string) @curl_exec($this->ch);
     curl_close($ch);
     $details = @json_decode($data);
-    uset($data);
+    unset($data);
     if (!isset($details->query)) {
       // @codeCoverageIgnoreStart
       $message = "Error: Could not fetch page.";
