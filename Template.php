@@ -43,7 +43,7 @@ final class Template {
   protected bool $mod_dashes = FALSE;
   protected bool $mod_names = FALSE;
   protected bool $no_initial_doi = FALSE;
-  protected array $used_by_api = array(  
+  protected array $used_by_api = array(
                'adsabs'   => array(),
                'arxiv'    => array(),
                'crossref' => array(),
