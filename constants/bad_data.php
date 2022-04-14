@@ -113,7 +113,14 @@ const BAD_ZOTERO_TITLES = ['Browse publications', 'Central Authentication Servic
                                  'Seite nicht gefunden', 'Página no encontrada', 'الصفحة غير موجودة', '找不到网页',
                                  'страница не найдена', 'Page non trouvée', 'An error occured',
                                  'Compare Payday Loans', 'Find the Best Loan Deal', '..::.. Error', "Pagina inicia",
-                                 'Help Center - The Arizona Republic'];
+                                 'Help Center - The Arizona Republic', '404 ERROR', '404 - URL invalid',
+                                 "404. That's an error", '404 - Page Not Found', 'Página não existe', 
+                                 'This is not the page you requested', 'Page Not Found', '404 - - ',
+                                 '404 &#124; ',  'Missing page', '404 - File or directory not found', '错误页面',
+                                 '404 Page - ', '404: Page Not Found ', '404: PAGE NOT FOUND', '404 Error',
+                                 '404 | ', '页面不存在', 'De pagina is niet gevonden', '404 - ', ' Stranica nije pronađena',
+                                 '404 Page', '404. The page', "wasn't found on this server", '404. The URL', 
+                                 'ShieldSquare'];
 
 const CANONICAL_PUBLISHER_URLS = array ('elsevier.com', 'springer.com', 'sciencedirect.com', 'tandfonline.com',
                                 'taylorandfrancis.com', 'wiley.com', 'sagepub.com', 'sagepublications.com',
@@ -353,7 +360,7 @@ const NO_DATE_WEBSITES = array('wikipedia.org', 'web.archive.org', 'perma-archiv
                               'archive.is', 'archive-it.org', 'nationalarchives.gov.uk', 'freezepage.com', 'webcitation.org',
                               'waybackmachine.org', 'siarchives.si.edu', 'gutenberg.org', 'archive.fo', 'archive.today', 'archive.ph',
                               'oireachtas.ie', 'webarchive.nla.gov.au', 'ebooks.adelaide.edu.au', 'archive.md', 'imdb.com',
-                              'apps.des.qld.gov.au', 'billboard.com');
+                              'apps.des.qld.gov.au', 'billboard.com', 'music.apple.com');
 
 const ZOTERO_AVOID_REGEX = array("twitter\.",               // This should be {{cite tweet}}
                                  // Zotero seems to be doing better now "youtube\.", "youtu\.be",

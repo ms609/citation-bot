@@ -21,15 +21,15 @@ This is some basic documentation about what this bot is and how some of the part
 
 This is more properly a bot-gadget-tool combination. The parts are:
 
-* DOIBot, found in index.html (web frontend) and process_page.php (information is
+* DOIBot, found in `index.html` (web frontend) and `process_page.php` (information is
   POSTed to this and it does the citation expansion; backend). This automatically
   posts a new page revision with expanded citations and thus requires a bot account.
   All activity takes place on Tool Labs.
-* Citation expander (:en:Mediawiki:Gadget-citations.js) + gadgetapi.php. This
+* Citation expander (https://en.wikipedia.org/wiki/MediaWiki:Gadget-citations.js) + `gadgetapi.php`. This
   is comprises an Ajax front-end in the on-wiki gadget and a PHP backend API.
-* [Generate template](https://github.com/ms609/citation-bot/blob/master/generate_template.php) creates the wiki reference given an identifier (for example given a doi: <https://citations.toolforge.org/generate_template.php?doi=10.1109/SCAM.2013.6648183>)
+* `generate_template.php` creates the wiki reference given an identifier (for example: https://citations.toolforge.org/generate_template.php?doi=10.1109/SCAM.2013.6648183)
 
-Bugs and requested changes are listed here: https://en.wikipedia.org/wiki/User_talk:Citation_bot .
+Bugs and requested changes are listed here: https://en.wikipedia.org/wiki/User_talk:Citation_bot.
 
 ## Structure
 
@@ -98,3 +98,9 @@ This can be updated by maintainers logging on to Toolforge, then entering the co
     webservice restart
     
 In order to reduce complexity, the code currently uses a Wikipedia hosted and managed server instead at https://en.wikipedia.org/api/rest_v1/#/Citation/getCitation.
+
+## Running on the command line
+In order to run on the command line one needs OAuth tokens as documented in `env.php.example` (there are additional API keys that are needed to run some functions).  Also, change BOT_USER_AGENT in `setup.php' to something else. Then the bot can be run such as:
+
+    /usr/bin/php ./process_page.php "Covid Watch|Water|COVID-19_apps" --slow
+

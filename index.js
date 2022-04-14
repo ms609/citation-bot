@@ -62,10 +62,10 @@ function ValidateCategory() {
 function ValidateLinked() {
   if (this.value.trim() === "") {
     this.classList.add("error");
-    document.getElementById("linkedSubmit").disabled = "disabled";
+    document.getElementById("LinkedSubmit").disabled = "disabled";
   } else {
     this.classList.remove("error");
-    document.getElementById("linkedSubmit").disabled = false;
+    document.getElementById("LinkedSubmit").disabled = false;
   }
 }
 
