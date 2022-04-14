@@ -49,7 +49,9 @@ final class WikipediaBot {
     $this->user_consumer = new Consumer((string) getenv('PHP_WP_OAUTH_CONSUMER'), (string) getenv('PHP_WP_OAUTH_SECRET'));
     $conf = new ClientConfig(WIKI_ROOT . '?title=Special:OAuth');
     $conf->setConsumer($this->user_consumer);
-    $conf->setUserAgent(BOT_USER_AGENT);
+    if (method_exists($conf, 'setUserAgent') {
+      $conf->setUserAgent(BOT_USER_AGENT);
+    }
     $this->user_client = new Client($conf);
 
     /** @psalm-suppress RedundantCondition */  /* PSALM thinks TRAVIS cannot be FALSE */
@@ -514,7 +516,9 @@ final class WikipediaBot {
       if (!getenv('PHP_WP_OAUTH_CONSUMER')) report_error("PHP_WP_OAUTH_CONSUMER not set");
       if (!getenv('PHP_WP_OAUTH_SECRET'))   report_error("PHP_WP_OAUTH_SECRET not set");
       $conf->setConsumer(new Consumer((string) getenv('PHP_WP_OAUTH_CONSUMER'), (string) getenv('PHP_WP_OAUTH_SECRET')));
-      $conf->setUserAgent(BOT_USER_AGENT);
+      if (method_exists($conf, 'setUserAgent') {
+        $conf->setUserAgent(BOT_USER_AGENT);
+      }
       $client = new Client($conf);
       $ident = $client->identify( $this->user_token );
       $user = (string) $ident->username;
