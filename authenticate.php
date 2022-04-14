@@ -43,7 +43,7 @@ catch (Throwable $e) {
 
 try {
   $conf->setConsumer(new Consumer((string) getenv('PHP_WP_OAUTH_CONSUMER'), (string) getenv('PHP_WP_OAUTH_SECRET')));
-  if (method_exists($conf, 'setUserAgent') {
+  if (method_exists($conf, 'setUserAgent')) {
     $conf->setUserAgent(BOT_USER_AGENT);
   }
   $client = new Client($conf);
