@@ -419,7 +419,7 @@ final class WikipediaBot {
   }
   # @return -1 if page does not exist; 0 if exists and not redirect; 1 if is redirect
   static public function is_redirect(string $page) : int {
-    self::QueryAPI([
+    $res = self::QueryAPI([
         "action" => "query",
         "prop" => "info",
         "titles" => $page,
@@ -433,7 +433,7 @@ final class WikipediaBot {
     return (isset($res->missing) ? -1 : (isset($res->redirect) ? 1 : 0));
   }
   public static function redirect_target(string $page) : ?string {
-     self::QueryAPI([
+    $res = self::QueryAPI([
         "action" => "query",
         "redirects" => "1",
         "titles" => $page,
