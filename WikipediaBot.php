@@ -375,13 +375,6 @@ final class WikipediaBot {
     }
     return (string) $res->query->redirects[0]->to;
   }
-  static public function namespace_id(string $name) : int {
-    $lc_name = strtolower($name);
-    return array_key_exists($lc_name, NAMESPACE_ID) ? NAMESPACE_ID[$lc_name] : 0;
-  }
-  static public function namespace_name(int $id) : ?string {
-    return array_key_exists($id, NAMESPACES) ? NAMESPACES[$id] : NULL;
-  }
   
   static public function QueryAPI(array $params) : string {
     $ch = curl_init();
