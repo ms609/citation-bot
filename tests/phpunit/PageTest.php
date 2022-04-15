@@ -10,7 +10,7 @@ require_once __DIR__ . '/../testBaseClass.php';
 final class PageTest extends testBaseClass {
 
   protected function setUp(): void {
-   if (BAD_PAGE_HTTP !== '' || BAD_PAGE_API !== '') {
+   if (BAD_PAGE_API !== '') {
      $this->markTestSkipped();
    }
   }
@@ -84,29 +84,20 @@ final class PageTest extends testBaseClass {
   }
  
   public function testBotReadblocked() : void {
-   $this->requires_secrets(function() : void {
       $page = new TestPage();
-      $api = new WikipediaBot();
-      $page->get_text_from('User:Blocked Testing Account/readtest', $api);
+      $page->get_text_from('User:Blocked Testing Account/readtest');
       $this->assertSame('', $page->parsed_text()); // We will not read anything since it is blocked!
-   });
   }
  
   public function testBotRead() : void {
-   $this->requires_secrets(function() : void {
       $page = new TestPage();
-      $api = new WikipediaBot();
-      $page->get_text_from('User:Citation_bot', $api);
+      $page->get_text_from('User:Citation_bot');
       $this->assertTrue(strlen($page->parsed_text()) > 200);
-   });
   }
  
   public function testBotReadNonExistant() : void {
-   $this->requires_secrets(function() : void {
       $page = new TestPage();
-      $api = new WikipediaBot();
-      $this->assertSame(FALSE, $page->get_text_from('User:Blocked Testing Account/readtest/NOT_REAL_EVER', $api));
-   });
+      $this->assertSame(FALSE, $page->get_text_from('User:Blocked Testing Account/readtest/NOT_REAL_EVER'));
   }
  
   public function testDontCrashOnDates() : void { // See zotero test testRespectDates for actually making sure that it is used
@@ -132,27 +123,18 @@ final class PageTest extends testBaseClass {
   }
  
   public function testBotReadRedirect() : void {
-   $this->requires_secrets(function() : void {
       $page = new TestPage();
-      $api = new WikipediaBot();
-      $this->assertSame(FALSE, $page->get_text_from('Wikipedia:UCB', $api));
-   });
+      $this->assertSame(FALSE, $page->get_text_from('Wikipedia:UCB'));
   }
 
   public function testBotReadInvalidNamespace() : void {
-   $this->requires_secrets(function() : void {
       $page = new TestPage();
-      $api = new WikipediaBot();
-      $this->assertSame(FALSE, $page->get_text_from('Bogus:UCBdfasdsfasdfd', $api));
-   });
+      $this->assertSame(FALSE, $page->get_text_from('Bogus:UCBdfasdsfasdfd'));
   }
  
   public function testBotReadInvalidPage() : void {
-   $this->requires_secrets(function() : void {
       $page = new TestPage();
-      $api = new WikipediaBot();
-      $this->assertSame(FALSE, $page->get_text_from('.', $api));
-   });
+      $this->assertSame(FALSE, $page->get_text_from('.'));
   }
   
   public function testBotExpandWrite() : void {
@@ -160,7 +142,7 @@ final class PageTest extends testBaseClass {
       $api = new WikipediaBot();
       $page = new TestPage();
       $writeTestPage = 'User:Blocked Testing Account/writetest';
-      $page->get_text_from($writeTestPage, $api);
+      $page->get_text_from($writeTestPage);
       $trialCitation = '{{Cite journal | title Bot Testing | ' .
         'doi_broken_date=1986-01-01 | doi = 10.1038/nature09068}}';
       $page->overwrite_text($trialCitation);
@@ -173,14 +155,14 @@ final class PageTest extends testBaseClass {
       } else {
         $this->assertTrue($page_result);
       }
-      $page->get_text_from($writeTestPage, $api);
+      $page->get_text_from($writeTestPage);
       $this->assertSame($trialCitation, $page->parsed_text());
       $page->expand_text();
       $this->assertTrue(strpos($page->edit_summary(), 'journal, ') > 3);
       $this->assertTrue(strpos($page->edit_summary(), ' Removed ') > 3);
       $this->assertTrue($page->write($api));
       
-      $page->get_text_from($writeTestPage, $api);
+      $page->get_text_from($writeTestPage);
       $this->assertTrue(strpos($page->parsed_text(), 'Nature') > 5);
    });
   }

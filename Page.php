@@ -31,12 +31,33 @@ class Page {
       $this->construct_modifications_array();
   }
 
-  public function get_text_from(string $title, WikipediaBot $api) : bool {
+  public function get_text_from(string $title) : bool {
     $this->construct_modifications_array(); // Could be new page
 
-    $details = $api->fetch(['action'=>'query', 
-      'prop'=>'info', 'titles'=> $title, 'curtimestamp'=>'true', 'inprop' => 'protection'], 'GET');
-    
+    $ch = curl_init();
+    curl_setopt_array($ch, [
+        CURLOPT_FAILONERROR => TRUE,
+        CURLOPT_FOLLOWLOCATION => TRUE,
+        CURLOPT_MAXREDIRS => 5,
+        CURLOPT_HEADER => 0,
+        CURLOPT_RETURNTRANSFER => TRUE,
+        CURLOPT_CONNECTTIMEOUT => 15,
+        CURLOPT_TIMEOUT => 20,
+        CURLOPT_COOKIESESSION => TRUE,
+        CURLOPT_COOKIEFILE => 'cookie.txt',
+        CURLOPT_USERAGENT => BOT_USER_AGENT,
+        CURLOPT_URL => API_ROOT . '?' . http_build_query([
+            'action'=>'query', 
+            'prop'=>'info', 
+            'titles'=> $title, 
+            'curtimestamp'=>'true', 
+            'inprop' => 'protection', 
+            'format' => 'json'])
+          ]);
+    $data = (string) @curl_exec($ch);
+    curl_close($ch);
+    $details = @json_decode($data);
+    unset($data);
     if (!isset($details->query)) {
       // @codeCoverageIgnoreStart
       $message = "Error: Could not fetch page.";
@@ -95,6 +116,8 @@ class Page {
                CURLOPT_USERAGENT => BOT_USER_AGENT,
                CURLOPT_RETURNTRANSFER => 1,
                CURLOPT_TIMEOUT => 20,
+               CURLOPT_COOKIESESSION => TRUE,
+               CURLOPT_COOKIEFILE => 'cookie.txt',
                CURLOPT_URL => WIKI_ROOT . '?' . http_build_query(['title' => $title, 'action' =>'raw'])]);
     $this->text = (string) @curl_exec($ch);
     curl_close($ch);
@@ -662,7 +685,7 @@ class Page {
   }
   
   protected function allow_bots() : bool {
-    if ((defined("BAD_PAGE_HTTP") && BAD_PAGE_HTTP !== "") || (defined("BAD_PAGE_API") && BAD_PAGE_API !== "")) {
+    if (defined("BAD_PAGE_API") && BAD_PAGE_API !== "") {
       return TRUE; // When testing the bot on a specific page, allow "editing"
     }
     // see {{bots}} and {{nobots}}
