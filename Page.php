@@ -40,7 +40,7 @@ class Page {
             'titles'=> $title, 
             'curtimestamp'=>'true', 
             'inprop' => 'protection', 
-            'format' => 'json'])
+            'format' => 'json',
           ]);
 
     if (!isset($details->query)) {
