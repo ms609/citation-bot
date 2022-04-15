@@ -10,7 +10,7 @@ require_once __DIR__ . '/../testBaseClass.php';
   final class WikipediaBotTest extends testBaseClass {
 
     protected function setUp(): void {
-     if (BAD_PAGE_HTTP !== '' || BAD_PAGE_API !== '') {
+     if (BAD_PAGE_API !== '') {
        $this->markTestSkipped();
      }
     }
@@ -18,7 +18,7 @@ require_once __DIR__ . '/../testBaseClass.php';
     public function testLoggedInUser() : void {
      $this->requires_secrets(function() : void {
       $api = new WikipediaBot();
-      $this->assertSame("Citation bot test", $api->username());
+      $this->assertSame("Citation bot test", $api->bot_account_name());
      });
     }
       

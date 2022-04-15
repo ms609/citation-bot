@@ -1014,7 +1014,7 @@ function edit_a_list_of_pages(array $pages_in_category, WikipediaBot $api, strin
   foreach ($pages_in_category as $page_title) {
     check_killed();
     $done++;
-    if ($page->get_text_from($page_title, $api) && $page->expand_text()) {
+    if ($page->get_text_from($page_title) && $page->expand_text()) {
       report_phase("Writing to " . echoable($page_title) . '... ');
       $attempts = 0;
       if ($total === 1) {
