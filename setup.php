@@ -97,7 +97,6 @@ stream_context_set_default(['http' => ['timeout' => 20]]);
 ini_set('default_socket_timeout', '20');
 
 define("PHP_ADSABSAPIKEY", (string) getenv("PHP_ADSABSAPIKEY"));
-define("PHP_GOOGLEKEY", (string) getenv("PHP_GOOGLEKEY"));
 define("PHP_S2APIKEY", (string) getenv("PHP_S2APIKEY"));
 
 function check_blocked() : void {

@@ -6712,14 +6712,6 @@ T1 - This is the Title }}';
      });
   }
  
-  public function testJustAnLCCN() : void {
-    $this->requires_google(function() : void {
-      $text = '{{cite book | lccn=2009925036}}';
-      $expanded = $this->process_citation($text);
-      $this->assertSame('Alternative Energy for Dummies', $expanded->get2('title'));
-    });
-  }
- 
    public function testRedirectFixing() : void {
     $this->requires_secrets(function() : void {
      $text = '{{cite journal|journal=[[Journal Of Polymer Science]]}}';

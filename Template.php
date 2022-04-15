@@ -2728,51 +2728,6 @@ final class Template {
           }
         }
       }
-      /** https://www.googleapis.com/books/v1/volumes?q=oclc:61313128 and such gives bogus results now.  Also, we run out of searches really fast.
-      if ( !$google_books_worked && PHP_GOOGLEKEY) { // Try Google API instead
-        if ($isbn) {
-          return FALSE; // ISBN did not work, so give up
-        } elseif ($oclc) {
-          $url_token = "oclc:" . $oclc;
-        } elseif ($lccn) {
-          $url_token = "lccn:" . $lccn;
-        } else {
-          return FALSE;
-        }
-        $ch = curl_init();
-        curl_setopt_array($ch,
-               [CURLOPT_HEADER => 0,
-                CURLOPT_RETURNTRANSFER => 1,
-                CURLOPT_TIMEOUT => 15,
-                CURLOPT_USERAGENT => BOT_USER_AGENT,
-                CURLOPT_URL => "https://www.googleapis.com/books/v1/volumes?q=" . $url_token . "&key=" . PHP_GOOGLEKEY]);
-        $string = (string) @curl_exec($ch);
-        curl_close($ch);
-        if ($string == '') {
-            report_warning("Did not receive results from Google API search" . echoable($url_token));  // @codeCoverageIgnore
-            return FALSE;                                                                 // @codeCoverageIgnore
-        }
-        $result = @json_decode($string, FALSE);
-        if (isset($result)) {
-          if (isset($result->totalItems)) {
-            if ($result->totalItems === 1 && isset($result->items) && isset($result->items[0]) && isset($result->items[0]->id) ) {
-              $gid = (string) $result->items[0]->id;
-              $url = 'https://books.google.com/books?id=' . $gid;
-            } else {
-              report_info("No results for Google API search " . echoable($url_token));
-            }
-            // @codeCoverageIgnoreStart
-          } elseif (isset($result->error->errors[0]->reason) && $result->error->errors[0]->reason === 'rateLimitExceeded') {
-            report_warning("Google Books API reported error out of queries for the day");
-          } elseif (isset($result->error)) {
-            report_warning("Google Books API reported error: " . echoable(print_r($result->error->errors, TRUE)));
-          } else {
-            report_warning("Could not parse Google API results for " . echoable($url_token));
-            return FALSE;
-          }
-            // @codeCoverageIgnoreEnd
-        }
-      } **/
     }
     // Now we parse a Google Books URL
     if ($url && (preg_match("~[Bb]ooks\.[Gg]oogle\.[\w\.]+/.*\bid=([\w\d\-]+)~", $url, $gid) || preg_match("~[Ee]ncrypted\.[Gg]oogle\..+book.*\bid=([\w\d\-]+)~", $url, $gid))) {
