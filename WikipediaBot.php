@@ -476,22 +476,17 @@ final class WikipediaBot {
   
   static public function is_valid_user(string $user) : bool {
     if (!$user) return FALSE;
-    $response = self::QueryAPI([
+    $query = [
          "action" => "query",
          "usprop" => "blockinfo",
          "format" => "json",
          "list" => "users",
          "ususers" => urlencode(str_replace(" ", "_", $user)),
-      ]);
+      ];
+    $response = self::QueryAPI($query);
     if ($response == '' || (strpos($response, '"userid"')  === FALSE)) { // try again if weird
       sleep(5);
-      $response = self::QueryAPI([
-         "action" => "query",
-         "usprop" => "blockinfo",
-         "format" => "json",
-         "list" => "users",
-         "ususers" => urlencode(str_replace(" ", "_", $user)
-      ]);
+      $response = self::QueryAPI($query);
     }
     if ($response == '') return FALSE;
     $response = str_replace(array("\r", "\n"), '', $response);  // paranoid
