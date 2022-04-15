@@ -455,7 +455,7 @@ final class WikipediaBot {
     return array_key_exists($id, NAMESPACES) ? NAMESPACES[$id] : NULL;
   }
   
-  static public function QueryAPI(array $params) : ?string {
+  static public function QueryAPI(array $params) : string {
     $ch = curl_init();
     curl_setopt_array($ch, [
         CURLOPT_HTTPGET => TRUE,
