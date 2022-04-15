@@ -481,7 +481,7 @@ final class WikipediaBot {
          "usprop" => "blockinfo",
          "format" => "json",
          "list" => "users",
-         "ususers" => urlencode(str_replace(" ", "_", $user)
+         "ususers" => urlencode(str_replace(" ", "_", $user)),
       ]);
     if ($response == '' || (strpos($response, '"userid"')  === FALSE)) { // try again if weird
       sleep(5);
