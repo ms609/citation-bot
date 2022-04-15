@@ -21,7 +21,7 @@ final class WikipediaBot {
   /** @var resource $ch */
   private $ch;
   private $the_user = '';
-  private static $last_WikipediaBot;
+  private static $last_WikipediaBot; // For NonStandardMode()
 
   function __construct() {
     $this->ch = curl_init();
@@ -274,8 +274,7 @@ final class WikipediaBot {
     } elseif (isset($result->edit)) {
       // @codeCoverageIgnoreStart
       if (isset($result->edit->captcha)) {
-        if (self::NonStandardMode()) html_echo(echoable(print_r($result, TRUE)));
-        report_error("Write error: We encountered a captcha, so can't be properly logged in.");
+        report_error("Write error: We encountered a captcha, so can't be properly logged in."); // Bot some flags set on en. and simple. to avoid captchas
       } elseif ($result->edit->result == "Success") {
         // Need to check for this string wherever our behaviour is dependant on the success or failure of the write operation
         if (HTML_OUTPUT) {
