@@ -57,45 +57,46 @@ require_once __DIR__ . '/../testBaseClass.php';
     }
 
     public function testNamespaces() : void {
-     $this->requires_secrets(function() : void {
-      $api = new WikipediaBot();
       $vars = array(
             'format' => 'json',
             'action' => 'query',
             'meta'   => 'siteinfo',
             'siprop'  => 'namespaces',
         );
-      $namespaces = $api->fetch($vars, 'POST');
+      $namespaces = WikipediaBot::QueryAPI($vars);
+      $namespaces = @json_decode($namespaces);
       
-      if ($namespaces == FALSE) {
+      if ($namespaces == NULL) {
         report_error('API failed to return anything for namespaces');
       }
       
+      $errors = FALSE;
       foreach ($namespaces->query->namespaces as $ns) {
         $ns_name = isset($ns->canonical)? $ns->canonical : '';
         $ns_id = $ns->id;
-        $this->assertSame($ns_id, WikipediaBot::namespace_id($ns_name));
-        $this->assertSame($ns_name, WikipediaBot::namespace_name($ns_id));
+        if ($ns_id !== WikipediaBot::namespace_id($ns_name)) {
+          $errors = TRUE;
+        }
+        if ($ns_name !== WikipediaBot::namespace_name($ns_id)) {
+          $errors = TRUE;
+        }
       }
       
-      /*
-      // If the above assertions are throwing an error, you can generate an updated 
-      // version of constants/namespace.php by running the below and pasting the content:
-      echo "\n\n! Namespaces are out of date. Please update constants/namespace.php with the below:\n\n";
-      echo "<?php\nconst NAMESPACES = Array(";
-      foreach ($namespaces->query->namespaces as $ns) {
-        $ns_name = isset($ns->canonical)? $ns->canonical : '';
-        echo ("\n  " . (string) $ns->id . " => '" . $ns_name . "',");
+      if ($errors) {
+        echo "\n\n! Namespaces are out of date. Please update constants/namespace.php with the below:\n\n";
+        echo "<?php\nconst NAMESPACES = Array(";
+        foreach ($namespaces->query->namespaces as $ns) {
+          $ns_name = isset($ns->canonical)? $ns->canonical : '';
+          echo ("\n  " . (string) $ns->id . " => '" . $ns_name . "',");
+        }
+        echo ");\n\nconst NAMESPACE_ID = Array(";
+        foreach ($namespaces->query->namespaces as $ns) {
+          $ns_name = isset($ns->canonical)? $ns->canonical : '';
+          echo ("\n  '" . strtolower($ns_name) . "' => " . (string) $ns->id . ",");
+        }
+        echo "\n);\n?" . ">\n";
       }
-      echo ");\n\nconst NAMESPACE_ID = Array(";
-      foreach ($namespaces->query->namespaces as $ns) {
-        $ns_name = isset($ns->canonical)? $ns->canonical : '';
-        echo ("\n  '" . strtolower($ns_name) . "' => " . (string) $ns->id . ",");
-      }
-      echo "\n);\n?" . ">\n";
-      exit(0);
-      */
-     });
+      $this->assertFalse($errors);
     }
       
     public function testGetLastRevision() : void {
@@ -115,14 +116,7 @@ require_once __DIR__ . '/../testBaseClass.php';
     public function testNonStandardMode() : void {
       $this->assertFalse(WikipediaBot::NonStandardMode());
     }
-   
-    public function testNonStandardWikiBotClass() : void {
-     $this->requires_secrets(function() : void {
-      $api = new WikipediaBot(TRUE);
-      $this->assertTrue(TRUE); // Just verify no crash
-     });
-    }
-   
+
     public function testIsValidUser() : void {
       $result = WikipediaBot::is_valid_user('Smith609');
       $this->assertSame(TRUE, $result);
