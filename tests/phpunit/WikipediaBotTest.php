@@ -18,7 +18,7 @@ require_once __DIR__ . '/../testBaseClass.php';
     public function testLoggedInUser() : void {
      $this->requires_secrets(function() : void {
       $api = new WikipediaBot();
-      $this->assertSame("Citation bot test", $api->username());
+      $this->assertSame("Citation bot test", $api->bot_account_name());
      });
     }
       
