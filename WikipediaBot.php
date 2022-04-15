@@ -76,7 +76,7 @@ final class WikipediaBot {
     curl_close($this->ch);
   }
   
-  public function username() : string {
+  public function bot_account_name() : string {
     $userQuery = $this->fetch(['action' => 'query', 'meta' => 'userinfo'], 'GET');
     return (isset($userQuery->query->userinfo->name)) ? $userQuery->query->userinfo->name : '';
   }
@@ -85,7 +85,7 @@ final class WikipediaBot {
     if ($this->the_user == '') {
       report_error('User Not Set');         // @codeCoverageIgnore
     }
-    return $this->the_user; // Might or might not match the above
+    return $this->the_user;
   }
   
   private function ret_okay(?object $response) : bool {
@@ -96,7 +96,7 @@ final class WikipediaBot {
     if (isset($response->error)) {
       // @codeCoverageIgnoreStart
       if ((string) $response->error->code == 'blocked') { // Travis CI IPs are blocked, even to logged in users.
-        report_error('Account "' . $this->username() .  '" or this IP is blocked from editing.');
+        report_error('Account "' . $this->bot_account_name() .  '" or this IP is blocked from editing.');
       } elseif (strpos((string) $response->error->info, 'The database has been automatically locked') !== FALSE) {
         report_minor_error('Wikipedia database Locked.  Aborting changes for this page.  Will sleep and move on.');
         sleep(10);
