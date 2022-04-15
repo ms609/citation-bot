@@ -13,7 +13,7 @@ if (HTML_OUTPUT) {
   bot_html_header();
   $edit_summary_end = "| Suggested by " . $api->get_the_user() . " ";
 } else {
-  $edit_summary_end = ""; // Username is person who is running the bot
+  $edit_summary_end = ""; // Command line edits as the person
 }
 
 check_blocked();
