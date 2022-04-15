@@ -36,49 +36,6 @@ require_once __DIR__ . '/../testBaseClass.php';
       $this->assertSame( 1, WikipediaBot::is_redirect('WP:UCB'));
       $this->assertSame('User:Citation bot/use', WikipediaBot::redirect_target('WP:UCB'));
     }
-
-    public function testNamespaces() : void {
-      $vars = array(
-            'format' => 'json',
-            'action' => 'query',
-            'meta'   => 'siteinfo',
-            'siprop'  => 'namespaces',
-        );
-      $namespaces = WikipediaBot::QueryAPI($vars);
-      $namespaces = @json_decode($namespaces);
-      
-      if ($namespaces == NULL) {
-        report_error('API failed to return anything for namespaces');
-      }
-      
-      $errors = FALSE;
-      foreach ($namespaces->query->namespaces as $ns) {
-        $ns_name = isset($ns->canonical)? $ns->canonical : '';
-        $ns_id = $ns->id;
-        if ($ns_id !== WikipediaBot::namespace_id($ns_name)) {
-          $errors = TRUE;
-        }
-        if ($ns_name !== WikipediaBot::namespace_name($ns_id)) {
-          $errors = TRUE;
-        }
-      }
-      
-      if ($errors) {
-        echo "\n\n! Namespaces are out of date. Please update constants/namespace.php with the below:\n\n";
-        echo "<?php\nconst NAMESPACES = Array(";
-        foreach ($namespaces->query->namespaces as $ns) {
-          $ns_name = isset($ns->canonical)? $ns->canonical : '';
-          echo ("\n  " . (string) $ns->id . " => '" . $ns_name . "',");
-        }
-        echo ");\n\nconst NAMESPACE_ID = Array(";
-        foreach ($namespaces->query->namespaces as $ns) {
-          $ns_name = isset($ns->canonical)? $ns->canonical : '';
-          echo ("\n  '" . strtolower($ns_name) . "' => " . (string) $ns->id . ",");
-        }
-        echo "\n);\n?" . ">\n";
-      }
-      $this->assertFalse($errors);
-    }
       
     public function testGetLastRevision() : void {
      $this->requires_secrets(function() : void {
