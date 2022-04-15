@@ -23,7 +23,7 @@ final class WikipediaBot {
   private $the_user = '';
   private static $last_WikipediaBot;
 
-  function __construct(bool $no_user = FALSE) {
+  function __construct() {
     $this->ch = curl_init();
     curl_setopt_array($this->ch, [
         CURLOPT_FAILONERROR => TRUE, // This is a little paranoid - see https://curl.se/libcurl/c/CURLOPT_FAILONERROR.html
@@ -55,11 +55,8 @@ final class WikipediaBot {
     $this->user_client = new Client($conf);
 
     /** @psalm-suppress RedundantCondition */  /* PSALM thinks TRAVIS cannot be FALSE */
-    if (TRAVIS && !$no_user) {
+    if (TRAVIS) {
       $this->the_user = 'Citation_bot';
-      $this->user_token = new Token("", "");
-    } elseif ($no_user) {
-      $this->the_user = ''; // This is if we call is_redirect() from gadget
       $this->user_token = new Token("", "");
       // @codeCoverageIgnoreStart
     } elseif (!HTML_OUTPUT) { // Running on the command line, and editing using main tokens
