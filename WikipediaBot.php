@@ -330,37 +330,6 @@ final class WikipediaBot {
     } while ($vars["cmcontinue"]);
     return $list;
   }
-  
-  // Returns an array; Array ("title1", "title2" ... );
-  public function what_transcludes(string $template, int $namespace = 99) : array {
-    $titles = $this->what_transcludes_2($template, $namespace);
-    return $titles["title"];
-  }
-
-  protected function what_transcludes_2(string $template, int $namespace = 99) : array {
-    $vars = Array (
-      "action" => "query",
-      "list" => "embeddedin",
-      "eilimit" => "5000",
-      "eititle" => "Template:" . $template,
-      "einamespace" => ($namespace==99)?"":(string)$namespace,
-    );
-    $list = ['title' => NULL];
-    
-    do {
-      $res = $this->fetch($vars, 'POST');
-      if (isset($res->query->embeddedin->ei) || $res == NULL) {
-        report_error('Error reading API for template/namespace: ' . echoable($template) . '/' . echoable(($namespace==99)?"Normal":(string)$namespace));   // @codeCoverageIgnore
-      } else {
-        foreach($res->query->embeddedin as $page) {
-          $list["title"][] = $page->title;
-          $list["id"][] = $page->pageid;
-        }
-      }
-      $vars["eicontinue"] = isset($res->continue) ? (string) $res->continue->eicontinue : FALSE;
-    } while ($vars["eicontinue"]);
-    return $list;
-  }
 
   public function get_last_revision(string $page) : string {
     $res = $this->fetch([
@@ -376,43 +345,6 @@ final class WikipediaBot {
     return  (isset($page->revisions[0]->revid) ? (string) $page->revisions[0]->revid : '');
   }
 
-  public function get_prefix_index(string $prefix, int $namespace = 0, string $start = "") : array {
-    $page_titles = [];
-    $vars = ["action" => "query",
-      "list" => "allpages",
-      "apnamespace" => $namespace,
-      "apprefix" => $prefix,
-      "aplimit" => "500",
-      "apfrom" => $start
-    ];
-    
-    do {
-      $res = $this->fetch($vars, 'POST');
-      if ($res && !isset($res->error) && isset($res->query->allpages)) {
-        foreach ($res->query->allpages as $page) {
-          $page_titles[] = $page->title;
-          # $page_ids[] = $page->pageid;
-        }
-      } else {
-        report_error('Error reading API with vars ' . http_build_query($vars));     // @codeCoverageIgnore
-        if (isset($res->error)) echo $res->error;                                   // @codeCoverageIgnore
-      }
-      $vars["apfrom"] = isset($res->continue) ? $res->continue->apcontinue : FALSE;
-    } while ($vars["apfrom"]);
-    return $page_titles;
-  }
-  public function get_namespace(string $page) : int {
-    $res = $this->fetch([
-        "action" => "query",
-        "prop" => "info",
-        "titles" => $page,
-        ], 'GET'); 
-    if (!isset($res->query->pages)) {
-        report_warning("Failed to get article namespace");       // @codeCoverageIgnore
-        return -99999;                                           // @codeCoverageIgnore
-    }
-    return (int) reset($res->query->pages)->ns;
-  }
   # @return -1 if page does not exist; 0 if exists and not redirect; 1 if is redirect
   static public function is_redirect(string $page) : int {
     $res = self::QueryAPI([

@@ -30,25 +30,6 @@ require_once __DIR__ . '/../testBaseClass.php';
      });
     }
     
-    public function testWhatTranscludes() : void {
-     $this->requires_secrets(function() : void {
-      $api = new WikipediaBot();
-      $this->assertTrue(count($api->what_transcludes('Graphical timeline')) > 10);
-     });
-    }
-      
-    public function testGetPrefixIndex() : void {
-     $this->requires_secrets(function() : void {
-      $api = new WikipediaBot();
-      $namespace = $api->get_namespace('Template:Cite journal');
-      $this->assertSame(WikipediaBot::namespace_id('Template'), $namespace);
-      $results = $api->get_prefix_index('Cite jo', $namespace); // too many results if we just use 'Cite'
-      $this->assertTrue(array_search('Template:Cite journal', $results) !== FALSE);
-      $results = $api->get_prefix_index("If we retrieve anything here, it's an error", $namespace);
-      $this->assertTrue(empty($results));
-     });
-    }
-    
     public function testRedirects() : void {
       $this->assertSame(-1, WikipediaBot::is_redirect('NoSuchPage:ThereCan-tBe'));
       $this->assertSame( 0, WikipediaBot::is_redirect('User:Citation_bot'));
