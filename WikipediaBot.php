@@ -301,7 +301,7 @@ final class WikipediaBot {
     return FALSE;
   }
   
-  public function category_members(string $cat) : array {
+  public static function category_members(string $cat) : array {
     $list = [];
     $vars = [
       "cmtitle" => "Category:$cat", // Don't URLencode.
@@ -311,7 +311,7 @@ final class WikipediaBot {
     ];
     
     do {
-      $res = self::QueryAPI($vars, 'POST');
+      $res = self::QueryAPI($vars);
       $res = @json_decode($res);
       if (isset($res->query->categorymembers)) {
         foreach ($res->query->categorymembers as $page) {
