@@ -425,6 +425,7 @@ final class WikipediaBot {
         "titles" => $page,
         "format" => "json",
         ]);
+    $res = @json_decode($res);
     if (!isset($res->query->pages)) {
         report_warning("Failed to get redirect status");    // @codeCoverageIgnore
         return -1;                                          // @codeCoverageIgnore
@@ -439,6 +440,7 @@ final class WikipediaBot {
         "titles" => $page,
         "format" => "json",
         ]);
+    $res = @json_decode($res);
     if (!isset($res->query->redirects[0]->to)) {
         report_warning("Failed to get redirect target");     // @codeCoverageIgnore
         return NULL;                                         // @codeCoverageIgnore
@@ -453,7 +455,7 @@ final class WikipediaBot {
     return array_key_exists($id, NAMESPACES) ? NAMESPACES[$id] : NULL;
   }
   
-  static public function QueryAPI(array $params) : ?array {
+  static public function QueryAPI(array $params) : ?string {
     $ch = curl_init();
     curl_setopt_array($ch, [
         CURLOPT_HTTPGET => TRUE,
@@ -471,7 +473,7 @@ final class WikipediaBot {
           ]);
     $data = (string) @curl_exec($ch);
     curl_close($ch);
-    return @json_decode($data);
+    return $data;
   }
   
   static public function is_valid_user(string $user) : bool {
@@ -484,7 +486,7 @@ final class WikipediaBot {
          "ususers" => urlencode(str_replace(" ", "_", $user)),
       ];
     $response = self::QueryAPI($query);
-    if ($response == '' || (strpos($response, '"userid"')  === FALSE)) { // try again if weird
+    if ($response === NULL || (strpos($response, '"userid"')  === FALSE)) { // try again if weird
       sleep(5);
       $response = self::QueryAPI($query);
     }
