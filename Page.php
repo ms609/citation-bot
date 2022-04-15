@@ -42,6 +42,7 @@ class Page {
             'inprop' => 'protection', 
             'format' => 'json',
           ]);
+    $details = @json_decode($details);
 
     if (!isset($details->query)) {
       // @codeCoverageIgnoreStart
