@@ -320,15 +320,7 @@ final class PageTest extends testBaseClass {
       $this->assertTrue((bool) stripos($page->parsed_text(), 'PhysRevD.78.081701'));
     });
   }
-                        
-  public function testUrlReferencesWithText17() : void {
-    $this->requires_google(function() : void {
-      $text = "<ref>{{oclc|23454}}</ref>";
-      $page = $this->process_page($text);
-      $this->assertTrue((bool) strpos($page->parsed_text(), 'it'));
-    });
-  }                    
-                        
+                    
   public function testMagazine() : void {
       $text = '{{cite magazine|work=Yup}}';
       $page = $this->process_page($text);

@@ -20,9 +20,9 @@ final class WikipediaBot {
   private Token $user_token;
   private CurlHandle $ch;
   private string $the_user = '';
-  private static ?self $last_WikipediaBot;
+  private static ?self $last_WikipediaBot; // For NonStandardMode()
 
-  function __construct(bool $no_user = FALSE) {
+  function __construct() {
     $this->ch = curl_init();
     curl_setopt_array($this->ch, [
         CURLOPT_FAILONERROR => TRUE, // This is a little paranoid - see https://curl.se/libcurl/c/CURLOPT_FAILONERROR.html
@@ -54,11 +54,8 @@ final class WikipediaBot {
     $this->user_client = new Client($conf);
 
     /** @psalm-suppress RedundantCondition */  /* PSALM thinks TRAVIS cannot be FALSE */
-    if (TRAVIS && !$no_user) {
+    if (TRAVIS) {
       $this->the_user = 'Citation_bot';
-      $this->user_token = new Token("", "");
-    } elseif ($no_user) {
-      $this->the_user = ''; // This is if we call is_redirect() from gadget
       $this->user_token = new Token("", "");
       // @codeCoverageIgnoreStart
     } elseif (!HTML_OUTPUT) { // Running on the command line, and editing using main tokens
@@ -276,8 +273,7 @@ final class WikipediaBot {
     } elseif (isset($result->edit)) {
       // @codeCoverageIgnoreStart
       if (isset($result->edit->captcha)) {
-        if (self::NonStandardMode()) html_echo(echoable(print_r($result, TRUE)));
-        report_error("Write error: We encountered a captcha, so can't be properly logged in.");
+        report_error("Write error: We encountered a captcha, so can't be properly logged in."); // Bot some flags set on en. and simple. to avoid captchas
       } elseif ($result->edit->result == "Success") {
         // Need to check for this string wherever our behaviour is dependant on the success or failure of the write operation
         if (HTML_OUTPUT) {
@@ -418,19 +414,13 @@ final class WikipediaBot {
   }
   # @return -1 if page does not exist; 0 if exists and not redirect; 1 if is redirect
   static public function is_redirect(string $page) : int {
-    if (isset(self::$last_WikipediaBot)) {
-      $api = self::$last_WikipediaBot;
-    } elseif (getenv('PHP_OAUTH_CONSUMER_TOKEN')) {
-      $api = new WikipediaBot(TRUE);
-    } else {      // This is when we are in TRAVIS but have no secret keys.
-      return 0;   // @codeCoverageIgnore
-    }
-    $res = $api->fetch([
+    $res = self::QueryAPI([
         "action" => "query",
         "prop" => "info",
         "titles" => $page,
-        ], 'POST');
-    
+        "format" => "json",
+        ]);
+    $res = @json_decode($res);
     if (!isset($res->query->pages)) {
         report_warning("Failed to get redirect status");    // @codeCoverageIgnore
         return -1;                                          // @codeCoverageIgnore
@@ -438,12 +428,14 @@ final class WikipediaBot {
     $res = reset($res->query->pages);
     return (isset($res->missing) ? -1 : (isset($res->redirect) ? 1 : 0));
   }
-  public function redirect_target(string $page) : ?string {
-    $res = $this->fetch([
+  public static function redirect_target(string $page) : ?string {
+    $res = self::QueryAPI([
         "action" => "query",
         "redirects" => "1",
         "titles" => $page,
-        ], 'POST');
+        "format" => "json",
+        ]);
+    $res = @json_decode($res);
     if (!isset($res->query->redirects[0]->to)) {
         report_warning("Failed to get redirect target");     // @codeCoverageIgnore
         return NULL;                                         // @codeCoverageIgnore
@@ -458,22 +450,41 @@ final class WikipediaBot {
     return array_key_exists($id, NAMESPACES) ? NAMESPACES[$id] : NULL;
   }
   
-  static public function is_valid_user(string $user) : bool {
-    if (!$user) return FALSE;
+  static public function QueryAPI(array $params) : string {
     $ch = curl_init();
     curl_setopt_array($ch, [
-      CURLOPT_HEADER => 0,
-      CURLOPT_RETURNTRANSFER => TRUE,
-      CURLOPT_TIMEOUT => 20,
-      CURLOPT_USERAGENT => BOT_USER_AGENT,
-      CURLOPT_URL => API_ROOT . '?action=query&usprop=blockinfo&format=json&list=users&ususers=' . urlencode(str_replace(" ", "_", $user))
-    ]);
-    $response = (string) @curl_exec($ch);
-    if ($response == '' || (strpos($response, '"userid"')  === FALSE)) { // try again if weird
-      sleep(5);
-      $response = (string) @curl_exec($ch);
-    }
+        CURLOPT_HTTPGET => TRUE,
+        CURLOPT_FAILONERROR => TRUE,
+        CURLOPT_FOLLOWLOCATION => TRUE,
+        CURLOPT_MAXREDIRS => 5,
+        CURLOPT_HEADER => 0,
+        CURLOPT_RETURNTRANSFER => TRUE,
+        CURLOPT_CONNECTTIMEOUT => 15,
+        CURLOPT_TIMEOUT => 20,
+        CURLOPT_COOKIESESSION => TRUE,
+        CURLOPT_COOKIEFILE => 'cookie.txt',
+        CURLOPT_USERAGENT => BOT_USER_AGENT,
+        CURLOPT_URL => API_ROOT . '?' . http_build_query($params)
+          ]);
+    $data = (string) @curl_exec($ch);
     curl_close($ch);
+    return $data;
+  }
+  
+  static public function is_valid_user(string $user) : bool {
+    if (!$user) return FALSE;
+    $query = [
+         "action" => "query",
+         "usprop" => "blockinfo",
+         "format" => "json",
+         "list" => "users",
+         "ususers" => urlencode(str_replace(" ", "_", $user)),
+      ];
+    $response = self::QueryAPI($query);
+    if ($response === NULL || (strpos($response, '"userid"')  === FALSE)) { // try again if weird
+      sleep(5);
+      $response = self::QueryAPI($query);
+    }
     if ($response == '') return FALSE;
     $response = str_replace(array("\r", "\n"), '', $response);  // paranoid
     if (strpos($response, '"invalid"') !== FALSE) return FALSE; // IP Address and similar stuff
