@@ -21,7 +21,7 @@ final class WikipediaBot {
   /** @var resource $ch */
   private $ch;
   private $the_user = '';
-  private static $last_WikipediaBot;  // This leads what looks like a circular memory-leak in the test suite, but not in real-life
+  private static $last_WikipediaBot;
 
   function __construct(bool $no_user = FALSE) {
     $this->ch = curl_init();
