@@ -34,30 +34,16 @@ class Page {
   public function get_text_from(string $title) : bool {
     $this->construct_modifications_array(); // Could be new page
 
-    $ch = curl_init();
-    curl_setopt_array($ch, [
-        CURLOPT_FAILONERROR => TRUE,
-        CURLOPT_FOLLOWLOCATION => TRUE,
-        CURLOPT_MAXREDIRS => 5,
-        CURLOPT_HEADER => 0,
-        CURLOPT_RETURNTRANSFER => TRUE,
-        CURLOPT_CONNECTTIMEOUT => 15,
-        CURLOPT_TIMEOUT => 20,
-        CURLOPT_COOKIESESSION => TRUE,
-        CURLOPT_COOKIEFILE => 'cookie.txt',
-        CURLOPT_USERAGENT => BOT_USER_AGENT,
-        CURLOPT_URL => API_ROOT . '?' . http_build_query([
+    $details = WikipediaBot::QueryAPI([
             'action'=>'query', 
             'prop'=>'info', 
             'titles'=> $title, 
             'curtimestamp'=>'true', 
             'inprop' => 'protection', 
-            'format' => 'json'])
+            'format' => 'json',
           ]);
-    $data = (string) @curl_exec($ch);
-    curl_close($ch);
-    $details = @json_decode($data);
-    unset($data);
+    $details = @json_decode($details);
+
     if (!isset($details->query)) {
       // @codeCoverageIgnoreStart
       $message = "Error: Could not fetch page.";
