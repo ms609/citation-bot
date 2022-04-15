@@ -9,7 +9,6 @@ abstract class testBaseClass extends PHPUnit\Framework\TestCase {
   // Change these to temporarily disable sets of tests======================
   private $testing_skip_zotero = FALSE;                                           //
   private $testing_skip_bibcode= FALSE;                                           //
-  private $testing_skip_google = TRUE;                                            // API turned off for now.  Gave bad resutls.
   private $testing_skip_wiki   = FALSE;                                           //
   private $testing_skip_dx     = FALSE;                                           //
   private $testing_skip_arxiv  = FALSE;                                           //
@@ -32,16 +31,6 @@ abstract class testBaseClass extends PHPUnit\Framework\TestCase {
   protected function requires_secrets(callable $function) : void {
     if ($this->testing_skip_wiki) {
       echo 'A'; // For API
-      ob_flush();
-      $this->assertNull(NULL);
-    } else {
-      $function();
-    }
-  }
-  
-  protected function requires_google(callable $function) : void {
-    if ($this->testing_skip_google) {
-      echo 'G';
       ob_flush();
       $this->assertNull(NULL);
     } else {
