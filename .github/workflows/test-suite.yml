@@ -44,7 +44,6 @@ jobs:
     - name: Full test with PHP
       env:
          PHP_ADSABSAPIKEY: ${{ secrets.PHP_ADSABSAPIKEY }}
-         PHP_GOOGLEKEY: ${{ secrets.PHP_GOOGLEKEY }}
          PHP_OAUTH_CONSUMER_TOKEN: ${{ secrets.PHP_OAUTH_CONSUMER_TOKEN }}
          PHP_OAUTH_CONSUMER_SECRET: ${{ secrets.PHP_OAUTH_CONSUMER_SECRET }}
          PHP_OAUTH_ACCESS_TOKEN: ${{ secrets.PHP_OAUTH_ACCESS_TOKEN }}

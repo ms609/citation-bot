@@ -111,8 +111,6 @@ final class Template {
         $this->name = $spacing[1] . 'cite journal' . $spacing[2];
       } elseif (!$this->blank_other_than_comments('newspaper')) {
         $this->name = $spacing[1] . 'cite news' . $spacing[2];
-//      } elseif ($this->blank_other_than_comments(WORK_ALIASES) && $this->has('url')) {
-//        $this->name = $spacing[1] . 'cite web' . $spacing[2];
       } elseif (!$this->blank_other_than_comments('website') && $this->has('url')) {
         $this->name = $spacing[1] . 'cite web' . $spacing[2];
       } elseif (!$this->blank_other_than_comments('magazine')) {
@@ -133,8 +131,6 @@ final class Template {
         $this->name = $spacing[1] . 'Cite journal' . $spacing[2];
       } elseif (!$this->blank_other_than_comments('newspaper')) {
         $this->name = $spacing[1] . 'Cite news' . $spacing[2];
-//      } elseif ($this->blank_other_than_comments(WORK_ALIASES) && $this->has('url')) {
-//        $this->name = $spacing[1] . 'Cite web' . $spacing[2];
       } elseif (!$this->blank_other_than_comments('website') && $this->has('url')) {
         $this->name = $spacing[1] . 'Cite web' . $spacing[2];
       } elseif (!$this->blank_other_than_comments('magazine')) {
@@ -2732,51 +2728,6 @@ final class Template {
           }
         }
       }
-      /** https://www.googleapis.com/books/v1/volumes?q=oclc:61313128 and such gives bogus results now.  Also, we run out of searches really fast.
-      if ( !$google_books_worked && PHP_GOOGLEKEY) { // Try Google API instead
-        if ($isbn) {
-          return FALSE; // ISBN did not work, so give up
-        } elseif ($oclc) {
-          $url_token = "oclc:" . $oclc;
-        } elseif ($lccn) {
-          $url_token = "lccn:" . $lccn;
-        } else {
-          return FALSE;
-        }
-        $ch = curl_init();
-        curl_setopt_array($ch,
-               [CURLOPT_HEADER => 0,
-                CURLOPT_RETURNTRANSFER => 1,
-                CURLOPT_TIMEOUT => 15,
-                CURLOPT_USERAGENT => BOT_USER_AGENT,
-                CURLOPT_URL => "https://www.googleapis.com/books/v1/volumes?q=" . $url_token . "&key=" . PHP_GOOGLEKEY]);
-        $string = (string) @curl_exec($ch);
-        curl_close($ch);
-        if ($string == '') {
-            report_warning("Did not receive results from Google API search" . echoable($url_token));  // @codeCoverageIgnore
-            return FALSE;                                                                 // @codeCoverageIgnore
-        }
-        $result = @json_decode($string, FALSE);
-        if (isset($result)) {
-          if (isset($result->totalItems)) {
-            if ($result->totalItems === 1 && isset($result->items) && isset($result->items[0]) && isset($result->items[0]->id) ) {
-              $gid = (string) $result->items[0]->id;
-              $url = 'https://books.google.com/books?id=' . $gid;
-            } else {
-              report_info("No results for Google API search " . echoable($url_token));
-            }
-            // @codeCoverageIgnoreStart
-          } elseif (isset($result->error->errors[0]->reason) && $result->error->errors[0]->reason === 'rateLimitExceeded') {
-            report_warning("Google Books API reported error out of queries for the day");
-          } elseif (isset($result->error)) {
-            report_warning("Google Books API reported error: " . echoable(print_r($result->error->errors, TRUE)));
-          } else {
-            report_warning("Could not parse Google API results for " . echoable($url_token));
-            return FALSE;
-          }
-            // @codeCoverageIgnoreEnd
-        }
-      } **/
     }
     // Now we parse a Google Books URL
     if ($url && (preg_match("~[Bb]ooks\.[Gg]oogle\.[\w\.]+/.*\bid=([\w\d\-]+)~", $url, $gid) || preg_match("~[Ee]ncrypted\.[Gg]oogle\..+book.*\bid=([\w\d\-]+)~", $url, $gid))) {
@@ -3786,20 +3737,6 @@ final class Template {
 
         case 'author':
           $the_author = $this->get($param);
-          if (substr($the_author, 0, 2) == '[[' &&
-              substr($the_author,   -2) == ']]' &&
-              mb_substr_count($the_author, '[[') === 1 &&
-              mb_substr_count($the_author, ']]') === 1 &&
-              strpos($the_author, 'CITATION_BOT') === FALSE &&
-              strpos($the_author, '{{!}}') === FALSE) {  // Has a normal wikilink
-         //   if (preg_match(REGEXP_PLAIN_WIKILINK_ONLY, $the_author, $matches)) {
-         //     $this->set($param, $matches[1]);
-         //     $this->add_if_new($param . '-link', $matches[1]);
-         //   } elseif (preg_match(REGEXP_PIPED_WIKILINK_ONLY, $the_author, $matches)) {
-         //     $this->set($param, $matches[2]);
-         //     $this->add_if_new($param . '-link', $matches[1]);
-         //   }
-          }
           if ($this->blank('agency') && in_array(strtolower($the_author), ['associated press', 'reuters'])) {
             $this->rename('author' . $pmatch[2], 'agency');
             if ($pmatch[2] == '1' || $pmatch[2] == '') {
@@ -6136,19 +6073,6 @@ final class Template {
           }
           return;
 
-        case 'publicationplace': case 'publication-place':
-          // TODO - WAITING ON DISCUSSION
-          // if ($this->blank(['location', 'place', 'conference']) && $this->wikiname() !== 'cite conference') { // A conference might have a location and a pulisher address
-          //  $this->rename($param, 'location'); // This should only be used when 'location'/'place' is being used to describe where is was physically written, i.e. location=Vacationing in France|publication-place=New York
-          // }
-          return;
-
-        case 'publication-date': case 'publicationdate':
-          // TODO - WAITING ON DISCUSSION
-          // if ($this->blank(['year', 'date'])) {
-          //   $this->rename($param, 'date'); // When date and year are blank, this is displayed as date.  So convert
-          // }
-          return;
       }
     }
   }
