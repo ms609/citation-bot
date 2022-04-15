@@ -111,8 +111,6 @@ final class Template {
         $this->name = $spacing[1] . 'cite journal' . $spacing[2];
       } elseif (!$this->blank_other_than_comments('newspaper')) {
         $this->name = $spacing[1] . 'cite news' . $spacing[2];
-//      } elseif ($this->blank_other_than_comments(WORK_ALIASES) && $this->has('url')) {
-//        $this->name = $spacing[1] . 'cite web' . $spacing[2];
       } elseif (!$this->blank_other_than_comments('website') && $this->has('url')) {
         $this->name = $spacing[1] . 'cite web' . $spacing[2];
       } elseif (!$this->blank_other_than_comments('magazine')) {
@@ -133,8 +131,6 @@ final class Template {
         $this->name = $spacing[1] . 'Cite journal' . $spacing[2];
       } elseif (!$this->blank_other_than_comments('newspaper')) {
         $this->name = $spacing[1] . 'Cite news' . $spacing[2];
-//      } elseif ($this->blank_other_than_comments(WORK_ALIASES) && $this->has('url')) {
-//        $this->name = $spacing[1] . 'Cite web' . $spacing[2];
       } elseif (!$this->blank_other_than_comments('website') && $this->has('url')) {
         $this->name = $spacing[1] . 'Cite web' . $spacing[2];
       } elseif (!$this->blank_other_than_comments('magazine')) {
@@ -3786,20 +3782,6 @@ final class Template {
 
         case 'author':
           $the_author = $this->get($param);
-          if (substr($the_author, 0, 2) == '[[' &&
-              substr($the_author,   -2) == ']]' &&
-              mb_substr_count($the_author, '[[') === 1 &&
-              mb_substr_count($the_author, ']]') === 1 &&
-              strpos($the_author, 'CITATION_BOT') === FALSE &&
-              strpos($the_author, '{{!}}') === FALSE) {  // Has a normal wikilink
-         //   if (preg_match(REGEXP_PLAIN_WIKILINK_ONLY, $the_author, $matches)) {
-         //     $this->set($param, $matches[1]);
-         //     $this->add_if_new($param . '-link', $matches[1]);
-         //   } elseif (preg_match(REGEXP_PIPED_WIKILINK_ONLY, $the_author, $matches)) {
-         //     $this->set($param, $matches[2]);
-         //     $this->add_if_new($param . '-link', $matches[1]);
-         //   }
-          }
           if ($this->blank('agency') && in_array(strtolower($the_author), ['associated press', 'reuters'])) {
             $this->rename('author' . $pmatch[2], 'agency');
             if ($pmatch[2] == '1' || $pmatch[2] == '') {
@@ -6136,19 +6118,6 @@ final class Template {
           }
           return;
 
-        case 'publicationplace': case 'publication-place':
-          // TODO - WAITING ON DISCUSSION
-          // if ($this->blank(['location', 'place', 'conference']) && $this->wikiname() !== 'cite conference') { // A conference might have a location and a pulisher address
-          //  $this->rename($param, 'location'); // This should only be used when 'location'/'place' is being used to describe where is was physically written, i.e. location=Vacationing in France|publication-place=New York
-          // }
-          return;
-
-        case 'publication-date': case 'publicationdate':
-          // TODO - WAITING ON DISCUSSION
-          // if ($this->blank(['year', 'date'])) {
-          //   $this->rename($param, 'date'); // When date and year are blank, this is displayed as date.  So convert
-          // }
-          return;
       }
     }
   }
