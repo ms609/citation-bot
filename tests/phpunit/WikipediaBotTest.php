@@ -23,7 +23,7 @@ require_once __DIR__ . '/../testBaseClass.php';
     }
       
     public function testCategoryMembers() : void {
-      $this->assertTrue(count(WikipediaBot::category_members('Indian drama films')) > 10);
+      $this->assertTrue(count(WikipediaBot::category_members('Indian drama films')) > 520);
       $this->assertSame(0, count(WikipediaBot::category_members('A category we expect to be empty')));
     }
     
