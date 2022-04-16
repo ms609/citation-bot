@@ -116,7 +116,7 @@ final class WikipediaBot {
   }
   
   /** @phpstan-impure **/
-  public function fetch(array $params, string $method, int $depth = 1) : ?object {
+  private function fetch(array $params, string $method, int $depth = 1) : ?object {
     set_time_limit(120);
     if ($depth > 1) sleep($depth+2);
     if ($depth > 4) return NULL;
@@ -376,7 +376,7 @@ final class WikipediaBot {
     return (string) $res->query->redirects[0]->to;
   }
   
-  static public function QueryAPI(array $params) : string {
+  static private function QueryAPI(array $params) : string {
     $ch = curl_init();
     curl_setopt_array($ch, [
         CURLOPT_HTTPGET => TRUE,
@@ -395,6 +395,18 @@ final class WikipediaBot {
     $data = (string) @curl_exec($ch);
     curl_close($ch);
     return $data;
+  }
+  
+  static public function ReadDetails(string $title) : object {
+      $details = self::QueryAPI([
+            'action'=>'query', 
+            'prop'=>'info', 
+            'titles'=> $title, 
+            'curtimestamp'=>'true', 
+            'inprop' => 'protection', 
+            'format' => 'json',
+          ]);
+    return @json_decode($details);
   }
   
   static public function is_valid_user(string $user) : bool {
