@@ -311,6 +311,7 @@ final class WikipediaBot {
     
     do {
       $res = self::QueryAPIPost($vars);
+      $res = @json_decode($res);
       if (isset($res->query->categorymembers)) {
         foreach ($res->query->categorymembers as $page) {
           // We probably only want to visit pages in the main & draft namespace
