@@ -34,15 +34,7 @@ class Page {
   public function get_text_from(string $title) : bool {
     $this->construct_modifications_array(); // Could be new page
 
-    $details = WikipediaBot::QueryAPI([
-            'action'=>'query', 
-            'prop'=>'info', 
-            'titles'=> $title, 
-            'curtimestamp'=>'true', 
-            'inprop' => 'protection', 
-            'format' => 'json',
-          ]);
-    $details = @json_decode($details);
+    $details = WikipediaBot::ReadDetails($title);
 
     if (!isset($details->query)) {
       // @codeCoverageIgnoreStart

@@ -377,8 +377,6 @@ final class WikipediaBot {
   }
   
   static private function QueryAPI(array $params) : string {
-    ADD post version and try to use it instead 
-    Also make as many methods as possible private
     $ch = curl_init();
     curl_setopt_array($ch, [
         CURLOPT_HTTPGET => TRUE,
@@ -397,6 +395,18 @@ final class WikipediaBot {
     $data = (string) @curl_exec($ch);
     curl_close($ch);
     return $data;
+  }
+  
+  static public function ReadDetails(string $title) : object {
+      $details = self::QueryAPI([
+            'action'=>'query', 
+            'prop'=>'info', 
+            'titles'=> $title, 
+            'curtimestamp'=>'true', 
+            'inprop' => 'protection', 
+            'format' => 'json',
+          ]);
+    return @json_decode($details);
   }
   
   static public function is_valid_user(string $user) : bool {
