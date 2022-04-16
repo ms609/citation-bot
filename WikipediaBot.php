@@ -308,6 +308,7 @@ final class WikipediaBot {
       "action" => "query",
       "cmlimit" => "500",
       "list" => "categorymembers",
+      "format" => "json",
     ];
     
     do {
