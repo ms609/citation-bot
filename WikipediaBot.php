@@ -258,7 +258,6 @@ final class WikipediaBot {
         "starttimestamp" => $startedEditing,
         "nocreate" => "1",
         "watchlist" => "nochange",
-        "format" => "json",
         'token' => $auth_token,
     );
     $result = $this->fetch($submit_vars, 'POST');
@@ -301,7 +300,7 @@ final class WikipediaBot {
     return FALSE;
   }
   
-  public function category_members(string $cat) : array {
+  public static function category_members(string $cat) : array {
     $list = [];
     $vars = [
       "cmtitle" => "Category:$cat", // Don't URLencode.
@@ -311,7 +310,8 @@ final class WikipediaBot {
     ];
     
     do {
-      $res = $this->fetch($vars, 'POST');
+      $res = self::QueryAPIPost($vars);
+      $res = @json_decode($res);
       if (isset($res->query->categorymembers)) {
         foreach ($res->query->categorymembers as $page) {
           // We probably only want to visit pages in the main & draft namespace
@@ -351,7 +351,6 @@ final class WikipediaBot {
         "action" => "query",
         "prop" => "info",
         "titles" => $page,
-        "format" => "json",
         ]);
     $res = @json_decode($res);
     if (!isset($res->query->pages)) {
@@ -366,7 +365,6 @@ final class WikipediaBot {
         "action" => "query",
         "redirects" => "1",
         "titles" => $page,
-        "format" => "json",
         ]);
     $res = @json_decode($res);
     if (!isset($res->query->redirects[0]->to)) {
@@ -377,6 +375,7 @@ final class WikipediaBot {
   }
   
   static private function QueryAPI(array $params) : string {
+    $params['format'] = 'json';
     $ch = curl_init();
     curl_setopt_array($ch, [
         CURLOPT_HTTPGET => TRUE,
@@ -397,6 +396,29 @@ final class WikipediaBot {
     return $data;
   }
   
+  static private function QueryAPIPost(array $params) : string {
+    $params['format'] = 'json';
+    $ch = curl_init();
+    curl_setopt_array($ch, [
+        CURLOPT_POST => TRUE,
+        CURLOPT_FAILONERROR => TRUE,
+        CURLOPT_FOLLOWLOCATION => TRUE,
+        CURLOPT_MAXREDIRS => 5,
+        CURLOPT_HEADER => 0,
+        CURLOPT_RETURNTRANSFER => TRUE,
+        CURLOPT_CONNECTTIMEOUT => 15,
+        CURLOPT_TIMEOUT => 20,
+        CURLOPT_COOKIESESSION => TRUE,
+        CURLOPT_COOKIEFILE => 'cookie.txt',
+        CURLOPT_USERAGENT => BOT_USER_AGENT,
+        CURLOPT_POSTFIELDS => http_build_query($params),
+        CURLOPT_URL => API_ROOT
+          ]);
+    $data = (string) @curl_exec($ch);
+    curl_close($ch);
+    return $data;
+  }
+ 
   static public function ReadDetails(string $title) : object {
       $details = self::QueryAPI([
             'action'=>'query', 
@@ -404,7 +426,6 @@ final class WikipediaBot {
             'titles'=> $title, 
             'curtimestamp'=>'true', 
             'inprop' => 'protection', 
-            'format' => 'json',
           ]);
     return @json_decode($details);
   }
@@ -414,7 +435,6 @@ final class WikipediaBot {
     $query = [
          "action" => "query",
          "usprop" => "blockinfo",
-         "format" => "json",
          "list" => "users",
          "ususers" => urlencode(str_replace(" ", "_", $user)),
       ];

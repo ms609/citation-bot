@@ -23,11 +23,8 @@ require_once __DIR__ . '/../testBaseClass.php';
     }
       
     public function testCategoryMembers() : void {
-     $this->requires_secrets(function() : void {
-      $api = new WikipediaBot();
-      $this->assertTrue(count($api->category_members('Indian drama films')) > 10);
-      $this->assertSame(0, count($api->category_members('A category we expect to be empty')));
-     });
+      $this->assertTrue(count(WikipediaBot::category_members('Indian drama films')) > 10);
+      $this->assertSame(0, count(WikipediaBot::category_members('A category we expect to be empty')));
     }
     
     public function testRedirects() : void {
