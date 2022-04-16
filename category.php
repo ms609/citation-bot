@@ -24,7 +24,7 @@ check_blocked();
 $edit_summary_end = "| Suggested by " . $api->get_the_user() . " | [[Category:$category]] | #UCB_Category ";
 
 if ($category) {
-  $pages_in_category = $api->category_members($category);
+  $pages_in_category = WikipediaBot::category_members($category);
   if (empty($pages_in_category)) {
     report_warning('Category appears to be empty');
     echo ' </pre><footer><a href="./" title="Use Citation Bot again">Another</a>?</footer></body></html>';
