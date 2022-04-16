@@ -327,8 +327,8 @@ final class WikipediaBot {
       } else {
         report_error('Error reading API for category ' . echoable($cat) . "\n\n");   // @codeCoverageIgnore
       }
-      $vars["cmcontinue"] = isset($res->continue) ? $res->continue->cmcontinue : FALSE;
-    } while ($vars["cmcontinue"]);
+      $vars["gcmcontinue"] = isset($res->continue) ? $res->continue->gcmcontinue : FALSE;
+    } while ($vars["gcmcontinue"]);
     return $list;
   }
 
