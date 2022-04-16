@@ -73,7 +73,7 @@ final class WikipediaBot {
     curl_close($this->ch);
   }
   
-  public function bot_account_name() : string {
+  private function bot_account_name() : string {
     $userQuery = $this->fetch(['action' => 'query', 'meta' => 'userinfo'], 'GET');
     return (isset($userQuery->query->userinfo->name)) ? $userQuery->query->userinfo->name : '';
   }
@@ -376,7 +376,7 @@ final class WikipediaBot {
     return (string) $res->query->redirects[0]->to;
   }
   
-  static public function QueryAPI(array $params) : string {
+  static private function QueryAPI(array $params) : string {
     $ch = curl_init();
     curl_setopt_array($ch, [
         CURLOPT_HTTPGET => TRUE,
@@ -395,6 +395,18 @@ final class WikipediaBot {
     $data = (string) @curl_exec($ch);
     curl_close($ch);
     return $data;
+  }
+  
+  static public function ReadDetails(string $title) : object {
+      $details = self::QueryAPI([
+            'action'=>'query', 
+            'prop'=>'info', 
+            'titles'=> $title, 
+            'curtimestamp'=>'true', 
+            'inprop' => 'protection', 
+            'format' => 'json',
+          ]);
+    return @json_decode($details);
   }
   
   static public function is_valid_user(string $user) : bool {
