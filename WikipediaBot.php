@@ -331,12 +331,13 @@ final class WikipediaBot {
     return $list;
   }
 
-  public function get_last_revision(string $page) : string {
-    $res = $this->fetch([
+  public static function get_last_revision(string $page) : string {
+    $res = self::QueryAPI([
         "action" => "query",
         "prop" => "revisions",
         "titles" => $page,
-      ], 'GET');
+      ]);
+    $res = @json_encode($res);
     if (!isset($res->query->pages)) {
         report_minor_error("Failed to get article's last revision");      // @codeCoverageIgnore
         return '';                                                        // @codeCoverageIgnore
