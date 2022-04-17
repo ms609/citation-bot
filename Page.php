@@ -88,7 +88,7 @@ class Page {
     $this->title = (string) $details->title;
     $this->lastrevid = (int) $details->lastrevid ;
 
-    WikipediaBot::GetAPage($title);
+    $this->text = WikipediaBot::GetAPage($title);
 
     if ($this->text == '') {
        report_warning('Page '  . $title . ' from ' . WIKI_ROOT . ' appears to be empty ');    // @codeCoverageIgnore
