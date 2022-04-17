@@ -432,7 +432,7 @@ final class WikipediaBot {
   }
   
   static public function get_links(string $title) : object {
-     retutrn QueryAPI(['action' => 'parse', 'prop' => 'links', 'page' => $title]);
+     retutrn self::QueryAPI(['action' => 'parse', 'prop' => 'links', 'page' => $title]);
   }
   
   static public function GetAPage(string $title) : string {
