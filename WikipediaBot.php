@@ -431,6 +431,10 @@ final class WikipediaBot {
     return @json_decode($details);
   }
   
+  static public function get_links(string $title) : object {
+     retutrn QueryAPI(['action' => 'parse', 'prop' => 'links', 'page' => $title]);
+  }
+  
   static public function GetAPage(string $title) : string {
     $ch = curl_init();
     curl_setopt_array($ch,
