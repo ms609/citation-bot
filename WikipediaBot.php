@@ -431,7 +431,7 @@ final class WikipediaBot {
     return @json_decode($details);
   }
   
-  static public function GetAPage(string $title) : object {
+  static public function GetAPage(string $title) : string {
     $ch = curl_init();
     curl_setopt_array($ch,
               [CURLOPT_HEADER => 0,
@@ -441,8 +441,9 @@ final class WikipediaBot {
                CURLOPT_COOKIESESSION => TRUE,
                CURLOPT_COOKIEFILE => 'cookie.txt',
                CURLOPT_URL => WIKI_ROOT . '?' . http_build_query(['title' => $title, 'action' =>'raw'])]);
-    $this->text = (string) @curl_exec($ch);
+    $text = (string) @curl_exec($ch);
     curl_close($ch);
+    return $text;
   }
   
   
