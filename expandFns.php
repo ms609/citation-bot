@@ -1024,7 +1024,7 @@ function edit_a_list_of_pages(array $pages_in_category, WikipediaBot $api, strin
       }
       while (!$page->write($api, $edit_sum) && $attempts < MAX_TRIES) ++$attempts;
       if ($attempts < MAX_TRIES) {
-        $last_rev = $api->get_last_revision($page_title);
+        $last_rev = WikipediaBot::get_last_revision($page_title);
         echo
         "\n  <a href=" . WIKI_ROOT . "?title=" . urlencode($page_title) . "&diff=prev&oldid="
         . $last_rev . ">diff</a>" .
