@@ -431,6 +431,21 @@ final class WikipediaBot {
     return @json_decode($details);
   }
   
+  static public function GetAPage(string $title) : object {
+    $ch = curl_init();
+    curl_setopt_array($ch,
+              [CURLOPT_HEADER => 0,
+               CURLOPT_USERAGENT => BOT_USER_AGENT,
+               CURLOPT_RETURNTRANSFER => 1,
+               CURLOPT_TIMEOUT => 20,
+               CURLOPT_COOKIESESSION => TRUE,
+               CURLOPT_COOKIEFILE => 'cookie.txt',
+               CURLOPT_URL => WIKI_ROOT . '?' . http_build_query(['title' => $title, 'action' =>'raw'])]);
+    $this->text = (string) @curl_exec($ch);
+    curl_close($ch);
+  }
+  
+  
   static public function is_valid_user(string $user) : bool {
     if (!$user) return FALSE;
     $query = [
