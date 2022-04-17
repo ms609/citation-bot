@@ -35,10 +35,7 @@ require_once __DIR__ . '/../testBaseClass.php';
     }
       
     public function testGetLastRevision() : void {
-     $this->requires_secrets(function() : void {
-      $api = new WikipediaBot();
-      $this->assertSame('805321380', $api->get_last_revision('User:Blocked testing account/readtest'));
-     });
+      $this->assertSame('805321380', WikipediaBot::get_last_revision('User:Blocked testing account/readtest'));
     }
    
     public function testGetUserName() : void {
