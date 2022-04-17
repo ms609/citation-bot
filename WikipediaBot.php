@@ -431,7 +431,7 @@ final class WikipediaBot {
     return @json_decode($details);
   }
   
-  static public function get_links(string $title) : object {
+  static public function get_links(string $title) : string {
      return self::QueryAPI(['action' => 'parse', 'prop' => 'links', 'page' => $title]);
   }
   
