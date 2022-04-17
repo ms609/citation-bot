@@ -337,7 +337,7 @@ final class WikipediaBot {
         "prop" => "revisions",
         "titles" => $page,
       ]);
-    $res = @json_encode($res);
+    $res = @json_decode($res);
     if (!isset($res->query->pages)) {
         report_minor_error("Failed to get article's last revision");      // @codeCoverageIgnore
         return '';                                                        // @codeCoverageIgnore
