@@ -581,7 +581,11 @@ const NON_JOURNALS = array('Amphibian Species of the World', 'an Online Referenc
 const ARE_MAGAZINES = array('the new yorker', 'the new republic', 'new republic', 'expedition magazine', 'wired', 'wired uk',
                            'computer gaming world', 'edge (magazine)', 'game informer', 'pc gamer uk',
                            'wired (magazine)', 'time', 'life', 'time (magazine)', 'life (magazine)', 'billboard',
-                           'billboard (magazine)', 'rolling stone', 'mcv/develop', 'vanity fair'
+                           'billboard (magazine)', 'rolling stone', 'mcv/develop', 'vanity fair',
+                           'nintendo power', 'playthings', 'entertainment weekly', 'official xbox magazine',
+                           'electronic gaming monthly', 'official u.s. playstation magazine',
+                           'playstation: the official magazine', 'play and silicon mag', 'games radar', 'hyper',
+                           'famitsu', 'gamepro',
                            ); // lowercase axact matches
 const ARE_MANY_THINGS = array('pc gamer', 'gamestar', 'rock paper shotgun', 'mcv', 'rock, paper, shotgun', 'edge',
                               'ballotpedia', 'npr', 'ballotpedia.org', 'npr.org', 'nih.gov', 'nih', 
