@@ -58,7 +58,7 @@ private static function create_ch_zotero() : void { // Called below at end of fi
    
   self::$ch_jstor = curl_init();
   curl_setopt_array(self::$ch_jstor,
-        CURLOPT_RETURNTRANSFER => 1,
+       [CURLOPT_RETURNTRANSFER => 1,
         CURLOPT_TIMEOUT => 15,
         CURLOPT_USERAGENT => BOT_USER_AGENT]);
 }
