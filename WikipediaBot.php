@@ -73,11 +73,6 @@ final class WikipediaBot {
     curl_close($this->ch);
   }
   
-  public function bot_account_name() : string {
-    $userQuery = $this->fetch(['action' => 'query', 'meta' => 'userinfo'], 'GET');
-    return (isset($userQuery->query->userinfo->name)) ? $userQuery->query->userinfo->name : '';
-  }
-  
   public function get_the_user() : string {
     if ($this->the_user == '') {
       report_error('User Not Set');         // @codeCoverageIgnore
