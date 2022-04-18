@@ -3977,13 +3977,15 @@ final class Template {
           if (!doi_works($doi)) {
             $this->verify_doi();
             $doi = $this->get($param);
+            if ($doi === '') return;
           }
           if (!doi_works($doi) && strpos($doi, '10.1111/j.1475-4983.' . $this->year()) === 0) {
             $this->forget('doi');  // Special Papers in Palaeontology - they do not work
             return;
           }
           if (!doi_works($doi)) {
-            $this->set($param, sanitize_doi($doi));
+            $doi = sanitize_doi($doi);
+            $this->set($param, $doi);
           }
           if (preg_match('~^10.1093\/oi\/authority\.\d{10,}$~', $doi) &&
               preg_match('~oxfordreference.com\/view\/10.1093\/oi\/authority\.\d{10,}~', $this->get('url')) &&

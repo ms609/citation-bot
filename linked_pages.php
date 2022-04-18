@@ -35,16 +35,8 @@ if (strlen($page_name) > 256)  {
 }
 $edit_summary_end = "| Suggested by " . $api->get_the_user() . " | Linked from $page_name | #UCB_webform_linked ";
 
-$url = API_ROOT . '?action=parse&prop=links&format=json&page=' . $page_name;
-$ch = curl_init();
-curl_setopt_array($ch,
-      [CURLOPT_HEADER => 0,
-       CURLOPT_TIMEOUT => 45,
-       CURLOPT_RETURNTRANSFER =>  1,
-       CURLOPT_URL => $url,
-       CURLOPT_USERAGENT => BOT_USER_AGENT]);
-$json = (string) @curl_exec($ch);
-curl_close($ch);
+$json = WikipediaBot::get_links($page_name);
+
 if ($json == '') {
   report_warning(' Error getting page list');
   echo ' </pre><footer><a href="./" title="Use Citation Bot again">Another</a>?</footer></body></html>';
