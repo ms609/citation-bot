@@ -3,7 +3,7 @@ declare(strict_types=1);
 
 require_once __DIR__ . '/../setup.php';
 
-define("BAD_PAGE_API", "");
+define("BAD_PAGE_API", "User:AManWithNoPlan/sandbox2");
 
 abstract class testBaseClass extends PHPUnit\Framework\TestCase {
   // Change these to temporarily disable sets of tests======================
