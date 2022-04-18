@@ -24,7 +24,7 @@ final class WikipediaBot {
   private static $last_WikipediaBot; // For NonStandardMode()
 
   function __construct() {
-    $this->ch = curl_init();
+    $this->ch = curl_init();dsfadsfds
     curl_setopt_array($this->ch, [
         CURLOPT_FAILONERROR => TRUE, // This is a little paranoid - see https://curl.se/libcurl/c/CURLOPT_FAILONERROR.html
         CURLOPT_FOLLOWLOCATION => TRUE,
