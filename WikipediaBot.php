@@ -375,7 +375,7 @@ final class WikipediaBot {
         case 'GET':        
           curl_setopt_array(self::$ch, [
                 CURLOPT_HTTPGET => TRUE,
-                CURLOPT_URL => API_ROOT . '?' . http_build_query($params)
+                CURLOPT_URL => API_ROOT . '?' . http_build_query($params),
                 CURLOPT_HTTPHEADER => []
                   ]);
           break;
@@ -384,7 +384,7 @@ final class WikipediaBot {
             curl_setopt_array(self::$ch, [
                 CURLOPT_POST => TRUE,
                 CURLOPT_POSTFIELDS => http_build_query($params),
-                CURLOPT_URL => API_ROOT
+                CURLOPT_URL => API_ROOT,
                 CURLOPT_HTTPHEADER => []
           ]);
           break;
