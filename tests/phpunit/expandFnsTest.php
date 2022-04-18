@@ -320,6 +320,11 @@ final class expandFnsTest extends testBaseClass {
     $this->assertSame('AIDS', title_capitalization('Aids', TRUE));
     $this->assertSame('BioScience', title_capitalization('Bioscience', TRUE));
   }
+ 
+  public function testDOIWorks() : void {
+    $this->assertFalse(doi_works(''));
+    $this->assertFalse(doi_active(''));
+  }
   
   public function testThrottle() : void { // Just runs over the code and basically does nothing
     for ($x = 0; $x <= 155; $x++) {
