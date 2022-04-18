@@ -688,7 +688,7 @@ function query_crossref(string $doi) : ?object {
       sleep(1);              // @codeCoverageIgnore
       // Keep trying...
     }
-  }                                                                 // @codeCoverageIgnore
+  }
   report_warning("Error loading CrossRef file from DOI " . echoable($doi) . "!");    // @codeCoverageIgnore
   return NULL;                                                                       // @codeCoverageIgnore
 }
