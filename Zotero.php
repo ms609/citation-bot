@@ -63,7 +63,7 @@ public static function create_ch_zotero() : void { // Called below at end of fil
         CURLOPT_USERAGENT => BOT_USER_AGENT]);
    
   self::$ch_dx = curl_init();
-  curl_setopt_array($ch_dx,
+  curl_setopt_array(self::$ch_dx,
         [CURLOPT_FOLLOWLOCATION => TRUE,
          CURLOPT_MAXREDIRS => 20, // No infinite loops for us, 20 for Elsivier and Springer websites
          CURLOPT_CONNECTTIMEOUT =>  4, 
@@ -73,7 +73,7 @@ public static function create_ch_zotero() : void { // Called below at end of fil
          CURLOPT_USERAGENT => BOT_USER_AGENT]);
 
   self::$ch_pmc = curl_init();
-  curl_setopt_array($ch_pmc,
+  curl_setopt_array(self::$ch_pmc,
         [CURLOPT_RETURNTRANSFER => TRUE,
          CURLOPT_TIMEOUT => 15,
          CURLOPT_USERAGENT => BOT_USER_AGENT]);
@@ -269,7 +269,7 @@ public static function drop_urls_that_match_dois(array &$templates) : void {  //
           curl_setopt(self::$ch_dx, CURLOPT_URL, "https://dx.doi.org/" . doi_encode($doi));
           $ch_return = (string) @curl_exec(self::$ch_dx);
           if (strlen($ch_return) > 50) { // Avoid bogus tiny pages
-            $redirectedUrl_doi = curl_getinfo($ch_dx, CURLINFO_EFFECTIVE_URL);  // Final URL
+            $redirectedUrl_doi = curl_getinfo(self::$ch_dx, CURLINFO_EFFECTIVE_URL);  // Final URL
             if (stripos($redirectedUrl_doi, 'cookie') !== FALSE) break;
             if (stripos($redirectedUrl_doi, 'denied') !== FALSE) break;
             $redirectedUrl_doi = self::url_simplify($redirectedUrl_doi);
