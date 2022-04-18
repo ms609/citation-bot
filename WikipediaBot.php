@@ -305,7 +305,7 @@ final class WikipediaBot {
     ];
     
     do {
-      $res = self::QueryAPIPost($vars);
+      $res = self::QueryAPI($vars, 'POST');
       $res = @json_decode($res);
       if (isset($res->query->categorymembers)) {
         foreach ($res->query->categorymembers as $page) {
@@ -331,7 +331,7 @@ final class WikipediaBot {
         "action" => "query",
         "prop" => "revisions",
         "titles" => $page,
-      ]);
+      ], 'GET');
     $res = @json_decode($res);
     if (!isset($res->query->pages)) {
         report_minor_error("Failed to get article's last revision");      // @codeCoverageIgnore
@@ -347,7 +347,7 @@ final class WikipediaBot {
         "action" => "query",
         "prop" => "info",
         "titles" => $page,
-        ]);
+        ], 'GET');
     $res = @json_decode($res);
     if (!isset($res->query->pages)) {
         report_warning("Failed to get redirect status");    // @codeCoverageIgnore
@@ -361,7 +361,7 @@ final class WikipediaBot {
         "action" => "query",
         "redirects" => "1",
         "titles" => $page,
-        ]);
+        ], 'GET');
     $res = @json_decode($res);
     if (!isset($res->query->redirects[0]->to)) {
         report_warning("Failed to get redirect target");     // @codeCoverageIgnore
@@ -370,46 +370,48 @@ final class WikipediaBot {
     return (string) $res->query->redirects[0]->to;
   }
   
-  static private function QueryAPI(array $params) : string {
+  static private function QueryAPI(array $params, string $method) : string {
     $params['format'] = 'json';
     $ch = curl_init();
-    curl_setopt_array($ch, [
-        CURLOPT_HTTPGET => TRUE,
-        CURLOPT_FAILONERROR => TRUE,
-        CURLOPT_FOLLOWLOCATION => TRUE,
-        CURLOPT_MAXREDIRS => 5,
-        CURLOPT_HEADER => 0,
-        CURLOPT_RETURNTRANSFER => TRUE,
-        CURLOPT_CONNECTTIMEOUT => 15,
-        CURLOPT_TIMEOUT => 20,
-        CURLOPT_COOKIESESSION => TRUE,
-        CURLOPT_COOKIEFILE => 'cookie.txt',
-        CURLOPT_USERAGENT => BOT_USER_AGENT,
-        CURLOPT_URL => API_ROOT . '?' . http_build_query($params)
+      switch ($method) {
+        case 'GET':        
+          curl_setopt_array($ch, [
+                CURLOPT_HTTPGET => TRUE,
+                CURLOPT_FAILONERROR => TRUE,
+                CURLOPT_FOLLOWLOCATION => TRUE,
+                CURLOPT_MAXREDIRS => 5,
+                CURLOPT_HEADER => 0,
+                CURLOPT_RETURNTRANSFER => TRUE,
+                CURLOPT_CONNECTTIMEOUT => 15,
+                CURLOPT_TIMEOUT => 20,
+                CURLOPT_COOKIESESSION => TRUE,
+                CURLOPT_COOKIEFILE => 'cookie.txt',
+                CURLOPT_USERAGENT => BOT_USER_AGENT,
+                CURLOPT_URL => API_ROOT . '?' . http_build_query($params)
+                  ]);
+          break;
+
+        case 'POST':
+            curl_setopt_array($ch, [
+                CURLOPT_POST => TRUE,
+                CURLOPT_FAILONERROR => TRUE,
+                CURLOPT_FOLLOWLOCATION => TRUE,
+                CURLOPT_MAXREDIRS => 5,
+                CURLOPT_HEADER => 0,
+                CURLOPT_RETURNTRANSFER => TRUE,
+                CURLOPT_CONNECTTIMEOUT => 15,
+                CURLOPT_TIMEOUT => 20,
+                CURLOPT_COOKIESESSION => TRUE,
+                CURLOPT_COOKIEFILE => 'cookie.txt',
+                CURLOPT_USERAGENT => BOT_USER_AGENT,
+                CURLOPT_POSTFIELDS => http_build_query($params),
+                CURLOPT_URL => API_ROOT
           ]);
-    $data = (string) @curl_exec($ch);
-    curl_close($ch);
-    return $data;
-  }
-  
-  static private function QueryAPIPost(array $params) : string {
-    $params['format'] = 'json';
-    $ch = curl_init();
-    curl_setopt_array($ch, [
-        CURLOPT_POST => TRUE,
-        CURLOPT_FAILONERROR => TRUE,
-        CURLOPT_FOLLOWLOCATION => TRUE,
-        CURLOPT_MAXREDIRS => 5,
-        CURLOPT_HEADER => 0,
-        CURLOPT_RETURNTRANSFER => TRUE,
-        CURLOPT_CONNECTTIMEOUT => 15,
-        CURLOPT_TIMEOUT => 20,
-        CURLOPT_COOKIESESSION => TRUE,
-        CURLOPT_COOKIEFILE => 'cookie.txt',
-        CURLOPT_USERAGENT => BOT_USER_AGENT,
-        CURLOPT_POSTFIELDS => http_build_query($params),
-        CURLOPT_URL => API_ROOT
-          ]);
+          break;
+
+        default:
+          report_error("Unrecognized method in QueryAPI: " . $method); // @codeCoverageIgnore
+      }
     $data = (string) @curl_exec($ch);
     curl_close($ch);
     return $data;
@@ -422,12 +424,12 @@ final class WikipediaBot {
             'titles'=> $title, 
             'curtimestamp'=>'true', 
             'inprop' => 'protection', 
-          ]);
+          ], 'GET');
     return @json_decode($details);
   }
   
   static public function get_links(string $title) : string {
-     return self::QueryAPI(['action' => 'parse', 'prop' => 'links', 'page' => $title]);
+     return self::QueryAPI(['action' => 'parse', 'prop' => 'links', 'page' => $title], 'GET');
   }
   
   static public function GetAPage(string $title) : string {
@@ -454,10 +456,10 @@ final class WikipediaBot {
          "list" => "users",
          "ususers" => urlencode(str_replace(" ", "_", $user)),
       ];
-    $response = self::QueryAPI($query);
+    $response = self::QueryAPI($query, 'GET');
     if ($response === NULL || (strpos($response, '"userid"')  === FALSE)) { // try again if weird
       sleep(5);
-      $response = self::QueryAPI($query);
+      $response = self::QueryAPI($query, 'GET');
     }
     if ($response == '') return FALSE;
     $response = str_replace(array("\r", "\n"), '', $response);  // paranoid
