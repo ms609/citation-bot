@@ -93,7 +93,7 @@ final class WikipediaBot {
     if (isset($response->error)) {
       // @codeCoverageIgnoreStart
       if ((string) $response->error->code == 'blocked') { // Travis CI IPs are blocked, even to logged in users.
-        report_error('Account "' dfafsdsfasd. $this->bot_account_name() .  '" or this IP is blocked from editing.');
+        report_error('Bot account or this IP is blocked from editing.');
       } elseif (strpos((string) $response->error->info, 'The database has been automatically locked') !== FALSE) {
         report_minor_error('Wikipedia database Locked.  Aborting changes for this page.  Will sleep and move on.');
         sleep(10);
