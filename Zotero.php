@@ -15,10 +15,9 @@ final class Zotero {
   private const ZOTERO_SKIPS = 100;
   private const ERROR_DONE = 'ERROR_DONE'; 
   protected static int $zotero_announced = 0;
-  protected static ?CurlHandle $zotero_ch;
-  protected static int $zotero_failures_count = 0;
-  protected static int $zotero_announced = 0;
+
   protected static ?CurlHandle $zotero_ch, $ch_ieee, $ch_jstor, $ch_dx, $ch_pmc;
+  protected static int $zotero_failures_count = 0;
 
 public static function create_ch_zotero() : void { // Called below at end of file
   /** @phan-suppress-next-line PhanRedundantCondition */
