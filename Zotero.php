@@ -19,7 +19,7 @@ final class Zotero {
   protected static $zotero_ch, $ch_ieee, $ch_jstor;
   protected static $zotero_failures_count = 0;
 
-private static function create_ch_zotero() : void { // Called below at end of file
+public static function create_ch_zotero() : void { // Called below at end of file
   /** @phan-suppress-next-line PhanRedundantCondition */
   self::$zotero_ch = curl_init();
   if ( USE_CITOID ) {
@@ -848,7 +848,7 @@ public static function url_simplify(string $url) : string {
   return $url;
 }
 
-private static function find_indentifiers_in_urls(Template $template, ?string $url_sent = NULL) : bool {
+public static function find_indentifiers_in_urls(Template $template, ?string $url_sent = NULL) : bool {
     set_time_limit(120);
     $matches = ['', '']; // prevent memory leak in some PHP versions
     $bibcode = ['', '']; // prevent memory leak in some PHP versions
@@ -1046,7 +1046,7 @@ private static function find_indentifiers_in_urls(Template $template, ?string $u
                             [CURLOPT_URL => 'https://www.jstor.org/citation/ris/' . $matches[1],
                              CURLOPT_HEADER => 0,
                              CURLOPT_NOBODY => 0]);
-          $dat = (string) @curl_exec($ch_jstor);
+          $dat = (string) @curl_exec(self::$ch_jstor);
           if ($dat &&
               stripos($dat, 'No RIS data found for') === FALSE &&
               stripos($dat, 'Block Reference') === FALSE &&
