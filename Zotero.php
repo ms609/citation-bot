@@ -15,8 +15,8 @@ final class Zotero {
   private const ZOTERO_SKIPS = 100;
   private const ERROR_DONE = 'ERROR_DONE'; 
   protected static $zotero_announced = 0;
-  /** @var resource|null $zotero_ch, $ch_ieee, $ch_jstor */
-  protected static $zotero_ch, $ch_ieee, $ch_jstor;
+  /** @var resource|null $zotero_ch, $ch_ieee, $ch_jstor, $ch_dx, $ch_pmc */
+  protected static $zotero_ch, $ch_ieee, $ch_jstor, $ch_dx, $ch_pmc;
   protected static $zotero_failures_count = 0;
 
 public static function create_ch_zotero() : void { // Called below at end of file
@@ -61,6 +61,22 @@ public static function create_ch_zotero() : void { // Called below at end of fil
        [CURLOPT_RETURNTRANSFER => 1,
         CURLOPT_TIMEOUT => 15,
         CURLOPT_USERAGENT => BOT_USER_AGENT]);
+   
+  self::$ch_dx = curl_init();
+  curl_setopt_array($ch_dx,
+        [CURLOPT_FOLLOWLOCATION => TRUE,
+         CURLOPT_MAXREDIRS => 20, // No infinite loops for us, 20 for Elsivier and Springer websites
+         CURLOPT_CONNECTTIMEOUT =>  4, 
+         CURLOPT_TIMEOUT => 20,
+         CURLOPT_RETURNTRANSFER => TRUE,
+         CURLOPT_AUTOREFERER => TRUE,
+         CURLOPT_USERAGENT => BOT_USER_AGENT]);
+
+  self::$ch_pmc = curl_init();
+  curl_setopt_array($ch_pmc,
+        [CURLOPT_RETURNTRANSFER => TRUE,
+         CURLOPT_TIMEOUT => 15,
+         CURLOPT_USERAGENT => BOT_USER_AGENT]);
 }
 
 public static function block_zotero() : void {
@@ -173,7 +189,6 @@ public static function drop_urls_that_match_dois(array &$templates) : void {  //
          CURLOPT_CONNECTTIMEOUT =>  4, 
          CURLOPT_TIMEOUT => 20,
          CURLOPT_RETURNTRANSFER => TRUE,
-         CURLOPT_COOKIEFILE => 'cookie.txt',
          CURLOPT_AUTOREFERER => TRUE,
          CURLOPT_USERAGENT => BOT_USER_AGENT]);
   foreach ($templates as $template) {
@@ -251,10 +266,10 @@ public static function drop_urls_that_match_dois(array &$templates) : void {  //
           report_forget("Existing canonical URL resulting in equivalent free DOI/pmc; dropping URL");
           $template->forget($url_kind);  
        } elseif (stripos($url, 'pdf') === FALSE && $template->get('doi-access') === 'free' && $template->has('pmc')) {
-          curl_setopt($ch, CURLOPT_URL, "https://dx.doi.org/" . doi_encode($doi));
-          $ch_return = (string) @curl_exec($ch);
+          curl_setopt(self::$ch_dx, CURLOPT_URL, "https://dx.doi.org/" . doi_encode($doi));
+          $ch_return = (string) @curl_exec(self::$ch_dx);
           if (strlen($ch_return) > 50) { // Avoid bogus tiny pages
-            $redirectedUrl_doi = curl_getinfo($ch, CURLINFO_EFFECTIVE_URL);  // Final URL
+            $redirectedUrl_doi = curl_getinfo($ch_dx, CURLINFO_EFFECTIVE_URL);  // Final URL
             if (stripos($redirectedUrl_doi, 'cookie') !== FALSE) break;
             if (stripos($redirectedUrl_doi, 'denied') !== FALSE) break;
             $redirectedUrl_doi = self::url_simplify($redirectedUrl_doi);
@@ -1227,15 +1242,9 @@ public static function find_indentifiers_in_urls(Template $template, ?string $ur
         if (is_null($url_sent)) {
           if (stripos($url, ".pdf") !== FALSE) {
             $test_url = "https://www.ncbi.nlm.nih.gov/pmc/articles/PMC" . $match[1] . $match[2] . "/";
-            $ch = curl_init();
-            curl_setopt_array($ch,
-                      [CURLOPT_RETURNTRANSFER => TRUE,
-                       CURLOPT_TIMEOUT => 15,
-                       CURLOPT_URL => $test_url,
-                       CURLOPT_USERAGENT => BOT_USER_AGENT]);
-            @curl_exec($ch);
-            $httpCode = (int) @curl_getinfo($ch, CURLINFO_HTTP_CODE);
-            curl_close($ch);
+            curl_setopt_array(self::$ch_pmc, [CURLOPT_URL => $test_url]);
+            @curl_exec(self::$ch_pmc);
+            $httpCode = (int) @curl_getinfo(self::$ch_pmc, CURLINFO_HTTP_CODE);
             if ($httpCode == 404) { // Some PMCs do NOT resolve.  So leave URL
               return $template->add_if_new('pmc', $match[1] . $match[2]);
             }
