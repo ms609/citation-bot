@@ -3965,7 +3965,7 @@ final class Template {
               curl_setopt_array($this::$ch_jstor,
                        [CURLOPT_RETURNTRANSFER => TRUE,
                         CURLOPT_TIMEOUT => 25,
-                        CURLOP_URL => $test_url,
+                        CURLOPT_URL => $test_url,
                         CURLOPT_USERAGENT => BOT_USER_AGENT]);
               @curl_exec($this::$ch_jstor);
               $httpCode = (int) @curl_getinfo($this::$ch_jstor, CURLINFO_HTTP_CODE);
