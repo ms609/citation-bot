@@ -18,7 +18,7 @@ final class WikipediaBot {
   private Consumer $user_consumer;
   private Client $user_client;
   private Token $user_token;
-  private CurlHandle $ch;
+  private static CurlHandle $ch;
   private string $the_user = '';
   private static ?self $last_WikipediaBot; // For NonStandardMode()
   
