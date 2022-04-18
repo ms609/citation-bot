@@ -51,13 +51,22 @@ final class Template {
                'jstor'    => array(),
                'zotero'   => array(),
             );
+  protected static $ch_adsabs, $ch_paywall, $ch_google, $ch_jstor, $ch_proquest;
 
   function __construct() {
-     ;  // All the real construction is done in parse_text() and above in variable initialization
+    if (!isset($this::$ch_adsabs)) {
+      $this::$ch_adsabs = curl_init();
+      $this::$ch_paywall = curl_init();
+      $this::$ch_google = curl_init();
+      $this::$ch_jstor = curl_init();
+      $this::$ch_proquest = curl_init();
+    }
+    ; // All the real construction is done in parse_text() and above in variable initialization
   }
 
   public function parse_text(string $text) : void {
     set_time_limit(120);
+    
     $spacing = ['', '']; // prevent memory leak in some PHP versions
     if (isset($this->rawtext)) {
         report_error("Template already initialized; call new Template() before calling Template::parse_text()"); // @codeCoverageIgnore
@@ -2174,42 +2183,39 @@ final class Template {
     if (!PHP_ADSABSAPIKEY) return (object) array('numFound' => 0);
 
     try {
-      $ch = curl_init();
       /** @psalm-suppress RedundantCondition */ /* PSALM thinks TRAVIS cannot be FALSE */
       $adsabs_url = "https://" . (TRAVIS ? 'qa' : 'api')
                   . ".adsabs.harvard.edu/v1/search/query"
                   . "?q=$options&fl=arxiv_class,author,bibcode,doi,doctype,identifier,"
                   . "issue,page,pub,pubdate,title,volume,year";
-      curl_setopt_array($ch,
+      curl_setopt_array($this::$ch_adsabs,
                [CURLOPT_HTTPHEADER => ['Authorization: Bearer ' . PHP_ADSABSAPIKEY],
                 CURLOPT_RETURNTRANSFER => TRUE,
                 CURLOPT_HEADER => TRUE,
                 CURLOPT_TIMEOUT => 20,
                 CURLOPT_USERAGENT => BOT_USER_AGENT,
                 CURLOPT_URL => $adsabs_url]);
-      $return = (string) @curl_exec($ch);
-      if (502 === curl_getinfo($ch, CURLINFO_HTTP_CODE)) {
+      $return = (string) @curl_exec($this::$ch_adsabs);
+      if (502 === curl_getinfo($this::$ch_adsabs, CURLINFO_HTTP_CODE)) {
         // @codeCoverageIgnoreStart
         sleep(4);
-        $return = (string) @curl_exec($ch);
-        if (502 === curl_getinfo($ch, CURLINFO_HTTP_CODE) && TRAVIS) {
+        $return = (string) @curl_exec($this::$ch_adsabs);
+        if (502 === curl_getinfo($this::$ch_adsabs, CURLINFO_HTTP_CODE) && TRAVIS) {
            sleep(20); // better slow than not at all
-           $return = (string) @curl_exec($ch);
+           $return = (string) @curl_exec($this::$ch_adsabs);
         }
         // @codeCoverageIgnoreEnd
       }
       if ($return == "") {
         // @codeCoverageIgnoreStart
-        $exception = curl_error($ch);
-        $number = curl_errno($ch);
-        curl_close($ch);
+        $exception = curl_error($this::$ch_adsabs);
+        $number = curl_errno($this::$ch_adsabs);
         throw new Exception($exception, $number);
         // @codeCoverageIgnoreEnd
       }
-      $http_response = (int) @curl_getinfo($ch, CURLINFO_HTTP_CODE);
-      $header_length = (int) @curl_getinfo($ch, CURLINFO_HEADER_SIZE);
+      $http_response = (int) @curl_getinfo($this::$ch_adsabs, CURLINFO_HTTP_CODE);
+      $header_length = (int) @curl_getinfo($this::$ch_adsabs, CURLINFO_HEADER_SIZE);
       if ($http_response == 0 || $header_length == 0) throw new Exception('Size of zero from website');
-      curl_close($ch);
       $header = substr($return, 0, $header_length);
       $body = substr($return, $header_length);
       $decoded = @json_decode($body);
@@ -2488,15 +2494,13 @@ final class Template {
     $match = ['', '']; // prevent memory leak in some PHP versions
     $matches = ['', '']; // prevent memory leak in some PHP versions
     $url = "https://api.unpaywall.org/v2/$doi?email=" . CROSSREFUSERNAME;
-    $ch = curl_init();
-    curl_setopt_array($ch,
+    curl_setopt_array($this::$ch_paywall,
             [CURLOPT_HEADER => 0,
              CURLOPT_RETURNTRANSFER => 1,
              CURLOPT_URL => $url,
              CURLOPT_TIMEOUT => 10,
              CURLOPT_USERAGENT => BOT_USER_AGENT]);
-    $json = (string) @curl_exec($ch);
-    curl_close($ch);
+    $json = (string) @curl_exec($this::$ch_paywall);
     if ($json) {
       $oa = @json_decode($json);
       if ($oa !== FALSE && isset($oa->best_oa_location)) {
@@ -2709,15 +2713,13 @@ final class Template {
       }
       if ($isbn) {  // Try Books.Google.Com
         $google_book_url = 'https://www.google.com/search?tbo=p&tbm=bks&q=isbn:' . $isbn;
-        $ch = curl_init();
-        curl_setopt_array($ch,
+        curl_setopt_array($this::$ch_google,
                    [CURLOPT_USERAGENT => BOT_USER_AGENT,
                     CURLOPT_HEADER => 0,
                     CURLOPT_RETURNTRANSFER => 1,
                     CURLOPT_TIMEOUT => 15,
                     CURLOPT_URL => $google_book_url]);
-        $google_content = (string) @curl_exec($ch);
-        curl_close($ch);
+        $google_content = (string) @curl_exec($this::$ch_google);
         if ($google_content && preg_match_all('~[Bb]ooks\.[Gg]oogle\.com/books\?id=(............)&amp~', $google_content, $google_results)) {
           $google_results = $google_results[1];
           $google_results = array_unique($google_results);
@@ -2913,15 +2915,13 @@ final class Template {
     set_time_limit(120);
     $match = ['', '']; // prevent memory leak in some PHP versions
     $google_book_url = "https://books.google.com/books/feeds/volumes/" . $gid;
-    $ch = curl_init();
-    curl_setopt_array($ch,
+    curl_setopt_array($this::$ch_google,
            [CURLOPT_USERAGENT => BOT_USER_AGENT,
             CURLOPT_HEADER => 0,
             CURLOPT_RETURNTRANSFER => 1,
             CURLOPT_TIMEOUT => 15,
             CURLOPT_URL => $google_book_url]);
-    $data = (string) @curl_exec($ch);
-    curl_close($ch);
+    $data = (string) @curl_exec($this::$ch_google);
     if ($data == '') return FALSE;
     $simplified_xml = str_replace('http___//www.w3.org/2005/Atom', 'http://www.w3.org/2005/Atom',
       str_replace(":", "___", $data));
@@ -3962,14 +3962,13 @@ final class Template {
             $this->forget('doi');
             if ($this->blank('url')) {
               $test_url = 'https://plants.jstor.org/stable/' . $doi;
-              $ch = curl_init($test_url);
-              curl_setopt_array($ch,
+              curl_setopt_array($this::$ch_jstor,
                        [CURLOPT_RETURNTRANSFER => TRUE,
                         CURLOPT_TIMEOUT => 25,
+                        CURLOP_URL => $test_url,
                         CURLOPT_USERAGENT => BOT_USER_AGENT]);
-              @curl_exec($ch);
-              $httpCode = (int) @curl_getinfo($ch, CURLINFO_HTTP_CODE);
-              curl_close($ch);
+              @curl_exec($this::$ch_jstor);
+              $httpCode = (int) @curl_getinfo($this::$ch_jstor, CURLINFO_HTTP_CODE);
               if ($httpCode == 200) $this->add_if_new('url', $test_url);
             }
             return;
@@ -5673,18 +5672,16 @@ final class Template {
                  $this->set($param, 'https://www.proquest.com/docview/' . $matches[1]); // User specific information
             }
             if (preg_match("~^https?://proquest\.umi\.com/.*$~", $this->get($param), $matches)) {
-                 $ch = curl_init();
-                 curl_setopt_array($ch,
+                 curl_setopt_array($this::$ch_proquest,
                          [CURLOPT_FOLLOWLOCATION => TRUE,
                           CURLOPT_MAXREDIRS => 20,
                           CURLOPT_CONNECTTIMEOUT => 8,
                           CURLOPT_TIMEOUT => 25,
                           CURLOPT_RETURNTRANSFER => TRUE,
-                          CURLOPT_COOKIEFILE => 'cookie.txt',
                           CURLOPT_USERAGENT => BOT_USER_AGENT,
                           CURLOPT_URL => $matches[0]]);
-                 if (@curl_exec($ch)) {
-                    $redirectedUrl = (string) @curl_getinfo($ch, CURLINFO_EFFECTIVE_URL);  // Final URL
+                 if (@curl_exec($this::$ch_proquest)) {
+                    $redirectedUrl = (string) @curl_getinfo($this::$ch_proquest, CURLINFO_EFFECTIVE_URL);  // Final URL
                     if (preg_match("~^https?://.+(\.proquest\.com/docview/\d{4,})(?:|/abstract.*|/fulltext.*|/preview.*)$~", $redirectedUrl, $matches) ||
                         preg_match("~^https?://.+(\.proquest\.com/openurl/handler/.+)$~", $redirectedUrl, $matches)) {
                        $changed = TRUE;
@@ -5696,7 +5693,6 @@ final class Template {
                        $this->forget($param);
                     }
                  }
-                 curl_close($ch);
             }
             if (preg_match("~^(.+)/se-./?$~", $this->get($param), $matches)) {
               $this->set($param, $matches[1]);
@@ -7465,3 +7461,4 @@ final class Template {
      $this->parse_text($tmp);
   }
 }
+
