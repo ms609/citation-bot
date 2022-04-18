@@ -275,6 +275,8 @@ function arxiv_api(array $ids, array &$templates) : bool {  // Pointer to save m
 }
 
 function adsabs_api(array $ids, array &$templates, string $identifier) : bool {  // Pointer to save memory
+  static $ch;
+  if ($isset($ch)) $ch = curl_init();
   set_time_limit(120);
   $rate_limit = [['', '', ''], ['', '', ''], ['', '', '']]; // prevent memory leak in some PHP versions
   if (AdsAbsControl::gave_up_yet()) return FALSE;
@@ -325,7 +327,6 @@ function adsabs_api(array $ids, array &$templates, string $identifier) : bool { 
   
   try {
     report_action("Expanding from BibCodes via AdsAbs API");
-    $ch = curl_init();
     curl_setopt_array($ch,
              [CURLOPT_URL => $adsabs_url,
               CURLOPT_TIMEOUT => 20,
@@ -340,13 +341,11 @@ function adsabs_api(array $ids, array &$templates, string $identifier) : bool { 
       // @codeCoverageIgnoreStart
       $error = curl_error($ch);
       $errno = curl_errno($ch);
-      curl_close($ch);
       throw new Exception($error, $errno);
       // @codeCoverageIgnoreEnd
     } 
     $http_response = (int) @curl_getinfo($ch, CURLINFO_HTTP_CODE);
     $header_length = (int) @curl_getinfo($ch, CURLINFO_HEADER_SIZE);
-    curl_close($ch);
     if ($http_response == 0 || $header_length ==0) throw new Exception('Size of zero received');
     $header = substr($return, 0, $header_length);
     $body = substr($return, $header_length);
@@ -417,7 +416,6 @@ function adsabs_api(array $ids, array &$templates, string $identifier) : bool { 
       report_warning(sprintf("Error %d in adsabs_api: %s",
                     $e->getCode(), $e->getMessage()));
     }
-    @curl_close($ch); // Some code paths have it closed, others do not
     return TRUE;
   }
   // @codeCoverageIgnoreEnd
@@ -655,11 +653,12 @@ function expand_by_doi(Template $template, bool $force = FALSE) : bool {
 }
 
 function query_crossref(string $doi) : ?object {
+  static $ch;
+  if ($isset($ch)) $ch = curl_init();
   if (strpos($doi, '10.2307') === 0) return NULL; // jstor API is better
   set_time_limit(120);
   $doi = str_replace(DOI_URL_DECODE, DOI_URL_ENCODE, $doi);
   $url = "https://www.crossref.org/openurl/?pid=" . CROSSREFUSERNAME . "&id=doi:$doi&noredirect=TRUE";
-  $ch = curl_init();
   curl_setopt_array($ch,
             [CURLOPT_HEADER => 0,
              CURLOPT_RETURNTRANSFER =>  1,
@@ -679,7 +678,6 @@ function query_crossref(string $doi) : ?object {
           $raw_xml);
     $xml = @simplexml_load_string($raw_xml);
     if (is_object($xml) && isset($xml->query_result->body->query)) {
-      curl_close($ch);
       $result = $xml->query_result->body->query;
       if ((string) @$result["status"] == "resolved") {
         return $result;
@@ -690,13 +688,14 @@ function query_crossref(string $doi) : ?object {
       sleep(1);              // @codeCoverageIgnore
       // Keep trying...
     }
-  }
-  curl_close($ch);                                                                   // @codeCoverageIgnore
+  }                                                                 // @codeCoverageIgnore
   report_warning("Error loading CrossRef file from DOI " . echoable($doi) . "!");    // @codeCoverageIgnore
   return NULL;                                                                       // @codeCoverageIgnore
 }
 
 function expand_doi_with_dx(Template $template, string $doi) : bool {
+     static $ch;
+     if ($isset($ch)) $ch = curl_init();
      // See https://crosscite.org/docs.html for discussion of API we are using -- not all agencies resolve the same way
      // https://api.crossref.org/works/$doi can be used to find out the agency
      // https://www.doi.org/registration_agencies.html  https://www.doi.org/RA_Coverage.html List of all ten doi granting agencies - many do not do journals
@@ -718,7 +717,6 @@ function expand_doi_with_dx(Template $template, string $doi) : bool {
        return $template->add_if_new($name, (string) $data, 'dx');
      };
      if (!$doi) return FALSE;
-     $ch = curl_init();
      curl_setopt_array($ch,
              [CURLOPT_USERAGENT => BOT_USER_AGENT,
               CURLOPT_URL => 'https://doi.org/' . $doi,
@@ -730,11 +728,9 @@ function expand_doi_with_dx(Template $template, string $doi) : bool {
      try {
        $data = (string) @curl_exec($ch);
      } catch (Exception $e) {                    // @codeCoverageIgnoreStart
-       curl_close($ch);
        $template->mark_inactive_doi();
        return FALSE;
      }                                           // @codeCoverageIgnoreEnd
-     curl_close($ch);
      if ($data == "" || stripos($data, 'DOI Not Found') !== FALSE || stripos($data, 'DOI prefix') !== FALSE) {
        $template->mark_inactive_doi();
        return FALSE;
@@ -827,6 +823,8 @@ function expand_doi_with_dx(Template $template, string $doi) : bool {
 }
 
 function expand_by_jstor(Template $template) : bool {
+  static $ch;
+  if ($isset($ch)) $ch = curl_init();
   set_time_limit(120);
   $match = ['', '']; // prevent memory leak in some PHP versions
   if ($template->incomplete() === FALSE) return FALSE;
@@ -843,7 +841,6 @@ function expand_by_jstor(Template $template) : bool {
   $jstor = trim($jstor);
   if (strpos($jstor, ' ') !== FALSE) return FALSE ; // Comment/template found
   if (substr($jstor, 0, 1) === 'i') return FALSE ; // We do not want i12342 kind
-  $ch = curl_init();
   curl_setopt_array($ch,
            [CURLOPT_HEADER => 0,
             CURLOPT_RETURNTRANSFER => 1,
@@ -851,7 +848,6 @@ function expand_by_jstor(Template $template) : bool {
             CURLOPT_URL => 'https://www.jstor.org/citation/ris/' . $jstor,
             CURLOPT_USERAGENT => BOT_USER_AGENT]);
   $dat = (string) @curl_exec($ch);
-  curl_close($ch);
   if ($dat == '') {
     report_info("JSTOR API returned nothing for ". jstor_link($jstor));     // @codeCoverageIgnore
     return FALSE;                                                           // @codeCoverageIgnore
@@ -1162,9 +1158,10 @@ function get_semanticscholar_license(string $s2cid) : ?bool {
 }
 
 function expand_templates_from_archives(array &$templates) : void { // This is done very late as a latch ditch effort  // Pointer to save memory
+  static $ch;
+  if ($isset($ch)) $ch = curl_init();
   set_time_limit(120);
   $match = ['', '']; // prevent memory leak in some PHP versions
-  $ch = curl_init();
   curl_setopt_array($ch,
           [CURLOPT_HEADER => 0,
            CURLOPT_RETURNTRANSFER => 1,
@@ -1196,6 +1193,5 @@ function expand_templates_from_archives(array &$templates) : void { // This is d
       }
     }
   }
-  curl_close($ch);
 }
 
