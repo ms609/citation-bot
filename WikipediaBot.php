@@ -13,7 +13,7 @@ require_once 'constants.php';      // @codeCoverageIgnore
 
 final class WikipediaBot {
 
-  private  $bot_consumer;
+  private Consumer $bot_consumer;
   private Token $bot_token;
   private Consumer $user_consumer;
   private Client $user_client;
