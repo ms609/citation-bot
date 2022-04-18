@@ -85,7 +85,7 @@ final class WikipediaBot {
     return $this->the_user;
   }
   
-  private function ret_okay(?object $response) : bool {
+  private static function ret_okay(?object $response) : bool {
     if (is_null($response)) {
       report_minor_error('Wikipedia responce was not decoded.');  // @codeCoverageIgnore
       return FALSE;                                               // @codeCoverageIgnore
@@ -115,6 +115,18 @@ final class WikipediaBot {
     return TRUE;
   }
   
+  private function MakeHeader(boolean $editing) : string {
+    $token = $this->bot_token;
+    $consumer = $this->bot_consumer;
+    if (defined('EDIT_AS_USER') && $editing) {
+       $token = $this->user_token;
+       $consumer = $this->user_consumer;
+    }
+    $request = Request::fromConsumerAndToken($consumer, $token, $method, API_ROOT, $params);
+    $request->signRequest(new HmacSha1(), $consumer, $token);
+    $authenticationHeader = $request->toHeader();
+  }
+  
   /** @phpstan-impure **/
   private function fetch(array $params, string $method, int $depth = 1) : ?object {
     set_time_limit(120);
@@ -122,15 +134,7 @@ final class WikipediaBot {
     if ($depth > 4) return NULL;
     $params['format'] = 'json';
 
-    $token = $this->bot_token;
-    $consumer = $this->bot_consumer;
-    if (defined('EDIT_AS_USER') && ($params["action"] === "edit")) {
-       $token = $this->user_token;
-       $consumer = $this->user_consumer;
-    }
-    $request = Request::fromConsumerAndToken($consumer, $token, $method, API_ROOT, $params);
-    $request->signRequest(new HmacSha1(), $consumer, $token);
-    $authenticationHeader = $request->toHeader();
+    $authenticationHeader = $this->MakeHeader((@$params["action"] === "edit"));
     
     try {
       switch ($method) {
@@ -172,7 +176,7 @@ final class WikipediaBot {
         return $this->fetch($params, $method, $depth+1);
         // @codeCoverageIgnoreEnd
       }
-      return ($this->ret_okay($ret)) ? $ret : NULL;
+      return (self::ret_okay($ret)) ? $ret : NULL;
     } catch(Exception $E) {
       report_warning("Exception caught!\n");
       report_info("Response: ". $E->getMessage());
@@ -310,7 +314,7 @@ final class WikipediaBot {
     ];
     
     do {
-      $res = self::QueryAPIPost($vars);
+      $res = self::QueryAPI($vars, 'POST');
       $res = @json_decode($res);
       if (isset($res->query->categorymembers)) {
         foreach ($res->query->categorymembers as $page) {
@@ -336,7 +340,7 @@ final class WikipediaBot {
         "action" => "query",
         "prop" => "revisions",
         "titles" => $page,
-      ]);
+      ], 'GET');
     $res = @json_decode($res);
     if (!isset($res->query->pages)) {
         report_minor_error("Failed to get article's last revision");      // @codeCoverageIgnore
@@ -352,7 +356,7 @@ final class WikipediaBot {
         "action" => "query",
         "prop" => "info",
         "titles" => $page,
-        ]);
+        ], 'GET');
     $res = @json_decode($res);
     if (!isset($res->query->pages)) {
         report_warning("Failed to get redirect status");    // @codeCoverageIgnore
@@ -366,7 +370,7 @@ final class WikipediaBot {
         "action" => "query",
         "redirects" => "1",
         "titles" => $page,
-        ]);
+        ], 'GET');
     $res = @json_decode($res);
     if (!isset($res->query->redirects[0]->to)) {
         report_warning("Failed to get redirect target");     // @codeCoverageIgnore
@@ -375,10 +379,13 @@ final class WikipediaBot {
     return (string) $res->query->redirects[0]->to;
   }
   
-  static private function QueryAPI(array $params) : string {
+  static private function QueryAPI(array $params, string $method) : string {
     $params['format'] = 'json';
     $ch = curl_init();
-    curl_setopt_array($ch, [
+    try {
+      switch ($method) {
+        case 'GET':        
+        curl_setopt_array($ch, [
         CURLOPT_HTTPGET => TRUE,
         CURLOPT_FAILONERROR => TRUE,
         CURLOPT_FOLLOWLOCATION => TRUE,
@@ -392,15 +399,10 @@ final class WikipediaBot {
         CURLOPT_USERAGENT => BOT_USER_AGENT,
         CURLOPT_URL => API_ROOT . '?' . http_build_query($params)
           ]);
-    $data = (string) @curl_exec($ch);
-    curl_close($ch);
-    return $data;
-  }
-  
-  static private function QueryAPIPost(array $params) : string {
-    $params['format'] = 'json';
-    $ch = curl_init();
-    curl_setopt_array($ch, [
+          break;
+
+        case 'POST':
+        curl_setopt_array($ch, [
         CURLOPT_POST => TRUE,
         CURLOPT_FAILONERROR => TRUE,
         CURLOPT_FOLLOWLOCATION => TRUE,
@@ -415,6 +417,11 @@ final class WikipediaBot {
         CURLOPT_POSTFIELDS => http_build_query($params),
         CURLOPT_URL => API_ROOT
           ]);
+          break;
+
+        default:
+          report_error("Unrecognized method in QueryAPI: " . $method); // @codeCoverageIgnore
+      }
     $data = (string) @curl_exec($ch);
     curl_close($ch);
     return $data;
@@ -427,12 +434,12 @@ final class WikipediaBot {
             'titles'=> $title, 
             'curtimestamp'=>'true', 
             'inprop' => 'protection', 
-          ]);
+          ], 'GET');
     return @json_decode($details);
   }
   
   static public function get_links(string $title) : string {
-     return self::QueryAPI(['action' => 'parse', 'prop' => 'links', 'page' => $title]);
+     return self::QueryAPI(['action' => 'parse', 'prop' => 'links', 'page' => $title], 'GET');
   }
   
   static public function GetAPage(string $title) : string {
@@ -459,10 +466,10 @@ final class WikipediaBot {
          "list" => "users",
          "ususers" => urlencode(str_replace(" ", "_", $user)),
       ];
-    $response = self::QueryAPI($query);
+    $response = self::QueryAPI($query, 'GET');
     if ($response === NULL || (strpos($response, '"userid"')  === FALSE)) { // try again if weird
       sleep(5);
-      $response = self::QueryAPI($query);
+      $response = self::QueryAPI($query, 'GET');
     }
     if ($response == '') return FALSE;
     $response = str_replace(array("\r", "\n"), '', $response);  // paranoid
