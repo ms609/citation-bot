@@ -939,11 +939,11 @@ function check_doi_for_jstor(string $doi, Template $template) : void {
   if (strpos($doi, '10.2307') === 0) { // special case
     $doi = substr($doi, 8);
   }
-  $test_url = "https://www.jstor.org/citation/ris/" . $doi;
-  $ch = curl_init($test_url);
+  $ch = curl_init();
   curl_setopt_array($ch,
           [CURLOPT_RETURNTRANSFER => TRUE,
            CURLOPT_TIMEOUT => 10,
+           CURLOPT_URL => "https://www.jstor.org/citation/ris/" . $doi,
            CURLOPT_USERAGENT => BOT_USER_AGENT]);
   $ris = (string) @curl_exec($ch);
   $httpCode = (int) @curl_getinfo($ch, CURLINFO_HTTP_CODE);
