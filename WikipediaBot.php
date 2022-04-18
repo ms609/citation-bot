@@ -23,7 +23,7 @@ final class WikipediaBot {
   private $the_user = '';
   private static $last_WikipediaBot; // For NonStandardMode()
   
-  public static function make_ch() : void {
+  public static function make_ch() : void { // Executed below at end of file
     if (isset(self::ch)) return;
     self::ch = curl_init();
         curl_setopt_array(self::ch, [
@@ -502,3 +502,7 @@ final class WikipediaBot {
     exit(0);
   }
 }
+
+WikipediaBot::make_ch();
+
+
