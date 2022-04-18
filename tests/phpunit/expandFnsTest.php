@@ -324,6 +324,8 @@ final class expandFnsTest extends testBaseClass {
   public function testDOIWorks() : void {
     $this->assertFalse(doi_works(''));
     $this->assertFalse(doi_active(''));
+    $this->assertFalse(doi_works('   '));
+    $this->assertFalse(doi_active('    '));
   }
   
   public function testThrottle() : void { // Just runs over the code and basically does nothing
