@@ -415,7 +415,7 @@ final class WikipediaBot {
     curl_setopt_array(self::$ch,
               [CURLOPT_HTTPGET => TRUE,
                CURLOPT_HTTPHEADER => []
-               CURLOPT_URL => WIKI_ROOT . '?' . http_build_query(['title' => $title, 'action' =>'raw'])]);
+               CURLOPT_URL => WIKI_ROOT . '?' . http_build_query(['title' => $title, 'action' =>'raw']);
     $text = (string) @curl_exec(self::$ch);
     return $text;
   }
