@@ -60,7 +60,7 @@ function format_forename(string $forename) : string {
 }
 
 /* format_initials
- * Returns a string of initals, formatted for Cite Doi output
+ * Returns a string of initals
  *
  * $str: A series of initials, in any format.  NOTE! Do not pass a forename here!
  *
