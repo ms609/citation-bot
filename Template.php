@@ -6799,7 +6799,7 @@ final class Template {
   }
 
   public function set(string $par, string $val) : bool {
-    if ($par === 'doi') debug_print_backtrace(0, 6));
+    if ($par === 'doi') debug_print_backtrace(0, 6);
     if ($par === '') report_error('NULL parameter passed to set with value of ' . echoable($val));
     if (mb_stripos($this->get($par), 'CITATION_BOT_PLACEHOLDER_COMMENT') !== FALSE && $par !== 'ref') {
       return FALSE;
@@ -6862,7 +6862,7 @@ final class Template {
     $this->forgetter($par, TRUE);
   }
   private function forgetter(string $par, bool $echo_forgetting) : void { // Do not call this function directly
-   if ($par === 'doi') debug_print_backtrace(0, 6));
+   if ($par === 'doi') debug_print_backtrace(0, 6);
    $spacing = ['', '']; // prevent memory leak in some PHP versions
    if (!$this->blank($par)) { // do not remove all this other stuff if blank
     if ($par == 'url') {
