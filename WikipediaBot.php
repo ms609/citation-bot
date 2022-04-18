@@ -85,7 +85,7 @@ final class WikipediaBot {
     return $this->the_user;
   }
   
-  private function ret_okay(?object $response) : bool {
+  private static function ret_okay(?object $response) : bool {
     if (is_null($response)) {
       report_minor_error('Wikipedia responce was not decoded.');  // @codeCoverageIgnore
       return FALSE;                                               // @codeCoverageIgnore
@@ -172,7 +172,7 @@ final class WikipediaBot {
         return $this->fetch($params, $method, $depth+1);
         // @codeCoverageIgnoreEnd
       }
-      return ($this->ret_okay($ret)) ? $ret : NULL;
+      return (self::ret_okay($ret)) ? $ret : NULL;
     } catch(Exception $E) {
       report_warning("Exception caught!\n");
       report_info("Response: ". $E->getMessage());
