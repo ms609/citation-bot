@@ -34,15 +34,7 @@ class Page {
   public function get_text_from(string $title) : bool {
     $this->construct_modifications_array(); // Could be new page
 
-    $details = WikipediaBot::QueryAPI([
-            'action'=>'query', 
-            'prop'=>'info', 
-            'titles'=> $title, 
-            'curtimestamp'=>'true', 
-            'inprop' => 'protection', 
-            'format' => 'json',
-          ]);
-    $details = @json_decode($details);
+    $details = WikipediaBot::ReadDetails($title);
 
     if (!isset($details->query)) {
       // @codeCoverageIgnoreStart
@@ -96,17 +88,8 @@ class Page {
     $this->title = (string) $details->title;
     $this->lastrevid = (int) $details->lastrevid ;
 
-    $ch = curl_init();
-    curl_setopt_array($ch,
-              [CURLOPT_HEADER => 0,
-               CURLOPT_USERAGENT => BOT_USER_AGENT,
-               CURLOPT_RETURNTRANSFER => 1,
-               CURLOPT_TIMEOUT => 20,
-               CURLOPT_COOKIESESSION => TRUE,
-               CURLOPT_COOKIEFILE => 'cookie.txt',
-               CURLOPT_URL => WIKI_ROOT . '?' . http_build_query(['title' => $title, 'action' =>'raw'])]);
-    $this->text = (string) @curl_exec($ch);
-    curl_close($ch);
+    $this->text = WikipediaBot::GetAPage($title);
+
     if ($this->text == '') {
        report_warning('Page '  . $title . ' from ' . WIKI_ROOT . ' appears to be empty ');    // @codeCoverageIgnore
        return FALSE;                                                                          // @codeCoverageIgnore
