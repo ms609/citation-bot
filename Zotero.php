@@ -847,10 +847,8 @@ public static function url_simplify(string $url) : string {
   $url = str_ireplace('https', 'http', $url);
   return $url;
 }
-  
-} // End of CLASS
 
-function find_indentifiers_in_urls(Template $template, ?string $url_sent = NULL) : bool {
+private static function find_indentifiers_in_urls(Template $template, ?string $url_sent = NULL) : bool {
     set_time_limit(120);
     $matches = ['', '']; // prevent memory leak in some PHP versions
     $bibcode = ['', '']; // prevent memory leak in some PHP versions
@@ -1546,6 +1544,9 @@ function find_indentifiers_in_urls(Template $template, ?string $url_sent = NULL)
       }
     }
     return FALSE ;
-}
+ }
+  
+} // End of CLASS
+
 
 Zotero::create_ch_zotero();
