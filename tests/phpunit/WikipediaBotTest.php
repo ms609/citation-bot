@@ -14,13 +14,6 @@ require_once __DIR__ . '/../testBaseClass.php';
        $this->markTestSkipped();
      }
     }
-
-    public function testLoggedInUser() : void {
-     $this->requires_secrets(function() : void {
-      $api = new WikipediaBot();
-      $this->assertSame("Citation bot test", $api->bot_account_name());
-     });
-    }
       
     public function testCategoryMembers() : void {
       $this->assertTrue(count(WikipediaBot::category_members('Indian drama films')) > 10);
