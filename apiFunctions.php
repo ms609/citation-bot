@@ -276,7 +276,7 @@ function arxiv_api(array $ids, array &$templates) : bool {  // Pointer to save m
 
 function adsabs_api(array $ids, array &$templates, string $identifier) : bool {  // Pointer to save memory
   static $ch;
-  if ($isset($ch)) $ch = curl_init();
+  if (!isset$ch)) $ch = curl_init();
   set_time_limit(120);
   $rate_limit = [['', '', ''], ['', '', ''], ['', '', '']]; // prevent memory leak in some PHP versions
   if (AdsAbsControl::gave_up_yet()) return FALSE;
@@ -654,7 +654,7 @@ function expand_by_doi(Template $template, bool $force = FALSE) : bool {
 
 function query_crossref(string $doi) : ?object {
   static $ch;
-  if ($isset($ch)) $ch = curl_init();
+  if (!isset$ch)) $ch = curl_init();
   if (strpos($doi, '10.2307') === 0) return NULL; // jstor API is better
   set_time_limit(120);
   $doi = str_replace(DOI_URL_DECODE, DOI_URL_ENCODE, $doi);
@@ -695,7 +695,7 @@ function query_crossref(string $doi) : ?object {
 
 function expand_doi_with_dx(Template $template, string $doi) : bool {
      static $ch;
-     if ($isset($ch)) $ch = curl_init();
+     if (!isset$ch)) $ch = curl_init();
      // See https://crosscite.org/docs.html for discussion of API we are using -- not all agencies resolve the same way
      // https://api.crossref.org/works/$doi can be used to find out the agency
      // https://www.doi.org/registration_agencies.html  https://www.doi.org/RA_Coverage.html List of all ten doi granting agencies - many do not do journals
@@ -824,7 +824,7 @@ function expand_doi_with_dx(Template $template, string $doi) : bool {
 
 function expand_by_jstor(Template $template) : bool {
   static $ch;
-  if ($isset($ch)) $ch = curl_init();
+  if (!isset$ch)) $ch = curl_init();
   set_time_limit(120);
   $match = ['', '']; // prevent memory leak in some PHP versions
   if ($template->incomplete() === FALSE) return FALSE;
@@ -1159,7 +1159,7 @@ function get_semanticscholar_license(string $s2cid) : ?bool {
 
 function expand_templates_from_archives(array &$templates) : void { // This is done very late as a latch ditch effort  // Pointer to save memory
   static $ch;
-  if ($isset($ch)) $ch = curl_init();
+  if (!isset$ch)) $ch = curl_init();
   set_time_limit(120);
   $match = ['', '']; // prevent memory leak in some PHP versions
   curl_setopt_array($ch,
