@@ -19,13 +19,14 @@ final class WikipediaBot {
   private $user_client;
   private $user_token;
   /** @var resource $ch */
-  private $ch;
+  private static $ch; // All wikipedia connections share a session
   private $the_user = '';
   private static $last_WikipediaBot; // For NonStandardMode()
-
-  function __construct() {
-    $this->ch = curl_init();
-    curl_setopt_array($this->ch, [
+  
+  public static function make_ch() : void {
+    if (isset(self::ch)) return;
+    self::ch = curl_init();
+        curl_setopt_array(self::ch, [
         CURLOPT_FAILONERROR => TRUE, // This is a little paranoid - see https://curl.se/libcurl/c/CURLOPT_FAILONERROR.html
         CURLOPT_FOLLOWLOCATION => TRUE,
         CURLOPT_MAXREDIRS => 5,
@@ -33,10 +34,13 @@ final class WikipediaBot {
         CURLOPT_RETURNTRANSFER => TRUE,
         CURLOPT_CONNECTTIMEOUT => 15,
         CURLOPT_TIMEOUT => 20,
-        CURLOPT_COOKIESESSION => TRUE,
-        CURLOPT_COOKIEFILE => 'cookie.txt',
         CURLOPT_USERAGENT => BOT_USER_AGENT,
+        CURLOPT_COOKIESESSION => TRUE,
     ]);
+  }
+
+  function __construct() {
+    self::make_ch();
     // setup.php must already be run at this point
     if (!getenv('PHP_OAUTH_CONSUMER_TOKEN'))  report_error("PHP_OAUTH_CONSUMER_TOKEN not set");
     if (!getenv('PHP_OAUTH_CONSUMER_SECRET')) report_error("PHP_OAUTH_CONSUMER_SECRET not set");
@@ -67,10 +71,6 @@ final class WikipediaBot {
       // @codeCoverageIgnoreEnd
     }
     self::$last_WikipediaBot = $this;
-  }
-  
-  function __destruct() {
-    curl_close($this->ch);
   }
   
   public function get_the_user() : string {
@@ -130,7 +130,7 @@ final class WikipediaBot {
     try {
       switch ($method) {
         case 'GET':        
-          curl_setopt_array($this->ch, [
+          curl_setopt_array(self::ch, [
             CURLOPT_HTTPGET => TRUE,
             CURLOPT_URL => API_ROOT . '?' . http_build_query($params),
             CURLOPT_HTTPHEADER => [$authenticationHeader],
@@ -138,7 +138,7 @@ final class WikipediaBot {
           break;
 
         case 'POST':
-          curl_setopt_array($this->ch, [
+          curl_setopt_array(self::ch, [
             CURLOPT_POST => TRUE,
             CURLOPT_POSTFIELDS => http_build_query($params),
             CURLOPT_HTTPHEADER => [$authenticationHeader],
@@ -149,10 +149,10 @@ final class WikipediaBot {
         default:
           report_error("Unrecognized method in Fetch: " . $method); // @codeCoverageIgnore
       }
-      $data = (string) @curl_exec($this->ch);
+      $data = (string) @curl_exec(self::ch);
       if ( !$data ) {
-        report_minor_error("Curl error: " . echoable(curl_error($this->ch)));  // @codeCoverageIgnore
-        return NULL;                                                           // @codeCoverageIgnore
+        report_minor_error("Curl error: " . echoable(curl_error(self::ch)));  // @codeCoverageIgnore
+        return NULL;                                                          // @codeCoverageIgnore
       }
       $ret = @json_decode($data); 
       if (isset($ret->error) && (
@@ -372,48 +372,28 @@ final class WikipediaBot {
   
   static private function QueryAPI(array $params, string $method) : string {
     $params['format'] = 'json';
-    $ch = curl_init();
       switch ($method) {
         case 'GET':        
-          curl_setopt_array($ch, [
+          curl_setopt_array(self::ch, [
                 CURLOPT_HTTPGET => TRUE,
-                CURLOPT_FAILONERROR => TRUE,
-                CURLOPT_FOLLOWLOCATION => TRUE,
-                CURLOPT_MAXREDIRS => 5,
-                CURLOPT_HEADER => 0,
-                CURLOPT_RETURNTRANSFER => TRUE,
-                CURLOPT_CONNECTTIMEOUT => 15,
-                CURLOPT_TIMEOUT => 20,
-                CURLOPT_COOKIESESSION => TRUE,
-                CURLOPT_COOKIEFILE => 'cookie.txt',
-                CURLOPT_USERAGENT => BOT_USER_AGENT,
                 CURLOPT_URL => API_ROOT . '?' . http_build_query($params)
+                CURLOPT_HTTPHEADER => []
                   ]);
           break;
 
         case 'POST':
-            curl_setopt_array($ch, [
+            curl_setopt_array(self::ch, [
                 CURLOPT_POST => TRUE,
-                CURLOPT_FAILONERROR => TRUE,
-                CURLOPT_FOLLOWLOCATION => TRUE,
-                CURLOPT_MAXREDIRS => 5,
-                CURLOPT_HEADER => 0,
-                CURLOPT_RETURNTRANSFER => TRUE,
-                CURLOPT_CONNECTTIMEOUT => 15,
-                CURLOPT_TIMEOUT => 20,
-                CURLOPT_COOKIESESSION => TRUE,
-                CURLOPT_COOKIEFILE => 'cookie.txt',
-                CURLOPT_USERAGENT => BOT_USER_AGENT,
                 CURLOPT_POSTFIELDS => http_build_query($params),
                 CURLOPT_URL => API_ROOT
+                CURLOPT_HTTPHEADER => []
           ]);
           break;
 
         default:
           report_error("Unrecognized method in QueryAPI: " . $method); // @codeCoverageIgnore
       }
-    $data = (string) @curl_exec($ch);
-    curl_close($ch);
+    $data = (string) @curl_exec(self::ch);
     return $data;
   }
  
@@ -433,17 +413,11 @@ final class WikipediaBot {
   }
   
   static public function GetAPage(string $title) : string {
-    $ch = curl_init();
-    curl_setopt_array($ch,
-              [CURLOPT_HEADER => 0,
-               CURLOPT_USERAGENT => BOT_USER_AGENT,
-               CURLOPT_RETURNTRANSFER => 1,
-               CURLOPT_TIMEOUT => 20,
-               CURLOPT_COOKIESESSION => TRUE,
-               CURLOPT_COOKIEFILE => 'cookie.txt',
+    curl_setopt_array(self::ch,
+              [CURLOPT_HTTPGET => TRUE,
+               CURLOPT_HTTPHEADER => []
                CURLOPT_URL => WIKI_ROOT . '?' . http_build_query(['title' => $title, 'action' =>'raw'])]);
-    $text = (string) @curl_exec($ch);
-    curl_close($ch);
+    $text = (string) @curl_exec(self::ch);
     return $text;
   }
   
