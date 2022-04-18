@@ -1643,7 +1643,7 @@ final class Template {
   // This is also called when adding a URL with add_if_new, in which case
   // it looks for a parameter before adding the url.
   public function get_identifiers_from_url(?string $url_sent = NULL) : bool {
-    return find_indentifiers_in_urls($this, $url_sent);
+    return Zotero::find_indentifiers_in_urls($this, $url_sent);
   }
 
   protected function get_doi_from_text() : void {
