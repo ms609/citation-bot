@@ -1047,7 +1047,7 @@ function find_indentifiers_in_urls(Template $template, ?string $url_sent = NULL)
           curl_setopt_array(self::$ch_jstor,
                             [CURLOPT_URL => 'https://www.jstor.org/citation/ris/' . $matches[1],
                              CURLOPT_HEADER => 0,
-                             CURLOPT_NOBODY => 0]);]);
+                             CURLOPT_NOBODY => 0]);
           $dat = (string) @curl_exec($ch_jstor);
           if ($dat &&
               stripos($dat, 'No RIS data found for') === FALSE &&
