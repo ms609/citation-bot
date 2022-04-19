@@ -10,36 +10,34 @@ require_once __DIR__ . '/../testBaseClass.php';
 final class PageTest extends testBaseClass {
 
   public function testBotExpandWrite() : void {
-
       $api = new WikipediaBot();
       $page = new TestPage();
-      $writeTestPage = 'User:Blocked_Testing_Account/writetest';
+      $writeTestPage = 'User:Blocked Testing Account/writetest';
       $page->get_text_from($writeTestPage);
+      $origText = $page->parsed_text();
       $trialCitation = '{{Cite journal | title Bot Testing | ' .
         'doi_broken_date=1986-01-01 | doi = 10.1038/nature09068}}';
       $page->overwrite_text($trialCitation);
       $page_result = $page->write($api, "Testing bot write function");
-   echo "\n\n DEBUG " . $page_result . "\n\n";
-
-      $page->get_text_from($writeTestPage);
-      if ($trialCitation === $page->parsed_text()) {
-         echo "\n same \n";
+      if (TRAVIS && !$page_result) {
+        // ! API call failed: '''Your IP address is in a range which has been blocked on all wikis.''' The block was made by [//meta.wikimedia.org/wiki/User:Jon_Kolbert Jon Kolbert] (meta.wikimedia.org). The reason given is ''[[m:NOP|Open Proxy]]: Colocation webhost - Contact [[m:Special:Contact/stewards|stewards]] if you are affected ''. * Start of block: 02:23, 27 October 2019 * Expiration of block: 02:23, 27 October 2021
+        $page->get_text_from($writeTestPage);
+        $this->assertSame($origText, $page->parsed_text());
       } else {
-         echo  " TRIAL : " . $trialCitation . "\n\n";
-         echo  " PARCED: " .  $page->parsed_text() . "\n\n";
+        // Double check we can read it back
+        $page->get_text_from($writeTestPage);
+        $this->assertSame($trialCitation, $page->parsed_text());
       }
+      $page->overwrite_text($trialCitation);
       $page->expand_text();
-   echo "SUMMARY:  " . $page->edit_summary() . "\n\n";
-   
-   //   $this->assertTrue(strpos($page->edit_summary(), 'journal, ') > 3);
-   //   $this->assertTrue(strpos($page->edit_summary(), ' Removed ') > 3);
-   // Wrap this in requires secrets?????   $this->assertTrue($page->write($api));
-      
+      $this->assertTrue(strpos($page->edit_summary(), 'journal, ') > 3);
+      $this->assertTrue(strpos($page->edit_summary(), ' Removed ') > 3);
+      if ($page_result) {
+         $this->assertTrue($page->write($api));
+      } else {
+         $this->assertFalse($page->write($api));
+      }
       $page->get_text_from($writeTestPage);
-   
-  echo  " NATURE : " . $page->parsed_text() . "\n\n";
-
+      $this->assertTrue(strpos($page->parsed_text(), 'Nature') > 5);
   }
- 
-
 }
