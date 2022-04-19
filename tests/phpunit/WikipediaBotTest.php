@@ -24,7 +24,7 @@ require_once __DIR__ . '/../testBaseClass.php';
       $this->assertTrue(count(WikipediaBot::category_members('Indian drama films')) > 10);
       $this->assertSame(0, count(WikipediaBot::category_members('A category we expect to be empty')));
     }
-       
+    
     public function testRedirects() : void {
       $this->assertSame(-1, WikipediaBot::is_redirect('NoSuchPage:ThereCan-tBe'));
       $this->assertSame( 0, WikipediaBot::is_redirect('User:Citation_bot'));
