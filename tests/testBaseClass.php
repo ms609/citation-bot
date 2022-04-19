@@ -21,7 +21,7 @@ abstract class testBaseClass extends PHPUnit\Framework\TestCase {
     if (!PHP_ADSABSAPIKEY) $this->testing_skip_bibcode = TRUE;
     if (!getenv('PHP_OAUTH_CONSUMER_TOKEN') || !getenv('PHP_OAUTH_CONSUMER_SECRET') ||
         !getenv('PHP_OAUTH_ACCESS_TOKEN')   || !getenv('PHP_OAUTH_ACCESS_SECRET')) {
-       $this->testing_skip_wiki = TRUE;
+      ;
     }
 
     AdsAbsControl::give_up();
