@@ -16,6 +16,7 @@ final class zoteroTest extends testBaseClass {
   
   public function testCoverageFixer() : void {
      Zotero::create_ch_zotero();
+     $this->assertTrue(TRUE);
   }
 
   public function testZoteroExpansion_biorxiv() : void {
