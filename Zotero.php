@@ -20,8 +20,13 @@ final class Zotero {
   protected static $zotero_failures_count = 0;
 
 public static function create_ch_zotero() : void { // Called below at end of file
-  /** @phan-suppress-next-line PhanRedundantCondition */
+  if (isset(self::$zotero_ch)) curl_close(self::$zotero_ch);
+  if (isset(self::$ch_ieee)) curl_close(self::$ch_ieee);
+  if (isset(self::$ch_jstor)) curl_close(self::$ch_jstor);
+  if (isset(self::$ch_dx)) curl_close(self::$ch_dx);
+  if (isset(self::$ch_pmc)) curl_close(self::$ch_pmc);
   self::$zotero_ch = curl_init();
+  /** @phan-suppress-next-line PhanRedundantCondition */
   if ( USE_CITOID ) {
         /** @psalm-suppress PossiblyNullArgument */ 
         curl_setopt_array(self::$zotero_ch,
