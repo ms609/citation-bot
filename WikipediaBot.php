@@ -187,7 +187,7 @@ final class WikipediaBot {
           ], 'GET');
     
     if (!$response) {
-      report_warning("Write request failed");     // @codeCoverageIgnore
+      report_warning("Write reqsdfauest failed");     // @codeCoverageIgnore
       return FALSE;                               // @codeCoverageIgnore
     }
     if (isset($response->warnings)) {
