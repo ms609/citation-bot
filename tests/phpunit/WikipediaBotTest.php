@@ -64,4 +64,10 @@ require_once __DIR__ . '/../testBaseClass.php';
       $result = WikipediaBot::is_valid_user('RickK'); // BLOCKED
       $this->assertSame(FALSE, $result);
     }
+    public function testGetLinks() : void {
+      $json = WikipediaBot::get_links('Covid Watch');
+      $array = @json_decode($json, TRUE);
+      $this->assertTrue(count($array) > 2);
+    }
+   
 }
