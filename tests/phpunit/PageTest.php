@@ -168,23 +168,19 @@ final class PageTest extends testBaseClass {
   }
  
   public function testNobots() : void {
-    $this->requires_secrets(function() : void {
       $api = new WikipediaBot();
       $text = '{{cite thesis|url=https://mathscinet.ams.org/mathscinet-getitem?mr=1234}}{{nobots}}';
       $page = $this->process_page($text);
       $this->assertSame($text, $page->parsed_text());
       $this->assertSame(FALSE, $page->write($api, "Testing bot write function"));
-   });
   }
  
   public function testNobots2() : void {
-     $this->requires_secrets(function() : void {
       $api = new WikipediaBot();
       $text = '{{cite thesis|url=https://mathscinet.ams.org/mathscinet-getitem?mr=1234}}{{bots|allow=not_you}}';
       $page = $this->process_page($text);
       $this->assertSame($text, $page->parsed_text());
       $this->assertSame(FALSE, $page->write($api, "Testing bot write function"));
-   });
   }
  
   public function testEmptyPage() : void {
