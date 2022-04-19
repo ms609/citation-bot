@@ -5681,6 +5681,7 @@ final class Template {
                           CURLOPT_TIMEOUT => 25,
                           CURLOPT_RETURNTRANSFER => TRUE,
                           CURLOPT_USERAGENT => BOT_USER_AGENT,
+                          CURLOPT_COOKIEFILE => 'cookie.txt', // Seems to be a good idea for proquest
                           CURLOPT_URL => $matches[0]]);
                  if (@curl_exec($ch)) {
                     $redirectedUrl = (string) @curl_getinfo($ch, CURLINFO_EFFECTIVE_URL);  // Final URL
