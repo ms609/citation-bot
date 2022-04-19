@@ -29,6 +29,7 @@ public static function create_ch_zotero() : void { // Called below at end of fil
             CURLOPT_HTTPHEADER => ['accept: application/json; charset=utf-8'],
             CURLOPT_RETURNTRANSFER => TRUE,
             CURLOPT_USERAGENT => BOT_USER_AGENT,
+            CURLOPT_COOKIESESSION => TRUE,
             // Defaults used in TRAVIS overiden below when deployed
             CURLOPT_CONNECTTIMEOUT => 10,
             CURLOPT_TIMEOUT => 45]);
@@ -41,6 +42,7 @@ public static function create_ch_zotero() : void { // Called below at end of fil
             CURLOPT_HTTPHEADER => ['Content-Type: text/plain'],
             CURLOPT_RETURNTRANSFER => TRUE,
             CURLOPT_USERAGENT => BOT_USER_AGENT,
+            CURLOPT_COOKIESESSION => TRUE,
             // Defaults used in TRAVIS overiden below when deployed
             CURLOPT_CONNECTTIMEOUT => 10,
             CURLOPT_TIMEOUT => 45]);
@@ -54,12 +56,14 @@ public static function create_ch_zotero() : void { // Called below at end of fil
           CURLOPT_FOLLOWLOCATION => TRUE,
           CURLOPT_MAXREDIRS => 10,
           CURLOPT_CONNECTTIMEOUT => 8,
+          CURLOPT_COOKIESESSION => TRUE,
           CURLOPT_USERAGENT => 'curl/7.55.1']); // IEEE now requires JavaScript, unless you specify curl
    
   self::$ch_jstor = curl_init();
   curl_setopt_array(self::$ch_jstor,
        [CURLOPT_RETURNTRANSFER => 1,
         CURLOPT_TIMEOUT => 15,
+        CURLOPT_COOKIESESSION => TRUE,
         CURLOPT_USERAGENT => BOT_USER_AGENT]);
    
   self::$ch_dx = curl_init();
@@ -70,12 +74,14 @@ public static function create_ch_zotero() : void { // Called below at end of fil
          CURLOPT_TIMEOUT => 20,
          CURLOPT_RETURNTRANSFER => TRUE,
          CURLOPT_AUTOREFERER => TRUE,
+         CURLOPT_COOKIESESSION => TRUE,
          CURLOPT_USERAGENT => BOT_USER_AGENT]);
 
   self::$ch_pmc = curl_init();
   curl_setopt_array(self::$ch_pmc,
         [CURLOPT_RETURNTRANSFER => TRUE,
          CURLOPT_TIMEOUT => 15,
+         CURLOPT_COOKIESESSION => TRUE,
          CURLOPT_USERAGENT => BOT_USER_AGENT]);
 }
 
@@ -190,6 +196,7 @@ public static function drop_urls_that_match_dois(array &$templates) : void {  //
          CURLOPT_TIMEOUT => 20,
          CURLOPT_RETURNTRANSFER => TRUE,
          CURLOPT_AUTOREFERER => TRUE,
+         CURLOPT_COOKIESESSION => TRUE,
          CURLOPT_USERAGENT => BOT_USER_AGENT]);
   foreach ($templates as $template) {
     $doi = $template->get_without_comments_and_placeholders('doi');
