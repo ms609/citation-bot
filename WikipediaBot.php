@@ -120,10 +120,10 @@ final class WikipediaBot {
 
     $token = $this->bot_token;
     $consumer = $this->bot_consumer;
-    if (defined('EDIT_AS_USER') && ($params["action"] === "edit")) {
+    if (defined('EDIT_AS_USER') && ($params["action"] === "edit")) { // @codeCoverageIgnoreBegin
        $token = $this->user_token;
        $consumer = $this->user_consumer;
-    }
+    }                                                                // @codeCoverageIgnoreEnd
     $request = Request::fromConsumerAndToken($consumer, $token, $method, API_ROOT, $params);
     $request->signRequest(new HmacSha1(), $consumer, $token);
     $authenticationHeader = $request->toHeader();
