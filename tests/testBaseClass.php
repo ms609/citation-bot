@@ -3,7 +3,12 @@ declare(strict_types=1);
 
 require_once __DIR__ . '/../setup.php';
 
-define("BAD_PAGE_API", ""); // Remember that debug_print_backtrace(0, 6) can be helpful
+      $json = WikipediaBot::get_links('Covid Watch');
+    echo $json;
+      $array = @json_decode($json, TRUE);
+print_r($array);
+
+define("BAD_PAGE_API", "dsfasdfdsfdsfds"); // Remember that debug_print_backtrace(0, 6) can be helpful
 
 abstract class testBaseClass extends PHPUnit\Framework\TestCase {
   // Change these to temporarily disable sets of tests======================
@@ -29,6 +34,8 @@ abstract class testBaseClass extends PHPUnit\Framework\TestCase {
   }
 
   protected function requires_secrets(callable $function) : void {
+
+
     if ($this->testing_skip_wiki) {
       echo 'A'; // For API
       ob_flush();
