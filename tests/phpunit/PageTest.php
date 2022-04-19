@@ -30,7 +30,7 @@ final class PageTest extends testBaseClass {
       }
       $this->requires_secrets(function() : void {
        $this->assertTrue(TRAVIS || $page_result); // If we have tokens and are not in TRAVIS, then should have worked
-      }
+      });
       $page->overwrite_text($trialCitation);
       $page->expand_text();
       $this->assertTrue(strpos($page->edit_summary(), 'journal, ') > 3);
