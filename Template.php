@@ -5680,7 +5680,7 @@ final class Template {
                           CURLOPT_CONNECTTIMEOUT => 8,
                           CURLOPT_TIMEOUT => 25,
                           CURLOPT_RETURNTRANSFER => TRUE,
-                          CURLOPT_COOKIEFILE => 'cookie.txt',
+                          CURLOPT_COOKIESESSION => TRUE,
                           CURLOPT_USERAGENT => BOT_USER_AGENT,
                           CURLOPT_URL => $matches[0]]);
                  if (@curl_exec($ch)) {
