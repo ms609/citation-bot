@@ -37,10 +37,8 @@ require_once __DIR__ . '/../testBaseClass.php';
     }
    
     public function testGetUserName() : void {
-     $this->requires_secrets(function() : void {
       $api = new WikipediaBot();
       $this->assertSame('Citation_bot', $api->get_the_user());
-     });
     }
    
     public function testNonStandardMode() : void {
