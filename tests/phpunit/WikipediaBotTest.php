@@ -71,8 +71,7 @@ require_once __DIR__ . '/../testBaseClass.php';
     }
     public function testGetLinks() : void {
       $json = WikipediaBot::get_links('Covid Watch');
-      $array = @json_decode($json, TRUE);
-      $this->assertTrue(count($array) > 2);
+      $this->assertTrue(substr_count($json, 'exists') > 15);
     }
    
 }
