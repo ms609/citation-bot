@@ -1558,4 +1558,4 @@ public static function find_indentifiers_in_urls(Template $template, ?string $ur
 } // End of CLASS
 
 
-Zotero::create_ch_zotero();
+Zotero::create_ch_zotero();  // @codeCoverageIgnore
