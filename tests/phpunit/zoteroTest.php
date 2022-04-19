@@ -13,6 +13,11 @@ final class zoteroTest extends testBaseClass {
      $this->markTestSkipped();
    }
   }
+  
+  public function testCoverageFixer() : void {
+     Zotero::create_ch_zotero();
+     $this->assertTrue(TRUE);
+  }
 
   public function testZoteroExpansion_biorxiv() : void {
     $text = '{{Cite journal| biorxiv=326363 }}';
