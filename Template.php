@@ -6368,8 +6368,6 @@ final class Template {
                  $this->add_if_new('website', $i_value);
                }
              }
-             // TODO - this seems to be disliked, they might change their mind:
-             // if ($this->wikiname() === 'cite web') $this->add_if_new('website', $hostname);
            }
         }
       }
@@ -7246,7 +7244,6 @@ final class Template {
     } elseif ($issn === '0163-089X' || $issn === '1092-0935') {
       return $this->set('newspaper', '[[The Wall Street Journal]]');
     }
-    // TODO Add more common ones that fail
     // @codeCoverageIgnoreEnd
     if ($issn === '9999-9999') return FALSE; // Fake test suite data
     if (!preg_match('~^\d{4}.?\d{3}[0-9xX]$~u', $issn)) return FALSE;
