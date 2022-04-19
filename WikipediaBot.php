@@ -502,6 +502,6 @@ final class WikipediaBot {
   }
 }
 
-WikipediaBot::make_ch();
+WikipediaBot::make_ch(); // @codeCoverageIgnore
 
 
