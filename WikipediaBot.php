@@ -375,12 +375,12 @@ final class WikipediaBot {
     $params['format'] = 'json';
       switch ($method) {
         case 'GET':        
-          curl_setopt_array(self::$ch, [
+    /**      curl_setopt_array(self::$ch, [
                 CURLOPT_HTTPGET => TRUE,
                 CURLOPT_URL => API_ROOT . '?' . http_build_query($params),
                 CURLOPT_HTTPHEADER => []
                   ]);
-          break;
+          break; **/
 
         case 'POST':
             curl_setopt_array(self::$ch, [
