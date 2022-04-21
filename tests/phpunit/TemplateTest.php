@@ -422,11 +422,11 @@ final class TemplateTest extends testBaseClass {
   }
 
    public function testDropBadData4() : void {
-    $text = "{{citation|last3=Get author RSS}}";
+    $text = "{{citation|last=Archive|last3=Get author RSS}}";
     $expanded = $this->process_citation($text);
     $this->assertSame('{{citation}}', $expanded->parsed_text());
     
-    $text = "{{citation|first2=Email the}}";
+    $text = "{{citation|last=Archive|first2=Email the}}";
     $expanded = $this->process_citation($text);
     $this->assertSame('{{citation}}', $expanded->parsed_text());
   }
@@ -468,12 +468,12 @@ final class TemplateTest extends testBaseClass {
   }
  
   public function testShortenMusic() : void {
-    $text="{{cite web|url=https://oxfordmusiconline.com/X/X/2134}}";
+    $text="{{cite web|url=https://oxfordmusiconline.com/X/X/2134/1/1/1/1}}";
     $template = $this->process_citation($text);
-    $this->assertSame('https://oxfordmusiconline.com/X/2134', $template->get2('url'));
-    $text="{{cite web|url=https://oxfordmusiconline.com/X/X/X/2134}}";
+    $this->assertSame('https://oxfordmusiconline.com/X/2134/1/1/1/1', $template->get2('url'));
+    $text="{{cite web|url=https://oxfordmusiconline.com/X/X/X/2134/1/1/1/1}}";
     $template = $this->process_citation($text);
-    $this->assertSame('https://oxfordmusiconline.com/X/2134', $template->get2('url'));
+    $this->assertSame('https://oxfordmusiconline.com/X/2134/1/1/1/1', $template->get2('url'));
   }
  
   public function testGroveMusic1() : void {
@@ -5076,7 +5076,7 @@ T1 - This is the Title }}';
   }
  
    public function testTidyEcon2() : void {
-    $text = "{{cite web|publisher=the guardian media group|work=economist.com}}";
+    $text = "{{cite web|publisher=the economist group|work=economist.com}}";
     $template = $this->make_citation($text);
     $template->tidy_parameter('publisher');
     $this->assertNull($template->get2('publisher'));
@@ -6839,8 +6839,8 @@ T1 - This is the Title }}';
      $this->assertSame('[[Journal of Polymer Science|J Poly Sci]]', $template->get2('journal'));
    }
  
-    public function test1093DoiStuff() : void {
-     $text = '{{cite journal|url=X|doi=10.1093/BADDDDDDDD/BADDDDDDD|via=hose}}';
+    public function test1093DoiStuff1() : void {
+     $text = '{{cite journal|url=X|doi=10.1093/BADDDDDDDD/BADDDDDDD/junl|via=hose}}';
      $template = $this->make_citation($text);
      $template->forget('url');
      $this->assertNull($template->get2('url'));
@@ -6848,8 +6848,10 @@ T1 - This is the Title }}';
      $this->assertNull($template->get2('website'));
      $this->assertSame('cite document', $template->wikiname());
      $this->assertSame('hose', $template->get2('work'));
-
-     $text = '{{Cite journal|url=X|doi=10.1093/BADDDDDDDD/BADDDDDDD|website=hose}}';
+    }
+ 
+    public function test1093DoiStuff2() : void {
+     $text = '{{Cite journal|url=X|doi=10.1093/BADDDDDDDD/BADDDDDDD/junl|website=hose}}';
      $template = $this->make_citation($text);
      $template->forget('url');
      $this->assertNull($template->get2('url'));
@@ -6857,8 +6859,10 @@ T1 - This is the Title }}';
      $this->assertNull($template->get2('website'));
      $this->assertSame('cite document', $template->wikiname());
      $this->assertSame('hose', $template->get2('work'));
-     
-     $text = '{{Cite journal|url=X|doi=10.1093/BADDDDDDDD/BADDDDDDD|website=hose|via=Hose}}';
+    }
+ 
+    public function test1093DoiStuff3() : void {
+     $text = '{{Cite journal|url=X|doi=10.1093/BADDDDDDDD/BADDDDDDD/junl|website=hose|via=Hose}}';
      $template = $this->make_citation($text);
      $template->forget('url');
      $this->assertNull($template->get2('url'));
@@ -6866,8 +6870,10 @@ T1 - This is the Title }}';
      $this->assertNull($template->get2('website'));
      $this->assertSame('cite document', $template->wikiname());
      $this->assertSame('hose', $template->get2('work'));
-     
-     $text = '{{Cite journal|url=X|doi=10.1093/BADDDDDDDD/BADDDDDDD|website=kittens|via=doggies}}';
+    }
+ 
+    public function test1093DoiStuff4() : void {
+     $text = '{{Cite journal|url=X|doi=10.1093/BADDDDDDDD/BADDDDDDD/junl|website=kittens|via=doggies}}';
      $template = $this->make_citation($text);
      $template->forget('url');
      $this->assertNull($template->get2('url'));
@@ -6910,7 +6916,7 @@ T1 - This is the Title }}';
      $template = $this->make_citation($text);
      $template->add_if_new('title', 'n/A');
      $template->add_if_new('journal', 'Undefined');
-     $this->assertSame($text, $prepared->parsed_text());
+     $this->assertSame($text, $template->parsed_text());
    }
  
    public function testCleanBritArchive() : void {
@@ -6923,7 +6929,7 @@ T1 - This is the Title }}';
      $text = '{{Cite web|url=https://www.healthaffairs.org/do/10.1377/hblog20180605.966625/full/|archiveurl=healthaffairs.org}}';
      $template = $this->process_citation($text);
      $this->assertSame('10.1377/forefront.20180605.966625', $template->get2('doi'));
-     $this->assertSame('https://www.healthaffairs.org/do/10.1377/forefront.20180605.966625/full', $template->get2('url'));
+     $this->assertSame('https://www.healthaffairs.org/do/10.1377/forefront.20180605.966625/full/', $template->get2('url'));
      $this->assertNull($template->get2('archiveurl'));
    }
 }
