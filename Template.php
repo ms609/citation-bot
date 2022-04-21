@@ -6879,20 +6879,24 @@ final class Template {
         if ($this->has('via') && $this->blank('website')) {
           if ($this->get('url') === 'X') echo "\nIN 1093 loop1\n"; ob_flush();
           $this->rename('via', 'work');
+          echo $this->parced_text() / "\n";
         } elseif ($this->has('website') && $this->blank('via')) {
           if ($this->get('url') === 'X') echo "\nIN 1093 loop2\n"; ob_flush();
           $this->rename('website', 'work');
+                    echo $this->parced_text() / "\n";
         } elseif ($this->has('website') && $this->has('via')) {
           if ($this->get('url') === 'X') echo "\nIN 1093 loop3\n"; ob_flush();
           if (titles_are_similar($this->get('website'), $this->get('via'))) {
             if ($this->get('url') === 'X') echo "\nIN 1093 loop4\n"; ob_flush();
             $this->forgetter('via', $echo_forgetting);
             $this->rename('website', 'work');
+                      echo $this->parced_text() / "\n";
           } else {
             if ($this->get('url') === 'X') echo "\nIN 1093 loop5\n"; ob_flush();
             $tmp = $this->get('website') . ' via ' . $this->get('via');
             $this->forgetter('via', $echo_forgetting);
             $this->rename('website', 'work', $tmp);
+                      echo $this->parced_text() / "\n";
           }
         }
         preg_match("~^(\s*).*\b(\s*)$~", $this->name, $spacing);
