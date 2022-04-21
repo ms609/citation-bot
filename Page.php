@@ -442,11 +442,12 @@ class Page {
     $caps_ok = array('lccn', 'isbn', 'doi');
     $last_first_in  = array(' last=',  ' last =',  '|last=',  '|last =',  ' first=',  ' first =',  '|first=',  '|first =', 'cite newspaper', 'Cite newspaper', '| format=PDF ', '| format = PDF ', '|format=PDF ', '|format = PDF ', '| format=PDF', '| format = PDF', '|format=PDF', '|format = PDF', 'Cite ', 'cite ');
     $last_first_out = array(' last1=', ' last1 =', '|last1=', '|last1 =', ' first1=', ' first1 =', '|first1=', '|first1 =','cite news',      'Cite news',      '',              '',                '',              '',              '',             '',               '',            '',              'Cite' , 'cite' );
+    // @codeCoverageIgnoreStart
     if (WIKI_ROOT === 'https://simple.wikipedia.org/w/index.php') { // Backload clean-up
        $caps_ok = array();
        $last_first_in  = array();
        $last_first_out = array();
-    }
+    } // @codeCoverageIgnoreEnd
     return strcmp(str_replace($last_first_in, $last_first_out, str_ireplace($caps_ok, $caps_ok, $this->text)),
                   str_replace($last_first_in, $last_first_out, str_ireplace($caps_ok, $caps_ok, $this->start_text))) != 0;
   }
@@ -550,7 +551,7 @@ class Page {
     }
     $auto_summary = $auto_summary . "| [[WP:UCB|Use this bot]]. [[WP:DBUG|Report bugs]]. ";
     if (WIKI_ROOT !== 'https://en.wikipedia.org/w/index.php') {
-      $auto_summary = str_replace('[[WP:', '[[en:WP:', $auto_summary);
+      $auto_summary = str_replace('[[WP:', '[[en:WP:', $auto_summary);  // @codeCoverageIgnore
     }
     return $auto_summary;
   }
@@ -654,8 +655,8 @@ class Page {
   }
   
   protected function allow_bots() : bool {
-    if (defined("BAD_PAGE_API") && BAD_PAGE_API !== "") {
-      return TRUE; // When testing the bot on a specific page, allow "editing"
+    if (defined("BAD_PAGE_API") && BAD_PAGE_API !== "") {  // When testing the bot on a specific page, allow "editing"
+      return TRUE; // @codeCoverageIgnore
     }
     // see {{bots}} and {{nobots}}
     $bot_username = 'Citation[ _]bot';
