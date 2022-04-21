@@ -6718,4 +6718,77 @@ T1 - This is the Title }}';
      $this->assertSame('[[Journal of Polymer Science|J Poly Sci]]', $template->get2('journal'));
    }
  
+    public function test1093DoiStuff() : void {
+     $text = '{{cite journal|url=X|doi=10.1093/BADDDDDDDD/BADDDDDDD|via=hose}}';
+     $template = $this->make_template($text);
+     $template->forget('url');
+     $this->assertNull($template->get2('url'));
+     $this->assertNull($template->get2('via'));
+     $this->assertNull($template->get2('website'));
+     $this->assertSame('cite document', $template->wikiname());
+     $this->assertSame('hose', $template->get2('work'));
+
+     $text = '{{Cite journal|url=X|doi=10.1093/BADDDDDDDD/BADDDDDDD|website=hose}}';
+     $template = $this->make_template($text);
+     $template->forget('url');
+     $this->assertNull($template->get2('url'));
+     $this->assertNull($template->get2('via'));
+     $this->assertNull($template->get2('website'));
+     $this->assertSame('cite document', $template->wikiname());
+     $this->assertSame('hose', $template->get2('work'));
+     
+     $text = '{{Cite journal|url=X|doi=10.1093/BADDDDDDDD/BADDDDDDD|website=hose|via=Hose}}';
+     $template = $this->make_template($text);
+     $template->forget('url');
+     $this->assertNull($template->get2('url'));
+     $this->assertNull($template->get2('via'));
+     $this->assertNull($template->get2('website'));
+     $this->assertSame('cite document', $template->wikiname());
+     $this->assertSame('hose', $template->get2('work'));
+     
+     $text = '{{Cite journal|url=X|doi=10.1093/BADDDDDDDD/BADDDDDDD|website=kittens|via=doggies}}';
+     $template = $this->make_template($text);
+     $template->forget('url');
+     $this->assertNull($template->get2('url'));
+     $this->assertNull($template->get2('via'));
+     $this->assertNull($template->get2('website'));
+     $this->assertSame('cite document', $template->wikiname());
+     $this->assertSame('kittens via doggies', $template->get2('work'));
+   }
+ 
+    public function testFixURLinLocation) : void {
+     $text = '{{cite journal|location=http://www.apple.com/indes.html}}';
+     $template = $this->process_citation($text);
+     $this->assertNull($template->get2('location'));
+     $this->assertSame('http://www.apple.com/indes.html', $template->get2('url'));
+     
+     $text = '{{cite journal|location=http://www.apple.com/indes.html|url=http://www.apple.com/}}';
+     $template = $this->process_citation($text);
+     $this->assertNull($template->get2('location'));
+     $this->assertSame('http://www.apple.com/indes.html', $template->get2('url'));
+     
+     $text = '{{cite journal|url=http://www.apple.com/indes.html|location=http://www.apple.com/}}';
+     $template = $this->process_citation($text);
+     $this->assertNull($template->get2('location'));
+     $this->assertSame('http://www.apple.com/indes.html', $template->get2('url'));
+     
+     $text = '{{cite journal|url=http://www.apple.com/indes.html|location=http://www.ibm.com/}}';
+     $template = $this->process_citation($text);
+     $this->assertSame('http://www.ibm.com/', $template->get2('location'));
+     $this->assertSame('http://www.apple.com/indes.html', $template->get2('url'));
+   }
+ 
+   public function testVcite() : void {
+     $text = '{{vcite journal|doi=10.5555/dsfadsafdsfs}}';
+     $template = $this->process_citation($text);
+     $this->assertNotNull($template->get2('doi-broken-date'));
+   }
+ 
+   public function testAddingJunk() : void {
+     $text = '{{cite journal}}';
+     $template = $this->make_template($text);
+     $template->add_if_new('title', 'n/A');
+     $template->add_if_new('journal', 'Undefined');
+     $this->assertSame($text, $prepared->parsed_text());
+   }
 }
