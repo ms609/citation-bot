@@ -422,11 +422,11 @@ final class TemplateTest extends testBaseClass {
   }
 
    public function testDropBadData4() : void {
-    $text = "{{citation|last=Archive|last3=Get author RSS}}";
+    $text = "{{citation|last=Archive|first=Get author RSS}}";
     $expanded = $this->process_citation($text);
     $this->assertSame('{{citation}}', $expanded->parsed_text());
     
-    $text = "{{citation|last=Archive|first2=Email the}}";
+    $text = "{{citation|last=Archive|first2=Email the|last2=Author}}";
     $expanded = $this->process_citation($text);
     $this->assertSame('{{citation}}', $expanded->parsed_text());
   }
