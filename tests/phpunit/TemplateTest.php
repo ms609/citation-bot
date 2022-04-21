@@ -418,14 +418,17 @@ final class TemplateTest extends testBaseClass {
    public function testDropBadData3() : void {
     $text = "{{cite journal|doi=10.1063/5.0088162|coauthors=HDU|title=dsfadsafdskfldslj;fdsj;klfkdljssfjkl;ad;fkjdsl;kjfsda}}";
     $expanded = $this->process_citation($text);
+    $expanded->forget('s2cid');
     $this->assertSame($text, $expanded->parsed_text()); // Bad title blocks cross-ref
   }
 
-   public function testDropBadData4() : void {
-    $text = "{{citation|last=Archive|first=Get author RSS}}";
+   public function testDropBadData4a() : void {
+    $text = "{{citation|last=Archive|first2=Get author RSS}}";
     $expanded = $this->process_citation($text);
     $this->assertSame('{{citation}}', $expanded->parsed_text());
-    
+   }
+ 
+   public function testDropBadData4b() : void {
     $text = "{{citation|last=Archive|first2=Email the|last2=Author}}";
     $expanded = $this->process_citation($text);
     $this->assertSame('{{citation}}', $expanded->parsed_text());
