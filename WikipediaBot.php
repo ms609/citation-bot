@@ -112,8 +112,7 @@ final class WikipediaBot {
   }
   
   /** @phpstan-impure **/
-  private function fetch(array $params, string $method, int $depth = 1) : ?object {
-    if (self::NonStandardMode()) $method = 'POST';
+  private function fetch(array $params, int $depth = 1) : ?object {
     set_time_limit(120);
     if ($depth > 1) sleep($depth+2);
     if ($depth > 4) return NULL;
@@ -129,28 +128,13 @@ final class WikipediaBot {
     $request->signRequest(new HmacSha1(), $consumer, $token);
     $authenticationHeader = $request->toHeader();
     
-    try {
-      switch ($method) {
-        case 'GET':        
-          curl_setopt_array(self::$ch, [
-            CURLOPT_HTTPGET => TRUE,
-            CURLOPT_URL => API_ROOT . '?' . http_build_query($params),
-            CURLOPT_HTTPHEADER => [$authenticationHeader],
-          ]);
-          break;
-
-        case 'POST':
           curl_setopt_array(self::$ch, [
             CURLOPT_POST => TRUE,
             CURLOPT_POSTFIELDS => http_build_query($params),
             CURLOPT_HTTPHEADER => [$authenticationHeader],
             CURLOPT_URL => API_ROOT
           ]);
-          break;
-
-        default:
-          report_error("Unrecognized method in Fetch: " . $method); // @codeCoverageIgnore
-      }
+    
       $data = (string) @curl_exec(self::$ch);
       if ( !$data ) {
         report_minor_error("Curl error: " . echoable(curl_error(self::$ch)));  // @codeCoverageIgnore
@@ -166,7 +150,7 @@ final class WikipediaBot {
       ) {
         // @codeCoverageIgnoreStart
         unset($data, $ret, $token, $consumer, $request, $authenticationHeader); // save memory during recursion
-        return $this->fetch($params, $method, $depth+1);
+        return $this->fetch($params, $depth+1);
         // @codeCoverageIgnoreEnd
       }
       return (self::ret_okay($ret)) ? $ret : NULL;
@@ -185,7 +169,7 @@ final class WikipediaBot {
             'rvprop' => 'timestamp',
             'meta' => 'tokens',
             'titles' => $page
-          ], 'GET');
+          ]);
     
     if (!$response) {
       report_warning("Write request failed");     // @codeCoverageIgnore
@@ -257,7 +241,7 @@ final class WikipediaBot {
         "watchlist" => "nochange",
         'token' => $auth_token,
     );
-    $result = $this->fetch($submit_vars, 'POST');
+    $result = $this->fetch($submit_vars);
     
     if (isset($result->error)) {
       // @codeCoverageIgnoreStart
@@ -307,7 +291,7 @@ final class WikipediaBot {
     ];
     
     do {
-      $res = self::QueryAPI($vars, 'POST');
+      $res = self::QueryAPI($vars);
       $res = @json_decode($res);
       if (isset($res->query->categorymembers)) {
         foreach ($res->query->categorymembers as $page) {
@@ -333,7 +317,7 @@ final class WikipediaBot {
         "action" => "query",
         "prop" => "revisions",
         "titles" => $page,
-      ], 'GET');
+      ]);
     $res = @json_decode($res);
     if (!isset($res->query->pages)) {
         report_minor_error("Failed to get article's last revision");      // @codeCoverageIgnore
@@ -349,7 +333,7 @@ final class WikipediaBot {
         "action" => "query",
         "prop" => "info",
         "titles" => $page,
-        ], 'GET');
+        ]);
     $res = @json_decode($res);
     if (!isset($res->query->pages)) {
         report_warning("Failed to get redirect status");    // @codeCoverageIgnore
@@ -363,7 +347,7 @@ final class WikipediaBot {
         "action" => "query",
         "redirects" => "1",
         "titles" => $page,
-        ], 'GET');
+        ]);
     $res = @json_decode($res);
     if (!isset($res->query->redirects[0]->to)) {
         report_warning("Failed to get redirect target");     // @codeCoverageIgnore
@@ -372,29 +356,16 @@ final class WikipediaBot {
     return (string) $res->query->redirects[0]->to;
   }
   
-  static private function QueryAPI(array $params, string $method) : string {
+  static private function QueryAPI(array $params) : string {
     $params['format'] = 'json';
-      switch ($method) {
-        case 'GET':        
-          curl_setopt_array(self::$ch, [
-                CURLOPT_HTTPGET => TRUE,
-                CURLOPT_URL => API_ROOT . '?' . http_build_query($params),
-                CURLOPT_HTTPHEADER => []
-                  ]);
-          break;
 
-        case 'POST':
             curl_setopt_array(self::$ch, [
                 CURLOPT_POST => TRUE,
                 CURLOPT_POSTFIELDS => http_build_query($params),
                 CURLOPT_URL => API_ROOT,
                 CURLOPT_HTTPHEADER => []
           ]);
-          break;
 
-        default:
-          report_error("Unrecognized method in QueryAPI: " . $method); // @codeCoverageIgnore
-      }
     $data = (string) @curl_exec(self::$ch);
     return $data;
   }
@@ -406,12 +377,12 @@ final class WikipediaBot {
             'titles'=> $title, 
             'curtimestamp'=>'true', 
             'inprop' => 'protection', 
-          ], 'GET');
+          ]);
     return @json_decode($details);
   }
   
   static public function get_links(string $title) : string {
-     return self::QueryAPI(['action' => 'parse', 'prop' => 'links', 'page' => $title], 'GET');
+     return self::QueryAPI(['action' => 'parse', 'prop' => 'links', 'page' => $title]);
   }
   
   static public function GetAPage(string $title) : string {
@@ -432,10 +403,10 @@ final class WikipediaBot {
          "list" => "users",
          "ususers" => urlencode(str_replace(" ", "_", $user)),
       ];
-    $response = self::QueryAPI($query, 'GET');
+    $response = self::QueryAPI($query);
     if ($response === NULL || (strpos($response, '"userid"')  === FALSE)) { // try again if weird
       sleep(5);
-      $response = self::QueryAPI($query, 'GET');
+      $response = self::QueryAPI($query);
     }
     if ($response == '') return FALSE;
     $response = str_replace(array("\r", "\n"), '', $response);  // paranoid
