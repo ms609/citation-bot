@@ -6874,31 +6874,33 @@ final class Template {
        echo "\nThe WRK: " . $this->get('work') . "\n"; ob_flush();
        echo "\nThe BLK : " . (string) $this->blank(array_diff(WORK_ALIASES, ['website'])) . "\n"; ob_flush();
        echo "\nThe BAD : " . (string) bad_10_1093_doi($this->get('doi')) . "\n"; ob_flush();                                                                 
+          echo $this->parced_text() . "\n";
       if ($this->blank(array_diff(WORK_ALIASES, ['website'])) && bad_10_1093_doi($this->get('doi'))) {
          echo "\nIN 1093 loop\n"; ob_flush();
         if ($this->has('via') && $this->blank('website')) {
            echo "\nIN 1093 loop1\n"; ob_flush();
           $this->rename('via', 'work');
-          echo $this->parced_text() / "\n";
+          echo $this->parced_text() . "\n";
         } elseif ($this->has('website') && $this->blank('via')) {
            echo "\nIN 1093 loop2\n"; ob_flush();
           $this->rename('website', 'work');
-                    echo $this->parced_text() / "\n";
+                    echo $this->parced_text() . "\n";
         } elseif ($this->has('website') && $this->has('via')) {
            echo "\nIN 1093 loop3\n"; ob_flush();
           if (titles_are_similar($this->get('website'), $this->get('via'))) {
              echo "\nIN 1093 loop4\n"; ob_flush();
             $this->forgetter('via', $echo_forgetting);
             $this->rename('website', 'work');
-                      echo $this->parced_text() / "\n";
+                      echo $this->parced_text() . "\n";
           } else {
              echo "\nIN 1093 loop5\n"; ob_flush();
             $tmp = $this->get('website') . ' via ' . $this->get('via');
             $this->forgetter('via', $echo_forgetting);
             $this->rename('website', 'work', $tmp);
-                      echo $this->parced_text() / "\n";
+                      echo $this->parced_text() . "\n";
           }
         }
+                  echo "DONE : " . $this->parced_text() . "\n";
         preg_match("~^(\s*).*\b(\s*)$~", $this->name, $spacing);
         if (substr($this->name,0,1) === 'c') {
           $this->name = $spacing[1] . 'cite document' . $spacing[2];
@@ -6908,6 +6910,7 @@ final class Template {
       }
       $this->forgetter('via', $echo_forgetting);
       $this->forgetter('website', $echo_forgetting);
+                       echo "VERY DONE : " . $this->parced_text() . "\n";
     }
     if ($par == 'chapter' && $this->blank('url')) {
       if($this->has('chapter-url')) {
@@ -6966,6 +6969,7 @@ final class Template {
        } elseif ($this->has('arxiv') || $this->has('eprint')) {
          $this->change_name_to('cite arxiv');
        } else {
+       echo "WHY HERE\n";
          $this->change_name_to('cite document');
        }
     }
