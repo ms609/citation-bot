@@ -6897,4 +6897,10 @@ T1 - This is the Title }}';
      $template->add_if_new('journal', 'Undefined');
      $this->assertSame($text, $prepared->parsed_text());
    }
+ 
+   public function testCleanBritArchive() : void {
+     $text = '{{Cite web|title=Register {{!}} British Newspaper Archive|url=https://www.britishnewspaperarchive.co.uk/account/register?countrykey=0&showgiftvoucherclaimingoptions=false&gift=false&nextpage=%2faccount%2flogin%3freturnurl%3d%252fviewer%252fbl%252f0003125%252f18850804%252f069%252f0004&rememberme=false&cookietracking=false&partnershipkey=0&newsletter=false&offers=false&registerreason=none&showsubscriptionoptions=false&showcouponmessaging=false&showfreetrialmessaging=false&showregisteroptions=false&showloginoptions=false&isonlyupgradeable=false|access-date=2022-02-17|website=www.britishnewspaperarchive.co.uk}}';
+     $template = $this->process_citation($text);
+     $this->assertSame('[[British Newspaper Archive]]', $template->get2('via'));
+   }
 }
