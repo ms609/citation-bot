@@ -399,7 +399,56 @@ final class TemplateTest extends testBaseClass {
     $this->assertNull($expanded->get2('issn'));
     $this->assertNull($expanded->get2('url'));
   }
-   
+
+   public function testDropBadData2() : void {
+    $text = "{{cite journal|author2=BAD|jstor=3073767|pages=null|page=null|volume=n/a|issue=0|title=[No title found]|coauthors=Duh|last1=Duh|first1=Dum|first=Hello|last=By|author=Yup|author1=Nope}}";
+    $expanded = $this->process_citation($text);
+    $this->assertSame('Are Helionitronium Trications Stable?', $expanded->get2('title'));
+    $this->assertSame('99', $expanded->get2('volume'));
+    $this->assertSame('24', $expanded->get2('issue'));
+    $this->assertSame('Duh', $expanded->get2('last1')); // We have a bad author2, so no fixed them
+    $this->assertSame('Proceedings of the National Academy of Sciences of the United States of America', $expanded->get2('journal')); 
+    $this->assertSame('15303–15307', $expanded->get2('pages'));
+    // JSTOR gives up these, but we do not add since we get journal title and URL is simply jstor stable
+    $this->assertNull($expanded->get2('publisher'));
+    $this->assertNull($expanded->get2('issn'));
+    $this->assertNull($expanded->get2('url'));
+  }
+
+   public function testDropBadData3() : void {
+    $text = "{{cite journal|doi=10.1063/5.0088162|coauthors=HDU|title=dsfadsafdskfldslj;fdsj;klfkdljssfjkl;ad;fkjdsl;kjfsda}}";
+    $expanded = $this->process_citation($text);
+    $this->assertSame($text, $expanded->parsed_text()); // Bad title blocks cross-ref
+  }
+
+   public function testDropBadData4() : void {
+    $text = "{{citation|last3=Get author RSS}}";
+    $expanded = $this->process_citation($text);
+    $this->assertSame('{{citation}}', $expanded->parsed_text());
+    
+    $text = "{{citation|first2=Email the}}";
+    $expanded = $this->process_citation($text);
+    $this->assertSame('{{citation}}', $expanded->parsed_text());
+  }
+ 
+   public function testDropBadData5() : void {
+    $text = "{{citation|last=Published|first=Me}}";
+    $expanded = $this->process_citation($text);
+    $this->assertSame('{{citation|authour1=Me}}', $expanded->parsed_text());
+    
+    $text = "{{citation|last=Published|first1=Me}}";
+    $expanded = $this->process_citation($text);
+    $this->assertSame('{{citation|authour1=Me}}', $expanded->parsed_text());
+    
+    $text = "{{citation|last1=Published|first=Me}}";
+    $expanded = $this->process_citation($text);
+    $this->assertSame('{{citation|authour1=Me}}', $expanded->parsed_text());
+    
+    $text = "{{citation|last1=Published|first1=Me}}";
+    $expanded = $this->process_citation($text);
+    $this->assertSame('{{citation|authour1=Me}}', $expanded->parsed_text());
+  }
+ 
   public function testDOI1093() : void {
     $text = '{{cite web |doi=10.1093/gmo/9781561592630.article.J441700 |title=Tatum, Art(hur, Jr.) (jazz) |last=Howlett |first=Felicity |publisher=Oxford University Press |date=2002}}';
     $template = $this->make_citation($text);
