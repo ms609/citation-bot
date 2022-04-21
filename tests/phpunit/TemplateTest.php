@@ -4987,6 +4987,63 @@ T1 - This is the Title }}';
     $this->assertSame('new york times magazine', $template->get2('website'));
    }
  
+   public function testTidyGaurdian1() : void {
+    $text = "{{cite web|publisher=the guardian media group|work=This is a work that stays}}";
+    $template = $this->make_citation($text);
+    $template->tidy_parameter('publisher');
+    $this->assertSame('This is a work that stays', $template->get2('work'));
+    $this->assertSame('the guardian media group', $template->get2('publisher'));
+  }
+ 
+   public function testTidyGaurdian2() : void {
+    $text = "{{cite web|publisher=the guardian media group|work=theguardian.com}}";
+    $template = $this->make_citation($text);
+    $template->tidy_parameter('publisher');
+    $this->assertNull($template->get2('publisher'));
+    $this->assertSame('[[The Guardian]]', $template->get2('work'));
+  }
+
+  public function testTidyEcon1() : void {
+    $text = "{{cite web|publisher=the economist group|work=This is a work that stays}}";
+    $template = $this->make_citation($text);
+    $template->tidy_parameter('publisher');
+    $this->assertSame('This is a work that stays', $template->get2('work'));
+    $this->assertSame('the economist group', $template->get2('publisher'));
+  }
+ 
+   public function testTidyEcon2() : void {
+    $text = "{{cite web|publisher=the guardian media group|work=economist.com}}";
+    $template = $this->make_citation($text);
+    $template->tidy_parameter('publisher');
+    $this->assertNull($template->get2('publisher'));
+    $this->assertSame('[[The Economist]]', $template->get2('work'));
+  }
+
+
+  public function testTidySD1() : void {
+    $text = "{{cite web|publisher=the san diego union tribune|work=This is a work that stays}}";
+    $template = $this->make_citation($text);
+    $template->tidy_parameter('publisher');
+    $this->assertSame('This is a work that stays', $template->get2('work'));
+    $this->assertSame('the san diego union tribune', $template->get2('publisher'));
+  }
+ 
+   public function testTidySD2() : void {
+    $text = "{{cite web|publisher=the san diego union tribune|work=SignOnSanDiego.com}}";
+    $template = $this->make_citation($text);
+    $template->tidy_parameter('publisher');
+    $this->assertNull($template->get2('publisher'));
+    $this->assertSame('[[The San Diego Union-Tribune]]', $template->get2('work'));
+  }
+ 
+  public function testTidyNewsUk() : void {
+    $text = "{{cite web|publisher=news UK|work=thetimes.co.uk}}";
+    $template = $this->make_citation($text);
+    $template->tidy_parameter('publisher');
+    $this->assertNull($template->get2('publisher'));
+    $this->assertSame('[[The Times]]', $template->get2('work'));
+  }
+ 
    public function testRefComment() : void {
     $text = "{{cite web|ref=harv <!--  -->}}";
     $template = $this->process_citation($text);
