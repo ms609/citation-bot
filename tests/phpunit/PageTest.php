@@ -321,7 +321,15 @@ final class PageTest extends testBaseClass {
       $this->assertTrue((bool) stripos($page->parsed_text(), 'PhysRevD.78.081701'));
     });
   }
-                    
+ 
+   public function testUrlReferencesWithText17() : void {
+      $text = "<ref>{{isbn|0974900907}}</ref>";
+      $text = $text . $text;
+      $page = $this->process_page($text);
+      $this->assertTrue((bool) stripos($page->parsed_text(), 'Lahar'));
+      $this->assertTrue((bool) stripos($page->parsed_text(), 'cite book'));
+  }
+ 
   public function testMagazine() : void {
       $text = '{{cite magazine|work=Yup}}';
       $page = $this->process_page($text);
@@ -414,4 +422,15 @@ final class PageTest extends testBaseClass {
     $this->assertSame("https://books.google.com/books?id=Sw4EAAAAMBAJ&dq=%22The+Dennis+James+Carnival%22&pg=PT12", $template->get('url'));
   }
    
+  public function testAddEditorsSummary() : void {
+    $text = "{{Cite journal | doi-access=free|url=http://www.hbw.com/species/somali-pigeon-columba-oliviae|title=Somali Pigeon (Columba oliviae)|journal=Birds of the World|date=4 March 2020|last1=Baptista|first1=Luis F.|last2=Trail|first2=Pepper W.|last3=Horblit|first3=H. M.|last4=Sharpe|first4=Christopher J.|last5=Boesman|first5=Peter F. D.|last6=Garcia|first6=Ernest|doi=10.2173/bow.sompig1.01}}";
+    $page = $this->process_page($text);
+    $this->assertSame('(Add: editors 1-5. | [[WP:UCB|Use this bot]]. [[WP:DBUG|Report bugs]]. ', $page->edit_summary());
+  }
+ 
+  public function testConvertURLSummary() : void {
+    $text = "{{cite thesis |last=Hopkins-Weise |first=Jeffrey Ellis |date=2003-09-01 |title=Australian Involvement in the New Zealand Wars of the 1840s and 1860s |type=MPhil. |chapter=Sydney Manufacture of Coehorn Mortars |publisher=University of Queensland |docket= |oclc= |url=https://espace.library.uq.edu.au/data/UQ_198457/the17900.pdf?Expires=1650241198&Key-Pair-Id=APKAJKNBJ4MJBJNC6NLQ&Signature=gEyFpad5YhGNqdoOeq-utC-RLOB7KujpHfPCaNrUj-9KgjhunuqaY6gX5TIIrPQigy4To58NDSqVyGgr4a2DUE9O6AaiO8RjnVG8LDJWrgZqykR0H4xO8rJAy5cnCaTvhFhyAbeJLP7cOrqSgUfyuXvNO46SxiNoW3QNP-futcvJi7hbCKhYVJmTjoPl0HdsNunU3238Y8t2U3eCBtITFfiWcLXuX4od8xDf9Hbpb0~JwsZhyRnhzN0gv8FvD2V2vTku-MYR5H8KzcPsl3ovlP9HZ74cnlQpBXv4XKjG~6LzCBYHsnbNPxHERYLwR1qjnlrKTSAVBrV3mZ05z9Z2jQ__ |access-date=2022-04-18|page=57}}
+    $page = $this->process_page($text);
+    $this->assertSame('(Add: chapter-url. Removed or converted URL. | [[WP:UCB|Use this bot]]. [[WP:DBUG|Report bugs]]. ', $page->edit_summary());
+  }
 }
