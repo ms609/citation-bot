@@ -407,4 +407,11 @@ final class PageTest extends testBaseClass {
     $this->assertSame("{{cite iucn}}", $page->parsed_text());
     $this->assertSame('Misc citation tidying. | [[WP:UCB|Use this bot]]. [[WP:DBUG|Report bugs]]. ', $page->edit_summary());
   }
+ 
+  public function testInterview() : void {
+    $text = "{{cite interview|url=https://books.google.com/books?id=Sw4EAAAAMBAJ&pg=PT12&dq=%22The+Dennis+James+Carnival%22#v=onepage&q=%22The%20Dennis%20James%20Carnival%22&f=false}}";
+    $template = $this->process_citation($text);
+    $this->assertSame("https://books.google.com/books?id=Sw4EAAAAMBAJ&dq=%22The+Dennis+James+Carnival%22&pg=PT12", $template->get('url'));
+  }
+   
 }
