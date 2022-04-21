@@ -414,10 +414,12 @@ final class WikipediaBot {
   }
   
   static public function GetAPage(string $title) : string {
+    $params = ['title' => $title, 'action' =>'parse', 'prop' => 'wikitext'];
     curl_setopt_array(self::$ch,
               [CURLOPT_HTTPGET => TRUE,
                CURLOPT_HTTPHEADER => [],
-               CURLOPT_URL => WIKI_ROOT . '?' . http_build_query(['title' => $title, 'action' =>'raw'])]);
+                CURLOPT_POST => TRUE,
+                CURLOPT_POSTFIELDS => http_build_query($params)]);
     $text = (string) @curl_exec(self::$ch);
     return $text;
   }
