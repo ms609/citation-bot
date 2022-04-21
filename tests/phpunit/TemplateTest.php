@@ -461,6 +461,21 @@ final class TemplateTest extends testBaseClass {
     $this->assertSame('{{Cite document |doi=10.1093/gmo/9781561592630.article.J441700 |title=Tatum, Art(hur, Jr.) (jazz) |last=Howlett |first=Felicity |publisher=Oxford University Press |date=2002}}', $template->parsed_text());
   } 
  
+  public function testOxLit() : void {
+    $text="{{cite web|url=https://oxfordre.com/literature/view/10.1093/acrefore/9780190201098.001.0001/acrefore-9780190201098-e-1357|doi-broken-date=X|doi=10.3421/32412xxxxxxx}}";
+    $template = $this->process_citation($text);
+    $this->assertSame('10.1093/acrefore/9780190201098.013.1357', $template->get2('doi'));
+  }
+ 
+  public function testShortenMusic() : void {
+    $text="{{cite web|url=https://oxfordmusiconline.com/X/X/2134}}";
+    $template = $this->process_citation($text);
+    $this->assertSame('https://oxfordmusiconline.com/X/2134', $template->get2('url'));
+    $text="{{cite web|url=https://oxfordmusiconline.com/X/X/X/2134}}";
+    $template = $this->process_citation($text);
+    $this->assertSame('https://oxfordmusiconline.com/X/2134', $template->get2('url'));
+  }
+ 
   public function testGroveMusic1() : void {
     $text = '{{cite web |url=https://doi.org/10.1093/gmo/9781561592630.article.J441700 |title=Tatum, Art(hur, Jr.) (jazz) |last1=Howlett |first1=Felicity | website=Grove Music Online |publisher=Oxford University Press |date=2002 |access-date=November 20, 2018 |url-access=subscription|via=Grove Music Online}}';
     $template = $this->process_citation($text);
@@ -6902,5 +6917,13 @@ T1 - This is the Title }}';
      $text = '{{Cite web|title=Register {{!}} British Newspaper Archive|url=https://www.britishnewspaperarchive.co.uk/account/register?countrykey=0&showgiftvoucherclaimingoptions=false&gift=false&nextpage=%2faccount%2flogin%3freturnurl%3d%252fviewer%252fbl%252f0003125%252f18850804%252f069%252f0004&rememberme=false&cookietracking=false&partnershipkey=0&newsletter=false&offers=false&registerreason=none&showsubscriptionoptions=false&showcouponmessaging=false&showfreetrialmessaging=false&showregisteroptions=false&showloginoptions=false&isonlyupgradeable=false|access-date=2022-02-17|website=www.britishnewspaperarchive.co.uk}}';
      $template = $this->process_citation($text);
      $this->assertSame('[[British Newspaper Archive]]', $template->get2('via'));
+   }
+ 
+   public function testHealthAffairs() : void {
+     $text = '{{Cite web|url=https://www.healthaffairs.org/do/10.1377/hblog20180605.966625/full/|archiveurl=healthaffairs.org}}';
+     $template = $this->process_citation($text);
+     $this->assertSame('10.1377/forefront.20180605.966625', $template->get2('doi'));
+     $this->assertSame('https://www.healthaffairs.org/do/10.1377/forefront.20180605.966625', $template->get2('url'));
+     $this->assertNull($template->get2('archiveurl'));
    }
 }
