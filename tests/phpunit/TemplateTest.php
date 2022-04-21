@@ -6891,7 +6891,7 @@ T1 - This is the Title }}';
      $this->assertNull($template->get2('via'));
      $this->assertNull($template->get2('website'));
      $this->assertSame('cite document', $template->wikiname());
-     $this->assertSame('hose', $template->get2('journal'));
+     $this->assertSame('Hose', $template->get2('journal'));
     }
  
     public function test1093DoiStuff6() : void {
@@ -6902,7 +6902,7 @@ T1 - This is the Title }}';
      $this->assertNull($template->get2('via'));
      $this->assertNull($template->get2('website'));
      $this->assertSame('cite document', $template->wikiname());
-     $this->assertSame('hose', $template->get2('journal'));
+     $this->assertSame('Hose', $template->get2('journal'));
     }
  
     public function test1093DoiStuff7() : void {
@@ -6913,7 +6913,7 @@ T1 - This is the Title }}';
      $this->assertNull($template->get2('via'));
      $this->assertNull($template->get2('website'));
      $this->assertSame('cite document', $template->wikiname());
-     $this->assertSame('hose', $template->get2('journal'));
+     $this->assertSame('Hose', $template->get2('journal'));
     }
  
     public function test1093DoiStuff8() : void {
@@ -6924,7 +6924,7 @@ T1 - This is the Title }}';
      $this->assertNull($template->get2('via'));
      $this->assertNull($template->get2('website'));
      $this->assertSame('cite document', $template->wikiname());
-     $this->assertSame('kittens via doggies', $template->get2('journal'));
+     $this->assertSame('Kittens Via Doggies', $template->get2('journal'));
    }
  
  
