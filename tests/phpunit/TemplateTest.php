@@ -434,19 +434,19 @@ final class TemplateTest extends testBaseClass {
    public function testDropBadData5() : void {
     $text = "{{citation|last=Published|first=Me}}";
     $expanded = $this->process_citation($text);
-    $this->assertSame('{{citation|authour1=Me}}', $expanded->parsed_text());
+    $this->assertSame('{{citation|author1=Me}}', $expanded->parsed_text());
     
     $text = "{{citation|last=Published|first1=Me}}";
     $expanded = $this->process_citation($text);
-    $this->assertSame('{{citation|authour1=Me}}', $expanded->parsed_text());
+    $this->assertSame('{{citation|author1=Me}}', $expanded->parsed_text());
     
     $text = "{{citation|last1=Published|first=Me}}";
     $expanded = $this->process_citation($text);
-    $this->assertSame('{{citation|authour1=Me}}', $expanded->parsed_text());
+    $this->assertSame('{{citation|author1=Me}}', $expanded->parsed_text());
     
     $text = "{{citation|last1=Published|first1=Me}}";
     $expanded = $this->process_citation($text);
-    $this->assertSame('{{citation|authour1=Me}}', $expanded->parsed_text());
+    $this->assertSame('{{citation|author1=Me}}', $expanded->parsed_text());
   }
  
   public function testDOI1093() : void {
@@ -6841,7 +6841,7 @@ T1 - This is the Title }}';
  
     public function test1093DoiStuff() : void {
      $text = '{{cite journal|url=X|doi=10.1093/BADDDDDDDD/BADDDDDDD|via=hose}}';
-     $template = $this->make_template($text);
+     $template = $this->make_citation($text);
      $template->forget('url');
      $this->assertNull($template->get2('url'));
      $this->assertNull($template->get2('via'));
@@ -6850,7 +6850,7 @@ T1 - This is the Title }}';
      $this->assertSame('hose', $template->get2('work'));
 
      $text = '{{Cite journal|url=X|doi=10.1093/BADDDDDDDD/BADDDDDDD|website=hose}}';
-     $template = $this->make_template($text);
+     $template = $this->make_citation($text);
      $template->forget('url');
      $this->assertNull($template->get2('url'));
      $this->assertNull($template->get2('via'));
@@ -6859,7 +6859,7 @@ T1 - This is the Title }}';
      $this->assertSame('hose', $template->get2('work'));
      
      $text = '{{Cite journal|url=X|doi=10.1093/BADDDDDDDD/BADDDDDDD|website=hose|via=Hose}}';
-     $template = $this->make_template($text);
+     $template = $this->make_citation($text);
      $template->forget('url');
      $this->assertNull($template->get2('url'));
      $this->assertNull($template->get2('via'));
@@ -6868,7 +6868,7 @@ T1 - This is the Title }}';
      $this->assertSame('hose', $template->get2('work'));
      
      $text = '{{Cite journal|url=X|doi=10.1093/BADDDDDDDD/BADDDDDDD|website=kittens|via=doggies}}';
-     $template = $this->make_template($text);
+     $template = $this->make_citation($text);
      $template->forget('url');
      $this->assertNull($template->get2('url'));
      $this->assertNull($template->get2('via'));
@@ -6907,7 +6907,7 @@ T1 - This is the Title }}';
  
    public function testAddingJunk() : void {
      $text = '{{cite journal}}';
-     $template = $this->make_template($text);
+     $template = $this->make_citation($text);
      $template->add_if_new('title', 'n/A');
      $template->add_if_new('journal', 'Undefined');
      $this->assertSame($text, $prepared->parsed_text());
@@ -6923,7 +6923,7 @@ T1 - This is the Title }}';
      $text = '{{Cite web|url=https://www.healthaffairs.org/do/10.1377/hblog20180605.966625/full/|archiveurl=healthaffairs.org}}';
      $template = $this->process_citation($text);
      $this->assertSame('10.1377/forefront.20180605.966625', $template->get2('doi'));
-     $this->assertSame('https://www.healthaffairs.org/do/10.1377/forefront.20180605.966625', $template->get2('url'));
+     $this->assertSame('https://www.healthaffairs.org/do/10.1377/forefront.20180605.966625/full', $template->get2('url'));
      $this->assertNull($template->get2('archiveurl'));
    }
 }
