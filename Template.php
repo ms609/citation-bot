@@ -6872,7 +6872,7 @@ final class Template {
       if ($this->get('url') === 'X') echo "\nThe WEB: " . $this->get('website') . "\n"; ob_flush();
       if ($this->get('url') === 'X') echo "\nThe VIA: " . $this->get('via') . "\n"; ob_flush();
       if ($this->get('url') === 'X') echo "\nThe WRK: " . $this->get('work') . "\n"; ob_flush();
-      if ($this->get('url') === 'X') echo "\nThe BLK : " . (string) $this->blank(array_diff(WORK_ALIASES, ['website']) . "\n"; ob_flush();
+      if ($this->get('url') === 'X') echo "\nThe BLK : " . (string) $this->blank(array_diff(WORK_ALIASES, ['website'])) . "\n"; ob_flush();
       if ($this->get('url') === 'X') echo "\nThe BAD : " . (string) bad_10_1093_doi($this->get('doi')) . "\n"; ob_flush();                                                                 
       if ($this->blank(array_diff(WORK_ALIASES, ['website'])) && bad_10_1093_doi($this->get('doi'))) {
         if ($this->get('url') === 'X') echo "\nIN 1093 loop\n"; ob_flush();
