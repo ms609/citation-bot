@@ -120,7 +120,7 @@ final class WikipediaBot {
 
     $token = $this->bot_token;
     $consumer = $this->bot_consumer;
-    if (defined('EDIT_AS_USER') && ($params["action"] === "edit")) { // @codeCoverageIgnoreBegin
+    if (defined('EDIT_AS_USER') && ($params["action"] === "edit")) { // @codeCoverageIgnoreStart
        $token = $this->user_token;
        $consumer = $this->user_consumer;
     }                                                                // @codeCoverageIgnoreEnd
