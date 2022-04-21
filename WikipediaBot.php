@@ -414,7 +414,7 @@ final class WikipediaBot {
   }
   
   static public function GetAPage(string $title) : string {
-    curl_setopt_array(self::$ch,
+    curl_setopt_array(self::$ch, [
             CURLOPT_POST => TRUE,
             CURLOPT_POSTFIELDS => http_build_query($params),
             CURLOPT_HTTPHEADER => [],
