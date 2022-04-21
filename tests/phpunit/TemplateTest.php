@@ -6756,7 +6756,7 @@ T1 - This is the Title }}';
      $this->assertSame('kittens via doggies', $template->get2('work'));
    }
  
-    public function testFixURLinLocation) : void {
+    public function testFixURLinLocation() : void {
      $text = '{{cite journal|location=http://www.apple.com/indes.html}}';
      $template = $this->process_citation($text);
      $this->assertNull($template->get2('location'));
