@@ -127,7 +127,8 @@ final class WikipediaBot {
     $request = Request::fromConsumerAndToken($consumer, $token, $method, API_ROOT, $params);
     $request->signRequest(new HmacSha1(), $consumer, $token);
     $authenticationHeader = $request->toHeader();
-    
+
+try {
           curl_setopt_array(self::$ch, [
             CURLOPT_POST => TRUE,
             CURLOPT_POSTFIELDS => http_build_query($params),
