@@ -4589,7 +4589,7 @@ final class Template {
                   stripos($this->get($work), 'thetimes.co.uk') !== FALSE) {
                  $this->forget($param);
                  if (stripos($this->get($work), 'thetimes.co.uk') !== FALSE) {
-                   $this->set($work, '[[The Times]]|');
+                   $this->set($work, '[[The Times]]');
                  }
                  return;
               }
