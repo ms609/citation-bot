@@ -6867,16 +6867,29 @@ final class Template {
       if ($this->has('work') && stripos($this->get('work'), 'www.') === 0) {
          $this->forgetter('work', $echo_forgetting);
       }
+      if ($this->get('url') === 'X') echo "\nIN FORGET\n"; ob_flush();
+      if ($this->get('url') === 'X') echo "\nThe DOI: " . $this->get('doi') . "\n"; ob_flush();
+      if ($this->get('url') === 'X') echo "\nThe WEB: " . $this->get('website') . "\n"; ob_flush();
+      if ($this->get('url') === 'X') echo "\nThe VIA: " . $this->get('via') . "\n"; ob_flush();
+      if ($this->get('url') === 'X') echo "\nThe WRK: " . $this->get('work') . "\n"; ob_flush();
+      if ($this->get('url') === 'X') echo "\nThe BLK : " . (string) $this->blank(array_diff(WORK_ALIASES, ['website']) . "\n"; ob_flush();
+      if ($this->get('url') === 'X') echo "\nThe BAD : " . (string) bad_10_1093_doi($this->get('doi')) . "\n"; ob_flush();                                                                 
       if ($this->blank(array_diff(WORK_ALIASES, ['website'])) && bad_10_1093_doi($this->get('doi'))) {
+        if ($this->get('url') === 'X') echo "\nIN 1093 loop\n"; ob_flush();
         if ($this->has('via') && $this->blank('website')) {
+          if ($this->get('url') === 'X') echo "\nIN 1093 loop1\n"; ob_flush();
           $this->rename('via', 'work');
         } elseif ($this->has('website') && $this->blank('via')) {
+          if ($this->get('url') === 'X') echo "\nIN 1093 loop2\n"; ob_flush();
           $this->rename('website', 'work');
         } elseif ($this->has('website') && $this->has('via')) {
+          if ($this->get('url') === 'X') echo "\nIN 1093 loop3\n"; ob_flush();
           if (titles_are_similar($this->get('website'), $this->get('via'))) {
+            if ($this->get('url') === 'X') echo "\nIN 1093 loop4\n"; ob_flush();
             $this->forgetter('via', $echo_forgetting);
             $this->rename('website', 'work');
           } else {
+            if ($this->get('url') === 'X') echo "\nIN 1093 loop5\n"; ob_flush();
             $tmp = $this->get('website') . ' via ' . $this->get('via');
             $this->forgetter('via', $echo_forgetting);
             $this->rename('website', 'work', $tmp);
