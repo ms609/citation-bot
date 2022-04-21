@@ -5996,18 +5996,6 @@ final class Template {
              $this->forget($param);
             return;
           }
-          if ($this->get($param) === 'sfdb.org') { // Clean up after bad edits
-            $url = $this->get('url');
-             if (stripos($url, 'isfdb.org') !== FALSE) {
-               if (stripos($url, '.isfdb.org') !== FALSE || stripos($url, '/isfdb.org') !== FALSE) {
-                 $this->set($param, 'isfdb.org');
-                 return;
-               } else {
-                 $this->forget($param);
-                 return;
-               }
-             }
-          }
           if (($this->wikiname() === 'cite book') && (str_i_same($this->get($param), 'google.com') ||
                                                       str_i_same($this->get($param), 'Google Books') ||
                                                       str_i_same($this->get($param), 'Google Book') ||
