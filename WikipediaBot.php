@@ -419,6 +419,7 @@ final class WikipediaBot {
             CURLOPT_POSTFIELDS => http_build_query($params),
             CURLOPT_HTTPHEADER => [],
             CURLOPT_URL => API_ROOT
+          ]);
     $text = (string) @curl_exec(self::$ch);
     return $text;
   }
