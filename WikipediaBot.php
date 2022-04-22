@@ -371,11 +371,13 @@ try {
        $data = (string) @curl_exec(self::$ch);  // @codeCoverageIgnore
     }
     return (self::ret_okay(@json_decode($data))) ? $data : '';
+    // @codeCoverageIgnoreStart
    } catch(Exception $E) {
-      report_warning("Exception caught!!\n");      // @codeCoverageIgnore
-      report_info("Response: ". $E->getMessage()); // @codeCoverageIgnore
+      report_warning("Exception caught!!\n");
+      report_info("Response: ". $E->getMessage());
    }
-   return ''; // @codeCoverageIgnore
+   return '';
+  // @codeCoverageIgnoreEnd
   }
  
   static public function ReadDetails(string $title) : object {
