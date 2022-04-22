@@ -340,7 +340,9 @@ try {
         report_warning("Failed to get redirect status");    // @codeCoverageIgnore
         return -1;                                          // @codeCoverageIgnore
     }
-    $res = reset($res->query->pages);
+    print_r($res->query->pages);
+    $page = reset($res->query->pages);
+    print_r($page);
     return (isset($res->missing) ? -1 : (isset($res->redirect) ? 1 : 0));
   }
   public static function redirect_target(string $page) : ?string {
