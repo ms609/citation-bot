@@ -6998,7 +6998,7 @@ T1 - This is the Title }}';
    public function testAddExitingThings3() : void {
     $text = "{{Cite web}}";
     $expanded = $this->make_citation($text);
-    $this->assertTrue($expanded->add_if_new('website',  'Springer Zone');
+    $this->assertTrue($expanded->add_if_new('website',  'Springer Zone'));
     $this->assertFalse($expanded->add_if_new('website', 'Goodbye dead'));
   }
 
