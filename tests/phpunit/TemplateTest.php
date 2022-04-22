@@ -6648,7 +6648,7 @@ T1 - This is the Title }}';
   }
  
   public function testCiteODNB3() : void {
-     $text = '{{Cite ODNB|url=https://www.oxforddnb.com/view/10.1093/odnb/9780198614128.001.0001/odnb-9780198614128-e-107316|doi=dfasdfdsafdsdsfds}}';
+     $text = '{{Cite ODNB|url=https://www.oxforddnb.com/view/10.1093/odnb/9780198614128.001.0001/odnb-9780198614128-e-107316|doi=10.1093/odnb/9780198614128.001.0001/odnb-9780198614128-e-107316}}';
      $template = $this->process_citation($text);
      $this->assertSame('10.1093/odnb/9780198614128.013.107316', $template->get2('doi'));
   }
@@ -6657,14 +6657,14 @@ T1 - This is the Title }}';
      $text = '{{Cite ODNB|url=https://www.oxforddnb.com/view/10.1093/odnb/9780198614128.001.0001/odnb-9780198614128-e-107316|id=107316}}';
      $template = $this->process_citation($text);
      $this->assertSame('10.1093/odnb/9780198614128.013.107316', $template->get2('doi'));
-     $this->assertNull('id');
+     $this->assertNull($template->get2('id'));
   }
 
   public function testCiteODNB5() : void {
      $text = '{{Cite ODNB|url=https://www.oxforddnb.com/view/10.1093/odnb/9780198614128.001.0001/odnb-9780198614128-e-107316|id=107316|doi=dfasdfdsafdsdsfds}}';
      $template = $this->process_citation($text);
      $this->assertSame('10.1093/odnb/9780198614128.013.107316', $template->get2('doi'));
-     $this->assertNull('id');
+     $this->assertNull($template->get2('id'));
   }
  
   public function testSemanticscholar1() : void {
