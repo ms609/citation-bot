@@ -137,17 +137,13 @@ try {
           ]);
     
       $data = (string) @curl_exec(self::$ch);
-      if ( !$data ) {
-        report_minor_error("Curl error: " . echoable(curl_error(self::$ch)));  // @codeCoverageIgnore
-        return NULL;                                                          // @codeCoverageIgnore
-      }
       $ret = @json_decode($data); 
-      if (isset($ret->error) && (
+      if (($ret == NULL) || (isset($ret->error) && (
         (string) $ret->error->code === 'assertuserfailed' ||
         stripos((string) $ret->error->info, 'The database has been automatically locked') !== FALSE ||
         stripos((string) $ret->error->info, 'abusefilter-warning-predatory') !== FALSE ||
         stripos((string) $ret->error->info, 'protected') !== FALSE ||
-        stripos((string) $ret->error->info, 'Nonce already used') !== FALSE)
+        stripos((string) $ret->error->info, 'Nonce already used') !== FALSE))
       ) {
         // @codeCoverageIgnoreStart
         unset($data, $ret, $token, $consumer, $request, $authenticationHeader); // save memory during recursion
@@ -164,6 +160,11 @@ try {
   
   /** @phpstan-impure **/
   public function write_page(string $page, string $text, string $editSummary, int $lastRevId, string $startedEditing) : bool {
+    if (stripos($text, "CITATION_BOT_PLACEHOLDER") != FALSE)  {
+      report_minor_error("\n ! Placeholder left escaped in text. Aborting.");  // @codeCoverageIgnore
+      return FALSE;                                                            // @codeCoverageIgnore
+    }
+
     $response = $this->fetch([
             'action' => 'query',
             'prop' => 'info|revisions',
@@ -211,10 +212,6 @@ try {
       report_minor_error("Possible edit conflict detected. Aborting.");      // @codeCoverageIgnore
       return FALSE;                                                          // @codeCoverageIgnore
     }
-    if (stripos($text, "CITATION_BOT_PLACEHOLDER") != FALSE)  {
-      report_minor_error("\n ! Placeholder left escaped in text. Aborting.");  // @codeCoverageIgnore
-      return FALSE;                                                            // @codeCoverageIgnore
-    }
     if (!isset($response->query) || !isset($response->query->tokens) ||
         !isset($response->query->tokens->csrftoken)) {
       report_minor_error("Responce object was invalid.  Aborting. ");  // @codeCoverageIgnore
@@ -255,7 +252,7 @@ try {
     } elseif (isset($result->edit)) {
       // @codeCoverageIgnoreStart
       if (isset($result->edit->captcha)) {
-        report_error("Write error: We encountered a captcha, so can't be properly logged in."); // Bot some flags set on en. and simple. to avoid captchas
+        report_error("Write error: We encountered a captcha, so can't be properly logged in."); // Bot account has flags set on en.wikipedia.org and simple.wikipedia.org to avoid captchas
       } elseif ($result->edit->result == "Success") {
         // Need to check for this string wherever our behaviour is dependant on the success or failure of the write operation
         if (HTML_OUTPUT) {
