@@ -6980,4 +6980,180 @@ T1 - This is the Title }}';
      $this->assertSame('https://www.healthaffairs.org/do/10.1377/forefront.20180605.966625/full/', $template->get2('url'));
      $this->assertNull($template->get2('archiveurl'));
    }
+ 
+  public function testAddExitingThings() : void {
+    $text = "{{Cite web}}";
+    $expanded = $this->make_citation($text);
+    $this->assertTrue($expanded->add_if_new('publisher',  'X'));
+    $this->assertFalse($expanded->add_if_new('publisher', 'Y'));
+   
+    $this->assertTrue($expanded->add_if_new('location',  'X'));
+    $this->assertFalse($expanded->add_if_new('location', 'Y'));
+   
+    $this->assertTrue($expanded->add_if_new('website',  'X'));
+    $this->assertFalse($expanded->add_if_new('website', 'Y'));
+  }
+
+   public function testAllSortsOfBadData() : void {
+    $text = "{{Cite journal|journal=arXiv|title=[No title found]|issue=null|volume=null|page=null|pages=null|pmc=1}}";
+    $expanded = $this->process_citation($text);
+    $this->assertSame($text, $expanded->parsed_text());
+  }
+ 
+   public function testTidyUpNA() : void {
+    $text = "{{Cite journal|volume=n/a|issue=3}}";
+    $expanded = $this->process_citation($text);
+    $this->assertNull($expanded->get2('volume'));
+
+    $text = "{{Cite journal|issue=n/a|volume=3}}";
+    $expanded = $this->process_citation($text);
+    $this->assertNull($expanded->get2('issue'));
+  }
+
+   public function testTestExistingVerifiedData() : void {
+    $text = "{{Cite journal|volume=((4))}}";
+    $expanded = $this->make_citation($text);
+    $this->assertFalse($expanded->set('volume', '3'));
+  }
+ 
+  public function testTidyWebsites() : void {
+    $text = "{{Cite web|website=Undefined}}";
+    $expanded = $this->make_citation($text);
+    $expanded->tidy_parameter('website');
+    $this->assertNull($expanded->get2('website'));
+   
+    $text = "{{Cite web|website=latimes.com}}";
+    $expanded = $this->make_citation($text);
+    $expanded->tidy_parameter('website');
+    $this->asserSame('[[Los Angeles Times]]', $expanded->get2('website'));
+   
+    $text = "{{Cite web|website=nytimes.com}}";
+     $expanded = $this->make_citation($text);
+    $expanded->tidy_parameter('website');
+    $this->asserSame('[[The New York Times]]', $expanded->get2('website'));
+   
+    $text = "{{Cite web|website=The Times Digital Archive}}";
+    $expanded = $this->make_citation($text);
+    $expanded->tidy_parameter('website');
+    $this->asserSame('[[The Times]]', $expanded->get2('website'));
+   
+    $text = "{{Cite web|website=electronic gaming monthly}}";
+    $expanded = $this->make_citation($text);
+    $expanded->tidy_parameter('website');
+    $this->asserSame('electronic gaming monthly', $expanded->get2('magazine'));
+    $this->asserSame('cite magazine', $expanded->wikiname());
+
+    $text = "{{Cite web|website=the economist}}";
+    $expanded = $this->make_citation($text);
+    $expanded->tidy_parameter('website');
+    $this->asserSame('the economist', $expanded->get2('newspaper'));
+    $this->asserSame('cite news', $expanded->wikiname());
+  }
+ 
+  public function testTidyWorkers() : void { 
+    $text = "{{Cite web|work=latimes.com}}";
+    $expanded = $this->make_citation($text);
+    $expanded->tidy_parameter('work');
+    $this->asserSame('[[Los Angeles Times]]', $expanded->get2('work'));
+   
+    $text = "{{Cite web|website=nytimes.com}}";
+    $expanded = $this->make_citation($text);
+    $expanded->tidy_parameter('work');
+    $this->asserSame('[[The New York Times]]', $expanded->get2('work'));
+   
+    $text = "{{Cite web|website=The Times Digital Archive}}";
+    $expanded = $this->make_citation($text);
+    $expanded->tidy_parameter('work');
+    $this->asserSame('[[The Times]]', $expanded->get2('work'));
+  }
+ 
+  public function testHasNoIssuesAtAll() : void {
+    $text = "{{Cite journal|journal=oceanic linguistics special publications|issue=3|volume=5}}";
+    $expanded = $this->make_citation($text);
+    $expanded->tidy_parameter('issue');
+    $this->asserNull($expanded->get2('issue'));
+    $this->asserSame('5', $expanded->get2('volume'));
+   
+    $text = "{{Cite journal|journal=oceanic linguistics special publications|issue=3}}";
+    $expanded = $this->make_citation($text);
+    $expanded->tidy_parameter('issue');
+    $this->asserNull($expanded->get2('issue'));
+    $this->asserSame('3', $expanded->get2('volume'));
+  }
+
+   public function testTidyBadArchives() : void {
+    $text = "{{Cite web|archive-url=https://www.britishnewspaperarchive.co.uk/account/register/dsfads}}";
+    $expanded = $this->make_citation($text);
+    $expanded->tidy_parameter('archive-url');
+    $this->asserNull($expanded->get2('archive-url'));
+
+    $text = "{{Cite web|archive-url=https://meta.wikimedia.org/w/index\.php?title=Special:UserLogin:DSFadsfds}}";
+    $expanded = $this->make_citation($text);
+    $expanded->tidy_parameter('archive-url');
+    $this->asserNull($expanded->get2('archive-url'));
+   }
+
+  public function testTidyBadISSN() : void {
+    $text = "{{Cite web|issn=1111222X}}";
+    $expanded = $this->make_citation($text);
+    $expanded->tidy_parameter('issn');
+    $this->asserSame('1111-222X', $expanded->get2('issn'));
+   
+    $text = "{{Cite web|issn=1111-222x}}";
+    $expanded = $this->make_citation($text);
+    $expanded->tidy_parameter('issn');
+    $this->asserSame('1111-222X', $expanded->get2('issn'));
+  }
+
+   public function testTidyBadPeriodical() {
+    $text = "{{Cite web|periodical=undefined}}";
+    $expanded = $this->make_citation($text);
+    $expanded->tidy_parameter('periodical');
+    $this->asserNull($expanded->get2('periodical'));
+
+    $text = "{{Cite web|periodical=medrxiv}}";
+    $expanded = $this->make_citation($text);
+    $expanded->tidy_parameter('periodical');
+    $this->asserNull($expanded->get2('periodical'));
+    $this->asserSame('medrxiv', $expanded->get2('work'));
+    $this->asserSame('cite document', $expanded->wikiname());
+   }
+ 
+   public function testTidyGoogleSupport() : void {
+    $text = "{{Cite web|url=https://support.google.com/hello|publisher=Proudly made by the google plex}}";
+    $expanded = $this->make_citation($text);
+    $expanded->tidy_parameter('publisher');
+    $this->asserSame('Google Inc.', $expanded->get2('publisher'));
+   }
+ 
+   public function testTidyURLStatus() : void {
+      $text = "{{cite web|url=http://x.com/|deadurl=sì}}"
+      $expanded = $this->make_citation($text);
+      $expanded->tidy_parameter('deadurl');
+      $this->asserSame('dead', $expanded->get2('url-status'));
+      $this->asserNull($expanded->get2('deadurl'));
+    
+      $text = "{{cite web|url=http://x.com/|deadurl=live}}"
+      $expanded = $this->make_citation($text);
+      $expanded->tidy_parameter('deadurl');
+      $this->asserSame('alive', $expanded->get2('url-status'));
+      $this->asserNull($expanded->get2('deadurl'));
+   }
+ 
+   public function testTidyMonth() : void {
+      $text = "{{cite web|date=March 2000|month=march|day=11}}"
+      $expanded = $this->make_citation($text);
+      $expanded->tidy_parameter('month');
+      $this->asserNull($expanded->get2('day'));
+      $this->asserNull($expanded->get2('month'));
+   }
+ 
+   public function testCulturalAdvice() : void {
+      $text = "{{cite web|chapter=Cultural Advice|chapter-url=http://anu.edu.au}}"
+      $expanded = $this->make_citation($text);
+      $expanded->tidy_parameter('chapter');
+      $this->asserNull($expanded->get2('chapter'));
+      $this->asserNull($expanded->get2('chapter-url'));
+      $this->asserSame('http://anu.edu.au', $expanded->get2('url'));
+   }
 }
