@@ -7140,7 +7140,7 @@ T1 - This is the Title }}';
       $this->asserNull($expanded->get2('deadurl'));
    }
  
-   public function testTidyMonth() : void {
+   public function testTidyMonth2() : void {
       $text = "{{cite web|date=March 2000|month=march|day=11}}";
       $expanded = $this->make_citation($text);
       $expanded->tidy_parameter('month');
