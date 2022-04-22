@@ -7071,13 +7071,13 @@ T1 - This is the Title }}';
     $text = "{{Cite journal|journal=oceanic linguistics special publications|issue=3|volume=5}}";
     $expanded = $this->make_citation($text);
     $expanded->tidy_parameter('issue');
-    $this->asserNull($expanded->get2('issue'));
+    $this->AssertNull($expanded->get2('issue'));
     $this->asserSame('5', $expanded->get2('volume'));
    
     $text = "{{Cite journal|journal=oceanic linguistics special publications|issue=3}}";
     $expanded = $this->make_citation($text);
     $expanded->tidy_parameter('issue');
-    $this->asserNull($expanded->get2('issue'));
+    $this->AssertNull($expanded->get2('issue'));
     $this->asserSame('3', $expanded->get2('volume'));
   }
 
@@ -7085,12 +7085,12 @@ T1 - This is the Title }}';
     $text = "{{Cite web|archive-url=https://www.britishnewspaperarchive.co.uk/account/register/dsfads}}";
     $expanded = $this->make_citation($text);
     $expanded->tidy_parameter('archive-url');
-    $this->asserNull($expanded->get2('archive-url'));
+    $this->AssertNull($expanded->get2('archive-url'));
 
     $text = "{{Cite web|archive-url=https://meta.wikimedia.org/w/index\.php?title=Special:UserLogin:DSFadsfds}}";
     $expanded = $this->make_citation($text);
     $expanded->tidy_parameter('archive-url');
-    $this->asserNull($expanded->get2('archive-url'));
+    $this->AssertNull($expanded->get2('archive-url'));
    }
 
   public function testTidyBadISSN() : void {
@@ -7109,12 +7109,12 @@ T1 - This is the Title }}';
     $text = "{{Cite web|periodical=undefined}}";
     $expanded = $this->make_citation($text);
     $expanded->tidy_parameter('periodical');
-    $this->asserNull($expanded->get2('periodical'));
+    $this->AssertNull($expanded->get2('periodical'));
 
     $text = "{{Cite web|periodical=medrxiv}}";
     $expanded = $this->make_citation($text);
     $expanded->tidy_parameter('periodical');
-    $this->asserNull($expanded->get2('periodical'));
+    $this->AssertNull($expanded->get2('periodical'));
     $this->asserSame('medrxiv', $expanded->get2('work'));
     $this->asserSame('cite document', $expanded->wikiname());
    }
@@ -7131,29 +7131,29 @@ T1 - This is the Title }}';
       $expanded = $this->make_citation($text);
       $expanded->tidy_parameter('deadurl');
       $this->asserSame('dead', $expanded->get2('url-status'));
-      $this->asserNull($expanded->get2('deadurl'));
+      $this->AssertNull($expanded->get2('deadurl'));
     
       $text = "{{cite web|url=http://x.com/|deadurl=live}}";
       $expanded = $this->make_citation($text);
       $expanded->tidy_parameter('deadurl');
       $this->asserSame('alive', $expanded->get2('url-status'));
-      $this->asserNull($expanded->get2('deadurl'));
+      $this->AssertNull($expanded->get2('deadurl'));
    }
  
    public function testTidyMonth2() : void {
       $text = "{{cite web|date=March 2000|month=march|day=11}}";
       $expanded = $this->make_citation($text);
       $expanded->tidy_parameter('month');
-      $this->asserNull($expanded->get2('day'));
-      $this->asserNull($expanded->get2('month'));
+      $this->AssertNull($expanded->get2('day'));
+      $this->AssertNull($expanded->get2('month'));
    }
  
    public function testCulturalAdvice() : void {
       $text = "{{cite web|chapter=Cultural Advice|chapter-url=http://anu.edu.au}}";
       $expanded = $this->make_citation($text);
       $expanded->tidy_parameter('chapter');
-      $this->asserNull($expanded->get2('chapter'));
-      $this->asserNull($expanded->get2('chapter-url'));
+      $this->AssertNull($expanded->get2('chapter'));
+      $this->AssertNull($expanded->get2('chapter-url'));
       $this->asserSame('http://anu.edu.au', $expanded->get2('url'));
    }
 }
