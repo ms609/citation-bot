@@ -7290,7 +7290,7 @@ final class Template {
     if ($this->has('doi')) {
       $doi = $this->get('doi');
       if (doi_works($doi) === FALSE) {
-        if (preg_match("~^10\.1093/(?:\S+odnb-9780198614128-e-|ref:odnb|odnb/9780198614128\.013\.)(\d+)$~", $doi, $matches)) {
+        if (preg_match("~^10\.1093/(?:\S+odnb-9780198614128-e-|ref:odnb|odnb/9780198614128\.013\.|odnb/)(\d+)$~", $doi, $matches)) {
           $try1 = '10.1093/ref:odnb/' . $matches[1];
           $try2 = '10.1093/odnb/' . $matches[1];
           $try3 = '10.1093/odnb/9780198614128.013.' . $matches[1];
