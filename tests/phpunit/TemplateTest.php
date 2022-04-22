@@ -7250,4 +7250,10 @@ T1 - This is the Title }}';
       $this->AssertNull($expanded->get2('doi'));
       $this->AssertSame('1234.56789', $expanded->get2('arxiv'));
    }
+ 
+   public function testAddCodeIfThisFails() : void { // Add more oxford code, if these start to work
+      $this->AssertFalse(doi_works('10.1093/acref/9780199208951.013.q-author-00005-00000991')); // https://www.oxfordreference.com/view/10.1093/acref/9780199208951.001.0001/q-author-00005-00000991
+      $this->AssertFalse(doi_works('10.1093/oao/9781884446054.013.8000020158')); // https://www.oxfordartonline.com/groveart/view/10.1093/gao/9781884446054.001.0001/oao-9781884446054-e-8000020158
+    
+   }
 }
