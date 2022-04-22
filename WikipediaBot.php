@@ -220,12 +220,12 @@ try {
     
     // No obvious errors; looks like we're good to go ahead and edit
     $auth_token = $response->query->tokens->csrftoken;
-    if (defined('EDIT_AS_USER')) {
+    if (defined('EDIT_AS_USER')) {  // @codeCoverageIgnoreStart
       $auth_token = json_decode( $this->user_client->makeOAuthCall(
         $this->user_token,
        API_ROOT . '?action=query&meta=tokens&format=json'
        ) )->query->tokens->csrftoken;
-    }
+    }                              // @codeCoverageIgnoreEnd
     $submit_vars = array(
         "action" => "edit",
         "title" => $page,
@@ -355,6 +355,7 @@ try {
   }
   
   static private function QueryAPI(array $params) : string {
+   try {
     $params['format'] = 'json';
 
             curl_setopt_array(self::$ch, [
@@ -369,7 +370,14 @@ try {
        sleep(4);                                // @codeCoverageIgnore
        $data = (string) @curl_exec(self::$ch);  // @codeCoverageIgnore
     }
-    return $data;
+    return (self::ret_okay(@json_decode($data))) ? $data : '';
+    // @codeCoverageIgnoreStart
+   } catch(Exception $E) {
+      report_warning("Exception caught!!\n");
+      report_info("Response: ". $E->getMessage());
+   }
+   return '';
+  // @codeCoverageIgnoreEnd
   }
  
   static public function ReadDetails(string $title) : object {
