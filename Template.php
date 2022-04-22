@@ -5194,35 +5194,6 @@ final class Template {
               }
           }
 
-          // ONLY in meta-data : TODO - verify that it works later.  10.1093/oao/9781884446054.013.8000020158. https://www.oxfordartonline.com/groveart/view/10.1093/gao/9781884446054.001.0001/oao-9781884446054-e-8000020158
-          if (preg_match('~^https?://www\.oxfordartonline\.com/(?:groveart/|)(?:view|abstract)/10\.1093/gao/9781884446054\.001\.0001/oao\-9781884446054\-e\-(80\d+)$~', $this->get($param), $matches)) {
-              $new_doi = '10.1093/oao/9781884446054.013.' . $matches[1];
-              if (doi_works($new_doi)) {
-                $this->add_if_new('isbn', '978-1-884446-05-4');
-                if ($this->has('doi') && $this->has('doi-broken-date')) {
-                    $this->set('doi', '');
-                    $this->forget('doi-broken-date');
-                    $this->add_if_new('doi', $new_doi);
-                 } elseif ($this->blank('doi')) {
-                    $this->add_if_new('doi', $new_doi);
-                }
-              }
-          }
-          // ONLY in meta-data : TODO - verify that it works later.  10.1093/acref/9780199208951.013.q-author-00005-00001557 https://www.oxfordreference.com/view/10.1093/acref/9780199208951.001.0001/q-author-00005-00000991
-          if (preg_match('~^https?://www\.oxfordreference\.com/(?:view|abstract)/10\.1093/acref/9780199208951\.001\.0001/(q\-author\-\d+\-\d+)$~', $this->get($param), $matches)) {
-              $new_doi = '10.1093/acref/9780199208951.013.' . $matches[1];
-              if (doi_works($new_doi)) {
-                $this->add_if_new('isbn', '978-0-19-920895-1');
-                if ($this->has('doi') && $this->has('doi-broken-date')) {
-                    $this->set('doi', '');
-                    $this->forget('doi-broken-date');
-                    $this->add_if_new('doi', $new_doi);
-                 } elseif ($this->blank('doi')) {
-                    $this->add_if_new('doi', $new_doi);
-                }
-              }
-          }
-
           if (preg_match('~^https?://oxfordaasc\.com/view/10\.1093/acref/9780195301731\.001\.0001/acref\-9780195301731\-e\-(\d+)$~', $this->get($param), $matches)) {
               $new_doi = '10.1093/acref/9780195301731.013.' . $matches[1];
               if (doi_works($new_doi)) {
