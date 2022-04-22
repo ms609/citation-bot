@@ -7005,7 +7005,7 @@ T1 - This is the Title }}';
    public function testAllSortsOfBadData() : void {
     $text = "{{Cite journal|journal=arXiv|title=[No title found]|issue=null|volume=n/a|page=n/a|pages=null|pmc=1}}";
     $expanded = $this->process_citation($text);
-    $this->assertSame($text, $expanded->parsed_text());
+    $this->assertSame('{{Cite journal|journal=ArXiv|title=[No title found]|volume=n/a|page=n/a|pmc=1}}', $expanded->parsed_text());
   }
  
    public function testTidyUpNA() : void {
@@ -7064,12 +7064,12 @@ T1 - This is the Title }}';
     $expanded->tidy_parameter('work');
     $this->AssertSame('[[Los Angeles Times]]', $expanded->get2('work'));
    
-    $text = "{{Cite web|website=nytimes.com}}";
+    $text = "{{Cite web|work=nytimes.com}}";
     $expanded = $this->make_citation($text);
     $expanded->tidy_parameter('work');
     $this->AssertSame('[[The New York Times]]', $expanded->get2('work'));
    
-    $text = "{{Cite web|website=The Times Digital Archive}}";
+    $text = "{{Cite web|work=The Times Digital Archive}}";
     $expanded = $this->make_citation($text);
     $expanded->tidy_parameter('work');
     $this->AssertSame('[[The Times]]', $expanded->get2('work'));
@@ -7123,7 +7123,7 @@ T1 - This is the Title }}';
     $expanded = $this->make_citation($text);
     $expanded->tidy_parameter('periodical');
     $this->AssertNull($expanded->get2('periodical'));
-    $this->AssertSame('medrxiv', $expanded->get2('work'));
+    $this->AssertSame('medRxiv', $expanded->get2('work'));
     $this->AssertSame('cite document', $expanded->wikiname());
    }
  
@@ -7144,7 +7144,7 @@ T1 - This is the Title }}';
       $text = "{{cite web|url=http://x.com/|deadurl=live}}";
       $expanded = $this->make_citation($text);
       $expanded->tidy_parameter('deadurl');
-      $this->AssertSame('alive', $expanded->get2('url-status'));
+      $this->AssertSame('live', $expanded->get2('url-status'));
       $this->AssertNull($expanded->get2('deadurl'));
    }
  
@@ -7195,7 +7195,7 @@ T1 - This is the Title }}';
    public function testBloomWithVia() : void {
       $text = "{{cite news|via=bloomberg web services and such}}";
       $expanded = $this->make_citation($text);
-      $expanded->add_if_new('newspaper', 'Bloomberg');
+      $expanded->add_if_new('newspaper', 'The Bloomberg is the way to go');
       $this->AssertNull($expanded->get2('via'));
    }
     
