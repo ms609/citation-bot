@@ -7163,6 +7163,7 @@ T1 - This is the Title }}';
       $this->AssertNull($expanded->get2('chapter'));
       $this->AssertNull($expanded->get2('chapter-url'));
       $this->AssertSame('http://anu.edu.au', $expanded->get2('url'));
+   }
    
    public function testChangeNameReject() : void {
       $text = "{{cite document|work=medrxiv}}";
