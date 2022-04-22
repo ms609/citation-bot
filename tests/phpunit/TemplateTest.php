@@ -7133,7 +7133,7 @@ T1 - This is the Title }}';
       $this->asserSame('dead', $expanded->get2('url-status'));
       $this->asserNull($expanded->get2('deadurl'));
     
-      $text = "{{cite web|url=http://x.com/|deadurl=live}}"
+      $text = "{{cite web|url=http://x.com/|deadurl=live}}";
       $expanded = $this->make_citation($text);
       $expanded->tidy_parameter('deadurl');
       $this->asserSame('alive', $expanded->get2('url-status'));
