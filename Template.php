@@ -1427,6 +1427,7 @@ final class Template {
         // TODO : re-checked & change this back to 6 months ago everyone in a while to compact all DOIs
         $last_day = strtotime("23:59:59 28 February 2022");
         $check_date = $last_day - 126000;
+        // @@codeCoverageIgnoreStart
         if (($the_new > $last_day) && ($existing < $check_date)) {
             if ($this->date_style === DATES_MDY) {
                return $this->add($param_name, date('F j, Y', $last_day));
@@ -1434,6 +1435,7 @@ final class Template {
                return $this->add($param_name, date('j F Y', $last_day));
             }
         }
+        // @@codeCoverageIgnoreEnd
         return FALSE;
 
       case 'pmid':
