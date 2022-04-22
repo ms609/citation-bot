@@ -365,6 +365,10 @@ try {
           ]);
 
     $data = (string) @curl_exec(self::$ch);
+    if ($data === '') {
+       sleep(4);                                // @codeCoverageIgnore
+       $data = (string) @curl_exec(self::$ch);  // @codeCoverageIgnore
+    }
     return $data;
   }
  
