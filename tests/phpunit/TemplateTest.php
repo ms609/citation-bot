@@ -7127,7 +7127,7 @@ T1 - This is the Title }}';
    }
  
    public function testTidyURLStatus() : void {
-      $text = "{{cite web|url=http://x.com/|deadurl=sì}}"
+      $text = "{{cite web|url=http://x.com/|deadurl=sì}}";
       $expanded = $this->make_citation($text);
       $expanded->tidy_parameter('deadurl');
       $this->asserSame('dead', $expanded->get2('url-status'));
@@ -7141,7 +7141,7 @@ T1 - This is the Title }}';
    }
  
    public function testTidyMonth() : void {
-      $text = "{{cite web|date=March 2000|month=march|day=11}}"
+      $text = "{{cite web|date=March 2000|month=march|day=11}}";
       $expanded = $this->make_citation($text);
       $expanded->tidy_parameter('month');
       $this->asserNull($expanded->get2('day'));
@@ -7149,7 +7149,7 @@ T1 - This is the Title }}';
    }
  
    public function testCulturalAdvice() : void {
-      $text = "{{cite web|chapter=Cultural Advice|chapter-url=http://anu.edu.au}}"
+      $text = "{{cite web|chapter=Cultural Advice|chapter-url=http://anu.edu.au}}";
       $expanded = $this->make_citation($text);
       $expanded->tidy_parameter('chapter');
       $this->asserNull($expanded->get2('chapter'));
