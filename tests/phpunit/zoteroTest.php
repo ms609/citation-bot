@@ -741,7 +741,7 @@ final class zoteroTest extends testBaseClass {
     $zotero_data[0] = (object) array('title' => 'Cultural Advice', 'itemType' => 'journalArticle');
     $zotero_response = json_encode($zotero_data);
     $this->assertTrue(Zotero::process_zotero_response($zotero_response, $template, $url, $url_kind, $access_date));
-    $this->assertNull$template->get2('journal'));
+    $this->assertNull($template->get2('journal'));
     $this->assertNull($template->get2('title'));
   }
   
