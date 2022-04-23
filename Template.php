@@ -51,6 +51,7 @@ final class Template {
                'jstor'    => array(),
                'zotero'   => array(),
             );
+  private const DEFAULT_STYLE = ' param=val ';
 
   function __construct() {
      ;  // All the real construction is done in parse_text() and above in variable initialization
@@ -173,7 +174,7 @@ final class Template {
     $this->no_initial_doi = $this->blank('doi');
 
     if (!$this->blank(['publisher', 'location', 'publication-place', 'place'])) $this->had_initial_publisher = TRUE;
-    $example = ' param=val ';
+    $example = DEFAULT_STYLE;
     if (isset($this->param[0])) {
         // Use second param as a template if present, in case first pair
         // is last1 = Smith | first1 = J.\n
@@ -181,8 +182,8 @@ final class Template {
         $example = preg_replace('~[^\s=][^=]*[^\s=]~u', 'X', $example); // Collapse strings
         $example = preg_replace('~ +~u', ' ', $example); // Collapse spaces
         // Check if messed up
-        if (substr_count($example, '=') !== 1) $example = ' param=val ';
-        if (substr_count($example, "\n") > 1 ) $example = ' param=val ';
+        if (substr_count($example, '=') !== 1) $example = DEFAULT_STYLE;
+        if (substr_count($example, "\n") > 1 ) $example = DEFAULT_STYLE;
     }
     $this->example_param = $example;
 
