@@ -173,7 +173,7 @@ final class Template {
     $this->no_initial_doi = $this->blank('doi');
 
     if (!$this->blank(['publisher', 'location', 'publication-place', 'place'])) $this->had_initial_publisher = TRUE;
-    $example = 'param = val';
+    $example = ' param=val ';
     if (isset($this->param[0])) {
         // Use second param as a template if present, in case first pair
         // is last1 = Smith | first1 = J.\n
