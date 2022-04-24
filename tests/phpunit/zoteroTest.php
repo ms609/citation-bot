@@ -764,7 +764,7 @@ final class zoteroTest extends testBaseClass {
     $access_date = 0;
     $url = '';
     $url_kind = '';
-    $zotero_data[0] = (object) array('title' => 'This', 'itemType' => 'webpage', 'extra' => 'dfasfsdaf ADS Bibcode: 1234asdfghjklqwerty dfasfsdaf');
+    $zotero_data[0] = (object) array('title' => 'This', 'itemType' => 'webpage', 'extra' => 'ADS Bibcode: 1234asdfghjklqwerty');
     $zotero_response = json_encode($zotero_data);
     $this->assertTrue(Zotero::process_zotero_response($zotero_response, $template, $url, $url_kind, $access_date));
     $this->assertSame('1234asdfghjklqwerty', $template->get2('bibcode'));
