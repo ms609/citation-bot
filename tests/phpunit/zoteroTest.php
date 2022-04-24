@@ -843,7 +843,7 @@ final class zoteroTest extends testBaseClass {
     $tmp_array = [$template];
     Zotero::drop_urls_that_match_dois($tmp_array);
     $this->assertNotNull($template->get2('url'));
-  }pubs.geoscienceworld.org
+  }
     
   public function testRemoveURLwithProxy3() : void { // CANONICAL_PUBLISHER_URLS
     $text = '{{cite journal|doi=10.1021/acs.analchem.8b04567|url=http://pubs.geoscienceworld.org|doi-access=free}}';
