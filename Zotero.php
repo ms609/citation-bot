@@ -834,7 +834,13 @@ public static function process_zotero_response(string $zotero_response, Template
             if (strtolower((string) $result->creators[$i]->firstName) === 'published') $result->creators[$i]->firstName ='';
             $template->validate_and_add($authorParam, (string) $result->creators[$i]->lastName, (string) $result->creators[$i]->firstName,
             isset($result->rights) ? (string) $result->rights : '', FALSE);
-            if ($template->blank(['author' . (string)($i), 'first' . (string)($i), 'last' . (string)($i)])) break; // Break out if nothing added
+             // Break out if nothing added
+            if ((strpos($authorParam, 'author') === 0) &&
+                     $template->blank(['author' . (string)($author_i), 'first' . (string)($author_i), 'last' . (string)($author_i)])) break;
+            if ((strpos($authorParam, 'editor') === 0) &&
+                     $template->blank(['editor' . (string)($editor_i)])) break;
+            if ((strpos($authorParam, 'translator') === 0) &&
+                     $template->blank(['translator' . (string)($translator_i)])) break;
          }
         }
         $i++;
