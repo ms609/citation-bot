@@ -793,6 +793,25 @@ final class zoteroTest extends testBaseClass {
     $this->assertTrue(Zotero::process_zotero_response($zotero_response, $template, $url, $url_kind, $access_date));
     $this->assertSame('cite journal', $template->wikiname());
   }
+
+  public function testZoteroResponse48() : void {
+    $text = '{{cite web|id=}}';
+    $template = $this->make_citation($text);
+    $access_date = 0;
+    $url = '';
+    $url_kind = '';
+    $creators[0] = (object) array('creatorType' => 'translator', 'firstName' => "JoeT", "lastName" => "SmithT");
+    $creators[1] = (object) array('creatorType' => 'editor', 'firstName' => "JoeE", "lastName" => "SmithE");
+    $creators[2] = (object) array('creatorType' => 'author', 'firstName' => "JoeA", "lastName" => "SmithA");
+    $creators[3] = (object) array('creatorType' => 'translator', 'firstName' => "JoeTX", "lastName" => "SmithTX");
+    $creators[4] = (object) array('creatorType' => 'editor', 'firstName' => "JoeEX", "lastName" => "SmithEX");
+    $creators[5] = (object) array('creatorType' => 'author', 'firstName' => "JoeAX", "lastName" => "SmithAX");
+    $zotero_data[0] = (object) array('title' => 'Billy', 'itemType' => 'report', 'creators' => $creators);
+    $zotero_response = json_encode($zotero_data);
+    $this->assertTrue(Zotero::process_zotero_response($zotero_response, $template, $url, $url_kind, $access_date));
+    $this->assertSame('I DO NOT KNOW', $template->parsed_text());
+    $this->assertSame('Joe', $template->get2('translator1'));
+  }
   
   public function testRemoveURLthatRedirects() : void { // This URL is a redirect -- tests code that does that
     $text = '{{cite journal|pmc=XYZ|doi=10.1021/acs.analchem.8b04567|url=http://shortdoi.org/gf7sqt|pmid=30741529|pmc=6526953|title=ISiCLE: A Quantum Chemistry Pipeline for Establishing in Silico Collision Cross Section Libraries|journal=Analytical Chemistry|volume=91|issue=7|pages=4346–4356|year=2019|last1=Colby|first1=Sean M.|last2=Thomas|first2=Dennis G.|last3=Nuñez|first3=Jamie R.|last4=Baxter|first4=Douglas J.|last5=Glaesemann|first5=Kurt R.|last6=Brown|first6=Joseph M.|last7=Pirrung|first7=Meg A.|last8=Govind|first8=Niranjan|last9=Teeguarden|first9=Justin G.|last10=Metz|first10=Thomas O.|last11=Renslow|first11=Ryan S.}}';
@@ -801,7 +820,39 @@ final class zoteroTest extends testBaseClass {
     Zotero::drop_urls_that_match_dois($tmp_array);
     $this->assertNotNull($template->get2('url'));
   }
- 
+
+  public function testRemoveURLthatRedirects2() : void {
+    $text = '{{cite journal|doi=10.1021/acs.analchem.8b04567|url=http://shortdoi.org/gf7sqt|pmid=30741529|pmc=6526953|doi-access=free}}';
+    $template = $this->make_citation($text);
+    $tmp_array = [$template];
+    Zotero::drop_urls_that_match_dois($tmp_array);
+    $this->assertNotNull($template->get2('url'));
+  }
+
+  public function testRemoveURLwithProxy1() : void { // PROXY_HOSTS_TO_DROP
+    $text = '{{cite journal|doi=10.1021/acs.analchem.8b04567|url=http://delivery.acm.org|doi-access=free}}';
+    $template = $this->make_citation($text);
+    $tmp_array = [$template];
+    Zotero::drop_urls_that_match_dois($tmp_array);
+    $this->assertNotNull($template->get2('url'));
+  }
+  
+  public function testRemoveURLwithProxy2() : void { // PROXY_HOSTS_TO_ALWAYS_DROP
+    $text = '{{cite journal|doi=10.1021/acs.analchem.8b04567|url=http://journals.royalsociety.org|doi-access=free}}';
+    $template = $this->make_citation($text);
+    $tmp_array = [$template];
+    Zotero::drop_urls_that_match_dois($tmp_array);
+    $this->assertNotNull($template->get2('url'));
+  }pubs.geoscienceworld.org
+    
+  public function testRemoveURLwithProxy3() : void { // CANONICAL_PUBLISHER_URLS
+    $text = '{{cite journal|doi=10.1021/acs.analchem.8b04567|url=http://pubs.geoscienceworld.org|doi-access=free}}';
+    $template = $this->make_citation($text);
+    $tmp_array = [$template];
+    Zotero::drop_urls_that_match_dois($tmp_array);
+    $this->assertNotNull($template->get2('url'));
+  }
+  
    public function testUseArchive() : void {
     $text = '{{cite journal|archive-url=https://web.archive.org/web/20160418061734/http://www.weimarpedia.de/index.php?id=1&tx_wpj_pi1%5barticle%5d=104&tx_wpj_pi1%5baction%5d=show&tx_wpj_pi1%5bcontroller%5d=article&cHash=0fc8834241a91f8cb7d6f1c91bc93489}}';
     $template = $this->make_citation($text);
