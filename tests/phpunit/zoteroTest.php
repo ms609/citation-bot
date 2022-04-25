@@ -1054,7 +1054,7 @@ final class zoteroTest extends testBaseClass {
     $this->assertSame('Replication Data for: Perceiving emotion in non-social targets: The effect of trait empathy on emotional through art', $expanded->get2('title'));
    });
   }
- /** TODO
+
   public function testZoteroExpansion_citeseerx() : void {
    $this->requires_zotero(function() : void {
     $text = '{{Cite journal| citeseerx=10.1.1.483.8892 }}';
@@ -1062,6 +1062,5 @@ final class zoteroTest extends testBaseClass {
     $this->assertSame('Chemical Kinetics Models for the Fatigue Behavior of Fused Silica Optical Fiber', $expanded->get2('title'));
    });
   }
-**/
  
 }
