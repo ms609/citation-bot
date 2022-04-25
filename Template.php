@@ -2240,11 +2240,7 @@ final class Template {
         if ($rate_limit[2][2]) {
           report_info("AdsAbs search " . (string)((int) $rate_limit[2][0] - (int) $rate_limit[2][1]) . "/" . $rate_limit[2][0] . "\n");
         } else {
-          // @codeCoverageIgnoreStart
-          report_warning("AdsAbs daily search limit exceeded.\n");
-          AdsAbsControl::give_up();
-          return (object) array('numFound' => 0);
-          // @codeCoverageIgnoreEnd
+          throw new Exception('Too many requests', $http_response);  // @codeCoverageIgnore
         }
       }
       if (!is_object($decoded)) {
@@ -2265,17 +2261,14 @@ final class Template {
         AdsAbsControl::give_up();
         report_warning('Giving up on AdsAbs for a while.  SSL certificate has expired.');
       } elseif (strpos($e->getMessage(), 'org.apache.solr.search.SyntaxError') !== FALSE) {
-        report_info(sprintf("Internal Error %d in query_adsabs: %s",
-                      $e->getCode(), echoable($e->getMessage())));
+        report_info(sprintf("Internal Error %d in query_adsabs: %s", $e->getCode(), echoable($e->getMessage())));
       } elseif (strpos($e->getMessage(), 'HTTP') === 0) {
-        report_warning(sprintf("HTTP Error %d in query_adsabs: %s",
-                      $e->getCode(), echoable($e->getMessage())));
+        report_warning(sprintf("HTTP Error %d in query_adsabs: %s", $e->getCode(), echoable($e->getMessage())));
       } elseif (strpos($e->getMessage(), 'Too many requests') !== FALSE) {
-          AdsAbsControl::give_up();
-          report_warning('Giving up on AdsAbs for a while.  Too many requests.');
+        AdsAbsControl::give_up();
+        report_warning('Giving up on AdsAbs for a while.  Too many requests.');
       } else {
-        report_warning(sprintf("Error %d in query_adsabs: %s",
-                      $e->getCode(), echoable($e->getMessage())));
+        report_warning(sprintf("Error %d in query_adsabs: %s", $e->getCode(), echoable($e->getMessage())));
       }
       return (object) array('numFound' => 0);
     }
