@@ -51,6 +51,7 @@ final class Template {
                'jstor'    => array(),
                'zotero'   => array(),
             );
+  private const DEFAULT_STYLE = ' param=val ';
 
   function __construct() {
      ;  // All the real construction is done in parse_text() and above in variable initialization
@@ -173,7 +174,7 @@ final class Template {
     $this->no_initial_doi = $this->blank('doi');
 
     if (!$this->blank(['publisher', 'location', 'publication-place', 'place'])) $this->had_initial_publisher = TRUE;
-    $example = 'param = val';
+    $example = self::DEFAULT_STYLE;
     if (isset($this->param[0])) {
         // Use second param as a template if present, in case first pair
         // is last1 = Smith | first1 = J.\n
@@ -181,8 +182,8 @@ final class Template {
         $example = preg_replace('~[^\s=][^=]*[^\s=]~u', 'X', $example); // Collapse strings
         $example = preg_replace('~ +~u', ' ', $example); // Collapse spaces
         // Check if messed up
-        if (substr_count($example, '=') !== 1) $example = 'param = val';
-        if (substr_count($example, "\n") > 1 ) $example = 'param = val';
+        if (substr_count($example, '=') !== 1) $example = self::DEFAULT_STYLE;
+        if (substr_count($example, "\n") > 1 ) $example = self::DEFAULT_STYLE;
     }
     $this->example_param = $example;
 
@@ -1427,6 +1428,7 @@ final class Template {
         // TODO : re-checked & change this back to 6 months ago everyone in a while to compact all DOIs
         $last_day = strtotime("23:59:59 28 February 2022");
         $check_date = $last_day - 126000;
+        // @codeCoverageIgnoreStart
         if (($the_new > $last_day) && ($existing < $check_date)) {
             if ($this->date_style === DATES_MDY) {
                return $this->add($param_name, date('F j, Y', $last_day));
@@ -1434,6 +1436,7 @@ final class Template {
                return $this->add($param_name, date('j F Y', $last_day));
             }
         }
+        // @codeCoverageIgnoreEnd
         return FALSE;
 
       case 'pmid':
@@ -2173,7 +2176,6 @@ final class Template {
     if (AdsAbsControl::gave_up_yet()) return (object) array('numFound' => 0);
     if (!PHP_ADSABSAPIKEY) return (object) array('numFound' => 0);
 
-    try {
       $ch = curl_init();
       /** @psalm-suppress RedundantCondition */ /* PSALM thinks TRAVIS cannot be FALSE */
       $adsabs_url = "https://" . (TRAVIS ? 'qa' : 'api')
@@ -2188,96 +2190,9 @@ final class Template {
                 CURLOPT_USERAGENT => BOT_USER_AGENT,
                 CURLOPT_URL => $adsabs_url]);
       $return = (string) @curl_exec($ch);
-      if (502 === curl_getinfo($ch, CURLINFO_HTTP_CODE)) {
-        // @codeCoverageIgnoreStart
-        sleep(4);
-        $return = (string) @curl_exec($ch);
-        if (502 === curl_getinfo($ch, CURLINFO_HTTP_CODE) && TRAVIS) {
-           sleep(20); // better slow than not at all
-           $return = (string) @curl_exec($ch);
-        }
-        // @codeCoverageIgnoreEnd
-      }
-      if ($return == "") {
-        // @codeCoverageIgnoreStart
-        $exception = curl_error($ch);
-        $number = curl_errno($ch);
-        curl_close($ch);
-        throw new Exception($exception, $number);
-        // @codeCoverageIgnoreEnd
-      }
-      $http_response = (int) @curl_getinfo($ch, CURLINFO_HTTP_CODE);
-      $header_length = (int) @curl_getinfo($ch, CURLINFO_HEADER_SIZE);
-      if ($http_response == 0 || $header_length == 0) throw new Exception('Size of zero from website');
+      $response = Bibcode_Responce_Processing($return, $ch, $adsabs_url);
       curl_close($ch);
-      $header = substr($return, 0, $header_length);
-      $body = substr($return, $header_length);
-      $decoded = @json_decode($body);
-
-      if (is_object($decoded) && isset($decoded->error)) {
-        // @codeCoverageIgnoreStart
-        if (isset($decoded->error->trace)) {
-          throw new Exception(
-          "ADSABS website returned a stack trace"
-          . "\n - URL was:  " . $adsabs_url,
-          (isset($decoded->error->code) ? $decoded->error->code : 999));
-        } else {
-          throw new Exception(
-          ((isset($decoded->error->msg)) ? $decoded->error->msg : $decoded->error)
-          . "\n - URL was:  " . $adsabs_url,
-          (isset($decoded->error->code) ? $decoded->error->code : 999));
-        }
-        // @codeCoverageIgnoreStart
-      }
-      if ($http_response != 200) {
-        throw new Exception(strtok($header, "\n"), $http_response); // @codeCoverageIgnore
-      }
-
-      if (preg_match_all('~\nX\-RateLimit\-(\w+):\s*(\d+)\r~i', $header, $rate_limit)) {
-        if ($rate_limit[2][2]) {
-          report_info("AdsAbs search " . (string)((int) $rate_limit[2][0] - (int) $rate_limit[2][1]) . "/" . $rate_limit[2][0] .
-               ":\n       " . str_replace("&", "\n       ", urldecode($options)));
-               // "; reset at " . date('r', $rate_limit[2][2]);
-        } else {
-          report_warning("AdsAbs daily search limit exceeded. Retry in a while\n");  // @codeCoverageIgnore
-          return (object) array('numFound' => 0);                                    // @codeCoverageIgnore
-        }
-      } else {
-        ; // report_warning("Headers do not contain rate limit information: This is unexpected.");  // @codeCoverageIgnore
-      }
-      if (!is_object($decoded)) {
-        throw new Exception("Could not decode API response:\n" . $body, 5000);   // @codeCoverageIgnore
-      } elseif (isset($decoded->response)) {
-        $response = $decoded->response;
-      } elseif (isset($decoded->error)) {                    // @codeCoverageIgnore
-        throw new Exception("" . $decoded->error, 5000);     // @codeCoverageIgnore
-      } else {
-        throw new Exception("Could not decode AdsAbs response", 5000);        // @codeCoverageIgnore
-      }
-      return $response;
-      // @codeCoverageIgnoreStart
-    } catch (Exception $e) {
-      if ($e->getCode() == 5000) { // made up code for AdsAbs error
-        report_warning(sprintf("API Error in query_adsabs: %s", echoable($e->getMessage())));
-      } elseif ($e->getCode() == 60) {
-        AdsAbsControl::give_up();
-        report_warning('Giving up on AdsAbs for a while.  SSL certificate has expired.');
-      } elseif (strpos($e->getMessage(), 'org.apache.solr.search.SyntaxError') !== FALSE) {
-        report_info(sprintf("Internal Error %d in query_adsabs: %s",
-                      $e->getCode(), echoable($e->getMessage())));
-      } elseif (strpos($e->getMessage(), 'HTTP') === 0) {
-        report_warning(sprintf("HTTP Error %d in query_adsabs: %s",
-                      $e->getCode(), echoable($e->getMessage())));
-      } elseif (strpos($e->getMessage(), 'Too many requests') !== FALSE) {
-          AdsAbsControl::give_up();
-          report_warning('Giving up on AdsAbs for a while.  Too many requests.');
-      } else {
-        report_warning(sprintf("Error %d in query_adsabs: %s",
-                      $e->getCode(), echoable($e->getMessage())));
-      }
-      return (object) array('numFound' => 0);
-    }
-    // @codeCoverageIgnoreEnd
+    return $response;
   }
 
   public function expand_by_RIS(string &$dat, bool $add_url) : void { // Pass by pointer to wipe this data when called from use_unnamed_params()
@@ -4589,7 +4504,7 @@ final class Template {
                   stripos($this->get($work), 'thetimes.co.uk') !== FALSE) {
                  $this->forget($param);
                  if (stripos($this->get($work), 'thetimes.co.uk') !== FALSE) {
-                   $this->set($work, '[[The Times]]|');
+                   $this->set($work, '[[The Times]]');
                  }
                  return;
               }
@@ -5192,35 +5107,6 @@ final class Template {
               }
           }
 
-          // ONLY in meta-data : TODO - verify that it works later.  10.1093/oao/9781884446054.013.8000020158. https://www.oxfordartonline.com/groveart/view/10.1093/gao/9781884446054.001.0001/oao-9781884446054-e-8000020158
-          if (preg_match('~^https?://www\.oxfordartonline\.com/(?:groveart/|)(?:view|abstract)/10\.1093/gao/9781884446054\.001\.0001/oao\-9781884446054\-e\-(80\d+)$~', $this->get($param), $matches)) {
-              $new_doi = '10.1093/oao/9781884446054.013.' . $matches[1];
-              if (doi_works($new_doi)) {
-                $this->add_if_new('isbn', '978-1-884446-05-4');
-                if ($this->has('doi') && $this->has('doi-broken-date')) {
-                    $this->set('doi', '');
-                    $this->forget('doi-broken-date');
-                    $this->add_if_new('doi', $new_doi);
-                 } elseif ($this->blank('doi')) {
-                    $this->add_if_new('doi', $new_doi);
-                }
-              }
-          }
-          // ONLY in meta-data : TODO - verify that it works later.  10.1093/acref/9780199208951.013.q-author-00005-00001557 https://www.oxfordreference.com/view/10.1093/acref/9780199208951.001.0001/q-author-00005-00000991
-          if (preg_match('~^https?://www\.oxfordreference\.com/(?:view|abstract)/10\.1093/acref/9780199208951\.001\.0001/(q\-author\-\d+\-\d+)$~', $this->get($param), $matches)) {
-              $new_doi = '10.1093/acref/9780199208951.013.' . $matches[1];
-              if (doi_works($new_doi)) {
-                $this->add_if_new('isbn', '978-0-19-920895-1');
-                if ($this->has('doi') && $this->has('doi-broken-date')) {
-                    $this->set('doi', '');
-                    $this->forget('doi-broken-date');
-                    $this->add_if_new('doi', $new_doi);
-                 } elseif ($this->blank('doi')) {
-                    $this->add_if_new('doi', $new_doi);
-                }
-              }
-          }
-
           if (preg_match('~^https?://oxfordaasc\.com/view/10\.1093/acref/9780195301731\.001\.0001/acref\-9780195301731\-e\-(\d+)$~', $this->get($param), $matches)) {
               $new_doi = '10.1093/acref/9780195301731.013.' . $matches[1];
               if (doi_works($new_doi)) {
@@ -5680,8 +5566,8 @@ final class Template {
                           CURLOPT_CONNECTTIMEOUT => 8,
                           CURLOPT_TIMEOUT => 25,
                           CURLOPT_RETURNTRANSFER => TRUE,
-                          CURLOPT_COOKIEFILE => 'cookie.txt',
                           CURLOPT_USERAGENT => BOT_USER_AGENT,
+                          CURLOPT_COOKIEFILE => 'cookie.txt', // Seems to be a good idea for proquest
                           CURLOPT_URL => $matches[0]]);
                  if (@curl_exec($ch)) {
                     $redirectedUrl = (string) @curl_getinfo($ch, CURLINFO_EFFECTIVE_URL);  // Final URL
@@ -5995,18 +5881,6 @@ final class Template {
           if ($this->get($param) === 'Undefined' || $this->get($param) === 'undefined') {
              $this->forget($param);
             return;
-          }
-          if ($this->get($param) === 'sfdb.org') { // Clean up after bad edits
-            $url = $this->get('url');
-             if (stripos($url, 'isfdb.org') !== FALSE) {
-               if (stripos($url, '.isfdb.org') !== FALSE || stripos($url, '/isfdb.org') !== FALSE) {
-                 $this->set($param, 'isfdb.org');
-                 return;
-               } else {
-                 $this->forget($param);
-                 return;
-               }
-             }
           }
           if (($this->wikiname() === 'cite book') && (str_i_same($this->get($param), 'google.com') ||
                                                       str_i_same($this->get($param), 'Google Books') ||
@@ -6368,8 +6242,6 @@ final class Template {
                  $this->add_if_new('website', $i_value);
                }
              }
-             // TODO - this seems to be disliked, they might change their mind:
-             // if ($this->wikiname() === 'cite web') $this->add_if_new('website', $hostname);
            }
         }
       }
@@ -7246,7 +7118,6 @@ final class Template {
     } elseif ($issn === '0163-089X' || $issn === '1092-0935') {
       return $this->set('newspaper', '[[The Wall Street Journal]]');
     }
-    // TODO Add more common ones that fail
     // @codeCoverageIgnoreEnd
     if ($issn === '9999-9999') return FALSE; // Fake test suite data
     if (!preg_match('~^\d{4}.?\d{3}[0-9xX]$~u', $issn)) return FALSE;
@@ -7332,7 +7203,7 @@ final class Template {
     if ($this->has('doi')) {
       $doi = $this->get('doi');
       if (doi_works($doi) === FALSE) {
-        if (preg_match("~^10\.1093/(?:odnb/|ref:odnb|odnb/9780198614128\.013\.)(\d+)$~", $doi, $matches)) {
+        if (preg_match("~^10\.1093/(?:\S+odnb-9780198614128-e-|ref:odnb|odnb/9780198614128\.013\.|odnb/)(\d+)$~", $doi, $matches)) {
           $try1 = '10.1093/ref:odnb/' . $matches[1];
           $try2 = '10.1093/odnb/' . $matches[1];
           $try3 = '10.1093/odnb/9780198614128.013.' . $matches[1];

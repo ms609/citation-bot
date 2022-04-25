@@ -54,12 +54,12 @@ final class PageTest extends testBaseClass {
  
   public function testPageChangeSummary8() : void {
       $page = $this->process_page('{{cite journal|chapter-url=https://mathscinet.ams.org/mathscinet-getitem?mr=1234|title=mr=1234}}');
-      $this->assertSame('{{cite journal|url=https://mathscinet.ams.org/mathscinet-getitem?mr=1234|title=mr=1234|mr = 1234}}', $page->parsed_text());
+      $this->assertSame('{{cite journal|url=https://mathscinet.ams.org/mathscinet-getitem?mr=1234|title=mr=1234| mr=1234 }}', $page->parsed_text());
       $this->assertSame('Add: mr, url. Removed proxy/dead URL that duplicated identifier. | [[WP:UCB|Use this bot]]. [[WP:DBUG|Report bugs]]. ', $page->edit_summary());
   }
   public function testPageChangeSummary9() : void {
       $page = $this->process_page('{{cite journal|chapterurl=https://mathscinet.ams.org/mathscinet-getitem?mr=1234|title=mr=1234}}');
-      $this->assertSame('{{cite journal|url=https://mathscinet.ams.org/mathscinet-getitem?mr=1234|title=mr=1234|mr = 1234}}', $page->parsed_text());
+      $this->assertSame('{{cite journal|url=https://mathscinet.ams.org/mathscinet-getitem?mr=1234|title=mr=1234| mr=1234 }}', $page->parsed_text());
       $this->assertSame('Add: mr, url. Removed proxy/dead URL that duplicated identifier. | [[WP:UCB|Use this bot]]. [[WP:DBUG|Report bugs]]. ', $page->edit_summary());
   }
    
@@ -138,53 +138,54 @@ final class PageTest extends testBaseClass {
   }
   
   public function testBotExpandWrite() : void {
-   $this->requires_secrets(function() : void {
       $api = new WikipediaBot();
       $page = new TestPage();
       $writeTestPage = 'User:Blocked Testing Account/writetest';
       $page->get_text_from($writeTestPage);
+      $origText = $page->parsed_text();
       $trialCitation = '{{Cite journal | title Bot Testing | ' .
         'doi_broken_date=1986-01-01 | doi = 10.1038/nature09068}}';
       $page->overwrite_text($trialCitation);
       $page_result = $page->write($api, "Testing bot write function");
       if (TRAVIS && !$page_result) {
-        echo 'T';  // ! API call failed: '''Your IP address is in a range which has been blocked on all wikis.''' The block was made by [//meta.wikimedia.org/wiki/User:Jon_Kolbert Jon Kolbert] (meta.wikimedia.org). The reason given is ''[[m:NOP|Open Proxy]]: Colocation webhost - Contact [[m:Special:Contact/stewards|stewards]] if you are affected ''. * Start of block: 02:23, 27 October 2019 * Expiration of block: 02:23, 27 October 2021
-        ob_flush();
-        $this->assertTrue(TRUE); // make CI happy
-        return;
+        // ! API call failed: '''Your IP address is in a range which has been blocked on all wikis.''' The block was made by [//meta.wikimedia.org/wiki/User:Jon_Kolbert Jon Kolbert] (meta.wikimedia.org). The reason given is ''[[m:NOP|Open Proxy]]: Colocation webhost - Contact [[m:Special:Contact/stewards|stewards]] if you are affected ''. * Start of block: 02:23, 27 October 2019 * Expiration of block: 02:23, 27 October 2021
+        $page->get_text_from($writeTestPage);
+        $this->assertSame($origText, $page->parsed_text());
       } else {
-        $this->assertTrue($page_result);
+        // Double check we can read it back
+        $page->get_text_from($writeTestPage);
+        $this->assertSame($trialCitation, $page->parsed_text());
       }
-      $page->get_text_from($writeTestPage);
-      $this->assertSame($trialCitation, $page->parsed_text());
+      $this->requires_secrets(function() : void {
+       $this->assertTrue(TRAVIS || $page_result); // If we have tokens and are not in TRAVIS, then should have worked
+      });
+      $page->overwrite_text($trialCitation);
       $page->expand_text();
       $this->assertTrue(strpos($page->edit_summary(), 'journal, ') > 3);
       $this->assertTrue(strpos($page->edit_summary(), ' Removed ') > 3);
-      $this->assertTrue($page->write($api));
-      
+      if ($page_result) {
+         $this->assertTrue($page->write($api));
+      } else {
+         $this->assertFalse($page->write($api));
+      }
       $page->get_text_from($writeTestPage);
       $this->assertTrue(strpos($page->parsed_text(), 'Nature') > 5);
-   });
   }
  
   public function testNobots() : void {
-    $this->requires_secrets(function() : void {
       $api = new WikipediaBot();
       $text = '{{cite thesis|url=https://mathscinet.ams.org/mathscinet-getitem?mr=1234}}{{nobots}}';
       $page = $this->process_page($text);
       $this->assertSame($text, $page->parsed_text());
       $this->assertSame(FALSE, $page->write($api, "Testing bot write function"));
-   });
   }
  
   public function testNobots2() : void {
-     $this->requires_secrets(function() : void {
       $api = new WikipediaBot();
       $text = '{{cite thesis|url=https://mathscinet.ams.org/mathscinet-getitem?mr=1234}}{{bots|allow=not_you}}';
       $page = $this->process_page($text);
       $this->assertSame($text, $page->parsed_text());
       $this->assertSame(FALSE, $page->write($api, "Testing bot write function"));
-   });
   }
  
   public function testEmptyPage() : void {
@@ -194,9 +195,9 @@ final class PageTest extends testBaseClass {
       }
   }
 
-  public function testUrlReferences() : void {
+  public function testUrlReferencesAAAAA() : void {
       $page = $this->process_page("URL reference test 1 <ref name='bob'>http://doi.org/10.1007/s12668-011-0022-5< / ref>\n Second reference: \n<ref >  [https://www.ncbi.nlm.nih.gov/pmc/articles/PMC3705692/] </ref> URL reference test 1");
-      $this->assertSame("URL reference test 1 <ref name='bob'>{{Cite journal|url=http://doi.org/10.1007/s12668-011-0022-5|doi = 10.1007/s12668-011-0022-5|title = Reoccurring Patterns in Hierarchical Protein Materials and Music: The Power of Analogies|year = 2011|last1 = Giesa|first1 = Tristan|last2 = Spivak|first2 = David I.|last3 = Buehler|first3 = Markus J.|journal = Bionanoscience|volume = 1|issue = 4|pages = 153–161|arxiv = 1111.5297}}< / ref>\n Second reference: \n<ref >{{Cite journal|pmc = 3705692|year = 2013|last1 = Mahajan|first1 = P. T.|last2 = Pimple|first2 = P.|last3 = Palsetia|first3 = D.|last4 = Dave|first4 = N.|last5 = De Sousa|first5 = A.|title = Indian religious concepts on sexuality and marriage|journal = Indian Journal of Psychiatry|volume = 55|issue = Suppl 2|pages = S256–S262|doi = 10.4103/0019-5545.105547|pmid = 23858264}}</ref> URL reference test 1", str_replace('|s2cid = 5178100', '', $page->parsed_text()));
+      $this->assertSame("URL reference test 1 <ref name='bob'>{{Cite journal | url=http://doi.org/10.1007/s12668-011-0022-5 | doi=10.1007/s12668-011-0022-5 | title=Reoccurring Patterns in Hierarchical Protein Materials and Music: The Power of Analogies | year=2011 | last1=Giesa | first1=Tristan | last2=Spivak | first2=David I. | last3=Buehler | first3=Markus J. | journal=Bionanoscience | volume=1 | issue=4 | pages=153–161 | arxiv=1111.5297 }}< / ref>\n Second reference: \n<ref >{{Cite journal | pmc=3705692 | year=2013 | last1=Mahajan | first1=P. T. | last2=Pimple | first2=P. | last3=Palsetia | first3=D. | last4=Dave | first4=N. | last5=De Sousa | first5=A. | title=Indian religious concepts on sexuality and marriage | journal=Indian Journal of Psychiatry | volume=55 | issue=Suppl 2 | pages=S256–S262 | doi=10.4103/0019-5545.105547 | pmid=23858264 }}</ref> URL reference test 1", str_replace('| s2cid=5178100 ', '', $page->parsed_text()));
   }
  
   public function testUrlReferencesAA() : void {
@@ -218,13 +219,13 @@ final class PageTest extends testBaseClass {
    public function testUrlReferencesWithText0() : void {
       $text = "<ref>{{doi|10.2307/962034}}</ref>";
       $page = $this->process_page($text);
-      $this->assertSame('<ref>{{Cite journal|doi = 10.2307/962034|jstor = 962034|title = Alban Berg, Wilhelm Fliess and the Secret Programme of the Violin Concerto|last1 = Jarman|first1 = Douglas|journal = The Musical Times|year = 1983|volume = 124|issue = 1682|pages = 218–223}}</ref>', $page->parsed_text());
+      $this->assertSame('<ref>{{Cite journal | doi=10.2307/962034 | jstor=962034 | title=Alban Berg, Wilhelm Fliess and the Secret Programme of the Violin Concerto | last1=Jarman | first1=Douglas | journal=The Musical Times | year=1983 | volume=124 | issue=1682 | pages=218–223 }}</ref>', $page->parsed_text());
   }
  
   public function testUrlReferencesWithText1() : void {
       $text = "<ref>Jarman, D. (1983). [https://www.jstor.org/discover/10.2307/962034?uid=3738032&amp;uid=373072751&amp;uid=2&amp;uid=3&amp;uid=60&amp;sid=21102523353593 Alban Berg, Wilhelm Fliess and the Secret Programme of the Violin Concerto]. ''The Musical Times'' Vol. 124, No. 1682 (Apr. 1983), pp. 218–223</ref>";
       $page = $this->process_page($text);
-      $this->assertSame('<ref>{{Cite journal|url=https://www.jstor.org/stable/962034|jstor=962034|doi=10.2307/962034|title=Alban Berg, Wilhelm Fliess and the Secret Programme of the Violin Concerto|last1=Jarman|first1=Douglas|journal=The Musical Times|year=1983|volume=124|issue=1682|pages=218–223}}</ref>', $page->parsed_text());
+      $this->assertSame('<ref>{{Cite journal | url=https://www.jstor.org/stable/962034 | jstor=962034 | doi=10.2307/962034 | title=Alban Berg, Wilhelm Fliess and the Secret Programme of the Violin Concerto | last1=Jarman | first1=Douglas | journal=The Musical Times | year=1983 | volume=124 | issue=1682 | pages=218–223 }}</ref>', $page->parsed_text());
   }
   
   public function testUrlReferencesWithText2() : void {
@@ -236,7 +237,7 @@ final class PageTest extends testBaseClass {
   public function testUrlReferencesWithText3() : void {
       $text = "<ref>Raymond O.  Silverstein, &quot;A note on the term 'Bantu' as first used by W. H. I. Bleek&quot;, ''African Studies'' 27 (1968), 211–212, [https://www.doi.org/10.1080/00020186808707298 doi:10.1080/00020186808707298].</ref>";
       $page = $this->process_page($text);
-      $this->assertSame('<ref>{{Cite journal|url=https://www.doi.org/10.1080/00020186808707298|doi = 10.1080/00020186808707298|title = A note on the term "Bantu" as first used by W. H. I. Bleek|year = 1968|last1 = Silverstein|first1 = Raymond O.|journal = African Studies|volume = 27|issue = 4|pages = 211–212}}</ref>', $page->parsed_text());
+      $this->assertSame('<ref>{{Cite journal | url=https://www.doi.org/10.1080/00020186808707298 | doi=10.1080/00020186808707298 | title=A note on the term "Bantu" as first used by W. H. I. Bleek | year=1968 | last1=Silverstein | first1=Raymond O. | journal=African Studies | volume=27 | issue=4 | pages=211–212 }}</ref>', $page->parsed_text());
   }
   
   public function testUrlReferencesWithText4() : void { // Has [[ ]] in it
@@ -248,25 +249,25 @@ final class PageTest extends testBaseClass {
   public function testUrlReferencesWithText5() : void {
       $text = "<ref>Stoeckelhuber, Mechthild, Alexander Sliwa, and Ulrich Welsch. &quot;[http://onlinelibrary.wiley.com/doi/10.1002/1097-0185(20000701)259:3%3C312::AID-AR80%3E3.0.CO;2-X/full Histo‐physiology of the scent‐marking glands of the penile pad, anal pouch, and the forefoot in the aardwolf (Proteles cristatus)].&quot; The anatomical record 259.3 (2000): 312-326.</ref>";
       $page = $this->process_page($text);
-      $this->assertSame('<ref>{{Cite journal|url=http://onlinelibrary.wiley.com/doi/10.1002/1097-0185(20000701)259:3%3C312::AID-AR80%3E3.0.CO;2-X/full|doi=10.1002/1097-0185(20000701)259:3<312::AID-AR80>3.0.CO;2-X|title=Histo-physiology of the scent-marking glands of the penile pad, anal pouch, and the forefoot in the aardwolf (Proteles cristatus)|year=2000|last1=Stoeckelhuber|first1=Mechthild|last2=Sliwa|first2=Alexander|last3=Welsch|first3=Ulrich|journal=The Anatomical Record|volume=259|issue=3|pages=312–326|pmid=10861364}}</ref>', $page->parsed_text());
+      $this->assertSame('<ref>{{Cite journal | url=http://onlinelibrary.wiley.com/doi/10.1002/1097-0185(20000701)259:3%3C312::AID-AR80%3E3.0.CO;2-X/full | doi=10.1002/1097-0185(20000701)259:3<312::AID-AR80>3.0.CO;2-X | title=Histo-physiology of the scent-marking glands of the penile pad, anal pouch, and the forefoot in the aardwolf (Proteles cristatus) | year=2000 | last1=Stoeckelhuber | first1=Mechthild | last2=Sliwa | first2=Alexander | last3=Welsch | first3=Ulrich | journal=The Anatomical Record | volume=259 | issue=3 | pages=312–326 | pmid=10861364 }}</ref>', $page->parsed_text());
   }
 
   public function testUrlReferencesWithText6() : void {
       $text = "<ref>Emma Ambrose, Cas Mudde (2015). ''[http://www.tandfonline.com/doi/abs/10.1080/13537113.2015.1032033 Canadian Multiculturalism and the Absence of the Far Right]'' Nationalism and Ethnic Politics Vol. 21 Iss. 2.</ref>";
       $page = $this->process_page($text);
-      $this->assertSame('<ref>{{Cite journal|url=http://www.tandfonline.com/doi/abs/10.1080/13537113.2015.1032033|doi = 10.1080/13537113.2015.1032033|title = Canadian Multiculturalism and the Absence of the Far Right|year = 2015|last1 = Ambrose|first1 = Emma|last2 = Mudde|first2 = Cas|journal = Nationalism and Ethnic Politics|volume = 21|issue = 2|pages = 213–236}}</ref>', str_replace('|s2cid = 145773856', '', $page->parsed_text()));
+      $this->assertSame('<ref>{{Cite journal | url=http://www.tandfonline.com/doi/abs/10.1080/13537113.2015.1032033 | doi=10.1080/13537113.2015.1032033 | title=Canadian Multiculturalism and the Absence of the Far Right | year=2015 | last1=Ambrose | first1=Emma | last2=Mudde | first2=Cas | journal=Nationalism and Ethnic Politics | volume=21 | issue=2 | pages=213–236 }}</ref>', str_replace('| s2cid=145773856 ', '', $page->parsed_text()));
   }
  
   public function testUrlReferencesWithText7() : void {
       $text = "<ref>Gregory, T. Ryan. (2008). [https://link.springer.com/article/10.1007/s12052-007-0001-z ''Evolution as Fact, Theory, and Path'']. ''Evolution: Education and Outreach'' 1 (1): 46–52.</ref>";
       $page = $this->process_page($text);
-      $this->assertSame('<ref>{{Cite journal|url=https://link.springer.com/article/10.1007/s12052-007-0001-z|doi = 10.1007/s12052-007-0001-z|title = Evolution as Fact, Theory, and Path|year = 2008|last1 = Gregory|first1 = T. Ryan|journal = Evolution: Education and Outreach|volume = 1|pages = 46–52}}</ref>', str_replace('|s2cid = 19788314', '', $page->parsed_text()));
+      $this->assertSame('<ref>{{Cite journal | url=https://link.springer.com/article/10.1007/s12052-007-0001-z | doi=10.1007/s12052-007-0001-z | title=Evolution as Fact, Theory, and Path | year=2008 | last1=Gregory | first1=T. Ryan | journal=Evolution: Education and Outreach | volume=1 | pages=46–52 }}</ref>', str_replace('| s2cid=19788314 ', '', $page->parsed_text()));
   }
  
   public function testUrlReferencesWithText8() : void {
       $text = "<ref>James L. Elshoff, Michael Marcotty, [http://doi.acm.org/10.1145/358589.358596 Improving computer program readability to aid modification], Communications of the ACM, v.25 n.8, p.512-521, Aug 1982.</ref>";
       $page = $this->process_page($text);
-      $this->assertSame('<ref>{{Cite journal|url=http://doi.acm.org/10.1145/358589.358596|doi = 10.1145/358589.358596|title = Improving computer program readability to aid modification|year = 1982|last1 = Elshoff|first1 = James L.|last2 = Marcotty|first2 = Michael|journal = Communications of the ACM|volume = 25|issue = 8|pages = 512–521}}</ref>', str_replace('|s2cid = 30026641', '', $page->parsed_text()));
+      $this->assertSame('<ref>{{Cite journal | url=http://doi.acm.org/10.1145/358589.358596 | doi=10.1145/358589.358596 | title=Improving computer program readability to aid modification | year=1982 | last1=Elshoff | first1=James L. | last2=Marcotty | first2=Michael | journal=Communications of the ACM | volume=25 | issue=8 | pages=512–521 }}</ref>', str_replace('| s2cid=30026641 ', '', $page->parsed_text()));
   }
  
   public function testUrlReferencesWithText9() : void { // Two "urls"
@@ -303,7 +304,7 @@ final class PageTest extends testBaseClass {
   public function testUrlReferencesWithText14() : void {
       $text = "<ref>{{cite web}}</ref><ref>{{cite web}}</ref><ref>James L. Elshoff, Michael Marcotty, [http://doi.acm.org/10.1145/358589.358596 Improving computer program readability to aid modification], Communications of the ACM, v.25 n.8, p.512-521, Aug 1982.</ref>";
       $page = $this->process_page($text);
-      $this->assertSame('<ref>{{cite web}}</ref><ref>{{cite web}}</ref><ref>{{Cite journal|url=http://doi.acm.org/10.1145/358589.358596|doi = 10.1145/358589.358596|title = Improving computer program readability to aid modification|year = 1982|last1 = Elshoff|first1 = James L.|last2 = Marcotty|first2 = Michael|journal = Communications of the ACM|volume = 25|issue = 8|pages = 512–521}}</ref>', str_replace('|s2cid = 30026641', '', $page->parsed_text()));
+      $this->assertSame('<ref>{{cite web}}</ref><ref>{{cite web}}</ref><ref>{{Cite journal | url=http://doi.acm.org/10.1145/358589.358596 | doi=10.1145/358589.358596 | title=Improving computer program readability to aid modification | year=1982 | last1=Elshoff | first1=James L. | last2=Marcotty | first2=Michael | journal=Communications of the ACM | volume=25 | issue=8 | pages=512–521 }}</ref>', str_replace('| s2cid=30026641 ', '', $page->parsed_text()));
   }
  
    public function testUrlReferencesWithText15() : void {
@@ -320,7 +321,15 @@ final class PageTest extends testBaseClass {
       $this->assertTrue((bool) stripos($page->parsed_text(), 'PhysRevD.78.081701'));
     });
   }
-                    
+ 
+   public function testUrlReferencesWithText17() : void {
+      $text = "<ref>{{isbn|0974900907}}</ref>";
+      $text = $text . $text;
+      $page = $this->process_page($text);
+      $this->assertTrue((bool) stripos($page->parsed_text(), 'Lahar'));
+      $this->assertTrue((bool) stripos($page->parsed_text(), 'cite book'));
+  }
+ 
   public function testMagazine() : void {
       $text = '{{cite magazine|work=Yup}}';
       $page = $this->process_page($text);
@@ -336,7 +345,7 @@ final class PageTest extends testBaseClass {
   public function testNobots4() : void {
       $text = '{{cite thesis|url=https://mathscinet.ams.org/mathscinet-getitem?mr=1234}}{{bots|allow=Citation Bot}}';
       $page = $this->process_page($text);
-      $this->assertSame('{{cite thesis|url=https://mathscinet.ams.org/mathscinet-getitem?mr=1234|mr = 1234}}{{bots|allow=Citation Bot}}', $page->parsed_text());
+      $this->assertSame('{{cite thesis|url=https://mathscinet.ams.org/mathscinet-getitem?mr=1234| mr=1234 }}{{bots|allow=Citation Bot}}', $page->parsed_text());
       $text = '{{cite thesis|url=https://mathscinet.ams.org/mathscinet-getitem?mr=1234}}{{bots|allow=none}}';
       $page = $this->process_page($text);
       $this->assertSame($text, $page->parsed_text());
@@ -405,5 +414,23 @@ final class PageTest extends testBaseClass {
     $page = $this->process_page($text);
     $this->assertSame("{{cite iucn}}", $page->parsed_text());
     $this->assertSame('Misc citation tidying. | [[WP:UCB|Use this bot]]. [[WP:DBUG|Report bugs]]. ', $page->edit_summary());
+  }
+ 
+  public function testInterview() : void {
+    $text = "{{cite interview|url=https://books.google.com/books?id=Sw4EAAAAMBAJ&pg=PT12&dq=%22The+Dennis+James+Carnival%22#v=onepage&q=%22The%20Dennis%20James%20Carnival%22&f=false}}";
+    $template = $this->process_citation($text);
+    $this->assertSame("https://books.google.com/books?id=Sw4EAAAAMBAJ&dq=%22The+Dennis+James+Carnival%22&pg=PT12", $template->get('url'));
+  }
+   
+  public function testAddEditorsSummary() : void {
+    $text = "{{Cite journal | doi-access=free|url=http://www.hbw.com/species/somali-pigeon-columba-oliviae|title=Somali Pigeon (Columba oliviae)|journal=Birds of the World|date=4 March 2020|last1=Baptista|first1=Luis F.|last2=Trail|first2=Pepper W.|last3=Horblit|first3=H. M.|last4=Sharpe|first4=Christopher J.|last5=Boesman|first5=Peter F. D.|last6=Garcia|first6=Ernest|doi=10.2173/bow.sompig1.01}}";
+    $page = $this->process_page($text);
+    $this->assertSame('Add: editors 1-5. | [[WP:UCB|Use this bot]]. [[WP:DBUG|Report bugs]]. ', $page->edit_summary());
+  }
+ 
+  public function testConvertURLSummary() : void {
+    $text = "{{cite thesis |last=Hopkins-Weise |first=Jeffrey Ellis |date=2003-09-01 |title=Australian Involvement in the New Zealand Wars of the 1840s and 1860s |type=MPhil. |chapter=Sydney Manufacture of Coehorn Mortars |publisher=University of Queensland |docket= |oclc= |url=https://espace.library.uq.edu.au/data/UQ_198457/the17900.pdf?Expires=1650241198&Key-Pair-Id=APKAJKNBJ4MJBJNC6NLQ&Signature=gEyFpad5YhGNqdoOeq-utC-RLOB7KujpHfPCaNrUj-9KgjhunuqaY6gX5TIIrPQigy4To58NDSqVyGgr4a2DUE9O6AaiO8RjnVG8LDJWrgZqykR0H4xO8rJAy5cnCaTvhFhyAbeJLP7cOrqSgUfyuXvNO46SxiNoW3QNP-futcvJi7hbCKhYVJmTjoPl0HdsNunU3238Y8t2U3eCBtITFfiWcLXuX4od8xDf9Hbpb0~JwsZhyRnhzN0gv8FvD2V2vTku-MYR5H8KzcPsl3ovlP9HZ74cnlQpBXv4XKjG~6LzCBYHsnbNPxHERYLwR1qjnlrKTSAVBrV3mZ05z9Z2jQ__ |access-date=2022-04-18|page=57}}";
+    $page = $this->process_page($text);
+    $this->assertSame('Add: chapter-url. Removed or converted URL. | [[WP:UCB|Use this bot]]. [[WP:DBUG|Report bugs]]. ', $page->edit_summary());
   }
 }
