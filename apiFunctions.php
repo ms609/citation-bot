@@ -372,8 +372,7 @@ function adsabs_api(array $ids, array &$templates, string $identifier) : bool { 
     
     if (preg_match_all('~\nX\-RateLimit\-(\w+):\s*(\d+)\r~i', $header, $rate_limit)) {
       if ($rate_limit[2][2]) {
-        report_info("AdsAbs 'big-query' request " . (string)((float) $rate_limit[2][0] - (float)$rate_limit[2][1]) . "/" . $rate_limit[2][0] .
-             ":\n       ");
+        report_info("AdsAbs search " . (string)((int) $rate_limit[2][0] - (int) $rate_limit[2][1]) . "/" . $rate_limit[2][0] . "\n");
       } else {
         // @codeCoverageIgnoreStart
         report_warning("AdsAbs daily search limit exceeded. Big queries stopped for a while\n");
