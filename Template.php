@@ -2230,7 +2230,7 @@ final class Template {
           . "\n - URL was:  " . $adsabs_url,
           (isset($decoded->error->code) ? $decoded->error->code : 999));
         }
-        // @codeCoverageIgnoreStart
+        // @codeCoverageIgnoreEnd
       }
       if ($http_response != 200) {
         throw new Exception(strtok($header, "\n"), $http_response); // @codeCoverageIgnore
