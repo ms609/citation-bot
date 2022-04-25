@@ -1467,7 +1467,7 @@ public static function find_indentifiers_in_urls(Template $template, ?string $ur
               $handle = $matches[1]; // @codeCoverageIgnore
           }
           return $template->add_if_new('hdl', $handle);
-      } elseif (preg_match("~^https?://zbmath\.org/\?format=complete&q=an:([0-9][0-9][0-9][0-9]\.[0-9][0-9][0-9][0-9][0-9])~i", $url, $match)) {
+      } elseif (preg_match("~^https?://zbmath\.org/\?(?:format=complete&|)q=an:([0-9][0-9][0-9][0-9]\.[0-9][0-9][0-9][0-9][0-9])~i", $url, $match)) {
           quietly('report_modification', "Converting URL to ZBL parameter");
           if (is_null($url_sent)) {
              if ($template->has_good_free_copy()) {
@@ -1476,7 +1476,7 @@ public static function find_indentifiers_in_urls(Template $template, ?string $ur
              }
           }
           return $template->add_if_new('zbl', $match[1]);
-      } elseif (preg_match("~^https?://zbmath\.org/\?format=complete&q=an:([0-9][0-9]\.[0-9][0-9][0-9][0-9]\.[0-9][0-9])~i", $url, $match)) {
+      } elseif (preg_match("~^https?://zbmath\.org/\?(?:format=complete&|)q=an:([0-9][0-9]\.[0-9][0-9][0-9][0-9]\.[0-9][0-9])~i", $url, $match)) {
           quietly('report_modification', "Converting URL to JFM parameter");
           if (is_null($url_sent)) {
              if ($template->has_good_free_copy()) {
