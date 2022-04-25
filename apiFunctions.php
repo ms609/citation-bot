@@ -335,7 +335,7 @@ function adsabs_api(array $ids, array &$templates, string $identifier) : bool { 
               CURLOPT_CUSTOMREQUEST => 'POST',
               CURLOPT_POSTFIELDS => "$identifier\n" . str_replace("%0A", "\n", urlencode(implode("\n", $ids)))]);
     $return = (string) @curl_exec($ch);
-    $response = Bibcode_Responce_Processing($return, $ch)
+    $response = Bibcode_Responce_Processing($return, $ch);
     curl_close($ch);
     if (!isset($response->docs)) return TRUE;
   
@@ -1161,7 +1161,7 @@ function Bibcode_Responce_Processing(string $return, $ch) : object {
     if (!is_object($decoded)) {
       throw new Exception("Could not decode API response:\n" . $body, 5000);  // @codeCoverageIgnore
     } elseif (isset($decoded->response)) {
-      $response = $decoded->response;
+      return $decoded->response;
     } elseif (isset($decoded->error)) {                   // @codeCoverageIgnore
       throw new Exception("" . $decoded->error, 5000);    // @codeCoverageIgnore
     } else {
@@ -1184,9 +1184,8 @@ function Bibcode_Responce_Processing(string $return, $ch) : object {
     } else {
       report_warning(sprintf("Error %d in query_adsabs: %s", $e->getCode(), echoable($e->getMessage())));
     }
-    return (object) array('numFound' => 0);
   }
+  return (object) array('numFound' => 0);
   // @codeCoverageIgnoreEnd
-  return $response;
 }
 
