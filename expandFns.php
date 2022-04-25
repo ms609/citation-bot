@@ -67,8 +67,8 @@ function is_doi_active(string $doi) : ?bool {
   $response = $headers_test[0];
   if (stripos($response, '200 OK'       ) !== FALSE || stripos($response, 'HTTP/1.1 200') !== FALSE) return TRUE;
   if (stripos($response, '404 Not Found') !== FALSE || stripos($response, 'HTTP/1.1 404') !== FALSE) return FALSE;
-  report_minor_error("CrossRef server error loading headers for DOI " . echoable($doi . " : " . $response));  // @codeCoverageIgnore
-  return NULL;                                                                                                // @codeCoverageIgnore
+  report_warning("CrossRef server error loading headers for DOI " . echoable($doi . " : " . $response));  // @codeCoverageIgnore
+  return NULL;                                                                                            // @codeCoverageIgnore
 }
 
 function throttle_dx () : void {
