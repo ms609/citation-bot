@@ -347,7 +347,7 @@ function adsabs_api(array $ids, array &$templates, string $identifier) : bool { 
     $http_response = (int) @curl_getinfo($ch, CURLINFO_HTTP_CODE);
     $header_length = (int) @curl_getinfo($ch, CURLINFO_HEADER_SIZE);
     curl_close($ch);
-    if ($http_response == 0 || $header_length ==0) throw new Exception('Size of zero received');
+    if ($http_response === 0 || $header_length === 0) throw new Exception('Size of zero from adsabs website');
     $header = substr($return, 0, $header_length);
     $body = substr($return, $header_length);
     $decoded = @json_decode($body);
