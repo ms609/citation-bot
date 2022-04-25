@@ -1147,9 +1147,14 @@ function Bibcode_Responce_Processing(string $return, $ch, string $adsabs_url) : 
       // @codeCoverageIgnoreEnd
     }
     if ($http_response != 200) {
-      throw new Exception(strtok($header, "\n"), $http_response);  // @codeCoverageIgnore
+      // @codeCoverageIgnoreStart
+      $message = strtok($header, "\n");
+      /** @psalm-suppress UnusedFunctionCall */
+      @strtok('',''); // Free internal buffers with empty unused call
+      throw new Exception($message, $http_response);
+      // @codeCoverageIgnoreEnd
     }
-    
+
     if (preg_match_all('~\nX\-RateLimit\-(\w+):\s*(\d+)\r~i', $header, $rate_limit)) {
       if ($rate_limit[2][2]) {
         report_info("AdsAbs search " . (string)((int) $rate_limit[2][0] - (int) $rate_limit[2][1]) . "/" . $rate_limit[2][0] . "\n");
