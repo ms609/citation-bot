@@ -1036,7 +1036,7 @@ final class TemplateTest extends testBaseClass {
   public function testURLCleanUp18() : void {
     $text = "{{cite journal|url=https://www.jstor.org/stable/1986280?origin=324124324}}";
     $template = $this->make_citation($text);
-    $this->assertFalse($template->get_identifiers_from_url());
+    $this->assertTrue($template->get_identifiers_from_url());
     $this->assertSame('https://www.jstor.org/stable/1986280', $template->get2('url'));
   }
 
@@ -1044,13 +1044,13 @@ final class TemplateTest extends testBaseClass {
     $text = "{{cite journal|url=https://dx.doi.org/10.0000/Rubbish_bot_failure_test|doi=10.0000/Rubbish_bot_failure_test|doi-access=free}}";
     $template = $this->make_citation($text);
     $this->assertFalse($template->get_identifiers_from_url());
-    $this->assertNull( $template->get2('url'));
+    $this->assertNull($template->get2('url'));
   }
 
   public function testURLCleanUp20() : void {
     $text = "{{cite journal|url=https://doi.library.ubc.ca/10.7717/peerj.3486|pmc=5483034}}"; // Has good free copy
     $template = $this->make_citation($text);
-    $this->assertFalse($template->get_identifiers_from_url());
+    $this->assertTrue($template->get_identifiers_from_url());
     $this->assertNull($template->get2('url'));
   }
  
@@ -5723,15 +5723,15 @@ T1 - This is the Title }}';
   public function testConversionOfURL9() : void {
     $text = "{{cite web|url=https://ncbi.nlm.nih.gov/entrez/eutils/elink.fcgi?dfastool=sumsearch.org&&id=123456|title=Xyz|pmc=123456}}";
     $template = $this->make_citation($text);
-    $this->assertTrue($template->get_identifiers_from_url());
+    $this->assertFalse($template->get_identifiers_from_url());
     $this->assertNull($template->get2('url'));
   }
  
   public function testConversionOfURL10() : void {
     $text = "{{cite web|url=https://ncbi.nlm.nih.gov/entrez/eutils/elink.fcgi?dfastool=sumsearch.org&&id=123456|title=Xyz|pmc=333333|doi=10.0000/Rubbish_bot_failure_test}}";
     $template = $this->make_citation($text);
-    $this->assertTrue($template->get_identifiers_from_url());
-    $this->assertNull($template->get2('url'));
+    $this->assertFalse($template->get_identifiers_from_url());
+    $this->assertNotNull($template->get2('url'));
   }
 
   public function testConversionOfURL11() : void {
