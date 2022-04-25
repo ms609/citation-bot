@@ -374,11 +374,7 @@ function adsabs_api(array $ids, array &$templates, string $identifier) : bool { 
       if ($rate_limit[2][2]) {
         report_info("AdsAbs search " . (string)((int) $rate_limit[2][0] - (int) $rate_limit[2][1]) . "/" . $rate_limit[2][0] . "\n");
       } else {
-        // @codeCoverageIgnoreStart
-        report_warning("AdsAbs daily search limit exceeded.\n");
-        AdsAbsControl::give_up();
-        return TRUE;
-        // @codeCoverageIgnoreEnd
+        throw new Exception('Too many requests', $http_response);  // @codeCoverageIgnore
       }
     }
     if (!is_object($decoded)) {
@@ -393,23 +389,19 @@ function adsabs_api(array $ids, array &$templates, string $identifier) : bool { 
   // @codeCoverageIgnoreStart
   } catch (Exception $e) {
     if ($e->getCode() == 5000) { // made up code for AdsAbs error
-      report_warning(sprintf("API Error in adsabs_api: %s",
-                    $e->getMessage()));
+      report_warning(sprintf("API Error in query_adsabs: %s", echoable($e->getMessage())));
     } elseif ($e->getCode() == 60) {
-        AdsAbsControl::give_up();
-        report_warning('Giving up on AdsAbs for a while.  SSL certificate has expired.');
+      AdsAbsControl::give_up();
+      report_warning('Giving up on AdsAbs for a while.  SSL certificate has expired.');
     } elseif (strpos($e->getMessage(), 'org.apache.solr.search.SyntaxError') !== FALSE) {
-      report_info(sprintf("Internal Error %d in adsabs_api: %s",
-                    $e->getCode(), $e->getMessage()));
+      report_info(sprintf("Internal Error %d in query_adsabs: %s", $e->getCode(), echoable($e->getMessage())));
     } elseif (strpos($e->getMessage(), 'HTTP') === 0) {
-      report_warning(sprintf("HTTP Error %d in adsabs_api: %s",
-                    $e->getCode(), $e->getMessage()));
+      report_warning(sprintf("HTTP Error %d in query_adsabs: %s", $e->getCode(), echoable($e->getMessage())));
     } elseif (strpos($e->getMessage(), 'Too many requests') !== FALSE) {
-        AdsAbsControl::give_up();
-        report_warning('Giving up on AdsAbs for a while.  Too many requests.');
+      AdsAbsControl::give_up();
+      report_warning('Giving up on AdsAbs for a while.  Too many requests.');
     } else {
-      report_warning(sprintf("Error %d in adsabs_api: %s",
-                    $e->getCode(), $e->getMessage()));
+      report_warning(sprintf("Error %d in query_adsabs: %s", $e->getCode(), echoable($e->getMessage())));
     }
     @curl_close($ch); // Some code paths have it closed, others do not
     return TRUE;
