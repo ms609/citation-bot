@@ -2195,24 +2195,20 @@ final class Template {
         // @codeCoverageIgnoreStart
         sleep(4);
         $return = (string) @curl_exec($ch);
-        if (502 === curl_getinfo($ch, CURLINFO_HTTP_CODE) && TRAVIS) {
-           sleep(20); // better slow than not at all
-           $return = (string) @curl_exec($ch);
-        }
         // @codeCoverageIgnoreEnd
       }
       if ($return == "") {
         // @codeCoverageIgnoreStart
-        $exception = curl_error($ch);
-        $number = curl_errno($ch);
+        $error = curl_error($ch);
+        $errno = curl_errno($ch);
         curl_close($ch);
-        throw new Exception($exception, $number);
+        throw new Exception($error, $errno);
         // @codeCoverageIgnoreEnd
       }
       $http_response = (int) @curl_getinfo($ch, CURLINFO_HTTP_CODE);
       $header_length = (int) @curl_getinfo($ch, CURLINFO_HEADER_SIZE);
-      if ($http_response == 0 || $header_length == 0) throw new Exception('Size of zero from website');
       curl_close($ch);
+      if ($http_response === 0 || $header_length === 0) throw new Exception('Size of zero from adsabs website');
       $header = substr($return, 0, $header_length);
       $body = substr($return, $header_length);
       $decoded = @json_decode($body);
