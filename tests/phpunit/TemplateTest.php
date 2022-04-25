@@ -17,14 +17,14 @@ final class TemplateTest extends testBaseClass {
 
   public function testLotsOfFloaters() : void {
     $text_in = "{{cite journal|issue 3 volume 5 | title Love|journal Dog|series Not mine today|chapter cows|this is random stuff | 123-4567-890 }}";
-    $text_out= "{{cite book|this is random stuff |issue = 3|volume = 5|title = Love|chapter = Cows|journal = Dog|series = Not mine today|isbn = 123-4567-890}}";
+    $text_out= "{{cite book|this is random stuff | issue=3 | volume=5 | title=Love | chapter=Cows | journal=Dog | series=Not mine today | isbn=123-4567-890 }}";
     $prepared = $this->prepare_citation($text_in);
     $this->assertSame($text_out, $prepared->parsed_text());
   }
   
   public function testLotsOfFloaters2() : void {
     $text_in = "{{cite journal|isssue 3 volumee 5 | tittle Love|journall Dog|series Not mine today|chapte cows|this is random stuff | zauthor Joe }}";
-    $text_out= "{{cite journal|isssue 3 volumee 5 | tittle Love|chapte cows|this is random stuff | zauthor Joe |journal = L Dog|series = Not mine today}}";
+    $text_out= "{{cite journal|isssue 3 volumee 5 | tittle Love|chapte cows|this is random stuff | zauthor Joe | journal=L Dog | series=Not mine today }}";
     $prepared = $this->prepare_citation($text_in);
     $this->assertSame($text_out, $prepared->parsed_text());
   }
@@ -416,7 +416,7 @@ final class TemplateTest extends testBaseClass {
   }
 
    public function testDropBadData3() : void {
-    $text = "{{cite journal|doi=10.1063/5.0088162|coauthors=HDU|title=dsfadsafdskfldslj;fdsj;klfkdljssfjkl;ad;fkjdsl;kjfsda}}";
+    $text = "{{cite journal|doi=10.1063/5.0088162|coauthors=HDU|title=dsfadsafdskfldslj;fdsj;klfkdljssfjkl;ad;fkjdsl;kjfsda||pmid=<!-- -->}}";
     $expanded = $this->process_citation($text);
     $expanded->forget('s2cid');
     $this->assertSame($text, $expanded->parsed_text()); // Bad title blocks cross-ref
@@ -5817,22 +5817,22 @@ T1 - This is the Title }}';
     $text = "{{cite web}}";
     $template = $this->make_citation($text);
     $template->validate_and_add('author1', 'George @Hashtags', '', '', FALSE);
-    $this->assertSame("{{cite web|author1 = George}}", $template->parsed_text());
+    $this->assertSame("{{cite web| author1=George }}", $template->parsed_text());
 
     $text = "{{cite web}}";
     $template = $this->make_citation($text);
     $template->validate_and_add('author1', 'George Billy@hotmail.com', 'Sam @Hashtag', '', FALSE);
-    $this->assertSame("{{cite web|last1 = George|first1 = Sam}}", $template->parsed_text());
+    $this->assertSame("{{cite web| last1=George | first1=Sam }}", $template->parsed_text());
 
     $text = "{{cite web}}";
     $template = $this->make_citation($text);
     $template->validate_and_add('author1', 'com', 'Sam', '', FALSE);
-    $this->assertSame("{{cite web|last1 = Com|first1 = Sam}}", $template->parsed_text());
+    $this->assertSame("{{cite web| last1=Com | first1=Sam }}", $template->parsed_text());
    
     $text = "{{cite web}}";
     $template = $this->make_citation($text);
     $template->validate_and_add('author1', '',  'George @Hashtags', '', FALSE);
-    $this->assertSame("{{cite web|author1 = George}}", $template->parsed_text());
+    $this->assertSame("{{cite web| author1=George }}", $template->parsed_text());
   }
  
   public function testDateYearRedundancyEtc() : void {
@@ -6004,7 +6004,7 @@ T1 - This is the Title }}';
      $text='{{Cite journal| p 33 }}';
      $template = $this->process_citation($text);
      $this->assertSame('33', $template->get2('page'));
-     $this->assertSame('{{Cite journal|page = 33}}', $template->parsed_text());
+     $this->assertSame('{{Cite journal| page=33 }}', $template->parsed_text());
 
      $text='{{Cite journal | p 33 |page=}}';
      $template = $this->process_citation($text);
