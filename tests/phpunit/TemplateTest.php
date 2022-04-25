@@ -2951,7 +2951,7 @@ T1 - This is the Title }}';
   }
 
   public function testIgnoreUnkownCiteTemplates() : void {
-    $text = "{{Cite imaginary source | http://google.com | title  I am a title | auhtor = Other, A. N. | issue- 9 | vol. 22 pp. 5-6|doi=10.bad/bad }}";
+    $text = "{{Cite imaginary source | http://google.com | title  I am a title | auhtor = Other, A. N. | issue- 9 | vol. 22 pp. 5-6|doi=10.0000/Rubbish_bot_failure_test }}";
     $expanded = $this->process_citation($text);
     $this->assertSame($text, $expanded->parsed_text());
   }
@@ -7059,7 +7059,7 @@ T1 - This is the Title }}';
    }
  
    public function testVcite() : void {
-     $text = '{{vcite journal|doi=10.5555/dsfadsafdsfs}}';
+     $text = '{{vcite journal|doi=10.0000/Rubbish_bot_failure_test}}';
      $template = $this->process_citation($text);
      $this->assertNotNull($template->get2('doi-broken-date'));
    }
