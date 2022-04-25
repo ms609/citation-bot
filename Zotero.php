@@ -318,8 +318,6 @@ public static function drop_urls_that_match_dois(array &$templates) : void {  //
     }
   }
   curl_close($ch);
-  /** @psalm-suppress UnusedFunctionCall */
-  @strtok('',''); // Free internal buffers with empty unused call
 }
 
 private static function zotero_request(string $url) : string {
@@ -878,6 +876,8 @@ public static function url_simplify(string $url) : string {
   $url = substr($url, 0, -1); // Remove the ending slash we added
   $url = strtok($url, '?#');
   $url = str_ireplace('https', 'http', $url);
+  /** @psalm-suppress UnusedFunctionCall */
+  @strtok('',''); // Free internal buffers with empty unused call
   return $url;
 }
 
