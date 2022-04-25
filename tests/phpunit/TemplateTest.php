@@ -904,6 +904,16 @@ final class TemplateTest extends testBaseClass {
     $template = $this->make_citation($text);
     $template->get_identifiers_from_url();
     $this->assertNotNull($template->get2('url'));
+   
+    $text = "{{cite book|url=http://orbit.dtu.dk/en/publications/33333|doi=1234|pmc=312432}}";
+    $template = $this->make_citation($text);
+    $template->get_identifiers_from_url();
+    $this->assertNull($template->get2('url'));
+   
+    $text = "{{cite book|url=http://orbit.dtu.dk/en/publications/33333|doi=1234|doi-access=free}}";
+    $template = $this->make_citation($text);
+    $template->get_identifiers_from_url();
+    $this->assertNull($template->get2('url'));
   }
 
   public function testURLCleanUp3() : void {
@@ -1021,6 +1031,27 @@ final class TemplateTest extends testBaseClass {
     $this->assertFalse($template->get_identifiers_from_url());
     $this->assertSame('https://SomeRandomWeb.com/10.5284/1000184', $template->get2('url'));
     $this->assertNull($template->get2('doi'));
+  }
+  
+  public function testURLCleanUp18() : void {
+    $text = "{{cite journal|url=https://www.jstor.org/stable/1986280?origin=324124324}}";
+    $template = $this->make_citation($text);
+    $this->assertFalse($template->get_identifiers_from_url());
+    $this->assertSame('https://www.jstor.org/stable/1986280', $template->get2('url'));
+  }
+
+  public function testURLCleanUp19() : void {
+    $text = "{{cite journal|url=https://dx.doi.org/10.0000/Rubbish_bot_failure_test|doi=10.0000/Rubbish_bot_failure_test|doi-access=free}}";
+    $template = $this->make_citation($text);
+    $this->assertFalse($template->get_identifiers_from_url());
+    $this->assertNull( $template->get2('url'));
+  }
+
+  public function testURLCleanUp20() : void {
+    $text = "{{cite journal|url=https://doi.library.ubc.ca/10.7717/peerj.3486|pmc=5483034}}"; // Has good free copy
+    $template = $this->make_citation($text);
+    $this->assertFalse($template->get_identifiers_from_url());
+    $this->assertNull($template->get2('url'));
   }
  
   public function testHDLasDOIThing1() : void {
@@ -5668,6 +5699,10 @@ T1 - This is the Title }}';
     $text = "{{cite web|url=http://search.proquest.com/docview/12341234}}";  // No title
     $template = $this->make_citation($text);
     $this->assertFalse($template->get_identifiers_from_url());
+   
+    $text = "{{cite web|url=http://search.proquest.com/docview/12341234|title=X|id=<!--- --->}}";  // Blocked by comment
+    $template = $this->make_citation($text);
+    $this->assertFalse($template->get_identifiers_from_url());
   }
  
   public function testConversionOfURL7() : void {
@@ -5677,7 +5712,42 @@ T1 - This is the Title }}';
     $this->assertSame('CITATION_BOT_PLACEHOLDER_COMMENT', $template->get2('id'));
     $this->assertSame('https://search.proquest.com/docview/12341234', $template->get2('url'));
   }
+ 
+  public function testConversionOfURL8() : void {
+    $text = "{{cite web|url=https://citeseerx.ist.psu.edu/viewdoc/summary?doi=10.1.1.483.8892|title=Xyz|pmc=341322|doi-access=free|doi=10.0000/Rubbish_bot_failure_test}}";
+    $template = $this->make_citation($text);
+    $this->assertTrue($template->get_identifiers_from_url());
+    $this->assertNull($template->get2('url'));
+  }
 
+  public function testConversionOfURL9() : void {
+    $text = "{{cite web|url=https://ncbi.nlm.nih.gov/entrez/eutils/elink.fcgi?dfastool=sumsearch.org&&id=123456|title=Xyz|pmc=123456}}";
+    $template = $this->make_citation($text);
+    $this->assertTrue($template->get_identifiers_from_url());
+    $this->assertNull($template->get2('url'));
+  }
+ 
+  public function testConversionOfURL10() : void {
+    $text = "{{cite web|url=https://ncbi.nlm.nih.gov/entrez/eutils/elink.fcgi?dfastool=sumsearch.org&&id=123456|title=Xyz|pmc=333333|doi=10.0000/Rubbish_bot_failure_test}}";
+    $template = $this->make_citation($text);
+    $this->assertTrue($template->get_identifiers_from_url());
+    $this->assertNull($template->get2('url'));
+  }
+
+  public function testConversionOfURL11() : void {
+    $text = "{{cite web|url=https://zbmath.org/?q=an:7511.33034|title=Xyz|pmc=333333|doi=10.0000/Rubbish_bot_failure_test|doi-access=free}}";
+    $template = $this->make_citation($text);
+    $this->assertTrue($template->get_identifiers_from_url());
+    $this->assertNull($template->get2('url'));
+  }
+
+  public function testConversionOfURL12() : void {
+    $text = "{{cite web|url=https://www.osti.gov/biblio/1760327-generic-advanced-computing-framework-executing-windows-based-dynamic-contingency-analysis-tool-parallel-cluster-machines|title=Xyz|pmc=333333|doi=10.0000/Rubbish_bot_failure_test|doi-access=free}}";
+    $template = $this->make_citation($text);
+    $this->assertTrue($template->get_identifiers_from_url());
+    $this->assertNull($template->get2('url'));
+  }
+ 
   public function testVolumeIssueDemixing21() : void {
     $text = '{{cite journal|issue = volume 12|doi=XYZ}}';
     $prepared = $this->prepare_citation($text);
@@ -5775,7 +5845,14 @@ T1 - This is the Title }}';
     $this->assertTrue($template->get_identifiers_from_url());
     $this->assertSame('1234', $template->get2('oclc'));
     $this->assertNotNull($template->get2('url'));
-    $this->assertSame('cite book', $template->wikiname());           
+    $this->assertSame('cite book', $template->wikiname());
+   
+    $text = "{{cite web|url=http://worldcat.org/title/stuff/oclc/1234&referer=brief_results}}";
+    $template = $this->make_citation($text);
+    $this->assertTrue($template->get_identifiers_from_url());
+    $this->assertSame('1234', $template->get2('oclc'));
+    $this->assertSame('https://worldcat.org/title/stuff/oclc/1234', $template->get2('url'));
+    $this->assertSame('cite book', $template->wikiname());
   }
  
   public function testConversionOfURL2B() : void {
@@ -6713,6 +6790,14 @@ T1 - This is the Title }}';
      $template->get_identifiers_from_url();
      $this->assertSame('XXXXXX', $template->get2('S2CID')); 
      $this->assertSame('https://semanticscholar.org/paper/861fc89e94d8564adc670fbd35c48b2d2f487704', $template->get2('url'));
+  }
+ 
+  public function testSemanticscholar42() : void {
+     $text = '{{cite web|url=https://semanticscholar.org/paper/861fc89e94d8564adc670fbd35c48b2d2f487704|pmc=32414}}'; // has a good free copy
+     $template = $this->make_citation($text);
+     $template->get_identifiers_from_url();
+     $this->assertNull($template->get2('url')); 
+     $this->assertNotNull($template->get2('s2cid'));
   }
  
   public function testSemanticscholar5() : void {
