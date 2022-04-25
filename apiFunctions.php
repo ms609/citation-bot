@@ -335,7 +335,7 @@ function adsabs_api(array $ids, array &$templates, string $identifier) : bool { 
               CURLOPT_CUSTOMREQUEST => 'POST',
               CURLOPT_POSTFIELDS => "$identifier\n" . str_replace("%0A", "\n", urlencode(implode("\n", $ids)))]);
     $return = (string) @curl_exec($ch);
-    $response = Bibcode_Responce_Processing($return, $ch);
+    $response = Bibcode_Responce_Processing($return, $ch, $adsabs_url);
     curl_close($ch);
     if (!isset($response->docs)) return TRUE;
   
@@ -1116,8 +1116,7 @@ function expand_templates_from_archives(array &$templates) : void { // This is d
   curl_close($ch);
 }
 
-/** @var resource $ch **/
-function Bibcode_Responce_Processing(string $return, $ch) : object {
+function Bibcode_Responce_Processing(string $return, $ch, string $adsabs_url) : object {
   try {
     if ($return == "") {
       // @codeCoverageIgnoreStart
