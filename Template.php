@@ -2243,8 +2243,6 @@ final class Template {
           report_warning("AdsAbs daily search limit exceeded. Retry in a while\n");  // @codeCoverageIgnore
           return (object) array('numFound' => 0);                                    // @codeCoverageIgnore
         }
-      } else {
-        ; // report_warning("Headers do not contain rate limit information: This is unexpected.");  // @codeCoverageIgnore
       }
       if (!is_object($decoded)) {
         throw new Exception("Could not decode API response:\n" . $body, 5000);   // @codeCoverageIgnore
