@@ -2252,7 +2252,6 @@ final class Template {
       } else {
         throw new Exception("Could not decode AdsAbs response", 5000);        // @codeCoverageIgnore
       }
-      return $response;
       // @codeCoverageIgnoreStart
     } catch (Exception $e) {
       if ($e->getCode() == 5000) { // made up code for AdsAbs error
@@ -2273,6 +2272,7 @@ final class Template {
       return (object) array('numFound' => 0);
     }
     // @codeCoverageIgnoreEnd
+    return $response;
   }
 
   public function expand_by_RIS(string &$dat, bool $add_url) : void { // Pass by pointer to wipe this data when called from use_unnamed_params()
