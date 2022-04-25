@@ -14,6 +14,11 @@ require_once __DIR__ . '/../testBaseClass.php';
        $this->markTestSkipped();
      }
     }
+   
+    public function testCoverageFixer() : void {
+       WikipediaBot::make_ch();
+       $this->assertTrue(TRUE);
+    }
       
     public function testCategoryMembers() : void {
       $this->assertTrue(count(WikipediaBot::category_members('Indian drama films')) > 10);
@@ -32,10 +37,8 @@ require_once __DIR__ . '/../testBaseClass.php';
     }
    
     public function testGetUserName() : void {
-     $this->requires_secrets(function() : void {
-      $api = new WikipediaBot(); // Make sure one exists
+      $api = new WikipediaBot();
       $this->assertSame('Citation_bot', $api->get_the_user());
-     });
     }
    
     public function testNonStandardMode() : void {
@@ -64,4 +67,9 @@ require_once __DIR__ . '/../testBaseClass.php';
       $result = WikipediaBot::is_valid_user('RickK'); // BLOCKED
       $this->assertSame(FALSE, $result);
     }
+    public function testGetLinks() : void {
+      $json = WikipediaBot::get_links('Covid Watch');
+      $this->assertTrue(substr_count($json, 'exists') > 15);
+    }
+   
 }

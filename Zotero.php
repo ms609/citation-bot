@@ -15,11 +15,17 @@ final class Zotero {
   private const ZOTERO_SKIPS = 100;
   private const ERROR_DONE = 'ERROR_DONE'; 
   protected static $zotero_announced = 0;
-  /** @var resource|null $zotero_ch */
-  protected static $zotero_ch;
+  /** @var resource|null $zotero_ch, $ch_ieee, $ch_jstor, $ch_dx, $ch_pmc */
+  protected static $zotero_ch, $ch_ieee, $ch_jstor, $ch_dx, $ch_pmc;
   protected static $zotero_failures_count = 0;
 
-private static function set_default_ch_zotero() : void {
+public static function create_ch_zotero() : void { // Called below at end of file
+  if (isset(self::$zotero_ch)) curl_close(self::$zotero_ch);
+  if (isset(self::$ch_ieee)) curl_close(self::$ch_ieee);
+  if (isset(self::$ch_jstor)) curl_close(self::$ch_jstor);
+  if (isset(self::$ch_dx)) curl_close(self::$ch_dx);
+  if (isset(self::$ch_pmc)) curl_close(self::$ch_pmc);
+  self::$zotero_ch = curl_init();
   /** @phan-suppress-next-line PhanRedundantCondition */
   if ( USE_CITOID ) {
         /** @psalm-suppress PossiblyNullArgument */ 
@@ -28,6 +34,7 @@ private static function set_default_ch_zotero() : void {
             CURLOPT_HTTPHEADER => ['accept: application/json; charset=utf-8'],
             CURLOPT_RETURNTRANSFER => TRUE,
             CURLOPT_USERAGENT => BOT_USER_AGENT,
+            CURLOPT_COOKIESESSION => TRUE,
             // Defaults used in TRAVIS overiden below when deployed
             CURLOPT_CONNECTTIMEOUT => 10,
             CURLOPT_TIMEOUT => 45]);
@@ -40,11 +47,47 @@ private static function set_default_ch_zotero() : void {
             CURLOPT_HTTPHEADER => ['Content-Type: text/plain'],
             CURLOPT_RETURNTRANSFER => TRUE,
             CURLOPT_USERAGENT => BOT_USER_AGENT,
+            CURLOPT_COOKIESESSION => TRUE,
             // Defaults used in TRAVIS overiden below when deployed
             CURLOPT_CONNECTTIMEOUT => 10,
             CURLOPT_TIMEOUT => 45]);
         // @codeCoverageIgnoreEnd
     }
+  self::$ch_ieee = curl_init();
+  curl_setopt_array(self::$ch_ieee,
+         [CURLOPT_RETURNTRANSFER => TRUE,
+          CURLOPT_HEADER => FALSE,
+          CURLOPT_TIMEOUT => 15,
+          CURLOPT_FOLLOWLOCATION => TRUE,
+          CURLOPT_MAXREDIRS => 10,
+          CURLOPT_CONNECTTIMEOUT => 8,
+          CURLOPT_COOKIESESSION => TRUE,
+          CURLOPT_USERAGENT => 'curl/7.55.1']); // IEEE now requires JavaScript, unless you specify curl
+   
+  self::$ch_jstor = curl_init();
+  curl_setopt_array(self::$ch_jstor,
+       [CURLOPT_RETURNTRANSFER => 1,
+        CURLOPT_TIMEOUT => 15,
+        CURLOPT_COOKIESESSION => TRUE,
+        CURLOPT_USERAGENT => BOT_USER_AGENT]);
+   
+  self::$ch_dx = curl_init();
+  curl_setopt_array(self::$ch_dx,
+        [CURLOPT_FOLLOWLOCATION => TRUE,
+         CURLOPT_MAXREDIRS => 20, // No infinite loops for us, 20 for Elsivier and Springer websites
+         CURLOPT_CONNECTTIMEOUT =>  4, 
+         CURLOPT_TIMEOUT => 20,
+         CURLOPT_RETURNTRANSFER => TRUE,
+         CURLOPT_AUTOREFERER => TRUE,
+         CURLOPT_COOKIESESSION => TRUE,
+         CURLOPT_USERAGENT => BOT_USER_AGENT]);
+
+  self::$ch_pmc = curl_init();
+  curl_setopt_array(self::$ch_pmc,
+        [CURLOPT_RETURNTRANSFER => TRUE,
+         CURLOPT_TIMEOUT => 15,
+         CURLOPT_COOKIESESSION => TRUE,
+         CURLOPT_USERAGENT => BOT_USER_AGENT]);
 }
 
 public static function block_zotero() : void {
@@ -57,10 +100,6 @@ public static function unblock_zotero() : void {
 
 public static function query_url_api_class(array $ids, array &$templates) : void { // Pointer to save memory
   if (!SLOW_MODE) return; // Zotero takes time
-  if (!is_resource(self::$zotero_ch)) { // When closed will return FALSE
-     self::$zotero_ch = curl_init();
-     self::set_default_ch_zotero();
-  }
 
   if (!TRAVIS) { // try harder in tests
     // @codeCoverageIgnoreStart
@@ -121,24 +160,14 @@ public static function query_url_api_class(array $ids, array &$templates) : void
 public static function query_ieee_webpages(array &$templates) : void {  // Pointer to save memory
   $matches_url = ['', '']; // prevent memory leak in some PHP versions
   $matches = ['', '']; // prevent memory leak in some PHP versions
-  $ch_ieee = curl_init();
-  curl_setopt_array($ch_ieee,
-         [CURLOPT_RETURNTRANSFER => TRUE,
-          CURLOPT_HEADER => FALSE,
-          CURLOPT_TIMEOUT => 15,
-          CURLOPT_FOLLOWLOCATION => TRUE,
-          CURLOPT_MAXREDIRS => 10,
-          CURLOPT_CONNECTTIMEOUT => 8,
-          CURLOPT_COOKIEFILE => 'cookie.txt',
-          CURLOPT_USERAGENT => 'curl/7.55.1']); // IEEE now requires JavaScript, unless you specify curl
   
   foreach (['url', 'chapter-url', 'chapterurl'] as $kind) {
    foreach ($templates as $template) {
     set_time_limit(120);
     if ($template->blank('doi') && preg_match("~^https://ieeexplore\.ieee\.org/document/(\d{5,})$~", $template->get($kind), $matches_url)) {
        usleep(100000); // 0.10 seconds
-       curl_setopt($ch_ieee, CURLOPT_URL, $template->get($kind));
-       $return = (string) @curl_exec($ch_ieee);
+       curl_setopt(self::$ch_ieee, CURLOPT_URL, $template->get($kind));
+       $return = (string) @curl_exec(self::$ch_ieee);
        if ($return !== "" && preg_match_all('~"doi":"(10\.\d{4}/[^\s"]+)"~', $return, $matches, PREG_PATTERN_ORDER)) {
           $dois = array_unique($matches[1]);
           if (count($dois) === 1) {
@@ -151,8 +180,8 @@ public static function query_ieee_webpages(array &$templates) : void {  // Point
        }
     } elseif ($template->has('doi') && preg_match("~^https://ieeexplore\.ieee\.org/document/(\d{5,})$~", $template->get($kind), $matches_url) && doi_works($template->get('doi'))) {
        usleep(100000); // 0.10 seconds
-       curl_setopt($ch_ieee, CURLOPT_URL, $template->get($kind));
-       $return = (string) @curl_exec($ch_ieee);
+       curl_setopt(self::$ch_ieee, CURLOPT_URL, $template->get($kind));
+       $return = (string) @curl_exec(self::$ch_ieee);
        if ($return != "" && strpos($return, "<title> -  </title>") !== FALSE) {
          report_forget("Existing IEEE no longer works - dropping URL"); // @codeCoverageIgnore
          $template->forget($kind);                                      // @codeCoverageIgnore
@@ -160,7 +189,6 @@ public static function query_ieee_webpages(array &$templates) : void {  // Point
     }
    }
   }
-  curl_close($ch_ieee);
 }
 
 public static function drop_urls_that_match_dois(array &$templates) : void {  // Pointer to save memory
@@ -172,8 +200,8 @@ public static function drop_urls_that_match_dois(array &$templates) : void {  //
          CURLOPT_CONNECTTIMEOUT =>  4, 
          CURLOPT_TIMEOUT => 20,
          CURLOPT_RETURNTRANSFER => TRUE,
-         CURLOPT_COOKIEFILE => 'cookie.txt',
          CURLOPT_AUTOREFERER => TRUE,
+         CURLOPT_COOKIESESSION => TRUE,
          CURLOPT_USERAGENT => BOT_USER_AGENT]);
   foreach ($templates as $template) {
     $doi = $template->get_without_comments_and_placeholders('doi');
@@ -250,10 +278,10 @@ public static function drop_urls_that_match_dois(array &$templates) : void {  //
           report_forget("Existing canonical URL resulting in equivalent free DOI/pmc; dropping URL");
           $template->forget($url_kind);  
        } elseif (stripos($url, 'pdf') === FALSE && $template->get('doi-access') === 'free' && $template->has('pmc')) {
-          curl_setopt($ch, CURLOPT_URL, "https://dx.doi.org/" . doi_encode($doi));
-          $ch_return = (string) @curl_exec($ch);
+          curl_setopt(self::$ch_dx, CURLOPT_URL, "https://dx.doi.org/" . doi_encode($doi));
+          $ch_return = (string) @curl_exec(self::$ch_dx);
           if (strlen($ch_return) > 50) { // Avoid bogus tiny pages
-            $redirectedUrl_doi = curl_getinfo($ch, CURLINFO_EFFECTIVE_URL);  // Final URL
+            $redirectedUrl_doi = curl_getinfo(self::$ch_dx, CURLINFO_EFFECTIVE_URL);  // Final URL
             if (stripos($redirectedUrl_doi, 'cookie') !== FALSE) break;
             if (stripos($redirectedUrl_doi, 'denied') !== FALSE) break;
             $redirectedUrl_doi = self::url_simplify($redirectedUrl_doi);
@@ -290,8 +318,6 @@ public static function drop_urls_that_match_dois(array &$templates) : void {  //
     }
   }
   curl_close($ch);
-  /** @psalm-suppress UnusedFunctionCall */
-  @strtok('',''); // Free internal buffers with empty unused call
 }
 
 private static function zotero_request(string $url) : string {
@@ -301,10 +327,6 @@ private static function zotero_request(string $url) : string {
     if (self::ZOTERO_GIVE_UP == self::$zotero_failures_count) self::$zotero_failures_count = 0; // @codeCoverageIgnore
   }
 
-  if (!is_resource(self::$zotero_ch)) {
-     self::$zotero_ch = curl_init();   // @codeCoverageIgnore
-     self::set_default_ch_zotero();    // @codeCoverageIgnore
-  }
   /** @phan-suppress-next-line PhanRedundantCondition */
   if ( USE_CITOID ) {
      curl_setopt(self::$zotero_ch, CURLOPT_URL, CITOID_ZOTERO . urlencode($url));
@@ -810,7 +832,13 @@ public static function process_zotero_response(string $zotero_response, Template
             if (strtolower((string) $result->creators[$i]->firstName) === 'published') $result->creators[$i]->firstName ='';
             $template->validate_and_add($authorParam, (string) $result->creators[$i]->lastName, (string) $result->creators[$i]->firstName,
             isset($result->rights) ? (string) $result->rights : '', FALSE);
-            if ($template->blank(['author' . (string)($i), 'first' . (string)($i), 'last' . (string)($i)])) break; // Break out if nothing added
+             // Break out if nothing added
+            if ((strpos($authorParam, 'author') === 0) &&
+                     $template->blank(['author' . (string)($author_i), 'first' . (string)($author_i), 'last' . (string)($author_i)])) break;
+            if ((strpos($authorParam, 'editor') === 0) &&
+                     $template->blank(['editor' . (string)($editor_i)])) break;
+            if ((strpos($authorParam, 'translator') === 0) &&
+                     $template->blank(['translator' . (string)($translator_i)])) break;
          }
         }
         $i++;
@@ -848,12 +876,12 @@ public static function url_simplify(string $url) : string {
   $url = substr($url, 0, -1); // Remove the ending slash we added
   $url = strtok($url, '?#');
   $url = str_ireplace('https', 'http', $url);
+  /** @psalm-suppress UnusedFunctionCall */
+  @strtok('',''); // Free internal buffers with empty unused call
   return $url;
 }
-  
-} // End of CLASS
 
-function find_indentifiers_in_urls(Template $template, ?string $url_sent = NULL) : bool {
+public static function find_indentifiers_in_urls(Template $template, ?string $url_sent = NULL) : bool {
     set_time_limit(120);
     $matches = ['', '']; // prevent memory leak in some PHP versions
     $bibcode = ['', '']; // prevent memory leak in some PHP versions
@@ -1047,15 +1075,11 @@ function find_indentifiers_in_urls(Template $template, ?string $url_sent = NULL)
          }
          return FALSE;
        } elseif ($template->blank('jstor')) {
-          $ch = curl_init();
-          curl_setopt_array($ch,
-                   [CURLOPT_HEADER => 0,
-                    CURLOPT_RETURNTRANSFER => 1,
-                    CURLOPT_TIMEOUT => 15,
-                    CURLOPT_URL => 'https://www.jstor.org/citation/ris/' . $matches[1],
-                    CURLOPT_USERAGENT => BOT_USER_AGENT]);
-          $dat = (string) @curl_exec($ch);
-          curl_close($ch);
+          curl_setopt_array(self::$ch_jstor,
+                            [CURLOPT_URL => 'https://www.jstor.org/citation/ris/' . $matches[1],
+                             CURLOPT_HEADER => 0,
+                             CURLOPT_NOBODY => 0]);
+          $dat = (string) @curl_exec(self::$ch_jstor);
           if ($dat &&
               stripos($dat, 'No RIS data found for') === FALSE &&
               stripos($dat, 'Block Reference') === FALSE &&
@@ -1183,26 +1207,20 @@ function find_indentifiers_in_urls(Template $template, ?string $url_sent = NULL)
         $template->use_sici(); // Grab what we can before getting rid off it
         // Need to encode the sici bit that follows sici?sici= [10 characters]
         $encoded_url = substr($url, 0, $sici_pos + 10) . urlencode(urldecode(substr($url, $sici_pos + 10)));
-        $ch = curl_init($encoded_url);
-        curl_setopt_array($ch,
-              [CURLOPT_HEADER => 1,
-               CURLOPT_NOBODY => 1,
-               CURLOPT_RETURNTRANSFER => TRUE,
-               CURLOPT_TIMEOUT => 15,
-               CURLOPT_USERAGENT => BOT_USER_AGENT]);
-        if (@curl_exec($ch)) {
-          $redirect_url = (string) @curl_getinfo($ch, CURLINFO_REDIRECT_URL);
+        curl_setopt_array(self::$ch_jstor, [CURLOPT_URL => $encoded_url,
+                                            CURLOPT_HEADER => 1,
+                                            CURLOPT_NOBODY => 1]);
+        if (@curl_exec(self::$ch_jstor)) {
+          $redirect_url = (string) @curl_getinfo(self::$ch_jstor, CURLINFO_REDIRECT_URL);
           if (strpos($redirect_url, "jstor.org/stable/")) {
             $url = $redirect_url;
             if (is_null($url_sent)) {
               $template->set($url_type, $url); // Save it
             }
           } else {  // We do not want this URL incorrectly parsed below, or even waste time trying.
-            curl_close($ch);  // @codeCoverageIgnore
             return FALSE;     // @codeCoverageIgnore
           }
         }
-        curl_close($ch);
       }
       if (preg_match("~^/(?:\w+/)*(\d{5,})[^\d%\-]*(?:\?|$)~", substr($url, (int) stripos($url, 'jstor.org') + 9), $match) ||
                 preg_match("~^https?://(?:www\.)?jstor\.org\S+(?:stable|discovery)/(?:10\.7591/|)(\d{5,}|(?:j|J|histirel|jeductechsoci|saoa)\.[a-zA-Z0-9\.]+)$~", $url, $match)) {
@@ -1242,14 +1260,9 @@ function find_indentifiers_in_urls(Template $template, ?string $url_sent = NULL)
         if (is_null($url_sent)) {
           if (stripos($url, ".pdf") !== FALSE) {
             $test_url = "https://www.ncbi.nlm.nih.gov/pmc/articles/PMC" . $match[1] . $match[2] . "/";
-            $ch = curl_init($test_url);
-            curl_setopt_array($ch,
-                      [CURLOPT_RETURNTRANSFER => TRUE,
-                       CURLOPT_TIMEOUT => 15,
-                       CURLOPT_USERAGENT => BOT_USER_AGENT]);
-            @curl_exec($ch);
-            $httpCode = (int) @curl_getinfo($ch, CURLINFO_HTTP_CODE);
-            curl_close($ch);
+            curl_setopt_array(self::$ch_pmc, [CURLOPT_URL => $test_url]);
+            @curl_exec(self::$ch_pmc);
+            $httpCode = (int) @curl_getinfo(self::$ch_pmc, CURLINFO_HTTP_CODE);
             if ($httpCode == 404) { // Some PMCs do NOT resolve.  So leave URL
               return $template->add_if_new('pmc', $match[1] . $match[2]);
             }
@@ -1454,7 +1467,7 @@ function find_indentifiers_in_urls(Template $template, ?string $url_sent = NULL)
               $handle = $matches[1]; // @codeCoverageIgnore
           }
           return $template->add_if_new('hdl', $handle);
-      } elseif (preg_match("~^https?://zbmath\.org/\?format=complete&q=an:([0-9][0-9][0-9][0-9]\.[0-9][0-9][0-9][0-9][0-9])~i", $url, $match)) {
+      } elseif (preg_match("~^https?://zbmath\.org/\?(?:format=complete&|)q=an:([0-9][0-9][0-9][0-9]\.[0-9][0-9][0-9][0-9][0-9])~i", $url, $match)) {
           quietly('report_modification', "Converting URL to ZBL parameter");
           if (is_null($url_sent)) {
              if ($template->has_good_free_copy()) {
@@ -1463,7 +1476,7 @@ function find_indentifiers_in_urls(Template $template, ?string $url_sent = NULL)
              }
           }
           return $template->add_if_new('zbl', $match[1]);
-      } elseif (preg_match("~^https?://zbmath\.org/\?format=complete&q=an:([0-9][0-9]\.[0-9][0-9][0-9][0-9]\.[0-9][0-9])~i", $url, $match)) {
+      } elseif (preg_match("~^https?://zbmath\.org/\?(?:format=complete&|)q=an:([0-9][0-9]\.[0-9][0-9][0-9][0-9]\.[0-9][0-9])~i", $url, $match)) {
           quietly('report_modification', "Converting URL to JFM parameter");
           if (is_null($url_sent)) {
              if ($template->has_good_free_copy()) {
@@ -1558,4 +1571,9 @@ function find_indentifiers_in_urls(Template $template, ?string $url_sent = NULL)
       }
     }
     return FALSE ;
-}
+ }
+  
+} // End of CLASS
+
+
+Zotero::create_ch_zotero();  // @codeCoverageIgnore
