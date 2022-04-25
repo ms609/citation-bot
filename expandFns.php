@@ -42,7 +42,7 @@ function doi_works(string $doi) : ?bool {
   if (isset($cache_good[$doi])) return TRUE;
   if (isset($cache_bad[$doi]))  return FALSE;
   // For really long category runs
-  if (count($cache_bad) > 7) $cache_bad = BAD_DOI_ARRAY;
+  if (count($cache_bad) > 10) $cache_bad = BAD_DOI_ARRAY;
   if (count($cache_good) > 100000) $cache_good = [];
   $works = is_doi_works($doi);
   if ($works === NULL) {
