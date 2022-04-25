@@ -2240,8 +2240,11 @@ final class Template {
         if ($rate_limit[2][2]) {
           report_info("AdsAbs search " . (string)((int) $rate_limit[2][0] - (int) $rate_limit[2][1]) . "/" . $rate_limit[2][0] . "\n");
         } else {
-          report_warning("AdsAbs daily search limit exceeded. Retry in a while\n");  // @codeCoverageIgnore
-          return (object) array('numFound' => 0);                                    // @codeCoverageIgnore
+          // @codeCoverageIgnoreStart
+          report_warning("AdsAbs daily search limit exceeded.\n");
+          AdsAbsControl::give_up();
+          return (object) array('numFound' => 0);
+          // @codeCoverageIgnoreEnd
         }
       }
       if (!is_object($decoded)) {
