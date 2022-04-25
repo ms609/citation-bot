@@ -2176,7 +2176,6 @@ final class Template {
     if (AdsAbsControl::gave_up_yet()) return (object) array('numFound' => 0);
     if (!PHP_ADSABSAPIKEY) return (object) array('numFound' => 0);
 
-    try {
       $ch = curl_init();
       /** @psalm-suppress RedundantCondition */ /* PSALM thinks TRAVIS cannot be FALSE */
       $adsabs_url = "https://" . (TRAVIS ? 'qa' : 'api')
@@ -2191,83 +2190,8 @@ final class Template {
                 CURLOPT_USERAGENT => BOT_USER_AGENT,
                 CURLOPT_URL => $adsabs_url]);
       $return = (string) @curl_exec($ch);
-      if (502 === curl_getinfo($ch, CURLINFO_HTTP_CODE)) {
-        // @codeCoverageIgnoreStart
-        sleep(4);
-        $return = (string) @curl_exec($ch);
-        // @codeCoverageIgnoreEnd
-      }
-      if ($return == "") {
-        // @codeCoverageIgnoreStart
-        $error = curl_error($ch);
-        $errno = curl_errno($ch);
-        curl_close($ch);
-        throw new Exception($error, $errno);
-        // @codeCoverageIgnoreEnd
-      }
-      $http_response = (int) @curl_getinfo($ch, CURLINFO_HTTP_CODE);
-      $header_length = (int) @curl_getinfo($ch, CURLINFO_HEADER_SIZE);
+      $response = Bibcode_Responce_Processing($return, $ch);
       curl_close($ch);
-      if ($http_response === 0 || $header_length === 0) throw new Exception('Size of zero from adsabs website');
-      $header = substr($return, 0, $header_length);
-      $body = substr($return, $header_length);
-      $decoded = @json_decode($body);
-
-      if (is_object($decoded) && isset($decoded->error)) {
-        // @codeCoverageIgnoreStart
-        if (isset($decoded->error->trace)) {
-          throw new Exception(
-          "ADSABS website returned a stack trace"
-          . "\n - URL was:  " . $adsabs_url,
-          (isset($decoded->error->code) ? $decoded->error->code : 999));
-        } else {
-          throw new Exception(
-          ((isset($decoded->error->msg)) ? $decoded->error->msg : $decoded->error)
-          . "\n - URL was:  " . $adsabs_url,
-          (isset($decoded->error->code) ? $decoded->error->code : 999));
-        }
-        // @codeCoverageIgnoreEnd
-      }
-      if ($http_response != 200) {
-        throw new Exception(strtok($header, "\n"), $http_response); // @codeCoverageIgnore
-      }
-
-      if (preg_match_all('~\nX\-RateLimit\-(\w+):\s*(\d+)\r~i', $header, $rate_limit)) {
-        if ($rate_limit[2][2]) {
-          report_info("AdsAbs search " . (string)((int) $rate_limit[2][0] - (int) $rate_limit[2][1]) . "/" . $rate_limit[2][0] . "\n");
-        } else {
-          throw new Exception('Too many requests', $http_response);  // @codeCoverageIgnore
-        }
-      }
-      if (!is_object($decoded)) {
-        throw new Exception("Could not decode API response:\n" . $body, 5000);   // @codeCoverageIgnore
-      } elseif (isset($decoded->response)) {
-        $response = $decoded->response;
-      } elseif (isset($decoded->error)) {                    // @codeCoverageIgnore
-        throw new Exception("" . $decoded->error, 5000);     // @codeCoverageIgnore
-      } else {
-        throw new Exception("Could not decode AdsAbs response", 5000);        // @codeCoverageIgnore
-      }
-      // @codeCoverageIgnoreStart
-    } catch (Exception $e) {
-      if ($e->getCode() == 5000) { // made up code for AdsAbs error
-        report_warning(sprintf("API Error in query_adsabs: %s", echoable($e->getMessage())));
-      } elseif ($e->getCode() == 60) {
-        AdsAbsControl::give_up();
-        report_warning('Giving up on AdsAbs for a while.  SSL certificate has expired.');
-      } elseif (strpos($e->getMessage(), 'org.apache.solr.search.SyntaxError') !== FALSE) {
-        report_info(sprintf("Internal Error %d in query_adsabs: %s", $e->getCode(), echoable($e->getMessage())));
-      } elseif (strpos($e->getMessage(), 'HTTP') === 0) {
-        report_warning(sprintf("HTTP Error %d in query_adsabs: %s", $e->getCode(), echoable($e->getMessage())));
-      } elseif (strpos($e->getMessage(), 'Too many requests') !== FALSE) {
-        AdsAbsControl::give_up();
-        report_warning('Giving up on AdsAbs for a while.  Too many requests.');
-      } else {
-        report_warning(sprintf("Error %d in query_adsabs: %s", $e->getCode(), echoable($e->getMessage())));
-      }
-      return (object) array('numFound' => 0);
-    }
-    // @codeCoverageIgnoreEnd
     return $response;
   }
 
