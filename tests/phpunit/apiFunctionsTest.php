@@ -118,7 +118,7 @@ final class apiFunctionsTest extends testBaseClass {
     $this->requires_dx(function() : void {
      $expanded = $this->make_citation('{{Cite journal}}');
      expand_doi_with_dx($expanded, '10.1017/CBO9780511983658');  // This is cross-ref doi, so for DX DOI expansion
-     $this->assertSame('{{Cite book|year = 1996|isbn = 9780521572903|last1 = Luo|first1 = Zhi-Quan|last2 = Pang|first2 = Jong-Shi|last3 = Ralph|first3 = Daniel|title = Mathematical Programs with Equilibrium Constraints|publisher = Cambridge University Press}}', $expanded->parsed_text());
+     $this->assertSame('{{Cite book| year=1996 | isbn=9780521572903 | last1=Luo | first1=Zhi-Quan | last2=Pang | first2=Jong-Shi | last3=Ralph | first3=Daniel | title=Mathematical Programs with Equilibrium Constraints | publisher=Cambridge University Press }}', $expanded->parsed_text());
     });
   }
   
@@ -126,7 +126,7 @@ final class apiFunctionsTest extends testBaseClass {
     $this->requires_dx(function() : void {
      $expanded = $this->make_citation('{{Cite journal}}');
      expand_doi_with_dx($expanded, '10.1002/0470841559.ch1');  // This is cross-ref doi, so for DX DOI expansion
-     $this->assertSame('{{Cite book|year = 2003|title = Internetworking LANs and WANs|chapter = Network Concepts|publisher = John Wiley & Sons|location = Chichester, UK}}', $expanded->parsed_text());
+     $this->assertSame('{{Cite book| year=2003 | title=Internetworking LANs and WANs | chapter=Network Concepts | publisher=John Wiley & Sons | location=Chichester, UK }}', $expanded->parsed_text());
     });
   }
   
@@ -134,7 +134,7 @@ final class apiFunctionsTest extends testBaseClass {
     $this->requires_dx(function() : void {
      $expanded = $this->make_citation('{{Cite journal}}');
      expand_doi_with_dx($expanded, '10.1594/PANGAEA.726855');
-     $this->assertSame('{{Cite journal|year = 2009|last1 = Irino|first1 = Tomohisa|last2 = Tada|first2 = Ryuji|title = Chemical and mineral compositions of sediments from ODP Site 127-797, supplement to: Irino, Tomohisa; Tada, Ryuji (2000): Quantification of aeolian dust (Kosa) contribution to the Japan Sea sediments and its variation during the last 200 ky. Geochemical Journal, 34(1), 59-93}}', $expanded->parsed_text());
+     $this->assertSame('{{Cite journal| year=2009 | last1=Irino | first1=Tomohisa | last2=Tada | first2=Ryuji | title=Chemical and mineral compositions of sediments from ODP Site 127-797, supplement to: Irino, Tomohisa; Tada, Ryuji (2000): Quantification of aeolian dust (Kosa) contribution to the Japan Sea sediments and its variation during the last 200 ky. Geochemical Journal, 34(1), 59-93 }}', $expanded->parsed_text());
     });
   }
 
@@ -142,7 +142,7 @@ final class apiFunctionsTest extends testBaseClass {
     $this->requires_dx(function() : void {
      $expanded = $this->make_citation('{{Cite journal}}');
      expand_doi_with_dx($expanded, '10.1594/GFZ.GEOFON.gfz2009kciu');
-     $this->assertSame('{{Cite journal|year = 2009|author1 = Geofon Operator|title = GEOFON event gfz2009kciu (NW Balkan Region)|publisher = Deutsches GeoForschungsZentrum GFZ}}', $expanded->parsed_text());
+     $this->assertSame('{{Cite journal| year=2009 | author1=Geofon Operator | title=GEOFON event gfz2009kciu (NW Balkan Region) | publisher=Deutsches GeoForschungsZentrum GFZ }}', $expanded->parsed_text());
     });
   }
   
@@ -150,7 +150,7 @@ final class apiFunctionsTest extends testBaseClass {
     $this->requires_dx(function() : void {
      $expanded = $this->make_citation('{{Cite journal}}');
      expand_doi_with_dx($expanded, '10.1594/PANGAEA.667386');
-     $this->assertSame('{{Cite book|year = 2008|last1 = Kraus|first1 = Stefan|last2 = del Valle|first2 = Rodolfo|title = Geological map of Potter Peninsula (King George Island, South Shetland Islands, Antarctic Peninsula)|chapter = Impact of climate induced glacier melt on marine coastal systems, Antarctica (IMCOAST/IMCONet)|publisher = PANGAEA - Data Publisher for Earth & Environmental Science}}', $expanded->parsed_text());
+     $this->assertSame('{{Cite book| year=2008 | last1=Kraus | first1=Stefan | last2=del Valle | first2=Rodolfo | title=Geological map of Potter Peninsula (King George Island, South Shetland Islands, Antarctic Peninsula) | chapter=Impact of climate induced glacier melt on marine coastal systems, Antarctica (IMCOAST/IMCONet) | publisher=PANGAEA - Data Publisher for Earth & Environmental Science }}', $expanded->parsed_text());
     });
   }
 
@@ -158,7 +158,7 @@ final class apiFunctionsTest extends testBaseClass {
     $this->requires_dx(function() : void {
      $expanded = $this->make_citation('{{Cite journal}}');
      expand_doi_with_dx($expanded, '10.3207/2959859860');
-     $this->assertSame('{{Cite journal|year = 2009|last1 = Kirchhof|first1 = Bernd|title = Silicone oil bubbles entrapped in the vitreous base during silicone oil removal}}', $expanded->parsed_text());
+     $this->assertSame('{{Cite journal| year=2009 | last1=Kirchhof | first1=Bernd | title=Silicone oil bubbles entrapped in the vitreous base during silicone oil removal }}', $expanded->parsed_text());
     });
   }
 
@@ -166,7 +166,7 @@ final class apiFunctionsTest extends testBaseClass {
     $this->requires_dx(function() : void {
      $expanded = $this->make_citation('{{Cite journal}}');
      expand_doi_with_dx($expanded, '10.3866/PKU.WHXB201112303');
-     $this->assertSame('{{Cite journal|year = 2012|volume = 28|issue = 3|last1 = Yu|first1 = ZHANG|last3 = Ning|first3 = MA|last4 = Wei-Zhou|first4 = WANG|title = Correlation between Bond-Length Change and Vibrational Frequency Shift in Hydrogen-Bonded Complexes Revisited|journal = Acta Physico-Chimica Sinica}}', $expanded->parsed_text());
+     $this->assertSame('{{Cite journal| year=2012 | volume=28 | issue=3 | last1=Yu | first1=ZHANG | last3=Ning | first3=MA | last4=Wei-Zhou | first4=WANG | title=Correlation between Bond-Length Change and Vibrational Frequency Shift in Hydrogen-Bonded Complexes Revisited | journal=Acta Physico-Chimica Sinica }}', $expanded->parsed_text());
     });
   }
   
@@ -190,7 +190,7 @@ final class apiFunctionsTest extends testBaseClass {
     $this->requires_dx(function() : void {
      $expanded = $this->make_citation('{{Cite journal}}');
      expand_doi_with_dx($expanded, '10.11467/isss2003.7.1_11');
-     $this->assertSame('{{Cite journal|year = 2009|volume = 7|last1 = 竹本|first1 = 賢太郎|last2 = 川東|first2 = 正美|last3 = 久保|first3 = 信行|last4 = 左近|first4 = 多喜男|title = 大学におけるWebメールとターミナルサービスの研究|journal = Society for Standardization Studies}}', $expanded->parsed_text());
+     $this->assertSame('{{Cite journal| year=2009 | volume=7 | last1=竹本 | first1=賢太郎 | last2=川東 | first2=正美 | last3=久保 | first3=信行 | last4=左近 | first4=多喜男 | title=大学におけるWebメールとターミナルサービスの研究 | journal=Society for Standardization Studies }}', $expanded->parsed_text());
     });
   }
 
@@ -198,7 +198,7 @@ final class apiFunctionsTest extends testBaseClass {
     $this->requires_dx(function() : void {
      $expanded = $this->make_citation('{{Cite journal}}');
      expand_doi_with_dx($expanded, '10.7875/leading.author.2.e008');
-     $this->assertSame('{{Cite journal|year = 2013|volume = 2|last1 = 川崎|first1 = 努.|title = 植物における免疫誘導と病原微生物の感染戦略|journal = 領域融合レビュー}}', $expanded->parsed_text());
+     $this->assertSame('{{Cite journal| year=2013 | volume=2 | last1=川崎 | first1=努. | title=植物における免疫誘導と病原微生物の感染戦略 | journal=領域融合レビュー }}', $expanded->parsed_text());
     });
   }
 
@@ -206,7 +206,7 @@ final class apiFunctionsTest extends testBaseClass {
     $this->requires_dx(function() : void {
      $expanded = $this->make_citation('{{Cite journal}}');
      expand_doi_with_dx($expanded, '10.1430/8105');
-     $this->assertSame("{{Cite journal|year = 2002|issue = 4|author1 = Romano Prodi|title = L'Industria dopo l'euro|journal = L'Industria}}", $expanded->parsed_text());
+     $this->assertSame("{{Cite journal| year=2002 | issue=4 | author1=Romano Prodi | title=L'Industria dopo l'euro | journal=L'Industria }}", $expanded->parsed_text());
     });
   }
   
@@ -214,7 +214,7 @@ final class apiFunctionsTest extends testBaseClass {
     $this->requires_dx(function() : void {
      $expanded = $this->make_citation('{{Cite journal}}');
      expand_doi_with_dx($expanded, '10.1392/BC1.0');
-     $this->assertSame('{{Cite journal|year = 2004|last1 = Attanasio|first1 = Piero|title = The use of Doi in eContent value chain|publisher = mEDRA}}', $expanded->parsed_text());
+     $this->assertSame('{{Cite journal| year=2004 | last1=Attanasio | first1=Piero | title=The use of Doi in eContent value chain | publisher=mEDRA }}', $expanded->parsed_text());
     });
   }    
 
@@ -243,7 +243,7 @@ final class apiFunctionsTest extends testBaseClass {
     $this->requires_dx(function() : void {
      $expanded = $this->make_citation('{{Cite journal}}');
      expand_doi_with_dx($expanded, '10.3743/KOSIM.2011.28.2.117');
-     $this->assertSame('{{Cite journal|year = 2011|volume = 28|issue = 2|last1 = Kim|first1 = Byung-Kyu|last2 = Kang|first2 = Mu-Yeong|last3 = Choi|first3 = Seon-Heui|last4 = Kim|first4 = Soon-Young|last5 = You|first5 = Beom-Jong|last6 = Shin|first6 = Jae-Do|title = Citing Behavior of Korean Scientists on Foreign Journals in KSCD|journal = Journal of the Korean Society for Information Management}}', $expanded->parsed_text());
+     $this->assertSame('{{Cite journal| year=2011 | volume=28 | issue=2 | last1=Kim | first1=Byung-Kyu | last2=Kang | first2=Mu-Yeong | last3=Choi | first3=Seon-Heui | last4=Kim | first4=Soon-Young | last5=You | first5=Beom-Jong | last6=Shin | first6=Jae-Do | title=Citing Behavior of Korean Scientists on Foreign Journals in KSCD | journal=Journal of the Korean Society for Information Management }}', $expanded->parsed_text());
     });
   }
   
@@ -253,9 +253,9 @@ final class apiFunctionsTest extends testBaseClass {
      $expanded = $this->make_citation('{{Cite journal}}');
      expand_doi_with_dx($expanded, '10.2788/14231');
      if ($expanded->has('author1')) {
-       $this->assertSame('{{Cite journal|year = 2007|author1 = European Commission. Joint Research Centre. Institute for Environment Sustainability|last2 = Vogt|first2 = Jürgen|last3 = Foisneau|first3 = Stéphanie|title = European river and catchment database, version 2.0 (CCM2) : Analysis tools|publisher = Publications Office}}', $expanded->parsed_text());
+       $this->assertSame('{{Cite journal | year=2007 | author1=European Commission. Joint Research Centre. Institute for Environment Sustainability | last2=Vogt | first2=Jürgen | last3=Foisneau | first3=Stéphanie | title=European river and catchment database, version 2.0 (CCM2) : Analysis tools | publisher=Publications Office }}', $expanded->parsed_text());
      } else {
-       $this->assertSame('{{Cite journal|year = 2007|last1 = Vogt|first1 = Jürgen|last2 = Foisneau|first2 = Stéphanie|title = European river and catchment database, version 2.0 (CCM2) : Analysis tools|publisher = Publications Office}}', $expanded->parsed_text());
+       $this->assertSame('{{Cite journal | year=2007 | last1=Vogt | first1=Jürgen | last2=Foisneau | first2=Stéphanie | title=European river and catchment database, version 2.0 (CCM2) : Analysis tools | publisher=Publications Office }}', $expanded->parsed_text());
      }
      });
   }
