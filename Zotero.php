@@ -20,8 +20,13 @@ final class Zotero {
   protected static int $zotero_failures_count = 0;
 
 public static function create_ch_zotero() : void { // Called below at end of file
-  /** @phan-suppress-next-line PhanRedundantCondition */
+  if (isset(self::$zotero_ch)) curl_close(self::$zotero_ch);
+  if (isset(self::$ch_ieee)) curl_close(self::$ch_ieee);
+  if (isset(self::$ch_jstor)) curl_close(self::$ch_jstor);
+  if (isset(self::$ch_dx)) curl_close(self::$ch_dx);
+  if (isset(self::$ch_pmc)) curl_close(self::$ch_pmc);
   self::$zotero_ch = curl_init();
+  /** @phan-suppress-next-line PhanRedundantCondition */
   if ( USE_CITOID ) {
         /** @psalm-suppress PossiblyNullArgument */ 
         curl_setopt_array(self::$zotero_ch,
@@ -29,6 +34,7 @@ public static function create_ch_zotero() : void { // Called below at end of fil
             CURLOPT_HTTPHEADER => ['accept: application/json; charset=utf-8'],
             CURLOPT_RETURNTRANSFER => TRUE,
             CURLOPT_USERAGENT => BOT_USER_AGENT,
+            CURLOPT_COOKIESESSION => TRUE,
             // Defaults used in TRAVIS overiden below when deployed
             CURLOPT_CONNECTTIMEOUT => 10,
             CURLOPT_TIMEOUT => 45]);
@@ -41,6 +47,7 @@ public static function create_ch_zotero() : void { // Called below at end of fil
             CURLOPT_HTTPHEADER => ['Content-Type: text/plain'],
             CURLOPT_RETURNTRANSFER => TRUE,
             CURLOPT_USERAGENT => BOT_USER_AGENT,
+            CURLOPT_COOKIESESSION => TRUE,
             // Defaults used in TRAVIS overiden below when deployed
             CURLOPT_CONNECTTIMEOUT => 10,
             CURLOPT_TIMEOUT => 45]);
@@ -54,12 +61,14 @@ public static function create_ch_zotero() : void { // Called below at end of fil
           CURLOPT_FOLLOWLOCATION => TRUE,
           CURLOPT_MAXREDIRS => 10,
           CURLOPT_CONNECTTIMEOUT => 8,
+          CURLOPT_COOKIESESSION => TRUE,
           CURLOPT_USERAGENT => 'curl/7.55.1']); // IEEE now requires JavaScript, unless you specify curl
    
   self::$ch_jstor = curl_init();
   curl_setopt_array(self::$ch_jstor,
        [CURLOPT_RETURNTRANSFER => 1,
         CURLOPT_TIMEOUT => 15,
+        CURLOPT_COOKIESESSION => TRUE,
         CURLOPT_USERAGENT => BOT_USER_AGENT]);
    
   self::$ch_dx = curl_init();
@@ -70,12 +79,14 @@ public static function create_ch_zotero() : void { // Called below at end of fil
          CURLOPT_TIMEOUT => 20,
          CURLOPT_RETURNTRANSFER => TRUE,
          CURLOPT_AUTOREFERER => TRUE,
+         CURLOPT_COOKIESESSION => TRUE,
          CURLOPT_USERAGENT => BOT_USER_AGENT]);
 
   self::$ch_pmc = curl_init();
   curl_setopt_array(self::$ch_pmc,
         [CURLOPT_RETURNTRANSFER => TRUE,
          CURLOPT_TIMEOUT => 15,
+         CURLOPT_COOKIESESSION => TRUE,
          CURLOPT_USERAGENT => BOT_USER_AGENT]);
 }
 
@@ -190,6 +201,7 @@ public static function drop_urls_that_match_dois(array &$templates) : void {  //
          CURLOPT_TIMEOUT => 20,
          CURLOPT_RETURNTRANSFER => TRUE,
          CURLOPT_AUTOREFERER => TRUE,
+         CURLOPT_COOKIESESSION => TRUE,
          CURLOPT_USERAGENT => BOT_USER_AGENT]);
   foreach ($templates as $template) {
     $doi = $template->get_without_comments_and_placeholders('doi');
@@ -306,8 +318,6 @@ public static function drop_urls_that_match_dois(array &$templates) : void {  //
     }
   }
   curl_close($ch);
-  /** @psalm-suppress UnusedFunctionCall */
-  @strtok('',''); // Free internal buffers with empty unused call
 }
 
 private static function zotero_request(string $url) : string {
@@ -822,7 +832,13 @@ public static function process_zotero_response(string $zotero_response, Template
             if (strtolower((string) $result->creators[$i]->firstName) === 'published') $result->creators[$i]->firstName ='';
             $template->validate_and_add($authorParam, (string) $result->creators[$i]->lastName, (string) $result->creators[$i]->firstName,
             isset($result->rights) ? (string) $result->rights : '', FALSE);
-            if ($template->blank(['author' . (string)($i), 'first' . (string)($i), 'last' . (string)($i)])) break; // Break out if nothing added
+             // Break out if nothing added
+            if ((strpos($authorParam, 'author') === 0) &&
+                     $template->blank(['author' . (string)($author_i), 'first' . (string)($author_i), 'last' . (string)($author_i)])) break;
+            if ((strpos($authorParam, 'editor') === 0) &&
+                     $template->blank(['editor' . (string)($editor_i)])) break;
+            if ((strpos($authorParam, 'translator') === 0) &&
+                     $template->blank(['translator' . (string)($translator_i)])) break;
          }
         }
         $i++;
@@ -860,6 +876,8 @@ public static function url_simplify(string $url) : string {
   $url = substr($url, 0, -1); // Remove the ending slash we added
   $url = strtok($url, '?#');
   $url = str_ireplace('https', 'http', $url);
+  /** @psalm-suppress UnusedFunctionCall */
+  @strtok('',''); // Free internal buffers with empty unused call
   return $url;
 }
 
@@ -1449,7 +1467,7 @@ public static function find_indentifiers_in_urls(Template $template, ?string $ur
               $handle = $matches[1]; // @codeCoverageIgnore
           }
           return $template->add_if_new('hdl', $handle);
-      } elseif (preg_match("~^https?://zbmath\.org/\?format=complete&q=an:([0-9][0-9][0-9][0-9]\.[0-9][0-9][0-9][0-9][0-9])~i", $url, $match)) {
+      } elseif (preg_match("~^https?://zbmath\.org/\?(?:format=complete&|)q=an:([0-9][0-9][0-9][0-9]\.[0-9][0-9][0-9][0-9][0-9])~i", $url, $match)) {
           quietly('report_modification', "Converting URL to ZBL parameter");
           if (is_null($url_sent)) {
              if ($template->has_good_free_copy()) {
@@ -1458,7 +1476,7 @@ public static function find_indentifiers_in_urls(Template $template, ?string $ur
              }
           }
           return $template->add_if_new('zbl', $match[1]);
-      } elseif (preg_match("~^https?://zbmath\.org/\?format=complete&q=an:([0-9][0-9]\.[0-9][0-9][0-9][0-9]\.[0-9][0-9])~i", $url, $match)) {
+      } elseif (preg_match("~^https?://zbmath\.org/\?(?:format=complete&|)q=an:([0-9][0-9]\.[0-9][0-9][0-9][0-9]\.[0-9][0-9])~i", $url, $match)) {
           quietly('report_modification', "Converting URL to JFM parameter");
           if (is_null($url_sent)) {
              if ($template->has_good_free_copy()) {
@@ -1558,4 +1576,4 @@ public static function find_indentifiers_in_urls(Template $template, ?string $ur
 } // End of CLASS
 
 
-Zotero::create_ch_zotero();
+Zotero::create_ch_zotero();  // @codeCoverageIgnore
