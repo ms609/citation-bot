@@ -2238,9 +2238,7 @@ final class Template {
 
       if (preg_match_all('~\nX\-RateLimit\-(\w+):\s*(\d+)\r~i', $header, $rate_limit)) {
         if ($rate_limit[2][2]) {
-          report_info("AdsAbs search " . (string)((int) $rate_limit[2][0] - (int) $rate_limit[2][1]) . "/" . $rate_limit[2][0] .
-               ":\n       " . str_replace("&", "\n       ", urldecode($options)));
-               // "; reset at " . date('r', $rate_limit[2][2]);
+          report_info("AdsAbs search " . (string)((int) $rate_limit[2][0] - (int) $rate_limit[2][1]) . "/" . $rate_limit[2][0] . "\n");
         } else {
           report_warning("AdsAbs daily search limit exceeded. Retry in a while\n");  // @codeCoverageIgnore
           return (object) array('numFound' => 0);                                    // @codeCoverageIgnore
