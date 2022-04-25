@@ -335,7 +335,8 @@ function adsabs_api(array $ids, array &$templates, string $identifier) : bool { 
               CURLOPT_CUSTOMREQUEST => 'POST',
               CURLOPT_POSTFIELDS => "$identifier\n" . str_replace("%0A", "\n", urlencode(implode("\n", $ids)))]);
     $return = (string) @curl_exec($ch);
-    $response = Bibcode_Error_Checking($return, $ch)
+    $response = Bibcode_Responce_Processing($return, $ch)
+    curl_close($ch);
     if (!isset($response->docs)) return TRUE;
   
   foreach ($response->docs as $record) {
@@ -1116,19 +1117,17 @@ function expand_templates_from_archives(array &$templates) : void { // This is d
 }
 
 /** @var resource $ch **/
-function Bibcode_Error_Checking(string $return, $ch) : object {
+function Bibcode_Responce_Processing(string $return, $ch) : object {
   try {
     if ($return == "") {
       // @codeCoverageIgnoreStart
       $error = curl_error($ch);
       $errno = curl_errno($ch);
-      curl_close($ch);
       throw new Exception($error, $errno);
       // @codeCoverageIgnoreEnd
     } 
     $http_response = (int) @curl_getinfo($ch, CURLINFO_HTTP_CODE);
     $header_length = (int) @curl_getinfo($ch, CURLINFO_HEADER_SIZE);
-    curl_close($ch);
     if ($http_response === 0 || $header_length === 0) throw new Exception('Size of zero from adsabs website');
     $header = substr($return, 0, $header_length);
     $body = substr($return, $header_length);
