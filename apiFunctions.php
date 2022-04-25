@@ -383,8 +383,6 @@ function adsabs_api(array $ids, array &$templates, string $identifier) : bool { 
         return TRUE;
         // @codeCoverageIgnoreEnd
       }
-    } else {
-      ; // report_warning("Headers do not contain rate limit information: This is unexpected.");  // @codeCoverageIgnore
     }
     if (!is_object($decoded)) {
       throw new Exception("Could not decode API response:\n" . $body, 5000);  // @codeCoverageIgnore
