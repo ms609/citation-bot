@@ -375,11 +375,8 @@ function adsabs_api(array $ids, array &$templates, string $identifier) : bool { 
         report_info("AdsAbs search " . (string)((int) $rate_limit[2][0] - (int) $rate_limit[2][1]) . "/" . $rate_limit[2][0] . "\n");
       } else {
         // @codeCoverageIgnoreStart
-        report_warning("AdsAbs daily search limit exceeded. Big queries stopped for a while\n");
-        sleep(1);
-        foreach ($templates as $template) {
-           if ($template->has('bibcode')) $template->expand_by_adsabs();
-        }
+        report_warning("AdsAbs daily search limit exceeded.\n");
+        AdsAbsControl::give_up();
         return TRUE;
         // @codeCoverageIgnoreEnd
       }
