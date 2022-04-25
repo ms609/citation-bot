@@ -690,6 +690,8 @@ function title_capitalization(string $in, bool $caps_after_punctuation) : string
     $new_case = 'BioScience';
   } elseif ($new_case === 'Aids') {
     $new_case = 'AIDS';
+  } elseif ($new_case === 'Biomedical Engineering Online') {
+    $new_case = 'BioMedical Engineering OnLine';
   }
   return $new_case;
 }
