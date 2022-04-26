@@ -226,7 +226,7 @@ public static function drop_urls_that_match_dois(array &$templates) : void {  //
           // SEP 2020 report_forget("Existing IEEE resulting from equivalent DOI; dropping URL");
           // SEP 2020 $template->forget($url_kind);
     }
-    
+    echo __LINE__ . "\n";
     if ($doi &&
         $url &&
         !$template->profoundly_incomplete() &&
@@ -234,41 +234,42 @@ public static function drop_urls_that_match_dois(array &$templates) : void {  //
         (strpos($doi, '10.1093/') === FALSE) &&
         $template->blank(DOI_BROKEN_ALIASES))
     {
+           echo __LINE__ . "\n";
        set_time_limit(120);
        if (str_ireplace(PROXY_HOSTS_TO_DROP,'', $url) !== $url && $template->get('doi-access') === 'free') {
           report_forget("Existing proxy URL resulting from equivalent free DOI; dropping URL");
-          $template->forget($url_kind);
+          $template->forget($url_kind);    echo __LINE__ . "\n";
        } elseif (str_ireplace(PROXY_HOSTS_TO_ALWAYS_DROP,'', $url) !== $url && $template->get('doi-access') === 'free') {
           report_forget("Existing proxy URL resulting from equivalent free DOI; dropping URL");
-          $template->forget($url_kind);
+          $template->forget($url_kind);    echo __LINE__ . "\n";
        } elseif (str_ireplace(PROXY_HOSTS_TO_ALWAYS_DROP,'', $url) !== $url) {
           report_forget("Existing proxy URL resulting from equivalent DOI; fixing URL");
-          $template->set($url_kind, "https://dx.doi.org/" . doi_encode($doi));
+          $template->set($url_kind, "https://dx.doi.org/" . doi_encode($doi));    echo __LINE__ . "\n";
        } elseif (preg_match('~www.sciencedirect.com/science/article/B[^/\-]*\-[^/\-]+\-[^/\-]+/~', $url)) {
           report_forget("Existing Invalid ScienceDirect URL when DOI is present; fixing URL");
-          $template->set($url_kind, "https://dx.doi.org/" . doi_encode($doi));
+          $template->set($url_kind, "https://dx.doi.org/" . doi_encode($doi));    echo __LINE__ . "\n";
        } elseif (preg_match('~www.sciencedirect.com/science/article/pii/\S{0,16}$~i', $url)) { // Too Short
           report_forget("Existing Invalid ScienceDirect URL when DOI is present; fixing URL");
-          $template->set($url_kind, "https://dx.doi.org/" . doi_encode($doi));
+          $template->set($url_kind, "https://dx.doi.org/" . doi_encode($doi));    echo __LINE__ . "\n";
        } elseif (preg_match('~www.springerlink.com/content~i', $url)) { // Dead website
           report_forget("Existing Invalid Springer Link URL when DOI is present; fixing URL");
-          $template->set($url_kind, "https://dx.doi.org/" . doi_encode($doi));
+          $template->set($url_kind, "https://dx.doi.org/" . doi_encode($doi));    echo __LINE__ . "\n";
        } elseif (str_ireplace('insights.ovid.com/pubmed','', $url) !== $url && $template->has('pmid')) {
           // SEP 2020 report_forget("Existing OVID URL resulting from equivalent PMID and DOI; dropping URL");
-          // SEP 2020 $template->forget($url_kind);
+          // SEP 2020 $template->forget($url_kind);    echo __LINE__ . "\n";
        } elseif ($template->has('pmc') && str_ireplace('iopscience.iop.org','', $url) !== $url) {
           // SEP 2020 report_forget("Existing IOP URL resulting from equivalent DOI; dropping URL");
-          // SEP 2020 $template->forget($url_kind);;
+          // SEP 2020 $template->forget($url_kind);;    echo __LINE__ . "\n";
           $template->set($url_kind, "https://dx.doi.org/" . doi_encode($doi));
        } elseif (str_ireplace('wkhealth.com','', $url) !== $url) {
           report_forget("Existing Outdated WK Health URL resulting from equivalent DOI; fixing URL");
-          $template->set($url_kind, "https://dx.doi.org/" . doi_encode($doi));
+          $template->set($url_kind, "https://dx.doi.org/" . doi_encode($doi));    echo __LINE__ . "\n";
        } elseif ($template->has('pmc') && str_ireplace('bmj.com/cgi/pmidlookup','', $url) !== $url && $template->has('pmid') && $template->get('doi-access') === 'free' && stripos($url, 'pdf') === FALSE) {
           report_forget("Existing The BMJ URL resulting from equivalent PMID and free DOI; dropping URL");
-          $template->forget($url_kind);
+          $template->forget($url_kind);    echo __LINE__ . "\n";
        } elseif ($template->get('doi-access') === 'free' && $template->get('url-status') === 'dead' && $url_kind === 'url') {
           report_forget("Existing free DOI; dropping dead URL");
-          $template->forget($url_kind);
+          $template->forget($url_kind);    echo __LINE__ . "\n";
        } elseif (doi_active($template->get('doi')) &&
                  !preg_match(REGEXP_DOI_ISSN_ONLY, $template->get('doi')) &&
                  $url_kind != '' &&
@@ -276,33 +277,42 @@ public static function drop_urls_that_match_dois(array &$templates) : void {  //
                  $template->has_good_free_copy() &&
                  (stripos($template->get($url_kind), 'pdf') === FALSE)) {
           report_forget("Existing canonical URL resulting in equivalent free DOI/pmc; dropping URL");
-          $template->forget($url_kind);  
+          $template->forget($url_kind);      echo __LINE__ . "\n";
        } elseif (stripos($url, 'pdf') === FALSE && $template->get('doi-access') === 'free' && $template->has('pmc')) {
+              echo __LINE__ . "\n";
           curl_setopt(self::$ch_dx, CURLOPT_URL, "https://dx.doi.org/" . doi_encode($doi));
           $ch_return = (string) @curl_exec(self::$ch_dx);
           if (strlen($ch_return) > 50) { // Avoid bogus tiny pages
+                 echo __LINE__ . "\n";
             $redirectedUrl_doi = curl_getinfo(self::$ch_dx, CURLINFO_EFFECTIVE_URL);  // Final URL
             if (stripos($redirectedUrl_doi, 'cookie') !== FALSE) break;
+                 echo __LINE__ . "\n";
             if (stripos($redirectedUrl_doi, 'denied') !== FALSE) break;
+                 echo __LINE__ . "\n";
             $redirectedUrl_doi = self::url_simplify($redirectedUrl_doi);
             $url_short         = self::url_simplify($url);
+                 echo __LINE__ . "\n";
             if ( preg_match('~^https?://.+/pii/?(S?\d{4}[^/]+)~i', $redirectedUrl_doi, $matches ) === 1 ) { // Grab PII numbers
                  $redirectedUrl_doi = $matches[1] ;  // @codeCoverageIgnore 
             }
+                 echo __LINE__ . "\n";
             if (stripos($url_short, $redirectedUrl_doi) !== FALSE ||
                 stripos($redirectedUrl_doi, $url_short) !== FALSE) {
                report_forget("Existing canonical URL resulting from equivalent free DOI; dropping URL");
                $template->forget($url_kind);
+                   echo __LINE__ . "\n";
             } else { // See if $url redirects
+                   echo __LINE__ . "\n";
                curl_setopt($ch, CURLOPT_URL, $url);
                $ch_return = (string) @curl_exec($ch);
                if (strlen($ch_return) > 60) {
+                      echo __LINE__ . "\n";
                   $redirectedUrl_url = curl_getinfo($ch, CURLINFO_EFFECTIVE_URL);
                   $redirectedUrl_url = self::url_simplify($redirectedUrl_url);
                   if (stripos($redirectedUrl_url, $redirectedUrl_doi) !== FALSE ||
                       stripos($redirectedUrl_doi, $redirectedUrl_url) !== FALSE) {
                     report_forget("Existing canonical URL resulting from equivalent free DOI; dropping URL");
-                    $template->forget($url_kind);
+                    $template->forget($url_kind);    echo __LINE__ . "\n";
                   }
                }
             }
@@ -311,7 +321,9 @@ public static function drop_urls_that_match_dois(array &$templates) : void {  //
     }
     $url = $template->get($url_kind);
     if ($url && !$template->profoundly_incomplete() && str_ireplace(PROXY_HOSTS_TO_ALWAYS_DROP,'', $url) !== $url) {
+           echo __LINE__ . "\n";
        if (!$template->blank_other_than_comments('pmc')) {
+              echo __LINE__ . "\n";
           report_forget("Existing proxy URL resulting from equivalent PMC; dropping URL");
           $template->forget($url_kind);
        }
@@ -883,6 +895,7 @@ public static function url_simplify(string $url) : string {
 
 public static function find_indentifiers_in_urls(Template $template, ?string $url_sent = NULL) : bool {
     set_time_limit(120);
+   echo  __LINE__ . "\n";
     $matches = ['', '']; // prevent memory leak in some PHP versions
     $bibcode = ['', '']; // prevent memory leak in some PHP versions
     $arxiv_id = ['', '']; // prevent memory leak in some PHP versions
@@ -946,7 +959,7 @@ public static function find_indentifiers_in_urls(Template $template, ?string $ur
       $url = $url_sent;
       $url_type = 'An invalid value';
     }
-
+echo  __LINE__ . ' ' . $url_type . ' '  . $url . "\n" ;
     if (strtolower(substr( $url, 0, 6 )) === "ttp://" || strtolower(substr( $url, 0, 7 )) === "ttps://") { // Not unusual to lose first character in copy and paste
       $url = "h" . $url;
       if (is_null($url_sent)) {
@@ -989,7 +1002,7 @@ public static function find_indentifiers_in_urls(Template $template, ?string $ur
          $template->set($url_type, $url); // Trimming leading zeroes
        }
     }
-
+   echo  __LINE__ . "\n";
     // semanticscholar
     if (preg_match('~^https?://(?:pdfs?\.|www\.|)semanticscholar\.org/~i', $url)) {
        $s2cid = getS2CID($url);
@@ -1016,7 +1029,7 @@ public static function find_indentifiers_in_urls(Template $template, ?string $ur
        }
        return TRUE;
     }
-
+echo  __LINE__ "\n" ;
     // Trim ?seq=1#page_scan_tab_contents off of jstor urls
     // We do this since not all jstor urls are recognized below
     if (preg_match("~^(https?://\S*jstor.org\S*)\?seq=1#[a-zA-Z_]+$~", $url, $matches)) {
@@ -1066,7 +1079,7 @@ public static function find_indentifiers_in_urls(Template $template, ?string $ur
          $template->set($url_type, $url); // Update URL with cleaner one
        }
     }
-
+   echo  __LINE__ . "\n";
     if (preg_match('~^https?://(?:www\.|)jstor\.org/stable/(?:pdf|pdfplus)/(.+)\.pdf$~i', $url, $matches) ||
         preg_match('~^https?://(?:www\.|)jstor\.org/tc/accept\?origin=(?:\%2F|/)stable(?:\%2F|/)pdf(?:\%2F|/)(\d{3,})\.pdf$~i', $url, $matches)) {
        if ($matches[1] == $template->get('jstor')) {
@@ -1110,7 +1123,7 @@ public static function find_indentifiers_in_urls(Template $template, ?string $ur
          $template->set($url_type, $url); // Update URL with cleaner one
        }
     }
-
+   echo  __LINE__ . "\n";
     if (preg_match("~^https?://(?:(?:dx\.|www\.|)doi\.org|doi\.library\.ubc\.ca)/([^\?]*)~i", $url, $match)) {
       if ($template->has('doi')) {
         if (str_i_same($template->get('doi'), $match[1]) || str_i_same($template->get('doi'), urldecode($match[1]))) {
@@ -1150,6 +1163,7 @@ public static function find_indentifiers_in_urls(Template $template, ?string $ur
         return FALSE; // "bad" doi?
       }
     }
+      echo  __LINE__ . "\n";
     if (stripos($url, 'oxforddnb.com') !== FALSE) return FALSE; // generally bad, and not helpful
     if ($doi = extract_doi($url)[1]) {
       if (bad_10_1093_doi($doi)) return FALSE;
@@ -1200,7 +1214,7 @@ public static function find_indentifiers_in_urls(Template $template, ?string $ur
     }
 
     // JSTOR
-
+   echo  __LINE__ . "\n";
     if (stripos($url, "jstor.org") !== FALSE) {
       $sici_pos = stripos($url, "sici");
       if ($sici_pos) {  //  Outdated url style
@@ -1239,6 +1253,7 @@ public static function find_indentifiers_in_urls(Template $template, ?string $ur
         return FALSE; // Jstor URL yielded nothing
       }
     } else {
+          echo  __LINE__ . "\n";
       if (preg_match(REGEXP_BIBCODE, urldecode($url), $bibcode)) {
         if ($template->blank('bibcode')) {
           quietly('report_modification', "Converting url to bibcode parameter");
@@ -1558,6 +1573,8 @@ public static function find_indentifiers_in_urls(Template $template, ?string $ur
              if ($template->has_good_free_copy()) $template->forget($url_type);
           }
           return TRUE;
+        } else {
+          return FALSE; // Append blocked by comment
         }
       } elseif (($template->has('chapterurl') || $template->has('chapte-rurl') || $template->has('url') || ($url_type === 'url') || ($url_type === 'chapterurl')  || ($url_type === 'chapter-url')) && preg_match("~^https?://web\.archive\.org/web/\d{14}/(https?://.*)$~", $url, $match) && $template->blank(['archiveurl', 'archive-url'])) {
           if (is_null($url_sent)) {
