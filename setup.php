@@ -5,7 +5,7 @@ if (file_exists('git_pull.lock')) {
   sleep(5);
   exit('<!DOCTYPE html><html lang="en" dir="ltr"><head><title>Citation Bot: error</title></head><body><h1>GIT pull in progress - please retry again in a moment</h1></body></html>');
 }
-
+DEBUG
 /*
  * setup.php sets up the environment
  * Most of the page expansion depends on everything else
