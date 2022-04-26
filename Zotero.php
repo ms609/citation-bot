@@ -1418,11 +1418,11 @@ public static function find_indentifiers_in_urls(Template $template, ?string $ur
             $test_url = "https://hdl.handle.net/" . $handle;
             $headers_test = @get_headers($test_url, GET_THE_HEADERS, $context);
             if ($headers_test === FALSE) {
-               sleep(3);
-               $headers_test = @get_headers($test_url, GET_THE_HEADERS, $context);
+               sleep(3);   // @codeCoverageIgnore
+               $headers_test = @get_headers($test_url, GET_THE_HEADERS, $context); // @codeCoverageIgnore
             }
             if ($headers_test === FALSE || (empty($headers_test['Location']) && empty($headers_test['location']))) {
-               $handle = $matches[1];
+               $handle = $matches[1];   // @codeCoverageIgnore
             }
           }
           while (preg_match('~^(.+)/$~', $handle, $matches)) { // Trailing slash
@@ -1445,8 +1445,8 @@ public static function find_indentifiers_in_urls(Template $template, ?string $ur
           usleep(20000);
           $headers_test = @get_headers($test_url, GET_THE_HEADERS, $context);
           if ($headers_test === FALSE) {
-             sleep(3);
-             $headers_test = @get_headers($test_url, GET_THE_HEADERS, $context);
+             sleep(3);  // @codeCoverageIgnore
+             $headers_test = @get_headers($test_url, GET_THE_HEADERS, $context);  // @codeCoverageIgnore
           }
           if ($headers_test === FALSE) return FALSE; // hdl.handle.net is down
           if (empty($headers_test['Location']) && empty($headers_test['location'])) return FALSE; // does not resolve
