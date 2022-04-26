@@ -1054,6 +1054,27 @@ final class TemplateTest extends testBaseClass {
     $this->assertNull($template->get2('url'));
   }
  
+  public function testURLCleanUp21() : void {
+    $text = "{{cite journal|url=https://BlahBlah.com/10.7717/peerj.3486|doi=10.7717/peerj.3486|doi-access=free}}"; // Has good free copy
+    $template = $this->make_citation($text);
+    $this->assertFalse($template->get_identifiers_from_url()); // Did not really add anything
+    $this->assertNull($template->get2('url'));
+  }
+
+  public function testURLCleanUp22() : void {
+    $text = "{{cite journal|url=https://BlahBlah.com/10.7717/peerj.3486with_lotst_of_unk|doi-access=free|doi=10.7717/peerj.3486|pmc=23222}}"; // Has good free copy
+    $template = $this->make_citation($text);
+    $this->assertFalse($template->get_identifiers_from_url()); // Did not really add anything
+    $this->assertNull($template->get2('url'));
+  }
+
+   public function testURLCleanUp23() : void {
+    $text = "{{cite journal|url=https://BlahBlah.com/10.7717/peerj.3486|pmc=342342|doi-access=free}}"; // Has good free copy
+    $template = $this->make_citation($text);
+    $this->assertTrue($template->get_identifiers_from_url());
+    $this->assertNull($template->get2('url'));
+  }
+ 
   public function testHDLasDOIThing1() : void {
     $text='{{Cite journal | doi=20.1000/100|url=http://www.stuff.com/20.1000/100}}';
     $template = $this->make_citation($text);
@@ -3457,7 +3478,7 @@ T1 - This is the Title }}';
   }
   
   public function testHandles1() : void {
-    $template = $this->make_citation('{{Cite web|url=http://hdl.handle.net/10125/20269////|journal=X}}');
+    $template = $this->make_citation('{{Cite web|url=http://hdl.handle.net/10125/20269////;jsessionid=dfasddsa|journal=X}}');
     $this->assertTrue($template->get_identifiers_from_url());
     $this->assertSame('10125/20269', $template->get2('hdl'));
     $this->assertSame('cite web', $template->wikiname());
@@ -5729,6 +5750,14 @@ T1 - This is the Title }}';
  
   public function testConversionOfURL10() : void {
     $text = "{{cite web|url=https://ncbi.nlm.nih.gov/entrez/eutils/elink.fcgi?dfastool=sumsearch.org&&id=123456|title=Xyz|pmc=333333|doi=10.0000/Rubbish_bot_failure_test}}";
+    $template = $this->make_citation($text);
+    $this->assertFalse($template->get_identifiers_from_url());
+    $this->assertNotNull($template->get2('url'));
+  }
+
+ 
+  public function testConversionOfURL10B() : void {
+    $text = "{{cite web|url=https://ncbi.nlm.nih.gov/entrez/eutils/elink.fcgi?dfastool=sumsearch.org&&id=123456|pmid=123456|title=Xyz|pmc=333333|doi=10.0000/Rubbish_bot_failure_test}}";
     $template = $this->make_citation($text);
     $this->assertFalse($template->get_identifiers_from_url());
     $this->assertNotNull($template->get2('url'));
