@@ -5763,7 +5763,7 @@ T1 - This is the Title }}';
   }
 
   public function testConversionOfURL15() : void {
-    $text = '{{cite web | url=https://www.osti.gov/energycitations/product.biblio.jsp?osti_id=2341|title=Xyz|pmc=333333|doi=10.0000/Rubbish_bot_failure_test|doi-access=free}}";
+    $text = '{{cite web | url=https://www.osti.gov/energycitations/product.biblio.jsp?osti_id=2341|title=Xyz|pmc=333333|doi=10.0000/Rubbish_bot_failure_test|doi-access=free}}';
     $template = $this->make_citation($text);
     $this->assertTrue($template->get_identifiers_from_url());
     $this->assertNull($template->get2('url'));
