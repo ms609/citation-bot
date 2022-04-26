@@ -1029,7 +1029,7 @@ echo  __LINE__ . ' ' . $url_type . ' '  . $url . "\n" ;
        }
        return TRUE;
     }
-echo  __LINE__ "\n" ;
+echo  __LINE__ . "\n" ;
     // Trim ?seq=1#page_scan_tab_contents off of jstor urls
     // We do this since not all jstor urls are recognized below
     if (preg_match("~^(https?://\S*jstor.org\S*)\?seq=1#[a-zA-Z_]+$~", $url, $matches)) {
