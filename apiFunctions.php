@@ -807,21 +807,24 @@ function expand_by_jstor(Template $template) : bool {
       }
     }
     if ($bad_data) { // Now for TI: T1 existing titles (title followed by sub-title)
+      $got_count = 0;
       $new_title = ': ';
       foreach ($ris as $ris_line) {
         $ris_part = explode(" - ", $ris_line . " ");
         switch (trim($ris_part[0])) {
           case "T1":
             $new_title = $new_title . trim($ris_part[1]);
+            $got_count = $got_count + 10;
             break;
           case "TI":
             $new_title = trim($ris_part[1]) . $new_title;
+            $got_count = $got_count + 100;
             break;
         default:
           break;
         }
       }
-      if ($new_title !== ': ') {
+      if ($got_count === 110) { // Exactly one of each
         foreach (['chapter', 'title', 'series', 'trans-title'] as $possible) {
           if ($template->has($possible) && titles_are_similar($template->get($possible), $new_title)) {
             $bad_data = FALSE;
