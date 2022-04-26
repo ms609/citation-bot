@@ -1558,8 +1558,6 @@ public static function find_indentifiers_in_urls(Template $template, ?string $ur
              if ($template->has_good_free_copy()) $template->forget($url_type);
           }
           return TRUE;
-        } else {
-          return FALSE; // Append blocked by comment
         }
       } elseif (($template->has('chapterurl') || $template->has('chapte-rurl') || $template->has('url') || ($url_type === 'url') || ($url_type === 'chapterurl')  || ($url_type === 'chapter-url')) && preg_match("~^https?://web\.archive\.org/web/\d{14}/(https?://.*)$~", $url, $match) && $template->blank(['archiveurl', 'archive-url'])) {
           if (is_null($url_sent)) {
