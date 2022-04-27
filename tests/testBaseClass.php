@@ -10,8 +10,6 @@ abstract class testBaseClass extends PHPUnit\Framework\TestCase {
   private $testing_skip_zotero = FALSE;                                           //
   private $testing_skip_bibcode= FALSE;                                           //
   private $testing_skip_wiki   = FALSE;                                           //
-  private $testing_skip_dx     = FALSE;                                           //
-  private $testing_skip_arxiv  = FALSE;                                           //
   // =======================================================================
   
   function __construct() {
@@ -38,26 +36,6 @@ abstract class testBaseClass extends PHPUnit\Framework\TestCase {
     }
   }
 
-  protected function requires_dx(callable $function) : void {
-    if ($this->testing_skip_dx) {
-      echo 'X';
-      ob_flush();
-      $this->assertNull(NULL);
-    } else {
-      $function();
-    }
-  }
-    
-  protected function requires_arxiv(callable $function) : void {
-    if ($this->testing_skip_arxiv) {
-      echo 'V';
-      ob_flush();
-      $this->assertNull(NULL);
-    } else {
-      $function();
-    }
-  }
-
   // Only routines that absolutely need bibcode access since we are limited 
   protected function requires_bibcode(callable $function) : void {
     if ($this->testing_skip_bibcode) {
@@ -76,7 +54,7 @@ abstract class testBaseClass extends PHPUnit\Framework\TestCase {
     }
   }
 
-  // Allows us to turn off Zotero tests
+  // Allows us to turn off Zotero tests and speeds up non-zotero tests
   protected function requires_zotero(callable $function) : void {
     if ($this->testing_skip_zotero) {
       echo 'Z';
