@@ -2174,7 +2174,6 @@ final class Template {
     $rate_limit = [['', '', ''], ['', '', ''], ['', '', '']]; // prevent memory leak in some PHP versions
     // API docs at https://github.com/adsabs/adsabs-dev-api/blob/master/Search_API.ipynb
     if (AdsAbsControl::gave_up_yet()) return (object) array('numFound' => 0);
-    if (!PHP_ADSABSAPIKEY) return (object) array('numFound' => 0);
 
       $ch = curl_init();
       /** @psalm-suppress RedundantCondition */ /* PSALM thinks TRAVIS cannot be FALSE */
@@ -2192,6 +2191,7 @@ final class Template {
       $return = (string) @curl_exec($ch);
       $response = Bibcode_Responce_Processing($return, $ch, $adsabs_url);
       curl_close($ch);
+    echo "\n\n IN TEMPLATE \n\n";
     return $response;
   }
 
