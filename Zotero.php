@@ -1456,8 +1456,8 @@ public static function find_indentifiers_in_urls(Template $template, ?string $ur
           }
           if (is_array(@$headers_test['Location'])) {
             $the_header_loc = (string) $headers_test['Location'][0];
-          } elseif (is_array(@$headers_test['location'])) {
-            $the_header_loc = (string) $headers_test['location'][0];
+          } elseif (is_array(@$headers_test['location'])) { // non-standard
+            $the_header_loc = (string) $headers_test['location'][0]; // @codeCoverageIgnore
           } else {
             $the_header_loc = (string) @$headers_test['Location'] . (string) @$headers_test['location'];
           }
