@@ -812,9 +812,20 @@ final class zoteroTest extends testBaseClass {
     $this->assertSame('{{cite web|id=|title=Billy|translator1=Smitht, Joet|editor1=Smithe, Joee|last1=Smitha|first1=Joea|last2=Smithax|first2=Joeax|editor2=Smithex, Joeex|translator2=Smithtx, Joetx}}', $template->parsed_text());
   }
   
-  
   public function testZoteroResponse49() : void {
     $text = '{{cite web|title=X|chapter=Y}}'; // New data for chapter and title match exactly
+    $template = $this->make_citation($text);
+    $access_date = 0;
+    $url = '';
+    $url_kind = '';
+    $zotero_data[0] = (object) array('title' => 'X', 'chapter' => 'Y', 'year', 'pages' => '34-55');
+    $zotero_response = json_encode($zotero_data);
+    $this->assertTrue(Zotero::process_zotero_response($zotero_response, $template, $url, $url_kind, $access_date));
+    $this->assertSame('34–55', $template->get2('pages'));
+  }
+  
+  public function testZoteroResponse50() : void {
+    $text = '{{cite web|title=Y|chapter=X}}'; // New data for chapter and title match exactly, but reversed
     $template = $this->make_citation($text);
     $access_date = 0;
     $url = '';
