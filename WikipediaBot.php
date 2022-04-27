@@ -454,7 +454,7 @@ try {
       if (!self::is_valid_user($user)) {
         unset($_SESSION['access_key']);
         unset($_SESSION['access_secret']);
-        report_error('User is either invalid or blocked on ' . WIKI_ROOT . ' according to ' . API_ROOT . '?action=query&usprop=blockinfo&format=json&list=users&ususers=' . urlencode(str_replace(" ", "_", $user)));
+        report_error('User is either invalid or blocked according to ' . API_ROOT . '?action=query&usprop=blockinfo&format=json&list=users&ususers=' . urlencode(str_replace(" ", "_", $user)));
       }
       $this->the_user = $user;
       $_SESSION['citation_bot_user_id'] = $this->the_user;
