@@ -41,12 +41,6 @@ final class WikipediaBot {
 
   function __construct() {
     // setup.php must already be run at this point
-    if (!TRAVIS) { // @codeCoverageIgnoreStart
-      if (!getenv('PHP_OAUTH_CONSUMER_TOKEN'))  report_error("PHP_OAUTH_CONSUMER_TOKEN not set");
-      if (!getenv('PHP_OAUTH_CONSUMER_SECRET')) report_error("PHP_OAUTH_CONSUMER_SECRET not set");
-      if (!getenv('PHP_OAUTH_ACCESS_TOKEN'))    report_error("PHP_OAUTH_ACCESS_TOKEN not set");
-      if (!getenv('PHP_OAUTH_ACCESS_SECRET'))   report_error("PHP_OAUTH_ACCESS_SECRET not set");
-    }              // @codeCoverageIgnoreEnd
 
     $this->bot_consumer = new Consumer((string) getenv('PHP_OAUTH_CONSUMER_TOKEN'), (string) getenv('PHP_OAUTH_CONSUMER_SECRET'));
     $this->bot_token = new Token((string) getenv('PHP_OAUTH_ACCESS_TOKEN'), (string) getenv('PHP_OAUTH_ACCESS_SECRET'));
@@ -426,7 +420,7 @@ try {
     if (strpos($response, '"userid"')  === FALSE) return FALSE; // Double check, should actually never return FALSE here
     return TRUE;
   }
-  
+
   static public function NonStandardMode() : bool {
     return !TRAVIS && isset(self::$last_WikipediaBot) && self::$last_WikipediaBot->get_the_user() === 'AManWithNoPlan';
   }
@@ -455,15 +449,7 @@ try {
      try {
       $this->user_token = new Token($_SESSION['access_key'], $_SESSION['access_secret']);
       // Validate the credentials.
-      $conf = new ClientConfig(WIKI_ROOT . '?title=Special:OAuth');
-      if (!getenv('PHP_WP_OAUTH_CONSUMER')) report_error("PHP_WP_OAUTH_CONSUMER not set");
-      if (!getenv('PHP_WP_OAUTH_SECRET'))   report_error("PHP_WP_OAUTH_SECRET not set");
-      $conf->setConsumer(new Consumer((string) getenv('PHP_WP_OAUTH_CONSUMER'), (string) getenv('PHP_WP_OAUTH_SECRET')));
-      if (method_exists($conf, 'setUserAgent')) {
-        $conf->setUserAgent(BOT_USER_AGENT);
-      }
-      $client = new Client($conf);
-      $ident = $client->identify( $this->user_token );
+      $ident = $this->user_client->identify($this->user_token);
       $user = (string) $ident->username;
       if (!self::is_valid_user($user)) {
         unset($_SESSION['access_key']);
