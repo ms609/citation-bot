@@ -1062,7 +1062,7 @@ final class TemplateTest extends testBaseClass {
   }
 
   public function testURLCleanUp22() : void {
-    $text = "{{cite journal|url=https://BlahBlah.com/10.7717/peerj.3486with_lotst_of_unk|doi-access=free|doi=10.7717/peerj.3486|pmc=23222}}"; // Has good free copy
+    $text = "{{cite journal|url=https://BlahBlah.com/10.7717/peerj.3486#with_lotst_of_junk|doi-access=free|doi=10.7717/peerj.3486|pmc=23222}}"; // Has good free copy
     $template = $this->make_citation($text);
     $this->assertFalse($template->get_identifiers_from_url()); // Did not really add anything
     $this->assertNull($template->get2('url'));
