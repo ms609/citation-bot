@@ -5760,7 +5760,7 @@ T1 - This is the Title }}';
     $text = "{{cite web|url=https://ncbi.nlm.nih.gov/entrez/eutils/elink.fcgi?dfastool=sumsearch.org&&id=123456|pmid=123456|title=Xyz|pmc=333333|doi=10.0000/Rubbish_bot_failure_test}}";
     $template = $this->make_citation($text);
     $this->assertFalse($template->get_identifiers_from_url());
-    $this->assertNotNull($template->get2('url'));
+    $this->assertNull($template->get2('url'));
   }
 
   public function testConversionOfURL11() : void {
