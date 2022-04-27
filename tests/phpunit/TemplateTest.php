@@ -700,7 +700,6 @@ final class TemplateTest extends testBaseClass {
   }
   
   public function testArxivExpansion() : void {
-   $this->requires_arxiv(function() : void {
     $text = "{{Cite web | http://uk.arxiv.org/abs/0806.0013}}"
           . "{{Cite arxiv | eprint = 0806.0013 | class=forgetit|publisher=uk.arxiv}}"
           . '{{Cite arxiv |arxiv=1609.01689 | title = Accelerating Nuclear Configuration Interaction Calculations through a Preconditioned Block Iterative Eigensolver|class=cs.NA | year = 2016| last1 = Shao| first1 = Meiyue | display-authors = etal}}'
@@ -717,7 +716,6 @@ final class TemplateTest extends testBaseClass {
     $this->assertNull($templates[1]->get2('publisher'));
     $this->assertSame('2018', $templates[2]->get2('year'));
     $this->assertSame('Pascual Jordan, his contributions to quantum mechanics and his legacy in contemporary local quantum physics', $templates[3]->get2('title'));
-   });
   }
   
   public function testAmazonExpansion1() : void {
@@ -2017,11 +2015,9 @@ final class TemplateTest extends testBaseClass {
   }
   
   public function testLongAuthorLists() : void {
-  $this->requires_arxiv(function() : void {
     $text = '{{cite web | https://arxiv.org/PS_cache/arxiv/pdf/1003/1003.3124v2.pdf|doi=<!--Do not add-->}}';
     $expanded = $this->process_citation($text);
     $this->assertSame('The ATLAS Collaboration', $expanded->first_author());
-   });
   }
   public function testLongAuthorLists2() : void {
     // Same paper as testLongAuthorLists(), but CrossRef records full list of authors instead of collaboration name
@@ -2985,11 +2981,9 @@ T1 - This is the Title }}';
   }
  
   public function testArxivPDf() : void {
-   $this->requires_arxiv(function() : void {
     $text = '{{cite web|url=https://arxiv.org/ftp/arxiv/papers/1312/1312.7288.pdf}}';
     $expanded = $this->process_citation($text);
-    $this->assertSame('1312.7288', $expanded->get2('arxiv'));
-   });   
+    $this->assertSame('1312.7288', $expanded->get2('arxiv')); 
   }
   
   public function testEmptyCitations() : void {
@@ -2999,7 +2993,6 @@ T1 - This is the Title }}';
   }
 
   public function testLatexMathInTitle() : void { // This contains Math stuff that should be z~10, but we just verify that we do not make it worse at this time.  See https://tex.stackexchange.com/questions/55701/how-do-i-write-sim-approximately-with-the-correct-spacing
-   $this->requires_arxiv(function() : void {
     $text = "{{Cite arxiv|eprint=1801.03103}}";
     $expanded = $this->process_citation($text);
     $title = $expanded->get2('title');
@@ -3011,7 +3004,6 @@ T1 - This is the Title }}';
     } else {
        $this->assertTrue($title); // What did we get
     }
-   });
   }
 
   public function testDropGoogleWebsite() : void {
