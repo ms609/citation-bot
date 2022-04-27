@@ -336,6 +336,7 @@ function adsabs_api(array $ids, array &$templates, string $identifier) : bool { 
     $return = (string) @curl_exec($ch);
     $response = Bibcode_Responce_Processing($return, $ch, $adsabs_url);
     curl_close($ch);
+    echo "\n\n IN API FUNCTIONS \n\n";
     if (!isset($response->docs)) return TRUE;
   
   foreach ($response->docs as $record) {
