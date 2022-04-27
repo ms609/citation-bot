@@ -104,7 +104,6 @@ final class apiFunctionsTest extends testBaseClass {
      $this->assertSame('17', $expanded->get2('volume'));
      $this->assertSame('YUKAWA', $expanded->get2('last1'));
      $this->assertSame('Hideki', $expanded->get2('first1'));
-    });
   }
   // See https://www.doi.org/demos.html  NOT ALL EXPAND AT THIS TIME
   public function testExpansion_doi_not_from_crossrefBook() : void {
