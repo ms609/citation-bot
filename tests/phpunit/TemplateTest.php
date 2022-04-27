@@ -1072,6 +1072,13 @@ final class TemplateTest extends testBaseClass {
     $this->assertTrue($template->get_identifiers_from_url());
     $this->assertNull($template->get2('url'));
   }
+
+  public function testURLCleanUp24() : void {
+    $text = "{{cite journal|url=https://BlahBlah.com/25.10.2015/2137303/default.htm#/10.7717/peerj.3486#with_lotst_of_junk|doi-access=free|doi=10.7717/peerj.3486|pmc=23222}}"; // Has good free copy, and DOI is after first 10. in url
+    $template = $this->make_citation($text);
+    $this->assertFalse($template->get_identifiers_from_url()); // Did not really add anything
+    $this->assertNull($template->get2('url'));
+  }
  
   public function testHDLasDOIThing1() : void {
     $text='{{Cite journal | doi=20.1000/100|url=http://www.stuff.com/20.1000/100}}';
