@@ -430,21 +430,20 @@ try {
  * @codeCoverageIgnore
  */
   private function authenticate_user() : void {
-    if (session_status() !== PHP_SESSION_ACTIVE) report_error('No active session found');
-    // These would be old and unusable if we are here
-    unset($_SESSION['request_key']);
-    unset($_SESSION['request_secret']);
-    if (isset($_SESSION['citation_bot_user_id'])) {
-      if (is_string($_SESSION['citation_bot_user_id']) && self::is_valid_user($_SESSION['citation_bot_user_id'])) {
-        $this->the_user = $_SESSION['citation_bot_user_id'];
-        @setcookie(session_name(),session_id(),time()+(24*3600)); // 24 hours
-        $this->user_token = new Token($_SESSION['access_key'], $_SESSION['access_secret']);
-        session_write_close(); // Done with it
-        return;
-      } else {
-        unset($_SESSION['citation_bot_user_id']);
-      }
+    if (session_status() !== PHP_SESSION_ACTIVE) report_error('No active session found');    
+    unset($_SESSION['request_key'], $_SESSION['request_secret']); // These would be old and unusable if we are here
+    if (isset($_SESSION['citation_bot_user_id']) &&
+        isset($_SESSION['access_key']) &&
+        isset($_SESSION['access_secret']) &&
+        is_string($_SESSION['citation_bot_user_id']) &&
+        self::is_valid_user($_SESSION['citation_bot_user_id'])) {
+          $this->the_user = $_SESSION['citation_bot_user_id'];
+          @setcookie(session_name(),session_id(),time()+(24*3600)); // 24 hours
+          $this->user_token = new Token($_SESSION['access_key'], $_SESSION['access_secret']);
+          session_write_close(); // Done with it
+          return;
     }
+    unset($_SESSION['citation_bot_user_id']);
     if (isset($_SESSION['access_key']) && isset($_SESSION['access_secret'])) {
      try {
       $this->user_token = new Token($_SESSION['access_key'], $_SESSION['access_secret']);
@@ -452,8 +451,7 @@ try {
       $ident = $this->user_client->identify($this->user_token);
       $user = (string) $ident->username;
       if (!self::is_valid_user($user)) {
-        unset($_SESSION['access_key']);
-        unset($_SESSION['access_secret']);
+        unset($_SESSION['access_key'], $_SESSION['access_secret']);
         report_error('User is either invalid or blocked according to ' . API_ROOT . '?action=query&usprop=blockinfo&format=json&list=users&ususers=' . urlencode(str_replace(" ", "_", $user)));
       }
       $this->the_user = $user;
@@ -463,8 +461,7 @@ try {
      }
      catch (Throwable $e) { ; }
     }
-    unset($_SESSION['access_key']);
-    unset($_SESSION['access_secret']);
+    unset($_SESSION['access_key'], $_SESSION['access_secret']);
     $return = urlencode($_SERVER['REQUEST_URI']);
     session_write_close();
     @header("Location: authenticate.php?return=" . $return);
