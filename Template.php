@@ -2174,7 +2174,11 @@ final class Template {
     $rate_limit = [['', '', ''], ['', '', ''], ['', '', '']]; // prevent memory leak in some PHP versions
     // API docs at https://github.com/adsabs/adsabs-dev-api/blob/master/Search_API.ipynb
     if (AdsAbsControl::gave_up_yet()) return (object) array('numFound' => 0);
-    if (!PHP_ADSABSAPIKEY) return (object) array('numFound' => 0);
+    if (!PHP_ADSABSAPIKEY) {
+       $curl_header = []; 
+    } else {
+       $curl_header = ['Authorization: Bearer ' . PHP_ADSABSAPIKEY]; 
+    }
 
       $ch = curl_init();
       /** @psalm-suppress RedundantCondition */ /* PSALM thinks TRAVIS cannot be FALSE */
@@ -2183,7 +2187,7 @@ final class Template {
                   . "?q=$options&fl=arxiv_class,author,bibcode,doi,doctype,identifier,"
                   . "issue,page,pub,pubdate,title,volume,year";
       curl_setopt_array($ch,
-               [CURLOPT_HTTPHEADER => ['Authorization: Bearer ' . PHP_ADSABSAPIKEY],
+               [CURLOPT_HTTPHEADER => $curl_header,
                 CURLOPT_RETURNTRANSFER => TRUE,
                 CURLOPT_HEADER => TRUE,
                 CURLOPT_TIMEOUT => 20,
