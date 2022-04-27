@@ -278,7 +278,12 @@ function adsabs_api(array $ids, array &$templates, string $identifier) : bool { 
   set_time_limit(120);
   $rate_limit = [['', '', ''], ['', '', ''], ['', '', '']]; // prevent memory leak in some PHP versions
   if (AdsAbsControl::gave_up_yet()) return FALSE;
-  if (!PHP_ADSABSAPIKEY) return FALSE;
+  if (!PHP_ADSABSAPIKEY) {
+    foreach ($templates as $template) {
+      $template->expand_by_adsabs();
+    }
+    return TRUE;
+  }
   if (count($ids) == 0) return FALSE;
   
   foreach ($ids as $key => $bibcode) {
