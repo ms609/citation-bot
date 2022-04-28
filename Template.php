@@ -740,7 +740,7 @@ final class Template {
       report_minor_error("Attempted to add invalid parameter: " . echoable($param_name)); // @codeCoverageIgnore
     }
 
-    // We have to map these, since sometimes we get floating accessdat and such
+    // We have to map these, since sometimes we get floating accessdate and such
     $mistake_id = array_search($param_name, COMMON_MISTAKES_TOOL);
     if ($mistake_id !== FALSE) {
         $param_name = COMMON_MISTAKES_TOOL[$mistake_id];
