@@ -319,6 +319,7 @@ final class expandFnsTest extends testBaseClass {
   public function testCapitalization_lots_more7() : void {
     $this->assertSame('AIDS', title_capitalization('Aids', TRUE));
     $this->assertSame('BioScience', title_capitalization('Bioscience', TRUE));
+    $this->assertSame('BioMedical Engineering OnLine', title_capitalization('Biomedical Engineering Online', TRUE));
   }
  
   public function testDOIWorks() : void {
