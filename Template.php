@@ -1325,7 +1325,7 @@ final class Template {
 
       case 'class':
         if ($this->blank($param_name) && strpos($this->get('eprint') . $this->get('arxiv'), '/') === FALSE ) { // Old eprints include class in the ID
-          if ($this->wikiname() === 'cite arxiv') {  // Only relevent for cite arxiv
+          if ($this->wikiname() === 'cite arxiv') {  // Only relevant for cite arxiv
             return $this->add($param_name, sanitize_string($value));
           }
         }
@@ -1610,7 +1610,7 @@ final class Template {
 
   public function validate_and_add(string $author_param, string $author, string $forename, string $check_against, bool $add_even_if_existing) : void {
     $match = ['', '']; // prevent memory leak in some PHP versions
-    if (!$add_even_if_existing && ($this->initial_author_params || $this->had_initial_editor)) return; // Zotero does not know difference betwee editors and authors often
+    if (!$add_even_if_existing && ($this->initial_author_params || $this->had_initial_editor)) return; // Zotero does not know difference between editors and authors often
     if (in_array(strtolower($author), BAD_AUTHORS) === FALSE && author_is_human($author) && author_is_human($forename)) {
       while(preg_match('~^(.*)\s[\S]+@~', ' ' . $author, $match) || // Remove emails
             preg_match('~^(.*)\s+@~', ' ' . $author, $match)) { // Remove twitter handles
@@ -1832,7 +1832,7 @@ final class Template {
   /* do_query
    *
    * Searches pubmed based on terms provided in an array.
-   * Provide an array of wikipedia parameters which exist in $p, and this will construct a Pubmed seach query and
+   * Provide an array of wikipedia parameters which exist in $p, and this will construct a Pubmed search query and
    * return the results as array (first result, # of results)
    */
     $key_index = array(
@@ -2434,7 +2434,7 @@ final class Template {
         }
         if (!$oa_url) return 'nothing';
 
-        if (stripos($oa_url, 'semanticscholar.org') !== FALSE) return 'semanticscholar';  // Limit semanticscholar to licenced only - use API call instead (avoid blacklisting)
+        if (stripos($oa_url, 'semanticscholar.org') !== FALSE) return 'semanticscholar';  // Limit semanticscholar to licensed only - use API call instead (avoid blacklisting)
         if (stripos($oa_url, 'citeseerx') !== FALSE) return 'citeseerx'; //is currently blacklisted due to copyright concerns
         if ($this->get('url')) {
             if ($this->get('url') !== $oa_url) $this->get_identifiers_from_url($oa_url);  // Maybe we can get a new link type
@@ -2541,7 +2541,7 @@ final class Template {
           // @codeCoverageIgnoreStart
           if($headers_test ===FALSE) {
             $this->forget($url_type);
-            report_warning("Open access URL was was unreachable from Unpaywall API for doi: " . echoable($doi));
+            report_warning("Open access URL was unreachable from Unpaywall API for doi: " . echoable($doi));
             return 'nothing';
           }
           // @codeCoverageIgnoreEnd
@@ -3127,7 +3127,7 @@ final class Template {
         } else {
           $closest = '';
         }
-        // Strict inequality as we want to favour the longest match possible
+        // Strict inequality as we want to favor the longest match possible
         if ($lev < $shortest || $shortest < 0) {
           $comp = $closest;
           $closest = $parameter;
@@ -3394,7 +3394,7 @@ final class Template {
         $parameter = str_replace('#', $param_number, $parameter);
         if (strpos($parameter, '#') !== FALSE) continue; // Do no use # items unless we have a number
         $lev = (float) levenshtein($p->param, $parameter, 5, 4, 6);
-        // Strict inequality as we want to favour the longest match possible
+        // Strict inequality as we want to favor the longest match possible
         if ($lev < $shortest || $shortest < 0) {
           $comp = $closest;
           $closest = $parameter;
