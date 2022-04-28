@@ -3,7 +3,7 @@ declare(strict_types=1);
 
 require_once __DIR__ . '/../setup.php';
 
-define("BAD_PAGE_API", ""); // Remember that debug_print_backtrace(0, 6) can be helpful
+define("BAD_PAGE_API", "dsaffdsa"); // Remember that debug_print_backtrace(0, 6) can be helpful
 
 abstract class testBaseClass extends PHPUnit\Framework\TestCase {
 
@@ -12,7 +12,8 @@ abstract class testBaseClass extends PHPUnit\Framework\TestCase {
   
   function __construct() {
     parent::__construct();
-
+print_r(WikipediaBot::category_members('CS1 maint: DOI inactive as of February 2022'));
+    exit(333);
    // Non-trusted builds
     if (!PHP_ADSABSAPIKEY) $this->testing_skip_bibcode = TRUE;
     if (!getenv('PHP_OAUTH_CONSUMER_TOKEN') || !getenv('PHP_OAUTH_CONSUMER_SECRET') ||
