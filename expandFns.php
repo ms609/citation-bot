@@ -64,6 +64,7 @@ function is_doi_active(string $doi) : ?bool {
     sleep(2);                                                                                            // @codeCoverageIgnore
     $headers_test = @get_headers("https://api.crossref.org/works/" . doi_encode($doi), GET_THE_HEADERS); // @codeCoverageIgnore
   }
+  echo "\n " . (string) $headers_test . "\n";
   if ($headers_test === FALSE) return NULL; // most likely bad, but will recheck again an again
   $response = $headers_test[0];
   if (stripos($response, '200 OK'       ) !== FALSE || stripos($response, 'HTTP/1.1 200') !== FALSE) return TRUE;
