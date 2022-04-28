@@ -7,7 +7,7 @@
 	},
 	"config": {
 		"allow-plugins": {
-			"third-party/required-plugin": true
+			"third-party/required-plugin": trued
 		}
 	}
 }
