@@ -35,7 +35,7 @@ public static function create_ch_zotero() : void { // Called below at end of fil
             CURLOPT_RETURNTRANSFER => TRUE,
             CURLOPT_USERAGENT => BOT_USER_AGENT,
             CURLOPT_COOKIESESSION => TRUE,
-            // Defaults used in TRAVIS overiden below when deployed
+            // Defaults used in TRAVIS overridden below when deployed
             CURLOPT_CONNECTTIMEOUT => 10,
             CURLOPT_TIMEOUT => 45]);
   } else {
@@ -48,7 +48,7 @@ public static function create_ch_zotero() : void { // Called below at end of fil
             CURLOPT_RETURNTRANSFER => TRUE,
             CURLOPT_USERAGENT => BOT_USER_AGENT,
             CURLOPT_COOKIESESSION => TRUE,
-            // Defaults used in TRAVIS overiden below when deployed
+            // Defaults used in TRAVIS overridden below when deployed
             CURLOPT_CONNECTTIMEOUT => 10,
             CURLOPT_TIMEOUT => 45]);
         // @codeCoverageIgnoreEnd
@@ -74,7 +74,7 @@ public static function create_ch_zotero() : void { // Called below at end of fil
   self::$ch_dx = curl_init();
   curl_setopt_array(self::$ch_dx,
         [CURLOPT_FOLLOWLOCATION => TRUE,
-         CURLOPT_MAXREDIRS => 20, // No infinite loops for us, 20 for Elsivier and Springer websites
+         CURLOPT_MAXREDIRS => 20, // No infinite loops for us, 20 for Elsevier and Springer websites
          CURLOPT_CONNECTTIMEOUT =>  4, 
          CURLOPT_TIMEOUT => 20,
          CURLOPT_RETURNTRANSFER => TRUE,
@@ -196,7 +196,7 @@ public static function drop_urls_that_match_dois(array &$templates) : void {  //
   $ch = curl_init();
   curl_setopt_array($ch,
         [CURLOPT_FOLLOWLOCATION => TRUE,
-         CURLOPT_MAXREDIRS => 20, // No infinite loops for us, 20 for Elsivier and Springer websites
+         CURLOPT_MAXREDIRS => 20, // No infinite loops for us, 20 for Elsevier and Springer websites
          CURLOPT_CONNECTTIMEOUT =>  4, 
          CURLOPT_TIMEOUT => 20,
          CURLOPT_RETURNTRANSFER => TRUE,
@@ -995,11 +995,11 @@ public static function find_indentifiers_in_urls(Template $template, ?string $ur
        $s2cid = getS2CID($url);
        if ($s2cid == '') return FALSE;
        if ($template->has('s2cid') && $s2cid != $template->get('s2cid')) {
-          report_warning('Existsing URL does not match exisiting S2CID: ' .  echoable($template->get('s2cid')));
+          report_warning('Existing URL does not match existing S2CID: ' .  echoable($template->get('s2cid')));
           return FALSE;
        }
        if ($template->has('S2CID') && $s2cid != $template->get('S2CID')) {
-          report_warning('Existsing URL does not match exisiting S2CID: ' .  echoable($template->get('S2CID')));
+          report_warning('Existing URL does not match existing S2CID: ' .  echoable($template->get('S2CID')));
           return FALSE;
        }
        $template->add_if_new('s2cid', $s2cid);
@@ -1463,7 +1463,7 @@ public static function find_indentifiers_in_urls(Template $template, ?string $ur
           }
           if (preg_match('~^([^/]+/[^/]+)/.*$~', $handle, $matches)   // Might be padded with stuff
             && stripos($the_header_loc, $handle) === FALSE
-            && stripos($the_header_loc, $matches[1]) !== FALSE) {  // Too long ones almost never resolve, but I seen at least one
+            && stripos($the_header_loc, $matches[1]) !== FALSE) {  // Too long ones almost never resolve, but we have seen at least one
               $handle = $matches[1]; // @codeCoverageIgnore
           }
           return $template->add_if_new('hdl', $handle);
@@ -1520,7 +1520,7 @@ public static function find_indentifiers_in_urls(Template $template, ?string $ur
           return $template->add_if_new('osti', $match[1]);
       } elseif (preg_match("~^https?://(?:www\.|)worldcat\.org(?:/title/\S+)?/oclc/([0-9]+)~i", $url, $match)) {
           if (strpos($url, 'edition') && ($template->wikiname() !== 'cite book')) {
-            report_warning('Not adding OCLC beccause is appears to be a weblink to a list of editions: ' . $match[1]);
+            report_warning('Not adding OCLC because is appears to be a weblink to a list of editions: ' . $match[1]);
             return FALSE;
           }
           quietly('report_modification', "Converting URL to OCLC parameter");

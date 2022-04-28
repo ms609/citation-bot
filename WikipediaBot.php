@@ -248,7 +248,7 @@ try {
       if (isset($result->edit->captcha)) {
         report_error("Write error: We encountered a captcha, so can't be properly logged in."); // Bot account has flags set on en.wikipedia.org and simple.wikipedia.org to avoid captchas
       } elseif ($result->edit->result == "Success") {
-        // Need to check for this string wherever our behaviour is dependant on the success or failure of the write operation
+        // Need to check for this string wherever our behavior is dependent on the success or failure of the write operation
         if (HTML_OUTPUT) {
           report_inline("\n <span style='reddish'>Written to <a href='" 
           . WIKI_ROOT . "?title=" . urlencode($myPage->title) . "'>" 
@@ -276,7 +276,7 @@ try {
   public static function category_members(string $cat) : array {
     $list = [];
     $vars = [
-      "cmtitle" => "Category:$cat", // Don't URLencode.
+      "cmtitle" => "Category:$cat", // Don't urlencode.
       "action" => "query",
       "cmlimit" => "500",
       "list" => "categorymembers",
