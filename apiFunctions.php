@@ -486,7 +486,7 @@ function expand_by_doi(Template $template, bool $force = FALSE) : bool {
           }
         }
         if (isset($crossRef->series_title)) {
-          foreach (['chapter', 'title', 'trans-title'] as $possible) { // Series === series could easily be false possitive
+          foreach (['chapter', 'title', 'trans-title'] as $possible) { // Series === series could easily be false positive
             if ($template->has($possible) && titles_are_similar($template->get($possible), (string) $crossRef->series_title)) {
                 $bad_data = FALSE;
                 break;
@@ -675,7 +675,7 @@ function expand_doi_with_dx(Template $template, string $doi) : bool {
        foreach ($json['author'] as $auth) {
           $i = $i + 1;
           if (((string) @$auth['family'] === '') && ((string) @$auth['given'] !== '')) {
-             $try_to_add_it('author' . (string) $i, @$auth['given']); // First name without last name.  Probably an organziation
+             $try_to_add_it('author' . (string) $i, @$auth['given']); // First name without last name.  Probably an organization
           } else {
              $try_to_add_it('last' . (string) $i, @$auth['family']);
              $try_to_add_it('first' . (string) $i, @$auth['given']);
