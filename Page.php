@@ -181,25 +181,25 @@ class Page {
                       substr_count($this->text, '{{Citation');
     $ref_count = substr_count($this->text, '<ref') + substr_count($this->text, '<Ref');
     // PLAIN URLS Converted to Templates
-    // Ones like <ref>https://www.nytimes.com/{{full|date=April 2016}}</ref> (?:full) so we can add others easily
+    // Ones like <ref>http://www.../....{{full|date=April 2016}}</ref> (?:full) so we can add others easily
     $this->text = preg_replace_callback(
                       "~(<(?:\s*)ref[^>]*?>)(\s*\[?(https?:\/\/[^ >}{\]\[]+?)\]?\s*{{(?:full|Full citation needed)(?:|\|date=[a-zA-Z0-9 ]+)}})(<\s*?\/\s*?ref(?:\s*)>)~i",
                       function(array $matches) : string {return $matches[1] . '{{Cite web | url=' . $matches[3] . ' | ' . strtolower('CITATION_BOT_PLACEHOLDER_BARE_URL') .'=' . base64_encode($matches[2]) . ' }}' . $matches[4] ;},
                       $this->text
                       );
-    // Ones like <ref>https://www.nytimes.com/{{Bare URL inline|date=April 2016}}</ref>
+    // Ones like <ref>http://www.../....{{Bare URL inline|date=April 2016}}</ref>
     $this->text = preg_replace_callback(
                       "~(<(?:\s*)ref[^>]*?>)(\s*\[?(https?:\/\/[^ >}{\]\[]+?)\]?\s*{{Bare URL inline(?:|\|date=[a-zA-Z0-9 ]+)}})(<\s*?\/\s*?ref(?:\s*)>)~i",
                       function(array $matches) : string {return $matches[1] . '{{Cite web | url=' . $matches[3] . ' | ' . strtolower('CITATION_BOT_PLACEHOLDER_BARE_URL') .'=' . base64_encode($matches[2]) . ' }}' . $matches[4] ;},
                       $this->text
                       );
-    // Examples: <ref>http://www.../index.html</ref>; <ref>[http://www.../index.html]</ref>
-    $this->text = preg_replace_callback(   // Ones like <ref>http://www.../index.html</ref> or <ref>[http://www.../index.html]</ref>
+    // Ones like <ref>http://www.../....</ref>; <ref>[http://www.../....]</ref>
+    $this->text = preg_replace_callback(
                       "~(<(?:\s*)ref[^>]*?>)(\s*\[?(https?:\/\/[^ >}{\]\[]+?)\]?\s*)(<\s*?\/\s*?ref(?:\s*)>)~i",
                       function(array $matches) : string {return $matches[1] . '{{Cite web | url=' . $matches[3] . ' | ' . strtolower('CITATION_BOT_PLACEHOLDER_BARE_URL') .'=' . base64_encode($matches[2]) . ' }}' . $matches[4] ;},
                       $this->text
                       );
-   // Ones like <ref>[http://www... http://www...]</ref>
+    // Ones like <ref>[http://www... http://www...]</ref>
     $this->text = preg_replace_callback(   
                       "~(<(?:\s*)ref[^>]*?>)((\s*\[)(https?:\/\/[^\s>\}\{\]\[]+?)(\s+)(https?:\/\/[^\s>\}\{\]\[]+?)(\s*\]\s*))(<\s*?\/\s*?ref(?:\s*)>)~i",
                       function(array $matches) : string  {
@@ -597,7 +597,7 @@ class Page {
   }
   
   public function extract_object(string $class) : array {
-    $match = ['', '']; // Avoid PHP memory leak bug by intializing it
+    $match = ['', '']; // Avoid PHP memory leak bug by initializing it
     $i = 0;
     $text = $this->text;
     $regexp_in = $class::REGEXP;

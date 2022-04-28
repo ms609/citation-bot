@@ -2,9 +2,9 @@ Where issues require consensus on Wikipedia policy, they are discussed on the [C
 
 Other bugs or feature requests can be listed here. Please complete as much of the below as you feel is relevant.
 
-- Expected behaviour
+- Expected behavior
 
-- Actual behaviour
+- Actual behavior
 
 - Link showing what goes wrong
 
