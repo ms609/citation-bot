@@ -1463,7 +1463,7 @@ public static function find_indentifiers_in_urls(Template $template, ?string $ur
           }
           if (preg_match('~^([^/]+/[^/]+)/.*$~', $handle, $matches)   // Might be padded with stuff
             && stripos($the_header_loc, $handle) === FALSE
-            && stripos($the_header_loc, $matches[1]) !== FALSE) {  // Too long ones almost never resolve, but I seen at least one
+            && stripos($the_header_loc, $matches[1]) !== FALSE) {  // Too long ones almost never resolve, but we have seen at least one
               $handle = $matches[1]; // @codeCoverageIgnore
           }
           return $template->add_if_new('hdl', $handle);
