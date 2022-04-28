@@ -1302,8 +1302,8 @@ final class Template {
         if ($this->get('title') === 'none') return FALSE;
         if (strpos($this->get('title'), '[') !== FALSE) return FALSE;  // TITLE_LINK_ALIASES within the title
         $value = sanitize_string($value);
-        foreach (ALL_URL_TYPES as $exisiting)  {
-          if (str_i_same($value, $this->get($exisiting))) {
+        foreach (ALL_URL_TYPES as $existing)  {
+          if (str_i_same($value, $this->get($existing))) {
             return FALSE;
           }
         }
