@@ -486,7 +486,7 @@ function expand_by_doi(Template $template, bool $force = FALSE) : bool {
           }
         }
         if (isset($crossRef->series_title)) {
-          foreach (['chapter', 'title', 'trans-title'] as $possible) { // Series === series could easily be false possitive
+          foreach (['chapter', 'title', 'trans-title'] as $possible) { // Series === series could easily be false positive
             if ($template->has($possible) && titles_are_similar($template->get($possible), (string) $crossRef->series_title)) {
                 $bad_data = FALSE;
                 break;
