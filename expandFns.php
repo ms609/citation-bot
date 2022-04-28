@@ -67,8 +67,8 @@ function is_doi_active(string $doi) : ?bool {
   $response = $headers_test[0];
   if (stripos($response, '200 OK'       ) !== FALSE || stripos($response, 'HTTP/1.1 200') !== FALSE) return TRUE;
   if (stripos($response, '404 Not Found') !== FALSE || stripos($response, 'HTTP/1.1 404') !== FALSE) return FALSE;
-  report_minor_error("CrossRef server error loading headers for DOI " . echoable($doi . " : " . $response));  // @codeCoverageIgnore
-  return NULL;                                                                                                // @codeCoverageIgnore
+  report_warning("CrossRef server error loading headers for DOI " . echoable($doi . " : " . $response));  // @codeCoverageIgnore
+  return NULL;                                                                                            // @codeCoverageIgnore
 }
 
 function throttle_dx () : void {
@@ -126,8 +126,11 @@ function is_doi_works(string $doi) : ?bool {
   if (preg_match('~^10\.1038/nature\d{5}$~i', $doi) && $headers_test === FALSE) return FALSE; // Nature dropped the ball for now TODO - https://dx.doi.org/10.1038/nature05009
   if ($headers_test === FALSE) return NULL; // most likely bad, but will recheck again and again
   if (empty($headers_test['Location']) && empty($headers_test['location'])) return FALSE; // leads nowhere
-  if (stripos($headers_test[0], '404 Not Found') !== FALSE || stripos($headers_test[0], 'HTTP/1.1 404') !== FALSE) return FALSE; // leads to 404
-  return TRUE; // Lead somewhere
+  if (stripos($headers_test[0], '404 Not Found') !== FALSE         || stripos($headers_test[0], 'HTTP/1.1 404') !== FALSE) return FALSE; // Bad
+  if (stripos($headers_test[0], '302 Found') !== FALSE             || stripos($headers_test[0], 'HTTP/1.1 302') !== FALSE) return TRUE;  // Good
+  if (stripos($headers_test[0], '301 Moved Permanently') !== FALSE || stripos($headers_test[0], 'HTTP/1.1 301') !== FALSE) return FALSE; // Bad prefix
+  report_minor_error("Unexpected response in is_doi_works " . echoable($headers_test[0])); // @codeCoverageIgnore
+  return NULL; // @codeCoverageIgnore
 }
 
 /** @psalm-suppress UnusedParam */
@@ -690,6 +693,8 @@ function title_capitalization(string $in, bool $caps_after_punctuation) : string
     $new_case = 'BioScience';
   } elseif ($new_case === 'Aids') {
     $new_case = 'AIDS';
+  } elseif ($new_case === 'Biomedical Engineering Online') {
+    $new_case = 'BioMedical Engineering OnLine';
   }
   return $new_case;
 }

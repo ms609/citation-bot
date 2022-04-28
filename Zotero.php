@@ -1418,11 +1418,11 @@ public static function find_indentifiers_in_urls(Template $template, ?string $ur
             $test_url = "https://hdl.handle.net/" . $handle;
             $headers_test = @get_headers($test_url, GET_THE_HEADERS, $context);
             if ($headers_test === FALSE) {
-               sleep(3);
-               $headers_test = @get_headers($test_url, GET_THE_HEADERS, $context);
+               sleep(3);   // @codeCoverageIgnore
+               $headers_test = @get_headers($test_url, GET_THE_HEADERS, $context); // @codeCoverageIgnore
             }
             if ($headers_test === FALSE || (empty($headers_test['Location']) && empty($headers_test['location']))) {
-               $handle = $matches[1];
+               $handle = $matches[1];   // @codeCoverageIgnore
             }
           }
           while (preg_match('~^(.+)/$~', $handle, $matches)) { // Trailing slash
@@ -1445,8 +1445,8 @@ public static function find_indentifiers_in_urls(Template $template, ?string $ur
           usleep(20000);
           $headers_test = @get_headers($test_url, GET_THE_HEADERS, $context);
           if ($headers_test === FALSE) {
-             sleep(3);
-             $headers_test = @get_headers($test_url, GET_THE_HEADERS, $context);
+             sleep(3);  // @codeCoverageIgnore
+             $headers_test = @get_headers($test_url, GET_THE_HEADERS, $context);  // @codeCoverageIgnore
           }
           if ($headers_test === FALSE) return FALSE; // hdl.handle.net is down
           if (empty($headers_test['Location']) && empty($headers_test['location'])) return FALSE; // does not resolve
@@ -1456,8 +1456,8 @@ public static function find_indentifiers_in_urls(Template $template, ?string $ur
           }
           if (is_array(@$headers_test['Location'])) {
             $the_header_loc = (string) $headers_test['Location'][0];
-          } elseif (is_array(@$headers_test['location'])) {
-            $the_header_loc = (string) $headers_test['location'][0];
+          } elseif (is_array(@$headers_test['location'])) { // non-standard
+            $the_header_loc = (string) $headers_test['location'][0]; // @codeCoverageIgnore
           } else {
             $the_header_loc = (string) @$headers_test['Location'] . (string) @$headers_test['location'];
           }
@@ -1558,8 +1558,6 @@ public static function find_indentifiers_in_urls(Template $template, ?string $ur
              if ($template->has_good_free_copy()) $template->forget($url_type);
           }
           return TRUE;
-        } else {
-          return FALSE; // Append blocked by comment
         }
       } elseif (($template->has('chapterurl') || $template->has('chapte-rurl') || $template->has('url') || ($url_type === 'url') || ($url_type === 'chapterurl')  || ($url_type === 'chapter-url')) && preg_match("~^https?://web\.archive\.org/web/\d{14}/(https?://.*)$~", $url, $match) && $template->blank(['archiveurl', 'archive-url'])) {
           if (is_null($url_sent)) {

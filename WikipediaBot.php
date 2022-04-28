@@ -41,12 +41,6 @@ final class WikipediaBot {
 
   function __construct() {
     // setup.php must already be run at this point
-    if (!TRAVIS) { // @codeCoverageIgnoreStart
-      if (!getenv('PHP_OAUTH_CONSUMER_TOKEN'))  report_error("PHP_OAUTH_CONSUMER_TOKEN not set");
-      if (!getenv('PHP_OAUTH_CONSUMER_SECRET')) report_error("PHP_OAUTH_CONSUMER_SECRET not set");
-      if (!getenv('PHP_OAUTH_ACCESS_TOKEN'))    report_error("PHP_OAUTH_ACCESS_TOKEN not set");
-      if (!getenv('PHP_OAUTH_ACCESS_SECRET'))   report_error("PHP_OAUTH_ACCESS_SECRET not set");
-    }              // @codeCoverageIgnoreEnd
 
     $this->bot_consumer = new Consumer((string) getenv('PHP_OAUTH_CONSUMER_TOKEN'), (string) getenv('PHP_OAUTH_CONSUMER_SECRET'));
     $this->bot_token = new Token((string) getenv('PHP_OAUTH_ACCESS_TOKEN'), (string) getenv('PHP_OAUTH_ACCESS_SECRET'));
@@ -83,7 +77,7 @@ final class WikipediaBot {
   
   private static function ret_okay(?object $response) : bool {
     if (is_null($response)) {
-      report_minor_error('Wikipedia responce was not decoded.');  // @codeCoverageIgnore
+      report_minor_error('Wikipedia response was not decoded.');  // @codeCoverageIgnore
       return FALSE;                                               // @codeCoverageIgnore
     }
     if (isset($response->error)) {
@@ -214,7 +208,7 @@ try {
     }
     if (!isset($response->query) || !isset($response->query->tokens) ||
         !isset($response->query->tokens->csrftoken)) {
-      report_minor_error("Responce object was invalid.  Aborting. ");  // @codeCoverageIgnore
+      report_minor_error("Response object was invalid.  Aborting. ");  // @codeCoverageIgnore
       return FALSE;                                                    // @codeCoverageIgnore
     }
     
@@ -293,12 +287,23 @@ try {
       $res = @json_decode($res);
       if (isset($res->query->categorymembers)) {
         foreach ($res->query->categorymembers as $page) {
-          // We probably only want to visit pages in the main & draft namespace
+          // We probably only want to visit pages in the main namespace
           if (stripos($page->title, 'talk:') === FALSE &&
               stripos($page->title, 'Special:') === FALSE &&
               stripos($page->title, '/doc') === FALSE &&
               stripos($page->title, 'Template:') === FALSE &&
-              stripos($page->title, 'Wikipedia:') === FALSE) {
+              stripos($page->title, 'Mediawiki:') === FALSE &&
+              stripos($page->title, 'help:') === FALSE &&
+              stripos($page->title, 'Gadget:') === FALSE &&
+              stripos($page->title, 'Portal:') === FALSE &&
+              stripos($page->title, 'timedtext:') === FALSE &&
+              stripos($page->title, 'module:') === FALSE && 
+              stripos($page->title, 'category:') === FALSE &&  
+              stripos($page->title, 'Wikipedia:') === FALSE &&  
+              stripos($page->title, 'Gadget definition:') ===FALSE &&  
+              stripos($page->title, 'Topic:') === FALSE &&  
+              stripos($page->title, 'Education Program:') === FALSE &&  
+              stripos($page->title, 'Book:') === FALSE) {
             $list[] = $page->title;
           }
         }
@@ -426,7 +431,7 @@ try {
     if (strpos($response, '"userid"')  === FALSE) return FALSE; // Double check, should actually never return FALSE here
     return TRUE;
   }
-  
+
   static public function NonStandardMode() : bool {
     return !TRAVIS && isset(self::$last_WikipediaBot) && self::$last_WikipediaBot->get_the_user() === 'AManWithNoPlan';
   }
@@ -436,39 +441,29 @@ try {
  * @codeCoverageIgnore
  */
   private function authenticate_user() : void {
-    if (session_status() !== PHP_SESSION_ACTIVE) report_error('No active session found');
-    // These would be old and unusable if we are here
-    unset($_SESSION['request_key']);
-    unset($_SESSION['request_secret']);
-    if (isset($_SESSION['citation_bot_user_id'])) {
-      if (is_string($_SESSION['citation_bot_user_id']) && self::is_valid_user($_SESSION['citation_bot_user_id'])) {
-        $this->the_user = $_SESSION['citation_bot_user_id'];
-        @setcookie(session_name(),session_id(),time()+(24*3600)); // 24 hours
-        $this->user_token = new Token($_SESSION['access_key'], $_SESSION['access_secret']);
-        session_write_close(); // Done with it
-        return;
-      } else {
-        unset($_SESSION['citation_bot_user_id']);
-      }
+    if (session_status() !== PHP_SESSION_ACTIVE) report_error('No active session found');    
+    unset($_SESSION['request_key'], $_SESSION['request_secret']); // These would be old and unusable if we are here
+    if (isset($_SESSION['citation_bot_user_id']) &&
+        isset($_SESSION['access_key']) &&
+        isset($_SESSION['access_secret']) &&
+        is_string($_SESSION['citation_bot_user_id']) &&
+        self::is_valid_user($_SESSION['citation_bot_user_id'])) {
+          $this->the_user = $_SESSION['citation_bot_user_id'];
+          @setcookie(session_name(),session_id(),time()+(24*3600)); // 24 hours
+          $this->user_token = new Token($_SESSION['access_key'], $_SESSION['access_secret']);
+          session_write_close(); // Done with it
+          return;
     }
+    unset($_SESSION['citation_bot_user_id']);
     if (isset($_SESSION['access_key']) && isset($_SESSION['access_secret'])) {
      try {
       $this->user_token = new Token($_SESSION['access_key'], $_SESSION['access_secret']);
       // Validate the credentials.
-      $conf = new ClientConfig(WIKI_ROOT . '?title=Special:OAuth');
-      if (!getenv('PHP_WP_OAUTH_CONSUMER')) report_error("PHP_WP_OAUTH_CONSUMER not set");
-      if (!getenv('PHP_WP_OAUTH_SECRET'))   report_error("PHP_WP_OAUTH_SECRET not set");
-      $conf->setConsumer(new Consumer((string) getenv('PHP_WP_OAUTH_CONSUMER'), (string) getenv('PHP_WP_OAUTH_SECRET')));
-      if (method_exists($conf, 'setUserAgent')) {
-        $conf->setUserAgent(BOT_USER_AGENT);
-      }
-      $client = new Client($conf);
-      $ident = $client->identify( $this->user_token );
+      $ident = $this->user_client->identify($this->user_token);
       $user = (string) $ident->username;
       if (!self::is_valid_user($user)) {
-        unset($_SESSION['access_key']);
-        unset($_SESSION['access_secret']);
-        report_error('User is either invalid or blocked on ' . WIKI_ROOT . ' according to ' . API_ROOT . '?action=query&usprop=blockinfo&format=json&list=users&ususers=' . urlencode(str_replace(" ", "_", $user)));
+        unset($_SESSION['access_key'], $_SESSION['access_secret']);
+        report_error('User is either invalid or blocked according to ' . API_ROOT . '?action=query&usprop=blockinfo&format=json&list=users&ususers=' . urlencode(str_replace(" ", "_", $user)));
       }
       $this->the_user = $user;
       $_SESSION['citation_bot_user_id'] = $this->the_user;
@@ -477,8 +472,7 @@ try {
      }
      catch (Throwable $e) { ; }
     }
-    unset($_SESSION['access_key']);
-    unset($_SESSION['access_secret']);
+    unset($_SESSION['access_key'], $_SESSION['access_secret']);
     $return = urlencode($_SERVER['REQUEST_URI']);
     session_write_close();
     @header("Location: authenticate.php?return=" . $return);

@@ -812,16 +812,52 @@ final class zoteroTest extends testBaseClass {
     $this->assertSame('{{cite web|id=|title=Billy|translator1=Smitht, Joet|editor1=Smithe, Joee|last1=Smitha|first1=Joea|last2=Smithax|first2=Joeax|editor2=Smithex, Joeex|translator2=Smithtx, Joetx}}', $template->parsed_text());
   }
   
+  public function testZoteroResponse49() : void {
+    $text = '{{cite web|title=X|chapter=Y}}'; // New data for chapter and title match exactly
+    $template = $this->make_citation($text);
+    $access_date = 0;
+    $url = '';
+    $url_kind = '';
+    $zotero_data[0] = (object) array('title' => 'X', 'chapter' => 'Y', 'year', 'pages' => '34-55');
+    $zotero_response = json_encode($zotero_data);
+    $this->assertTrue(Zotero::process_zotero_response($zotero_response, $template, $url, $url_kind, $access_date));
+    $this->assertSame('34–55', $template->get2('pages'));
+  }
+  
+  public function testZoteroResponse50() : void {
+    $text = '{{cite web|title=Y|chapter=X}}'; // New data for chapter and title match exactly, but reversed
+    $template = $this->make_citation($text);
+    $access_date = 0;
+    $url = '';
+    $url_kind = '';
+    $zotero_data[0] = (object) array('title' => 'X', 'chapter' => 'Y', 'year', 'pages' => '34-55');
+    $zotero_response = json_encode($zotero_data);
+    $this->assertTrue(Zotero::process_zotero_response($zotero_response, $template, $url, $url_kind, $access_date));
+    $this->assertSame('34–55', $template->get2('pages'));
+  }
+  
+  public function testZoteroResponse51() : void {
+    $text = '{{cite web|title=No one seems to understand how this work|chapter=This is the title of the chapter}}'; // New data for chapter and title match exactly, but reversed
+    $template = $this->make_citation($text);
+    $access_date = 0;
+    $url = '';
+    $url_kind = '';
+    $zotero_data[0] = (object) array('title' => 'This is the title of the chapter', 'year', 'pages' => '34-55');
+    $zotero_response = json_encode($zotero_data);
+    $this->assertTrue(Zotero::process_zotero_response($zotero_response, $template, $url, $url_kind, $access_date));
+    $this->assertSame('34–55', $template->get2('pages'));
+  }
+
   public function testRemoveURLthatRedirects() : void { // This URL is a redirect -- tests code that does that
-    $text = '{{cite journal|pmc=XYZ|doi=10.1021/acs.analchem.8b04567|url=http://shortdoi.org/gf7sqt|pmid=30741529|pmc=6526953|title=ISiCLE: A Quantum Chemistry Pipeline for Establishing in Silico Collision Cross Section Libraries|journal=Analytical Chemistry|volume=91|issue=7|pages=4346–4356|year=2019|last1=Colby|first1=Sean M.|last2=Thomas|first2=Dennis G.|last3=Nuñez|first3=Jamie R.|last4=Baxter|first4=Douglas J.|last5=Glaesemann|first5=Kurt R.|last6=Brown|first6=Joseph M.|last7=Pirrung|first7=Meg A.|last8=Govind|first8=Niranjan|last9=Teeguarden|first9=Justin G.|last10=Metz|first10=Thomas O.|last11=Renslow|first11=Ryan S.}}';
+    $text = '{{cite journal|doi-access=free|doi=10.1021/acs.analchem.8b04567|url=https://shortdoi.org/gf7sqt|pmid=30741529|pmc=6526953|title=ISiCLE: A Quantum Chemistry Pipeline for Establishing in Silico Collision Cross Section Libraries|journal=Analytical Chemistry|volume=91|issue=7|pages=4346–4356|year=2019|last1=Colby|first1=Sean M.|last2=Thomas|first2=Dennis G.|last3=Nuñez|first3=Jamie R.|last4=Baxter|first4=Douglas J.|last5=Glaesemann|first5=Kurt R.|last6=Brown|first6=Joseph M.|last7=Pirrung|first7=Meg A.|last8=Govind|first8=Niranjan|last9=Teeguarden|first9=Justin G.|last10=Metz|first10=Thomas O.|last11=Renslow|first11=Ryan S.}}';
     $template = $this->make_citation($text);
     $tmp_array = [$template];
     Zotero::drop_urls_that_match_dois($tmp_array);
-    $this->assertNotNull($template->get2('url'));
+    $this->assertNull($template->get2('url'));
   }
 
   public function testRemoveURLthatRedirects2() : void {
-    $text = '{{cite journal|doi=10.1021/acs.analchem.8b04567|url=http://shortdoi.org/gf7sqt|pmid=30741529|pmc=6526953|doi-access=free}}';
+    $text = '{{cite journal|doi=10.1021/acs.analchem.8b04567|url=https://shortdoi.org/gf7sqt|pmid=30741529|pmc=6526953|doi-access=free}}';
     $template = $this->make_citation($text);
     $tmp_array = [$template];
     Zotero::drop_urls_that_match_dois($tmp_array);
@@ -834,6 +870,12 @@ final class zoteroTest extends testBaseClass {
     $tmp_array = [$template];
     Zotero::drop_urls_that_match_dois($tmp_array);
     $this->assertNotNull($template->get2('url'));
+    
+    $text = '{{cite journal|doi=10.1021/acs.analchem.8b04567|url=http://delivery.acm.org|doi-access=free|issue=1|volume=1|pages=22-33|year=2022|journal=X|title=Y|author1=Y|author2=X}}';
+    $template = $this->make_citation($text);
+    $tmp_array = [$template];
+    Zotero::drop_urls_that_match_dois($tmp_array);
+    $this->assertNull($template->get2('url'));
   }
   
   public function testRemoveURLwithProxy2() : void { // PROXY_HOSTS_TO_ALWAYS_DROP
@@ -842,6 +884,12 @@ final class zoteroTest extends testBaseClass {
     $tmp_array = [$template];
     Zotero::drop_urls_that_match_dois($tmp_array);
     $this->assertNotNull($template->get2('url'));
+    
+    $text = '{{cite journal|doi=10.1021/acs.analchem.8b04567|url=http://journals.royalsociety.org|doi-access=free|issue=1|volume=1|pages=22-33|year=2022|journal=X|title=Y|author1=Y|author2=X}}';
+    $template = $this->make_citation($text);
+    $tmp_array = [$template];
+    Zotero::drop_urls_that_match_dois($tmp_array);
+    $this->assertNull($template->get2('url'));
   }
     
   public function testRemoveURLwithProxy3() : void { // CANONICAL_PUBLISHER_URLS
@@ -850,6 +898,12 @@ final class zoteroTest extends testBaseClass {
     $tmp_array = [$template];
     Zotero::drop_urls_that_match_dois($tmp_array);
     $this->assertNotNull($template->get2('url'));
+    
+    $text = '{{cite journal|doi=10.1021/acs.analchem.8b04567|url=http://pubs.geoscienceworld.org|doi-access=free|issue=1|volume=1|pages=22-33|year=2022|journal=X|title=Y|author1=Y|author2=X}}';
+    $template = $this->make_citation($text);
+    $tmp_array = [$template];
+    Zotero::drop_urls_that_match_dois($tmp_array);
+    $this->assertNull($template->get2('url'));
   }
   
    public function testUseArchive() : void {
@@ -1054,7 +1108,7 @@ final class zoteroTest extends testBaseClass {
     $this->assertSame('Replication Data for: Perceiving emotion in non-social targets: The effect of trait empathy on emotional through art', $expanded->get2('title'));
    });
   }
- /** TODO
+
   public function testZoteroExpansion_citeseerx() : void {
    $this->requires_zotero(function() : void {
     $text = '{{Cite journal| citeseerx=10.1.1.483.8892 }}';
@@ -1062,6 +1116,5 @@ final class zoteroTest extends testBaseClass {
     $this->assertSame('Chemical Kinetics Models for the Fatigue Behavior of Fused Silica Optical Fiber', $expanded->get2('title'));
    });
   }
-**/
  
 }
