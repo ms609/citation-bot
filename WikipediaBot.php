@@ -287,12 +287,23 @@ try {
       $res = @json_decode($res);
       if (isset($res->query->categorymembers)) {
         foreach ($res->query->categorymembers as $page) {
-          // We probably only want to visit pages in the main & draft namespace
+          // We probably only want to visit pages in the main namespace
           if (stripos($page->title, 'talk:') === FALSE &&
               stripos($page->title, 'Special:') === FALSE &&
               stripos($page->title, '/doc') === FALSE &&
               stripos($page->title, 'Template:') === FALSE &&
+              stripos($page->title, 'Mediawiki:') === FALSE &&
+              stripos($page->title, 'help:') === FALSE &&
+              stripos($page->title, 'Gadget:') === FALSE &&
+              stripos($page->title, 'Portal:') === FALSE &&
+              stripos($page->title, 'timedtext:') === FALSE &&
+              stripos($page->title, 'module:') === FALSE && 
+              stripos($page->title, 'category:') === FALSE &&  
               stripos($page->title, 'Wikipedia:') === FALSE) {
+              stripos($page->title, 'Gadget definition:') === FALSE) {
+              stripos($page->title, 'Topic:') === FALSE) {
+              stripos($page->title, 'Education Program:') === FALSE) {
+              stripos($page->title, 'Book:') === FALSE) {
             $list[] = $page->title;
           }
         }
