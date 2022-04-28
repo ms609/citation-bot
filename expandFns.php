@@ -54,6 +54,7 @@ function doi_works(string $doi) : ?bool {
   }
   $cache_good[$doi] = TRUE;
   echo "\n GOOD: " . $doi . "\n";
+  ob_flush();
   return TRUE;
 }
 
@@ -66,7 +67,6 @@ function is_doi_active(string $doi) : ?bool {
   }
   if ($headers_test === FALSE) return NULL; // most likely bad, but will recheck again an again
   $response = $headers_test[0];
-  print_r($response);
   if (stripos($response, '200 OK'       ) !== FALSE || stripos($response, 'HTTP/1.1 200') !== FALSE) return TRUE;
   if (stripos($response, '404 Not Found') !== FALSE || stripos($response, 'HTTP/1.1 404') !== FALSE) return FALSE;
   report_warning("CrossRef server error loading headers for DOI " . echoable($doi . " : " . $response));  // @codeCoverageIgnore
@@ -129,6 +129,9 @@ function is_doi_works(string $doi) : ?bool {
   if ($headers_test === FALSE) return NULL; // most likely bad, but will recheck again and again
   if (empty($headers_test['Location']) && empty($headers_test['location'])) return FALSE; // leads nowhere
   if (stripos($headers_test[0], '404 Not Found') !== FALSE || stripos($headers_test[0], 'HTTP/1.1 404') !== FALSE) return FALSE; // leads to 404
+  ob_flush();
+  print_r($headers_test[0]);
+  ob_flush();
   return TRUE; // Lead somewhere
 }
 
