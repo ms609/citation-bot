@@ -995,11 +995,11 @@ public static function find_indentifiers_in_urls(Template $template, ?string $ur
        $s2cid = getS2CID($url);
        if ($s2cid == '') return FALSE;
        if ($template->has('s2cid') && $s2cid != $template->get('s2cid')) {
-          report_warning('Existing URL does not match exisiting S2CID: ' .  echoable($template->get('s2cid')));
+          report_warning('Existing URL does not match existing S2CID: ' .  echoable($template->get('s2cid')));
           return FALSE;
        }
        if ($template->has('S2CID') && $s2cid != $template->get('S2CID')) {
-          report_warning('Existing URL does not match exisiting S2CID: ' .  echoable($template->get('S2CID')));
+          report_warning('Existing URL does not match existing S2CID: ' .  echoable($template->get('S2CID')));
           return FALSE;
        }
        $template->add_if_new('s2cid', $s2cid);
