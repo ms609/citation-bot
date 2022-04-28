@@ -675,7 +675,7 @@ function expand_doi_with_dx(Template $template, string $doi) : bool {
        foreach ($json['author'] as $auth) {
           $i = $i + 1;
           if (((string) @$auth['family'] === '') && ((string) @$auth['given'] !== '')) {
-             $try_to_add_it('author' . (string) $i, @$auth['given']); // First name without last name.  Probably an organziation
+             $try_to_add_it('author' . (string) $i, @$auth['given']); // First name without last name.  Probably an organization
           } else {
              $try_to_add_it('last' . (string) $i, @$auth['family']);
              $try_to_add_it('first' . (string) $i, @$auth['given']);
