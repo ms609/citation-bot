@@ -53,8 +53,6 @@ function doi_works(string $doi) : ?bool {
     return FALSE;
   }
   $cache_good[$doi] = TRUE;
-  echo "\n GOOD: " . $doi . "\n";
-  ob_flush();
   return TRUE;
 }
 
@@ -125,13 +123,15 @@ function is_doi_works(string $doi) : ?bool {
      $headers_test = @get_headers("https://doi.org/" . doi_encode($doi), GET_THE_HEADERS, $context);  // @codeCoverageIgnore
      if ($headers_test === FALSE) return FALSE; /** We trust previous failure **/       // @codeCoverageIgnore
   }
+  ob_flush();
+  echo "\n" . echoable($doi) . "\n";
+  ob_flush();
+  print_r($headers_test[0]);
+  ob_flush();
   if (preg_match('~^10\.1038/nature\d{5}$~i', $doi) && $headers_test === FALSE) return FALSE; // Nature dropped the ball for now TODO - https://dx.doi.org/10.1038/nature05009
   if ($headers_test === FALSE) return NULL; // most likely bad, but will recheck again and again
   if (empty($headers_test['Location']) && empty($headers_test['location'])) return FALSE; // leads nowhere
   if (stripos($headers_test[0], '404 Not Found') !== FALSE || stripos($headers_test[0], 'HTTP/1.1 404') !== FALSE) return FALSE; // leads to 404
-  ob_flush();
-  print_r($headers_test[0]);
-  ob_flush();
   return TRUE; // Lead somewhere
 }
 
