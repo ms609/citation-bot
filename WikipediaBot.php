@@ -299,10 +299,10 @@ try {
               stripos($page->title, 'timedtext:') === FALSE &&
               stripos($page->title, 'module:') === FALSE && 
               stripos($page->title, 'category:') === FALSE &&  
-              stripos($page->title, 'Wikipedia:') === FALSE) {
-              stripos($page->title, 'Gadget definition:') === FALSE) {
-              stripos($page->title, 'Topic:') === FALSE) {
-              stripos($page->title, 'Education Program:') === FALSE) {
+              stripos($page->title, 'Wikipedia:') === FALSE &&  
+              stripos($page->title, 'Gadget definition:') ===FALSE &&  
+              stripos($page->title, 'Topic:') === FALSE &&  
+              stripos($page->title, 'Education Program:') === FALSE &&  
               stripos($page->title, 'Book:') === FALSE) {
             $list[] = $page->title;
           }
