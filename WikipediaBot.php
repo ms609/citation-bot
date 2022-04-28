@@ -77,7 +77,7 @@ final class WikipediaBot {
   
   private static function ret_okay(?object $response) : bool {
     if (is_null($response)) {
-      report_minor_error('Wikipedia responce was not decoded.');  // @codeCoverageIgnore
+      report_minor_error('Wikipedia response was not decoded.');  // @codeCoverageIgnore
       return FALSE;                                               // @codeCoverageIgnore
     }
     if (isset($response->error)) {
@@ -208,7 +208,7 @@ try {
     }
     if (!isset($response->query) || !isset($response->query->tokens) ||
         !isset($response->query->tokens->csrftoken)) {
-      report_minor_error("Responce object was invalid.  Aborting. ");  // @codeCoverageIgnore
+      report_minor_error("Response object was invalid.  Aborting. ");  // @codeCoverageIgnore
       return FALSE;                                                    // @codeCoverageIgnore
     }
     
