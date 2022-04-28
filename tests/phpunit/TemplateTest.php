@@ -104,7 +104,15 @@ final class TemplateTest extends testBaseClass {
     $text = "{{cite document|doi=XXX/978-XXX}}";
     $expanded = $this->process_citation($text);
     $this->assertSame("cite book", $expanded->wikiname());
+    $this->assertNotNull($expanded->get2('doi-broken-date'));
   }
+ 
+  public function testHDLnotBroken() {
+    $text = "{{cite document|doi=20.1000/100}}";
+    $expanded = $this->process_citation($text);
+    $this->assertNull($expanded->get2('doi-broken-date'));
+  }
+  
   public function testTemplateConvertComplex2b() : void {
     $text = "{{cite document|journal=X}}";
     $expanded = $this->process_citation($text);
@@ -700,7 +708,6 @@ final class TemplateTest extends testBaseClass {
   }
   
   public function testArxivExpansion() : void {
-   $this->requires_arxiv(function() : void {
     $text = "{{Cite web | http://uk.arxiv.org/abs/0806.0013}}"
           . "{{Cite arxiv | eprint = 0806.0013 | class=forgetit|publisher=uk.arxiv}}"
           . '{{Cite arxiv |arxiv=1609.01689 | title = Accelerating Nuclear Configuration Interaction Calculations through a Preconditioned Block Iterative Eigensolver|class=cs.NA | year = 2016| last1 = Shao| first1 = Meiyue | display-authors = etal}}'
@@ -717,7 +724,6 @@ final class TemplateTest extends testBaseClass {
     $this->assertNull($templates[1]->get2('publisher'));
     $this->assertSame('2018', $templates[2]->get2('year'));
     $this->assertSame('Pascual Jordan, his contributions to quantum mechanics and his legacy in contemporary local quantum physics', $templates[3]->get2('title'));
-   });
   }
   
   public function testAmazonExpansion1() : void {
@@ -1051,6 +1057,34 @@ final class TemplateTest extends testBaseClass {
     $text = "{{cite journal|url=https://doi.library.ubc.ca/10.7717/peerj.3486|pmc=5483034}}"; // Has good free copy
     $template = $this->make_citation($text);
     $this->assertTrue($template->get_identifiers_from_url());
+    $this->assertNull($template->get2('url'));
+  }
+ 
+  public function testURLCleanUp21() : void {
+    $text = "{{cite journal|url=https://BlahBlah.com/10.7717/peerj.3486|doi=10.7717/peerj.3486|doi-access=free}}"; // Has good free copy
+    $template = $this->make_citation($text);
+    $this->assertFalse($template->get_identifiers_from_url()); // Did not really add anything
+    $this->assertNull($template->get2('url'));
+  }
+
+  public function testURLCleanUp22() : void {
+    $text = "{{cite journal|url=https://BlahBlah.com/10.7717/peerj.3486#with_lotst_of_junk|doi-access=free|doi=10.7717/peerj.3486|pmc=23222}}"; // Has good free copy
+    $template = $this->make_citation($text);
+    $this->assertFalse($template->get_identifiers_from_url()); // Did not really add anything
+    $this->assertNull($template->get2('url'));
+  }
+
+   public function testURLCleanUp23() : void {
+    $text = "{{cite journal|url=https://BlahBlah.com/10.7717/peerj.3486|pmc=342342|doi-access=free}}"; // Has good free copy
+    $template = $this->make_citation($text);
+    $this->assertTrue($template->get_identifiers_from_url());
+    $this->assertNull($template->get2('url'));
+  }
+
+  public function testURLCleanUp24() : void {
+    $text = "{{cite journal|url=https://BlahBlah.com/25.10.2015/2137303/default.htm#/10.7717/peerj.3486#with_lotst_of_junk|doi-access=free|doi=10.7717/peerj.3486|pmc=23222}}"; // Has good free copy, and DOI is after first 10. in url
+    $template = $this->make_citation($text);
+    $this->assertFalse($template->get_identifiers_from_url()); // Did not really add anything
     $this->assertNull($template->get2('url'));
   }
  
@@ -1996,11 +2030,9 @@ final class TemplateTest extends testBaseClass {
   }
   
   public function testLongAuthorLists() : void {
-  $this->requires_arxiv(function() : void {
     $text = '{{cite web | https://arxiv.org/PS_cache/arxiv/pdf/1003/1003.3124v2.pdf|doi=<!--Do not add-->}}';
     $expanded = $this->process_citation($text);
     $this->assertSame('The ATLAS Collaboration', $expanded->first_author());
-   });
   }
   public function testLongAuthorLists2() : void {
     // Same paper as testLongAuthorLists(), but CrossRef records full list of authors instead of collaboration name
@@ -2964,11 +2996,9 @@ T1 - This is the Title }}';
   }
  
   public function testArxivPDf() : void {
-   $this->requires_arxiv(function() : void {
     $text = '{{cite web|url=https://arxiv.org/ftp/arxiv/papers/1312/1312.7288.pdf}}';
     $expanded = $this->process_citation($text);
-    $this->assertSame('1312.7288', $expanded->get2('arxiv'));
-   });   
+    $this->assertSame('1312.7288', $expanded->get2('arxiv')); 
   }
   
   public function testEmptyCitations() : void {
@@ -2978,7 +3008,6 @@ T1 - This is the Title }}';
   }
 
   public function testLatexMathInTitle() : void { // This contains Math stuff that should be z~10, but we just verify that we do not make it worse at this time.  See https://tex.stackexchange.com/questions/55701/how-do-i-write-sim-approximately-with-the-correct-spacing
-   $this->requires_arxiv(function() : void {
     $text = "{{Cite arxiv|eprint=1801.03103}}";
     $expanded = $this->process_citation($text);
     $title = $expanded->get2('title');
@@ -2990,7 +3019,6 @@ T1 - This is the Title }}';
     } else {
        $this->assertTrue($title); // What did we get
     }
-   });
   }
 
   public function testDropGoogleWebsite() : void {
@@ -3457,7 +3485,7 @@ T1 - This is the Title }}';
   }
   
   public function testHandles1() : void {
-    $template = $this->make_citation('{{Cite web|url=http://hdl.handle.net/10125/20269////|journal=X}}');
+    $template = $this->make_citation('{{Cite web|url=http://hdl.handle.net/10125/20269////;jsessionid=dfasddsa|journal=X}}');
     $this->assertTrue($template->get_identifiers_from_url());
     $this->assertSame('10125/20269', $template->get2('hdl'));
     $this->assertSame('cite web', $template->wikiname());
@@ -5734,6 +5762,14 @@ T1 - This is the Title }}';
     $this->assertNotNull($template->get2('url'));
   }
 
+ 
+  public function testConversionOfURL10B() : void {
+    $text = "{{cite web|url=https://ncbi.nlm.nih.gov/entrez/eutils/elink.fcgi?dfastool=sumsearch.org&&id=123456|pmid=123456|title=Xyz|pmc=333333|doi=10.0000/Rubbish_bot_failure_test}}";
+    $template = $this->make_citation($text);
+    $this->assertFalse($template->get_identifiers_from_url());
+    $this->assertNull($template->get2('url'));
+  }
+
   public function testConversionOfURL11() : void {
     $text = "{{cite web|url=https://zbmath.org/?q=an:7511.33034|title=Xyz|pmc=333333|doi=10.0000/Rubbish_bot_failure_test|doi-access=free}}";
     $template = $this->make_citation($text);
@@ -5743,6 +5779,27 @@ T1 - This is the Title }}';
 
   public function testConversionOfURL12() : void {
     $text = "{{cite web|url=https://www.osti.gov/biblio/1760327-generic-advanced-computing-framework-executing-windows-based-dynamic-contingency-analysis-tool-parallel-cluster-machines|title=Xyz|pmc=333333|doi=10.0000/Rubbish_bot_failure_test|doi-access=free}}";
+    $template = $this->make_citation($text);
+    $this->assertTrue($template->get_identifiers_from_url());
+    $this->assertNull($template->get2('url'));
+  }
+ 
+  public function testConversionOfURL13() : void {
+    $text = "{{cite web|url=https://zbmath.org/?q=an:75.1133.34|title=Xyz|pmc=333333|doi=10.0000/Rubbish_bot_failure_test|doi-access=free}}";
+    $template = $this->make_citation($text);
+    $this->assertTrue($template->get_identifiers_from_url());
+    $this->assertNull($template->get2('url'));
+  }
+
+  public function testConversionOfURL14() : void {
+    $text = "{{cite web|url=https://papers.ssrn.com/sol3/papers.cfm?abstract_id=1234231|title=Xyz|pmc=333333|doi=10.0000/Rubbish_bot_failure_test|doi-access=free}}";
+    $template = $this->make_citation($text);
+    $this->assertTrue($template->get_identifiers_from_url());
+    $this->assertNull($template->get2('url'));
+  }
+
+  public function testConversionOfURL15() : void {
+    $text = '{{cite web | url=https://www.osti.gov/energycitations/product.biblio.jsp?osti_id=2341|title=Xyz|pmc=333333|doi=10.0000/Rubbish_bot_failure_test|doi-access=free}}';
     $template = $this->make_citation($text);
     $this->assertTrue($template->get_identifiers_from_url());
     $this->assertNull($template->get2('url'));

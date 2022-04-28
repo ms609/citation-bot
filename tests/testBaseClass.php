@@ -6,13 +6,9 @@ require_once __DIR__ . '/../setup.php';
 define("BAD_PAGE_API", ""); // Remember that debug_print_backtrace(0, 6) can be helpful
 
 abstract class testBaseClass extends PHPUnit\Framework\TestCase {
-  // Change these to temporarily disable sets of tests======================
-  private $testing_skip_zotero = FALSE;                                           //
-  private $testing_skip_bibcode= FALSE;                                           //
-  private $testing_skip_wiki   = FALSE;                                           //
-  private $testing_skip_dx     = FALSE;                                           //
-  private $testing_skip_arxiv  = FALSE;                                           //
-  // =======================================================================
+
+  private $testing_skip_bibcode= FALSE;
+  private $testing_skip_wiki   = FALSE;
   
   function __construct() {
     parent::__construct();
@@ -30,27 +26,7 @@ abstract class testBaseClass extends PHPUnit\Framework\TestCase {
 
   protected function requires_secrets(callable $function) : void {
     if ($this->testing_skip_wiki) {
-      echo 'A'; // For API
-      ob_flush();
-      $this->assertNull(NULL);
-    } else {
-      $function();
-    }
-  }
-
-  protected function requires_dx(callable $function) : void {
-    if ($this->testing_skip_dx) {
-      echo 'X';
-      ob_flush();
-      $this->assertNull(NULL);
-    } else {
-      $function();
-    }
-  }
-    
-  protected function requires_arxiv(callable $function) : void {
-    if ($this->testing_skip_arxiv) {
-      echo 'V';
+      echo 'A'; // For API, since W is taken
       ob_flush();
       $this->assertNull(NULL);
     } else {
@@ -76,22 +52,14 @@ abstract class testBaseClass extends PHPUnit\Framework\TestCase {
     }
   }
 
-  // Allows us to turn off Zotero tests
+  // Speeds up non-zotero tests
   protected function requires_zotero(callable $function) : void {
-    if ($this->testing_skip_zotero) {
-      echo 'Z';
-      ob_flush();
-      Zotero::unblock_zotero();
-      Zotero::block_zotero();
-      $this->assertNull(NULL);
-    } else {
       try {
         Zotero::unblock_zotero();
         $function();
       } finally {
         Zotero::block_zotero();
       }
-    }
   } 
   
   protected function make_citation(string $text) : Template {

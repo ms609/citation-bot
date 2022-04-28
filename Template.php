@@ -2190,7 +2190,7 @@ final class Template {
                 CURLOPT_USERAGENT => BOT_USER_AGENT,
                 CURLOPT_URL => $adsabs_url]);
       $return = (string) @curl_exec($ch);
-      $response = Bibcode_Responce_Processing($return, $ch, $adsabs_url);
+      $response = Bibcode_Response_Processing($return, $ch, $adsabs_url);
       curl_close($ch);
     return $response;
   }
