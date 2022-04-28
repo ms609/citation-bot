@@ -104,7 +104,15 @@ final class TemplateTest extends testBaseClass {
     $text = "{{cite document|doi=XXX/978-XXX}}";
     $expanded = $this->process_citation($text);
     $this->assertSame("cite book", $expanded->wikiname());
+    $this->assertNotNull($expanded->get2('doi-broken-date'));
   }
+ 
+  public function testHDLnotBroken() {
+    $text = "{{cite document|doi=20.1000/100}}";
+    $expanded = $this->process_citation($text);
+    $this->assertNull($expanded->get2('doi-broken-date'));
+  }
+  
   public function testTemplateConvertComplex2b() : void {
     $text = "{{cite document|journal=X}}";
     $expanded = $this->process_citation($text);
