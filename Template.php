@@ -3356,7 +3356,7 @@ final class Template {
         if (stripos($p->param, 'DUPLICATE_') === 0) {
           report_forget("Dropping empty left-over duplicate parameter " . echoable($p->param) . " ");
         } else {
-          report_forget("Dropping empty unrecognised parameter " . echoable($p->param) . " ");
+          report_forget("Dropping empty unrecognized parameter " . echoable($p->param) . " ");
         }
         $this->quietly_forget($p->param);
         continue;
@@ -3365,7 +3365,7 @@ final class Template {
       if (stripos($p->param, 'DUPLICATE_') === 0) {
         report_modification("Left-over duplicate parameter " . echoable($p->param) . " ");
       } else {
-        report_modification("Unrecognised parameter " . echoable($p->param) . " ");
+        report_modification("Unrecognized parameter " . echoable($p->param) . " ");
       }
       $mistake_id = array_search($p->param, $mistake_keys);
       if ($mistake_id) {
@@ -3493,7 +3493,7 @@ final class Template {
         $this->rename('url', 'chapter-url');
       } elseif (!$this->blank(['chapter-url','chapterurl']) && (str_i_same($this->get('chapter-url'), $this->get('url')))) {
         $this->forget('url');
-      }  // otherwise they are differnt urls
+      }  // otherwise they are different urls
     }
   }
 
@@ -4155,7 +4155,7 @@ final class Template {
                     }
                   }
               }
-              // We assume that human text is some kind of abreviations that we really don't wan to mess with
+              // We assume that human text is some kind of abbreviations that we really do not want to mess with
               $periodical  = '[[' . $linked_text . '|' . $human_text . ']]';
               $this->set($param, $periodical);
             } elseif (substr_count($periodical, ']') === 0 && substr_count($periodical, '[') === 0) { // No links
@@ -4704,7 +4704,7 @@ final class Template {
                 && mb_substr($title, -1)   === "'"
                 && mb_substr_count($title, "'") == 2)
           ) {
-            report_warning("The quotes around the title are most likely an editors error: " . mb_substr($title, 1, -1));
+            report_warning("The quotes around the title are most likely an editor's error: " . mb_substr($title, 1, -1));
           }
           // Messed up cases:   [[sdfsad] or [dsfasdf]]
           if (preg_match('~^\[\[([^\]\[\|]+)\]$~', $title, $matches) ||
