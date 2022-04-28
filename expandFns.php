@@ -89,7 +89,7 @@ function is_doi_works(string $doi) : ?bool {
   if (!preg_match('~^([^\/]+)\/~', $doi, $matches)) return FALSE;
   $registrant = $matches[1];
   // TODO this might need updated over time.  See registrant_err_patterns on https://en.wikipedia.org/wiki/Module:Citation/CS1/Identifiers
-  if (strpos($registrant, '10.') === 0) { // We have do deal with valid handles in the DOI field grrrr - very rare, so only check actual DOIs
+  if (strpos($registrant, '10.') === 0) { // We have to deal with valid handles in the DOI field - very rare, so only check actual DOIs
     $registrant = substr($registrant,3);
     if (preg_match('~^[^1-3]\d\d\d\d\.\d\d*$~', $registrant)) return FALSE; // 5 digits with subcode (0xxxx, 40000+); accepts: 10000–39999
     if (preg_match('~^[^1-5]\d\d\d\d$~', $registrant)) return FALSE;        // 5 digits without subcode (0xxxx, 60000+); accepts: 10000–59999
@@ -105,11 +105,11 @@ function is_doi_works(string $doi) : ?bool {
   $context_1 = stream_context_create(array(
            'ssl' => ['verify_peer' => FALSE, 'verify_peer_name' => FALSE, 'allow_self_signed' => TRUE, 'security_level' => 0, 'verify_depth' => 0],
            'http' => ['ignore_errors' => TRUE, 'max_redirects' => 40, 'timeout' => 20.0, 'follow_location' => 1,  'header'=> ['Connection: close'], "user_agent" => BOT_USER_AGENT]
-         )); // Allow crudy cheap journals
+         )); // Allow cruddy cheap journals
   $context = stream_context_create(array(
            'ssl' => ['verify_peer' => FALSE, 'verify_peer_name' => FALSE, 'allow_self_signed' => TRUE, 'security_level' => 0, 'verify_depth' => 0],
            'http' => ['ignore_errors' => TRUE, 'max_redirects' => 40, 'timeout' => 20.0, 'follow_location' => 1, 'protocol_version' => 1.1,  'header'=> ['Connection: close'], "user_agent" => BOT_USER_AGENT]
-         )); // Allow crudy cheap journals  
+         )); // Allow cruddy cheap journals  
   $headers_test = @get_headers("https://doi.org/" . doi_encode($doi), GET_THE_HEADERS, $context_1);
   if ($headers_test === FALSE) {
      sleep(2);                                                                          // @codeCoverageIgnore
@@ -540,10 +540,10 @@ function title_case(string $text) : string {
   return mb_convert_case($text, MB_CASE_TITLE, "UTF-8");
 }
 
-/** Returns a properly capitalised title.
+/** Returns a properly capitalized title.
  *      If $caps_after_punctuation is TRUE (or there is an abundance of periods), it allows the 
  *      letter after colons and other punctuation marks to remain capitalized.
- *      If not, it won't capitalise after : etc.
+ *      If not, it won't capitalize after : etc.
  */
 function title_capitalization(string $in, bool $caps_after_punctuation) : string {
   $matches_in = ['', '']; // prevent memory leak in some PHP versions
@@ -586,12 +586,12 @@ function title_capitalization(string $in, bool $caps_after_punctuation) : string
   }
 
   if ($caps_after_punctuation || (substr_count($in, '.') / strlen($in)) > .07) {
-    // When there are lots of periods, then they probably mark abbrev.s, not sentence ends
+    // When there are lots of periods, then they probably mark abbreviations, not sentence ends
     // We should therefore capitalize after each punctuation character.
-    $new_case = preg_replace_callback("~[?.:!/]\s+[a-z]~u" /* Capitalise after punctuation */,
+    $new_case = preg_replace_callback("~[?.:!/]\s+[a-z]~u" /* Capitalize after punctuation */,
       function (array $matches) : string {return mb_strtoupper($matches[0]);},
       $new_case);
-    $new_case = preg_replace_callback("~(?<!<)/[a-z]~u" /* Capitalise after slash unless part of ending html tag */,
+    $new_case = preg_replace_callback("~(?<!<)/[a-z]~u" /* Capitalize after slash unless part of ending html tag */,
       function (array $matches) : string {return mb_strtoupper($matches[0]);},
       $new_case);
     // But not "Ann. Of...." which seems to be common in journal titles
@@ -768,7 +768,7 @@ function tidy_date(string $string) : string {
        return date('j F Y', strtotime($matches[1].$matches[2])) . ' – ' . date('j F Y', strtotime($matches[3].$matches[4])); 
      }
   }
-  // Huge amout of character cleaning
+  // Huge amount of character cleaning
   if (strlen($string) != mb_strlen($string)) {  // Convert all multi-byte characters to dashes
     $cleaned = '';
     for ($i = 0; $i < mb_strlen($string); $i++) {
@@ -782,7 +782,7 @@ function tidy_date(string $string) : string {
     $string = $cleaned;
   }
   $string = preg_replace("~[^\x01-\x7F]~","-", $string); // Convert any non-ASCII Characters to dashes
-  $string = preg_replace('~[\s\-]*\-[\s\-]*~', '-',$string); // Combine dash with any following or preceeding white space and other dash
+  $string = preg_replace('~[\s\-]*\-[\s\-]*~', '-',$string); // Combine dash with any following or preceding white space and other dash
   $string = preg_replace('~^\-*(.+?)\-*$~', '\1', $string);  // Remove trailing/leading dashes
   $string = trim($string);
   // End of character clean-up
@@ -836,7 +836,7 @@ function tidy_date(string $string) : string {
   }
   if (preg_match( '~^(\d{4}\-\d{1,2}\-\d{1,2})[^0-9]~', $string, $matches)) return tidy_date($matches[1]); // Starts with date
   if (preg_match('~\s(\d{4}\-\d{1,2}\-\d{1,2})$~',     $string, $matches)) return tidy_date($matches[1]);  // Ends with a date
-  if (preg_match('~^(\d{1,2}/\d{1,2}/\d{4})[^0-9]~', $string, $matches)) return tidy_date($matches[1]); //Recusion to clean up 3/27/2000
+  if (preg_match('~^(\d{1,2}/\d{1,2}/\d{4})[^0-9]~', $string, $matches)) return tidy_date($matches[1]); // Recursion to clean up 3/27/2000
   if (preg_match('~[^0-9](\d{1,2}/\d{1,2}/\d{4})$~', $string, $matches)) return tidy_date($matches[1]);
   
   // Dates with dots -- convert to slashes and try again.
@@ -850,7 +850,7 @@ function tidy_date(string $string) : string {
   return ''; // And we give up
 }
 
-function not_bad_10_1093_doi(string $url) : bool { // We assume dois are bad, unless on good list
+function not_bad_10_1093_doi(string $url) : bool { // We assume DOIs are bad, unless on good list
   $match = ['', '']; // prevent memory leak in some PHP versions
   if ($url == NULL) return TRUE;
   if(!preg_match('~10.1093/([^/]+)/~u', $url, $match)) return TRUE;

@@ -60,7 +60,7 @@ function format_forename(string $forename) : string {
 }
 
 /* format_initials
- * Returns a string of initals
+ * Returns a string of initials
  *
  * $str: A series of initials, in any format.  NOTE! Do not pass a forename here!
  *
@@ -110,7 +110,7 @@ function author_is_human(string $author) : bool {
 // Returns the author's name formatted as Surname, F.I.
 function format_author(string $author) : string {
   
-  // Requires an author who is formatted as SURNAME, FORENAME or SURNAME FORENAME or FORENAME SURNAME. Substitute initials for forenames if nec.
+  // Requires an author who is formatted as SURNAME, FORENAME or SURNAME FORENAME or FORENAME SURNAME. Substitute initials for forenames if needed
   $surname = '';
   // Google and Zotero sometimes have these (sir) and just sir
   $author = preg_replace("~ ?\((?i)sir(?-i)\.?\)~", "", html_entity_decode($author, ENT_COMPAT | ENT_HTML401, 'UTF-8'));
@@ -210,7 +210,7 @@ function format_multiple_authors(string $authors) : string {
   ## Split the citation into an author by author account
   $authors = preg_replace(array("~\band\b~i", "~[\d\+\*]+~"), ";", $authors); //Remove "and" and affiliation symbols
 
-  $authors = str_replace(array("&nbsp;", "(", ")"), array(" "), $authors); //Remove spaces and weird puntcuation
+  $authors = str_replace(array("&nbsp;", "(", ")"), array(" "), $authors); //Remove spaces and weird punctuation
   $authors = str_replace(array(".,", "&", "  "), ";", $authors); //Remove "and"
   if (preg_match("~[,;]$~", trim($authors))) $authors = substr(trim($authors), 0, strlen(trim($authors))-1); // remove trailing punctuation
 
