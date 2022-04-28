@@ -53,6 +53,7 @@ function doi_works(string $doi) : ?bool {
     return FALSE;
   }
   $cache_good[$doi] = TRUE;
+  echo "\n GOOD: " . $doi . "\n";
   return TRUE;
 }
 
