@@ -110,7 +110,7 @@ final class TemplateTest extends testBaseClass {
   public function testDOIsMovedStillOkay() : void { // This one gets "move perm.." from dx.doi.org, and works
     $text = "{{cite journal|doi=10.1016/j.chaos.2004.07.021}}";
     $expanded = $this->process_citation($text);
-    $this->assertNotNull($expanded->get2('doi-broken-date'));
+    $this->assertNull($expanded->get2('doi-broken-date'));
   }
  
   public function testHDLnotBroken() {
