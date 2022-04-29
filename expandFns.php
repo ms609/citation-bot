@@ -129,7 +129,11 @@ function is_doi_works(string $doi) : ?bool {
   if (stripos($headers_test[0], '404 Not Found') !== FALSE         || stripos($headers_test[0], 'HTTP/1.1 404') !== FALSE) return FALSE; // Bad
   if (stripos($headers_test[0], '302 Found') !== FALSE             || stripos($headers_test[0], 'HTTP/1.1 302') !== FALSE) return TRUE;  // Good
   if (stripos($headers_test[0], '301 Moved Permanently') !== FALSE || stripos($headers_test[0], 'HTTP/1.1 301') !== FALSE) { // Could be DOI change or bad prefix
-      if (stripos($headers_test[1], '302 Found') !== FALSE         || stripos($headers_test[1], 'HTTP/1.1 302') !== FALSE) return TRUE;  // Good
+      if (stripos($headers_test[1], '302 Found') !== FALSE         || stripos($headers_test[1], 'HTTP/1.1 302') !== FALSE) {
+        return TRUE;  // Good
+      } else {
+        return FALSE;
+      }
   }
   report_minor_error("Unexpected response in is_doi_works " . echoable($headers_test[0])); // @codeCoverageIgnore
   return NULL; // @codeCoverageIgnore
