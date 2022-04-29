@@ -1759,10 +1759,6 @@ final class Template {
       if ($this->has('title') && !in_array('doi', $results[2])) {
         usleep(100000); // Wait 1/10 of a second since we just tried
         $xml = get_entrez_xml('pubmed', $results[0]);
-        if ($xml === NULL) {
-          sleep(3);                                     // @codeCoverageIgnore
-          $xml = get_entrez_xml('pubmed', $results[0]); // @codeCoverageIgnore
-        }
         if ($xml === NULL || !is_object($xml->DocSum->Item)) {
           report_inline("Unable to query pubmed.");     // @codeCoverageIgnore
           return;                                       // @codeCoverageIgnore
@@ -1899,10 +1895,6 @@ final class Template {
     usleep(20000); // Wait 1/50 of a second since we probably just tried
     $xml = get_entrez_xml('esearch_pubmed', $query);
     // @codeCoverageIgnoreStart
-    if ($xml === NULL) {
-      sleep(3);
-      $xml = get_entrez_xml('esearch_pubmed', $query);
-    }
     if ($xml === NULL) {
       report_warning("no results.");
       return array('', 0);
