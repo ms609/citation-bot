@@ -1748,6 +1748,17 @@ final class Template {
     }
     return FALSE;
   }
+  
+  private function xml_post(string $url, string $post) {
+$ch = curl_init();
+curl_setopt($ch, CURLOPT_URL,$url);
+curl_setopt($ch, CURLOPT_POST, 1);
+curl_setopt($ch, CURLOPT_POSTFIELDS, $post);
+curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+$output = curl_exec($ch);
+curl_close ($ch);
+return @simplexml_load_string($output);
+}
 
   public function find_pmid() : void {
     set_time_limit(120);
@@ -1757,12 +1768,11 @@ final class Template {
     if ($results[1] == 1) {
       // Double check title if we did not use DOI
       if ($this->has('title') && !in_array('doi', $results[2])) {
-        $url = "https://eutils.ncbi.nlm.nih.gov/entrez/eutils/esummary.fcgi?tool=WikipediaCitationBot&email=" . PUBMEDUSERNAME . "&db=pubmed&id=" . $results[0];
         usleep(100000); // Wait 1/10 of a second since we just tried
-        $xml = @simplexml_load_file($url);
+        $xml = xml_post("https://eutils.ncbi.nlm.nih.gov/entrez/eutils/esummary.fcgi", "tool=WikipediaCitationBot&email=" . PUBMEDUSERNAME . "&db=pubmed&id=" . $results[0]);
         if ($xml === FALSE) {
           sleep(3);                                     // @codeCoverageIgnore
-          $xml = @simplexml_load_file($url);            // @codeCoverageIgnore
+          $xml = xml_post("https://eutils.ncbi.nlm.nih.gov/entrez/eutils/esummary.fcgi", "tool=WikipediaCitationBot&email=" . PUBMEDUSERNAME . "&db=pubmed&id=" . $results[0]);
         }
         if ($xml === FALSE || !is_object($xml->DocSum->Item)) {
           report_inline("Unable to query pubmed.");     // @codeCoverageIgnore
