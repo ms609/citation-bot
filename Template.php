@@ -1797,7 +1797,7 @@ final class Template {
  *
  */
     if ($doi = $this->get_without_comments_and_placeholders('doi')) {
-      if (!strpos($doi, "[") && !strpos($doi, "<") && doi_works($doi)) { // Doi's with square brackets and less/greater than cannot search PUBMED (yes, we asked).
+      if (doi_works($doi)) {
         $results = $this->do_pumbed_query(array("doi"));
         if ($results[1] !== 0) return $results; // If more than one, we are doomed
       }
