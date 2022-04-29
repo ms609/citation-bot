@@ -1757,14 +1757,9 @@ final class Template {
     if ($results[1] == 1) {
       // Double check title if we did not use DOI
       if ($this->has('title') && !in_array('doi', $results[2])) {
-        $url = "https://eutils.ncbi.nlm.nih.gov/entrez/eutils/esummary.fcgi?tool=WikipediaCitationBot&email=" . PUBMEDUSERNAME . "&db=pubmed&id=" . $results[0];
         usleep(100000); // Wait 1/10 of a second since we just tried
-        $xml = @simplexml_load_file($url);
-        if ($xml === FALSE) {
-          sleep(3);                                     // @codeCoverageIgnore
-          $xml = @simplexml_load_file($url);            // @codeCoverageIgnore
-        }
-        if ($xml === FALSE || !is_object($xml->DocSum->Item)) {
+        $xml = get_entrez_xml('pubmed', $results[0]);
+        if ($xml === NULL || !is_object($xml->DocSum->Item)) {
           report_inline("Unable to query pubmed.");     // @codeCoverageIgnore
           return;                                       // @codeCoverageIgnore
         }
@@ -1897,15 +1892,10 @@ final class Template {
       }
     }
     $query = substr($query, 5); // Chop off initial " AND "
-    $url = "https://eutils.ncbi.nlm.nih.gov/entrez/eutils/esearch.fcgi?db=pubmed&tool=WikipediaCitationBot&email=" . PUBMEDUSERNAME . "&term=$query";
     usleep(20000); // Wait 1/50 of a second since we probably just tried
-    $xml = @simplexml_load_file($url);
+    $xml = get_entrez_xml('esearch_pubmed', $query);
     // @codeCoverageIgnoreStart
-    if ($xml === FALSE) {
-      sleep(3);
-      $xml = @simplexml_load_file($url);
-    }
-    if ($xml === FALSE) {
+    if ($xml === NULL) {
       report_warning("no results.");
       return array('', 0);
     }
