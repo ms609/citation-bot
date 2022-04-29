@@ -348,59 +348,10 @@ function adsabs_api(array $ids, array &$templates, string $identifier) : bool { 
     report_info("Found match for bibcode " . bibcode_link($record->bibcode));
     $matched_ids[] = $record->bibcode;
     foreach($ids as $template_key => $an_id) { // Cannot use array_search since that only returns first
-    if ($an_id === (string) $record->bibcode) {
-    $this_template = $templates[$template_key];
-    $this_template->record_api_usage('adsabs', 'bibcode');
-    $this_template->add_if_new("title", (string) $record->title[0], 'adsabs'); // add_if_new will format the title text and check for unknown
-    $i = 0;
-    if (isset($record->author)) {
-     foreach ($record->author as $author) {
-      $this_template->add_if_new("author" . (string) ++$i, $author, 'adsabs');
-     }
-    }
-    if (isset($record->pub)) {
-      $journal_string = explode(",", (string) $record->pub);
-      $journal_start = mb_strtolower($journal_string[0]);
-      if (preg_match("~\bthesis\b~ui", $journal_start)) {
-        // Do nothing
-      } elseif (substr($journal_start, 0, 6) == "eprint") {  // Appears to no longer be used
-        if (substr($journal_start, 0, 13) == "eprint arxiv:" && isset($record->arxivclass)) {  // @codeCoverageIgnore
-          $this_template->add_if_new("class", (string) @$record->arxivclass, 'adsabs');                 // @codeCoverageIgnore
-        }
-      } else {
-        $this_template->add_if_new('journal', $journal_string[0], 'adsabs');
-      }          
-    }
-    if (isset($record->page)) {
-      $tmp = implode($record->page);
-      if ((stripos($tmp, 'arxiv') !== FALSE) || (strpos($tmp, '/') !== FALSE)) {  // Bad data
-       unset($record->page);
-       unset($record->volume);
-       unset($record->issue);
-      } elseif (preg_match('~[^A-Za-z]~', (string) $record->page)) { // Do not trust anything with letters
-       unset($record->page);
+      if ($an_id === (string) $record->bibcode) {
+         $this_template = $templates[$template_key];
+         process_bibcode_data($this_template,  $record);
       }
-    }
-    $this_template->add_if_new("volume", (string) @$record->volume, 'adsabs');
-    $this_template->add_if_new("issue", (string) @$record->issue, 'adsabs');
-    $this_template->add_if_new("year", preg_replace("~\D~", "", (string) @$record->year), 'adsabs');
-    if (isset($record->page)) {
-      $dum = implode('–', $record->page);
-      if (preg_match('~^[\-\–\d]+$~u', $dum)) {
-        $this_template->add_if_new("pages", $dum, 'adsabs');
-      }
-      unset($record->page);
-    }
-    if (isset($record->identifier)) { // Sometimes arXiv is in journal (see above), sometimes here in identifier
-      foreach ($record->identifier as $recid) {
-        $recid = (string) $recid;
-        if(strtolower(substr($recid, 0, 6)) === 'arxiv:') {
-           if (isset($record->arxivclass)) $this_template->add_if_new("class", (string) @$record->arxivclass, 'adsabs');
-           $this_template->add_if_new('arxiv', substr($recid, 6), 'adsabs');
-        }
-      }
-    }
-    }
     }
   }
   $unmatched_ids = array_diff($ids, $matched_ids);
@@ -1229,4 +1180,61 @@ function xml_post(string $url, string $post) {
    $output = curl_exec($ch);
    curl_close ($ch);
    return @simplexml_load_string($output);
+}
+
+function process_bibcode_data(Template $this_template, object $record) : void {
+    $this_template->record_api_usage('adsabs', 'bibcode');
+    $this_template->add_if_new('title', (string) $record->title[0], 'adsabs'); // add_if_new will format the title text and check for unknown
+    $i = 0;
+    if (isset($record->author)) {
+     foreach ($record->author as $author) {
+      $this_template->add_if_new('author' . (string) ++$i, $author, 'adsabs');
+     }
+    }
+    if (isset($record->pub)) {
+      $journal_string = explode(',', (string) $record->pub);
+      $journal_start = mb_strtolower($journal_string[0]);
+      if (preg_match("~\bthesis\b~ui", $journal_start)) {
+        // Do nothing
+      } elseif (substr($journal_start, 0, 6) === 'eprint') {  // No longer used
+      if (substr($journal_start, 0, 13) === 'eprint arxiv:') {               //@codeCoverageIgnore
+          $this_template->add_if_new('class', (string) @$record->arxivclass);  //@codeCoverageIgnore
+          $this_template->add_if_new('arxiv', substr($journal_start, 13));     //@codeCoverageIgnore                                 //@codeCoverageIgnore
+        }
+      } else {
+        $this_template->add_if_new('journal', $journal_string[0], 'adsabs');
+      }          
+    }
+    if (isset($record->page)) {
+      $tmp = implode($record->page);
+      if ((stripos($tmp, 'arxiv') !== FALSE) || (strpos($tmp, '/') !== FALSE)) {  // Bad data
+       unset($record->page);
+       unset($record->volume);
+       unset($record->issue);
+      } elseif (preg_match('~[^A-Za-z]~', (string) $record->page)) { // Do not trust anything with letters
+       unset($record->page);
+      }
+    }
+    $this_template->add_if_new('volume', (string) @$record->volume, 'adsabs');
+    $this_template->add_if_new('issue', (string) @$record->issue, 'adsabs');
+    $this_template->add_if_new('year', preg_replace("~\D~", "", (string) @$record->year), 'adsabs');
+    if (isset($record->page)) {
+      $dum = implode('–', $record->page);
+      if (preg_match('~^[\-\–\d]+$~u', $dum)) {
+        $this_template->add_if_new('pages', $dum, 'adsabs');
+      }
+      unset($record->page);
+    }
+    if (isset($record->identifier)) { // Sometimes arXiv is in journal (see above), sometimes here in identifier
+      foreach ($record->identifier as $recid) {
+        $recid = (string) $recid;
+        if(strtolower(substr($recid, 0, 6)) === 'arxiv:') {
+           $this_template->add_if_new('class', (string) @$record->arxivclass, 'adsabs');
+           $this_template->add_if_new('arxiv', substr($recid, 6), 'adsabs');
+        }
+      }
+    }
+    if (isset($record->doi)) {
+      $this_template->add_if_new('doi', (string) $record->doi[0]);
+    }
 }
