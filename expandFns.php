@@ -126,6 +126,7 @@ function is_doi_works(string $doi) : ?bool {
   if (preg_match('~^10\.1038/nature\d{5}$~i', $doi) && $headers_test === FALSE) return FALSE; // Nature dropped the ball for now TODO - https://dx.doi.org/10.1038/nature05009
   if ($headers_test === FALSE) return NULL; // most likely bad, but will recheck again and again
   if (empty($headers_test['Location']) && empty($headers_test['location'])) return FALSE; // leads nowhere
+  echo "\n" . $headers_test['Location'] . "\n";
   if (stripos($headers_test[0], '404 Not Found') !== FALSE         || stripos($headers_test[0], 'HTTP/1.1 404') !== FALSE) return FALSE; // Bad
   if (stripos($headers_test[0], '302 Found') !== FALSE             || stripos($headers_test[0], 'HTTP/1.1 302') !== FALSE) return TRUE;  // Good
   if (stripos($headers_test[0], '301 Moved Permanently') !== FALSE || stripos($headers_test[0], 'HTTP/1.1 301') !== FALSE) return FALSE; // Bad prefix
