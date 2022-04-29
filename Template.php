@@ -1759,7 +1759,7 @@ $headers = array(
    "Content-Type: application/x-www-form-urlencoded",
    "Accept: application/xml",
 );
-curl_setopt($curl, CURLOPT_HTTPHEADER, $headers);
+curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
 $output = curl_exec($ch);
 curl_close ($ch);
 return @simplexml_load_string($output);
