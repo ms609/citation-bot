@@ -1190,15 +1190,17 @@ function Bibcode_Response_Processing(string $return, $ch, string $adsabs_url) : 
 }
 
 function get_entrez_xml(string $type, string $query) : ?SimpleXMLElement {
+   $url =  "https://eutils.ncbi.nlm.nih.gov/entrez/eutils/";
+   $post=  "tool=WikipediaCitationBot&email=" . PUBMEDUSERNAME;
    if ($type === "esearch_pubmed") {
-      $url =  "https://eutils.ncbi.nlm.nih.gov/entrez/eutils/esearch.fcgi";
-      $post=  "tool=WikipediaCitationBot&email=" . PUBMEDUSERNAME . "&db=pubmed&term=$query";
+      $url  .= "esearch.fcgi";
+      $post .= "&db=pubmed&term=" . $query;
    } elseif ($type === "pubmed") {
-      $url = "https://eutils.ncbi.nlm.nih.gov/entrez/eutils/esummary.fcgi";
-      $post=  "tool=WikipediaCitationBot&email=" . PUBMEDUSERNAME . "&db=pubmed&id=$query";
+      $url .= "esummary.fcgi";
+      $post .= "&db=pubmed&id=" . $query;
    } elseif ($type === "pmc") {
-      $url = "https://eutils.ncbi.nlm.nih.gov/entrez/eutils/esummary.fcgi";
-      $post=  "tool=WikipediaCitationBot&email=" . PUBMEDUSERNAME . "&db=pmc&id=$query";
+      $url .= "esummary.fcgi";
+      $post .= "&db=pmc&id=" . $query;
    } else {
       report_error("Invalid type passed to get_entrez_xml: " . $type);
    }
