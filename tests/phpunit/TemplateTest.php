@@ -104,6 +104,12 @@ final class TemplateTest extends testBaseClass {
     $text = "{{cite document|doi=XXX/978-XXX}}";
     $expanded = $this->process_citation($text);
     $this->assertSame("cite book", $expanded->wikiname());
+    $this->assertNotNull($expanded->get2('doi-broken-date')); // This one gets "move perm.." from dx.doi.org, and is bogus
+  }
+ 
+  public function testDOIsMovedStillOkay() : void { // This one gets "move perm.." from dx.doi.org, and works
+    $text = "{{cite journal|doi=10.1016/j.chaos.2004.07.021}}";
+    $expanded = $this->process_citation($text);
     $this->assertNotNull($expanded->get2('doi-broken-date'));
   }
  
