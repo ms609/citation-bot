@@ -1766,35 +1766,6 @@ return @simplexml_load_string($output);
     report_action("Searching PubMed... ");
     $results = $this->query_pubmed();
     if ($results[1] == 1) {
-      // Double check title if we did not use DOI
-      if ($this->has('title') && !in_array('doi', $results[2])) {
-        usleep(100000); // Wait 1/10 of a second since we just tried
-        $xml = xml_post("https://eutils.ncbi.nlm.nih.gov/entrez/eutils/esummary.fcgi", "tool=WikipediaCitationBot&email=" . PUBMEDUSERNAME . "&db=pubmed&id=" . $results[0]);
-        if ($xml === FALSE) {
-          sleep(3);                                     // @codeCoverageIgnore
-          $xml = xml_post("https://eutils.ncbi.nlm.nih.gov/entrez/eutils/esummary.fcgi", "tool=WikipediaCitationBot&email=" . PUBMEDUSERNAME . "&db=pubmed&id=" . $results[0]);
-        }
-        if ($xml === FALSE || !is_object($xml->DocSum->Item)) {
-          report_inline("Unable to query pubmed.");     // @codeCoverageIgnore
-          return;                                       // @codeCoverageIgnore
-        }
-        $Items = $xml->DocSum->Item;
-        foreach ($Items as $item) {
-           if ($item['Name'] == 'Title') {
-               $new_title = str_replace(array("[", "]"), "", (string) $item);
-               foreach (['chapter', 'title', 'series', 'trans-title'] as $possible) {
-                 if ($this->has($possible) && titles_are_similar($this->get($possible), $new_title)) {
-                   $this->add_if_new('pmid', $results[0]);
-                   return;
-                 }
-               }
-               // @codeCoverageIgnoreStart
-               report_inline("Similar matching pubmed title not similar enough.  Rejected: " . pubmed_link('pmid', $results[0]));
-               return;
-               // @codeCoverageIgnoreEnd
-           }
-        }
-      }
       $this->add_if_new('pmid', $results[0]);
     } else {
       report_inline("nothing found.");
@@ -1819,18 +1790,6 @@ return @simplexml_load_string($output);
     }
     // If we've got this far, the DOI was unproductive or there was no DOI.
 
-    if ($this->has('journal') && $this->has('volume') && $this->page_range()) {
-      $results = $this->do_pumbed_query(array("journal", "volume", "issue", "page"));
-      if ($results[1] == 1) return $results;
-    }
-    if ($this->has('title') && $this->first_surname()) {
-        $results = $this->do_pumbed_query(array("title", "surname", "year", "volume"));
-        if ($results[1] == 1) return $results;
-        if ($results[1] > 1) {
-          $results = $this->do_pumbed_query(array("title", "surname", "year", "volume", "issue"));
-          if ($results[1] == 1) return $results;
-        }
-    }
     $results = [];
     $results[1] = 0;
     return $results;
@@ -1907,15 +1866,11 @@ return @simplexml_load_string($output);
       }
     }
     $query = substr($query, 5); // Chop off initial " AND "
-    $url = "https://eutils.ncbi.nlm.nih.gov/entrez/eutils/esearch.fcgi?db=pubmed&tool=WikipediaCitationBot&email=" . PUBMEDUSERNAME . "&term=$query";
-    echo $url;
     usleep(20000); // Wait 1/50 of a second since we probably just tried
-    $xml = @simplexml_load_file($url);
+    echo ("https://eutils.ncbi.nlm.nih.gov/entrez/eutils/esearch.fcgi" . "db=pubmed&tool=WikipediaCitationBot&email=" . PUBMEDUSERNAME . "&term=$query");
+    $xml = xml_post("https://eutils.ncbi.nlm.nih.gov/entrez/eutils/esearch.fcgi", "db=pubmed&tool=WikipediaCitationBot&email=" . PUBMEDUSERNAME . "&term=$query");
+    print_r($xml);
     // @codeCoverageIgnoreStart
-    if ($xml === FALSE) {
-      sleep(3);
-      $xml = @simplexml_load_file($url);
-    }
     if ($xml === FALSE) {
       report_warning("no results.");
       return array('', 0);
