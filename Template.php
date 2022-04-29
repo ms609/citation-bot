@@ -1897,11 +1897,11 @@ final class Template {
     }
     $query = substr($query, 5); // Chop off initial " AND "
     usleep(20000); // Wait 1/50 of a second since we probably just tried
-    $xml = get_entrez_xml('esearch_pubmed', $query)
+    $xml = get_entrez_xml('esearch_pubmed', $query);
     // @codeCoverageIgnoreStart
     if ($xml === NULL) {
       sleep(3);
-      $xml = get_entrez_xml('esearch_pubmed', $query)
+      $xml = get_entrez_xml('esearch_pubmed', $query);
     }
     if ($xml === NULL) {
       report_warning("no results.");
