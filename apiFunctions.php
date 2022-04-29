@@ -1189,7 +1189,7 @@ function Bibcode_Response_Processing(string $return, $ch, string $adsabs_url) : 
   // @codeCoverageIgnoreEnd
 }
 
-function get_entrez_xml(string $type, string $query) : object? {
+function get_entrez_xml(string $type, string $query) : ?object {
    if ($type === "esearch_pubmed") {
       $url =  "https://eutils.ncbi.nlm.nih.gov/entrez/eutils/esearch.fcgi?tool=WikipediaCitationBot&email=" . PUBMEDUSERNAME . "&db=pubmed&term=$query";
    } elseif ($type === "pubmed") {
@@ -1201,9 +1201,11 @@ function get_entrez_xml(string $type, string $query) : object? {
    }
    $xml = @simplexml_load_file($url);
    if ($xml === FALSE) {
+      // @codeCoverageIgnoreStart
      sleep(3);
      $xml = @simplexml_load_file($url);
      if ($xml === FALSE) $xml = NULL;
+     // @codeCoverageIgnoreEnd
    }
    return $xml;
 }
