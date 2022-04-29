@@ -1755,6 +1755,11 @@ curl_setopt($ch, CURLOPT_URL,$url);
 curl_setopt($ch, CURLOPT_POST, 1);
 curl_setopt($ch, CURLOPT_POSTFIELDS, $post);
 curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+$headers = array(
+   "Content-Type: application/x-www-form-urlencoded",
+   "Accept: application/xml",
+);
+curl_setopt($curl, CURLOPT_HTTPHEADER, $headers);
 $output = curl_exec($ch);
 curl_close ($ch);
 return @simplexml_load_string($output);
@@ -1868,7 +1873,7 @@ return @simplexml_load_string($output);
     $query = substr($query, 5); // Chop off initial " AND "
     usleep(20000); // Wait 1/50 of a second since we probably just tried
     echo ("https://eutils.ncbi.nlm.nih.gov/entrez/eutils/esearch.fcgi" . "db=pubmed&tool=WikipediaCitationBot&email=" . PUBMEDUSERNAME . "&term=$query");
-    $xml = xml_post("https://eutils.ncbi.nlm.nih.gov/entrez/eutils/esearch.fcgi", "db=pubmed&tool=WikipediaCitationBot&email=" . PUBMEDUSERNAME . "&term=$query");
+    $xml = $this->xml_post("https://eutils.ncbi.nlm.nih.gov/entrez/eutils/esearch.fcgi", "db=pubmed&tool=WikipediaCitationBot&email=" . PUBMEDUSERNAME . "&term=$query");
     print_r($xml);
     // @codeCoverageIgnoreStart
     if ($xml === FALSE) {
