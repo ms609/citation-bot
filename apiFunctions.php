@@ -1191,22 +1191,42 @@ function Bibcode_Response_Processing(string $return, $ch, string $adsabs_url) : 
 
 function get_entrez_xml(string $type, string $query) : ?SimpleXMLElement {
    $url =  "https://eutils.ncbi.nlm.nih.gov/entrez/eutils/";
+   $post=  "tool=WikipediaCitationBot&email=" . PUBMEDUSERNAME;
    if ($type === "esearch_pubmed") {
-      $url .=  "esearch.fcgi?tool=WikipediaCitationBot&email=" . PUBMEDUSERNAME . "&db=pubmed&term=$query";
+      $url  .= "esearch.fcgi";
+      $post .= "&db=pubmed&term=" . $query;
    } elseif ($type === "pubmed") {
-      $url .= "esummary.fcgi?tool=WikipediaCitationBot&email=" . PUBMEDUSERNAME . "&db=pubmed&id=$query";
+      $url .= "esummary.fcgi";
+      $post .= "&db=pubmed&id=" . $query;
    } elseif ($type === "pmc") {
-      $url .= "esummary.fcgi?tool=WikipediaCitationBot&email=" . PUBMEDUSERNAME . "&db=pmc&id=$query";
+      $url .= "esummary.fcgi";
+      $post .= "&db=pmc&id=" . $query;
    } else {
       report_error("Invalid type passed to get_entrez_xml: " . $type);
    }
-   $xml = @simplexml_load_file($url);
+   $xml = xml_post($url, $post);
    if ($xml === FALSE) {
       // @codeCoverageIgnoreStart
      sleep(3);
-     $xml = @simplexml_load_file($url);
+     $xml = xml_post($url, $post);
      if ($xml === FALSE) $xml = NULL;
      // @codeCoverageIgnoreEnd
    }
    return $xml;
+}
+// Must use post in order to get DOIs with <, >, [, and ] in them and other problems
+function xml_post(string $url, string $post) {
+   $ch = curl_init();
+   curl_setopt($ch, CURLOPT_URL,$url);
+   curl_setopt($ch, CURLOPT_POST, 1);
+   curl_setopt($ch, CURLOPT_POSTFIELDS, $post);
+   curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+   $headers = array(
+      "Content-Type: application/x-www-form-urlencoded",
+      "Accept: application/xml",
+   );
+   curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
+   $output = curl_exec($ch);
+   curl_close ($ch);
+   return @simplexml_load_string($output);
 }
