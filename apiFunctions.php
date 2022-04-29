@@ -43,12 +43,8 @@ function entrez_api(array $ids, array &$templates, string $db) : bool {   // Poi
   $xml = get_entrez_xml($db, implode(',', $ids));
   
   if (!is_object($xml)) {
-    sleep(2);
-    $xml = get_entrez_xml($db, implode(',', $ids));
-    if (!is_object($xml)) {
-      report_warning("Error in PubMed search: No response from Entrez server");   // @codeCoverageIgnore
-      return FALSE;                                                               // @codeCoverageIgnore
-    }
+    report_warning("Error in PubMed search: No response from Entrez server");   // @codeCoverageIgnore
+    return FALSE;                                                               // @codeCoverageIgnore
   }
 
   // A few PMC do not have any data, just pictures of stuff
@@ -1204,6 +1200,10 @@ function get_entrez_xml(string $type, string $query) : object? {
       report_error("Invalid type in  get_entrez_xml " . $type);
    }
    $xml = @simplexml_load_file($url);
-   if ($xml === FALSE) $xml = NULL;
+   if ($xml === FALSE) {
+     sleep(3);
+     $xml = @simplexml_load_file($url);
+     if ($xml === FALSE) $xml = NULL;
+   }
    return $xml;
 }
