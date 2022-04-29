@@ -1189,7 +1189,7 @@ function Bibcode_Response_Processing(string $return, $ch, string $adsabs_url) : 
   // @codeCoverageIgnoreEnd
 }
 
-function get_entrez_xml(string $type, string $query) : ?object {
+function get_entrez_xml(string $type, string $query) : ?SimpleXMLElement {
    $url =  "https://eutils.ncbi.nlm.nih.gov/entrez/eutils/";
    if ($type === "esearch_pubmed") {
       $url .=  "esearch.fcgi?tool=WikipediaCitationBot&email=" . PUBMEDUSERNAME . "&db=pubmed&term=$query";
