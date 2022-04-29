@@ -1196,10 +1196,10 @@ function process_bibcode_data(Template $this_template, object $record) : void {
       $journal_start = mb_strtolower($journal_string[0]);
       if (preg_match("~\bthesis\b~ui", $journal_start)) {
         // Do nothing
-      } elseif (substr($journal_start, 0, 6) === 'eprint') {  // No longer used
+      } elseif (substr($journal_start, 0, 6) === 'eprint') {  // No longer u  sed
       if (substr($journal_start, 0, 13) === 'eprint arxiv:') {               //@codeCoverageIgnore
-          $this_template->add_if_new('class', (string) @$record->arxivclass);  //@codeCoverageIgnore
-          $this_template->add_if_new('arxiv', substr($journal_start, 13));     //@codeCoverageIgnore                                 //@codeCoverageIgnore
+          if (isset($record->arxivclass)) $this_template->add_if_new('class', (string) $record->arxivclass);  //@codeCoverageIgnore
+          $this_template->add_if_new('arxiv', substr($journal_start, 13));     //@codeCoverageIgnore
         }
       } else {
         $this_template->add_if_new('journal', $journal_string[0], 'adsabs');
@@ -1229,7 +1229,7 @@ function process_bibcode_data(Template $this_template, object $record) : void {
       foreach ($record->identifier as $recid) {
         $recid = (string) $recid;
         if(strtolower(substr($recid, 0, 6)) === 'arxiv:') {
-           $this_template->add_if_new('class', (string) @$record->arxivclass, 'adsabs');
+           if (isset($record->arxivclass)) $this_template->add_if_new('class', (string) $record->arxivclass, 'adsabs');
            $this_template->add_if_new('arxiv', substr($recid, 6), 'adsabs');
         }
       }
