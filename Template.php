@@ -2071,56 +2071,7 @@ final class Template {
         report_info("Updating " . bibcode_link($this->get('bibcode')) . " to " .  bibcode_link((string) $record->bibcode));
         $this->set('bibcode', (string) $record->bibcode); // The bibcode has been updated
       }
-      $this->add_if_new('title', (string) $record->title[0]); // add_if_new will format the title text and check for unknown
-      $i = 0;
-      if (isset($record->author)) {
-       foreach ($record->author as $author) {
-        $this->add_if_new('author' . (string) ++$i, $author);
-       }
-      }
-      if (isset($record->pub)) {
-        $journal_string = explode(",", (string) $record->pub);
-        $journal_start = mb_strtolower($journal_string[0]);
-        if (preg_match("~\bthesis\b~ui", $journal_start)) {
-          // Do nothing
-        } elseif (substr($journal_start, 0, 6) == "eprint") {        // This is outdated format.  Seems to not exists now
-          if (substr($journal_start, 0, 13) == "eprint arxiv:") {      //@codeCoverageIgnore
-            if (isset($record->arxivclass)) $this->add_if_new('class', (string) $record->arxivclass);  //@codeCoverageIgnore
-            $this->add_if_new('arxiv', substr($journal_start, 13));                                     //@codeCoverageIgnore
-          }
-        } else {
-          $this->add_if_new('journal', $journal_string[0]);
-        }
-      }
-      if (isset($record->page)) {
-         $tmp = implode($record->page);
-         if ((stripos($tmp, 'arxiv') !== FALSE) || (strpos($tmp, '/') !== FALSE)) {  // Bad data
-          unset($record->page);
-          unset($record->volume);
-          unset($record->issue);
-         }
-       }
-      if (isset($record->volume)) $this->add_if_new('volume', (string) $record->volume);
-      if (isset($record->issue))  $this->add_if_new('issue', (string) $record->issue);
-      if (isset($record->year))   $this->add_if_new('year', preg_replace("~\D~", "", (string) $record->year));
-      if (isset($record->page)) {
-        $dum = implode('–', $record->page);
-        if (preg_match('~^[\-\–\d]+$~u', $dum)) {
-          $this->add_if_new('pages', $dum);
-        }
-        unset($record->page);
-      }
-      if (isset($record->identifier)) { // Sometimes arXiv is in journal (see above), sometimes here in identifier
-        foreach ($record->identifier as $recid) {
-          if(strtolower(substr($recid, 0, 6)) === 'arxiv:') {
-             if (isset($record->arxivclass)) $this->add_if_new('class', (string) $record->arxivclass);
-             $this->add_if_new('arxiv', substr($recid, 6));
-          }
-        }
-      }
-      if (isset($record->doi)) {
-        $this->add_if_new('doi', (string) $record->doi[0]);
-      }
+      process_bibcode_data($this, $record);
       return TRUE;
     } elseif ($result->numFound == 0) {                         // @codeCoverageIgnore
       report_inline('no record retrieved.');                    // @codeCoverageIgnore
