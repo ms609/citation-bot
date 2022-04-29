@@ -38,12 +38,13 @@ function entrez_api(array $ids, array &$templates, string $db) : bool {   // Poi
   $get_template = function(int $template_key) use($templates) : Template { // Only exists to make static tools understand this is a Template() type
        return $templates[$template_key];
   };
-  
-  $xml = get_entrez_xml($db, implode(',', $ids))
+
+  report_action("Using $db API to retrieve publication details: ");
+  $xml = get_entrez_xml($db, implode(',', $ids));
   
   if (!is_object($xml)) {
     sleep(2);
-    $xml = get_entrez_xml($db, implode(',', $ids))
+    $xml = get_entrez_xml($db, implode(',', $ids));
     if (!is_object($xml)) {
       report_warning("Error in PubMed search: No response from Entrez server");   // @codeCoverageIgnore
       return FALSE;                                                               // @codeCoverageIgnore
