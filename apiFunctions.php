@@ -1200,6 +1200,8 @@ function get_entrez_xml(string $type, string $query) : object? {
       $url = "https://eutils.ncbi.nlm.nih.gov/entrez/eutils/esummary.fcgi?tool=WikipediaCitationBot&email=" . PUBMEDUSERNAME . "&db=pubmed&id=$query";
    } elseif ($type === "pmc") {
       $url = "https://eutils.ncbi.nlm.nih.gov/entrez/eutils/esummary.fcgi?tool=WikipediaCitationBot&email=" . PUBMEDUSERNAME . "&db=pmc&id=$query";
+   } else {
+      report_error("Invalid type in  get_entrez_xml " . $type);
    }
    $xml = @simplexml_load_file($url);
    if ($xml === FALSE) $xml = NULL;
