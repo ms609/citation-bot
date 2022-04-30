@@ -4417,17 +4417,17 @@ T1 - This is the Title }}';
   public function testArchiveDate() : void {
     $text = "{{cite journal}}";
     $template = $this->make_citation($text);
-    $template->date_style = DATES_MDY;
+    Template::$date_style = DATES_MDY;
     $this->assertTrue($template->add_if_new('archive-date', '20 JAN 2010'));
     $this->assertSame('January 20, 2010', $template->get2('archive-date'));
     $text = "{{cite journal}}";
     $template = $this->make_citation($text);
-    $template->date_style = DATES_DMY;       
+    Template::$date_style = DATES_DMY;       
     $this->assertTrue($template->add_if_new('archive-date', '20 JAN 2010'));
     $this->assertSame('20 January 2010', $template->get2('archive-date'));
     $text = "{{cite journal}}";
     $template = $this->make_citation($text);
-    $template->date_style = DATES_WHATEVER;   
+    Template::$date_style = DATES_WHATEVER;   
     $this->assertTrue($template->add_if_new('archive-date', '20 JAN 2010'));
     $this->assertSame('20 JAN 2010', $template->get2('archive-date'));
     $text = "{{cite journal}}";
@@ -4445,7 +4445,7 @@ T1 - This is the Title }}';
   public function testAccessDate1() : void {
     $text = "{{cite journal|url=XXX}}";
     $template = $this->make_citation($text);
-    $template->date_style = DATES_MDY;
+    Template::$date_style = DATES_MDY;
     $this->assertTrue($template->add_if_new('access-date', '20 JAN 2010'));
     $this->assertSame('January 20, 2010', $template->get2('access-date'));
   }
@@ -4453,7 +4453,7 @@ T1 - This is the Title }}';
   public function testAccessDate2() : void {
     $text = "{{cite journal|url=XXX}}";
     $template = $this->make_citation($text);
-    $template->date_style = DATES_DMY;       
+    Template::$date_style = DATES_DMY;       
     $this->assertTrue($template->add_if_new('access-date', '20 JAN 2010'));
     $this->assertSame('20 January 2010', $template->get2('access-date'));
   }
@@ -4461,7 +4461,7 @@ T1 - This is the Title }}';
   public function testAccessDate3() : void {
     $text = "{{cite journal|url=XXX}}";
     $template = $this->make_citation($text);
-    $template->date_style = DATES_WHATEVER;   
+    Template::$date_style = DATES_WHATEVER;   
     $this->assertTrue($template->add_if_new('access-date', '20 JAN 2010'));
     $this->assertSame('20 JAN 2010', $template->get2('access-date'));
   }
@@ -4685,7 +4685,7 @@ T1 - This is the Title }}';
   public function testAddBrokenDateFormat2() : void {
     $text = "{{cite journal|doi=10.0000/Rubbish_bot_failure_test}}";
     $template = $this->make_citation($text);
-    $template->date_style = DATES_MDY;
+    Template::$date_style = DATES_MDY;
     $this->assertTrue($template->add_if_new('doi-broken-date', '1 DEC 2019'));
     $this->assertSame('December 1, 2019', $template->get2('doi-broken-date'));
   }
@@ -4693,7 +4693,7 @@ T1 - This is the Title }}';
   public function testAddBrokenDateFormat3() : void {
     $text = "{{cite journal|doi=10.0000/Rubbish_bot_failure_test}}";
     $template = $this->make_citation($text);
-    $template->date_style = DATES_DMY;
+    Template::$date_style = DATES_DMY;
     $this->assertTrue($template->add_if_new('doi-broken-date', '1 DEC 2019'));
     $this->assertSame('1 December 2019', $template->get2('doi-broken-date'));
   }
@@ -6468,15 +6468,15 @@ T1 - This is the Title }}';
    public function testDateStyles() : void {
      $text = '{{cite web}}';
      $template = $this->make_citation($text);
-     $template->date_style = DATES_MDY;
+     Template::$date_style = DATES_MDY;
      $template->add_if_new('date', '12-02-2019');
      $this->assertSame('February 12, 2019', $template->get2('date'));
      $template = $this->make_citation($text);
-     $template->date_style = DATES_DMY;
+     Template::$date_style = DATES_DMY;
      $template->add_if_new('date', '12-02-2019');
      $this->assertSame('12 February 2019', $template->get2('date'));
      $template = $this->make_citation($text);
-     $template->date_style = DATES_WHATEVER;
+     Template::$date_style = DATES_WHATEVER;
      $template->add_if_new('date', '12-02-2019');
      $this->assertSame('12-02-2019', $template->get2('date'));
    }
