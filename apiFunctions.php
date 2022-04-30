@@ -1264,7 +1264,7 @@ function expand_book_adsabs(Template $template, object $result) : bool {
        }
       }
     }
-    if ($template->blank(['year', 'date']) && preg_match('~^(\d{4}).*book.*$~', $this->get('bibcode'), $matches)) {
+    if ($template->blank(['year', 'date']) && preg_match('~^(\d{4}).*book.*$~', $template->get('bibcode'), $matches)) {
       $template->add_if_new('year', $matches[1]); // Fail safe code to grab a year directly from the bibcode itself
     }
     return $return;
