@@ -287,12 +287,6 @@ function adsabs_api(array $ids, array &$templates, string $identifier) : bool { 
     }
     return TRUE;
   }
-  // do ones the big API does not do
-  foreach ($templates as $template) {
-    if ((strpos($template->get('bibcode'), '&') !== FALSE)) {
-      $template->expand_by_adsabs(); // This single bibcode API supports bibcodes with & in them
-    }
-  }
 
   // Do not do big query if all templates are complete
   $NONE_IS_INCOMPLETE = TRUE;
@@ -323,7 +317,7 @@ function adsabs_api(array $ids, array &$templates, string $identifier) : bool { 
               CURLOPT_RETURNTRANSFER => TRUE,
               CURLOPT_HEADER => TRUE,
               CURLOPT_CUSTOMREQUEST => 'POST',
-              CURLOPT_POSTFIELDS => "$identifier\n" . str_replace("%0A", "\n", urlencode(implode("\n", $ids)))]);
+              CURLOPT_POSTFIELDS => "$identifier\n" . implode("\n", $ids)]);
     $return = (string) @curl_exec($ch);
     $response = Bibcode_Response_Processing($return, $ch, $adsabs_url);
     curl_close($ch);
