@@ -275,9 +275,9 @@ function adsabs_api(array $ids, array &$templates, string $identifier) : bool { 
   if (count($ids) == 0) return FALSE;
   
   foreach ($ids as $key => $bibcode) {
-    if (stripos($bibcode, 'CITATION') !== false) {
+    if (stripos($bibcode, 'CITATION') !== FALSE) {
         unset($ids[$key]);  // @codeCoverageIgnore
-    } elseif (strpos($bibcode, '&') !== false) {
+    } elseif (strpos($bibcode, '&') !== FALSE) {
         unset($ids[$key]);
     }
   }
@@ -289,7 +289,7 @@ function adsabs_api(array $ids, array &$templates, string $identifier) : bool { 
   }
   // do ones the big API does not do
   foreach ($templates as $template) {
-    if ((strpos($template->get('bibcode'), '&') !== false)) {
+    if ((strpos($template->get('bibcode'), '&') !== FALSE)) {
       $template->expand_by_adsabs(); // This single bibcode API supports bibcodes with & in them
     }
   }
@@ -298,7 +298,7 @@ function adsabs_api(array $ids, array &$templates, string $identifier) : bool { 
   $NONE_IS_INCOMPLETE = TRUE;
   foreach ($templates as $template) {
     if ($template->has('bibcode')
-      && (strpos($template->get('bibcode'), '&') === false)
+      && (strpos($template->get('bibcode'), '&') === FALSE)
       && $template->incomplete()) {
       $NONE_IS_INCOMPLETE = FALSE;
       break;
@@ -358,6 +358,12 @@ function adsabs_api(array $ids, array &$templates, string $identifier) : bool { 
   $unmatched_ids = array_diff($ids, $matched_ids);
   if (count($unmatched_ids)) {
     report_warning("No match for bibcode identifier: " . implode('; ', $unmatched_ids));  // @codeCoverageIgnore
+  }
+  foreach ($templates as $template) {
+    if ($template->blank(['year', 'date']) && preg_match('~^(\d{4}).*book.*$~', $template->get('bibcode'), $matches)) {
+          $template->add_if_new('year', $matches[1]); // Fail safe book code to grab a year directly from the bibcode itself
+      }
+    }
   }
   return TRUE;
 }
