@@ -410,8 +410,9 @@ class Page {
     unset($our_templates_ieee);
     
     $this->replace_object($all_templates);
-    // remove circular memory reference that makes garbage collection harder
-    unset(Template::$all_templates);
+    // remove circular memory reference that makes garbage collection harder and reset
+    Template::$all_templates = NULL;
+    Template::$date_style = DATES_WHATEVER;
     unset($all_templates);
 
     $this->text = preg_replace('~(\{\{[Cc]ite ODNB\s*\|[^\{\}\_]+_?[^\{\}\_]+\}\}\s*)\{\{ODNBsub\}\}~u', '$1', $this->text); // Allow only one underscore to shield us from MATH etc.
