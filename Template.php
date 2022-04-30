@@ -25,8 +25,8 @@ final class Template {
   public const REGEXP = ['~\{\{[^\{\}\|]+\}\}~su', '~\{\{[^\{\}]+\}\}~su', '~\{\{(?>[^\{]|\{[^\{])+?\}\}~su'];  // Please see https://stackoverflow.com/questions/1722453/need-to-prevent-php-regex-segfault for discussion of atomic regex
   public const TREAT_IDENTICAL_SEPARATELY = FALSE;  // This is safe because templates are the last thing we do AND we do not directly edit $all_templates that are sub-templates - we might remove them, but do not change their content directly
   /** @psalm-suppress PropertyNotSetInConstructor */
-  public $all_templates;  // Points to list of all the Template() on the Page() including this one.  It can only be set by the page class after all templates are made
-  public $date_style = DATES_WHATEVER;  // Will get from the page
+  public static $all_templates;  // Points to list of all the Template() on the Page() including this one.  It can only be set by the page class after all templates are made
+  public static $date_style = DATES_WHATEVER;  // Will get from the page
   /** @psalm-suppress PropertyNotSetInConstructor */
   protected $rawtext;  // Must start out as unset
   public $last_searched_doi = '';
@@ -923,9 +923,9 @@ final class Template {
         if (!$this->blank(['access-date', 'accessdate'])) return FALSE;
         $time = strtotime($value);
         if ($time) { // should come in cleaned up
-            if ($this->date_style === DATES_MDY) {
+            if (self::$date_style === DATES_MDY) {
                $value = date('F j, Y', $time);
-            } elseif ($this->date_style === DATES_DMY) {
+            } elseif (self::$date_style === DATES_DMY) {
                $value = date('j F Y', $time);
             }
             return $this->add('access-date', $value);
@@ -937,9 +937,9 @@ final class Template {
         if (!$this->blank(['archive-date', 'archivedate'])) return FALSE;
         $time = strtotime($value);
         if ($time) { // should come in cleaned up
-            if ($this->date_style === DATES_MDY) {
+            if (self::$date_style === DATES_MDY) {
                $value = date('F j, Y', $time);
-            } elseif ($this->date_style === DATES_DMY) {
+            } elseif (self::$date_style === DATES_DMY) {
                $value = date('j F Y', $time);
             }
             return $this->add('archive-date', $value);
@@ -960,12 +960,12 @@ final class Template {
         if (preg_match("~^\d{4}$~", sanitize_string($value))) {
           // Not adding any date data beyond the year, so 'year' parameter is more suitable
           $param_name = "year";
-        } elseif ($this->date_style !== DATES_WHATEVER || preg_match('~^\d{4}\-\d{2}\-\d{2}$~', $value)) {
+        } elseif (self::$date_style !== DATES_WHATEVER || preg_match('~^\d{4}\-\d{2}\-\d{2}$~', $value)) {
           $time = strtotime($value);
           if ($time) {
             $day = date('d', $time);
             if ($day !== '01') { // Probably just got month and year if day=1
-              if ($this->date_style === DATES_MDY) {
+              if (self::$date_style === DATES_MDY) {
                  $value = date('F j, Y', $time);
               } else { // DATES_DMY and make DATES_WHATEVER pretty
                  $value = date('j F Y', $time);
@@ -1416,9 +1416,9 @@ final class Template {
         }
         $time = strtotime($value);
         if ($time) { // paranoid
-            if ($this->date_style === DATES_MDY) {
+            if (self::$date_style === DATES_MDY) {
                $value = date('F j, Y', $time);
-            } elseif ($this->date_style === DATES_DMY) {
+            } elseif (self::$date_style === DATES_DMY) {
                $value = date('j F Y', $time);
             }
         }
@@ -1435,7 +1435,7 @@ final class Template {
         $check_date = $last_day - 126000;
         // @codeCoverageIgnoreStart
         if (($the_new > $last_day) && ($existing < $check_date)) {
-            if ($this->date_style === DATES_MDY) {
+            if (self::$date_style === DATES_MDY) {
                return $this->add($param_name, date('F j, Y', $last_day));
             } else {
                return $this->add($param_name, date('j F Y', $last_day));
@@ -3125,7 +3125,7 @@ final class Template {
     }
     if (preg_match_all('~' . sprintf(Self::PLACEHOLDER_TEXT, '(\d+)') . '~', $id, $matches)) {
       for ($i = 0; $i < count($matches[1]); $i++) {
-        $subtemplate = $this->all_templates[$matches[1][$i]];
+        $subtemplate = self::$all_templates[$matches[1][$i]];
         $subtemplate_name = $subtemplate->wikiname();
         switch($subtemplate_name) {
           case "arxiv":
@@ -6825,7 +6825,7 @@ final class Template {
   protected function get_inline_doi_from_title() : void {
      $match = ['', '']; // prevent memory leak in some PHP versions
      if (preg_match("~(?:\s)*(?:# # # CITATION_BOT_PLACEHOLDER_TEMPLATE )(\d+)(?: # # #)(?:\s)*~", $this->get('title'), $match)) {
-       if ($inline_doi = $this->all_templates[$match[1]]->inline_doi_information()) {
+       if ($inline_doi = self::$all_templates[$match[1]]->inline_doi_information()) {
          if ($this->add_if_new('doi', trim($inline_doi[0]))) { // Add doi
            $this->set('title', trim($inline_doi[1]));
            quietly('report_modification', "Converting inline DOI to DOI parameter");
@@ -7221,7 +7221,7 @@ final class Template {
      $tmp = $this->parsed_text();
      while (preg_match_all('~' . sprintf(Self::PLACEHOLDER_TEXT, '(\d+)') . '~', $tmp, $matches)) {	
        for ($i = 0; $i < count($matches[1]); $i++) {	
-         $subtemplate = $this->all_templates[$matches[1][$i]];	
+         $subtemplate = self::$all_templates[$matches[1][$i]];	
          $tmp = str_replace($matches[0][$i], $subtemplate->parsed_text(), $tmp);	
        }	
      }	
