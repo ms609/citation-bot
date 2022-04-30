@@ -1940,13 +1940,13 @@ final class Template {
     if (strpos($this->get('doi'), '10.1093/') === 0) return FALSE;
     report_action("Checking AdsAbs database");
     if ($this->has('bibcode')) {
-      $result = $this->query_adsabs("identifier:" . urlencode('"' . $this->get('bibcode') . '"'));
+      $result = query_adsabs("identifier:" . urlencode('"' . $this->get('bibcode') . '"'));
     } elseif ($this->has('doi') && preg_match(REGEXP_DOI, $this->get_without_comments_and_placeholders('doi'), $doi)) {
-      $result = $this->query_adsabs("identifier:" . urlencode('"' .  $doi[0] . '"'));  // In DOI we trust
+      $result = query_adsabs("identifier:" . urlencode('"' .  $doi[0] . '"'));  // In DOI we trust
     } elseif ($this->has('eprint')) {
-      $result = $this->query_adsabs("identifier:" . urlencode('"' . $this->get('eprint') . '"'));
+      $result = query_adsabs("identifier:" . urlencode('"' . $this->get('eprint') . '"'));
     } elseif ($this->has('arxiv')) {
-      $result = $this->query_adsabs("identifier:" . urlencode('"' . $this->get('arxiv')  . '"')); // @codeCoverageIgnore
+      $result = query_adsabs("identifier:" . urlencode('"' . $this->get('arxiv')  . '"')); // @codeCoverageIgnore
     } else {
       $result = (object) array("numFound" => 0);
     }
@@ -1957,7 +1957,7 @@ final class Template {
     }
 
     if ($this->has('bibcode') && strpos($this->get('bibcode'), 'book') !== FALSE) {
-      return $this->expand_book_adsabs($result);
+      return expand_book_adsabs($this, $result);
     }
     
     if ($result->numFound == 0) {
@@ -1974,7 +1974,7 @@ final class Template {
     }
 
     if (($result->numFound != 1) && $this->has('title')) { // Do assume failure to find arXiv means that it is not there
-      $result = $this->query_adsabs("title:" . urlencode('"' .  trim(str_replace('"', ' ', $this->get_without_comments_and_placeholders("title"))) . '"'));
+      $result = query_adsabs("title:" . urlencode('"' .  trim(str_replace('"', ' ', $this->get_without_comments_and_placeholders("title"))) . '"'));
       if ($result->numFound == 0) return FALSE;
       $record = $result->docs[0];
       if (titles_are_dissimilar($this->get_without_comments_and_placeholders("title"), $record->title[0])) {  // Considering we searched for title, this is very paranoid
@@ -1996,7 +1996,7 @@ final class Template {
       $pages = $this->page_range();
       if (!$pages) return FALSE;
       if ($this->blank('volume') && !$this->year()) return FALSE;
-      $result = $this->query_adsabs(
+      $result = query_adsabs(
           ($this->has('journal') ? "pub:" . urlencode('"' . remove_brackets($journal) . '"') : "&fq=issn:" . urlencode($this->get('issn')))
         . ($this->year() ? ("&fq=year:" . urlencode($this->year())) : '')
         . ($this->has('volume') ? ("&fq=volume:" . urlencode('"' . $this->get('volume') . '"')) : '')
@@ -2087,59 +2087,6 @@ final class Template {
       report_inline('multiple records retrieved.  Ignoring.');  // @codeCoverageIgnore
       return FALSE;                                             // @codeCoverageIgnore
     }
-  }
-
-  protected function expand_book_adsabs(object $result) : bool {
-    set_time_limit(120);
-    $matches = ['', '']; // prevent memory leak in some PHP versions
-    $return = FALSE;
-    if ($result->numFound == 1) {
-      $return = TRUE;
-      $record = $result->docs[0];
-      if (isset($record->year)) $this->add_if_new('year', preg_replace("~\D~", "", (string) $record->year));
-      if (isset($record->title)) $this->add_if_new('title', (string) $record->title[0]);
-      if ($this->blank(array_merge(FIRST_EDITOR_ALIASES, FIRST_AUTHOR_ALIASES, ['publisher']))) { // Avoid re-adding editors as authors, etc.
-       $i = 0;
-       if (isset($record->author)) {
-        foreach ($record->author as $author) {
-         $this->add_if_new('author' . (string) ++$i, $author);
-        }
-       }
-      }
-    }
-    if ($this->blank(['year', 'date']) && preg_match('~^(\d{4}).*book.*$~', $this->get('bibcode'), $matches)) {
-      $this->add_if_new('year', $matches[1]); // Fail safe code to grab a year directly from the bibcode itself
-    }
-    return $return;
-  }
-
-  // $options should be a series of field names, colons (optionally urlencoded), and
-  // URL-ENCODED search strings, separated by (unencoded) ampersands.
-  // Surround search terms in (url-encoded) ""s, i.e. doi:"10.1038/bla(bla)bla"
-  protected function query_adsabs(string $options) : object {
-    set_time_limit(120);
-    $rate_limit = [['', '', ''], ['', '', ''], ['', '', '']]; // prevent memory leak in some PHP versions
-    // API docs at https://github.com/adsabs/adsabs-dev-api/blob/master/Search_API.ipynb
-    if (AdsAbsControl::gave_up_yet()) return (object) array('numFound' => 0);
-    if (!PHP_ADSABSAPIKEY) return (object) array('numFound' => 0);
-
-      $ch = curl_init();
-      /** @psalm-suppress RedundantCondition */ /* PSALM thinks TRAVIS cannot be FALSE */
-      $adsabs_url = "https://" . (TRAVIS ? 'qa' : 'api')
-                  . ".adsabs.harvard.edu/v1/search/query"
-                  . "?q=$options&fl=arxiv_class,author,bibcode,doi,doctype,identifier,"
-                  . "issue,page,pub,pubdate,title,volume,year";
-      curl_setopt_array($ch,
-               [CURLOPT_HTTPHEADER => ['Authorization: Bearer ' . PHP_ADSABSAPIKEY],
-                CURLOPT_RETURNTRANSFER => TRUE,
-                CURLOPT_HEADER => TRUE,
-                CURLOPT_TIMEOUT => 20,
-                CURLOPT_USERAGENT => BOT_USER_AGENT,
-                CURLOPT_URL => $adsabs_url]);
-      $return = (string) @curl_exec($ch);
-      $response = Bibcode_Response_Processing($return, $ch, $adsabs_url);
-      curl_close($ch);
-    return $response;
   }
 
   public function expand_by_RIS(string &$dat, bool $add_url) : void { // Pass by pointer to wipe this data when called from use_unnamed_params()

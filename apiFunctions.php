@@ -350,7 +350,7 @@ function adsabs_api(array $ids, array &$templates, string $identifier) : bool { 
          if (stripos($an_id, 'book') === FALSE) {
            process_bibcode_data($this_template,  $record);
          } else {
-           $this_template->expand_book_adsabs($record);
+           expand_book_adsabs($this_template, $record);
         }
       }
     }
@@ -1244,3 +1244,57 @@ function process_bibcode_data(Template $this_template, object $record) : void {
       $this_template->add_if_new('doi', (string) $record->doi[0]);
     }
 }
+
+
+function expand_book_adsabs(Template $template, object $result) : bool {
+    set_time_limit(120);
+    $matches = ['', '']; // prevent memory leak in some PHP versions
+    $return = FALSE;
+    if ($result->numFound == 1) {
+      $return = TRUE;
+      $record = $result->docs[0];
+      if (isset($record->year)) $template->add_if_new('year', preg_replace("~\D~", "", (string) $record->year));
+      if (isset($record->title)) $template->add_if_new('title', (string) $record->title[0]);
+      if ($template->blank(array_merge(FIRST_EDITOR_ALIASES, FIRST_AUTHOR_ALIASES, ['publisher']))) { // Avoid re-adding editors as authors, etc.
+       $i = 0;
+       if (isset($record->author)) {
+        foreach ($record->author as $author) {
+         $template->add_if_new('author' . (string) ++$i, $author);
+        }
+       }
+      }
+    }
+    if ($template->blank(['year', 'date']) && preg_match('~^(\d{4}).*book.*$~', $template->get('bibcode'), $matches)) {
+      $template->add_if_new('year', $matches[1]); // Fail safe code to grab a year directly from the bibcode itself
+    }
+    return $return;
+  }
+
+  // $options should be a series of field names, colons (optionally urlencoded), and
+  // URL-ENCODED search strings, separated by (unencoded) ampersands.
+  // Surround search terms in (url-encoded) ""s, i.e. doi:"10.1038/bla(bla)bla"
+function query_adsabs(string $options) : object {
+    set_time_limit(120);
+    $rate_limit = [['', '', ''], ['', '', ''], ['', '', '']]; // prevent memory leak in some PHP versions
+    // API docs at https://github.com/adsabs/adsabs-dev-api/blob/master/Search_API.ipynb
+    if (AdsAbsControl::gave_up_yet()) return (object) array('numFound' => 0);
+    if (!PHP_ADSABSAPIKEY) return (object) array('numFound' => 0);
+
+      $ch = curl_init();
+      /** @psalm-suppress RedundantCondition */ /* PSALM thinks TRAVIS cannot be FALSE */
+      $adsabs_url = "https://" . (TRAVIS ? 'qa' : 'api')
+                  . ".adsabs.harvard.edu/v1/search/query"
+                  . "?q=$options&fl=arxiv_class,author,bibcode,doi,doctype,identifier,"
+                  . "issue,page,pub,pubdate,title,volume,year";
+      curl_setopt_array($ch,
+               [CURLOPT_HTTPHEADER => ['Authorization: Bearer ' . PHP_ADSABSAPIKEY],
+                CURLOPT_RETURNTRANSFER => TRUE,
+                CURLOPT_HEADER => TRUE,
+                CURLOPT_TIMEOUT => 20,
+                CURLOPT_USERAGENT => BOT_USER_AGENT,
+                CURLOPT_URL => $adsabs_url]);
+      $return = (string) @curl_exec($ch);
+      $response = Bibcode_Response_Processing($return, $ch, $adsabs_url);
+      curl_close($ch);
+    return $response;
+  }
