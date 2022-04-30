@@ -289,7 +289,7 @@ function adsabs_api(array $ids, array &$templates, string $identifier) : bool { 
   }
   // do ones the big API does not do
   foreach ($templates as $template) {
-    if ((strpos($template->get('bibcode'), '&') !== false))) {
+    if ((strpos($template->get('bibcode'), '&') !== false)) {
       $template->expand_by_adsabs(); // This single bibcode API supports bibcodes with & in them
     }
   }
