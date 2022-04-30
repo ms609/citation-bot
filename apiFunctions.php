@@ -277,8 +277,6 @@ function adsabs_api(array $ids, array &$templates, string $identifier) : bool { 
   foreach ($ids as $key => $bibcode) {
     if (stripos($bibcode, 'CITATION') !== FALSE) {
         unset($ids[$key]);  // @codeCoverageIgnore
-    } elseif (strpos($bibcode, '&') !== FALSE) {
-        unset($ids[$key]);
     }
   }
   if (count($ids) < 5) {
@@ -292,7 +290,6 @@ function adsabs_api(array $ids, array &$templates, string $identifier) : bool { 
   $NONE_IS_INCOMPLETE = TRUE;
   foreach ($templates as $template) {
     if ($template->has('bibcode')
-      && (strpos($template->get('bibcode'), '&') === FALSE)
       && $template->incomplete()) {
       $NONE_IS_INCOMPLETE = FALSE;
       break;
