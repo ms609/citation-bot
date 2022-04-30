@@ -1961,7 +1961,7 @@ final class Template {
     }
     
     if ($result->numFound == 0) {
-      if ($this->has('bibcode') return FALSE;
+      if ($this->has('bibcode')) return FALSE;
       // Avoid blowing through our quota
       if ((!in_array($this->wikiname(), ['cite journal', 'citation', 'cite conference', 'cite book', 'cite arxiv', 'cite article'])) ||
           ($this->wikiname() == 'cite book' && $this->has('isbn')) ||
