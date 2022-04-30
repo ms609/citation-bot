@@ -275,9 +275,7 @@ function adsabs_api(array $ids, array &$templates, string $identifier) : bool { 
   if (count($ids) == 0) return FALSE;
   
   foreach ($ids as $key => $bibcode) {
-    if (strpos($bibcode, 'book') !== false) {
-        unset($ids[$key]);
-    } elseif (stripos($bibcode, 'CITATION') !== false) {
+    if (stripos($bibcode, 'CITATION') !== false) {
         unset($ids[$key]);  // @codeCoverageIgnore
     } elseif (strpos($bibcode, '&') !== false) {
         unset($ids[$key]);
@@ -291,8 +289,8 @@ function adsabs_api(array $ids, array &$templates, string $identifier) : bool { 
   }
   // do ones the big API does not do
   foreach ($templates as $template) {
-    if ((strpos($template->get('bibcode'), '&') !== false) || (strpos($template->get('bibcode'), 'book') !== false)) {
-      $template->expand_by_adsabs(); // This single bibcode API supports bibcodes with & in them, and special book code
+    if ((strpos($template->get('bibcode'), '&') !== false)) {
+      $template->expand_by_adsabs(); // This single bibcode API supports bibcodes with & in them
     }
   }
 
@@ -301,7 +299,6 @@ function adsabs_api(array $ids, array &$templates, string $identifier) : bool { 
   foreach ($templates as $template) {
     if ($template->has('bibcode')
       && (strpos($template->get('bibcode'), '&') === false)
-      && (strpos($template->get('bibcode'), 'book') === false)
       && $template->incomplete()) {
       $NONE_IS_INCOMPLETE = FALSE;
       break;
@@ -350,7 +347,11 @@ function adsabs_api(array $ids, array &$templates, string $identifier) : bool { 
     foreach($ids as $template_key => $an_id) { // Cannot use array_search since that only returns first
       if ($an_id === (string) $record->bibcode) {
          $this_template = $templates[$template_key];
-         process_bibcode_data($this_template,  $record);
+         if (stripos($an_id, 'book') === FALSE) {
+           process_bibcode_data($this_template,  $record);
+         } else {
+           $this_template->expand_book_adsabs($record);
+        }
       }
     }
   }

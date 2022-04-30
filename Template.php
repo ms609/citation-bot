@@ -1937,9 +1937,6 @@ final class Template {
       return FALSE;                                                                              // @codeCoverageIgnore
     }
     if ($this->has('bibcode')) $this->record_api_usage('adsabs', 'bibcode');
-    if ($this->has('bibcode') && strpos($this->get('bibcode'), 'book') !== FALSE) {
-      return $this->expand_book_adsabs();
-    }
     if (strpos($this->get('doi'), '10.1093/') === 0) return FALSE;
     report_action("Checking AdsAbs database");
     if ($this->has('bibcode')) {
@@ -1959,7 +1956,12 @@ final class Template {
       return FALSE;                                           // @codeCoverageIgnore
     }
 
+    if ($this->has('bibcode') && strpos($this->get('bibcode'), 'book') !== FALSE) {
+      return $this->expand_book_adsabs($result);
+    }
+    
     if ($result->numFound == 0) {
+      if ($this->has('bibcode')) return FALSE;
       // Avoid blowing through our quota
       if ((!in_array($this->wikiname(), ['cite journal', 'citation', 'cite conference', 'cite book', 'cite arxiv', 'cite article'])) ||
           ($this->wikiname() == 'cite book' && $this->has('isbn')) ||
@@ -2087,11 +2089,10 @@ final class Template {
     }
   }
 
-  protected function expand_book_adsabs() : bool {
+  protected function expand_book_adsabs(object $result) : bool {
     set_time_limit(120);
     $matches = ['', '']; // prevent memory leak in some PHP versions
     $return = FALSE;
-    $result = $this->query_adsabs("bibcode:" . urlencode('"' . $this->get('bibcode') . '"'));
     if ($result->numFound == 1) {
       $return = TRUE;
       $record = $result->docs[0];
