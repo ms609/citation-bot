@@ -361,8 +361,7 @@ function adsabs_api(array $ids, array &$templates, string $identifier) : bool { 
   }
   foreach ($templates as $template) {
     if ($template->blank(['year', 'date']) && preg_match('~^(\d{4}).*book.*$~', $template->get('bibcode'), $matches)) {
-          $template->add_if_new('year', $matches[1]); // Fail safe book code to grab a year directly from the bibcode itself
-      }
+        $template->add_if_new('year', $matches[1]); // Fail safe book code to grab a year directly from the bibcode itself
     }
   }
   return TRUE;
