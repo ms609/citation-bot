@@ -6,9 +6,6 @@ ignore_user_abort(FALSE); // Dies if cannot connect back to client, should be th
 try {
  @header('Access-Control-Allow-Origin: *'); //This is ok because the API is not authenticated
  @header('Content-Type: text/json');
- @header('Cache-Control: no-cache, no-store, must-revalidate');
- @header('Pragma: no-cache');
- @header('Expires: 0');
 
  //Set up tool requirements
  require_once 'setup.php';
@@ -23,7 +20,6 @@ try {
 
  //Expand text from postvars
  $page = new Page();
- gc_collect_cycles();
  $page->parse_text($originalText);
  $page->expand_text();
  $newText = $page->parsed_text();
@@ -35,8 +31,6 @@ try {
    $editSummary .=  str_replace('Use this bot', 'Use this tool', $page->edit_summary()) . '| #UCB_Gadget ';
  }
 
- unset($page, $originalText);
-
  /**
    * @psalm-taint-escape html
    * @psalm-taint-escape has_quotes
@@ -45,7 +39,7 @@ try {
    'expandedtext' => $newText,
    'editsummary' => $editSummary
  );
- unset($newText, $editSummary);
+ unset($newText, $editSummary, $originalText, $page); // Free memory before encoding
  ob_end_clean();
  
  echo (string) @json_encode($result);
