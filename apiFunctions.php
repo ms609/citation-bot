@@ -972,7 +972,7 @@ function getS2CID(string $url) : string {
       
 function ConvertS2CID_DOI(string $s2cid) : string {
   $context = stream_context_create(CONTEXT_S2);
-  $response = (string) @file_get_contents(HOST_S2 . '/v1/paper/' . $doi, FALSE, $context);
+  $response = (string) @file_get_contents(HOST_S2 . '/v1/paper/CorpusID:' . $s2cid, FALSE, $context);
   if (!$response) {
     report_warning("No response from semanticscholar.");   // @codeCoverageIgnore
     return '';                                           // @codeCoverageIgnore
