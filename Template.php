@@ -1961,11 +1961,12 @@ final class Template {
     }
     
     if ($result->numFound == 0) {
-      if ($this->has('bibcode')) return FALSE;
       // Avoid blowing through our quota
-      if ((!in_array($this->wikiname(), ['cite journal', 'citation', 'cite conference', 'cite book', 'cite arxiv', 'cite article'])) ||
-          ($this->wikiname() == 'cite book' && $this->has('isbn')) ||
-          ($this->wikiname() == 'citation' && $this->has('isbn') && $this->has('chapter')) ||
+      if ((!in_array($this->wikiname(), ['cite journal', 'citation', 'cite conference', 'cite book', 'cite arxiv', 'cite article'])) || // Unlikely to find anything
+          ($this->wikiname() == 'cite book' && $this->has('isbn')) ||     // "complete" enough for a book
+          ($this->wikiname() == 'citation' && $this->has('isbn') && $this->has('chapter')) ||  // "complete" enough for a book
+          ($this->has_good_free_copy()) ||  // Alreadly links out to something free
+          ($this->has('s2cid')) ||  // good enough, usually includes abstract and link to copy
           ($this->has('bibcode'))) // Must be GIGO
           {
             report_inline('no record retrieved.');                // @codeCoverageIgnore
@@ -1973,7 +1974,7 @@ final class Template {
           }
     }
 
-    if (($result->numFound != 1) && $this->has('title')) { // Do assume failure to find arXiv means that it is not there
+    if (($result->numFound !== 1) && $this->has('title')) { // Do assume failure to find arXiv means that it is not there
       $result = query_adsabs("title:" . urlencode('"' .  trim(str_replace('"', ' ', $this->get_without_comments_and_placeholders("title"))) . '"'));
       if ($result->numFound == 0) return FALSE;
       $record = $result->docs[0];
@@ -1990,7 +1991,7 @@ final class Template {
       }
     }
 
-    if ($result->numFound != 1 && ($this->has('journal') || $this->has('issn'))) {
+    if ($result->numFound !== 1 && ($this->has('journal') || $this->has('issn'))) {
       $journal = $this->get('journal');
       // try partial search using bibcode components:
       $pages = $this->page_range();
