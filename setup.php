@@ -164,7 +164,12 @@ require_once 'Page.php';
 define("MAX_PAGES", 2850);
 define("BIG_RUN", 3);
 
+// Allow crudy cheap journals
 define("INSECURE_CONTEXT", stream_context_create(array(
            'ssl' => ['verify_peer' => FALSE, 'verify_peer_name' => FALSE, 'allow_self_signed' => TRUE, 'security_level' => 0, 'verify_depth' => 0],
            'http' => ['ignore_errors' => TRUE, 'max_redirects' => 40, 'timeout' => 20.0, 'follow_location' => 1,  'header'=> ['Connection: close'], "user_agent" => BOT_USER_AGENT]
-         ))); // Allow crudy cheap journals
+         )));
+define("INSECURE_CONTEXT_11", stream_context_create(array(
+           'ssl' => ['verify_peer' => FALSE, 'verify_peer_name' => FALSE, 'allow_self_signed' => TRUE, 'security_level' => 0, 'verify_depth' => 0],
+           'http' => ['ignore_errors' => TRUE, 'max_redirects' => 40, 'timeout' => 20.0, 'follow_location' => 1,  'header'=> ['Connection: close'], "user_agent" => BOT_USER_AGENT,  'protocol_version' => 1.1]
+         )));
