@@ -3277,21 +3277,21 @@ T1 - This is the Title }}';
   }
  
    public function testVolumeIssueDemixing11() : void {
-    $text = '{{cite journal|volume = number 12|doi=XYZ}}';
+    $text = '{{cite journal|volume = number 12|doi=10.0000/Rubbish_bot_failure_test}}';
     $prepared = $this->prepare_citation($text);
     $this->assertSame('12', $prepared->get2('issue'));
     $this->assertNull($prepared->get2('volume'));
   }
  
   public function testVolumeIssueDemixing12() : void {
-    $text = '{{cite journal|volume = number 12|issue=12|doi=XYZ}}';
+    $text = '{{cite journal|volume = number 12|issue=12|doi=10.0000/Rubbish_bot_failure_test}}';
     $prepared = $this->prepare_citation($text);
     $this->assertNull($prepared->get2('volume'));
     $this->assertSame('12', $prepared->get2('issue'));
   }
  
   public function testVolumeIssueDemixing13() : void {
-    $text = '{{cite journal|volume = number 12|issue=12|doi=XYZ}}';
+    $text = '{{cite journal|volume = number 12|issue=12|doi=10.0000/Rubbish_bot_failure_test}}';
     $prepared = $this->prepare_citation($text);
     $this->assertNull($prepared->get2('volume'));
     $this->assertSame('12', $prepared->get2('issue'));
@@ -5280,7 +5280,7 @@ T1 - This is the Title }}';
     $this->assertSame('978-0-19-861412-8', $template->get2('isbn'));
     $this->assertNull($template->get2('doi-broken-date'));
     
-    $text = "{{cite web|url=https://www.oxforddnb.com/view/10.1093/odnb/9780198614128.001.0001/odnb-9780198614128-e-108196|doi=X|doi-broken-date=Y|title=Joe Blow - Oxford Dictionary of National Biography}}";
+    $text = "{{cite web|url=https://www.oxforddnb.com/view/10.1093/odnb/9780198614128.001.0001/odnb-9780198614128-e-108196|doi=10.0000/Rubbish_bot_failure_test|doi-broken-date=Y|title=Joe Blow - Oxford Dictionary of National Biography}}";
     $template = $this->make_citation($text);
     $template->tidy_parameter('url');
     $this->assertSame('10.1093/odnb/9780198614128.013.108196', $template->get2('doi'));
@@ -5814,14 +5814,14 @@ T1 - This is the Title }}';
   }
  
   public function testVolumeIssueDemixing21() : void {
-    $text = '{{cite journal|issue = volume 12|doi=XYZ}}';
+    $text = '{{cite journal|issue = volume 12|doi=10.0000/Rubbish_bot_failure_test}}';
     $prepared = $this->prepare_citation($text);
     $this->assertSame('12', $prepared->get2('volume'));
     $this->assertNull($prepared->get2('issue'));
   }
  
   public function testVolumeIssueDemixing22() : void {
-    $text = '{{cite journal|issue = volume 12XX|volume=12XX|doi=XYZ}}';
+    $text = '{{cite journal|issue = volume 12XX|volume=12XX|doi=10.0000/Rubbish_bot_failure_test}}';
     $prepared = $this->prepare_citation($text);
     $this->assertSame('12XX', $prepared->get2('volume'));
     $this->assertNull($prepared->get2('issue'));
@@ -6901,18 +6901,18 @@ T1 - This is the Title }}';
   }
  
    public function testDontDoIt() : void { // "complete" already
-     $text = '{{cite journal|title=X|journal=X|issue=X|volume=X|pages=12-34|year=1980|last2=Him|doi=X|bibcode=X|last1=X|first1=X}}';
+     $text = '{{cite journal|title=X|journal=X|issue=X|volume=X|pages=12-34|year=1980|last2=Him|doi=10.0000/Rubbish_bot_failure_test|bibcode=X|last1=X|first1=X}}';
      $template = $this->make_citation($text);
      $this->assertFalse($template->incomplete());
-     $text = '{{cite journal|title=X|periodical=X|issue=X|volume=X|pages=12-34|year=1980|last2=Him|doi=X|bibcode=X|last1=X|first1=X}}';
+     $text = '{{cite journal|title=X|periodical=X|issue=X|volume=X|pages=12-34|year=1980|last2=Him|doi=10.0000/Rubbish_bot_failure_test|bibcode=X|last1=X|first1=X}}';
      $template = $this->make_citation($text);
      $this->assertFalse($template->incomplete());
   
      $this->requires_bibcode(function() : void {
-      $text = '{{cite journal|title=X|journal=X|issue=X|volume=X|pages=12-34|year=1980|last2=Him|doi=X|bibcode=X|last1=X|first1=X}}';
+      $text = '{{cite journal|title=X|journal=X|issue=X|volume=X|pages=12-34|year=1980|last2=Him|doi=10.0000/Rubbish_bot_failure_test|bibcode=X|last1=X|first1=X}}';
       $template = $this->make_citation($text);
       $this->assertFalse($template->expand_by_adsabs());
-      $text = '{{cite journal|title=X|periodical=X|issue=X|volume=X|pages=12-34|year=1980|last2=Him|doi=X|bibcode=X|last1=X|first1=X}}';
+      $text = '{{cite journal|title=X|periodical=X|issue=X|volume=X|pages=12-34|year=1980|last2=Him|doi=10.0000/Rubbish_bot_failure_test|bibcode=X|last1=X|first1=X}}';
       $template = $this->make_citation($text);
       $this->assertFalse($template->expand_by_adsabs());
      });
