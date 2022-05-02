@@ -7515,7 +7515,7 @@ T1 - This is the Title }}';
 
       $text = "{{cite LSA|url=https://books.google.com/books?id=12345&article_id=3241&q=huh}}";
       $expanded = $this->process_citation($text);
-      $this->AssertSame('{{cite LSA|url=https://books.google.com/books?id=12345&q=huh&article_id=3241#v=onepage}}', $expanded->get2('url'));
+      $this->AssertSame('https://books.google.com/books?id=12345&q=huh&article_id=3241#v=onepage', $expanded->get2('url'));
     }
 
 }
