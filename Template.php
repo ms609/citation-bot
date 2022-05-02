@@ -2423,11 +2423,7 @@ final class Template {
         $has_url_already = $this->has($url_type);
         $this->add_if_new($url_type, $oa_url);  // Will check for PMCs etc hidden in URL
         if ($this->has($url_type) && !$has_url_already) {  // The above line might have eaten the URL and upgraded it
-          $context = stream_context_create(array(
-           'ssl' => ['verify_peer' => FALSE, 'verify_peer_name' => FALSE, 'allow_self_signed' => TRUE, 'security_level' => 0, 'verify_depth' => 0],
-           'http' => ['ignore_errors' => TRUE, 'max_redirects' => 40, 'timeout' => 20.0, 'follow_location' => 1,  'header'=> ['Connection: close'], "user_agent" => BOT_USER_AGENT]
-         )); // Allow crudy cheap journals
-          $headers_test = @get_headers($this->get($url_type), GET_THE_HEADERS, $context);
+          $headers_test = @get_headers($this->get($url_type), GET_THE_HEADERS, INSECURE_CONTEXT);
           // @codeCoverageIgnoreStart
           if($headers_test ===FALSE) {
             $this->forget($url_type);
