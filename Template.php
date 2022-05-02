@@ -25,8 +25,8 @@ final class Template {
   public const REGEXP = ['~\{\{[^\{\}\|]+\}\}~su', '~\{\{[^\{\}]+\}\}~su', '~\{\{(?>[^\{]|\{[^\{])+?\}\}~su'];  // Please see https://stackoverflow.com/questions/1722453/need-to-prevent-php-regex-segfault for discussion of atomic regex
   public const TREAT_IDENTICAL_SEPARATELY = FALSE;  // This is safe because templates are the last thing we do AND we do not directly edit $all_templates that are sub-templates - we might remove them, but do not change their content directly
   /** @psalm-suppress PropertyNotSetInConstructor */
-  public sss$all_templates;  // Points to list of all the Template() on the Page() including this one.  It can only be set by the page class after all templates are made
-  public $date_style = DATES_WHATEVER;  // Will get from the page
+  public static $all_templates;  // Points to list of all the Template() on the Page() including this one.  It can only be set by the page class after all templates are made
+  public static $date_style = DATES_WHATEVER;  // Will get from the page
   /** @psalm-suppress PropertyNotSetInConstructor */
   protected $rawtext;  // Must start out as unset
   public $last_searched_doi = '';
@@ -51,8 +51,7 @@ final class Template {
                'jstor'    => array(),
                'zotero'   => array(),
             );
-  private const DEFAULT_STYLE = ' param=val ';
-
+  
   function __construct() {
      ;  // All the real construction is done in parse_text() and above in variable initialization
   }
@@ -174,16 +173,22 @@ final class Template {
     $this->no_initial_doi = $this->blank('doi');
 
     if (!$this->blank(['publisher', 'location', 'publication-place', 'place'])) $this->had_initial_publisher = TRUE;
-    $example = self::DEFAULT_STYLE;
+ 
     if (isset($this->param[0])) {
         // Use second param as a template if present, in case first pair
         // is last1 = Smith | first1 = J.\n
         $example = $this->param[isset($this->param[1]) ? 1 : 0]->parsed_text();
         $example = preg_replace('~[^\s=][^=]*[^\s=]~u', 'X', $example); // Collapse strings
         $example = preg_replace('~ +~u', ' ', $example); // Collapse spaces
-        // Check if messed up
-        if (substr_count($example, '=') !== 1) $example = self::DEFAULT_STYLE;
-        if (substr_count($example, "\n") > 1 ) $example = self::DEFAULT_STYLE;
+        // Check if messed up, and do not use bad styles
+        if ((substr_count($example, '=') !== 1) ||
+            (substr_count($example, "\n") > 1) ||
+            ($example === 'X=X') ||
+            ($example === 'X = X')) {
+           $example = ' X=X ';
+        }
+    } else {
+        $example = ' X=X ';
     }
     $this->example_param = $example;
 
@@ -918,9 +923,9 @@ final class Template {
         if (!$this->blank(['access-date', 'accessdate'])) return FALSE;
         $time = strtotime($value);
         if ($time) { // should come in cleaned up
-            if ($this->date_style === DATES_MDY) {
+            if (self::$date_style === DATES_MDY) {
                $value = date('F j, Y', $time);
-            } elseif ($this->date_style === DATES_DMY) {
+            } elseif (self::$date_style === DATES_DMY) {
                $value = date('j F Y', $time);
             }
             return $this->add('access-date', $value);
@@ -932,9 +937,9 @@ final class Template {
         if (!$this->blank(['archive-date', 'archivedate'])) return FALSE;
         $time = strtotime($value);
         if ($time) { // should come in cleaned up
-            if ($this->date_style === DATES_MDY) {
+            if (self::$date_style === DATES_MDY) {
                $value = date('F j, Y', $time);
-            } elseif ($this->date_style === DATES_DMY) {
+            } elseif (self::$date_style === DATES_DMY) {
                $value = date('j F Y', $time);
             }
             return $this->add('archive-date', $value);
@@ -955,12 +960,12 @@ final class Template {
         if (preg_match("~^\d{4}$~", sanitize_string($value))) {
           // Not adding any date data beyond the year, so 'year' parameter is more suitable
           $param_name = "year";
-        } elseif ($this->date_style !== DATES_WHATEVER || preg_match('~^\d{4}\-\d{2}\-\d{2}$~', $value)) {
+        } elseif (self::$date_style !== DATES_WHATEVER || preg_match('~^\d{4}\-\d{2}\-\d{2}$~', $value)) {
           $time = strtotime($value);
           if ($time) {
             $day = date('d', $time);
             if ($day !== '01') { // Probably just got month and year if day=1
-              if ($this->date_style === DATES_MDY) {
+              if (self::$date_style === DATES_MDY) {
                  $value = date('F j, Y', $time);
               } else { // DATES_DMY and make DATES_WHATEVER pretty
                  $value = date('j F Y', $time);
@@ -1411,9 +1416,9 @@ final class Template {
         }
         $time = strtotime($value);
         if ($time) { // paranoid
-            if ($this->date_style === DATES_MDY) {
+            if (self::$date_style === DATES_MDY) {
                $value = date('F j, Y', $time);
-            } elseif ($this->date_style === DATES_DMY) {
+            } elseif (self::$date_style === DATES_DMY) {
                $value = date('j F Y', $time);
             }
         }
@@ -1430,7 +1435,7 @@ final class Template {
         $check_date = $last_day - 126000;
         // @codeCoverageIgnoreStart
         if (($the_new > $last_day) && ($existing < $check_date)) {
-            if ($this->date_style === DATES_MDY) {
+            if (self::$date_style === DATES_MDY) {
                return $this->add($param_name, date('F j, Y', $last_day));
             } else {
                return $this->add($param_name, date('j F Y', $last_day));
@@ -1757,14 +1762,9 @@ final class Template {
     if ($results[1] == 1) {
       // Double check title if we did not use DOI
       if ($this->has('title') && !in_array('doi', $results[2])) {
-        $url = "https://eutils.ncbi.nlm.nih.gov/entrez/eutils/esummary.fcgi?tool=WikipediaCitationBot&email=" . PUBMEDUSERNAME . "&db=pubmed&id=" . $results[0];
         usleep(100000); // Wait 1/10 of a second since we just tried
-        $xml = @simplexml_load_file($url);
-        if ($xml === FALSE) {
-          sleep(3);                                     // @codeCoverageIgnore
-          $xml = @simplexml_load_file($url);            // @codeCoverageIgnore
-        }
-        if ($xml === FALSE || !is_object($xml->DocSum->Item)) {
+        $xml = get_entrez_xml('pubmed', $results[0]);
+        if ($xml === NULL || !is_object($xml->DocSum->Item)) {
           report_inline("Unable to query pubmed.");     // @codeCoverageIgnore
           return;                                       // @codeCoverageIgnore
         }
@@ -1802,7 +1802,7 @@ final class Template {
  *
  */
     if ($doi = $this->get_without_comments_and_placeholders('doi')) {
-      if (!strpos($doi, "[") && !strpos($doi, "<") && doi_works($doi)) { // Doi's with square brackets and less/greater than cannot search PUBMED (yes, we asked).
+      if (doi_works($doi)) {
         $results = $this->do_pumbed_query(array("doi"));
         if ($results[1] !== 0) return $results; // If more than one, we are doomed
       }
@@ -1897,15 +1897,10 @@ final class Template {
       }
     }
     $query = substr($query, 5); // Chop off initial " AND "
-    $url = "https://eutils.ncbi.nlm.nih.gov/entrez/eutils/esearch.fcgi?db=pubmed&tool=WikipediaCitationBot&email=" . PUBMEDUSERNAME . "&term=$query";
     usleep(20000); // Wait 1/50 of a second since we probably just tried
-    $xml = @simplexml_load_file($url);
+    $xml = get_entrez_xml('esearch_pubmed', $query);
     // @codeCoverageIgnoreStart
-    if ($xml === FALSE) {
-      sleep(3);
-      $xml = @simplexml_load_file($url);
-    }
-    if ($xml === FALSE) {
+    if ($xml === NULL) {
       report_warning("no results.");
       return array('', 0);
     }
@@ -1942,19 +1937,16 @@ final class Template {
       return FALSE;                                                                              // @codeCoverageIgnore
     }
     if ($this->has('bibcode')) $this->record_api_usage('adsabs', 'bibcode');
-    if ($this->has('bibcode') && strpos($this->get('bibcode'), 'book') !== FALSE) {
-      return $this->expand_book_adsabs();
-    }
     if (strpos($this->get('doi'), '10.1093/') === 0) return FALSE;
     report_action("Checking AdsAbs database");
     if ($this->has('bibcode')) {
-      $result = $this->query_adsabs("identifier:" . urlencode('"' . $this->get('bibcode') . '"'));
+      $result = query_adsabs("identifier:" . urlencode('"' . $this->get('bibcode') . '"'));
     } elseif ($this->has('doi') && preg_match(REGEXP_DOI, $this->get_without_comments_and_placeholders('doi'), $doi)) {
-      $result = $this->query_adsabs("identifier:" . urlencode('"' .  $doi[0] . '"'));  // In DOI we trust
+      $result = query_adsabs("identifier:" . urlencode('"' .  $doi[0] . '"'));  // In DOI we trust
     } elseif ($this->has('eprint')) {
-      $result = $this->query_adsabs("identifier:" . urlencode('"' . $this->get('eprint') . '"'));
+      $result = query_adsabs("identifier:" . urlencode('"' . $this->get('eprint') . '"'));
     } elseif ($this->has('arxiv')) {
-      $result = $this->query_adsabs("identifier:" . urlencode('"' . $this->get('arxiv')  . '"')); // @codeCoverageIgnore
+      $result = query_adsabs("identifier:" . urlencode('"' . $this->get('arxiv')  . '"')); // @codeCoverageIgnore
     } else {
       $result = (object) array("numFound" => 0);
     }
@@ -1964,11 +1956,17 @@ final class Template {
       return FALSE;                                           // @codeCoverageIgnore
     }
 
+    if ($this->has('bibcode') && strpos($this->get('bibcode'), 'book') !== FALSE) {
+      return expand_book_adsabs($this, $result);
+    }
+    
     if ($result->numFound == 0) {
       // Avoid blowing through our quota
-      if ((!in_array($this->wikiname(), ['cite journal', 'citation', 'cite conference', 'cite book', 'cite arxiv', 'cite article'])) ||
-          ($this->wikiname() == 'cite book' && $this->has('isbn')) ||
-          ($this->wikiname() == 'citation' && $this->has('isbn') && $this->has('chapter')) ||
+      if ((!in_array($this->wikiname(), ['cite journal', 'citation', 'cite conference', 'cite book', 'cite arxiv', 'cite article'])) || // Unlikely to find anything
+          ($this->wikiname() == 'cite book' && $this->has('isbn')) ||     // "complete" enough for a book
+          ($this->wikiname() == 'citation' && $this->has('isbn') && $this->has('chapter')) ||  // "complete" enough for a book
+          ($this->has_good_free_copy()) ||  // Alreadly links out to something free
+          ($this->has('s2cid')) ||  // good enough, usually includes abstract and link to copy
           ($this->has('bibcode'))) // Must be GIGO
           {
             report_inline('no record retrieved.');                // @codeCoverageIgnore
@@ -1976,8 +1974,8 @@ final class Template {
           }
     }
 
-    if (($result->numFound != 1) && $this->has('title')) { // Do assume failure to find arXiv means that it is not there
-      $result = $this->query_adsabs("title:" . urlencode('"' .  trim(str_replace('"', ' ', $this->get_without_comments_and_placeholders("title"))) . '"'));
+    if (($result->numFound !== 1) && $this->has('title')) { // Do assume failure to find arXiv means that it is not there
+      $result = query_adsabs("title:" . urlencode('"' .  trim(str_replace('"', ' ', $this->get_without_comments_and_placeholders("title"))) . '"'));
       if ($result->numFound == 0) return FALSE;
       $record = $result->docs[0];
       if (titles_are_dissimilar($this->get_without_comments_and_placeholders("title"), $record->title[0])) {  // Considering we searched for title, this is very paranoid
@@ -1993,13 +1991,13 @@ final class Template {
       }
     }
 
-    if ($result->numFound != 1 && ($this->has('journal') || $this->has('issn'))) {
+    if ($result->numFound !== 1 && ($this->has('journal') || $this->has('issn'))) {
       $journal = $this->get('journal');
       // try partial search using bibcode components:
       $pages = $this->page_range();
       if (!$pages) return FALSE;
       if ($this->blank('volume') && !$this->year()) return FALSE;
-      $result = $this->query_adsabs(
+      $result = query_adsabs(
           ($this->has('journal') ? "pub:" . urlencode('"' . remove_brackets($journal) . '"') : "&fq=issn:" . urlencode($this->get('issn')))
         . ($this->year() ? ("&fq=year:" . urlencode($this->year())) : '')
         . ($this->has('volume') ? ("&fq=volume:" . urlencode('"' . $this->get('volume') . '"')) : '')
@@ -2081,56 +2079,7 @@ final class Template {
         report_info("Updating " . bibcode_link($this->get('bibcode')) . " to " .  bibcode_link((string) $record->bibcode));
         $this->set('bibcode', (string) $record->bibcode); // The bibcode has been updated
       }
-      $this->add_if_new('title', (string) $record->title[0]); // add_if_new will format the title text and check for unknown
-      $i = 0;
-      if (isset($record->author)) {
-       foreach ($record->author as $author) {
-        $this->add_if_new('author' . (string) ++$i, $author);
-       }
-      }
-      if (isset($record->pub)) {
-        $journal_string = explode(",", (string) $record->pub);
-        $journal_start = mb_strtolower($journal_string[0]);
-        if (preg_match("~\bthesis\b~ui", $journal_start)) {
-          // Do nothing
-        } elseif (substr($journal_start, 0, 6) == "eprint") {        // This is outdated format.  Seems to not exists now
-          if (substr($journal_start, 0, 13) == "eprint arxiv:") {      //@codeCoverageIgnore
-            if (isset($record->arxivclass)) $this->add_if_new('class', (string) $record->arxivclass);  //@codeCoverageIgnore
-            $this->add_if_new('arxiv', substr($journal_start, 13));                                     //@codeCoverageIgnore
-          }
-        } else {
-          $this->add_if_new('journal', $journal_string[0]);
-        }
-      }
-      if (isset($record->page)) {
-         $tmp = implode($record->page);
-         if ((stripos($tmp, 'arxiv') !== FALSE) || (strpos($tmp, '/') !== FALSE)) {  // Bad data
-          unset($record->page);
-          unset($record->volume);
-          unset($record->issue);
-         }
-       }
-      if (isset($record->volume)) $this->add_if_new('volume', (string) $record->volume);
-      if (isset($record->issue))  $this->add_if_new('issue', (string) $record->issue);
-      if (isset($record->year))   $this->add_if_new('year', preg_replace("~\D~", "", (string) $record->year));
-      if (isset($record->page)) {
-        $dum = implode('–', $record->page);
-        if (preg_match('~^[\-\–\d]+$~u', $dum)) {
-          $this->add_if_new('pages', $dum);
-        }
-        unset($record->page);
-      }
-      if (isset($record->identifier)) { // Sometimes arXiv is in journal (see above), sometimes here in identifier
-        foreach ($record->identifier as $recid) {
-          if(strtolower(substr($recid, 0, 6)) === 'arxiv:') {
-             if (isset($record->arxivclass)) $this->add_if_new('class', (string) $record->arxivclass);
-             $this->add_if_new('arxiv', substr($recid, 6));
-          }
-        }
-      }
-      if (isset($record->doi)) {
-        $this->add_if_new('doi', (string) $record->doi[0]);
-      }
+      process_bibcode_data($this, $record);
       return TRUE;
     } elseif ($result->numFound == 0) {                         // @codeCoverageIgnore
       report_inline('no record retrieved.');                    // @codeCoverageIgnore
@@ -2139,60 +2088,6 @@ final class Template {
       report_inline('multiple records retrieved.  Ignoring.');  // @codeCoverageIgnore
       return FALSE;                                             // @codeCoverageIgnore
     }
-  }
-
-  protected function expand_book_adsabs() : bool {
-    set_time_limit(120);
-    $matches = ['', '']; // prevent memory leak in some PHP versions
-    $return = FALSE;
-    $result = $this->query_adsabs("bibcode:" . urlencode('"' . $this->get('bibcode') . '"'));
-    if ($result->numFound == 1) {
-      $return = TRUE;
-      $record = $result->docs[0];
-      if (isset($record->year)) $this->add_if_new('year', preg_replace("~\D~", "", (string) $record->year));
-      if (isset($record->title)) $this->add_if_new('title', (string) $record->title[0]);
-      if ($this->blank(array_merge(FIRST_EDITOR_ALIASES, FIRST_AUTHOR_ALIASES, ['publisher']))) { // Avoid re-adding editors as authors, etc.
-       $i = 0;
-       if (isset($record->author)) {
-        foreach ($record->author as $author) {
-         $this->add_if_new('author' . (string) ++$i, $author);
-        }
-       }
-      }
-    }
-    if ($this->blank(['year', 'date']) && preg_match('~^(\d{4}).*book.*$~', $this->get('bibcode'), $matches)) {
-      $this->add_if_new('year', $matches[1]); // Fail safe code to grab a year directly from the bibcode itself
-    }
-    return $return;
-  }
-
-  // $options should be a series of field names, colons (optionally urlencoded), and
-  // URL-ENCODED search strings, separated by (unencoded) ampersands.
-  // Surround search terms in (url-encoded) ""s, i.e. doi:"10.1038/bla(bla)bla"
-  protected function query_adsabs(string $options) : object {
-    set_time_limit(120);
-    $rate_limit = [['', '', ''], ['', '', ''], ['', '', '']]; // prevent memory leak in some PHP versions
-    // API docs at https://github.com/adsabs/adsabs-dev-api/blob/master/Search_API.ipynb
-    if (AdsAbsControl::gave_up_yet()) return (object) array('numFound' => 0);
-    if (!PHP_ADSABSAPIKEY) return (object) array('numFound' => 0);
-
-      $ch = curl_init();
-      /** @psalm-suppress RedundantCondition */ /* PSALM thinks TRAVIS cannot be FALSE */
-      $adsabs_url = "https://" . (TRAVIS ? 'qa' : 'api')
-                  . ".adsabs.harvard.edu/v1/search/query"
-                  . "?q=$options&fl=arxiv_class,author,bibcode,doi,doctype,identifier,"
-                  . "issue,page,pub,pubdate,title,volume,year";
-      curl_setopt_array($ch,
-               [CURLOPT_HTTPHEADER => ['Authorization: Bearer ' . PHP_ADSABSAPIKEY],
-                CURLOPT_RETURNTRANSFER => TRUE,
-                CURLOPT_HEADER => TRUE,
-                CURLOPT_TIMEOUT => 20,
-                CURLOPT_USERAGENT => BOT_USER_AGENT,
-                CURLOPT_URL => $adsabs_url]);
-      $return = (string) @curl_exec($ch);
-      $response = Bibcode_Response_Processing($return, $ch, $adsabs_url);
-      curl_close($ch);
-    return $response;
   }
 
   public function expand_by_RIS(string &$dat, bool $add_url) : void { // Pass by pointer to wipe this data when called from use_unnamed_params()
@@ -2384,14 +2279,10 @@ final class Template {
             ($this->has('jstor') && $this->get('jstor-access') === 'free')
            ) return; // do not add url if have OA already.  Do indlude preprints in list
     if ($this->has('s2cid') || $this->has('S2CID')) return;
-    if (PHP_S2APIKEY) {
-      $context = stream_context_create(array('http'=>array('header'=>"x-api-key: " . PHP_S2APIKEY . "\r\n")));
-      $json = (string) @file_get_contents('https://partner.semanticscholar.org/v1/paper/' . $doi, FALSE, $context);
-    } else {
-      $json = (string) @file_get_contents('https://api.semanticscholar.org/v1/paper/' . $doi); // @codeCoverageIgnore
-    }
-    if ($json) {
-      $oa = @json_decode($json);
+    $context = stream_context_create(CONTEXT_S2);
+    $response = (string) @file_get_contents(HOST_S2 . '/v1/paper/' . $doi, FALSE, $context);
+    if ($response) {
+      $oa = @json_decode($response);
       if ($oa !== FALSE && isset($oa->url) && isset($oa->is_publisher_licensed) && $oa->is_publisher_licensed) {
         $this->get_identifiers_from_url($oa->url);
       }
@@ -2533,10 +2424,7 @@ final class Template {
         $has_url_already = $this->has($url_type);
         $this->add_if_new($url_type, $oa_url);  // Will check for PMCs etc hidden in URL
         if ($this->has($url_type) && !$has_url_already) {  // The above line might have eaten the URL and upgraded it
-          $context = stream_context_create(array(
-           'ssl' => ['verify_peer' => FALSE, 'verify_peer_name' => FALSE, 'allow_self_signed' => TRUE, 'security_level' => 0],
-           'http' => ['ignore_errors' => TRUE, 'max_redirects' => 40, 'timeout' => 20.0, 'follow_location' => 1,  'header'=> ['Connection: close'], "user_agent" => BOT_USER_AGENT]
-         )); // Allow crudy cheap journals
+          $context = stream_context_create(CONTEXT_INSECURE);
           $headers_test = @get_headers($this->get($url_type), GET_THE_HEADERS, $context);
           // @codeCoverageIgnoreStart
           if($headers_test ===FALSE) {
@@ -3231,7 +3119,7 @@ final class Template {
     }
     if (preg_match_all('~' . sprintf(Self::PLACEHOLDER_TEXT, '(\d+)') . '~', $id, $matches)) {
       for ($i = 0; $i < count($matches[1]); $i++) {
-        $subtemplate = $this->all_templates[$matches[1][$i]];
+        $subtemplate = self::$all_templates[$matches[1][$i]];
         $subtemplate_name = $subtemplate->wikiname();
         switch($subtemplate_name) {
           case "arxiv":
@@ -6931,7 +6819,7 @@ final class Template {
   protected function get_inline_doi_from_title() : void {
      $match = ['', '']; // prevent memory leak in some PHP versions
      if (preg_match("~(?:\s)*(?:# # # CITATION_BOT_PLACEHOLDER_TEMPLATE )(\d+)(?: # # #)(?:\s)*~", $this->get('title'), $match)) {
-       if ($inline_doi = $this->all_templates[$match[1]]->inline_doi_information()) {
+       if ($inline_doi = self::$all_templates[$match[1]]->inline_doi_information()) {
          if ($this->add_if_new('doi', trim($inline_doi[0]))) { // Add doi
            $this->set('title', trim($inline_doi[1]));
            quietly('report_modification', "Converting inline DOI to DOI parameter");
@@ -7327,7 +7215,7 @@ final class Template {
      $tmp = $this->parsed_text();
      while (preg_match_all('~' . sprintf(Self::PLACEHOLDER_TEXT, '(\d+)') . '~', $tmp, $matches)) {	
        for ($i = 0; $i < count($matches[1]); $i++) {	
-         $subtemplate = $this->all_templates[$matches[1][$i]];	
+         $subtemplate = self::$all_templates[$matches[1][$i]];	
          $tmp = str_replace($matches[0][$i], $subtemplate->parsed_text(), $tmp);	
        }	
      }	
