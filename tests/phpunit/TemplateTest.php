@@ -5371,7 +5371,7 @@ T1 - This is the Title }}';
    } 
 
    public function testMusicDOIsL() : void {
-    $text = "{{cite web|url=https://www.oxfordmusiconline.com/grovemusic/view/10.1093/gmo/9781561592630.001.0001/omo-9781561592630-e-4002232256|doi=10.0000/Rubbish_bot_failure_testy|doi-broken-date=Y}}";
+    $text = "{{cite web|url=https://www.oxfordmusiconline.com/grovemusic/view/10.1093/gmo/9781561592630.001.0001/omo-9781561592630-e-4002232256|doi=10.0000/Rubbish_bot_failure_test|doi-broken-date=Y}}";
     $template = $this->make_citation($text);
     $template->tidy_parameter('url');
     $this->assertSame('10.1093/gmo/9781561592630.article.L2232256', $template->get2('doi'));
