@@ -100,8 +100,10 @@ define("PHP_ADSABSAPIKEY", (string) getenv("PHP_ADSABSAPIKEY"));
 
 if ((string) getenv("PHP_S2APIKEY") !== "") {
    define("S2_CONTEXT", stream_context_create(array('http'=>array('header'=>"x-api-key: " . (string) getenv("PHP_S2APIKEY") . "\r\n"))));
+   define("S2_HOST", 'https://partner.semanticscholar.org/');
 } else {
    define("S2_CONTEXT", stream_context_create(array()));
+   define("S2_HOST", 'https://api.semanticscholar.org/');
 }
 
 function check_blocked() : void {
