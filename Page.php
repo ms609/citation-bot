@@ -254,10 +254,8 @@ class Page {
       $this->text = $this->start_text;
       return FALSE;
     }
-    for ($i = 0; $i < count($all_templates); $i++) {
-       $all_templates[$i]->all_templates = &$all_templates; // Pointer to avoid MASSSIVE memory leak on crazy pages
-       $all_templates[$i]->date_style = $this->date_style;
-    }
+    Template::$all_templates = &$all_templates; // Pointer to save memory
+    Template::$date_style = $this->date_style;
     for ($i = 0; $i < count($all_templates); $i++) {
       if ($all_templates[$i]->wikiname() === 'void') {
         $all_templates[$i]->block_modifications();
@@ -412,11 +410,9 @@ class Page {
     unset($our_templates_ieee);
     
     $this->replace_object($all_templates);
-    // remove circular memory reference that makes garbage collection hard (all templates have an array of all templates)
-    for ($i = 0; $i < count($all_templates); $i++) {
-       set_time_limit(120);
-       unset($all_templates[$i]->all_templates);
-    }
+    // remove circular memory reference that makes garbage collection harder and reset
+    Template::$all_templates = NULL;
+    Template::$date_style = DATES_WHATEVER;
     unset($all_templates);
 
     $this->text = preg_replace('~(\{\{[Cc]ite ODNB\s*\|[^\{\}\_]+_?[^\{\}\_]+\}\}\s*)\{\{ODNBsub\}\}~u', '$1', $this->text); // Allow only one underscore to shield us from MATH etc.
@@ -597,7 +593,7 @@ class Page {
   }
   
   public function extract_object(string $class) : array {
-    $match = ['', '']; // Avoid PHP memory leak bug by initializing it
+    $match = ['', '']; // prevent memory leak in some PHP versions
     $i = 0;
     $text = $this->text;
     $regexp_in = $class::REGEXP;

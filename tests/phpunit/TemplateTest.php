@@ -104,7 +104,13 @@ final class TemplateTest extends testBaseClass {
     $text = "{{cite document|doi=XXX/978-XXX}}";
     $expanded = $this->process_citation($text);
     $this->assertSame("cite book", $expanded->wikiname());
-    $this->assertNotNull($expanded->get2('doi-broken-date'));
+    $this->assertNotNull($expanded->get2('doi-broken-date')); // This one gets "move perm.." from dx.doi.org, and is bogus
+  }
+ 
+  public function testDOIsMovedStillOkay() : void { // This one gets "move perm.." from dx.doi.org, and works
+    $text = "{{cite journal|doi=10.1016/j.chaos.2004.07.021}}";
+    $expanded = $this->process_citation($text);
+    $this->assertNull($expanded->get2('doi-broken-date'));
   }
  
   public function testHDLnotBroken() {
@@ -1701,7 +1707,7 @@ final class TemplateTest extends testBaseClass {
   public function testId2Param5() : void {
       $text = '{{cite book|pages=1–2|id={{arxiv|astr.ph|1234.5678}}}}{{cite book|pages=1–3|id={{arxiv|astr.ph|1234.5678}}}}'; // Two of the same sub-template, but in different tempalates
       $expanded = $this->process_page($text);
-      $this->assertSame('{{cite book|pages=1–2|arxiv=astr.ph/1234.5678}}{{cite book|pages=1–3|arxiv=astr.ph/1234.5678}}', $expanded->parsed_text());
+      $this->assertSame('{{cite book|pages=1–2| arxiv=astr.ph/1234.5678 }}{{cite book|pages=1–3| arxiv=astr.ph/1234.5678 }}', $expanded->parsed_text());
   }
   
   public function testNestedTemplates1() : void {
@@ -2162,6 +2168,7 @@ T1 - This is the Title }}';
       $code_coverage1  = '{{Citation |
 %0 Journal Article
 %T This Title
+%R NOT_A_DOI
 %@ 9999-9999}}';
    
       $code_coverage2  = '{{Citation |
@@ -2194,6 +2201,7 @@ T1 - This is the Title }}';
        $prepared = $this->process_citation($code_coverage1);
        $this->assertSame('This Title', $prepared->get2('title'));;
        $this->assertSame('9999-9999', $prepared->get2('issn'));
+       $this->assertNull($prepared->get2('doi'));
    
        $prepared = $this->process_citation($code_coverage2);
        $this->assertSame('This Title', $prepared->get2('title'));;
@@ -3269,21 +3277,21 @@ T1 - This is the Title }}';
   }
  
    public function testVolumeIssueDemixing11() : void {
-    $text = '{{cite journal|volume = number 12|doi=XYZ}}';
+    $text = '{{cite journal|volume = number 12|doi=10.0000/Rubbish_bot_failure_test}}';
     $prepared = $this->prepare_citation($text);
     $this->assertSame('12', $prepared->get2('issue'));
     $this->assertNull($prepared->get2('volume'));
   }
  
   public function testVolumeIssueDemixing12() : void {
-    $text = '{{cite journal|volume = number 12|issue=12|doi=XYZ}}';
+    $text = '{{cite journal|volume = number 12|issue=12|doi=10.0000/Rubbish_bot_failure_test}}';
     $prepared = $this->prepare_citation($text);
     $this->assertNull($prepared->get2('volume'));
     $this->assertSame('12', $prepared->get2('issue'));
   }
  
   public function testVolumeIssueDemixing13() : void {
-    $text = '{{cite journal|volume = number 12|issue=12|doi=XYZ}}';
+    $text = '{{cite journal|volume = number 12|issue=12|doi=10.0000/Rubbish_bot_failure_test}}';
     $prepared = $this->prepare_citation($text);
     $this->assertNull($prepared->get2('volume'));
     $this->assertSame('12', $prepared->get2('issue'));
@@ -4411,17 +4419,17 @@ T1 - This is the Title }}';
   public function testArchiveDate() : void {
     $text = "{{cite journal}}";
     $template = $this->make_citation($text);
-    $template->date_style = DATES_MDY;
+    Template::$date_style = DATES_MDY;
     $this->assertTrue($template->add_if_new('archive-date', '20 JAN 2010'));
     $this->assertSame('January 20, 2010', $template->get2('archive-date'));
     $text = "{{cite journal}}";
     $template = $this->make_citation($text);
-    $template->date_style = DATES_DMY;       
+    Template::$date_style = DATES_DMY;       
     $this->assertTrue($template->add_if_new('archive-date', '20 JAN 2010'));
     $this->assertSame('20 January 2010', $template->get2('archive-date'));
     $text = "{{cite journal}}";
     $template = $this->make_citation($text);
-    $template->date_style = DATES_WHATEVER;   
+    Template::$date_style = DATES_WHATEVER;   
     $this->assertTrue($template->add_if_new('archive-date', '20 JAN 2010'));
     $this->assertSame('20 JAN 2010', $template->get2('archive-date'));
     $text = "{{cite journal}}";
@@ -4439,7 +4447,7 @@ T1 - This is the Title }}';
   public function testAccessDate1() : void {
     $text = "{{cite journal|url=XXX}}";
     $template = $this->make_citation($text);
-    $template->date_style = DATES_MDY;
+    Template::$date_style = DATES_MDY;
     $this->assertTrue($template->add_if_new('access-date', '20 JAN 2010'));
     $this->assertSame('January 20, 2010', $template->get2('access-date'));
   }
@@ -4447,7 +4455,7 @@ T1 - This is the Title }}';
   public function testAccessDate2() : void {
     $text = "{{cite journal|url=XXX}}";
     $template = $this->make_citation($text);
-    $template->date_style = DATES_DMY;       
+    Template::$date_style = DATES_DMY;       
     $this->assertTrue($template->add_if_new('access-date', '20 JAN 2010'));
     $this->assertSame('20 January 2010', $template->get2('access-date'));
   }
@@ -4455,7 +4463,7 @@ T1 - This is the Title }}';
   public function testAccessDate3() : void {
     $text = "{{cite journal|url=XXX}}";
     $template = $this->make_citation($text);
-    $template->date_style = DATES_WHATEVER;   
+    Template::$date_style = DATES_WHATEVER;   
     $this->assertTrue($template->add_if_new('access-date', '20 JAN 2010'));
     $this->assertSame('20 JAN 2010', $template->get2('access-date'));
   }
@@ -4679,7 +4687,7 @@ T1 - This is the Title }}';
   public function testAddBrokenDateFormat2() : void {
     $text = "{{cite journal|doi=10.0000/Rubbish_bot_failure_test}}";
     $template = $this->make_citation($text);
-    $template->date_style = DATES_MDY;
+    Template::$date_style = DATES_MDY;
     $this->assertTrue($template->add_if_new('doi-broken-date', '1 DEC 2019'));
     $this->assertSame('December 1, 2019', $template->get2('doi-broken-date'));
   }
@@ -4687,7 +4695,7 @@ T1 - This is the Title }}';
   public function testAddBrokenDateFormat3() : void {
     $text = "{{cite journal|doi=10.0000/Rubbish_bot_failure_test}}";
     $template = $this->make_citation($text);
-    $template->date_style = DATES_DMY;
+    Template::$date_style = DATES_DMY;
     $this->assertTrue($template->add_if_new('doi-broken-date', '1 DEC 2019'));
     $this->assertSame('1 December 2019', $template->get2('doi-broken-date'));
   }
@@ -5272,7 +5280,7 @@ T1 - This is the Title }}';
     $this->assertSame('978-0-19-861412-8', $template->get2('isbn'));
     $this->assertNull($template->get2('doi-broken-date'));
     
-    $text = "{{cite web|url=https://www.oxforddnb.com/view/10.1093/odnb/9780198614128.001.0001/odnb-9780198614128-e-108196|doi=X|doi-broken-date=Y|title=Joe Blow - Oxford Dictionary of National Biography}}";
+    $text = "{{cite web|url=https://www.oxforddnb.com/view/10.1093/odnb/9780198614128.001.0001/odnb-9780198614128-e-108196|doi=10.0000/Rubbish_bot_failure_test|doi-broken-date=Y|title=Joe Blow - Oxford Dictionary of National Biography}}";
     $template = $this->make_citation($text);
     $template->tidy_parameter('url');
     $this->assertSame('10.1093/odnb/9780198614128.013.108196', $template->get2('doi'));
@@ -5363,7 +5371,7 @@ T1 - This is the Title }}';
    } 
 
    public function testMusicDOIsL() : void {
-    $text = "{{cite web|url=https://www.oxfordmusiconline.com/grovemusic/view/10.1093/gmo/9781561592630.001.0001/omo-9781561592630-e-4002232256|doi=10.0000/Rubbish_bot_failure_testy|doi-broken-date=Y}}";
+    $text = "{{cite web|url=https://www.oxfordmusiconline.com/grovemusic/view/10.1093/gmo/9781561592630.001.0001/omo-9781561592630-e-4002232256|doi=10.0000/Rubbish_bot_failure_test|doi-broken-date=Y}}";
     $template = $this->make_citation($text);
     $template->tidy_parameter('url');
     $this->assertSame('10.1093/gmo/9781561592630.article.L2232256', $template->get2('doi'));
@@ -5806,14 +5814,14 @@ T1 - This is the Title }}';
   }
  
   public function testVolumeIssueDemixing21() : void {
-    $text = '{{cite journal|issue = volume 12|doi=XYZ}}';
+    $text = '{{cite journal|issue = volume 12|doi=10.0000/Rubbish_bot_failure_test}}';
     $prepared = $this->prepare_citation($text);
     $this->assertSame('12', $prepared->get2('volume'));
     $this->assertNull($prepared->get2('issue'));
   }
  
   public function testVolumeIssueDemixing22() : void {
-    $text = '{{cite journal|issue = volume 12XX|volume=12XX|doi=XYZ}}';
+    $text = '{{cite journal|issue = volume 12XX|volume=12XX|doi=10.0000/Rubbish_bot_failure_test}}';
     $prepared = $this->prepare_citation($text);
     $this->assertSame('12XX', $prepared->get2('volume'));
     $this->assertNull($prepared->get2('issue'));
@@ -6347,10 +6355,10 @@ T1 - This is the Title }}';
     public function testIDconvert13() : void {
      $text = '{{cite journal|id=<small>{{MR|396410}}</small>}}';
      $page = $this->process_page($text);
-     $this->assertSame('{{cite journal|mr=396410}}', $page->parsed_text());
+     $this->assertSame('{{cite journal| mr=396410 }}', $page->parsed_text());
      $text = '{{cite journal|id=<small> </small>{{MR|396410}}}}';
      $page = $this->process_page($text);
-     $this->assertSame('{{cite journal|mr=396410}}', $page->parsed_text());
+     $this->assertSame('{{cite journal| mr=396410 }}', $page->parsed_text());
     }
  
    public function testCAPS() : void {
@@ -6462,15 +6470,15 @@ T1 - This is the Title }}';
    public function testDateStyles() : void {
      $text = '{{cite web}}';
      $template = $this->make_citation($text);
-     $template->date_style = DATES_MDY;
+     Template::$date_style = DATES_MDY;
      $template->add_if_new('date', '12-02-2019');
      $this->assertSame('February 12, 2019', $template->get2('date'));
      $template = $this->make_citation($text);
-     $template->date_style = DATES_DMY;
+     Template::$date_style = DATES_DMY;
      $template->add_if_new('date', '12-02-2019');
      $this->assertSame('12 February 2019', $template->get2('date'));
      $template = $this->make_citation($text);
-     $template->date_style = DATES_WHATEVER;
+     Template::$date_style = DATES_WHATEVER;
      $template->add_if_new('date', '12-02-2019');
      $this->assertSame('12-02-2019', $template->get2('date'));
    }
@@ -6893,18 +6901,18 @@ T1 - This is the Title }}';
   }
  
    public function testDontDoIt() : void { // "complete" already
-     $text = '{{cite journal|title=X|journal=X|issue=X|volume=X|pages=12-34|year=1980|last2=Him|doi=X|bibcode=X|last1=X|first1=X}}';
+     $text = '{{cite journal|title=X|journal=X|issue=X|volume=X|pages=12-34|year=1980|last2=Him|doi=10.0000/Rubbish_bot_failure_test|bibcode=X|last1=X|first1=X}}';
      $template = $this->make_citation($text);
      $this->assertFalse($template->incomplete());
-     $text = '{{cite journal|title=X|periodical=X|issue=X|volume=X|pages=12-34|year=1980|last2=Him|doi=X|bibcode=X|last1=X|first1=X}}';
+     $text = '{{cite journal|title=X|periodical=X|issue=X|volume=X|pages=12-34|year=1980|last2=Him|doi=10.0000/Rubbish_bot_failure_test|bibcode=X|last1=X|first1=X}}';
      $template = $this->make_citation($text);
      $this->assertFalse($template->incomplete());
   
      $this->requires_bibcode(function() : void {
-      $text = '{{cite journal|title=X|journal=X|issue=X|volume=X|pages=12-34|year=1980|last2=Him|doi=X|bibcode=X|last1=X|first1=X}}';
+      $text = '{{cite journal|title=X|journal=X|issue=X|volume=X|pages=12-34|year=1980|last2=Him|doi=10.0000/Rubbish_bot_failure_test|bibcode=X|last1=X|first1=X}}';
       $template = $this->make_citation($text);
       $this->assertFalse($template->expand_by_adsabs());
-      $text = '{{cite journal|title=X|periodical=X|issue=X|volume=X|pages=12-34|year=1980|last2=Him|doi=X|bibcode=X|last1=X|first1=X}}';
+      $text = '{{cite journal|title=X|periodical=X|issue=X|volume=X|pages=12-34|year=1980|last2=Him|doi=10.0000/Rubbish_bot_failure_test|bibcode=X|last1=X|first1=X}}';
       $template = $this->make_citation($text);
       $this->assertFalse($template->expand_by_adsabs());
      });
@@ -7396,6 +7404,118 @@ T1 - This is the Title }}';
    public function testAddCodeIfThisFails() : void { // Add more oxford code, if these start to work
       $this->AssertFalse(doi_works('10.1093/acref/9780199208951.013.q-author-00005-00000991')); // https://www.oxfordreference.com/view/10.1093/acref/9780199208951.001.0001/q-author-00005-00000991
       $this->AssertFalse(doi_works('10.1093/oao/9781884446054.013.8000020158')); // https://www.oxfordartonline.com/groveart/view/10.1093/gao/9781884446054.001.0001/oao-9781884446054-e-8000020158
-    
    }
+ 
+   public function testGoogleBooksCleanup1() : void {
+      $text = "{{cite LSA|url=https://books.google.com/booksid=12345}}";
+      $expanded = $this->process_citation($text);
+      $this->AssertSame('https://books.google.com/books?id=12345', $expanded->get2('url'));
+   }
+   public function testGoogleBooksCleanup2() : void {
+      $text = "{{cite LSA|url=https://books.google.com/books?vid=12345}}";
+      $expanded = $this->process_citation($text);
+      $this->AssertSame('https://books.google.com/books?id=12345', $expanded->get2('url'));
+   }
+   public function testGoogleBooksCleanup3() : void {
+      $text = "{{cite LSA|url=https://books.google.com/books?qid=12345}}";
+      $expanded = $this->process_citation($text);
+      $this->AssertSame('https://books.google.com/books?id=12345', $expanded->get2('url'));
+   }
+   public function testGoogleBooksCleanup4() : void {
+      $text = "{{cite LSA|url=https://books.google.com/?id=12345}}";
+      $expanded = $this->process_citation($text);
+      $this->AssertSame('https://books.google.com/books?id=12345', $expanded->get2('url'));
+   }
+   public function testGoogleBooksCleanup5() : void {
+      $text = "{{cite LSA|url=https://books.google.uk.co/books?isbn=12345}}";
+      $expanded = $this->process_citation($text);
+      $this->AssertSame('https://books.google.com/books?isbn=12345', $expanded->get2('url'));
+    }
+ 
+    public function testGoogleBooksHashCleanup1() : void {
+      $text = "{{cite LSA|url=https://books.google.com/books?id=12345&q=xyz#q=abc}}";
+      $expanded = $this->process_citation($text);
+      $this->AssertSame('https://books.google.com/books?id=12345&q=abc', $expanded->get2('url'));
+    }
+ 
+    public function testGoogleBooksHashCleanup2() : void {
+      $text = "{{cite LSA|url=https://books.google.com/books?id=12345&dq=xyz#q=abc}}";
+      $expanded = $this->process_citation($text);
+      $this->AssertSame('https://books.google.com/books?id=12345&q=abc', $expanded->get2('url'));
+    }
+
+    public function testGoogleBooksHashCleanup3() : void {
+      $text = "{{cite LSA|url=https://books.google.com/books?id=12345&dq=abc#q=abc}}";
+      $expanded = $this->process_citation($text);
+      $this->AssertSame('https://books.google.com/books?id=12345&q=abc', $expanded->get2('url'));
+    }
+
+    public function testGoogleBooksHashCleanup4() : void {
+      $text = "{{cite LSA|url=https://books.google.com/books?id=12345#q=abc}}";
+      $expanded = $this->process_citation($text);
+      $this->AssertSame('https://books.google.com/books?id=12345&q=abc', $expanded->get2('url'));
+    }
+
+    public function testGoogleBooksHashCleanup5() : void {
+      $text = "{{cite LSA|url=https://books.google.com/books?id=12345&vq=abc}}";
+      $expanded = $this->process_citation($text);
+      $this->AssertSame('https://books.google.com/books?id=12345&q=abc', $expanded->get2('url'));
+    }
+ 
+    public function testGoogleBooksHashCleanup6() : void {
+      $text = "{{cite LSA|url=https://books.google.com/books?id=12345&vq=abc&pg=3214&q=xyz}}";
+      $expanded = $this->process_citation($text);
+      $this->AssertSame('https://books.google.com/books?id=12345&q=abc&pg=3214', $expanded->get2('url'));
+    }
+ 
+    public function testGoogleBooksHashCleanup7() : void {
+      $text = "{{cite LSA|url=https://books.google.com/books?id=12345&lpg=1234}}";
+      $expanded = $this->process_citation($text);
+      $this->AssertSame('https://books.google.com/books?id=12345&pg=1234', $expanded->get2('url'));
+    }
+
+    public function testGoogleBooksHashCleanup8() : void {
+      $text = "{{cite LSA|url=https://books.google.com/books?id=12345&q=isbn}}";
+      $expanded = $this->process_citation($text);
+      $this->AssertSame('https://books.google.com/books?id=12345&q=isbn', $expanded->get2('url'));
+     
+      $text = "{{cite LSA|url=https://books.google.com/books?id=12345&q=isbn1234}}";
+      $expanded = $this->process_citation($text);
+      $this->AssertSame('https://books.google.com/books?id=12345', $expanded->get2('url'));
+     
+      $text = "{{cite LSA|url=https://books.google.com/books?id=12345&q=inauthor:34123123}}";
+      $expanded = $this->process_citation($text);
+      $this->AssertSame('https://books.google.com/books?id=12345', $expanded->get2('url'));
+    }
+
+    public function testGoogleBooksHashCleanup9() : void {
+      $text = "{{cite LSA|url=https://books.google.com/books?id=12345&dq=isbn}}";
+      $expanded = $this->process_citation($text);
+      $this->AssertSame('https://books.google.com/books?id=12345&q=isbn', $expanded->get2('url'));
+
+      $text = "{{cite LSA|url=https://books.google.com/books?id=12345&dq=isbn1234}}";
+      $expanded = $this->process_citation($text);
+      $this->AssertSame('https://books.google.com/books?id=12345', $expanded->get2('url'));
+     
+      $text = "{{cite LSA|url=https://books.google.com/books?id=12345&dq=inauthor:34123123}}";
+      $expanded = $this->process_citation($text);
+      $this->AssertSame('https://books.google.com/books?id=12345', $expanded->get2('url'));
+    }
+ 
+    public function testGoogleBooksHashCleanup10() : void {
+      $text = "{{cite LSA|url=https://books.google.com/books?id=12345&d=ser&pg=3241&lpg=321&article_id=3241&sitesec=reviews}}";
+      $expanded = $this->process_citation($text);
+      $this->AssertSame('https://books.google.com/books?id=12345&sitesec=reviews', $expanded->get2('url'));
+    }
+ 
+    public function testGoogleBooksHashCleanup11() : void {
+      $text = "{{cite LSA|url=https://books.google.com/books?id=12345&article_id=3241}}";
+      $expanded = $this->process_citation($text);
+      $this->AssertSame('https://books.google.com/books?id=12345&article_id=3241', $expanded->get2('url'));
+
+      $text = "{{cite LSA|url=https://books.google.com/books?id=12345&article_id=3241&q=huh}}";
+      $expanded = $this->process_citation($text);
+      $this->AssertSame('https://books.google.com/books?id=12345&q=huh&article_id=3241#v=onepage', $expanded->get2('url'));
+    }
+
 }

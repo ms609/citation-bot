@@ -38,20 +38,13 @@ function entrez_api(array $ids, array &$templates, string $db) : bool {   // Poi
   $get_template = function(int $template_key) use($templates) : Template { // Only exists to make static tools understand this is a Template() type
        return $templates[$template_key];
   };
-  
-  $url = "https://eutils.ncbi.nlm.nih.gov/entrez/eutils/esummary.fcgi?tool=WikipediaCitationBot&email=" . PUBMEDUSERNAME . "&db=$db&id=" 
-               . implode(',', $ids);
+
   report_action("Using $db API to retrieve publication details: ");
+  $xml = get_entrez_xml($db, implode(',', $ids));
   
-  $xml = @simplexml_load_file($url);
-  
-  if (!is_object($xml)) {
-    sleep(2);
-    $xml = @simplexml_load_file($url);
-    if (!is_object($xml)) {
-      report_warning("Error in PubMed search: No response from Entrez server");   // @codeCoverageIgnore
-      return FALSE;                                                               // @codeCoverageIgnore
-    }
+  if ($xml === NULL) {
+    report_warning("Error in PubMed search: No response from Entrez server");   // @codeCoverageIgnore
+    return FALSE;                                                               // @codeCoverageIgnore
   }
 
   // A few PMC do not have any data, just pictures of stuff
@@ -282,12 +275,8 @@ function adsabs_api(array $ids, array &$templates, string $identifier) : bool { 
   if (count($ids) == 0) return FALSE;
   
   foreach ($ids as $key => $bibcode) {
-    if (strpos($bibcode, 'book') !== false) {
-        unset($ids[$key]);
-    } elseif (stripos($bibcode, 'CITATION') !== false) {
+    if (stripos($bibcode, 'CITATION') !== FALSE) {
         unset($ids[$key]);  // @codeCoverageIgnore
-    } elseif (strpos($bibcode, '&') !== false) {
-        unset($ids[$key]);
     }
   }
   if (count($ids) < 5) {
@@ -296,19 +285,11 @@ function adsabs_api(array $ids, array &$templates, string $identifier) : bool { 
     }
     return TRUE;
   }
-  // do ones the big API does not do
-  foreach ($templates as $template) {
-    if ((strpos($template->get('bibcode'), '&') !== false) || (strpos($template->get('bibcode'), 'book') !== false)) {
-      $template->expand_by_adsabs(); // This single bibcode API supports bibcodes with & in them, and special book code
-    }
-  }
 
   // Do not do big query if all templates are complete
   $NONE_IS_INCOMPLETE = TRUE;
   foreach ($templates as $template) {
     if ($template->has('bibcode')
-      && (strpos($template->get('bibcode'), '&') === false)
-      && (strpos($template->get('bibcode'), 'book') === false)
       && $template->incomplete()) {
       $NONE_IS_INCOMPLETE = FALSE;
       break;
@@ -333,7 +314,7 @@ function adsabs_api(array $ids, array &$templates, string $identifier) : bool { 
               CURLOPT_RETURNTRANSFER => TRUE,
               CURLOPT_HEADER => TRUE,
               CURLOPT_CUSTOMREQUEST => 'POST',
-              CURLOPT_POSTFIELDS => "$identifier\n" . str_replace("%0A", "\n", urlencode(implode("\n", $ids)))]);
+              CURLOPT_POSTFIELDS => "$identifier\n" . implode("\n", $ids)]);
     $return = (string) @curl_exec($ch);
     $response = Bibcode_Response_Processing($return, $ch, $adsabs_url);
     curl_close($ch);
@@ -355,64 +336,24 @@ function adsabs_api(array $ids, array &$templates, string $identifier) : bool { 
     report_info("Found match for bibcode " . bibcode_link($record->bibcode));
     $matched_ids[] = $record->bibcode;
     foreach($ids as $template_key => $an_id) { // Cannot use array_search since that only returns first
-    if ($an_id === (string) $record->bibcode) {
-    $this_template = $templates[$template_key];
-    $this_template->record_api_usage('adsabs', 'bibcode');
-    $this_template->add_if_new("title", (string) $record->title[0], 'adsabs'); // add_if_new will format the title text and check for unknown
-    $i = 0;
-    if (isset($record->author)) {
-     foreach ($record->author as $author) {
-      $this_template->add_if_new("author" . (string) ++$i, $author, 'adsabs');
-     }
-    }
-    if (isset($record->pub)) {
-      $journal_string = explode(",", (string) $record->pub);
-      $journal_start = mb_strtolower($journal_string[0]);
-      if (preg_match("~\bthesis\b~ui", $journal_start)) {
-        // Do nothing
-      } elseif (substr($journal_start, 0, 6) == "eprint") {  // Appears to no longer be used
-        if (substr($journal_start, 0, 13) == "eprint arxiv:" && isset($record->arxivclass)) {  // @codeCoverageIgnore
-          $this_template->add_if_new("class", (string) @$record->arxivclass, 'adsabs');                 // @codeCoverageIgnore
-        }
-      } else {
-        $this_template->add_if_new('journal', $journal_string[0], 'adsabs');
-      }          
-    }
-    if (isset($record->page)) {
-      $tmp = implode($record->page);
-      if ((stripos($tmp, 'arxiv') !== FALSE) || (strpos($tmp, '/') !== FALSE)) {  // Bad data
-       unset($record->page);
-       unset($record->volume);
-       unset($record->issue);
-      } elseif (preg_match('~[^A-Za-z]~', (string) $record->page)) { // Do not trust anything with letters
-       unset($record->page);
-      }
-    }
-    $this_template->add_if_new("volume", (string) @$record->volume, 'adsabs');
-    $this_template->add_if_new("issue", (string) @$record->issue, 'adsabs');
-    $this_template->add_if_new("year", preg_replace("~\D~", "", (string) @$record->year), 'adsabs');
-    if (isset($record->page)) {
-      $dum = implode('–', $record->page);
-      if (preg_match('~^[\-\–\d]+$~u', $dum)) {
-        $this_template->add_if_new("pages", $dum, 'adsabs');
-      }
-      unset($record->page);
-    }
-    if (isset($record->identifier)) { // Sometimes arXiv is in journal (see above), sometimes here in identifier
-      foreach ($record->identifier as $recid) {
-        $recid = (string) $recid;
-        if(strtolower(substr($recid, 0, 6)) === 'arxiv:') {
-           if (isset($record->arxivclass)) $this_template->add_if_new("class", (string) @$record->arxivclass, 'adsabs');
-           $this_template->add_if_new('arxiv', substr($recid, 6), 'adsabs');
+      if ($an_id === (string) $record->bibcode) {
+         $this_template = $templates[$template_key];
+         if (stripos($an_id, 'book') === FALSE) {
+           process_bibcode_data($this_template,  $record);
+         } else {
+           expand_book_adsabs($this_template, $record);
         }
       }
-    }
-    }
     }
   }
   $unmatched_ids = array_diff($ids, $matched_ids);
   if (count($unmatched_ids)) {
     report_warning("No match for bibcode identifier: " . implode('; ', $unmatched_ids));  // @codeCoverageIgnore
+  }
+  foreach ($templates as $template) {
+    if ($template->blank(['year', 'date']) && preg_match('~^(\d{4}).*book.*$~', $template->get('bibcode'), $matches)) {
+        $template->add_if_new('year', $matches[1]); // Fail safe book code to grab a year directly from the bibcode itself
+    }
   }
   return TRUE;
 }
@@ -1007,12 +948,8 @@ function parse_plain_text_reference(string $journal_data, Template $this_templat
 } 
 
 function getS2CID(string $url) : string {
-  if (PHP_S2APIKEY) {
-    $context = stream_context_create(array('http'=>array('header'=>"x-api-key: " . PHP_S2APIKEY . "\r\n")));
-    $response = (string) @file_get_contents('https://partner.semanticscholar.org/v1/paper/URL:' . $url, FALSE, $context);
-  } else {
-    $response = (string) @file_get_contents('https://api.semanticscholar.org/v1/paper/URL:' . $url);  // @codeCoverageIgnore
-  }
+  $context = stream_context_create(CONTEXT_S2);
+  $response = (string) @file_get_contents(HOST_S2 . '/v1/paper/URL:' . $url, FALSE, $context);
   if (!$response) {
     report_warning("No response from semanticscholar.");   // @codeCoverageIgnore
     return '';                                             // @codeCoverageIgnore
@@ -1034,12 +971,8 @@ function getS2CID(string $url) : string {
 }
       
 function ConvertS2CID_DOI(string $s2cid) : string {
-  if (PHP_S2APIKEY) {
-    $context = stream_context_create(array('http'=>array('header'=>"x-api-key: " . PHP_S2APIKEY . "\r\n")));
-    $response = (string) @file_get_contents('https://partner.semanticscholar.org/v1/paper/CorpusID:' . $s2cid, FALSE, $context);
-  } else {
-    $response = (string) @file_get_contents('https://api.semanticscholar.org/v1/paper/CorpusID:' . $s2cid);   // @codeCoverageIgnore
-  }
+  $context = stream_context_create(CONTEXT_S2);
+  $response = (string) @file_get_contents(HOST_S2 . '/v1/paper/CorpusID:' . $s2cid, FALSE, $context);
   if (!$response) {
     report_warning("No response from semanticscholar.");   // @codeCoverageIgnore
     return '';                                           // @codeCoverageIgnore
@@ -1067,12 +1000,8 @@ function ConvertS2CID_DOI(string $s2cid) : string {
 }
 
 function get_semanticscholar_license(string $s2cid) : ?bool {
-    if (PHP_S2APIKEY) {
-      $context = stream_context_create(array('http'=>array('header'=>"x-api-key: " . PHP_S2APIKEY . "\r\n")));
-      $response = (string) @file_get_contents('https://partner.semanticscholar.org/v1/paper/CorpusID:' . $s2cid, FALSE, $context);
-    } else {
-      $response = (string) @file_get_contents('https://api.semanticscholar.org/v1/paper/CorpusID:' . $s2cid);   // @codeCoverageIgnore
-    }
+    $context = stream_context_create(CONTEXT_S2);
+    $response = (string) @file_get_contents(HOST_S2 . '/v1/paper/CorpusID:' . $s2cid, FALSE, $context);
     if ($response == '') return NULL;
     if (stripos($response, 'Paper not found') !== FALSE) return FALSE;
     $oa = @json_decode($response);
@@ -1196,3 +1125,155 @@ function Bibcode_Response_Processing(string $return, $ch, string $adsabs_url) : 
   // @codeCoverageIgnoreEnd
 }
 
+function get_entrez_xml(string $type, string $query) : ?SimpleXMLElement {
+   $url =  "https://eutils.ncbi.nlm.nih.gov/entrez/eutils/";
+   $post=  "tool=WikipediaCitationBot&email=" . PUBMEDUSERNAME;
+   if ($type === "esearch_pubmed") {
+      $url  .= "esearch.fcgi";
+      $post .= "&db=pubmed&term=" . $query;
+   } elseif ($type === "pubmed") {
+      $url .= "esummary.fcgi";
+      $post .= "&db=pubmed&id=" . $query;
+   } elseif ($type === "pmc") {
+      $url .= "esummary.fcgi";
+      $post .= "&db=pmc&id=" . $query;
+   } else {
+      report_error("Invalid type passed to get_entrez_xml: " . $type);  // @codeCoverageIgnore
+   }
+   $xml = xml_post($url, $post);
+   if ($xml === FALSE) {
+      // @codeCoverageIgnoreStart
+     sleep(3);
+     $xml = xml_post($url, $post);
+     if ($xml === FALSE) $xml = NULL;
+     // @codeCoverageIgnoreEnd
+   }
+   return $xml;
+}
+// Must use post in order to get DOIs with <, >, [, and ] in them and other problems
+function xml_post(string $url, string $post) {
+   $ch = curl_init();
+   curl_setopt($ch, CURLOPT_URL,$url);
+   curl_setopt($ch, CURLOPT_POST, 1);
+   curl_setopt($ch, CURLOPT_POSTFIELDS, $post);
+   curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+   $headers = array(
+      "Content-Type: application/x-www-form-urlencoded",
+      "Accept: application/xml",
+   );
+   curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
+   $output = (string) @curl_exec($ch);
+   curl_close ($ch);
+   return @simplexml_load_string($output);
+}
+
+function process_bibcode_data(Template $this_template, object $record) : void {
+    $this_template->record_api_usage('adsabs', 'bibcode');
+    $this_template->add_if_new('title', (string) $record->title[0], 'adsabs'); // add_if_new will format the title text and check for unknown
+    $i = 0;
+    if (isset($record->author)) {
+     foreach ($record->author as $author) {
+      $this_template->add_if_new('author' . (string) ++$i, $author, 'adsabs');
+     }
+    }
+    if (isset($record->pub)) {
+      $journal_string = explode(',', (string) $record->pub);
+      $journal_start = mb_strtolower($journal_string[0]);
+      if (preg_match("~\bthesis\b~ui", $journal_start)) {
+        // Do nothing
+      } elseif (substr($journal_start, 0, 6) === 'eprint') {  // No longer u  sed
+      if (substr($journal_start, 0, 13) === 'eprint arxiv:') {               //@codeCoverageIgnore
+          if (isset($record->arxivclass)) $this_template->add_if_new('class', (string) $record->arxivclass);  //@codeCoverageIgnore
+          $this_template->add_if_new('arxiv', substr($journal_start, 13));     //@codeCoverageIgnore
+        }
+      } else {
+        $this_template->add_if_new('journal', $journal_string[0], 'adsabs');
+      }          
+    }
+    if (isset($record->page)) {
+      $tmp = implode($record->page);
+      if ((stripos($tmp, 'arxiv') !== FALSE) || (strpos($tmp, '/') !== FALSE)) {  // Bad data
+       unset($record->page);
+       unset($record->volume);
+       unset($record->issue);
+      } elseif (preg_match('~[^A-Za-z]~', $tmp)) { // Do not trust anything with letters
+       unset($record->page);
+      }
+    }
+    $this_template->add_if_new('volume', (string) @$record->volume, 'adsabs');
+    $this_template->add_if_new('issue', (string) @$record->issue, 'adsabs');
+    $this_template->add_if_new('year', preg_replace("~\D~", "", (string) @$record->year), 'adsabs');
+    if (isset($record->page)) {
+      $dum = implode('–', $record->page);
+      if (preg_match('~^[\-\–\d]+$~u', $dum)) {
+        $this_template->add_if_new('pages', $dum, 'adsabs');
+      }
+      unset($record->page);
+    }
+    if (isset($record->identifier)) { // Sometimes arXiv is in journal (see above), sometimes here in identifier
+      foreach ($record->identifier as $recid) {
+        $recid = (string) $recid;
+        if(strtolower(substr($recid, 0, 6)) === 'arxiv:') {
+           if (isset($record->arxivclass)) $this_template->add_if_new('class', (string) $record->arxivclass, 'adsabs');
+           $this_template->add_if_new('arxiv', substr($recid, 6), 'adsabs');
+        }
+      }
+    }
+    if (isset($record->doi)) {
+      $this_template->add_if_new('doi', (string) $record->doi[0]);
+    }
+}
+
+
+function expand_book_adsabs(Template $template, object $result) : bool {
+    set_time_limit(120);
+    $matches = ['', '']; // prevent memory leak in some PHP versions
+    $return = FALSE;
+    if (@$result->numFound === 1) {
+      $return = TRUE;
+      $record = $result->docs[0];
+      if (isset($record->year)) $template->add_if_new('year', preg_replace("~\D~", "", (string) $record->year));
+      if (isset($record->title)) $template->add_if_new('title', (string) $record->title[0]);
+      if ($template->blank(array_merge(FIRST_EDITOR_ALIASES, FIRST_AUTHOR_ALIASES, ['publisher']))) { // Avoid re-adding editors as authors, etc.
+       $i = 0;
+       if (isset($record->author)) {
+        foreach ($record->author as $author) {
+         $template->add_if_new('author' . (string) ++$i, $author);
+        }
+       }
+      }
+    }
+    if ($template->blank(['year', 'date']) && preg_match('~^(\d{4}).*book.*$~', $template->get('bibcode'), $matches)) {
+      $template->add_if_new('year', $matches[1]); // Fail safe code to grab a year directly from the bibcode itself
+    }
+    return $return;
+  }
+
+  // $options should be a series of field names, colons (optionally urlencoded), and
+  // URL-ENCODED search strings, separated by (unencoded) ampersands.
+  // Surround search terms in (url-encoded) ""s, i.e. doi:"10.1038/bla(bla)bla"
+function query_adsabs(string $options) : object {
+    set_time_limit(120);
+    $rate_limit = [['', '', ''], ['', '', ''], ['', '', '']]; // prevent memory leak in some PHP versions
+    // API docs at https://github.com/adsabs/adsabs-dev-api/blob/master/Search_API.ipynb
+    if (AdsAbsControl::gave_up_yet()) return (object) array('numFound' => 0);
+    if (!PHP_ADSABSAPIKEY) return (object) array('numFound' => 0);
+
+      $ch = curl_init();
+      /** @psalm-suppress RedundantCondition */ /* PSALM thinks TRAVIS cannot be FALSE */
+      $adsabs_url = "https://" . (TRAVIS ? 'qa' : 'api')
+                  . ".adsabs.harvard.edu/v1/search/query"
+                  . "?q=$options&fl=arxiv_class,author,bibcode,doi,doctype,identifier,"
+                  . "issue,page,pub,pubdate,title,volume,year";
+      curl_setopt_array($ch,
+               [CURLOPT_HTTPHEADER => ['Authorization: Bearer ' . PHP_ADSABSAPIKEY],
+                CURLOPT_RETURNTRANSFER => TRUE,
+                CURLOPT_HEADER => TRUE,
+                CURLOPT_TIMEOUT => 20,
+                CURLOPT_USERAGENT => BOT_USER_AGENT,
+                CURLOPT_URL => $adsabs_url]);
+      $return = (string) @curl_exec($ch);
+      $response = Bibcode_Response_Processing($return, $ch, $adsabs_url);
+      curl_close($ch);
+    return $response;
+  }
