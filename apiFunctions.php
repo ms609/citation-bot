@@ -1191,13 +1191,12 @@ function process_bibcode_data(Template $this_template, object $record) : void {
       }          
     }
     if (isset($record->page)) {
-      if (TRAVIS) print_r($record->page); // TODO - remove
       $tmp = implode($record->page);
       if ((stripos($tmp, 'arxiv') !== FALSE) || (strpos($tmp, '/') !== FALSE)) {  // Bad data
        unset($record->page);
        unset($record->volume);
        unset($record->issue);
-      } elseif (preg_match('~[^A-Za-z]~', (string) $record->page)) { // Do not trust anything with letters
+      } elseif (preg_match('~[^A-Za-z]~', $tmp)) { // Do not trust anything with letters
        unset($record->page);
       }
     }
