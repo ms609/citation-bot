@@ -948,12 +948,7 @@ function parse_plain_text_reference(string $journal_data, Template $this_templat
 } 
 
 function getS2CID(string $url) : string {
-  if (PHP_S2APIKEY) {
-    $context = stream_context_create(array('http'=>array('header'=>"x-api-key: " . PHP_S2APIKEY . "\r\n")));
-    $response = (string) @file_get_contents('https://partner.semanticscholar.org/v1/paper/URL:' . $url, FALSE, $context);
-  } else {
-    $response = (string) @file_get_contents('https://api.semanticscholar.org/v1/paper/URL:' . $url);  // @codeCoverageIgnore
-  }
+  $response = (string) @file_get_contents('https://partner.semanticscholar.org/v1/paper/URL:' . $url, FALSE, S2_CONTEXT);
   if (!$response) {
     report_warning("No response from semanticscholar.");   // @codeCoverageIgnore
     return '';                                             // @codeCoverageIgnore
@@ -975,12 +970,7 @@ function getS2CID(string $url) : string {
 }
       
 function ConvertS2CID_DOI(string $s2cid) : string {
-  if (PHP_S2APIKEY) {
-    $context = stream_context_create(array('http'=>array('header'=>"x-api-key: " . PHP_S2APIKEY . "\r\n")));
-    $response = (string) @file_get_contents('https://partner.semanticscholar.org/v1/paper/CorpusID:' . $s2cid, FALSE, $context);
-  } else {
-    $response = (string) @file_get_contents('https://api.semanticscholar.org/v1/paper/CorpusID:' . $s2cid);   // @codeCoverageIgnore
-  }
+  $response = (string) @file_get_contents('https://partner.semanticscholar.org/v1/paper/CorpusID:' . $s2cid, FALSE, S2_CONTEXT);
   if (!$response) {
     report_warning("No response from semanticscholar.");   // @codeCoverageIgnore
     return '';                                           // @codeCoverageIgnore
@@ -1008,12 +998,7 @@ function ConvertS2CID_DOI(string $s2cid) : string {
 }
 
 function get_semanticscholar_license(string $s2cid) : ?bool {
-    if (PHP_S2APIKEY) {
-      $context = stream_context_create(array('http'=>array('header'=>"x-api-key: " . PHP_S2APIKEY . "\r\n")));
-      $response = (string) @file_get_contents('https://partner.semanticscholar.org/v1/paper/CorpusID:' . $s2cid, FALSE, $context);
-    } else {
-      $response = (string) @file_get_contents('https://api.semanticscholar.org/v1/paper/CorpusID:' . $s2cid);   // @codeCoverageIgnore
-    }
+    $response = (string) @file_get_contents('https://partner.semanticscholar.org/v1/paper/CorpusID:' . $s2cid, FALSE, S2_CONTEXT);
     if ($response == '') return NULL;
     if (stripos($response, 'Paper not found') !== FALSE) return FALSE;
     $oa = @json_decode($response);
