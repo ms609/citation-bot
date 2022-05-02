@@ -290,4 +290,428 @@ final class apiFunctionsTest extends testBaseClass {
      $this->assertSame("Kopera", $template->get2('editor1-last'));
   }
 
+  public function testBibcodeData1() : void {
+     $text = "{{Cite book | bibcode = 2017NatCo...814879F}}";
+     $template = $this->make_citation($text);
+     $results = (object) array(
+   'bibcode' => '2017NatCo...814879F',
+   'author' => 
+  array (
+    0 => 'Fredin, Ola',
+    1 => 'Viola, Giulio',
+    2 => 'Zwingmann, Horst',
+    3 => 'Sørlie, Ronald',
+    4 => 'Brönner, Marco',
+    5 => 'Lie, Jan-Erik',
+    6 => 'Grandal, Else Margrethe',
+    7 => 'Müller, Axel',
+    8 => 'Margreth, Annina',
+    9 => 'Vogt, Christoph',
+    10 => 'Knies, Jochen',
+  ),
+   'doctype' => 'article',
+   'doi' => 
+  array (
+    0 => '10.1038/ncomms14879',
+  ),
+   'identifier' => 
+  array (
+    0 => '2017NatCo...814879F',
+    1 => '10.1038/ncomms14879',
+  ),
+   'page' => 
+  array (
+    0 => '14879',
+  ),
+   'pub' => 'Nature Communications',
+   'pubdate' => '2017-04-00',
+   'title' => 
+  array (
+    0 => 'The inheritance of a Mesozoic landscape in western Scandinavia',
+  ),
+   'volume' => '8',
+   'year' => '2017',
+);
+     process_bibcode_data($template, $results);
+     $this->assertSame('Nature Communications', $template->gets('journal'));
+     $this->assertSame('10.1038/ncomms14879',  $template->gets('doi'));
+  }
+
+  public function testBibcodeData2() : void {
+     $text = "{{Cite book | bibcode = 1996GSAB..108..195R}}";
+     $template = $this->make_citation($text);
+     $results = (object) array(
+   'bibcode' => '1996GSAB..108..195R',
+   'author' => 
+  array (
+    0 => 'Retallack, Gregory J.',
+    1 => 'Veevers, John J.',
+    2 => 'Morante, Ric',
+  ),
+   'doctype' => 'article',
+   'doi' => 
+  array (
+    0 => '10.1130/0016-7606(1996)108<0195:GCGBPT>2.3.CO;2',
+  ),
+   'identifier' => 
+  array (
+    0 => '10.1130/0016-7606(1996)108<0195:GCGBPT>2.3.CO;2',
+    1 => '1996GSAB..108..195R',
+  ),
+   'issue' => '2',
+   'page' => 
+  array (
+    0 => '195',
+  ),
+   'pub' => 'Geological Society of America Bulletin',
+   'pubdate' => '1996-02-00',
+   'title' => 
+  array (
+    0 => 'Global coal gap between Permian-Triassic extinction and Middle Triassic recovery of peat-forming plants',
+  ),
+   'volume' => '108',
+   'year' => '1996',
+);
+     process_bibcode_data($template, $results);
+     $this->assertSame('Geological Society of America Bulletin', $template->gets('journal'));
+     $this->assertSame('10.1130/0016-7606(1996)108<0195:GCGBPT>2.3.CO;2',  $template->gets('doi'));
+  }
+  
+  public function testBibcodeData3() : void {
+     $text = "{{Cite book | bibcode = 2000A&A...361..952H}}";
+     $template = $this->make_citation($text);
+     $results = (object) array(
+   'bibcode' => '2000A&A...361..952H',
+   'author' => 
+  array (
+    0 => 'Hessman, F. V.',
+    1 => 'Gänsicke, B. T.',
+    2 => 'Mattei, J. A.',
+  ),
+   'doctype' => 'article',
+   'identifier' => 
+  array (
+    0 => '2000A&A...361..952H',
+  ),
+   'page' => 
+  array (
+    0 => '952',
+  ),
+   'pub' => 'Astronomy and Astrophysics',
+   'pubdate' => '2000-09-00',
+   'title' => 
+  array (
+    0 => 'The history and source of mass-transfer variations in AM Herculis',
+  ),
+   'volume' => '361',
+   'year' => '2000',
+);
+     process_bibcode_data($template, $results);
+     $this->assertSame('Astronomy and Astrophysics', $template->gets('journal'));
+     $this->assertNull($template->gets('doi'));
+  }
+  
+  public function testBibcodeData4() : void {
+     $text = "{{Cite book | bibcode = 1995Sci...267...77R}}";
+     $template = $this->make_citation($text);
+     $results = (object) array(
+   'bibcode' => '1995Sci...267...77R',
+   'author' => 
+  array (
+    0 => 'Retallack, G. J.',
+  ),
+   'doctype' => 'article',
+   'doi' => 
+  array (
+    0 => '10.1126/science.267.5194.77',
+  ),
+   'identifier' => 
+  array (
+    0 => '1995Sci...267...77R',
+    1 => '10.1126/science.267.5194.77',
+  ),
+   'issue' => '5194',
+   'page' => 
+  array (
+    0 => '77',
+  ),
+   'pub' => 'Science',
+   'pubdate' => '1995-01-00',
+   'title' => 
+  array (
+    0 => 'Permain-Triassic Life Crisis on Land',
+  ),
+   'volume' => '267',
+   'year' => '1995',
+)
+     process_bibcode_data($template, $results);
+     $this->assertSame('Science', $template->gets('journal'));
+     $this->assertSame('10.1126/science.267.5194.77',  $template->gets('doi'));
+  }
+  
+  public function testBibcodeData5() : void {
+     $text = "{{Cite book | bibcode = 1995Geo....23..967E}}";
+     $template = $this->make_citation($text);
+     $results = (object) array(
+   'bibcode' => '1995Geo....23..967E',
+   'author' => 
+  array (
+    0 => 'Eshet, Yoram',
+    1 => 'Rampino, Michael R.',
+    2 => 'Visscher, Henk',
+  ),
+   'doctype' => 'article',
+   'doi' => 
+  array (
+    0 => '10.1130/0091-7613(1995)023<0967:FEAPRO>2.3.CO;2',
+  ),
+   'identifier' => 
+  array (
+    0 => '1995Geo....23..967E',
+    1 => '10.1130/0091-7613(1995)023<0967:FEAPRO>2.3.CO;2',
+  ),
+   'issue' => '11',
+   'page' => 
+  array (
+    0 => '967',
+  ),
+   'pub' => 'Geology',
+   'pubdate' => '1995-11-00',
+   'title' => 
+  array (
+    0 => 'Fungal event and palynological record of ecological crisis and recovery across the Permian-Triassic boundary',
+  ),
+   'volume' => '23',
+   'year' => '1995',
+);
+     process_bibcode_data($template, $results);
+     $this->assertSame('Geology', $template->gets('journal'));
+     $this->assertSame('10.1130/0091-7613(1995)023<0967:FEAPRO>2.3.CO;2',  $template->gets('doi'));
+  }
+  
+  public function testBibcodeData6() : void {
+     $text = "{{Cite book | bibcode = 1974JPal...48..524M}}";
+     $template = $this->make_citation($text);
+     $results = (object) array(
+   'bibcode' => '1974JPal...48..524M',
+   'author' => 
+  array (
+    0 => 'Moorman, M.',
+  ),
+   'doctype' => 'article',
+   'identifier' => 
+  array (
+    0 => '1974JPal...48..524M',
+  ),
+   'page' => 
+  array (
+    0 => '524',
+  ),
+   'pub' => 'Journal of Paleontology',
+   'pubdate' => '1974-05-00',
+   'title' => 
+  array (
+    0 => 'Microbiota of the late Proterozoic Hector Formation, Southwestern Alberta, Canada',
+  ),
+   'volume' => '48',
+   'year' => '1974',
+);
+     process_bibcode_data($template, $results);
+     $this->assertSame('Journal of Paleontology', $template->gets('journal'));
+     $this->assertSame('1974',  $template->gets('year'));
+  }
+  
+  public function testBibcodeData7() : void {
+     $text = "{{Cite book | bibcode = 1966Natur.211..116M}}";
+     $template = $this->make_citation($text);
+     $results = (object) array(
+   'bibcode' => '1966Natur.211..116M',
+   'author' => 
+  array (
+    0 => 'Melville, R.',
+  ),
+   'doctype' => 'article',
+   'doi' => 
+  array (
+    0 => '10.1038/211116a0',
+  ),
+   'identifier' => 
+  array (
+    0 => '1966Natur.211..116M',
+    1 => '10.1038/211116a0',
+  ),
+   'issue' => '5045',
+   'page' => 
+  array (
+    0 => '116',
+  ),
+   'pub' => 'Nature',
+   'pubdate' => '1966-07-00',
+   'title' => 
+  array (
+    0 => 'Continental Drift, Mesozoic Continents and the Migrations of the Angiosperms',
+  ),
+   'volume' => '211',
+   'year' => '1966',
+);
+     process_bibcode_data($template, $results);
+     $this->assertSame('Nature', $template->gets('journal'));
+     $this->assertSame('10.1038/211116a0',  $template->gets('doi'));
+  }
+  
+  public function testBibcodeData8() : void {
+     $text = "{{Cite book | bibcode = 1995astro.ph..8159B}}";
+     $template = $this->make_citation($text);
+     $results = (object) array(
+   'bibcode' => '1995astro.ph..8159B',
+   'arxiv_class' => 
+  array (
+    0 => 'astro-ph',
+    1 => 'hep-ph',
+  ),
+   'author' => 
+  array (
+    0 => 'Brandenberger, Robert H.',
+  ),
+   'doctype' => 'eprint',
+   'identifier' => 
+  array (
+    0 => 'arXiv:astro-ph/9508159',
+    1 => '1995astro.ph..8159B',
+  ),
+   'page' => 
+  array (
+    0 => 'astro-ph/9508159',
+  ),
+   'pub' => 'arXiv e-prints',
+   'pubdate' => '1995-09-00',
+   'title' => 
+  array (
+    0 => 'Formation of Structure in the Universe',
+  ),
+   'year' => '1995',
+);
+     process_bibcode_data($template, $results);
+     $this->assertSame('1995', $template->gets('year'));
+     $this->assertSame('astro-ph/9508159',  $template->gets('arxiv') . $template->gets('eprint'));
+  }
+  
+  public function testBibcodeData9() : void {
+     $text = "{{Cite book | bibcode = 1932Natur.129Q..18.}}";
+     $template = $this->make_citation($text);
+     $results = (object) array(
+   'bibcode' => '1932Natur.129Q..18.',
+   'doctype' => 'article',
+   'doi' => 
+  array (
+    0 => '10.1038/129018a0',
+  ),
+   'identifier' => 
+  array (
+    0 => '1932Natur.129Q..18.',
+    1 => '10.1038/129018a0',
+  ),
+   'issue' => '3244',
+   'page' => 
+  array (
+    0 => '18',
+  ),
+   'pub' => 'Nature',
+   'pubdate' => '1932-01-00',
+   'title' => 
+  array (
+    0 => 'Electric Equipment of the Dolomites Railway.',
+  ),
+   'volume' => '129',
+   'year' => '1932',
+);
+     process_bibcode_data($template, $results);
+     $this->assertSame('Nature', $template->gets('journal'));
+     $this->assertSame('10.1038/129018a0',  $template->gets('doi'));
+  }
+  
+  public function testBibcodeData10() : void {
+     $text = "{{Cite book | bibcode = 2019arXiv190502552Q}}";
+     $template = $this->make_citation($text);
+     $results = (object) array(
+   'bibcode' => '2019arXiv190502552Q',
+   'arxiv_class' => 
+  array (
+    0 => 'q-bio.QM',
+  ),
+   'author' => 
+  array (
+    0 => 'Qin, Yang',
+    1 => 'Freebairn, Louise',
+    2 => 'Atkinson, Jo-An',
+    3 => 'Qian, Weicheng',
+    4 => 'Safarishahrbijari, Anahita',
+    5 => 'Osgood, Nathaniel D',
+  ),
+   'doctype' => 'eprint',
+   'identifier' => 
+  array (
+    0 => '2019arXiv190502552Q',
+    1 => 'arXiv:1905.02552',
+  ),
+   'page' => 
+  array (
+    0 => 'arXiv:1905.02552',
+  ),
+   'pub' => 'arXiv e-prints',
+   'pubdate' => '2019-05-00',
+   'title' => 
+  array (
+    0 => 'Multi-Scale Simulation Modeling for Prevention and Public Health Management of Diabetes in Pregnancy and Sequelae',
+  ),
+   'year' => '2019',
+);
+     process_bibcode_data($template, $results);
+     $this->assertSame('2019', $template->gets('year'));
+     $this->assertSame('1905.02552',  $template->gets('arxiv') . $template->gets('eprint'));
+  }
+  
+  public function testBibcodeData11() : void {
+     $text = "{{Cite book | bibcode = 2003....book.......}}";
+     $template = $this->make_citation($text);
+     $results = (object) array();
+     expand_book_adsabs($template, $results);
+     $this->assertSame('2003', $template->gets('year'));
+  }
+
+  public function testBibcodeData12() : void {
+     $text = "{{Cite book | bibcode = 1958ses..book.....S}}";
+     $template = $this->make_citation($text);
+     $results = (object) array(
+   'numFound' => 1,
+   'start' => 0,
+   'docs' => 
+  array (
+    0 => 
+    (object) array(
+       'bibcode' => '1958ses..book.....S',
+       'author' => 
+      array (
+        0 => 'Schwarzschild, Martin',
+      ),
+       'doctype' => 'book',
+       'identifier' => 
+      array (
+        0 => '1958ses..book.....S',
+      ),
+       'pub' => 'Princeton',
+       'pubdate' => '1958-00-00',
+       'title' => 
+      array (
+        0 => 'Structure and evolution of the stars.',
+      ),
+       'year' => '1958',
+    ),
+  ),
+);
+     expand_book_adsabs($template, $results);
+     $this->assertSame('1958', $template->gets('year'));
+     $this->assertSame('structure and evolution of the stars', strtolower($template->gets('title')));
+  }
+
 }
