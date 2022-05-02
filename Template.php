@@ -2279,14 +2279,10 @@ final class Template {
             ($this->has('jstor') && $this->get('jstor-access') === 'free')
            ) return; // do not add url if have OA already.  Do indlude preprints in list
     if ($this->has('s2cid') || $this->has('S2CID')) return;
-    if (PHP_S2APIKEY) {
-      $context = stream_context_create(array('http'=>array('header'=>"x-api-key: " . PHP_S2APIKEY . "\r\n")));
-      $json = (string) @file_get_contents('https://partner.semanticscholar.org/v1/paper/' . $doi, FALSE, $context);
-    } else {
-      $json = (string) @file_get_contents('https://api.semanticscholar.org/v1/paper/' . $doi); // @codeCoverageIgnore
-    }
-    if ($json) {
-      $oa = @json_decode($json);
+    $context = stream_context_create(CONTEXT_S2);
+    $response = (string) @file_get_contents(HOST_S2 . '/v1/paper/' . $doi, FALSE, $context);
+    if ($response) {
+      $oa = @json_decode($response);
       if ($oa !== FALSE && isset($oa->url) && isset($oa->is_publisher_licensed) && $oa->is_publisher_licensed) {
         $this->get_identifiers_from_url($oa->url);
       }
