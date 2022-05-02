@@ -2168,6 +2168,7 @@ T1 - This is the Title }}';
       $code_coverage1  = '{{Citation |
 %0 Journal Article
 %T This Title
+%R NOT_A_DOI
 %@ 9999-9999}}';
    
       $code_coverage2  = '{{Citation |
@@ -2200,6 +2201,7 @@ T1 - This is the Title }}';
        $prepared = $this->process_citation($code_coverage1);
        $this->assertSame('This Title', $prepared->get2('title'));;
        $this->assertSame('9999-9999', $prepared->get2('issn'));
+       $this->assertNull($prepared->get2('doi'));
    
        $prepared = $this->process_citation($code_coverage2);
        $this->assertSame('This Title', $prepared->get2('title'));;
