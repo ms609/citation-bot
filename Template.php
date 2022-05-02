@@ -2279,7 +2279,7 @@ final class Template {
             ($this->has('jstor') && $this->get('jstor-access') === 'free')
            ) return; // do not add url if have OA already.  Do indlude preprints in list
     if ($this->has('s2cid') || $this->has('S2CID')) return;
-    $json = (string) @file_get_contents('https://partner.semanticscholar.org/v1/paper/' . $doi, FALSE, S2_CONTEXT);
+    $json = (string) @file_get_contents(S2_HOST . 'v1/paper/' . $doi, FALSE, S2_CONTEXT);
     if ($json) {
       $oa = @json_decode($json);
       if ($oa !== FALSE && isset($oa->url) && isset($oa->is_publisher_licensed) && $oa->is_publisher_licensed) {
