@@ -1162,7 +1162,7 @@ function xml_post(string $url, string $post) {
       "Accept: application/xml",
    );
    curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
-   $output = curl_exec($ch);
+   $output = (string) @curl_exec($ch);
    curl_close ($ch);
    return @simplexml_load_string($output);
 }
