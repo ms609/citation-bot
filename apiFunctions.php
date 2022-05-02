@@ -1180,7 +1180,7 @@ function xml_post(string $url, string $post) {
 }
 
 function process_bibcode_data(Template $this_template, object $record) : void {
-    if (WikipediaBot::NonStandardMode()) print_r($record);
+    if (WikipediaBot::NonStandardMode()) var_export($record);
     $this_template->record_api_usage('adsabs', 'bibcode');
     $this_template->add_if_new('title', (string) $record->title[0], 'adsabs'); // add_if_new will format the title text and check for unknown
     $i = 0;
@@ -1239,7 +1239,7 @@ function process_bibcode_data(Template $this_template, object $record) : void {
 
 
 function expand_book_adsabs(Template $template, object $result) : bool {
-    if (WikipediaBot::NonStandardMode()) print_r($result);
+    if (WikipediaBot::NonStandardMode()) var_export($result);
     set_time_limit(120);
     $matches = ['', '']; // prevent memory leak in some PHP versions
     $return = FALSE;
