@@ -7404,6 +7404,28 @@ T1 - This is the Title }}';
    public function testAddCodeIfThisFails() : void { // Add more oxford code, if these start to work
       $this->AssertFalse(doi_works('10.1093/acref/9780199208951.013.q-author-00005-00000991')); // https://www.oxfordreference.com/view/10.1093/acref/9780199208951.001.0001/q-author-00005-00000991
       $this->AssertFalse(doi_works('10.1093/oao/9781884446054.013.8000020158')); // https://www.oxfordartonline.com/groveart/view/10.1093/gao/9781884446054.001.0001/oao-9781884446054-e-8000020158
-    
    }
+ 
+   public function testGoogleBooksCleanup() : void {
+      $text = "{{cite lsa|url=https://books.google.com/booksid=12345}}";
+      $expanded = $this->process_citation($text);
+      $this->AssertSame('https://books.google.com/books?id=12345', $expanded->get2('url'));
+    
+      $text = "{{cite lsa|url=https://books.google.com/books?vid=12345}}";
+      $expanded = $this->process_citation($text);
+      $this->AssertSame('https://books.google.com/books?id=12345', $expanded->get2('url'));
+    
+      $text = "{{cite lsa|url=https://books.google.com/books?qid=12345}}";
+      $expanded = $this->process_citation($text);
+      $this->AssertSame('https://books.google.com/books?id=12345', $expanded->get2('url'));
+
+      $text = "{{cite lsa|url=https://books.google.com/?id=12345}}";
+      $expanded = $this->process_citation($text);
+      $this->AssertSame('https://books.google.com/books?id=12345', $expanded->get2('url'));
+    
+      $text = "{{cite lsa|url=https://books.google.uk.co/books?isbn=12345}}";
+      $expanded = $this->process_citation($text);
+      $this->AssertSame('https://books.google.com/books?isbn=12345', $expanded->get2('url'));
+    }
+
 }
