@@ -16,4 +16,5 @@ parameters:
 		- API_ROOT
 		- BOT_USER_AGENT
 		- S2_CONTEXT
+		- S2_HOST
 		
