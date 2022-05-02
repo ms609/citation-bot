@@ -1150,7 +1150,7 @@ function get_entrez_xml(string $type, string $query) : ?SimpleXMLElement {
       $url .= "esummary.fcgi";
       $post .= "&db=pmc&id=" . $query;
    } else {
-      report_error("Invalid type passed to get_entrez_xml: " . $type);
+      report_error("Invalid type passed to get_entrez_xml: " . $type);  // @codeCoverageIgnore
    }
    $xml = xml_post($url, $post);
    if ($xml === FALSE) {
@@ -1180,6 +1180,7 @@ function xml_post(string $url, string $post) {
 }
 
 function process_bibcode_data(Template $this_template, object $record) : void {
+    if (WikipediaBot::NonStandardMode()) print_r($record);
     $this_template->record_api_usage('adsabs', 'bibcode');
     $this_template->add_if_new('title', (string) $record->title[0], 'adsabs'); // add_if_new will format the title text and check for unknown
     $i = 0;
@@ -1238,6 +1239,7 @@ function process_bibcode_data(Template $this_template, object $record) : void {
 
 
 function expand_book_adsabs(Template $template, object $result) : bool {
+    if (WikipediaBot::NonStandardMode()) print_r($result);
     set_time_limit(120);
     $matches = ['', '']; // prevent memory leak in some PHP versions
     $return = FALSE;
