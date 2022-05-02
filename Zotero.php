@@ -1380,10 +1380,6 @@ public static function find_indentifiers_in_urls(Template $template, ?string $ur
           }
         }
       } elseif (stripos($url, 'handle') !== FALSE || stripos($url, 'persistentId=hdl:') !== FALSE) {
-          $context = stream_context_create(array(
-           'ssl' => ['verify_peer' => FALSE, 'verify_peer_name' => FALSE, 'allow_self_signed' => TRUE, 'security_level' => 0, 'verify_depth' => 0],
-           'http' => ['ignore_errors' => TRUE, 'max_redirects' => 40, 'timeout' => 20.0, 'follow_location' => 1, 'header'=> ['Connection: close'], "user_agent" => BOT_USER_AGENT]
-           )); // Allow crudy cheap journals
           // Special case of hdl.handle.net/123/456
           if (preg_match('~^https?://hdl\.handle\.net/(\d{2,}.*/.+)$~', $url, $matches)) {
             $url = 'https://hdl.handle.net/handle/' . $matches[1];
@@ -1416,10 +1412,10 @@ public static function find_indentifiers_in_urls(Template $template, ?string $ur
           if (preg_match('~^(.+)\?urlappend=~', $handle, $matches)) {  // should we shorten it
             usleep(100000);
             $test_url = "https://hdl.handle.net/" . $handle;
-            $headers_test = @get_headers($test_url, GET_THE_HEADERS, $context);
+            $headers_test = @get_headers($test_url, GET_THE_HEADERS, INSECURE_CONTEXT);
             if ($headers_test === FALSE) {
                sleep(3);   // @codeCoverageIgnore
-               $headers_test = @get_headers($test_url, GET_THE_HEADERS, $context); // @codeCoverageIgnore
+               $headers_test = @get_headers($test_url, GET_THE_HEADERS, INSECURE_CONTEXT); // @codeCoverageIgnore
             }
             if ($headers_test === FALSE || (empty($headers_test['Location']) && empty($headers_test['location']))) {
                $handle = $matches[1];   // @codeCoverageIgnore
@@ -1443,10 +1439,10 @@ public static function find_indentifiers_in_urls(Template $template, ?string $ur
           // Verify that it works as a hdl
           $test_url = "https://hdl.handle.net/" . $handle;
           usleep(20000);
-          $headers_test = @get_headers($test_url, GET_THE_HEADERS, $context);
+          $headers_test = @get_headers($test_url, GET_THE_HEADERS, INSECURE_CONTEXT);
           if ($headers_test === FALSE) {
              sleep(3);  // @codeCoverageIgnore
-             $headers_test = @get_headers($test_url, GET_THE_HEADERS, $context);  // @codeCoverageIgnore
+             $headers_test = @get_headers($test_url, GET_THE_HEADERS, INSECURE_CONTEXT);  // @codeCoverageIgnore
           }
           if ($headers_test === FALSE) return FALSE; // hdl.handle.net is down
           if (empty($headers_test['Location']) && empty($headers_test['location'])) return FALSE; // does not resolve
