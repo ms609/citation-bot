@@ -2282,7 +2282,7 @@ final class Template {
     $context = stream_context_create(CONTEXT_S2);
     $response = (string) @file_get_contents(HOST_S2 . '/v1/paper/' . $doi, FALSE, $context);
     if ($response) {
-      $oa = @json_decode($json);
+      $oa = @json_decode($response);
       if ($oa !== FALSE && isset($oa->url) && isset($oa->is_publisher_licensed) && $oa->is_publisher_licensed) {
         $this->get_identifiers_from_url($oa->url);
       }
