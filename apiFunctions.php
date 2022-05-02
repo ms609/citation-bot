@@ -1231,7 +1231,7 @@ function expand_book_adsabs(Template $template, object $result) : bool {
     set_time_limit(120);
     $matches = ['', '']; // prevent memory leak in some PHP versions
     $return = FALSE;
-    if ($result->numFound == 1) {
+    if (@$result->numFound === 1) {
       $return = TRUE;
       $record = $result->docs[0];
       if (isset($record->year)) $template->add_if_new('year', preg_replace("~\D~", "", (string) $record->year));
