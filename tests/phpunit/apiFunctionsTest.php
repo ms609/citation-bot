@@ -443,7 +443,7 @@ final class apiFunctionsTest extends testBaseClass {
   ),
    'volume' => '267',
    'year' => '1995',
-)
+);
      process_bibcode_data($template, $results);
      $this->assertSame('Science', $template->gets('journal'));
      $this->assertSame('10.1126/science.267.5194.77',  $template->gets('doi'));
