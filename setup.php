@@ -97,7 +97,12 @@ stream_context_set_default(['http' => ['timeout' => 20]]);
 ini_set('default_socket_timeout', '20');
 
 define("PHP_ADSABSAPIKEY", (string) getenv("PHP_ADSABSAPIKEY"));
-define("PHP_S2APIKEY", (string) getenv("PHP_S2APIKEY"));
+
+if ((string) getenv("PHP_S2APIKEY") !== "") {
+   define("S2_CONTEXT", stream_context_create(array('http'=>array('header'=>"x-api-key: " . (string) getenv("PHP_S2APIKEY") . "\r\n"))));
+} else {
+   define("S2_CONTEXT", stream_context_create(array()));
+}
 
 function check_blocked() : void {
   if (!TRAVIS && ! WikipediaBot::is_valid_user('Citation_bot')) {
@@ -159,4 +164,7 @@ require_once 'Page.php';
 define("MAX_PAGES", 2850);
 define("BIG_RUN", 3);
 
-
+define("INSECURE_CONTEXT", stream_context_create(array(
+           'ssl' => ['verify_peer' => FALSE, 'verify_peer_name' => FALSE, 'allow_self_signed' => TRUE, 'security_level' => 0, 'verify_depth' => 0],
+           'http' => ['ignore_errors' => TRUE, 'max_redirects' => 40, 'timeout' => 20.0, 'follow_location' => 1,  'header'=> ['Connection: close'], "user_agent" => BOT_USER_AGENT]
+         ))); // Allow crudy cheap journals
