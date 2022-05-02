@@ -333,8 +333,8 @@ final class apiFunctionsTest extends testBaseClass {
    'year' => '2017',
 );
      process_bibcode_data($template, $results);
-     $this->assertSame('Nature Communications', $template->gets('journal'));
-     $this->assertSame('10.1038/ncomms14879',  $template->gets('doi'));
+     $this->assertSame('Nature Communications', $template->get2('journal'));
+     $this->assertSame('10.1038/ncomms14879',  $template->get2('doi'));
   }
 
   public function testBibcodeData2() : void {
@@ -373,8 +373,8 @@ final class apiFunctionsTest extends testBaseClass {
    'year' => '1996',
 );
      process_bibcode_data($template, $results);
-     $this->assertSame('Geological Society of America Bulletin', $template->gets('journal'));
-     $this->assertSame('10.1130/0016-7606(1996)108<0195:GCGBPT>2.3.CO;2',  $template->gets('doi'));
+     $this->assertSame('Geological Society of America Bulletin', $template->get2('journal'));
+     $this->assertSame('10.1130/0016-7606(1996)108<0195:GCGBPT>2.3.CO;2',  $template->get2('doi'));
   }
   
   public function testBibcodeData3() : void {
@@ -407,8 +407,8 @@ final class apiFunctionsTest extends testBaseClass {
    'year' => '2000',
 );
      process_bibcode_data($template, $results);
-     $this->assertSame('Astronomy and Astrophysics', $template->gets('journal'));
-     $this->assertNull($template->gets('doi'));
+     $this->assertSame('Astronomy and Astrophysics', $template->get2('journal'));
+     $this->assertNull($template->get2('doi'));
   }
   
   public function testBibcodeData4() : void {
@@ -445,8 +445,8 @@ final class apiFunctionsTest extends testBaseClass {
    'year' => '1995',
 );
      process_bibcode_data($template, $results);
-     $this->assertSame('Science', $template->gets('journal'));
-     $this->assertSame('10.1126/science.267.5194.77',  $template->gets('doi'));
+     $this->assertSame('Science', $template->get2('journal'));
+     $this->assertSame('10.1126/science.267.5194.77',  $template->get2('doi'));
   }
   
   public function testBibcodeData5() : void {
@@ -485,8 +485,8 @@ final class apiFunctionsTest extends testBaseClass {
    'year' => '1995',
 );
      process_bibcode_data($template, $results);
-     $this->assertSame('Geology', $template->gets('journal'));
-     $this->assertSame('10.1130/0091-7613(1995)023<0967:FEAPRO>2.3.CO;2',  $template->gets('doi'));
+     $this->assertSame('Geology', $template->get2('journal'));
+     $this->assertSame('10.1130/0091-7613(1995)023<0967:FEAPRO>2.3.CO;2',  $template->get2('doi'));
   }
   
   public function testBibcodeData6() : void {
@@ -517,8 +517,8 @@ final class apiFunctionsTest extends testBaseClass {
    'year' => '1974',
 );
      process_bibcode_data($template, $results);
-     $this->assertSame('Journal of Paleontology', $template->gets('journal'));
-     $this->assertSame('1974',  $template->gets('year'));
+     $this->assertSame('Journal of Paleontology', $template->get2('journal'));
+     $this->assertSame('1974',  $template->get2('year'));
   }
   
   public function testBibcodeData7() : void {
@@ -555,8 +555,8 @@ final class apiFunctionsTest extends testBaseClass {
    'year' => '1966',
 );
      process_bibcode_data($template, $results);
-     $this->assertSame('Nature', $template->gets('journal'));
-     $this->assertSame('10.1038/211116a0',  $template->gets('doi'));
+     $this->assertSame('Nature', $template->get2('journal'));
+     $this->assertSame('10.1038/211116a0',  $template->get2('doi'));
   }
   
   public function testBibcodeData8() : void {
@@ -592,8 +592,8 @@ final class apiFunctionsTest extends testBaseClass {
    'year' => '1995',
 );
      process_bibcode_data($template, $results);
-     $this->assertSame('1995', $template->gets('year'));
-     $this->assertSame('astro-ph/9508159',  $template->gets('arxiv') . $template->gets('eprint'));
+     $this->assertSame('1995', $template->get2('year'));
+     $this->assertSame('astro-ph/9508159',  $template->get2('arxiv') . $template->get2('eprint'));
   }
   
   public function testBibcodeData9() : void {
@@ -626,8 +626,8 @@ final class apiFunctionsTest extends testBaseClass {
    'year' => '1932',
 );
      process_bibcode_data($template, $results);
-     $this->assertSame('Nature', $template->gets('journal'));
-     $this->assertSame('10.1038/129018a0',  $template->gets('doi'));
+     $this->assertSame('Nature', $template->get2('journal'));
+     $this->assertSame('10.1038/129018a0',  $template->get2('doi'));
   }
   
   public function testBibcodeData10() : void {
@@ -667,8 +667,8 @@ final class apiFunctionsTest extends testBaseClass {
    'year' => '2019',
 );
      process_bibcode_data($template, $results);
-     $this->assertSame('2019', $template->gets('year'));
-     $this->assertSame('1905.02552',  $template->gets('arxiv') . $template->gets('eprint'));
+     $this->assertSame('2019', $template->get2('year'));
+     $this->assertSame('1905.02552',  $template->get2('arxiv') . $template->get2('eprint'));
   }
   
   public function testBibcodeData11() : void {
@@ -676,7 +676,7 @@ final class apiFunctionsTest extends testBaseClass {
      $template = $this->make_citation($text);
      $results = (object) array();
      expand_book_adsabs($template, $results);
-     $this->assertSame('2003', $template->gets('year'));
+     $this->assertSame('2003', $template->get2('year'));
   }
 
   public function testBibcodeData12() : void {
@@ -710,8 +710,8 @@ final class apiFunctionsTest extends testBaseClass {
   ),
 );
      expand_book_adsabs($template, $results);
-     $this->assertSame('1958', $template->gets('year'));
-     $this->assertSame('structure and evolution of the stars', strtolower($template->gets('title')));
+     $this->assertSame('1958', $template->get2('year'));
+     $this->assertSame('structure and evolution of the stars', strtolower($template->get2('title')));
   }
 
 }
