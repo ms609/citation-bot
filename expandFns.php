@@ -102,14 +102,8 @@ function is_doi_works(string $doi) : ?bool {
   }
   throttle_dx();
   // Try HTTP 1.0 on first try
-  $context_1 = stream_context_create(array(
-           'ssl' => ['verify_peer' => FALSE, 'verify_peer_name' => FALSE, 'allow_self_signed' => TRUE, 'security_level' => 0, 'verify_depth' => 0],
-           'http' => ['ignore_errors' => TRUE, 'max_redirects' => 40, 'timeout' => 20.0, 'follow_location' => 1,  'header'=> ['Connection: close'], "user_agent" => BOT_USER_AGENT]
-         )); // Allow cruddy cheap journals
-  $context = stream_context_create(array(
-           'ssl' => ['verify_peer' => FALSE, 'verify_peer_name' => FALSE, 'allow_self_signed' => TRUE, 'security_level' => 0, 'verify_depth' => 0],
-           'http' => ['ignore_errors' => TRUE, 'max_redirects' => 40, 'timeout' => 20.0, 'follow_location' => 1, 'protocol_version' => 1.1,  'header'=> ['Connection: close'], "user_agent" => BOT_USER_AGENT]
-         )); // Allow cruddy cheap journals  
+  $context_1 = stream_context_create(CONTEXT_INSECURE);
+  $context = stream_context_create(CONTEXT_INSECURE_11);
   $headers_test = @get_headers("https://doi.org/" . doi_encode($doi), GET_THE_HEADERS, $context_1);
   if ($headers_test === FALSE) {
      sleep(2);                                                                          // @codeCoverageIgnore
