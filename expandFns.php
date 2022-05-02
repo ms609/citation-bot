@@ -101,26 +101,17 @@ function is_doi_works(string $doi) : ?bool {
     if (preg_match('~[^\d\.]~', $registrant)) return FALSE;                 // any character that isn't a digit or a dot
   }
   throttle_dx();
-  // Try HTTP 1.0 on first try
-  $context_1 = stream_context_create(array(
-           'ssl' => ['verify_peer' => FALSE, 'verify_peer_name' => FALSE, 'allow_self_signed' => TRUE, 'security_level' => 0, 'verify_depth' => 0],
-           'http' => ['ignore_errors' => TRUE, 'max_redirects' => 40, 'timeout' => 20.0, 'follow_location' => 1,  'header'=> ['Connection: close'], "user_agent" => BOT_USER_AGENT]
-         )); // Allow cruddy cheap journals
-  $context = stream_context_create(array(
-           'ssl' => ['verify_peer' => FALSE, 'verify_peer_name' => FALSE, 'allow_self_signed' => TRUE, 'security_level' => 0, 'verify_depth' => 0],
-           'http' => ['ignore_errors' => TRUE, 'max_redirects' => 40, 'timeout' => 20.0, 'follow_location' => 1, 'protocol_version' => 1.1,  'header'=> ['Connection: close'], "user_agent" => BOT_USER_AGENT]
-         )); // Allow cruddy cheap journals  
-  $headers_test = @get_headers("https://doi.org/" . doi_encode($doi), GET_THE_HEADERS, $context_1);
+  $headers_test = @get_headers("https://doi.org/" . doi_encode($doi), GET_THE_HEADERS, INSECURE_CONTEXT);
   if ($headers_test === FALSE) {
      sleep(2);                                                                          // @codeCoverageIgnore
-     $headers_test = @get_headers("https://doi.org/" . doi_encode($doi), GET_THE_HEADERS, $context);  // @codeCoverageIgnore
+     $headers_test = @get_headers("https://doi.org/" . doi_encode($doi), GET_THE_HEADERS, INSECURE_CONTEXT_11);  // @codeCoverageIgnore
   }
   if ($headers_test === FALSE) {
      sleep(5);                                                                          // @codeCoverageIgnore
-     $headers_test = @get_headers("https://doi.org/" . doi_encode($doi), GET_THE_HEADERS, $context);  // @codeCoverageIgnore
+     $headers_test = @get_headers("https://doi.org/" . doi_encode($doi), GET_THE_HEADERS, INSECURE_CONTEXT_11);  // @codeCoverageIgnore
   } elseif ((empty($headers_test['Location']) && empty($headers_test['location'])) || stripos($headers_test[0], '404 Not Found') !== FALSE || stripos($headers_test[0], 'HTTP/1.1 404') !== FALSE) {
      sleep(5);                                                                          // @codeCoverageIgnore
-     $headers_test = @get_headers("https://doi.org/" . doi_encode($doi), GET_THE_HEADERS, $context);  // @codeCoverageIgnore
+     $headers_test = @get_headers("https://doi.org/" . doi_encode($doi), GET_THE_HEADERS, INSECURE_CONTEXT_11);  // @codeCoverageIgnore
      if ($headers_test === FALSE) return FALSE; /** We trust previous failure **/       // @codeCoverageIgnore
   }
   if (preg_match('~^10\.1038/nature\d{5}$~i', $doi) && $headers_test === FALSE) return FALSE; // Nature dropped the ball for now TODO - https://dx.doi.org/10.1038/nature05009
