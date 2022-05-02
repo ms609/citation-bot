@@ -15,4 +15,5 @@ parameters:
 		- WIKI_ROOT
 		- API_ROOT
 		- BOT_USER_AGENT
+		- S2_CONTEXT
 		
