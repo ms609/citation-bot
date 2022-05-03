@@ -363,7 +363,7 @@ final class apiFunctionsTest extends testBaseClass {
    'issue' => '2',
    'page' => 
   array (
-    0 => '195',
+    0 => '195DUMMY',
   ),
    'pub' => 'Geological Society of America Bulletin',
    'pubdate' => '1996-02-00',
@@ -376,7 +376,9 @@ final class apiFunctionsTest extends testBaseClass {
 );
      process_bibcode_data($template, $results);
      $this->assertSame('Geological Society of America Bulletin', $template->get2('journal'));
-     $this->assertSame('10.1130/0016-7606(1996)108<0195:GCGBPT>2.3.CO;2',  $template->get2('doi'));
+     $this->assertSame('10.1130/0016-7606(1996)108<0195:GCGBPT>2.3.CO;2', $template->get2('doi'));
+     $this->assertNull($template->get2('page'));
+     $this->assertNull($template->get2('pages')); // Added letters
   }
   
   public function testBibcodeData3() : void {
@@ -411,6 +413,7 @@ final class apiFunctionsTest extends testBaseClass {
      process_bibcode_data($template, $results);
      $this->assertSame('Astronomy and Astrophysics', $template->get2('journal'));
      $this->assertNull($template->get2('doi'));
+     $this->assertSame('952', $template->page());
   }
   
   public function testBibcodeData4() : void {
