@@ -413,7 +413,7 @@ final class apiFunctionsTest extends testBaseClass {
      process_bibcode_data($template, $results);
      $this->assertSame('Astronomy and Astrophysics', $template->get2('journal'));
      $this->assertNull($template->get2('doi'));
-     $this->assertSame('952', $template->page());
+     $this->assertSame('952', $template->get2('page') . $template->get2('pages'));
   }
   
   public function testBibcodeData4() : void {
