@@ -1380,7 +1380,6 @@ public static function find_indentifiers_in_urls(Template $template, ?string $ur
           }
         }
       } elseif (stripos($url, 'handle') !== FALSE || stripos($url, 'persistentId=hdl:') !== FALSE) {
-          $context = stream_context_create(CONTEXT_INSECURE);
           // Special case of hdl.handle.net/123/456
           if (preg_match('~^https?://hdl\.handle\.net/(\d{2,}.*/.+)$~', $url, $matches)) {
             $url = 'https://hdl.handle.net/handle/' . $matches[1];
@@ -1410,15 +1409,8 @@ public static function find_indentifiers_in_urls(Template $template, ?string $ur
           }
           $handle = urldecode($handle);
           // Verify that it works as a hdl - first with urlappend, since that is often page numbers
-          if (preg_match('~^(.+)\?urlappend=~', $handle, $matches)) {  // should we shorten it
-            usleep(100000);
-            $test_url = "https://hdl.handle.net/" . $handle;
-            $headers_test = @get_headers($test_url, GET_THE_HEADERS, $context);
-            if ($headers_test === FALSE) {
-               sleep(3);   // @codeCoverageIgnore
-               $headers_test = @get_headers($test_url, GET_THE_HEADERS, $context); // @codeCoverageIgnore
-            }
-            if ($headers_test === FALSE || (empty($headers_test['Location']) && empty($headers_test['location']))) {
+          if (preg_match('~^(.+)\?urlappend=~', $handle, $matches)) {  // should we shorten it?
+            if (hdl_works($handle) === FALSE) {
                $handle = $matches[1];   // @codeCoverageIgnore
             }
           }
@@ -1438,15 +1430,7 @@ public static function find_indentifiers_in_urls(Template $template, ?string $ur
           }
 
           // Verify that it works as a hdl
-          $test_url = "https://hdl.handle.net/" . $handle;
-          usleep(20000);
-          $headers_test = @get_headers($test_url, GET_THE_HEADERS, $context);
-          if ($headers_test === FALSE) {
-             sleep(3);  // @codeCoverageIgnore
-             $headers_test = @get_headers($test_url, GET_THE_HEADERS, $context);  // @codeCoverageIgnore
-          }
-          if ($headers_test === FALSE) return FALSE; // hdl.handle.net is down
-          if (empty($headers_test['Location']) && empty($headers_test['location'])) return FALSE; // does not resolve
+          if (hdl_works($handle) === FALSE || hdl_works($handle) === NULL) return FALSE;
           quietly('report_modification', "Converting URL to HDL parameter");
           if (is_null($url_sent)) {
              if ($template->has_good_free_copy()) $template->forget($url_type);
