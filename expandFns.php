@@ -1082,3 +1082,63 @@ function bot_html_header() : void {
    ');
 }
 
+// Returns NULL/FALSE/String of location
+function hdl_works(string $hdl) {
+  // Greatly speed-up by having one array of each kind and only look for hash keys, not values
+  static $cache_good = [];
+  static $cache_bad  = [];
+  if (isset($cache_good[$hdl])) return $cache_good[$hdl];
+  if (isset($cache_bad[$hdl]))  return FALSE;
+  if (count($cache_bad) > 250) $cache_bad = []; // Lots of things that look like handles are not handles
+  if (count($cache_good) > 1000) $cache_good = [];
+  $works = is_hdl_works($hdl);
+  if ($works === NULL) {
+    return NULL; // @codeCoverageIgnore
+  }
+  if ($works === FALSE) {
+    $cache_bad[$hdl] = TRUE;
+    return FALSE;
+  }
+  $cache_good[$hdl] = $works;
+  return $works;
+}
+
+
+function is_hdl_works(string $hdl) {
+  $matches = ['', '']; // prevent memory leak in some PHP versions
+  $hdl = trim($hdl);
+  // And now some obvious fails
+  if (strpos($hdl, '/') === FALSE) return FALSE;
+  if (strpos($hdl, 'CITATION_BOT_PLACEHOLDER') !== FALSE) return FALSE;
+  if (strpos($hdl, '123456789') === 0) return FALSE;
+  if (strpos($hdl, '10.') === 0) {
+    if (doi_works($hdl) === FALSE) return FALSE;
+  }
+  // See if it works
+  $context = stream_context_create(CONTEXT_INSECURE);
+  usleep(100000);
+  $test_url = "https://hdl.handle.net/" . $hdl;
+  $headers_test = @get_headers($test_url, GET_THE_HEADERS, $context);
+  if ($headers_test === FALSE) {
+      sleep(3);   // @codeCoverageIgnore
+      $headers_test = @get_headers($test_url, GET_THE_HEADERS, $context); // @codeCoverageIgnore
+  }
+  if ($headers_test === FALSE) {
+      sleep(8);   // @codeCoverageIgnore
+      $headers_test = @get_headers($test_url, GET_THE_HEADERS, $context); // @codeCoverageIgnore
+  }
+  if ($headers_test === FALSE) return NULL; // most likely bad, but will recheck again and again
+  if (empty($headers_test['Location']) && empty($headers_test['location'])) return FALSE; // leads nowhere
+  if (is_array(@$headers_test['Location'])) {
+      $the_header_loc = (string) $headers_test['Location'][0];
+   } elseif (is_array(@$headers_test['location'])) { // non-standard
+      $the_header_loc = (string) $headers_test['location'][0]; // @codeCoverageIgnore
+   } else {
+      $the_header_loc = (string) @$headers_test['Location'] . (string) @$headers_test['location'];
+   }
+  if (stripos($headers_test[0], '404 Not Found') !== FALSE         || stripos($headers_test[0], 'HTTP/1.1 404') !== FALSE) return FALSE; // Bad
+  if (stripos($headers_test[0], '302 Found') !== FALSE             || stripos($headers_test[0], 'HTTP/1.1 302') !== FALSE) return $the_header_loc;  // Good
+  if (stripos($headers_test[0], '301 Moved Permanently') !== FALSE || stripos($headers_test[0], 'HTTP/1.1 301') !== FALSE) return $the_header_loc;  // DOI has changed
+  report_minor_error("Unexpected response in is_hdl_works " . echoable($headers_test[0])); // @codeCoverageIgnore
+  return NULL; // @codeCoverageIgnore
+}
