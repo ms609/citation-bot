@@ -1198,7 +1198,7 @@ function process_bibcode_data(Template $this_template, object $record) : void {
        unset($record->page);
        unset($record->volume);
        unset($record->issue);
-      } elseif (preg_match('~[^A-Za-z]~', $tmp)) { // Do not trust anything with letters
+      } elseif (preg_match('~[A-Za-z]~', $tmp)) { // Do not trust anything with letters
        unset($record->page);
       }
     }
