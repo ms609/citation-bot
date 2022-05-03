@@ -18,6 +18,7 @@ function doi_active(string $doi) : ?bool {
   if ($works === NULL) {
     return NULL; // @codeCoverageIgnore
   }
+  echo "\n DOI active count:" . count($cache_good) . ' ' . count($cache_bad) . "\n"
   if ($works === FALSE) {
     // $cache_bad[$doi] = TRUE; do not store to save memory
     return FALSE;
@@ -48,6 +49,7 @@ function doi_works(string $doi) : ?bool {
   if ($works === NULL) {
     return NULL; // @codeCoverageIgnore
   }
+  echo "\n DOI works count:" . count($cache_good) . ' ' . count($cache_bad) . "\n"
   if ($works === FALSE) {
     $cache_bad[$doi] = TRUE;
     return FALSE;
@@ -1095,6 +1097,7 @@ function hdl_works(string $hdl) {
   if ($works === NULL) {
     return NULL; // @codeCoverageIgnore
   }
+  echo "\n HDL works count:" . count($cache_good) . ' ' . count($cache_bad) . "\n"
   if ($works === FALSE) {
     $cache_bad[$hdl] = TRUE;
     return FALSE;
