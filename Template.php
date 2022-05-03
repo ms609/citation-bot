@@ -205,11 +205,15 @@ final class Template {
   // Re-assemble parsed template into string
   public function parsed_text() : string {
     if ($this->has(strtolower('CITATION_BOT_PLACEHOLDER_BARE_URL'))) {
-      if ($this->blank(['title', 'chapter'])) {
-        return base64_decode($this->get(strtolower('CITATION_BOT_PLACEHOLDER_BARE_URL')));
-      } else {
+      if ($this->has('title') || $this->has('chapter') ||
+         (($this->has('journal') &&
+           ($this->get('volume') . $this->get('issue') !== '') &&
+           ($this->page() !== '') &&
+           ($this->year() !== ''))) {
         report_action("Converted Bare reference to template: " . trim(base64_decode($this->get(strtolower('CITATION_BOT_PLACEHOLDER_BARE_URL')))));
-        $this->forget(strtolower('CITATION_BOT_PLACEHOLDER_BARE_URL'));
+        $this->forget_quietly(strtolower('CITATION_BOT_PLACEHOLDER_BARE_URL'));
+      } else {
+        return base64_decode($this->get(strtolower('CITATION_BOT_PLACEHOLDER_BARE_URL')));
       }
     }
     return '{{' . $this->name . $this->join_params() . '}}';
