@@ -1088,11 +1088,13 @@ function Bibcode_Response_Processing(string $return, $ch, string $adsabs_url) : 
     }
 
     if (preg_match_all('~\nX\-RateLimit\-(\w+):\s*(\d+)\r~i', $header, $rate_limit)) {
+      // @codeCoverageIgnoreStart
       if ($rate_limit[2][2]) {
         report_info("AdsAbs search " . (string)((int) $rate_limit[2][0] - (int) $rate_limit[2][1]) . "/" . $rate_limit[2][0] . "\n");
       } else {
-        throw new Exception('Too many requests', $http_response);  // @codeCoverageIgnore
+        throw new Exception('Too many requests', $http_response);
       }
+      // @codeCoverageIgnoreEnd
     }
     if (!is_object($decoded)) {
       throw new Exception("Could not decode API response:\n" . $body, 5000);  // @codeCoverageIgnore
