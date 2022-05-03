@@ -48,6 +48,7 @@ function doi_works(string $doi) : ?bool {
   if ($works === NULL) {
     return NULL; // @codeCoverageIgnore
   }
+  print_r($cache_bad);
   if ($works === FALSE) {
     $cache_bad[$doi] = TRUE;
     return FALSE;
