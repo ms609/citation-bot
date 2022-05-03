@@ -1061,8 +1061,14 @@ function Bibcode_Response_Processing(string $return, $ch, string $adsabs_url) : 
     $header_length = (int) @curl_getinfo($ch, CURLINFO_HEADER_SIZE);
     if ($http_response === 0 || $header_length === 0) throw new Exception('Size of zero from adsabs website');
     $header = substr($return, 0, $header_length);
+    echo "\n\n HEADER: $header :END HEADER\n\n";
+    
     $body = substr($return, $header_length);
+    
+    echo "\n\n BODY: $body :END BODY\n\n";
     $decoded = @json_decode($body);
+    print_r($decoded);
+    echo "\n\n";
     if (is_object($decoded) && isset($decoded->error)) {
       // @codeCoverageIgnoreStart
       if (isset($decoded->error->trace)) {
