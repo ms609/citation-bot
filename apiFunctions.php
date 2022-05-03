@@ -1062,7 +1062,6 @@ function Bibcode_Response_Processing(string $return, $ch, string $adsabs_url) : 
     if ($http_response === 0 || $header_length === 0) throw new Exception('Size of zero from adsabs website');
     $header = substr($return, 0, $header_length);
     $body = substr($return, $header_length);
-    if (WikipediaBot::NonStandardMode()) echo "\n\n\n$header\n\n\n$body\n\n\n";
     $decoded = @json_decode($body);
     if (is_object($decoded) && isset($decoded->error)) {
       // @codeCoverageIgnoreStart
