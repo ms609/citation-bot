@@ -322,6 +322,17 @@ class Page {
     set_time_limit(120);
     $this->expand_templates_from_identifier('doi',     $our_templates);  // Do DOIs first!  Try again later for added DOIs
     $this->expand_templates_from_identifier('doi',     $our_templates_slight);
+    for ($i = 0; $i < count($our_templates_slight); $i++) { // Is is really a journal, after expanding DOI
+      $this_template = $our_templates_slight[$i];
+      if ($this_template->has('journal') &&
+          $this_template->has('doi') &&
+          ($this_template->has('volume') || $this_template->has('issue')) &&
+          ($this_template->has('year') || $this_template->has('date')) &&
+          ($this_template->has('page') || $this_template->has('pages')) &&
+          $this_template->has('title')) {
+        $this_template->change_name_to('cite journal', TRUE, TRUE);
+      }
+    }
     $this->expand_templates_from_identifier('pmid',    $our_templates);
     $this->expand_templates_from_identifier('pmc',     $our_templates);
     $this->expand_templates_from_identifier('bibcode', $our_templates);
