@@ -716,7 +716,7 @@ final class apiFunctionsTest extends testBaseClass {
      $this->assertSame('structure and evolution of the stars', strtolower($template->get2('title')));
   }
 
-  public function testBibCodeResponceProcess() : void {
+  public function testBibCodeResponseProcess() : void {
     // Need a valid curl object to abuse
     $ch = curl_init();
     curl_setopt_array($ch,
@@ -892,7 +892,7 @@ final class apiFunctionsTest extends testBaseClass {
         "title":["Multi-Scale Simulation Modeling for Prevention and Public Health Management of Diabetes in Pregnancy and Sequelae"],
         "year":"2019"}]
   }}';
-    $responce = Bibcode_Response_Processing($return, $ch, "No real URL");
+    $response = Bibcode_Response_Processing($return, $ch, "No real URL");
     curl_close($ch);
     $this->assertTrue(isset($response->docs));
     $this->assertSame(10, $response->numFound);
