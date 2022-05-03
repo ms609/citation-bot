@@ -206,7 +206,7 @@ final class Template {
   public function parsed_text() : string {
     if ($this->has(strtolower('CITATION_BOT_PLACEHOLDER_BARE_URL'))) {
       if ($this->has('title') || $this->has('chapter') ||
-         (($this->has('journal') &&
+          ($this->has('journal') &&
            ($this->get('volume') . $this->get('issue') !== '') &&
            ($this->page() !== '') &&
            ($this->year() !== ''))) {
