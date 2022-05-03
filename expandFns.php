@@ -1111,9 +1111,7 @@ function is_hdl_works(string $hdl) {
   if (strpos($hdl, '/') === FALSE) return FALSE;
   if (strpos($hdl, 'CITATION_BOT_PLACEHOLDER') !== FALSE) return FALSE;
   if (strpos($hdl, '123456789') === 0) return FALSE;
-  if (strpos($hdl, '10.') === 0) {
-    if (doi_works($hdl) === FALSE) return FALSE;
-  }
+  if (strpos($hdl, '10.') === 0 && doi_works($hdl) === FALSE) return FALSE;
   // See if it works
   $context = stream_context_create(CONTEXT_INSECURE);
   usleep(100000);
@@ -1138,7 +1136,7 @@ function is_hdl_works(string $hdl) {
    }
   if (stripos($headers_test[0], '404 Not Found') !== FALSE         || stripos($headers_test[0], 'HTTP/1.1 404') !== FALSE) return FALSE; // Bad
   if (stripos($headers_test[0], '302 Found') !== FALSE             || stripos($headers_test[0], 'HTTP/1.1 302') !== FALSE) return $the_header_loc;  // Good
-  if (stripos($headers_test[0], '301 Moved Permanently') !== FALSE || stripos($headers_test[0], 'HTTP/1.1 301') !== FALSE) return $the_header_loc;  // DOI has changed
+  if (stripos($headers_test[0], '301 Moved Permanently') !== FALSE || stripos($headers_test[0], 'HTTP/1.1 301') !== FALSE) return $the_header_loc;  // @codeCoverageIgnore  // DOIs that have been changed give this
   report_minor_error("Unexpected response in is_hdl_works " . echoable($headers_test[0])); // @codeCoverageIgnore
   return NULL; // @codeCoverageIgnore
 }
