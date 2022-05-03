@@ -6006,6 +6006,13 @@ final class Template {
             $this->name = 'Cite book';
           }
        }
+       if (($this->has('arxiv') || $this->has('eprint')) && (stripos($this->get('url'), 'arxiv') !== FALSE)) {
+          if ($this->name === 'cite web') {
+            $this->name = 'cite arXiv';
+          } else {
+            $this->name = 'Cite arXiv';
+          }
+       }
       }
       if (!$this->blank(DOI_BROKEN_ALIASES) && $this->has('jstor') &&
         (strpos($this->get('doi'), '10.2307') === 0 || $this->get('doi') === $this->get('jstor') ||
