@@ -9,6 +9,7 @@ function doi_active(string $doi) : ?bool {
   // Greatly speed-up by having one array of each kind and only look for hash keys, not values
   static $cache_good = [];
   static $cache_bad  = [];
+  $doi = trim($doi);
   if (isset($cache_good[$doi])) return TRUE;
   if (isset($cache_bad[$doi]))  return FALSE;
   // For really long category runs
@@ -39,6 +40,7 @@ function doi_works(string $doi) : ?bool {
   // Greatly speed-up by having one array of each kind and only look for hash keys, not values
   static $cache_good = [];
   static $cache_bad  = BAD_DOI_ARRAY;
+  $doi = trim($doi);
   if (isset($cache_good[$doi])) return TRUE;
   if (isset($cache_bad[$doi]))  return FALSE;
   // For really long category runs
@@ -1086,6 +1088,7 @@ function hdl_works(string $hdl) {
   // Greatly speed-up by having one array of each kind and only look for hash keys, not values
   static $cache_good = [];
   static $cache_bad  = [];
+  $hdl = trim($hdl);
   if (isset($cache_good[$hdl])) return $cache_good[$hdl];
   if (isset($cache_bad[$hdl]))  return FALSE;
   if (count($cache_bad) > 250) $cache_bad = []; // Lots of things that look like handles are not handles
