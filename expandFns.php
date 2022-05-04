@@ -1138,7 +1138,9 @@ function is_hdl_works(string $hdl) {
    }
   if (stripos($headers_test[0], '404 Not Found') !== FALSE         || stripos($headers_test[0], 'HTTP/1.1 404') !== FALSE) return FALSE; // Bad
   if (stripos($headers_test[0], '302 Found') !== FALSE             || stripos($headers_test[0], 'HTTP/1.1 302') !== FALSE) return $the_header_loc;  // Good
-  if (stripos($headers_test[0], '301 Moved Permanently') !== FALSE || stripos($headers_test[0], 'HTTP/1.1 301') !== FALSE) return $the_header_loc;  // @codeCoverageIgnore  // DOIs that have been changed give this
-  report_minor_error("Unexpected response in is_hdl_works " . echoable($headers_test[0])); // @codeCoverageIgnore
-  return NULL; // @codeCoverageIgnore
+  // @codeCoverageIgnoreStart
+  if (stripos($headers_test[0], '301 Moved Permanently') !== FALSE || stripos($headers_test[0], 'HTTP/1.1 301') !== FALSE) return $the_header_loc;  // Good, but only for moved DOIs and those will be checked with doi_works()
+  report_minor_error("Unexpected response in is_hdl_works " . echoable($headers_test[0]));
+  return NULL;
+  // @codeCoverageIgnoreEnd
 }
