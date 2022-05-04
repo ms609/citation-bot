@@ -104,10 +104,10 @@ final class expandFnsTest extends testBaseClass {
     $this->assertSame('10.1111/j.1475-4983.2012.01203.x', sanitize_doi('10.1111/j.1475-4983.2012.01203.'));  // Missing x after dot
   }
   public function testSanitizeDoi2() : void {
-    $this->assertSame('143242342342', sanitize_doi('143242342342.')); // Rubbish with trailing dot, just remove it
-    $this->assertSame('143242342342', sanitize_doi('143242342342#page_scan_tab_contents'));
-    $this->assertSame('143242342342', sanitize_doi('143242342342;jsessionid'));
-    $this->assertSame('143242342342', sanitize_doi('143242342342/summary'));
+    $this->assertSame('10.0000/Rubbish_bot_failure_test', sanitize_doi('10.0000/Rubbish_bot_failure_test.')); // Rubbish with trailing dot, just remove it
+    $this->assertSame('10.0000/Rubbish_bot_failure_test', sanitize_doi('10.0000/Rubbish_bot_failure_test#page_scan_tab_contents'));
+    $this->assertSame('10.0000/Rubbish_bot_failure_test', sanitize_doi('10.0000/Rubbish_bot_failure_test;jsessionid'));
+    $this->assertSame('10.0000/Rubbish_bot_failure_test', sanitize_doi('10.0000/Rubbish_bot_failure_test/summary'));
   }
   
   public function testTidyDate1() : void {
