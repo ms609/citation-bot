@@ -7547,9 +7547,9 @@ T1 - This is the Title }}';
     }
  
     public function testWorkofAmazon() : void {
-      $text = "{{cite book|work=Has One|publisher=Amazon Inc}}";
+      $text = "{{cite book|title=Has One|work=Amazon Inc}}";
       $expanded = $this->process_citation($text);
-      $this->AssertSame('Has One', $expanded->get2('work'));
+      $this->AssertSame('Has One', $expanded->get2('title'));
       $this->AssertNull($expanded->get2('publisher'));
     }
 }
