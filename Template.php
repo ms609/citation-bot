@@ -5432,6 +5432,10 @@ final class Template {
                  $changed = TRUE;
                  $this->set($param, 'https://www.proquest.com/docview/' . $matches[1]);
             }
+            if (preg_match("~^https?://search\.proquest\.com/dissertations/docview/(.+)$~", $this->get($param), $matches)) {
+                 $changed = TRUE;
+                 $this->set($param, 'https://www.proquest.com/dissertations/docview/' . $matches[1]);
+            }
             if (preg_match("~^https?://proquest\.umi\.com/.*$~", $this->get($param), $matches)) {
                  $ch = curl_init();
                  curl_setopt_array($ch,
