@@ -1931,8 +1931,8 @@ final class Template {
      $needs_told = FALSE;                                                           // @codeCoverageIgnore
      return FALSE;                                                                  // @codeCoverageIgnore
     }
-    if ($this->has('bibcode') && !$this->incomplete() && $this->has('doi')) {
-      return FALSE; // Don't waste a query
+    if ($this->has('bibcode') && !$this->incomplete() && $this->has('doi')) {  // Don't waste a query
+      return FALSE;  // @codeCoverageIgnore
     }
     if (stripos($this->get('bibcode'), 'CITATION') !== false) return FALSE;
 
