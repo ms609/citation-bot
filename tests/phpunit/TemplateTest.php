@@ -1820,6 +1820,16 @@ final class TemplateTest extends testBaseClass {
       $this->assertSame($text, $prepared->parsed_text());
   }
  
+  public function testDropDuplicates3() : void {
+      $text = '{{citation|year=2000|year=}}';
+      $prepared = $this->process_citation($text);
+      $this->assertSame('{{citation|year=2000}}', $prepared->parsed_text());
+
+      $text = '{{citation|year=|year=2000}}';
+      $prepared = $this->process_citation($text);
+      $this->assertSame('{{citation|year=2000}}', $prepared->parsed_text());
+  }
+ 
   public function testFixCAPSJunk() : void {
       $text = '{{citation|URL=X}}';
       $prepared = $this->process_citation($text);
@@ -2140,6 +2150,19 @@ T1 - This is the Title }}';
      $this->assertSame('1990', $prepared->get2('year')); 
      $this->assertSame('This is the Journal', $prepared->get2('journal'));
      $this->assertSame('This is the Title', $prepared->get2('title'));
+   
+     $text = '{{Cite journal  | TY - JOUR
+Y1 - 1990
+JF - This is the Journal
+T1 - This is the Title 
+SP - i 
+EP - 999 }}';
+     $prepared = $this->prepare_citation($text);
+     $this->assertSame('1990', $prepared->get2('year')); 
+     $this->assertSame('This is the Journal', $prepared->get2('journal'));
+     $this->assertSame('This is the Title', $prepared->get2('title'));
+     $this->assertNull($prepared->get2('page'));
+     $this->assertNull($prepared->get2('pages')); // Range is too big and starts with "i"
   }
     
   public function testEndNote() : void {
@@ -2504,6 +2527,12 @@ T1 - This is the Title }}';
     $text = '{{cite journal|date=2001 and 2004}}';
     $prepared = $this->prepare_citation($text);
     $this->assertSame('2001 and 2004', $prepared->get2('date'));
+  }
+ 
+  public function testCleanDates16(): void {
+    $text = '{{cite journal|date=Summer, 1994-3333}}';
+    $prepared = $this->prepare_citation($text);
+    $this->assertSame('Summer 1994–3333', $prepared->get2('date'));
   }
  
   public function testZooKeys() : void {
@@ -3178,7 +3207,7 @@ T1 - This is the Title }}';
   }
 
   public function testTrimGoogleStuff() : void {
-    $text = '{{cite web|url=https://www.google.com/search?q=%22institute+for+sustainable+weight+loss%22&oq=%22institute+for+sustainable+weight+loss%22&aqs=chrome..69i57j69i59.14823j0j7&sourceid=chrome&ie=UTF-8#The_hash#The_second_hash}}';
+    $text = '{{cite web|url=https://www.google.com/search?q=%22institute+for+sustainable+weight+loss%22&btnG=&oq=%22institute+for+sustainable+weight+loss%22&aqs=chrome..69i57j69i59.14823j0j7&sourceid=chrome&ie=UTF-8#The_hash#The_second_hash}}';
     $prepared = $this->prepare_citation($text);
     $this->assertSame('https://www.google.com/search?q=%22institute+for+sustainable+weight+loss%22#The_hash', $prepared->get2('url'));
   }
@@ -3931,7 +3960,7 @@ T1 - This is the Title }}';
   }
 
   public function testTidy42() : void {
-    $text = "{{cite journal|archiveurl=https://www.google.com/search?q=%22institute+for+sustainable+weight+loss%22&oq=%22institute+for+sustainable+weight+loss%22&aqs=chrome..69i57j69i59.14823j0j7&sourceid=chrome&ie=UTF-8&oe=Bogus&rct=ABC}}";
+    $text = "{{cite journal|archiveurl=https://www.google.com/search?q=%22institute+for+sustainable+weight+loss%22&btnG=Search&oq=%22institute+for+sustainable+weight+loss%22&aqs=chrome..69i57j69i59.14823j0j7&sourceid=chrome&ie=UTF-8&oe=Bogus&rct=ABC}}";
     $template = $this->make_citation($text);
     $template->tidy_parameter('archiveurl');
     $this->assertSame('https://www.google.com/search?q=%22institute+for+sustainable+weight+loss%22&oe=Bogus&rct=ABC', $template->get2('archiveurl'));
@@ -3974,10 +4003,10 @@ T1 - This is the Title }}';
   }
 
   public function testTidy48() : void {
-    $text = "{{cite journal|url=https://www.google.com/search?q=%22institute+for+sustainable+weight+loss%22&oq=%22institute+for+sustainable+weight+loss%22&aqs=chrome..69i57j69i59.14823j0j7&sourceid=chrome&ie=UTF-8}}";
+    $text = "{{cite journal|url=https://www.google.com/search?q=%22institute+for+sustainable+weight+loss%22&oq=%22institute+for+sustainable+weight+loss%22&aqs=chrome..69i57j69i59.14823j0j7&sourceid=chrome&ie=UTF-8&btnG=YUP}}";
     $template = $this->make_citation($text);
     $template->tidy_parameter('url');
-    $this->assertSame('https://www.google.com/search?q=%22institute+for+sustainable+weight+loss%22', $template->get2('url'));
+    $this->assertSame('https://www.google.com/search?q=%22institute+for+sustainable+weight+loss%22&btnG=YUP', $template->get2('url'));
   }
  
   public function testTidy49() : void {
@@ -4144,12 +4173,34 @@ T1 - This is the Title }}';
     $this->assertSame('https://www.proquest.com/docview/1234', $template->get2('url'));
   }
  
+ public function testTidy66c() : void {
+    $text = "{{cite journal|url=https://search.proquest.com/docview/1234abc}}";
+    $template = $this->make_citation($text);
+    $template->tidy_parameter('url');
+    $this->assertSame('https://www.proquest.com/docview/1234abc', $template->get2('url'));
+  }
+ 
+ public function testTidy66d() : void {
+    $text = "{{cite journal|url=https://search.proquest.com/openview/1234abc}}";
+    $template = $this->make_citation($text);
+    $template->tidy_parameter('url');
+    $this->assertSame('https://www.proquest.com/openview/1234abc', $template->get2('url'));
+  }
+ 
  public function testTidy67() : void {
     $text = "{{cite journal|url=https://0-search-proquest-com.schoo.org/STUFF/docview/1234/2314/3214}}";
     $template = $this->make_citation($text);
     $template->tidy_parameter('url');
     $this->assertSame('https://www.proquest.com/docview/1234', $template->get2('url'));
   }
+ 
+ public function testTidy67b() : void {
+    $text = "{{cite journal|url=https://0-search-proquest-com.scoolaid.net/STUFF/docview/1234/2314/3214}}";
+    $template = $this->make_citation($text);
+    $template->tidy_parameter('url');
+    $this->assertSame('https://www.proquest.com/docview/1234', $template->get2('url'));
+  }
+ 
  
   public function testTidy68() : void {
     $text = "{{cite journal|url=http://proxy-proquest.umi.com-org/pqd1234}}"; // Bogus, so deleted
@@ -6367,6 +6418,13 @@ T1 - This is the Title }}';
      $this->assertSame('{{cite journal| mr=396410 }}', $page->parsed_text());
     }
  
+ 
+    public function testIDconvert14() : void {
+     $text = '{{cite journal|id=dafdasfd PMID 3432413 324214324324 }}';
+     $template = $this->process_citation($text);
+     $this->assertSame('3432413', $process_citation->get2('pmid'));
+    }
+ 
    public function testCAPS() : void {
      $text = '{{Cite journal | URL = }}';
      $template = $this->process_citation($text);
@@ -6999,7 +7057,7 @@ T1 - This is the Title }}';
     $this->assertSame('2003hoe..book.....K', $expanded->get2('bibcode'));
    });
   }
-
+ 
   public function testZooKeys2() : void {
       $text = '{{Cite journal|journal=[[Zookeys]]}}';
       $expanded = $this->process_citation($text);
@@ -7182,6 +7240,10 @@ T1 - This is the Title }}';
     $text = "{{Cite journal|journal=arXiv|title=[No title found]|issue=null|volume=n/a|page=n/a|pages=null|pmc=1}}";
     $expanded = $this->process_citation($text);
     $this->assertSame('{{Cite journal|journal=ArXiv|title=[No title found]|volume=n/a|page=n/a|pmc=1}}', $expanded->parsed_text());
+    
+    $text = "{{Cite journal|journal=arXiv|title=[No TITLE found]|issue=null|volume=n/a|page=n/a|pages=null|pmc=1}}";
+    $expanded = $this->process_citation($text);
+    $this->assertSame('{{Cite journal|journal=ArXiv|title=[No TITLE found]|volume=n/a|page=n/a|pmc=1}}', $expanded->parsed_text());
   }
  
    public function testTidyUpNA() : void {
@@ -7261,6 +7323,12 @@ T1 - This is the Title }}';
     $text = "{{Cite journal|journal=oceanic linguistics special publications|issue=3}}";
     $expanded = $this->make_citation($text);
     $expanded->tidy_parameter('issue');
+    $this->AssertNull($expanded->get2('issue'));
+    $this->AssertSame('3', $expanded->get2('volume'));
+   
+    $text = "{{Cite journal|journal=oceanic linguistics special publications}}";
+    $expanded = $this->make_citation($text);
+    $expanded->add_if_new('issue', '3');
     $this->AssertNull($expanded->get2('issue'));
     $this->AssertSame('3', $expanded->get2('volume'));
   }
@@ -7552,4 +7620,85 @@ T1 - This is the Title }}';
       $this->AssertSame('Has One', $expanded->get2('title'));
       $this->AssertNull($expanded->get2('publisher'));
     }
+ 
+    public function testAbbrInPublisher() : void {
+      $text = "{{cite web|publisher=nytc|work=new york times}}";
+      $expanded = $this->process_citation($text);
+      $this->AssertSame('new york times', $expanded->get2('work'));
+      $this->AssertNull($expanded->get2('publisher'));
+
+      $text = "{{cite web|publisher=nyt|work=new york times}}";
+      $expanded = $this->process_citation($text);
+      $this->AssertSame('new york times', $expanded->get2('work'));
+      $this->AssertNull($expanded->get2('publisher'));
+     
+
+      $text = "{{cite web|publisher=wpc|work=washington post}}";
+      $expanded = $this->process_citation($text);
+      $this->AssertSame('washington post', $expanded->get2('work'));
+      $this->AssertNull($expanded->get2('publisher'));
+    }
+
+    public function testDoiThatFailsWeird() : void {
+      $text = "{{cite web|doi=10.1111/j.1475-4983.2002.32412432423423421314324234233242314234|year=2002}}"; // Special Papers in Palaeontology - they do not work
+      $expanded = $this->process_citation($text);
+      $this->AssertNull($expanded->get2('doi'));
+    }
+ 
+    public function tesBadURLStatusSettings() : void {
+      $text = "{{cite web|url-status=sì}}";
+      $expanded = $this->process_citation($text);
+      $this->AssertSame('dead', $expanded->get2('url-status'));
+     
+      $text = "{{cite web|url-status=no}}";
+      $expanded = $this->process_citation($text);
+      $this->AssertSame('live', $expanded->get2('url-status'));
+    }
+
+    public function tesCitePaper() : void {
+      $text = "{{cite paper|url=x|website=x}}";
+      $expanded = $this->process_citation($text);
+      $this->AssertSame('cite web', $expanded->wikiname());
+     
+      $text = "{{cite paper|url=x|magazine=x}}";
+      $expanded = $this->process_citation($text);
+      $this->AssertSame('cite magazine', $expanded->wikiname());  
+
+      $text = "{{cite paper|url=x|encyclopedia=x}}";
+      $expanded = $this->process_citation($text);
+      $this->AssertSame('cite encyclopedia', $expanded->wikiname());  
+
+      $text = "{{cite paper|url=x|journal=x}}";
+      $expanded = $this->process_citation($text);
+      $this->AssertSame('cite journal', $expanded->wikiname());  
+
+      $text = "{{Cite paper|url=x|website=x}}";
+      $expanded = $this->process_citation($text);
+      $this->AssertSame('cite web', $expanded->wikiname());
+     
+      $text = "{{Cite paper|url=x|magazine=x}}";
+      $expanded = $this->process_citation($text);
+      $this->AssertSame('cite magazine', $expanded->wikiname());  
+
+      $text = "{{Cite paper|url=x|encyclopedia=x}}";
+      $expanded = $this->process_citation($text);
+      $this->AssertSame('cite encyclopedia', $expanded->wikiname());  
+
+      $text = "{{Cite paper|url=x|journal=x}}";
+      $expanded = $this->process_citation($text);
+      $this->AssertSame('cite journal', $expanded->wikiname());  
+    }
+    
+    public function testAreManyThings() : void {
+      $text = "{{Cite web}}";
+      $expanded = $this->make_citation($text);
+      $expanded->add_if_new('newspaper', 'Ballotpedia');
+      $this->AssertSame('Ballotpedia', $expanded->get2('website')); 
+     
+      $text = "{{Cite news}}";
+      $expanded = $this->make_citation($text);
+      $expanded->add_if_new('newspaper', 'Ballotpedia');
+      $this->AssertSame('Ballotpedia', $expanded->get2('newspaper'));  
+    }
+
 }
