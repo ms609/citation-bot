@@ -4128,21 +4128,21 @@ T1 - This is the Title }}';
     $text = "{{cite journal|url=https://search.proquest.com/STUFF/docview/1234/STUFF}}";
     $template = $this->make_citation($text);
     $template->tidy_parameter('url');
-    $this->assertSame('https://search.proquest.com/docview/1234/STUFF', $template->get2('url'));
+    $this->assertSame('https://www.proquest.com/docview/1234/STUFF', $template->get2('url'));
   }
  
  public function testTidy66b() : void {
     $text = "{{cite journal|url=http://host.com/login?url=https://search-proquest-com-stuff/STUFF/docview/1234/34123/342}}";
     $template = $this->make_citation($text);
     $template->tidy_parameter('url');
-    $this->assertSame('https://search.proquest.com/docview/1234', $template->get2('url'));
+    $this->assertSame('https://www.proquest.com/docview/1234', $template->get2('url'));
   }
  
  public function testTidy67() : void {
     $text = "{{cite journal|url=https://0-search-proquest-com.schoo.org/STUFF/docview/1234/2314/3214}}";
     $template = $this->make_citation($text);
     $template->tidy_parameter('url');
-    $this->assertSame('https://search.proquest.com/docview/1234', $template->get2('url'));
+    $this->assertSame('https://www.proquest.com/docview/1234', $template->get2('url'));
   }
  
   public function testTidy68() : void {
@@ -4156,21 +4156,21 @@ T1 - This is the Title }}';
     $text = "{{cite journal|url=https://search.proquest.com/dissertations/docview/1234}}";
     $template = $this->make_citation($text);
     $template->tidy_parameter('url');
-    $this->assertSame('https://search.proquest.com/dissertations/docview/1234', $template->get2('url'));
+    $this->assertSame('https://www.proquest.com/dissertations/docview/1234', $template->get2('url'));
   }
  
   public function testTidy70() : void {
     $text = "{{cite journal|url=https://search.proquest.com/docview/1234/fulltext}}";
     $template = $this->make_citation($text);
     $template->tidy_parameter('url');
-    $this->assertSame('https://search.proquest.com/docview/1234', $template->get2('url'));
+    $this->assertSame('https://www.proquest.com/docview/1234', $template->get2('url'));
   }
  
   public function testTidy70b() : void {
     $text = "{{cite journal|url=https://search.proquest.com/docview/1234?account=XXXXX}}";
     $template = $this->make_citation($text);
     $template->tidy_parameter('url');
-    $this->assertSame('https://search.proquest.com/docview/1234', $template->get2('url'));
+    $this->assertSame('https://www.proquest.com/docview/1234', $template->get2('url'));
   }
  
   public function testTidy71() : void {
