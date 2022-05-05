@@ -6422,7 +6422,7 @@ EP - 999 }}';
     public function testIDconvert14() : void {
      $text = '{{cite journal|id=dafdasfd PMID 3432413 324214324324 }}';
      $template = $this->process_citation($text);
-     $this->assertSame('3432413', $process_citation->get2('pmid'));
+     $this->assertSame('3432413', $template->get2('pmid'));
     }
  
    public function testCAPS() : void {
@@ -7635,7 +7635,7 @@ EP - 999 }}';
 
       $text = "{{cite web|publisher=wpc|work=washington post}}";
       $expanded = $this->process_citation($text);
-      $this->AssertSame('washington post', $expanded->get2('work'));
+      $this->AssertSame('washington post', $expanded->get2('newspaper'));
       $this->AssertNull($expanded->get2('publisher'));
     }
 
