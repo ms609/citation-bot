@@ -484,6 +484,12 @@ final class TemplateTest extends testBaseClass {
     $this->assertSame('10.1093/acrefore/9780190201098.013.1357', $template->get2('doi'));
   }
  
+  public function testOxComms() : void {
+    $text="{{cite web|url=https://oxfordre.com/communication/view/10.1093/acrefore/9780190228613.001.0001/acrefore-9780190228613-e-1195|doi-broken-date=X|doi=10.3421/32412xxxxxxx}}";
+    $template = $this->process_citation($text);
+    $this->assertSame('10.1093/acrefore/9780190228613.013.1195', $template->get2('doi'));
+  }
+ 
   public function testShortenMusic() : void {
     $text="{{cite web|url=https://oxfordmusiconline.com/X/X/2134/1/1/1/1}}";
     $template = $this->process_citation($text);
@@ -7517,5 +7523,33 @@ T1 - This is the Title }}';
       $expanded = $this->process_citation($text);
       $this->AssertSame('https://books.google.com/books?id=12345&q=huh&article_id=3241#v=onepage', $expanded->get2('url'));
     }
-
+ 
+    public function testLotsOfZeros() : void {
+      $text = "{{cite journal|volume=0000000000000|issue=00000000000}}";
+      $expanded = $this->process_citation($text);
+      $this->AssertNull($expanded->get2('volume'));
+      $this->AssertNull($expanded->get2('issue'));
+    }
+ 
+    public function testWorkToMag() : void {
+      $text = "{{cite journal|work=The New Yorker}}";
+      $expanded = $this->process_citation($text);
+      $this->AssertSame('The New Yorker', $expanded->get2('magazine'));
+      $this->AssertNull($expanded->get2('work'));
+      $this->AssertSame('cite magazine', $expanded->wikiname());
+    }
+ 
+    public function testWorkAgency() : void {
+      $text = "{{cite news|work=Reuters|url=SomeThingElse.com}}";
+      $expanded = $this->process_citation($text);
+      $this->AssertSame('Reuters', $expanded->get2('agency'));
+      $this->AssertNull($expanded->get2('work'));
+    }
+ 
+    public function testWorkofAmazon() : void {
+      $text = "{{cite book|work=Has One|publisher=Amazon Inc}}";
+      $expanded = $this->process_citation($text);
+      $this->AssertSame('Has One', $expanded->get2('work'));
+      $this->AssertNull($expanded->get2('publisher'));
+    }
 }
