@@ -2677,8 +2677,8 @@ final class Template {
       if (isset($book_array['pg'])){
           $url .= '&pg=' . $book_array['pg'];
       }
-      if (isset($book_array['lpg'])){
-          $url .= '&lpg=' . $book_array['lpg'];
+      if (isset($book_array['lpg'])){ // Currently NOT POSSIBLE - failsafe code for changes
+          $url .= '&lpg=' . $book_array['lpg']; // @codeCoverageIgnore
       }
       if (isset($book_array['article_id'])){
           $url .= '&article_id=' . $book_array['article_id'];
