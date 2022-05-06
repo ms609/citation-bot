@@ -7507,7 +7507,7 @@ T1 - This is the Title }}';
       $expanded = $this->process_citation($text);
       $this->AssertSame('https://books.google.com/books?id=12345&sitesec=reviews', $expanded->get2('url'));
     }
- 
+ ds
     public function testGoogleBooksHashCleanup11() : void {
       $text = "{{cite LSA|url=https://books.google.com/books?id=12345&article_id=3241}}";
       $expanded = $this->process_citation($text);
