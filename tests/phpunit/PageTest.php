@@ -431,4 +431,14 @@ final class PageTest extends testBaseClass {
     $page = $this->process_page($text);
     $this->assertSame('Add: chapter-url. Removed or converted URL. | [[WP:UCB|Use this bot]]. [[WP:DBUG|Report bugs]]. ', $page->edit_summary());
   }
+
+  public function testConvertCiteNews() : void {
+    $text = "{{Cite news|doi=10.1088/1742-6596/1087/6/062024}}";
+    $template = $this->process_citation($text);
+    $this->assertSame('10.1088/1742-6596/1087/6/062024', $template->get2('doi'));
+    $this->assertSame('The application of 3D technology in video games', $template->get2('title'));
+    $this->assertSame('1087', $template->get2('volume'));
+    $this->assertSame('cite journal', $template->wikiname());
+  }
+
 }
