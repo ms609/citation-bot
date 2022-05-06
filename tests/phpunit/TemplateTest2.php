@@ -4008,7 +4008,7 @@ final class TemplateTest2 extends testBaseClass {
       $this->AssertNull($expanded->get2('doi'));
     }
  
-    public function tesBadURLStatusSettings() : void {
+    public function testBadURLStatusSettings() : void {
       $text = "{{cite web|url-status=sì}}";
       $expanded = $this->process_citation($text);
       $this->AssertSame('dead', $expanded->get2('url-status'));
@@ -4018,7 +4018,7 @@ final class TemplateTest2 extends testBaseClass {
       $this->AssertSame('live', $expanded->get2('url-status'));
     }
  
-     public function tesCiteDocument() : void {
+     public function testCiteDocument() : void {
       $text = "{{cite document|url=x|website=x}}";
       $expanded = $this->process_citation($text);
       $this->AssertSame('cite web', $expanded->wikiname());
@@ -4052,7 +4052,7 @@ final class TemplateTest2 extends testBaseClass {
       $this->AssertSame('cite journal', $expanded->wikiname());  
     }
 
-    public function tesCitePaper() : void {
+    public function testCitePaper() : void {
       $text = "{{cite paper|url=x|website=x}}";
       $expanded = $this->process_citation($text);
       $this->AssertSame('cite web', $expanded->wikiname());
