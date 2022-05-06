@@ -114,6 +114,7 @@ final class Template {
       } elseif (!$this->blank_other_than_comments('website') && $this->has('url')) {
         $this->name = $spacing[1] . 'cite web' . $spacing[2];
       } elseif (!$this->blank_other_than_comments('magazine')) {
+        trigger_error(___LINE__, E_USER_ERROR);
         $this->name = $spacing[1] . 'cite magazine' . $spacing[2];
       } elseif (!$this->blank_other_than_comments(['encyclopedia', 'encyclopaedia'])) {
         $this->name = $spacing[1] . 'cite encyclopedia' . $spacing[2];
