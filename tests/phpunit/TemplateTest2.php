@@ -4008,12 +4008,33 @@ final class TemplateTest2 extends testBaseClass {
       $this->AssertNull($expanded->get2('doi'));
     }
  
-    public function testBadURLStatusSettings() : void {
-      $text = "{{cite web|url-status=sì}}";
+    public function testBadURLStatusSettings1() : void {
+      $text = "{{cite web|url-status=sì|url=X}}";
       $expanded = $this->process_citation($text);
       $this->AssertSame('dead', $expanded->get2('url-status'));
-     
-      $text = "{{cite web|url-status=no}}";
+    }
+    public function testBadURLStatusSettings2() : void {
+      $text = "{{cite web|url-status=no|url=X}}";
+      $expanded = $this->process_citation($text);
+      $this->AssertSame('live', $expanded->get2('url-status'));
+    }
+    public function testBadURLStatusSettings3() : void {
+      $text = "{{cite web|url-status=sì|url=X|archive-url=Y}}";
+      $expanded = $this->process_citation($text);
+      $this->AssertSame('dead', $expanded->get2('url-status'));
+    }
+    public function testBadURLStatusSettings4() : void {
+      $text = "{{cite web|url-status=no|url=X|archive-url=Y}}";
+      $expanded = $this->process_citation($text);
+      $this->AssertSame('live', $expanded->get2('url-status'));
+    }
+    public function testBadURLStatusSettings5() : void {
+      $text = "{{cite web|url-status=dead|url=X|archive-url=Y}}";
+      $expanded = $this->process_citation($text);
+      $this->AssertSame('dead', $expanded->get2('url-status'));
+    }
+    public function testBadURLStatusSettings6() : void {
+      $text = "{{cite web|url-status=live|url=X|archive-url=Y}}";
       $expanded = $this->process_citation($text);
       $this->AssertSame('live', $expanded->get2('url-status'));
     }
