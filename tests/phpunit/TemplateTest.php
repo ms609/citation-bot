@@ -7654,6 +7654,40 @@ EP - 999 }}';
       $expanded = $this->process_citation($text);
       $this->AssertSame('live', $expanded->get2('url-status'));
     }
+ 
+     public function tesCiteDocument() : void {
+      $text = "{{cite document|url=x|website=x}}";
+      $expanded = $this->process_citation($text);
+      $this->AssertSame('cite web', $expanded->wikiname());
+     
+      $text = "{{cite document|url=x|magazine=x}}";
+      $expanded = $this->process_citation($text);
+      $this->AssertSame('cite magazine', $expanded->wikiname());  
+
+      $text = "{{cite document|url=x|encyclopedia=x}}";
+      $expanded = $this->process_citation($text);
+      $this->AssertSame('cite encyclopedia', $expanded->wikiname());  
+
+      $text = "{{cite document|url=x|journal=x}}";
+      $expanded = $this->process_citation($text);
+      $this->AssertSame('cite journal', $expanded->wikiname());  
+
+      $text = "{{cite document|url=x|website=x}}";
+      $expanded = $this->process_citation($text);
+      $this->AssertSame('cite web', $expanded->wikiname());
+     
+      $text = "{{cite document|url=x|magazine=x}}";
+      $expanded = $this->process_citation($text);
+      $this->AssertSame('cite magazine', $expanded->wikiname());  
+
+      $text = "{{cite document|url=x|encyclopedia=x}}";
+      $expanded = $this->process_citation($text);
+      $this->AssertSame('cite encyclopedia', $expanded->wikiname());  
+
+      $text = "{{cite document|url=x|journal=x}}";
+      $expanded = $this->process_citation($text);
+      $this->AssertSame('cite journal', $expanded->wikiname());  
+    }
 
     public function tesCitePaper() : void {
       $text = "{{cite paper|url=x|website=x}}";
