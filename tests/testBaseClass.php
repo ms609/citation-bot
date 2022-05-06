@@ -22,6 +22,7 @@ abstract class testBaseClass extends PHPUnit\Framework\TestCase {
 
     AdsAbsControl::give_up();
     Zotero::block_zotero();
+    gc_collect_cycles();
   }
 
   protected function requires_secrets(callable $function) : void {

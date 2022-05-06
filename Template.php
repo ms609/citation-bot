@@ -205,11 +205,15 @@ final class Template {
   // Re-assemble parsed template into string
   public function parsed_text() : string {
     if ($this->has(strtolower('CITATION_BOT_PLACEHOLDER_BARE_URL'))) {
-      if ($this->blank(['title', 'chapter'])) {
-        return base64_decode($this->get(strtolower('CITATION_BOT_PLACEHOLDER_BARE_URL')));
-      } else {
+      if ($this->has('title') || $this->has('chapter') ||
+          ($this->has('journal') &&
+           ($this->get('volume') . $this->get('issue') !== '') &&
+           ($this->page() !== '') &&
+           ($this->year() !== ''))) {
         report_action("Converted Bare reference to template: " . trim(base64_decode($this->get(strtolower('CITATION_BOT_PLACEHOLDER_BARE_URL')))));
-        $this->forget(strtolower('CITATION_BOT_PLACEHOLDER_BARE_URL'));
+        $this->quietly_forget(strtolower('CITATION_BOT_PLACEHOLDER_BARE_URL'));
+      } else {
+        return base64_decode($this->get(strtolower('CITATION_BOT_PLACEHOLDER_BARE_URL')));
       }
     }
     return '{{' . $this->name . $this->join_params() . '}}';
@@ -1927,8 +1931,8 @@ final class Template {
      $needs_told = FALSE;                                                           // @codeCoverageIgnore
      return FALSE;                                                                  // @codeCoverageIgnore
     }
-    if ($this->has('bibcode') && !$this->incomplete() && $this->has('doi')) {
-      return FALSE; // Don't waste a query
+    if ($this->has('bibcode') && !$this->incomplete() && $this->has('doi')) {  // Don't waste a query
+      return FALSE;  // @codeCoverageIgnore
     }
     if (stripos($this->get('bibcode'), 'CITATION') !== false) return FALSE;
 
@@ -2673,8 +2677,8 @@ final class Template {
       if (isset($book_array['pg'])){
           $url .= '&pg=' . $book_array['pg'];
       }
-      if (isset($book_array['lpg'])){
-          $url .= '&lpg=' . $book_array['lpg'];
+      if (isset($book_array['lpg'])){ // Currently NOT POSSIBLE - failsafe code for changes
+          $url .= '&lpg=' . $book_array['lpg']; // @codeCoverageIgnore
       }
       if (isset($book_array['article_id'])){
           $url .= '&article_id=' . $book_array['article_id'];
@@ -3107,7 +3111,7 @@ final class Template {
       $this->forget('id');
       return;
     }
-    while (preg_match("~\b(PMID|DOI|ISBN|ISSN|ARXIV|LCCN)[\s:]*(\d[\d\s\-]*+[^\s\}\{\|,;]*)(?:[,;] )?~iu", $id, $match)) {
+    while (preg_match("~\b(PMID|DOI|ISBN|ISSN|ARXIV|LCCN)[\s:]*(\d[\d\s\-][^\s\}\{\|,;]*)(?:[,;] )?~iu", $id, $match)) {
       $the_type = strtolower($match[1]);
       $the_data = $match[2];
       $the_all  = $match[0];
@@ -3329,7 +3333,7 @@ final class Template {
     return $ret;
   }
 
-  public function change_name_to(string $new_name, bool $rename_cite_book = TRUE) : void {
+  public function change_name_to(string $new_name, bool $rename_cite_book = TRUE, bool $rename_anything = FALSE) : void {
     $spacing = ['', '']; $matches = ['', '']; // prevent memory leak in some PHP versions
     if (strpos($this->get('doi'), '10.1093') !== FALSE && $this->wikiname() !== 'cite web') return;
     if (bad_10_1093_doi($this->get('doi'))) return;
@@ -3348,8 +3352,9 @@ final class Template {
     }
     $new_name = strtolower(trim($new_name)); // Match wikiname() output and cite book below
     if ($new_name === $this->wikiname()) return;
-    if ((in_array($this->wikiname(), TEMPLATES_WE_RENAME) && ($rename_cite_book || $this->wikiname() != 'cite book'))
-        || ($this->wikiname() === 'cite news' && $new_name === 'cite magazine')
+    if ((in_array($this->wikiname(), TEMPLATES_WE_RENAME) && ($rename_cite_book || $this->wikiname() !== 'cite book')) ||
+        ($this->wikiname() === 'cite news' && $new_name === 'cite magazine') ||
+        ($rename_anything && in_array($new_name, TEMPLATES_WE_RENAME)) // In rare cases when we are positive that cite news is really cite journal
     ) {
       if ($new_name === 'cite arxiv') {
         if (!$this->blank(array_merge(['website','displayauthors','display-authors','access-date','accessdate',
@@ -4192,10 +4197,6 @@ final class Template {
             return;
           }
           if (stripos($this->get('url'), 'developers.google.com') !== FALSE && stripos($publisher, 'google') !== FALSE)  {
-            $this->set($param, 'Google Inc.');  // Case when Google actually IS a publisher
-            return;
-          }
-          if (stripos($this->get('url'), 'support.google.com') !== FALSE && stripos($publisher, 'google') !== FALSE)  {
             $this->set($param, 'Google Inc.');  // Case when Google actually IS a publisher
             return;
           }
@@ -5386,12 +5387,7 @@ final class Template {
             }
           }
           if (stripos($this->get($param), 'proquest') !== FALSE) {
-            if (preg_match("~^(?:http.+/login/?\?url=|)https?://(?:0\-|)search.proquest.com[^/]+(|/[^/]+)+/docview/(.+)$~", $this->get($param), $matches)) {
-                 $this->set($param, 'https://search.proquest.com' . $matches[1] . '/docview/' . $matches[2]);
-                 report_info("Remove proxy from ProQuest URL");
-                 if ($this->has('via') && stripos($this->get('via'), 'library') !== FALSE) $this->forget('via');
-                 if ($this->has('via') && stripos($this->get('via'), 'proquest') === FALSE) $this->forget('via');
-            } elseif (preg_match("~^(?:http.+/login/?\?url=|)https?://(?:0\-|)www.proquest.com[^/]+(|/[^/]+)+/docview/(.+)$~", $this->get($param), $matches)) {
+            if (preg_match("~^(?:http.+/login/?\?url=|)https?://(?:0\-|)(?:search|www).proquest.com[^/]+(|/[^/]+)+/docview/(.+)$~", $this->get($param), $matches)) {
                  $this->set($param, 'https://www.proquest.com' . $matches[1] . '/docview/' . $matches[2]);
                  report_info("Remove proxy from ProQuest URL");
                  if ($this->has('via') && stripos($this->get('via'), 'library') !== FALSE) $this->forget('via');
@@ -5403,48 +5399,42 @@ final class Template {
                  if ($this->has('via') && stripos($this->get('via'), 'library') !== FALSE) $this->forget('via');
                  if ($this->has('via') && stripos($this->get('via'), 'proquest') === FALSE) $this->forget('via');
                }
-            } elseif (preg_match("~^(?:http.+/login/?\?url=|)https?://(?:0\-|)search.proquest.+scoolaid\.net(|/[^/]+)+/docview/(.+)$~", $this->get($param), $matches)) {
-                 $this->set($param, 'https://search.proquest.com' . $matches[1] . '/docview/' . $matches[2]);
+            } elseif (preg_match("~^(?:http.+/login/?\?url=|)https?://(?:0\-|)(?:www|search).proquest.+scoolaid\.net(|/[^/]+)+/docview/(.+)$~", $this->get($param), $matches)) {
+                 $this->set($param, 'https://www.proquest.com' . $matches[1] . '/docview/' . $matches[2]);
                  report_info("Remove proxy from ProQuest URL");
                  if ($this->has('via') && stripos($this->get('via'), 'library') !== FALSE) $this->forget('via');
                  if ($this->has('via') && stripos($this->get('via'), 'proquest') === FALSE) $this->forget('via');
             }
             $changed = FALSE;
-            if (preg_match("~^https?://search.proquest.com/(.+)/docview/(.+)$~", $this->get($param), $matches)) {
-              if ($matches[1] != 'dissertations') {
-                 $changed = TRUE;
-                 $this->set($param, 'https://search.proquest.com/docview/' . $matches[2]); // Remove specific search engine
-              }
-            }
-            if (preg_match("~^https?://www.proquest.com/(.+)/docview/(.+)$~", $this->get($param), $matches)) {
+            if (preg_match("~^https?://(?:|search|www).proquest.com/(.+)/docview/(.+)$~", $this->get($param), $matches)) {
               if ($matches[1] != 'dissertations') {
                  $changed = TRUE;
                  $this->set($param, 'https://www.proquest.com/docview/' . $matches[2]); // Remove specific search engine
               }
             }
-            if (preg_match("~^https?://search\.proquest\.com/docview/(.+)/(?:abstract|fulltext|preview|page).*$~i", $this->get($param), $matches)) {
-                 $changed = TRUE;
-                 $this->set($param, 'https://search.proquest.com/docview/' . $matches[1]); // You have to login to get that
-            }
-            if (preg_match("~^https?://www\.proquest\.com/docview/(.+)/(?:abstract|fulltext|preview|page).*$~i", $this->get($param), $matches)) {
+            if (preg_match("~^https?://(?:search|www)\.proquest\.com/docview/(.+)/(?:abstract|fulltext|preview|page).*$~i", $this->get($param), $matches)) {
                  $changed = TRUE;
                  $this->set($param, 'https://www.proquest.com/docview/' . $matches[1]); // You have to login to get that
             }
-            if (preg_match("~^https?://search\.proquest\.com/docview/(.+)\?.+$~", $this->get($param), $matches)) {
-                 $changed = TRUE;
-                 $this->set($param, 'https://search.proquest.com/docview/' . $matches[1]); // User specific information
-            }
-            if (preg_match("~^https?://www\.proquest\.com/docview/(.+)\?.+$~", $this->get($param), $matches)) {
+            if (preg_match("~^https?://(?:search|www)\.proquest\.com/docview/(.+)\?.+$~", $this->get($param), $matches)) {
                  $changed = TRUE;
                  $this->set($param, 'https://www.proquest.com/docview/' . $matches[1]); // User specific information
             }
-            if (preg_match("~^https?://search\.proquest\.com/docview/([0-9]+)/[0-9A-Z]+/[0-9]+\??$~", $this->get($param), $matches)) {
-                 $changed = TRUE;
-                 $this->set($param, 'https://search.proquest.com/docview/' . $matches[1]); // User specific information
-            }
-            if (preg_match("~^https?://www\.proquest\.com/docview/([0-9]+)/[0-9A-Z]+/[0-9]+\??$~", $this->get($param), $matches)) {
+            if (preg_match("~^https?://(?:www|search)\.proquest\.com/docview/([0-9]+)/[0-9A-Z]+/[0-9]+\??$~", $this->get($param), $matches)) {
                  $changed = TRUE;
                  $this->set($param, 'https://www.proquest.com/docview/' . $matches[1]); // User specific information
+            }
+            if (preg_match("~^https?://search\.proquest\.com/docview/(.+)$~", $this->get($param), $matches)) {
+                 $changed = TRUE;
+                 $this->set($param, 'https://www.proquest.com/docview/' . $matches[1]);
+            }
+            if (preg_match("~^https?://search\.proquest\.com/dissertations/docview/(.+)$~", $this->get($param), $matches)) {
+                 $changed = TRUE;
+                 $this->set($param, 'https://www.proquest.com/dissertations/docview/' . $matches[1]);
+            }
+            if (preg_match("~^https?://search\.proquest\.com/openview/(.+)$~", $this->get($param), $matches)) {
+                 $changed = TRUE;
+                 $this->set($param, 'https://www.proquest.com/openview/' . $matches[1]);
             }
             if (preg_match("~^https?://proquest\.umi\.com/.*$~", $this->get($param), $matches)) {
                  $ch = curl_init();
@@ -6001,6 +5991,14 @@ final class Template {
           } else {
             $this->name = 'Cite book';
           }
+       }
+       if (($this->has('arxiv') || $this->has('eprint')) && (stripos($this->get('url'), 'arxiv.org') !== FALSE)) {
+          if ($this->name === 'cite web') {
+            $this->name = 'cite arXiv';
+          } else {
+            $this->name = 'Cite arXiv';
+          }
+          $this->quietly_forget('url');
        }
       }
       if (!$this->blank(DOI_BROKEN_ALIASES) && $this->has('jstor') &&
