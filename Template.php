@@ -71,6 +71,7 @@ final class Template {
       $this->name = substr($text, 2, -2);
     }
     $this->initial_name = $this->name;
+    echo "\n" . __LINE__ . "  " . $this->name . "\n";
     // Clean up outdated redirects
     preg_match("~^(\s*).*\b(\s*)$~", $this->name, $spacing);
     $trim_name = trim($this->name);
@@ -81,7 +82,7 @@ final class Template {
          $trim_name = str_replace("_", " ", $trim_name);
       }
     }
-
+    echo "\n" . __LINE__ . "  " . $this->name . "\n";
     foreach (TEMPLATE_CONVERSIONS as $trial) {
       if ($trim_name === $trial[0]) {
         $this->name = $spacing[1] . $trial[1] . $spacing[2];
@@ -91,7 +92,9 @@ final class Template {
     while (strpos($this->name, 'Cite  ') === 0 || strpos($this->name, 'cite  ') === 0) {
       $this->name = substr_replace($this->name, 'ite ', 1, 5);
     }
+        echo "\n" . __LINE__ . "  " . $this->name . "\n";
     $trim_name = trim($this->name); // Update if changed above
+        echo "\n" . __LINE__ . "  " . $this->name . "\n";
     // Cite article is actually cite news, but often used for journal by mistake - fix
     if ($trim_name === 'cite article') {
       if ($this->blank(['journal', 'pmid', 'pmc', 'doi', 's2cid', 'citeseerx'])) {
@@ -107,6 +110,7 @@ final class Template {
       }
       // Cite paper and Cite document are really cite journal
     } elseif ($trim_name === 'cite paper' || $trim_name === 'cite document') {
+          echo "\n" . __LINE__ . "  " . $this->name . "\n";
       if (!$this->blank_other_than_comments('journal')) {
         $this->name = $spacing[1] . 'cite journal' . $spacing[2];
       } elseif (!$this->blank_other_than_comments('newspaper')) {
@@ -114,6 +118,7 @@ final class Template {
       } elseif (!$this->blank_other_than_comments('website') && $this->has('url')) {
         $this->name = $spacing[1] . 'cite web' . $spacing[2];
       } elseif (!$this->blank_other_than_comments('magazine')) {
+            echo "\n" . __LINE__ . "  " . $this->name . "\n";
         $this->name = $spacing[1] . 'cite magazine' . $spacing[2];
       } elseif (!$this->blank_other_than_comments(['encyclopedia', 'encyclopaedia'])) {
         $this->name = $spacing[1] . 'cite encyclopedia' . $spacing[2];
@@ -126,7 +131,9 @@ final class Template {
       } else {
         $this->name = $spacing[1] . 'cite document' . $spacing[2];
       }
+          echo "\n" . __LINE__ . "  " . $this->name . "\n";
     } elseif ($trim_name === 'Cite paper' || $trim_name === 'Cite document') {
+          echo "\n" . __LINE__ . "  " . $this->name . "\n";
       if (!$this->blank_other_than_comments('journal')) {
         $this->name = $spacing[1] . 'Cite journal' . $spacing[2];
       } elseif (!$this->blank_other_than_comments('newspaper')) {
