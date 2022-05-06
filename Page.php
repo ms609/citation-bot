@@ -212,7 +212,7 @@ class Page {
                       ); 
      // PLAIN {{DOI}}, {{PMID}}, {{PMC}} {{isbn}} {{oclc}} {{bibcode}} {{arxiv}} Converted to templates
      $this->text = preg_replace_callback(   // like <ref>{{doi|10.1244/abc}}</ref>
-                      "~(<(?:\s*)ref[^>]*?>)(\s*\{\{(?:doi\|10\.\d{4,6}\/[^\s\}\{\|]+?|pmid\|\d{4,9}|pmc\|\d{4,9}|oclc\|\d{4,9}|isbn\|[0-9\-xX]+?|arxiv\|\d{4}\.\d{4,5}|arxiv\|[a-z\.\-]{2,12}\/\d{7,8}|bibcode\|[12]\d{3}[\w\d\.&]{15}|jstor\|[^\s\}\{\|]+?)\}\}\s*)(<\s*?\/\s*?ref(?:\s*)>)~i",
+                      "~(<(?:\s*)ref[^>]*?>)(\s*\{\{(?:doi\|10\.\d{4,6}\/[^\s\}\{\|]+?|pmid\|\d{4,9}|pmc\|\d{4,9}|oclc\|\d{4,9}|isbn\|[0-9\-xX]+?|arxiv\|\d{4}\.\d{4,5}(?:|v\d+)|arxiv\|[a-z\.\-]{2,12}\/\d{7,8}(?:|v\d+)|bibcode\|[12]\d{3}[\w\d\.&]{15}|jstor\|[^\s\}\{\|]+?)\}\}\s*)(<\s*?\/\s*?ref(?:\s*)>)~i",
                       function(array $matches) : string  {
                         if (stripos($matches[2], 'arxiv')) {
                           $type = 'arxiv';
@@ -322,6 +322,17 @@ class Page {
     set_time_limit(120);
     $this->expand_templates_from_identifier('doi',     $our_templates);  // Do DOIs first!  Try again later for added DOIs
     $this->expand_templates_from_identifier('doi',     $our_templates_slight);
+    for ($i = 0; $i < count($our_templates_slight); $i++) { // Is is really a journal, after expanding DOI
+      $this_template = $our_templates_slight[$i];
+      if ($this_template->has('journal') &&
+          $this_template->has('doi') &&
+          ($this_template->has('volume') || $this_template->has('issue')) &&
+          ($this_template->has('year') || $this_template->has('date')) &&
+          ($this_template->has('page') || $this_template->has('pages')) &&
+          $this_template->has('title')) {
+        $this_template->change_name_to('cite journal', TRUE, TRUE);
+      }
+    }
     $this->expand_templates_from_identifier('pmid',    $our_templates);
     $this->expand_templates_from_identifier('pmc',     $our_templates);
     $this->expand_templates_from_identifier('bibcode', $our_templates);
@@ -706,7 +717,6 @@ final class TestPage extends Page {
   // Functions for use in testing context only
   
   function __construct() {
-    gc_collect_cycles();
     $trace = debug_backtrace();
     $name = $trace[2]['function'];
     $this->title = empty($name) ? 'Test Page' : $name;
