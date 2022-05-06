@@ -3717,12 +3717,9 @@ final class Template {
         case 'url-status':
           $the_data = strtolower($this->get($param));
           if (in_array($the_data, ['y', 'yes', 'si', 'sì'])) {
-            $this->rename($param, 'url-status', 'dead');
-            $this->forget($param);
-          }
-          if (in_array($the_data, ['n', 'no', 'alive'])) {
-            $this->rename($param, 'url-status', 'live');
-            $this->forget($param);
+            $this->set($param, 'dead');
+          } elseif (in_array($the_data, ['n', 'no', 'alive'])) {
+            $this->set($param, 'live');
           }
           return;
 
