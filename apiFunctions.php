@@ -176,7 +176,7 @@ function arxiv_api(array $ids, array &$templates) : bool {  // Pointer to save m
   if (count($ids) == 0) return FALSE;
   report_action("Getting data from arXiv API");
   $context = stream_context_create(array(
-    'http' => array('ignore_errors' => true),
+    'http' => array('ignore_errors' => TRUE),
   ));
   $request = "https://export.arxiv.org/api/query?start=0&max_results=2000&id_list=" . implode(',', $ids);
   $response = (string) @file_get_contents($request, FALSE, $context);
