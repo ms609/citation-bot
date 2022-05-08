@@ -5,7 +5,7 @@ if (file_exists('git_pull.lock')) {
   sleep(5);
   exit('<!DOCTYPE html><html lang="en" dir="ltr"><head><title>Citation Bot: error</title></head><body><h1>GIT pull in progress - please retry again in a moment</h1></body></html>');
 }
-barf
+
 /*
  * setup.php sets up the environment
  * Most of the page expansion depends on everything else
@@ -140,7 +140,7 @@ function check_overused() : void {
 function check_killed() : void {
  if (!HTML_OUTPUT) return;
  if(!defined('BIG_JOB_MODE')) return;
- @session_start(['read_and_close' => true]);
+ @session_start(['read_and_close' => TRUE]);
  if (isset($_SESSION['kill_the_big_job'])) {
    @session_start();
    unset($_SESSION['kill_the_big_job']);
