@@ -452,8 +452,7 @@ try {
           return;
     }
     @session_start(); // Need write access
-    unset($_SESSION['request_key'], $_SESSION['request_secret']); // These would be old and unusable if we are here
-    unset($_SESSION['citation_bot_user_id']);
+    unset($_SESSION['request_key'], $_SESSION['request_secret'], $_SESSION['citation_bot_user_id']); // These would be old and unusable if we are here
     if (isset($_SESSION['access_key']) && isset($_SESSION['access_secret'])) {
      try {
       $this->user_token = new Token($_SESSION['access_key'], $_SESSION['access_secret']);
