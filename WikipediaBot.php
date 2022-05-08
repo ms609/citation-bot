@@ -441,8 +441,6 @@ try {
  * @codeCoverageIgnore
  */
   private function authenticate_user() : void {
-    if (session_status() !== PHP_SESSION_ACTIVE) report_error('No active session found');    
-    unset($_SESSION['request_key'], $_SESSION['request_secret']); // These would be old and unusable if we are here
     if (isset($_SESSION['citation_bot_user_id']) &&
         isset($_SESSION['access_key']) &&
         isset($_SESSION['access_secret']) &&
@@ -451,9 +449,10 @@ try {
           $this->the_user = $_SESSION['citation_bot_user_id'];
           @setcookie(session_name(),session_id(),time()+(24*3600)); // 24 hours
           $this->user_token = new Token($_SESSION['access_key'], $_SESSION['access_secret']);
-          session_write_close(); // Done with it
           return;
     }
+    @session_start(); // Need write access
+    unset($_SESSION['request_key'], $_SESSION['request_secret']); // These would be old and unusable if we are here
     unset($_SESSION['citation_bot_user_id']);
     if (isset($_SESSION['access_key']) && isset($_SESSION['access_secret'])) {
      try {
