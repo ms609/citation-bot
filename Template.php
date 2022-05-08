@@ -2300,8 +2300,8 @@ final class Template {
     $url = "https://api.unpaywall.org/v2/$doi?email=" . CROSSREFUSERNAME;
     $ch = curl_init();
     curl_setopt_array($ch,
-            [CURLOPT_HEADER => 0,
-             CURLOPT_RETURNTRANSFER => 1,
+            [CURLOPT_HEADER => FALSE,
+             CURLOPT_RETURNTRANSFER => TRUE,
              CURLOPT_URL => $url,
              CURLOPT_TIMEOUT => 10,
              CURLOPT_USERAGENT => BOT_USER_AGENT]);
@@ -2519,8 +2519,8 @@ final class Template {
         $ch = curl_init();
         curl_setopt_array($ch,
                    [CURLOPT_USERAGENT => BOT_USER_AGENT,
-                    CURLOPT_HEADER => 0,
-                    CURLOPT_RETURNTRANSFER => 1,
+                    CURLOPT_HEADER => FALSE,
+                    CURLOPT_RETURNTRANSFER => TRUE,
                     CURLOPT_TIMEOUT => 15,
                     CURLOPT_URL => $google_book_url]);
         $google_content = (string) @curl_exec($ch);
@@ -2723,8 +2723,8 @@ final class Template {
     $ch = curl_init();
     curl_setopt_array($ch,
            [CURLOPT_USERAGENT => BOT_USER_AGENT,
-            CURLOPT_HEADER => 0,
-            CURLOPT_RETURNTRANSFER => 1,
+            CURLOPT_HEADER => FALSE,
+            CURLOPT_RETURNTRANSFER => TRUE,
             CURLOPT_TIMEOUT => 15,
             CURLOPT_URL => $google_book_url]);
     $data = (string) @curl_exec($ch);
