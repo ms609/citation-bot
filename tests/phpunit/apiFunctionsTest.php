@@ -724,8 +724,8 @@ final class apiFunctionsTest extends testBaseClass {
     $ch = curl_init();
     curl_setopt_array($ch,
            [CURLOPT_USERAGENT => BOT_USER_AGENT,
-            CURLOPT_HEADER => 1,
-            CURLOPT_RETURNTRANSFER => 1,
+            CURLOPT_HEADER => TRUE,
+            CURLOPT_RETURNTRANSFER => TRUE,
             CURLOPT_TIMEOUT => 15,
             CURLOPT_URL => 'https://books.google.com/books/feeds/volumes/to0yXzq_EkQC']);
     @curl_exec($ch);
