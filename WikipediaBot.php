@@ -30,7 +30,7 @@ final class WikipediaBot {
         CURLOPT_FAILONERROR => TRUE, // This is a little paranoid - see https://curl.se/libcurl/c/CURLOPT_FAILONERROR.html
         CURLOPT_FOLLOWLOCATION => TRUE,
         CURLOPT_MAXREDIRS => 5,
-        CURLOPT_HEADER => 0, // Don't include header in output
+        CURLOPT_HEADER => FALSE,
         CURLOPT_RETURNTRANSFER => TRUE,
         CURLOPT_CONNECTTIMEOUT => 15,
         CURLOPT_TIMEOUT => 20,
