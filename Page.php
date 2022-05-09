@@ -422,7 +422,7 @@ class Page {
     
     $this->replace_object($all_templates);
     // remove circular memory reference that makes garbage collection harder and reset
-    Template::$all_templates = NULL;
+    Template::$all_templates = array();
     Template::$date_style = DATES_WHATEVER;
     unset($all_templates);
 
