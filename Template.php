@@ -3863,6 +3863,39 @@ final class Template {
             }
           }
           return;
+          
+        case 'hdl':  
+          $handle = $this->get($param);
+          if (!$handle) return;
+          $handle = urldecode($handle);
+          if (preg_match('~^(.+);ownerid=~', $handle, $matches)) {  // should we shorten it?
+            if (hdl_works($handle) === FALSE) {
+               $handle = $matches[1];
+            } elseif (hdl_works($handle) === NULL) {
+               ; // Do nothing
+            } else  {
+               $long  = hdl_works($handle);
+               $short = hdl_works($matches[1]);
+               if ($long === $short) { // ownerid does nothing
+                 $handle = $matches[1];
+               }
+            }
+          }
+          if (preg_match('~^(.+)\?urlappend=~', $handle, $matches)) {  // should we shorten it?
+            if (hdl_works($handle) === FALSE) {
+               $handle = $matches[1];   // @codeCoverageIgnore
+            } elseif (hdl_works($handle) === NULL) {
+               ; // Do nothing
+            } else  {
+               $long  = hdl_works($handle);
+               $short = hdl_works($matches[1]);
+               if ($long === $short) { // urlappend does nothing
+                 $handle = $matches[1];
+               }
+            }
+          }
+          $this->set('hdl', $handle);
+          return; 
 
         case 'doi-broken': case 'doi_brokendate': case 'doi-broken-date': case 'doi_inactivedate': case 'doi-inactive-date':
           if ($this->blank('doi')) $this->forget($param);
