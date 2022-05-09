@@ -64,7 +64,7 @@ abstract class testBaseClass extends PHPUnit\Framework\TestCase {
   } 
   
   protected function make_citation(string $text) : Template {
-    Template::$all_templates = NULL;
+    Template::$all_templates = array();
     Template::$date_style = DATES_WHATEVER;
     $this->assertSame('{{', mb_substr($text, 0, 2));
     $this->assertSame('}}', mb_substr($text, -2));
@@ -88,7 +88,7 @@ abstract class testBaseClass extends PHPUnit\Framework\TestCase {
   }
     
   protected function process_page(string $text) : TestPage { // Only used if more than just a citation template
-    Template::$all_templates = NULL;
+    Template::$all_templates = array();
     Template::$date_style = DATES_WHATEVER;
     $page = new TestPage();
     $page->parse_text($text);
