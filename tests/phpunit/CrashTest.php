@@ -10,19 +10,8 @@ require_once __DIR__ . '/../testBaseClass.php';
 final class CrashTest extends testBaseClass {
 
   public function testBadPage2() : void {  // Use this when debugging pages that crash the bot
-    $bad_page = BAD_PAGE_API;
-    $bad_page = str_replace(' ', '_', $bad_page);
-    if ($bad_page !== "") {
-      define("TRAVIS_PRINT", "YES");
-      $page = new TestPage();
-      $page->get_text_from($bad_page);
-      AdsAbsControl::back_on();
-      Zotero::unblock_zotero();
-      $page->expand_text();
-      AdsAbsControl::give_up();
-      Zotero::block_zotero();
-      $this->assertTrue(FALSE); // prevent us from git committing with a website included
-    }
-    $this->assertTrue(TRUE);
-  }
+    $text='{{cite book |last1=Adler |first1=Cyrus |last2=Singer |first2=Isidore |title=The Jewish encyclopedia: a descriptive record of the history, religion, literature, and customs of the Jewish people from the earliest times to the present day |date=1901 |publisher=Funk and Wagnalls |page=302 |hdl=2027/mdp.39015064245429?urlappend=%3Bseq=326%3Bownerid=13510798900390116-358 |url=https://hdl.handle.net/2027/mdp.39015064245429?urlappend=%3Bseq=326%3Bownerid=13510798900390116-358}}';
+    $t = $this->process_citation($text);
+    $this->assertNull($t->parsed_text());
+   }
 }
