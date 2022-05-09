@@ -9,7 +9,7 @@ echo '<!DOCTYPE html><html lang="en" dir="ltr"><head><title>Git Pull</title></he
 if (mkdir('git_pull.lock', 0700)) {
   // Fetch only updates .git, so it is very safe. That is the first half of pull. So do it as own command
   /** @psalm-suppress ForbiddenCode */
-  echo htmlspecialchars((string) shell_exec("/usr/bin/git fetch 2>&1 ; /usr/bin/git pull 2>&1"), ENT_QUOTES);
+  echo htmlspecialchars((string) shell_exec("(/usr/bin/git fetch ; /usr/bin/git pull)  2>&1"), ENT_QUOTES);
   rmdir('git_pull.lock') ;
 } else {
   echo 'lock file exists -- aborting ';
