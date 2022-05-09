@@ -1403,12 +1403,13 @@ public static function find_indentifiers_in_urls(Template $template, ?string $ur
           }
           if ($handle === FALSE) return FALSE;
           // Trim off session stuff - urlappend seems to be used for page numbers and such
-          while (preg_match('~^(.+)(?:/browse\?|;jsessionid|;sequence=|\?sequence=|&isAllowed=|&origin=|&rd=|\?value=|&type=|/browse-title|&submit_browse=|\%3Bui=embed)~',
+          $handle = str_replace('%3B', ';');
+          while (preg_match('~^(.+)(?:/browse\?|;jsessionid|;sequence=|\?sequence=|&isAllowed=|&origin=|&rd=|\?value=|&type=|/browse-title|&submit_browse=|;ui=embed)~',
                                 $handle, $matches)) {
             $handle = $matches[1];
           }
           $handle = hdl_decode($handle);
-          if (preg_match('~^(.+);ownerid=~', $handle, $matches)) {  // should we shorten it?
+          if (preg_match('~^(.+)%3Bownerid=~', $handle, $matches)) {  // should we shorten it?
             if (hdl_works($handle) === FALSE) {
                $handle = $matches[1];   // @codeCoverageIgnore
             } elseif (hdl_works($handle) === NULL) {
