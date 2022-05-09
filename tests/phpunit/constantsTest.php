@@ -150,7 +150,7 @@ final class constantsTest extends testBaseClass {
       sort($our_whitelist_sorted);
 
       $context = stream_context_create(array(
-        'http' => array('ignore_errors' => true),
+        'http' => array('ignore_errors' => TRUE),
       ));
       $wikipedia_response = @file_get_contents(WIKI_ROOT . '?title=Module:Citation/CS1/Whitelist&action=raw', FALSE, $context);
       preg_match_all("~\s\[\'([a-zA-Z0-9\#\-\_ ]+?)\'\] = ~" , $wikipedia_response, $matches);

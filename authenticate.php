@@ -1,7 +1,7 @@
 <?php
 declare(strict_types=1);
 set_time_limit(120);
-@session_start();
+@session_start(['read_and_close' => TRUE]);
 
 require_once 'html_headers.php';
 
@@ -16,6 +16,7 @@ use MediaWiki\OAuthClient\Client;
 
 // The two ways we leave this script
 function death_time(string $err) : void {
+  @session_start(); // Need write access
   unset($_SESSION['access_key'], $_SESSION['access_secret'], $_SESSION['citation_bot_user_id'], $_SESSION['request_key'], $_SESSION['request_secret']);     
   echo '<!DOCTYPE html><html lang="en" dir="ltr"><head><title>Authentifcation System Failure</title></head><body><main>' . echoable($err) . '</main></body></html>';
   exit(0);
@@ -24,10 +25,6 @@ function death_time(string $err) : void {
 function return_to_sender(string $where = 'https://citations.toolforge.org/') : void {
   header("Location: " . $where);
   exit(0);
-}
-
-if(session_status() !== PHP_SESSION_ACTIVE conflict) {
-  death_time("Citation Bot could not create a session");
 }
 
 if (!getenv('PHP_WP_OAUTH_CONSUMER') || !getenv('PHP_WP_OAUTH_SECRET')) {
@@ -64,6 +61,7 @@ if (isset($_SESSION['access_key']) && isset($_SESSION['access_secret'])) {
    catch (Throwable $e) { ; }
 }
 // clear anything left over that did not work
+@session_start(); // Need write access
 unset($_SESSION['access_key'], $_SESSION['access_secret']);
 
 // New Incoming Access Grant
