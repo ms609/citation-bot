@@ -16,4 +16,3 @@ if (mkdir('git_pull.lock', 0700)) {
 }
 echo '</pre></main></body></html>';
 ?>
-
