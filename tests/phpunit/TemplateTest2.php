@@ -4008,17 +4008,38 @@ final class TemplateTest2 extends testBaseClass {
       $this->AssertNull($expanded->get2('doi'));
     }
  
-    public function tesBadURLStatusSettings() : void {
-      $text = "{{cite web|url-status=sì}}";
+    public function testBadURLStatusSettings1() : void {
+      $text = "{{cite web|url-status=sì|url=X}}";
       $expanded = $this->process_citation($text);
       $this->AssertSame('dead', $expanded->get2('url-status'));
-     
-      $text = "{{cite web|url-status=no}}";
+    }
+    public function testBadURLStatusSettings2() : void {
+      $text = "{{cite web|url-status=no|url=X}}";
+      $expanded = $this->process_citation($text);
+      $this->AssertSame('live', $expanded->get2('url-status'));
+    }
+    public function testBadURLStatusSettings3() : void {
+      $text = "{{cite web|url-status=sì|url=X|archive-url=Y}}";
+      $expanded = $this->process_citation($text);
+      $this->AssertSame('dead', $expanded->get2('url-status'));
+    }
+    public function testBadURLStatusSettings4() : void {
+      $text = "{{cite web|url-status=no|url=X|archive-url=Y}}";
+      $expanded = $this->process_citation($text);
+      $this->AssertSame('live', $expanded->get2('url-status'));
+    }
+    public function testBadURLStatusSettings5() : void {
+      $text = "{{cite web|url-status=dead|url=X|archive-url=Y}}";
+      $expanded = $this->process_citation($text);
+      $this->AssertSame('dead', $expanded->get2('url-status'));
+    }
+    public function testBadURLStatusSettings6() : void {
+      $text = "{{cite web|url-status=live|url=X|archive-url=Y}}";
       $expanded = $this->process_citation($text);
       $this->AssertSame('live', $expanded->get2('url-status'));
     }
  
-     public function tesCiteDocument() : void {
+     public function testCiteDocument() : void {
       $text = "{{cite document|url=x|website=x}}";
       $expanded = $this->process_citation($text);
       $this->AssertSame('cite web', $expanded->wikiname());
@@ -4052,7 +4073,7 @@ final class TemplateTest2 extends testBaseClass {
       $this->AssertSame('cite journal', $expanded->wikiname());  
     }
 
-    public function tesCitePaper() : void {
+    public function testCitePaper() : void {
       $text = "{{cite paper|url=x|website=x}}";
       $expanded = $this->process_citation($text);
       $this->AssertSame('cite web', $expanded->wikiname());
