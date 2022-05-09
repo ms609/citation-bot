@@ -26,7 +26,7 @@ function return_to_sender(string $where = 'https://citations.toolforge.org/') : 
   exit(0);
 }
 
-if(session_status() !== PHP_SESSION_ACTIVE) {
+if(session_status() !== PHP_SESSION_ACTIVE conflict) {
   death_time("Citation Bot could not create a session");
 }
 
