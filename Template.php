@@ -3867,7 +3867,7 @@ final class Template {
         case 'hdl':  
           $handle = $this->get($param);
           if (!$handle) return;
-          $handle = urldecode($handle);
+          $handle = hdl_decode($handle);
           if (preg_match('~^(.+);ownerid=~', $handle, $matches)) {  // should we shorten it?
             if (hdl_works($handle) === FALSE) {
                $handle = $matches[1];
