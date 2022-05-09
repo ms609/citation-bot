@@ -3867,7 +3867,7 @@ final class Template {
         case 'doi-broken': case 'doi_brokendate': case 'doi-broken-date': case 'doi_inactivedate': case 'doi-inactive-date':
           if ($this->blank('doi')) $this->forget($param);
           return;
-
+conflict
         case 'edition':
           if ($this->blank($param)) return;
           $this->set($param, preg_replace("~\s+ed(ition)?\.?\s*$~i", "", $this->get($param)));
