@@ -3867,33 +3867,46 @@ final class Template {
         case 'hdl':  
           $handle = $this->get($param);
           if (!$handle) return;
+          echo "\n" . __LINE__ . "  " . $handle;
           $handle = hdl_decode($handle);
           if (preg_match('~^(.+)%3Bownerid=~', $handle, $matches)) {  // should we shorten it?
             if (hdl_works($handle) === FALSE) {
                $handle = $matches[1];
+                        echo "\n" . __LINE__ . "  " . $handle;
             } elseif (hdl_works($handle) === NULL) {
                ; // Do nothing
+                        echo "\n" . __LINE__ . "  " . $handle;
             } else  {
                $long  = hdl_works($handle);
                $short = hdl_works($matches[1]);
+                        echo "\n" . __LINE__ . "  " . $long . " " . $short;
                if ($long === $short) { // ownerid does nothing
                  $handle = $matches[1];
+                           echo "\n" . __LINE__ . "  " . $handle;
                }
+                        echo "\n" . __LINE__ . "  " . $handle;
             }
           }
+                    echo "\n" . __LINE__ . "  " . $handle;
           if (preg_match('~^(.+)\?urlappend=~', $handle, $matches)) {  // should we shorten it?
             if (hdl_works($handle) === FALSE) {
                $handle = $matches[1];   // @codeCoverageIgnore
+                        echo "\n" . __LINE__ . "  " . $handle;
             } elseif (hdl_works($handle) === NULL) {
                ; // Do nothing
+                        echo "\n" . __LINE__ . "  " . $handle;
             } else  {
                $long  = hdl_works($handle);
                $short = hdl_works($matches[1]);
+              echo "\n" . __LINE__ . "  " . $long . " " . $short;
                if ($long === $short) { // urlappend does nothing
                  $handle = $matches[1];
+                           echo "\n" . __LINE__ . "  " . $handle;
                }
+                        echo "\n" . __LINE__ . "  " . $handle;
             }
           }
+                    echo "\n" . __LINE__ . "  " . $handle;
           $this->set('hdl', $handle);
           return; 
 
