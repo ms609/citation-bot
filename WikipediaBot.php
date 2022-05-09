@@ -30,7 +30,7 @@ final class WikipediaBot {
         CURLOPT_FAILONERROR => TRUE, // This is a little paranoid - see https://curl.se/libcurl/c/CURLOPT_FAILONERROR.html
         CURLOPT_FOLLOWLOCATION => TRUE,
         CURLOPT_MAXREDIRS => 5,
-        CURLOPT_HEADER => 0, // Don't include header in output
+        CURLOPT_HEADER => FALSE,
         CURLOPT_RETURNTRANSFER => TRUE,
         CURLOPT_CONNECTTIMEOUT => 15,
         CURLOPT_TIMEOUT => 20,
@@ -441,8 +441,6 @@ try {
  * @codeCoverageIgnore
  */
   private function authenticate_user() : void {
-    if (session_status() !== PHP_SESSION_ACTIVE) report_error('No active session found');    
-    unset($_SESSION['request_key'], $_SESSION['request_secret']); // These would be old and unusable if we are here
     if (isset($_SESSION['citation_bot_user_id']) &&
         isset($_SESSION['access_key']) &&
         isset($_SESSION['access_secret']) &&
@@ -451,10 +449,10 @@ try {
           $this->the_user = $_SESSION['citation_bot_user_id'];
           @setcookie(session_name(),session_id(),time()+(24*3600)); // 24 hours
           $this->user_token = new Token($_SESSION['access_key'], $_SESSION['access_secret']);
-          session_write_close(); // Done with it
           return;
     }
-    unset($_SESSION['citation_bot_user_id']);
+    @session_start(); // Need write access
+    unset($_SESSION['request_key'], $_SESSION['request_secret'], $_SESSION['citation_bot_user_id']); // These would be old and unusable if we are here
     if (isset($_SESSION['access_key']) && isset($_SESSION['access_secret'])) {
      try {
       $this->user_token = new Token($_SESSION['access_key'], $_SESSION['access_secret']);

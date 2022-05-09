@@ -1934,7 +1934,7 @@ final class Template {
     if ($this->has('bibcode') && !$this->incomplete() && $this->has('doi')) {  // Don't waste a query
       return FALSE;  // @codeCoverageIgnore
     }
-    if (stripos($this->get('bibcode'), 'CITATION') !== false) return FALSE;
+    if (stripos($this->get('bibcode'), 'CITATION') !== FALSE) return FALSE;
 
     if ($this->api_has_used('adsabs', equivalent_parameters('bibcode'))) {
       report_info("No need to repeat AdsAbs search for " . bibcode_link($this->get('bibcode'))); // @codeCoverageIgnore
@@ -2300,8 +2300,8 @@ final class Template {
     $url = "https://api.unpaywall.org/v2/$doi?email=" . CROSSREFUSERNAME;
     $ch = curl_init();
     curl_setopt_array($ch,
-            [CURLOPT_HEADER => 0,
-             CURLOPT_RETURNTRANSFER => 1,
+            [CURLOPT_HEADER => FALSE,
+             CURLOPT_RETURNTRANSFER => TRUE,
              CURLOPT_URL => $url,
              CURLOPT_TIMEOUT => 10,
              CURLOPT_USERAGENT => BOT_USER_AGENT]);
@@ -2519,8 +2519,8 @@ final class Template {
         $ch = curl_init();
         curl_setopt_array($ch,
                    [CURLOPT_USERAGENT => BOT_USER_AGENT,
-                    CURLOPT_HEADER => 0,
-                    CURLOPT_RETURNTRANSFER => 1,
+                    CURLOPT_HEADER => FALSE,
+                    CURLOPT_RETURNTRANSFER => TRUE,
                     CURLOPT_TIMEOUT => 15,
                     CURLOPT_URL => $google_book_url]);
         $google_content = (string) @curl_exec($ch);
@@ -2723,8 +2723,8 @@ final class Template {
     $ch = curl_init();
     curl_setopt_array($ch,
            [CURLOPT_USERAGENT => BOT_USER_AGENT,
-            CURLOPT_HEADER => 0,
-            CURLOPT_RETURNTRANSFER => 1,
+            CURLOPT_HEADER => FALSE,
+            CURLOPT_RETURNTRANSFER => TRUE,
             CURLOPT_TIMEOUT => 15,
             CURLOPT_URL => $google_book_url]);
     $data = (string) @curl_exec($ch);
@@ -3717,12 +3717,9 @@ final class Template {
         case 'url-status':
           $the_data = strtolower($this->get($param));
           if (in_array($the_data, ['y', 'yes', 'si', 'sì'])) {
-            $this->rename($param, 'url-status', 'dead');
-            $this->forget($param);
-          }
-          if (in_array($the_data, ['n', 'no', 'alive'])) {
-            $this->rename($param, 'url-status', 'live');
-            $this->forget($param);
+            $this->set($param, 'dead');
+          } elseif (in_array($the_data, ['n', 'no', 'alive'])) {
+            $this->set($param, 'live');
           }
           return;
 

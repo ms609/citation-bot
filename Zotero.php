@@ -66,7 +66,7 @@ public static function create_ch_zotero() : void { // Called below at end of fil
    
   self::$ch_jstor = curl_init();
   curl_setopt_array(self::$ch_jstor,
-       [CURLOPT_RETURNTRANSFER => 1,
+       [CURLOPT_RETURNTRANSFER => TRUE,
         CURLOPT_TIMEOUT => 15,
         CURLOPT_COOKIESESSION => TRUE,
         CURLOPT_USERAGENT => BOT_USER_AGENT]);
@@ -1077,8 +1077,8 @@ public static function find_indentifiers_in_urls(Template $template, ?string $ur
        } elseif ($template->blank('jstor')) {
           curl_setopt_array(self::$ch_jstor,
                             [CURLOPT_URL => 'https://www.jstor.org/citation/ris/' . $matches[1],
-                             CURLOPT_HEADER => 0,
-                             CURLOPT_NOBODY => 0]);
+                             CURLOPT_HEADER => FALSE,
+                             CURLOPT_NOBODY => FALSE]);
           $dat = (string) @curl_exec(self::$ch_jstor);
           if ($dat &&
               stripos($dat, 'No RIS data found for') === FALSE &&
@@ -1208,8 +1208,8 @@ public static function find_indentifiers_in_urls(Template $template, ?string $ur
         // Need to encode the sici bit that follows sici?sici= [10 characters]
         $encoded_url = substr($url, 0, $sici_pos + 10) . urlencode(urldecode(substr($url, $sici_pos + 10)));
         curl_setopt_array(self::$ch_jstor, [CURLOPT_URL => $encoded_url,
-                                            CURLOPT_HEADER => 1,
-                                            CURLOPT_NOBODY => 1]);
+                                            CURLOPT_HEADER => TRUE,
+                                            CURLOPT_NOBODY => TRUE]);
         if (@curl_exec(self::$ch_jstor)) {
           $redirect_url = (string) @curl_getinfo(self::$ch_jstor, CURLINFO_REDIRECT_URL);
           if (strpos($redirect_url, "jstor.org/stable/")) {

@@ -176,7 +176,7 @@ function arxiv_api(array $ids, array &$templates) : bool {  // Pointer to save m
   if (count($ids) == 0) return FALSE;
   report_action("Getting data from arXiv API");
   $context = stream_context_create(array(
-    'http' => array('ignore_errors' => true),
+    'http' => array('ignore_errors' => TRUE),
   ));
   $request = "https://export.arxiv.org/api/query?start=0&max_results=2000&id_list=" . implode(',', $ids);
   $response = (string) @file_get_contents($request, FALSE, $context);
@@ -519,8 +519,8 @@ function query_crossref(string $doi) : ?object {
   $url = "https://www.crossref.org/openurl/?pid=" . CROSSREFUSERNAME . "&id=doi:$doi&noredirect=TRUE";
   $ch = curl_init();
   curl_setopt_array($ch,
-            [CURLOPT_HEADER => 0,
-             CURLOPT_RETURNTRANSFER =>  1,
+            [CURLOPT_HEADER => FALSE,
+             CURLOPT_RETURNTRANSFER => TRUE,
              CURLOPT_URL =>  $url,
              CURLOPT_TIMEOUT => 15,
              CURLOPT_USERAGENT => BOT_USER_AGENT]);
@@ -703,8 +703,8 @@ function expand_by_jstor(Template $template) : bool {
   if (substr($jstor, 0, 1) === 'i') return FALSE ; // We do not want i12342 kind
   $ch = curl_init();
   curl_setopt_array($ch,
-           [CURLOPT_HEADER => 0,
-            CURLOPT_RETURNTRANSFER => 1,
+           [CURLOPT_HEADER => FALSE,
+            CURLOPT_RETURNTRANSFER => TRUE,
             CURLOPT_TIMEOUT => 15,
             CURLOPT_URL => 'https://www.jstor.org/citation/ris/' . $jstor,
             CURLOPT_USERAGENT => BOT_USER_AGENT]);
@@ -1015,8 +1015,8 @@ function expand_templates_from_archives(array &$templates) : void { // This is d
   $match = ['', '']; // prevent memory leak in some PHP versions
   $ch = curl_init();
   curl_setopt_array($ch,
-          [CURLOPT_HEADER => 0,
-           CURLOPT_RETURNTRANSFER => 1,
+          [CURLOPT_HEADER => FALSE,
+           CURLOPT_RETURNTRANSFER => TRUE,
            CURLOPT_TIMEOUT => 25,
            CURLOPT_USERAGENT => BOT_USER_AGENT]);
   foreach ($templates as $template) {
@@ -1156,9 +1156,9 @@ function get_entrez_xml(string $type, string $query) : ?SimpleXMLElement {
 function xml_post(string $url, string $post) {
    $ch = curl_init();
    curl_setopt($ch, CURLOPT_URL,$url);
-   curl_setopt($ch, CURLOPT_POST, 1);
+   curl_setopt($ch, CURLOPT_POST, TRUE);
    curl_setopt($ch, CURLOPT_POSTFIELDS, $post);
-   curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+   curl_setopt($ch, CURLOPT_RETURNTRANSFER, TRUE);
    $headers = array(
       "Content-Type: application/x-www-form-urlencoded",
       "Accept: application/xml",
