@@ -1407,7 +1407,7 @@ public static function find_indentifiers_in_urls(Template $template, ?string $ur
                                 $handle, $matches)) {
             $handle = $matches[1];
           }
-          $handle = urldecode($handle);
+          $handle = hdl_decode($handle);
           if (preg_match('~^(.+);ownerid=~', $handle, $matches)) {  // should we shorten it?
             if (hdl_works($handle) === FALSE) {
                $handle = $matches[1];   // @codeCoverageIgnore
