@@ -1408,10 +1408,31 @@ public static function find_indentifiers_in_urls(Template $template, ?string $ur
             $handle = $matches[1];
           }
           $handle = urldecode($handle);
+          if (preg_match('~^(.+);ownerid=~', $handle, $matches)) {  // should we shorten it?
+            if (hdl_works($handle) === FALSE) {
+               $handle = $matches[1];   // @codeCoverageIgnore
+            } elseif (hdl_works($handle) === NULL) {
+               ; // Do nothing
+            } else  {
+               $long  = hdl_works($handle);
+               $short = hdl_works($matches[1]);
+               if ($long === $short) { // ownerid does nothing
+                 $handle = $matches[1];
+               }
+            }
+          }
           // Verify that it works as a hdl - first with urlappend, since that is often page numbers
           if (preg_match('~^(.+)\?urlappend=~', $handle, $matches)) {  // should we shorten it?
             if (hdl_works($handle) === FALSE) {
                $handle = $matches[1];   // @codeCoverageIgnore
+            } elseif (hdl_works($handle) === NULL) {
+               ; // Do nothing
+            } else  {
+               $long  = hdl_works($handle);
+               $short = hdl_works($matches[1]);
+               if ($long === $short) { // urlappend does nothing
+                 $handle = $matches[1];
+               }
             }
           }
           while (preg_match('~^(.+)/$~', $handle, $matches)) { // Trailing slash
