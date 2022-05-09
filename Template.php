@@ -3873,7 +3873,9 @@ final class Template {
                $handle = $matches[1];
             } elseif (hdl_works($handle) === NULL) {
                ; // Do nothing
-            } else  {
+            } elseif (stripos($matches[1], 'urlappend') === FALSE) {
+              $handle = $matches[1];
+            } else {
                $long  = hdl_works($handle);
                $short = hdl_works($matches[1]);
                if ($long === $short) { // ownerid does nothing
