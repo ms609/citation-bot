@@ -1115,20 +1115,30 @@ function is_hdl_works(string $hdl) {
   if (strpos($hdl, '123456789') === 0) return FALSE;
   if (strpos($hdl, '10.') === 0 && doi_works($hdl) === FALSE) return FALSE;
   // See if it works
+  echo "\n" . __LINE__ . " " . $hdl . "\n";
   $context = stream_context_create(CONTEXT_INSECURE);
   usleep(100000);
   $test_url = "https://hdl.handle.net/" . $hdl;
+  echo "\n" . __LINE__ . " " . $test_url . "\n";
   $headers_test = @get_headers($test_url, GET_THE_HEADERS, $context);
   if ($headers_test === FALSE) {
+    echo "\n" . __LINE__ . " do over \n";
       sleep(3);   // @codeCoverageIgnore
       $headers_test = @get_headers($test_url, GET_THE_HEADERS, $context); // @codeCoverageIgnore
   }
   if ($headers_test === FALSE) {
+    echo "\n" . __LINE__ . " do over again \n";
       sleep(8);   // @codeCoverageIgnore
       $headers_test = @get_headers($test_url, GET_THE_HEADERS, $context); // @codeCoverageIgnore
   }
-  if ($headers_test === FALSE) return NULL; // most likely bad, but will recheck again and again
-  if (empty($headers_test['Location']) && empty($headers_test['location'])) return FALSE; // leads nowhere
+  if ($headers_test === FALSE){
+        echo "\n" . __LINE__ . " go nothing \n";
+    return NULL; // most likely bad, but will recheck again and again
+  }
+  if (empty($headers_test['Location']) && empty($headers_test['location'])){
+            echo "\n" . __LINE__ . " go nowhere \n";
+    return FALSE; // leads nowhere
+  }
   if (is_array(@$headers_test['Location'])) {
       $the_header_loc = (string) $headers_test['Location'][0];
    } elseif (is_array(@$headers_test['location'])) { // non-standard
@@ -1136,6 +1146,8 @@ function is_hdl_works(string $hdl) {
    } else {
       $the_header_loc = (string) @$headers_test['Location'] . (string) @$headers_test['location'];
    }
+   echo "\n" . __LINE__ . " " . $the_header_loc . " \n";
+   echo "\n" . __LINE__ . " " . $headers_test[0] . " \n";
   if (stripos($headers_test[0], '404 Not Found') !== FALSE         || stripos($headers_test[0], 'HTTP/1.1 404') !== FALSE) return FALSE; // Bad
   if (stripos($headers_test[0], '302 Found') !== FALSE             || stripos($headers_test[0], 'HTTP/1.1 302') !== FALSE) return $the_header_loc;  // Good
   // @codeCoverageIgnoreStart
