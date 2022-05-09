@@ -3868,12 +3868,12 @@ final class Template {
           $handle = $this->get($param);
           if (!$handle) return;
           $handle = hdl_decode($handle);
-          if (preg_match('~^(.+)%3Bownerid=~', $handle, $matches)) {  // should we shorten it?
+          if (preg_match('~^(.+)(%3Bownerid=.*)$~', $handle, $matches)) {  // should we shorten it?
             if (hdl_works($handle) === FALSE) {
                $handle = $matches[1];
             } elseif (hdl_works($handle) === NULL) {
                ; // Do nothing
-            } elseif (stripos($matches[1], 'urlappend') === FALSE) {
+            } elseif (stripos($matches[2], 'urlappend') === FALSE) {
               $handle = $matches[1];
             } else {
                $long  = hdl_works($handle);
