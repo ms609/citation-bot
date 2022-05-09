@@ -25,7 +25,7 @@ final class Template {
   public const REGEXP = ['~\{\{[^\{\}\|]+\}\}~su', '~\{\{[^\{\}]+\}\}~su', '~\{\{(?>[^\{]|\{[^\{])+?\}\}~su'];  // Please see https://stackoverflow.com/questions/1722453/need-to-prevent-php-regex-segfault for discussion of atomic regex
   public const TREAT_IDENTICAL_SEPARATELY = FALSE;  // This is safe because templates are the last thing we do AND we do not directly edit $all_templates that are sub-templates - we might remove them, but do not change their content directly
   /** @psalm-suppress PropertyNotSetInConstructor */
-  public static $all_templates;  // Points to list of all the Template() on the Page() including this one.  It can only be set by the page class after all templates are made
+  public static $all_templates = array();  // Points to list of all the Template() on the Page() including this one.  It can only be set by the page class after all templates are made
   public static $date_style = DATES_WHATEVER;  // Will get from the page
   /** @psalm-suppress PropertyNotSetInConstructor */
   protected $rawtext;  // Must start out as unset
