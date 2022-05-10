@@ -991,6 +991,14 @@ function doi_encode (string $doi) : string {
     return $doi;
 }
 
+function hdl_decode(string $hdl) : string {
+    $hdl = urldecode($hdl);
+    $hdl = str_replace(';', '%3B', $hdl);
+    $hdl = str_replace('#', '%23', $hdl);
+    $hdl = str_replace(' ', '%20', $hdl);
+    return $hdl;
+}
+
 /**
  * Only on webpage
  * @codeCoverageIgnore

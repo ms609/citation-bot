@@ -50,9 +50,10 @@ final class Template {
                'jstor'    => array(),
                'zotero'   => array(),
             );
+  private $this_array;
   
   function __construct() {
-     ;  // All the real construction is done in parse_text() and above in variable initialization
+     $this->this_array = [$this];  // All the real construction is done in parse_text() and above in variable initialization
   }
 
   public function parse_text(string $text) : void {
@@ -182,9 +183,10 @@ final class Template {
         // Check if messed up, and do not use bad styles
         if ((substr_count($example, '=') !== 1) ||
             (substr_count($example, "\n") > 1) ||
-            ($example === 'X=X') ||
             ($example === 'X = X')) {
            $example = ' X=X ';
+        } elseif ($example === 'X=X') {
+           $example = 'X=X ';
         }
     } else {
         $example = ' X=X ';
@@ -331,7 +333,8 @@ final class Template {
             report_action("Found and used SICI");
           }
       }
-      if (!$this->blank(['pmc', 'pmid', 'doi', 'jstor'])) { // Have some good data
+      if (!$this->blank(['pmc', 'pmid', 'doi', 'jstor']) ||
+         (stripos($this->get('journal') . $this->get('title'), 'arxiv') !== FALSE && !$this->blank(['eprint', 'arxiv']))) { // Have some good data
           $the_title   = $this->get('title');
           $the_journal = $this->get('journal');
           $the_chapter = $this->get('chapter');
@@ -373,6 +376,11 @@ final class Template {
               $the_title = '';
               $bad_data = TRUE;
           }
+          if (stripos($the_title, 'arXiv') !== FALSE) {
+              $this->rename('title', 'CITATION_BOT_PLACEHOLDER_title');
+              $the_title = '';
+              $bad_data = TRUE;
+          }
           if (strlen($the_journal) > 15 && strpos($the_journal, ' ') !== FALSE &&
               mb_strtoupper($the_journal) === $the_journal && strpos($the_journal, 'CITATION') === FALSE &&
               mb_check_encoding($the_journal, 'ASCII')) {
@@ -396,6 +404,7 @@ final class Template {
               $this->rename('journal', 'CITATION_BOT_PLACEHOLDER_journal');
               $the_journal = '';
               $bad_data = TRUE;
+              if ($this->wikiname() === 'cite journal') $this->change_name_to('cite arxiv');
           }
           if ($the_title != '' && stripos($the_title, 'CITATION') === FALSE) {
             if (str_i_same($the_title, $the_journal) &&
@@ -454,18 +463,20 @@ final class Template {
               }
           }
           if ($bad_data) {
-            $this_array = [$this];
             if ($this->has('doi') && doi_active($this->get('doi'))) {
               expand_by_doi($this);
             }
             if ($this->has('pmid')) {
-              query_pmid_api(array($this->get('pmid')), $this_array);
+              query_pmid_api(array($this->get('pmid')), $this->this_array);
             }
             if ($this->has('pmc')) {
-              query_pmc_api(array($this->get('pmc')), $this_array);
+              query_pmc_api(array($this->get('pmc')), $this->this_array);
             }
             if ($this->has('jstor')) {
               expand_by_jstor($this);
+            }
+            if ($this->blank(['pmid', 'pmc', 'jstor']) && ($this->has('eprint') || $this->has('arxiv'))) {
+              expand_arxiv_templates($this->this_array);
             }
             if ($this->has('CITATION_BOT_PLACEHOLDER_journal')) {
               if ($this->has('journal') && $this->get('journal') !== $this->get('CITATION_BOT_PLACEHOLDER_journal') &&
@@ -1924,13 +1935,29 @@ final class Template {
     static $needs_told = TRUE;
     set_time_limit(120);
     $doi = ['', '']; // prevent memory leak in some PHP versions
+    
+    if ($this->has('bibcode') && $this->blank('doi')) {
+      $doi = AdsAbsControl::get_bib2doi($this->get('bibcode'));
+      if (doi_works($doi)) {
+        $this->add_if_new('doi', $doi);
+      }
+    }
+    if ($this->has('doi') && $this->blank('bibcode')) {
+      $doi = $this->get('doi');
+      if (doi_works($doi)) {
+        $bib = AdsAbsControl::get_doi2bib($doi);
+        if (strlen($bib) > 12) $this->add_if_new('bibcode_nosearch', $bib);
+      }
+    }
+    
     // API docs at https://github.com/adsabs/adsabs-dev-api
     if (!SLOW_MODE && $this->blank('bibcode')) {
      if ($needs_told) report_info("Skipping search for new bibcodes in slow mode"); // @codeCoverageIgnore
      $needs_told = FALSE;                                                           // @codeCoverageIgnore
      return FALSE;                                                                  // @codeCoverageIgnore
     }
-    if ($this->has('bibcode') && !$this->incomplete() && $this->has('doi')) {  // Don't waste a query
+    if ($this->has('bibcode') && !$this->incomplete() &&
+        ($this->has('doi') || AdsAbsControl::get_bib2doi($this->get('bibcode')) === 'X')) {  // Don't waste a query, if it has a doi or will not find a doi
       return FALSE;  // @codeCoverageIgnore
     }
     if (stripos($this->get('bibcode'), 'CITATION') !== FALSE) return FALSE;
@@ -1970,6 +1997,7 @@ final class Template {
           ($this->wikiname() == 'citation' && $this->has('isbn') && $this->has('chapter')) ||  // "complete" enough for a book
           ($this->has_good_free_copy()) ||  // Alreadly links out to something free
           ($this->has('s2cid')) ||  // good enough, usually includes abstract and link to copy
+          ($this->has('doi') && doi_works($this->get('doi'))) ||    // good enough, usually includes abstract 
           ($this->has('bibcode'))) // Must be GIGO
           {
             report_inline('no record retrieved.');                // @codeCoverageIgnore
@@ -2243,13 +2271,12 @@ final class Template {
 
   public function expand_by_pubmed(bool $force = FALSE) : void {
     if (!$force && !$this->incomplete()) return;
-    $this_array = [$this];
     if ($pm = $this->get('pmid')) {
       report_action('Checking ' . pubmed_link('pmid', $pm) . ' for more details');
-      query_pmid_api(array($pm), $this_array);
+      query_pmid_api(array($pm), $this->this_array);
     } elseif ($pm = $this->get('pmc')) {
       report_action('Checking ' . pubmed_link('pmc', $pm) . ' for more details');
-      query_pmc_api(array($pm), $this_array);
+      query_pmc_api(array($pm), $this->this_array);
     }
   }
 
@@ -3863,6 +3890,41 @@ final class Template {
             }
           }
           return;
+          
+        case 'hdl':  
+          $handle = $this->get($param);
+          if (!$handle) return;
+          $handle = hdl_decode($handle);
+          if (preg_match('~^(.+)(%3Bownerid=.*)$~', $handle, $matches)) {  // should we shorten it?
+            if (hdl_works($handle) === FALSE) {
+               $handle = $matches[1];
+            } elseif (hdl_works($handle) === NULL) {
+               ; // Do nothing
+            } elseif (stripos($matches[2], 'urlappend') === FALSE) {
+              $handle = $matches[1];
+            } else {
+               $long  = hdl_works($handle);
+               $short = hdl_works($matches[1]);
+               if ($long === $short) { // ownerid does nothing
+                 $handle = $matches[1];
+               }
+            }
+          }
+          if (preg_match('~^(.+)\?urlappend=~', $handle, $matches)) {  // should we shorten it?
+            if (hdl_works($handle) === FALSE) {
+               $handle = $matches[1];   // @codeCoverageIgnore
+            } elseif (hdl_works($handle) === NULL) {
+               ; // Do nothing
+            } else  {
+               $long  = hdl_works($handle);
+               $short = hdl_works($matches[1]);
+               if ($long === $short) { // urlappend does nothing
+                 $handle = $matches[1];
+               }
+            }
+          }
+          $this->set('hdl', $handle);
+          return; 
 
         case 'doi-broken': case 'doi_brokendate': case 'doi-broken-date': case 'doi_inactivedate': case 'doi-inactive-date':
           if ($this->blank('doi')) $this->forget($param);
@@ -3969,6 +4031,7 @@ final class Template {
           if (str_equivalent($this->get($param), $this->get('work'))) $this->forget('work');
 
           $periodical = trim($this->get($param));
+          if (stripos($periodical, 'arxiv') !== FALSE) return;
           // Special odd cases go here
           if ($periodical === 'TAXON') { // All caps that should not be
              $this->set($param, 'Taxon');
@@ -3982,7 +4045,7 @@ final class Template {
              if ($this->blank('website')) $this->rename($param, 'website');
              return;
           }
-          if ($this->blank(['chapter', 'isbn']) && $param === 'journal') {
+          if ($this->blank(['chapter', 'isbn']) && $param === 'journal' && stripos($this->get($param), 'arxiv') === FALSE) {
             // Avoid renaming between cite journal and cite book
             $this->change_name_to('cite journal');
           }
@@ -5907,7 +5970,7 @@ final class Template {
       }
       if ($this->has(strtolower('CITATION_BOT_PLACEHOLDER_BARE_URL'))) {
         if ($this->has('title') || $this->has('chapter')) {
-          $this->forget(strtolower('CITATION_BOT_PLACEHOLDER_BARE_URL'));
+          $this->quietly_forget(strtolower('CITATION_BOT_PLACEHOLDER_BARE_URL'));
         }
       }
       if ($this->get('issue') === 'n/a' && preg_match('~^\d+$~', $this->get('volume'))) {
@@ -5988,7 +6051,7 @@ final class Template {
             $this->name = 'Cite book';
           }
        }
-       if (($this->has('arxiv') || $this->has('eprint')) && (stripos($this->get('url'), 'arxiv.org') !== FALSE)) {
+       if (($this->has('arxiv') || $this->has('eprint')) && (stripos($this->get('url'), 'arxiv') !== FALSE)) {
           if ($this->name === 'cite web') {
             $this->name = 'cite arXiv';
           } else {
@@ -6003,7 +6066,7 @@ final class Template {
        $this->forget('doi'); // Forget DOI that is really jstor, if it is broken
        foreach (DOI_BROKEN_ALIASES as $alias) $this->forget($alias);
       }
-      if ($this->has('journal')) {  // Do this at the very end of work in case we change type/etc during expansion
+      if ($this->has('journal') && stripos($this->get('journal'), 'arxiv') === FALSE) { // Do this at the very end of work in case we change type/etc during expansion
           if ($this->blank(['chapter', 'isbn'])) {
             // Avoid renaming between cite journal and cite book
             $this->change_name_to('cite journal');
@@ -6094,10 +6157,10 @@ final class Template {
       if ($this->get('newspaper') === 'Reuters') {
         $this->rename('newspaper', 'work');
       }
-      if (($this->wikiname() === 'cite journal' || $this->wikiname() === 'cite document') && $this->has('chapter') && $this->blank('title')) {
+      if (($this->wikiname() === 'cite journal' || $this->wikiname() === 'cite document' || $this->wikiname() === 'cite web') && $this->has('chapter') && $this->blank('title')) {
         $this->rename('chapter', 'title');
       }
-      if (($this->wikiname() === 'cite journal' || $this->wikiname() === 'cite document') && $this->has('chapter')) { // At least avoid a template error
+      if (($this->wikiname() === 'cite journal' || $this->wikiname() === 'cite document' || $this->wikiname() === 'cite web') && $this->has('chapter')) { // At least avoid a template error
         $this->change_name_to('cite book');
       }
       if (($this->wikiname() === 'cite web' || $this->wikiname() === 'cite news') &&

@@ -11,7 +11,7 @@ echo '<!DOCTYPE html><html lang="en" dir="ltr"><head><title>Make a Template</tit
 require_once 'setup.php';
 
 $t = new Template();
-$t->parse_text('{{Cite web}}');
+$t->parse_text('{{cite web }}');
 if (count($_GET) > 10) exit('Excessive number of parameters passed</pre></body></html>');
 if (count($_GET) === 0) exit('No parameters passed</pre></body></html>');
 foreach ($_GET as $param=>$value) {
