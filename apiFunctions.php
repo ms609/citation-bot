@@ -27,17 +27,17 @@ final class AdsAbsControl {
 
   public static function add_doi_map(string $bib, $doi) : void {
     if ($doi === 'X') {
-       $this->bib2doi[$bib] => 'X';
+       self::$bib2doi[$bib] => 'X';
     } elseif (doi_works($doi)) { // paranoid
-       $this->bib2doi[$bib] => $doi;
-       $this->doi2bib[$doi] => $bib;
+       self::$bib2doi[$bib] => $doi;
+       self::$doi2bib[$doi] => $bib;
     }
   }
   public static function get_doi2bib(string $doi) : string {
-    return (string) @$this->doi2bib[$doi];
+    return (string) @self::$doi2bib[$doi];
   }
   public static function get_bib2doi(string $bib) : string {
-    return (string) @$this->bib2doi[$bib];
+    return (string) @$self::$bib2doi[$bib];
   }
 }
 
