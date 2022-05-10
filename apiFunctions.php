@@ -26,8 +26,12 @@ final class AdsAbsControl {
   }
 
   public static function add_doi_map(string $bib, $doi) : void {
-    $this->bib2doi[$bib] => $doi;
-    if ($doi !== 'X') $this->doi2bib[$doi] => $bib;
+    if ($doi === 'X') {
+       $this->bib2doi[$bib] => 'X';
+    } elseif (doi_works($doi)) { // paranoid
+       $this->bib2doi[$bib] => $doi;
+       $this->doi2bib[$doi] => $bib;
+    }
   }
   public static function get_doi2bib(string $doi) : string {
     return (string) @$this->doi2bib[$doi];
