@@ -6035,7 +6035,7 @@ final class Template {
             $this->name = 'Cite book';
           }
        }
-       if (($this->has('arxiv') || $this->has('eprint')) && (stripos($this->get('url'), 'arxiv.org') !== FALSE)) {
+       if (($this->has('arxiv') || $this->has('eprint')) && (stripos($this->get('url'), 'arxiv') !== FALSE)) {
           if ($this->name === 'cite web') {
             $this->name = 'cite arXiv';
           } else {
@@ -6050,7 +6050,7 @@ final class Template {
        $this->forget('doi'); // Forget DOI that is really jstor, if it is broken
        foreach (DOI_BROKEN_ALIASES as $alias) $this->forget($alias);
       }
-      if ($this->has('journal')) {  // Do this at the very end of work in case we change type/etc during expansion
+      if ($this->has('journal') && stripos($this->get('journal'), 'arxiv') === FALSE) { // Do this at the very end of work in case we change type/etc during expansion
           if ($this->blank(['chapter', 'isbn'])) {
             // Avoid renaming between cite journal and cite book
             $this->change_name_to('cite journal');
