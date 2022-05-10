@@ -3373,7 +3373,7 @@ final class TemplateTest2 extends testBaseClass {
     $text = "{{Cite book|bibcode=1982mcts.book.....H}}";  // Verify requires_bibcode() works
     $expanded = $this->process_citation($text);
     $this->assertNull($expanded->get2('title'));
-    $this->assertNull($expanded->get2('year'));
+    $this->assertSame('1982', $expanded->get2('year'));
   }
   
   public function testBadBibcodeARXIVPages() : void {

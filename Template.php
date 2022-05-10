@@ -1935,13 +1935,29 @@ final class Template {
     static $needs_told = TRUE;
     set_time_limit(120);
     $doi = ['', '']; // prevent memory leak in some PHP versions
+    
+    if ($this->has('bibcode') && $this->blank('doi')) {
+      $doi = AdsAbsControl::get_bib2doi($this->get('bibcode'));
+      if (doi_works($doi)) {
+        $this->add_if_new('doi', $doi);
+      }
+    }
+    if ($this->has('doi') && $this->blank('bibcode')) {
+      $doi = $this->get('doi');
+      if (doi_works($doi)) {
+        $bib = AdsAbsControl::get_doi2bib($doi);
+        if (strlen($bib) > 12) $this->add_if_new('bibcode_nosearch', $bib);
+      }
+    }
+    
     // API docs at https://github.com/adsabs/adsabs-dev-api
     if (!SLOW_MODE && $this->blank('bibcode')) {
      if ($needs_told) report_info("Skipping search for new bibcodes in slow mode"); // @codeCoverageIgnore
      $needs_told = FALSE;                                                           // @codeCoverageIgnore
      return FALSE;                                                                  // @codeCoverageIgnore
     }
-    if ($this->has('bibcode') && !$this->incomplete() && $this->has('doi')) {  // Don't waste a query
+    if ($this->has('bibcode') && !$this->incomplete() &&
+        ($this->has('doi') || AdsAbsControl::get_bib2doi($this->get('bibcode')) === 'X')) {  // Don't waste a query, if it has a doi or will not find a doi
       return FALSE;  // @codeCoverageIgnore
     }
     if (stripos($this->get('bibcode'), 'CITATION') !== FALSE) return FALSE;
@@ -1981,6 +1997,7 @@ final class Template {
           ($this->wikiname() == 'citation' && $this->has('isbn') && $this->has('chapter')) ||  // "complete" enough for a book
           ($this->has_good_free_copy()) ||  // Alreadly links out to something free
           ($this->has('s2cid')) ||  // good enough, usually includes abstract and link to copy
+          ($this->has('doi') && doi_works($this->get('doi'))) ||    // good enough, usually includes abstract 
           ($this->has('bibcode'))) // Must be GIGO
           {
             report_inline('no record retrieved.');                // @codeCoverageIgnore
