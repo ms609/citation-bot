@@ -27,10 +27,10 @@ final class AdsAbsControl {
 
   public static function add_doi_map(string $bib, $doi) : void {
     if ($doi === 'X') {
-       self::$bib2doi[$bib] => 'X';
+       self::$bib2doi[$bib] = 'X';
     } elseif (doi_works($doi)) { // paranoid
-       self::$bib2doi[$bib] => $doi;
-       self::$doi2bib[$doi] => $bib;
+       self::$bib2doi[$bib] = $doi;
+       self::$doi2bib[$doi] = $bib;
     }
   }
   public static function get_doi2bib(string $doi) : string {
