@@ -26,6 +26,7 @@ final class AdsAbsControl {
   }
 
   public static function add_doi_map(string $bib, $doi) : void {
+    if (!WikipediaBot::NonStandardMode()) return; // TODO - remove once tested
     if ($doi === 'X') {
        self::$bib2doi[$bib] = 'X';
     } elseif (doi_works($doi)) { // paranoid
