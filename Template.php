@@ -332,6 +332,7 @@ final class Template {
             report_action("Found and used SICI");
           }
       }
+      echo "\n" . __LINE__ . " " . $this->parsed_text() . "\n";
       if (!$this->blank(['pmc', 'pmid', 'doi', 'jstor']) ||
          (stripos($this->get('journal') . $this->get('title'), 'arxiv') !== FALSE && !$this->blank(['eprint', 'arxiv']))) { // Have some good data
           $the_title   = $this->get('title');
@@ -341,6 +342,7 @@ final class Template {
           $the_issue   = $this->get('issue');
           $the_page    = $this->get('page');
           $the_pages   = $this->get('pages');
+      echo "\n" . __LINE__ . " " . $this->parsed_text() . "\n";
           $initial_author_params_save = $this->initial_author_params;
           $bad_data = FALSE;
           if ($the_pages === '0' || $the_pages === 'null' || $the_pages === 'n/a') {
@@ -376,6 +378,7 @@ final class Template {
               $bad_data = TRUE;
           }
           if (stripos($the_title, 'arXiv') !== FALSE) {
+      echo "\n" . __LINE__ . " " . $this->parsed_text() . "\n";
               $this->rename('title', 'CITATION_BOT_PLACEHOLDER_title');
               $the_title = '';
               $bad_data = TRUE;
@@ -400,6 +403,7 @@ final class Template {
               $bad_data = TRUE;
           }
           if (stripos($the_journal, 'arXiv') !== FALSE) {
+      echo "\n" . __LINE__ . " " . $this->parsed_text() . "\n";
               $this->rename('journal', 'CITATION_BOT_PLACEHOLDER_journal');
               $the_journal = '';
               $bad_data = TRUE;
@@ -462,6 +466,7 @@ final class Template {
               }
           }
           if ($bad_data) {
+      echo "\n" . __LINE__ . " " . $this->parsed_text() . "\n";
             $this_array = [$this];
             if ($this->has('doi') && doi_active($this->get('doi'))) {
               expand_by_doi($this);
@@ -476,7 +481,9 @@ final class Template {
               expand_by_jstor($this);
             }
             if ($this->blank(['pmid', 'pmc', 'jstor']) && ($this->has('eprint') || $this->has('arxiv'))) {
+      echo "\n" . __LINE__ . " " . $this->parsed_text() . "\n";
               expand_arxiv_templates($this_array);
+      echo "\n" . __LINE__ . " " . $this->parsed_text() . "\n";
             }
             if ($this->has('CITATION_BOT_PLACEHOLDER_journal')) {
               if ($this->has('journal') && $this->get('journal') !== $this->get('CITATION_BOT_PLACEHOLDER_journal') &&
@@ -559,7 +566,9 @@ final class Template {
           unset($the_pages);
           unset($bad_data);
         }
+            echo "\n" . __LINE__ . " " . $this->parsed_text() . "\n";
         $this->tidy();
+            echo "\n" . __LINE__ . " " . $this->parsed_text() . "\n";
         // Fix up URLs hiding in identifiers
         foreach (['issn', 'oclc', 'pmc', 'doi', 'pmid', 'jstor', 'arxiv', 'zbl', 'mr',
                   'lccn', 'hdl', 'ssrn', 'ol', 'jfm', 'osti', 'biorxiv', 'citeseerx', 'hdl'] as $possible) {
@@ -582,6 +591,7 @@ final class Template {
       // This is all we do with cite magazine
       $this->rename('work', 'magazine');
     }
+          echo "\n" . __LINE__ . " " . $this->parsed_text() . "\n";
   }
 
   public function fix_rogue_etal() : void {
