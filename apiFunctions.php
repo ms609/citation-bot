@@ -34,10 +34,10 @@ final class AdsAbsControl {
     }
   }
   public static function get_doi2bib(string $doi) : string {
-    return (string) @self::$doi2bib[$doi];
+    return (string) self::@$doi2bib[$doi];
   }
   public static function get_bib2doi(string $bib) : string {
-    return (string) @$self::$bib2doi[$bib];
+    return (string) self::@$bib2doi[$bib];
   }
 }
 
