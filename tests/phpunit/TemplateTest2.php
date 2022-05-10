@@ -2775,10 +2775,10 @@ final class TemplateTest2 extends testBaseClass {
     public function testIDconvert13() : void {
      $text = '{{cite journal|id=<small>{{MR|396410}}</small>}}';
      $page = $this->process_page($text);
-     $this->assertSame('{{cite journal| mr=396410 }}', $page->parsed_text());
+     $this->assertSame('{{cite journal|mr=396410 }}', $page->parsed_text());
      $text = '{{cite journal|id=<small> </small>{{MR|396410}}}}';
      $page = $this->process_page($text);
-     $this->assertSame('{{cite journal| mr=396410 }}', $page->parsed_text());
+     $this->assertSame('{{cite journal|mr=396410 }}', $page->parsed_text());
     }
  
  
@@ -3602,7 +3602,7 @@ final class TemplateTest2 extends testBaseClass {
    public function testAllSortsOfBadData() : void {
     $text = "{{Cite journal|journal=arXiv|title=[No title found]|issue=null|volume=n/a|page=n/a|pages=null|pmc=1}}";
     $expanded = $this->process_citation($text);
-    $this->assertSame('{{Cite journal|journal=ArXiv|title=[No title found]|volume=n/a|page=n/a|pmc=1}}', $expanded->parsed_text());
+    $this->assertSame('{{Cite journal|journal=arXiv|title=[No title found]|volume=n/a|page=n/a|pmc=1}}', $expanded->parsed_text());
     
     $text = "{{Cite journal|journal=arXiv|title=[No TITLE found]|issue=null|volume=n/a|page=n/a|pages=null|pmc=1}}";
     $expanded = $this->process_citation($text);
