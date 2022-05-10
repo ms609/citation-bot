@@ -4015,6 +4015,7 @@ final class Template {
           if (str_equivalent($this->get($param), $this->get('work'))) $this->forget('work');
 
           $periodical = trim($this->get($param));
+          if (stripos($periodical, 'arxiv') !== FALSE) return;
           // Special odd cases go here
           if ($periodical === 'TAXON') { // All caps that should not be
              $this->set($param, 'Taxon');
