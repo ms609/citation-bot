@@ -475,7 +475,8 @@ final class Template {
               expand_by_jstor($this);
             }
             if ($this->blank(['pmid', 'pmc', 'jstor']) && ($this->has('eprint') || $this->has('arxiv'))) {
-              expand_arxiv_templates([$this]);
+              $the_this_array = [$this];
+              expand_arxiv_templates($the_this_array);
             }
             if ($this->has('CITATION_BOT_PLACEHOLDER_journal')) {
               if ($this->has('journal') && $this->get('journal') !== $this->get('CITATION_BOT_PLACEHOLDER_journal') &&
