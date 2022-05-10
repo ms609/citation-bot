@@ -5953,7 +5953,7 @@ final class Template {
       }
       if ($this->has(strtolower('CITATION_BOT_PLACEHOLDER_BARE_URL'))) {
         if ($this->has('title') || $this->has('chapter')) {
-          $this->forget(strtolower('CITATION_BOT_PLACEHOLDER_BARE_URL'));
+          $this->quietly_forget(strtolower('CITATION_BOT_PLACEHOLDER_BARE_URL'));
         }
       }
       if ($this->get('issue') === 'n/a' && preg_match('~^\d+$~', $this->get('volume'))) {
@@ -6140,10 +6140,10 @@ final class Template {
       if ($this->get('newspaper') === 'Reuters') {
         $this->rename('newspaper', 'work');
       }
-      if (($this->wikiname() === 'cite journal' || $this->wikiname() === 'cite document') && $this->has('chapter') && $this->blank('title')) {
+      if (($this->wikiname() === 'cite journal' || $this->wikiname() === 'cite document' || $this->wikiname() === 'cite web') && $this->has('chapter') && $this->blank('title')) {
         $this->rename('chapter', 'title');
       }
-      if (($this->wikiname() === 'cite journal' || $this->wikiname() === 'cite document') && $this->has('chapter')) { // At least avoid a template error
+      if (($this->wikiname() === 'cite journal' || $this->wikiname() === 'cite document' || $this->wikiname() === 'cite web') && $this->has('chapter')) { // At least avoid a template error
         $this->change_name_to('cite book');
       }
       if (($this->wikiname() === 'cite web' || $this->wikiname() === 'cite news') &&
