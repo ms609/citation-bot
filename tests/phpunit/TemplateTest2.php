@@ -1989,11 +1989,11 @@ final class TemplateTest2 extends testBaseClass {
     $this->assertNull($template->get2('chapter'));
     $this->assertNull($template->get2('publisher'));
    
-    $text = "{{cite web|journal=X|chapter=Y|}}"; // Will warn userdfasddsafds
+    $text = "{{cite web|journal=X|chapter=Y|}}";
     $template = $this->make_citation($text);
     $template->final_tidy();
     $this->assertSame('cite web', $template->wikiname());
-    $this->assertSame('Y', $template->get2('chapter'));
+    $this->assertSame('Y', $template->get2('title'));
   }
 
   public function testCiteTypeWarnings2() : void {
@@ -3606,7 +3606,7 @@ final class TemplateTest2 extends testBaseClass {
     
     $text = "{{Cite journal|journal=arXiv|title=[No TITLE found]|issue=null|volume=n/a|page=n/a|pages=null|pmc=1}}";
     $expanded = $this->process_citation($text);
-    $this->assertSame('{{Cite journal|journal=ArXiv|title=[No TITLE found]|volume=n/a|page=n/a|pmc=1}}', $expanded->parsed_text());
+    $this->assertSame('{{Cite journal|journal=arXiv|title=[No TITLE found]|volume=n/a|page=n/a|pmc=1}}', $expanded->parsed_text());
   }
  
    public function testTidyUpNA() : void {
