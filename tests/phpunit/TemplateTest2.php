@@ -1989,11 +1989,11 @@ final class TemplateTest2 extends testBaseClass {
     $this->assertNull($template->get2('chapter'));
     $this->assertNull($template->get2('publisher'));
    
-    $text = "{{cite web|journal=X|chapter=Y|}}"; // Will warn user
+    $text = "{{cite web|journal=X|chapter=Y|}}";
     $template = $this->make_citation($text);
     $template->final_tidy();
     $this->assertSame('cite web', $template->wikiname());
-    $this->assertSame('Y', $template->get2('chapter'));
+    $this->assertSame('Y', $template->get2('title'));
   }
 
   public function testCiteTypeWarnings2() : void {
