@@ -182,9 +182,10 @@ final class Template {
         // Check if messed up, and do not use bad styles
         if ((substr_count($example, '=') !== 1) ||
             (substr_count($example, "\n") > 1) ||
-            ($example === 'X=X') ||
             ($example === 'X = X')) {
            $example = ' X=X ';
+        } elseif ($example === 'X=X') {
+           $example = ' X=X';
         }
     } else {
         $example = ' X=X ';
