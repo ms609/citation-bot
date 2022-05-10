@@ -11,6 +11,9 @@ function query_pmc_api  (array $pmcs, array &$templates) : bool { return entrez_
 
 final class AdsAbsControl {
   private static $counter = 0;
+  private $doi2bib = array();
+  private $bib2doi = array();
+
   public static function gave_up_yet() : bool {
     self::$counter = max(self::$counter - 1, 0);
     return (self::$counter != 0);
@@ -20,6 +23,17 @@ final class AdsAbsControl {
   }
   public static function back_on() : void {
     self::$counter = 0;
+  }
+
+  public static function add_doi_map(string $bib, $doi) : void {
+    $this->bib2doi[$bib] => $doi;
+    if ($doi !== 'X') $this->doi2bib[$doi] => $bib;
+  }
+  public static function get_doi2bib(string $doi) : string {
+    return (string) @$this->doi2bib[$doi];
+  }
+  public static function get_bib2doi(string $bib) : string {
+    return (string) @$this->bib2doi[$bib];
   }
 }
 
@@ -270,8 +284,6 @@ function arxiv_api(array $ids, array &$templates) : bool {  // Pointer to save m
 function adsabs_api(array $ids, array &$templates, string $identifier) : bool {  // Pointer to save memory
   set_time_limit(120);
   $rate_limit = [['', '', ''], ['', '', ''], ['', '', '']]; // prevent memory leak in some PHP versions
-  if (AdsAbsControl::gave_up_yet()) return FALSE;
-  if (!PHP_ADSABSAPIKEY) return FALSE;
   if (count($ids) == 0) return FALSE;
   
   foreach ($ids as $key => $bibcode) {
@@ -286,16 +298,24 @@ function adsabs_api(array $ids, array &$templates, string $identifier) : bool { 
     return TRUE;
   }
 
+  // Use cache
+  foreach ($templates as $template) {
+    if ($template->has('bibcode') && $template->blank('doi')) {
+      $doi = AdsAbsControl::get_bib2doi($template->get('bibcode'));
+      if (doi_works($doi)) $template->add_if_new($doi);
+    }
+  }
   // Do not do big query if all templates are complete
   $NONE_IS_INCOMPLETE = TRUE;
   foreach ($templates as $template) {
-    if ($template->has('bibcode')
-      && $template->incomplete()) {
+    if ($template->has('bibcode') && $template->incomplete()) {
       $NONE_IS_INCOMPLETE = FALSE;
       break;
     }
   }
   if ($NONE_IS_INCOMPLETE) return FALSE;
+  if (AdsAbsControl::gave_up_yet()) return FALSE;
+  if (!PHP_ADSABSAPIKEY) return FALSE;
   
   // API docs at https://github.com/adsabs/adsabs-dev-api/blob/master/Search_API.ipynb
   /** @psalm-suppress RedundantCondition */ /* PSALM thinks TRAVIS cannot be FALSE */
@@ -1221,8 +1241,14 @@ function process_bibcode_data(Template $this_template, object $record) : void {
         }
       }
     }
-    if (isset($record->doi)) {
-      $this_template->add_if_new('doi', (string) $record->doi[0]);
+    if (isset($record->doi)){
+      $doi = (string) @$record->doi[0];
+      if (doi_works($doi)) {
+        $this_template->add_if_new('doi', $doi);
+        AdsAbsControl::add_doi_map($this_template->get('bibcode'), $doi);
+      }
+    } else {
+      AdsAbsControl::add_doi_map($this_template->get('bibcode'), 'X');
     }
 }
 
