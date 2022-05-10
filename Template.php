@@ -186,7 +186,7 @@ final class Template {
             ($example === 'X = X')) {
            $example = ' X=X ';
         } elseif ($example === 'X=X') {
-           $example = ' X=X';
+           $example = 'X=X ';
         }
     } else {
         $example = ' X=X ';
