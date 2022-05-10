@@ -50,9 +50,10 @@ final class Template {
                'jstor'    => array(),
                'zotero'   => array(),
             );
+  private $this_array;
   
   function __construct() {
-     ;  // All the real construction is done in parse_text() and above in variable initialization
+     $this->this_array = [$this];  // All the real construction is done in parse_text() and above in variable initialization
   }
 
   public function parse_text(string $text) : void {
@@ -462,21 +463,20 @@ final class Template {
               }
           }
           if ($bad_data) {
-            $this_array = [$this];
             if ($this->has('doi') && doi_active($this->get('doi'))) {
               expand_by_doi($this);
             }
             if ($this->has('pmid')) {
-              query_pmid_api(array($this->get('pmid')), $this_array);
+              query_pmid_api(array($this->get('pmid')), $this->this_array);
             }
             if ($this->has('pmc')) {
-              query_pmc_api(array($this->get('pmc')), $this_array);
+              query_pmc_api(array($this->get('pmc')), $this->this_array);
             }
             if ($this->has('jstor')) {
               expand_by_jstor($this);
             }
             if ($this->blank(['pmid', 'pmc', 'jstor']) && ($this->has('eprint') || $this->has('arxiv'))) {
-              expand_arxiv_templates($this_array);
+              expand_arxiv_templates($this->this_array);
             }
             if ($this->has('CITATION_BOT_PLACEHOLDER_journal')) {
               if ($this->has('journal') && $this->get('journal') !== $this->get('CITATION_BOT_PLACEHOLDER_journal') &&
@@ -2254,13 +2254,12 @@ final class Template {
 
   public function expand_by_pubmed(bool $force = FALSE) : void {
     if (!$force && !$this->incomplete()) return;
-    $this_array = [$this];
     if ($pm = $this->get('pmid')) {
       report_action('Checking ' . pubmed_link('pmid', $pm) . ' for more details');
-      query_pmid_api(array($pm), $this_array);
+      query_pmid_api(array($pm), $this->this_array);
     } elseif ($pm = $this->get('pmc')) {
       report_action('Checking ' . pubmed_link('pmc', $pm) . ' for more details');
-      query_pmc_api(array($pm), $this_array);
+      query_pmc_api(array($pm), $this->this_array);
     }
   }
 
