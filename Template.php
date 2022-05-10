@@ -1939,7 +1939,7 @@ final class Template {
     if ($this->has('bibcode') && $this->blank('doi')) {
       $doi = AdsAbsControl::get_bib2doi($this->get('bibcode'));
       if (doi_works($doi)) {
-        $this->add_if_new($doi);
+        $this->add_if_new('doi', $doi);
       }
     }
     if ($this->has('doi') && $this->blank('bibcode')) {
