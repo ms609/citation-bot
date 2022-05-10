@@ -1989,11 +1989,11 @@ final class TemplateTest2 extends testBaseClass {
     $this->assertNull($template->get2('chapter'));
     $this->assertNull($template->get2('publisher'));
    
-    $text = "{{cite web|journal=X|chapter=Y|}}"; // Will warn user
+    $text = "{{cite web|journal=X|chapter=Y|}}";
     $template = $this->make_citation($text);
     $template->final_tidy();
     $this->assertSame('cite web', $template->wikiname());
-    $this->assertSame('Y', $template->get2('chapter'));
+    $this->assertSame('Y', $template->get2('title'));
   }
 
   public function testCiteTypeWarnings2() : void {
@@ -2775,10 +2775,10 @@ final class TemplateTest2 extends testBaseClass {
     public function testIDconvert13() : void {
      $text = '{{cite journal|id=<small>{{MR|396410}}</small>}}';
      $page = $this->process_page($text);
-     $this->assertSame('{{cite journal| mr=396410 }}', $page->parsed_text());
+     $this->assertSame('{{cite journal|mr=396410 }}', $page->parsed_text());
      $text = '{{cite journal|id=<small> </small>{{MR|396410}}}}';
      $page = $this->process_page($text);
-     $this->assertSame('{{cite journal| mr=396410 }}', $page->parsed_text());
+     $this->assertSame('{{cite journal|mr=396410 }}', $page->parsed_text());
     }
  
  
@@ -3373,7 +3373,7 @@ final class TemplateTest2 extends testBaseClass {
     $text = "{{Cite book|bibcode=1982mcts.book.....H}}";  // Verify requires_bibcode() works
     $expanded = $this->process_citation($text);
     $this->assertNull($expanded->get2('title'));
-    $this->assertNull($expanded->get2('year'));
+    $this->assertSame('1982', $expanded->get2('year'));
   }
   
   public function testBadBibcodeARXIVPages() : void {
@@ -3602,11 +3602,11 @@ final class TemplateTest2 extends testBaseClass {
    public function testAllSortsOfBadData() : void {
     $text = "{{Cite journal|journal=arXiv|title=[No title found]|issue=null|volume=n/a|page=n/a|pages=null|pmc=1}}";
     $expanded = $this->process_citation($text);
-    $this->assertSame('{{Cite journal|journal=ArXiv|title=[No title found]|volume=n/a|page=n/a|pmc=1}}', $expanded->parsed_text());
+    $this->assertSame('{{Cite journal|journal=arXiv|title=[No title found]|volume=n/a|page=n/a|pmc=1}}', $expanded->parsed_text());
     
     $text = "{{Cite journal|journal=arXiv|title=[No TITLE found]|issue=null|volume=n/a|page=n/a|pages=null|pmc=1}}";
     $expanded = $this->process_citation($text);
-    $this->assertSame('{{Cite journal|journal=ArXiv|title=[No TITLE found]|volume=n/a|page=n/a|pmc=1}}', $expanded->parsed_text());
+    $this->assertSame('{{Cite journal|journal=arXiv|title=[No TITLE found]|volume=n/a|page=n/a|pmc=1}}', $expanded->parsed_text());
   }
  
    public function testTidyUpNA() : void {
