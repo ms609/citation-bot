@@ -11,8 +11,8 @@ function query_pmc_api  (array $pmcs, array &$templates) : bool { return entrez_
 
 final class AdsAbsControl {
   private static $counter = 0;
-  private $doi2bib = array();
-  private $bib2doi = array();
+  private static $doi2bib = array();
+  private static $bib2doi = array();
 
   public static function gave_up_yet() : bool {
     self::$counter = max(self::$counter - 1, 0);
