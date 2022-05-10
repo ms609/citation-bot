@@ -403,7 +403,7 @@ final class Template {
               $this->rename('journal', 'CITATION_BOT_PLACEHOLDER_journal');
               $the_journal = '';
               $bad_data = TRUE;
-              if ($this->wikiname() === 'cite journal') $this->change_name_to('cite arxiv');  
+              if ($this->wikiname() === 'cite journal') $this->change_name_to('cite arxiv');
           }
           if ($the_title != '' && stripos($the_title, 'CITATION') === FALSE) {
             if (str_i_same($the_title, $the_journal) &&
@@ -4028,7 +4028,7 @@ final class Template {
              if ($this->blank('website')) $this->rename($param, 'website');
              return;
           }
-          if ($this->blank(['chapter', 'isbn']) && $param === 'journal' && stripos($this->get($param), 'arxiv') !== FALSE) {
+          if ($this->blank(['chapter', 'isbn']) && $param === 'journal' && stripos($this->get($param), 'arxiv') === FALSE) {
             // Avoid renaming between cite journal and cite book
             $this->change_name_to('cite journal');
           }
