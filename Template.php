@@ -4029,7 +4029,7 @@ final class Template {
              if ($this->blank('website')) $this->rename($param, 'website');
              return;
           }
-          if ($this->blank(['chapter', 'isbn']) && $param === 'journal') {
+          if ($this->blank(['chapter', 'isbn']) && $param === 'journal' && stripos($this->get($param), 'arxiv') !== FALSE) {
             // Avoid renaming between cite journal and cite book
             $this->change_name_to('cite journal');
           }
