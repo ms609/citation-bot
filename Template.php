@@ -332,7 +332,8 @@ final class Template {
             report_action("Found and used SICI");
           }
       }
-      if (!$this->blank(['pmc', 'pmid', 'doi', 'jstor'])) { // Have some good data
+      if (!$this->blank(['pmc', 'pmid', 'doi', 'jstor']) ||
+         (stripos($this->get('journal') . $this->get('title'), 'arxiv') !== FALSE && !$this->blank(['eprint', 'arxiv'])) { // Have some good data
           $the_title   = $this->get('title');
           $the_journal = $this->get('journal');
           $the_chapter = $this->get('chapter');
@@ -370,6 +371,11 @@ final class Template {
               $bad_data = TRUE;
           }
           if ($the_title === 'null' || $the_title === '[No title found]' || $the_title === 'Archived copy' || $the_title === 'ShieldSquare Captcha') { // title=none is often because title is "reviewed work....
+              $this->rename('title', 'CITATION_BOT_PLACEHOLDER_title');
+              $the_title = '';
+              $bad_data = TRUE;
+          }
+          if (stripos($the_title, 'arXiv') !== FALSE) {
               $this->rename('title', 'CITATION_BOT_PLACEHOLDER_title');
               $the_title = '';
               $bad_data = TRUE;
@@ -467,6 +473,9 @@ final class Template {
             }
             if ($this->has('jstor')) {
               expand_by_jstor($this);
+            }
+            if ($this->blank(['pmid', 'pmc', 'jstor']) && ($this->has('eprint') || $this->has('arxiv'))) {
+              expand_arxiv_templates([$this]);
             }
             if ($this->has('CITATION_BOT_PLACEHOLDER_journal')) {
               if ($this->has('journal') && $this->get('journal') !== $this->get('CITATION_BOT_PLACEHOLDER_journal') &&
