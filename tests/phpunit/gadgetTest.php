@@ -29,7 +29,7 @@ final class gadgetTest extends testBaseClass {
       unset($_REQUEST);
       // Output checking time
       $json = json_decode($json_text);
-      $this->assertSame('{{citation|pmid=34213| year=1979 | last1=Weber | first1=F. | last2=Kayser | first2=F. H. | title=Antimicrobial resistance and serotypes of Streptococcus pneumoniae in Switzerland | journal=Schweizerische Medizinische Wochenschrift | volume=109 | issue=11 | pages=395–399 }}', $json->expandedtext);
+      $this->assertSame('{{citation|pmid=34213|year=1979 |last1=Weber | first1=F. |last2=Kayser |first2=F. H. |title=Antimicrobial resistance and serotypes of Streptococcus pneumoniae in Switzerland |journal=Schweizerische Medizinische Wochenschrift |volume=109 |issue=11 |pages=395–399 }}', $json->expandedtext);
       $this->assertSame('Something Nice | Alter: template type. Add: pages, issue, volume, journal, title, year, authors 1-2. Removed Template redirect. | [[WP:UCB|Use this tool]]. [[WP:DBUG|Report bugs]]. | #UCB_Gadget ', $json->editsummary);
   }
 }
