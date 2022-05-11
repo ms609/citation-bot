@@ -713,7 +713,7 @@ public static function process_zotero_response(string $zotero_response, Template
   if ( isset($result->volume) 
   &&   strpos($result->volume, "(") === FALSE ) $template->add_if_new('volume', (string) $result->volume);
   if ( isset($result->date) && strlen($result->date)>3)$template->add_if_new('date', tidy_date($result->date));
-  if ( isset($result->series) && stripos($url, 'portal.acm.org')===FALSE)  $template->add_if_new('series' , (string) $result->series);
+  if ( isset($result->series) && stripos($url, '.acm.org')===FALSE)  $template->add_if_new('series' , (string) $result->series);
   // Sometimes zotero lists the last name as "published" and puts the whole name in the first place
   $i = 0;
   while (isset($result->author[$i])) {

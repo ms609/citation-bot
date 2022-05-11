@@ -50,10 +50,10 @@ final class Template {
                'jstor'    => array(),
                'zotero'   => array(),
             );
-  private $this_array;
+  private $this_array = array(); // Unset after using to avoid pointer loop that makes garbage collection harder
   
   function __construct() {
-     $this->this_array = [$this];  // All the real construction is done in parse_text() and above in variable initialization
+     ;  // All the real construction is done in parse_text() and above in variable initialization
   }
 
   public function parse_text(string $text) : void {
@@ -466,6 +466,7 @@ final class Template {
             if ($this->has('doi') && doi_active($this->get('doi'))) {
               expand_by_doi($this);
             }
+            $this->this_array = array($this);
             if ($this->has('pmid')) {
               query_pmid_api(array($this->get('pmid')), $this->this_array);
             }
@@ -478,6 +479,7 @@ final class Template {
             if ($this->blank(['pmid', 'pmc', 'jstor']) && ($this->has('eprint') || $this->has('arxiv'))) {
               expand_arxiv_templates($this->this_array);
             }
+            $this->this_array = array();
             if ($this->has('CITATION_BOT_PLACEHOLDER_journal')) {
               if ($this->has('journal') && $this->get('journal') !== $this->get('CITATION_BOT_PLACEHOLDER_journal') &&
                   '[[' . $this->get('journal') . ']]' !== $this->get('CITATION_BOT_PLACEHOLDER_journal')) {
@@ -1500,7 +1502,12 @@ final class Template {
             $low_quality = FALSE;
           }
           $this->add('bibcode', $value);
-          if ($param_name === 'bibcode') $this->expand_by_adsabs();
+          if ($param_name === 'bibcode') {
+            $bib_array = array($value);
+            $this->this_array = array($this);
+            query_bibcode_api($bib_array, $this->this_array);
+            $this->this_array = array();
+          }
           if ($low_quality) {
             $this->quietly_forget('bibcode');
           }
@@ -1960,6 +1967,9 @@ final class Template {
         ($this->has('doi') || AdsAbsControl::get_bib2doi($this->get('bibcode')) === 'X')) {  // Don't waste a query, if it has a doi or will not find a doi
       return FALSE;  // @codeCoverageIgnore
     }
+    
+    if ($this->has('bibcode')) return FALSE; // Now use big query API for existing bibcode
+    
     if (stripos($this->get('bibcode'), 'CITATION') !== FALSE) return FALSE;
 
     if ($this->api_has_used('adsabs', equivalent_parameters('bibcode'))) {
@@ -1989,7 +1999,6 @@ final class Template {
     if ($this->has('bibcode') && strpos($this->get('bibcode'), 'book') !== FALSE) {
       return expand_book_adsabs($this, $result);
     }
-    
     if ($result->numFound == 0) {
       // Avoid blowing through our quota
       if ((!in_array($this->wikiname(), ['cite journal', 'citation', 'cite conference', 'cite book', 'cite arxiv', 'cite article'])) || // Unlikely to find anything
@@ -2077,10 +2086,8 @@ final class Template {
       }
 
       if (strpos((string) $record->bibcode, 'book') !== FALSE) {  // Found a book.  Need special code
-         $old_one = $this->get('bibcode');
          $this->add_if_new('bibcode_nosearch', (string) $record->bibcode);
-         if ($this->get('bibcode') === $old_one) return FALSE; // Extra paranoid code to 100% guarantee no infinite loop as code evolves
-         return $this->expand_by_adsabs(); // @phan-suppress-current-line PhanPossiblyInfiniteRecursionSameParams
+         return expand_book_adsabs($this, $result);
       }
 
       if ($this->wikiname() === 'cite book' || $this->wikiname() === 'citation') { // Possible book and we found book review in journal
@@ -2271,6 +2278,7 @@ final class Template {
 
   public function expand_by_pubmed(bool $force = FALSE) : void {
     if (!$force && !$this->incomplete()) return;
+    $this->this_array = array($this);
     if ($pm = $this->get('pmid')) {
       report_action('Checking ' . pubmed_link('pmid', $pm) . ' for more details');
       query_pmid_api(array($pm), $this->this_array);
@@ -2278,6 +2286,7 @@ final class Template {
       report_action('Checking ' . pubmed_link('pmc', $pm) . ' for more details');
       query_pmc_api(array($pm), $this->this_array);
     }
+    $this->this_array = array();
   }
 
   public function use_sici() : bool {

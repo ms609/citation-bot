@@ -16,10 +16,12 @@ final class CrashTest extends testBaseClass {
       define("TRAVIS_PRINT", "YES");
       $page = new TestPage();
       $page->get_text_from($bad_page);
-      AdsAbsControl::back_on();
+      AdsAbsControl::big_back_on();
+      AdsAbsControl::small_back_on();
       Zotero::unblock_zotero();
       $page->expand_text();
-      AdsAbsControl::give_up();
+      AdsAbsControl::small_give_up();
+      AdsAbsControl::big_give_up();
       Zotero::block_zotero();
       $this->assertTrue(FALSE); // prevent us from git committing with a website included
     }
