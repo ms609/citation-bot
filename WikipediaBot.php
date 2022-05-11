@@ -192,8 +192,9 @@ try {
       report_minor_error("Pages array is non-existent.  Aborting.");   // @codeCoverageIgnore
       return FALSE;                                                    // @codeCoverageIgnore
     }
+    print_r($response->query->pages);
     $myPage = reset($response->query->pages); // reset gives first element in list
-    
+    print_r($myPage);
     if (!isset($myPage->lastrevid) || !isset($myPage->revisions) || !isset($myPage->revisions[0]) ||
         !isset($myPage->revisions[0]->timestamp) || !isset($myPage->title)) {
       report_minor_error("Page seems not to exist. Aborting.");   // @codeCoverageIgnore
@@ -326,7 +327,9 @@ try {
         report_minor_error("Failed to get article's last revision");      // @codeCoverageIgnore
         return '';                                                        // @codeCoverageIgnore
     }
+    print_r($res->query->pages);
     $page = reset($res->query->pages);
+    print_r($page);
     return  (isset($page->revisions[0]->revid) ? (string) $page->revisions[0]->revid : '');
   }
 
@@ -342,7 +345,9 @@ try {
         report_warning("Failed to get redirect status");    // @codeCoverageIgnore
         return -1;                                          // @codeCoverageIgnore
     }
+    print_r($res->query->pages);
     $res = reset($res->query->pages);
+    print_r($res);
     return (isset($res->missing) ? -1 : (isset($res->redirect) ? 1 : 0));
   }
   public static function redirect_target(string $page) : ?string {
