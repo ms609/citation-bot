@@ -307,7 +307,14 @@ function adsabs_api(array $ids, array &$templates, string $identifier) : bool { 
       if (doi_works($doi)) $template->add_if_new('doi', $doi);
     }
   }
-  // Do not do big query if all templates are complete
+  
+  if (WikipediaBot::NonStandardMode()) { // TODO - remove debug
+    foreach ($templates as $template) {
+      if ($template->has('bibcode')) $template->expand_by_adsabs();
+    }
+    return TRUE;
+  }
+
   $NONE_IS_INCOMPLETE = TRUE;
   foreach ($templates as $template) {
     if ($template->has('bibcode') && $template->incomplete()) {
