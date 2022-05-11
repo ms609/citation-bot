@@ -50,7 +50,7 @@ final class Template {
                'jstor'    => array(),
                'zotero'   => array(),
             );
-  private $this_array = array(); // Unset after using to avoid pointer loop that makes garbage collection harder
+  private array $this_array = array(); // Unset after using to avoid pointer loop that makes garbage collection harder
   
   function __construct() {
      ;  // All the real construction is done in parse_text() and above in variable initialization
