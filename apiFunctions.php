@@ -16,8 +16,8 @@ final class AdsAbsControl {
   private static $bib2doi = array();
 
   public static function big_gave_up_yet() : bool {
-    self::$counter = max(self::$counter - 1, 0);
-    return (self::$big_counter != 0);
+    self::$big_counter = max(self::$big_counter - 1, 0);
+    return (self::$big_counter !== 0);
   }
   public static function big_give_up() : void {
     self::$big_counter = 1000;
@@ -27,8 +27,8 @@ final class AdsAbsControl {
   }
 
   public static function small_gave_up_yet() : bool {
-    self::$counter = max(self::$counter - 1, 0);
-    return (self::$small_counter != 0);
+    self::$small_counter = max(self::$small_counter - 1, 0);
+    return (self::$small_counter !== 0);
   }
   public static function small_give_up() : void {
     self::$small_counter = 1000;
