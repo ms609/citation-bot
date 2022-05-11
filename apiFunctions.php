@@ -346,7 +346,7 @@ if (WikipediaBot::NonStandardMode()) {  // TODO - remove debug
   print_r($response);
   foreach ($response->docs as $record) {
     if (!in_array($record->bibcode, $ids)) {
-        foreach ($response->identifier as $identity) {
+        foreach ($record->identifier as $identity) {
           if (in_array($identity, $ids)) {
             $record->bibcode = $identity; // unmap it
           }
