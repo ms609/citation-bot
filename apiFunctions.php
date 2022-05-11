@@ -341,12 +341,23 @@ function adsabs_api(array $ids, array &$templates, string $identifier) : bool { 
     $response = Bibcode_Response_Processing($return, $ch, $adsabs_url);
     curl_close($ch);
     if (!isset($response->docs)) return TRUE;
+
+if (WikipediaBot::NonStandardMode()) {  // TODO - remove debug
+  print_r($response);
+  foreach ($response->docs as $record) {
+    if (!in_array($record->bibcode, $ids)) {
+        foreach ($response->identifier as $identity) {
+          if (in_array($identity, $ids)) {
+            $record->bibcode = $identity; // unmap it
+          }
+        }
+    }
+  }
+}
+
   
   foreach ($response->docs as $record) {
     if (!in_array($record->bibcode, $ids)) {  // Remapped bibcodes cause corrupt big queries
-      if (WikipediaBot::NonStandardMode()) { // TODO - remove debug
-        print_r($response);
-      }
       // @codeCoverageIgnoreStart
       foreach ($templates as $template) {
         if ($template->has('bibcode')) $template->expand_by_adsabs();
