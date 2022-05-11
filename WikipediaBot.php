@@ -328,6 +328,7 @@ try {
         return '';                                                        // @codeCoverageIgnore
     }
     print_r($res->query->pages);
+    print_r(get_mangled_object_vars($res->query->pages));
     $page = reset($res->query->pages);
     print_r($page);
     return  (isset($page->revisions[0]->revid) ? (string) $page->revisions[0]->revid : '');
