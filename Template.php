@@ -1505,7 +1505,7 @@ final class Template {
           if ($param_name === 'bibcode') {
             $bib_array = array($value);
             $this->this_array = array($this);
-            query_bibcode_api($bib_array, $this->this_array)
+            query_bibcode_api($bib_array, $this->this_array);
             $this->this_array = array();
           }
           if ($low_quality) {
