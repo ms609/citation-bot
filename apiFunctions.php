@@ -352,7 +352,7 @@ function adsabs_api(array $ids, array &$templates, string $identifier) : bool { 
               CURLOPT_CUSTOMREQUEST => 'POST',
               CURLOPT_POSTFIELDS => "$identifier\n" . implode("\n", $ids)]);
     $return = (string) @curl_exec($ch);
-    $response = Bibcode_Response_Processing($return, $ch, $adsabs_url, 'big');
+    $response = Bibcode_Response_Processing($return, $ch, $adsabs_url);
     curl_close($ch);
     if (!isset($response->docs)) return TRUE;
 
@@ -1089,7 +1089,7 @@ function expand_templates_from_archives(array &$templates) : void { // This is d
   curl_close($ch);
 }
 
-function Bibcode_Response_Processing(string $return, $ch, string $adsabs_url, string $q_type) : object {
+function Bibcode_Response_Processing(string $return, $ch, string $adsabs_url) : object {
   try {
     if ($return == "") {
       // @codeCoverageIgnoreStart
@@ -1160,7 +1160,7 @@ function Bibcode_Response_Processing(string $return, $ch, string $adsabs_url, st
       report_warning(sprintf("HTTP Error %d in query_adsabs: %s", $e->getCode(), echoable($e->getMessage())));
     } elseif (strpos($e->getMessage(), 'Too many requests') !== FALSE) {
       report_warning('Giving up on AdsAbs for a while.  Too many requests.');
-      if ($q_type === 'big') {
+      if (strpos($adsabs_url, 'bigquery') !== FALSE) {
         AdsAbsControl::big_give_up();
       } else {
         AdsAbsControl::small_give_up(); 
@@ -1327,7 +1327,7 @@ function query_adsabs(string $options) : object {
                 CURLOPT_USERAGENT => BOT_USER_AGENT,
                 CURLOPT_URL => $adsabs_url]);
       $return = (string) @curl_exec($ch);
-      $response = Bibcode_Response_Processing($return, $ch, $adsabs_url, 'small');
+      $response = Bibcode_Response_Processing($return, $ch, $adsabs_url);
       curl_close($ch);
     return $response;
   }
