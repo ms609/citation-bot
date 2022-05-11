@@ -360,7 +360,7 @@ function adsabs_api(array $ids, array &$templates, string $identifier) : bool { 
     report_info("Found match for bibcode " . bibcode_link($record->bibcode));
     $matched_ids[] = $record->bibcode;
     foreach($ids as $template_key => $an_id) { // Cannot use array_search since that only returns first
-      if ($an_id === (string) $record->bibcode) {
+      if (isset($record->bibcode) && $an_id === (string) $record->bibcode) {
          $this_template = $templates[$template_key];
          if (isset($record->citation_bot_new_bibcode)) {
            $this_template->set('bibcode', (string) $record->citation_bot_new_bibcode);
