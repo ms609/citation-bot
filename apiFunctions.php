@@ -342,9 +342,7 @@ function adsabs_api(array $ids, array &$templates, string $identifier) : bool { 
     curl_close($ch);
     if (!isset($response->docs)) return TRUE;
 
-if (WikipediaBot::NonStandardMode()) {  // TODO - remove debug
-  print_r($response);
-  foreach ($response->docs as $record) {
+  foreach ($response->docs as $record) { // Check for remapped bibcodes
     if (!in_array($record->bibcode, $ids)) {
         foreach ($record->identifier as $identity) {
           if (in_array($identity, $ids)) {
@@ -354,7 +352,6 @@ if (WikipediaBot::NonStandardMode()) {  // TODO - remove debug
         }
     }
   }
-}
 
   $matched_ids = [];
   foreach ($response->docs as $record) {
