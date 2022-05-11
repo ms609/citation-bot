@@ -25,8 +25,12 @@ final class AdsAbsControl {
     self::$counter = 0;
   }
 
-  public static function add_doi_map(string $bib, $doi) : void {
+  public static function add_doi_map(string $bib, string $doi) : void {
     if (!WikipediaBot::NonStandardMode()) return; // TODO - remove once tested
+    if ($bib === '' || $doi === '') {
+       report_minor_error('Bad parameter in add_doi_map: ' . echoable($bib) . ' : ' . echoable($doi));
+       return;
+    }
     if ($doi === 'X') {
        self::$bib2doi[$bib] = 'X';
     } elseif (doi_works($doi)) { // paranoid
