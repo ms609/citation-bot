@@ -297,6 +297,8 @@ function adsabs_api(array $ids, array &$templates, string $identifier) : bool { 
   foreach ($ids as $key => $bibcode) {
     if (stripos($bibcode, 'CITATION') !== FALSE) {
         unset($ids[$key]);  // @codeCoverageIgnore
+    } elseif (strlen($bibcode) !== 19) {
+        unset($ids[$key]);
     }
   }
 
