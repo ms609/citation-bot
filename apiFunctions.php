@@ -344,6 +344,9 @@ function adsabs_api(array $ids, array &$templates, string $identifier) : bool { 
   
   foreach ($response->docs as $record) {
     if (!in_array($record->bibcode, $ids)) {  // Remapped bibcodes cause corrupt big queries
+      if (WikipediaBot::NonStandardMode()) { // TODO - remove debug
+        print_r($response);
+      }
       // @codeCoverageIgnoreStart
       foreach ($templates as $template) {
         if ($template->has('bibcode')) $template->expand_by_adsabs();
