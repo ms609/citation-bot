@@ -26,7 +26,6 @@ final class AdsAbsControl {
   }
 
   public static function add_doi_map(string $bib, string $doi) : void {
-    if (!WikipediaBot::NonStandardMode()) return; // TODO - remove once tested
     if ($bib === '' || $doi === '') {
        report_minor_error('Bad parameter in add_doi_map: ' . echoable($bib) . ' : ' . echoable($doi));
        return;
@@ -299,12 +298,6 @@ function adsabs_api(array $ids, array &$templates, string $identifier) : bool { 
     if (stripos($bibcode, 'CITATION') !== FALSE) {
         unset($ids[$key]);  // @codeCoverageIgnore
     }
-  }
-  if (count($ids) < 5 && !WikipediaBot::NonStandardMode()) { // TODO - debug
-    foreach ($templates as $template) {
-      if ($template->has('bibcode')) $template->expand_by_adsabs();
-    }
-    return TRUE;
   }
 
   // Use cache
