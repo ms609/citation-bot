@@ -2078,10 +2078,8 @@ final class Template {
       }
 
       if (strpos((string) $record->bibcode, 'book') !== FALSE) {  // Found a book.  Need special code
-         $old_one = $this->get('bibcode');
          $this->add_if_new('bibcode_nosearch', (string) $record->bibcode);
-         if ($this->get('bibcode') === $old_one) return FALSE; // Extra paranoid code to 100% guarantee no infinite loop as code evolves
-         return $this->expand_by_adsabs(); // @phan-suppress-current-line PhanPossiblyInfiniteRecursionSameParams
+         return expand_book_adsabs($this, $result);
       }
 
       if ($this->wikiname() === 'cite book' || $this->wikiname() === 'citation') { // Possible book and we found book review in journal
