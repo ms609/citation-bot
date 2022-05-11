@@ -1149,6 +1149,9 @@ function is_hdl_works(string $hdl) {
       $the_header_loc = (string) @$headers_test['Location'] . (string) @$headers_test['location'];
    }
   if (stripos($headers_test[0], '404 Not Found') !== FALSE         || stripos($headers_test[0], 'HTTP/1.1 404') !== FALSE) return FALSE; // Bad
+  if (strpos($hdl, '?') !== FALSE && isset($headers_test[1])) {
+     if (stripos($headers_test[1], '404 Not Found') !== FALSE      || stripos($headers_test[1], 'HTTP/1.1 404') !== FALSE) return FALSE; // Bad final location
+  }
   if (stripos($headers_test[0], '302 Found') !== FALSE             || stripos($headers_test[0], 'HTTP/1.1 302') !== FALSE) return $the_header_loc;  // Good
   // @codeCoverageIgnoreStart
   if (stripos($headers_test[0], '301 Moved Permanently') !== FALSE || stripos($headers_test[0], 'HTTP/1.1 301') !== FALSE) return $the_header_loc;  // Good, but only for moved DOIs and those will be checked with doi_works()
