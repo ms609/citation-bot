@@ -1502,7 +1502,12 @@ final class Template {
             $low_quality = FALSE;
           }
           $this->add('bibcode', $value);
-          if ($param_name === 'bibcode') $this->expand_by_adsabs();
+          if ($param_name === 'bibcode') {
+            $bib_array = array($value);
+            $this->this_array = array($this);
+            query_bibcode_api($bib_array, $this->this_array)
+            $this->this_array = array();
+          }
           if ($low_quality) {
             $this->quietly_forget('bibcode');
           }
@@ -1962,6 +1967,9 @@ final class Template {
         ($this->has('doi') || AdsAbsControl::get_bib2doi($this->get('bibcode')) === 'X')) {  // Don't waste a query, if it has a doi or will not find a doi
       return FALSE;  // @codeCoverageIgnore
     }
+    
+    if ($this->has('bibcode')) return FALSE; // Now use big query API for existing bibcode
+    
     if (stripos($this->get('bibcode'), 'CITATION') !== FALSE) return FALSE;
 
     if ($this->api_has_used('adsabs', equivalent_parameters('bibcode'))) {
