@@ -50,7 +50,7 @@ final class Template {
                'jstor'    => array(),
                'zotero'   => array(),
             );
-  private $this_array;
+  private array $this_array;
   
   function __construct() {
      $this->this_array = [$this];  // All the real construction is done in parse_text() and above in variable initialization
