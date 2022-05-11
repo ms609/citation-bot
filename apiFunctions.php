@@ -300,7 +300,7 @@ function adsabs_api(array $ids, array &$templates, string $identifier) : bool { 
         unset($ids[$key]);  // @codeCoverageIgnore
     }
   }
-  if (count($ids) < 5 || WikipediaBot::NonStandardMode()) { // TODO - debug
+  if (count($ids) < 5 && !WikipediaBot::NonStandardMode()) { // TODO - debug
     foreach ($templates as $template) {
       if ($template->has('bibcode')) $template->expand_by_adsabs();
     }
