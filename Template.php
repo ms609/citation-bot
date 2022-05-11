@@ -1991,7 +1991,10 @@ final class Template {
     if ($this->has('bibcode') && strpos($this->get('bibcode'), 'book') !== FALSE) {
       return expand_book_adsabs($this, $result);
     }
-    
+    if (WikipediaBot::NonStandardMode()) { // TODO - debug
+      report_inline($this->get('bibcode'));
+      print_r($result);
+    }
     if ($result->numFound == 0) {
       // Avoid blowing through our quota
       if ((!in_array($this->wikiname(), ['cite journal', 'citation', 'cite conference', 'cite book', 'cite arxiv', 'cite article'])) || // Unlikely to find anything
