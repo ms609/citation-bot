@@ -311,7 +311,7 @@ function adsabs_api(array $ids, array &$templates, string $identifier) : bool { 
   foreach ($templates as $template) {
     if ($template->has('bibcode') && $template->blank('doi')) {
       $doi = AdsAbsControl::get_bib2doi($template->get('bibcode'));
-      if (doi_works($doi)) $template->add_if_new($doi);
+      if (doi_works($doi)) $template->add_if_new('doi', $doi);
     }
   }
   // Do not do big query if all templates are complete
