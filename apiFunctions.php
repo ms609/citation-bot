@@ -348,24 +348,13 @@ if (WikipediaBot::NonStandardMode()) {  // TODO - remove debug
     if (!in_array($record->bibcode, $ids)) {
         foreach ($record->identifier as $identity) {
           if (in_array($identity, $ids)) {
+            $record->citation_bot_new_bibcode = $record->bibcode; // save it
             $record->bibcode = $identity; // unmap it
           }
         }
     }
   }
 }
-
-  
-  foreach ($response->docs as $record) {
-    if (!in_array($record->bibcode, $ids)) {  // Remapped bibcodes cause corrupt big queries
-      // @codeCoverageIgnoreStart
-      foreach ($templates as $template) {
-        if ($template->has('bibcode')) $template->expand_by_adsabs();
-      }
-      return TRUE;
-      // @codeCoverageIgnoreEnd
-    }
-  }
 
   $matched_ids = [];
   foreach ($response->docs as $record) {
@@ -374,8 +363,13 @@ if (WikipediaBot::NonStandardMode()) {  // TODO - remove debug
     foreach($ids as $template_key => $an_id) { // Cannot use array_search since that only returns first
       if ($an_id === (string) $record->bibcode) {
          $this_template = $templates[$template_key];
+         if (isset($record->citation_bot_new_bibcode)) {
+           $this_template->set('bibcode', (string) $record->citation_bot_new_bibcode);
+           $record->bibcode = $record->citation_bot_new_bibcode;
+           unset($record->citation_bot_new_bibcode);
+         }
          if (stripos($an_id, 'book') === FALSE) {
-           process_bibcode_data($this_template,  $record);
+           process_bibcode_data($this_template, $record);
          } else {
            expand_book_adsabs($this_template, $record);
         }
