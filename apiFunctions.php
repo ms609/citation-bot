@@ -10,23 +10,38 @@ function query_pmid_api (array $pmids, array &$templates) : bool { return entrez
 function query_pmc_api  (array $pmcs, array &$templates) : bool { return entrez_api($pmcs,  $templates, 'pmc'); } // Pointer to save memory
 
 final class AdsAbsControl {
-  private static int $counter = 0;
+  private static int $big_counter = 0;
+  private static int $small_counter = 0;
   private static array $doi2bib = array();
   private static array $bib2doi = array();
 
-  public static function gave_up_yet() : bool {
-    self::$counter = max(self::$counter - 1, 0);
-    return (self::$counter != 0);
+  public static function big_gave_up_yet() : bool {
+    self::$big_counter = max(self::$big_counter - 1, 0);
+    return (self::$big_counter !== 0);
   }
-  public static function give_up() : void {
-    self::$counter = 1000;
+  public static function big_give_up() : void {
+    self::$big_counter = 1000;
   }
-  public static function back_on() : void {
-    self::$counter = 0;
+  public static function big_back_on() : void {
+    self::$big_counter = 0;
   }
 
-  public static function add_doi_map(string $bib, $doi) : void {
-    if (!WikipediaBot::NonStandardMode()) return; // TODO - remove once tested
+  public static function small_gave_up_yet() : bool {
+    self::$small_counter = max(self::$small_counter - 1, 0);
+    return (self::$small_counter !== 0);
+  }
+  public static function small_give_up() : void {
+    self::$small_counter = 1000;
+  }
+  public static function small_back_on() : void {
+    self::$small_counter = 0;
+  }
+  
+  public static function add_doi_map(string $bib, string $doi) : void {
+    if ($bib === '' || $doi === '') {
+       report_minor_error('Bad parameter in add_doi_map: ' . echoable($bib) . ' : ' . echoable($doi));
+       return;
+    }
     if ($doi === 'X') {
        self::$bib2doi[$bib] = 'X';
     } elseif (doi_works($doi)) { // paranoid
@@ -294,23 +309,19 @@ function adsabs_api(array $ids, array &$templates, string $identifier) : bool { 
   foreach ($ids as $key => $bibcode) {
     if (stripos($bibcode, 'CITATION') !== FALSE) {
         unset($ids[$key]);  // @codeCoverageIgnore
+    } elseif (strlen($bibcode) !== 19) {
+        unset($ids[$key]);
     }
-  }
-  if (count($ids) < 5) {
-    foreach ($templates as $template) {
-      if ($template->has('bibcode')) $template->expand_by_adsabs();
-    }
-    return TRUE;
   }
 
   // Use cache
   foreach ($templates as $template) {
     if ($template->has('bibcode') && $template->blank('doi')) {
       $doi = AdsAbsControl::get_bib2doi($template->get('bibcode'));
-      if (doi_works($doi)) $template->add_if_new($doi);
+      if (doi_works($doi)) $template->add_if_new('doi', $doi);
     }
   }
-  // Do not do big query if all templates are complete
+
   $NONE_IS_INCOMPLETE = TRUE;
   foreach ($templates as $template) {
     if ($template->has('bibcode') && $template->incomplete()) {
@@ -319,7 +330,7 @@ function adsabs_api(array $ids, array &$templates, string $identifier) : bool { 
     }
   }
   if ($NONE_IS_INCOMPLETE) return FALSE;
-  if (AdsAbsControl::gave_up_yet()) return FALSE;
+  if (AdsAbsControl::big_gave_up_yet()) return FALSE;
   if (!PHP_ADSABSAPIKEY) return FALSE;
   
   // API docs at https://github.com/adsabs/adsabs-dev-api/blob/master/Search_API.ipynb
@@ -341,18 +352,18 @@ function adsabs_api(array $ids, array &$templates, string $identifier) : bool { 
               CURLOPT_CUSTOMREQUEST => 'POST',
               CURLOPT_POSTFIELDS => "$identifier\n" . implode("\n", $ids)]);
     $return = (string) @curl_exec($ch);
-    $response = Bibcode_Response_Processing($return, $ch, $adsabs_url);
+    $response = Bibcode_Response_Processing($return, $ch, $adsabs_url, 'big');
     curl_close($ch);
     if (!isset($response->docs)) return TRUE;
-  
-  foreach ($response->docs as $record) {
-    if (!in_array($record->bibcode, $ids)) {  // Remapped bibcodes cause corrupt big queries
-      // @codeCoverageIgnoreStart
-      foreach ($templates as $template) {
-        if ($template->has('bibcode')) $template->expand_by_adsabs();
-      }
-      return TRUE;
-      // @codeCoverageIgnoreEnd
+
+  foreach ($response->docs as $record) { // Check for remapped bibcodes
+    if (!in_array($record->bibcode, $ids)) {
+        foreach ($record->identifier as $identity) {
+          if (in_array($identity, $ids)) {
+            $record->citation_bot_new_bibcode = $record->bibcode; // save it
+            $record->bibcode = $identity; // unmap it
+          }
+        }
     }
   }
 
@@ -361,10 +372,15 @@ function adsabs_api(array $ids, array &$templates, string $identifier) : bool { 
     report_info("Found match for bibcode " . bibcode_link($record->bibcode));
     $matched_ids[] = $record->bibcode;
     foreach($ids as $template_key => $an_id) { // Cannot use array_search since that only returns first
-      if ($an_id === (string) $record->bibcode) {
+      if (isset($record->bibcode) && $an_id === (string) $record->bibcode) {
          $this_template = $templates[$template_key];
+         if (isset($record->citation_bot_new_bibcode)) {
+           $this_template->set('bibcode', (string) $record->citation_bot_new_bibcode);
+           $record->bibcode = $record->citation_bot_new_bibcode;
+           unset($record->citation_bot_new_bibcode);
+         }
          if (stripos($an_id, 'book') === FALSE) {
-           process_bibcode_data($this_template,  $record);
+           process_bibcode_data($this_template, $record);
          } else {
            expand_book_adsabs($this_template, $record);
         }
@@ -1073,7 +1089,7 @@ function expand_templates_from_archives(array &$templates) : void { // This is d
   curl_close($ch);
 }
 
-function Bibcode_Response_Processing(string $return, $ch, string $adsabs_url) : object {
+function Bibcode_Response_Processing(string $return, $ch, string $adsabs_url, string $q_type) : object {
   try {
     if ($return == "") {
       // @codeCoverageIgnoreStart
@@ -1135,15 +1151,20 @@ function Bibcode_Response_Processing(string $return, $ch, string $adsabs_url) : 
     if ($e->getCode() == 5000) { // made up code for AdsAbs error
       report_warning(sprintf("API Error in query_adsabs: %s", echoable($e->getMessage())));
     } elseif ($e->getCode() == 60) {
-      AdsAbsControl::give_up();
+      AdsAbsControl::big_give_up();
+      AdsAbsControl::small_give_up();
       report_warning('Giving up on AdsAbs for a while.  SSL certificate has expired.');
     } elseif (strpos($e->getMessage(), 'org.apache.solr.search.SyntaxError') !== FALSE) {
       report_info(sprintf("Internal Error %d in query_adsabs: %s", $e->getCode(), echoable($e->getMessage())));
     } elseif (strpos($e->getMessage(), 'HTTP') === 0) {
       report_warning(sprintf("HTTP Error %d in query_adsabs: %s", $e->getCode(), echoable($e->getMessage())));
     } elseif (strpos($e->getMessage(), 'Too many requests') !== FALSE) {
-      AdsAbsControl::give_up();
       report_warning('Giving up on AdsAbs for a while.  Too many requests.');
+      if ($q_type === 'big') {
+        AdsAbsControl::big_give_up();
+      } else {
+        AdsAbsControl::small_give_up(); 
+      }
     } else {
       report_warning(sprintf("Error %d in query_adsabs: %s", $e->getCode(), echoable($e->getMessage())));
     }
@@ -1289,7 +1310,7 @@ function query_adsabs(string $options) : object {
     set_time_limit(120);
     $rate_limit = [['', '', ''], ['', '', ''], ['', '', '']]; // prevent memory leak in some PHP versions
     // API docs at https://github.com/adsabs/adsabs-dev-api/blob/master/Search_API.ipynb
-    if (AdsAbsControl::gave_up_yet()) return (object) array('numFound' => 0);
+    if (AdsAbsControl::small_gave_up_yet()) return (object) array('numFound' => 0);
     if (!PHP_ADSABSAPIKEY) return (object) array('numFound' => 0);
 
       $ch = curl_init();
@@ -1306,7 +1327,7 @@ function query_adsabs(string $options) : object {
                 CURLOPT_USERAGENT => BOT_USER_AGENT,
                 CURLOPT_URL => $adsabs_url]);
       $return = (string) @curl_exec($ch);
-      $response = Bibcode_Response_Processing($return, $ch, $adsabs_url);
+      $response = Bibcode_Response_Processing($return, $ch, $adsabs_url, 'small');
       curl_close($ch);
     return $response;
   }
