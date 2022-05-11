@@ -307,13 +307,6 @@ function adsabs_api(array $ids, array &$templates, string $identifier) : bool { 
       if (doi_works($doi)) $template->add_if_new('doi', $doi);
     }
   }
-  
-  if (WikipediaBot::NonStandardMode()) { // TODO - remove debug
-    foreach ($templates as $template) {
-      if ($template->has('bibcode')) $template->expand_by_adsabs();
-    }
-    return TRUE;
-  }
 
   $NONE_IS_INCOMPLETE = TRUE;
   foreach ($templates as $template) {
@@ -1312,10 +1305,5 @@ function query_adsabs(string $options) : object {
       $return = (string) @curl_exec($ch);
       $response = Bibcode_Response_Processing($return, $ch, $adsabs_url);
       curl_close($ch);
-    if (WikipediaBot::NonStandardMode()) { // TODO - debug
-      report_inline($adsabs_url);
-      report_inline($return);
-      print_r($response);
-    }
     return $response;
   }
