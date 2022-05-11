@@ -20,7 +20,8 @@ abstract class testBaseClass extends PHPUnit\Framework\TestCase {
        $this->testing_skip_wiki = TRUE;
     }
 
-    AdsAbsControl::give_up();
+    AdsAbsControl::small_give_up();
+    AdsAbsControl::big_give_up();
     Zotero::block_zotero();
     gc_collect_cycles();
   }
@@ -40,15 +41,19 @@ abstract class testBaseClass extends PHPUnit\Framework\TestCase {
     if ($this->testing_skip_bibcode) {
       echo 'B';
       ob_flush();
-      AdsAbsControl::back_on();
-      AdsAbsControl::give_up();
+      AdsAbsControl::big_back_on();
+      AdsAbsControl::big_give_up();
+      AdsAbsControl::small_back_on();
+      AdsAbsControl::small_give_up();
       $this->assertNull(NULL);
     } else {
       try {
-        AdsAbsControl::back_on();
+        AdsAbsControl::big_back_on();
+        AdsAbsControl::small_back_on();
         $function();
       } finally {
-        AdsAbsControl::give_up();
+        AdsAbsControl::big_give_up();
+        AdsAbsControl::small_give_up();
       }
     }
   }
