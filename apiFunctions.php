@@ -10,21 +10,33 @@ function query_pmid_api (array $pmids, array &$templates) : bool { return entrez
 function query_pmc_api  (array $pmcs, array &$templates) : bool { return entrez_api($pmcs,  $templates, 'pmc'); } // Pointer to save memory
 
 final class AdsAbsControl {
-  private static $counter = 0;
+  private static $big_counter = 0;
+  private static $small_counter = 0;
   private static $doi2bib = array();
   private static $bib2doi = array();
 
-  public static function gave_up_yet() : bool {
-    self::$counter = max(self::$counter - 1, 0);
-    return (self::$counter != 0);
+  public static function big_gave_up_yet() : bool {
+    self::$big_counter = max(self::$big_counter - 1, 0);
+    return (self::$big_counter !== 0);
   }
-  public static function give_up() : void {
-    self::$counter = 1000;
+  public static function big_give_up() : void {
+    self::$big_counter = 1000;
   }
-  public static function back_on() : void {
-    self::$counter = 0;
+  public static function big_back_on() : void {
+    self::$big_counter = 0;
   }
 
+  public static function small_gave_up_yet() : bool {
+    self::$small_counter = max(self::$small_counter - 1, 0);
+    return (self::$small_counter !== 0);
+  }
+  public static function small_give_up() : void {
+    self::$small_counter = 1000;
+  }
+  public static function small_back_on() : void {
+    self::$small_counter = 0;
+  }
+  
   public static function add_doi_map(string $bib, string $doi) : void {
     if ($bib === '' || $doi === '') {
        report_minor_error('Bad parameter in add_doi_map: ' . echoable($bib) . ' : ' . echoable($doi));
@@ -318,7 +330,7 @@ function adsabs_api(array $ids, array &$templates, string $identifier) : bool { 
     }
   }
   if ($NONE_IS_INCOMPLETE) return FALSE;
-  if (AdsAbsControl::gave_up_yet()) return FALSE;
+  if (AdsAbsControl::big_gave_up_yet()) return FALSE;
   if (!PHP_ADSABSAPIKEY) return FALSE;
   
   // API docs at https://github.com/adsabs/adsabs-dev-api/blob/master/Search_API.ipynb
@@ -340,7 +352,7 @@ function adsabs_api(array $ids, array &$templates, string $identifier) : bool { 
               CURLOPT_CUSTOMREQUEST => 'POST',
               CURLOPT_POSTFIELDS => "$identifier\n" . implode("\n", $ids)]);
     $return = (string) @curl_exec($ch);
-    $response = Bibcode_Response_Processing($return, $ch, $adsabs_url);
+    $response = Bibcode_Response_Processing($return, $ch, $adsabs_url, 'big');
     curl_close($ch);
     if (!isset($response->docs)) return TRUE;
 
@@ -1077,7 +1089,7 @@ function expand_templates_from_archives(array &$templates) : void { // This is d
   curl_close($ch);
 }
 
-function Bibcode_Response_Processing(string $return, $ch, string $adsabs_url) : object {
+function Bibcode_Response_Processing(string $return, $ch, string $adsabs_url, string $q_type) : object {
   try {
     if ($return == "") {
       // @codeCoverageIgnoreStart
@@ -1139,15 +1151,20 @@ function Bibcode_Response_Processing(string $return, $ch, string $adsabs_url) : 
     if ($e->getCode() == 5000) { // made up code for AdsAbs error
       report_warning(sprintf("API Error in query_adsabs: %s", echoable($e->getMessage())));
     } elseif ($e->getCode() == 60) {
-      AdsAbsControl::give_up();
+      AdsAbsControl::big_give_up();
+      AdsAbsControl::small_give_up();
       report_warning('Giving up on AdsAbs for a while.  SSL certificate has expired.');
     } elseif (strpos($e->getMessage(), 'org.apache.solr.search.SyntaxError') !== FALSE) {
       report_info(sprintf("Internal Error %d in query_adsabs: %s", $e->getCode(), echoable($e->getMessage())));
     } elseif (strpos($e->getMessage(), 'HTTP') === 0) {
       report_warning(sprintf("HTTP Error %d in query_adsabs: %s", $e->getCode(), echoable($e->getMessage())));
     } elseif (strpos($e->getMessage(), 'Too many requests') !== FALSE) {
-      AdsAbsControl::give_up();
       report_warning('Giving up on AdsAbs for a while.  Too many requests.');
+      if ($q_type === 'big') {
+        AdsAbsControl::big_give_up();
+      } else {
+        AdsAbsControl::small_give_up(); 
+      }
     } else {
       report_warning(sprintf("Error %d in query_adsabs: %s", $e->getCode(), echoable($e->getMessage())));
     }
@@ -1293,7 +1310,7 @@ function query_adsabs(string $options) : object {
     set_time_limit(120);
     $rate_limit = [['', '', ''], ['', '', ''], ['', '', '']]; // prevent memory leak in some PHP versions
     // API docs at https://github.com/adsabs/adsabs-dev-api/blob/master/Search_API.ipynb
-    if (AdsAbsControl::gave_up_yet()) return (object) array('numFound' => 0);
+    if (AdsAbsControl::small_gave_up_yet()) return (object) array('numFound' => 0);
     if (!PHP_ADSABSAPIKEY) return (object) array('numFound' => 0);
 
       $ch = curl_init();
@@ -1310,7 +1327,7 @@ function query_adsabs(string $options) : object {
                 CURLOPT_USERAGENT => BOT_USER_AGENT,
                 CURLOPT_URL => $adsabs_url]);
       $return = (string) @curl_exec($ch);
-      $response = Bibcode_Response_Processing($return, $ch, $adsabs_url);
+      $response = Bibcode_Response_Processing($return, $ch, $adsabs_url, 'small');
       curl_close($ch);
     return $response;
   }
