@@ -39,8 +39,8 @@ final class AdsAbsControl {
   
   public static function add_doi_map(string $bib, string $doi) : void {
     if ($bib === '' || $doi === '') {
-       report_minor_error('Bad parameter in add_doi_map: ' . echoable($bib) . ' : ' . echoable($doi));
-       return;
+       report_minor_error('Bad parameter in add_doi_map: ' . echoable($bib) . ' : ' . echoable($doi)); // @codeCoverageIgnore
+       return; // @codeCoverageIgnore
     }
     if ($doi === 'X') {
        self::$bib2doi[$bib] = 'X';
@@ -307,10 +307,8 @@ function adsabs_api(array $ids, array &$templates, string $identifier) : bool { 
   if (count($ids) == 0) return FALSE;
   
   foreach ($ids as $key => $bibcode) {
-    if (stripos($bibcode, 'CITATION') !== FALSE) {
+    if (stripos($bibcode, 'CITATION') !== FALSE || strlen($bibcode) !== 19) {
         unset($ids[$key]);  // @codeCoverageIgnore
-    } elseif (strlen($bibcode) !== 19) {
-        unset($ids[$key]);
     }
   }
 
