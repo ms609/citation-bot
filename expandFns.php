@@ -1103,12 +1103,15 @@ function hdl_works(string $hdl) {
   if (count($cache_good) > 1000) $cache_good = [];
   $works = is_hdl_works($hdl);
   if ($works === NULL) {
+    echo "\n HDL NULL: " . $hdl ."\n";
     return NULL; // @codeCoverageIgnore
   }
   if ($works === FALSE) {
     $cache_bad[$hdl] = TRUE;
+        echo "\n HDL  BAD: " . $hdl ."\n";
     return FALSE;
   }
+        echo "\n HDL  GOOD: " . $hdl ."\n";
   $cache_good[$hdl] = $works;
   return $works;
 }
@@ -1135,6 +1138,7 @@ function is_hdl_works(string $hdl) {
       sleep(8);   // @codeCoverageIgnore
       $headers_test = @get_headers($test_url, GET_THE_HEADERS, $context); // @codeCoverageIgnore
   }
+  print_r($headers_test);
   if ($headers_test === FALSE) return NULL; // most likely bad, but will recheck again and again
   if (empty($headers_test['Location']) && empty($headers_test['location'])) return FALSE; // leads nowhere
   if (is_array(@$headers_test['Location'])) {
