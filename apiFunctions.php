@@ -440,7 +440,7 @@ function expand_by_doi(Template $template, bool $force = FALSE) : bool {
         } else {
            $new_roman = FALSE;
         }
-        foreach (['chapter', 'title', 'series', 'trans-title'] as $possible) {
+        foreach (['chapter', 'title', 'series', 'trans-title', 'book-title'] as $possible) {
           if ($template->has($possible)) {
             $old = $template->get($possible);
             if (preg_match('~^(.................+)[\.\?]\s+([IVX]+)\.\s.+$~i', $old, $matches)) {
@@ -466,7 +466,7 @@ function expand_by_doi(Template $template, bool $force = FALSE) : bool {
           }
         }
         if (isset($crossRef->series_title)) {
-          foreach (['chapter', 'title', 'trans-title'] as $possible) { // Series === series could easily be false positive
+          foreach (['chapter', 'title', 'trans-title', 'book-title'] as $possible) { // Series === series could easily be false positive
             if ($template->has($possible) && titles_are_similar($template->get($possible), (string) $crossRef->series_title)) {
                 $bad_data = FALSE;
                 break;
@@ -487,8 +487,9 @@ function expand_by_doi(Template $template, bool $force = FALSE) : bool {
       }
       report_action("Querying CrossRef: doi:" . doi_link($doi));
 
+      if ($this->has('book-title')) unset($crossRef->volume_title);
       if ($crossRef->volume_title && ($template->blank(WORK_ALIASES) || $template->wikiname() === 'cite book')) {
-        if (strtolower($template->get('title')) == strtolower((string) $crossRef->article_title)) {
+        if (strtolower($template->get('title')) === strtolower((string) $crossRef->article_title)) {
            $template->rename('title', 'chapter');
          } else {
            $template->add_if_new('chapter', restore_italics((string) $crossRef->article_title), 'crossref'); // add_if_new formats this value as a title
