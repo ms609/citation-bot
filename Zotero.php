@@ -1421,12 +1421,12 @@ public static function find_indentifiers_in_urls(Template $template, ?string $ur
             } elseif (hdl_works($handle) === NULL && (hdl_works($matches[1]) === NULL || hdl_works($matches[1]) === FALSE)) {
                ; // Do nothing
             } elseif (hdl_works($handle) === NULL) {
-               $handle = $matches[1];
+               $handle = $matches[1]; // @codeCoverageIgnore
             } else  { // Both work
                $long  = hdl_works($handle);
                $short = hdl_works($matches[1]);
                if ($long === $short) { // urlappend does nothing
-                 $handle = $matches[1];
+                 $handle = $matches[1]; // @codeCoverageIgnore
                }
             }
           }
