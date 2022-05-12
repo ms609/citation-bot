@@ -1128,7 +1128,7 @@ function is_hdl_works(string $hdl) {
   // See if it works
   $context = stream_context_create(CONTEXT_INSECURE_11);
   usleep(100000);
-  $test_url = "https://hdl.handle.net/" . $hdl;
+  $test_url = "https://dx.doi.org/" . $hdl;
   $headers_test = @get_headers($test_url, GET_THE_HEADERS, $context);
   if ($headers_test === FALSE) {
       sleep(3);   // @codeCoverageIgnore
