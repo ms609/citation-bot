@@ -14,17 +14,20 @@ final class zoteroTest extends testBaseClass {
     hdl_works('2027/mdp.39015064245429');
     hdl_works('2027/mdp.39015064245429?urlappend=%3Bseq=326');
     hdl_works('2027/mdp.39015064245429?urlappend=%3Bseq=326%3Bownerid=13510798900390116-358');
-    hdl_works('2027/mdp.39015064245429?urlappend=;seq=326');
-    hdl_works('2027/mdp.39015064245429?urlappend=;seq=326;ownerid=13510798900390116-358');
-    hdl_works('2027/mdp.39015064245429?urlappend=;seq=326%3Bownerid=13510798900390116-358');
-    hdl_works('2027/mdp.39015064245429?urlappend=%3Bseq=326;ownerid=13510798900390116-358');
+    $text = '{{Cite web}}';
+    $template = $this->make_citation($text);
+    $template->get_identifiers_from_url('https://hdl.handel.net/2027/mdp.39015064245429?urlappend=%3Bseq=326%3Bownerid=13510798900390116-358');
+    $this->assertNull($template->parsed_text());
+  }
+
+  public function testHDLSimpler2() : void {
     hdl_works('20.1000/100');
     hdl_works('20.1000/100?urlappend=%3Bseq=326');
     hdl_works('20.1000/100?urlappend=%3Bseq=326%3Bownerid=13510798900390116-35');
-    hdl_works('20.1000/100?urlappend=;seq=326');
-    hdl_works('20.1000/100?urlappend=;seq=326;ownerid=13510798900390116-35');
-    hdl_works('20.1000/100?urlappend=%3Bseq=326;ownerid=13510798900390116-35');
-    hdl_works('20.1000/100?urlappend=;seq=326%3Bownerid=13510798900390116-35');
+    $text = '{{Cite web}}';
+    $template = $this->make_citation($text);
+    $template->get_identifiers_from_url('https://hdl.handel.net/20.1000/100?urlappend=%3Bseq=326%3Bownerid=13510798900390116-35');
+    $this->assertNull($template->parsed_text());
   }
 
 }
