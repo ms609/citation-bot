@@ -1282,6 +1282,7 @@ public static function find_indentifiers_in_urls(Template $template, ?string $ur
         return $template->add_if_new('pmc', $match[1] . $match[2]);
       } elseif (preg_match("~^https?://(?:www\.|)europepmc\.org/articles?/pmc/?(\d{4,})~i", $url, $match)  ||
                 preg_match("~^https?://(?:www\.|)europepmc\.org/scanned\?pageindex=(?:\d+)\&articles=pmc(\d{4,})~i", $url, $match)) {
+                    echo "\n" . __FILE__ . " " . __LINE__ . " " . $url . "\n";
         if ($template->wikiname() === 'cite web') $template->change_name_to('cite journal');
         if ($template->blank('pmc')) {
           quietly('report_modification', "Converting Europe URL to PMC parameter");
@@ -1291,6 +1292,7 @@ public static function find_indentifiers_in_urls(Template $template, ?string $ur
         }
         return $template->add_if_new('pmc', $match[1]);
       } elseif (preg_match("~^https?://(?:www\.|)europepmc\.org/(?:abstract|articles?)/med/(\d{4,})~i", $url, $match)) {
+                    echo "\n" . __FILE__ . " " . __LINE__ . " " . $url . "\n";
         if ($template->wikiname() === 'cite web') $template->change_name_to('cite journal');
         if ($template->blank('pmid')) {
           quietly('report_modification', "Converting Europe URL to PMID parameter");
@@ -1300,6 +1302,7 @@ public static function find_indentifiers_in_urls(Template $template, ?string $ur
         }
         return $template->add_if_new('pmid', $match[1]);
       } elseif (preg_match("~^https?://(?:www\.|)pubmedcentralcanada\.ca/pmcc/articles/PMC(\d{4,})(?:|/.*)$~i", $url, $match)) {
+                    echo "\n" . __FILE__ . " " . __LINE__ . " " . $url . "\n";
         if ($template->wikiname() === 'cite web') $template->change_name_to('cite journal');
         quietly('report_modification', "Converting Canadian URL to PMC parameter");
         if (is_null($url_sent)) {
@@ -1307,7 +1310,8 @@ public static function find_indentifiers_in_urls(Template $template, ?string $ur
         }
         return $template->add_if_new('pmc', $match[1]);
       } elseif (preg_match("~^https?://citeseerx\.ist\.psu\.edu/viewdoc/(?:summary|download)(?:\;jsessionid=[^\?]+|)\?doi=([0-9.]*)(?:&.+)?~", $url, $match)) {
-        quietly('report_modification', "URL is hard-coded citeseerx; converting to use citeseerx parameter.");
+                   echo "\n" . __FILE__ . " " . __LINE__ . " " . $url . "\n";
+         quietly('report_modification', "URL is hard-coded citeseerx; converting to use citeseerx parameter.");
         if (is_null($url_sent)) {
           if ($template->has_good_free_copy()) {
             $template->forget($url_type);
@@ -1317,7 +1321,7 @@ public static function find_indentifiers_in_urls(Template $template, ?string $ur
         return $template->add_if_new('citeseerx', urldecode($match[1])); // We cannot parse these at this time
 
       } elseif (preg_match("~\barxiv\.org/.*(?:pdf|abs|ftp/arxiv/papers/\d{4})/(.+?)(?:\.pdf)?$~i", $url, $match)) {
-
+           echo "\n" . __FILE__ . " " . __LINE__ . " " . $url . "\n";
         /* ARXIV
          * See https://arxiv.org/help/arxiv_identifier for identifier formats
          */
@@ -1341,6 +1345,7 @@ public static function find_indentifiers_in_urls(Template $template, ?string $ur
       . ".*?=?(\d{4,})~i", $url, $match)||
           preg_match("~^https?://pubmed\.ncbi\.nlm\.nih\.gov/(?:|entrez/eutils/elink.fcgi\?dbfrom=pubmed\&retmode=ref\&cmd=prlinks\&id=)(\d{4,})(?:|/|-.+)$~", $url, $match)
         ) {
+                    echo "\n" . __FILE__ . " " . __LINE__ . " " . $url . "\n";
         if (preg_match("~\?term~i", $url) && !preg_match("~pubmed\.ncbi\.nlm\.nih\.gov/\d{4,}/\?from_term=~", $url)) {
           return FALSE; // A search such as https://www.ncbi.nlm.nih.gov/pubmed/?term=Sainis%20KB%5BAuthor%5D&cauthor=true&cauthor_uid=19447493
         }
@@ -1352,7 +1357,8 @@ public static function find_indentifiers_in_urls(Template $template, ?string $ur
         return $template->add_if_new('pmid', $match[1]);
 
       } elseif (preg_match('~^http.+ncbi\.nlm\.nih\.gov/entrez/eutils/elink.fcgi\?.+tool=sumsearch\.org.+id=(\d+)$~', $url, $match)) {
-        if ($url_sent) return FALSE;   // Many do not work
+                   echo "\n" . __FILE__ . " " . __LINE__ . " " . $url . "\n";
+         if ($url_sent) return FALSE;   // Many do not work
         if ($template->blank(['doi', 'pmc'])) return FALSE;  // This is a redirect to the publisher, not pubmed
         if ($match[1] == $template->get('pmc')) {
            $template->forget($url_type); // Same as PMC-auto-link
@@ -1362,7 +1368,7 @@ public static function find_indentifiers_in_urls(Template $template, ?string $ur
         return FALSE;
 
       } elseif (preg_match("~^https?://(?:www\.|)amazon(?P<domain>\.[\w\.]{1,7})/.*dp/(?P<id>\d+X?)~i", $url, $match)) {
-
+           echo "\n" . __FILE__ . " " . __LINE__ . " " . $url . "\n";
         if ($template->wikiname() === 'cite web') $template->change_name_to('cite book');
         if ($match['domain'] == ".com") {
           if (is_null($url_sent)) {
