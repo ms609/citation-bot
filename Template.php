@@ -334,7 +334,7 @@ final class Template {
           }
       }
       if (!$this->blank(['pmc', 'pmid', 'doi', 'jstor']) ||
-         (stripos($this->get('journal') . $this->get('title'), 'arxiv') !== FALSE && !$this->blank(['eprint', 'arxiv']))) { // Have some good data
+         (stripos($this->get('journal') . $this->get('title'), 'arxiv') !== FALSE && !$this->blank(ARXIV_ALIASES))) { // Have some good data
           $the_title   = $this->get('title');
           $the_journal = $this->get('journal');
           $the_chapter = $this->get('chapter');
@@ -399,6 +399,12 @@ final class Template {
               $this->rename('journal', 'CITATION_BOT_PLACEHOLDER_journal');
               $the_journal = '';
               $bad_data = TRUE;
+          }
+          if (stripos($the_journal, 'arXiv:') === 0 && !$this->blank(ARXIV_ALIASES)) {
+              $this->forget('journal');
+              $the_journal = '';
+              $bad_data = TRUE;
+              if ($this->wikiname() === 'cite journal') $this->change_name_to('cite arxiv');
           }
           if (stripos($the_journal, 'arXiv') !== FALSE) {
               $this->rename('journal', 'CITATION_BOT_PLACEHOLDER_journal');

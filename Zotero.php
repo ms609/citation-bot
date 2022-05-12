@@ -1409,26 +1409,20 @@ public static function find_indentifiers_in_urls(Template $template, ?string $ur
             $handle = $matches[1];
           }
           $handle = hdl_decode($handle);
-          if (preg_match('~^(.+)%3Bownerid=~', $handle, $matches)) {  // should we shorten it?
-            if (hdl_works($handle) === FALSE) {
-               $handle = $matches[1];   // @codeCoverageIgnore
-            } elseif (hdl_works($handle) === NULL) {
-               ; // Do nothing
-            } else  {
-               $long  = hdl_works($handle);
-               $short = hdl_works($matches[1]);
-               if ($long === $short) { // ownerid does nothing
-                 $handle = $matches[1];
-               }
+          if (preg_match('~^(.+)%3Bownerid=~', $handle, $matches)) {
+            if (hdl_works($matches[1])) {
+               $handle = $matches[1];
             }
           }
           // Verify that it works as a hdl - first with urlappend, since that is often page numbers
           if (preg_match('~^(.+)\?urlappend=~', $handle, $matches)) {  // should we shorten it?
             if (hdl_works($handle) === FALSE) {
                $handle = $matches[1];   // @codeCoverageIgnore
-            } elseif (hdl_works($handle) === NULL) {
+            } elseif (hdl_works($handle) === NULL && (hdl_works($matches[1]) === NULL || hdl_works($matches[1]) === FALSE)) {
                ; // Do nothing
-            } else  {
+            } elseif (hdl_works($handle) === NULL) {
+               $handle = $matches[1];
+            } else  { // Both work
                $long  = hdl_works($handle);
                $short = hdl_works($matches[1]);
                if ($long === $short) { // urlappend does nothing
