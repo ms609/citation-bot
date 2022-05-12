@@ -1111,7 +1111,7 @@ function hdl_works(string $hdl) {
         echo "\n HDL  BAD: " . $hdl ."\n";
     return FALSE;
   }
-        echo "\n HDL  GOOD: " . $hdl ."\n";
+        echo "\n HDL  GOOD: " . $hdl ."  ". $works."\n";
   $cache_good[$hdl] = $works;
   return $works;
 }
