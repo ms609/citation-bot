@@ -1138,7 +1138,6 @@ function is_hdl_works(string $hdl) {
       sleep(8);   // @codeCoverageIgnore
       $headers_test = @get_headers($test_url, GET_THE_HEADERS, $context); // @codeCoverageIgnore
   }
-  print_r($headers_test);
   if ($headers_test === FALSE) return NULL; // most likely bad, but will recheck again and again
   if (empty($headers_test['Location']) && empty($headers_test['location'])) return FALSE; // leads nowhere
   if (is_array(@$headers_test['Location'])) {
@@ -1149,7 +1148,7 @@ function is_hdl_works(string $hdl) {
       $the_header_loc = (string) @$headers_test['Location'] . (string) @$headers_test['location'];
    }
   if (stripos($headers_test[0], '404 Not Found') !== FALSE         || stripos($headers_test[0], 'HTTP/1.1 404') !== FALSE) return FALSE; // Bad
-  if ((strpos($hdl, '?') !== FALSE || strpos($hdl, '%') !== FALSE) && isset($headers_test[1])) {
+  if (isset($headers_test[1])) {
      if (stripos($headers_test[1], '404 Not Found') !== FALSE      || stripos($headers_test[1], 'HTTP/1.1 404') !== FALSE) return FALSE; // Bad final location
   }
   if (stripos($headers_test[0], '302 Found') !== FALSE             || stripos($headers_test[0], 'HTTP/1.1 302') !== FALSE) return $the_header_loc;  // Good
