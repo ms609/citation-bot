@@ -64,6 +64,7 @@ function entrez_api(array $ids, array &$templates, string $db) : bool {   // Poi
   $names = ['', '']; // prevent memory leak in some PHP versions
   if (!count($ids)) return FALSE;
   if ($ids == ['XYZ']) return FALSE; // junk data from test suite
+  if ($ids == ['1']) return FALSE; // junk data from test suite
   if ($ids == ['']) return FALSE; // junk data from test suite
   if ($db !== 'pubmed' && $db !== 'pmc') {
     report_error("Invalid Entrez type passed in: " . $db);  // @codeCoverageIgnore
