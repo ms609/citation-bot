@@ -1381,9 +1381,11 @@ public static function find_indentifiers_in_urls(Template $template, ?string $ur
         }
       } elseif (stripos($url, 'handle') !== FALSE || stripos($url, 'persistentId=hdl:') !== FALSE) {
           // Special case of hdl.handle.net/123/456
+          echo "\n" . __LINE__ . " " . $url . "\n";
           if (preg_match('~^https?://hdl\.handle\.net/(\d{2,}.*/.+)$~', $url, $matches)) {
             $url = 'https://hdl.handle.net/handle/' . $matches[1];
           }
+          echo "\n" . __LINE__ . " " . $url . "\n";
           // Hostname
           $handle1 = FALSE;
           foreach (HANDLES_HOSTS as $hosts) {
@@ -1392,6 +1394,7 @@ public static function find_indentifiers_in_urls(Template $template, ?string $ur
               break;
             }
           }
+                   echo "\n" . __LINE__ . " " . $handle1 . "\n";
           if ($handle1 === FALSE) return FALSE;
           // file path
           $handle = FALSE;
@@ -1401,6 +1404,7 @@ public static function find_indentifiers_in_urls(Template $template, ?string $ur
               break;
             }
           }
+                   echo "\n" . __LINE__ . " " . $handle . "\n";
           if ($handle === FALSE) return FALSE;
           // Trim off session stuff - urlappend seems to be used for page numbers and such
           $handle = str_ireplace('%3B', ';', $handle);
@@ -1408,12 +1412,15 @@ public static function find_indentifiers_in_urls(Template $template, ?string $ur
                                 $handle, $matches)) {
             $handle = $matches[1];
           }
+                   echo "\n" . __LINE__ . " " . $handle . "\n";
           $handle = hdl_decode($handle);
+                   echo "\n" . __LINE__ . " " . $handle . "\n";
           if (preg_match('~^(.+)%3Bownerid=~', $handle, $matches)) {
             if (hdl_works($matches[1])) {
                $handle = $matches[1];
             }
           }
+                   echo "\n" . __LINE__ . " " . $handle . "\n";
           // Verify that it works as a hdl - first with urlappend, since that is often page numbers
           if (preg_match('~^(.+)\?urlappend=~', $handle, $matches)) {  // should we shorten it?
             if (hdl_works($handle) === FALSE) {
@@ -1430,21 +1437,23 @@ public static function find_indentifiers_in_urls(Template $template, ?string $ur
                }
             }
           }
+                   echo "\n" . __LINE__ . " " . $handle . "\n";
           while (preg_match('~^(.+)/$~', $handle, $matches)) { // Trailing slash
             $handle = $matches[1];
           }
           while (preg_match('~^/(.+)$~', $handle, $matches)) { // Leading slash
             $handle = $matches[1];
           }
+                   echo "\n" . __LINE__ . " " . $handle . "\n";
           // Safety check
           if (strlen($handle) < 6 || strpos($handle, '/') === FALSE) return FALSE;
           if (strpos($handle, '123456789') === 0) return FALSE;
-
+                   echo "\n" . __LINE__ . " " . $handle . "\n";
           $the_question = strpos($handle, '?');
           if ($the_question !== FALSE) {
              $handle = substr($handle, 0, $the_question) . '?' . str_replace('%3D', '=', urlencode(substr($handle, $the_question+1)));
           }
-
+                   echo "\n" . __LINE__ . " " . $handle . "\n";
           // Verify that it works as a hdl
           $the_header_loc = hdl_works($handle);
           if ($the_header_loc === FALSE || $the_header_loc === NULL) return FALSE;
@@ -1457,6 +1466,7 @@ public static function find_indentifiers_in_urls(Template $template, ?string $ur
             && stripos($the_header_loc, $matches[1]) !== FALSE) {  // Too long ones almost never resolve, but we have seen at least one
               $handle = $matches[1]; // @codeCoverageIgnore
           }
+                   echo "\n" . __LINE__ . " " . $handle . "\n";
           return $template->add_if_new('hdl', $handle);
       } elseif (preg_match("~^https?://zbmath\.org/\?(?:format=complete&|)q=an:([0-9][0-9][0-9][0-9]\.[0-9][0-9][0-9][0-9][0-9])~i", $url, $match)) {
           quietly('report_modification', "Converting URL to ZBL parameter");
