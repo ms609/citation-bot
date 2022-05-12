@@ -1126,7 +1126,7 @@ function is_hdl_works(string $hdl) {
   if (strpos($hdl, '123456789') === 0) return FALSE;
   if (strpos($hdl, '10.') === 0 && doi_works($hdl) === FALSE) return FALSE;
   // See if it works
-  $context = stream_context_create(CONTEXT_INSECURE);
+  $context = stream_context_create(CONTEXT_INSECURE_11);
   usleep(100000);
   $test_url = "https://hdl.handle.net/" . $hdl;
   $headers_test = @get_headers($test_url, GET_THE_HEADERS, $context);
