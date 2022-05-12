@@ -1987,7 +1987,7 @@ final class Template {
     if (strpos($this->get('doi'), '10.1093/') === 0) return FALSE;
     report_action("Checking AdsAbs database");
     if ($this->has('bibcode')) {
-      $result = query_adsabs("identifier:" . urlencode('"' . $this->get('bibcode') . '"'));
+      $result = query_adsabs("identifier:" . urlencode('"' . $this->get('bibcode') . '"')); // @codeCoverageIgnore
     } elseif ($this->has('doi') && preg_match(REGEXP_DOI, $this->get_without_comments_and_placeholders('doi'), $doi)) {
       $result = query_adsabs("identifier:" . urlencode('"' .  $doi[0] . '"'));  // In DOI we trust
     } elseif ($this->has('eprint')) {
@@ -3157,7 +3157,7 @@ final class Template {
       $the_type = strtolower($match[1]);
       $the_data = $match[2];
       $the_all  = $match[0];
-      if ($the_type != 'doi' && preg_match("~^([^\]]+)\]+$~", $the_data, $matches)) {
+      if ($the_type != 'doi' && preg_match("~^([^\]\}\{\s\,\;\:\|\<\>]+)$~", $the_data, $matches)) {
         $the_data = $matches[1];
       }
       $this->add_if_new($the_type, $the_data);
