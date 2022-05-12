@@ -1162,6 +1162,7 @@ final class Template {
           }
           if ($this->has('article') &&
                  ($this->wikiname() === 'cite encyclopedia' || $this->wikiname() === 'cite dictionary' || $this->wikiname() === 'cite encyclopaedia')) return FALSE; // Probably the same thing
+          if (!$this->blank(['booktitle', 'book-title'])) return FALSE; // Cite conference uses this
           if ($this->blank('script-title')) {
             return $this->add($param_name, wikify_external_text($value));
           } else {
