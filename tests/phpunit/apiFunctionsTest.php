@@ -7,7 +7,7 @@ require_once __DIR__ . '/../testBaseClass.php';
 
 final class apiFunctionsTest extends testBaseClass {
 
-  protected function setUp(): void {
+  protected function setUp() : void {
    if (BAD_PAGE_API !== '') {
      $this->markTestSkipped();
    }
@@ -902,7 +902,7 @@ final class apiFunctionsTest extends testBaseClass {
   }
   
   public function testBibCodeCache() : void {
-    AdsAbsControl::add_doi_map('2014ApPhA.116..403G', '10.1007/s00339-014-8468-2'):
+    AdsAbsControl::add_doi_map('2014ApPhA.116..403G', '10.1007/s00339-014-8468-2');
 
     $text = "{{cite journal| bibcode=2014ApPhA.116..403G}}";
     $prepared = $this->process_citation($text);
@@ -924,7 +924,7 @@ final class apiFunctionsTest extends testBaseClass {
   }
   
   public function testBibCodeCache2() : void {
-    AdsAbsControl::add_doi_map('2000AAS...19713707B', 'X'):
+    AdsAbsControl::add_doi_map('2000AAS...19713707B', 'X');
     
     $text = "{{cite journal| bibcode=2000AAS...19713707B}}";
     $prepared = $this->process_citation($text);
