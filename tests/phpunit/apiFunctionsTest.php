@@ -900,4 +900,48 @@ final class apiFunctionsTest extends testBaseClass {
     $this->assertTrue(isset($response->docs));
     $this->assertSame(10, $response->numFound);
   }
+  
+  public function testBibCodeCache() : void {
+    AdsAbsControl::add_doi_map('2014ApPhA.116..403G', '10.1007/s00339-014-8468-2'):
+
+    $text = "{{cite journal| bibcode=2014ApPhA.116..403G}}";
+    $prepared = $this->process_citation($text);
+    $this->assertSame('10.1007/s00339-014-8468-2', $prepared->get2('doi'));
+    
+    $text = "{{cite journal| bibcode=2014ApPhA.116..403G}}";
+    $prepared = $this->make_citation($text);
+    $prepared->expand_by_adsabs();
+    $this->assertSame('10.1007/s00339-014-8468-2', $prepared->get2('doi'));
+    
+    $text = "{{cite journal| doi=10.1007/s00339-014-8468-2}}";
+    $prepared = $this->process_citation($text);
+    $this->assertSame('2014ApPhA.116..403G', $prepared->get2('bibcode'));
+    
+    $text = "{{cite journal| doi=10.1007/s00339-014-8468-2}}";
+    $prepared = $this->make_citation($text);
+    $prepared->expand_by_adsabs();
+    $this->assertSame('2014ApPhA.116..403G', $prepared->get2('bibcode'));
+  }
+  
+  public function testBibCodeCache2() : void {
+    AdsAbsControl::add_doi_map('2000AAS...19713707B', 'X'):
+    
+    $text = "{{cite journal| bibcode=2000AAS...19713707B}}";
+    $prepared = $this->process_citation($text);
+    $this->assertSame($text, $prepared->parsed_text());
+
+    $text = "{{cite journal| bibcode=2000AAS...19713707B}}";
+    $prepared = $this->make_citation($text);
+    $prepared->expand_by_adsabs();
+    $this->assertSame($text, $prepared->parsed_text());
+    
+    $text = "{{cite journal| doi=X}}";
+    $prepared = $this->process_citation($text);
+    $this->assertNull($prepared->get2('bibcode'));
+    
+    $text = "{{cite journal| doi=X}}";
+    $prepared = $this->make_citation($text);
+    $prepared->expand_by_adsabs();
+    $this->assertNull($prepared->get2('bibcode'));
+  }
 }
