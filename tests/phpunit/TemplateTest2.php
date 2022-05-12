@@ -3611,6 +3611,14 @@ final class TemplateTest2 extends testBaseClass {
     $text = "{{Cite journal|journal=arXiv|title=[No TITLE found]|issue=null|volume=n/a|page=n/a|pages=null|pmc=1}}";
     $expanded = $this->process_citation($text);
     $this->assertSame('{{Cite journal|journal=arXiv|title=[No TITLE found]|volume=n/a|page=n/a|pmc=1}}', $expanded->parsed_text());
+    
+    $text = "{{Cite journal|journal=arXiv: blah|title=arXiv|issue=null|volume=n/a|page=n/a|pages=null|eprint=x}}";
+    $expanded = $this->process_citation($text);
+    $this->assertSame('{{Cite journal|title=arXiv|volume=n/a|page=n/a|pmc=1|arxiv=x}}', $expanded->parsed_text());
+ 
+    $text = "{{Cite journal|pages=n/a|pmc=1}}";
+    $expanded = $this->process_citation($text);
+    $this->assertSame('{{Cite journal|pages=n/a|pmc=1}}', $expanded->parsed_text());
   }
  
    public function testTidyUpNA() : void {
@@ -4054,11 +4062,11 @@ final class TemplateTest2 extends testBaseClass {
 
       $text = "{{cite document|url=x|encyclopedia=x}}";
       $expanded = $this->process_citation($text);
-      $this->AssertSame('cite encyclopedia', $expanded->wikiname());  
+      $this->AssertSame('cite encyclopedia', $expanded->wikiname());
 
       $text = "{{cite document|url=x|journal=x}}";
       $expanded = $this->process_citation($text);
-      $this->AssertSame('cite journal', $expanded->wikiname());  
+      $this->AssertSame('cite journal', $expanded->wikiname());
 
       $text = "{{cite document|url=x|website=x}}";
       $expanded = $this->process_citation($text);
@@ -4066,15 +4074,19 @@ final class TemplateTest2 extends testBaseClass {
      
       $text = "{{cite document|url=x|magazine=x}}";
       $expanded = $this->process_citation($text);
-      $this->AssertSame('cite magazine', $expanded->wikiname());  
+      $this->AssertSame('cite magazine', $expanded->wikiname());
 
       $text = "{{cite document|url=x|encyclopedia=x}}";
       $expanded = $this->process_citation($text);
-      $this->AssertSame('cite encyclopedia', $expanded->wikiname());  
+      $this->AssertSame('cite encyclopedia', $expanded->wikiname());
 
       $text = "{{cite document|url=x|journal=x}}";
       $expanded = $this->process_citation($text);
-      $this->AssertSame('cite journal', $expanded->wikiname());  
+      $this->AssertSame('cite journal', $expanded->wikiname());
+      
+      $text = "{{cite document|url=x|pmc=x}}";
+      $expanded = $this->process_citation($text);
+      $this->AssertSame('cite journal', $expanded->wikiname());
     }
 
     public function testCitePaper() : void {
@@ -4084,15 +4096,15 @@ final class TemplateTest2 extends testBaseClass {
      
       $text = "{{cite paper|url=x|magazine=x}}";
       $expanded = $this->process_citation($text);
-      $this->AssertSame('cite magazine', $expanded->wikiname());  
+      $this->AssertSame('cite magazine', $expanded->wikiname());
 
       $text = "{{cite paper|url=x|encyclopedia=x}}";
       $expanded = $this->process_citation($text);
-      $this->AssertSame('cite encyclopedia', $expanded->wikiname());  
+      $this->AssertSame('cite encyclopedia', $expanded->wikiname());
 
       $text = "{{cite paper|url=x|journal=x}}";
       $expanded = $this->process_citation($text);
-      $this->AssertSame('cite journal', $expanded->wikiname());  
+      $this->AssertSame('cite journal', $expanded->wikiname());
 
       $text = "{{Cite paper|url=x|website=x}}";
       $expanded = $this->process_citation($text);
@@ -4100,15 +4112,19 @@ final class TemplateTest2 extends testBaseClass {
      
       $text = "{{Cite paper|url=x|magazine=x}}";
       $expanded = $this->process_citation($text);
-      $this->AssertSame('cite magazine', $expanded->wikiname());  
+      $this->AssertSame('cite magazine', $expanded->wikiname());
 
       $text = "{{Cite paper|url=x|encyclopedia=x}}";
       $expanded = $this->process_citation($text);
-      $this->AssertSame('cite encyclopedia', $expanded->wikiname());  
+      $this->AssertSame('cite encyclopedia', $expanded->wikiname());
 
       $text = "{{Cite paper|url=x|journal=x}}";
       $expanded = $this->process_citation($text);
-      $this->AssertSame('cite journal', $expanded->wikiname());  
+      $this->AssertSame('cite journal', $expanded->wikiname());
+     
+      $text = "{{Cite paper|url=x|pmc=x}}";
+      $expanded = $this->process_citation($text);
+      $this->AssertSame('cite journal', $expanded->wikiname());
     }
     
     public function testAreManyThings() : void {
