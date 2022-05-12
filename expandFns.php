@@ -1123,7 +1123,7 @@ function is_hdl_works(string $hdl) {
   if (strpos($hdl, '123456789') === 0) return FALSE;
   if (strpos($hdl, '10.') === 0 && doi_works($hdl) === FALSE) return FALSE;
   // See if it works
-  $context = stream_context_create(CONTEXT_INSECURE);
+  $context = stream_context_create(CONTEXT_INSECURE_11); // HDL does 1.1 always
   usleep(100000);
   $test_url = "https://hdl.handle.net/" . $hdl;
   $headers_test = @get_headers($test_url, GET_THE_HEADERS, $context);
@@ -1145,6 +1145,9 @@ function is_hdl_works(string $hdl) {
       $the_header_loc = (string) @$headers_test['Location'] . (string) @$headers_test['location'];
    }
   if (stripos($headers_test[0], '404 Not Found') !== FALSE         || stripos($headers_test[0], 'HTTP/1.1 404') !== FALSE) return FALSE; // Bad
+  if (isset($headers_test[1])) {
+     if (stripos($headers_test[1], '404 Not Found') !== FALSE      || stripos($headers_test[1], 'HTTP/1.1 404') !== FALSE) return FALSE; // Bad next location
+  }
   if (stripos($headers_test[0], '302 Found') !== FALSE             || stripos($headers_test[0], 'HTTP/1.1 302') !== FALSE) return $the_header_loc;  // Good
   // @codeCoverageIgnoreStart
   if (stripos($headers_test[0], '301 Moved Permanently') !== FALSE || stripos($headers_test[0], 'HTTP/1.1 301') !== FALSE) return $the_header_loc;  // Good, but only for moved DOIs and those will be checked with doi_works()
