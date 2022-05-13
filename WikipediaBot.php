@@ -241,11 +241,10 @@ try {
   
   public static function response2page(?object $response) : ?object {
     if ($response === NULL) {
-      report_warning("Write request failed");    // @codeCoverageIgnore
-      return NULL;                               // @codeCoverageIgnore
+      report_warning("Write request failed");
+      return NULL;
     }
     if (isset($response->warnings)) {
-      // @codeCoverageIgnoreStart
       if (isset($response->warnings->prop)) {
         report_warning((string) $response->warnings->prop->{'*'});
         return NULL;
@@ -254,28 +253,27 @@ try {
         report_warning((string) $response->warnings->info->{'*'});
         return NULL;
       }
-      // @codeCoverageIgnoreEnd
     }
     if (!isset($response->batchcomplete)) {
-      report_warning("Write request triggered no response from server");   // @codeCoverageIgnore
-      return NULL;                                                         // @codeCoverageIgnore
+      report_warning("Write request triggered no response from server");
+      return NULL;
     }
     
     if (!isset($response->query) || !isset($response->query->pages)) {
-      report_warning("Pages array is non-existent.  Aborting.");   // @codeCoverageIgnore
-      return NULL;                                                 // @codeCoverageIgnore
+      report_warning("Pages array is non-existent.  Aborting.");
+      return NULL;
     }
     $myPage = reset($response->query->pages); // reset gives first element in list
     
     if (!isset($myPage->lastrevid) || !isset($myPage->revisions) || !isset($myPage->revisions[0]) ||
         !isset($myPage->revisions[0]->timestamp) || !isset($myPage->title)) {
-      report_warning("Page seems not to exist. Aborting.");   // @codeCoverageIgnore
-      return NULL;                                            // @codeCoverageIgnore
+      report_warning("Page seems not to exist. Aborting.");
+      return NULL;
     }
     if (!isset($response->query) || !isset($response->query->tokens) ||
         !isset($response->query->tokens->csrftoken)) {
-      report_warning("Response object was invalid.  Aborting. ");  // @codeCoverageIgnore
-      return NULL;                                                 // @codeCoverageIgnore
+      report_warning("Response object was invalid.  Aborting. ");
+      return NULL;
     }
     return $myPage;
   }
