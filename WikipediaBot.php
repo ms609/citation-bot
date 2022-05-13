@@ -75,32 +75,30 @@ final class WikipediaBot {
     return $this->the_user;
   }
   
-  private static function ret_okay(?object $response) : bool {
+  private static function ret_okay(?object $response) : bool { // We send back TRUE for thing that are page specific
     if (is_null($response)) {
-      report_minor_error('Wikipedia response was not decoded.');  // @codeCoverageIgnore
-      return FALSE;                                               // @codeCoverageIgnore
+      report_warning('Wikipedia response was not decoded.  Will sleep and move on.');
+      sleep(10);
+      return FALSE;
     }
     if (isset($response->error)) {
-      // @codeCoverageIgnoreStart
       if ((string) $response->error->code == 'blocked') { // Travis CI IPs are blocked, even to logged in users.
-        report_error('Bot account or this IP is blocked from editing.');
+        report_error('Bot account or this IP is blocked from editing.');  // @codeCoverageIgnore
       } elseif (strpos((string) $response->error->info, 'The database has been automatically locked') !== FALSE) {
-        report_minor_error('Wikipedia database Locked.  Aborting changes for this page.  Will sleep and move on.');
-        sleep(10);
-        return TRUE;
+        report_warning('Wikipedia database Locked.  Aborting changes for this page.  Will sleep and move on.');
       } elseif (strpos((string) $response->error->info, 'abusefilter-warning-predatory') !== FALSE) {
-        report_minor_error('Wikipedia page contains predatory references.  Aborting changes for this page.  Will sleep and move on.');
+        report_warning('Wikipedia page contains predatory references.  Aborting changes for this page.');
         return TRUE;
       } elseif (strpos((string) $response->error->info, 'protected') !== FALSE) {
-        report_minor_error('Wikipedia page is protected from editing.  Aborting changes for this page.  Will sleep and move on.');
+        report_warning('Wikipedia page is protected from editing.  Aborting changes for this page.');
         return TRUE;
       } elseif (strpos((string) $response->error->info, 'Wikipedia:Why create an account') !== FALSE) {
-        report_error('The bot is editing as you, and you have not granted that permission.  Go to ' . WIKI_ROOT . '?title=Special:OAuthManageMyGrants/update/230820 and grant Citation Bot "Edit existing pages" rights.');
+        report_error('The bot is editing as you, and you have not granted that permission.  Go to ' . WIKI_ROOT . '?title=Special:OAuthManageMyGrants/update/230820 and grant Citation Bot "Edit existing pages" rights.');  // @codeCoverageIgnore
       } else {
-        report_minor_error('API call failed: ' . (string) $response->error->info);
+        report_warning('API call failed: ' . echoable((string) $response->error->info) . '.  Will sleep and move on.');
       }
+      sleep (10);
       return FALSE;
-      // @codeCoverageIgnoreEnd
     }
     return TRUE;
   }
