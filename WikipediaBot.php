@@ -167,38 +167,9 @@ try {
             'titles' => $page
           ]);
     
-    if (!$response) {
-      report_warning("Write request failed");     // @codeCoverageIgnore
-      return FALSE;                               // @codeCoverageIgnore
-    }
-    if (isset($response->warnings)) {
-      // @codeCoverageIgnoreStart
-      if (isset($response->warnings->prop)) {
-        report_minor_error((string) $response->warnings->prop->{'*'});
-        return FALSE;
-      }
-      if (isset($response->warnings->info)) {
-        report_minor_error((string) $response->warnings->info->{'*'});
-        return FALSE;
-      }
-      // @codeCoverageIgnoreEnd
-    }
-    if (!isset($response->batchcomplete)) {
-      report_minor_error("Write request triggered no response from server");   // @codeCoverageIgnore
-      return FALSE;                                                            // @codeCoverageIgnore
-    }
+    $myPage = self::response2page($response);
+    if ($myPage === NULL) return FALSE;
     
-    if (!isset($response->query) || !isset($response->query->pages)) {
-      report_minor_error("Pages array is non-existent.  Aborting.");   // @codeCoverageIgnore
-      return FALSE;                                                    // @codeCoverageIgnore
-    }
-    $myPage = reset($response->query->pages); // reset gives first element in list
-    
-    if (!isset($myPage->lastrevid) || !isset($myPage->revisions) || !isset($myPage->revisions[0]) ||
-        !isset($myPage->revisions[0]->timestamp) || !isset($myPage->title)) {
-      report_minor_error("Page seems not to exist. Aborting.");   // @codeCoverageIgnore
-      return FALSE;                                               // @codeCoverageIgnore
-    }
     $baseTimeStamp = $myPage->revisions[0]->timestamp;
     
     if (($lastRevId != 0 && $myPage->lastrevid != $lastRevId)
@@ -206,12 +177,7 @@ try {
       report_minor_error("Possible edit conflict detected. Aborting.");      // @codeCoverageIgnore
       return FALSE;                                                          // @codeCoverageIgnore
     }
-    if (!isset($response->query) || !isset($response->query->tokens) ||
-        !isset($response->query->tokens->csrftoken)) {
-      report_minor_error("Response object was invalid.  Aborting. ");  // @codeCoverageIgnore
-      return FALSE;                                                    // @codeCoverageIgnore
-    }
-    
+
     // No obvious errors; looks like we're good to go ahead and edit
     $auth_token = $response->query->tokens->csrftoken;
     if (defined('EDIT_AS_USER')) {  // @codeCoverageIgnoreStart
@@ -271,6 +237,47 @@ try {
       // @codeCoverageIgnoreEnd
     }
     return FALSE;
+  }
+  
+  public static function response2page(?object $response) : ?object {
+    if ($response === NULL) {
+      report_warning("Write request failed");    // @codeCoverageIgnore
+      return NULL;                               // @codeCoverageIgnore
+    }
+    if (isset($response->warnings)) {
+      // @codeCoverageIgnoreStart
+      if (isset($response->warnings->prop)) {
+        report_warning((string) $response->warnings->prop->{'*'});
+        return NULL;
+      }
+      if (isset($response->warnings->info)) {
+        report_warning((string) $response->warnings->info->{'*'});
+        return NULL;
+      }
+      // @codeCoverageIgnoreEnd
+    }
+    if (!isset($response->batchcomplete)) {
+      report_warning("Write request triggered no response from server");   // @codeCoverageIgnore
+      return NULL;                                                         // @codeCoverageIgnore
+    }
+    
+    if (!isset($response->query) || !isset($response->query->pages)) {
+      report_warning("Pages array is non-existent.  Aborting.");   // @codeCoverageIgnore
+      return NULL;                                                 // @codeCoverageIgnore
+    }
+    $myPage = reset($response->query->pages); // reset gives first element in list
+    
+    if (!isset($myPage->lastrevid) || !isset($myPage->revisions) || !isset($myPage->revisions[0]) ||
+        !isset($myPage->revisions[0]->timestamp) || !isset($myPage->title)) {
+      report_warning("Page seems not to exist. Aborting.");   // @codeCoverageIgnore
+      return NULL;                                            // @codeCoverageIgnore
+    }
+    if (!isset($response->query) || !isset($response->query->tokens) ||
+        !isset($response->query->tokens->csrftoken)) {
+      report_warning("Response object was invalid.  Aborting. ");  // @codeCoverageIgnore
+      return NULL;                                                 // @codeCoverageIgnore
+    }
+    return $myPage;
   }
   
   public static function category_members(string $cat) : array {
