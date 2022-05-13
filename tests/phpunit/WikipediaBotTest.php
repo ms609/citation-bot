@@ -104,12 +104,12 @@ require_once __DIR__ . '/../testBaseClass.php';
       $this->assertNull(WikipediaBot::response2page($response));
      
       $response = (object) array('batchcomplete' => 'we did it', 'query' => (object) array('pages'));
-      $response->query->pages= array((object) array('lastrevid' => 1, 'revisions' => 1, 'title' => 'x');
+      $response->query->pages= array((object) array('lastrevid' => 1, 'revisions' => 1, 'title' => 'x'));
       $response->query->pages[0]->revisions = array('0' => (object) array('timestamp' => 1));
       $this->assertNull(WikipediaBot::response2page($response));
 
       $response = (object) array('batchcomplete' => 'we did it', 'query' => (object) array('pages'));
-      $response->query->pages= array((object) array('lastrevid' => 1, 'revisions' => 1, 'title' => 'x');
+      $response->query->pages= array((object) array('lastrevid' => 1, 'revisions' => 1, 'title' => 'x'));
       $response->query->pages[0]->revisions = array('0' => (object) array('timestamp' => 1));
       $response->query->tokens = (object) array('csrftoken' => 1);
       $this->assertNotNull(WikipediaBot::response2page($response));
