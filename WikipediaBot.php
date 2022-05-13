@@ -201,42 +201,17 @@ try {
     );
     $result = $this->fetch($submit_vars);
     
-    if (isset($result->error)) {
-      // @codeCoverageIgnoreStart
-      report_minor_error("Write error: " . 
-                    echoable(strtoupper($result->error->code)) . ": " . 
-                    str_replace(array("You ", " have "), array("This bot ", " has "), 
-                    echoable($result->error->info)));
-      return FALSE;
-      // @codeCoverageIgnoreEnd
-    } elseif (isset($result->edit)) {
-      // @codeCoverageIgnoreStart
-      if (isset($result->edit->captcha)) {
-        report_error("Write error: We encountered a captcha, so can't be properly logged in."); // Bot account has flags set on en.wikipedia.org and simple.wikipedia.org to avoid captchas
-      } elseif ($result->edit->result == "Success") {
-        // Need to check for this string wherever our behavior is dependent on the success or failure of the write operation
-        if (HTML_OUTPUT) {
-          report_inline("\n <span style='reddish'>Written to <a href='" 
-          . WIKI_ROOT . "?title=" . urlencode($myPage->title) . "'>" 
-          . echoable($myPage->title) . '</a></span>');
-        } else {
-          report_inline("\n Written to " . echoable($myPage->title) . ". \n");
-        }
-        return TRUE;
-      } elseif (isset($result->edit->result)) {
-        report_warning(echoable('Attempt to write page returned error: ' .  $result->edit->result));
-        return FALSE;
-      }
-      // @codeCoverageIgnoreEnd
+    if (!resultsGood($result)) return FALSE;
+    
+    if (HTML_OUTPUT) {
+      report_inline("\n <span style='reddish'>Written to <a href='" 
+        . WIKI_ROOT . "?title=" . urlencode($myPage->title) . "'>" 
+        . echoable($myPage->title) . '</a></span>');
     } else {
-      // @codeCoverageIgnoreStart
-      report_warning("Unhandled write error.  Please copy this output and " .
-                    "<a href='https://en.wikipedia.org/wiki/User_talk:Citation_bot'>" .
-                    "report a bug</a>.  There is no need to report the database being locked unless it continues to be a problem. ");
-      sleep(15);
-      // @codeCoverageIgnoreEnd
+        report_inline("\n Written to " . echoable($myPage->title) . ". \n");
     }
-    return FALSE;
+    return TRUE;
+
   }
   
   public static function response2page(?object $response) : ?object {
@@ -276,6 +251,28 @@ try {
       return NULL;
     }
     return $myPage;
+  }
+  
+  public static function resultsGood(?object $results) : boolean {
+    if (isset($result->error)) {
+      report_warning("Write error: " . 
+                    echoable(strtoupper($result->error->code)) . ": " . 
+                    str_replace(array("You ", " have "), array("This bot ", " has "), 
+                    echoable($result->error->info)));
+      return FALSE;
+    } elseif (isset($result->edit->captcha)) {  // Bot account has flags set on en.wikipedia.org and simple.wikipedia.org to avoid captchas
+      report_error("Write error: We encountered a captcha, so can't be properly logged in.");  // @codeCoverageIgnore
+    } elseif (!isset($result->edit->result)) { // Includes results === NULL
+      report_warning("Unhandled write error.  Please copy this output and " .
+                    "<a href='https://en.wikipedia.org/wiki/User_talk:Citation_bot'>" .
+                    "report a bug</a>.  There is no need to report the database being locked unless it continues to be a problem. ");
+      sleep(5);
+      return FALSE;
+    } elseif ($result->edit->result !== "Success") {
+      report_warning('Attempt to write page returned error: ' .  echoable($result->edit->result));
+      return FALSE;
+    }
+    return TRUE;
   }
   
   public static function category_members(string $cat) : array {
