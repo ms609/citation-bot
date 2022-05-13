@@ -2097,7 +2097,7 @@ final class Template {
          return expand_book_adsabs($this, $result);
       }
 
-      if ($this->looksLikeBook()) { // Possible book and we found book review in journal
+      if ($this->looksLikeBookReview($record)) { // Possible book and we found book review in journal
           report_info("Suspect that BibCode " . bibcode_link((string) $record->bibcode) . " is book review.  Rejecting.");
           return FALSE;
       }
@@ -2119,7 +2119,7 @@ final class Template {
     }
   }
   
-  public function looksLikeBook() : bool {
+  public function looksLikeBookReview(object $record) : bool {
       if ($this->wikiname() === 'cite book' || $this->wikiname() === 'citation') {
         $book_count = 0;
         if($this->has('publisher')) $book_count += 1;
