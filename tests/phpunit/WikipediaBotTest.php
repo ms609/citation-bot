@@ -108,7 +108,7 @@ require_once __DIR__ . '/../testBaseClass.php';
       $this->assertNull(WikipediaBot::response2page($response));
     }
     public function test_response2page6() : void {
-      $response = (object) array('batchcomplete' => 'we did it', 'query' => (object) array('pages' => 'we have a pape'));
+      $response = (object) array('batchcomplete' => 'we did it', 'query' => (object) array('pages' => array('stuff' => 'stuffy')));
       $this->assertNull(WikipediaBot::response2page($response));
     }
     public function test_response2page7() : void {
