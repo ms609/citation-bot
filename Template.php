@@ -2097,25 +2097,9 @@ final class Template {
          return expand_book_adsabs($this, $result);
       }
 
-      if ($this->wikiname() === 'cite book' || $this->wikiname() === 'citation') { // Possible book and we found book review in journal
-        $book_count = 0;
-        if($this->has('publisher')) $book_count += 1;
-        if($this->has('isbn'))      $book_count += 2;
-        if($this->has('location'))  $book_count += 1;
-        if($this->has('chapter'))   $book_count += 2;
-        if($this->has('oclc'))      $book_count += 1;
-        if($this->has('lccn'))      $book_count += 2;
-        if($this->has('journal'))   $book_count -= 2;
-        if($this->has('series'))    $book_count += 1;
-        if($this->has('edition'))   $book_count += 2;
-        if($this->has('asin'))      $book_count += 2;
-        if(stripos($this->get('url'), 'google') !== FALSE && stripos($this->get('url'), 'book') !== FALSE) $book_count += 2;
-        if(isset($record->year) && $this->year() && ((int)$record->year !== (int)$this->year())) $book_count += 1;
-        if($this->wikiname() === 'cite book') $book_count += 3;
-        if($book_count > 3) {
+      if ($this->looksLikeBook()) { // Possible book and we found book review in journal
           report_info("Suspect that BibCode " . bibcode_link((string) $record->bibcode) . " is book review.  Rejecting.");
           return FALSE;
-        }
       }
 
       if ($this->blank('bibcode')) {
@@ -2133,6 +2117,27 @@ final class Template {
       report_inline('multiple records retrieved.  Ignoring.');  // @codeCoverageIgnore
       return FALSE;                                             // @codeCoverageIgnore
     }
+  }
+  
+  public function looksLikeBook() : bool {
+      if ($this->wikiname() === 'cite book' || $this->wikiname() === 'citation') {
+        $book_count = 0;
+        if($this->has('publisher')) $book_count += 1;
+        if($this->has('isbn'))      $book_count += 2;
+        if($this->has('location'))  $book_count += 1;
+        if($this->has('chapter'))   $book_count += 2;
+        if($this->has('oclc'))      $book_count += 1;
+        if($this->has('lccn'))      $book_count += 2;
+        if($this->has('journal'))   $book_count -= 2;
+        if($this->has('series'))    $book_count += 1;
+        if($this->has('edition'))   $book_count += 2;
+        if($this->has('asin'))      $book_count += 2;
+        if(stripos($this->get('url'), 'google') !== FALSE && stripos($this->get('url'), 'book') !== FALSE) $book_count += 2;
+        if(isset($record->year) && $this->year() && ((int)$record->year !== (int)$this->year())) $book_count += 1;
+        if($this->wikiname() === 'cite book') $book_count += 3;
+        if($book_count > 3) return TRUE;
+      }
+      return FALSE;
   }
 
   public function expand_by_RIS(string &$dat, bool $add_url) : void { // Pass by pointer to wipe this data when called from use_unnamed_params()
