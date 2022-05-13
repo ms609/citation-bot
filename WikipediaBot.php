@@ -204,14 +204,13 @@ try {
     if (!self::resultsGood($result)) return FALSE;
     
     if (HTML_OUTPUT) {
-      report_inline("\n <span style='reddish'>Written to <a href='" 
-        . WIKI_ROOT . "?title=" . urlencode($myPage->title) . "'>" 
-        . echoable($myPage->title) . '</a></span>');     // @codeCoverageIgnore
+      report_inline("\n <span style='reddish'>Written to <a href='"   // @codeCoverageIgnore
+        . WIKI_ROOT . "?title=" . urlencode($myPage->title) . "'>"    // @codeCoverageIgnore
+        . echoable($myPage->title) . '</a></span>');                  // @codeCoverageIgnore
     } else {
         report_inline("\n Written to " . echoable($myPage->title) . ". \n");
     }
     return TRUE;
-
   }
   
   public static function response2page(?object $response) : ?object {
