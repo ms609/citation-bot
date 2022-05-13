@@ -82,20 +82,20 @@ final class WikipediaBot {
       return FALSE;
     }
     if (isset($response->error)) {
-      if ((string) $response->error->code == 'blocked') { // Travis CI IPs are blocked, even to logged in users.
+      if ((string) @$response->error->code === 'blocked') { // Travis CI IPs are blocked, even to logged in users.
         report_error('Bot account or this IP is blocked from editing.');  // @codeCoverageIgnore
-      } elseif (strpos((string) $response->error->info, 'The database has been automatically locked') !== FALSE) {
+      } elseif (strpos((string) @$response->error->info, 'The database has been automatically locked') !== FALSE) {
         report_warning('Wikipedia database Locked.  Aborting changes for this page.  Will sleep and move on.');
-      } elseif (strpos((string) $response->error->info, 'abusefilter-warning-predatory') !== FALSE) {
+      } elseif (strpos((string) @$response->error->info, 'abusefilter-warning-predatory') !== FALSE) {
         report_warning('Wikipedia page contains predatory references.  Aborting changes for this page.');
         return TRUE;
-      } elseif (strpos((string) $response->error->info, 'protected') !== FALSE) {
+      } elseif (strpos((string) @$response->error->info, 'protected') !== FALSE) {
         report_warning('Wikipedia page is protected from editing.  Aborting changes for this page.');
         return TRUE;
-      } elseif (strpos((string) $response->error->info, 'Wikipedia:Why create an account') !== FALSE) {
+      } elseif (strpos((string) @$response->error->info, 'Wikipedia:Why create an account') !== FALSE) {
         report_error('The bot is editing as you, and you have not granted that permission.  Go to ' . WIKI_ROOT . '?title=Special:OAuthManageMyGrants/update/230820 and grant Citation Bot "Edit existing pages" rights.');  // @codeCoverageIgnore
       } else {
-        report_warning('API call failed: ' . echoable((string) $response->error->info) . '.  Will sleep and move on.');
+        report_warning('API call failed: ' . echoable((string) @$response->error->info) . '.  Will sleep and move on.');
       }
       sleep (10);
       return FALSE;
