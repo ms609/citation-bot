@@ -253,7 +253,7 @@ try {
     return $myPage;
   }
   
-  public static function resultsGood(?object $results) : boolean {
+  public static function resultsGood(?object $result) : bool {
     if (isset($result->error)) {
       report_warning("Write error: " . 
                     echoable(strtoupper($result->error->code)) . ": " . 
