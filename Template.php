@@ -334,7 +334,7 @@ final class Template {
           }
       }
       if (!$this->blank(['pmc', 'pmid', 'doi', 'jstor']) ||
-         (stripos($this->get('journal') . $this->get('title'), 'arxiv') !== FALSE && !$this->blank(['eprint', 'arxiv']))) { // Have some good data
+         (stripos($this->get('journal') . $this->get('title'), 'arxiv') !== FALSE && !$this->blank(ARXIV_ALIASES))) { // Have some good data
           $the_title   = $this->get('title');
           $the_journal = $this->get('journal');
           $the_chapter = $this->get('chapter');
@@ -399,6 +399,12 @@ final class Template {
               $this->rename('journal', 'CITATION_BOT_PLACEHOLDER_journal');
               $the_journal = '';
               $bad_data = TRUE;
+          }
+          if (stripos($the_journal, 'arXiv:') === 0 && !$this->blank(ARXIV_ALIASES)) {
+              $this->forget('journal');
+              $the_journal = '';
+              $bad_data = TRUE;
+              if ($this->wikiname() === 'cite journal') $this->change_name_to('cite arxiv');
           }
           if (stripos($the_journal, 'arXiv') !== FALSE) {
               $this->rename('journal', 'CITATION_BOT_PLACEHOLDER_journal');
@@ -1156,6 +1162,7 @@ final class Template {
           }
           if ($this->has('article') &&
                  ($this->wikiname() === 'cite encyclopedia' || $this->wikiname() === 'cite dictionary' || $this->wikiname() === 'cite encyclopaedia')) return FALSE; // Probably the same thing
+          if (!$this->blank(['booktitle', 'book-title'])) return FALSE; // Cite conference uses this
           if ($this->blank('script-title')) {
             return $this->add($param_name, wikify_external_text($value));
           } else {
@@ -1980,7 +1987,7 @@ final class Template {
     if (strpos($this->get('doi'), '10.1093/') === 0) return FALSE;
     report_action("Checking AdsAbs database");
     if ($this->has('bibcode')) {
-      $result = query_adsabs("identifier:" . urlencode('"' . $this->get('bibcode') . '"'));
+      $result = query_adsabs("identifier:" . urlencode('"' . $this->get('bibcode') . '"')); // @codeCoverageIgnore
     } elseif ($this->has('doi') && preg_match(REGEXP_DOI, $this->get_without_comments_and_placeholders('doi'), $doi)) {
       $result = query_adsabs("identifier:" . urlencode('"' .  $doi[0] . '"'));  // In DOI we trust
     } elseif ($this->has('eprint')) {
@@ -3150,7 +3157,7 @@ final class Template {
       $the_type = strtolower($match[1]);
       $the_data = $match[2];
       $the_all  = $match[0];
-      if ($the_type != 'doi' && preg_match("~^([^\]]+)\]+$~", $the_data, $matches)) {
+      if ($the_type != 'doi' && preg_match("~^([^\]\}\{\s\,\;\:\|\<\>]+)$~", $the_data, $matches)) {
         $the_data = $matches[1];
       }
       $this->add_if_new($the_type, $the_data);
@@ -7238,7 +7245,7 @@ final class Template {
     if (preg_match('~^([A-Z][a-z]+), (\d{4})[\-\–](\d{4})$~', $input, $matches)) { // Comma with month/season and years
       return $matches[1] . ' ' . $matches[2] . '–' . $matches[3];
     }
-    if (preg_match('~^([A-Z][a-z]+) 0(\d),? (\d{4})$~', $input, $matches)) { // Zero-padding	
+    if (preg_match('~^([A-Z][a-z]+) 0(\d),? (\d{4})$~', $input, $matches)) { // Zero-padding
       return $matches[1] . ' ' . $matches[2] . ', ' . $matches[3];
     }
     if (preg_match('~^([A-Z][a-z]+ \d{1,2})( \d{4})$~', $input, $matches)) { // Missing comma in format which requires it
@@ -7279,12 +7286,12 @@ final class Template {
 
   public function block_modifications() : void { // {{void}} should be just like a comment, BUT this code will not stop the normalization of the hidden template which has already been done
      $tmp = $this->parsed_text();
-     while (preg_match_all('~' . sprintf(Self::PLACEHOLDER_TEXT, '(\d+)') . '~', $tmp, $matches)) {	
-       for ($i = 0; $i < count($matches[1]); $i++) {	
-         $subtemplate = self::$all_templates[$matches[1][$i]];	
-         $tmp = str_replace($matches[0][$i], $subtemplate->parsed_text(), $tmp);	
-       }	
-     }	
+     while (preg_match_all('~' . sprintf(Self::PLACEHOLDER_TEXT, '(\d+)') . '~', $tmp, $matches)) {
+       for ($i = 0; $i < count($matches[1]); $i++) {
+         $subtemplate = self::$all_templates[$matches[1][$i]];
+         $tmp = str_replace($matches[0][$i], $subtemplate->parsed_text(), $tmp);
+       }
+     }
      // So we do not get an error when we parse a second time
      unset($this->rawtext);  // @phan-suppress-current-line PhanTypeObjectUnsetDeclaredProperty
      $this->parse_text($tmp);

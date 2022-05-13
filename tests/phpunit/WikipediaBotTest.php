@@ -72,4 +72,64 @@ require_once __DIR__ . '/../testBaseClass.php';
       $this->assertTrue(substr_count($json, 'exists') > 15);
     }
    
+    public function test_ret_okay() : void {
+      $this->assertFalse(WikipediaBot::ret_okay(NULL));
+     
+      $response = (object) array('error' => (object) array('info' =>  'Hello, The database has been automatically locked so give up'));
+      $this->assertFalse(WikipediaBot::ret_okay($response));
+     
+      $response = (object) array('error' => (object) array('info' =>  'Greetings, abusefilter-warning-predatory so give up'));
+      $this->assertTrue(WikipediaBot::ret_okay($response));
+
+      $response = (object) array('error' => (object) array('info' =>  'Greetings, this page is protected so give up'));
+      $this->assertTrue(WikipediaBot::ret_okay($response));
+    }
+   
+    public function test_response2page() : void {
+      $this->assertNull(WikipediaBot::response2page(NULL));
+     
+      $response = (object) array('warnings' => (object) array('prop' =>  'this is a prop'));
+      $this->assertNull(WikipediaBot::response2page($response));
+
+      $response = (object) array('warnings' => (object) array('info' =>  'this is a info'));
+      $this->assertNull(WikipediaBot::response2page($response));
+
+      $response = (object) array('dogs' => (object) array('cats' =>  'this has no batchcomplete'));
+      $this->assertNull(WikipediaBot::response2page($response));
+
+      $response = (object) array('batchcomplete' => 'we did it but have not query');
+      $this->assertNull(WikipediaBot::response2page($response));
+     
+      $response = (object) array('batchcomplete' => 'we did it', 'query' => (object) array('pages' => 'we have a pape'));
+      $this->assertNull(WikipediaBot::response2page($response));
+     
+      $response = (object) array('batchcomplete' => 'we did it', 'query' => (object) array('pages'));
+      $response->query->pages= array((object) array('lastrevid' => 1, 'revisions' => 1, 'title' => 'x'));
+      $response->query->pages[0]->revisions = array('0' => (object) array('timestamp' => 1));
+      $this->assertNull(WikipediaBot::response2page($response));
+
+      $response = (object) array('batchcomplete' => 'we did it', 'query' => (object) array('pages'));
+      $response->query->pages= array((object) array('lastrevid' => 1, 'revisions' => 1, 'title' => 'x'));
+      $response->query->pages[0]->revisions = array('0' => (object) array('timestamp' => 1));
+      $response->query->tokens = (object) array('csrftoken' => 1);
+      $this->assertNotNull(WikipediaBot::response2page($response));
+    }
+                                     
+   public function test_resultsGood() : void {
+      $result = NULL;
+      $this->assertFalse(WikipediaBot::resultsGood($result));
+    
+      $result = (object) array ('edit' => 'nonresult');
+      $this->assertFalse(WikipediaBot::resultsGood($result));
+
+      $result = (object) array ('error' => (object) array('code' => '3', 'info' => 'y'));
+      $this->assertFalse(WikipediaBot::resultsGood($result));
+
+      $result = (object) array ('edit' => (object) array('result' => 'failed'));
+      $this->assertFalse(WikipediaBot::resultsGood($result));
+    
+      $result = (object) array ('edit' => (object) array('result' => 'Success'));
+      $this->assertTrue(WikipediaBot::resultsGood($result));
+  }
+   
 }

@@ -39,8 +39,8 @@ final class AdsAbsControl {
   
   public static function add_doi_map(string $bib, string $doi) : void {
     if ($bib === '' || $doi === '') {
-       report_minor_error('Bad parameter in add_doi_map: ' . echoable($bib) . ' : ' . echoable($doi));
-       return;
+       report_minor_error('Bad parameter in add_doi_map: ' . echoable($bib) . ' : ' . echoable($doi)); // @codeCoverageIgnore
+       return; // @codeCoverageIgnore
     }
     if ($doi === 'X') {
        self::$bib2doi[$bib] = 'X';
@@ -64,6 +64,7 @@ function entrez_api(array $ids, array &$templates, string $db) : bool {   // Poi
   $names = ['', '']; // prevent memory leak in some PHP versions
   if (!count($ids)) return FALSE;
   if ($ids == ['XYZ']) return FALSE; // junk data from test suite
+  if ($ids == ['1']) return FALSE; // junk data from test suite
   if ($ids == ['']) return FALSE; // junk data from test suite
   if ($db !== 'pubmed' && $db !== 'pmc') {
     report_error("Invalid Entrez type passed in: " . $db);  // @codeCoverageIgnore
@@ -307,10 +308,8 @@ function adsabs_api(array $ids, array &$templates, string $identifier) : bool { 
   if (count($ids) == 0) return FALSE;
   
   foreach ($ids as $key => $bibcode) {
-    if (stripos($bibcode, 'CITATION') !== FALSE) {
+    if (stripos($bibcode, 'CITATION') !== FALSE || strlen($bibcode) !== 19) {
         unset($ids[$key]);  // @codeCoverageIgnore
-    } elseif (strlen($bibcode) !== 19) {
-        unset($ids[$key]);
     }
   }
 
@@ -352,7 +351,7 @@ function adsabs_api(array $ids, array &$templates, string $identifier) : bool { 
               CURLOPT_CUSTOMREQUEST => 'POST',
               CURLOPT_POSTFIELDS => "$identifier\n" . implode("\n", $ids)]);
     $return = (string) @curl_exec($ch);
-    $response = Bibcode_Response_Processing($return, $ch, $adsabs_url, 'big');
+    $response = Bibcode_Response_Processing($return, $ch, $adsabs_url);
     curl_close($ch);
     if (!isset($response->docs)) return TRUE;
 
@@ -442,7 +441,7 @@ function expand_by_doi(Template $template, bool $force = FALSE) : bool {
         } else {
            $new_roman = FALSE;
         }
-        foreach (['chapter', 'title', 'series', 'trans-title'] as $possible) {
+        foreach (['chapter', 'title', 'series', 'trans-title', 'book-title'] as $possible) {
           if ($template->has($possible)) {
             $old = $template->get($possible);
             if (preg_match('~^(.................+)[\.\?]\s+([IVX]+)\.\s.+$~i', $old, $matches)) {
@@ -468,7 +467,7 @@ function expand_by_doi(Template $template, bool $force = FALSE) : bool {
           }
         }
         if (isset($crossRef->series_title)) {
-          foreach (['chapter', 'title', 'trans-title'] as $possible) { // Series === series could easily be false positive
+          foreach (['chapter', 'title', 'trans-title', 'book-title'] as $possible) { // Series === series could easily be false positive
             if ($template->has($possible) && titles_are_similar($template->get($possible), (string) $crossRef->series_title)) {
                 $bad_data = FALSE;
                 break;
@@ -489,8 +488,9 @@ function expand_by_doi(Template $template, bool $force = FALSE) : bool {
       }
       report_action("Querying CrossRef: doi:" . doi_link($doi));
 
+      if ($template->has('book-title')) unset($crossRef->volume_title);
       if ($crossRef->volume_title && ($template->blank(WORK_ALIASES) || $template->wikiname() === 'cite book')) {
-        if (strtolower($template->get('title')) == strtolower((string) $crossRef->article_title)) {
+        if (strtolower($template->get('title')) === strtolower((string) $crossRef->article_title)) {
            $template->rename('title', 'chapter');
          } else {
            $template->add_if_new('chapter', restore_italics((string) $crossRef->article_title), 'crossref'); // add_if_new formats this value as a title
@@ -1089,7 +1089,7 @@ function expand_templates_from_archives(array &$templates) : void { // This is d
   curl_close($ch);
 }
 
-function Bibcode_Response_Processing(string $return, $ch, string $adsabs_url, string $q_type) : object {
+function Bibcode_Response_Processing(string $return, $ch, string $adsabs_url) : object {
   try {
     if ($return == "") {
       // @codeCoverageIgnoreStart
@@ -1160,7 +1160,7 @@ function Bibcode_Response_Processing(string $return, $ch, string $adsabs_url, st
       report_warning(sprintf("HTTP Error %d in query_adsabs: %s", $e->getCode(), echoable($e->getMessage())));
     } elseif (strpos($e->getMessage(), 'Too many requests') !== FALSE) {
       report_warning('Giving up on AdsAbs for a while.  Too many requests.');
-      if ($q_type === 'big') {
+      if (strpos($adsabs_url, 'bigquery') !== FALSE) {
         AdsAbsControl::big_give_up();
       } else {
         AdsAbsControl::small_give_up(); 
@@ -1327,7 +1327,7 @@ function query_adsabs(string $options) : object {
                 CURLOPT_USERAGENT => BOT_USER_AGENT,
                 CURLOPT_URL => $adsabs_url]);
       $return = (string) @curl_exec($ch);
-      $response = Bibcode_Response_Processing($return, $ch, $adsabs_url, 'small');
+      $response = Bibcode_Response_Processing($return, $ch, $adsabs_url);
       curl_close($ch);
     return $response;
   }

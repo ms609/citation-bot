@@ -75,32 +75,30 @@ final class WikipediaBot {
     return $this->the_user;
   }
   
-  private static function ret_okay(?object $response) : bool { conflict
+  private static function ret_okay(?object $response) : bool { // We send back TRUE for thing that are page specific
     if (is_null($response)) {
-      report_minor_error('Wikipedia response was not decoded.');  // @codeCoverageIgnore
-      return FALSE;                                               // @codeCoverageIgnore
+      report_warning('Wikipedia response was not decoded.  Will sleep and move on.');
+      sleep(10);
+      return FALSE;
     }
     if (isset($response->error)) {
-      // @codeCoverageIgnoreStart
       if ((string) $response->error->code == 'blocked') { // Travis CI IPs are blocked, even to logged in users.
-        report_error('Bot account or this IP is blocked from editing.');
+        report_error('Bot account or this IP is blocked from editing.');  // @codeCoverageIgnore
       } elseif (strpos((string) $response->error->info, 'The database has been automatically locked') !== FALSE) {
-        report_minor_error('Wikipedia database Locked.  Aborting changes for this page.  Will sleep and move on.');
-        sleep(10);
-        return TRUE;
+        report_warning('Wikipedia database Locked.  Aborting changes for this page.  Will sleep and move on.');
       } elseif (strpos((string) $response->error->info, 'abusefilter-warning-predatory') !== FALSE) {
-        report_minor_error('Wikipedia page contains predatory references.  Aborting changes for this page.  Will sleep and move on.');
+        report_warning('Wikipedia page contains predatory references.  Aborting changes for this page.');
         return TRUE;
       } elseif (strpos((string) $response->error->info, 'protected') !== FALSE) {
-        report_minor_error('Wikipedia page is protected from editing.  Aborting changes for this page.  Will sleep and move on.');
+        report_warning('Wikipedia page is protected from editing.  Aborting changes for this page.');
         return TRUE;
       } elseif (strpos((string) $response->error->info, 'Wikipedia:Why create an account') !== FALSE) {
-        report_error('The bot is editing as you, and you have not granted that permission.  Go to ' . WIKI_ROOT . '?title=Special:OAuthManageMyGrants/update/230820 and grant Citation Bot "Edit existing pages" rights.');
+        report_error('The bot is editing as you, and you have not granted that permission.  Go to ' . WIKI_ROOT . '?title=Special:OAuthManageMyGrants/update/230820 and grant Citation Bot "Edit existing pages" rights.');  // @codeCoverageIgnore
       } else {
-        report_minor_error('API call failed: ' . (string) $response->error->info);
+        report_warning('API call failed: ' . echoable((string) $response->error->info) . '.  Will sleep and move on.');
       }
+      sleep (10);
       return FALSE;
-      // @codeCoverageIgnoreEnd
     }
     return TRUE;
   }
@@ -167,38 +165,9 @@ try {
             'titles' => $page
           ]);
     
-    if (!$response) {
-      report_warning("Write request failed");     // @codeCoverageIgnore
-      return FALSE;                               // @codeCoverageIgnore
-    }
-    if (isset($response->warnings)) {
-      // @codeCoverageIgnoreStart
-      if (isset($response->warnings->prop)) {
-        report_minor_error((string) $response->warnings->prop->{'*'});
-        return FALSE;
-      }
-      if (isset($response->warnings->info)) {
-        report_minor_error((string) $response->warnings->info->{'*'});
-        return FALSE;
-      }
-      // @codeCoverageIgnoreEnd
-    }
-    if (!isset($response->batchcomplete)) {
-      report_minor_error("Write request triggered no response from server");   // @codeCoverageIgnore
-      return FALSE;                                                            // @codeCoverageIgnore
-    }
+    $myPage = self::response2page($response);
+    if ($myPage === NULL) return FALSE;
     
-    if (!isset($response->query) || !isset($response->query->pages)) {
-      report_minor_error("Pages array is non-existent.  Aborting.");   // @codeCoverageIgnore
-      return FALSE;                                                    // @codeCoverageIgnore
-    }
-    $myPage = reset($response->query->pages); // reset gives first element in list
-    
-    if (!isset($myPage->lastrevid) || !isset($myPage->revisions) || !isset($myPage->revisions[0]) ||
-        !isset($myPage->revisions[0]->timestamp) || !isset($myPage->title)) {
-      report_minor_error("Page seems not to exist. Aborting.");   // @codeCoverageIgnore
-      return FALSE;                                               // @codeCoverageIgnore
-    }
     $baseTimeStamp = $myPage->revisions[0]->timestamp;
     
     if (($lastRevId != 0 && $myPage->lastrevid != $lastRevId)
@@ -206,12 +175,7 @@ try {
       report_minor_error("Possible edit conflict detected. Aborting.");      // @codeCoverageIgnore
       return FALSE;                                                          // @codeCoverageIgnore
     }
-    if (!isset($response->query) || !isset($response->query->tokens) ||
-        !isset($response->query->tokens->csrftoken)) {
-      report_minor_error("Response object was invalid.  Aborting. ");  // @codeCoverageIgnore
-      return FALSE;                                                    // @codeCoverageIgnore
-    }
-    
+
     // No obvious errors; looks like we're good to go ahead and edit
     $auth_token = $response->query->tokens->csrftoken;
     if (defined('EDIT_AS_USER')) {  // @codeCoverageIgnoreStart
@@ -235,42 +199,78 @@ try {
     );
     $result = $this->fetch($submit_vars);
     
+    if (!self::resultsGood($result)) return FALSE;
+    
+    if (HTML_OUTPUT) {
+      report_inline("\n <span style='reddish'>Written to <a href='" 
+        . WIKI_ROOT . "?title=" . urlencode($myPage->title) . "'>" 
+        . echoable($myPage->title) . '</a></span>');
+    } else {
+        report_inline("\n Written to " . echoable($myPage->title) . ". \n");
+    }
+    return TRUE;
+
+  }
+  
+  public static function response2page(?object $response) : ?object {
+    if ($response === NULL) {
+      report_warning("Write request failed");
+      return NULL;
+    }
+    if (isset($response->warnings)) {
+      if (isset($response->warnings->prop)) {
+        report_warning((string) $response->warnings->prop->{'*'});
+        return NULL;
+      }
+      if (isset($response->warnings->info)) {
+        report_warning((string) $response->warnings->info->{'*'});
+        return NULL;
+      }
+    }
+    if (!isset($response->batchcomplete)) {
+      report_warning("Write request triggered no response from server");
+      return NULL;
+    }
+    
+    if (!isset($response->query) || !isset($response->query->pages)) {
+      report_warning("Pages array is non-existent.  Aborting.");
+      return NULL;
+    }
+    $myPage = reset($response->query->pages); // reset gives first element in list
+    
+    if (!isset($myPage->lastrevid) || !isset($myPage->revisions) || !isset($myPage->revisions[0]) ||
+        !isset($myPage->revisions[0]->timestamp) || !isset($myPage->title)) {
+      report_warning("Page seems not to exist. Aborting.");
+      return NULL;
+    }
+    if (!isset($response->query) || !isset($response->query->tokens) ||
+        !isset($response->query->tokens->csrftoken)) {
+      report_warning("Response object was invalid.  Aborting. ");
+      return NULL;
+    }
+    return $myPage;
+  }
+  
+  public static function resultsGood(?object $result) : bool {
     if (isset($result->error)) {
-      // @codeCoverageIgnoreStart
-      report_minor_error("Write error: " . 
+      report_warning("Write error: " . 
                     echoable(strtoupper($result->error->code)) . ": " . 
                     str_replace(array("You ", " have "), array("This bot ", " has "), 
                     echoable($result->error->info)));
       return FALSE;
-      // @codeCoverageIgnoreEnd
-    } elseif (isset($result->edit)) {
-      // @codeCoverageIgnoreStart
-      if (isset($result->edit->captcha)) {
-        report_error("Write error: We encountered a captcha, so can't be properly logged in."); // Bot account has flags set on en.wikipedia.org and simple.wikipedia.org to avoid captchas
-      } elseif ($result->edit->result == "Success") {
-        // Need to check for this string wherever our behavior is dependent on the success or failure of the write operation
-        if (HTML_OUTPUT) {
-          report_inline("\n <span style='reddish'>Written to <a href='" 
-          . WIKI_ROOT . "?title=" . urlencode($myPage->title) . "'>" 
-          . echoable($myPage->title) . '</a></span>');
-        } else {
-          report_inline("\n Written to " . echoable($myPage->title) . ". \n");
-        }
-        return TRUE;
-      } elseif (isset($result->edit->result)) {
-        report_warning(echoable('Attempt to write page returned error: ' .  $result->edit->result));
-        return FALSE;
-      }
-      // @codeCoverageIgnoreEnd
-    } else {
-      // @codeCoverageIgnoreStart
+    } elseif (isset($result->edit->captcha)) {  // Bot account has flags set on en.wikipedia.org and simple.wikipedia.org to avoid captchas
+      report_error("Write error: We encountered a captcha, so can't be properly logged in.");  // @codeCoverageIgnore
+    } elseif (!isset($result->edit->result)) { // Includes results === NULL
       report_warning("Unhandled write error.  Please copy this output and " .
                     "<a href='https://en.wikipedia.org/wiki/User_talk:Citation_bot'>" .
                     "report a bug</a>.  There is no need to report the database being locked unless it continues to be a problem. ");
-      sleep(15);
-      // @codeCoverageIgnoreEnd
+      sleep(5);
+      return FALSE;
+    } elseif ($result->edit->result !== "Success") {
+      report_warning('Attempt to write page returned error: ' .  echoable($result->edit->result));
+      return FALSE;
     }
-    return FALSE;
+    return TRUE;
   }
   
   public static function category_members(string $cat) : array {
