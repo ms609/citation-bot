@@ -97,7 +97,7 @@ require_once __DIR__ . '/../testBaseClass.php';
       $response = (object) array('dogs' => (object) array('cats' =>  'this has no batchcomplete'));
       $this->assertNull(WikipediaBot::response2page($response));
 
-      $response = (object) array('batchcomplete' => 'we did it but have not query'));
+      $response = (object) array('batchcomplete' => 'we did it but have not query');
       $this->assertNull(WikipediaBot::response2page($response));
      
       $response = (object) array('batchcomplete' => 'we did it', 'query' => (object) array('pages' => 'we have a pape'));
