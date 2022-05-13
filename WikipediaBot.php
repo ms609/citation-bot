@@ -75,7 +75,7 @@ final class WikipediaBot {
     return $this->the_user;
   }
   
-  private static function ret_okay(?object $response) : bool { // We send back TRUE for thing that are page specific
+  public static function ret_okay(?object $response) : bool { // We send back TRUE for thing that are page specific
     if (is_null($response)) {
       report_warning('Wikipedia response was not decoded.  Will sleep and move on.');
       sleep(10);
