@@ -4144,7 +4144,7 @@ final class TemplateTest2 extends testBaseClass {
       $expanded = $this->process_citation($text);
       $this->AssertSame('20.1000/100', $expanded->get2('hdl'));
      
-      $text = "{{cite paper|hdl=20.1000/100?%3Bseq=326%3Bownerid=13510798900390116-35urlappend}}";
+      $text = "{{cite paper|hdl=20.1000/100?urlappend=%3Bseq=326%3Bownerid=13510798900390116-35urlappend}}";
       $expanded = $this->process_citation($text);
       $this->AssertSame('20.1000/100', $expanded->get2('hdl'));
      
