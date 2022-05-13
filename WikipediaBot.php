@@ -143,11 +143,13 @@ try {
         // @codeCoverageIgnoreEnd
       }
       return (self::ret_okay($ret)) ? $ret : NULL;
+    // @codeCoverageIgnoreStart
     } catch(Exception $E) {
       report_warning("Exception caught!\n");
       report_info("Response: ". $E->getMessage());
     }
     return NULL;
+    // @codeCoverageIgnoreEnd
   }
   
   /** @phpstan-impure **/
@@ -204,7 +206,7 @@ try {
     if (HTML_OUTPUT) {
       report_inline("\n <span style='reddish'>Written to <a href='" 
         . WIKI_ROOT . "?title=" . urlencode($myPage->title) . "'>" 
-        . echoable($myPage->title) . '</a></span>');
+        . echoable($myPage->title) . '</a></span>');     // @codeCoverageIgnore
     } else {
         report_inline("\n Written to " . echoable($myPage->title) . ". \n");
     }
