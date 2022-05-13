@@ -201,7 +201,7 @@ try {
     );
     $result = $this->fetch($submit_vars);
     
-    if (!resultsGood($result)) return FALSE;
+    if (!self::resultsGood($result)) return FALSE;
     
     if (HTML_OUTPUT) {
       report_inline("\n <span style='reddish'>Written to <a href='" 
