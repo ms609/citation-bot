@@ -74,7 +74,7 @@ final class WikipediaBot {
     return $this->the_user;
   }
   
-  private static function ret_okay(?object $response) : bool {
+  private static function ret_okay(?object $response) : bool { conflict
     if (is_null($response)) {
       report_minor_error('Wikipedia response was not decoded.');  // @codeCoverageIgnore
       return FALSE;                                               // @codeCoverageIgnore
