@@ -92,11 +92,11 @@ require_once __DIR__ . '/../testBaseClass.php';
       $this->assertNull(WikipediaBot::response2page(NULL));
     }
     public function test_response2page2() : void {
-      $response = (object) array('warnings' => (object) array('prop' =>  'this is a prop'));
+      $response = (object) array('warnings' => (object) array('prop' =>  (object) array('*' => 'this is a prop')));
       $this->assertNull(WikipediaBot::response2page($response));
     }
     public function test_response2page3() : void {
-      $response = (object) array('warnings' => (object) array('info' =>  'this is a info'));
+      $response = (object) array('warnings' => (object) array('info' =>  (object) array('*' => 'this is an info')));
       $this->assertNull(WikipediaBot::response2page($response));
     }
     public function test_response2page4() : void {
