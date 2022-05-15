@@ -10,11 +10,11 @@ if (password_verify($_REQUEST['p'], '$2y$10$UOmZtkKs1X17vE/mmbfVgOiy0ZAkXnxa9UxF
   phpinfo(INFO_ALL);
   /** @psalm-suppress ForbiddenCode */
   echo "\n\n" . htmlspecialchars((string) shell_exec("(/bin/rm -rf  ../.nfs00000000050c0a6700000001 )  2>&1"), ENT_QUOTES);
-  echo "\n\n" . htmlspecialchars((string) shell_exec("(/bin/sed 's/cpu\: 1/cpu\: 4/' ../service.template  > ../service.template.new )  2>&1"), ENT_QUOTES);
+  echo "\n\n" . htmlspecialchars((string) shell_exec("(/bin/mv  ../service.template.new  ../service.template )  2>&1"), ENT_QUOTES);
   echo "\n\n" . htmlspecialchars((string) shell_exec("(/bin/ls -lahtr . .. )  2>&1"), ENT_QUOTES);
 
   echo "\n service.template \n" . htmlspecialchars((string) shell_exec("(/bin/cat ../service.template)  2>&1"), ENT_QUOTES);
-  echo "\n service.template.new \n" . htmlspecialchars((string) shell_exec("(/bin/cat ../service.template.new)  2>&1"), ENT_QUOTES);
+
 }
 
 echo '</pre></body></html>';
