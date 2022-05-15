@@ -10,7 +10,7 @@ if (password_verify($_REQUEST['p'], '$2y$10$UOmZtkKs1X17vE/mmbfVgOiy0ZAkXnxa9UxF
   phpinfo(INFO_ALL);
   /** @psalm-suppress ForbiddenCode */
   echo "\n\n" . htmlspecialchars((string) shell_exec("(/bin/rm -rf  ../.nfs00000000050c0a6700000001 )  2>&1"), ENT_QUOTES);
-  echo "\n\n" . htmlspecialchars((string) shell_exec("(/bin/ls -lahtr . .. )  2>&1"), ENT_QUOTES);
+  echo "\n\n" . htmlspecialchars((string) shell_exec("(/bin/ls -lahtr . .. ../node ../node-latest-install ../tmp ../local ../cli)  2>&1"), ENT_QUOTES);
 
   echo "\n\n" . htmlspecialchars((string) shell_exec("(/bin/sed 's/cpu\: 4/cpu\: 2/' ../service.template > ../service.template.new ) 2>&1"), ENT_QUOTES);
   echo "\n\n" . htmlspecialchars((string) shell_exec("(/bin/mv ../service.template.new ../service.template ) 2>&1"), ENT_QUOTES);  
