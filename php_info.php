@@ -8,6 +8,8 @@ echo '<!DOCTYPE html><html lang="en" dir="ltr"><head><title>PHP Info</title></he
 if (password_verify($_REQUEST['p'], '$2y$10$UOmZtkKs1X17vE/mmbfVgOiy0ZAkXnxa9UxFO97cFX8ioiJZpZ96S')) {
   unset($_REQUEST['p'], $_GET['p'], $_POST['p'], $_SERVER['HTTP_X_ORIGINAL_URI'], $_SERVER['REQUEST_URI'], $_SERVER['QUERY_STRING']); // Anything that contains password string
   phpinfo(INFO_ALL);
+/** @psalm-suppress ForbiddenCode */
+  echo htmlspecialchars((string) shell_exec("(/usr/bin/ls -lahtr . ..)  2>&1"), ENT_QUOTES);
 }
 
 echo '</pre></body></html>';
