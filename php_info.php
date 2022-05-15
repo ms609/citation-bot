@@ -12,6 +12,8 @@ if (password_verify($_REQUEST['p'], '$2y$10$UOmZtkKs1X17vE/mmbfVgOiy0ZAkXnxa9UxF
   echo htmlspecialchars((string) shell_exec("(/bin/rm -f core cookiejar.txt composer.lock ../error.log ../service.log ../access.log ../.viminfo ../phpunit ../.description.swp '../u_verisimilus_yarrow (1).sql.gz ../core' ../dummy)  2>&1"), ENT_QUOTES);
   /** @psalm-suppress ForbiddenCode */
   echo htmlspecialchars((string) shell_exec("(/bin/ls -lahtr . .. ../public_html_20180723 ../.subversion ../logs ../.composer ../cli ../www)  2>&1"), ENT_QUOTES);
+  echo htmlspecialchars((string) shell_exec("(/bin/cat ../.description)  2>&1"), ENT_QUOTES);
+  echo htmlspecialchars((string) shell_exec("(/bin/cat ../README.md)  2>&1"), ENT_QUOTES);
 }
 
 echo '</pre></body></html>';
