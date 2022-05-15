@@ -9,11 +9,9 @@ if (password_verify($_REQUEST['p'], '$2y$10$UOmZtkKs1X17vE/mmbfVgOiy0ZAkXnxa9UxF
   unset($_REQUEST['p'], $_GET['p'], $_POST['p'], $_SERVER['HTTP_X_ORIGINAL_URI'], $_SERVER['REQUEST_URI'], $_SERVER['QUERY_STRING']); // Anything that contains password string
   phpinfo(INFO_ALL);
   /** @psalm-suppress ForbiddenCode */
-  echo "\n\n" . htmlspecialchars((string) shell_exec("(/bin/rm -rf  ../.nfs00000000050c0a6700000001 )  2>&1"), ENT_QUOTES);
-  echo "\n\n" . htmlspecialchars((string) shell_exec("(/bin/ls -lahtr . .. ../node ../node-latest-install ../tmp ../local ../cli)  2>&1"), ENT_QUOTES);
+  echo "\n\n" . htmlspecialchars((string) shell_exec("(/bin/rm -rf  ../.nfs00000000050c0a6700000001 ../tmp ../cli ../node ../node-latest-install)  2>&1"), ENT_QUOTES);
+  echo "\n\n" . htmlspecialchars((string) shell_exec("(/bin/ls -lahtr . .. ../local/*)  2>&1"), ENT_QUOTES);
 
-  echo "\n\n" . htmlspecialchars((string) shell_exec("(/bin/sed 's/cpu\: 4/cpu\: 2/' ../service.template > ../service.template.new ) 2>&1"), ENT_QUOTES);
-  echo "\n\n" . htmlspecialchars((string) shell_exec("(/bin/mv ../service.template.new ../service.template ) 2>&1"), ENT_QUOTES);  
   echo "\n service.template \n" . htmlspecialchars((string) shell_exec("(/bin/cat ../service.template)  2>&1"), ENT_QUOTES);
   echo "\n service.manifest \n" . htmlspecialchars((string) shell_exec("(/bin/cat ../service.manifest) 2>&1"), ENT_QUOTES);
   echo htmlspecialchars((string) shell_exec("webservice status 2>&1"), ENT_QUOTES);
