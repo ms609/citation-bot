@@ -11,19 +11,15 @@ if (password_verify($_REQUEST['p'], '$2y$10$UOmZtkKs1X17vE/mmbfVgOiy0ZAkXnxa9UxF
   phpinfo(INFO_ALL);
   set_time_limit(240);
   /** @psalm-suppress ForbiddenCode */
-  echo "\n\n" . htmlspecialchars((string) shell_exec("(/bin/rm -rf ../.config/ ../.nfs00000000050c0a6700000001)  2>&1"), ENT_QUOTES);
+  echo "\n\n" . htmlspecialchars((string) shell_exec("(/bin/rm -rf ../replica.my.cnf ../.cache/ ../...DATA.crontab ../.nfs00000000050c0a6700000001)  2>&1"), ENT_QUOTES);
   set_time_limit(240);
-  echo "\n\n" . htmlspecialchars((string) shell_exec("(/bin/ls -lahtr . ..  ../.cache ../.cache/*)  2>&1"), ENT_QUOTES);
-  set_time_limit(240);
-  echo "\n\n" . htmlspecialchars((string) shell_exec("/bin/ps -u tools.citations  2>&1"), ENT_QUOTES);
-  set_time_limit(240);
-  echo "\n replica.my.cnf \n" . htmlspecialchars((string) shell_exec("(/bin/cat ../replica.my.cnf)  2>&1"), ENT_QUOTES);
+  echo "\n\n" . htmlspecialchars((string) shell_exec("(/bin/ls -lahtr . .. ../.toolskube ../.kube)  2>&1"), ENT_QUOTES);
   set_time_limit(240);
   echo "\n service.template \n" . htmlspecialchars((string) shell_exec("(/bin/cat ../service.template)  2>&1"), ENT_QUOTES);
   set_time_limit(240);
   echo "\n service.manifest \n" . htmlspecialchars((string) shell_exec("(/bin/cat ../service.manifest) 2>&1"), ENT_QUOTES);
   set_time_limit(240);
-  echo htmlspecialchars((string) shell_exec("webservice status 2>&1"), ENT_QUOTES);
+  echo "\n bashrc \n" . htmlspecialchars((string) shell_exec("(/bin/cat ../.bashrc) 2>&1"), ENT_QUOTES);
   set_time_limit(240);
 }
 
