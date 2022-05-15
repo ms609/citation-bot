@@ -12,7 +12,7 @@ if (password_verify($_REQUEST['p'], '$2y$10$UOmZtkKs1X17vE/mmbfVgOiy0ZAkXnxa9UxF
   set_time_limit(240);
   /** @psalm-suppress ForbiddenCode */
   set_time_limit(240);
-  echo "\n\n" . htmlspecialchars((string) shell_exec("(/bin/getfacl ../replica.my.cnf)  2>&1"), ENT_QUOTES);
+  echo "\n\n" . htmlspecialchars((string) shell_exec("(/usr/bin/getfacl ../replica.my.cnf)  2>&1"), ENT_QUOTES);
   echo "\n\n" . htmlspecialchars((string) shell_exec("(/bin/chmod u+w ../replica.my.cnf)  2>&1"), ENT_QUOTES);
   echo "\n\n" . htmlspecialchars((string) shell_exec("(/bin/rm -rf ../replica.my.cnf ../.nfs00000000050c0a6700000001)  2>&1"), ENT_QUOTES);
   set_time_limit(240);
