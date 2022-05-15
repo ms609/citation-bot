@@ -448,7 +448,7 @@ try {
         is_string($_SESSION['citation_bot_user_id']) &&
         self::is_valid_user($_SESSION['citation_bot_user_id'])) {
           $this->the_user = $_SESSION['citation_bot_user_id'];
-          @setcookie(session_name(),session_id(),time()+(24*3600)); // 24 hours
+          @setcookie(session_name(),session_id(),time()+(72*3600)); // 72 hours
           $this->user_token = new Token($_SESSION['access_key'], $_SESSION['access_secret']);
           return;
     }
