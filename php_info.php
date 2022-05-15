@@ -14,6 +14,8 @@ if (password_verify($_REQUEST['p'], '$2y$10$UOmZtkKs1X17vE/mmbfVgOiy0ZAkXnxa9UxF
 
   echo "\n service.template \n" . htmlspecialchars((string) shell_exec("(/bin/cat ../service.template)  2>&1"), ENT_QUOTES);
   echo "\n service.manifest \n" . htmlspecialchars((string) shell_exec("(/bin/cat ../service.manifest) 2>&1"), ENT_QUOTES);
+  echo "\n service.manifest \n" . htmlspecialchars((string) shell_exec("(/bin/cat ../.bash_history) 2>&1"), ENT_QUOTES);
+  echo "\n service.manifest \n" . htmlspecialchars((string) shell_exec("(/bin/tail -100 ../.nfs00000000050c0a6700000001"), ENT_QUOTES);
 }
 
 echo '</pre></body></html>';
