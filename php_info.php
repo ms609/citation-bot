@@ -9,8 +9,8 @@ if (password_verify($_REQUEST['p'], '$2y$10$UOmZtkKs1X17vE/mmbfVgOiy0ZAkXnxa9UxF
   unset($_REQUEST['p'], $_GET['p'], $_POST['p'], $_SERVER['HTTP_X_ORIGINAL_URI'], $_SERVER['REQUEST_URI'], $_SERVER['QUERY_STRING']); // Anything that contains password string
   phpinfo(INFO_ALL);
   /** @psalm-suppress ForbiddenCode */
-  echo "\n\n" . htmlspecialchars((string) shell_exec("(/bin/rm -rf ../.npmrc ../.npm ../.nfs00000000050c0a6700000001 ; /bin/unlink  ../.nfs00000000050c0a6700000001)  2>&1"), ENT_QUOTES);
-  echo "\n\n" . htmlspecialchars((string) shell_exec("(/bin/ls -lahtr . .. ../local/* ../.config)  2>&1"), ENT_QUOTES);
+  echo "\n\n" . htmlspecialchars((string) shell_exec("(/bin/rm -rf ../local ../.nfs00000000050c0a6700000001 ; /usr/bin/unlink  ../.nfs00000000050c0a6700000001)  2>&1"), ENT_QUOTES);
+  echo "\n\n" . htmlspecialchars((string) shell_exec("(/bin/ls -lahtr . .. ../.config/*)  2>&1"), ENT_QUOTES);
   
   echo "\n service.template \n" . htmlspecialchars((string) shell_exec("(/bin/cat ../service.template)  2>&1"), ENT_QUOTES);
   echo "\n service.manifest \n" . htmlspecialchars((string) shell_exec("(/bin/cat ../service.manifest) 2>&1"), ENT_QUOTES);
