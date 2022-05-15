@@ -2256,7 +2256,7 @@ final class Template {
           break;
         default:
           if (isset($ris_part[1])) {
-             report_info("Unexpected RIS data type ignored: " . echoable(trim($ris_part[0])) . " set to " . echoable(trim($ris_part[1])));
+             report_minor_error("Unexpected RIS data type ignored: " . echoable(trim($ris_part[0])) . " set to " . echoable(trim($ris_part[1])));
           };
       }
       unset($ris_part[0]);
