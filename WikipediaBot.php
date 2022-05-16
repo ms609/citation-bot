@@ -183,7 +183,7 @@ try {
     // No obvious errors; looks like we're good to go ahead and edit
     $auth_token = $response->query->tokens->csrftoken;
     if (defined('EDIT_AS_USER')) {  // @codeCoverageIgnoreStart
-      $auth_token = json_decode( $this->user_client->makeOAuthCall(
+      $auth_token = @json_decode( $this->user_client->makeOAuthCall(
         $this->user_token,
        API_ROOT . '?action=query&meta=tokens&format=json'
        ) )->query->tokens->csrftoken;
