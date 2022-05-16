@@ -1307,7 +1307,7 @@ public static function find_indentifiers_in_urls(Template $template, ?string $ur
         return FALSE;
 
       } elseif (stripos($url, 'europepmc.org') !== FALSE) {
-        if (preg_match("~^https?://(?:www\.|)europepmc\.org/articles?/pmc/?(\d{4,})~i", $url, $match)) ||
+        if (preg_match("~^https?://(?:www\.|)europepmc\.org/articles?/pmc/?(\d{4,})~i", $url, $match) ||
             preg_match("~^https?://(?:www\.|)europepmc\.org/scanned\?pageindex=(?:\d+)\&articles=pmc(\d{4,})~i", $url, $match)) {
          if ($template->wikiname() === 'cite web') $template->change_name_to('cite journal');
          if ($template->blank('pmc')) {
