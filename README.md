@@ -104,5 +104,5 @@ In order to run on the command line one needs OAuth tokens as documented in `env
 
     /usr/bin/php ./process_page.php "Covid Watch|Water|COVID-19_apps" --slow
     
-The command line tool will first look for a file with the page in the local direcory and read that for the | deliminated page names.
+The command line tool will also accept `page_list.txt` and `page_list2.txt` as page names.  In those cases the bot expect a file of such name to contain a single line of | seperated page names.
 
