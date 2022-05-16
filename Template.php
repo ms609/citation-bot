@@ -3801,17 +3801,17 @@ final class Template {
         case 'doi':
           $doi = $this->get($param);
           if (!$doi) return;
-          if ($doi == '10.1267/science.040579197') {
+          if ($doi === '10.1267/science.040579197') {
             // This is a bogus DOI from the PMID example file
             $this->forget('doi');
             return;
           }
-          if ($doi == '10.5284/1000184') {
+          if ($doi === '10.5284/1000184') {
             // This is a DOI for an entire database, not anything within it
             $this->forget('doi');
             return;
           }
-          if (substr($doi, 0, 8) == '10.5555/') { // Test DOI prefix.  NEVER will work
+          if (substr($doi, 0, 8) === '10.5555/') { // Test DOI prefix.  NEVER will work
             $this->forget('doi');
             if ($this->blank('url')) {
               $test_url = 'https://plants.jstor.org/stable/' . $doi;
@@ -3840,16 +3840,17 @@ final class Template {
             $doi = sanitize_doi($doi);
             $this->set($param, $doi);
           }
-          if (preg_match('~^10.1093\/oi\/authority\.\d{10,}$~', $doi) &&
-              preg_match('~oxfordreference.com\/view\/10.1093\/oi\/authority\.\d{10,}~', $this->get('url')) &&
-              !doi_works($doi)) {
+          if (!doi_works($doi) {
+            if(preg_match('~^10.1093\/oi\/authority\.\d{10,}$~', $doi) &&
+              preg_match('~oxfordreference.com\/view\/10.1093\/oi\/authority\.\d{10,}~', $this->get('url'))
+              ) {
+             $this->forget('doi');
+             return;
+            } elseif (preg_match('~^10\.1093\/law\:epil\/9780199231690\/law\-9780199231690~', $doi) &&
+              preg_match('~ouplaw.com\/view\/10\.1093/law\:epil\/9780199231690\/law\-9780199231690~', $this->get('url'))) {
             $this->forget('doi');
             return;
-          } elseif (preg_match('~^10\.1093\/law\:epil\/9780199231690\/law\-9780199231690~', $doi) &&
-              preg_match('~ouplaw.com\/view\/10\.1093/law\:epil\/9780199231690\/law\-9780199231690~', $this->get('url')) &&
-              !doi_works($doi)) {
-            $this->forget('doi');
-            return;
+            }
           }
           if (stripos($doi, '10.1093/law:epil') === 0 || stripos($doi, '10.1093/oi/authority') === 0) {
             return;
@@ -3862,7 +3863,7 @@ final class Template {
             }
            }
           }
-          if (preg_match('~^10\.2307/(\d+)$~', $this->get_without_comments_and_placeholders('doi'))) {
+          if ($this->blank('jstor') && preg_match('~^10\.2307/(\d+)$~', $this->get_without_comments_and_placeholders('doi'))) {
             $this->add_if_new('jstor', substr($this->get_without_comments_and_placeholders('doi'), 8));
           }
           if ($this->wikiname() === 'cite arxiv') $this->change_name_to('cite journal');
