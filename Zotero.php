@@ -954,7 +954,7 @@ public static function find_indentifiers_in_urls(Template $template, ?string $ur
       }
     }
     // Abstract only websites
-    if (preg_match('~orbit.dtu.dk/en/publications~', $url)) { // This file path only
+    if (strpos($url, 'orbit.dtu.dk/en/publications') !== FALSE) { // This file path only
        if (is_null($url_sent)) {
          if ($template->has('pmc')) {
             $template->forget($url_type); // Remove it to make room for free-link
@@ -965,33 +965,35 @@ public static function find_indentifiers_in_urls(Template $template, ?string $ur
        return FALSE;
     }
     // IEEE
-    if (preg_match('~ieeexplore.ieee.org.+arnumber=(\d+)(?:|[^\d].*)$~', $url, $matches)) {
+    if (strpos($url, 'ieeexplore') !== FALSE) {
+     if (preg_match('~ieeexplore.ieee.org.+arnumber=(\d+)(?:|[^\d].*)$~', $url, $matches)) {
        $url = 'https://ieeexplore.ieee.org/document/' . $matches[1];
        if (is_null($url_sent)) {
          $template->set($url_type, $url); // Update URL with cleaner one
        }
-    }
-    if (preg_match('~^https?://ieeexplore\.ieee\.org(?:|\:80)/(?:|abstract/)document/(\d+)/?(?:|\?reload=true)$~', $url, $matches)) {
+     }
+     if (preg_match('~^https?://ieeexplore\.ieee\.org(?:|\:80)/(?:|abstract/)document/(\d+)/?(?:|\?reload=true)$~', $url, $matches)) {
        $url = 'https://ieeexplore.ieee.org/document/' . $matches[1];
        if (is_null($url_sent)) {
          $template->set($url_type, $url); // Normalize to HTTPS and remove abstract and remove trailing slash etc
        }
-    }
-    if (preg_match('~^https?://ieeexplore\.ieee\.org.*/iel5/\d+/\d+/(\d+).pdf(?:|\?.*)$~', $url, $matches)) {
+     }
+     if (preg_match('~^https?://ieeexplore\.ieee\.org.*/iel5/\d+/\d+/(\d+).pdf(?:|\?.*)$~', $url, $matches)) {
        $url = 'https://ieeexplore.ieee.org/document/' . $matches[1];
        if (is_null($url_sent)) {
          $template->set($url_type, $url); // Normalize
        }
-    }
-    if (preg_match('~^https://ieeexplore\.ieee\.org/document/0+(\d+)$~', $url, $matches)) {
+     }
+     if (preg_match('~^https://ieeexplore\.ieee\.org/document/0+(\d+)$~', $url, $matches)) {
        $url = 'https://ieeexplore.ieee.org/document/' . $matches[1];
        if (is_null($url_sent)) {
          $template->set($url_type, $url); // Trimming leading zeroes
        }
+     }
     }
 
     // semanticscholar
-    if (preg_match('~^https?://(?:pdfs?\.|www\.|)semanticscholar\.org/~i', $url)) {
+    if (stripos($url, 'semanticscholar.org') !== FALSE) {
        $s2cid = getS2CID($url);
        if ($s2cid == '') return FALSE;
        if ($template->has('s2cid') && $s2cid != $template->get('s2cid')) {
@@ -1017,57 +1019,58 @@ public static function find_indentifiers_in_urls(Template $template, ?string $ur
        return TRUE;
     }
 
-    // Trim ?seq=1#page_scan_tab_contents off of jstor urls
-    // We do this since not all jstor urls are recognized below
-    if (preg_match("~^(https?://\S*jstor.org\S*)\?seq=1#[a-zA-Z_]+$~", $url, $matches)) {
+    if (stripos($url, 'jstor') !== FALSE) {
+     // Trim ?seq=1#page_scan_tab_contents off of jstor urls
+     // We do this since not all jstor urls are recognized below
+     if (preg_match("~^(https?://\S*jstor.org\S*)\?seq=1#[a-zA-Z_]+$~", $url, $matches)) {
        $url = $matches[1];
        if (is_null($url_sent)) {
          $template->set($url_type, $url); // Update URL with cleaner one
        }
-    }
-    if (preg_match("~^(https?://\S*jstor.org\S*)\?refreqid=~", $url, $matches)) {
+     }
+     if (preg_match("~^(https?://\S*jstor.org\S*)\?refreqid=~", $url, $matches)) {
        $url = $matches[1];
        if (is_null($url_sent)) {
          $template->set($url_type, $url); // Update URL with cleaner one
        }
-    }
-    if (preg_match("~^(https?://\S*jstor.org\S*)\?origin=~", $url, $matches)) {
+     }
+     if (preg_match("~^(https?://\S*jstor.org\S*)\?origin=~", $url, $matches)) {
        $url = $matches[1];
        if (is_null($url_sent)) {
          $template->set($url_type, $url); // Update URL with cleaner one
        }
-    }
-    if (stripos($url, 'plants.jstor.org') !== FALSE) {
+     }
+     if (stripos($url, 'plants.jstor.org') !== FALSE) {
       return FALSE; # Plants database, not journal
-    }
-    // https://www.jstor.org.stuff/proxy/stuff/stable/10.2307/3347357 and such
-    // Optional 0- at front.
-    // DO NOT change www.jstor.org to www\.jstor\.org  -- Many proxies use www-jstor-org
-    if (preg_match('~^(https?://(?:0-www.|www.|)jstor.org)(?:\S*proxy\S*/|/)(?:stable|discover)/10.2307/(.+)$~i', $url, $matches)) {
+     }
+     // https://www.jstor.org.stuff/proxy/stuff/stable/10.2307/3347357 and such
+     // Optional 0- at front.
+     // DO NOT change www.jstor.org to www\.jstor\.org  -- Many proxies use www-jstor-org
+     if (preg_match('~^(https?://(?:0-www.|www.|)jstor.org)(?:\S*proxy\S*/|/)(?:stable|discover)/10.2307/(.+)$~i', $url, $matches)) {
        $url = $matches[1] . '/stable/' . $matches[2] ; // that is default.  This also means we get jstor not doi
        if (is_null($url_sent)) {
          $template->set($url_type, $url); // Update URL with cleaner one.  Will probably call forget on it below
        }
-    }
-    // https://www.jstor.org.libweb.lib.utsa.edu/stable/3347357 and such
-    // Optional 0- at front.
-    // DO NOT change www.jstor.org to www\.jstor\.org  -- Many proxies use www-jstor-org
-    // https://www-jstor-org.libezp.lib.lsu.edu/stable/10.7249/j.ctt4cgd90.10 and such
-    if (preg_match('~^https?://(?:0-www.|www.|)jstor.org\.[^/]+/(?:stable|discover)/(.+)$~i', $url, $matches)) {
+     }
+     // https://www.jstor.org.libweb.lib.utsa.edu/stable/3347357 and such
+     // Optional 0- at front.
+     // DO NOT change www.jstor.org to www\.jstor\.org  -- Many proxies use www-jstor-org
+     // https://www-jstor-org.libezp.lib.lsu.edu/stable/10.7249/j.ctt4cgd90.10 and such
+     if (preg_match('~^https?://(?:0-www.|www.|)jstor.org\.[^/]+/(?:stable|discover)/(.+)$~i', $url, $matches)) {
        $url = 'https://www.jstor.org/stable/' . $matches[1] ;
        if (is_null($url_sent)) {
          $template->set($url_type, $url); // Update URL with cleaner one
        }
-    }
-    // Remove junk from URLs
-    while (preg_match('~^https?://www\.jstor\.org/stable/(.+)(?:&ved=|&usg=|%3Fseq%3D1|\?seq=|\?uid=)~i', $url, $matches)) {
+     }
+     // Remove junk from URLs
+     while (preg_match('~^https?://www\.jstor\.org/stable/(.+)(?:&ved=|&usg=|%3Fseq%3D1|\?seq=|\?uid=)~i', $url, $matches)) {
        $url = 'https://www.jstor.org/stable/' . $matches[1] ;
        if (is_null($url_sent)) {
          $template->set($url_type, $url); // Update URL with cleaner one
        }
-    }
+     }
 
-    if (preg_match('~^https?://(?:www\.|)jstor\.org/stable/(?:pdf|pdfplus)/(.+)\.pdf$~i', $url, $matches) ||
+     if (preg_match('~^https?://(?:www\.|)jstor\.org/stable/(?:pdf|pdfplus)/(.+)\.pdf$~i', $url, $matches) ||
         preg_match('~^https?://(?:www\.|)jstor\.org/tc/accept\?origin=(?:\%2F|/)stable(?:\%2F|/)pdf(?:\%2F|/)(\d{3,})\.pdf$~i', $url, $matches)) {
        if ($matches[1] == $template->get('jstor')) {
          if (is_null($url_sent)) {
@@ -1089,13 +1092,14 @@ public static function find_indentifiers_in_urls(Template $template, ?string $ur
             return $template->add_if_new('jstor', $matches[1]);
           }
         }
-    }
-    if ($template->has('jstor') && preg_match('~^https?://(?:www\.|)jstor\.org/(?:stable|discover)/(?:|pdf/)' . $template->get('jstor') . '(?:|\.pdf)$~i', $url)) {
+     }
+     if ($template->has('jstor') && preg_match('~^https?://(?:www\.|)jstor\.org/(?:stable|discover)/(?:|pdf/)' . $template->get('jstor') . '(?:|\.pdf)$~i', $url)) {
        if (is_null($url_sent)) {
          if ($template->has_good_free_copy()) $template->forget($url_type);
        }
        return FALSE;
-    }
+     }
+    } // JSTOR
     if (preg_match('~^https?://(?:www\.|)archive\.org/detail/jstor\-(\d{5,})$~i', $url, $matches)) {
        $template->add_if_new('jstor', $matches[1]);
        if (is_null($url_sent)) {
