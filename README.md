@@ -100,7 +100,7 @@ This can be updated by maintainers logging on to Toolforge, then entering the co
 In order to reduce complexity, the code currently uses a Wikipedia hosted and managed server instead at https://en.wikipedia.org/api/rest_v1/#/Citation/getCitation.
 
 ## Running on the command line
-In order to run on the command line one needs OAuth tokens as documented in `env.php.example` (there are additional API keys that are needed to run some functions).  Change BOT_USER_AGENT in `setup.php` to something else. Use composer to `composer require mediawiki/oauthclient:1.2.0`. Then the bot can be run such as:
+In order to run on the command line one needs OAuth tokens as documented in `env.php.example` (there are additional API keys that are needed to run some functions).  Change BOT_USER_AGENT in `setup.php` to something else. Use composer to `composer require mediawiki/oauthclient:1.2.0`. Many shells wil have trouble with UTF-8 characaters and special care must be taken with names that contain a quotation mark.  Then the bot can be run such as:
 
     /usr/bin/php ./process_page.php "Covid Watch|Water|COVID-19_apps" --slow
 
