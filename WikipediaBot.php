@@ -183,15 +183,14 @@ try {
     // No obvious errors; looks like we're good to go ahead and edit
     $auth_token = $response->query->tokens->csrftoken;
     if (defined('EDIT_AS_USER')) {  // @codeCoverageIgnoreStart
-      $from_oauth = $this->user_client->makeOAuthCall(
+      $oauth_json = @json_decode($this->user_client->makeOAuthCall(
         $this->user_token,
        API_ROOT . '?action=query&meta=tokens&format=json'
-       );
-      print_r($from_oauth);
-      $oauth_json = @json_decode($from_oauth);
-      print_r($oauth_json);
+       ));
+      if (isset($oauth_json->error) || $oauth_json = NULL)) {
+        report_error('Failed to get token to edit as the user');
+      }
       $auth_token = $oauth_json->query->tokens->csrftoken;
-      print_r($auth_token);
     }                              // @codeCoverageIgnoreEnd
     $submit_vars = array(
         "action" => "edit",
