@@ -1274,25 +1274,28 @@ public static function find_indentifiers_in_urls(Template $template, ?string $ur
           if (stripos(str_replace("printable", "", $url), "table") === FALSE) $template->forget($url_type); // This is the same as PMC auto-link
         }
         return $template->add_if_new('pmc', $match[1] . $match[2]);
-      } elseif (preg_match("~^https?://(?:www\.|)europepmc\.org/articles?/pmc/?(\d{4,})~i", $url, $match)  ||
-                preg_match("~^https?://(?:www\.|)europepmc\.org/scanned\?pageindex=(?:\d+)\&articles=pmc(\d{4,})~i", $url, $match)) {
-        if ($template->wikiname() === 'cite web') $template->change_name_to('cite journal');
-        if ($template->blank('pmc')) {
-          quietly('report_modification', "Converting Europe URL to PMC parameter");
-        }
-        if (is_null($url_sent) && stripos($url, ".pdf") === FALSE) {
-           $template->forget($url_type); // This is same as PMC-auto-link
-        }
-        return $template->add_if_new('pmc', $match[1]);
-      } elseif (preg_match("~^https?://(?:www\.|)europepmc\.org/(?:abstract|articles?)/med/(\d{4,})~i", $url, $match)) {
-        if ($template->wikiname() === 'cite web') $template->change_name_to('cite journal');
-        if ($template->blank('pmid')) {
-          quietly('report_modification', "Converting Europe URL to PMID parameter");
-        }
-        if (is_null($url_sent)) {
+      } elseif (stripos($url, 'europepmc.org') !== FALSE) {
+        if (preg_match("~^https?://(?:www\.|)europepmc\.org/articles?/pmc/?(\d{4,})" 
+                  . "|^https?://(?:www\.|)europepmc\.org/scanned\?pageindex=(?:\d+)\&articles=pmc(\d{4,})~i", $url, $match)) {
+         if ($template->wikiname() === 'cite web') $template->change_name_to('cite journal');
+         if ($template->blank('pmc')) {
+           quietly('report_modification', "Converting Europe URL to PMC parameter");
+         }
+         if (is_null($url_sent) && stripos($url, ".pdf") === FALSE) {
+            $template->forget($url_type); // This is same as PMC-auto-link
+         }
+         return $template->add_if_new('pmc', $match[1]);
+        } elseif (preg_match("~^https?://(?:www\.|)europepmc\.org/(?:abstract|articles?)/med/(\d{4,})~i", $url, $match)) {
+         if ($template->wikiname() === 'cite web') $template->change_name_to('cite journal');
+         if ($template->blank('pmid')) {
+           quietly('report_modification', "Converting Europe URL to PMID parameter");
+         }
+         if (is_null($url_sent)) {
             if ($template->has_good_free_copy()) $template->forget($url_type);
+         }
+         return $template->add_if_new('pmid', $match[1]);
         }
-        return $template->add_if_new('pmid', $match[1]);
+        return FALSE;
       } elseif (preg_match("~^https?://(?:www\.|)pubmedcentralcanada\.ca/pmcc/articles/PMC(\d{4,})(?:|/.*)$~i", $url, $match)) {
         if ($template->wikiname() === 'cite web') $template->change_name_to('cite journal');
         quietly('report_modification', "Converting Canadian URL to PMC parameter");
@@ -1327,7 +1330,7 @@ public static function find_indentifiers_in_urls(Template $template, ?string $ur
         }
         if ($template->wikiname() === 'cite web') $template->change_name_to('cite arxiv');
 
-      } elseif (preg_match("~https?://(?:www\.|)ncbi\.nlm\.nih\.gov/(?:m/)?"
+      } elseif (preg_match("~^https?://(?:www\.|)ncbi\.nlm\.nih\.gov/(?:m/)?"
       . "(?:pubmed/|"
       . "/eutils/elink\.fcgi\S+dbfrom=pubmed\S+/|"
       . "entrez/query\.fcgi\S+db=pubmed\S+|"
@@ -1345,7 +1348,7 @@ public static function find_indentifiers_in_urls(Template $template, ?string $ur
         if ($template->wikiname() === 'cite web') $template->change_name_to('cite journal');
         return $template->add_if_new('pmid', $match[1]);
 
-      } elseif (preg_match('~^http.+ncbi\.nlm\.nih\.gov/entrez/eutils/elink.fcgi\?.+tool=sumsearch\.org.+id=(\d+)$~', $url, $match)) {
+      } elseif (preg_match('~^https?://.*ncbi\.nlm\.nih\.gov/entrez/eutils/elink.fcgi\?.+tool=sumsearch\.org.+id=(\d+)$~', $url, $match)) {
         if ($url_sent) return FALSE;   // Many do not work
         if ($template->blank(['doi', 'pmc'])) return FALSE;  // This is a redirect to the publisher, not pubmed
         if ($match[1] == $template->get('pmc')) {
@@ -1554,7 +1557,7 @@ public static function find_indentifiers_in_urls(Template $template, ?string $ur
           }
           return TRUE;
         }
-      } elseif (($template->has('chapterurl') || $template->has('chapte-rurl') || $template->has('url') || ($url_type === 'url') || ($url_type === 'chapterurl')  || ($url_type === 'chapter-url')) && preg_match("~^https?://web\.archive\.org/web/\d{14}/(https?://.*)$~", $url, $match) && $template->blank(['archiveurl', 'archive-url'])) {
+      } elseif (($template->has('chapterurl') || $template->has('chapter-url') || $template->has('url') || ($url_type === 'url') || ($url_type === 'chapterurl')  || ($url_type === 'chapter-url')) && preg_match("~^https?://web\.archive\.org/web/\d{14}/(https?://.*)$~", $url, $match) && $template->blank(['archiveurl', 'archive-url'])) {
           if (is_null($url_sent)) {
              quietly('report_modification', 'Extracting URL from archive');
              $template->set($url_type, $match[1]);
