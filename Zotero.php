@@ -1253,27 +1253,59 @@ public static function find_indentifiers_in_urls(Template $template, ?string $ur
         } elseif (is_null($url_sent) && urldecode($bibcode[1]) === $template->get('bibcode')) {
           if ($template->has_good_free_copy()) $template->forget($url_type);
         }
-
-      } elseif (preg_match("~^https?://(?:www\.|)pubmedcentral\.nih\.gov/articlerender.fcgi\?.*\bartid=(\d{4,})"
-                      . "|^https?://(?:www\.|)ncbi\.nlm\.nih\.gov/(?:m/)?pmc/articles/(?:PMC|instance)?(\d{4,})~i", $url, $match)) {
-        if (preg_match("~\?term~i", $url)) return FALSE; // A search such as https://www.ncbi.nlm.nih.gov/pmc/?term=Sainis%20KB%5BAuthor%5D&cauthor=true&cauthor_uid=19447493
-        if ($template->wikiname() === 'cite web') $template->change_name_to('cite journal');
-        if ($template->blank('pmc')) {
-          quietly('report_modification', "Converting URL to PMC parameter");
-        }
-        if (is_null($url_sent)) {
-          if (stripos($url, ".pdf") !== FALSE) {
-            $test_url = "https://www.ncbi.nlm.nih.gov/pmc/articles/PMC" . $match[1] . $match[2] . "/";
-            curl_setopt_array(self::$ch_pmc, [CURLOPT_URL => $test_url]);
-            @curl_exec(self::$ch_pmc);
-            $httpCode = (int) @curl_getinfo(self::$ch_pmc, CURLINFO_HTTP_CODE);
-            if ($httpCode == 404) { // Some PMCs do NOT resolve.  So leave URL
-              return $template->add_if_new('pmc', $match[1] . $match[2]);
-            }
+      } elseif (stripos($url, '.nih.gov') !== FALSE) {
+         
+        if (preg_match("~^https?://(?:www\.|)pubmedcentral\.nih\.gov/articlerender.fcgi\?.*\bartid=(\d{4,})"
+                        . "|^https?://(?:www\.|)ncbi\.nlm\.nih\.gov/(?:m/)?pmc/articles/(?:PMC|instance)?(\d{4,})~i", $url, $match)) {
+          if (preg_match("~\?term~i", $url)) return FALSE; // A search such as https://www.ncbi.nlm.nih.gov/pmc/?term=Sainis%20KB%5BAuthor%5D&cauthor=true&cauthor_uid=19447493
+          if ($template->wikiname() === 'cite web') $template->change_name_to('cite journal');
+          if ($template->blank('pmc')) {
+            quietly('report_modification', "Converting URL to PMC parameter");
           }
-          if (stripos(str_replace("printable", "", $url), "table") === FALSE) $template->forget($url_type); // This is the same as PMC auto-link
+          if (is_null($url_sent)) {
+            if (stripos($url, ".pdf") !== FALSE) {
+              $test_url = "https://www.ncbi.nlm.nih.gov/pmc/articles/PMC" . $match[1] . $match[2] . "/";
+              curl_setopt_array(self::$ch_pmc, [CURLOPT_URL => $test_url]);
+              @curl_exec(self::$ch_pmc);
+              $httpCode = (int) @curl_getinfo(self::$ch_pmc, CURLINFO_HTTP_CODE);
+              if ($httpCode == 404) { // Some PMCs do NOT resolve.  So leave URL
+                return $template->add_if_new('pmc', $match[1] . $match[2]);
+              }
+            }
+            if (stripos(str_replace("printable", "", $url), "table") === FALSE) $template->forget($url_type); // This is the same as PMC auto-link
+          }
+          return $template->add_if_new('pmc', $match[1] . $match[2]);
+        
+        } elseif (preg_match("~^https?://(?:www\.|)ncbi\.nlm\.nih\.gov/(?:m/)?"
+        . "(?:pubmed/|"
+        . "/eutils/elink\.fcgi\S+dbfrom=pubmed\S+/|"
+        . "entrez/query\.fcgi\S+db=pubmed\S+|"
+        . "pmc/articles/pmid/)"
+        . ".*?=?(\d{4,})~i", $url, $match)||
+            preg_match("~^https?://pubmed\.ncbi\.nlm\.nih\.gov/(?:|entrez/eutils/elink.fcgi\?dbfrom=pubmed\&retmode=ref\&cmd=prlinks\&id=)(\d{4,})(?:|/|-.+)$~", $url, $match)
+          ) {
+          if (preg_match("~\?term~i", $url) && !preg_match("~pubmed\.ncbi\.nlm\.nih\.gov/\d{4,}/\?from_term=~", $url)) {
+            return FALSE; // A search such as https://www.ncbi.nlm.nih.gov/pubmed/?term=Sainis%20KB%5BAuthor%5D&cauthor=true&cauthor_uid=19447493
+          }
+          quietly('report_modification', "Converting URL to PMID parameter");
+          if (is_null($url_sent)) {
+            if ($template->has_good_free_copy()) $template->forget($url_type);
+          }
+          if ($template->wikiname() === 'cite web') $template->change_name_to('cite journal');
+          return $template->add_if_new('pmid', $match[1]);
+        
+        } elseif (preg_match('~^https?://.*ncbi\.nlm\.nih\.gov/entrez/eutils/elink.fcgi\?.+tool=sumsearch\.org.+id=(\d+)$~', $url, $match)) {
+          if ($url_sent) return FALSE;   // Many do not work
+          if ($template->blank(['doi', 'pmc'])) return FALSE;  // This is a redirect to the publisher, not pubmed
+          if ($match[1] == $template->get('pmc')) {
+             $template->forget($url_type); // Same as PMC-auto-link
+          } elseif ($match[1] == $template->get('pmid')) {
+             if ($template->has_good_free_copy()) $template->forget($url_type);
+          }
+          return FALSE;
         }
-        return $template->add_if_new('pmc', $match[1] . $match[2]);
+        return FALSE;
+
       } elseif (stripos($url, 'europepmc.org') !== FALSE) {
         if (preg_match("~^https?://(?:www\.|)europepmc\.org/articles?/pmc/?(\d{4,})" 
                   . "|^https?://(?:www\.|)europepmc\.org/scanned\?pageindex=(?:\d+)\&articles=pmc(\d{4,})~i", $url, $match)) {
@@ -1329,34 +1361,6 @@ public static function find_indentifiers_in_urls(Template $template, ?string $ur
           return $ret;
         }
         if ($template->wikiname() === 'cite web') $template->change_name_to('cite arxiv');
-
-      } elseif (preg_match("~^https?://(?:www\.|)ncbi\.nlm\.nih\.gov/(?:m/)?"
-      . "(?:pubmed/|"
-      . "/eutils/elink\.fcgi\S+dbfrom=pubmed\S+/|"
-      . "entrez/query\.fcgi\S+db=pubmed\S+|"
-      . "pmc/articles/pmid/)"
-      . ".*?=?(\d{4,})~i", $url, $match)||
-          preg_match("~^https?://pubmed\.ncbi\.nlm\.nih\.gov/(?:|entrez/eutils/elink.fcgi\?dbfrom=pubmed\&retmode=ref\&cmd=prlinks\&id=)(\d{4,})(?:|/|-.+)$~", $url, $match)
-        ) {
-        if (preg_match("~\?term~i", $url) && !preg_match("~pubmed\.ncbi\.nlm\.nih\.gov/\d{4,}/\?from_term=~", $url)) {
-          return FALSE; // A search such as https://www.ncbi.nlm.nih.gov/pubmed/?term=Sainis%20KB%5BAuthor%5D&cauthor=true&cauthor_uid=19447493
-        }
-        quietly('report_modification', "Converting URL to PMID parameter");
-        if (is_null($url_sent)) {
-          if ($template->has_good_free_copy()) $template->forget($url_type);
-        }
-        if ($template->wikiname() === 'cite web') $template->change_name_to('cite journal');
-        return $template->add_if_new('pmid', $match[1]);
-
-      } elseif (preg_match('~^https?://.*ncbi\.nlm\.nih\.gov/entrez/eutils/elink.fcgi\?.+tool=sumsearch\.org.+id=(\d+)$~', $url, $match)) {
-        if ($url_sent) return FALSE;   // Many do not work
-        if ($template->blank(['doi', 'pmc'])) return FALSE;  // This is a redirect to the publisher, not pubmed
-        if ($match[1] == $template->get('pmc')) {
-           $template->forget($url_type); // Same as PMC-auto-link
-        } elseif ($match[1] == $template->get('pmid')) {
-           if ($template->has_good_free_copy()) $template->forget($url_type);
-        }
-        return FALSE;
 
       } elseif (preg_match("~^https?://(?:www\.|)amazon(?P<domain>\.[\w\.]{1,7})/.*dp/(?P<id>\d+X?)~i", $url, $match)) {
 
