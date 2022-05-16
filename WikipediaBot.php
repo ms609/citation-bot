@@ -186,7 +186,7 @@ try {
       $oauth_json = @json_decode($this->user_client->makeOAuthCall(
         $this->user_token,
        API_ROOT . '?action=query&meta=tokens&format=json'
-       ));
+       );
       if (isset($oauth_json->error) || $oauth_json = NULL)) {
         report_error('Failed to get token to edit as the user');
       }
