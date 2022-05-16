@@ -27,7 +27,7 @@ if ($category) {
   $pages_in_category = WikipediaBot::category_members($category);
   if (empty($pages_in_category)) {
     report_warning('Category appears to be empty');
-    echo ' </pre><footer><a href="./" title="Use Citation Bot again">Another</a>?</footer></body></html>';
+    bot_html_footer();
     exit();
   }
   $pages_in_category = array_unique($pages_in_category); // Paranoid
@@ -41,7 +41,7 @@ if ($category) {
        echo echoable((string) $page_title) . "\n";
     }
     echo "\n\n";
-    echo ' </pre><footer><a href="./" title="Use Citation Bot again">Another</a>?</footer></body></html>';
+    bot_html_footer();
     exit();
   }
   unset($total, $category);
@@ -54,7 +54,7 @@ if ($category) {
   } else {
     report_warning("Nothing requested -- OR -- category got lost during initial authorization.");
   }
-  echo ' </pre><footer><a href="./" title="Use Citation Bot again">Another</a>?</footer></body></html>';
+  bot_html_footer();
 }
 exit();
 ?>
