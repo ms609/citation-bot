@@ -20,8 +20,10 @@ check_blocked();
 
 if (isset($argv[1])) {
   $pages = (string) $argv[1];
-  if (@file_get_contents('./' . $pages) !== FALSE) {
-    $pages = file_get_contents('./' . $pages);
+  if ($pages === 'page_list.txt') {
+    $pages = trim((string) @file_get_contents('./page_list.txt'));
+  } elseif ($pages === 'page_list2.txt') {
+    $pages = trim((string) @file_get_contents('./page_list2.txt'));
   }
 } elseif (isset($_GET["page"])) {
   $pages = (string) $_GET["page"];
