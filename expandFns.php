@@ -1059,7 +1059,7 @@ function edit_a_list_of_pages(array $pages_in_category, WikipediaBot $api, strin
     echo "\n";
   }
   if ($total > 1) {
-    echo echo "\n Done all " . (string) $total . " pages. \n  # # # \n";
+    echo "\n Done all " . (string) $total . " pages. \n  # # # \n";
     if (!HTML_OUTPUT) $final_edit_overview;
   } else {
     echo "\n Done with page.";
