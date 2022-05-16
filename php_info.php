@@ -15,11 +15,7 @@ if (password_verify($_REQUEST['p'], '$2y$10$UOmZtkKs1X17vE/mmbfVgOiy0ZAkXnxa9UxF
   set_time_limit(240);
   echo "\n\n" . htmlspecialchars((string) shell_exec("(/bin/ls -lahtr . ..)  2>&1"), ENT_QUOTES);
   set_time_limit(240);
-  echo "\n\n" . htmlspecialchars((string) shell_exec("(/bin/composer require mediawiki/oauthclient:1.2.0)  2>&1"), ENT_QUOTES);
-  set_time_limit(240);
-  echo "\n\n" . htmlspecialchars((string) shell_exec("(/usr/bin/composer require mediawiki/oauthclient:1.2.0)  2>&1"), ENT_QUOTES);
-  set_time_limit(240);
-  echo "\n\n" . htmlspecialchars((string) shell_exec("(/usr/local/bin/composer require mediawiki/oauthclient:1.2.0)  2>&1"), ENT_QUOTES); 
+  echo "\n\n" . htmlspecialchars((string) shell_exec('(COMPOSER_HOME=${PWD}/.. /usr/local/bin/composer require mediawiki/oauthclient:1.2.0)  2>&1'), ENT_QUOTES); 
   set_time_limit(240);
   echo "\n service.template \n" . htmlspecialchars((string) shell_exec("(/bin/cat composer.json)  2>&1"), ENT_QUOTES);
   set_time_limit(240);
