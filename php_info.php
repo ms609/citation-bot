@@ -18,8 +18,6 @@ if (password_verify($_REQUEST['p'], '$2y$10$UOmZtkKs1X17vE/mmbfVgOiy0ZAkXnxa9UxF
   echo "\n service.template \n" . htmlspecialchars((string) shell_exec("(/bin/cat ../service.template)  2>&1"), ENT_QUOTES);
   set_time_limit(240);
   echo "\n service.manifest \n" . htmlspecialchars((string) shell_exec("(/bin/cat ../service.manifest) 2>&1"), ENT_QUOTES);
-  set_time_limit(240);
-  echo "\n\n" . htmlspecialchars((string) shell_exec("(/bin/cat ./env.php) 2>&1"), ENT_QUOTES);
 }
 
 echo '</pre></body></html>';
