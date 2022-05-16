@@ -399,7 +399,7 @@ try {
             'curtimestamp'=>'true', 
             'inprop' => 'protection', 
           ]);
-    return @json_decode($details);
+    return (object) @json_decode($details);
   }
   
   static public function get_links(string $title) : string {
