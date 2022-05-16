@@ -2146,7 +2146,7 @@ ER -  }}';
       $text = '{{Cite journal  | TY - BOOK
 Y1 - 1990
 T1 - This will be a subtitle
-ZZ - This will be ignored and not understood}}';
+T3 - This will be ignored}}';
      $prepared = $this->prepare_citation($text);
      $this->assertSame('1990', $prepared->get2('year')); 
      $this->assertNull($prepared->get2('title'));
