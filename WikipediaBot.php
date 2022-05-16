@@ -94,7 +94,7 @@ final class WikipediaBot {
         return TRUE;
       } elseif (strpos((string) @$response->error->info, 'Wikipedia:Why create an account') !== FALSE) {
         report_error('The bot is editing as you, and you have not granted that permission.  Go to ' . WIKI_ROOT . '?title=Special:OAuthManageMyGrants/update/230820 and grant Citation Bot "Edit existing pages" rights.');  // @codeCoverageIgnore
-      } elseif (defined('EDIT_AS_USER') && strpos((string) @$response->error->info, 'The authorization headers in your request are not valid') !== FALSE) {
+      } elseif (!defined('EDIT_AS_USER') && strpos((string) @$response->error->info, 'The authorization headers in your request are not valid') !== FALSE) {
         report_error('There is something wrong with your Oauth tokens');  // @codeCoverageIgnore
       } else {
         report_warning('API call failed: ' . echoable((string) @$response->error->info) . '.  Will sleep and move on.');
