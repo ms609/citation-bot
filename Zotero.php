@@ -953,6 +953,11 @@ public static function find_indentifiers_in_urls(Template $template, ?string $ur
         $template->set($url_type, $url); // Save it
       }
     }
+    // Common ones that do not help
+    if (strpos($url, 'books.google') !==FALSE) return FALSE;
+    if (strpos($url, 'researchgate.net') !==FALSE) return FALSE;
+    if (strpos($url, 'academia.edu') !==FALSE) return FALSE;
+   
     // Abstract only websites
     if (strpos($url, 'orbit.dtu.dk/en/publications') !== FALSE) { // This file path only
        if (is_null($url_sent)) {
