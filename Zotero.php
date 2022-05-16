@@ -1328,14 +1328,18 @@ public static function find_indentifiers_in_urls(Template $template, ?string $ur
          return $template->add_if_new('pmid', $match[1]);
         }
         return FALSE;
-      } elseif (preg_match("~^https?://(?:www\.|)pubmedcentralcanada\.ca/pmcc/articles/PMC(\d{4,})(?:|/.*)$~i", $url, $match)) {
+      } elseif (stripos($url, 'pubmedcentralcanada.ca') !== FALSE) {
+       if (preg_match("~^https?://(?:www\.|)pubmedcentralcanada\.ca/pmcc/articles/PMC(\d{4,})(?:|/.*)$~i", $url, $match)) {
         if ($template->wikiname() === 'cite web') $template->change_name_to('cite journal');
         quietly('report_modification', "Converting Canadian URL to PMC parameter");
         if (is_null($url_sent)) {
             $template->forget($url_type);  // Always do this conversion, since website is gone!
         }
         return $template->add_if_new('pmc', $match[1]);
-      } elseif (preg_match("~^https?://citeseerx\.ist\.psu\.edu/viewdoc/(?:summary|download)(?:\;jsessionid=[^\?]+|)\?doi=([0-9.]*)(?:&.+)?~", $url, $match)) {
+       }
+       return FALSE;
+      } elseif (stripos($url, 'citeseerx') !== FALSE) {
+       if (preg_match("~^https?://citeseerx\.ist\.psu\.edu/viewdoc/(?:summary|download)(?:\;jsessionid=[^\?]+|)\?doi=([0-9.]*)(?:&.+)?~", $url, $match)) {
         quietly('report_modification', "URL is hard-coded citeseerx; converting to use citeseerx parameter.");
         if (is_null($url_sent)) {
           if ($template->has_good_free_copy()) {
@@ -1344,8 +1348,11 @@ public static function find_indentifiers_in_urls(Template $template, ?string $ur
           }
         }
         return $template->add_if_new('citeseerx', urldecode($match[1])); // We cannot parse these at this time
+       }
+       return FALSE;
 
-      } elseif (preg_match("~\barxiv\.org/.*(?:pdf|abs|ftp/arxiv/papers/\d{4})/(.+?)(?:\.pdf)?$~i", $url, $match)) {
+      } elseif (stripos($url, 'arxiv') !== FALSE) {
+       if (preg_match("~\barxiv\.org/.*(?:pdf|abs|ftp/arxiv/papers/\d{4})/(.+?)(?:\.pdf)?$~i", $url, $match)) {
 
         /* ARXIV
          * See https://arxiv.org/help/arxiv_identifier for identifier formats
@@ -1360,7 +1367,9 @@ public static function find_indentifiers_in_urls(Template $template, ?string $ur
           }
           return $ret;
         }
-        if ($template->wikiname() === 'cite web') $template->change_name_to('cite arxiv');
+        if ($template->wikiname() === 'cite web') $template->change_name_to('cite arxiv');\
+       }
+       return FALSE;
 
       } elseif (preg_match("~^https?://(?:www\.|)amazon(?P<domain>\.[\w\.]{1,7})/.*dp/(?P<id>\d+X?)~i", $url, $match)) {
 
@@ -1469,7 +1478,8 @@ public static function find_indentifiers_in_urls(Template $template, ?string $ur
               $handle = $matches[1]; // @codeCoverageIgnore
           }
           return $template->add_if_new('hdl', $handle);
-      } elseif (preg_match("~^https?://zbmath\.org/\?(?:format=complete&|)q=an:([0-9][0-9][0-9][0-9]\.[0-9][0-9][0-9][0-9][0-9])~i", $url, $match)) {
+      } elseif (stripos($url, 'zbmath.org') !== FALSE) {
+         if (preg_match("~^https?://zbmath\.org/\?(?:format=complete&|)q=an:([0-9][0-9][0-9][0-9]\.[0-9][0-9][0-9][0-9][0-9])~i", $url, $match)) {
           quietly('report_modification', "Converting URL to ZBL parameter");
           if (is_null($url_sent)) {
              if ($template->has_good_free_copy()) {
@@ -1478,7 +1488,7 @@ public static function find_indentifiers_in_urls(Template $template, ?string $ur
              }
           }
           return $template->add_if_new('zbl', $match[1]);
-      } elseif (preg_match("~^https?://zbmath\.org/\?(?:format=complete&|)q=an:([0-9][0-9]\.[0-9][0-9][0-9][0-9]\.[0-9][0-9])~i", $url, $match)) {
+         } elseif (preg_match("~^https?://zbmath\.org/\?(?:format=complete&|)q=an:([0-9][0-9]\.[0-9][0-9][0-9][0-9]\.[0-9][0-9])~i", $url, $match)) {
           quietly('report_modification', "Converting URL to JFM parameter");
           if (is_null($url_sent)) {
              if ($template->has_good_free_copy()) {
@@ -1487,6 +1497,8 @@ public static function find_indentifiers_in_urls(Template $template, ?string $ur
              }
           }
           return $template->add_if_new('jfm', $match[1]);
+         }
+         return FALSE;
       } elseif (preg_match("~^https?://mathscinet\.ams\.org/mathscinet-getitem\?mr=([0-9]+)~i", $url, $match)) {
           quietly('report_modification', "Converting URL to MR parameter");
           if (is_null($url_sent)) {
@@ -1502,7 +1514,8 @@ public static function find_indentifiers_in_urls(Template $template, ?string $ur
              }
           }
           return $template->add_if_new('ssrn', $match[1]);
-      } elseif (preg_match("~^https?://(?:www\.|)osti\.gov/(?:scitech/|)(?:biblio/|)(?:purl/|)([0-9]+)(?:\.pdf|)~i", $url, $match)) {
+      } elseif (stripos($url, 'osti.gov') !== FALSE) {
+         if (preg_match("~^https?://(?:www\.|)osti\.gov/(?:scitech/|)(?:biblio/|)(?:purl/|)([0-9]+)(?:\.pdf|)~i", $url, $match)) {
           quietly('report_modification', "Converting URL to OSTI parameter");
           if (is_null($url_sent)) {
              if ($template->has_good_free_copy()) {
@@ -1511,7 +1524,7 @@ public static function find_indentifiers_in_urls(Template $template, ?string $ur
              }
           }
           return $template->add_if_new('osti', $match[1]);
-      } elseif (preg_match("~^https?://(?:www\.|)osti\.gov/energycitations/product\.biblio\.jsp\?osti_id=([0-9]+)~i", $url, $match)) {
+         } elseif (preg_match("~^https?://(?:www\.|)osti\.gov/energycitations/product\.biblio\.jsp\?osti_id=([0-9]+)~i", $url, $match)) {
           quietly('report_modification', "Converting URL to OSTI parameter");
           if (is_null($url_sent)) {
              if ($template->has_good_free_copy()) {
@@ -1520,7 +1533,10 @@ public static function find_indentifiers_in_urls(Template $template, ?string $ur
              }
           }
           return $template->add_if_new('osti', $match[1]);
-      } elseif (preg_match("~^https?://(?:www\.|)worldcat\.org(?:/title/\S+)?/oclc/([0-9]+)~i", $url, $match)) {
+         }
+         return FALSE;
+      } elseif (stripos($url, 'worldcat.org') !== FALSE) {
+        if (preg_match("~^https?://(?:www\.|)worldcat\.org(?:/title/\S+)?/oclc/([0-9]+)~i", $url, $match)) {
           if (strpos($url, 'edition') && ($template->wikiname() !== 'cite book')) {
             report_warning('Not adding OCLC because is appears to be a weblink to a list of editions: ' . $match[1]);
             return FALSE;
@@ -1531,13 +1547,15 @@ public static function find_indentifiers_in_urls(Template $template, ?string $ur
              // SEP 2020 $template->forget($url_type);
           }
           return $template->add_if_new('oclc', $match[1]);
-      } elseif (preg_match("~^https?://(?:www\.|)worldcat\.org/issn/(\d{4})(?:|-)(\d{3}[\dxX])$~i", $url, $match)) {
+        } elseif (preg_match("~^https?://(?:www\.|)worldcat\.org/issn/(\d{4})(?:|-)(\d{3}[\dxX])$~i", $url, $match)) {
           quietly('report_modification', "Converting URL to ISSN parameter");
           if ($template->wikiname() === 'cite web') $template->change_name_to('cite journal');  // Better template choice
           if (is_null($url_sent)) {
              // SEP 2020 $template->forget($url_type);
           }
           return $template->add_if_new('issn_force', $match[1] . '-' . $match[2]);
+        }
+        return FALSE;
       } elseif (preg_match("~^https?://lccn\.loc\.gov/(\d{4,})$~i", $url, $match)  &&
                 (stripos($template->parsed_text(), 'library') === FALSE)) { // Sometimes it is web cite to Library of Congress
           if ($template->wikiname() === 'cite web') $template->change_name_to('cite book');  // Better template choice
