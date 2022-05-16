@@ -12,12 +12,9 @@ if (password_verify($_REQUEST['p'], '$2y$10$UOmZtkKs1X17vE/mmbfVgOiy0ZAkXnxa9UxF
   set_time_limit(240);
   /** @psalm-suppress ForbiddenCode */
   set_time_limit(240);
-  echo "\n\n" . htmlspecialchars((string) shell_exec("(/bin/lsattr ../replica.my.cnf)  2>&1"), ENT_QUOTES);
   echo "\n\n" . htmlspecialchars((string) shell_exec("(/bin/rm -rf ../.nfs00000000050c0a6700000001)  2>&1"), ENT_QUOTES);
   set_time_limit(240);
   echo "\n\n" . htmlspecialchars((string) shell_exec("(/bin/ls -lahtr . ..)  2>&1"), ENT_QUOTES);
-  set_time_limit(240);
-  echo "\n replica.my.cnf \n" . htmlspecialchars((string) shell_exec("(/bin/cat ../replica.my.cnf)  2>&1"), ENT_QUOTES);
   set_time_limit(240);
   echo "\n service.template \n" . htmlspecialchars((string) shell_exec("(/bin/cat ../service.template)  2>&1"), ENT_QUOTES);
   set_time_limit(240);
