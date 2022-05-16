@@ -2249,7 +2249,8 @@ final class Template {
           $ris_publisher = trim($ris_part[1]);  // Get these from JSTOR
           $dat = trim(str_replace("\n$ris_line", "", "\n$dat"));
           break;
-        case "M3": case "N1": case "N2": case "ER": case "TY": case "KW":
+        case "M3": case "N1": case "N2": case "ER": case "TY": case "KW": case "T3":  // T3 is often the sub-title of a book
+        case "A2": // This can be book editors or authors of the book that is reviewed
         case "C1": case "DB": case "AB": case "Y2": // The following line is from JSTOR RIS (basically the header and blank lines)
         case "": case "Provider: JSTOR http://www.jstor.org": case "Database: JSTOR": case "Content: text/plain; charset=\"UTF-8\"";
           $dat = trim(str_replace("\n$ris_line", "", "\n$dat")); // Ignore these completely
