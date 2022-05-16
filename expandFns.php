@@ -1059,8 +1059,8 @@ function edit_a_list_of_pages(array $pages_in_category, WikipediaBot $api, strin
     echo "\n";
   }
   if ($total > 1) {
-    echo "\n Done all " . (string) $total . " pages. \n  # # # \n";
-    if (!HTML_OUTPUT) $final_edit_overview;
+    if (!HTML_OUTPUT) $final_edit_overview = ''; 
+    echo "\n Done all " . (string) $total . " pages. \n  # # # \n" . $final_edit_overview;
   } else {
     echo "\n Done with page.";
   }
