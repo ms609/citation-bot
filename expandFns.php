@@ -1,7 +1,7 @@
 <?php
 declare(strict_types=1);
 
-require_once 'constants.php';      // @codeCoverageIgnore
+require_once 'constants.php';     // @codeCoverageIgnore
 require_once 'Template.php';      // @codeCoverageIgnore
 
 // ============================================= DOI functions ======================================
@@ -1011,13 +1011,13 @@ function edit_a_list_of_pages(array $pages_in_category, WikipediaBot $api, strin
   }
   if (empty($pages_in_category)) {
     report_warning('No links to expand found');
-    echo '</pre><footer><a href="./" title="Use Citation Bot again">Another</a>?</footer></body></html>';
+    bot_html_footer();
     exit();
   }
   $total = count($pages_in_category);
   if ($total > MAX_PAGES) {
     report_warning('Number of links is huge (' . (string) $total . ')  Cancelling run (maximum size is ' . (string) MAX_PAGES . ').  Listen to Obi-Wan Kenobi:  You want to go home and rethink your life.');
-    echo '</pre><footer><a href="./" title="Use Citation Bot again">Another</a>?</footer></body></html>';
+    bot_html_footer();
     exit();
   }
   if ($total > BIG_RUN) check_overused();
@@ -1058,10 +1058,11 @@ function edit_a_list_of_pages(array $pages_in_category, WikipediaBot $api, strin
     echo "\n";
   }
   if ($total > 1) {
-    echo "\n Done all " . (string) $total . " pages. \n  # # # \n" . $final_edit_overview  . ' </pre><footer><a href="./" title="Use Citation Bot again">Another</a>?</footer></body></html>';
+    echo "\n Done all " . (string) $total . " pages. \n  # # # \n" . $final_edit_overview;
   } else {
-    echo "\n Done with page." . '</pre><footer><a href="./" title="Use Citation Bot again">Another</a>?</footer></body></html>';
+    echo "\n Done with page.";
   }
+  bot_html_footer();
 }
 
 
@@ -1090,6 +1091,15 @@ function bot_html_header() : void {
   <pre id="botOutput">
    ');
 }
+
+/**
+ * Only on webpage
+ * @codeCoverageIgnore
+ */
+function bot_html_footer() : void {
+   if (HTML_OUTPUT) echo '</pre><footer><a href="./" title="Use Citation Bot again">Another</a>?</footer></body></html>';
+}
+
 
 // Returns NULL/FALSE/String of location
 function hdl_works(string $hdl) {
