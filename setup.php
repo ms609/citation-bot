@@ -30,7 +30,7 @@ include_once './vendor/autoload.php';
 
 define("TRAVIS", (bool) getenv('CI')); // Not just TRAVIS, but GitHub actions set this to true
 define("USE_CITOID", TRUE); // Define which Zotero to use
-if (isset($_REQUEST["page"]) && (string) $_REQUEST["page"] === "User:AManWithNoPlan/sandbox3") {
+if ((string) @$_REQUEST["page"] . (string) @$argv[1] === "User:AManWithNoPlan/sandbox3") { // Specific page to make sure this code path keeps working
   define('EDIT_AS_USER', TRUE);
 }
 
