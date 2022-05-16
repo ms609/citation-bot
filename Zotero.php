@@ -1367,7 +1367,7 @@ public static function find_indentifiers_in_urls(Template $template, ?string $ur
           }
           return $ret;
         }
-        if ($template->wikiname() === 'cite web') $template->change_name_to('cite arxiv');\
+        if ($template->wikiname() === 'cite web') $template->change_name_to('cite arxiv');
        }
        return FALSE;
 
