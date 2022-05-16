@@ -1255,8 +1255,8 @@ public static function find_indentifiers_in_urls(Template $template, ?string $ur
         }
       } elseif (stripos($url, '.nih.gov') !== FALSE) {
          
-        if (preg_match("~^https?://(?:www\.|)pubmedcentral\.nih\.gov/articlerender.fcgi\?.*\bartid=(\d{4,})"
-                        . "|^https?://(?:www\.|)ncbi\.nlm\.nih\.gov/(?:m/)?pmc/articles/(?:PMC|instance)?(\d{4,})~i", $url, $match)) {
+        if (preg_match("~^https?://(?:www\.|)pubmedcentral\.nih\.gov/articlerender.fcgi\?.*\bartid=(\d{4,})~i", $url, $match) ||
+            preg_match("~^https?://(?:www\.|)ncbi\.nlm\.nih\.gov/(?:m/)?pmc/articles/(?:PMC|instance)?(\d{4,})~i", $url, $match)) {
           if (preg_match("~\?term~i", $url)) return FALSE; // A search such as https://www.ncbi.nlm.nih.gov/pmc/?term=Sainis%20KB%5BAuthor%5D&cauthor=true&cauthor_uid=19447493
           if ($template->wikiname() === 'cite web') $template->change_name_to('cite journal');
           if ($template->blank('pmc')) {
@@ -1307,8 +1307,8 @@ public static function find_indentifiers_in_urls(Template $template, ?string $ur
         return FALSE;
 
       } elseif (stripos($url, 'europepmc.org') !== FALSE) {
-        if (preg_match("~^https?://(?:www\.|)europepmc\.org/articles?/pmc/?(\d{4,})" 
-                  . "|^https?://(?:www\.|)europepmc\.org/scanned\?pageindex=(?:\d+)\&articles=pmc(\d{4,})~i", $url, $match)) {
+        if (preg_match("~^https?://(?:www\.|)europepmc\.org/articles?/pmc/?(\d{4,})~i", $url, $match)) ||
+            preg_match("~^https?://(?:www\.|)europepmc\.org/scanned\?pageindex=(?:\d+)\&articles=pmc(\d{4,})~i", $url, $match)) {
          if ($template->wikiname() === 'cite web') $template->change_name_to('cite journal');
          if ($template->blank('pmc')) {
            quietly('report_modification', "Converting Europe URL to PMC parameter");
