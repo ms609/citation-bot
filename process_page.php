@@ -20,7 +20,7 @@ check_blocked();
 
 if (isset($argv[1])) {
   $pages = (string) $argv[1];
-  if (file_get_contents('./' . $pages) !== FALSE) {
+  if (@file_get_contents('./' . $pages) !== FALSE) {
     $pages = file_get_contents('./' . $pages);
   }
 } elseif (isset($_GET["page"])) {
