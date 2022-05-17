@@ -2701,6 +2701,7 @@ final class Template {
         }
       }
       if (isset($book_array['dq'])){
+        report_error('debug');
         if (((stripos($book_array['dq'], 'isbn') === 0) && ($book_array['dq'] !=='ISBN') && ($book_array['dq'] !== 'isbn')) || // Sometimes the search is for the term isbn
             stripos($book_array['dq'], 'subject:') === 0 ||
             stripos($book_array['dq'], 'inauthor:') === 0 ||
