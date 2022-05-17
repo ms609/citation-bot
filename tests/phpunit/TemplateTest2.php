@@ -4242,6 +4242,22 @@ final class TemplateTest2 extends testBaseClass {
       $expanded->add_if_new('newspaper', 'Ballotpedia');
       $this->AssertSame('Ballotpedia', $expanded->get2('newspaper'));  
     }
+ 
+    public function testAreMagazines() : void {
+      $text = "{{Cite web|work=official xbox magazine}}";
+      $expanded = $this->make_citation($text);
+      $expanded->tidy_parameter('work');
+      $this->AssertSame('official xbox magazine', $expanded->get2('magazine')); 
+      $this->AssertSame('cite magazine', $expanded->wikiname()); 
+      $this->AssertNull($expanded->get2('work')); 
+
+      $text = "{{Cite web|work=official xbox magazine|doi=X}}";
+      $expanded = $this->make_citation($text);
+      $expanded->tidy_parameter('work');
+      $this->AssertSame('official xbox magazine', $expanded->get2('work')); 
+      $this->AssertSame('cite web', $expanded->wikiname()); 
+      $this->AssertNull($expanded->get2('magazine')); 
+    }
 
     public function testHDLneedsShorter() : void {
       $text = "{{cite paper|hdl=20.1000/100?urlappend=%3Bseq=326%3Bownerid=13510798900390116-35}}";
