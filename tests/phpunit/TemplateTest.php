@@ -3663,4 +3663,22 @@ EP - 999 }}';
     $this->assertSame('1234', $template->get2('mr'));
   }
  
+  public function testlooksLikeBookReview() : void {
+    $text='{{cite journal|journal=X|url=book}}';
+    $template = $this->make_citation($text);
+    $record = (object) NULL;
+    $this->assertFalse($template->looksLikeBookReview($record));
+   
+    $text='{{cite journal|journal=X|url=book|year=2002|isbn=x|location=x|oclc=x}}';
+    $template = $this->make_citation($text);
+    $record = (object) NULL;
+    $record->year = '2000';
+    $this->assertFalse($template->looksLikeBookReview($record));
+   
+    $text='{{cite book|journal=X|url=book|year=2002|isbn=x|location=x|oclc=x}}';
+    $template = $this->make_citation($text);
+    $record = (object) NULL;
+    $record->year = '2000';
+    $this->assertTrue($template->looksLikeBookReview($record));
+  }
 }
