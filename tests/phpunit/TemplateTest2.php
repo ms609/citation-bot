@@ -1206,6 +1206,17 @@ final class TemplateTest2 extends testBaseClass {
     $this->assertNull($template->get2('journal'));
   }
  
+  public function testRenameSpecialCases4() : void {
+    $text = "{{cite web|title=X|url=Y}}"
+    $template = $this->make_citation($text);
+    $template->rename('title', 'chapter');
+    $this->assertNull($template->get2('url'));
+    $this->assertNull($template->get2('title'));
+    $this->assertSame('X', $template->get2('chapter'));
+    $this->assertSame('Y', $template->get2('url'));
+  }
+ 
+ 
   public function testModificationsOdd() : void {
     $text = "{{cite web}}"; // param will be null to start
     $template = $this->make_citation($text);
@@ -1256,6 +1267,24 @@ final class TemplateTest2 extends testBaseClass {
     $this->assertNull($template->get2('day'));
     $this->assertNull($template->get2('month'));
     $this->assertSame('Dec 2000', $template->get2('date'));
+  }
+ 
+  public function testGetYear() : void {
+    $text = "{{cite web|date=2000 Nov}}";
+    $template = $this->make_citation($text);
+    $this->assertSame('2000', $template->year());
+   
+    $text = "{{cite web|date=Nov 2000}}";
+    $template = $this->make_citation($text);
+    $this->assertSame('2000', $template->year());
+   
+    $text = "{{cite web|date=2000}}";
+    $template = $this->make_citation($text);
+    $this->assertSame('2000', $template->year());
+   
+    $text = "{{cite web|year=2000}}";
+    $template = $this->make_citation($text);
+    $this->assertSame('2000', $template->year());
   }
  
   public function testTidyDeadurl() : void {
@@ -2057,6 +2086,49 @@ final class TemplateTest2 extends testBaseClass {
     $template = $this->make_citation($text);
     $template->final_tidy();
     $this->assertNull($template->get2('chapter'));
+  }
+ 
+  public function testTidyChapterNotJournal() : void {              
+    $text = "{{cite web|chapter=X|title=Y|url=Z}}";
+    $template = $this->make_citation($text);
+    $template->final_tidy();
+    $this->assertSame('cite book', $template->wikiname());
+  }
+ 
+  public function testTidyChapterNotJournalSpecial1093() : void {              
+    $text = "{{cite web|chapter=X|title=Y|url=Z|doi=10.1093/1}}";
+    $template = $this->make_citation($text);
+    $template->final_tidy();
+    $this->assertSame('cite book', $template->wikiname());
+   
+    $text = "{{Cite web|chapter=X|title=Y|url=Z|doi=10.1093/1}}";
+    $template = $this->make_citation($text);
+    $template->final_tidy();
+    $this->assertSame('cite book', $template->wikiname());
+  }
+ 
+  public function testPrintWarning() : { // We don't check, but it does cover code
+    $text = "{{cite journal|page=3-4}}";
+    $template = $this->process_citation($text);
+    $this->assertSame($text, $template->parsed_text());
+  }
+ 
+  public function testRemovePg() : {
+    $text = "{{cite journal|page=pg. 343}}";
+    $template = $this->process_citation($text);
+    $this->assertSame('343', $template->get2('page'));
+   
+    $text = "{{cite journal|pages=pg. 343–349}}";
+    $template = $this->process_citation($text);
+    $this->assertSame('343–349', $template->get2('pages'));
+  }
+ 
+  public function testTidyReuters() : void {              
+    $text = "{{cite news|newspaper=Reuters}}";
+    $template = $this->make_citation($text);
+    $template->final_tidy();
+    $this->assertSame('Reuters', $template->get2('work'));
+    $this->assertNull($template->get2('newspaper'));
   }
  
   public function testETCTidy() : void {
