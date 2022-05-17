@@ -1213,7 +1213,7 @@ final class TemplateTest2 extends testBaseClass {
     $this->assertNull($template->get2('url'));
     $this->assertNull($template->get2('title'));
     $this->assertSame('X', $template->get2('chapter'));
-    $this->assertSame('Y', $template->get2('chatper-url'));
+    $this->assertSame('Y', $template->get2('chapter-url'));
   }
  
  
@@ -2125,14 +2125,22 @@ final class TemplateTest2 extends testBaseClass {
  
   public function testTidyReuters() : void {              
     $text = "{{cite web|newspaper=Reuters}}";
-    $template = $this->make_citation($text);
-    $template->final_tidy();
-    $this->assertSame('Reuters', $template->get2('work'));
+    $template = $this->process_citation($text);
+    $this->assertSame('Reuters', $template->get2('agency'));
     $this->assertNull($template->get2('newspaper'));
    
     $text = "{{cite news|newspaper=Reuters}}";
-    $template = $this->make_citation($text);
-    $template->final_tidy();
+    $template = $this->process_citation($text);
+    $this->assertSame('Reuters', $template->get2('newspaper'));
+    $this->assertNull($template->get2('work'));
+   
+    $text = "{{cite web|newspaper=Reuters|url=reuters.com}}";
+    $template = $this->process_citation($text);
+    $this->assertSame('Reuters', $template->get2('work'));
+    $this->assertNull($template->get2('newspaper'));
+   
+    $text = "{{cite news|newspaper=Reuters|url=reuters.com}}";
+    $template = $this->process_citation($text);
     $this->assertSame('Reuters', $template->get2('newspaper'));
     $this->assertNull($template->get2('work'));
   }
