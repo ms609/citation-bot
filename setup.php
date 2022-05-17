@@ -134,7 +134,6 @@ function check_overused() : void {
  define('BIG_JOB_MODE', 'YES');
  register_shutdown_function('unlock_user');
  @session_write_close();
- pcntl_signal(SIGTERM, "sig_handler"); // By default SIGTERM does not call exit()
 }
 
 function check_killed() : void {
