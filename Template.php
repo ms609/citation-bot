@@ -6260,7 +6260,7 @@ final class Template {
       $trial[] = $match[1];
       $trial[] = $match[2];
     }
-    if (strpos($doi, '10.1093') === 0) {
+    if (strpos($doi, '10.1093') === 0 && !doi_works($doi)) {
           if (preg_match('~^10\.1093/(?:ref:|)odnb/9780198614128\.001\.0001/odnb\-9780198614128\-e\-(\d+)$~', $doi, $matches)) {
               $trial[] = '10.1093/ref:odnb/' . $matches[1];
               $trial[] = '10.1093/odnb/' . $matches[1];
