@@ -103,10 +103,9 @@ function is_doi_works(string $doi) : ?bool {
     if (preg_match('~[^\d\.]~', $registrant)) return FALSE;                 // any character that isn't a digit or a dot
   }
   throttle_dx();
-  // Try HTTP 1.0 on first try
-  $context_1 = stream_context_create(CONTEXT_INSECURE);
+
   $context = stream_context_create(CONTEXT_INSECURE_11);
-  $headers_test = @get_headers("https://doi.org/" . doi_encode($doi), GET_THE_HEADERS, $context_1);
+  $headers_test = @get_headers("https://doi.org/" . doi_encode($doi), GET_THE_HEADERS, $context);
   if ($headers_test === FALSE) {
      sleep(2);                                                                          // @codeCoverageIgnore
      $headers_test = @get_headers("https://doi.org/" . doi_encode($doi), GET_THE_HEADERS, $context);  // @codeCoverageIgnore
