@@ -3291,6 +3291,12 @@ final class TemplateTest2 extends testBaseClass {
      $this->assertSame('10.1093/ww/9780199540884.013.U12345', $template->get2('doi'));
   }
  
+   public function testVerifyDOI15() : void {
+     $text = '{{cite journal|doi=10.1093/ww/9780199540891.001.0001/ww-9780199540884-e-1234}}';
+     $template = $this->process_citation($text);
+     $this->assertSame('10.1093/ww/9780199540884.013.U12345', $template->get2('doi'));
+  }
+ 
   public function testOxfordTemplate() : void {
      $text = '{{cite web |last1=Courtney |first1=W. P. |last2=Hinings |first2=Jessica |title=Woodley, George (bap. 1786, d. 1846) |url=https://doi.org/10.1093/ref:odnb/29929 |website=Oxford Dictionary of National Biography |publisher=Oxford University Press |accessdate=12 September 2019}}';
      $template = $this->process_citation($text);
