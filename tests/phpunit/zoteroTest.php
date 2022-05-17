@@ -1125,6 +1125,8 @@ final class zoteroTest extends testBaseClass {
     $template = $this->make_citation($text);
     $template->get_identifiers_from_url('https://hdl.handle.net/2027/mdp.39015064245429?urlappend=%3Bseq=326%3Bownerid=13510798900390116-358');
     $this->assertSame('2027/mdp.39015064245429?urlappend=%3Bseq=326', $template->get2('hdl'));
+    $template->get_identifiers_from_url('https://hdl.handle.net/2027/mdp.39015064245429?urlappend=%3Bseq=326%3Bownerid=13510798900390116urlappend-358');
+    $this->assertSame('2027/mdp.39015064245429?urlappend=%3Bseq=326', $template->get2('hdl'));
   }
 
   public function testHDLSimpler2() : void {
