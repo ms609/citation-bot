@@ -1213,7 +1213,7 @@ final class TemplateTest2 extends testBaseClass {
     $this->assertNull($template->get2('url'));
     $this->assertNull($template->get2('title'));
     $this->assertSame('X', $template->get2('chapter'));
-    $this->assertSame('Y', $template->get2('url'));
+    $this->assertSame('Y', $template->get2('chatper-url'));
   }
  
  
