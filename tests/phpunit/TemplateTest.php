@@ -3681,4 +3681,10 @@ EP - 999 }}';
     $record->year = '2000';
     $this->assertTrue($template->looksLikeBookReview($record));
   }
+ 
+  public function testDropBadDq() : void {
+    $text='{{Cite web | url=https://books.google.com/books?id=SjpSkzjIzfsC&dq=subject:HUH&pg=213}}';
+    $template = $this->process_citation($text);
+    $this->assertSame('https://books.google.com/books?id=SjpSkzjIzfsC&pg=213', $template->get2('url'));
+  }
 }
