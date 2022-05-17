@@ -162,7 +162,11 @@ require_once 'Zotero.php';
 require_once 'apiFunctions.php';
 require_once 'Page.php';
 
-define("MAX_PAGES", 3850);
+if (isset($argv)) {
+  define("MAX_PAGES", 1000000);
+} else {
+  define("MAX_PAGES", 3850);
+}
 define("BIG_RUN", 3);
 
 
