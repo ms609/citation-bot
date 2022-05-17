@@ -1077,7 +1077,7 @@ public static function find_indentifiers_in_urls(Template $template, ?string $ur
 
      if (preg_match('~^https?://(?:www\.|)jstor\.org/stable/(?:pdf|pdfplus)/(.+)\.pdf$~i', $url, $matches) ||
         preg_match('~^https?://(?:www\.|)jstor\.org/tc/accept\?origin=(?:\%2F|/)stable(?:\%2F|/)pdf(?:\%2F|/)(\d{3,})\.pdf$~i', $url, $matches)) {
-       if ($matches[1] == $template->get('jstor')) {
+       if ($matches[1] === $template->get('jstor')) {
          if (is_null($url_sent)) {
            if ($template->has_good_free_copy()) $template->forget($url_type);
          }
@@ -1122,7 +1122,8 @@ public static function find_indentifiers_in_urls(Template $template, ?string $ur
 
     if (preg_match("~^https?://(?:(?:dx\.|www\.|)doi\.org|doi\.library\.ubc\.ca)/([^\?]*)~i", $url, $match)) {
       if ($template->has('doi')) {
-        if (str_i_same($template->get('doi'), $match[1]) || str_i_same($template->get('doi'), urldecode($match[1]))) {
+        $doi = $template->get('doi');
+        if (str_i_same($doi, $match[1]) || str_i_same($doi, urldecode($match[1]))) {
          if (is_null($url_sent) && $template->get('doi-access') === 'free') {
           quietly('report_modification', "URL is hard-coded DOI; removing since we already have free DOI parameter");
           $template->forget($url_type);
@@ -1133,15 +1134,15 @@ public static function find_indentifiers_in_urls(Template $template, ?string $ur
         if (is_null($url_sent)) {
          report_warning('doi.org URL does not match existing DOI parameter, investigating...');
         }
-        if ($template->get('doi') != $template->get3('doi')) return FALSE;
-        if (doi_works($match[1]) && !doi_works($template->get('doi'))) {
+        if ($doi !== $template->get3('doi')) return FALSE;
+        if (doi_works($match[1]) && !doi_works($doi)) {
           $template->set('doi', $match[1]);
           if (is_null($url_sent)) {
             if ($template->has_good_free_copy()) $template->forget($url_type);
           }
           return TRUE;
         }
-        if (!doi_works($match[1]) && doi_works($template->get('doi'))) {
+        if (!doi_works($match[1]) && doi_works($doi)) {
           if (is_null($url_sent)) {
              if ($template->has_good_free_copy()) $template->forget($url_type);
           }
@@ -1168,8 +1169,8 @@ public static function find_indentifiers_in_urls(Template $template, ?string $ur
          if ($template->has_good_free_copy()) $template->forget($url_type);
       }
       $template->tidy_parameter('doi'); // Sanitize DOI before comparing
-      if ($template->has('doi') && mb_stripos($doi, $template->get('doi')) === 0) { // DOIs are case-insensitive
-        if (doi_works($doi) && is_null($url_sent) && mb_strpos(strtolower($url), ".pdf") === FALSE && !preg_match(REGEXP_DOI_ISSN_ONLY, $doi)) {
+      if ($template->has('doi') && stripos($doi, $template->get('doi')) === 0) { // DOIs are case-insensitive
+        if (doi_works($doi) && is_null($url_sent) && strpos(strtolower($url), ".pdf") === FALSE && !preg_match(REGEXP_DOI_ISSN_ONLY, $doi)) {
           if ($template->has_good_free_copy()) {
              report_forget("Recognized existing DOI in URL; dropping URL");
              $template->forget($url_type);
@@ -1197,8 +1198,9 @@ public static function find_indentifiers_in_urls(Template $template, ?string $ur
       return FALSE; // Did not add it
     } elseif ($template->has('doi')) { // Did not find a doi, perhaps we were wrong
       $template->tidy_parameter('doi'); // Sanitize DOI before comparing
-      if (mb_stripos($url, $template->get('doi')) !== FALSE) { // DOIs are case-insensitive
-        if (doi_works($template->get('doi')) && is_null($url_sent) && mb_strpos(strtolower($url), ".pdf") === FALSE && not_bad_10_1093_doi($template->get('doi')) && !preg_match(REGEXP_DOI_ISSN_ONLY, $template->get('doi'))) {
+      $doi = $template->get('doi'));
+      if (stripos($url, $doi) !== FALSE) { // DOIs are case-insensitive
+        if (doi_works($doi) && is_null($url_sent) && strpos(strtolower($url), ".pdf") === FALSE && not_bad_10_1093_doi($doi) && !preg_match(REGEXP_DOI_ISSN_ONLY, $doi)) {
           if ($template->has_good_free_copy()) {
              report_forget("Recognized the existing DOI in URL; dropping URL");
              $template->forget($url_type);
@@ -1236,7 +1238,7 @@ public static function find_indentifiers_in_urls(Template $template, ?string $ur
         if (is_null($url_sent)) {
           if ($template->has_good_free_copy()) $template->forget($url_type);
         }
-        if ($template->get('jstor')) {
+        if ($template->has('jstor')) {
           quietly('report_inaction', "Not using redundant URL (jstor parameter set)");
         } else {
           quietly('report_modification', "Converting URL to JSTOR parameter " . jstor_link(urldecode($match[1])));
