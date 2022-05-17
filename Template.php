@@ -305,6 +305,7 @@ final class Template {
           }
         }
       }
+      doi_works($this->get('doi')); // this can be slow.  Prime cache for better slow step determination
       $this->get_inline_doi_from_title();
       $this->parameter_names_to_lowercase();
       $this->use_unnamed_params();
