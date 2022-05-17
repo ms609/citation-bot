@@ -558,12 +558,20 @@ final class TemplateTest2 extends testBaseClass {
   }
  
  public function testTidy67b() : void {
-    $text = "{{cite journal|url=https://0-search-proquest-com.scoolaid.net/STUFF/docview/1234/2314/3214}}";
+    $text = "{{cite journal|url=https://0-search-proquest-com.scoolaid.net/STUFF/docview/1234/2314/3214|via=library proquest}}";
     $template = $this->make_citation($text);
     $template->tidy_parameter('url');
     $this->assertSame('https://www.proquest.com/docview/1234', $template->get2('url'));
-  }
+    $this->assertNull($template->get2('via'));
+ }
  
+ public function testTidy67c() : void {
+    $text = "{{cite journal|url= http://host.com/login/?url=https://0-search-proquest-com.scoolaid.net/STUFF/docview/1234/2314/3214|via=dude}}";
+    $template = $this->make_citation($text);
+    $template->tidy_parameter('url');
+    $this->assertSame('https://www.proquest.com/docview/1234', $template->get2('url'));
+    $this->assertNull($template->get2('via'));
+ }
  
   public function testTidy68() : void {
     $text = "{{cite journal|url=http://proxy-proquest.umi.com-org/pqd1234}}"; // Bogus, so deleted
@@ -1364,6 +1372,16 @@ final class TemplateTest2 extends testBaseClass {
            
   public function testTidyTimesArchiveAndWork() : void {
     $text = "{{cite web|publisher=the times digital archive|newspaper=the times}}";
+    $template = $this->make_citation($text);
+    $template->tidy_parameter('publisher');
+    $this->assertNull($template->get2('publisher'));
+   
+    $text = "{{cite web|publisher=the times digital archive|newspaper=times (london)}}";
+    $template = $this->make_citation($text);
+    $template->tidy_parameter('publisher');
+    $this->assertNull($template->get2('publisher'));
+   
+    $text = "{{cite web|publisher=the times digital archive|newspaper=times [london]}}";
     $template = $this->make_citation($text);
     $template->tidy_parameter('publisher');
     $this->assertNull($template->get2('publisher'));
@@ -3179,6 +3197,20 @@ final class TemplateTest2 extends testBaseClass {
      $template = $this->make_citation($text);
      $template->verify_doi();
      $this->assertSame('10.5240/7B2F-ED76-31F6-8CFB-4DB9-M', $template->get2('doi'));
+  }
+ 
+   public function testVerifyDOI13() : void {
+     $text = '{{cite journal|doi=10.1111/j.1471-0528.1995.tb09132.x</a>}}';
+     $template = $this->make_citation($text);
+     $template->verify_doi();
+     $this->assertSame('10.1111/j.1471-0528.1995.tb09132.x', $template->get2('doi'));
+  }
+ 
+   public function testVerifyDOI14() : void {
+     $text = '{{cite journal|doi=10.1093/ww/9780199540891.001.0001/ww-9780199540884-e-1234}}';
+     $template = $this->make_citation($text);
+     $template->verify_doi();
+     $this->assertSame('10.1093/ww/9780199540884.013.U12345', $template->get2('doi'));
   }
  
   public function testOxfordTemplate() : void {
