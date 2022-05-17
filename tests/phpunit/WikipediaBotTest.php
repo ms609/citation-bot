@@ -87,6 +87,10 @@ require_once __DIR__ . '/../testBaseClass.php';
       $response = (object) array('error' => (object) array('info' =>  'Greetings, this page is protected so give up'));
       $this->assertTrue(WikipediaBot::ret_okay($response));
     }
+    public function test_ret_okay5() : void {
+      $response = (object) array('error' => (object) array('info' =>  'weak'));
+      $this->assertFalse(WikipediaBot::ret_okay($response));
+    }
    
     public function test_response2page1() : void {
       $this->assertNull(WikipediaBot::response2page(NULL));
