@@ -1198,7 +1198,7 @@ public static function find_indentifiers_in_urls(Template $template, ?string $ur
       return FALSE; // Did not add it
     } elseif ($template->has('doi')) { // Did not find a doi, perhaps we were wrong
       $template->tidy_parameter('doi'); // Sanitize DOI before comparing
-      $doi = $template->get('doi'));
+      $doi = $template->get('doi');
       if (stripos($url, $doi) !== FALSE) { // DOIs are case-insensitive
         if (doi_works($doi) && is_null($url_sent) && strpos(strtolower($url), ".pdf") === FALSE && not_bad_10_1093_doi($doi) && !preg_match(REGEXP_DOI_ISSN_ONLY, $doi)) {
           if ($template->has_good_free_copy()) {
