@@ -10,8 +10,8 @@ try {
  //Set up tool requirements
  require_once 'setup.php';
 
- $originalText = (string) $_POST['text'];
- $editSummary = (string) $_POST['summary'];
+ $originalText = (string) @$_POST['text'];
+ $editSummary = (string) @$_POST['summary'];
 
  if (strlen(trim($originalText)) < 4) {
    throw new Exception('tiny');  // @codeCoverageIgnore
