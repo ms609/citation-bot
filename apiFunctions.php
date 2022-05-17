@@ -1189,17 +1189,16 @@ function get_entrez_xml(string $type, string $query) : ?SimpleXMLElement {
       report_error("Invalid type passed to get_entrez_xml: " . $type);  // @codeCoverageIgnore
    }
    $xml = xml_post($url, $post);
-   if ($xml === FALSE) {
+   if ($xml === NULL) {
       // @codeCoverageIgnoreStart
      sleep(3);
      $xml = xml_post($url, $post);
-     if ($xml === FALSE) $xml = NULL;
      // @codeCoverageIgnoreEnd
    }
    return $xml;
 }
 // Must use post in order to get DOIs with <, >, [, and ] in them and other problems
-function xml_post(string $url, string $post) {
+function xml_post(string $url, string $post) : ?SimpleXMLElement {
    $ch = curl_init();
    curl_setopt($ch, CURLOPT_URL,$url);
    curl_setopt($ch, CURLOPT_POST, TRUE);
@@ -1212,7 +1211,9 @@ function xml_post(string $url, string $post) {
    curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
    $output = (string) @curl_exec($ch);
    curl_close ($ch);
-   return @simplexml_load_string($output);
+   $xml = @simplexml_load_string($output);
+   if ($xml === FALSE) $xml = NULL;
+   return $xml;
 }
 
 function process_bibcode_data(Template $this_template, object $record) : void {
