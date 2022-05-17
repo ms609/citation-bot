@@ -6196,8 +6196,8 @@ final class Template {
         if (stripos($url, 'CITATION_BOT') === FALSE &&
             filter_var($url, FILTER_VALIDATE_URL) !== FALSE &&
             !preg_match('~^https?://[^/]+/?$~', $url) &&       // Ignore just a hostname
-            preg_match (REGEXP_IS_URL, $url) === 1) {
-           preg_match('~^https?://([^/]+)/~', $url, $matches);
+            preg_match (REGEXP_IS_URL, $url) === 1 &&
+           preg_match('~^https?://([^/]+)/~', $url, $matches)) {
            $hostname = $matches[1];
            if (str_ireplace(CANONICAL_PUBLISHER_URLS, '', $hostname) === $hostname &&
                str_ireplace(PROXY_HOSTS_TO_ALWAYS_DROP, '', $hostname) === $hostname &&
