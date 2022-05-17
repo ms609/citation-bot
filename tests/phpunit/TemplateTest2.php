@@ -2124,11 +2124,17 @@ final class TemplateTest2 extends testBaseClass {
   }
  
   public function testTidyReuters() : void {              
-    $text = "{{cite news|newspaper=Reuters}}";
+    $text = "{{cite web|newspaper=Reuters}}";
     $template = $this->make_citation($text);
     $template->final_tidy();
     $this->assertSame('Reuters', $template->get2('work'));
     $this->assertNull($template->get2('newspaper'));
+   
+    $text = "{{cite news|newspaper=Reuters}}";
+    $template = $this->make_citation($text);
+    $template->final_tidy();
+    $this->assertSame('Reuters', $template->get2('newspaper'));
+    $this->assertNull($template->get2('work'));
   }
  
   public function testETCTidy() : void {
