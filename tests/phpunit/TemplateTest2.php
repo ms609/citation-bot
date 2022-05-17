@@ -4289,4 +4289,21 @@ final class TemplateTest2 extends testBaseClass {
       $this->AssertSame('20.1000/100', $expanded->get2('hdl'));
      
     }
+ 
+   public function testSillyURL() : void { // This get checks by string match, but not regex
+     $text='{{cite web|url=https://stuff.nih.gov}}';
+     $template = $this->make_citation($text);
+     $this->assertFalse($template->get_identifiers_from_url());
+     $this->assertNotNull($template->get2('url'));
+    
+     $text='{{cite web|url=https://europepmc.org}}';
+     $template = $this->make_citation($text);
+     $this->assertFalse($template->get_identifiers_from_url());
+     $this->assertNotNull($template->get2('url'));
+    
+     $text='{{cite web|url=https://pubmedcentralcanada.ca}}';
+     $template = $this->make_citation($text);
+     $this->assertFalse($template->get_identifiers_from_url());
+     $this->assertNotNull($template->get2('url'));
+   }
 }
