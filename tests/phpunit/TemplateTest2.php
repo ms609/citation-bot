@@ -1739,17 +1739,17 @@ final class TemplateTest2 extends testBaseClass {
    }       
           
 
-   public function testOxforddnbDOIs() : void {
+   public function testOxforddnbDOIs1() : void {
     $text = "{{cite web|url=https://www.oxforddnb.com/view/10.1093/ref:odnb/9780198614128.001.0001/odnb-9780198614128-e-33369|doi=10.0000/Rubbish_bot_failure_test|doi-broken-date=Y}}";
-    $template = $this->make_citation($text);
-    $template->tidy_parameter('url');
+    $template = $this->process_citation($text);
     $this->assertSame('10.1093/ref:odnb/33369', $template->get2('doi'));
     $this->assertSame('978-0-19-861412-8', $template->get2('isbn'));
     $this->assertNull($template->get2('doi-broken-date'));
-    
+   }
+ 
+   public function testOxforddnbDOIs2() : void
     $text = "{{cite web|url=https://www.oxforddnb.com/view/10.1093/odnb/9780198614128.001.0001/odnb-9780198614128-e-108196|doi=10.0000/Rubbish_bot_failure_test|doi-broken-date=Y|title=Joe Blow - Oxford Dictionary of National Biography}}";
-    $template = $this->make_citation($text);
-    $template->tidy_parameter('url');
+    $template = $this->process_citation($text);
     $this->assertSame('10.1093/odnb/9780198614128.013.108196', $template->get2('doi'));
     $this->assertSame('978-0-19-861412-8', $template->get2('isbn'));
     $this->assertSame('Joe Blow', $template->get2('title'));
