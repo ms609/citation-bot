@@ -6225,6 +6225,7 @@ final class Template {
     $match = ['', '']; // prevent memory leak in some PHP versions
     $matches = ['', '']; // prevent memory leak in some PHP versions
     $doi = $this->get_without_comments_and_placeholders('doi');
+    echo __LINE__ . " " . $doi . "\n";
     if (!$doi) return FALSE;
     if ($this->doi_valid) return TRUE;
     if ($last_doi === $doi) {
@@ -6235,6 +6236,7 @@ final class Template {
     }
     $trial = array();
     $trial[] = $doi;
+    echo __LINE__ . " " ; print_r($trial);
     // DOI not correctly formatted
     switch (substr($doi, -1)) {
       case ".":
@@ -6256,19 +6258,23 @@ final class Template {
         $trial[] = "10." . $doi;
       }
     }
+    echo __LINE__ . " " ; print_r($trial);
     if (preg_match("~^(.+)(10\.\d{4,6}/.+)~", trim($doi), $match)) {
       $trial[] = $match[1];
       $trial[] = $match[2];
     }
+    echo __LINE__ . " " ; print_r($trial);
     if (preg_match("~^10\.1093/ww/9780199540891\.001\.0001/ww\-9780199540884\-e\-(\d+)$~", $doi, $match)) {
       $trial[] = '10.1093/ww/9780199540884.013.U' . $match[1];
     }
+    echo __LINE__ . " " ; print_r($trial);
     $replacements = array ("&lt;" => "<", "&gt;" => ">");
     if (preg_match("~&[lg]t;~", $doi)) {
       $trial[] = str_replace(array_keys($replacements), $replacements, $doi);
     }
     $changed = TRUE;
     $try = $doi;
+    echo __LINE__ . " " ; print_r($trial);
     while ($changed) {
       $changed = FALSE;
       if ($pos = strrpos($try, '.')) {
@@ -6309,6 +6315,7 @@ final class Template {
          $changed = TRUE;
       }
     }
+    echo __LINE__ . " " ; print_r($trial);
     foreach ($trial as $try) {
       // Check that it begins with 10.
       if (preg_match("~[^/]*(\d{4}/.+)$~", $try, $match)) $try = "10." . $match[1];
@@ -6321,9 +6328,11 @@ final class Template {
         } else {
            report_info("Modified DOI:  " . echoable($try) . " is operational...");
         }
+        echo __LINE__ . " " . $try . "\n";
         return TRUE;
       }
     }
+    
     foreach ($trial as $try) {
       // Check that it begins with 10.
       if (preg_match("~[^/]*(\d{4}/.+)$~", $try, $match)) $try = "10." . $match[1];
@@ -6336,20 +6345,24 @@ final class Template {
         } else {
            report_info("Modified DOI:  " . echoable($try) . " is operational...");
         }
+        echo __LINE__ . " " . $try . "\n";
         return TRUE;
       }
     }
     $doi_status = doi_works($doi);
     if ($doi_status === NULL) {
+        echo __LINE__ . " " . $doi . "\n";
       report_warning("DOI status unknown.  doi.org failed to respond to: " . doi_link($doi));  // @codeCoverageIgnore
       return FALSE;                                                                            // @codeCoverageIgnore
     } elseif ($doi_status === FALSE) {
       report_inline("It's not...");
+        echo __LINE__ . " " . $doi . "\n";
       $this->add_if_new('doi-broken-date', date("Y-m-d"));
       return FALSE;
     } else {
       // Only get to this code if we got NULL earlier and now suddenly get OK
       // @codeCoverageIgnoreStart
+        echo __LINE__ . " " . $doi . "\n";
       foreach (DOI_BROKEN_ALIASES as $alias) $this->forget($alias);
       $this->doi_valid = TRUE;
       report_inline('DOI ok.');
