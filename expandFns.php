@@ -188,14 +188,15 @@ function sanitize_doi(string $doi) : string {
   // And now for 10.1093 URLs
   // The add chapter/page stuff after the DOI in the URL and it looks like part of the DOI to us
   // Things like 10.1093/oxfordhb/9780199552238.001.0001/oxfordhb-9780199552238-e-003 and 10.1093/acprof:oso/9780195304923.001.0001/acprof-9780195304923-chapter-7
-  if (strpos($doi, '10.1093') === 0) {
+  if (strpos($doi, '10.1093') === 0 && doi_works($doi) === FALSE) {
     if (preg_match('~^(10\.1093/oxfordhb.+)(?:/oxfordhb.+)$~', $doi, $match) ||
         preg_match('~^(10\.1093/acprof.+)(?:/acprof.+)$~', $doi, $match) ||
         preg_match('~^(10\.1093/acref.+)(?:/acref.+)$~', $doi, $match) ||
         preg_match('~^(10\.1093/ref:odnb.+)(?:/odnb.+)$~', $doi, $match) ||
         preg_match('~^(10\.1093/ww.+)(?:/ww.+)$~', $doi, $match) ||
         preg_match('~^(10\.1093/anb.+)(?:/anb.+)$~', $doi, $match)) {
-       $doi = $match[1];
+       $new_doi = $match[1];
+       if (doi_works($new_doi)) $doi = $new_doi;
     }
   }
   return $doi;
