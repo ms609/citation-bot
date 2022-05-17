@@ -6260,8 +6260,102 @@ final class Template {
       $trial[] = $match[1];
       $trial[] = $match[2];
     }
-    if (preg_match("~^10\.1093/ww/9780199540891\.001\.0001/ww\-9780199540884\-e\-(\d+)$~", $doi, $match)) {
-      $trial[] = '10.1093/ww/9780199540884.013.U' . $match[1];
+    if (strpos($doi, '10.1093') === 0) {
+          if (preg_match('~^10\.1093/(?:ref:|)odnb/9780198614128\.001\.0001/odnb\-9780198614128\-e\-(\d+)$~', $doi, $matches)) {
+              $trial[] = '10.1093/ref:odnb/' . $matches[1];
+              $trial[] = '10.1093/odnb/' . $matches[1];
+              $trial[] = '10.1093/odnb/9780198614128.013.' . $matches[1];
+          }
+          if (preg_match('~^10\.1093/anb/9780198606697\.001\.0001/anb\-9780198606697\-e\-(\d+)$~', $doi, $matches)) {
+              $trial[] = '10.1093/anb/9780198606697.article.' . $matches[1];
+          }
+          if (preg_match('~^10\.1093/benz/9780199773787\.001\.0001/acref-9780199773787\-e\-(\d+)$~', $doi, $matches)) {
+              $trial[] = '10.1093/benz/9780199773787.article.B' . $matches[1];
+          }
+          if (preg_match('~^10\.1093/gao/9781884446054\.001\.0001/oao\-9781884446054\-e\-7000(\d+)$~', $doi, $matches)) {
+              $trial[] = '10.1093/gao/9781884446054.article.T' . $matches[1];
+          }
+          if (preg_match('~^10\.1093/gao/9781884446054\.001\.0001/oao\-9781884446054\-e\-700(\d+)$~', $doi, $matches)) {
+              $trial[] = '10.1093/gao/9781884446054.article.T' . $matches[1];
+          }
+          if (preg_match('~^10\.1093/acref/9780195301731\.001\.0001/acref\-9780195301731\-e\-(\d+)$~', $doi, $matches)) {
+              $trial[] = '10.1093/acref/9780195301731.013.' . $matches[1];
+          }
+          if (preg_match('~^10\.1093/ww/(9780199540891|9780199540884)\.001\.0001/ww\-9780199540884\-e\-(\d+)$~', $doi, $matches)) {
+              $trial[] = '10.1093/ww/9780199540884.013.U' . $matches[2];
+          }
+          if (preg_match('~^10\.1093/gmo/9781561592630\.001\.0001/omo-9781561592630-e-00000(\d+)$~', $doi, $matches)) {
+              $trial[] = '10.1093/gmo/9781561592630.article.' . $matches[1];
+          }
+          if (preg_match('~^10\.1093/gmo/9781561592630\.001\.0001/omo-9781561592630-e-100(\d+)$~', $doi, $matches)) {
+              $trial[] = '10.1093/gmo/9781561592630.article.A' . $matches[1];
+          }
+          if (preg_match('~^10\.1093/gmo/9781561592630\.001\.0001/omo-9781561592630-e-5000(\d+)$~', $doi, $matches)) {
+              $trial[] = '10.1093/gmo/9781561592630.article.O' . $matches[1];
+          }
+          if (preg_match('~^10\.1093/gmo/9781561592630\.001\.0001/omo-9781561592630-e-400(\d+)$~', $doi, $matches)) {
+              $trial[] = '10.1093/gmo/9781561592630.article.L' . $matches[1];
+          }
+          if (preg_match('~^10\.1093/gmo/9781561592630\.001\.0001/omo-9781561592630-e-2000(\d+)$~', $doi, $matches)) {
+              $trial[] = '10.1093/gmo/9781561592630.article.J' . $matches[1];
+          }
+          if (preg_match('~^10\.1093/acrefore/9780199366439\.001\.0001/acrefore\-9780199366439\-e\-(\d+)$~', $doi, $matches)) {
+              $trial[] = '10.1093/acrefore/9780199366439.013.' . $matches[1];
+          }
+          if (preg_match('~^10\.1093/acrefore/9780190228613\.001\.0001/acrefore\-9780190228613\-e\-(\d+)$~', $doi, $matches)) {
+              $trial[] = '10.1093/acrefore/9780190228613.013.' . $matches[1];
+          }
+          if (preg_match('~^10\.1093/acrefore/9780199389414\.001\.0001/acrefore\-9780199389414\-e\-(\d+)$~', $doi, $matches)) {
+              $trial[] = '10.1093/acrefore/9780199389414.013.' . $matches[1];
+          }
+          if (preg_match('~^10\.1093/acrefore/9780199329175\.001\.0001/acrefore\-9780199329175\-e\-(\d+)$~', $doi, $matches)) {
+              $trial[] = '10.1093/acrefore/9780199329175.013.' . $matches[1];
+          }
+          if (preg_match('~^10\.1093/acrefore/9780190277734\.001\.0001/acrefore\-9780190277734\-e\-(\d+)$~', $doi, $matches)) {
+              $trial[] = '10.1093/acrefore/9780190277734.013.' . $matches[1];
+          }
+          if (preg_match('~^10\.1093/acrefore/9780190846626\.001\.0001/acrefore\-9780190846626\-e\-(\d+)$~', $doi, $matches)) {
+              $trial[] = '10.1093/acrefore/9780190846626.013.' . $matches[1];
+          }
+          if (preg_match('~^10\.1093/acrefore/9780190228620\.001\.0001/acrefore\-9780190228620\-e\-(\d+)$~', $doi, $matches)) {
+              $trial[] = '10.1093/acrefore/9780190228620.013.' . $matches[1];
+          }
+          if (preg_match('~^10\.1093/acrefore/9780199340378\.001\.0001/acrefore\-9780199340378\-e\-(\d+)$~', $doi, $matches)) {
+              $trial[] = '10.1093/acrefore/9780199340378.013.' . $matches[1];
+          }
+          if (preg_match('~^10\.1093/acrefore/9780190854584\.001\.0001/acrefore\-9780190854584\-e\-(\d+)$~', $doi, $matches)) {
+              $trial[] = '10.1093/acrefore/9780190854584.013.' . $matches[1];
+          }
+          if (preg_match('~^10\.1093/acrefore/9780199381135\.001\.0001/acrefore\-9780199381135\-e\-(\d+)$~', $doi, $matches)) {
+              $trial[] = '10.1093/acrefore/9780199381135.013.' . $matches[1];
+          }
+          if (preg_match('~^10\.1093/acrefore/9780190236557\.001\.0001/acrefore\-9780190236557\-e\-(\d+)$~', $doi, $matches)) {
+              $trial[] = '10.1093/acrefore/9780190236557.013.' . $matches[1];
+          }
+          if (preg_match('~^10\.1093/acrefore/9780190228637\.001\.0001/acrefore\-9780190228637\-e\-(\d+)$~', $doi, $matches)) {
+              $trial[] = '10.1093/acrefore/9780190228637.013.' . $matches[1];
+          }
+          if (preg_match('~^10\.1093/acrefore/9780190201098\.001\.0001/acrefore\-9780190201098\-e\-(\d+)$~', $doi, $matches)) {
+              $trial[] = '10.1093/acrefore/9780190201098.013.' . $matches[1];
+          }
+          if (preg_match('~^10\.1093/oso/(\d{13})\.001\.0001/oso\-(\d{13})\-chapter\-(\d+)$~', $doi, $matches)) {
+            if ($matches[1] === $matches[2]) {
+              $trial[] = '10.1093/oso/' . $matches[1] . '.003.' . str_pad($matches[3], 4, "0", STR_PAD_LEFT);
+            }
+          }
+          if (preg_match('~^10\.1093/med/9780199592548\.001\.0001/med\-9780199592548-chapter-(\d+)$~', $doi, $matches)) {
+            $trial[] = '10.1093/med/9780199592548.003.' . str_pad($matches[1], 4, "0", STR_PAD_LEFT);
+          }
+          if (preg_match('~^10\.1093/oso/(\d{13})\.001\.0001/oso\-(\d{13})$~', $doi, $matches)) {
+            if ($matches[1] === $matches[2]) {
+              $trial[] = '10.1093/oso/' . $matches[1] . '.001.0001';
+            }
+          }
+          if (preg_match('~^10\.1093/oxfordhb/(\d{13})\.001\.0001/oxfordhb\-(\d{13})-e-(\d+)$~', $doi, $matches)) {
+            if ($matches[1] === $matches[2]) {
+              $trial[] = '10.1093/oxfordhb/' . $matches[1] . '.013.' . $matches[3];
+            }
+          }
     }
     $replacements = array ("&lt;" => "<", "&gt;" => ">");
     if (preg_match("~&[lg]t;~", $doi)) {
