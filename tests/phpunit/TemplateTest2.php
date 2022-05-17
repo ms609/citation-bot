@@ -2107,13 +2107,13 @@ final class TemplateTest2 extends testBaseClass {
     $this->assertSame('cite book', $template->wikiname());
   }
  
-  public function testPrintWarning() : { // We don't check, but it does cover code
+  public function testPrintWarning() : void { // We don't check, but it does cover code
     $text = "{{cite journal|page=3-4}}";
     $template = $this->process_citation($text);
     $this->assertSame($text, $template->parsed_text());
   }
  
-  public function testRemovePg() : {
+  public function testRemovePg() : void {
     $text = "{{cite journal|page=pg. 343}}";
     $template = $this->process_citation($text);
     $this->assertSame('343', $template->get2('page'));
