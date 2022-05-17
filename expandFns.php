@@ -104,8 +104,9 @@ function is_doi_works(string $doi) : ?bool {
   }
   throttle_dx();
 
-  $context = stream_context_create(CONTEXT_INSECURE_11);
+  $context = stream_context_create(CONTEXT_INSECURE);
   $headers_test = @get_headers("https://doi.org/" . doi_encode($doi), GET_THE_HEADERS, $context);
+  $context = stream_context_create(CONTEXT_INSECURE_11);
   if ($headers_test === FALSE) {
      sleep(2);                                                                          // @codeCoverageIgnore
      $headers_test = @get_headers("https://doi.org/" . doi_encode($doi), GET_THE_HEADERS, $context);  // @codeCoverageIgnore
