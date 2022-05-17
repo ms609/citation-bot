@@ -1207,7 +1207,7 @@ final class TemplateTest2 extends testBaseClass {
   }
  
   public function testRenameSpecialCases4() : void {
-    $text = "{{cite web|title=X|url=Y}}"
+    $text = "{{cite web|title=X|url=Y}}";
     $template = $this->make_citation($text);
     $template->rename('title', 'chapter');
     $this->assertNull($template->get2('url'));
