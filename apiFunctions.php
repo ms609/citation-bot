@@ -356,6 +356,7 @@ function adsabs_api(array $ids, array &$templates, string $identifier) : bool { 
     if (!isset($response->docs)) return TRUE;
 
   foreach ($response->docs as $record) { // Check for remapped bibcodes
+    $record = (object) $record; // Make static analysis happy
     if (isset($record->bibcode) && !in_array($record->bibcode, $ids) && isset($record->identifier)) {
         foreach ($record->identifier as $identity) {
           if (in_array($identity, $ids)) {
