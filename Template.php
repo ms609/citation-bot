@@ -6452,7 +6452,7 @@ final class Template {
     }
   }
 
-  protected function page() : string {
+  public function page() : string {
     if ($this->has('pages')) {
       $page = $this->get('pages');
     } else {
@@ -6462,7 +6462,7 @@ final class Template {
     return $page;
   }
 
-  protected function year() : string {
+  public function year() : string {
     $matches = ['', '']; // prevent memory leak in some PHP versions
     if ($this->has('year')) {
       return $this->get('year');
