@@ -6266,6 +6266,18 @@ final class Template {
               $trial[] = '10.1093/odnb/' . $matches[1];
               $trial[] = '10.1093/odnb/9780198614128.013.' . $matches[1];
           }
+          if (preg_match('~^10\.1093/odnb/(\d+)$~', $doi, $matches)) {
+              $trial[] = '10.1093/ref:odnb/' . $matches[1];
+              $trial[] = '10.1093/odnb/9780198614128.013.' . $matches[1];
+          }
+          if (preg_match('~^10\.1093/ref:odnb/(\d+)$~', $doi, $matches)) {
+              $trial[] = '10.1093/odnb/' . $matches[1];
+              $trial[] = '10.1093/odnb/9780198614128.013.' . $matches[1];
+          }
+          if (preg_match('~^10\.1093/9780198614128.013.(\d+)$~', $doi, $matches)) {
+              $trial[] = '10.1093/odnb/' . $matches[1];
+              $trial[] = '10.1093/odnb/9780198614128.013.' . $matches[1];
+          }
           if (preg_match('~^10\.1093/anb/9780198606697\.001\.0001/anb\-9780198606697\-e\-(\d+)$~', $doi, $matches)) {
               $trial[] = '10.1093/anb/9780198606697.article.' . $matches[1];
           }
