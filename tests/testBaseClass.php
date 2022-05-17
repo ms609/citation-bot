@@ -3,7 +3,7 @@ declare(strict_types=1);
 
 require_once __DIR__ . '/../setup.php';
 
-define("BAD_PAGE_API", ""); // Remember that debug_print_backtrace(0, 6) can be helpful
+define("BAD_PAGE_API", "dsafdsfsdfsdafdssfasdfdsafdsasdfdssd"); // Remember that debug_print_backtrace(0, 6) can be helpful
 
 abstract class testBaseClass extends PHPUnit\Framework\TestCase {
 
