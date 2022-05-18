@@ -12,6 +12,11 @@ final class apiFunctionsTest extends testBaseClass {
      $this->markTestSkipped();
    }
   }
+  
+  public function testFillCache() : void {
+    $this->fill_cache();
+    $this->assertTrue(TRUE);
+  }
 
   public function testAdsabsApi() : void {
     $this->requires_bibcode(function() : void {
