@@ -67,6 +67,7 @@ if (!TRAVIS) {
       ob_start();
     }
 }
+if (isset($argv)) ob_end_flush();
 
 if (file_exists('env.php')) {
   // Set the environment variables with putenv(). Remember to set permissions (not readable!)
