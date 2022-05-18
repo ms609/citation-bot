@@ -1280,27 +1280,26 @@ function process_bibcode_data(Template $this_template, object $record) : void {
     }
 }
 
-
-function expand_book_adsabs(Template $template, object $result) : bool {
+function expand_book_adsabs(Template $template, object $record) : bool {
     set_time_limit(120);
-    $matches = ['', '']; // prevent memory leak in some PHP versions
     $return = FALSE;
-    if (@$result->numFound === 1) {
+    if (isset($record->year)) {
+      $template->add_if_new('year', preg_replace("~\D~", "", (string) $record->year));
       $return = TRUE;
-      $record = $result->docs[0];
-      if (isset($record->year)) $template->add_if_new('year', preg_replace("~\D~", "", (string) $record->year));
-      if (isset($record->title)) $template->add_if_new('title', (string) $record->title[0]);
-      if ($template->blank(array_merge(FIRST_EDITOR_ALIASES, FIRST_AUTHOR_ALIASES, ['publisher']))) { // Avoid re-adding editors as authors, etc.
-       $i = 0;
+    }
+    if (isset($record->title)) {
+      $template->add_if_new('title', (string) $record->title[0]);
+      $return = TRUE;
+    }
+    if ($template->blank(array_merge(FIRST_EDITOR_ALIASES, FIRST_AUTHOR_ALIASES, ['publisher']))) { // Avoid re-adding editors as authors, etc.
+      $i = 0;
        if (isset($record->author)) {
         foreach ($record->author as $author) {
          $template->add_if_new('author' . (string) ++$i, $author);
+         $return = TRUE;
         }
        }
       }
-    }
-    if ($template->blank(['year', 'date']) && preg_match('~^(\d{4}).*book.*$~', $template->get('bibcode'), $matches)) {
-      $template->add_if_new('year', $matches[1]); // Fail safe code to grab a year directly from the bibcode itself
     }
     return $return;
   }
