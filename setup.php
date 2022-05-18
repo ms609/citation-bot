@@ -168,6 +168,3 @@ if (isset($argv)) {
   define("MAX_PAGES", 3850);
 }
 define("BIG_RUN", 3);
-
-if (!SLOW_MODE) report_info("Will skip the search for new bibcodes and the expanding of URLS in non-slow mode");
-
