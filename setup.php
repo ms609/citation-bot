@@ -169,4 +169,5 @@ if (isset($argv)) {
 }
 define("BIG_RUN", 3);
 
+if (!SLOW_MODE) report_info("Will skip the search for new bibcodes and the expanding of URLS in non-slow mode");
 
