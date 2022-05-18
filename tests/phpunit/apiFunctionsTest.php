@@ -714,7 +714,7 @@ final class apiFunctionsTest extends testBaseClass {
     ),
   ),
 );
-     expand_book_adsabs($template, $results);
+     expand_book_adsabs($template, $results->[0]);
      $this->assertSame('1958', $template->get2('year'));
      $this->assertSame('structure and evolution of the stars', strtolower($template->get2('title')));
   }
