@@ -3516,7 +3516,7 @@ final class TemplateTest2 extends testBaseClass {
  
   public function testNoBibcodesForArxiv() : void {
    $this->requires_bibcode(function() : void {
-    $text = "{{Cite arxiv|last=Sussillo|first=David|last2=Abbott|first2=L. F.|date=2014-12-19|title=Random Walk Initialization for Training Very Deep Feedforward Networks|eprint=1412.6558 |class=cs.NE}}";
+    $text = "{{Cite arXiv|last1=Sussillo|first1=David|last2=Abbott|first2=L. F.|date=2014-12-19|title=Random Walk Initialization for Training Very Deep Feedforward Networks|eprint=1412.6558 |class=cs.NE}}";
     $expanded = $this->process_citation($text);
     $this->assertNull($expanded->get2('bibcode'));  // If this eventually gets a journal, we will have to change the test
    });
