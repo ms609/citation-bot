@@ -8,11 +8,6 @@ declare(strict_types=1);
 require_once __DIR__ . '/../testBaseClass.php';
  
 final class CrashTest extends testBaseClass {
- 
-  public function testFillCache() : void {
-    $this->fill_cache();
-    $this->assertTrue(TRUE);
-  }
 
   public function testBadPage2() : void {  // Use this when debugging pages that crash the bot
     $bad_page = BAD_PAGE_API;
