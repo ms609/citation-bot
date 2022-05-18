@@ -51,9 +51,11 @@ function doi_works(string $doi) : ?bool {
     return NULL; // @codeCoverageIgnore
   }
   if ($works === FALSE) {
+    echo "\n" . $doi . "\n";
     $cache_bad[$doi] = TRUE;
     return FALSE;
   }
+  echo "\n" . $doi . "\n";
   $cache_good[$doi] = TRUE;
   return TRUE;
 }
@@ -1119,9 +1121,11 @@ function hdl_works(string $hdl) {
     return NULL; // @codeCoverageIgnore
   }
   if ($works === FALSE) {
+    echo "\n" . $hdl . "\n";
     $cache_bad[$hdl] = TRUE;
     return FALSE;
   }
+  echo "\n" . $hdl . "\n";
   $cache_good[$hdl] = $works;
   return $works;
 }
