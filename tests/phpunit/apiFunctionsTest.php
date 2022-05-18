@@ -684,7 +684,7 @@ final class apiFunctionsTest extends testBaseClass {
      $template = $this->make_citation($text);
      $results = (object) array();
      expand_book_adsabs($template, $results);
-     $this->assertSame('2003', $template->get2('year'));
+     $this->assertNull($template->get2('year'));
   }
 
   public function testBibcodeData12() : void {
