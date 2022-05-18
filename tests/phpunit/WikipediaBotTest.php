@@ -15,6 +15,11 @@ require_once __DIR__ . '/../testBaseClass.php';
      }
     }
    
+    public function testFillCache() : void {
+      $this->fill_cache();
+      $this->assertTrue(TRUE);
+    }
+   
     public function testCoverageFixer() : void {
        WikipediaBot::make_ch();
        $this->assertTrue(TRUE);
