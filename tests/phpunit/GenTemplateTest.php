@@ -12,6 +12,11 @@ final class GenTemplateTest extends testBaseClass {
      $this->markTestSkipped();
    }
   }
+ 
+  public function testFillCache() : void {
+    $this->fill_cache();
+    $this->assertTrue(TRUE);
+  }
 
   public function testGenTemplate() : void {
       // Run API
