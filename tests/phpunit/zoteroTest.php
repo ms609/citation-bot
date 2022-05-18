@@ -14,6 +14,11 @@ final class zoteroTest extends testBaseClass {
    }
   }
   
+  public function testFillCache() : void {
+    $this->fill_cache();
+    $this->assertTrue(TRUE);
+  }
+  
   public function testCoverageFixer() : void {
      Zotero::create_ch_zotero();
      $this->assertTrue(TRUE);
