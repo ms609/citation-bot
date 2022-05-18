@@ -6,7 +6,6 @@ parameters:
 		- SLOW_MODE
 		- FLUSHING_OKAY
 		- TRAVIS
-		- USE_CITOID
 		- EDIT_AS_USER
 		- BIG_JOB_MODE
 		- MAX_TRIES

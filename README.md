@@ -87,18 +87,6 @@ Or for testing in the shell:
 
 Before entering the k8s shell, it may be necessary to install phpunit (as wget is not available in the k8s shell).
 
-## Dependency services
-
-The bot accesses an instance of the Zotero translation server.  The source code for this server is https://github.com/ms609/translation-server
-
-This can be updated by maintainers logging on to Toolforge, then entering the commands 
-
-    become translation-server
-    npm update
-    webservice restart
-    
-In order to reduce complexity, the code currently uses a Wikipedia hosted and managed server instead at https://en.wikipedia.org/api/rest_v1/#/Citation/getCitation.
-
 ## Running on the command line
 In order to run on the command line one needs OAuth tokens as documented in `env.php.example` (there are additional API keys that are needed to run some functions).  Change BOT_USER_AGENT in `setup.php` to something else. Use composer to `composer require mediawiki/oauthclient:1.2.0`.  Then the bot can be run such as:
 
