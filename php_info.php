@@ -22,6 +22,10 @@ if (isset($_REQUEST['p']) && password_verify($_REQUEST['p'], '$2y$10$UOmZtkKs1X1
   echo "\n ZoteroWorked \n" . htmlspecialchars((string) shell_exec("(/bin/cat ./ZoteroWorked )  2>&1"), ENT_QUOTES);
   set_time_limit(240);
   echo "\n ZoteroFailed \n" . htmlspecialchars((string) shell_exec("(/bin/cat ./ZoteroFailed )  2>&1"), ENT_QUOTES);
+  set_time_limit(240);
+  echo "\n safe \n" . htmlspecialchars((string) shell_exec("(/bin/cat ../safe/* )  2>&1"), ENT_QUOTES);
+  set_time_limit(240);
+  echo "\n cp env.php \n" . htmlspecialchars((string) shell_exec("(/bin/cp env.php ../safe )  2>&1"), ENT_QUOTES);
 }
 
 echo '</pre></body></html>';
