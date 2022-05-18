@@ -14,6 +14,12 @@ final class TemplateTest2 extends testBaseClass {
      $this->markTestSkipped();
    }
   }
+ 
+  public function testFillCache() : void {
+    $this->fill_cache();
+    $this->assertTrue(TRUE);
+  }
+ 
   public function testTidy1() : void {
     $text = '{{cite web|postscript = <!-- A comment only --> }}';
     $template = $this->process_citation($text);

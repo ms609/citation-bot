@@ -14,6 +14,11 @@ final class gadgetTest extends testBaseClass {
    }
   }
  
+  public function testFillCache() : void {
+    $this->fill_cache();
+    $this->assertTrue(TRUE);
+  }
+ 
   public function testGadget() : void {
       ob_start();
       $_POST['text'] = '{{cite|pmid=34213}}';

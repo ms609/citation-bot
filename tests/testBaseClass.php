@@ -24,9 +24,6 @@ abstract class testBaseClass extends PHPUnit\Framework\TestCase {
     AdsAbsControl::big_give_up();
     Zotero::block_zotero();
     gc_collect_cycles();
-    if (BAD_PAGE_API === '') {
-     $this->fill_cache();
-    }
   }
 
   protected function requires_secrets(callable $function) : void {

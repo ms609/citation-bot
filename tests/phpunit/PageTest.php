@@ -14,6 +14,11 @@ final class PageTest extends testBaseClass {
      $this->markTestSkipped();
    }
   }
+ 
+  public function testFillCache() : void {
+    $this->fill_cache();
+    $this->assertTrue(TRUE);
+  }
 
   public function testPageChangeSummary1() : void {
       $page = $this->process_page('{{cite journal|chapter=chapter name|title=book name}}'); // Change to book from journal
