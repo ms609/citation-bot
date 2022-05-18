@@ -169,7 +169,7 @@ const UCFIRST_JOURNAL_ACRONYMS = array(/* The following will be automatically up
           " Rna ", " S.a.p.i.en.s ", " S.a.p.i.en.s. ", " Saggiatore Musicale ", " Scalacs ", 
           " SCH ", " SCR. ", " Siam Journal on ", " Siam Review ", " Sicot-J ", " Spums J ", 
           " SRP Arh Celok Lek ", " Star Trek: The Official Monthly Magazine ", " STD & Aids ", 
-          " STDS ", " Série a ", " Tae Kwon do Times ", " Tappi Journal ", " Tellus a ", " Thai for Bull "
+          " STDS ", " Série a ", " Tae Kwon do Times ", " Tappi Journal ", " Tellus a ", " Thai for Bull ",
           " The ANNALS of the American Academy ", " The de Paulia ", " The Embo Journal ", 
           " The New Yorker (Serial) ", " Tidsskr nor Laegeforen ", " Tidsskr nor Lægeforen ", 
           " Time off Magazine ", " Time Out London ", " Tot de ", " Transactions and Archaeological Record of the Cardiganshire Antiquarian Society ", 
