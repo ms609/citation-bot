@@ -26,7 +26,7 @@ class Page {
   protected string $start_text = '';
   protected int $lastrevid = 0;
   protected bool $page_error = FALSE;
-  protected bool static $told_fast = FALSE;
+  protected static bool $told_fast = FALSE;
 
   function __construct() { 
       $this->construct_modifications_array();
