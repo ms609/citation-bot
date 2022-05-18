@@ -2007,7 +2007,7 @@ final class Template {
     if (strpos($this->get('bibcode'), 'book') !== FALSE) {
       if ($result->numFound !== 1) {
         if ($this->blank(['year', 'date']) && preg_match('~^(\d{4}).*book.*$~', $this->get('bibcode'), $matches)) {
-            $template->add_if_new('year', $matches[1]);
+            $this->add_if_new('year', $matches[1]);
         }
         return FALSE; 
       }
