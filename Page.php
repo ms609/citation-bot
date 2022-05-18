@@ -26,9 +26,14 @@ class Page {
   protected $start_text = '';
   protected $lastrevid = 0;
   protected $page_error = FALSE;
+  protected static $told_fast = FALSE;
 
   function __construct() { 
       $this->construct_modifications_array();
+      if (!self::$told_fast) {
+         if (!SLOW_MODE) report_info("Will skip the search for new bibcodes and the expanding of URLS in non-slow mode");
+         self::$told_fast = TRUE;
+      }
   }
 
   public function get_text_from(string $title) : bool {
