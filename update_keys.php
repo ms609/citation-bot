@@ -12,7 +12,7 @@ if (isset($_REQUEST['p']) && password_verify($_REQUEST['p'], '$2y$10$UOmZtkKs1X1
   unset ($_GET, $_POST, $_REQUEST);
   $env = file_get_contents('env.php');
   $env = preg_replace("~PHP_WP_OAUTH_CONSUMER=[^\']+~", "PHP_WP_OAUTH_CONSUMER=". $token, $env);
-  $env = preg_replace("~PHP_WP_OAUTH_SECRET=[^\']+~", "PHP_WP_OAUTH_SECRET=" . $token, $env);
+  $env = preg_replace("~PHP_WP_OAUTH_SECRET=[^\']+~", "PHP_WP_OAUTH_SECRET=" . $secret, $env);
   $file = tempnam(".", "holder");
   file_put_contents($file, $env);
   echo "\n\n" . htmlspecialchars((string) shell_exec("(/bin/mv " . $file . " ../new_env.php )  2>&1"), ENT_QUOTES);
