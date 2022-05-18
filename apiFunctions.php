@@ -1295,14 +1295,13 @@ function expand_book_adsabs(Template $template, object $record) : bool {
       $return = TRUE;
     }
     if ($template->blank(array_merge(FIRST_EDITOR_ALIASES, FIRST_AUTHOR_ALIASES, ['publisher']))) { // Avoid re-adding editors as authors, etc.
-      $i = 0;
+       $i = 0;
        if (isset($record->author)) {
         foreach ($record->author as $author) {
          $template->add_if_new('author' . (string) ++$i, $author);
          $return = TRUE;
         }
        }
-      }
     }
     return $return;
   }
