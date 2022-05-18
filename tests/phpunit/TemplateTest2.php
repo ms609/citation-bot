@@ -4311,5 +4311,20 @@ final class TemplateTest2 extends testBaseClass {
      $template = $this->make_citation($text);
      $this->assertFalse($template->get_identifiers_from_url());
      $this->assertNotNull($template->get2('url'));
+    
+     $text='{{cite web|url=https://citeseerx}}';
+     $template = $this->make_citation($text);
+     $this->assertFalse($template->get_identifiers_from_url());
+     $this->assertNotNull($template->get2('url'));
+    
+     $text='{{cite web|url=https://worldcat.org}}';
+     $template = $this->make_citation($text);
+     $this->assertFalse($template->get_identifiers_from_url());
+     $this->assertNotNull($template->get2('url'));
+    
+     $text='{{cite web|url=https://zbmath.org}}';
+     $template = $this->make_citation($text);
+     $this->assertFalse($template->get_identifiers_from_url());
+     $this->assertNotNull($template->get2('url'));
    }
 }
