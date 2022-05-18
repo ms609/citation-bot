@@ -1396,7 +1396,8 @@ final class Template {
       case 'doi-access':
         if ($this->blank('doi') || $this->has($param_name)) return FALSE;
         $this->add($param_name, $value);
-        if ($value === 'free') {
+        if ($value === 'free' && doi_works($this->get('doi'))) {
+            if (preg_match('~^https?://(?:dx\.|)doi\.org~', $this->get('url')) $this->forget('url');
             $this->this_array = array($this);
             Zotero::drop_urls_that_match_dois($this->this_array);
             $this->this_array = array();
