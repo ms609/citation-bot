@@ -1398,7 +1398,7 @@ final class Template {
         $this->add($param_name, $value);
         if ($value === 'free') {
             $this->this_array = array($this);
-            drop_urls_that_match_dois($this->this_array);
+            Zotero::drop_urls_that_match_dois($this->this_array);
             $this->this_array = array();
         }
         return TRUE;
