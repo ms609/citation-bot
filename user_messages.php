@@ -44,7 +44,7 @@ function report_error(string $text) : void {
 function report_minor_error(string $text) : void {  // For things we want to error in tests, but continue on Wikipedia
   // @codeCoverageIgnoreStart
   /** @psalm-suppress RedundantCondition */ /* PSALM thinks TRAVIS cannot be FALSE */
-  if (TRAVIS) {
+  if (!HTML_OUTPUT) { // command line and TRAVIS
     report_error($text);
   } else {
     report_warning($text);

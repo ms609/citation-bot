@@ -305,6 +305,7 @@ final class Template {
           }
         }
       }
+      doi_works($this->get('doi')); // this can be slow.  Prime cache for better slow step determination
       $this->get_inline_doi_from_title();
       $this->parameter_names_to_lowercase();
       $this->use_unnamed_params();
@@ -1128,6 +1129,7 @@ final class Template {
           $value = wikify_external_text($value);
           if ($this->has('journal') && str_equivalent($this->get('journal'), $value)) return FALSE;
           if ($this->has('title') && str_equivalent($this->get('title'), $value)) return FALSE;
+          if ($value === 'A Penguin book') return FALSE;
           return $this->add($param_name, $value);
         }
         return FALSE;
@@ -1395,6 +1397,12 @@ final class Template {
       case 'doi-access':
         if ($this->blank('doi') || $this->has($param_name)) return FALSE;
         $this->add($param_name, $value);
+        if ($value === 'free' && doi_works($this->get('doi'))) {
+            if (preg_match('~^https?://(?:dx\.|)doi\.org~', $this->get('url'))) $this->forget('url');
+            $this->this_array = array($this);
+            Zotero::drop_urls_that_match_dois($this->this_array);
+            $this->this_array = array();
+        }
         return TRUE;
 
       case 's2cid':
@@ -1965,11 +1973,6 @@ final class Template {
     }
     
     // API docs at https://github.com/adsabs/adsabs-dev-api
-    if (!SLOW_MODE && $this->blank('bibcode')) {
-     if ($needs_told) report_info("Skipping search for new bibcodes in slow mode"); // @codeCoverageIgnore
-     $needs_told = FALSE;                                                           // @codeCoverageIgnore
-     return FALSE;                                                                  // @codeCoverageIgnore
-    }
     if ($this->has('bibcode') && !$this->incomplete() &&
         ($this->has('doi') || AdsAbsControl::get_bib2doi($this->get('bibcode')) === 'X')) {  // Don't waste a query, if it has a doi or will not find a doi
       return FALSE;  // @codeCoverageIgnore
@@ -2003,8 +2006,14 @@ final class Template {
       return FALSE;                                           // @codeCoverageIgnore
     }
 
-    if ($this->has('bibcode') && strpos($this->get('bibcode'), 'book') !== FALSE) {
-      return expand_book_adsabs($this, $result);
+    if (strpos($this->get('bibcode'), 'book') !== FALSE) {
+      if ($result->numFound !== 1) {
+        if ($this->blank(['year', 'date']) && preg_match('~^(\d{4}).*book.*$~', $this->get('bibcode'), $matches)) {
+            $this->add_if_new('year', $matches[1]);
+        }
+        return FALSE; 
+      }
+      return expand_book_adsabs($this, $result->docs[0]);
     }
     if ($result->numFound == 0) {
       // Avoid blowing through our quota
@@ -2094,28 +2103,12 @@ final class Template {
 
       if (strpos((string) $record->bibcode, 'book') !== FALSE) {  // Found a book.  Need special code
          $this->add_if_new('bibcode_nosearch', (string) $record->bibcode);
-         return expand_book_adsabs($this, $result);
+         return expand_book_adsabs($this, $record);
       }
 
-      if ($this->wikiname() === 'cite book' || $this->wikiname() === 'citation') { // Possible book and we found book review in journal
-        $book_count = 0;
-        if($this->has('publisher')) $book_count += 1;
-        if($this->has('isbn'))      $book_count += 2;
-        if($this->has('location'))  $book_count += 1;
-        if($this->has('chapter'))   $book_count += 2;
-        if($this->has('oclc'))      $book_count += 1;
-        if($this->has('lccn'))      $book_count += 2;
-        if($this->has('journal'))   $book_count -= 2;
-        if($this->has('series'))    $book_count += 1;
-        if($this->has('edition'))   $book_count += 2;
-        if($this->has('asin'))      $book_count += 2;
-        if(stripos($this->get('url'), 'google') !== FALSE && stripos($this->get('url'), 'book') !== FALSE) $book_count += 2;
-        if(isset($record->year) && $this->year() && ((int)$record->year !== (int)$this->year())) $book_count += 1;
-        if($this->wikiname() === 'cite book') $book_count += 3;
-        if($book_count > 3) {
+      if ($this->looksLikeBookReview($record)) { // Possible book and we found book review in journal
           report_info("Suspect that BibCode " . bibcode_link((string) $record->bibcode) . " is book review.  Rejecting.");
           return FALSE;
-        }
       }
 
       if ($this->blank('bibcode')) {
@@ -2133,6 +2126,27 @@ final class Template {
       report_inline('multiple records retrieved.  Ignoring.');  // @codeCoverageIgnore
       return FALSE;                                             // @codeCoverageIgnore
     }
+  }
+  
+  public function looksLikeBookReview(object $record) : bool {
+      if ($this->wikiname() === 'cite book' || $this->wikiname() === 'citation') {
+        $book_count = 0;
+        if($this->has('publisher')) $book_count += 1;
+        if($this->has('isbn'))      $book_count += 2;
+        if($this->has('location'))  $book_count += 1;
+        if($this->has('chapter'))   $book_count += 2;
+        if($this->has('oclc'))      $book_count += 1;
+        if($this->has('lccn'))      $book_count += 2;
+        if($this->has('journal'))   $book_count -= 2;
+        if($this->has('series'))    $book_count += 1;
+        if($this->has('edition'))   $book_count += 2;
+        if($this->has('asin'))      $book_count += 2;
+        if(stripos($this->get('url'), 'google') !== FALSE && stripos($this->get('url'), 'book') !== FALSE) $book_count += 2;
+        if(isset($record->year) && $this->year() && ((int)$record->year !== (int)$this->year())) $book_count += 1;
+        if($this->wikiname() === 'cite book') $book_count += 3;
+        if($book_count > 3) return TRUE;
+      }
+      return FALSE;
   }
 
   public function expand_by_RIS(string &$dat, bool $add_url) : void { // Pass by pointer to wipe this data when called from use_unnamed_params()
@@ -2244,14 +2258,15 @@ final class Template {
           $ris_publisher = trim($ris_part[1]);  // Get these from JSTOR
           $dat = trim(str_replace("\n$ris_line", "", "\n$dat"));
           break;
-        case "M3": case "N1": case "N2": case "ER": case "TY": case "KW":
+        case "M3": case "N1": case "N2": case "ER": case "TY": case "KW": case "T3":  // T3 is often the sub-title of a book
+        case "A2": // This can be book editors or authors of the book that is reviewed
         case "C1": case "DB": case "AB": case "Y2": // The following line is from JSTOR RIS (basically the header and blank lines)
         case "": case "Provider: JSTOR http://www.jstor.org": case "Database: JSTOR": case "Content: text/plain; charset=\"UTF-8\"";
           $dat = trim(str_replace("\n$ris_line", "", "\n$dat")); // Ignore these completely
           break;
         default:
           if (isset($ris_part[1])) {
-             report_info("Unexpected RIS data type ignored: " . echoable(trim($ris_part[0])) . " set to " . echoable(trim($ris_part[1])));
+             report_minor_error("Unexpected RIS data type ignored: " . echoable(trim($ris_part[0])) . " set to " . echoable(trim($ris_part[1]))); // @codeCoverageIgnore
           };
       }
       unset($ris_part[0]);
@@ -3795,17 +3810,17 @@ final class Template {
         case 'doi':
           $doi = $this->get($param);
           if (!$doi) return;
-          if ($doi == '10.1267/science.040579197') {
+          if ($doi === '10.1267/science.040579197') {
             // This is a bogus DOI from the PMID example file
             $this->forget('doi');
             return;
           }
-          if ($doi == '10.5284/1000184') {
+          if ($doi === '10.5284/1000184') {
             // This is a DOI for an entire database, not anything within it
             $this->forget('doi');
             return;
           }
-          if (substr($doi, 0, 8) == '10.5555/') { // Test DOI prefix.  NEVER will work
+          if (substr($doi, 0, 8) === '10.5555/') { // Test DOI prefix.  NEVER will work
             $this->forget('doi');
             if ($this->blank('url')) {
               $test_url = 'https://plants.jstor.org/stable/' . $doi;
@@ -3834,16 +3849,16 @@ final class Template {
             $doi = sanitize_doi($doi);
             $this->set($param, $doi);
           }
-          if (preg_match('~^10.1093\/oi\/authority\.\d{10,}$~', $doi) &&
-              preg_match('~oxfordreference.com\/view\/10.1093\/oi\/authority\.\d{10,}~', $this->get('url')) &&
-              !doi_works($doi)) {
+          if (!doi_works($doi)) {
+            if (preg_match('~^10.1093\/oi\/authority\.\d{10,}$~', $doi) &&
+              preg_match('~oxfordreference.com\/view\/10.1093\/oi\/authority\.\d{10,}~', $this->get('url'))) {
+             $this->forget('doi');
+             return;
+            } elseif (preg_match('~^10\.1093\/law\:epil\/9780199231690\/law\-9780199231690~', $doi) &&
+              preg_match('~ouplaw.com\/view\/10\.1093/law\:epil\/9780199231690\/law\-9780199231690~', $this->get('url'))) {
             $this->forget('doi');
             return;
-          } elseif (preg_match('~^10\.1093\/law\:epil\/9780199231690\/law\-9780199231690~', $doi) &&
-              preg_match('~ouplaw.com\/view\/10\.1093/law\:epil\/9780199231690\/law\-9780199231690~', $this->get('url')) &&
-              !doi_works($doi)) {
-            $this->forget('doi');
-            return;
+            }
           }
           if (stripos($doi, '10.1093/law:epil') === 0 || stripos($doi, '10.1093/oi/authority') === 0) {
             return;
@@ -3856,7 +3871,7 @@ final class Template {
             }
            }
           }
-          if (preg_match('~^10\.2307/(\d+)$~', $this->get_without_comments_and_placeholders('doi'))) {
+          if ($this->blank('jstor') && preg_match('~^10\.2307/(\d+)$~', $this->get_without_comments_and_placeholders('doi'))) {
             $this->add_if_new('jstor', substr($this->get_without_comments_and_placeholders('doi'), 8));
           }
           if ($this->wikiname() === 'cite arxiv') $this->change_name_to('cite journal');
@@ -4011,13 +4026,13 @@ final class Template {
         case 'issn':
         case 'eissn':
           if ($this->blank($param)) return;
-          $this->set($param, preg_replace('~\s?[\-\–]+\s?~', '-', $this->get($param))); // a White space next to a dash or bad dash
-          if (preg_match('~^(\d{4})\s?(\d{3}[\dxX])$~', $this->get($param), $matches)) {
-            $this->set($param, $matches[1] . '-' . strtoupper($matches[2])); // Add dash
+          $orig = $this->get($param);
+          $new = preg_replace('~\s?[\-\–]+\s?~', '-', $orig); // a White space next to a dash or bad dash
+          $new = str_replace('x', 'X', $new);
+          if (preg_match('~^(\d{4})\s?(\d{3}[\dX])$~', $new, $matches)) {
+            $new =  $matches[1] . '-' . strtoupper($matches[2]); // Add dash
           }
-          if (preg_match('~^\d{4}\-\d{3}x$~', $this->get($param))) {
-            $this->set($param, strtoupper($this->get($param))); // Uppercase X
-          }
+          if ($orig !== $new) $this->set($param, $new);
           return;
 
         case 'asin':
@@ -6189,8 +6204,8 @@ final class Template {
         if (stripos($url, 'CITATION_BOT') === FALSE &&
             filter_var($url, FILTER_VALIDATE_URL) !== FALSE &&
             !preg_match('~^https?://[^/]+/?$~', $url) &&       // Ignore just a hostname
-            preg_match (REGEXP_IS_URL, $url) === 1) {
-           preg_match('~^https?://([^/]+)/~', $url, $matches);
+            preg_match (REGEXP_IS_URL, $url) === 1 &&
+           preg_match('~^https?://([^/]+)/~', $url, $matches)) {
            $hostname = $matches[1];
            if (str_ireplace(CANONICAL_PUBLISHER_URLS, '', $hostname) === $hostname &&
                str_ireplace(PROXY_HOSTS_TO_ALWAYS_DROP, '', $hostname) === $hostname &&
@@ -6253,8 +6268,114 @@ final class Template {
       $trial[] = $match[1];
       $trial[] = $match[2];
     }
-    if (preg_match("~^10\.1093/ww/9780199540891\.001\.0001/ww\-9780199540884\-e\-(\d+)$~", $doi, $match)) {
-      $trial[] = '10.1093/ww/9780199540884.013.U' . $match[1];
+    if (strpos($doi, '10.1093') === 0 && doi_works($doi) !== TRUE) {
+          if (preg_match('~^10\.1093/(?:ref:|)odnb/9780198614128\.001\.0001/odnb\-9780198614128\-e\-(\d+)$~', $doi, $matches)) {
+              $trial[] = '10.1093/ref:odnb/' . $matches[1];
+              $trial[] = '10.1093/odnb/' . $matches[1];
+              $trial[] = '10.1093/odnb/9780198614128.013.' . $matches[1];
+          }
+          if (preg_match('~^10\.1093/odnb/(\d+)$~', $doi, $matches)) {
+              $trial[] = '10.1093/ref:odnb/' . $matches[1];
+              $trial[] = '10.1093/odnb/9780198614128.013.' . $matches[1];
+          }
+          if (preg_match('~^10\.1093/ref:odnb/(\d+)$~', $doi, $matches)) {
+              $trial[] = '10.1093/odnb/' . $matches[1];
+              $trial[] = '10.1093/odnb/9780198614128.013.' . $matches[1];
+          }
+          if (preg_match('~^10\.1093/9780198614128.013.(\d+)$~', $doi, $matches)) {
+              $trial[] = '10.1093/odnb/' . $matches[1];
+              $trial[] = '10.1093/odnb/9780198614128.013.' . $matches[1];
+          }
+          if (preg_match('~^10\.1093/anb/9780198606697\.001\.0001/anb\-9780198606697\-e\-(\d+)$~', $doi, $matches)) {
+              $trial[] = '10.1093/anb/9780198606697.article.' . $matches[1];
+          }
+          if (preg_match('~^10\.1093/benz/9780199773787\.001\.0001/acref-9780199773787\-e\-(\d+)$~', $doi, $matches)) {
+              $trial[] = '10.1093/benz/9780199773787.article.B' . $matches[1];
+          }
+          if (preg_match('~^10\.1093/gao/9781884446054\.001\.0001/oao\-9781884446054\-e\-7000(\d+)$~', $doi, $matches)) {
+              $trial[] = '10.1093/gao/9781884446054.article.T' . $matches[1];
+          }
+          if (preg_match('~^10\.1093/gao/9781884446054\.001\.0001/oao\-9781884446054\-e\-700(\d+)$~', $doi, $matches)) {
+              $trial[] = '10.1093/gao/9781884446054.article.T' . $matches[1];
+          }
+          if (preg_match('~^10\.1093/acref/9780195301731\.001\.0001/acref\-9780195301731\-e\-(\d+)$~', $doi, $matches)) {
+              $trial[] = '10.1093/acref/9780195301731.013.' . $matches[1];
+          }
+          if (preg_match('~^10\.1093/ww/(9780199540891|9780199540884)\.001\.0001/ww\-9780199540884\-e\-(\d+)$~', $doi, $matches)) {
+              $trial[] = '10.1093/ww/9780199540884.013.U' . $matches[2];
+          }
+          if (preg_match('~^10\.1093/gmo/9781561592630\.001\.0001/omo-9781561592630-e-00000(\d+)$~', $doi, $matches)) {
+              $trial[] = '10.1093/gmo/9781561592630.article.' . $matches[1];
+          }
+          if (preg_match('~^10\.1093/gmo/9781561592630\.001\.0001/omo-9781561592630-e-100(\d+)$~', $doi, $matches)) {
+              $trial[] = '10.1093/gmo/9781561592630.article.A' . $matches[1];
+          }
+          if (preg_match('~^10\.1093/gmo/9781561592630\.001\.0001/omo-9781561592630-e-5000(\d+)$~', $doi, $matches)) {
+              $trial[] = '10.1093/gmo/9781561592630.article.O' . $matches[1];
+          }
+          if (preg_match('~^10\.1093/gmo/9781561592630\.001\.0001/omo-9781561592630-e-400(\d+)$~', $doi, $matches)) {
+              $trial[] = '10.1093/gmo/9781561592630.article.L' . $matches[1];
+          }
+          if (preg_match('~^10\.1093/gmo/9781561592630\.001\.0001/omo-9781561592630-e-2000(\d+)$~', $doi, $matches)) {
+              $trial[] = '10.1093/gmo/9781561592630.article.J' . $matches[1];
+          }
+          if (preg_match('~^10\.1093/acrefore/9780199366439\.001\.0001/acrefore\-9780199366439\-e\-(\d+)$~', $doi, $matches)) {
+              $trial[] = '10.1093/acrefore/9780199366439.013.' . $matches[1];
+          }
+          if (preg_match('~^10\.1093/acrefore/9780190228613\.001\.0001/acrefore\-9780190228613\-e\-(\d+)$~', $doi, $matches)) {
+              $trial[] = '10.1093/acrefore/9780190228613.013.' . $matches[1];
+          }
+          if (preg_match('~^10\.1093/acrefore/9780199389414\.001\.0001/acrefore\-9780199389414\-e\-(\d+)$~', $doi, $matches)) {
+              $trial[] = '10.1093/acrefore/9780199389414.013.' . $matches[1];
+          }
+          if (preg_match('~^10\.1093/acrefore/9780199329175\.001\.0001/acrefore\-9780199329175\-e\-(\d+)$~', $doi, $matches)) {
+              $trial[] = '10.1093/acrefore/9780199329175.013.' . $matches[1];
+          }
+          if (preg_match('~^10\.1093/acrefore/9780190277734\.001\.0001/acrefore\-9780190277734\-e\-(\d+)$~', $doi, $matches)) {
+              $trial[] = '10.1093/acrefore/9780190277734.013.' . $matches[1];
+          }
+          if (preg_match('~^10\.1093/acrefore/9780190846626\.001\.0001/acrefore\-9780190846626\-e\-(\d+)$~', $doi, $matches)) {
+              $trial[] = '10.1093/acrefore/9780190846626.013.' . $matches[1];
+          }
+          if (preg_match('~^10\.1093/acrefore/9780190228620\.001\.0001/acrefore\-9780190228620\-e\-(\d+)$~', $doi, $matches)) {
+              $trial[] = '10.1093/acrefore/9780190228620.013.' . $matches[1];
+          }
+          if (preg_match('~^10\.1093/acrefore/9780199340378\.001\.0001/acrefore\-9780199340378\-e\-(\d+)$~', $doi, $matches)) {
+              $trial[] = '10.1093/acrefore/9780199340378.013.' . $matches[1];
+          }
+          if (preg_match('~^10\.1093/acrefore/9780190854584\.001\.0001/acrefore\-9780190854584\-e\-(\d+)$~', $doi, $matches)) {
+              $trial[] = '10.1093/acrefore/9780190854584.013.' . $matches[1];
+          }
+          if (preg_match('~^10\.1093/acrefore/9780199381135\.001\.0001/acrefore\-9780199381135\-e\-(\d+)$~', $doi, $matches)) {
+              $trial[] = '10.1093/acrefore/9780199381135.013.' . $matches[1];
+          }
+          if (preg_match('~^10\.1093/acrefore/9780190236557\.001\.0001/acrefore\-9780190236557\-e\-(\d+)$~', $doi, $matches)) {
+              $trial[] = '10.1093/acrefore/9780190236557.013.' . $matches[1];
+          }
+          if (preg_match('~^10\.1093/acrefore/9780190228637\.001\.0001/acrefore\-9780190228637\-e\-(\d+)$~', $doi, $matches)) {
+              $trial[] = '10.1093/acrefore/9780190228637.013.' . $matches[1];
+          }
+          if (preg_match('~^10\.1093/acrefore/9780190201098\.001\.0001/acrefore\-9780190201098\-e\-(\d+)$~', $doi, $matches)) {
+              $trial[] = '10.1093/acrefore/9780190201098.013.' . $matches[1];
+          }
+          if (preg_match('~^10\.1093/oso/(\d{13})\.001\.0001/oso\-(\d{13})\-chapter\-(\d+)$~', $doi, $matches)) {
+            if ($matches[1] === $matches[2]) {
+              $trial[] = '10.1093/oso/' . $matches[1] . '.003.' . str_pad($matches[3], 4, "0", STR_PAD_LEFT);
+            }
+          }
+          if (preg_match('~^10\.1093/med/9780199592548\.001\.0001/med\-9780199592548-chapter-(\d+)$~', $doi, $matches)) {
+            $trial[] = '10.1093/med/9780199592548.003.' . str_pad($matches[1], 4, "0", STR_PAD_LEFT);
+          }
+          if (preg_match('~^10\.1093/oso/(\d{13})\.001\.0001/oso\-(\d{13})$~', $doi, $matches)) {
+            if ($matches[1] === $matches[2]) {
+              $trial[] = '10.1093/oso/' . $matches[1] . '.001.0001';
+            }
+          }
+          if (preg_match('~^10\.1093/oxfordhb/(\d{13})\.001\.0001/oxfordhb\-(\d{13})-e-(\d+)$~', $doi, $matches)) {
+            if ($matches[1] === $matches[2]) {
+              $trial[] = '10.1093/oxfordhb/' . $matches[1] . '.013.' . $matches[3];
+            }
+          }
     }
     $replacements = array ("&lt;" => "<", "&gt;" => ">");
     if (preg_match("~&[lg]t;~", $doi)) {
@@ -6445,7 +6566,7 @@ final class Template {
     }
   }
 
-  protected function page() : string {
+  public function page() : string {
     if ($this->has('pages')) {
       $page = $this->get('pages');
     } else {
@@ -6455,7 +6576,7 @@ final class Template {
     return $page;
   }
 
-  protected function year() : string {
+  public function year() : string {
     $matches = ['', '']; // prevent memory leak in some PHP versions
     if ($this->has('year')) {
       return $this->get('year');
@@ -7031,7 +7152,7 @@ final class Template {
           case "aqs": case "gs_l": case "uact": case "tbo": case "tbs":
           case "num": case "redir_esc": case "gs_lcp": case "sxsrf":
           case "gfe_rd": case "gws_rd": case "rlz": case "sclient":
-          case "prmd":
+          case "prmd": case "dpr":
              break;
           case "btnG":
              if ($part_start[1] == "" || str_i_same($part_start[1], 'Search')) break;
@@ -7045,7 +7166,7 @@ final class Template {
              if (str_i_same($part_start[1], 'utf-8')) break;  // UTF-8 is the default
              $url .=  $part . "&" ;
              break;
-          case "hl": case "safe": case "q": case "tbm":
+          case "hl": case "safe": case "q": case "tbm": case "start":
              $url .=  $part . "&" ;
              break;
           default:

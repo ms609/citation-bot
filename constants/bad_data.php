@@ -13,7 +13,7 @@ const BAD_ACCEPTED_MANUSCRIPT_TITLES = array("oup accepted manuscript", "placeho
                                              "placeholder for arabic language transliteration", "article not found");
 const BAD_AUTHORS = array("unknown", "missing", "- -.", "- -", "no authorship indicated", "no authorship", "no author",
                            "no authors", "no author indicated", "no authorship indicated", "dk eyewitness", "united states",
-                           "great britain", "indiatoday", "natural history museum bern", "daily sabah");
+                           "great britain", "indiatoday", "natural history museum bern", "daily sabah", 'el país', 'el pais');
 const NON_HUMAN_AUTHORS = array('collaborat', 'reporter', 'journalist', 'correspondent', 'anchor', 'staff', 'foreign',
                                 'national', 'endowment', ' for the ', 'humanities', 'committee', 'group',
                                 'society', ' of america', 'association', ' at the ', 'board of ', 'communications',
@@ -78,7 +78,7 @@ const BAD_TITLES = array("unknown", "missing", "arxiv e-prints", "arxiv mathemat
                          "breaking news, analysis, politics, blogs, news photos, video, tech reviews",
                          "breaking news, analysis, politics, blogs, news photos, video, tech reviews - time.com",
                          "redirect notice", "oxford music online", "trove - archived webpage", "pagina inicia",
-                         "404 not found");
+                         "404 not found", "404页面", "sign up ");
 const IN_PRESS_ALIASES = array("in press", "inpress", "pending", "published", 
                                "published online", "no-no", "n/a", "online ahead of print", 
                                "unpublished", "unknown", "tba", "forthcoming", "in the press", 
@@ -121,7 +121,7 @@ const BAD_ZOTERO_TITLES = ['Browse publications', 'Central Authentication Servic
                                  '404 Page - ', '404: Page Not Found ', '404: PAGE NOT FOUND', '404 Error',
                                  '404 | ', '页面不存在', 'De pagina is niet gevonden', '404 - ', ' Stranica nije pronađena',
                                  '404 Page', '404. The page', "wasn't found on this server", '404. The URL', 
-                                 'ShieldSquare', '404 Not Found'];
+                                 'ShieldSquare', '404 Not Found', "404页面", "Sign up | LinkedIn"];
 
 const CANONICAL_PUBLISHER_URLS = array ('elsevier.com', 'springer.com', 'sciencedirect.com', 'tandfonline.com',
                                 'taylorandfrancis.com', 'wiley.com', 'sagepub.com', 'sagepublications.com',

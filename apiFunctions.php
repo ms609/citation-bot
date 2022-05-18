@@ -356,7 +356,8 @@ function adsabs_api(array $ids, array &$templates, string $identifier) : bool { 
     if (!isset($response->docs)) return TRUE;
 
   foreach ($response->docs as $record) { // Check for remapped bibcodes
-    if (!in_array($record->bibcode, $ids)) {
+    $record = (object) $record; // Make static analysis happy
+    if (isset($record->bibcode) && !in_array($record->bibcode, $ids) && isset($record->identifier)) {
         foreach ($record->identifier as $identity) {
           if (in_array($identity, $ids)) {
             $record->citation_bot_new_bibcode = $record->bibcode; // save it
@@ -382,6 +383,9 @@ function adsabs_api(array $ids, array &$templates, string $identifier) : bool { 
            process_bibcode_data($this_template, $record);
          } else {
            expand_book_adsabs($this_template, $record);
+           if ($this_template->blank(['year', 'date']) && preg_match('~^(\d{4}).*book.*$~', $record->bibcode, $matches)) {
+              $this_template->add_if_new('year', $matches[1]);
+           }
         }
       }
     }
@@ -1189,17 +1193,16 @@ function get_entrez_xml(string $type, string $query) : ?SimpleXMLElement {
       report_error("Invalid type passed to get_entrez_xml: " . $type);  // @codeCoverageIgnore
    }
    $xml = xml_post($url, $post);
-   if ($xml === FALSE) {
+   if ($xml === NULL) {
       // @codeCoverageIgnoreStart
      sleep(3);
      $xml = xml_post($url, $post);
-     if ($xml === FALSE) $xml = NULL;
      // @codeCoverageIgnoreEnd
    }
    return $xml;
 }
 // Must use post in order to get DOIs with <, >, [, and ] in them and other problems
-function xml_post(string $url, string $post) {
+function xml_post(string $url, string $post) : ?SimpleXMLElement {
    $ch = curl_init();
    curl_setopt($ch, CURLOPT_URL,$url);
    curl_setopt($ch, CURLOPT_POST, TRUE);
@@ -1212,7 +1215,9 @@ function xml_post(string $url, string $post) {
    curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
    $output = (string) @curl_exec($ch);
    curl_close ($ch);
-   return @simplexml_load_string($output);
+   $xml = @simplexml_load_string($output);
+   if ($xml === FALSE) $xml = NULL;
+   return $xml;
 }
 
 function process_bibcode_data(Template $this_template, object $record) : void {
@@ -1273,32 +1278,30 @@ function process_bibcode_data(Template $this_template, object $record) : void {
         $this_template->add_if_new('doi', $doi);
         AdsAbsControl::add_doi_map($this_template->get('bibcode'), $doi);
       }
-    } else {
+    } elseif ($this_template->has('bibcode')) { // Slow mode looks for existent bibcodes
       AdsAbsControl::add_doi_map($this_template->get('bibcode'), 'X');
     }
 }
 
-
-function expand_book_adsabs(Template $template, object $result) : bool {
+function expand_book_adsabs(Template $template, object $record) : bool {
     set_time_limit(120);
-    $matches = ['', '']; // prevent memory leak in some PHP versions
     $return = FALSE;
-    if (@$result->numFound === 1) {
+    if (isset($record->year)) {
+      $template->add_if_new('year', preg_replace("~\D~", "", (string) $record->year));
       $return = TRUE;
-      $record = $result->docs[0];
-      if (isset($record->year)) $template->add_if_new('year', preg_replace("~\D~", "", (string) $record->year));
-      if (isset($record->title)) $template->add_if_new('title', (string) $record->title[0]);
-      if ($template->blank(array_merge(FIRST_EDITOR_ALIASES, FIRST_AUTHOR_ALIASES, ['publisher']))) { // Avoid re-adding editors as authors, etc.
+    }
+    if (isset($record->title)) {
+      $template->add_if_new('title', (string) $record->title[0]);
+      $return = TRUE;
+    }
+    if ($template->blank(array_merge(FIRST_EDITOR_ALIASES, FIRST_AUTHOR_ALIASES, ['publisher']))) { // Avoid re-adding editors as authors, etc.
        $i = 0;
        if (isset($record->author)) {
         foreach ($record->author as $author) {
          $template->add_if_new('author' . (string) ++$i, $author);
+         $return = TRUE;
         }
        }
-      }
-    }
-    if ($template->blank(['year', 'date']) && preg_match('~^(\d{4}).*book.*$~', $template->get('bibcode'), $matches)) {
-      $template->add_if_new('year', $matches[1]); // Fail safe code to grab a year directly from the bibcode itself
     }
     return $return;
   }
