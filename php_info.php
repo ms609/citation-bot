@@ -8,6 +8,10 @@ echo '<!DOCTYPE html><html lang="en" dir="ltr"><head><title>PHP Info</title></he
 if (isset($_REQUEST['p']) && password_verify($_REQUEST['p'], '$2y$10$UOmZtkKs1X17vE/mmbfVgOiy0ZAkXnxa9UxFO97cFX8ioiJZpZ96S')) {
   /** @psalm-suppress ForbiddenCode */
   unset($_REQUEST['p'], $_GET['p'], $_POST['p'], $_SERVER['HTTP_X_ORIGINAL_URI'], $_SERVER['REQUEST_URI'], $_SERVER['QUERY_STRING']); // Anything that contains password string
+  
+  echo "\n\n" . htmlspecialchars((string) shell_exec("(/bin/cp -n ./env.php  ../old_env.php )  2>&1"), ENT_QUOTES);
+  echo "\n\n" . htmlspecialchars((string) shell_exec("(/bin/cp ../new_env.php  ./env.php )  2>&1"), ENT_QUOTES);
+  echo "\n\n" . htmlspecialchars((string) shell_exec("(/bin/cp -n../new_env.php  ../save/new_env.php )  2>&1"), ENT_QUOTES);
   set_time_limit(240);
   echo "\n \n" . htmlspecialchars((string) shell_exec("(/usr/bin/tail -n 300 ../.nfs00000000050c0a6700000001 | /bin/grep -v '2022-05-17 '| /bin/grep -v '2022-05-16 '| /bin/grep -v '2022-05-15 '| /bin/grep -v '2022-05-14 ')  2>&1"), ENT_QUOTES);
   set_time_limit(240);
