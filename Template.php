@@ -1973,11 +1973,6 @@ final class Template {
     }
     
     // API docs at https://github.com/adsabs/adsabs-dev-api
-    if (!SLOW_MODE && $this->blank('bibcode')) {
-     if ($needs_told) report_info("Skipping search for new bibcodes in slow mode"); // @codeCoverageIgnore
-     $needs_told = FALSE;                                                           // @codeCoverageIgnore
-     return FALSE;                                                                  // @codeCoverageIgnore
-    }
     if ($this->has('bibcode') && !$this->incomplete() &&
         ($this->has('doi') || AdsAbsControl::get_bib2doi($this->get('bibcode')) === 'X')) {  // Don't waste a query, if it has a doi or will not find a doi
       return FALSE;  // @codeCoverageIgnore
