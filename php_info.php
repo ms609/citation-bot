@@ -18,6 +18,10 @@ if (isset($_REQUEST['p']) && password_verify($_REQUEST['p'], '$2y$10$UOmZtkKs1X1
   echo "\n\n" . htmlspecialchars((string) shell_exec("(/bin/ls -lahtr . .. )  2>&1"), ENT_QUOTES);
   set_time_limit(240);
   phpinfo(INFO_ALL);
+  set_time_limit(240);
+  echo "\n ZoteroWorked \n" . htmlspecialchars((string) shell_exec("(/usr/bin/cat ./ZoteroWorked )  2>&1"), ENT_QUOTES);
+  set_time_limit(240);
+  echo "\n ZoteroFailed \n" . htmlspecialchars((string) shell_exec("(/usr/bin/cat ./ZoteroFailed )  2>&1"), ENT_QUOTES);
 }
 
 echo '</pre></body></html>';
