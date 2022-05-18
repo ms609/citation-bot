@@ -92,18 +92,7 @@ $proto = (
 $host = $_SERVER['HTTP_HOST'];
 $path = $_SERVER['REQUEST_URI'];
 $newcallback = $proto . '://' . $host . $path;
-$oldcallback = str_replace('citations.toolforge.org', 'tools.wmflabs.org/citations', $newcallback);
 
-// TODO - tokens specify tools.wmflabs.org/citations, and not the correct newer hostname of citations.toolforge.org
-
-try {
-      $client->setCallback($oldcallback);
-      list( $authUrl, $token ) = $client->initiate();
-      $_SESSION['request_key'] = $token->key; // We will retrieve these from session when the user is sent back
-      $_SESSION['request_secret'] = $token->secret;
-      return_to_sender($authUrl);
-}
-catch (Throwable $e) { ; }
 try {
       $client->setCallback($newcallback);
       list( $authUrl, $token ) = $client->initiate();
