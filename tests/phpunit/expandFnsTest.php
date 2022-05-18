@@ -14,6 +14,11 @@ final class expandFnsTest extends testBaseClass {
      $this->markTestSkipped();
    }
   }
+  
+  public function testFillCache() : void {
+    $this->fill_cache();
+    $this->assertTrue(TRUE);
+  }
 
   public function testCapitalization1a() : void {
     $this->assertSame('Molecular and Cellular Biology', title_capitalization(title_case('Molecular and cellular biology'), TRUE));

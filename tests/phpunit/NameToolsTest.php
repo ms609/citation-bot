@@ -15,6 +15,11 @@ final class NameToolsTest extends testBaseClass {
    }
   }
 
+  public function testFillCache() : void {
+    $this->fill_cache();
+    $this->assertTrue(TRUE);
+  }
+
   public function testFormatMultipleAuthors1() : void {
     $authors = 'M.A. Smith, Smith M.A., Smith MA., Martin A. Smith, MA Smith, Martin Smith'; // unparsable gibberish formatted in many ways--basically exists to check for code changes
     $result=format_multiple_authors($authors);

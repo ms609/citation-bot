@@ -1,7 +1,7 @@
 <?php
 declare(strict_types=1);
 
-require_once 'constants.php';      // @codeCoverageIgnore
+require_once 'constants.php';     // @codeCoverageIgnore
 require_once 'Template.php';      // @codeCoverageIgnore
 
 // ============================================= DOI functions ======================================
@@ -103,10 +103,10 @@ function is_doi_works(string $doi) : ?bool {
     if (preg_match('~[^\d\.]~', $registrant)) return FALSE;                 // any character that isn't a digit or a dot
   }
   throttle_dx();
-  // Try HTTP 1.0 on first try
-  $context_1 = stream_context_create(CONTEXT_INSECURE);
+
+  $context = stream_context_create(CONTEXT_INSECURE);
+  $headers_test = @get_headers("https://doi.org/" . doi_encode($doi), GET_THE_HEADERS, $context);
   $context = stream_context_create(CONTEXT_INSECURE_11);
-  $headers_test = @get_headers("https://doi.org/" . doi_encode($doi), GET_THE_HEADERS, $context_1);
   if ($headers_test === FALSE) {
      sleep(2);                                                                          // @codeCoverageIgnore
      $headers_test = @get_headers("https://doi.org/" . doi_encode($doi), GET_THE_HEADERS, $context);  // @codeCoverageIgnore
@@ -189,14 +189,15 @@ function sanitize_doi(string $doi) : string {
   // And now for 10.1093 URLs
   // The add chapter/page stuff after the DOI in the URL and it looks like part of the DOI to us
   // Things like 10.1093/oxfordhb/9780199552238.001.0001/oxfordhb-9780199552238-e-003 and 10.1093/acprof:oso/9780195304923.001.0001/acprof-9780195304923-chapter-7
-  if (strpos($doi, '10.1093') === 0) {
+  if (strpos($doi, '10.1093') === 0 && doi_works($doi) === FALSE) {
     if (preg_match('~^(10\.1093/oxfordhb.+)(?:/oxfordhb.+)$~', $doi, $match) ||
         preg_match('~^(10\.1093/acprof.+)(?:/acprof.+)$~', $doi, $match) ||
         preg_match('~^(10\.1093/acref.+)(?:/acref.+)$~', $doi, $match) ||
         preg_match('~^(10\.1093/ref:odnb.+)(?:/odnb.+)$~', $doi, $match) ||
         preg_match('~^(10\.1093/ww.+)(?:/ww.+)$~', $doi, $match) ||
         preg_match('~^(10\.1093/anb.+)(?:/anb.+)$~', $doi, $match)) {
-       $doi = $match[1];
+       $new_doi = $match[1];
+       if (doi_works($new_doi)) $doi = $new_doi;
     }
   }
   return $doi;
@@ -1011,13 +1012,13 @@ function edit_a_list_of_pages(array $pages_in_category, WikipediaBot $api, strin
   }
   if (empty($pages_in_category)) {
     report_warning('No links to expand found');
-    echo '</pre><footer><a href="./" title="Use Citation Bot again">Another</a>?</footer></body></html>';
+    bot_html_footer();
     exit();
   }
   $total = count($pages_in_category);
   if ($total > MAX_PAGES) {
     report_warning('Number of links is huge (' . (string) $total . ')  Cancelling run (maximum size is ' . (string) MAX_PAGES . ').  Listen to Obi-Wan Kenobi:  You want to go home and rethink your life.');
-    echo '</pre><footer><a href="./" title="Use Citation Bot again">Another</a>?</footer></body></html>';
+    bot_html_footer();
     exit();
   }
   if ($total > BIG_RUN) check_overused();
@@ -1039,10 +1040,11 @@ function edit_a_list_of_pages(array $pages_in_category, WikipediaBot $api, strin
       while (!$page->write($api, $edit_sum) && $attempts < MAX_TRIES) ++$attempts;
       if ($attempts < MAX_TRIES) {
         $last_rev = WikipediaBot::get_last_revision($page_title);
-        echo
+        html_echo(
         "\n  <a href=" . WIKI_ROOT . "?title=" . urlencode($page_title) . "&diff=prev&oldid="
         . $last_rev . ">diff</a>" .
-        " | <a href=" . WIKI_ROOT . "?title=" . urlencode($page_title) . "&action=history>history</a>";
+        " | <a href=" . WIKI_ROOT . "?title=" . urlencode($page_title) . "&action=history>history</a>", 
+        "\n" . WIKI_ROOT . "?title=" . urlencode($page_title) . "&diff=prev&oldid=". $last_rev . "\n");
         $final_edit_overview .=
           "\n [ <a href=" . WIKI_ROOT . "?title=" . urlencode($page_title) . "&diff=prev&oldid="
         . $last_rev . ">diff</a>" .
@@ -1058,10 +1060,12 @@ function edit_a_list_of_pages(array $pages_in_category, WikipediaBot $api, strin
     echo "\n";
   }
   if ($total > 1) {
-    echo "\n Done all " . (string) $total . " pages. \n  # # # \n" . $final_edit_overview  . ' </pre><footer><a href="./" title="Use Citation Bot again">Another</a>?</footer></body></html>';
+    if (!HTML_OUTPUT) $final_edit_overview = ''; 
+    echo "\n Done all " . (string) $total . " pages. \n  # # # \n" . $final_edit_overview;
   } else {
-    echo "\n Done with page." . '</pre><footer><a href="./" title="Use Citation Bot again">Another</a>?</footer></body></html>';
+    echo "\n Done with page.";
   }
+  bot_html_footer();
 }
 
 
@@ -1090,6 +1094,15 @@ function bot_html_header() : void {
   <pre id="botOutput">
    ');
 }
+
+/**
+ * Only on webpage
+ * @codeCoverageIgnore
+ */
+function bot_html_footer() : void {
+   if (HTML_OUTPUT) echo '</pre><footer><a href="./" title="Use Citation Bot again">Another</a>?</footer></body></html>';
+}
+
 
 // Returns NULL/FALSE/String of location
 function hdl_works(string $hdl) {

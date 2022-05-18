@@ -14,6 +14,11 @@ final class ParameterTest extends testBaseClass {
      $this->markTestSkipped();
    }
   }
+  
+  public function testFillCache() : void {
+    $this->fill_cache();
+    $this->assertTrue(TRUE);
+  }
 
   public function testValueWithPipeAndTrailingNewline() : void {
     $text = "last1 = [[:en:Bigwig# # # CITATION_BOT_PLACEHOLDER_PIPE # # #SomeoneFamous]]\n";

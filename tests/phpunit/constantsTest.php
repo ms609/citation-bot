@@ -15,6 +15,11 @@ final class constantsTest extends testBaseClass {
    }
   }
 
+  public function testFillCache() : void {
+    $this->fill_cache();
+    $this->assertTrue(TRUE);
+  }
+  
   public function testConstantsDefined() : void {
     $this->assertSame(count(UCFIRST_JOURNAL_ACRONYMS), count(JOURNAL_ACRONYMS));
     for ($i = 0; $i < count(JOURNAL_ACRONYMS); $i++) {

@@ -75,27 +75,29 @@ final class WikipediaBot {
     return $this->the_user;
   }
   
-  private static function ret_okay(?object $response) : bool { // We send back TRUE for thing that are page specific
+  public static function ret_okay(?object $response) : bool { // We send back TRUE for thing that are page specific
     if (is_null($response)) {
       report_warning('Wikipedia response was not decoded.  Will sleep and move on.');
       sleep(10);
       return FALSE;
     }
     if (isset($response->error)) {
-      if ((string) $response->error->code == 'blocked') { // Travis CI IPs are blocked, even to logged in users.
+      if ((string) @$response->error->code === 'blocked') { // Travis CI IPs are blocked, even to logged in users.
         report_error('Bot account or this IP is blocked from editing.');  // @codeCoverageIgnore
-      } elseif (strpos((string) $response->error->info, 'The database has been automatically locked') !== FALSE) {
+      } elseif (strpos((string) @$response->error->info, 'The database has been automatically locked') !== FALSE) {
         report_warning('Wikipedia database Locked.  Aborting changes for this page.  Will sleep and move on.');
-      } elseif (strpos((string) $response->error->info, 'abusefilter-warning-predatory') !== FALSE) {
+      } elseif (strpos((string) @$response->error->info, 'abusefilter-warning-predatory') !== FALSE) {
         report_warning('Wikipedia page contains predatory references.  Aborting changes for this page.');
         return TRUE;
-      } elseif (strpos((string) $response->error->info, 'protected') !== FALSE) {
+      } elseif (strpos((string) @$response->error->info, 'protected') !== FALSE) {
         report_warning('Wikipedia page is protected from editing.  Aborting changes for this page.');
         return TRUE;
-      } elseif (strpos((string) $response->error->info, 'Wikipedia:Why create an account') !== FALSE) {
+      } elseif (strpos((string) @$response->error->info, 'Wikipedia:Why create an account') !== FALSE) {
         report_error('The bot is editing as you, and you have not granted that permission.  Go to ' . WIKI_ROOT . '?title=Special:OAuthManageMyGrants/update/230820 and grant Citation Bot "Edit existing pages" rights.');  // @codeCoverageIgnore
+      } elseif (strpos((string) @$response->error->info, 'The authorization headers in your request are not valid') !== FALSE) {
+        report_error('There is something wrong with your Oauth tokens');  // @codeCoverageIgnore
       } else {
-        report_warning('API call failed: ' . echoable((string) $response->error->info) . '.  Will sleep and move on.');
+        report_warning('API call failed: ' . echoable((string) @$response->error->info) . '.  Will sleep and move on.');
       }
       sleep (10);
       return FALSE;
@@ -143,11 +145,13 @@ try {
         // @codeCoverageIgnoreEnd
       }
       return (self::ret_okay($ret)) ? $ret : NULL;
+    // @codeCoverageIgnoreStart
     } catch(Exception $E) {
       report_warning("Exception caught!\n");
       report_info("Response: ". $E->getMessage());
     }
     return NULL;
+    // @codeCoverageIgnoreEnd
   }
   
   /** @phpstan-impure **/
@@ -179,10 +183,13 @@ try {
     // No obvious errors; looks like we're good to go ahead and edit
     $auth_token = $response->query->tokens->csrftoken;
     if (defined('EDIT_AS_USER')) {  // @codeCoverageIgnoreStart
-      $auth_token = json_decode( $this->user_client->makeOAuthCall(
+      $auth_token = @json_decode( $this->user_client->makeOAuthCall(
         $this->user_token,
        API_ROOT . '?action=query&meta=tokens&format=json'
        ) )->query->tokens->csrftoken;
+      if ($auth_token === NULL) {
+        report_error('unable to get user tokens');
+      }
     }                              // @codeCoverageIgnoreEnd
     $submit_vars = array(
         "action" => "edit",
@@ -202,14 +209,13 @@ try {
     if (!self::resultsGood($result)) return FALSE;
     
     if (HTML_OUTPUT) {
-      report_inline("\n <span style='reddish'>Written to <a href='" 
-        . WIKI_ROOT . "?title=" . urlencode($myPage->title) . "'>" 
-        . echoable($myPage->title) . '</a></span>');
+      report_inline("\n <span style='reddish'>Written to <a href='"   // @codeCoverageIgnore
+        . WIKI_ROOT . "?title=" . urlencode($myPage->title) . "'>"    // @codeCoverageIgnore
+        . echoable($myPage->title) . '</a></span>');                  // @codeCoverageIgnore
     } else {
         report_inline("\n Written to " . echoable($myPage->title) . ". \n");
     }
     return TRUE;
-
   }
   
   public static function response2page(?object $response) : ?object {
@@ -393,7 +399,7 @@ try {
             'curtimestamp'=>'true', 
             'inprop' => 'protection', 
           ]);
-    return @json_decode($details);
+    return (object) @json_decode($details);
   }
   
   static public function get_links(string $title) : string {
@@ -447,7 +453,7 @@ try {
         is_string($_SESSION['citation_bot_user_id']) &&
         self::is_valid_user($_SESSION['citation_bot_user_id'])) {
           $this->the_user = $_SESSION['citation_bot_user_id'];
-          @setcookie(session_name(),session_id(),time()+(24*3600)); // 24 hours
+          @setcookie(session_name(),session_id(),time()+(72*3600)); // 72 hours
           $this->user_token = new Token($_SESSION['access_key'], $_SESSION['access_secret']);
           return;
     }

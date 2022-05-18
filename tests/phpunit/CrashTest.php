@@ -27,4 +27,5 @@ final class CrashTest extends testBaseClass {
     }
     $this->assertTrue(TRUE);
   }
+
 }

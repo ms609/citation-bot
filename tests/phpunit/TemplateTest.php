@@ -14,6 +14,11 @@ final class TemplateTest extends testBaseClass {
      $this->markTestSkipped();
    }
   }
+ 
+  public function testFillCache() : void {
+    $this->fill_cache();
+    $this->assertTrue(TRUE);
+  }
 
   public function testLotsOfFloaters() : void {
     $text_in = "{{cite journal|issue 3 volume 5 | title Love|journal Dog|series Not mine today|chapter cows|this is random stuff | 123-4567-890 }}";
@@ -433,6 +438,7 @@ final class TemplateTest extends testBaseClass {
     $text = "{{cite journal|doi=10.1063/5.0088162|coauthors=HDU|title=dsfadsafdskfldslj;fdsj;klfkdljssfjkl;ad;fkjdsl;kjfsda|pmid=<!-- -->}}";
     $expanded = $this->process_citation($text);
     $expanded->forget('s2cid');
+    $expanded->forget('hdl');
     $this->assertSame($text, $expanded->parsed_text()); // Bad title blocks cross-ref
   }
 
@@ -1828,6 +1834,18 @@ final class TemplateTest extends testBaseClass {
       $text = '{{citation|year=|year=2000}}';
       $prepared = $this->process_citation($text);
       $this->assertSame('{{citation|year=2000}}', $prepared->parsed_text());
+   
+      $text = '{{citation|year=2000|year=2000}}';
+      $prepared = $this->process_citation($text);
+      $this->assertSame('{{citation|year=2000}}', $prepared->parsed_text());
+   
+      $text = '{{citation|year 2000|year=2000}}';
+      $prepared = $this->process_citation($text);
+      $this->assertSame('{{citation|year=2000}}', $prepared->parsed_text());
+   
+      $text = '{{citation|year=2000|year 2000}}';
+      $prepared = $this->process_citation($text);
+      $this->assertSame('{{citation|year=2000}}', $prepared->parsed_text());
   }
  
   public function testFixCAPSJunk() : void {
@@ -2134,7 +2152,7 @@ ER -  }}';
       $text = '{{Cite journal  | TY - BOOK
 Y1 - 1990
 T1 - This will be a subtitle
-ZZ - This will be ignored and not understood}}';
+T3 - This will be ignored}}';
      $prepared = $this->prepare_citation($text);
      $this->assertSame('1990', $prepared->get2('year')); 
      $this->assertNull($prepared->get2('title'));
@@ -3651,4 +3669,28 @@ EP - 999 }}';
     $this->assertSame('1234', $template->get2('mr'));
   }
  
+  public function testlooksLikeBookReview() : void {
+    $text='{{cite journal|journal=X|url=book}}';
+    $template = $this->make_citation($text);
+    $record = (object) NULL;
+    $this->assertFalse($template->looksLikeBookReview($record));
+   
+    $text='{{cite journal|journal=X|url=book|year=2002|isbn=x|location=x|oclc=x}}';
+    $template = $this->make_citation($text);
+    $record = (object) NULL;
+    $record->year = '2000';
+    $this->assertFalse($template->looksLikeBookReview($record));
+   
+    $text='{{cite book|journal=X|url=book|year=2002|isbn=x|location=x|oclc=x}}';
+    $template = $this->make_citation($text);
+    $record = (object) NULL;
+    $record->year = '2000';
+    $this->assertTrue($template->looksLikeBookReview($record));
+  }
+ 
+  public function testDropBadDq() : void {
+    $text='{{Cite web | url=https://books.google.com/books?id=SjpSkzjIzfsC&dq=subject:HUH&pg=213}}';
+    $template = $this->process_citation($text);
+    $this->assertSame('https://books.google.com/books?id=SjpSkzjIzfsC&pg=213', $template->get2('url'));
+  }
 }

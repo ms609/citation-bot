@@ -30,7 +30,7 @@ include_once './vendor/autoload.php';
 
 define("TRAVIS", (bool) getenv('CI')); // Not just TRAVIS, but GitHub actions set this to true
 define("USE_CITOID", TRUE); // Define which Zotero to use
-if (isset($_REQUEST["page"]) && (string) $_REQUEST["page"] === "User:AManWithNoPlan/sandbox3") {
+if ((string) @$_REQUEST["page"] . (string) @$argv[1] === "User:AManWithNoPlan/sandbox3") { // Specific page to make sure this code path keeps working
   define('EDIT_AS_USER', TRUE);
 }
 
@@ -67,6 +67,7 @@ if (!TRAVIS) {
       ob_start();
     }
 }
+if (isset($argv)) ob_end_flush();
 
 if (file_exists('env.php')) {
   // Set the environment variables with putenv(). Remember to set permissions (not readable!)
@@ -134,7 +135,6 @@ function check_overused() : void {
  define('BIG_JOB_MODE', 'YES');
  register_shutdown_function('unlock_user');
  @session_write_close();
- pcntl_signal(SIGTERM, "sig_handler"); // By default SIGTERM does not call exit()
 }
 
 function check_killed() : void {
@@ -162,7 +162,9 @@ require_once 'Zotero.php';
 require_once 'apiFunctions.php';
 require_once 'Page.php';
 
-define("MAX_PAGES", 2850);
+if (isset($argv)) {
+  define("MAX_PAGES", 1000000);
+} else {
+  define("MAX_PAGES", 3850);
+}
 define("BIG_RUN", 3);
-
-
