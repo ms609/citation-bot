@@ -18,7 +18,7 @@ final class WikipediaBot {
   private Consumer $user_consumer;
   private Client $user_client;
   private Token $user_token;
-  /** @var resource $ch */
+  /** @var ?resource $ch */
   private static $ch; // All wikipedia connections share a session
   private string $the_user = '';
   private static ?self $last_WikipediaBot; // For NonStandardMode()
@@ -423,7 +423,7 @@ try {
          "ususers" => urlencode(str_replace(" ", "_", $user)),
       ];
     $response = self::QueryAPI($query);
-    if ($response === NULL || (strpos($response, '"userid"')  === FALSE)) { // try again if weird
+    if (strpos($response, '"userid"')  === FALSE) { // try again if weird
       sleep(5);
       $response = self::QueryAPI($query);
     }
