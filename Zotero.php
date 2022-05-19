@@ -5,6 +5,8 @@ require_once 'constants.php';  // @codeCoverageIgnore
 require_once 'Template.php';   // @codeCoverageIgnore
 
 const MAGIC_STRING_URLS = 'CITATION_BOT_PLACEHOLDER_URL_POINTER_';  
+const CITOID_ZOTERO = "https://en.wikipedia.org/api/rest_v1/data/citation/zotero/";
+
 
 function query_url_api(array $ids, array &$templates) : void {  // Pointer to save memory
    Zotero::query_url_api_class($ids, $templates);
@@ -26,33 +28,17 @@ public static function create_ch_zotero() : void { // Called below at end of fil
   if (isset(self::$ch_dx)) curl_close(self::$ch_dx);
   if (isset(self::$ch_pmc)) curl_close(self::$ch_pmc);
   self::$zotero_ch = curl_init();
-  /** @phan-suppress-next-line PhanRedundantCondition */
-  if ( USE_CITOID ) {
-        /** @psalm-suppress PossiblyNullArgument */ 
-        curl_setopt_array(self::$zotero_ch,
-            [CURLOPT_URL => CITOID_ZOTERO,
-            CURLOPT_HTTPHEADER => ['accept: application/json; charset=utf-8'],
-            CURLOPT_RETURNTRANSFER => TRUE,
-            CURLOPT_USERAGENT => BOT_USER_AGENT,
-            CURLOPT_COOKIESESSION => TRUE,
-            // Defaults used in TRAVIS overridden below when deployed
-            CURLOPT_CONNECTTIMEOUT => 10,
-            CURLOPT_TIMEOUT => 45]);
-  } else {
-        // @codeCoverageIgnoreStart
-        /** @psalm-suppress PossiblyNullArgument */ 
-        curl_setopt_array(self::$zotero_ch,
-            [CURLOPT_URL => ZOTERO_ROOT,
-            CURLOPT_CUSTOMREQUEST => "POST",
-            CURLOPT_HTTPHEADER => ['Content-Type: text/plain'],
-            CURLOPT_RETURNTRANSFER => TRUE,
-            CURLOPT_USERAGENT => BOT_USER_AGENT,
-            CURLOPT_COOKIESESSION => TRUE,
-            // Defaults used in TRAVIS overridden below when deployed
-            CURLOPT_CONNECTTIMEOUT => 10,
-            CURLOPT_TIMEOUT => 45]);
-        // @codeCoverageIgnoreEnd
-    }
+  /** @psalm-suppress PossiblyNullArgument */ 
+  curl_setopt_array(self::$zotero_ch,
+         [CURLOPT_URL => CITOID_ZOTERO,
+          CURLOPT_HTTPHEADER => ['accept: application/json; charset=utf-8'],
+          CURLOPT_RETURNTRANSFER => TRUE,
+          CURLOPT_USERAGENT => BOT_USER_AGENT,
+          CURLOPT_COOKIESESSION => TRUE,
+          // Defaults used in TRAVIS overridden below when deployed
+          CURLOPT_CONNECTTIMEOUT => 10,
+          CURLOPT_TIMEOUT => 45]);
+
   self::$ch_ieee = curl_init();
   curl_setopt_array(self::$ch_ieee,
          [CURLOPT_RETURNTRANSFER => TRUE,
@@ -327,13 +313,8 @@ private static function zotero_request(string $url) : string {
     if (self::ZOTERO_GIVE_UP == self::$zotero_failures_count) self::$zotero_failures_count = 0; // @codeCoverageIgnore
   }
 
-  /** @phan-suppress-next-line PhanRedundantCondition */
-  if ( USE_CITOID ) {
-     curl_setopt(self::$zotero_ch, CURLOPT_URL, CITOID_ZOTERO . urlencode($url));
-  } else {
-     curl_setopt(self::$zotero_ch, CURLOPT_POSTFIELDS, $url);    // @codeCoverageIgnore 
-  }
-   
+  curl_setopt(self::$zotero_ch, CURLOPT_URL, CITOID_ZOTERO . urlencode($url));
+
   if (self::$zotero_failures_count > self::ZOTERO_GIVE_UP) return self::ERROR_DONE;
   
   usleep(100000*(1+self::$zotero_failures_count)); // 0.10 seconds delay throttle

@@ -21,3 +21,4 @@ return [
     'target_php_version' => '8.1',
     'minimum_target_php_version' => '8.1',
 ];
+

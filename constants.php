@@ -10,8 +10,6 @@ require_once 'constants/regular_expressions.php';
 
 const PIPE_PLACEHOLDER = '# # # CITATION_BOT_PLACEHOLDER_PIPE # # #';
 const TEMP_PLACEHOLDER = "# # # CITATION_BOT_PLACEHOLDER_TEMPORARY %s # # #";
-const ZOTERO_ROOT = "https://translation-server.toolforge.org/web";
-const CITOID_ZOTERO = "https://en.wikipedia.org/api/rest_v1/data/citation/zotero/";
 
 //Common replacements
 const HTML_DECODE = array("[", "]", "<", ">", " ");
