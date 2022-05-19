@@ -3411,6 +3411,7 @@ final class Template {
     }
     $new_name = strtolower(trim($new_name)); // Match wikiname() output and cite book below
     if ($new_name === $this->wikiname()) return;
+    if ($this->has('conference') && 'cite conference' === $this->wikiname()) return; // Need to lose conference first
     if ((in_array($this->wikiname(), TEMPLATES_WE_RENAME) && ($rename_cite_book || $this->wikiname() !== 'cite book')) ||
         ($this->wikiname() === 'cite news' && $new_name === 'cite magazine') ||
         ($rename_anything && in_array($new_name, TEMPLATES_WE_RENAME)) // In rare cases when we are positive that cite news is really cite journal
