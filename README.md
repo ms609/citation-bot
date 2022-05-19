@@ -69,7 +69,7 @@ Also beware the difference between `else if` and `elseif`.
 
 ## Deployment
 
-The bot requires PHP >= 7.3.
+The bot requires PHP >= 7.4.
 
 To run the bot from a new environment, you will need to create an `env.php` file (if one doesn't already exist) that sets the needed authentication tokens as environment variables. To do this, you can rename `env.php.example` to `env.php`, set the variables in the file, and then make sure the file is not world readable or writable:
 
@@ -79,11 +79,11 @@ To run the bot from a new environment, you will need to create an `env.php` file
 
     become citations[-dev]
     webservice stop
-    webservice --backend=kubernetes start
+    webservice --backend=kubernetes php7.4 start
 
 Or for testing in the shell:
 
-    webservice --backend=kubernetes shell
+    webservice --backend=kubernetes php7.4 shell
 
 Before entering the k8s shell, it may be necessary to install phpunit (as wget is not available in the k8s shell).
 
