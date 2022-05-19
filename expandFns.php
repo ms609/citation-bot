@@ -1103,8 +1103,9 @@ function bot_html_footer() : void {
    if (HTML_OUTPUT) echo '</pre><footer><a href="./" title="Use Citation Bot again">Another</a>?</footer></body></html>';
 }
 
-
-// Returns NULL/FALSE/String of location
+  /**
+   * @return string|null|false       Returns NULL/FALSE/String of location
+   **/
 function hdl_works(string $hdl) {
   // Greatly speed-up by having one array of each kind and only look for hash keys, not values
   static $cache_good = [];
@@ -1126,7 +1127,9 @@ function hdl_works(string $hdl) {
   return $works;
 }
 
-
+  /**
+   * @return string|null|false       Returns NULL/FALSE/String of location
+   **/
 function is_hdl_works(string $hdl) {
   $matches = ['', '']; // prevent memory leak in some PHP versions
   $hdl = trim($hdl);
