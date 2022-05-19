@@ -1125,7 +1125,7 @@ function Bibcode_Response_Processing(string $return, $ch, string $adsabs_url) : 
     }
     if ($http_response != 200) {
       // @codeCoverageIgnoreStart
-      $message = strtok($header, "\n");
+      $message = (string) strtok($header, "\n");
       /** @psalm-suppress UnusedFunctionCall */
       @strtok('',''); // Free internal buffers with empty unused call
       throw new Exception($message, $http_response);
