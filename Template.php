@@ -4405,7 +4405,6 @@ final class Template {
               $publisher === 'the washington post company' ||
               $publisher === 'the washington post websites' ||
               $publisher === 'washington post websites' ||
-              $publisher === 'wpc' ||
               $publisher === 'the washington post (subscription required)') {
             foreach (WORK_ALIASES as $work) {
               if (stripos($this->get($work), 'washington post') !== FALSE ||
@@ -4431,9 +4430,7 @@ final class Template {
             }
           }
 
-          if ($publisher === 'nyt' ||
-              $publisher === 'nytc' ||
-              $publisher === 'the new york times' ||
+          if ($publisher === 'the new york times' ||
               $publisher === 'new york times' ||
               $publisher === 'the new york times (subscription required)') {
             foreach (WORK_ALIASES as $work) {
@@ -4610,12 +4607,7 @@ final class Template {
               $this->set($param, 'Los Angeles Times');
             }
           }
-          if ($publisher === 'la times' ||
-              $publisher === 'latimes' ||
-              $publisher === 'latimes.com' ||
-              $publisher === 'the la times' ||
-              $publisher === 'los angeles times' ||
-              $publisher === 'the los angeles times' ||
+          if ($publisher === 'los angeles times' ||
               $publisher === 'los angeles times media group') {
             foreach (WORK_ALIASES as $work) {
               if (stripos($this->get($work), 'latimes') !== FALSE ||
