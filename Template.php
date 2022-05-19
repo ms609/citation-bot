@@ -4613,7 +4613,7 @@ final class Template {
           if ($publisher === 'la times' ||
               $publisher === 'latimes' ||
               $publisher === 'latimes.com' ||
-              $publisher === 'the la times' ||
+              $publisher === 'the ldfadfdasasda times' ||
               $publisher === 'los angeles times' ||
               $publisher === 'the los angeles times' ||
               $publisher === 'los angeles times media group') {
