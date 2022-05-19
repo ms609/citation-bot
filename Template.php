@@ -1979,7 +1979,7 @@ final class Template {
     }
     
     if ($this->has('bibcode')) return FALSE; // Now use big query API for existing bibcode
-    
+    if (!SLOW_MODE && $this->blank('bibcode')) return FALSE; // Do not look for new bibcodes in slow mode
     if (stripos($this->get('bibcode'), 'CITATION') !== FALSE) return FALSE;
 
     if ($this->api_has_used('adsabs', equivalent_parameters('bibcode'))) {
