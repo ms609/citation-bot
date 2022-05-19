@@ -17,7 +17,13 @@ final class Zotero {
   private const ZOTERO_SKIPS = 100;
   private const ERROR_DONE = 'ERROR_DONE'; 
   protected static int $zotero_announced = 0;
-  /** @var resource $zotero_ch **/ /** @var resource $ch_ieee **/ /** @var resource $ch_jstor **/ /** @var resource $ch_dx **/ /** @var resource $ch_pmc **/
+  /**
+   * @var resource $zotero_ch
+   * @var resource $ch_ieee
+   * @var resource $ch_jstor
+   * @var resource $ch_dx
+   * @var resource $ch_pmc
+   **/
   protected static $zotero_ch, $ch_ieee, $ch_jstor, $ch_dx, $ch_pmc;
   protected static int $zotero_failures_count = 0;
   private static bool $is_setup = FALSE;
