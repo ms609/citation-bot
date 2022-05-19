@@ -17,16 +17,20 @@ final class Zotero {
   private const ZOTERO_SKIPS = 100;
   private const ERROR_DONE = 'ERROR_DONE'; 
   protected static int $zotero_announced = 0;
-  /** @var resource|null $zotero_ch, $ch_ieee, $ch_jstor, $ch_dx, $ch_pmc */
+  /**
+   * @var resource $zotero_ch
+   * @var resource $ch_ieee
+   * @var resource $ch_jstor
+   * @var resource $ch_dx
+   * @var resource $ch_pmc
+   **/
   protected static $zotero_ch, $ch_ieee, $ch_jstor, $ch_dx, $ch_pmc;
   protected static int $zotero_failures_count = 0;
+  private static bool $is_setup = FALSE;
 
 public static function create_ch_zotero() : void { // Called below at end of file
-  if (isset(self::$zotero_ch)) curl_close(self::$zotero_ch);
-  if (isset(self::$ch_ieee)) curl_close(self::$ch_ieee);
-  if (isset(self::$ch_jstor)) curl_close(self::$ch_jstor);
-  if (isset(self::$ch_dx)) curl_close(self::$ch_dx);
-  if (isset(self::$ch_pmc)) curl_close(self::$ch_pmc);
+  if (self::$is_setup) return;
+  self::$is_setup = TRUE;
   self::$zotero_ch = curl_init();
   /** @psalm-suppress PossiblyNullArgument */ 
   curl_setopt_array(self::$zotero_ch,
