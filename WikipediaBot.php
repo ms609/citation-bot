@@ -18,13 +18,15 @@ final class WikipediaBot {
   private Consumer $user_consumer;
   private Client $user_client;
   private Token $user_token;
-  /** @var ?resource $ch */
-  private static $ch = NULL; // All wikipedia connections share a session
+  /** @var resource $ch */
+  private static $ch; // All wikipedia connections share a session
+  private static bool $init_done = FALSE;
   private string $the_user = '';
   private static ?self $last_WikipediaBot; // For NonStandardMode()
   
   public static function make_ch() : void { // Executed below at end of file
-    if (!is_null(self::$ch)) curl_close(self::$ch);
+    if ($init_done) return;
+    $init_done = TRUE;
     self::$ch = curl_init();
         curl_setopt_array(self::$ch, [
         CURLOPT_FAILONERROR => TRUE, // This is a little paranoid - see https://curl.se/libcurl/c/CURLOPT_FAILONERROR.html
