@@ -25,8 +25,8 @@ final class WikipediaBot {
   private static ?self $last_WikipediaBot; // For NonStandardMode()
   
   public static function make_ch() : void { // Executed below at end of file
-    if ($init_done) return;
-    $init_done = TRUE;
+    if (self::$init_done) return;
+    self::$init_done = TRUE;
     self::$ch = curl_init();
         curl_setopt_array(self::$ch, [
         CURLOPT_FAILONERROR => TRUE, // This is a little paranoid - see https://curl.se/libcurl/c/CURLOPT_FAILONERROR.html
