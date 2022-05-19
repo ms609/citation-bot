@@ -5,6 +5,8 @@ require_once 'constants.php';  // @codeCoverageIgnore
 require_once 'Template.php';   // @codeCoverageIgnore
 
 const MAGIC_STRING_URLS = 'CITATION_BOT_PLACEHOLDER_URL_POINTER_';  
+const CITOID_ZOTERO = "https://en.wikipedia.org/api/rest_v1/data/citation/zotero/";
+
 
 function query_url_api(array $ids, array &$templates) : void {  // Pointer to save memory
    Zotero::query_url_api_class($ids, $templates);
@@ -28,7 +30,7 @@ public static function create_ch_zotero() : void { // Called below at end of fil
   self::$zotero_ch = curl_init();
   /** @psalm-suppress PossiblyNullArgument */ 
   curl_setopt_array(self::$zotero_ch,
-         [CURLOPT_URL => "https://en.wikipedia.org/api/rest_v1/data/citation/zotero/",
+         [CURLOPT_URL => CITOID_ZOTERO,
           CURLOPT_HTTPHEADER => ['accept: application/json; charset=utf-8'],
           CURLOPT_RETURNTRANSFER => TRUE,
           CURLOPT_USERAGENT => BOT_USER_AGENT,
