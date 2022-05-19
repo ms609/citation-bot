@@ -1978,7 +1978,7 @@ final class Template {
       return FALSE;  // @codeCoverageIgnore
     }
     
-    if ($this->has('bibcode')) return FALSE; // Now use big query API for existing bibcode
+    if (!$this->blank('bibcode')) return FALSE; // Now use big query API for existing bibcode - code below still assumes that we might use a bibcode
     if (!SLOW_MODE && $this->blank('bibcode')) return FALSE; // Do not look for new bibcodes in slow mode
     if (stripos($this->get('bibcode'), 'CITATION') !== FALSE) return FALSE;
 
