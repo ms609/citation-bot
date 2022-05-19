@@ -4572,7 +4572,6 @@ final class Template {
           }
           if ($publisher === 'forbes publishing' ||
               $publisher === 'forbes' ||
-              $publisher === 'forbes.com' ||
               $publisher === 'forbes magazine' ||
               $publisher === 'forbes media') {
             foreach (WORK_ALIASES as $work) {
