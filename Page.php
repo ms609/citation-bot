@@ -18,15 +18,15 @@ require_once 'constants.php';     // @codeCoverageIgnore
 
 class Page {
 
-  protected $text = '';
-  protected $title = '';
-  protected $modifications = array();
-  protected $date_style = DATES_WHATEVER;
-  protected $read_at = '';
-  protected $start_text = '';
-  protected $lastrevid = 0;
-  protected $page_error = FALSE;
-  protected static $told_fast = FALSE;
+  protected string $text = '';
+  protected string $title = '';
+  protected array $modifications = array();
+  protected int $date_style = DATES_WHATEVER;
+  protected string $read_at = '';
+  protected string $start_text = '';
+  protected int $lastrevid = 0;
+  protected bool $page_error = FALSE;
+  protected static bool $told_fast = FALSE;
 
   function __construct() { 
       $this->construct_modifications_array();

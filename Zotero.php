@@ -16,10 +16,10 @@ final class Zotero {
   private const ZOTERO_GIVE_UP = 5;
   private const ZOTERO_SKIPS = 100;
   private const ERROR_DONE = 'ERROR_DONE'; 
-  protected static $zotero_announced = 0;
+  protected static int $zotero_announced = 0;
   /** @var resource|null $zotero_ch, $ch_ieee, $ch_jstor, $ch_dx, $ch_pmc */
   protected static $zotero_ch, $ch_ieee, $ch_jstor, $ch_dx, $ch_pmc;
-  protected static $zotero_failures_count = 0;
+  protected static int $zotero_failures_count = 0;
 
 public static function create_ch_zotero() : void { // Called below at end of file
   if (isset(self::$zotero_ch)) curl_close(self::$zotero_ch);

@@ -10,10 +10,10 @@ function query_pmid_api (array $pmids, array &$templates) : bool { return entrez
 function query_pmc_api  (array $pmcs, array &$templates) : bool { return entrez_api($pmcs,  $templates, 'pmc'); } // Pointer to save memory
 
 final class AdsAbsControl {
-  private static $big_counter = 0;
-  private static $small_counter = 0;
-  private static $doi2bib = array();
-  private static $bib2doi = array();
+  private static int $big_counter = 0;
+  private static int $small_counter = 0;
+  private static array $doi2bib = array();
+  private static array $bib2doi = array();
 
   public static function big_gave_up_yet() : bool {
     self::$big_counter = max(self::$big_counter - 1, 0);

@@ -13,15 +13,15 @@ require_once 'constants.php';      // @codeCoverageIgnore
 
 final class WikipediaBot {
 
-  private $bot_consumer;
-  private $bot_token;
-  private $user_consumer;
-  private $user_client;
-  private $user_token;
+  private Consumer $bot_consumer;
+  private Token $bot_token;
+  private Consumer $user_consumer;
+  private Client $user_client;
+  private Token $user_token;
   /** @var resource $ch */
   private static $ch; // All wikipedia connections share a session
-  private $the_user = '';
-  private static $last_WikipediaBot; // For NonStandardMode()
+  private string $the_user = '';
+  private static ?self $last_WikipediaBot; // For NonStandardMode()
   
   public static function make_ch() : void { // Executed below at end of file
     if (isset(self::$ch)) curl_close(self::$ch);

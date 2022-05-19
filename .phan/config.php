@@ -18,6 +18,7 @@ return [
     'directory_list' => [
         '.', 'tests/', 'tests/phpunit', 'vendor/'
     ],
-    'target_php_version' => '7.3',
-    'minimum_target_php_version' => '7.3',
+    'target_php_version' => '7.4',
+    'minimum_target_php_version' => '7.4',
 ];
+

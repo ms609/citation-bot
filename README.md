@@ -4,7 +4,7 @@
 [![codecov](https://codecov.io/gh/ms609/citation-bot/branch/master/graph/badge.svg)](https://codecov.io/gh/ms609/citation-bot)
 [![Project Status: Inactive - The project has reached a stable, usable state but is no longer being actively developed; support/maintenance will be provided as time allows.](https://www.repostatus.org/badges/latest/inactive.svg)](https://www.repostatus.org/#inactive)
 [![License: GPL v3](https://img.shields.io/badge/License-GPLv3-blue.svg)](https://www.gnu.org/licenses/gpl-3.0)
-[![PHP ](https://img.shields.io/badge/PHP-7.3-blue.svg)](https://www.php.net)
+[![PHP ](https://img.shields.io/badge/PHP-7.4-blue.svg)](https://www.php.net)
 [![GitHub issues](https://img.shields.io/github/issues/ms609/citation-bot.png)](https://github.com/ms609/citation-bot/issues)
 
 
@@ -69,7 +69,7 @@ Also beware the difference between `else if` and `elseif`.
 
 ## Deployment
 
-The bot requires PHP >= 7.3.
+The bot requires PHP >= 7.4.
 
 To run the bot from a new environment, you will need to create an `env.php` file (if one doesn't already exist) that sets the needed authentication tokens as environment variables. To do this, you can rename `env.php.example` to `env.php`, set the variables in the file, and then make sure the file is not world readable or writable:
 
@@ -79,11 +79,11 @@ To run the bot from a new environment, you will need to create an `env.php` file
 
     become citations[-dev]
     webservice stop
-    webservice --backend=kubernetes start
+    webservice --backend=kubernetes php7.4 start
 
 Or for testing in the shell:
 
-    webservice --backend=kubernetes shell
+    webservice --backend=kubernetes php7.4 shell
 
 Before entering the k8s shell, it may be necessary to install phpunit (as wget is not available in the k8s shell).
 
