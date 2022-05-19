@@ -28,7 +28,7 @@ public static function create_ch_zotero() : void { // Called below at end of fil
   self::$zotero_ch = curl_init();
   /** @psalm-suppress PossiblyNullArgument */ 
   curl_setopt_array(self::$zotero_ch,
-         [CURLOPT_URL => CITOID_ZOTERO,
+         [CURLOPT_URL => "https://en.wikipedia.org/api/rest_v1/data/citation/zotero/",
           CURLOPT_HTTPHEADER => ['accept: application/json; charset=utf-8'],
           CURLOPT_RETURNTRANSFER => TRUE,
           CURLOPT_USERAGENT => BOT_USER_AGENT,
