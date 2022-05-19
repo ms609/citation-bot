@@ -4326,5 +4326,11 @@ final class TemplateTest2 extends testBaseClass {
      $template = $this->make_citation($text);
      $this->assertFalse($template->get_identifiers_from_url());
      $this->assertNotNull($template->get2('url'));
+    
+     $text='{{cite web|url=https://www.osti.gov}}';
+     $template = $this->make_citation($text);
+     $this->assertFalse($template->get_identifiers_from_url());
+     $this->assertNotNull($template->get2('url'));
+    
    }
 }

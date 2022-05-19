@@ -1092,7 +1092,7 @@ function expand_templates_from_archives(array &$templates) : void { // This is d
   }
   curl_close($ch);
 }
-
+/** @param resource $ch **/
 function Bibcode_Response_Processing(string $return, $ch, string $adsabs_url) : object {
   try {
     if ($return == "") {
@@ -1125,7 +1125,7 @@ function Bibcode_Response_Processing(string $return, $ch, string $adsabs_url) : 
     }
     if ($http_response != 200) {
       // @codeCoverageIgnoreStart
-      $message = strtok($header, "\n");
+      $message = (string) strtok($header, "\n");
       /** @psalm-suppress UnusedFunctionCall */
       @strtok('',''); // Free internal buffers with empty unused call
       throw new Exception($message, $http_response);

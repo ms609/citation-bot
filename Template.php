@@ -1978,8 +1978,8 @@ final class Template {
       return FALSE;  // @codeCoverageIgnore
     }
     
-    if ($this->has('bibcode')) return FALSE; // Now use big query API for existing bibcode
-    
+    if (!$this->blank_other_than_comments('bibcode')) return FALSE; // Now use big query API for existing bibcode - code below still assumes that we might use a bibcode
+    if (!SLOW_MODE && $this->blank('bibcode')) return FALSE; // Do not look for new bibcodes in slow mode
     if (stripos($this->get('bibcode'), 'CITATION') !== FALSE) return FALSE;
 
     if ($this->api_has_used('adsabs', equivalent_parameters('bibcode'))) {
@@ -4405,7 +4405,6 @@ final class Template {
               $publisher === 'the washington post company' ||
               $publisher === 'the washington post websites' ||
               $publisher === 'washington post websites' ||
-              $publisher === 'wpc' ||
               $publisher === 'the washington post (subscription required)') {
             foreach (WORK_ALIASES as $work) {
               if (stripos($this->get($work), 'washington post') !== FALSE ||
@@ -4431,9 +4430,7 @@ final class Template {
             }
           }
 
-          if ($publisher === 'nyt' ||
-              $publisher === 'nytc' ||
-              $publisher === 'the new york times' ||
+          if ($publisher === 'the new york times' ||
               $publisher === 'new york times' ||
               $publisher === 'the new york times (subscription required)') {
             foreach (WORK_ALIASES as $work) {
@@ -4575,7 +4572,6 @@ final class Template {
           }
           if ($publisher === 'forbes publishing' ||
               $publisher === 'forbes' ||
-              $publisher === 'forbes.com' ||
               $publisher === 'forbes magazine' ||
               $publisher === 'forbes media') {
             foreach (WORK_ALIASES as $work) {
@@ -4610,12 +4606,7 @@ final class Template {
               $this->set($param, 'Los Angeles Times');
             }
           }
-          if ($publisher === 'la times' ||
-              $publisher === 'latimes' ||
-              $publisher === 'latimes.com' ||
-              $publisher === 'the la times' ||
-              $publisher === 'los angeles times' ||
-              $publisher === 'the los angeles times' ||
+          if ($publisher === 'los angeles times' ||
               $publisher === 'los angeles times media group') {
             foreach (WORK_ALIASES as $work) {
               if (stripos($this->get($work), 'latimes') !== FALSE ||

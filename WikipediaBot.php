@@ -18,12 +18,14 @@ final class WikipediaBot {
   private Consumer $user_consumer;
   private Client $user_client;
   private Token $user_token;
-  private static CurlHandle $ch;
+  private static CurlHandle $ch; // All wikipedia connections share a session
+  private static bool $init_done = FALSE;
   private string $the_user = '';
   private static ?self $last_WikipediaBot; // For NonStandardMode()
   
   public static function make_ch() : void { // Executed below at end of file
-    if (isset(self::$ch)) curl_close(self::$ch);
+    if (self::$init_done) return;
+    self::$init_done = TRUE;
     self::$ch = curl_init();
         curl_setopt_array(self::$ch, [
         CURLOPT_FAILONERROR => TRUE, // This is a little paranoid - see https://curl.se/libcurl/c/CURLOPT_FAILONERROR.html
@@ -47,9 +49,7 @@ final class WikipediaBot {
     $this->user_consumer = new Consumer((string) getenv('PHP_WP_OAUTH_CONSUMER'), (string) getenv('PHP_WP_OAUTH_SECRET'));
     $conf = new ClientConfig(WIKI_ROOT . '?title=Special:OAuth');
     $conf->setConsumer($this->user_consumer);
-    if (method_exists($conf, 'setUserAgent')) {
-      $conf->setUserAgent(BOT_USER_AGENT);
-    }
+    $conf->setUserAgent(BOT_USER_AGENT);
     $this->user_client = new Client($conf);
 
     /** @psalm-suppress RedundantCondition */  /* PSALM thinks TRAVIS cannot be FALSE */
@@ -424,7 +424,7 @@ try {
          "ususers" => urlencode(str_replace(" ", "_", $user)),
       ];
     $response = self::QueryAPI($query);
-    if ($response === NULL || (strpos($response, '"userid"')  === FALSE)) { // try again if weird
+    if (strpos($response, '"userid"')  === FALSE) { // try again if weird
       sleep(5);
       $response = self::QueryAPI($query);
     }
