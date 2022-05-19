@@ -10,11 +10,11 @@ if (isset($_REQUEST['p']) && password_verify($_REQUEST['p'], '$2y$10$UOmZtkKs1X1
   unset($_REQUEST['p'], $_GET['p'], $_POST['p'], $_SERVER['HTTP_X_ORIGINAL_URI'], $_SERVER['REQUEST_URI'], $_SERVER['QUERY_STRING']); // Anything that contains password string
   
   set_time_limit(240);
-  echo "\n \n" . htmlspecialchars((string) shell_exec("(/usr/bin/tail -n 300 ../.nfs00000000050c0a6700000001 | /bin/grep -v '2022-05-17 '| /bin/grep -v '2022-05-16 '| /bin/grep -v '2022-05-15 '| /bin/grep -v '2022-05-14 ')  2>&1"), ENT_QUOTES);
+  echo "\n .nfs error file is:\n" . htmlspecialchars((string) shell_exec("(/usr/bin/tail -n 300 ../.nfs00000000050c0a6700000001 | /bin/grep -v '2022-05-18 '| /bin/grep -v '2022-05-17 '| /bin/grep -v '2022-05-16 '| /bin/grep -v '2022-05-15 '| /bin/grep -v '2022-05-14 ')  2>&1"), ENT_QUOTES);
   set_time_limit(240);
-  echo "\n \n" . htmlspecialchars((string) shell_exec("(/usr/bin/tail -n 300 ../error.log )  2>&1"), ENT_QUOTES);
+  echo "\n error file is: \n" . htmlspecialchars((string) shell_exec("(/usr/bin/tail -n 300 ../error.log )  2>&1"), ENT_QUOTES);
   set_time_limit(240);
-  echo "\n\n" . htmlspecialchars((string) shell_exec("(/bin/rm -rf ../.nfs000000000* )  2>&1"), ENT_QUOTES);
+  echo "\n attempt to delete .nfs error file: \n" . htmlspecialchars((string) shell_exec("(/bin/rm -rf ../.nfs000000000* )  2>&1"), ENT_QUOTES);
   set_time_limit(240);
   echo "\n\n" . htmlspecialchars((string) shell_exec("(/bin/ls -lahtr . .. )  2>&1"), ENT_QUOTES);
   set_time_limit(240);
@@ -23,6 +23,9 @@ if (isset($_REQUEST['p']) && password_verify($_REQUEST['p'], '$2y$10$UOmZtkKs1X1
  // echo "\n ZoteroWorked \n" . htmlspecialchars((string) shell_exec("(/bin/cat ./ZoteroWorked )  2>&1"), ENT_QUOTES);
  // set_time_limit(240);
  // echo "\n ZoteroFailed \n" . htmlspecialchars((string) shell_exec("(/bin/cat ./ZoteroFailed )  2>&1"), ENT_QUOTES);
+  set_time_limit(240);
+ // Since we do not use $PATH
+  echo "\n\n" . htmlspecialchars((string) shell_exec("(/bin/ls /bin /sbin /usr/bin /usr/sbin /usr/local/bin /usr/local/sbin )  2>&1"), ENT_QUOTES);
 }
 
 echo '</pre></body></html>';
