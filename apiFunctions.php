@@ -1092,7 +1092,7 @@ function expand_templates_from_archives(array &$templates) : void { // This is d
   }
   curl_close($ch);
 }
-/** @var resource $ch **/
+/** @param resource $ch **/
 function Bibcode_Response_Processing(string $return, $ch, string $adsabs_url) : object {
   try {
     if ($return == "") {
