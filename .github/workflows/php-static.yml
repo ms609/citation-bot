@@ -49,9 +49,6 @@ jobs:
     - name: PHP phpstan
       run: php ./vendor/bin/phpstan --no-interaction analyse --memory-limit=2G constants/*.php html_headers.php Parameter.php user_messages.php constants.php expandFns.php Zotero.php apiFunctions.php NameTools.php Comment.php Page.php WikipediaBot.php Template.php setup.php category.php generate_template.php linked_pages.php unlock_git.php process_page.php authenticate.php
 
-    - name: PHP Design Security
-      run: ./vendor/bin/progpilot html_hedfaaders.php category.php generate_template.php gitpull.php linked_pages.php process_page.php authenticate.php unlock_git.php
-
     - name: PHP psalm Taint
       run: php ./vendor/bin/psalm --taint-analysis
 
@@ -62,6 +59,9 @@ jobs:
       uses: actionsdesk/lfs-warning@v3.1
       with:
         filesizelimit: 393000b
+
+    - name: PHP Design Security
+      run: ./vendor/bin/progpilot html_headers.php category.php generate_template.php gitpull.php linked_pages.php process_page.php authenticate.php unlock_git.php
 
     - name: PHP phan
       run: php ./vendor/bin/phan --analyze-twice --allow-polyfill-parser
