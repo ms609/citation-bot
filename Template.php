@@ -4887,6 +4887,13 @@ final class Template {
               }
           }
           
+          if (stripos($this->get($param), 'youtube') !== FALSE) {
+            if (preg_match("~^(https?://(?:|www\.|m\.)youtube\.com/watch/)(%3F.+)$~", $this->get($param), $matches)) {
+                 report_info("Decoded YouTube URL");
+                 $this->set($param,  $matches[1] . urldecode($matches[2]));
+            }
+          }
+          
           // Proxy stuff
           if (stripos($this->get($param), 'proxy') !== FALSE) { // Look for proxy first for speed, this list will grow and grow
               // Use dots, not \. since it might match dot or dash
