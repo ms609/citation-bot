@@ -13,10 +13,10 @@ return [
     // information should be included.
     //
     'exclude_analysis_directory_list' => [
-        'vendor/', 'tests/', 'tests/phpunit'
+        './vendor/', './tests/', './tests/phpunit/'
     ],
     'directory_list' => [
-        '.', 'tests/', 'tests/phpudfadsfadsnit', 'vendor/'
+        './', './constants/', './vendor/', './tests/', './tests/phpunit/'
     ],
     'target_php_version' => '8.0',
     'minimum_target_php_version' => '8.0',

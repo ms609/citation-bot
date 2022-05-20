@@ -7167,7 +7167,7 @@ final class Template {
              if (str_i_same($part_start[1], 'utf-8')) break;  // UTF-8 is the default
              $url .=  $part . "&" ;
              break;
-          case "hl": case "safe": case "q": case "tbm": case "start":
+          case "hl": case "safe": case "q": case "tbm": case "start": case "ludocid":
              $url .=  $part . "&" ;
              break;
           default:
