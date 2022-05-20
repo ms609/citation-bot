@@ -1214,7 +1214,7 @@ function xml_post(string $url, string $post) : ?SimpleXMLElement {
                      "Accept: application/xml"),
                 CURLOPT_TIMEOUT => 10,
                 CURLOPT_USERAGENT => BOT_USER_AGENT
-               ]
+               ]);
    $output = (string) @curl_exec($ch);
    curl_close ($ch);
    $xml = @simplexml_load_string($output);
