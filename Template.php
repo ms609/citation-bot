@@ -4888,7 +4888,7 @@ final class Template {
           }
           
           if (stripos($this->get($param), 'youtube') !== FALSE) {
-            if (preg_match("~^(https?://(?:|www\.|m\.)youtube\.com/watch/)(%3F.+)$~", $this->get($param), $matches)) {
+            if (preg_match("~^(https?://(?:|www\.|m\.)youtube\.com/watch)(%3F.+)$~", $this->get($param), $matches)) {
                  report_info("Decoded YouTube URL");
                  $this->set($param,  $matches[1] . urldecode($matches[2]));
             }
