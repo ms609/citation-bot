@@ -37,7 +37,7 @@ jobs:
           ${{ runner.os }}-php-
 
     - name: Configure composer and dependencies
-      run: composer config allow-plugins.third-party/required-plugin true && composer config minimum-stability dev && composer config prefer-stable true && composer require overtrue/phplint  phpstan/phpstan nikic/php-ast mediawiki/oauthclient:1.2.0  phan/phan vimeo/psalm designsecurity/progpilot phpunit/phpunit
+      run: composer config allow-plugins.third-party/required-plugin true && composer config minimum-stability dev && composer config prefer-stable true && composer require overtrue/phplint  phpstan/phpstan mediawiki/oauthclient:1.2.0  phan/phan vimeo/psalm designsecurity/progpilot phpunit/phpunit
       
     - name: Install dependencies
       if: steps.composer-cache.outputs.cache-hit != 'true'
@@ -50,7 +50,7 @@ jobs:
       run: php ./vendor/bin/phpstan --no-interaction analyse --memory-limit=2G constants/*.php html_headers.php Parameter.php user_messages.php constants.php expandFns.php Zotero.php apiFunctions.php NameTools.php Comment.php Page.php WikipediaBot.php Template.php setup.php category.php generate_template.php linked_pages.php unlock_git.php process_page.php authenticate.php
 
     - name: PHP phan
-      run: php ./vendor/bin/phan --analyze-twice constants/*.php html_headers.php constants.php Comment.php user_messages.php  Parameter.php expandFns.php  NameTools.php WikipediaBot.php Template.php Zotero.php apiFunctions.php Page.php setup.php category.php generate_template.php gitpull.php linked_pages.php process_page.php authenticate.php unlock_git.php
+      run: php ./vendor/bin/phan --analyze-twice --allow-polyfill-parser constants/*.php html_headers.php constants.php Comment.php user_messages.php  Parameter.php expandFns.php  NameTools.php WikipediaBot.php Template.php Zotero.php apiFunctions.php Page.php setup.php category.php generate_template.php gitpull.php linked_pages.php process_page.php authenticate.php unlock_git.php
 
     - name: PHP Design Security
       run: ./vendor/bin/progpilot html_headers.php category.php generate_template.php gitpull.php linked_pages.php process_page.php authenticate.php unlock_git.php
