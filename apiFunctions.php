@@ -1204,15 +1204,17 @@ function get_entrez_xml(string $type, string $query) : ?SimpleXMLElement {
 // Must use post in order to get DOIs with <, >, [, and ] in them and other problems
 function xml_post(string $url, string $post) : ?SimpleXMLElement {
    $ch = curl_init();
-   curl_setopt($ch, CURLOPT_URL,$url);
-   curl_setopt($ch, CURLOPT_POST, TRUE);
-   curl_setopt($ch, CURLOPT_POSTFIELDS, $post);
-   curl_setopt($ch, CURLOPT_RETURNTRANSFER, TRUE);
-   $headers = array(
-      "Content-Type: application/x-www-form-urlencoded",
-      "Accept: application/xml",
-   );
-   curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
+      curl_setopt_array($ch,
+               [CURLOPT_URL => $url,
+                CURLOPT_POST => TRUE,
+                CURLOPT_POSTFIELDS => $post,
+                CURLOPT_RETURNTRANSFER => TRUE,
+                CURLOPT_HTTPHEADER => array(
+                     "Content-Type: application/x-www-form-urlencoded",
+                     "Accept: application/xml"),
+                CURLOPT_TIMEOUT => 10,
+                CURLOPT_USERAGENT => BOT_USER_AGENT
+               ]
    $output = (string) @curl_exec($ch);
    curl_close ($ch);
    $xml = @simplexml_load_string($output);
