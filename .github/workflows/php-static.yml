@@ -11,13 +11,13 @@ on:
 jobs:
   build:
 
-    runs-on: ubuntu-18.04 ### need for PHP 7.3 ubuntu-latest
+    runs-on: ubuntu-18.04
 
     steps:
     - name: Checkout Repo
       uses: actions/checkout@v2
 
-    - name: Setup PHP 7.3 with PCOV
+    - name: Setup PHP with PCOV
       uses: shivammathur/setup-php@v2
       with:
         php-version: '7.4'
