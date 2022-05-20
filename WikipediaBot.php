@@ -176,8 +176,8 @@ try {
     
     if (($lastRevId != 0 && $myPage->lastrevid != $lastRevId)
      || ($startedEditing != '' && strtotime($baseTimeStamp) > strtotime($startedEditing))) {
-      report_minor_error("Possible edit conflict detected. Aborting.");      // @codeCoverageIgnore
-      return FALSE;                                                          // @codeCoverageIgnore
+      report_warning("Possible edit conflict detected. Aborting.");      // @codeCoverageIgnore
+      return FALSE;                                                      // @codeCoverageIgnore
     }
 
     // No obvious errors; looks like we're good to go ahead and edit
