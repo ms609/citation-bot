@@ -16,7 +16,7 @@ return [
         'vendor/', 'tests/', 'tests/phpunit'
     ],
     'directory_list' => [
-        '.', 'tests/', 'tests/phpunit', 'vendor/'
+        '.', 'tests/', 'tests/phpudfadsfadsnit', 'vendor/'
     ],
     'target_php_version' => '8.0',
     'minimum_target_php_version' => '8.0',
