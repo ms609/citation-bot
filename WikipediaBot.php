@@ -477,7 +477,7 @@ try {
     }
     unset($_SESSION['access_key'], $_SESSION['access_secret']);
     $return = urlencode($_SERVER['REQUEST_URI']);
-    session_write_close();
+    session_write_close();dfasd 
     @header("Location: authenticate.php?return=" . $return);
     exit(0);
   }
