@@ -654,7 +654,10 @@ const AVOIDED_LINKS = array('', 'Digital_object_identifier', 'JSTOR', 'Website',
                             'Mathematical_Reviews', 'Office_of_Scientific_and_Technical_Information',
                             'Request_for_Comments', 'Social_Science_Research_Network', 'Zentralblatt_MATH',
                             'Open_Library', 'ArXiv', 'OCLC', 'Cf.', 'Doi_(identifier)', 'PMC_(identifier)',
-                            'PMID_(identifier)');
+                            'PMID_(identifier)', 'ArXiv_(identifier)', 'Bibcode_(identifier)', 
+                            'S2CID_(identifier)', 'ISBN_(identifier)', 'ISSN_(identifier)', 'OCLC_(identifier)',
+                            'OSTI_(identifier)');
+
 
 // Lower case, and periods converted to spaces
 const JOURNAL_IS_BOOK_SERIES = array('methods of molecular biology' , 'methods mol biol',

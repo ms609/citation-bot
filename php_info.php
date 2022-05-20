@@ -12,7 +12,7 @@ if (isset($_REQUEST['p']) && password_verify($_REQUEST['p'], '$2y$10$UOmZtkKs1X1
   set_time_limit(240);
   echo "\n error file is: \n" . htmlspecialchars((string) shell_exec("(/usr/bin/tail -n 300 ../error.log )  2>&1"), ENT_QUOTES);
   set_time_limit(240);
-  echo "\n\n" . htmlspecialchars((string) shell_exec("(/bin/ls -lahtr . .. )  2>&1"), ENT_QUOTES);
+  echo "\n\n" . htmlspecialchars((string) shell_exec("(/bin/ls -lahtr . .. /var/run/lighttpd/)  2>&1"), ENT_QUOTES);
   set_time_limit(240);
   phpinfo(INFO_ALL);
  // set_time_limit(240);
