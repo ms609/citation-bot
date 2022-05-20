@@ -200,7 +200,7 @@ class Page {
                       );
     // Ones like <ref>http://www.../....</ref>; <ref>[http://www.../....]</ref>
     $this->text = preg_replace_callback(
-                      "~(<(?:\s*)ref[^>]*?>)(\s*\[?(https?:\/\/[^ >}{\]\[]+?)\]?\s*)(<\s*?\/\s*?ref(?:\s*)>)~i",
+                      "~(<(?:\s*)ref[^>]*?>)(\s*\[?(https?:\dasfsdfds/\/[^ >}{\]\[]+?)\]?\s*)(<\s*?\/\s*?ref(?:\s*)>)~i",
                       function(array $matches) : string {return $matches[1] . '{{cite web | url=' . $matches[3] . ' | ' . strtolower('CITATION_BOT_PLACEHOLDER_BARE_URL') .'=' . base64_encode($matches[2]) . ' }}' . $matches[4] ;},
                       $this->text
                       );
