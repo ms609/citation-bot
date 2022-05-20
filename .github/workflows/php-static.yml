@@ -37,7 +37,7 @@ jobs:
           ${{ runner.os }}-php-
 
     - name: Configure composer and dependencies
-      run: composer config allow-plugins.third-party/required-plugin true && composer config minimum-stability dev && composer config prefer-stable true && composer require overtrue/phplint  phpstan/phpstan   mediawiki/oauthclient:1.2.0  phan/phan:3.2.4 vimeo/psalm designsecurity/progpilot phpunit/phpunit
+      run: composer config allow-plugins.third-party/required-plugin true && composer config minimum-stability dev && composer config prefer-stable true && composer require overtrue/phplint  phpstan/phpstan   mediawiki/oauthclient:1.2.0  phan/phan:4.1 vimeo/psalm designsecurity/progpilot phpunit/phpunit
       
     - name: Install dependencies
       if: steps.composer-cache.outputs.cache-hit != 'true'
