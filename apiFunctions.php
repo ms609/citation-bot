@@ -723,7 +723,7 @@ function expand_doi_with_dx(Template $template, string $doi) : bool {
      } else {
        $try_to_add_it('title', @$json['title']);                                                 // @codeCoverageIgnore
        /** @psalm-suppress RedundantCondition */ /* PSALM thinks TRAVIS cannot be FALSE */
-       if (TRAVIS) print_r($json);                                                               // @codeCoverageIgnore
+       if (!HTML_OUTPUT) print_r($json);                                                         // @codeCoverageIgnore
        report_minor_error('dx.doi.org returned unexpected data type for ' . doi_link($doi));     // @codeCoverageIgnore
      }
      return TRUE;
