@@ -7168,6 +7168,7 @@ final class Template {
              $url .=  $part . "&" ;
              break;
           case "hl": case "safe": case "q": case "tbm": case "start": case "ludocid":
+          case "cshid":
              $url .=  $part . "&" ;
              break;
           default:
