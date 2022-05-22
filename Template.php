@@ -4827,6 +4827,7 @@ final class Template {
           }
         case 'url':
           if ($this->blank($param)) return;
+          $the_original_url = $this->get($param);
           if (preg_match("~^https?://(?:www\.|)researchgate\.net/[^\s]*publication/([0-9]+)_*~i", $this->get($param), $matches)) {
               $this->set($param, 'https://www.researchgate.net/publication/' . $matches[1]);
               if (preg_match('~^\(PDF\)(.+)$~i', trim($this->get('title')), $match)) {
@@ -5564,6 +5565,10 @@ final class Template {
             $this->rename('url', 'chapter-url');
             // Comment out because "never used"  $param = 'chapter-url';
             return;
+          }
+          $the_new_url = $this->get('url');
+          if ($the_original_url !== $the_new_url) {
+            $this->get_identifiers_from_url();
           }
           return;
 
