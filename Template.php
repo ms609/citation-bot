@@ -4890,6 +4890,10 @@ final class Template {
                  $this->set($param,  $matches[1] . urldecode($matches[2]));
             }
           }
+
+          if (preg_match("~^https?://(.+\.springer\.com/.+)#citeas$~", $this->get($param), $matches)) {
+               $this->set($param, 'https://' . $matches[1]);
+          }
           
           // Proxy stuff
           if (stripos($this->get($param), 'proxy') !== FALSE) { // Look for proxy first for speed, this list will grow and grow
