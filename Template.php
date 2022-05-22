@@ -372,12 +372,8 @@ final class Template {
               $the_title = '';
               $bad_data = TRUE;
           }
-          if ($the_title === 'null' || $the_title === '[No title found]' || $the_title === 'Archived copy' || $the_title === 'ShieldSquare Captcha') { // title=none is often because title is "reviewed work....
-              $this->rename('title', 'CITATION_BOT_PLACEHOLDER_title');
-              $the_title = '';
-              $bad_data = TRUE;
-          }
-          if (stripos($the_title, 'arXiv') !== FALSE) {
+          if ($the_title === 'null' || $the_title === '[No title found]' || $the_title === 'Archived copy' ||
+              $the_title === 'ShieldSquare Captcha' || $the_title === 'Shibboleth Authentication Request') { // title=none is often because title is "reviewed work....
               $this->rename('title', 'CITATION_BOT_PLACEHOLDER_title');
               $the_title = '';
               $bad_data = TRUE;
@@ -437,14 +433,15 @@ final class Template {
             } elseif (substr($the_title, 0, 12) == 'IEEE Xplore ') {
               $this->rename('title', 'CITATION_BOT_PLACEHOLDER_title');
               $bad_data = TRUE;
-            } elseif ($the_title === 'Shibboleth Authentication Request') {
-              $this->rename('title', 'CITATION_BOT_PLACEHOLDER_title');
-              $bad_data = TRUE;
             } elseif (preg_match('~.+(?: Volume| Vol\.| V. | Number| No\.| Num\.| Issue ).*\d+.*page.*\d+~i', $the_title)) {
               $this->rename('title', 'CITATION_BOT_PLACEHOLDER_title');
               $bad_data = TRUE;
             } elseif (preg_match('~^\[No title found\]$~i', $the_title)) {
               $this->rename('title', 'CITATION_BOT_PLACEHOLDER_title');
+              $bad_data = TRUE;
+            } elseif (stripos($the_title, 'arXiv') !== FALSE) {
+              $this->rename('title', 'CITATION_BOT_PLACEHOLDER_title');
+              $the_title = '';
               $bad_data = TRUE;
             }
           }
