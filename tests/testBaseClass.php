@@ -133,6 +133,8 @@ abstract class testBaseClass extends PHPUnit\Framework\TestCase {
   }
   
   protected function fill_cache() : void { // complete list of DOIs and HDLs that TRUE/FALSE in test suite as of 18 MAY 2022
+    Zotero::create_ch_zotero();
+    WikipediaBot::make_ch();
     doi_works('Z123Z');
     doi_works('XXX/978-XXX');
     doi_works('X');
