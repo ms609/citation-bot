@@ -7241,7 +7241,6 @@ final class Template {
   }
 
   public function clean_cite_odnb() : void {
-    $matches = ['', ''];
     if ($this->has('url')) {
       while (preg_match('~^(https?://www\.oxforddnb\.com/.+)(?:\;jsession|\?rskey|\#)~', $this->get('url'), $matches)) {
          $this->set('url', $matches[1]);
@@ -7306,7 +7305,6 @@ final class Template {
   }
 
   public function clean_dates(string $input) : string { // See https://en.wikipedia.org/wiki/Help:CS1_errors#bad_date
-    $matches = ['', ''];
     if ($input === '0001-11-30') return '';
     $months_seasons = array('January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December', 'Winter', 'Spring', 'Summer', 'Fall', 'Autumn');
     $input = str_ireplace($months_seasons, $months_seasons, $input); // capitalization
