@@ -28,7 +28,7 @@ final class Zotero {
   protected static int $zotero_failures_count = 0;
   private static bool $is_setup = FALSE;
 
-public static function create_ch_zotero() : void { // Called below at end of file
+public static function create_ch_zotero() : void {
   if (self::$is_setup) return;
   self::$is_setup = TRUE;
   self::$zotero_ch = curl_init();
@@ -1582,6 +1582,3 @@ public static function find_indentifiers_in_urls(Template $template, ?string $ur
  }
   
 } // End of CLASS
-
-
-Zotero::create_ch_zotero();  // @codeCoverageIgnore

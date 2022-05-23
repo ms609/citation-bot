@@ -24,7 +24,7 @@ final class WikipediaBot {
   private string $the_user = '';
   private static ?self $last_WikipediaBot; // For NonStandardMode()
   
-  public static function make_ch() : void { // Executed below at end of file
+  public static function make_ch() : void {
     if (self::$init_done) return;
     self::$init_done = TRUE;
     self::$ch = curl_init();
@@ -484,7 +484,3 @@ try {
     exit(0);
   }
 }
-
-WikipediaBot::make_ch(); // @codeCoverageIgnore
-
-
