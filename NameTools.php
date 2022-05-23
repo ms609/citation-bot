@@ -66,7 +66,6 @@ function format_forename(string $forename) : string {
  *
  */
 function format_initials(string $str) : string {
-  $match = ['', '']; // prevent memory leak in some PHP versions
   $str = trim($str);
         if ($str == "") return "";
         $end = (substr($str, strlen($str)-1) == ";") ? ";" : '';

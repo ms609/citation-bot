@@ -465,7 +465,6 @@ class Page {
   }
 
   public function edit_summary() : string {
-    $match = ['', '']; // prevent memory leak in some PHP versions
     $auto_summary = "";
     if (count($this->modifications["changeonly"]) !== 0) {
       $auto_summary .= "Alter: " . implode(", ", $this->modifications["changeonly"]) . ". ";
@@ -609,7 +608,6 @@ class Page {
   }
   
   public function extract_object(string $class) : array {
-    $match = ['', '']; // prevent memory leak in some PHP versions
     $i = 0;
     $text = $this->text;
     $regexp_in = $class::REGEXP;

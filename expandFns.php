@@ -83,7 +83,6 @@ function throttle_dx () : void {
 }
 
 function is_doi_works(string $doi) : ?bool {
-  $matches = ['', '']; // prevent memory leak in some PHP versions
   $doi = trim($doi);
   // And now some obvious fails
   if (strpos($doi, '/') === FALSE) return FALSE;
@@ -145,7 +144,6 @@ function query_jstor_api(array $ids, array &$templates) : bool { // $ids not use
 }
 
 function sanitize_doi(string $doi) : string {
-  $match = ['', '']; // prevent memory leak in some PHP versions
   if (substr($doi, -1) === '.') {
     $try_doi = substr($doi, 0, -1);
     if (doi_works($try_doi)) { // If it works without dot, then remove it
@@ -209,8 +207,6 @@ function sanitize_doi(string $doi) : string {
  * 1 => the decoded DOI
  */
 function extract_doi(string $text) : array {
-  $match = ['', '']; // prevent memory leak in some PHP versions
-  $new_match = ['', '']; // prevent memory leak in some PHP versions
   if (preg_match(
         "~(10\.\d{4}\d?(/|%2[fF])..([^\s\|\"\?&>]|&l?g?t;|<[^\s\|\"\?&]*>)+)~",
         $text, $match)) {
@@ -245,7 +241,6 @@ function extract_doi(string $text) : array {
 
 // ============================================= String/Text functions ======================================
 function wikify_external_text(string $title) : string {
-  $matches = ['', '']; // prevent memory leak in some PHP versions
   $replacement = [];
   $placeholder = [];
   if (preg_match_all("~<(?:mml:)?math[^>]*>(.*?)</(?:mml:)?math>~", $title, $matches)) {
@@ -335,7 +330,6 @@ function restore_italics (string $text) : string {
 }
 
 function sanitize_string(string $str) : string {
-  $math_hits = ['', '']; // prevent memory leak in some PHP versions
   // ought only be applied to newly-found data.
   if ($str == '') return '';
   if (strtolower(trim($str)) == 'science (new york, n.y.)') return 'Science';
@@ -549,8 +543,6 @@ function title_case(string $text) : string {
  *      If not, it won't capitalize after : etc.
  */
 function title_capitalization(string $in, bool $caps_after_punctuation) : string {
-  $matches_in = ['', '']; // prevent memory leak in some PHP versions
-  $matches_out = ['', '']; // prevent memory leak in some PHP versions
   // Use 'straight quotes' per WP:MOS
   $new_case = straighten_quotes(trim($in), FALSE);
   if (mb_substr($new_case, 0, 1) === "[" && mb_substr($new_case, -1) === "]") {
@@ -751,7 +743,6 @@ function throttle (int $min_interval) : void {
 // ============================================= Data processing functions ======================================
 
 function tidy_date(string $string) : string {
-  $matches = ['', '']; // prevent memory leak in some PHP versions
   $string=trim($string);
   if (stripos($string, 'Invalid') !== FALSE) return '';
   if (strpos($string, '1/1/0001') !== FALSE) return '';
@@ -847,7 +838,6 @@ function tidy_date(string $string) : string {
 }
 
 function not_bad_10_1093_doi(string $url) : bool { // We assume DOIs are bad, unless on good list
-  $match = ['', '']; // prevent memory leak in some PHP versions
   if ($url == NULL) return TRUE;
   if(!preg_match('~10.1093/([^/]+)/~u', $url, $match)) return TRUE;
   $test = strtolower($match[1]);
@@ -869,7 +859,6 @@ function remove_comments(string $string) : string {
 }
 
 function prior_parameters(string $par, array $list=array()) : array {
-  $match = ['', '']; // prevent memory leak in some PHP versions
   array_unshift($list, $par);
   if (preg_match('~(\D+)(\d+)~', $par, $match) && stripos($par, 's2cid') === FALSE) {
     $before = (string) ((int) $match[2] - 1);
@@ -1124,7 +1113,6 @@ function hdl_works(string $hdl) {
    * @return string|null|false       Returns NULL/FALSE/String of location
    **/
 function is_hdl_works(string $hdl) {
-  $matches = ['', '']; // prevent memory leak in some PHP versions
   $hdl = trim($hdl);
   // And now some obvious fails
   if (strpos($hdl, '/') === FALSE) return FALSE;

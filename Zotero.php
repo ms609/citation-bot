@@ -148,8 +148,6 @@ public static function query_url_api_class(array $ids, array &$templates) : void
 }
 
 public static function query_ieee_webpages(array &$templates) : void {  // Pointer to save memory
-  $matches_url = ['', '']; // prevent memory leak in some PHP versions
-  $matches = ['', '']; // prevent memory leak in some PHP versions
   
   foreach (['url', 'chapter-url', 'chapterurl'] as $kind) {
    foreach ($templates as $template) {
@@ -416,7 +414,6 @@ public static function expand_by_zotero(Template $template, ?string $url = NULL)
 }
 
 public static function process_zotero_response(string $zotero_response, Template $template, string $url, string $url_kind, int $access_date) : bool {
-  $matches = ['', '']; // prevent memory leak in some PHP versions
   if ($zotero_response === self::ERROR_DONE) return FALSE;  // Error message already printed in zotero_request()
  
   switch (trim($zotero_response)) {
@@ -854,7 +851,6 @@ public static function process_zotero_response(string $zotero_response, Template
 }
 
 public static function url_simplify(string $url) : string {
-  $matches = ['', '']; // prevent memory leak in some PHP versions
   $url = str_replace('/action/captchaChallenge?redirectUri=', '', $url);
   $url = urldecode($url);
   // IEEE is annoying
@@ -874,10 +870,6 @@ public static function url_simplify(string $url) : string {
 
 public static function find_indentifiers_in_urls(Template $template, ?string $url_sent = NULL) : bool {
     set_time_limit(120);
-    $matches = ['', '']; // prevent memory leak in some PHP versions
-    $bibcode = ['', '']; // prevent memory leak in some PHP versions
-    $arxiv_id = ['', '']; // prevent memory leak in some PHP versions
-    $match = ['', '']; // prevent memory leak in some PHP versions
     if (is_null($url_sent)) {
        // Chapter URLs are generally better than URLs for the whole book.
         if ($template->has('url') && $template->has('chapterurl')) {

@@ -60,8 +60,6 @@ final class AdsAbsControl {
 
 function entrez_api(array $ids, array &$templates, string $db) : bool {   // Pointer to save memory
   set_time_limit(120);
-  $match = ['', '']; // prevent memory leak in some PHP versions
-  $names = ['', '']; // prevent memory leak in some PHP versions
   if (!count($ids)) return FALSE;
   if ($ids == ['XYZ']) return FALSE; // junk data from test suite
   if ($ids == ['1']) return FALSE; // junk data from test suite
@@ -206,8 +204,6 @@ function expand_arxiv_templates (array &$templates) : bool {  // Pointer to save
 
 function arxiv_api(array $ids, array &$templates) : bool {  // Pointer to save memory
   set_time_limit(120);
-  $names = ['', '']; // prevent memory leak in some PHP versions
-  $match = ['', '']; // prevent memory leak in some PHP versions
   if (count($ids) == 0) return FALSE;
   report_action("Getting data from arXiv API");
   $context = stream_context_create(array(
@@ -304,7 +300,6 @@ function arxiv_api(array $ids, array &$templates) : bool {  // Pointer to save m
 
 function adsabs_api(array $ids, array &$templates, string $identifier) : bool {  // Pointer to save memory
   set_time_limit(120);
-  $rate_limit = [['', '', ''], ['', '', ''], ['', '', '']]; // prevent memory leak in some PHP versions
   if (count($ids) == 0) return FALSE;
   
   foreach ($ids as $key => $bibcode) {
@@ -412,7 +407,6 @@ function query_doi_api(array $ids, array &$templates) : bool { // $id not used y
 
 function expand_by_doi(Template $template, bool $force = FALSE) : bool {
   set_time_limit(120);
-  $matches = ['', '']; // prevent memory leak in some PHP versions
   // Because it can recover rarely used parameters such as editors, series & isbn, 
   // there will be few instances where it could not in principle be profitable to 
   // run this function, so we don't check this first.
@@ -731,7 +725,6 @@ function expand_doi_with_dx(Template $template, string $doi) : bool {
 
 function expand_by_jstor(Template $template) : bool {
   set_time_limit(120);
-  $match = ['', '']; // prevent memory leak in some PHP versions
   if ($template->incomplete() === FALSE) return FALSE;
   if ($template->has('jstor')) {
      $jstor = trim($template->get('jstor'));
@@ -844,8 +837,6 @@ function expand_by_jstor(Template $template) : bool {
 // This routine is actually not used much, since we often get a DOI and thus do not need to parse this thankfully
 // Do not add a new regex without adding a test too in TemplateTest.php
 function parse_plain_text_reference(string $journal_data, Template $this_template, bool $upgrade_years = FALSE ) : void {
-      $matches = ['', '']; // prevent memory leak in some PHP versions
-      $match = ['', '']; // prevent memory leak in some PHP versions
       $journal_data = trim($journal_data);
       if ($journal_data === "") return;
       $arxiv_journal=FALSE;
@@ -1057,7 +1048,6 @@ function get_semanticscholar_license(string $s2cid) : ?bool {
 
 function expand_templates_from_archives(array &$templates) : void { // This is done very late as a latch ditch effort  // Pointer to save memory
   set_time_limit(120);
-  $match = ['', '']; // prevent memory leak in some PHP versions
   $ch = curl_init();
   curl_setopt_array($ch,
           [CURLOPT_HEADER => FALSE,
@@ -1313,7 +1303,6 @@ function expand_book_adsabs(Template $template, object $record) : bool {
   // Surround search terms in (url-encoded) ""s, i.e. doi:"10.1038/bla(bla)bla"
 function query_adsabs(string $options) : object {
     set_time_limit(120);
-    $rate_limit = [['', '', ''], ['', '', ''], ['', '', '']]; // prevent memory leak in some PHP versions
     // API docs at https://github.com/adsabs/adsabs-dev-api/blob/master/Search_API.ipynb
     if (AdsAbsControl::small_gave_up_yet()) return (object) array('numFound' => 0);
     if (!PHP_ADSABSAPIKEY) return (object) array('numFound' => 0);
