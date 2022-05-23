@@ -484,7 +484,3 @@ try {
     exit(0);
   }
 }
-
-WikipediaBot::make_ch(); // @codeCoverageIgnore
-
-
