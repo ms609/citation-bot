@@ -53,7 +53,7 @@ jobs:
          PHP_WP_OAUTH_SECRET: ${{ secrets.PHP_WP_OAUTH_SECRET }}
          PHP_WP_OAUTH_CONSUMER: ${{ secrets.PHP_WP_OAUTH_CONSUMER }}
          PHP_S2APIKEY: ${{ secrets.PHP_S2APIKEY }}
-      run: ./vendor/bin/phpunit --coverage-clover coverage.xml
+      run:  unshare --net  ./vendor/bin/phpunit --coverage-clover coverage.xml
 
     - name: Code Coverage
       run: /bin/bash <(curl -s https://codecov.io/bash)
