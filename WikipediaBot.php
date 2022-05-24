@@ -314,7 +314,8 @@ try {
           }
         }
       } else {
-        report_error('Error reading API for category ' . echoable($cat) . "\n\n");   // @codeCoverageIgnore
+        report_warning('Error reading API for category ' . echoable($cat) . "\n\n");   // @codeCoverageIgnore
+        return array();                                                                // @codeCoverageIgnore
       }
       $vars["cmcontinue"] = isset($res->continue) ? $res->continue->cmcontinue : FALSE;
     } while ($vars["cmcontinue"]);
