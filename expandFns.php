@@ -317,6 +317,7 @@ function wikify_external_text(string $title) : string {
   } else {
     $title = sanitize_string($title);
   }
+  $title = str_replace(['​'],[' '], $title);
 
   for ($i = 0; $i < count($replacement); $i++) {
     $title = str_replace($placeholder[$i], $replacement[$i], $title); // @phan-suppress-current-line PhanTypePossiblyInvalidDimOffset
