@@ -2347,6 +2347,7 @@ final class Template {
              CURLOPT_RETURNTRANSFER => TRUE,
              CURLOPT_URL => $url,
              CURLOPT_TIMEOUT => 10,
+             CURLOPT_CONNECTTIMEOUT => 10,
              CURLOPT_USERAGENT => BOT_USER_AGENT]);
     $json = (string) @curl_exec($ch);
     curl_close($ch);
@@ -2560,6 +2561,7 @@ final class Template {
                     CURLOPT_HEADER => FALSE,
                     CURLOPT_RETURNTRANSFER => TRUE,
                     CURLOPT_TIMEOUT => 15,
+                    CURLOPT_CONNECTTIMEOUT => 10,
                     CURLOPT_URL => $google_book_url]);
         $google_content = (string) @curl_exec($ch);
         curl_close($ch);
@@ -2763,6 +2765,7 @@ final class Template {
             CURLOPT_HEADER => FALSE,
             CURLOPT_RETURNTRANSFER => TRUE,
             CURLOPT_TIMEOUT => 15,
+            CURLOPT_CONNECTTIMEOUT => 10,
             CURLOPT_URL => $google_book_url]);
     $data = (string) @curl_exec($ch);
     curl_close($ch);
@@ -3800,6 +3803,7 @@ final class Template {
               curl_setopt_array($ch,
                        [CURLOPT_RETURNTRANSFER => TRUE,
                         CURLOPT_TIMEOUT => 25,
+                        CURLOPT_CONNECTTIMEOUT => 10,
                         CURLOPT_USERAGENT => BOT_USER_AGENT]);
               @curl_exec($ch);
               $httpCode = (int) @curl_getinfo($ch, CURLINFO_HTTP_CODE);

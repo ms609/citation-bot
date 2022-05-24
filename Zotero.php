@@ -58,6 +58,7 @@ public static function create_ch_zotero() : void {
   curl_setopt_array(self::$ch_jstor,
        [CURLOPT_RETURNTRANSFER => TRUE,
         CURLOPT_TIMEOUT => 15,
+        CURLOPT_CONNECTTIMEOUT => 10,
         CURLOPT_COOKIESESSION => TRUE,
         CURLOPT_USERAGENT => BOT_USER_AGENT]);
    
@@ -76,6 +77,7 @@ public static function create_ch_zotero() : void {
   curl_setopt_array(self::$ch_pmc,
         [CURLOPT_RETURNTRANSFER => TRUE,
          CURLOPT_TIMEOUT => 15,
+         CURLOPT_CONNECTTIMEOUT => 10,
          CURLOPT_COOKIESESSION => TRUE,
          CURLOPT_USERAGENT => BOT_USER_AGENT]);
 }

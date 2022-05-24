@@ -339,6 +339,7 @@ function adsabs_api(array $ids, array &$templates, string $identifier) : bool { 
     curl_setopt_array($ch,
              [CURLOPT_URL => $adsabs_url,
               CURLOPT_TIMEOUT => 20,
+              CURLOPT_CONNECTTIMEOUT => 10,
               CURLOPT_USERAGENT => BOT_USER_AGENT,
               CURLOPT_HTTPHEADER => ['Content-Type: big-query/csv', 'Authorization: Bearer ' . PHP_ADSABSAPIKEY],
               CURLOPT_RETURNTRANSFER => TRUE,
@@ -562,6 +563,7 @@ function query_crossref(string $doi) : ?object {
              CURLOPT_RETURNTRANSFER => TRUE,
              CURLOPT_URL =>  $url,
              CURLOPT_TIMEOUT => 15,
+             CURLOPT_CONNECTTIMEOUT => 10,
              CURLOPT_USERAGENT => BOT_USER_AGENT]);
   for ($i = 0; $i < 2; $i++) {
     $raw_xml = (string) @curl_exec($ch);
@@ -622,6 +624,7 @@ function expand_doi_with_dx(Template $template, string $doi) : bool {
               CURLOPT_HTTPHEADER => ["Accept: application/vnd.citationstyles.csl+json"],
               CURLOPT_RETURNTRANSFER => TRUE,
               CURLOPT_FOLLOWLOCATION => TRUE,
+              CURLOPT_CONNECTTIMEOUT => 10,
               CURLOPT_TIMEOUT => 30]); // can take a long time when nothing to be found
      report_action("Querying dx.doi.org: doi:" . doi_link($doi));
      try {
@@ -744,6 +747,7 @@ function expand_by_jstor(Template $template) : bool {
            [CURLOPT_HEADER => FALSE,
             CURLOPT_RETURNTRANSFER => TRUE,
             CURLOPT_TIMEOUT => 15,
+            CURLOPT_CONNECTTIMEOUT => 10,
             CURLOPT_URL => 'https://www.jstor.org/citation/ris/' . $jstor,
             CURLOPT_USERAGENT => BOT_USER_AGENT]);
   $dat = (string) @curl_exec($ch);
@@ -1053,6 +1057,7 @@ function expand_templates_from_archives(array &$templates) : void { // This is d
           [CURLOPT_HEADER => FALSE,
            CURLOPT_RETURNTRANSFER => TRUE,
            CURLOPT_TIMEOUT => 25,
+           CURLOPT_CONNECTTIMEOUT => 10,
            CURLOPT_USERAGENT => BOT_USER_AGENT]);
   foreach ($templates as $template) {
     set_time_limit(120);
@@ -1203,6 +1208,7 @@ function xml_post(string $url, string $post) : ?SimpleXMLElement {
                      "Content-Type: application/x-www-form-urlencoded",
                      "Accept: application/xml"),
                 CURLOPT_TIMEOUT => 10,
+                CURLOPT_CONNECTTIMEOUT => 10,
                 CURLOPT_USERAGENT => BOT_USER_AGENT
                ]);
    $output = (string) @curl_exec($ch);
@@ -1318,6 +1324,7 @@ function query_adsabs(string $options) : object {
                 CURLOPT_RETURNTRANSFER => TRUE,
                 CURLOPT_HEADER => TRUE,
                 CURLOPT_TIMEOUT => 20,
+                CURLOPT_CONNECTTIMEOUT => 10,
                 CURLOPT_USERAGENT => BOT_USER_AGENT,
                 CURLOPT_URL => $adsabs_url]);
       $return = (string) @curl_exec($ch);
