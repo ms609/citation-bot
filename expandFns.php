@@ -256,12 +256,12 @@ function wikify_external_text(string $title) : string {
   }
   $title = html_entity_decode($title, ENT_COMPAT | ENT_HTML401, "UTF-8");
   $title = preg_replace("~\s+~"," ", $title);  // Remove all white spaces before
-  if (mb_substr($title, -6) == "&nbsp;") $title = mb_substr($title, 0, -6);
+  if (mb_substr($title, -6) === "&nbsp;") $title = mb_substr($title, 0, -6);
   // Special code for ending periods
-  while (mb_substr($title, -2) == "..") {
+  while (mb_substr($title, -2) === "..") {
     $title = mb_substr($title, 0, -1);
   }
-  if (mb_substr($title, -1) == ".") { // Ends with a period
+  if (mb_substr($title, -1) === ".") { // Ends with a period
    if (mb_substr_count($title, '.') === 1) { // Only one period
       $title = mb_substr($title, 0, -1);
    } elseif (mb_substr_count($title, ' ') === 0) { // No spaces at all and multiple periods
@@ -293,7 +293,7 @@ function wikify_external_text(string $title) : string {
   $title = str_ireplace($originalTags, $wikiTags, $title);
 
   $title_orig = '';
-  while ($title != $title_orig) {
+  while ($title !== $title_orig) {
     $title_orig = $title;  // Might have to do more than once.   The following do not allow < within the inner match since the end tag is the same :-( and they might nest or who knows what
     $title = preg_replace_callback('~(?:<Emphasis Type="Italic">)([^<]+)(?:</Emphasis>)~iu',
       function (array $matches) : string {return ("''" . $matches[1] . "''");},
@@ -312,7 +312,7 @@ function wikify_external_text(string $title) : string {
       $title);
   }
 
-  if (mb_substr($title, -1) == '.') {
+  if (mb_substr($title, -1) === '.') {
     $title = sanitize_string($title) . '.';
   } else {
     $title = sanitize_string($title);
@@ -334,8 +334,8 @@ function restore_italics (string $text) : string {
 
 function sanitize_string(string $str) : string {
   // ought only be applied to newly-found data.
-  if ($str == '') return '';
-  if (strtolower(trim($str)) == 'science (new york, n.y.)') return 'Science';
+  if ($str === '') return '';
+  if (strtolower(trim($str)) === 'science (new york, n.y.)') return 'Science';
   if (preg_match('~^\[http.+\]$~', $str)) return $str; // It is a link out
   $replacement = [];
   $placeholder = [];
@@ -361,13 +361,13 @@ function truncate_publisher(string $p) : string {
 }
 
 function str_remove_irrelevant_bits(string $str) : string {
-  if ($str == '') return '';
+  if ($str === '') return '';
   $str = trim($str);
   $str = str_replace('�', 'X', $str);
   $str = preg_replace(REGEXP_PLAIN_WIKILINK, "$1", $str);   // Convert [[X]] wikilinks into X
   $str = preg_replace(REGEXP_PIPED_WIKILINK, "$2", $str);   // Convert [[Y|X]] wikilinks into X
   $str = trim($str);
-  $str = preg_replace("~^the\s+~i", "", $str);  // Ignore leading "the" so "New York Times" == "The New York Times"
+  $str = preg_replace("~^the\s+~i", "", $str);  // Ignore leading "the" so "New York Times" === "The New York Times"
   // punctuation
   $str = str_replace(array('.', ',', ';', ': '), array(' ', ' ', ' ', ' '), $str);
   $str = str_replace(array(':', '-', '&mdash;', '&ndash;', '—', '–'), array('', '', '', '', '', ''), $str);
@@ -437,13 +437,13 @@ function titles_are_dissimilar(string $inTitle, string $dbTitle) : bool {
         $dbTitle  = str_replace([" ", "<strong>", "</strong>", "<em>", "</em>", "&nbsp", "&", "'", ",", ".", ";", '"'], "", $dbTitle);
   // This will convert &delta into delta
         return ((strlen($inTitle) > 254 || strlen($dbTitle) > 254)
-              ? (strlen($inTitle) != strlen($dbTitle)
+              ? (strlen($inTitle) !== strlen($dbTitle)
                 || similar_text($inTitle, $dbTitle) / strlen($inTitle) < 0.98)
               : (levenshtein($inTitle, $dbTitle) > 3)
         )
         &&  
         ((strlen($inTitle2) > 254 || strlen($dbTitle) > 254)
-              ? (strlen($inTitle2) != strlen($dbTitle)
+              ? (strlen($inTitle2) !== strlen($dbTitle)
                 || similar_text($inTitle2, $dbTitle) / strlen($inTitle2) < 0.98)
               : (levenshtein($inTitle2, $dbTitle) > 3)
         );
@@ -557,7 +557,7 @@ function title_capitalization(string $in, bool $caps_after_punctuation) : string
      return $new_case; // Who knows - duplicate code above
   }
 
-  if ($new_case == mb_strtoupper($new_case) 
+  if ($new_case === mb_strtoupper($new_case) 
      && mb_strlen(str_replace(array("[", "]"), "", trim($in))) > 6
      ) {
     // ALL CAPS to Title Case
@@ -638,14 +638,14 @@ function title_capitalization(string $in, bool $caps_after_punctuation) : string
     $new_case);
 
   // "des" at end is "Des" for Design not german "The"
-  if (mb_substr($new_case, -4, 4) == ' des') $new_case = mb_substr($new_case, 0, -4)  . ' Des';
+  if (mb_substr($new_case, -4, 4) === ' des') $new_case = mb_substr($new_case, 0, -4)  . ' Des';
 
   // Capitalization exceptions, e.g. Elife -> eLife
   $new_case = str_replace(UCFIRST_JOURNAL_ACRONYMS, JOURNAL_ACRONYMS, " " .  $new_case . " ");
   $new_case = mb_substr($new_case, 1, mb_strlen($new_case) - 2); // remove spaces, needed for matching in LC_SMALL_WORDS
 
   // Single letter at end should be capitalized  J Chem Phys E for example.  Obviously not the spanish word "e".
-  if (mb_substr($new_case, -2, 1) == ' ') $new_case = strrev(ucfirst(strrev($new_case)));
+  if (mb_substr($new_case, -2, 1) === ' ') $new_case = strrev(ucfirst(strrev($new_case)));
   
   if ($new_case === 'Now and then') $new_case = 'Now and Then'; // Odd journal name
 
@@ -653,12 +653,12 @@ function title_capitalization(string $in, bool $caps_after_punctuation) : string
   $its_in = preg_match_all('~ its(?= )~iu', ' ' . trim($in) . ' ', $matches_in, PREG_OFFSET_CAPTURE);
   $new_case = trim($new_case);
   $its_out = preg_match_all('~ its(?= )~iu', ' ' . $new_case . ' ', $matches_out, PREG_OFFSET_CAPTURE);
-  if ($its_in === $its_out && $its_in != 0) {
+  if ($its_in === $its_out && $its_in !== 0) {
     $matches_in = $matches_in[0];
     $matches_out = $matches_out[0];
     foreach ($matches_in as $key => $_value) {
-      if ($matches_in[$key][0] != $matches_out[$key][0]  &&
-          $matches_in[$key][1] == $matches_out[$key][1]) {
+      if ($matches_in[$key][0] !== $matches_out[$key][0]  &&
+          $matches_in[$key][1] === $matches_out[$key][1]) {
         $new_case = mb_substr_replace($new_case, trim($matches_in[$key][0]), $matches_out[$key][1], 3);
       }
     }
@@ -667,12 +667,12 @@ function title_capitalization(string $in, bool $caps_after_punctuation) : string
   $its_in = preg_match_all('~ dos(?= )~iu', ' ' . trim($in) . ' ', $matches_in, PREG_OFFSET_CAPTURE);
   $new_case = trim($new_case);
   $its_out = preg_match_all('~ dos(?= )~iu', ' ' . $new_case . ' ', $matches_out, PREG_OFFSET_CAPTURE);
-  if ($its_in === $its_out && $its_in != 0) {
+  if ($its_in === $its_out && $its_in !== 0) {
     $matches_in = $matches_in[0];
     $matches_out = $matches_out[0];
     foreach ($matches_in as $key => $_value) {
-      if ($matches_in[$key][0] != $matches_out[$key][0]  &&
-          $matches_in[$key][1] == $matches_out[$key][1]) {
+      if ($matches_in[$key][0] !== $matches_out[$key][0]  &&
+          $matches_in[$key][1] === $matches_out[$key][1]) {
         $new_case = mb_substr_replace($new_case, trim($matches_in[$key][0]), $matches_out[$key][1], 3);
       }
     }
@@ -752,18 +752,18 @@ function tidy_date(string $string) : string {
   if (!preg_match('~\d{2}~', $string)) return ''; // If there are not two numbers next to each other, reject
   // Google sends ranges
   if (preg_match('~^(\d{4})(\-\d{2}\-\d{2})\s+\-\s+(\d{4})(\-\d{2}\-\d{2})$~', $string, $matches)) { // Date range
-     if ($matches[1] == $matches[3]) {
+     if ($matches[1] === $matches[3]) {
        return date('j F', strtotime($matches[1].$matches[2])) . ' – ' . date('j F Y', strtotime($matches[3].$matches[4]));
      } else {
        return date('j F Y', strtotime($matches[1].$matches[2])) . ' – ' . date('j F Y', strtotime($matches[3].$matches[4])); 
      }
   }
   // Huge amount of character cleaning
-  if (strlen($string) != mb_strlen($string)) {  // Convert all multi-byte characters to dashes
+  if (strlen($string) !== mb_strlen($string)) {  // Convert all multi-byte characters to dashes
     $cleaned = '';
     for ($i = 0; $i < mb_strlen($string); $i++) {
        $char = mb_substr($string,$i,1);
-       if (mb_strlen($char) == strlen($char)) {
+       if (mb_strlen($char) === strlen($char)) {
           $cleaned .= $char;
        } else {
           $cleaned .= '-';
@@ -816,7 +816,7 @@ function tidy_date(string $string) : string {
     $year = intval(date('Y', $time));
     if ($year < -2000 || $year > (int)date("Y") + 10) return ''; // We got an invalid year
     if ($year < 100 && $year > -100) return '';
-    if ($day == '01') { // Probably just got month and year
+    if ($day === '01') { // Probably just got month and year
       $string = date('F Y', $time);
     } else {
       $string = date('Y-m-d', $time);
@@ -841,7 +841,7 @@ function tidy_date(string $string) : string {
 }
 
 function not_bad_10_1093_doi(string $url) : bool { // We assume DOIs are bad, unless on good list
-  if ($url == NULL) return TRUE;
+  if ($url === NULL) return TRUE;
   if(!preg_match('~10.1093/([^/]+)/~u', $url, $match)) return TRUE;
   $test = strtolower($match[1]);
   // March 2019 Good list
@@ -928,7 +928,7 @@ function equivalent_parameters(string $par) : array {
 function check_doi_for_jstor(string $doi, Template $template) : void {
   if ($template->has('jstor')) return;
   $doi = trim($doi);
-  if ($doi == '') return;
+  if ($doi === '') return;
   if (strpos($doi, '10.2307') === 0) { // special case
     $doi = substr($doi, 8);
   }
@@ -942,7 +942,7 @@ function check_doi_for_jstor(string $doi, Template $template) : void {
   $ris = (string) @curl_exec($ch);
   $httpCode = (int) @curl_getinfo($ch, CURLINFO_HTTP_CODE);
   curl_close($ch);
-  if ($httpCode == 200 &&
+  if ($httpCode === 200 &&
       stripos($ris, $doi) !== FALSE &&
       strpos ($ris, 'Provider') !== FALSE &&
       stripos($ris, 'No RIS data found for') === FALSE &&
