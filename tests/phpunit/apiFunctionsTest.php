@@ -735,6 +735,7 @@ final class apiFunctionsTest extends testBaseClass {
             CURLOPT_HEADER => TRUE,
             CURLOPT_RETURNTRANSFER => TRUE,
             CURLOPT_TIMEOUT => 15,
+            CURLOPT_CONNECTTIMEOUT => 10,
             CURLOPT_URL => 'https://books.google.com/books/feeds/volumes/to0yXzq_EkQC']);
     @curl_exec($ch);
     $header_length = (int) @curl_getinfo($ch, CURLINFO_HEADER_SIZE);
