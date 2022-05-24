@@ -28,7 +28,7 @@ require_once 'constants.php';
 ini_set("user_agent", BOT_USER_AGENT);
 include_once './vendor/autoload.php';
 
-define("TRAVIS", (bool) getenv('CI') || defined('__PHPUNIT_PHAR__') || defined('PHPUNIT_COMPOSER_INSTALL') || (strpos(@$_SERVER['argv'][0], 'phpunit') !== FALSE));
+define("TRAVIS", (bool) getenv('CI') || defined('__PHPUNIT_PHAR__') || defined('PHPUNIT_COMPOSER_INSTALL') || (strpos((string) tr@$_SERVER['argv'][0], 'phpunit') !== FALSE));
 
 if ((string) @$_REQUEST["page"] . (string) @$argv[1] === "User:AManWithNoPlan/sandbox3") { // Specific page to make sure this code path keeps working
   define('EDIT_AS_USER', TRUE);
