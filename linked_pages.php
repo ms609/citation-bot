@@ -14,7 +14,7 @@ bot_html_header();
 check_blocked();
 
 $page_name = str_replace(' ', '_', trim((string) @$_POST['linkpage']));
-if ($page_name == '') {
+if ($page_name === '') {
   if (isset($_GET['page'])) {
     report_warning('Use the webform.  Passing pages in the URL not supported anymore.');
   } else {
@@ -37,7 +37,7 @@ $edit_summary_end = "| Suggested by " . $api->get_the_user() . " | Linked from $
 
 $json = WikipediaBot::get_links($page_name);
 
-if ($json == '') {
+if ($json === '') {
   report_warning(' Error getting page list');
   bot_html_footer();
   exit();
@@ -53,7 +53,7 @@ $links = $array['parse']['links']; // @phan-suppress-current-line PhanTypeArrayS
 unset($array);
 $pages_in_category = [];
 foreach($links as $link) {
-    if (isset($link['exists']) && ($link['ns'] == 0 || $link['ns'] == 118)) {  // normal and draft articles only
+    if (isset($link['exists']) && ($link['ns'] === 0 || $link['ns'] === 118)) {  // normal and draft articles only
         $linked_page = str_replace(' ', '_', $link['*']);
         if(!in_array($linked_page, AVOIDED_LINKS) && stripos($linked_page, 'disambiguation') === FALSE) {
             $pages_in_category[] = $linked_page;
