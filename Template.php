@@ -721,10 +721,13 @@ final class Template {
     foreach ($this->param as $p) {
       if (in_array($p->param, $param)) {
         $value = $p->val;
+        $value = trim($value);
         if (stripos($value, '# # # CITATION_BOT_PLACEHOLDER_COMMENT') !== FALSE) {
-          dsfasffdsfasdfdsds
-          if (trim(preg_replace('~# # # CITATION_BOT_PLACEHOLDER_COMMENT \d+ # # #~i', '', $value)) !== '') return FALSE;
+          $value = trim(preg_replace('~^# # # CITATION_BOT_PLACEHOLDER_COMMENT \d+ # # #~i', '', $value)); // Sneak up on it
+          $value = trim(preg_replace('~# # # CITATION_BOT_PLACEHOLDER_COMMENT \d+ # # #~i', '', $value));
         }
+        $value = trim($value);
+        if ($value !== '') return FALSE;
       }
     }
     return TRUE;
