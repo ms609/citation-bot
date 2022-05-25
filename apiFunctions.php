@@ -989,6 +989,7 @@ function parse_plain_text_reference(string $journal_data, Template $this_templat
 
 function getS2CID(string $url) : string {
   $context = stream_context_create(CONTEXT_S2);
+  /** @psalm-taint-escape file */
   $response = (string) @file_get_contents(HOST_S2 . '/v1/paper/URL:' . $url, FALSE, $context);
   if (!$response) {
     report_warning("No response from semanticscholar.");   // @codeCoverageIgnore
@@ -1012,6 +1013,7 @@ function getS2CID(string $url) : string {
       
 function ConvertS2CID_DOI(string $s2cid) : string {
   $context = stream_context_create(CONTEXT_S2);
+  /** @psalm-taint-escape file */
   $response = (string) @file_get_contents(HOST_S2 . '/v1/paper/CorpusID:' . $s2cid, FALSE, $context);
   if (!$response) {
     report_warning("No response from semanticscholar.");   // @codeCoverageIgnore
