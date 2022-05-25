@@ -1157,6 +1157,7 @@ function is_hdl_works(string $hdl) {
   // @codeCoverageIgnoreEnd
 }
 
+// Sometimes (UTF-8 non-english characters) preg_replace fails, and we would rather have the original string than a null
 function safe_preg_replace(string $regex, string $replace, string $old) : string {
   if ($old === "") return "";
   $new = preg_replace($regex, $replace, $old);
