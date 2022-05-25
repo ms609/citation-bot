@@ -1753,6 +1753,7 @@ final class Template {
         return FALSE;                                                // @codeCoverageIgnore
       }
       $result = $result->query_result->body->query;
+      print_r($result);
       if ($result['status'] === 'malformed') {
         report_warning("Cannot search CrossRef: " . echoable((string) $result->msg));  // @codeCoverageIgnore
       } elseif ($result["status"] === "resolved") {
