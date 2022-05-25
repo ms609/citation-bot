@@ -154,9 +154,9 @@ function sanitize_doi(string $doi) : string {
       $doi = $try_doi;
     }
   }
-  $doi = preg_replace('~^https?://d?x?\.?doi\.org/~i', '', $doi); // Strip URL part if present
-  $doi = preg_replace('~^/?d?x?\.?doi\.org/~i', '', $doi);
-  $doi = preg_replace('~^doi:~i', '', $doi); // Strip doi: part if present
+  $doi = safe_preg_replace('~^https?://d?x?\.?doi\.org/~i', '', $doi); // Strip URL part if present
+  $doi = safe_preg_replace('~^/?d?x?\.?doi\.org/~i', '', $doi);
+  $doi = safe_preg_replace('~^doi:~i', '', $doi); // Strip doi: part if present
   $doi = str_replace("+" , "%2B", $doi); // plus signs are valid DOI characters, but in URLs are "spaces"
   $doi = str_replace(HTML_ENCODE_DOI, HTML_DECODE_DOI, trim(urldecode($doi)));
   if ($pos = (int) strrpos($doi, '.')) {
@@ -255,7 +255,7 @@ function wikify_external_text(string $title) : string {
     }
   }
   $title = html_entity_decode($title, ENT_COMPAT | ENT_HTML401, "UTF-8");
-  $title = preg_replace("~\s+~"," ", $title);  // Remove all white spaces before
+  $title = safe_preg_replace("~\s+~"," ", $title);  // Remove all white spaces before
   if (mb_substr($title, -6) === "&nbsp;") $title = mb_substr($title, 0, -6);
   // Special code for ending periods
   while (mb_substr($title, -2) === "..") {
@@ -275,7 +275,7 @@ function wikify_external_text(string $title) : string {
     }
    }
   }
-  $title = preg_replace('~[\*]$~', '', $title);
+  $title = safe_preg_replace('~[\*]$~', '', $title);
   $title = title_capitalization($title, TRUE);
 
   $htmlBraces  = array("&lt;", "&gt;");
@@ -329,7 +329,7 @@ function wikify_external_text(string $title) : string {
 
 function restore_italics (string $text) : string {
   // <em> tags often go missing around species names in CrossRef
-  return preg_replace('~([a-z]+)([A-Z][a-z]+\b)~', "$1 ''$2''", $text);
+  return safe_preg_replace('~([a-z]+)([A-Z][a-z]+\b)~', "$1 ''$2''", $text);
 }
 
 function sanitize_string(string $str) : string {
@@ -349,7 +349,7 @@ function sanitize_string(string $str) : string {
   }
   $dirty = array ('[', ']', '|', '{', '}', " what�s ");
   $clean = array ('&#91;', '&#93;', '&#124;', '&#123;', '&#125;', " what's ");
-  $str = trim(str_replace($dirty, $clean, preg_replace('~[;.,]+$~', '', $str)));
+  $str = trim(str_replace($dirty, $clean, safe_preg_replace('~[;.,]+$~', '', $str)));
   if ($math_templates_present) {
     $str = str_replace($placeholder, $replacement, $str);
   }
@@ -357,17 +357,17 @@ function sanitize_string(string $str) : string {
 }
 
 function truncate_publisher(string $p) : string {
-  return preg_replace("~\s+(group|inc|ltd|publishing)\.?\s*$~i", "", $p);
+  return safe_preg_replace("~\s+(group|inc|ltd|publishing)\.?\s*$~i", "", $p);
 }
 
 function str_remove_irrelevant_bits(string $str) : string {
   if ($str === '') return '';
   $str = trim($str);
   $str = str_replace('�', 'X', $str);
-  $str = preg_replace(REGEXP_PLAIN_WIKILINK, "$1", $str);   // Convert [[X]] wikilinks into X
-  $str = preg_replace(REGEXP_PIPED_WIKILINK, "$2", $str);   // Convert [[Y|X]] wikilinks into X
+  $str = safe_preg_replace(REGEXP_PLAIN_WIKILINK, "$1", $str);   // Convert [[X]] wikilinks into X
+  $str = safe_preg_replace(REGEXP_PIPED_WIKILINK, "$2", $str);   // Convert [[Y|X]] wikilinks into X
   $str = trim($str);
-  $str = preg_replace("~^the\s+~i", "", $str);  // Ignore leading "the" so "New York Times" === "The New York Times"
+  $str = safe_preg_replace("~^the\s+~i", "", $str);  // Ignore leading "the" so "New York Times" == "The New York Times"
   // punctuation
   $str = str_replace(array('.', ',', ';', ': '), array(' ', ' ', ' ', ' '), $str);
   $str = str_replace(array(':', '-', '&mdash;', '&ndash;', '—', '–'), array('', '', '', '', '', ''), $str);
@@ -380,11 +380,11 @@ function str_remove_irrelevant_bits(string $str) : string {
                       array('Springer',       'Springer',                 'Springer',        'Springer'         ), $str);
   $str = straighten_quotes($str, TRUE);
   $str = str_replace("′","'", $str);
-  $str = preg_replace('~\(Incorporating .*\)$~i', '', $str);  // Physical Chemistry Chemical Physics (Incorporating Faraday Transactions)
-  $str = preg_replace('~\d+ Volume Set$~i', '', $str);  // Ullmann's Encyclopedia of Industrial Chemistry, 40 Volume Set
-  $str = preg_replace('~^Retracted~i', '', $str);
-  $str = preg_replace('~\d?\d? ?The ?sequence ?of ?\S+ ?has ?been ?deposited ?in ?the ?GenBank ?database ?under ?accession ?number ?\S+ ?\d?~i', '', $str);
-  $str = preg_replace('~(?:\:\.\,)? ?(?:an|the) official publication of the.+$~i', '', $str);
+  $str = safe_preg_replace('~\(Incorporating .*\)$~i', '', $str);  // Physical Chemistry Chemical Physics (Incorporating Faraday Transactions)
+  $str = safe_preg_replace('~\d+ Volume Set$~i', '', $str);  // Ullmann's Encyclopedia of Industrial Chemistry, 40 Volume Set
+  $str = safe_preg_replace('~^Retracted~i', '', $str);
+  $str = safe_preg_replace('~\d?\d? ?The ?sequence ?of ?\S+ ?has ?been ?deposited ?in ?the ?GenBank ?database ?under ?accession ?number ?\S+ ?\d?~i', '', $str);
+  $str = safe_preg_replace('~(?:\:\.\,)? ?(?:an|the) official publication of the.+$~i', '', $str);
   $str = trim($str);
   $str = strip_diacritics($str);
   return $str;
@@ -456,31 +456,31 @@ function titles_simple(string $inTitle) : string {
             function (array $matches) : string {return ($matches[1]);}, trim($inTitle));
         if ($inTitle2 !== "") $inTitle = $inTitle2;
         // Trailing "a review"
-        $inTitle2 = (string) preg_replace('~(?:\: | |\:)a review$~iu', '', trim($inTitle));
+        $inTitle2 = (string) safe_preg_replace('~(?:\: | |\:)a review$~iu', '', trim($inTitle));
         if ($inTitle2 !== "") $inTitle = $inTitle2;
         // Strip trailing Online
-        $inTitle2 = (string) preg_replace('~ Online$~iu', '', $inTitle);
+        $inTitle2 = (string) safe_preg_replace('~ Online$~iu', '', $inTitle);
         if ($inTitle2 !== "") $inTitle = $inTitle2;
         // Strip trailing (Third Edition)
-        $inTitle2 = (string) preg_replace('~\([^\s\(\)]+ Edition\)^~iu', '', $inTitle);
+        $inTitle2 = (string) safe_preg_replace('~\([^\s\(\)]+ Edition\)^~iu', '', $inTitle);
         if ($inTitle2 !== "") $inTitle = $inTitle2;
         // Strip leading International Symposium on 
-        $inTitle2 = (string) preg_replace('~^International Symposium on ~iu', '', $inTitle);
+        $inTitle2 = (string) safe_preg_replace('~^International Symposium on ~iu', '', $inTitle);
         if ($inTitle2 !== "") $inTitle = $inTitle2;
         // Strip leading the
-        $inTitle2 = (string) preg_replace('~^The ~iu', '', $inTitle);
+        $inTitle2 = (string) safe_preg_replace('~^The ~iu', '', $inTitle);
         if ($inTitle2 !== "") $inTitle = $inTitle2;
         // Reduce punctuation
         $inTitle = straighten_quotes(mb_strtolower((string) $inTitle), TRUE);
-        $inTitle2 = (string) preg_replace("~(?: |‐|−|-|—|–|â€™|â€”|â€“)~u", "", $inTitle);
+        $inTitle2 = (string) safe_preg_replace("~(?: |‐|−|-|—|–|â€™|â€”|â€“)~u", "", $inTitle);
         if ($inTitle2 !== "") $inTitle = $inTitle2;
         $inTitle = str_replace(array("\n", "\r", "\t", "&#8208;", ":", "&ndash;", "&mdash;", "&ndash", "&mdash"), "", $inTitle);
         // Retracted
-        $inTitle2 = (string) preg_replace("~\[RETRACTED\]~ui", "", $inTitle);
+        $inTitle2 = (string) safe_preg_replace("~\[RETRACTED\]~ui", "", $inTitle);
         if ($inTitle2 !== "") $inTitle = $inTitle2;
-        $inTitle2 = (string) preg_replace("~\(RETRACTED\)~ui", "", $inTitle);
+        $inTitle2 = (string) safe_preg_replace("~\(RETRACTED\)~ui", "", $inTitle);
         if ($inTitle2 !== "") $inTitle = $inTitle2;
-        $inTitle2 = (string) preg_replace("~RETRACTED~ui", "", $inTitle);
+        $inTitle2 = (string) safe_preg_replace("~RETRACTED~ui", "", $inTitle);
         if ($inTitle2 !== "") $inTitle = $inTitle2;
         // Drop normal quotes
         $inTitle = str_replace(array("'", '"'), "", $inTitle);
@@ -500,27 +500,27 @@ function straighten_quotes(string $str, bool $do_more) : string { // (?<!\') and
   // These Regex can die on Unicode because of backward looking
   if ($str === '') return '';
   $str = str_replace('Hawaiʻi', 'CITATION_BOT_PLACEHOLDER_HAWAII', $str);
-  $str2 = preg_replace('~(?<!\')&#821[679];|&#39;|&#x201[89];|[\x{FF07}\x{2018}-\x{201B}`]|&[rl]s?[b]?quo;(?!\')~u', "'", $str);
+  $str2 = safe_preg_replace('~(?<!\')&#821[679];|&#39;|&#x201[89];|[\x{FF07}\x{2018}-\x{201B}`]|&[rl]s?[b]?quo;(?!\')~u', "'", $str);
   if ($str2 !== NULL) $str = $str2;
   if((mb_strpos($str, '&rsaquo;') !== FALSE && mb_strpos($str, '&[lsaquo;')  !== FALSE) ||
      (mb_strpos($str, '\x{2039}') !== FALSE && mb_strpos($str, '\x{203A}') !== FALSE) ||
      (mb_strpos($str, '‹')        !== FALSE && mb_strpos($str, '›')        !== FALSE)) { // Only replace single angle quotes if some of both
-     $str2 = preg_replace('~&[lr]saquo;|[\x{2039}\x{203A}]|[‹›]~u', "'", $str);           // Websites tiles: Jobs ›› Iowa ›› Cows ›› Ames
+     $str2 = safe_preg_replace('~&[lr]saquo;|[\x{2039}\x{203A}]|[‹›]~u', "'", $str);           // Websites tiles: Jobs ›› Iowa ›› Cows ›› Ames
      if ($str2 !== NULL) $str = $str2;
   }
-  $str2 = preg_replace('~&#822[013];|[\x{201C}-\x{201F}]|&[rlb][d]?quo;~u', '"', $str);
+  $str2 = safe_preg_replace('~&#822[013];|[\x{201C}-\x{201F}]|&[rlb][d]?quo;~u', '"', $str);
   if ($str2 !== NULL) $str = $str2;
   if((mb_strpos($str, '&raquo;')  !== FALSE && mb_strpos($str, '&laquo;')  !== FALSE) ||
      (mb_strpos($str, '\x{00AB}') !== FALSE && mb_strpos($str, '\x{00AB}') !== FALSE) ||
      (mb_strpos($str, '«')        !== FALSE && mb_strpos($str, '»')        !== FALSE)) { // Only replace double angle quotes if some of both // Websites tiles: Jobs » Iowa » Cows » Ames
      if ($do_more){
-       $str2 = preg_replace('~&[lr]aquo;|[\x{00AB}\x{00BB}]|[«»]~u', '"', $str);
+       $str2 = safe_preg_replace('~&[lr]aquo;|[\x{00AB}\x{00BB}]|[«»]~u', '"', $str);
      } else { // Only outer funky quotes, not inner quotes
        if (preg_match('~^(?:&laquo;|&raquo;|\x{00AB}|\x{00BB}|«|»)~u', $str) &&
            preg_match( '~(?:&laquo;|&raquo;|\x{00AB}|\x{00BB}|«|»)$~u', $str) // Only if there is an outer quote on both ends
        ) {
-         $str2 = preg_replace('~^(?:&laquo;|&raquo;|\x{00AB}|\x{00BB}|«|»)~u' , '"', $str);
-         $str2 = preg_replace( '~(?:&laquo;|&raquo;|\x{00AB}|\x{00BB}|«|»)$~u', '"', $str2);
+         $str2 = safe_preg_replace('~^(?:&laquo;|&raquo;|\x{00AB}|\x{00BB}|«|»)~u' , '"', $str);
+         $str2 = safe_preg_replace( '~(?:&laquo;|&raquo;|\x{00AB}|\x{00BB}|«|»)$~u', '"', $str2);
        } else {
          $str2 = $str; // No change
        }
@@ -624,7 +624,7 @@ function title_capitalization(string $in, bool $caps_after_punctuation) : string
   $new_case = mb_ucfirst(trim($new_case));
 
   // Solitary 'a' should be lowercase
-  $new_case = preg_replace("~(\w\s+)A(\s+\w)~u", "$1a$2", $new_case);
+  $new_case = safe_preg_replace("~(\w\s+)A(\s+\w)~u", "$1a$2", $new_case);
   // but not in "U S A"
   $new_case = trim(str_replace(" U S a ", " U S A ", ' ' . $new_case . ' '));
 
@@ -771,13 +771,13 @@ function tidy_date(string $string) : string {
     }
     $string = $cleaned;
   }
-  $string = preg_replace("~[^\x01-\x7F]~","-", $string); // Convert any non-ASCII Characters to dashes
-  $string = preg_replace('~[\s\-]*\-[\s\-]*~', '-',$string); // Combine dash with any following or preceding white space and other dash
-  $string = preg_replace('~^\-*(.+?)\-*$~', '\1', $string);  // Remove trailing/leading dashes
+  $string = safe_preg_replace("~[^\x01-\x7F]~","-", $string); // Convert any non-ASCII Characters to dashes
+  $string = safe_preg_replace('~[\s\-]*\-[\s\-]*~', '-',$string); // Combine dash with any following or preceding white space and other dash
+  $string = safe_preg_replace('~^\-*(.+?)\-*$~', '\1', $string);  // Remove trailing/leading dashes
   $string = trim($string);
   // End of character clean-up
-  $string = preg_replace('~[^0-9]+\d{2}:\d{2}:\d{2}$~', '', $string); //trailing time
-  $string = preg_replace('~^Date published \(~', '', $string); // seen this
+  $string = safe_preg_replace('~[^0-9]+\d{2}:\d{2}:\d{2}$~', '', $string); //trailing time
+  $string = safe_preg_replace('~^Date published \(~', '', $string); // seen this
   // https://stackoverflow.com/questions/29917598/why-does-0000-00-00-000000-return-0001-11-30-000000
   if (strpos($string, '0001-11-30') !== FALSE) return '';
   if (strpos($string, '1969-12-31') !== FALSE) return '';
@@ -973,6 +973,7 @@ function str_i_same(string $str1, string $str2) : bool {
 }
   
 function doi_encode (string $doi) : string {
+   /** @psalm-taint-escape html */  /** @psalm-taint-escape quotes */
     $doi = urlencode($doi);
     $doi = str_replace('%2F', '/', $doi);
     return $doi;
@@ -1155,4 +1156,12 @@ function is_hdl_works(string $hdl) {
   report_minor_error("Unexpected response in is_hdl_works " . echoable($headers_test[0]));
   return NULL;
   // @codeCoverageIgnoreEnd
+}
+
+// Sometimes (UTF-8 non-english characters) preg_replace fails, and we would rather have the original string than a null
+function safe_preg_replace(string $regex, string $replace, string $old) : string {
+  if ($old === "") return "";
+  $new = preg_replace($regex, $replace, $old);
+  if ($new === NULL) return $old;
+  return (string) $new;
 }
