@@ -640,7 +640,7 @@ function expand_doi_with_dx(Template $template, string $doi) : bool {
        return FALSE;
      }
      $json = @json_decode($data, TRUE);
-     if($json === FALSE) return FALSE;
+     if($json === FALSE || $json === NULL) return FALSE;
      // BE WARNED:  this code uses the "@$var" method.
      // If the variable is not set, then PHP just passes NULL, then that is interpreted as a empty string
      if ($template->blank(['date', 'year'])) {
