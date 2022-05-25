@@ -841,7 +841,7 @@ function tidy_date(string $string) : string {
 }
 
 function not_bad_10_1093_doi(string $url) : bool { // We assume DOIs are bad, unless on good list
-  if ($url === NULL) return TRUE;
+  if ($url === '') return TRUE;
   if(!preg_match('~10.1093/([^/]+)/~u', $url, $match)) return TRUE;
   $test = strtolower($match[1]);
   // March 2019 Good list
