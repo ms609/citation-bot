@@ -85,22 +85,22 @@ function bibcode_link(string $id) : string {
 }
 
 function doi_link(string $doi) : string {
-  /** @psalm-suppress TypeDoesNotContainType */ /* PSALM thinks HTML_OUTPUT cannot be false */
+  /** @psalm-suppress TypeDoesNotContainType */ /* PSALM thinks HTML_OUTPUT cannot be false */ /** @psalm-taint-escape html */
   return HTML_OUTPUT
-    ? '<a href="https://dx.doi.org/' . doi_encode($doi) . '" target="_blank">' . $doi . '</a>'      // @codeCoverageIgnore
+    ? '<a href="https://dx.doi.org/' . doi_encode($doi) . '" target="_blank">' . echoable($doi) . '</a>'      // @codeCoverageIgnore
     : $doi;
 }
 
 function jstor_link(string $id) : string {
   /** @psalm-suppress TypeDoesNotContainType */ /* PSALM thinks HTML_OUTPUT cannot be false */
   return HTML_OUTPUT
-    ? '<a href="https://www.jstor.org/citation/ris/' . urlencode($id) . '" target="_blank">JSTOR ' . $id . '</a>'    // @codeCoverageIgnore
+    ? '<a href="https://www.jstor.org/citation/ris/' . urlencode($id) . '" target="_blank">JSTOR ' . echoable($id) . '</a>'    // @codeCoverageIgnore
     : "JSTOR $id";
 }
 
 function wiki_link(string $page) : string {
   /** @psalm-suppress TypeDoesNotContainType */ /* PSALM thinks HTML_OUTPUT cannot be false */
   return HTML_OUTPUT
-    ? '<a href="' . WIKI_ROOT . '?title=' . urlencode(str_replace(' ', '_', $page)) . '" target="_blank">Wikipedia pagedsfasdfds: ' . $page . '</a>'    // @codeCoverageIgnore
+    ? '<a href="' . WIKI_ROOT . '?title=' . urlencode(str_replace(' ', '_', $page)) . '" target="_blank">Wikipedia page: ' . echoable($page) . '</a>'    // @codeCoverageIgnore
     : "Wikipedia page : $page";
 }
