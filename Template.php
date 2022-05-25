@@ -1755,7 +1755,7 @@ final class Template {
       $result = $result->query_result->body->query;
       if ((string) $result->attributes()->status === 'malformed') {
         report_warning("Cannot search CrossRef: " . echoable((string) $result->msg));  // @codeCoverageIgnore
-      } elseif ((string) $result->attributes()->status == "resolved") {
+      } elseif ((string) $result->attributes()->status === "resolved") {
         if (!isset($result->doi)) return FALSE;
         report_info(" Successful!");
         return $this->add_if_new('doi', (string) $result->doi);
