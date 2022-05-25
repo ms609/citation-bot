@@ -719,7 +719,7 @@ final class Template {
     if (empty($this->param)) return TRUE;
     if (!is_array($param)) $param = array($param);
     foreach ($this->param as $p) {
-      if (in_array($p->param, $param) && trim(preg_replace('~# # # CITATION_BOT_PLACEHOLDER_COMMENT.*?# # #~sui', '', $p->val)) != '') return FALSE;
+      if (in_array($p->param, $param) && trim(preg_replace('~# # # CITATION_BOT_PLACEHOLDER_COMMENT.*?# # #~si', '', $p->val)) !== '') return FALSE;
     }
     return TRUE;
   }
