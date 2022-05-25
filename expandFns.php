@@ -1156,3 +1156,10 @@ function is_hdl_works(string $hdl) {
   return NULL;
   // @codeCoverageIgnoreEnd
 }
+
+function safe_preg_replace(string $regex, string $replace, string $old) : string {
+  if ($old === "") return "";
+  $new = preg_replace($regex, $replace, $old);
+  if ($new === NULL) return $old;
+  return (string) $new;
+}
