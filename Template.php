@@ -2054,8 +2054,8 @@ final class Template {
       $journal_string = explode(",", (string) $result->docs[0]->pub);
       $journal_fuzzyer = "~\([iI]ncorporating.+|\bof\b|\bthe\b|\ba|eedings\b|\W~";
       if (strlen($journal_string[0])
-      &&  strpos(mb_strtolower(preg_replace($journal_fuzzyer, "", $journal)),
-                 mb_strtolower(preg_replace($journal_fuzzyer, "", $journal_string[0]))
+      &&  strpos(mb_strtolower(safe_preg_replace($journal_fuzzyer, "", $journal)),
+                 mb_strtolower(safe_preg_replace($journal_fuzzyer, "", $journal_string[0]))
                  ) === FALSE
       ) {
         report_info("Partial match but database journal \"" .         // @codeCoverageIgnore
@@ -3475,15 +3475,15 @@ final class Template {
           $param !== 'trans-title' &&                 // these can be very weird
           (($param !== 'chapter' && $param !== 'title') || strlen($this->get($param)) > 4)  // Avoid tiny titles that might be a smiley face
          ) {
-        $this->set($param, preg_replace('~[\x{2000}-\x{200A}\x{00A0}\x{202F}\x{205F}\x{3000}]~u', ' ', $this->get($param))); // Non-standard spaces
-        $this->set($param, preg_replace('~[\t\n\r\0\x0B]~u', ' ', $this->get($param))); // tabs, linefeeds, null bytes
-        $this->set($param, preg_replace('~  +~u', ' ', $this->get($param))); // multiple spaces
-        $this->set($param, preg_replace('~(?<!:)[:,]$~u', '', $this->get($param)));   // Remove trailing commas, colons, but not semi-colons--They are HTML encoding stuff
-        $this->set($param, preg_replace('~^[:,;](?!:)~u', '', $this->get($param)));  // Remove leading commas, colons, and semi-colons
-        $this->set($param, preg_replace('~^\=+\s*(?![^a-zA-Z0-9\[\'\"])~u', '', $this->get($param)));  // Remove leading ='s sign if in front of letter or number
-        $this->set($param, preg_replace('~&#x2013;~u', '&ndash;', $this->get($param)));
-        $this->set($param, preg_replace('~&#x2014;~u', '&mdash;', $this->get($param)));
-        $this->set($param, preg_replace('~(?<!\&)&[Aa]mp;(?!&)~u', '&', $this->get($param))); // &Amp; => & but not if next character is & or previous character is ;
+        $this->set($param, safe_preg_replace('~[\x{2000}-\x{200A}\x{00A0}\x{202F}\x{205F}\x{3000}]~u', ' ', $this->get($param))); // Non-standard spaces
+        $this->set($param, safe_preg_replace('~[\t\n\r\0\x0B]~u', ' ', $this->get($param))); // tabs, linefeeds, null bytes
+        $this->set($param, safe_preg_replace('~  +~u', ' ', $this->get($param))); // multiple spaces
+        $this->set($param, safe_preg_replace('~(?<!:)[:,]$~u', '', $this->get($param)));   // Remove trailing commas, colons, but not semi-colons--They are HTML encoding stuff
+        $this->set($param, safe_preg_replace('~^[:,;](?!:)~u', '', $this->get($param)));  // Remove leading commas, colons, and semi-colons
+        $this->set($param, safe_preg_replace('~^\=+\s*(?![^a-zA-Z0-9\[\'\"])~u', '', $this->get($param)));  // Remove leading ='s sign if in front of letter or number
+        $this->set($param, safe_preg_replace('~&#x2013;~u', '&ndash;', $this->get($param)));
+        $this->set($param, safe_preg_replace('~&#x2014;~u', '&mdash;', $this->get($param)));
+        $this->set($param, safe_preg_replace('~(?<!\&)&[Aa]mp;(?!&)~u', '&', $this->get($param))); // &Amp; => & but not if next character is & or previous character is ;
 
         // Remove final semi-colon from a few items
         if ((in_array($param, ['date', 'year', 'location', 'publisher', 'issue', 'number', 'page', 'pages', 'pp', 'p', 'volume']) ||
@@ -3511,11 +3511,11 @@ final class Template {
         while (preg_match("~^(.+)&nbsp;$~u", $this->get($param), $matches)) {
           $this->set($param, trim($matches[1], " \t\n\r\0\x0B"));
         }
-        $this->set($param, preg_replace('~\x{00AD}~u', '', $this->get($param))); // Remove soft hyphen
+        $this->set($param, safe_preg_replace('~\x{00AD}~u', '', $this->get($param))); // Remove soft hyphen
       }
     }
     if (in_array(strtolower($param), ['series', 'journal', 'newspaper']) && $this->has($param)) {
-      $this->set($param, preg_replace('~[™|®]$~u', '', $this->get($param))); // remove trailing TM/(R)
+      $this->set($param, safe_preg_replace('~[™|®]$~u', '', $this->get($param))); // remove trailing TM/(R)
     }
     if (!preg_match('~^(\D+)(\d*)(\D*)$~', $param, $pmatch)) {
       report_minor_error("Unrecognized parameter name format in " . echoable($param));  // @codeCoverageIgnore
@@ -3993,7 +3993,7 @@ final class Template {
 
         case 'isbn':
           if ($this->blank('isbn')) return;
-          $this->set('isbn', preg_replace('~\s?-\s?~', '-', $this->get('isbn'))); // a White space next to a dash
+          $this->set('isbn', safe_preg_replace('~\s?-\s?~', '-', $this->get('isbn'))); // a White space next to a dash
           $this->set('isbn', $this->isbn10Toisbn13($this->get('isbn')));
           if ($this->blank('journal') || $this->has('chapter') || $this->wikiname() === 'cite web') {
             $this->change_name_to('cite book');
@@ -4005,7 +4005,7 @@ final class Template {
         case 'eissn':
           if ($this->blank($param)) return;
           $orig = $this->get($param);
-          $new = preg_replace('~\s?[\-\–]+\s?~', '-', $orig); // a White space next to a dash or bad dash
+          $new = safe_preg_replace('~\s?[\-\–]+\s?~', '-', $orig); // a White space next to a dash or bad dash
           $new = str_replace('x', 'X', $new);
           if (preg_match('~^(\d{4})\s?(\d{3}[\dX])$~', $new, $matches)) {
             $new =  $matches[1] . '-' . strtoupper($matches[2]); // Add dash
@@ -5689,7 +5689,7 @@ final class Template {
           // Remove leading zeroes
           $value = $this->get($param);
           if ($value !== '') {
-            $value = preg_replace('~^0+~', '', $value);
+            $value = safe_preg_replace('~^0+~', '', $value);
             if ($value === '') {
               $this->forget($param); // Was all zeros
             }
@@ -5733,7 +5733,7 @@ final class Template {
           }
           // Remove leading zeroes
           if ($value && $this->get('journal') != 'Insecta Mundi') {
-            $value = preg_replace('~^0+~', '', $value);
+            $value = safe_preg_replace('~^0+~', '', $value);
             if ($value === '') {
               $this->forget($param); // Was all zeros
             }
@@ -5808,9 +5808,9 @@ final class Template {
             }
           }
           if (strpos($this->get($param), '&') === FALSE) {
-            $this->set($param, preg_replace("~^[.,;]*\s*(.*?)\s*[,.;]*$~", "$1", $this->get($param)));
+            $this->set($param, safe_preg_replace("~^[.,;]*\s*(.*?)\s*[,.;]*$~", "$1", $this->get($param)));
           } else {
-            $this->set($param, preg_replace("~^[.,;]*\s*(.*?)\s*[,.]*$~", "$1", $this->get($param))); // Not trailing ;
+            $this->set($param, safe_preg_replace("~^[.,;]*\s*(.*?)\s*[,.]*$~", "$1", $this->get($param))); // Not trailing ;
           }
           if (mb_substr($this->get($param), -4) === ' etc') {
             $this->set($param, $this->get($param) . '.');
@@ -6703,8 +6703,8 @@ final class Template {
 
   public function get_without_comments_and_placeholders(string $name) : string {
     $ret = $this->get($name);
-    $ret = preg_replace('~<!--.*?-->~su', '', $ret); // Comments
-    $ret = preg_replace('~# # # CITATION_BOT_PLACEHOLDER.*?# # #~sui', '', $ret); // Other place holders already escaped.  Case insensitive
+    $ret = safe_preg_replace('~<!--.*?-->~su', '', $ret); // Comments
+    $ret = safe_preg_replace('~# # # CITATION_BOT_PLACEHOLDER.*?# # #~sui', '', $ret); // Other place holders already escaped.  Case insensitive
     $ret = str_replace("\xc2\xa0", ' ', $ret); // Replace non-breaking with breaking spaces, which are trimmable
     $ret = trim($ret);
     return $ret;

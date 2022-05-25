@@ -85,15 +85,16 @@ function bibcode_link(string $id) : string {
 }
 
 function doi_link(string $doi) : string {
+  /* PSALM thinks HTML_OUTPUT cannot be false */
  /**
    * @psalm-taint-escape html
    * @psalm-taint-escape has_quotes
+   * @psalm-suppress TypeDoesNotContainType
    */
-  $doi_link = doi_encode(urldecode($doi));
-  /** @psalm-suppress TypeDoesNotContainType */ /* PSALM thinks HTML_OUTPUT cannot be false */
-  return HTML_OUTPUT
-    ? '<a href="https://dx.doi.org/' . $doi_link . '" target="_blank">' . echoable($doi) . '</a>'      // @codeCoverageIgnore
+  $return = HTML_OUTPUT
+    ? '<a href="https://dx.doi.org/' . doi_encode(urldecode($doi)) . '" target="_blank">' . echoable($doi) . '</a>'      // @codeCoverageIgnore
     : $doi;
+  return $return;
 }
 
 function jstor_link(string $id) : string {
