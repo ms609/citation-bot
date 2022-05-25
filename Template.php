@@ -3474,7 +3474,7 @@ final class Template {
           (($param !== 'chapter' && $param !== 'title') || strlen($this->get($param)) > 4)  // Avoid tiny titles that might be a smiley face
          ) {
         // These are split up to avoid regex failures
-        $this->set($param, preg_replace('~[\x{2000}-\x{200A}]+~u', ' ', $this->get($param))); // Non-standard spaces
+        $this->set($param, preg_replace('~[\x{2000}\x{2001}\x{2002}\x{2003}\x{2004}\x{2005}\x{2006}\x{2007}\x{2008}\x{2009}\x{200A}]+~u', ' ', $this->get($param))); // Non-standard spaces
         $this->set($param, preg_replace('~\x{00A0}+~u', ' ', $this->get($param))); // Non-standard spaces
         $this->set($param, preg_replace('~\x{202F}+~u', ' ', $this->get($param))); // Non-standard spaces
         $this->set($param, preg_replace('~\x{205F}+~u', ' ', $this->get($param))); // Non-standard spaces
