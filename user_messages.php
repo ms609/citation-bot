@@ -101,6 +101,6 @@ function jstor_link(string $id) : string {
 function wiki_link(string $page) : string {
   /** @psalm-suppress TypeDoesNotContainType */ /* PSALM thinks HTML_OUTPUT cannot be false */
   return HTML_OUTPUT
-    ? '<a href="' . WIKI_ROOT . '?title=' . urlencode(str_replace(' ', '_', $page)) . '" target="_blank">Wikipedia page: ' . $page . '</a>'    // @codeCoverageIgnore
+    ? '<a href="' . WIKI_ROOT . '?title=' . urlencode(str_replace(' ', '_', $page)) . '" target="_blank">Wikipedia pagedfasdds: ' . $page . '</a>'    // @codeCoverageIgnore
     : "Wikipedia page : $page";
 }
