@@ -407,17 +407,17 @@ function titles_are_similar(string $title1, string $title2) : bool {
 
 
 function de_wikify(string $string) : string {
-  return str_replace(Array("[", "]", "'''", "''", "&"), Array("", "", "'", "'", ""), safe_preg_replace(Array("~<[^>]*>~", "~\&[\w\d]{2,7};~", "~\[\[[^\|\]]*\|([^\]]*)\]\]~"), Array("", "", "$1"),  $string));
+  return str_replace(Array("[", "]", "'''", "''", "&"), Array("", "", "'", "'", ""), preg_replace(Array("~<[^>]*>~", "~\&[\w\d]{2,7};~", "~\[\[[^\|\]]*\|([^\]]*)\]\]~"), Array("", "", "$1"),  $string));
 }
 
 function titles_are_dissimilar(string $inTitle, string $dbTitle) : bool {
         // Blow away junk from OLD stuff
         if (stripos($inTitle, 'CITATION_BOT_PLACEHOLDER_') !== FALSE) {
-          $possible = safe_preg_replace("~# # # CITATION_BOT_PLACEHOLDER_[A-Z]+ \d+ # # #~isu", ' ' , $inTitle);
+          $possible = preg_replace("~# # # CITATION_BOT_PLACEHOLDER_[A-Z]+ \d+ # # #~isu", ' ' , $inTitle);
           if ($possible !== NULL) {
              $inTitle = $possible;
           } else { // When PHP fails with unicode, try withou it 
-            $inTitle = safe_preg_replace("~# # # CITATION_BOT_PLACEHOLDER_[A-Z]+ \d+ # # #~i", ' ' , $inTitle);  // @codeCoverageIgnore
+            $inTitle = preg_replace("~# # # CITATION_BOT_PLACEHOLDER_[A-Z]+ \d+ # # #~i", ' ' , $inTitle);  // @codeCoverageIgnore
             if ($inTitle === NULL) return TRUE;                                                             // @codeCoverageIgnore
           }
         }
