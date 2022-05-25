@@ -722,6 +722,7 @@ final class Template {
       if (in_array($p->param, $param)) {
         $value = $p->val;
         if (stripos($value, '# # # CITATION_BOT_PLACEHOLDER_COMMENT') !== FALSE) {
+          dsfasffdsfasdfdsds
           if (trim(preg_replace('~# # # CITATION_BOT_PLACEHOLDER_COMMENT \d+ # # #~i', '', $value)) !== '') return FALSE;
         }
       }
