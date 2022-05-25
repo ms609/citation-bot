@@ -3474,7 +3474,11 @@ final class Template {
           (($param !== 'chapter' && $param !== 'title') || strlen($this->get($param)) > 4)  // Avoid tiny titles that might be a smiley face
          ) {
         // These are split up to avoid regex failures
-        $this->set($param, preg_replace('~[\x{2000}-\x{200A}\x{00A0}\x{202F}\x{205F}\x{3000}]~u', ' ', $this->get($param))); // Non-standard spaces
+        $this->set($param, preg_replace('~[\x{2000}-\x{200A}]+~u', ' ', $this->get($param))); // Non-standard spaces
+        $this->set($param, preg_replace('~\x{00A0}+~u', ' ', $this->get($param))); // Non-standard spaces
+        $this->set($param, preg_replace('~\x{202F}+~u', ' ', $this->get($param))); // Non-standard spaces
+        $this->set($param, preg_replace('~\x{205F}+~u', ' ', $this->get($param))); // Non-standard spaces
+        $this->set($param, preg_replace('~\x{3000}+~u', ' ', $this->get($param))); // Non-standard spaces
         $this->set($param, preg_replace('~\t+~u', ' ', $this->get($param))); // tabs
         $this->set($param, preg_replace('~[\n\r]+~u', ' ', $this->get($param))); //linefeeds
         $this->set($param, preg_replace('~\0+~u', ' ', $this->get($param))); // null bytes
