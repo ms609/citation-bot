@@ -1753,9 +1753,9 @@ final class Template {
         return FALSE;                                                // @codeCoverageIgnore
       }
       $result = $result->query_result->body->query;
-      if ($result['status'] == 'malformed') {
+      if ($result->attributes()->status === 'malformed') {
         report_warning("Cannot search CrossRef: " . echoable((string) $result->msg));  // @codeCoverageIgnore
-      } elseif ($result["status"] == "resolved") {
+      } elseif ($result->attributes()->status == "resolved") {
         if (!isset($result->doi)) return FALSE;
         report_info(" Successful!");
         return $this->add_if_new('doi', (string) $result->doi);
@@ -1796,7 +1796,7 @@ final class Template {
         }
         $Items = $xml->DocSum->Item;
         foreach ($Items as $item) {
-           if ($item['Name'] == 'Title') {
+           if ($item->attributes()->Name === 'Title') {
                $new_title = str_replace(array("[", "]"), "", (string) $item);
                foreach (['chapter', 'title', 'series', 'trans-title'] as $possible) {
                  if ($this->has($possible) && titles_are_similar($this->get($possible), $new_title)) {
