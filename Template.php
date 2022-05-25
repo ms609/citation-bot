@@ -2330,6 +2330,7 @@ final class Template {
     if ($this->has('s2cid') || $this->has('S2CID')) return;
     $context = stream_context_create(CONTEXT_S2);
     /** @psalm-taint-escape file */
+    afdsfdsaf
     $response = (string) @file_get_contents(HOST_S2 . '/v1/paper/' . $doi, FALSE, $context);
     if ($response) {
       $oa = @json_decode($response);
