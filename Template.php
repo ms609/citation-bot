@@ -1796,6 +1796,7 @@ final class Template {
         }
         $Items = $xml->DocSum->Item;
         foreach ($Items as $item) {
+           print_r($item);
            if ($item['Name'] == 'Title') {
                $new_title = str_replace(array("[", "]"), "", (string) $item);
                foreach (['chapter', 'title', 'series', 'trans-title'] as $possible) {
