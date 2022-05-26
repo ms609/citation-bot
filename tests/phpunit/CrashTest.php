@@ -14,6 +14,8 @@ final class CrashTest extends testBaseClass {
     $bad_page = str_replace(' ', '_', $bad_page);
     if ($bad_page !== "") {
       define("TRAVIS_PRINT", "YES");
+      Zotero::create_ch_zotero();
+      WikipediaBot::make_ch();
       $page = new TestPage();
       $page->get_text_from($bad_page);
       AdsAbsControl::big_back_on();
