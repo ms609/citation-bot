@@ -10,6 +10,8 @@ require_once __DIR__ . '/../testBaseClass.php';
 final class CrashTest extends testBaseClass {
 
   public function testBadPage2() : void {  // Use this when debugging pages that crash the bot
+    Zotero::create_ch_zotero();
+    WikipediaBot::make_ch();
     $bad_page = BAD_PAGE_API;
     $bad_page = str_replace(' ', '_', $bad_page);
     if ($bad_page !== "") {
