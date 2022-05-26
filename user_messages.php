@@ -67,7 +67,7 @@ function echoable(?string $string) : string {
    */
   $string = (string) $string;
   /** @psalm-suppress TypeDoesNotContainType */ /* PSALM thinks HTML_OUTPUT cannot be false */
-  return HTML_OUTPUT ? htmlspecialchars($string, ENT_QUOTES) : $string;
+  return HTML_OUTPUT ? htmlspecialchars($string, ENT_QUOTES | ENT_SUBSTITUTE | ENT_HTML401) : $string;
 }
 
 function pubmed_link(string $identifier, string $pm) : string {
