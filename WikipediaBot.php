@@ -156,7 +156,7 @@ try {
   
   /** @phpstan-impure **/
   public function write_page(string $page, string $text, string $editSummary, int $lastRevId, string $startedEditing) : bool {
-    if (stripos($text, "CITATION_BOT_PLACEHOLDER") != FALSE)  {
+    if (stripos($text, "CITATION_BOT_PLACEHOLDER") !== FALSE)  {
       report_minor_error("\n ! Placeholder left escaped in text. Aborting.");  // @codeCoverageIgnore
       return FALSE;                                                            // @codeCoverageIgnore
     }
