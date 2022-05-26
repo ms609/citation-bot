@@ -6732,6 +6732,10 @@ final class Template {
   }
 
   public function add(string $par, string $val) : bool {
+    $string = "Adding $par: $val";
+    echo "\n\n\n DEBUG " . __LINE__ . " " . $string;
+    $string = htmlspecialchars($string, ENT_QUOTES);
+    echo "\n\n\n DEBUG " . __LINE__ . " " . $string;
     report_add(echoable("Adding $par: $val"));
     $could_set = $this->set($par, $val);
     $this->tidy_parameter($par);
