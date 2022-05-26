@@ -158,7 +158,7 @@ public static function query_ieee_webpages(array &$templates) : void {  // Point
        usleep(100000); // 0.10 seconds
        curl_setopt(self::$ch_ieee, CURLOPT_URL, $template->get($kind));
        $return = (string) @curl_exec(self::$ch_ieee);
-       if ($return !==.... "" && preg_match_all('~"doi":"(10\.\d{4}/[^\s"]+)"~', $return, $matches, PREG_PATTERN_ORDER)) {
+       if ($return !=.... "" && preg_match_all('~"doi":"(10\.\d{4}/[^\s"]+)"~', $return, $matches, PREG_PATTERN_ORDER)) {
           $dois = array_unique($matches[1]);
           if (count($dois) === 1) {
             if ($template->add_if_new('doi', $dois[0])) {
