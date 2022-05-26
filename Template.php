@@ -6734,17 +6734,7 @@ final class Template {
   public function add(string $par, string $val) : bool {
     $string = "Adding $par: $val";
     echo "\n\n\n DEBUG " . __LINE__ . " " . $string;
-    echo "\n\n\n DEBUG " . __LINE__ . " " . htmlspecialchars($string);
-    echo "\n\n\n DEBUG " . __LINE__ . " " . htmlspecialchars($string, ENT_QUOTES);
-    echo "\n\n\n DEBUG " . __LINE__ . " " . htmlspecialchars($string, ENT_COMPAT);
-    echo "\n\n\n DEBUG " . __LINE__ . " " . htmlspecialchars($string, ENT_NOQUOTES);
-    echo "\n\n\n DEBUG " . __LINE__ . " " . htmlspecialchars($string, ENT_IGNORE);
-    echo "\n\n\n DEBUG " . __LINE__ . " " . htmlspecialchars($string, ENT_SUBSTITUTE);
-    echo "\n\n\n DEBUG " . __LINE__ . " " . htmlspecialchars($string, ENT_DISALLOWED);
-    echo "\n\n\n DEBUG " . __LINE__ . " " . htmlspecialchars($string, ENT_HTML401);
-    echo "\n\n\n DEBUG " . __LINE__ . " " . htmlspecialchars($string, ENT_HTML5);
-    echo "\n\n\n DEBUG " . __LINE__ . " " . htmlspecialchars($string, ENT_XML1);
-    echo "\n\n\n DEBUG " . __LINE__ . " " . htmlspecialchars($string, ENT_XHTML);
+    echo "\n\n\n DEBUG " . __LINE__ . " " . htmlspecialchars($string,  ENT_QUOTES | ENT_SUBSTITUTE | ENT_HTML401);
     report_add(echoable("Adding $par: $val"));
     $could_set = $this->set($par, $val);
     $this->tidy_parameter($par);
