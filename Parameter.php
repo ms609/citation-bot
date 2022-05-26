@@ -24,13 +24,13 @@ final class Parameter {
     // $pre_eq[2]: the parameter name itself (which can span multiple lines)
     // $pre_eq[3]: any whitespace after the parameter name (including newlines)
     preg_match('~^(\s*?)(\S[\s\S]*?)(\s*+)$~', $split[0], $pre_eq);
-    if (count($split) == 2) {
+    if (count($split) === 2) {
       // Split the text after the '=' into constituent parts:
       // $post_eq[1]: any whitespace before the parameter value (not including newlines)
       // $post_eq[2]: the parameter value itself (which can span multiple lines)
       // $post_eq[3]: any whitespace after the parameter value (including newlines)
       preg_match('~^([ \t\p{Zs}]*)([\s\S]*?)(\s*+)$~', $split[1], $post_eq);
-      if (count($pre_eq) == 0) {
+      if (count($pre_eq) === 0) {
         $this->eq    = $split[0] . '=' . $post_eq[1];
       } else {
         $this->pre   = $pre_eq[1];
