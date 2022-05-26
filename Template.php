@@ -3680,7 +3680,7 @@ final class Template {
         case 'bibcode':
           if ($this->blank($param)) return;
           $bibcode_journal = substr($this->get($param), 4);
-          if ($bibcode_journal === '') return; // bad bibcodes would not have four characters, use ==, since it might be "" or FALSE depending upon error/PHP version
+          if ($bibcode_journal === '' || $bibcode_journal === FALSE) return; // bad bibcodes would not have four characters, use ==, since it might be "" or FALSE depending upon error/PHP version
           foreach (NON_JOURNAL_BIBCODES as $exception) {
             if (substr($bibcode_journal, 0, strlen($exception)) === $exception) return;
           }
@@ -6168,7 +6168,7 @@ final class Template {
       if (!empty($this->param)) { // Forget author-link and such that have no such author
        foreach ($this->param as $p) {
         $alias = $p->param;
-        if ($alias !== NULL && $this->blank($alias)) {
+        if ($alias !== NULL && $alias !== '' && $this->blank($alias)) {
           if (preg_match('~^author(\d+)\-?link$~', $alias, $matches) || preg_match('~^author\-?link(\d+)$~', $alias, $matches)) {
             if ($this->blank(AUTHOR_PARAMETERS[(int) $matches[1]])) {
               $this->forget($alias);
