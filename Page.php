@@ -95,7 +95,7 @@ class Page {
 
     $this->text = WikipediaBot::GetAPage($title);
 
-    if ($this->text == '') {
+    if ($this->text === '') {
        report_warning('Page '  . $title . ' from ' . str_replace(['/w/index.php', 'https://'], ['',''], WIKI_ROOT) . ' appears to be empty '); // @codeCoverageIgnore
        return FALSE;                                                                          // @codeCoverageIgnore
     }
@@ -295,7 +295,7 @@ class Page {
       } elseif (in_array($this_template->wikiname(), TEMPLATES_WE_CHAPTER_URL)) {
         $our_templates_slight[] = $this_template;
         $this_template->rename('chapterurl', 'chapter-url');
-      } elseif ($this_template->wikiname() == 'cite magazine' || $this_template->wikiname() == 'cite periodical') {
+      } elseif ($this_template->wikiname() === 'cite magazine' || $this_template->wikiname() === 'cite periodical') {
         $our_templates_slight[] = $this_template;
         if ($this_template->blank('magazine') && $this_template->has('work')) {
             $this_template->rename('work', 'magazine');
@@ -461,7 +461,7 @@ class Page {
        $last_first_out = array();
     } // @codeCoverageIgnoreEnd
     return strcmp(str_replace($last_first_in, $last_first_out, str_ireplace($caps_ok, $caps_ok, $this->text)),
-                  str_replace($last_first_in, $last_first_out, str_ireplace($caps_ok, $caps_ok, $this->start_text))) != 0;
+                  str_replace($last_first_in, $last_first_out, str_ireplace($caps_ok, $caps_ok, $this->start_text))) !== 0;
   }
 
   public function edit_summary() : string {
@@ -655,7 +655,7 @@ class Page {
 
   protected function announce_page() : void {
     $url_encoded_title =  urlencode($this->title);
-    if ($url_encoded_title == '') return;
+    if ($url_encoded_title === '') return;
     html_echo ("\n<hr>[" . date("H:i:s") . "] Processing page '<a href='" . WIKI_ROOT . "?title=$url_encoded_title' style='font-weight:bold;'>" 
         . echoable($this->title)
         . "</a>' &mdash; <a href='" . WIKI_ROOT . "?title=$url_encoded_title"
