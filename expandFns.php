@@ -435,9 +435,9 @@ function titles_are_dissimilar(string $inTitle, string $dbTitle) : bool {
         $dbTitle = mb_strtolower($dbTitle);
         $inTitle = mb_strtolower($inTitle);
         $inTitle2 = mb_strtolower($inTitle2);
-        $inTitle  = str_replace([" ", "<strong>", "</strong>", "<em>", "</em>", "&nbsp", "&", "'", ",", ".", ";", '"', "\n", "\r"], "", $inTitle);
-        $inTitle2 = str_replace([" ", "<strong>", "</strong>", "<em>", "</em>", "&nbsp", "&", "'", ",", ".", ";", '"', "\n", "\r"], "", $inTitle2);
-        $dbTitle  = str_replace([" ", "<strong>", "</strong>", "<em>", "</em>", "&nbsp", "&", "'", ",", ".", ";", '"', "\n", "\r"], "", $dbTitle);
+        $inTitle  = str_replace([" ", "<strong>", "</strong>", "<em>", "</em>", "&nbsp", "&", "'", ",", ".", ";", '"', "\n", "\r", "\t", "\v", "\e"], "", $inTitle);
+        $inTitle2 = str_replace([" ", "<strong>", "</strong>", "<em>", "</em>", "&nbsp", "&", "'", ",", ".", ";", '"', "\n", "\r", "\t", "\v", "\e"], "", $inTitle2);
+        $dbTitle  = str_replace([" ", "<strong>", "</strong>", "<em>", "</em>", "&nbsp", "&", "'", ",", ".", ";", '"', "\n", "\r", "\t", "\v", "\e"], "", $dbTitle);
   // This will convert &delta into delta
         return ((strlen($inTitle) > 254 || strlen($dbTitle) > 254)
               ? (strlen($inTitle) != strlen($dbTitle)
