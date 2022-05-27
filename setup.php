@@ -38,6 +38,7 @@ if (TRAVIS || isset($argv)) {
   define("HTML_OUTPUT", FALSE);
 } else {
   define("HTML_OUTPUT", TRUE);
+  ob_start();  // Always internal buffer website since server does this for us
 }
 
 // This is needed because the Gadget API expects only JSON back, therefore ALL output from the citation bot is thrown away
@@ -55,15 +56,6 @@ if (isset($_REQUEST["slow"]) || TRAVIS || (isset($argv[2]) && $argv[2] === '--sl
   define("SLOW_MODE", FALSE);
 }
 
-if (!TRAVIS) {
-    if (FLUSHING_OKAY) {
-      while (ob_get_level()) {
-        ob_end_flush();
-      }
-    } else {
-      ob_start();
-    }
-}
 ob_implicit_flush();
 flush();
 
