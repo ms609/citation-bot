@@ -11,7 +11,7 @@ if (file_exists('git_pull.lock')) {
  * Most of the page expansion depends on everything else
  */
 
-if (isset($_REQUEST["wiki_base"])){ 
+if (isset($_REQUEST["wiki_base"])){
   $wiki_base = trim((string) $_REQUEST["wiki_base"]);
   if (!in_array($wiki_base, ['en', 'simple'])) {
      exit('<!DOCTYPE html><html lang="en" dir="ltr"><head><title>Citation Bot: error</title></head><body><h1>Unsupported wiki requested - aborting</h1></body></html>');
@@ -130,9 +130,9 @@ function check_overused() : void {
  }
  ob_start(); // Buffer output for big jobs
  @session_start();
- $_SESSION['big_and_busy'] = 'BLOCK3';
  define('BIG_JOB_MODE', 'YES');
  register_shutdown_function('unlock_user');
+ $_SESSION['big_and_busy'] = 'BLOCK3';
  @session_write_close();
 }
 
