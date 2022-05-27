@@ -4,3 +4,4 @@
 @header('Expires: 0');
 @header('Pragma: no-cache');
 @header('X-Accel-Buffering: no');
+@header('X-Accel-Expires: 0');
