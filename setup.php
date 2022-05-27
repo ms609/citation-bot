@@ -118,10 +118,6 @@ function unlock_user() : void {
   @session_write_close();
 }
 
-function sig_handler(int $signo) : void {
-  exit(); 
-}
-
 function check_overused() : void {
  if (!HTML_OUTPUT) return;
  if (isset($_SESSION['big_and_busy']) && $_SESSION['big_and_busy'] === 'BLOCK3') {
