@@ -679,7 +679,7 @@ function title_capitalization(string $in, bool $caps_after_punctuation) : string
   // Trust existing "DOS", "dos", ... 
   $its_in = preg_match_all('~ dos(?= )~iu', ' ' . trim($in) . ' ', $matches_in, PREG_OFFSET_CAPTURE);
   $new_case = trim($new_case);
-  $its_out = preg_match_all('~ dos(?= )~iu', ' ' . $new_case . ' ', $matches_out, PREG_OFFSET_CAPTURE);=
+  $its_out = preg_match_all('~ dos(?= )~iu', ' ' . $new_case . ' ', $matches_out, PREG_OFFSET_CAPTURE);
   if ($its_in === $its_out && $its_in !== 0 && $its_in !== FALSE) {
     $matches_in = $matches_in[0];
     $matches_out = $matches_out[0];
