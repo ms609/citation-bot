@@ -1,5 +1,5 @@
 <?php
-@header('Cache-Control: private, no-store');
+@header('Cache-Control: no-store, private');
 @header('Content-type: text/html; charset=utf-8');
 @header('Expires: 0');
 @header('Pragma: no-cache');
