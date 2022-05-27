@@ -63,6 +63,7 @@ function is_doi_active(string $doi) : ?bool {
   $headers_test = @get_headers("https://api.crossref.org/works/" . doi_encode($doi), GET_THE_HEADERS);
   if ($headers_test === FALSE) {
     sleep(2);                                                                                            // @codeCoverageIgnore
+    report_inline(' .');                                                                                 // @codeCoverageIgnore
     $headers_test = @get_headers("https://api.crossref.org/works/" . doi_encode($doi), GET_THE_HEADERS); // @codeCoverageIgnore
   }
   if ($headers_test === FALSE) return NULL; // most likely bad, but will recheck again an again
@@ -110,16 +111,19 @@ function is_doi_works(string $doi) : ?bool {
   $context = stream_context_create(CONTEXT_INSECURE_11);
   if ($headers_test === FALSE) {
      sleep(2);                                                                                        // @codeCoverageIgnore
+     report_inline(' .');                                                                             // @codeCoverageIgnore
      set_time_limit(120);                                                                             // @codeCoverageIgnore
      $headers_test = @get_headers("https://doi.org/" . doi_encode($doi), GET_THE_HEADERS, $context);  // @codeCoverageIgnore
   }
   if ($headers_test === FALSE) {
      sleep(5);                                                                                        // @codeCoverageIgnore
      set_time_limit(120);                                                                             // @codeCoverageIgnore
+     report_inline(' .');                                                                             // @codeCoverageIgnore
      $headers_test = @get_headers("https://doi.org/" . doi_encode($doi), GET_THE_HEADERS, $context);  // @codeCoverageIgnore
   } elseif ((empty($headers_test['Location']) && empty($headers_test['location'])) || stripos($headers_test[0], '404 Not Found') !== FALSE || stripos($headers_test[0], 'HTTP/1.1 404') !== FALSE) {
      sleep(5);                                                                                        // @codeCoverageIgnore
      set_time_limit(120);                                                                             // @codeCoverageIgnore
+     report_inline(' .');                                                                             // @codeCoverageIgnore
      $headers_test = @get_headers("https://doi.org/" . doi_encode($doi), GET_THE_HEADERS, $context);  // @codeCoverageIgnore
      if ($headers_test === FALSE) return FALSE; /** We trust previous failure **/                     // @codeCoverageIgnore
   }
@@ -1140,13 +1144,15 @@ function is_hdl_works(string $hdl) {
   set_time_limit(120);
   $headers_test = @get_headers($test_url, GET_THE_HEADERS, $context);
   if ($headers_test === FALSE) {
-      sleep(3);   // @codeCoverageIgnore
+      sleep(3);                                                           // @codeCoverageIgnore
       set_time_limit(120);                                                // @codeCoverageIgnore
+      report_inline(' .');                                                // @codeCoverageIgnore
       $headers_test = @get_headers($test_url, GET_THE_HEADERS, $context); // @codeCoverageIgnore
   }
   if ($headers_test === FALSE) {
-      sleep(8);   // @codeCoverageIgnore
+      sleep(8);                                                           // @codeCoverageIgnore
       set_time_limit(120);                                                // @codeCoverageIgnore
+      report_inline(' .');                                                // @codeCoverageIgnore
       $headers_test = @get_headers($test_url, GET_THE_HEADERS, $context); // @codeCoverageIgnore
   }
   if ($headers_test === FALSE) return NULL; // most likely bad, but will recheck again and again
