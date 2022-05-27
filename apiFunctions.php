@@ -86,7 +86,7 @@ function entrez_api(array $ids, array &$templates, string $db) : bool {   // Poi
    foreach($ids as $template_key => $an_id) { // Cannot use array_search since that only returns first
    if ($an_id == $document->Id) {
     $this_template = $get_template($template_key);
-    $this_template->record_api_usage('entrez', $db == 'pubmed' ? 'pmid' : 'pmc');
+    $this_template->record_api_usage('entrez', $db === 'pubmed' ? 'pmid' : 'pmc');
  
     foreach ($document->Item as $item) {
       if (preg_match("~10\.\d{4}/[^\s\"']*~", (string) $item, $match)) {
@@ -117,7 +117,7 @@ function entrez_api(array $ids, array &$templates, string $db) : bool {   // Poi
               $junior = $jr_test[1];
               if (preg_match("~(.*) (\w+)$~", $subItem, $names)) {
                 $first = trim(preg_replace('~(?<=[A-Z])([A-Z])~', ". $1", $names[2]));
-                if (strpos($first, '.') && substr($first, -1) != '.') {
+                if (strpos($first, '.') && substr($first, -1) !== '.') {
                   $first = $first . '.';
                 }
                 $i++;
@@ -188,7 +188,7 @@ function expand_arxiv_templates (array &$templates) : bool {  // Pointer to save
   $ids = array();
   $arxiv_templates = array();
   foreach ($templates as $this_template) {
-    if ($this_template->wikiname() == 'cite arxiv') {
+    if ($this_template->wikiname() === 'cite arxiv') {
       $this_template->rename('arxiv', 'eprint');
     } else {
       $this_template->rename('eprint', 'arxiv');
@@ -204,7 +204,7 @@ function expand_arxiv_templates (array &$templates) : bool {  // Pointer to save
 
 function arxiv_api(array $ids, array &$templates) : bool {  // Pointer to save memory
   set_time_limit(120);
-  if (count($ids) == 0) return FALSE;
+  if (count($ids) === 0) return FALSE;
   report_action("Getting data from arXiv API");
   $context = stream_context_create(array(
     'http' => array('ignore_errors' => TRUE),
@@ -300,7 +300,7 @@ function arxiv_api(array $ids, array &$templates) : bool {  // Pointer to save m
 
 function adsabs_api(array $ids, array &$templates, string $identifier) : bool {  // Pointer to save memory
   set_time_limit(120);
-  if (count($ids) == 0) return FALSE;
+  if (count($ids) === 0) return FALSE;
   
   foreach ($ids as $key => $bibcode) {
     if (stripos($bibcode, 'CITATION') !== FALSE || strlen($bibcode) !== 19) {
@@ -454,7 +454,7 @@ function expand_by_doi(Template $template, bool $force = FALSE) : bool {
             }
             if (titles_are_similar($old, $new)) {
               if ($old_roman && $new_roman) {
-                if ($old_roman == $new_roman) { // If they got roman numeral truncted, then must match
+                if ($old_roman === $new_roman) { // If they got roman numeral truncted, then must match
                   $bad_data = FALSE;
                   break;
                 }
@@ -508,7 +508,7 @@ function expand_by_doi(Template $template, bool $force = FALSE) : bool {
         // Check to see whether a single author is already set
         // This might be, for example, a collaboration
         $existing_author = $template->first_author();
-        $add_authors = $existing_author == '' || author_is_human($existing_author);
+        $add_authors = $existing_author === '' || author_is_human($existing_author);
         
         foreach ($crossRef->contributors->contributor as $author) {
           if (strtoupper((string) $author->surname) === '&NA;') break; // No Author, leave loop now!  Have only seen upper-case in the wild
@@ -580,7 +580,7 @@ function query_crossref(string $doi) : ?object {
     if (is_object($xml) && isset($xml->query_result->body->query)) {
       curl_close($ch);
       $result = $xml->query_result->body->query;
-      if ((string) @$result["status"] == "resolved") {
+      if ((string) @$result["status"] === "resolved") {
         return $result;
       } else {
         return NULL;
@@ -635,7 +635,7 @@ function expand_doi_with_dx(Template $template, string $doi) : bool {
        return FALSE;
      }                                           // @codeCoverageIgnoreEnd
      curl_close($ch);
-     if ($data == "" || stripos($data, 'DOI Not Found') !== FALSE || stripos($data, 'DOI prefix') !== FALSE) {
+     if ($data === "" || stripos($data, 'DOI Not Found') !== FALSE || stripos($data, 'DOI prefix') !== FALSE) {
        $template->mark_inactive_doi();
        return FALSE;
      }
@@ -752,7 +752,7 @@ function expand_by_jstor(Template $template) : bool {
             CURLOPT_USERAGENT => BOT_USER_AGENT]);
   $dat = (string) @curl_exec($ch);
   curl_close($ch);
-  if ($dat == '') {
+  if ($dat === '') {
     report_info("JSTOR API returned nothing for ". jstor_link($jstor));     // @codeCoverageIgnore
     return FALSE;                                                           // @codeCoverageIgnore
   }
@@ -1046,7 +1046,7 @@ function ConvertS2CID_DOI(string $s2cid) : string {
 function get_semanticscholar_license(string $s2cid) : ?bool {
     $context = stream_context_create(CONTEXT_S2);
     $response = (string) @file_get_contents(HOST_S2 . '/v1/paper/CorpusID:' . $s2cid, FALSE, $context);
-    if ($response == '') return NULL;
+    if ($response === '') return NULL;
     if (stripos($response, 'Paper not found') !== FALSE) return FALSE;
     $oa = @json_decode($response);
     if ($oa === FALSE) return NULL;
@@ -1094,7 +1094,7 @@ function expand_templates_from_archives(array &$templates) : void { // This is d
 /** @param resource $ch **/
 function Bibcode_Response_Processing(string $return, $ch, string $adsabs_url) : object {
   try {
-    if ($return == "") {
+    if ($return === "") {
       // @codeCoverageIgnoreStart
       $error = curl_error($ch);
       $errno = curl_errno($ch);
@@ -1122,7 +1122,7 @@ function Bibcode_Response_Processing(string $return, $ch, string $adsabs_url) : 
       }
       // @codeCoverageIgnoreEnd
     }
-    if ($http_response != 200) {
+    if ($http_response !== 200) {
       // @codeCoverageIgnoreStart
       $message = (string) strtok($header, "\n");
       /** @psalm-suppress UnusedFunctionCall */
@@ -1151,9 +1151,9 @@ function Bibcode_Response_Processing(string $return, $ch, string $adsabs_url) : 
     }
   // @codeCoverageIgnoreStart
   } catch (Exception $e) {
-    if ($e->getCode() == 5000) { // made up code for AdsAbs error
+    if ($e->getCode() === 5000) { // made up code for AdsAbs error
       report_warning(sprintf("API Error in query_adsabs: %s", echoable($e->getMessage())));
-    } elseif ($e->getCode() == 60) {
+    } elseif ($e->getCode() === 60) {
       AdsAbsControl::big_give_up();
       AdsAbsControl::small_give_up();
       report_warning('Giving up on AdsAbs for a while.  SSL certificate has expired.');
