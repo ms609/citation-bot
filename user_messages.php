@@ -9,19 +9,14 @@ function html_echo(string $text, string $alternate_text='') : void {
 }
 
 function user_notice(string $symbol, string $class, string $text) : void {
-  static $last_time = 0;
   if (!TRAVIS || defined("TRAVIS_PRINT")) {
     // @codeCoverageIgnoreStart
-    if (defined('BIG_JOB_MODE') && in_array($class, array("boring", "removed", "added", "changed", "subsubitem"))) return;
+    if (defined('BIG_JOB_MODE') && in_array($class, array("boring", "removed", "added", "changed", "subsubitem"))) {
+      echo '.'; // Echo something to keep the code alive, but not so much to overfill the cache
+      return;
+    }
     /** @psalm-suppress TypeDoesNotContainType */ /* PSALM thinks HTML_OUTPUT cannot be false */
     echo "\n " . (HTML_OUTPUT ? "<span class='$class'>" : "") . $symbol . $text . (HTML_OUTPUT ? "</span>" : "");
-    if (FLUSHING_OKAY && ob_get_level() && !defined('BIG_JOB_MODE')) {
-      $now = microtime(TRUE);dfsafdsf sadaf
-      if (5 < ($now - $last_time)) {
-        $last_time = $now;
-        ob_flush();
-      }
-    }
     // @codeCoverageIgnoreEnd
   }
 }

@@ -63,6 +63,7 @@ function is_doi_active(string $doi) : ?bool {
   $headers_test = @get_headers("https://api.crossref.org/works/" . doi_encode($doi), GET_THE_HEADERS);
   if ($headers_test === FALSE) {
     sleep(2);                                                                                            // @codeCoverageIgnore
+    report_inline(' .');                                                                                 // @codeCoverageIgnore
     $headers_test = @get_headers("https://api.crossref.org/works/" . doi_encode($doi), GET_THE_HEADERS); // @codeCoverageIgnore
   }
   if ($headers_test === FALSE) return NULL; // most likely bad, but will recheck again an again
@@ -83,6 +84,7 @@ function throttle_dx () : void {
 }
 
 function is_doi_works(string $doi) : ?bool {
+  set_time_limit(120);
   $doi = trim($doi);
   // And now some obvious fails
   if (strpos($doi, '/') === FALSE) return FALSE;
@@ -104,19 +106,26 @@ function is_doi_works(string $doi) : ?bool {
   throttle_dx();
 
   $context = stream_context_create(CONTEXT_INSECURE);
+  set_time_limit(120);
   $headers_test = @get_headers("https://doi.org/" . doi_encode($doi), GET_THE_HEADERS, $context);
   $context = stream_context_create(CONTEXT_INSECURE_11);
   if ($headers_test === FALSE) {
-     sleep(2);                                                                          // @codeCoverageIgnore
+     sleep(2);                                                                                        // @codeCoverageIgnore
+     report_inline(' .');                                                                             // @codeCoverageIgnore
+     set_time_limit(120);                                                                             // @codeCoverageIgnore
      $headers_test = @get_headers("https://doi.org/" . doi_encode($doi), GET_THE_HEADERS, $context);  // @codeCoverageIgnore
   }
   if ($headers_test === FALSE) {
-     sleep(5);                                                                          // @codeCoverageIgnore
+     sleep(5);                                                                                        // @codeCoverageIgnore
+     set_time_limit(120);                                                                             // @codeCoverageIgnore
+     report_inline(' .');                                                                             // @codeCoverageIgnore
      $headers_test = @get_headers("https://doi.org/" . doi_encode($doi), GET_THE_HEADERS, $context);  // @codeCoverageIgnore
   } elseif ((empty($headers_test['Location']) && empty($headers_test['location'])) || stripos($headers_test[0], '404 Not Found') !== FALSE || stripos($headers_test[0], 'HTTP/1.1 404') !== FALSE) {
-     sleep(5);                                                                          // @codeCoverageIgnore
+     sleep(5);                                                                                        // @codeCoverageIgnore
+     set_time_limit(120);                                                                             // @codeCoverageIgnore
+     report_inline(' .');                                                                             // @codeCoverageIgnore
      $headers_test = @get_headers("https://doi.org/" . doi_encode($doi), GET_THE_HEADERS, $context);  // @codeCoverageIgnore
-     if ($headers_test === FALSE) return FALSE; /** We trust previous failure **/       // @codeCoverageIgnore
+     if ($headers_test === FALSE) return FALSE; /** We trust previous failure **/                     // @codeCoverageIgnore
   }
   if (preg_match('~^10\.1038/nature\d{5}$~i', $doi) && $headers_test === FALSE) return FALSE; // Nature dropped the ball for now TODO - https://dx.doi.org/10.1038/nature05009
   if ($headers_test === FALSE) return NULL; // most likely bad, but will recheck again and again
@@ -435,7 +444,7 @@ function titles_are_dissimilar(string $inTitle, string $dbTitle) : bool {
         $dbTitle = mb_strtolower($dbTitle);
         $inTitle = mb_strtolower($inTitle);
         $inTitle2 = mb_strtolower($inTitle2);
-        $drops = [" ", "<strong>", "</strong>", "<em>", "</em>", "&nbsp", "&ensp", "&emsp", "&thinsp", "&zwnj", "&#45", "&#8208", "&", "'", ",", ".", ";", '"', "\n", "\r", "\t", "\v", "\e", "‐", "-"];
+        $drops = [" ", "<strong>", "</strong>", "<em>", "</em>", "&nbsp", "&ensp", "&emsp", "&thinsp", "&zwnj", "&#45", "&#8208", "&#700", "&", "'", ",", ".", ";", '"', "\n", "\r", "\t", "\v", "\e", "‐", "-", "ʼ", "`"];
         $inTitle  = str_replace($drops, "", $inTitle);
         $inTitle2 = str_replace($drops, "", $inTitle2);
         $dbTitle  = str_replace($drops, "", $dbTitle);
@@ -1132,13 +1141,18 @@ function is_hdl_works(string $hdl) {
   $context = stream_context_create(CONTEXT_INSECURE_11); // HDL does 1.1 always
   usleep(100000);
   $test_url = "https://hdl.handle.net/" . $hdl;
+  set_time_limit(120);
   $headers_test = @get_headers($test_url, GET_THE_HEADERS, $context);
   if ($headers_test === FALSE) {
-      sleep(3);   // @codeCoverageIgnore
+      sleep(3);                                                           // @codeCoverageIgnore
+      set_time_limit(120);                                                // @codeCoverageIgnore
+      report_inline(' .');                                                // @codeCoverageIgnore
       $headers_test = @get_headers($test_url, GET_THE_HEADERS, $context); // @codeCoverageIgnore
   }
   if ($headers_test === FALSE) {
-      sleep(8);   // @codeCoverageIgnore
+      sleep(8);                                                           // @codeCoverageIgnore
+      set_time_limit(120);                                                // @codeCoverageIgnore
+      report_inline(' .');                                                // @codeCoverageIgnore
       $headers_test = @get_headers($test_url, GET_THE_HEADERS, $context); // @codeCoverageIgnore
   }
   if ($headers_test === FALSE) return NULL; // most likely bad, but will recheck again and again

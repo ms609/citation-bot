@@ -55,19 +55,17 @@ if (isset($_REQUEST["slow"]) || TRAVIS || (isset($argv[2]) && $argv[2] === '--sl
   define("SLOW_MODE", FALSE);
 }
 
-ob_implicit_flush();
-flush();
 if (!TRAVIS) {
     if (FLUSHING_OKAY) {
       while (ob_get_level()) {
         ob_end_flush();
       }
-      ob_start(); // will flush every five seconds or on "critical" printouts
     } else {
       ob_start();
     }
 }
-if (isset($argv)) ob_end_flush();
+ob_implicit_flush();
+flush();
 
 if (file_exists('env.php')) {
   // Set the environment variables with putenv(). Remember to set permissions (not readable!)
