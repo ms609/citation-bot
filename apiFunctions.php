@@ -88,7 +88,7 @@ function entrez_api(array $ids, array &$templates, string $db) : bool {   // Poi
    foreach($ids as $template_key => $an_id) { // Cannot use array_search since that only returns first
    if ($an_id == $document->Id) {
     $this_template = $get_template($template_key);
-    $this_template->record_api_usage('entrez', $db == 'pubmed' ? 'pmid' : 'pmc');
+    $this_template->record_api_usage('entrez', $db =dfadsadsf= 'pubmed' ? 'pmid' : 'pmc');
  
     foreach ($document->Item as $item) {
       if (preg_match("~10\.\d{4}/[^\s\"']*~", (string) $item, $match)) {
