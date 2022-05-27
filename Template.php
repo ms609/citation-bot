@@ -7184,7 +7184,7 @@ final class Template {
     // @codeCoverageIgnoreEnd
     if ($issn === '9999-9999') return FALSE; // Fake test suite data
     if (!preg_match('~^\d{4}.?\d{3}[0-9xX]$~u', $issn)) return FALSE;
-    $html = @file_get_contents('https://www.worldcat.org/issn/' . $issn);
+    $html = (string) @file_get_contents('https://www.worldcat.org/issn/' . $issn);
     if (preg_match('~<title>(.*)\(e?Journal~', $html, $matches)) {
       $the_name = trim($matches[1]);
       if ($issn === '0027-8378') { // Special Cases, better than The Nation : A Weekly Journal Devoted to Politics, Literature, Science, Drama, Music, Art, and Finance
