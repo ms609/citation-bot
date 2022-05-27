@@ -11,7 +11,7 @@ if (file_exists('git_pull.lock')) {
  * Most of the page expansion depends on everything else
  */
 
-if (isset($_REQUEST["wiki_base"])){ 
+if (isset($_REQUEST["wiki_base"])){
   $wiki_base = trim((string) $_REQUEST["wiki_base"]);
   if (!in_array($wiki_base, ['en', 'simple'])) {
      exit('<!DOCTYPE html><html lang="en" dir="ltr"><head><title>Citation Bot: error</title></head><body><h1>Unsupported wiki requested - aborting</h1></body></html>');
@@ -38,6 +38,7 @@ if (TRAVIS || isset($argv)) {
   define("HTML_OUTPUT", FALSE);
 } else {
   define("HTML_OUTPUT", TRUE);
+  ob_start();  // Always internal buffer website since server does this for us
 }
 
 // This is needed because the Gadget API expects only JSON back, therefore ALL output from the citation bot is thrown away
@@ -55,15 +56,6 @@ if (isset($_REQUEST["slow"]) || TRAVIS || (isset($argv[2]) && $argv[2] === '--sl
   define("SLOW_MODE", FALSE);
 }
 
-if (!TRAVIS) {
-    if (FLUSHING_OKAY) {
-      while (ob_get_level()) {
-        ob_end_flush();
-      }
-    } else {
-      ob_start();
-    }
-}
 ob_implicit_flush();
 flush();
 
@@ -118,20 +110,17 @@ function unlock_user() : void {
   @session_write_close();
 }
 
-function sig_handler(int $signo) : void {
-  exit(); 
-}
-
 function check_overused() : void {
  if (!HTML_OUTPUT) return;
  if (isset($_SESSION['big_and_busy']) && $_SESSION['big_and_busy'] === 'BLOCK3') {
    echo '</pre><div style="text-align:center"><h1>Run blocked by your existing big run.</h1></div><footer><a href="./" title="Use Citation Bot again">Another</a>?</footer></body></html>';
    exit();
  }
+ ob_start(); // Buffer output for big jobs
  @session_start();
- $_SESSION['big_and_busy'] = 'BLOCK3';
  define('BIG_JOB_MODE', 'YES');
  register_shutdown_function('unlock_user');
+ $_SESSION['big_and_busy'] = 'BLOCK3';
  @session_write_close();
 }
 

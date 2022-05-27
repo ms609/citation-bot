@@ -3679,8 +3679,8 @@ final class Template {
           
         case 'bibcode':
           if ($this->blank($param)) return;
-          $bibcode_journal = substr($this->get($param), 4);
-          if ($bibcode_journal === '' || $bibcode_journal === FALSE) return; // bad bibcodes would not have four characters, use ==, since it might be "" or FALSE depending upon error/PHP version
+          $bibcode_journal = (string) substr($this->get($param), 4);
+          if ($bibcode_journal === '') return; // bad bibcodes would not have four characters, use ==, since it might be "" or FALSE depending upon error/PHP version
           foreach (NON_JOURNAL_BIBCODES as $exception) {
             if (substr($bibcode_journal, 0, strlen($exception)) === $exception) return;
           }
@@ -4095,8 +4095,8 @@ final class Template {
               $this->set($param, '[[' . $periodical . ']]');
               $new_periodical = title_capitalization(ucwords($periodical), TRUE);
               if (str_ireplace(OBVIOUS_FOREIGN_WORDS, '', ' ' . $periodical . ' ') === ' ' . $periodical . ' ' &&
-                  str_replace(['(', ')'], '', $periodical) === $periodical &&
-                  $new_periodical !== $periodical) {
+                  str_replace(['(', ')'], '', $periodical) == $periodical &&
+                  $new_periodical != $periodical) {
                  $now = WikipediaBot::is_redirect($periodical);
                  if ($now === -1) { // Dead link
                    $this->set($param, '[[' . $new_periodical . ']]');
@@ -4114,8 +4114,8 @@ final class Template {
               }
               $new_linked_text = title_capitalization(ucwords($linked_text), TRUE);
               if (str_ireplace(OBVIOUS_FOREIGN_WORDS, '', ' ' . $linked_text . ' ') === ' ' . $linked_text . ' ' &&
-                str_replace(['(', ')'], '', $linked_text ) === $linked_text &&
-                $new_linked_text !== $linked_text) {
+                str_replace(['(', ')'], '', $linked_text ) == $linked_text &&
+                $new_linked_text != $linked_text) {
                   $now = WikipediaBot::is_redirect($linked_text);
                   if ($now === -1) {
                     $linked_text = $new_linked_text; // Dead to something
@@ -7184,7 +7184,7 @@ final class Template {
     // @codeCoverageIgnoreEnd
     if ($issn === '9999-9999') return FALSE; // Fake test suite data
     if (!preg_match('~^\d{4}.?\d{3}[0-9xX]$~u', $issn)) return FALSE;
-    $html = @file_get_contents('https://www.worldcat.org/issn/' . $issn);
+    $html = (string) @file_get_contents('https://www.worldcat.org/issn/' . $issn);
     if (preg_match('~<title>(.*)\(e?Journal~', $html, $matches)) {
       $the_name = trim($matches[1]);
       if ($issn === '0027-8378') { // Special Cases, better than The Nation : A Weekly Journal Devoted to Politics, Literature, Science, Drama, Music, Art, and Finance
