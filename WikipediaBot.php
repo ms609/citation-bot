@@ -23,7 +23,7 @@ final class WikipediaBot {
   private string $the_user = '';
   private static ?self $last_WikipediaBot; // For NonStandardMode()
   
-  public static function make_ch() : void { // Executed below at end of file
+  public static function make_ch() : void {
     if (self::$init_done) return;
     self::$init_done = TRUE;
     self::$ch = curl_init();
@@ -68,7 +68,7 @@ final class WikipediaBot {
   }
   
   public function get_the_user() : string {
-    if ($this->the_user == '') {
+    if ($this->the_user === '') {
       report_error('User Not Set');         // @codeCoverageIgnore
     }
     return $this->the_user;
@@ -131,7 +131,7 @@ try {
     
       $data = (string) @curl_exec(self::$ch);
       $ret = @json_decode($data); 
-      if (($ret == NULL) || (isset($ret->error) && (
+      if (($ret === NULL) || ($ret === FALSE) || (isset($ret->error) && (
         (string) $ret->error->code === 'assertuserfailed' ||
         stripos((string) $ret->error->info, 'The database has been automatically locked') !== FALSE ||
         stripos((string) $ret->error->info, 'abusefilter-warning-predatory') !== FALSE ||
@@ -155,7 +155,7 @@ try {
   
   /** @phpstan-impure **/
   public function write_page(string $page, string $text, string $editSummary, int $lastRevId, string $startedEditing) : bool {
-    if (stripos($text, "CITATION_BOT_PLACEHOLDER") != FALSE)  {
+    if (stripos($text, "CITATION_BOT_PLACEHOLDER") !== FALSE)  {
       report_minor_error("\n ! Placeholder left escaped in text. Aborting.");  // @codeCoverageIgnore
       return FALSE;                                                            // @codeCoverageIgnore
     }
@@ -173,8 +173,8 @@ try {
     
     $baseTimeStamp = $myPage->revisions[0]->timestamp;
     
-    if (($lastRevId != 0 && $myPage->lastrevid != $lastRevId)
-     || ($startedEditing != '' && strtotime($baseTimeStamp) > strtotime($startedEditing))) {
+    if (($lastRevId !== 0 && $myPage->lastrevid !== $lastRevId)
+     || ($startedEditing !== '' && strtotime($baseTimeStamp) > strtotime($startedEditing))) {
       report_warning("Possible edit conflict detected. Aborting.");      // @codeCoverageIgnore
       return FALSE;                                                      // @codeCoverageIgnore
     }
@@ -313,7 +313,8 @@ try {
           }
         }
       } else {
-        report_error('Error reading API for category ' . echoable($cat) . "\n\n");   // @codeCoverageIgnore
+        report_warning('Error reading API for category ' . echoable($cat) . "\n\n");   // @codeCoverageIgnore
+        return array();                                                                // @codeCoverageIgnore
       }
       $vars["cmcontinue"] = isset($res->continue) ? $res->continue->cmcontinue : FALSE;
     } while ($vars["cmcontinue"]);
@@ -428,7 +429,7 @@ try {
       sleep(5);
       $response = self::QueryAPI($query);
     }
-    if ($response == '') return FALSE;
+    if ($response === '') return FALSE;
     $response = str_replace(array("\r", "\n"), '', $response);  // paranoid
     if (strpos($response, '"invalid"') !== FALSE) return FALSE; // IP Address and similar stuff
     if (strpos($response, '"blockid"') !== FALSE) return FALSE; // Valid but blocked
@@ -483,7 +484,3 @@ try {
     exit(0);
   }
 }
-
-WikipediaBot::make_ch(); // @codeCoverageIgnore
-
-

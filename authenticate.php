@@ -66,6 +66,7 @@ unset($_SESSION['access_key'], $_SESSION['access_secret']);
 if (isset($_GET['oauth_verifier']) && isset($_SESSION['request_key']) && isset($_SESSION['request_secret']) ) {
    try {
         $accessToken = $client->complete(new Token($_SESSION['request_key'], $_SESSION['request_secret']), $_GET['oauth_verifier']);
+        if ((string) @$accessToken->key === '' || (string) @$accessToken->secret === '') throw new Exception('OAuth complete() call failed');
         $_SESSION['access_key'] = $accessToken->key;
         $_SESSION['access_secret'] = $accessToken->secret;
         unset($_SESSION['request_key'], $_SESSION['request_secret']);
@@ -78,7 +79,7 @@ if (isset($_GET['oauth_verifier']) && isset($_SESSION['request_key']) && isset($
         return_to_sender();
    }
    catch (Throwable $e) { ; }
-   death_time("Incoming authorization tokens did not work");
+   death_time("Incoming authorization tokens did not work - try again please");
 }
 unset($_SESSION['request_key'], $_SESSION['request_secret']);
 

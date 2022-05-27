@@ -9,19 +9,14 @@ function html_echo(string $text, string $alternate_text='') : void {
 }
 
 function user_notice(string $symbol, string $class, string $text) : void {
-  static $last_time = 0;
   if (!TRAVIS || defined("TRAVIS_PRINT")) {
     // @codeCoverageIgnoreStart
-    if (defined('BIG_JOB_MODE') && in_array($class, array("boring", "removed", "added", "changed", "subsubitem"))) return;
+    if (defined('BIG_JOB_MODE') && in_array($class, array("boring", "removed", "added", "changed", "subsubitem"))) {
+      echo '.'; // Echo something to keep the code alive, but not so much to overfill the cache
+      return;
+    }
     /** @psalm-suppress TypeDoesNotContainType */ /* PSALM thinks HTML_OUTPUT cannot be false */
     echo "\n " . (HTML_OUTPUT ? "<span class='$class'>" : "") . $symbol . $text . (HTML_OUTPUT ? "</span>" : "");
-    if (FLUSHING_OKAY && ob_get_level() && !defined('BIG_JOB_MODE')) {
-      $now = microtime(TRUE);
-      if (5 < ($now - $last_time)) {
-        $last_time = $now;
-        ob_flush();
-      }
-    }
     // @codeCoverageIgnoreEnd
   }
 }
@@ -67,7 +62,7 @@ function echoable(?string $string) : string {
    */
   $string = (string) $string;
   /** @psalm-suppress TypeDoesNotContainType */ /* PSALM thinks HTML_OUTPUT cannot be false */
-  return HTML_OUTPUT ? htmlspecialchars($string, ENT_QUOTES) : $string;
+  return HTML_OUTPUT ? htmlspecialchars($string, ENT_QUOTES | ENT_SUBSTITUTE | ENT_HTML401) : $string;
 }
 
 function pubmed_link(string $identifier, string $pm) : string {
@@ -85,22 +80,28 @@ function bibcode_link(string $id) : string {
 }
 
 function doi_link(string $doi) : string {
-  /** @psalm-suppress TypeDoesNotContainType */ /* PSALM thinks HTML_OUTPUT cannot be false */
-  return HTML_OUTPUT
-    ? '<a href="https://dx.doi.org/' . doi_encode($doi) . '" target="_blank">' . $doi . '</a>'      // @codeCoverageIgnore
+  /* PSALM thinks HTML_OUTPUT cannot be false */
+ /**
+   * @psalm-taint-escape html
+   * @psalm-taint-escape has_quotes
+   * @psalm-suppress TypeDoesNotContainType
+   */
+  $return = HTML_OUTPUT
+    ? '<a href="https://dx.doi.org/' . doi_encode(urldecode($doi)) . '" target="_blank">' . echoable($doi) . '</a>'      // @codeCoverageIgnore
     : $doi;
+  return $return;
 }
 
 function jstor_link(string $id) : string {
   /** @psalm-suppress TypeDoesNotContainType */ /* PSALM thinks HTML_OUTPUT cannot be false */
   return HTML_OUTPUT
-    ? '<a href="https://www.jstor.org/citation/ris/' . urlencode($id) . '" target="_blank">JSTOR ' . $id . '</a>'    // @codeCoverageIgnore
+    ? '<a href="https://www.jstor.org/citation/ris/' . urlencode($id) . '" target="_blank">JSTOR ' . echoable($id) . '</a>'    // @codeCoverageIgnore
     : "JSTOR $id";
 }
 
 function wiki_link(string $page) : string {
   /** @psalm-suppress TypeDoesNotContainType */ /* PSALM thinks HTML_OUTPUT cannot be false */
   return HTML_OUTPUT
-    ? '<a href="' . WIKI_ROOT . '?title=' . urlencode(str_replace(' ', '_', $page)) . '" target="_blank">Wikipedia page: ' . $page . '</a>'    // @codeCoverageIgnore
+    ? '<a href="' . WIKI_ROOT . '?title=' . urlencode(str_replace(' ', '_', $page)) . '" target="_blank">Wikipedia page: ' . echoable($page) . '</a>'    // @codeCoverageIgnore
     : "Wikipedia page : $page";
 }

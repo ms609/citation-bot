@@ -21,7 +21,7 @@ final class Zotero {
   protected static int $zotero_failures_count = 0;
   private static bool $is_setup = FALSE;
 
-public static function create_ch_zotero() : void { // Called below at end of file
+public static function create_ch_zotero() : void {
   if (self::$is_setup) return;
   self::$is_setup = TRUE;
   self::$zotero_ch = curl_init();
@@ -51,6 +51,7 @@ public static function create_ch_zotero() : void { // Called below at end of fil
   curl_setopt_array(self::$ch_jstor,
        [CURLOPT_RETURNTRANSFER => TRUE,
         CURLOPT_TIMEOUT => 15,
+        CURLOPT_CONNECTTIMEOUT => 10,
         CURLOPT_COOKIESESSION => TRUE,
         CURLOPT_USERAGENT => BOT_USER_AGENT]);
    
@@ -69,6 +70,7 @@ public static function create_ch_zotero() : void { // Called below at end of fil
   curl_setopt_array(self::$ch_pmc,
         [CURLOPT_RETURNTRANSFER => TRUE,
          CURLOPT_TIMEOUT => 15,
+         CURLOPT_CONNECTTIMEOUT => 10,
          CURLOPT_COOKIESESSION => TRUE,
          CURLOPT_USERAGENT => BOT_USER_AGENT]);
 }
@@ -141,8 +143,6 @@ public static function query_url_api_class(array $ids, array &$templates) : void
 }
 
 public static function query_ieee_webpages(array &$templates) : void {  // Pointer to save memory
-  $matches_url = ['', '']; // prevent memory leak in some PHP versions
-  $matches = ['', '']; // prevent memory leak in some PHP versions
   
   foreach (['url', 'chapter-url', 'chapterurl'] as $kind) {
    foreach ($templates as $template) {
@@ -165,7 +165,7 @@ public static function query_ieee_webpages(array &$templates) : void {  // Point
        usleep(100000); // 0.10 seconds
        curl_setopt(self::$ch_ieee, CURLOPT_URL, $template->get($kind));
        $return = (string) @curl_exec(self::$ch_ieee);
-       if ($return != "" && strpos($return, "<title> -  </title>") !== FALSE) {
+       if ($return !== "" && strpos($return, "<title> -  </title>") !== FALSE) {
          report_forget("Existing IEEE no longer works - dropping URL"); // @codeCoverageIgnore
          $template->forget($kind);                                      // @codeCoverageIgnore
        }
@@ -254,8 +254,8 @@ public static function drop_urls_that_match_dois(array &$templates) : void {  //
           $template->forget($url_kind);
        } elseif (doi_active($template->get('doi')) &&
                  !preg_match(REGEXP_DOI_ISSN_ONLY, $template->get('doi')) &&
-                 $url_kind != '' &&
-                 (str_ireplace(CANONICAL_PUBLISHER_URLS, '', $template->get($url_kind)) != $template->get($url_kind)) &&
+                 $url_kind !== '' &&
+                 (str_ireplace(CANONICAL_PUBLISHER_URLS, '', $template->get($url_kind)) !== $template->get($url_kind)) &&
                  $template->has_good_free_copy() &&
                  (stripos($template->get($url_kind), 'pdf') === FALSE)) {
           report_forget("Existing canonical URL resulting in equivalent free DOI/pmc; dropping URL");
@@ -307,7 +307,7 @@ private static function zotero_request(string $url) : string {
   set_time_limit(120);
   if (self::$zotero_failures_count > self::ZOTERO_GIVE_UP) {
     self::$zotero_failures_count = self::$zotero_failures_count - 1;                            // @codeCoverageIgnore
-    if (self::ZOTERO_GIVE_UP == self::$zotero_failures_count) self::$zotero_failures_count = 0; // @codeCoverageIgnore
+    if (self::ZOTERO_GIVE_UP === self::$zotero_failures_count) self::$zotero_failures_count = 0; // @codeCoverageIgnore
   }
 
   curl_setopt(self::$zotero_ch, CURLOPT_URL, CITOID_ZOTERO . urlencode($url));
@@ -316,13 +316,13 @@ private static function zotero_request(string $url) : string {
   
   usleep(100000*(1+self::$zotero_failures_count)); // 0.10 seconds delay throttle
   $zotero_response = (string) @curl_exec(self::$zotero_ch);
-  if ($zotero_response == '') {
+  if ($zotero_response === '') {
      // @codeCoverageIgnoreStart
      sleep(2);
      $zotero_response = (string) @curl_exec(self::$zotero_ch);
      // @codeCoverageIgnoreEnd
   }
-  if ($zotero_response == '') {
+  if ($zotero_response === '') {
     // @codeCoverageIgnoreStart
     report_warning(curl_error(self::$zotero_ch) . "   For URL: " . $url);
     if (strpos(curl_error(self::$zotero_ch), 'timed out after') !== FALSE) {
@@ -409,7 +409,6 @@ public static function expand_by_zotero(Template $template, ?string $url = NULL)
 }
 
 public static function process_zotero_response(string $zotero_response, Template $template, string $url, string $url_kind, int $access_date) : bool {
-  $matches = ['', '']; // prevent memory leak in some PHP versions
   if ($zotero_response === self::ERROR_DONE) return FALSE;  // Error message already printed in zotero_request()
  
   switch (trim($zotero_response)) {
@@ -461,7 +460,7 @@ public static function process_zotero_response(string $zotero_response, Template
     report_warning("Did not get a title for URL ". $url . ": " . $zotero_response);  // @codeCoverageIgnore
     return FALSE;                                                                    // @codeCoverageIgnore
   }
-  if (substr(strtolower(trim($result->title)), 0, 9) == 'not found') {
+  if (substr(strtolower(trim($result->title)), 0, 9) === 'not found') {
     report_info("Could not resolve URL ". $url);
     return FALSE;
   }
@@ -677,7 +676,7 @@ public static function process_zotero_response(string $zotero_response, Template
         $template->add_if_new('pages'  , $pos_pages);
      }
   }
-  if (isset($result->itemType) && $result->itemType == 'newspaperArticle') {
+  if (isset($result->itemType) && $result->itemType === 'newspaperArticle') {
     if ( isset($result->publicationTitle)) {
        $new_title = (string) $result->publicationTitle;
        if (in_array(strtolower($new_title), WORKS_ARE_PUBLISHERS)) {
@@ -739,12 +738,12 @@ public static function process_zotero_response(string $zotero_response, Template
       case 'journalArticle':
       case 'conferencePaper':
       case 'report':  // ssrn uses this
-        if($template->wikiname() == 'cite web' && str_ireplace(NON_JOURNAL_WEBSITES, '', $url) === $url && !$template->blank(WORK_ALIASES)) {
+        if($template->wikiname() === 'cite web' && str_ireplace(NON_JOURNAL_WEBSITES, '', $url) === $url && !$template->blank(WORK_ALIASES)) {
           $template->change_name_to('cite journal');
         }
         break;
       case 'magazineArticle':
-        if($template->wikiname() == 'cite web') {
+        if($template->wikiname() === 'cite web') {
           $template->change_name_to('cite magazine');
         }
         break;      
@@ -847,7 +846,6 @@ public static function process_zotero_response(string $zotero_response, Template
 }
 
 public static function url_simplify(string $url) : string {
-  $matches = ['', '']; // prevent memory leak in some PHP versions
   $url = str_replace('/action/captchaChallenge?redirectUri=', '', $url);
   $url = urldecode($url);
   // IEEE is annoying
@@ -867,10 +865,6 @@ public static function url_simplify(string $url) : string {
 
 public static function find_indentifiers_in_urls(Template $template, ?string $url_sent = NULL) : bool {
     set_time_limit(120);
-    $matches = ['', '']; // prevent memory leak in some PHP versions
-    $bibcode = ['', '']; // prevent memory leak in some PHP versions
-    $arxiv_id = ['', '']; // prevent memory leak in some PHP versions
-    $match = ['', '']; // prevent memory leak in some PHP versions
     if (is_null($url_sent)) {
        // Chapter URLs are generally better than URLs for the whole book.
         if ($template->has('url') && $template->has('chapterurl')) {
@@ -984,12 +978,12 @@ public static function find_indentifiers_in_urls(Template $template, ?string $ur
     // semanticscholar
     if (stripos($url, 'semanticscholar.org') !== FALSE) {
        $s2cid = getS2CID($url);
-       if ($s2cid == '') return FALSE;
-       if ($template->has('s2cid') && $s2cid != $template->get('s2cid')) {
+       if ($s2cid === '') return FALSE;
+       if ($template->has('s2cid') && $s2cid !== $template->get('s2cid')) {
           report_warning('Existing URL does not match existing S2CID: ' .  echoable($template->get('s2cid')));
           return FALSE;
        }
-       if ($template->has('S2CID') && $s2cid != $template->get('S2CID')) {
+       if ($template->has('S2CID') && $s2cid !== $template->get('S2CID')) {
           report_warning('Existing URL does not match existing S2CID: ' .  echoable($template->get('S2CID')));
           return FALSE;
        }
@@ -1259,7 +1253,7 @@ public static function find_indentifiers_in_urls(Template $template, ?string $ur
               curl_setopt_array(self::$ch_pmc, [CURLOPT_URL => $test_url]);
               @curl_exec(self::$ch_pmc);
               $httpCode = (int) @curl_getinfo(self::$ch_pmc, CURLINFO_HTTP_CODE);
-              if ($httpCode == 404) { // Some PMCs do NOT resolve.  So leave URL
+              if ($httpCode === 404) { // Some PMCs do NOT resolve.  So leave URL
                 return $template->add_if_new('pmc', $match[1] . $match[2]);
               }
             }
@@ -1288,9 +1282,9 @@ public static function find_indentifiers_in_urls(Template $template, ?string $ur
         } elseif (preg_match('~^https?://.*ncbi\.nlm\.nih\.gov/entrez/eutils/elink.fcgi\?.+tool=sumsearch\.org.+id=(\d+)$~', $url, $match)) {
           if ($url_sent) return FALSE;   // Many do not work
           if ($template->blank(['doi', 'pmc'])) return FALSE;  // This is a redirect to the publisher, not pubmed
-          if ($match[1] == $template->get('pmc')) {
+          if ($match[1] === $template->get('pmc')) {
              $template->forget($url_type); // Same as PMC-auto-link
-          } elseif ($match[1] == $template->get('pmid')) {
+          } elseif ($match[1] === $template->get('pmid')) {
              if ($template->has_good_free_copy()) $template->forget($url_type);
           }
           return FALSE;
@@ -1365,7 +1359,7 @@ public static function find_indentifiers_in_urls(Template $template, ?string $ur
       } elseif (preg_match("~^https?://(?:www\.|)amazon(?P<domain>\.[\w\.]{1,7})/.*dp/(?P<id>\d+X?)~i", $url, $match)) {
 
         if ($template->wikiname() === 'cite web') $template->change_name_to('cite book');
-        if ($match['domain'] == ".com") {
+        if ($match['domain'] === ".com") {
           if (is_null($url_sent)) {
             $template->forget($url_type);
             if (stripos($template->get('publisher'), 'amazon') !== FALSE) {
@@ -1583,6 +1577,3 @@ public static function find_indentifiers_in_urls(Template $template, ?string $ur
  }
   
 } // End of CLASS
-
-
-Zotero::create_ch_zotero();  // @codeCoverageIgnore

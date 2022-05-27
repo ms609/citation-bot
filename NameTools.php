@@ -8,32 +8,32 @@ require_once 'constants.php';    // @codeCoverageIgnore
  * Output: array ($name without Jr, if $name ends in Jr, Jr)
  */
 function junior_test(string $name) : array {
-  $junior = (substr($name, -3) == " Jr")?" Jr":"";
+  $junior = (substr($name, -3) === " Jr")?" Jr":"";
   if ($junior) {
     $name = substr($name, 0, -3);
   } else {
-    $junior = (substr($name, -4) == " Jr.")?" Jr.":"";
+    $junior = (substr($name, -4) === " Jr.")?" Jr.":"";
     if ($junior) {
       $name = substr($name, 0, -4);
     }
   }
-  if (substr($name, -1) == ",") {
+  if (substr($name, -1) === ",") {
     $name = substr($name, 0, -1);
   }
   return array($name, $junior);
 }
 
 function format_surname(string $surname) : string {
-  if ($surname == '-') return '';
+  if ($surname === '-') return '';
   if (preg_match('~^\S\.?$~u', $surname)) return mb_strtoupper($surname); // Just a single initial, with or without period
   $surname = mb_convert_case(trim(mb_ereg_replace("-", " - ", $surname)), MB_CASE_LOWER);
-  if (mb_substr($surname, 0, 2) == "o'") {
+  if (mb_substr($surname, 0, 2) === "o'") {
         return "O'" . format_surname_2(mb_substr($surname, 2));
-  } elseif (mb_substr($surname, 0, 2) == "mc") {
+  } elseif (mb_substr($surname, 0, 2) === "mc") {
         return "Mc" . format_surname_2(mb_substr($surname, 2));
-  } elseif (mb_substr($surname, 0, 3) == "mac" && strlen($surname) > 5 && !mb_strpos($surname, "-") && mb_substr($surname, 3, 1) != "h") {
+  } elseif (mb_substr($surname, 0, 3) === "mac" && strlen($surname) > 5 && !mb_strpos($surname, "-") && mb_substr($surname, 3, 1) !== "h") {
         return "Mac" . format_surname_2(mb_substr($surname, 3));
-  } elseif (mb_substr($surname, 0, 1) == "&") {
+  } elseif (mb_substr($surname, 0, 1) === "&") {
         return "&" . format_surname_2(mb_substr($surname, 1));
   } else {
         return format_surname_2($surname); // Case of surname
@@ -52,7 +52,7 @@ function format_surname_2(string $surname) : string {
 }
 
 function format_forename(string $forename) : string {
-  if ($forename == '-') return '';
+  if ($forename === '-') return '';
   return str_replace(array(" ."), "", trim(preg_replace_callback("~(\p{L})(\p{L}{3,})~u",  function(
             array $matches) : string {
             return mb_strtoupper($matches[1]) . mb_strtolower($matches[2]);}
@@ -66,10 +66,9 @@ function format_forename(string $forename) : string {
  *
  */
 function format_initials(string $str) : string {
-  $match = ['', '']; // prevent memory leak in some PHP versions
   $str = trim($str);
-        if ($str == "") return "";
-        $end = (substr($str, strlen($str)-1) == ";") ? ";" : '';
+        if ($str === "") return "";
+        $end = (substr($str, strlen($str)-1) === ";") ? ";" : '';
         preg_match_all("~\w~", $str, $match);
         return mb_strtoupper(implode(".",$match[0]) . ".") . $end;
 }
@@ -77,9 +76,9 @@ function format_initials(string $str) : string {
 function is_initials(string $str) : bool {
         $str = trim($str);
         if (!$str) return FALSE;
-        if (strlen(str_replace(array("-", ".", ";"), "", $str)) >3) return FALSE;
-        if (strlen(str_replace(array("-", ".", ";"), "", $str)) ==1) return TRUE;
-        if (mb_strtoupper($str) != $str) return FALSE;
+        if (strlen(str_replace(array("-", ".", ";"), "", $str)) > 3) return FALSE;
+        if (strlen(str_replace(array("-", ".", ";"), "", $str)) === 1) return TRUE;
+        if (mb_strtoupper($str) !== $str) return FALSE;
         return TRUE;
 }
 
@@ -92,7 +91,7 @@ function author_is_human(string $author) : bool {
   $chars = count_chars($author);
   if ($chars[ord(":")] > 0 || $chars[ord(" ")] > 3 || strlen($author) > 33
     || substr(strtolower($author), 0, 4) === "the " 
-    || (str_ireplace(NON_HUMAN_AUTHORS, '', $author) != $author)  // This is the use a replace to see if a substring is present trick
+    || (str_ireplace(NON_HUMAN_AUTHORS, '', $author) !== $author)  // This is the use a replace to see if a substring is present trick
     || preg_match("~[A-Z]{3}~", $author)
     || substr(strtolower($author),-4) === " inc"
     || substr(strtolower($author),-5) === " inc."
@@ -121,7 +120,7 @@ function format_author(string $author) : string {
   
   $author = preg_replace("~(^[;,.\s]+|[;,.\s]+$)~", "", trim($author)); //Housekeeping
   $author = preg_replace("~^[aA]nd ~", "", trim($author)); // Just in case it has been split from a Smith; Jones; and Western
-  if ($author == "") {
+  if ($author === "") {
       return "";
   }
 
@@ -190,9 +189,9 @@ function format_author(string $author) : string {
     }
   }
   // Special cases when code cannot fully determine things, or if the name is only Smith
-  if (trim($surname) == '') { // get this with A. B. C.
+  if (trim($surname) === '') { // get this with A. B. C.
     $full_name = format_forename($fore);
-  } elseif (trim($fore) == '') {  // Get this with just Smith
+  } elseif (trim($fore) === '') {  // Get this with just Smith
     $full_name = format_surname($surname);
   } else {
     $full_name = format_surname($surname) . ", " . format_forename($fore);
@@ -215,7 +214,7 @@ function format_multiple_authors(string $authors) : string {
   if (preg_match("~[,;]$~", trim($authors))) $authors = substr(trim($authors), 0, strlen(trim($authors))-1); // remove trailing punctuation
 
   $authors = trim($authors);
-  if ($authors == "") {
+  if ($authors === "") {
     return '';
   }
 
@@ -224,14 +223,14 @@ function format_multiple_authors(string $authors) : string {
   $bits = array();
   if (isset($authors[1])) {
     foreach ($authors as $A){
-      if (trim($A) != "") $return[] = format_author($A);
+      if (trim($A) !== "") $return[] = format_author($A);
     }
   } else {
     //Use commas as delimiters
     $chunks = explode(",", $authors[0]);
     foreach ($chunks as $chunk){
       $chunk = trim($chunk);
-      if ($chunk == '') continue; // Odd things with extra commas
+      if ($chunk === '') continue; // Odd things with extra commas
       $bits = explode(" ", $chunk);
       $bitts = array();
       foreach ($bits as $bit){

@@ -95,7 +95,7 @@ class Page {
 
     $this->text = WikipediaBot::GetAPage($title);
 
-    if ($this->text == '') {
+    if ($this->text === '') {
        report_warning('Page '  . $title . ' from ' . str_replace(['/w/index.php', 'https://'], ['',''], WIKI_ROOT) . ' appears to be empty '); // @codeCoverageIgnore
        return FALSE;                                                                          // @codeCoverageIgnore
     }
@@ -200,7 +200,7 @@ class Page {
                       );
     // Ones like <ref>http://www.../....</ref>; <ref>[http://www.../....]</ref>   Also, allow a trailing period, space+period, or comma
     $this->text = preg_replace_callback(
-                      "~(<(?:\s*)ref[^>]*?>)(\s*\[?(https?:\/\/[^ >}{\]\[]+?)(?:| \.|\,|\.)\]?\s*)(<\s*?\/\s*?ref(?:\s*)>)~i",
+                      "~(<(?:\s*)ref[^>]*?>)(\s*\[?(https?:\/\/[^ >}{\]\[]+?)[ \,\.]*\]?[\s\.\,]*)(<\s*?\/\s*?ref(?:\s*)>)~i",
                       function(array $matches) : string {return $matches[1] . '{{cite web | url=' . $matches[3] . ' | ' . strtolower('CITATION_BOT_PLACEHOLDER_BARE_URL') .'=' . base64_encode($matches[2]) . ' }}' . $matches[4] ;},
                       $this->text
                       );
@@ -295,7 +295,7 @@ class Page {
       } elseif (in_array($this_template->wikiname(), TEMPLATES_WE_CHAPTER_URL)) {
         $our_templates_slight[] = $this_template;
         $this_template->rename('chapterurl', 'chapter-url');
-      } elseif ($this_template->wikiname() == 'cite magazine' || $this_template->wikiname() == 'cite periodical') {
+      } elseif ($this_template->wikiname() === 'cite magazine' || $this_template->wikiname() === 'cite periodical') {
         $our_templates_slight[] = $this_template;
         if ($this_template->blank('magazine') && $this_template->has('work')) {
             $this_template->rename('work', 'magazine');
@@ -431,8 +431,8 @@ class Page {
     Template::$date_style = DATES_WHATEVER;
     unset($all_templates);
 
-    $this->text = preg_replace('~(\{\{[Cc]ite ODNB\s*\|[^\{\}\_]+_?[^\{\}\_]+\}\}\s*)\{\{ODNBsub\}\}~u', '$1', $this->text); // Allow only one underscore to shield us from MATH etc.
-    $this->text = preg_replace('~(\{\{[Cc]ite ODNB\s*\|[^\{\}\_]*ref ?= ?\{\{sfn[^\{\}\_]+\}\}[^\{\}\_]*\}\}\s*)\{\{ODNBsub\}\}~u', '$1', $this->text); // Allow a ref={{sfn in the template
+    $this->text = safe_preg_replace('~(\{\{[Cc]ite ODNB\s*\|[^\{\}\_]+_?[^\{\}\_]+\}\}\s*)\{\{ODNBsub\}\}~u', '$1', $this->text); // Allow only one underscore to shield us from MATH etc.
+    $this->text = safe_preg_replace('~(\{\{[Cc]ite ODNB\s*\|[^\{\}\_]*ref ?= ?\{\{sfn[^\{\}\_]+\}\}[^\{\}\_]*\}\}\s*)\{\{ODNBsub\}\}~u', '$1', $this->text); // Allow a ref={{sfn in the template
     
     set_time_limit(120);
     $this->replace_object($singlebrack); unset($singlebrack);
@@ -461,11 +461,10 @@ class Page {
        $last_first_out = array();
     } // @codeCoverageIgnoreEnd
     return strcmp(str_replace($last_first_in, $last_first_out, str_ireplace($caps_ok, $caps_ok, $this->text)),
-                  str_replace($last_first_in, $last_first_out, str_ireplace($caps_ok, $caps_ok, $this->start_text))) != 0;
+                  str_replace($last_first_in, $last_first_out, str_ireplace($caps_ok, $caps_ok, $this->start_text))) !== 0;
   }
 
   public function edit_summary() : string {
-    $match = ['', '']; // prevent memory leak in some PHP versions
     $auto_summary = "";
     if (count($this->modifications["changeonly"]) !== 0) {
       $auto_summary .= "Alter: " . implode(", ", $this->modifications["changeonly"]) . ". ";
@@ -609,7 +608,6 @@ class Page {
   }
   
   public function extract_object(string $class) : array {
-    $match = ['', '']; // prevent memory leak in some PHP versions
     $i = 0;
     $text = $this->text;
     $regexp_in = $class::REGEXP;
@@ -657,7 +655,7 @@ class Page {
 
   protected function announce_page() : void {
     $url_encoded_title =  urlencode($this->title);
-    if ($url_encoded_title == '') return;
+    if ($url_encoded_title === '') return;
     html_echo ("\n<hr>[" . date("H:i:s") . "] Processing page '<a href='" . WIKI_ROOT . "?title=$url_encoded_title' style='font-weight:bold;'>" 
         . echoable($this->title)
         . "</a>' &mdash; <a href='" . WIKI_ROOT . "?title=$url_encoded_title"
