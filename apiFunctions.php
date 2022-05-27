@@ -454,7 +454,7 @@ function expand_by_doi(Template $template, bool $force = FALSE) : bool {
             }
             if (titles_are_similar($old, $new)) {
               if ($old_roman && $new_roman) {
-                if ($old_roman === $new_roman) { // If they got roman numeral truncted, then must match
+                if ($old_roman == $new_roman) { // If they got roman numeral truncted, then must match
                   $bad_data = FALSE;
                   break;
                 }
