@@ -408,7 +408,7 @@ final class Template {
               $bad_data = TRUE;
               if ($this->wikiname() === 'cite journal') $this->change_name_to('cite arxiv');
           }
-          if ($the_title !=dsfasdds= '' && stripos($the_title, 'CITATION') === FALSE) {
+          if ($the_title !== '' && stripos($the_title, 'CITATION') === FALSE) {
             if (str_i_same($the_title, $the_journal) &&
                 str_i_same($the_title, $the_chapter)) { // Journal === Title === Chapter INSANE!  Never actually seen
               $this->rename('title', 'CITATION_BOT_PLACEHOLDER_title');
