@@ -30,7 +30,6 @@
         <file name="gitpull.php" />
         <file name="linked_pages.php" />
         <file name="process_page.php" />
-        <file name="restart.php" />
         <file name="setup.php" />
         <file name="unlock_git.php" />
         <file name="user_messages.php" />
