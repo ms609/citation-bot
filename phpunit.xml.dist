@@ -20,7 +20,6 @@
       <file>./category.php</file>
       <file>./linked_pages.php</file>
       <file>./authenticate.php</file>
-      <file>./restart.php</file>
       <file>./setup.php</file>
       <file>./php_info.php</file>
       <file>./kill_big_job.php</file>
