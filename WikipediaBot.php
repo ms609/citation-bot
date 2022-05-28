@@ -132,18 +132,17 @@ try {
     
       $data = (string) @curl_exec(self::$ch);
       $ret = @json_decode($data); 
-      if (($ret === NULL) || ($ret === FALSE) || (isset($ret->error) && (
+      if (($ret === NULL) || ($ret === FALSE) || (isset($ret->error) && (   // @codeCoverageIgnoreStart
         (string) $ret->error->code === 'assertuserfailed' ||
         stripos((string) $ret->error->info, 'The database has been automatically locked') !== FALSE ||
         stripos((string) $ret->error->info, 'abusefilter-warning-predatory') !== FALSE ||
         stripos((string) $ret->error->info, 'protected') !== FALSE ||
         stripos((string) $ret->error->info, 'Nonce already used') !== FALSE))
       ) {
-        // @codeCoverageIgnoreStart
         unset($data, $ret, $token, $consumer, $request, $authenticationHeader); // save memory during recursion
         return $this->fetch($params, $depth+1);
-        // @codeCoverageIgnoreEnd
-      }
+        
+      }         // @codeCoverageIgnoreEnd
       return (self::ret_okay($ret)) ? $ret : NULL;
     // @codeCoverageIgnoreStart
     } catch(Exception $E) {
