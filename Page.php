@@ -579,9 +579,8 @@ class Page {
       if ($api->write_page($this->title, $this->text,
               $this->edit_summary() . $edit_summary_end,
               $this->lastrevid, $this->read_at)) {
-        return TRUE;          // @codeCoverageIgnore
-      } elseif (!TRAVIS) {
-        // @codeCoverageIgnoreStart
+        return TRUE;
+      } elseif (!TRAVIS) { // @codeCoverageIgnoreStart
         sleep(9);  // could be database being locked
         report_info("Trying to write again after waiting");
         $return = $api->write_page($this->title, $this->text,
