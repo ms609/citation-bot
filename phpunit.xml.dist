@@ -16,13 +16,10 @@
       <file>./constants.php</file>
       <file>./process_page.php</file>
       <file>./gitpull.php</file>
-      <file>./unlock_git.php</file>
       <file>./category.php</file>
       <file>./linked_pages.php</file>
       <file>./authenticate.php</file>
-      <file>./restart.php</file>
       <file>./setup.php</file>
-      <file>./php_infofadsfdsfads.php</file>
       <file>./kill_big_job.php</file>
       <file>./html_headers.php</file>
     </exclude>
