@@ -4393,7 +4393,6 @@ final class TemplateTest2 extends testBaseClass {
       $text = "{{cite paper|hdl=20.1000/100?urlappend=%3Bseq=326%3Bownerid=13510798900390116-35urlappend}}";
       $expanded = $this->process_citation($text);
       $this->AssertSame('20.1000/100', $expanded->get2('hdl'));
-     
     }
  
    public function testSillyURL() : void { // This get checks by string match, but not regex
@@ -4431,6 +4430,34 @@ final class TemplateTest2 extends testBaseClass {
      $template = $this->make_citation($text);
      $this->assertFalse($template->get_identifiers_from_url());
      $this->assertNotNull($template->get2('url'));
-    
    }
+ 
+    public function testBaleOutDois() : void {
+      $text = "{{cite arXiv|doi=10.1093/oi/authority/343214332}}";
+      $expanded = $this->make_citation($text);
+      $expanded->tidy_parameter('doi');
+      $this->AssertSame('cite arxiv', $expanded->wikiname());
+    }
+
+    public function testFinalTidyThings1() : void {
+      $text = "{{Cite web|title=Stuff|chapter=More Stuff}}";
+      $expanded = $this->make_citation($text);
+      $expanded->final_tidy());
+      $this->AssertSame('cite book', $expanded->wikiname());
+    }
+
+    public function testFinalTidyThings2() : void {
+      $text = "{{Cite web|title=Stuff|url=arxiv_and_such|arxiv=1234}}";
+      $expanded = $this->make_citation($text);
+      $expanded->final_tidy());
+      $this->AssertSame('cite arxiv', $expanded->wikiname());
+      $this->AssertNull($expanded->get2('url'));
+     
+      $text = "{{cite web|title=Stuff|url=arxiv_and_such|eprint=1234}}";
+      $expanded = $this->make_citation($text);
+      $expanded->final_tidy());
+      $this->AssertSame('cite arxiv', $expanded->wikiname());
+      $this->AssertNull($expanded->get2('url'));
+    }
+ 
 }
