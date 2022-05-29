@@ -4442,7 +4442,7 @@ final class TemplateTest2 extends testBaseClass {
     public function testFinalTidyThings1() : void {
       $text = "{{Cite web|title=Stuff|chapter=More Stuff}}";
       $expanded = $this->make_citation($text);
-      $expanded->final_tidy());
+      $expanded->final_tidy();
       $this->AssertSame('cite book', $expanded->wikiname());
     }
 
