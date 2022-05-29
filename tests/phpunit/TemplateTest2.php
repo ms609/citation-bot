@@ -4491,11 +4491,18 @@ final class TemplateTest2 extends testBaseClass {
     }
  
     public function testTidyArchiveCloseToStart() : void {
-      $text = "{{Cite book|title=Stuff|chapter=More Stuff|url=http://archive.org/details/stuff/page/11}}";
+      $text = "{{Cite book|title=Stuff|chapter=More Stuff|url=http://archive.org/details/stuff/page/n11}}";
       $expanded = $this->make_citation($text);
       $expanded->tidy_parameter('url');
       $this->AssertSame('cite book', $expanded->wikiname());
-      $this->AssertSame('http://www.dfadsfdsfasd.com/wp-content/blah', $expanded->get2('url'));
+      $this->AssertSame('http://archive.org/details/stuff/page/n11', $expanded->get2('url'));
       $this->AssertNull($expanded->get2('chapter-url'));
+     
+      $text = "{{Cite book|title=Stuff|chapter=More Stuff|url=http://archive.org/details/stuff/page/n111}}";
+      $expanded = $this->make_citation($text);
+      $expanded->tidy_parameter('url');
+      $this->AssertSame('cite book', $expanded->wikiname());
+      $this->AssertSame('http://archive.org/details/stuff/page/n111', $expanded->get2('chapter-url'));
+      $this->AssertNull($expanded->get2('url'));
     }
 }
