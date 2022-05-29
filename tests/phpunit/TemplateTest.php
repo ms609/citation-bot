@@ -3693,4 +3693,16 @@ EP - 999 }}';
     $template = $this->process_citation($text);
     $this->assertSame('https://books.google.com/books?id=SjpSkzjIzfsC&pg=213', $template->get2('url'));
   }
+ 
+  public function testBlankOtherThanComments() : void {
+    $text_in = "{{cite journal| title=<!-- comment1 -->  <!-- comment2 -->| journal= | issue=3 <!-- comment3 -->| volume=65 |lccn= <!-- comment4 --> cow <!-- comment5 --> }}";
+    $template = $this->make_citation($text_in);
+    $this->assertTrue($template->blank_other_than_comments('isbn'));
+    $this->assertTrue($template->blank_other_than_comments('title'));
+    $this->assertTrue($template->blank_other_than_comments('journal'));
+    $this->assertFalse($template->blank_other_than_comments('issue'));
+    $this->assertFalse($template->blank_other_than_comments('volume'));
+    $this->assertFalse($template->blank_other_than_comments('lccn'));
+  }
+ 
 }
