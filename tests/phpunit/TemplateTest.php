@@ -494,6 +494,9 @@ final class TemplateTest extends testBaseClass {
     $text="{{cite web|url=https://oxfordre.com/communication/communication/view/10.1093/acrefore/9780190228613.001.0001/acrefore-9780190228613-e-1195|doi-broken-date=X|doi=10.3421/32412xxxxxxx}}";
     $template = $this->process_citation($text);
     $this->assertSame('10.1093/acrefore/9780190228613.013.1195', $template->get2('doi'));
+    $template->forget('doi');
+    $template->tidy_parameter('url');
+    $this->assertSame('10.1093/acrefore/9780190228613.013.1195', $template->get2('doi'));
   }
  
   public function testShortenMusic() : void {
@@ -3731,8 +3734,12 @@ EP - 999 }}';
     $template = $this->make_citation($text_in);
     $template->tidy_parameter('page');
     $this->assertSame('333-444', $template->get2('page'));
+   
+    $text_in = "{{cite web| page=333–444}}";
+    $template = $this->make_citation($text_in);
+    $template->tidy_parameter('page');
+    $this->assertSame('333–444', $template->get2('page'));
   }
- 
 
   public function testTidyGoofyFirsts() : void {
     $text_in = "{{Citation | last1=[[Hose|Dude]]|first1=[[John|Girl]] }}";
