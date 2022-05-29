@@ -3601,6 +3601,14 @@ final class TemplateTest2 extends testBaseClass {
     $this->assertNull($expanded->get2('title'));
     $this->assertNull($expanded->get2('year'));
   }
+ 
+  public function testBibcodesFindBooks() : void {
+    $this->requires_bibcode(function() : void {
+      $text = "{{cite book|title=Enhancement of Electrochemical Activity in Bioelectrochemical Systems by Using Bacterial Anodes: An Overview|year=2022|last1=Gandu|first1=Bharath|last2=Rozenfeld|first2=Shmuel|last3=Ouaknin Hirsch|first3=Lea|last4=Schechter|first4=Alex|last5=Cahan|first5=Rivka|bibcode= }}}";
+      $expanded = $this->process_citation($text);
+      $this->assertSame('2020bisy.book..211G', $expanded->get2('bibcode'));
+    });
+  }
   
   public function testBadBibcodeARXIVPages() : void {
    $this->requires_bibcode(function() : void {
