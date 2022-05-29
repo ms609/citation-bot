@@ -4491,7 +4491,7 @@ final class TemplateTest2 extends testBaseClass {
     }
  
     public function testTidyArchiveCloseToStart() : void {
-      $text = "{{Cite book|title=Stuff|chapter=More Stuff|url=http://archive.org/details/stuff/page/11}";
+      $text = "{{Cite book|title=Stuff|chapter=More Stuff|url=http://archive.org/details/stuff/page/11}}";
       $expanded = $this->make_citation($text);
       $expanded->tidy_parameter('url');
       $this->AssertSame('cite book', $expanded->wikiname());
