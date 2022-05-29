@@ -137,9 +137,9 @@ abstract class testBaseClass extends PHPUnit\Framework\TestCase {
   }
   
   protected function flush() : void {
-     while (ob_get_level()) { ob_end_flush(); };
-     ob_start(); // PHPUnit turns on a level of buffering itself -- Give it back to avoid "Risky Test"
+     ob_end_flush();
      flush();
+     ob_start();
   }
 
   protected function fill_cache() : void { // complete list of DOIs and HDLs that TRUE/FALSE in test suite as of 18 MAY 2022
