@@ -1857,7 +1857,7 @@ final class TemplateTest2 extends testBaseClass {
     $this->assertNull($template->get2('doi-broken-date'));
     $template->forget('doi');
     $template->tidy_parameter('url');
-    $this->assertSame('10.1093/gmo/9781561592630.article.4005', $template->get2('doi'));
+    $this->assertSame('10.1093/gmo/9781561592630.article.40055', $template->get2('doi'));
    }  
 
    public function testMusicDOIsA() : void {
