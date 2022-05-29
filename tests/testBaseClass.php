@@ -28,8 +28,9 @@ abstract class testBaseClass extends PHPUnit\Framework\TestCase {
 
   protected function requires_secrets(callable $function) : void {
     if ($this->testing_skip_wiki) {
+      $this->flush();
       echo 'A'; // For API, since W is taken
-      ob_flush();
+      $this->flush();
       $this->assertNull(NULL);
     } else {
       $function();
@@ -39,8 +40,9 @@ abstract class testBaseClass extends PHPUnit\Framework\TestCase {
   // Only routines that absolutely need bibcode access since we are limited 
   protected function requires_bibcode(callable $function) : void {
     if ($this->testing_skip_bibcode) {
+      $this->flush();
       echo 'B';
-      ob_flush();
+      $this->flush();
       AdsAbsControl::big_back_on();
       AdsAbsControl::big_give_up();
       AdsAbsControl::small_back_on();
@@ -69,7 +71,7 @@ abstract class testBaseClass extends PHPUnit\Framework\TestCase {
   } 
   
   protected function make_citation(string $text) : Template {
-    ob_flush();
+    $this->flush();
     Template::$all_templates = array();
     Template::$date_style = DATES_WHATEVER;
     $this->assertSame('{{', mb_substr($text, 0, 2));
@@ -94,7 +96,7 @@ abstract class testBaseClass extends PHPUnit\Framework\TestCase {
   }
     
   protected function process_page(string $text) : TestPage { // Only used if more than just a citation template
-    ob_flush();
+    $this->flush();
     Template::$all_templates = array();
     Template::$date_style = DATES_WHATEVER;
     $page = new TestPage();
@@ -134,6 +136,12 @@ abstract class testBaseClass extends PHPUnit\Framework\TestCase {
     }
   }
   
+  protected function flush() : void {
+     while (ob_get_level()) { ob_end_flush(); };
+     ob_start(); // PHPUnit turns on a level of buffering itself -- Give it back to avoid "Risky Test"
+     flush();
+  }
+
   protected function fill_cache() : void { // complete list of DOIs and HDLs that TRUE/FALSE in test suite as of 18 MAY 2022
     Zotero::create_ch_zotero();
     WikipediaBot::make_ch();
