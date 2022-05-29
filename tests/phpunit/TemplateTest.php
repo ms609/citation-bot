@@ -1838,11 +1838,23 @@ final class TemplateTest extends testBaseClass {
       $prepared = $this->process_citation($text);
       $this->assertSame('{{citation|year=2000}}', $prepared->parsed_text());
    
+      $text = '{{citation|year= | year= |year=| year=|year=2000}}';
+      $prepared = $this->process_citation($text);
+      $this->assertSame('{{citation|year=2000}}', $prepared->parsed_text());
+   
       $text = '{{citation|year=2000|year=2000}}';
       $prepared = $this->process_citation($text);
       $this->assertSame('{{citation|year=2000}}', $prepared->parsed_text());
    
       $text = '{{citation|year 2000|year=2000}}';
+      $prepared = $this->process_citation($text);
+      $this->assertSame('{{citation|year=2000}}', $prepared->parsed_text());
+   
+      $text = '{{citation|year=|year 2000|year=2000}}';
+      $prepared = $this->process_citation($text);
+      $this->assertSame('{{citation|year=2000}}', $prepared->parsed_text());
+   
+      $text = '{{citation|year 2000|year=|year=2000}}';
       $prepared = $this->process_citation($text);
       $this->assertSame('{{citation|year=2000}}', $prepared->parsed_text());
    
