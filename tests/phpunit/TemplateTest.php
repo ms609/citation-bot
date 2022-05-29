@@ -491,7 +491,7 @@ final class TemplateTest extends testBaseClass {
   }
  
   public function testOxComms() : void {
-    $text="{{cite web|url=https://oxfordre.com/communication/view/10.1093/acrefore/9780190228613.001.0001/acrefore-9780190228613-e-1195|doi-broken-date=X|doi=10.3421/32412xxxxxxx}}";
+    $text="{{cite web|url=https://oxfordre.com/communication/communication/view/10.1093/acrefore/9780190228613.001.0001/acrefore-9780190228613-e-1195|doi-broken-date=X|doi=10.3421/32412xxxxxxx}}";
     $template = $this->process_citation($text);
     $this->assertSame('10.1093/acrefore/9780190228613.013.1195', $template->get2('doi'));
   }
@@ -3703,6 +3703,35 @@ EP - 999 }}';
     $this->assertFalse($template->blank_other_than_comments('issue'));
     $this->assertFalse($template->blank_other_than_comments('volume'));
     $this->assertFalse($template->blank_other_than_comments('lccn'));
+  }
+
+ 
+  public function testCleanUpSomeURLS1() : void {
+    $text_in = "{{cite web| url = https://www.youtube.com/watch%3Fv=9NHSOrUHE6c}}";
+    $template = $this->make_citation($text_in);
+    $template->tidy_parameter('url');
+    $this->assertSame('https://www.youtube.com/watch?v=9NHSOrUHE6c', $template->get2('url'));
+  }
+   
+  public function testCleanUpSomeURLS2() : void {
+    $text_in = "{{cite web| url = https://www.springer.com/abc#citeas}}";
+    $template = $this->make_citation($text_in);
+    $template->tidy_parameter('url');
+    $this->assertSame('https://www.springer.com/abc', $template->get2('url'));
+  }
+ 
+  public function testCleanUpSomeURLS3() : void {
+    $text_in = "{{cite web| url = https://www.springer.com/abc#citeas}}";
+    $template = $this->make_citation($text_in);
+    $template->tidy_parameter('url');
+    $this->assertSame('https://www.springer.com/abc', $template->get2('url'));
+  }
+
+  public function testTidyPageRangeLookLikePage() : void {
+    $text_in = "{{cite web| page=333-444}}";
+    $template = $this->make_citation($text_in);
+    $template->tidy_parameter('page');
+    $this->assertSame('333-444', $template->get2('page'));
   }
  
 }
