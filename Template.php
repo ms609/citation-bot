@@ -5540,7 +5540,7 @@ final class Template {
                  }
                  curl_close($ch);
             }
-            if (preg_match("~^(.+)/se-./?$~", $this->get($param), $matches)) {
+            if (preg_match("~^(.+)/se-[^\/]+/?$~", $this->get($param), $matches)) {
               $this->set($param, $matches[1]);
               $changed = TRUE;
             }
