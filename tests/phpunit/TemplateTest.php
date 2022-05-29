@@ -3758,5 +3758,11 @@ EP - 999 }}';
     $template = $this->process_citation($text_in);
     $this->assertSame('{{Citation | last1=Dude|first1=John |author1-link=Hose }}', $template->parsed_text());
   }
- 
+
+  public function testDashIsEquals() : void {
+    $text_in = "{{cite journal|archive=url=https://xy.com }}";
+    $prepared = $this->prepare_citation($text_in);
+    $this->assertSame("UNKONWN", $prepared->parsed_text());
+  }
+  
 }
