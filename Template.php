@@ -4128,10 +4128,11 @@ final class Template {
               // We assume that human text is some kind of abbreviations that we really do not want to mess with
               $periodical  = '[[' . $linked_text . '|' . $human_text . ']]';
               $this->set($param, $periodical);
-            } elseif (substr_count($periodical, ']') === 0 && substr_count($periodical, '[') === 0) { // No links
+            }
+          }
+          if (substr_count($periodical, ']') === 0 && substr_count($periodical, '[') === 0) { // No links
              $periodical = straighten_quotes($periodical, TRUE);
              $this->set($param, $periodical);
-            }
           }
           if ($this->wikiname() === 'cite arxiv') $this->change_name_to('cite journal');
           if ($this->is_book_series($param)) {
