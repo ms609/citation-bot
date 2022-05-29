@@ -4449,13 +4449,13 @@ final class TemplateTest2 extends testBaseClass {
     public function testFinalTidyThings2() : void {
       $text = "{{Cite web|title=Stuff|url=arxiv_and_such|arxiv=1234}}";
       $expanded = $this->make_citation($text);
-      $expanded->final_tidy());
+      $expanded->final_tidy();
       $this->AssertSame('cite arxiv', $expanded->wikiname());
       $this->AssertNull($expanded->get2('url'));
      
       $text = "{{cite web|title=Stuff|url=arxiv_and_such|eprint=1234}}";
       $expanded = $this->make_citation($text);
-      $expanded->final_tidy());
+      $expanded->final_tidy();
       $this->AssertSame('cite arxiv', $expanded->wikiname());
       $this->AssertNull($expanded->get2('url'));
     }
