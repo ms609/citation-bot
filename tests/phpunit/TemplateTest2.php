@@ -579,6 +579,14 @@ final class TemplateTest2 extends testBaseClass {
     $this->assertNull($template->get2('via'));
  }
  
+ public function testTidy67d() : void {
+    $text = "{{cite journal|url= http://host.com/login/?url=https://0-search-proquest.scoolaid.net/STUFF/docview/1234/2314/3214|via=dude}}";
+    $template = $this->make_citation($text);
+    $template->tidy_parameter('url');
+    $this->assertSame('https://www.proquest.com/docview/1234', $template->get2('url'));
+    $this->assertNull($template->get2('via'));
+ }
+ 
   public function testTidy68() : void {
     $text = "{{cite journal|url=http://proxy-proquest.umi.com-org/pqd1234}}"; // Bogus, so deleted
     $template = $this->make_citation($text);
