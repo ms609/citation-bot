@@ -488,6 +488,9 @@ final class TemplateTest extends testBaseClass {
     $text="{{cite web|url=https://oxfordre.com/literature/view/10.1093/acrefore/9780190201098.001.0001/acrefore-9780190201098-e-1357|doi-broken-date=X|doi=10.3421/32412xxxxxxx}}";
     $template = $this->process_citation($text);
     $this->assertSame('10.1093/acrefore/9780190201098.013.1357', $template->get2('doi'));
+    $template->forget('doi');
+    $template->tidy_parameter('url');
+    $this->assertSame('10.1093/acrefore/9780190201098.013.1357', $template->get2('doi'));
   }
  
   public function testOxComms() : void {
