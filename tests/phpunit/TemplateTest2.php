@@ -556,6 +556,13 @@ final class TemplateTest2 extends testBaseClass {
     $this->assertSame('https://www.proquest.com/openview/1234abc', $template->get2('url'));
   }
  
+ public function testTidy66e() : void {
+    $text = "{{cite journal|url=https://search.proquest.com/docview/1234abc/se-32413232}}";
+    $template = $this->make_citation($text);
+    $template->tidy_parameter('url');
+    $this->assertSame('https://www.proquest.com/docview/1234abc', $template->get2('url'));
+ }
+ 
  public function testTidy67() : void {
     $text = "{{cite journal|url=https://0-search-proquest-com.schoo.org/STUFF/docview/1234/2314/3214}}";
     $template = $this->make_citation($text);
@@ -4459,5 +4466,36 @@ final class TemplateTest2 extends testBaseClass {
       $this->AssertSame('cite arxiv', $expanded->wikiname());
       $this->AssertNull($expanded->get2('url'));
     }
+
+    public function testTidyWPContentURL() : void {
+      $text = "{{Cite book|title=Stuff|chapter=More Stuff|url=http://www.dfadsfdsfasd.com/wp-content/chapter/2332}}";
+      $expanded = $this->make_citation($text);
+      $expanded->tidy_parameter('url');
+      $this->AssertSame('cite book', $expanded->wikiname());
+      $this->AssertSame('http://www.dfadsfdsfasd.com/wp-content/chapter/2332', $expanded->get2('chapter-url'));
+      $this->AssertNull($expanded->get2('url'));
+
+      $text = "{{Cite book|title=Stuff|chapter=More Stuff|url=http://www.dfadsfdsfasd.com/wp-content/pages/23332}}";
+      $expanded = $this->make_citation($text);
+      $expanded->tidy_parameter('url');
+      $this->AssertSame('cite book', $expanded->wikiname());
+      $this->AssertSame('http://www.dfadsfdsfasd.com/wp-content/pages/23332', $expanded->get2('chapter-url'));
+      $this->AssertNull($expanded->get2('url'));
+     
+      $text = "{{Cite book|title=Stuff|chapter=More Stuff|url=http://www.dfadsfdsfasd.com/wp-content/blah}}";
+      $expanded = $this->make_citation($text);
+      $expanded->tidy_parameter('url');
+      $this->AssertSame('cite book', $expanded->wikiname());
+      $this->AssertSame('http://www.dfadsfdsfasd.com/wp-content/blah', $expanded->get2('url'));
+      $this->AssertNull($expanded->get2('chapter-url'));
+    }
  
+    public function testTidyArchiveCloseToStart() : void {
+      $text = "{{Cite book|title=Stuff|chapter=More Stuff|url=http://archive.org/details/stuff/page/11}";
+      $expanded = $this->make_citation($text);
+      $expanded->tidy_parameter('url');
+      $this->AssertSame('cite book', $expanded->wikiname());
+      $this->AssertSame('http://www.dfadsfdsfasd.com/wp-content/blah', $expanded->get2('url'));
+      $this->AssertNull($expanded->get2('chapter-url'));
+    }
 }
