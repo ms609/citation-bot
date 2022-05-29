@@ -722,8 +722,9 @@ final class Template {
       if (in_array($p->param, $param)) {
         $value = $p->val;
         $value = trim($value);
-        if (stripos($value, '# # # CITATION_BOT_PLACEHOLDER_COMMENT') !== FALSE) {
-          $value = trim(preg_replace('~^# # # CITATION_BOT_PLACEHOLDER_COMMENT \d+ # # #~i', '', $value)); // Sneak up on it
+        if (stripos($value, '# # # CITATION_BOT_PLACEHOLDER_COMMENT') !== FALSE) { // Regex failure paranoia
+          $value = trim(preg_replace('~^# # # CITATION_BOT_PLACEHOLDER_COMMENT \d+ # # #~i', '', $value));
+          $value = trim(preg_replace('~# # # CITATION_BOT_PLACEHOLDER_COMMENT \d+ # # #$~i', '', $value));
           $value = trim(preg_replace('~# # # CITATION_BOT_PLACEHOLDER_COMMENT \d+ # # #~i', '', $value));
         }
         $value = trim($value);
