@@ -3252,7 +3252,7 @@ final class Template {
   $mistake_corrections = array_values(COMMON_MISTAKES);
   $mistake_keys = array_keys(COMMON_MISTAKES);
 
-  foreach ($this->param as $p) {
+   foreach ($this->param as $p) {
     if (strlen($p->param) > 0) {
       $mistake_id = array_search($p->param, $mistake_keys);
       if ($mistake_id) {
@@ -3264,10 +3264,22 @@ final class Template {
         continue;
       }
     }
+   }
+   foreach ($this->param as $p) {
+    if (substr_count($p->val, "=") === 1 && !in_array($p->param, PARAMETER_LIST)) {
+      $param = $p->param;
+      $value = $p->val;
+      $equals = strpos($value, '=');
+      $before = trim(substr($equals, 0, $equals));
+      $after  = trim(substr($value, $equals));
+      $possible = $param . '-' . $before;
+      if (in_array($possible, PARAMETER_LIST)) {
+        $p->param = $possible;
+        $p->val   = $after;
+      }
+    }
+   }
   }
-}
-
-
 
   protected function correct_param_spelling() : void {
   // check each parameter name against the list of accepted names (loaded in expand.php).
