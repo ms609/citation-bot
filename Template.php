@@ -3270,7 +3270,7 @@ final class Template {
       $param = $p->param;
       $value = $p->val;
       $equals = (int) strpos($value, '=');
-      $before = trim(substr($equals, 0, $equals));
+      $before = trim(substr($value, 0, $equals));
       $after  = trim(substr($value, $equals));
       $possible = $param . '-' . $before;
       if (in_array($possible, PARAMETER_LIST)) {
