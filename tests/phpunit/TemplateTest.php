@@ -3734,4 +3734,15 @@ EP - 999 }}';
     $this->assertSame('333-444', $template->get2('page'));
   }
  
+
+  public function testTidyGoofyFirsts() : void {
+    $text_in = "{{Citation | last1=[[Hose|Dude]]|first1=[[John|Girl]] }}";
+    $template = $this->process_citation($text_in);
+    $this->assertSame('{{Citation | last1=Dude|first1=Girl |author1-link=Hose }}', $template->parsed_text());
+   
+    $text_in = "{{Citation | last1=[[Hose|Dude]]|first1=[[John]] }}";
+    $template = $this->process_citation($text_in);
+    $this->assertSame('{{Citation | last1=Dude|first1=John |author1-link=Hose }}', $template->parsed_text());
+  }
+ 
 }
