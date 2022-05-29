@@ -10,9 +10,10 @@ require_once __DIR__ . '/../testBaseClass.php';
 final class CrashTest extends testBaseClass {
 
   public function testBlankOtherThanComments() : void {
+    $template = new Template();
     $text_in = "{{cite journal| title=<!-- comment1 -->  <!-- comment2 -->| journal= | issue=3 <!-- comment3 -->| volume=65 |lccn= <!-- comment4 --> cow <!-- comment5 --> }}";
     $page = $this->process_page($text_in); // Have to do this so that comments stay as comments
-    $template = (Template) Template::$all_templates[0];
+    $template = $template::$all_templates[0];
     echo $template->parse_text();
     $this->assertTrue($template->blank_other_than_comments('isbn'));
     $this->assertTrue($template->blank_other_than_comments('title'));
