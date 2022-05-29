@@ -595,10 +595,10 @@ class Page {
            }
            return FALSE;
          }
-        // @codeCoverageIgnoreEnd
       } else {
         return FALSE;
       }
+      // @codeCoverageIgnoreEnd
     } else {
       report_warning("Can't write to " . echoable($this->title) . 
         " - prohibited by {{bots}} template.");
