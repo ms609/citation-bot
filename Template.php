@@ -722,11 +722,20 @@ final class Template {
       if (in_array($p->param, $param)) {
         $value = $p->val;
         $value = trim($value);
+        echo "\n" . __LINE__ . " $p->param $value\n";
         if (stripos($value, '# # # CITATION_BOT_PLACEHOLDER_COMMENT') !== FALSE) {
-          $value = trim(preg_replace('~^# # # CITATION_BOT_PLACEHOLDER_COMMENT \d+ # # #~i', '', $value)); // Sneak up on it
+           // Sneak up on it because of Regex issues
+                  echo "\n" . __LINE__ . " $p->param $value\n";
+          $value = trim(preg_replace('~^# # # CITATION_BOT_PLACEHOLDER_COMMENT \d+ # # #~i', '', $value));
+                  echo "\n" . __LINE__ . " $p->param $value\n";
+          $value = trim(preg_replace('~# # # CITATION_BOT_PLACEHOLDER_COMMENT \d+ # # #$~i', '', $value));
+                  echo "\n" . __LINE__ . " $p->param $value\n";
           $value = trim(preg_replace('~# # # CITATION_BOT_PLACEHOLDER_COMMENT \d+ # # #~i', '', $value));
+                  echo "\n" . __LINE__ . " $p->param $value\n";
         }
+                echo "\n" . __LINE__ . " $p->param $value\n";
         $value = trim($value);
+                echo "\n" . __LINE__ . " $p->param $value\n";
         if ($value !== '') return FALSE;
       }
     }
