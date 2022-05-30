@@ -3924,16 +3924,6 @@ final class Template {
           if (preg_match('~^(.+)(%3Bownerid=.*)$~', $handle, $matches)) {  // should we shorten it?
             if (hdl_works($handle) === FALSE) {
                $handle = $matches[1];
-            } elseif (hdl_works($handle) === NULL) {
-               ; // Do nothing
-            } elseif (stripos($matches[2], 'urlappend') === FALSE) {
-              $handle = $matches[1];
-            } else {
-               $long  = hdl_works($handle);
-               $short = hdl_works($matches[1]);
-               if ($long === $short) { // ownerid does nothing
-                 $handle = $matches[1];
-               }
             }
           }
           if (preg_match('~^(.+)\?urlappend=~', $handle, $matches)) {  // should we shorten it?
