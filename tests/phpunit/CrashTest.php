@@ -14,25 +14,9 @@ final class CrashTest extends testBaseClass {
   }
  
     public function testFinalTidyThings1() : void {
-      $text = "{{Cite web|title=Stuff|chapter=More Stuff}}";
-      $expanded = $this->make_citation($text);
-      $expanded->final_tidy();
-      $this->AssertSame('cite book', $expanded->wikiname());
-
-      $text = "{{Cite web|title=Stuff|chapter=More Stuff|series=X|journal=Y}}";
-      $expanded = $this->make_citation($text);
-      $expanded->final_tidy();
-      $this->AssertSame('cite book', $expanded->wikiname());
-
-      $text = "{{Cite web|title=Stuff|chapter=More Stuff|journal=Y}}";
-      $expanded = $this->make_citation($text);
-      $expanded->final_tidy();
-      $this->AssertSame('cite book', $expanded->wikiname());
-
-      $text = "{{Cite web|title=Stuff|chapter=More Stuff|series=X}}";
-      $expanded = $this->make_citation($text);
-      $expanded->final_tidy();
-      $this->AssertSame('cite book', $expanded->wikiname());
+      $text = "{{Cite web|year=|year=2000}}";
+      $expanded = $this->process_citation($text);
+      $this->AssertSame('{{Cite web|year=2000}}', $expanded->parsed_text());
     }
 
 
