@@ -4455,6 +4455,41 @@ final class TemplateTest2 extends testBaseClass {
       $expanded = $this->make_citation($text);
       $expanded->final_tidy();
       $this->AssertSame('cite book', $expanded->wikiname());
+
+      $text = "{{Cite web|title=Stuff|chapter=More Stuff|series=X|journal=Y}}";
+      $expanded = $this->make_citation($text);
+      $expanded->final_tidy();
+      $this->AssertSame('cite book', $expanded->wikiname());
+
+      $text = "{{Cite web|title=Stuff|chapter=More Stuff|journal=Y}}";
+      $expanded = $this->make_citation($text);
+      $expanded->final_tidy();
+      $this->AssertSame('cite book', $expanded->wikiname());
+
+      $text = "{{Cite web|title=Stuff|chapter=More Stuff|series=X}}";
+      $expanded = $this->make_citation($text);
+      $expanded->final_tidy();
+      $this->AssertSame('cite book', $expanded->wikiname());
+     
+      $text = "{{cite web|title=Stuff|chapter=More Stuff}}";
+      $expanded = $this->make_citation($text);
+      $expanded->final_tidy();
+      $this->AssertSame('cite book', $expanded->wikiname());
+
+      $text = "{{cite web|title=Stuff|chapter=More Stuff|series=X|journal=Y}}";
+      $expanded = $this->make_citation($text);
+      $expanded->final_tidy();
+      $this->AssertSame('cite book', $expanded->wikiname());
+
+      $text = "{{cite web|title=Stuff|chapter=More Stuff|journal=Y}}";
+      $expanded = $this->make_citation($text);
+      $expanded->final_tidy();
+      $this->AssertSame('cite book', $expanded->wikiname());
+
+      $text = "{{cite web|title=Stuff|chapter=More Stuff|series=X}}";
+      $expanded = $this->make_citation($text);
+      $expanded->final_tidy();
+      $this->AssertSame('cite book', $expanded->wikiname());
     }
 
     public function testFinalTidyThings2() : void {
