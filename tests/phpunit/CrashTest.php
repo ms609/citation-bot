@@ -19,9 +19,14 @@ final class CrashTest extends testBaseClass {
     $template->add('title', 'Thus');
     $this->assertNotNull($template->get2('citation_bot_placeholder_bare_url'));
     $array = $template->modifications();
-    var_export($array);
+    $expected = array ( 'modifications' =>  array ( 0 => 'title',  ),
+                        'additions' =>  array ( 0 => 'title',  ),
+                        'deletions' =>  array ( 0 => 'citation_bot_placeholder_bare_url', ),
+                        'changeonly' => array (  ),
+                        'dashes' => FALSE,
+                        'names' => FALSE,)
+    $this->assertTrue($array == $expected);
     $this->assertNull($template->get2('citation_bot_placeholder_bare_url'));
-    $this->assertTrue(FALSE);
   }
 
 
