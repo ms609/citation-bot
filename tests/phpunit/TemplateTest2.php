@@ -4404,6 +4404,10 @@ final class TemplateTest2 extends testBaseClass {
       $text = "{{cite paper|hdl=20.1000/100?urlappend=%3Bseq=326%3Bownerid=13510798900390116-35urlappend}}";
       $expanded = $this->process_citation($text);
       $this->AssertSame('20.1000/100', $expanded->get2('hdl'));
+     
+      $text = "{{cite paper|hdl=2027/mdp.39015077587742?urlappend=%3Bseq=3}}"; // This is the front page
+      $expanded = $this->process_citation($text);
+      $this->AssertSame('2027/mdp.39015077587742', $expanded->get2('hdl'));
     }
  
    public function testSillyURL() : void { // This get checks by string match, but not regex
