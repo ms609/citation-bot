@@ -2455,6 +2455,7 @@ final class Template {
             ($this->has('jstor') && stripos($oa_hostname, 'jstor.org') !== FALSE) ||
             ($this->has('pmid') && stripos($oa_hostname, 'nlm.nih.gov') !== FALSE) ||
             (stripos($oa_hostname, 'doi.org') !== FALSE)) {
+          file_put_contents('CodeCoverage', $doi . " is free and rejected \n", FILE_APPEND);
           return 'have free';
        }
        preg_match("~^https?://([^\/]+)/~", $oa_url . '/', $match);
@@ -2471,6 +2472,7 @@ final class Template {
               (strpos($oa_url, 'eprints') !== FALSE) ||
               (strpos($oa_url, 'chapter') !== FALSE)) {
             $url_type = 'chapter-url';
+            file_put_contents('CodeCoverage', $doi . " is free gets a chapter-url \n", FILE_APPEND);
           }
         }
         $has_url_already = $this->has($url_type);
@@ -6176,6 +6178,7 @@ final class Template {
         $this->rename('chapter', 'title');
       }
       if (($this->wikiname() === 'cite journal' || $this->wikiname() === 'cite document' || $this->wikiname() === 'cite web') && $this->has('chapter')) { // At least avoid a template error
+        file_put_contents('CodeCoverage', $this->parsed_text() . " gets cleaned up\n", FILE_APPEND);
         $this->change_name_to('cite book', TRUE, TRUE);
       }
       if (($this->wikiname() === 'cite web' || $this->wikiname() === 'cite news') &&
