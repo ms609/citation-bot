@@ -14,13 +14,13 @@ final class CrashTest extends testBaseClass {
   }
  
   public function testModsArray() : void {
-    $text = '{{cite journal | CITATION_BOT_PLACEHOLDER_BARE_URL = XYX }}';
+    $text = '{{cite journal | citation_bot_placeholder_bare_url = XYX }}';
     $template = $this->make_citation($text);
     $template->add('title', 'Thus');
-    $this->assertNotNull($template->get2('CITATION_BOT_PLACEHOLDER_BARE_URL'));
+    $this->assertNotNull($template->get2('citation_bot_placeholder_bare_url'));
     $array = $template->modifications();
     var_export($array);
-    $this->assertNull($template->get2('CITATION_BOT_PLACEHOLDER_BARE_URL'));
+    $this->assertNull($template->get2('citation_bot_placeholder_bare_url'));
     $this->assertTrue(FALSE);
   }
 
