@@ -3988,7 +3988,15 @@ EP - 999 }}';
                         'changeonly' => array (  ),
                         'dashes' => FALSE,
                         'names' => FALSE,);
-    $this->assertTrue($array == $expected);
+    $this->assertEqualsCanonicalizing($expected, $array);
     $this->assertNull($template->get2('citation_bot_placeholder_bare_url'));
+  }
+ 
+  public function testMistakesWeDoNotFix() : void {
+    $text = '{{new cambridge medieval history|ed10=That Guy}}';
+    $template = $this->prepare_citation($text);
+    $array = $template->modifications();
+    $expected = array ('modifications' => array ( ), 'additions' => array ( ), 'deletions' => array ( ), 'changeonly' => array ( ), 'dashes' => false, 'names' => false, );
+    $this->assertEqualsCanonicalizing($expected, $array);
   }
 }
