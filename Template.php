@@ -6361,7 +6361,8 @@ final class Template {
           }
           if (preg_match('~^10\.1093/oxfordhb/(\d{13})\.001\.0001/oxfordhb\-(\d{13})-e-(\d+)$~', $doi, $matches)) {
             if ($matches[1] === $matches[2]) {
-              $trial[] = '10.1093/oxfordhb/' . $matches[1] . '.013.' . $matches[3];
+              $trial[] = '10.1093/oxfordhb/' . $matches[1] . '.013.'  . $matches[3];
+              $trial[] = '10.1093/oxfordhb/' . $matches[1] . '.013.0' . $matches[3];
             }
           }
     }
