@@ -3465,6 +3465,20 @@ final class TemplateTest2 extends testBaseClass {
      $this->assertNull($template->get2('id'));
   }
  
+  public function testCiteODNB6() : void {
+     $text = '{{Cite ODNB|id=10731|doi=10.1093/odnb/9780198614128.013.10731}}';
+     $template = $this->process_citation($text);
+     $this->assertSame('10.1093/odnb/9780198614128.013.107316', $template->get2('doi'));
+     $this->assertNull($template->get2('id'));
+  }
+ 
+  public function testCiteODNB7() : void { // Prefer given doi over ID, This is a contrived test
+     $text = '{{Cite ODNB|id=107316|doi=10.1038/ncomms14879}}';
+     $template = $this->process_citation($text);
+     $this->assertSame('10.1038/ncomms14879', $template->get2('doi'));
+     $this->assertNull($template->get2('id'));
+  }
+ 
   public function testSemanticscholar1() : void {
      $text = '{{cite web|url=https://semanticscholar.org/paper/861fc89e94d8564adc670fbd35c48b2d2f487704}}';
      $template = $this->process_citation($text);
