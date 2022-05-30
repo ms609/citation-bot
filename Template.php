@@ -1340,6 +1340,15 @@ final class Template {
           }
         }
         return $this->add($param_name, $value);
+        
+      case 'chapter-url':
+        $value = sanitize_string($value);
+        foreach (ALL_URL_TYPES as $existing)  {
+          if (str_i_same($value, $this->get($existing))) {
+            return FALSE;
+          }
+        }
+        return $this->add($param_name, $value);
 
       case 'archive-url':
         if ($this->blank(['archive-url', 'archiveurl'])) {
