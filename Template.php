@@ -3272,7 +3272,7 @@ final class Template {
       $value = $p->val;
       $equals = (int) strpos($value, '=');
       $before = trim(substr($value, 0, $equals));
-      $after  = trim(substr($value, $equals));
+      $after  = trim(substr($value, $equals+1));
       $possible = $param . '-' . $before;
       if (in_array($possible, PARAMETER_LIST)) {
         $p->param = $possible;
