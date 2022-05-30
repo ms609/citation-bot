@@ -77,6 +77,10 @@ final class CrashTest extends testBaseClass {
       $text = "{{Cite web|year 2000|year }}";
       $expanded = $this->process_citation($text);
       $this->assertSame('{{Cite web|year | year=2000 }}', $expanded->parsed_text());
+     
+      $text = '{{citation|year=2000|year=||||||||||||||||||||||||||||||||||||||||}}';
+      $prepared = $this->process_citation($text);
+      $this->assertSame('{{citation|year=2000}}', $prepared->parsed_text());
     }
 
 }
