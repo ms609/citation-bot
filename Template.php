@@ -2105,7 +2105,7 @@ final class Template {
         // The code below is not used anymore, since bot always uses interface in APIfunctions for existing bibcodes
       } elseif ($this->get('bibcode') !== (string) $record->bibcode && stripos($this->get('bibcode'), 'CITATION_BOT_PLACEHOLDER') === FALSE) { // @codeCoverageIgnore
         report_info("Updating " . bibcode_link($this->get('bibcode')) . " to " .  bibcode_link((string) $record->bibcode));                    // @codeCoverageIgnore
-        $this->set('bibcode', (string) $record->bibcode); // The bibcode has been updated                                                      // @codeCoverageIgnore
+        $this->set('bibcode', (string) $record->bibcode);                                                                                      // @codeCoverageIgnore
       }                                                                                                                                        // @codeCoverageIgnore
       process_bibcode_data($this, $record);
       return TRUE;
