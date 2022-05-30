@@ -276,7 +276,7 @@ class Page {
       $this_template = $all_templates[$i];
       if (in_array($this_template->wikiname(), TEMPLATES_WE_PROCESS)) {
         $our_templates[] = $this_template;
-        dsfasdfsdfsd
+        $this_template->correct_param_mistakes();
         $this_template->prepare();
       } elseif (in_array($this_template->wikiname(), TEMPLATES_WE_SLIGHTLY_PROCESS)) {
         $our_templates_slight[] = $this_template;
@@ -580,9 +580,8 @@ class Page {
       if ($api->write_page($this->title, $this->text,
               $this->edit_summary() . $edit_summary_end,
               $this->lastrevid, $this->read_at)) {
-        return TRUE;          // @codeCoverageIgnore
-      } elseif (!TRAVIS) {
-        // @codeCoverageIgnoreStart
+        return TRUE;
+      } elseif (!TRAVIS) { // @codeCoverageIgnoreStart
         sleep(9);  // could be database being locked
         report_info("Trying to write again after waiting");
         $return = $api->write_page($this->title, $this->text,
@@ -597,10 +596,10 @@ class Page {
            }
            return FALSE;
          }
-        // @codeCoverageIgnoreEnd
       } else {
         return FALSE;
       }
+      // @codeCoverageIgnoreEnd
     } else {
       report_warning("Can't write to " . echoable($this->title) . 
         " - prohibited by {{bots}} template.");

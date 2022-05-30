@@ -372,10 +372,10 @@ final class TemplateTest2 extends testBaseClass {
   }
 
   public function testTidy48() : void {
-    $text = "{{cite journal|url=https://www.google.com/search?q=%22institute+for+sustainable+weight+loss%22&oq=%22institute+for+sustainable+weight+loss%22&aqs=chrome..69i57j69i59.14823j0j7&sourceid=chrome&ie=UTF-8&btnG=YUP}}";
+    $text = "{{cite journal|url=https://www.google.com/search?q=%22institute+for+sustainable+weight+loss%22&oq=%22institute+for+sustainable+weight+loss%22&aqs=chrome..69i57j69i59.14823j0j7&sourceid=chrome&ie=UTF-8&btnG=YUP&cshid=X}}";
     $template = $this->make_citation($text);
     $template->tidy_parameter('url');
-    $this->assertSame('https://www.google.com/search?q=%22institute+for+sustainable+weight+loss%22&btnG=YUP', $template->get2('url'));
+    $this->assertSame('https://www.google.com/search?q=%22institute+for+sustainable+weight+loss%22&btnG=YUP&cshid=X', $template->get2('url'));
   }
  
   public function testTidy49() : void {
@@ -556,6 +556,13 @@ final class TemplateTest2 extends testBaseClass {
     $this->assertSame('https://www.proquest.com/openview/1234abc', $template->get2('url'));
   }
  
+ public function testTidy66e() : void {
+    $text = "{{cite journal|url=https://search.proquest.com/docview/1234abc/se-32413232}}";
+    $template = $this->make_citation($text);
+    $template->tidy_parameter('url');
+    $this->assertSame('https://www.proquest.com/docview/1234abc', $template->get2('url'));
+ }
+ 
  public function testTidy67() : void {
     $text = "{{cite journal|url=https://0-search-proquest-com.schoo.org/STUFF/docview/1234/2314/3214}}";
     $template = $this->make_citation($text);
@@ -573,6 +580,14 @@ final class TemplateTest2 extends testBaseClass {
  
  public function testTidy67c() : void {
     $text = "{{cite journal|url= http://host.com/login/?url=https://0-search-proquest-com.scoolaid.net/STUFF/docview/1234/2314/3214|via=dude}}";
+    $template = $this->make_citation($text);
+    $template->tidy_parameter('url');
+    $this->assertSame('https://www.proquest.com/docview/1234', $template->get2('url'));
+    $this->assertNull($template->get2('via'));
+ }
+ 
+ public function testTidy67d() : void {
+    $text = "{{cite journal|url= http://host.com/login/?url=https://0-search-proquest.scoolaid.net/STUFF/docview/1234/2314/3214|via=dude}}";
     $template = $this->make_citation($text);
     $template->tidy_parameter('url');
     $this->assertSame('https://www.proquest.com/docview/1234', $template->get2('url'));
@@ -1751,6 +1766,9 @@ final class TemplateTest2 extends testBaseClass {
     $this->assertSame('10.1093/ref:odnb/33369', $template->get2('doi'));
     $this->assertSame('978-0-19-861412-8', $template->get2('isbn'));
     $this->assertNull($template->get2('doi-broken-date'));
+    $template->forget('doi');
+    $template->tidy_parameter('url');
+    $this->assertSame('10.1093/ref:odnb/33369', $template->get2('doi'));
    }
  
    public function testOxforddnbDOIs2() : void {
@@ -1760,6 +1778,9 @@ final class TemplateTest2 extends testBaseClass {
     $this->assertSame('978-0-19-861412-8', $template->get2('isbn'));
     $this->assertSame('Joe Blow', $template->get2('title'));
     $this->assertNull($template->get2('doi-broken-date'));
+    $template->forget('doi');
+    $template->tidy_parameter('url');
+    $this->assertSame('10.1093/odnb/9780198614128.013.108196', $template->get2('doi'));
    }       
        
    public function testANBDOIs() : void {
@@ -1769,6 +1790,9 @@ final class TemplateTest2 extends testBaseClass {
     $this->assertSame('10.1093/anb/9780198606697.article.1800262', $template->get2('doi'));
     $this->assertSame('978-0-19-860669-7', $template->get2('isbn'));
     $this->assertNull($template->get2('doi-broken-date'));
+    $template->forget('doi');
+    $template->tidy_parameter('url');
+    $this->assertSame('10.1093/anb/9780198606697.article.1800262', $template->get2('doi'));
    }
     
    public function testArtDOIs() : void {
@@ -1778,6 +1802,9 @@ final class TemplateTest2 extends testBaseClass {
     $this->assertSame('10.1093/benz/9780199773787.article.B00183827', $template->get2('doi'));
     $this->assertSame('978-0-19-977378-7', $template->get2('isbn'));
     $this->assertNull($template->get2('doi-broken-date'));
+    $template->forget('doi');
+    $template->tidy_parameter('url');
+    $this->assertSame('10.1093/benz/9780199773787.article.B00183827', $template->get2('doi'));
    }
 
    public function testGroveDOIs() : void {
@@ -1787,6 +1814,9 @@ final class TemplateTest2 extends testBaseClass {
     $this->assertSame('10.1093/gao/9781884446054.article.T082129', $template->get2('doi'));
     $this->assertSame('978-1-884446-05-4', $template->get2('isbn'));
     $this->assertNull($template->get2('doi-broken-date'));
+    $template->forget('doi');
+    $template->tidy_parameter('url');
+    $this->assertSame('10.1093/gao/9781884446054.article.T082129', $template->get2('doi'));
    }
 
    public function testGroveDOIs2() : void {
@@ -1796,6 +1826,9 @@ final class TemplateTest2 extends testBaseClass {
     $this->assertSame('10.1093/gao/9781884446054.article.T2085714', $template->get2('doi'));
     $this->assertSame('978-1-884446-05-4', $template->get2('isbn'));
     $this->assertNull($template->get2('doi-broken-date'));
+    $template->forget('doi');
+    $template->tidy_parameter('url');
+    $this->assertSame('10.1093/gao/9781884446054.article.T2085714', $template->get2('doi'));
    }
 
    public function testAASCDOIs() : void {
@@ -1805,6 +1838,9 @@ final class TemplateTest2 extends testBaseClass {
     $this->assertSame('10.1093/acref/9780195301731.013.41463', $template->get2('doi'));
     $this->assertSame('978-0-19-530173-1', $template->get2('isbn'));
     $this->assertNull($template->get2('doi-broken-date'));
+    $template->forget('doi');
+    $template->tidy_parameter('url');
+    $this->assertSame('10.1093/acref/9780195301731.013.41463', $template->get2('doi'));
    }    
 
    public function testWhoWhoDOIs() : void {
@@ -1814,6 +1850,9 @@ final class TemplateTest2 extends testBaseClass {
     $this->assertSame('10.1093/ww/9780199540884.013.U37305', $template->get2('doi'));
     $this->assertSame('978-0-19-954089-1', $template->get2('isbn'));
     $this->assertNull($template->get2('doi-broken-date'));
+    $template->forget('doi');
+    $template->tidy_parameter('url');
+    $this->assertSame('10.1093/ww/9780199540884.013.U37305', $template->get2('doi'));
    }  
  
    public function testMusicDOIs() : void {
@@ -1823,6 +1862,9 @@ final class TemplateTest2 extends testBaseClass {
     $this->assertSame('10.1093/gmo/9781561592630.article.40055', $template->get2('doi'));
     $this->assertSame('978-1-56159-263-0', $template->get2('isbn'));
     $this->assertNull($template->get2('doi-broken-date'));
+    $template->forget('doi');
+    $template->tidy_parameter('url');
+    $this->assertSame('10.1093/gmo/9781561592630.article.40055', $template->get2('doi'));
    }  
 
    public function testMusicDOIsA() : void {
@@ -1832,6 +1874,9 @@ final class TemplateTest2 extends testBaseClass {
     $this->assertSame('10.1093/gmo/9781561592630.article.A2242442', $template->get2('doi'));
     $this->assertSame('978-1-56159-263-0', $template->get2('isbn'));
     $this->assertNull($template->get2('doi-broken-date'));
+    $template->forget('doi');
+    $template->tidy_parameter('url');
+    $this->assertSame('10.1093/gmo/9781561592630.article.A2242442', $template->get2('doi'));
    } 
  
    public function testMusicDOIsO() : void {
@@ -1841,6 +1886,9 @@ final class TemplateTest2 extends testBaseClass {
     $this->assertSame('10.1093/gmo/9781561592630.article.O008391', $template->get2('doi'));
     $this->assertSame('978-1-56159-263-0', $template->get2('isbn'));
     $this->assertNull($template->get2('doi-broken-date'));
+    $template->forget('doi');
+    $template->tidy_parameter('url');
+    $this->assertSame('10.1093/gmo/9781561592630.article.O008391', $template->get2('doi'));
    } 
 
    public function testMusicDOIsL() : void {
@@ -1850,6 +1898,9 @@ final class TemplateTest2 extends testBaseClass {
     $this->assertSame('10.1093/gmo/9781561592630.article.L2232256', $template->get2('doi'));
     $this->assertSame('978-1-56159-263-0', $template->get2('isbn'));
     $this->assertNull($template->get2('doi-broken-date'));
+    $template->forget('doi');
+    $template->tidy_parameter('url');
+    $this->assertSame('10.1093/gmo/9781561592630.article.L2232256', $template->get2('doi'));
    }
  
    public function testMusicDOIsJ() : void {
@@ -1859,6 +1910,9 @@ final class TemplateTest2 extends testBaseClass {
     $this->assertSame('10.1093/gmo/9781561592630.article.J095300', $template->get2('doi'));
     $this->assertSame('978-1-56159-263-0', $template->get2('isbn'));
     $this->assertNull($template->get2('doi-broken-date'));
+    $template->forget('doi');
+    $template->tidy_parameter('url');
+    $this->assertSame('10.1093/gmo/9781561592630.article.J095300', $template->get2('doi'));
    }
  
    public function testLatinDOIs() : void {
@@ -1868,6 +1922,9 @@ final class TemplateTest2 extends testBaseClass {
     $this->assertSame('10.1093/acrefore/9780199366439.013.2', $template->get2('doi'));
     $this->assertSame('978-0-19-936643-9', $template->get2('isbn'));
     $this->assertNull($template->get2('doi-broken-date'));
+    $template->forget('doi');
+    $template->tidy_parameter('url');
+    $this->assertSame('10.1093/acrefore/9780199366439.013.2', $template->get2('doi'));
    }
  
  
@@ -1878,6 +1935,9 @@ final class TemplateTest2 extends testBaseClass {
     $this->assertSame('10.1093/acrefore/9780199389414.013.224', $template->get2('doi'));
     $this->assertSame('978-0-19-938941-4', $template->get2('isbn'));
     $this->assertNull($template->get2('doi-broken-date'));
+    $template->forget('doi');
+    $template->tidy_parameter('url');
+    $this->assertSame('10.1093/acrefore/9780199389414.013.224', $template->get2('doi'));
    } 
 
    public function testAmHistDOIs() : void {
@@ -1887,6 +1947,9 @@ final class TemplateTest2 extends testBaseClass {
     $this->assertSame('10.1093/acrefore/9780199329175.013.17', $template->get2('doi'));
     $this->assertSame('978-0-19-932917-5', $template->get2('isbn'));
     $this->assertNull($template->get2('doi-broken-date'));
+    $template->forget('doi');
+    $template->tidy_parameter('url');
+    $this->assertSame('10.1093/acrefore/9780199329175.013.17', $template->get2('doi'));
    }    
 
    public function testAfHistDOIs() : void {
@@ -1896,6 +1959,9 @@ final class TemplateTest2 extends testBaseClass {
     $this->assertSame('10.1093/acrefore/9780190277734.013.191', $template->get2('doi'));
     $this->assertSame('978-0-19-027773-4', $template->get2('isbn'));
     $this->assertNull($template->get2('doi-broken-date'));
+    $template->forget('doi');
+    $template->tidy_parameter('url');
+    $this->assertSame('10.1093/acrefore/9780190277734.013.191', $template->get2('doi'));
    }     
 
    public function testIntStudDOIs() : void {
@@ -1905,6 +1971,9 @@ final class TemplateTest2 extends testBaseClass {
     $this->assertSame('10.1093/acrefore/9780190846626.013.39', $template->get2('doi'));
     $this->assertSame('978-0-19-084662-6', $template->get2('isbn'));
     $this->assertNull($template->get2('doi-broken-date'));
+    $template->forget('doi');
+    $template->tidy_parameter('url');
+    $this->assertSame('10.1093/acrefore/9780190846626.013.39', $template->get2('doi'));
    }
            
    public function testClimateDOIs() : void {
@@ -1914,6 +1983,9 @@ final class TemplateTest2 extends testBaseClass {
     $this->assertSame('10.1093/acrefore/9780190228620.013.699', $template->get2('doi'));
     $this->assertSame('978-0-19-022862-0', $template->get2('isbn'));
     $this->assertNull($template->get2('doi-broken-date'));
+    $template->forget('doi');
+    $template->tidy_parameter('url');
+    $this->assertSame('10.1093/acrefore/9780190228620.013.699', $template->get2('doi'));
    }
            
    public function testReligionDOIs() : void {
@@ -1923,6 +1995,9 @@ final class TemplateTest2 extends testBaseClass {
     $this->assertSame('10.1093/acrefore/9780199340378.013.568', $template->get2('doi'));
     $this->assertSame('978-0-19-934037-8', $template->get2('isbn'));
     $this->assertNull($template->get2('doi-broken-date'));
+    $template->forget('doi');
+    $template->tidy_parameter('url');
+    $this->assertSame('10.1093/acrefore/9780199340378.013.568', $template->get2('doi'));
    }
            
    public function testAnthroDOIs() : void {
@@ -1932,6 +2007,9 @@ final class TemplateTest2 extends testBaseClass {
     $this->assertSame('10.1093/acrefore/9780190854584.013.45', $template->get2('doi'));
     $this->assertSame('978-0-19-085458-4', $template->get2('isbn'));
     $this->assertNull($template->get2('doi-broken-date'));
+    $template->forget('doi');
+    $template->tidy_parameter('url');
+    $this->assertSame('10.1093/acrefore/9780190854584.013.45', $template->get2('doi'));
    }
  
    public function testClassicsDOIs() : void {
@@ -1941,6 +2019,9 @@ final class TemplateTest2 extends testBaseClass {
     $this->assertSame('10.1093/acrefore/9780199381135.013.7023', $template->get2('doi'));
     $this->assertSame('978-0-19-938113-5', $template->get2('isbn'));
     $this->assertNull($template->get2('doi-broken-date'));
+    $template->forget('doi');
+    $template->tidy_parameter('url');
+    $this->assertSame('10.1093/acrefore/9780199381135.013.7023', $template->get2('doi'));
    }
  
    public function testPsychDOIs() : void {
@@ -1950,6 +2031,9 @@ final class TemplateTest2 extends testBaseClass {
     $this->assertSame('10.1093/acrefore/9780190236557.013.384', $template->get2('doi'));
     $this->assertSame('978-0-19-023655-7', $template->get2('isbn'));
     $this->assertNull($template->get2('doi-broken-date'));
+    $template->forget('doi');
+    $template->tidy_parameter('url');
+    $this->assertSame('10.1093/acrefore/9780190236557.013.384', $template->get2('doi'));
    }     
            
    public function testPoliDOIs() : void {
@@ -1959,6 +2043,9 @@ final class TemplateTest2 extends testBaseClass {
     $this->assertSame('10.1093/acrefore/9780190228637.013.181', $template->get2('doi'));
     $this->assertSame('978-0-19-022863-7', $template->get2('isbn'));
     $this->assertNull($template->get2('doi-broken-date'));
+    $template->forget('doi');
+    $template->tidy_parameter('url');
+    $this->assertSame('10.1093/acrefore/9780190228637.013.181', $template->get2('doi'));
    }     
 
    public function testOxPressDOIs() : void {
@@ -1968,6 +2055,9 @@ final class TemplateTest2 extends testBaseClass {
     $this->assertSame('10.1093/oso/9780190124786.001.0001', $template->get2('doi'));
     $this->assertSame('978-0-19-012478-6', $template->get2('isbn'));
     $this->assertNull($template->get2('doi-broken-date'));
+    $template->forget('doi');
+    $template->tidy_parameter('url');
+    $this->assertSame('10.1093/oso/9780190124786.001.0001', $template->get2('doi'));
    }      
            
    public function testMedDOIs() : void {
@@ -1977,6 +2067,9 @@ final class TemplateTest2 extends testBaseClass {
     $this->assertSame('10.1093/med/9780199592548.003.0199', $template->get2('doi'));
     $this->assertSame('978-0-19-959254-8', $template->get2('isbn'));
     $this->assertNull($template->get2('doi-broken-date'));
+    $template->forget('doi');
+    $template->tidy_parameter('url');
+    $this->assertSame('10.1093/med/9780199592548.003.0199', $template->get2('doi'));
    }
  
    public function testUnPressScholDOIs() : void {
@@ -1986,6 +2079,9 @@ final class TemplateTest2 extends testBaseClass {
     $this->assertSame('10.1093/oso/9780198814122.003.0005', $template->get2('doi'));
     $this->assertSame('978-0-19-881412-2', $template->get2('isbn'));
     $this->assertNull($template->get2('doi-broken-date'));
+    $template->forget('doi');
+    $template->tidy_parameter('url');
+    $this->assertSame('10.1093/oso/9780198814122.003.0005', $template->get2('doi'));
    }
  
    public function testOxHandbookDOIs() : void {
@@ -1995,6 +2091,9 @@ final class TemplateTest2 extends testBaseClass {
     $this->assertSame('10.1093/oxfordhb/9780198824633.013.1', $template->get2('doi'));
     $this->assertSame('978-0-19-882463-3', $template->get2('isbn'));
     $this->assertNull($template->get2('doi-broken-date'));
+    $template->forget('doi');
+    $template->tidy_parameter('url');
+    $this->assertSame('10.1093/oxfordhb/9780198824633.013.1', $template->get2('doi'));
    }  
         
   public function testAuthors1() : void {
@@ -3509,6 +3608,14 @@ final class TemplateTest2 extends testBaseClass {
     $this->assertNull($expanded->get2('title'));
     $this->assertNull($expanded->get2('year'));
   }
+ 
+  public function testBibcodesFindBooks() : void {
+    $this->requires_bibcode(function() : void {
+      $text = "{{cite book|title=Enhancement of Electrochemical Activity in Bioelectrochemical Systems by Using Bacterial Anodes: An Overview|year=2022|last1=Gandu|first1=Bharath|last2=Rozenfeld|first2=Shmuel|last3=Ouaknin Hirsch|first3=Lea|last4=Schechter|first4=Alex|last5=Cahan|first5=Rivka|bibcode= }}";
+      $expanded = $this->process_citation($text);
+      $this->assertSame('2020bisy.book..211G', $expanded->get2('bibcode'));
+    });
+  }
   
   public function testBadBibcodeARXIVPages() : void {
    $this->requires_bibcode(function() : void {
@@ -4293,7 +4400,6 @@ final class TemplateTest2 extends testBaseClass {
       $text = "{{cite paper|hdl=20.1000/100?urlappend=%3Bseq=326%3Bownerid=13510798900390116-35urlappend}}";
       $expanded = $this->process_citation($text);
       $this->AssertSame('20.1000/100', $expanded->get2('hdl'));
-     
     }
  
    public function testSillyURL() : void { // This get checks by string match, but not regex
@@ -4331,6 +4437,72 @@ final class TemplateTest2 extends testBaseClass {
      $template = $this->make_citation($text);
      $this->assertFalse($template->get_identifiers_from_url());
      $this->assertNotNull($template->get2('url'));
-    
    }
+ 
+    public function testBaleOutDois() : void {
+      $text = "{{cite arXiv|doi=10.1093/oi/authority/343214332}}";
+      $expanded = $this->make_citation($text);
+      $expanded->tidy_parameter('doi');
+      $this->AssertSame('cite arxiv', $expanded->wikiname());
+    }
+
+    public function testFinalTidyThings1() : void {
+      $text = "{{Cite web|title=Stuff|chapter=More Stuff}}";
+      $expanded = $this->make_citation($text);
+      $expanded->final_tidy();
+      $this->AssertSame('cite book', $expanded->wikiname());
+    }
+
+    public function testFinalTidyThings2() : void {
+      $text = "{{Cite web|title=Stuff|url=arxiv_and_such|arxiv=1234}}";
+      $expanded = $this->make_citation($text);
+      $expanded->final_tidy();
+      $this->AssertSame('cite arxiv', $expanded->wikiname());
+      $this->AssertNull($expanded->get2('url'));
+     
+      $text = "{{cite web|title=Stuff|url=arxiv_and_such|eprint=1234}}";
+      $expanded = $this->make_citation($text);
+      $expanded->final_tidy();
+      $this->AssertSame('cite arxiv', $expanded->wikiname());
+      $this->AssertNull($expanded->get2('url'));
+    }
+
+    public function testTidyWPContentURL() : void {
+      $text = "{{Cite book|title=Stuff|chapter=More Stuff|url=http://www.dfadsfdsfasd.com/wp-content/chapter/2332}}";
+      $expanded = $this->make_citation($text);
+      $expanded->tidy_parameter('url');
+      $this->AssertSame('cite book', $expanded->wikiname());
+      $this->AssertSame('http://www.dfadsfdsfasd.com/wp-content/chapter/2332', $expanded->get2('chapter-url'));
+      $this->AssertNull($expanded->get2('url'));
+
+      $text = "{{Cite book|title=Stuff|chapter=More Stuff|url=http://www.dfadsfdsfasd.com/wp-content/pages/23332}}";
+      $expanded = $this->make_citation($text);
+      $expanded->tidy_parameter('url');
+      $this->AssertSame('cite book', $expanded->wikiname());
+      $this->AssertSame('http://www.dfadsfdsfasd.com/wp-content/pages/23332', $expanded->get2('chapter-url'));
+      $this->AssertNull($expanded->get2('url'));
+     
+      $text = "{{Cite book|title=Stuff|chapter=More Stuff|url=http://www.dfadsfdsfasd.com/wp-content/blah}}";
+      $expanded = $this->make_citation($text);
+      $expanded->tidy_parameter('url');
+      $this->AssertSame('cite book', $expanded->wikiname());
+      $this->AssertSame('http://www.dfadsfdsfasd.com/wp-content/blah', $expanded->get2('url'));
+      $this->AssertNull($expanded->get2('chapter-url'));
+    }
+ 
+    public function testTidyArchiveCloseToStart() : void {
+      $text = "{{Cite book|title=Stuff|chapter=More Stuff|url=http://archive.org/details/stuff/page/n11}}";
+      $expanded = $this->make_citation($text);
+      $expanded->tidy_parameter('url');
+      $this->AssertSame('cite book', $expanded->wikiname());
+      $this->AssertSame('http://archive.org/details/stuff/page/n11', $expanded->get2('url'));
+      $this->AssertNull($expanded->get2('chapter-url'));
+     
+      $text = "{{Cite book|title=Stuff|chapter=More Stuff|url=http://archive.org/details/stuff/page/n111}}";
+      $expanded = $this->make_citation($text);
+      $expanded->tidy_parameter('url');
+      $this->AssertSame('cite book', $expanded->wikiname());
+      $this->AssertSame('http://archive.org/details/stuff/page/n111', $expanded->get2('chapter-url'));
+      $this->AssertNull($expanded->get2('url'));
+    }
 }

@@ -488,11 +488,17 @@ final class TemplateTest extends testBaseClass {
     $text="{{cite web|url=https://oxfordre.com/literature/view/10.1093/acrefore/9780190201098.001.0001/acrefore-9780190201098-e-1357|doi-broken-date=X|doi=10.3421/32412xxxxxxx}}";
     $template = $this->process_citation($text);
     $this->assertSame('10.1093/acrefore/9780190201098.013.1357', $template->get2('doi'));
+    $template->forget('doi');
+    $template->tidy_parameter('url');
+    $this->assertSame('10.1093/acrefore/9780190201098.013.1357', $template->get2('doi'));
   }
  
   public function testOxComms() : void {
-    $text="{{cite web|url=https://oxfordre.com/communication/view/10.1093/acrefore/9780190228613.001.0001/acrefore-9780190228613-e-1195|doi-broken-date=X|doi=10.3421/32412xxxxxxx}}";
+    $text="{{cite web|url=https://oxfordre.com/communication/communication/view/10.1093/acrefore/9780190228613.001.0001/acrefore-9780190228613-e-1195|doi-broken-date=X|doi=10.3421/32412xxxxxxx}}";
     $template = $this->process_citation($text);
+    $this->assertSame('10.1093/acrefore/9780190228613.013.1195', $template->get2('doi'));
+    $template->forget('doi');
+    $template->tidy_parameter('url');
     $this->assertSame('10.1093/acrefore/9780190228613.013.1195', $template->get2('doi'));
   }
  
@@ -1835,6 +1841,10 @@ final class TemplateTest extends testBaseClass {
       $prepared = $this->process_citation($text);
       $this->assertSame('{{citation|year=2000}}', $prepared->parsed_text());
    
+      $text = '{{citation|year= | year= |year=| year=|year=2000}}';
+      $prepared = $this->process_citation($text);
+      $this->assertSame('{{citation|year=2000}}', $prepared->parsed_text());
+   
       $text = '{{citation|year=2000|year=2000}}';
       $prepared = $this->process_citation($text);
       $this->assertSame('{{citation|year=2000}}', $prepared->parsed_text());
@@ -1843,9 +1853,25 @@ final class TemplateTest extends testBaseClass {
       $prepared = $this->process_citation($text);
       $this->assertSame('{{citation|year=2000}}', $prepared->parsed_text());
    
+      $text = '{{citation|year=|year 2000|year=2000}}';
+      $prepared = $this->process_citation($text);
+      $this->assertSame('{{citation|year=2000}}', $prepared->parsed_text());
+   
+      $text = '{{citation|year 2000|year=|year=2000}}';
+      $prepared = $this->process_citation($text);
+      $this->assertSame('{{citation|year=2000}}', $prepared->parsed_text());
+   
       $text = '{{citation|year=2000|year 2000}}';
       $prepared = $this->process_citation($text);
       $this->assertSame('{{citation|year=2000}}', $prepared->parsed_text());
+
+      $text = '{{citation|year=2000|year=2000|year 2000|year=|year=2000}}';
+      $prepared = $this->process_citation($text);
+      $this->assertSame('{{citation|year=2000}}', $prepared->parsed_text());
+   
+      $text = '{{citation|year=2000|year=2001|year=2000|year=2001|year=2000}}';
+      $prepared = $this->process_citation($text);
+      $this->assertSame('{{citation|DUPLICATE_year=2000|DUPLICATE_year=2001|DUPLICATE_year=2000|DUPLICATE_year=2001|year=2000}}', $prepared->parsed_text());
   }
  
   public function testFixCAPSJunk() : void {
@@ -3692,5 +3718,233 @@ EP - 999 }}';
     $text='{{Cite web | url=https://books.google.com/books?id=SjpSkzjIzfsC&dq=subject:HUH&pg=213}}';
     $template = $this->process_citation($text);
     $this->assertSame('https://books.google.com/books?id=SjpSkzjIzfsC&pg=213', $template->get2('url'));
+  }
+ 
+  public function testBlankOtherThanComments() : void {
+    $text_in = "{{cite journal| title= # # # CITATION_BOT_PLACEHOLDER_COMMENT 1 # # #  # # # CITATION_BOT_PLACEHOLDER_COMMENT 2 # # # | journal= | issue=3 # # # CITATION_BOT_PLACEHOLDER_COMMENT 3 # # #| volume=65 |lccn= # # # CITATION_BOT_PLACEHOLDER_COMMENT 4 # # # cow # # # CITATION_BOT_PLACEHOLDER_COMMENT 5 # # # }}";
+    $template = $this->make_citation($text_in); // Have to explicitly set comments above since Page() encodes and then decodes them
+    $this->assertTrue($template->blank_other_than_comments('isbn'));
+    $this->assertTrue($template->blank_other_than_comments('title'));
+    $this->assertTrue($template->blank_other_than_comments('journal'));
+    $this->assertFalse($template->blank_other_than_comments('issue'));
+    $this->assertFalse($template->blank_other_than_comments('volume'));
+    $this->assertFalse($template->blank_other_than_comments('lccn'));
+  }
+ 
+  public function testCleanUpSomeURLS1() : void {
+    $text_in = "{{cite web| url = https://www.youtube.com/watch%3Fv=9NHSOrUHE6c}}";
+    $template = $this->make_citation($text_in);
+    $template->tidy_parameter('url');
+    $this->assertSame('https://www.youtube.com/watch?v=9NHSOrUHE6c', $template->get2('url'));
+  }
+   
+  public function testCleanUpSomeURLS2() : void {
+    $text_in = "{{cite web| url = https://www.springer.com/abc#citeas}}";
+    $template = $this->make_citation($text_in);
+    $template->tidy_parameter('url');
+    $this->assertSame('https://www.springer.com/abc', $template->get2('url'));
+  }
+ 
+  public function testCleanUpSomeURLS3() : void {
+    $text_in = "{{cite web| url = https://www.springer.com/abc#citeas}}";
+    $template = $this->make_citation($text_in);
+    $template->tidy_parameter('url');
+    $this->assertSame('https://www.springer.com/abc', $template->get2('url'));
+  }
+
+  public function testTidyPageRangeLookLikePage() : void {
+    $text_in = "{{cite web| page=333-444}}";
+    $template = $this->make_citation($text_in);
+    $template->tidy_parameter('page');
+    $this->assertSame('333-444', $template->get2('page'));
+   
+    $text_in = "{{cite web| page=333–444}}";
+    $template = $this->make_citation($text_in);
+    $template->tidy_parameter('page');
+    $this->assertSame('333–444', $template->get2('page'));
+  }
+
+  public function testTidyGoofyFirsts() : void {
+    $text_in = "{{Citation | last1=[[Hose|Dude]]|first1=[[John|Girl]] }}";
+    $template = $this->process_citation($text_in);
+    $this->assertSame('{{Citation | last1=Dude|first1=Girl |author1-link=Hose }}', $template->parsed_text());
+   
+    $text_in = "{{Citation | last1=[[Hose|Dude]]|first1=[[John]] }}";
+    $template = $this->process_citation($text_in);
+    $this->assertSame('{{Citation | last1=Dude|first1=John |author1-link=Hose }}', $template->parsed_text());
+  }
+
+ public function testFixLotsOfDOIs() : void {
+  $text = '{{cite journal| doi= 10.1093/acref/9780195301731.001.0001/acref-9780195301731-e-41463}}';
+  $template = $this->make_citation($text);
+  $template->tidy_parameter('doi');
+  $this->assertSame('10.1093/acref/9780195301731.013.41463', $template->get2('doi'));
+  
+  $text = '{{cite journal| doi= 10.1093/acrefore/9780190201098.001.0001/acrefore-9780190201098-e-1357}}';
+  $template = $this->make_citation($text);
+  $template->tidy_parameter('doi');
+  $this->assertSame('10.1093/acrefore/9780190201098.013.1357', $template->get2('doi'));
+  
+  $text = '{{cite journal| doi=10.1093/acrefore/9780190228613.001.0001/acrefore-9780190228613-e-1195 }}';
+  $template = $this->make_citation($text);
+  $template->tidy_parameter('doi');
+  $this->assertSame('10.1093/acrefore/9780190228613.013.1195', $template->get2('doi'));
+  
+  $text = '{{cite journal| doi=10.1093/acrefore/9780190228620.001.0001/acrefore-9780190228620-e-699 }}';
+  $template = $this->make_citation($text);
+  $template->tidy_parameter('doi');
+  $this->assertSame('10.1093/acrefore/9780190228620.013.699', $template->get2('doi'));
+  
+  $text = '{{cite journal| doi=10.1093/acrefore/9780190228637.001.0001/acrefore-9780190228637-e-181 }}';
+  $template = $this->make_citation($text);
+  $template->tidy_parameter('doi');
+  $this->assertSame('10.1093/acrefore/9780190228637.013.181', $template->get2('doi'));
+  
+  $text = '{{cite journal| doi=10.1093/acrefore/9780190236557.001.0001/acrefore-9780190236557-e-384 }}';
+  $template = $this->make_citation($text);
+  $template->tidy_parameter('doi');
+  $this->assertSame('10.1093/acrefore/9780190236557.013.384', $template->get2('doi'));
+  
+  $text = '{{cite journal| doi=10.1093/acrefore/9780190277734.001.0001/acrefore-9780190277734-e-191 }}';
+  $template = $this->make_citation($text);
+  $template->tidy_parameter('doi');
+  $this->assertSame('10.1093/acrefore/9780190277734.013.191', $template->get2('doi'));
+  
+  $text = '{{cite journal| doi=10.1093/acrefore/9780190846626.001.0001/acrefore-9780190846626-e-39 }}';
+  $template = $this->make_citation($text);
+  $template->tidy_parameter('doi');
+  $this->assertSame('10.1093/acrefore/9780190846626.013.39', $template->get2('doi'));
+  
+  $text = '{{cite journal| doi=10.1093/acrefore/9780190854584.001.0001/acrefore-9780190854584-e-45 }}';
+  $template = $this->make_citation($text);
+  $template->tidy_parameter('doi');
+  $this->assertSame('10.1093/acrefore/9780190854584.013.45', $template->get2('doi'));
+  
+  $text = '{{cite journal| doi=10.1093/acrefore/9780199329175.001.0001/acrefore-9780199329175-e-17 }}';
+  $template = $this->make_citation($text);
+  $template->tidy_parameter('doi');
+  $this->assertSame('10.1093/acrefore/9780199329175.013.17', $template->get2('doi'));
+  
+  $text = '{{cite journal| doi=10.1093/acrefore/9780199340378.001.0001/acrefore-9780199340378-e-568 }}';
+  $template = $this->make_citation($text);
+  $template->tidy_parameter('doi');
+  $this->assertSame('10.1093/acrefore/9780199340378.013.568', $template->get2('doi'));
+  
+  $text = '{{cite journal| doi=10.1093/acrefore/9780199366439.001.0001/acrefore-9780199366439-e-2 }}';
+  $template = $this->make_citation($text);
+  $template->tidy_parameter('doi');
+  $this->assertSame('10.1093/acrefore/9780199366439.013.2', $template->get2('doi'));
+  
+  $text = '{{cite journal| doi=10.1093/acrefore/9780199381135.001.0001/acrefore-9780199381135-e-7023 }}';
+  $template = $this->make_citation($text);
+  $template->tidy_parameter('doi');
+  $this->assertSame('10.1093/acrefore/9780199381135.013.7023', $template->get2('doi'));
+  
+  $text = '{{cite journal| doi=10.1093/acrefore/9780199389414.001.0001/acrefore-9780199389414-e-224 }}';
+  $template = $this->make_citation($text);
+  $template->tidy_parameter('doi');
+  $this->assertSame('10.1093/acrefore/9780199389414.013.224', $template->get2('doi'));
+  
+  $text = '{{cite journal| doi=10.1093/anb/9780198606697.001.0001/anb-9780198606697-e-1800262 }}';
+  $template = $this->make_citation($text);
+  $template->tidy_parameter('doi');
+  $this->assertSame('10.1093/anb/9780198606697.article.1800262', $template->get2('doi'));
+  
+  $text = '{{cite journal| doi=10.1093/benz/9780199773787.001.0001/acref-9780199773787-e-00183827 }}';
+  $template = $this->make_citation($text);
+  $template->tidy_parameter('doi');
+  $this->assertSame('10.1093/benz/9780199773787.article.B00183827', $template->get2('doi'));
+  
+  $text = '{{cite journal| doi=10.1093/gao/9781884446054.001.0001/oao-9781884446054-e-7000082129 }}';
+  $template = $this->make_citation($text);
+  $template->tidy_parameter('doi');
+  $this->assertSame('10.1093/gao/9781884446054.article.T082129', $template->get2('doi'));
+  
+  $text = '{{cite journal| doi=10.1093/med/9780199592548.001.0001/med-9780199592548-chapter-199 }}';
+  $template = $this->make_citation($text);
+  $template->tidy_parameter('doi');
+  $this->assertSame('10.1093/med/9780199592548.003.0199', $template->get2('doi'));
+  
+  $text = '{{cite journal| doi=10.1093/odnb/9780198614128.001.0001/odnb-9780198614128-e-29929 }}';
+  $template = $this->make_citation($text);
+  $template->tidy_parameter('doi');
+  $this->assertSame('10.1093/ref:odnb/29929', $template->get2('doi'));
+  
+  $text = '{{cite journal| doi=10.1093/ref:odnb/9780198614128.001.0001/odnb-9780198614128-e-29929 }}';
+  $template = $this->make_citation($text);
+  $template->tidy_parameter('doi');
+  $this->assertSame('10.1093/ref:odnb/29929', $template->get2('doi'));
+  
+  $text = '{{cite journal| doi=10.1093/odnb/29929 }}';
+  $template = $this->make_citation($text);
+  $template->tidy_parameter('doi');
+  $this->assertSame('10.1093/ref:odnb/29929', $template->get2('doi'));
+  
+  $text = '{{cite journal| doi=10.1093/ww/9780199540884.001.0001/ww-9780199540884-e-12345 }}';
+  $template = $this->make_citation($text);
+  $template->tidy_parameter('doi');
+  $this->assertSame('10.1093/ww/9780199540884.013.U12345', $template->get2('doi'));
+  
+  $text = '{{cite journal| doi=10.1093/gmo/9781561592630.001.0001/omo-9781561592630-e-0000040055 }}';
+  $template = $this->make_citation($text);
+  $template->tidy_parameter('doi');
+  $this->assertSame('10.1093/gmo/9781561592630.article.40055', $template->get2('doi'));
+  
+  $text = '{{cite journal| doi=10.1093/gmo/9781561592630.001.0001/omo-9781561592630-e-1002242442 }}';
+  $template = $this->make_citation($text);
+  $template->tidy_parameter('doi');
+  $this->assertSame('10.1093/gmo/9781561592630.article.A2242442', $template->get2('doi'));
+  
+  $text = '{{cite journal| doi=10.1093/gmo/9781561592630.001.0001/omo-9781561592630-e-2000095300 }}';
+  $template = $this->make_citation($text);
+  $template->tidy_parameter('doi');
+  $this->assertSame('10.1093/gmo/9781561592630.article.J095300', $template->get2('doi'));
+  
+  $text = '{{cite journal| doi=10.1093/gmo/9781561592630.001.0001/omo-9781561592630-e-4002232256}}';
+  $template = $this->make_citation($text);
+  $template->tidy_parameter('doi');
+  $this->assertSame('10.1093/gmo/9781561592630.article.L2232256', $template->get2('doi'));
+  
+  $text = '{{cite journal| doi=10.1093/gmo/9781561592630.001.0001/omo-9781561592630-e-5000008391 }}';
+  $template = $this->make_citation($text);
+  $template->tidy_parameter('doi');
+  $this->assertSame('10.1093/gmo/9781561592630.article.O008391', $template->get2('doi'));
+  
+  $text = '{{cite journal| doi=10.1093/ref:odnb/108196 }}';
+  $template = $this->make_citation($text);
+  $template->tidy_parameter('doi');
+  $this->assertSame('10.1093/odnb/9780198614128.013.108196', $template->get2('doi'));
+  
+  $text = '{{cite journal| doi=10.1093/9780198614128.013.108196 }}';
+  $template = $this->make_citation($text);
+  $template->tidy_parameter('doi');
+  $this->assertSame('10.1093/odnb/9780198614128.013.108196', $template->get2('doi'));
+  
+  $text = '{{cite journal| doi=10.1093/oxfordhb/9780199552238.001.0001/oxfordhb-9780199552238-e-023 }}';
+  $template = $this->make_citation($text);
+  $template->tidy_parameter('doi');
+  $this->assertSame('10.1093/oxfordhb/9780199552238.003.0023', $template->get2('doi'));
+  
+  $text = '{{cite journal| doi=10.1093/oso/9780198814122.001.0001/oso-9780198814122-chapter-5 }}';
+  $template = $this->make_citation($text);
+  $template->tidy_parameter('doi');
+  $this->assertSame('10.1093/oso/9780198814122.003.0005', $template->get2('doi'));
+  
+  $text = '{{cite journal| doi=10.1093/oso/9780190124786.001.0001/oso-9780190124786 }}';
+  $template = $this->make_citation($text);
+  $template->tidy_parameter('doi');
+  $this->assertSame('10.1093/oso/9780190124786.001.0001', $template->get2('doi'));
+ }
+
+  public function testDashIsEquals() : void {
+    $text_in = "{{cite journal|archive=url=https://xy.com }}";
+    $template = $this->process_citation($text_in);
+    $this->assertSame("https://xy.com", $template->get2('archive-url'));
+    $this->assertNull($template->get2('archive'));
+   
+    $text_in = "{{cite news|archive=url=https://xy.com }}";
+    $template = $this->process_citation($text_in);
+    $this->assertSame("https://xy.com", $template->get2('archive-url'));
+    $this->assertNull($template->get2('archive'));
   }
 }

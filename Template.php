@@ -722,8 +722,9 @@ final class Template {
       if (in_array($p->param, $param)) {
         $value = $p->val;
         $value = trim($value);
-        if (stripos($value, '# # # CITATION_BOT_PLACEHOLDER_COMMENT') !== FALSE) {
-          $value = trim(preg_replace('~^# # # CITATION_BOT_PLACEHOLDER_COMMENT \d+ # # #~i', '', $value)); // Sneak up on it
+        if (stripos($value, '# # # CITATION_BOT_PLACEHOLDER_COMMENT') !== FALSE) { // Regex failure paranoia
+          $value = trim(preg_replace('~^# # # CITATION_BOT_PLACEHOLDER_COMMENT \d+ # # #~i', '', $value));
+          $value = trim(preg_replace('~# # # CITATION_BOT_PLACEHOLDER_COMMENT \d+ # # #$~i', '', $value));
           $value = trim(preg_replace('~# # # CITATION_BOT_PLACEHOLDER_COMMENT \d+ # # #~i', '', $value));
         }
         $value = trim($value);
@@ -3264,6 +3265,21 @@ final class Template {
       }
     }
   }
+    // Catch archive=url=http......
+  foreach ($this->param as $p) {
+    if (substr_count($p->val, "=") === 1 && !in_array($p->param, PARAMETER_LIST)) {
+      $param = $p->param;
+      $value = $p->val;
+      $equals = (int) strpos($value, '=');
+      $before = trim(substr($value, 0, $equals));
+      $after  = trim(substr($value, $equals+1));
+      $possible = $param . '-' . $before;
+      if (in_array($possible, PARAMETER_LIST)) {
+        $p->param = $possible;
+        $p->val   = $after;
+      }
+    }
+   }
 }
 
 
@@ -4128,9 +4144,6 @@ final class Template {
               // We assume that human text is some kind of abbreviations that we really do not want to mess with
               $periodical  = '[[' . $linked_text . '|' . $human_text . ']]';
               $this->set($param, $periodical);
-            } elseif (substr_count($periodical, ']') === 0 && substr_count($periodical, '[') === 0) { // No links
-             $periodical = straighten_quotes($periodical, TRUE);
-             $this->set($param, $periodical);
             }
           }
           if ($this->wikiname() === 'cite arxiv') $this->change_name_to('cite journal');
@@ -5542,7 +5555,7 @@ final class Template {
                  }
                  curl_close($ch);
             }
-            if (preg_match("~^(.+)/se-./?$~", $this->get($param), $matches)) {
+            if (preg_match("~^(.+)/se-[^\/]+/?$~", $this->get($param), $matches)) {
               $this->set($param, $matches[1]);
               $changed = TRUE;
             }
@@ -6363,7 +6376,10 @@ final class Template {
           }
           if (preg_match('~^10\.1093/oxfordhb/(\d{13})\.001\.0001/oxfordhb\-(\d{13})-e-(\d+)$~', $doi, $matches)) {
             if ($matches[1] === $matches[2]) {
-              $trial[] = '10.1093/oxfordhb/' . $matches[1] . '.013.' . $matches[3];
+              $trial[] = '10.1093/oxfordhb/' . $matches[1] . '.013.'  . $matches[3];
+              $trial[] = '10.1093/oxfordhb/' . $matches[1] . '.013.0' . $matches[3];
+              $trial[] = '10.1093/oxfordhb/' . $matches[1] . '.003.'  . $matches[3];
+              $trial[] = '10.1093/oxfordhb/' . $matches[1] . '.003.0' . $matches[3];
             }
           }
     }
