@@ -3466,7 +3466,7 @@ final class TemplateTest2 extends testBaseClass {
   }
  
   public function testCiteODNB6() : void {
-     $text = '{{Cite ODNB|id=10731|doi=10.1093/odnb/9780198614128.013.10731}}';
+     $text = '{{Cite ODNB|id=107316|doi=10.1093/odnb/9780198614128.013.107316}}';
      $template = $this->process_citation($text);
      $this->assertSame('10.1093/odnb/9780198614128.013.107316', $template->get2('doi'));
      $this->assertNull($template->get2('id'));
