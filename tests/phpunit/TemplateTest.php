@@ -3936,4 +3936,15 @@ EP - 999 }}';
   $this->assertSame('10.1093/oso/9780190124786.001.0001', $template->get2('doi'));
  }
 
+  public function testDashIsEquals() : void {
+    $text_in = "{{cite journal|archive=url=https://xy.com }}";
+    $template = $this->process_citation($text_in);
+    $this->assertSame("https://xy.com", $template->get2('archive-url'));
+    $this->assertNull($template->get2('archive'));
+   
+    $text_in = "{{cite news|archive=url=https://xy.com }}";
+    $template = $this->process_citation($text_in);
+    $this->assertSame("https://xy.com", $template->get2('archive-url'));
+    $this->assertNull($template->get2('archive'));
+  }
 }
