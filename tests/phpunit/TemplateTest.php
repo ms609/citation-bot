@@ -3947,4 +3947,12 @@ EP - 999 }}';
     $this->assertSame("https://xy.com", $template->get2('archive-url'));
     $this->assertNull($template->get2('archive'));
   }
+ 
+  public function testMistakesWeDoNotFix() : void {
+    $text = '{{new cambridge medieval history|ed10=That Guy}}';
+    $template = $this->prepare_citation($text);
+    $ret = $template->modifications();
+    $expect = array ('modifications' => array ( ), 'additions' => array ( ), 'deletions' => array ( ), 'changeonly' => array ( ), 'dashes' => false, 'names' => false, );
+    $this->assertTrue($ret == $expect);
+  }
 }
