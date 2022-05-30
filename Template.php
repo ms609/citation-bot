@@ -6049,7 +6049,7 @@ final class Template {
       echo __LINE__ . " ". $this->name . "\n";
       if (($this->wikiname() === 'cite document' || $this->wikiname() === 'cite journal' || $this->wikiname() === 'cite web') &&
           (strpos($this->get('isbn'), '978-0-19') === 0 || strpos($this->get('isbn'), '978019') === 0 || strpos($this->get('isbn'), '978-019') === 0)) {
-         $this->change_name_to('cite book');
+         $this->change_name_to('cite book',  TRUE, TRUE);
       }
       echo __LINE__ . " ". $this->name . "\n";
       if ($this->blank('pmc-embargo-date')) $this->forget('pmc-embargo-date'); // Do at the very end, so we do not delete it, then add it later in a different position
@@ -6199,7 +6199,7 @@ final class Template {
       }
       echo __LINE__ . " ". $this->name . "\n";
       if (($this->wikiname() === 'cite journal' || $this->wikiname() === 'cite document' || $this->wikiname() === 'cite web') && $this->has('chapter')) { // At least avoid a template error
-        $this->change_name_to('cite book');
+        $this->change_name_to('cite book',  TRUE, TRUE);
       }
       echo __LINE__ . " ". $this->name . "\n";
       if (($this->wikiname() === 'cite web' || $this->wikiname() === 'cite news') &&
