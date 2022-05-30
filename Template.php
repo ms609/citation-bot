@@ -6945,7 +6945,7 @@ final class Template {
         unset($old[$old_name]);
       }
     }
-    // 99.99% of the time does nothing, since they should already be switched, but do it just in case
+    // 99.99% of the time does nothing, since they should already be switched.  This will be needed for templates that we do very little too, such as TEMPLATES_WE_CHAPTER_URL 
     foreach ($new as $old_name => $old_data) {
       $mistake_id = array_search($old_name, $mistake_keys);
       if ($mistake_id !== FALSE) {
