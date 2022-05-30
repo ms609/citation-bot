@@ -2102,13 +2102,14 @@ final class Template {
 
       if ($this->blank('bibcode')) {
         $this->add_if_new('bibcode_nosearch', (string) $record->bibcode);
-      } elseif ($this->get('bibcode') !== (string) $record->bibcode && stripos($this->get('bibcode'), 'CITATION_BOT_PLACEHOLDER') === FALSE) {
-        report_info("Updating " . bibcode_link($this->get('bibcode')) . " to " .  bibcode_link((string) $record->bibcode));
-        $this->set('bibcode', (string) $record->bibcode); // The bibcode has been updated
-      }
+        // The code below is not used anymore, since bot always uses interface in APIfunctions for existing bibcodes
+      } elseif ($this->get('bibcode') !== (string) $record->bibcode && stripos($this->get('bibcode'), 'CITATION_BOT_PLACEHOLDER') === FALSE) { // @codeCoverageIgnore
+        report_info("Updating " . bibcode_link($this->get('bibcode')) . " to " .  bibcode_link((string) $record->bibcode));                    // @codeCoverageIgnore
+        $this->set('bibcode', (string) $record->bibcode); // The bibcode has been updated                                                      // @codeCoverageIgnore
+      }                                                                                                                                        // @codeCoverageIgnore
       process_bibcode_data($this, $record);
       return TRUE;
-    } elseif ($result->numFound === 0) {                         // @codeCoverageIgnore
+    } elseif ($result->numFound === 0) {                        // @codeCoverageIgnore
       report_inline('no record retrieved.');                    // @codeCoverageIgnore
       return FALSE;                                             // @codeCoverageIgnore
     } else {                                                    // @codeCoverageIgnore
