@@ -17,7 +17,8 @@ final class CrashTest extends testBaseClass {
     $text = '{{new cambridge medieval history|ed10=That Guy}}';
     $template = $this->prepare_citation($text);
     $ret = $template->modifications();
-    var_export($ret);
+    $expect = array ('modifications' => array ( ), 'additions' => array ( ), 'deletions' => array ( ), 'changeonly' => array ( ), 'dashes' => false, 'names' => false, );
+    $this->assertTrue($ret == $expect);
   }
     
 
