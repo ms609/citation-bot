@@ -276,6 +276,7 @@ class Page {
       $this_template = $all_templates[$i];
       if (in_array($this_template->wikiname(), TEMPLATES_WE_PROCESS)) {
         $our_templates[] = $this_template;
+        $this_template->correct_param_mistakes();
         $this_template->prepare();
       } elseif (in_array($this_template->wikiname(), TEMPLATES_WE_SLIGHTLY_PROCESS)) {
         $our_templates_slight[] = $this_template;
