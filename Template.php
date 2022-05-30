@@ -2850,8 +2850,6 @@ final class Template {
     $param_occurrences = array();
     $duplicated_parameters = array();
     $duplicate_identical = array();
-
-    print_r($this->param);
     
     foreach ($this->param as $pointer => $par) {
       if ($par->param && isset($param_occurrences[$par->param])) {
@@ -6951,6 +6949,7 @@ final class Template {
     foreach ($new as $old_name => $old_data) {
       $mistake_id = array_search($old_name, $mistake_keys);
       if ($mistake_id !== FALSE) {
+        echo "\n DID IT\n";
         $new[$mistake_corrections[$mistake_id]] = $old_data;
         unset($new[$old_name]);
       }
