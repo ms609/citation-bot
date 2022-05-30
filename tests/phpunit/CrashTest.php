@@ -14,6 +14,11 @@ final class CrashTest extends testBaseClass {
     $template = $this->process_citation($text_in);
     $this->assertSame("https://xy.com", $template->get2('archive-url'));
     $this->assertNull($template->get2('archive'));
+   
+    $text_in = "{{cite news|archive=url=https://xy.com }}";
+    $template = $this->process_citation($text_in);
+    $this->assertSame("https://xy.com", $template->get2('archive-url'));
+    $this->assertNull($template->get2('archive'));
   }
 
 }
