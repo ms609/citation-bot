@@ -24,7 +24,7 @@ final class CrashTest extends testBaseClass {
                         'deletions' =>  array ( 0 => 'citation_bot_placeholder_bare_url', ),
                         'changeonly' => array (  ),
                         'dashes' => FALSE,
-                        'names' => FALSE,)
+                        'names' => FALSE,);
     $this->assertTrue($array == $expected);
     $this->assertNull($template->get2('citation_bot_placeholder_bare_url'));
   }
