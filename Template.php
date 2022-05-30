@@ -6201,7 +6201,7 @@ final class Template {
       echo __LINE__ . " ". $this->name . "\n";
       if (($this->wikiname() === 'cite journal' || $this->wikiname() === 'cite document' || $this->wikiname() === 'cite web') && $this->has('chapter')) { // At least avoid a template error
         $this->change_name_to('cite book',  TRUE, TRUE);
-         echo __LINE__ . " SHoulD "HAVE \n";
+         echo __LINE__ . " SHoulD HAVE \n";
       }
       echo __LINE__ . " ". $this->name . "\n";
       if (($this->wikiname() === 'cite web' || $this->wikiname() === 'cite news') &&
