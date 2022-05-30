@@ -6055,7 +6055,7 @@ final class Template {
          $this->change_name_to('cite book');
       }
       if ($this->blank('pmc-embargo-date')) $this->forget('pmc-embargo-date'); // Do at the very end, so we do not delete it, then add it later in a different position
-      if ($this->wikiname() === 'cite arxiv' && $this->get_without_comments_and_placeholders('doi')) {
+      if ($this->wikiname() === 'cite arxiv' && $this->get_without_comments_and_placeholders('doi') && stripos($this->get_without_comments_and_placeholders('doi'), 'arxiv') === FALSE) {
         $this->change_name_to('cite journal');
       }
       if ($this->wikiname() === 'cite arxiv' && $this->has('bibcode')) {
