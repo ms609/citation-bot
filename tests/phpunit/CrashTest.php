@@ -13,74 +13,12 @@ final class CrashTest extends testBaseClass {
     $this->assertTrue(FALSE);
   }
  
-    public function testDropDuplicates3() : void {
-      $text = '{{citation|year=2000|year=}}';
-      $prepared = $this->process_citation($text);
-      $this->assertSame('{{citation|year=2000}}', $prepared->parsed_text());
-
-      $text = '{{citation|year=|year=2000}}';
-      $prepared = $this->process_citation($text);
-      $this->assertSame('{{citation|year=2000}}', $prepared->parsed_text());
-   
-      $text = '{{citation|year= | year= |year=| year=|year=2000}}';
-      $prepared = $this->process_citation($text);
-      $this->assertSame('{{citation|year=2000}}', $prepared->parsed_text());
-   
-      $text = '{{citation|year=2000|year=2000}}';
-      $prepared = $this->process_citation($text);
-      $this->assertSame('{{citation|year=2000}}', $prepared->parsed_text());
-   
-      $text = '{{citation|year 2000|year=2000}}';
-      $prepared = $this->process_citation($text);
-      $this->assertSame('{{citation|year=2000}}', $prepared->parsed_text());
-   
-      $text = '{{citation|year=|year 2000|year=2000}}';
-      $prepared = $this->process_citation($text);
-      $this->assertSame('{{citation|year=2000}}', $prepared->parsed_text());
-   
-      $text = '{{citation|year 2000|year=|year=2000}}';
-      $prepared = $this->process_citation($text);
-      $this->assertSame('{{citation|year=2000}}', $prepared->parsed_text());
-   
-      $text = '{{citation|year=2000|year 2000}}';
-      $prepared = $this->process_citation($text);
-      $this->assertSame('{{citation|year=2000}}', $prepared->parsed_text());
-
-      $text = '{{citation|year=2000|year=2000|year 2000|year=|year=2000}}';
-      $prepared = $this->process_citation($text);
-      $this->assertSame('{{citation|year=2000}}', $prepared->parsed_text());
-   
-      $text = '{{citation|year=2000|year=2001|year=2000|year=2001|year=2000}}';
-      $prepared = $this->process_citation($text);
-      $this->assertSame('{{citation|DUPLICATE_year=2000|DUPLICATE_year=2001|DUPLICATE_year=2000|DUPLICATE_year=2001|year=2000}}', $prepared->parsed_text());
-  
-      $text = "{{Cite web|year=|year=2000}}";
-      $expanded = $this->process_citation($text);
-      $this->assertSame('{{Cite web|year=2000}}', $expanded->parsed_text());
-
-      $text = "{{Cite web|year=2000|year=2000}}";
-      $expanded = $this->process_citation($text);
-      $this->assertSame('{{Cite web|year=2000}}', $expanded->parsed_text());
-
-      $text = "{{Cite web|year|year=2000}}";
-      $expanded = $this->process_citation($text);
-      $this->assertSame('{{Cite web|year|year=2000}}', $expanded->parsed_text());
-
-      $text = "{{Cite web|year|year}}";
-      $expanded = $this->process_citation($text);
-      $this->assertSame('{{Cite web|year|year}}', $expanded->parsed_text());
-
-      $text = "{{Cite web|year|year 2000}}";
-      $expanded = $this->process_citation($text);
-      $this->assertSame('{{Cite web|year| year=2000 }}', $expanded->parsed_text());
-
-      $text = "{{Cite web|year 2000|year }}";
-      $expanded = $this->process_citation($text);
-      $this->assertSame('{{Cite web|year | year=2000 }}', $expanded->parsed_text());
-     
-      $text = '{{citation|year=2000|year=||||||||||||||||||||||||||||||||||||||||}}';
-      $prepared = $this->process_citation($text);
-      $this->assertSame('{{citation|year=2000}}', $prepared->parsed_text());
-    }
+  public function testThis() : void {
+    $text = '{{new cambridge medieval history|ed10=That Guy}}';
+    $template = $this->prepare_template($text);
+    $ret = $template->modifications();
+    var_export($ret);
+  }
+    
 
 }
