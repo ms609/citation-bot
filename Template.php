@@ -2004,15 +2004,6 @@ final class Template {
       return FALSE;                                           // @codeCoverageIgnore
     }
 
-    if (strpos($this->get('bibcode'), 'book') !== FALSE) {
-      if ($result->numFound !== 1) {
-        if ($this->blank(['year', 'date']) && preg_match('~^(\d{4}).*book.*$~', $this->get('bibcode'), $matches)) {
-            $this->add_if_new('year', $matches[1]);
-        }
-        return FALSE; 
-      }
-      return expand_book_adsabs($this, $result->docs[0]);
-    }
     if ($result->numFound === 0) {
       // Avoid blowing through our quota
       if ((!in_array($this->wikiname(), ['cite journal', 'citation', 'cite conference', 'cite book', 'cite arxiv', 'cite article'])) || // Unlikely to find anything
