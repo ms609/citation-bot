@@ -6051,7 +6051,7 @@ final class Template {
          } else {
             $this->change_name_to($this->initial_name);
          }
-      };
+      }
       if (($this->wikiname() === 'cite document' || $this->wikiname() === 'cite journal' || $this->wikiname() === 'cite web') &&
           (strpos($this->get('isbn'), '978-0-19') === 0 || strpos($this->get('isbn'), '978019') === 0 || strpos($this->get('isbn'), '978-019') === 0)) {
          $this->change_name_to('cite book');
