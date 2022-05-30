@@ -5003,9 +5003,6 @@ final class Template {
           if (preg_match('~^https?://www\.oxforddnb\.com/view/10\.1093/(?:ref:|)odnb/9780198614128\.001\.0001/odnb\-9780198614128\-e\-(\d+)$~', $this->get($param), $matches)) {
               $new_doi = '10.1093/ref:odnb/' . $matches[1];
               if (!doi_works($new_doi)) {
-                $new_doi = '10.1093/odnb/' . $matches[1];
-              }
-              if (!doi_works($new_doi)) {
                 $new_doi = '10.1093/odnb/9780198614128.013.' . $matches[1];
               }
               if (doi_works($new_doi)) {
@@ -6266,7 +6263,6 @@ final class Template {
     if (strpos($doi, '10.1093') === 0 && doi_works($doi) !== TRUE) {
           if (preg_match('~^10\.1093/(?:ref:|)odnb/9780198614128\.001\.0001/odnb\-9780198614128\-e\-(\d+)$~', $doi, $matches)) {
               $trial[] = '10.1093/ref:odnb/' . $matches[1];
-              $trial[] = '10.1093/odnb/' . $matches[1];
               $trial[] = '10.1093/odnb/9780198614128.013.' . $matches[1];
           }
           if (preg_match('~^10\.1093/odnb/(\d+)$~', $doi, $matches)) {
@@ -6274,11 +6270,9 @@ final class Template {
               $trial[] = '10.1093/odnb/9780198614128.013.' . $matches[1];
           }
           if (preg_match('~^10\.1093/ref:odnb/(\d+)$~', $doi, $matches)) {
-              $trial[] = '10.1093/odnb/' . $matches[1];
               $trial[] = '10.1093/odnb/9780198614128.013.' . $matches[1];
           }
           if (preg_match('~^10\.1093/9780198614128.013.(\d+)$~', $doi, $matches)) {
-              $trial[] = '10.1093/odnb/' . $matches[1];
               $trial[] = '10.1093/odnb/9780198614128.013.' . $matches[1];
           }
           if (preg_match('~^10\.1093/anb/9780198606697\.001\.0001/anb\-9780198606697\-e\-(\d+)$~', $doi, $matches)) {
@@ -7274,12 +7268,9 @@ final class Template {
       if (doi_works($doi) === FALSE) {
         if (preg_match("~^10\.1093/(?:\S+odnb-9780198614128-e-|ref:odnb|odnb/9780198614128\.013\.|odnb/)(\d+)$~", $doi, $matches)) {
           $try1 = '10.1093/ref:odnb/' . $matches[1];
-          $try2 = '10.1093/odnb/' . $matches[1];
           $try3 = '10.1093/odnb/9780198614128.013.' . $matches[1];
           if (doi_works($try1)) {
             $this->set('doi', $try1);
-          } elseif (doi_works($try2)) {
-            $this->set('doi', $try2);
           } elseif (doi_works($try3)) {
             $this->set('doi', $try3);
           }
@@ -7289,21 +7280,9 @@ final class Template {
     if ($this->has('id')) {
           $doi = $this->get('doi');
           $try1 = '10.1093/ref:odnb/' . $this->get('id');
-          $try2 = '10.1093/odnb/' . $this->get('id');
           $try3 = '10.1093/odnb/9780198614128.013.' . $this->get('id');
           if (doi_works($try1) !== FALSE) {
             ; // Template does this
-          } elseif (doi_works($try2)) {
-            if ($doi === '') {
-              $this->rename('id', 'doi', $try2);
-            } elseif ($doi === $try2) {
-              $this->forget('id');
-            } elseif (doi_works($doi)) {
-              $this->forget('id');
-            } else {
-              $this->forget('doi');
-              $this->rename('id', 'doi', $try2);
-            }
           } elseif (doi_works($try3)) {
             if ($doi === '') {
               $this->rename('id', 'doi', $try3);
