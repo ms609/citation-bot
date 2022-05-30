@@ -5948,10 +5948,11 @@ final class Template {
   public function final_tidy() : void {
     set_time_limit(120);
     if ($this->should_be_processed()) {
-      echo __LINE__ . $this->wikiname() . "\n";
+      echo __LINE__ . $this->wikiname() . " AND " . $this->initial_name . " AND " . $this->name . "\n";
       if ($this->initial_name !== $this->name) {
          $this->tidy();
       }
+      echo __LINE__ . $this->wikiname() . "\n";
       // Sometimes title and chapter come from different databases
       if ($this->has('chapter') && ($this->get('chapter') === $this->get('title'))) {  // Leave only one
         if ($this->wikiname() === 'cite book' || $this->has('isbn')) {
@@ -5960,6 +5961,7 @@ final class Template {
           $this->forget('chapter');
         }
       }
+      echo __LINE__ . $this->wikiname() . "\n";
       // Sometimes series and journal come from different databases
       if ($this->has('series') && $this->has('journal') &&
           (str_equivalent($this->get('series'), $this->get('journal')))) {  // Leave only one
