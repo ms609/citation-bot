@@ -4324,6 +4324,10 @@ final class TemplateTest2 extends testBaseClass {
       $text = "{{cite document|url=x|pmc=x}}";
       $expanded = $this->process_citation($text);
       $this->AssertSame('cite journal', $expanded->wikiname());
+      
+      $text = "{{cite document|title=This|chapter=That}}";
+      $expanded = $this->process_citation($text);
+      $this->AssertSame('cite book', $expanded->wikiname());
     }
 
     public function testCitePaper() : void {
