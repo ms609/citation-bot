@@ -1601,6 +1601,13 @@ final class TemplateTest extends testBaseClass {
    $this->assertNull($template->get2('url'));
   }
  
+  public function testUnPaywall3() : void { // This DOI is free and resolves to doi.org
+   $text = "{{cite journal|doi=10.1016/j.ifacol.2017.08.010}}";
+   $template = $this->make_citation($text);
+   $template->get_unpaywall_url($template->get2('doi'));
+   $this->assertNull($template->get2('url'));
+  }
+ 
   public function testCommentHandling() : void {
     $text = "{{cite book|pages=3333 <!-- yes --> }} {{cite book <!-- no --> | pages=3<nowiki>-</nowiki>6}} {{cite book | pages=3<pre>-</pre>6}} {{cite book | pages=3<math>-</math>6}} {{cite book | pages=3<score>-</score>6}} {{cite book | pages=3<chem>-</chem>6}}";
     $expanded_page = $this->process_page($text);
