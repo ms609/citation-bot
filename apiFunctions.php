@@ -379,9 +379,6 @@ function adsabs_api(array $ids, array &$templates, string $identifier) : bool { 
            process_bibcode_data($this_template, $record);
          } else {
            expand_book_adsabs($this_template, $record);
-           if ($this_template->blank(['year', 'date']) && preg_match('~^(\d{4}).*book.*$~', $record->bibcode, $matches)) {
-              $this_template->add_if_new('year', $matches[1]);
-           }
         }
       }
     }
