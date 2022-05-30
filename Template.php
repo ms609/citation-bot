@@ -5935,9 +5935,11 @@ final class Template {
   public function final_tidy() : void {
     set_time_limit(120);
     if ($this->should_be_processed()) {
+      echo __LINE__ . " ". $this->name . "\n";
       if ($this->initial_name !== $this->name) {
          $this->tidy();
       }
+      echo __LINE__ . " ". $this->name . "\n";
       // Sometimes title and chapter come from different databases
       if ($this->has('chapter') && ($this->get('chapter') === $this->get('title'))) {  // Leave only one
         if ($this->wikiname() === 'cite book' || $this->has('isbn')) {
@@ -5946,6 +5948,7 @@ final class Template {
           $this->forget('chapter');
         }
       }
+      echo __LINE__ . " ". $this->name . "\n";
       // Sometimes series and journal come from different databases
       if ($this->has('series') && $this->has('journal') &&
           (str_equivalent($this->get('series'), $this->get('journal')))) {  // Leave only one
@@ -5955,6 +5958,7 @@ final class Template {
           $this->forget('series');
         }
       }
+      echo __LINE__ . " ". $this->name . "\n";
       // Double check these troublesome "journals"
       if (($this->is_book_series('journal') || $this->is_book_series('series') ||
            $this->is_book_series('chapter') || $this->is_book_series('title')) ||
@@ -5969,6 +5973,7 @@ final class Template {
         $this->tidy_parameter('title');
         $this->tidy_parameter('chapter');
       }
+      echo __LINE__ . " ". $this->name . "\n";
       // "Work is a troublesome parameter
       if ($this->has_but_maybe_blank('work') && $this->blank('work')) { // Have work=, but it is blank
          if ($this->has('journal') ||
@@ -5983,6 +5988,7 @@ final class Template {
             $this->rename('work', 'journal');
          }
       }
+      echo __LINE__ . " ". $this->name . "\n";
       if ($this->has(strtolower('CITATION_BOT_PLACEHOLDER_BARE_URL'))) {
         if ($this->has('title') || $this->has('chapter')) {
           $this->quietly_forget(strtolower('CITATION_BOT_PLACEHOLDER_BARE_URL'));
@@ -5994,6 +6000,7 @@ final class Template {
       if ($this->get('volume') === 'n/a' && preg_match('~^\d+$~', $this->get('issue'))) {
         $this->forget('volume');
       }
+      echo __LINE__ . " ". $this->name . "\n";
       if ($this->has('doi') && $this->has('issue') && ($this->get('issue') === $this->get('volume')) && // Issue = Volume and not NULL
         ($this->get('issue') === $this->get_without_comments_and_placeholders('issue')) &&
         ($this->get('volume') === $this->get_without_comments_and_placeholders('volume'))) { // No comments to flag problems
@@ -6017,6 +6024,7 @@ final class Template {
            }
         }
       }
+      echo __LINE__ . " ". $this->name . "\n";
       $this->tidy_parameter('url'); // depending upon end state, convert to chapter-url
       $this->tidy_parameter('via');
       $this->tidy_parameter('publisher');
@@ -6029,6 +6037,7 @@ final class Template {
           $this->tidy_parameter('publisher');
         }
       }
+      echo __LINE__ . " ". $this->name . "\n";
       if ($this->wikiname() === 'cite journal' && $this->blank(WORK_ALIASES) &&
           stripos($this->initial_name, 'journal') === FALSE) {
          if ($this->has('arxiv') || $this->has('eprint')) {
@@ -6037,14 +6046,17 @@ final class Template {
             $this->change_name_to($this->initial_name);
          }
       }
+      echo __LINE__ . " ". $this->name . "\n";
       if (($this->wikiname() === 'cite document' || $this->wikiname() === 'cite journal' || $this->wikiname() === 'cite web') &&
           (strpos($this->get('isbn'), '978-0-19') === 0 || strpos($this->get('isbn'), '978019') === 0 || strpos($this->get('isbn'), '978-019') === 0)) {
          $this->change_name_to('cite book');
       }
+      echo __LINE__ . " ". $this->name . "\n";
       if ($this->blank('pmc-embargo-date')) $this->forget('pmc-embargo-date'); // Do at the very end, so we do not delete it, then add it later in a different position
       if ($this->wikiname() === 'cite arxiv' && $this->get_without_comments_and_placeholders('doi') && stripos($this->get_without_comments_and_placeholders('doi'), 'arxiv') === FALSE) {
         $this->change_name_to('cite journal');
       }
+      echo __LINE__ . " ". $this->name . "\n";
       if ($this->wikiname() === 'cite arxiv' && $this->has('bibcode')) {
         $this->forget('bibcode'); // Not supported and 99% of the time just a arxiv bibcode anyway
       }
@@ -6058,6 +6070,7 @@ final class Template {
           }
        }
       }
+      echo __LINE__ . " ". $this->name . "\n";
       if ($this->wikiname() === 'cite web') {
        if (!$this->blank_other_than_comments('title') && !$this->blank_other_than_comments('chapter')) {
           if ($this->name === 'cite web') { // Need special code to keep caps the same
@@ -6066,6 +6079,7 @@ final class Template {
             $this->name = 'Cite book';
           }
        }
+        echo __LINE__ . " ". $this->name . "\n";
        if (($this->has('arxiv') || $this->has('eprint')) && (stripos($this->get('url'), 'arxiv') !== FALSE)) {
           if ($this->name === 'cite web') {
             $this->name = 'cite arXiv';
@@ -6075,12 +6089,14 @@ final class Template {
           $this->quietly_forget('url');
        }
       }
+      echo __LINE__ . " ". $this->name . "\n";
       if (!$this->blank(DOI_BROKEN_ALIASES) && $this->has('jstor') &&
         (strpos($this->get('doi'), '10.2307') === 0 || $this->get('doi') === $this->get('jstor') ||
          substr($this->get('doi'), 0, -2) === $this->get('jstor') || substr($this->get('doi'), 0, -3) === $this->get('jstor'))) {
        $this->forget('doi'); // Forget DOI that is really jstor, if it is broken
        foreach (DOI_BROKEN_ALIASES as $alias) $this->forget($alias);
       }
+      echo __LINE__ . " ". $this->name . "\n";
       if ($this->has('journal') && stripos($this->get('journal'), 'arxiv') === FALSE) { // Do this at the very end of work in case we change type/etc during expansion
           if ($this->blank(['chapter', 'isbn'])) {
             // Avoid renaming between cite journal and cite book
@@ -6099,11 +6115,13 @@ final class Template {
             . ' as well as chapter / ISBN ' . $this->get('chapter') . ' ' .  $this->get('isbn')));
           }
       }
+      echo __LINE__ . " ". $this->name . "\n";
       if ($this->wikiname() === 'cite book' && $this->blank(['issue', 'journal'])) {
        // Remove blank stuff that will most likely never get filled in
        $this->forget('issue');
        $this->forget('journal');
       }
+      echo __LINE__ . " ". $this->name . "\n";
       if (preg_match('~^10\.1093/ref\:odnb/\d+$~', $this->get('doi')) &&
         $this->has('title') &&
         $this->wikiname() !== 'cite encyclopedia' &&
@@ -6120,6 +6138,7 @@ final class Template {
        if (stripos($this->get('publisher'), 'oxford') !== FALSE) $this->forget('publisher');
        $this->forget('dictionary');
       }
+      echo __LINE__ . " ". $this->name . "\n";
       if (preg_match('~^10\.1093/~', $this->get('doi')) &&
         $this->has('title') &&
         ($this->wikiname() === 'cite web' || $this->wikiname() === 'cite journal') &&
@@ -6139,6 +6158,7 @@ final class Template {
           }
         }
       }
+      echo __LINE__ . " ". $this->name . "\n";
       $this->tidy_parameter('doi'); // might be free, and freedom is date dependent for some journals
       if (!empty($this->param)) {
         $drop_me_maybe = array();
@@ -6157,6 +6177,7 @@ final class Template {
          }
         }
       }
+      echo __LINE__ . " ". $this->name . "\n";
       if (!empty($this->param)) { // Forget author-link and such that have no such author
        foreach ($this->param as $p) {
         $alias = $p->param;
@@ -6172,12 +6193,15 @@ final class Template {
       if ($this->get('newspaper') === 'Reuters') {
         $this->rename('newspaper', 'work');
       }
+      echo __LINE__ . " ". $this->name . "\n";
       if (($this->wikiname() === 'cite journal' || $this->wikiname() === 'cite document' || $this->wikiname() === 'cite web') && $this->has('chapter') && $this->blank('title')) {
         $this->rename('chapter', 'title');
       }
+      echo __LINE__ . " ". $this->name . "\n";
       if (($this->wikiname() === 'cite journal' || $this->wikiname() === 'cite document' || $this->wikiname() === 'cite web') && $this->has('chapter')) { // At least avoid a template error
         $this->change_name_to('cite book');
       }
+      echo __LINE__ . " ". $this->name . "\n";
       if (($this->wikiname() === 'cite web' || $this->wikiname() === 'cite news') &&
           $this->blank(WORK_ALIASES) &&
           $this->blank(['publisher', 'via', 'pmc', 'pmid', 'doi', 'mr', 'asin', 'issn', 'eissn', 'hdl', 'id', 'isbn', 'jfm', 'jstor', 'oclc', 'ol', 'osti', 's2cid', 'ssrn', 'zbl', 'citeseerx', 'arxiv', 'eprint', 'biorxiv']) &&
