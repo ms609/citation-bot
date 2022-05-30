@@ -10,57 +10,57 @@ require_once __DIR__ . '/../testBaseClass.php';
 final class CrashTest extends testBaseClass {
 
  public function testFixLotsOfDOIs() : void {
-  $text = '{{cite journal| doi= }}';
+  $text = '{{cite journal| doi= 10.1093/acref/9780195301731.001.0001/acref-9780195301731-e-41463}}';
   $template = $this->make_citation($text);
   $template->tidy_paramter('doi');
   $this->assertSame('10.1093/acref/9780195301731.013.41463', $template->get2('doi'));
   
-  $text = '{{cite journal| doi= }}';
+  $text = '{{cite journal| doi= 10.1093/acrefore/9780190201098.001.0001/acrefore-9780190201098-e-1357}}';
   $template = $this->make_citation($text);
   $template->tidy_paramter('doi');
   $this->assertSame('10.1093/acrefore/9780190201098.013.1357', $template->get2('doi'));
   
-  $text = '{{cite journal| doi= }}';
+  $text = '{{cite journal| doi=10.1093/acrefore/9780190228613.001.0001/acrefore-9780190228613-e-1195 }}';
   $template = $this->make_citation($text);
   $template->tidy_paramter('doi');
   $this->assertSame('10.1093/acrefore/9780190228613.013.1195', $template->get2('doi'));
   
-  $text = '{{cite journal| doi= }}';
+  $text = '{{cite journal| doi=10.1093/acrefore/9780190228620.001.0001/acrefore-9780190228620-e-699 }}';
   $template = $this->make_citation($text);
   $template->tidy_paramter('doi');
   $this->assertSame('10.1093/acrefore/9780190228620.013.699', $template->get2('doi'));
   
-  $text = '{{cite journal| doi= }}';
+  $text = '{{cite journal| doi=10.1093/acrefore/9780190228637.001.0001/acrefore-9780190228637-e-181 }}';
   $template = $this->make_citation($text);
   $template->tidy_paramter('doi');
   $this->assertSame('10.1093/acrefore/9780190228637.013.181', $template->get2('doi'));
   
-  $text = '{{cite journal| doi= }}';
+  $text = '{{cite journal| doi=10.1093/acrefore/9780190236557.001.0001/acrefore-9780190236557-e-384 }}';
   $template = $this->make_citation($text);
   $template->tidy_paramter('doi');
   $this->assertSame('10.1093/acrefore/9780190236557.013.384', $template->get2('doi'));
   
-  $text = '{{cite journal| doi= }}';
+  $text = '{{cite journal| doi=10.1093/acrefore/9780190277734.001.0001/acrefore-9780190277734-e-191 }}';
   $template = $this->make_citation($text);
   $template->tidy_paramter('doi');
   $this->assertSame('10.1093/acrefore/9780190277734.013.191', $template->get2('doi'));
   
-  $text = '{{cite journal| doi= }}';
+  $text = '{{cite journal| doi=10.1093/acrefore/9780190846626.001.0001/acrefore-9780190846626-e-39 }}';
   $template = $this->make_citation($text);
   $template->tidy_paramter('doi');
   $this->assertSame('10.1093/acrefore/9780190846626.013.39', $template->get2('doi'));
   
-  $text = '{{cite journal| doi= }}';
+  $text = '{{cite journal| doi=10.1093/acrefore/9780190854584.001.0001/acrefore-9780190854584-e-45 }}';
   $template = $this->make_citation($text);
   $template->tidy_paramter('doi');
   $this->assertSame('10.1093/acrefore/9780190854584.013.45', $template->get2('doi'));
   
-  $text = '{{cite journal| doi= }}';
+  $text = '{{cite journal| doi=10.1093/acrefore/9780199329175.001.0001/acrefore-9780199329175-e-17 }}';
   $template = $this->make_citation($text);
   $template->tidy_paramter('doi');
   $this->assertSame('10.1093/acrefore/9780199329175.013.17', $template->get2('doi'));
   
-  $text = '{{cite journal| doi= }}';
+  $text = '{{cite journal| doi=10.1093/acrefore/9780199340378.001.0001/acrefore-9780199340378-e-568 }}';
   $template = $this->make_citation($text);
   $template->tidy_paramter('doi');
   $this->assertSame('10.1093/acrefore/9780199340378.013.568', $template->get2('doi'));
@@ -70,12 +70,12 @@ final class CrashTest extends testBaseClass {
   $template->tidy_paramter('doi');
   $this->assertSame('10.1093/acrefore/9780199366439.013.2', $template->get2('doi'));
   
-  $text = '{{cite journal| doi= }}';
+  $text = '{{cite journal| doi=10.1093/acrefore/9780199366439.001.0001/acrefore-9780199366439-e-7023 }}';
   $template = $this->make_citation($text);
   $template->tidy_paramter('doi');
   $this->assertSame('10.1093/acrefore/9780199381135.013.7023', $template->get2('doi'));
   
-  $text = '{{cite journal| doi= }}';
+  $text = '{{cite journal| doi=10.1093/acrefore/9780199389414.001.0001/acrefore-9780199389414-e-224 }}';
   $template = $this->make_citation($text);
   $template->tidy_paramter('doi');
   $this->assertSame('10.1093/acrefore/9780199389414.013.224', $template->get2('doi'));
