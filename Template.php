@@ -3265,6 +3265,21 @@ final class Template {
       }
     }
   }
+    // Catch archive=url=http......
+  foreach ($this->param as $p) {
+    if (substr_count($p->val, "=") === 1 && !in_array($p->param, PARAMETER_LIST)) {
+      $param = $p->param;
+      $value = $p->val;
+      $equals = (int) strpos($value, '=');
+      $before = trim(substr($value, 0, $equals));
+      $after  = trim(substr($value, $equals));
+      $possible = $param . '-' . $before;
+      if (in_array($possible, PARAMETER_LIST)) {
+        $p->param = $possible;
+        $p->val   = $after;
+      }
+    }
+   }
 }
 
 
