@@ -143,8 +143,8 @@ function entrez_api(array $ids, array &$templates, string $db) : bool {   // Poi
                 break;
               case "pmcid":
                 if (preg_match("~embargo-date: ?(\d{4})\/(\d{2})\/(\d{2})~", (string) $subItem, $match)) {
-                   $date_emb = date("F j, Y", mktime(0, 0, 0, (int) $match[2], (int) $match[3], (int) $match[1]));
-                   $this_template->add_if_new('pmc-embargo-date', $date_emb, 'entrez');
+                   $date_emb = date("F j, Y", mktime(0, 0, 0, (int) $match[2], (int) $match[3], (int) $match[1]));  // @codeCoverageIgnore
+                   $this_template->add_if_new('pmc-embargo-date', $date_emb, 'entrez');                             // @codeCoverageIgnore  
                 }
                 break;
               case "doi": case "pii":
@@ -153,6 +153,7 @@ function entrez_api(array $ids, array &$templates, string $db) : bool {   // Poi
                   $this_template->add_if_new('doi', $match[0], 'entrez');
                 }
                 if (preg_match("~PMC\d+~", (string) $subItem, $match)) {
+                  file_put_contents('CodeCoverage', $match[0] . " This PMC###### was found using a PMID\n", FILE_APPEND);
                   $this_template->add_if_new('pmc', substr($match[0], 3), 'entrez');
                 }
             }
@@ -171,6 +172,7 @@ function entrez_api(array $ids, array &$templates, string $db) : bool {   // Poi
           }
           $possible_pmid = array_unique($possible_pmid);
           if (count($possible_pmid) === 1 && $possible_pmid[0] !== (string) $document->Id) { // Only one and it is not PMC
+            file_put_contents('CodeCoverage',$possible_pmid[0] . " This PMID was found using a PMC\n", FILE_APPEND);
             $this_template->add_if_new('pmid', $possible_pmid[0], 'entrez');
           }
         break;
@@ -248,6 +250,7 @@ function arxiv_api(array $ids, array &$templates) : bool {  // Pointer to save m
         if ($this_template->blank('title')) {
             $this_template->set('title', $the_arxiv_title);
             if ($the_arxiv_contribution !== '') $this_template->set('contribution', $the_arxiv_contribution);
+            file_put_contents('CodeCoverage', (string) $entry->arxivdoi . " this DOI was founf from arxiv \n", FILE_APPEND);
         } else {
             if ($the_arxiv_contribution !== '' && $this_template->blank('contribution')) $this_template->forget('contribution');
         }
@@ -656,6 +659,7 @@ function expand_doi_with_dx(Template $template, string $doi) : bool {
           $i = $i + 1;
           if (((string) @$auth['family'] === '') && ((string) @$auth['given'] !== '')) {
              $try_to_add_it('author' . (string) $i, @$auth['given']); // First name without last name.  Probably an organization
+             file_put_contents('CodeCoverage', $doi . " found organization not person\n", FILE_APPEND);
           } else {
              $try_to_add_it('last' . (string) $i, @$auth['family']);
              $try_to_add_it('first' . (string) $i, @$auth['given']);
@@ -701,6 +705,7 @@ function expand_doi_with_dx(Template $template, string $doi) : bool {
           $try_to_add_it('chapter', @$json['categories']['0']);  // Not really right, but there is no cite data set template
        }
      } elseif (@$json['type'] == '') {  // Add what we can where we can
+       file_put_contents('CodeCoverage', $doi . " found blank type \n", FILE_APPEND);
        $try_to_add_it('title', @$json['title']);
        $try_to_add_it('location', @$json['publisher-location']);
        $try_to_add_it('publisher', @$json['publisher']);
@@ -805,6 +810,7 @@ function expand_by_jstor(Template $template) : bool {
         }
       }
       if ($got_count === 110) { // Exactly one of each
+        file_put_contents('CodeCoverage', $jstor . " found goofy titles \n", FILE_APPEND);
         foreach (['chapter', 'title', 'series', 'trans-title'] as $possible) {
           if ($template->has($possible) && titles_are_similar($template->get($possible), $new_title)) {
             $bad_data = FALSE;
