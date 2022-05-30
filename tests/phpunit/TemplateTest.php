@@ -3761,8 +3761,9 @@ EP - 999 }}';
 
   public function testDashIsEquals() : void {
     $text_in = "{{cite journal|archive=url=https://xy.com }}";
-    $prepared = $this->prepare_citation($text_in);
-    $this->assertSame("UNKONWN", $prepared->parsed_text());
+    $template = $this->process_citation($text_in);
+    $this->assertSame("https://xy.com", $template->get2('archive-url'));
+    $this->assertNull($template->get2('archive'));
   }
   
 }
