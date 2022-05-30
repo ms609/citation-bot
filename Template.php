@@ -6050,7 +6050,7 @@ final class Template {
       if (($this->wikiname() === 'cite document' || $this->wikiname() === 'cite journal' || $this->wikiname() === 'cite web') &&
           (strpos($this->get('isbn'), '978-0-19') === 0 || strpos($this->get('isbn'), '978019') === 0 || strpos($this->get('isbn'), '978-019') === 0)) {
          $this->change_name_to('cite book',  TRUE, TRUE);
-              echo __LINE__ . " SHoulD "HAVE \n";
+              echo __LINE__ . " SHoulD HAVE \n";
       }
       echo __LINE__ . " ". $this->name . "\n";
       if ($this->blank('pmc-embargo-date')) $this->forget('pmc-embargo-date'); // Do at the very end, so we do not delete it, then add it later in a different position
