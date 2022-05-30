@@ -13,21 +13,12 @@ final class CrashTest extends testBaseClass {
     $this->assertTrue(FALSE);
   }
  
-  public function testModsArray() : void {
-    $text = '{{cite journal | citation_bot_placeholder_bare_url = XYX }}';
-    $template = $this->make_citation($text);
-    $template->add('title', 'Thus');
-    $this->assertNotNull($template->get2('citation_bot_placeholder_bare_url'));
-    $array = $template->modifications();
-    $expected = array ( 'modifications' =>  array ( 0 => 'title',  ),
-                        'additions' =>  array ( 0 => 'title',  ),
-                        'deletions' =>  array ( 0 => 'citation_bot_placeholder_bare_url', ),
-                        'changeonly' => array (  ),
-                        'dashes' => FALSE,
-                        'names' => FALSE,);
-    $this->assertTrue($array == $expected);
-    $this->assertNull($template->get2('citation_bot_placeholder_bare_url'));
-  }
+    public function testFinalTidyThings1() : void {
+      $text = "{{Cite web|title=Stuff|chapter=More Stuff}}";
+      $expanded = $this->make_citation($text);
+      $expanded->final_tidy();
+      $this->AssertSame('cite book', $expanded->wikiname());
+    }
 
 
 }
