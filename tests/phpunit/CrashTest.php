@@ -15,7 +15,7 @@ final class CrashTest extends testBaseClass {
  
   public function testThis() : void {
     $text = '{{new cambridge medieval history|ed10=That Guy}}';
-    $template = $this->prepare_template($text);
+    $template = $this->prepare_citation($text);
     $ret = $template->modifications();
     var_export($ret);
   }
