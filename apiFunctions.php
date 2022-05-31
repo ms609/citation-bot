@@ -654,6 +654,7 @@ function expand_doi_with_dx(Template $template, string $doi) : bool {
      $try_to_add_it('isbn', @$json['ISBN']['0']);
      $try_to_add_it('isbn', @$json['isbn-type']['0']['value']);
      if (isset($json['author'])) {
+         print_r($json['author']);
        $i = 0;
        foreach ($json['author'] as $auth) {
           $i = $i + 1;
