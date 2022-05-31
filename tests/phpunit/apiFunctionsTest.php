@@ -955,9 +955,9 @@ final class apiFunctionsTest extends testBaseClass {
   }
 
   public function testJstorGoofyRIS() : void {
-    $text = "{{cite book| jstor=resrep24545}}";
+    $text = "{{cite book| jstor=resrep24545| title=Safeguarding Digital Democracy Digital Innovation and Democracy Initiative Roadmap}}";
     $prepared = $this->process_citation($text);
-    $this->assertSame('Safeguarding Digital Democracy', $prepared->get2('title'));
+    $this->assertSame('Kornbluh', $prepared->get2('last1'));
   }
   
 }
