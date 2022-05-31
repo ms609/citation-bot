@@ -4028,10 +4028,22 @@ EP - 999 }}';
     $this->assertNull($template->get2('last1'));
     $this->assertNull($template->get2('last'));
     $this->assertNull($template->get2('author1'));
-    $this->assertNull($template->get2('author1'));
+    $this->assertNull($template->get2('author'));
     $this->assertNull($template->get2('first1'));
     $this->assertNull($template->get2('first'));
     $this->assertNotNull($template->get2('title'));
+  }
+ 
+ 
+  public function testDoiHasNoLastFirstSplit() : void {
+    $text = "{{cite journal|doi=10.11468/seikatsueisei1925.16.2_123}}";
+    $template = $this->process_citation($text);
+    $this->assertNull($template->get2('last1'));
+    $this->assertNull($template->get2('last'));
+    $this->assertNull($template->get2('author'));
+    $this->assertNull($template->get2('first1'));
+    $this->assertNull($template->get2('first'));
+    $this->assertSame("大阪市立衛生試験所", $template->get2('author1'));
   }
  
 }
