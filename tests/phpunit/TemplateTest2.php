@@ -2088,7 +2088,7 @@ final class TemplateTest2 extends testBaseClass {
     $text = "{{cite web|url=https://oxford.universitypressscholarship.com/view/10.1093/acprof:oso/9780199812295.001.0001/oso-9780199812295-chapter-7}}";
     $template = $this->make_citation($text);
     $template->tidy_parameter('url');
-    $this->assertSame('10.1093/acprof:oso/978019.003.0007', $template->get2('doi'));
+    $this->assertSame('10.1093/acprof:oso/9780199812295.003.0007', $template->get2('doi'));
     $this->assertSame('978-0-19-981229-5', $template->get2('isbn'));
     $this->assertNull($template->get2('doi-broken-date'));
    }
