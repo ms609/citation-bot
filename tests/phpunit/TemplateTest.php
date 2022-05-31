@@ -4046,4 +4046,13 @@ EP - 999 }}';
     $this->assertSame("大阪市立衛生試験所", $template->get2('author1'));
   }
  
+  public function testRejectDuplicateFreeURL() : void {
+    $text = '{{cite journal | doi =  10.1103/PhysRevE.103.012115 }}';  // Give OSTI, thus will not add url
+    $template = $this->make_citation($text);
+    $template->get_open_access_url();
+    $this->assertEquals('1778027', $template->get2('osti'));
+    $template->get_open_access_url();
+    $this->assertNull($template->get2('url'));
+  }
+ 
 }
