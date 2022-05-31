@@ -780,7 +780,7 @@ function expand_by_jstor(Template $template) : bool {
         case "T2":
         case "BT":
           $new_title = trim($ris_part[1]);
-          foreach (['chapter', 'title', 'series', 'trans-title'] as $possible) {
+          foreach (['chapter', 'title', 'series', 'trans-title', 'book-title'] as $possible) {
             if ($template->has($possible) && titles_are_similar($template->get($possible), $new_title)) {
               $bad_data = FALSE;
             }
@@ -809,7 +809,7 @@ function expand_by_jstor(Template $template) : bool {
         }
       }
       if ($got_count === 110) { // Exactly one of each
-        foreach (['chapter', 'title', 'series', 'trans-title'] as $possible) {
+        foreach (['chapter', 'title', 'series', 'trans-title', 'book-title'] as $possible) {
           if ($template->has($possible) && titles_are_similar($template->get($possible), $new_title)) {
             $bad_data = FALSE;
           }
