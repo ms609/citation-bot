@@ -959,5 +959,14 @@ final class apiFunctionsTest extends testBaseClass {
     $prepared = $this->process_citation($text);
     $this->assertSame('Kornbluh', $prepared->get2('last1'));
   }
-  
+
+  public function testBlankTypeFromDX() : void {
+    $text = "{{cite book| doi=10.14989/doctor.k19250 }}";
+    $prepared = $this->process_citation($text);
+    $this->assertSame('2015', $prepared->get2('year'));
+    
+    $text = "{{Cite journal|doi=10.26099/aacp-5268}}";
+    $prepared = $this->process_citation($text);
+    $this->assertSame('Collins', $prepared->get2('last1'));
+  }
 }

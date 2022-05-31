@@ -658,8 +658,7 @@ function expand_doi_with_dx(Template $template, string $doi) : bool {
        foreach ($json['author'] as $auth) {
           $i = $i + 1;
           if (((string) @$auth['family'] === '') && ((string) @$auth['given'] !== '')) {
-             $try_to_add_it('author' . (string) $i, @$auth['given']); // First name without last name.  Probably an organization
-             file_put_contents('CodeCoverage', $doi . " found organization not person\n", FILE_APPEND);
+             $try_to_add_it('author' . (string) $i, @$auth['given']); // First name without last name.  Probably an organization or chinese/korean/japanese name
           } else {
              $try_to_add_it('last' . (string) $i, @$auth['family']);
              $try_to_add_it('first' . (string) $i, @$auth['given']);
@@ -705,7 +704,6 @@ function expand_doi_with_dx(Template $template, string $doi) : bool {
           $try_to_add_it('chapter', @$json['categories']['0']);  // Not really right, but there is no cite data set template
        }
      } elseif (@$json['type'] == '') {  // Add what we can where we can
-       file_put_cofasdfasdfntents('CodeCoverage', $doi . " found blank type \n", FILE_APPEND);
        $try_to_add_it('title', @$json['title']);
        $try_to_add_it('location', @$json['publisher-location']);
        $try_to_add_it('publisher', @$json['publisher']);
@@ -781,7 +779,7 @@ function expand_by_jstor(Template $template) : bool {
         case "T2":
         case "BT":
           $new_title = trim($ris_part[1]);
-          foreach (['chapter', 'title', 'series', 'trans-title'] as $possible) {
+          foreach (['chapter', 'title', 'series', 'trans-title', 'book-title'] as $possible) {
             if ($template->has($possible) && titles_are_similar($template->get($possible), $new_title)) {
               $bad_data = FALSE;
             }
@@ -810,7 +808,7 @@ function expand_by_jstor(Template $template) : bool {
         }
       }
       if ($got_count === 110) { // Exactly one of each
-        foreach (['chapter', 'title', 'series', 'trans-title'] as $possible) {
+        foreach (['chapter', 'title', 'series', 'trans-title', 'book-title'] as $possible) {
           if ($template->has($possible) && titles_are_similar($template->get($possible), $new_title)) {
             $bad_data = FALSE;
           }

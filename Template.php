@@ -1817,7 +1817,7 @@ final class Template {
         foreach ($Items as $item) {
            if ((string) $item->attributes()->Name === 'Title') {
                $new_title = str_replace(array("[", "]"), "", (string) $item);
-               foreach (['chapter', 'title', 'series', 'trans-title'] as $possible) {
+               foreach (['chapter', 'title', 'series', 'trans-title', 'book-title'] as $possible) {
                  if ($this->has($possible) && titles_are_similar($this->get($possible), $new_title)) {
                    $this->add_if_new('pmid', $results[0]);
                    return;
@@ -7137,7 +7137,7 @@ final class Template {
           case "aqs": case "gs_l": case "uact": case "tbo": case "tbs":
           case "num": case "redir_esc": case "gs_lcp": case "sxsrf":
           case "gfe_rd": case "gws_rd": case "rlz": case "sclient":
-          case "prmd": case "dpr":
+          case "prmd": case "dpr": case "newwindow":
              break;
           case "btnG":
              if ($part_start[1] === "" || str_i_same($part_start[1], 'Search')) break;
