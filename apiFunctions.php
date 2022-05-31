@@ -810,7 +810,6 @@ function expand_by_jstor(Template $template) : bool {
         }
       }
       if ($got_count === 110) { // Exactly one of each
-        file_put_contents('CodeCoverage', $jstor . " found goofy titles \n", FILE_APPEND);
         foreach (['chapter', 'title', 'series', 'trans-title'] as $possible) {
           if ($template->has($possible) && titles_are_similar($template->get($possible), $new_title)) {
             $bad_data = FALSE;
