@@ -953,4 +953,11 @@ final class apiFunctionsTest extends testBaseClass {
     $prepared->expand_by_adsabs();
     $this->assertNull($prepared->get2('bibcode'));
   }
+
+  public function testJstorGoofyRIS() : void {
+    $text = "{{cite book| jstor=resrep24545}}";
+    $prepared = $this->process_citation($text);
+    $this->assertSame('Safeguarding Digital Democracy', $prepared->get2('title'));
+  }
+  
 }
