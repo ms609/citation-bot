@@ -6186,7 +6186,6 @@ final class Template {
         $this->rename('chapter', 'title');
       }
       if (($this->wikiname() === 'cite journal' || $this->wikiname() === 'cite document' || $this->wikiname() === 'cite web') && $this->has('chapter')) { // At least avoid a template error
-        file_put_contents('CodeCoverage', $this->parsed_text() . " gets cleaned up\n", FILE_APPEND);
         $this->change_name_to('cite book', TRUE, TRUE);
       }
       if (($this->wikiname() === 'cite web' || $this->wikiname() === 'cite news') &&
