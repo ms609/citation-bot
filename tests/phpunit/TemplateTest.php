@@ -4013,4 +4013,12 @@ EP - 999 }}';
     $template->get_unpaywall_url('10.1007/978-3-319-18111-0_47');
     $this->assertNotNull($template->get2('chapter-url'));
   }
+ 
+  public function testChaptURLisDup() : void {
+    $text = "{{cite book|url=https://www.cnn.com/ }}";
+    $template = $this->make_citation($text);
+    $template->get_unpaywall_url('10.1007/978-3-319-18111-0_47');
+    $this->assertFalse($template->add_if_new('chapter-url', 'https://www.cnn.com/'));
+    $this->assertNull($template->get2('chapter-url'));
+  }
 }
