@@ -2481,7 +2481,6 @@ final class Template {
               (strpos($oa_url, 'eprints') !== FALSE) ||
               (strpos($oa_url, 'chapter') !== FALSE)) {
             $url_type = 'chapter-url';
-            file_put_contents('CodeCoverage', $doi . " is free gets a chapter-url \n", FILE_APPEND);
           }
         }
         $has_url_already = $this->has($url_type);
