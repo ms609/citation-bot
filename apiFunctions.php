@@ -250,7 +250,6 @@ function arxiv_api(array $ids, array &$templates) : bool {  // Pointer to save m
         if ($this_template->blank('title')) {
             $this_template->set('title', $the_arxiv_title);
             if ($the_arxiv_contribution !== '') $this_template->set('contribution', $the_arxiv_contribution);
-            echo "GOT ONE";
         } else {
             if ($the_arxiv_contribution !== '' && $this_template->blank('contribution')) $this_template->forget('contribution');
         }
