@@ -2084,6 +2084,15 @@ final class TemplateTest2 extends testBaseClass {
     $this->assertSame('10.1093/oso/9780198814122.003.0005', $template->get2('doi'));
    }
  
+   public function testUnPressScholDOIsType2() : void {
+    $text = "{{cite web|url=https://oxford.universitypressscholarship.com/view/10.1093/acprof:oso/9780199812295.001.0001/oso-9780199812295-chapter-7}}";
+    $template = $this->make_citation($text);
+    $template->tidy_parameter('url');
+    $this->assertSame('10.1093/acprof:oso/9780199812295.003.0007', $template->get2('doi'));
+    $this->assertSame('978-0-19-981229-5', $template->get2('isbn'));
+    $this->assertNull($template->get2('doi-broken-date'));
+   }
+ 
    public function testOxHandbookDOIs() : void {
     $text = "{{cite web|url=https://www.oxfordhandbooks.com/view/10.1093/oxfordhb/9780198824633.001.0001/oxfordhb-9780198824633-e-1|doi=10.0000/Rubbish_bot_failure_test|doi-broken-date=Y}}";
     $template = $this->make_citation($text);
