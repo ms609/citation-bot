@@ -4021,4 +4021,17 @@ EP - 999 }}';
     $this->assertFalse($template->add_if_new('chapter-url', 'https://www.cnn.com/'));
     $this->assertNull($template->get2('chapter-url'));
   }
+ 
+  public function testGoogleBadAuthor() : void {
+    $text = "{{cite book|url=https://books.google.com/books?id=5wllAAAAcAAJ }}";
+    $template = $this->process_citation($text);
+    $this->assertNull($template->get2('last1'));
+    $this->assertNull($template->get2('last'));
+    $this->assertNull($template->get2('author1'));
+    $this->assertNull($template->get2('author1'));
+    $this->assertNull($template->get2('first1'));
+    $this->assertNull($template->get2('first'));
+    $this->assertNotNull($template->get2('title'));
+  }
+ 
 }
