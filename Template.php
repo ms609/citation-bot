@@ -2464,7 +2464,6 @@ final class Template {
             ($this->has('jstor') && stripos($oa_hostname, 'jstor.org') !== FALSE) ||
             ($this->has('pmid') && stripos($oa_hostname, 'nlm.nih.gov') !== FALSE) ||
             (stripos($oa_hostname, 'doi.org') !== FALSE)) {
-          echo "GOT IT";
           return 'have free';
        }
        preg_match("~^https?://([^\/]+)/~", $oa_url . '/', $match);
