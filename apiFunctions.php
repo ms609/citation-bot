@@ -704,7 +704,6 @@ function expand_doi_with_dx(Template $template, string $doi) : bool {
           $try_to_add_it('chapter', @$json['categories']['0']);  // Not really right, but there is no cite data set template
        }
      } elseif (@$json['type'] == '') {  // Add what we can where we can
-       file_put_contents('CodeCoverage', $doi . " found blank type \n", FILE_APPEND);
        $try_to_add_it('title', @$json['title']);
        $try_to_add_it('location', @$json['publisher-location']);
        $try_to_add_it('publisher', @$json['publisher']);
