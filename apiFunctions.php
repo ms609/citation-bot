@@ -641,6 +641,7 @@ function expand_doi_with_dx(Template $template, string $doi) : bool {
      }
      $json = @json_decode($data, TRUE);
      if($json == FALSE) return FALSE;
+  print_r($json);
      // BE WARNED:  this code uses the "@$var" method.
      // If the variable is not set, then PHP just passes NULL, then that is interpreted as a empty string
      if ($template->blank(['date', 'year'])) {
@@ -654,7 +655,6 @@ function expand_doi_with_dx(Template $template, string $doi) : bool {
      $try_to_add_it('isbn', @$json['ISBN']['0']);
      $try_to_add_it('isbn', @$json['isbn-type']['0']['value']);
      if (isset($json['author'])) {
-         print_r($json['author']);
        $i = 0;
        foreach ($json['author'] as $auth) {
           $i = $i + 1;
