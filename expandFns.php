@@ -106,9 +106,12 @@ function is_doi_works(string $doi) : ?bool {
   }
   throttle_dx();
 
+  $headers_test = @get_headers("https://doi.org/" . doi_encode($doi), GET_THE_HEADERS);
+  print_r($headers_test);
   $context = stream_context_create(CONTEXT_INSECURE);
   set_time_limit(120);
   $headers_test = @get_headers("https://doi.org/" . doi_encode($doi), GET_THE_HEADERS, $context);
+  print_r($headers_test);
   $context = stream_context_create(CONTEXT_INSECURE_11);
   if ($headers_test === FALSE) {
      sleep(2);                                                                                        // @codeCoverageIgnore
@@ -128,6 +131,7 @@ function is_doi_works(string $doi) : ?bool {
      $headers_test = @get_headers("https://doi.org/" . doi_encode($doi), GET_THE_HEADERS, $context);  // @codeCoverageIgnore
      if ($headers_test === FALSE) return FALSE; /** We trust previous failure **/                     // @codeCoverageIgnore
   }
+  print_r($headers_test);
   if (preg_match('~^10\.1038/nature\d{5}$~i', $doi) && $headers_test === FALSE) return FALSE; // Nature dropped the ball for now TODO - https://dx.doi.org/10.1038/nature05009
   if ($headers_test === FALSE) return NULL; // most likely bad, but will recheck again and again
   if (empty($headers_test['Location']) && empty($headers_test['location'])) return FALSE; // leads nowhere
