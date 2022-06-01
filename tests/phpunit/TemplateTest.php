@@ -3518,26 +3518,26 @@ EP - 999 }}';
   public function testEditors() : void {
     $text = '{{cite journal|editor3=Set}}';
     $prepared = $this->prepare_citation($text);
-    $prepared->add_if_new('editor3-last', 'SetItL');
-    $prepared->add_if_new('editor3-first', 'SetItF');
+    $prepared->add_if_new('editor-last3', 'SetItL');
+    $prepared->add_if_new('editor-first3', 'SetItF');
     $prepared->add_if_new('editor3', 'SetItN');
     $this->assertSame('Set', $prepared->get2('editor3'));
-    $this->assertNull($prepared->get2('editor3-last'));
-    $this->assertNull($prepared->get2('editor3-first'));
+    $this->assertNull($prepared->get2('editor-last3'));
+    $this->assertNull($prepared->get2('editor-first3'));
    
     $text = '{{cite journal}}';
     $prepared = $this->prepare_citation($text);
-    $prepared->add_if_new('editor3-last', 'SetItL');
-    $prepared->add_if_new('editor3-first', 'SetItF');
+    $prepared->add_if_new('editor-last3', 'SetItL');
+    $prepared->add_if_new('editor-first3', 'SetItF');
     $prepared->add_if_new('editor3', 'SetItN'); // Should not get set
-    $this->assertSame('SetItL', $prepared->get2('editor3-last'));
-    $this->assertSame('SetItF', $prepared->get2('editor3-first'));
+    $this->assertSame('SetItL', $prepared->get2('editor-last3'));
+    $this->assertSame('SetItF', $prepared->get2('editor-first3'));
     $this->assertNull($prepared->get2('editor3'));
    
     $text = '{{cite journal}}';
     $prepared = $this->prepare_citation($text);
-    $prepared->add_if_new('editor33333-last', 'SetIt'); // Huge number
-    $this->assertSame('SetIt', $prepared->get2('editor33333-last'));
+    $prepared->add_if_new('editor-last33333', 'SetIt'); // Huge number
+    $this->assertSame('SetIt', $prepared->get2('editor-last33333'));
   }
  
   public function testAddPages() : void {
