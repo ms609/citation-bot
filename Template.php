@@ -2270,6 +2270,7 @@ final class Template {
         case "A3": // Only seen this once and it duplicated AU
         case "ET": // Might be edition of book as an integer
         case "C1": case "DB": case "AB": case "Y2": // The following line is from JSTOR RIS (basically the header and blank lines)
+          dfadsfsdfsd
         case "": case "Provider: JSTOR http://www.jstor.org": case "Database: JSTOR": case "Content: text/plain; charset=\"UTF-8\"";
           $dat = trim(str_replace("\n$ris_line", "", "\n$dat")); // Ignore these completely
           break;
