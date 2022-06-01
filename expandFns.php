@@ -131,13 +131,16 @@ function is_doi_works(string $doi) : ?bool {
   if (preg_match('~^10\.1038/nature\d{5}$~i', $doi) && $headers_test === FALSE) return FALSE; // Nature dropped the ball for now TODO - https://dx.doi.org/10.1038/nature05009
   if ($headers_test === FALSE) return NULL; // most likely bad, but will recheck again and again
   if (empty($headers_test['Location']) && empty($headers_test['location'])) return FALSE; // leads nowhere
-  if (stripos($headers_test[0], '404 Not Found') !== FALSE         || stripos($headers_test[0], 'HTTP/1.1 404') !== FALSE) return FALSE; // Bad
-  if (stripos($headers_test[0], '302 Found') !== FALSE             || stripos($headers_test[0], 'HTTP/1.1 302') !== FALSE) return TRUE;  // Good
-  if (stripos($headers_test[0], '301 Moved Permanently') !== FALSE || stripos($headers_test[0], 'HTTP/1.1 301') !== FALSE) { // Could be DOI change or bad prefix
-      if (stripos($headers_test[1], '302 Found') !== FALSE         || stripos($headers_test[1], 'HTTP/1.1 302') !== FALSE) {
+  $resp0 = (string) @$headers_test[0];
+  $resp1 = (string) @$headers_test[1];
+  $resp2 = (string) @$headers_test[2];
+  if (stripos($resp0, '404 Not Found') !== FALSE         || stripos($resp0, 'HTTP/1.1 404') !== FALSE) return FALSE; // Bad
+  if (stripos($resp0, '302 Found') !== FALSE             || stripos($resp0, 'HTTP/1.1 302') !== FALSE) return TRUE;  // Good
+  if (stripos($resp0, '301 Moved Permanently') !== FALSE || stripos($resp0, 'HTTP/1.1 301') !== FALSE) { // Could be DOI change or bad prefix
+      if (stripos($resp1, '302 Found') !== FALSE         || stripos($resp1, 'HTTP/1.1 302') !== FALSE) {
         return TRUE;  // Good
-      } elseif (stripos($headers_test[1], '301 Moved Permanently') !== FALSE  || stripos($headers_test[1], 'HTTP/1.1 301') !== FALSE) {
-        if (stripos(@$headers_test[2], '200 OK') !== FALSE         || stripos($headers_test[2], 'HTTP/1.1 200') !== FALSE) {
+      } elseif (stripos($resp1, '301 Moved Permanently') !== FALSE || stripos($resp1, 'HTTP/1.1 301') !== FALSE) {
+        if (stripos($resp2, '200 OK') !== FALSE         || stripos($resp2, 'HTTP/1.1 200') !== FALSE) {
           return TRUE;
         } else {
           return FALSE;
