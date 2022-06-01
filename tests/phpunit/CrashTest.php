@@ -18,6 +18,9 @@ final class CrashTest extends testBaseClass {
   public function testBadPage2() : void {  // Use this when debugging pages that crash the bot
     $text = "{{Cite web | doi=10.25300/MISQ/2015/39.4.9}}";
     $expanded = $this->process_citation($text);
+   
+    $text = "{{Cite web | doi=10.absd/3241}}";
+    $expanded = $this->process_citation($text);
     $this->assertSame('huh', $expanded->parsed_text());
   }
 
