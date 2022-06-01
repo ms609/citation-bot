@@ -507,8 +507,8 @@ function expand_by_doi(Template $template, bool $force = FALSE) : bool {
           if ($author["contributor_role"] == 'editor') {
             ++$ed_i;
             if ($ed_i < 31 && !isset($crossRef->journal_title)) {
-              $template->add_if_new("editor$ed_i-last", format_surname((string) $author->surname), 'crossref');
-              $template->add_if_new("editor$ed_i-first", format_forename((string) $author->given_name), 'crossref');
+              $template->add_if_new("editor-last$ed_i", format_surname((string) $author->surname), 'crossref');
+              $template->add_if_new("editor-first$ed_i", format_forename((string) $author->given_name), 'crossref');
             }
           } elseif ($author['contributor_role'] == 'author' && $add_authors) {
             ++$au_i;
