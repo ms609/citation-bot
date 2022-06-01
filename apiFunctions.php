@@ -131,6 +131,7 @@ function entrez_api(array $ids, array &$templates, string $db) : bool {   // Poi
           }
         break; case "LangList": case 'ISSN':
         break; case "ArticleIds":
+          $possible_pmid = [];
           foreach ($item->Item as $subItem) {
             switch ($subItem["Name"]) {
               case "pubmed": case "pmid":
@@ -143,34 +144,28 @@ function entrez_api(array $ids, array &$templates, string $db) : bool {   // Poi
                 break;
               case "pmcid":
                 if (preg_match("~embargo-date: ?(\d{4})\/(\d{2})\/(\d{2})~", (string) $subItem, $match)) {
-                   $date_emb = date("F j, Y", mktime(0, 0, 0, (int) $match[2], (int) $match[3], (int) $match[1]));
-                   $this_template->add_if_new('pmc-embargo-date', $date_emb, 'entrez');
+                   $date_emb = date("F j, Y", mktime(0, 0, 0, (int) $match[2], (int) $match[3], (int) $match[1]));  // @codeCoverageIgnore
+                   $this_template->add_if_new('pmc-embargo-date', $date_emb, 'entrez');                             // @codeCoverageIgnore  
                 }
-                break;
-              case "doi": case "pii":
-              default:
-                if (preg_match("~10\.\d{4}/[^\s\"']*~", (string) $subItem, $match)) {
-                  $this_template->add_if_new('doi', $match[0], 'entrez');
-                }
-                if (preg_match("~PMC\d+~", (string) $subItem, $match)) {
-                  $this_template->add_if_new('pmc', substr($match[0], 3), 'entrez');
-                }
-            }
-          }
-          // Special floating PMID code
-          $possible_pmid = [];
-          foreach ($item->Item as $subItem) {
-            switch ($subItem["Name"]) {
-              case "pubmed": case "pmid": case "pmc": case "doi": case "pii":
                 break;
               default:
                 if (preg_match("~^[1-9]\d{4,7}$~", (string) $subItem, $match)) {
                   $possible_pmid[] = $match[0];
                 }
+              case "doi": case "pii":
+                if (preg_match("~10\.\d{4}/[^\s\"']*~", (string) $subItem, $match)) {
+                  $this_template->add_if_new('doi', $match[0], 'entrez');
+                }
+                if (preg_match("~PMC\d+~", (string) $subItem, $match)) {
+                  file_put_contents('CodeCoverage', $match[0] . " This PMC###### was found using a PMID\n", FILE_APPEND);
+                  $this_template->add_if_new('pmc', substr($match[0], 3), 'entrez');
+                }
             }
           }
+          // Special floating PMID code
           $possible_pmid = array_unique($possible_pmid);
-          if (count($possible_pmid) === 1 && $possible_pmid[0] !== (string) $document->Id) { // Only one and it is not PMC
+          if (count($possible_pmid) === 1 && $possible_pmid[0] !== (string) $document->Id && $possible_pmid[0] !== $this_template->get('pmc')) { // Only one and it is not PMC
+            file_put_contents('CodeCoverage',$possible_pmid[0] . " PMID was found using a PMC " . (string) $document->Id . "\n", FILE_APPEND);
             $this_template->add_if_new('pmid', $possible_pmid[0], 'entrez');
           }
         break;
@@ -379,9 +374,6 @@ function adsabs_api(array $ids, array &$templates, string $identifier) : bool { 
            process_bibcode_data($this_template, $record);
          } else {
            expand_book_adsabs($this_template, $record);
-           if ($this_template->blank(['year', 'date']) && preg_match('~^(\d{4}).*book.*$~', $record->bibcode, $matches)) {
-              $this_template->add_if_new('year', $matches[1]);
-           }
         }
       }
     }
@@ -500,7 +492,7 @@ function expand_by_doi(Template $template, bool $force = FALSE) : bool {
       }
       $template->add_if_new('series', (string) $crossRef->series_title, 'crossref'); // add_if_new will format the title for a series?
       $template->add_if_new("year", (string) $crossRef->year, 'crossref');
-      if (   $template->blank(array('editor', 'editor1', 'editor-last', 'editor1-last')) // If editors present, authors may not be desired
+      if (   $template->blank(array('editor', 'editor1', 'editor-last', 'editor1-last', 'editor-last1')) // If editors present, authors may not be desired
           && $crossRef->contributors->contributor
         ) {
         $au_i = 0;
@@ -515,8 +507,8 @@ function expand_by_doi(Template $template, bool $force = FALSE) : bool {
           if ($author["contributor_role"] == 'editor') {
             ++$ed_i;
             if ($ed_i < 31 && !isset($crossRef->journal_title)) {
-              $template->add_if_new("editor$ed_i-last", format_surname((string) $author->surname), 'crossref');
-              $template->add_if_new("editor$ed_i-first", format_forename((string) $author->given_name), 'crossref');
+              $template->add_if_new("editor-last$ed_i", format_surname((string) $author->surname), 'crossref');
+              $template->add_if_new("editor-first$ed_i", format_forename((string) $author->given_name), 'crossref');
             }
           } elseif ($author['contributor_role'] == 'author' && $add_authors) {
             ++$au_i;
@@ -658,7 +650,7 @@ function expand_doi_with_dx(Template $template, string $doi) : bool {
        foreach ($json['author'] as $auth) {
           $i = $i + 1;
           if (((string) @$auth['family'] === '') && ((string) @$auth['given'] !== '')) {
-             $try_to_add_it('author' . (string) $i, @$auth['given']); // First name without last name.  Probably an organization
+             $try_to_add_it('author' . (string) $i, @$auth['given']); // First name without last name.  Probably an organization or chinese/korean/japanese name
           } else {
              $try_to_add_it('last' . (string) $i, @$auth['family']);
              $try_to_add_it('first' . (string) $i, @$auth['given']);
@@ -703,7 +695,7 @@ function expand_doi_with_dx(Template $template, string $doi) : bool {
            (($template->wikiname() === 'cite book') || $template->blank(WORK_ALIASES))) { // No journal/magazine set and can convert to book
           $try_to_add_it('chapter', @$json['categories']['0']);  // Not really right, but there is no cite data set template
        }
-     } elseif (@$json['type'] == ''dsfadsfdsf) {  // Add what we can where we can
+     } elseif (@$json['type'] == '' || @$json['type'] == 'graphic') {  // Add what we can where we can
        $try_to_add_it('title', @$json['title']);
        $try_to_add_it('location', @$json['publisher-location']);
        $try_to_add_it('publisher', @$json['publisher']);
@@ -779,7 +771,7 @@ function expand_by_jstor(Template $template) : bool {
         case "T2":
         case "BT":
           $new_title = trim($ris_part[1]);
-          foreach (['chapter', 'title', 'series', 'trans-title'] as $possible) {
+          foreach (['chapter', 'title', 'series', 'trans-title', 'book-title'] as $possible) {
             if ($template->has($possible) && titles_are_similar($template->get($possible), $new_title)) {
               $bad_data = FALSE;
             }
@@ -808,7 +800,7 @@ function expand_by_jstor(Template $template) : bool {
         }
       }
       if ($got_count === 110) { // Exactly one of each
-        foreach (['chapter', 'title', 'series', 'trans-title'] as $possible) {
+        foreach (['chapter', 'title', 'series', 'trans-title', 'book-title'] as $possible) {
           if ($template->has($possible) && titles_are_similar($template->get($possible), $new_title)) {
             $bad_data = FALSE;
           }

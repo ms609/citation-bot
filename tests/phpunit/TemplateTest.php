@@ -1601,6 +1601,13 @@ final class TemplateTest extends testBaseClass {
    $this->assertNull($template->get2('url'));
   }
  
+  public function testUnPaywall3() : void { // This DOI is free and resolves to doi.org
+   $text = "{{cite journal|doi=10.1016/j.ifacol.2017.08.010}}";
+   $template = $this->make_citation($text);
+   $template->get_unpaywall_url($template->get2('doi'));
+   $this->assertNull($template->get2('url'));
+  }
+ 
   public function testCommentHandling() : void {
     $text = "{{cite book|pages=3333 <!-- yes --> }} {{cite book <!-- no --> | pages=3<nowiki>-</nowiki>6}} {{cite book | pages=3<pre>-</pre>6}} {{cite book | pages=3<math>-</math>6}} {{cite book | pages=3<score>-</score>6}} {{cite book | pages=3<chem>-</chem>6}}";
     $expanded_page = $this->process_page($text);
@@ -1872,6 +1879,34 @@ final class TemplateTest extends testBaseClass {
       $text = '{{citation|year=2000|year=2001|year=2000|year=2001|year=2000}}';
       $prepared = $this->process_citation($text);
       $this->assertSame('{{citation|DUPLICATE_year=2000|DUPLICATE_year=2001|DUPLICATE_year=2000|DUPLICATE_year=2001|year=2000}}', $prepared->parsed_text());
+  
+      $text = "{{Cite web|year=|year=2000}}";
+      $expanded = $this->process_citation($text);
+      $this->assertSame('{{Cite web|year=2000}}', $expanded->parsed_text());
+
+      $text = "{{Cite web|year=2000|year=2000}}";
+      $expanded = $this->process_citation($text);
+      $this->assertSame('{{Cite web|year=2000}}', $expanded->parsed_text());
+
+      $text = "{{Cite web|year|year=2000}}";
+      $expanded = $this->process_citation($text);
+      $this->assertSame('{{Cite web|year|year=2000}}', $expanded->parsed_text());
+
+      $text = "{{Cite web|year|year}}";
+      $expanded = $this->process_citation($text);
+      $this->assertSame('{{Cite web|year|year}}', $expanded->parsed_text());
+
+      $text = "{{Cite web|year|year 2000}}";
+      $expanded = $this->process_citation($text);
+      $this->assertSame('{{Cite web|year| year=2000 }}', $expanded->parsed_text());
+
+      $text = "{{Cite web|year 2000|year }}";
+      $expanded = $this->process_citation($text);
+      $this->assertSame('{{Cite web|year | year=2000 }}', $expanded->parsed_text());
+     
+      $text = '{{citation|year=2000|year=||||||||||||||||||||||||||||||||||||||||}}';
+      $prepared = $this->process_citation($text);
+      $this->assertSame('{{citation|year=2000}}', $prepared->parsed_text());
   }
  
   public function testFixCAPSJunk() : void {
@@ -3483,26 +3518,33 @@ EP - 999 }}';
   public function testEditors() : void {
     $text = '{{cite journal|editor3=Set}}';
     $prepared = $this->prepare_citation($text);
-    $prepared->add_if_new('editor3-last', 'SetItL');
-    $prepared->add_if_new('editor3-first', 'SetItF');
+    $prepared->add_if_new('editor-last3', 'SetItL');
+    $prepared->add_if_new('editor-first3', 'SetItF');
     $prepared->add_if_new('editor3', 'SetItN');
     $this->assertSame('Set', $prepared->get2('editor3'));
-    $this->assertNull($prepared->get2('editor3-last'));
-    $this->assertNull($prepared->get2('editor3-first'));
+    $this->assertNull($prepared->get2('editor-last3'));
+    $this->assertNull($prepared->get2('editor-first3'));
    
     $text = '{{cite journal}}';
     $prepared = $this->prepare_citation($text);
-    $prepared->add_if_new('editor3-last', 'SetItL');
-    $prepared->add_if_new('editor3-first', 'SetItF');
+    $prepared->add_if_new('editor-last3', 'SetItL');
+    $prepared->add_if_new('editor-first3', 'SetItF');
     $prepared->add_if_new('editor3', 'SetItN'); // Should not get set
-    $this->assertSame('SetItL', $prepared->get2('editor3-last'));
-    $this->assertSame('SetItF', $prepared->get2('editor3-first'));
+    $this->assertSame('SetItL', $prepared->get2('editor-last3'));
+    $this->assertSame('SetItF', $prepared->get2('editor-first3'));
     $this->assertNull($prepared->get2('editor3'));
    
     $text = '{{cite journal}}';
     $prepared = $this->prepare_citation($text);
-    $prepared->add_if_new('editor33333-last', 'SetIt'); // Huge number
-    $this->assertSame('SetIt', $prepared->get2('editor33333-last'));
+    $prepared->add_if_new('editor-last33', 'SetIt'); // Huge number
+    $this->assertNull($prepared->get2('editor-last33'));
+    $this->assertNull($prepared->get2('display-editors'));
+   
+    $text = '{{cite journal|editor29=dfasddsfadsd}}';
+    $prepared = $this->prepare_citation($text);
+    $prepared->add_if_new('editor-last33', 'SetIt');
+    $this->assertNull($prepared->get2('editor-last33'));
+    $this->assertSame('1', $prepared->get2('display-editors'));
   }
  
   public function testAddPages() : void {
@@ -3947,4 +3989,91 @@ EP - 999 }}';
     $this->assertSame("https://xy.com", $template->get2('archive-url'));
     $this->assertNull($template->get2('archive'));
   }
+ 
+  public function testModsArray() : void {
+    $text = '{{cite journal | citation_bot_placeholder_bare_url = XYX }}';
+    $template = $this->make_citation($text);
+    $template->add('title', 'Thus');
+    $this->assertNotNull($template->get2('citation_bot_placeholder_bare_url'));
+    $array = $template->modifications();
+    $expected = array ( 'modifications' =>  array ( 0 => 'title',  ),
+                        'additions' =>  array ( 0 => 'title',  ),
+                        'deletions' =>  array ( 0 => 'citation_bot_placeholder_bare_url', ),
+                        'changeonly' => array (  ),
+                        'dashes' => FALSE,
+                        'names' => FALSE,);
+    $this->assertEqualsCanonicalizing($expected, $array);
+    $this->assertNull($template->get2('citation_bot_placeholder_bare_url'));
+  }
+ 
+  public function testMistakesWeDoNotFix() : void {
+    $text = '{{new cambridge medieval history|ed10=That Guy}}';
+    $template = $this->prepare_citation($text);
+    $array = $template->modifications();
+    $expected = array ('modifications' => array ( ), 'additions' => array ( ), 'deletions' => array ( ), 'changeonly' => array ( ), 'dashes' => false, 'names' => false, );
+    $this->assertEqualsCanonicalizing($expected, $array);
+  }
+ 
+  public function testOAChapterURL() : void {
+    $text = "{{cite book|doi=10.1007/978-3-319-18111-0_47|chapter=Cross-Dialectal Arabic Processing |title=Computational Linguistics and Intelligent Text Processing |series=Lecture Notes in Computer Science |year=2015 |last1=Harrat |first1=Salima |last2=Meftouh |first2=Karima |last3=Abbas |first3=Mourad |last4=Jamoussi |first4=Salma |last5=Saad |first5=Motaz |last6=Smaili |first6=Kamel |volume=9041 |pages=620–632 |isbn=978-3-319-18110-3 }}";
+    $template = $this->make_citation($text);
+    $template->get_unpaywall_url('10.1007/978-3-319-18111-0_47');
+    $this->assertNotNull($template->get2('chapter-url'));
+  }
+ 
+  public function testChaptURLisDup() : void {
+    $text = "{{cite book|url=https://www.cnn.com/ }}";
+    $template = $this->make_citation($text);
+    $template->get_unpaywall_url('10.1007/978-3-319-18111-0_47');
+    $this->assertFalse($template->add_if_new('chapter-url', 'https://www.cnn.com/'));
+    $this->assertNull($template->get2('chapter-url'));
+  }
+ 
+  public function testGoogleBadAuthor() : void {
+    $text = "{{cite book|url=https://books.google.com/books?id=5wllAAAAcAAJ }}";
+    $template = $this->process_citation($text);
+    $this->assertNull($template->get2('last1'));
+    $this->assertNull($template->get2('last'));
+    $this->assertNull($template->get2('author1'));
+    $this->assertNull($template->get2('author'));
+    $this->assertNull($template->get2('first1'));
+    $this->assertNull($template->get2('first'));
+    $this->assertNotNull($template->get2('title'));
+  }
+ 
+ 
+  public function testDoiHasNoLastFirstSplit() : void {
+    $text = "{{cite journal|doi=10.11468/seikatsueisei1925.16.2_123}}";
+    $template = $this->process_citation($text);
+    $this->assertNull($template->get2('last1'));
+    $this->assertNull($template->get2('last'));
+    $this->assertNull($template->get2('author'));
+    $this->assertNull($template->get2('first1'));
+    $this->assertNull($template->get2('first'));
+    $this->assertSame("大阪市立衛生試験所", $template->get2('author1'));
+  }
+ 
+  public function testRejectDuplicateFreeURL() : void {
+    $text = '{{cite journal | doi =  10.1103/PhysRevE.103.012115 }}';  // Give OSTI, thus will not add url
+    $template = $this->make_citation($text);
+    $template->get_open_access_url();
+    $this->assertEquals('1778027', $template->get2('osti'));
+    $template->get_open_access_url();
+    $this->assertNull($template->get2('url'));
+  }
+ 
+  public function testArxivHasDOIwithoutData() : void { // This doi is dead, so it takes different path in code
+    $text = '{{citation|arxiv=2202.10024|title=TESS discovery of a sub-Neptune orbiting a mid-M dwarf TOI-2136}}';
+    $template = $this->process_citation($text);
+    $this->assertSame('TESS discovery of a sub-Neptune orbiting a mid-M dwarf TOI-2136', $template->get2('title'));
+    $this->assertSame('10.1093/mnras/stac1448', $template->get2('doi'));
+  }
+ 
+  public function testChapterCausesBookInFinal() : void {
+    $text = '{{cite journal |last1=Délot |first1=Emmanuèle C |last2=Vilain |first2=Eric J |title=Nonsyndromic 46,XX Testicular Disorders of Sex Development |chapter=Nonsyndromic 46,XX Testicular Disorders/Differences of Sex Development |journal=GeneReviews |date=2003 |url=https://www.ncbi.nlm.nih.gov/books/NBK1416/ |access-date=6 December 2018 |archive-date=23 June 2020 |archive-url=https://web.archive.org/web/20200623171901/https://www.ncbi.nlm.nih.gov/books/NBK1416/ |url-status=live }}';
+    $template = $this->make_citation($text);
+    $template->final_tidy();
+    $this->assertSame('cite book', $template->wikiname());
+  }
+
 }

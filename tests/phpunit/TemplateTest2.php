@@ -833,11 +833,11 @@ final class TemplateTest2 extends testBaseClass {
   public function testAddEditor() : void {
     $text = "{{cite journal}}";
     $template = $this->make_citation($text);
-    $this->assertTrue($template->add_if_new('editor1-last', 'Phil'));
-    $this->assertSame('Phil', $template->get2('editor1-last'));
+    $this->assertTrue($template->add_if_new('editor-last1', 'Phil'));
+    $this->assertSame('Phil', $template->get2('editor-last1'));
     $text = "{{cite journal|editor-last=Junk}}";
     $template = $this->make_citation($text);
-    $this->assertFalse($template->add_if_new('editor1-last', 'Phil'));
+    $this->assertFalse($template->add_if_new('editor-last1', 'Phil'));
     $text = "{{cite journal}}";
     $template = $this->make_citation($text);
     $this->assertTrue($template->add_if_new('editor1', 'Phil'));
@@ -2082,6 +2082,15 @@ final class TemplateTest2 extends testBaseClass {
     $template->forget('doi');
     $template->tidy_parameter('url');
     $this->assertSame('10.1093/oso/9780198814122.003.0005', $template->get2('doi'));
+   }
+ 
+   public function testUnPressScholDOIsType2() : void {
+    $text = "{{cite web|url=https://oxford.universitypressscholarship.com/view/10.1093/acprof:oso/9780199812295.001.0001/oso-9780199812295-chapter-7}}";
+    $template = $this->make_citation($text);
+    $template->tidy_parameter('url');
+    $this->assertSame('10.1093/acprof:oso/9780199812295.003.0007', $template->get2('doi'));
+    $this->assertSame('978-0-19-981229-5', $template->get2('isbn'));
+    $this->assertNull($template->get2('doi-broken-date'));
    }
  
    public function testOxHandbookDOIs() : void {
@@ -3465,6 +3474,20 @@ final class TemplateTest2 extends testBaseClass {
      $this->assertNull($template->get2('id'));
   }
  
+  public function testCiteODNB6() : void {
+     $text = '{{Cite ODNB|id=107316|doi=10.1093/odnb/9780198614128.013.107316}}';
+     $template = $this->process_citation($text);
+     $this->assertSame('10.1093/odnb/9780198614128.013.107316', $template->get2('doi'));
+     $this->assertNull($template->get2('id'));
+  }
+ 
+  public function testCiteODNB7() : void { // Prefer given doi over ID, This is a contrived test
+     $text = '{{Cite ODNB|id=107316|doi=10.1038/ncomms14879}}';
+     $template = $this->process_citation($text);
+     $this->assertSame('10.1038/ncomms14879', $template->get2('doi'));
+     $this->assertNull($template->get2('id'));
+  }
+ 
   public function testSemanticscholar1() : void {
      $text = '{{cite web|url=https://semanticscholar.org/paper/861fc89e94d8564adc670fbd35c48b2d2f487704}}';
      $template = $this->process_citation($text);
@@ -4324,6 +4347,10 @@ final class TemplateTest2 extends testBaseClass {
       $text = "{{cite document|url=x|pmc=x}}";
       $expanded = $this->process_citation($text);
       $this->AssertSame('cite journal', $expanded->wikiname());
+      
+      $text = "{{cite document|title=This|chapter=That}}";
+      $expanded = $this->process_citation($text);
+      $this->AssertSame('cite book', $expanded->wikiname());
     }
 
     public function testCitePaper() : void {
@@ -4400,6 +4427,10 @@ final class TemplateTest2 extends testBaseClass {
       $text = "{{cite paper|hdl=20.1000/100?urlappend=%3Bseq=326%3Bownerid=13510798900390116-35urlappend}}";
       $expanded = $this->process_citation($text);
       $this->AssertSame('20.1000/100', $expanded->get2('hdl'));
+     
+      $text = "{{cite paper|hdl=2027/mdp.39015077587742?urlappend=}}";
+      $expanded = $this->process_citation($text);
+      $this->AssertSame('2027/mdp.39015077587742', $expanded->get2('hdl'));
     }
  
    public function testSillyURL() : void { // This get checks by string match, but not regex
@@ -4448,6 +4479,41 @@ final class TemplateTest2 extends testBaseClass {
 
     public function testFinalTidyThings1() : void {
       $text = "{{Cite web|title=Stuff|chapter=More Stuff}}";
+      $expanded = $this->make_citation($text);
+      $expanded->final_tidy();
+      $this->AssertSame('cite book', $expanded->wikiname());
+
+      $text = "{{Cite web|title=Stuff|chapter=More Stuff|series=X|journal=Y}}";
+      $expanded = $this->make_citation($text);
+      $expanded->final_tidy();
+      $this->AssertSame('cite book', $expanded->wikiname());
+
+      $text = "{{Cite web|title=Stuff|chapter=More Stuff|journal=Y}}";
+      $expanded = $this->make_citation($text);
+      $expanded->final_tidy();
+      $this->AssertSame('cite book', $expanded->wikiname());
+
+      $text = "{{Cite web|title=Stuff|chapter=More Stuff|series=X}}";
+      $expanded = $this->make_citation($text);
+      $expanded->final_tidy();
+      $this->AssertSame('cite book', $expanded->wikiname());
+     
+      $text = "{{cite web|title=Stuff|chapter=More Stuff}}";
+      $expanded = $this->make_citation($text);
+      $expanded->final_tidy();
+      $this->AssertSame('cite book', $expanded->wikiname());
+
+      $text = "{{cite web|title=Stuff|chapter=More Stuff|series=X|journal=Y}}";
+      $expanded = $this->make_citation($text);
+      $expanded->final_tidy();
+      $this->AssertSame('cite book', $expanded->wikiname());
+
+      $text = "{{cite web|title=Stuff|chapter=More Stuff|journal=Y}}";
+      $expanded = $this->make_citation($text);
+      $expanded->final_tidy();
+      $this->AssertSame('cite book', $expanded->wikiname());
+
+      $text = "{{cite web|title=Stuff|chapter=More Stuff|series=X}}";
       $expanded = $this->make_citation($text);
       $expanded->final_tidy();
       $this->AssertSame('cite book', $expanded->wikiname());

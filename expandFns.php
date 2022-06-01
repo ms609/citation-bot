@@ -48,6 +48,7 @@ function doi_works(string $doi) : ?bool {
   if (count($cache_good) > 100000) $cache_good = [];
   $works = is_doi_works($doi);
   if ($works === NULL) {
+    file_put_contents('CodeCoverage', $doi . " returns NULL from dx.doi.org \n", FILE_APPEND);
     return NULL; // @codeCoverageIgnore
   }
   if ($works === FALSE) {
@@ -1182,4 +1183,10 @@ function safe_preg_replace(string $regex, string $replace, string $old) : string
   $new = preg_replace($regex, $replace, $old);
   if ($new === NULL) return $old;
   return (string) $new;
+}
+
+function wikifyURL(string $url) : string {
+   $in  = array('"', "'", '<', '>', '[', ']', '{', '|', '}');
+   $out = array('%20', '%22', '%27', '%3C', '%3E', '%5B', '%5D', '%7B', '%7C', '%7D');
+   return str_replace($in, $out, $url);
 }

@@ -297,7 +297,7 @@ final class apiFunctionsTest extends testBaseClass {
   public function testCrossRefAddEditors() : void {
      $text = "{{Cite book | doi = 10.1117/12.135408}}";
      $template = $this->process_citation($text);
-     $this->assertSame("Kopera", $template->get2('editor1-last'));
+     $this->assertSame("Kopera", $template->get2('editor-last1'));
   }
 
   public function testBibcodeData1() : void {
@@ -952,5 +952,21 @@ final class apiFunctionsTest extends testBaseClass {
     $prepared = $this->make_citation($text);
     $prepared->expand_by_adsabs();
     $this->assertNull($prepared->get2('bibcode'));
+  }
+
+  public function testJstorGoofyRIS() : void {
+    $text = "{{cite book| jstor=resrep24545| title=Safeguarding Digital Democracy Digital Innovation and Democracy Initiative Roadmap}}";
+    $prepared = $this->process_citation($text);
+    $this->assertSame('Kornbluh', $prepared->get2('last1'));
+  }
+
+  public function testBlankTypeFromDX() : void {
+    $text = "{{cite book| doi=10.14989/doctor.k19250 }}";
+    $prepared = $this->process_citation($text);
+    $this->assertSame('2015', $prepared->get2('year'));
+    
+    $text = "{{Cite journal|doi=10.26099/aacp-5268}}";
+    $prepared = $this->process_citation($text);
+    $this->assertSame('Collins', $prepared->get2('last1'));
   }
 }

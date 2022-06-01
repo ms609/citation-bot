@@ -425,5 +425,22 @@ abstract class testBaseClass extends PHPUnit\Framework\TestCase {
     hdl_works('1807/32368');
     hdl_works('10125/dfsjladsflhdsfaewfsdfjhasjdfhldsaflkdshkafjhsdjkfhdaskljfhdsjklfahsdafjkldashafldsfhjdsa_TEST_DATA_FOR_BOT_TO_FAIL_ON');
     hdl_works('10125/20269');
+    doi_works('10.1017/CBO9780511983658');
+    doi_works('10.1002/0470841559.ch1');
+    doi_works('10.1594/PANGAEA.726855');
+    doi_works('10.1594/GFZ.GEOFON.gfz2009kciu');
+    doi_works('10.1594/PANGAEA.667386');
+    doi_works('10.3207/2959859860');
+    doi_works('10.3866/PKU.WHXB201112303');
+    doi_works('10.3972/water973.0145.db');
+    doi_works('10.7666/d.y351065');
+    doi_works('10.11467/isss2003.7.1_11');
+    doi_works('10.7875/leading.author.2.e008');
+    doi_works('10.1430/8105');
+    doi_works('10.1392/BC1.0');
+    doi_works('10.6620/ZS.2018.57-30');
+    doi_works('10.5240/7B2F-ED76-31F6-8CFB-4DB9-M');
+    doi_works('10.3743/KOSIM.2011.28.2.117');
+    doi_works('10.2788/14231');
   }
 }

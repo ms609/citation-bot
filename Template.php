@@ -784,10 +784,19 @@ final class Template {
     }
 
     if ($param_name !== 's2cid') {
-     if ((int) substr($param_name, -4) > 0 || (int) substr($param_name, -3) > 0 || (int) substr($param_name, -2) > 30) {
-      // Stop at 30 authors - or page codes will become cluttered!
-      if ((bool) $this->get('last29') || (bool) $this->get('author29') || (bool) $this->get('surname29')) $this->add_if_new('display-authors', '1');
-      return FALSE;
+     if (strpos($param_name, 'last') === 0 || strpos($param_name, 'first') === 0 || strpos($param_name, 'author') === 0) {
+      if ((int) substr($param_name, -4) > 0 || (int) substr($param_name, -3) > 0 || (int) substr($param_name, -2) > 30) {
+       // Stop at 30 authors - or page codes will become cluttered!
+       if ((bool) $this->get('last29') || (bool) $this->get('author29') || (bool) $this->get('surname29')) $this->add_if_new('display-authors', '1');
+       return FALSE;
+      }
+     }
+     if (strpos($param_name, 'editor') === 0) {
+      if ((int) substr($param_name, -4) > 0 || (int) substr($param_name, -3) > 0 || (int) substr($param_name, -2) > 30) {
+       // Stop at 30 authors - or page codes will become cluttered!
+       if ((bool) $this->get('editor29') || (bool) $this->get('editor-last29') || (bool) $this->get('editor29-last')) $this->add_if_new('display-editors', '1');
+       return FALSE;
+      }
      }
     }
 
@@ -804,7 +813,7 @@ final class Template {
         }
         return FALSE;
 
-      case (bool) preg_match('~^editor(\d{1,})-first$~', $param_name, $match) :
+      case (bool) preg_match('~^editor-first(\d{1,})$~', $param_name, $match) :
         if ($this->had_initial_editor) return FALSE;
         if (!$this->blank(['editors', 'editor', 'editor-last', 'editor-first'])) return FALSE; // Existing incompatible data
         if ($this->blank(['editor' . $match[1], 'editor' . $match[1] . '-first', 'editor-first' . $match[1]])) {
@@ -812,7 +821,7 @@ final class Template {
         }
         return FALSE;
 
-      case (bool) preg_match('~^editor(\d{1,})-last$~', $param_name, $match) :
+      case (bool) preg_match('~^editor-last(\d{1,})$~', $param_name, $match) :
         if ($this->had_initial_editor) return FALSE;
         if (!$this->blank(['editors', 'editor', 'editor-last', 'editor-first'])) return FALSE; // Existing incompatible data
         if ($this->blank(['editor' . $match[1], 'editor' . $match[1] . '-last', 'editor-last' . $match[1]])) {
@@ -1340,6 +1349,15 @@ final class Template {
           }
         }
         return $this->add($param_name, $value);
+        
+      case 'chapter-url':
+        $value = sanitize_string($value);
+        foreach (ALL_URL_TYPES as $existing)  {
+          if (str_i_same($value, $this->get($existing))) {
+            return FALSE;
+          }
+        }
+        return $this->add($param_name, $value);
 
       case 'archive-url':
         if ($this->blank(['archive-url', 'archiveurl'])) {
@@ -1808,7 +1826,7 @@ final class Template {
         foreach ($Items as $item) {
            if ((string) $item->attributes()->Name === 'Title') {
                $new_title = str_replace(array("[", "]"), "", (string) $item);
-               foreach (['chapter', 'title', 'series', 'trans-title'] as $possible) {
+               foreach (['chapter', 'title', 'series', 'trans-title', 'book-title'] as $possible) {
                  if ($this->has($possible) && titles_are_similar($this->get($possible), $new_title)) {
                    $this->add_if_new('pmid', $results[0]);
                    return;
@@ -2004,15 +2022,6 @@ final class Template {
       return FALSE;                                           // @codeCoverageIgnore
     }
 
-    if (strpos($this->get('bibcode'), 'book') !== FALSE) {
-      if ($result->numFound !== 1) {
-        if ($this->blank(['year', 'date']) && preg_match('~^(\d{4}).*book.*$~', $this->get('bibcode'), $matches)) {
-            $this->add_if_new('year', $matches[1]);
-        }
-        return FALSE; 
-      }
-      return expand_book_adsabs($this, $result->docs[0]);
-    }
     if ($result->numFound === 0) {
       // Avoid blowing through our quota
       if ((!in_array($this->wikiname(), ['cite journal', 'citation', 'cite conference', 'cite book', 'cite arxiv', 'cite article'])) || // Unlikely to find anything
@@ -2111,13 +2120,14 @@ final class Template {
 
       if ($this->blank('bibcode')) {
         $this->add_if_new('bibcode_nosearch', (string) $record->bibcode);
-      } elseif ($this->get('bibcode') !== (string) $record->bibcode && stripos($this->get('bibcode'), 'CITATION_BOT_PLACEHOLDER') === FALSE) {
-        report_info("Updating " . bibcode_link($this->get('bibcode')) . " to " .  bibcode_link((string) $record->bibcode));
-        $this->set('bibcode', (string) $record->bibcode); // The bibcode has been updated
-      }
+        // The code below is not used anymore, since bot always uses interface in APIfunctions for existing bibcodes
+      } elseif ($this->get('bibcode') !== (string) $record->bibcode && stripos($this->get('bibcode'), 'CITATION_BOT_PLACEHOLDER') === FALSE) { // @codeCoverageIgnore
+        report_info("Updating " . bibcode_link($this->get('bibcode')) . " to " .  bibcode_link((string) $record->bibcode));                    // @codeCoverageIgnore
+        $this->set('bibcode', (string) $record->bibcode);                                                                                      // @codeCoverageIgnore
+      }                                                                                                                                        // @codeCoverageIgnore
       process_bibcode_data($this, $record);
       return TRUE;
-    } elseif ($result->numFound === 0) {                         // @codeCoverageIgnore
+    } elseif ($result->numFound === 0) {                        // @codeCoverageIgnore
       report_inline('no record retrieved.');                    // @codeCoverageIgnore
       return FALSE;                                             // @codeCoverageIgnore
     } else {                                                    // @codeCoverageIgnore
@@ -2806,6 +2816,7 @@ final class Template {
     if ($this->blank(array_merge(FIRST_EDITOR_ALIASES, FIRST_AUTHOR_ALIASES, ['publisher', 'journal', 'magazine', 'periodical']))) { // Too many errors in gBook database to add to existing data.   Only add if blank.
       foreach ($xml->dc___creator as $author) {
         if (strtolower(str_replace("___", ":", (string) $author)) === "gale group") break;
+        if (preg_match('~\d{4}~', (string) $author)) break; // Has a date in it
         $this->validate_and_add('author' . (string) ++$i, str_replace("___", ":", (string) $author), '', '', TRUE);
         if ($this->blank(['author' . (string) $i, 'first' . (string) $i, 'last' . (string) $i])) $i--; // It did not get added
       }
@@ -2865,7 +2876,7 @@ final class Template {
         if ($par->val === '') {
           $par->val = $this->param[$duplicate_pos]->val;
         } elseif ($this->param[$duplicate_pos]->val === '') {
-          $this->param[$duplicate_pos]->val = $par->val;
+          report_error('Invalid event in Template::use_unnamed_params'); // @codeCoverageIgnore
         }
         array_unshift($duplicated_parameters, $duplicate_pos);
         array_unshift($duplicate_identical, (mb_strtolower(trim((string) $par->val)) === mb_strtolower(trim((string) $this->param[$duplicate_pos]->val)))); // Drop duplicates that differ only by case
@@ -3932,16 +3943,6 @@ final class Template {
           if (preg_match('~^(.+)(%3Bownerid=.*)$~', $handle, $matches)) {  // should we shorten it?
             if (hdl_works($handle) === FALSE) {
                $handle = $matches[1];
-            } elseif (hdl_works($handle) === NULL) {
-               ; // Do nothing
-            } elseif (stripos($matches[2], 'urlappend') === FALSE) {
-              $handle = $matches[1];
-            } else {
-               $long  = hdl_works($handle);
-               $short = hdl_works($matches[1]);
-               if ($long === $short) { // ownerid does nothing
-                 $handle = $matches[1];
-               }
             }
           }
           if (preg_match('~^(.+)\?urlappend=~', $handle, $matches)) {  // should we shorten it?
@@ -5011,9 +5012,6 @@ final class Template {
           if (preg_match('~^https?://www\.oxforddnb\.com/view/10\.1093/(?:ref:|)odnb/9780198614128\.001\.0001/odnb\-9780198614128\-e\-(\d+)$~', $this->get($param), $matches)) {
               $new_doi = '10.1093/ref:odnb/' . $matches[1];
               if (!doi_works($new_doi)) {
-                $new_doi = '10.1093/odnb/' . $matches[1];
-              }
-              if (!doi_works($new_doi)) {
                 $new_doi = '10.1093/odnb/9780198614128.013.' . $matches[1];
               }
               if (doi_works($new_doi)) {
@@ -5369,10 +5367,10 @@ final class Template {
               }
           }
 
-          if (preg_match('~^https?://oxford\.universitypressscholarship\.com/(?:view|abstract)/10\.1093/oso/(\d{13})\.001\.0001/oso\-(\d{13})\-chapter\-(\d+)$~', $this->get($param), $matches)) {
-            if ($matches[1] === $matches[2]) {
-              $this->add_if_new('isbn', $matches[1]);
-              $new_doi = '10.1093/oso/' . $matches[1] . '.003.' . str_pad($matches[3], 4, "0", STR_PAD_LEFT);
+          if (preg_match('~^https?://oxford\.universitypressscholarship\.com/(?:view|abstract)/10\.1093/(oso|acprof:oso)/(\d{13})\.001\.0001/oso\-(\d{13})\-chapter\-(\d+)$~', $this->get($param), $matches)) {
+            if ($matches[2] === $matches[3]) {
+              $this->add_if_new('isbn', $matches[2]);
+              $new_doi = '10.1093/' . $matches[1] . '/' . $matches[2] . '.003.' . str_pad($matches[4], 4, "0", STR_PAD_LEFT);
               if (doi_works($new_doi)) {
                 if ($this->has('doi') && $this->has('doi-broken-date')) {
                     $this->set('doi', '');
@@ -6060,10 +6058,10 @@ final class Template {
       }
       if (($this->wikiname() === 'cite document' || $this->wikiname() === 'cite journal' || $this->wikiname() === 'cite web') &&
           (strpos($this->get('isbn'), '978-0-19') === 0 || strpos($this->get('isbn'), '978019') === 0 || strpos($this->get('isbn'), '978-019') === 0)) {
-         $this->change_name_to('cite book');
+         $this->change_name_to('cite book', TRUE, TRUE);
       }
       if ($this->blank('pmc-embargo-date')) $this->forget('pmc-embargo-date'); // Do at the very end, so we do not delete it, then add it later in a different position
-      if ($this->wikiname() === 'cite arxiv' && $this->get_without_comments_and_placeholders('doi')) {
+      if ($this->wikiname() === 'cite arxiv' && $this->get_without_comments_and_placeholders('doi') && stripos($this->get_without_comments_and_placeholders('doi'), 'arxiv') === FALSE) {
         $this->change_name_to('cite journal');
       }
       if ($this->wikiname() === 'cite arxiv' && $this->has('bibcode')) {
@@ -6197,7 +6195,7 @@ final class Template {
         $this->rename('chapter', 'title');
       }
       if (($this->wikiname() === 'cite journal' || $this->wikiname() === 'cite document' || $this->wikiname() === 'cite web') && $this->has('chapter')) { // At least avoid a template error
-        $this->change_name_to('cite book');
+        $this->change_name_to('cite book', TRUE, TRUE);
       }
       if (($this->wikiname() === 'cite web' || $this->wikiname() === 'cite news') &&
           $this->blank(WORK_ALIASES) &&
@@ -6274,7 +6272,6 @@ final class Template {
     if (strpos($doi, '10.1093') === 0 && doi_works($doi) !== TRUE) {
           if (preg_match('~^10\.1093/(?:ref:|)odnb/9780198614128\.001\.0001/odnb\-9780198614128\-e\-(\d+)$~', $doi, $matches)) {
               $trial[] = '10.1093/ref:odnb/' . $matches[1];
-              $trial[] = '10.1093/odnb/' . $matches[1];
               $trial[] = '10.1093/odnb/9780198614128.013.' . $matches[1];
           }
           if (preg_match('~^10\.1093/odnb/(\d+)$~', $doi, $matches)) {
@@ -6282,11 +6279,9 @@ final class Template {
               $trial[] = '10.1093/odnb/9780198614128.013.' . $matches[1];
           }
           if (preg_match('~^10\.1093/ref:odnb/(\d+)$~', $doi, $matches)) {
-              $trial[] = '10.1093/odnb/' . $matches[1];
               $trial[] = '10.1093/odnb/9780198614128.013.' . $matches[1];
           }
           if (preg_match('~^10\.1093/9780198614128.013.(\d+)$~', $doi, $matches)) {
-              $trial[] = '10.1093/odnb/' . $matches[1];
               $trial[] = '10.1093/odnb/9780198614128.013.' . $matches[1];
           }
           if (preg_match('~^10\.1093/anb/9780198606697\.001\.0001/anb\-9780198606697\-e\-(\d+)$~', $doi, $matches)) {
@@ -6953,7 +6948,7 @@ final class Template {
         unset($old[$old_name]);
       }
     }
-    // 99.99% of the time does nothing, since they should already be switched, but do it just in case
+    // 99.99% of the time does nothing, since they should already be switched.  This will be needed for templates that we do very little too, such as TEMPLATES_WE_CHAPTER_URL 
     foreach ($new as $old_name => $old_data) {
       $mistake_id = array_search($old_name, $mistake_keys);
       if ($mistake_id !== FALSE) {
@@ -7149,7 +7144,7 @@ final class Template {
           case "aqs": case "gs_l": case "uact": case "tbo": case "tbs":
           case "num": case "redir_esc": case "gs_lcp": case "sxsrf":
           case "gfe_rd": case "gws_rd": case "rlz": case "sclient":
-          case "prmd": case "dpr":
+          case "prmd": case "dpr": case "newwindow":
              break;
           case "btnG":
              if ($part_start[1] === "" || str_i_same($part_start[1], 'Search')) break;
@@ -7282,12 +7277,9 @@ final class Template {
       if (doi_works($doi) === FALSE) {
         if (preg_match("~^10\.1093/(?:\S+odnb-9780198614128-e-|ref:odnb|odnb/9780198614128\.013\.|odnb/)(\d+)$~", $doi, $matches)) {
           $try1 = '10.1093/ref:odnb/' . $matches[1];
-          $try2 = '10.1093/odnb/' . $matches[1];
           $try3 = '10.1093/odnb/9780198614128.013.' . $matches[1];
           if (doi_works($try1)) {
             $this->set('doi', $try1);
-          } elseif (doi_works($try2)) {
-            $this->set('doi', $try2);
           } elseif (doi_works($try3)) {
             $this->set('doi', $try3);
           }
@@ -7297,21 +7289,9 @@ final class Template {
     if ($this->has('id')) {
           $doi = $this->get('doi');
           $try1 = '10.1093/ref:odnb/' . $this->get('id');
-          $try2 = '10.1093/odnb/' . $this->get('id');
           $try3 = '10.1093/odnb/9780198614128.013.' . $this->get('id');
           if (doi_works($try1) !== FALSE) {
             ; // Template does this
-          } elseif (doi_works($try2)) {
-            if ($doi === '') {
-              $this->rename('id', 'doi', $try2);
-            } elseif ($doi === $try2) {
-              $this->forget('id');
-            } elseif (doi_works($doi)) {
-              $this->forget('id');
-            } else {
-              $this->forget('doi');
-              $this->rename('id', 'doi', $try2);
-            }
           } elseif (doi_works($try3)) {
             if ($doi === '') {
               $this->rename('id', 'doi', $try3);
