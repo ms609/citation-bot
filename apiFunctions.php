@@ -132,7 +132,6 @@ function entrez_api(array $ids, array &$templates, string $db) : bool {   // Poi
         break; case "LangList": case 'ISSN':
         break; case "ArticleIds":
           $possible_pmid = [];
-          print_r($item->Item);
           foreach ($item->Item as $subItem) {
             switch ($subItem["Name"]) {
               case "pubmed": case "pmid":
