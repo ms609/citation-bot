@@ -136,6 +136,12 @@ function is_doi_works(string $doi) : ?bool {
   if (stripos($headers_test[0], '301 Moved Permanently') !== FALSE || stripos($headers_test[0], 'HTTP/1.1 301') !== FALSE) { // Could be DOI change or bad prefix
       if (stripos($headers_test[1], '302 Found') !== FALSE         || stripos($headers_test[1], 'HTTP/1.1 302') !== FALSE) {
         return TRUE;  // Good
+      } elseif (stripos($headers_test[1], '301 Moved Permanently') !== FALSE  || stripos($headers_test[1], 'HTTP/1.1 301') !== FALSE) {
+        if (stripos(@$headers_test[2], '200 OK') !== FALSE         || stripos($headers_test[2], 'HTTP/1.1 200') !== FALSE) {
+          return TRUE;
+        } else {
+          return FALSE;
+        }
       } else {
         return FALSE;
       }
