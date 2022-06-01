@@ -101,26 +101,8 @@ function is_doi_works(string $doi) : ?bool {
   $context = stream_context_create(CONTEXT_INSECURE);
   set_time_limit(120);
   $headers_test = @get_headers("https://doi.org/" . doi_encode($doi), GET_THE_HEADERS, $context);
-  $context = stream_context_create(CONTEXT_INSECURE_11);
-  if ($headers_test === FALSE) {
-     sleep(2);                                                                                        // @codeCoverageIgnore
-     report_inline(' .');                                                                             // @codeCoverageIgnore
-     set_time_limit(120);                                                                             // @codeCoverageIgnore
-     $headers_test = @get_headers("https://doi.org/" . doi_encode($doi), GET_THE_HEADERS, $context);  // @codeCoverageIgnore
-  }
-  if ($headers_test === FALSE) {
-     sleep(5);                                                                                        // @codeCoverageIgnore
-     set_time_limit(120);                                                                             // @codeCoverageIgnore
-     report_inline(' .');                                                                             // @codeCoverageIgnore
-     $headers_test = @get_headers("https://doi.org/" . doi_encode($doi), GET_THE_HEADERS, $context);  // @codeCoverageIgnore
-  } elseif ((empty($headers_test['Location']) && empty($headers_test['location'])) || stripos($headers_test[0], '404 Not Found') !== FALSE || stripos($headers_test[0], 'HTTP/1.1 404') !== FALSE) {
-     sleep(5);                                                                                        // @codeCoverageIgnore
-     set_time_limit(120);                                                                             // @codeCoverageIgnore
-     report_inline(' .');                                                                             // @codeCoverageIgnore
-     $headers_test = @get_headers("https://doi.org/" . doi_encode($doi), GET_THE_HEADERS, $context);  // @codeCoverageIgnore
-     if ($headers_test === FALSE) return FALSE; /** We trust previous failure **/                     // @codeCoverageIgnore
-  }
   print_r($headers_test);
+
   if (preg_match('~^10\.1038/nature\d{5}$~i', $doi) && $headers_test === FALSE) return FALSE; // Nature dropped the ball for now TODO - https://dx.doi.org/10.1038/nature05009
   if ($headers_test === FALSE) return NULL; // most likely bad, but will recheck again and again
   if (empty($headers_test['Location']) && empty($headers_test['location'])) return FALSE; // leads nowhere
