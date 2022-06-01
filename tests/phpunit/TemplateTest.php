@@ -3536,8 +3536,15 @@ EP - 999 }}';
    
     $text = '{{cite journal}}';
     $prepared = $this->prepare_citation($text);
-    $prepared->add_if_new('editor-last33333', 'SetIt'); // Huge number
-    $this->assertSame('SetIt', $prepared->get2('editor-last33333'));
+    $prepared->add_if_new('editor-last33', 'SetIt'); // Huge number
+    $this->assertNull($prepared->get2('editor-last33'));
+    $this->assertNull($prepared->get2('display-editors'));
+   
+    $text = '{{cite journal|editor29=dfasddsfadsd}}';
+    $prepared = $this->prepare_citation($text);
+    $prepared->add_if_new('editor-last33', 'SetIt');
+    $this->assertNull($prepared->get2('editor-last33'));
+    $this->assertSame('1', $prepared->get2('display-editors'));
   }
  
   public function testAddPages() : void {
