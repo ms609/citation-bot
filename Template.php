@@ -784,10 +784,19 @@ final class Template {
     }
 
     if ($param_name !== 's2cid') {
-     if ((int) substr($param_name, -4) > 0 || (int) substr($param_name, -3) > 0 || (int) substr($param_name, -2) > 30) {
-      // Stop at 30 authors - or page codes will become cluttered!
-      if ((bool) $this->get('last29') || (bool) $this->get('author29') || (bool) $this->get('surname29')) $this->add_if_new('display-authors', '1');
-      return FALSE;
+     if (strpos($param_name, 'last') === 0 || strpos($param_name, 'first') === 0 || strpos($param_name, 'author') === 0) {
+      if ((int) substr($param_name, -4) > 0 || (int) substr($param_name, -3) > 0 || (int) substr($param_name, -2) > 30) {
+       // Stop at 30 authors - or page codes will become cluttered!
+       if ((bool) $this->get('last29') || (bool) $this->get('author29') || (bool) $this->get('surname29')) $this->add_if_new('display-authors', '1');
+       return FALSE;
+      }
+     }
+     if (strpos($param_name, 'editor') === 0) {
+      if ((int) substr($param_name, -4) > 0 || (int) substr($param_name, -3) > 0 || (int) substr($param_name, -2) > 30) {
+       // Stop at 30 authors - or page codes will become cluttered!
+       if ((bool) $this->get('editor29') || (bool) $this->get('editor-last29') || (bool) $this->get('editor29-last')) $this->add_if_new('display-editors', '1');
+       return FALSE;
+      }
      }
     }
 
@@ -804,7 +813,7 @@ final class Template {
         }
         return FALSE;
 
-      case (bool) preg_match('~^editor(\d{1,})-first$~', $param_name, $match) :
+      case (bool) preg_match('~^editor-first(\d{1,})$~', $param_name, $match) :
         if ($this->had_initial_editor) return FALSE;
         if (!$this->blank(['editors', 'editor', 'editor-last', 'editor-first'])) return FALSE; // Existing incompatible data
         if ($this->blank(['editor' . $match[1], 'editor' . $match[1] . '-first', 'editor-first' . $match[1]])) {
@@ -812,7 +821,7 @@ final class Template {
         }
         return FALSE;
 
-      case (bool) preg_match('~^editor(\d{1,})-last$~', $param_name, $match) :
+      case (bool) preg_match('~^editor-last(\d{1,})$~', $param_name, $match) :
         if ($this->had_initial_editor) return FALSE;
         if (!$this->blank(['editors', 'editor', 'editor-last', 'editor-first'])) return FALSE; // Existing incompatible data
         if ($this->blank(['editor' . $match[1], 'editor' . $match[1] . '-last', 'editor-last' . $match[1]])) {

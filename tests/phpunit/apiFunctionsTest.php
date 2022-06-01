@@ -297,7 +297,7 @@ final class apiFunctionsTest extends testBaseClass {
   public function testCrossRefAddEditors() : void {
      $text = "{{Cite book | doi = 10.1117/12.135408}}";
      $template = $this->process_citation($text);
-     $this->assertSame("Kopera", $template->get2('editor1-last'));
+     $this->assertSame("Kopera", $template->get2('editor-last1'));
   }
 
   public function testBibcodeData1() : void {

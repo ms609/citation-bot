@@ -492,7 +492,7 @@ function expand_by_doi(Template $template, bool $force = FALSE) : bool {
       }
       $template->add_if_new('series', (string) $crossRef->series_title, 'crossref'); // add_if_new will format the title for a series?
       $template->add_if_new("year", (string) $crossRef->year, 'crossref');
-      if (   $template->blank(array('editor', 'editor1', 'editor-last', 'editor1-last')) // If editors present, authors may not be desired
+      if (   $template->blank(array('editor', 'editor1', 'editor-last', 'editor1-last', 'editor-last1')) // If editors present, authors may not be desired
           && $crossRef->contributors->contributor
         ) {
         $au_i = 0;
@@ -507,8 +507,8 @@ function expand_by_doi(Template $template, bool $force = FALSE) : bool {
           if ($author["contributor_role"] == 'editor') {
             ++$ed_i;
             if ($ed_i < 31 && !isset($crossRef->journal_title)) {
-              $template->add_if_new("editor$ed_i-last", format_surname((string) $author->surname), 'crossref');
-              $template->add_if_new("editor$ed_i-first", format_forename((string) $author->given_name), 'crossref');
+              $template->add_if_new("editor-last$ed_i", format_surname((string) $author->surname), 'crossref');
+              $template->add_if_new("editor-first$ed_i", format_forename((string) $author->given_name), 'crossref');
             }
           } elseif ($author['contributor_role'] == 'author' && $add_authors) {
             ++$au_i;
@@ -695,7 +695,7 @@ function expand_doi_with_dx(Template $template, string $doi) : bool {
            (($template->wikiname() === 'cite book') || $template->blank(WORK_ALIASES))) { // No journal/magazine set and can convert to book
           $try_to_add_it('chapter', @$json['categories']['0']);  // Not really right, but there is no cite data set template
        }
-     } elseif (@$json['type'] == '' csdfads) {  // Add what we can where we can
+     } elseif (@$json['type'] == '' || @$json['type'] == 'graphic') {  // Add what we can where we can
        $try_to_add_it('title', @$json['title']);
        $try_to_add_it('location', @$json['publisher-location']);
        $try_to_add_it('publisher', @$json['publisher']);
