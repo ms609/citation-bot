@@ -833,11 +833,11 @@ final class TemplateTest2 extends testBaseClass {
   public function testAddEditor() : void {
     $text = "{{cite journal}}";
     $template = $this->make_citation($text);
-    $this->assertTrue($template->add_if_new('editor1-last', 'Phil'));
-    $this->assertSame('Phil', $template->get2('editor1-last'));
+    $this->assertTrue($template->add_if_new('editor-last1', 'Phil'));
+    $this->assertSame('Phil', $template->get2('editor-last1'));
     $text = "{{cite journal|editor-last=Junk}}";
     $template = $this->make_citation($text);
-    $this->assertFalse($template->add_if_new('editor1-last', 'Phil'));
+    $this->assertFalse($template->add_if_new('editor-last1', 'Phil'));
     $text = "{{cite journal}}";
     $template = $this->make_citation($text);
     $this->assertTrue($template->add_if_new('editor1', 'Phil'));
