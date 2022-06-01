@@ -784,10 +784,19 @@ final class Template {
     }
 
     if ($param_name !== 's2cid') {
-     if ((int) substr($param_name, -4) > 0 || (int) substr($param_name, -3) > 0 || (int) substr($param_name, -2) > 30) {
-      // Stop at 30 authors - or page codes will become cluttered!
-      if ((bool) $this->get('last29') || (bool) $this->get('author29') || (bool) $this->get('surname29')) $this->add_if_new('display-authors', '1');
-      return FALSE;
+     if (strpos($param_name, 'last') === 0 || strpos($param_name, 'first') === 0 || strpos($param_name, 'author') === 0) {
+      if ((int) substr($param_name, -4) > 0 || (int) substr($param_name, -3) > 0 || (int) substr($param_name, -2) > 30) {
+       // Stop at 30 authors - or page codes will become cluttered!
+       if ((bool) $this->get('last29') || (bool) $this->get('author29') || (bool) $this->get('surname29')) $this->add_if_new('display-authors', '1');
+       return FALSE;
+      }
+     }
+     if (strpos($param_name, 'editor') === 0) {
+      if ((int) substr($param_name, -4) > 0 || (int) substr($param_name, -3) > 0 || (int) substr($param_name, -2) > 30) {
+       // Stop at 30 authors - or page codes will become cluttered!
+       if ((bool) $this->get('editor29') || (bool) $this->get('editor-last29') || (bool) $this->get('editor29-last')) $this->add_if_new('display-editors', '1');
+       return FALSE;
+      }
      }
     }
 
