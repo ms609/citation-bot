@@ -106,12 +106,9 @@ function is_doi_works(string $doi) : ?bool {
   }
   throttle_dx();
 
-  $headers_test = @get_headers("https://doi.org/" . doi_encode($doi), GET_THE_HEADERS);
-  print_r($headers_test);
   $context = stream_context_create(CONTEXT_INSECURE);
   set_time_limit(120);
   $headers_test = @get_headers("https://doi.org/" . doi_encode($doi), GET_THE_HEADERS, $context);
-  print_r($headers_test);
   $context = stream_context_create(CONTEXT_INSECURE_11);
   if ($headers_test === FALSE) {
      sleep(2);                                                                                        // @codeCoverageIgnore
