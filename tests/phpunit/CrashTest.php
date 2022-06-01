@@ -17,7 +17,7 @@ final class CrashTest extends testBaseClass {
 
   public function testBadPage2() : void {  // Use this when debugging pages that crash the bot
     is_doi_works("10.3403/bsiso10294");
-    is_doi_works("10.25300/MISQ/2014/38.2.08");
+    is_doi_works("10.21236/ada614052");
    
   }
 
