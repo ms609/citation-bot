@@ -97,7 +97,7 @@ function is_doi_works(string $doi) : ?bool {
   $context = stream_context_create(CONTEXT_INSECURE);
   set_time_limit(120);
   $start = microtime(true);
-  $headers_test = @get_headers("https://doi.org/" . str_replace("/", "%2F", doi_encode($doi)), GET_THE_HEADERS, $context);
+  $headers_test = @get_headers("https://doi.org/" . doi_encode($doi), GET_THE_HEADERS, $context);
   $end = microtime(true);
   $total_time = (string) ($end-$start);
   echo "\n $doi took $total_time \n";
@@ -105,17 +105,19 @@ function is_doi_works(string $doi) : ?bool {
 
   set_time_limit(120);
   $start = microtime(true);
-  $headers_test = @get_headers("https://doi.org/" . doi_encode($doi), GET_THE_HEADERS);
-  $end = microtime(true);
-  $total_time = (string) ($end-$start);
-  echo "\n $doi took $total_time \n";
-  print_r($headers_test);
-  
-  set_time_limit(120);
-  $start = microtime(true);
-  $headers_test = @get_headers("https://doi.org/" . str_replace("/", "%2F", doi_encode($doi)), 0, $context);
-  $end = microtime(true);
-  $total_time = (string) ($end-$start);
+// create a new cURL resource
+$ch = curl_init();
+
+// set URL and other appropriate options
+curl_setopt($ch, CURLOPT_URL, "https://doi.org/" . doi_encode($doi));
+curl_setopt($ch, CURLOPT_HEADER, true);
+curl_setopt($ch, CURLOPT_USERAGENT, "Mozilla custom agent");
+
+// grab URL and pass it to the browser
+$headers_test = @curl_exec($ch);
+
+// close cURL resource, and free up system resources
+curl_close($ch);;
   echo "\n $doi took $total_time \n";
   print_r($headers_test);
 
