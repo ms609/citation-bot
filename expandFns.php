@@ -143,7 +143,7 @@ function is_doi_works(string $doi) : ?bool {
     $url = curl_getinfo($ch, CURLINFO_EFFECTIVE_URL);
     $cod = curl_getinfo($ch, CURLINFO_HTTP_CODE);
     curl_close($ch);
-    if ($cod === 302 && stripos($url, 'doi.org') === FALSE)) {
+    if (($cod === 302) && (stripos($url, 'doi.org') === FALSE)) {
         return TRUE;
     } else {
         return NULL; // most likely bad, but will recheck again and again
