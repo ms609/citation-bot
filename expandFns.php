@@ -104,7 +104,7 @@ function is_doi_works(string $doi) : ?bool {
   if ($headers_test === FALSE) { // Use CURL instead
     $ch = curl_init();
     curl_setopt_array($ch,
-            [CURLOPT_HEADER => FALSE,
+            [CURLOPT_HEADER => TRUE,
              CURLOPT_RETURNTRANSFER => TRUE,
              CURLOPT_URL => "https://doi.org/" . doi_encode($doi),
              CURLOPT_TIMEOUT => 15,
