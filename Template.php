@@ -3861,7 +3861,7 @@ final class Template {
             $this->forget('doi');  // Special Papers in Palaeontology - they do not work
             return;
           }
-          if (!doi_works($doi) && strpos($doi, '10.2277/') === 0) {
+          if (doi_works($doi) !== TRUE && strpos($doi, '10.2277/') === 0) {
             $this->forget('doi');  // contentdirections.com DOI provider is gone
             return;
           }
