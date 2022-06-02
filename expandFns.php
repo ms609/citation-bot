@@ -91,20 +91,6 @@ function is_doi_works(string $doi) : ?bool {
   if (strpos($doi, '/') === FALSE) return FALSE;
   if (strpos($doi, 'CITATION_BOT_PLACEHOLDER') !== FALSE) return FALSE;
   if (!preg_match('~^([^\/]+)\/~', $doi, $matches)) return FALSE;
-  $registrant = $matches[1];
-  // TODO this might need updated over time.  See registrant_err_patterns on https://en.wikipedia.org/wiki/Module:Citation/CS1/Identifiers
-  if (strpos($registrant, '10.') === 0) { // We have to deal with valid handles in the DOI field - very rare, so only check actual DOIs
-    $registrant = substr($registrant,3);
-    if (preg_match('~^[^1-3]\d\d\d\d\.\d\d*$~', $registrant)) return FALSE; // 5 digits with subcode (0xxxx, 40000+); accepts: 10000–39999
-    if (preg_match('~^[^1-5]\d\d\d\d$~', $registrant)) return FALSE;        // 5 digits without subcode (0xxxx, 60000+); accepts: 10000–59999
-    if (preg_match('~^[^1-9]\d\d\d\.\d\d*$~', $registrant)) return FALSE;   // 4 digits with subcode (0xxx); accepts: 1000–9999
-    if (preg_match('~^[^1-9]\d\d\d$~', $registrant)) return FALSE;          // 4 digits without subcode (0xxx); accepts: 1000–9999
-    if (preg_match('~^\d\d\d\d\d\d+~', $registrant)) return FALSE;          // 6 or more digits
-    if (preg_match('~^\d\d?\d?$~', $registrant)) return FALSE;              // less than 4 digits without subcode (with subcode is legitimate)
-    if ($registrant === '5555') return FALSE;                               // test registrant will never resolve
-    if (preg_match('~[^\d\.]~', $registrant)) return FALSE;                 // any character that isn't a digit or a dot
-  }
-  throttle_dx();
 
   $context = stream_context_create(CONTEXT_INSECURE);
   set_time_limit(120);
@@ -128,6 +114,7 @@ function is_doi_works(string $doi) : ?bool {
      $headers_test = @get_headers("https://doi.org/" . doi_encode($doi), GET_THE_HEADERS, $context);  // @codeCoverageIgnore
      if ($headers_test === FALSE) return FALSE; /** We trust previous failure **/                     // @codeCoverageIgnore
   }
+  echo __LINE__ . "\n" ; print_r($headers_test);
   if (preg_match('~^10\.1038/nature\d{5}$~i', $doi) && $headers_test === FALSE) return FALSE; // Nature dropped the ball for now TODO - https://dx.doi.org/10.1038/nature05009
   if ($headers_test === FALSE) { // Use CURL instead
     if (strpos($doi, '10.2277/') === 0) return FALSE;
@@ -145,6 +132,7 @@ function is_doi_works(string $doi) : ?bool {
     $url  = curl_getinfo($ch, CURLINFO_EFFECTIVE_URL);
     $code = curl_getinfo($ch, CURLINFO_HTTP_CODE);
     curl_close($ch);
+  echo __LINE__ . "\n  $url \n $head \n $code \n";
     if (stripos($head . $url, 'contentdirections.com') !== FALSE) return FALSE;
     if (($code === 302 || $code === 200) &&
         (stripos($url, 'doi.org') === FALSE) &&
