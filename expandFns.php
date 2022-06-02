@@ -96,43 +96,33 @@ function is_doi_works(string $doi) : ?bool {
 
   $context = stream_context_create(CONTEXT_INSECURE);
   set_time_limit(120);
-  $start = microtime(true);
   $headers_test = @get_headers("https://doi.org/" . doi_encode($doi), GET_THE_HEADERS, $context);
-  $end = microtime(true);
-  $total_time = (string) ($end-$start);
-  echo "\n $doi took $total_time \n";
+  echo "\n $doi  \n";
   print_r($headers_test);
 
   set_time_limit(120);
-  $start = microtime(true);
-// create a new cURL resource
-$ch = curl_init();
-
-// set URL and other appropriate options
-curl_setopt($ch, CURLOPT_URL, "https://doi.org/" . doi_encode($doi));
-curl_setopt($ch, CURLOPT_HEADER, TRUE);
-curl_setopt($ch, CURLOPT_USERAGENT, "Mozilla custom agent");
-curl_setopt($ch, CURLOPT_RETURNTRANSFER, TRUE);
-curl_setopt($ch, CURLOPT_NOBODY, TRUE);
-// grab URL and pass it to the browser
-$headers_test = @curl_exec($ch);
-
-// close cURL resource, and free up system resources
-curl_close($ch);;
-  echo "\n $doi took $total_time \n";
-  print_r($headers_test);
-
-  $context_options = array (
-        'https' => array (
-            'method' => 'POST',
-            'content' => doi_encode($doi)
-            )
-        );
-  $context = stream_context_create($context_options);
-  set_time_limit(120);
-  $headers_test = @get_headers("https://dx.doi.org/", GET_THE_HEADERS, $context);
-  echo "\n using POST\n";
-  print_r($headers_test);
+  if ($headers_test === FALSE) { // Use CURL instead
+    $ch = curl_init();
+    curl_setopt_array($ch,
+            [CURLOPT_HEADER => FALSE,
+             CURLOPT_RETURNTRANSFER => TRUE,
+             CURLOPT_URL => "https://doi.org/" . doi_encode($doi),
+             CURLOPT_TIMEOUT => 15,
+             CURLOPT_CONNECTTIMEOUT => 10,
+             CURLOPT_NOBODY => TRUE,
+             CURLOPT_USERAGENT => BOT_USER_AGENT]);
+    $trans = @curl_exec($ch);
+    $url = curl_getinfo($ch, CURLINFO_EFFECTIVE_URL);
+    $cod = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+    curl_close($ch);
+    echo "\n From CURL $cod $url\n";
+    echo $trans . "\n";
+    if (($cod === 302) && (stripos($url, 'doi.org') === FALSE)) {
+        return TRUE;
+    } else {
+        return NULL; // most likely bad, but will recheck again and again
+    }
+  }
   
   if (preg_match('~^10\.1038/nature\d{5}$~i', $doi) && $headers_test === FALSE) return FALSE; // Nature dropped the ball for now TODO - https://dx.doi.org/10.1038/nature05009
   if ($headers_test === FALSE) return NULL; // most likely bad, but will recheck again and again
