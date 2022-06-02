@@ -122,6 +122,17 @@ curl_close($ch);;
   echo "\n $doi took $total_time \n";
   print_r($headers_test);
 
+  $context_options = array (
+        'https' => array (
+            'method' => 'POST',
+            'content' => doi_encode($doi)
+            )
+        );
+  $context = stream_context_create($context_options);
+  set_time_limit(120);
+  $headers_test = @get_headers("https://doi.org/", GET_THE_HEADERS, $context);
+  echo "\n using POST\n";
+  print_r($headers_test);
   
   if (preg_match('~^10\.1038/nature\d{5}$~i', $doi) && $headers_test === FALSE) return FALSE; // Nature dropped the ball for now TODO - https://dx.doi.org/10.1038/nature05009
   if ($headers_test === FALSE) return NULL; // most likely bad, but will recheck again and again
