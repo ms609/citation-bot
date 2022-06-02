@@ -110,9 +110,10 @@ $ch = curl_init();
 
 // set URL and other appropriate options
 curl_setopt($ch, CURLOPT_URL, "https://doi.org/" . doi_encode($doi));
-curl_setopt($ch, CURLOPT_HEADER, true);
+curl_setopt($ch, CURLOPT_HEADER, TRUE);
 curl_setopt($ch, CURLOPT_USERAGENT, "Mozilla custom agent");
-
+curl_setopt($ch, CURLOPT_RETURNTRANSFER, TRUE);
+curl_setopt($ch, CURLOPT_NOBODY, TRUE);
 // grab URL and pass it to the browser
 $headers_test = @curl_exec($ch);
 
