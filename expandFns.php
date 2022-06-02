@@ -47,10 +47,6 @@ function doi_works(string $doi) : ?bool {
   if (count($cache_bad) > 2500) $cache_bad = BAD_DOI_ARRAY;
   if (count($cache_good) > 100000) $cache_good = [];
   $works = is_doi_works($doi);
-  echo "\n $doi";
-  if ($works === NULL) echo " is NULL\n";
-  if ($works === TRUE) echo " is TRUE\n";
-  if ($works === FALSE) echo " is FALSE\n";
   if ($works === NULL) {
     file_put_contents('CodeCoverage', $doi . " returns NULL from dx.doi.org \n", FILE_APPEND);
     return NULL; // @codeCoverageIgnore
@@ -101,6 +97,7 @@ function is_doi_works(string $doi) : ?bool {
   $context = stream_context_create(CONTEXT_INSECURE);
   set_time_limit(120);
   $headers_test = @get_headers("https://doi.org/" . doi_encode($doi), GET_THE_HEADERS, $context);
+  echo "\n $doi \n";
   print_r($headers_test);
 
   if (preg_match('~^10\.1038/nature\d{5}$~i', $doi) && $headers_test === FALSE) return FALSE; // Nature dropped the ball for now TODO - https://dx.doi.org/10.1038/nature05009
