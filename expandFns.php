@@ -140,7 +140,7 @@ function is_doi_works(string $doi) : ?bool {
              CURLOPT_NOBODY => TRUE,
              CURLOPT_FOLLOWLOCATION => TRUE,
              CURLOPT_USERAGENT => BOT_USER_AGENT]);
-    $head = @curl_exec($ch);
+    $head = (string) @curl_exec($ch);
     $url  = curl_getinfo($ch, CURLINFO_EFFECTIVE_URL);
     $code = curl_getinfo($ch, CURLINFO_HTTP_CODE);
     curl_close($ch);
