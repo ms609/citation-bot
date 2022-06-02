@@ -137,7 +137,7 @@ function is_doi_works(string $doi) : ?bool {
              CURLOPT_URL => "https://doi.org/" . doi_encode($doi),
              CURLOPT_TIMEOUT => 15,
              CURLOPT_CONNECTTIMEOUT => 10,
-             CURLOPT_NOBODY => TRUE;
+             CURLOPT_NOBODY => TRUE,
              CURLOPT_USERAGENT => BOT_USER_AGENT]);
     @curl_exec($ch);
     $url = curl_getinfo($ch, CURLINFO_EFFECTIVE_URL);
