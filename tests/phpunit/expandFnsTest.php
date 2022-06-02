@@ -345,4 +345,12 @@ final class expandFnsTest extends testBaseClass {
     $this->assertTrue(doi_works('10.5479/si.00963801.5-301.449'));
   }
 
+  public function testHeaderProblemDOI() : void { // Just runs over the code and basically does nothing
+    $this->assertTrue(doi_works('10.3403/bsiso10294')); // get_headers() gives FALSE for some reason, so need to use CURL
+  }
+
+  public function testHostIsGoneDOI() : void { // Just runs over the code and basically does nothing
+    $this->assertNull(doi_works('10.1036/0071422803')); // goes to dead doi.contentdirections.com
+  }
+  
 }
