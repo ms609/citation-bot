@@ -96,8 +96,11 @@ function is_doi_works(string $doi) : ?bool {
 
   $context = stream_context_create(CONTEXT_INSECURE);
   set_time_limit(120);
+  $start = microtime(true);
   $headers_test = @get_headers("https://doi.org/" . doi_encode($doi), GET_THE_HEADERS, $context);
-  echo "\n $doi \n";
+  $end = microtime(true);
+  $total_time = (string) ($end-$start);
+  echo "\n $doi took $total_time \n";
   print_r($headers_test);
 
   if (preg_match('~^10\.1038/nature\d{5}$~i', $doi) && $headers_test === FALSE) return FALSE; // Nature dropped the ball for now TODO - https://dx.doi.org/10.1038/nature05009
