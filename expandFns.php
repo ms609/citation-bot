@@ -148,6 +148,7 @@ function is_doi_works(string $doi) : ?bool {
         (stripos($url, 'doi.org') === FALSE) &&
         strlen($head) > 55 && 
         (stripos($head, 'Content-Type') !== FALSE) &&
+        (stripos($head . $url, 'contentdirections.com') === FALSE) &&
         (stripos($head, 'location') !== FALSE))
     {
         return TRUE;
