@@ -130,7 +130,7 @@ curl_close($ch);;
         );
   $context = stream_context_create($context_options);
   set_time_limit(120);
-  $headers_test = @get_headers("https://doi.org/", GET_THE_HEADERS, $context);
+  $headers_test = @get_headers("https://dx.doi.org/", GET_THE_HEADERS, $context);
   echo "\n using POST\n";
   print_r($headers_test);
   
