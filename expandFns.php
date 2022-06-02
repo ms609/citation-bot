@@ -87,6 +87,7 @@ function throttle_dx () : void {
 function is_doi_works(string $doi) : ?bool {
   set_time_limit(120);
   $doi = trim($doi);
+  echo "\n $doi \n";
   // And now some obvious fails
   if (strpos($doi, '/') === FALSE) return FALSE;
   if (strpos($doi, 'CITATION_BOT_PLACEHOLDER') !== FALSE) return FALSE;
