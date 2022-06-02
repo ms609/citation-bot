@@ -160,6 +160,7 @@ function is_doi_works(string $doi) : ?bool {
   $resp0 = (string) @$headers_test[0];
   $resp1 = (string) @$headers_test[1];
   $resp2 = (string) @$headers_test[2];
+  if (stripos($resp0 . $resp1 . $resp2, 'contentdirections.com') !== FALSE) return FALSE;
   if (stripos($resp0, '404 Not Found') !== FALSE         || stripos($resp0, 'HTTP/1.1 404') !== FALSE) return FALSE; // Bad
   if (stripos($resp0, '302 Found') !== FALSE             || stripos($resp0, 'HTTP/1.1 302') !== FALSE) return TRUE;  // Good
   if (stripos($resp0, '301 Moved Permanently') !== FALSE || stripos($resp0, 'HTTP/1.1 301') !== FALSE) { // Could be DOI change or bad prefix
