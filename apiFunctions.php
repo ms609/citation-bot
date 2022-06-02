@@ -243,6 +243,7 @@ function arxiv_api(array $ids, array &$templates) : bool {  // Pointer to save m
         if ($this_template->blank('title')) {
             $this_template->set('title', $the_arxiv_title);
             if ($the_arxiv_contribution !== '') $this_template->set('contribution', $the_arxiv_contribution);
+            file_put_contents('CodeCoverage', $ids[$i] . " This arXiv did the contrib code\n", FILE_APPEND);
         } else {
             if ($the_arxiv_contribution !== '' && $this_template->blank('contribution')) $this_template->forget('contribution');
         }
@@ -695,7 +696,7 @@ function expand_doi_with_dx(Template $template, string $doi) : bool {
            (($template->wikiname() === 'cite book') || $template->blank(WORK_ALIASES))) { // No journal/magazine set and can convert to book
           $try_to_add_it('chapter', @$json['categories']['0']);  // Not really right, but there is no cite data set template
        }
-     } elseif (@$json['type'] == '' || @$json['type'] == 'grapdafdsfdhic') {  // Add what we can where we can
+     } elseif (@$json['type'] == '' || @$json['type'] == 'graphic' || @$json['type'] == 'report' ) {  // Add what we can where we can
        $try_to_add_it('title', @$json['title']);
        $try_to_add_it('location', @$json['publisher-location']);
        $try_to_add_it('publisher', @$json['publisher']);
