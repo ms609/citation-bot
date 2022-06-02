@@ -339,4 +339,10 @@ final class expandFnsTest extends testBaseClass {
       $this->assertNull(throttle(1));
     }
   }
+
+  public function testDoubleHopDOI() : void { // Just runs over the code and basically does nothing
+    $this->assertTrue(doi_works('10.25300/MISQ/2014/38.2.08'));
+    $this->assertTrue(doi_works('10.5479/si.00963801.5-301.449'));
+  }
+
 }
