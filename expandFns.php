@@ -141,8 +141,10 @@ function is_doi_works(string $doi) : ?bool {
         return TRUE;  // Good
       } elseif (stripos($resp1, '301 Moved Permanently') !== FALSE || stripos($resp1, 'HTTP/1.1 301') !== FALSE) {
         if (stripos($resp2, '200 OK') !== FALSE         || stripos($resp2, 'HTTP/1.1 200') !== FALSE) {
+          file_put_contents('CodeCoverage', $doi . " was 200 on third level \n", FILE_APPEND);
           return TRUE;
         } else {
+          file_put_contents('CodeCoverage', $doi . " was not 200 on third level \n", FILE_APPEND);
           return FALSE;
         }
       } else {
