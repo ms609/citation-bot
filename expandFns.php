@@ -144,11 +144,11 @@ function is_doi_works(string $doi) : ?bool {
     $url  = curl_getinfo($ch, CURLINFO_EFFECTIVE_URL);
     $code = curl_getinfo($ch, CURLINFO_HTTP_CODE);
     curl_close($ch);
+    if (stripos($head . $url, 'contentdirections.com') !== FALSE) return FALSE;
     if (($code === 302 || $code === 200) &&
         (stripos($url, 'doi.org') === FALSE) &&
         strlen($head) > 55 && 
         (stripos($head, 'Content-Type') !== FALSE) &&
-        (stripos($head . $url, 'contentdirections.com') === FALSE) &&
         (stripos($head, 'location') !== FALSE))
     {
         return TRUE;
