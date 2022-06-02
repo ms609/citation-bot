@@ -132,19 +132,24 @@ function is_doi_works(string $doi) : ?bool {
   if ($headers_test === FALSE) { // Use CURL instead
     $ch = curl_init();
     curl_setopt_array($ch,
-            [CURLOPT_HEADER => FALSE,
+            [CURLOPT_HEADER => TRUE,
              CURLOPT_RETURNTRANSFER => TRUE,
              CURLOPT_URL => "https://doi.org/" . doi_encode($doi),
              CURLOPT_TIMEOUT => 15,
              CURLOPT_CONNECTTIMEOUT => 10,
              CURLOPT_NOBODY => TRUE,
-             CURLOPT_FOLLOWLOCATION => TRUE;
+             CURLOPT_FOLLOWLOCATION => TRUE,
              CURLOPT_USERAGENT => BOT_USER_AGENT]);
-    @curl_exec($ch);
-    $url = curl_getinfo($ch, CURLINFO_EFFECTIVE_URL);
-    $cod = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+    $head = @curl_exec($ch);
+    $url  = curl_getinfo($ch, CURLINFO_EFFECTIVE_URL);
+    $code = curl_getinfo($ch, CURLINFO_HTTP_CODE);
     curl_close($ch);
-    if (($cod === 302) && (stripos($url, 'doi.org') === FALSE)) {
+    if (($code === 302 || $code === 200) &&
+        (stripos($url, 'doi.org') === FALSE) &&
+        strlen($head) > 55 && 
+        (stripos($head, 'Content-Type') !== FALSE) &&
+        (stripos($head, 'location') !== FALSE))
+    {
         return TRUE;
     } else {
         return NULL; // most likely bad, but will recheck again and again
