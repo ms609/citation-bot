@@ -110,6 +110,7 @@ function is_doi_works(string $doi) : ?bool {
              CURLOPT_TIMEOUT => 15,
              CURLOPT_CONNECTTIMEOUT => 10,
              CURLOPT_NOBODY => TRUE,
+             CURLOPT_FOLLOWLOCATION =>TRUE,
              CURLOPT_USERAGENT => BOT_USER_AGENT]);
     $trans = @curl_exec($ch);
     $url = curl_getinfo($ch, CURLINFO_EFFECTIVE_URL);
