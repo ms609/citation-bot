@@ -129,7 +129,32 @@ function is_doi_works(string $doi) : ?bool {
      if ($headers_test === FALSE) return FALSE; /** We trust previous failure **/                     // @codeCoverageIgnore
   }
   if (preg_match('~^10\.1038/nature\d{5}$~i', $doi) && $headers_test === FALSE) return FALSE; // Nature dropped the ball for now TODO - https://dx.doi.org/10.1038/nature05009
-  if ($headers_test === FALSE) return NULL; // most likely bad, but will recheck again and again
+  if ($headers_test === FALSE) { // Use CURL instead
+    $ch = curl_init();
+    curl_setopt_array($ch,
+            [CURLOPT_HEADER => TRUE,
+             CURLOPT_RETURNTRANSFER => TRUE,
+             CURLOPT_URL => "https://doi.org/" . doi_encode($doi),
+             CURLOPT_TIMEOUT => 15,
+             CURLOPT_CONNECTTIMEOUT => 10,
+             CURLOPT_NOBODY => TRUE,
+             CURLOPT_FOLLOWLOCATION => TRUE,
+             CURLOPT_USERAGENT => BOT_USER_AGENT]);
+    $head = (string) @curl_exec($ch);
+    $url  = curl_getinfo($ch, CURLINFO_EFFECTIVE_URL);
+    $code = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+    curl_close($ch);
+    if (($code === 302 || $code === 200) &&
+        (stripos($url, 'doi.org') === FALSE) &&
+        strlen($head) > 55 && 
+        (stripos($head, 'Content-Type') !== FALSE) &&
+        (stripos($head, 'location') !== FALSE))
+    {
+        return TRUE;
+    } else {
+        return NULL; // most likely bad, but will recheck again and again
+    }
+  }
   if (empty($headers_test['Location']) && empty($headers_test['location'])) return FALSE; // leads nowhere
   $resp0 = (string) @$headers_test[0];
   $resp1 = (string) @$headers_test[1];
