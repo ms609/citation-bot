@@ -355,7 +355,7 @@ final class expandFnsTest extends testBaseClass {
   
   public function testBankruptDOICompany() : void {
     $text = "{{cite journal|doi=10.2277/JUNK_INVALID}}";
-    $template = $this->process_citation($text));
+    $template = $this->process_citation($text);
     $this->assertNull($template->get2('doi'));
   }
   
