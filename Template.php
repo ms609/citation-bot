@@ -2879,13 +2879,14 @@ final class Template {
         if ($par->val === '') {
           $par->val = $this->param[$duplicate_pos]->val;
         } elseif ($this->param[$duplicate_pos]->val === '') {
-          report_error('Invalid event in Template::use_unnamed_params'); // @codeCoverageIgnore
+          $this->param[$duplicate_pos]->val = $par->val;
         }
         array_unshift($duplicated_parameters, $duplicate_pos);
         array_unshift($duplicate_identical, (mb_strtolower(trim((string) $par->val)) === mb_strtolower(trim((string) $this->param[$duplicate_pos]->val)))); // Drop duplicates that differ only by case
       }
       $param_occurrences[$par->param] = $pointer;
     }
+    print_r($this->param);
 
     $n_dup_params = count($duplicated_parameters);
 
