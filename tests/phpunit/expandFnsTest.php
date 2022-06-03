@@ -353,4 +353,10 @@ final class expandFnsTest extends testBaseClass {
     $this->assertNull(doi_works('10.1036/0071422803')); // goes to dead doi.contentdirections.com
   }
   
+  public function testBankruptDOICompany() : void {
+    $text = "{{cite journal|doi=10.2277/JUNK_INVALID}}";
+    $template = $this->process_citation($text));
+    $this->assertNull($template->get2('doi'));
+  }
+  
 }
