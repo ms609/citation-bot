@@ -41,10 +41,10 @@ class Page {
 
     $details = WikipediaBot::ReadDetails($title);
 
-    if (!isset($details->query)) {
+    if (!isset($details->query->pages)) {
       // @codeCoverageIgnoreStart
       $message = "Error: Could not fetch page.";
-      if (isset($details->error)) $message .= "  " . $details->error->info;
+      if (isset($details->error->info))  $message = $message . " " . (string) $details->error->info; 
       report_warning($message);
       return FALSE;
       // @codeCoverageIgnoreEnd
