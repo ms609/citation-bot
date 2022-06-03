@@ -1908,13 +1908,21 @@ final class TemplateTest extends testBaseClass {
       $prepared = $this->process_citation($text);
       $this->assertSame('{{citation|year=2000}}', $prepared->parsed_text());
    
-      $text = "{{citation|year=|title=X|year=2000}}"; // Something between the two but with blank first is different code path
+      $text = "{{citation|year=|title=X|year=2000}}";
       $expanded = $this->process_citation($text);
       $this->assertSame('{{citation|title=X|year=2000}}', $expanded->parsed_text());
    
       $text = "{{citation|year=2000|title=X|year=}}";
       $expanded = $this->process_citation($text);
       $this->assertSame('{{citation|year=2000|title=X}}', $expanded->parsed_text());
+   
+      $text = '{{Cite web |title= | year=2003 | title= Ten}}'; // Something between the two but with blank first is different code path, and the item of interest is not year
+      $expanded = $this->process_citation($text);
+      $this->assertSame('{{Cite web | year=2003 | title= Ten}}', $expanded->parsed_text());
+   
+      $text = '{{citation|title=2000|title=2000|title 2000|title=|title=2000}}';
+      $prepared = $this->process_citation($text);
+      $this->assertSame('{{citation|title=2000}}', $prepared->parsed_text());
   }
  
   public function testFixCAPSJunk() : void {
