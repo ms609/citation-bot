@@ -145,7 +145,6 @@ function is_doi_works(string $doi) : ?bool {
     $url  = curl_getinfo($ch, CURLINFO_EFFECTIVE_URL);
     $code = curl_getinfo($ch, CURLINFO_HTTP_CODE);
     curl_close($ch);
-    if (stripos($head . $url, 'contentdirections.com') !== FALSE) return FALSE;
     if (($code === 302 || $code === 200) &&
         (stripos($url, 'doi.org') === FALSE) &&
         strlen($head) > 55 && 
@@ -161,7 +160,6 @@ function is_doi_works(string $doi) : ?bool {
   $resp0 = (string) @$headers_test[0];
   $resp1 = (string) @$headers_test[1];
   $resp2 = (string) @$headers_test[2];
-  if (stripos((string) @implode(@$headers_test['Location']) . (string) @implode(@$headers_test['location']), 'contentdirections.com') !== FALSE) return FALSE;
   if (stripos($resp0, '404 Not Found') !== FALSE         || stripos($resp0, 'HTTP/1.1 404') !== FALSE) return FALSE; // Bad
   if (stripos($resp0, '302 Found') !== FALSE             || stripos($resp0, 'HTTP/1.1 302') !== FALSE) return TRUE;  // Good
   if (stripos($resp0, '301 Moved Permanently') !== FALSE || stripos($resp0, 'HTTP/1.1 301') !== FALSE) { // Could be DOI change or bad prefix
