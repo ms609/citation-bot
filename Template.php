@@ -4721,7 +4721,7 @@ final class Template {
                  $this->set($param, trim($match[1])); // Books/journals probably don't end in (PDF)
           }
           
-          if (preg_match("~^(.+national conference) on \-$~i", $this->get($param), $matches) {
+          if (preg_match("~^(.+national conference) on \-$~i", $this->get($param), $matches)) {
               $this->set($param, trim($match[1])); // ACM conference titles
           }
           return;
