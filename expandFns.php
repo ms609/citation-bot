@@ -337,8 +337,13 @@ function wikify_external_text(string $title) : string {
   $title = str_ireplace($originalTags, $wikiTags, $title);
   $originalTags = array('<br>', '</br>', '</ br>', '<p>', '</p>', '</ p>', '<strong>', '</strong>', '</ strong>');
   $wikiTags = array('. ','. ','. ','. ','. ','. ', ' ',' ',' ');
-  $title = str_ireplace($originalTags, $wikiTags, $title);
-
+  $title = trim(str_ireplace($originalTags, $wikiTags, $title));
+  if (preg_match("~^\. (.+)$~", $title, $matches)) {
+    $title = trim($matches[1]);
+  }
+ if (preg_match("~^(.+)\.$~", $title, $matches)) {
+    $title = trim($matches[1]);
+  }
   $title_orig = '';
   while ($title !== $title_orig) {
     $title_orig = $title;  // Might have to do more than once.   The following do not allow < within the inner match since the end tag is the same :-( and they might nest or who knows what
