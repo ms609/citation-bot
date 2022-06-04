@@ -1357,6 +1357,11 @@ final class Template {
             return FALSE;
           }
         }
+        $chap = '';
+        foreach (CHAPTER_ALIASES as $alias) {
+          $chap = $chap . $this->get($alias);
+        }
+        if (preg_match('~\[\[.+\]\]~', $chap)) return FALSE; // Chapter is already wikilinked
         return $this->add($param_name, $value);
 
       case 'archive-url':
