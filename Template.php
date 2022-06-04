@@ -4722,7 +4722,7 @@ final class Template {
           }
           
           if (preg_match("~^(.+national conference) on \-$~i", $this->get($param), $matches)) {
-              $this->set($param, trim($match[1])); // ACM conference titles
+              $this->set($param, trim($matches[1])); // ACM conference titles
           }
           return;
 
