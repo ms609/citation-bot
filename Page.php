@@ -616,6 +616,12 @@ class Page {
     $treat_identical_separately = $class::TREAT_IDENTICAL_SEPARATELY;
     $objects = array();
     
+    if (count($regexp_in) > 1) { // Loop over array twice, since sometimes more complex regex fails and starting over works
+      foreach ($regexp_in as $regexp) {
+        $regexp_in[] = $regexp;
+      }
+    }
+    
     $preg_ok = TRUE;
     foreach ($regexp_in as $regexp) {
       while ($preg_ok = preg_match($regexp, $text, $match)) {
