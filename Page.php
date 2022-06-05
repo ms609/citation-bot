@@ -257,6 +257,7 @@ class Page {
     set_time_limit(120);
     if ($this->page_error) {
       $this->text = $this->start_text;
+      file_put_contents('CodeCoverage', $this->title . " page failed \n", FILE_APPEND);
       return FALSE;
     }
     Template::$all_templates = &$all_templates; // Pointer to save memory
