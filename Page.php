@@ -15,7 +15,6 @@ require_once 'expandFns.php';     // @codeCoverageIgnore
 require_once 'user_messages.php'; // @codeCoverageIgnore
 require_once 'Zotero.php';        // @codeCoverageIgnore
 require_once 'constants.php';     // @codeCoverageIgnore
-
 class Page {
 
   protected string $text = '';
@@ -616,7 +615,10 @@ class Page {
     $treat_identical_separately = $class::TREAT_IDENTICAL_SEPARATELY;
     $objects = array();
     
-    if (count($regexp_in) > 1) { // Loop over array twice, since sometimes more complex regex fails and starting over works
+    if (count($regexp_in) > 1) { // Loop over array four times, since sometimes more complex regex fails and starting over works
+      foreach ($regexp_in as $regexp) {
+        $regexp_in[] = $regexp;
+      }
       foreach ($regexp_in as $regexp) {
         $regexp_in[] = $regexp;
       }
