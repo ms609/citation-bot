@@ -975,5 +975,5 @@ final class apiFunctionsTest extends testBaseClass {
     $prepared = $this->process_citation($text);
     $this->assertSame('10.3847/1538-4357/ac35ec', $prepared->get2('doi'));
     $this->assertNotNull($prepared->get2('doi-broken-date')); // The DOI has to not work for this test to cover the code where a title and arxiv exist and a doi is found, but the doi does not add a title
-  }
+  } // Could try 2201.04741 if this fails
 }
