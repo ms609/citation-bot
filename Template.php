@@ -1872,7 +1872,8 @@ final class Template {
       $results = $this->do_pumbed_query(array("journal", "volume", "issue", "page"));
       if ($results[1] === 1) return $results;
     }
-    if ($this->has('title') && $this->first_surname()) {
+    $is_book = $this->looksLikeBookReview((object) array());
+    if ($this->has('title') && $this->first_surname() && !$is_book) {
         $results = $this->do_pumbed_query(array("title", "surname", "year", "volume"));
         if ($results[1] === 1) return $results;
         if ($results[1] > 1) {
