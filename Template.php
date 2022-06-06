@@ -3975,9 +3975,6 @@ final class Template {
 
         case 'doi-broken': case 'doi_brokendate': case 'doi-broken-date': case 'doi_inactivedate': case 'doi-inactive-date':
           if ($this->blank('doi')) $this->forget($param);
-          if (!$this->blank(ARXIV_ALIASES)) {
-            file_put_contents('CodeCoverage', $this->get('arxiv') . $this->get('eprint') . " appears to usable for testGetBadDoiFromArxiv()\n", FILE_APPEND);
-          }
           return;
 
         case 'edition':
