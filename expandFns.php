@@ -341,7 +341,7 @@ function wikify_external_text(string $title) : string {
   if (preg_match("~^\. (.+)$~", $title, $matches)) {
     $title = trim($matches[1]);
   }
- if (preg_match("~^(.+)(\.\s)+\.$~s", $title, $matches)) {
+ if (preg_match("~^(.+)(\.\s+)\.$~s", $title, $matches)) {
     $title = trim($matches[1] . ".");
   }
   $title_orig = '';
