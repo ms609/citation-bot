@@ -970,7 +970,7 @@ final class apiFunctionsTest extends testBaseClass {
     $this->assertSame('Collins', $prepared->get2('last1'));
   }
   
-  public funtion testGetBadDoiFromArxiv() : void {
+  public function testGetBadDoiFromArxiv() : void {
     $text = "{{cite journal|arxiv=2106.09766 |title=On Use of the Moore-Penrose Pseudoinverse for Evaluating the RGA of Non-Square Systems }}";
     $prepared = $this->process_citation($text);
     $this->assertSame('10.33103/uot.ijccce.21.3.8', $prepared->get2('doi'));
