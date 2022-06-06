@@ -335,8 +335,8 @@ function wikify_external_text(string $title) : string {
   $originalTags = array('.<br>', '.</br>', '.</ br>', '.<p>', '.</p>', '.</ p>', '.<strong>', '.</strong>', '.</ strong>');
   $wikiTags = array('. ','. ','. ','. ','. ','. ','. ','. ','. ');
   $title = str_ireplace($originalTags, $wikiTags, $title);
-  $originalTags = array('<br>', '</br>', '</ br>', '<p>', '</p>', '</ p>', '<strong>', '</strong>', '</ strong>', '<p class=\"HeadingRun \'\'In\'\'\">');
-  $wikiTags = array('. ','. ','. ','. ','. ','. ', ' ',' ',' ', ' ');
+  $originalTags = array('<br>', '</br>', '</ br>', '<p>', '</p>', '</ p>', '<strong>', '</strong>', '</ strong>');
+  $wikiTags = array('. ','. ','. ','. ','. ','. ', ' ',' ',' ');
   $title = trim(str_ireplace($originalTags, $wikiTags, $title));
   if (preg_match("~^\. (.+)$~", $title, $matches)) {
     $title = trim($matches[1]);
@@ -371,6 +371,10 @@ function wikify_external_text(string $title) : string {
   }
 
   $title = str_replace(['​'],[' '], $title); // Funky spaces
+  
+  $title = str_ireplace('<p class=\"HeadingRun \'\'In\'\'\">', ' ', $title);
+  
+  $title = str_ireplace(['    ', '   ', '  '], [' ', ' ', ' '], $title);
   $title = trim($title," \t\n\r\0\x0B\xc2\xa0");
 
   for ($i = 0; $i < count($replacement); $i++) {
