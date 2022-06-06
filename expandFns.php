@@ -335,8 +335,8 @@ function wikify_external_text(string $title) : string {
   $originalTags = array('.<br>', '.</br>', '.</ br>', '.<p>', '.</p>', '.</ p>', '.<strong>', '.</strong>', '.</ strong>');
   $wikiTags = array('. ','. ','. ','. ','. ','. ','. ','. ','. ');
   $title = str_ireplace($originalTags, $wikiTags, $title);
-  $originalTags = array('<br>', '</br>', '</ br>', '<p>', '</p>', '</ p>', '<strong>', '</strong>', '</ strong>');
-  $wikiTags = array('. ','. ','. ','. ','. ','. ', ' ',' ',' ');
+  $originalTags = array('<br>', '</br>', '</ br>', '<p>', '</p>', '</ p>', '<strong>', '</strong>', '</ strong>', '<p class=\"HeadingRun \'\'In\'\'\">');
+  $wikiTags = array('. ','. ','. ','. ','. ','. ', ' ',' ',' ', ' ');
   $title = trim(str_ireplace($originalTags, $wikiTags, $title));
   if (preg_match("~^\. (.+)$~", $title, $matches)) {
     $title = trim($matches[1]);
