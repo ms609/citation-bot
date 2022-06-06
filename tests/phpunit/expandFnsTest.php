@@ -265,6 +265,10 @@ final class expandFnsTest extends testBaseClass {
     $this->assertSame("ABC",remove_brackets('{}{}{A[][][][][]B()(){}[]][][[][C][][][[()()'));
   }
   
+  public function testStrong() : void {
+    $this->assertSame('A new genus and two new species of Apomecynini, a new species of Desmiphorini, and new records in Lamiinae and Disteniidae (Coleoptera)', wikify_external_text('. <strong>A new genus and two new species of Apomecynini, a new species of Desmiphorini, and new records in Lamiinae and Disteniidae (Coleoptera)</strong>.'));
+  }
+
   // The X prevents first character caps
   public function testCapitalization_lots_more() : void { // Double check that constants are in order when we sort - paranoid
     $this->assertSame('X BJPsych', title_capitalization(title_case('X Bjpsych'), TRUE));

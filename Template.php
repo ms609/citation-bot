@@ -1357,6 +1357,11 @@ final class Template {
             return FALSE;
           }
         }
+        $chap = '';
+        foreach (CHAPTER_ALIASES as $alias) {
+          $chap = $chap . $this->get($alias);
+        }
+        if (preg_match('~\[\[.+\]\]~', $chap)) return FALSE; // Chapter is already wikilinked
         return $this->add($param_name, $value);
 
       case 'archive-url':
@@ -1867,7 +1872,8 @@ final class Template {
       $results = $this->do_pumbed_query(array("journal", "volume", "issue", "page"));
       if ($results[1] === 1) return $results;
     }
-    if ($this->has('title') && $this->first_surname() dfsadfdsfasd) {
+    $is_book = $this->looksLikeBookReview((object) array());
+    if ($this->has('title') && $this->first_surname() && !$is_book) {
         $results = $this->do_pumbed_query(array("title", "surname", "year", "volume"));
         if ($results[1] === 1) return $results;
         if ($results[1] > 1) {
@@ -3970,6 +3976,9 @@ print_r($this->param);
 
         case 'doi-broken': case 'doi_brokendate': case 'doi-broken-date': case 'doi_inactivedate': case 'doi-inactive-date':
           if ($this->blank('doi')) $this->forget($param);
+          if (!$this->blank(ARXIV_ALIASES)) {
+            file_put_contents('CodeCoverage', $this->get('arxiv') . $this->get('eprint') . " appears to usable for testGetBadDoiFromArxiv()\n", FILE_APPEND);
+          }
           return;
 
         case 'edition':
@@ -4720,6 +4729,10 @@ print_r($this->param);
                  $this->set($param, trim($match[1]));
           } elseif (!$this->blank(['isbn', 'doi', 'pmc', 'pmid']) && preg_match('~^(.+) \(PDF\)$~i', trim($this->get($param)), $match)) {
                  $this->set($param, trim($match[1])); // Books/journals probably don't end in (PDF)
+          }
+          
+          if (preg_match("~^(.+national conference) on \-$~i", $this->get($param), $matches)) {
+              $this->set($param, trim($matches[1])); // ACM conference titles
           }
           return;
 

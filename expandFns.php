@@ -332,13 +332,18 @@ function wikify_external_text(string $title) : string {
   $originalTags = array('<title>', '</title>', '</ title>', 'From the Cover: ');
   $wikiTags = array('','','','');
   $title = str_ireplace($originalTags, $wikiTags, $title);
-  $originalTags = array('.<br>', '.</br>', '.</ br>', '.<p>', '.</p>', '.</ p>');
-  $wikiTags = array('. ','. ','. ','. ','. ','. ');
+  $originalTags = array('.<br>', '.</br>', '.</ br>', '.<p>', '.</p>', '.</ p>', '.<strong>', '.</strong>', '.</ strong>');
+  $wikiTags = array('. ','. ','. ','. ','. ','. ','. ','. ','. ');
   $title = str_ireplace($originalTags, $wikiTags, $title);
-  $originalTags = array('<br>', '</br>', '</ br>', '<p>', '</p>', '</ p>');
-  $wikiTags = array('. ','. ','. ','. ','. ','. ');
-  $title = str_ireplace($originalTags, $wikiTags, $title);
-
+  $originalTags = array('<br>', '</br>', '</ br>', '<p>', '</p>', '</ p>', '<strong>', '</strong>', '</ strong>');
+  $wikiTags = array('. ','. ','. ','. ','. ','. ', ' ',' ',' ');
+  $title = trim(str_ireplace($originalTags, $wikiTags, $title));
+  if (preg_match("~^\. (.+)$~", $title, $matches)) {
+    $title = trim($matches[1]);
+  }
+ if (preg_match("~^(.+)(\.\s)+\.$~s", $title, $matches)) {
+    $title = trim($matches[1] . ".");
+  }
   $title_orig = '';
   while ($title !== $title_orig) {
     $title_orig = $title;  // Might have to do more than once.   The following do not allow < within the inner match since the end tag is the same :-( and they might nest or who knows what
@@ -366,6 +371,10 @@ function wikify_external_text(string $title) : string {
   }
 
   $title = str_replace(['​'],[' '], $title); // Funky spaces
+  
+  $title = str_ireplace('<p class="HeadingRun \'\'In\'\'">', ' ', $title);
+  
+  $title = str_ireplace(['    ', '   ', '  '], [' ', ' ', ' '], $title);
   $title = trim($title," \t\n\r\0\x0B\xc2\xa0");
 
   for ($i = 0; $i < count($replacement); $i++) {
