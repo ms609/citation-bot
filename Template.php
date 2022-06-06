@@ -2877,6 +2877,7 @@ final class Template {
     $param_occurrences = array();
     $duplicated_parameters = array();
     $duplicate_identical = array();
+
     foreach ($this->param as $pointer => $par) {
       if ($par->param && isset($param_occurrences[$par->param])) {
         $duplicate_pos = $param_occurrences[$par->param];
