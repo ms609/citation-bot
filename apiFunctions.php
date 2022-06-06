@@ -243,7 +243,6 @@ function arxiv_api(array $ids, array &$templates) : bool {  // Pointer to save m
         if ($this_template->blank('title')) {
             $this_template->set('title', $the_arxiv_title);
             if ($the_arxiv_contribution !== '') $this_template->set('contribution', $the_arxiv_contribution);
-            file_put_contents('CodeCoverage', $ids[$i] . " This arXiv did the contrib code\n", FILE_APPEND);
         } else {
             if ($the_arxiv_contribution !== '' && $this_template->blank('contribution')) $this_template->forget('contribution');
         }
