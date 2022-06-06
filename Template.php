@@ -2877,14 +2877,12 @@ final class Template {
     $param_occurrences = array();
     $duplicated_parameters = array();
     $duplicate_identical = array();
-print_r($this->param);
     foreach ($this->param as $pointer => $par) {
       if ($par->param && isset($param_occurrences[$par->param])) {
         $duplicate_pos = $param_occurrences[$par->param];
         if ($par->val === '') {
           $par->val = $this->param[$duplicate_pos]->val;
         } elseif ($this->param[$duplicate_pos]->val === '') {
-          echo "\n DID IT \n";
           $this->param[$duplicate_pos]->val = $par->val;
         }
         array_unshift($duplicated_parameters, $duplicate_pos);
