@@ -372,7 +372,7 @@ function wikify_external_text(string $title) : string {
 
   $title = str_replace(['​'],[' '], $title); // Funky spaces
   
-  $title = str_ireplace('<p class=\"HeadingRun \'\'In\'\'\">', ' ', $title);
+  $title = str_ireplace('<p class="HeadingRun \'\'In\'\'">', ' ', $title);
   
   $title = str_ireplace(['    ', '   ', '  '], [' ', ' ', ' '], $title);
   $title = trim($title," \t\n\r\0\x0B\xc2\xa0");
