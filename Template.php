@@ -3871,6 +3871,10 @@ final class Template {
             $this->forget('doi');  // contentdirections.com DOI provider is gone
             return;
           }
+          if (doi_works($doi) !== TRUE && strpos($doi, '10.1336/) === 0 && $this->has('isnb')) {
+            $this->forget('doi');  // contentdirections.com DOI provider is gone
+            return;
+          }
           if (!doi_works($doi)) {
             $doi = sanitize_doi($doi);
             $this->set($param, $doi);
