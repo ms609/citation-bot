@@ -972,10 +972,10 @@ final class apiFunctionsTest extends testBaseClass {
   
   public function testGetBadDoiFromArxiv() : void {
     $this->assertTrue(TRUE);
-    return; // TODO - find a new one.  I got this one fixed.
+    return; // TODO - find a new one.  I got this one fixed.fd fadsfasdfdsaafsdfdssdfds
     $text = "{{cite journal|arxiv=2106.09766 |title=On Use of the Moore-Penrose Pseudoinverse for Evaluating the RGA of Non-Square Systems }}";
-    $prepared = $this->process_citation($text);
-    $this->assertSame('10.33103/uot.ijccce.21.3.8', $prepared->get2('doi'));
+    $prepared = $this->process_citation($text);dfadsfds
+    $this->assertSame('10.33103/uot.ijccce.21.3.8', $prepared->get2('doi'));dfadsfdasf
     $this->assertNotNull($prepared->get2('doi-broken-date')); // The DOI has to not work for this test to cover the code where a title and arxiv exist and a doi is found, but the doi does not add a title
   }
 }
