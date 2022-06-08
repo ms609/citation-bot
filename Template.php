@@ -22,7 +22,7 @@ require_once 'NameTools.php';
 
 final class Template {
   public const PLACEHOLDER_TEXT = '# # # CITATION_BOT_PLACEHOLDER_TEMPLATE %s # # #';
-  public const REGEXP = ['~\{\{[^\{\}\|]+\}\}~su', '~\{\{[^\{\}]+\}\}~su', '~\{\{(?>[^\{]|\{[^\{])+?\}\}~su'];  // Please see https://stackoverflow.com/questions/1722453/need-to-prevent-php-regex-segfault for discussion of atomic regex
+  public const REGEXP = ['~(?<!\{)\{\{\}\}(?!\})~su', '~\{\{[^\{\}\|]+\}\}~su', '~\{\{[^\{\}]+\}\}~su', '~\{\{(?>[^\{]|\{[^\{])+?\}\}~su'];  // Please see https://stackoverflow.com/questions/1722453/need-to-prevent-php-regex-segfault for discussion of atomic regex
   public const TREAT_IDENTICAL_SEPARATELY = FALSE;  // This is safe because templates are the last thing we do AND we do not directly edit $all_templates that are sub-templates - we might remove them, but do not change their content directly
   public static array $all_templates = array();  // Points to list of all the Template() on the Page() including this one.  It can only be set by the page class after all templates are made
   public static int $date_style = DATES_WHATEVER;  // Will get from the page
@@ -3871,6 +3871,10 @@ final class Template {
             $this->forget('doi');  // contentdirections.com DOI provider is gone
             return;
           }
+          if (doi_works($doi) !== TRUE && strpos($doi, '10.1336/') === 0 && $this->has('isbn')) {
+            $this->forget('doi');  // contentdirections.com DOI provider is gone
+            return;
+          }
           if (!doi_works($doi)) {
             $doi = sanitize_doi($doi);
             $this->set($param, $doi);
@@ -3975,9 +3979,6 @@ final class Template {
 
         case 'doi-broken': case 'doi_brokendate': case 'doi-broken-date': case 'doi_inactivedate': case 'doi-inactive-date':
           if ($this->blank('doi')) $this->forget($param);
-          if (!$this->blank(ARXIV_ALIASES)) {
-            file_put_contents('CodeCoverage', $this->get('arxiv') . $this->get('eprint') . " appears to usable for testGetBadDoiFromArxiv()\n", FILE_APPEND);
-          }
           return;
 
         case 'edition':
