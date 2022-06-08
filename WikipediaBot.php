@@ -430,7 +430,7 @@ try {
          "action" => "query",
          "usprop" => "blockinfo",
          "list" => "users",
-         "ususers" => (str_replace(" ", "_", $user)),
+         "ususers" => str_replace(" ", "_", $user),
       ];
     $response = self::QueryAPI($query);
     echo "\n 2 $response \n";
