@@ -422,7 +422,7 @@ try {
          "action" => "query",
          "usprop" => "blockinfo",
          "list" => "users",
-         "ususers" => urlencode(str_replace(" ", "_", $user)),
+         "ususers" => $user,
       ];
     $response = self::QueryAPI($query);
     if (strpos($response, '"userid"')  === FALSE) { // try again if weird
