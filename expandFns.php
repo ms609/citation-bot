@@ -109,6 +109,7 @@ function is_doi_works(string $doi) : ?bool {
   $context = stream_context_create(CONTEXT_INSECURE);
   set_time_limit(120);
   $headers_test = @get_headers("https://doi.org/" . doi_encode($doi), GET_THE_HEADERS, $context);
+  echo "\n" . __LINE__ . " "; print_r($headers_test);
   $context = stream_context_create(CONTEXT_INSECURE_11);
   if ($headers_test === FALSE) {
      sleep(2);                                                                                        // @codeCoverageIgnore
@@ -116,6 +117,7 @@ function is_doi_works(string $doi) : ?bool {
      set_time_limit(120);                                                                             // @codeCoverageIgnore
      $headers_test = @get_headers("https://doi.org/" . doi_encode($doi), GET_THE_HEADERS, $context);  // @codeCoverageIgnore
   }
+  echo "\n" . __LINE__ . " "; print_r($headers_test);
   if ($headers_test === FALSE) {
      sleep(5);                                                                                        // @codeCoverageIgnore
      set_time_limit(120);                                                                             // @codeCoverageIgnore
@@ -128,6 +130,7 @@ function is_doi_works(string $doi) : ?bool {
      $headers_test = @get_headers("https://doi.org/" . doi_encode($doi), GET_THE_HEADERS, $context);  // @codeCoverageIgnore
      if ($headers_test === FALSE) return FALSE; /** We trust previous failure **/                     // @codeCoverageIgnore
   }
+  echo "\n" . __LINE__ . " "; print_r($headers_test);
   if (preg_match('~^10\.1038/nature\d{5}$~i', $doi) && $headers_test === FALSE) return FALSE; // Nature dropped the ball for now TODO - https://dx.doi.org/10.1038/nature05009
   if ($headers_test === FALSE) { // Use CURL instead
     if (strpos($doi, '10.2277/') === 0) return FALSE;
@@ -145,6 +148,7 @@ function is_doi_works(string $doi) : ?bool {
     $url  = curl_getinfo($ch, CURLINFO_EFFECTIVE_URL);
     $code = curl_getinfo($ch, CURLINFO_HTTP_CODE);
     curl_close($ch);
+  echo "\n" . __LINE__ . " ". $head . "\n" . $url . "\n" . $code ."\n";
     if (($code === 302 || $code === 200) &&
         (stripos($url, 'doi.org') === FALSE) &&
         strlen($head) > 55 && 
