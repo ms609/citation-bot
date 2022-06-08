@@ -438,7 +438,7 @@ try {
          "action" => "query",
          "usprop" => "blockinfo",
          "list" => "users",
-         "ususers" => $user),
+         "ususers" => $user,
       ];
     $response = self::QueryAPI($query);
     echo "\n 3 $response \n";
