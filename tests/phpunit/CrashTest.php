@@ -14,4 +14,8 @@ final class CrashTest extends testBaseClass {
       $expanded = $this->process_citation($text);
   }
 
+ 
+  public function testBadPage() : void {  // Use this when debugging pages that crash the bot
+      $this->assertTrue(FALSE);
+  }
 }
