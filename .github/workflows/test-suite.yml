@@ -55,4 +55,6 @@ jobs:
          PHP_S2APIKEY: ${{ secrets.PHP_S2APIKEY }}
       run: ./vendor/bin/phpunit --coverage-clover coverage.xml
 
-
+    - name: Code Coverage
+      run: /bin/bash <(curl -s https://codecov.io/bash)
+      
