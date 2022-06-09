@@ -3877,7 +3877,7 @@ final class Template {
           }
           if (doi_works($doi) !== TRUE && strpos($doi, '10.1036/') === 0 && $this->has('isbn')) {
             $this->forget('doi');  // contentdirections.com DOI provider is gone
-            return;10.1036/0071422803
+            return;
           }
           if (!doi_works($doi)) {
             $doi = sanitize_doi($doi);
