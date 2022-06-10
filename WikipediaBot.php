@@ -422,34 +422,9 @@ try {
          "action" => "query",
          "usprop" => "blockinfo",
          "list" => "users",
-         "ususers" => urlencode(str_replace(" ", "_", $user)),
-      ];
-    $response = self::QueryAPI($query);
-    echo "\n 1 $response \n";
-    $query = [
-         "action" => "query",
-         "usprop" => "blockinfo",
-         "list" => "users",
-         "ususers" => str_replace(" ", "_", $user),
-      ];
-    $response = self::QueryAPI($query);
-    echo "\n 2 $response \n";
-    $query = [
-         "action" => "query",
-         "usprop" => "blockinfo",
-         "list" => "users",
          "ususers" => $user,
       ];
     $response = self::QueryAPI($query);
-    echo "\n 3 $response \n";
-    $query = [
-         "action" => "query",
-         "usprop" => "blockinfo",
-         "list" => "users",
-         "ususers" => urlencode($user),
-      ];
-    $response = self::QueryAPI($query);
-    echo "\n 4 $response \n";
     if (strpos($response, '"userid"')  === FALSE) { // try again if weird
       sleep(5);
       $response = self::QueryAPI($query);
