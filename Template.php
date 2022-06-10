@@ -3790,6 +3790,7 @@ final class Template {
             $this->rename($param, 'url-status', 'live');
             $this->forget($param);
           }
+          if ($the_data === '') $this->forget($param);
           return;
 
         case 'url-status':
