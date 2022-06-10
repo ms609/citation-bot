@@ -156,9 +156,9 @@ function is_doi_works(string $doi) : ?bool {
   echo "\n" . __LINE__ . " ". $head . "\n" . $url . "\n" . $code ."\n";
     if (($code === 302 || $code === 200) &&
         (stripos($url, 'doi.org') === FALSE) &&
-        strlen($head) > 55 && 
+        (strlen($head) > 55 &&
         (stripos($head, 'Content-Type') !== FALSE) &&
-        (stripos($head, 'location') !== FALSE))
+        (stripos($head, 'location') !== FALSE)) || (stripos($url, 'dtic.mil') !== FALSE)) // Expect something, unless dtic.mi
     {
         return TRUE;
     } else {
