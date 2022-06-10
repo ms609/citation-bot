@@ -6067,6 +6067,12 @@ final class Template {
         }
       }
       $this->tidy_parameter('url'); // depending upon end state, convert to chapter-url
+      if ($this->has_good_free_copy()) { // One last try to drop URLs
+        $url = $this->get('url');
+        if ($url !== str_ireplace(['nih.gov', 'pubmed', 'pmc', 'doi'], '', $url)) {          
+          $this->get_identifiers_from_url();
+        }
+      }
       $this->tidy_parameter('via');
       $this->tidy_parameter('publisher');
       if ($this->has('publisher') && preg_match("~^([\'\"]+)([^\'\"]+)([\'\"]+)$~u", $this->get('publisher'), $matches)) {
