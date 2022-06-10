@@ -632,7 +632,7 @@ final class Template {
     } else {
         $two_authors = FALSE;
     }  
-    if ($this->wikiname() =='cite book' || ($this->wikiname() =='citation' && $this->has('isbn'))) { // Assume book
+    if ($this->wikiname() === 'cite book' || ($this->wikiname() === 'citation' && $this->has('isbn'))) { // Assume book
       if ($this->display_authors() >= $this->number_of_authors()) return TRUE;
       return (!(
               $this->has('isbn')
@@ -640,6 +640,11 @@ final class Template {
           && ($this->has('date') || $this->has('year'))
           && $two_authors
       ));
+    }
+    if ($this->wikiname() === 'cite conference') { // cite conference uses very different parameters
+      if ($this->has('title') && ($this->has('conference') || $this->has('book-title') || $this->has('chapter'))) {
+        return FALSE;
+      }
     }
     // And now everything else
     if ($this->blank(['pages', 'page', 'at']) ||
