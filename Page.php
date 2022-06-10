@@ -311,7 +311,7 @@ class Page {
         $this_template->get_identifiers_from_url();
         $this_template->expand_by_google_books();
         $this_template->tidy();
-        $this_template->tidy_parameter('dead-url');
+        $this_template->tidy_parameter('dead-url'); $this_template->tidy_parameter('deadurl');
       } elseif ($this_template->wikiname() === 'cite lsa') {
         $this_template->clean_google_books();
         $this_template->forget('ref'); // Common parameter that does not actually work
@@ -321,11 +321,10 @@ class Page {
       } elseif ($this_template->wikiname() === 'cite episode' || $this_template->wikiname() === 'cite interview') {
         $this_template->clean_google_books();
         $this_template->correct_param_mistakes();
-        $this_template->tidy_parameter('dead-url');
+        $this_template->tidy_parameter('dead-url'); $this_template->tidy_parameter('deadurl');
       } elseif ((strpos($this_template->wikiname(), 'cite ') === 0)  || (strpos($this_template->wikiname(), 'vcite ') === 0)) {
         $this_template->clean_google_books();
-        $this_template->tidy_parameter('dead-url');
-        $this_template->tidy_parameter('deadurl');
+        $this_template->tidy_parameter('dead-url'); $this_template->tidy_parameter('deadurl');
         // THIS CATCH ALL NEEDS TO BE LAST IN THE LIST!!!!!!
       }
     }
