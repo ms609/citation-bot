@@ -140,6 +140,9 @@ function is_doi_works(string $doi) : ?bool {
              CURLOPT_CONNECTTIMEOUT => 10,
              CURLOPT_NOBODY => TRUE,
              CURLOPT_FOLLOWLOCATION => TRUE,
+             CURLOPT_SSL_VERIFYHOST => 0,
+             CURLOPT_SSL_VERIFYPEER => FALSE,
+             CURLOPT_SSL_VERIFYSTATUS => FALSE,
              CURLOPT_USERAGENT => BOT_USER_AGENT]);
     $head = (string) @curl_exec($ch);
     $url  = curl_getinfo($ch, CURLINFO_EFFECTIVE_URL);
@@ -147,9 +150,9 @@ function is_doi_works(string $doi) : ?bool {
     curl_close($ch);
     if (($code === 302 || $code === 200) &&
         (stripos($url, 'doi.org') === FALSE) &&
-        strlen($head) > 55 && 
+        (strlen($head) > 55 &&
         (stripos($head, 'Content-Type') !== FALSE) &&
-        (stripos($head, 'location') !== FALSE))
+        (stripos($head, 'location') !== FALSE)) || (stripos($url, 'dtic.mil') !== FALSE)) // Expect something, unless dtic.mil
     {
         return TRUE;
     } else {
