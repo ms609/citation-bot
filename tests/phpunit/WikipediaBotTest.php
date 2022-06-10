@@ -55,6 +55,8 @@ require_once __DIR__ . '/../testBaseClass.php';
       $this->assertSame(TRUE, $result);
       $result = WikipediaBot::is_valid_user('Stanlha'); // Random user who exists but does not have page as of Nov 2017
       $this->assertSame(TRUE, $result);
+      $result = WikipediaBot::is_valid_user("David(Owner, Founder, Creator and Lead Developer)"); // Random user who has a name with funky characters
+      $this->assertSame(TRUE, $result);     
     }
     public function testIsINValidUser() : void {
       $result = WikipediaBot::is_valid_user('Not_a_valid_user_at_Dec_2017'); 

@@ -632,7 +632,7 @@ final class Template {
     } else {
         $two_authors = FALSE;
     }  
-    if ($this->wikiname() =='cite book' || ($this->wikiname() =='citation' && $this->has('isbn'))) { // Assume book
+    if ($this->wikiname() === 'cite book' || ($this->wikiname() === 'citation' && $this->has('isbn'))) { // Assume book
       if ($this->display_authors() >= $this->number_of_authors()) return TRUE;
       return (!(
               $this->has('isbn')
@@ -640,6 +640,11 @@ final class Template {
           && ($this->has('date') || $this->has('year'))
           && $two_authors
       ));
+    }
+    if ($this->wikiname() === 'cite conference') { // cite conference uses very different parameters
+      if ($this->has('title') && ($this->has('conference') || $this->has('book-title') || $this->has('chapter'))) {
+        return FALSE;
+      }
     }
     // And now everything else
     if ($this->blank(['pages', 'page', 'at']) ||
@@ -3790,6 +3795,7 @@ final class Template {
             $this->rename($param, 'url-status', 'live');
             $this->forget($param);
           }
+          if ($the_data === '') $this->forget($param);
           return;
 
         case 'url-status':
@@ -3872,6 +3878,10 @@ final class Template {
             return;
           }
           if (doi_works($doi) !== TRUE && strpos($doi, '10.1336/') === 0 && $this->has('isbn')) {
+            $this->forget('doi');  // contentdirections.com DOI provider is gone
+            return;
+          }
+          if (doi_works($doi) !== TRUE && strpos($doi, '10.1036/') === 0 && $this->has('isbn')) {
             $this->forget('doi');  // contentdirections.com DOI provider is gone
             return;
           }
@@ -6057,6 +6067,12 @@ final class Template {
         }
       }
       $this->tidy_parameter('url'); // depending upon end state, convert to chapter-url
+      if ($this->has_good_free_copy()) { // One last try to drop URLs
+        $url = $this->get('url');
+        if ($url !== str_ireplace(['nih.gov', 'pubmed', 'pmc', 'doi'], '', $url)) {          
+          $this->get_identifiers_from_url();
+        }
+      }
       $this->tidy_parameter('via');
       $this->tidy_parameter('publisher');
       if ($this->has('publisher') && preg_match("~^([\'\"]+)([^\'\"]+)([\'\"]+)$~u", $this->get('publisher'), $matches)) {
