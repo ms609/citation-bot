@@ -146,6 +146,8 @@ function is_doi_works(string $doi) : ?bool {
              CURLOPT_CONNECTTIMEOUT => 10,
              CURLOPT_NOBODY => TRUE,
              CURLOPT_FOLLOWLOCATION => TRUE,
+             CURLOPT_SSL_VERIFYHOST => 0,
+             CURLOPT_SSL_VERIFYPEER => FALSE,
              CURLOPT_USERAGENT => BOT_USER_AGENT]);
     $head = (string) @curl_exec($ch);
     $url  = curl_getinfo($ch, CURLINFO_EFFECTIVE_URL);
