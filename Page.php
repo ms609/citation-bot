@@ -320,6 +320,7 @@ class Page {
         $this_template->correct_param_mistakes();
       } elseif ((strpos($this_template->wikiname(), 'cite ') === 0)  || (strpos($this_template->wikiname(), 'vcite ') === 0)) {
         $this_template->clean_google_books();
+        condfssafs
         // THIS CATCH ALL NEEDS TO BE LAST IN THE LIST!!!!!!
       }
     }
