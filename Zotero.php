@@ -765,11 +765,7 @@ public static function process_zotero_response(string $zotero_response, Template
            }
         }
         break;
-      case 'webpage':
-      case 'blogPost':
-      case 'document':
-        
-        break; // Could be a journal article or a genuine web page.
+
         
       case 'thesis':
         $template->change_name_to('cite thesis');
@@ -778,17 +774,21 @@ public static function process_zotero_response(string $zotero_response, Template
           $template->add_if_new('type' , (string) $result->thesisType); // Prefer type since it exists in cite journal too
         }
         break;
-        
+
+      case 'webpage':
+      case 'blogPost':
+      case 'document':// Could be a journal article or a genuine web page.
+      case 'entry':
       case 'videoRecording':
       case 'film':
-      case 'audioRecording';   // @codeCoverageIgnore
-      case 'presentation';     // @codeCoverageIgnore
-      case 'computerProgram';  // @codeCoverageIgnore
-      case 'forumPost';        // @codeCoverageIgnore
+      case 'audioRecording':   // @codeCoverageIgnore
+      case 'presentation':     // @codeCoverageIgnore
+      case 'computerProgram':  // @codeCoverageIgnore
+      case 'forumPost':       // @codeCoverageIgnore
           // Do not change type. This seems to include things that will just make people angry if we change type to encyclopedia
-      case 'encyclopediaArticle';  // @codeCoverageIgnore
+      case 'encyclopediaArticle':  // @codeCoverageIgnore
           // Probably tick people off too
-      case 'dictionaryEntry';  // @codeCoverageIgnore
+      case 'dictionaryEntry':  // @codeCoverageIgnore
         // Nothing special that we know of yet
         break;
 
