@@ -344,11 +344,13 @@ try {
         "titles" => $page,
         ]);
     $res = @json_decode($res);
+    print_r($res);
     if (!isset($res->query->pages)) {
         report_warning("Failed to get redirect status");    // @codeCoverageIgnore
         return -1;                                          // @codeCoverageIgnore
     }
     $res = reset($res->query->pages);
+    print_r($res);
     return (isset($res->missing) ? -1 : (isset($res->redirect) ? 1 : 0));
   }
   public static function redirect_target(string $page) : ?string {
