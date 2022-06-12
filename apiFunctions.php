@@ -131,7 +131,6 @@ function entrez_api(array $ids, array &$templates, string $db) : bool {   // Poi
           }
         break; case "LangList": case 'ISSN':
         break; case "ArticleIds":
-          $possible_pmid = [];
           foreach ($item->Item as $subItem) {
             switch ($subItem["Name"]) {
               case "pubmed": case "pmid":
@@ -148,25 +147,11 @@ function entrez_api(array $ids, array &$templates, string $db) : bool {   // Poi
                    $this_template->add_if_new('pmc-embargo-date', $date_emb, 'entrez');                             // @codeCoverageIgnore  
                 }
                 break;
-              default:
-                if (preg_match("~^[1-9]\d{4,7}$~", (string) $subItem, $match)) {
-                  $possible_pmid[] = $match[0];
-                }
               case "doi": case "pii":
                 if (preg_match("~10\.\d{4}/[^\s\"']*~", (string) $subItem, $match)) {
                   $this_template->add_if_new('doi', $match[0], 'entrez');
                 }
-                if (preg_match("~PMC\d+~", (string) $subItem, $match)) {
-                  file_put_contents('CodeCoverage', $match[0] . " This PMC###### was found using a PMID\n", FILE_APPEND);
-                  $this_template->add_if_new('pmc', substr($match[0], 3), 'entrez');
-                }
             }
-          }
-          // Special floating PMID code
-          $possible_pmid = array_unique($possible_pmid);
-          if (count($possible_pmid) === 1 && $possible_pmid[0] !== (string) $document->Id && $possible_pmid[0] !== $this_template->get('pmc')) { // Only one and it is not PMC
-            file_put_contents('CodeCoverage',$possible_pmid[0] . " PMID was found using a PMC " . (string) $document->Id . "\n", FILE_APPEND);
-            $this_template->add_if_new('pmid', $possible_pmid[0], 'entrez');
           }
         break;
       }
