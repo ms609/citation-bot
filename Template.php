@@ -3787,15 +3787,18 @@ final class Template {
 
         case 'dead-url': case 'deadurl':
           $the_data = strtolower($this->get($param));
-          if (in_array($the_data, ['y', 'yes', 'dead', 'si', 'sì'])) {
+          if (in_array($the_data, ['y', 'yes', 'dead', 'si', 'sì', 'ja'])) {
             $this->rename($param, 'url-status', 'dead');
             $this->forget($param);
-          }
-          if (in_array($the_data, ['n', 'no', 'live', 'alive'])) {
+          } elseif (in_array($the_data, ['n', 'no', 'live', 'alive'])) {
             $this->rename($param, 'url-status', 'live');
             $this->forget($param);
+          } elseif (in_array($the_data, ['', 'bot: unknown'])) {
+            $this->forget($param);
+          } elseif (in_array($the_data, ['unfit'])) {
+            $this->rename($param, 'url-status');
+            $this->forget($param);
           }
-          if ($the_data === '') $this->forget($param);
           return;
 
         case 'url-status':
