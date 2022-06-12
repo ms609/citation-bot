@@ -21,7 +21,10 @@ final class CrashTest extends testBaseClass {
   public function testBadPage2() : void {  // Use this when debugging pages that crash the bot
      //$result = doi_works('10.21236/ad0012012');
      //print_r($result);
-   print_r(WikipediaBot::is_redirect('ReoJHans/sandbox'));
+   print_r(WikipediaBot::is_redirect('User:ReoJHans/sandbox'));
+   print_r(WikipediaBot::is_redirect('User%3AReoJHans%2Fsandbox'));
+   print_r(WikipediaBot::is_redirect('User:AReoJHans%2Fsandbox'));
+   print_r(WikipediaBot::is_redirect('User%3AReoJHans/sandbox'));
    print_r(WikipediaBot::is_redirect('NoSuchPage:ThereCan-tBe'));
    print_r(WikipediaBot::is_redirect('User:Citation_bot'));
    print_r(WikipediaBot::is_redirect('WP:UCB'));
