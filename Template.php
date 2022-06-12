@@ -7078,7 +7078,9 @@ final class Template {
               preg_match("~^(\d+)\.(\d+)$~i", $data, $matches) ||
               preg_match("~^(\d+)\((\d+\/\d+)\)$~i", $data, $matches) ||
               preg_match("~^(\d+) \((\d+ Suppl \d+)\)$~i", $data, $matches) ||
-              preg_match("~^Vol\.?(\d+)\((\d+)\)$~", $data, $matches)
+              preg_match("~^Vol\.?(\d+)\((\d+)\)$~", $data, $matches) ||
+              preg_match("~^(\d+) +\(No\.? (\d+)\)$~i", $data, $matches) ||
+              preg_match("~^(\d+) +\(Iss\.? (\d+)\)$~i", $data, $matches)
          ) {
          $possible_volume=$matches[1];
          $possible_issue=$matches[2];
