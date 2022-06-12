@@ -22,6 +22,12 @@ final class CrashTest extends testBaseClass {
      //$result = doi_works('10.21236/ad0012012');
      //print_r($result);
    print_r(WikipediaBot::is_redirect('ReoJHans/sandbox'));
+   print_r(WikipediaBot::is_redirect('NoSuchPage:ThereCan-tBe'));
+   print_r(WikipediaBot::is_redirect('User:Citation_bot'));
+   print_r(WikipediaBot::is_redirect('WP:UCB'));
+   
+   
+   
   }
 
 }
