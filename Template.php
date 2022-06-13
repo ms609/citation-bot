@@ -3867,6 +3867,12 @@ final class Template {
             }
             return;
           }
+          if (doi_works($doi) === NULL && ($this->has('pmc') || $this->has('pmid')) && strpos($doi, '10.1210/') === 0) {
+            if (strpos($doi, '10.1210/me.') === 0 || strpos($doi, '10.1210/jc.') === 0 || strpos($doi, '10.1210/er.') === 0) {
+              $this->forget('doi'); // Need updated and replaces
+              return;
+            }
+          }
           if (!doi_works($doi)) {
             $this->verify_doi();
             $doi = $this->get($param);
@@ -3887,12 +3893,6 @@ final class Template {
           if (doi_works($doi) !== TRUE && strpos($doi, '10.1036/') === 0 && $this->has('isbn')) {
             $this->forget('doi');  // contentdirections.com DOI provider is gone
             return;
-          }
-          if (doi_works($doi) === NULL && ($this->has('pmc') || $this->has('pmid')) && strpos($doi, '10.1210/') === 0) {
-            if (strpos($doi, '10.1210/me.') === 0 || strpos($doi, '10.1210/jc.') === 0 || strpos($doi, '10.1210/er.') === 0) {
-              $this->forget('doi'); // Need updated and replaces
-              return;
-            }
           }
           if (!doi_works($doi)) {
             $doi = sanitize_doi($doi);
