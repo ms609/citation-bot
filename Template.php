@@ -1782,6 +1782,7 @@ final class Template {
            . ($data['volume']     ? "&volume=" . urlencode($data['volume'])     : '')
            . ($data['issn']       ? "&issn="   . urlencode($data['issn'])       : "&title=" . urlencode($data['journal']));
       $result = @simplexml_load_file($url);
+      print_r($result);
       if ($result === FALSE) {
         report_warning("Error loading simpleXML file from CrossRef.");  // @codeCoverageIgnore
         return FALSE;                                                   // @codeCoverageIgnore
