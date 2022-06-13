@@ -3867,11 +3867,22 @@ final class Template {
             }
             return;
           }
-          if (doi_works($doi) === NULL && ($this->has('pmc') || $this->has('pmid')) && strpos($doi, '10.1210/') === 0) {
+          if (doi_works($doi) === NULL) {
+           if (($this->has('pmc') || $this->has('pmid')) && strpos($doi, '10.1210/') === 0) {
             if (strpos($doi, '10.1210/me.') === 0 || strpos($doi, '10.1210/jc.') === 0 || strpos($doi, '10.1210/er.') === 0  || strpos($doi, '10.1210/en.') === 0) {
               $this->forget('doi'); // Need updated and replaces
               return;
             }
+           }
+           if (strpos($doi, '10.1258/jrsm.') === 0) {
+              $doi = $this->get('doi');
+              $this->set('doi', ''); // Need updated and replaces
+              $this->get_doi_from_crossref();
+              if (doi_works($this->get('doi')) !== TRUE) {
+                $this->set('doi', $doi);
+              }
+              return; 
+           }
           }
           if (!doi_works($doi)) {
             $this->verify_doi();
