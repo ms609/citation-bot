@@ -3891,6 +3891,7 @@ final class Template {
           if (doi_works($doi) === NULL && ($this->has('pmc') || $this->has('pmid')) && strpos($doi, '10.1210/') === 0) {
             if (strpos($doi, '10.1210/me.') === 0 || strpos($doi, '10.1210/jc.') === 0 || strpos($doi, '10.1210/er.') === 0) {
               $this->forget('doi'); // Need updated and replaces
+              return;
             }
           }
           if (!doi_works($doi)) {
