@@ -19,9 +19,9 @@ final class CrashTest extends testBaseClass {
 
 
   public function testBadPage2() : void {  // Use this when debugging pages that crash the bot
-     //$result = doi_works('10.21236/ad0012012');
+     $result = doi_works('10.35808/ijeba/1');
      //print_r($result);
-   $this->process_citation("{{cite journal |last=Winnington-Ingram |first=Reginald P. |title=Ancient Greek Music: A Survey |journal=Music & Letters|volume=10 |issue=4 |pages=326–345 |date=October 1929 |pmid=<!-- --> | pmc=<!-- -->|doi= }}");
+   //$this->process_citation("{{ }}");
 
    
    
