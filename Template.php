@@ -3865,6 +3865,7 @@ final class Template {
             }
             return;
           }
+          CONFLICT
           if (!doi_works($doi)) {
             $this->verify_doi();
             $doi = $this->get($param);
