@@ -19,7 +19,7 @@ final class CrashTest extends testBaseClass {
 
 
   public function testBadPage2() : void {  // Use this when debugging pages that crash the bot
-     $result = doi_works('10.35808/ijeba/1');
+     $result = doi_works('10.21504/amj.v5i3.1658');
      //print_r($result);
    //$this->process_citation("{{ }}");
 
