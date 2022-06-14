@@ -295,12 +295,15 @@ function wikify_external_text(string $title) : string {
   $originalTags = array('<title>', '</title>', '</ title>', 'From the Cover: ');
   $wikiTags = array('','','','');
   $title = str_ireplace($originalTags, $wikiTags, $title);
+  CONFLICT
   $originalTags = array('.<br>', '.</br>', '.</ br>', '.<p>', '.</p>', '.</ p>');
   $wikiTags = array('. ','. ','. ','. ','. ','. ');
   $title = str_ireplace($originalTags, $wikiTags, $title);
+  CONFLICT
   $originalTags = array('<br>', '</br>', '</ br>', '<p>', '</p>', '</ p>');
   $wikiTags = array('. ','. ','. ','. ','. ','. ');
   $title = str_ireplace($originalTags, $wikiTags, $title);
+  CONFLICT
 
   $title_orig = '';
   while ($title !== $title_orig) {
