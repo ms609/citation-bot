@@ -1254,19 +1254,20 @@ public static function find_indentifiers_in_urls(Template $template, ?string $ur
           if ($template->blank('pmc')) {
             quietly('report_modification', "Converting URL to PMC parameter");
           }
+          $new_pmc = (string) @$match[1] . (string) @$match[2];
           if (is_null($url_sent)) {
             if (stripos($url, ".pdf") !== FALSE) {
-              $test_url = "https://www.ncbi.nlm.nih.gov/pmc/articles/PMC" . $match[1] . $match[2] . "/";
+              $test_url = "https://www.ncbi.nlm.nih.gov/pmc/articles/PMC" . $new_pmc . "/";
               curl_setopt_array(self::$ch_pmc, [CURLOPT_URL => $test_url]);
               @curl_exec(self::$ch_pmc);
               $httpCode = (int) @curl_getinfo(self::$ch_pmc, CURLINFO_HTTP_CODE);
               if ($httpCode === 404) { // Some PMCs do NOT resolve.  So leave URL
-                return $template->add_if_new('pmc', $match[1] . $match[2]);
+                return $template->add_if_new('pmc', $new_pmc);
               }
             }
             if (stripos(str_replace("printable", "", $url), "table") === FALSE) $template->forget($url_type); // This is the same as PMC auto-link
           }
-          return $template->add_if_new('pmc', $match[1] . $match[2]);
+          return $template->add_if_new('pmc', $new_pmc);
         
         } elseif (preg_match("~^https?://(?:www\.|)ncbi\.nlm\.nih\.gov/(?:m/)?"
         . "(?:pubmed/|"
