@@ -22,7 +22,7 @@ require_once 'NameTools.php';
 
 final class Template {
   public const PLACEHOLDER_TEXT = '# # # CITATION_BOT_PLACEHOLDER_TEMPLATE %s # # #';
-  public const REGEXP = ['~\{\{[^\{\}\|]+\}\}~su', '~\{\{[^\{\}]+\}\}~su', '~\{\{(?>[^\{]|\{[^\{])+?\}\}~su'];  // Please see https://stackoverflow.com/questions/1722453/need-to-prevent-php-regex-segfault for discussion of atomic regex
+  public const REGEXP = ['~(?<!\{)\{\{\}\}(?!\})~su', '~\{\{[^\{\}\|]+\}\}~su', '~\{\{[^\{\}]+\}\}~su', '~\{\{(?>[^\{]|\{[^\{])+?\}\}~su'];  // Please see https://stackoverflow.com/questions/1722453/need-to-prevent-php-regex-segfault for discussion of atomic regex
   public const TREAT_IDENTICAL_SEPARATELY = FALSE;  // This is safe because templates are the last thing we do AND we do not directly edit $all_templates that are sub-templates - we might remove them, but do not change their content directly
   public static array $all_templates = array();  // Points to list of all the Template() on the Page() including this one.  It can only be set by the page class after all templates are made
   public static int $date_style = DATES_WHATEVER;  // Will get from the page
@@ -632,7 +632,7 @@ final class Template {
     } else {
         $two_authors = FALSE;
     }  
-    if ($this->wikiname() =='cite book' || ($this->wikiname() =='citation' && $this->has('isbn'))) { // Assume book
+    if ($this->wikiname() === 'cite book' || ($this->wikiname() === 'citation' && $this->has('isbn'))) { // Assume book
       if ($this->display_authors() >= $this->number_of_authors()) return TRUE;
       return (!(
               $this->has('isbn')
@@ -640,6 +640,11 @@ final class Template {
           && ($this->has('date') || $this->has('year'))
           && $two_authors
       ));
+    }
+    if ($this->wikiname() === 'cite conference') { // cite conference uses very different parameters
+      if ($this->has('title') && ($this->has('conference') || $this->has('book-title') || $this->has('chapter'))) {
+        return FALSE;
+      }
     }
     // And now everything else
     if ($this->blank(['pages', 'page', 'at']) ||
@@ -1357,6 +1362,11 @@ final class Template {
             return FALSE;
           }
         }
+        $chap = '';
+        foreach (CHAPTER_ALIASES as $alias) {
+          $chap = $chap . $this->get($alias);
+        }
+        if (preg_match('~\[\[.+\]\]~', $chap)) return FALSE; // Chapter is already wikilinked
         return $this->add($param_name, $value);
 
       case 'archive-url':
@@ -1867,7 +1877,8 @@ final class Template {
       $results = $this->do_pumbed_query(array("journal", "volume", "issue", "page"));
       if ($results[1] === 1) return $results;
     }
-    if ($this->has('title') && $this->first_surname()) {
+    $is_book = $this->looksLikeBookReview((object) array());
+    if ($this->has('title') && $this->first_surname() && !$is_book) {
         $results = $this->do_pumbed_query(array("title", "surname", "year", "volume"));
         if ($results[1] === 1) return $results;
         if ($results[1] > 1) {
@@ -2269,6 +2280,8 @@ final class Template {
         case "A2": // This can be book editors or authors of the book that is reviewed
         case "A3": // Only seen this once and it duplicated AU
         case "ET": // Might be edition of book as an integer
+        case "LA": // Language
+        case "DA": // Date this is based upon, not written or published
         case "C1": case "DB": case "AB": case "Y2": // The following line is from JSTOR RIS (basically the header and blank lines)
         case "": case "Provider: JSTOR http://www.jstor.org": case "Database: JSTOR": case "Content: text/plain; charset=\"UTF-8\"";
           $dat = trim(str_replace("\n$ris_line", "", "\n$dat")); // Ignore these completely
@@ -2876,7 +2889,7 @@ final class Template {
         if ($par->val === '') {
           $par->val = $this->param[$duplicate_pos]->val;
         } elseif ($this->param[$duplicate_pos]->val === '') {
-          report_error('Invalid event in Template::use_unnamed_params'); // @codeCoverageIgnore
+          $this->param[$duplicate_pos]->val = $par->val;
         }
         array_unshift($duplicated_parameters, $duplicate_pos);
         array_unshift($duplicate_identical, (mb_strtolower(trim((string) $par->val)) === mb_strtolower(trim((string) $this->param[$duplicate_pos]->val)))); // Drop duplicates that differ only by case
@@ -3774,12 +3787,16 @@ final class Template {
 
         case 'dead-url': case 'deadurl':
           $the_data = strtolower($this->get($param));
-          if (in_array($the_data, ['y', 'yes', 'dead', 'si', 'sì'])) {
+          if (in_array($the_data, ['y', 'yes', 'dead', 'si', 'sì', 'ja'])) {
             $this->rename($param, 'url-status', 'dead');
             $this->forget($param);
-          }
-          if (in_array($the_data, ['n', 'no', 'live', 'alive'])) {
+          } elseif (in_array($the_data, ['n', 'no', 'live', 'alive'])) {
             $this->rename($param, 'url-status', 'live');
+            $this->forget($param);
+          } elseif (in_array($the_data, ['', 'bot: unknown'])) {
+            $this->forget($param);
+          } elseif (in_array($the_data, ['unfit'])) {
+            $this->rename($param, 'url-status');
             $this->forget($param);
           }
           return;
@@ -3850,6 +3867,23 @@ final class Template {
             }
             return;
           }
+          if (doi_works($doi) === NULL) {
+           if (($this->has('pmc') || $this->has('pmid')) && strpos($doi, '10.1210/') === 0) {
+            if (strpos($doi, '10.1210/me.') === 0 || strpos($doi, '10.1210/jc.') === 0 || strpos($doi, '10.1210/er.') === 0  || strpos($doi, '10.1210/en.') === 0) {
+              $this->forget('doi'); // Need updated and replaces
+              return;
+            }
+           }
+           if (strpos($doi, '10.1258/jrsm.') === 0) {
+              $doi = $this->get('doi');
+              $this->set('doi', ''); // Need updated and replaces
+              $this->get_doi_from_crossref();
+              if (doi_works($this->get('doi')) !== TRUE) {
+                $this->set('doi', $doi);
+              }
+              return; 
+           }
+          }
           if (!doi_works($doi)) {
             $this->verify_doi();
             $doi = $this->get($param);
@@ -3857,6 +3891,18 @@ final class Template {
           }
           if (!doi_works($doi) && strpos($doi, '10.1111/j.1475-4983.' . $this->year()) === 0) {
             $this->forget('doi');  // Special Papers in Palaeontology - they do not work
+            return;
+          }
+          if (doi_works($doi) !== TRUE && strpos($doi, '10.2277/') === 0) {
+            $this->forget('doi');  // contentdirections.com DOI provider is gone
+            return;
+          }
+          if (doi_works($doi) !== TRUE && strpos($doi, '10.1336/') === 0 && $this->has('isbn')) {
+            $this->forget('doi');  // contentdirections.com DOI provider is gone
+            return;
+          }
+          if (doi_works($doi) !== TRUE && strpos($doi, '10.1036/') === 0 && $this->has('isbn')) {
+            $this->forget('doi');  // contentdirections.com DOI provider is gone
             return;
           }
           if (!doi_works($doi)) {
@@ -4713,6 +4759,10 @@ final class Template {
                  $this->set($param, trim($match[1]));
           } elseif (!$this->blank(['isbn', 'doi', 'pmc', 'pmid']) && preg_match('~^(.+) \(PDF\)$~i', trim($this->get($param)), $match)) {
                  $this->set($param, trim($match[1])); // Books/journals probably don't end in (PDF)
+          }
+          
+          if (preg_match("~^(.+national conference) on \-$~i", $this->get($param), $matches)) {
+              $this->set($param, trim($matches[1])); // ACM conference titles
           }
           return;
 
@@ -6037,6 +6087,12 @@ final class Template {
         }
       }
       $this->tidy_parameter('url'); // depending upon end state, convert to chapter-url
+      if ($this->has_good_free_copy()) { // One last try to drop URLs
+        $url = $this->get('url');
+        if ($url !== str_ireplace(['nih.gov', 'pubmed', 'pmc', 'doi'], '', $url)) {          
+          $this->get_identifiers_from_url();
+        }
+      }
       $this->tidy_parameter('via');
       $this->tidy_parameter('publisher');
       if ($this->has('publisher') && preg_match("~^([\'\"]+)([^\'\"]+)([\'\"]+)$~u", $this->get('publisher'), $matches)) {
@@ -7039,7 +7095,9 @@ final class Template {
               preg_match("~^(\d+)\.(\d+)$~i", $data, $matches) ||
               preg_match("~^(\d+)\((\d+\/\d+)\)$~i", $data, $matches) ||
               preg_match("~^(\d+) \((\d+ Suppl \d+)\)$~i", $data, $matches) ||
-              preg_match("~^Vol\.?(\d+)\((\d+)\)$~", $data, $matches)
+              preg_match("~^Vol\.?(\d+)\((\d+)\)$~", $data, $matches) ||
+              preg_match("~^(\d+) +\(No(?:\.|\. | )(\d+)\)$~i", $data, $matches) ||
+              preg_match("~^(\d+) +\(Iss(?:\.|\. | )(\d+)\)$~i", $data, $matches)
          ) {
          $possible_volume=$matches[1];
          $possible_issue=$matches[2];

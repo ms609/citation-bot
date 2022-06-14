@@ -442,5 +442,7 @@ abstract class testBaseClass extends PHPUnit\Framework\TestCase {
     doi_works('10.5240/7B2F-ED76-31F6-8CFB-4DB9-M');
     doi_works('10.3743/KOSIM.2011.28.2.117');
     doi_works('10.2788/14231');
+    doi_works('10.25300/MISQ/2014/38.2.08');
+    doi_works('10.5479/si.00963801.5-301.449');
   }
 }

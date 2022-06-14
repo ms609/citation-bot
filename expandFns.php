@@ -129,13 +129,51 @@ function is_doi_works(string $doi) : ?bool {
      if ($headers_test === FALSE) return FALSE; /** We trust previous failure **/                     // @codeCoverageIgnore
   }
   if (preg_match('~^10\.1038/nature\d{5}$~i', $doi) && $headers_test === FALSE) return FALSE; // Nature dropped the ball for now TODO - https://dx.doi.org/10.1038/nature05009
-  if ($headers_test === FALSE) return NULL; // most likely bad, but will recheck again and again
+  if ($headers_test === FALSE) { // Use CURL instead
+    if (strpos($doi, '10.2277/') === 0) return FALSE;
+    $ch = curl_init();
+    curl_setopt_array($ch,
+            [CURLOPT_HEADER => TRUE,
+             CURLOPT_RETURNTRANSFER => TRUE,
+             CURLOPT_URL => "https://doi.org/" . doi_encode($doi),
+             CURLOPT_TIMEOUT => 15,
+             CURLOPT_CONNECTTIMEOUT => 10,
+             CURLOPT_NOBODY => TRUE,
+             CURLOPT_FOLLOWLOCATION => TRUE,
+             CURLOPT_SSL_VERIFYHOST => 0,
+             CURLOPT_SSL_VERIFYPEER => FALSE,
+             CURLOPT_SSL_VERIFYSTATUS => FALSE,
+             CURLOPT_USERAGENT => BOT_USER_AGENT]);
+    $head = (string) @curl_exec($ch);
+    $url  = curl_getinfo($ch, CURLINFO_EFFECTIVE_URL);
+    $code = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+    curl_close($ch);
+    if (($code === 302 || $code === 200) &&
+        (stripos($url, 'doi.org') === FALSE) &&
+        (strlen($head) > 55 &&
+        (stripos($head, 'Content-Type') !== FALSE) &&
+        (stripos($head, 'location') !== FALSE)) || (stripos($url, 'dtic.mil') !== FALSE)) // Expect something, unless dtic.mil
+    {
+        return TRUE;
+    } else {
+        return NULL; // most likely bad, but will recheck again and again
+    }
+  }
   if (empty($headers_test['Location']) && empty($headers_test['location'])) return FALSE; // leads nowhere
-  if (stripos($headers_test[0], '404 Not Found') !== FALSE         || stripos($headers_test[0], 'HTTP/1.1 404') !== FALSE) return FALSE; // Bad
-  if (stripos($headers_test[0], '302 Found') !== FALSE             || stripos($headers_test[0], 'HTTP/1.1 302') !== FALSE) return TRUE;  // Good
-  if (stripos($headers_test[0], '301 Moved Permanently') !== FALSE || stripos($headers_test[0], 'HTTP/1.1 301') !== FALSE) { // Could be DOI change or bad prefix
-      if (stripos($headers_test[1], '302 Found') !== FALSE         || stripos($headers_test[1], 'HTTP/1.1 302') !== FALSE) {
+  $resp0 = (string) @$headers_test[0];
+  $resp1 = (string) @$headers_test[1];
+  $resp2 = (string) @$headers_test[2];
+  if (stripos($resp0, '404 Not Found') !== FALSE         || stripos($resp0, 'HTTP/1.1 404') !== FALSE) return FALSE; // Bad
+  if (stripos($resp0, '302 Found') !== FALSE             || stripos($resp0, 'HTTP/1.1 302') !== FALSE) return TRUE;  // Good
+  if (stripos($resp0, '301 Moved Permanently') !== FALSE || stripos($resp0, 'HTTP/1.1 301') !== FALSE) { // Could be DOI change or bad prefix
+      if (stripos($resp1, '302 Found') !== FALSE         || stripos($resp1, 'HTTP/1.1 302') !== FALSE) {
         return TRUE;  // Good
+      } elseif (stripos($resp1, '301 Moved Permanently') !== FALSE || stripos($resp1, 'HTTP/1.1 301') !== FALSE) { // Just in case code.  Curl code deals with better
+        if (stripos($resp2, '200 OK') !== FALSE         || stripos($resp2, 'HTTP/1.1 200') !== FALSE) {    // @codeCoverageIgnoreStart
+          return TRUE;
+        } else {
+          return FALSE;
+        }                                                                                                  // @codeCoverageIgnoreEnd
       } else {
         return FALSE;
       }
@@ -295,16 +333,18 @@ function wikify_external_text(string $title) : string {
   $originalTags = array('<title>', '</title>', '</ title>', 'From the Cover: ');
   $wikiTags = array('','','','');
   $title = str_ireplace($originalTags, $wikiTags, $title);
-  CONFLICT
-  $originalTags = array('.<br>', '.</br>', '.</ br>', '.<p>', '.</p>', '.</ p>');
-  $wikiTags = array('. ','. ','. ','. ','. ','. ');
+  $originalTags = array('.<br>', '.</br>', '.</ br>', '.<p>', '.</p>', '.</ p>', '.<strong>', '.</strong>', '.</ strong>');
+  $wikiTags = array('. ','. ','. ','. ','. ','. ','. ','. ','. ');
   $title = str_ireplace($originalTags, $wikiTags, $title);
-  CONFLICT
-  $originalTags = array('<br>', '</br>', '</ br>', '<p>', '</p>', '</ p>');
-  $wikiTags = array('. ','. ','. ','. ','. ','. ');
-  $title = str_ireplace($originalTags, $wikiTags, $title);
-  CONFLICT
-
+  $originalTags = array('<br>', '</br>', '</ br>', '<p>', '</p>', '</ p>', '<strong>', '</strong>', '</ strong>');
+  $wikiTags = array('. ','. ','. ','. ','. ','. ', ' ',' ',' ');
+  $title = trim(str_ireplace($originalTags, $wikiTags, $title));
+  if (preg_match("~^\. (.+)$~", $title, $matches)) {
+    $title = trim($matches[1]);
+  }
+ if (preg_match("~^(.+)(\.\s+)\.$~s", $title, $matches)) {
+    $title = trim($matches[1] . ".");
+  }
   $title_orig = '';
   while ($title !== $title_orig) {
     $title_orig = $title;  // Might have to do more than once.   The following do not allow < within the inner match since the end tag is the same :-( and they might nest or who knows what
@@ -332,6 +372,10 @@ function wikify_external_text(string $title) : string {
   }
 
   $title = str_replace(['​'],[' '], $title); // Funky spaces
+  
+  $title = str_ireplace('<p class="HeadingRun \'\'In\'\'">', ' ', $title);
+  
+  $title = str_ireplace(['    ', '   ', '  '], [' ', ' ', ' '], $title);
   $title = trim($title," \t\n\r\0\x0B\xc2\xa0");
 
   for ($i = 0; $i < count($replacement); $i++) {

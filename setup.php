@@ -80,7 +80,13 @@ if (file_exists('env.php')) {
 }
 
 mb_internal_encoding('UTF-8');
-ini_set("memory_limit", "800M"); // Needed for "Skin Cancer" and other large pages
+
+ // Needed for "Skin Cancer" and other large pages
+ini_set("memory_limit", "800M");
+ini_set("pcre.backtrack_limit", "5000000");
+ini_set("pcre.recursion_limit", "500000");
+
+
 date_default_timezone_set('UTC');
 
 /** @psalm-suppress UnusedFunctionCall */

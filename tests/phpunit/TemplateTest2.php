@@ -1322,6 +1322,13 @@ final class TemplateTest2 extends testBaseClass {
     $this->assertNull($template->get2('deadurl'));
     $this->assertNull($template->get2('dead-url'));
     $this->assertSame('live', $template->get2('url-status'));
+   
+    $text = "{{cite web|dead-url=unfit}}";
+    $template = $this->make_citation($text);
+    $template->tidy_parameter('dead-url');
+    $this->assertNull($template->get2('deadurl'));
+    $this->assertNull($template->get2('dead-url'));
+    $this->assertSame('unfit', $template->get2('url-status'));
   }
 
   public function testTidyLastAmp() : void {
@@ -4570,5 +4577,31 @@ final class TemplateTest2 extends testBaseClass {
       $this->AssertSame('cite book', $expanded->wikiname());
       $this->AssertSame('http://archive.org/details/stuff/page/n111', $expanded->get2('chapter-url'));
       $this->AssertNull($expanded->get2('url'));
+    }
+ 
+    public function testRemoveContentdirectionsDOIs() : void {
+      $text = "{{cite web|doi=10.1336/3dasfdsfadsfsdfdsfdsfdsfdsfdsfsdfds|isbn=X}}";
+      $expanded = $this->make_citation($text);
+      $expanded->tidy_parameter('doi');
+      $this->AssertNull($expanded->get2('doi'));
+     
+      $text = "{{cite web|doi=10.1036/3dasfdsfadsfsdfdsfdsfdsfdsfdsfsdfds|isbn=X}}";
+      $expanded = $this->make_citation($text);
+      $expanded->tidy_parameter('doi');
+      $this->AssertNull($expanded->get2('doi'));
+    }
+
+    public function testCiteConferenceIncomplete() : void {
+      $text = "{{cite conference|title=X|conference=Y}}";
+      $expanded = $this->make_citation($text);
+      $this->AssertFalse($expanded->incomplete());
+     
+      $text = "{{cite conference|title=X|book-title=Y}}";
+      $expanded = $this->make_citation($text);
+      $this->AssertFalse($expanded->incomplete());
+     
+      $text = "{{cite conference|title=X|chapter=Y}}";
+      $expanded = $this->make_citation($text);
+      $this->AssertFalse($expanded->incomplete());
     }
 }

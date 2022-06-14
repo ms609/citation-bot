@@ -15,7 +15,6 @@ require_once 'expandFns.php';     // @codeCoverageIgnore
 require_once 'user_messages.php'; // @codeCoverageIgnore
 require_once 'Zotero.php';        // @codeCoverageIgnore
 require_once 'constants.php';     // @codeCoverageIgnore
-
 class Page {
 
   protected string $text = '';
@@ -41,10 +40,10 @@ class Page {
 
     $details = WikipediaBot::ReadDetails($title);
 
-    if (!isset($details->query)) {
+    if (!isset($details->query->pages)) {
       // @codeCoverageIgnoreStart
       $message = "Error: Could not fetch page.";
-      if (isset($details->error)) $message .= "  " . $details->error->info;
+      if (isset($details->error->info))  $message = $message . " " . (string) $details->error->info; 
       report_warning($message);
       return FALSE;
       // @codeCoverageIgnoreEnd
@@ -257,6 +256,7 @@ class Page {
     set_time_limit(120);
     if ($this->page_error) {
       $this->text = $this->start_text;
+      file_put_contents('CodeCoverage', $this->title . " page failed \n", FILE_APPEND);
       return FALSE;
     }
     Template::$all_templates = &$all_templates; // Pointer to save memory
@@ -285,6 +285,7 @@ class Page {
         $this_template->get_identifiers_from_url();
         $this_template->expand_by_google_books();
         $this_template->tidy();
+        $this_template->tidy_parameter('dead-url');
         if ($this_template->wikiname() === 'cite conference') $our_templates_conferences[] = $this_template;
         $our_templates_ieee[] = $this_template;
       } elseif (in_array($this_template->wikiname(), TEMPLATES_WE_BARELY_PROCESS)) { // No capitalization of thesis, etc.
@@ -293,6 +294,7 @@ class Page {
         $this_template->correct_param_mistakes();
         $this_template->get_identifiers_from_url();
         $this_template->tidy();
+        $this_template->tidy_parameter('dead-url');
       } elseif (in_array($this_template->wikiname(), TEMPLATES_WE_CHAPTER_URL)) {
         $our_templates_slight[] = $this_template;
         $this_template->rename('chapterurl', 'chapter-url');
@@ -309,6 +311,7 @@ class Page {
         $this_template->get_identifiers_from_url();
         $this_template->expand_by_google_books();
         $this_template->tidy();
+        $this_template->tidy_parameter('dead-url'); $this_template->tidy_parameter('deadurl');
       } elseif ($this_template->wikiname() === 'cite lsa') {
         $this_template->clean_google_books();
         $this_template->forget('ref'); // Common parameter that does not actually work
@@ -318,8 +321,10 @@ class Page {
       } elseif ($this_template->wikiname() === 'cite episode' || $this_template->wikiname() === 'cite interview') {
         $this_template->clean_google_books();
         $this_template->correct_param_mistakes();
+        $this_template->tidy_parameter('dead-url'); $this_template->tidy_parameter('deadurl');
       } elseif ((strpos($this_template->wikiname(), 'cite ') === 0)  || (strpos($this_template->wikiname(), 'vcite ') === 0)) {
         $this_template->clean_google_books();
+        $this_template->tidy_parameter('dead-url'); $this_template->tidy_parameter('deadurl');
         // THIS CATCH ALL NEEDS TO BE LAST IN THE LIST!!!!!!
       }
     }
@@ -452,9 +457,9 @@ class Page {
 
     // we often just fix Journal caps, so must be case sensitive compare
     // Avoid minor edits - gadget API will make these changes, since it does not check return code
-    $caps_ok = array('lccn', 'isbn', 'doi');
-    $last_first_in  = array(' last=',  ' last =',  '|last=',  '|last =',  ' first=',  ' first =',  '|first=',  '|first =', 'cite newspaper', 'Cite newspaper', '| format=PDF ', '| format = PDF ', '|format=PDF ', '|format = PDF ', '| format=PDF', '| format = PDF', '|format=PDF', '|format = PDF', 'Cite ', 'cite ', 'proquest');
-    $last_first_out = array(' last1=', ' last1 =', '|last1=', '|last1 =', ' first1=', ' first1 =', '|first1=', '|first1 =','cite news',      'Cite news',      '',              '',                '',              '',              '',             '',               '',            '',              'Cite' , 'cite' , 'proquest');
+    $caps_ok = array('lccn', 'isbn', 'doi', 'proquest');
+    $last_first_in  = array(' last=',  ' last =',  '|last=',  '|last =',  ' first=',  ' first =',  '|first=',  '|first =', 'cite newspaper', 'Cite newspaper', '| format=PDF ', '| format = PDF ', '|format=PDF ', '|format = PDF ', '| format=PDF', '| format = PDF', '|format=PDF', '|format = PDF', 'Cite ', 'cite ');
+    $last_first_out = array(' last1=', ' last1 =', '|last1=', '|last1 =', ' first1=', ' first1 =', '|first1=', '|first1 =','cite news',      'Cite news',      '',              '',                '',              '',              '',             '',               '',            '',              'Cite' , 'cite' );
     // @codeCoverageIgnoreStart
     if (WIKI_ROOT === 'https://simple.wikipedia.org/w/index.php') { // Backload clean-up
        $caps_ok = array();
@@ -614,6 +619,15 @@ class Page {
     $placeholder_text = $class::PLACEHOLDER_TEXT;
     $treat_identical_separately = $class::TREAT_IDENTICAL_SEPARATELY;
     $objects = array();
+    
+    if (count($regexp_in) > 1) { // Loop over array four times, since sometimes more complex regex fails and starting over works
+      foreach ($regexp_in as $regexp) {
+        $regexp_in[] = $regexp;
+      }
+      foreach ($regexp_in as $regexp) {
+        $regexp_in[] = $regexp;
+      }
+    }
     
     $preg_ok = TRUE;
     foreach ($regexp_in as $regexp) {

@@ -260,11 +260,21 @@ final class expandFnsTest extends testBaseClass {
   public function testTrailingPeriods6() : void {
     $this->assertSame('Blahy', wikify_external_text('Blahy............'));
   }
-  
+  public function testTrailingPeriods7() : void {
+    $this->assertSame('Blahy.', wikify_external_text('Blahy....... ....'));
+  }
+  public function testTrailingPeriods8() : void {
+    $this->assertSame('Dfadsfds Hoser......', wikify_external_text('Dfadsfds Hoser..... . .'));
+  }
+
   public function testBrackets() : void {
     $this->assertSame("ABC",remove_brackets('{}{}{A[][][][][]B()(){}[]][][[][C][][][[()()'));
   }
   
+  public function testStrong() : void {
+    $this->assertSame('A new genus and two new species of Apomecynini, a new species of Desmiphorini, and new records in Lamiinae and Disteniidae (Coleoptera)', wikify_external_text('. <strong>A new genus and two new species of Apomecynini, a new species of Desmiphorini, and new records in Lamiinae and Disteniidae (Coleoptera)</strong>.'));
+  }
+
   // The X prevents first character caps
   public function testCapitalization_lots_more() : void { // Double check that constants are in order when we sort - paranoid
     $this->assertSame('X BJPsych', title_capitalization(title_case('X Bjpsych'), TRUE));
@@ -339,4 +349,24 @@ final class expandFnsTest extends testBaseClass {
       $this->assertNull(throttle(1));
     }
   }
+
+  public function testDoubleHopDOI() : void { // Just runs over the code and basically does nothing
+    $this->assertTrue(doi_works('10.25300/MISQ/2014/38.2.08'));
+    $this->assertTrue(doi_works('10.5479/si.00963801.5-301.449'));
+  }
+
+  public function testHeaderProblemDOI() : void { // Just runs over the code and basically does nothing
+    $this->assertTrue(doi_works('10.3403/bsiso10294')); // get_headers() gives FALSE for some reason, so need to use CURL
+  }
+
+  public function testHostIsGoneDOI() : void { // Just runs over the code and basically does nothing
+    $this->assertNull(doi_works('10.1036/0071422803')); // goes to dead doi.contentdirections.com
+  }
+  
+  public function testBankruptDOICompany() : void {
+    $text = "{{cite journal|doi=10.2277/JUNK_INVALID}}";
+    $template = $this->process_citation($text);
+    $this->assertNull($template->get2('doi'));
+  }
+  
 }
