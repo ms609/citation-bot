@@ -3788,15 +3788,18 @@ final class Template {
 
         case 'dead-url': case 'deadurl':
           $the_data = strtolower($this->get($param));
-          if (in_array($the_data, ['y', 'yes', 'dead', 'si', 'sì'])) {
+          if (in_array($the_data, ['y', 'yes', 'dead', 'si', 'sì', 'ja'])) {
             $this->rename($param, 'url-status', 'dead');
             $this->forget($param);
-          }
-          if (in_array($the_data, ['n', 'no', 'live', 'alive'])) {
+          } elseif (in_array($the_data, ['n', 'no', 'live', 'alive'])) {
             $this->rename($param, 'url-status', 'live');
             $this->forget($param);
+          } elseif (in_array($the_data, ['', 'bot: unknown'])) {
+            $this->forget($param);
+          } elseif (in_array($the_data, ['unfit'])) {
+            $this->rename($param, 'url-status');
+            $this->forget($param);
           }
-          if ($the_data === '') $this->forget($param);
           return;
 
         case 'url-status':
@@ -3865,7 +3868,23 @@ final class Template {
             }
             return;
           }
-          CONFLICT
+          if (doi_works($doi) === NULL) {
+           if (($this->has('pmc') || $this->has('pmid')) && strpos($doi, '10.1210/') === 0) {
+            if (strpos($doi, '10.1210/me.') === 0 || strpos($doi, '10.1210/jc.') === 0 || strpos($doi, '10.1210/er.') === 0  || strpos($doi, '10.1210/en.') === 0) {
+              $this->forget('doi'); // Need updated and replaces
+              return;
+            }
+           }
+           if (strpos($doi, '10.1258/jrsm.') === 0) {
+              $doi = $this->get('doi');
+              $this->set('doi', ''); // Need updated and replaces
+              $this->get_doi_from_crossref();
+              if (doi_works($this->get('doi')) !== TRUE) {
+                $this->set('doi', $doi);
+              }
+              return; 
+           }
+          }
           if (!doi_works($doi)) {
             $this->verify_doi();
             $doi = $this->get($param);
@@ -7077,7 +7096,9 @@ final class Template {
               preg_match("~^(\d+)\.(\d+)$~i", $data, $matches) ||
               preg_match("~^(\d+)\((\d+\/\d+)\)$~i", $data, $matches) ||
               preg_match("~^(\d+) \((\d+ Suppl \d+)\)$~i", $data, $matches) ||
-              preg_match("~^Vol\.?(\d+)\((\d+)\)$~", $data, $matches)
+              preg_match("~^Vol\.?(\d+)\((\d+)\)$~", $data, $matches) ||
+              preg_match("~^(\d+) +\(No(?:\.|\. | )(\d+)\)$~i", $data, $matches) ||
+              preg_match("~^(\d+) +\(Iss(?:\.|\. | )(\d+)\)$~i", $data, $matches)
          ) {
          $possible_volume=$matches[1];
          $possible_issue=$matches[2];

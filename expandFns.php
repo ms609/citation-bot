@@ -175,14 +175,12 @@ function is_doi_works(string $doi) : ?bool {
   if (stripos($resp0, '301 Moved Permanently') !== FALSE || stripos($resp0, 'HTTP/1.1 301') !== FALSE) { // Could be DOI change or bad prefix
       if (stripos($resp1, '302 Found') !== FALSE         || stripos($resp1, 'HTTP/1.1 302') !== FALSE) {
         return TRUE;  // Good
-      } elseif (stripos($resp1, '301 Moved Permanently') !== FALSE || stripos($resp1, 'HTTP/1.1 301') !== FALSE) {
-        if (stripos($resp2, '200 OK') !== FALSE         || stripos($resp2, 'HTTP/1.1 200') !== FALSE) {
-          file_put_contents('CodeCoverage', $doi . " was 200 on third level \n", FILE_APPEND);
+      } elseif (stripos($resp1, '301 Moved Permanently') !== FALSE || stripos($resp1, 'HTTP/1.1 301') !== FALSE) { // Just in case code.  Curl code deals with better
+        if (stripos($resp2, '200 OK') !== FALSE         || stripos($resp2, 'HTTP/1.1 200') !== FALSE) {    // @codeCoverageIgnoreStart
           return TRUE;
         } else {
-          file_put_contents('CodeCoverage', $doi . " was not 200 on third level \n", FILE_APPEND);
           return FALSE;
-        }
+        }                                                                                                  // @codeCoverageIgnoreEnd
       } else {
         return FALSE;
       }
