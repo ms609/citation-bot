@@ -21,7 +21,7 @@ final class CrashTest extends testBaseClass {
   public function testBadPage2() : void {  // Use this when debugging pages that crash the bot
      //$result = doi_works('10.21236/ad0012012');
      //print_r($result);
-   $this->process_citation("{{cite journal |last1=Freemon |first1=Frank R |title=Bubonic plague in the Book of Samuel |journal=Journal of the Royal Society of Medicine |date=September 2005 |volume=98 |issue=9 |pages=436  |issn=0141-0768|pmc=<!-- --> |pmid=<!-- --> }}");
+   $this->process_citation("{{cite journal |last=Winnington-Ingram |first=Reginald P. |title=Ancient Greek Music: A Survey |journal=Music & Letters|volume=10 |issue=4 |pages=326–345 |date=October 1929 |pmid=<!-- --> | pmc=<!-- -->|doi= }}");
 
    
    
