@@ -3890,6 +3890,15 @@ final class Template {
              }
            }
           }
+          if (strpos($doi, '10.1525/as.') === 0) {
+              $doi = $this->get('doi');
+              $this->set('doi', ''); // Need updated since journal moved
+              $this->get_doi_from_crossref();
+              if (doi_works($this->get('doi')) !== TRUE) {
+                $this->set('doi', $doi);
+              }
+              return; 
+          }
           if (!doi_works($doi)) {
             $this->verify_doi();
             $doi = $this->get($param);
