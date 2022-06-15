@@ -3883,6 +3883,10 @@ final class Template {
               }
               return; 
            }
+           if (strpos($doi, '10.2979/NWS.') === 0 || strpos($doi, '10.2979/FSR.') === 0) {
+              $this->forget('doi');// Dead/Jstor/Muse
+              return;
+           }
           }
           if (!doi_works($doi)) {
             $this->verify_doi();
