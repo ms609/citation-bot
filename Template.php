@@ -3870,13 +3870,13 @@ final class Template {
           if (doi_works($doi) === NULL) {
            if (($this->has('pmc') || $this->has('pmid')) && strpos($doi, '10.1210/') === 0) {
             if (strpos($doi, '10.1210/me.') === 0 || strpos($doi, '10.1210/jc.') === 0 || strpos($doi, '10.1210/er.') === 0  || strpos($doi, '10.1210/en.') === 0) {
-              $this->forget('doi'); // Need updated and replaces
+              $this->forget('doi'); // Need updated and replaced
               return;
             }
            }
-           if (strpos($doi, '10.1258/jrsm.') === 0) {
+           if (strpos($doi, '10.1258/jrsm.') === 0 || strpos($doi, '10.1525/as.') === 0 || strpos($doi, '10.1525/sp.') === 0) {
               $doi = $this->get('doi');
-              $this->set('doi', ''); // Need updated and replaces
+              $this->set('doi', ''); // Need updated and replaced
               $this->get_doi_from_crossref();
               if (doi_works($this->get('doi')) !== TRUE) {
                 $this->set('doi', $doi);
@@ -3889,15 +3889,6 @@ final class Template {
               return;
              }
            }
-          }
-          if (strpos($doi, '10.1525/as.') === 0) {
-              $doi = $this->get('doi');
-              $this->set('doi', ''); // Need updated since journal moved
-              $this->get_doi_from_crossref();
-              if (doi_works($this->get('doi')) !== TRUE) {
-                $this->set('doi', $doi);
-              }
-              return; 
           }
           if (!doi_works($doi)) {
             $this->verify_doi();
