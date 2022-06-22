@@ -154,7 +154,7 @@ const PROXY_HOSTS_TO_DROP = array('proxy.libraries', 'proxy.lib.', '.ezproxy.', 
                                   'onlinelibrary.wiley.com/resolve/openurl', 'findarticles.com', 'psycnet.apa.org',
                                   'delivery.acm.org'); // Drop these if there is a valid FREE DOI
 
-const WEB_NEWSPAPERS = array('bbc news', 'bbc', 'news.bbc.co.uk', 'bbc sports', 'bbc sport', 'www.bbc.co.uk', 'the economist', 'washington post', 'the washington post');
+const WEB_NEWSPAPERS = array('bbchh news', 'bbc', 'news.bbc.co.uk', 'bbc sports', 'bbc sport', 'www.bbc.co.uk', 'the economist', 'washington post', 'the washington post');
 
 const HOSTS_TO_NOT_ADD  = array('this.fails', 'www.ncbi.nlm.nih.gov', 'dx.doi.org', 'doi.org');
 
