@@ -466,6 +466,9 @@ final class Template {
               }
           }
           if ($bad_data) {
+            if ($this->has('year')) { // Often the pre-print year
+              $this->rename('year', 'CITATION_BOT_PLACEHOLDER_year');
+            }
             if ($this->has('doi') && doi_active($this->get('doi'))) {
               expand_by_doi($this);
             }
@@ -531,6 +534,13 @@ final class Template {
                 $this->forget('CITATION_BOT_PLACEHOLDER_pages');
               } else {
                 $this->rename('CITATION_BOT_PLACEHOLDER_pages', 'pages');
+              }
+            }
+            if ($this->has('CITATION_BOT_PLACEHOLDER_year')) {
+              if ($this->has('year') && ($this->get('year') !== $this->get('CITATION_BOT_PLACEHOLDER_year'))) {
+                $this->forget('CITATION_BOT_PLACEHOLDER_year');
+              } else {
+                $this->rename('CITATION_BOT_PLACEHOLDER_year', 'year');
               }
             }
             if ($this->has('CITATION_BOT_PLACEHOLDER_coauthors')) {
