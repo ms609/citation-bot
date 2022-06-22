@@ -3889,6 +3889,32 @@ final class Template {
               return;
              }
            }
+           if (stripos($doi, '10.1093/em/') === 0) {
+             if (preg_match('~^10\.1093/em/(\d+)(\.\d+\.\d+)$~', $doi, $matches)) {
+               $romed = numberToRomanRepresentation((int) $matches[1]) . $matches[2];
+               $try_doi = '10.1093/earlyj/' . $romed;
+               if (doi_works($try_doi) === TRUE) {
+                 $this->set('doi', $try_doi);
+                 return;
+               }
+               $try_doi = '10.1093/em/' . $romed;
+               if (doi_works($try_doi) === TRUE) {
+                 $this->set('doi', $try_doi);
+                 return;
+               }
+             }
+             return; 
+           }
+           if (stripos($doi, '10.1093/ml/') === 0) {
+             if (preg_match('~^10\.1093/ml/(\d+)(\.\d+\.\d+)$~', $doi, $matches)) {
+               $romed = numberToRomanRepresentation((int) $matches[1]) . $matches[2];
+               $try_doi = '10.1093/ml/' . $romed;
+               if (doi_works($try_doi) === TRUE) {
+                 $this->set('doi', $try_doi);
+               }
+             }
+             return; 
+           }
           }
           if (!doi_works($doi)) {
             $this->verify_doi();
