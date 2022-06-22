@@ -695,7 +695,7 @@ public static function process_zotero_response(string $zotero_response, Template
   }
   if ( isset($result->volume) 
   &&   strpos($result->volume, "(") === FALSE ) $template->add_if_new('volume', (string) $result->volume);
-  if ( isset($result->date) && strlen($result->date)>3)$template->add_if_new('date', tidy_date($result->date));
+  if ( isset($result->date) && strlen((string) $result->date)>3)$template->add_if_new('date', tidy_date((string) $result->date));
   if ( isset($result->series) && stripos($url, '.acm.org')===FALSE)  $template->add_if_new('series' , (string) $result->series);
   // Sometimes zotero lists the last name as "published" and puts the whole name in the first place
   $i = 0;
@@ -1247,19 +1247,20 @@ public static function find_indentifiers_in_urls(Template $template, ?string $ur
           if ($template->blank('pmc')) {
             quietly('report_modification', "Converting URL to PMC parameter");
           }
+          $new_pmc = (string) @$match[1] . (string) @$match[2];
           if (is_null($url_sent)) {
             if (stripos($url, ".pdf") !== FALSE) {
-              $test_url = "https://www.ncbi.nlm.nih.gov/pmc/articles/PMC" . $match[1] . $match[2] . "/";
+              $test_url = "https://www.ncbi.nlm.nih.gov/pmc/articles/PMC" . $new_pmc . "/";
               curl_setopt_array(self::$ch_pmc, [CURLOPT_URL => $test_url]);
               @curl_exec(self::$ch_pmc);
               $httpCode = (int) @curl_getinfo(self::$ch_pmc, CURLINFO_HTTP_CODE);
               if ($httpCode === 404) { // Some PMCs do NOT resolve.  So leave URL
-                return $template->add_if_new('pmc', $match[1] . $match[2]);
+                return $template->add_if_new('pmc', $new_pmc);
               }
             }
             if (stripos(str_replace("printable", "", $url), "table") === FALSE) $template->forget($url_type); // This is the same as PMC auto-link
           }
-          return $template->add_if_new('pmc', $match[1] . $match[2]);
+          return $template->add_if_new('pmc', $new_pmc);
         
         } elseif (preg_match("~^https?://(?:www\.|)ncbi\.nlm\.nih\.gov/(?:m/)?"
         . "(?:pubmed/|"

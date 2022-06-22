@@ -361,7 +361,8 @@ const NO_DATE_WEBSITES = array('wikipedia.org', 'web.archive.org', 'perma-archiv
                               'archive.is', 'archive-it.org', 'nationalarchives.gov.uk', 'freezepage.com', 'webcitation.org',
                               'waybackmachine.org', 'siarchives.si.edu', 'gutenberg.org', 'archive.fo', 'archive.today', 'archive.ph',
                               'oireachtas.ie', 'webarchive.nla.gov.au', 'ebooks.adelaide.edu.au', 'archive.md', 'imdb.com',
-                              'apps.des.qld.gov.au', 'billboard.com', 'music.apple.com');
+                              'apps.des.qld.gov.au', 'billboard.com', 'music.apple.com', 'spotify.com', 'fred.stlouisfed.org',
+                              'simonsfoundation.org');
 
 const ZOTERO_AVOID_REGEX = array("twitter\.",               // This should be {{cite tweet}}
                                  // Zotero seems to be doing better now "youtube\.", "youtu\.be",
@@ -591,7 +592,7 @@ const ARE_MAGAZINES = array('the new yorker', 'the new republic', 'new republic'
 const ARE_MANY_THINGS = array('pc gamer', 'gamestar', 'rock paper shotgun', 'mcv', 'rock, paper, shotgun', 'edge',
                               'ballotpedia', 'npr', 'ballotpedia.org', 'npr.org', 'nih.gov', 'nih', 
                                'national institutes of health', 'national institutes of health (nih)'); // lowercase axact matches.  These are things that are both websites and newspapers
-const ARE_NEWSPAPERS = array('the economist', 'la times', 'toronto sun', 'washington post', 'the washingtonbbbb post'); // lowercase axact matches
+const ARE_NEWSPAPERS = array('the economist', 'la times', 'toronto sun', 'washington post', 'the washington post', 'philippine daily inquirer'); // lowercase axact matches
 const NO_PUBLISHER_NEEDED = array('los angeles times', 'new york times magazine', 'the new york times',
                                    'new york times', 'huffington post', 'the daily telegraph', 'forbes.com',
                                    'forbes magazine'); // lowercase axact matches

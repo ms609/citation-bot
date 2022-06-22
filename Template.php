@@ -354,12 +354,12 @@ final class Template {
               $the_page = '';
               $bad_data = TRUE;
           }
-          if ($the_volume === '0' || $the_volume === 'null' || $the_volume === 'n/a' || $the_volume === 'Online edition' || $the_volume === 'online' || $the_volume === 'Online') {
+          if ($the_volume === '0' || $the_volume === 'null' || $the_volume === 'n/a' || $the_volume === 'Online edition' || $the_volume === 'online' || $the_volume === 'Online' || $the_volume === 'in press'  || $the_volume === 'In press') {
               $this->rename('volume', 'CITATION_BOT_PLACEHOLDER_volume');
               $the_volume = '';
               $bad_data = TRUE;
           }
-          if ($the_issue === '0' || $the_issue === 'null' || $the_issue === 'ja' || $the_issue === 'n/a' || $the_issue === 'Online edition' || $the_issue === 'online' || $the_issue === 'Online') {
+          if ($the_issue === '0' || $the_issue === 'null' || $the_issue === 'ja' || $the_issue === 'n/a' || $the_issue === 'Online edition' || $the_issue === 'online' || $the_issue === 'Online' || $the_issue === 'in press' || $the_issue === 'In press') {
               $this->rename('issue', 'CITATION_BOT_PLACEHOLDER_issue');
               $the_issue = '';
               $bad_data = TRUE;
@@ -466,6 +466,9 @@ final class Template {
               }
           }
           if ($bad_data) {
+            if ($this->has('year')) { // Often the pre-print year
+              $this->rename('year', 'CITATION_BOT_PLACEHOLDER_year');
+            }
             if ($this->has('doi') && doi_active($this->get('doi'))) {
               expand_by_doi($this);
             }
@@ -531,6 +534,13 @@ final class Template {
                 $this->forget('CITATION_BOT_PLACEHOLDER_pages');
               } else {
                 $this->rename('CITATION_BOT_PLACEHOLDER_pages', 'pages');
+              }
+            }
+            if ($this->has('CITATION_BOT_PLACEHOLDER_year')) {
+              if ($this->has('year') && ($this->get('year') !== $this->get('CITATION_BOT_PLACEHOLDER_year'))) {
+                $this->forget('CITATION_BOT_PLACEHOLDER_year');
+              } else {
+                $this->rename('CITATION_BOT_PLACEHOLDER_year', 'year');
               }
             }
             if ($this->has('CITATION_BOT_PLACEHOLDER_coauthors')) {
@@ -3869,19 +3879,51 @@ final class Template {
           }
           if (doi_works($doi) === NULL) {
            if (($this->has('pmc') || $this->has('pmid')) && strpos($doi, '10.1210/') === 0) {
-            if (strpos($doi, '10.1210/me.') === 0 || strpos($doi, '10.1210/jc.') === 0 || strpos($doi, '10.1210/er.') === 0  || strpos($doi, '10.1210/en.') === 0) {
-              $this->forget('doi'); // Need updated and replaces
+            if (stripos($doi, '10.1210/me.') === 0 || stripos($doi, '10.1210/jc.') === 0 || stripos($doi, '10.1210/er.') === 0  || stripos($doi, '10.1210/en.') === 0) {
+              $this->forget('doi'); // Need updated and replaced
               return;
             }
            }
-           if (strpos($doi, '10.1258/jrsm.') === 0) {
+           if (stripos($doi, '10.1258/jrsm.') === 0 || stripos($doi, '10.1525/as.') === 0 || stripos($doi, '10.1525/sp.') === 0) {
               $doi = $this->get('doi');
-              $this->set('doi', ''); // Need updated and replaces
+              $this->set('doi', ''); // Need updated and replaced
               $this->get_doi_from_crossref();
               if (doi_works($this->get('doi')) !== TRUE) {
                 $this->set('doi', $doi);
               }
               return; 
+           }
+           if (stripos($doi, '10.2979/new.') === 0 || stripos($doi, '10.2979/FSR.') === 0) {
+             if ($this->has('url') ||$this->has('jstor')) {
+              $this->forget('doi');// Dead/Jstor/Muse
+              return;
+             }
+           }
+           if (stripos($doi, '10.1093/em/') === 0) {
+             if (preg_match('~^10\.1093/em/(\d+)(\.\d+\.\d+)$~', $doi, $matches)) {
+               $romed = numberToRomanRepresentation((int) $matches[1]) . $matches[2];
+               $try_doi = '10.1093/earlyj/' . $romed;
+               if (doi_works($try_doi) === TRUE) {
+                 $this->set('doi', $try_doi);
+                 return;
+               }
+               $try_doi = '10.1093/em/' . $romed;
+               if (doi_works($try_doi) === TRUE) {
+                 $this->set('doi', $try_doi);
+                 return;
+               }
+             }
+             return; 
+           }
+           if (stripos($doi, '10.1093/ml/') === 0) {
+             if (preg_match('~^10\.1093/ml/(\d+)(\.\d+\.\d+)$~', $doi, $matches)) {
+               $romed = numberToRomanRepresentation((int) $matches[1]) . $matches[2];
+               $try_doi = '10.1093/ml/' . $romed;
+               if (doi_works($try_doi) === TRUE) {
+                 $this->set('doi', $try_doi);
+               }
+             }
+             return; 
            }
           }
           if (!doi_works($doi)) {
@@ -4922,7 +4964,12 @@ final class Template {
           if (preg_match("~https?://www\.britishnewspaperarchive\.co\.uk/account/register.+viewer\%252fbl\%252f(\d+)\%252f(\d+)\%252f(\d+)\%252f(\d+)(?:\&|\%253f)~", $this->get($param), $matches)) {
              $this->set($param, 'https://www.britishnewspaperarchive.co.uk/viewer/bl/' . $matches[1] . '/' . $matches[2] . '/' . $matches[3] . '/' .$matches[4]);
           }
-          
+          if (preg_match("~^https?(://pubs\.rsc\.org.+)#!divAbstract$~", $this->get($param), $matches)) {
+             $this->set($param, 'https' . $matches[1]);
+          }
+          if (preg_match("~^https?(://pubs\.rsc\.org.+)\/unauth$~", $this->get($param), $matches)) {
+             $this->set($param, 'https' . $matches[1]);
+          }
           if (preg_match("~^https?://www.healthaffairs.org/do/10.1377/hblog(\d+\.\d+)/full/$~", $this->get($param), $matches)) {
               $this->set($param, 'https://www.healthaffairs.org/do/10.1377/forefront.' . $matches[1] . '/full/');
               $this->forget('access-date');
@@ -6694,6 +6741,8 @@ final class Template {
         if (strpos($old_param . $new_param, 'CITATION_BOT_PLACEHOLDER_year') === FALSE &&
             strpos($old_param . $new_param, 'CITATION_BOT_PLACEHOLDER_date') === FALSE &&
             strpos($old_param . $new_param, 'CITATION_BOT_PLACEHOLDER_title') === FALSE &&
+            strpos($old_param . $new_param, 'CITATION_BOT_PLACEHOLDER_volume') === FALSE &&
+            strpos($old_param . $new_param, 'CITATION_BOT_PLACEHOLDER_issue') === FALSE &&
             strpos($old_param . $new_param, 'CITATION_BOT_PLACEHOLDER_journal') === FALSE) {
           report_modification("Renamed \"" . echoable($old_param) . "\" -> \"" . echoable($new_param) . "\"");
           $this->mod_names = TRUE;
