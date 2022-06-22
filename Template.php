@@ -6741,6 +6741,8 @@ final class Template {
         if (strpos($old_param . $new_param, 'CITATION_BOT_PLACEHOLDER_year') === FALSE &&
             strpos($old_param . $new_param, 'CITATION_BOT_PLACEHOLDER_date') === FALSE &&
             strpos($old_param . $new_param, 'CITATION_BOT_PLACEHOLDER_title') === FALSE &&
+            strpos($old_param . $new_param, 'CITATION_BOT_PLACEHOLDER_volume') === FALSE &&
+            strpos($old_param . $new_param, 'CITATION_BOT_PLACEHOLDER_issue') === FALSE &&
             strpos($old_param . $new_param, 'CITATION_BOT_PLACEHOLDER_journal') === FALSE) {
           report_modification("Renamed \"" . echoable($old_param) . "\" -> \"" . echoable($new_param) . "\"");
           $this->mod_names = TRUE;
