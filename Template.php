@@ -5868,10 +5868,10 @@ final class Template {
               return;
             }
             $temp_string = strtolower($this->get('journal')) ;
-            if(substr($temp_string, 0, 2) === "[[" && substr($temp_string, -2) === "]]") {  // Wikilinked journal title
+            if (substr($temp_string, 0, 2) === "[[" && substr($temp_string, -2) === "]]") {  // Wikilinked journal title
                $temp_string = substr(substr($temp_string, 2), 0, -2); // Remove [[ and ]]
             }
-            if(in_array($temp_string, HAS_NO_ISSUE)) {
+            if (in_array($temp_string, HAS_NO_ISSUE)) {
               if ($this->blank('volume')) {
                 $this->rename($param, 'volume');
               } else {
@@ -5879,7 +5879,7 @@ final class Template {
               }
               return;
             }
-            if(in_array($temp_string, PREFER_VOLUMES) && $this->has('volume')) {
+            if (in_array($temp_string, PREFER_VOLUMES) && $this->has('volume')) {
               if ($this->get('volume') === $this->get($param)) {
                 $this->forget($param);
                 return;
