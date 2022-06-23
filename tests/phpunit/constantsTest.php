@@ -79,6 +79,10 @@ final class constantsTest extends testBaseClass {
     foreach (JOURNAL_ACRONYMS as $actual) {
       $this->assertSame(strtolower($expected), strtolower($actual));
       $expected = next($acronyms);
+      $lastChar = substr($actual, -1);
+      $firstChar= substr($actual, 0, 1);
+      $this->assertFalse($lastChar === ' ');
+      $this->assertFalse($firstChar === ' ');
     }
   }
   
@@ -88,6 +92,10 @@ final class constantsTest extends testBaseClass {
                              JOURNAL_IS_BOOK_SERIES, HAS_NO_ISSUE, WORKS_ARE_PUBLISHERS, PREFER_VOLUMES);
     foreach ($big_array as $actual) {
       $this->assertSame(strtolower($actual), $actual);
+      $lastChar = substr($actual, -1);
+      $firstChar= substr($actual, 0, 1);
+      $this->assertFalse($lastChar === ' ');
+      $this->assertFalse($firstChar === ' ');
     }
   }
   
