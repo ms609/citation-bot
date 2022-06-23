@@ -5861,22 +5861,24 @@ final class Template {
             if (!$this->blank($param)) $this->forget($param);
             return;
           }
-          $this->volume_issue_demix($this->get($param), $param);
-          if ($this->blank($param)) {
-             $this->forget($param);
-             return;
-          }
-          $temp_string = strtolower($this->get('journal')) ;
-          if(substr($temp_string, 0, 2) === "[[" && substr($temp_string, -2) === "]]") {  // Wikilinked journal title
-               $temp_string = substr(substr($temp_string, 2), 0, -2); // Remove [[ and ]]
-          }
-          if ($param === 'issue' && in_array($temp_string, HAS_NO_ISSUE)) {
-            if ($this->blank('volume')) {
-              $this->rename($param, 'volume');
-            } else {
+          if (($param === 'issue' || $param === 'number')) {
+            $this->volume_issue_demix($this->get($param), $param);
+            if ($this->blank($param)) {
               $this->forget($param);
+              return;
             }
-            return;
+            $temp_string = strtolower($this->get('journal')) ;
+            if(substr($temp_string, 0, 2) === "[[" && substr($temp_string, -2) === "]]") {  // Wikilinked journal title
+               $temp_string = substr(substr($temp_string, 2), 0, -2); // Remove [[ and ]]
+            }
+            if(in_array($temp_string, HAS_NO_ISSUE)) {
+              if ($this->blank('volume')) {
+                $this->rename($param, 'volume');
+              } else {
+                $this->forget($param);
+              }
+              return;
+            }
           }
           // No break here: pages, issue and year (the previous case) should be treated in this fashion.
         case 'pages': case 'page': case 'pp': # And case 'year': case 'issue':, following from previous
