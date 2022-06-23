@@ -664,6 +664,11 @@ final class Template {
       return TRUE;
     }
     if ($this->display_authors() >= $this->number_of_authors()) return TRUE;
+    
+    if ($this->wikiname() === 'citation' && $this->has('work')) {
+      return TRUE; // Should consider changing the work parameter, since {{citation}} uses the work parameter type to determine format :-(
+    }
+    
     return (!(
              ($this->has('journal') || $this->has('periodical') || $this->has('work') || $this->has('newspaper') || $this->has('magazine'))
           &&  $this->has('volume')
