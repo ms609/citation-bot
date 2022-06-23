@@ -5879,6 +5879,13 @@ final class Template {
               }
               return;
             }
+            if(in_array($temp_string, PREFER_VOLUMES) && $this->has('volume')) {
+              if ($this->get('volume') === $this->get($param)) {
+                $this->forget($param);
+                return;
+              }
+            }
+            
           }
           // No break here: pages, issue and year (the previous case) should be treated in this fashion.
         case 'pages': case 'page': case 'pp': # And case 'year': case 'issue':, following from previous
