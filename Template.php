@@ -5801,6 +5801,14 @@ final class Template {
               $this->rename('volume', 'issue');
             } else {
               $this->forget('volume');
+              return;
+            }
+          }
+          if (in_array($temp_string, PREFER_VOLUMES) && $this->has('volume')) {
+            if ($this->get('volume') === $this->get('issue')) {
+              $this->forget('issue');
+            } elseif ($this->get('volume') === $this->get('number')) {
+              $this->forget('number');
             }
           }
           // Remove leading zeroes
@@ -5885,7 +5893,6 @@ final class Template {
                 return;
               }
             }
-            
           }
           // No break here: pages, issue and year (the previous case) should be treated in this fashion.
         case 'pages': case 'page': case 'pp': # And case 'year': case 'issue':, following from previous
