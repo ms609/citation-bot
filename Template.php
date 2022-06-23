@@ -5861,7 +5861,7 @@ final class Template {
             if (!$this->blank($param)) $this->forget($param);
             return;
           }
-          if (($param === 'issue' || $param === 'number')) {
+          if ($param === 'issue' || $param === 'number') {
             $this->volume_issue_demix($this->get($param), $param);
             if ($this->blank($param)) {
               $this->forget($param);
