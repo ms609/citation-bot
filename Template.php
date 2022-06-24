@@ -3923,7 +3923,7 @@ final class Template {
            if (strpos($doi, '10.2310/') === 0) {
              $this->set('doi', '');
              $this->get_doi_from_crossref();
-             if ($this->blank('doi')) (
+             if ($this->blank('doi')) {
                 $this->set('doi', $doi);
              }
              return;
