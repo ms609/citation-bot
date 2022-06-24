@@ -3920,6 +3920,14 @@ final class Template {
              }
              return; 
            }
+           if (strpos($doi, '10.2310/') === 0) {
+             $this->set('doi', '');
+             $this->get_doi_from_crossref();
+             if ($this->blank('doi')) (
+                $this->set('doi', $doi);
+             }
+             return;
+           }
            if (stripos($doi, '10.1093/ml/') === 0) {
              if (preg_match('~^10\.1093/ml/(\d+)(\.\d+\.\d+)$~', $doi, $matches)) {
                $romed = numberToRomanRepresentation((int) $matches[1]) . $matches[2];
