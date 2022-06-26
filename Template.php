@@ -3889,7 +3889,7 @@ final class Template {
               return;
             }
            }
-           if (stripos($doi, '10.1258/jrsm.') === 0 || stripos($doi, '10.1525/as.') === 0 || stripos($doi, '10.1525/sp.') === 0) {
+           if (stripos($doi, '10.1258/jrsm.') === 0 || stripos($doi, '10.1525/as.') === 0 || stripos($doi, '10.1525/sp.') === 0 || stripos($doi, '10.1067/mva.') === 0) {
               $doi = $this->get('doi');
               $this->set('doi', ''); // Need updated and replaced
               $this->get_doi_from_crossref();
