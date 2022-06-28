@@ -304,7 +304,9 @@ final class Template {
           }
         }
       }
-      doi_works($this->get('doi')); // this can be slow.  Prime cache for better slow step determination
+      if (doi_works($this->get('doi')) === NULL) { // this can be slow.  Prime cache for better slow step determination
+        $this->tidy_parameter('doi'); // Clean it up now
+      } 
       $this->get_inline_doi_from_title();
       $this->parameter_names_to_lowercase();
       $this->use_unnamed_params();
@@ -3881,6 +3883,16 @@ final class Template {
               if ($httpCode === 200) $this->add_if_new('url', $test_url);
             }
             return;
+          }
+          if (stripos($doi, '10.1258/jrsm.') === 0) {  // Need updated and replaced.  Go to 404, but not NULL
+              $doi = $this->get('doi');
+              $this->set('doi', '');
+              $this->get_doi_from_crossref();
+              if (doi_works($this->get('doi')) !== TRUE) {
+                $this->set('doi', $doi);
+              } else {
+                $doi = $this->get('doi');
+              }
           }
           if (doi_works($doi) === NULL) {
            if ($this->has('pmc') || $this->has('pmid')) {
