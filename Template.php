@@ -3884,16 +3884,6 @@ final class Template {
             }
             return;
           }
-          if (stripos($doi, '10.1258/jrsm.') === 0) {  // Need updated and replaced.  Go to 404, but not NULL
-              $doi = $this->get('doi');
-              $this->set('doi', '');
-              $this->get_doi_from_crossref();
-              if (doi_works($this->get('doi')) !== TRUE) {
-                $this->set('doi', $doi);
-              } else {
-                $doi = $this->get('doi');
-              }
-          }
           if (doi_works($doi) === NULL) {
            if ($this->has('pmc') || $this->has('pmid')) {
             if (stripos($doi, '10.1210/me.') === 0 || stripos($doi, '10.1210/jc.') === 0 ||
