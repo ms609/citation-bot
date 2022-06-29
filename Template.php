@@ -3885,7 +3885,7 @@ final class Template {
             return;
           }
           if (!doi_works($doi) && (stripos($doi, '10.3316/informit.') === 0 || stripos($doi, '10.3316/ielapa.') === 0)) {
-            if ($this->has('url') || $this->has('pmid') || $this->has('pmid') || $this->has('pmc')) {
+            if ($this->has('url') || $this->has('pmid') || $this->has('jstor') || $this->has('pmc')) {
               $this->forget('doi');
               return;
             }
