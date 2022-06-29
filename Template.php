@@ -3884,6 +3884,12 @@ final class Template {
             }
             return;
           }
+          if (!doi_works($value) && (stripos($value, '10.3316/informit.') === 0 || stripos($value, '10.3316/ielapa.') === 0)) {
+            if ($this->has('url') || $this->has('pmid') || $this->has('pmid') || $this->has('pmc')) {
+              $this->forget('doi');
+              return;
+            }
+          }
           if (doi_works($doi) === NULL) {
            if ($this->has('pmc') || $this->has('pmid')) {
             if (stripos($doi, '10.1210/me.') === 0 || stripos($doi, '10.1210/jc.') === 0 ||
