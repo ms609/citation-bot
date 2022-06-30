@@ -188,25 +188,26 @@ class Page {
     // Ones like <ref>http://www.../....{{full|date=April 2016}}</ref> (?:full) so we can add others easily
     $this->text = preg_replace_callback(
                       "~(<(?:\s*)ref[^>]*?>)(\s*\[?(https?:\/\/[^ >}{\]\[]+?)\]?\s*{{(?:full|Full citation needed)(?:|\|date=[a-zA-Z0-9 ]+)}})(<\s*?\/\s*?ref(?:\s*)>)~i",
-                      function(array $matches) : string {return $matches[1] . '{{cite web | url=' . wikifyURL($matches[3]) . ' | ' . strtolower('CITATION_BOT_PLACEHOLDER_BARE_URL') .'=' . base64_encode($matches[2]) . ' }}' . $matches[4] ;},
+                      function(array $matches) : string {echo "\n" . __LINE__ . "\n"; return $matches[1] . '{{cite web | url=' . wikifyURL($matches[3]) . ' | ' . strtolower('CITATION_BOT_PLACEHOLDER_BARE_URL') .'=' . base64_encode($matches[2]) . ' }}' . $matches[4] ;},
                       $this->text
                       );
     // Ones like <ref>http://www.../....{{Bare URL inline|date=April 2016}}</ref>
     $this->text = preg_replace_callback(
                       "~(<(?:\s*)ref[^>]*?>)(\s*\[?(https?:\/\/[^ >}{\]\[]+?)\]?\s*{{Bare URL inline(?:|\|date=[a-zA-Z0-9 ]+)}})(<\s*?\/\s*?ref(?:\s*)>)~i",
-                      function(array $matches) : string {return $matches[1] . '{{cite web | url=' . wikifyURL($matches[3]) . ' | ' . strtolower('CITATION_BOT_PLACEHOLDER_BARE_URL') .'=' . base64_encode($matches[2]) . ' }}' . $matches[4] ;},
+                      function(array $matches) : string {echo "\n" . __LINE__ . "\n"; return $matches[1] . '{{cite web | url=' . wikifyURL($matches[3]) . ' | ' . strtolower('CITATION_BOT_PLACEHOLDER_BARE_URL') .'=' . base64_encode($matches[2]) . ' }}' . $matches[4] ;},
                       $this->text
                       );
     // Ones like <ref>http://www.../....</ref>; <ref>[http://www.../....]</ref>   Also, allow a trailing period, space+period, or comma
     $this->text = preg_replace_callback(
                       "~(<(?:\s*)ref[^>]*?>)(\s*\[?(https?:\/\/[^ >}{\]\[]+?)[ \,\.]*\]?[\s\.\,]*)(<\s*?\/\s*?ref(?:\s*)>)~i",
-                      function(array $matches) : string {return $matches[1] . '{{cite web | url=' . wikifyURL($matches[3]) . ' | ' . strtolower('CITATION_BOT_PLACEHOLDER_BARE_URL') .'=' . base64_encode($matches[2]) . ' }}' . $matches[4] ;},
+                      function(array $matches) : string {echo "\n" . __LINE__ . "\n"; return $matches[1] . '{{cite web | url=' . wikifyURL($matches[3]) . ' | ' . strtolower('CITATION_BOT_PLACEHOLDER_BARE_URL') .'=' . base64_encode($matches[2]) . ' }}' . $matches[4] ;},
                       $this->text
                       );
     // Ones like <ref>[http://www... http://www...]</ref>
     $this->text = preg_replace_callback(   
                       "~(<(?:\s*)ref[^>]*?>)((\s*\[)(https?:\/\/[^\s>\}\{\]\[]+?)(\s+)(https?:\/\/[^\s>\}\{\]\[]+?)(\s*\]\s*))(<\s*?\/\s*?ref(?:\s*)>)~i",
                       function(array $matches) : string  {
+                        echo "\n" . __LINE__ . "\n"; 
                         if ($matches[4] === $matches[6]) {
                             return $matches[1] . '{{cite web | url=' . wikifyURL($matches[4]) . ' | ' . strtolower('CITATION_BOT_PLACEHOLDER_BARE_URL') .'=' . base64_encode($matches[2]) . ' }}' . $matches[8] ;
                         }
@@ -218,6 +219,7 @@ class Page {
      $this->text = preg_replace_callback(   // like <ref>{{doi|10.1244/abc}}</ref>
                       "~(<(?:\s*)ref[^>]*?>)(\s*\{\{(?:doi\|10\.\d{4,6}\/[^\s\}\{\|]+?|pmid\|\d{4,9}|pmc\|\d{4,9}|oclc\|\d{4,9}|isbn\|[0-9\-xX]+?|arxiv\|\d{4}\.\d{4,5}(?:|v\d+)|arxiv\|[a-z\.\-]{2,12}\/\d{7,8}(?:|v\d+)|bibcode\|[12]\d{3}[\w\d\.&]{15}|jstor\|[^\s\}\{\|]+?)\}\}\s*)(<\s*?\/\s*?ref(?:\s*)>)~i",
                       function(array $matches) : string  {
+                        echo "\n" . __LINE__ . "\n"; 
                         if (stripos($matches[2], 'arxiv')) {
                           $type = 'arxiv';
                         } elseif (stripos($matches[2], 'isbn') || stripos($matches[2], 'oclc')) {
@@ -232,7 +234,7 @@ class Page {
      // PLAIN DOIS Converted to templates
      $this->text = preg_replace_callback(   // like <ref>10.1244/abc</ref>
                       "~(<(?:\s*)ref[^>]*?>)(\s*10\.[0-9]{4,6}\/\S+?\s*)(<\s*?\/\s*?ref(?:\s*)>)~i",
-                      function(array $matches) : string  {return $matches[1] . '{{cite journal | doi=' . str_replace('|', '%7C', $matches[2]) . ' | ' . strtolower('CITATION_BOT_PLACEHOLDER_BARE_URL') .'=' . base64_encode($matches[2]) . ' }}' . $matches[3] ;},
+                      function(array $matches) : string  {echo "\n" . __LINE__ . "\n"; return $matches[1] . '{{cite journal | doi=' . str_replace('|', '%7C', $matches[2]) . ' | ' . strtolower('CITATION_BOT_PLACEHOLDER_BARE_URL') .'=' . base64_encode($matches[2]) . ' }}' . $matches[3] ;},
                       $this->text
                       );
      if (
@@ -243,6 +245,7 @@ class Page {
                                             // also without titles on the urls
                       "~(<(?:\s*)ref[^>]*?>)([^\{\}<\[\]]+\[)(https?://\S+?/10\.[0-9]{4,6}\/[^\[\]\{\}\s]+?)( [^\]\[\{\}]+?\]|\])(\s*[^<\]\[]+?)(<\s*?\/\s*?ref(?:\s*)>)~i",
                       function(array $matches) : string  {
+                        echo "\n" . __LINE__ . "\n"; 
                         if (substr_count(strtoupper($matches[2].$matches[3].$matches[4].$matches[5]), 'HTTP') !== 1) return $matches[0]; // more than one url
                         if (substr_count(strtoupper($matches[2].$matches[3].$matches[4].$matches[5]), 'SEE ALSO') !== 0) return $matches[0];
                         return $matches[1] . '{{cite journal | url=' . wikifyURL($matches[3]) . ' | ' . strtolower('CITATION_BOT_PLACEHOLDER_BARE_URL') .'=' . base64_encode($matches[2] . $matches[3] . $matches[4] . $matches[5]) . ' }}' . $matches[6] ;},
