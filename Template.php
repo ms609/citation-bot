@@ -3893,8 +3893,8 @@ final class Template {
           if (doi_works($doi) === NULL) {
            if ($this->has('pmc') || $this->has('pmid')) {
             if (stripos($doi, '10.1210/me.') === 0 || stripos($doi, '10.1210/jc.') === 0 ||
-                stripos($doi, '10.1210/er.') === 0  || stripos($doi, '10.1210/en.') === 0 ||
-                stripos($doi, '10.1128/.61') === 0) {
+                stripos($doi, '10.1210/er.') === 0 || stripos($doi, '10.1210/en.') === 0 ||
+                stripos($doi, '10.1128/.61') === 0 || stripos($doi, '10.1379/1466-1268') === 0) {
               $this->forget('doi'); // Need updated and replaced
               return;
             }
