@@ -243,8 +243,14 @@ class Page {
                                             // also without titles on the urls
                       "~(<(?:\s*)ref[^>]*?>)([^\{\}<\[\]]+\[)(https?://\S+?/10\.[0-9]{4,6}\/[^\[\]\{\}\s]+?)( [^\]\[\{\}]+?\]|\])(\s*[^<\]\[]+?)(<\s*?\/\s*?ref(?:\s*)>)~i",
                       function(array $matches) : string  {
-                        if (substr_count(strtoupper($matches[2].$matches[3].$matches[4].$matches[5]), 'HTTP') !== 1) return $matches[0]; // more than one url
-                        if (substr_count(strtoupper($matches[2].$matches[3].$matches[4].$matches[5]), 'SEE ALSO') !== 0) return $matches[0];
+                        $UPPER = strtoupper($matches[0]);
+                        if (substr_count($UPPER, 'HTTP') !== 1) return $matches[0]; // more than one url
+                        if (substr_count($UPPER, 'SEE ALSO') !== 0) return $matches[0];
+                        if (substr_count($UPPER, 'CITATION_BOT_PLACEHOLDER_COMMENT') !== 0) return $matches[0];
+                        if (substr_count($UPPER, '{{CITE') !== 0) return $matches[0];
+                        if (substr_count($UPPER, '{{CITATION') !== 0) return $matches[0];
+                        if (substr_count($UPPER, '{{ CITE') !== 0) return $matches[0];
+                        if (substr_count($UPPER, '{{ CITATION') !== 0) return $matches[0];
                         return $matches[1] . '{{cite journal | url=' . wikifyURL($matches[3]) . ' | ' . strtolower('CITATION_BOT_PLACEHOLDER_BARE_URL') .'=' . base64_encode($matches[2] . $matches[3] . $matches[4] . $matches[5]) . ' }}' . $matches[6] ;},
                       $this->text
                       );
