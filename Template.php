@@ -3909,7 +3909,8 @@ final class Template {
               }
               return; 
            }
-           if (stripos($doi, '10.2979/new.') === 0 || stripos($doi, '10.2979/FSR.') === 0 || stripos($doi, '10.2979/NWS') === 0) {
+           if (stripos($doi, '10.2979/new.') === 0 || stripos($doi, '10.2979/FSR.') === 0 ||
+               stripos($doi, '10.2979/NWS') === 0  || stripos($doi, '10.1353/nwsa.') === 0 ) {
              if ($this->has('url') ||$this->has('jstor')) {
               $this->forget('doi');// Dead/Jstor/Muse
               return;
