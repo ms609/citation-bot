@@ -48,7 +48,7 @@ function doi_works(string $doi) : ?bool {
   if (count($cache_good) > 100000) $cache_good = [];
   $works = is_doi_works($doi);
   if ($works === NULL) {
-    file_put_contents('CodeCoverage', $doi . " returns NULL from dx.doi.org \n", FILE_APPEND);
+    // file_put_contents('CodeCoverage', $doi . " returns NULL from dx.doi.org \n", FILE_APPEND);
     return NULL; // @codeCoverageIgnore
   }
   if ($works === FALSE) {
