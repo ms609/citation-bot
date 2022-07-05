@@ -4416,7 +4416,7 @@ final class Template {
               return; // Case when Google actually IS a publisher
             }
           }
-          if (preg_match('~\S+\s*\/\s*(?:|\[\[)Google News Archive~i', $publisher) {
+          if (preg_match('~\S+\s*\/\s*(?:|\[\[)Google News Archive~i', $publisher)) {
              return;  // this is Newspaper / Google News Archive
           }
 
