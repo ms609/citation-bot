@@ -48,7 +48,7 @@ function doi_works(string $doi) : ?bool {
   if (count($cache_good) > 100000) $cache_good = [];
   $works = is_doi_works($doi);
   if ($works === NULL) {
-    file_put_contents('CodeCoverage', $doi . " returns NULL from dx.doi.org \n", FILE_APPEND);
+    // file_put_contents('CodeCoverage', $doi . " returns NULL from dx.doi.org \n", FILE_APPEND);
     return NULL; // @codeCoverageIgnore
   }
   if ($works === FALSE) {
@@ -530,6 +530,9 @@ function titles_simple(string $inTitle) : string {
         if ($inTitle2 !== "") $inTitle = $inTitle2;
         // Strip leading the
         $inTitle2 = (string) safe_preg_replace('~^The ~iu', '', $inTitle);
+        if ($inTitle2 !== "") $inTitle = $inTitle2;
+        // Strip trailing 
+        $inTitle2 = (string) safe_preg_replace('~ A literature review$~iu', '', $inTitle);
         if ($inTitle2 !== "") $inTitle = $inTitle2;
         // Reduce punctuation
         $inTitle = straighten_quotes(mb_strtolower((string) $inTitle), TRUE);

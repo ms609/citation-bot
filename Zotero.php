@@ -400,11 +400,13 @@ public static function expand_by_zotero(Template $template, ?string $url = NULL)
   }
   $zotero_response = self::zotero_request($url);
   $return = self::process_zotero_response($zotero_response, $template, $url, $url_kind, $access_date);
+  /**
   if ($return) {
-     file_put_contents('ZoteroWorked', $url . "\n", FILE_APPEND); // Log success here
+     file_put_contents('ZoteroWorked', $url . "\n", FILE_APPEND);
   } else {
-     file_put_contents('ZoteroFailed', $url . "\n", FILE_APPEND); // Log failure here
+     file_put_contents('ZoteroFailed', $url . "\n", FILE_APPEND);
   }
+  **/
   return $return;
 }
 

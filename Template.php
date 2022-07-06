@@ -304,7 +304,9 @@ final class Template {
           }
         }
       }
-      doi_works($this->get('doi')); // this can be slow.  Prime cache for better slow step determination
+      if (doi_works($this->get('doi')) === NULL) { // this can be slow.  Prime cache for better slow step determination
+        $this->tidy_parameter('doi'); // Clean it up now
+      } 
       $this->get_inline_doi_from_title();
       $this->parameter_names_to_lowercase();
       $this->use_unnamed_params();
@@ -664,6 +666,11 @@ final class Template {
       return TRUE;
     }
     if ($this->display_authors() >= $this->number_of_authors()) return TRUE;
+    
+    if ($this->wikiname() === 'citation' && $this->has('work')) {
+      return TRUE; // Should consider changing the work parameter, since {{citation}} uses the work parameter type to determine format :-(
+    }
+    
     return (!(
              ($this->has('journal') || $this->has('periodical') || $this->has('work') || $this->has('newspaper') || $this->has('magazine'))
           &&  $this->has('volume')
@@ -3877,14 +3884,23 @@ final class Template {
             }
             return;
           }
+          if (!doi_works($doi) && (stripos($doi, '10.3316/informit.') === 0 || stripos($doi, '10.3316/ielapa.') === 0)) {
+            if ($this->has('url') || $this->has('pmid') || $this->has('jstor') || $this->has('pmc')) {
+              $this->forget('doi');
+              return;
+            }
+          }
           if (doi_works($doi) === NULL) {
-           if (($this->has('pmc') || $this->has('pmid')) && strpos($doi, '10.1210/') === 0) {
-            if (stripos($doi, '10.1210/me.') === 0 || stripos($doi, '10.1210/jc.') === 0 || stripos($doi, '10.1210/er.') === 0  || stripos($doi, '10.1210/en.') === 0) {
+           if ($this->has('pmc') || $this->has('pmid')) {
+            if (stripos($doi, '10.1210/me.') === 0 || stripos($doi, '10.1210/jc.') === 0 ||
+                stripos($doi, '10.1210/er.') === 0 || stripos($doi, '10.1210/en.') === 0 ||
+                stripos($doi, '10.1128/.61') === 0 || stripos($doi, '10.1379/1466-1268') === 0) {
               $this->forget('doi'); // Need updated and replaced
               return;
             }
            }
-           if (stripos($doi, '10.1258/jrsm.') === 0 || stripos($doi, '10.1525/as.') === 0 || stripos($doi, '10.1525/sp.') === 0) {
+           if (stripos($doi, '10.1258/jrsm.') === 0 || stripos($doi, '10.1525/as.') === 0 ||
+               stripos($doi, '10.1525/sp.') === 0 || stripos($doi, '10.1067/mva.') === 0) {
               $doi = $this->get('doi');
               $this->set('doi', ''); // Need updated and replaced
               $this->get_doi_from_crossref();
@@ -3893,7 +3909,8 @@ final class Template {
               }
               return; 
            }
-           if (stripos($doi, '10.2979/new.') === 0 || stripos($doi, '10.2979/FSR.') === 0) {
+           if (stripos($doi, '10.2979/new.') === 0 || stripos($doi, '10.2979/FSR.') === 0 ||
+               stripos($doi, '10.2979/NWS') === 0  || stripos($doi, '10.1353/nwsa.') === 0 ) {
              if ($this->has('url') ||$this->has('jstor')) {
               $this->forget('doi');// Dead/Jstor/Muse
               return;
@@ -3914,6 +3931,14 @@ final class Template {
                }
              }
              return; 
+           }
+           if (strpos($doi, '10.2310/') === 0) {
+             $this->set('doi', '');
+             $this->get_doi_from_crossref();
+             if ($this->blank('doi')) {
+                $this->set('doi', $doi);
+             }
+             return;
            }
            if (stripos($doi, '10.1093/ml/') === 0) {
              if (preg_match('~^10\.1093/ml/(\d+)(\.\d+\.\d+)$~', $doi, $matches)) {
@@ -4390,6 +4415,9 @@ final class Template {
                 stripos($this_host, 'github') !== FALSE){
               return; // Case when Google actually IS a publisher
             }
+          }
+          if (preg_match('~\S+\s*\/\s*(?:|\[\[)Google News Archive~i', $publisher)) {
+             return;  // this is Newspaper / Google News Archive
           }
 
           foreach (NON_PUBLISHERS as $not_publisher) {
@@ -5801,6 +5829,14 @@ final class Template {
               $this->rename('volume', 'issue');
             } else {
               $this->forget('volume');
+              return;
+            }
+          }
+          if (in_array($temp_string, PREFER_VOLUMES) && $this->has('volume')) {
+            if ($this->get('volume') === $this->get('issue')) {
+              $this->forget('issue');
+            } elseif ($this->get('volume') === $this->get('number')) {
+              $this->forget('number');
             }
           }
           // Remove leading zeroes
@@ -5861,22 +5897,30 @@ final class Template {
             if (!$this->blank($param)) $this->forget($param);
             return;
           }
-          $this->volume_issue_demix($this->get($param), $param);
-          if ($this->blank($param)) {
-             $this->forget($param);
-             return;
-          }
-          $temp_string = strtolower($this->get('journal')) ;
-          if(substr($temp_string, 0, 2) === "[[" && substr($temp_string, -2) === "]]") {  // Wikilinked journal title
-               $temp_string = substr(substr($temp_string, 2), 0, -2); // Remove [[ and ]]
-          }
-          if ($param === 'issue' && in_array($temp_string, HAS_NO_ISSUE)) {
-            if ($this->blank('volume')) {
-              $this->rename($param, 'volume');
-            } else {
+          if ($param === 'issue' || $param === 'number') {
+            $this->volume_issue_demix($this->get($param), $param);
+            if ($this->blank($param)) {
               $this->forget($param);
+              return;
             }
-            return;
+            $temp_string = strtolower($this->get('journal')) ;
+            if (substr($temp_string, 0, 2) === "[[" && substr($temp_string, -2) === "]]") {  // Wikilinked journal title
+               $temp_string = substr(substr($temp_string, 2), 0, -2); // Remove [[ and ]]
+            }
+            if (in_array($temp_string, HAS_NO_ISSUE)) {
+              if ($this->blank('volume')) {
+                $this->rename($param, 'volume');
+              } else {
+                $this->forget($param);
+              }
+              return;
+            }
+            if (in_array($temp_string, PREFER_VOLUMES) && $this->has('volume')) {
+              if ($this->get('volume') === $this->get($param)) {
+                $this->forget($param);
+                return;
+              }
+            }
           }
           // No break here: pages, issue and year (the previous case) should be treated in this fashion.
         case 'pages': case 'page': case 'pp': # And case 'year': case 'issue':, following from previous
