@@ -404,7 +404,7 @@ final class TemplateTest extends testBaseClass {
   }
  
    public function testDropBadData() : void {
-    $text = "{{cite journal|jstor=3073767|pages=null|page=null|volume=n/a|issue=0|title=[No title found]|coauthors=Duh|last1=Duh|first1=Dum|first=Hello|last=By|author=Yup|author1=Nope}}";
+    $text = "{{cite journal|jstor=3073767|pages=null|page=null|volume=n/a|issue=0|title=[No title found]|coauthors=Duh|last1=Duh|first1=Dum|first=Hello|last=By|author=Yup|author1=Nope|year=2002}}";
     $expanded = $this->process_citation($text);
     $this->assertSame('Are Helionitronium Trications Stable?', $expanded->get2('title'));
     $this->assertSame('99', $expanded->get2('volume'));
@@ -420,7 +420,7 @@ final class TemplateTest extends testBaseClass {
   }
 
    public function testDropBadData2() : void {
-    $text = "{{cite journal|author2=BAD|jstor=3073767|pages=null|page=null|volume=n/a|issue=0|title=[No title found]|coauthors=Duh|last1=Duh|first1=Dum|first=Hello|last=By|author=Yup|author1=Nope}}";
+    $text = "{{cite journal|author2=BAD|jstor=3073767|pages=null|page=null|volume=n/a|issue=0|title=[No title found]|coauthors=Duh|last1=Duh|first1=Dum|first=Hello|last=By|author=Yup|author1=Nope|year=2005}}";
     $expanded = $this->process_citation($text);
     $this->assertSame('Are Helionitronium Trications Stable?', $expanded->get2('title'));
     $this->assertSame('99', $expanded->get2('volume'));
