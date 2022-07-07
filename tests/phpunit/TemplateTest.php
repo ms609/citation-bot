@@ -4106,7 +4106,7 @@ EP - 999 }}';
   public function testNullDOInoCrash() : void {
     $text = '{{cite journal | doi=10.5604/01.3001.0012.8474 }}';
     $template = $this->process_citation($text);
-    $this->assertSame($text, $template->parced_text());
+    $this->assertSame($text, $template->parsed_text());
   }
 
   public function testTidySomeStuff() : void {
