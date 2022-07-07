@@ -4103,5 +4103,51 @@ EP - 999 }}';
     $this->assertSame('Proceedings of the 1964 19th ACM national conference', $template->get2('title'));
   }
  
+  public function testNullDOInoCrash() : void {
+    $text = '{{cite journal | doi=10.5604/01.3001.0012.8474 }}';
+    $template = $this->process_citation($text);
+    $this->assertSame($text, $template->parced_text());
+  }
+
+  public function testTidySomeStuff() : void {
+    $text = '{{cite journal | url=http://pubs.rsc.org/XYZ#!divAbstract}}';
+    $template = $this->make_citation($text);
+    $template->tidy_parameter('url');
+    $this->assertSame('https://pubs.rsc.org/XYZ', $template->get2('url'));
+   
+    $text = '{{cite journal | url=http://pubs.rsc.org/XYZ/unauth}}';
+    $template = $this->make_citation($text);
+    $template->tidy_parameter('url');
+    $this->assertSame('https://pubs.rsc.org/XYZ', $template->get2('url'));
+  }
+ 
+  public function testTidyPreferVolumes() : void {
+    $text = '{{cite journal | journal=Illinois Classical Studies|issue=3|volume=3}}';
+    $template = $this->make_citation($text);
+    $template->tidy_parameter('volume');
+    $this->assertNull($template->get2('issue'));
+
+    $text = '{{cite journal | journal=Illinois Classical Studies|number=3|volume=3}}';
+    $template = $this->make_citation($text);
+    $template->tidy_parameter('volume');
+    $this->assertNull($template->get2('number'));
+          
+    $text = '{{cite journal | journal=Illinois Classical Studies|issue=3|volume=3}}';
+    $template = $this->make_citation($text);
+    $template->tidy_parameter('issue');
+    $this->assertNull($template->get2('issue'));
+
+    $text = '{{cite journal | journal=Illinois Classical Studies|number=3|volume=3}}';
+    $template = $this->make_citation($text);
+    $template->tidy_parameter('number');
+    $this->assertNull($template->get2('number'));
+  }
+ 
+  public function testTidyBogusDOIs3316() : void {
+    $text = '{{cite journal | doi=10.3316/informit.324214324123413412313|pmc=XXXXX}}';
+    $template = $this->make_citation($text);
+    $template->tidy_parameter('doi');
+    $this->assertNull($template->get2('doi'));
+  } 
  
 }
