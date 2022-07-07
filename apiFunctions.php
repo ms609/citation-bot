@@ -654,9 +654,9 @@ function expand_doi_with_dx(Template $template, string $doi) : bool {
        $try_to_add_it('journal', @$json['container-title']);
        $try_to_add_it('title', @$json['title']);
        $try_to_add_it('issn', @$json['issn']); // Will not add if journal is set
-     } elseif (@$json['type'] == 'journal-issue') { // Do not add "title": should be blank anyway DOI:10.7592/fejf2015.62
-       $try_to_add_it('journal', @$json['container-title']);
-       $try_to_add_it('issn', @$json['issn']); // Will not add if journal is set
+     } elseif (@$json['type'] == 'journal-issue') { // Very rare: Do not add "title": should be blank anyway.  Got this once from DOI:10.7592/fejf2015.62
+       $try_to_add_it('journal', @$json['container-title']);   // @codeCoverageIgnore
+       $try_to_add_it('issn', @$json['issn']);                 // @codeCoverageIgnore
      } elseif (@$json['type'] == 'monograph' || @$json['type'] == 'book') {
        $try_to_add_it('title', @$json['title']);
        $try_to_add_it('title', @$json['container-title']);// Usually not set, but just in case this instead of title is set
