@@ -4608,4 +4608,9 @@ final class TemplateTest2 extends testBaseClass {
       $expanded = $this->make_citation($text);
       $this->AssertFalse($expanded->incomplete());
     }
+ 
+    public function testKeepGoogPublish() : void {
+      $text = "{{cite web|author=Leeps |url=https://news.google.com/newspapers?nid=1309&dat=19890604&id=tKFUAAAAIBAJ&sjid=NpADAAAAIBAJ&pg=5932,900833&hl=en |title=Rust Busters |publisher=[[New Straits Times]] / [[Google News Archive]] |date=1989-06-04 |access-date=2015-05-03 }}";
+      $expanded = $this->process_citation($text);
+      $this->assertSame($text, $expanded->parsed_text());
 }
