@@ -156,8 +156,8 @@ try {
   /** @phpstan-impure **/
   public function write_page(string $page, string $text, string $editSummary, int $lastRevId, string $startedEditing) : bool {
     if (stripos($text, "CITATION_BOT_PLACEHOLDER") !== FALSE)  {
-      report_minor_error("\n ! Placeholder left escaped in text. Aborting.");  // @codeCoverageIgnore
-      return FALSE;                                                            // @codeCoverageIgnore
+      report_minor_error("\n ! Placeholder left escaped in text. Aborting for page " . $page);  // @codeCoverageIgnore
+      return FALSE;                                                                             // @codeCoverageIgnore
     }
 
     $response = $this->fetch([
@@ -329,8 +329,8 @@ try {
       ]);
     $res = @json_decode($res);
     if (!isset($res->query->pages)) {
-        report_minor_error("Failed to get article's last revision");      // @codeCoverageIgnore
-        return '';                                                        // @codeCoverageIgnore
+        report_minor_error("Failed to get article's last revision for " . $page);      // @codeCoverageIgnore
+        return '';                                                                     // @codeCoverageIgnore
     }
     $page = reset($res->query->pages);
     return  (isset($page->revisions[0]->revid) ? (string) $page->revisions[0]->revid : '');
