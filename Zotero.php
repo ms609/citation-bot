@@ -592,12 +592,27 @@ public static function process_zotero_response(string $zotero_response, Template
     if (preg_match('~\s(Citation Key: \S+)\s~i', ' ' . $result->extra . ' ', $matches)) { // Not precise enough to use
       $result->extra = trim(str_replace(trim($matches[0]), '', $result->extra));           // @codeCoverageIgnore
     }
+    if (preg_match('~\s(event-location: \S+)\s~i', ' ' . $result->extra . ' ', $matches)) { // Not precise enough to use
+      $result->extra = trim(str_replace(trim($matches[0]), '', $result->extra));           // @codeCoverageIgnore
+    }
+    if (preg_match('~\s(number-of-pages: \S+)\s~i', ' ' . $result->extra . ' ', $matches)) { // Not precise enough to use
+      $result->extra = trim(str_replace(trim($matches[0]), '', $result->extra));           // @codeCoverageIgnore
+    }
+    if (preg_match('~\s(submitted: \S+)\s~i', ' ' . $result->extra . ' ', $matches)) { // Not precise enough to use
+      $result->extra = trim(str_replace(trim($matches[0]), '', $result->extra));           // @codeCoverageIgnore
+    }
+    if (preg_match('~\s(Version: \S+)\s~i', ' ' . $result->extra . ' ', $matches)) { // Not precise enough to use
+      $result->extra = trim(str_replace(trim($matches[0]), '', $result->extra));           // @codeCoverageIgnore
+    }
+    if (preg_match('~\s(\d+ cm\.)\s~i', ' ' . $result->extra . ' ', $matches)) { // Not precise enough to use
+      $result->extra = trim(str_replace(trim($matches[0]), '', $result->extra));           // @codeCoverageIgnore
+    }
     if (preg_match('~\sADS Bibcode: (\d{4}\S{15})\s~i', ' ' . $result->extra . ' ', $matches)) {
       $result->extra = trim(str_replace(trim($matches[0]), '', $result->extra));
       $template->add_if_new('bibcode',  $matches[1]);
     } 
     if (trim($result->extra) !== '') {
-      report_minor_error("Unhandled extra data: " . $result->extra);                       // @codeCoverageIgnore
+      report_minor_error("Unhandled extra data: " . $result->extra .  ' FROM ' . $url);          // @codeCoverageIgnore
     }
   } 
   
@@ -783,6 +798,7 @@ public static function process_zotero_response(string $zotero_response, Template
       case 'entry':
       case 'videoRecording':
       case 'film':
+      case 'manuscript':   // @codeCoverageIgnore
       case 'audioRecording':   // @codeCoverageIgnore
       case 'presentation':     // @codeCoverageIgnore
       case 'computerProgram':  // @codeCoverageIgnore
