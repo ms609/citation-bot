@@ -612,7 +612,7 @@ public static function process_zotero_response(string $zotero_response, Template
       $template->add_if_new('bibcode',  $matches[1]);
     } 
     if (trim($result->extra) !== '') {
-      report_minor_error("Unhandled extra data: " . $result->extra .  ' FROM ' . $url);          // @codeCoverageIgnore
+      report_minor_error("Unhandled extra data: " . echoable($result->extra) .  ' FROM ' . echoable($url));          // @codeCoverageIgnore
     }
   } 
   
@@ -811,7 +811,7 @@ public static function process_zotero_response(string $zotero_response, Template
         break;
 
       default:                                                                         // @codeCoverageIgnore
-        report_minor_error("Unhandled itemType: " . $result->itemType . " for $url");  // @codeCoverageIgnore
+        report_minor_error("Unhandled itemType: " . echoable($result->itemType) . " for $url");  // @codeCoverageIgnore
     }
     
     if (in_array($result->itemType, ['journalArticle', 'newspaperArticle', 'report', 'magazineArticle', 'thesis'])) {
@@ -832,7 +832,7 @@ public static function process_zotero_response(string $zotero_response, Template
               $authorParam = 'translator' . (string) ++$translator_i;
               break;
             default:                                                               // @codeCoverageIgnore
-              report_minor_error("Unrecognized creator type: " . $creatorType);    // @codeCoverageIgnore
+              report_minor_error("Unrecognized creator type: " . echoable($creatorType));    // @codeCoverageIgnore
               $authorParam = '';                                                   // @codeCoverageIgnore
           }
          if ($authorParam && author_is_human($result->creators[$i]->firstName . ' ' . $result->creators[$i]->lastName)) {
