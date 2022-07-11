@@ -7286,6 +7286,9 @@ final class Template {
 
       foreach ($url_parts as $part) {
         $part_start = explode("=", $part);
+        if (isset($part_start[1]) && $part_start[1] === '') {
+          $part_start[0] = "newwindow"; // Do not add blank ones
+        }
         switch ($part_start[0]) {
           case "aq": case "aqi": case "bih": case "biw": case "client":
           case "as": case "useragent": case "as_brr":
