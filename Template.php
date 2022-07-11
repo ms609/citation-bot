@@ -7315,7 +7315,7 @@ final class Template {
              break;
           default:
              // @codeCoverageIgnoreStart
-             report_minor_error("Unexpected Google URL component:  " . echoable($part));
+             report_minor_error("Unexpected Google URL component:  " . echoable($part) . " in " . echoable($url));
              $url .=  $part . "&" ;
              break;
              // @codeCoverageIgnoreEnd
