@@ -91,7 +91,7 @@ $proto = (
 $host = $_SERVER['HTTP_HOST'];
 $path = $_SERVER['REQUEST_URI'];
 $newcallback = $proto . '://' . $host . $path;
-if (isset($_POST["page"]) && $path === '/process_page.php' && strpos((string) $_POST["page"], '|') === FALSE) {
+if (isset($_POST["page"]) && strpos($path, 'process_page.php') !== FALSE && strpos((string) $_POST["page"], '|') === FALSE) {
   $newcallback = $newcallback . '?edit=webform&slow=1&page=' . (string) $_POST["page"];
 }
 
