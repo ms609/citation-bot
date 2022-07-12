@@ -604,9 +604,6 @@ public static function process_zotero_response(string $zotero_response, Template
     if (preg_match('~\s(Citation Key: \S+)\s~i', ' ' . $result->extra . ' ', $matches)) { // We don't use it
       $result->extra = trim(str_replace(trim($matches[0]), '', $result->extra));           // @codeCoverageIgnore
     }
-    if (preg_match('~\s(event-location: \S+)\s~i', ' ' . $result->extra . ' ', $matches)) { // We don't use it
-      $result->extra = trim(str_replace(trim($matches[0]), '', $result->extra));           // @codeCoverageIgnore
-    }
     if (preg_match('~\s(number-of-pages: \S+)\s~i', ' ' . $result->extra . ' ', $matches)) { // We don't use it
       $result->extra = trim(str_replace(trim($matches[0]), '', $result->extra));           // @codeCoverageIgnore
     }
@@ -625,7 +622,11 @@ public static function process_zotero_response(string $zotero_response, Template
     if (preg_match('~\sADS Bibcode: (\d{4}\S{15})\s~i', ' ' . $result->extra . ' ', $matches)) {
       $result->extra = trim(str_replace(trim($matches[0]), '', $result->extra));
       $template->add_if_new('bibcode',  $matches[1]);
-    } 
+    }
+    // These go at end since it is unbound on end
+    if (preg_match('~\s(event-location: .+)\s~i', ' ' . $result->extra . ' ', $matches)) { // We don't use it and it is long verbose
+      $result->extra = trim(str_replace(trim($matches[0]), '', $result->extra));           // @codeCoverageIgnore
+    }
     if (trim($result->extra) !== '') {
       report_minor_error("Unhandled extra data: " . echoable($result->extra) .  ' FROM ' . echoable($url));          // @codeCoverageIgnore
     }
