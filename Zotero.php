@@ -574,6 +574,18 @@ public static function process_zotero_response(string $zotero_response, Template
         $template->add_if_new('pmid', $matches[1]);
       }
     }
+    if (preg_match('~\sPMID: (\d+)\s~i', ' ' . $result->extra . ' ', $matches)) {
+      $result->extra = trim(str_replace(trim($matches[0]), '', $result->extra));
+      $template->add_if_new('pmid', $matches[1]);
+    }
+    if (preg_match('~\sOCLC: (\d+)\s~i', ' ' . $result->extra . ' ', $matches)) {
+      $result->extra = trim(str_replace(trim($matches[0]), '', $result->extra));
+      $template->add_if_new('oclc', $matches[1]);
+    }
+    if (preg_match('~\sOpen Library ID: OL(\d+M)\s~i', ' ' . $result->extra . ' ', $matches)) {
+      $result->extra = trim(str_replace(trim($matches[0]), '', $result->extra));
+      $template->add_if_new('ol', $matches[1]);
+    }
     if (preg_match('~\sIMDb ID: ((?:tt|co|nm)\d+)\s~i', ' ' . $result->extra . ' ', $matches)) { // We don't use it
       $result->extra = trim(str_replace(trim($matches[0]), '', $result->extra));
     }
@@ -589,22 +601,25 @@ public static function process_zotero_response(string $zotero_response, Template
     if (preg_match('~\s(Page Version ID: \S+)\s~i', ' ' . $result->extra . ' ', $matches)) { // We don't use it
       $result->extra = trim(str_replace(trim($matches[0]), '', $result->extra));           // @codeCoverageIgnore
     }
-    if (preg_match('~\s(Citation Key: \S+)\s~i', ' ' . $result->extra . ' ', $matches)) { // Not precise enough to use
+    if (preg_match('~\s(Citation Key: \S+)\s~i', ' ' . $result->extra . ' ', $matches)) { // We don't use it
       $result->extra = trim(str_replace(trim($matches[0]), '', $result->extra));           // @codeCoverageIgnore
     }
-    if (preg_match('~\s(event-location: \S+)\s~i', ' ' . $result->extra . ' ', $matches)) { // Not precise enough to use
+    if (preg_match('~\s(event-location: \S+)\s~i', ' ' . $result->extra . ' ', $matches)) { // We don't use it
       $result->extra = trim(str_replace(trim($matches[0]), '', $result->extra));           // @codeCoverageIgnore
     }
-    if (preg_match('~\s(number-of-pages: \S+)\s~i', ' ' . $result->extra . ' ', $matches)) { // Not precise enough to use
+    if (preg_match('~\s(number-of-pages: \S+)\s~i', ' ' . $result->extra . ' ', $matches)) { // We don't use it
       $result->extra = trim(str_replace(trim($matches[0]), '', $result->extra));           // @codeCoverageIgnore
     }
-    if (preg_match('~\s(submitted: \S+)\s~i', ' ' . $result->extra . ' ', $matches)) { // Not precise enough to use
+    if (preg_match('~\s(submitted: \S+)\s~i', ' ' . $result->extra . ' ', $matches)) { // We don't use it
       $result->extra = trim(str_replace(trim($matches[0]), '', $result->extra));           // @codeCoverageIgnore
     }
-    if (preg_match('~\s(Version: \S+)\s~i', ' ' . $result->extra . ' ', $matches)) { // Not precise enough to use
+    if (preg_match('~\s(Version: \S+)\s~i', ' ' . $result->extra . ' ', $matches)) { // We don't use it
       $result->extra = trim(str_replace(trim($matches[0]), '', $result->extra));           // @codeCoverageIgnore
     }
-    if (preg_match('~\s(\d+ cm\.)\s~i', ' ' . $result->extra . ' ', $matches)) { // Not precise enough to use
+    if (preg_match('~\s(Version: \S+)\s~i', ' ' . $result->extra . ' ', $matches)) { // We don't use it
+      $result->extra = trim(str_replace(trim($matches[0]), '', $result->extra));           // @codeCoverageIgnore
+    }
+    if (preg_match('~\s(Translated title:  \S+)\s~i', ' ' . $result->extra . ' ', $matches)) {  // We don't use it
       $result->extra = trim(str_replace(trim($matches[0]), '', $result->extra));           // @codeCoverageIgnore
     }
     if (preg_match('~\sADS Bibcode: (\d{4}\S{15})\s~i', ' ' . $result->extra . ' ', $matches)) {
@@ -830,6 +845,8 @@ public static function process_zotero_response(string $zotero_response, Template
               break;
             case 'translator':
               $authorParam = 'translator' . (string) ++$translator_i;
+              break;
+             case 'reviewedAuthor':
               break;
             default:                                                               // @codeCoverageIgnore
               report_minor_error("Unrecognized creator type: " . echoable($creatorType));    // @codeCoverageIgnore
