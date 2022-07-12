@@ -847,6 +847,7 @@ public static function process_zotero_response(string $zotero_response, Template
               $authorParam = 'translator' . (string) ++$translator_i;
               break;
              case 'reviewedAuthor':
+              $authorParam = '';
               break;
             default:                                                               // @codeCoverageIgnore
               report_minor_error("Unrecognized creator type: " . echoable($creatorType));    // @codeCoverageIgnore
