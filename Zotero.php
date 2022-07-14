@@ -733,8 +733,16 @@ public static function process_zotero_response(string $zotero_response, Template
       }
     }
   }
-  if ( isset($result->volume) 
-  &&   strpos($result->volume, "(") === FALSE ) $template->add_if_new('volume', (string) $result->volume);
+  if (isset($result->volume)) {
+     $volume = (string) $result->volume;
+     if (strpos($volume, "(") === FALSE ) {
+        if (preg_match('~[a-zA-Z]~', $volume) && (bool) strtotime($volume) {
+           ; // Do not add date
+        } else {
+           $template->add_if_new('volume', $volume);
+        }
+     }
+  }
   if ( isset($result->date) && strlen((string) $result->date)>3)$template->add_if_new('date', tidy_date((string) $result->date));
   if ( isset($result->series) && stripos($url, '.acm.org')===FALSE)  $template->add_if_new('series' , (string) $result->series);
   // Sometimes zotero lists the last name as "published" and puts the whole name in the first place
