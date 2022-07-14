@@ -6360,7 +6360,7 @@ final class Template {
            preg_match('~^https?://([^/]+)/~', $url, $matches)) {
            $hostname = strtolower($matches[1]);
            $hostname = (string) preg_replace('~^(m\.|www\.)~', '', $hostname);
-           if (preg_match('~^https?://([^/]+/[^/]+)~', $url, $matches) {
+           if (preg_match('~^https?://([^/]+/[^/]+)~', $url, $matches)) {
              $hostname_plus = strtolower($matches[1]);
            } else {
              $hostname_plus = 'matches nothing';
@@ -6374,7 +6374,10 @@ final class Template {
              foreach (HOSTNAME_MAP as $i_key => $i_value) { // Scan longer url first
                if ($hostname_plus === $i_key) {
                  $this->add_if_new('website', $i_value);
-               } elseif ($hostname === $i_key) {
+               }
+             }
+             foreach (HOSTNAME_MAP as $i_key => $i_value) { // Scan longer url first
+               if ($hostname === $i_key) {
                  $this->add_if_new('website', $i_value);
                }
              }
