@@ -736,7 +736,7 @@ public static function process_zotero_response(string $zotero_response, Template
   if (isset($result->volume)) {
      $volume = (string) $result->volume;
      if (strpos($volume, "(") === FALSE ) {
-        if (preg_match('~[a-zA-Z]~', $volume) && (bool) strtotime($volume) {
+        if (preg_match('~[a-zA-Z]~', $volume) && (bool) strtotime($volume)) {
            ; // Do not add date
         } else {
            $template->add_if_new('volume', $volume);
