@@ -156,7 +156,14 @@ const PROXY_HOSTS_TO_DROP = array('proxy.libraries', 'proxy.lib.', '.ezproxy.', 
                                   'onlinelibrary.wiley.com/resolve/openurl', 'findarticles.com', 'psycnet.apa.org',
                                   'delivery.acm.org'); // Drop these if there is a valid FREE DOI
 
-const WEB_NEWSPAPERS = array('bbc news', 'bbc', 'news.bbc.co.uk', 'bbc sports', 'bbc sport', 'www.bbc.co.uk', 'the economist', 'washington post', 'the washington post');
+const WEB_NEWSPAPERS = array('bbc news', 'bbc', 'news.bbc.co.uk', 'bbc sports', 'bbc sport', 'www.bbc.co.uk', 'the economist', 'washington post', 'the washington post',
+			     'philippine daily inquirer', 'www.inquirer.net', 'manila bulletin', 'mb.com.ph', 'the philippine star', 'www.philstar.com',
+			     'the manila times', 'www.manilatimes.net', 'manila standard', 'manilastandard.net', 'sunstar', 'www.sunstar.com.ph',
+			     'malaya (newspaper)', 'malaya.com.ph', 'daily tribune (philippines)', 'tribune.net.ph', 'businessworld',
+			     'www.bworldonline.com', 'businessmirror', 'businessmirror.com.ph', 'united news', 'www.unitednews.net.ph',
+			     'mindanao gold star daily', 'mindanaogoldstardaily.com', 'tempo (newspaper)', 'www.tempo.com.ph',
+			     "people's journal", 'journal.com.ph', 'abante', 'www.abante.com.ph', 'balita (newspaper)', 'balita.net.ph',
+			     'inquirer bandera', 'bandera.inquirer.net', 'pilipino star ngayon', 'www.philstar.com');
 
 const HOSTS_TO_NOT_ADD  = array('this.fails', 'www.ncbi.nlm.nih.gov', 'dx.doi.org', 'doi.org');
 
@@ -356,6 +363,24 @@ const HOSTNAME_MAP  = array('public.ebookcentral.proquest.com' => '[[ProQuest]]'
                             'dailysabah.com' => '[[Daily Sabah]]',
                             'ibm.com' => '[[IBM]]',
                             'ieee.org' => '[[Institute of Electrical and Electronics Engineers]] (IEEE)',
+			    'bandera.inquirer.net' => '[[Inquirer Bandera|Bandera]]',
+			    'inquirer.net' => '[[Philippine Daily Inquirer]]',
+			    'mb.com.ph' => '[[Manila Bulletin]]',
+			    'philstar.com' => '[[The Philippine STAR]]',
+			    'manilatimes.net' => '[[The Manila Times]]',
+			    'manilastandard.net' => '[[Manila Standard]]',
+			    'sunstar.com.ph' => '[[SunStar]]',
+			    'malaya.com.ph' => '[[Malaya (newspaper)|Malaya]]',
+			    'tribune.net.ph' => '[[Daily Tribune (Philippines)|Daily Tribune]]',
+			    'bworldonline.com' => '[[BusinessWorld]]',
+			    'businessmirror.com.ph' => '[[BusinessMirror]]',
+			    'unitednews.net.ph' => '[[United News]]',
+			    'mindanaogoldstardaily.com' => '[[Mindanao Gold Star Daily]]',
+			    'tempo.com.ph' => '[[Tempo (newspaper)|Tempo]]',
+			    'journal.com.ph' => "[[People's Journal]]",
+			    'abante.com.ph' => '[[Abante]]',
+			    'balita.net.ph' => '[[Balita (newspaper)|Balita]]',
+			    'philstar.com' => '[[Pilipino Star Ngayon]]',
                            ); // Be warned, some website host a seperate sunday edition, etc.  Be careful and when in doubt link to hostname
 
 const NO_DATE_WEBSITES = array('wikipedia.org', 'web.archive.org', 'perma-archives.org', 'webarchive.proni.gov.uk', 'perma.cc',
