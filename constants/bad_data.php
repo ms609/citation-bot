@@ -164,7 +164,7 @@ const WEB_NEWSPAPERS = array('bbc news', 'bbc', 'news.bbc.co.uk', 'bbc sports', 
 			     'www.bworldonline.com', 'businessmirror', 'businessmirror.com.ph', 'united news', 'www.unitednews.net.ph',
 			     'mindanao gold star daily', 'mindanaogoldstardaily.com', 'tempo (newspaper)', 'www.tempo.com.ph',
 			     "people's journal", 'journal.com.ph', 'abante', 'www.abante.com.ph', 'balita (newspaper)', 'balita.net.ph',
-			     'inquirer bandera', 'bandera.inquirer.net', 'pilipino star ngayon', 'www.philstar.com');
+			     'inquirer bandera', 'bandera.inquirer.net', 'pilipino star ngayon');
 
 const HOSTS_TO_NOT_ADD  = array('this.fails', 'www.ncbi.nlm.nih.gov', 'dx.doi.org', 'doi.org');
 
@@ -280,7 +280,7 @@ const HOSTNAME_MAP  = array('public.ebookcentral.proquest.com' => '[[ProQuest]]'
                             'thestar.com' => '[[Toronto Star]]',
                             'tennessean.com' => '[[The Tennessean]]',
                             'startribune.com' => '[[Star Tribune]]',
-                            'www.comedy.co.uk' => '[[British Comedy Guide]]',
+                            'comedy.co.uk' => '[[British Comedy Guide]]',
                             'legacy.com' => '[[Legacy.com]]',
                             'slantmagazine.com' => '[[Slant Magazine]]',
                             'nme.com' => '[[NME]]',
@@ -367,6 +367,7 @@ const HOSTNAME_MAP  = array('public.ebookcentral.proquest.com' => '[[ProQuest]]'
 			    'bandera.inquirer.net' => '[[Inquirer Bandera|Bandera]]',
 			    'inquirer.net' => '[[Philippine Daily Inquirer]]',
 			    'mb.com.ph' => '[[Manila Bulletin]]',
+			    'philstar.com/pilipino-star-ngayon' => '[[Pilipino Star Ngayon]]',
 			    'philstar.com' => '[[The Philippine STAR]]',
 			    'manilatimes.net' => '[[The Manila Times]]',
 			    'manilastandard.net' => '[[Manila Standard]]',
@@ -381,7 +382,6 @@ const HOSTNAME_MAP  = array('public.ebookcentral.proquest.com' => '[[ProQuest]]'
 			    'journal.com.ph' => "[[People's Journal]]",
 			    'abante.com.ph' => '[[Abante]]',
 			    'balita.net.ph' => '[[Balita (newspaper)|Balita]]',
-			    'philstar.com' => '[[Pilipino Star Ngayon]]',
 			    'pna.gov.ph' => 'Philippine News Agency',
 			    'pia.gov.ph' => 'Philippine Information Agency',
                            ); // Be warned, some website host a seperate sunday edition, etc.  Be careful and when in doubt link to hostname
