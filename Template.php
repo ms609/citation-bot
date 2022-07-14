@@ -7301,7 +7301,7 @@ final class Template {
       foreach ($url_parts as $part) {
         $part_start = explode("=", $part);
         if (isset($part_start[1]) && $part_start[1] === '') {
-          $part_start[0] = "newwindow"; // Do not add blank ones
+          $part_start[0] = "donotaddmeback"; // Do not add blank ones
         }
         switch ($part_start[0]) {
           case "aq": case "aqi": case "bih": case "biw": case "client":
@@ -7312,7 +7312,10 @@ final class Template {
           case "aqs": case "gs_l": case "uact": case "tbo": case "tbs":
           case "num": case "redir_esc": case "gs_lcp": case "sxsrf":
           case "gfe_rd": case "gws_rd": case "rlz": case "sclient":
-          case "prmd": case "dpr": case "newwindow":
+          case "prmd": case "dpr": case "newwindow": case "gs_ssp":
+          case "spell": case "shndl": case "sugexp": case "donotaddmeback":
+          case "usg": case "fir": case "entrypoint": case "as_qdr":
+          case "as_drrb": case "as_minm":  case "as_mind":  case "as_maxm":  case "as_maxd": 
              break;
           case "btnG":
              if ($part_start[1] === "" || str_i_same($part_start[1], 'Search')) break;
@@ -7327,7 +7330,8 @@ final class Template {
              $url .=  $part . "&" ;
              break;
           case "hl": case "safe": case "q": case "tbm": case "start": case "ludocid":
-          case "cshid": case "stick": case "as_eq":
+          case "cshid": case "stick": case "as_eq": case "kgmid": case "as_drrb":
+          case "as_scoring":
              $url .=  $part . "&" ;
              break;
           default:
