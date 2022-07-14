@@ -3623,14 +3623,16 @@ final class Template {
           // Undo some bad bot/human edits
           if ($this->blank(WORK_ALIASES) &&
               in_array(strtolower(str_replace(array('[', ']', '.'), '', $this->get($param))),
-                       ['reuters', 'associated press', 'united press international', 'yonhap news agency', 'official charts company'])) {
+                       ['reuters', 'associated press', 'united press international', 'yonhap news agency', 'official charts company',
+                        'philippine news agency', 'philippine information agency'])) {
             $the_url = '';
             foreach (ALL_URL_TYPES as $thingy) {
               $the_url .= $this->get($thingy);
             }
             if (stripos($the_url, 'reuters.com') !== FALSE || stripos($the_url, 'apnews.com') !== FALSE ||
                 stripos($the_url, 'yna.co.kr') !== FALSE || stripos($the_url, 'upi.com') !== FALSE ||
-                stripos($the_url, 'officialcharts.com') !== FALSE) {
+                stripos($the_url, 'officialcharts.com') !== FALSE || stripos($the_url, 'pia.gov.ph') !== FALSE ||
+                stripos($the_url, 'pna.gov.ph') !== FALSE) {
                $this->rename($param, 'work');
             }
           }
