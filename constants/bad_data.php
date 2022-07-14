@@ -54,7 +54,8 @@ const PUBLISHERS_ARE_WORKS = array('the san diego union-tribune', 'forbes', 'sal
                                    'forbes middle east', 'forbes russia', 'forbes.ru', 'forbes afrique', 'forbes magazine',
                                    'forbes asia', 'forbes israel', 'forbes global 2000', 'forbes china', '[[forbes]] (Russia)',
                                    'forbes việt nam', 'forbes vietnam', 'forbes viet nam', 'forbes contributor blogs',
-                                   'the baltimore sun', 'nba.com', 
+                                   'the baltimore sun', 'nba.com', 'philippine news agency', 'www.pna.gov.ph',
+				   'pia.gov.ph', 'philippine information agency',
                                    // WP:CITALICSRFC and MOS:ITALICWEBCITE  ?????     'abc news', 'nbc news', 'cbs news', 'bbc news'
                                   ); // LOWER CASE!  WWW not there too! 
 
@@ -381,6 +382,8 @@ const HOSTNAME_MAP  = array('public.ebookcentral.proquest.com' => '[[ProQuest]]'
 			    'abante.com.ph' => '[[Abante]]',
 			    'balita.net.ph' => '[[Balita (newspaper)|Balita]]',
 			    'philstar.com' => '[[Pilipino Star Ngayon]]',
+			    'pna.gov.ph' => 'Philippine News Agency',
+			    'pia.gov.ph' => 'Philippine Information Agency',
                            ); // Be warned, some website host a seperate sunday edition, etc.  Be careful and when in doubt link to hostname
 
 const NO_DATE_WEBSITES = array('wikipedia.org', 'web.archive.org', 'perma-archives.org', 'webarchive.proni.gov.uk', 'perma.cc',
