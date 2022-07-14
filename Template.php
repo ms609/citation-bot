@@ -6358,15 +6358,23 @@ final class Template {
             !preg_match('~^https?://[^/]+/?$~', $url) &&       // Ignore just a hostname
             preg_match (REGEXP_IS_URL, $url) === 1 &&
            preg_match('~^https?://([^/]+)/~', $url, $matches)) {
-           $hostname = $matches[1];
+           $hostname = strtolower($matches[1]);
+           $hostname = (string) preg_replace('~^(m\.|www\.)~', '', $hostname);
+           if (preg_match('~^https?://([^/]+/[^/]+)~', $url, $matches) {
+             $hostname_plus = strtolower($matches[1]);
+           } else {
+             $hostname_plus = 'matches nothing';
+           }
+           $hostname_plus = (string) preg_replace('~^(m\.|www\.)~', '', $hostname_plus);
            if (str_ireplace(CANONICAL_PUBLISHER_URLS, '', $hostname) === $hostname &&
                str_ireplace(PROXY_HOSTS_TO_ALWAYS_DROP, '', $hostname) === $hostname &&
                str_ireplace(PROXY_HOSTS_TO_DROP, '', $hostname) === $hostname &&
                str_ireplace(HOSTS_TO_NOT_ADD, '', $hostname) === $hostname
              ) {
-             $hostname_test = (string) preg_replace('~^(m\.|www\.)~', '', $hostname);
-             foreach (HOSTNAME_MAP as $i_key => $i_value) {
-               if ($hostname_test === $i_key) {
+             foreach (HOSTNAME_MAP as $i_key => $i_value) { // Scan longer url first
+               if ($hostname_plus === $i_key) {
+                 $this->add_if_new('website', $i_value);
+               } elseif ($hostname === $i_key) {
                  $this->add_if_new('website', $i_value);
                }
              }
