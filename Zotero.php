@@ -886,7 +886,7 @@ public static function process_zotero_response(string $zotero_response, Template
               $authorParam = '';
               break;
             default:                                                               // @codeCoverageIgnore
-              report_minor_error("Unrecognized creator type: " . echoable($creatorType));    // @codeCoverageIgnore
+              report_minor_error("Unrecognized creator type: " . echoable($creatorType) . ' FROM ' . echoable($url));    // @codeCoverageIgnore
               $authorParam = '';                                                   // @codeCoverageIgnore
           }
          if ($authorParam && author_is_human($result->creators[$i]->firstName . ' ' . $result->creators[$i]->lastName)) {
