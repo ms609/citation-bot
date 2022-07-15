@@ -607,9 +607,6 @@ public static function process_zotero_response(string $zotero_response, Template
     if (preg_match('~\s(number-of-pages: \S+)\s~i', ' ' . $result->extra . ' ', $matches)) { // We don't use it
       $result->extra = trim(str_replace(trim($matches[0]), '', $result->extra));           // @codeCoverageIgnore
     }
-    if (preg_match('~\s(submitted: \S+)\s~i', ' ' . $result->extra . ' ', $matches)) { // We don't use it
-      $result->extra = trim(str_replace(trim($matches[0]), '', $result->extra));           // @codeCoverageIgnore
-    }
     if (preg_match('~\s(Version: \S+)\s~i', ' ' . $result->extra . ' ', $matches)) { // We don't use it
       $result->extra = trim(str_replace(trim($matches[0]), '', $result->extra));           // @codeCoverageIgnore
     }
@@ -635,17 +632,20 @@ public static function process_zotero_response(string $zotero_response, Template
       $result->extra = trim(str_replace(trim($matches[0]), '', $result->extra));
       $template->add_if_new('bibcode',  $matches[1]);
     }
-    // These go at end since it is unbound on end
-    if (preg_match('~event\-location:[\s\S]+$~i', ' ' . $result->extra . ' ', $matches)) { // We don't use it and it is long verbose
+    // These go at end since it is unbound on end often with linefeeds and such
+    if (preg_match('~submitted:[\s\S]*$~i', ' ' . $result->extra . ' ', $matches)) { // We don't use it
       $result->extra = trim(str_replace(trim($matches[0]), '', $result->extra));           // @codeCoverageIgnore
     }
-    if (preg_match('~Translated title:[\s\S]+$~i', ' ' . $result->extra . ' ', $matches)) {  // We don't use it
+    if (preg_match('~event\-location:[\s\S]*$~i', ' ' . $result->extra . ' ', $matches)) { // We don't use it and it is long verbose
       $result->extra = trim(str_replace(trim($matches[0]), '', $result->extra));           // @codeCoverageIgnore
     }
-    if (preg_match('~reviewed\-title:[\s\S]+$~i', ' ' . $result->extra . ' ', $matches)) {  // We don't use it
+    if (preg_match('~Translated title:[\s\S]*$~i', ' ' . $result->extra . ' ', $matches)) {  // We don't use it
       $result->extra = trim(str_replace(trim($matches[0]), '', $result->extra));           // @codeCoverageIgnore
     }
-    if (preg_match('~Physical Description:[\s\S]+$~i', ' ' . $result->extra . ' ', $matches)) {  // We don't use it
+    if (preg_match('~reviewed\-title:[\s\S]*$~i', ' ' . $result->extra . ' ', $matches)) {  // We don't use it
+      $result->extra = trim(str_replace(trim($matches[0]), '', $result->extra));           // @codeCoverageIgnore
+    }
+    if (preg_match('~Physical Description:[\s\S]*$~i', ' ' . $result->extra . ' ', $matches)) {  // We don't use it
       $result->extra = trim(str_replace(trim($matches[0]), '', $result->extra));           // @codeCoverageIgnore
     }
     if (trim($result->extra) !== '') {
