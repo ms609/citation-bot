@@ -7294,7 +7294,7 @@ final class Template {
         $hash = "#" . $url_parts[1];
       }
 
-      $url_parts = explode("&", str_replace("?", "&", $url));
+      $url_parts = explode("&", str_replace("&&", "&", str_replace("?", "&", $url)));
       array_shift($url_parts);
       $url = "https://www.google.com/search?";
 
