@@ -7315,7 +7315,9 @@ final class Template {
           case "prmd": case "dpr": case "newwindow": case "gs_ssp":
           case "spell": case "shndl": case "sugexp": case "donotaddmeback":
           case "usg": case "fir": case "entrypoint": case "as_qdr":
-          case "as_drrb": case "as_minm":  case "as_mind":  case "as_maxm":  case "as_maxd": 
+          case "as_drrb": case "as_minm":  case "as_mind":  case "as_maxm":
+          case "as_maxd": case "kgs": case "ictx": case "shem": case "vet":
+          case "ictx":
              break;
           case "btnG":
              if ($part_start[1] === "" || str_i_same($part_start[1], 'Search')) break;
@@ -7331,7 +7333,7 @@ final class Template {
              break;
           case "hl": case "safe": case "q": case "tbm": case "start": case "ludocid":
           case "cshid": case "stick": case "as_eq": case "kgmid": case "as_drrb":
-          case "as_scoring":
+          case "as_scoring": case "gl":
              $url .=  $part . "&" ;
              break;
           default:
