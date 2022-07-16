@@ -635,6 +635,9 @@ public static function process_zotero_response(string $zotero_response, Template
     if (preg_match('~\s(IP-\d+)\s~i', ' ' . $result->extra . ' ', $matches)) { // We don't use it
       $result->extra = trim(str_replace(trim($matches[0]), '', $result->extra));           // @codeCoverageIgnore
     }
+    if (preg_match('~\s(Accession Number: \S+)\s~i', ' ' . $result->extra . ' ', $matches)) { // We don't use it
+      $result->extra = trim(str_replace(trim($matches[0]), '', $result->extra));           // @codeCoverageIgnore
+    }
     if (preg_match('~\sADS Bibcode: (\d{4}\S{15})\s~i', ' ' . $result->extra . ' ', $matches)) {
       $result->extra = trim(str_replace(trim($matches[0]), '', $result->extra));
       $template->add_if_new('bibcode',  $matches[1]);
@@ -854,6 +857,7 @@ public static function process_zotero_response(string $zotero_response, Template
       case 'entry':
       case 'videoRecording':
       case 'film':
+      case 'bill':    // @codeCoverageIgnore
       case 'manuscript':   // @codeCoverageIgnore
       case 'audioRecording':   // @codeCoverageIgnore
       case 'presentation':     // @codeCoverageIgnore
