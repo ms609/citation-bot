@@ -1224,7 +1224,7 @@ final class Template {
             if (stripos($this->rawtext, 'oxforddnb') !== FALSE) return FALSE;
             if (stripos($this->rawtext, 'escholarship.org') !== FALSE) return FALSE;
           }
-          if (preg_match('~^volume[:\s]+0*(.*)~', $value, $matches)) {
+          if (preg_match('~^volume[:\s]+0*(.*)~i', $value, $matches)) {
             $value = $matches[1];
           }
           $temp_string = strtolower($this->get('journal')) ;
