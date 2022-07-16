@@ -1224,6 +1224,9 @@ final class Template {
             if (stripos($this->rawtext, 'oxforddnb') !== FALSE) return FALSE;
             if (stripos($this->rawtext, 'escholarship.org') !== FALSE) return FALSE;
           }
+          if (preg_match('~^volume[:\s]+0*(.*)~', $value, $matches)) {
+            $value = $matches[1];
+          }
           $temp_string = strtolower($this->get('journal')) ;
           if(substr($temp_string, 0, 2) === "[[" && substr($temp_string, -2) === "]]") {  // Wikilinked journal title
                $temp_string = substr(substr($temp_string, 2), 0, -2); // Remove [[ and ]]
