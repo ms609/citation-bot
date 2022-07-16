@@ -7320,7 +7320,9 @@ final class Template {
           case "usg": case "fir": case "entrypoint": case "as_qdr":
           case "as_drrb": case "as_minm":  case "as_mind":  case "as_maxm":
           case "as_maxd": case "kgs": case "ictx": case "shem": case "vet":
-          case "ictx": case "iflsig":
+          case "ictx": case "iflsig": case "tab": case "sqi": case "noj":
+          case "hs": case "es_sm":
+            
              break;
           case "btnG":
              if ($part_start[1] === "" || str_i_same($part_start[1], 'Search')) break;
