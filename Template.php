@@ -2302,6 +2302,7 @@ final class Template {
         case "ET": // Might be edition of book as an integer
         case "LA": // Language
         case "DA": // Date this is based upon, not written or published
+        case "CY": // Location
         case "C1": case "DB": case "AB": case "Y2": // The following line is from JSTOR RIS (basically the header and blank lines)
         case "": case "Provider: JSTOR http://www.jstor.org": case "Database: JSTOR": case "Content: text/plain; charset=\"UTF-8\"";
           $dat = trim(str_replace("\n$ris_line", "", "\n$dat")); // Ignore these completely
