@@ -3535,7 +3535,6 @@ final class Template {
       return;  // We let comments block the bot
     }
     if ($this->get($param) !== $this->get3($param)) return;
-e=﻿Th
     if($this->has($param)) {
       if (stripos($param, 'separator') === FALSE &&   // lone punctuation valid
           stripos($param, 'postscript') === FALSE &&  // periods valid
