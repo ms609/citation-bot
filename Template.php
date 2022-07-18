@@ -7322,7 +7322,7 @@ final class Template {
           case "as_drrb": case "as_minm":  case "as_mind":  case "as_maxm":
           case "as_maxd": case "kgs": case "ictx": case "shem": case "vet":
           case "ictx": case "iflsig": case "tab": case "sqi": case "noj":
-          case "hs": case "es_sm":
+          case "hs": case "es_sm": case "site":
             
              break;
           case "btnG":
