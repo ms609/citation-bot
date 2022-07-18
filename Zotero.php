@@ -857,6 +857,7 @@ public static function process_zotero_response(string $zotero_response, Template
       case 'entry':
       case 'videoRecording':
       case 'film':
+      case 'map':    // @codeCoverageIgnore
       case 'bill':    // @codeCoverageIgnore
       case 'manuscript':   // @codeCoverageIgnore
       case 'audioRecording':   // @codeCoverageIgnore
