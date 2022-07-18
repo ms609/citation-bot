@@ -7324,7 +7324,7 @@ final class Template {
           case "ictx": case "iflsig": case "tab": case "sqi": case "noj":
           case "hs": case "es_sm": case "site": case "btnmeta_news_search":
           case "channel": case "espv": case "cad": case "es_sm": case "gs_sm":
-          case "ictx": case "imgil":
+          case "ictx": case "imgil": case "ins":
              break;
           case "btnG":
              if ($part_start[1] === "" || str_i_same($part_start[1], 'Search')) break;
