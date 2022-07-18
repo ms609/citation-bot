@@ -7322,8 +7322,9 @@ final class Template {
           case "as_drrb": case "as_minm":  case "as_mind":  case "as_maxm":
           case "as_maxd": case "kgs": case "ictx": case "shem": case "vet":
           case "ictx": case "iflsig": case "tab": case "sqi": case "noj":
-          case "hs": case "es_sm": case "site":
-            
+          case "hs": case "es_sm": case "site": case "btnmeta_news_search":
+          case "channel": case "espv": case "cad": case "es_sm": case "gs_sm":
+          case "ictx": case "imgil":
              break;
           case "btnG":
              if ($part_start[1] === "" || str_i_same($part_start[1], 'Search')) break;
