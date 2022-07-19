@@ -659,6 +659,9 @@ function expand_doi_with_dx(Template $template, string $doi) : bool {
        $try_to_add_it('issn', @$json['issn']);                 // @codeCoverageIgnore
      } elseif (@$json['type'] == 'journal') { // Very rare: Do not add "title": should be blank anyway.  Got this once from DOI:10.1007/13539.2190-6009 and DOI:10.14296/rih/issn.1749.8155
        $try_to_add_it('issn', @$json['issn']);                 // @codeCoverageIgnore
+     } elseif (@$json['type'] == 'reference-entry') { // Very rare: Got this once from DOI:10.1002/14356007.a02_115.pub2
+       $try_to_add_it('work', @$json['container-title']);      // @codeCoverageIgnore
+       $try_to_add_it('title', @$json['title']);               // @codeCoverageIgnore
      } elseif (@$json['type'] == 'monograph' || @$json['type'] == 'book') {
        $try_to_add_it('title', @$json['title']);
        $try_to_add_it('title', @$json['container-title']);// Usually not set, but just in case this instead of title is set
