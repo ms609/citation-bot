@@ -642,6 +642,9 @@ public static function process_zotero_response(string $zotero_response, Template
       $result->extra = trim(str_replace(trim($matches[0]), '', $result->extra));
       $template->add_if_new('bibcode',  $matches[1]);
     }
+    if (preg_match('~\s(arXiv: \S+)\s~i', ' ' . $result->extra . ' ', $matches)) { // We don't use it - only comes from arXiv DOIs
+      $result->extra = trim(str_replace(trim($matches[0]), '', $result->extra));  // @codeCoverageIgnore
+    }
     // These go at end since it is unbound on end often with linefeeds and such
     if (preg_match('~submitted:[\s\S]*$~i', ' ' . $result->extra . ' ', $matches)) { // We don't use it
       $result->extra = trim(str_replace(trim($matches[0]), '', $result->extra));           // @codeCoverageIgnore
