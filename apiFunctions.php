@@ -174,7 +174,7 @@ function expand_arxiv_templates (array &$templates) : bool {  // Pointer to save
       $this_template->rename('eprint', 'arxiv');
     }
     $eprint = str_ireplace("arXiv:", "", $this_template->get('eprint') . $this_template->get('arxiv'));
-    if ($eprint) {
+    if ($eprint && stripos($eprint, 'CITATION_BOT') === FALSE) {
       $ids[] = $eprint;
       $arxiv_templates[] = $this_template;
     }
