@@ -7325,7 +7325,7 @@ final class Template {
           case "hs": case "es_sm": case "site": case "btnmeta_news_search":
           case "channel": case "espv": case "cad": case "es_sm": case "gs_sm":
           case "ictx": case "imgil": case "ins": case "npsic=":  case "rflfq":
-          case "rlha": case "rldoc":
+          case "rlha": case "rldoc": case "rldimm": case "npsic":
              break;
           case "btnG":
              if ($part_start[1] === "" || str_i_same($part_start[1], 'Search')) break;
