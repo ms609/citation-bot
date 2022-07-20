@@ -7324,7 +7324,8 @@ final class Template {
           case "ictx": case "iflsig": case "tab": case "sqi": case "noj":
           case "hs": case "es_sm": case "site": case "btnmeta_news_search":
           case "channel": case "espv": case "cad": case "es_sm": case "gs_sm":
-          case "ictx": case "imgil": case "ins":
+          case "ictx": case "imgil": case "ins": case "npsic=":  case "rflfq":
+          case "rlha": case "rldoc":
              break;
           case "btnG":
              if ($part_start[1] === "" || str_i_same($part_start[1], 'Search')) break;
@@ -7340,7 +7341,7 @@ final class Template {
              break;
           case "hl": case "safe": case "q": case "tbm": case "start": case "ludocid":
           case "cshid": case "stick": case "as_eq": case "kgmid": case "as_drrb":
-          case "as_scoring": case "gl":
+          case "as_scoring": case "gl": case "rllag":
              $url .=  $part . "&" ;
              break;
           default:
