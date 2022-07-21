@@ -54,3 +54,8 @@ final class SingleBracket extends WikiThings {
   public const PLACEHOLDER_TEXT = '# # # CITATION_BOT_PLACEHOLDER_SINGLE_BRACKET %s # # #';
   public const REGEXP = ['~(?<!\{)\{[^\{\}]+\}(?!\})~us'];
 }
+
+final class SingleAgainBracket extends WikiThings {
+  public const PLACEHOLDER_TEXT = '# # # CITATION_BOT_PLACEHOLDER_SINGLE_AGAIN_BRACKET %s # # #';
+  public const REGEXP = ['~(?<!\{)\{[^\{\}]+\}(?!\})~us'];
+}
