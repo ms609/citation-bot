@@ -1390,7 +1390,15 @@ public static function find_indentifiers_in_urls(Template $template, ?string $ur
              if ($template->has_good_free_copy()) $template->forget($url_type);
           }
           return FALSE;
-        }
+        } elseif (preg_match('~^https?://.*ncbi\.nlm\.nih\.gov/pubmed\?term=(\d+)$~', $url, $match)) {
+           $pos_pmid = $match[1];
+           $old_pmid = $template->get('pmid');
+           if ($old_pmid === '' || ($old_pmid === $pos_pmid)) {
+              $template->set('url', 'https://pubmed.ncbi.nlm.nih.gov/' . $pos_pmid .'/');
+              $template->add_if_new('pmid', $pos_pmid);
+           } else {
+              report_warning($url . ' does not match PMID of ' . echoable($old_pmid));
+           }
         return FALSE;
 
       } elseif (stripos($url, 'europepmc.org') !== FALSE) {
