@@ -164,7 +164,7 @@ const WEB_NEWSPAPERS = array('bbc news', 'bbc', 'news.bbc.co.uk', 'bbc sports', 
 			     'www.bworldonline.com', 'businessmirror', 'businessmirror.com.ph', 'united news', 'www.unitednews.net.ph',
 			     'mindanao gold star daily', 'mindanaogoldstardaily.com', 'tempo (newspaper)', 'www.tempo.com.ph',
 			     "people's journal", 'journal.com.ph', 'abante', 'www.abante.com.ph', 'balita (newspaper)', 'balita.net.ph',
-			     'inquirer bandera', 'bandera.inquirer.net', 'pilipino star ngayon');
+			     'inquirer bandera', 'bandera.inquirer.net', 'pilipino star ngayon', 'irishtimes.com', 'the irish times');
 
 const HOSTS_TO_NOT_ADD  = array('this.fails', 'www.ncbi.nlm.nih.gov', 'dx.doi.org', 'doi.org');
 
@@ -384,6 +384,7 @@ const HOSTNAME_MAP  = array('public.ebookcentral.proquest.com' => '[[ProQuest]]'
 			    'balita.net.ph' => '[[Balita (newspaper)|Balita]]',
 			    'pna.gov.ph' => 'Philippine News Agency',
 			    'pia.gov.ph' => 'Philippine Information Agency',
+			    'irishtimes.com' => '[[The Irish Times]]',
                            ); // Be warned, some website host a seperate sunday edition, etc.  Be careful and when in doubt link to hostname
 
 const NO_DATE_WEBSITES = array('wikipedia.org', 'web.archive.org', 'perma-archives.org', 'webarchive.proni.gov.uk', 'perma.cc',
@@ -790,7 +791,7 @@ const ARE_MAGAZINES = array('the new yorker', 'the new republic', 'new republic'
 const ARE_MANY_THINGS = array('pc gamer', 'gamestar', 'rock paper shotgun', 'mcv', 'rock, paper, shotgun', 'edge',
                               'ballotpedia', 'npr', 'ballotpedia.org', 'npr.org', 'nih.gov', 'nih', 
                                'national institutes of health', 'national institutes of health (nih)'); // lowercase axact matches.  These are things that are both websites and newspapers
-const ARE_NEWSPAPERS = array('the economist', 'la times', 'toronto sun', 'washington post', 'the washington post', 'philippine daily inquirer'); // lowercase axact matches
+const ARE_NEWSPAPERS = array('the economist', 'la times', 'toronto sun', 'washington post', 'the washington post', 'philippine daily inquirer', 'the irish times'); // lowercase axact matches
 const NO_PUBLISHER_NEEDED = array('los angeles times', 'new york times magazine', 'the new york times',
                                    'new york times', 'huffington post', 'the daily telegraph', 'forbes.com',
                                    'forbes magazine'); // lowercase axact matches
