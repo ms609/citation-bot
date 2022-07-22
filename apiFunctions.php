@@ -1209,6 +1209,7 @@ function xml_post(string $url, string $post) : ?SimpleXMLElement {
 
 function process_bibcode_data(Template $this_template, object $record) : void {
     $this_template->record_api_usage('adsabs', 'bibcode');
+   if (!isset($record->title[0])) return;
     $this_template->add_if_new('title', (string) $record->title[0], 'adsabs'); // add_if_new will format the title text and check for unknown
     $i = 0;
     if (isset($record->author)) {
