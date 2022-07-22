@@ -1398,7 +1398,7 @@ public static function find_indentifiers_in_urls(Template $template, ?string $ur
               $template->add_if_new('pmid', $pos_pmid);
               return TRUE;
            } else {
-              report_warning($url . ' does not match PMID of ' . echoable($old_pmid));
+              report_warning(echoable($url) . ' does not match PMID of ' . echoable($old_pmid));
            }
            return FALSE;
         } elseif (preg_match('~^https?://.*ncbi\.nlm\.nih\.gov/pubmed\?term=.*$~', $url)) {
