@@ -663,12 +663,6 @@ class Page {
         report_minor_error("Report this problem please");
         // @codeCoverageIgnoreEnd
     }
-    
-    
-    dfasdfsdfds
-      d
-      sfads
-      fasdfad
     $this->text = $text;
     return $objects;
   }
