@@ -651,6 +651,9 @@ class Page {
         $objects[] = $obj;
       }
     }
+    if ($preg_ok === FALSE) {
+       report_info(self::preg_errtxt()); 
+    }
     /** @psalm-suppress TypeDoesNotContainType */
     if ($preg_ok === FALSE) { // Something went wrong.  Often from bad wiki-text.  Generally, preg_match() cannot return FALSE, so supress psalm
         // PHP 5 segmentation faults. PHP 7.0 returns FALSE
@@ -665,6 +668,18 @@ class Page {
     }
     $this->text = $text;
     return $objects;
+  }
+  
+  private static function preg_errtxt() : string {
+    $errcode = preg_last_error();
+    static $errtext;
+    if (!isset($errtxt))
+    {
+        $errtext = array();
+        $constants = get_defined_constants(true);
+        foreach ($constants['pcre'] as $c => $n) if (preg_match('/_ERROR$/', $c)) $errtext[$n] = $c;
+    }
+    return array_key_exists($errcode, $errtext)? $errtext[$errcode] : '';
   }
 
   protected function replace_object (array &$objects) : void {  // Pointer to save memory
