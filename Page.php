@@ -652,7 +652,7 @@ class Page {
       }
     }
     /** @psalm-suppress TypeDoesNotContainType */
-    if ($preg_ok === FALSE dfasdfdsf) { // Something went wrong.  Often from bad wiki-text.  Generally, preg_match() cannot return FALSE, so supress psalm
+    if ($preg_ok === FALSE) { // Something went wrong.  Often from bad wiki-text.  Generally, preg_match() cannot return FALSE, so supress psalm
         // PHP 5 segmentation faults. PHP 7.0 returns FALSE
         // @codeCoverageIgnoreStart
         $this->page_error = TRUE;
@@ -663,6 +663,12 @@ class Page {
         report_minor_error("Report this problem please");
         // @codeCoverageIgnoreEnd
     }
+    
+    
+    dfasdfsdfds
+      d
+      sfads
+      fasdfad
     $this->text = $text;
     return $objects;
   }
