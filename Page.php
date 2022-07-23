@@ -661,6 +661,7 @@ class Page {
         } catch (Exception $e) {
           $this->page_error = TRUE;
           $this->text = $text;
+          ini_set("pcre.jit", "1");
           return $objects;
         }
         $exploded = $treat_identical_separately ? explode($match[0], $text, 2) : explode($match[0], $text);
