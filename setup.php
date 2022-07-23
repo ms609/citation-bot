@@ -83,7 +83,7 @@ mb_internal_encoding('UTF-8');
 
  // Needed for "Skin Cancer" and other large pages
 ini_set("memory_limit", "800M");
-ini_set("pcre.backtrack_limit", "425000000");
+ini_set("pcre.backtrack_limit", "1425000000");
 ini_set("pcre.recursion_limit", "425000000");
 
 
