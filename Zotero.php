@@ -124,7 +124,7 @@ public static function query_url_api_class(array $ids, array &$templates) : void
        }
        $doi = $template->get('doi');
        if (!doi_active($doi)) {
-         if ($template->has('citeseerx')) self::expand_by_zotero($template, 'http://citeseerx.ist.psu.edu/viewdoc/summary?doi=' . $template->get('citeseerx'));
+         if ($template->has('citeseerx')) self::expand_by_zotero($template, 'https://citeseerx.ist.psu.edu/viewdoc/summary?doi=' . $template->get('citeseerx'));
          if ($template->has('hdl'))       self::expand_by_zotero($template, 'https://hdl.handle.net/' . $template->get('hdl'));
          //  Has a CAPCHA --  if ($template->has('jfm'))       self::expand_by_zotero($template, 'https://zbmath.org/?format=complete&q=an:' . $template->get('jfm'));
          //  Has a CAPCHA --  if ($template->has('zbl'))       self::expand_by_zotero($template, 'https://zbmath.org/?format=complete&q=an:' . $template->get('zbl'));
@@ -567,6 +567,22 @@ public static function process_zotero_response(string $zotero_response, Template
         $template->add_if_new('pmid', $matches[1]);
       }
     }
+    if (preg_match('~\sPMID: (\d+)\s~i', ' ' . $result->extra . ' ', $matches)) {
+      $result->extra = trim(str_replace(trim($matches[0]), '', $result->extra));
+      $template->add_if_new('pmid', $matches[1]);
+    }
+    if (preg_match('~\sOCLC: (\d+)\s~i', ' ' . $result->extra . ' ', $matches)) {
+      $result->extra = trim(str_replace(trim($matches[0]), '', $result->extra));
+      $template->add_if_new('oclc', $matches[1]);
+    }
+    if (preg_match('~\sOCLC: ocn(\d+)\s~i', ' ' . $result->extra . ' ', $matches)) {
+      $result->extra = trim(str_replace(trim($matches[0]), '', $result->extra));
+      $template->add_if_new('oclc', $matches[1]);
+    }
+    if (preg_match('~\sOpen Library ID: OL(\d+M)\s~i', ' ' . $result->extra . ' ', $matches)) {
+      $result->extra = trim(str_replace(trim($matches[0]), '', $result->extra));
+      $template->add_if_new('ol', $matches[1]);
+    }
     if (preg_match('~\sIMDb ID: ((?:tt|co|nm)\d+)\s~i', ' ' . $result->extra . ' ', $matches)) { // We don't use it
       $result->extra = trim(str_replace(trim($matches[0]), '', $result->extra));
     }
@@ -582,15 +598,83 @@ public static function process_zotero_response(string $zotero_response, Template
     if (preg_match('~\s(Page Version ID: \S+)\s~i', ' ' . $result->extra . ' ', $matches)) { // We don't use it
       $result->extra = trim(str_replace(trim($matches[0]), '', $result->extra));           // @codeCoverageIgnore
     }
-    if (preg_match('~\s(Citation Key: \S+)\s~i', ' ' . $result->extra . ' ', $matches)) { // Not precise enough to use
+    if (preg_match('~\s(Citation Key: \S+)\s~i', ' ' . $result->extra . ' ', $matches)) { // We don't use it
+      $result->extra = trim(str_replace(trim($matches[0]), '', $result->extra));           // @codeCoverageIgnore
+    }
+    if (preg_match('~\s(number-of-pages: \S+)\s~i', ' ' . $result->extra . ' ', $matches)) { // We don't use it
+      $result->extra = trim(str_replace(trim($matches[0]), '', $result->extra));           // @codeCoverageIgnore
+    }
+    if (preg_match('~\s(Version: \S+)\s~i', ' ' . $result->extra . ' ', $matches)) { // We don't use it
+      $result->extra = trim(str_replace(trim($matches[0]), '', $result->extra));           // @codeCoverageIgnore
+    }
+    if (preg_match('~\s(RSLID: \S+)\s~i', ' ' . $result->extra . ' ', $matches)) { // We don't use it
+      $result->extra = trim(str_replace(trim($matches[0]), '', $result->extra));           // @codeCoverageIgnore
+    }
+    if (preg_match('~\s(QID: \S+)\s~i', ' ' . $result->extra . ' ', $matches)) { // We don't use it
+      $result->extra = trim(str_replace(trim($matches[0]), '', $result->extra));           // @codeCoverageIgnore
+    }
+    if (preg_match('~\s(National Archives Identifier: \S+)\s~i', ' ' . $result->extra . ' ', $matches)) { // We don't use it
+      $result->extra = trim(str_replace(trim($matches[0]), '', $result->extra));           // @codeCoverageIgnore
+    }
+    if (preg_match('~\s(Catalog Number: \S+)\s~i', ' ' . $result->extra . ' ', $matches)) { // We don't use it
+      $result->extra = trim(str_replace(trim($matches[0]), '', $result->extra));           // @codeCoverageIgnore
+    }
+    if (preg_match('~\s(BMCR ID: \S+)\s~i', ' ' . $result->extra . ' ', $matches)) { // We don't use it
+      $result->extra = trim(str_replace(trim($matches[0]), '', $result->extra));           // @codeCoverageIgnore
+    }
+    if (preg_match('~\s(PubAg AGID: \S+)\s~i', ' ' . $result->extra . ' ', $matches)) { // We don't use it
+      $result->extra = trim(str_replace(trim($matches[0]), '', $result->extra));           // @codeCoverageIgnore
+    }
+    if (preg_match('~\s(IP-\d+)\s~i', ' ' . $result->extra . ' ', $matches)) { // We don't use it
+      $result->extra = trim(str_replace(trim($matches[0]), '', $result->extra));           // @codeCoverageIgnore
+    }
+    if (preg_match('~\s(Accession Number: \S+)\s~i', ' ' . $result->extra . ' ', $matches)) { // We don't use it
       $result->extra = trim(str_replace(trim($matches[0]), '', $result->extra));           // @codeCoverageIgnore
     }
     if (preg_match('~\sADS Bibcode: (\d{4}\S{15})\s~i', ' ' . $result->extra . ' ', $matches)) {
       $result->extra = trim(str_replace(trim($matches[0]), '', $result->extra));
       $template->add_if_new('bibcode',  $matches[1]);
-    } 
-    if (trim($result->extra) !== '') {
-      report_minor_error("Unhandled extra data: " . $result->extra);                       // @codeCoverageIgnore
+    }
+    if (preg_match('~\s(arXiv: \S+)\s~i', ' ' . $result->extra . ' ', $matches)) { // We don't use it - only comes from arXiv DOIs
+      $result->extra = trim(str_replace(trim($matches[0]), '', $result->extra));  // @codeCoverageIgnore
+    }
+    if (preg_match('~\s(\d+ cm\.)\s~i', ' ' . $result->extra . ' ', $matches)) { // We don't use it - size of book
+      $result->extra = trim(str_replace(trim($matches[0]), '', $result->extra));  // @codeCoverageIgnore
+    }
+    // These go at end since it is unbound on end often with linefeeds and such
+    if (preg_match('~submitted:[\s\S]*$~i', ' ' . $result->extra . ' ', $matches)) { // We don't use it
+      $result->extra = trim(str_replace(trim($matches[0]), '', $result->extra));           // @codeCoverageIgnore
+    }
+    if (preg_match('~event\-location:[\s\S]*$~i', ' ' . $result->extra . ' ', $matches)) { // We don't use it and it is long verbose
+      $result->extra = trim(str_replace(trim($matches[0]), '', $result->extra));           // @codeCoverageIgnore
+    }
+    if (preg_match('~Translated title:[\s\S]*$~i', ' ' . $result->extra . ' ', $matches)) {  // We don't use it
+      $result->extra = trim(str_replace(trim($matches[0]), '', $result->extra));           // @codeCoverageIgnore
+    }
+    if (preg_match('~reviewed\-title:[\s\S]*$~i', ' ' . $result->extra . ' ', $matches)) {  // We don't use it
+      $result->extra = trim(str_replace(trim($matches[0]), '', $result->extra));           // @codeCoverageIgnore
+    }
+    if (preg_match('~Physical Description:[\s\S]*$~i', ' ' . $result->extra . ' ', $matches)) {  // We don't use it
+      $result->extra = trim(str_replace(trim($matches[0]), '', $result->extra));           // @codeCoverageIgnore
+    }
+    if (preg_match('~BBK:[\s\S]*$~i', ' ' . $result->extra . ' ', $matches)) {  // We don't use it
+      $result->extra = trim(str_replace(trim($matches[0]), '', $result->extra));           // @codeCoverageIgnore
+    }
+    if (preg_match('~Place Manufactured: [\s\S]*$~i', ' ' . $result->extra . ' ', $matches)) {  // We don't use it
+      $result->extra = trim(str_replace(trim($matches[0]), '', $result->extra));           // @codeCoverageIgnore
+    }
+    if (preg_match('~Dimensions: [\s\S]*$~i', ' ' . $result->extra . ' ', $matches)) {  // We don't use it
+      $result->extra = trim(str_replace(trim($matches[0]), '', $result->extra));           // @codeCoverageIgnore
+    }
+    if (preg_match('~Category: [\s\S]*$~i', ' ' . $result->extra . ' ', $matches)) {  // We don't use it
+      $result->extra = trim(str_replace(trim($matches[0]), '', $result->extra));           // @codeCoverageIgnore
+    }
+    if (preg_match('~Credit: [\s\S]*$~i', ' ' . $result->extra . ' ', $matches)) {  // We don't use it
+      $result->extra = trim(str_replace(trim($matches[0]), '', $result->extra));           // @codeCoverageIgnore
+    }
+    $result->extra = trim($result->extra);
+    if ($result->extra !== '') {
+      report_minor_error("Unhandled extra data: " . echoable($result->extra) .  ' FROM ' . echoable($url));          // @codeCoverageIgnore
     }
   } 
   
@@ -695,8 +779,16 @@ public static function process_zotero_response(string $zotero_response, Template
       }
     }
   }
-  if ( isset($result->volume) 
-  &&   strpos($result->volume, "(") === FALSE ) $template->add_if_new('volume', (string) $result->volume);
+  if (isset($result->volume)) {
+     $volume = (string) $result->volume;
+     if (strpos($volume, "(") === FALSE ) {
+        if (preg_match('~[a-zA-Z]~', $volume) && (bool) strtotime($volume)) {
+           ; // Do not add date
+        } else {
+           $template->add_if_new('volume', $volume);
+        }
+     }
+  }
   if ( isset($result->date) && strlen((string) $result->date)>3)$template->add_if_new('date', tidy_date((string) $result->date));
   if ( isset($result->series) && stripos($url, '.acm.org')===FALSE)  $template->add_if_new('series' , (string) $result->series);
   // Sometimes zotero lists the last name as "published" and puts the whole name in the first place
@@ -776,10 +868,19 @@ public static function process_zotero_response(string $zotero_response, Template
       case 'entry':
       case 'videoRecording':
       case 'film':
+      case 'map':    // @codeCoverageIgnore
+      case 'bill':    // @codeCoverageIgnore
+      case 'manuscript':   // @codeCoverageIgnore
       case 'audioRecording':   // @codeCoverageIgnore
       case 'presentation':     // @codeCoverageIgnore
       case 'computerProgram':  // @codeCoverageIgnore
       case 'forumPost':       // @codeCoverageIgnore
+      case 'tvBroadcast':       // @codeCoverageIgnore
+      case 'podcast':       // @codeCoverageIgnore
+      case 'manuscript':       // @codeCoverageIgnore
+      case 'artwork':       // @codeCoverageIgnore
+          // Do not change type.  Would need to think about parameters
+      case 'patent':       // @codeCoverageIgnore
           // Do not change type. This seems to include things that will just make people angry if we change type to encyclopedia
       case 'encyclopediaArticle':  // @codeCoverageIgnore
           // Probably tick people off too
@@ -788,7 +889,7 @@ public static function process_zotero_response(string $zotero_response, Template
         break;
 
       default:                                                                         // @codeCoverageIgnore
-        report_minor_error("Unhandled itemType: " . $result->itemType . " for $url");  // @codeCoverageIgnore
+        report_minor_error("Unhandled itemType: " . echoable($result->itemType) . " for $url");  // @codeCoverageIgnore
     }
     
     if (in_array($result->itemType, ['journalArticle', 'newspaperArticle', 'report', 'magazineArticle', 'thesis'])) {
@@ -799,7 +900,7 @@ public static function process_zotero_response(string $zotero_response, Template
         $creatorType = isset($result->creators[$i]->creatorType) ? $result->creators[$i]->creatorType : 'author';
         if (isset($result->creators[$i]->firstName) && isset($result->creators[$i]->lastName)) {
           switch ($creatorType) {
-            case 'author':
+            case 'author': case 'contributor':
               $authorParam = 'author' . (string) ++$author_i;
               break;
             case 'editor':
@@ -808,8 +909,11 @@ public static function process_zotero_response(string $zotero_response, Template
             case 'translator':
               $authorParam = 'translator' . (string) ++$translator_i;
               break;
+             case 'reviewedAuthor':
+              $authorParam = '';
+              break;
             default:                                                               // @codeCoverageIgnore
-              report_minor_error("Unrecognized creator type: " . $creatorType);    // @codeCoverageIgnore
+              report_minor_error("Unrecognized creator type: " . echoable($creatorType) . ' FROM ' . echoable($url));    // @codeCoverageIgnore
               $authorParam = '';                                                   // @codeCoverageIgnore
           }
          if ($authorParam && author_is_human($result->creators[$i]->firstName . ' ' . $result->creators[$i]->lastName)) {
@@ -1291,8 +1395,24 @@ public static function find_indentifiers_in_urls(Template $template, ?string $ur
              if ($template->has_good_free_copy()) $template->forget($url_type);
           }
           return FALSE;
+        } elseif (preg_match('~^https?://.*ncbi\.nlm\.nih\.gov/pubmed\?term=(\d+)$~', $url, $match)) {
+           $pos_pmid = $match[1];
+           $old_pmid = $template->get('pmid');
+           if ($old_pmid === '' || ($old_pmid === $pos_pmid)) {
+              $template->set('url', 'https://pubmed.ncbi.nlm.nih.gov/' . $pos_pmid .'/');
+              $template->add_if_new('pmid', $pos_pmid);
+              return TRUE;
+           } else {
+              report_warning(echoable($url) . ' does not match PMID of ' . echoable($old_pmid));
+           }
+           return FALSE;
+        } elseif (preg_match('~^https?://.*ncbi\.nlm\.nih\.gov/pubmed\?term=.*$~', $url)) {
+           if ($template->has('pmid') || $template->has('pmc')) {
+              report_info('Dropped non-specific pubmed search URL, since PMID is present');
+              $template->forget($url_type);
+           }
+           return FALSE;
         }
-        return FALSE;
 
       } elseif (stripos($url, 'europepmc.org') !== FALSE) {
         if (preg_match("~^https?://(?:www\.|)europepmc\.org/articles?/pmc/?(\d{4,})~i", $url, $match) ||

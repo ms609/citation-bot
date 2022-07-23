@@ -14,7 +14,8 @@ const BAD_ACCEPTED_MANUSCRIPT_TITLES = array("oup accepted manuscript", "placeho
                                              "placeholder for arabic language transliteration", "article not found");
 const BAD_AUTHORS = array("unknown", "missing", "- -.", "- -", "no authorship indicated", "no authorship", "no author",
                            "no authors", "no author indicated", "no authorship indicated", "dk eyewitness", "united states",
-                           "great britain", "indiatoday", "natural history museum bern", "daily sabah", 'el país', 'el pais');
+                           "great britain", "indiatoday", "natural history museum bern", "daily sabah", 'el país', 'el pais', 
+			   "radio", "rundfunk");
 const NON_HUMAN_AUTHORS = array('collaborat', 'reporter', 'journalist', 'correspondent', 'anchor', 'staff', 'foreign',
                                 'national', 'endowment', ' for the ', 'humanities', 'committee', 'group',
                                 'society', ' of america', 'association', ' at the ', 'board of ', 'communications',
@@ -22,7 +23,7 @@ const NON_HUMAN_AUTHORS = array('collaborat', 'reporter', 'journalist', 'corresp
                                 'dept of ', 'college', 'center for', 'office of', 'editor', 
                                 'world news', 'national news', 'eyewitness', 'information', 'business', 'bureau',
                                 'us census', 'indiatoday', 'natural history', 'museum', '試験所', 'circuit',
-                                'external', 'relations', 'nations', 'united');
+                                'external', 'relations', 'nations', 'united', 'radio', 'rundfunk');
 const BAD_PUBLISHERS = array('london', 'edinburgi', 'edinburgh', 'no publisher', 'no publisher given',
                              'no publisher specified', 'unknown', 'publisher not identified', 'report');
 
@@ -53,7 +54,8 @@ const PUBLISHERS_ARE_WORKS = array('the san diego union-tribune', 'forbes', 'sal
                                    'forbes middle east', 'forbes russia', 'forbes.ru', 'forbes afrique', 'forbes magazine',
                                    'forbes asia', 'forbes israel', 'forbes global 2000', 'forbes china', '[[forbes]] (Russia)',
                                    'forbes việt nam', 'forbes vietnam', 'forbes viet nam', 'forbes contributor blogs',
-                                   'the baltimore sun', 'nba.com', 
+                                   'the baltimore sun', 'nba.com', 'philippine news agency', 'www.pna.gov.ph',
+				   'pia.gov.ph', 'philippine information agency',
                                    // WP:CITALICSRFC and MOS:ITALICWEBCITE  ?????     'abc news', 'nbc news', 'cbs news', 'bbc news'
                                   ); // LOWER CASE!  WWW not there too! 
 
@@ -155,7 +157,14 @@ const PROXY_HOSTS_TO_DROP = array('proxy.libraries', 'proxy.lib.', '.ezproxy.', 
                                   'onlinelibrary.wiley.com/resolve/openurl', 'findarticles.com', 'psycnet.apa.org',
                                   'delivery.acm.org'); // Drop these if there is a valid FREE DOI
 
-const WEB_NEWSPAPERS = array('bbc news', 'bbc', 'news.bbc.co.uk', 'bbc sports', 'bbc sport', 'www.bbc.co.uk', 'the economist', 'washington post', 'the washington post');
+const WEB_NEWSPAPERS = array('bbc news', 'bbc', 'news.bbc.co.uk', 'bbc sports', 'bbc sport', 'www.bbc.co.uk', 'the economist', 'washington post', 'the washington post',
+			     'philippine daily inquirer', 'www.inquirer.net', 'manila bulletin', 'mb.com.ph', 'the philippine star', 'www.philstar.com',
+			     'the manila times', 'www.manilatimes.net', 'manila standard', 'manilastandard.net', 'sunstar', 'www.sunstar.com.ph',
+			     'malaya (newspaper)', 'malaya.com.ph', 'daily tribune (philippines)', 'tribune.net.ph', 'businessworld',
+			     'www.bworldonline.com', 'businessmirror', 'businessmirror.com.ph', 'united news', 'www.unitednews.net.ph',
+			     'mindanao gold star daily', 'mindanaogoldstardaily.com', 'tempo (newspaper)', 'www.tempo.com.ph',
+			     "people's journal", 'journal.com.ph', 'abante', 'www.abante.com.ph', 'balita (newspaper)', 'balita.net.ph',
+			     'inquirer bandera', 'bandera.inquirer.net', 'pilipino star ngayon', 'irishtimes.com', 'the irish times');
 
 const HOSTS_TO_NOT_ADD  = array('this.fails', 'www.ncbi.nlm.nih.gov', 'dx.doi.org', 'doi.org');
 
@@ -271,7 +280,7 @@ const HOSTNAME_MAP  = array('public.ebookcentral.proquest.com' => '[[ProQuest]]'
                             'thestar.com' => '[[Toronto Star]]',
                             'tennessean.com' => '[[The Tennessean]]',
                             'startribune.com' => '[[Star Tribune]]',
-                            'www.comedy.co.uk' => '[[British Comedy Guide]]',
+                            'comedy.co.uk' => '[[British Comedy Guide]]',
                             'legacy.com' => '[[Legacy.com]]',
                             'slantmagazine.com' => '[[Slant Magazine]]',
                             'nme.com' => '[[NME]]',
@@ -355,6 +364,27 @@ const HOSTNAME_MAP  = array('public.ebookcentral.proquest.com' => '[[ProQuest]]'
                             'dailysabah.com' => '[[Daily Sabah]]',
                             'ibm.com' => '[[IBM]]',
                             'ieee.org' => '[[Institute of Electrical and Electronics Engineers]] (IEEE)',
+			    'bandera.inquirer.net' => '[[Inquirer Bandera|Bandera]]',
+			    'inquirer.net' => '[[Philippine Daily Inquirer]]',
+			    'mb.com.ph' => '[[Manila Bulletin]]',
+			    'philstar.com/pilipino-star-ngayon' => '[[Pilipino Star Ngayon]]',
+			    'philstar.com' => '[[The Philippine STAR]]',
+			    'manilatimes.net' => '[[The Manila Times]]',
+			    'manilastandard.net' => '[[Manila Standard]]',
+			    'sunstar.com.ph' => '[[SunStar]]',
+			    'malaya.com.ph' => '[[Malaya (newspaper)|Malaya]]',
+			    'tribune.net.ph' => '[[Daily Tribune (Philippines)|Daily Tribune]]',
+			    'bworldonline.com' => '[[BusinessWorld]]',
+			    'businessmirror.com.ph' => '[[BusinessMirror]]',
+			    'unitednews.net.ph' => '[[United News]]',
+			    'mindanaogoldstardaily.com' => '[[Mindanao Gold Star Daily]]',
+			    'tempo.com.ph' => '[[Tempo (newspaper)|Tempo]]',
+			    'journal.com.ph' => "[[People's Journal]]",
+			    'abante.com.ph' => '[[Abante]]',
+			    'balita.net.ph' => '[[Balita (newspaper)|Balita]]',
+			    'pna.gov.ph' => 'Philippine News Agency',
+			    'pia.gov.ph' => 'Philippine Information Agency',
+			    'irishtimes.com' => '[[The Irish Times]]',
                            ); // Be warned, some website host a seperate sunday edition, etc.  Be careful and when in doubt link to hostname
 
 const NO_DATE_WEBSITES = array('wikipedia.org', 'web.archive.org', 'perma-archives.org', 'webarchive.proni.gov.uk', 'perma.cc',
@@ -363,7 +393,7 @@ const NO_DATE_WEBSITES = array('wikipedia.org', 'web.archive.org', 'perma-archiv
                               'waybackmachine.org', 'siarchives.si.edu', 'gutenberg.org', 'archive.fo', 'archive.today', 'archive.ph',
                               'oireachtas.ie', 'webarchive.nla.gov.au', 'ebooks.adelaide.edu.au', 'archive.md', 'imdb.com',
                               'apps.des.qld.gov.au', 'billboard.com', 'music.apple.com', 'spotify.com', 'fred.stlouisfed.org',
-                              'simonsfoundation.org');
+                              'simonsfoundation.org', 'chroniclingamerica.loc.gov');
 
 const ZOTERO_AVOID_REGEX = array("twitter\.",               // This should be {{cite tweet}}
                                  // Zotero seems to be doing better now "youtube\.", "youtu\.be",
@@ -761,7 +791,7 @@ const ARE_MAGAZINES = array('the new yorker', 'the new republic', 'new republic'
 const ARE_MANY_THINGS = array('pc gamer', 'gamestar', 'rock paper shotgun', 'mcv', 'rock, paper, shotgun', 'edge',
                               'ballotpedia', 'npr', 'ballotpedia.org', 'npr.org', 'nih.gov', 'nih', 
                                'national institutes of health', 'national institutes of health (nih)'); // lowercase axact matches.  These are things that are both websites and newspapers
-const ARE_NEWSPAPERS = array('the economist', 'la times', 'toronto sun', 'washington post', 'the washington post', 'philippine daily inquirer'); // lowercase axact matches
+const ARE_NEWSPAPERS = array('the economist', 'la times', 'toronto sun', 'washington post', 'the washington post', 'philippine daily inquirer', 'the irish times'); // lowercase axact matches
 const NO_PUBLISHER_NEEDED = array('los angeles times', 'new york times magazine', 'the new york times',
                                    'new york times', 'huffington post', 'the daily telegraph', 'forbes.com',
                                    'forbes magazine'); // lowercase axact matches

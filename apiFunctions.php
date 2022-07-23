@@ -174,7 +174,7 @@ function expand_arxiv_templates (array &$templates) : bool {  // Pointer to save
       $this_template->rename('eprint', 'arxiv');
     }
     $eprint = str_ireplace("arXiv:", "", $this_template->get('eprint') . $this_template->get('arxiv'));
-    if ($eprint) {
+    if ($eprint && stripos($eprint, 'CITATION_BOT') === FALSE) {
       $ids[] = $eprint;
       $arxiv_templates[] = $this_template;
     }
@@ -273,7 +273,7 @@ function arxiv_api(array $ids, array &$templates) : bool {  // Pointer to save m
     $this_template = next($templates);
   }
   if ($this_template !== FALSE) {
-    report_minor_error('Unexpected error in arxiv_api()');   // @codeCoverageIgnore
+    report_minor_error('Unexpected error in arxiv_api()' . echoable($this_template->parsed_text()));   // @codeCoverageIgnore
   }
   return TRUE;
 }
@@ -654,9 +654,14 @@ function expand_doi_with_dx(Template $template, string $doi) : bool {
        $try_to_add_it('journal', @$json['container-title']);
        $try_to_add_it('title', @$json['title']);
        $try_to_add_it('issn', @$json['issn']); // Will not add if journal is set
-     } elseif (@$json['type'] == 'journal-issue') { // Do not add "title": should be blank anyway DOI:10.7592/fejf2015.62
-       $try_to_add_it('journal', @$json['container-title']);
-       $try_to_add_it('issn', @$json['issn']); // Will not add if journal is set
+     } elseif (@$json['type'] == 'journal-issue') { // Very rare: Do not add "title": should be blank anyway.  Got this once from DOI:10.7592/fejf2015.62
+       $try_to_add_it('journal', @$json['container-title']);   // @codeCoverageIgnore
+       $try_to_add_it('issn', @$json['issn']);                 // @codeCoverageIgnore
+     } elseif (@$json['type'] == 'journal') { // Very rare: Do not add "title": should be blank anyway.  Got this once from DOI:10.1007/13539.2190-6009 and DOI:10.14296/rih/issn.1749.8155
+       $try_to_add_it('issn', @$json['issn']);                 // @codeCoverageIgnore
+     } elseif (@$json['type'] == 'reference-entry') { // Very rare: Got this once from DOI:10.1002/14356007.a02_115.pub2
+       $try_to_add_it('work', @$json['container-title']);      // @codeCoverageIgnore
+       $try_to_add_it('title', @$json['title']);               // @codeCoverageIgnore
      } elseif (@$json['type'] == 'monograph' || @$json['type'] == 'book') {
        $try_to_add_it('title', @$json['title']);
        $try_to_add_it('title', @$json['container-title']);// Usually not set, but just in case this instead of title is set
@@ -695,7 +700,7 @@ function expand_doi_with_dx(Template $template, string $doi) : bool {
        if (stripos(@$json['URL'], 'hdl.handle.net')) {
            $template->get_identifiers_from_url($json['URL']);
        }
-     } elseif (@$json['type'] == 'posted-content') { // posted-content is from bioRxiv
+     } elseif (@$json['type'] == 'posted-content' || @$json['type'] == 'grant') { // posted-content is from bioRxiv
        $try_to_add_it('title', @$json['title']);
      } else {
        $try_to_add_it('title', @$json['title']);                                                 // @codeCoverageIgnore
@@ -982,7 +987,7 @@ function getS2CID(string $url) : string {
     return '';                                             // @codeCoverageIgnore
   }
   if (!isset($json->corpusId)) {
-    report_minor_error("No corpusId found from semanticscholar."); // @codeCoverageIgnore
+    report_minor_error("No corpusId found from semanticscholar for ". $url); // @codeCoverageIgnore
     return '';                                                     // @codeCoverageIgnore
   }
   if (is_array($json->corpusId) || is_object($json->corpusId)) {
@@ -1204,6 +1209,7 @@ function xml_post(string $url, string $post) : ?SimpleXMLElement {
 
 function process_bibcode_data(Template $this_template, object $record) : void {
     $this_template->record_api_usage('adsabs', 'bibcode');
+    if (!isset($record->title[0])) return;
     $this_template->add_if_new('title', (string) $record->title[0], 'adsabs'); // add_if_new will format the title text and check for unknown
     $i = 0;
     if (isset($record->author)) {
@@ -1235,9 +1241,9 @@ function process_bibcode_data(Template $this_template, object $record) : void {
        unset($record->page);
       }
     }
-    $this_template->add_if_new('volume', (string) @$record->volume, 'adsabs');
-    $this_template->add_if_new('issue', (string) @$record->issue, 'adsabs');
-    $this_template->add_if_new('year', preg_replace("~\D~", "", (string) @$record->year), 'adsabs');
+    if (isset($record->volume)) $this_template->add_if_new('volume', (string) $record->volume, 'adsabs');
+    if (isset($record->issue)) $this_template->add_if_new('issue', (string) $record->issue, 'adsabs');
+    if (isset($record->year)) $this_template->add_if_new('year', preg_replace("~\D~", "", (string) $record->year), 'adsabs');
     if (isset($record->page)) {
       $dum = implode('–', $record->page);
       if (preg_match('~^[\-\–\d]+$~u', $dum)) {

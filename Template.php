@@ -1224,6 +1224,9 @@ final class Template {
             if (stripos($this->rawtext, 'oxforddnb') !== FALSE) return FALSE;
             if (stripos($this->rawtext, 'escholarship.org') !== FALSE) return FALSE;
           }
+          if (preg_match('~^volume[:\s]+0*(.*)~i', $value, $matches)) {
+            $value = $matches[1];
+          }
           $temp_string = strtolower($this->get('journal')) ;
           if(substr($temp_string, 0, 2) === "[[" && substr($temp_string, -2) === "]]") {  // Wikilinked journal title
                $temp_string = substr(substr($temp_string, 2), 0, -2); // Remove [[ and ]]
@@ -2299,6 +2302,7 @@ final class Template {
         case "ET": // Might be edition of book as an integer
         case "LA": // Language
         case "DA": // Date this is based upon, not written or published
+        case "CY": // Location
         case "C1": case "DB": case "AB": case "Y2": // The following line is from JSTOR RIS (basically the header and blank lines)
         case "": case "Provider: JSTOR http://www.jstor.org": case "Database: JSTOR": case "Content: text/plain; charset=\"UTF-8\"";
           $dat = trim(str_replace("\n$ris_line", "", "\n$dat")); // Ignore these completely
@@ -3531,7 +3535,6 @@ final class Template {
       return;  // We let comments block the bot
     }
     if ($this->get($param) !== $this->get3($param)) return;
-
     if($this->has($param)) {
       if (stripos($param, 'separator') === FALSE &&   // lone punctuation valid
           stripos($param, 'postscript') === FALSE &&  // periods valid
@@ -3543,6 +3546,7 @@ final class Template {
          ) {
         $this->set($param, safe_preg_replace('~[\x{2000}-\x{200A}\x{00A0}\x{202F}\x{205F}\x{3000}]~u', ' ', $this->get($param))); // Non-standard spaces
         $this->set($param, safe_preg_replace('~[\t\n\r\0\x0B]~u', ' ', $this->get($param))); // tabs, linefeeds, null bytes
+        $this->set($param, safe_preg_replace('~﻿~u', ' ', $this->get($param)));
         $this->set($param, safe_preg_replace('~  +~u', ' ', $this->get($param))); // multiple spaces
         $this->set($param, safe_preg_replace('~(?<!:)[:,]$~u', '', $this->get($param)));   // Remove trailing commas, colons, but not semi-colons--They are HTML encoding stuff
         $this->set($param, safe_preg_replace('~^[:,;](?!:)~u', '', $this->get($param)));  // Remove leading commas, colons, and semi-colons
@@ -3623,14 +3627,16 @@ final class Template {
           // Undo some bad bot/human edits
           if ($this->blank(WORK_ALIASES) &&
               in_array(strtolower(str_replace(array('[', ']', '.'), '', $this->get($param))),
-                       ['reuters', 'associated press', 'united press international', 'yonhap news agency', 'official charts company'])) {
+                       ['reuters', 'associated press', 'united press international', 'yonhap news agency', 'official charts company',
+                        'philippine news agency', 'philippine information agency'])) {
             $the_url = '';
             foreach (ALL_URL_TYPES as $thingy) {
               $the_url .= $this->get($thingy);
             }
             if (stripos($the_url, 'reuters.com') !== FALSE || stripos($the_url, 'apnews.com') !== FALSE ||
                 stripos($the_url, 'yna.co.kr') !== FALSE || stripos($the_url, 'upi.com') !== FALSE ||
-                stripos($the_url, 'officialcharts.com') !== FALSE) {
+                stripos($the_url, 'officialcharts.com') !== FALSE || stripos($the_url, 'pia.gov.ph') !== FALSE ||
+                stripos($the_url, 'pna.gov.ph') !== FALSE) {
                $this->rename($param, 'work');
             }
           }
@@ -6356,15 +6362,26 @@ final class Template {
             !preg_match('~^https?://[^/]+/?$~', $url) &&       // Ignore just a hostname
             preg_match (REGEXP_IS_URL, $url) === 1 &&
            preg_match('~^https?://([^/]+)/~', $url, $matches)) {
-           $hostname = $matches[1];
+           $hostname = strtolower($matches[1]);
+           $hostname = (string) preg_replace('~^(m\.|www\.)~', '', $hostname);
+           if (preg_match('~^https?://([^/]+/[^/]+)~', $url, $matches)) {
+             $hostname_plus = strtolower($matches[1]);
+           } else {
+             $hostname_plus = 'matches nothing';
+           }
+           $hostname_plus = (string) preg_replace('~^(m\.|www\.)~', '', $hostname_plus);
            if (str_ireplace(CANONICAL_PUBLISHER_URLS, '', $hostname) === $hostname &&
                str_ireplace(PROXY_HOSTS_TO_ALWAYS_DROP, '', $hostname) === $hostname &&
                str_ireplace(PROXY_HOSTS_TO_DROP, '', $hostname) === $hostname &&
                str_ireplace(HOSTS_TO_NOT_ADD, '', $hostname) === $hostname
              ) {
-             $hostname_test = (string) preg_replace('~^(m\.|www\.)~', '', $hostname);
-             foreach (HOSTNAME_MAP as $i_key => $i_value) {
-               if ($hostname_test === $i_key) {
+             foreach (HOSTNAME_MAP as $i_key => $i_value) { // Scan longer url first
+               if ($hostname_plus === $i_key) {
+                 $this->add_if_new('website', $i_value);
+               }
+             }
+             foreach (HOSTNAME_MAP as $i_key => $i_value) { // Scan longer url first
+               if ($hostname === $i_key) {
                  $this->add_if_new('website', $i_value);
                }
              }
@@ -7273,6 +7290,7 @@ final class Template {
   protected function simplify_google_search(string $url) : string {
       if (stripos($url, 'q=') === FALSE) return $url;  // Not a search
       if (preg_match('~^https?://.*google.com/search/~', $url)) return $url; // Not a search if the slash is there
+      $orig_url = $url;
       $hash = '';
       if (strpos($url, "#")) {
         $url_parts = explode("#", $url);
@@ -7280,12 +7298,15 @@ final class Template {
         $hash = "#" . $url_parts[1];
       }
 
-      $url_parts = explode("&", str_replace("?", "&", $url));
+      $url_parts = explode("&", str_replace("&&", "&", str_replace("?", "&", $url)));
       array_shift($url_parts);
       $url = "https://www.google.com/search?";
 
       foreach ($url_parts as $part) {
         $part_start = explode("=", $part);
+        if (isset($part_start[1]) && $part_start[1] === '') {
+          $part_start[0] = "donotaddmeback"; // Do not add blank ones
+        }
         switch ($part_start[0]) {
           case "aq": case "aqi": case "bih": case "biw": case "client":
           case "as": case "useragent": case "as_brr":
@@ -7295,7 +7316,17 @@ final class Template {
           case "aqs": case "gs_l": case "uact": case "tbo": case "tbs":
           case "num": case "redir_esc": case "gs_lcp": case "sxsrf":
           case "gfe_rd": case "gws_rd": case "rlz": case "sclient":
-          case "prmd": case "dpr": case "newwindow":
+          case "prmd": case "dpr": case "newwindow": case "gs_ssp":
+          case "spell": case "shndl": case "sugexp": case "donotaddmeback":
+          case "usg": case "fir": case "entrypoint": case "as_qdr":
+          case "as_drrb": case "as_minm":  case "as_mind":  case "as_maxm":
+          case "as_maxd": case "kgs": case "ictx": case "shem": case "vet":
+          case "ictx": case "iflsig": case "tab": case "sqi": case "noj":
+          case "hs": case "es_sm": case "site": case "btnmeta_news_search":
+          case "channel": case "espv": case "cad": case "es_sm": case "gs_sm":
+          case "ictx": case "imgil": case "ins": case "npsic=":  case "rflfq":
+          case "rlha": case "rldoc": case "rldimm": case "npsic": case "phdesc":
+          case "prmdo": case "ssui":
              break;
           case "btnG":
              if ($part_start[1] === "" || str_i_same($part_start[1], 'Search')) break;
@@ -7310,12 +7341,13 @@ final class Template {
              $url .=  $part . "&" ;
              break;
           case "hl": case "safe": case "q": case "tbm": case "start": case "ludocid":
-          case "cshid":
+          case "cshid": case "stick": case "as_eq": case "kgmid": case "as_drrb":
+          case "as_scoring": case "gl": case "rllag":
              $url .=  $part . "&" ;
              break;
           default:
              // @codeCoverageIgnoreStart
-             report_minor_error("Unexpected Google URL component:  " . echoable($part));
+             report_minor_error("Unexpected Google URL component:  " . echoable($part) . " in " . echoable($orig_url));
              $url .=  $part . "&" ;
              break;
              // @codeCoverageIgnoreEnd
@@ -7362,8 +7394,8 @@ final class Template {
       $wonky = trim($matches[1]);
       if ($wonky === "[WorldCat.org]") {
         report_info('WorldCat temporarily unresponsive or does not have Title for ISSN ' .  echoable($issn));
-      } elseif (preg_match('~^(.+)\. \(e?Newspaper, \d{4}\) \[WorldCat.org\]$~', $wonky, $matches)) {
-        return $this->add_if_new('newspaper', trim($matches[1]));
+      } elseif (preg_match('~^(.+) \(e?Newspaper, \d{4}s?\) \[WorldCat.org\]$~', $wonky, $matches)) {
+        return $this->add_if_new('newspaper', trim($matches[1], " \n\r\t\v\x00\."));
       } else {
         report_minor_error('Unexpected title from WorldCat for ISSN ' . echoable($issn) . ' : ' . echoable($wonky));
       }

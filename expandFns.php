@@ -1209,8 +1209,8 @@ function is_hdl_works(string $hdl) {
   if ($headers_test === FALSE) return NULL; // most likely bad, but will recheck again and again
   if (empty($headers_test['Location']) && empty($headers_test['location'])) return FALSE; // leads nowhere
   if (is_array(@$headers_test['Location'])) {
-      $the_header_loc = (string) $headers_test['Location'][0];
-   } elseif (is_array(@$headers_test['location'])) { // non-standard
+      $the_header_loc = (string) $headers_test['Location'][0]; // @codeCoverageIgnore
+   } elseif (is_array(@$headers_test['location'])) {
       $the_header_loc = (string) $headers_test['location'][0]; // @codeCoverageIgnore
    } else {
       $the_header_loc = (string) @$headers_test['Location'] . (string) @$headers_test['location'];

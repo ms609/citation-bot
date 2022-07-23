@@ -369,4 +369,8 @@ final class expandFnsTest extends testBaseClass {
     $this->assertNull($template->get2('doi'));
   }
   
+  public function testRomanNumbers() : void {
+    $this->assertSame('MMCCCXXXI', numberToRomanRepresentation(2331));
+  }
+  
 }

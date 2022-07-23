@@ -651,6 +651,28 @@ class Page {
         $objects[] = $obj;
       }
     }
+    if ($preg_ok === FALSE && isset($regexp)) {
+      report_info(self::preg_errtxt()); 
+      ini_set("pcre.jit", "0");   // This does not seem to work
+      $regexp = str_replace('~su', '~s', $regexp); // Try without unicode
+      while ($preg_ok = preg_match($regexp, $text, $match)) { // Just use last most powerful REGEX
+        $obj = new $class();
+        try {
+          $obj->parse_text($match[0]);
+        } catch (Exception $e) {
+          $this->page_error = TRUE;
+          $this->text = $text;
+          ini_set("pcre.jit", "1");
+          return $objects;
+        }
+        $exploded = $treat_identical_separately ? explode($match[0], $text, 2) : explode($match[0], $text);
+        $text = implode(sprintf($placeholder_text, $i++), $exploded);
+        $objects[] = $obj;
+      }
+      report_info(self::preg_errtxt());
+      ini_set("pcre.jit", "1");
+    }
+    
     /** @psalm-suppress TypeDoesNotContainType */
     if ($preg_ok === FALSE) { // Something went wrong.  Often from bad wiki-text.  Generally, preg_match() cannot return FALSE, so supress psalm
         // PHP 5 segmentation faults. PHP 7.0 returns FALSE
@@ -660,11 +682,19 @@ class Page {
         if ($class === "Template") {
           echo "<p>\n\n The following text might help you figure out where the <b>error on the page</b> is (Look for lone { and } characters)</h1>\n\n" . echoable($text) . "\n\n<p>";
         }
-        report_minor_error("Report this problem please");
+        report_minor_error("Report this problem please about page " . $this->title);
         // @codeCoverageIgnoreEnd
     }
     $this->text = $text;
     return $objects;
+  }
+  
+  private static function preg_errtxt() : string {
+    $errcode = preg_last_error();
+    $errtext = array();
+    $constants = get_defined_constants(true);
+    foreach ($constants['pcre'] as $c => $n) if (preg_match('/_ERROR$/', $c)) $errtext[$n] = $c;
+    return array_key_exists($errcode, $errtext)? $errtext[$errcode] : '';
   }
 
   protected function replace_object (array &$objects) : void {  // Pointer to save memory

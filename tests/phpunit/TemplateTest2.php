@@ -3593,6 +3593,10 @@ final class TemplateTest2 extends testBaseClass {
      $text = '{{cite journal|title=X|periodical=X|issue=X|volume=X|pages=12-34|year=1980|last2=Him|doi=10.0000/Rubbish_bot_failure_test|bibcode=X|last1=X|first1=X}}';
      $template = $this->make_citation($text);
      $this->assertFalse($template->incomplete());
+    
+     $text = '{{citation    |title=X|work=X      |issue=X|volume=X|pages=12-34|year=1980|last2=Him|doi=10.0000/Rubbish_bot_failure_test|bibcode=X|last1=X|first1=X}}';
+     $template = $this->make_citation($text);
+     $this->assertTrue($template->incomplete());
   
      $this->requires_bibcode(function() : void {
       $text = '{{cite journal|title=X|journal=X|issue=X|volume=X|pages=12-34|year=1980|last2=Him|doi=10.0000/Rubbish_bot_failure_test|bibcode=X|last1=X|first1=X}}';
@@ -4603,5 +4607,11 @@ final class TemplateTest2 extends testBaseClass {
       $text = "{{cite conference|title=X|chapter=Y}}";
       $expanded = $this->make_citation($text);
       $this->AssertFalse($expanded->incomplete());
+    }
+ 
+    public function testKeepGoogPublish() : void {
+      $text = "{{cite web|author=Leeps |url=https://news.google.com/newspapers?nid=1309&dat=19890604&id=tKFUAAAAIBAJ&sjid=NpADAAAAIBAJ&pg=5932,900833&hl=en |title=Rust Busters |publisher=[[New Straits Times]] / [[Google News Archive]] |date=1989-06-04 |access-date=2015-05-03 }}";
+      $expanded = $this->process_citation($text);
+      $this->assertSame($text, $expanded->parsed_text());
     }
 }

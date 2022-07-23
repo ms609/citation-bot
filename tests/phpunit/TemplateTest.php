@@ -404,7 +404,7 @@ final class TemplateTest extends testBaseClass {
   }
  
    public function testDropBadData() : void {
-    $text = "{{cite journal|jstor=3073767|pages=null|page=null|volume=n/a|issue=0|title=[No title found]|coauthors=Duh|last1=Duh|first1=Dum|first=Hello|last=By|author=Yup|author1=Nope}}";
+    $text = "{{cite journal|jstor=3073767|pages=null|page=null|volume=n/a|issue=0|title=[No title found]|coauthors=Duh|last1=Duh|first1=Dum|first=Hello|last=By|author=Yup|author1=Nope|year=2002}}";
     $expanded = $this->process_citation($text);
     $this->assertSame('Are Helionitronium Trications Stable?', $expanded->get2('title'));
     $this->assertSame('99', $expanded->get2('volume'));
@@ -420,7 +420,7 @@ final class TemplateTest extends testBaseClass {
   }
 
    public function testDropBadData2() : void {
-    $text = "{{cite journal|author2=BAD|jstor=3073767|pages=null|page=null|volume=n/a|issue=0|title=[No title found]|coauthors=Duh|last1=Duh|first1=Dum|first=Hello|last=By|author=Yup|author1=Nope}}";
+    $text = "{{cite journal|author2=BAD|jstor=3073767|pages=null|page=null|volume=n/a|issue=0|title=[No title found]|coauthors=Duh|last1=Duh|first1=Dum|first=Hello|last=By|author=Yup|author1=Nope|year=2005}}";
     $expanded = $this->process_citation($text);
     $this->assertSame('Are Helionitronium Trications Stable?', $expanded->get2('title'));
     $this->assertSame('99', $expanded->get2('volume'));
@@ -4103,5 +4103,51 @@ EP - 999 }}';
     $this->assertSame('Proceedings of the 1964 19th ACM national conference', $template->get2('title'));
   }
  
+  public function testNullDOInoCrash() : void {
+    $text = '{{cite journal | doi=10.5604/01.3001.0012.8474 }}';
+    $template = $this->process_citation($text);
+    $this->assertSame('{{cite journal | doi=10.5604/01.3001.0012.8474 | s2cid=187373177 }}', $template->parsed_text());
+  }
+
+  public function testTidySomeStuff() : void {
+    $text = '{{cite journal | url=http://pubs.rsc.org/XYZ#!divAbstract}}';
+    $template = $this->make_citation($text);
+    $template->tidy_parameter('url');
+    $this->assertSame('https://pubs.rsc.org/XYZ', $template->get2('url'));
+   
+    $text = '{{cite journal | url=http://pubs.rsc.org/XYZ/unauth}}';
+    $template = $this->make_citation($text);
+    $template->tidy_parameter('url');
+    $this->assertSame('https://pubs.rsc.org/XYZ', $template->get2('url'));
+  }
+ 
+  public function testTidyPreferVolumes() : void {
+    $text = '{{cite journal | journal=Illinois Classical Studies|issue=3|volume=3}}';
+    $template = $this->make_citation($text);
+    $template->tidy_parameter('volume');
+    $this->assertNull($template->get2('issue'));
+
+    $text = '{{cite journal | journal=Illinois Classical Studies|number=3|volume=3}}';
+    $template = $this->make_citation($text);
+    $template->tidy_parameter('volume');
+    $this->assertNull($template->get2('number'));
+          
+    $text = '{{cite journal | journal=Illinois Classical Studies|issue=3|volume=3}}';
+    $template = $this->make_citation($text);
+    $template->tidy_parameter('issue');
+    $this->assertNull($template->get2('issue'));
+
+    $text = '{{cite journal | journal=Illinois Classical Studies|number=3|volume=3}}';
+    $template = $this->make_citation($text);
+    $template->tidy_parameter('number');
+    $this->assertNull($template->get2('number'));
+  }
+ 
+  public function testTidyBogusDOIs3316() : void {
+    $text = '{{cite journal | doi=10.3316/informit.324214324123413412313|pmc=XXXXX}}';
+    $template = $this->make_citation($text);
+    $template->tidy_parameter('doi');
+    $this->assertNull($template->get2('doi'));
+  } 
  
 }

@@ -39,6 +39,7 @@ function report_error(string $text) : void {
 }
 function report_minor_error(string $text) : void {  // For things we want to error in tests, but continue on Wikipedia
   // @codeCoverageIgnoreStart
+  file_put_contents('CodeCoverage', html_entity_decode($text) . "\n", FILE_APPEND);
   /** @psalm-suppress RedundantCondition */ /* PSALM thinks TRAVIS cannot be FALSE */
   if (!HTML_OUTPUT) { // command line and TRAVIS
     report_error($text);
