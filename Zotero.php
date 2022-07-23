@@ -1375,7 +1375,7 @@ public static function find_indentifiers_in_urls(Template $template, ?string $ur
           }
           return $template->add_if_new('pmc', $new_pmc);
         
-        } elseif (preg_match('~^https?://.*ncbi\.nlm\.nih\.gov/pubmed\?term=(\d+)$~', $url, $match)) {
+        } elseif (preg_match('~^https?://.*ncbi\.nlm\.nih\.gov/pubmed/?\?term=(\d+)$~', $url, $match)) {
            $pos_pmid = $match[1];
            $old_pmid = $template->get('pmid');
            if ($old_pmid === '' || ($old_pmid === $pos_pmid)) {
@@ -1386,7 +1386,7 @@ public static function find_indentifiers_in_urls(Template $template, ?string $ur
               report_warning(echoable($url) . ' does not match PMID of ' . echoable($old_pmid));
            }
            return FALSE;
-        } elseif (preg_match('~^https?://.*ncbi\.nlm\.nih\.gov/pubmed\?term=.*$~', $url) && ($template->has('pmid') || $template->has('pmc'))) {
+        } elseif (preg_match('~^https?://.*ncbi\.nlm\.nih\.gov/pubmed/?\?term=.*$~', $url) && ($template->has('pmid') || $template->has('pmc'))) {
            report_info('Dropped non-specific pubmed search URL, since PMID is present');
            $template->forget($url_type);
            return FALSE;
