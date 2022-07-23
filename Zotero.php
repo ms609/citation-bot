@@ -1379,7 +1379,7 @@ public static function find_indentifiers_in_urls(Template $template, ?string $ur
            $pos_pmid = $match[1];
            $old_pmid = $template->get('pmid');
            if ($old_pmid === '' || ($old_pmid === $pos_pmid)) {
-              $template->set('url', 'https://pubmed.ncbi.nlm.nih.gov/' . $pos_pmid .'/');
+              $template->set($url_type, 'https://pubmed.ncbi.nlm.nih.gov/' . $pos_pmid .'/');
               $template->add_if_new('pmid', $pos_pmid);
               return TRUE;
            } else {
@@ -1399,6 +1399,9 @@ public static function find_indentifiers_in_urls(Template $template, ?string $ur
             preg_match("~^https?://pubmed\.ncbi\.nlm\.nih\.gov/(?:|entrez/eutils/elink.fcgi\?dbfrom=pubmed\&retmode=ref\&cmd=prlinks\&id=)(\d{4,})/?(?:|#.+|-.+|\?.+)$~", $url, $match)
           ) {
           if (preg_match("~\?term~i", $url) && !preg_match("~pubmed\.ncbi\.nlm\.nih\.gov/\d{4,}/\?from_term=~", $url)) {
+            if (preg_match('~^https?://.*ncbi\.nlm\.nih\.gov/pubmed/?(\?term=.*)$~', $url, $matches) {
+                $template->set($url_type, 'https://pubmed.ncbi.nlm.nih.gov/' . $matches[1]);
+            }
             return FALSE; // A search such as https://www.ncbi.nlm.nih.gov/pubmed/?term=Sainis%20KB%5BAuthor%5D&cauthor=true&cauthor_uid=19447493
           }
           quietly('report_modification', "Converting URL to PMID parameter");
