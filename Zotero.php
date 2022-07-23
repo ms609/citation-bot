@@ -1420,6 +1420,9 @@ public static function find_indentifiers_in_urls(Template $template, ?string $ur
              if ($template->has_good_free_copy()) $template->forget($url_type);
           }
           return FALSE;
+        } elseif (preg_match('~^https?://.*ncbi\.nlm\.nih\.gov/pubmed/?(\?term=.*)$~', $url, $matches)) {
+           $template->set($url_type, 'https://pubmed.ncbi.nlm.nih.gov/' . $matches[1]);
+           return FALSE;
         }
 
       } elseif (stripos($url, 'europepmc.org') !== FALSE) {
