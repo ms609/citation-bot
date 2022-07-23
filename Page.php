@@ -653,7 +653,8 @@ class Page {
     }
     if ($preg_ok === FALSE) {
       report_info(self::preg_errtxt()); 
-      ini_set("pcre.jit", "0");
+      ini_set("pcre.jit", "0");   // This does not seem to work
+      $regexp = str_replace('~su', '~s', $regexp); // Try without unicode
       while ($preg_ok = preg_match($regexp, $text, $match)) { // Just use last most powerful REGEX
         $obj = new $class();
         try {
