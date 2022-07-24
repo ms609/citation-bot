@@ -1281,6 +1281,7 @@ final class Template {
            || mb_stripos($all_page_values, 'article') !== FALSE
            || mb_stripos($all_page_values, '[') !== FALSE
            || mb_stripos($all_page_values, ',') !== FALSE
+           || mb_stripos($all_page_values, '(') !== FALSE
            || mb_stripos($all_page_values, 'CITATION_BOT_PLACEHOLDER') !== FALSE) { // A comment or template will block the bot
            return FALSE;
         }
