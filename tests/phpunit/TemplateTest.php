@@ -254,7 +254,7 @@ final class TemplateTest extends testBaseClass {
     $expanded = $this->process_citation($text);
     $this->assertNull($expanded->get2('pmid'));
     $this->assertNull($expanded->get2('pmc'));
-    $this->assertSame('https://www.ncbi.nlm.nih.gov/pubmed/?term=Sainis%20KB%5BAuthor%5D&cauthor=true&cauthor_uid=19447493', $expanded->get2('url'));  
+    $this->assertSame('https://pubmed.ncbi.nlm.nih.gov/?term=Sainis%20KB%5BAuthor%5D&cauthor=true&cauthor_uid=19447493', $expanded->get2('url'));  
    }
  
    public function testJournal2Web() : void {
