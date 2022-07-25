@@ -700,13 +700,13 @@ function expand_doi_with_dx(Template $template, string $doi) : bool {
        if (stripos(@$json['URL'], 'hdl.handle.net')) {
            $template->get_identifiers_from_url($json['URL']);
        }
-     } elseif (@$json['type'] == 'posted-content' || @$json['type'] == 'grant') { // posted-content is from bioRxiv
+     } elseif (@$json['type'] == 'posted-content' || @$json['type'] == 'grant' || @$json['type'] == 'song') { // posted-content is from bioRxiv
        $try_to_add_it('title', @$json['title']);
      } else {
        $try_to_add_it('title', @$json['title']);                                                 // @codeCoverageIgnore
        /** @psalm-suppress RedundantCondition */ /* PSALM thinks TRAVIS cannot be FALSE */
        if (!HTML_OUTPUT) print_r($json);                                                         // @codeCoverageIgnore
-       report_minor_error('dx.doi.org returned unexpected data type for ' . doi_link($doi));     // @codeCoverageIgnore
+       report_minor_error('dx.doi.org returned unexpected data type ' . (string) @$json['type'] . ' for ' . doi_link($doi));     // @codeCoverageIgnore
      }
      return TRUE;
 }
