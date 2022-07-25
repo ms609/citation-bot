@@ -398,6 +398,11 @@ final class Template {
               $the_journal = '';
               $bad_data = TRUE;
           }
+          if (str_i_same($the_journal, 'JSTOR')) {
+              $this->rename('journal', 'CITATION_BOT_PLACEHOLDER_journal');
+              $the_journal = '';
+              $bad_data = TRUE;
+          }
           if (stripos($the_journal, 'arXiv:') === 0 && !$this->blank(ARXIV_ALIASES)) {
               $this->forget('journal');
               $the_journal = '';
