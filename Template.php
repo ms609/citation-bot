@@ -7336,7 +7336,7 @@ final class Template {
           case "channel": case "espv": case "cad": case "es_sm": case "gs_sm":
           case "ictx": case "imgil": case "ins": case "npsic=":  case "rflfq":
           case "rlha": case "rldoc": case "rldimm": case "npsic": case "phdesc":
-          case "prmdo": case "ssui": case "lqi":
+          case "prmdo": case "ssui": case "lqi": case "rlst":
              break;
           case "btnG":
              if ($part_start[1] === "" || str_i_same($part_start[1], 'Search')) break;
