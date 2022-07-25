@@ -394,6 +394,7 @@ class Page {
     expand_templates_from_archives($our_templates);
 
     report_phase('Remedial work to clean up templates');
+    $log_bad_chapter = FALSE;
     for ($i = 0; $i < count($our_templates); $i++) {
       $this_template = $our_templates[$i];
       // Clean up:
@@ -414,7 +415,17 @@ class Page {
           $this->modifications[$key] = $this->modifications[$key] || $template_mods[$key]; // bool like mod_dashes
         }
       }
-    }
+      if ($this_template->has('chapter')) {
+        $type = $this_template->wikiname();
+        if (in_array($type, ['cite journal', 'cite news'])) {
+          $log_bad_chapter = TRUE;
+        }
+      }
+    }    
+    if ($log_bad_chapter) { // We can fix these and find these fast
+      file_put_contents('CodeCoverage', $this->title . " page has ignored chapter \n", FILE_APPEND);
+    }  
+          
     for ($i = 0; $i < count($our_templates_slight); $i++) {
       $this_template = $our_templates_slight[$i];
       // Record any modifications that have been made:
