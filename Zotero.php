@@ -645,6 +645,9 @@ public static function process_zotero_response(string $zotero_response, Template
     if (preg_match('~\s(arXiv: \S+)\s~i', ' ' . $result->extra . ' ', $matches)) { // We don't use it - only comes from arXiv DOIs
       $result->extra = trim(str_replace(trim($matches[0]), '', $result->extra));  // @codeCoverageIgnore
     }
+    if (preg_match('~\s(INIS Reference Number: \d+)\s~i', ' ' . $result->extra . ' ', $matches)) { // We don't use it - https://inis.iaea.org
+      $result->extra = trim(str_replace(trim($matches[0]), '', $result->extra));  // @codeCoverageIgnore
+    }
     if (preg_match('~\s(\d+ cm\.)\s~i', ' ' . $result->extra . ' ', $matches)) { // We don't use it - size of book
       $result->extra = trim(str_replace(trim($matches[0]), '', $result->extra));  // @codeCoverageIgnore
     }
