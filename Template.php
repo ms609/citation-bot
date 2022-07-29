@@ -7353,7 +7353,7 @@ final class Template {
              break;
           case "hl": case "safe": case "q": case "tbm": case "start": case "ludocid":
           case "cshid": case "stick": case "as_eq": case "kgmid": case "as_drrb":
-          case "as_scoring": case "gl": case "rllag":
+          case "as_scoring": case "gl": case "rllag": case "lsig":
              $url .=  $part . "&" ;
              break;
           default:
