@@ -7343,6 +7343,10 @@ final class Template {
              if ($part_start[1] === "" || str_i_same($part_start[1], 'any')) break;
              $url .=  $part . "&" ;
              break;
+          case "cf":
+             if ($part_start[1] === "" || str_i_same($part_start[1], 'all')) break;
+             $url .=  $part . "&" ;
+             break;
           case "as_epq":
              if ($part_start[1] === "") break;
              $url .=  $part . "&" ;
