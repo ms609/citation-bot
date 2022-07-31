@@ -7337,7 +7337,15 @@ final class Template {
           case "ictx": case "imgil": case "ins": case "npsic=":  case "rflfq":
           case "rlha": case "rldoc": case "rldimm": case "npsic": case "phdesc":
           case "prmdo": case "ssui": case "lqi": case "rlst": case "pf":
-          case "authuser": case "gsas":
+          case "authuser": case "gsas": case "ned": case "pz":
+             break;
+          case "as_occt":
+             if ($part_start[1] === "" || str_i_same($part_start[1], 'any')) break;
+             $url .=  $part . "&" ;
+             break;
+          case "as_epq":
+             if ($part_start[1] === "") break;
+             $url .=  $part . "&" ;
              break;
           case "btnG":
              if ($part_start[1] === "" || str_i_same($part_start[1], 'Search')) break;
