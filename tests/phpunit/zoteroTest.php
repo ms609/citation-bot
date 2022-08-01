@@ -1091,16 +1091,6 @@ final class zoteroTest extends testBaseClass {
    });
   }
  
-  public function testZoteroTruncateDOI() : void {
-   $this->requires_zotero(function() : void {
-    $text = '{{cite journal|url=http://www.oxfordhandbooks.com/view/10.1093/oxfordhb/9780199552238.001.0001/oxfordhb-9780199552238-e-023}}';
-    $expanded = $this->process_citation($text);
-    $this->assertNull($expanded->get2('doi-broken-date'));
-    $this->assertSame('http://www.oxfordhandbooks.com/view/10.1093/oxfordhb/9780199552238.001.0001/oxfordhb-9780199552238-e-023', $expanded->get2('url'));
-    $this->assertSame('10.1093/oxfordhb/9780199552238.003.0023', $expanded->get2('doi'));
-   });
-  }
- 
   public function testZoteroExpansion_hdl() : void {
    $this->requires_zotero(function() : void {
     $text = '{{Cite journal| hdl=10411/OF7UCA }}';
