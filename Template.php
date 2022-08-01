@@ -2597,6 +2597,10 @@ final class Template {
     if ($url_type) {
       $url = $this->get($url_type);
       if (!$url) return FALSE;
+      if (preg_match("~^https?://www\.google\.(?:[^\./]+)/books/edition/_/(.+)$~", $url, $matches)) {
+        $url = 'https://www.google.com/books/edition/_/'. $matches[1];
+        $this->set($url_type, $url);
+      }
       if (!preg_match("~(?:[Bb]ooks|[Ee]ncrypted)\.[Gg]oogle\.[\w\.]+/.*\bid=([\w\d\-]+)~", $url, $gid) &&
           !preg_match("~\.[Gg]oogle\.com/books/edition/_/([a-zA-Z0-9]+)(?:\?.+|)$~", $url, $gid)) {
          return FALSE;  // Got nothing usable
@@ -2809,13 +2813,6 @@ final class Template {
         $this->set($url_type, $url);
       }
       if ($use_it) $this->google_book_details($gid[1]);
-      return TRUE;
-    }
-    if (preg_match("~^https?://www\.google\.[^\./]+/books/edition/_/([^&\?]+)\?(.*)$~", $url, $gid)) {
-      $this->set($url_type, 'https://www.google.com/books/edition/_/' . $gid[1] . '?' . $gid[2]);
-      if ($use_it) {
-        $this->google_book_details($gid[1]);
-      }
       return TRUE;
     }
     if (preg_match("~^(.+\.google\.com/books/edition/[^\/]+/)([a-zA-Z0-9]+)(\?.+|)$~", $url, $gid)) {
