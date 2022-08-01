@@ -2812,7 +2812,7 @@ final class Template {
       return TRUE;
     }
     if (preg_match("~^https?://www\.google\.[^\./]+/books/edition/_/([^&\?]+)\?(.*)$~", $url, $gid)) {
-      $this->set($url_type, 'https://www.google.com/books/edition/_/' . $gid[1] . '?' . $gid[2];
+      $this->set($url_type, 'https://www.google.com/books/edition/_/' . $gid[1] . '?' . $gid[2]);
       if ($use_it) {
         $this->google_book_details($gid[1]);
       }
