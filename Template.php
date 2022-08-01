@@ -7419,6 +7419,8 @@ final class Template {
         report_info('WorldCat temporarily unresponsive or does not have Title for ISSN ' .  echoable($issn));
       } elseif (preg_match('~^(.+) \(e?Newspaper, \d{4}s?\) \[WorldCat.org\]$~', $wonky, $matches)) {
         return $this->add_if_new('newspaper', trim($matches[1], " \n\r\t\v\x00\."));
+      } elseif (preg_match('~\(DVD video~', $wonky, $matches)) {
+        return FALSE;
       } else {
         report_minor_error('Unexpected title from WorldCat for ISSN ' . echoable($issn) . ' : ' . echoable($wonky));
       }
