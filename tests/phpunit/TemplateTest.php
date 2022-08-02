@@ -3705,7 +3705,7 @@ EP - 999 }}';
   }
  
   public function testJunkData() : void {
-    $text = "{{Cite web | title=JSTOR THIS IS A LONG TITLE IN ALL CAPPS AND IT IS BAD|pmid=1974135}} " . 
+    $text = "{{Cite web | title=JSTOR THIS IS A LONG TITLE IN ALL CAPPS AND IT IS BAD|journal=JSTOR|pmid=1974135}} " . 
             "{{Cite web | title=JSTOR This is bad data|journal=JSTOR This is bad data|jstor=1974136}}" .
             "{{Cite web | title=JSTOR This is a title on JSTOR|pmc=1974137}}" .
             "{{Cite web | title=JSTOR This is a title with IEEE Xplore Document|pmid=1974138}}" .
