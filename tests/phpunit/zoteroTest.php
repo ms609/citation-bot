@@ -1154,7 +1154,7 @@ final class zoteroTest extends testBaseClass {
     $text = '{{Cite web|url=https://stuff.ncbi.nlm.nih.gov/pubmed?term=12343214|pmid=32412}}';
     $template = $this->make_citation($text);
     $template->get_identifiers_from_url();
-    $this->assertSame('https://www.ncbi.nlm.nih.gov/pubmed?term=12343214|pmid=32412', $template->get2('url'));
+    $this->assertSame('https://stuff.ncbi.nlm.nih.gov/pubmed?term=12343214', $template->get2('url'));
   }
 
   public function testPubMedTermStuff5() : void {
