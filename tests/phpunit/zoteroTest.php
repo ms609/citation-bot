@@ -1129,4 +1129,39 @@ final class zoteroTest extends testBaseClass {
     $this->assertSame('20.1000/100', $template->get2('hdl'));
   }
 
+  public function testPubMedTermStuff1() : void {
+    $text = '{{Cite web|url=https://stuff.ncbi.nlm.nih.gov/pubmed/?term=dropper}}';
+    $template = $this->make_citation($text);
+    $template->get_identifiers_from_url();
+    $this->assertSame('https://pubmed.ncbi.nlm.nih.gov/?term=dropper', $template->get2('url'));
+  }
+  
+  public function testPubMedTermStuff2() : void {
+    $text = '{{Cite web|url=https://stuff.ncbi.nlm.nih.gov/pubmed/?term=dropper|pmid=21234}}';
+    $template = $this->make_citation($text);
+    $template->get_identifiers_from_url();
+    $this->assertNull($template->get2('url'));
+  }
+  
+  public function testPubMedTermStuff3() : void {
+    $text = '{{Cite web|url=https://stuff.ncbi.nlm.nih.gov/pubmed?term=21234|pmid=21234}}';
+    $template = $this->make_citation($text);
+    $template->get_identifiers_from_url();
+    $this->assertSame('https://pubmed.ncbi.nlm.nih.gov/21234/', $template->get2('url'));
+  }
+  
+  public function testPubMedTermStuff4() : void {
+    $text = '{{Cite web|url=https://stuff.ncbi.nlm.nih.gov/pubmed?term=12343214|pmid=32412}}';
+    $template = $this->make_citation($text);
+    $template->get_identifiers_from_url();
+    $this->assertSame('https://www.ncbi.nlm.nih.gov/pubmed?term=12343214|pmid=32412', $template->get2('url'));
+  }
+
+  public function testPubMedTermStuff5() : void {
+    $text = '{{Cite web|url=https://stuff.ncbi.nlm.nih.gov/pubmed/?term=21234|pmid=}}';
+    $template = $this->make_citation($text);
+    $template->get_identifiers_from_url();
+    $this->assertSame('https://pubmed.ncbi.nlm.nih.gov/21234/', $template->get2('url'));
+    $this->assertSame('21234', $template->get2('pmid'));
+  }
 }
