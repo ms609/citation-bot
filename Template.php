@@ -6380,7 +6380,7 @@ final class Template {
            preg_match('~^https?://([^/]+)/~', $url, $matches)) {
            $hostname = strtolower($matches[1]);
            $hostname = (string) preg_replace('~^(m\.|www\.)~', '', $hostname);
-           if (preg_match('~^https?://([^/]+/[^/]+)~', $url, $matches)) {
+           if (preg_match('~^https?://([^/]+/+[^/]+)~', $url, $matches)) {
              $hostname_plus = strtolower($matches[1]);
            } else {
              file_put_contents('CodeCoverage', "\n" . $url . " generated matches nothing event\n" , FILE_APPEND); // @codeCoverageIgnore
