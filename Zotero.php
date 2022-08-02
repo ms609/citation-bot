@@ -919,9 +919,9 @@ public static function process_zotero_response(string $zotero_response, Template
             case 'translator':
               $authorParam = 'translator' . (string) ++$translator_i;
               break;
-             case 'reviewedAuthor':
-              $authorParam = '';
-              break;
+             case 'reviewedAuthor':   // @codeCoverageIgnore
+              $authorParam = '';      // @codeCoverageIgnore
+              break;                  // @codeCoverageIgnore
             default:                                                               // @codeCoverageIgnore
               report_minor_error("Unrecognized creator type: " . echoable($creatorType) . ' FROM ' . echoable($url));    // @codeCoverageIgnore
               $authorParam = '';                                                   // @codeCoverageIgnore
