@@ -3910,7 +3910,8 @@ final class Template {
               return;
             }
           }
-          if (doi_works($doi) === NULL) {
+          if (doi_works($doi) === NULL) { // This is super slow and rare
+           // @codeCoverageIgnoreStart
            if ($this->has('pmc') || $this->has('pmid')) {
             if (stripos($doi, '10.1210/me.') === 0 || stripos($doi, '10.1210/jc.') === 0 ||
                 stripos($doi, '10.1210/er.') === 0 || stripos($doi, '10.1210/en.') === 0 ||
@@ -3970,6 +3971,7 @@ final class Template {
              }
              return; 
            }
+           // @codeCoverageIgnoreEnd
           }
           if (!doi_works($doi)) {
             $this->verify_doi();
@@ -6381,7 +6383,8 @@ final class Template {
            if (preg_match('~^https?://([^/]+/[^/]+)~', $url, $matches)) {
              $hostname_plus = strtolower($matches[1]);
            } else {
-             $hostname_plus = 'matches nothing';
+             file_put_contents('CodeCoverage', "\n" . $url . " generated matches nothing event\n" , FILE_APPEND); // @codeCoverageIgnore
+             $hostname_plus = 'matches nothing';                                                            // @codeCoverageIgnore
            }
            $hostname_plus = (string) preg_replace('~^(m\.|www\.)~', '', $hostname_plus);
            if (str_ireplace(CANONICAL_PUBLISHER_URLS, '', $hostname) === $hostname &&
