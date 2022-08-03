@@ -257,6 +257,7 @@ class Page {
      }
     // TEMPLATES
     set_time_limit(120);
+    $triplebrack = $this->extract_object('TripleBracket');
     $singlebrack = $this->extract_object('SingleBracket');
     $all_templates = $this->extract_object('Template');
     set_time_limit(120);
@@ -459,6 +460,7 @@ class Page {
     
     set_time_limit(120);
     $this->replace_object($singlebrack); unset($singlebrack);
+    $this->replace_object($triplebrack); unset($triplebrack);
     $this->replace_object($preformated); unset($preformated);
     $this->replace_object($musicality); unset($musicality);
     $this->replace_object($mathematics); unset($mathematics);
