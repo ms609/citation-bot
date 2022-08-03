@@ -6375,7 +6375,7 @@ final class Template {
         $url = $this->get('url');
         if (stripos($url, 'CITATION_BOT') === FALSE &&
             filter_var($url, FILTER_VALIDATE_URL) !== FALSE &&
-            !preg_match('~^https?://[^/]+/?$~', $url) &&       // Ignore just a hostname
+            !preg_match('~^https?://[^/]+/*?$~', $url) &&       // Ignore just a hostname
             preg_match (REGEXP_IS_URL, $url) === 1 &&
            preg_match('~^https?://([^/]+)/~', $url, $matches)) {
            $hostname = strtolower($matches[1]);
@@ -6387,6 +6387,7 @@ final class Template {
              $hostname_plus = 'matches nothing';                                                            // @codeCoverageIgnore
            }
            $hostname_plus = (string) preg_replace('~^(m\.|www\.)~', '', $hostname_plus);
+           $hostname_plus = (string) preg_replace('~//+~', '/', $hostname_plus);
            if (str_ireplace(CANONICAL_PUBLISHER_URLS, '', $hostname) === $hostname &&
                str_ireplace(PROXY_HOSTS_TO_ALWAYS_DROP, '', $hostname) === $hostname &&
                str_ireplace(PROXY_HOSTS_TO_DROP, '', $hostname) === $hostname &&
