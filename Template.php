@@ -3592,7 +3592,7 @@ final class Template {
           stripos($param, 'url') === FALSE &&         // everything is valid
           stripos($param, 'link') === FALSE &&        // inter-wiki links
           $param !== 'trans-title'                    // these can be very weird
-         ) 
+         ) {
         // Non-breaking spaces at ends
         $this->set($param, trim($this->get($param), " \t\n\r\0\x0B"));
         while (preg_match("~^&nbsp;(.+)$~u", $this->get($param), $matches)) {
