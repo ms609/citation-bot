@@ -21,7 +21,7 @@ final class PageTest extends testBaseClass {
   }
 
   public function testPageChangeSummary1() : void {
-      $page = $this->process_page('{{cite journal|chapter=chapter name|title=book name}}'); // Change to book from journal
+      $page = $this->process_page('{{cite journal|chapter=chapter name|title=book name}}{stuff}{{{Stuffy|dsafsdf}}}'); // Change to book from journal
       $this->assertSame('Alter: template type. | [[WP:UCB|Use this bot]]. [[WP:DBUG|Report bugs]]. ', $page->edit_summary());
   }
 
