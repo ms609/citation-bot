@@ -3586,7 +3586,13 @@ final class Template {
         if (preg_match("~^\'\'\'([^\']+)\'\'\'$~u", $this->get($param), $matches)) {
            $this->set($param, $matches[1]); // Remove bold
         }
-
+        $this->set($param, safe_preg_replace('~\x{00AD}~u', '', $this->get($param))); // Remove soft hyphen
+      }
+      if (stripos($param, 'separator') === FALSE &&   // punctuation valid
+          stripos($param, 'url') === FALSE &&         // everything is valid
+          stripos($param, 'link') === FALSE &&        // inter-wiki links
+          $param !== 'trans-title'                    // these can be very weird
+         ) 
         // Non-breaking spaces at ends
         $this->set($param, trim($this->get($param), " \t\n\r\0\x0B"));
         while (preg_match("~^&nbsp;(.+)$~u", $this->get($param), $matches)) {
@@ -3595,7 +3601,6 @@ final class Template {
         while (preg_match("~^(.+)&nbsp;$~u", $this->get($param), $matches)) {
           $this->set($param, trim($matches[1], " \t\n\r\0\x0B"));
         }
-        $this->set($param, safe_preg_replace('~\x{00AD}~u', '', $this->get($param))); // Remove soft hyphen
       }
     }
     if (in_array(strtolower($param), ['series', 'journal', 'newspaper']) && $this->has($param)) {
