@@ -82,7 +82,7 @@ const JOURNAL_ACRONYMS = array(/* The following will be automatically updated to
           " FEBS Journal ", " Fizika Goreniya i Vzryva ", " For. Bull. ", " Föreningen i Stockholm ", 
           " für anorganische und allgemeine ", " Gigiena i Sanitariia ", " HannahArendt.net ", 
           " hessenARCHÄOLOGIE ", " hessenARCHÄOLOGIE ", " History of Science; An Annual Review of Literature ", 
-          " HIV & AIDS ", " HIV and AIDS ", " Hiv/AIDS ", " HIV/AIDS ", " HOAJ biology ", 
+          " HIV & AIDS ", " HIV and AIDS ", " HIV/AIDS ", " Hiv/AIDS ", " HOAJ biology ", 
           " Hoppe-Seyler's ", " hprints ", " Hylli i Dritës ", " i ee ", " i ee ", " i Teplovoznaja ", 
           " i-Perception ", " iConference ", " IDCases ", " IEEE/ACM ", " IEEE/ACM ", " IFAC-PapersOnLine ", 
           " iJournal ", " iJournal ", " im Gesundheitswesen ", " InfoWorld ", " Inside Higher Ed ", 
