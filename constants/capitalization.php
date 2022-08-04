@@ -11,18 +11,18 @@ const LC_SMALL_WORDS = array(/* The following will be automatically updated to a
           " die ", " DNA ", " do ", " du ", " e ", " ed ", " ee ", " eEarth ", " EFORT ", 
           " ein ", " eine ", " einen ", " EJNMMI ", " el ", " else ", " EMBO ", " en ", 
           " EPJ ", " ESMO ", " et ", " EURASIP ", " FASEB ", " FDA ", " FEBS ", " FEMS ", 
-          " for ", " from ", " för ", " für ", " GSA ", " HIV ",
-          " HLA ", " HTMLGIANT ", " IBM ", " ICES ", " IEEE ", " if ", " ILR ", " in ", 
-          " INFLIBNET ", " into ", " is ", " its ", " IUCN ", " JAMA ", " JAMA: ", " la ", 
-          " las ", " le ", " les ", " los ", " M.A. ", " M.D. ", " medRxiv ", " mit ", 
-          " MNRAS ", " mot ", " N.Y. ", " N.Y.) ", " NASA ", " NEJM ", " NIH ", " non ", 
-          " nor ", " NRC ", " NY ", " NYC ", " NYT ", " NZ ", " och ", " OECD ", " of ", 
-          " off ", " og ", " on ", " or ", " over ", " P.E. ", " PC ", " PCR ", " per ", 
-          " Ph.D. ", " PMLA ", " PNAS ", " PS: ", " R&D ", " RNA ", " RTÉ ", " S&P ", 
-          " SAE ", " SpringerPlus ", " SSRN ", " TAPPI ", " TCI: ", " te ", " TESOL ", 
-          " the ", " TheMarker ", " then ", " till ", " to ", " UCLA ", " UK ", " um ", 
-          " und ", " unserer ", " up ", " USA ", " van ", " vir ", " von ", " voor ", " when ", 
-          " with ", " within ", " woor ", " y ", " zu ", " zum ", " zur ", /* The above will be automatically updated to alphabetical order */ 
+          " for ", " from ", " för ", " für ", " GSA ", " HIV ", " HLA ", " HTMLGIANT ", 
+          " IBM ", " ICES ", " IEEE ", " if ", " ILR ", " in ", " INFLIBNET ", " into ", 
+          " is ", " its ", " IUCN ", " JAMA ", " JAMA: ", " la ", " las ", " le ", " les ", 
+          " los ", " M.A. ", " M.D. ", " medRxiv ", " mit ", " MNRAS ", " mot ", " N.Y. ", 
+          " N.Y.) ", " NASA ", " NEJM ", " NIH ", " non ", " nor ", " NRC ", " NY ", " NYC ", 
+          " NYT ", " NZ ", " och ", " OECD ", " of ", " off ", " og ", " on ", " or ", 
+          " over ", " P.E. ", " PC ", " PCR ", " per ", " Ph.D. ", " PMLA ", " PNAS ", 
+          " PS: ", " R&D ", " RNA ", " RTÉ ", " S&P ", " SAE ", " SpringerPlus ", " SSRN ", 
+          " TAPPI ", " TCI: ", " te ", " TESOL ", " the ", " TheMarker ", " then ", " till ", 
+          " to ", " UCLA ", " UK ", " um ", " und ", " unserer ", " up ", " USA ", " van ", 
+          " vir ", " von ", " voor ", " when ", " with ", " within ", " woor ", " y ", 
+          " zu ", " zum ", " zur ", /* The above will be automatically updated to alphabetical order */ 
           // After this line we list exceptions that need re-capitalizing after they have been decapitalized.
           " El Dorado ", " Las Vegas ", " Los Angeles ", " N Y ", " U S A ");
 const UC_SMALL_WORDS = array(/* The following will be automatically updated to alphabetical order */
@@ -36,18 +36,18 @@ const UC_SMALL_WORDS = array(/* The following will be automatically updated to a
           " Die ", " Dna ", " Do ", " Du ", " E ", " Ed ", " Ee ", " Eearth ", " Efort ", 
           " Ein ", " Eine ", " Einen ", " Ejnmmi ", " El ", " Else ", " Embo ", " En ", 
           " Epj ", " Esmo ", " Et ", " Eurasip ", " Faseb ", " Fda ", " Febs ", " Fems ", 
-          " For ", " From ", " För ", " Für ", " Gsa ", " Hiv ",
-          " Hla ", " Htmlgiant ", " Ibm ", " Ices ", " Ieee ", " If ", " Ilr ", " In ", 
-          " Inflibnet ", " Into ", " Is ", " Its ", " Iucn ", " Jama ", " Jama: ", " La ", 
-          " Las ", " Le ", " Les ", " Los ", " M.a. ", " M.d. ", " Medrxiv ", " Mit ", 
-          " Mnras ", " Mot ", " N.y. ", " N.y.) ", " Nasa ", " Nejm ", " Nih ", " Non ", 
-          " Nor ", " Nrc ", " Ny ", " Nyc ", " Nyt ", " Nz ", " Och ", " Oecd ", " Of ", 
-          " Off ", " Og ", " On ", " Or ", " Over ", " P.e. ", " Pc ", " Pcr ", " Per ", 
-          " Ph.d. ", " Pmla ", " Pnas ", " Ps: ", " R&d ", " Rna ", " Rté ", " S&p ", 
-          " Sae ", " Springerplus ", " Ssrn ", " Tappi ", " Tci: ", " Te ", " Tesol ", 
-          " The ", " Themarker ", " Then ", " Till ", " To ", " Ucla ", " Uk ", " Um ", 
-          " Und ", " Unserer ", " Up ", " Usa ", " Van ", " Vir ", " Von ", " Voor ", " When ", 
-          " With ", " Within ", " Woor ", " Y ", " Zu ", " Zum ", " Zur ", /* The above will be automatically updated to alphabetical order */ 
+          " For ", " From ", " För ", " Für ", " Gsa ", " Hiv ", " Hla ", " Htmlgiant ", 
+          " Ibm ", " Ices ", " Ieee ", " If ", " Ilr ", " In ", " Inflibnet ", " Into ", 
+          " Is ", " Its ", " Iucn ", " Jama ", " Jama: ", " La ", " Las ", " Le ", " Les ", 
+          " Los ", " M.a. ", " M.d. ", " Medrxiv ", " Mit ", " Mnras ", " Mot ", " N.y. ", 
+          " N.y.) ", " Nasa ", " Nejm ", " Nih ", " Non ", " Nor ", " Nrc ", " Ny ", " Nyc ", 
+          " Nyt ", " Nz ", " Och ", " Oecd ", " Of ", " Off ", " Og ", " On ", " Or ", 
+          " Over ", " P.e. ", " Pc ", " Pcr ", " Per ", " Ph.d. ", " Pmla ", " Pnas ", 
+          " Ps: ", " R&d ", " Rna ", " Rté ", " S&p ", " Sae ", " Springerplus ", " Ssrn ", 
+          " Tappi ", " Tci: ", " Te ", " Tesol ", " The ", " Themarker ", " Then ", " Till ", 
+          " To ", " Ucla ", " Uk ", " Um ", " Und ", " Unserer ", " Up ", " Usa ", " Van ", 
+          " Vir ", " Von ", " Voor ", " When ", " With ", " Within ", " Woor ", " Y ", 
+          " Zu ", " Zum ", " Zur ", /* The above will be automatically updated to alphabetical order */ 
           // After this line we list exceptions that need re-capitalizing after they have been decapitalized.
           " el Dorado ", " las Vegas ", " los Angeles ", " N y ", " U S a ");
           // For ones that start with lower-case, include both ELife and Elife versions in misspelled array
