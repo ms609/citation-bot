@@ -2596,7 +2596,7 @@ final class Template {
 
   public function expand_by_google_books() : bool {
     $this->clean_google_books();
-    if (ZOTERO_ONLY) return;
+    if (ZOTERO_ONLY) return FALSE;
     if ($this->has('doi') && doi_active($this->get('doi'))) return FALSE;
     foreach (['url', 'chapterurl', 'chapter-url'] as $url_type) {
        if ($this->expand_by_google_books_inner($url_type, TRUE)) return TRUE;
