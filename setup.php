@@ -55,8 +55,11 @@ if (isset($_REQUEST["slow"]) || TRAVIS || (isset($argv[2]) && $argv[2] === '--sl
 } else {
   define("SLOW_MODE", FALSE);
 }
-
-define("ZOTERO_ONLY", FALSE);
+if (isset($argv[2]) && $argv[2] === '--zotero') {
+  define("ZOTERO_ONLY", TRUE);
+} else {
+  define("ZOTERO_ONLY", FALSE);
+}
 
 ob_implicit_flush();
 flush();
