@@ -14,4 +14,5 @@ parameters:
 		- WIKI_ROOT
 		- API_ROOT
 		- BOT_USER_AGENT
+		- ZOTERO_ONLY
 		

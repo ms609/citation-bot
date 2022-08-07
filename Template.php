@@ -1768,6 +1768,7 @@ final class Template {
     if ($this->has('doi')) {
       return TRUE;
     }
+    if (ZOTERO_ONLY) return FALSE;
     report_action("Checking CrossRef database for doi. ");
     $page_range = $this->page_range();
     $data = [
@@ -1836,6 +1837,7 @@ final class Template {
     if ($this->has('doi')) {
       return TRUE;
     }
+    if (ZOTERO_ONLY) return FALSE;
     if ($this->blank(['s2cid', 'S2CID'])) return FALSE;
     if ($this->has('s2cid') && $this->has('S2CID')) return FALSE;
     report_action("Checking semanticscholar database for doi. ");
@@ -1849,6 +1851,7 @@ final class Template {
 
   public function find_pmid() : void {
     set_time_limit(120);
+    if (ZOTERO_ONLY) return;
     if (!$this->blank('pmid')) return;
     report_action("Searching PubMed... ");
     $results = $this->query_pubmed();
@@ -1894,6 +1897,11 @@ final class Template {
  *   [2] => what was used to find PMID
  *
  */
+    if (ZOTERO_ONLY) {
+      $results = [];
+      $results[1] = 0;
+      return $results;
+    }
     if ($doi = $this->get_without_comments_and_placeholders('doi')) {
       if (doi_works($doi)) {
         $results = $this->do_pumbed_query(array("doi"));
@@ -2013,6 +2021,7 @@ final class Template {
   public function expand_by_adsabs() : bool {
     static $needs_told = TRUE;
     set_time_limit(120);
+    if (ZOTERO_ONLY) return FALSE;
     
     if ($this->has('bibcode') && $this->blank('doi')) {
       $doi = AdsAbsControl::get_bib2doi($this->get('bibcode'));
@@ -2352,6 +2361,7 @@ final class Template {
   }
 
   public function expand_by_pubmed(bool $force = FALSE) : void {
+    if (ZOTERO_ONLY) return;
     if (!$force && !$this->incomplete()) return;
     $this->this_array = array($this);
     if ($pm = $this->get('pmid')) {
@@ -2378,6 +2388,7 @@ final class Template {
 
   public function get_open_access_url() : void {
     if (!$this->blank(DOI_BROKEN_ALIASES)) return;
+    if (ZOTERO_ONLY) return;
     $doi = $this->get_without_comments_and_placeholders('doi');
     if (!$doi) return;
     if (strpos($doi, '10.1093/') === 0) return;
@@ -2585,6 +2596,7 @@ final class Template {
 
   public function expand_by_google_books() : bool {
     $this->clean_google_books();
+    if (ZOTERO_ONLY) return FALSE;
     if ($this->has('doi') && doi_active($this->get('doi'))) return FALSE;
     foreach (['url', 'chapterurl', 'chapter-url'] as $url_type) {
        if ($this->expand_by_google_books_inner($url_type, TRUE)) return TRUE;

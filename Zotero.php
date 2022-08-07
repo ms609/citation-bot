@@ -183,6 +183,7 @@ public static function query_ieee_webpages(array &$templates) : void {  // Point
 
 public static function drop_urls_that_match_dois(array &$templates) : void {  // Pointer to save memory
   // Now that we have expanded URLs, try to lose them
+  if (ZOTERO_ONLY) return;
   $ch = curl_init();
   curl_setopt_array($ch,
         [CURLOPT_FOLLOWLOCATION => TRUE,
