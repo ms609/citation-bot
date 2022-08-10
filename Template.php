@@ -7363,7 +7363,7 @@ final class Template {
           case "ictx": case "imgil": case "ins": case "npsic=":  case "rflfq":
           case "rlha": case "rldoc": case "rldimm": case "npsic": case "phdesc":
           case "prmdo": case "ssui": case "lqi": case "rlst": case "pf":
-          case "authuser": case "gsas": case "ned": case "pz":
+          case "authuser": case "gsas": case "ned": case "pz": case "e":
              break;
           case "as_occt":
              if ($part_start[1] === "" || str_i_same($part_start[1], 'any')) break;
@@ -7371,6 +7371,10 @@ final class Template {
              break;
           case "cf":
              if ($part_start[1] === "" || str_i_same($part_start[1], 'all')) break;
+             $url .=  $part . "&" ;
+             break;
+          case "btnK":
+             if ($part_start[1] === "" || str_i_same($part_start[1], 'Google+Search')) break;
              $url .=  $part . "&" ;
              break;
           case "as_epq":
