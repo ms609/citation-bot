@@ -15,7 +15,7 @@ const LC_SMALL_WORDS = array(/* The following will be automatically updated to a
           " HLA ", " HTMLGIANT ", " IBM ", " ICES ", " IEEE ", " if ", " ILR ", " in ", 
           " INFLIBNET ", " into ", " is ", " its ", " IUCN ", " JAMA ", " JAMA: ", " la ", 
           " las ", " le ", " les ", " los ", " M.A. ", " M.D. ", " medRxiv ", " mit ", 
-          " MNRAS ", " mot ", " N.Y. ", " N.Y.) ", " NASA ", " NEJM ", " NIH ", " non ", 
+          " MNRAS ", " mot ", " N.Y. ", " N.Y.) ", " NASA ", " NEJM ", " NIH ", " non ",  CONFLISCT
           " nor ", " NRC ", " NY ", " NYC ", " NYT ", " NZ ", " och ", " OECD ", " of ", 
           " off ", " og ", " on ", " or ", " over ", " P.E. ", " PC ", " PCR ", " per ", 
           " Ph.D. ", " PMLA ", " PNAS ", " PS: ", " R&D ", " RNA ", " RTÉ ", " S&P ", 
