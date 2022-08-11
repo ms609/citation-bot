@@ -429,6 +429,10 @@ try {
       sleep(5);
       $response = self::QueryAPI($query);
     }
+    if (strpos($response, '"userid"')  === FALSE) { // try yet again if weird
+      sleep(10);
+      $response = self::QueryAPI($query);
+    }
     if ($response === '') return FALSE;
     $response = str_replace(array("\r", "\n"), '', $response);  // paranoid
     if (strpos($response, '"invalid"') !== FALSE) return FALSE; // IP Address and similar stuff
