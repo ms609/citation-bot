@@ -1429,9 +1429,7 @@ final class Template {
         if (stripos($value, '10.1093/oi/authority') === 0) return FALSE; // Those do not work
         if (stripos($value, '10.10520/') === 0 && !doi_works($value)) return FALSE; // Has doi in the URL, but is not a doi
         if (stripos($value, '10.1967/') === 0 && !doi_works($value)) return FALSE; // Retired DOIs
-        if (stripos($value, '10.3316/informit.') === 0 && !doi_works($value)) return FALSE; // These do not seem to work - TODO watch https://dx.doi.org/10.3316/informit.550258516430914
-        if (stripos($value, '10.3316/ielapa.') === 0 && !doi_works($value)) return FALSE; // These do not seem to work - TODO watch   https://dx.doi.org/10.3316/ielapa.347150294724689
-        if (stripos($value, '10.3316/aeipt..') === 0 && !doi_works($value)) return FALSE; // These do not seem to work - TODO watch   https://search.informit.org/doi/10.3316/aeipt.207729
+        if (stripos($value, '10.3316/') === 0 && !doi_works($value)) return FALSE; // These do not seem to work - TODO watch https://dx.doi.org/10.3316/informit.550258516430914 https://dx.doi.org/10.3316/ielapa.347150294724689 https://search.informit.org/doi/10.3316/aeipt.207729 https://search.informit.org/doi/10.3316/agispt.19930546 https://search.informit.org/doi/10.3316/aeipt.207729
         if (preg_match(REGEXP_DOI, $value, $match)) {
           if ($this->blank($param_name)) {
             if ($this->wikiname() === 'cite arxiv') $this->change_name_to('cite journal');
@@ -3921,7 +3919,7 @@ final class Template {
             }
             return;
           }
-          if (!doi_works($doi) && (stripos($doi, '10.3316/informit.') === 0 || stripos($doi, '10.3316/ielapa.') === 0)) {
+          if (!doi_works($doi) && (stripos($doi, '10.3316/') === 0)) {
             if ($this->has('url') || $this->has('pmid') || $this->has('jstor') || $this->has('pmc')) {
               $this->forget('doi');
               return;
