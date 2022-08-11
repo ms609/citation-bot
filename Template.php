@@ -373,7 +373,7 @@ final class Template {
               $the_title = '';
               $bad_data = TRUE;
           }
-          if ($the_title === 'null' || $the_title === '[No title found]' || $the_title === 'Archived copy' ||
+          if ($the_title === 'null' || $the_title === '[No title found]' || $the_title === 'Archived copy' || $the_title === 'JSTOR' ||
               $the_title === 'ShieldSquare Captcha' || $the_title === 'Shibboleth Authentication Request') { // title=none is often because title is "reviewed work....
               $this->rename('title', 'CITATION_BOT_PLACEHOLDER_title');
               $the_title = '';
@@ -394,6 +394,11 @@ final class Template {
               $bad_data = TRUE;
           }
           if (str_i_same($the_journal, 'Biochimica et Biophysica Acta') || str_i_same($the_journal, '[[Biochimica et Biophysica Acta]]')) { // Only part of the journal name
+              $this->rename('journal', 'CITATION_BOT_PLACEHOLDER_journal');
+              $the_journal = '';
+              $bad_data = TRUE;
+          }
+          if (str_i_same($the_journal, 'JSTOR')) {
               $this->rename('journal', 'CITATION_BOT_PLACEHOLDER_journal');
               $the_journal = '';
               $bad_data = TRUE;
@@ -1279,6 +1284,9 @@ final class Template {
            || mb_stripos($all_page_values, 'footnote') !== FALSE
            || mb_stripos($all_page_values, 'endnote') !== FALSE
            || mb_stripos($all_page_values, 'article') !== FALSE
+           || mb_stripos($all_page_values, '[') !== FALSE
+           || mb_stripos($all_page_values, ',') !== FALSE
+           || mb_stripos($all_page_values, '(') !== FALSE
            || mb_stripos($all_page_values, 'CITATION_BOT_PLACEHOLDER') !== FALSE) { // A comment or template will block the bot
            return FALSE;
         }
@@ -1423,6 +1431,7 @@ final class Template {
         if (stripos($value, '10.1967/') === 0 && !doi_works($value)) return FALSE; // Retired DOIs
         if (stripos($value, '10.3316/informit.') === 0 && !doi_works($value)) return FALSE; // These do not seem to work - TODO watch https://dx.doi.org/10.3316/informit.550258516430914
         if (stripos($value, '10.3316/ielapa.') === 0 && !doi_works($value)) return FALSE; // These do not seem to work - TODO watch   https://dx.doi.org/10.3316/ielapa.347150294724689
+        if (stripos($value, '10.3316/aeipt..') === 0 && !doi_works($value)) return FALSE; // These do not seem to work - TODO watch   https://search.informit.org/doi/10.3316/aeipt.207729
         if (preg_match(REGEXP_DOI, $value, $match)) {
           if ($this->blank($param_name)) {
             if ($this->wikiname() === 'cite arxiv') $this->change_name_to('cite journal');
@@ -1512,7 +1521,7 @@ final class Template {
            return $this->add($param_name, $value);
         }
         // TODO : re-checked & change this back to 6 months ago everyone in a while to compact all DOIs
-        $last_day = strtotime("23:59:59 28 February 2022");
+        $last_day = strtotime("23:59:59 31 July 2022");
         $check_date = $last_day - 126000;
         // @codeCoverageIgnoreStart
         if (($the_new > $last_day) && ($existing < $check_date)) {
@@ -1759,6 +1768,7 @@ final class Template {
     if ($this->has('doi')) {
       return TRUE;
     }
+    if (ZOTERO_ONLY) return FALSE;
     report_action("Checking CrossRef database for doi. ");
     $page_range = $this->page_range();
     $data = [
@@ -1827,6 +1837,7 @@ final class Template {
     if ($this->has('doi')) {
       return TRUE;
     }
+    if (ZOTERO_ONLY) return FALSE;
     if ($this->blank(['s2cid', 'S2CID'])) return FALSE;
     if ($this->has('s2cid') && $this->has('S2CID')) return FALSE;
     report_action("Checking semanticscholar database for doi. ");
@@ -1840,6 +1851,7 @@ final class Template {
 
   public function find_pmid() : void {
     set_time_limit(120);
+    if (ZOTERO_ONLY) return;
     if (!$this->blank('pmid')) return;
     report_action("Searching PubMed... ");
     $results = $this->query_pubmed();
@@ -1885,6 +1897,11 @@ final class Template {
  *   [2] => what was used to find PMID
  *
  */
+    if (ZOTERO_ONLY) {
+      $results = [];
+      $results[1] = 0;
+      return $results;
+    }
     if ($doi = $this->get_without_comments_and_placeholders('doi')) {
       if (doi_works($doi)) {
         $results = $this->do_pumbed_query(array("doi"));
@@ -2004,6 +2021,7 @@ final class Template {
   public function expand_by_adsabs() : bool {
     static $needs_told = TRUE;
     set_time_limit(120);
+    if (ZOTERO_ONLY) return FALSE;
     
     if ($this->has('bibcode') && $this->blank('doi')) {
       $doi = AdsAbsControl::get_bib2doi($this->get('bibcode'));
@@ -2303,6 +2321,7 @@ final class Template {
         case "LA": // Language
         case "DA": // Date this is based upon, not written or published
         case "CY": // Location
+        case "TT": // Translated title - very rare and not oftne a very good translation
         case "C1": case "DB": case "AB": case "Y2": // The following line is from JSTOR RIS (basically the header and blank lines)
         case "": case "Provider: JSTOR http://www.jstor.org": case "Database: JSTOR": case "Content: text/plain; charset=\"UTF-8\"";
           $dat = trim(str_replace("\n$ris_line", "", "\n$dat")); // Ignore these completely
@@ -2342,6 +2361,7 @@ final class Template {
   }
 
   public function expand_by_pubmed(bool $force = FALSE) : void {
+    if (ZOTERO_ONLY) return;
     if (!$force && !$this->incomplete()) return;
     $this->this_array = array($this);
     if ($pm = $this->get('pmid')) {
@@ -2368,6 +2388,7 @@ final class Template {
 
   public function get_open_access_url() : void {
     if (!$this->blank(DOI_BROKEN_ALIASES)) return;
+    if (ZOTERO_ONLY) return;
     $doi = $this->get_without_comments_and_placeholders('doi');
     if (!$doi) return;
     if (strpos($doi, '10.1093/') === 0) return;
@@ -2575,6 +2596,7 @@ final class Template {
 
   public function expand_by_google_books() : bool {
     $this->clean_google_books();
+    if (ZOTERO_ONLY) return FALSE;
     if ($this->has('doi') && doi_active($this->get('doi'))) return FALSE;
     foreach (['url', 'chapterurl', 'chapter-url'] as $url_type) {
        if ($this->expand_by_google_books_inner($url_type, TRUE)) return TRUE;
@@ -2587,6 +2609,10 @@ final class Template {
     if ($url_type) {
       $url = $this->get($url_type);
       if (!$url) return FALSE;
+      if (preg_match("~^https?://www\.google\.(?:[^\./]+)/books/edition/_/(.+)$~", $url, $matches)) {
+        $url = 'https://www.google.com/books/edition/_/'. $matches[1];
+        $this->set($url_type, $url);
+      }
       if (!preg_match("~(?:[Bb]ooks|[Ee]ncrypted)\.[Gg]oogle\.[\w\.]+/.*\bid=([\w\d\-]+)~", $url, $gid) &&
           !preg_match("~\.[Gg]oogle\.com/books/edition/_/([a-zA-Z0-9]+)(?:\?.+|)$~", $url, $gid)) {
          return FALSE;  // Got nothing usable
@@ -3572,7 +3598,13 @@ final class Template {
         if (preg_match("~^\'\'\'([^\']+)\'\'\'$~u", $this->get($param), $matches)) {
            $this->set($param, $matches[1]); // Remove bold
         }
-
+        $this->set($param, safe_preg_replace('~\x{00AD}~u', '', $this->get($param))); // Remove soft hyphen
+      }
+      if (stripos($param, 'separator') === FALSE &&   // punctuation valid
+          stripos($param, 'url') === FALSE &&         // everything is valid
+          stripos($param, 'link') === FALSE &&        // inter-wiki links
+          $param !== 'trans-title'                    // these can be very weird
+         ) {
         // Non-breaking spaces at ends
         $this->set($param, trim($this->get($param), " \t\n\r\0\x0B"));
         while (preg_match("~^&nbsp;(.+)$~u", $this->get($param), $matches)) {
@@ -3581,7 +3613,6 @@ final class Template {
         while (preg_match("~^(.+)&nbsp;$~u", $this->get($param), $matches)) {
           $this->set($param, trim($matches[1], " \t\n\r\0\x0B"));
         }
-        $this->set($param, safe_preg_replace('~\x{00AD}~u', '', $this->get($param))); // Remove soft hyphen
       }
     }
     if (in_array(strtolower($param), ['series', 'journal', 'newspaper']) && $this->has($param)) {
@@ -3896,7 +3927,8 @@ final class Template {
               return;
             }
           }
-          if (doi_works($doi) === NULL) {
+          if (doi_works($doi) === NULL) { // This is super slow and rare
+           // @codeCoverageIgnoreStart
            if ($this->has('pmc') || $this->has('pmid')) {
             if (stripos($doi, '10.1210/me.') === 0 || stripos($doi, '10.1210/jc.') === 0 ||
                 stripos($doi, '10.1210/er.') === 0 || stripos($doi, '10.1210/en.') === 0 ||
@@ -3956,6 +3988,7 @@ final class Template {
              }
              return; 
            }
+           // @codeCoverageIgnoreEnd
           }
           if (!doi_works($doi)) {
             $this->verify_doi();
@@ -3997,7 +4030,7 @@ final class Template {
             return;
           }
           if (!preg_match(REGEXP_DOI_ISSN_ONLY, $doi) && doi_works($doi)) {
-           if(!in_array(strtolower($doi), NON_JOURNAL_DOIS)) {
+           if(!in_array(strtolower($doi), NON_JOURNAL_DOIS) && (strpos($doi, '10.14344/') === FALSE)) {
             $the_journal = $this->get('journal') . $this->get('work') . $this->get('periodical');
             if (str_replace(NON_JOURNALS, '', $the_journal) === $the_journal) {
               $this->change_name_to('cite journal', FALSE);
@@ -4024,7 +4057,8 @@ final class Template {
                                   strpos($doi, '10.3897/zookeys') === 0 ||
                                   strpos($doi, '10.1016/j.jbc.') === 0 ||
                                   strpos($doi, '10.1016/S0021-9258') === 0 ||
-                                  strpos($doi, '10.1074/jbc.') === 0
+                                  strpos($doi, '10.1074/jbc.') === 0 ||
+                                  strpos($doi, '10.4249/') === 0
                                  )) {
             $this->add_if_new('doi-access', 'free');
           }
@@ -6359,17 +6393,19 @@ final class Template {
         $url = $this->get('url');
         if (stripos($url, 'CITATION_BOT') === FALSE &&
             filter_var($url, FILTER_VALIDATE_URL) !== FALSE &&
-            !preg_match('~^https?://[^/]+/?$~', $url) &&       // Ignore just a hostname
+            !preg_match('~^https?://[^/]+/*?$~', $url) &&       // Ignore just a hostname
             preg_match (REGEXP_IS_URL, $url) === 1 &&
            preg_match('~^https?://([^/]+)/~', $url, $matches)) {
            $hostname = strtolower($matches[1]);
            $hostname = (string) preg_replace('~^(m\.|www\.)~', '', $hostname);
-           if (preg_match('~^https?://([^/]+/[^/]+)~', $url, $matches)) {
+           if (preg_match('~^https?://([^/]+/+[^/]+)~', $url, $matches)) {
              $hostname_plus = strtolower($matches[1]);
            } else {
-             $hostname_plus = 'matches nothing';
+             file_put_contents('CodeCoverage', "\n" . $url . " generated matches nothing event\n" , FILE_APPEND); // @codeCoverageIgnore
+             $hostname_plus = 'matches nothing';                                                            // @codeCoverageIgnore
            }
            $hostname_plus = (string) preg_replace('~^(m\.|www\.)~', '', $hostname_plus);
+           $hostname_plus = (string) preg_replace('~//+~', '/', $hostname_plus);
            if (str_ireplace(CANONICAL_PUBLISHER_URLS, '', $hostname) === $hostname &&
                str_ireplace(PROXY_HOSTS_TO_ALWAYS_DROP, '', $hostname) === $hostname &&
                str_ireplace(PROXY_HOSTS_TO_DROP, '', $hostname) === $hostname &&
@@ -7326,7 +7362,24 @@ final class Template {
           case "channel": case "espv": case "cad": case "es_sm": case "gs_sm":
           case "ictx": case "imgil": case "ins": case "npsic=":  case "rflfq":
           case "rlha": case "rldoc": case "rldimm": case "npsic": case "phdesc":
-          case "prmdo": case "ssui":
+          case "prmdo": case "ssui": case "lqi": case "rlst": case "pf":
+          case "authuser": case "gsas": case "ned": case "pz": case "e":
+             break;
+          case "as_occt":
+             if ($part_start[1] === "" || str_i_same($part_start[1], 'any')) break;
+             $url .=  $part . "&" ;
+             break;
+          case "cf":
+             if ($part_start[1] === "" || str_i_same($part_start[1], 'all')) break;
+             $url .=  $part . "&" ;
+             break;
+          case "btnK":
+             if ($part_start[1] === "" || str_i_same($part_start[1], 'Google+Search')) break;
+             $url .=  $part . "&" ;
+             break;
+          case "as_epq":
+             if ($part_start[1] === "") break;
+             $url .=  $part . "&" ;
              break;
           case "btnG":
              if ($part_start[1] === "" || str_i_same($part_start[1], 'Search')) break;
@@ -7342,7 +7395,7 @@ final class Template {
              break;
           case "hl": case "safe": case "q": case "tbm": case "start": case "ludocid":
           case "cshid": case "stick": case "as_eq": case "kgmid": case "as_drrb":
-          case "as_scoring": case "gl": case "rllag":
+          case "as_scoring": case "gl": case "rllag": case "lsig":
              $url .=  $part . "&" ;
              break;
           default:
@@ -7396,6 +7449,8 @@ final class Template {
         report_info('WorldCat temporarily unresponsive or does not have Title for ISSN ' .  echoable($issn));
       } elseif (preg_match('~^(.+) \(e?Newspaper, \d{4}s?\) \[WorldCat.org\]$~', $wonky, $matches)) {
         return $this->add_if_new('newspaper', trim($matches[1], " \n\r\t\v\x00\."));
+      } elseif (preg_match('~\(DVD video~', $wonky, $matches)) {
+        return FALSE;
       } else {
         report_minor_error('Unexpected title from WorldCat for ISSN ' . echoable($issn) . ' : ' . echoable($wonky));
       }

@@ -50,10 +50,15 @@ if (strpos((string) @$_SERVER['PHP_SELF'], '/gadgetapi.php') === FALSE) {
 
 if (isset($_REQUEST["slow"]) || TRAVIS || (isset($argv[2]) && $argv[2] === '--slow')) {
   define("SLOW_MODE", TRUE);
+  define("ZOTERO_ONLY", FALSE);
+} elseif (isset($argv[2]) && $argv[2] === '--zotero') {
+  define("SLOW_MODE", TRUE);
+  define("ZOTERO_ONLY", TRUE);
 } elseif (isset($argv[2])) {
   exit("Unexpected text on the command.  Only --slow is valid second argument.");
 } else {
   define("SLOW_MODE", FALSE);
+  define("ZOTERO_ONLY", FALSE);
 }
 
 ob_implicit_flush();

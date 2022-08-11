@@ -633,4 +633,6 @@ const TEMPLATE_CONVERSIONS = array(
                ['proquest', 'ProQuest'],
                ['DOI', 'doi'],
                ['Doi', 'doi'],
+               ['Deadurl', 'Dead link'],
+               ['deadurl', 'dead link'],
                );

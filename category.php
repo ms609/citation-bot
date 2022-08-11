@@ -34,7 +34,7 @@ if ($category) {
   shuffle($pages_in_category);
 
   $total = count($pages_in_category);
-  if ($total > intval(MAX_PAGES / 2)) {
+  if ($total > intval(MAX_PAGES / 4)) {
     report_warning( 'Category is huge (' . (string) $total . ')  Cancelling run. Pick a smaller category (maximum size is ' . (string) intval(MAX_PAGES / 4) . ').  Listen to Obi-Wan Kenobi:  You want to go home and rethink your life.');
     echo "\n\n";
     foreach ($pages_in_category as $page_title) {

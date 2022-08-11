@@ -257,6 +257,7 @@ class Page {
      }
     // TEMPLATES
     set_time_limit(120);
+    $triplebrack = $this->extract_object('TripleBracket');
     $singlebrack = $this->extract_object('SingleBracket');
     $all_templates = $this->extract_object('Template');
     set_time_limit(120);
@@ -394,6 +395,7 @@ class Page {
     expand_templates_from_archives($our_templates);
 
     report_phase('Remedial work to clean up templates');
+    $log_bad_chapter = FALSE;
     for ($i = 0; $i < count($our_templates); $i++) {
       $this_template = $our_templates[$i];
       // Clean up:
@@ -414,7 +416,17 @@ class Page {
           $this->modifications[$key] = $this->modifications[$key] || $template_mods[$key]; // bool like mod_dashes
         }
       }
-    }
+      if ($this_template->has('chapter')) {
+        $type = $this_template->wikiname();
+        if (in_array($type, ['cite journal', 'cite news'])) {
+          $log_bad_chapter = TRUE; // @codeCoverageIgnore
+        }
+      }
+    }    
+    if ($log_bad_chapter) { // We can fix these and find these fast
+      file_put_contents('CodeCoverage', $this->title . " page has ignored chapter \n", FILE_APPEND); // @codeCoverageIgnore
+    }  
+          
     for ($i = 0; $i < count($our_templates_slight); $i++) {
       $this_template = $our_templates_slight[$i];
       // Record any modifications that have been made:
@@ -448,6 +460,7 @@ class Page {
     
     set_time_limit(120);
     $this->replace_object($singlebrack); unset($singlebrack);
+    $this->replace_object($triplebrack); unset($triplebrack);
     $this->replace_object($preformated); unset($preformated);
     $this->replace_object($musicality); unset($musicality);
     $this->replace_object($mathematics); unset($mathematics);
@@ -549,7 +562,7 @@ class Page {
     if (count($this->modifications["deletions"]) !== 0 && count($this->modifications["additions"]) !== 0 && $this->modifications["names"]) {
       $auto_summary .= 'Some additions/deletions were parameter name changes. ';
     }
-    $isbn978_added = substr_count($this->text, '978') - substr_count($this->start_text, '978');
+    $isbn978_added = substr_count($this->text, '978-') - substr_count($this->start_text, '978-');
     $isbn_added = (substr_count($this->text, 'isbn') + substr_count($this->text, 'ISBN')) -
                   (substr_count($this->start_text, 'isbn') + substr_count($this->start_text, 'ISBN'));
     if (($isbn978_added > 0) && ($isbn978_added > $isbn_added)) { // Still will get false positives for isbn=blank converted to isbn=978......
@@ -652,8 +665,7 @@ class Page {
       }
     }
     if ($preg_ok === FALSE && isset($regexp)) {
-      report_info(self::preg_errtxt()); 
-      ini_set("pcre.jit", "0");   // This does not seem to work
+      // @codeCoverageIgnoreStart
       $regexp = str_replace('~su', '~s', $regexp); // Try without unicode
       while ($preg_ok = preg_match($regexp, $text, $match)) { // Just use last most powerful REGEX
         $obj = new $class();
@@ -662,15 +674,13 @@ class Page {
         } catch (Exception $e) {
           $this->page_error = TRUE;
           $this->text = $text;
-          ini_set("pcre.jit", "1");
           return $objects;
         }
         $exploded = $treat_identical_separately ? explode($match[0], $text, 2) : explode($match[0], $text);
         $text = implode(sprintf($placeholder_text, $i++), $exploded);
         $objects[] = $obj;
       }
-      report_info(self::preg_errtxt());
-      ini_set("pcre.jit", "1");
+      // @codeCoverageIgnoreEnd
     }
     
     /** @psalm-suppress TypeDoesNotContainType */
@@ -687,14 +697,6 @@ class Page {
     }
     $this->text = $text;
     return $objects;
-  }
-  
-  private static function preg_errtxt() : string {
-    $errcode = preg_last_error();
-    $errtext = array();
-    $constants = get_defined_constants(true);
-    foreach ($constants['pcre'] as $c => $n) if (preg_match('/_ERROR$/', $c)) $errtext[$n] = $c;
-    return array_key_exists($errcode, $errtext)? $errtext[$errcode] : '';
   }
 
   protected function replace_object (array &$objects) : void {  // Pointer to save memory

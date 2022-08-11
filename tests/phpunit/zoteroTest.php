@@ -848,6 +848,20 @@ final class zoteroTest extends testBaseClass {
     $this->assertSame('34–55', $template->get2('pages'));
   }
 
+  public function testZoteroResponse52() : void {
+    $text = '{{cite web}}';
+    $template = $this->make_citation($text);
+    $access_date = 0;
+    $url = '';
+    $url_kind = '';
+    $zotero_data[0] = (object) array('title' => 'This is the title of the chapter', 'extra' => 'PMID: 12345 OCLC: 7777 Open Library ID: OL1234M');
+    $zotero_response = json_encode($zotero_data);
+    $this->assertTrue(Zotero::process_zotero_response($zotero_response, $template, $url, $url_kind, $access_date));
+    $this->assertSame('12345', $template->get2('pmid'));
+    $this->assertSame('7777', $template->get2('oclc'));
+    $this->assertSame('1234M', $template->get2('ol'));
+  }
+  
   public function testRemoveURLthatRedirects() : void { // This URL is a redirect -- tests code that does that
     $text = '{{cite journal|doi-access=free|doi=10.1021/acs.analchem.8b04567|url=https://shortdoi.org/gf7sqt|pmid=30741529|pmc=6526953|title=ISiCLE: A Quantum Chemistry Pipeline for Establishing in Silico Collision Cross Section Libraries|journal=Analytical Chemistry|volume=91|issue=7|pages=4346–4356|year=2019|last1=Colby|first1=Sean M.|last2=Thomas|first2=Dennis G.|last3=Nuñez|first3=Jamie R.|last4=Baxter|first4=Douglas J.|last5=Glaesemann|first5=Kurt R.|last6=Brown|first6=Joseph M.|last7=Pirrung|first7=Meg A.|last8=Govind|first8=Niranjan|last9=Teeguarden|first9=Justin G.|last10=Metz|first10=Thomas O.|last11=Renslow|first11=Ryan S.}}';
     $template = $this->make_citation($text);
@@ -1091,16 +1105,6 @@ final class zoteroTest extends testBaseClass {
    });
   }
  
-  public function testZoteroTruncateDOI() : void {
-   $this->requires_zotero(function() : void {
-    $text = '{{cite journal|url=http://www.oxfordhandbooks.com/view/10.1093/oxfordhb/9780199552238.001.0001/oxfordhb-9780199552238-e-023}}';
-    $expanded = $this->process_citation($text);
-    $this->assertNull($expanded->get2('doi-broken-date'));
-    $this->assertSame('http://www.oxfordhandbooks.com/view/10.1093/oxfordhb/9780199552238.001.0001/oxfordhb-9780199552238-e-023', $expanded->get2('url'));
-    $this->assertSame('10.1093/oxfordhb/9780199552238.003.0023', $expanded->get2('doi'));
-   });
-  }
- 
   public function testZoteroExpansion_hdl() : void {
    $this->requires_zotero(function() : void {
     $text = '{{Cite journal| hdl=10411/OF7UCA }}';
@@ -1139,4 +1143,39 @@ final class zoteroTest extends testBaseClass {
     $this->assertSame('20.1000/100', $template->get2('hdl'));
   }
 
+  public function testPubMedTermStuff1() : void {
+    $text = '{{Cite web|url=https://stuff.ncbi.nlm.nih.gov/pubmed/?term=dropper}}';
+    $template = $this->make_citation($text);
+    $template->get_identifiers_from_url();
+    $this->assertSame('https://pubmed.ncbi.nlm.nih.gov/?term=dropper', $template->get2('url'));
+  }
+  
+  public function testPubMedTermStuff2() : void {
+    $text = '{{Cite web|url=https://stuff.ncbi.nlm.nih.gov/pubmed/?term=dropper|pmid=21234}}';
+    $template = $this->make_citation($text);
+    $template->get_identifiers_from_url();
+    $this->assertNull($template->get2('url'));
+  }
+  
+  public function testPubMedTermStuff3() : void {
+    $text = '{{Cite web|url=https://stuff.ncbi.nlm.nih.gov/pubmed?term=21234|pmid=21234}}';
+    $template = $this->make_citation($text);
+    $template->get_identifiers_from_url();
+    $this->assertSame('https://pubmed.ncbi.nlm.nih.gov/21234/', $template->get2('url'));
+  }
+  
+  public function testPubMedTermStuff4() : void {
+    $text = '{{Cite web|url=https://stuff.ncbi.nlm.nih.gov/pubmed?term=12343214|pmid=32412}}';
+    $template = $this->make_citation($text);
+    $template->get_identifiers_from_url();
+    $this->assertSame('https://stuff.ncbi.nlm.nih.gov/pubmed?term=12343214', $template->get2('url'));
+  }
+
+  public function testPubMedTermStuff5() : void {
+    $text = '{{Cite web|url=https://stuff.ncbi.nlm.nih.gov/pubmed/?term=21234|pmid=}}';
+    $template = $this->make_citation($text);
+    $template->get_identifiers_from_url();
+    $this->assertSame('https://pubmed.ncbi.nlm.nih.gov/21234/', $template->get2('url'));
+    $this->assertSame('21234', $template->get2('pmid'));
+  }
 }

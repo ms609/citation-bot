@@ -176,6 +176,7 @@ public static function query_ieee_webpages(array &$templates) : void {  // Point
 
 public static function drop_urls_that_match_dois(array &$templates) : void {  // Pointer to save memory
   // Now that we have expanded URLs, try to lose them
+  if (ZOTERO_ONLY) return;
   $ch = curl_init();
   curl_setopt_array($ch,
         [CURLOPT_FOLLOWLOCATION => TRUE,
@@ -571,11 +572,7 @@ public static function process_zotero_response(string $zotero_response, Template
       $result->extra = trim(str_replace(trim($matches[0]), '', $result->extra));
       $template->add_if_new('pmid', $matches[1]);
     }
-    if (preg_match('~\sOCLC: (\d+)\s~i', ' ' . $result->extra . ' ', $matches)) {
-      $result->extra = trim(str_replace(trim($matches[0]), '', $result->extra));
-      $template->add_if_new('oclc', $matches[1]);
-    }
-    if (preg_match('~\sOCLC: ocn(\d+)\s~i', ' ' . $result->extra . ' ', $matches)) {
+    if (preg_match('~\sOCLC: (?:|ocn|ocm)(\d+)\s~i', ' ' . $result->extra . ' ', $matches)) {
       $result->extra = trim(str_replace(trim($matches[0]), '', $result->extra));
       $template->add_if_new('oclc', $matches[1]);
     }
@@ -599,6 +596,9 @@ public static function process_zotero_response(string $zotero_response, Template
       $result->extra = trim(str_replace(trim($matches[0]), '', $result->extra));           // @codeCoverageIgnore
     }
     if (preg_match('~\s(Citation Key: \S+)\s~i', ' ' . $result->extra . ' ', $matches)) { // We don't use it
+      $result->extra = trim(str_replace(trim($matches[0]), '', $result->extra));           // @codeCoverageIgnore
+    }
+    if (preg_match('~\s(number-of-pages: [ivx]+, \d+)\s~i', ' ' . $result->extra . ' ', $matches)) { // We don't use it
       $result->extra = trim(str_replace(trim($matches[0]), '', $result->extra));           // @codeCoverageIgnore
     }
     if (preg_match('~\s(number-of-pages: \S+)\s~i', ' ' . $result->extra . ' ', $matches)) { // We don't use it
@@ -638,6 +638,9 @@ public static function process_zotero_response(string $zotero_response, Template
     if (preg_match('~\s(arXiv: \S+)\s~i', ' ' . $result->extra . ' ', $matches)) { // We don't use it - only comes from arXiv DOIs
       $result->extra = trim(str_replace(trim($matches[0]), '', $result->extra));  // @codeCoverageIgnore
     }
+    if (preg_match('~\s(INIS Reference Number: \d+)\s~i', ' ' . $result->extra . ' ', $matches)) { // We don't use it - https://inis.iaea.org
+      $result->extra = trim(str_replace(trim($matches[0]), '', $result->extra));  // @codeCoverageIgnore
+    }
     if (preg_match('~\s(\d+ cm\.)\s~i', ' ' . $result->extra . ' ', $matches)) { // We don't use it - size of book
       $result->extra = trim(str_replace(trim($matches[0]), '', $result->extra));  // @codeCoverageIgnore
     }
@@ -670,6 +673,12 @@ public static function process_zotero_response(string $zotero_response, Template
       $result->extra = trim(str_replace(trim($matches[0]), '', $result->extra));           // @codeCoverageIgnore
     }
     if (preg_match('~Credit: [\s\S]*$~i', ' ' . $result->extra . ' ', $matches)) {  // We don't use it
+      $result->extra = trim(str_replace(trim($matches[0]), '', $result->extra));           // @codeCoverageIgnore
+    }
+    if (preg_match('~Manufacturer: [\s\S]*$~i', ' ' . $result->extra . ' ', $matches)) {  // We don't use it
+      $result->extra = trim(str_replace(trim($matches[0]), '', $result->extra));           // @codeCoverageIgnore
+    }
+    if (preg_match('~pl., cartes, errata.~i', ' ' . $result->extra . ' ', $matches)) {  // We don't use it
       $result->extra = trim(str_replace(trim($matches[0]), '', $result->extra));           // @codeCoverageIgnore
     }
     $result->extra = trim($result->extra);
@@ -879,6 +888,7 @@ public static function process_zotero_response(string $zotero_response, Template
       case 'podcast':       // @codeCoverageIgnore
       case 'manuscript':       // @codeCoverageIgnore
       case 'artwork':       // @codeCoverageIgnore
+      case 'interview':   // @codeCoverageIgnore
           // Do not change type.  Would need to think about parameters
       case 'patent':       // @codeCoverageIgnore
           // Do not change type. This seems to include things that will just make people angry if we change type to encyclopedia
@@ -900,7 +910,7 @@ public static function process_zotero_response(string $zotero_response, Template
         $creatorType = isset($result->creators[$i]->creatorType) ? $result->creators[$i]->creatorType : 'author';
         if (isset($result->creators[$i]->firstName) && isset($result->creators[$i]->lastName)) {
           switch ($creatorType) {
-            case 'author': case 'contributor':
+            case 'author': case 'contributor': case 'artist':
               $authorParam = 'author' . (string) ++$author_i;
               break;
             case 'editor':
@@ -909,9 +919,9 @@ public static function process_zotero_response(string $zotero_response, Template
             case 'translator':
               $authorParam = 'translator' . (string) ++$translator_i;
               break;
-             case 'reviewedAuthor':
-              $authorParam = '';
-              break;
+             case 'reviewedAuthor':   // @codeCoverageIgnore
+              $authorParam = '';      // @codeCoverageIgnore
+              break;                  // @codeCoverageIgnore
             default:                                                               // @codeCoverageIgnore
               report_minor_error("Unrecognized creator type: " . echoable($creatorType) . ' FROM ' . echoable($url));    // @codeCoverageIgnore
               $authorParam = '';                                                   // @codeCoverageIgnore
@@ -1152,7 +1162,7 @@ public static function find_indentifiers_in_urls(Template $template, ?string $ur
        }
      }
      // Remove junk from URLs
-     while (preg_match('~^https?://www\.jstor\.org/stable/(.+)(?:&ved=|&usg=|%3Fseq%3D1|\?seq=|\?uid=)~i', $url, $matches)) {
+     while (preg_match('~^https?://www\.jstor\.org/stable/(.+)(?:&ved=|&usg=|%3Fseq%3D1|\?|#metadata_info_tab_contents)~i', $url, $matches)) {
        $url = 'https://www.jstor.org/stable/' . $matches[1] ;
        if (is_null($url_sent)) {
          $template->set($url_type, $url); // Update URL with cleaner one
@@ -1368,6 +1378,21 @@ public static function find_indentifiers_in_urls(Template $template, ?string $ur
           }
           return $template->add_if_new('pmc', $new_pmc);
         
+        } elseif (preg_match('~^https?://.*ncbi\.nlm\.nih\.gov/pubmed/?\?term=(\d+)$~', $url, $match)) {
+           $pos_pmid = $match[1];
+           $old_pmid = $template->get('pmid');
+           if ($old_pmid === '' || ($old_pmid === $pos_pmid)) {
+              $template->set($url_type, 'https://pubmed.ncbi.nlm.nih.gov/' . $pos_pmid .'/');
+              $template->add_if_new('pmid', $pos_pmid);
+              return TRUE;
+           } else {
+              report_warning(echoable($url) . ' does not match PMID of ' . echoable($old_pmid));
+           }
+           return FALSE;
+        } elseif (preg_match('~^https?://.*ncbi\.nlm\.nih\.gov/pubmed/?\?term=.*$~', $url) && ($template->has('pmid') || $template->has('pmc'))) {
+           report_info('Dropped non-specific pubmed search URL, since PMID is present');
+           $template->forget($url_type);
+           return FALSE;
         } elseif (preg_match("~^https?://(?:www\.|)ncbi\.nlm\.nih\.gov/(?:m/)?"
         . "(?:pubmed/|"
         . "/eutils/elink\.fcgi\S+dbfrom=pubmed\S+/|"
@@ -1377,6 +1402,9 @@ public static function find_indentifiers_in_urls(Template $template, ?string $ur
             preg_match("~^https?://pubmed\.ncbi\.nlm\.nih\.gov/(?:|entrez/eutils/elink.fcgi\?dbfrom=pubmed\&retmode=ref\&cmd=prlinks\&id=)(\d{4,})/?(?:|#.+|-.+|\?.+)$~", $url, $match)
           ) {
           if (preg_match("~\?term~i", $url) && !preg_match("~pubmed\.ncbi\.nlm\.nih\.gov/\d{4,}/\?from_term=~", $url)) {
+            if (preg_match('~^https?://.*ncbi\.nlm\.nih\.gov/pubmed/?(\?term=.*)$~', $url, $matches)) {
+                $template->set($url_type, 'https://pubmed.ncbi.nlm.nih.gov/' . $matches[1]);
+            }
             return FALSE; // A search such as https://www.ncbi.nlm.nih.gov/pubmed/?term=Sainis%20KB%5BAuthor%5D&cauthor=true&cauthor_uid=19447493
           }
           quietly('report_modification', "Converting URL to PMID parameter");
@@ -1395,22 +1423,8 @@ public static function find_indentifiers_in_urls(Template $template, ?string $ur
              if ($template->has_good_free_copy()) $template->forget($url_type);
           }
           return FALSE;
-        } elseif (preg_match('~^https?://.*ncbi\.nlm\.nih\.gov/pubmed\?term=(\d+)$~', $url, $match)) {
-           $pos_pmid = $match[1];
-           $old_pmid = $template->get('pmid');
-           if ($old_pmid === '' || ($old_pmid === $pos_pmid)) {
-              $template->set('url', 'https://pubmed.ncbi.nlm.nih.gov/' . $pos_pmid .'/');
-              $template->add_if_new('pmid', $pos_pmid);
-              return TRUE;
-           } else {
-              report_warning(echoable($url) . ' does not match PMID of ' . echoable($old_pmid));
-           }
-           return FALSE;
-        } elseif (preg_match('~^https?://.*ncbi\.nlm\.nih\.gov/pubmed\?term=.*$~', $url)) {
-           if ($template->has('pmid') || $template->has('pmc')) {
-              report_info('Dropped non-specific pubmed search URL, since PMID is present');
-              $template->forget($url_type);
-           }
+        } elseif (preg_match('~^https?://.*ncbi\.nlm\.nih\.gov/pubmed/?(\?term=.*)$~', $url, $matches)) {
+           $template->set($url_type, 'https://pubmed.ncbi.nlm.nih.gov/' . $matches[1]);
            return FALSE;
         }
 

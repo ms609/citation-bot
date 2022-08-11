@@ -4614,4 +4614,21 @@ final class TemplateTest2 extends testBaseClass {
       $expanded = $this->process_citation($text);
       $this->assertSame($text, $expanded->parsed_text());
     }
+ 
+    public function testMulitpleNewspapers() : void {
+      $text = "{{cite web |url=https://philstar.com/pilipino-star-ngayon/stuff }}";
+      $expanded = $this->process_citation($text);
+      $this->assertSame('[[Pilipino Star Ngayon]]', $expanded->get2('website'));
+     
+      $text = "{{cite web |url=https://philstar.com/stuff }}";
+      $expanded = $this->process_citation($text);
+      $this->assertSame('[[The Philippine STAR]]', $expanded->get2('website'));
+    }
+ 
+    public function testAddBadVolume() : void {
+      $text = "{{cite journal}}";
+      $expanded = $this->make_citation($text);
+      $expanded->add_if_new('volume', 'volume 08');
+      $this->assertSame('8', $expanded->get2('volume'));
+    }
 }

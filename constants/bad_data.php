@@ -20,10 +20,10 @@ const NON_HUMAN_AUTHORS = array('collaborat', 'reporter', 'journalist', 'corresp
                                 'national', 'endowment', ' for the ', 'humanities', 'committee', 'group',
                                 'society', ' of america', 'association', ' at the ', 'board of ', 'communications',
                                 'corporation', 'incorporated', 'editorial', 'university', 'dept. of', 'department',
-                                'dept of ', 'college', 'center for', 'office of', 'editor', 
+                                'dept of ', 'college', 'center for', 'office of', 'editor', 'institut',
                                 'world news', 'national news', 'eyewitness', 'information', 'business', 'bureau',
                                 'us census', 'indiatoday', 'natural history', 'museum', '試験所', 'circuit',
-                                'external', 'relations', 'nations', 'united', 'radio', 'rundfunk');
+                                'external', 'relations', 'nations', 'united', 'radio', 'rundfunk', 'new york');
 const BAD_PUBLISHERS = array('london', 'edinburgi', 'edinburgh', 'no publisher', 'no publisher given',
                              'no publisher specified', 'unknown', 'publisher not identified', 'report');
 

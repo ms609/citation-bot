@@ -61,6 +61,7 @@ final class AdsAbsControl {
 function entrez_api(array $ids, array &$templates, string $db) : bool {   // Pointer to save memory
   set_time_limit(120);
   if (!count($ids)) return FALSE;
+  if (ZOTERO_ONLY) return FALSE;
   if ($ids == ['XYZ']) return FALSE; // junk data from test suite
   if ($ids == ['1']) return FALSE; // junk data from test suite
   if ($ids == ['']) return FALSE; // junk data from test suite
@@ -165,6 +166,7 @@ function entrez_api(array $ids, array &$templates, string $db) : bool {   // Poi
 function query_bibcode_api(array $bibcodes, array &$templates) : bool { return adsabs_api($bibcodes, $templates, 'bibcode'); }  // Pointer to save memory
 
 function expand_arxiv_templates (array &$templates) : bool {  // Pointer to save memory
+  if (ZOTERO_ONLY) return FALSE;
   $ids = array();
   $arxiv_templates = array();
   foreach ($templates as $this_template) {
@@ -279,6 +281,7 @@ function arxiv_api(array $ids, array &$templates) : bool {  // Pointer to save m
 }
 
 function adsabs_api(array $ids, array &$templates, string $identifier) : bool {  // Pointer to save memory
+  if (ZOTERO_ONLY) return FALSE;
   set_time_limit(120);
   if (count($ids) === 0) return FALSE;
   
@@ -384,6 +387,7 @@ function query_doi_api(array $ids, array &$templates) : bool { // $id not used y
 }
 
 function expand_by_doi(Template $template, bool $force = FALSE) : bool {
+  if (ZOTERO_ONLY) return FALSE;
   set_time_limit(120);
   // Because it can recover rarely used parameters such as editors, series & isbn, 
   // there will be few instances where it could not in principle be profitable to 
@@ -530,6 +534,7 @@ function expand_by_doi(Template $template, bool $force = FALSE) : bool {
 }
 
 function query_crossref(string $doi) : ?object {
+  if (ZOTERO_ONLY) return NULL;
   if (strpos($doi, '10.2307') === 0) return NULL; // jstor API is better
   set_time_limit(120);
   $doi = str_replace(DOI_URL_DECODE, DOI_URL_ENCODE, $doi);
@@ -579,6 +584,7 @@ function expand_doi_with_dx(Template $template, string $doi) : bool {
      // Examples of DOI usage   https://www.doi.org/demos.html
      // This basically does this:
      // curl -LH "Accept: application/vnd.citationstyles.csl+json" https://dx.doi.org/10.5524/100077
+     if (ZOTERO_ONLY) return FALSE;
      if (strpos($doi, '10.2307') === 0) return FALSE; // jstor API is better
      if (strpos($doi, '10.24436') === 0) return FALSE; // They have horrible meta-data
      set_time_limit(120);
@@ -700,18 +706,19 @@ function expand_doi_with_dx(Template $template, string $doi) : bool {
        if (stripos(@$json['URL'], 'hdl.handle.net')) {
            $template->get_identifiers_from_url($json['URL']);
        }
-     } elseif (@$json['type'] == 'posted-content' || @$json['type'] == 'grant') { // posted-content is from bioRxiv
+     } elseif (@$json['type'] == 'posted-content' || @$json['type'] == 'grant' || @$json['type'] == 'song') { // posted-content is from bioRxiv
        $try_to_add_it('title', @$json['title']);
      } else {
        $try_to_add_it('title', @$json['title']);                                                 // @codeCoverageIgnore
        /** @psalm-suppress RedundantCondition */ /* PSALM thinks TRAVIS cannot be FALSE */
        if (!HTML_OUTPUT) print_r($json);                                                         // @codeCoverageIgnore
-       report_minor_error('dx.doi.org returned unexpected data type for ' . doi_link($doi));     // @codeCoverageIgnore
+       report_minor_error('dx.doi.org returned unexpected data type ' . (string) @$json['type'] . ' for ' . doi_link($doi));     // @codeCoverageIgnore
      }
      return TRUE;
 }
 
 function expand_by_jstor(Template $template) : bool {
+  if (ZOTERO_ONLY) return FALSE;
   set_time_limit(120);
   if ($template->incomplete() === FALSE) return FALSE;
   if ($template->has('jstor')) {
@@ -973,6 +980,7 @@ function parse_plain_text_reference(string $journal_data, Template $this_templat
 } 
 
 function getS2CID(string $url) : string {
+  if (ZOTERO_ONLY) return '';
   $context = stream_context_create(CONTEXT_S2);
   /** @psalm-taint-escape file */
   $url = urlencode(urldecode($url));
@@ -998,6 +1006,7 @@ function getS2CID(string $url) : string {
 }
       
 function ConvertS2CID_DOI(string $s2cid) : string {
+  if (ZOTERO_ONLY) return '';
   $context = stream_context_create(CONTEXT_S2);
   /** @psalm-taint-escape file */
   $s2cid = urlencode($s2cid);
@@ -1041,6 +1050,7 @@ function get_semanticscholar_license(string $s2cid) : ?bool {
 
 function expand_templates_from_archives(array &$templates) : void { // This is done very late as a latch ditch effort  // Pointer to save memory
   set_time_limit(120);
+  if (ZOTERO_ONLY) return;
   $ch = curl_init();
   curl_setopt_array($ch,
           [CURLOPT_HEADER => FALSE,
@@ -1302,7 +1312,6 @@ function query_adsabs(string $options) : object {
     // API docs at https://github.com/adsabs/adsabs-dev-api/blob/master/Search_API.ipynb
     if (AdsAbsControl::small_gave_up_yet()) return (object) array('numFound' => 0);
     if (!PHP_ADSABSAPIKEY) return (object) array('numFound' => 0);
-
       $ch = curl_init();
       /** @psalm-suppress RedundantCondition */ /* PSALM thinks TRAVIS cannot be FALSE */
       $adsabs_url = "https://" . (TRAVIS ? 'qa' : 'api')

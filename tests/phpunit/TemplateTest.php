@@ -254,7 +254,7 @@ final class TemplateTest extends testBaseClass {
     $expanded = $this->process_citation($text);
     $this->assertNull($expanded->get2('pmid'));
     $this->assertNull($expanded->get2('pmc'));
-    $this->assertSame('https://www.ncbi.nlm.nih.gov/pubmed/?term=Sainis%20KB%5BAuthor%5D&cauthor=true&cauthor_uid=19447493', $expanded->get2('url'));  
+    $this->assertSame('https://pubmed.ncbi.nlm.nih.gov/?term=Sainis%20KB%5BAuthor%5D&cauthor=true&cauthor_uid=19447493', $expanded->get2('url'));  
    }
  
    public function testJournal2Web() : void {
@@ -3302,9 +3302,9 @@ EP - 999 }}';
   }
 
   public function testTrimGoogleStuff() : void {
-    $text = '{{cite web|url=https://www.google.com/search?q=%22institute+for+sustainable+weight+loss%22&btnG=&oq=%22institute+for+sustainable+weight+loss%22&aqs=chrome..69i57j69i59.14823j0j7&sourceid=chrome&ie=UTF-8#The_hash#The_second_hash}}';
+    $text = '{{cite web|url=https://www.google.com/search?q=%22institute+for+sustainable+weight+loss%22&btnG=&oq=%22institute+for+sustainable+weight+loss%22&aqs=chrome..69i57j69i59.14823j0j7&sourceid=chrome&ie=UTF-8&as_occt=any&cf=all&as_epq=&as_scoring=YES&as_occt=BUG&cf=DOG&as_epq=CAT#The_hash#The_second_hash}}';
     $prepared = $this->prepare_citation($text);
-    $this->assertSame('https://www.google.com/search?q=%22institute+for+sustainable+weight+loss%22#The_hash', $prepared->get2('url'));
+    $this->assertSame('https://www.google.com/search?q=%22institute+for+sustainable+weight+loss%22&as_scoring=YES&as_occt=BUG&cf=DOG&as_epq=CAT#The_hash', $prepared->get2('url'));
   }
  
   public function testCleanRGTitles() : void {
@@ -3705,7 +3705,7 @@ EP - 999 }}';
   }
  
   public function testJunkData() : void {
-    $text = "{{Cite web | title=JSTOR THIS IS A LONG TITLE IN ALL CAPPS AND IT IS BAD|pmid=1974135}} " . 
+    $text = "{{Cite web | title=JSTOR THIS IS A LONG TITLE IN ALL CAPPS AND IT IS BAD|journal=JSTOR|pmid=1974135}} " . 
             "{{Cite web | title=JSTOR This is bad data|journal=JSTOR This is bad data|jstor=1974136}}" .
             "{{Cite web | title=JSTOR This is a title on JSTOR|pmc=1974137}}" .
             "{{Cite web | title=JSTOR This is a title with IEEE Xplore Document|pmid=1974138}}" .
