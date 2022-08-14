@@ -335,6 +335,10 @@ private static function zotero_request(string $url) : string {
     report_warning(curl_error(self::$zotero_ch) . "   For URL: " . $url);
     if (strpos(curl_error(self::$zotero_ch), 'timed out after') !== FALSE) {
       self::$zotero_failures_count = self::$zotero_failures_count + 1;
+      if (ZOTERO_ONLY) {
+         self::$zotero_failures_count = 1;
+         sleep 5;
+      }
       if (self::$zotero_failures_count > self::ZOTERO_GIVE_UP) {
         report_warning("Giving up on URL expansion for a while");
         self::$zotero_failures_count = self::$zotero_failures_count + self::ZOTERO_SKIPS;
