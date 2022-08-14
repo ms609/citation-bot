@@ -93,7 +93,8 @@ public static function unblock_zotero() : void {
 public static function query_url_api_class(array $ids, array &$templates) : void { // Pointer to save memory
   if (!SLOW_MODE) return; // Zotero takes time
 
-  if (!TRAVIS) { // try harder in tests
+  curl_setopt(self::$zotero_ch, CURLOPT_TIMEOUT, 45); // Reset default
+  if (!TRAVIS && !ZOTERO_ONLY) { // try harder in tests
     // @codeCoverageIgnoreStart
     curl_setopt(self::$zotero_ch, CURLOPT_CONNECTTIMEOUT, 3);
     $url_count = 0;
@@ -115,10 +116,11 @@ public static function query_url_api_class(array $ids, array &$templates) : void
   foreach ($templates as $template) {
      self::expand_by_zotero($template);
   }
+  self::$zotero_announced = 2;
+  if (ZOTERO_ONLY) return;
   if (!TRAVIS) { // These are pretty reliable, unlike random urls
       curl_setopt(self::$zotero_ch, CURLOPT_TIMEOUT, 10);  // @codeCoverageIgnore
   }
-  self::$zotero_announced = 2;
   foreach ($templates as $template) {
        if ($template->has('biorxiv')) {
          if ($template->blank('doi')) {
