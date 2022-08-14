@@ -636,6 +636,7 @@ final class Template {
   }
 
   public function incomplete() : bool {   // FYI: some references will never be considered complete
+    if (ZOTERO_ONLY && $this->has('title')) return FALSE;
     $possible_extra_authors = $this->get('author') . $this->get('authors') . $this->get('vauthors');
     if (strpos($possible_extra_authors, ' and ') !== FALSE ||
         strpos($possible_extra_authors, '; ')    !== FALSE ||
@@ -689,6 +690,7 @@ final class Template {
   }
 
   public function profoundly_incomplete(string $url = '') : bool {
+    if (ZOTERO_ONLY && $this->has('title')) return FALSE;
     // Zotero translation server often returns bad data, which is worth having if we have no data,
     // but we don't want to fill a single missing field with garbage if a reference is otherwise well formed.
     $has_date = $this->has('date') || $this->has('year') ;
