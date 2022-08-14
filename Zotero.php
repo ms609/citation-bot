@@ -339,7 +339,7 @@ private static function zotero_request(string $url) : string {
       self::$zotero_failures_count = self::$zotero_failures_count + 1;
       if (ZOTERO_ONLY) {
          self::$zotero_failures_count = 1;
-         sleep 5;
+         sleep(10);
       }
       if (self::$zotero_failures_count > self::ZOTERO_GIVE_UP) {
         report_warning("Giving up on URL expansion for a while");
