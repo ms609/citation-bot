@@ -81,7 +81,7 @@ const BAD_TITLES = array("unknown", "missing", "arxiv e-prints", "arxiv mathemat
                          "breaking news, analysis, politics, blogs, news photos, video, tech reviews",
                          "breaking news, analysis, politics, blogs, news photos, video, tech reviews - time.com",
                          "redirect notice", "oxford music online", "trove - archived webpage", "pagina inicia",
-                         "404 not found", "404页面", "sign up ");
+                         "404 not found", "404页面", "sign up ", "Index of /Home");
 const IN_PRESS_ALIASES = array("in press", "inpress", "pending", "published", 
                                "published online", "no-no", "n/a", "online ahead of print", 
                                "unpublished", "unknown", "tba", "forthcoming", "in the press", 
