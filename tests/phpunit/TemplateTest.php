@@ -2157,9 +2157,7 @@ final class TemplateTest extends testBaseClass {
     $expanded = $this->process_citation($text);
     $this->assertSame('1', $expanded->get2('display-authors'));
     $this->assertSame('Aielli', $expanded->get2('last30'));
-    $this->assertSame("Charged-particle multiplicities in pp interactions at <math>"
-      . '\sqrt{s}=900\text{ GeV}' .
-      "</math> measured with the ATLAS detector at the LHC", $expanded->get2('title'));
+    $this->assertSame('Charged-particle multiplicities in pp interactions at s=900 GeV measured with the ATLAS detector at the LHC', $expanded->get2('title'));
     $this->assertNull($expanded->get2('last31'));
   }
   
