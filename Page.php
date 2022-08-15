@@ -103,6 +103,7 @@ class Page {
 
     if (preg_match('~\#redirect *\[\[~i', $this->text)) {
       report_warning("Page is a redirect.");
+      file_put_contents('CodeCoverage', $this->title . " is a redirect. \n", FILE_APPEND);
       return FALSE;
     }
     return TRUE;
