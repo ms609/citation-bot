@@ -56,6 +56,9 @@ if (isset($_REQUEST["slow"]) || TRAVIS || (isset($argv[2]) && $argv[2] === '--sl
   define("ZOTERO_ONLY", TRUE);
 } elseif (isset($argv[2])) {
   exit("Unexpected text on the command.  Only --slow is valid second argument.");
+} elseif (isset($_POST['linkpage']) && (strpos($_POST['linkpage'], 'ZOTERO') !== FALSE)) {
+  define("SLOW_MODE", TRUE);
+  define("ZOTERO_ONLY", TRUE);
 } else {
   define("SLOW_MODE", FALSE);
   define("ZOTERO_ONLY", FALSE);
