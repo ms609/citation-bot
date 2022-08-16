@@ -37,6 +37,8 @@ $edit_summary_end = "| Suggested by " . $api->get_the_user() . " | Linked from $
 
 $json = WikipediaBot::get_links($page_name);
 
+file_put_contents('CodeCoverage', echoable($page_name) . " is a linked page list. \n", FILE_APPEND);
+
 if ($json === '') {
   report_warning(' Error getting page list');
   bot_html_footer();
