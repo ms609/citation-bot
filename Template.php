@@ -3927,6 +3927,10 @@ final class Template {
               return;
             }
           }
+          if (!doi_works($doi) && (stripos($doi, '10.1043/0003-3219(') === 0)) {
+            $this->forget('doi'); // Per-email.  The Angle Orthodontist will NEVER do these, since they have <> and [] in them
+            return;
+          }
           if (doi_works($doi) === NULL) { // This is super slow and rare
            // @codeCoverageIgnoreStart
            if ($this->has('pmc') || $this->has('pmid')) {
