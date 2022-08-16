@@ -449,6 +449,7 @@ const ZOTERO_AVOID_REGEX = array("twitter\.",               // This should be {{
                                  "charts\.nz", // Fails 100%
                                  "radiomap\.eu", // Fails 100%
                                  "www\.virtualwall\.org", // Fails 100%
+				 "steubencourier\.com", // USA Today highjakced
                                 );
 const NON_JOURNAL_WEBSITES = array('-news.co.uk/', '.ajc.com/', '.al.com/',
 	                  '.ap.org/', '.bbm.ca/', '.dw.com/', '.fec.gov/', '.ft.com/',
