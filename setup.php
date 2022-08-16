@@ -51,6 +51,9 @@ if (strpos((string) @$_SERVER['PHP_SELF'], '/gadgetapi.php') === FALSE) {
 if (isset($_POST["page"]) && strpos((string) $_POST["page"], 'ZOTERO_ONLY|') === 0) {
   define("SLOW_MODE", TRUE);
   define("ZOTERO_ONLY", TRUE);
+} elseif (isset($_POST['linkpage']) && (strpos($_POST['linkpage'], 'ZOTERO') !== FALSE)) {
+  define("SLOW_MODE", TRUE);
+  define("ZOTERO_ONLY", TRUE);
 } elseif (isset($_REQUEST["slow"]) || TRAVIS || (isset($argv[2]) && $argv[2] === '--slow')) {
   define("SLOW_MODE", TRUE);
   define("ZOTERO_ONLY", FALSE);
@@ -59,9 +62,6 @@ if (isset($_POST["page"]) && strpos((string) $_POST["page"], 'ZOTERO_ONLY|') ===
   define("ZOTERO_ONLY", TRUE);
 } elseif (isset($argv[2])) {
   exit("Unexpected text on the command.  Only --slow is valid second argument.");
-} elseif (isset($_POST['linkpage']) && (strpos($_POST['linkpage'], 'ZOTERO') !== FALSE)) {
-  define("SLOW_MODE", TRUE);
-  define("ZOTERO_ONLY", TRUE);
 } else {
   define("SLOW_MODE", FALSE);
   define("ZOTERO_ONLY", FALSE);
