@@ -35,9 +35,9 @@ if (strlen($page_name) > 256)  {
 }
 $edit_summary_end = "| Suggested by " . $api->get_the_user() . " | Linked from $page_name | #UCB_webform_linked ";
 
-$json = WikipediaBot::get_links($page_name);
-
 file_put_contents('CodeCoverage', echoable($page_name) . " is a linked page list. \n", FILE_APPEND);
+
+$json = WikipediaBot::get_links($page_name);
 
 if ($json === '') {
   report_warning(' Error getting page list');
