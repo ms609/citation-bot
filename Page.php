@@ -395,6 +395,7 @@ class Page {
       }
     }
     expand_templates_from_archives($our_templates);
+    if (ZOTERO_ONLY) expand_templates_from_archives($our_templates_slight); // In this mode, we reject everything if there is a title set
 
     report_phase('Remedial work to clean up templates');
     $log_bad_chapter = FALSE;
