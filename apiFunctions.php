@@ -1050,7 +1050,6 @@ function get_semanticscholar_license(string $s2cid) : ?bool {
 
 function expand_templates_from_archives(array &$templates) : void { // This is done very late as a latch ditch effort  // Pointer to save memory
   set_time_limit(120);
-  if (ZOTERO_ONLY) return;
   $ch = curl_init();
   curl_setopt_array($ch,
           [CURLOPT_HEADER => FALSE,
