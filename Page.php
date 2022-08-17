@@ -359,6 +359,7 @@ class Page {
     $this->expand_templates_from_identifier('doi',     $our_templates);
     expand_arxiv_templates($our_templates);
     $this->expand_templates_from_identifier('url',     $our_templates);
+    if (ZOTERO_ONLY) $this->expand_templates_from_identifier('url', $our_templates_slight); // In this mode, we reject everything if there is a title set
     Zotero::query_ieee_webpages($our_templates_ieee);
     Zotero::query_ieee_webpages($our_templates);
     
