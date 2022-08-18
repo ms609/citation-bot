@@ -3899,7 +3899,7 @@ final class Template {
             $try = $matches[1] . $matches[2];
             if (doi_works($try)) {
                $doi = $try;
-               $this->set('doi', $try)
+               $this->set('doi', $try);
             }
           }
           if ($doi === '10.1267/science.040579197') {
