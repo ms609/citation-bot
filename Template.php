@@ -3895,7 +3895,7 @@ final class Template {
         case 'doi':
           $doi = $this->get($param);
           if (!$doi) return;
-          if (preg_match('~^(10\.[^\/]+\/)\/(.+)$~', $doi, $matches) {
+          if (preg_match('~^(10\.[^\/]+\/)\/(.+)$~', $doi, $matches)) {
             $try = $matches[1] . $matches[2];
             if (doi_works($try)) {
                $doi = $try;
