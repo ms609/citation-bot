@@ -560,6 +560,8 @@ function titles_simple(string $inTitle) : string {
         $inTitle = str_replace(array("'", '"'), "", $inTitle);
         // Strip trailing periods
         $inTitle = trim(rtrim($inTitle, '.'));
+        // &
+        $inTitle = str_replace(" & ", " and ", $inTitle);
         // greek
         $inTitle = strip_diacritics($inTitle);
         $inTitle = str_remove_irrelevant_bits($inTitle);
