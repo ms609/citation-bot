@@ -1069,10 +1069,10 @@ function expand_templates_from_archives(array &$templates) : void { // This is d
         curl_setopt($ch, CURLOPT_URL, $archive_url);
         $raw_html = (string) @curl_exec($ch);
         if ($raw_html && (
-          preg_match('~^[\S\s]+?doctype[\S\s]+?<head[\S\s]+?<title>([\S\s]+?)<\/title>[\S\s]+?head>[\S\s]+?<body~i', $raw_html, $match) ||
-          preg_match('~^[\S\s]+?doctype[\S\s]+?<head[\S\s]+?<meta property="og:title" content="([\S\s]+?)"\/><meta property="twitter:title"[\S\s]+?<title[\S\s]+?head[\S\s]+?<body~i', $raw_html, $match) ||
-          preg_match('~^[\S\s]+?doctype[\S\s]+?<head[\S\s]+?<title>([\S\s]+?) \| Ghostarchive<\/title>[\S\s]+?head[\S\s]+?<body~i', $raw_html, $match) ||
-          preg_match('~^\s*<html[\S\s]+<head[\S\s]+?<!-- End Wayback Rewrite JS Include -->\s*?<title>([\S\s]+?)<\/title>[\S\s]+?head[\S\s]+?<body~i', $raw_html, $match)
+          preg_match('~^[\S\s]+?doctype[\S\s]+?<head[\S\s]+?<title>([\S\s]+?)<\/title>[\S\s]+?head>[\S\s]+?<body~ui', $raw_html, $match) ||
+          preg_match('~^[\S\s]+?doctype[\S\s]+?<head[\S\s]+?<meta property="og:title" content="([\S\s]+?)"\/><meta property="twitter:title"[\S\s]+?<title[\S\s]+?head[\S\s]+?<body~iu', $raw_html, $match) ||
+          preg_match('~^[\S\s]+?doctype[\S\s]+?<head[\S\s]+?<title>([\S\s]+?) \| Ghostarchive<\/title>[\S\s]+?head[\S\s]+?<body~iu', $raw_html, $match) ||
+          preg_match('~^\s*<html[\S\s]+<head[\S\s]+?<!-- End Wayback Rewrite JS Include -->\s*?<title>([\S\s]+?)<\/title>[\S\s]+?head[\S\s]+?<body~iu', $raw_html, $match)
         )) {
           $title = trim($match[1]);
           if (stripos($title, 'archive') === FALSE &&
@@ -1085,7 +1085,11 @@ function expand_templates_from_archives(array &$templates) : void { // This is d
             foreach (BAD_ZOTERO_TITLES as $bad_title ) {
                if (mb_stripos($title, $bad_title) !== FALSE) $good_title = FALSE;
             }
-            if ($good_title) $template->add_if_new('title', $title);
+            if ($good_title) {
+              $old = $template->get('title');
+              $template->add_if_new('title', $title);
+              if ($template->get('title') === '') $template->set('title', $old); // UTF-8 craziness
+            }
           }
         }
       }
