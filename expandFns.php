@@ -84,6 +84,15 @@ function throttle_dx () : void {
   $last = $now;
 }
 
+function throttle_archive () : void {
+  static $last = 0.0;
+  $min_time = 1000000.0; // One second
+  $now = microtime(TRUE);
+  $left = (int) ($min_time - ($now - $last));
+  if ($left > 0 && $left < $min_time) usleep($left); // less than min_time is paranoia, but do not want an inifinite delay
+  $last = $now;
+}
+
 function is_doi_works(string $doi) : ?bool {
   set_time_limit(120);
   $doi = trim($doi);
