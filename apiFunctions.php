@@ -1074,9 +1074,10 @@ function expand_templates_from_archives(array &$templates) : void { // This is d
           preg_match('~^[\S\s]+doctype[\S\s]+html[\S\s]+<head[\S\s]+<title>([\S\s]+) \| Ghostarchive<\/title>[\S\s]+head[\S\s]+<body~i', $raw_html, $match) ||
           preg_match('~^\s*<html[\S\s]+<head[\S\s]+<!-- End Wayback Rewrite JS Include -->\s*<title>([\S\s]+)<\/title>[\S\s]+head[\S\s]+<body~i', $raw_html, $match)
         )) {
-          $title = $match[1];
+          $title = trim($match[1]);
           if (stripos($title, 'archive') === FALSE &&
               stripos($title, 'wayback') === FALSE &&
+              $title !== '' &&
               !in_array(strtolower($title), BAD_ACCEPTED_MANUSCRIPT_TITLES) &&
               !in_array(strtolower($title), IN_PRESS_ALIASES)
              ) {
