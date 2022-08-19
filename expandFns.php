@@ -439,6 +439,7 @@ function str_remove_irrelevant_bits(string $str) : string {
   $str = str_replace(array('.', ',', ';', ': '), array(' ', ' ', ' ', ' '), $str);
   $str = str_replace(array(':', '-', '&mdash;', '&ndash;', '—', '–'), array('', '', '', '', '', ''), $str);
   $str = str_replace(array('   ', '  '), array(' ', ' '), $str);
+  $str = str_replace(" & ", " and ", $str);
   $str = trim($str);
   $str = str_ireplace(array('Proceedings', 'Proceeding', 'Symposium', 'Huffington ', 'the Journal of ', 'nytimes.com'   , '& '  , '(Clifton, N.J.)'),
                       array('Proc',        'Proc',       'Sym',       'Huff ',       'journal of ',     'New York Times', 'and ', ''), $str);
