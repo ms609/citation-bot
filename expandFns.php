@@ -1273,7 +1273,7 @@ function numberToRomanRepresentation(int $number) : string { // https://stackove
 }
 
 function convert_to_utf8(string $value) : string {
-    $encode =  mb_detect_encoding($value, ["UTF-8", "GB2312", "WINDOWS-1252"]);
+    $encode =  mb_detect_encoding($value, ["UTF-8", "GB2312", "WINDOWS-1252", "ISO-2022-JP"]);
     if ($encode) $new_value = mb_convert_encoding($value, "UTF-8", $encode);
     if ($new_value) $value=$new_value; 
 }
