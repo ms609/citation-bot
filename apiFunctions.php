@@ -1056,6 +1056,7 @@ function expand_templates_from_archives(array &$templates) : void { // This is d
            CURLOPT_RETURNTRANSFER => TRUE,
            CURLOPT_TIMEOUT => 25,
            CURLOPT_CONNECTTIMEOUT => 10,
+           CURLOPT_FOLLOWLOCATION => TRUE,
            CURLOPT_USERAGENT => BOT_USER_AGENT]);
   foreach ($templates as $template) {
     set_time_limit(120);
