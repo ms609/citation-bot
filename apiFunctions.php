@@ -1065,6 +1065,7 @@ function expand_templates_from_archives(array &$templates) : void { // This is d
         ($template->blank('title') || strtolower($template->get('title')) === 'archived copy')) {
       $archive_url = $template->get('archive-url') . $template->get('archiveurl');
       if (stripos($archive_url, 'archive') !==FALSE) {
+        throttle_archive();
         curl_setopt($ch, CURLOPT_URL, $archive_url);
         $raw_html = (string) @curl_exec($ch);
         if ($raw_html && (
