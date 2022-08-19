@@ -1052,7 +1052,7 @@ function expand_templates_from_archives(array &$templates) : void { // This is d
   set_time_limit(120);
   $ch = curl_init();
   curl_setopt_array($ch,
-          [CURLOPT_HEADER => FALSE,
+          [CURLOPT_HEADER => TRUE,
            CURLOPT_RETURNTRANSFER => TRUE,
            CURLOPT_TIMEOUT => 25,
            CURLOPT_CONNECTTIMEOUT => 10,
@@ -1077,6 +1077,13 @@ function expand_templates_from_archives(array &$templates) : void { // This is d
           preg_match('~^\s*<html[\S\s]+<head[\S\s]+?<!-- End Wayback Rewrite JS Include -->\s*?<!-- WebPoet\(tm\) Web Page Pull[\s\S]+?-->[\S\s]+?<title>([\S\s]+?)<\/title>[\S\s]+?head~', $raw_html, $match)
         )) {
           $title = trim($match[1]);
+          if (preg_match('~x-archive-guessed-charset: (\S+)~i', $raw_html, $match)) {
+              $try = mb_convert_encoding($title, "UTF-8", $match[1]);
+              if ($try != "") $title = $try;
+          } elseif (preg_match('~content-type: text/html; charset=(\S+)~i', $raw_html, $match)) {
+              $try = mb_convert_encoding($title, "UTF-8", $match[1]);
+              if ($try != "") $title = $try;
+          }
           if (stripos($title, 'archive') === FALSE &&
               stripos($title, 'wayback') === FALSE &&
               $title !== '' &&
@@ -1353,3 +1360,4 @@ function query_adsabs(string $options) : object {
       curl_close($ch);
     return $response;
   }
+
