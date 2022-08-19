@@ -1073,8 +1073,8 @@ function expand_templates_from_archives(array &$templates) : void { // This is d
           preg_match('~^[\S\s]+?doctype[\S\s]+?<head[\S\s]+?<title>([\S\s]+?)<\/title>[\S\s]+?head[\S\s]+?<body~i', $raw_html, $match) ||
           preg_match('~^[\S\s]+?doctype[\S\s]+?<head[\S\s]+?<meta property="og:title" content="([\S\s]+?)"\/><meta property="twitter:title"[\S\s]+?<title[\S\s]+?head[\S\s]+?<body~i', $raw_html, $match) ||
           preg_match('~^[\S\s]+?doctype[\S\s]+?<head[\S\s]+?<title>([\S\s]+?) \| Ghostarchive<\/title>[\S\s]+?head[\S\s]+?<body~i', $raw_html, $match) ||
-          preg_match('~^\s*<html[\S\s]+<head[\S\s]+?<!-- End Wayback Rewrite JS Include -->[\s\S]*?<title>([\S\s]+?)<\/title>[\S\s]+?head[\S\s]+?<body~i', $raw_html, $match) ||
-          preg_match('~^\s*<html[\S\s]+<head[\S\s]+?<!-- End Wayback Rewrite JS Include -->\s*?<!-- WebPoet\(tm\) Web Page Pull[\s\S]+?-->[\S\s]+?<title>([\S\s]+?)<\/title>[\S\s]+?head~', $raw_html, $match)
+          preg_match('~<html[\S\s]+<head[\S\s]+?<!-- End Wayback Rewrite JS Include -->[\s\S]*?<title>([\S\s]+?)<\/title>[\S\s]+?head[\S\s]+?<body~i', $raw_html, $match) ||
+          preg_match('~<html[\S\s]+<head[\S\s]+?<!-- End Wayback Rewrite JS Include -->\s*?<!-- WebPoet\(tm\) Web Page Pull[\s\S]+?-->[\S\s]+?<title>([\S\s]+?)<\/title>[\S\s]+?head~', $raw_html, $match)
         )) {
           $title = trim($match[1]);
           if (preg_match('~x-archive-guessed-charset: (\S+)~i', $raw_html, $match)) {
