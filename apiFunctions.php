@@ -1078,10 +1078,10 @@ function expand_templates_from_archives(array &$templates) : void { // This is d
         )) {
           $title = trim($match[1]);
           if (preg_match('~x-archive-guessed-charset: (\S+)~i', $raw_html, $match)) {
-              $try = mb_convert_encoding($title, "UTF-8", $match[1]);
+              $try = @mb_convert_encoding($title, "UTF-8", $match[1]);
               if ($try != "") $title = $try;
           } elseif (preg_match('~content-type: text/html; charset=(\S+)~i', $raw_html, $match)) {
-              $try = mb_convert_encoding($title, "UTF-8", $match[1]);
+              $try = @mb_convert_encoding($title, "UTF-8", $match[1]);
               if ($try != "") $title = $try;
           }
           if (stripos($title, 'archive') === FALSE &&
