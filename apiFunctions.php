@@ -1088,6 +1088,7 @@ function expand_templates_from_archives(array &$templates) : void { // This is d
                if (mb_stripos($title, $bad_title) !== FALSE) $good_title = FALSE;
             }
             if ($good_title) {
+              $title = convert_to_utf8($title);
               $old = $template->get('title');
               $template->add_if_new('title', $title);
               $new = $template->get('title');
