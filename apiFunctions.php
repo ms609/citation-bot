@@ -1060,7 +1060,7 @@ function expand_templates_from_archives(array &$templates) : void { // This is d
            CURLOPT_USERAGENT => BOT_USER_AGENT]);
   foreach ($templates as $template) {
     set_time_limit(120);
-    if ($template->blank(['chapter', 'series']) &&
+    if ($template->blank(['chapter', 'series', 'script-title']) &&
         !$template->blank(['archive-url', 'archiveurl']) &&
         ($template->blank(WORK_ALIASES) || $template->has('website'))  &&
         ($template->blank('title') || strtolower($template->get('title')) === 'archived copy')) {
