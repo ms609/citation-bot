@@ -1068,7 +1068,6 @@ function expand_templates_from_archives(array &$templates) : void { // This is d
         throttle_archive();
         curl_setopt($ch, CURLOPT_URL, $archive_url);
         $raw_html = (string) @curl_exec($ch);
-        $the_body = str
         if ($raw_html && (
           preg_match('~^[\S\s]+?doctype[\S\s]+?<head[\S\s]+?<title>([\S\s]+?)<\/title>[\S\s]+?head>[\S\s]+?<body~i', $raw_html, $match) ||
           preg_match('~^[\S\s]+?doctype[\S\s]+?<head[\S\s]+?<meta property="og:title" content="([\S\s]+?)"\/><meta property="twitter:title"[\S\s]+?<title[\S\s]+?head[\S\s]+?<body~i', $raw_html, $match) ||
