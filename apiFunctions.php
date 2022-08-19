@@ -1061,7 +1061,7 @@ function expand_templates_from_archives(array &$templates) : void { // This is d
     set_time_limit(120);
     if ($template->blank(['chapter', 'series']) &&
         !$template->blank(['archive-url', 'archiveurl']) &&
-        $template->blank(WORK_ALIASES) &&
+        ($template->blank(WORK_ALIASES) || $template->has('website'))  &&
         ($template->blank('title') || strtolower($template->get('title')) === 'archived copy')) {
       $archive_url = $template->get('archive-url') . $template->get('archiveurl');
       if (stripos($archive_url, 'archive') !==FALSE) {
