@@ -1082,14 +1082,15 @@ function expand_templates_from_archives(array &$templates) : void { // This is d
               if ($try != "") {
                 $title = $try;
               } else {
-                file_put_contents('CodeCoverage', 'Bad Encoding: ' . $match[1] . ' for ' . echoable($archive_url));
+                file_put_contents('CodeCoverage', 'Bad Encoding: ' . $match[1] . ' for ' . echoable($archive_url), FILE_APPEND); // @codeCoverageIgnore
               }
           } elseif (preg_match('~content-type: text/html; charset=(\S+)~i', $raw_html, $match)) {
               $try = @mb_convert_encoding($title, "UTF-8", $match[1]);
               if ($try != "") {
                 $title = $try;
               } else {
-                file_put_contents('CodeCoverage', 'Bad Encoding: ' . $match[1] . ' for ' . echoable($archive_url));
+                file_put_contents('CodeCoverage', 'Bad Encoding: ' . $match[1] . ' for ' . echoable($archive_url), FILE_APPEND); // @codeCoverageIgnore
+
               }
           }
           if (stripos($title, 'archive') === FALSE &&
