@@ -1077,21 +1077,16 @@ function expand_templates_from_archives(array &$templates) : void { // This is d
           preg_match('~<html[\S\s]+<head[\S\s]+?<!-- End Wayback Rewrite JS Include -->\s*?<!-- WebPoet\(tm\) Web Page Pull[\s\S]+?-->[\S\s]+?<title>([\S\s]+?)<\/title>[\S\s]+?head~', $raw_html, $match)
         )) {
           $title = trim($match[1]);
-          if (preg_match('~x-archive-guessed-charset: (\S+)~i', $raw_html, $match)) {
+          if (preg_match('~x-archive-guessed-charset: (\S+)~i', $raw_html, $match) ||
+              preg_match('~content-type: text/html; charset=(\S+)~i', $raw_html, $match)) {
+            if (strtolower($match[1]) !== 'utf-8') {
               $try = @mb_convert_encoding($title, "UTF-8", $match[1]);
               if ($try != "") {
                 $title = $try;
               } else {
                 file_put_contents('CodeCoverage', 'Bad Encoding: ' . $match[1] . ' for ' . echoable($archive_url), FILE_APPEND); // @codeCoverageIgnore
               }
-          } elseif (preg_match('~content-type: text/html; charset=(\S+)~i', $raw_html, $match)) {
-              $try = @mb_convert_encoding($title, "UTF-8", $match[1]);
-              if ($try != "") {
-                $title = $try;
-              } else {
-                file_put_contents('CodeCoverage', 'Bad Encoding: ' . $match[1] . ' for ' . echoable($archive_url), FILE_APPEND); // @codeCoverageIgnore
-
-              }
+            }
           }
           if (stripos($title, 'archive') === FALSE &&
               stripos($title, 'wayback') === FALSE &&
