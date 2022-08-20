@@ -1095,7 +1095,7 @@ function expand_templates_from_archives(array &$templates) : void { // This is d
             $good_title = TRUE;
             if (in_array(strtolower($title), BAD_ACCEPTED_MANUSCRIPT_TITLES) ||
                 in_array(strtolower($title), IN_PRESS_ALIASES)) {
-              good_title = FALSE;
+              $good_title = FALSE;
             }
             foreach (BAD_ZOTERO_TITLES as $bad_title ) {
                if (mb_stripos($title, $bad_title) !== FALSE) $good_title = FALSE;
