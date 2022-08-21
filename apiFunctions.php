@@ -1081,17 +1081,22 @@ function expand_templates_from_archives(array &$templates) : void { // This is d
               stripos($title, 'wayback') === FALSE &&
               $title !== ''
              ) {
+            $cleaned = FALSE;
             if (preg_match('~x-archive-guessed-charset: (\S+)~i', $raw_html, $match) ||
                 preg_match('~content-type: text/html; charset=(\S+)~i', $raw_html, $match)) {
               if (strtolower($match[1]) !== 'utf-8') {
                 $try = @mb_convert_encoding($title, "UTF-8", $match[1]);
                 if ($try != "") {
                   $title = $try;
+                  $cleaned = TRUE;
                 } else {
                   file_put_contents('CodeCoverage', 'Bad Encoding: ' . $match[1] . ' for ' . echoable($archive_url), FILE_APPEND); // @codeCoverageIgnore
                 }
+              } else {
+                $cleaned = TRUE; 
               }
             }
+            if (!$cleaned) $title = convert_to_utf8($title);
             $good_title = TRUE;
             if (in_array(strtolower($title), BAD_ACCEPTED_MANUSCRIPT_TITLES) ||
                 in_array(strtolower($title), IN_PRESS_ALIASES)) {
@@ -1101,7 +1106,6 @@ function expand_templates_from_archives(array &$templates) : void { // This is d
                if (mb_stripos($title, $bad_title) !== FALSE) $good_title = FALSE;
             }
             if ($good_title) {
-              $title = convert_to_utf8($title);
               $old = $template->get('title');
               $template->add_if_new('title', $title);
               $new = $template->get('title');
