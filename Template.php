@@ -3058,8 +3058,14 @@ final class Template {
 
       if (preg_match('~^(https?://|www\.)\S+~', $dat, $match)) { # Takes priority over more tentative matches
         report_add("Found URL floating in template; setting url");
-        $this->add_if_new('url', $match[0]);
-        $dat = str_replace($match[0], '', $dat);
+        $url = $match[0];
+        if ($this->blank('url')) {
+           $this->add_if_new('url', $url);
+        } elseif ($this->blank(['archive-url','archiveurl']) &&
+               stripos($url, 'archive') !== FALSE) {
+           $this->add_if_new('archive-url', $url);
+        }
+        $dat = str_replace($url '', $dat);
       }
 
       if (preg_match_all("~(\w+)\.?[:\-\s]*([^\s;:,.]+)[;.,]*~", $dat, $match)) { #vol/page abbrev.
