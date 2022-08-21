@@ -1124,7 +1124,7 @@ function expand_templates_from_archives(array &$templates) : void { // This is d
               if ($new === '') {
                  $template->set('title', $old); // UTF-8 craziness
               } else {
-                 $bad_count = mb_substr_count($new, '�') + mb_substr_count($new, '$') + mb_substr_count($new, '%');
+                 $bad_count = substr_count($new, '�') + mb_substr_count($new, '$') + mb_substr_count($new, '%');
                  if ($bad_count > 5) {
                      $template->set('title', $old); // UTF-8 craziness
                  }
