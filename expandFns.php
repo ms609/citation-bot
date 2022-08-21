@@ -386,7 +386,11 @@ function wikify_external_text(string $title) : string {
   $title = str_ireplace('<p class="HeadingRun \'\'In\'\'">', ' ', $title);
   
   $title = str_ireplace(['    ', '   ', '  '], [' ', ' ', ' '], $title);
-  $title = trim($title," \t\n\r\0\x0B\xc2\xa0");
+  if (mb_strlen($title) === strlen($title)) {
+     $title = trim($title," \t\n\r\0\x0B\xc2\xa0");
+  } else {
+     $title = trim($title," \t\n\r\0");
+  }
 
   for ($i = 0; $i < count($replacement); $i++) {
     $title = str_replace($placeholder[$i], $replacement[$i], $title); // @phan-suppress-current-line PhanTypePossiblyInvalidDimOffset
