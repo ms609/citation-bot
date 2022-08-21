@@ -3065,7 +3065,7 @@ final class Template {
                stripos($url, 'archive') !== FALSE) {
            $this->add_if_new('archive-url', $url);
         }
-        $dat = str_replace($url '', $dat);
+        $dat = str_replace($url, '', $dat);
       }
 
       if (preg_match_all("~(\w+)\.?[:\-\s]*([^\s;:,.]+)[;.,]*~", $dat, $match)) { #vol/page abbrev.
