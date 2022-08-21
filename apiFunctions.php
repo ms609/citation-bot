@@ -1070,11 +1070,12 @@ function expand_templates_from_archives(array &$templates) : void { // This is d
         curl_setopt($ch, CURLOPT_URL, $archive_url);
         $raw_html = (string) @curl_exec($ch);
         if ($raw_html && (
-          preg_match('~^[\S\s]+?doctype[\S\s]+?<head[\S\s]+?<title>([\S\s]+?)<\/title>[\S\s]+?head[\S\s]+?<body~i', $raw_html, $match) ||
-          preg_match('~^[\S\s]+?doctype[\S\s]+?<head[\S\s]+?<meta property="og:title" content="([\S\s]+?)"\/><meta property="twitter:title"[\S\s]+?<title[\S\s]+?head[\S\s]+?<body~i', $raw_html, $match) ||
-          preg_match('~^[\S\s]+?doctype[\S\s]+?<head[\S\s]+?<title>([\S\s]+?) \| Ghostarchive<\/title>[\S\s]+?head[\S\s]+?<body~i', $raw_html, $match) ||
+          preg_match('~doctype[\S\s]+?<head[\S\s]+?<title>([\S\s]+?)<\/title>[\S\s]+?head[\S\s]+?<body~i', $raw_html, $match) ||
+          preg_match('~doctype[\S\s]+?<head[\S\s]+?<meta property="og:title" content="([\S\s]+?)"\/><meta property="twitter:title"[\S\s]+?<title[\S\s]+?head[\S\s]+?<body~i', $raw_html, $match) ||
+          preg_match('~doctype[\S\s]+?<head[\S\s]+?<title>([\S\s]+?) \| Ghostarchive<\/title>[\S\s]+?head[\S\s]+?<body~i', $raw_html, $match) ||
           preg_match('~<html[\S\s]+<head[\S\s]+?<!-- End Wayback Rewrite JS Include -->[\s\S]*?<title>([\S\s]+?)<\/title>[\S\s]+?head[\S\s]+?<body~i', $raw_html, $match) ||
-          preg_match('~<html[\S\s]+<head[\S\s]+?<!-- End Wayback Rewrite JS Include -->\s*?<!-- WebPoet\(tm\) Web Page Pull[\s\S]+?-->[\S\s]+?<title>([\S\s]+?)<\/title>[\S\s]+?head~', $raw_html, $match)
+          preg_match('~<html[\S\s]+<head[\S\s]+?<!-- End Wayback Rewrite JS Include -->\s*?<!-- WebPoet\(tm\) Web Page Pull[\s\S]+?-->[\S\s]+?<title>([\S\s]+?)<\/title>[\S\s]+?head~i', $raw_html, $match) ||
+          preg_match('~archive\.org/includes/analytics\.js[\S\s]+?-- End Wayback Rewrite JS Include[\S\s]+?head[\S\s]+<title>([\S\s]+?)<\/title>[\S\s]+?head[\S\s]+?<body~', $raw_html, $match)
         )) {
           $title = trim($match[1]);
           if (stripos($title, 'archive') === FALSE &&
@@ -1094,6 +1095,17 @@ function expand_templates_from_archives(array &$templates) : void { // This is d
                 }
               } else {
                 $cleaned = TRUE; 
+              }
+            }
+            if (!$cleaned) {
+              if (preg_match('~<meta http-equiv="content-type" content="text\/html;charset=([^"]+)">~i', $raw_html, $match)) { // Meta tags are not as relialbe
+               if (strtolower($match[1]) !== 'utf-8') {
+                $try = @mb_convert_encoding($title, "UTF-8", $match[1]);
+                if ($try != "") {
+                  $title = $try;
+                  $cleaned = TRUE;
+                }
+               }
               }
             }
             if (!$cleaned) $title = convert_to_utf8($title);
