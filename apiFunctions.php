@@ -1085,7 +1085,7 @@ function expand_templates_from_archives(array &$templates) : void { // This is d
             $cleaned = FALSE;
             if (preg_match('~x-archive-guessed-charset: (\S+)~i', $raw_html, $match) ||
                 preg_match('~content-type: text/html; charset=(\S+)~i', $raw_html, $match)) {
-              if (strtolower($match[1]) !== 'utf-8') {
+              if (strtolower($match[1]) !== 'utf-8' && strtolower($match[1]) !== 'iso-8859-1'  && strtolower($match[1]) !== 'iso-8859-7') {
                 $try = @mb_convert_encoding($title, "UTF-8", $match[1]);
                 if ($try != "") {
                   $title = $try;
@@ -1093,8 +1093,6 @@ function expand_templates_from_archives(array &$templates) : void { // This is d
                 } else {
                   file_put_contents('CodeCoverage', 'Bad Encoding: ' . $match[1] . ' for ' . echoable($archive_url), FILE_APPEND); // @codeCoverageIgnore
                 }
-              } else {
-                $cleaned = TRUE; 
               }
             }
             if (!$cleaned) {
@@ -1119,12 +1117,13 @@ function expand_templates_from_archives(array &$templates) : void { // This is d
             }
             if ($good_title) {
               $old = $template->get('title');
+              $template->set('title', '');
               $template->add_if_new('title', $title);
               $new = $template->get('title');
               if ($new === '') {
                  $template->set('title', $old); // UTF-8 craziness
               } else {
-                 $bad_count = substr_count($new, '�') + mb_substr_count($new, '$') + mb_substr_count($new, '%');
+                 $bad_count = substr_count($new, '�') + mb_substr_count($new, '$') + mb_substr_count($new, '%') + substr_count($new, '');
                  if ($bad_count > 5) {
                      $template->set('title', $old); // UTF-8 craziness
                  }
