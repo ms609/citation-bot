@@ -1083,9 +1083,8 @@ function expand_templates_from_archives(array &$templates) : void { // This is d
               $title !== ''
              ) {
             $cleaned = FALSE;
-            if (preg_match('~x-archive-guessed-charset: (\S+)~i', $raw_html, $match) ||
-                preg_match('~content-type: text/html; charset=(\S+)~i', $raw_html, $match)) {
-              if (strtolower($match[1]) !== 'utf-8' && strtolower($match[1]) !== 'iso-8859-1'  && strtolower($match[1]) !== 'iso-8859-7' && strtolower($match[1]) !== 'iso-8859-9' && strtolower($match[1]) !==  'iso-8859-16') {
+            if (preg_match('~x-archive-guessed-charset: (\S+)~i', $raw_html, $match)) {
+              if (strtolower($match[1]) !== 'utf-8') {
                 $try = @mb_convert_encoding($title, "UTF-8", $match[1]);
                 if ($try != "") {
                   $title = $try;
@@ -1096,14 +1095,27 @@ function expand_templates_from_archives(array &$templates) : void { // This is d
               }
             }
             if (!$cleaned) {
-              if (preg_match('~<meta http-equiv="content-type" content="text\/html;[\s]*charset=([^"]+)"~i', $raw_html, $match)) { // Meta tags are not as relialbe
+              if (preg_match('~<meta http-equiv="content-type" content="text\/html;[\s]*charset=([^"]+)"~i', $raw_html, $match)) {
                if (strtolower($match[1]) !== 'utf-8') {
                 $try = @mb_convert_encoding($title, "UTF-8", $match[1]);
                 if ($try != "") {
                   $title = $try;
                   $cleaned = TRUE;
+                } else {
+                  file_put_contents('CodeCoverage', 'Bad Encoding: ' . $match[1] . ' for ' . echoable($archive_url), FILE_APPEND); // @codeCoverageIgnore
                 }
                }
+              }
+            }
+            if (preg_match('~content-type: text/html; charset=(\S+)~i', $raw_html, $match)) {
+              if (strtolower($match[1]) !== 'utf-8') {
+                $try = @mb_convert_encoding($title, "UTF-8", $match[1]);
+                if ($try != "") {
+                  $title = $try;
+                  $cleaned = TRUE;
+                } else {
+                  file_put_contents('CodeCoverage', 'Bad Encoding: ' . $match[1] . ' for ' . echoable($archive_url), FILE_APPEND); // @codeCoverageIgnore
+                }
               }
             }
             if (!$cleaned) $title = convert_to_utf8($title);
