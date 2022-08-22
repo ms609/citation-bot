@@ -1096,7 +1096,7 @@ function expand_templates_from_archives(array &$templates) : void { // This is d
               }
             }
             if (!$cleaned) {
-              if (preg_match('~<meta http-equiv="content-type" content="text\/html;[\s]*charset=([^"]+)">~i', $raw_html, $match)) { // Meta tags are not as relialbe
+              if (preg_match('~<meta http-equiv="content-type" content="text\/html;[\s]*charset=([^"]+)"~i', $raw_html, $match)) { // Meta tags are not as relialbe
                if (strtolower($match[1]) !== 'utf-8') {
                 $try = @mb_convert_encoding($title, "UTF-8", $match[1]);
                 if ($try != "") {
