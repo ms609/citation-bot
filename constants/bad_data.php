@@ -82,7 +82,7 @@ const BAD_TITLES = array("unknown", "missing", "arxiv e-prints", "arxiv mathemat
                          "breaking news, analysis, politics, blogs, news photos, video, tech reviews - time.com",
                          "redirect notice", "oxford music online", "trove - archived webpage", "pagina inicia",
                          "404 not found", "404页面", "sign up ", "index of /home", "usa today - today's breaking news, us & world news",
-			 "403 unauthorized", "404错误");
+			 "403 unauthorized", "404错误", "internal server error");
 const IN_PRESS_ALIASES = array("in press", "inpress", "pending", "published", 
                                "published online", "no-no", "n/a", "online ahead of print", 
                                "unpublished", "unknown", "tba", "forthcoming", "in the press", 
@@ -126,7 +126,7 @@ const BAD_ZOTERO_TITLES = ['Browse publications', 'Central Authentication Servic
                                  '404 | ', '页面不存在', 'De pagina is niet gevonden', '404 - ', ' Stranica nije pronađena',
                                  '404 Page', '404. The page', "wasn't found on this server", '404. The URL', 
                                  'ShieldSquare', '404 Not Found', "404页面", "Sign up | LinkedIn", 'The-star.co.kr',
-			         'Connecting to the iTunes Store'];
+			         'Connecting to the iTunes Store', '500 Internal Server Error'];
 
 const CANONICAL_PUBLISHER_URLS = array ('elsevier.com', 'springer.com', 'sciencedirect.com', 'tandfonline.com',
                                 'taylorandfrancis.com', 'wiley.com', 'sagepub.com', 'sagepublications.com',
