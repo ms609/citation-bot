@@ -10,7 +10,7 @@ final class gadgetTest extends testBaseClass {
  
   protected function setUp(): void {
    if (BAD_PAGE_API !== '') {
-     $this->markTestSkipped();
+     // $this->markTestSkipped();
    }
   }
  
@@ -21,7 +21,7 @@ final class gadgetTest extends testBaseClass {
  
   public function testGadget() : void {
       ob_start();
-      $_POST['text'] = '{{cite|pmid=34213}}';
+      $_POST['text'] = '{{cite web|archive-url=https://web.archive.org/web/20070627024929/http://www.ib.hu-berlin.de/~pbruhn/b-kunst.htm}}';
       $_POST['summary'] = 'Something Nice';
       $_REQUEST["slow"] = "1";
       require(__DIR__ . '/../../gadgetapi.php');
