@@ -1308,7 +1308,7 @@ function smart_decode(string $title, string $encode, string $archive_url) : stri
     $try = (string) @mb_convert_encoding($title, "UTF-8", $encode);
   }
   if ($try == "") {
-    file_put_contents('CodeCoverage', 'Bad Encoding: ' . $encode . ' for ' . echoable($archive_url), FILE_APPEND); // @codeCoverageIgnore
+    file_put_contents('CodeCoverage', 'Bad Encoding: ' . $encode . ' for ' . echoable($archive_url) . "\n", FILE_APPEND); // @codeCoverageIgnore
   }
   return $try;
 }
