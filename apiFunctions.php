@@ -1389,21 +1389,3 @@ function query_adsabs(string $options) : object {
     return $response;
   }
 
-function is_encoding_reasonable(string $encode) : bool { // common "default" ones that are often wrong
-  $encode = strtolower($encode);
-  return !in_array($encode, ['utf-8', 'iso-8859-1', 'windows-1252', 'unicode']);
-}
-
-function smart_decode(string $title, string $encode, string $archive_url) : string {
-  if ($title === "") return "";
-  if (strtolower($encode) === "windows-1255") {
-    $try = @iconv("Windows-1255", "UTF-8", $title);
-  } else {
-    $try = @mb_convert_encoding($title, "UTF-8", $encode);
-  }
-  if ($try == "") {
-    file_put_contents('CodeCoverage', 'Bad Encoding: ' . $encode . ' for ' . echoable($archive_url), FILE_APPEND); // @codeCoverageIgnore
-  }
-  return $try;
-}
-
