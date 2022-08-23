@@ -1078,6 +1078,7 @@ function expand_templates_from_archives(array &$templates) : void { // This is d
           preg_match('~archive\.org/includes/analytics\.js[\S\s]+?-- End Wayback Rewrite JS Include[\S\s]+?head[\S\s]+<title>([\S\s]+?)<\/title>[\S\s]+?head[\S\s]+?<body~', $raw_html, $match)
         )) {
           $title = trim($match[1]);
+          if (preg_match('~^[\?\s\,\.\-\;\:\'\"]+$~i', $title)) $title = ''; // Hebrew
           if (stripos($title, 'archive') === FALSE &&
               stripos($title, 'wayback') === FALSE &&
               $title !== ''
