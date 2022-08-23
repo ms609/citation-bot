@@ -1085,50 +1085,32 @@ function expand_templates_from_archives(array &$templates) : void { // This is d
             $cleaned = FALSE;
             if (preg_match('~x-archive-guessed-charset: (\S+)~i', $raw_html, $match)) {
               $encode = $match[1];
-              if (is_encoding_reasonable($encode) {
-                if (strtolower($encode) === "windows-1255") {
-                   $try = @iconv("Windows-1255", "UTF-8", $title);
-                } else {
-                   $try = @mb_convert_encoding($title, "UTF-8", $encode);
-                }
+              if (is_encoding_reasonable($encode)) {
+                $try = smart_decode($title, $encode, $archive_url);
                 if ($try != "") {
                   $title = $try;
                   $cleaned = TRUE;
-                } else {
-                  file_put_contents('CodeCoverage', 'Bad Encoding: ' . $encode . ' for ' . echoable($archive_url), FILE_APPEND); // @codeCoverageIgnore
                 }
               }
             }
             if (!$cleaned && preg_match('~<meta http-equiv="?content-type"? content="text\/html;[\s]*charset=([^"]+)"~i', $raw_html, $match)) {
                $encode = $match[1];
                if (is_encoding_reasonable($encode)) {
-                if (strtolower($encode) === "windows-1255") {
-                   $try = @iconv("Windows-1255", "UTF-8", $title);
-                } else {
-                   $try = @mb_convert_encoding($title, "UTF-8", $encode);
-                }
-                if ($try != "") {
-                  $title = $try;
-                  $cleaned = TRUE;
-                } else {
-                  file_put_contents('CodeCoverage', 'Bad Encoding: ' . $encode . ' for ' . echoable($archive_url), FILE_APPEND); // @codeCoverageIgnore
-                }
+                 $try = smart_decode($title, $encode, $archive_url);
+                 if ($try != "") {
+                   $title = $try;
+                   $cleaned = TRUE;
+                 }
                }
             }
             if (!$cleaned && preg_match('~content-type: text/html; charset=(\S+)~i', $raw_html, $match)) {
               $encode = $match[1];
               if (strtolower($encode) !== 'utf-8') {
-                if (strtolower($encode) === "windows-1255") {
-                   $try = @iconv("Windows-1255", "UTF-8", $title);
-                } else {
-                   $try = @mb_convert_encoding($title, "UTF-8", $encode);
-                }
-                if ($try != "") {
-                  $title = $try;
-                  $cleaned = TRUE;
-                } else {
-                  file_put_contents('CodeCoverage', 'Bad Encoding: ' . $encode . ' for ' . echoable($archive_url), FILE_APPEND); // @codeCoverageIgnore
-                }
+                 $try = smart_decode($title, $encode, $archive_url);
+                 if ($try != "") {
+                   $title = $try;
+                   $cleaned = TRUE;
+                 }
               }
             }
             if (!$cleaned) $title = convert_to_utf8($title);
@@ -1412,5 +1394,15 @@ function is_encoding_reasonable(string $encode) : bool { // common "default" one
   return !in_array($encode, ['utf-8', 'iso-8859-1', 'windows-1252', 'unicode']);
 }
 
-
+function smart_decode(string $title, string $encode, string $archive_url) : string {
+  if ($title === "") return "";
+  if (strtolower($encode) === "windows-1255") {
+    $try = @iconv("Windows-1255", "UTF-8", $title);
+  } else {
+    $try = @mb_convert_encoding($title, "UTF-8", $encode);
+  }
+  if ($try == "") {
+    file_put_contents('CodeCoverage', 'Bad Encoding: ' . $encode . ' for ' . echoable($archive_url), FILE_APPEND); // @codeCoverageIgnore
+  }
+}
 
