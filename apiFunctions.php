@@ -1084,7 +1084,7 @@ function expand_templates_from_archives(array &$templates) : void { // This is d
              ) {
             $cleaned = FALSE;
             if (preg_match('~x-archive-guessed-charset: (\S+)~i', $raw_html, $match)) {
-              if (strtolower($match[1]) !== 'utf-8') {
+              if (strtolower($match[1]) !== 'utf-8' && strtolower($match[1]) !== 'iso-8859-1' && strtolower($match[1]) !== 'windows-1252'  && strtolower($match[1]) !== 'unicode') {
                 if (strtolower($match[1]) === "windows-1255") {
                    $try = @iconv("Windows-1255", "UTF-8", $title);
                 } else {
@@ -1099,7 +1099,7 @@ function expand_templates_from_archives(array &$templates) : void { // This is d
               }
             }
             if (!$cleaned && preg_match('~<meta http-equiv="?content-type"? content="text\/html;[\s]*charset=([^"]+)"~i', $raw_html, $match)) {
-               if (strtolower($match[1]) !== 'utf-8' && strtolower($match[1]) !== 'iso-8859-1' && strtolower($match[1]) !== 'windows-1252') {
+               if (strtolower($match[1]) !== 'utf-8' && strtolower($match[1]) !== 'iso-8859-1' && strtolower($match[1]) !== 'windows-1252'  && strtolower($match[1]) !== 'unicode') {
                 if (strtolower($match[1]) === "windows-1255") {
                    $try = @iconv("Windows-1255", "UTF-8", $title);
                 } else {
