@@ -1297,7 +1297,8 @@ function convert_to_utf8(string $value) : string {
 
 function is_encoding_reasonable(string $encode) : bool { // common "default" ones that are often wrong
   $encode = strtolower($encode);
-  return !in_array($encode, ['utf-8', 'iso-8859-1', 'windows-1252', 'unicode']);
+  return !in_array($encode, ['utf-8', 'iso-8859-1', 'windows-1252', 'unicode', 'us-ascii']);
+
 }
 
 function smart_decode(string $title, string $encode, string $archive_url) : string {
