@@ -1084,7 +1084,7 @@ function expand_templates_from_archives(array &$templates) : void { // This is d
              ) {
             $cleaned = FALSE;
             if (preg_match('~x-archive-guessed-charset: (\S+)~i', $raw_html, $match)) {
-              if (strtolower($match[1]) !== 'utf-8' && strtolower($match[1]) !== 'iso-8859-1' && strtolower($match[1]) !== 'windows-1252'  && strtolower($match[1]) !== 'unicode') {
+              if (is_encoding_reasonable($match[1])) {
                 if (strtolower($match[1]) === "windows-1255") {
                    $try = @iconv("Windows-1255", "UTF-8", $title);
                 } else {
@@ -1099,7 +1099,7 @@ function expand_templates_from_archives(array &$templates) : void { // This is d
               }
             }
             if (!$cleaned && preg_match('~<meta http-equiv="?content-type"? content="text\/html;[\s]*charset=([^"]+)"~i', $raw_html, $match)) {
-               if (strtolower($match[1]) !== 'utf-8' && strtolower($match[1]) !== 'iso-8859-1' && strtolower($match[1]) !== 'windows-1252'  && strtolower($match[1]) !== 'unicode') {
+               if (is_encoding_reasonable($match[1])) {
                 if (strtolower($match[1]) === "windows-1255") {
                    $try = @iconv("Windows-1255", "UTF-8", $title);
                 } else {
@@ -1403,4 +1403,11 @@ function query_adsabs(string $options) : object {
       curl_close($ch);
     return $response;
   }
+
+function is_encoding_reasonable(string $encode) : bool { // common "default" ones that are often wrong
+  $encode = strtolower($encode);
+  return !in_array($encode, ['utf-8', 'iso-8859-1', 'windows-1252', 'unicode']);
+}
+
+
 
