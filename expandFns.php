@@ -1302,7 +1302,7 @@ function is_encoding_reasonable(string $encode) : bool { // common "default" one
 
 function smart_decode(string $title, string $encode, string $archive_url) : string {
   if ($title === "") return "";
-  if (in_array(strtolower($encode), ["windows-1255", "maccyrillic", "windows-1253", "windows-1256", "tis-620", "windows-874", "iso-8859-11", "big5"])) {
+  if (in_array(strtolower($encode), ["windows-1255", "maccyrillic", "windows-1253", "windows-1256", "tis-620", "windows-874", "iso-8859-11", "big5", "windows-1250"])) {
 
     $try = (string) @iconv($encode, "UTF-8", $title);
   } else {
