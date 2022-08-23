@@ -1078,7 +1078,6 @@ function expand_templates_from_archives(array &$templates) : void { // This is d
           preg_match('~archive\.org/includes/analytics\.js[\S\s]+?-- End Wayback Rewrite JS Include[\S\s]+?head[\S\s]+<title>([\S\s]+?)<\/title>[\S\s]+?head[\S\s]+?<body~', $raw_html, $match)
         )) {
           $title = trim($match[1]);
-          if (preg_match('~^[\?\s\,\.\-\;\:\'\"]+$~i', $title)) $title = ''; // Hebrew
           if (stripos($title, 'archive') === FALSE &&
               stripos($title, 'wayback') === FALSE &&
               $title !== ''
@@ -1086,7 +1085,11 @@ function expand_templates_from_archives(array &$templates) : void { // This is d
             $cleaned = FALSE;
             if (preg_match('~x-archive-guessed-charset: (\S+)~i', $raw_html, $match)) {
               if (strtolower($match[1]) !== 'utf-8') {
-                $try = @mb_convert_encoding($title, "UTF-8", $match[1]);
+                if (strtolower($match[1]) === "windows-1255") {
+                   $try = @iconv("Windows-1255", "UTF-8", $title);
+                } else {
+                   $try = @mb_convert_encoding($title, "UTF-8", $match[1]);
+                }
                 if ($try != "") {
                   $title = $try;
                   $cleaned = TRUE;
@@ -1097,7 +1100,11 @@ function expand_templates_from_archives(array &$templates) : void { // This is d
             }
             if (!$cleaned && preg_match('~<meta http-equiv="?content-type"? content="text\/html;[\s]*charset=([^"]+)"~i', $raw_html, $match)) {
                if (strtolower($match[1]) !== 'utf-8' && strtolower($match[1]) !== 'iso-8859-1' && strtolower($match[1]) !== 'windows-1252') {
-                $try = @mb_convert_encoding($title, "UTF-8", $match[1]);
+                if (strtolower($match[1]) === "windows-1255") {
+                   $try = @iconv("Windows-1255", "UTF-8", $title);
+                } else {
+                   $try = @mb_convert_encoding($title, "UTF-8", $match[1]);
+                }
                 if ($try != "") {
                   $title = $try;
                   $cleaned = TRUE;
@@ -1108,7 +1115,11 @@ function expand_templates_from_archives(array &$templates) : void { // This is d
             }
             if (!$cleaned && preg_match('~content-type: text/html; charset=(\S+)~i', $raw_html, $match)) {
               if (strtolower($match[1]) !== 'utf-8') {
-                $try = @mb_convert_encoding($title, "UTF-8", $match[1]);
+                if (strtolower($match[1]) === "windows-1255") {
+                   $try = @iconv("Windows-1255", "UTF-8", $title);
+                } else {
+                   $try = @mb_convert_encoding($title, "UTF-8", $match[1]);
+                }
                 if ($try != "") {
                   $title = $try;
                   $cleaned = TRUE;
