@@ -1404,5 +1404,6 @@ function smart_decode(string $title, string $encode, string $archive_url) : stri
   if ($try == "") {
     file_put_contents('CodeCoverage', 'Bad Encoding: ' . $encode . ' for ' . echoable($archive_url), FILE_APPEND); // @codeCoverageIgnore
   }
+  return $try;
 }
 
