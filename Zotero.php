@@ -996,6 +996,7 @@ public static function url_simplify(string $url) : string {
 
 public static function find_indentifiers_in_urls(Template $template, ?string $url_sent = NULL) : bool {
     set_time_limit(120);
+    if (ZOTERO_ONLY) return FALSE;
     if (is_null($url_sent)) {
        // Chapter URLs are generally better than URLs for the whole book.
         if ($template->has('url') && $template->has('chapterurl')) {
