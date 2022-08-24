@@ -1078,7 +1078,7 @@ function expand_templates_from_archives(array &$templates) : void { // This is d
          substr_count($template->get('title'), '') >0 ||
          substr_count($template->get('title'), '') >0 ||
          substr_count($template->get('title'), '') >0 ||
-         substr_count($template->get('title'), '�') >0) {
+         substr_count($template->get('title'), '�') >0 )) {
       $archive_url = $template->get('archive-url') . $template->get('archiveurl');
       if (stripos($archive_url, 'archive') !==FALSE && stripos($archive_url, '.pdf') === FALSE) {
         throttle_archive();
