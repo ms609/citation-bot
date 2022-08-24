@@ -1063,20 +1063,34 @@ function expand_templates_from_archives(array &$templates) : void { // This is d
     if ($template->blank(['chapter', 'series', 'script-title']) &&
         !$template->blank(['archive-url', 'archiveurl']) &&
         ($template->blank(WORK_ALIASES) || $template->has('website'))  &&
-        ($template->blank('title') || strtolower($template->get('title')) === 'archived copy')) {
+        ($template->blank('title') || strtolower($template->get('title')) === 'archived copy' ||
+         substr_count($template->get('title'), '?') > 10 ||
+         substr_count($template->get('title'), '') >0 ||
+         substr_count($template->get('title'), '') >0 ||
+         substr_count($template->get('title'), '') >0 ||
+         substr_count($template->get('title'), '') >0 ||
+         substr_count($template->get('title'), '') >0 ||
+         substr_count($template->get('title'), '') >0 ||
+         substr_count($template->get('title'), '') >0 ||
+         substr_count($template->get('title'), '') >0 ||
+         substr_count($template->get('title'), '') >0 ||
+         substr_count($template->get('title'), '') >0 ||
+         substr_count($template->get('title'), '') >0 ||
+         substr_count($template->get('title'), '') >0 ||
+         substr_count($template->get('title'), '') >0 ||
+         substr_count($template->get('title'), '�') >0) {
       $archive_url = $template->get('archive-url') . $template->get('archiveurl');
-      if (stripos($archive_url, 'archive') !==FALSE) {
+      if (stripos($archive_url, 'archive') !==FALSE && stripos($archive_url, '.pdf') === FALSE) {
         throttle_archive();
         curl_setopt($ch, CURLOPT_URL, $archive_url);
         $raw_html = (string) @curl_exec($ch);
-        if ($raw_html && (
-          preg_match('~doctype[\S\s]+?<head[\S\s]+?<title>([\S\s]+?)<\/title>[\S\s]+?head[\S\s]+?<body~i', $raw_html, $match) ||
-          preg_match('~doctype[\S\s]+?<head[\S\s]+?<meta property="og:title" content="([\S\s]+?\S[\S\s]+?)"\/>[\S\s]+?<title[\S\s]+?head[\S\s]+?<body~i', $raw_html, $match) ||
-          preg_match('~doctype[\S\s]+?<head[\S\s]+?<title>([\S\s]+?) \| Ghostarchive<\/title>[\S\s]+?head[\S\s]+?<body~i', $raw_html, $match) ||
-          preg_match('~<html[\S\s]+<head[\S\s]+?<!-- End Wayback Rewrite JS Include -->[\s\S]*?<title>([\S\s]+?)<\/title>[\S\s]+?head[\S\s]+?<body~i', $raw_html, $match) ||
-          preg_match('~<html[\S\s]+<head[\S\s]+?<!-- End Wayback Rewrite JS Include -->\s*?<!-- WebPoet\(tm\) Web Page Pull[\s\S]+?-->[\S\s]+?<title>([\S\s]+?)<\/title>[\S\s]+?head~i', $raw_html, $match) ||
-          preg_match('~archive\.org/includes/analytics\.js[\S\s]+?-- End Wayback Rewrite JS Include[\S\s]+?head[\S\s]+<title>([\S\s]+?)<\/title>[\S\s]+?head[\S\s]+?<body~', $raw_html, $match)
-        )) {
+        foreach (array('~doctype[\S\s]+?<head[\S\s]+?<title>([\S\s]+?\S[\S\s]+?)<\/title>[\S\s]+?head[\S\s]+?<body~i',
+                      '~doctype[\S\s]+?<head[\S\s]+?<meta property="og:title" content="([\S\s]+?\S[\S\s]+?)"\/>[\S\s]+?<title[\S\s]+?head[\S\s]+?<body~i',
+                      '~doctype[\S\s]+?<head[\S\s]+?<title>([\S\s]+?\S[\S\s]+?) \| Ghostarchive<\/title>[\S\s]+?head[\S\s]+?<body~i',
+                      '~<html[\S\s]+<head[\S\s]+?<!-- End Wayback Rewrite JS Include -->[\s\S]*?<title>([\S\s]+?\S[\S\s]+?)<\/title>[\S\s]+?head[\S\s]+?<body~i',
+                      '~<html[\S\s]+<head[\S\s]+?<!-- End Wayback Rewrite JS Include -->\s*?<!-- WebPoet\(tm\) Web Page Pull[\s\S]+?-->[\S\s]+?<title>([\S\s]+?\S[\S\s]+?)<\/title>[\S\s]+?head~i',
+                      '~archive\.org/includes/analytics\.js[\S\s]+?-- End Wayback Rewrite JS Include[\S\s]+?head[\S\s]+<title>([\S\s]+?\S[\S\s]+?)<\/title>[\S\s]+?head[\S\s]+?<body~') as $regex) {
+         if ($raw_html && preg_match($regex, $raw_html, $match)) {
           $title = trim($match[1]);
           if (stripos($title, 'archive') === FALSE &&
               stripos($title, 'wayback') === FALSE &&
@@ -1137,6 +1151,7 @@ function expand_templates_from_archives(array &$templates) : void { // This is d
               }
             }
           }
+         }
         }
       }
     }
