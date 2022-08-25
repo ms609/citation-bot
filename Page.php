@@ -619,7 +619,7 @@ class Page {
          } else {
            $failures[4] = TRUE;
            if ($failures[0] && $failures[1] && $failures[2] && $failures[3]) {
-              report_error("Five failures in a row -- shutting down the bot");
+              report_error("Five failures in a row -- shutting down the bot on page " . $this->title);
            }
            return FALSE;
          }
