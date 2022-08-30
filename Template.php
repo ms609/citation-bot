@@ -2039,12 +2039,12 @@ final class Template {
     }
     
     // API docs at https://github.com/adsabs/adsabs-dev-api
-    if ($this->has('bibcode') && !$this->incomplete() &&
+    if ($this->has('bibcode') && !$this->incomplete() && stripos($this->get('bibcode'), 'tmp') === FALSE && stripos($this->get('bibcode'), 'arxiv') === FALSE  &&
         ($this->has('doi') || AdsAbsControl::get_bib2doi($this->get('bibcode')) === 'X')) {  // Don't waste a query, if it has a doi or will not find a doi
       return FALSE;  // @codeCoverageIgnore
     }
     
-    if (!$this->blank_other_than_comments('bibcode')) return FALSE; // Now use big query API for existing bibcode - code below still assumes that we might use a bibcode
+    if (!$this->blank_other_than_comments('bibcode') && stripos($this->get('bibcode'), 'tmp') === FALSE && stripos($this->get('bibcode'), 'arxiv') === FALSE ) return FALSE; // Now use big query API for existing bibcode - code below still assumes that we might use a bibcode
     if (!SLOW_MODE && $this->blank('bibcode')) return FALSE; // Do not look for new bibcodes in slow mode
     if (stripos($this->get('bibcode'), 'CITATION') !== FALSE) return FALSE;
 
