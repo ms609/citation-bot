@@ -2030,7 +2030,7 @@ final class Template {
         $this->add_if_new('doi', $doi);
       }
     }
-    if ($this->has('doi') && $this->blank('bibcode')) {
+    if ($this->has('doi') && ($this->blank('bibcode') || stripos($this->get('bibcode'), 'tmp') !== FALSE || stripos($this->get('bibcode'), 'arxiv') !== FALSE)) {
       $doi = $this->get('doi');
       if (doi_works($doi)) {
         $bib = AdsAbsControl::get_doi2bib($doi);
