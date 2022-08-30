@@ -46,7 +46,7 @@ final class AdsAbsControl {
        self::$bib2doi[$bib] = 'X';
     } elseif (doi_works($doi)) { // paranoid
        self::$bib2doi[$bib] = $doi;
-       self::$doi2bib[$doi] = $bib;
+       if (stripos($bib, 'tmp') === FALSE && stripos($bib, 'arxiv') === FALSE) self::$doi2bib[$doi] = $bib;
     }
   }
   public static function get_doi2bib(string $doi) : string {
@@ -302,6 +302,10 @@ function adsabs_api(array $ids, array &$templates, string $identifier) : bool { 
   $NONE_IS_INCOMPLETE = TRUE;
   foreach ($templates as $template) {
     if ($template->has('bibcode') && $template->incomplete()) {
+      $NONE_IS_INCOMPLETE = FALSE;
+      break;
+    }
+    if (stripos($bib, 'tmp') !== FALSE || stripos($bib, 'arxiv') !== FALSE)) {
       $NONE_IS_INCOMPLETE = FALSE;
       break;
     }
