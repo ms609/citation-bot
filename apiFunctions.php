@@ -305,7 +305,7 @@ function adsabs_api(array $ids, array &$templates, string $identifier) : bool { 
       $NONE_IS_INCOMPLETE = FALSE;
       break;
     }
-    if (stripos($bib, 'tmp') !== FALSE || stripos($bib, 'arxiv') !== FALSE)) {
+    if (stripos($bib, 'tmp') !== FALSE || stripos($bib, 'arxiv') !== FALSE) {
       $NONE_IS_INCOMPLETE = FALSE;
       break;
     }
