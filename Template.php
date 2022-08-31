@@ -1559,8 +1559,8 @@ final class Template {
 
       case 'bibcode_nosearch':  // Avoid recursive loop
       case 'bibcode':
-        if (stripos($value, 'arxiv') === FALSE &&
-            stripos($this->get('bibcode'), 'arxiv') !== FALSE &&
+        if (stripos($value, 'arxiv') === FALSE && stripos($value, 'tmp') === FALSE &&
+            (stripos($this->get('bibcode'), 'arxiv') !== FALSE || stripos($this->get('bibcode'), 'arxiv') !== FALSE) &&
             strlen(trim($value)) > 16
             ) {
           $this->quietly_forget('bibcode');  // Upgrade bad bibcode
@@ -2055,9 +2055,11 @@ final class Template {
     if ($this->has('bibcode')) $this->record_api_usage('adsabs', 'bibcode');
     if (strpos($this->get('doi'), '10.1093/') === 0) return FALSE;
     report_action("Checking AdsAbs database");
-    if ($this->has('bibcode')) {
-      $result = query_adsabs("identifier:" . urlencode('"' . $this->get('bibcode') . '"')); // @codeCoverageIgnore
-    } elseif ($this->has('doi') && preg_match(REGEXP_DOI, $this->get_without_comments_and_placeholders('doi'), $doi)) {
+    // No longer use this code for exanding existing bibcodes
+    // if ($this->has('bibcode')) {
+    //   $result = query_adsabs("identifier:" . urlencode('"' . $this->get('bibcode') . '"'));
+    // } else
+    if ($this->has('doi') && preg_match(REGEXP_DOI, $this->get_without_comments_and_placeholders('doi'), $doi)) {
       $result = query_adsabs("identifier:" . urlencode('"' .  $doi[0] . '"'));  // In DOI we trust
     } elseif ($this->has('eprint')) {
       $result = query_adsabs("identifier:" . urlencode('"' . $this->get('eprint') . '"'));
