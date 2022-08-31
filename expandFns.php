@@ -583,6 +583,7 @@ function straighten_quotes(string $str, bool $do_more) : string { // (?<!\') and
   // These Regex can die on Unicode because of backward looking
   if ($str === '') return '';
   $str = str_replace('Hawaiʻi', 'CITATION_BOT_PLACEHOLDER_HAWAII', $str);
+  $str = str_replace('Ha‘apai', 'CITATION_BOT_PLACEHOLDER_HAAPAI', $str);
   $str2 = safe_preg_replace('~(?<!\')&#821[679];|&#39;|&#x201[89];|[\x{FF07}\x{2018}-\x{201B}`]|&[rl]s?[b]?quo;(?!\')~u', "'", $str);
   if ($str2 !== NULL) $str = $str2;
   if((mb_strpos($str, '&rsaquo;') !== FALSE && mb_strpos($str, '&[lsaquo;')  !== FALSE) ||
@@ -610,7 +611,8 @@ function straighten_quotes(string $str, bool $do_more) : string { // (?<!\') and
      }
      if ($str2 !== NULL) $str = $str2;
   }
-  $str = str_replace('CITATION_BOT_PLACEHOLDER_HAWAII', 'Hawaiʻi', $str);
+  $str = str_ireplace('CITATION_BOT_PLACEHOLDER_HAAPAI', 'Ha‘apai', $str);
+  $str = str_ireplace('CITATION_BOT_PLACEHOLDER_HAWAII', 'Hawaiʻi', $str);
   return $str;
 }
 
