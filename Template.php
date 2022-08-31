@@ -3233,7 +3233,7 @@ final class Template {
     } else {
       return;
     }
-    if ($id === "<small></small>" || $id === "<small> </small>") {
+    if ($id === "<small></small>" || $id === "<small> </small>" || $id === ".") {
       $this->forget('id');
       return;
     }
@@ -3305,8 +3305,8 @@ final class Template {
                                       $subtemplate->get('id') :
                                       $subtemplate->param_value(0);
 
-            $this->add_if_new($subtemplate_name, $subtemplate_identifier);
-            $id = str_replace($matches[0][$i], '', $id); // Could only do this if previous line evaluated to TRUE, but let's be aggressive here.
+            $did_it = $this->add_if_new($subtemplate_name, $subtemplate_identifier);
+            if ($did_it) $id = str_replace($matches[0][$i], '', $id);
             break;
           default:
             report_info("No match found for " . $subtemplate_name);
