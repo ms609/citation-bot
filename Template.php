@@ -1560,7 +1560,7 @@ final class Template {
       case 'bibcode_nosearch':  // Avoid recursive loop
       case 'bibcode':
         if (stripos($value, 'arxiv') === FALSE && stripos($value, 'tmp') === FALSE &&
-            (stripos($this->get('bibcode'), 'arxiv') !== FALSE || stripos($this->get('bibcode'), 'arxiv') !== FALSE) &&
+            (stripos($this->get('bibcode'), 'arxiv') !== FALSE || stripos($this->get('bibcode'), 'tmp') !== FALSE) &&
             strlen(trim($value)) > 16
             ) {
           $this->quietly_forget('bibcode');  // Upgrade bad bibcode
