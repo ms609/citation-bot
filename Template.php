@@ -3668,7 +3668,7 @@ final class Template {
           if ($this->blank(WORK_ALIASES) &&
               in_array(strtolower(str_replace(array('[', ']', '.'), '', $this->get($param))),
                        ['reuters', 'associated press', 'united press international', 'yonhap news agency', 'official charts company',
-                        'philippine news agency', 'philippine information agency'])) {
+                        'philippine news agency', 'philippine information agency', 'ap', 'ap news', 'associated press news'])) {
             $the_url = '';
             foreach (ALL_URL_TYPES as $thingy) {
               $the_url .= $this->get($thingy);
