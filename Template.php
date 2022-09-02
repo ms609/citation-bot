@@ -3678,6 +3678,13 @@ final class Template {
                 stripos($the_url, 'officialcharts.com') !== FALSE || stripos($the_url, 'pia.gov.ph') !== FALSE ||
                 stripos($the_url, 'pna.gov.ph') !== FALSE) {
                $this->rename($param, 'work');
+               if (stripos($the_url, 'apnews.com') !== FALSE)) {
+                 if ($this->get('work') === 'AP'){
+                   $this->set('work', 'AP News');
+                 } elseif ($this->get('work') === 'Associated Press'){
+                   $this->set('work', 'Associated Press News');
+                 }
+               }
             }
           }
 
