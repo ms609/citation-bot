@@ -2409,7 +2409,7 @@ final class Template {
     $context = stream_context_create(CONTEXT_S2);
     /** @psalm-taint-escape file */
     $doi = doi_encode(urldecode($doi));
-    $response = (string) @file_get_contents(HOST_S2 . '/v1/paper/' . $doi, FALSE, $context);
+    $response = (string) @file_get_contents('https://api.semanticscholar.org/v1/paper/' . $doi, FALSE, $context);
     if ($response) {
       $oa = @json_decode($response);
       if ($oa !== FALSE && isset($oa->url) && isset($oa->is_publisher_licensed) && $oa->is_publisher_licensed) {
