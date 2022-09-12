@@ -988,7 +988,7 @@ function getS2CID(string $url) : string {
   $context = stream_context_create(CONTEXT_S2);
   /** @psalm-taint-escape file */
   $url = urlencode(urldecode($url));
-  $response = (string) @file_get_contents(HOST_S2 . '/v1/paper/URL:' . $url, FALSE, $context);
+  $response = (string) @file_get_contents('https://api.semanticscholar.org/v1/paper/URL:' . $url, FALSE, $context);
   if (!$response) {
     report_warning("No response from semanticscholar.");   // @codeCoverageIgnore
     return '';                                             // @codeCoverageIgnore
@@ -1014,7 +1014,7 @@ function ConvertS2CID_DOI(string $s2cid) : string {
   $context = stream_context_create(CONTEXT_S2);
   /** @psalm-taint-escape file */
   $s2cid = urlencode($s2cid);
-  $response = (string) @file_get_contents(HOST_S2 . '/v1/paper/CorpusID:' . $s2cid, FALSE, $context);
+  $response = (string) @file_get_contents('https://api.semanticscholar.org/v1/paper/CorpusID:' . $s2cid, FALSE, $context);
   if (!$response) {
     report_warning("No response from semanticscholar.");   // @codeCoverageIgnore
     return '';                                           // @codeCoverageIgnore
@@ -1043,7 +1043,7 @@ function ConvertS2CID_DOI(string $s2cid) : string {
 
 function get_semanticscholar_license(string $s2cid) : ?bool {
     $context = stream_context_create(CONTEXT_S2);
-    $response = (string) @file_get_contents(HOST_S2 . '/v1/paper/CorpusID:' . $s2cid, FALSE, $context);
+    $response = (string) @file_get_contents('https://api.semanticscholar.org/v1/paper/CorpusID:' . $s2cid, FALSE, $context);
     if ($response === '') return NULL;
     if (stripos($response, 'Paper not found') !== FALSE) return FALSE;
     $oa = @json_decode($response);
