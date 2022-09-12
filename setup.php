@@ -107,10 +107,8 @@ ini_set('default_socket_timeout', '20');
 define("PHP_ADSABSAPIKEY", (string) getenv("PHP_ADSABSAPIKEY"));
 if ((string) getenv("PHP_S2APIKEY") !== "") {
   define("CONTEXT_S2", array('http'=>array('header'=>"x-api-key: " . (string) getenv("PHP_S2APIKEY") . "\r\n")));
-  define("HOST_S2", "https://partner.semanticscholar.org");
 } else {
   define("CONTEXT_S2", array());
-  define("HOST_S2", "https://api.semanticscholar.org");
 }
 
 function check_blocked() : void {
