@@ -7395,31 +7395,31 @@ final class Template {
           case "authuser": case "gsas": case "ned": case "pz": case "e":
              break;
           case "as_occt":
-             if ($part_start[1] === "" || str_i_same($part_start[1], 'any')) break;
+             if ($part_start[1] == "" || str_i_same($part_start[1], 'any')) break;
              $url .=  $part . "&" ;
              break;
           case "cf":
-             if ($part_start[1] === "" || str_i_same($part_start[1], 'all')) break;
+             if ($part_start[1] == "" || str_i_same($part_start[1], 'all')) break;
              $url .=  $part . "&" ;
              break;
           case "btnK":
-             if ($part_start[1] === "" || str_i_same($part_start[1], 'Google+Search')) break;
+             if ($part_start[1] == "" || str_i_same($part_start[1], 'Google+Search')) break;
              $url .=  $part . "&" ;
              break;
           case "as_epq":
-             if ($part_start[1] === "") break;
+             if ($part_start[1] == "") break;
              $url .=  $part . "&" ;
              break;
           case "btnG":
-             if ($part_start[1] === "" || str_i_same($part_start[1], 'Search')) break;
+             if ($part_start[1] == "" || str_i_same($part_start[1], 'Search')) break;
              $url .=  $part . "&" ;
              break;
           case "rct":
-             if (str_i_same($part_start[1], 'j')) break;  // default
+             if ($part_start[1] == "" || str_i_same($part_start[1], 'j')) break;  // default
              $url .=  $part . "&" ;
              break;
           case "ie": case "oe":
-             if (str_i_same($part_start[1], 'utf-8')) break;  // UTF-8 is the default
+             if ($part_start[1] == "" || str_i_same($part_start[1], 'utf-8')) break;  // UTF-8 is the default
              $url .=  $part . "&" ;
              break;
           case "hl": case "safe": case "q": case "tbm": case "start": case "ludocid":
