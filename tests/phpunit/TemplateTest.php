@@ -176,13 +176,7 @@ final class TemplateTest extends testBaseClass {
     $expanded = $this->process_citation($text);
     $this->assertSame('', $expanded->get2('title'));
   }
- 
-  public function testTheNation() : void {
-    $text = "{{cite journal|issn=0027-8378}}";
-    $expanded = $this->process_citation($text);
-    $this->assertSame('The Nation', $expanded->get2('journal'));
-  }
-   
+
   public function testNoGoonUTF8() : void {
     $text = "{{cite news |date=びっくり１位 白鴎|title=阪神びっくり１位 白鴎大・大山、鉄人魂の持ち主だ|journal=鉄人魂}}";
     $expanded = $this->process_citation($text);
