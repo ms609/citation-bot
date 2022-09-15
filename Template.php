@@ -5879,6 +5879,7 @@ final class Template {
               $this->forget('number');
             }
           }
+          CONFLICT
           // Remove leading zeroes
           $value = $this->get($param);
           if ($value !== '') {
