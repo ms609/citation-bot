@@ -48,7 +48,13 @@ if (strpos((string) @$_SERVER['PHP_SELF'], '/gadgetapi.php') === FALSE) {
   define("FLUSHING_OKAY", FALSE);
 }
 
-if (isset($_REQUEST["slow"]) || TRAVIS || (isset($argv[2]) && $argv[2] === '--slow')) {
+if (isset($_POST["page"]) && strpos((string) $_POST["page"], 'ZOTERO_ONLY|') === 0) {
+  define("SLOW_MODE", TRUE);
+  define("ZOTERO_ONLY", TRUE);
+} elseif (isset($_POST['linkpage']) && (strpos($_POST['linkpage'], 'ZOTERO') !== FALSE)) {
+  define("SLOW_MODE", TRUE);
+  define("ZOTERO_ONLY", TRUE);
+} elseif (isset($_REQUEST["slow"]) || TRAVIS || (isset($argv[2]) && $argv[2] === '--slow')) {
   define("SLOW_MODE", TRUE);
   define("ZOTERO_ONLY", FALSE);
 } elseif (isset($argv[2]) && $argv[2] === '--zotero') {
@@ -101,10 +107,8 @@ ini_set('default_socket_timeout', '20');
 define("PHP_ADSABSAPIKEY", (string) getenv("PHP_ADSABSAPIKEY"));
 if ((string) getenv("PHP_S2APIKEY") !== "") {
   define("CONTEXT_S2", array('http'=>array('header'=>"x-api-key: " . (string) getenv("PHP_S2APIKEY") . "\r\n")));
-  define("HOST_S2", "https://partner.semanticscholar.org");
 } else {
   define("CONTEXT_S2", array());
-  define("HOST_S2", "https://api.semanticscholar.org");
 }
 
 function check_blocked() : void {

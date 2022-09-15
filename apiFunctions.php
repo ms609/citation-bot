@@ -46,7 +46,7 @@ final class AdsAbsControl {
        self::$bib2doi[$bib] = 'X';
     } elseif (doi_works($doi)) { // paranoid
        self::$bib2doi[$bib] = $doi;
-       self::$doi2bib[$doi] = $bib;
+       if (stripos($bib, 'tmp') === FALSE && stripos($bib, 'arxiv') === FALSE) self::$doi2bib[$doi] = $bib;
     }
   }
   public static function get_doi2bib(string $doi) : string {
@@ -302,6 +302,10 @@ function adsabs_api(array $ids, array &$templates, string $identifier) : bool { 
   $NONE_IS_INCOMPLETE = TRUE;
   foreach ($templates as $template) {
     if ($template->has('bibcode') && $template->incomplete()) {
+      $NONE_IS_INCOMPLETE = FALSE;
+      break;
+    }
+    if (stripos($template->get('bibcode'), 'tmp') !== FALSE || stripos($template->get('bibcode'), 'arxiv') !== FALSE) {
       $NONE_IS_INCOMPLETE = FALSE;
       break;
     }
@@ -984,7 +988,7 @@ function getS2CID(string $url) : string {
   $context = stream_context_create(CONTEXT_S2);
   /** @psalm-taint-escape file */
   $url = urlencode(urldecode($url));
-  $response = (string) @file_get_contents(HOST_S2 . '/v1/paper/URL:' . $url, FALSE, $context);
+  $response = (string) @file_get_contents('https://api.semanticscholar.org/v1/paper/URL:' . $url, FALSE, $context);
   if (!$response) {
     report_warning("No response from semanticscholar.");   // @codeCoverageIgnore
     return '';                                             // @codeCoverageIgnore
@@ -1010,7 +1014,7 @@ function ConvertS2CID_DOI(string $s2cid) : string {
   $context = stream_context_create(CONTEXT_S2);
   /** @psalm-taint-escape file */
   $s2cid = urlencode($s2cid);
-  $response = (string) @file_get_contents(HOST_S2 . '/v1/paper/CorpusID:' . $s2cid, FALSE, $context);
+  $response = (string) @file_get_contents('https://api.semanticscholar.org/v1/paper/CorpusID:' . $s2cid, FALSE, $context);
   if (!$response) {
     report_warning("No response from semanticscholar.");   // @codeCoverageIgnore
     return '';                                           // @codeCoverageIgnore
@@ -1039,7 +1043,7 @@ function ConvertS2CID_DOI(string $s2cid) : string {
 
 function get_semanticscholar_license(string $s2cid) : ?bool {
     $context = stream_context_create(CONTEXT_S2);
-    $response = (string) @file_get_contents(HOST_S2 . '/v1/paper/CorpusID:' . $s2cid, FALSE, $context);
+    $response = (string) @file_get_contents('https://api.semanticscholar.org/v1/paper/CorpusID:' . $s2cid, FALSE, $context);
     if ($response === '') return NULL;
     if (stripos($response, 'Paper not found') !== FALSE) return FALSE;
     $oa = @json_decode($response);
@@ -1050,36 +1054,113 @@ function get_semanticscholar_license(string $s2cid) : ?bool {
 
 function expand_templates_from_archives(array &$templates) : void { // This is done very late as a latch ditch effort  // Pointer to save memory
   set_time_limit(120);
-  if (ZOTERO_ONLY) return;
   $ch = curl_init();
   curl_setopt_array($ch,
-          [CURLOPT_HEADER => FALSE,
+          [CURLOPT_HEADER => TRUE,
            CURLOPT_RETURNTRANSFER => TRUE,
            CURLOPT_TIMEOUT => 25,
            CURLOPT_CONNECTTIMEOUT => 10,
+           CURLOPT_FOLLOWLOCATION => TRUE,
            CURLOPT_USERAGENT => BOT_USER_AGENT]);
   foreach ($templates as $template) {
     set_time_limit(120);
-    if ($template->blank(['title', 'chapter', 'series']) &&
-        !$template->blank(['archive-url', 'archive-url']) &&
-        $template->blank(WORK_ALIASES)) {
+    if ($template->has('script-title') && (strtolower($template->get('title')) === 'archived copy' || strtolower($template->get('title')) === 'archive copy')) {
+      $template->forget('title');
+    }
+    if ($template->blank(['chapter', 'series', 'script-title']) &&
+        !$template->blank(['archive-url', 'archiveurl']) &&
+        ($template->blank(WORK_ALIASES) || $template->has('website'))  &&
+        ($template->blank('title') || strtolower($template->get('title')) === 'archived copy' || strtolower($template->get('title')) === 'archive copy' ||
+         substr_count($template->get('title'), '?') > 10 ||
+         substr_count($template->get('title'), '') >0 ||
+         substr_count($template->get('title'), '') >0 ||
+         substr_count($template->get('title'), '') >0 ||
+         substr_count($template->get('title'), '') >0 ||
+         substr_count($template->get('title'), '') >0 ||
+         substr_count($template->get('title'), '') >0 ||
+         substr_count($template->get('title'), '') >0 ||
+         substr_count($template->get('title'), '') >0 ||
+         substr_count($template->get('title'), '') >0 ||
+         substr_count($template->get('title'), '') >0 ||
+         substr_count($template->get('title'), '') >0 ||
+         substr_count($template->get('title'), '') >0 ||
+         substr_count($template->get('title'), '') >0 ||
+         substr_count($template->get('title'), '�') >0 )) {
       $archive_url = $template->get('archive-url') . $template->get('archiveurl');
-      if (stripos($archive_url, 'archive') !==FALSE) {
+      if (stripos($archive_url, 'archive') !==FALSE && stripos($archive_url, '.pdf') === FALSE) {
+        throttle_archive();
         curl_setopt($ch, CURLOPT_URL, $archive_url);
         $raw_html = (string) @curl_exec($ch);
-        if ($raw_html && preg_match('~^[\S\s]+doctype[\S\s]+html[\S\s]+head[\S\s]+<title>(.+)<\/title>[\S\s]+head[\S\s]+body~', $raw_html, $match)) {
-          $title = $match[1];
+        foreach (array('~doctype[\S\s]+?<head[\S\s]+?<title>([\S\s]+?\S[\S\s]+?)<\/title>[\S\s]+?head[\S\s]+?<body~i',
+                      '~doctype[\S\s]+?<head[\S\s]+?<meta property="og:title" content="([\S\s]+?\S[\S\s]+?)"\/>[\S\s]+?<title[\S\s]+?head[\S\s]+?<body~i',
+                      '~doctype[\S\s]+?<head[\S\s]+?<title>([\S\s]+?\S[\S\s]+?) \| Ghostarchive<\/title>[\S\s]+?head[\S\s]+?<body~i',
+                      '~<html[\S\s]+<head[\S\s]+?<!-- End Wayback Rewrite JS Include -->[\s\S]*?<title>([\S\s]+?\S[\S\s]+?)<\/title>[\S\s]+?head[\S\s]+?<body~i',
+                      '~<html[\S\s]+<head[\S\s]+?<!-- End Wayback Rewrite JS Include -->\s*?<!-- WebPoet\(tm\) Web Page Pull[\s\S]+?-->[\S\s]+?<title>([\S\s]+?\S[\S\s]+?)<\/title>[\S\s]+?head~i',
+                      '~archive\.org/includes/analytics\.js[\S\s]+?-- End Wayback Rewrite JS Include[\S\s]+?head[\S\s]+<title>([\S\s]+?\S[\S\s]+?)<\/title>[\S\s]+?head[\S\s]+?<body~') as $regex) {
+         if ($raw_html && preg_match($regex, $raw_html, $match)) {
+          $title = trim($match[1]);
           if (stripos($title, 'archive') === FALSE &&
               stripos($title, 'wayback') === FALSE &&
-              !in_array(strtolower($title), BAD_ACCEPTED_MANUSCRIPT_TITLES) &&
-              !in_array(strtolower($title), IN_PRESS_ALIASES)
+              $title !== ''
              ) {
+            $cleaned = FALSE;
+            if (preg_match('~x-archive-guessed-charset: (\S+)~i', $raw_html, $match)) {
+              $encode = $match[1];
+              if (is_encoding_reasonable($encode)) {
+                $try = smart_decode($title, $encode, $archive_url);
+                if ($try != "") {
+                  $title = $try;
+                  $cleaned = TRUE;
+                }
+              }
+            }
+            if (!$cleaned && preg_match('~<meta http-equiv="?content-type"? content="text\/html;[\s]*charset=([^"]+)"~i', $raw_html, $match)) {
+               $encode = $match[1];
+               if (is_encoding_reasonable($encode)) {
+                 $try = smart_decode($title, $encode, $archive_url);
+                 if ($try != "") {
+                   $title = $try;
+                   $cleaned = TRUE;
+                 }
+               }
+            }
+            if (!$cleaned && preg_match('~content-type: text/html; charset=(\S+)~i', $raw_html, $match)) {
+              $encode = $match[1];
+              if (strtolower($encode) !== 'utf-8') {
+                 $try = smart_decode($title, $encode, $archive_url);
+                 if ($try != "") {
+                   $title = $try;
+                   $cleaned = TRUE;
+                 }
+              }
+            }
+            if (!$cleaned) $title = convert_to_utf8($title);
             $good_title = TRUE;
+            if (in_array(strtolower($title), BAD_ACCEPTED_MANUSCRIPT_TITLES) ||
+                in_array(strtolower($title), IN_PRESS_ALIASES)) {
+              $good_title = FALSE;
+            }
             foreach (BAD_ZOTERO_TITLES as $bad_title ) {
                if (mb_stripos($title, $bad_title) !== FALSE) $good_title = FALSE;
             }
-            if ($good_title) $template->add_if_new('title', $title);
+            if ($good_title) {
+              $old = $template->get('title');
+              $template->set('title', '');
+              $template->add_if_new('title', $title);
+              $new = $template->get('title');
+              if ($new === '') {
+                 $template->set('title', $old); // UTF-8 craziness
+              } else {
+                 $bad_count = substr_count($new, '�') + mb_substr_count($new, '$') + mb_substr_count($new, '%') + substr_count($new, '');
+                 if ($bad_count > 5) {
+                     $template->set('title', $old); // UTF-8 craziness
+                 } else {
+                     $raw_html = ''; // We are done 
+                 }
+              }
+            }
           }
+         }
         }
       }
     }
@@ -1331,3 +1412,4 @@ function query_adsabs(string $options) : object {
       curl_close($ch);
     return $response;
   }
+

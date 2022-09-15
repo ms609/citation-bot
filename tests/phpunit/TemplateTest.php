@@ -176,13 +176,7 @@ final class TemplateTest extends testBaseClass {
     $expanded = $this->process_citation($text);
     $this->assertSame('', $expanded->get2('title'));
   }
- 
-  public function testTheNation() : void {
-    $text = "{{cite journal|issn=0027-8378}}";
-    $expanded = $this->process_citation($text);
-    $this->assertSame('The Nation', $expanded->get2('journal'));
-  }
-   
+
   public function testNoGoonUTF8() : void {
     $text = "{{cite news |date=びっくり１位 白鴎|title=阪神びっくり１位 白鴎大・大山、鉄人魂の持ち主だ|journal=鉄人魂}}";
     $expanded = $this->process_citation($text);
@@ -1645,13 +1639,7 @@ final class TemplateTest extends testBaseClass {
     $this->assertSame('152', $expanded->get2('volume'));
     $this->assertSame('215', $expanded->get2('page'));
   }
- 
-  public function testUseISSN() : void {
-      $text = "{{Cite book|issn=0031-0603}}";
-      $expanded = $this->process_citation($text);
-      $this->assertTrue(stripos($expanded->get('journal'), 'Entomologist') !== FALSE);
-  }
- 
+
   public function testParameterAlias() : void {
     $text = '{{cite journal |author-last1=Knops |author-first1=J.M. |author-last2=Nash III |author-first2=T.H.
     |date=1991 |title=Mineral cycling and epiphytic lichens: Implications at the ecosystem level 
@@ -2157,9 +2145,7 @@ final class TemplateTest extends testBaseClass {
     $expanded = $this->process_citation($text);
     $this->assertSame('1', $expanded->get2('display-authors'));
     $this->assertSame('Aielli', $expanded->get2('last30'));
-    $this->assertSame("Charged-particle multiplicities in pp interactions at <math>"
-      . '\sqrt{s}=900\text{ GeV}' .
-      "</math> measured with the ATLAS detector at the LHC", $expanded->get2('title'));
+    $this->assertSame('Charged-particle multiplicities in pp interactions at s=900 GeV measured with the ATLAS detector at the LHC', $expanded->get2('title'));
     $this->assertNull($expanded->get2('last31'));
   }
   

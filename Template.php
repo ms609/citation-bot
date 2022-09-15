@@ -636,6 +636,7 @@ final class Template {
   }
 
   public function incomplete() : bool {   // FYI: some references will never be considered complete
+    if (ZOTERO_ONLY && $this->has('title')) return FALSE;
     $possible_extra_authors = $this->get('author') . $this->get('authors') . $this->get('vauthors');
     if (strpos($possible_extra_authors, ' and ') !== FALSE ||
         strpos($possible_extra_authors, '; ')    !== FALSE ||
@@ -689,6 +690,7 @@ final class Template {
   }
 
   public function profoundly_incomplete(string $url = '') : bool {
+    if (ZOTERO_ONLY && $this->has('title')) return FALSE;
     // Zotero translation server often returns bad data, which is worth having if we have no data,
     // but we don't want to fill a single missing field with garbage if a reference is otherwise well formed.
     $has_date = $this->has('date') || $this->has('year') ;
@@ -1429,9 +1431,8 @@ final class Template {
         if (stripos($value, '10.1093/oi/authority') === 0) return FALSE; // Those do not work
         if (stripos($value, '10.10520/') === 0 && !doi_works($value)) return FALSE; // Has doi in the URL, but is not a doi
         if (stripos($value, '10.1967/') === 0 && !doi_works($value)) return FALSE; // Retired DOIs
-        if (stripos($value, '10.3316/informit.') === 0 && !doi_works($value)) return FALSE; // These do not seem to work - TODO watch https://dx.doi.org/10.3316/informit.550258516430914
-        if (stripos($value, '10.3316/ielapa.') === 0 && !doi_works($value)) return FALSE; // These do not seem to work - TODO watch   https://dx.doi.org/10.3316/ielapa.347150294724689
-        if (stripos($value, '10.3316/aeipt..') === 0 && !doi_works($value)) return FALSE; // These do not seem to work - TODO watch   https://search.informit.org/doi/10.3316/aeipt.207729
+        if (stripos($value, '10.1043/0003-3219(') === 0 && !doi_works($value)) return FALSE; // Per-email.  The Angle Orthodontist will NEVER do these, since they have <> and [] in them
+        if (stripos($value, '10.3316/') === 0 && !doi_works($value)) return FALSE; // These do not seem to work - TODO watch https://dx.doi.org/10.3316/informit.550258516430914 https://dx.doi.org/10.3316/ielapa.347150294724689 https://search.informit.org/doi/10.3316/aeipt.207729 https://search.informit.org/doi/10.3316/agispt.19930546 https://search.informit.org/doi/10.3316/aeipt.207729
         if (preg_match(REGEXP_DOI, $value, $match)) {
           if ($this->blank($param_name)) {
             if ($this->wikiname() === 'cite arxiv') $this->change_name_to('cite journal');
@@ -1558,8 +1559,8 @@ final class Template {
 
       case 'bibcode_nosearch':  // Avoid recursive loop
       case 'bibcode':
-        if (stripos($value, 'arxiv') === FALSE &&
-            stripos($this->get('bibcode'), 'arxiv') !== FALSE &&
+        if (stripos($value, 'arxiv') === FALSE && stripos($value, 'tmp') === FALSE &&
+            (stripos($this->get('bibcode'), 'arxiv') !== FALSE || stripos($this->get('bibcode'), 'tmp') !== FALSE) &&
             strlen(trim($value)) > 16
             ) {
           $this->quietly_forget('bibcode');  // Upgrade bad bibcode
@@ -2029,7 +2030,7 @@ final class Template {
         $this->add_if_new('doi', $doi);
       }
     }
-    if ($this->has('doi') && $this->blank('bibcode')) {
+    if ($this->has('doi') && ($this->blank('bibcode') || stripos($this->get('bibcode'), 'tmp') !== FALSE || stripos($this->get('bibcode'), 'arxiv') !== FALSE)) {
       $doi = $this->get('doi');
       if (doi_works($doi)) {
         $bib = AdsAbsControl::get_doi2bib($doi);
@@ -2038,12 +2039,12 @@ final class Template {
     }
     
     // API docs at https://github.com/adsabs/adsabs-dev-api
-    if ($this->has('bibcode') && !$this->incomplete() &&
+    if ($this->has('bibcode') && !$this->incomplete() && stripos($this->get('bibcode'), 'tmp') === FALSE && stripos($this->get('bibcode'), 'arxiv') === FALSE  &&
         ($this->has('doi') || AdsAbsControl::get_bib2doi($this->get('bibcode')) === 'X')) {  // Don't waste a query, if it has a doi or will not find a doi
       return FALSE;  // @codeCoverageIgnore
     }
     
-    if (!$this->blank_other_than_comments('bibcode')) return FALSE; // Now use big query API for existing bibcode - code below still assumes that we might use a bibcode
+    if (!$this->blank_other_than_comments('bibcode') && stripos($this->get('bibcode'), 'tmp') === FALSE && stripos($this->get('bibcode'), 'arxiv') === FALSE ) return FALSE; // Now use big query API for existing bibcode - code below still assumes that we might use a bibcode
     if (!SLOW_MODE && $this->blank('bibcode')) return FALSE; // Do not look for new bibcodes in slow mode
     if (stripos($this->get('bibcode'), 'CITATION') !== FALSE) return FALSE;
 
@@ -2054,9 +2055,11 @@ final class Template {
     if ($this->has('bibcode')) $this->record_api_usage('adsabs', 'bibcode');
     if (strpos($this->get('doi'), '10.1093/') === 0) return FALSE;
     report_action("Checking AdsAbs database");
-    if ($this->has('bibcode')) {
-      $result = query_adsabs("identifier:" . urlencode('"' . $this->get('bibcode') . '"')); // @codeCoverageIgnore
-    } elseif ($this->has('doi') && preg_match(REGEXP_DOI, $this->get_without_comments_and_placeholders('doi'), $doi)) {
+    // No longer use this code for exanding existing bibcodes
+    // if ($this->has('bibcode')) {
+    //   $result = query_adsabs("identifier:" . urlencode('"' . $this->get('bibcode') . '"'));
+    // } else
+    if ($this->has('doi') && preg_match(REGEXP_DOI, $this->get_without_comments_and_placeholders('doi'), $doi)) {
       $result = query_adsabs("identifier:" . urlencode('"' .  $doi[0] . '"'));  // In DOI we trust
     } elseif ($this->has('eprint')) {
       $result = query_adsabs("identifier:" . urlencode('"' . $this->get('eprint') . '"'));
@@ -2406,7 +2409,7 @@ final class Template {
     $context = stream_context_create(CONTEXT_S2);
     /** @psalm-taint-escape file */
     $doi = doi_encode(urldecode($doi));
-    $response = (string) @file_get_contents(HOST_S2 . '/v1/paper/' . $doi, FALSE, $context);
+    $response = (string) @file_get_contents('https://api.semanticscholar.org/v1/paper/' . $doi, FALSE, $context);
     if ($response) {
       $oa = @json_decode($response);
       if ($oa !== FALSE && isset($oa->url) && isset($oa->is_publisher_licensed) && $oa->is_publisher_licensed) {
@@ -3057,8 +3060,14 @@ final class Template {
 
       if (preg_match('~^(https?://|www\.)\S+~', $dat, $match)) { # Takes priority over more tentative matches
         report_add("Found URL floating in template; setting url");
-        $this->add_if_new('url', $match[0]);
-        $dat = str_replace($match[0], '', $dat);
+        $url = $match[0];
+        if ($this->blank('url')) {
+           $this->add_if_new('url', $url);
+        } elseif ($this->blank(['archive-url','archiveurl']) &&
+               stripos($url, 'archive') !== FALSE) {
+           $this->add_if_new('archive-url', $url);
+        }
+        $dat = str_replace($url, '', $dat);
       }
 
       if (preg_match_all("~(\w+)\.?[:\-\s]*([^\s;:,.]+)[;.,]*~", $dat, $match)) { #vol/page abbrev.
@@ -3226,7 +3235,7 @@ final class Template {
     } else {
       return;
     }
-    if ($id === "<small></small>" || $id === "<small> </small>") {
+    if ($id === "<small></small>" || $id === "<small> </small>" || $id === ".") {
       $this->forget('id');
       return;
     }
@@ -3298,8 +3307,10 @@ final class Template {
                                       $subtemplate->get('id') :
                                       $subtemplate->param_value(0);
 
-            $this->add_if_new($subtemplate_name, $subtemplate_identifier);
-            $id = str_replace($matches[0][$i], '', $id); // Could only do this if previous line evaluated to TRUE, but let's be aggressive here.
+            $did_it = $this->add_if_new($subtemplate_name, $subtemplate_identifier);
+            if ($did_it) $id = str_replace($matches[0][$i], '', $id);
+            break;
+          case "proquest":
             break;
           default:
             report_info("No match found for " . $subtemplate_name);
@@ -3659,7 +3670,7 @@ final class Template {
           if ($this->blank(WORK_ALIASES) &&
               in_array(strtolower(str_replace(array('[', ']', '.'), '', $this->get($param))),
                        ['reuters', 'associated press', 'united press international', 'yonhap news agency', 'official charts company',
-                        'philippine news agency', 'philippine information agency'])) {
+                        'philippine news agency', 'philippine information agency', 'ap', 'ap news', 'associated press news'])) {
             $the_url = '';
             foreach (ALL_URL_TYPES as $thingy) {
               $the_url .= $this->get($thingy);
@@ -3669,6 +3680,13 @@ final class Template {
                 stripos($the_url, 'officialcharts.com') !== FALSE || stripos($the_url, 'pia.gov.ph') !== FALSE ||
                 stripos($the_url, 'pna.gov.ph') !== FALSE) {
                $this->rename($param, 'work');
+               if (stripos($the_url, 'apnews.com') !== FALSE) {
+                 if ($this->get('work') === 'AP'){
+                   $this->set('work', 'AP News');
+                 } elseif ($this->get('work') === 'Associated Press'){
+                   $this->set('work', 'Associated Press News');
+                 }
+               }
             }
           }
 
@@ -3894,6 +3912,13 @@ final class Template {
         case 'doi':
           $doi = $this->get($param);
           if (!$doi) return;
+          if (preg_match('~^(10\.[^\/]+\/)\/(.+)$~', $doi, $matches)) {
+            $try = $matches[1] . $matches[2];
+            if (doi_works($try)) {
+               $doi = $try;
+               $this->set('doi', $try);
+            }
+          }
           if ($doi === '10.1267/science.040579197') {
             // This is a bogus DOI from the PMID example file
             $this->forget('doi');
@@ -3921,11 +3946,15 @@ final class Template {
             }
             return;
           }
-          if (!doi_works($doi) && (stripos($doi, '10.3316/informit.') === 0 || stripos($doi, '10.3316/ielapa.') === 0)) {
+          if (!doi_works($doi) && (stripos($doi, '10.3316/') === 0)) {
             if ($this->has('url') || $this->has('pmid') || $this->has('jstor') || $this->has('pmc')) {
               $this->forget('doi');
               return;
             }
+          }
+          if (!doi_works($doi) && (stripos($doi, '10.1043/0003-3219(') === 0)) {
+            $this->forget('doi'); // Per-email.  The Angle Orthodontist will NEVER do these, since they have <> and [] in them
+            return;
           }
           if (doi_works($doi) === NULL) { // This is super slow and rare
            // @codeCoverageIgnoreStart
@@ -5879,7 +5908,13 @@ final class Template {
               $this->forget('number');
             }
           }
-          CONFLICT
+          if (in_array($temp_string, PREFER_ISSUES) && $this->has('volume')) {
+            if ($this->get('volume') === $this->get('issue')) {
+              $this->forget('volume');
+            } elseif ($this->get('volume') === $this->get('number')) {
+              $this->forget('volume');
+            }
+          }
           // Remove leading zeroes
           $value = $this->get($param);
           if ($value !== '') {
@@ -5959,6 +5994,12 @@ final class Template {
             if (in_array($temp_string, PREFER_VOLUMES) && $this->has('volume')) {
               if ($this->get('volume') === $this->get($param)) {
                 $this->forget($param);
+                return;
+              }
+            }
+            if (in_array($temp_string, PREFER_ISSUES) && $this->has('volume')) {
+              if ($this->get('volume') === $this->get($param)) {
+                $this->forget('volume');
                 return;
               }
             }
@@ -7367,36 +7408,36 @@ final class Template {
           case "authuser": case "gsas": case "ned": case "pz": case "e":
              break;
           case "as_occt":
-             if ($part_start[1] === "" || str_i_same($part_start[1], 'any')) break;
+             if ($part_start[1] == "" || str_i_same($part_start[1], 'any')) break;
              $url .=  $part . "&" ;
              break;
           case "cf":
-             if ($part_start[1] === "" || str_i_same($part_start[1], 'all')) break;
+             if ($part_start[1] == "" || str_i_same($part_start[1], 'all')) break;
              $url .=  $part . "&" ;
              break;
           case "btnK":
-             if ($part_start[1] === "" || str_i_same($part_start[1], 'Google+Search')) break;
+             if ($part_start[1] == "" || str_i_same($part_start[1], 'Google+Search')) break;
              $url .=  $part . "&" ;
              break;
           case "as_epq":
-             if ($part_start[1] === "") break;
+             if ($part_start[1] == "") break;
              $url .=  $part . "&" ;
              break;
           case "btnG":
-             if ($part_start[1] === "" || str_i_same($part_start[1], 'Search')) break;
+             if ($part_start[1] == "" || str_i_same($part_start[1], 'Search')) break;
              $url .=  $part . "&" ;
              break;
           case "rct":
-             if (str_i_same($part_start[1], 'j')) break;  // default
+             if ($part_start[1] == "" || str_i_same($part_start[1], 'j')) break;  // default
              $url .=  $part . "&" ;
              break;
           case "ie": case "oe":
-             if (str_i_same($part_start[1], 'utf-8')) break;  // UTF-8 is the default
+             if ($part_start[1] == "" || str_i_same($part_start[1], 'utf-8')) break;  // UTF-8 is the default
              $url .=  $part . "&" ;
              break;
           case "hl": case "safe": case "q": case "tbm": case "start": case "ludocid":
           case "cshid": case "stick": case "as_eq": case "kgmid": case "as_drrb":
-          case "as_scoring": case "gl": case "rllag": case "lsig":
+          case "as_scoring": case "gl": case "rllag": case "lsig": case "lpsid": case "as_q":
              $url .=  $part . "&" ;
              break;
           default:
@@ -7432,6 +7473,7 @@ final class Template {
     // @codeCoverageIgnoreEnd
     if ($issn === '9999-9999') return FALSE; // Fake test suite data
     if (!preg_match('~^\d{4}.?\d{3}[0-9xX]$~u', $issn)) return FALSE;
+    /** TODO - this API is gone
     $html = (string) @file_get_contents('https://www.worldcat.org/issn/' . $issn);
     if (preg_match('~<title>(.*)\(e?Journal~', $html, $matches)) {
       $the_name = trim($matches[1]);
@@ -7443,7 +7485,6 @@ final class Template {
       } else {
         return $this->add_if_new('journal', $the_name);   // Might be newspaper, hard to tell.
       }
-      // @codeCoverageIgnoreStart
     } elseif (preg_match('~<title>(.*)</title>~', $html, $matches)) {
       $wonky = trim($matches[1]);
       if ($wonky === "[WorldCat.org]") {
@@ -7456,8 +7497,8 @@ final class Template {
         report_minor_error('Unexpected title from WorldCat for ISSN ' . echoable($issn) . ' : ' . echoable($wonky));
       }
     }
+    **/
     return FALSE;
-    // @codeCoverageIgnoreEnd
   }
 
   private function is_book_series(string $param) : bool {

@@ -84,6 +84,15 @@ function throttle_dx () : void {
   $last = $now;
 }
 
+function throttle_archive () : void {
+  static $last = 0.0;
+  $min_time = 1000000.0; // One second
+  $now = microtime(TRUE);
+  $left = (int) ($min_time - ($now - $last));
+  if ($left > 0 && $left < $min_time) usleep($left); // less than min_time is paranoia, but do not want an inifinite delay
+  $last = $now;
+}
+
 function is_doi_works(string $doi) : ?bool {
   set_time_limit(120);
   $doi = trim($doi);
@@ -111,6 +120,7 @@ function is_doi_works(string $doi) : ?bool {
   $headers_test = @get_headers("https://doi.org/" . doi_encode($doi), GET_THE_HEADERS, $context);
   $context = stream_context_create(CONTEXT_INSECURE_11);
   if ($headers_test === FALSE) {
+     if (ZOTERO_ONLY) return NULL;
      sleep(2);                                                                                        // @codeCoverageIgnore
      report_inline(' .');                                                                             // @codeCoverageIgnore
      set_time_limit(120);                                                                             // @codeCoverageIgnore
@@ -348,19 +358,19 @@ function wikify_external_text(string $title) : string {
   $title_orig = '';
   while ($title !== $title_orig) {
     $title_orig = $title;  // Might have to do more than once.   The following do not allow < within the inner match since the end tag is the same :-( and they might nest or who knows what
-    $title = preg_replace_callback('~(?:<Emphasis Type="Italic">)([^<]+)(?:</Emphasis>)~iu',
+    $title = safe_preg_replace_callback('~(?:<Emphasis Type="Italic">)([^<]+)(?:</Emphasis>)~iu',
       function (array $matches) : string {return ("''" . $matches[1] . "''");},
       $title);
-    $title = preg_replace_callback('~(?:<Emphasis Type="Bold">)([^<]+)(?:</Emphasis>)~iu',
+    $title = safe_preg_replace_callback('~(?:<Emphasis Type="Bold">)([^<]+)(?:</Emphasis>)~iu',
       function (array $matches) : string {return ("'''" . $matches[1] . "'''");},
       $title);
-    $title = preg_replace_callback('~(?:<em>)([^<]+)(?:</em>)~iu',
+    $title = safe_preg_replace_callback('~(?:<em>)([^<]+)(?:</em>)~iu',
       function (array $matches) : string {return ("''" . $matches[1] . "''");},
       $title);
-    $title = preg_replace_callback('~(?:<i>)([^<]+)(?:</i>)~iu',
+    $title = safe_preg_replace_callback('~(?:<i>)([^<]+)(?:</i>)~iu',
       function (array $matches) : string {return ("''" . $matches[1] . "''");},
       $title);
-    $title = preg_replace_callback('~(?:<italics>)([^<]+)(?:</italics>)~iu',
+    $title = safe_preg_replace_callback('~(?:<italics>)([^<]+)(?:</italics>)~iu',
       function (array $matches) : string {return ("''" . $matches[1] . "''");},
       $title);
   }
@@ -376,7 +386,11 @@ function wikify_external_text(string $title) : string {
   $title = str_ireplace('<p class="HeadingRun \'\'In\'\'">', ' ', $title);
   
   $title = str_ireplace(['    ', '   ', '  '], [' ', ' ', ' '], $title);
-  $title = trim($title," \t\n\r\0\x0B\xc2\xa0");
+  if (mb_strlen($title) === strlen($title)) {
+     $title = trim($title," \t\n\r\0\x0B\xc2\xa0");
+  } else {
+     $title = trim($title," \t\n\r\0");
+  }
 
   for ($i = 0; $i < count($replacement); $i++) {
     $title = str_replace($placeholder[$i], $replacement[$i], $title); // @phan-suppress-current-line PhanTypePossiblyInvalidDimOffset
@@ -429,6 +443,8 @@ function str_remove_irrelevant_bits(string $str) : string {
   $str = str_replace(array('.', ',', ';', ': '), array(' ', ' ', ' ', ' '), $str);
   $str = str_replace(array(':', '-', '&mdash;', '&ndash;', '—', '–'), array('', '', '', '', '', ''), $str);
   $str = str_replace(array('   ', '  '), array(' ', ' '), $str);
+  $str = str_replace(" & ", " and ", $str);
+  $str = str_replace(" / ", " and ", $str);
   $str = trim($str);
   $str = str_ireplace(array('Proceedings', 'Proceeding', 'Symposium', 'Huffington ', 'the Journal of ', 'nytimes.com'   , '& '  , '(Clifton, N.J.)'),
                       array('Proc',        'Proc',       'Sym',       'Huff ',       'journal of ',     'New York Times', 'and ', ''), $str);
@@ -513,7 +529,7 @@ function titles_are_dissimilar(string $inTitle, string $dbTitle) : bool {
 function titles_simple(string $inTitle) : string {
         // Failure leads to null or empty strings!!!!
         // Leading Chapter # -   Use callback to make sure there are a few characters after this
-        $inTitle2 = (string) preg_replace_callback('~^(?:Chapter \d+ \- )(.....+)~iu',
+        $inTitle2 = (string) safe_preg_replace_callback('~^(?:Chapter \d+ \- )(.....+)~iu',
             function (array $matches) : string {return ($matches[1]);}, trim($inTitle));
         if ($inTitle2 !== "") $inTitle = $inTitle2;
         // Trailing "a review"
@@ -550,6 +566,9 @@ function titles_simple(string $inTitle) : string {
         $inTitle = str_replace(array("'", '"'), "", $inTitle);
         // Strip trailing periods
         $inTitle = trim(rtrim($inTitle, '.'));
+        // &
+        $inTitle = str_replace(" & ", " and ", $inTitle);
+        $inTitle = str_replace(" / ", " and ", $inTitle);
         // greek
         $inTitle = strip_diacritics($inTitle);
         $inTitle = str_remove_irrelevant_bits($inTitle);
@@ -564,6 +583,7 @@ function straighten_quotes(string $str, bool $do_more) : string { // (?<!\') and
   // These Regex can die on Unicode because of backward looking
   if ($str === '') return '';
   $str = str_replace('Hawaiʻi', 'CITATION_BOT_PLACEHOLDER_HAWAII', $str);
+  $str = str_replace('Ha‘apai', 'CITATION_BOT_PLACEHOLDER_HAAPAI', $str);
   $str2 = safe_preg_replace('~(?<!\')&#821[679];|&#39;|&#x201[89];|[\x{FF07}\x{2018}-\x{201B}`]|&[rl]s?[b]?quo;(?!\')~u', "'", $str);
   if ($str2 !== NULL) $str = $str2;
   if((mb_strpos($str, '&rsaquo;') !== FALSE && mb_strpos($str, '&[lsaquo;')  !== FALSE) ||
@@ -591,7 +611,8 @@ function straighten_quotes(string $str, bool $do_more) : string { // (?<!\') and
      }
      if ($str2 !== NULL) $str = $str2;
   }
-  $str = str_replace('CITATION_BOT_PLACEHOLDER_HAWAII', 'Hawaiʻi', $str);
+  $str = str_ireplace('CITATION_BOT_PLACEHOLDER_HAAPAI', 'Ha‘apai', $str);
+  $str = str_ireplace('CITATION_BOT_PLACEHOLDER_HAWAII', 'Hawaiʻi', $str);
   return $str;
 }
 
@@ -630,10 +651,10 @@ function title_capitalization(string $in, bool $caps_after_punctuation) : string
 
   // Implicit acronyms
   $new_case = ' ' . $new_case . ' ';
-  $new_case = preg_replace_callback("~[^\w&][b-df-hj-np-tv-xz]{3,}(?=\W)~ui", 
+  $new_case = safe_preg_replace_callback("~[^\w&][b-df-hj-np-tv-xz]{3,}(?=\W)~ui", 
       function (array $matches) : string {return mb_strtoupper($matches[0]);}, // Three or more consonants.  NOT Y
       $new_case);
-  $new_case = preg_replace_callback("~[^\w&][aeiou]{3,}(?=\W)~ui", 
+  $new_case = safe_preg_replace_callback("~[^\w&][aeiou]{3,}(?=\W)~ui", 
       function (array $matches) : string {return mb_strtoupper($matches[0]);}, // Three or more vowels.  NOT Y
       $new_case);
   $new_case = mb_substr($new_case, 1, -1); // Remove added spaces
@@ -650,36 +671,36 @@ function title_capitalization(string $in, bool $caps_after_punctuation) : string
   if ($caps_after_punctuation || (substr_count($in, '.') / strlen($in)) > .07) {
     // When there are lots of periods, then they probably mark abbreviations, not sentence ends
     // We should therefore capitalize after each punctuation character.
-    $new_case = preg_replace_callback("~[?.:!/]\s+[a-z]~u" /* Capitalize after punctuation */,
+    $new_case = safe_preg_replace_callback("~[?.:!/]\s+[a-z]~u" /* Capitalize after punctuation */,
       function (array $matches) : string {return mb_strtoupper($matches[0]);},
       $new_case);
-    $new_case = preg_replace_callback("~(?<!<)/[a-z]~u" /* Capitalize after slash unless part of ending html tag */,
+    $new_case = safe_preg_replace_callback("~(?<!<)/[a-z]~u" /* Capitalize after slash unless part of ending html tag */,
       function (array $matches) : string {return mb_strtoupper($matches[0]);},
       $new_case);
     // But not "Ann. Of...." which seems to be common in journal titles
     $new_case = str_replace("Ann. Of ", "Ann. of ", $new_case);
   }
 
-  $new_case = preg_replace_callback(
+  $new_case = safe_preg_replace_callback(
     "~ \([a-z]~u" /* uppercase after parenthesis */, 
     function (array $matches) : string {return mb_strtoupper($matches[0]);},
     trim($new_case)
   );
 
-  $new_case = preg_replace_callback(
+  $new_case = safe_preg_replace_callback(
     "~\w{2}'[A-Z]\b~u" /* Lowercase after apostrophes */, 
     function (array $matches) : string {return mb_strtolower($matches[0]);},
     trim($new_case)
   );
   /** French l'Words and d'Words  **/
-  $new_case = preg_replace_callback(
+  $new_case = safe_preg_replace_callback(
     "~(\s[LD][\'\x{00B4}])([a-zA-ZÀ-ÿ]+)~u",
     function (array $matches) : string {return mb_strtolower($matches[1]) . mb_ucfirst($matches[2]);},
     ' ' . $new_case
   );
 
   /** Italian dell'xxx words **/
-  $new_case = preg_replace_callback(
+  $new_case = safe_preg_replace_callback(
     "~(\s)(Dell|Degli|Delle)([\'\x{00B4}][a-zA-ZÀ-ÿ]{3})~u",
     function (array $matches) : string {return $matches[1] . strtolower($matches[2]) . $matches[3];},
     $new_case
@@ -696,7 +717,7 @@ function title_capitalization(string $in, bool $caps_after_punctuation) : string
   $new_case = str_replace(['(new Series)', '(new series)'] , ['(New Series)', '(New Series)'], $new_case);
 
   // Catch some specific epithets, which should be lowercase
-  $new_case = preg_replace_callback(
+  $new_case = safe_preg_replace_callback(
     "~(?:'')?(?P<taxon>\p{L}+\s+\p{L}+)(?:'')?\s+(?P<nova>(?:(?:gen\.? no?v?|sp\.? no?v?|no?v?\.? sp|no?v?\.? gen)\b[\.,\s]*)+)~ui" /* Species names to lowercase */,
     function (array $matches) : string {return "''" . ucfirst(strtolower($matches['taxon'])) . "'' " . strtolower($matches["nova"]);},
     $new_case);
@@ -742,11 +763,11 @@ function title_capitalization(string $in, bool $caps_after_punctuation) : string
     }
   }
   // Part XII: Roman numerals
-  $new_case = preg_replace_callback(
+  $new_case = safe_preg_replace_callback(
     "~ part ([xvil]+): ~iu",
     function (array $matches) : string {return " Part " . strtoupper($matches[1]) . ": ";},
     $new_case);
-  $new_case = preg_replace_callback(
+  $new_case = safe_preg_replace_callback(
     "~ part ([xvi]+) ~iu",
     function (array $matches) : string {return " Part " . strtoupper($matches[1]) . " ";},
     $new_case);
@@ -1234,6 +1255,12 @@ function safe_preg_replace(string $regex, string $replace, string $old) : string
   if ($new === NULL) return $old;
   return (string) $new;
 }
+function safe_preg_replace_callback(string $regex, callable $replace, string $old) : string {
+  if ($old === "") return "";
+  $new = preg_replace_callback($regex, $replace, $old);
+  if ($new === NULL) return $old;
+  return (string) $new;
+}
 
 function wikifyURL(string $url) : string {
    $in  = array(' '  , '"'  , "'"  , '<'  ,'>'   , '['  , ']'  , '{'  , '|'  , '}');
@@ -1255,3 +1282,37 @@ function numberToRomanRepresentation(int $number) : string { // https://stackove
     }
     return $returnValue;
 }
+
+function convert_to_utf8(string $value) : string {
+    $encode1 =  mb_detect_encoding($value, ["UTF-8", "EUC-KR", "EUC-CN", "ISO-2022-JP", "WINDOWS-1252", "iso-8859-1"]);
+    if ($encode1 === FALSE || $encode1 === 'UTF-8') return $value;
+    $encode2 =  mb_detect_encoding($value, ["UTF-8", "EUC-CN", "EUC-KR", "ISO-2022-JP", "WINDOWS-1252", "iso-8859-1"]);
+    if ($encode1 !== $encode2) return $value;
+    $encode3 =  mb_detect_encoding($value, ["UTF-8", "ISO-2022-JP", "EUC-CN", "EUC-KR", "WINDOWS-1252", "iso-8859-1"]);
+    if ($encode1 !== $encode3) return $value;
+    $encode4 =  mb_detect_encoding($value, ["iso-8859-1", "UTF-8", "WINDOWS-1252", "ISO-2022-JP", "EUC-CN", "EUC-KR"]);
+    if ($encode1 !== $encode4) return $value;
+    $new_value = mb_convert_encoding($value, "UTF-8", $encode1);
+    if ($new_value == "") return $value;
+    return $new_value;
+}
+
+function is_encoding_reasonable(string $encode) : bool { // common "default" ones that are often wrong
+  $encode = strtolower($encode);
+  return !in_array($encode, ['utf-8', 'iso-8859-1', 'windows-1252', 'unicode', 'us-ascii', 'none', 'iso-8859-7']);
+}
+
+function smart_decode(string $title, string $encode, string $archive_url) : string {
+  if ($title === "") return "";
+  if (in_array(strtolower($encode), ["windows-1255", "maccyrillic", "windows-1253", "windows-1256", "tis-620", "windows-874", "iso-8859-11", "big5", "windows-1250"])) {
+    $try = (string) @iconv($encode, "UTF-8", $title);
+  } else {
+    $try = (string) @mb_convert_encoding($title, "UTF-8", $encode);
+  }
+  if ($try == "") {
+    file_put_contents('CodeCoverage', 'Bad Encoding: ' . $encode . ' for ' . echoable($archive_url) . "\n", FILE_APPEND); // @codeCoverageIgnore
+  }
+  return $try;
+}
+
+

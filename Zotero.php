@@ -86,7 +86,8 @@ public static function unblock_zotero() : void {
 public static function query_url_api_class(array $ids, array &$templates) : void { // Pointer to save memory
   if (!SLOW_MODE) return; // Zotero takes time
 
-  if (!TRAVIS) { // try harder in tests
+  curl_setopt(self::$zotero_ch, CURLOPT_TIMEOUT, 45); // Reset default
+  if (!TRAVIS && !ZOTERO_ONLY) { // try harder in tests
     // @codeCoverageIgnoreStart
     curl_setopt(self::$zotero_ch, CURLOPT_CONNECTTIMEOUT, 3);
     $url_count = 0;
@@ -108,10 +109,11 @@ public static function query_url_api_class(array $ids, array &$templates) : void
   foreach ($templates as $template) {
      self::expand_by_zotero($template);
   }
+  self::$zotero_announced = 2;
+  if (ZOTERO_ONLY) return;
   if (!TRAVIS) { // These are pretty reliable, unlike random urls
       curl_setopt(self::$zotero_ch, CURLOPT_TIMEOUT, 10);  // @codeCoverageIgnore
   }
-  self::$zotero_announced = 2;
   foreach ($templates as $template) {
        if ($template->has('biorxiv')) {
          if ($template->blank('doi')) {
@@ -328,6 +330,10 @@ private static function zotero_request(string $url) : string {
     report_warning(curl_error(self::$zotero_ch) . "   For URL: " . $url);
     if (strpos(curl_error(self::$zotero_ch), 'timed out after') !== FALSE) {
       self::$zotero_failures_count = self::$zotero_failures_count + 1;
+      if (ZOTERO_ONLY) {
+         self::$zotero_failures_count = 1;
+         sleep(10);
+      }
       if (self::$zotero_failures_count > self::ZOTERO_GIVE_UP) {
         report_warning("Giving up on URL expansion for a while");
         self::$zotero_failures_count = self::$zotero_failures_count + self::ZOTERO_SKIPS;
@@ -479,13 +485,15 @@ public static function process_zotero_response(string $zotero_response, Template
   unset($result->journalAbbreviation);
   unset($result->ISSN);
 
+  $result->title = convert_to_utf8($result->title);
   // Reject if we find more than 5 or more than 10% of the characters are �.  This means that character
   // set was not correct in Zotero and nothing is good.  We allow a couple of � for German umlauts that arer easily fixable by humans.
   // We also get a lot of % and $ if the encoding was something like iso-2022-jp and converted wrong
-  $bad_count = mb_substr_count($result->title, '�') + mb_substr_count($result->title, '$') + mb_substr_count($result->title, '%');
+  $bad_count = substr_count($result->title, '�') + mb_substr_count($result->title, '$') + mb_substr_count($result->title, '%');
   $total_count = mb_strlen($result->title);
   if (isset($result->bookTitle)) {
-    $bad_count += mb_substr_count($result->bookTitle, '�') + mb_substr_count($result->bookTitle, '$') + mb_substr_count($result->bookTitle, '%');
+    $result->bookTitle = convert_to_utf8($result->bookTitle);
+    $bad_count += substr_count($result->bookTitle, '�') + mb_substr_count($result->bookTitle, '$') + mb_substr_count($result->bookTitle, '%');
     $total_count += mb_strlen($result->bookTitle);
   }
   if (($bad_count > 5) || ($total_count > 1 && (($bad_count/$total_count) > 0.1))) {
@@ -981,6 +989,7 @@ public static function url_simplify(string $url) : string {
 
 public static function find_indentifiers_in_urls(Template $template, ?string $url_sent = NULL) : bool {
     set_time_limit(120);
+    if (ZOTERO_ONLY) return FALSE;
     if (is_null($url_sent)) {
        // Chapter URLs are generally better than URLs for the whole book.
         if ($template->has('url') && $template->has('chapterurl')) {
@@ -1357,7 +1366,7 @@ public static function find_indentifiers_in_urls(Template $template, ?string $ur
       } elseif (stripos($url, '.nih.gov') !== FALSE) {
          
         if (preg_match("~^https?://(?:www\.|)pubmedcentral\.nih\.gov/articlerender.fcgi\?.*\bartid=(\d{4,})"
-                        . "|^https?://(?:www\.|)ncbi\.nlm\.nih\.gov/(?:m/)?pmc/articles/(?:PMC|instance)?(\d{4,})~i", $url, $match)) {
+                        . "|^https?://(?:www\.|)ncbi\.nlm\.nih\.gov/(?:m/|labs/|)pmc/articles/(?:PMC|instance)?(\d{4,})~i", $url, $match)) {
           if (preg_match("~\?term~i", $url)) return FALSE; // A search such as https://www.ncbi.nlm.nih.gov/pmc/?term=Sainis%20KB%5BAuthor%5D&cauthor=true&cauthor_uid=19447493
           if ($template->wikiname() === 'cite web') $template->change_name_to('cite journal');
           if ($template->blank('pmc')) {

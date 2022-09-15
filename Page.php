@@ -103,6 +103,7 @@ class Page {
 
     if (preg_match('~\#redirect *\[\[~i', $this->text)) {
       report_warning("Page is a redirect.");
+      if (strlen($this->text) > 1000) file_put_contents('CodeCoverage', $this->title . " is probably not a redirect. \n", FILE_APPEND);
       return FALSE;
     }
     return TRUE;
@@ -142,9 +143,7 @@ class Page {
       if (in_array($templates[$i]->wikiname(), TEMPLATES_WE_PROCESS)) {
         if ($templates[$i]->has($identifier)
         && !$templates[$i]->api_has_used($api, equivalent_parameters($identifier))) {
-          if (($api !== 'adsabs') || $templates[$i]->incomplete() || $templates[$i]->blank('doi')) { // Avoid some bibcode searches
             $ids[$i] = $templates[$i]->get_without_comments_and_placeholders($identifier);
-          }
         }
       }
     }
@@ -358,6 +357,7 @@ class Page {
     $this->expand_templates_from_identifier('doi',     $our_templates);
     expand_arxiv_templates($our_templates);
     $this->expand_templates_from_identifier('url',     $our_templates);
+    if (ZOTERO_ONLY) $this->expand_templates_from_identifier('url', $our_templates_slight); // In this mode, we reject everything if there is a title set
     Zotero::query_ieee_webpages($our_templates_ieee);
     Zotero::query_ieee_webpages($our_templates);
     
@@ -369,7 +369,9 @@ class Page {
       $this_template->get_doi_from_crossref();
       $this_template->get_doi_from_semanticscholar();
       $this_template->find_pmid();
-      if ($this_template->blank('bibcode')) {
+      if ($this_template->blank('bibcode') ||
+          stripos($this_template->get('bibcode'), 'arxiv') !== FALSE ||
+          stripos($this_template->get('bibcode'), 'tmp') !== FALSE) {
         $no_arxiv = $this_template->blank('arxiv');
         $this_template->expand_by_adsabs(); // Try to get a bibcode
         if (!$this_template->blank('arxiv') && $no_arxiv) {  // Added an arXiv.  Stuff to learn and sometimes even find a DOI -- VERY RARE
@@ -393,6 +395,7 @@ class Page {
       }
     }
     expand_templates_from_archives($our_templates);
+    if (ZOTERO_ONLY) expand_templates_from_archives($our_templates_slight); // In this mode, we reject everything if there is a title set
 
     report_phase('Remedial work to clean up templates');
     $log_bad_chapter = FALSE;
@@ -616,7 +619,7 @@ class Page {
          } else {
            $failures[4] = TRUE;
            if ($failures[0] && $failures[1] && $failures[2] && $failures[3]) {
-              report_error("Five failures in a row -- shutting down the bot");
+              report_error("Five failures in a row -- shutting down the bot on page " . $this->title);
            }
            return FALSE;
          }
