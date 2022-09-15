@@ -7460,6 +7460,7 @@ final class Template {
     // @codeCoverageIgnoreEnd
     if ($issn === '9999-9999') return FALSE; // Fake test suite data
     if (!preg_match('~^\d{4}.?\d{3}[0-9xX]$~u', $issn)) return FALSE;
+    /** TODO - this API is gone
     $html = (string) @file_get_contents('https://www.worldcat.org/issn/' . $issn);
     if (preg_match('~<title>(.*)\(e?Journal~', $html, $matches)) {
       $the_name = trim($matches[1]);
@@ -7471,7 +7472,6 @@ final class Template {
       } else {
         return $this->add_if_new('journal', $the_name);   // Might be newspaper, hard to tell.
       }
-      // @codeCoverageIgnoreStart
     } elseif (preg_match('~<title>(.*)</title>~', $html, $matches)) {
       $wonky = trim($matches[1]);
       if ($wonky === "[WorldCat.org]") {
@@ -7484,8 +7484,8 @@ final class Template {
         report_minor_error('Unexpected title from WorldCat for ISSN ' . echoable($issn) . ' : ' . echoable($wonky));
       }
     }
+    **/
     return FALSE;
-    // @codeCoverageIgnoreEnd
   }
 
   private function is_book_series(string $param) : bool {
