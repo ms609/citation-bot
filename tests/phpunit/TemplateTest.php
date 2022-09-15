@@ -1645,13 +1645,7 @@ final class TemplateTest extends testBaseClass {
     $this->assertSame('152', $expanded->get2('volume'));
     $this->assertSame('215', $expanded->get2('page'));
   }
- 
-  public function testUseISSN() : void {
-      $text = "{{Cite book|issn=0031-0603}}";
-      $expanded = $this->process_citation($text);
-      $this->assertTrue(stripos($expanded->get('journal'), 'Entomologist') !== FALSE);
-  }
- 
+
   public function testParameterAlias() : void {
     $text = '{{cite journal |author-last1=Knops |author-first1=J.M. |author-last2=Nash III |author-first2=T.H.
     |date=1991 |title=Mineral cycling and epiphytic lichens: Implications at the ecosystem level 
