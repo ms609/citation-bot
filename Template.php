@@ -5908,6 +5908,13 @@ final class Template {
               $this->forget('number');
             }
           }
+          if (in_array($temp_string, PREFER_ISSUES) && $this->has('volume')) {
+            if ($this->get('volume') === $this->get('issue')) {
+              $this->forget('volume');
+            } elseif ($this->get('volume') === $this->get('number')) {
+              $this->forget('volume');
+            }
+          }
           // Remove leading zeroes
           $value = $this->get($param);
           if ($value !== '') {
@@ -5987,6 +5994,12 @@ final class Template {
             if (in_array($temp_string, PREFER_VOLUMES) && $this->has('volume')) {
               if ($this->get('volume') === $this->get($param)) {
                 $this->forget($param);
+                return;
+              }
+            }
+            if (in_array($temp_string, PREFER_ISSUES) && $this->has('volume')) {
+              if ($this->get('volume') === $this->get($param)) {
+                $this->forget('volume');
                 return;
               }
             }
