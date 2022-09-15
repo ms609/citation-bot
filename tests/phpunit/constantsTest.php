@@ -85,7 +85,8 @@ final class constantsTest extends testBaseClass {
   public function testAllLowerCase() : void {
     $big_array = array_merge(HAS_NO_VOLUME, BAD_ACCEPTED_MANUSCRIPT_TITLES, BAD_AUTHORS,
                              PUBLISHER_ENDINGS, BAD_TITLES, IN_PRESS_ALIASES, NON_PUBLISHERS,
-                             JOURNAL_IS_BOOK_SERIES, HAS_NO_ISSUE, WORKS_ARE_PUBLISHERS, PREFER_VOLUMES);
+                             JOURNAL_IS_BOOK_SERIES, HAS_NO_ISSUE, WORKS_ARE_PUBLISHERS, PREFER_VOLUMES,
+                             PREFER_ISSUES);
     foreach ($big_array as $actual) {
       $this->assertSame(strtolower($actual), $actual);
     }
@@ -94,7 +95,8 @@ final class constantsTest extends testBaseClass {
   public function testNoSpacesOnEnds() : void {
     $big_array = array_merge(HAS_NO_VOLUME, BAD_ACCEPTED_MANUSCRIPT_TITLES, BAD_AUTHORS,
                              PUBLISHER_ENDINGS, BAD_TITLES, IN_PRESS_ALIASES, NON_PUBLISHERS,
-                             JOURNAL_IS_BOOK_SERIES, HAS_NO_ISSUE, WORKS_ARE_PUBLISHERS, PREFER_VOLUMES);
+                             JOURNAL_IS_BOOK_SERIES, HAS_NO_ISSUE, WORKS_ARE_PUBLISHERS, PREFER_VOLUMES,
+                             PREFER_ISSUES);
     foreach ($big_array as $actual) {
       if (!in_array($actual, ["sign up "])) {
        $this->assertSame(trim($actual), $actual);
