@@ -158,7 +158,7 @@ const UCFIRST_JOURNAL_ACRONYMS = array(/* The following will be automatically up
           " J Gerontol a Biol Sci Med Sci ", " J SCH Nurs ", " J Siam ", " J. Siam ", " Jabs : Journal of Applied Biological Sciences ", 
           " Jak-Stat ", " Jama Psychiatry ", " Jmir ", " Jnci: Journal ", " Journal of E-Learning ", 
           " Journal of Materials Chemistry A ", " Journal of the A.i.i.e ", " Journal of the Iest ", 
-          " Journal Sur ", " JPN ", " JPN. ", " L'Ihés ", " L'ihés ", " l'Ihés ", " l'ihés ", , " L. SCH. L. ",
+          " Journal Sur ", " JPN ", " JPN. ", " L'Ihés ", " L'ihés ", " l'Ihés ", " l'ihés ", " L. SCH. L. ",
           " la Trobe ", " Latina/O ", " Le Monde Artiste ", " LTD ", " Maa Focus ", " MAbs ", 
           " Mabs ", " Marion e. Wade ", " MBio ", " Mbio ", " Med SCH ", " Medchemcomm ", 
           " Meddelelser Om Grønland ", " Meddelelser Om Grønland, ", " MedRxiv ", " MedScape ", 
