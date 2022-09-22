@@ -1692,6 +1692,7 @@ final class Template {
         }
         return FALSE;
 
+      case 'work':
       case 'website':
         if ($this->blank(WORK_ALIASES)) {
           return $this->add($param_name, $value); // Do NOT Sanitize
