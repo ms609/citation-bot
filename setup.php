@@ -146,6 +146,7 @@ function check_killed() : void {
  if (isset($_SESSION['kill_the_big_job'])) {
    @session_start();
    unset($_SESSION['kill_the_big_job']);
+   unset($_SESSION['big_and_busy']);
    @session_write_close();
    echo '</pre><div style="text-align:center"><h1>Run killed as requested.</h1></div><footer><a href="./" title="Use Citation Bot again">Another</a>?</footer></body></html>';
    exit();
