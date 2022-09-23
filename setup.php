@@ -127,6 +127,7 @@ function unlock_user() : void {
 
 function check_overused() : void {
  if (!HTML_OUTPUT) return;
+ if ($_SESSION['citation_bot_user_id'] === "Whoop whoop pull up") return; // No idea why
  if (isset($_SESSION['big_and_busy']) && $_SESSION['big_and_busy'] === 'BLOCK4') {
    echo '</pre><div style="text-align:center"><h1>Run blocked by your existing big run.</h1></div><footer><a href="./" title="Use Citation Bot again">Another</a>?</footer></body></html>';
    exit();
