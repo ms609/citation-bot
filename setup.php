@@ -170,7 +170,7 @@ if (isset($argv)) {
 } else {
   define("MAX_PAGES", 3850);
 }
-define("BIG_RUN", 3);
+define("BIG_RUN", 50);
 
 if (!TRAVIS) { // This is explicity "tested" in test suite
   Zotero::create_ch_zotero();
