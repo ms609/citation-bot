@@ -351,8 +351,8 @@ class Page {
       }
       if ($this_template->has('url')) {
         $the_url = $this_template->get('url');
-        $new_url = str_ireplace(['nytimes.com'], '', $url); // TODO - add more "blessed" hosts
-        if (($the_url !== $new_url) || ZOTERO_ONLY || $this_template->blank('title')) {
+        $new_url = str_ireplace(['nytimes.com'], '', $the_url); // TODO - add more "blessed" hosts
+        if (($the_url !== $new_url) || ZOTERO_ONLY || $this_template->blank('title') || ($this_template->has('via') && $this_template->blank(WORK_ALIASES))) {
            $array_of_template = array($this_template);
            $this->expand_templates_from_identifier('url', $array_of_template);
         }
