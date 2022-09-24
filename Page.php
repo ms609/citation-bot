@@ -349,6 +349,13 @@ class Page {
           $this_template->has('title')) {
         $this_template->change_name_to('cite journal', TRUE, TRUE);
       }
+      if ($this_template->has('url')) {
+        $the_url = $this_template->get('url');
+        $new_url = str_ireplace(['nytimes.com'], '', $url); // TODO - add more "blessed" hosts
+        if (($the_url !== $url) || ZOTERO_ONLY || $this_template->blank('title')) {
+           $this->expand_templates_from_identifier('url', $this_template)
+        }
+      }
     }
     $this->expand_templates_from_identifier('pmid',    $our_templates);
     $this->expand_templates_from_identifier('pmc',     $our_templates);
@@ -357,7 +364,6 @@ class Page {
     $this->expand_templates_from_identifier('doi',     $our_templates);
     expand_arxiv_templates($our_templates);
     $this->expand_templates_from_identifier('url',     $our_templates);
-    if (ZOTERO_ONLY) $this->expand_templates_from_identifier('url', $our_templates_slight); // In this mode, we reject everything if there is a title set
     Zotero::query_ieee_webpages($our_templates_ieee);
     Zotero::query_ieee_webpages($our_templates);
     
