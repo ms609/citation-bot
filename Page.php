@@ -353,7 +353,7 @@ class Page {
         $the_url = $this_template->get('url');
         $new_url = str_ireplace(['nytimes.com'], '', $url); // TODO - add more "blessed" hosts
         if (($the_url !== $url) || ZOTERO_ONLY || $this_template->blank('title')) {
-           $this->expand_templates_from_identifier('url', $this_template)
+           $this->expand_templates_from_identifier('url', $this_template);
         }
       }
     }
