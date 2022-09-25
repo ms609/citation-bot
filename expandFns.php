@@ -778,6 +778,10 @@ function title_capitalization(string $in, bool $caps_after_punctuation) : string
     $new_case = 'AIDS';
   } elseif ($new_case === 'Biomedical Engineering Online') {
     $new_case = 'BioMedical Engineering OnLine';
+  } elseif ($new_case === 'Sage Open') {
+    $new_case = 'SAGE Open';
+  } elseif ($new_case === 'Ca') {
+    $new_case = 'CA';
   }
   return $new_case;
 }
