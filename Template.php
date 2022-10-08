@@ -7416,6 +7416,10 @@ final class Template {
              if (@$part_start[1] == "" || str_i_same($part_start[1], 'all')) break;
              $url .=  $part . "&" ;
              break;
+          case "cs":
+             if (@$part_start[1] == "" || str_i_same($part_start[1], '0')) break;
+             $url .=  $part . "&" ;
+             break;
           case "btnK":
              if (@$part_start[1] == "" || str_i_same($part_start[1], 'Google+Search')) break;
              $url .=  $part . "&" ;
