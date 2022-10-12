@@ -7210,6 +7210,17 @@ final class Template {
        if ($vals === '') unset($ret['deletions'][$inds]); // If we get rid of double pipe that appears as a deletion, not misc.
     }
 
+    $no_dash_to_start = TRUE;
+    foreach ($old as $old_name => $old_data) {
+        if (in_array($old_name, PAGE_ALIASES)) {
+           if (strpos($old_data, '-') !== FALSE) $no_dash_to_start = FALSE;
+        }
+        if (in_array($old_name, ['volume', 'issue', 'number'])) {
+           if (strpos($old_data, '-') !== FALSE) $no_dash_to_start = FALSE;
+        }
+    }
+    if ($no_dash_to_start) $this->mod_dashes = FALSE;
+    
     $ret['dashes'] = $this->mod_dashes;
     $ret['names'] = $this->mod_names;
     return $ret;
