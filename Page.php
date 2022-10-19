@@ -262,7 +262,7 @@ class Page {
     set_time_limit(120);
     if ($this->page_error) {
       $this->text = $this->start_text;
-      file_put_contents('CodeCoverage', $this->title . " page failed \n", FILE_APPEND);
+      if ($this->title !== "") file_put_contents('CodeCoverage', $this->title . " page failed \n", FILE_APPEND);
       return FALSE;
     }
     Template::$all_templates = &$all_templates; // Pointer to save memory
@@ -702,7 +702,7 @@ class Page {
         if ($class === "Template") {
           echo "<p>\n\n The following text might help you figure out where the <b>error on the page</b> is (Look for lone { and } characters)</h1>\n\n" . echoable($text) . "\n\n<p>";
         }
-        report_minor_error("Report this problem please about page " . $this->title);
+        if (TRAVIS || $this->title !== "") report_minor_error("Report this problem please about page " . $this->title);
         // @codeCoverageIgnoreEnd
     }
     $this->text = $text;
