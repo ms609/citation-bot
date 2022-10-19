@@ -127,7 +127,8 @@ function unlock_user() : void {
 
 function check_overused() : void {
  if (!HTML_OUTPUT) return;
- if (isset($_SESSION['big_and_busy']) && $_SESSION['big_and_busy'] === 'BLOCK3') {
+ if ($_SESSION['citation_bot_user_id'] === "Whoop whoop pull up") return; // No idea why
+ if (isset($_SESSION['big_and_busy']) && $_SESSION['big_and_busy'] === 'BLOCK4') {
    echo '</pre><div style="text-align:center"><h1>Run blocked by your existing big run.</h1></div><footer><a href="./" title="Use Citation Bot again">Another</a>?</footer></body></html>';
    exit();
  }
@@ -135,7 +136,7 @@ function check_overused() : void {
  @session_start();
  define('BIG_JOB_MODE', 'YES');
  register_shutdown_function('unlock_user');
- $_SESSION['big_and_busy'] = 'BLOCK3';
+ $_SESSION['big_and_busy'] = 'BLOCK4';
  @session_write_close();
 }
 
@@ -146,6 +147,7 @@ function check_killed() : void {
  if (isset($_SESSION['kill_the_big_job'])) {
    @session_start();
    unset($_SESSION['kill_the_big_job']);
+   unset($_SESSION['big_and_busy']);
    @session_write_close();
    echo '</pre><div style="text-align:center"><h1>Run killed as requested.</h1></div><footer><a href="./" title="Use Citation Bot again">Another</a>?</footer></body></html>';
    exit();
@@ -169,7 +171,7 @@ if (isset($argv)) {
 } else {
   define("MAX_PAGES", 3850);
 }
-define("BIG_RUN", 3);
+define("BIG_RUN", 50);
 
 if (!TRAVIS) { // This is explicity "tested" in test suite
   Zotero::create_ch_zotero();

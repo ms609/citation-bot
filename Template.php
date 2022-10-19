@@ -1692,6 +1692,7 @@ final class Template {
         }
         return FALSE;
 
+      case 'work':
       case 'website':
         if ($this->blank(WORK_ALIASES)) {
           return $this->add($param_name, $value); // Do NOT Sanitize
@@ -7209,6 +7210,17 @@ final class Template {
        if ($vals === '') unset($ret['deletions'][$inds]); // If we get rid of double pipe that appears as a deletion, not misc.
     }
 
+    $no_dash_to_start = TRUE;
+    foreach ($old as $old_name => $old_data) {
+        if (in_array($old_name, PAGE_ALIASES)) {
+           if (strpos($old_data, '-') !== FALSE) $no_dash_to_start = FALSE;
+        }
+        if (in_array($old_name, ['volume', 'issue', 'number'])) {
+           if (strpos($old_data, '-') !== FALSE) $no_dash_to_start = FALSE;
+        }
+    }
+    if ($no_dash_to_start) $this->mod_dashes = FALSE;
+    
     $ret['dashes'] = $this->mod_dashes;
     $ret['names'] = $this->mod_names;
     return $ret;
@@ -7408,31 +7420,35 @@ final class Template {
           case "authuser": case "gsas": case "ned": case "pz": case "e":
              break;
           case "as_occt":
-             if ($part_start[1] == "" || str_i_same($part_start[1], 'any')) break;
+             if (@$part_start[1] == "" || str_i_same($part_start[1], 'any')) break;
              $url .=  $part . "&" ;
              break;
           case "cf":
-             if ($part_start[1] == "" || str_i_same($part_start[1], 'all')) break;
+             if (@$part_start[1] == "" || str_i_same($part_start[1], 'all')) break;
+             $url .=  $part . "&" ;
+             break;
+          case "cs":
+             if (@$part_start[1] == "" || str_i_same($part_start[1], '0')) break;
              $url .=  $part . "&" ;
              break;
           case "btnK":
-             if ($part_start[1] == "" || str_i_same($part_start[1], 'Google+Search')) break;
+             if (@$part_start[1] == "" || str_i_same($part_start[1], 'Google+Search')) break;
              $url .=  $part . "&" ;
              break;
           case "as_epq":
-             if ($part_start[1] == "") break;
+             if (@$part_start[1] == "") break;
              $url .=  $part . "&" ;
              break;
           case "btnG":
-             if ($part_start[1] == "" || str_i_same($part_start[1], 'Search')) break;
+             if (@$part_start[1] == "" || str_i_same($part_start[1], 'Search')) break;
              $url .=  $part . "&" ;
              break;
           case "rct":
-             if ($part_start[1] == "" || str_i_same($part_start[1], 'j')) break;  // default
+             if (@$part_start[1] == "" || str_i_same($part_start[1], 'j')) break;  // default
              $url .=  $part . "&" ;
              break;
           case "ie": case "oe":
-             if ($part_start[1] == "" || str_i_same($part_start[1], 'utf-8')) break;  // UTF-8 is the default
+             if (@$part_start[1] == "" || str_i_same($part_start[1], 'utf-8')) break;  // UTF-8 is the default
              $url .=  $part . "&" ;
              break;
           case "hl": case "safe": case "q": case "tbm": case "start": case "ludocid":

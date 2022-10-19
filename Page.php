@@ -103,7 +103,7 @@ class Page {
 
     if (preg_match('~\#redirect *\[\[~i', $this->text)) {
       report_warning("Page is a redirect.");
-      if (strlen($this->text) > 1000) file_put_contents('CodeCoverage', $this->title . " is probably not a redirect. \n", FILE_APPEND);
+      if (strlen($this->text) > 2000) file_put_contents('CodeCoverage', $this->title . " is probably not a redirect. \n", FILE_APPEND);
       return FALSE;
     }
     return TRUE;
@@ -262,7 +262,7 @@ class Page {
     set_time_limit(120);
     if ($this->page_error) {
       $this->text = $this->start_text;
-      file_put_contents('CodeCoverage', $this->title . " page failed \n", FILE_APPEND);conflict
+      if ($this->title !== "") file_put_contents('CodeCoverage', $this->title . " page failed \n", FILE_APPEND);
       return FALSE;
     }
     Template::$all_templates = &$all_templates; // Pointer to save memory
@@ -349,6 +349,14 @@ class Page {
           $this_template->has('title')) {
         $this_template->change_name_to('cite journal', TRUE, TRUE);
       }
+      if ($this_template->has('url')) {
+        $the_url = $this_template->get('url');
+        $new_url = str_ireplace(['nytimes.com'], '', $the_url); // TODO - add more "blessed" hosts
+        if (($the_url !== $new_url) || ZOTERO_ONLY || $this_template->blank('title') || ($this_template->has('via') && $this_template->blank(WORK_ALIASES))) {
+           $array_of_template = array($this_template);
+           $this->expand_templates_from_identifier('url', $array_of_template);
+        }
+      }
     }
     $this->expand_templates_from_identifier('pmid',    $our_templates);
     $this->expand_templates_from_identifier('pmc',     $our_templates);
@@ -357,7 +365,6 @@ class Page {
     $this->expand_templates_from_identifier('doi',     $our_templates);
     expand_arxiv_templates($our_templates);
     $this->expand_templates_from_identifier('url',     $our_templates);
-    if (ZOTERO_ONLY) $this->expand_templates_from_identifier('url', $our_templates_slight); // In this mode, we reject everything if there is a title set
     Zotero::query_ieee_webpages($our_templates_ieee);
     Zotero::query_ieee_webpages($our_templates);
     
@@ -695,7 +702,7 @@ class Page {
         if ($class === "Template") {
           echo "<p>\n\n The following text might help you figure out where the <b>error on the page</b> is (Look for lone { and } characters)</h1>\n\n" . echoable($text) . "\n\n<p>";
         }
-        report_minor_error("Report this problem please about page " . $this->title);
+        if (TRAVIS || $this->title !== "") report_minor_error("Report this problem please about page " . $this->title);
         // @codeCoverageIgnoreEnd
     }
     $this->text = $text;
