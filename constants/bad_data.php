@@ -780,7 +780,7 @@ const NON_JOURNAL_WEBSITES = array('-news.co.uk/', '.ajc.com/', '.al.com/',
 	                  'ynszxc.net/', 'yourentertainmentnow.com/', 'youtube.com/',
 	                  'yuzhnoye.com/', 'zap2it.com/', 'zdnet.com/', 'zeenews.india.com/',
 	                  'zerohedge.com/', 'zhanqi.tv/', 'zoominfo.com/', 'hdr.undp.org/', '.nist.gov/',
-	                  'ngdc.noaa.gov/');
+	                  'ngdc.noaa.gov/', 'babel.hathitrust.org/');
                      // Just a list of ones that are obvious.  Add ones that time-out as we find them
                      // bbm.ca is short enough that we add /bbm.ca/ and .bbm.ca/ since we don't want to grab too many sites
 
