@@ -2584,7 +2584,7 @@ final class Template {
          $this->set($url_type, 'https://books.google.com/books?id=' . $matches[1]);
        }
        if ($this->has($url_type) && preg_match('~^https?://books\.google\..*id\&\#61\;.*$~', $this->get($url_type), $matches)) {
-         $this->set($url_type, str_replace('&#61;', '=', $this->get($url_type));
+         $this->set($url_type, str_replace('&#61;', '=', $this->get($url_type)));
        }
        if ($this->has($url_type) && preg_match('~^https?://books\.google\.[^/]+/(?:books|)\?[qv]id=(.+)$~', $this->get($url_type), $matches)) {
          $this->set($url_type, 'https://books.google.com/books?id=' . $matches[1]);
