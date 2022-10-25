@@ -18,7 +18,7 @@ jobs:
       uses: actions/checkout@v3
 
     - name: Setup PHP with PCOV
-      uses: shivammathur/setup-php@v2.21.2
+      uses: shivammathur/setup-php@v2
       with:
         php-version: '7.4'
         ini-values: pcov.directory=.
