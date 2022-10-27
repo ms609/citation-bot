@@ -6046,7 +6046,18 @@ final class Template {
           if (   (mb_substr_count($value, "–") === 1) // Exactly one EN_DASH.
               && can_safely_modify_dashes($value)) {
             if ($pmatch[1] === 'page') {
-              report_warning('Perhaps page= of ' . echoable($value) . ' is actually a page range.  If so, change to pages=, otherwise change minus sign to {{endash}}');
+              $bad = TRUE;
+              if (preg_match('~^(\d+)\–(\d+)$~', $value, $matches_dash)) {
+                $part1 = (integer) $matches_dash[1];
+                $part2 = (integer) $matches_dash[2];
+                if (($matches_dash[1][0] !== '0') && $matches_dash[2][0] !== '0') &&
+                  ($part1 < $part2) &&
+                  ($part1 > 9)) { // Probably not a section
+                  $this->set($param, $part1 . "–" . $part2);
+                  $bad = FALSE;
+                }
+              }
+              if ($bad) report_warning('Perhaps page= of ' . echoable($value) . ' is actually a page range.  If so, change to pages=, otherwise change minus sign to {{endash}}');
             } else {
               $the_dash = (int) mb_strpos($value, "–"); // ALL must be mb_ functions because of long dash
               $part1 = trim(mb_substr($value, 0, $the_dash));
