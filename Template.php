@@ -6050,7 +6050,7 @@ final class Template {
               if (preg_match('~^(\d+)\–(\d+)$~', $value, $matches_dash)) {
                 $part1 = (integer) $matches_dash[1];
                 $part2 = (integer) $matches_dash[2];
-                if (($matches_dash[1][0] !== '0') && $matches_dash[2][0] !== '0') &&
+                if (($matches_dash[1][0] !== '0') && ($matches_dash[2][0] !== '0') &&
                   ($part1 < $part2) &&
                   ($part1 > 9)) { // Probably not a section
                   $this->set($param, $part1 . "–" . $part2);
