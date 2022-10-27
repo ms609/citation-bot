@@ -4066,7 +4066,10 @@ final class Template {
             return;
           }
           if (!preg_match(REGEXP_DOI_ISSN_ONLY, $doi) && doi_works($doi)) {
-           if(!in_array(strtolower($doi), NON_JOURNAL_DOIS) && (strpos($doi, '10.14344/') === FALSE) && (stripos($doi, '10.7289/V') === FALSE)) {
+           if(!in_array(strtolower($doi), NON_JOURNAL_DOIS) &&
+              (strpos($doi, '10.14344/') === FALSE) &&
+              (stripos($doi, '10.7289/V') === FALSE) &&
+              (stripos($doi, '10.5962/bhl.title.') === FALSE)) {
             $the_journal = $this->get('journal') . $this->get('work') . $this->get('periodical');
             if (str_replace(NON_JOURNALS, '', $the_journal) === $the_journal) {
               $this->change_name_to('cite journal', FALSE);
