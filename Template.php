@@ -6053,7 +6053,7 @@ final class Template {
                 if (($matches_dash[1][0] !== '0') && ($matches_dash[2][0] !== '0') &&
                   ($part1 < $part2) &&
                   ($part1 > 9)) { // Probably not a section
-                  $this->set($param, $part1 . "–" . $part2);
+                  $this->set('pages', $part1 . "–" . $part2);
                   $bad = FALSE;
                 }
               }
