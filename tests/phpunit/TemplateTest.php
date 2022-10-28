@@ -3807,7 +3807,7 @@ EP - 999 }}';
     $template = $this->make_citation($text_in);
     $template->tidy_parameter('page');
     $this->assertSame('333–444', $template->get2('pages'));
-    $this->assertNull($template->get2('page'));
+    $this->assertSame('', $template->get('page'));
    
     $text_in = "{{cite web| page=1-444}}";
     $template = $this->make_citation($text_in);
