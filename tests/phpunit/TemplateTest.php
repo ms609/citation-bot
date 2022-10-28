@@ -3812,13 +3812,13 @@ EP - 999 }}';
     $text_in = "{{cite web| page=1-444}}";
     $template = $this->make_citation($text_in);
     $template->tidy_parameter('page');
-    $this->assertSame('333-444', $template->get2('page'));
+    $this->assertSame('1-444', $template->get2('page'));
     $this->assertNull($template->get2('pages'));
    
     $text_in = "{{cite web| page=1–444}}";
     $template = $this->make_citation($text_in);
     $template->tidy_parameter('page');
-    $this->assertSame('333–444', $template->get2('page'));
+    $this->assertSame('1–444', $template->get2('page'));
     $this->assertNull($template->get2('pages'));
   }
 
