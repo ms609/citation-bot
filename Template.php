@@ -3520,7 +3520,7 @@ final class Template {
       if (substr($this->name,0,1) === 'c') {
         $this->name = $spacing[1] . $new_name . $spacing[2];
       } else {
-        $this->name = $spacing[1] . ucfirst($new_name) . $spacing[2];
+        $this->name = $spacing[1] . mb_ucfirst($new_name) . $spacing[2];
       }
       switch (strtolower($new_name)) {
         case 'cite journal':
@@ -4294,7 +4294,7 @@ final class Template {
             if ((strlen($periodical) - mb_strlen($periodical)) < 9 ) { // eight or fewer UTF-8 stuff
                if (str_ireplace(OBVIOUS_FOREIGN_WORDS, '', ' ' . $periodical . ' ') === ' ' . $periodical . ' ' &&
                    strip_diacritics($periodical) === $periodical) {
-                      $periodical = ucwords($periodical); // Found NO foreign words/phrase
+                      $periodical = mb_ucwords($periodical); // Found NO foreign words/phrase
                }
                $this->set($param, title_capitalization($periodical, TRUE));
             }
@@ -4303,7 +4303,7 @@ final class Template {
               $periodical = $matches[1];
               $periodical = str_replace("’", "'", $periodical); // Fix quotes for links
               $this->set($param, '[[' . $periodical . ']]');
-              $new_periodical = title_capitalization(ucwords($periodical), TRUE);
+              $new_periodical = title_capitalization(mb_ucwords($periodical), TRUE);
               if (str_ireplace(OBVIOUS_FOREIGN_WORDS, '', ' ' . $periodical . ' ') === ' ' . $periodical . ' ' &&
                   str_replace(['(', ')'], '', $periodical) == $periodical &&
                   $new_periodical != $periodical) {
@@ -4322,7 +4322,7 @@ final class Template {
               if (preg_match("~^[\'\"]+([^\'\"]+)[\'\"]+$~", $human_text, $matches)) { // Remove quotes
                 $human_text = $matches[1];
               }
-              $new_linked_text = title_capitalization(ucwords($linked_text), TRUE);
+              $new_linked_text = title_capitalization(mb_ucwords($linked_text), TRUE);
               if (str_ireplace(OBVIOUS_FOREIGN_WORDS, '', ' ' . $linked_text . ' ') === ' ' . $linked_text . ' ' &&
                 str_replace(['(', ')'], '', $linked_text ) == $linked_text &&
                 $new_linked_text != $linked_text) {
