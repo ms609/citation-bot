@@ -791,6 +791,16 @@ function mb_ucfirst(string $string) : string
     return mb_strtoupper(mb_substr($string, 0, 1)) . mb_substr($string, 1, NULL);
 }
 
+function mb_ucwords(string $string) : string
+{
+	mb_ereg_search_init($string, '(\S)(\S*\s*)|(\s+)');
+	$output = '';
+	while ($match = mb_ereg_search_regs()) {
+		$output .= $match[3] ? $match[3] : mb_strtoupper($match[1]) . $match[2];
+	}
+	return $output;
+}
+
 function mb_substr_replace(string $string, string $replacement, int $start, int $length) : string {
     return mb_substr($string, 0, $start).$replacement.mb_substr($string, $start+$length);
 }
