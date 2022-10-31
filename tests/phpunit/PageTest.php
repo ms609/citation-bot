@@ -90,7 +90,7 @@ final class PageTest extends testBaseClass {
  
   public function testPageChangeSummary14() : void {
       $page = $this->process_page('{{cite journal|pages=44-55}}');
-      $this->assertSame('Alter: pages. Formatted [[WP:ENDASH|dashes]]. | [[WP:UCB|Use this tool]]. [[WP:DBUG|Report bugs]]. ', $page->edit_summary());
+      $this->assertSame('Alter: pages. Formatted [[WP:ENDASH|dashes]]. | [[WP:UCB|Use this bot]]. [[WP:DBUG|Report bugs]]. ', $page->edit_summary());
   }
  
   public function testBotReadblocked() : void {
