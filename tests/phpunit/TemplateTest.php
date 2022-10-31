@@ -2069,6 +2069,16 @@ final class TemplateTest extends testBaseClass {
     $this->assertSame('Stephen Jay'  , $expanded->get2('first1') );
     $this->assertSame('17 September 1990'   , $expanded->get2('date'));
     $this->assertNull($expanded->get2('pages')); // Do not expand pages.  Google might give total pages to us
+   
+    $text = "{{Cite web | http://books.google.co.uk/books/about/Wonderful_Life.html}}";
+    $expanded = $this->process_citation($text);
+    $this->assertSame('cite document', $expanded->wikiname());
+    $this->assertNull($expanded->get2('url'));
+   
+    $text = "{{Cite web | http://books.google.com/books?id&#61;SjpSkzjIzfsC&redir_esc&#61;y}}";
+    $expanded = $this->process_citation($text);
+    $this->assertSame('cite book', $expanded->wikiname());
+    $this->assertSame('https://books.google.com/books?id=SjpSkzjIzfsC', $expanded->get2('url'));
   }
  
    public function testGoogleBooksExpansion2() : void {
@@ -2633,7 +2643,7 @@ EP - 999 }}';
   }
  
   public function testZooKeysDoiTidy1() : void {
-      $text = '{{Cite journal|doi=10.3897/zookeys.123.322222}}';
+      $text = '{{Cite journal|doi=10.3897//zookeys.123.322222}}'; // Note extra slash for fun
       $expanded = $this->make_citation($text);
       $expanded->tidy_parameter('doi');
       $this->assertNull($expanded->get2('journal'));
@@ -2664,7 +2674,13 @@ EP - 999 }}';
       $this->assertNull($expanded->get2('issue'));
   }
  
-
+  public function testOrthodontist() : void {
+      $text = '{{Cite journal|doi=10.1043/0003-3219(BADBADBAD}}'; // These will never work
+      $expanded = $this->make_citation($text);
+      $expanded->tidy_parameter('doi');
+      $this->assertNull($expanded->get2('doi'));
+  }
+ 
   public function testZooKeysAddIssue() : void {
       $text = '{{Cite journal|journal=[[ZooKeys]]}}';
       $expanded = $this->make_citation($text);
@@ -3288,7 +3304,7 @@ EP - 999 }}';
   }
 
   public function testTrimGoogleStuff() : void {
-    $text = '{{cite web|url=https://www.google.com/search?q=%22institute+for+sustainable+weight+loss%22&btnG=&oq=%22institute+for+sustainable+weight+loss%22&aqs=chrome..69i57j69i59.14823j0j7&sourceid=chrome&ie=UTF-8&as_occt=any&cf=all&as_epq=&as_scoring=YES&as_occt=BUG&cf=DOG&as_epq=CAT&btnK=Google+Search&btnK=DOGS#The_hash#The_second_hash}}';
+    $text = '{{cite web|url=https://www.google.com/search?q=%22institute+for+sustainable+weight+loss%22&btnG=&oq=%22institute+for+sustainable+weight+loss%22&aqs=chrome..69i57j69i59.14823j0j7&sourceid=chrome&ie=UTF-8&as_occt=any&cf=all&as_epq=&as_scoring=YES&as_occt=BUG&cs=0&cf=DOG&as_epq=CAT&btnK=Google+Search&btnK=DOGS#The_hash#The_second_hash}}';
     $prepared = $this->prepare_citation($text);
     $this->assertSame('https://www.google.com/search?q=%22institute+for+sustainable+weight+loss%22&as_scoring=YES&as_occt=BUG&cf=DOG&as_epq=CAT&btnK=DOGS#The_hash', $prepared->get2('url'));
   }
@@ -4142,6 +4158,29 @@ EP - 999 }}';
     $template->tidy_parameter('number');
     $this->assertNull($template->get2('number'));
   }
+ 
+  public function testTidyPreferIssues() : void {
+    $text = '{{cite journal | journal=Mammalian Species|issue=3|volume=3}}';
+    $template = $this->make_citation($text);
+    $template->tidy_parameter('volume');
+    $this->assertNull($template->get2('volume'));
+
+    $text = '{{cite journal | journal=Mammalian Species|number=3|volume=3}}';
+    $template = $this->make_citation($text);
+    $template->tidy_parameter('volume');
+    $this->assertNull($template->get2('volume'));
+          
+    $text = '{{cite journal | journal=Mammalian Species|issue=3|volume=3}}';
+    $template = $this->make_citation($text);
+    $template->tidy_parameter('issue');
+    $this->assertNull($template->get2('volume'));
+
+    $text = '{{cite journal | journal=Mammalian Species|number=3|volume=3}}';
+    $template = $this->make_citation($text);
+    $template->tidy_parameter('number');
+    $this->assertNull($template->get2('volume'));
+  }
+ 
  
   public function testTidyBogusDOIs3316() : void {
     $text = '{{cite journal | doi=10.3316/informit.324214324123413412313|pmc=XXXXX}}';
