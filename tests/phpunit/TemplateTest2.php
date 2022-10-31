@@ -2865,6 +2865,12 @@ final class TemplateTest2 extends testBaseClass {
      $this->assertSame('33', $template->get2('page'));
    }
  
+    public function testFloaters10() : void {
+     $text='{{Cite journal | url=http://cnn.com/ | https://www.archive.org/web/20160313143910/http://ww38.grlmobile.com/}}';
+     $template = $this->process_citation($text);
+     $this->assertSame('https://www.archive.org/web/20160313143910/http://ww38.grlmobile.com/', $template->get2('archive-url'));
+   }           
+                      
    public function testSuppressWarnings() : void {
      $text='{{Cite journal |doi=((10.51134/sod.2013.039 )) }}';
      $template = $this->process_citation($text);
