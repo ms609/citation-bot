@@ -1270,13 +1270,13 @@ final class TemplateTest2 extends testBaseClass {
     $template = $this->make_citation($text);
     $template->tidy_parameter('agency');
     $this->assertSame('Associated Press News', $template->get2('work'));
-    $this->assertNull($template->get2('agency');
+    $this->assertNull($template->get2('agency'));
                       
     $text = "{{cite web|agency=AP|url=apnews.com}}";
     $template = $this->make_citation($text);
     $template->tidy_parameter('agency');
     $this->assertSame('AP News', $template->get2('work'));
-    $this->assertNull($template->get2('agency')
+    $this->assertNull($template->get2('agency'));
   }
  
   public function testTidyClass() : void {
