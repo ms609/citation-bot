@@ -1900,9 +1900,9 @@ final class Template {
  *
  */
     if (ZOTERO_ONLY) {
-      $results = [];
-      $results[1] = 0;
-      return $results;
+      $results = [];     // @codeCoverageIgnore
+      $results[1] = 0;   // @codeCoverageIgnore
+      return $results;   // @codeCoverageIgnore
     }
     if ($doi = $this->get_without_comments_and_placeholders('doi')) {
       if (doi_works($doi)) {
