@@ -2633,7 +2633,7 @@ EP - 999 }}';
   }
  
   public function testZooKeysDoiTidy1() : void {
-      $text = '{{Cite journal|doi=10.3897/zookeys.123.322222}}';
+      $text = '{{Cite journal|doi=10.3897//zookeys.123.322222}}'; // Note extra slash for fun
       $expanded = $this->make_citation($text);
       $expanded->tidy_parameter('doi');
       $this->assertNull($expanded->get2('journal'));
@@ -2664,7 +2664,13 @@ EP - 999 }}';
       $this->assertNull($expanded->get2('issue'));
   }
  
-
+  public function testOrthodontist() : void {
+      $text = '{{Cite journal|doi=10.1043/0003-3219(BADBADBAD}}'; // These will never work
+      $expanded = $this->make_citation($text);
+      $expanded->tidy_parameter('doi');
+      $this->assertNull($expanded->get2('doi'));
+  }
+ 
   public function testZooKeysAddIssue() : void {
       $text = '{{Cite journal|journal=[[ZooKeys]]}}';
       $expanded = $this->make_citation($text);
