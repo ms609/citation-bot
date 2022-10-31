@@ -74,6 +74,12 @@ final class expandFnsTest extends testBaseClass {
   public function testCapitalization8e() : void {
     $this->assertSame('I the las Vegas...Trip.',  title_capitalization('I the las Vegas...Trip.' , TRUE));
   }
+  public function testCapitalization9() : void {
+    $this->assertSame('SAGE Open',  title_capitalization('Sage Open' , TRUE));
+  }
+  public function testCapitalization10() : void {
+    $this->assertSame('CA',  title_capitalization('Ca' , TRUE));
+  }
   
   public function testFrenchCapitalization1() : void {
     $this->assertSame("L'Aerotecnica", title_capitalization(title_case("L'Aerotecnica"), TRUE));
