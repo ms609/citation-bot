@@ -3013,6 +3013,12 @@ final class TemplateTest2 extends testBaseClass {
      $this->assertSame('3432413', $template->get2('pmid'));
     }
  
+   public function testIDconvert15() : void {
+     $text = '{{Cite journal | id = {{ProQuest|0226845494}} }}';
+     $template = $this->process_citation($text);
+     $this->assertSame($text, $template->parsed_text());
+    }
+ 
    public function testCAPS() : void {
      $text = '{{Cite journal | URL = }}';
      $template = $this->process_citation($text);
