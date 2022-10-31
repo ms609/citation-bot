@@ -2069,6 +2069,16 @@ final class TemplateTest extends testBaseClass {
     $this->assertSame('Stephen Jay'  , $expanded->get2('first1') );
     $this->assertSame('17 September 1990'   , $expanded->get2('date'));
     $this->assertNull($expanded->get2('pages')); // Do not expand pages.  Google might give total pages to us
+   
+    $text = "{{Cite web | http://books.google.co.uk/books/about/Wonderful_Life.html}}";
+    $expanded = $this->process_citation($text);
+    $this->assertSame('cite document', $expanded->wikiname());
+    $this->assertNull($expanded->get2('url'));
+   
+    $text = "{{Cite web | http://books.google.com/books?id&#61;SjpSkzjIzfsC&redir_esc&#61;y}}";
+    $expanded = $this->process_citation($text);
+    $this->assertSame('cite book', $expanded->wikiname());
+    $this->assertSame('https://books.google.com/books?id=SjpSkzjIzfsC', $expanded->get2('url'));
   }
  
    public function testGoogleBooksExpansion2() : void {
