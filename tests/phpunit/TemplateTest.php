@@ -3288,9 +3288,9 @@ EP - 999 }}';
   }
 
   public function testTrimGoogleStuff() : void {
-    $text = '{{cite web|url=https://www.google.com/search?q=%22institute+for+sustainable+weight+loss%22&btnG=&oq=%22institute+for+sustainable+weight+loss%22&aqs=chrome..69i57j69i59.14823j0j7&sourceid=chrome&ie=UTF-8&as_occt=any&cf=all&as_epq=&as_scoring=YES&as_occt=BUG&cf=DOG&as_epq=CAT&btnK=Google+Search#The_hash#The_second_hash}}';
+    $text = '{{cite web|url=https://www.google.com/search?q=%22institute+for+sustainable+weight+loss%22&btnG=&oq=%22institute+for+sustainable+weight+loss%22&aqs=chrome..69i57j69i59.14823j0j7&sourceid=chrome&ie=UTF-8&as_occt=any&cf=all&as_epq=&as_scoring=YES&as_occt=BUG&cf=DOG&as_epq=CAT&btnK=Google+Search&btnK=DOGS#The_hash#The_second_hash}}';
     $prepared = $this->prepare_citation($text);
-    $this->assertSame('https://www.google.com/search?q=%22institute+for+sustainable+weight+loss%22&as_scoring=YES&as_occt=BUG&cf=DOG&as_epq=CAT#The_hash', $prepared->get2('url'));
+    $this->assertSame('https://www.google.com/search?q=%22institute+for+sustainable+weight+loss%22&as_scoring=YES&as_occt=BUG&cf=DOG&as_epq=CAT&btnK=DOGS#The_hash', $prepared->get2('url'));
   }
  
   public function testCleanRGTitles() : void {
