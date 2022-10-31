@@ -88,6 +88,11 @@ final class PageTest extends testBaseClass {
       $this->assertSame('Alter: template type. | [[WP:UCB|Use this bot]]. [[WP:DBUG|Report bugs]]. ', $page->edit_summary());
   }
  
+  public function testPageChangeSummary14() : void {
+      $page = $this->process_page('{{cite journal|pages=44-55}}');
+      $this->assertSame('Alter: pages. Formatted [[WP:ENDASH|dashes]]. | [[WP:UCB|Use this tool]]. [[WP:DBUG|Report bugs]]. ', $page->edit_summary());
+  }
+ 
   public function testBotReadblocked() : void {
       $page = new TestPage();
       $page->get_text_from('User:Blocked Testing Account/readtest');
