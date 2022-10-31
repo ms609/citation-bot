@@ -4637,4 +4637,15 @@ final class TemplateTest2 extends testBaseClass {
       $expanded->add_if_new('volume', 'volume 08');
       $this->assertSame('8', $expanded->get2('volume'));
     }
+ 
+    public function testRandomISSNtests() : void {
+      $text = "{{cite journal|issn=AAAA-AAAA}}";
+      $expanded = $this->make_citation($text);
+      $this->assertFalse($expanded->use_issn());
+
+      $text = "{{cite journal|issn=1682-5845}}";
+      $expanded = $this->make_citation($text);
+      $this->assertFalse($expanded->use_issn()); // TODO-fix API
+    }
+
 }
