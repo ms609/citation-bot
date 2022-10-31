@@ -4143,6 +4143,29 @@ EP - 999 }}';
     $this->assertNull($template->get2('number'));
   }
  
+  public function testTidyPreferIssues() : void {
+    $text = '{{cite journal | journal=Mammalian Species|issue=3|volume=3}}';
+    $template = $this->make_citation($text);
+    $template->tidy_parameter('volume');
+    $this->assertNull($template->get2('volume'));
+
+    $text = '{{cite journal | journal=Mammalian Species|number=3|volume=3}}';
+    $template = $this->make_citation($text);
+    $template->tidy_parameter('volume');
+    $this->assertNull($template->get2('volume'));
+          
+    $text = '{{cite journal | journal=Mammalian Species|issue=3|volume=3}}';
+    $template = $this->make_citation($text);
+    $template->tidy_parameter('issue');
+    $this->assertNull($template->get2('volume'));
+
+    $text = '{{cite journal | journal=Mammalian Species|number=3|volume=3}}';
+    $template = $this->make_citation($text);
+    $template->tidy_parameter('number');
+    $this->assertNull($template->get2('volume'));
+  }
+ 
+ 
   public function testTidyBogusDOIs3316() : void {
     $text = '{{cite journal | doi=10.3316/informit.324214324123413412313|pmc=XXXXX}}';
     $template = $this->make_citation($text);
