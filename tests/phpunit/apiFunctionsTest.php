@@ -966,7 +966,7 @@ final class apiFunctionsTest extends testBaseClass {
   public function testCleanUpArchives() : void {
     $text = "{{cite book| title=Archived Copy| script-title=Kornbluh}}";
     $prepared = $this->process_citation($text);
-    $this->assertSame('Kornbluh', $prepared->get2('last1'));
+    $this->assertSame('Kornbluh', $prepared->get2('script-title'));
     $this->assertNull($prepared->get2('title'));
   }
   
