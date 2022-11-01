@@ -377,7 +377,7 @@ final class expandFnsTest extends testBaseClass {
   
   public function testVariousEncodes1() : void {
     $test="ã·ã§ããã³ã°";
-    $this->assertSame("Ã£Â‚Â·Ã£ÂƒÂ§Ã£ÂƒÂƒÃ£ÂƒÂ”Ã£ÂƒÂ³Ã£Â‚Â°", convert_to_utf8($test));
+    $this->assertSame($test, convert_to_utf8($test));
   }
 
   public function testVariousEncodes2() : void {
