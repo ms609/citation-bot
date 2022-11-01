@@ -375,6 +375,21 @@ final class expandFnsTest extends testBaseClass {
     $this->assertNull($template->get2('doi'));
   }
   
+  public function testVariousEncodes1() : void {
+    $test="ã·ã§ããã³ã°";
+    $this->assertSame("Ã£Â‚Â·Ã£ÂƒÂ§Ã£ÂƒÂƒÃ£ÂƒÂ”Ã£ÂƒÂ³Ã£Â‚Â°", convert_to_utf8($test));
+  }
+
+  public function testVariousEncodes2() : void {
+    $test="ショッピング";
+    $this->assertSame($test, smart_decode($test, 'UTF-8',''));
+  }
+
+  public function testVariousEncodes3() : void {
+    $test="ショッピング";
+    $this->assertSame('ใทใงใใใณใฐ', smart_decode($test,  "iso-8859-11",'')); // Clearly random junk
+  }
+ 
   public function testRomanNumbers() : void {
     $this->assertSame('MMCCCXXXI', numberToRomanRepresentation(2331));
   }
