@@ -1427,6 +1427,7 @@ final class Template {
         if ($value === '10.1126/science') return FALSE; // This results from over-truncating other DOIs and it oddly works
         if (stripos($value, '10.5779/hypothesis') === 0) return FALSE; // SPAM took over
         if (substr($value, 0, 8) === '10.5555/') return FALSE ; // Test DOI prefix.  NEVER will work
+        if (stripos($value, '10.5860/choice.') === 0) return FALSE; // This is a book review - paywalled
         if (stripos($value, '10.1093/law:epil') === 0) return FALSE; // Those do not work
         if (stripos($value, '10.1093/oi/authority') === 0) return FALSE; // Those do not work
         if (stripos($value, '10.10520/') === 0 && !doi_works($value)) return FALSE; // Has doi in the URL, but is not a doi
