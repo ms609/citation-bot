@@ -62,7 +62,7 @@ const PUBLISHERS_ARE_WORKS = array('the san diego union-tribune', 'forbes', 'sal
 
 const WORKS_ARE_PUBLISHERS = array('united states census bureau'); // LOWER CASE!
 
-const DUBIOUS_JOURNALS = array('fda', 'reuters', 'associated press', 'ap', 'ap wire', 'report'); // Things we add, but only if publisher and agency are both blank
+const DUBIOUS_JOURNALS = array('fda', 'reuters', 'associated press', 'ap', 'ap wire', 'report', 'nist', 'national institute of standards and technology'); // Things we add, but only if publisher and agency are both blank
 
 // Catch 'authors' such as "hearst magazines", "time inc", "nielsen business media, inc"
 // Ordered alphabetically.
@@ -142,7 +142,7 @@ const CANONICAL_PUBLISHER_URLS = array ('elsevier.com', 'springer.com', 'science
                                 'sciencemag.org', 'doi.apa.org', 'psycnet.apa.org', 'journals.upress.ufl.edu',
                                 'clinchem.org', 'cell.com', 'aeaweb.org', 'chestpubs.org', 'journal.chestnet.org',
                                 'chestjournal.org', 'biomedcentral.com', 'journals.royalsociety.org',
-                                'mdpi.com', 'frontiersin.org',
+                                'mdpi.com', 'frontiersin.org', 'scholarpedia.org',
                                 //  Below are journal search engines
                                 '.serialssolutions.com', '.ebscohost.com',
                                 //  Below are proxys
@@ -779,12 +779,14 @@ const NON_JOURNAL_WEBSITES = array('-news.co.uk/', '.ajc.com/', '.al.com/',
 	                  'xxlmag.com/', 'xzqh.org/', 'yahoo.co.jp/', 'yahoo.com/', 'yandex.ru/',
 	                  'ynszxc.net/', 'yourentertainmentnow.com/', 'youtube.com/',
 	                  'yuzhnoye.com/', 'zap2it.com/', 'zdnet.com/', 'zeenews.india.com/',
-	                  'zerohedge.com/', 'zhanqi.tv/', 'zoominfo.com/', 'hdr.undp.org/');
+	                  'zerohedge.com/', 'zhanqi.tv/', 'zoominfo.com/', 'hdr.undp.org/', '.nist.gov/',
+	                  'ngdc.noaa.gov/', 'babel.hathitrust.org/');
                      // Just a list of ones that are obvious.  Add ones that time-out as we find them
                      // bbm.ca is short enough that we add /bbm.ca/ and .bbm.ca/ since we don't want to grab too many sites
 
 const NON_JOURNAL_DOIS = array('10.5531/db.vz.0001'); // lowercase exact matches
-const NON_JOURNALS = array('Amphibian Species of the World', 'an Online Reference', 'An Online Reference'); // Case-sensitive sub-string
+const NON_JOURNALS = array('Amphibian Species of the World', 'an Online Reference', 'An Online Reference',
+			   'Boston Almanac and Guide1', 'Includes:reports from Commissioners, Inspectors and Others'); // Case-sensitive sub-string
 const ARE_MAGAZINES = array('the new yorker', 'the new republic', 'new republic', 'expedition magazine', 'wired', 'wired uk',
                            'computer gaming world', 'edge (magazine)', 'game informer', 'pc gamer uk',
                            'wired (magazine)', 'time', 'life', 'time (magazine)', 'life (magazine)', 'billboard',

@@ -97,7 +97,7 @@ function entrez_api(array $ids, array &$templates, string $db) : bool {   // Poi
                 case "Title":   $this_template->add_if_new('title',  str_replace(array("[", "]"), "", (string) $item), 'entrez'); // add_if_new will format the title
         break;  case "PubDate": preg_match("~(\d+)\s*(\w*)~", (string) $item, $match);
                                 $this_template->add_if_new('year', (string) @$match[1], 'entrez');
-        break;  case "FullJournalName": $this_template->add_if_new('journal',  ucwords((string) $item), 'entrez'); // add_if_new will format the title
+        break;  case "FullJournalName": $this_template->add_if_new('journal',  mb_ucwords((string) $item), 'entrez'); // add_if_new will format the title
         break;  case "Volume":  $this_template->add_if_new('volume', (string) $item, 'entrez');
         break;  case "Issue":   $this_template->add_if_new('issue', (string) $item, 'entrez');
         break;  case "Pages":   $this_template->add_if_new('pages', (string) $item, 'entrez');
@@ -702,7 +702,7 @@ function expand_doi_with_dx(Template $template, string $doi) : bool {
        $try_to_add_it('title', @$json['title']);
        $try_to_add_it('location', @$json['publisher-location']);
        $try_to_add_it('publisher', @$json['publisher']);
-     } elseif (@$json['type'] == 'thesis' || @$json['type'] == 'dissertation') {
+     } elseif (@$json['type'] == 'thesis' || @$json['type'] == 'dissertation' || @$json['type'] == 'dissertation-thesis') {
        $template->change_name_to('cite thesis');
        $try_to_add_it('title', @$json['title']);
        $try_to_add_it('location', @$json['publisher-location']);

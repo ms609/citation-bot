@@ -23,7 +23,7 @@ final class constantsTest extends testBaseClass {
   public function testConstantsDefined() : void {
     $this->assertSame(count(UCFIRST_JOURNAL_ACRONYMS), count(JOURNAL_ACRONYMS));
     for ($i = 0; $i < count(JOURNAL_ACRONYMS); $i++) {
-      $this->assertSame(trim(JOURNAL_ACRONYMS[$i]), trim(title_capitalization(ucwords(trim(UCFIRST_JOURNAL_ACRONYMS[$i])), TRUE)));
+      $this->assertSame(trim(JOURNAL_ACRONYMS[$i]), trim(title_capitalization(mb_ucwords(trim(UCFIRST_JOURNAL_ACRONYMS[$i])), TRUE)));
       // Verify that they are padded with a space
       $this->assertSame   (' ', mb_substr(UCFIRST_JOURNAL_ACRONYMS[$i], -1, 1));
       $this->assertSame   (' ', mb_substr(UCFIRST_JOURNAL_ACRONYMS[$i],  0, 1));
@@ -69,7 +69,7 @@ final class constantsTest extends testBaseClass {
     $this->assertSame('Xzzzy', title_capitalization('xzzzy', TRUE));
     // Relationship Status = It's Complicated :-)
     $this->assertSame('Xzzzy Aeiouy AEIOU and xzzzy Aeiouy AEIOU', title_capitalization('xzzzy Aeiouy aeiou and xzzzy Aeiouy aeiou', TRUE));
-    $this->assertSame('Xzzzy Aeiouy AEIOU and Xzzzy Aeiouy AEIOU', title_capitalization(ucwords('xzzzy Aeiouy aeiou and xzzzy Aeiouy aeiou'), TRUE));
+    $this->assertSame('Xzzzy Aeiouy AEIOU and Xzzzy Aeiouy AEIOU', title_capitalization(mb_ucwords('xzzzy Aeiouy aeiou and xzzzy Aeiouy aeiou'), TRUE));
   }
   
   public function testConstantsOrder() : void {

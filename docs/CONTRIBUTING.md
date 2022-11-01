@@ -41,6 +41,7 @@ Always write a clear log message for your commits. One-line messages are fine fo
   * We want 100% code coverage with untestable code flagged in the source -- such as code that handles error conditions.  See the file apiFunctions.php for lots of examples of non-coverage code.
   * All curl_init() calls must also set CURLOPT_TIMEOUT to something reasonable for the importance of the data and the speed of the website
   * error_reporting(E_ALL) and declare(strict_types=1) are both set
+  * Multi-byte functions should be used in most cases, such as mb_ucwords instead of ucwords
 
 ## Bot output conventions
 The bot reports its activity to users using:

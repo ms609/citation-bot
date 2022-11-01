@@ -351,7 +351,7 @@ class Page {
       }
       if ($this_template->has('url')) {
         $the_url = $this_template->get('url');
-        $new_url = str_ireplace(['nytimes.com'], '', $the_url); // TODO - add more "blessed" hosts
+        $new_url = str_ireplace(['nytimes.com', 'mdpi.com', 'frontiersin.org', 'plos.org', 'sciencedirect.com', 'onlinelibrary.wiley.com'], '', $the_url); // TODO - add more "blessed" hosts that probably should not be cite news
         if (($the_url !== $new_url) || ZOTERO_ONLY || $this_template->blank('title') || ($this_template->has('via') && $this_template->blank(WORK_ALIASES))) {
            $array_of_template = array($this_template);
            $this->expand_templates_from_identifier('url', $array_of_template);
@@ -486,7 +486,7 @@ class Page {
 
     // we often just fix Journal caps, so must be case sensitive compare
     // Avoid minor edits - gadget API will make these changes, since it does not check return code
-    $caps_ok = array('lccn', 'isbn', 'doi', 'proquest');
+    $caps_ok = array('lccn', 'isbn');
     $last_first_in  = array(' last=',  ' last =',  '|last=',  '|last =',  ' first=',  ' first =',  '|first=',  '|first =', 'cite newspaper', 'Cite newspaper', '| format=PDF ', '| format = PDF ', '|format=PDF ', '|format = PDF ', '| format=PDF', '| format = PDF', '|format=PDF', '|format = PDF', 'Cite ', 'cite ');
     $last_first_out = array(' last1=', ' last1 =', '|last1=', '|last1 =', ' first1=', ' first1 =', '|first1=', '|first1 =','cite news',      'Cite news',      '',              '',                '',              '',              '',             '',               '',            '',              'Cite' , 'cite' );
     // @codeCoverageIgnoreStart

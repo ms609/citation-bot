@@ -963,6 +963,13 @@ final class apiFunctionsTest extends testBaseClass {
     $this->assertSame('Kornbluh', $prepared->get2('last1'));
   }
 
+  public function testCleanUpArchives() : void {
+    $text = "{{cite book| title=Archived Copy| script-title=Kornbluh}}";
+    $prepared = $this->process_citation($text);
+    $this->assertSame('Kornbluh', $prepared->get2('script-title'));
+    $this->assertNull($prepared->get2('title'));
+  }
+  
   public function testBlankTypeFromDX() : void {
     $text = "{{cite book| doi=10.14989/doctor.k19250 }}";
     $prepared = $this->process_citation($text);

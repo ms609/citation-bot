@@ -795,7 +795,9 @@ public static function process_zotero_response(string $zotero_response, Template
     if ( isset($result->publicationTitle)) {
       if ((!$template->has('title') || !$template->has('chapter')) && // Do not add if already has title and chapter
           (stripos((string) $result->publicationTitle, ' edition') === FALSE)) {  // Do not add if "journal" includes "edition"
-        $template->add_if_new('journal', (string) $result->publicationTitle);
+         if (str_replace(NON_JOURNALS, '', (string) $result->publicationTitle) === (string) $result->publicationTitle) {
+            $template->add_if_new('journal', (string) $result->publicationTitle);
+         }
       }
     }
   }

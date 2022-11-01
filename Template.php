@@ -1433,6 +1433,7 @@ final class Template {
         if (stripos($value, '10.1967/') === 0 && !doi_works($value)) return FALSE; // Retired DOIs
         if (stripos($value, '10.1043/0003-3219(') === 0 && !doi_works($value)) return FALSE; // Per-email.  The Angle Orthodontist will NEVER do these, since they have <> and [] in them
         if (stripos($value, '10.3316/') === 0 && !doi_works($value)) return FALSE; // These do not seem to work - TODO watch https://dx.doi.org/10.3316/informit.550258516430914 https://dx.doi.org/10.3316/ielapa.347150294724689 https://search.informit.org/doi/10.3316/aeipt.207729 https://search.informit.org/doi/10.3316/agispt.19930546 https://search.informit.org/doi/10.3316/aeipt.207729
+        if (stripos($value, '10.1002/was.') === 0 && !doi_works($value)) return FALSE; // do's not doi's - TODO watch https://dx.doi.org/10.1002/was.00020423
         if (preg_match(REGEXP_DOI, $value, $match)) {
           if ($this->blank($param_name)) {
             if ($this->wikiname() === 'cite arxiv') $this->change_name_to('cite journal');
@@ -1900,9 +1901,9 @@ final class Template {
  *
  */
     if (ZOTERO_ONLY) {
-      $results = [];
-      $results[1] = 0;
-      return $results;
+      $results = [];     // @codeCoverageIgnore
+      $results[1] = 0;   // @codeCoverageIgnore
+      return $results;   // @codeCoverageIgnore
     }
     if ($doi = $this->get_without_comments_and_placeholders('doi')) {
       if (doi_works($doi)) {
@@ -2582,6 +2583,12 @@ final class Template {
     foreach (ALL_URL_TYPES as $url_type) {
        if ($this->has($url_type) && preg_match('~^https?://books\.google\.[^/]+/booksid=(.+)$~', $this->get($url_type), $matches)) {
          $this->set($url_type, 'https://books.google.com/books?id=' . $matches[1]);
+       }
+       if ($this->has($url_type) && preg_match('~^https?://books\.google\.[^/]+\/books\/about\/[^/]+\.html$~', $this->get($url_type), $matches)) {
+         $this->forget($url_type);
+       }
+       if ($this->has($url_type) && preg_match('~^https?://books\.google\..*id\&\#61\;.*$~', $this->get($url_type), $matches)) {
+         $this->set($url_type, str_replace('&#61;', '=', $this->get($url_type)));
        }
        if ($this->has($url_type) && preg_match('~^https?://books\.google\.[^/]+/(?:books|)\?[qv]id=(.+)$~', $this->get($url_type), $matches)) {
          $this->set($url_type, 'https://books.google.com/books?id=' . $matches[1]);
@@ -3514,7 +3521,7 @@ final class Template {
       if (substr($this->name,0,1) === 'c') {
         $this->name = $spacing[1] . $new_name . $spacing[2];
       } else {
-        $this->name = $spacing[1] . ucfirst($new_name) . $spacing[2];
+        $this->name = $spacing[1] . mb_ucfirst($new_name) . $spacing[2];
       }
       switch (strtolower($new_name)) {
         case 'cite journal':
@@ -4060,7 +4067,10 @@ final class Template {
             return;
           }
           if (!preg_match(REGEXP_DOI_ISSN_ONLY, $doi) && doi_works($doi)) {
-           if(!in_array(strtolower($doi), NON_JOURNAL_DOIS) && (strpos($doi, '10.14344/') === FALSE)) {
+           if(!in_array(strtolower($doi), NON_JOURNAL_DOIS) &&
+              (strpos($doi, '10.14344/') === FALSE) &&
+              (stripos($doi, '10.7289/V') === FALSE) &&
+              (stripos($doi, '10.5962/bhl.title.') === FALSE)) {
             $the_journal = $this->get('journal') . $this->get('work') . $this->get('periodical');
             if (str_replace(NON_JOURNALS, '', $the_journal) === $the_journal) {
               $this->change_name_to('cite journal', FALSE);
@@ -4088,6 +4098,7 @@ final class Template {
                                   strpos($doi, '10.1016/j.jbc.') === 0 ||
                                   strpos($doi, '10.1016/S0021-9258') === 0 ||
                                   strpos($doi, '10.1074/jbc.') === 0 ||
+                                  strpos($doi, '10.1210/jendso/') === 0 ||
                                   strpos($doi, '10.4249/') === 0
                                  )) {
             $this->add_if_new('doi-access', 'free');
@@ -4284,7 +4295,7 @@ final class Template {
             if ((strlen($periodical) - mb_strlen($periodical)) < 9 ) { // eight or fewer UTF-8 stuff
                if (str_ireplace(OBVIOUS_FOREIGN_WORDS, '', ' ' . $periodical . ' ') === ' ' . $periodical . ' ' &&
                    strip_diacritics($periodical) === $periodical) {
-                      $periodical = ucwords($periodical); // Found NO foreign words/phrase
+                      $periodical = mb_ucwords($periodical); // Found NO foreign words/phrase
                }
                $this->set($param, title_capitalization($periodical, TRUE));
             }
@@ -4293,7 +4304,7 @@ final class Template {
               $periodical = $matches[1];
               $periodical = str_replace("’", "'", $periodical); // Fix quotes for links
               $this->set($param, '[[' . $periodical . ']]');
-              $new_periodical = title_capitalization(ucwords($periodical), TRUE);
+              $new_periodical = title_capitalization(mb_ucwords($periodical), TRUE);
               if (str_ireplace(OBVIOUS_FOREIGN_WORDS, '', ' ' . $periodical . ' ') === ' ' . $periodical . ' ' &&
                   str_replace(['(', ')'], '', $periodical) == $periodical &&
                   $new_periodical != $periodical) {
@@ -4312,7 +4323,7 @@ final class Template {
               if (preg_match("~^[\'\"]+([^\'\"]+)[\'\"]+$~", $human_text, $matches)) { // Remove quotes
                 $human_text = $matches[1];
               }
-              $new_linked_text = title_capitalization(ucwords($linked_text), TRUE);
+              $new_linked_text = title_capitalization(mb_ucwords($linked_text), TRUE);
               if (str_ireplace(OBVIOUS_FOREIGN_WORDS, '', ' ' . $linked_text . ' ') === ' ' . $linked_text . ' ' &&
                 str_replace(['(', ')'], '', $linked_text ) == $linked_text &&
                 $new_linked_text != $linked_text) {
@@ -6039,7 +6050,18 @@ final class Template {
           if (   (mb_substr_count($value, "–") === 1) // Exactly one EN_DASH.
               && can_safely_modify_dashes($value)) {
             if ($pmatch[1] === 'page') {
-              report_warning('Perhaps page= of ' . echoable($value) . ' is actually a page range.  If so, change to pages=, otherwise change minus sign to {{endash}}');
+              $bad = TRUE;
+              if (preg_match('~^(\d+)\–(\d+)$~', $value, $matches_dash)) {
+                $part1 = (integer) $matches_dash[1];
+                $part2 = (integer) $matches_dash[2];
+                if (($matches_dash[1][0] !== '0') && ($matches_dash[2][0] !== '0') &&
+                  ($part1 < $part2) &&
+                  ($part1 > 9)) { // Probably not a section
+                  $this->rename($param, 'pages');
+                  $bad = FALSE;
+                }
+              }
+              if ($bad) report_warning('Perhaps page= of ' . echoable($value) . ' is actually a page range.  If so, change to pages=, otherwise change minus sign to {{endash}}');
             } else {
               $the_dash = (int) mb_strpos($value, "–"); // ALL must be mb_ functions because of long dash
               $part1 = trim(mb_substr($value, 0, $the_dash));

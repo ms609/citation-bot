@@ -74,6 +74,12 @@ final class expandFnsTest extends testBaseClass {
   public function testCapitalization8e() : void {
     $this->assertSame('I the las Vegas...Trip.',  title_capitalization('I the las Vegas...Trip.' , TRUE));
   }
+  public function testCapitalization9() : void {
+    $this->assertSame('SAGE Open',  title_capitalization('Sage Open' , TRUE));
+  }
+  public function testCapitalization10() : void {
+    $this->assertSame('CA',  title_capitalization('Ca' , TRUE));
+  }
   
   public function testFrenchCapitalization1() : void {
     $this->assertSame("L'Aerotecnica", title_capitalization(title_case("L'Aerotecnica"), TRUE));
@@ -368,7 +374,22 @@ final class expandFnsTest extends testBaseClass {
     $template = $this->process_citation($text);
     $this->assertNull($template->get2('doi'));
   }
-  dfasddsfadsfs conflict
+  
+  public function testVariousEncodes1() : void {
+    $test="ã·ã§ããã³ã°";
+    $this->assertSame($test, convert_to_utf8($test));
+  }
+
+  public function testVariousEncodes2() : void {
+    $test="ショッピング";
+    $this->assertSame($test, smart_decode($test, 'UTF-8',''));
+  }
+
+  public function testVariousEncodes3() : void {
+    $test="ショッピング";
+    $this->assertSame('ใทใงใใใณใฐ', smart_decode($test,  "iso-8859-11",'')); // Clearly random junk
+  }
+ 
   public function testRomanNumbers() : void {
     $this->assertSame('MMCCCXXXI', numberToRomanRepresentation(2331));
   }

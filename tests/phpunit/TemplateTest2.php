@@ -1265,6 +1265,18 @@ final class TemplateTest2 extends testBaseClass {
     $template->tidy_parameter('agency');
     $this->assertSame('associated press', $template->get2('work'));
     $this->assertNull($template->get2('agency'));
+   
+    $text = "{{cite web|agency=Associated Press|url=apnews.com}}";
+    $template = $this->make_citation($text);
+    $template->tidy_parameter('agency');
+    $this->assertSame('Associated Press News', $template->get2('work'));
+    $this->assertNull($template->get2('agency'));
+                      
+    $text = "{{cite web|agency=AP|url=apnews.com}}";
+    $template = $this->make_citation($text);
+    $template->tidy_parameter('agency');
+    $this->assertSame('AP News', $template->get2('work'));
+    $this->assertNull($template->get2('agency'));
   }
  
   public function testTidyClass() : void {
@@ -2853,6 +2865,12 @@ final class TemplateTest2 extends testBaseClass {
      $this->assertSame('33', $template->get2('page'));
    }
  
+    public function testFloaters10() : void {
+     $text='{{Cite journal | url=http://cnn.com/ | https://www.archive.org/web/20160313143910/http://ww38.grlmobile.com/}}';
+     $template = $this->process_citation($text);
+     $this->assertSame('https://www.archive.org/web/20160313143910/http://ww38.grlmobile.com/', $template->get2('archive-url'));
+   }           
+                      
    public function testSuppressWarnings() : void {
      $text='{{Cite journal |doi=((10.51134/sod.2013.039 )) }}';
      $template = $this->process_citation($text);
@@ -3011,6 +3029,12 @@ final class TemplateTest2 extends testBaseClass {
      $text = '{{cite journal|id=dafdasfd PMID 3432413 324214324324 }}';
      $template = $this->process_citation($text);
      $this->assertSame('3432413', $template->get2('pmid'));
+    }
+ 
+   public function testIDconvert15() : void {
+     $text = '{{Cite journal | id = {{ProQuest|0226845494}} }}';
+     $template = $this->process_citation($text);
+     $this->assertSame($text, $template->parsed_text());
     }
  
    public function testCAPS() : void {
@@ -4631,4 +4655,15 @@ final class TemplateTest2 extends testBaseClass {
       $expanded->add_if_new('volume', 'volume 08');
       $this->assertSame('8', $expanded->get2('volume'));
     }
+ 
+    public function testRandomISSNtests() : void {
+      $text = "{{cite journal|issn=AAAA-AAAA}}";
+      $expanded = $this->make_citation($text);
+      $this->assertFalse($expanded->use_issn());
+
+      $text = "{{cite journal|issn=1682-5845}}";
+      $expanded = $this->make_citation($text);
+      $this->assertFalse($expanded->use_issn()); // TODO-fix API
+    }
+
 }
