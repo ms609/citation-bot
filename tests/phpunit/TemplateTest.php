@@ -3304,9 +3304,16 @@ EP - 999 }}';
   }
 
   public function testTrimGoogleStuff() : void {
-    $text = '{{cite web|url=https://www.google.com/search?q=%22institute+for+sustainable+weight+loss%22&btnG=&oq=%22institute+for+sustainable+weight+loss%22&aqs=chrome..69i57j69i59.14823j0j7&sourceid=chrome&ie=UTF-8&as_occt=any&cf=all&as_epq=&as_scoring=YES&as_occt=BUG&cs=0&cf=DOG&as_epq=CAT&btnK=Google+Search&btnK=DOGS#The_hash#The_second_hash}}';
+    $text = '{{cite web|url=https://www.google.com/search?q=%22institute+for+sustainable+weight+loss%22&btnG=&oq=%22institute+for+sustainable+weight+loss%22&aqs=chrome..69i57j69i59.14823j0j7&sourceid=chrome&ie=UTF-8&as_occt=any&cf=all&as_epq=&as_scoring=YES&as_occt=BUG&cs=0&cf=DOG&as_epq=CAT&btnK=Google+Search&btnK=DOGS&cs=CATS#The_hash#The_second_hash}}';
     $prepared = $this->prepare_citation($text);
-    $this->assertSame('https://www.google.com/search?q=%22institute+for+sustainable+weight+loss%22&as_scoring=YES&as_occt=BUG&cf=DOG&as_epq=CAT&btnK=DOGS#The_hash', $prepared->get2('url'));
+    $this->assertSame('https://www.google.com/search?q=%22institute+for+sustainable+weight+loss%22&as_scoring=YES&as_occt=BUG&cf=DOG&as_epq=CAT&btnK=DOGS&cs=CATS#The_hash', $prepared->get2('url'));
+  }
+
+  public function testDOIExtraSlash() : void {
+    $text = '{{cite web|doi=10.1109//PESGM41954.2020.9281477}}';
+    $prepared = $this->make_citation($text);
+    $prepared->tidy_parameter('doi');
+    $this->assertSame('10.1109/PESGM41954.2020.9281477', $prepared->get2('doi'));
   }
  
   public function testCleanRGTitles() : void {
