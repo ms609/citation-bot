@@ -397,22 +397,22 @@ final class expandFnsTest extends testBaseClass {
   
   public function testVariousEncodes5() : void {
     $test="¡	¢	£	¤	¥	¦	§	¨	©	ª	« °	±	²	³	´	µ	¶	·	¸	¹	º	»	¼	½	¾	¿ Ð	Ñ	Ò	Ó	Ô	Õ	Ö	×	Ø	Ù	Ú	Û	Ü	Ý	Þ	ß";
-    $this->assertSame($test, mb_convert_encoding($test, "WINDOWS-1252",  "UTF-8"));
+    $this->assertSame($test, convert_to_utf8((mb_convert_encoding($test, "WINDOWS-1252",  "UTF-8")));
   }
   
   public function testVariousEncodes6() : void {
     $test="昨夜, 最高";
-    $this->assertSame($test, mb_convert_encoding($test, "ISO-2022-JP",  "UTF-8"));
+    $this->assertSame($test, convert_to_utf8(mb_convert_encoding($test, "ISO-2022-JP",  "UTF-8")));
   }
   
   public function testVariousEncodes7() : void {
     $test="象形许慎";
-    $this->assertSame($test, mb_convert_encoding($test, "EUC-CN",  "UTF-8"));
+    $this->assertSame($test, convert_to_utf8(mb_convert_encoding($test, "EUC-CN",  "UTF-8")));
   }
   
   public function testVariousEncodes8() : void {
     $test="당신 이름이 무엇입니까";
-    $this->assertSame($test, mb_convert_encoding($test, "EUC-KR",  "UTF-8"));
+    $this->assertSame($test, convert_to_utf8(mb_convert_encoding($test, "EUC-KR",  "UTF-8")));
   }
  
   public function testRomanNumbers() : void {
