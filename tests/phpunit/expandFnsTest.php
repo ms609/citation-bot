@@ -389,6 +389,31 @@ final class expandFnsTest extends testBaseClass {
     $test="ショッピング";
     $this->assertSame('ใทใงใใใณใฐ', smart_decode($test,  "iso-8859-11",'')); // Clearly random junk
   }
+
+  public function testVariousEncodes4() : void {
+    $test="W, w, Y, y, Ý, ý, Ö, ö, Ü, ü, Ø, ø or øe";
+    $this->assertSame($test, mb_convert_encoding($test, "iso-8859-1",  "UTF-8"));
+  }
+  
+  public function testVariousEncodes4() : void {
+    $test="¡	¢	£	¤	¥	¦	§	¨	©	ª	« °	±	²	³	´	µ	¶	·	¸	¹	º	»	¼	½	¾	¿ Ð	Ñ	Ò	Ó	Ô	Õ	Ö	×	Ø	Ù	Ú	Û	Ü	Ý	Þ	ß";
+    $this->assertSame($test, mb_convert_encoding($test, "WINDOWS-1252",  "UTF-8"));
+  }
+  
+  public function testVariousEncodes4() : void {
+    $test="昨夜, 最高";
+    $this->assertSame($test, mb_convert_encoding($test, "ISO-2022-JP",  "UTF-8"));
+  }
+  
+  public function testVariousEncodes4() : void {
+    $test="象形许慎";
+    $this->assertSame($test, mb_convert_encoding($test, "EUC-CN",  "UTF-8"));
+  }
+  
+  public function testVariousEncodes4() : void {
+    $test="당신 이름이 무엇입니까";
+    $this->assertSame($test, mb_convert_encoding($test, "EUC-KR",  "UTF-8"));
+  }
  
   public function testRomanNumbers() : void {
     $this->assertSame('MMCCCXXXI', numberToRomanRepresentation(2331));
