@@ -397,7 +397,7 @@ final class expandFnsTest extends testBaseClass {
   
   public function testVariousEncodes5() : void {
     $test="¡	¢	£	¤	¥	¦	§	¨	©	ª	« °	±	²	³	´	µ	¶	·	¸	¹	º	»	¼	½	¾	¿ Ð	Ñ	Ò	Ó	Ô	Õ	Ö	×	Ø	Ù	Ú	Û	Ü	Ý	Þ	ß";
-    $this->assertSame($test, convert_to_utf8((mb_convert_encoding($test, "WINDOWS-1252",  "UTF-8")));
+    $this->assertSame($test, convert_to_utf8(mb_convert_encoding($test, "WINDOWS-1252",  "UTF-8")));
   }
   
   public function testVariousEncodes6() : void {
