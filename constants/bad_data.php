@@ -172,7 +172,7 @@ const WEB_NEWSPAPERS = array('bbc news', 'bbc', 'news.bbc.co.uk', 'bbc sports', 
 			     'the seattle times', 'the news tribune', 'the spokesman-review', 'the montana standard', 'the missoulian',
 			     'the spokesman-review', 'bozeman daily chronicle', 'the new york times', 'argus leader', 'the washington post',
 			     'rapid city journal', 'austin daily herald', 'la crosse tribune', 'chicago tribune',
-			     'rochester democrat and chronicle', 'the boston globe', 'the indianapolis news);
+			     'rochester democrat and chronicle', 'the boston globe', 'the indianapolis news');
 
 const HOSTS_TO_NOT_ADD  = array('this.fails', 'www.ncbi.nlm.nih.gov', 'dx.doi.org', 'doi.org');
 
