@@ -161,14 +161,18 @@ const PROXY_HOSTS_TO_DROP = array('proxy.libraries', 'proxy.lib.', '.ezproxy.', 
                                   'onlinelibrary.wiley.com/resolve/openurl', 'findarticles.com', 'psycnet.apa.org',
                                   'delivery.acm.org'); // Drop these if there is a valid FREE DOI
 
-const WEB_NEWSPAPERS = array('bbc news', 'bbc', 'news.bbc.co.uk', 'bbc sports', 'bbc sport', 'www.bbc.co.uk', 'the economist', 'washington post', 'the washington post',
+const WEB_NEWSPAPERS = array('bbc news', 'bbc', 'news.bbc.co.uk', 'bbc sports', 'bbc sport', 'www.bbc.co.uk', 'the economist', 'washington post',
 			     'philippine daily inquirer', 'www.inquirer.net', 'manila bulletin', 'mb.com.ph', 'the philippine star', 'www.philstar.com',
 			     'the manila times', 'www.manilatimes.net', 'manila standard', 'manilastandard.net', 'sunstar', 'www.sunstar.com.ph',
 			     'malaya (newspaper)', 'malaya.com.ph', 'daily tribune (philippines)', 'tribune.net.ph', 'businessworld',
 			     'www.bworldonline.com', 'businessmirror', 'businessmirror.com.ph', 'united news', 'www.unitednews.net.ph',
 			     'mindanao gold star daily', 'mindanaogoldstardaily.com', 'tempo (newspaper)', 'www.tempo.com.ph',
 			     "people's journal", 'journal.com.ph', 'abante', 'www.abante.com.ph', 'balita (newspaper)', 'balita.net.ph',
-			     'inquirer bandera', 'bandera.inquirer.net', 'pilipino star ngayon', 'irishtimes.com', 'the irish times');
+			     'inquirer bandera', 'bandera.inquirer.net', 'pilipino star ngayon', 'irishtimes.com', 'the irish times',
+			     'the seattle times', 'the news tribune', 'the spokesman-review', 'the montana standard', 'the missoulian',
+			     'the spokesman-review', 'bozeman daily chronicle', 'the new york times', 'argus leader', 'the washington post',
+			     'rapid city journal', 'austin daily herald', 'la crosse tribune', 'chicago tribune',
+			     'rochester democrat and chronicle', 'the boston globe', 'the indianapolis news);
 
 const HOSTS_TO_NOT_ADD  = array('this.fails', 'www.ncbi.nlm.nih.gov', 'dx.doi.org', 'doi.org');
 
