@@ -5978,7 +5978,7 @@ final class Template {
             return;
           }
           if ($param === 'issue' || $param === 'number') {
-            if (preg_match('~^(?:iss\.|iss|issue|number|num|num\.|no|no:|no\.)\s*(\d+)$~i', $value, $matches)) {
+            if (preg_match('~^(?:iss\.|iss|issue|number|num|num\.|no|no:|no\.|№|№\.)\s*(\d+)$~iu', $value, $matches)) {
               $value = $matches[1];
             }
           }
