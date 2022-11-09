@@ -1298,13 +1298,13 @@ function numberToRomanRepresentation(int $number) : string { // https://stackove
 }
 
 function convert_to_utf8(string $value) : string {
-    $encode1 =  mb_detect_encoding($value, ["UTF-8", "EUC-KR", "EUC-CN", "ISO-2022-JP", "WINDOWS-1252", "iso-8859-1"]);
+    $encode1 =  mb_detect_encoding($value, ["UTF-8", "EUC-KR", "EUC-CN", "ISO-2022-JP", "WINDOWS-1252", "iso-8859-1"], TRUE);
     if ($encode1 === FALSE || $encode1 === 'UTF-8') return $value;
-    $encode2 =  mb_detect_encoding($value, ["UTF-8", "EUC-CN", "EUC-KR", "ISO-2022-JP", "WINDOWS-1252", "iso-8859-1"]);
+    $encode2 =  mb_detect_encoding($value, ["UTF-8", "EUC-CN", "EUC-KR", "ISO-2022-JP", "WINDOWS-1252", "iso-8859-1"], TRUE);
     if ($encode1 !== $encode2) return $value;
-    $encode3 =  mb_detect_encoding($value, ["UTF-8", "ISO-2022-JP", "EUC-CN", "EUC-KR", "WINDOWS-1252", "iso-8859-1"]);
+    $encode3 =  mb_detect_encoding($value, ["UTF-8", "ISO-2022-JP", "EUC-CN", "EUC-KR", "WINDOWS-1252", "iso-8859-1"], TRUE);
     if ($encode1 !== $encode3) return $value;
-    $encode4 =  mb_detect_encoding($value, ["iso-8859-1", "UTF-8", "WINDOWS-1252", "ISO-2022-JP", "EUC-CN", "EUC-KR"]);
+    $encode4 =  mb_detect_encoding($value, ["iso-8859-1", "UTF-8", "WINDOWS-1252", "ISO-2022-JP", "EUC-CN", "EUC-KR"], TRUE);
     if ($encode1 !== $encode4) return $value;
     $new_value = mb_convert_encoding($value, "UTF-8", $encode1);
     if ($new_value == "") return $value;
