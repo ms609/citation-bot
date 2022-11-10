@@ -133,7 +133,7 @@ public static function query_url_api_class(array $ids, array &$templates) : void
        }
        $doi = $template->get('doi');
        if (!doi_active($doi)) {
-         if ($template->has('citeseerx')) self::expand_by_zotero($template, 'https://citeseerx.ist.psu.edu/viewdoc/summary?doi=' . $template->get('citeseerx'));
+         // TODO - no longer work: if ($template->has('citeseerx')) self::expand_by_zotero($template, 'https://citeseerx.ist.psu.edu/viewdoc/summary?doi=' . $template->get('citeseerx'));
          if ($template->has('hdl'))       self::expand_by_zotero($template, 'https://hdl.handle.net/' . $template->get('hdl'));
          //  Has a CAPCHA --  if ($template->has('jfm'))       self::expand_by_zotero($template, 'https://zbmath.org/?format=complete&q=an:' . $template->get('jfm'));
          //  Has a CAPCHA --  if ($template->has('zbl'))       self::expand_by_zotero($template, 'https://zbmath.org/?format=complete&q=an:' . $template->get('zbl'));
