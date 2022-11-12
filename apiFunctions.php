@@ -1302,6 +1302,7 @@ function process_bibcode_data(Template $this_template, object $record) : void {
     $this_template->record_api_usage('adsabs', 'bibcode');
     if (!isset($record->title[0])) return;
     $this_template->add_if_new('title', (string) $record->title[0], 'adsabs'); // add_if_new will format the title text and check for unknown
+    if (stripos((string) $record->title[0], 'book review') !== FALSE) unset($record->author); // often book author
     $i = 0;
     if (isset($record->author)) {
      foreach ($record->author as $author) {
