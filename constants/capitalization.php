@@ -102,7 +102,7 @@ const JOURNAL_ACRONYMS = array(/* The following will be automatically updated to
           " Montana The Magazine of Western History ", " mSphere ", " mSphere ", " mSystems ", 
           " mSystems ", " MycoKeys ", " n.paradoxa ", " NASA Tech Briefs ", " Nauka i Zhizn ", 
           " NBER ", " NDT & E International ", " NeuroImage ", " NeuroReport ", " Newspaper for IT Leaders ", 
-          " Notes of the AAS ", " Novye i Maloizvestnye ", " Now and Then: ", " Ny Forskning i Grammatik ", 
+          " Notes of the AAS ", " Novye i Maloizvestnye ", " Now and Then: ", CONFLICT " Ny Forskning i Grammatik ", 
           " Nyt Tidsskrift ", " Obsidian II ", " Ocean Science Journal : Osj ", " PAJ: A Journal of Performance and Art ", 
           " PALAIOS ", " PalAsiatica ", " PalZ ", " PeerJ ", " PharmSci ", " PhD ", " PhytoKeys ", 
           " Pis'ma v Astronomicheskii ", " PLOS ", " PLOS ", " PLOS ", " PLOS ", " PLOS ", 
