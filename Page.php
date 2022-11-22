@@ -405,7 +405,6 @@ class Page {
     if (ZOTERO_ONLY) expand_templates_from_archives($our_templates_slight); // In this mode, we reject everything if there is a title set
 
     report_phase('Remedial work to clean up templates');
-    $log_bad_chapter = FALSE;
     for ($i = 0; $i < count($our_templates); $i++) {
       $this_template = $our_templates[$i];
       // Clean up:
@@ -426,13 +425,16 @@ class Page {
           $this->modifications[$key] = $this->modifications[$key] || $template_mods[$key]; // bool like mod_dashes
         }
       }
+    }
+    $log_bad_chapter = FALSE;
+    for ($i = 0; $i < count($all_templates); $i++) {
+      $this_template = $all_templates[$i];
       if ($this_template->has('chapter')) {
-        $type = $this_template->wikiname();
-        if (in_array($type, ['cite journal', 'cite news'])) {
-          $log_bad_chapter = TRUE; // @codeCoverageIgnore
+        if (in_array($this_template->wikiname(), ['cite journal', 'cite news'])) {
+          $log_bad_chapter = TRUE;
         }
       }
-    }    
+    }
     if ($log_bad_chapter) { // We can fix these and find these fast
       file_put_contents('CodeCoverage', $this->title . " page has ignored chapter \n", FILE_APPEND); // @codeCoverageIgnore
     }  

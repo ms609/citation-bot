@@ -2466,6 +2466,7 @@ final class Template {
 
         if (stripos($oa_url, 'semanticscholar.org') !== FALSE) return 'semanticscholar';  // Limit semanticscholar to licensed only - use API call instead (avoid blacklisting)
         if (stripos($oa_url, 'citeseerx') !== FALSE) return 'citeseerx'; //is currently blacklisted due to copyright concerns
+        if (stripos($oa_url, 'palgraveconnect') !== FALSE) return 'palgraveconnect';
         if ($this->get('url')) {
             if ($this->get('url') !== $oa_url) $this->get_identifiers_from_url($oa_url);  // Maybe we can get a new link type
             return 'have url';
@@ -3256,7 +3257,7 @@ final class Template {
       $this->forget('id');
       return;
     }
-    while (preg_match("~\b(PMID|DOI|ISBN|ISSN|ARXIV|LCCN)[\s:]*(\d[\d\s\-][^\s\}\{\|,;]*)(?:[,;] )?~iu", $id, $match)) {
+    while (preg_match("~\b(PMID|DOI|ISBN|ISSN|ARXIV|LCCN|CiteSeerX)[\s:]*(\d[\d\s\-][^\s\}\{\|,;]*)(?:[,;] )?~iu", $id, $match)) {
       $the_type = strtolower($match[1]);
       $the_data = $match[2];
       $the_all  = $match[0];
@@ -3298,6 +3299,7 @@ final class Template {
           case "pmid":
           case "pmc":
           case "ssrn":
+          case "citeseerx":
           case "zbl":
 
             // Specific checks for particular templates:
@@ -5977,7 +5979,7 @@ final class Template {
             return;
           }
           if ($param === 'issue' || $param === 'number') {
-            if (preg_match('~^(?:iss\.|iss|issue|number|num|num\.|no|no:|no\.)\s*(\d+)$~i', $value, $matches)) {
+            if (preg_match('~^(?:iss\.|iss|issue|number|num|num\.|no|no:|no\.|№|№\.)\s*(\d+)$~iu', $value, $matches)) {
               $value = $matches[1];
             }
           }

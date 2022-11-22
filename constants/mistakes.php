@@ -635,4 +635,6 @@ const TEMPLATE_CONVERSIONS = array(
                ['Doi', 'doi'],
                ['Deadurl', 'Dead link'],
                ['deadurl', 'dead link'],
+               ['Citeseerx', 'CiteSeerX'],
+               ['citeseerx', 'CiteSeerX'],
                );
