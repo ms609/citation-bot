@@ -362,7 +362,7 @@ function adsabs_api(array $ids, array &$templates, string $identifier) : bool { 
            $record->bibcode = $record->citation_bot_new_bibcode;
            unset($record->citation_bot_new_bibcode);
          }
-         if (stripos($an_id, 'book') === FALSE) {
+         if ((stripos($an_id, 'book') === FALSE) && (stripos($an_id, 'PhD') === FALSE)) {
            process_bibcode_data($this_template, $record);
          } else {
            expand_book_adsabs($this_template, $record);
