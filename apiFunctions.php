@@ -659,7 +659,7 @@ function expand_doi_with_dx(Template $template, string $doi) : bool {
      }
      if (@$json['type'] == 'article-journal' ||
          @$json['type'] == 'journal-article' ||
-         @$json['type'] == 'article' ||
+         @$json['type'] == 'article' || @$json['type'] == 'proceedings-article' ||
          (@$json['type'] == '' && (isset($json['container-title']) || isset($json['issn']['0'])))) {
        $try_to_add_it('journal', @$json['container-title']);
        $try_to_add_it('title', @$json['title']);
