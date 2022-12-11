@@ -90,6 +90,10 @@ public static function unblock_zotero() : void {
   self::$zotero_failures_count = 0;  
 }
 
+/**
+  @param array<string> $ids
+  @param array<Template> $templates
+**/
 public static function query_url_api_class(array $ids, array &$templates) : void { // Pointer to save memory
   if (!SLOW_MODE) return; // Zotero takes time
 

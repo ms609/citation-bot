@@ -57,7 +57,10 @@ final class AdsAbsControl {
   }
 }
 
-
+/** 
+  @param array<string> $ids
+  @param array<Template> $templates
+**/
 function entrez_api(array $ids, array &$templates, string $db) : bool {   // Pointer to save memory
   set_time_limit(120);
   if (!count($ids)) return FALSE;
@@ -163,8 +166,15 @@ function entrez_api(array $ids, array &$templates, string $db) : bool {   // Poi
   return TRUE;
 }
 
+/** 
+  @param array<string> $bibcodes
+  @param array<Template> $templates
+**/
 function query_bibcode_api(array $bibcodes, array &$templates) : bool { return adsabs_api($bibcodes, $templates, 'bibcode'); }  // Pointer to save memory
 
+/** 
+  @param array<Template> $templates
+**/
 function expand_arxiv_templates (array &$templates) : bool {  // Pointer to save memory
   if (ZOTERO_ONLY) return FALSE;
   $ids = array();
@@ -184,6 +194,10 @@ function expand_arxiv_templates (array &$templates) : bool {  // Pointer to save
   return arxiv_api($ids, $arxiv_templates);
 }
 
+/** 
+  @param array<string> $ids
+  @param array<Template> $templates
+**/
 function arxiv_api(array $ids, array &$templates) : bool {  // Pointer to save memory
   set_time_limit(120);
   if (count($ids) === 0) return FALSE;
@@ -280,6 +294,10 @@ function arxiv_api(array $ids, array &$templates) : bool {  // Pointer to save m
   return TRUE;
 }
 
+/** 
+  @param array<string> $ids
+  @param array<Template> $templates
+**/
 function adsabs_api(array $ids, array &$templates, string $identifier) : bool {  // Pointer to save memory
   if (ZOTERO_ONLY) return FALSE;
   set_time_limit(120);
@@ -382,6 +400,10 @@ function adsabs_api(array $ids, array &$templates, string $identifier) : bool { 
   return TRUE;
 }
 
+/** 
+  @param array<string> $ids
+  @param array<Template> $templates
+**/
 /** @psalm-suppress UnusedParam */
 function query_doi_api(array $ids, array &$templates) : bool { // $id not used yet  // Pointer to save memory
   foreach ($templates as $template) {
@@ -1054,6 +1076,9 @@ function get_semanticscholar_license(string $s2cid) : ?bool {
     return FALSE;
 }
 
+/** 
+  @param array<Template> $templates
+**/
 function expand_templates_from_archives(array &$templates) : void { // This is done very late as a latch ditch effort  // Pointer to save memory
   set_time_limit(120);
   $ch = curl_init();
