@@ -73,7 +73,7 @@ Also beware the difference between `else if` and `elseif`.
 
 The bot requires PHP >= 7.4.
 
-To run the bot from a new \ironment, you will need to create an `env.php` file (if one doesn't already exist) that sets the needed authentication tokens as environment variables. To do this, you can rename `env.php.example` to `env.php`, set the variables in the file, and then make sure the file is not world readable or writable:
+To run the bot from a new environment, you will need to create an `env.php` file (if one doesn't already exist) that sets the needed authentication tokens as environment variables. To do this, you can rename `env.php.example` to `env.php`, set the variables in the file, and then make sure the file is not world readable or writable:
 
     chmod o-rwx env.php
 
