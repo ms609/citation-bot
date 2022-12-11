@@ -458,6 +458,7 @@ const ZOTERO_AVOID_REGEX = array("twitter\.",               // This should be {{
                                  "radiomap\.eu", // Fails 100%
                                  "www\.virtualwall\.org", // Fails 100%
 				 "steubencourier\.com", // USA Today highjakced
+				 "biodiversity\.org\.au", // Zotero gives bad data
 				 "findarticles\.com", // Gone
                                 );
 const NON_JOURNAL_WEBSITES = array('-news.co.uk/', '.ajc.com/', '.al.com/',
