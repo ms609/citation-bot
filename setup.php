@@ -127,8 +127,8 @@ function unlock_user() : void {
 }
 
 function check_overused() : void {
+ return; /**  No longer enforcing - TODO figure out some way to get this to work
  if (!HTML_OUTPUT) return;
- return; // No longer enforcing - TODO figure out some way to get this to work
  if (isset($_SESSION['big_and_busy']) && $_SESSION['big_and_busy'] === 'BLOCK4') {
    echo '</pre><div style="text-align:center"><h1>Run blocked by your existing big run.</h1></div><footer><a href="./" title="Use Citation Bot again">Another</a>?</footer></body></html>';
    exit();
@@ -139,6 +139,7 @@ function check_overused() : void {
  register_shutdown_function('unlock_user');
  $_SESSION['big_and_busy'] = 'BLOCK4';
  @session_write_close();
+ **/
 }
 
 function check_killed() : void {
