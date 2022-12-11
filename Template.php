@@ -148,7 +148,7 @@ final class Template {
     }
 
     if (substr($this->wikiname(),0,5) === 'cite ' || $this->wikiname() === 'citation') {
-      if (preg_match('~< */? *ref *>~i', $this->rawtext)) {
+      if (preg_match('~< */? *ref *>~i', $this->rawtext) && ($this->wikiname() !== 'cite check')) {
          report_warning('reference within citation template: most likely unclosed template.  ' . "\n" . $this->rawtext . "\n");
          throw new Exception('page_error');
       }
@@ -2058,6 +2058,9 @@ final class Template {
     if (!$this->blank_other_than_comments('bibcode') && stripos($this->get('bibcode'), 'tmp') === FALSE && stripos($this->get('bibcode'), 'arxiv') === FALSE ) return FALSE; // Now use big query API for existing bibcode - code below still assumes that we might use a bibcode
     if (!SLOW_MODE && $this->blank('bibcode')) return FALSE; // Do not look for new bibcodes in slow mode
     if (stripos($this->get('bibcode'), 'CITATION') !== FALSE) return FALSE;
+    // Do not search if it is a book - might find book review
+    if (stripos($this->get('jstor'), 'document') !== FALSE) return FALSE;
+    if (stripos($this->get('jstor'), '.ch.') !== FALSE) return FALSE;
 
     if ($this->api_has_used('adsabs', equivalent_parameters('bibcode'))) {
       report_info("No need to repeat AdsAbs search for " . bibcode_link($this->get('bibcode'))); // @codeCoverageIgnore

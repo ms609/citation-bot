@@ -43,7 +43,7 @@ if ($json === '') {
   exit();
 }
 $array = @json_decode($json, TRUE);
-unset($json, $page_name, $url);
+unset($json, $page_name);
 if ($array === FALSE || !isset($array['parse']['links']) || !is_array($array['parse']['links'])) {
   report_warning(' Error interpreting page list - perhaps page requested does not even exist');
   bot_html_footer();
