@@ -390,6 +390,7 @@ final class expandFnsTest extends testBaseClass {
     $this->assertSame('ใทใงใใใณใฐ', smart_decode($test,  "iso-8859-11",'')); // Clearly random junk
   }
 
+  /** TODO - figure out if this is possible.
   public function testVariousEncodes4() : void {
     $test="2xSP!#$%&'()*+,-./3x0123456789:;<=>?4x@ABCDEFGHIJKLMNO5xPQRSTUVWXYZ[\]^_6x`abcdefghijklmno7xpqrstuvwxyz{|}~8x9xAxNBSP¡¢£¤¥¦§¨©ª«¬SHY®¯Bx°±²³´µ¶·¸¹º»¼½¾¿CxÀÁÂÃÄÅÆÇÈÉÊËÌÍÎÏDxÐÑÒÓÔÕÖ×ØÙÚÛÜÝÞßExàáâãäåæçèéêëìíîïFxðñòóôõö÷øùúûüýþÿ";
     $this->assertSame($test, mb_convert_encoding($test, "iso-8859-1",  "UTF-8"));
@@ -414,7 +415,8 @@ final class expandFnsTest extends testBaseClass {
     $test="당신 이름이 무엇입니까 이름이 키얀인 어린 소년을 만나보세요. 그러나 그는 다른 많은 이름도 가지고 있습니다. 당신은 얼마나 많은 이름을 가지고 있습니까?";
     $this->assertSame($test, convert_to_utf8(mb_convert_encoding($test, "EUC-KR",  "UTF-8")));
   }
- 
+  **/
+  
   public function testRomanNumbers() : void {
     $this->assertSame('MMCCCXXXI', numberToRomanRepresentation(2331));
   }
