@@ -257,7 +257,7 @@ class Page {
     set_time_limit(120);
     $triplebrack = $this->extract_object('TripleBracket');
     $singlebrack = $this->extract_object('SingleBracket');
-    // @var array<Template>
+    // @var array<Template> $all_templates
     $all_templates = $this->extract_object('Template');
     set_time_limit(120);
     if ($this->page_error) {
@@ -272,13 +272,13 @@ class Page {
         $all_templates[$i]->block_modifications();
       }
     }
-    // @var array<Template>
+    // @var array<Template> $our_templates
     $our_templates = array();
-    // @var array<Template>
+    // @var array<Template> $our_templates_slight
     $our_templates_slight = array();
-    // @var array<Template>
+    // @var array<Template> $our_templates_conferences
     $our_templates_conferences = array();
-    // @var array<Template>
+    // @var array<Template>  $our_templates_ieee
     $our_templates_ieee = array();
     report_phase('Remedial work to prepare citations');
     for ($i = 0; $i < count($all_templates); $i++) {
