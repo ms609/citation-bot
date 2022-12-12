@@ -165,17 +165,18 @@ class Page {
     }
 
     // COMMENTS AND NOWIKI ETC. //
-    // @var array<Comment> $comments
+    /** @var array<Comment>     $comments
+        @var array<Nokiki>      $nowiki
+        @var array<Chemistry>   $chemistry
+        @var array<Mathematics> $mathematics
+        @var array<Musicscores> $musicality
+        @var array<Preformated> $preformated
+    */
     $comments    = $this->extract_object('Comment');
-    // @var array<Nokiki> $nowiki
     $nowiki      = $this->extract_object('Nowiki');
-    // @var array<Chemistry> $chemistry
     $chemistry   = $this->extract_object('Chemistry');
-    // @var array<Mathematics> $mathematics
     $mathematics = $this->extract_object('Mathematics');
-    // @var array<Musicscores> $musicality
     $musicality  = $this->extract_object('Musicscores');
-    // @var array<Preformated> $preformated
     $preformated = $this->extract_object('Preformated');
     set_time_limit(120);
     if (!$this->allow_bots()) {
@@ -263,7 +264,7 @@ class Page {
     set_time_limit(120);
     $triplebrack = $this->extract_object('TripleBracket');
     $singlebrack = $this->extract_object('SingleBracket');
-    // @var array<Template> $all_templates
+    /** @var array<Template> $all_templates */
     $all_templates = $this->extract_object('Template');
     set_time_limit(120);
     if ($this->page_error) {
@@ -278,13 +279,14 @@ class Page {
         $this_template->block_modifications();
       }
     }
-    // @var array<Template> $our_templates
+    /** @var array<Template> $our_templates
+        @var array<Template> $our_templates_slight
+        @var array<Template> $our_templates_conferences
+        @var array<Template> $our_templates_ieee
+    */
     $our_templates = array();
-    // @var array<Template> $our_templates_slight
     $our_templates_slight = array();
-    // @var array<Template> $our_templates_conferences
     $our_templates_conferences = array();
-    // @var array<Template>  $our_templates_ieee
     $our_templates_ieee = array();
     report_phase('Remedial work to prepare citations');
     foreach ($all_templates as $this_template) {
