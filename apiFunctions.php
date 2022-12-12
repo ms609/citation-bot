@@ -205,6 +205,7 @@ function arxiv_api(array $ids, array &$templates) : bool {  // Pointer to save m
   $context = stream_context_create(array(
     'http' => array('ignore_errors' => TRUE),
   ));
+  /** @psalm-taint-escape ssrf */
   $request = "https://export.arxiv.org/api/query?start=0&max_results=2000&id_list=" . implode(',', $ids);
   $response = (string) @file_get_contents($request, FALSE, $context);
   if ($response) {
@@ -1113,6 +1114,7 @@ function expand_templates_from_archives(array &$templates) : void { // This is d
          substr_count($template->get('title'), '') >0 ||
          substr_count($template->get('title'), '') >0 ||
          substr_count($template->get('title'), '�') >0 )) {
+      /** @psalm-taint-escape ssrf */
       $archive_url = $template->get('archive-url') . $template->get('archiveurl');
       if (stripos($archive_url, 'archive') !==FALSE && stripos($archive_url, '.pdf') === FALSE) {
         throttle_archive();
