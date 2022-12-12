@@ -4,7 +4,7 @@ declare(strict_types=1);
 require_once 'constants.php';  // @codeCoverageIgnore
 require_once 'Template.php';   // @codeCoverageIgnore
 
-const MAGIC_STRING_URLS = 'CITATION_BOT_PLACEHOLDER_URL_POINTER_';  
+const MAGIC_STRING_URLS = 'CITATION_BOT_PLACEHOLDER_URL_POINTER_';
 const CITOID_ZOTERO = "https://en.wikipedia.org/api/rest_v1/data/citation/zotero/";
 
 /**
@@ -168,7 +168,9 @@ public static function query_ieee_webpages(array &$templates) : void {  // Point
     set_time_limit(120);
     if ($template->blank('doi') && preg_match("~^https://ieeexplore\.ieee\.org/document/(\d{5,})$~", $template->get($kind), $matches_url)) {
        usleep(100000); // 0.10 seconds
-       curl_setopt(self::$ch_ieee, CURLOPT_URL, $template->get($kind));
+       /** @psalm-taint-escape ssrf */
+       $the_url = $template->get($kind);
+       curl_setopt(self::$ch_ieee, CURLOPT_URL, $the_url);
        $return = (string) @curl_exec(self::$ch_ieee);
        if ($return !== "" && preg_match_all('~"doi":"(10\.\d{4}/[^\s"]+)"~', $return, $matches, PREG_PATTERN_ORDER)) {
           $dois = array_unique($matches[1]);
@@ -182,7 +184,9 @@ public static function query_ieee_webpages(array &$templates) : void {  // Point
        }
     } elseif ($template->has('doi') && preg_match("~^https://ieeexplore\.ieee\.org/document/(\d{5,})$~", $template->get($kind), $matches_url) && doi_works($template->get('doi'))) {
        usleep(100000); // 0.10 seconds
-       curl_setopt(self::$ch_ieee, CURLOPT_URL, $template->get($kind));
+       /** @psalm-taint-escape ssrf */
+       $the_url = $template->get($kind);
+       curl_setopt(self::$ch_ieee, CURLOPT_URL, $the_url);
        $return = (string) @curl_exec(self::$ch_ieee);
        if ($return !== "" && strpos($return, "<title> -  </title>") !== FALSE) {
          report_forget("Existing IEEE no longer works - dropping URL"); // @codeCoverageIgnore
@@ -300,7 +304,9 @@ public static function drop_urls_that_match_dois(array &$templates) : void {  //
                report_forget("Existing canonical URL resulting from equivalent free DOI; dropping URL");
                $template->forget($url_kind);
             } else { // See if $url redirects
-               curl_setopt($ch, CURLOPT_URL, $url);
+               /** @psalm-taint-escape ssrf */
+               $the_url = $url;
+               curl_setopt($ch, CURLOPT_URL, $the_url);
                $ch_return = (string) @curl_exec($ch);
                if (strlen($ch_return) > 60) {
                   $redirectedUrl_url = curl_getinfo($ch, CURLINFO_EFFECTIVE_URL);
@@ -333,7 +339,9 @@ private static function zotero_request(string $url) : string {
     if (self::ZOTERO_GIVE_UP === self::$zotero_failures_count) self::$zotero_failures_count = 0; // @codeCoverageIgnore
   }
 
-  curl_setopt(self::$zotero_ch, CURLOPT_URL, CITOID_ZOTERO . urlencode($url));
+  /** @psalm-taint-escape ssrf */
+  $the_url = CITOID_ZOTERO . urlencode($url);
+  curl_setopt(self::$zotero_ch, CURLOPT_URL, $the_url);
 
   if (self::$zotero_failures_count > self::ZOTERO_GIVE_UP) return self::ERROR_DONE;
   
@@ -463,7 +471,7 @@ public static function process_zotero_response(string $zotero_response, Template
     return FALSE;
   }
   if (strpos($zotero_response, '503 Service Temporarily Unavailable') !== FALSE) {
-    report_warning("Temporarily Unavailable error for URL ". $url);  // @codeCoverageIgnore
+    report_warning("Temporarily Unavailable error for URL " . echoable($url));  // @codeCoverageIgnore
     return FALSE;                                                    // @codeCoverageIgnore
   }
   $zotero_data = @json_decode($zotero_response, FALSE);
