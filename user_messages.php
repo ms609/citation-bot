@@ -77,7 +77,7 @@ function pubmed_link(string $identifier, string $pm) : string {
 function bibcode_link(string $id) : string {
   /** @psalm-suppress TypeDoesNotContainType */ /* PSALM thinks HTML_OUTPUT cannot be false */
   return HTML_OUTPUT
-    ? '<a href="https://ui.adsabs.harvard.edu/abs/' . urlencode($id) . '" target="_blank">' . $id . '</a>'   // @codeCoverageIgnore
+    ? '<a href="https://ui.adsabs.harvard.edu/abs/' . urlencode($id) . '" target="_blank">' . echoable($id) . '</a>'   // @codeCoverageIgnore
     : $id;
 }
 
