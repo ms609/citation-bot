@@ -105,5 +105,5 @@ function wiki_link(string $page) : string {
   /** @psalm-suppress TypeDoesNotContainType */ /* PSALM thinks HTML_OUTPUT cannot be false */
   return HTML_OUTPUT
     ? '<a href="' . WIKI_ROOT . '?title=' . urlencode(str_replace(' ', '_', $page)) . '" target="_blank">Wikipedia page: ' . echoable($page) . '</a>'    // @codeCoverageIgnore
-    : "Wikipedia page : " echoable($page);
+    : "Wikipedia page : " . echoable($page);
 }
