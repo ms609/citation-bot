@@ -2573,7 +2573,9 @@ final class Template {
         $this->add_if_new($url_type, $oa_url);  // Will check for PMCs etc hidden in URL
         if ($this->has($url_type) && !$has_url_already) {  // The above line might have eaten the URL and upgraded it
           $context = stream_context_create(CONTEXT_INSECURE);
-          $headers_test = @get_headers($this->get($url_type), GET_THE_HEADERS, $context);
+          /** @psalm-taint-escape ssrf */
+          $the_url = $this->get($url_type);
+          $headers_test = @get_headers($the_url, GET_THE_HEADERS, $context);
           // @codeCoverageIgnoreStart
           if($headers_test ===FALSE) {
             $this->forget($url_type);
@@ -3959,6 +3961,7 @@ final class Template {
           if (substr($doi, 0, 8) === '10.5555/') { // Test DOI prefix.  NEVER will work
             $this->forget('doi');
             if ($this->blank('url')) {
+              /** @psalm-taint-escape ssrf */
               $test_url = 'https://plants.jstor.org/stable/' . $doi;
               $ch = curl_init($test_url);
               curl_setopt_array($ch,
