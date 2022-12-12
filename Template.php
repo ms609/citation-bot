@@ -6952,7 +6952,6 @@ final class Template {
     // $parameter_i->param is the parameter name within the Parameter object
     foreach ($this->param as $parameter_i) {
       if ($parameter_i->param === $name) {
-        if ($parameter_i->val === NULL) $parameter_i->val = ''; // Clean up
         $the_val = $parameter_i->val;
         if (preg_match("~^\(\((.*)\)\)$~", $the_val, $matches)) {
           $the_val = trim($matches[1]);
@@ -6966,7 +6965,6 @@ final class Template {
   public function get2(string $name) : ?string {
     foreach ($this->param as $parameter_i) {
       if ($parameter_i->param === $name) {
-        if ($parameter_i->val === NULL) $parameter_i->val = ''; // Clean up
         $the_val = $parameter_i->val;
         if (preg_match("~^\(\((.*)\)\)$~", $the_val, $matches)) {
           $the_val = trim($matches[1]);
@@ -6980,7 +6978,6 @@ final class Template {
   public function get3(string $name) : string {  // like get() only includes (( ))
     foreach ($this->param as $parameter_i) {
       if ($parameter_i->param === $name) {
-        if ($parameter_i->val === NULL) $parameter_i->val = ''; // Clean up
         $the_val = $parameter_i->val;
         return $the_val;
       }
