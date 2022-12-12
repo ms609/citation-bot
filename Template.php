@@ -24,7 +24,7 @@ final class Template {
   public const PLACEHOLDER_TEXT = '# # # CITATION_BOT_PLACEHOLDER_TEMPLATE %s # # #';
   public const REGEXP = ['~(?<!\{)\{\{\}\}(?!\})~su', '~\{\{[^\{\}\|]+\}\}~su', '~\{\{[^\{\}]+\}\}~su', '~\{\{(?>[^\{]|\{[^\{])+?\}\}~su'];  // Please see https://stackoverflow.com/questions/1722453/need-to-prevent-php-regex-segfault for discussion of atomic regex
   public const TREAT_IDENTICAL_SEPARATELY = FALSE;  // This is safe because templates are the last thing we do AND we do not directly edit $all_templates that are sub-templates - we might remove them, but do not change their content directly
-  // @var array<Template> $all_templates
+  /** @var array<Template> $all_templates */
   public static array $all_templates = array();  // Points to list of all the Template() on the Page() including this one.  It can only be set by the page class after all templates are made
   public static int $date_style = DATES_WHATEVER;  // Will get from the page
   /** @psalm-suppress PropertyNotSetInConstructor */
@@ -32,11 +32,11 @@ final class Template {
   public string $last_searched_doi = '';
   protected string $example_param = '';
   protected string $name = '';
-  // @var array<Parameter> $param
+  /** @var array<Parameter> $param */
   protected array $param = array();
-  // @var array<Parameter> $initial_param
+  /** @var array<Parameter> $initial_param */
   protected array $initial_param = array();
-  // @var array<string> $initial_author_params
+  /** @var array<string> $initial_author_params */
   protected array $initial_author_params = array();
   protected string $initial_name = '';
   protected bool $doi_valid = FALSE;
@@ -54,7 +54,7 @@ final class Template {
                'jstor'    => array(),
                'zotero'   => array(),
             );
-  // @var array<Template> $this_array
+  /** @var array<Template> $this_array */
   private array $this_array = array(); // Unset after using to avoid pointer loop that makes garbage collection harder
   
   function __construct() {
