@@ -7,7 +7,10 @@ require_once 'Template.php';   // @codeCoverageIgnore
 const MAGIC_STRING_URLS = 'CITATION_BOT_PLACEHOLDER_URL_POINTER_';  
 const CITOID_ZOTERO = "https://en.wikipedia.org/api/rest_v1/data/citation/zotero/";
 
-
+/**
+  @param array<Template> $templates
+  @param array<string> $ids
+**/
 function query_url_api(array $ids, array &$templates) : void {  // Pointer to save memory
    Zotero::query_url_api_class($ids, $templates);
 }
@@ -155,6 +158,9 @@ public static function query_url_api_class(array $ids, array &$templates) : void
   }
 }
 
+/**
+  @param array<Template> $templates
+**/
 public static function query_ieee_webpages(array &$templates) : void {  // Pointer to save memory
   
   foreach (['url', 'chapter-url', 'chapterurl'] as $kind) {
@@ -187,6 +193,9 @@ public static function query_ieee_webpages(array &$templates) : void {  // Point
   }
 }
 
+/**
+  @param array<Template> $templates
+**/
 public static function drop_urls_that_match_dois(array &$templates) : void {  // Pointer to save memory
   // Now that we have expanded URLs, try to lose them
   if (ZOTERO_ONLY) return;
