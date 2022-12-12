@@ -8,8 +8,8 @@ const MAGIC_STRING_URLS = 'CITATION_BOT_PLACEHOLDER_URL_POINTER_';
 const CITOID_ZOTERO = "https://en.wikipedia.org/api/rest_v1/data/citation/zotero/";
 
 /**
-  @param array<Template> $templates
   @param array<string> $ids
+  @param array<Template> $templates
 **/
 function query_url_api(array $ids, array &$templates) : void {  // Pointer to save memory
    Zotero::query_url_api_class($ids, $templates);
