@@ -34,7 +34,7 @@ final class Template {
   protected string $name = '';
   /** @var array<Parameter> $param */
   protected array $param = array();
-  /** @var array<Parameter> $initial_param */
+  /** @var array<string> $initial_param */
   protected array $initial_param = array();
   /** @var array<string> $initial_author_params */
   protected array $initial_author_params = array();
