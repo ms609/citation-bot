@@ -165,11 +165,17 @@ class Page {
     }
 
     // COMMENTS AND NOWIKI ETC. //
+    // @var array<Comment> $comments
     $comments    = $this->extract_object('Comment');
+    // @var array<Nokiki> $nowiki
     $nowiki      = $this->extract_object('Nowiki');
+    // @var array<Chemistry> $chemistry
     $chemistry   = $this->extract_object('Chemistry');
+    // @var array<Mathematics> $mathematics
     $mathematics = $this->extract_object('Mathematics');
+    // @var array<Musicscores> $musicality
     $musicality  = $this->extract_object('Musicscores');
+    // @var array<Preformated> $preformated
     $preformated = $this->extract_object('Preformated');
     set_time_limit(120);
     if (!$this->allow_bots()) {
