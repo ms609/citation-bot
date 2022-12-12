@@ -482,11 +482,11 @@ function expand_by_doi(Template $template, bool $force = FALSE) : bool {
         }
         if ($bad_data) {
           report_warning("CrossRef title did not match existing title: doi:" . doi_link($doi));
-          if (isset($crossRef->series_title)) report_info("  Possible new title: " . (string) $crossRef->series_title);
-          if (isset($crossRef->article_title)) report_info("  Possible new title: " . (string) $crossRef->article_title);
+          if (isset($crossRef->series_title)) report_info("  Possible new title: " . echoable((string) $crossRef->series_title));
+          if (isset($crossRef->article_title)) report_info("  Possible new title: " .  echoable((string) $crossRef->article_title));
           foreach (['chapter', 'title', 'series'] as $possible) {
            if ($template->has($possible)) {
-              report_info("  Existing old title: " . $template->get($possible));
+              report_info("  Existing old title: " .  echoable($template->get($possible)));
            }
           }
           return FALSE;
@@ -842,13 +842,13 @@ function expand_by_jstor(Template $template) : bool {
          switch (trim($ris_part[0])) {
            case "T1": case "TI": case "T2": case "BT":
             $new_title = trim($ris_part[1]);
-            report_info("  Possible new title: " . $new_title);
+            report_info("  Possible new title: " .  echoable($new_title));
            default: // @codeCoverageIgnore
          }
        }
        foreach (['chapter', 'title', 'series'] as $possible) {
          if ($template->has($possible)) {
-            report_info("  Existing old title: " . $template->get($possible));
+            report_info("  Existing old title: " .  echoable($template->get($possible)));
          }
        }
        return FALSE;
