@@ -355,7 +355,7 @@ private static function zotero_request(string $url) : string {
   }
   if ($zotero_response === '') {
     // @codeCoverageIgnoreStart
-    report_warning(curl_error(self::$zotero_ch) . "   For URL: " . $url);
+    report_warning(curl_error(self::$zotero_ch) . "   For URL: " . echoable($url));
     if (strpos(curl_error(self::$zotero_ch), 'timed out after') !== FALSE) {
       self::$zotero_failures_count = self::$zotero_failures_count + 1;
       if (ZOTERO_ONLY) {
@@ -476,13 +476,13 @@ public static function process_zotero_response(string $zotero_response, Template
   }
   $zotero_data = @json_decode($zotero_response, FALSE);
   if (!isset($zotero_data)) {
-    report_warning("Could not parse JSON for URL ". $url . ": " . $zotero_response);
+    report_warning("Could not parse JSON for URL ". echoable($url) . ": " . $zotero_response);
     return FALSE;
   } elseif (!is_array($zotero_data)) {
     if (is_object($zotero_data)) {
       $zotero_data = (array) $zotero_data;
     } else {
-      report_warning("JSON did not parse correctly for URL ". $url . ": " . $zotero_response);
+      report_warning("JSON did not parse correctly for URL ". echoable($url) . ": " . $zotero_response);
       return FALSE;
     }
   }
@@ -494,7 +494,7 @@ public static function process_zotero_response(string $zotero_response, Template
   $result = (object) $result ;
   
   if (!isset($result->title)) {
-    report_warning("Did not get a title for URL ". $url . ": " . $zotero_response);  // @codeCoverageIgnore
+    report_warning("Did not get a title for URL ". echoable($url) . ": " . $zotero_response);  // @codeCoverageIgnore
     return FALSE;                                                                    // @codeCoverageIgnore
   }
   if (substr(strtolower(trim($result->title)), 0, 9) === 'not found') {
