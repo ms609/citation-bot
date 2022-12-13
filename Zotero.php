@@ -940,7 +940,7 @@ public static function process_zotero_response(string $zotero_response, Template
         break;
 
       default:                                                                         // @codeCoverageIgnore
-        report_minor_error("Unhandled itemType: " . echoable($result->itemType) . " for $url");  // @codeCoverageIgnore
+        report_minor_error("Unhandled itemType: " . echoable($result->itemType) . " for " . echoable($url));  // @codeCoverageIgnore
     }
     
     if (in_array($result->itemType, ['journalArticle', 'newspaperArticle', 'report', 'magazineArticle', 'thesis'])) {
