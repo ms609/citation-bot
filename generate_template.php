@@ -15,11 +15,14 @@ $t->parse_text('{{cite web }}');
 if (count($_GET) !== 1) exit('Exactly one parameters must be passed</pre></body></html>');
 foreach ($_GET as $param=>$value) {
   /** The user sent this in, so we declare it to not be tainted */
-  /** @psalm-taint-escape ssrf */
+  /** @psalm-taint-escape ssrf */ /** @psalm-taint-escape quotes */
   $value = strtolower($value);
   /** @psalm-taint-escape ssrf */
   $param = strtolower($param);
   if (strlen($value) === 0) exit('Unset parameter error</pre></body></html>');
+  if ((strpos($value, "'") !== FALSE ) || (strpos($value, '"') !== FALSE ) || (strpos($value, "|") !== FALSE ) || (strpos($value, " ") !== FALSE )) {
+     exit('Invalid parameter value error</pre></body></html>');
+  }
   if (!in_array($param, PARAMETER_LIST)) exit('Unknown parameter passed</pre></body></html>');
   $t->set($param, $value);
 }
