@@ -2650,21 +2650,11 @@ final class Template {
       }
     } else {
       $url = '';
-      $google_books_worked = FALSE ;
       $isbn = $this->get('isbn');
-      $lccn = $this->get('lccn');
-      $oclc = $this->get('oclc');
       if ($isbn) {
         $isbn = str_replace(array(" ", "-"), "", $isbn);
         if (preg_match("~[^0-9Xx]~", $isbn) === 1) $isbn='' ;
         if (strlen($isbn) !== 13 && strlen($isbn) !== 10) $isbn='' ;
-      }
-      if ($lccn) {
-        $lccn = str_replace(array(" ", "-"), "", $lccn);
-        if (preg_match("~[^0-9]~", $lccn) === 1) $lccn='' ;
-      }
-      if ($oclc) {
-        if ( !ctype_alnum($oclc) ) $oclc='' ;
       }
       if ($isbn) {  // Try Books.Google.Com
         $google_book_url = 'https://www.google.com/search?tbo=p&tbm=bks&q=isbn:' . $isbn;
@@ -2684,7 +2674,6 @@ final class Template {
           if (count($google_results) === 1) {
             $gid = $google_results[0];
             $url = 'https://books.google.com/books?id=' . $gid;
-            $google_books_worked = TRUE;
           }
         }
       }
