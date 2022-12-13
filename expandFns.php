@@ -1072,7 +1072,9 @@ function str_i_same(string $str1, string $str2) : bool {
 }
   
 function doi_encode (string $doi) : string {
-   /** @psalm-taint-escape html */  /** @psalm-taint-escape quotes */  /** @psalm-taint-escape ssrf */
+   /** @psalm-taint-escape html
+       @psalm-taint-escape has_quotes
+       @psalm-taint-escape ssrf */
     $doi = urlencode($doi);
     $doi = str_replace('%2F', '/', $doi);
     return $doi;
