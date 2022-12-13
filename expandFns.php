@@ -1264,7 +1264,7 @@ function is_hdl_works(string $hdl) {
   $resp0 = (string) @$headers_test['0'];
   /** @psalm-suppress InvalidArrayOffset */
   $resp1 = (string) @$headers_test['1'];
-  if (stripos($resp0, '404 Not Found') !== FALSE         || stripos$resp0, 'HTTP/1.1 404') !== FALSE) return FALSE; // Bad
+  if (stripos($resp0, '404 Not Found') !== FALSE         || stripos($resp0, 'HTTP/1.1 404') !== FALSE) return FALSE; // Bad
   if ($resp1 !== '') {
      if (stripos($resp1, '404 Not Found') !== FALSE      || stripos($resp1, 'HTTP/1.1 404') !== FALSE) return FALSE; // Bad next location
   }
