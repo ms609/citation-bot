@@ -450,19 +450,19 @@ public static function process_zotero_response(string $zotero_response, Template
  
   switch (trim($zotero_response)) {
     case '':
-      report_info("Nothing returned for URL $url");
+      report_info("Nothing returned for URL " . echoable($url));
       return FALSE;
     case 'Internal Server Error':
-      report_info("Internal server error with URL $url");
+      report_info("Internal server error with URL " . echoable($url));
       return FALSE;
     case 'Remote page not found':
-      report_info("Remote page not found for URL ". $url);
+      report_info("Remote page not found for URL " . echoable($url));
       return FALSE;
     case 'No items returned from any translator':
-      report_info("Remote page not interpretable for URL ". $url);
+      report_info("Remote page not interpretable for URL " . echoable($url));
       return FALSE;
     case 'An error occurred during translation. Please check translation with the Zotero client.':
-      report_info("An error occurred during translation for URL ". $url);
+      report_info("An error occurred during translation for URL " . echoable($url));
       return FALSE;
   }
   
@@ -498,7 +498,7 @@ public static function process_zotero_response(string $zotero_response, Template
     return FALSE;                                                                    // @codeCoverageIgnore
   }
   if (substr(strtolower(trim($result->title)), 0, 9) === 'not found') {
-    report_info("Could not resolve URL ". $url);
+    report_info("Could not resolve URL " . echoable($url));
     return FALSE;
   }
   // Remove unused stuff.  TODO - Is there any value in these:
@@ -525,11 +525,11 @@ public static function process_zotero_response(string $zotero_response, Template
     $total_count += mb_strlen($result->bookTitle);
   }
   if (($bad_count > 5) || ($total_count > 1 && (($bad_count/$total_count) > 0.1))) {
-    report_info("Could parse unicode characters in ". $url);
+    report_info("Could parse unicode characters in " . echoable($url));
     return FALSE;
   }
   
-  report_info("Retrieved info from ". $url);
+  report_info("Retrieved info from " . echoable($url));
   // Verify that Zotero translation server did not think that this was a website and not a journal
   if (strtolower(substr(trim($result->title), -9)) === ' on jstor') {  // Not really "expanded", just add the title without " on jstor"
     $template->add_if_new('title', substr(trim($result->title), 0, -9)); // @codeCoverageIgnore
@@ -541,7 +541,7 @@ public static function process_zotero_response(string $zotero_response, Template
   if (isset($result->title))     $test_data .= $result->title;
   foreach (BAD_ZOTERO_TITLES as $bad_title ) {
       if (mb_stripos($test_data, $bad_title) !== FALSE) {
-        report_info("Received invalid title data for URL ". $url . ": $test_data");
+        report_info("Received invalid title data for URL " . echoable($url) . ": $test_data");
         return FALSE;
       }
   }
@@ -551,7 +551,7 @@ public static function process_zotero_response(string $zotero_response, Template
   if (isset($result->bookTitle)) {
    foreach (array_merge(BAD_ACCEPTED_MANUSCRIPT_TITLES, IN_PRESS_ALIASES) as $bad_title ) {
       if (str_i_same($result->bookTitle, $bad_title)) {
-        report_info("Received invalid book title data for URL ". $url . ": $result->bookTitle");
+        report_info("Received invalid book title data for URL " . echoable($url) . ": $result->bookTitle");
         return FALSE;
       }
    }
@@ -559,7 +559,7 @@ public static function process_zotero_response(string $zotero_response, Template
   if (isset($result->title)) {
    foreach (array_merge(BAD_ACCEPTED_MANUSCRIPT_TITLES, IN_PRESS_ALIASES) as $bad_title ) {
       if (str_i_same($result->title, $bad_title)) {
-        report_info("Received invalid title data for URL ". $url . ": $result->title");
+        report_info("Received invalid title data for URL ". echoable($url) . ": $result->title");
         return FALSE;
       }
    }
@@ -567,7 +567,7 @@ public static function process_zotero_response(string $zotero_response, Template
   if (isset($result->publicationTitle)) {
    foreach (array_merge(BAD_ACCEPTED_MANUSCRIPT_TITLES, IN_PRESS_ALIASES) as $bad_title ) {
       if (str_i_same($result->publicationTitle, $bad_title)) {
-        report_info("Received invalid publication title data for URL ". $url . ": $result->publicationTitle");
+        report_info("Received invalid publication title data for URL ". echoable($url) . ": $result->publicationTitle");
         return FALSE;
       }
    }
@@ -753,7 +753,7 @@ public static function process_zotero_response(string $zotero_response, Template
     $new_date = strtotime(tidy_date($result->date));
     if($new_date) { // can compare
       if($new_date > $access_date) {
-        report_info("URL appears to have changed since access-date ". $url);
+        report_info("URL appears to have changed since access-date " . echoable($url));
         return FALSE;
       }
     }
