@@ -132,13 +132,16 @@ function is_doi_works(string $doi) : ?bool {
      set_time_limit(120);                                                                             // @codeCoverageIgnore
      report_inline(' .');                                                                             // @codeCoverageIgnore
      $headers_test = @get_headers("https://doi.org/" . doi_encode($doi), GET_THE_HEADERS, $context);  // @codeCoverageIgnore
-     /** @psalm-suppress InvalidArrayOffset */
-  } elseif ((empty($headers_test['Location']) && empty($headers_test['location'])) || stripos($headers_test['0'], '404 Not Found') !== FALSE || stripos($headers_test['0'], 'HTTP/1.1 404') !== FALSE) {
+  } else {
+    /** @psalm-suppress InvalidArrayOffset */
+    $resp0 = (string) @$headers_test['0'];                                                            // @codeCoverageIgnore
+    if ((empty($headers_test['Location']) && empty($headers_test['location'])) || stripos($resp0, '404 Not Found') !== FALSE || stripos($resp0, 'HTTP/1.1 404') !== FALSE) { // @codeCoverageIgnore
      sleep(5);                                                                                        // @codeCoverageIgnore
      set_time_limit(120);                                                                             // @codeCoverageIgnore
      report_inline(' .');                                                                             // @codeCoverageIgnore
      $headers_test = @get_headers("https://doi.org/" . doi_encode($doi), GET_THE_HEADERS, $context);  // @codeCoverageIgnore
      if ($headers_test === FALSE) return FALSE; /** We trust previous failure **/                     // @codeCoverageIgnore
+    }                                                                                                 // @codeCoverageIgnore
   }
   if (preg_match('~^10\.1038/nature\d{5}$~i', $doi) && $headers_test === FALSE) return FALSE; // Nature dropped the ball for now TODO - https://dx.doi.org/10.1038/nature05009
   if ($headers_test === FALSE) { // Use CURL instead
