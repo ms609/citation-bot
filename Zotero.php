@@ -761,7 +761,7 @@ public static function process_zotero_response(string $zotero_response, Template
   if (str_i_same(substr((string) @$result->publicationTitle, 0, 4), 'http') ||
       str_i_same(substr((string) @$result->bookTitle, 0, 4), 'http') ||
       str_i_same(substr((string) @$result->title, 0, 4), 'http')) {
-    report_info("URL returned in Journal/Newpaper/Title/Chapter field for " . $url);  // @codeCoverageIgnore
+    report_info("URL returned in Journal/Newpaper/Title/Chapter field for " . echoable($url));  // @codeCoverageIgnore
     return FALSE;                                                                     // @codeCoverageIgnore
   }
   
