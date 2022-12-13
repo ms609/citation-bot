@@ -68,7 +68,7 @@ function is_doi_active(string $doi) : ?bool {
     $headers_test = @get_headers("https://api.crossref.org/works/" . doi_encode($doi), GET_THE_HEADERS); // @codeCoverageIgnore
   }
   if ($headers_test === FALSE) return NULL; // most likely bad, but will recheck again an again
-  $response = $headers_test[0];
+  $response = $headers_test['0'];
   if (stripos($response, '200 OK'       ) !== FALSE || stripos($response, 'HTTP/1.1 200') !== FALSE) return TRUE;
   if (stripos($response, '404 Not Found') !== FALSE || stripos($response, 'HTTP/1.1 404') !== FALSE) return FALSE;
   report_warning("CrossRef server error loading headers for DOI " . echoable($doi . " : " . $response));  // @codeCoverageIgnore
@@ -131,7 +131,7 @@ function is_doi_works(string $doi) : ?bool {
      set_time_limit(120);                                                                             // @codeCoverageIgnore
      report_inline(' .');                                                                             // @codeCoverageIgnore
      $headers_test = @get_headers("https://doi.org/" . doi_encode($doi), GET_THE_HEADERS, $context);  // @codeCoverageIgnore
-  } elseif ((empty($headers_test['Location']) && empty($headers_test['location'])) || stripos($headers_test[0], '404 Not Found') !== FALSE || stripos($headers_test[0], 'HTTP/1.1 404') !== FALSE) {
+  } elseif ((empty($headers_test['Location']) && empty($headers_test['location'])) || stripos($headers_test['0'], '404 Not Found') !== FALSE || stripos($headers_test['0'], 'HTTP/1.1 404') !== FALSE) {
      sleep(5);                                                                                        // @codeCoverageIgnore
      set_time_limit(120);                                                                             // @codeCoverageIgnore
      report_inline(' .');                                                                             // @codeCoverageIgnore
@@ -170,9 +170,9 @@ function is_doi_works(string $doi) : ?bool {
     }
   }
   if (empty($headers_test['Location']) && empty($headers_test['location'])) return FALSE; // leads nowhere
-  $resp0 = (string) @$headers_test[0];
-  $resp1 = (string) @$headers_test[1];
-  $resp2 = (string) @$headers_test[2];
+  $resp0 = (string) @$headers_test['0'];
+  $resp1 = (string) @$headers_test['1'];
+  $resp2 = (string) @$headers_test['2'];
   if (stripos($resp0, '404 Not Found') !== FALSE         || stripos($resp0, 'HTTP/1.1 404') !== FALSE) return FALSE; // Bad
   if (stripos($resp0, '302 Found') !== FALSE             || stripos($resp0, 'HTTP/1.1 302') !== FALSE) return TRUE;  // Good
   if (stripos($resp0, '301 Moved Permanently') !== FALSE || stripos($resp0, 'HTTP/1.1 301') !== FALSE) { // Could be DOI change or bad prefix
@@ -188,7 +188,7 @@ function is_doi_works(string $doi) : ?bool {
         return FALSE;
       }
   }
-  report_minor_error("Unexpected response in is_doi_works " . echoable($headers_test[0])); // @codeCoverageIgnore
+  report_minor_error("Unexpected response in is_doi_works " . echoable($headers_test['0'])); // @codeCoverageIgnore
   return NULL; // @codeCoverageIgnore
 }
 
@@ -1252,14 +1252,14 @@ function is_hdl_works(string $hdl) {
    } else {
       $the_header_loc = (string) @$headers_test['Location'] . (string) @$headers_test['location'];
    }
-  if (stripos($headers_test[0], '404 Not Found') !== FALSE         || stripos($headers_test[0], 'HTTP/1.1 404') !== FALSE) return FALSE; // Bad
-  if (isset($headers_test[1])) {
-     if (stripos($headers_test[1], '404 Not Found') !== FALSE      || stripos($headers_test[1], 'HTTP/1.1 404') !== FALSE) return FALSE; // Bad next location
+  if (stripos($headers_test['0'], '404 Not Found') !== FALSE         || stripos($headers_test['0'], 'HTTP/1.1 404') !== FALSE) return FALSE; // Bad
+  if (isset($headers_test['1'])) {
+     if (stripos($headers_test['1'], '404 Not Found') !== FALSE      || stripos($headers_test['1'], 'HTTP/1.1 404') !== FALSE) return FALSE; // Bad next location
   }
-  if (stripos($headers_test[0], '302 Found') !== FALSE             || stripos($headers_test[0], 'HTTP/1.1 302') !== FALSE) return $the_header_loc;  // Good
+  if (stripos($headers_test['0'], '302 Found') !== FALSE             || stripos($headers_test['0'], 'HTTP/1.1 302') !== FALSE) return $the_header_loc;  // Good
   // @codeCoverageIgnoreStart
-  if (stripos($headers_test[0], '301 Moved Permanently') !== FALSE || stripos($headers_test[0], 'HTTP/1.1 301') !== FALSE) return $the_header_loc;  // Good, but only for moved DOIs and those will be checked with doi_works()
-  report_minor_error("Unexpected response in is_hdl_works " . echoable($headers_test[0]));
+  if (stripos($headers_test['0'], '301 Moved Permanently') !== FALSE || stripos($headers_test['0'], 'HTTP/1.1 301') !== FALSE) return $the_header_loc;  // Good, but only for moved DOIs and those will be checked with doi_works()
+  report_minor_error("Unexpected response in is_hdl_works " . echoable($headers_test['0']));
   return NULL;
   // @codeCoverageIgnoreEnd
 }
