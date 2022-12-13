@@ -78,14 +78,12 @@ function bibcode_link(string $id) : string {
   /** @psalm-suppress TypeDoesNotContainType */ /* PSALM thinks HTML_OUTPUT cannot be false */
   return HTML_OUTPUT
     ? '<a href="https://ui.adsabs.harvard.edu/abs/' . urlencode($id) . '" target="_blank">' . echoable($id) . '</a>'   // @codeCoverageIgnore
-    : $id;
+    : echoable($id);
 }
 
 function doi_link(string $doi) : string {
   /* PSALM thinks HTML_OUTPUT cannot be false */
  /**
-   * @psalm-taint-escape html
-   * @psalm-taint-escape has_quotes
    * @psalm-suppress TypeDoesNotContainType
    */
   $return = HTML_OUTPUT
