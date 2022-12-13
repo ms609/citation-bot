@@ -205,7 +205,7 @@ function arxiv_api(array $ids, array &$templates) : bool {  // Pointer to save m
   $context = stream_context_create(array(
     'http' => array('ignore_errors' => TRUE),
   ));
-  /** @psalm-taint-escape ssrf */
+  /** @psalm-taint-escape file */
   $request = "https://export.arxiv.org/api/query?start=0&max_results=2000&id_list=" . implode(',', $ids);
   $response = (string) @file_get_contents($request, FALSE, $context);
   if ($response) {
