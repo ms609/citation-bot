@@ -215,7 +215,7 @@ final class Template {
            ($this->get('volume') . $this->get('issue') !== '') &&
            ($this->page() !== '') &&
            ($this->year() !== ''))) {
-        report_action("Converted Bare reference to template: " . trim(base64_decode($this->get(strtolower('CITATION_BOT_PLACEHOLDER_BARE_URL')))));
+        report_action("Converted Bare reference to template: " . echoable(trim(base64_decode($this->get(strtolower('CITATION_BOT_PLACEHOLDER_BARE_URL'))))));
         $this->quietly_forget(strtolower('CITATION_BOT_PLACEHOLDER_BARE_URL'));
       } else {
         return base64_decode($this->get(strtolower('CITATION_BOT_PLACEHOLDER_BARE_URL')));
