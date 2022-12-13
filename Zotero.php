@@ -467,7 +467,7 @@ public static function process_zotero_response(string $zotero_response, Template
   }
   
   if (strpos($zotero_response, '502 Bad Gateway') !== FALSE) {
-    report_warning("Bad Gateway error for URL ". $url);
+    report_warning("Bad Gateway error for URL ". echoable($url));
     return FALSE;
   }
   if (strpos($zotero_response, '503 Service Temporarily Unavailable') !== FALSE) {
