@@ -6201,11 +6201,10 @@ final class Template {
     }
     $new = $this->parsed_text();
     if ($orig !== $new) {
-      $orig = $new;
       foreach ($this->param as $param) {
         $this->tidy_parameter($param->param);
       }
-    }
+    } // Give up tidy after third time.  Something is goofy.
   }
 
   public function final_tidy() : void {
