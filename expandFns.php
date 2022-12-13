@@ -793,12 +793,15 @@ function mb_ucfirst(string $string) : string
 
 function mb_ucwords(string $string) : string
 {
-	mb_ereg_search_init($string, '(\S)(\S*\s*)|(\s+)');
-	$output = '';
-	while ($match = mb_ereg_search_regs()) {
-		$output .= $match[3] ? $match[3] : mb_strtoupper($match[1]) . $match[2];
-	}
-	return $output;
+   if (mb_ereg_search_init($string, '(\S)(\S*\s*)|(\s+)')) {
+      $output = '';
+      while ($match = mb_ereg_search_regs()) {
+         $output .= $match[3] ? $match[3] : mb_strtoupper($match[1]) . $match[2];
+      }
+      return $output;
+   } else {
+      return $string;  // @codeCoverageIgnore
+   }
 }
 
 function mb_substr_replace(string $string, string $replacement, int $start, int $length) : string {
