@@ -2584,7 +2584,7 @@ final class Template {
           }
           // @codeCoverageIgnoreEnd
           /** @psalm-suppress InvalidArrayOffset */
-          $response_code = intval(substr($headers_test['0'], 9, 3));
+          $response_code = intval(substr((string) $headers_test['0'], 9, 3));
           // @codeCoverageIgnoreStart
           if($response_code > 400) {  // Generally 400 and below are okay, includes redirects too though
             $this->forget($url_type);
