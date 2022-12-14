@@ -766,14 +766,14 @@ public static function process_zotero_response(string $zotero_response, Template
   }
   
   if (isset($result->bookTitle)) {
-    $result->bookTitle = preg_replace('~\s*\(pdf\)$~i', '', (string) $result->bookTitle);
-    $result->bookTitle = preg_replace('~^\(pdf\)\s*~i', '', (string) $result->bookTitle);
-    $result->bookTitle = preg_replace('~ \- ProQuest\.?~i', '', (string) $result->bookTitle);
+    $result->bookTitle = safe_preg_replace('~\s*\(pdf\)$~i', '', $result->bookTitle);
+    $result->bookTitle = safe_preg_replace('~^\(pdf\)\s*~i', '', $result->bookTitle);
+    $result->bookTitle = safe_preg_replace('~ \- ProQuest\.?~i', '', $result->bookTitle);
   }
   if (isset($result->title)) {
-    $result->title = preg_replace('~\s*\(pdf\)$~i', '', (string) $result->title);
-    $result->title = preg_replace('~^\(pdf\)\s*~i', '', (string) $result->title);
-    $result->title = preg_replace('~ \- ProQuest\.?~i', '', (string) $result->title);
+    $result->title = safe_preg_replace('~\s*\(pdf\)$~i', '', (string) $result->title);
+    $result->title = safe_preg_replace('~^\(pdf\)\s*~i', '', $result->title);
+    $result->title = safe_preg_replace('~ \- ProQuest\.?~i', '', $result->title);
   }
   
   if (strpos($url, 'biodiversitylibrary.org') !== FALSE) {
