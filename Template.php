@@ -7441,10 +7441,10 @@ final class Template {
           case "usg": case "fir": case "entrypoint": case "as_qdr":
           case "as_drrb": case "as_minm":  case "as_mind":  case "as_maxm":
           case "as_maxd": case "kgs": case "ictx": case "shem": case "vet":
-          case "ictx": case "iflsig": case "tab": case "sqi": case "noj":
+          case "iflsig": case "tab": case "sqi": case "noj":
           case "hs": case "es_sm": case "site": case "btnmeta_news_search":
-          case "channel": case "espv": case "cad": case "es_sm": case "gs_sm":
-          case "ictx": case "imgil": case "ins": case "npsic=":  case "rflfq":
+          case "channel": case "espv": case "cad": case "gs_sm":
+          case "imgil": case "ins": case "npsic=":  case "rflfq":
           case "rlha": case "rldoc": case "rldimm": case "npsic": case "phdesc":
           case "prmdo": case "ssui": case "lqi": case "rlst": case "pf":
           case "authuser": case "gsas": case "ned": case "pz": case "e":
