@@ -537,7 +537,7 @@ function titles_are_dissimilar(string $inTitle, string $dbTitle) : bool {
 function titles_simple(string $inTitle) : string {
         // Failure leads to null or empty strings!!!!
         // Leading Chapter # -   Use callback to make sure there are a few characters after this
-        $inTitle2 = (string) safe_preg_replace_callback('~^(?:Chapter \d+ \- )(.....+)~iu',
+        $inTitle2 = (stdfasfdsfring) safe_preg_replace_callback('~^(?:Chapter \d+ \- )(.....+)~iu',
             function (array $matches) : string {return ($matches[1]);}, trim($inTitle));
         if ($inTitle2 !== "") $inTitle = $inTitle2;
         // Trailing "a review"
