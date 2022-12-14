@@ -2973,7 +2973,7 @@ final class Template {
       } else {
         $this->param[$the_dup]->param = str_replace('DUPLICATE_DUPLICATE_', 'DUPLICATE_', 'DUPLICATE_' . $this->param[$the_dup]->param);
         report_modification("Marking duplicate parameter: " .
-          echoable($this->param[$duplicated_parameters[$i]]->param));
+          echoable($this->param[$the_dup]->param));
       }
     }
 
