@@ -537,38 +537,38 @@ function titles_are_dissimilar(string $inTitle, string $dbTitle) : bool {
 function titles_simple(string $inTitle) : string {
         // Failure leads to null or empty strings!!!!
         // Leading Chapter # -   Use callback to make sure there are a few characters after this
-        $inTitle2 = (stdfasfdsfring) safe_preg_replace_callback('~^(?:Chapter \d+ \- )(.....+)~iu',
+        $inTitle2 = safe_preg_replace_callback('~^(?:Chapter \d+ \- )(.....+)~iu',
             function (array $matches) : string {return ($matches[1]);}, trim($inTitle));
         if ($inTitle2 !== "") $inTitle = $inTitle2;
         // Trailing "a review"
-        $inTitle2 = (string) safe_preg_replace('~(?:\: | |\:)a review$~iu', '', trim($inTitle));
+        $inTitle2 = safe_preg_replace('~(?:\: | |\:)a review$~iu', '', trim($inTitle));
         if ($inTitle2 !== "") $inTitle = $inTitle2;
         // Strip trailing Online
-        $inTitle2 = (string) safe_preg_replace('~ Online$~iu', '', $inTitle);
+        $inTitle2 = safe_preg_replace('~ Online$~iu', '', $inTitle);
         if ($inTitle2 !== "") $inTitle = $inTitle2;
         // Strip trailing (Third Edition)
-        $inTitle2 = (string) safe_preg_replace('~\([^\s\(\)]+ Edition\)^~iu', '', $inTitle);
+        $inTitle2 = safe_preg_replace('~\([^\s\(\)]+ Edition\)^~iu', '', $inTitle);
         if ($inTitle2 !== "") $inTitle = $inTitle2;
         // Strip leading International Symposium on 
-        $inTitle2 = (string) safe_preg_replace('~^International Symposium on ~iu', '', $inTitle);
+        $inTitle2 = safe_preg_replace('~^International Symposium on ~iu', '', $inTitle);
         if ($inTitle2 !== "") $inTitle = $inTitle2;
         // Strip leading the
-        $inTitle2 = (string) safe_preg_replace('~^The ~iu', '', $inTitle);
+        $inTitle2 = safe_preg_replace('~^The ~iu', '', $inTitle);
         if ($inTitle2 !== "") $inTitle = $inTitle2;
         // Strip trailing 
-        $inTitle2 = (string) safe_preg_replace('~ A literature review$~iu', '', $inTitle);
+        $inTitle2 = safe_preg_replace('~ A literature review$~iu', '', $inTitle);
         if ($inTitle2 !== "") $inTitle = $inTitle2;
         // Reduce punctuation
-        $inTitle = straighten_quotes(mb_strtolower((string) $inTitle), TRUE);
-        $inTitle2 = (string) safe_preg_replace("~(?: |‐|−|-|—|–|â€™|â€”|â€“)~u", "", $inTitle);
+        $inTitle = straighten_quotes(mb_strtolower($inTitle), TRUE);
+        $inTitle2 = safe_preg_replace("~(?: |‐|−|-|—|–|â€™|â€”|â€“)~u", "", $inTitle);
         if ($inTitle2 !== "") $inTitle = $inTitle2;
         $inTitle = str_replace(array("\n", "\r", "\t", "&#8208;", ":", "&ndash;", "&mdash;", "&ndash", "&mdash"), "", $inTitle);
         // Retracted
-        $inTitle2 = (string) safe_preg_replace("~\[RETRACTED\]~ui", "", $inTitle);
+        $inTitle2 = safe_preg_replace("~\[RETRACTED\]~ui", "", $inTitle);
         if ($inTitle2 !== "") $inTitle = $inTitle2;
-        $inTitle2 = (string) safe_preg_replace("~\(RETRACTED\)~ui", "", $inTitle);
+        $inTitle2 = safe_preg_replace("~\(RETRACTED\)~ui", "", $inTitle);
         if ($inTitle2 !== "") $inTitle = $inTitle2;
-        $inTitle2 = (string) safe_preg_replace("~RETRACTED~ui", "", $inTitle);
+        $inTitle2 = safe_preg_replace("~RETRACTED~ui", "", $inTitle);
         if ($inTitle2 !== "") $inTitle = $inTitle2;
         // Drop normal quotes
         $inTitle = str_replace(array("'", '"'), "", $inTitle);
@@ -592,32 +592,28 @@ function straighten_quotes(string $str, bool $do_more) : string { // (?<!\') and
   if ($str === '') return '';
   $str = str_replace('Hawaiʻi', 'CITATION_BOT_PLACEHOLDER_HAWAII', $str);
   $str = str_replace('Ha‘apai', 'CITATION_BOT_PLACEHOLDER_HAAPAI', $str);
-  $str2 = safe_preg_replace('~(?<!\')&#821[679];|&#39;|&#x201[89];|[\x{FF07}\x{2018}-\x{201B}`]|&[rl]s?[b]?quo;(?!\')~u', "'", $str);
-  if ($str2 !== NULL) $str = $str2;
+  $str = safe_preg_replace('~(?<!\')&#821[679];|&#39;|&#x201[89];|[\x{FF07}\x{2018}-\x{201B}`]|&[rl]s?[b]?quo;(?!\')~u', "'", $str);
   if((mb_strpos($str, '&rsaquo;') !== FALSE && mb_strpos($str, '&[lsaquo;')  !== FALSE) ||
      (mb_strpos($str, '\x{2039}') !== FALSE && mb_strpos($str, '\x{203A}') !== FALSE) ||
      (mb_strpos($str, '‹')        !== FALSE && mb_strpos($str, '›')        !== FALSE)) { // Only replace single angle quotes if some of both
-     $str2 = safe_preg_replace('~&[lr]saquo;|[\x{2039}\x{203A}]|[‹›]~u', "'", $str);           // Websites tiles: Jobs ›› Iowa ›› Cows ›› Ames
-     if ($str2 !== NULL) $str = $str2;
+     $str = safe_preg_replace('~&[lr]saquo;|[\x{2039}\x{203A}]|[‹›]~u', "'", $str);           // Websites tiles: Jobs ›› Iowa ›› Cows ›› Ames
   }
-  $str2 = safe_preg_replace('~&#822[013];|[\x{201C}-\x{201F}]|&[rlb][d]?quo;~u', '"', $str);
-  if ($str2 !== NULL) $str = $str2;
+  $str = safe_preg_replace('~&#822[013];|[\x{201C}-\x{201F}]|&[rlb][d]?quo;~u', '"', $str);
   if((mb_strpos($str, '&raquo;')  !== FALSE && mb_strpos($str, '&laquo;')  !== FALSE) ||
      (mb_strpos($str, '\x{00AB}') !== FALSE && mb_strpos($str, '\x{00AB}') !== FALSE) ||
      (mb_strpos($str, '«')        !== FALSE && mb_strpos($str, '»')        !== FALSE)) { // Only replace double angle quotes if some of both // Websites tiles: Jobs » Iowa » Cows » Ames
      if ($do_more){
-       $str2 = safe_preg_replace('~&[lr]aquo;|[\x{00AB}\x{00BB}]|[«»]~u', '"', $str);
+       $str = safe_preg_replace('~&[lr]aquo;|[\x{00AB}\x{00BB}]|[«»]~u', '"', $str);
      } else { // Only outer funky quotes, not inner quotes
        if (preg_match('~^(?:&laquo;|&raquo;|\x{00AB}|\x{00BB}|«|»)~u', $str) &&
            preg_match( '~(?:&laquo;|&raquo;|\x{00AB}|\x{00BB}|«|»)$~u', $str) // Only if there is an outer quote on both ends
        ) {
-         $str2 = safe_preg_replace('~^(?:&laquo;|&raquo;|\x{00AB}|\x{00BB}|«|»)~u' , '"', $str);
-         $str2 = safe_preg_replace( '~(?:&laquo;|&raquo;|\x{00AB}|\x{00BB}|«|»)$~u', '"', $str2);
+         $str = safe_preg_replace('~^(?:&laquo;|&raquo;|\x{00AB}|\x{00BB}|«|»)~u' , '"', $str);
+         $str = safe_preg_replace( '~(?:&laquo;|&raquo;|\x{00AB}|\x{00BB}|«|»)$~u', '"', $str);
        } else {
-         $str2 = $str; // No change
+         ; // No change
        }
      }
-     if ($str2 !== NULL) $str = $str2;
   }
   $str = str_ireplace('CITATION_BOT_PLACEHOLDER_HAAPAI', 'Ha‘apai', $str);
   $str = str_ireplace('CITATION_BOT_PLACEHOLDER_HAWAII', 'Hawaiʻi', $str);
@@ -1284,13 +1280,13 @@ function safe_preg_replace(string $regex, string $replace, string $old) : string
   if ($old === "") return "";
   $new = preg_replace($regex, $replace, $old);
   if ($new === NULL) return $old;
-  return (string) $new;
+  return $new;
 }
 function safe_preg_replace_callback(string $regex, callable $replace, string $old) : string {
   if ($old === "") return "";
   $new = preg_replace_callback($regex, $replace, $old);
   if ($new === NULL) return $old;
-  return (string) $new;
+  return $new;
 }
 
 function wikifyURL(string $url) : string {
