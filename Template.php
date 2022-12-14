@@ -2938,9 +2938,7 @@ final class Template {
     if (empty($this->param)) return;
     $keys = array_keys($this->param);
     foreach ($keys as $the_key) {
-      if (!ctype_lower($this->param[$the_key]->param)) {
-        $this->param[$the_key]->param = strtolower($this->param[$the_key]->param);
-      }
+      $this->param[$the_key]->param = strtolower($this->param[$the_key]->param);
     }
   }
 
