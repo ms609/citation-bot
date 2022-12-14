@@ -2937,10 +2937,8 @@ final class Template {
   protected function parameter_names_to_lowercase() : void {
     if (empty($this->param)) return;
     $keys = array_keys($this->param);
-    for ($i = 0; $i < count($keys); $i++) {
-      if (!ctype_lower($this->param[$keys[$i]]->param)) {
-        $this->param[$keys[$i]]->param = strtolower($this->param[$keys[$i]]->param);
-      }
+    foreach ($keys as $the_key) {
+      $this->param[$the_key]->param = strtolower($this->param[$the_key]->param);
     }
   }
 
