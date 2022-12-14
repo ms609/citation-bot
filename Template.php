@@ -2960,7 +2960,7 @@ final class Template {
           $this->param[$duplicate_pos]->val = $par->val;
         }
         array_unshift($duplicated_parameters, $duplicate_pos);
-        array_unshift($duplicate_identical, (mb_strtolower(trim((strdffdsafding) $par->val)) === mb_strtolower(trim((string) $this->param[$duplicate_pos]->val)))); // Drop duplicates that differ only by case
+        array_unshift($duplicate_identical, (mb_strtolower(trim($par->val)) === mb_strtolower(trim($this->param[$duplicate_pos]->val)))); // Drop duplicates that differ only by case
       }
       $param_occurrences[$par->param] = $pointer;
     }
@@ -2984,8 +2984,8 @@ final class Template {
       foreach ($this->param as $param_key => $p) {
         if ($need_one && !empty($p->param)) {
           if (preg_match('~^\s*(https?://|www\.)\S+~', $p->param)) { # URL ending ~ xxx.com/?para=val
-            $val = isset($p->val) ? (string) $p->val : '';
-            $param = (string) $p->param;
+            $val = $p->val;
+            $param = $p->param;
             $this->param[$param_key]->val =  $param . '=' . $val;
             $this->param[$param_key]->param = 'url';
             $this->param[$param_key]->eq = ' = '; // Upgrade it to nicely spread out
@@ -3554,7 +3554,7 @@ final class Template {
   }
 
   public function wikiname() : string {
-    $name = trim(mb_strtolower(str_replace('_', ' ', (string) $this->name)));
+    $name = trim(mb_strtolower(str_replace('_', ' ', $this->name)));
      // Treat the same since alias
     if ($name === 'cite work') $name = 'cite book';
     if ($name === 'cite chapter') $name = 'cite book';
@@ -6442,7 +6442,7 @@ final class Template {
       if (!empty($this->param)) { // Forget author-link and such that have no such author
        foreach ($this->param as $p) {
         $alias = $p->param;
-        if ($alias !== NULL && $alias !== '' && $this->blank($alias)) {
+        if ($alias !== '' && $this->blank($alias)) {
           if (preg_match('~^author(\d+)\-?link$~', $alias, $matches) || preg_match('~^author\-?link(\d+)$~', $alias, $matches)) {
             if ($this->blank(AUTHOR_PARAMETERS[(int) $matches[1]])) {
               $this->forget($alias);
@@ -6993,7 +6993,7 @@ final class Template {
   protected function param_value(int $i) : string {
     $item = $this->param_with_index($i);
     if (is_null($item)) return ''; // id={{arxiv}} and other junk
-    return (string) $item->val;
+    return $item->val;
   }
 
   public function get_without_comments_and_placeholders(string $name) : string {
@@ -7032,12 +7032,12 @@ final class Template {
     if ($this->get($par) !== $this->get3($par)) {
       return FALSE;
     }
-    if (($pos = $this->get_param_key((string) $par)) !== NULL) {
+    if (($pos = $this->get_param_key($par)) !== NULL) {
       $this->param[$pos]->val = $val;
       return TRUE;
     }
     $p = new Parameter();
-    $p->parse_text((string) $this->example_param); // cast to make static analysis happy
+    $p->parse_text($this->example_param);
     $p->param = $par;
     $p->val = $val;
 
