@@ -2937,9 +2937,9 @@ final class Template {
   protected function parameter_names_to_lowercase() : void {
     if (empty($this->param)) return;
     $keys = array_keys($this->param);
-    for ($i = 0; $i < count($keys); $i++) {
-      if (!ctype_lower($this->param[$keys[$i]]->param)) {
-        $this->param[$keys[$i]]->param = strtolower($this->param[$keys[$i]]->param);
+    foreach ($keys as $the_key) {
+      if (!ctype_lower($this->param[$the_key]->param)) {
+        $this->param[$the_key]->param = strtolower($this->param[$the_key]->param);
       }
     }
   }
@@ -2965,15 +2965,13 @@ final class Template {
       $param_occurrences[$par->param] = $pointer;
     }
 
-    $n_dup_params = count($duplicated_parameters);
-
-    for ($i = 0; $i < $n_dup_params; $i++) {
-      if ($duplicate_identical[$i]) {
+    foreach ($duplicated_parameters as $the_dup) {
+      if ($the_dup) {
         report_forget("Deleting identical duplicate of parameter: " .
-          echoable($this->param[$duplicated_parameters[$i]]->param));
-        unset($this->param[$duplicated_parameters[$i]]);
+          echoable($this->param[$the_dup]->param));
+        unset($this->param[$the_dup]);
       } else {
-        $this->param[$duplicated_parameters[$i]]->param = str_replace('DUPLICATE_DUPLICATE_', 'DUPLICATE_', 'DUPLICATE_' . $this->param[$duplicated_parameters[$i]]->param);
+        $this->param[$the_dup]->param = str_replace('DUPLICATE_DUPLICATE_', 'DUPLICATE_', 'DUPLICATE_' . $this->param[$the_dup]->param);
         report_modification("Marking duplicate parameter: " .
           echoable($this->param[$duplicated_parameters[$i]]->param));
       }
