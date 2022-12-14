@@ -120,7 +120,7 @@ class Page {
   }
  
   public function parsed_text() : string {
-    return (string) $this->text;
+    return $this->text;
   }
   // $identifier: parameter to send to api_function, e.g. "pmid"
   // $templates: Array of pointers to the templates
