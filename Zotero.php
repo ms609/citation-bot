@@ -4,10 +4,13 @@ declare(strict_types=1);
 require_once 'constants.php';  // @codeCoverageIgnore
 require_once 'Template.php';   // @codeCoverageIgnore
 
-const MAGIC_STRING_URLS = 'CITATION_BOT_PLACEHOLDER_URL_POINTER_';  
+const MAGIC_STRING_URLS = 'CITATION_BOT_PLACEHOLDER_URL_POINTER_';
 const CITOID_ZOTERO = "https://en.wikipedia.org/api/rest_v1/data/citation/zotero/";
 
-
+/**
+  @param array<string> $ids
+  @param array<Template> $templates
+**/
 function query_url_api(array $ids, array &$templates) : void {  // Pointer to save memory
    Zotero::query_url_api_class($ids, $templates);
 }
@@ -148,6 +151,9 @@ public static function query_url_api_class(array $ids, array &$templates) : void
   }
 }
 
+/**
+  @param array<Template> $templates
+**/
 public static function query_ieee_webpages(array &$templates) : void {  // Pointer to save memory
   
   foreach (['url', 'chapter-url', 'chapterurl'] as $kind) {
@@ -155,7 +161,9 @@ public static function query_ieee_webpages(array &$templates) : void {  // Point
     set_time_limit(120);
     if ($template->blank('doi') && preg_match("~^https://ieeexplore\.ieee\.org/document/(\d{5,})$~", $template->get($kind), $matches_url)) {
        usleep(100000); // 0.10 seconds
-       curl_setopt(self::$ch_ieee, CURLOPT_URL, $template->get($kind));
+       /** @psalm-taint-escape ssrf */
+       $the_url = $template->get($kind);
+       curl_setopt(self::$ch_ieee, CURLOPT_URL, $the_url);
        $return = (string) @curl_exec(self::$ch_ieee);
        if ($return !== "" && preg_match_all('~"doi":"(10\.\d{4}/[^\s"]+)"~', $return, $matches, PREG_PATTERN_ORDER)) {
           $dois = array_unique($matches[1]);
@@ -169,7 +177,9 @@ public static function query_ieee_webpages(array &$templates) : void {  // Point
        }
     } elseif ($template->has('doi') && preg_match("~^https://ieeexplore\.ieee\.org/document/(\d{5,})$~", $template->get($kind), $matches_url) && doi_works($template->get('doi'))) {
        usleep(100000); // 0.10 seconds
-       curl_setopt(self::$ch_ieee, CURLOPT_URL, $template->get($kind));
+       /** @psalm-taint-escape ssrf */
+       $the_url = $template->get($kind);
+       curl_setopt(self::$ch_ieee, CURLOPT_URL, $the_url);
        $return = (string) @curl_exec(self::$ch_ieee);
        if ($return !== "" && strpos($return, "<title> -  </title>") !== FALSE) {
          report_forget("Existing IEEE no longer works - dropping URL"); // @codeCoverageIgnore
@@ -180,6 +190,9 @@ public static function query_ieee_webpages(array &$templates) : void {  // Point
   }
 }
 
+/**
+  @param array<Template> $templates
+**/
 public static function drop_urls_that_match_dois(array &$templates) : void {  // Pointer to save memory
   // Now that we have expanded URLs, try to lose them
   if (ZOTERO_ONLY) return;
@@ -284,7 +297,9 @@ public static function drop_urls_that_match_dois(array &$templates) : void {  //
                report_forget("Existing canonical URL resulting from equivalent free DOI; dropping URL");
                $template->forget($url_kind);
             } else { // See if $url redirects
-               curl_setopt($ch, CURLOPT_URL, $url);
+               /** @psalm-taint-escape ssrf */
+               $the_url = $url;
+               curl_setopt($ch, CURLOPT_URL, $the_url);
                $ch_return = (string) @curl_exec($ch);
                if (strlen($ch_return) > 60) {
                   $redirectedUrl_url = curl_getinfo($ch, CURLINFO_EFFECTIVE_URL);
@@ -317,7 +332,9 @@ private static function zotero_request(string $url) : string {
     if (self::ZOTERO_GIVE_UP === self::$zotero_failures_count) self::$zotero_failures_count = 0; // @codeCoverageIgnore
   }
 
-  curl_setopt(self::$zotero_ch, CURLOPT_URL, CITOID_ZOTERO . urlencode($url));
+  /** @psalm-taint-escape ssrf */
+  $the_url = CITOID_ZOTERO . urlencode($url);
+  curl_setopt(self::$zotero_ch, CURLOPT_URL, $the_url);
 
   if (self::$zotero_failures_count > self::ZOTERO_GIVE_UP) return self::ERROR_DONE;
   
@@ -331,7 +348,7 @@ private static function zotero_request(string $url) : string {
   }
   if ($zotero_response === '') {
     // @codeCoverageIgnoreStart
-    report_warning(curl_error(self::$zotero_ch) . "   For URL: " . $url);
+    report_warning(curl_error(self::$zotero_ch) . "   For URL: " . echoable($url));
     if (strpos(curl_error(self::$zotero_ch), 'timed out after') !== FALSE) {
       self::$zotero_failures_count = self::$zotero_failures_count + 1;
       if (ZOTERO_ONLY) {
@@ -426,39 +443,39 @@ public static function process_zotero_response(string $zotero_response, Template
  
   switch (trim($zotero_response)) {
     case '':
-      report_info("Nothing returned for URL $url");
+      report_info("Nothing returned for URL " . echoable($url));
       return FALSE;
     case 'Internal Server Error':
-      report_info("Internal server error with URL $url");
+      report_info("Internal server error with URL " . echoable($url));
       return FALSE;
     case 'Remote page not found':
-      report_info("Remote page not found for URL ". $url);
+      report_info("Remote page not found for URL " . echoable($url));
       return FALSE;
     case 'No items returned from any translator':
-      report_info("Remote page not interpretable for URL ". $url);
+      report_info("Remote page not interpretable for URL " . echoable($url));
       return FALSE;
     case 'An error occurred during translation. Please check translation with the Zotero client.':
-      report_info("An error occurred during translation for URL ". $url);
+      report_info("An error occurred during translation for URL " . echoable($url));
       return FALSE;
   }
   
   if (strpos($zotero_response, '502 Bad Gateway') !== FALSE) {
-    report_warning("Bad Gateway error for URL ". $url);
+    report_warning("Bad Gateway error for URL ". echoable($url));
     return FALSE;
   }
   if (strpos($zotero_response, '503 Service Temporarily Unavailable') !== FALSE) {
-    report_warning("Temporarily Unavailable error for URL ". $url);  // @codeCoverageIgnore
+    report_warning("Temporarily Unavailable error for URL " . echoable($url));  // @codeCoverageIgnore
     return FALSE;                                                    // @codeCoverageIgnore
   }
   $zotero_data = @json_decode($zotero_response, FALSE);
   if (!isset($zotero_data)) {
-    report_warning("Could not parse JSON for URL ". $url . ": " . $zotero_response);
+    report_warning("Could not parse JSON for URL ". echoable($url) . ": " . $zotero_response);
     return FALSE;
   } elseif (!is_array($zotero_data)) {
     if (is_object($zotero_data)) {
       $zotero_data = (array) $zotero_data;
     } else {
-      report_warning("JSON did not parse correctly for URL ". $url . ": " . $zotero_response);
+      report_warning("JSON did not parse correctly for URL ". echoable($url) . ": " . $zotero_response);
       return FALSE;
     }
   }
@@ -470,11 +487,11 @@ public static function process_zotero_response(string $zotero_response, Template
   $result = (object) $result ;
   
   if (!isset($result->title)) {
-    report_warning("Did not get a title for URL ". $url . ": " . $zotero_response);  // @codeCoverageIgnore
+    report_warning("Did not get a title for URL ". echoable($url) . ": " . $zotero_response);  // @codeCoverageIgnore
     return FALSE;                                                                    // @codeCoverageIgnore
   }
   if (substr(strtolower(trim($result->title)), 0, 9) === 'not found') {
-    report_info("Could not resolve URL ". $url);
+    report_info("Could not resolve URL " . echoable($url));
     return FALSE;
   }
   // Remove unused stuff.  TODO - Is there any value in these:
@@ -501,11 +518,11 @@ public static function process_zotero_response(string $zotero_response, Template
     $total_count += mb_strlen($result->bookTitle);
   }
   if (($bad_count > 5) || ($total_count > 1 && (($bad_count/$total_count) > 0.1))) {
-    report_info("Could parse unicode characters in ". $url);
+    report_info("Could parse unicode characters in " . echoable($url));
     return FALSE;
   }
   
-  report_info("Retrieved info from ". $url);
+  report_info("Retrieved info from " . echoable($url));
   // Verify that Zotero translation server did not think that this was a website and not a journal
   if (strtolower(substr(trim($result->title), -9)) === ' on jstor') {  // Not really "expanded", just add the title without " on jstor"
     $template->add_if_new('title', substr(trim($result->title), 0, -9)); // @codeCoverageIgnore
@@ -517,7 +534,7 @@ public static function process_zotero_response(string $zotero_response, Template
   if (isset($result->title))     $test_data .= $result->title;
   foreach (BAD_ZOTERO_TITLES as $bad_title ) {
       if (mb_stripos($test_data, $bad_title) !== FALSE) {
-        report_info("Received invalid title data for URL ". $url . ": $test_data");
+        report_info("Received invalid title data for URL " . echoable($url) . ": $test_data");
         return FALSE;
       }
   }
@@ -527,7 +544,7 @@ public static function process_zotero_response(string $zotero_response, Template
   if (isset($result->bookTitle)) {
    foreach (array_merge(BAD_ACCEPTED_MANUSCRIPT_TITLES, IN_PRESS_ALIASES) as $bad_title ) {
       if (str_i_same($result->bookTitle, $bad_title)) {
-        report_info("Received invalid book title data for URL ". $url . ": $result->bookTitle");
+        report_info("Received invalid book title data for URL " . echoable($url) . ": $result->bookTitle");
         return FALSE;
       }
    }
@@ -535,7 +552,7 @@ public static function process_zotero_response(string $zotero_response, Template
   if (isset($result->title)) {
    foreach (array_merge(BAD_ACCEPTED_MANUSCRIPT_TITLES, IN_PRESS_ALIASES) as $bad_title ) {
       if (str_i_same($result->title, $bad_title)) {
-        report_info("Received invalid title data for URL ". $url . ": $result->title");
+        report_info("Received invalid title data for URL ". echoable($url) . ": $result->title");
         return FALSE;
       }
    }
@@ -543,7 +560,7 @@ public static function process_zotero_response(string $zotero_response, Template
   if (isset($result->publicationTitle)) {
    foreach (array_merge(BAD_ACCEPTED_MANUSCRIPT_TITLES, IN_PRESS_ALIASES) as $bad_title ) {
       if (str_i_same($result->publicationTitle, $bad_title)) {
-        report_info("Received invalid publication title data for URL ". $url . ": $result->publicationTitle");
+        report_info("Received invalid publication title data for URL ". echoable($url) . ": $result->publicationTitle");
         return FALSE;
       }
    }
@@ -729,7 +746,7 @@ public static function process_zotero_response(string $zotero_response, Template
     $new_date = strtotime(tidy_date($result->date));
     if($new_date) { // can compare
       if($new_date > $access_date) {
-        report_info("URL appears to have changed since access-date ". $url);
+        report_info("URL appears to have changed since access-date " . echoable($url));
         return FALSE;
       }
     }
@@ -737,19 +754,19 @@ public static function process_zotero_response(string $zotero_response, Template
   if (str_i_same(substr((string) @$result->publicationTitle, 0, 4), 'http') ||
       str_i_same(substr((string) @$result->bookTitle, 0, 4), 'http') ||
       str_i_same(substr((string) @$result->title, 0, 4), 'http')) {
-    report_info("URL returned in Journal/Newpaper/Title/Chapter field for " . $url);  // @codeCoverageIgnore
+    report_info("URL returned in Journal/Newpaper/Title/Chapter field for " . echoable($url));  // @codeCoverageIgnore
     return FALSE;                                                                     // @codeCoverageIgnore
   }
   
   if (isset($result->bookTitle)) {
-    $result->bookTitle = preg_replace('~\s*\(pdf\)$~i', '', (string) $result->bookTitle);
-    $result->bookTitle = preg_replace('~^\(pdf\)\s*~i', '', (string) $result->bookTitle);
-    $result->bookTitle = preg_replace('~ \- ProQuest\.?~i', '', (string) $result->bookTitle);
+    $result->bookTitle = safe_preg_replace('~\s*\(pdf\)$~i', '', $result->bookTitle);
+    $result->bookTitle = safe_preg_replace('~^\(pdf\)\s*~i', '', $result->bookTitle);
+    $result->bookTitle = safe_preg_replace('~ \- ProQuest\.?~i', '', $result->bookTitle);
   }
   if (isset($result->title)) {
-    $result->title = preg_replace('~\s*\(pdf\)$~i', '', (string) $result->title);
-    $result->title = preg_replace('~^\(pdf\)\s*~i', '', (string) $result->title);
-    $result->title = preg_replace('~ \- ProQuest\.?~i', '', (string) $result->title);
+    $result->title = safe_preg_replace('~\s*\(pdf\)$~i', '', (string) $result->title);
+    $result->title = safe_preg_replace('~^\(pdf\)\s*~i', '', $result->title);
+    $result->title = safe_preg_replace('~ \- ProQuest\.?~i', '', $result->title);
   }
   
   if (strpos($url, 'biodiversitylibrary.org') !== FALSE) {
@@ -916,7 +933,7 @@ public static function process_zotero_response(string $zotero_response, Template
         break;
 
       default:                                                                         // @codeCoverageIgnore
-        report_minor_error("Unhandled itemType: " . echoable($result->itemType) . " for $url");  // @codeCoverageIgnore
+        report_minor_error("Unhandled itemType: " . echoable($result->itemType) . " for " . echoable($url));  // @codeCoverageIgnore
     }
     
     if (in_array($result->itemType, ['journalArticle', 'newspaperArticle', 'report', 'magazineArticle', 'thesis'])) {

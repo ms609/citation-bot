@@ -120,7 +120,7 @@ class Page {
   }
  
   public function parsed_text() : string {
-    return (string) $this->text;
+    return $this->text;
   }
   // $identifier: parameter to send to api_function, e.g. "pmid"
   // $templates: Array of pointers to the templates
@@ -165,11 +165,17 @@ class Page {
     }
 
     // COMMENTS AND NOWIKI ETC. //
+    /** @var array<Comment>     $comments    */
     $comments    = $this->extract_object('Comment');
+    /** @var array<Nowiki>      $nowiki      */
     $nowiki      = $this->extract_object('Nowiki');
+    /** @var array<Chemistry>   $chemistry   */
     $chemistry   = $this->extract_object('Chemistry');
+    /** @var array<Mathematics> $mathematics */
     $mathematics = $this->extract_object('Mathematics');
+    /** @var array<Musicscores> $musicality  */
     $musicality  = $this->extract_object('Musicscores');
+    /** @var array<Preformated> $preformated */
     $preformated = $this->extract_object('Preformated');
     set_time_limit(120);
     if (!$this->allow_bots()) {
@@ -257,7 +263,7 @@ class Page {
     set_time_limit(120);
     $triplebrack = $this->extract_object('TripleBracket');
     $singlebrack = $this->extract_object('SingleBracket');
-    // @var array<Template>
+    /** @var array<Template> $all_templates */
     $all_templates = $this->extract_object('Template');
     set_time_limit(120);
     if ($this->page_error) {
@@ -267,23 +273,22 @@ class Page {
     }
     Template::$all_templates = &$all_templates; // Pointer to save memory
     Template::$date_style = $this->date_style;
-    for ($i = 0; $i < count($all_templates); $i++) {
-      if ($all_templates[$i]->wikiname() === 'void') {
-        $all_templates[$i]->block_modifications();
+    foreach ($all_templates as $this_template) {
+      if ($this_template->wikiname() === 'void') {
+        $this_template->block_modifications();
       }
     }
-    // @var array<Template>
+    /** @var array<Template> $our_templates */
     $our_templates = array();
-    // @var array<Template>
+    /** @var array<Template> $our_templates_slight */
     $our_templates_slight = array();
-    // @var array<Template>
+    /** @var array<Template> $our_templates_conferences */
     $our_templates_conferences = array();
-    // @var array<Template>
+    /** @var array<Template> $our_templates_ieee */
     $our_templates_ieee = array();
     report_phase('Remedial work to prepare citations');
-    for ($i = 0; $i < count($all_templates); $i++) {
+    foreach ($all_templates as $this_template) {
       set_time_limit(120);
-      $this_template = $all_templates[$i];
       if (in_array($this_template->wikiname(), TEMPLATES_WE_PROCESS)) {
         $our_templates[] = $this_template;
         $this_template->correct_param_mistakes();
@@ -343,8 +348,7 @@ class Page {
     set_time_limit(120);
     $this->expand_templates_from_identifier('doi',     $our_templates);  // Do DOIs first!  Try again later for added DOIs
     $this->expand_templates_from_identifier('doi',     $our_templates_slight);
-    for ($i = 0; $i < count($our_templates_slight); $i++) { // Is is really a journal, after expanding DOI
-      $this_template = $our_templates_slight[$i];
+    foreach ($our_templates_slight as $this_template) { // Is is really a journal, after expanding DOI
       if ($this_template->has('journal') &&
           $this_template->has('doi') &&
           ($this_template->has('volume') || $this_template->has('issue')) &&
@@ -373,9 +377,8 @@ class Page {
     Zotero::query_ieee_webpages($our_templates);
     
     report_phase('Expand individual templates by API calls');
-    for ($i = 0; $i < count($our_templates); $i++) {
+    foreach ($our_templates as $this_template) {
       set_time_limit(120);
-      $this_template = $our_templates[$i];
       $this_template->expand_by_google_books();
       $this_template->get_doi_from_crossref();
       $this_template->get_doi_from_semanticscholar();
@@ -399,8 +402,7 @@ class Page {
     
     // Last ditch usage of ISSN - This could mean running the bot again will add more things
     $issn_templates = array_merge(TEMPLATES_WE_PROCESS, TEMPLATES_WE_SLIGHTLY_PROCESS, ['cite magazine']);
-    for ($i = 0; $i < count($all_templates); $i++) {
-      $this_template = $all_templates[$i];
+    foreach ($all_templates as $this_template) {
       if (in_array($this_template->wikiname(), $issn_templates)) {
         $this_template->use_issn();
       }
@@ -409,8 +411,7 @@ class Page {
     if (ZOTERO_ONLY) expand_templates_from_archives($our_templates_slight); // In this mode, we reject everything if there is a title set
 
     report_phase('Remedial work to clean up templates');
-    for ($i = 0; $i < count($our_templates); $i++) {
-      $this_template = $our_templates[$i];
+    foreach ($our_templates as $this_template) {
       // Clean up:
       if (!$this_template->initial_author_params()) {
         $this_template->handle_et_al();
@@ -431,8 +432,7 @@ class Page {
       }
     }
     $log_bad_chapter = FALSE;
-    for ($i = 0; $i < count($all_templates); $i++) {
-      $this_template = $all_templates[$i];
+    foreach ($all_templates as $this_template) {
       if ($this_template->has('chapter')) {
         if (in_array($this_template->wikiname(), ['cite journal', 'cite news'])) {
           $log_bad_chapter = TRUE;
@@ -443,8 +443,7 @@ class Page {
       file_put_contents('CodeCoverage', $this->title . " page has ignored chapter \n", FILE_APPEND); // @codeCoverageIgnore
     }  
           
-    for ($i = 0; $i < count($our_templates_slight); $i++) {
-      $this_template = $our_templates_slight[$i];
+    foreach ($our_templates_slight as $this_template) {
       // Record any modifications that have been made:
       $template_mods = $this_template->modifications();
       foreach (array_keys($template_mods) as $key) {

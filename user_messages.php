@@ -70,27 +70,25 @@ function echoable(?string $string) : string {
 function pubmed_link(string $identifier, string $pm) : string {
   /** @psalm-suppress TypeDoesNotContainType */ /* PSALM thinks HTML_OUTPUT cannot be false */
   return HTML_OUTPUT 
-       ? '<a href="https://www.ncbi.nlm.nih.gov/pubmed/' . urlencode($pm) . '" target="_blank">' . strtoupper($identifier) . ' ' . $pm . "</a>"   // @codeCoverageIgnore
-       : strtoupper($identifier) . ' ' . $pm;
+       ? '<a href="https://www.ncbi.nlm.nih.gov/pubmed/' . urlencode($pm) . '" target="_blank">' . strtoupper($identifier) . ' ' . echoable($pm) . "</a>"   // @codeCoverageIgnore
+       : strtoupper($identifier) . ' ' . echoable($pm);
 }
 
 function bibcode_link(string $id) : string {
   /** @psalm-suppress TypeDoesNotContainType */ /* PSALM thinks HTML_OUTPUT cannot be false */
   return HTML_OUTPUT
-    ? '<a href="https://ui.adsabs.harvard.edu/abs/' . urlencode($id) . '" target="_blank">' . $id . '</a>'   // @codeCoverageIgnore
-    : $id;
+    ? '<a href="https://ui.adsabs.harvard.edu/abs/' . urlencode($id) . '" target="_blank">' . echoable($id) . '</a>'   // @codeCoverageIgnore
+    : echoable($id);
 }
 
 function doi_link(string $doi) : string {
   /* PSALM thinks HTML_OUTPUT cannot be false */
  /**
-   * @psalm-taint-escape html
-   * @psalm-taint-escape has_quotes
    * @psalm-suppress TypeDoesNotContainType
    */
   $return = HTML_OUTPUT
     ? '<a href="https://dx.doi.org/' . doi_encode(urldecode($doi)) . '" target="_blank">' . echoable($doi) . '</a>'      // @codeCoverageIgnore
-    : $doi;
+    : echoable($doi);
   return $return;
 }
 
@@ -98,12 +96,12 @@ function jstor_link(string $id) : string {
   /** @psalm-suppress TypeDoesNotContainType */ /* PSALM thinks HTML_OUTPUT cannot be false */
   return HTML_OUTPUT
     ? '<a href="https://www.jstor.org/citation/ris/' . urlencode($id) . '" target="_blank">JSTOR ' . echoable($id) . '</a>'    // @codeCoverageIgnore
-    : "JSTOR $id";
+    : "JSTOR " . echoable($id);
 }
 
 function wiki_link(string $page) : string {
   /** @psalm-suppress TypeDoesNotContainType */ /* PSALM thinks HTML_OUTPUT cannot be false */
   return HTML_OUTPUT
     ? '<a href="' . WIKI_ROOT . '?title=' . urlencode(str_replace(' ', '_', $page)) . '" target="_blank">Wikipedia page: ' . echoable($page) . '</a>'    // @codeCoverageIgnore
-    : "Wikipedia page : $page";
+    : "Wikipedia page : " . echoable($page);
 }

@@ -68,7 +68,8 @@ function is_doi_active(string $doi) : ?bool {
     $headers_test = @get_headers("https://api.crossref.org/works/" . doi_encode($doi), GET_THE_HEADERS); // @codeCoverageIgnore
   }
   if ($headers_test === FALSE) return NULL; // most likely bad, but will recheck again an again
-  $response = $headers_test[0];
+  /** @psalm-suppress InvalidArrayOffset */
+  $response = (string) $headers_test['0'];
   if (stripos($response, '200 OK'       ) !== FALSE || stripos($response, 'HTTP/1.1 200') !== FALSE) return TRUE;
   if (stripos($response, '404 Not Found') !== FALSE || stripos($response, 'HTTP/1.1 404') !== FALSE) return FALSE;
   report_warning("CrossRef server error loading headers for DOI " . echoable($doi . " : " . $response));  // @codeCoverageIgnore
@@ -131,12 +132,16 @@ function is_doi_works(string $doi) : ?bool {
      set_time_limit(120);                                                                             // @codeCoverageIgnore
      report_inline(' .');                                                                             // @codeCoverageIgnore
      $headers_test = @get_headers("https://doi.org/" . doi_encode($doi), GET_THE_HEADERS, $context);  // @codeCoverageIgnore
-  } elseif ((empty($headers_test['Location']) && empty($headers_test['location'])) || stripos($headers_test[0], '404 Not Found') !== FALSE || stripos($headers_test[0], 'HTTP/1.1 404') !== FALSE) {
+  } else {
+    /** @psalm-suppress InvalidArrayOffset */
+    $resp0 = (string) @$headers_test['0'];                                                            // @codeCoverageIgnore
+    if ((empty($headers_test['Location']) && empty($headers_test['location'])) || stripos($resp0, '404 Not Found') !== FALSE || stripos($resp0, 'HTTP/1.1 404') !== FALSE) { // @codeCoverageIgnore
      sleep(5);                                                                                        // @codeCoverageIgnore
      set_time_limit(120);                                                                             // @codeCoverageIgnore
      report_inline(' .');                                                                             // @codeCoverageIgnore
      $headers_test = @get_headers("https://doi.org/" . doi_encode($doi), GET_THE_HEADERS, $context);  // @codeCoverageIgnore
      if ($headers_test === FALSE) return FALSE; /** We trust previous failure **/                     // @codeCoverageIgnore
+    }                                                                                                 // @codeCoverageIgnore
   }
   if (preg_match('~^10\.1038/nature\d{5}$~i', $doi) && $headers_test === FALSE) return FALSE; // Nature dropped the ball for now TODO - https://dx.doi.org/10.1038/nature05009
   if ($headers_test === FALSE) { // Use CURL instead
@@ -170,9 +175,12 @@ function is_doi_works(string $doi) : ?bool {
     }
   }
   if (empty($headers_test['Location']) && empty($headers_test['location'])) return FALSE; // leads nowhere
-  $resp0 = (string) @$headers_test[0];
-  $resp1 = (string) @$headers_test[1];
-  $resp2 = (string) @$headers_test[2];
+  /** @psalm-suppress InvalidArrayOffset */
+  $resp0 = (string) @$headers_test['0'];
+  /** @psalm-suppress InvalidArrayOffset */
+  $resp1 = (string) @$headers_test['1'];
+  /** @psalm-suppress InvalidArrayOffset */
+  $resp2 = (string) @$headers_test['2'];
   if (stripos($resp0, '404 Not Found') !== FALSE         || stripos($resp0, 'HTTP/1.1 404') !== FALSE) return FALSE; // Bad
   if (stripos($resp0, '302 Found') !== FALSE             || stripos($resp0, 'HTTP/1.1 302') !== FALSE) return TRUE;  // Good
   if (stripos($resp0, '301 Moved Permanently') !== FALSE || stripos($resp0, 'HTTP/1.1 301') !== FALSE) { // Could be DOI change or bad prefix
@@ -188,7 +196,7 @@ function is_doi_works(string $doi) : ?bool {
         return FALSE;
       }
   }
-  report_minor_error("Unexpected response in is_doi_works " . echoable($headers_test[0])); // @codeCoverageIgnore
+  report_minor_error("Unexpected response in is_doi_works " . echoable($resp0)); // @codeCoverageIgnore
   return NULL; // @codeCoverageIgnore
 }
 
@@ -529,38 +537,38 @@ function titles_are_dissimilar(string $inTitle, string $dbTitle) : bool {
 function titles_simple(string $inTitle) : string {
         // Failure leads to null or empty strings!!!!
         // Leading Chapter # -   Use callback to make sure there are a few characters after this
-        $inTitle2 = (string) safe_preg_replace_callback('~^(?:Chapter \d+ \- )(.....+)~iu',
+        $inTitle2 = safe_preg_replace_callback('~^(?:Chapter \d+ \- )(.....+)~iu',
             function (array $matches) : string {return ($matches[1]);}, trim($inTitle));
         if ($inTitle2 !== "") $inTitle = $inTitle2;
         // Trailing "a review"
-        $inTitle2 = (string) safe_preg_replace('~(?:\: | |\:)a review$~iu', '', trim($inTitle));
+        $inTitle2 = safe_preg_replace('~(?:\: | |\:)a review$~iu', '', trim($inTitle));
         if ($inTitle2 !== "") $inTitle = $inTitle2;
         // Strip trailing Online
-        $inTitle2 = (string) safe_preg_replace('~ Online$~iu', '', $inTitle);
+        $inTitle2 = safe_preg_replace('~ Online$~iu', '', $inTitle);
         if ($inTitle2 !== "") $inTitle = $inTitle2;
         // Strip trailing (Third Edition)
-        $inTitle2 = (string) safe_preg_replace('~\([^\s\(\)]+ Edition\)^~iu', '', $inTitle);
+        $inTitle2 = safe_preg_replace('~\([^\s\(\)]+ Edition\)^~iu', '', $inTitle);
         if ($inTitle2 !== "") $inTitle = $inTitle2;
         // Strip leading International Symposium on 
-        $inTitle2 = (string) safe_preg_replace('~^International Symposium on ~iu', '', $inTitle);
+        $inTitle2 = safe_preg_replace('~^International Symposium on ~iu', '', $inTitle);
         if ($inTitle2 !== "") $inTitle = $inTitle2;
         // Strip leading the
-        $inTitle2 = (string) safe_preg_replace('~^The ~iu', '', $inTitle);
+        $inTitle2 = safe_preg_replace('~^The ~iu', '', $inTitle);
         if ($inTitle2 !== "") $inTitle = $inTitle2;
         // Strip trailing 
-        $inTitle2 = (string) safe_preg_replace('~ A literature review$~iu', '', $inTitle);
+        $inTitle2 = safe_preg_replace('~ A literature review$~iu', '', $inTitle);
         if ($inTitle2 !== "") $inTitle = $inTitle2;
         // Reduce punctuation
-        $inTitle = straighten_quotes(mb_strtolower((string) $inTitle), TRUE);
-        $inTitle2 = (string) safe_preg_replace("~(?: |‐|−|-|—|–|â€™|â€”|â€“)~u", "", $inTitle);
+        $inTitle = straighten_quotes(mb_strtolower($inTitle), TRUE);
+        $inTitle2 = safe_preg_replace("~(?: |‐|−|-|—|–|â€™|â€”|â€“)~u", "", $inTitle);
         if ($inTitle2 !== "") $inTitle = $inTitle2;
         $inTitle = str_replace(array("\n", "\r", "\t", "&#8208;", ":", "&ndash;", "&mdash;", "&ndash", "&mdash"), "", $inTitle);
         // Retracted
-        $inTitle2 = (string) safe_preg_replace("~\[RETRACTED\]~ui", "", $inTitle);
+        $inTitle2 = safe_preg_replace("~\[RETRACTED\]~ui", "", $inTitle);
         if ($inTitle2 !== "") $inTitle = $inTitle2;
-        $inTitle2 = (string) safe_preg_replace("~\(RETRACTED\)~ui", "", $inTitle);
+        $inTitle2 = safe_preg_replace("~\(RETRACTED\)~ui", "", $inTitle);
         if ($inTitle2 !== "") $inTitle = $inTitle2;
-        $inTitle2 = (string) safe_preg_replace("~RETRACTED~ui", "", $inTitle);
+        $inTitle2 = safe_preg_replace("~RETRACTED~ui", "", $inTitle);
         if ($inTitle2 !== "") $inTitle = $inTitle2;
         // Drop normal quotes
         $inTitle = str_replace(array("'", '"'), "", $inTitle);
@@ -584,32 +592,28 @@ function straighten_quotes(string $str, bool $do_more) : string { // (?<!\') and
   if ($str === '') return '';
   $str = str_replace('Hawaiʻi', 'CITATION_BOT_PLACEHOLDER_HAWAII', $str);
   $str = str_replace('Ha‘apai', 'CITATION_BOT_PLACEHOLDER_HAAPAI', $str);
-  $str2 = safe_preg_replace('~(?<!\')&#821[679];|&#39;|&#x201[89];|[\x{FF07}\x{2018}-\x{201B}`]|&[rl]s?[b]?quo;(?!\')~u', "'", $str);
-  if ($str2 !== NULL) $str = $str2;
+  $str = safe_preg_replace('~(?<!\')&#821[679];|&#39;|&#x201[89];|[\x{FF07}\x{2018}-\x{201B}`]|&[rl]s?[b]?quo;(?!\')~u', "'", $str);
   if((mb_strpos($str, '&rsaquo;') !== FALSE && mb_strpos($str, '&[lsaquo;')  !== FALSE) ||
      (mb_strpos($str, '\x{2039}') !== FALSE && mb_strpos($str, '\x{203A}') !== FALSE) ||
      (mb_strpos($str, '‹')        !== FALSE && mb_strpos($str, '›')        !== FALSE)) { // Only replace single angle quotes if some of both
-     $str2 = safe_preg_replace('~&[lr]saquo;|[\x{2039}\x{203A}]|[‹›]~u', "'", $str);           // Websites tiles: Jobs ›› Iowa ›› Cows ›› Ames
-     if ($str2 !== NULL) $str = $str2;
+     $str = safe_preg_replace('~&[lr]saquo;|[\x{2039}\x{203A}]|[‹›]~u', "'", $str);           // Websites tiles: Jobs ›› Iowa ›› Cows ›› Ames
   }
-  $str2 = safe_preg_replace('~&#822[013];|[\x{201C}-\x{201F}]|&[rlb][d]?quo;~u', '"', $str);
-  if ($str2 !== NULL) $str = $str2;
+  $str = safe_preg_replace('~&#822[013];|[\x{201C}-\x{201F}]|&[rlb][d]?quo;~u', '"', $str);
   if((mb_strpos($str, '&raquo;')  !== FALSE && mb_strpos($str, '&laquo;')  !== FALSE) ||
      (mb_strpos($str, '\x{00AB}') !== FALSE && mb_strpos($str, '\x{00AB}') !== FALSE) ||
      (mb_strpos($str, '«')        !== FALSE && mb_strpos($str, '»')        !== FALSE)) { // Only replace double angle quotes if some of both // Websites tiles: Jobs » Iowa » Cows » Ames
      if ($do_more){
-       $str2 = safe_preg_replace('~&[lr]aquo;|[\x{00AB}\x{00BB}]|[«»]~u', '"', $str);
+       $str = safe_preg_replace('~&[lr]aquo;|[\x{00AB}\x{00BB}]|[«»]~u', '"', $str);
      } else { // Only outer funky quotes, not inner quotes
        if (preg_match('~^(?:&laquo;|&raquo;|\x{00AB}|\x{00BB}|«|»)~u', $str) &&
            preg_match( '~(?:&laquo;|&raquo;|\x{00AB}|\x{00BB}|«|»)$~u', $str) // Only if there is an outer quote on both ends
        ) {
-         $str2 = safe_preg_replace('~^(?:&laquo;|&raquo;|\x{00AB}|\x{00BB}|«|»)~u' , '"', $str);
-         $str2 = safe_preg_replace( '~(?:&laquo;|&raquo;|\x{00AB}|\x{00BB}|«|»)$~u', '"', $str2);
+         $str = safe_preg_replace('~^(?:&laquo;|&raquo;|\x{00AB}|\x{00BB}|«|»)~u' , '"', $str);
+         $str = safe_preg_replace( '~(?:&laquo;|&raquo;|\x{00AB}|\x{00BB}|«|»)$~u', '"', $str);
        } else {
-         $str2 = $str; // No change
+         ; // No change
        }
      }
-     if ($str2 !== NULL) $str = $str2;
   }
   $str = str_ireplace('CITATION_BOT_PLACEHOLDER_HAAPAI', 'Ha‘apai', $str);
   $str = str_ireplace('CITATION_BOT_PLACEHOLDER_HAWAII', 'Hawaiʻi', $str);
@@ -793,12 +797,15 @@ function mb_ucfirst(string $string) : string
 
 function mb_ucwords(string $string) : string
 {
-	mb_ereg_search_init($string, '(\S)(\S*\s*)|(\s+)');
-	$output = '';
-	while ($match = mb_ereg_search_regs()) {
-		$output .= $match[3] ? $match[3] : mb_strtoupper($match[1]) . $match[2];
-	}
-	return $output;
+   if (mb_ereg_search_init($string, '(\S)(\S*\s*)|(\s+)')) {
+      $output = '';
+      while ($match = mb_ereg_search_regs()) {
+         $output .= $match[3] ? $match[3] : mb_strtoupper($match[1]) . $match[2];
+      }
+      return $output;
+   } else {
+      return $string;  // @codeCoverageIgnore
+   }
 }
 
 function mb_substr_replace(string $string, string $replacement, int $start, int $length) : string {
@@ -1072,7 +1079,9 @@ function str_i_same(string $str1, string $str2) : bool {
 }
   
 function doi_encode (string $doi) : string {
-   /** @psalm-taint-escape html */  /** @psalm-taint-escape quotes */
+   /** @psalm-taint-escape html
+       @psalm-taint-escape has_quotes
+       @psalm-taint-escape ssrf */
     $doi = urlencode($doi);
     $doi = str_replace('%2F', '/', $doi);
     return $doi;
@@ -1245,19 +1254,23 @@ function is_hdl_works(string $hdl) {
   if (empty($headers_test['Location']) && empty($headers_test['location'])) return FALSE; // leads nowhere
   if (is_array(@$headers_test['Location'])) {
       $the_header_loc = (string) $headers_test['Location'][0]; // @codeCoverageIgnore
-   } elseif (is_array(@$headers_test['location'])) {
+  } elseif (is_array(@$headers_test['location'])) {
       $the_header_loc = (string) $headers_test['location'][0]; // @codeCoverageIgnore
-   } else {
+  } else {
       $the_header_loc = (string) @$headers_test['Location'] . (string) @$headers_test['location'];
-   }
-  if (stripos($headers_test[0], '404 Not Found') !== FALSE         || stripos($headers_test[0], 'HTTP/1.1 404') !== FALSE) return FALSE; // Bad
-  if (isset($headers_test[1])) {
-     if (stripos($headers_test[1], '404 Not Found') !== FALSE      || stripos($headers_test[1], 'HTTP/1.1 404') !== FALSE) return FALSE; // Bad next location
   }
-  if (stripos($headers_test[0], '302 Found') !== FALSE             || stripos($headers_test[0], 'HTTP/1.1 302') !== FALSE) return $the_header_loc;  // Good
+  /** @psalm-suppress InvalidArrayOffset */
+  $resp0 = (string) @$headers_test['0'];
+  /** @psalm-suppress InvalidArrayOffset */
+  $resp1 = (string) @$headers_test['1'];
+  if (stripos($resp0, '404 Not Found') !== FALSE         || stripos($resp0, 'HTTP/1.1 404') !== FALSE) return FALSE; // Bad
+  if ($resp1 !== '') {
+     if (stripos($resp1, '404 Not Found') !== FALSE      || stripos($resp1, 'HTTP/1.1 404') !== FALSE) return FALSE; // Bad next location
+  }
+  if (stripos($resp0, '302 Found') !== FALSE             || stripos($resp0, 'HTTP/1.1 302') !== FALSE) return $the_header_loc;  // Good
   // @codeCoverageIgnoreStart
-  if (stripos($headers_test[0], '301 Moved Permanently') !== FALSE || stripos($headers_test[0], 'HTTP/1.1 301') !== FALSE) return $the_header_loc;  // Good, but only for moved DOIs and those will be checked with doi_works()
-  report_minor_error("Unexpected response in is_hdl_works " . echoable($headers_test[0]));
+  if (stripos($resp0, '301 Moved Permanently') !== FALSE || stripos($resp0, 'HTTP/1.1 301') !== FALSE) return $the_header_loc;  // Good, but only for moved DOIs and those will be checked with doi_works()
+  report_minor_error("Unexpected response in is_hdl_works " . echoable($resp0));
   return NULL;
   // @codeCoverageIgnoreEnd
 }
@@ -1267,13 +1280,13 @@ function safe_preg_replace(string $regex, string $replace, string $old) : string
   if ($old === "") return "";
   $new = preg_replace($regex, $replace, $old);
   if ($new === NULL) return $old;
-  return (string) $new;
+  return $new;
 }
 function safe_preg_replace_callback(string $regex, callable $replace, string $old) : string {
   if ($old === "") return "";
   $new = preg_replace_callback($regex, $replace, $old);
   if ($new === NULL) return $old;
-  return (string) $new;
+  return $new;
 }
 
 function wikifyURL(string $url) : string {

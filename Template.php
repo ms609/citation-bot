@@ -24,6 +24,7 @@ final class Template {
   public const PLACEHOLDER_TEXT = '# # # CITATION_BOT_PLACEHOLDER_TEMPLATE %s # # #';
   public const REGEXP = ['~(?<!\{)\{\{\}\}(?!\})~su', '~\{\{[^\{\}\|]+\}\}~su', '~\{\{[^\{\}]+\}\}~su', '~\{\{(?>[^\{]|\{[^\{])+?\}\}~su'];  // Please see https://stackoverflow.com/questions/1722453/need-to-prevent-php-regex-segfault for discussion of atomic regex
   public const TREAT_IDENTICAL_SEPARATELY = FALSE;  // This is safe because templates are the last thing we do AND we do not directly edit $all_templates that are sub-templates - we might remove them, but do not change their content directly
+  /** @var array<Template> $all_templates */
   public static array $all_templates = array();  // Points to list of all the Template() on the Page() including this one.  It can only be set by the page class after all templates are made
   public static int $date_style = DATES_WHATEVER;  // Will get from the page
   /** @psalm-suppress PropertyNotSetInConstructor */
@@ -31,8 +32,11 @@ final class Template {
   public string $last_searched_doi = '';
   protected string $example_param = '';
   protected string $name = '';
+  /** @var array<Parameter> $param */
   protected array $param = array();
+  /** @var array<string> $initial_param */
   protected array $initial_param = array();
+  /** @var array<string> $initial_author_params */
   protected array $initial_author_params = array();
   protected string $initial_name = '';
   protected bool $doi_valid = FALSE;
@@ -50,6 +54,7 @@ final class Template {
                'jstor'    => array(),
                'zotero'   => array(),
             );
+  /** @var array<Template> $this_array */
   private array $this_array = array(); // Unset after using to avoid pointer loop that makes garbage collection harder
   
   function __construct() {
@@ -210,7 +215,7 @@ final class Template {
            ($this->get('volume') . $this->get('issue') !== '') &&
            ($this->page() !== '') &&
            ($this->year() !== ''))) {
-        report_action("Converted Bare reference to template: " . trim(base64_decode($this->get(strtolower('CITATION_BOT_PLACEHOLDER_BARE_URL')))));
+        report_action("Converted Bare reference to template: " . echoable(trim(base64_decode($this->get(strtolower('CITATION_BOT_PLACEHOLDER_BARE_URL'))))));
         $this->quietly_forget(strtolower('CITATION_BOT_PLACEHOLDER_BARE_URL'));
       } else {
         return base64_decode($this->get(strtolower('CITATION_BOT_PLACEHOLDER_BARE_URL')));
@@ -2568,7 +2573,9 @@ final class Template {
         $this->add_if_new($url_type, $oa_url);  // Will check for PMCs etc hidden in URL
         if ($this->has($url_type) && !$has_url_already) {  // The above line might have eaten the URL and upgraded it
           $context = stream_context_create(CONTEXT_INSECURE);
-          $headers_test = @get_headers($this->get($url_type), GET_THE_HEADERS, $context);
+          /** @psalm-taint-escape ssrf */
+          $the_url = $this->get($url_type);
+          $headers_test = @get_headers($the_url, GET_THE_HEADERS, $context);
           // @codeCoverageIgnoreStart
           if($headers_test ===FALSE) {
             $this->forget($url_type);
@@ -2576,7 +2583,8 @@ final class Template {
             return 'nothing';
           }
           // @codeCoverageIgnoreEnd
-          $response_code = intval(substr($headers_test[0], 9, 3));
+          /** @psalm-suppress InvalidArrayOffset */
+          $response_code = intval(substr((string) $headers_test['0'], 9, 3));
           // @codeCoverageIgnoreStart
           if($response_code > 400) {  // Generally 400 and below are okay, includes redirects too though
             $this->forget($url_type);
@@ -2643,21 +2651,11 @@ final class Template {
       }
     } else {
       $url = '';
-      $google_books_worked = FALSE ;
       $isbn = $this->get('isbn');
-      $lccn = $this->get('lccn');
-      $oclc = $this->get('oclc');
       if ($isbn) {
         $isbn = str_replace(array(" ", "-"), "", $isbn);
         if (preg_match("~[^0-9Xx]~", $isbn) === 1) $isbn='' ;
         if (strlen($isbn) !== 13 && strlen($isbn) !== 10) $isbn='' ;
-      }
-      if ($lccn) {
-        $lccn = str_replace(array(" ", "-"), "", $lccn);
-        if (preg_match("~[^0-9]~", $lccn) === 1) $lccn='' ;
-      }
-      if ($oclc) {
-        if ( !ctype_alnum($oclc) ) $oclc='' ;
       }
       if ($isbn) {  // Try Books.Google.Com
         $google_book_url = 'https://www.google.com/search?tbo=p&tbm=bks&q=isbn:' . $isbn;
@@ -2677,7 +2675,6 @@ final class Template {
           if (count($google_results) === 1) {
             $gid = $google_results[0];
             $url = 'https://books.google.com/books?id=' . $gid;
-            $google_books_worked = TRUE;
           }
         }
       }
@@ -2940,10 +2937,8 @@ final class Template {
   protected function parameter_names_to_lowercase() : void {
     if (empty($this->param)) return;
     $keys = array_keys($this->param);
-    for ($i = 0; $i < count($keys); $i++) {
-      if (!ctypeasfdsfdsaf_lower($this->param[$keys[$i]]->param)) {
-        $this->param[$keys[$i]]->param = strtolower($this->param[$keys[$i]]->param);
-      }
+    foreach ($keys as $the_key) {
+      $this->param[$the_key]->param = strtolower($this->param[$the_key]->param);
     }
   }
 
@@ -2963,7 +2958,7 @@ final class Template {
           $this->param[$duplicate_pos]->val = $par->val;
         }
         array_unshift($duplicated_parameters, $duplicate_pos);
-        array_unshift($duplicate_identical, (mb_strtolower(trim((string) $par->val)) === mb_strtolower(trim((string) $this->param[$duplicate_pos]->val)))); // Drop duplicates that differ only by case
+        array_unshift($duplicate_identical, (mb_strtolower(trim($par->val)) === mb_strtolower(trim($this->param[$duplicate_pos]->val)))); // Drop duplicates that differ only by case
       }
       $param_occurrences[$par->param] = $pointer;
     }
@@ -2987,8 +2982,8 @@ final class Template {
       foreach ($this->param as $param_key => $p) {
         if ($need_one && !empty($p->param)) {
           if (preg_match('~^\s*(https?://|www\.)\S+~', $p->param)) { # URL ending ~ xxx.com/?para=val
-            $val = isset($p->val) ? (string) $p->val : '';
-            $param = (string) $p->param;
+            $val = $p->val;
+            $param = $p->param;
             $this->param[$param_key]->val =  $param . '=' . $val;
             $this->param[$param_key]->param = 'url';
             $this->param[$param_key]->eq = ' = '; // Upgrade it to nicely spread out
@@ -3557,7 +3552,7 @@ final class Template {
   }
 
   public function wikiname() : string {
-    $name = trim(mb_strtolower(str_replace('_', ' ', (string) $this->name)));
+    $name = trim(mb_strtolower(str_replace('_', ' ', $this->name)));
      // Treat the same since alias
     if ($name === 'cite work') $name = 'cite book';
     if ($name === 'cite chapter') $name = 'cite book';
@@ -3954,6 +3949,7 @@ final class Template {
           if (substr($doi, 0, 8) === '10.5555/') { // Test DOI prefix.  NEVER will work
             $this->forget('doi');
             if ($this->blank('url')) {
+              /** @psalm-taint-escape ssrf */
               $test_url = 'https://plants.jstor.org/stable/' . $doi;
               $ch = curl_init($test_url);
               curl_setopt_array($ch,
@@ -6204,11 +6200,10 @@ final class Template {
     }
     $new = $this->parsed_text();
     if ($orig !== $new) {
-      $orig = $new;
       foreach ($this->param as $param) {
         $this->tidy_parameter($param->param);
       }
-    }
+    } // Give up tidy after third time.  Something is goofy.
   }
 
   public function final_tidy() : void {
@@ -6445,7 +6440,7 @@ final class Template {
       if (!empty($this->param)) { // Forget author-link and such that have no such author
        foreach ($this->param as $p) {
         $alias = $p->param;
-        if ($alias !== NULL && $alias !== '' && $this->blank($alias)) {
+        if ($alias !== '' && $this->blank($alias)) {
           if (preg_match('~^author(\d+)\-?link$~', $alias, $matches) || preg_match('~^author\-?link(\d+)$~', $alias, $matches)) {
             if ($this->blank(AUTHOR_PARAMETERS[(int) $matches[1]])) {
               $this->forget($alias);
@@ -6947,7 +6942,6 @@ final class Template {
     // $parameter_i->param is the parameter name within the Parameter object
     foreach ($this->param as $parameter_i) {
       if ($parameter_i->param === $name) {
-        if ($parameter_i->val === NULL) $parameter_i->val = ''; // Clean up
         $the_val = $parameter_i->val;
         if (preg_match("~^\(\((.*)\)\)$~", $the_val, $matches)) {
           $the_val = trim($matches[1]);
@@ -6961,7 +6955,6 @@ final class Template {
   public function get2(string $name) : ?string {
     foreach ($this->param as $parameter_i) {
       if ($parameter_i->param === $name) {
-        if ($parameter_i->val === NULL) $parameter_i->val = ''; // Clean up
         $the_val = $parameter_i->val;
         if (preg_match("~^\(\((.*)\)\)$~", $the_val, $matches)) {
           $the_val = trim($matches[1]);
@@ -6975,7 +6968,6 @@ final class Template {
   public function get3(string $name) : string {  // like get() only includes (( ))
     foreach ($this->param as $parameter_i) {
       if ($parameter_i->param === $name) {
-        if ($parameter_i->val === NULL) $parameter_i->val = ''; // Clean up
         $the_val = $parameter_i->val;
         return $the_val;
       }
@@ -6999,7 +6991,7 @@ final class Template {
   protected function param_value(int $i) : string {
     $item = $this->param_with_index($i);
     if (is_null($item)) return ''; // id={{arxiv}} and other junk
-    return (string) $item->val;
+    return $item->val;
   }
 
   public function get_without_comments_and_placeholders(string $name) : string {
@@ -7038,12 +7030,12 @@ final class Template {
     if ($this->get($par) !== $this->get3($par)) {
       return FALSE;
     }
-    if (($pos = $this->get_param_key((string) $par)) !== NULL) {
+    if (($pos = $this->get_param_key($par)) !== NULL) {
       $this->param[$pos]->val = $val;
       return TRUE;
     }
     $p = new Parameter();
-    $p->parse_text((string) $this->example_param); // cast to make static analysis happy
+    $p->parse_text($this->example_param);
     $p->param = $par;
     $p->val = $val;
 
@@ -7447,10 +7439,10 @@ final class Template {
           case "usg": case "fir": case "entrypoint": case "as_qdr":
           case "as_drrb": case "as_minm":  case "as_mind":  case "as_maxm":
           case "as_maxd": case "kgs": case "ictx": case "shem": case "vet":
-          case "ictx": case "iflsig": case "tab": case "sqi": case "noj":
+          case "iflsig": case "tab": case "sqi": case "noj":
           case "hs": case "es_sm": case "site": case "btnmeta_news_search":
-          case "channel": case "espv": case "cad": case "es_sm": case "gs_sm":
-          case "ictx": case "imgil": case "ins": case "npsic=":  case "rflfq":
+          case "channel": case "espv": case "cad": case "gs_sm":
+          case "imgil": case "ins": case "npsic=":  case "rflfq":
           case "rlha": case "rldoc": case "rldimm": case "npsic": case "phdesc":
           case "prmdo": case "ssui": case "lqi": case "rlst": case "pf":
           case "authuser": case "gsas": case "ned": case "pz": case "e":

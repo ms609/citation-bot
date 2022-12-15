@@ -247,9 +247,8 @@ try {
       report_warning("Page seems not to exist. Aborting.");
       return NULL;
     }
-    if (!isset($response->query) || !isset($response->query->tokens) ||
-        !isset($response->query->tokens->csrftoken)) {
-      report_warning("Response object was invalid.  Aborting. ");
+    if (!isset($response->query->tokens) || !isset($response->query->tokens->csrftoken)) {
+      report_warning("Response object lacked tokens.  Aborting. ");
       return NULL;
     }
     return $myPage;

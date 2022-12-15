@@ -98,8 +98,9 @@ function entrez_api(array $ids, array &$templates, string $db) : bool {   // Poi
       }
       switch ($item["Name"]) {
                 case "Title":   $this_template->add_if_new('title',  str_replace(array("[", "]"), "", (string) $item), 'entrez'); // add_if_new will format the title
-        break;  case "PubDate": preg_match("~(\d+)\s*(\w*)~", (string) $item, $match);
-                                $this_template->add_if_new('year', (string) @$match[1], 'entrez');
+        break;  case "PubDate": if (preg_match("~(\d+)\s*(\w*)~", (string) $item, $match)) {
+                                    $this_template->add_if_new('year', $match[1], 'entrez');
+                                }
         break;  case "FullJournalName": $this_template->add_if_new('journal',  mb_ucwords((string) $item), 'entrez'); // add_if_new will format the title
         break;  case "Volume":  $this_template->add_if_new('volume', (string) $item, 'entrez');
         break;  case "Issue":   $this_template->add_if_new('issue', (string) $item, 'entrez');
@@ -205,6 +206,7 @@ function arxiv_api(array $ids, array &$templates) : bool {  // Pointer to save m
   $context = stream_context_create(array(
     'http' => array('ignore_errors' => TRUE),
   ));
+  /** @psalm-taint-escape file */
   $request = "https://export.arxiv.org/api/query?start=0&max_results=2000&id_list=" . implode(',', $ids);
   $response = (string) @file_get_contents($request, FALSE, $context);
   if ($response) {
@@ -482,11 +484,11 @@ function expand_by_doi(Template $template, bool $force = FALSE) : bool {
         }
         if ($bad_data) {
           report_warning("CrossRef title did not match existing title: doi:" . doi_link($doi));
-          if (isset($crossRef->series_title)) report_info("  Possible new title: " . (string) $crossRef->series_title);
-          if (isset($crossRef->article_title)) report_info("  Possible new title: " . (string) $crossRef->article_title);
+          if (isset($crossRef->series_title)) report_info("  Possible new title: " . echoable((string) $crossRef->series_title));
+          if (isset($crossRef->article_title)) report_info("  Possible new title: " .  echoable((string) $crossRef->article_title));
           foreach (['chapter', 'title', 'series'] as $possible) {
            if ($template->has($possible)) {
-              report_info("  Existing old title: " . $template->get($possible));
+              report_info("  Existing old title: " .  echoable($template->get($possible)));
            }
           }
           return FALSE;
@@ -842,13 +844,13 @@ function expand_by_jstor(Template $template) : bool {
          switch (trim($ris_part[0])) {
            case "T1": case "TI": case "T2": case "BT":
             $new_title = trim($ris_part[1]);
-            report_info("  Possible new title: " . $new_title);
+            report_info("  Possible new title: " .  echoable($new_title));
            default: // @codeCoverageIgnore
          }
        }
        foreach (['chapter', 'title', 'series'] as $possible) {
          if ($template->has($possible)) {
-            report_info("  Existing old title: " . $template->get($possible));
+            report_info("  Existing old title: " .  echoable($template->get($possible)));
          }
        }
        return FALSE;
@@ -1113,6 +1115,7 @@ function expand_templates_from_archives(array &$templates) : void { // This is d
          substr_count($template->get('title'), '') >0 ||
          substr_count($template->get('title'), '') >0 ||
          substr_count($template->get('title'), '�') >0 )) {
+      /** @psalm-taint-escape ssrf */
       $archive_url = $template->get('archive-url') . $template->get('archiveurl');
       if (stripos($archive_url, 'archive') !==FALSE && stripos($archive_url, '.pdf') === FALSE) {
         throttle_archive();
