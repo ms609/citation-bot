@@ -69,7 +69,7 @@ function is_doi_active(string $doi) : ?bool {
   }
   if ($headers_test === FALSE) return NULL; // most likely bad, but will recheck again an again
   /** @psalm-suppress InvalidArrayOffset */
-  $response = $headers_test['0'];
+  $response = (string) $headers_test['0'];
   if (stripos($response, '200 OK'       ) !== FALSE || stripos($response, 'HTTP/1.1 200') !== FALSE) return TRUE;
   if (stripos($response, '404 Not Found') !== FALSE || stripos($response, 'HTTP/1.1 404') !== FALSE) return FALSE;
   report_warning("CrossRef server error loading headers for DOI " . echoable($doi . " : " . $response));  // @codeCoverageIgnore
