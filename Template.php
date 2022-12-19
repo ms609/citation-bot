@@ -7442,7 +7442,7 @@ final class Template {
           case "iflsig": case "tab": case "sqi": case "noj":
           case "hs": case "es_sm": case "site": case "btnmeta_news_search":
           case "channel": case "espv": case "cad": case "gs_sm":
-          case "imgil": case "ins": case "npsic=":  case "rflfq":
+          case "imgil": case "ins": case "npsic=":  case "rflfq": case "lei":
           case "rlha": case "rldoc": case "rldimm": case "npsic": case "phdesc":
           case "prmdo": case "ssui": case "lqi": case "rlst": case "pf":
           case "authuser": case "gsas": case "ned": case "pz": case "e": case "surl":
