@@ -2966,14 +2966,16 @@ final class Template {
     $n_dup_params = count($duplicated_parameters);
 
     for ($i = 0; $i < $n_dup_params; $i++) {
-      if ($duplicate_identical[$i]) {
+      $the_dup = $duplicated_parameters[$i];
+      $is_same = $duplicate_identical[$i];
+      if ($is_same) {
         report_forget("Deleting identical duplicate of parameter: " .
-          echoable($this->param[$duplicated_parameters[$i]]->param));
-        unset($this->param[$duplicated_parameters[$i]]);
+          echoable($this->param[$the_dup]->param));
+        unset($this->param[$the_dup]);
       } else {
-        $this->param[$duplicated_parameters[$i]]->param = str_replace('DUPLICATE_DUPLICATE_', 'DUPLICATE_', 'DUPLICATE_' . $this->param[$duplicated_parameters[$i]]->param);
+        $this->param[$the_dup]->param = str_replace('DUPLICATE_DUPLICATE_', 'DUPLICATE_', 'DUPLICATE_' . $this->param[$the_dup]->param);
         report_modification("Marking duplicate parameter: " .
-          echoable($this->param[$duplicated_parameters[$i]]->param));
+          echoable($this->param[$the_dup]->param));
       }
     }
 
