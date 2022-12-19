@@ -7445,7 +7445,7 @@ final class Template {
           case "imgil": case "ins": case "npsic=":  case "rflfq":
           case "rlha": case "rldoc": case "rldimm": case "npsic": case "phdesc":
           case "prmdo": case "ssui": case "lqi": case "rlst": case "pf":
-          case "authuser": case "gsas": case "ned": case "pz": case "e":
+          case "authuser": case "gsas": case "ned": case "pz": case "e": case "surl":
              break;
           case "as_occt":
              if (@$part_start[1] == "" || str_i_same($part_start[1], 'any')) break;
