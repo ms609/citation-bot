@@ -2967,6 +2967,7 @@ final class Template {
 
     for ($i = 0; $i < $n_dup_params; $i++) {
       $the_dup = $duplicated_parameters[$i];
+      /** @psalm-suppress InvalidArrayOffset */
       $is_same = $duplicate_identical[$i];
       if ($is_same) {
         report_forget("Deleting identical duplicate of parameter: " .
