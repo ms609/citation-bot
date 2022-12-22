@@ -2947,7 +2947,6 @@ final class Template {
 
     $param_occurrences = array();
     $duplicated_parameters = array();
-    $duplicate_identical = array();
 
     foreach ($this->param as $pointer => $par) {
       if ($par->param && isset($param_occurrences[$par->param])) {
@@ -2957,8 +2956,8 @@ final class Template {
         } elseif ($this->param[$duplicate_pos]->val === '') {
           $this->param[$duplicate_pos]->val = $par->val;
         }
-        array_unshift($duplicated_parameters, $duplicate_pos);
-        array_unshift($duplicate_identical, (mb_strtolower(trim($par->val)) === mb_strtolower(trim($this->param[$duplicate_pos]->val)))); // Drop duplicates that differ only by case
+        $is_identical = (mb_strtolower(trim($par->val)) === mb_strtolower(trim($this->param[$duplicate_pos]->val))); // Drop duplicates that differ only by case
+        array_unshift($duplicated_parameters, [$duplicate_pos, $is_identical]);
       }
       $param_occurrences[$par->param] = $pointer;
     }
@@ -2966,16 +2965,14 @@ final class Template {
     $n_dup_params = count($duplicated_parameters);
 
     for ($i = 0; $i < $n_dup_params; $i++) {
-      $the_dup = $duplicated_parameters[$i];
-      $is_same = $duplicate_identical[$i];
+      $the_dup = $duplicated_parameters[$i][0];
+      $is_same = $duplicated_parameters[$i][1];
       if ($is_same) {
-        report_forget("Deleting identical duplicate of parameter: " .
-          echoable($this->param[$the_dup]->param));
+        report_forget("Deleting identical duplicate of parameter: " . echoable($this->param[$the_dup]->param));
         unset($this->param[$the_dup]);
       } else {
         $this->param[$the_dup]->param = str_replace('DUPLICATE_DUPLICATE_', 'DUPLICATE_', 'DUPLICATE_' . $this->param[$the_dup]->param);
-        report_modification("Marking duplicate parameter: " .
-          echoable($this->param[$the_dup]->param));
+        report_modification("Marking duplicate parameter: " . echoable($this->param[$the_dup]->param));
       }
     }
 
