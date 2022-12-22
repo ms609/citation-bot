@@ -1,0 +1,7 @@
+path: .
+jobs: 1
+extensions:
+  - php
+exclude:
+  - vendor
+warning: true
