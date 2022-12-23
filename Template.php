@@ -2966,6 +2966,7 @@ final class Template {
     $n_dup_params = count($duplicated_parameters);
 
     for ($i = 0; $i < $n_dup_params; $i++) {
+      dfsasdfdsafsd
       if ($duplicate_identical[$i]) {
         report_forget("Deleting identical duplicate of parameter: " .
           echoable($this->param[$duplicated_parameters[$i]]->param));
