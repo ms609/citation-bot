@@ -18,11 +18,11 @@ foreach ($_GET as $param=>$value) {
   /** @psalm-taint-escape ssrf
       @psalm-taint-escape has_quotes
       @psalm-taint-escape html */
-  $value = strtolower($value);
+  $value = strtolower((string) $value);
   /** @psalm-taint-escape ssrf
       @psalm-taint-escape has_quotes
       @psalm-taint-escape html */
-  $param = strtolower($param);
+  $param = strtolower((string) $param);
   if (strlen($value) === 0) exit('Unset parameter error</pre></body></html>');
   if ((strpos($value, "'") !== FALSE ) || (strpos($value, '"') !== FALSE ) || (strpos($value, "|") !== FALSE ) || (strpos($value, " ") !== FALSE )) {
      exit('Invalid parameter value error</pre></body></html>');

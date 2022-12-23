@@ -674,7 +674,9 @@ class Page {
           $this->text = $text;
           return $objects;
         }
-        $exploded = $treat_identical_separately ? explode($match[0], $text, 2) : explode($match[0], $text);
+        /** @var non-empty-string $separator */
+        $separator = $match[0];
+        $exploded = $treat_identical_separately ? explode($separator, $text, 2) : explode($separator, $text);
         $text = implode(sprintf($placeholder_text, $i++), $exploded);
         $objects[] = $obj;
       }
@@ -691,7 +693,9 @@ class Page {
           $this->text = $text;
           return $objects;
         }
-        $exploded = $treat_identical_separately ? explode($match[0], $text, 2) : explode($match[0], $text);
+        /** @var non-empty-string $separator */
+        $separator = $match[0];
+        $exploded = $treat_identical_separately ? explode($separator, $text, 2) : explode($separator, $text);
         $text = implode(sprintf($placeholder_text, $i++), $exploded);
         $objects[] = $obj;
       }

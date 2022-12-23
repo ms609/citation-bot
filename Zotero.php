@@ -573,7 +573,7 @@ public static function process_zotero_response(string $zotero_response, Template
    }
   }
    
-  if (preg_match('~^([^\]]+)\|([^\]]+)\| ?THE DAILY STAR$~i', @$result->title, $matches)) {
+  if (preg_match('~^([^\]]+)\|([^\]]+)\| ?THE DAILY STAR$~i', (string) @$result->title, $matches)) {
     $result->title = $matches[1];
     $result->publicationTitle = 'The Daily Star';
   }
@@ -743,7 +743,7 @@ public static function process_zotero_response(string $zotero_response, Template
   
   if ( isset($result->ISBN)) $template->add_if_new('isbn'   , $result->ISBN);
   if ($access_date && isset($result->date)) {
-    $new_date = strtotime(tidy_date($result->date));
+    $new_date = strtotime(tidy_date((string) $result->date)); // One time got an integer
     if($new_date) { // can compare
       if($new_date > $access_date) {
         report_info("URL appears to have changed since access-date " . echoable($url));

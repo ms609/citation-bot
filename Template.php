@@ -2966,15 +2966,17 @@ final class Template {
     $n_dup_params = count($duplicated_parameters);
 
     for ($i = 0; $i < $n_dup_params; $i++) {
-      dfsasdfdsafsd
-      if ($duplicate_identical[$i]) {
+      $the_dup = $duplicated_parameters[$i];
+      /** @psalm-suppress InvalidArrayOffset */
+      $is_same = $duplicate_identical[$i];
+      if ($is_same) {
         report_forget("Deleting identical duplicate of parameter: " .
-          echoable($this->param[$duplicated_parameters[$i]]->param));
-        unset($this->param[$duplicated_parameters[$i]]);
+          echoable($this->param[$the_dup]->param));
+        unset($this->param[$the_dup]);
       } else {
-        $this->param[$duplicated_parameters[$i]]->param = str_replace('DUPLICATE_DUPLICATE_', 'DUPLICATE_', 'DUPLICATE_' . $this->param[$duplicated_parameters[$i]]->param);
+        $this->param[$the_dup]->param = str_replace('DUPLICATE_DUPLICATE_', 'DUPLICATE_', 'DUPLICATE_' . $this->param[$the_dup]->param);
         report_modification("Marking duplicate parameter: " .
-          echoable($this->param[$duplicated_parameters[$i]]->param));
+          echoable($this->param[$the_dup]->param));
       }
     }
 
@@ -7443,10 +7445,10 @@ final class Template {
           case "iflsig": case "tab": case "sqi": case "noj":
           case "hs": case "es_sm": case "site": case "btnmeta_news_search":
           case "channel": case "espv": case "cad": case "gs_sm":
-          case "imgil": case "ins": case "npsic=":  case "rflfq":
+          case "imgil": case "ins": case "npsic=":  case "rflfq": case "lei":
           case "rlha": case "rldoc": case "rldimm": case "npsic": case "phdesc":
           case "prmdo": case "ssui": case "lqi": case "rlst": case "pf":
-          case "authuser": case "gsas": case "ned": case "pz": case "e":
+          case "authuser": case "gsas": case "ned": case "pz": case "e": case "surl":
              break;
           case "as_occt":
              if (@$part_start[1] == "" || str_i_same($part_start[1], 'any')) break;
