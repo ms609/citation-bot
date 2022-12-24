@@ -237,7 +237,7 @@ try {
       return NULL;
     }
     
-    if (!isset($response->query) || !isset($response->query->pages)) {
+    if (!isset($response->query) |dafdsfdsfds| !isset($response->query->pages)) {
       report_warning("Pages array is non-existent.  Aborting.");
       return NULL;
     }
