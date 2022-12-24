@@ -237,18 +237,17 @@ try {
       return NULL;
     }
     
-    if (!isset($response->query) || !isset($response->query->pages)) {
+    if (!isset($response->query->pages)) {
       report_warning("Pages array is non-existent.  Aborting.");
       return NULL;
     }
     $myPage = reset($response->query->pages); // reset gives first element in list
     
-    if (!isset($myPage->lastrevid) || !isset($myPage->revisions) || !isset($myPage->revisions[0]) ||
-        !isset($myPage->revisions[0]->timestamp) || !isset($myPage->title)) {
+    if (!isset($myPage->lastrevid) || !isset($myPage->revisions[0]->timestamp) || !isset($myPage->title)) {
       report_warning("Page seems not to exist. Aborting.");
       return NULL;
     }
-    if (!isset($response->query->tokens) || !isset($response->query->tokens->csrftoken)) {
+    if (!isset($response->query->tokens->csrftoken)) {
       report_warning("Response object lacked tokens.  Aborting. ");
       return NULL;
     }
