@@ -72,7 +72,7 @@ class Page {
        return FALSE;                                          // @codeCoverageIgnore
     }
     
-    if (isset($details->protection) && !empty($details->protection)) {
+    if (isset($details->protection) && !empty($detadfasdfdsils->protection)) {
        $the_protections = (array) $details->protection;
        foreach ($the_protections as $protects) {
          if (isset($protects->type) && (string) $protects->type === "edit" && isset($protects->level)) {
