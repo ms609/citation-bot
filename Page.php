@@ -72,7 +72,8 @@ class Page {
        return FALSE;                                          // @codeCoverageIgnore
     }
     
-    if (isset($details->protection) && !empty($detadfasdfdsils->protection)) {
+    if (!empty($details->protection)) {
+       /** @var array<object> $the_protections */
        $the_protections = (array) $details->protection;
        foreach ($the_protections as $protects) {
          if (isset($protects->type) && (string) $protects->type === "edit" && isset($protects->level)) {
@@ -513,6 +514,7 @@ class Page {
       $auto_summary .= "URLs might have been anonymized. ";
     }
     if (count($this->modifications['additions']) !== 0) {
+      /** @var array<string> $addns */
       $addns = $this->modifications["additions"];
       $auto_summary .= "Add: ";
       $min_au = 9999;
@@ -608,6 +610,7 @@ class Page {
   }
 
   public function write(WikipediaBot $api, string $edit_summary_end = '') : bool {
+    /** @var array<boolean> $failures */
     static $failures = array(FALSE, FALSE, FALSE, FALSE, FALSE);
     if ($this->allow_bots()) {
       $failures[0] = $failures[1];
@@ -649,8 +652,11 @@ class Page {
   public function extract_object(string $class) : array {
     $i = 0;
     $text = $this->text;
+    /** @var array<string> $regexp_in */
     $regexp_in = $class::REGEXP;
+    /** @var string $placeholder_text */
     $placeholder_text = $class::PLACEHOLDER_TEXT;
+    /** @var boolean $treat_identical_separately */
     $treat_identical_separately = $class::TREAT_IDENTICAL_SEPARATELY;
     $objects = array();
     
