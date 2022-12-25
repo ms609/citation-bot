@@ -807,6 +807,7 @@ final class Template {
     // We have to map these, since sometimes we get floating accessdate and such
     $mistake_id = array_search($param_name, COMMON_MISTAKES_TOOL);
     if ($mistake_id !== FALSE) {
+        /** @var string $param_name */
         $param_name = COMMON_MISTAKES_TOOL[$mistake_id];
     }
 
@@ -1904,6 +1905,7 @@ final class Template {
     }
   }
 
+  /** @return array<string,int> */
   protected function query_pubmed() : array {
 /*
  *
@@ -1911,13 +1913,10 @@ final class Template {
  * Returns an array:
  *   [0] => PMID of first matching result
  *   [1] => total number of results
- *   [2] => what was used to find PMID
  *
  */
     if (ZOTERO_ONLY) {
-      $results = [];     // @codeCoverageIgnore
-      $results[1] = 0;   // @codeCoverageIgnore
-      return $results;   // @codeCoverageIgnore
+      return array('', 0);   // @codeCoverageIgnore
     }
     if ($doi = $this->get_without_comments_and_placeholders('doi')) {
       if (doi_works($doi)) {
@@ -1940,11 +1939,10 @@ final class Template {
           if ($results[1] === 1) return $results;
         }
     }
-    $results = [];
-    $results[1] = 0;
-    return $results;
+    return array('', 0);
   }
 
+  /** @param array<string> $terms */ /** @return array<string,int> */
   protected function do_pumbed_query(array $terms) : array {
     set_time_limit(120);
   /* do_query
