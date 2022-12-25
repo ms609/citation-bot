@@ -1905,7 +1905,7 @@ final class Template {
     }
   }
 
-  /** @return array<string,int> */
+  /** @return array<string|int> */
   protected function query_pubmed() : array {
 /*
  *
@@ -1942,7 +1942,7 @@ final class Template {
     return array('', 0);
   }
 
-  /** @param array<string> $terms */ /** @return array<string,int> */
+  /** @param array<string> $terms */ /** @return array<string|int> */
   protected function do_pumbed_query(array $terms) : array {
     set_time_limit(120);
   /* do_query
