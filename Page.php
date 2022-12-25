@@ -521,7 +521,6 @@ class Page {
       $max_au = 0;
       $min_ed = 9999;
       $max_ed = 0;
-      /** @var ?string $add */
       while ($add = array_pop($addns)) {
         if (preg_match('~editor[^\d]*(\d+)~', $add, $match)) {
           if ($match[1] < $min_ed) $min_ed = $match[1];
