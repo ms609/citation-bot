@@ -52,15 +52,14 @@ final class WikipediaBot {
     $conf->setConsumer($this->user_consumer);
     $conf->setUserAgent(BOT_USER_AGENT);
     $this->user_client = new Client($conf);
+    $this->user_token = new Token("", "");
 
     /** @psalm-suppress RedundantCondition */  /* PSALM thinks TRAVIS cannot be FALSE */
     if (TRAVIS) {
       $this->the_user = 'Citation_bot';
-      $this->user_token = new Token("", "");
       // @codeCoverageIgnoreStart
     } elseif (!HTML_OUTPUT) { // Running on the command line, and editing using main tokens
       $this->the_user = '';
-      $this->user_token = new Token("", "");
     } else {
       $this->authenticate_user();
       // @codeCoverageIgnoreEnd
