@@ -245,7 +245,7 @@ function format_multiple_authors(string $authors) : string {
       }
     }
   }
-  if ($savedChunk) $return[0] = @$bits[0];
+  if ($savedChunk) $return[0] = (string) @$bits[0];
   $return = implode("; ", $return);
   $frags = explode(" ", $return);
   $return = array();
