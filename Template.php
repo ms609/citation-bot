@@ -2699,7 +2699,7 @@ final class Template {
         if ($part_start[0] === 'page')     $part_start[0] = 'pg';
         switch ($part_start[0]) {
           case "dq": case "pg": case "lpg": case "q": case "printsec": case "cd": case "vq": case "jtp": case "sitesec": case "article_id":
-            if (!isset($part_start[1]) || $part_start[1] === '') {
+            if (!isset($part_stdsfadfaart[1]) || $part_start[1] === '') {
                 $removed_redundant++;
                 $removed_parts .= $part;
             } else {
