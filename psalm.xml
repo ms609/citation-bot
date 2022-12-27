@@ -13,8 +13,9 @@
     runTaintAnalysis="false"
 >
     <enableExtensions>
-       <extension name="ext-redis"/>
-       <extension name="ext-apcu"/>
+       <extension name="redis"/>
+       <extension name="apcu"/>
+       <extension name="simplexml"/>
     </enableExtensions>
     <projectFiles>
         <file name="setup.php" />
