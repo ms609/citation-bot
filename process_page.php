@@ -26,15 +26,24 @@ if (isset($argv[1])) {
     $pages = trim((string) @file_get_contents('./page_list2.txt'));
   }
 } elseif (isset($_GET["page"])) {
-  $pages = (string) $_GET["page"];
+  $pages = $_GET["page"];
+  if (!is_string($pages)) {
+    report_warning('Non-string found in GET for page.');
+    $pages = '';
+  }
   if (strpos($pages, '|') !== FALSE) {
-    report_error('Use the webform for multiple pages.');
+    report_warning('Use the webform for multiple pages.');
+    $pages = '';
   }
 } elseif (isset($_POST["page"])) {
-  $pages = (string) $_POST["page"];
+  $pages = $_POST["page"];
+  if (!is_string($pages)) {
+    report_warning('Non-string found in POST for page.');
+    $pages = '';
+  }
 } else {
   report_warning('Nothing requested -- OR -- pages got lost during initial authorization ');
-  $pages = ''; // Errors out below
+  $pages = '';
 }
 
 if (isset($_REQUEST["edit"]) && $_REQUEST["edit"]) {
