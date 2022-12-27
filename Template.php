@@ -1780,7 +1780,7 @@ final class Template {
       // This is quite a broad match, so we need to ensure that no baggage has been tagged on to the end of the URL.
       $doi = preg_replace("~(\.x)/(?:\w+)~", "$1", $match[0]);
       $doi = extract_doi($doi)[1];
-      if ($doi === FALSE) return; // Found nothing
+      if ($doi === '') return; // Found nothing
       if ($this->has('quote') && strpos($this->get('quote'), $doi) !== FALSE) return;
       if (doi_active($doi)) $this->add_if_new('doi', $doi);
     }
@@ -3046,7 +3046,8 @@ final class Template {
               }
               break;
             case "R": // Resource identifier... *may* be DOI but probably isn't always.
-              if ($matches = extract_doi($endnote_datum)[1]) {
+              $matches = extract_doi($endnote_datum)[1];
+              if ($matches !== '') {
                 $endnote_datum = $matches;
                 $endnote_parameter = 'doi';
               } else {
@@ -3075,7 +3076,7 @@ final class Template {
       }
 
       $doi = extract_doi($dat);
-      if ($doi[1] !== FALSE) {
+      if ($doi[1] !== '') {
         $this->add_if_new('doi', $doi[1]);
         $this->change_name_to('cite journal');
         $dat = str_replace($doi[0], '', $dat);
@@ -5023,7 +5024,7 @@ final class Template {
                  return;
              }
              if ($this->get_identifiers_from_url($this->get($param))) {
-               if (!extract_doi($this->get($param))[1]) { // If it gives a doi, then might want to keep it anyway since many archives have doi in the url string
+               if (extract_doi($this->get($param))[1] === '') { // If it gives a doi, then might want to keep it anyway since many archives have doi in the url string
                  $this->forget($param);
                  return;
                }
