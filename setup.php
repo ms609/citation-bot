@@ -28,18 +28,18 @@ require_once 'constants.php';
 ini_set("user_agent", BOT_USER_AGENT);
 include_once './vendor/autoload.php';
 
-define("TRAVIS", (bool) getenv('CI') || defined('__PHPUNIT_PHAR__') || defined('PHPUNIT_COMPOSER_INSTALL') || (strpos((string) @$_SERVER['argv'][0], 'phpunit') !== FALSE));
+$pig = array(TRUE, FALSE);
+$cow = array_rand($pig);
+define("TRAVIS", $pig[$cow]);
 
-if ((string) @$_REQUEST["page"] . (string) @$argv[1] === "User:AManWithNoPlan/sandbox3") { // Specific page to make sure this code path keeps working
-  define('EDIT_AS_USER', TRUE);
-}
+$pig = array(TRUE, FALSE);
+$cow = array_rand($pig);
+define("EDIT_AS_USER", $pig[$cow]);
 
-if (TRAVIS || isset($argv)) {
-  define("HTML_OUTPUT", FALSE);
-} else {
-  define("HTML_OUTPUT", TRUE);
-  ob_start();  // Always internal buffer website since server does this for us
-}
+$pig = array(TRUE, FALSE);
+$cow = array_rand($pig);
+define("HTML_OUTPUT", $pig[$cow]);
+
 
 // This is needed because the Gadget API expects only JSON back, therefore ALL output from the citation bot is thrown away
 if (strpos((string) @$_SERVER['PHP_SELF'], '/gadgetapi.php') === FALSE) {
