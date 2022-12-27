@@ -55,9 +55,10 @@ final class Template {
                'zotero'   => array(),
             );
   /** @var array<Template> $this_array */
-  private array $this_array = array(); // Unset after using to avoid pointer loop that makes garbage collection harder
-  
+  private array $this_array;
+
   function __construct() {
+     $this->this_array = array(WeakReference::create($this));  // avoid pointer loop that makes garbage collection harder
      ;  // All the real construction is done in parse_text() and above in variable initialization
   }
 
@@ -489,7 +490,6 @@ final class Template {
             if ($this->has('doi') && doi_active($this->get('doi'))) {
               expand_by_doi($this);
             }
-            $this->this_array = array($this);
             if ($this->has('pmid')) {
               query_pmid_api(array($this->get('pmid')), $this->this_array);
             }
@@ -502,7 +502,6 @@ final class Template {
             if ($this->blank(['pmid', 'pmc', 'jstor']) && ($this->has('eprint') || $this->has('arxiv'))) {
               expand_arxiv_templates($this->this_array);
             }
-            $this->this_array = array();
             if ($this->has('CITATION_BOT_PLACEHOLDER_journal')) {
               if ($this->has('journal') && $this->get('journal') !== $this->get('CITATION_BOT_PLACEHOLDER_journal') &&
                   '[[' . $this->get('journal') . ']]' !== $this->get('CITATION_BOT_PLACEHOLDER_journal')) {
@@ -1473,9 +1472,7 @@ final class Template {
         $this->add($param_name, $value);
         if ($value === 'free' && doi_works($this->get('doi'))) {
             if (preg_match('~^https?://(?:dx\.|)doi\.org~', $this->get('url'))) $this->forget('url');
-            $this->this_array = array($this);
             Zotero::drop_urls_that_match_dois($this->this_array);
-            $this->this_array = array();
         }
         return TRUE;
 
@@ -1593,9 +1590,7 @@ final class Template {
           $this->add('bibcode', $value);
           if ($param_name === 'bibcode') {
             $bib_array = array($value);
-            $this->this_array = array($this);
             query_bibcode_api($bib_array, $this->this_array);
-            $this->this_array = array();
           }
           if ($low_quality) {
             $this->quietly_forget('bibcode');
@@ -2388,7 +2383,6 @@ final class Template {
   public function expand_by_pubmed(bool $force = FALSE) : void {
     if (ZOTERO_ONLY) return;
     if (!$force && !$this->incomplete()) return;
-    $this->this_array = array($this);
     if ($pm = $this->get('pmid')) {
       report_action('Checking ' . pubmed_link('pmid', $pm) . ' for more details');
       query_pmid_api(array($pm), $this->this_array);
@@ -2396,7 +2390,6 @@ final class Template {
       report_action('Checking ' . pubmed_link('pmc', $pm) . ' for more details');
       query_pmc_api(array($pm), $this->this_array);
     }
-    $this->this_array = array();
   }
 
   public function use_sici() : bool {
