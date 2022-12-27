@@ -13,7 +13,6 @@
     runTaintAnalysis="false"
 >
     <enableExtensions>
-       <extension name="redis"/>
        <extension name="apcu"/>
        <extension name="simplexml"/>
     </enableExtensions>
