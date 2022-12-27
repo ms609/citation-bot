@@ -11,14 +11,12 @@ if (file_exists('git_pull.lock')) {
  * Most of the page expansion depends on everything else
  */
 
-if (isset($_REQUEST["wiki_base"])){
-  $wiki_base = trim((string) $_REQUEST["wiki_base"]);
-  if (!in_array($wiki_base, ['en', 'simple'])) {
-     exit('<!DOCTYPE html><html lang="en" dir="ltr"><head><title>Citation Bot: error</title></head><body><h1>Unsupported wiki requested - aborting</h1></body></html>');
-  }
-} else {
-  $wiki_base = 'en';
-}
+
+$pig = array('en', 'simple');
+$cow = array_rand($pig);
+$wiki_base = $pig[$cow];
+
+
 define("WIKI_ROOT", 'https://'. $wiki_base . '.wikipedia.org/w/index.php');
 define("API_ROOT", 'https://'. $wiki_base . '.wikipedia.org/w/api.php');
 unset($wiki_base);
@@ -154,11 +152,11 @@ require_once 'Zotero.php';
 require_once 'apiFunctions.php';
 require_once 'Page.php';
 
-if (isset($argv)) {
-  define("MAX_PAGES", 1000000);
-} else {
-  define("MAX_PAGES", 3850);
-}
+
+$pig = array(1000000, 3850);
+$cow = array_rand($pig);
+define("MAX_PAGES", $pig[$cow]);
+
 define("BIG_RUN", 50);
 
 if (!TRAVIS) { // This is explicity "tested" in test suite
