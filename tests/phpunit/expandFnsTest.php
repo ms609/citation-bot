@@ -105,8 +105,8 @@ final class expandFnsTest extends testBaseClass {
     $this->assertSame('10.1093/acref/9780199204632.001.0001', extract_doi('http://www.oxfordreference.com/view/10.1093/acref/9780199204632.001.0001/acref-9780199204632-e-4022')[1]);
     $this->assertSame('10.1038/nature11111', extract_doi('http://www.oxfordreference.com/view/10.1038/nature11111/figures#display.aspx?quest=solve&problem=punctuation')[1]);
     $the_return = extract_doi('https://somenewssite.com/date/25.10.2015/2137303/default.htm'); // 10.2015/2137303 looks like a DOI
-    $this->assertFalse($the_return[0]);
-    $this->assertFalse($the_return[1]);
+    $this->assertSame('', $the_return[0]);
+    $this->assertSame('', $the_return[1]);
   }
   
   public function testSanitizeDoi1() : void {
