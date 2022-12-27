@@ -59,7 +59,7 @@ final class Template {
 
   function __construct() {
      $weak = WeakReference::create($this);
-     $weak_ref = weak->get();
+     $weak_ref = $weak->get();
      $this->this_array = array($weak_ref);  // avoid pointer loop that makes garbage collection harder
      ;  // All the real construction is done in parse_text() and above in variable initialization
   }
