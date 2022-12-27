@@ -12,6 +12,10 @@
     findUnusedVariablesAndParams="true"
     runTaintAnalysis="false"
 >
+    <enableExtensions>
+       <extension name="ext-redis"/>
+       <extension name="ext-apcu"/>
+    </enableExtensions>
     <projectFiles>
         <file name="setup.php" />
         <file name="Comment.php" />
