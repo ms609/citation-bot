@@ -63,7 +63,7 @@ final class Template {
 
   public function parse_text(string $text) : void {
     set_time_limit(120);
-    dfasdfdsafsdfd
+    /** @psalm-suppress  @RedundantPropertyInitializationCheck */
     if (isset($this->rawtext)) {
         report_error("Template already initialized; call new Template() before calling Template::parse_text()"); // @codeCoverageIgnore
     }
@@ -182,7 +182,11 @@ final class Template {
     if (isset($this->param[0])) {
         // Use second param as a template if present, in case first pair
         // is last1 = Smith | first1 = J.\n
-        $example = $this->param[isset($this->param[1]) ? 1 : 0]->parsed_text();
+        if (isset($this->param[1])) {
+           $example = $this->param[1]->parsed_text();
+        } else {
+           $example = $this->param[0]->parsed_text();
+        }
         $example = preg_replace('~[^\s=][^=]*[^\s=]~u', 'X', $example); // Collapse strings
         $example = preg_replace('~ +~u', ' ', $example); // Collapse spaces
         // Check if messed up, and do not use bad styles
@@ -2552,13 +2556,14 @@ final class Template {
             (stripos($oa_hostname, 'doi.org') !== FALSE)) {
           return 'have free';
        }
-       preg_match("~^https?://([^\/]+)/~", $oa_url . '/', $match);
-       $new_host_name = str_replace('www.', '', strtolower((string) @$match[1]));
-       foreach (ALL_URL_TYPES as $old_url) {
+       if (preg_match("~^https?://([^\/]+)/~", $oa_url . '/', $match)) {
+         $new_host_name = str_replace('www.', '', strtolower($match[1]));
+         foreach (ALL_URL_TYPES as $old_url) {
             if (preg_match("~^https?://([^\/]+)/~", $this->get($old_url), $match)) {
                 $old_host_name = str_replace('www.', '', strtolower($match[1]));
                 if ($old_host_name === $new_host_name) return 'have free';
             }
+         }
        }
         $url_type = 'url';
         if ($this->has('chapter')) {
@@ -7427,7 +7432,13 @@ final class Template {
         if (isset($part_start[1]) && $part_start[1] === '') {
           $part_start[0] = "donotaddmeback"; // Do not add blank ones
         }
-        $it_is_blank = (empty($part_start[1]));
+        if (empty($part_start[1])) {
+          $part_start1 = '';
+          $it_is_blank = TRUE;
+        } else {
+          $part_start1 = $part_start[1];
+          $it_is_blank = FALSE;
+        }
         switch ($part_start[0]) {
           case "aq": case "aqi": case "bih": case "biw": case "client":
           case "as": case "useragent": case "as_brr":
@@ -7451,19 +7462,19 @@ final class Template {
           case "authuser": case "gsas": case "ned": case "pz": case "e": case "surl":
              break;
           case "as_occt":
-             if ($it_is_blank || str_i_same($part_start[1], 'any')) break;
+             if ($it_is_blank || str_i_same($part_start1, 'any')) break;
              $url .=  $part . "&" ;
              break;
           case "cf":
-             if ($it_is_blank || str_i_same($part_start[1], 'all')) break;
+             if ($it_is_blank || str_i_same($part_start1, 'all')) break;
              $url .=  $part . "&" ;
              break;
           case "cs":
-             if ($it_is_blank || str_i_same($part_start[1], '0')) break;
+             if ($it_is_blank || str_i_same($part_start1, '0')) break;
              $url .=  $part . "&" ;
              break;
           case "btnK":
-             if ($it_is_blank || str_i_same($part_start[1], 'Google+Search')) break;
+             if ($it_is_blank || str_i_same($part_start1, 'Google+Search')) break;
              $url .=  $part . "&" ;
              break;
           case "as_epq":
@@ -7471,15 +7482,15 @@ final class Template {
              $url .=  $part . "&" ;
              break;
           case "btnG":
-             if ($it_is_blank || str_i_same($part_start[1], 'Search')) break;
+             if ($it_is_blank || str_i_same($part_start1, 'Search')) break;
              $url .=  $part . "&" ;
              break;
           case "rct":
-             if ($it_is_blank || str_i_same($part_start[1], 'j')) break;  // default
+             if ($it_is_blank || str_i_same($part_start1, 'j')) break;  // default
              $url .=  $part . "&" ;
              break;
           case "ie": case "oe":
-             if ($it_is_blank || str_i_same($part_start[1], 'utf-8')) break;  // UTF-8 is the default
+             if ($it_is_blank || str_i_same($part_start1, 'utf-8')) break;  // UTF-8 is the default
              $url .=  $part . "&" ;
              break;
           case "hl": case "safe": case "q": case "tbm": case "start": case "ludocid":
