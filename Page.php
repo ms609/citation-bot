@@ -49,13 +49,14 @@ class Page {
       // @codeCoverageIgnoreEnd
     }
     foreach ($details->query->pages as $p) {
+      /** @var object $my_details */
       $my_details = $p;
     }
     if (!isset($my_details)) {
       report_warning("Page fetch error - could not even get details"); // @codeCoverageIgnore
       return FALSE;                                                    // @codeCoverageIgnore
     }
-    $this->read_at = isset($details->curtimestamp) ? $details->curtimestamp : NULL;
+    $this->read_at = isset($details->curtimestamp) ? $details->curtimestamp : '';
     
     $details = $my_details;
     if (isset($details->invalid)) {
@@ -672,6 +673,7 @@ class Page {
     $preg_ok = TRUE;
     foreach ($regexp_in as $regexp) {
       while ($preg_ok = preg_match($regexp, $text, $match)) {
+        /** @var class-string $class $obj */
         $obj = new $class();
         try {
           $obj->parse_text($match[0]);
@@ -726,8 +728,11 @@ class Page {
 
   protected function replace_object (array &$objects) : void {  // Pointer to save memory
     $i = count($objects);
-    if ($objects) foreach (array_reverse($objects) as $obj)
-      $this->text = str_ireplace(sprintf($obj::PLACEHOLDER_TEXT, --$i), $obj->parsed_text(), $this->text); // Case insensitive, since comment placeholder might get title case, etc.
+    if ($objects) {
+      foreach (array_reverse($objects) as $obj) {
+        $this->text = str_ireplace(sprintf($obj::PLACEHOLDER_TEXT, --$i), $obj->parsed_text(), $this->text); // Case insensitive, since comment placeholder might get title case, etc.
+      }
+    }
   }
 
   protected function announce_page() : void {
