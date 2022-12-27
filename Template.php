@@ -63,6 +63,7 @@ final class Template {
 
   public function parse_text(string $text) : void {
     set_time_limit(120);
+    dfasdfdsafsdfd
     if (isset($this->rawtext)) {
         report_error("Template already initialized; call new Template() before calling Template::parse_text()"); // @codeCoverageIgnore
     }
