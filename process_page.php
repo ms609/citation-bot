@@ -19,7 +19,7 @@ if (HTML_OUTPUT) {
 check_blocked();
 
 if (isset($argv[1])) {
-  $pages = (string) $argv[1];
+  $pages = $argv[1];
   if ($pages === 'page_list.txt') {
     $pages = trim((string) @file_get_contents('./page_list.txt'));
   } elseif ($pages === 'page_list2.txt') {
