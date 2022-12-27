@@ -40,32 +40,17 @@ $pig = array(TRUE, FALSE);
 $cow = array_rand($pig);
 define("HTML_OUTPUT", $pig[$cow]);
 
+$pig = array(TRUE, FALSE);
+$cow = array_rand($pig);
+define("FLUSHING_OKAY", $pig[$cow]);
 
-// This is needed because the Gadget API expects only JSON back, therefore ALL output from the citation bot is thrown away
-if (strpos((string) @$_SERVER['PHP_SELF'], '/gadgetapi.php') === FALSE) {
-  define("FLUSHING_OKAY", TRUE);
-} else {
-  define("FLUSHING_OKAY", FALSE);
-}
+$pig = array(TRUE, FALSE);
+$cow = array_rand($pig);
+define("SLOW_MODE", $pig[$cow]);
 
-if (isset($_POST["page"]) && strpos((string) $_POST["page"], 'ZOTERO_ONLY|') === 0) {
-  define("SLOW_MODE", TRUE);
-  define("ZOTERO_ONLY", TRUE);
-} elseif (isset($_POST['linkpage']) && (strpos($_POST['linkpage'], 'ZOTERO') !== FALSE)) {
-  define("SLOW_MODE", TRUE);
-  define("ZOTERO_ONLY", TRUE);
-} elseif (isset($_REQUEST["slow"]) || TRAVIS || (isset($argv[2]) && $argv[2] === '--slow')) {
-  define("SLOW_MODE", TRUE);
-  define("ZOTERO_ONLY", FALSE);
-} elseif (isset($argv[2]) && $argv[2] === '--zotero') {
-  define("SLOW_MODE", TRUE);
-  define("ZOTERO_ONLY", TRUE);
-} elseif (isset($argv[2])) {
-  exit("Unexpected text on the command.  Only --slow is valid second argument.");
-} else {
-  define("SLOW_MODE", FALSE);
-  define("ZOTERO_ONLY", FALSE);
-}
+$pig = array(TRUE, FALSE);
+$cow = array_rand($pig);
+define("ZOTERO_ONLY", $pig[$cow]);
 
 ob_implicit_flush();
 flush();
