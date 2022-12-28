@@ -1,4 +1,7 @@
 <?php
+
+// https://en.wikipedia.org/wiki/MediaWiki:Gadget-citations.js
+
 declare(strict_types=1);
 set_time_limit(120);
 ignore_user_abort(FALSE); // Dies if cannot connect back to client, should be the default
@@ -10,8 +13,11 @@ try {
  //Set up tool requirements
  require_once 'setup.php';
 
- $originalText = (string) @$_POST['text'];
- $editSummary = (string) @$_POST['summary'];
+ if (!is_string($_POST['text']) || !is_string($_POST['summary'])) {
+   throw new Exception('not a string');  // @codeCoverageIgnore
+ }
+ $originalText = $_POST['text'];
+ $editSummary = $_POST['summary'];
 
  if (strlen(trim($originalText)) < 4) {
    throw new Exception('tiny page');  // @codeCoverageIgnore
