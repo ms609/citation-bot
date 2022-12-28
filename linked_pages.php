@@ -13,7 +13,13 @@ bot_html_header();
 
 check_blocked();
 
-$page_name = str_replace(' ', '_', trim((string) @$_POST['linkpage']));
+if (!is_string(@$_POST['linkpage'])) {
+  report_warning(' Error in passing of linked page name ');
+  bot_html_footer();
+  exit();
+}
+
+$page_name = str_replace(' ', '_', trim($_POST['linkpage']));
 if ($page_name === '') {
   if (isset($_GET['page'])) {
     report_warning('Use the webform.  Passing pages in the URL not supported anymore.');

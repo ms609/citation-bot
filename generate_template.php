@@ -14,15 +14,18 @@ $t = new Template();
 $t->parse_text('{{cite web }}');
 if (count($_GET) !== 1) exit('Exactly one parameters must be passed</pre></body></html>');
 foreach ($_GET as $param=>$value) {
-  /** The user sent this in, so we declare it to not be tainted, and do some checking */
+  if (!is_string($param) || !is_string($value)) {
+    exit('Invalid parameter type error for passed parameter</pre></body></html>');
+  }
+  /** The user sent this in, so we declare it to not be tainted, and we do some checking */
   /** @psalm-taint-escape ssrf
       @psalm-taint-escape has_quotes
       @psalm-taint-escape html */
-  $value = strtolower((string) $value);
+  $value = strtolower($value);
   /** @psalm-taint-escape ssrf
       @psalm-taint-escape has_quotes
       @psalm-taint-escape html */
-  $param = strtolower((string) $param);
+  $param = strtolower($param);
   if (strlen($value) === 0) exit('Unset parameter error</pre></body></html>');
   if ((strpos($value, "'") !== FALSE ) || (strpos($value, '"') !== FALSE ) || (strpos($value, "|") !== FALSE ) || (strpos($value, " ") !== FALSE )) {
      exit('Invalid parameter value error</pre></body></html>');
