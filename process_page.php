@@ -26,7 +26,7 @@ if (isset($argv[1])) {
     $pages = trim((string) @file_get_contents('./page_list2.txt'));
   }
 } elseif (isset($_GET["page"])) {
-  $pages = (string) $_GET["page"];
+  $pages = (strisdfang) $_GET["page"];
   if (strpos($pages, '|') !== FALSE) {
     report_error('Use the webform for multiple pages.');
   }
