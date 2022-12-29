@@ -495,6 +495,7 @@ function expand_by_doi(Template $template, bool $force = FALSE) : bool {
         }
       }
       report_action("Querying CrossRef: doi:" . doi_link($doi));
+      print_r($crossRef);
 
       if ($template->has('book-title')) unset($crossRef->volume_title);
       if ($crossRef->volume_title && ($template->blank(WORK_ALIASES) || $template->wikiname() === 'cite book')) {
