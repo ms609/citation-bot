@@ -506,6 +506,9 @@ function expand_by_doi(Template $template, bool $force = FALSE) : bool {
         }
         $template->add_if_new('title', restore_italics((string) $crossRef->volume_title), 'crossref'); // add_if_new will wikify title and sanitize the string
       } else {
+        echo "\n\n (string) $crossRef->article_title \n\n";
+        echo "\n\n (estore_italics((string) $crossRef->article_title) \n\n";
+        
         $template->add_if_new('title', restore_italics((string) $crossRef->article_title), 'crossref'); // add_if_new will wikify title and sanitize the string
       }
       $template->add_if_new('series', (string) $crossRef->series_title, 'crossref'); // add_if_new will format the title for a series?
