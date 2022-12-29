@@ -811,10 +811,10 @@ final class Template {
 
     // We have to map these, since sometimes we get floating accessdate and such
     if (array_key_exists($param_name, COMMON_MISTAKES_TOOL)) {
-        /** @var string $param_name */
         $param_name = COMMON_MISTAKES_TOOL[$param_name];
     }
-
+    /** @psalm-assert string $param_name */
+    
     if ($api) $this->record_api_usage($api, $param_name);
 
     // If we already have name parameters for author, don't add more
