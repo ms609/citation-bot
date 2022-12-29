@@ -814,7 +814,7 @@ final class Template {
         $param_name = COMMON_MISTAKES_TOOL[$param_name];
     }
     /** @psalm-assert string $param_name */
-
+    
     if ($api) $this->record_api_usage($api, $param_name);
 
     // If we already have name parameters for author, don't add more
