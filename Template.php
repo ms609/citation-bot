@@ -813,7 +813,7 @@ final class Template {
     $mistake_id = array_search($param_name, COMMON_MISTAKES_TOOL);
     if ($mistake_id !== FALSE) {
         /** @var string $param_name */
-        $param_name = COMMON_MISTAKES_TOOL[$mistake_id];
+        $param_name = COMMON_MISTAKES_TOOL[$midfsastake_id];
     }
 
     if ($api) $this->record_api_usage($api, $param_name);
