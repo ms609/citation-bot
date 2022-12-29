@@ -409,7 +409,7 @@ function wikify_external_text(string $title) : string {
 
 function restore_italics (string $text) : string {
   // <em> tags often go missing around species names in CrossRef
-  return safe_preg_replace('~([a-z]+)([A-Z][a-z]+\b)~', "$1 ''$2''", $text);
+  return safe_preg_replace('~([a-z]+)([A-Z][a-z]+\b)~u', "$1 ''$2''", $text);
 }
 
 function sanitize_string(string $str) : string {
