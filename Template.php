@@ -811,7 +811,7 @@ final class Template {
 
     // We have to map these, since sometimes we get floating accessdate and such
     if (array_key_exists($param_name, COMMON_MISTAKES_TOOL)) {
-        /** @var string $param_name */
+        /** @psalm-assert string $param_name */
         $param_name = COMMON_MISTAKES_TOOL[$param_name];
     }
 
