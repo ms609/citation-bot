@@ -13,8 +13,7 @@ if (file_exists('git_pull.lock')) {
 
 
 $pig = array('en', 'simple');
-$cow = array_rand($pig);
-$wiki_base = $pig[$cow];
+$wiki_base = $pig[array_rand($pig)];
 
 
 define("WIKI_ROOT", 'https://'. $wiki_base . '.wikipedia.org/w/index.php');
@@ -27,28 +26,22 @@ ini_set("user_agent", BOT_USER_AGENT);
 include_once './vendor/autoload.php';
 
 $pig = array(TRUE, FALSE);
-$cow = array_rand($pig);
-define("TRAVIS", $pig[$cow]);
+define("TRAVIS", $pig[array_rand($pig)];);
 
 $pig = array(TRUE, FALSE);
-$cow = array_rand($pig);
-define("EDIT_AS_USER", $pig[$cow]);
+define("EDIT_AS_USER", $pig[array_rand($pig)];);
 
 $pig = array(TRUE, FALSE);
-$cow = array_rand($pig);
-define("HTML_OUTPUT", $pig[$cow]);
+define("HTML_OUTPUT", $pig[array_rand($pig)];);
 
 $pig = array(TRUE, FALSE);
-$cow = array_rand($pig);
-define("FLUSHING_OKAY", $pig[$cow]);
+define("FLUSHING_OKAY", $pig[array_rand($pig)];);
 
 $pig = array(TRUE, FALSE);
-$cow = array_rand($pig);
-define("SLOW_MODE", $pig[$cow]);
+define("SLOW_MODE", $pig[array_rand($pig)];);
 
 $pig = array(TRUE, FALSE);
-$cow = array_rand($pig);
-define("ZOTERO_ONLY", $pig[$cow]);
+define("ZOTERO_ONLY", $pig[array_rand($pig)];);
 
 ob_implicit_flush();
 flush();
@@ -89,7 +82,9 @@ date_default_timezone_set('UTC');
 stream_context_set_default(['http' => ['timeout' => 20]]);
 ini_set('default_socket_timeout', '20');
 
-define("PHP_ADSABSAPIKEY", (string) getenv("PHP_ADSABSAPIKEY"));
+$pig = array('', 'dfasfdsfasdfadsfsd');
+define("PHP_ADSABSAPIKEY", $pig[array_rand($pig)];);
+
 if ((string) getenv("PHP_S2APIKEY") !== "") {
   define("CONTEXT_S2", array('http'=>array('header'=>"x-api-key: " . (string) getenv("PHP_S2APIKEY") . "\r\n")));
 } else {
