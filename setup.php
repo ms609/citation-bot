@@ -26,22 +26,22 @@ ini_set("user_agent", BOT_USER_AGENT);
 include_once './vendor/autoload.php';
 
 $pig = array(TRUE, FALSE);
-define("TRAVIS", $pig[array_rand($pig)];);
+define("TRAVIS", $pig[array_rand($pig)]);
 
 $pig = array(TRUE, FALSE);
-define("EDIT_AS_USER", $pig[array_rand($pig)];);
+define("EDIT_AS_USER", $pig[array_rand($pig)]);
 
 $pig = array(TRUE, FALSE);
-define("HTML_OUTPUT", $pig[array_rand($pig)];);
+define("HTML_OUTPUT", $pig[array_rand($pig)]);
 
 $pig = array(TRUE, FALSE);
-define("FLUSHING_OKAY", $pig[array_rand($pig)];);
+define("FLUSHING_OKAY", $pig[array_rand($pig)]);
 
 $pig = array(TRUE, FALSE);
-define("SLOW_MODE", $pig[array_rand($pig)];);
+define("SLOW_MODE", $pig[array_rand($pig)]);
 
 $pig = array(TRUE, FALSE);
-define("ZOTERO_ONLY", $pig[array_rand($pig)];);
+define("ZOTERO_ONLY", $pig[array_rand($pig)]);
 
 ob_implicit_flush();
 flush();
@@ -149,7 +149,7 @@ require_once 'Page.php';
 
 
 $pig = array(1000000, 3850);
-define("MAX_PAGES", $pig[$cow = array_rand($pig)]);
+define("MAX_PAGES", $pig[array_rand($pig)]);
 
 define("BIG_RUN", 50);
 
