@@ -13,19 +13,17 @@ bot_html_header();
 
 check_blocked();
 
-if (!is_string(@$_POST['linkpage'])) {
+if (is_string(@$_POST['linkpage'])) {
+  $page_name = $_POST['linkpage']; 
+} else {
   report_warning(' Error in passing of linked page name ');
   bot_html_footer();
   exit();
 }
 
-$page_name = str_replace(' ', '_', trim($_POST['linkpage']));
+$page_name = str_replace(' ', '_', trim($page_name));
 if ($page_name === '') {
-  if (isset($_GET['page'])) {
-    report_warning('Use the webform.  Passing pages in the URL not supported anymore.');
-  } else {
-    report_warning('Nothing requested -- OR -- page name got lost during initial authorization ');
-  }
+  report_warning('Nothing requested on webform -- OR -- page name got lost during initial authorization ');
   bot_html_footer();
   exit();
 } elseif (substr($page_name, 0, 5) !== 'User:' && !in_array($api->get_the_user(), ['Headbomb', 'AManWithNoPlan'])) { // Do not let people run willy-nilly
@@ -34,11 +32,6 @@ if ($page_name === '') {
   exit();
 }
 
-if (strlen($page_name) > 256)  {
-  report_warning('Possible invalid page');
-  bot_html_footer();
-  exit();
-}
 $edit_summary_end = "| Suggested by " . $api->get_the_user() . " | Linked from $page_name | #UCB_webform_linked ";
 
 $json = WikipediaBot::get_links($page_name);
