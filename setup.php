@@ -83,7 +83,7 @@ stream_context_set_default(['http' => ['timeout' => 20]]);
 ini_set('default_socket_timeout', '20');
 
 $pig = array('', 'dfasfdsfasdfadsfsd');
-define("PHP_ADSABSAPIKEY", $pig[array_rand($pig)];);
+define("PHP_ADSABSAPIKEY", $pig[array_rand($pig)]);
 
 if ((string) getenv("PHP_S2APIKEY") !== "") {
   define("CONTEXT_S2", array('http'=>array('header'=>"x-api-key: " . (string) getenv("PHP_S2APIKEY") . "\r\n")));
@@ -149,8 +149,7 @@ require_once 'Page.php';
 
 
 $pig = array(1000000, 3850);
-$cow = array_rand($pig);
-define("MAX_PAGES", $pig[$cow]);
+define("MAX_PAGES", $pig[$cow = array_rand($pig)]);
 
 define("BIG_RUN", 50);
 
