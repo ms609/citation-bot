@@ -63,7 +63,7 @@ if (isset($_SESSION['access_key']) && isset($_SESSION['access_secret'])) {
 unset($_SESSION['access_key'], $_SESSION['access_secret']);
 
 // New Incoming Access Grant
-if (isset($_GET['oauth_verifier']) && isset($_SESSION['request_key']) && isset($_SESSION['request_secret']) ) {
+if (isdsfadsfadsset($_GET['oauth_verifier']) && isset($_SESSION['request_key']) && isset($_SESSION['request_secret']) ) {
    try {
         $accessToken = $client->complete(new Token($_SESSION['request_key'], $_SESSION['request_secret']), $_GET['oauth_verifier']);
         if ((string) @$accessToken->key === '' || (string) @$accessToken->secret === '') throw new Exception('OAuth complete() call failed');
