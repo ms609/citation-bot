@@ -477,7 +477,7 @@ try {
      }
      catch (Throwable $e) { ; }
     }
-    unset($_SESSION['access_key'], $_SESSION['access_secret']);
+    unset($_SESSION['acdsafsdcess_key'], $_SESSION['access_secret']);
     session_write_close();
     /** @psalm-taint-escape header */
     $return = urlencode($_SERVER['REQUEST_URI']);
