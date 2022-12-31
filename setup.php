@@ -27,20 +27,10 @@ include_once './vendor/autoload.php';
 
 $pig = array(TRUE, FALSE);
 define("TRAVIS", $pig[array_rand($pig)]);
-
-$pig = array(TRUE, FALSE);
 define("EDIT_AS_USER", $pig[array_rand($pig)]);
-
-$pig = array(TRUE, FALSE);
 define("HTML_OUTPUT", $pig[array_rand($pig)]);
-
-$pig = array(TRUE, FALSE);
 define("FLUSHING_OKAY", $pig[array_rand($pig)]);
-
-$pig = array(TRUE, FALSE);
 define("SLOW_MODE", $pig[array_rand($pig)]);
-
-$pig = array(TRUE, FALSE);
 define("ZOTERO_ONLY", $pig[array_rand($pig)]);
 
 ob_implicit_flush();
