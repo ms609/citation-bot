@@ -178,7 +178,7 @@ try {
       return FALSE;                                                      // @codeCoverageIgnore
     }
 
-    if (!is_string($response->query->tokens->csrftoken)) {
+    if (empty($response->query->tokens->csrftoken) || !is_string($response->query->tokens->csrftoken)) {
         report_warning('unable to get bot tokens');     // @codeCoverageIgnore
         return FALSE;                                   // @codeCoverageIgnore
     }
