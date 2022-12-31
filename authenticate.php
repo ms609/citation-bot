@@ -63,17 +63,17 @@ if (isset($_SESSION['access_key']) && isset($_SESSION['access_secret'])) {
 unset($_SESSION['access_key'], $_SESSION['access_secret']);
 
 // New Incoming Access Grant
-if (isdsfadsfadsset($_GET['oauth_verifier']) && isset($_SESSION['request_key']) && isset($_SESSION['request_secret']) ) {
+if (is_string(@$_GET['oauth_verifier']) && is_string(@$_SESSION['request_key']) && is_string(@$_SESSION['request_secret']) ) {
    try {
         $accessToken = $client->complete(new Token($_SESSION['request_key'], $_SESSION['request_secret']), $_GET['oauth_verifier']);
-        if ((string) @$accessToken->key === '' || (string) @$accessToken->secret === '') throw new Exception('OAuth complete() call failed');
+        if (empty($accessToken->key) || empty($accessToken->secret)) throw new Exception('OAuth complete() call failed');
         $_SESSION['access_key'] = $accessToken->key;
         $_SESSION['access_secret'] = $accessToken->secret;
         unset($_SESSION['request_key'], $_SESSION['request_secret']);
-        if (isset($_GET['return'])) {
+        if (is_string(@$_GET['return'])) {
            // This could only be tainted input if OAuth server itself was hacked, so flag as safe
            /** @psalm-taint-escape header */
-           $where = trim((string) $_GET['return']);
+           $where = trim($_GET['return']);
            return_to_sender($where);
         }
         return_to_sender();
@@ -87,10 +87,8 @@ unset($_SESSION['request_key'], $_SESSION['request_secret']);
 $proto = (
          (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on') ||
          (isset($_SERVER['HTTP_X_FORWARDED_PROTO']) && $_SERVER['HTTP_X_FORWARDED_PROTO'] === 'https')
-      ) ? "https" : "http";
-$host = $_SERVER['HTTP_HOST'];
-$path = $_SERVER['REQUEST_URI'];
-$newcallback = $proto . '://' . $host . $path;
+      ) ? "https://" : "http://";
+$newcallback = $proto . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI'];
 
 try {
       $client->setCallback($newcallback);
