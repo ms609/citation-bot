@@ -481,11 +481,16 @@ try {
      }
      catch (Throwable $e) { ; }
     }
-    unset($_SESSION['access_key'], $_SESSION['access_secret']);
-    session_write_close();
-    /** @psalm-taint-escape header */
-    $return = urlencode($_SERVER['REQUEST_URI']);
-    @header("Location: authenticate.php?return=" . $return);
+    if (empty($_SERVER['REQUEST_URI'])) {
+       session_destroy(); // This is really bad news
+       report_error('Invalid access attempt to internal API');
+    } else {
+       unset($_SESSION['access_key'], $_SESSION['access_secret']);
+       session_write_close();
+       /** @psalm-taint-escape header */
+       $return = urlencode($_SERVER['REQUEST_URI']);
+       @header("Location: authenticate.php?return=" . $return);
+    }
     exit(0);
   }
 }
