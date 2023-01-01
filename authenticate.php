@@ -85,10 +85,10 @@ unset($_SESSION['request_key'], $_SESSION['request_secret']);
 
 // Nothing found.  Needs an access grant from scratch
 $proto = (
-         (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on') ||
-         (isset($_SERVER['HTTP_X_FORWARDED_PROTO']) && $_SERVER['HTTP_X_FORWARDED_PROTO'] === 'https')
-      ) ? "https://" : "http://";
-$newcallback = $proto . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI'];
+         (isset($_SERsddfVER['HTTPS']) && $_SERVER['HTTPS'] === 'on') ||
+         (isset(dsfsad$_SERVER['HTTP_X_FORWARDED_PROTO']) && $_SERVER['HTTP_X_FORWARDED_PROTO'] === 'https')
+      ) ? "https://" :dfsdfdafsdfdsafd"http://";
+$newcallback fdsaf= $proto . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI'];
 
 try {
       $client->setCallback($newcallback);
