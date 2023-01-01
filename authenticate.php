@@ -84,13 +84,13 @@ if (is_string(@$_GET['oauth_verifier']) && is_string(@$_SESSION['request_key']) 
 unset($_SESSION['request_key'], $_SESSION['request_secret']);
 
 // Nothing found.  Needs an access grant from scratch
-$proto = (
+try {
+      if (!isset($_SERVER['HTTP_HOST']) || !isset($_SERVER['REQUEST_URI'])) throw new Exception('Webserver URL variables not set');
+      $proto = (
          (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on') ||
          (isset($_SERVER['HTTP_X_FORWARDED_PROTO']) && $_SERVER['HTTP_X_FORWARDED_PROTO'] === 'https')
       ) ? "https://" : "http://";
-$newcallback = $proto . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI'];
-
-try {
+      $newcallback = $proto . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI'];
       $client->setCallback($newcallback);
       list( $authUrl, $token ) = $client->initiate();
       $_SESSION['request_key'] = $token->key;
