@@ -7495,7 +7495,7 @@ final class Template {
              break;
           case "hl": case "safe": case "q": case "tbm": case "start": case "ludocid":
           case "cshid": case "stick": case "as_eq": case "kgmid": case "as_drrb":
-          case "as_scoring": case "gl": case "rllag": case "lsig": case "lpsid": case "as_q":
+          case "as_scoring": case "gl": case "rllag": case "lsig": case "lpsid": case "as_q": case "kponly":
              $url .=  $part . "&" ;
              break;
           default:
