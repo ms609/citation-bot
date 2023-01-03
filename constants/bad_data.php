@@ -785,7 +785,7 @@ const NON_JOURNAL_WEBSITES = array('-news.co.uk/', '.ajc.com/', '.al.com/',
 	                  'ynszxc.net/', 'yourentertainmentnow.com/', 'youtube.com/',
 	                  'yuzhnoye.com/', 'zap2it.com/', 'zdnet.com/', 'zeenews.india.com/',
 	                  'zerohedge.com/', 'zhanqi.tv/', 'zoominfo.com/', 'hdr.undp.org/', '.nist.gov/',
-	                  'ngdc.noaa.gov/', 'babel.hathitrust.org/', 'pcgames.de/');
+	                  'ngdc.noaa.gov/', 'babel.hathitrust.org/', 'pcgames.de/', 'eurogamer.it/');
                      // Just a list of ones that are obvious.  Add ones that time-out as we find them
                      // bbm.ca is short enough that we add /bbm.ca/ and .bbm.ca/ since we don't want to grab too many sites
 
@@ -802,7 +802,7 @@ const ARE_MAGAZINES = array('the new yorker', 'the new republic', 'new republic'
                            'famitsu', 'gamepro', 'yachting world',
                            ); // lowercase axact matches
 const ARE_MANY_THINGS = array('pc gamer', 'gamestar', 'rock paper shotgun', 'mcv', 'rock, paper, shotgun', 'edge',
-                              'ballotpedia', 'npr', 'ballotpedia.org', 'npr.org', 'nih.gov', 'nih', 
+                              'ballotpedia', 'npr', 'ballotpedia.org', 'npr.org', 'nih.gov', 'nih', 'eurogamer.it',
                                'national institutes of health', 'national institutes of health (nih)'); // lowercase axact matches.  These are things that are both websites and newspapers
 const ARE_NEWSPAPERS = array('the economist', 'la times', 'toronto sun', 'washington post', 'the washington post', 'philippine daily inquirer', 'the irish times'); // lowercase axact matches
 const NO_PUBLISHER_NEEDED = array('los angeles times', 'new york times magazine', 'the new york times',
