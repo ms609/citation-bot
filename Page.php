@@ -719,7 +719,11 @@ class Page {
         if ($class === "Template") {
           echo "<p>\n\n The following text might help you figure out where the <b>error on the page</b> is (Look for lone { and } characters)</h1>\n\n" . echoable($text) . "\n\n<p>";
         }
-        if (TRAVIS || $this->title !== "") report_minor_error("Report this problem please about page " . $this->title);
+        if (TRAVIS) {
+          report_error("Critical Error on page: " . $this->title);
+        } else {
+          report_warning("Either page is too big and complex or there is an error with { and } characters balancing out.");
+        }
         // @codeCoverageIgnoreEnd
     }
     $this->text = $text;
