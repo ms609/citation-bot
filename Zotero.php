@@ -715,7 +715,7 @@ public static function process_zotero_response(string $zotero_response, Template
     }
     $result->extra = trim($result->extra);
     if ($result->extra !== '') {
-      report_minor_error("Unhandled extra data: " . echoable($result->extra) .  ' FROM ' . echoable($url));          // @codeCoverageIgnore
+      // TODO - look at this again at some point report_minor_error("Unhandled extra data: " . echoable($result->extra) .  ' FROM ' . echoable($url));          // @codeCoverageIgnore
     }
   } 
   
@@ -1398,7 +1398,7 @@ public static function find_indentifiers_in_urls(Template $template, ?string $ur
           if ($template->blank('pmc')) {
             quietly('report_modification', "Converting URL to PMC parameter");
           }
-          $new_pmc = (string) @$match[1] . (string) @$match[2];
+          $new_pmc = $match[1] . $match[2];
           if (is_null($url_sent)) {
             if (stripos($url, ".pdf") !== FALSE) {
               $test_url = "https://www.ncbi.nlm.nih.gov/pmc/articles/PMC" . $new_pmc . "/";

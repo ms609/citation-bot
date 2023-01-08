@@ -19,22 +19,31 @@ if (HTML_OUTPUT) {
 check_blocked();
 
 if (isset($argv[1])) {
-  $pages = (string) $argv[1];
+  $pages = $argv[1];
   if ($pages === 'page_list.txt') {
     $pages = trim((string) @file_get_contents('./page_list.txt'));
   } elseif ($pages === 'page_list2.txt') {
     $pages = trim((string) @file_get_contents('./page_list2.txt'));
   }
 } elseif (isset($_GET["page"])) {
-  $pages = (string) $_GET["page"];
+  $pages = $_GET["page"];
+  if (!is_string($pages)) {
+    report_warning('Non-string found in GET for page.');
+    $pages = '';
+  }
   if (strpos($pages, '|') !== FALSE) {
-    report_error('Use the webform for multiple pages.');
+    report_warning('Use the webform for multiple pages.');
+    $pages = '';
   }
 } elseif (isset($_POST["page"])) {
-  $pages = (string) $_POST["page"];
+  $pages = $_POST["page"];
+  if (!is_string($pages)) {
+    report_warning('Non-string found in POST for page.');
+    $pages = '';
+  }
 } else {
   report_warning('Nothing requested -- OR -- pages got lost during initial authorization ');
-  $pages = ''; // Errors out below
+  $pages = '';
 }
 
 if (isset($_REQUEST["edit"]) && $_REQUEST["edit"]) {

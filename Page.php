@@ -49,13 +49,14 @@ class Page {
       // @codeCoverageIgnoreEnd
     }
     foreach ($details->query->pages as $p) {
+      /** @var object $my_details */
       $my_details = $p;
     }
     if (!isset($my_details)) {
       report_warning("Page fetch error - could not even get details"); // @codeCoverageIgnore
       return FALSE;                                                    // @codeCoverageIgnore
     }
-    $this->read_at = isset($details->curtimestamp) ? $details->curtimestamp : NULL;
+    $this->read_at = isset($details->curtimestamp) ? $details->curtimestamp : '';
     
     $details = $my_details;
     if (isset($details->invalid)) {
@@ -72,7 +73,8 @@ class Page {
        return FALSE;                                          // @codeCoverageIgnore
     }
     
-    if (isset($details->protection) && !empty($details->protection)) {
+    if (!empty($details->protection)) {
+       /** @var array<object> $the_protections */
        $the_protections = (array) $details->protection;
        foreach ($the_protections as $protects) {
          if (isset($protects->type) && (string) $protects->type === "edit" && isset($protects->level)) {
@@ -513,6 +515,7 @@ class Page {
       $auto_summary .= "URLs might have been anonymized. ";
     }
     if (count($this->modifications['additions']) !== 0) {
+      /** @var array<string> $addns */
       $addns = $this->modifications["additions"];
       $auto_summary .= "Add: ";
       $min_au = 9999;
@@ -608,6 +611,7 @@ class Page {
   }
 
   public function write(WikipediaBot $api, string $edit_summary_end = '') : bool {
+    /** @var array<boolean> $failures */
     static $failures = array(FALSE, FALSE, FALSE, FALSE, FALSE);
     if ($this->allow_bots()) {
       $failures[0] = $failures[1];
@@ -649,8 +653,11 @@ class Page {
   public function extract_object(string $class) : array {
     $i = 0;
     $text = $this->text;
+    /** @var array<string> $regexp_in */
     $regexp_in = $class::REGEXP;
+    /** @var string $placeholder_text */
     $placeholder_text = $class::PLACEHOLDER_TEXT;
+    /** @var boolean $treat_identical_separately */
     $treat_identical_separately = $class::TREAT_IDENTICAL_SEPARATELY;
     $objects = array();
     
@@ -666,6 +673,7 @@ class Page {
     $preg_ok = TRUE;
     foreach ($regexp_in as $regexp) {
       while ($preg_ok = preg_match($regexp, $text, $match)) {
+        /** @var class-string $class $obj */
         $obj = new $class();
         try {
           $obj->parse_text($match[0]);
@@ -711,7 +719,11 @@ class Page {
         if ($class === "Template") {
           echo "<p>\n\n The following text might help you figure out where the <b>error on the page</b> is (Look for lone { and } characters)</h1>\n\n" . echoable($text) . "\n\n<p>";
         }
-        if (TRAVIS || $this->title !== "") report_minor_error("Report this problem please about page " . $this->title);
+        if (TRAVIS) {
+          report_error("Critical Error on page: " . $this->title);
+        } else {
+          report_warning("Either page is too big and complex or there is an error with { and } characters balancing out.");
+        }
         // @codeCoverageIgnoreEnd
     }
     $this->text = $text;
@@ -720,8 +732,11 @@ class Page {
 
   protected function replace_object (array &$objects) : void {  // Pointer to save memory
     $i = count($objects);
-    if ($objects) foreach (array_reverse($objects) as $obj)
-      $this->text = str_ireplace(sprintf($obj::PLACEHOLDER_TEXT, --$i), $obj->parsed_text(), $this->text); // Case insensitive, since comment placeholder might get title case, etc.
+    if ($objects) {
+      foreach (array_reverse($objects) as $obj) {
+        $this->text = str_ireplace(sprintf($obj::PLACEHOLDER_TEXT, --$i), $obj->parsed_text(), $this->text); // Case insensitive, since comment placeholder might get title case, etc.
+      }
+    }
   }
 
   protected function announce_page() : void {

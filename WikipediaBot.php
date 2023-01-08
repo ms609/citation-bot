@@ -51,15 +51,14 @@ final class WikipediaBot {
     $conf->setConsumer($this->user_consumer);
     $conf->setUserAgent(BOT_USER_AGENT);
     $this->user_client = new Client($conf);
+    $this->user_token = new Token("", "");
 
     /** @psalm-suppress RedundantCondition */  /* PSALM thinks TRAVIS cannot be FALSE */
     if (TRAVIS) {
       $this->the_user = 'Citation_bot';
-      $this->user_token = new Token("", "");
       // @codeCoverageIgnoreStart
     } elseif (!HTML_OUTPUT) { // Running on the command line, and editing using main tokens
       $this->the_user = '';
-      $this->user_token = new Token("", "");
     } else {
       $this->authenticate_user();
       // @codeCoverageIgnoreEnd
@@ -178,6 +177,10 @@ try {
       return FALSE;                                                      // @codeCoverageIgnore
     }
 
+    if (empty($response->query->tokens->csrftoken) || !is_string($response->query->tokens->csrftoken)) {
+        report_warning('unable to get bot tokens');     // @codeCoverageIgnore
+        return FALSE;                                   // @codeCoverageIgnore
+    }
     // No obvious errors; looks like we're good to go ahead and edit
     $auth_token = $response->query->tokens->csrftoken;
     if (defined('EDIT_AS_USER')) {  // @codeCoverageIgnoreStart
@@ -236,18 +239,17 @@ try {
       return NULL;
     }
     
-    if (!isset($response->query) || !isset($response->query->pages)) {
+    if (!isset($response->query->pages)) {
       report_warning("Pages array is non-existent.  Aborting.");
       return NULL;
     }
     $myPage = reset($response->query->pages); // reset gives first element in list
     
-    if (!isset($myPage->lastrevid) || !isset($myPage->revisions) || !isset($myPage->revisions[0]) ||
-        !isset($myPage->revisions[0]->timestamp) || !isset($myPage->title)) {
+    if (!isset($myPage->lastrevid) || !isset($myPage->revisions[0]->timestamp) || !isset($myPage->title)) {
       report_warning("Page seems not to exist. Aborting.");
       return NULL;
     }
-    if (!isset($response->query->tokens) || !isset($response->query->tokens->csrftoken)) {
+    if (!isset($response->query->tokens->csrftoken)) {
       report_warning("Response object lacked tokens.  Aborting. ");
       return NULL;
     }
@@ -259,11 +261,11 @@ try {
       report_warning("Write error: " . 
                     echoable(strtoupper($result->error->code)) . ": " . 
                     str_replace(array("You ", " have "), array("This bot ", " has "), 
-                    echoable($result->error->info)));
+                    echoable((string) @$result->error->info)));
       return FALSE;
     } elseif (isset($result->edit->captcha)) {  // Bot account has flags set on en.wikipedia.org and simple.wikipedia.org to avoid captchas
       report_error("Write error: We encountered a captcha, so can't be properly logged in.");  // @codeCoverageIgnore
-    } elseif (!isset($result->edit->result)) { // Includes results === NULL
+    } elseif (empty($result->edit->result)) { // Includes results === NULL
       report_warning("Unhandled write error.  Please copy this output and " .
                     "<a href='https://en.wikipedia.org/wiki/User_talk:Citation_bot'>" .
                     "report a bug</a>.  There is no need to report the database being locked unless it continues to be a problem. ");
@@ -478,11 +480,16 @@ try {
      }
      catch (Throwable $e) { ; }
     }
-    unset($_SESSION['access_key'], $_SESSION['access_secret']);
-    session_write_close();
-    /** @psalm-taint-escape header */
-    $return = urlencode($_SERVER['REQUEST_URI']);
-    @header("Location: authenticate.php?return=" . $return);
+    if (empty($_SERVER['REQUEST_URI'])) {
+       session_destroy(); // This is really bad news
+       report_error('Invalid access attempt to internal API');
+    } else {
+       unset($_SESSION['access_key'], $_SESSION['access_secret']);
+       session_write_close();
+       /** @psalm-taint-escape header */
+       $return = urlencode($_SERVER['REQUEST_URI']);
+       @header("Location: authenticate.php?return=" . $return);
+    }
     exit(0);
   }
 }

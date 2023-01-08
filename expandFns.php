@@ -272,6 +272,7 @@ function sanitize_doi(string $doi) : string {
  * 0 => text containing a DOI, possibly encoded, possibly with additional text
  * 1 => the decoded DOI
  */
+/** @return array<string> */
 function extract_doi(string $text) : array {
   if (preg_match(
         "~(10\.\d{4}\d?(/|%2[fF])..([^\s\|\"\?&>]|&l?g?t;|<[^\s\|\"\?&]*>)+)~",
@@ -296,13 +297,13 @@ function extract_doi(string $text) : array {
     if (!doi_works($doi) && !doi_works(sanitize_doi($doi))) { // Reject URLS like ...../25.10.2015/2137303/default.htm
       if (preg_match('~^10\.([12]\d{3})~', $doi, $new_match)) {
         if (preg_match("~[0-3][0-9]\.10\." . $new_match[1] . "~", $text)) {
-          return array(FALSE, FALSE);
+          return array('', '');
         }
       }
     }
     return array($match[0], sanitize_doi($doi));
   }
-  return array(FALSE, FALSE);
+  return array('', '');
 }
 
 // ============================================= String/Text functions ======================================
@@ -408,6 +409,7 @@ function wikify_external_text(string $title) : string {
 
 function restore_italics (string $text) : string {
   // <em> tags often go missing around species names in CrossRef
+  if (str_ireplace(array('arxiv', 'ebay', 'aRMadillo', 'imac'), '', $text) !== $text) return $text; // Words with capitals in the middle, but not the first character
   return safe_preg_replace('~([a-z]+)([A-Z][a-z]+\b)~', "$1 ''$2''", $text);
 }
 

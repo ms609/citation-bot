@@ -63,6 +63,7 @@ final class Template {
 
   public function parse_text(string $text) : void {
     set_time_limit(120);
+    /** @psalm-suppress RedundantPropertyInitializationCheck */
     if (isset($this->rawtext)) {
         report_error("Template already initialized; call new Template() before calling Template::parse_text()"); // @codeCoverageIgnore
     }
@@ -181,7 +182,11 @@ final class Template {
     if (isset($this->param[0])) {
         // Use second param as a template if present, in case first pair
         // is last1 = Smith | first1 = J.\n
-        $example = $this->param[isset($this->param[1]) ? 1 : 0]->parsed_text();
+        if (isset($this->param[1])) {
+           $example = $this->param[1]->parsed_text();
+        } else {
+           $example = $this->param[0]->parsed_text();
+        }
         $example = preg_replace('~[^\s=][^=]*[^\s=]~u', 'X', $example); // Collapse strings
         $example = preg_replace('~ +~u', ' ', $example); // Collapse spaces
         // Check if messed up, and do not use bad styles
@@ -805,11 +810,11 @@ final class Template {
     }
 
     // We have to map these, since sometimes we get floating accessdate and such
-    $mistake_id = array_search($param_name, COMMON_MISTAKES_TOOL);
-    if ($mistake_id !== FALSE) {
-        $param_name = COMMON_MISTAKES_TOOL[$mistake_id];
+    if (array_key_exists($param_name, COMMON_MISTAKES_TOOL)) {
+        $param_name = COMMON_MISTAKES_TOOL[$param_name];
     }
-
+    /** @psalm-assert string $param_name */
+    
     if ($api) $this->record_api_usage($api, $param_name);
 
     // If we already have name parameters for author, don't add more
@@ -1530,7 +1535,7 @@ final class Template {
            return $this->add($param_name, $value);
         }
         // TODO : re-checked & change this back to 6 months ago everyone in a while to compact all DOIs
-        $last_day = strtotime("23:59:59 31 July 2022");
+        $last_day = strtotime("23:59:59 31 December 2022");
         $check_date = $last_day - 126000;
         // @codeCoverageIgnoreStart
         if (($the_new > $last_day) && ($existing < $check_date)) {
@@ -1774,7 +1779,7 @@ final class Template {
       // This is quite a broad match, so we need to ensure that no baggage has been tagged on to the end of the URL.
       $doi = preg_replace("~(\.x)/(?:\w+)~", "$1", $match[0]);
       $doi = extract_doi($doi)[1];
-      if ($doi === FALSE) return; // Found nothing
+      if ($doi === '') return; // Found nothing
       if ($this->has('quote') && strpos($this->get('quote'), $doi) !== FALSE) return;
       if (doi_active($doi)) $this->add_if_new('doi', $doi);
     }
@@ -1904,6 +1909,7 @@ final class Template {
     }
   }
 
+  /** @return array{0: string, 1: int, 2: array} */
   protected function query_pubmed() : array {
 /*
  *
@@ -1911,13 +1917,10 @@ final class Template {
  * Returns an array:
  *   [0] => PMID of first matching result
  *   [1] => total number of results
- *   [2] => what was used to find PMID
  *
  */
     if (ZOTERO_ONLY) {
-      $results = [];     // @codeCoverageIgnore
-      $results[1] = 0;   // @codeCoverageIgnore
-      return $results;   // @codeCoverageIgnore
+      return array('', 0, array());   // @codeCoverageIgnore
     }
     if ($doi = $this->get_without_comments_and_placeholders('doi')) {
       if (doi_works($doi)) {
@@ -1940,11 +1943,10 @@ final class Template {
           if ($results[1] === 1) return $results;
         }
     }
-    $results = [];
-    $results[1] = 0;
-    return $results;
+    return array('', 0, array());
   }
 
+  /** @param array<string> $terms */  /** @return array{0: string, 1: int, 2: array} */
   protected function do_pumbed_query(array $terms) : array {
     set_time_limit(120);
   /* do_query
@@ -2020,18 +2022,18 @@ final class Template {
     // @codeCoverageIgnoreStart
     if ($xml === NULL) {
       report_warning("no results.");
-      return array('', 0);
+      return array('', 0, array());
     }
     if (isset($xml->ErrorList)) { // Could look at $xml->ErrorList->PhraseNotFound for list of what was not found
       report_inline('no results.');
-      return array('', 0);
+      return array('', 0, array());
     }
     // @codeCoverageIgnoreEnd
 
     if (isset($xml->IdList->Id[0]) && isset($xml->Count)) {
       return array((string)$xml->IdList->Id[0], (int)(string)$xml->Count, $terms);// first results; number of results
     } else {
-      return array('', 0);
+      return array('', 0, array());
     }
   }
 
@@ -2553,13 +2555,14 @@ final class Template {
             (stripos($oa_hostname, 'doi.org') !== FALSE)) {
           return 'have free';
        }
-       preg_match("~^https?://([^\/]+)/~", $oa_url . '/', $match);
-       $new_host_name = str_replace('www.', '', strtolower((string) @$match[1]));
-       foreach (ALL_URL_TYPES as $old_url) {
+       if (preg_match("~^https?://([^\/]+)/~", $oa_url . '/', $match)) {
+         $new_host_name = str_replace('www.', '', strtolower($match[1]));
+         foreach (ALL_URL_TYPES as $old_url) {
             if (preg_match("~^https?://([^\/]+)/~", $this->get($old_url), $match)) {
                 $old_host_name = str_replace('www.', '', strtolower($match[1]));
                 if ($old_host_name === $new_host_name) return 'have free';
             }
+         }
        }
         $url_type = 'url';
         if ($this->has('chapter')) {
@@ -2701,7 +2704,7 @@ final class Template {
         if ($part_start[0] === 'page')     $part_start[0] = 'pg';
         switch ($part_start[0]) {
           case "dq": case "pg": case "lpg": case "q": case "printsec": case "cd": case "vq": case "jtp": case "sitesec": case "article_id":
-            if (!isset($part_start[1]) || $part_start[1] === '') {
+            if (empty($part_start[1])) {
                 $removed_redundant++;
                 $removed_parts .= $part;
             } else {
@@ -3042,7 +3045,8 @@ final class Template {
               }
               break;
             case "R": // Resource identifier... *may* be DOI but probably isn't always.
-              if ($matches = extract_doi($endnote_datum)[1]) {
+              $matches = extract_doi($endnote_datum)[1];
+              if ($matches !== '') {
                 $endnote_datum = $matches;
                 $endnote_parameter = 'doi';
               } else {
@@ -3071,7 +3075,7 @@ final class Template {
       }
 
       $doi = extract_doi($dat);
-      if ($doi[1] !== FALSE) {
+      if ($doi[1] !== '') {
         $this->add_if_new('doi', $doi[1]);
         $this->change_name_to('cite journal');
         $dat = str_replace($doi[0], '', $dat);
@@ -5019,7 +5023,7 @@ final class Template {
                  return;
              }
              if ($this->get_identifiers_from_url($this->get($param))) {
-               if (!extract_doi($this->get($param))[1]) { // If it gives a doi, then might want to keep it anyway since many archives have doi in the url string
+               if (extract_doi($this->get($param))[1] === '') { // If it gives a doi, then might want to keep it anyway since many archives have doi in the url string
                  $this->forget($param);
                  return;
                }
@@ -7428,6 +7432,13 @@ final class Template {
         if (isset($part_start[1]) && $part_start[1] === '') {
           $part_start[0] = "donotaddmeback"; // Do not add blank ones
         }
+        if (empty($part_start[1])) {
+          $part_start1 = '';
+          $it_is_blank = TRUE;
+        } else {
+          $part_start1 = $part_start[1];
+          $it_is_blank = FALSE;
+        }
         switch ($part_start[0]) {
           case "aq": case "aqi": case "bih": case "biw": case "client":
           case "as": case "useragent": case "as_brr":
@@ -7451,40 +7462,40 @@ final class Template {
           case "authuser": case "gsas": case "ned": case "pz": case "e": case "surl":
              break;
           case "as_occt":
-             if (@$part_start[1] == "" || str_i_same($part_start[1], 'any')) break;
+             if ($it_is_blank || str_i_same($part_start1, 'any')) break;
              $url .=  $part . "&" ;
              break;
           case "cf":
-             if (@$part_start[1] == "" || str_i_same($part_start[1], 'all')) break;
+             if ($it_is_blank || str_i_same($part_start1, 'all')) break;
              $url .=  $part . "&" ;
              break;
           case "cs":
-             if (@$part_start[1] == "" || str_i_same($part_start[1], '0')) break;
+             if ($it_is_blank || str_i_same($part_start1, '0')) break;
              $url .=  $part . "&" ;
              break;
           case "btnK":
-             if (@$part_start[1] == "" || str_i_same($part_start[1], 'Google+Search')) break;
+             if ($it_is_blank || str_i_same($part_start1, 'Google+Search')) break;
              $url .=  $part . "&" ;
              break;
           case "as_epq":
-             if (@$part_start[1] == "") break;
+             if ($it_is_blank) break;
              $url .=  $part . "&" ;
              break;
           case "btnG":
-             if (@$part_start[1] == "" || str_i_same($part_start[1], 'Search')) break;
+             if ($it_is_blank || str_i_same($part_start1, 'Search')) break;
              $url .=  $part . "&" ;
              break;
           case "rct":
-             if (@$part_start[1] == "" || str_i_same($part_start[1], 'j')) break;  // default
+             if ($it_is_blank || str_i_same($part_start1, 'j')) break;  // default
              $url .=  $part . "&" ;
              break;
           case "ie": case "oe":
-             if (@$part_start[1] == "" || str_i_same($part_start[1], 'utf-8')) break;  // UTF-8 is the default
+             if ($it_is_blank || str_i_same($part_start1, 'utf-8')) break;  // UTF-8 is the default
              $url .=  $part . "&" ;
              break;
           case "hl": case "safe": case "q": case "tbm": case "start": case "ludocid":
           case "cshid": case "stick": case "as_eq": case "kgmid": case "as_drrb":
-          case "as_scoring": case "gl": case "rllag": case "lsig": case "lpsid": case "as_q":
+          case "as_scoring": case "gl": case "rllag": case "lsig": case "lpsid": case "as_q": case "kponly":
              $url .=  $part . "&" ;
              break;
           default:
