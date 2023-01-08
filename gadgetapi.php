@@ -13,7 +13,7 @@ try {
  //Set up tool requirements
  require_once 'setup.php';
 
- if (!is_string($_POST['text']) || !is_string($_POST['summary'])) {
+ if (!is_string(@$_POST['text']) || !is_string(@$_POST['summary'])) {
    throw new Exception('not a string');  // @codeCoverageIgnore
  }
  $originalText = $_POST['text'];

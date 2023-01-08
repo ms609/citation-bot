@@ -41,19 +41,12 @@ if (file_exists('env.php')) {
   ob_start();
   /** @psalm-suppress MissingFile */
   include_once('env.php');
-  $env_output = trim(str_replace(['Reading authentication tokens from tools.wmflabs.org.',
-                                  'Reading authentication tokens from tools.wmflabs.org-dev.',
-                                  'Reading authentication tokens from citations.toolforge.org.',
-                                  'Reading authentication tokens from citations-dev.toolforge.org.',
-                                  'Reading authentication tokens.',
-                                  ' '],
-                                 ['', '', '', '', '', ''], ob_get_contents()));
+  $env_output = trim(ob_get_contents());
   if ($env_output) {
-    ob_end_flush();  // Something unexpected, so print it out
-    unset($env_output);
-  } else {
-    ob_end_clean();
+    file_put_contents('CodeCoverage', "\n" . $env_output . "\n", FILE_APPEND);  // Something unexpected, so log it
   }
+  unset($env_output);
+  ob_end_clean();
 }
 
 if (!mb_internal_encoding('UTF-8') || !mb_regex_encoding('UTF-8')) { /** @phpstan-ignore-line */ /** We are very paranoid */
