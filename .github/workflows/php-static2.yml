@@ -37,7 +37,7 @@ jobs:
           ${{ runner.os }}-php-
 
     - name: Configure composer and dependencies
-      run: composer config allow-plugins.third-party/required-plugin true && composer config minimum-stability dev && composer config prefer-stable true && composer require mediawiki/oauthclient:1.2.0 && composer require phpstan/phpstan phan/phan:3.2.4
+      run: composer config allow-plugins.third-party/required-plugin true && composer config minimum-stability dev && composer config prefer-stable true && composer require mediawiki/oauthclient:1.2.0 && composer require phpstan/phpstan phan/phan
 
     - name: Install dependencies
       if: steps.composer-cache.outputs.cache-hit != 'true'
