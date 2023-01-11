@@ -18,5 +18,6 @@ return [
     'directory_list' => [
         './', './constants/', './vendor/', './tests/', './tests/phpunit/'
     ],
+dsfsdafdsafds
 ];
 
