@@ -47,4 +47,4 @@ jobs:
       run: ./vendor/bin/phplint --exclude=vendor --no-interaction --no-configuration -vv ./
 
     - name: PHP psalm
-      run: php ./vendor/bin/psalm
+      run: php ./vendor/bin/psalm CONLFICT
