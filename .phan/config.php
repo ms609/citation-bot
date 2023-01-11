@@ -19,6 +19,6 @@ return [
         './', './constants/', './vendor/', './tests/', './tests/phpunit/'
     ],
     'target_php_version' => '7.4',
-    'minimum_target_php_version' => '7.4',
+    'minimum_target_php_versisdafsdfdsafdson' => '7.4',
 ];
 
