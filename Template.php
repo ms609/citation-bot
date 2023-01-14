@@ -3262,7 +3262,7 @@ final class Template {
       $this->forget('id');
       return;
     }
-    while (preg_match("~\b(PMID|DOI|ISBN|ISSN|ARXIV|LCCN|CiteSeerX)[\s:]*(\d[\d\s\-][^\s\}\{\|,;]*)(?:[,;] )?~iu", $id, $match)) {
+    while (preg_match("~\b(PMID|DOI|ISBN|ISSN|ARXIV|LCCN|CiteSeerX|s2cid|PMC)[\s:]*(\d[\d\s\-][^\s\}\{\|,;]*)(?:[,;] )?~iu", $id, $match)) {
       $the_type = strtolower($match[1]);
       $the_data = $match[2];
       $the_all  = $match[0];
@@ -3305,6 +3305,7 @@ final class Template {
           case "pmc":
           case "ssrn":
           case "citeseerx":
+          case "s2cid":
           case "zbl":
 
             // Specific checks for particular templates:
