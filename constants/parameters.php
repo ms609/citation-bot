@@ -424,7 +424,7 @@ const PARAMETER_LIST = array(
   'ISMN', 'ISSN', 'JFM', 'JSTOR', 'LCCN', 'MR', 'OCLC', 'OL', 'OSTI', 'PMC', 'PMID', 'RFC',
   'S2CID', 'SBN', 'SSRN', 'URL', 'ZBL', 'access-date', 'accessdate', 'agency', 'air-date',
   'airdate', 'archive-date', 'archive-format', 'archive-url', 'archivedate', 'archiveurl',
-  'article', 'article-format', 'article-url', 'article-url-access', 'arxiv', 'asin',
+  'article', 'article-format', 'article-number', 'article-url', 'article-url-access', 'arxiv', 'asin',
   'asin-tld', 'assign', 'assign#', 'assignee', 'at', 'audio-visual', 'author', 'author#',
   'author#-first', 'author#-given', 'author#-last', 'author#-link', 'author#-mask',
   'author#-surname', 'author#link', 'author-first', 'author-first#',
