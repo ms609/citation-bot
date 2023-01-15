@@ -3307,6 +3307,7 @@ final class Template {
           case "s2cid":
           case "hdl":
           case "zbl":
+          case "ol":
 
             // Specific checks for particular templates:
             if ($subtemplate_name === 'asin' && $subtemplate->has('country')) {
@@ -3317,12 +3318,21 @@ final class Template {
               report_info("{{OL}} author parameter not supported: cannot convert.");
               break;
             }
+            if ($subtemplate_name === 'ol' && (stripos($subtemplate->parsed_text(), "ia:") !== FALSE)) {
+              report_info("{{OL}} ia: parameter not supported: cannot convert.");
+              break;
+            }
             if ($subtemplate_name === 'jstor' && $subtemplate->has('sici') || $subtemplate->has('issn')) {
               report_info("{{JSTOR}} named parameters are not supported: cannot convert.");
               break;
             }
             if ($subtemplate_name === 'oclc' && !is_null($subtemplate->param_with_index(1))) {
               report_info("{{OCLC}} has multiple parameters: cannot convert.");
+              report_info(echoable($subtemplate->parsed_text()));
+              break;
+            }
+            if ($subtemplate_name === 'issn' && !is_null($subtemplate->param_with_index(1))) {
+              report_info("{{ISSN}} has multiple parameters: cannot convert.");
               report_info(echoable($subtemplate->parsed_text()));
               break;
             }
