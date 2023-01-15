@@ -3306,6 +3306,7 @@ final class Template {
           case "ssrn":
           case "citeseerx":
           case "s2cid":
+          case "hdl":
           case "zbl":
 
             // Specific checks for particular templates:
