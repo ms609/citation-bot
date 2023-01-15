@@ -3291,7 +3291,6 @@ final class Template {
             break;
           case "asin":
           case "oclc":
-          case "ol":
           case "bibcode":
           case "doi":
           case "isbn":
