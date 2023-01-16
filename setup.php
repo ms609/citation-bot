@@ -114,14 +114,14 @@ function check_blocked() : void {
 }
 
 function unlock_user() : void {
-  if (!HTML_OUTPUT) return;
   @session_start();
   unset($_SESSION['big_and_busy']);     
   @session_write_close();
 }
 
 function check_overused() : void {
- return; /**  No longer enforcing - TODO figure out some way to get this to work
+ return;
+  /**  No longer enforcing - TODO figure out some way to get this to work.  Seems to just hang.  Also, re-enable kill_big_job.php
  if (!HTML_OUTPUT) return;
  if (isset($_SESSION['big_and_busy']) && $_SESSION['big_and_busy'] === 'BLOCK4') {
    echo '</pre><div style="text-align:center"><h1>Run blocked by your existing big run.</h1></div><footer><a href="./" title="Use Citation Bot again">Another</a>?</footer></body></html>';
@@ -137,7 +137,6 @@ function check_overused() : void {
 }
 
 function check_killed() : void {
- if (!HTML_OUTPUT) return;
  if(!defined('BIG_JOB_MODE')) return;
  @session_start(['read_and_close' => TRUE]);
  if (isset($_SESSION['kill_the_big_job'])) {
