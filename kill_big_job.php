@@ -1,5 +1,5 @@
 <?php
-exit(); // Disabled this API
+exit(); // Disabled this API in setup.php
 declare(strict_types=1);
 set_time_limit(120);
 $started = @session_start();
