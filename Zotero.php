@@ -140,11 +140,11 @@ public static function query_url_api_class(array $ids, array &$templates) : void
        }
        $doi = $template->get('doi');
        if (!doi_active($doi)) {
-         // TODO - no longer work: if ($template->has('citeseerx')) self::expand_by_zotero($template, 'https://citeseerx.ist.psu.edu/viewdoc/summary?doi=' . $template->get('citeseerx'));
-         if ($template->has('hdl'))       self::expand_by_zotero($template, 'https://hdl.handle.net/' . $template->get('hdl'));
-         //  Has a CAPCHA --  if ($template->has('jfm'))       self::expand_by_zotero($template, 'https://zbmath.org/?format=complete&q=an:' . $template->get('jfm'));
-         //  Has a CAPCHA --  if ($template->has('zbl'))       self::expand_by_zotero($template, 'https://zbmath.org/?format=complete&q=an:' . $template->get('zbl'));
+         //  Gone -- if ($template->has('citeseerx'))
+         //  Has a CAPCHA --  if ($template->has('jfm'))
+         //  Has a CAPCHA --  if ($template->has('zbl'))
          //  Do NOT do MR --  it is a review not the article itself.  Note that html does have doi, but do not use it.
+         if ($template->has('hdl'))       self::expand_by_zotero($template, 'https://hdl.handle.net/' . $template->get('hdl'));
          if ($template->has('osti'))      self::expand_by_zotero($template, 'https://www.osti.gov/biblio/' . $template->get('osti'));
          if ($template->has('rfc'))       self::expand_by_zotero($template, 'https://tools.ietf.org/html/rfc' . $template->get('rfc'));
          if ($template->has('ssrn'))      self::expand_by_zotero($template, 'https://papers.ssrn.com/sol3/papers.cfm?abstract_id=' . $template->get('ssrn'));
@@ -501,7 +501,7 @@ public static function process_zotero_response(string $zotero_response, Template
     report_info("Could not resolve URL " . echoable($url));
     return FALSE;
   }
-  // Remove unused stuff.  TODO - Is there any value in these:
+  // Remove unused stuff
   unset($result->abstractNote);
   unset($result->version);
   unset($result->accessDate);
