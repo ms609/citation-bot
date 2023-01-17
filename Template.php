@@ -154,7 +154,7 @@ final class Template {
     }
 
     if (substr($this->wikiname(),0,5) === 'cite ' || $this->wikiname() === 'citation') {
-      if (preg_match('~< */? *ref *>~i', $this->rawtext) && ($this->wikiname() !== 'cite check')) {
+      if (preg_match('~< */? *ref *>~i', $this->rawtext) && (strpos($this->wikiname(), 'cite check') !== 0)) {
          report_warning('reference within citation template: most likely unclosed template.  ' . "\n" . $this->rawtext . "\n");
          throw new Exception('page_error');
       }
