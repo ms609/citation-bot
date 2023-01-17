@@ -3,7 +3,7 @@ declare(strict_types=1);
 exit(); // Disabled this API in setup.php
 set_time_limit(120);
 $started = @session_start();
-@setcookie(session_name(),session_id(),time()+(7*24*3600)); // since we do not create a WikipediaBot() instance
+@setcookie(session_name(),session_id(),time()+(7*24*3600)); // since we do not call WikipediaBot().authenticate_user()
 
 require_once 'html_headers.php';
 
