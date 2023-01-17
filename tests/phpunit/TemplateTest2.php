@@ -4663,7 +4663,7 @@ final class TemplateTest2 extends testBaseClass {
 
       $text = "{{cite journal|issn=1682-5845}}";
       $expanded = $this->make_citation($text);
-      $this->assertFalse($expanded->use_issn()); // TODO-fix API
+      $this->assertFalse($expanded->use_issn()); // We no longer have an API
     }
 
 }
