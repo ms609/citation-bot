@@ -452,13 +452,13 @@ try {
  * @codeCoverageIgnore
  */
   private function authenticate_user() : void {
+    @setcookie(session_name(),session_id(),time()+(7*24*3600)); // 7 days
     if (isset($_SESSION['citation_bot_user_id']) &&
         isset($_SESSION['access_key']) &&
         isset($_SESSION['access_secret']) &&
         is_string($_SESSION['citation_bot_user_id']) &&
         self::is_valid_user($_SESSION['citation_bot_user_id'])) {
           $this->the_user = $_SESSION['citation_bot_user_id'];
-          @setcookie(session_name(),session_id(),time()+(7*24*3600)); // 7 days
           $this->user_token = new Token($_SESSION['access_key'], $_SESSION['access_secret']);
           return;
     }
