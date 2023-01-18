@@ -420,5 +420,16 @@ final class expandFnsTest extends testBaseClass {
   public function testRomanNumbers() : void {
     $this->assertSame('MMCCCXXXI', numberToRomanRepresentation(2331));
   }
-  
+
+  public function testForDOIGettingFixed() : void { // These do not work, but it would be nice if they did
+    // Nature dropped these
+    $this->assertFalse(doi_works('10.1038/nature05009'));
+    // https://search.informit.org/doi/10.3316/aeipt.20772 and such
+    $this->assertFalse(doi_works('10.3316/informit.550258516430914');
+    $this->assertFalse(doi_works('10.3316/ielapa.347150294724689'));
+    $this->assertFalse(doi_works('10.3316/agispt.19930546'));         
+    $this->assertFalse(doi_works('10.3316/aeipt.207729'));
+    // DO's, not DOIs    
+    $this->assertFalse(doi_works('10.1002/was.00020423')); 
+  }
 }
