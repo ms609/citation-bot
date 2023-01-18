@@ -1444,8 +1444,8 @@ final class Template {
         if (stripos($value, '10.10520/') === 0 && !doi_works($value)) return FALSE; // Has doi in the URL, but is not a doi
         if (stripos($value, '10.1967/') === 0 && !doi_works($value)) return FALSE; // Retired DOIs
         if (stripos($value, '10.1043/0003-3219(') === 0 && !doi_works($value)) return FALSE; // Per-email.  The Angle Orthodontist will NEVER do these, since they have <> and [] in them
-        if (stripos($value, '10.3316/') === 0 && !doi_works($value)) return FALSE; // These do not seem to work - TODO watch https://dx.doi.org/10.3316/informit.550258516430914 https://dx.doi.org/10.3316/ielapa.347150294724689 https://search.informit.org/doi/10.3316/aeipt.207729 https://search.informit.org/doi/10.3316/agispt.19930546 https://search.informit.org/doi/10.3316/aeipt.207729
-        if (stripos($value, '10.1002/was.') === 0 && !doi_works($value)) return FALSE; // do's not doi's - TODO watch https://dx.doi.org/10.1002/was.00020423
+        if (stripos($value, '10.3316/') === 0 && !doi_works($value)) return FALSE; // These do not work - https://search.informit.org/doi/10.3316/aeipt.207729 etc.
+        if (stripos($value, '10.1002/was.') === 0 && !doi_works($value)) return FALSE; // do's not doi's
         if (preg_match(REGEXP_DOI, $value, $match)) {
           if ($this->blank($param_name)) {
             if ($this->wikiname() === 'cite arxiv') $this->change_name_to('cite journal');
