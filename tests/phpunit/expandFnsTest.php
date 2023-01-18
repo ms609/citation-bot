@@ -422,8 +422,8 @@ final class expandFnsTest extends testBaseClass {
   }
 
   public function testForDOIGettingFixed() : void { // These do not work, but it would be nice if they did
-    // Nature dropped ball on these
-    $this->assertFalse(doi_works('10.1038/nature05009'));
+    // Nature dropped ball on these - and they should break
+    $this->assertTrue(doi_works('10.1038/nature05009'));
     // https://search.informit.org/doi/10.3316/aeipt.20772 and such
     $this->assertFalse(doi_works('10.3316/informit.550258516430914'));
     $this->assertFalse(doi_works('10.3316/ielapa.347150294724689'));
