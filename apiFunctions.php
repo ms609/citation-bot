@@ -497,7 +497,8 @@ function expand_by_doi(Template $template, bool $force = FALSE) : bool {
       }
       report_action("Querying CrossRef: doi:" . doi_link($doi));
 
-      if (@$crossRef->volume_title === 'Professional Paper') unset($crossRef->volume_title);
+      if ((string) @$crossRef->volume_title === 'Professional Paper') unset($crossRef->volume_title);
+      if ((string) @$crossRef->series_title === 'Professional Paper') unset($crossRef->series_title);
       if ($template->has('book-title')) unset($crossRef->volume_title);
       if ($crossRef->volume_title && ($template->blank(WORK_ALIASES) || $template->wikiname() === 'cite book')) {
         if (strtolower($template->get('title')) === strtolower((string) $crossRef->article_title)) {
