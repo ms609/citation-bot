@@ -780,6 +780,7 @@ final class Template {
    *
    */
   public function add_if_new(string $param_name, string $value, string $api = '') : bool {
+    echo "called add_if_new with $param_name $value $api \n";
     $value = trim($value);
     $param_name = trim($param_name); // Pure paranoia
     if ($value === '') {
@@ -6893,6 +6894,7 @@ final class Template {
 
   // Amend parameters
   public function rename(string $old_param, string $new_param, ?string $new_value = NULL) : void {
+    echo "Called rename with $old_param $new_param $new_value \n";
     if (empty($this->param)) return;
     if ($old_param === $new_param) {
        if ($new_value !== NULL) {
