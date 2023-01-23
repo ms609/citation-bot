@@ -1446,6 +1446,7 @@ final class Template {
         if (stripos($value, '10.1043/0003-3219(') === 0 && !doi_works($value)) return FALSE; // Per-email.  The Angle Orthodontist will NEVER do these, since they have <> and [] in them
         if (stripos($value, '10.3316/') === 0 && !doi_works($value)) return FALSE; // These do not work - https://search.informit.org/doi/10.3316/aeipt.207729 etc.
         if (stripos($value, '10.1002/was.') === 0 && !doi_works($value)) return FALSE; // do's not doi's
+        if (stripos($value, '10.48550/arXiv') === 0) return FALSE;
         if (preg_match(REGEXP_DOI, $value, $match)) {
           if ($this->blank($param_name)) {
             if ($this->wikiname() === 'cite arxiv') $this->change_name_to('cite journal');
