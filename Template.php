@@ -3966,6 +3966,15 @@ final class Template {
             $this->forget('doi');
             return;
           }
+          if (stripos($value, '10.48550/arXiv.') === 0) {
+             $pos0 = strtolower(substr($value, 15));
+             $pos1 = strtolower($this->get('eprint'));
+             $pos2 = strtolower($this->get('arxiv'));
+             if ($pos0 === $pos1 || $pos0 === $pos2) {
+               $this->forget('doi');
+               return;
+             }
+          }
           if (substr($doi, 0, 8) === '10.5555/') { // Test DOI prefix.  NEVER will work
             $this->forget('doi');
             if ($this->blank('url')) {
