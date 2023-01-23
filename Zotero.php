@@ -875,7 +875,9 @@ public static function process_zotero_response(string $zotero_response, Template
         // also reject 'review' 
         if ($template->wikiname() === 'cite web' &&
             stripos($url . @$result->title . @$result->bookTitle . @$result->publicationTitle, 'review') === FALSE &&
-            stripos($url, 'archive.org') === FALSE && !preg_match('~^https?://[^/]*journal~', $url)) {
+            stripos($url, 'archive.org') === FALSE && !preg_match('~^https?://[^/]*journal~', $url) &&
+            stripos($url, 'booklistonline') === FALSE
+           ) {
           $template->change_name_to('cite book');
         }
         break;
