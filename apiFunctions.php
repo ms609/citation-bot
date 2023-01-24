@@ -1388,7 +1388,7 @@ function process_bibcode_data(Template $this_template, object $record) : void {
       $doi = (string) @$record->doi[0];
       if (doi_works($doi)) {
         $this_template->add_if_new('doi', $doi);
-        AdsAbsControl::add_doi_map($this_template->get('bibcode'), $doi);
+        if ($this_template->has('bibcode')) AdsAbsControl::add_doi_map($this_template->get('bibcode'), $doi);
       }
     } elseif ($this_template->has('bibcode')) { // Slow mode looks for existent bibcodes
       AdsAbsControl::add_doi_map($this_template->get('bibcode'), 'X');
