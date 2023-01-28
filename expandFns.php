@@ -710,7 +710,7 @@ function title_capitalization(string $in, bool $caps_after_punctuation) : string
   /** Italian dell'xxx words **/
   $new_case = safe_preg_replace_callback(
     "~(\s)(Dell|Degli|Delle)([\'\x{00B4}][a-zA-ZÀ-ÿ]{3})~u",
-    function (array $matches) : string {return $matches[1] . strtolower($matches[2]) . $matches[3];},
+    function (array $matches) : string {return $matches[1] . mb_strtolower($matches[2]) . $matches[3];},
     $new_case
   );
 
@@ -727,7 +727,7 @@ function title_capitalization(string $in, bool $caps_after_punctuation) : string
   // Catch some specific epithets, which should be lowercase
   $new_case = safe_preg_replace_callback(
     "~(?:'')?(?P<taxon>\p{L}+\s+\p{L}+)(?:'')?\s+(?P<nova>(?:(?:gen\.? no?v?|sp\.? no?v?|no?v?\.? sp|no?v?\.? gen)\b[\.,\s]*)+)~ui" /* Species names to lowercase */,
-    function (array $matches) : string {return "''" . mb_ucfirst(strtolower($matches['taxon'])) . "'' " . strtolower($matches["nova"]);},
+    function (array $matches) : string {return "''" . mb_ucfirst(mb_strtolower($matches['taxon'])) . "'' " . mb_strtolower($matches["nova"]);},
     $new_case);
 
   // "des" at end is "Des" for Design not german "The"
