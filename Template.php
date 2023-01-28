@@ -1733,7 +1733,11 @@ final class Template {
 
   public function validate_and_add(string $author_param, string $author, string $forename, string $check_against, bool $add_even_if_existing) : void {
     if (!$add_even_if_existing && ($this->initial_author_params || $this->had_initial_editor)) return; // Zotero does not know difference between editors and authors often
-    if (in_array(strtolower($author), BAD_AUTHORS) === FALSE && author_is_human($author) && author_is_human($forename)) {
+    if (in_array(strtolower($author), BAD_AUTHORS) === FALSE &&
+        in_array(strtolower($forename), BAD_AUTHORS) === FALSE &&
+        in_array(strtolower($forename . ' ' . $author), BAD_AUTHORS) === FALSE &&
+        author_is_human($author) && 
+        author_is_human($forename)) {
       while(preg_match('~^(.*)\s[\S]+@~', ' ' . $author, $match) || // Remove emails
             preg_match('~^(.*)\s+@~', ' ' . $author, $match)) { // Remove twitter handles
          $author = trim($match[1]);
