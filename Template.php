@@ -1653,7 +1653,7 @@ final class Template {
         $value = truncate_publisher($value);
         if (in_array(trim(strtolower($value), " \.\,\[\]\:\;\t\n\r\0\x0B" ), BAD_PUBLISHERS)) return FALSE;
         if ($this->has('via') && str_equivalent($this->get('via'), $value))  $this->rename('via', $param_name);
-        if (strtoupper($value) === $value || strtolower($value) === $value) {
+        if (mb_strtoupper($value) === $value || mb_strtolower($value) === $value) {
            $value = title_capitalization($value, TRUE);
         }
         if ($this->blank($param_name)) {
@@ -1733,9 +1733,9 @@ final class Template {
 
   public function validate_and_add(string $author_param, string $author, string $forename, string $check_against, bool $add_even_if_existing) : void {
     if (!$add_even_if_existing && ($this->initial_author_params || $this->had_initial_editor)) return; // Zotero does not know difference between editors and authors often
-    if (in_array(strtolower($author), BAD_AUTHORS) === FALSE &&
-        in_array(strtolower($forename), BAD_AUTHORS) === FALSE &&
-        in_array(strtolower($forename . ' ' . $author), BAD_AUTHORS) === FALSE &&
+    if (in_array(mb_strtolower($author), BAD_AUTHORS) === FALSE &&
+        in_array(mb_strtolower($forename), BAD_AUTHORS) === FALSE &&
+        in_array(mb_strtolower($forename . ' ' . $author), BAD_AUTHORS) === FALSE &&
         author_is_human($author) && 
         author_is_human($forename)) {
       while(preg_match('~^(.*)\s[\S]+@~', ' ' . $author, $match) || // Remove emails
@@ -3268,7 +3268,7 @@ final class Template {
       return;
     }
     while (preg_match("~\b(PMID|DOI|ISBN|ISSN|ARXIV|LCCN|CiteSeerX|s2cid|PMC)[\s:]*(\d[\d\s\-][^\s\}\{\|,;]*)(?:[,;] )?~iu", $id, $match)) {
-      $the_type = strtolower($match[1]);
+      $the_type = mb_strtolower($match[1]);
       $the_data = $match[2];
       $the_all  = $match[0];
       if ($the_type !== 'doi' && preg_match("~^([^\]\}\{\s\,\;\:\|\<\>]+)$~", $the_data, $matches)) {
@@ -3521,7 +3521,7 @@ final class Template {
     if (strpos($this->get('doi'), '10.1093') !== FALSE && $this->wikiname() !== 'cite web') return;
     if (bad_10_1093_doi($this->get('doi'))) return;
     foreach (WORK_ALIASES as $work) {
-      $worky = strtolower($this->get($work));
+      $worky = mb_strtolower($this->get($work));
       if (preg_match(REGEXP_PLAIN_WIKILINK, $worky, $matches) || preg_match(REGEXP_PIPED_WIKILINK, $worky, $matches)) {
         $worky = $matches[1]; // Always the wikilink for easier standardization
       }
@@ -3915,7 +3915,7 @@ final class Template {
           return;
 
         case 'url-status':
-          $the_data = strtolower($this->get($param));
+          $the_data = mb_strtolower($this->get($param));
           if (in_array($the_data, ['y', 'yes', 'si', 'sì'])) {
             $this->set($param, 'dead');
           } elseif (in_array($the_data, ['n', 'no', 'alive'])) {
@@ -4495,7 +4495,7 @@ final class Template {
             return;
           }
           if ($this->blank($param)) return;
-          $publisher = strtolower($this->get($param));
+          $publisher = mb_strtolower($this->get($param));
           if ($this->wikiname() === 'cite journal' && $this->has('journal') && $this->has('title')
               && !$this->blank(['pmc', 'pmid'])
               && (strpos($publisher, 'national center for biotechnology information') !== FALSE ||
@@ -4513,7 +4513,7 @@ final class Template {
               $publisher = $matches[2];
             }
             foreach (['journal', 'newspaper'] as $the_same) { // Prefer wiki-linked
-              if (strtolower($this->get($the_same)) === $publisher) {
+              if (mb_strtolower($this->get($the_same)) === $publisher) {
                 $this->forget($the_same);
                 $this->rename($param, $the_same);
                 return;
@@ -4551,7 +4551,7 @@ final class Template {
             }
           }
           // It might not be a product/book, but a "top 100" list
-          if (strtolower(str_replace(array('[', ' ', ']'), '', $publisher)) === 'amazon.com') {
+          if (mb_strtolower(str_replace(array('[', ' ', ']'), '', $publisher)) === 'amazon.com') {
             $all_urls = '';
             foreach (ALL_URL_TYPES as $a_url_type) {
               $all_urls .= $this->get($a_url_type);
@@ -4566,11 +4566,11 @@ final class Template {
             $this->forget($param);
             return;
           }
-          if (strtolower($this->get('journal')) === $publisher) {
+          if (mb_strtolower($this->get('journal')) === $publisher) {
             $this->forget($param);
             return;
           }
-          if (strtolower($this->get('newspaper')) === $publisher) {
+          if (mb_strtolower($this->get('newspaper')) === $publisher) {
             $this->forget($param);
             return;
           }
@@ -4581,7 +4581,7 @@ final class Template {
             }
           } elseif ($this->has('website')) {
             if (in_array(str_replace(array('[', ']', '"', "'", 'www.'), '', $publisher), PUBLISHERS_ARE_WORKS)) {
-               $webby = str_replace(array('[', ']', '"', "'", 'www.', 'the ', '.com', ' '), '', strtolower($this->get('website')));
+               $webby = str_replace(array('[', ']', '"', "'", 'www.', 'the ', '.com', ' '), '', mb_strtolower($this->get('website')));
                $pubby = str_replace(array('[', ']', '"', "'", 'www.', 'the ', '.com', ' '), '', $publisher);
                if ($webby === $pubby) {
                  if (stripos($this->get('website'), 'www') === 0 ||
@@ -4606,7 +4606,7 @@ final class Template {
           if (in_array(str_replace(array('[', ']', '"', "'", 'www.', ' company', ' digital archive', ' communications llc'), '', $publisher), PUBLISHERS_ARE_WORKS)) {
             $pubby = str_replace(array('the ', ' company', ' digital archive', ' communications llc'), '', $publisher);
             foreach (WORK_ALIASES as $work) {
-              $worky = str_replace(array('the ', ' company', ' digital archive', ' communications llc'), '', strtolower($this->get($work)));
+              $worky = str_replace(array('the ', ' company', ' digital archive', ' communications llc'), '', mb_strtolower($this->get($work)));
               if ($worky === $pubby) {
                  $this->forget($param);
                  return;
@@ -4882,7 +4882,7 @@ final class Template {
           return;
 
         case 'ref':
-          $content = strtolower($this->get($param));
+          $content = mb_strtolower($this->get($param));
           if ($content === '' || $content === 'harv') {
             $this->forget($param);
           } elseif (preg_match('~^harv( *# # # CITATION_BOT_PLACEHOLDER_COMMENT.*?# # #)$~sui', $content, $matches)) {
@@ -6034,7 +6034,7 @@ final class Template {
               $this->forget($param);
               return;
             }
-            $temp_string = strtolower($this->get('journal')) ;
+            $temp_string = mb_strtolower($this->get('journal')) ;
             if (substr($temp_string, 0, 2) === "[[" && substr($temp_string, -2) === "]]") {  // Wikilinked journal title
                $temp_string = substr(substr($temp_string, 2), 0, -2); // Remove [[ and ]]
             }
@@ -6503,10 +6503,10 @@ final class Template {
             !preg_match('~^https?://[^/]+/*?$~', $url) &&       // Ignore just a hostname
             preg_match (REGEXP_IS_URL, $url) === 1 &&
            preg_match('~^https?://([^/]+)/~', $url, $matches)) {
-           $hostname = strtolower($matches[1]);
+           $hostname = mb_strtolower($matches[1]);
            $hostname = (string) preg_replace('~^(m\.|www\.)~', '', $hostname);
            if (preg_match('~^https?://([^/]+/+[^/]+)~', $url, $matches)) {
-             $hostname_plus = strtolower($matches[1]);
+             $hostname_plus = mb_strtolower($matches[1]);
            } else {
              file_put_contents('CodeCoverage', "\n" . $url . " generated matches nothing event\n" , FILE_APPEND); // @codeCoverageIgnore
              $hostname_plus = 'matches nothing';                                                            // @codeCoverageIgnore
