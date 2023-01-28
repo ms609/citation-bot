@@ -152,7 +152,7 @@ const CANONICAL_PUBLISHER_URLS = array ('elsevier.com', 'springer.com', 'science
 
 const PROXY_HOSTS_TO_ALWAYS_DROP = array('proxy.libraries', 'proxy.lib.', '.ezproxy.', '-ezproxy.', '/ezproxy.',
                                   '.serialssolutions.com', 'search.ebscohost.com', 'findarticles.com',
-                                  'journals.royalsociety.org', 'ebscohost-com.wikipedialibrary.idm.oclc.org'); // Drop these if there is a valid DOI
+                                  'journals.royalsociety.org', '.idm.oclc.org'); // Drop these if there is a valid DOI
 
 const PROXY_HOSTS_TO_DROP = array('proxy.libraries', 'proxy.lib.', '.ezproxy.', '-ezproxy.', '/ezproxy.',
                                   '.serialssolutions.com', '.ebscohost.com', 'linkinghub.elsevier.com',
