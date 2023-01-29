@@ -494,8 +494,12 @@ public static function process_zotero_response(string $zotero_response, Template
   $result = (object) $result ;
   
   if (!isset($result->title)) {
-    report_warning("Did not get a title for URL ". echoable($url) . ": " . $zotero_response);  // @codeCoverageIgnore
-    return FALSE;                                                                    // @codeCoverageIgnore
+    if (strpos($zotero_response, 'unknown_error') !== FALSE) {  // @codeCoverageIgnoreStart
+       report_info("Did not get a title for URL ". echoable($url));
+    } else {
+       report_minor_error("Did not get a title for URL ". echoable($url) . ": " . $zotero_response); // Odd Error
+    }
+    return FALSE;   // @codeCoverageIgnoreEnd
   }
   if (substr(strtolower(trim($result->title)), 0, 9) === 'not found') {
     report_info("Could not resolve URL " . echoable($url));
