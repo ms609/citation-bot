@@ -2949,7 +2949,7 @@ final class Template {
     if (empty($this->param)) return;
     $keys = array_keys($this->param);
     foreach ($keys as $the_key) {
-      $this->param[$the_key]->param = strtolower($this->param[$the_key]->param);
+      $this->param[$the_key]->param = str_replace('duplicate_', 'DUPLICATE_', strtolower($this->param[$the_key]->param));
     }
   }
 
@@ -2985,7 +2985,7 @@ final class Template {
           echoable($this->param[$the_dup]->param));
         unset($this->param[$the_dup]);
       } else {
-        $this->param[$the_dup]->param = str_replace('DUPLICATE_DUPLICATE_', 'DUPLICATE_', 'DUPLICATE_' . $this->param[$the_dup]->param);
+        $this->param[$the_dup]->param = str_ireplace('DUPLICATE_DUPLICATE_', 'DUPLICATE_', 'DUPLICATE_' . $this->param[$the_dup]->param);
         report_modification("Marking duplicate parameter: " .
           echoable($this->param[$the_dup]->param));
       }

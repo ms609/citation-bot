@@ -4666,4 +4666,19 @@ final class TemplateTest2 extends testBaseClass {
       $this->assertFalse($expanded->use_issn()); // We no longer have an API
     }
 
+    public function testDuplicateCaps1() : void {
+      $text = "{{cite journal|duplicate_X=AAAA}}";
+      $expanded = $this->process_citation($text);
+      $this->assertSame('{{cite journal|DUPLICATE_x=AAAA}}', $expanded->parsed_text());
+      $expanded = $this->process_citation($expanded->parsed_text());
+      $this->assertSame('{{cite journal|DUPLICATE_x=AAAA}}', $expanded->parsed_text());
+    }
+ 
+    public function testDuplicateCaps2() : void {
+      $text = "{{cite journal|duplicate_x=AAAA|x=bbbb|X=cccc}}";
+      $expanded = $this->process_citation($text);
+      $this->assertSame('{{cite journal|DUPLICATE_x=AAAA|DUPLICATE_x=bbbb|x=cccc}}', $expanded->parsed_text());
+      $expanded = $this->process_citation($expanded->parsed_text());
+      $this->assertSame('{{cite journal|DUPLICATE_x=AAAA|DUPLICATE_x=bbbb|x=cccc}}', $expanded->parsed_text());
+    }
 }
