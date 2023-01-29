@@ -2604,7 +2604,6 @@ final class Template {
         return 'got one';
       }
     }
-    report_warning("Could not retrieve open access details from Unpaywall API for doi: " . echoable($doi));
     return 'nothing';
   }
 
