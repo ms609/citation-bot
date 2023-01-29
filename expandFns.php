@@ -1079,7 +1079,8 @@ function can_safely_modify_dashes(string $value) : bool {
 }
 
 function str_i_same(string $str1, string $str2) : bool {
-   return (0 === strcasecmp($str1, $str2));
+   if (0 === strcasecmp($str1, $str2)) return TRUE; // Quick non-multi-byte compare short cut
+   return (0 === strcmp(mb_strtoupper($str1), mb_strtoupper($str2)));
 }
   
 function doi_encode (string $doi) : string {

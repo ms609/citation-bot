@@ -47,7 +47,7 @@ function format_surname_2(string $surname) : string {
         },
     mb_ereg_replace(" - ", "-", $surname));
   $ret = str_ireplace(array('Von ', 'Und ', 'De La '), array('von ', 'und ', 'de la '), $ret);
-  $ret = preg_replace_callback('~;\w~', function(array $matches) : string {return strtolower($matches[0]);}, $ret);
+  $ret = preg_replace_callback('~;\w~', function(array $matches) : string {return mb_strtolower($matches[0]);}, $ret);
   return $ret;
 }
 

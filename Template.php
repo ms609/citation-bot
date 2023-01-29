@@ -3902,7 +3902,7 @@ final class Template {
           return;
 
         case 'dead-url': case 'deadurl':
-          $the_data = strtolower($this->get($param));
+          $the_data = mb_strtolower($this->get($param));
           if (in_array($the_data, ['y', 'yes', 'dead', 'si', 'sì', 'ja'])) {
             $this->rename($param, 'url-status', 'dead');
             $this->forget($param);
@@ -3931,7 +3931,7 @@ final class Template {
           return;
 
         case 'last-author-amp': case 'lastauthoramp':
-          $the_data = strtolower($this->get($param));
+          $the_data = mb_strtolower($this->get($param));
           if (in_array($the_data, ['n', 'no', 'false'])) {
             $this->forget($param);
             return;
