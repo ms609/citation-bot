@@ -10,7 +10,7 @@ require_once 'setup.php';
 $api = new WikipediaBot();
 $category = '';
 if (is_string(@$_POST["cat"])) $category = trim($_POST["cat"]);
-if (strtolower(substr($category, 0, 9)) === 'category:') $category = trim(substr($category, 9));
+if (str_i_same(substr($category, 0, 9), 'category:')) $category = trim(substr($category, 9));
 if ($category === '' && is_string(@$_GET["cat"])) {
    $try = trim($_GET["cat"]);
    if (in_array($try, ['CS1 errors: DOI' , 'CS1 maint: PMC format', 'CS1 maint: MR format', 'Articles with missing Cite arXiv inputs',
