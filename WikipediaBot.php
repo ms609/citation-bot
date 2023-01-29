@@ -260,7 +260,7 @@ try {
   public static function resultsGood(?object $result) : bool {
     if (isset($result->error)) {
       report_warning("Write error: " . 
-                    echoable(strtoupper($result->error->code)) . ": " . 
+                    echoable(mb_strtoupper($result->error->code)) . ": " . 
                     str_replace(array("You ", " have "), array("This bot ", " has "), 
                     echoable((string) @$result->error->info)));
       return FALSE;
