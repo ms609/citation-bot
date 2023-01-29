@@ -500,7 +500,7 @@ function expand_by_doi(Template $template, bool $force = FALSE) : bool {
       if ((string) @$crossRef->series_title === 'Professional Paper') unset($crossRef->series_title);
       if ($template->has('book-title')) unset($crossRef->volume_title);
       if ($crossRef->volume_title && ($template->blank(WORK_ALIASES) || $template->wikiname() === 'cite book')) {
-        if (mb_strtolower($template->get('title')) === mb_strtolower((string) $crossRef->article_title)) {
+        if (str_i_same($template->get('title'), (string) $crossRef->article_title)) {
            $template->rename('title', 'chapter');
          } else {
            $template->add_if_new('chapter', restore_italics((string) $crossRef->article_title), 'crossref'); // add_if_new formats this value as a title
@@ -1095,13 +1095,13 @@ function expand_templates_from_archives(array &$templates) : void { // This is d
            CURLOPT_USERAGENT => BOT_USER_AGENT]);
   foreach ($templates as $template) {
     set_time_limit(120);
-    if ($template->has('script-title') && (strtolower($template->get('title')) === 'archived copy' || strtolower($template->get('title')) === 'archive copy')) {
+    if ($template->has('script-title') && (str_i_same($template->get('title'), 'archived copy') || str_i_same($template->get('title'), 'archive copy'))) {
       $template->forget('title');
     }
     if ($template->blank(['chapter', 'series', 'script-title']) &&
         !$template->blank(['archive-url', 'archiveurl']) &&
         ($template->blank(WORK_ALIASES) || $template->has('website'))  &&
-        ($template->blank('title') || strtolower($template->get('title')) === 'archived copy' || strtolower($template->get('title')) === 'archive copy' ||
+        ($template->blank('title') || str_i_same($template->get('title'), 'archived copy') || str_i_same($template->get('title'), 'archive copy') ||
          substr_count($template->get('title'), '?') > 10 ||
          substr_count($template->get('title'), '') >0 ||
          substr_count($template->get('title'), '') >0 ||
@@ -1158,7 +1158,7 @@ function expand_templates_from_archives(array &$templates) : void { // This is d
             }
             if (!$cleaned && preg_match('~content-type: text/html; charset=(\S+)~i', $raw_html, $match)) {
               $encode = $match[1];
-              if (strtolower($encode) !== 'utf-8') {
+              if (!str_i_same($encode, 'utf-8')) {
                  $try = smart_decode($title, $encode, $archive_url);
                  if ($try != "") {
                    $title = $try;
@@ -1378,7 +1378,7 @@ function process_bibcode_data(Template $this_template, object $record) : void {
     if (isset($record->identifier)) { // Sometimes arXiv is in journal (see above), sometimes here in identifier
       foreach ($record->identifier as $recid) {
         $recid = (string) $recid;
-        if(strtolower(substr($recid, 0, 6)) === 'arxiv:') {
+        if (str_i_same(substr($recid, 0, 6), 'arxiv:')) {
            if (isset($record->arxivclass)) $this_template->add_if_new('class', (string) $record->arxivclass, 'adsabs');
            $this_template->add_if_new('arxiv', substr($recid, 6), 'adsabs');
         }
