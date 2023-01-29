@@ -5940,6 +5940,7 @@ final class Template {
               }
             }
           }
+          if (str_i_same('DOI.org (Crossref)', $this->get('via'))) $this->forget('via');
           return;
         case 'volume':
           if ($this->blank($param)) return;
