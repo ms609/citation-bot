@@ -637,4 +637,5 @@ const TEMPLATE_CONVERSIONS = array(
                ['deadurl', 'dead link'],
                ['Citeseerx', 'CiteSeerX'],
                ['citeseerx', 'CiteSeerX'],
+               ['GALE', 'Gale'],
                );
