@@ -493,6 +493,9 @@ public static function process_zotero_response(string $zotero_response, Template
   }
   $result = (object) $result ;
   
+  if (!isset($result->title) && !blank($result->subject) && blank($result->publicationTitle) && blank($result->bookTitle)) {
+    $result->title = $result->subject;
+  }
   if (!isset($result->title)) {
     if (strpos($zotero_response, 'unknown_error') !== FALSE) {  // @codeCoverageIgnoreStart
        report_info("Did not get a title for URL ". echoable($url));
@@ -516,6 +519,7 @@ public static function process_zotero_response(string $zotero_response, Template
   unset($result->websiteTitle);
   unset($result->journalAbbreviation);
   unset($result->ISSN);
+  unset($result->subject);
 
   $result->title = convert_to_utf8($result->title);
   // Reject if we find more than 5 or more than 10% of the characters are �.  This means that character
