@@ -418,7 +418,7 @@ function restore_italics (string $text) : string {
 function sanitize_string(string $str) : string {
   // ought only be applied to newly-found data.
   if ($str === '') return '';
-  if (strtolower(trim($str)) === 'science (new york, n.y.)') return 'Science';
+  if (str_i_same(trim($str, 'science (new york, n.y.)') return 'Science';
   if (preg_match('~^\[http.+\]$~', $str)) return $str; // It is a link out
   $replacement = [];
   $placeholder = [];
