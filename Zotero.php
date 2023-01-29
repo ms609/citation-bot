@@ -493,7 +493,7 @@ public static function process_zotero_response(string $zotero_response, Template
   }
   $result = (object) $result ;
   
-  if (!isset($result->title) && !blank($result->subject) && blank($result->publicationTitle) && blank($result->bookTitle)) {
+  if (!isset($result->title) && !empty($result->subject) && empty($result->publicationTitle) && empty($result->bookTitle)) {
     $result->title = $result->subject;
   }
   if (!isset($result->title)) {
