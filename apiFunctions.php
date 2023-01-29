@@ -522,7 +522,7 @@ function expand_by_doi(Template $template, bool $force = FALSE) : bool {
         $add_authors = $existing_author === '' || author_is_human($existing_author);
         
         foreach ($crossRef->contributors->contributor as $author) {
-          if (strtoupper((string) $author->surname) === '&NA;') break; // No Author, leave loop now!  Have only seen upper-case in the wild
+          if (str_i_same((string) $author->surname),'&NA;') break; // No Author, leave loop now!  Have only seen upper-case in the wild
           if ($author["contributor_role"] == 'editor') {
             ++$ed_i;
             if ($ed_i < 31 && !isset($crossRef->journal_title)) {
