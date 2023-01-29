@@ -3353,10 +3353,10 @@ final class Template {
             $did_it = $this->add_if_new($subtemplate_name, $subtemplate_identifier);
             if ($did_it) $id = str_replace($matches[0][$i], '', $id);
             break;
-          case "proquest": case "inist": case "gale": // TODO: Check if these have been added https://en.wikipedia.org/wiki/Template:Cite_journal
+          case "proquest": case "inist": case "gale": case "eric": case "naid": case "dtic": // TODO: Check if these have been added https://en.wikipedia.org/wiki/Template:Cite_journal
             break;
           default:
-            report_info("No match found for " . $subtemplate_name);
+            report_minor_error("No match found for subtemplate type: " . $subtemplate_name);
         }
       }
     }
