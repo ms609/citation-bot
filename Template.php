@@ -2026,8 +2026,12 @@ final class Template {
     $xml = get_entrez_xml('esearch_pubmed', $query);
     // @codeCoverageIgnoreStart
     if ($xml === NULL) {
-      report_warning("no results.");
-      return array('', 0, array());
+      sleep(1);
+      $xml = get_entrez_xml('esearch_pubmed', $query);
+      if ($xml === NULL) {
+         report_inline("no results.");
+         return array('', 0, array());
+      }
     }
     if (isset($xml->ErrorList)) { // Could look at $xml->ErrorList->PhraseNotFound for list of what was not found
       report_inline('no results.');
