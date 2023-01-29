@@ -504,7 +504,7 @@ public static function process_zotero_response(string $zotero_response, Template
     }
     return FALSE;   // @codeCoverageIgnoreEnd
   }
-  if (substr(strtolower(trim($result->title)), 0, 9) === 'not found') {
+  if (str_i_same(substr(trim($result->title), 0, 9), 'not found')) {
     report_info("Could not resolve URL " . echoable($url));
     return FALSE;
   }
@@ -539,7 +539,7 @@ public static function process_zotero_response(string $zotero_response, Template
   
   report_info("Retrieved info from " . echoable($url));
   // Verify that Zotero translation server did not think that this was a website and not a journal
-  if (strtolower(substr(trim($result->title), -9)) === ' on jstor') {  // Not really "expanded", just add the title without " on jstor"
+  if (str_i_same(substr(trim($result->title), -9)), ' on jstor')) {  // Not really "expanded", just add the title without " on jstor"
     $template->add_if_new('title', substr(trim($result->title), 0, -9)); // @codeCoverageIgnore
     return FALSE;  // @codeCoverageIgnore
   }
@@ -554,8 +554,8 @@ public static function process_zotero_response(string $zotero_response, Template
       }
   }
   if ($test_data === '404' || $test_data === '/404') return FALSE;
-  if (isset($result->bookTitle) && strtolower($result->bookTitle) === 'undefined') unset($result->bookTitle); // S2 without journals
-  if (isset($result->publicationTitle) && strtolower($result->publicationTitle) === 'undefined') unset($result->publicationTitle); // S2 without journals
+  if (isset($result->bookTitle) && str_i_same($result->bookTitle, 'undefined')) unset($result->bookTitle); // S2 without journals
+  if (isset($result->publicationTitle) && str_i_same($result->publicationTitle, 'undefined')) unset($result->publicationTitle); // S2 without journals
   if (isset($result->bookTitle)) {
    foreach (array_merge(BAD_ACCEPTED_MANUSCRIPT_TITLES, IN_PRESS_ALIASES) as $bad_title ) {
       if (str_i_same($result->bookTitle, $bad_title)) {
@@ -979,8 +979,8 @@ public static function process_zotero_response(string $zotero_response, Template
               $authorParam = '';                                                   // @codeCoverageIgnore
           }
          if ($authorParam && author_is_human($result->creators[$i]->firstName . ' ' . $result->creators[$i]->lastName)) {
-            if (strtolower((string) $result->creators[$i]->lastName ) === 'published') $result->creators[$i]->lastName  ='';
-            if (strtolower((string) $result->creators[$i]->firstName) === 'published') $result->creators[$i]->firstName ='';
+            if (str_i_same((string) $result->creators[$i]->lastName , 'published')) $result->creators[$i]->lastName  ='';
+            if (str_i_same((string) $result->creators[$i]->firstName, 'published')) $result->creators[$i]->firstName ='';
             $template->validate_and_add($authorParam, (string) $result->creators[$i]->lastName, (string) $result->creators[$i]->firstName,
             isset($result->rights) ? (string) $result->rights : '', FALSE);
              // Break out if nothing added
@@ -1068,10 +1068,10 @@ public static function find_indentifiers_in_urls(Template $template, ?string $ur
            $url_type = 'article-url';
         } elseif ($template->has('website')) { // No URL, but a website
           $url = trim($template->get('website'));
-          if (strtolower(substr( $url, 0, 6 )) === "ttp://" || strtolower(substr( $url, 0, 7 )) === "ttps://") { // Not unusual to lose first character in copy and paste
+          if (str_i_same(substr( $url, 0, 6 ), "ttp://") || str_i_same(substr( $url, 0, 7 ), "ttps://")) { // Not unusual to lose first character in copy and paste
             $url = "h" . $url;
           }
-          if (strtolower(substr( $url, 0, 4 )) !== "http" ) {
+          if (!str_i_same(substr($url, 0, 4 ), "http" )) {
             $url = "http://" . $url; // Try it with http
           }
           if (filter_var($url, FILTER_VALIDATE_URL) === FALSE) return FALSE; // PHP does not like it
@@ -1094,7 +1094,7 @@ public static function find_indentifiers_in_urls(Template $template, ?string $ur
       $url_type = 'An invalid value';
     }
 
-    if (strtolower(substr( $url, 0, 6 )) === "ttp://" || strtolower(substr( $url, 0, 7 )) === "ttps://") { // Not unusual to lose first character in copy and paste
+    if (str_i_same(substr( $url, 0, 6 ), "ttp://") || str_i_same(substr( $url, 0, 7 ), "ttps://")) { // Not unusual to lose first character in copy and paste
       $url = "h" . $url;
       if (is_null($url_sent)) {
         $template->set($url_type, $url); // Save it
