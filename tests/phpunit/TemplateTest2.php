@@ -2940,7 +2940,7 @@ final class TemplateTest2 extends testBaseClass {
    }
  
    public function testIDconvert4() : void {
-     $text = '{{Cite journal | id = {{howdy|44444}} }}';
+     $text = '{{Cite journal | id = {{inist|44444}} }}';
      $template = $this->process_citation($text);
      $template = $this->make_citation($template->parsed_text()); // Turn sub-templates into text
      $this->assertSame($text, $template->parsed_text());
@@ -2989,7 +2989,7 @@ final class TemplateTest2 extends testBaseClass {
    }
  
    public function testIDconvert9() : void {
-     $text = '{{Cite journal | id = {{howdy|0226845494}} }}';
+     $text = '{{Cite journal | id = {{inist|0226845494}} }}';
      $template = $this->process_citation($text);
      $this->assertSame($text, $template->parsed_text());
     }
