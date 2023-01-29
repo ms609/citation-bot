@@ -922,6 +922,7 @@ public static function process_zotero_response(string $zotero_response, Template
         }
         break;
 
+      case 'email': // Often uses subject, not title
       case 'webpage':
       case 'blogPost':
       case 'document':// Could be a journal article or a genuine web page.
