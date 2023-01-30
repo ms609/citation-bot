@@ -247,11 +247,16 @@ function sanitize_doi(string $doi) : string {
   }
   if ($pos = (int) strrpos($doi, '/')) {
    $extension = (string) substr($doi, $pos);
-   if (in_array(strtolower($extension), array('/abstract', '/full', '/pdf', '/epdf', '/asset/', '/summary', '/short', '/meta', '/html'))) {
+   if (in_array(strtolower($extension), array('/abstract', '/full', '/pdf', '/epdf', '/asset/', '/summary', '/short', '/meta', '/html', '/'))) {
       $doi = (string) substr($doi, 0, $pos);
    }
   }
-  $doi = str_replace('//', '/', $doi);
+  $new_doi = str_replace('//', '/', $doi);
+  if ($new_doi !== $doi) {
+    if (doi_works($new_doi) || !doi_works($doi)) {
+      $doi = $new_doi; // Double slash DOIs do exist
+    }
+  }
   // And now for 10.1093 URLs
   // The add chapter/page stuff after the DOI in the URL and it looks like part of the DOI to us
   // Things like 10.1093/oxfordhb/9780199552238.001.0001/oxfordhb-9780199552238-e-003 and 10.1093/acprof:oso/9780195304923.001.0001/acprof-9780195304923-chapter-7
