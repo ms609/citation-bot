@@ -498,6 +498,8 @@ public static function process_zotero_response(string $zotero_response, Template
       $result->title = $result->subject;
     } elseif (!empty($result->caseName)) {
       $result->title = $result->caseName;
+    } elseif (!empty($result->nameOfAct)) {
+      $result->title = $result->nameOfAct;
     }
   }
   if (!isset($result->title)) {
@@ -525,6 +527,7 @@ public static function process_zotero_response(string $zotero_response, Template
   unset($result->ISSN);
   unset($result->subject);
   unset($result->caseName);
+  unset($result->nameOfAct);
 
   $result->title = convert_to_utf8($result->title);
   // Reject if we find more than 5 or more than 10% of the characters are �.  This means that character
