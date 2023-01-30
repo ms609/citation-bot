@@ -1435,6 +1435,7 @@ final class Template {
         if ($value === '10.5284/1000184') return FALSE; // This is a DOI for an entire database, not anything within it
         if ($value === '10.1267/science.040579197') return FALSE; // PMID test doi
         if ($value === '10.2307/3511692') return FALSE; // common review
+        if ($value === '10.1377/forefront') return FALSE; // over-truncated
         if ($value === '10.1126/science') return FALSE; // This results from over-truncating other DOIs and it oddly works
         if (stripos($value, '10.5779/hypothesis') === 0) return FALSE; // SPAM took over
         if (substr($value, 0, 8) === '10.5555/') return FALSE ; // Test DOI prefix.  NEVER will work
