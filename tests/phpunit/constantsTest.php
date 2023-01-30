@@ -92,8 +92,8 @@ final class constantsTest extends testBaseClass {
     }
   }
 
-  public function testAllFreeOfUTF() : void { // If this fails, then we have to switch everything to MB_
-    $big_array = array_merge(HAS_NO_VOLUME, BAD_ACCEPTED_MANUSCRIPT_TITLES, BAD_AUTHORS,
+  public function testAllFreeOfUTF() : void { // If this fails, then we have to switch everything to MB_ (BAD_AUTHORS already has UTF-8)
+    $big_array = array_merge(HAS_NO_VOLUME, BAD_ACCEPTED_MANUSCRIPT_TITLES,
                              PUBLISHER_ENDINGS, BAD_TITLES, IN_PRESS_ALIASES, NON_PUBLISHERS,
                              JOURNAL_IS_BOOK_SERIES, HAS_NO_ISSUE, WORKS_ARE_PUBLISHERS, PREFER_VOLUMES,
                              PREFER_ISSUES, DEAD_PARAMETERS, PARAMETER_LIST, LOTS_OF_EDITORS,
