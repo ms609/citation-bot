@@ -3357,6 +3357,7 @@ final class Template {
           // TODO: Check if these have been added https://en.wikipedia.org/wiki/Template:Cite_journal
           case "proquest": case "inist": case "gale": case "eric": case "naid": case "dtic":  case "project muse":
           case "pii": case "ebscohost": case "libris": case "selibr":
+          case "url": // Untrustable: used by bozos
             break;
           default:
             report_minor_error("No match found for subtemplate type: " . $subtemplate_name);
