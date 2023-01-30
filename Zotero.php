@@ -493,8 +493,12 @@ public static function process_zotero_response(string $zotero_response, Template
   }
   $result = (object) $result ;
   
-  if (!isset($result->title) && !empty($result->subject) && empty($result->publicationTitle) && empty($result->bookTitle)) {
-    $result->title = $result->subject;
+  if (empty($result->publicationTitle) && empty($result->bookTitle) && !isset($result->title)) {
+    if (!empty($result->subject)) {
+      $result->title = $result->subject;
+    } elseif (!empty($result->caseName)) {
+      $result->title = $result->caseName;
+    }
   }
   if (!isset($result->title)) {
     if (strpos($zotero_response, 'unknown_error') !== FALSE) {  // @codeCoverageIgnoreStart
@@ -520,6 +524,7 @@ public static function process_zotero_response(string $zotero_response, Template
   unset($result->journalAbbreviation);
   unset($result->ISSN);
   unset($result->subject);
+  unset($result->caseName);
 
   $result->title = convert_to_utf8($result->title);
   // Reject if we find more than 5 or more than 10% of the characters are �.  This means that character
