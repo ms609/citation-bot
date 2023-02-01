@@ -492,7 +492,6 @@ public static function process_zotero_response(string $zotero_response, Template
     $result = $zotero_data[0];
   }
   $result = (object) $result ;
-  
   if (empty($result->publicationTitle) && empty($result->bookTitle) && !isset($result->title)) {
     if (!empty($result->subject)) {
       $result->title = $result->subject;
@@ -528,7 +527,7 @@ public static function process_zotero_response(string $zotero_response, Template
   unset($result->subject);
   unset($result->caseName);
   unset($result->nameOfAct);
-
+  print_r($result);
   $result->title = convert_to_utf8($result->title);
   // Reject if we find more than 5 or more than 10% of the characters are �.  This means that character
   // set was not correct in Zotero and nothing is good.  We allow a couple of � for German umlauts that arer easily fixable by humans.
