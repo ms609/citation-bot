@@ -3353,6 +3353,7 @@ final class Template {
                 $subtemplate->param_value(0) !== '55020366' &&
                 $subtemplate->param_value(0) !== '79346776' &&
                 $subtemplate->param_value(0) !== '84212910' &&
+                $subtemplate->param_value(0) !== '75-80057' &&
                 TRUE
                ) {
               break;
