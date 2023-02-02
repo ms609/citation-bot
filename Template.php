@@ -3357,6 +3357,10 @@ final class Template {
           // TODO: Check if these have been added https://en.wikipedia.org/wiki/Template:Cite_journal
           case "proquest": case "inist": case "gale": case "eric": case "naid": case "dtic":  case "project muse":
           case "pii": case "ebscohost": case "libris": case "selibr":
+          case "cobiss": case "crosbi": case "euclid": case "federal register": case "jpno":
+          case "lancaster university library": case "listed invalid isbn": case "ncbibook2":
+          case "ncj": case "researchgatepub": case "university of south wales pure":
+          case "usgs index id": case "us patent": case "us trademark": case "zdb":
           case "url": // Untrustable: used by bozos
             break;
           default:
