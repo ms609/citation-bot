@@ -3348,7 +3348,7 @@ final class Template {
             }
             if ($subtemplate_name === 'lcc') {
               if (preg_match('~^[\d\-]+$~', $subtemplate->param_value(0))) {
-                report_minor_error("Possible bad LCC template (did they mean LCCN) : " . $subtemplate->param_value(0));  // @codeCoverageIgnore
+                report_minor_error("Possible bad LCC template (did they mean LCCN) : " . echoable($subtemplate->param_value(0)));  // @codeCoverageIgnore
               }
               break;
             }
