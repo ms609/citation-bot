@@ -3346,20 +3346,11 @@ final class Template {
               report_info(echoable($subtemplate->parsed_text()));
               break;
             }
-            if ($subtemplate_name === 'lcc' && // One case where someone thought lcc = lccn
-                $subtemplate->param_value(0) !== '37032253' &&
-                $subtemplate->param_value(0) !== '86232954' &&
-                $subtemplate->param_value(0) !== '74-114275' &&
-                $subtemplate->param_value(0) !== '55020366' &&
-                $subtemplate->param_value(0) !== '79346776' &&
-                $subtemplate->param_value(0) !== '84212910' &&
-                $subtemplate->param_value(0) !== '75-80057' &&
-                $subtemplate->param_value(0) !== '66089704' &&
-                TRUE
-               ) {
-              break;
             } elseif ($subtemplate_name === 'lcc') {
-              $subtemplate_name = 'lccn';
+              if (preg_match('~^[\d\-]+$~', $subtemplate->param_value(0)) {
+                report_minor_error("Possible bad LCC template (did they mean LCCN) : " . $subtemplate->param_value(0));  // @codeCoverageIgnore
+              }
+              break;
             }
 
             // All tests okay; move identifier to suitable parameter
