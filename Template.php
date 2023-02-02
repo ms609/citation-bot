@@ -3346,7 +3346,12 @@ final class Template {
               report_info(echoable($subtemplate->parsed_text()));
               break;
             }
-            if ($subtemplate_name === 'lcc' && $subtemplate->param_value(0) !== '74-114275') { // One case where someone though lcc = lccn
+            if ($subtemplate_name === 'lcc' && // One case where someone thought lcc = lccn
+                $subtemplate->param_value(0) !== '37032253' &&
+                $subtemplate->param_value(0) !== '86232954' &&
+                $subtemplate->param_value(0) !== '74-114275' &&
+                TRUE
+               ) {
               break;
             } elseif ($subtemplate_name === 'lcc') {
               $subtemplate_name = 'lccn';
