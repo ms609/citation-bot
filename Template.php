@@ -3317,6 +3317,7 @@ final class Template {
           case "hdl":
           case "zbl":
           case "ol":
+          case "lcc":
 
             // Specific checks for particular templates:
             if ($subtemplate_name === 'asin' && $subtemplate->has('country')) {
@@ -3344,6 +3345,11 @@ final class Template {
               report_info("{{ISSN}} has multiple parameters: cannot convert.");
               report_info(echoable($subtemplate->parsed_text()));
               break;
+            }
+            if ($subtemplate_name === 'lcc' && $subtemplate->param_value(0) !== '74-114275') { // One case where someone though lcc = lccn
+              break;
+            } elseif ($subtemplate_name === 'lcc') {
+              $subtemplate_name = 'lccn';
             }
 
             // All tests okay; move identifier to suitable parameter
