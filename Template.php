@@ -3368,7 +3368,6 @@ final class Template {
           case "lancaster university library": case "listed invalid isbn": case "ncbibook2":
           case "ncj": case "researchgatepub": case "university of south wales pure":
           case "usgs index id": case "us patent": case "us trademark": case "zdb":
-          case "ebsco": case "ebscohost":
           case "url": // Untrustable: used by bozos
             break;
           default:
