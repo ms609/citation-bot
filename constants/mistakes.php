@@ -638,4 +638,10 @@ const TEMPLATE_CONVERSIONS = array(
                ['Citeseerx', 'CiteSeerX'],
                ['citeseerx', 'CiteSeerX'],
                ['GALE', 'Gale'],
+               ['Ebsco', 'EBSCOhost'],
+               ['Ebscohost', 'EBSCOhost'],
+               ['EBSCO', 'EBSCOhost'],
+               ['ebsco', 'EBSCOhost'],
+               ['ebscohost', 'EBSCOhost'],
+               ['eBSCO', 'EBSCOhost'],
                );
