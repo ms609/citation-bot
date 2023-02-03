@@ -393,6 +393,7 @@ const HOSTNAME_MAP  = array('public.ebookcentral.proquest.com' => '[[ProQuest]]'
 			    'pna.gov.ph' => 'Philippine News Agency',
 			    'pia.gov.ph' => 'Philippine Information Agency',
 			    'irishtimes.com' => '[[The Irish Times]]',
+			    'wikinews.org' => '[[Wikinews]]',
                            ); // Be warned, some website host a seperate sunday edition, etc.  Be careful and when in doubt link to hostname
 
 const NO_DATE_WEBSITES = array('wikipedia.org', 'web.archive.org', 'perma-archives.org', 'webarchive.proni.gov.uk', 'perma.cc',
