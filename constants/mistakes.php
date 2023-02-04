@@ -647,4 +647,6 @@ const TEMPLATE_CONVERSIONS = array(
                ['Ncid', 'NCID'],
                ['ncid', 'NCID'],
                ['BHLpage', 'BHL page'],
+               ['Internet archive', 'Internet Archive'],
+               ['internet archive', 'Internet Archive'],
                );
