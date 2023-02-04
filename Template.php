@@ -3361,6 +3361,13 @@ final class Template {
             $did_it = $this->add_if_new($subtemplate_name, $subtemplate_identifier);
             if ($did_it) $id = str_replace($matches[0][$i], '', $id);
             break;
+            
+            case "subscription required":
+            if ($this->has('url')) {
+              $did_it = $this->add_if_new('url-access', 'subscription');
+              if ($did_it || ($this->get('url-access') === 'subscription')) $id = str_replace($matches[0][$i], '', $id);
+            }
+            break;
           // TODO: Check if these have been added https://en.wikipedia.org/wiki/Template:Cite_journal
           case "proquest": case "inist": case "gale": case "eric": case "naid": case "dtic":  case "project muse":
           case "pii": case "ebscohost": case "libris": case "selibr":
