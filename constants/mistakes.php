@@ -644,4 +644,6 @@ const TEMPLATE_CONVERSIONS = array(
                ['ebsco', 'EBSCOhost'],
                ['ebscohost', 'EBSCOhost'],
                ['eBSCO', 'EBSCOhost'],
+               ['Ncid', 'NCID'],
+               ['ncid', 'NCID'],
                );
