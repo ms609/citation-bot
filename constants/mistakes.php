@@ -646,4 +646,5 @@ const TEMPLATE_CONVERSIONS = array(
                ['eBSCO', 'EBSCOhost'],
                ['Ncid', 'NCID'],
                ['ncid', 'NCID'],
+               ['BHLpage', 'BHL page'],
                );
