@@ -2926,7 +2926,7 @@ final class TemplateTest2 extends testBaseClass {
    }    
 
    public function testIDconvert2() : void {
-     $text = '{{Cite journal | id = {{jstor|33333|issn=xxxx}} }}';
+     $text = '{{Cite journal | id = {{JSTOR|33333|issn=xxxx}} }}';
      $template = $this->process_citation($text);
      $template = $this->make_citation($template->parsed_text()); // Turn sub-templates into text
      $this->assertSame($text, $template->parsed_text());
@@ -3003,7 +3003,7 @@ final class TemplateTest2 extends testBaseClass {
     public function testIDconvert11() : void {
      $text = '{{cite journal|id={{isbn}} {{oclc}} {{jstor}} {{arxiv}} }}';
      $page = $this->process_page($text);
-     $this->assertSame('{{cite journal|id={{isbn}} {{oclc}} {{jstor}} }}', $page->parsed_text());
+     $this->assertSame('{{cite journal|id={{isbn}} {{oclc}} {{JSTOR}} }}', $page->parsed_text());
     }
  
     public function testIDconvert12() : void {
