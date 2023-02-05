@@ -3370,7 +3370,7 @@ final class Template {
           case "ncj": case "researchgatepub": case "university of south wales pure":
           case "usgs index id": case "us patent": case "us trademark": case "zdb":
           case "subscription required": case "ncid": case "wikileaks cable":
-          case "bhl page": case "internet archive":
+          case "bhl page": case "internet archive": case "youtube":
           case "google books": // Usually done for fancy formatting and because already has title-link/url
           case "url": // Untrustable: used by bozos
             break;
