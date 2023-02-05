@@ -497,7 +497,7 @@ class Page {
     $last_first_in  = array(' last=',  ' last =',  '|last=',  '|last =',  ' first=',  ' first =',  '|first=',  '|first =', 'cite newspaper', 'Cite newspaper', '| format=PDF ', '| format = PDF ', '|format=PDF ', '|format = PDF ', '| format=PDF', '| format = PDF', '|format=PDF', '|format = PDF', 'Cite ', 'cite ');
     $last_first_out = array(' last1=', ' last1 =', '|last1=', '|last1 =', ' first1=', ' first1 =', '|first1=', '|first1 =','cite news',      'Cite news',      '',              '',                '',              '',              '',             '',               '',            '',              'Cite' , 'cite' );
     // @codeCoverageIgnoreStart
-    if (WIKI_ROOT === 'https://simple.wikipedia.org/w/index.php') { // Backload clean-up
+    if ((WIKI_ROOT === 'https://simple.wikipedia.org/w/index.php') || (stripos($this->title, "draft:") === 0)) { // Backload clean-up
        $caps_ok = array();
        $last_first_in  = array();
        $last_first_out = array();
