@@ -651,4 +651,7 @@ const TEMPLATE_CONVERSIONS = array(
                ['internet archive', 'Internet Archive'],
                ['youtube', 'YouTube'],
                ['Youtube', 'YouTube'],
+               ['pmc', 'PMC'],
+               ['pmid', 'PMID'],
+               ['jstor', 'JSTOR'],
                );
