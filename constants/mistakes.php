@@ -650,4 +650,5 @@ const TEMPLATE_CONVERSIONS = array(
                ['Internet archive', 'Internet Archive'],
                ['internet archive', 'Internet Archive'],
                ['youtube', 'YouTube'],
+               ['Youtube', 'YouTube'],
                );
