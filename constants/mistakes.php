@@ -649,4 +649,5 @@ const TEMPLATE_CONVERSIONS = array(
                ['BHLpage', 'BHL page'],
                ['Internet archive', 'Internet Archive'],
                ['internet archive', 'Internet Archive'],
+               ['youtube', 'YouTube'],
                );
