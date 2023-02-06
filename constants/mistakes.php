@@ -654,4 +654,5 @@ const TEMPLATE_CONVERSIONS = array(
                ['pmc', 'PMC'],
                ['pmid', 'PMID'],
                ['jstor', 'JSTOR'],
+               ['lccn', 'LCCN'],
                );
