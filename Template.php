@@ -3371,7 +3371,7 @@ final class Template {
           case "usgs index id": case "us patent": case "us trademark": case "zdb":
           case "subscription required": case "ncid": case "wikileaks cable":
           case "bhl page": case "internet archive": case "youtube": case "nypl":
-          case "ncid":
+          case "ncid": case "dnb-idn":
           case "google books": // Usually done for fancy formatting and because already has title-link/url
           case "url": // Untrustable: used by bozos
             break;
