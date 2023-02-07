@@ -659,4 +659,6 @@ const TEMPLATE_CONVERSIONS = array(
                ['Pmid', 'PMID'],
                ['Jstor', 'JSTOR'],
                ['Lccn', 'LCCN'],
+               ['urn', 'URN'],
+               ['Urn', 'URN'],
                );
