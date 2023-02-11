@@ -4430,7 +4430,7 @@ final class Template {
             return;
           } elseif (in_array(strtolower($the_param), ARE_NEWSPAPERS)) {
             $this->change_name_to('cite news');
-            $this->rename($param, 'newspaper');
+            if ($param !== 'work') $this->rename($param, 'newspaper'); // Grumpy people
             return;
           } elseif (in_array(strtolower($the_param), ARE_WORKS)) {
             $this->rename($param, 'CITATION_BOT_HOLDS_WORK');
