@@ -3553,7 +3553,7 @@ final class Template {
       }
       if (in_array($worky, ARE_MANY_THINGS)) return;
     }
-    if ($this->wikiname() === 'cite book' && !$this->blank_other_than_comments(CHAPTER_ALIASES)) {
+    if ($this->wikiname() === 'cite book' && !$this->blank_other_than_comments(CHAPTER_ALIASES_AND_SCRIPT)) {
       return; // Changing away leads to error
     }
     if ($this->wikiname() === 'cite document' && in_array(strtolower($this->get('work')), ARE_WORKS)) {
@@ -5092,7 +5092,7 @@ final class Template {
         case 'chapter-url':
         case 'chapterurl':
           if ($this->blank($param)) return;
-          if ($this->blank('url') && $this->blank(CHAPTER_ALIASES)) {
+          if ($this->blank('url') && $this->blank(CHAPTER_ALIASES_AND_SCRIPT)) {
             $this->rename($param, 'url');
             $param = 'url'; // passes down to next area
           }
