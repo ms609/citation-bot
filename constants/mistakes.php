@@ -631,6 +631,8 @@ const TEMPLATE_CONVERSIONS = array(
                ['cite encyclopædia', 'cite encyclopedia'],
                ['Proquest', 'ProQuest'],
                ['proquest', 'ProQuest'],
+               ['Pq', 'ProQuest'],
+               ['pq', 'ProQuest'],
                ['DOI', 'doi'],
                ['Doi', 'doi'],
                ['Deadurl', 'Dead link'],
