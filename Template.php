@@ -3373,7 +3373,9 @@ final class Template {
           case "bhl page": case "internet archive": case "youtube": case "nypl":
           case "bnf": case "dnb-idn": case "nara catalog record": case "urn":
           case "so-vid": case "philpapers": case "iccu": case "hathitrust":
-          case "hal": case "icd11": case "coden":
+          case "hal": case "icd11": case "coden": case "blcat": case "cobiss.bih":
+          case "cobiss.rs": case "cobiss.sr": case "harvtxt": case "mathnet":
+          case "ndljp": case "orcid": case "pq": case "sudoc": case "upc":     
           case "isbnt": // Assume not normal isbn for a reason
           case "google books": // Usually done for fancy formatting and because already has title-link/url
           case "url": // Untrustable: used by bozos
