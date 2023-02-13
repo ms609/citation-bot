@@ -413,7 +413,7 @@ final class Template {
               $the_journal = '';
               $bad_data = TRUE;
           }
-          if (stripos($the_journal, 'arXiv:') === 0 && !$this->blank(ARXIV_ALIASES)) {
+          if ((stripos($the_journal, 'arXiv:') === 0 || $the_journal === 'arXiv') && !$this->blank(ARXIV_ALIASES)) {
               $this->forget('journal');
               $the_journal = '';
               $bad_data = TRUE;
