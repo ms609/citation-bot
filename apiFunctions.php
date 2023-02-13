@@ -1120,6 +1120,7 @@ function expand_templates_from_archives(array &$templates) : void { // This is d
       /** @psalm-taint-escape ssrf */
       $archive_url = $template->get('archive-url') . $template->get('archiveurl');
       if (stripos($archive_url, 'archive') !==FALSE && stripos($archive_url, '.pdf') === FALSE) {
+        set_time_limit(120);
         throttle_archive();
         curl_setopt($ch, CURLOPT_URL, $archive_url);
         $raw_html = (string) @curl_exec($ch);
