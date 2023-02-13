@@ -6091,6 +6091,7 @@ final class Template {
           // No break here: pages, issue and year (the previous case) should be treated in this fashion.
         case 'pages': case 'page': case 'pp': # And case 'year': case 'issue':, following from previous
           $value = $this->get($param);
+          $value = str_replace('--', '-', $value);
           if (str_i_same('null', $value)) {
             $this->forget($param);
             return;
@@ -7380,6 +7381,7 @@ final class Template {
          $the_issue = 'issue';
      }
      $data = trim($data);
+     $data = str_replace('--', '-', $data);
      if (preg_match("~^(\d+)\s*\((\d+(-|–|\–|\{\{ndash\}\})?\d*)\)$~", $data, $matches) ||
               preg_match("~^(?:vol\. |Volume |vol |vol\.|)(\d+)[,\s]\s*(?:no\.|number|issue|Iss.|no )\s*(\d+(-|–|\–|\{\{ndash\}\})?\d*)$~i", $data, $matches) ||
               preg_match("~^(\d+)\.(\d+)$~i", $data, $matches) ||
