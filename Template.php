@@ -3375,8 +3375,10 @@ final class Template {
           case "so-vid": case "philpapers": case "iccu": case "hathitrust":
           case "hal": case "icd11": case "coden": case "blcat": case "cobiss.bih":
           case "cobiss.rs": case "cobiss.sr": case "harvtxt": case "mathnet":
-          case "ndljp": case "orcid": case "pq": case "sudoc": case "upc":     
+          case "ndljp": case "orcid": case "pq": case "sudoc": case "upc":
+          case "nps history library": case "smaller":
           case "isbnt": // Assume not normal isbn for a reason
+          case "issn link": // Assume not normal issn for a reason
           case "google books": // Usually done for fancy formatting and because already has title-link/url
           case "url": // Untrustable: used by bozos
             break;
