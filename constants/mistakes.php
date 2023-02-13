@@ -663,4 +663,8 @@ const TEMPLATE_CONVERSIONS = array(
                ['Lccn', 'LCCN'],
                ['urn', 'URN'],
                ['Urn', 'URN'],
+               ['ISSN search link', 'ISSN link'],
+               ['ISSNT', 'ISSN link'],
+               ['issn search', 'ISSN link'],
+               ['ISSN pair', 'ISSN link'],
                );
