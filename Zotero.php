@@ -528,6 +528,11 @@ public static function process_zotero_response(string $zotero_response, Template
   unset($result->subject);
   unset($result->caseName);
   unset($result->nameOfAct);
+  
+  if (stripos($url, 'www.royal.uk') !== FALSE) {
+    unset($result->creators);
+    unset($result->author);
+  }
 
   $result->title = convert_to_utf8($result->title);
   // Reject if we find more than 5 or more than 10% of the characters are �.  This means that character
