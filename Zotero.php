@@ -1556,7 +1556,7 @@ public static function find_indentifiers_in_urls(Template $template, ?string $ur
           quietly('report_modification', "Converting URL to arXiv parameter");
           $ret = $template->add_if_new('arxiv', $arxiv_id[0]); // Have to add before forget to get cite type right
           if (is_null($url_sent)) {
-            if ($template->has_good_free_copy()) $template->forget($url_type);
+            if ($template->has_good_free_copy() || $template->has('arxiv')  || $template->has('eprint')) $template->forget($url_type);
           }
           return $ret;
         }
