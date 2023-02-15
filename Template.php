@@ -6245,7 +6245,6 @@ final class Template {
               } elseif (stripos($this->get('via'), 'pressreader') !== FALSE) {
                  $this->forget($param);
               }
-            }
           }
           return;
 
