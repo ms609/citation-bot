@@ -5953,6 +5953,20 @@ final class Template {
             $this->rename($param, 'newspaper');
             return;
           }
+          
+          if (strtolower($the_param) === 'www.pressreader.com' ||
+               strtolower($the_param) === 'pressreader.com' ||
+               strtolower($the_param) === 'pressreader.com (archived)' ||
+               strtolower($the_param) === 'www.pressreader.com/'
+              ) {
+              if ($this->blank('via')) {
+                 $this->set($param, 'PressReader');
+                 $this->rename($param, 'via');
+              } elseif (stripos($this->get('via'), 'pressreader') !== FALSE) {
+                 $this->forget($param);
+              }
+          }
+          
           return;
 
         case 'via':   // Should just remove all 'via' with no url, but do not want to make people angry
