@@ -6234,13 +6234,18 @@ final class Template {
             $this->set($param, '[[British Newspaper Archive]]');
             $this->rename($param, 'via');
           }
-          if ((strtolower($the_param) === 'www.pressreader.com' ||
+          if (strtolower($the_param) === 'www.pressreader.com' ||
                strtolower($the_param) === 'pressreader.com' ||
                strtolower($the_param) === 'pressreader.com (archived)' ||
                strtolower($the_param) === 'www.pressreader.com/'
-              ) && $this->blank('via')) {
-            $this->set($param, 'PressReader');
-            $this->rename($param, 'via');
+              ) {
+              if ($this->blank('via')) {
+                 $this->set($param, 'PressReader');
+                 $this->rename($param, 'via');
+              } elseif (stripos($this->get('via'), 'pressreader') !== FALSE) {
+                 $this->forget($param);
+              }
+            }
           }
           return;
 
