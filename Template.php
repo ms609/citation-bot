@@ -6234,7 +6234,7 @@ final class Template {
             $this->set($param, '[[British Newspaper Archive]]');
             $this->rename($param, 'via');
           }
-          if ((strtolower($the_param) === 'www.pressreader.com' || strtolower($the_param) === 'pressreader.com') && $this->blank('via')) {
+          if ((strtolower($the_param) === 'www.pressreader.com' || strtolower($the_param) === 'pressreader.com' || strtolower($the_param) === 'pressreader.com (archived)') && $this->blank('via')) {
             $this->set($param, 'PressReader');
             $this->rename($param, 'via');
           }
