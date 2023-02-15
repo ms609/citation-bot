@@ -257,6 +257,12 @@ final class Template {
                                          "Register &#124; British Newspaper Archive",
                                          "PressReader.com - Your favorite newspapers and magazines.",
                                          "PressReader.com - Your favorite newspapers and magazines",
+                                         "PressReader.com - Connecting People Through News",
+                                         "PressReader.com - Connecting People Through News.",
+                                         "PressReader.com – Your favorite newspapers and magazines.",
+                                         "PressReader.com – Your favorite newspapers and magazines",
+                                         "PressReader.com – Connecting People Through News",
+                                         "PressReader.com – Connecting People Through News.", 
                                         ])) {
           $this->set('title', '');
       }
