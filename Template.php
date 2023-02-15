@@ -262,7 +262,9 @@ final class Template {
                                          "PressReader.com – Your favorite newspapers and magazines.",
                                          "PressReader.com – Your favorite newspapers and magazines",
                                          "PressReader.com – Connecting People Through News",
-                                         "PressReader.com – Connecting People Through News.", 
+                                         "PressReader.com – Connecting People Through News.",
+                                         "PressReader.com - Digital Newspaper & Magazine Subscriptions",
+                                         "PressReader.com - Digital Newspaper & Magazine Subscriptions.",
                                         ])) {
           $this->set('title', '');
       }
