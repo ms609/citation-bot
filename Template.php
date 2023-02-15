@@ -4914,6 +4914,19 @@ final class Template {
               }
           }
 
+          if (strtolower($publisher) === 'www.pressreader.com' ||
+               strtolower($publisher) === 'pressreader.com' ||
+               strtolower($publisher) === 'pressreader.com (archived)' ||
+               strtolower($publisher) === 'www.pressreader.com/'
+              ) {
+              if ($this->blank('via')) {
+                 $this->set($param, 'PressReader');
+                 $this->rename($param, 'via');
+              } elseif (stripos($this->get('via'), 'pressreader') !== FALSE) {
+                 $this->forget($param);
+              }
+          }
+
           return;
 
         case 'quotes':
