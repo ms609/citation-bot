@@ -254,7 +254,9 @@ final class Template {
       if (in_array($this->get('title'), [ "Bloomberg - Are you a robot?", "Page not found",
                                          "Breaking News, Analysis, Politics, Blogs, News Photos, Video, Tech Reviews",
                                          "Breaking News, Analysis, Politics, Blogs, News Photos, Video, Tech Reviews - TIME.com",
-                                         "Register &#124; British Newspaper Archive"
+                                         "Register &#124; British Newspaper Archive",
+                                         "PressReader.com - Your favorite newspapers and magazines.",
+                                         "PressReader.com - Your favorite newspapers and magazines",
                                         ])) {
           $this->set('title', '');
       }
@@ -6222,6 +6224,10 @@ final class Template {
           }
           if ((strtolower($the_param) === 'www.britishnewspaperarchive.co.uk' || strtolower($the_param) === 'britishnewspaperarchive.co.uk') && $this->blank('via')) {
             $this->set($param, '[[British Newspaper Archive]]');
+            $this->rename($param, 'via');
+          }
+          if ((strtolower($the_param) === 'www.pressreader.com' || strtolower($the_param) === 'pressreader.com') && $this->blank('via')) {
+            $this->set($param, 'PressReader');
             $this->rename($param, 'via');
           }
           return;
