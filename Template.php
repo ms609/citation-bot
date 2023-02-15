@@ -4921,16 +4921,6 @@ final class Template {
                $publisher === 'www.pressreader.com/'
               ) {
               if ($this->blank('via')) {
-                 $this->set($param, 'PressReader');
-                 $this->rename($param, 'via');
-              } elseif (stripos($this->get('via'), 'pressreader') !== FALSE) {
-                 $this->forget($param);
-              }
-          }
-          if ( $publisher === '[[pressreader]].com' ||
-               $publisher === '[[pressreader]]'
-              ) {
-              if ($this->blank('via')) {
                  $this->set($param, '[[PressReader]]');
                  $this->rename($param, 'via');
               } elseif (stripos($this->get('via'), 'pressreader') !== FALSE) {
