@@ -234,8 +234,10 @@ function arxiv_api(array $ids, array &$templates) : bool {  // Pointer to save m
   $this_template = current($templates); // advance at end of foreach loop
   foreach ($xml->entry as $entry) {
     $i = 0;
+           echo "\n" . $this_template->get('year') . "  " . __LINE__ . "\n";
     report_info("Found match for arXiv " . $ids[$i]);
     if ($this_template->add_if_new("doi", (string) $entry->arxivdoi, 'arxiv')) {
+             echo "\n" . $this_template->get('year') . "  " . __LINE__ . "\n";
       if ($this_template->blank(['journal', 'volume', 'issue']) && $this_template->has('title')) {
         // Move outdated/bad arXiv title out of the way
         $the_arxiv_title = $this_template->get('title');
@@ -255,6 +257,7 @@ function arxiv_api(array $ids, array &$templates) : bool {  // Pointer to save m
         expand_by_doi($this_template);
       }
     }
+           echo "\n" . $this_template->get('year') . "  " . __LINE__ . "\n";
     foreach ($entry->author as $auth) {
       $i++;
       $name = (string) $auth->name;
@@ -266,6 +269,7 @@ function arxiv_api(array $ids, array &$templates) : bool {  // Pointer to save m
       }
       if ($this_template->blank(["last$i", "first$i", "author$i"])) $i--;  // Deal with authors that are empty or just a colon as in https://export.arxiv.org/api/query?start=0&max_results=2000&id_list=2112.04678
     }
+           echo "\n" . $this_template->get('year') . "  " . __LINE__ . "\n";
     $the_title = (string) $entry->title;
     // arXiv fixes these when it sees them
     while (preg_match('~\$\^{(\d+)}\$~', $the_title, $match)) {
@@ -274,20 +278,25 @@ function arxiv_api(array $ids, array &$templates) : bool {  // Pointer to save m
     while (preg_match('~\$_(\d+)\$~', $the_title, $match)) {
       $the_title = str_replace($match[0], '<sub>' . $match[1] . '</sub>', $the_title); // @codeCoverageIgnore
     }
+           echo "\n" . $this_template->get('year') . "  " . __LINE__ . "\n";
     while (preg_match('~\\ce{([^}{^ ]+)}~', $the_title, $match)) {   // arXiv fixes these when it sees them
       $the_title = str_replace($match[0], ' ' . $match[1] . ' ', $the_title);  // @codeCoverageIgnore
       $the_title = str_replace('  ', ' ', $the_title);                         // @codeCoverageIgnore
     }
+           echo "\n" . $this_template->get('year') . "  " . __LINE__ . "\n";
     $this_template->add_if_new("title", $the_title, 'arxiv'); // Formatted by add_if_new
     $this_template->add_if_new("class", (string) $entry->category["term"], 'arxiv');
-    if ($int_time = strtotime((string)$entry->published)) { 
+    if ($int_time = strtotime((string)$entry->published)) { =
+       echo "\n" . $this_template->get('year') . "  " . __LINE__ . "\n";
        $this_template->add_if_new("year", date("Y", $int_time), 'arxiv');
+       echo "\n" . $this_template->get('year') . "  " . __LINE__ . "\n";
     }
 
     if ($entry->arxivjournal_ref) {
       $journal_data = trim((string) $entry->arxivjournal_ref); // this is human readble text
       parse_plain_text_reference($journal_data, $this_template, TRUE);
     }
+           echo "\n" . $this_template->get('year') . "  " . __LINE__ . "\n";
     $this_template = next($templates);
   }
   if ($this_template !== FALSE) {
