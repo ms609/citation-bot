@@ -91,6 +91,20 @@ final class constantsTest extends testBaseClass {
       $this->assertSame(strtolower($actual), $actual);
     }
   }
+
+  public function testAllFreeOfUTF() : void { // If this fails, then we have to switch everything to MB_ (BAD_AUTHORS already has UTF-8)
+    $big_array = array_merge(HAS_NO_VOLUME, BAD_ACCEPTED_MANUSCRIPT_TITLES,
+                             PUBLISHER_ENDINGS, BAD_TITLES, IN_PRESS_ALIASES, NON_PUBLISHERS,
+                             JOURNAL_IS_BOOK_SERIES, HAS_NO_ISSUE, WORKS_ARE_PUBLISHERS, PREFER_VOLUMES,
+                             PREFER_ISSUES, DEAD_PARAMETERS, PARAMETER_LIST, LOTS_OF_EDITORS,
+                             TEMPLATES_WE_HARV, FLATTENED_AUTHOR_PARAMETERS, TEMPLATES_VCITE,
+                             TEMPLATES_WE_CHAPTER_URL, TEMPLATES_WE_RENAME, TEMPLATES_WE_BARELY_PROCESS,
+                             TEMPLATES_WE_SLIGHTLY_PROCESS, TEMPLATES_WE_PROCESS);
+    foreach ($big_array as $actual) {
+      $this->assertSame(mb_strtolower($actual), strtolower($actual));
+      $this->assertSame(mb_strtoupper($actual), strtoupper($actual));
+    }
+  }
   
   public function testNoSpacesOnEnds() : void {
     $big_array = array_merge(HAS_NO_VOLUME, BAD_ACCEPTED_MANUSCRIPT_TITLES, BAD_AUTHORS,

@@ -284,7 +284,7 @@ function arxiv_api(array $ids, array &$templates) : bool {  // Pointer to save m
        $this_template->add_if_new("year", date("Y", $int_time), 'arxiv');
     }
 
-    if ($entry->arxivjournal_ref) {
+    if ($entry->arxivjournal_ref && $this_template->blank(['doi','pmid','pmc'])) {
       $journal_data = trim((string) $entry->arxivjournal_ref); // this is human readble text
       parse_plain_text_reference($journal_data, $this_template, TRUE);
     }
@@ -496,9 +496,11 @@ function expand_by_doi(Template $template, bool $force = FALSE) : bool {
       }
       report_action("Querying CrossRef: doi:" . doi_link($doi));
 
+      if ((string) @$crossRef->volume_title === 'Professional Paper') unset($crossRef->volume_title);
+      if ((string) @$crossRef->series_title === 'Professional Paper') unset($crossRef->series_title);
       if ($template->has('book-title')) unset($crossRef->volume_title);
       if ($crossRef->volume_title && ($template->blank(WORK_ALIASES) || $template->wikiname() === 'cite book')) {
-        if (strtolower($template->get('title')) === strtolower((string) $crossRef->article_title)) {
+        if (mb_strtolower($template->get('title')) === mb_strtolower((string) $crossRef->article_title)) {
            $template->rename('title', 'chapter');
          } else {
            $template->add_if_new('chapter', restore_italics((string) $crossRef->article_title), 'crossref'); // add_if_new formats this value as a title
@@ -1118,6 +1120,7 @@ function expand_templates_from_archives(array &$templates) : void { // This is d
       /** @psalm-taint-escape ssrf */
       $archive_url = $template->get('archive-url') . $template->get('archiveurl');
       if (stripos($archive_url, 'archive') !==FALSE && stripos($archive_url, '.pdf') === FALSE) {
+        set_time_limit(120);
         throttle_archive();
         curl_setopt($ch, CURLOPT_URL, $archive_url);
         $raw_html = (string) @curl_exec($ch);
@@ -1386,7 +1389,7 @@ function process_bibcode_data(Template $this_template, object $record) : void {
       $doi = (string) @$record->doi[0];
       if (doi_works($doi)) {
         $this_template->add_if_new('doi', $doi);
-        AdsAbsControl::add_doi_map($this_template->get('bibcode'), $doi);
+        if ($this_template->has('bibcode')) AdsAbsControl::add_doi_map($this_template->get('bibcode'), $doi);
       }
     } elseif ($this_template->has('bibcode')) { // Slow mode looks for existent bibcodes
       AdsAbsControl::add_doi_map($this_template->get('bibcode'), 'X');

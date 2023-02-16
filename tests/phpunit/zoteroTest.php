@@ -1113,16 +1113,6 @@ final class zoteroTest extends testBaseClass {
    });
   }
 
-  /** THIS API IS GONE!!!! TODO
-  public function testZoteroExpansion_citeseerx() : void {
-   $this->requires_zotero(function() : void {
-    $text = '{{Cite journal| citeseerx=10.1.1.483.8892 }}';
-    $expanded = $this->process_citation($text);
-    $this->assertSame('Chemical Kinetics Models for the Fatigue Behavior of Fused Silica Optical Fiber', $expanded->get2('title'));
-   });
-  }
-  **/
-
   public function testHDLSimpler1() : void {
     hdl_works('2027/mdp.39015064245429');
     hdl_works('2027/mdp.39015064245429?urlappend=%3Bseq=326');

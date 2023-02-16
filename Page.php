@@ -249,7 +249,7 @@ class Page {
                                             // also without titles on the urls
                       "~(<(?:\s*)ref[^>]*?>)([^\{\}<\[\]]+\[)(https?://\S+?/10\.[0-9]{4,6}\/[^\[\]\{\}\s]+?)( [^\]\[\{\}]+?\]|\])(\s*[^<\]\[]+?)(<\s*?\/\s*?ref(?:\s*)>)~i",
                       function(array $matches) : string  {
-                        $UPPER = strtoupper($matches[0]);
+                        $UPPER = mb_strtoupper($matches[0]);
                         if (substr_count($UPPER, 'HTTP') !== 1) return $matches[0]; // more than one url
                         if (substr_count($UPPER, 'SEE ALSO') !== 0) return $matches[0];
                         if (substr_count($UPPER, 'CITATION_BOT_PLACEHOLDER_COMMENT') !== 0) return $matches[0];
@@ -493,11 +493,11 @@ class Page {
 
     // we often just fix Journal caps, so must be case sensitive compare
     // Avoid minor edits - gadget API will make these changes, since it does not check return code
-    $caps_ok = array('lccn', 'isbn');
+    $caps_ok = array('isbn', '{{jstor', '{{youtube');
     $last_first_in  = array(' last=',  ' last =',  '|last=',  '|last =',  ' first=',  ' first =',  '|first=',  '|first =', 'cite newspaper', 'Cite newspaper', '| format=PDF ', '| format = PDF ', '|format=PDF ', '|format = PDF ', '| format=PDF', '| format = PDF', '|format=PDF', '|format = PDF', 'Cite ', 'cite ');
     $last_first_out = array(' last1=', ' last1 =', '|last1=', '|last1 =', ' first1=', ' first1 =', '|first1=', '|first1 =','cite news',      'Cite news',      '',              '',                '',              '',              '',             '',               '',            '',              'Cite' , 'cite' );
     // @codeCoverageIgnoreStart
-    if (WIKI_ROOT === 'https://simple.wikipedia.org/w/index.php') { // Backload clean-up
+    if ((WIKI_ROOT === 'https://simple.wikipedia.org/w/index.php') || (stripos($this->title, "draft:") === 0)) { // Backload clean-up
        $caps_ok = array();
        $last_first_in  = array();
        $last_first_out = array();
