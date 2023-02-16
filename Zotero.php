@@ -140,11 +140,11 @@ public static function query_url_api_class(array $ids, array &$templates) : void
        }
        $doi = $template->get('doi');
        if (!doi_active($doi)) {
-         // TODO - no longer work: if ($template->has('citeseerx')) self::expand_by_zotero($template, 'https://citeseerx.ist.psu.edu/viewdoc/summary?doi=' . $template->get('citeseerx'));
-         if ($template->has('hdl'))       self::expand_by_zotero($template, 'https://hdl.handle.net/' . $template->get('hdl'));
-         //  Has a CAPCHA --  if ($template->has('jfm'))       self::expand_by_zotero($template, 'https://zbmath.org/?format=complete&q=an:' . $template->get('jfm'));
-         //  Has a CAPCHA --  if ($template->has('zbl'))       self::expand_by_zotero($template, 'https://zbmath.org/?format=complete&q=an:' . $template->get('zbl'));
+         //  Gone -- if ($template->has('citeseerx'))
+         //  Has a CAPCHA --  if ($template->has('jfm'))
+         //  Has a CAPCHA --  if ($template->has('zbl'))
          //  Do NOT do MR --  it is a review not the article itself.  Note that html does have doi, but do not use it.
+         if ($template->has('hdl'))       self::expand_by_zotero($template, 'https://hdl.handle.net/' . $template->get('hdl'));
          if ($template->has('osti'))      self::expand_by_zotero($template, 'https://www.osti.gov/biblio/' . $template->get('osti'));
          if ($template->has('rfc'))       self::expand_by_zotero($template, 'https://tools.ietf.org/html/rfc' . $template->get('rfc'));
          if ($template->has('ssrn'))      self::expand_by_zotero($template, 'https://papers.ssrn.com/sol3/papers.cfm?abstract_id=' . $template->get('ssrn'));
@@ -493,15 +493,28 @@ public static function process_zotero_response(string $zotero_response, Template
   }
   $result = (object) $result ;
   
+  if (empty($result->publicationTitle) && empty($result->bookTitle) && !isset($result->title)) {
+    if (!empty($result->subject)) {
+      $result->title = $result->subject;
+    } elseif (!empty($result->caseName)) {
+      $result->title = $result->caseName;
+    } elseif (!empty($result->nameOfAct)) {
+      $result->title = $result->nameOfAct;
+    }
+  }
   if (!isset($result->title)) {
-    report_warning("Did not get a title for URL ". echoable($url) . ": " . $zotero_response);  // @codeCoverageIgnore
-    return FALSE;                                                                    // @codeCoverageIgnore
+    if (strpos($zotero_response, 'unknown_error') !== FALSE) {  // @codeCoverageIgnoreStart
+       report_info("Did not get a title for URL ". echoable($url));
+    } else {
+       report_minor_error("Did not get a title for URL ". echoable($url) . ": " . $zotero_response); // Odd Error
+    }
+    return FALSE;   // @codeCoverageIgnoreEnd
   }
   if (substr(strtolower(trim($result->title)), 0, 9) === 'not found') {
     report_info("Could not resolve URL " . echoable($url));
     return FALSE;
   }
-  // Remove unused stuff.  TODO - Is there any value in these:
+  // Remove unused stuff
   unset($result->abstractNote);
   unset($result->version);
   unset($result->accessDate);
@@ -512,6 +525,14 @@ public static function process_zotero_response(string $zotero_response, Template
   unset($result->websiteTitle);
   unset($result->journalAbbreviation);
   unset($result->ISSN);
+  unset($result->subject);
+  unset($result->caseName);
+  unset($result->nameOfAct);
+  
+  if (stripos($url, 'www.royal.uk') !== FALSE) {
+    unset($result->creators);
+    unset($result->author);
+  }
 
   $result->title = convert_to_utf8($result->title);
   // Reject if we find more than 5 or more than 10% of the characters are �.  This means that character
@@ -577,6 +598,8 @@ public static function process_zotero_response(string $zotero_response, Template
       $result->publicationTitle = 'National Post';
    } elseif ($tester === 'financialpost') {
       $result->publicationTitle = 'Financial Post';
+   } elseif ($tester === 'bloomberg.com') {
+      $result->publicationTitle = 'Bloomberg';
    }
   }
    
@@ -875,7 +898,9 @@ public static function process_zotero_response(string $zotero_response, Template
         // also reject 'review' 
         if ($template->wikiname() === 'cite web' &&
             stripos($url . @$result->title . @$result->bookTitle . @$result->publicationTitle, 'review') === FALSE &&
-            stripos($url, 'archive.org') === FALSE && !preg_match('~^https?://[^/]*journal~', $url)) {
+            stripos($url, 'archive.org') === FALSE && !preg_match('~^https?://[^/]*journal~', $url) &&
+            stripos($url, 'booklistonline') === FALSE
+           ) {
           $template->change_name_to('cite book');
         }
         break;
@@ -912,6 +937,7 @@ public static function process_zotero_response(string $zotero_response, Template
         }
         break;
 
+      case 'email': // Often uses subject, not title
       case 'webpage':
       case 'blogPost':
       case 'document':// Could be a journal article or a genuine web page.
@@ -929,7 +955,10 @@ public static function process_zotero_response(string $zotero_response, Template
       case 'podcast':       // @codeCoverageIgnore
       case 'manuscript':       // @codeCoverageIgnore
       case 'artwork':       // @codeCoverageIgnore
+      case 'case':       // @codeCoverageIgnore
+      case 'statute':       // @codeCoverageIgnore
       case 'interview':   // @codeCoverageIgnore
+      case 'radioBroadcast':   // @codeCoverageIgnore
           // Do not change type.  Would need to think about parameters
       case 'patent':       // @codeCoverageIgnore
           // Do not change type. This seems to include things that will just make people angry if we change type to encyclopedia
@@ -1405,7 +1434,7 @@ public static function find_indentifiers_in_urls(Template $template, ?string $ur
           if ($template->blank('pmc')) {
             quietly('report_modification', "Converting URL to PMC parameter");
           }
-          $new_pmc = $match[1] . $match[2];
+          $new_pmc = @$match[1] . @$match[2];
           if (is_null($url_sent)) {
             if (stripos($url, ".pdf") !== FALSE) {
               $test_url = "https://www.ncbi.nlm.nih.gov/pmc/articles/PMC" . $new_pmc . "/";
@@ -1527,7 +1556,7 @@ public static function find_indentifiers_in_urls(Template $template, ?string $ur
           quietly('report_modification', "Converting URL to arXiv parameter");
           $ret = $template->add_if_new('arxiv', $arxiv_id[0]); // Have to add before forget to get cite type right
           if (is_null($url_sent)) {
-            if ($template->has_good_free_copy()) $template->forget($url_type);
+            if ($template->has_good_free_copy() || $template->has('arxiv')  || $template->has('eprint')) $template->forget($url_type);
           }
           return $ret;
         }

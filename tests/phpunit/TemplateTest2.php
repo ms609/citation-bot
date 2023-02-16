@@ -2926,7 +2926,7 @@ final class TemplateTest2 extends testBaseClass {
    }    
 
    public function testIDconvert2() : void {
-     $text = '{{Cite journal | id = {{jstor|33333|issn=xxxx}} }}';
+     $text = '{{Cite journal | id = {{JSTOR|33333|issn=xxxx}} }}';
      $template = $this->process_citation($text);
      $template = $this->make_citation($template->parsed_text()); // Turn sub-templates into text
      $this->assertSame($text, $template->parsed_text());
@@ -2940,7 +2940,7 @@ final class TemplateTest2 extends testBaseClass {
    }
  
    public function testIDconvert4() : void {
-     $text = '{{Cite journal | id = {{howdy|44444}} }}';
+     $text = '{{Cite journal | id = {{inist|44444}} }}';
      $template = $this->process_citation($text);
      $template = $this->make_citation($template->parsed_text()); // Turn sub-templates into text
      $this->assertSame($text, $template->parsed_text());
@@ -2989,7 +2989,7 @@ final class TemplateTest2 extends testBaseClass {
    }
  
    public function testIDconvert9() : void {
-     $text = '{{Cite journal | id = {{howdy|0226845494}} }}';
+     $text = '{{Cite journal | id = {{inist|0226845494}} }}';
      $template = $this->process_citation($text);
      $this->assertSame($text, $template->parsed_text());
     }
@@ -3003,7 +3003,7 @@ final class TemplateTest2 extends testBaseClass {
     public function testIDconvert11() : void {
      $text = '{{cite journal|id={{isbn}} {{oclc}} {{jstor}} {{arxiv}} }}';
      $page = $this->process_page($text);
-     $this->assertSame('{{cite journal|id={{isbn}} {{oclc}} {{jstor}} }}', $page->parsed_text());
+     $this->assertSame('{{cite journal|id={{isbn}} {{oclc}} {{JSTOR}} }}', $page->parsed_text());
     }
  
     public function testIDconvert12() : void {
@@ -4663,7 +4663,22 @@ final class TemplateTest2 extends testBaseClass {
 
       $text = "{{cite journal|issn=1682-5845}}";
       $expanded = $this->make_citation($text);
-      $this->assertFalse($expanded->use_issn()); // TODO-fix API
+      $this->assertFalse($expanded->use_issn()); // We no longer have an API
     }
 
+    public function testDuplicateCaps1() : void {
+      $text = "{{cite journal|duplicate_X=AAAA}}";
+      $expanded = $this->process_citation($text);
+      $this->assertSame('{{cite journal|DUPLICATE_x=AAAA}}', $expanded->parsed_text());
+      $expanded = $this->process_citation($expanded->parsed_text());
+      $this->assertSame('{{cite journal|DUPLICATE_x=AAAA}}', $expanded->parsed_text());
+    }
+ 
+    public function testDuplicateCaps2() : void {
+      $text = "{{cite journal|duplicate_x=AAAA|x=bbbb|X=cccc}}";
+      $expanded = $this->process_citation($text);
+      $this->assertSame('{{cite journal|DUPLICATE_x=AAAA|DUPLICATE_x=bbbb|x=cccc}}', $expanded->parsed_text());
+      $expanded = $this->process_citation($expanded->parsed_text());
+      $this->assertSame('{{cite journal|DUPLICATE_x=AAAA|DUPLICATE_x=bbbb|x=cccc}}', $expanded->parsed_text());
+    }
 }

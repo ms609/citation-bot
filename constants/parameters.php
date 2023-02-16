@@ -5,7 +5,7 @@ const TEMPLATES_WE_PROCESS = array('citation', 'cite arxiv', 'cite book', 'cite 
                              'cite paper', 'cite', 'citebook', 'citejournal', 'citeweb', 'cite url', 'citepaper', 'citation journal',
                              'cite publication', 'cite citeseerx', 'cite website', 'cite dictionary', 'cite chapter', 'web cite', 'book cite',
                              'book reference', 'cit web', 'cit book', 'cite-book', 'cite-web', 'cit journal', 'cit news',
-                             'web reference', 'cite citation', 'cite contribution', 'cite ebook');
+                             'web reference', 'cite citation', 'cite contribution', 'cite ebook', 'cite manual');
 const TEMPLATES_WE_SLIGHTLY_PROCESS = array('cite news', 'cite newspaper', 'cite article', 'citenews', 'cite new');
 const TEMPLATES_WE_BARELY_PROCESS = array('cite thesis', 'cite press release', 'cite report', 'cite biorxiv', 'cite conference');
 const TEMPLATES_WE_RENAME  = array('cite arxiv', 'cite book', 'cite document', 'cite journal', 'cite web', 'cite work', 'cite article', 'cite paper', 'cite website');
@@ -393,7 +393,8 @@ const LOTS_OF_EDITORS = array('editor', 'editor-last', 'veditor', 'editor-surnam
 const TITLE_LINK_ALIASES = ['title-link', 'titlelink'];
 const ARXIV_ALIASES = ['arxiv', 'eprint'];
 const COAUTHOR_ALIASES = ['coauthor', 'coauthors'];
-const CHAPTER_ALIASES = ['chapter', 'contribution', 'article', 'entry', 'section'];
+const CHAPTER_ALIASES =            ['chapter', 'contribution', 'article', 'entry', 'section'];
+const CHAPTER_ALIASES_AND_SCRIPT = ['chapter', 'contribution', 'article', 'entry', 'section', 'script-chapter'];
 const DISPLAY_AUTHORS = ['display-authors', 'displayauthors'];
 const DISPLAY_EDITORS = ['display-editors', 'displayeditors'];
 const DOI_BROKEN_ALIASES = ['doi-broken', 'doi_brokendate', 'doi-broken-date', 'doi_inactivedate', 'doi-inactive-date'];
@@ -424,7 +425,7 @@ const PARAMETER_LIST = array(
   'ISMN', 'ISSN', 'JFM', 'JSTOR', 'LCCN', 'MR', 'OCLC', 'OL', 'OSTI', 'PMC', 'PMID', 'RFC',
   'S2CID', 'SBN', 'SSRN', 'URL', 'ZBL', 'access-date', 'accessdate', 'agency', 'air-date',
   'airdate', 'archive-date', 'archive-format', 'archive-url', 'archivedate', 'archiveurl',
-  'article', 'article-format', 'article-url', 'article-url-access', 'arxiv', 'asin',
+  'article', 'article-format', 'article-number', 'article-url', 'article-url-access', 'arxiv', 'asin',
   'asin-tld', 'assign', 'assign#', 'assignee', 'at', 'audio-visual', 'author', 'author#',
   'author#-first', 'author#-given', 'author#-last', 'author#-link', 'author#-mask',
   'author#-surname', 'author#link', 'author-first', 'author-first#',
