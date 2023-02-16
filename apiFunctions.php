@@ -292,7 +292,7 @@ function arxiv_api(array $ids, array &$templates) : bool {  // Pointer to save m
        echo "\n" . $this_template->get('year') . "  " . __LINE__ . "\n";
     }
 
-    if ($entry->arxivjournal_ref) {
+    if ($entry->arxivjournal_ref && $this_template->blank(['pmid','pmc','doi'])) {
       $journal_data = trim((string) $entry->arxivjournal_ref); // this is human readble text
       parse_plain_text_reference($journal_data, $this_template, TRUE);
     }
