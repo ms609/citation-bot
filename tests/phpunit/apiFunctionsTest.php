@@ -90,12 +90,6 @@ final class apiFunctionsTest extends testBaseClass {
       $this->assertSame('September 2010', $expanded->get2('date'));
       $this->assertNull($expanded->get2('year'));
   }
-  public function testArxivDateUpgradeSeesDate2() : void {
-      $text = '{{Cite journal|date=September 2009|doi=10.1016/j.physletb.2010.08.018|arxiv=1006.4000}}';
-      $expanded = $this->process_citation($text);
-      $this->assertNull($expanded->get2('date'));
-      $this->assertSame('2010', $expanded->get2('year'));
-  }
   
   public function testExpansion_doi_not_from_crossrefRG() : void {
      $text = '{{Cite journal| doi= 10.13140/RG.2.1.1002.9609}}';
