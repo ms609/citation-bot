@@ -5873,6 +5873,17 @@ final class Template {
           if ($the_original_url !== $the_new_url) {
             $this->get_identifiers_from_url();
           }
+          if (stripos($this->get('url'), 'cinemaexpress.com') !== FALSE) {
+           foreach (WORK_ALIASES as $worky) {
+            $lower = strtolower($this->get($worky));
+            if ($lower === 'the new indian express' ||
+                $lower === '[[the new indian express]]' ||
+                $lower === 'm.cinemaexpress.com' ||
+                $lower === 'cinemaexpress.com' ||
+                $lower === 'www.cinemaexpress.com') {
+              $this->set($worky, '[[Cinema Express]]');
+            }
+          }
           return;
 
         case 'work':
@@ -6275,16 +6286,6 @@ final class Template {
               } elseif (stripos($this->get('via'), 'pressreader') !== FALSE) {
                  $this->forget($param);
               }
-          }
-          if (stripos($this->get('url'), 'cinemaexpress.com') !== FALSE) {
-            $lower = strtolower($the_param);
-            if ($lower === 'the new indian express' ||
-                $lower === '[[the new indian express]]' ||
-                $lower === 'm.cinemaexpress.com' ||
-                $lower === 'cinemaexpress.com' ||
-                $lower === 'www.cinemaexpress.com') {
-              $this->set($param, '[[Cinema Express]]');
-            }
           }
           return;
 
