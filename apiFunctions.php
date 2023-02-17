@@ -288,6 +288,11 @@ function arxiv_api(array $ids, array &$templates) : bool {  // Pointer to save m
       $journal_data = trim((string) $entry->arxivjournal_ref); // this is human readble text
       parse_plain_text_reference($journal_data, $this_template, TRUE);
     }
+    if ($this_template->has('publisher')) {
+      if (stripos($this_template->get('publisher'), 'arxiv') !== FALSE) {
+        $this_template->forget('publisher');
+      }
+    }
     $this_template = next($templates);
   }
   if ($this_template !== FALSE) {
