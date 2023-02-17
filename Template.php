@@ -5883,6 +5883,7 @@ final class Template {
                 $lower === 'www.cinemaexpress.com') {
               $this->set($worky, '[[Cinema Express]]');
             }
+           }
           }
           return;
 
