@@ -1096,6 +1096,13 @@ final class Template {
           return $this->add('issn', $value);
         }
         return FALSE;
+        
+      case 'ismn':
+        $value = str_ireplace('m', '9790', $value); // update them
+        if ($this->blank('ismn')) {
+          return $this->add('ismn', $value);
+        }
+        return FALSE;
 
       case 'periodical': case 'journal': case 'newspaper': case 'magazine':
         if ($value=='HEP Lib.Web') $value = 'High Energy Physics Libraries Webzine'; // should be array
