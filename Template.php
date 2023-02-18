@@ -3329,6 +3329,7 @@ final class Template {
           case "zbl":
           case "ol":
           case "lcc":
+          case "ismn":
 
             // Specific checks for particular templates:
             if ($subtemplate_name === 'asin' && $subtemplate->has('country')) {
@@ -3354,6 +3355,11 @@ final class Template {
             }
             if ($subtemplate_name === 'issn' && !is_null($subtemplate->param_with_index(1))) {
               report_info("{{ISSN}} has multiple parameters: cannot convert.");
+              report_info(echoable($subtemplate->parsed_text()));
+              break;
+            }
+            if ($subtemplate_name === 'ismn' && !is_null($subtemplate->param_with_index(1))) {
+              report_info("{{ISMN}} has multiple parameters: cannot convert.");
               report_info(echoable($subtemplate->parsed_text()));
               break;
             }
@@ -3388,7 +3394,7 @@ final class Template {
           case "cobiss.rs": case "cobiss.sr": case "harvtxt": case "mathnet":
           case "ndljp": case "orcid": case "pq": case "sudoc": case "upc":
           case "nps history library": case "smaller": case "zenodo": case "!":
-          case "eccc": case "ean": case "ethos":
+          case "eccc": case "ean": case "ethos": case "chmid": case "factiva": case "mesh":
           case "isbnt": // Assume not normal isbn for a reason
           case "issn link": // Assume not normal issn for a reason
           case "google books": // Usually done for fancy formatting and because already has title-link/url
