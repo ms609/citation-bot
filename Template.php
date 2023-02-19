@@ -1768,6 +1768,9 @@ final class Template {
       while(preg_match('~^(?:rabbi|prof\.|doctor|professor|dr\.) ([\s\S]+)$~i', ' ' . $forename, $match)) { // Remove titles
          $forename = trim($match[1]);
       }
+      while(preg_match('~^(?:rabbi|prof\.|doctor|professor|dr\.) ([\s\S]+)$~i', ' ' . $author, $match)) { // Remove titles
+         $author = trim($match[1]);
+      }
       if (trim($author) === '') {
          $author = trim($forename);
          $forename = '';
