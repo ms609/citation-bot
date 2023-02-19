@@ -1770,11 +1770,19 @@ final class Template {
       $forename = trim($forename);
       $author = trim($author);
       echo "\n" . __LINE__ . " string $author_param, string $author, string $forename, string $check_against, bool $add_even_if_existing \n";
-      while(preg_match('~^(?:rabbi|prof\.|doctor|professor|dr\.) ([\s\S]+)$~i', ' ' . $forename, $match)) { // Remove titles
+      while(preg_match('~^(?:rabbi|prof\.|doctor|professor|dr\.)\s([\s\S]+)$~i', ' ' . $forename, $match)) { // Remove titles
          $forename = trim($match[1]);
       }
       echo "\n" . __LINE__ . " string $author_param, string $author, string $forename, string $check_against, bool $add_even_if_existing \n";
-      while(preg_match('~^(?:rabbi|prof\.|doctor|professor|dr\.) ([\s\S]+)$~i', ' ' . $author, $match)) { // Remove titles
+      while(preg_match('~^(?:rabbi|prof\.|doctor|professor|dr\.)\s([\s\S]+)$~i', ' ' . $author, $match)) { // Remove titles
+         $author = trim($match[1]);
+      }
+      echo "\n" . __LINE__ . " string $author_param, string $author, string $forename, string $check_against, bool $add_even_if_existing \n";
+      while(preg_match('~^(?:rabbi|prof\.|doctor|professor|dr\.)\s([\s\S]+)$~iu', ' ' . $forename, $match)) { // Remove titles
+         $forename = trim($match[1]);
+      }
+      echo "\n" . __LINE__ . " string $author_param, string $author, string $forename, string $check_against, bool $add_even_if_existing \n";
+      while(preg_match('~^(?:rabbi|prof\.|doctor|professor|dr\.)\s([\s\S]+)$~iu', ' ' . $author, $match)) { // Remove titles
          $author = trim($match[1]);
       }
       echo "\n" . __LINE__ . " string $author_param, string $author, string $forename, string $check_against, bool $add_even_if_existing \n";
