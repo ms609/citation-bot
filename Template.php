@@ -1752,7 +1752,7 @@ final class Template {
 
   public function validate_and_add(string $author_param, string $author, string $forename, string $check_against, bool $add_even_if_existing) : void {
     if (!$add_even_if_existing && ($this->initial_author_params || $this->had_initial_editor)) return; // Zotero does not know difference between editors and authors often
-    echo "\n string $author_param, string $author, string $forename, string $check_against, bool $add_even_if_existing \n";
+    echo "\n" . __LINE__ . " string $author_param, string $author, string $forename, string $check_against, bool $add_even_if_existing \n";
     if (in_array(mb_strtolower($author), BAD_AUTHORS) === FALSE &&
         in_array(mb_strtolower($forename), BAD_AUTHORS) === FALSE &&
         in_array(mb_strtolower($forename . ' ' . $author), BAD_AUTHORS) === FALSE &&
@@ -1766,12 +1766,15 @@ final class Template {
             preg_match('~^(.*)\s+@~', ' ' . $forename, $match)) { // Remove twitter handles
          $forename = trim($match[1]);
       }
+      echo "\n" . __LINE__ . " string $author_param, string $author, string $forename, string $check_against, bool $add_even_if_existing \n";
       while(preg_match('~^(?:rabbi|prof\.|doctor|professor|dr\.) ([\s\S]+)$~i', ' ' . $forename, $match)) { // Remove titles
          $forename = trim($match[1]);
       }
+      echo "\n" . __LINE__ . " string $author_param, string $author, string $forename, string $check_against, bool $add_even_if_existing \n";
       while(preg_match('~^(?:rabbi|prof\.|doctor|professor|dr\.) ([\s\S]+)$~i', ' ' . $author, $match)) { // Remove titles
          $author = trim($match[1]);
       }
+      echo "\n" . __LINE__ . " string $author_param, string $author, string $forename, string $check_against, bool $add_even_if_existing \n";
       if (trim($author) === '') {
          $author = trim($forename);
          $forename = '';
@@ -1779,6 +1782,7 @@ final class Template {
       $author_parts  = explode(" ", $author);
       $author_ending = end($author_parts);
       $name_as_publisher = trim($forename . ' ' . $author);
+      echo "\n" . __LINE__ . " string $author_param, string $author, string $forename, string $check_against, bool $add_even_if_existing \n";
       if (in_array(strtolower($author_ending), PUBLISHER_ENDINGS)
           || stripos($check_against, $name_as_publisher) !== FALSE) {
         $this->add_if_new('publisher' , $name_as_publisher);
