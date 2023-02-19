@@ -3405,6 +3405,8 @@ final class Template {
           case "ndljp": case "orcid": case "pq": case "sudoc": case "upc":
           case "nps history library": case "smaller": case "zenodo": case "!":
           case "eccc": case "ean": case "ethos": case "chmid": case "factiva": case "mesh":
+          case "dggs citation id": case "harvp":
+          case "gbooks": // TODO - should use
           case "isbnt": // Assume not normal isbn for a reason
           case "issn link": // Assume not normal issn for a reason
           case "google books": // Usually done for fancy formatting and because already has title-link/url
