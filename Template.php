@@ -1767,6 +1767,9 @@ final class Template {
          $forename = trim($match[1]);
       }
       echo "\n" . __LINE__ . " string $author_param, string $author, string $forename, string $check_against, bool $add_even_if_existing \n";
+      $forename = trim($forename);
+      $author = trim($author);
+      echo "\n" . __LINE__ . " string $author_param, string $author, string $forename, string $check_against, bool $add_even_if_existing \n";
       while(preg_match('~^(?:rabbi|prof\.|doctor|professor|dr\.) ([\s\S]+)$~i', ' ' . $forename, $match)) { // Remove titles
          $forename = trim($match[1]);
       }
