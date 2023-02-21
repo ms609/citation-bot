@@ -42,11 +42,6 @@ function clean_up_first_names(string $value) : string {
   return $value;
 }
 
-function clean_up_last_names(string $value) : string {
-  return $value; // TODO - expand this
-}  
-
-
 function format_surname(string $surname) : string {
   if ($surname === '-') return '';
   if (preg_match('~^\S\.?$~u', $surname)) return mb_strtoupper($surname); // Just a single initial, with or without period
