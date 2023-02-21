@@ -867,7 +867,8 @@ final class Template {
         if ($this->had_initial_editor) return FALSE;
         if (!$this->blank(['editors', 'editor', 'editor-last', 'editor-first'])) return FALSE; // Existing incompatible data
         if ($this->blank(['editor' . $match[1], 'editor' . $match[1] . '-first', 'editor-first' . $match[1]])) {
-          return $this->add($param_name, sanitize_string($value));
+          $value = clean_up_first_names($value);
+          return $this->add($param_name, $value);
         }
         return FALSE;
 
@@ -904,19 +905,8 @@ final class Template {
         return FALSE;
 
       case "first": case "first1":
-       $value = trim(straighten_quotes($value, TRUE));
        if ($this->blank(FIRST_FORENAME_ALIASES)) {
-          if (mb_substr($value, -1) === '.') { // Do not lose last period
-             $value = sanitize_string($value) . '.';
-          } else {
-             $value = sanitize_string($value);
-          }
-          if (mb_strlen($value) === 1 || (mb_strlen($value) > 3 && mb_substr($value, -2, 1) === " ")) { // Single character at end
-            $value .= '.';
-          }
-          if (mb_strlen($value) === 3 && mb_substr($value, -2, 1) === " ") { // Special case for "F M" -- add dots to both
-            $value = mb_substr($value, 0, 1) . '. ' . mb_substr($value, -1, 1) . '.';
-          }
+          $value = clean_up_first_names($value);
           return $this->add($param_name, $value);
       }
       return FALSE;
@@ -969,21 +959,10 @@ final class Template {
       case "first70": case "first71": case "first72": case "first73": case "first74": case "first75": case "first76": case "first77": case "first78": case "first79":
       case "first80": case "first81": case "first82": case "first83": case "first84": case "first85": case "first86": case "first87": case "first88": case "first89":
       case "first90": case "first91": case "first92": case "first93": case "first94": case "first95": case "first96": case "first97": case "first98": case "first99":
-        $value = trim(straighten_quotes($value, TRUE));
 
         if ($this->blank(array_merge(COAUTHOR_ALIASES, [$param_name, "author" . $auNo]))
                 && under_two_authors($this->get('author'))) {
-          if (mb_substr($value, -1) === '.') { // Do not lose last period
-             $value = sanitize_string($value) . '.';
-          } else {
-             $value = sanitize_string($value);
-          }
-          if (mb_strlen($value) === 1 || (mb_strlen($value) > 3 && mb_substr($value, -2, 1) === " ")) { // Single character at end
-            $value .= '.';
-          }
-          if (mb_strlen($value) === 3 && mb_substr($value, -2, 1) === " ") { // Special case for "F M" -- add dots to both
-            $value = mb_substr($value, 0, 1) . '. ' . mb_substr($value, -1, 1) . '.';
-          }
+          $value = clean_up_first_names($value);
           return $this->add($param_name, $value);
         }
         return FALSE;

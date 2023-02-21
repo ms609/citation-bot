@@ -23,6 +23,30 @@ function junior_test(string $name) : array {
   return array($name, $junior);
 }
 
+function clean_up_first_names(string $value) : string {
+  $value = trim(straighten_quotes($value, TRUE));
+  if (mb_substr($value, -1) === '.') { // Do not lose last period
+    $value = sanitize_string($value) . '.';
+  } else {
+    $value = sanitize_string($value);
+  }
+  if (mb_strlen($value) === 1) {
+    $value = $value . '.';
+  } elseif (mb_substr($value, -2, 1) === " ") {
+    if (mb_strlen($value) === 3) { // Special case for "F M" -- add dots to both
+      $value = mb_substr($value, 0, 1) . '. ' . mb_substr($value, -1, 1) . '.';
+    } elseif (mb_strlen($value) > 3) { // Single character at end
+       $value .= '.';
+    }
+  }
+  return $value;
+}
+
+function clean_up_last_names(string $value) : string {
+  return $value; // TODO - expand this
+}  
+
+
 function format_surname(string $surname) : string {
   if ($surname === '-') return '';
   if (preg_match('~^\S\.?$~u', $surname)) return mb_strtoupper($surname); // Just a single initial, with or without period
