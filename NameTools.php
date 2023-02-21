@@ -24,6 +24,7 @@ function junior_test(string $name) : array {
 }
 
 function clean_up_full_names(string $value) : string {
+  $value = trim($value);
   $value = str_replace(array(",;", " and;", " and ", " ;", "  ", "+", "*"), array(";", ";", " and ", ";", " ", "", ""), $value);
   $value = trim(straighten_quotes($value, TRUE));
   if (mb_substr($value, -1) === '.') { // Do not lose last period
@@ -35,6 +36,7 @@ function clean_up_full_names(string $value) : string {
 }
 
 function clean_up_last_names(string $value) : string {
+  $value = trim($value);
   $value = str_replace(array(",;", " and;", " and ", " ;", "  ", "+", "*"), array(";", ";", " ", ";", " ", "", ""), $value);
   $value = trim(straighten_quotes($value, TRUE));
   if (mb_substr($value, -1) === '.') { // Do not lose last period
@@ -46,6 +48,7 @@ function clean_up_last_names(string $value) : string {
 }
 
 function clean_up_first_names(string $value) : string {
+  $value = trim($value);
   $value = str_replace(array(",;", " and;", " and ", " ;", "  ", "+", "*"), array(";", ";", " ", ";", " ", "", ""), $value);
   $value = trim(straighten_quotes($value, TRUE));
   if (mb_substr($value, -1) === '.') { // Do not lose last period
