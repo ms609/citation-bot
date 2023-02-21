@@ -867,7 +867,8 @@ final class Template {
         if ($this->had_initial_editor) return FALSE;
         if (!$this->blank(['editors', 'editor', 'editor-last', 'editor-first'])) return FALSE; // Existing incompatible data
         if ($this->blank(['editor' . $match[1], 'editor' . $match[1] . '-first', 'editor-first' . $match[1]])) {
-          return $this->add($param_name, sanitize_string($value));
+          value = clean_up_first_names($value);
+          return $this->add($param_name, $value);
         }
         return FALSE;
 
@@ -904,9 +905,8 @@ final class Template {
         return FALSE;
 
       case "first": case "first1":
-       $value = trim(straighten_quotes($value, TRUE));
        if ($this->blank(FIRST_FORENAME_ALIASES)) {
-          $value = clean_up_names($value);
+          $value = clean_up_first_names($value);
           return $this->add($param_name, $value);
       }
       return FALSE;
@@ -962,7 +962,7 @@ final class Template {
 
         if ($this->blank(array_merge(COAUTHOR_ALIASES, [$param_name, "author" . $auNo]))
                 && under_two_authors($this->get('author'))) {
-          $value = clean_up_names($value);
+          $value = clean_up_first_names($value);
           return $this->add($param_name, $value);
         }
         return FALSE;
