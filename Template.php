@@ -892,7 +892,7 @@ final class Template {
         if ($this->blank(FIRST_AUTHOR_ALIASES)) {
           if (strpos($value, ',')) {
             $au = explode(',', $value);
-            $this->add('last' . (substr($param_name, -1) === '1' ? '1' : ''), clean_up_last_names(format_Surname($au[0])));
+            $this->add('last' . (substr($param_name, -1) === '1' ? '1' : ''), clean_up_last_names(format_surname($au[0])));
             return $this->add_if_new('first' . (substr($param_name, -1) === '1' ? '1' : ''), clean_up_first_names(format_forename(trim($au[1]))));
           } elseif (strpos($param_name, 'last') === FALSE) {
             return $this->add($param_name, clean_up_full_names($value));
