@@ -867,7 +867,7 @@ final class Template {
         if ($this->had_initial_editor) return FALSE;
         if (!$this->blank(['editors', 'editor', 'editor-last', 'editor-first'])) return FALSE; // Existing incompatible data
         if ($this->blank(['editor' . $match[1], 'editor' . $match[1] . '-first', 'editor-first' . $match[1]])) {
-          value = clean_up_first_names($value);
+          $value = clean_up_first_names($value);
           return $this->add($param_name, $value);
         }
         return FALSE;
