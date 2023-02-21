@@ -7634,6 +7634,10 @@ final class Template {
              if ($it_is_blank || str_i_same($part_start1, 'j')) break;  // default
              $url .=  $part . "&" ;
              break;
+          case "resnum":
+             if ($it_is_blank || str_i_same($part_start1, '11')) break; // default
+             $url .=  $part . "&" ;
+             break;
           case "ie": case "oe":
              if ($it_is_blank || str_i_same($part_start1, 'utf-8')) break;  // UTF-8 is the default
              $url .=  $part . "&" ;
