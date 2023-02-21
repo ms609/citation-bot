@@ -859,7 +859,7 @@ final class Template {
         if (!$this->blank(['editors', 'editor', 'editor-last', 'editor-first'])) return FALSE; // Existing incompatible data
         if ($this->blank(['editor' . $match[1], 'editor' . $match[1] . '-last', 'editor' . $match[1] . '-first',
                           'editor-last' . $match[1], 'editor-first' . $match[1]])) {
-          return $this->add($param_name, sanitize_string($value));
+          return $this->add($param_name, clean_up_full_names($value));
         }
         return FALSE;
 
@@ -867,8 +867,7 @@ final class Template {
         if ($this->had_initial_editor) return FALSE;
         if (!$this->blank(['editors', 'editor', 'editor-last', 'editor-first'])) return FALSE; // Existing incompatible data
         if ($this->blank(['editor' . $match[1], 'editor' . $match[1] . '-first', 'editor-first' . $match[1]])) {
-          $value = clean_up_first_names($value);
-          return $this->add($param_name, $value);
+          return $this->add($param_name, clean_up_first_names($value));
         }
         return FALSE;
 
@@ -876,7 +875,7 @@ final class Template {
         if ($this->had_initial_editor) return FALSE;
         if (!$this->blank(['editors', 'editor', 'editor-last', 'editor-first'])) return FALSE; // Existing incompatible data
         if ($this->blank(['editor' . $match[1], 'editor' . $match[1] . '-last', 'editor-last' . $match[1]])) {
-          return $this->add($param_name, sanitize_string($value));
+          return $this->add($param_name, clean_up_last_names($value));
         }
         return FALSE;
 
@@ -884,30 +883,29 @@ final class Template {
       case (bool) preg_match('~^translator(\d{1,})$~', $param_name, $match) :
         if (!$this->blank(['translators', 'translator', 'translator-last', 'translator-first'])) return FALSE; // Existing incompatible data
         if ($this->blank(['translator' . $match[1], 'translator' . $match[1] . '-last', 'translator' . $match[1] . '-first'])) {
-          return $this->add($param_name, sanitize_string($value));
+          return $this->add($param_name, clean_up_full_names($value));
         }
         return FALSE;
 
       ### AUTHORS
       case "author": case "author1": case "last1": case "last": case "authors":
-        $value = str_replace(array(",;", " and;", " and ", " ;", "  ", "+", "*"), array(";", ";", " ", ";", " ", "", ""), $value);
-        $value = trim(straighten_quotes($value, TRUE));
-
         if ($this->blank(FIRST_AUTHOR_ALIASES)) {
+          $value = clean_up_full_names($value); // Do before explode etc.
           if (strpos($value, ',')) {
             $au = explode(',', $value);
-            $this->add('last' . (substr($param_name, -1) === '1' ? '1' : ''), sanitize_string(format_Surname($au[0])));
-            return $this->add_if_new('first' . (substr($param_name, -1) === '1' ? '1' : ''), sanitize_string(format_forename(trim($au[1]))));
+            $this->add('last' . (substr($param_name, -1) === '1' ? '1' : ''), clean_up_last_names(format_surname($au[0])));
+            return $this->add_if_new('first' . (substr($param_name, -1) === '1' ? '1' : ''), clean_up_first_names(format_forename(trim($au[1]))));
+          } elseif (strpos($param_name, 'last') === FALSE) {
+            return $this->add($param_name, $value);
           } else {
-            return $this->add($param_name, sanitize_string($value));
+            return $this->add($param_name, clean_up_last_names($value));
           }
         }
         return FALSE;
 
       case "first": case "first1":
        if ($this->blank(FIRST_FORENAME_ALIASES)) {
-          $value = clean_up_first_names($value);
-          return $this->add($param_name, $value);
+          return $this->add($param_name, clean_up_first_names($value));
       }
       return FALSE;
       case "last2": case "last3": case "last4": case "last5": case "last6": case "last7": case "last8": case "last9":
@@ -932,20 +930,19 @@ final class Template {
       case "author17": case "author27": case "author37": case "author47": case "author57": case "author67": case "author77": case "author87": case "author97":
       case "author18": case "author28": case "author38": case "author48": case "author58": case "author68": case "author78": case "author88": case "author98":
       case "author19": case "author29": case "author39": case "author49": case "author59": case "author69": case "author79": case "author89": case "author99":
-        $value = str_replace(array(",;", " and;", " and ", " ;", "  ", "+", "*"), array(";", ";", " ", ";", " ", "", ""), $value);
-        $value = trim(straighten_quotes($value, TRUE));
 
         if ($this->blank(array_merge(COAUTHOR_ALIASES, ["last$auNo", "author$auNo"]))
           && strpos($this->get('author') . $this->get('authors'), ' and ') === FALSE
           && strpos($this->get('author') . $this->get('authors'), '; ') === FALSE
           && strpos($this->get('author') . $this->get('authors'), ' et al') === FALSE
         ) {
+          $value = clean_up_full_names($value); // Do before explode etc.
           if (strpos($value, ',') && substr($param_name, 0, 3) === 'aut') {
             $au = explode(',', $value);
-            $this->add('last' . $auNo, format_surname($au[0]));
-            return $this->add_if_new('first' . $auNo, format_forename(trim($au[1])));
+            $this->add('last' . $auNo, clean_up_last_names(format_surname($au[0])));
+            return $this->add_if_new('first' . $auNo, clean_up_first_names(format_forename(trim($au[1]))));
           } else {
-            return $this->add($param_name, sanitize_string($value));
+            return $this->add($param_name, $value);
           }
         }
         return FALSE;
@@ -962,8 +959,7 @@ final class Template {
 
         if ($this->blank(array_merge(COAUTHOR_ALIASES, [$param_name, "author" . $auNo]))
                 && under_two_authors($this->get('author'))) {
-          $value = clean_up_first_names($value);
-          return $this->add($param_name, $value);
+          return $this->add($param_name, clean_up_first_names($value));
         }
         return FALSE;
 

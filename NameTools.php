@@ -23,7 +23,33 @@ function junior_test(string $name) : array {
   return array($name, $junior);
 }
 
+function clean_up_full_names(string $value) : string {
+  $value = trim($value);
+  $value = str_replace(array(",;", " and;", " and ", " ;", "  ", "+", "*"), array(";", ";", " and ", ";", " ", "", ""), $value);
+  $value = trim(straighten_quotes($value, TRUE));
+  if (mb_substr($value, -1) === '.') { // Do not lose last period
+    $value = sanitize_string($value) . '.';
+  } else {
+    $value = sanitize_string($value);
+  }
+  return $value;
+}
+
+function clean_up_last_names(string $value) : string {
+  $value = trim($value);
+  $value = str_replace(array(",;", " and;", " and ", " ;", "  ", "+", "*"), array(";", ";", " ", ";", " ", "", ""), $value);
+  $value = trim(straighten_quotes($value, TRUE));
+  if (mb_substr($value, -1) === '.') { // Do not lose last period
+    $value = sanitize_string($value) . '.';
+  } else {
+    $value = sanitize_string($value);
+  }
+  return $value;
+}
+
 function clean_up_first_names(string $value) : string {
+  $value = trim($value);
+  $value = str_replace(array(",;", " and;", " and ", " ;", "  ", "+", "*"), array(";", ";", " ", ";", " ", "", ""), $value);
   $value = trim(straighten_quotes($value, TRUE));
   if (mb_substr($value, -1) === '.') { // Do not lose last period
     $value = sanitize_string($value) . '.';
@@ -41,11 +67,6 @@ function clean_up_first_names(string $value) : string {
   }
   return $value;
 }
-
-function clean_up_last_names(string $value) : string {
-  return $value; // TODO - expand this
-}  
-
 
 function format_surname(string $surname) : string {
   if ($surname === '-') return '';
