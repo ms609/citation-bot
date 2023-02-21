@@ -3384,7 +3384,7 @@ final class Template {
           case "nps history library": case "smaller": case "zenodo": case "!":
           case "eccc": case "ean": case "ethos": case "chmid": case "factiva": case "mesh":
           case "dggs citation id": case "harvp": case "nla": case "catkey":
-          case "mit libraries": case "epa national catalog": case "unt key":
+          case "mit libraries": case "epa national catalog": case "unt key": case "eram":
           case "gbooks": // TODO - should use
           case "isbnt": // Assume not normal isbn for a reason
           case "issn link": // Assume not normal issn for a reason
