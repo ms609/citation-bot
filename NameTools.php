@@ -23,7 +23,7 @@ function junior_test(string $name) : array {
   return array($name, $junior);
 }
 
-function clean_up_names(string $value) : string {
+function clean_up_first_names(string $value) : string {
   $value = trim(straighten_quotes($value, TRUE));
   if (mb_substr($value, -1) === '.') { // Do not lose last period
     $value = sanitize_string($value) . '.';
