@@ -91,8 +91,9 @@ if (!mb_internal_encoding('UTF-8') || !mb_regex_encoding('UTF-8')) { /** @phpsta
 ini_set("memory_limit", "800M");
 ini_set("pcre.backtrack_limit", "1425000000");
 ini_set("pcre.recursion_limit", "425000000");
-ini_set("pcre.jit", "0"); // TODO - at some point this will hopefully not be needed for pages like https://citations.toolforge.org/process_page.php?edit=toolbar&page=List_of_public_sector_undertakings_in_India
-
+if (isset($_REQUEST["pcre"]) {
+  ini_set("pcre.jit", "0"); // TODO - at some point this will hopefully not be needed for pages like https://citations.toolforge.org/process_page.php?edit=toolbar&page=List_of_public_sector_undertakings_in_India
+}
 
 date_default_timezone_set('UTC');
 
