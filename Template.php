@@ -3383,7 +3383,7 @@ final class Template {
           case "ndljp": case "orcid": case "pq": case "sudoc": case "upc": case "ceeol":
           case "nps history library": case "smaller": case "zenodo": case "!":
           case "eccc": case "ean": case "ethos": case "chmid": case "factiva": case "mesh":
-          case "dggs citation id": case "harvp": case "nla": case "catkey":
+          case "dggs citation id": case "harvp": case "nla": case "catkey": case "hyphen":
           case "mit libraries": case "epa national catalog": case "unt key": case "eram":
           case "gbooks": // TODO - should use
           case "isbnt": // Assume not normal isbn for a reason
