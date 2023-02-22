@@ -1135,9 +1135,11 @@ function expand_templates_from_archives(array &$templates) : void { // This is d
                       '~<html[\S\s]+<head[\S\s]+?<!-- End Wayback Rewrite JS Include -->[\s\S]*?<title>([\S\s]+?\S[\S\s]+?)<\/title>[\S\s]+?head[\S\s]+?<body~i',
                       '~<html[\S\s]+<head[\S\s]+?<!-- End Wayback Rewrite JS Include -->\s*?<!-- WebPoet\(tm\) Web Page Pull[\s\S]+?-->[\S\s]+?<title>([\S\s]+?\S[\S\s]+?)<\/title>[\S\s]+?head~i',
                       '~archive\.org/includes/analytics\.js[\S\s]+?-- End Wayback Rewrite JS Include[\S\s]+?head[\S\s]+<title>([\S\s]+?\S[\S\s]+?)<\/title>[\S\s]+?head[\S\s]+?<body~') as $regex) {
-         if ($raw_html && preg_match($regex, $raw_html, $match)) {
-          $title = trim($match[1]);
-          if (stripos($title, 'archive') === FALSE &&
+          set_time_limit(120); // Slow regex sometimes
+          if ($raw_html && preg_match($regex, $raw_html, $match)) {
+           set_time_limit(120);
+           $title = trim($match[1]);
+           if (stripos($title, 'archive') === FALSE &&
               stripos($title, 'wayback') === FALSE &&
               $title !== ''
              ) {
