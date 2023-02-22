@@ -23,6 +23,11 @@ function junior_test(string $name) : array {
   return array($name, $junior);
 }
 
+function split_author(string $value) : array {
+  if (substr_count($value, ',') !== 1) return array();
+  return(explode(',', $value));
+}
+
 function clean_up_full_names(string $value) : string {
   $value = trim($value);
   $value = str_replace(array(",;", " and;", " and ", " ;", "  ", "+", "*"), array(";", ";", " and ", ";", " ", "", ""), $value);
