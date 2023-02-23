@@ -4136,7 +4136,7 @@ final class Template {
           }
           if (!doi_works($doi)) {
             if (preg_match('~^10.1093\/oi\/authority\.\d{10,}$~', $doi) &&
-              preg_match('~oxfordreference.com\/view\/10.1093\/oi\/authority\.\d{10,}~', $this->get('url'))) {
+              preg_match('~(?:oxfordreference\.com|oxfordindex\.oup\.com)\/view\/10.1093\/oi\/authority\.\d{10,}~', $this->get('url'))) {
              $this->forget('doi');
              return;
             } elseif (preg_match('~^10\.1093\/law\:epil\/9780199231690\/law\-9780199231690~', $doi) &&
