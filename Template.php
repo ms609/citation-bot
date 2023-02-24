@@ -4925,6 +4925,30 @@ final class Template {
               } elseif (stripos($this->get('via'), 'pressreader') !== FALSE) {
                  $this->forget($param);
               }
+              return;
+          }
+          
+          if ( $publisher === 'www.sify.com' ||
+               $publisher === 'sify.com' ||
+               $publisher === 'sify'
+              ) {
+                 $this->set($param, '[[Sify]]');
+                 $publisher = 'sify';
+              }
+          }
+          if ((stripos($publisher, 'sify.com') !== FALSE) ||(stripos($publisher, 'sify ') !== FALSE) || ($publisher === 'sify')) {
+            if ($this->blank(WORK_ALIASES)) {
+              $this->rename($param, 'website');
+            } else {
+              $lower = "";
+              foreach (WORK_ALIASES as $worky) {
+                $lower = $lower . strtolower($this->get($worky));
+              }
+              if (strpos($lower, 'sify') !== FALSE) {
+                $this->forget($param);
+              }
+            }
+            return;
           }
 
           return;
@@ -6266,13 +6290,16 @@ final class Template {
           if (in_array(strtolower($the_param), ARE_MAGAZINES)) {
             $this->change_name_to('cite magazine');
             $this->rename($param, 'magazine');
+            return;
           } elseif (in_array(strtolower($the_param), ARE_NEWSPAPERS)) {
             $this->change_name_to('cite news');
             $this->rename($param, 'newspaper');
+            return;
           }
           if ((strtolower($the_param) === 'www.britishnewspaperarchive.co.uk' || strtolower($the_param) === 'britishnewspaperarchive.co.uk') && $this->blank('via')) {
             $this->set($param, '[[British Newspaper Archive]]');
             $this->rename($param, 'via');
+            return;
           }
           if (strtolower($the_param) === 'www.pressreader.com' ||
                strtolower($the_param) === 'pressreader.com' ||
@@ -6285,6 +6312,16 @@ final class Template {
               } elseif (stripos($this->get('via'), 'pressreader') !== FALSE) {
                  $this->forget($param);
               }
+            return;
+          }
+      
+          if ( strtolower($the_param) === 'www.sify.com' ||
+               strtolower($the_param) === 'sify.com' ||
+               strtolower($the_param) === 'sify'
+              ) {
+                 $this->set($param, '[[Sify]]');
+              }
+              return;
           }
           return;
 
