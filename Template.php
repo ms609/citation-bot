@@ -6318,8 +6318,7 @@ final class Template {
                strtolower($the_param) === 'sify.com' ||
                strtolower($the_param) === 'sify'
               ) {
-                 $this->set($param, '[[Sify]]');
-              }
+              $this->set($param, '[[Sify]]');
               return;
           }
           return;
