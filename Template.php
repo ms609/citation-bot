@@ -4934,7 +4934,6 @@ final class Template {
               ) {
                  $this->set($param, '[[Sify]]');
                  $publisher = 'sify';
-              }
           }
           if ((stripos($publisher, 'sify.com') !== FALSE) ||(stripos($publisher, 'sify ') !== FALSE) || ($publisher === 'sify')) {
             if ($this->blank(WORK_ALIASES)) {
