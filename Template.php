@@ -3385,6 +3385,7 @@ final class Template {
           case "eccc": case "ean": case "ethos": case "chmid": case "factiva": case "mesh":
           case "dggs citation id": case "harvp": case "nla": case "catkey": case "hyphen":
           case "mit libraries": case "epa national catalog": case "unt key": case "eram":
+          case "regreq":
           case "gbooks": // TODO - should use
           case "isbnt": // Assume not normal isbn for a reason
           case "issn link": // Assume not normal issn for a reason
