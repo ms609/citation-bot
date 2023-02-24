@@ -3909,12 +3909,6 @@ final class Template {
               }
            }
            return;
-          
-        case 'coauthors':
-           if ($this->blank($param)) {
-              $this->forget($param);
-           }
-           return;
 
         case 'date':
           if ($this->blank('date') && $this->has('year')) $this->forget('date');
