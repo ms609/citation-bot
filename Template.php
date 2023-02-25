@@ -7585,17 +7585,19 @@ final class Template {
 
       foreach ($url_parts as $part) {
         $part_start = explode("=", $part);
+        $part_start0 = $part_start[0]; 
         if (isset($part_start[1]) && $part_start[1] === '') {
-          $part_start[0] = "donotaddmeback"; // Do not add blank ones
-        }
-        if (empty($part_start[1])) {
+          $part_start0 = "donotaddmeback"; // Do not add blank ones
+          $part_start1 = '';
+          $it_is_blank = TRUE;
+        } elseif (empty($part_start[1])) {
           $part_start1 = '';
           $it_is_blank = TRUE;
         } else {
           $part_start1 = $part_start[1];
           $it_is_blank = FALSE;
         }
-        switch ($part_start[0]) {
+        switch ($part_start0) {
           case "aq": case "aqi": case "bih": case "biw": case "client":
           case "as": case "useragent": case "as_brr":
           case "ei": case "ots": case "sig": case "source": case "lr":
