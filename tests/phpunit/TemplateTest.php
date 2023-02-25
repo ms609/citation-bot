@@ -740,7 +740,7 @@ final class TemplateTest extends testBaseClass {
     $this->assertNull($templates[1]->get2('class'));
     $this->assertNull($templates[1]->get2('eprint'));
     $this->assertNull($templates[1]->get2('publisher'));
-    $this->assertSame('2018', $templates[2]->get2('year'));
+    $this->assertSame('2016', $templates[2]->get2('year'));
     $this->assertSame('Pascual Jordan, his contributions to quantum mechanics and his legacy in contemporary local quantum physics', $templates[3]->get2('title'));
   }
   

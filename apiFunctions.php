@@ -288,6 +288,11 @@ function arxiv_api(array $ids, array &$templates) : bool {  // Pointer to save m
       $journal_data = trim((string) $entry->arxivjournal_ref); // this is human readble text
       parse_plain_text_reference($journal_data, $this_template, TRUE);
     }
+    if ($this_template->has('publisher')) {
+      if (stripos($this_template->get('publisher'), 'arxiv') !== FALSE) {
+        $this_template->forget('publisher');
+      }
+    }
     $this_template = next($templates);
   }
   if ($this_template !== FALSE) {
@@ -1130,9 +1135,11 @@ function expand_templates_from_archives(array &$templates) : void { // This is d
                       '~<html[\S\s]+<head[\S\s]+?<!-- End Wayback Rewrite JS Include -->[\s\S]*?<title>([\S\s]+?\S[\S\s]+?)<\/title>[\S\s]+?head[\S\s]+?<body~i',
                       '~<html[\S\s]+<head[\S\s]+?<!-- End Wayback Rewrite JS Include -->\s*?<!-- WebPoet\(tm\) Web Page Pull[\s\S]+?-->[\S\s]+?<title>([\S\s]+?\S[\S\s]+?)<\/title>[\S\s]+?head~i',
                       '~archive\.org/includes/analytics\.js[\S\s]+?-- End Wayback Rewrite JS Include[\S\s]+?head[\S\s]+<title>([\S\s]+?\S[\S\s]+?)<\/title>[\S\s]+?head[\S\s]+?<body~') as $regex) {
-         if ($raw_html && preg_match($regex, $raw_html, $match)) {
-          $title = trim($match[1]);
-          if (stripos($title, 'archive') === FALSE &&
+          set_time_limit(120); // Slow regex sometimes
+          if ($raw_html && preg_match($regex, $raw_html, $match)) {
+           set_time_limit(120);
+           $title = trim($match[1]);
+           if (stripos($title, 'archive') === FALSE &&
               stripos($title, 'wayback') === FALSE &&
               $title !== ''
              ) {

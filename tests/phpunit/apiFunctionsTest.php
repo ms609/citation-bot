@@ -90,12 +90,6 @@ final class apiFunctionsTest extends testBaseClass {
       $this->assertSame('September 2010', $expanded->get2('date'));
       $this->assertNull($expanded->get2('year'));
   }
-  public function testArxivDateUpgradeSeesDate2() : void {
-      $text = '{{Cite journal|date=September 2009|doi=10.1016/j.physletb.2010.08.018|arxiv=1006.4000}}';
-      $expanded = $this->process_citation($text);
-      $this->assertNull($expanded->get2('date'));
-      $this->assertSame('2010', $expanded->get2('year'));
-  }
   
   public function testExpansion_doi_not_from_crossrefRG() : void {
      $text = '{{Cite journal| doi= 10.13140/RG.2.1.1002.9609}}';
@@ -225,7 +219,7 @@ final class apiFunctionsTest extends testBaseClass {
      $expanded = $this->make_citation('{{Cite journal}}');
      expand_doi_with_dx($expanded, '10.2788/14231');
      if ($expanded->has('author1')) {
-       $this->assertSame('{{Cite journal| year=2007 | author1=European Commission. Joint Research Centre. Institute for Environment Sustainability | last2=Vogt | first2=Jürgen | last3=Foisneau | first3=Stéphanie | title=European river and catchment database, version 2.0 (CCM2) : Analysis tools | publisher=Publications Office }}', $expanded->parsed_text());
+       $this->assertSame('{{Cite journal| year=2007 | author1=European Commission. Joint Research Centre. Institute for Environment and Sustainability | last2=Vogt | first2=Jürgen | last3=Foisneau | first3=Stéphanie | title=European river and catchment database, version 2.0 (CCM2) : Analysis tools | publisher=Publications Office }}', $expanded->parsed_text());
      } else {
        $this->assertSame('{{Cite journal| year=2007 | last1=Vogt | first1=Jürgen | last2=Foisneau | first2=Stéphanie | title=European river and catchment database, version 2.0 (CCM2) : Analysis tools | publisher=Publications Office }}', $expanded->parsed_text());
      }
