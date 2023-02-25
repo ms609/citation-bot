@@ -395,6 +395,8 @@ const HOSTNAME_MAP  = array('public.ebookcentral.proquest.com' => '[[ProQuest]]'
 			    'irishtimes.com' => '[[The Irish Times]]',
 			    'wikinews.org' => '[[Wikinews]]',
 			    'royal.uk' => 'The Royal Family',
+			    'cinemaexpress.com' => '[[Cinema Express]]',
+			    'sify.com' => '[[Sify]]',
                            ); // Be warned, some website host a seperate sunday edition, etc.  Be careful and when in doubt link to hostname
 
 const NO_DATE_WEBSITES = array('wikipedia.org', 'web.archive.org', 'perma-archives.org', 'webarchive.proni.gov.uk', 'perma.cc',

@@ -424,8 +424,9 @@ public static function expand_by_zotero(Template $template, ?string $url = NULL)
   // Is it actually a URL.  Zotero will search for non-url things too!
   if (filter_var($url, FILTER_VALIDATE_URL) === FALSE) return FALSE; // PHP does not like it
   if (preg_match('~^https?://[^/]+/?$~', $url) === 1) return FALSE; // Just a host name
+  set_time_limit(120); // This can be slow
   if (preg_match(REGEXP_IS_URL, $url) !== 1) return FALSE;  // See https://mathiasbynens.be/demo/url-regex/  This regex is more exact than validator.  We only spend time on this after quick and dirty check is passed
-   
+  set_time_limit(120);
   if (self::$zotero_announced === 1) {
     report_action("Using Zotero translation server to retrieve details from URLs.");
     self::$zotero_announced = 0;
