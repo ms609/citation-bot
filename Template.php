@@ -3388,6 +3388,7 @@ final class Template {
           case "cobiss.rs": case "cobiss.sr": case "harvtxt": case "mathnet":
           case "ndljp": case "orcid": case "pq": case "sudoc": case "upc":
           case "nps history library": case "smaller": case "zenodo": case "!":
+            conflict
           case "eccc":
           case "isbnt": // Assume not normal isbn for a reason
           case "issn link": // Assume not normal issn for a reason
