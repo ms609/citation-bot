@@ -2729,6 +2729,7 @@ final class Template {
           case "gs_lcp": case "sxsrf": case "gfe_rd": case "gws_rd":
           case "sa": case "oi": case "ct": case "client": case "redir_esc":
           case "callback": case "jscmd": case "bibkeys": case "newbks":
+          case "newbks_redir":
           case "buy": case "edge": case "zoom": case "img": // List of parameters known to be safe to remove
             $removed_parts .= $part;
             $removed_redundant++;
