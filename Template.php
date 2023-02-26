@@ -2710,14 +2710,15 @@ final class Template {
         if ($part_start[0] === 'text')     $part_start[0] = 'dq';
         if ($part_start[0] === 'keywords') $part_start[0] = 'q';
         if ($part_start[0] === 'page')     $part_start[0] = 'pg';
+        if (isset($part_start[2])) $part_start[1] = $part_start[1] . '=' . $part_start[2];
+        if (isset($part_start[3])) $part_start[1] = $part_start[1] . '=' . $part_start[3];
+        if (isset($part_start[4])) $part_start[1] = $part_start[1] . '=' . $part_start[4];
         switch ($part_start[0]) {
           case "dq": case "pg": case "lpg": case "q": case "printsec": case "cd": case "vq": case "jtp": case "sitesec": case "article_id":
             if (empty($part_start[1])) {
                 $removed_redundant++;
                 $removed_parts .= $part;
             } else {
-                if (isset($part_start[2])) $part_start[1] = $part_start[1] . '=' . $part_start[2];
-                if (isset($part_start[3])) $part_start[1] = $part_start[1] . '=' . $part_start[3];
                 $book_array[$part_start[0]] = $part_start[1];
             }
             break;
@@ -2729,8 +2730,14 @@ final class Template {
           case "sa": case "oi": case "ct": case "client": case "redir_esc":
           case "callback": case "jscmd": case "bibkeys":
           case "buy": case "edge": case "zoom": case "img": // List of parameters known to be safe to remove
+            $removed_parts .= $part;
+            $removed_redundant++;
+            break;
           default:
-            if ($removed_redundant !== 0) $removed_parts .= $part; // http://blah-blah is first parameter and it is not actually dropped
+            if ($removed_redundant !== 0) {
+              $removed_parts .= $part; // http://blah-blah is first parameter and it is not actually dropped
+              file_put_contents('CodeCoverage', "\n Unexpected dropping from Google Books " . $part . "\n", FILE_APPEND);
+            }
             $removed_redundant++;
         }
       }
