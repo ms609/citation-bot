@@ -2734,6 +2734,7 @@ final class Template {
           case "as_maxm_is": case "as_maxy_is": case "": case "as_minm_is":
           case "as_miny_is": case "authuser": case "cad": case "focus":
           case "gl": case "ovdme": case "sqi": case "w":
+          case "pgis": case "ppis":
           case "buy": case "edge": case "zoom": case "img": // List of parameters known to be safe to remove - many are how you searched for the book
             $removed_parts .= $part;
             $removed_redundant++;
