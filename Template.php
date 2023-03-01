@@ -266,6 +266,7 @@ final class Template {
                                          "PressReader.com - Digital Newspaper & Magazine Subscriptions",
                                          "PressReader.com - Digital Newspaper & Magazine Subscriptions.",
                                          "PressReader.com – Digital Newspaper & Magazine Subscriptions",
+                                         "Log In - ProQuest",
                                         ])) {
           $this->set('title', '');
       }
