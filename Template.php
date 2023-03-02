@@ -266,6 +266,7 @@ final class Template {
                                          "PressReader.com - Digital Newspaper & Magazine Subscriptions",
                                          "PressReader.com - Digital Newspaper & Magazine Subscriptions.",
                                          "PressReader.com – Digital Newspaper & Magazine Subscriptions",
+                                         "Log In - ProQuest",
                                         ])) {
           $this->set('title', '');
       }
@@ -2733,6 +2734,7 @@ final class Template {
           case "as_maxm_is": case "as_maxy_is": case "": case "as_minm_is":
           case "as_miny_is": case "authuser": case "cad": case "focus":
           case "gl": case "ovdme": case "sqi": case "w":
+          case "pgis": case "ppis": case "output":
           case "buy": case "edge": case "zoom": case "img": // List of parameters known to be safe to remove - many are how you searched for the book
             $removed_parts .= $part;
             $removed_redundant++;
@@ -3396,8 +3398,8 @@ final class Template {
           case "eccc": case "ean": case "ethos": case "chmid": case "factiva": case "mesh":
           case "dggs citation id": case "harvp": case "nla": case "catkey": case "hyphen":
           case "mit libraries": case "epa national catalog": case "unt key": case "eram":
-          case "regreq": case "nobr": case "subscription": case "uspl":
-          dsfadsfdasfdsfdsaf
+          case "regreq": case "nobr": case "subscription": case "uspl": case "small":
+          case "genbank": case "better source needed":  
           case "gbooks": // TODO - should use
           case "isbnt": case "issn link":// Assume not normal isbn for a reason
           case "google books": // Usually done for fancy formatting and because already has title-link/url
