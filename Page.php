@@ -105,7 +105,12 @@ class Page {
 
     if (preg_match('~\#redirect *\[\[~i', $this->text)) {
       report_warning("Page is a redirect.");
-      if (strlen($this->text) > 2000) file_put_contents('CodeCoverage', $this->title . " is probably not a redirect. \n", FILE_APPEND);
+      if (strlen($this->text) > 2000) {
+        $test_text = preg_replace("~\[\[Category\:[^\]\{\}\[]+\]\]~", "", $this->text);
+        if (strlen($test_text) > 1500) {
+           file_put_contents('CodeCoverage', $this->title . " is probably not a redirect. \n", FILE_APPEND);
+        }
+      }
       return FALSE;
     }
     return TRUE;
