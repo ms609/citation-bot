@@ -88,7 +88,7 @@ if (!mb_internal_encoding('UTF-8') || !mb_regex_encoding('UTF-8')) { /** @phpsta
 }
 
  // Needed for "Skin Cancer" and other large pages
-ini_set("memory_limit", "800M");
+ini_set("memory_limit", "1024M");
 ini_set("pcre.backtrack_limit", "1425000000");
 ini_set("pcre.recursion_limit", "425000000");
 if (isset($_REQUEST["pcre"])) {
