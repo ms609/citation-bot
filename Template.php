@@ -266,6 +266,7 @@ final class Template {
                                          "PressReader.com - Digital Newspaper & Magazine Subscriptions",
                                          "PressReader.com - Digital Newspaper & Magazine Subscriptions.",
                                          "PressReader.com – Digital Newspaper & Magazine Subscriptions",
+                                         "Log In - ProQuest",
                                         ])) {
           $this->set('title', '');
       }
@@ -2710,14 +2711,15 @@ final class Template {
         if ($part_start[0] === 'text')     $part_start[0] = 'dq';
         if ($part_start[0] === 'keywords') $part_start[0] = 'q';
         if ($part_start[0] === 'page')     $part_start[0] = 'pg';
+        if (isset($part_start[2])) $part_start[1] = $part_start[1] . '=' . $part_start[2];
+        if (isset($part_start[3])) $part_start[1] = $part_start[1] . '=' . $part_start[3];
+        if (isset($part_start[4])) $part_start[1] = $part_start[1] . '=' . $part_start[4];
         switch ($part_start[0]) {
           case "dq": case "pg": case "lpg": case "q": case "printsec": case "cd": case "vq": case "jtp": case "sitesec": case "article_id":
             if (empty($part_start[1])) {
                 $removed_redundant++;
                 $removed_parts .= $part;
             } else {
-                if (isset($part_start[2])) $part_start[1] = $part_start[1] . '=' . $part_start[2];
-                if (isset($part_start[3])) $part_start[1] = $part_start[1] . '=' . $part_start[3];
                 $book_array[$part_start[0]] = $part_start[1];
             }
             break;
@@ -2727,10 +2729,21 @@ final class Template {
           case "ei": case "ots": case "sig": case "source": case "lr": case "ved":
           case "gs_lcp": case "sxsrf": case "gfe_rd": case "gws_rd":
           case "sa": case "oi": case "ct": case "client": case "redir_esc":
-          case "callback": case "jscmd": case "bibkeys":
-          case "buy": case "edge": case "zoom": case "img": // List of parameters known to be safe to remove
+          case "callback": case "jscmd": case "bibkeys": case "newbks":
+          case "newbks_redir": case "resnum": case "ci":
+          case "as_maxm_is": case "as_maxy_is": case "": case "as_minm_is":
+          case "as_miny_is": case "authuser": case "cad": case "focus":
+          case "gl": case "ovdme": case "sqi": case "w":
+          case "pgis": case "ppis": case "output":
+          case "buy": case "edge": case "zoom": case "img": // List of parameters known to be safe to remove - many are how you searched for the book
+            $removed_parts .= $part;
+            $removed_redundant++;
+            break;
           default:
-            if ($removed_redundant !== 0) $removed_parts .= $part; // http://blah-blah is first parameter and it is not actually dropped
+            if ($removed_redundant !== 0) {
+              $removed_parts .= $part; // http://blah-blah is first parameter and it is not actually dropped
+              file_put_contents('CodeCoverage', "\n Unexpected dropping from Google Books " . $part . "\n", FILE_APPEND);
+            }
             $removed_redundant++;
         }
       }
@@ -3385,10 +3398,10 @@ final class Template {
           case "eccc": case "ean": case "ethos": case "chmid": case "factiva": case "mesh":
           case "dggs citation id": case "harvp": case "nla": case "catkey": case "hyphen":
           case "mit libraries": case "epa national catalog": case "unt key": case "eram":
-          case "regreq": CONFLICT
+          case "regreq": case "nobr": case "subscription": case "uspl": case "small":
+          case "genbank": case "better source needed":  
           case "gbooks": // TODO - should use
-          case "isbnt": // Assume not normal isbn for a reason
-          case "issn link": // Assume not normal issn for a reason
+          case "isbnt": case "issn link":// Assume not normal isbn for a reason
           case "google books": // Usually done for fancy formatting and because already has title-link/url
           case "url": // Untrustable: used by bozos
             break;
@@ -7585,17 +7598,19 @@ final class Template {
 
       foreach ($url_parts as $part) {
         $part_start = explode("=", $part);
+        $part_start0 = $part_start[0]; 
         if (isset($part_start[1]) && $part_start[1] === '') {
-          $part_start[0] = "donotaddmeback"; // Do not add blank ones
-        }
-        if (empty($part_start[1])) {
+          $part_start0 = "donotaddmeback"; // Do not add blank ones
+          $part_start1 = '';
+          $it_is_blank = TRUE;
+        } elseif (empty($part_start[1])) {
           $part_start1 = '';
           $it_is_blank = TRUE;
         } else {
           $part_start1 = $part_start[1];
           $it_is_blank = FALSE;
         }
-        switch ($part_start[0]) {
+        switch ($part_start0) {
           case "aq": case "aqi": case "bih": case "biw": case "client":
           case "as": case "useragent": case "as_brr":
           case "ei": case "ots": case "sig": case "source": case "lr":

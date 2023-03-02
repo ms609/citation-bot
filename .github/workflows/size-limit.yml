@@ -43,10 +43,12 @@ jobs:
       if: steps.composer-cache.outputs.cache-hit != 'true'
       run: composer install --prefer-dist  -vvv --no-progress
 
+# https://docs.github.com/en/search-github/searching-on-github/searching-code#considerations-for-code-search
+# Only files smaller than 384 KB are searchable
     - name: Size limit to make sure search works
       uses: actionsdesk/lfs-warning@v3.2
       with:
-        filesizelimit: 393000b
+        filesizelimit: 393216b
 
      
       
