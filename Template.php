@@ -3398,7 +3398,7 @@ final class Template {
           case "eccc": case "ean": case "ethos": case "chmid": case "factiva": case "mesh":
           case "dggs citation id": case "harvp": case "nla": case "catkey": case "hyphen":
           case "mit libraries": case "epa national catalog": case "unt key": case "eram":
-          case "regreq": case "nobr": case "subscription": case "uspl":
+          case "regreq": case "nobr": case "subscription": case "uspl": case "small":
           case "gbooks": // TODO - should use
           case "isbnt": case "issn link":// Assume not normal isbn for a reason
           case "google books": // Usually done for fancy formatting and because already has title-link/url
