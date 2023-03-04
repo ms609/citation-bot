@@ -1198,6 +1198,9 @@ function bot_html_header() : void {
 
   <pre id="botOutput">
    ');
+  if (ini_get('pcre.jit') === '0') {
+    report_warning('PCRE JIT Disabled');
+  }
 }
 
 /**
