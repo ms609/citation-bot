@@ -4,8 +4,6 @@ declare(strict_types=1);
  * Handle most aspects of citation templates
  *
  * Of particular note: add_if_new() is generally called to add or sometimes overwrite parameters.
- * A range of functions will search online databases
- * to find information to add to existing citations.
  */
 
 // @codeCoverageIgnoreStart
