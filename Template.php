@@ -4,12 +4,10 @@ declare(strict_types=1);
  * Template has methods to handle most aspects of citation template
  * parsing, handling, and expansion.
  *
- * Of particular note:
- *     add_if_new() is generally called to add or sometimes overwrite parameters. The central
- *       switch statement handles various parameters differently.
+ * Of particular note: add_if_new() is generally called to add or sometimes overwrite parameters.
  *
- * A range of functions will search CrossRef/adsabs/Google Books/other online databases
- * to find information that can be added to existing citations.
+ * A range of functions will search online databases
+ * to find information to add to existing citations.
  */
 
 // @codeCoverageIgnoreStart
@@ -4960,6 +4958,31 @@ final class Template {
                 $this->forget($param);
               }
             }
+
+          if ( $publisher === 'www.bollywoodhungama.com' ||
+               $publisher === 'bollywoodhungama.com' ||
+               $publisher === 'bollywoodhungama' ||
+               $publisher === 'bollywood hungama'
+              ) {
+                 if (strpos($this->get($param), ']') !== FALSE) {
+                   $this->set($param, '[[Bollywood Hungama]]');
+                 } else {
+                   $this->set($param, 'Bollywood Hungama');
+                 }
+                 $publisher = 'bollywood hungama';
+          }
+          if ((stripos($publisher, 'bollywoodhungama.com') !== FALSE) || (stripos($publisher, 'bollywood hungama') !== FALSE)) {
+            if ($this->blank(WORK_ALIASES)) {
+              $this->rename($param, 'website');
+            } else {
+              $lower = "";
+              foreach (WORK_ALIASES as $worky) {
+                $lower = $lower . strtolower($this->get($worky));
+              }
+              if (strpos($lower, 'bollywoodhungama') !== FALSE || strpos($lower, 'bollywood hungama')) {
+                $this->forget($param);
+              }
+            }
             return;
           }
 
@@ -6332,6 +6355,17 @@ final class Template {
                strtolower($the_param) === 'sify'
               ) {
               $this->set($param, '[[Sify]]');
+              return;
+          }
+          if ( strtolower($the_param) === 'www.bollywoodhungama.com' ||
+               strtolower($the_param) === 'bollywoodhungama.com' ||
+               strtolower($the_param) === 'bollywoodhungama'
+              ) {
+              if (strpos($this->get($param), '[') !== FALSE) {
+                $this->set($param, '[[Bollywood Hungama]]');
+              } else {
+                $this->set($param, 'Bollywood Hungama');
+              }
               return;
           }
           return;
