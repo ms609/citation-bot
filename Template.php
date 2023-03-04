@@ -4975,7 +4975,7 @@ final class Template {
               foreach (WORK_ALIASES as $worky) {
                 $lower = $lower . strtolower($this->get($worky));
               }
-              if (strpos($lower, 'bollywoodhungama') !== FALSE || strpos($lower, 'bollywood hungama')) {
+              if (strpos($lower, 'bollywoodhungama') !== FALSE || strpos($lower, 'bollywood hungama') !== FALSE) {
                 $this->forget($param);
               }
             }
