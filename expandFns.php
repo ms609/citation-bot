@@ -775,6 +775,10 @@ function title_capitalization(string $in, bool $caps_after_punctuation) : string
       }
     }
   }
+  
+
+  $new_case = str_replace(['Series a and B ', 'Series a & B '] , ['Series A and B ', 'Series A & B '], $new_case);
+  
   // Part XII: Roman numerals
   $new_case = safe_preg_replace_callback(
     "~ part ([xvil]+): ~iu",
