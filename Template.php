@@ -4960,11 +4960,7 @@ final class Template {
                $publisher === 'bollywoodhungama' ||
                $publisher === 'bollywood hungama'
               ) {
-                 if (strpos($this->get($param), ']') !== FALSE) {
-                   $this->set($param, '[[Bollywood Hungama]]');
-                 } else {
-                   $this->set($param, 'Bollywood Hungama');
-                 }
+                 $this->set($param, '[[Bollywood Hungama]]');
                  $publisher = 'bollywood hungama';
           }
           if ((stripos($publisher, 'bollywoodhungama.com') !== FALSE) || (stripos($publisher, 'bollywood hungama') !== FALSE)) {
@@ -6357,11 +6353,7 @@ final class Template {
                strtolower($the_param) === 'bollywoodhungama.com' ||
                strtolower($the_param) === 'bollywoodhungama'
               ) {
-              if (strpos($this->get($param), '[') !== FALSE) {
-                $this->set($param, '[[Bollywood Hungama]]');
-              } else {
-                $this->set($param, 'Bollywood Hungama');
-              }
+              $this->set($param, '[[Bollywood Hungama]]');
               return;
           }
           return;
