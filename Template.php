@@ -4954,6 +4954,8 @@ final class Template {
                 $this->forget($param);
               }
             }
+            return;
+          }
 
           if ( $publisher === 'www.bollywoodhungama.com' ||
                $publisher === 'bollywoodhungama.com' ||
