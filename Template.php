@@ -4957,6 +4957,29 @@ final class Template {
             return;
           }
 
+          if ( $publisher === 'www.bollywoodhungama.com' ||
+               $publisher === 'bollywoodhungama.com' ||
+               $publisher === 'bollywoodhungama' ||
+               $publisher === 'bollywood hungama'
+              ) {
+                 $this->set($param, '[[Bollywood Hungama]]');
+                 $publisher = 'bollywood hungama';
+          }
+          if ((stripos($publisher, 'bollywoodhungama.com') !== FALSE) || (stripos($publisher, 'bollywood hungama') !== FALSE)) {
+            if ($this->blank(WORK_ALIASES)) {
+              $this->rename($param, 'website');
+            } else {
+              $lower = "";
+              foreach (WORK_ALIASES as $worky) {
+                $lower = $lower . strtolower($this->get($worky));
+              }
+              if (strpos($lower, 'bollywoodhungama') !== FALSE || strpos($lower, 'bollywood hungama') !== FALSE) {
+                $this->forget($param);
+              }
+            }
+            return;
+          }
+
           return;
 
         case 'quotes':
@@ -6326,6 +6349,13 @@ final class Template {
                strtolower($the_param) === 'sify'
               ) {
               $this->set($param, '[[Sify]]');
+              return;
+          }
+          if ( strtolower($the_param) === 'www.bollywoodhungama.com' ||
+               strtolower($the_param) === 'bollywoodhungama.com' ||
+               strtolower($the_param) === 'bollywoodhungama'
+              ) {
+              $this->set($param, '[[Bollywood Hungama]]');
               return;
           }
           return;
