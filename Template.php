@@ -4982,6 +4982,10 @@ final class Template {
                 $this->rename($param, 'website');
               }
             }
+            $authtmp = $this->get('author');
+            if ($authtmp === 'Bollywood Hungama News Network' || $authtmp === 'Bollywood Hungama') {
+              $this->forget('author');
+            }
             return;
           }
 
@@ -6361,6 +6365,10 @@ final class Template {
                strtolower($the_param) === 'bollywoodhungama'
               ) {
               $this->set($param, '[[Bollywood Hungama]]');
+              $authtmp = $this->get('author');
+              if ($authtmp === 'Bollywood Hungama News Network' || $authtmp === 'Bollywood Hungama') {
+                $this->forget('author');
+              }
               return;
           }
           return;
