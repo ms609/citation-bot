@@ -6370,6 +6370,11 @@ final class Template {
                 $this->forget('author');
               }
               return;
+          } elseif (stripos($the_param, 'bollywoodhungama') !== FALSE || stripos($the_param, 'bollywood hungama') !== FALSE) {
+              $authtmp = $this->get('author');
+              if ($authtmp === 'Bollywood Hungama News Network' || $authtmp === 'Bollywood Hungama') {
+                $this->forget('author');
+              }
           }
           return;
 
