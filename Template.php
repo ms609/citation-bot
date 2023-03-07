@@ -4975,6 +4975,11 @@ final class Template {
               }
               if (strpos($lower, 'bollywoodhungama') !== FALSE || strpos($lower, 'bollywood hungama') !== FALSE) {
                 $this->forget($param);
+              } elseif ($lower === 'bh news network') {
+                foreach (WORK_ALIASES as $worky) {
+                  $this->forget($worky));
+                }
+                $this->rename($param, 'website');
               }
             }
             return;
