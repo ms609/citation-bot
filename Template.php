@@ -4977,7 +4977,7 @@ final class Template {
                 $this->forget($param);
               } elseif ($lower === 'bh news network') {
                 foreach (WORK_ALIASES as $worky) {
-                  $this->forget($worky));
+                  $this->forget($worky);
                 }
                 $this->rename($param, 'website');
               }
