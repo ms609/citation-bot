@@ -4965,7 +4965,7 @@ final class Template {
                  $this->set($param, '[[Bollywood Hungama]]');
                  $publisher = 'bollywood hungama';
           }
-          if ((stripos($publisher, 'bollywoodhungama.com') !== FALSE) || (stripos($publisher, 'bollywood hungama') !== FALSE || (stripos($publisher, 'BH News Network') !== FALSE)) {
+          if ((stripos($publisher, 'bollywoodhungama.com') !== FALSE) || (stripos($publisher, 'bollywood hungama') !== FALSE) || (stripos($publisher, 'BH News Network') !== FALSE)) {
             if ($this->blank(WORK_ALIASES)) {
               $this->rename($param, 'website');
             } else {
