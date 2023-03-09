@@ -2725,8 +2725,8 @@ final class Template {
           case "gs_lcp": case "sxsrf": case "gfe_rd": case "gws_rd":
           case "sa": case "oi": case "ct": case "client": case "redir_esc":
           case "callback": case "jscmd": case "bibkeys": case "newbks":
-          case "newbks_redir": case "resnum": case "ci":
-          case "as_maxm_is": case "as_maxy_is": case "": case "as_minm_is":
+          case "newbks_redir": case "resnum": case "ci": case "surl": case "safe":
+          case "as_maxm_is": case "as_maxy_is": case "f": case "as_minm_is":
           case "as_miny_is": case "authuser": case "cad": case "focus":
           case "gl": case "ovdme": case "sqi": case "w": case "rview":
           case "pgis": case "ppis": case "output": case "gboemv":
