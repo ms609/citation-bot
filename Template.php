@@ -2728,8 +2728,8 @@ final class Template {
           case "newbks_redir": case "resnum": case "ci": case "surl": case "safe":
           case "as_maxm_is": case "as_maxy_is": case "f": case "as_minm_is":
           case "as_miny_is": case "authuser": case "cad": case "focus":
-          case "gl": case "ovdme": case "sqi": case "w": case "rview":
-          case "pgis": case "ppis": case "output": case "gboemv":
+          case "gl": case "ovdme": case "sqi": case "w": case "rview": case "":
+          case "pgis": case "ppis": case "output": case "gboemv": case "ie":
           case "buy": case "edge": case "zoom": case "img": case "as_pt": // Safe to remove - many are how you searched for the book
             $removed_parts .= $part;
             $removed_redundant++;
