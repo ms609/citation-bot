@@ -622,6 +622,7 @@ function expand_doi_with_dx(Template $template, string $doi) : bool {
      if (ZOTERO_ONLY) return FALSE;
      if (strpos($doi, '10.2307') === 0) return FALSE; // jstor API is better
      if (strpos($doi, '10.24436') === 0) return FALSE; // They have horrible meta-data
+     if (strpos($doi, '10.5284/1028203') === 0) return FALSE; // database
      set_time_limit(120);
      /** @param array|string|null|int $data */ /** @psalm-suppress MissingClosureParamType */
      $try_to_add_it = function(string $name, $data) use($template) : bool {
