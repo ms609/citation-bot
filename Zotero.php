@@ -1280,13 +1280,19 @@ public static function find_indentifiers_in_urls(Template $template, ?string $ur
        return FALSE;
     }
 
-    if (preg_match('~^https?(://(?:0-www.|www.|)worldcat(?:libraries|)\.org.+)\&referer=brief_results$~i', $url, $matches)) {
+    if (preg_match('~^https?(://(?:0-www\.|www\.|ucsb\.)worldcat(?:libraries|)\.org.+)(?:\&referer=brief_results|%26referer%3Dbrief_results)$~i', $url, $matches)) {
        $url = 'https' . $matches[1];
        if (is_null($url_sent)) {
          $template->set($url_type, $url); // Update URL with cleaner one
        }
     }
-
+    if (preg_match('~^https?(://(?:0-www\.|www\.|ucsb\.)worldcat(?:libraries|)\.org.+)/oclc/(\d+)$~i', $url, $matches)) {
+       $url = 'https://www.worldcat.org/oclc/' . $matches[2];
+       if (is_null($url_sent)) {
+         $template->set($url_type, $url); // Update URL with cleaner one
+       }
+    }
+  
     if (preg_match("~^https?://(?:(?:dx\.|www\.|)doi\.org|doi\.library\.ubc\.ca)/([^\?]*)~i", $url, $match)) {
       if ($template->has('doi')) {
         $doi = $template->get('doi');
