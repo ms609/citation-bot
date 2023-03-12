@@ -2689,7 +2689,8 @@ final class Template {
     // Now we parse a Google Books URL
     if ($url && (preg_match("~[Bb]ooks\.[Gg]oogle\.[\w\.]+/.*\bid=([\w\d\-]+)~", $url, $gid) || preg_match("~[Ee]ncrypted\.[Gg]oogle\..+book.*\bid=([\w\d\-]+)~", $url, $gid))) {
       $orig_book_url = $url;
-      $url = normalize_google_books($url);
+      $removed_redundant = 0;
+      normalize_google_books($url, $removed_redundant);
       if ($url !== $orig_book_url && $url_type && (strpos($url_type, 'url') !== FALSE)) {
         if ($removed_redundant > 1) { // http:// is counted as 1 parameter
           report_forget(echoable($removed_parts));
