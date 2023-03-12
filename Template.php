@@ -3221,7 +3221,7 @@ final class Template {
           case "subscription required": case "ncid": case "wikileaks cable":
           case "bhl page": case "internet archive": case "youtube": case "nypl":
           case "bnf": case "dnb-idn": case "nara catalog record": case "urn":
-          case "so-vid": case "philpapers": case "iccu": case "hathitrust":
+          case "so-vid": case "philpapers": case "iccu": case "hathitrust": case "allmusic":
           case "hal": case "icd11": case "coden": case "blcat": case "cobiss.bih":
           case "cobiss.rs": case "cobiss.sr": case "harvtxt": case "mathnet": case "eissn":
           case "ndljp": case "orcid": case "pq": case "sudoc": case "upc": case "ceeol":
