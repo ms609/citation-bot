@@ -1358,7 +1358,7 @@ function smart_decode(string $title, string $encode, string $archive_url) : stri
   return $try;
 }
 
-function normalize_google_books(string $url) : string {
+function normalize_google_books(string &$url, integer &$removed_redundant) : void { // PASS BY REFERENCE!!!!!!
       $removed_redundant = 0;
       $hash = '';
       $removed_parts ='';
@@ -1526,5 +1526,4 @@ function normalize_google_books(string $url) : string {
       if (preg_match('~^(https://books\.google\.com/books\?id=[^#^&]+)(?:&printsec=frontcover|)(?:#v=onepage|v=snippet|)$~', $url, $matches)) {
          $url = $matches[1]; // URL Just wants the landing page
       }
-      return $url;
 }
