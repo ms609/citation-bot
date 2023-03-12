@@ -1358,7 +1358,7 @@ function smart_decode(string $title, string $encode, string $archive_url) : stri
   return $try;
 }
 
-function normalize_google_books(string &$url, integer &$removed_redundant) : void { // PASS BY REFERENCE!!!!!!
+function normalize_google_books(string &$url, int &$removed_redundant, string &$removed_parts) : void { // PASS BY REFERENCE!!!!!!
       $removed_redundant = 0;
       $hash = '';
       $removed_parts ='';
