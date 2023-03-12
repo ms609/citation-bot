@@ -3387,7 +3387,7 @@ final class Template {
           case "bnf": case "dnb-idn": case "nara catalog record": case "urn":
           case "so-vid": case "philpapers": case "iccu": case "hathitrust":
           case "hal": case "icd11": case "coden": case "blcat": case "cobiss.bih":
-          case "cobiss.rs": case "cobiss.sr": case "harvtxt": case "mathnet":
+          case "cobiss.rs": case "cobiss.sr": case "harvtxt": case "mathnet": case "eissn":
           case "ndljp": case "orcid": case "pq": case "sudoc": case "upc": case "ceeol":
           case "nps history library": case "smaller": case "zenodo": case "!":
           case "eccc": case "ean": case "ethos": case "chmid": case "factiva": case "mesh":
