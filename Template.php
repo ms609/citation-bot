@@ -2691,7 +2691,7 @@ final class Template {
       $orig_book_url = $url;
       $removed_redundant = 0;
       $removed_parts = '';
-      normalize_google_books($url, $removed_redundant, $removed_parts);
+      normalize_google_books($url, $removed_redundant, $removed_parts, $gid);
       if ($url !== $orig_book_url && $url_type && (strpos($url_type, 'url') !== FALSE)) {
         if ($removed_redundant > 1) { // http:// is counted as 1 parameter
           report_forget(echoable($removed_parts));
