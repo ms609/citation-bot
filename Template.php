@@ -5728,6 +5728,10 @@ final class Template {
                  $changed = TRUE;
                  $this->set($param, 'https://www.proquest.com/openview/' . $matches[1]);
             }
+            if (preg_match("~^(https://www\.proquest\.com/docview/.+)\?$~", $this->get($param), $matches)) {
+                 $changed = TRUE;
+                 $this->set($param, $matches[1]);
+            }
             if (preg_match("~^https?://proquest\.umi\.com/.*$~", $this->get($param), $matches)) {
                  $ch = curl_init();
                  curl_setopt_array($ch,
