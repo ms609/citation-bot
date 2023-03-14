@@ -117,7 +117,7 @@ const JOURNAL_ACRONYMS = array(/* The following will be automatically updated to
           " Tidsskr Nor Lægeforen ", " Time Off Magazine ", " Time Out London ", " tot de ", 
           " Transactions and archaeological record of the Cardiganshire Antiquarian Society ", 
           " U.S. ", " U.S.A. ", " U.S.A. ", " UBV Data ", " uHealth ", " uHealth ", " UNED Research Journal ", 
-          " USGS ", " v Astronomicheskii Zhurna ", " van Het ", " voor de geschiedenis der Nederlanden ", 
+          " USGS ", " v Astronomicheskii Zhurna ", " van het ", " voor de geschiedenis der Nederlanden ", 
           " voor de geschiedenis der Nederlanden ", " We Proceeded On ", " WRIR ", " z/Journal ", 
           " z/Journal ", " zbMATH ", " Zeitschrift für Geologische Wissenschaften ", " Zeitschrift für Physik A Hadrons and Nuclei ", 
           " Zeitschrift für Physik A: Hadrons and Nuclei ", " Znanosti i Umjetnosti ", 
