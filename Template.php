@@ -3162,6 +3162,7 @@ final class Template {
           case "ol":
           case "lcc":
           case "ismn":
+          case "biorxiv":
 
             // Specific checks for particular templates:
             if ($subtemplate_name === 'asin' && $subtemplate->has('country')) {
