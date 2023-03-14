@@ -1368,6 +1368,7 @@ function normalize_google_books(string &$url, int &$removed_redundant, string &$
         $url = $url_parts[0];
         $hash = $url_parts[1];
       }
+      $url = str_replace("&amp;", "&", $url); 
       $url_parts = explode("&", str_replace("?", "&", $url));
       $url = "https://books.google.com/books?id=" . $gid[1];
       $book_array = array();
@@ -1460,8 +1461,8 @@ function normalize_google_books(string &$url, int &$removed_redundant, string &$
           unset($book_array['dq']);
         }
       }
-      if (isset($book_array['bsq']) {
-        if (!$isset($book_array['q'] && !$isset($book_array['pq']) {
+      if (isset($book_array['bsq'])) {
+        if (!$isset($book_array['q']) && !$isset($book_array['pq'])) {
           $book_array['q'] = $book_array['bsq'];
         }
         unset($book_array['bsq']);
