@@ -1462,7 +1462,7 @@ function normalize_google_books(string &$url, int &$removed_redundant, string &$
         }
       }
       if (isset($book_array['bsq'])) {
-        if (!$isset($book_array['q']) && !$isset($book_array['pq'])) {
+        if (!isset($book_array['q']) && !isset($book_array['pq'])) {
           $book_array['q'] = $book_array['bsq'];
         }
         unset($book_array['bsq']);
