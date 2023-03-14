@@ -792,7 +792,7 @@ echo "\n" . __LINE__ . $new_case . "\n";
   }
 echo "\n" . __LINE__ . $new_case . "\n";
   $new_case = trim(str_replace(['Series a and B ', 'Series a & B '] , ['Series A and B ', 'Series A & B '], $new_case . ' ')); // TODO, use regex for any letter
-  echo "\n" . __LINE__ . $title . "\n";
+  echo "\n" . __LINE__ . $new_case . "\n";
   // Part XII: Roman numerals
   $new_case = safe_preg_replace_callback(
     "~ part ([xvil]+): ~iu",
