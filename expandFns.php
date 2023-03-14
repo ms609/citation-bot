@@ -317,6 +317,7 @@ function extract_doi(string $text) : array {
 function wikify_external_text(string $title) : string {
   $replacement = [];
   $placeholder = [];
+  echo "\n" . __LINE__ . $title . "\n";
   if (preg_match_all("~<(?:mml:)?math[^>]*>(.*?)</(?:mml:)?math>~", $title, $matches)) {
     for ($i = 0; $i < count($matches[0]); $i++) {
       $replacement[$i] = '<math>' . 
@@ -328,13 +329,18 @@ function wikify_external_text(string $title) : string {
       $title = str_replace($matches[0][$i], $placeholder[$i], $title);
     }
   }
+  echo "\n" . __LINE__ . $title . "\n";
   $title = html_entity_decode($title, ENT_COMPAT | ENT_HTML401, "UTF-8");
+    echo "\n" . __LINE__ . $title . "\n";
   $title = safe_preg_replace("~\s+~"," ", $title);  // Remove all white spaces before
+    echo "\n" . __LINE__ . $title . "\n";
   if (mb_substr($title, -6) === "&nbsp;") $title = mb_substr($title, 0, -6);
+    echo "\n" . __LINE__ . $title . "\n";
   // Special code for ending periods
   while (mb_substr($title, -2) === "..") {
     $title = mb_substr($title, 0, -1);
   }
+    echo "\n" . __LINE__ . $title . "\n";
   if (mb_substr($title, -1) === ".") { // Ends with a period
    if (mb_substr_count($title, '.') === 1) { // Only one period
       $title = mb_substr($title, 0, -1);
@@ -349,28 +355,35 @@ function wikify_external_text(string $title) : string {
     }
    }
   }
+    echo "\n" . __LINE__ . $title . "\n";
   $title = safe_preg_replace('~[\*]$~', '', $title);
+    echo "\n" . __LINE__ . $title . "\n";
   $title = title_capitalization($title, TRUE);
-
+  echo "\n" . __LINE__ . $title . "\n";
   $htmlBraces  = array("&lt;", "&gt;");
   $angleBraces = array("<", ">");
   $title = str_ireplace($htmlBraces, $angleBraces, $title);
+    echo "\n" . __LINE__ . $title . "\n";
 
   $originalTags = array('<title>', '</title>', '</ title>', 'From the Cover: ');
   $wikiTags = array('','','','');
   $title = str_ireplace($originalTags, $wikiTags, $title);
   $originalTags = array('.<br>', '.</br>', '.</ br>', '.<p>', '.</p>', '.</ p>', '.<strong>', '.</strong>', '.</ strong>');
   $wikiTags = array('. ','. ','. ','. ','. ','. ','. ','. ','. ');
+    echo "\n" . __LINE__ . $title . "\n";
   $title = str_ireplace($originalTags, $wikiTags, $title);
   $originalTags = array('<br>', '</br>', '</ br>', '<p>', '</p>', '</ p>', '<strong>', '</strong>', '</ strong>');
   $wikiTags = array('. ','. ','. ','. ','. ','. ', ' ',' ',' ');
+    echo "\n" . __LINE__ . $title . "\n";
   $title = trim(str_ireplace($originalTags, $wikiTags, $title));
+    echo "\n" . __LINE__ . $title . "\n";
   if (preg_match("~^\. (.+)$~", $title, $matches)) {
     $title = trim($matches[1]);
   }
  if (preg_match("~^(.+)(\.\s+)\.$~s", $title, $matches)) {
     $title = trim($matches[1] . ".");
   }
+    echo "\n" . __LINE__ . $title . "\n";
   $title_orig = '';
   while ($title !== $title_orig) {
     $title_orig = $title;  // Might have to do more than once.   The following do not allow < within the inner match since the end tag is the same :-( and they might nest or who knows what
@@ -390,27 +403,29 @@ function wikify_external_text(string $title) : string {
       function (array $matches) : string {return ("''" . $matches[1] . "''");},
       $title);
   }
+    echo "\n" . __LINE__ . $title . "\n";
 
   if (mb_substr($title, -1) === '.') {
     $title = sanitize_string($title) . '.';
   } else {
     $title = sanitize_string($title);
   }
-
+  echo "\n" . __LINE__ . $title . "\n";
   $title = str_replace(['​'],[' '], $title); // Funky spaces
-  
+    echo "\n" . __LINE__ . $title . "\n";
   $title = str_ireplace('<p class="HeadingRun \'\'In\'\'">', ' ', $title);
-  
+    echo "\n" . __LINE__ . $title . "\n";
   $title = str_ireplace(['    ', '   ', '  '], [' ', ' ', ' '], $title);
   if (mb_strlen($title) === strlen($title)) {
      $title = trim($title," \t\n\r\0\x0B\xc2\xa0");
   } else {
      $title = trim($title," \t\n\r\0");
   }
-
+  echo "\n" . __LINE__ . $title . "\n";
   for ($i = 0; $i < count($replacement); $i++) {
     $title = str_replace($placeholder[$i], $replacement[$i], $title); // @phan-suppress-current-line PhanTypePossiblyInvalidDimOffset
   }
+    echo "\n" . __LINE__ . $title . "\n";
   return $title; 
 }
 
