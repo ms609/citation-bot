@@ -804,7 +804,12 @@ function title_capitalization(string $in, bool $caps_after_punctuation) : string
 
 function mb_ucfirst(string $string) : string
 {
-    return mb_strtoupper(mb_substr($string, 0, 1)) . mb_substr($string, 1, NULL);
+    $first = mb_substr($string, 0, 1);
+    if (mb_strlen($first) !== strlen($first)) {
+      return $string;
+    } else {
+      return mb_strtoupper(mb_substr($string, 0, 1)) . mb_substr($string, 1, NULL);
+    }
 }
 
 function mb_ucwords(string $string) : string
