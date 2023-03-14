@@ -1028,8 +1028,13 @@ public static function process_zotero_response(string $zotero_response, Template
        if (stripos(trim($template->get('author')), 'Reuters') === 0) $template->forget('author'); // all too common
     }
   }
-  if (stripos($url, 'www.businesswire.com/news') !== FALSE && $template->wikiname() === 'cite web') {
-    $template->change_name_to('cite press release');
+  if ($template->wikiname() === 'cite web') {
+    if (stripos($url, 'businesswire.com/news') !== FALSE ||
+        stripos($url, 'prnewswire.com/') !== FALSE ||
+        stripos($url, 'globenewswire.com/') !== FALSE ||
+        stripos($url, 'newswire.com/') !== FALSE) {
+      $template->change_name_to('cite press release');
+    }
   }
   return TRUE;
 }
