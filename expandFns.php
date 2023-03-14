@@ -1401,6 +1401,7 @@ function normalize_google_books(string &$url, int &$removed_redundant, string &$
           case "as_miny_is": case "authuser": case "cad": case "focus": case "pjf":
           case "gl": case "ovdme": case "sqi": case "w": case "rview": case "":
           case "pgis": case "ppis": case "output": case "gboemv": case "ie": case "nbsp;":
+          case "fbclid": case "num": case "oe": case "pli": case "prev": case "vid": case "view":
           case "buy": case "edge": case "zoom": case "img": case "as_pt": // Safe to remove - many are how you searched for the book
             $removed_parts .= $part;
             $removed_redundant++;
@@ -1451,6 +1452,12 @@ function normalize_google_books(string &$url, int &$removed_redundant, string &$
           $book_array['q'] = $book_array['vq'];
           unset($book_array['vq']);
       }
+      if (isset($book_array['bsq'])) {
+        if (!isset($book_array['q']) && !isset($book_array['pq'])) {
+          $book_array['q'] = $book_array['bsq'];
+        }
+        unset($book_array['bsq']);
+      }
       if (isset($book_array['q']) && isset($book_array['dq'])) { // Q wins over DQ
           $removed_redundant++;
           $removed_parts .= '&dq=' . $book_array['dq'];
@@ -1460,12 +1467,6 @@ function normalize_google_books(string &$url, int &$removed_redundant, string &$
           $book_array['q'] = $book_array['dq'];
           unset($book_array['dq']);
         }
-      }
-      if (isset($book_array['bsq'])) {
-        if (!isset($book_array['q']) && !isset($book_array['pq'])) {
-          $book_array['q'] = $book_array['bsq'];
-        }
-        unset($book_array['bsq']);
       }
       if (isset($book_array['pg']) && isset($book_array['lpg'])) { // PG wins over LPG
           $removed_redundant++;
