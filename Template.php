@@ -2480,6 +2480,7 @@ final class Template {
         if (!$oa_url) return 'nothing';
 
         if (stripos($oa_url, 'semanticscholar.org') !== FALSE) return 'semanticscholar';  // use API call instead (avoid blacklisting)
+        if (stripos($oa_url, 'timetravel.mementoweb.org') !== FALSE) return 'mementoweb'; // Not good ones
         if (stripos($oa_url, 'citeseerx') !== FALSE) return 'citeseerx'; // blacklisted due to copyright concerns
         if (stripos($oa_url, 'palgraveconnect') !== FALSE) return 'palgraveconnect';
         if ($this->get('url')) {
