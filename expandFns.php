@@ -1380,7 +1380,7 @@ function normalize_google_books(string &$url, int &$removed_redundant, string &$
         if (isset($part_start[3])) $part_start[1] = $part_start[1] . '=' . $part_start[3];
         if (isset($part_start[4])) $part_start[1] = $part_start[1] . '=' . $part_start[4];
         switch ($part_start[0]) {
-          case "dq": case "pg": case "lpg": case "q": case "printsec": case "cd": case "vq": case "jtp": case "sitesec": case "article_id":
+          case "dq": case "pg": case "lpg": case "q": case "printsec": case "cd": case "vq": case "jtp": case "sitesec": case "article_id": case "bsq":
             if (empty($part_start[1])) {
                 $removed_redundant++;
                 $removed_parts .= $part;
@@ -1394,12 +1394,12 @@ function normalize_google_books(string &$url, int &$removed_redundant, string &$
           case "ei": case "ots": case "sig": case "source": case "lr": case "ved":
           case "gs_lcp": case "sxsrf": case "gfe_rd": case "gws_rd":
           case "sa": case "oi": case "ct": case "client": case "redir_esc":
-          case "callback": case "jscmd": case "bibkeys": case "newbks":
+          case "callback": case "jscmd": case "bibkeys": case "newbks": case "gbpv":
           case "newbks_redir": case "resnum": case "ci": case "surl": case "safe":
           case "as_maxm_is": case "as_maxy_is": case "f": case "as_minm_is":
-          case "as_miny_is": case "authuser": case "cad": case "focus":
+          case "as_miny_is": case "authuser": case "cad": case "focus": case "pjf":
           case "gl": case "ovdme": case "sqi": case "w": case "rview": case "":
-          case "pgis": case "ppis": case "output": case "gboemv": case "ie":
+          case "pgis": case "ppis": case "output": case "gboemv": case "ie": case "nbsp;":
           case "buy": case "edge": case "zoom": case "img": case "as_pt": // Safe to remove - many are how you searched for the book
             $removed_parts .= $part;
             $removed_redundant++;
@@ -1459,6 +1459,12 @@ function normalize_google_books(string &$url, int &$removed_redundant, string &$
           $book_array['q'] = $book_array['dq'];
           unset($book_array['dq']);
         }
+      }
+      if (isset($book_array['bsq']) {
+        if (!$isset($book_array['q'] && !$isset($book_array['pq']) {
+          $book_array['q'] = $book_array['bsq'];
+        }
+        unset($book_array['bsq']);
       }
       if (isset($book_array['pg']) && isset($book_array['lpg'])) { // PG wins over LPG
           $removed_redundant++;
