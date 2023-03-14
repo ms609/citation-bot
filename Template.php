@@ -3195,6 +3195,11 @@ final class Template {
               report_info(echoable($subtemplate->parsed_text()));
               break;
             }
+            if ($subtemplate_name === 'biorxiv' && !is_null($subtemplate->param_with_index(1))) {
+              report_info("{{biorxiv}} has multiple parameters: cannot convert.");
+              report_info(echoable($subtemplate->parsed_text()));
+              break;
+            }
             if ($subtemplate_name === 'lcc') {
               if (preg_match('~^[\d\-]+$~', $subtemplate->param_value(0))) {
                 report_minor_error("Possible bad LCC template (did they mean LCCN) : " . echoable($subtemplate->param_value(0)));  // @codeCoverageIgnore
@@ -3230,6 +3235,7 @@ final class Template {
           case "dggs citation id": case "harvp": case "nla": case "catkey": case "hyphen":
           case "mit libraries": case "epa national catalog": case "unt key": case "eram":
           case "regreq": case "nobr": case "subscription": case "uspl": case "small":
+          case "rism":
           case "genbank": case "better source needed": case "free access": case "required subscription":
           case "fahrplan-ch": case "incomplete short citation": case "music":
           case "gbooks": // TODO - should use
