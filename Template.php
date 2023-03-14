@@ -2459,6 +2459,7 @@ final class Template {
     curl_close($ch);
     if ($json) {
       $oa = @json_decode($json);
+      print_r($oa);
       if ($oa !== FALSE && isset($oa->best_oa_location)) {
         $best_location = $oa->best_oa_location;
         if ($best_location->host_type === 'publisher') {
