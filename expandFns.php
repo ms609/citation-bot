@@ -329,18 +329,13 @@ function wikify_external_text(string $title) : string {
       $title = str_replace($matches[0][$i], $placeholder[$i], $title);
     }
   }
-  echo "\n" . __LINE__ . $title . "\n";
   $title = html_entity_decode($title, ENT_COMPAT | ENT_HTML401, "UTF-8");
-    echo "\n" . __LINE__ . $title . "\n";
   $title = safe_preg_replace("~\s+~"," ", $title);  // Remove all white spaces before
-    echo "\n" . __LINE__ . $title . "\n";
   if (mb_substr($title, -6) === "&nbsp;") $title = mb_substr($title, 0, -6);
-    echo "\n" . __LINE__ . $title . "\n";
   // Special code for ending periods
   while (mb_substr($title, -2) === "..") {
     $title = mb_substr($title, 0, -1);
   }
-    echo "\n" . __LINE__ . $title . "\n";
   if (mb_substr($title, -1) === ".") { // Ends with a period
    if (mb_substr_count($title, '.') === 1) { // Only one period
       $title = mb_substr($title, 0, -1);
@@ -355,7 +350,6 @@ function wikify_external_text(string $title) : string {
     }
    }
   }
-    echo "\n" . __LINE__ . $title . "\n";
   $title = safe_preg_replace('~[\*]$~', '', $title);
     echo "\n" . __LINE__ . $title . "\n";
   $title = title_capitalization($title, TRUE);
@@ -661,33 +655,37 @@ function title_case(string $text) : string {
 function title_capitalization(string $in, bool $caps_after_punctuation) : string {
   // Use 'straight quotes' per WP:MOS
   $new_case = straighten_quotes(trim($in), FALSE);
+  echo "\n" . __LINE__ . $title . "\n";
   if (mb_substr($new_case, 0, 1) === "[" && mb_substr($new_case, -1) === "]") {
      return $new_case; // We ignore wikilinked names and URL linked since who knows what's going on there.
                        // Changing case may break links (e.g. [[Journal YZ|J. YZ]] etc.)
   }
-  
+  echo "\n" . __LINE__ . $title . "\n";
   if (stripos($new_case, 'www.') !== FALSE || stripos($new_case, 'www-') !== FALSE || stripos($new_case, 'http://') !== FALSE) {
      return $new_case; // Who knows - duplicate code above
   }
-
+echo "\n" . __LINE__ . $title . "\n";
   if ($new_case === mb_strtoupper($new_case) 
      && mb_strlen(str_replace(array("[", "]"), "", trim($in))) > 6
      ) {
     // ALL CAPS to Title Case
     $new_case = mb_convert_case($new_case, MB_CASE_TITLE, "UTF-8");
   }
-
+echo "\n" . __LINE__ . $title . "\n";
   // Implicit acronyms
   $new_case = ' ' . $new_case . ' ';
   $new_case = safe_preg_replace_callback("~[^\w&][b-df-hj-np-tv-xz]{3,}(?=\W)~ui", 
       function (array $matches) : string {return mb_strtoupper($matches[0]);}, // Three or more consonants.  NOT Y
       $new_case);
+  echo "\n" . __LINE__ . $title . "\n";
   $new_case = safe_preg_replace_callback("~[^\w&][aeiou]{3,}(?=\W)~ui", 
       function (array $matches) : string {return mb_strtoupper($matches[0]);}, // Three or more vowels.  NOT Y
       $new_case);
+  echo "\n" . __LINE__ . $title . "\n";
   $new_case = mb_substr($new_case, 1, -1); // Remove added spaces
-
+echo "\n" . __LINE__ . $title . "\n";
   $new_case = mb_substr(str_replace(UC_SMALL_WORDS, LC_SMALL_WORDS, " " . $new_case . " "), 1, -1);
+  echo "\n" . __LINE__ . $title . "\n";
   foreach(UC_SMALL_WORDS as $key=>$_value) {
     $upper = UC_SMALL_WORDS[$key];
     $lower = LC_SMALL_WORDS[$key];
@@ -695,7 +693,7 @@ function title_capitalization(string $in, bool $caps_after_punctuation) : string
        $new_case = str_replace(mb_substr($upper, 0, -1) . $char, mb_substr($lower, 0, -1) . $char, $new_case);
     }
   }
-
+echo "\n" . __LINE__ . $title . "\n";
   if ($caps_after_punctuation || (substr_count($in, '.') / strlen($in)) > .07) {
     // When there are lots of periods, then they probably mark abbreviations, not sentence ends
     // We should therefore capitalize after each punctuation character.
@@ -708,60 +706,61 @@ function title_capitalization(string $in, bool $caps_after_punctuation) : string
     // But not "Ann. Of...." which seems to be common in journal titles
     $new_case = str_replace("Ann. Of ", "Ann. of ", $new_case);
   }
-
+echo "\n" . __LINE__ . $title . "\n";
   $new_case = safe_preg_replace_callback(
     "~ \([a-z]~u" /* uppercase after parenthesis */, 
     function (array $matches) : string {return mb_strtoupper($matches[0]);},
     trim($new_case)
   );
-
+echo "\n" . __LINE__ . $title . "\n";
   $new_case = safe_preg_replace_callback(
     "~\w{2}'[A-Z]\b~u" /* Lowercase after apostrophes */, 
     function (array $matches) : string {return mb_strtolower($matches[0]);},
     trim($new_case)
   );
+  echo "\n" . __LINE__ . $title . "\n";
   /** French l'Words and d'Words  **/
   $new_case = safe_preg_replace_callback(
     "~(\s[LD][\'\x{00B4}])([a-zA-ZÀ-ÿ]+)~u",
     function (array $matches) : string {return mb_strtolower($matches[1]) . mb_ucfirst($matches[2]);},
     ' ' . $new_case
   );
-
+echo "\n" . __LINE__ . $title . "\n";
   /** Italian dell'xxx words **/
   $new_case = safe_preg_replace_callback(
     "~(\s)(Dell|Degli|Delle)([\'\x{00B4}][a-zA-ZÀ-ÿ]{3})~u",
     function (array $matches) : string {return $matches[1] . mb_strtolower($matches[2]) . $matches[3];},
     $new_case
   );
-
+echo "\n" . __LINE__ . $title . "\n";
   $new_case = mb_ucfirst(trim($new_case));
-
+echo "\n" . __LINE__ . $title . "\n";
   // Solitary 'a' should be lowercase
   $new_case = safe_preg_replace("~(\w\s+)A(\s+\w)~u", "$1a$2", $new_case);
   // but not in "U S A"
   $new_case = trim(str_replace(" U S a ", " U S A ", ' ' . $new_case . ' '));
-
+echo "\n" . __LINE__ . $title . "\n";
   // This should be capitalized
   $new_case = str_replace(['(new Series)', '(new series)'] , ['(New Series)', '(New Series)'], $new_case);
-
+echo "\n" . __LINE__ . $title . "\n";
   // Catch some specific epithets, which should be lowercase
   $new_case = safe_preg_replace_callback(
     "~(?:'')?(?P<taxon>\p{L}+\s+\p{L}+)(?:'')?\s+(?P<nova>(?:(?:gen\.? no?v?|sp\.? no?v?|no?v?\.? sp|no?v?\.? gen)\b[\.,\s]*)+)~ui" /* Species names to lowercase */,
     function (array $matches) : string {return "''" . mb_ucfirst(mb_strtolower($matches['taxon'])) . "'' " . mb_strtolower($matches["nova"]);},
     $new_case);
-
+echo "\n" . __LINE__ . $title . "\n";
   // "des" at end is "Des" for Design not german "The"
   if (mb_substr($new_case, -4, 4) === ' des') $new_case = mb_substr($new_case, 0, -4)  . ' Des';
-
+echo "\n" . __LINE__ . $title . "\n";
   // Capitalization exceptions, e.g. Elife -> eLife
   $new_case = str_replace(UCFIRST_JOURNAL_ACRONYMS, JOURNAL_ACRONYMS, " " .  $new_case . " ");
   $new_case = mb_substr($new_case, 1, mb_strlen($new_case) - 2); // remove spaces, needed for matching in LC_SMALL_WORDS
-
+echo "\n" . __LINE__ . $title . "\n";
   // Single letter at end should be capitalized  J Chem Phys E for example.  Obviously not the spanish word "e".
   if (mb_substr($new_case, -2, 1) === ' ') $new_case = strrev(mb_ucfirst(strrev($new_case)));
-  
+  echo "\n" . __LINE__ . $title . "\n";
   if ($new_case === 'Now and then') $new_case = 'Now and Then'; // Odd journal name
-
+echo "\n" . __LINE__ . $title . "\n";
   // Trust existing "ITS", "its", ... 
   $its_in = preg_match_all('~ its(?= )~iu', ' ' . trim($in) . ' ', $matches_in, PREG_OFFSET_CAPTURE);
   $new_case = trim($new_case);
@@ -776,6 +775,7 @@ function title_capitalization(string $in, bool $caps_after_punctuation) : string
       }
     }
   }
+  echo "\n" . __LINE__ . $title . "\n";
   // Trust existing "DOS", "dos", ... 
   $its_in = preg_match_all('~ dos(?= )~iu', ' ' . trim($in) . ' ', $matches_in, PREG_OFFSET_CAPTURE);
   $new_case = trim($new_case);
@@ -790,9 +790,9 @@ function title_capitalization(string $in, bool $caps_after_punctuation) : string
       }
     }
   }
-
+echo "\n" . __LINE__ . $title . "\n";
   $new_case = trim(str_replace(['Series a and B ', 'Series a & B '] , ['Series A and B ', 'Series A & B '], $new_case . ' ')); // TODO, use regex for any letter
-  
+  echo "\n" . __LINE__ . $title . "\n";
   // Part XII: Roman numerals
   $new_case = safe_preg_replace_callback(
     "~ part ([xvil]+): ~iu",
@@ -803,6 +803,7 @@ function title_capitalization(string $in, bool $caps_after_punctuation) : string
     function (array $matches) : string {return " Part " . strtoupper($matches[1]) . " ";},
     $new_case);
   // Special cases - Only if the full title
+  echo "\n" . __LINE__ . $title . "\n";
   if ($new_case === 'Bioscience') {
     $new_case = 'BioScience';
   } elseif ($new_case === 'Aids') {
@@ -814,6 +815,7 @@ function title_capitalization(string $in, bool $caps_after_punctuation) : string
   } elseif ($new_case === 'Ca') {
     $new_case = 'CA';
   }
+  echo "\n" . __LINE__ . $title . "\n";
   return $new_case;
 }
 
