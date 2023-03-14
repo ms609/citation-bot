@@ -708,7 +708,7 @@ function title_capitalization(string $in, bool $caps_after_punctuation) : string
   /** French l'Words and d'Words  **/
   $new_case = safe_preg_replace_callback(
     "~(\s[LD][\'\x{00B4}])([a-zA-ZÀ-ÿ]+)~u",
-    function (array $matches) : string {return mb_strtolower($matches[1]) . mb_ucfirst($matches[2]);},
+    function (array $matches) : string {return mb_strtolower($matches[1]) . mb_ucfirst_force($matches[2]);},
     ' ' . $new_case
   );
 
@@ -810,6 +810,11 @@ function mb_ucfirst(string $string) : string
     } else {
       return mb_strtoupper(mb_substr($string, 0, 1)) . mb_substr($string, 1, NULL);
     }
+}
+  
+function mb_ucfirst_force(string $string) : string
+{
+    return mb_strtoupper(mb_substr($string, 0, 1)) . mb_substr($string, 1, NULL);
 }
 
 function mb_ucwords(string $string) : string
