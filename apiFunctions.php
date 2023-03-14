@@ -504,7 +504,6 @@ function expand_by_doi(Template $template, bool $force = FALSE) : bool {
       if ((string) @$crossRef->volume_title === 'Professional Paper') unset($crossRef->volume_title);
       if ((string) @$crossRef->series_title === 'Professional Paper') unset($crossRef->series_title);
       if ($template->has('book-title')) unset($crossRef->volume_title);
-      echo "\n\n ". $crossRef->article_title . "\n\n" . restore_italics((string) $crossRef->article_title) . "\n\n";
       if ($crossRef->volume_title && ($template->blank(WORK_ALIASES) || $template->wikiname() === 'cite book')) {
         if (mb_strtolower($template->get('title')) === mb_strtolower((string) $crossRef->article_title)) {
            $template->rename('title', 'chapter');
@@ -515,7 +514,6 @@ function expand_by_doi(Template $template, bool $force = FALSE) : bool {
       } else {
         $template->add_if_new('title', restore_italics((string) $crossRef->article_title), 'crossref'); // add_if_new will wikify title and sanitize the string
       }
-      echo $template->get('title') . "\n\n";
       $template->add_if_new('series', (string) $crossRef->series_title, 'crossref'); // add_if_new will format the title for a series?
       $template->add_if_new("year", (string) $crossRef->year, 'crossref');
       if (   $template->blank(array('editor', 'editor1', 'editor-last', 'editor1-last', 'editor-last1')) // If editors present, authors may not be desired
