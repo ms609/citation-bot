@@ -188,7 +188,7 @@ const UCFIRST_JOURNAL_ACRONYMS = array(/* The following will be automatically up
           " Tidsskr nor Laegeforen ", " Tidsskr nor Lægeforen ", " Time off Magazine ", 
           " Time Out London ", " Tot de ", " Transactions and Archaeological Record of the Cardiganshire Antiquarian Society ", 
           " U.s. ", " U.S.a. ", " U.s.a ", " Ubv Data ", " UHealth ", " Uhealth ", " Uned Research Journal ", 
-          " Usgs ", " V Astronomicheskii Zhurna ", " Van Het ", " Voor de Geschiedenis der Nederlanden ", 
+          " Usgs ", " V Astronomicheskii Zhurna ", " van Het ", " Voor de Geschiedenis der Nederlanden ", 
           " voor de Geschiedenis der Nederlanden ", " We Proceeded on ", " Wrir ", " Z/Journal ", 
           " Z/journal ", " ZbMATH ", " Zeitschrift Für Geologische Wissenschaften ", " Zeitschrift für Physik a Hadrons and Nuclei ", 
           " Zeitschrift Für Physik a: Hadrons And Nuclei ", " Znanosti I Umjetnosti ", 
