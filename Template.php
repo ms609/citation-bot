@@ -1594,6 +1594,7 @@ final class Template {
         return FALSE;
 
       case 'isbn';
+        if ($value === '9780918678072') return FALSE; // Not a good one
         if ($this->blank($param_name)) {
           $value = $this->isbn10Toisbn13($value);
           if (strlen($value) === 13 && substr($value, 0, 6) === '978019') { // Oxford
