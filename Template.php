@@ -3461,6 +3461,7 @@ final class Template {
       // not to the whole proceedings
       // so we use chapter-url so that the template is well rendered afterwards
       if ($this->should_url2chapter(TRUE)) {
+        echo "\n".__LINE__"\n";
         $this->rename('url', 'chapter-url');
       } elseif (!$this->blank(['chapter-url','chapterurl']) && (str_i_same($this->get('chapter-url'), $this->get('url')))) {
         $this->forget('url');
@@ -5776,6 +5777,7 @@ final class Template {
             if ($changed) report_info("Normalized ProQuest URL");
           }
           if ($param === 'url' && $this->wikiname() === 'cite book' && $this->should_url2chapter(FALSE)) {
+                    echo "\n".__LINE__"\n";
             $this->rename('url', 'chapter-url');
             // Comment out because "never used"  $param = 'chapter-url';
             return;
@@ -7610,6 +7612,7 @@ final class Template {
   }
 
   private function should_url2chapter(bool $force) : bool {
+            echo "\n".__LINE__"\n";
     if ($this->has('chapterurl')) return FALSE;
     if ($this->has('chapter-url')) return FALSE;
     if ($this->has('trans-chapter')) return FALSE;
