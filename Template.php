@@ -3456,7 +3456,7 @@ final class Template {
           break;
       }
     }
-    if ($new_name === 'cite book') {
+    if ($new_name === 'cite book' && $this->wikiname() === 'cite book') {
       // all open-access versions of conference papers point to the paper itself
       // not to the whole proceedings
       // so we use chapter-url so that the template is well rendered afterwards
