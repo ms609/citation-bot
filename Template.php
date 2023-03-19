@@ -1078,7 +1078,14 @@ final class Template {
         if ($value=='HEP Lib.Web') $value = 'High Energy Physics Libraries Webzine'; // should be array
         if (preg_match('~Conference Proceedings.*IEEE.*IEEE~', $value)) return FALSE;
         if ($value === 'Wiley Online Library') return FALSE;
-        if ($value === 'Dissertations, Theses, and Capstone Projects') return FALSE;
+        if (stripos($value, 'Capstone Projects') !== FALSE) return FALSE;
+        if (stripos($value, 'Dissertations') !== FALSE) return FALSE;
+        if (stripos($value, 'Theses and Projects') !== FALSE) return FALSE;
+        if (stripos($value, 'Electronic Thesis') !== FALSE) return FALSE;
+        if (stripos($value, ' and Capstones') !== FALSE) return FALSE;
+        if (stripos($value, ' and Problem Reports') !== FALSE) return FALSE;
+        if (stripos($value, 'Doctoral ') !== FALSE) return FALSE;
+        
         if (!$this->blank(['booktitle', 'book-title'])) return FALSE;
         if (in_array(strtolower(sanitize_string($value)), BAD_TITLES )) return FALSE;
         if (in_array(strtolower($value), ARE_MANY_THINGS)) {
