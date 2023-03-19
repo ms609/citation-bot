@@ -7627,7 +7627,8 @@ final class Template {
     }
     if (stripos($url, 'PA1') && !preg_match('~PA1[0-9]~i', $url)) return FALSE;
     if (stripos($url, 'PA0')) return FALSE;
-    dsfasdf
+    if (stripos($url, 'PP1') && !preg_match('~PP1[0-9]~i', $url)) return FALSE;
+    if (stripos($url, 'PP0')) return FALSE;
     if ($this->get_without_comments_and_placeholders('chapter') === '') return FALSE;
     if (stripos($url, 'archive.org')) {
       if (strpos($url, 'chapter')) return TRUE;
