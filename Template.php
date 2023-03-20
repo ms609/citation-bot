@@ -3246,7 +3246,7 @@ final class Template {
           case "dggs citation id": case "harvp": case "nla": case "catkey": case "hyphen":
           case "mit libraries": case "epa national catalog": case "unt key": case "eram":
           case "regreq": case "nobr": case "subscription": case "uspl": case "small":
-          case "rism": case "jan": case "nbsp":
+          case "rism": case "jan": case "nbsp": case "abbr":
           case "genbank": case "better source needed": case "free access": case "required subscription":
           case "fahrplan-ch": case "incomplete short citation": case "music":
           case "gbooks": // TODO - should use
