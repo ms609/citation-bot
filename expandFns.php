@@ -457,7 +457,7 @@ function str_remove_irrelevant_bits(string $str) : string {
   $str = trim($str);
   $str = safe_preg_replace("~^the\s+~i", "", $str);  // Ignore leading "the" so "New York Times" == "The New York Times"
   // punctuation
-  $str = str_replace(array('.', ',', ';', ': '), array(' ', ' ', ' ', ' '), $str);
+  $str = str_replace(array('.', ',', ';', ': ', "…"), array(' ', ' ', ' ', ' ', ' '), $str);
   $str = str_replace(array(':', '-', '&mdash;', '&ndash;', '—', '–'), array('', '', '', '', '', ''), $str);
   $str = str_replace(array('   ', '  '), array(' ', ' '), $str);
   $str = str_replace(" & ", " and ", $str);
