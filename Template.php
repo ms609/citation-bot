@@ -1075,7 +1075,8 @@ final class Template {
         return FALSE;
 
       case 'periodical': case 'journal': case 'newspaper': case 'magazine':
-        if ($value=='HEP Lib.Web') $value = 'High Energy Physics Libraries Webzine'; // should be array
+        if ($value === 'HEP Lib.Web') $value = 'High Energy Physics Libraries Webzine'; // These should be array
+        if ($value === 'Peoplemag') $value = 'People';
         if (preg_match('~Conference Proceedings.*IEEE.*IEEE~', $value)) return FALSE;
         if ($value === 'Wiley Online Library') return FALSE;
         if (stripos($value, 'Capstone Projects') !== FALSE) return FALSE;
