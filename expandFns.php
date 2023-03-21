@@ -1494,16 +1494,12 @@ function normalize_google_books(string &$url, int &$removed_redundant, string &$
           $hash = $matcher[1];
       }
       if (preg_match('~^P*(PA\d+),M1$~', $hash, $matcher)){
-        if (!isset($book_array['pg']) && !isset($book_array['lpg'])) {
           $book_array['pg'] = $matcher[1];
           $hash = '';
-        }
       }
       if (preg_match('~^P*(PP\d+),M1$~', $hash, $matcher)){
-        if (!isset($book_array['pg']) && !isset($book_array['lpg'])) {
           $book_array['pg'] = $matcher[1];
           $hash = '';
-        }
       }
 
       if (isset($book_array['q'])){
