@@ -104,7 +104,7 @@ function format_surname_2(string $surname) : string {
 }
 
 function format_forename(string $forename) : string {
-  $forename = trim($forenamedfasfdsafa
+  $forename = trim($forename);
   if ($forename === '-') return '';
   if ($forename === '') return '';
   return str_replace(array(" ."), "", trim(preg_replace_callback("~(\p{L})(\p{L}{3,})~u",  function(
