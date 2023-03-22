@@ -457,7 +457,7 @@ function str_remove_irrelevant_bits(string $str) : string {
   $str = trim($str);
   $str = safe_preg_replace("~^the\s+~i", "", $str);  // Ignore leading "the" so "New York Times" == "The New York Times"
   // punctuation
-  $str = str_replace(array('.', ',', ';', ': '), array(' ', ' ', ' ', ' '), $str);
+  $str = str_replace(array('.', ',', ';', ': ', "…"), array(' ', ' ', ' ', ' ', ' '), $str);
   $str = str_replace(array(':', '-', '&mdash;', '&ndash;', '—', '–'), array('', '', '', '', '', ''), $str);
   $str = str_replace(array('   ', '  '), array(' ', ' '), $str);
   $str = str_replace(" & ", " and ", $str);
@@ -1407,9 +1407,9 @@ function normalize_google_books(string &$url, int &$removed_redundant, string &$
           case "sa": case "oi": case "ct": case "client": case "redir_esc":
           case "callback": case "jscmd": case "bibkeys": case "newbks": case "gbpv":
           case "newbks_redir": case "resnum": case "ci": case "surl": case "safe":
-          case "as_maxm_is": case "as_maxy_is": case "f": case "as_minm_is":
+          case "as_maxm_is": case "as_maxy_is": case "f": case "as_minm_is": case "pccc":
           case "as_miny_is": case "authuser": case "cad": case "focus": case "pjf":
-          case "gl": case "ovdme": case "sqi": case "w": case "rview": case "":
+          case "gl": case "ovdme": case "sqi": case "w": case "rview": case "": case "kptab":
           case "pgis": case "ppis": case "output": case "gboemv": case "ie": case "nbsp;":
           case "fbclid": case "num": case "oe": case "pli": case "prev": case "vid": case "view":
           case "buy": case "edge": case "zoom": case "img": case "as_pt": // Safe to remove - many are how you searched for the book
@@ -1493,11 +1493,13 @@ function normalize_google_books(string &$url, int &$removed_redundant, string &$
       if (preg_match('~^(.*)&$~', $hash, $matcher) ){
           $hash = $matcher[1];
       }
-      if (preg_match('~^P(PA\d+),M1$~', $hash, $matcher)){
-        if (!isset($book_array['pg']) && !isset($book_array['lpg'])) {
+      if (preg_match('~^P*(PA\d+),M1$~', $hash, $matcher)){
           $book_array['pg'] = $matcher[1];
           $hash = '';
-        }
+      }
+      if (preg_match('~^P*(PP\d+),M1$~', $hash, $matcher)){
+          $book_array['pg'] = $matcher[1];
+          $hash = '';
       }
 
       if (isset($book_array['q'])){

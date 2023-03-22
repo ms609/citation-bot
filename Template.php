@@ -1075,10 +1075,18 @@ final class Template {
         return FALSE;
 
       case 'periodical': case 'journal': case 'newspaper': case 'magazine':
-        if ($value=='HEP Lib.Web') $value = 'High Energy Physics Libraries Webzine'; // should be array
+        if ($value === 'HEP Lib.Web') $value = 'High Energy Physics Libraries Webzine'; // These should be array
+        if ($value === 'Peoplemag') $value = 'People';
         if (preg_match('~Conference Proceedings.*IEEE.*IEEE~', $value)) return FALSE;
         if ($value === 'Wiley Online Library') return FALSE;
-        if ($value === 'Dissertations, Theses, and Capstone Projects') return FALSE;
+        if (stripos($value, 'Capstone Projects') !== FALSE) return FALSE;
+        if (stripos($value, 'Dissertations') !== FALSE) return FALSE;
+        if (stripos($value, 'Theses and Projects') !== FALSE) return FALSE;
+        if (stripos($value, 'Electronic Thesis') !== FALSE) return FALSE;
+        if (stripos($value, ' and Capstones') !== FALSE) return FALSE;
+        if (stripos($value, ' and Problem Reports') !== FALSE) return FALSE;
+        if (stripos($value, 'Doctoral ') !== FALSE) return FALSE;
+        
         if (!$this->blank(['booktitle', 'book-title'])) return FALSE;
         if (in_array(strtolower(sanitize_string($value)), BAD_TITLES )) return FALSE;
         if (in_array(strtolower($value), ARE_MANY_THINGS)) {
@@ -3239,7 +3247,7 @@ final class Template {
           case "dggs citation id": case "harvp": case "nla": case "catkey": case "hyphen":
           case "mit libraries": case "epa national catalog": case "unt key": case "eram":
           case "regreq": case "nobr": case "subscription": case "uspl": case "small":
-          case "rism": case "jan": case "nbsp":
+          case "rism": case "jan": case "nbsp": case "abbr":
           case "genbank": case "better source needed": case "free access": case "required subscription":
           case "fahrplan-ch": case "incomplete short citation": case "music":
           case "gbooks": // TODO - should use

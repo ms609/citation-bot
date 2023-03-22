@@ -493,6 +493,7 @@ class Page {
     
     if (stripos($this->text, 'CITATION_BOT_PLACEHOLDER') !== FALSE) {
       $this->text = $this->start_text;                                  // @codeCoverageIgnore
+      if ($this->title !== "") file_put_contents('CodeCoverage', $this->title . " page failed \n", FILE_APPEND); // @codeCoverageIgnore
       report_error('CITATION_BOT_PLACEHOLDER found after processing');  // @codeCoverageIgnore
     }
 
