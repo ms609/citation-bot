@@ -798,7 +798,6 @@ final class Template {
     if ($param_name === '') {
       report_error('invalid param_name passed to add_if_new()'); // @codeCoverageIgnore
     }
-    echo "\n ADDDING>" . $value . "</n which will end up being>". clean_up_first_names($value) . "<\n";
     if (str_i_same($value, 'null')) { // Hopeully name is not actually null
       return FALSE;
     }
