@@ -74,6 +74,7 @@ function clean_up_first_names(string $value) : string {
 }
 
 function format_surname(string $surname) : string {
+dsfasddsafsd
   if ($surname === '-') return '';
   if (preg_match('~^\S\.?$~u', $surname)) return mb_strtoupper($surname); // Just a single initial, with or without period
   $surname = mb_convert_case(trim(mb_ereg_replace("-", " - ", $surname)), MB_CASE_LOWER);
