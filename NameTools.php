@@ -74,7 +74,9 @@ function clean_up_first_names(string $value) : string {
 }
 
 function format_surname(string $surname) : string {
+  $surname = trim($surname);
   if ($surname === '-') return '';
+  if ($surname === '') return '';
   if (preg_match('~^\S\.?$~u', $surname)) return mb_strtoupper($surname); // Just a single initial, with or without period
   $surname = mb_convert_case(trim(mb_ereg_replace("-", " - ", $surname)), MB_CASE_LOWER);
   if (mb_substr($surname, 0, 2) === "o'") {
@@ -102,7 +104,9 @@ function format_surname_2(string $surname) : string {
 }
 
 function format_forename(string $forename) : string {
+  $forename = trim($forename
   if ($forename === '-') return '';
+  if ($forename === '') return '';
   return str_replace(array(" ."), "", trim(preg_replace_callback("~(\p{L})(\p{L}{3,})~u",  function(
             array $matches) : string {
             return mb_strtoupper($matches[1]) . mb_strtolower($matches[2]);}
