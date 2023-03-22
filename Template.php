@@ -786,7 +786,7 @@ final class Template {
    *
    */
   public function add_if_new(string $param_name, string $value, string $api = '') : bool {
-    // Clean up weird stuff from CrossRef etc.
+    // Clean up weird stuff from CrossRef etc. d
     $value = safe_preg_replace('~[\x{2000}-\x{200A}\x{00A0}\x{202F}\x{205F}\x{3000}]~u', ' ', $value); // Non-standard spaces
     $value = safe_preg_replace('~[\t\n\r\0\x0B]~u', ' ', $value); // tabs, linefeeds, null bytes
     $value = safe_preg_replace('~  +~u', ' ', $value); // multiple spaces
