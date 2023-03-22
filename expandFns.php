@@ -1372,6 +1372,7 @@ function normalize_google_books(string &$url, int &$removed_redundant, string &$
       $removed_redundant = 0;
       $hash = '';
       $removed_parts ='';
+      $url = str_replace('&quot;', '"', $url);
 
       if (strpos($url, "#")) {
         $url_parts = explode("#", $url);
