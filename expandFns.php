@@ -1413,6 +1413,7 @@ function normalize_google_books(string &$url, int &$removed_redundant, string &$
           case "gl": case "ovdme": case "sqi": case "w": case "rview": case "": case "kptab":
           case "pgis": case "ppis": case "output": case "gboemv": case "ie": case "nbsp;":
           case "fbclid": case "num": case "oe": case "pli": case "prev": case "vid": case "view":
+          case "as_drrb_is":
           case "buy": case "edge": case "zoom": case "img": case "as_pt": // Safe to remove - many are how you searched for the book
             $removed_parts .= $part;
             $removed_redundant++;
