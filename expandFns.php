@@ -1502,6 +1502,14 @@ function normalize_google_books(string &$url, int &$removed_redundant, string &$
           $book_array['pg'] = $matcher[1];
           $hash = '';
       }
+      if (preg_match('~^P*(PT\d+),M1$~', $hash, $matcher)){
+          $book_array['pg'] = $matcher[1];
+          $hash = '';
+      }
+      if (preg_match('~^P*(PR\d+),M1$~', $hash, $matcher)){
+          $book_array['pg'] = $matcher[1];
+          $hash = '';
+      }
 
       if (isset($book_array['q'])){
         if (((stripos($book_array['q'], 'isbn') === 0) && ($book_array['q'] !=='ISBN') && ($book_array['q'] !== 'isbn')) || // Sometimes the search is for the term isbn
