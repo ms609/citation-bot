@@ -604,7 +604,6 @@ final class Template {
           if ($this->has($possible)) {
              $url = $this->get($possible);
              if (stripos($url, 'CITATION_BOT') === FALSE &&
-                 filter_var($url, FILTER_VALIDATE_URL) !== FALSE &&
                  !preg_match('~^https?://[^/]+/?$~', $url) &&       // Ignore just a hostname
                preg_match (REGEXP_IS_URL, $url) === 1) {
                $this->rename($possible, 'CITATION_BOT_PLACEHOLDER_possible');
@@ -6263,7 +6262,6 @@ final class Template {
         case 'location':
           // Check if it is a URL
           $the_param = $this->get($param);
-          if (filter_var($the_param, FILTER_VALIDATE_URL) === FALSE) return; // Fast
           if (preg_match(REGEXP_IS_URL, $the_param) !== 1) return; // complete
           if ($this->has('url')) {
              $url = $this->get('url');
@@ -6565,7 +6563,6 @@ final class Template {
           ) {
         $url = $this->get('url');
         if (stripos($url, 'CITATION_BOT') === FALSE &&
-            filter_var($url, FILTER_VALIDATE_URL) !== FALSE &&
             !preg_match('~^https?://[^/]+/*?$~', $url) &&       // Ignore just a hostname
             preg_match (REGEXP_IS_URL, $url) === 1 &&
            preg_match('~^https?://([^/]+)/~', $url, $matches)) {
