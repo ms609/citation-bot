@@ -2132,7 +2132,7 @@ final class TemplateTest extends testBaseClass {
     $this->assertSame('9780393307009', $expanded->get2('isbn')   );
     $this->assertSame('Gould'        , $expanded->get2('last1'));
     $this->assertSame('Stephen Jay'  , $expanded->get2('first1') );
-    $this->assertSame('17 September 1990'   , $expanded->get2('date'));
+    $this->assertSame('1989'         , $expanded->get2('year'));
     $this->assertNull($expanded->get2('pages')); // Do not expand pages.  Google might give total pages to us
   }
 
