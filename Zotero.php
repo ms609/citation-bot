@@ -423,7 +423,6 @@ public static function expand_by_zotero(Template $template, ?string $url = NULL)
   if(preg_match("~^https?://(?:www\.|m\.|)(?:" . $bad_url . ")~i", $url)) return FALSE; 
 
   // Is it actually a URL.  Zotero will search for non-url things too!
-  if (filter_var($url, FILTER_VALIDATE_URL) === FALSE) return FALSE; // PHP does not like it
   if (preg_match('~^https?://[^/]+/?$~', $url) === 1) return FALSE; // Just a host name
   set_time_limit(120); // This can be slow
   if (preg_match(REGEXP_IS_URL, $url) !== 1) return FALSE;  // See https://mathiasbynens.be/demo/url-regex/  This regex is more exact than validator.  We only spend time on this after quick and dirty check is passed
@@ -1100,7 +1099,6 @@ public static function find_indentifiers_in_urls(Template $template, ?string $ur
           if (strtolower(substr( $url, 0, 4 )) !== "http" ) {
             $url = "http://" . $url; // Try it with http
           }
-          if (filter_var($url, FILTER_VALIDATE_URL) === FALSE) return FALSE; // PHP does not like it
           if (preg_match (REGEXP_IS_URL, $url) !== 1) return FALSE;  // See https://mathiasbynens.be/demo/url-regex/  This regex is more exact than validator.  We only spend time on this after quick and dirty check is passed
           if (preg_match ('~^https?://[^/]+/?$~', $url) === 1) return FALSE; // Just a host name
           $template->rename('website', 'url'); // Change name it first, so that parameters stay in same order
