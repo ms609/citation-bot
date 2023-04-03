@@ -96,7 +96,8 @@ final class WikipediaBot {
       } elseif (strpos((string) @$response->error->info, 'The authorization headers in your request are not valid') !== FALSE) {
         report_error('There is something wrong with your Oauth tokens');  // @codeCoverageIgnore
       } else {
-        report_minor_error('API call failed: ' . echoable((string) @$response->error->info) . '.  Will sleep and move on.');
+        if (!TRAVIS) file_put_contents('CodeCoverage', html_entity_decode((string) @$response->error->info)) . "\n", FILE_APPEND); // Good to know about about these things
+        report_warning('API call failed: ' . echoable((string) @$response->error->info) . '.  Will sleep and move on.');
       }
       sleep (10);
       return FALSE;
