@@ -1388,9 +1388,6 @@ function normalize_google_books(string &$url, int &$removed_redundant, string &$
         if ($part_start[0] === 'text')     $part_start[0] = 'dq';
         if ($part_start[0] === 'keywords') $part_start[0] = 'q';
         if ($part_start[0] === 'page')     $part_start[0] = 'pg';
-        if (isset($part_start[2])) $part_start[1] = $part_start[1] . '=' . $part_start[2];
-        if (isset($part_start[3])) $part_start[1] = $part_start[1] . '=' . $part_start[3];
-        if (isset($part_start[4])) $part_start[1] = $part_start[1] . '=' . $part_start[4];
         switch ($part_start[0]) {
           case "dq": case "pg": case "lpg": case "q": case "printsec": case "cd": case "vq": case "jtp": case "sitesec": case "article_id": case "bsq":
             if (empty($part_start[1])) {
