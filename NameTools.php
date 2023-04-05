@@ -25,7 +25,7 @@ function junior_test(string $name) : array {
 
 function split_author(string $value) : array {
   if (substr_count($value, ',') !== 1) return array();
-  return(explode(',', $value));
+  return(explode(',', $value, 2));
 }
 
 function clean_up_full_names(string $value) : string {
