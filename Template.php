@@ -888,7 +888,7 @@ final class Template {
       ### AUTHORS
       case "author": case "author1": case "last1": case "last": case "authors":
         if ($this->blank(FIRST_AUTHOR_ALIASES)) {
-          $value = clean_up_full_names($value); // Do before CONFLICTexplode etc.
+          $value = clean_up_full_names($value)
           $au = split_author($value);
           if (!empty($au) && (substr($param_name, 0, 3) === 'aut')) {
             $this->add('last' . (substr($param_name, -1) === '1' ? '1' : ''), clean_up_last_names(format_surname($au[0])));
@@ -934,7 +934,7 @@ final class Template {
           && strpos($this->get('author') . $this->get('authors'), '; ') === FALSE
           && strpos($this->get('author') . $this->get('authors'), ' et al') === FALSE
         ) {
-          $value = clean_up_full_names($value); // Do before explode etc.
+          $value = clean_up_full_names($value);
           $au = split_author($value);
           if (!empty($au) && (substr($param_name, 0, 3) === 'aut')) {
             $this->add('last' . $auNo, clean_up_last_names(format_surname($au[0])));
@@ -2266,7 +2266,7 @@ final class Template {
     }
 
     foreach ($ris as $ris_line) {
-      $ris_part = explode(" - ", $ris_line . " ");
+      $ris_part = explode(" - ", $ris_line . " ", 2);
       if (trim($ris_part[0]) === "TY") {
         if (in_array(trim($ris_part[1]), ['CHAP', 'BOOK', 'EBOOK', 'ECHAP', 'EDBOOK', 'DICT', 'ENCYC', 'GOVDOC'])) {
           $ris_book = TRUE; // See https://en.wikipedia.org/wiki/RIS_(file_format)#Type_of_reference
@@ -2284,7 +2284,7 @@ final class Template {
     }
 
     foreach ($ris as $ris_line) {
-      $ris_part = explode(" - ", $ris_line . " ");
+      $ris_part = explode(" - ", $ris_line . " ", 2);
       $ris_parameter = FALSE;
       switch (trim($ris_part[0])) {
         case "T1":
@@ -7521,7 +7521,7 @@ final class Template {
       $orig_url = $url;
       $hash = '';
       if (strpos($url, "#")) {
-        $url_parts = explode("#", $url);
+        $url_parts = explode("#", $url, 2);
         $url = $url_parts[0];
         $hash = "#" . $url_parts[1];
       }
@@ -7531,7 +7531,7 @@ final class Template {
       $url = "https://www.google.com/search?";
 
       foreach ($url_parts as $part) {
-        $part_start = explode("=", $part);
+        $part_start = explode("=", $part, 2);
         $part_start0 = $part_start[0];
         if (isset($part_start[1]) && $part_start[1] === '') {
           $part_start0 = "donotaddmeback"; // Do not add blank ones
