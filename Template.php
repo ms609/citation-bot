@@ -888,7 +888,7 @@ final class Template {
       ### AUTHORS
       case "author": case "author1": case "last1": case "last": case "authors":
         if ($this->blank(FIRST_AUTHOR_ALIASES)) {
-          $value = clean_up_full_names($value)
+          $value = clean_up_full_names($value);
           $au = split_author($value);
           if (!empty($au) && (substr($param_name, 0, 3) === 'aut')) {
             $this->add('last' . (substr($param_name, -1) === '1' ? '1' : ''), clean_up_last_names(format_surname($au[0])));
