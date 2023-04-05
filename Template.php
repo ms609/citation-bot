@@ -2623,6 +2623,9 @@ final class Template {
 
   public function clean_google_books() : void {
     foreach (ALL_URL_TYPES as $url_type) {
+       if ($this->has($url_type) && preg_match('~^(https?://(?:books|www)\.google\.[^/]+/books.+)\?$~', $this->get($url_type), $matches)) {
+         $this->set($url_type, $matches[1]); // trailing ?
+       }
        if ($this->has($url_type) && preg_match('~^https?://books\.google\.[^/]+/booksid=(.+)$~', $this->get($url_type), $matches)) {
          $this->set($url_type, 'https://books.google.com/books?id=' . $matches[1]);
        }
