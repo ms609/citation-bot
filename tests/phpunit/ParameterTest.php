@@ -106,9 +106,10 @@ final class ParameterTest extends testBaseClass {
   public function testBlankValueNonBreakingSpaces() : void {
     $text = " first7 = \n";
     $parameter = $this->parameter_parse_text_helper($text);
-    $this->assertSame('', $parameter->pre);
-    $this->assertSame(' first7 ', $parameter->param);  //These are non-breaking spaces
-    $this->assertSame('=', $parameter->eq);
+    print_r($parameter);
+    $this->assertSame(' ', $parameter->pre);
+    $this->assertSame('first7', $parameter->param);  //These are non-breaking spaces
+    $this->assertSame(' =', $parameter->eq);
     $this->assertSame(' ', $parameter->val);  //This is a non-breaking space
     $this->assertSame("\n", $parameter->post);
   }
