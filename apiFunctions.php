@@ -802,7 +802,7 @@ function expand_by_jstor(Template $template) : bool {
     $bad_data = TRUE; 
     $ris = explode("\n", html_entity_decode($dat, ENT_COMPAT | ENT_HTML401, 'UTF-8'));
     foreach ($ris as $ris_line) {
-      $ris_part = explode(" - ", $ris_line . " ");
+      $ris_part = explode(" - ", $ris_line . " ", 2);
       switch (trim($ris_part[0])) {
         case "T1":
         case "TI":
@@ -823,7 +823,7 @@ function expand_by_jstor(Template $template) : bool {
       $got_count = 0;
       $new_title = ': ';
       foreach ($ris as $ris_line) {
-        $ris_part = explode(" - ", $ris_line . " ");
+        $ris_part = explode(" - ", $ris_line . " ", 2);
         switch (trim($ris_part[0])) {
           case "T1":
             $new_title = $new_title . trim($ris_part[1]);
@@ -848,7 +848,7 @@ function expand_by_jstor(Template $template) : bool {
     if ($bad_data) {
        report_info('Old title did not match for ' . jstor_link($jstor));
        foreach ($ris as $ris_line) {
-         $ris_part = explode(" - ", $ris_line . " ");
+         $ris_part = explode(" - ", $ris_line . " ", 2);
          switch (trim($ris_part[0])) {
            case "T1": case "TI": case "T2": case "BT":
             $new_title = trim($ris_part[1]);
