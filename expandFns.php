@@ -1375,16 +1375,16 @@ function normalize_google_books(string &$url, int &$removed_redundant, string &$
       $url = str_replace('&quot;', '"', $url);
 
       if (strpos($url, "#")) {
-        $url_parts = explode("#", $url);
+        $url_parts = explode("#", $url, 2);
         $url = $url_parts[0];
         $hash = $url_parts[1];
       }
       $url = str_replace("&amp;", "&", $url); 
-      $url_parts = explode("&", str_replace("?", "&", $url));
+      $url_parts = explode("&", str_replace("&&", "&", str_replace("?", "&", $url)));
       $url = "https://books.google.com/books?id=" . $gid[1];
       $book_array = array();
       foreach ($url_parts as $part) {
-        $part_start = explode("=", $part);
+        $part_start = explode("=", $part, 2);
         if ($part_start[0] === 'text')     $part_start[0] = 'dq';
         if ($part_start[0] === 'keywords') $part_start[0] = 'q';
         if ($part_start[0] === 'page')     $part_start[0] = 'pg';
