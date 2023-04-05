@@ -26,10 +26,10 @@ final class Parameter {
     preg_match('~^(\s*?)(\S[\s\S]*?)(\s*+)$~u', $split[0], $pre_eq);
     if (count($split) === 2) {
       // Split the text after the '=' into constituent parts:
-      // $post_eq[1]: any whitespace before the parameter value (not including newlines)
+      // $post_eq[1]: any whitespace before the parameter value (including newlines)
       // $post_eq[2]: the parameter value itself (which can span multiple lines)
       // $post_eq[3]: any whitespace after the parameter value (including newlines)
-      preg_match('~^([ \t\p{Zs}]*)([\s\S]*?)(\s*+)$~u', $split[1], $post_eq);
+      preg_match('~^([ \r\n\t\p{Zs}]*)([\s\S]*?)(\s*+)$~u', $split[1], $post_eq);
       if (count($pre_eq) === 0) {
         $this->eq    = $split[0] . '=' . $post_eq[1];
       } else {
