@@ -56,6 +56,13 @@ final class Parameter {
       $this->eq = $match[0] . $this->eq;
       $this->param = str_replace($match[0], '', $this->param);
     }
+    // Clean up line feeds
+    if ($this->val === '' && $this->post === '') {
+      if (preg_match('~^(.*=[^\n\r]*)([\n\r]+.*)$~', $this->eq, $match)) {
+        $this->eq = $match[1];
+        $this->post = $match[2];
+      }
+    }
 
   }
 
