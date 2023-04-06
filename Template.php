@@ -2641,6 +2641,9 @@ final class Template {
        if ($this->has($url_type) && preg_match('~^https?://(?:books|www)\.google\.[^/]+\/books\/edition\/[a-zA-Z0-9\_]+\/?$~', $this->get($url_type), $matches)) {
          $this->forget($url_type);
        }
+       if ($this->has($url_type) && preg_match('~^https?://(?:books|www)\.google\.[^/]+\/books\?pg=PA\S\S\S*$~', $this->get($url_type), $matches)) {
+         $this->forget($url_type);
+       }
        if ($this->has($url_type) && preg_match('~^https?://(?:books|www)\.google\.[^/]+\/books\/edition\/[a-zA-Z0-9\_]+\/([a-zA-Z0-9\-]+)\?(.+)$~', $this->get($url_type), $matches)) {
          $this->set($url_type, 'https://books.google.com/books?id=' . $matches[1] . '&' . $matches[2]);
        }
