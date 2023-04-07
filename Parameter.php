@@ -67,10 +67,10 @@ final class Parameter {
       if (preg_match('~^([^=]*=[^\n\r]*)([\n\r].*)$~u', $this->eq, $match)) {
       echo "\n on " . __LINE__  ."\n";
       if ($text !== $this->parsed_text()) echo "\n" . __LINE__ . " HOSED :$text: \n";
-        echo "We Have :" . $this->eq . ":" .  $this->val  . ":" .  ":" .  $this->post . ":\n";
+        echo "We Have :" . $this->eq . ":" .  $this->post . ":\n";
         $this->eq = $match[1];
         $this->post = $match[2];
-        echo "We Have :" . $this->eq . ":" .  $this->val  . ":" .  ":" .  $this->post . ":\n";
+        echo "We Have :" . $this->eq . ":" .  $this->post . ":\n";
         if ($text !== $this->parsed_text()) echo "\n" . __LINE__ . " HOSED :$text: \n";
       }
     }
