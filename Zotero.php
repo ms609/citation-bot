@@ -423,7 +423,6 @@ public static function expand_by_zotero(Template $template, ?string $url = NULL)
   if(preg_match("~^https?://(?:www\.|m\.|)(?:" . $bad_url . ")~i", $url)) return FALSE; 
 
   // Is it actually a URL.  Zotero will search for non-url things too!
-  if (filter_var($url, FILTER_VALIDATE_URL) === FALSE) return FALSE; // PHP does not like it
   if (preg_match('~^https?://[^/]+/?$~', $url) === 1) return FALSE; // Just a host name
   set_time_limit(120); // This can be slow
   if (preg_match(REGEXP_IS_URL, $url) !== 1) return FALSE;  // See https://mathiasbynens.be/demo/url-regex/  This regex is more exact than validator.  We only spend time on this after quick and dirty check is passed
@@ -929,8 +928,6 @@ public static function process_zotero_response(string $zotero_response, Template
            }
         }
         break;
-
-        
       case 'thesis':
         $template->change_name_to('cite thesis');
         if (isset($result->university)) $template->add_if_new('publisher' , $result->university);
@@ -1030,6 +1027,14 @@ public static function process_zotero_response(string $zotero_response, Template
        if (stripos(trim($template->get('author')), 'Reuters') === 0) $template->forget('author'); // all too common
     }
   }
+  if ($template->wikiname() === 'cite web') {
+    if (stripos($url, 'businesswire.com/news') !== FALSE ||
+        stripos($url, 'prnewswire.com/') !== FALSE ||
+        stripos($url, 'globenewswire.com/') !== FALSE ||
+        stripos($url, 'newswire.com/') !== FALSE) {
+      $template->change_name_to('cite press release');
+    }
+  }
   return TRUE;
 }
 
@@ -1094,7 +1099,6 @@ public static function find_indentifiers_in_urls(Template $template, ?string $ur
           if (strtolower(substr( $url, 0, 4 )) !== "http" ) {
             $url = "http://" . $url; // Try it with http
           }
-          if (filter_var($url, FILTER_VALIDATE_URL) === FALSE) return FALSE; // PHP does not like it
           if (preg_match (REGEXP_IS_URL, $url) !== 1) return FALSE;  // See https://mathiasbynens.be/demo/url-regex/  This regex is more exact than validator.  We only spend time on this after quick and dirty check is passed
           if (preg_match ('~^https?://[^/]+/?$~', $url) === 1) return FALSE; // Just a host name
           $template->rename('website', 'url'); // Change name it first, so that parameters stay in same order
@@ -1280,13 +1284,19 @@ public static function find_indentifiers_in_urls(Template $template, ?string $ur
        return FALSE;
     }
 
-    if (preg_match('~^https?(://(?:0-www.|www.|)worldcat(?:libraries|)\.org.+)\&referer=brief_results$~i', $url, $matches)) {
+    if (preg_match('~^https?(://(?:0-www\.|www\.|ucsb\.|)worldcat(?:libraries|)\.org.+)(?:\&referer=brief_results|\?referer=di&ht=edition|\?referer=brief_results|%26referer%3Dbrief_results|\?ht=edition&referer=di|\?referer=br&ht=edition|\/viewport)$~i', $url, $matches)) {
        $url = 'https' . $matches[1];
        if (is_null($url_sent)) {
          $template->set($url_type, $url); // Update URL with cleaner one
        }
     }
-
+    if (preg_match('~^https?(://(?:0-www\.|www\.|ucsb\.)worldcat(?:libraries|)\.org.+)/oclc/(\d+)$~i', $url, $matches)) {
+       $url = 'https://www.worldcat.org/oclc/' . $matches[2];
+       if (is_null($url_sent)) {
+         $template->set($url_type, $url); // Update URL with cleaner one
+       }
+    }
+  
     if (preg_match("~^https?://(?:(?:dx\.|www\.|)doi\.org|doi\.library\.ubc\.ca)/([^\?]*)~i", $url, $match)) {
       if ($template->has('doi')) {
         $doi = $template->get('doi');

@@ -457,7 +457,7 @@ function str_remove_irrelevant_bits(string $str) : string {
   $str = trim($str);
   $str = safe_preg_replace("~^the\s+~i", "", $str);  // Ignore leading "the" so "New York Times" == "The New York Times"
   // punctuation
-  $str = str_replace(array('.', ',', ';', ': '), array(' ', ' ', ' ', ' '), $str);
+  $str = str_replace(array('.', ',', ';', ': ', "…"), array(' ', ' ', ' ', ' ', ' '), $str);
   $str = str_replace(array(':', '-', '&mdash;', '&ndash;', '—', '–'), array('', '', '', '', '', ''), $str);
   $str = str_replace(array('   ', '  '), array(' ', ' '), $str);
   $str = str_replace(" & ", " and ", $str);
@@ -708,7 +708,7 @@ function title_capitalization(string $in, bool $caps_after_punctuation) : string
   /** French l'Words and d'Words  **/
   $new_case = safe_preg_replace_callback(
     "~(\s[LD][\'\x{00B4}])([a-zA-ZÀ-ÿ]+)~u",
-    function (array $matches) : string {return mb_strtolower($matches[1]) . mb_ucfirst($matches[2]);},
+    function (array $matches) : string {return mb_strtolower($matches[1]) . mb_ucfirst_force($matches[2]);},
     ' ' . $new_case
   );
 
@@ -775,6 +775,9 @@ function title_capitalization(string $in, bool $caps_after_punctuation) : string
       }
     }
   }
+
+  $new_case = trim(str_replace(['Series a and B ', 'Series a & B '] , ['Series A and B ', 'Series A & B '], $new_case . ' ')); // TODO, use regex for any letter
+  
   // Part XII: Roman numerals
   $new_case = safe_preg_replace_callback(
     "~ part ([xvil]+): ~iu",
@@ -800,6 +803,16 @@ function title_capitalization(string $in, bool $caps_after_punctuation) : string
 }
 
 function mb_ucfirst(string $string) : string
+{
+    $first = mb_substr($string, 0, 1);
+    if (mb_strlen($first) !== strlen($first)) {
+      return $string;
+    } else {
+      return mb_strtoupper(mb_substr($string, 0, 1)) . mb_substr($string, 1, NULL);
+    }
+}
+  
+function mb_ucfirst_force(string $string) : string
 {
     return mb_strtoupper(mb_substr($string, 0, 1)) . mb_substr($string, 1, NULL);
 }
@@ -1198,6 +1211,9 @@ function bot_html_header() : void {
 
   <pre id="botOutput">
    ');
+  if (ini_get('pcre.jit') === '0') {
+    report_warning('PCRE JIT Disabled');
+  }
 }
 
 /**
@@ -1352,4 +1368,196 @@ function smart_decode(string $title, string $encode, string $archive_url) : stri
   return $try;
 }
 
+function normalize_google_books(string &$url, int &$removed_redundant, string &$removed_parts, array &$gid) : void { // PASS BY REFERENCE!!!!!!
+      $removed_redundant = 0;
+      $hash = '';
+      $removed_parts ='';
+      $url = str_replace('&quot;', '"', $url);
 
+      if (strpos($url, "#")) {
+        $url_parts = explode("#", $url, 2);
+        $url = $url_parts[0];
+        $hash = $url_parts[1];
+      }
+      $url = str_replace("&amp;", "&", $url); 
+      $url_parts = explode("&", str_replace("&&", "&", str_replace("?", "&", $url)));
+      $url = "https://books.google.com/books?id=" . $gid[1];
+      $book_array = array();
+      foreach ($url_parts as $part) {
+        $part_start = explode("=", $part, 2);
+        if ($part_start[0] === 'text')     $part_start[0] = 'dq';
+        if ($part_start[0] === 'keywords') $part_start[0] = 'q';
+        if ($part_start[0] === 'page')     $part_start[0] = 'pg';
+        switch ($part_start[0]) {
+          case "dq": case "pg": case "lpg": case "q": case "printsec": case "cd": case "vq": case "jtp": case "sitesec": case "article_id": case "bsq":
+            if (empty($part_start[1])) {
+                $removed_redundant++;
+                $removed_parts .= $part;
+            } else {
+                $book_array[$part_start[0]] = $part_start[1];
+            }
+            break;
+          case "id":
+            break; // Don't "remove redundant"
+          case "as": case "useragent": case "as_brr": case "hl":
+          case "ei": case "ots": case "sig": case "source": case "lr": case "ved":
+          case "gs_lcp": case "sxsrf": case "gfe_rd": case "gws_rd":
+          case "sa": case "oi": case "ct": case "client": case "redir_esc":
+          case "callback": case "jscmd": case "bibkeys": case "newbks": case "gbpv":
+          case "newbks_redir": case "resnum": case "ci": case "surl": case "safe":
+          case "as_maxm_is": case "as_maxy_is": case "f": case "as_minm_is": case "pccc":
+          case "as_miny_is": case "authuser": case "cad": case "focus": case "pjf":
+          case "gl": case "ovdme": case "sqi": case "w": case "rview": case "": case "kptab":
+          case "pgis": case "ppis": case "output": case "gboemv": case "ie": case "nbsp;":
+          case "fbclid": case "num": case "oe": case "pli": case "prev": case "vid": case "view":
+          case "as_drrb_is": case "sourceid": case "btnG": case "rls":
+          case "buy": case "edge": case "zoom": case "img": case "as_pt": // Safe to remove - many are how you searched for the book
+            $removed_parts .= $part;
+            $removed_redundant++;
+            break;
+          default:
+            if ($removed_redundant !== 0) {
+              $removed_parts .= $part; // http://blah-blah is first parameter and it is not actually dropped
+              file_put_contents('CodeCoverage', "\n Unexpected dropping from Google Books " . $part . "\n", FILE_APPEND);
+            }
+            $removed_redundant++;
+        }
+      }
+      // Clean up hash first
+      $hash = '&' . trim($hash) . '&';
+      $hash = str_replace(['&f=false', '&f=true', 'v=onepage'], ['','',''], $hash); // onepage is default
+      $hash = str_replace(['&q&', '&q=&', '&&&&', '&&&', '&&'], ['&', '&', '&', '&', '&'], $hash);
+      if (preg_match('~(&q=[^&]+)&~', $hash, $matcher)) {
+          $hash = str_replace($matcher[1], '', $hash);
+          if (isset($book_array['q'])) {
+            $removed_parts .= '&q=' . $book_array['q'];
+            $book_array['q'] = urlencode(urldecode(substr($matcher[1], 3))); // #q= wins over &q= before # sign
+          } elseif (isset($book_array['dq'])) {
+            $removed_parts .= '&dq=' . $book_array['dq'];
+            $dum_dq = str_replace('+', ' ', urldecode($book_array['dq']));
+            $dum_q  = str_replace('+', ' ', urldecode(substr($matcher[1], 3)));
+            if ($dum_dq !== $dum_q) {
+              $book_array['q'] = urlencode(urldecode(substr($matcher[1], 3)));
+              unset($book_array['dq']);
+            } else {
+              $book_array['dq'] = urlencode(urldecode(substr($matcher[1], 3)));
+            }
+          } else {
+            $book_array['q'] = urlencode(urldecode(substr($matcher[1], 3)));
+          }
+      }
+      if (preg_match('~(&dq=[^&]+)&~', $hash, $matcher)) {
+          $hash = str_replace($matcher[1], '', $hash);
+          if (isset($book_array['dq'])) $removed_parts .= '&dq=' . $book_array['dq'];
+          $book_array['dq'] = urlencode(urldecode(substr($matcher[1], 3))); // #dq= wins over &dq= before # sign
+      }
+      if (isset($book_array['vq']) && !isset($book_array['q']) && !isset($book_array['dq'])) {
+          $book_array['q'] = $book_array['vq'];
+          unset($book_array['vq']);
+      }
+      if (isset($book_array['vq']) && isset($book_array['pg'])) { // VQ wins if and only if a page is set
+          unset($book_array['q']);
+          unset($book_array['dq']);
+          $book_array['q'] = $book_array['vq'];
+          unset($book_array['vq']);
+      }
+      if (isset($book_array['bsq'])) {
+        if (!isset($book_array['q']) && !isset($book_array['dq'])) {
+          $book_array['q'] = $book_array['bsq'];
+        }
+        unset($book_array['bsq']);
+      }
+      if (isset($book_array['q']) && isset($book_array['dq'])) { // Q wins over DQ
+          $removed_redundant++;
+          $removed_parts .= '&dq=' . $book_array['dq'];
+          unset($book_array['dq']);
+      } elseif (isset($book_array['dq'])) {      // Prefer Q parameters to DQ
+        if (!isset($book_array['pg']) && !isset($book_array['lpg'])) { // DQ requires that a page be set
+          $book_array['q'] = $book_array['dq'];
+          unset($book_array['dq']);
+        }
+      }
+      if (isset($book_array['pg']) && isset($book_array['lpg'])) { // PG wins over LPG
+          $removed_redundant++;
+          $removed_parts .= '&lpg=' . $book_array['lpg'];
+          unset($book_array['lpg']);
+      }
+      if (!isset($book_array['pg']) && isset($book_array['lpg'])) { // LPG by itself does not work
+          $book_array['pg'] = $book_array['lpg'];
+          unset($book_array['lpg']);
+      }
+      if (preg_match('~^&(.*)$~', $hash, $matcher) ){
+          $hash = $matcher[1];
+      }
+      if (preg_match('~^(.*)&$~', $hash, $matcher) ){
+          $hash = $matcher[1];
+      }
+      if (preg_match('~^P*(PA\d+),M1$~', $hash, $matcher)){
+          $book_array['pg'] = $matcher[1];
+          $hash = '';
+      }
+      if (preg_match('~^P*(PP\d+),M1$~', $hash, $matcher)){
+          $book_array['pg'] = $matcher[1];
+          $hash = '';
+      }
+      if (preg_match('~^P*(PT\d+),M1$~', $hash, $matcher)){
+          $book_array['pg'] = $matcher[1];
+          $hash = '';
+      }
+      if (preg_match('~^P*(PR\d+),M1$~', $hash, $matcher)){
+          $book_array['pg'] = $matcher[1];
+          $hash = '';
+      }
+
+      if (isset($book_array['q'])){
+        if (((stripos($book_array['q'], 'isbn') === 0) && ($book_array['q'] !=='ISBN') && ($book_array['q'] !== 'isbn')) || // Sometimes the search is for the term isbn
+            stripos($book_array['q'], 'subject:') === 0 ||
+            stripos($book_array['q'], 'inauthor:') === 0 ||
+            stripos($book_array['q'], 'inpublisher:') === 0) {
+          unset($book_array['q']);
+        }
+      }
+      if (isset($book_array['dq'])){
+        if (((stripos($book_array['dq'], 'isbn') === 0) && ($book_array['dq'] !=='ISBN') && ($book_array['dq'] !== 'isbn')) || // Sometimes the search is for the term isbn
+            stripos($book_array['dq'], 'subject:') === 0 ||
+            stripos($book_array['dq'], 'inauthor:') === 0 ||
+            stripos($book_array['dq'], 'inpublisher:') === 0) {
+          unset($book_array['dq']);
+        }
+      }
+      if (isset($book_array['sitesec'])) { // Overrides all other setting
+        if (strtolower($book_array['sitesec']) === 'reviews') {
+          $url .= '&sitesec=reviews';
+          unset($book_array['q']);
+          unset($book_array['pg']);
+          unset($book_array['lpg']);
+          unset($book_array['article_id']);
+        }
+      }
+      if (isset($book_array['q'])){
+          $url .= '&q=' . $book_array['q'];
+      }
+      if (isset($book_array['dq'])){
+          $url .= '&dq=' . $book_array['dq'];
+      }
+      if (isset($book_array['pg'])){
+          $url .= '&pg=' . $book_array['pg'];
+      }
+      if (isset($book_array['lpg'])){ // Currently NOT POSSIBLE - failsafe code for changes
+          $url .= '&lpg=' . $book_array['lpg']; // @codeCoverageIgnore
+      }
+      if (isset($book_array['article_id'])){
+          $url .= '&article_id=' . $book_array['article_id'];
+          if (!isset($book_array['dq']) && isset($book_array['q'])) {
+            $url .= '#v=onepage'; // Explicit onepage needed for these
+          }
+      }
+      if ($hash) {
+         $hash = "#" . $hash;
+         $removed_parts .= $hash;
+         $removed_redundant++;
+      }     // CLEANED UP, so do not add $url = $url . $hash;
+      if (preg_match('~^(https://books\.google\.com/books\?id=[^#^&]+)(?:&printsec=frontcover|)(?:#v=onepage|v=snippet|)$~', $url, $matches)) {
+         $url = $matches[1]; // URL Just wants the landing page
+      }
+}
