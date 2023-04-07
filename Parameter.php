@@ -58,7 +58,7 @@ final class Parameter {
     }
     // Clean up line feeds
     if ($this->val === '' && $this->post === '') {
-      if (preg_match('~^(.*=[^\n\r]*)([\n\r]+.*)$~', $this->eq, $match)) {
+      if (preg_match('~^([^=]*=[^\n\r]*)([\n\r][\s\S]*)$~u', $this->eq, $match)) {
         $this->eq = $match[1];
         $this->post = $match[2];
       }
