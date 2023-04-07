@@ -69,9 +69,14 @@ final class Parameter {
     if ($text !== $this->parsed_text()) echo "\n" . __LINE__ . " HOSED :$text: \n";
     // Clean up line feeds
     if ($this->val === '' && $this->post === '') {
+    echo "\n on " . __LINE__  ."\n";
+      unset($match);
       if (preg_match('~^([^=]*=[^\n\r]*)([\n\r].*)$~u', $this->eq, $match)) {
+      echo "\n on " . __LINE__  ."\n";
+      if ($text !== $this->parsed_text()) echo "\n" . __LINE__ . " HOSED :$text: \n";
         $this->eq = $match[1];
         $this->post = $match[2];
+        if ($text !== $this->parsed_text()) echo "\n" . __LINE__ . " HOSED :$text: \n";
       }
     }
     if ($text !== $this->parsed_text()) echo "\n" . __LINE__ . " HOSED :$text: \n";
