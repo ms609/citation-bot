@@ -63,7 +63,7 @@ final class Parameter {
         $this->post = $match[2];
       }
     }
-    if ($text !== $this->parsed_text()) echo "\n HOSED $text \n;
+    if ($text !== $this->parsed_text()) echo "\n HOSED $text \n";
 
   }
 
