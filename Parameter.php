@@ -25,7 +25,6 @@ final class Parameter {
     // $pre_eq[3]: any whitespace after the parameter name (including newlines)
     preg_match('~^(\s*?)(\S[\s\S]*?)(\s*+)$~u', $split[0], $pre_eq);
     if (count($split) === 2) {
-
       // Split the text after the '=' into constituent parts:
       // $post_eq[1]: any whitespace before the parameter value (including newlines)
       // $post_eq[2]: the parameter value itself (which can span multiple lines)
