@@ -164,6 +164,5 @@ final class ParameterTest extends testBaseClass {
     $template = $this->process_citation($text);
     $this->assertSame($text, $template->parsed_text());
   }
-
 }
 
