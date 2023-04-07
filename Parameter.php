@@ -47,31 +47,26 @@ final class Parameter {
     } else {
       $this->val  = $text;
     }
-
     // Comments before parameter names
     if (preg_match('~^# # # CITATION_BOT_PLACEHOLDER_COMMENT \d+ # # #(?:\s*)~isu', $this->param, $match)) {
       $this->pre = $this->pre . $match[0];
       $this->param = str_replace($match[0], '', $this->param);
     }
-
     // Comments after parameter names
     if (preg_match('~(?:\s*)# # # CITATION_BOT_PLACEHOLDER_COMMENT \d+ # # #$~isu', $this->param, $match)) {
       $this->eq = $match[0] . $this->eq;
       $this->param = str_replace($match[0], '', $this->param);
     }
-    if ($text !== $this->parsed_text()) echo "\n" . __LINE__ . " HOSED :$text: \n";
     // Clean up line feeds
     if ($this->val === '' && $this->post === '') {
-    echo "\n on " . __LINE__  ."\n";
-      unset($match);
       if (preg_match('~^([^=]*=[^\n\r]*)([\n\r].*)$~u', $this->eq, $match)) {
-      echo "\n on " . __LINE__  ."\n";
       if ($text !== $this->parsed_text()) echo "\n" . __LINE__ . " HOSED :$text: \n";
         echo "We Have :" . $this->eq . ":" .  $this->post . ":\n";
         $this->eq = $match[1];
         $this->post = $match[2];
         echo "We Have :" . $this->eq . ":" .  $this->post . ":\n";
         if ($text !== $this->parsed_text()) echo "\n" . __LINE__ . " HOSED :$text: \n";
+        exit();
       }
     }
 
