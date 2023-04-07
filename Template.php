@@ -149,7 +149,7 @@ final class Template {
 
     if (substr($this->wikiname(),0,5) === 'cite ' || $this->wikiname() === 'citation') {
       if (preg_match('~< */? *ref *>~i', $this->rawtext) && (strpos($this->wikiname(), 'cite check') !== 0)) {
-         report_warning('reference within citation template: most likely unclosed template.  ' . "\n" . $this->rawtext . "\n");
+         report_warning('reference within citation template: most likely unclosed template.  ' . "\n" . echoable($this->rawtext) . "\n");
          throw new Exception('page_error');
       }
     }
@@ -372,12 +372,12 @@ final class Template {
               $the_page = '';
               $bad_data = TRUE;
           }
-          if ($the_volume === '0' || $the_volume === 'null' || $the_volume === 'n/a' || $the_volume === 'Online edition' || $the_volume === 'online' || $the_volume === 'Online' || $the_volume === 'in press'  || $the_volume === 'In press') {
+          if ($the_volume === '0' || $the_volume === 'null' || $the_volume === 'n/a' || $the_volume === 'Online edition' || $the_volume === 'online' || $the_volume === 'Online' || $the_volume === 'in press'  || $the_volume === 'In press' || $the_volume === 'ahead-of-print') {
               $this->rename('volume', 'CITATION_BOT_PLACEHOLDER_volume');
               $the_volume = '';
               $bad_data = TRUE;
           }
-          if ($the_issue === '0' || $the_issue === 'null' || $the_issue === 'ja' || $the_issue === 'n/a' || $the_issue === 'Online edition' || $the_issue === 'online' || $the_issue === 'Online' || $the_issue === 'in press' || $the_issue === 'In press') {
+          if ($the_issue === '0' || $the_issue === 'null' || $the_issue === 'ja' || $the_issue === 'n/a' || $the_issue === 'Online edition' || $the_issue === 'online' || $the_issue === 'Online' || $the_issue === 'in press' || $the_issue === 'In press' || $the_issue === 'ahead-of-print') {
               $this->rename('issue', 'CITATION_BOT_PLACEHOLDER_issue');
               $the_issue = '';
               $bad_data = TRUE;
@@ -604,7 +604,6 @@ final class Template {
           if ($this->has($possible)) {
              $url = $this->get($possible);
              if (stripos($url, 'CITATION_BOT') === FALSE &&
-                 filter_var($url, FILTER_VALIDATE_URL) !== FALSE &&
                  !preg_match('~^https?://[^/]+/?$~', $url) &&       // Ignore just a hostname
                preg_match (REGEXP_IS_URL, $url) === 1) {
                $this->rename($possible, 'CITATION_BOT_PLACEHOLDER_possible');
@@ -889,7 +888,7 @@ final class Template {
       ### AUTHORS
       case "author": case "author1": case "last1": case "last": case "authors":
         if ($this->blank(FIRST_AUTHOR_ALIASES)) {
-          $value = clean_up_full_names($value); // Do before explode etc.
+          $value = clean_up_full_names($value);
           $au = split_author($value);
           if (!empty($au) && (substr($param_name, 0, 3) === 'aut')) {
             $this->add('last' . (substr($param_name, -1) === '1' ? '1' : ''), clean_up_last_names(format_surname($au[0])));
@@ -935,7 +934,7 @@ final class Template {
           && strpos($this->get('author') . $this->get('authors'), '; ') === FALSE
           && strpos($this->get('author') . $this->get('authors'), ' et al') === FALSE
         ) {
-          $value = clean_up_full_names($value); // Do before explode etc.
+          $value = clean_up_full_names($value);
           $au = split_author($value);
           if (!empty($au) && (substr($param_name, 0, 3) === 'aut')) {
             $this->add('last' . $auNo, clean_up_last_names(format_surname($au[0])));
@@ -2267,7 +2266,7 @@ final class Template {
     }
 
     foreach ($ris as $ris_line) {
-      $ris_part = explode(" - ", $ris_line . " ");
+      $ris_part = explode(" - ", $ris_line . " ", 2);
       if (trim($ris_part[0]) === "TY") {
         if (in_array(trim($ris_part[1]), ['CHAP', 'BOOK', 'EBOOK', 'ECHAP', 'EDBOOK', 'DICT', 'ENCYC', 'GOVDOC'])) {
           $ris_book = TRUE; // See https://en.wikipedia.org/wiki/RIS_(file_format)#Type_of_reference
@@ -2285,7 +2284,7 @@ final class Template {
     }
 
     foreach ($ris as $ris_line) {
-      $ris_part = explode(" - ", $ris_line . " ");
+      $ris_part = explode(" - ", $ris_line . " ", 2);
       $ris_parameter = FALSE;
       switch (trim($ris_part[0])) {
         case "T1":
@@ -2624,11 +2623,29 @@ final class Template {
 
   public function clean_google_books() : void {
     foreach (ALL_URL_TYPES as $url_type) {
+       if ($this->has($url_type) && preg_match('~^(https?://(?:books|www)\.google\.[^/]+/books.+)\?$~', $this->get($url_type), $matches)) {
+         $this->set($url_type, $matches[1]); // trailing ?
+       }
        if ($this->has($url_type) && preg_match('~^https?://books\.google\.[^/]+/booksid=(.+)$~', $this->get($url_type), $matches)) {
+         $this->set($url_type, 'https://books.google.com/books?id=' . $matches[1]);
+       }
+       if ($this->has($url_type) && preg_match('~^https?://www\.google\.[^/]+/books\?(.+)$~', $this->get($url_type), $matches)) {
+         $this->set($url_type, 'https://books.google.com/books?' . $matches[1]);
+       }
+       if ($this->has($url_type) && preg_match('~^https?://books\.google\.[^/\?]+\?id=(.+)$~', $this->get($url_type), $matches)) {
          $this->set($url_type, 'https://books.google.com/books?id=' . $matches[1]);
        }
        if ($this->has($url_type) && preg_match('~^https?://books\.google\.[^/]+\/books\/about\/[^/]+\.html$~', $this->get($url_type), $matches)) {
          $this->forget($url_type);
+       }
+       if ($this->has($url_type) && preg_match('~^https?://(?:books|www)\.google\.[^/]+\/books\/edition\/[a-zA-Z0-9\_]+\/?$~', $this->get($url_type), $matches)) {
+         $this->forget($url_type);
+       }
+       if ($this->has($url_type) && preg_match('~^https?://(?:books|www)\.google\.[^/]+\/books\?pg=P\S\S\S\S*$~', $this->get($url_type), $matches)) {
+         $this->forget($url_type);
+       }
+       if ($this->has($url_type) && preg_match('~^https?://(?:books|www)\.google\.[^/]+\/books\/edition\/[a-zA-Z0-9\_]+\/([a-zA-Z0-9\-]+)\?(.+)$~', $this->get($url_type), $matches)) {
+         $this->set($url_type, 'https://books.google.com/books?id=' . $matches[1] . '&' . $matches[2]);
        }
        if ($this->has($url_type) && preg_match('~^https?://books\.google\..*id\&\#61\;.*$~', $this->get($url_type), $matches)) {
          $this->set($url_type, str_replace('&#61;', '=', $this->get($url_type)));
@@ -2636,8 +2653,11 @@ final class Template {
        if ($this->has($url_type) && preg_match('~^https?://books\.google\.[^/]+/(?:books|)\?[qv]id=(.+)$~', $this->get($url_type), $matches)) {
          $this->set($url_type, 'https://books.google.com/books?id=' . $matches[1]);
        }
-       if ($this->has($url_type) && preg_match('~^https?://books\.google\.com/\?id=(.+)$~', $this->get($url_type), $matches)) {
+       if ($this->has($url_type) && preg_match('~^https?://(?:|www\.)books\.google\.com/\?id=(.+)$~', $this->get($url_type), $matches)) {
          $this->set($url_type, 'https://books.google.com/books?id=' . $matches[1]);
+       }
+       if ($this->has($url_type) && preg_match('~^https?://www\.google\.[a-z\.]+/books\?id=(.+)$~', $this->get($url_type), $matches)) {
+           $this->set($url_type, 'https://books.google.com/books?id=' . $matches[1]);
        }
        $this->expand_by_google_books_inner($url_type, FALSE);
        if ($this->has($url_type) && preg_match('~^https?://books\.google\.([^/]+)/books\?((?:isbn|vid)=.+)$~', $this->get($url_type), $matches)) {
@@ -2663,7 +2683,20 @@ final class Template {
     if ($url_type) {
       $url = $this->get($url_type);
       if (!$url) return FALSE;
-      if (preg_match("~^https?://www\.google\.(?:[^\./]+)/books/edition/_/(.+)$~", $url, $matches)) {
+      if (preg_match('~^https?:\/\/(?:www|books)\.google\.[a-zA-Z\.][a-zA-Z\.][a-zA-Z\.]?[a-zA-Z\.]?[a-zA-Z\.]?[a-zA-Z\.]?[a-zA-Z\.]?[a-zA-Z\.]?\/books\/(?:editions?|about)\/[^\/\/\s\<\|\{\}\>\]]+\/([^\? \]\[]+)\?([^\s\<\|\{\}\>\]]+)$~i', $url, $matches)) {
+            $url = 'https://books.google.com/books?id='. $matches[1] . '&' . $matches[2];
+            $this->set($url_type, $url);
+      } elseif (preg_match('~^https?:\/\/(?:www|books)\.google\.[a-zA-Z\.][a-zA-Z\.][a-zA-Z\.]?[a-zA-Z\.]?[a-zA-Z\.]?[a-zA-Z\.]?[a-zA-Z\.]?[a-zA-Z\.]?\/books\/(?:editions?|about)\/_\/([^\s\<\|\{\}\>\]\&\?\%]+)$~i', $url, $matches)) {
+            $url = 'https://books.google.com/books?id='. $matches[1];
+            $this->set($url_type, $url);
+      } elseif (preg_match('~^https?:\/\/(?:www|books)\.google\.[a-zA-Z\.][a-zA-Z\.][a-zA-Z\.]?[a-zA-Z\.]?[a-zA-Z\.]?[a-zA-Z\.]?[a-zA-Z\.]?[a-zA-Z\.]?\/books\/(?:editions?|about)\/_\/([^\s\<\|\{\}\>\]\&\?\%]+)?([^\s\<\|\{\}\>\]\?\%]+)$~i', $url, $matches)) {
+            $url = 'https://books.google.com/books?id='. $matches[1] . '&' . $matches[2];
+            $this->set($url_type, $url);
+      } elseif (preg_match('~^https?:\/\/(?:www|books)\.google\.[a-zA-Z\.][a-zA-Z\.][a-zA-Z\.]?[a-zA-Z\.]?[a-zA-Z\.]?[a-zA-Z\.]?[a-zA-Z\.]?[a-zA-Z\.]?\/books\/(?:editions?|about)\/[^\/\/\s\<\|\{\}\>\]]+\/([^\? \]\[\&\%]+)$~i', $url, $matches)) {
+            $url = 'https://books.google.com/books?id='. $matches[1];
+            $this->set($url_type, $url);
+      } 
+      if (preg_match("~^https?://www\.google\.(?:[^\./]+)/books/(?:editions?|about)/_/(.+)$~", $url, $matches)) {
         $url = 'https://www.google.com/books/edition/_/'. $matches[1];
         $this->set($url_type, $url);
       }
@@ -3251,9 +3284,10 @@ final class Template {
           case "dggs citation id": case "harvp": case "nla": case "catkey": case "hyphen":
           case "mit libraries": case "epa national catalog": case "unt key": case "eram":
           case "regreq": case "nobr": case "subscription": case "uspl": case "small":
-          case "rism": case "jan": case "nbsp": case "abbr":
+          case "rism": case "jan": case "nbsp": case "abbr": case "closed access":
           case "genbank": case "better source needed": case "free access": case "required subscription":
-          case "fahrplan-ch": case "incomplete short citation": case "music":
+          case "fahrplan-ch": case "incomplete short citation": case "music": case "bar-ads":
+          case "subscription or libraries": case "gallica";
           case "gbooks": // TODO - should use
           case "isbnt": case "issn link": case "lccn8": // Assume not normal template for a reason
           case "google books": // Usually done for fancy formatting and because already has title-link/url
@@ -6244,7 +6278,6 @@ final class Template {
         case 'location':
           // Check if it is a URL
           $the_param = $this->get($param);
-          if (filter_var($the_param, FILTER_VALIDATE_URL) === FALSE) return; // Fast
           if (preg_match(REGEXP_IS_URL, $the_param) !== 1) return; // complete
           if ($this->has('url')) {
              $url = $this->get('url');
@@ -6546,7 +6579,6 @@ final class Template {
           ) {
         $url = $this->get('url');
         if (stripos($url, 'CITATION_BOT') === FALSE &&
-            filter_var($url, FILTER_VALIDATE_URL) !== FALSE &&
             !preg_match('~^https?://[^/]+/*?$~', $url) &&       // Ignore just a hostname
             preg_match (REGEXP_IS_URL, $url) === 1 &&
            preg_match('~^https?://([^/]+)/~', $url, $matches)) {
@@ -7492,7 +7524,7 @@ final class Template {
       $orig_url = $url;
       $hash = '';
       if (strpos($url, "#")) {
-        $url_parts = explode("#", $url);
+        $url_parts = explode("#", $url, 2);
         $url = $url_parts[0];
         $hash = "#" . $url_parts[1];
       }
@@ -7502,7 +7534,7 @@ final class Template {
       $url = "https://www.google.com/search?";
 
       foreach ($url_parts as $part) {
-        $part_start = explode("=", $part);
+        $part_start = explode("=", $part, 2);
         $part_start0 = $part_start[0];
         if (isset($part_start[1]) && $part_start[1] === '') {
           $part_start0 = "donotaddmeback"; // Do not add blank ones

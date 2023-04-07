@@ -1372,24 +1372,22 @@ function normalize_google_books(string &$url, int &$removed_redundant, string &$
       $removed_redundant = 0;
       $hash = '';
       $removed_parts ='';
+      $url = str_replace('&quot;', '"', $url);
 
       if (strpos($url, "#")) {
-        $url_parts = explode("#", $url);
+        $url_parts = explode("#", $url, 2);
         $url = $url_parts[0];
         $hash = $url_parts[1];
       }
       $url = str_replace("&amp;", "&", $url); 
-      $url_parts = explode("&", str_replace("?", "&", $url));
+      $url_parts = explode("&", str_replace("&&", "&", str_replace("?", "&", $url)));
       $url = "https://books.google.com/books?id=" . $gid[1];
       $book_array = array();
       foreach ($url_parts as $part) {
-        $part_start = explode("=", $part);
+        $part_start = explode("=", $part, 2);
         if ($part_start[0] === 'text')     $part_start[0] = 'dq';
         if ($part_start[0] === 'keywords') $part_start[0] = 'q';
         if ($part_start[0] === 'page')     $part_start[0] = 'pg';
-        if (isset($part_start[2])) $part_start[1] = $part_start[1] . '=' . $part_start[2];
-        if (isset($part_start[3])) $part_start[1] = $part_start[1] . '=' . $part_start[3];
-        if (isset($part_start[4])) $part_start[1] = $part_start[1] . '=' . $part_start[4];
         switch ($part_start[0]) {
           case "dq": case "pg": case "lpg": case "q": case "printsec": case "cd": case "vq": case "jtp": case "sitesec": case "article_id": case "bsq":
             if (empty($part_start[1])) {
@@ -1412,6 +1410,7 @@ function normalize_google_books(string &$url, int &$removed_redundant, string &$
           case "gl": case "ovdme": case "sqi": case "w": case "rview": case "": case "kptab":
           case "pgis": case "ppis": case "output": case "gboemv": case "ie": case "nbsp;":
           case "fbclid": case "num": case "oe": case "pli": case "prev": case "vid": case "view":
+          case "as_drrb_is": case "sourceid": case "btnG": case "rls":
           case "buy": case "edge": case "zoom": case "img": case "as_pt": // Safe to remove - many are how you searched for the book
             $removed_parts .= $part;
             $removed_redundant++;
@@ -1498,6 +1497,14 @@ function normalize_google_books(string &$url, int &$removed_redundant, string &$
           $hash = '';
       }
       if (preg_match('~^P*(PP\d+),M1$~', $hash, $matcher)){
+          $book_array['pg'] = $matcher[1];
+          $hash = '';
+      }
+      if (preg_match('~^P*(PT\d+),M1$~', $hash, $matcher)){
+          $book_array['pg'] = $matcher[1];
+          $hash = '';
+      }
+      if (preg_match('~^P*(PR\d+),M1$~', $hash, $matcher)){
           $book_array['pg'] = $matcher[1];
           $hash = '';
       }

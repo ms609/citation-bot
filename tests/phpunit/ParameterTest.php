@@ -103,13 +103,13 @@ final class ParameterTest extends testBaseClass {
     $this->assertSame('{{cite web|cnn| cnn=joker }}', $template->parsed_text());
   }
 
-  public function testBlankValueNonBreakingSpaces() : void {
+  public function testBlankValueNonBreakingSpaces() : void {   //These are non-breaking spaces
     $text = " first7 = \n";
     $parameter = $this->parameter_parse_text_helper($text);
-    $this->assertSame('', $parameter->pre);
-    $this->assertSame(' first7 ', $parameter->param);  //These are non-breaking spaces
-    $this->assertSame('=', $parameter->eq);
-    $this->assertSame(' ', $parameter->val);  //This is a non-breaking space
+    $this->assertSame(' ', $parameter->pre);
+    $this->assertSame('first7', $parameter->param);
+    $this->assertSame(' = ', $parameter->eq);
+    $this->assertSame('', $parameter->val);
     $this->assertSame("\n", $parameter->post);
   }
 
@@ -159,5 +159,10 @@ final class ParameterTest extends testBaseClass {
     $this->assertSame('{{citation|format=Joe}}', $template->parsed_text());
   }
   
+  public function testOddSpaces() : void { // TODO
+    $text = "{{Infobox settlement\n| image_skyline            = \n \n| image_caption            = \n}}";
+    $template = $this->process_citation($text);
+    $this->assertSame($text, $template->parsed_text());
+  }
 }
 
