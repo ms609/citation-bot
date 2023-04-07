@@ -63,6 +63,7 @@ final class Parameter {
         $this->post = $match[2];
       }
     }
+    if ($text !== $this->pre . $this->param . this->eq . $this->val . $this->post) echo "\n HOSED $text \n;
 
   }
 
