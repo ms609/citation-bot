@@ -69,7 +69,7 @@ final class Parameter {
     if ($text !== $this->parsed_text()) echo "\n" . __LINE__ . " HOSED :$text: \n";
     // Clean up line feeds
     if ($this->val === '' && $this->post === '') {
-      if (preg_match('~^(.*=[^\n\r]*)([\n\r]+.*)$~', $this->eq, $match)) {
+      if (preg_match('~^([^=]*=[^\n\r]*)([\n\r].*)$~', $this->eq, $match)) {
         $this->eq = $match[1];
         $this->post = $match[2];
       }
