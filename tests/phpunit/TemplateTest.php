@@ -2067,7 +2067,7 @@ final class TemplateTest extends testBaseClass {
     $this->assertSame('9780393307009', $expanded->get2('isbn')   );
     $this->assertSame('Gould'        , $expanded->get2('last1'));
     $this->assertSame('Stephen Jay'  , $expanded->get2('first1') );
-    $this->assertSame('17 September 1990'   , $expanded->get2('date'));
+    $this->assertSame('1989'         , $expanded->get2('year'));
     $this->assertNull($expanded->get2('pages')); // Do not expand pages.  Google might give total pages to us
    
     $text = "{{Cite web | http://books.google.co.uk/books/about/Wonderful_Life.html}}";
@@ -2127,12 +2127,12 @@ final class TemplateTest extends testBaseClass {
     $text = "{{Cite web | url=https://www.google.com/books/edition/_/SjpSkzjIzfsC?hl=en}}";
     $expanded = $this->process_citation($text);
     $this->assertSame('cite book', $expanded->wikiname());
-    $this->assertSame('https://www.google.com/books/edition/_/SjpSkzjIzfsC', $expanded->get2('url'));
+    $this->assertSame('https://books.google.com/books?id=SjpSkzjIzfsC', $expanded->get2('url'));
     $this->assertSame('Wonderful Life: The Burgess Shale and the Nature of History',$expanded->get2('title'));
     $this->assertSame('9780393307009', $expanded->get2('isbn')   );
     $this->assertSame('Gould'        , $expanded->get2('last1'));
     $this->assertSame('Stephen Jay'  , $expanded->get2('first1') );
-    $this->assertSame('17 September 1990'   , $expanded->get2('date'));
+    $this->assertSame('1989'         , $expanded->get2('year'));
     $this->assertNull($expanded->get2('pages')); // Do not expand pages.  Google might give total pages to us
   }
 
@@ -3306,7 +3306,7 @@ EP - 999 }}';
   public function testTrimGoogleStuff() : void {
     $text = '{{cite web|url=https://www.google.com/search?q=%22institute+for+sustainable+weight+loss%22&btnG=&oq=%22institute+for+sustainable+weight+loss%22&aqs=chrome..69i57j69i59.14823j0j7&sourceid=chrome&ie=UTF-8&as_occt=any&cf=all&as_epq=&as_scoring=YES&as_occt=BUG&cs=0&cf=DOG&as_epq=CAT&btnK=Google+Search&btnK=DOGS&cs=CATS#The_hash#The_second_hash}}';
     $prepared = $this->prepare_citation($text);
-    $this->assertSame('https://www.google.com/search?q=%22institute+for+sustainable+weight+loss%22&as_scoring=YES&as_occt=BUG&cf=DOG&as_epq=CAT&btnK=DOGS&cs=CATS#The_hash', $prepared->get2('url'));
+    $this->assertSame('https://www.google.com/search?q=%22institute+for+sustainable+weight+loss%22&as_scoring=YES&as_occt=BUG&cf=DOG&as_epq=CAT&btnK=DOGS&cs=CATS#The_hash#The_second_hash', $prepared->get2('url'));
   }
 
   public function testDOIExtraSlash() : void {

@@ -622,6 +622,7 @@ function expand_doi_with_dx(Template $template, string $doi) : bool {
      if (ZOTERO_ONLY) return FALSE;
      if (strpos($doi, '10.2307') === 0) return FALSE; // jstor API is better
      if (strpos($doi, '10.24436') === 0) return FALSE; // They have horrible meta-data
+     if (strpos($doi, '10.5284/1028203') === 0) return FALSE; // database
      set_time_limit(120);
      /** @param array|string|null|int $data */ /** @psalm-suppress MissingClosureParamType */
      $try_to_add_it = function(string $name, $data) use($template) : bool {
@@ -801,7 +802,7 @@ function expand_by_jstor(Template $template) : bool {
     $bad_data = TRUE; 
     $ris = explode("\n", html_entity_decode($dat, ENT_COMPAT | ENT_HTML401, 'UTF-8'));
     foreach ($ris as $ris_line) {
-      $ris_part = explode(" - ", $ris_line . " ");
+      $ris_part = explode(" - ", $ris_line . " ", 2);
       switch (trim($ris_part[0])) {
         case "T1":
         case "TI":
@@ -822,7 +823,7 @@ function expand_by_jstor(Template $template) : bool {
       $got_count = 0;
       $new_title = ': ';
       foreach ($ris as $ris_line) {
-        $ris_part = explode(" - ", $ris_line . " ");
+        $ris_part = explode(" - ", $ris_line . " ", 2);
         switch (trim($ris_part[0])) {
           case "T1":
             $new_title = $new_title . trim($ris_part[1]);
@@ -847,7 +848,7 @@ function expand_by_jstor(Template $template) : bool {
     if ($bad_data) {
        report_info('Old title did not match for ' . jstor_link($jstor));
        foreach ($ris as $ris_line) {
-         $ris_part = explode(" - ", $ris_line . " ");
+         $ris_part = explode(" - ", $ris_line . " ", 2);
          switch (trim($ris_part[0])) {
            case "T1": case "TI": case "T2": case "BT":
             $new_title = trim($ris_part[1]);

@@ -78,7 +78,7 @@ const BAD_TITLES = array("unknown", "missing", "arxiv e-prints", "arxiv mathemat
                          "openid transaction in progress", 'download limit exceeded', 'privacy settings',
                          "untitled-1", "untitled-2", "professional paper", "zbmath",
                          "theses and dissertations available from proquest", "proquest ebook central", "report",
-                         "bloomberg - are you a robot?", "page not found",
+                         "bloomberg - are you a robot?", "page not found", "free live sex cams",
                          "breaking news, analysis, politics, blogs, news photos, video, tech reviews",
                          "breaking news, analysis, politics, blogs, news photos, video, tech reviews - time.com",
                          "redirect notice", "oxford music online", "trove - archived webpage", "pagina inicia",
@@ -121,7 +121,7 @@ const BAD_ZOTERO_TITLES = ['Browse publications', 'Central Authentication Servic
                                  'Compare Payday Loans', 'Find the Best Loan Deal', '..::.. Error', "Pagina inicia",
                                  'Help Center - The Arizona Republic', '404 ERROR', '404 - URL invalid',
                                  "404. That's an error", '404 - Page Not Found', 'Página não existe', 
-                                 'This is not the page you requested', 'Page Not Found', '404 - - ',
+                                 'This is not the page you requested', 'Page Not Found', '404 - - ', 'sex cams',
                                  '404 &#124; ',  'Missing page', '404 - File or directory not found', '错误页面',
                                  '404 Page - ', '404: Page Not Found ', '404: PAGE NOT FOUND', '404 Error',
                                  '404 | ', '页面不存在', 'De pagina is niet gevonden', '404 - ', ' Stranica nije pronađena',
@@ -398,6 +398,7 @@ const HOSTNAME_MAP  = array('public.ebookcentral.proquest.com' => '[[ProQuest]]'
 			    'cinemaexpress.com' => '[[Cinema Express]]',
 			    'sify.com' => '[[Sify]]',
 			    'animaldiversity.org' => '[[Animal Diversity Web]]',
+			    'bollywoodhungama.com' => '[[Bollywood Hungama]]',
                            ); // Be warned, some website host a seperate sunday edition, etc.  Be careful and when in doubt link to hostname
 
 const NO_DATE_WEBSITES = array('wikipedia.org', 'web.archive.org', 'perma-archives.org', 'webarchive.proni.gov.uk', 'perma.cc',
@@ -809,7 +810,7 @@ const ARE_MAGAZINES = array('the new yorker', 'the new republic', 'new republic'
                            ); // lowercase axact matches
 const ARE_MANY_THINGS = array('pc gamer', 'gamestar', 'rock paper shotgun', 'mcv', 'rock, paper, shotgun', 'edge',
                               'ballotpedia', 'npr', 'ballotpedia.org', 'npr.org', 'nih.gov', 'nih', 'eurogamer.it',
-			      'conceptcarz', 'the royal family',
+			      'conceptcarz', 'the royal family', 'eurogamer.de',
                               'national institutes of health', 'national institutes of health (nih)'); // lowercase axact matches.  These are things that are both websites and newspapers
 const ARE_NEWSPAPERS = array('the economist', 'la times', 'toronto sun', 'washington post', 'the washington post',
 			     'philippine daily inquirer', 'the irish times', 'wikinews', 'wikinews.org'); // lowercase axact matches
