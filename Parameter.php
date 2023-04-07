@@ -25,7 +25,6 @@ final class Parameter {
     // $pre_eq[3]: any whitespace after the parameter name (including newlines)
     preg_match('~^(\s*?)(\S[\s\S]*?)(\s*+)$~u', $split[0], $pre_eq);
     if (count($split) === 2) {
-    echo "\n on " . __LINE__  ."\n";
 
       // Split the text after the '=' into constituent parts:
       // $post_eq[1]: any whitespace before the parameter value (including newlines)
@@ -33,10 +32,8 @@ final class Parameter {
       // $post_eq[3]: any whitespace after the parameter value (including newlines)
       preg_match('~^([ \n\r\t\p{Zs}]*)([\s\S]*?)(\s*+)$~u', $split[1], $post_eq);
       if (count($pre_eq) === 0) {
-          echo "\n on " . __LINE__  ."\n";
         $this->eq    = $split[0] . '=' . $post_eq[1];
       } else {
-          echo "\n on " . __LINE__  ."\n";
         $this->pre   = $pre_eq[1];
         $this->param = $pre_eq[2];
         $this->eq    = $pre_eq[3] . '=' . $post_eq[1];
@@ -44,22 +41,18 @@ final class Parameter {
       $this->post  = $post_eq[3];
       $this->val   = $post_eq[2];
     } elseif ($pre_eq) {
-        echo "\n on " . __LINE__  ."\n";
       $this->pre  = $pre_eq[1];
       $this->val  = $pre_eq[2];
       $this->post = $pre_eq[3];
     } else {
-        echo "\n on " . __LINE__  ."\n";
       $this->val  = $text;
     }
-    if ($text !== $this->parsed_text()) echo "\n" . __LINE__ . " HOSED :$text: \n";
 
     // Comments before parameter names
     if (preg_match('~^# # # CITATION_BOT_PLACEHOLDER_COMMENT \d+ # # #(?:\s*)~isu', $this->param, $match)) {
       $this->pre = $this->pre . $match[0];
       $this->param = str_replace($match[0], '', $this->param);
     }
-    if ($text !== $this->parsed_text()) echo "\n" . __LINE__ . " HOSED :$text: \n";
 
     // Comments after parameter names
     if (preg_match('~(?:\s*)# # # CITATION_BOT_PLACEHOLDER_COMMENT \d+ # # #$~isu', $this->param, $match)) {
@@ -74,14 +67,13 @@ final class Parameter {
       if (preg_match('~^([^=]*=[^\n\r]*)([\n\r].*)$~u', $this->eq, $match)) {
       echo "\n on " . __LINE__  ."\n";
       if ($text !== $this->parsed_text()) echo "\n" . __LINE__ . " HOSED :$text: \n";
-        echo "We Have :" . $this->eq . ":" .  $this->val  . ":" .   . ":" .  $this->post . ":\n";
+        echo "We Have :" . $this->eq . ":" .  $this->val  . ":" .  ":" .  $this->post . ":\n";
         $this->eq = $match[1];
         $this->post = $match[2];
-        echo "We Have :" . $this->eq . ":" .  $this->val  . ":" .   . ":" .  $this->post . ":\n";
+        echo "We Have :" . $this->eq . ":" .  $this->val  . ":" .  ":" .  $this->post . ":\n";
         if ($text !== $this->parsed_text()) echo "\n" . __LINE__ . " HOSED :$text: \n";
       }
     }
-    if ($text !== $this->parsed_text()) echo "\n" . __LINE__ . " HOSED :$text: \n";
 
   }
 
