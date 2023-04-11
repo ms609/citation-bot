@@ -159,7 +159,7 @@ final class ParameterTest extends testBaseClass {
     $this->assertSame('{{citation|format=Joe}}', $template->parsed_text());
   }
   
-  public function testOddSpaces() : void { // TODO
+  public function testOddSpaces() : void {
     $text = "{{Infobox settlement\n| image_skyline            = \n \n| image_caption            = \n}}";
     $template = $this->process_citation($text);
     $this->assertSame($text, $template->parsed_text());
