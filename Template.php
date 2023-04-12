@@ -7175,7 +7175,7 @@ final class Template {
 
     if ($p->post !== '') { // Often templates are {{cite this|x=y |a=b |l=m}}  with last space missing
        $last = array_key_last($this->param);
-       if ($last && $this->param[$last]->post === '') {
+       if (($last !== NULL) && $this->param[$last]->post === '') {
            $this->param[$last]->post = $p->post;
        }
     } 
