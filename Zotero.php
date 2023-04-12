@@ -1450,15 +1450,16 @@ public static function find_indentifiers_in_urls(Template $template, ?string $ur
           if (is_null($url_sent)) {
             if (stripos($url, ".pdf") !== FALSE) {
               $test_url = "https://www.ncbi.nlm.nih.gov/pmc/articles/PMC" . $new_pmc . "/";
-              curl_setopt_array(self::$ch_pmc, [CURLOPT_URL => $test_url, CURLOPT_RETURNTRANSFER=>1]);
-              $debug=@curl_exec(self::$ch_pmc);
+              curl_setopt_array(self::$ch_pmc, [CURLOPT_URL => $test_url]);
+              @curl_exec(self::$ch_pmc);
               $httpCode = (int) @curl_getinfo(self::$ch_pmc, CURLINFO_HTTP_CODE);
-              echo "\n\n " . (string) $httpCode . "\n\n";
-              print_r($debug);
+              print_r($httpCode);
               if ($httpCode === 404) { // Some PMCs do NOT resolve.  So leave URL
+                echo "\n not dropping url\n";
                 return $template->add_if_new('pmc', $new_pmc);
               }
             }
+            echo "\n dropping url\n";
             if (stripos(str_replace("printable", "", $url), "table") === FALSE) $template->forget($url_type); // This is the same as PMC auto-link
           }
           return $template->add_if_new('pmc', $new_pmc);
