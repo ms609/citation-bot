@@ -25,6 +25,7 @@ final class CrashTest extends testBaseClass {
       AdsAbsControl::small_give_up();
       AdsAbsControl::big_give_up();
       Zotero::block_zotero();
+      echo $page->parsed_text();
       $this->assertTrue(FALSE); // prevent us from git committing with a website included
     }
     $this->assertTrue(TRUE);
