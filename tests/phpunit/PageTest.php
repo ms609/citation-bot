@@ -345,7 +345,7 @@ final class PageTest extends testBaseClass {
   public function testNobots4() : void {
       $text = '{{cite thesis|url=https://mathscinet.ams.org/mathscinet-getitem?mr=1234}}{{bots|allow=Citation Bot}}';
       $page = $this->process_page($text);
-      $this->assertSame('{{cite thesis|url=https://mathscinet.ams.org/mathscinet-getitem?mr=1234| mr=1234 }}{{bots|allow=Citation Bot}}', $page->parsed_text());
+      $this->assertSame('{{cite thesis|url=https://mathscinet.ams.org/mathscinet-getitem?mr=1234 | mr=1234 }}{{bots|allow=Citation Bot}}', $page->parsed_text());
       $text = '{{cite thesis|url=https://mathscinet.ams.org/mathscinet-getitem?mr=1234}}{{bots|allow=none}}';
       $page = $this->process_page($text);
       $this->assertSame($text, $page->parsed_text());
