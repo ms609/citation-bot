@@ -60,6 +60,20 @@ final class NameToolsTest extends testBaseClass {
     $result=format_multiple_authors($authors);
     $this->assertSame('Smith, M. A.; Smith, M. A.', $result);
   }
+  public function testFormatMultipleAuthors9() : void { // goofy data
+    $authors = ',a,';
+    $result=format_multiple_authors($authors);
+    $this->assertSame('A.', $result);
+    $authors = 'a';
+    $result=format_multiple_authors($authors);
+    $this->assertSame('A.', $result);
+    $authors = ',a';
+    $result=format_multiple_authors($authors);
+    $this->assertSame('A.', $result);
+    $authors = 'a,';
+    $result=format_multiple_authors($authors);
+    $this->assertSame('A.', $result);
+  }
     
   public function testFormatAuthor1() : void {  
     $author = "Conway Morris S.C.";
