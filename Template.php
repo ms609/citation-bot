@@ -1175,7 +1175,7 @@ final class Template {
         if (in_array(strtolower(sanitize_string($value)), BAD_TITLES )) return FALSE;
         if ($this->blank($param_name) || in_array($this->get($param_name), ['Archived copy', "{title}", 'ScienceDirect', 'Google Books', 'None'])
                                       || (stripos($this->get($param_name), 'EZProxy') !== FALSE && stripos($value, 'EZProxy') === FALSE)) {
-          if (foreach (['encyclopedia', 'encyclopaedia', 'work', 'dictionary', 'journal'] as $worky) {
+          foreach (['encyclopedia', 'encyclopaedia', 'work', 'dictionary', 'journal'] as $worky) {
             if (str_equivalent($this->get($worky), sanitize_string($value))) {
               return FALSE;
             }
