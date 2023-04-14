@@ -4681,4 +4681,12 @@ final class TemplateTest2 extends testBaseClass {
       $expanded = $this->process_citation($expanded->parsed_text());
       $this->assertSame('{{cite journal|DUPLICATE_x=AAAA|DUPLICATE_x=bbbb|x=cccc}}', $expanded->parsed_text());
     }
+ 
+    public function testBadChapterStays() : void {
+      $text = "{{cite journal|url=http://oxfordindex.oup.com/view/10.1093/ww/9780199540884.013.U162881|title=Chope, His Honour Robert Charles : Who Was Who - oi|chapter=Chope, His Honour Robert Charles, (26 June 1913–17 Oct. 1988), a Circuit Judge (Formerly Judge of County Courts), 1965–85 |date=December 2007 |doi=10.1093/ww/9780199540884.013.u162881}}
+      $expanded = $this->process_citation($text);
+      $this->assertSame('cite journal', $expanded->wikiname());
+      $this->assertSame('Chope, His Honour Robert Charles, (26 June 1913–17 Oct. 1988), a Circuit Judge (Formerly Judge of County Courts), 1965–85', $expanded->get2('chapter'));
+  }
+ 
 }
