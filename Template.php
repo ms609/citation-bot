@@ -687,11 +687,11 @@ final class Template {
       return TRUE;
     }
     if ($this->display_authors() >= $this->number_of_authors()) return TRUE;
-  
+
     if ($this->wikiname() === 'citation' && $this->has('work')) {
       return TRUE; // Should consider changing the work parameter, since {{citation}} uses the work parameter type to determine format :-(
     }
-  
+
     return (!(
              ($this->has('journal') || $this->has('periodical') || $this->has('work') || $this->has('newspaper') || $this->has('magazine'))
           &&  $this->has('volume')
@@ -823,7 +823,7 @@ final class Template {
         $param_name = COMMON_MISTAKES_TOOL[$param_name];
     }
     /** @psalm-assert string $param_name */
-  
+
     if ($api) $this->record_api_usage($api, $param_name);
 
     // If we already have name parameters for author, don't add more
@@ -1069,7 +1069,7 @@ final class Template {
           return $this->add('issn', $value);
         }
         return FALSE;
-      
+
       case 'ismn':
         $value = str_ireplace('m', '9790', $value); // update them
         if ($this->blank('ismn')) {
@@ -1089,7 +1089,7 @@ final class Template {
         if (stripos($value, ' and Capstones') !== FALSE) return FALSE;
         if (stripos($value, ' and Problem Reports') !== FALSE) return FALSE;
         if (stripos($value, 'Doctoral ') !== FALSE) return FALSE;
-        
+
         if (!$this->blank(['booktitle', 'book-title'])) return FALSE;
         if (in_array(strtolower(sanitize_string($value)), BAD_TITLES )) return FALSE;
         if (in_array(strtolower($value), ARE_MANY_THINGS)) {
@@ -1190,7 +1190,6 @@ final class Template {
           return $this->add($param_name, wikify_external_text($value));
         }
         return FALSE;
-
 
       ###  ARTICLE LOCATORS  ###
       ### (page, volume etc) ###
@@ -1377,7 +1376,6 @@ final class Template {
         }
         return FALSE;
 
-
       ###  ARTICLE IDENTIFIERS  ###
 
       case 'url':
@@ -1393,7 +1391,7 @@ final class Template {
           }
         }
         return $this->add($param_name, $value);
-      
+
       case 'chapter-url':
         $value = sanitize_string($value);
         foreach (ALL_URL_TYPES as $existing)  {
@@ -1680,7 +1678,7 @@ final class Template {
           return $this->add($param_name, sanitize_string($value));
         }
         return FALSE;
-      
+
       case 'jstor':
         if ($value === '3511692') return FALSE; // common review
         if ($this->blank($param_name)) {
@@ -2057,7 +2055,7 @@ final class Template {
     static $needs_told = TRUE;
     set_time_limit(120);
     if (ZOTERO_ONLY) return FALSE;
-  
+
     if ($this->has('bibcode') && $this->blank('doi')) {
       $doi = AdsAbsControl::get_bib2doi($this->get('bibcode'));
       if (doi_works($doi)) {
@@ -2071,13 +2069,13 @@ final class Template {
         if (strlen($bib) > 12) $this->add_if_new('bibcode_nosearch', $bib);
       }
     }
-  
+
     // API docs at https://github.com/adsabs/adsabs-dev-api
     if ($this->has('bibcode') && !$this->incomplete() && stripos($this->get('bibcode'), 'tmp') === FALSE && stripos($this->get('bibcode'), 'arxiv') === FALSE  &&
         ($this->has('doi') || AdsAbsControl::get_bib2doi($this->get('bibcode')) === 'X')) {  // Don't waste a query, if it has a doi or will not find a doi
       return FALSE;  // @codeCoverageIgnore
     }
-  
+
     if (!$this->blank_other_than_comments('bibcode') && stripos($this->get('bibcode'), 'tmp') === FALSE && stripos($this->get('bibcode'), 'arxiv') === FALSE ) return FALSE; // Now use big query API for existing bibcode - code below still assumes that we might use a bibcode
     if (!SLOW_MODE && $this->blank('bibcode')) return FALSE; // Do not look for new bibcodes in slow mode
     if (stripos($this->get('bibcode'), 'CITATION') !== FALSE) return FALSE;
@@ -2695,7 +2693,7 @@ final class Template {
       } elseif (preg_match('~^https?:\/\/(?:www|books)\.google\.[a-zA-Z\.][a-zA-Z\.][a-zA-Z\.]?[a-zA-Z\.]?[a-zA-Z\.]?[a-zA-Z\.]?[a-zA-Z\.]?[a-zA-Z\.]?\/books\/(?:editions?|about)\/[^\/\/\s\<\|\{\}\>\]]+\/([^\? \]\[\&\%]+)$~i', $url, $matches)) {
             $url = 'https://books.google.com/books?id='. $matches[1];
             $this->set($url_type, $url);
-      } 
+      }
       if (preg_match("~^https?://www\.google\.(?:[^\./]+)/books/(?:editions?|about)/_/(.+)$~", $url, $matches)) {
         $url = 'https://www.google.com/books/edition/_/'. $matches[1];
         $this->set($url_type, $url);
@@ -3345,7 +3343,6 @@ final class Template {
    }
 }
 
-
   protected function correct_param_spelling() : void {
   // check each parameter name against the list of accepted names (loaded in expand.php).
   // It will correct any that appear to be mistyped.
@@ -3769,7 +3766,7 @@ final class Template {
               if ($this->blank('first1')) $this->rename('first', 'first1');
             }
             return;
-        
+
         case 'bibcode':
           if ($this->blank($param)) return;
           $bibcode_journal = (string) substr($this->get($param), 4);
@@ -4112,7 +4109,7 @@ final class Template {
             }
           }
           return;
-        
+
         case 'hdl':
           $handle = $this->get($param);
           if (!$handle) return;
@@ -4770,7 +4767,6 @@ final class Template {
             }
           }
 
-
           if ($publisher === 'la times' ||
               $publisher === 'latimes' ||
               $publisher === 'latimes.com' ||
@@ -4827,7 +4823,7 @@ final class Template {
               }
               return;
           }
-        
+
           if ( $publisher === 'www.sify.com' ||
                $publisher === 'sify.com' ||
                $publisher === 'sify'
@@ -4963,7 +4959,7 @@ final class Template {
           } elseif (!$this->blank(['isbn', 'doi', 'pmc', 'pmid']) && preg_match('~^(.+) \(PDF\)$~i', trim($this->get($param)), $match)) {
                  $this->set($param, trim($match[1])); // Books/journals probably don't end in (PDF)
           }
-        
+
           if (preg_match("~^(.+national conference) on \-$~i", $this->get($param), $matches)) {
               $this->set($param, trim($matches[1])); // ACM conference titles
           }
@@ -5143,7 +5139,7 @@ final class Template {
                 }
               }
           }
-        
+
           if (stripos($this->get($param), 'youtube') !== FALSE) {
             if (preg_match("~^(https?://(?:|www\.|m\.)youtube\.com/watch)(%3F.+)$~", $this->get($param), $matches)) {
                  report_info("Decoded YouTube URL");
@@ -5154,7 +5150,7 @@ final class Template {
           if (preg_match("~^https?://(.+\.springer\.com/.+)#citeas$~", $this->get($param), $matches)) {
                $this->set($param, 'https://' . $matches[1]);
           }
-        
+
           // Proxy stuff
           if (stripos($this->get($param), 'proxy') !== FALSE) { // Look for proxy first for speed, this list will grow and grow
               // Use dots, not \. since it might match dot or dash
@@ -5923,7 +5919,7 @@ final class Template {
             $this->rename($param, 'newspaper');
             return;
           }
-        
+
           if (strtolower($the_param) === 'www.pressreader.com' ||
                strtolower($the_param) === 'pressreader.com' ||
                strtolower($the_param) === 'pressreader.com (archived)' ||
@@ -5936,7 +5932,7 @@ final class Template {
                  $this->forget($param);
               }
           }
-        
+
           return;
 
         case 'via':   // Should just remove all 'via' with no url, but do not want to make people angry
@@ -6249,7 +6245,7 @@ final class Template {
               }
             return;
           }
-    
+
           if ( strtolower($the_param) === 'www.sify.com' ||
                strtolower($the_param) === 'sify.com' ||
                strtolower($the_param) === 'sify'
@@ -6407,7 +6403,7 @@ final class Template {
       $this->tidy_parameter('url'); // depending upon end state, convert to chapter-url
       if ($this->has_good_free_copy()) { // One last try to drop URLs
         $url = $this->get('url');
-        if ($url !== str_ireplace(['nih.gov', 'pubmed', 'pmc', 'doi'], '', $url)) {        
+        if ($url !== str_ireplace(['nih.gov', 'pubmed', 'pmc', 'doi'], '', $url)) {
           $this->get_identifiers_from_url();
         }
       }
@@ -7178,7 +7174,7 @@ final class Template {
        if (($last !== NULL) && $this->param[$last]->post === '') {
            $this->param[$last]->post = $p->post;
        }
-    } 
+    }
     $this->param[] = $p;
     return TRUE;
   }
@@ -7367,7 +7363,7 @@ final class Template {
         }
     }
     if ($no_dash_to_start) $this->mod_dashes = FALSE;
-  
+
     $ret['dashes'] = $this->mod_dashes;
     $ret['names'] = $this->mod_names;
     return $ret;
