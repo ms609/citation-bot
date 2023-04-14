@@ -450,9 +450,9 @@ final class PageTest extends testBaseClass {
   }
   
   public function testRedirect() : void {
-    $text = " This is a #REDIRECT  dsfasdfasdfasdf     ]]      {{Cite news|doi=10.1088/1742-6596/1087/6/062024}}";
+    $text = " This is a #REDIRECT[[Waukesha Christmas parade attack]]         {{Cite news|doi=10.1088/1742-6596/1087/6/062024}}";
     for ($x = 0; $x <= 1000; $x++) {
-      echo $text = "Y" . $text . "X";
+      $text = "Y" . $text . "X";
     }
     $page = $this->process_page($text);
     $this->assertSame($text, $page->parsed_text());
