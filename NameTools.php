@@ -49,6 +49,7 @@ function clean_up_last_names(string $value) : string {
   } else {
     $value = sanitize_string($value);
   }
+  $value = str_replace('..', '.', $value);
   return $value;
 }
 
