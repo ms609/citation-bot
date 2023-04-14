@@ -217,4 +217,9 @@ final class NameToolsTest extends testBaseClass {
   public function testFormat5() : void {
     $this->assertSame('Johnson, A. B. C. D. E. F. G', format_author('A. B. C. D. E. F. G. Johnson'));
   }
+  
+  public function testCleanUpLastNames() : void {
+    $this->assertSame('B A.', clean_up_last_names('B A.'));
+    $this->assertSame('A.', clean_up_last_names('A.'));
+  }
 }
