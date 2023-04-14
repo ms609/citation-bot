@@ -892,3 +892,23 @@ const JOURNAL_IS_BOOK_SERIES = array('methods of molecular biology' , 'methods m
                                      'studies in bilingualism', 'antibiotics and chemotherapy',
                                      'oceanic linguistics special publications',
                                      'progress in brain research');
+
+const ALWAYS_BAD_TITLES = array("Bloomberg - Are you a robot?", "Page not found",
+                     "Breaking News, Analysis, Politics, Blogs, News Photos, Video, Tech Reviews",
+                     "Breaking News, Analysis, Politics, Blogs, News Photos, Video, Tech Reviews - TIME.com",
+                     "Register &#124; British Newspaper Archive",
+                     "PressReader.com - Your favorite newspapers and magazines.",
+                     "PressReader.com - Your favorite newspapers and magazines",
+                     "PressReader.com - Connecting People Through News",
+                     "PressReader.com - Connecting People Through News.",
+                     "PressReader.com – Your favorite newspapers and magazines.",
+                     "PressReader.com – Your favorite newspapers and magazines",
+                     "PressReader.com – Connecting People Through News",
+                     "PressReader.com – Connecting People Through News.",
+                     "PressReader.com - Digital Newspaper & Magazine Subscriptions",
+                     "PressReader.com - Digital Newspaper & Magazine Subscriptions.",
+                     "PressReader.com – Digital Newspaper & Magazine Subscriptions",
+                     "Log In - ProQuest",
+                    );
+
+                    
