@@ -104,14 +104,14 @@ class Page {
     $this->set_date_pattern();
 
     if (preg_match('~\#redirect *\[\[~i', $this->text)) {
-      report_warning("Page is a redirect.");
+      report_warning("Page is a redirect."); // @codeCoverageIgnoreStart
       if (strlen($this->text) > 2000) {
         $test_text = preg_replace("~\[\[Category\:[^\]\{\}\[]+\]\]~", "", $this->text);
         if (strlen($test_text) > 1500) {
            file_put_contents('CodeCoverage', $this->title . " is probably not a redirect. \n", FILE_APPEND);
         }
       }
-      return FALSE;
+      return FALSE; // @codeCoverageIgnoreEnd
     }
     return TRUE;
   }
