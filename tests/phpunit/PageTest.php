@@ -448,5 +448,5 @@ final class PageTest extends testBaseClass {
     $this->assertSame('1087', $template->get2('volume'));
     $this->assertSame('cite journal', $template->wikiname());
   }
-  
+
 }
