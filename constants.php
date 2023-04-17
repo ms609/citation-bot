@@ -8,10 +8,6 @@ require_once 'constants/mistakes.php';
 require_once 'constants/parameters.php';  
 require_once 'constants/regular_expressions.php';
 
-function bot_debug_log(string $log_this) : void {
-  file_put_contents('CodeCoverage', $log_this . "\n", FILE_APPEND);
-}
-
 const PIPE_PLACEHOLDER = '# # # CITATION_BOT_PLACEHOLDER_PIPE # # #';
 const TEMP_PLACEHOLDER = "# # # CITATION_BOT_PLACEHOLDER_TEMPORARY %s # # #";
 
