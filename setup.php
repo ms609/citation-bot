@@ -74,10 +74,6 @@ if (isset($_POST["page"]) && strpos((string) $_POST["page"], 'ZOTERO_ONLY|') ===
 ob_implicit_flush();
 flush();
 
-function bot_debug_log(string $log_this) : void {
-  file_put_contents('CodeCoverage', $log_this . "\n", FILE_APPEND);
-}
-
 if (file_exists('env.php')) {
   // Set the environment variables with putenv(). Remember to set permissions (not readable!)
   ob_start();
