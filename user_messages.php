@@ -105,7 +105,3 @@ function wiki_link(string $page) : string {
     ? '<a href="' . WIKI_ROOT . '?title=' . urlencode(str_replace(' ', '_', $page)) . '" target="_blank">Wikipedia page: ' . echoable($page) . '</a>'    // @codeCoverageIgnore
     : "Wikipedia page : " . echoable($page);
 }
-
-function bot_debug_log(string $log_this) : void {
-  file_put_contents('CodeCoverage', $log_this . "\n", FILE_APPEND);
-}
