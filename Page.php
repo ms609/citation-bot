@@ -108,7 +108,7 @@ class Page {
       if (strlen($this->text) > 2000) {
         $test_text = preg_replace("~\[\[Category\:[^\]\{\}\[]+\]\]~", "", $this->text);
         if (strlen($test_text) > 1500) {
-           file_put_contents('CodeCoverage', $this->title . " is probably not a redirect. \n", FILE_APPEND);
+           bot_debug_log($this->title . " is probably not a redirect.");
         }
       }
       return FALSE;
@@ -275,7 +275,7 @@ class Page {
     set_time_limit(120);
     if ($this->page_error) {
       $this->text = $this->start_text;
-      if ($this->title !== "") file_put_contents('CodeCoverage', $this->title . " page failed \n", FILE_APPEND);
+      if ($this->title !== "") bot_debug_log($this->title . " page failed");
       return FALSE;
     }
     Template::$all_templates = &$all_templates; // Pointer to save memory
@@ -447,7 +447,7 @@ class Page {
       }
     }
     if ($log_bad_chapter) { // We can fix these and find these fast
-      file_put_contents('CodeCoverage', $this->title . " page has ignored chapter \n", FILE_APPEND); // @codeCoverageIgnore
+      bot_debug_log($this->title . " page has ignored chapter"); // @codeCoverageIgnore
     }  
           
     foreach ($our_templates_slight as $this_template) {
@@ -493,7 +493,7 @@ class Page {
     
     if (stripos($this->text, 'CITATION_BOT_PLACEHOLDER') !== FALSE) {
       $this->text = $this->start_text;                                  // @codeCoverageIgnore
-      if ($this->title !== "") file_put_contents('CodeCoverage', $this->title . " page failed \n", FILE_APPEND); // @codeCoverageIgnore
+      if ($this->title !== "") bot_debug_log($this->title . " page failed"); // @codeCoverageIgnore
       report_error('CITATION_BOT_PLACEHOLDER found after processing');  // @codeCoverageIgnore
     }
 
