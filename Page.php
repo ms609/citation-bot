@@ -108,7 +108,7 @@ class Page {
       if (strlen($this->text) > 2000) {
         $test_text = preg_replace("~\[\[Category\:[^\]\{\}\[]+\]\]~", "", $this->text);
         if (strlen($test_text) > 1500) {
-           bot_debug_log($this->title . " is probably not a redirect.");
+           bot_debug_log($this->title . " is probably not a redirect");
         }
       }
       return FALSE;
