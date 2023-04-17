@@ -6587,8 +6587,8 @@ final class Template {
            if (preg_match('~^https?://([^/]+/+[^/]+)~', $url, $matches)) {
              $hostname_plus = mb_strtolower($matches[1]);
            } else {
-             bot_debug_log($url . " generated matches nothing event" , FILE_APPEND); // @codeCoverageIgnore
-             $hostname_plus = 'matches nothing';                                     // @codeCoverageIgnore
+             bot_debug_log($url . " generated matches nothing event"); // @codeCoverageIgnore
+             $hostname_plus = 'matches nothing';                       // @codeCoverageIgnore
            }
            $hostname_plus = (string) preg_replace('~^(m\.|www\.)~', '', $hostname_plus);
            $hostname_plus = (string) preg_replace('~//+~', '/', $hostname_plus);
