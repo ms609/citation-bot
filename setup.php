@@ -11,6 +11,10 @@ if (file_exists('git_pull.lock')) {
  * Most of the page expansion depends on everything else
  */
 
+function bot_debug_log(string $log_this) : void {
+  file_put_contents('CodeCoverage', $log_this . "\n", FILE_APPEND);
+}
+
 if (isset($_REQUEST["wiki_base"])){
   $wiki_base = trim((string) $_REQUEST["wiki_base"]);
   if (!in_array($wiki_base, ['en', 'simple'])) {
@@ -69,6 +73,10 @@ if (isset($_POST["page"]) && strpos((string) $_POST["page"], 'ZOTERO_ONLY|') ===
 
 ob_implicit_flush();
 flush();
+
+function bot_debug_log(string $log_this) : void {
+  file_put_contents('CodeCoverage', $log_this . "\n", FILE_APPEND);
+}
 
 if (file_exists('env.php')) {
   // Set the environment variables with putenv(). Remember to set permissions (not readable!)
