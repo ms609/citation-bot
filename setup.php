@@ -77,7 +77,7 @@ if (file_exists('env.php')) {
   include_once('env.php');
   $env_output = trim(ob_get_contents());
   if ($env_output) {
-    file_put_contents('CodeCoverage', "\n" . $env_output . "\n", FILE_APPEND);  // Something unexpected, so log it
+    bot_debug_log("got this:\n" . $env_output);  // Something unexpected, so log it
   }
   unset($env_output);
   ob_end_clean();
