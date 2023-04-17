@@ -48,7 +48,7 @@ function doi_works(string $doi) : ?bool {
   if (count($cache_good) > 100000) $cache_good = [];
   $works = is_doi_works($doi);
   if ($works === NULL) {
-    // file_put_contents('CodeCoverage', $doi . " returns NULL from dx.doi.org \n", FILE_APPEND);
+    // bot_debug_log($doi . " returns NULL from dx.doi.org");
     return NULL; // @codeCoverageIgnore
   }
   if ($works === FALSE) {
@@ -1363,7 +1363,7 @@ function smart_decode(string $title, string $encode, string $archive_url) : stri
     $try = (string) @mb_convert_encoding($title, "UTF-8", $encode);
   }
   if ($try == "") {
-    file_put_contents('CodeCoverage', 'Bad Encoding: ' . $encode . ' for ' . echoable($archive_url) . "\n", FILE_APPEND); // @codeCoverageIgnore
+    bot_debug_log('Bad Encoding: ' . $encode . ' for ' . echoable($archive_url)); // @codeCoverageIgnore
   }
   return $try;
 }
@@ -1418,7 +1418,7 @@ function normalize_google_books(string &$url, int &$removed_redundant, string &$
           default:
             if ($removed_redundant !== 0) {
               $removed_parts .= $part; // http://blah-blah is first parameter and it is not actually dropped
-              file_put_contents('CodeCoverage', "\n Unexpected dropping from Google Books " . $part . "\n", FILE_APPEND);
+              bot_debug_log("Unexpected dropping from Google Books " . $part);
             }
             $removed_redundant++;
         }
