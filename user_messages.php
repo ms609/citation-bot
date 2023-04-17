@@ -39,7 +39,7 @@ function report_error(string $text) : void {
 }
 function report_minor_error(string $text) : void {  // For things we want to error in tests, but continue on Wikipedia
   // @codeCoverageIgnoreStart
-  file_put_contents('CodeCoverage', html_entity_decode($text) . "\n", FILE_APPEND);
+  bot_debug_log(html_entity_decode($text));
   /** @psalm-suppress RedundantCondition */ /* PSALM thinks TRAVIS cannot be FALSE */
   if (!HTML_OUTPUT) { // command line and TRAVIS
     report_error($text);
@@ -104,4 +104,8 @@ function wiki_link(string $page) : string {
   return HTML_OUTPUT
     ? '<a href="' . WIKI_ROOT . '?title=' . urlencode(str_replace(' ', '_', $page)) . '" target="_blank">Wikipedia page: ' . echoable($page) . '</a>'    // @codeCoverageIgnore
     : "Wikipedia page : " . echoable($page);
+}
+
+function bot_debug_log(string $log_this) : void {
+  file_put_contents('CodeCoverage', $log_this . "\n", FILE_APPEND);
 }
