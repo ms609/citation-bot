@@ -11,6 +11,10 @@ if (file_exists('git_pull.lock')) {
  * Most of the page expansion depends on everything else
  */
 
+function bot_debug_log(string $log_this) : void {
+  file_put_contents('CodeCoverage', $log_this . "\n", FILE_APPEND);
+}
+
 if (isset($_REQUEST["wiki_base"])){
   $wiki_base = trim((string) $_REQUEST["wiki_base"]);
   if (!in_array($wiki_base, ['en', 'simple'])) {
@@ -77,7 +81,7 @@ if (file_exists('env.php')) {
   include_once('env.php');
   $env_output = trim(ob_get_contents());
   if ($env_output) {
-    file_put_contents('CodeCoverage', "\n" . $env_output . "\n", FILE_APPEND);  // Something unexpected, so log it
+    bot_debug_log("got this:\n" . $env_output);  // Something unexpected, so log it
   }
   unset($env_output);
   ob_end_clean();
