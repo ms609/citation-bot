@@ -438,9 +438,9 @@ public static function expand_by_zotero(Template $template, ?string $url = NULL)
   $return = self::process_zotero_response($zotero_response, $template, $url, $url_kind, $access_date);
   /**
   if ($return) {
-     file_put_contents('ZoteroWorked', $url . "\n", FILE_APPEND);
+     bot_debug_log('ZoteroWorked: ' . $url);
   } else {
-     file_put_contents('ZoteroFailed', $url . "\n", FILE_APPEND);
+     bot_debug_log('ZoteroFailed: ' . $url);
   }
   **/
   return $return;
