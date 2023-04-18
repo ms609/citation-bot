@@ -4957,6 +4957,10 @@ final class Template {
               $this->forget($param);
               return;
           }
+          if (preg_match('~googleads\.g\.doubleclick\.net~', $this->get($param))) {
+              $this->forget($param);
+              return;
+          }
           if (preg_match('~https://apis\.google\.com/js/plusone\.js$~', $this->get($param))) {
               $this->forget($param);
               return;
