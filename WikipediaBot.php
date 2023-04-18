@@ -420,7 +420,7 @@ try {
   
   static public function is_valid_user(string $user) : bool {
     if (!$user) return FALSE;
-    if (in_array($user, ['Spinixster'])) return FALSE;
+    if (in_array($user, array())) return FALSE; // TODO - add bad actors as needed
     $query = [
          "action" => "query",
          "usprop" => "blockinfo",
