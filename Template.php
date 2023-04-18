@@ -4949,31 +4949,13 @@ final class Template {
               $this->add_if_new('archive-date', $matches[1] . '-' . $matches[2] . '-' . $matches[3]);
             }
           }
-          if (preg_match('~^https?://(?:web\.archive\.org/web|archive\.today|archive\.\S\S|webarchive\.loc\.gov/all|www\.webarchive\.org\.uk/wayback/archive)/(?:save|\*)/~', $this->get($param))) {
-              $this->forget($param); // Forget "save it now" archives.  They are rubbish
-              return;
-          }
-          if (preg_match('~^https?://web\.archive\.org/web/.+https://www\.bloomberg\.com/tosv2\.html~', $this->get($param))) {
-              $this->forget($param);
-              return;
-          }
-          if (preg_match('~googleads\.g\.doubleclick\.net~', $this->get($param))) {
-              $this->forget($param);
-              return;
-          }
-          if (preg_match('~https://apis\.google\.com/js/plusone\.js$~', $this->get($param))) {
-              $this->forget($param);
-              return;
-          }
-          if (preg_match('~https?://www\.britishnewspaperarchive\.co\.uk/account/register~', $this->get($param))) {
-              $this->forget($param);
-              return;
-          }
-          if (preg_match('~https://www\.google\-analytics\.com/ga\.js$~', $this->get($param))) {
-              $this->forget($param);
-              return;
-          }
-          if (preg_match('~https://meta\.wikimedia\.org/w/index\.php\?title\=Special\:UserLogin~', $this->get($param))) {
+          if (preg_match('~^https?://(?:web\.archive\.org/web|archive\.today|archive\.\S\S|webarchive\.loc\.gov/all|www\.webarchive\.org\.uk/wayback/archive)/(?:save|\*)/~', $this->get($param)) ||
+              preg_match('~https://www\.bloomberg\.com/tosv2\.html~', $this->get($param)) ||
+              preg_match('~googleads\.g\.doubleclick\.net~', $this->get($param)) ||
+              preg_match('~https://apis\.google\.com/js/plusone\.js$~', $this->get($param)) ||
+              preg_match('~https?://www\.britishnewspaperarchive\.co\.uk/account/register~', $this->get($param)) ||
+              preg_match('~https://www\.google\-analytics\.com/ga\.js$~', $this->get($param)) ||
+              preg_match('~https://meta\.wikimedia\.org/w/index\.php\?title\=Special\:UserLogin~', $this->get($param)) )
               $this->forget($param);
               return;
           }
