@@ -4955,9 +4955,9 @@ final class Template {
               preg_match('~https://apis\.google\.com/js/plusone\.js$~', $this->get($param)) ||
               preg_match('~https?://www\.britishnewspaperarchive\.co\.uk/account/register~', $this->get($param)) ||
               preg_match('~https://www\.google\-analytics\.com/ga\.js$~', $this->get($param)) ||
-              preg_match('~https://meta\.wikimedia\.org/w/index\.php\?title\=Special\:UserLogin~', $this->get($param)) )
-              $this->forget($param);
-              return;
+              preg_match('~https://meta\.wikimedia\.org/w/index\.php\?title\=Special\:UserLogin~', $this->get($param))) {
+                $this->forget($param);
+                return;
           }
           if (preg_match('~^(https?://(?:www\.|)webcitation\.org/)([0-9a-zA-Z]{9})(?:|\?url=.*)$~', $this->get($param), $matches)) {
               // $this->set($param, $matches[1] . $matches[2]); // The url part is actually NOT binding, but other wikipedia bots check it
