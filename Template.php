@@ -18,19 +18,19 @@ final class Template {
   public const PLACEHOLDER_TEXT = '# # # CITATION_BOT_PLACEHOLDER_TEMPLATE %s # # #';
   public const REGEXP = ['~(?<!\{)\{\{\}\}(?!\})~su', '~\{\{[^\{\}\|]+\}\}~su', '~\{\{[^\{\}]+\}\}~su', '~\{\{(?>[^\{]|\{[^\{])+?\}\}~su'];  // Please see https://stackoverflow.com/questions/1722453/need-to-prevent-php-regex-segfault for discussion of atomic regex
   public const TREAT_IDENTICAL_SEPARATELY = FALSE;  // This is safe because templates are the last thing we do AND we do not directly edit $all_templates that are sub-templates - we might remove them, but do not change their content directly
-  /** @var array<Template> $all_templates */
+  /* @var array<Template> $all_templates */
   public static array $all_templates = array();  // List of all the Template() on the Page() including this one.  Can only be set by the page class after all templates are made
   public static int $date_style = DATES_WHATEVER;
-  /** @psalm-suppress PropertyNotSetInConstructor */
+  /* @psalm-suppress PropertyNotSetInConstructor */
   protected string $rawtext;  // Must start out as unset
   public string $last_searched_doi = '';
   protected string $example_param = '';
   protected string $name = '';
-  /** @var array<Parameter> $param */
+  /* @var array<Parameter> $param */
   protected array $param = array();
-  /** @var array<string> $initial_param */
+  /* @var array<string> $initial_param */
   protected array $initial_param = array();
-  /** @var array<string> $initial_author_params */
+  /* @var array<string> $initial_author_params */
   protected array $initial_author_params = array();
   protected string $initial_name = '';
   protected bool $doi_valid = FALSE;
@@ -48,7 +48,7 @@ final class Template {
                'jstor'    => array(),
                'zotero'   => array(),
             );
-  /** @var array<Template> $this_array */
+  /* @var array<Template> $this_array */
   private array $this_array = array(); // Unset after using to avoid pointer loop that makes garbage collection harder
 
   function __construct() {
@@ -57,7 +57,7 @@ final class Template {
 
   public function parse_text(string $text) : void {
     set_time_limit(120);
-    /** @psalm-suppress RedundantPropertyInitializationCheck */
+    /* @psalm-suppress RedundantPropertyInitializationCheck */
     if (isset($this->rawtext)) {
         report_error("Template already initialized"); // @codeCoverageIgnore
     }
@@ -618,7 +618,7 @@ final class Template {
 
   public function api_has_used(string $api, array $param) : bool {
     if (!isset($this->used_by_api[$api])) report_error("Invalid API: $api");
-    /** @psalm-suppress all */
+    /* @psalm-suppress all */
     return (bool) count(array_intersect($param, $this->used_by_api[$api]));
   }
 
@@ -719,9 +719,7 @@ final class Template {
     ));
   }
 
-  /**
-  * @param string[]|string $param
-  */
+  /* @param string[]|string $param */
   public function blank($param) : bool { // Accepts arrays of strings and string
     if (!$param) report_error('NULL passed to blank()');
     if (empty($this->param)) return TRUE;
@@ -731,9 +729,7 @@ final class Template {
     }
     return TRUE;
   }
-  /**
-  * @param string[]|string $param
-  */
+  /* @param string[]|string $param */
   public function blank_other_than_comments($param) : bool { // Accepts arrays of strings and string
     if (!$param) report_error('NULL passed to blank_other_than_comments()');
     if (empty($this->param)) return TRUE;
@@ -755,10 +751,9 @@ final class Template {
   }
 
   /*
-   * Adds a parameter to a template if the parameter and its equivalents are blank
-   * $api (string) specifies the API route by which a parameter was found; this will log the
+   * Adds a parameter if the parameter and its equivalents are blank
+   * $api specifies the API route by which a parameter was found; this will log the
    *      parameter so it is not used to trigger a new search via the same API.
-   *
    */
   public function add_if_new(string $param_name, string $value, string $api = '') : bool {
     // Clean up weird stuff from CrossRef etc.
@@ -798,8 +793,7 @@ final class Template {
     if (array_key_exists($param_name, COMMON_MISTAKES_TOOL)) {
         $param_name = COMMON_MISTAKES_TOOL[$param_name];
     }
-    /** @psalm-assert string $param_name */
-
+    /* @psalm-assert string $param_name */
     if ($api) $this->record_api_usage($api, $param_name);
 
     // If we already have name parameters for author, don't add more
@@ -1887,15 +1881,13 @@ final class Template {
     }
   }
 
-  /** @return array{0: string, 1: int, 2: array} */
+  /* @return array{0: string, 1: int, 2: array} */
   protected function query_pubmed() : array {
 /*
- *
- * Performs a search based on article data, using the DOI preferentially, and failing that, the rest of the article details.
+ * Search based on article data (preferentially the DOI) and failing that, the rest of the article details
  * Returns an array:
  *   [0] => PMID of first matching result
  *   [1] => total number of results
- *
  */
     if (ZOTERO_ONLY) {
       return array('', 0, array());   // @codeCoverageIgnore
@@ -1924,13 +1916,11 @@ final class Template {
     return array('', 0, array());
   }
 
-  /** @param array<string> $terms */  /** @return array{0: string, 1: int, 2: array} */
+  /* @param array<string> $terms */  /* @return array{0: string, 1: int, 2: array} */
   protected function do_pumbed_query(array $terms) : array {
     set_time_limit(120);
-  /* do_query
-   *
-   * Searches pubmed based on terms provided in an array.
-   * Provide an array of wikipedia parameters which exist in $p, and this will construct a Pubmed search query and
+  /* 
+   * Searches pubmed based on terms provided
    * return the results as array (first result, # of results)
    */
     $key_index = array(
@@ -2412,7 +2402,7 @@ final class Template {
            ) return; // do not add url if have OA already.  Do indlude preprints in list
     if ($this->has('s2cid') || $this->has('S2CID')) return;
     $context = stream_context_create(CONTEXT_S2);
-    /** @psalm-taint-escape file */
+    /* @psalm-taint-escape file */
     $doi = doi_encode(urldecode($doi));
     $response = (string) @file_get_contents('https://api.semanticscholar.org/v1/paper/' . $doi, FALSE, $context);
     if ($response) {
@@ -2561,7 +2551,7 @@ final class Template {
         $this->add_if_new($url_type, $oa_url);  // Will check for PMCs etc hidden in URL
         if ($this->has($url_type) && !$has_url_already) {  // The above line might have eaten the URL and upgraded it
           $context = stream_context_create(CONTEXT_INSECURE);
-          /** @psalm-taint-escape ssrf */
+          /* @psalm-taint-escape ssrf */
           $the_url = $this->get($url_type);
           $headers_test = @get_headers($the_url, GET_THE_HEADERS, $context);
           // @codeCoverageIgnoreStart
@@ -2571,7 +2561,7 @@ final class Template {
             return 'nothing';
           }
           // @codeCoverageIgnoreEnd
-          /** @psalm-suppress InvalidArrayOffset */
+          /* @psalm-suppress InvalidArrayOffset */
           $response_code = intval(substr((string) $headers_test['0'], 9, 3));
           // @codeCoverageIgnoreStart
           if($response_code > 400) {  // Generally 400 and below are okay, includes redirects too though
@@ -2836,7 +2826,7 @@ final class Template {
 
     for ($i = 0; $i < $n_dup_params; $i++) {
       $the_dup = $duplicated_parameters[$i];
-      /** @psalm-suppress InvalidArrayOffset */
+      /* @psalm-suppress InvalidArrayOffset */
       $is_same = $duplicate_identical[$i];
       if ($is_same) {
         report_forget("Deleting identical duplicate of parameter: " .
@@ -3508,7 +3498,7 @@ final class Template {
        // Remove misleading stuff -- comments of "NONE" etc mean nothing!
        // Cannot call forget, since it will not remove items with comments in it
        $key = $this->get_param_key('postscript');
-       /** @psalm-suppress PossiblyNullArrayOffset */
+       /* @psalm-suppress PossiblyNullArrayOffset */
        unset($this->param[$key]); // Key cannot be NULL because of get() call above
        report_forget('Dropping postscript that is only a comment');
        return;
@@ -3887,7 +3877,7 @@ final class Template {
           if (substr($doi, 0, 8) === '10.5555/') { // Test DOI prefix.  NEVER will work
             $this->forget('doi');
             if ($this->blank('url')) {
-              /** @psalm-taint-escape ssrf */
+              /* @psalm-taint-escape ssrf */
               $test_url = 'https://plants.jstor.org/stable/' . $doi;
               $ch = curl_init($test_url);
               curl_setopt_array($ch,
@@ -6823,10 +6813,9 @@ final class Template {
     }
   }
 
-  /* function handle_et_al
+  /*
    * To preserve user-input data, this function will only be called
-   * if no author parameters were specified at the start of the
-   * expansion process.
+   * if no author parameters were initially specified
   */
   public function handle_et_al() : void {
     foreach (AUTHOR_PARAMETERS as $author_cardinality => $group) {
@@ -6859,10 +6848,6 @@ final class Template {
     }
   }
 
-/********************************************************
- *   Functions to retrieve values that may be specified
- *   in various ways
- ********************************************************/
   protected function display_authors() : int {
     if (($da = $this->get('display-authors')) === '') {
       $da = $this->get('displayauthors');
@@ -6887,7 +6872,6 @@ final class Template {
     return $max;
   }
 
-  // Retrieve properties of template
   public function first_author() : string {
     foreach (array('author', 'author1', 'authors', 'vauthors') as $auth_param) {
       $author = $this->get($auth_param);
@@ -6949,7 +6933,6 @@ final class Template {
     return $pagenos;
   }
 
-  // Amend parameters
   public function rename(string $old_param, string $new_param, ?string $new_value = NULL) : void {
     if (empty($this->param)) return;
     if ($old_param === $new_param) {
@@ -7615,7 +7598,7 @@ final class Template {
     // @codeCoverageIgnoreEnd
     if ($issn === '9999-9999') return FALSE; // Fake test suite data
     if (!preg_match('~^\d{4}.?\d{3}[0-9xX]$~u', $issn)) return FALSE;
-    /** TODO - this API is gone **/
+    /* TODO - this API is gone */
     return FALSE;
   }
 
