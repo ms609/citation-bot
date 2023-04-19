@@ -7327,6 +7327,7 @@ final class Template {
     $isbn10 = trim($isbn10);  // Remove leading and trailing spaces
     $test = str_replace(array('—', '?', '–', '-', '?', ' '), '', $isbn10);
     if (strlen($test) < 10 || strlen ($test) > 13) return $isbn10;
+     $isbn10 = str_replace('x', 'X', $isbn10);
     if (preg_match("~^[0-9Xx ]+$~", $isbn10) === 1) { // Uses spaces
       $isbn10 = str_replace(' ', '-', $isbn10);
     }
