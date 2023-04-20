@@ -877,7 +877,8 @@ function tidy_date(string $string) : string {
   $string=trim($string);
   if (stripos($string, 'Invalid') !== FALSE) return '';
   if (strpos($string, '1/1/0001') !== FALSE) return '';
-  if (!preg_match('~\d{2}~', $string)) return ''; // If there are not two numbers next to each other, reject
+  if (!preg_match('~\d{2}~', $string)) return ''; // Not two numbers next to each other
+  if (preg_match('~^\d{2}\-\-$~', $string)) return '';
   // Google sends ranges
   if (preg_match('~^(\d{4})(\-\d{2}\-\d{2})\s+\-\s+(\d{4})(\-\d{2}\-\d{2})$~', $string, $matches)) { // Date range
      if ($matches[1] === $matches[3]) {
