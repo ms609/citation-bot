@@ -10,7 +10,6 @@ parameters:
 		- BIG_JOB_MODE
 		- MAX_TRIES
 		- MAX_PAGES
-		- BIG_RUN
 		- WIKI_ROOT
 		- API_ROOT
 		- BOT_USER_AGENT
