@@ -449,6 +449,10 @@ try {
     return !TRAVIS && isset(self::$last_WikipediaBot) && self::$last_WikipediaBot->get_the_user() === 'AManWithNoPlan';
   }
   
+  static public function GetLastUser() : string {
+    return self::$last_WikipediaBot->get_the_user();
+  }
+  
 /**
  * Human interaction needed
  * @codeCoverageIgnore
