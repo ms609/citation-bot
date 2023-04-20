@@ -12,12 +12,13 @@ function big_jobs_check_overused(int $page_count) : void {
  if (!WikipediaBot::NonStandardMode()) return; // TOTO - enable for everyone
  if ($page_count < 50) return; // Used to be BIG_RUN constant
  $fn = big_jobs_name();
- $big_jobs_lock_file = fopen($fn, 'w+');
- if ($big_jobs_lock_file === FALSE) {
-   echo '</pre><div style="text-align:center"><h1>Run blocked by your existing big run.</h1>' . str_replace('user_locks/','', $big_jobs_lock_file) . '</div><footer><a href="./" title="Use Citation Bot again">Another</a>?</footer></body></html>';
+ $lock_file = fopen($fn, 'w+');
+ if ($lock_file === FALSE) {
+   echo '</pre><div style="text-align:center"><h1>Run blocked by your existing big run.</h1>' . str_replace('user_locks/','', $fn) . '</div><footer><a href="./" title="Use Citation Bot again">Another</a>?</footer></body></html>';
    exit();
  } else {
-   unlink ($fn);
+   $big_jobs_lock_file = $lock_file; // Force file handle to stay open
+   unlink ($fn);  // We now have a lock file that will magically go away when code dies/quits
  }
 }
 
