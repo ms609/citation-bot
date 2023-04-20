@@ -9,8 +9,8 @@ function big_jobs_name() : string {
 
 function big_jobs_check_overused(int $page_count) : void {
  if (!HTML_OUTPUT) return;
- if (!WikipediaBot::NonStandardMode()) return FALSE; // TOTO - enable for everyone
- if ($page_count > 50) return; // Used to be BIG_RUN constant
+ if (!WikipediaBot::NonStandardMode()) return; // TOTO - enable for everyone
+ if ($page_count < 50) return; // Used to be BIG_RUN constant
  $fn = big_jobs_name();
  $big_jobs_lock_file = fopen($fn, 'w+');
  if ($big_jobs_lock_file === FALSE) {
