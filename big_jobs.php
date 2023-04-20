@@ -30,7 +30,7 @@ function big_jobs_check_killed() : void {
 }
 
 function big_jobs_exists() : bool {
- if (!HTML_OUTPUT) return;
+ if (!HTML_OUTPUT) return FALSE;
  $fn = big_jobs_name();
  $file = fopen($fn, 'w+');
  if ($file === FALSE) {
