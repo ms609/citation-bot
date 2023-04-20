@@ -3,6 +3,7 @@ declare(strict_types=1);
 
 require_once 'constants.php';     // @codeCoverageIgnore
 require_once 'Template.php';      // @codeCoverageIgnore
+require_once 'big_jobs.php';      // @codeCoverageIgnore
 
 // ============================================= DOI functions ======================================
 function doi_active(string $doi) : ?bool {
@@ -1140,13 +1141,13 @@ function edit_a_list_of_pages(array $pages_in_category, WikipediaBot $api, strin
     bot_html_footer();
     exit();
   }
-  if ($total > BIG_RUN) check_overused();
+  big_jobs_check_overused($total);
 
   $page = new Page();
   $done = 0;
 
   foreach ($pages_in_category as $page_title) {
-    check_killed();
+    big_jobs_check_killed();
     $done++;
     if ($page->get_text_from($page_title) && $page->expand_text()) {
       report_phase("Writing to " . echoable($page_title) . '... ');
