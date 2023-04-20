@@ -42,7 +42,7 @@ function big_jobs_exists() : bool {
  }
 }
 
-big_jobs_kill() : void {
+function big_jobs_kill() : void {
  $fn = big_jobs_name() . '_kill_job';
  $file = fopen($fn, 'w+');
  fclose($file);
