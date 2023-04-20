@@ -3,6 +3,7 @@ declare(strict_types=1);
 
 require_once 'constants.php';     // @codeCoverageIgnore
 require_once 'Template.php';      // @codeCoverageIgnore
+require_once 'big_jobs.php';      // @codeCoverageIgnore
 
 // ============================================= DOI functions ======================================
 function doi_active(string $doi) : ?bool {
