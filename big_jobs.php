@@ -4,7 +4,7 @@ static $big_jobs_lock_file;
 
 function big_jobs_name() : string {
   $user = $_SESSION['citation_bot_user_id'];
-  return "user_locks/" . str_replace(["'", "="], '', base64_encode($user));
+  return realpath("./user_locks/" . str_replace(["'", "="], '', base64_encode($user)));
 }
 
 function big_jobs_we_died() : void {
