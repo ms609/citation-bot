@@ -1,8 +1,7 @@
 <?php
 declare(strict_types=1);
 set_time_limit(120);
-$started = @session_start();
-@setcookie(session_name(),session_id(),time()+(7*24*3600)); // since we do not call WikipediaBot().authenticate_user()
+@session_start(['read_and_close' => TRUE]);
 
 require_once 'html_headers.php';
 require_once 'big_jobs.php';
