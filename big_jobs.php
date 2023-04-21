@@ -8,7 +8,7 @@ function big_jobs_name() : string {
 }
 
 function big_jobs_we_died() : void {
-  if (BIG_JOB_MODE) @unlink(big_jobs_name();
+  if (BIG_JOB_MODE) @unlink(big_jobs_name());
 }
 
 function big_jobs_check_overused(int $page_count) : void {
