@@ -8,7 +8,7 @@ function big_jobs_name() : string {
 }
 
 function big_jobs_we_died() : void {
-  if (BIG_JOB_MODE) @unlink(big_jobs_name());
+  if (defined('BIG_JOB_MODE')) @unlink(big_jobs_name());
 }
 
 function big_jobs_check_overused(int $page_count) : void {
@@ -33,7 +33,7 @@ function big_jobs_check_overused(int $page_count) : void {
 
 function big_jobs_check_killed() : void {
  if (!HTML_OUTPUT) return;
- if (!BIG_JOB_MODE) return;
+ if (!defined('BIG_JOB_MODE')) return;
  $fn = big_jobs_name() . '_kill_job';
  clearstatcache();
  if (file_exists($fn)) {
