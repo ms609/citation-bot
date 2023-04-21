@@ -4,11 +4,11 @@ static $big_jobs_lock_file;
 
 function big_jobs_name() : string {
   $user = $_SESSION['citation_bot_user_id'];
-  return realpath("./user_locks/" . str_replace(["'", "="], '', base64_encode($user)));
+  return "./user_locks/" . str_replace(["'", "="], '', base64_encode($user));
 }
 
 function big_jobs_we_died() : void {
-  if (defined('BIG_JOB_MODE')) @unlink(big_jobs_name());
+  @unlink(big_jobs_name());
 }
 
 function big_jobs_check_overused(int $page_count) : void {
@@ -38,7 +38,8 @@ function big_jobs_check_killed() : void {
  clearstatcache();
  if (file_exists($fn)) {
    echo '</pre><div style="text-align:center"><h1>Run killed as requested.</h1></div><footer><a href="./" title="Use Citation Bot again">Another</a>?</footer></body></html>';
-   unlink($fn);
+   @unlink($fn);
+   @unlink(big_jobs_name());
    exit();
  }
  $fn = big_jobs_name();
