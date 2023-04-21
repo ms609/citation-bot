@@ -1,7 +1,7 @@
 <?php
 declare(strict_types=1);
 set_time_limit(120);
-@session_start(['read_and_close' => TRUE]);
+$started = @session_start(['read_and_close' => TRUE]);
 
 require_once 'html_headers.php';
 require_once 'big_jobs.php';
