@@ -8,6 +8,7 @@ function big_jobs_name() : string {
 }
 
 function big_jobs_we_died() : void {
+  @fclose($big_jobs_lock_file);
   @unlink(big_jobs_name());
 }
 
