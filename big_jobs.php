@@ -48,6 +48,7 @@ function big_jobs_check_killed() : void {
 }
 
 function big_jobs_exists() : bool {
+ clearstatcache();
  return file_exists(big_jobs_name());
 }
 
