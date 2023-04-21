@@ -48,7 +48,6 @@ function big_jobs_check_killed() : void {
 }
 
 function big_jobs_exists() : bool {
- if (!HTML_OUTPUT) return FALSE;
  return file_exists(big_jobs_name());
 }
 
