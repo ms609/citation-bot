@@ -1,0 +1,2 @@
+inputs:
+    false_positives: "./progpilot.json"
