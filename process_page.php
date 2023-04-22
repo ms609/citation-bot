@@ -20,10 +20,8 @@ check_blocked();
 
 if (isset($argv[1])) {
   $pages = $argv[1];
-  if ($pages === 'page_list.txt') {
-    $pages = trim((string) @file_get_contents('./page_list.txt'));
-  } elseif ($pages === 'page_list2.txt') {
-    $pages = trim((string) @file_get_contents('./page_list2.txt'));
+  if (preg_match('~^page_list\d*\.txt$~', $pages)) {
+     $pages = trim((string) @file_get_contents('./' . $pages));
   }
 } elseif (isset($_GET["page"])) {
   $pages = $_GET["page"];
