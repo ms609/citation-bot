@@ -204,7 +204,7 @@ final class apiFunctionsTest extends testBaseClass {
   public function testExpansion_doi_not_from_crossref_eidr_Black_Panther_Movie() : void {
      $expanded = $this->make_citation('{{Cite journal}}');
      expand_doi_with_dx($expanded, '10.5240/7B2F-ED76-31F6-8CFB-4DB9-M');
-     $this->assertSame('{{Cite journal| last1=Coogler | first1=Ryan | title=Black Panther }}', $expanded->parsed_text());
+     $this->assertSame('{{Cite journal| year=2018 | last1=Coogler | first1=Ryan | title=Black Panther }}', $expanded->parsed_text());
   }
  
   // http://www.kisti.re.kr/eng/
