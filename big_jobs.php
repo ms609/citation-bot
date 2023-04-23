@@ -12,7 +12,6 @@ function big_jobs_we_died() : void {
 function big_jobs_check_overused(int $page_count) : void {
  static $lock_file; // Force file handle to stay open
  if (!HTML_OUTPUT) return;
- if (!WikipediaBot::NonStandardMode()) return; // TOTO - enable for everyone
  if ($page_count < 50) return; // Used to be BIG_RUN constant
  $fn = big_jobs_name();
  clearstatcache();
