@@ -179,7 +179,7 @@ final class PageTest extends testBaseClass {
          $this->assertFalse($page->write($api));
       }
       $page->get_text_from($writeTestPage);
-      $this->assertTrue(strpos($page->parsed_text(), 'Nature') > 5);
+      $this->assertTrue(strpos($page->parsed_text(), 'Nature') > 5); // This can fail, if the page gets edited and is no longer {{Cite journal | doi = 10.1038/nature09068 | title=Bot Testing | year=2010 | pmid=20505727 | last1=Smith | first1=M. R. | last2=Caron | first2=J. B. | journal=Nature | volume=465 | issue=7297 | pages=469–472 | hdl=1807/32368 | s2cid=4421029 }}
   }
  
   public function testNobots() : void {
