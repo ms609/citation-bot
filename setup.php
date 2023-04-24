@@ -12,7 +12,7 @@ if (file_exists('git_pull.lock')) {
  */
 
 function bot_debug_log(string $log_this) : void {
-  file_put_contents('CodeCoverage', echoable(Page::get_last_page_name()) . " :: $log_this\n", FILE_APPEND);
+  file_put_contents('CodeCoverage', echoable(Page::$last_title) . " :: $log_this\n", FILE_APPEND);
 }
 
 if (isset($_REQUEST["wiki_base"])){
