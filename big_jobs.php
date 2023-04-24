@@ -5,7 +5,8 @@ function big_jobs_name() : string {
   return "./user_locks/" . str_replace(["'", "="], '', base64_encode($user));
 }
 
-function big_jobs_we_died() : void {
+function big_jobs_we_died(resource $lock_file) : void {
+  @fclose($lock_file);
   @unlink(big_jobs_name());
 }
 
@@ -24,7 +25,7 @@ function big_jobs_check_overused(int $page_count) : void {
    exit();
  } else {
    define('BIG_JOB_MODE', 'YES');
-   register_shutdown_function('big_jobs_we_died'); // We now have a lock file that will magically go away when code dies/quits
+   register_shutdown_function('big_jobs_we_died', $lock_file); // We now have a lock file that will magically go away when code dies/quits
  }
 }
 
