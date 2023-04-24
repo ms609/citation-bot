@@ -29,7 +29,7 @@ class Page {
   protected static string $last_title = '';
 
   function __construct() {
-      /** @psalm-suppress UnusedVariable **/
+      /** @psalm-suppress UnusedVariable */
       self::$last_title = &$this->title; // pointer
       $this->construct_modifications_array();
       if (!self::$told_fast) {
