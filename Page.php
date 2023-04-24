@@ -26,20 +26,14 @@ class Page {
   protected int $lastrevid = 0;
   protected bool $page_error = FALSE;
   protected static bool $told_fast = FALSE;
-  private   static string $_last_title = '';
+  public    static string $last_title = '';
 
   function __construct() {
-      /** @psalm-suppress UnusedVariable */
-      self::$_last_title = &$this->title; // pointer
       $this->construct_modifications_array();
       if (!self::$told_fast) {
          if (!SLOW_MODE) report_info("Will skip the search for new bibcodes and the expanding of URLS in non-slow mode");
          self::$told_fast = TRUE;
       }
-  }
-  
-  public static function get_last_page_name() : string {
-      return self::$_last_title;
   }
 
   public function get_text_from(string $title) : bool {
@@ -99,6 +93,7 @@ class Page {
     }
 
     $this->title = (string) $details->title;
+    self::$last_title = $this->title;
     $this->lastrevid = (int) $details->lastrevid ;
 
     $this->text = WikipediaBot::GetAPage($title);
@@ -129,6 +124,7 @@ class Page {
     $this->start_text = $this->text;
     $this->set_date_pattern();
     $this->title = '';
+    self::$last_title = '';
     $this->read_at = '';
     $this->lastrevid = 0;
   }
@@ -822,6 +818,7 @@ final class TestPage extends Page {
     $trace = debug_backtrace();
     $name = $trace[2]['function'];
     $this->title = empty($name) ? 'Test Page' : $name;
+    self::$last_title = $this->title;
     parent::__construct();
   }
   
