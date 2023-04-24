@@ -26,7 +26,7 @@ class Page {
   protected int $lastrevid = 0;
   protected bool $page_error = FALSE;
   protected static bool $told_fast = FALSE;
-  protected static string $_last_title = '';
+  private   static string $_last_title = '';
 
   function __construct() {
       self::$_last_title = &$this->title; // pointer
