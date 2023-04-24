@@ -26,7 +26,7 @@ class Page {
   protected int $lastrevid = 0;
   protected bool $page_error = FALSE;
   protected static bool $told_fast = FALSE;
-  protected static string last_title = &$this->title; // pointer
+  protected static string $last_title = &$this->title; // pointer
 
   function __construct() { 
       $this->construct_modifications_array();
