@@ -26,11 +26,10 @@ class Page {
   protected int $lastrevid = 0;
   protected bool $page_error = FALSE;
   protected static bool $told_fast = FALSE;
-  protected static string $last_title = '';
+  protected static string $_last_title = '';
 
   function __construct() {
-      /** @psalm-suppress UnusedVariable */
-      self::$last_title = &$this->title; // pointer
+      self::$_last_title = &$this->title; // pointer
       $this->construct_modifications_array();
       if (!self::$told_fast) {
          if (!SLOW_MODE) report_info("Will skip the search for new bibcodes and the expanding of URLS in non-slow mode");
@@ -39,7 +38,7 @@ class Page {
   }
   
   public static function get_last_page_name() : string {
-      return self::$last_title;
+      return self::$_last_title;
   }
 
   public function get_text_from(string $title) : bool {
