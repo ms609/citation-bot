@@ -786,6 +786,10 @@ final class Template {
       return FALSE;
     }
 
+    if (str_i_same($value, '0 0')) {
+      return FALSE;
+    }
+
     if (mb_stripos($this->get($param_name), 'CITATION_BOT_PLACEHOLDER_COMMENT') !== FALSE) {
       return FALSE;  // We let comments block the bot
     }
