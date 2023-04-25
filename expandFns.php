@@ -3,6 +3,7 @@ declare(strict_types=1);
 
 require_once 'constants.php';     // @codeCoverageIgnore
 require_once 'Template.php';      // @codeCoverageIgnore
+require_once 'big_jobs.php';      // @codeCoverageIgnore
 
 // ============================================= DOI functions ======================================
 function doi_active(string $doi) : ?bool {
@@ -48,7 +49,7 @@ function doi_works(string $doi) : ?bool {
   if (count($cache_good) > 100000) $cache_good = [];
   $works = is_doi_works($doi);
   if ($works === NULL) {
-    // file_put_contents('CodeCoverage', $doi . " returns NULL from dx.doi.org \n", FILE_APPEND);
+    // bot_debug_log($doi . " returns NULL from dx.doi.org");
     return NULL; // @codeCoverageIgnore
   }
   if ($works === FALSE) {
@@ -877,7 +878,8 @@ function tidy_date(string $string) : string {
   $string=trim($string);
   if (stripos($string, 'Invalid') !== FALSE) return '';
   if (strpos($string, '1/1/0001') !== FALSE) return '';
-  if (!preg_match('~\d{2}~', $string)) return ''; // If there are not two numbers next to each other, reject
+  if (!preg_match('~\d{2}~', $string)) return ''; // Not two numbers next to each other
+  if (preg_match('~^\d{2}\-\-$~', $string)) return '';
   // Google sends ranges
   if (preg_match('~^(\d{4})(\-\d{2}\-\d{2})\s+\-\s+(\d{4})(\-\d{2}\-\d{2})$~', $string, $matches)) { // Date range
      if ($matches[1] === $matches[3]) {
@@ -1139,13 +1141,13 @@ function edit_a_list_of_pages(array $pages_in_category, WikipediaBot $api, strin
     bot_html_footer();
     exit();
   }
-  if ($total > BIG_RUN) check_overused();
+  big_jobs_check_overused($total);
 
   $page = new Page();
   $done = 0;
 
   foreach ($pages_in_category as $page_title) {
-    check_killed();
+    big_jobs_check_killed();
     $done++;
     if ($page->get_text_from($page_title) && $page->expand_text()) {
       report_phase("Writing to " . echoable($page_title) . '... ');
@@ -1363,7 +1365,7 @@ function smart_decode(string $title, string $encode, string $archive_url) : stri
     $try = (string) @mb_convert_encoding($title, "UTF-8", $encode);
   }
   if ($try == "") {
-    file_put_contents('CodeCoverage', 'Bad Encoding: ' . $encode . ' for ' . echoable($archive_url) . "\n", FILE_APPEND); // @codeCoverageIgnore
+    bot_debug_log('Bad Encoding: ' . $encode . ' for ' . echoable($archive_url)); // @codeCoverageIgnore
   }
   return $try;
 }
@@ -1418,7 +1420,7 @@ function normalize_google_books(string &$url, int &$removed_redundant, string &$
           default:
             if ($removed_redundant !== 0) {
               $removed_parts .= $part; // http://blah-blah is first parameter and it is not actually dropped
-              file_put_contents('CodeCoverage', "\n Unexpected dropping from Google Books " . $part . "\n", FILE_APPEND);
+              bot_debug_log("Unexpected dropping from Google Books " . $part);
             }
             $removed_redundant++;
         }
