@@ -179,7 +179,7 @@ final class PageTest extends testBaseClass {
          $this->assertFalse($page->write($api));
       }
       $page->get_text_from($writeTestPage);
-      $this->assertTrue(strpos($page->parsed_text(), 'Nature') > 5);
+      $this->assertTrue(strpos($page->parsed_text(), 'Nature') > 5); // This can fail, if the page gets edited and is no longer {{Cite journal | doi = 10.1038/nature09068 | title=Bot Testing | year=2010 | pmid=20505727 | last1=Smith | first1=M. R. | last2=Caron | first2=J. B. | journal=Nature | volume=465 | issue=7297 | pages=469–472 | hdl=1807/32368 | s2cid=4421029 }}
   }
  
   public function testNobots() : void {
@@ -345,7 +345,7 @@ final class PageTest extends testBaseClass {
   public function testNobots4() : void {
       $text = '{{cite thesis|url=https://mathscinet.ams.org/mathscinet-getitem?mr=1234}}{{bots|allow=Citation Bot}}';
       $page = $this->process_page($text);
-      $this->assertSame('{{cite thesis|url=https://mathscinet.ams.org/mathscinet-getitem?mr=1234| mr=1234 }}{{bots|allow=Citation Bot}}', $page->parsed_text());
+      $this->assertSame('{{cite thesis|url=https://mathscinet.ams.org/mathscinet-getitem?mr=1234 | mr=1234 }}{{bots|allow=Citation Bot}}', $page->parsed_text());
       $text = '{{cite thesis|url=https://mathscinet.ams.org/mathscinet-getitem?mr=1234}}{{bots|allow=none}}';
       $page = $this->process_page($text);
       $this->assertSame($text, $page->parsed_text());
