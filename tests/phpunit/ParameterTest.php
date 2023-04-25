@@ -100,7 +100,7 @@ final class ParameterTest extends testBaseClass {
     $template = $this->make_citation($text);
     $this->assertSame('{{cite web|cnn}}', $template->parsed_text());
     $template->set('cnn', 'joker');
-    $this->assertSame('{{cite web|cnn| cnn=joker }}', $template->parsed_text());
+    $this->assertSame('{{cite web|cnn | cnn=joker }}', $template->parsed_text());
   }
 
   public function testBlankValueNonBreakingSpaces() : void {   //These are non-breaking spaces
@@ -159,7 +159,7 @@ final class ParameterTest extends testBaseClass {
     $this->assertSame('{{citation|format=Joe}}', $template->parsed_text());
   }
   
-  public function testOddSpaces() : void { // TODO
+  public function testOddSpaces() : void {
     $text = "{{Infobox settlement\n| image_skyline            = \n \n| image_caption            = \n}}";
     $template = $this->process_citation($text);
     $this->assertSame($text, $template->parsed_text());

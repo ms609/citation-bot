@@ -26,8 +26,9 @@ class Page {
   protected int $lastrevid = 0;
   protected bool $page_error = FALSE;
   protected static bool $told_fast = FALSE;
+  public    static string $last_title = '';
 
-  function __construct() {asdffaasdf
+  function __construct() {
       $this->construct_modifications_array();
       if (!self::$told_fast) {
          if (!SLOW_MODE) report_info("Will skip the search for new bibcodes and the expanding of URLS in non-slow mode");
@@ -92,6 +93,7 @@ class Page {
     }
 
     $this->title = (string) $details->title;
+    self::$last_title = $this->title;
     $this->lastrevid = (int) $details->lastrevid ;
 
     $this->text = WikipediaBot::GetAPage($title);
@@ -104,14 +106,14 @@ class Page {
     $this->set_date_pattern();
 
     if (preg_match('~\#redirect *\[\[~i', $this->text)) {
-      report_warning("Page is a redirect.");
+      report_warning("Page is a redirect."); // @codeCoverageIgnoreStart
       if (strlen($this->text) > 2000) {
         $test_text = preg_replace("~\[\[Category\:[^\]\{\}\[]+\]\]~", "", $this->text);
         if (strlen($test_text) > 1500) {
-           file_put_contents('CodeCoverage', $this->title . " is probably not a redirect. \n", FILE_APPEND);
+           bot_debug_log($this->title . " is probably not a redirect");
         }
       }
-      return FALSE;
+      return FALSE; // @codeCoverageIgnoreEnd
     }
     return TRUE;
   }
@@ -122,6 +124,7 @@ class Page {
     $this->start_text = $this->text;
     $this->set_date_pattern();
     $this->title = '';
+    self::$last_title = '';
     $this->read_at = '';
     $this->lastrevid = 0;
   }
@@ -275,7 +278,7 @@ class Page {
     set_time_limit(120);
     if ($this->page_error) {
       $this->text = $this->start_text;
-      if ($this->title !== "") file_put_contents('CodeCoverage', $this->title . " page failed \n", FILE_APPEND);
+      if ($this->title !== "") bot_debug_log($this->title . " page failed");
       return FALSE;
     }
     Template::$all_templates = &$all_templates; // Pointer to save memory
@@ -447,7 +450,7 @@ class Page {
       }
     }
     if ($log_bad_chapter) { // We can fix these and find these fast
-      file_put_contents('CodeCoverage', $this->title . " page has ignored chapter \n", FILE_APPEND); // @codeCoverageIgnore
+      bot_debug_log($this->title . " page has ignored chapter"); // @codeCoverageIgnore
     }  
           
     foreach ($our_templates_slight as $this_template) {
@@ -493,7 +496,7 @@ class Page {
     
     if (stripos($this->text, 'CITATION_BOT_PLACEHOLDER') !== FALSE) {
       $this->text = $this->start_text;                                  // @codeCoverageIgnore
-      if ($this->title !== "") file_put_contents('CodeCoverage', $this->title . " page failed \n", FILE_APPEND); // @codeCoverageIgnore
+      if ($this->title !== "") bot_debug_log($this->title . " page failed"); // @codeCoverageIgnore
       report_error('CITATION_BOT_PLACEHOLDER found after processing');  // @codeCoverageIgnore
     }
 
@@ -586,7 +589,7 @@ class Page {
     if (count($this->modifications["deletions"]) !== 0 && count($this->modifications["additions"]) !== 0 && $this->modifications["names"]) {
       $auto_summary .= 'Some additions/deletions were parameter name changes. ';
     }
-    $isbn978_added = substr_count($this->text, '978-') - substr_count($this->start_text, '978-');
+    $isbn978_added = (substr_count($this->text, '978 ') + substr_count($this->text, '978-')) - (substr_count($this->start_text, '978 ') + substr_count($this->start_text, '978-'));
     $isbn_added = (substr_count($this->text, 'isbn') + substr_count($this->text, 'ISBN')) -
                   (substr_count($this->start_text, 'isbn') + substr_count($this->start_text, 'ISBN'));
     if (($isbn978_added > 0) && ($isbn978_added > $isbn_added)) { // Still will get false positives for isbn=blank converted to isbn=978......
@@ -815,6 +818,7 @@ final class TestPage extends Page {
     $trace = debug_backtrace();
     $name = $trace[2]['function'];
     $this->title = empty($name) ? 'Test Page' : $name;
+    self::$last_title = $this->title;
     parent::__construct();
   }
   

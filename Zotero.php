@@ -431,9 +431,9 @@ public static function expand_by_zotero(Template $template, ?string $url = NULL)
   $return = self::process_zotero_response($zotero_response, $template, $url, $url_kind, $access_date);
   /**
   if ($return) {
-     file_put_contents('ZoteroWorked', $url . "\n", FILE_APPEND);
+     bot_debug_log('ZoteroWorked: ' . $url);
   } else {
-     file_put_contents('ZoteroFailed', $url . "\n", FILE_APPEND);
+     bot_debug_log('ZoteroFailed: ' . $url);
   }
   **/
   return $return;
@@ -1446,7 +1446,7 @@ public static function find_indentifiers_in_urls(Template $template, ?string $ur
               curl_setopt_array(self::$ch_pmc, [CURLOPT_URL => $test_url]);
               @curl_exec(self::$ch_pmc);
               $httpCode = (int) @curl_getinfo(self::$ch_pmc, CURLINFO_HTTP_CODE);
-              if ($httpCode === 404) { // Some PMCs do NOT resolve.  So leave URL
+              if ($httpCode > 399 || ($httpCode === 0)) { // Some PMCs do NOT resolve.  So leave URL
                 return $template->add_if_new('pmc', $new_pmc);
               }
             }

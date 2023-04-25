@@ -806,7 +806,7 @@ const ARE_MAGAZINES = array('the new yorker', 'the new republic', 'new republic'
                            'nintendo power', 'playthings', 'entertainment weekly', 'official xbox magazine',
                            'electronic gaming monthly', 'official u.s. playstation magazine',
                            'playstation: the official magazine', 'play and silicon mag', 'games radar', 'hyper',
-                           'famitsu', 'gamepro', 'yachting world', 'kalki',
+                           'famitsu', 'gamepro', 'yachting world', 'kalki', 'sports illustrated',
                            ); // lowercase axact matches
 const ARE_MANY_THINGS = array('pc gamer', 'gamestar', 'rock paper shotgun', 'mcv', 'rock, paper, shotgun', 'edge',
                               'ballotpedia', 'npr', 'ballotpedia.org', 'npr.org', 'nih.gov', 'nih', 'eurogamer.it',
@@ -892,3 +892,23 @@ const JOURNAL_IS_BOOK_SERIES = array('methods of molecular biology' , 'methods m
                                      'studies in bilingualism', 'antibiotics and chemotherapy',
                                      'oceanic linguistics special publications',
                                      'progress in brain research');
+
+const ALWAYS_BAD_TITLES = array("Bloomberg - Are you a robot?", "Page not found",
+                     "Breaking News, Analysis, Politics, Blogs, News Photos, Video, Tech Reviews",
+                     "Breaking News, Analysis, Politics, Blogs, News Photos, Video, Tech Reviews - TIME.com",
+                     "Register &#124; British Newspaper Archive",
+                     "PressReader.com - Your favorite newspapers and magazines.",
+                     "PressReader.com - Your favorite newspapers and magazines",
+                     "PressReader.com - Connecting People Through News",
+                     "PressReader.com - Connecting People Through News.",
+                     "PressReader.com – Your favorite newspapers and magazines.",
+                     "PressReader.com – Your favorite newspapers and magazines",
+                     "PressReader.com – Connecting People Through News",
+                     "PressReader.com – Connecting People Through News.",
+                     "PressReader.com - Digital Newspaper & Magazine Subscriptions",
+                     "PressReader.com - Digital Newspaper & Magazine Subscriptions.",
+                     "PressReader.com – Digital Newspaper & Magazine Subscriptions",
+                     "Log In - ProQuest",
+                    );
+
+                    

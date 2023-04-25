@@ -49,6 +49,7 @@ function clean_up_last_names(string $value) : string {
   } else {
     $value = sanitize_string($value);
   }
+  $value = str_replace('..', '.', $value);
   return $value;
 }
 
@@ -300,11 +301,7 @@ function format_multiple_authors(string $authors) : string {
     }
   }
   if ($savedChunk) {
-    if (isset($bits[0])) {
-      $return[0] = $bits[0];
-    } else {
-      $return[0] = '';
-    }
+    $return[0] = (string) @$bits[0];
   }
   $return = implode("; ", $return);
   $frags = explode(" ", $return);

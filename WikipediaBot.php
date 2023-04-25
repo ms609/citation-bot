@@ -95,7 +95,7 @@ final class WikipediaBot {
       } elseif (strpos((string) @$response->error->info, 'The authorization headers in your request are not valid') !== FALSE) {
         report_error('There is something wrong with your Oauth tokens');  // @codeCoverageIgnore
       } else {
-        file_put_contents('CodeCoverage', html_entity_decode((string) @$response->error->info) . "\n", FILE_APPEND); // Good to know about about these things
+        bot_debug_log(html_entity_decode((string) @$response->error->info)); // Good to know about about these things
         report_warning('API call failed: ' . echoable((string) @$response->error->info) . '.  Will sleep and move on.');
       }
       sleep (10);
@@ -419,6 +419,7 @@ try {
   
   static public function is_valid_user(string $user) : bool {
     if (!$user) return FALSE;
+    // if (in_array($user, array())) return FALSE; // TODO - add bad actors as needed
     $query = [
          "action" => "query",
          "usprop" => "blockinfo",
@@ -445,6 +446,10 @@ try {
 
   static public function NonStandardMode() : bool {
     return !TRAVIS && isset(self::$last_WikipediaBot) && self::$last_WikipediaBot->get_the_user() === 'AManWithNoPlan';
+  }
+  
+  static public function GetLastUser() : string {
+    return self::$last_WikipediaBot->get_the_user();
   }
   
 /**
