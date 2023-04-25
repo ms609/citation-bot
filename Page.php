@@ -15,7 +15,7 @@ require_once 'expandFns.php';     // @codeCoverageIgnore
 require_once 'user_messages.php'; // @codeCoverageIgnore
 require_once 'Zotero.php';        // @codeCoverageIgnore
 require_once 'constants.php';     // @codeCoverageIgnore
-class Page {adfssdfasf
+class Page {
 
   protected string $text = '';
   protected string $title = '';
@@ -27,7 +27,7 @@ class Page {adfssdfasf
   protected bool $page_error = FALSE;
   protected static bool $told_fast = FALSE;
 
-  function __construct() { 
+  function __construct() {dafdfadsfa
       $this->construct_modifications_array();
       if (!self::$told_fast) {
          if (!SLOW_MODE) report_info("Will skip the search for new bibcodes and the expanding of URLS in non-slow mode");
