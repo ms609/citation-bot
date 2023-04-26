@@ -1224,6 +1224,7 @@ function bot_html_header() : void {
  */
 function bot_html_footer() : void {
    if (HTML_OUTPUT) echo '</pre><footer><a href="./" title="Use Citation Bot again">Another</a>?</footer></body></html>';
+   echo "\n";
 }
 
   /**
