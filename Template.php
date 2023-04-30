@@ -2541,6 +2541,7 @@ final class Template {
             ($this->has('ssrn') && stripos($oa_hostname, 'ssrn.com') !== FALSE) ||
             ($this->has('jstor') && stripos($oa_hostname, 'jstor.org') !== FALSE) ||
             ($this->has('pmid') && stripos($oa_hostname, 'nlm.nih.gov') !== FALSE) ||
+            ($this->has('jstor') && stripos($oa_hostname, 'jstor') !== FALSE) ||
             (stripos($oa_hostname, 'doi.org') !== FALSE)) {
           return 'have free';
        }
