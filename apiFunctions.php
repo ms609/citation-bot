@@ -88,6 +88,10 @@ function entrez_api(array $ids, array &$templates, string $db) : bool {   // Poi
   if (isset($xml->DocSum->Item) && count($xml->DocSum->Item) > 0) foreach($xml->DocSum as $document) {
    report_info("Found match for $db identifier " . $document->Id);
    foreach($ids as $template_key => $an_id) { // Cannot use array_search since that only returns first
+   if (!array_key_exists($template_key, $templates)) {
+       bot_debug_log('Key not found in entrez_api ' . (string) $template_key . ' ' . (string) $an_id);
+       $an_id = -3333; // Do not use this
+   } 
    if ($an_id == $document->Id) {
     $this_template = $get_template($template_key);
     $this_template->record_api_usage('entrez', $db === 'pubmed' ? 'pmid' : 'pmc');
