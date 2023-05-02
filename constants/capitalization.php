@@ -91,7 +91,7 @@ const JOURNAL_ACRONYMS = array(/* The following will be automatically updated to
           " Inside Higher Ed ", " iPhone ", " iScience ", " iScience ", " ISME ", " ISRN AIDS ", 
           " ISRN Genetics ", " J Gerontol A Biol Sci Med Sci ", " J Sch Nurs ", " J SIAM ", 
           " J. SIAM ", " JABS : Journal of Applied Biological Sciences ", " JAK-STAT ", 
-          " JAMA Psychiatry ", " JMIR ", " JNCI: Journal ", " Journal of e-Learning ", 
+          " JAMA Psychiatry ", " Jezik in slovstvo ", " JMIR ", " JNCI: Journal ", " Journal of e-Learning ", 
           " Journal of Materials Chemistry A ", " Journal of the A.I.E.E. ", " Journal of the IEST ", 
           " Journal sur ", " Jpn ", " Jpn. ", " Katorga i Ssylka ", " Keel ja ", " l'IHÉS ", 
           " l'IHÉS ", " l'IHÉS ", " l'IHÉS ", " L. Sch. L. ", " La Trobe ", " Latina/o ", " Le chemin de fer ", " Le chemin de fer ", " Le chemin de fer ",
@@ -162,7 +162,7 @@ const UCFIRST_JOURNAL_ACRONYMS = array(/* The following will be automatically up
           " Inside Higher ed ", " Iphone ", " IScience ", " Iscience ", " Isme ", " Isrn Aids ", 
           " Isrn Genetics ", " J Gerontol a Biol Sci Med Sci ", " J SCH Nurs ", " J Siam ", 
           " J. Siam ", " Jabs : Journal of Applied Biological Sciences ", " Jak-Stat ", 
-          " Jama Psychiatry ", " Jmir ", " Jnci: Journal ", " Journal of E-Learning ", 
+          " Jama Psychiatry ", " Jezik in Slovstvo ", " Jmir ", " Jnci: Journal ", " Journal of E-Learning ", 
           " Journal of Materials Chemistry A ", " Journal of the A.i.i.e ", " Journal of the Iest ", 
           " Journal Sur ", " JPN ", " JPN. ", " Katorga I Ssylka ", " Keel Ja ", " L'Ihés ", 
           " L'ihés ", " l'Ihés ", " l'ihés ", " L. SCH. L. ", " la Trobe ", " Latina/O ", " Le Chemin De Fer ", " Le Chemin de Fer ", " le Chemin de Fer ",
@@ -222,7 +222,7 @@ const OBVIOUS_FOREIGN_WORDS = array(" Abhandlungen ", " Actes ", " Annales ", " 
            " filmski ", " ljetopis ", " Saggiatore ", " musicale ", " artiste ", " Le Monde ",
            " univerzitet ", " Pravni ", " Fakultet ", " Gazeta ", " Caminhos ", " de Ferro ",
            " Jornal ", " comboios ", " Público ", " Revista ", " Olhar ", " Soudobé ", " dějiny ", " Maandblad ",
-           " geschiedenis ", " voor de ", " Tiede ", " ja ase ");
+           " geschiedenis ", " voor de ", " Tiede ", " ja ase ", " Jezik ", " slovstvo ");
 const MAP_DIACRITICS = array("À"=>"A", "Á"=>"A", "Â"=>"A", "Ã"=>"A",
     "Ä"=>"A", "Å"=>"A", "Æ"=>"AE", "Ç"=>"C", "È"=>"E", "É"=>"E",
     "Ê"=>"E", "Ë"=>"E", "Ì"=>"I", "Í"=>"I", "Î"=>"I", "Ï"=>"I",
