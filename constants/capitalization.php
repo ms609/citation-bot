@@ -127,7 +127,13 @@ const JOURNAL_ACRONYMS = array(/* The following will be automatically updated to
           " eScripta ", " eScripta ", " Arhiv za slovensku filologiju ", " u Krku za ", " Vjesnik Staroslavenske akademije ",
           " Glagoljski rukopisi ", 
           " Posebna izdanja ", " Bulletin za likovne umjetnosti Jugoslavenske akademije ", " e-Scripta ", " e-Scripta ", 
-          " Radovi za slovensku filologiju ",
+          " Radovi za slovensku filologiju ", " Danica ilirska ", " Vjesnik Staroslavenske akademije u Krku ", " Vjesnik Staroslavenske akademije u Krku ",
+          " Ricerche slavistiche ", " Croatia sacra ", " Krčki zbornik: godišnjak Povijesnog društva otoka Krka ",
+          " Krčki zbornik: godišnjak Povijesnog društva otoka Krka ", " Historická revue: vedecko-populárny časopis o dejinách ",
+          " Historická revue: vedecko-populárny časopis o dejinách ", " Zprávy o zasedání Král. čes. společnosti nauk v Praze ",
+          " Zprávy o zasedání Král. čes. společnosti nauk v Praze ", " Vjesnik kr. hrvatsko-slavonsko-dalmatinskoga Zemaljskog arhiva ",
+          " Vjesnik kr. hrvatsko-slavonsko-dalmatinskoga Zemaljskog arhiva ", " Acta medico-historica Adriatica ", " Acta medico-historica Adriatica ",
+          " Croatica Christiana periodica ", " Texte du Sacre ", " Radovi Staroslavenskog instituta ",
           " ZooKeys ", /* The above will be automatically updated to alphabetical order */ 
 );
 const UCFIRST_JOURNAL_ACRONYMS = array(/* The following will be automatically updated to alphabetical order */
@@ -205,7 +211,13 @@ const UCFIRST_JOURNAL_ACRONYMS = array(/* The following will be automatically up
           " Escripta ", " EScripta ", " Arhiv Za Slovensku Filologiju ", " U Krku Za ", " Vjesnik Staroslavenske Akademije ",
           " Glagoljski Rukopisi ", 
           " Posebna Izdanja ", " Bulletin Za Likovne Umjetnosti Jugoslavenske Akademije ", " E-Scripta ", " E-scripta ", 
-          " Radovi Za Slovensku Filologiju ",
+          " Radovi Za Slovensku Filologiju ", " Danica Ilirska ", " Vjesnik Staroslavenske akademije U Krku ", " Vjesnik Staroslavenske Akademije U Krku ",
+          " Ricerche Slavistiche ", " Croatia Sacra ", " Krčki Zbornik: Godišnjak Povijesnog Društva Otoka Krka ",
+          " Krčki zbornik: Godišnjak Povijesnog društva otoka Krka ", " Historická revue: Vedecko-populárny časopis o dejinách ",
+          " Historická Revue: Vedecko-Populárny časopis O Dejinách ", " Zprávy O Zasedání Král. čes. Společnosti Nauk V Praze ",
+          " Zprávy o zasedání Král. čes. Společnosti nauk v Praze ", " Vjesnik Kr. Hrvatsko-slavonsko-dalmatinskoga Zemaljskog Arhiva ",
+          " Vjesnik Kr. Hrvatsko-Slavonsko-Dalmatinskoga Zemaljskog Arhiva ", " Acta Medico-historica Adriatica ", " Acta Medico-Historica Adriatica ",
+          " Croatica Christiana Periodica ", " Texte Du Sacre ", " Radovi Staroslavenskog Instituta ",
           " Zookeys ", /* The above will be automatically updated to alphabetical order */ 
 );
 const OBVIOUS_FOREIGN_WORDS = array(" Abhandlungen ", " Actes ", " Annales ", " Archiv ", " Archives de ",
