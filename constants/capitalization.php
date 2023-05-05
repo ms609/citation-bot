@@ -121,7 +121,10 @@ const JOURNAL_ACRONYMS = array(/* The following will be automatically updated to
           " USGS ", " v Astronomicheskii Zhurna ", " van het ", " van het ", " voor de geschiedenis der Nederlanden ", 
           " voor de geschiedenis der Nederlanden ", " VTK/UCT ", " We Proceeded On ", " WRIR ", " z/Journal ", 
           " z/Journal ", " zbMATH ", " Zeitschrift für Geologische Wissenschaften ", " Zeitschrift für Physik A Hadrons and Nuclei ", 
-          " Zeitschrift für Physik A: Hadrons and Nuclei ", " Znanosti i Umjetnosti ", 
+          " Zeitschrift für Physik A: Hadrons and Nuclei ", " Znanosti i Umjetnosti ", " Radovi Staroslavenskog instituta ",
+          " Radovi Zavoda za povijesne znanosti HAZU u Zadru ", " Radovi Zavoda za povijesne znanosti HAZU u Zadru ", 
+          " Sbornik' Otd. russ. jazyka i slovesnosti ", " Radovi Staroslav. instituta ", " Ргасе filologiczne ",
+          " eScripta ", " eScripta ",
           " ZooKeys ", /* The above will be automatically updated to alphabetical order */ 
 );
 const UCFIRST_JOURNAL_ACRONYMS = array(/* The following will be automatically updated to alphabetical order */
@@ -193,7 +196,10 @@ const UCFIRST_JOURNAL_ACRONYMS = array(/* The following will be automatically up
           " Usgs ", " V Astronomicheskii Zhurna ", " Van Het ", " van Het ", " Voor de Geschiedenis der Nederlanden ", 
           " voor de Geschiedenis der Nederlanden ", " VTK/Uct ", " We Proceeded on ", " Wrir ", " Z/Journal ", 
           " Z/journal ", " ZbMATH ", " Zeitschrift Für Geologische Wissenschaften ", " Zeitschrift für Physik a Hadrons and Nuclei ", 
-          " Zeitschrift Für Physik a: Hadrons And Nuclei ", " Znanosti I Umjetnosti ", 
+          " Zeitschrift Für Physik a: Hadrons And Nuclei ", " Znanosti I Umjetnosti ", " Radovi Staroslavenskog Instituta ",
+          " Radovi Zavoda Za Povijesne Znanosti HAZU U Zadru ", " Radovi Zavoda Za Povijesne Znanosti Hazu U Zadru ", 
+          " Sbornik' Otd. Russ. Jazyka I Slovesnosti ", " Radovi Staroslav. Instituta ", " Ргасе Filologiczne ",
+          " Escripta ", " EScripta ",
           " Zookeys ", /* The above will be automatically updated to alphabetical order */ 
 );
 const OBVIOUS_FOREIGN_WORDS = array(" Abhandlungen ", " Actes ", " Annales ", " Archiv ", " Archives de ",
