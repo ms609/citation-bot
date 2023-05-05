@@ -146,7 +146,15 @@ const JOURNAL_ACRONYMS = array(/* The following will be automatically updated to
           " Vjesnik Zemaljskog arhiva ", " Povijesni prilozi ", " Radovi Zavoda za povijesne znanosti HAZU Zadru ",
           " Radovi Zavoda za povijesne znanosti HAZU Zadru ", " Prilozi povijesti otoka Hvara ",
           " Bogoslovni vestnik ", " Starine Jugoslavenske akademije znanosti i umjetnosti  ", " Arhivski vjesnik ",
-          " Stari pisci hrvatski ",
+          " Stari pisci hrvatski ", " JAZU u Zadru ", " JAZU u Zadru ", " Vjesnik Kr. Drž. arkiva u Zagrebu ",
+          " Glas Srp. kr. akademije ", " Vjesnik Staroslavenske akademije u Krku za god. ",
+          " Vjesnik Hrv. dalm. zem. arkiva ", " Vjesnik Hrv. dalm. zem. arkiva ",
+          " Vjesnik kr. Hrvatsko-slavonsko-dalmatinskog zemaljskog arkiva ",
+          " Vjesnik za arheologiju i historiju dalmatinsku ",
+          " Radovi Instituta Jugoslavenske akademije znanosti i umjetnosti u Zadru ",
+          " Vjesnik za arheologiju i historiju dalmatinsku ",
+          " Radovi Instituta Jugoslavenske akademije znanosti i umjetnosti u Zadru ",
+          " Građa za povijest knjiž. hrv. ",
           " ZooKeys ", /* The above will be automatically updated to alphabetical order */ 
 );
 const UCFIRST_JOURNAL_ACRONYMS = array(/* The following will be automatically updated to alphabetical order */
@@ -243,7 +251,15 @@ const UCFIRST_JOURNAL_ACRONYMS = array(/* The following will be automatically up
           " Vjesnik Zemaljskog Arhiva ", " Povijesni Prilozi ", " Radovi Zavoda Za Povijesne Znanosti HAZU Zadru ",
           " Radovi Zavoda Za Povijesne Znanosti Hazu Zadru ", " Prilozi Povijesti Otoka Hvara ",
           " Bogoslovni Vestnik ", " Starine Jugoslavenske Akademije Znanosti i Umjetnosti ", " Arhivski Vjesnik ",
-          " Stari Pisci hrvatski ",
+          " Stari Pisci Hrvatski ", " Jazu U Zadru ", " JAZU U Zadru ", " Vjesnik Kr. Drž. Arkiva u Zagrebu ",
+          " Glas SRP. Kr. Akademije ", " Vjesnik Staroslavenske akademije u Krku za God. ",
+          " Vjesnik HRV. Dalm. Zem. Arkiva ", " Vjesnik Hrv. Dalm. Zem. Arkiva ",
+          " Vjesnik Kr. Hrvatsko-slavonsko-dalmatinskog Zemaljskog Arkiva ",
+          " Vjesnik Za Arheologiju I Historiju Dalmatinsku ",
+          " Radovi Instituta Jugoslavenske Akademije Znanosti I Umjetnosti U Zadru ",
+          " Vjesnik Za Arheologiju i Historiju Dalmatinsku ",
+          " Radovi Instituta Jugoslavenske Akademije Znanosti i Umjetnosti U Zadru ",
+          " Građa za povijest knjiž. HRV. ",
           " Zookeys ", /* The above will be automatically updated to alphabetical order */ 
 );
 const OBVIOUS_FOREIGN_WORDS = array(" Abhandlungen ", " Actes ", " Annales ", " Archiv ", " Archives de ",
