@@ -138,6 +138,10 @@ const JOURNAL_ACRONYMS = array(/* The following will be automatically updated to
           " Nastavni vjesnik ", " Bibliotheca Enrico Damiani diretta da Nullo Minissi ", " Nast. vjesnik ", 
           " Problemi sjevernog Jadrana ", " Narodna starina ", " Starine Jugoslavenske akademije znanosti i umjetnosti ",
           " Vjestnik Kr. hrvatsko-slavonsko-dalmatinskog zemaljskog arkiva ", " Vjestnik Kr. hrvatsko-slavonsko-dalmatinskog zemaljskog arkiva ",
+          " Crkva na svijetu ", " za likovne umjetnosti ", " Folia onomastica Croatica ",
+          " Publikacije Staroslavenske akademije na Krku ", " Vjesnik zemaljskog arkiva ",
+          " Radovi Staroslavenskog zavoda ", " Starine Jugoslavenske Akademije Znanosti i Umjetnosti ",
+          " Bibliotheca Enrico Damiani diretta da Nullo Minissi ", " Bogoslovska smotra ",
           " ZooKeys ", /* The above will be automatically updated to alphabetical order */ 
 );
 const UCFIRST_JOURNAL_ACRONYMS = array(/* The following will be automatically updated to alphabetical order */
@@ -226,6 +230,10 @@ const UCFIRST_JOURNAL_ACRONYMS = array(/* The following will be automatically up
           " Nastavni Vjesnik ", " Bibliotheca Enrico Damiani Diretta Da Nullo Minissi ", " Nast. Vjesnik ", 
           " Problemi Sjevernog Jadrana ", " Narodna Starina ", " Starine Jugoslavenske Akademije Znanosti I Umjetnosti ",
           " Vjestnik Kr. Hrvatsko-slavonsko-dalmatinskog Zemaljskog Arkiva ", " Vjestnik Kr. Hrvatsko-Slavonsko-Dalmatinskog Zemaljskog Arkiva ",
+          " Crkva Na Svijetu ", " Za Likovne Umjetnosti ", " Folia Onomastica Croatica ",
+          " Publikacije Staroslavenske Akademije Na Krku ", " Vjesnik Zemaljskog Arkiva ",
+          " Radovi Staroslavenskog Zavoda ", " Starine Jugoslavenske Akademije Znanosti I Umjetnosti ",
+          " Bibliotheca Enrico Damiani Diretta Da Nullo Minissi ", " Bogoslovska Smotra ",
           " Zookeys ", /* The above will be automatically updated to alphabetical order */ 
 );
 const OBVIOUS_FOREIGN_WORDS = array(" Abhandlungen ", " Actes ", " Annales ", " Archiv ", " Archives de ",
