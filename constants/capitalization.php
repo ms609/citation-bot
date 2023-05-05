@@ -222,6 +222,7 @@ const UCFIRST_JOURNAL_ACRONYMS = array(/* The following will be automatically up
           " Zprávy o zasedání Král. čes. Společnosti nauk v Praze ", " Vjesnik Kr. Hrvatsko-slavonsko-dalmatinskoga Zemaljskog Arhiva ",
           " Vjesnik Kr. Hrvatsko-Slavonsko-Dalmatinskoga Zemaljskog Arhiva ", " Acta Medico-historica Adriatica ", " Acta Medico-Historica Adriatica ",
           " Croatica Christiana Periodica ", " Texte Du Sacre ", " Radovi Staroslavenskog Instituta ",
+          " Vjesnik Historijskih Arhiva U Rijeci I Pazinu ", " Vjesnik Povijesnog Arhiva Rijeka ", " Vjesnik Historijskih Arhiva U Rijeci I Pazinu ",
           " Nastavni Vjesnik ", " Bibliotheca Enrico Damiani Diretta Da Nullo Minissi ", " Nast. Vjesnik ", 
           " Problemi Sjevernog Jadrana ", " Narodna Starina ", " Starine Jugoslavenske Akademije Znanosti I Umjetnosti ",
           " Vjestnik Kr. Hrvatsko-slavonsko-dalmatinskog Zemaljskog Arkiva ", " Vjestnik Kr. Hrvatsko-Slavonsko-Dalmatinskog Zemaljskog Arkiva ",
