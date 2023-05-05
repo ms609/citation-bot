@@ -134,6 +134,10 @@ const JOURNAL_ACRONYMS = array(/* The following will be automatically updated to
           " Zprávy o zasedání Král. čes. společnosti nauk v Praze ", " Vjesnik kr. hrvatsko-slavonsko-dalmatinskoga Zemaljskog arhiva ",
           " Vjesnik kr. hrvatsko-slavonsko-dalmatinskoga Zemaljskog arhiva ", " Acta medico-historica Adriatica ", " Acta medico-historica Adriatica ",
           " Croatica Christiana periodica ", " Texte du Sacre ", " Radovi Staroslavenskog instituta ",
+          " Vjesnik historijskih arhiva u Rijeci i Pazinu ", " Vjesnik Povijesnog arhiva Rijeka ", " Vjesnik Historijskih arhiva u Rijeci i Pazinu ",
+          " Nastavni vjesnik ", " Bibliotheca Enrico Damiani diretta da Nullo Minissi ", " Nast. vjesnik ", 
+          " Problemi sjevernog Jadrana ", " Narodna starina ", " Starine Jugoslavenske akademije znanosti i umjetnosti ",
+          " Vjestnik Kr. hrvatsko-slavonsko-dalmatinskog zemaljskog arkiva ", " Vjestnik Kr. hrvatsko-slavonsko-dalmatinskog zemaljskog arkiva ",
           " ZooKeys ", /* The above will be automatically updated to alphabetical order */ 
 );
 const UCFIRST_JOURNAL_ACRONYMS = array(/* The following will be automatically updated to alphabetical order */
@@ -218,6 +222,9 @@ const UCFIRST_JOURNAL_ACRONYMS = array(/* The following will be automatically up
           " Zprávy o zasedání Král. čes. Společnosti nauk v Praze ", " Vjesnik Kr. Hrvatsko-slavonsko-dalmatinskoga Zemaljskog Arhiva ",
           " Vjesnik Kr. Hrvatsko-Slavonsko-Dalmatinskoga Zemaljskog Arhiva ", " Acta Medico-historica Adriatica ", " Acta Medico-Historica Adriatica ",
           " Croatica Christiana Periodica ", " Texte Du Sacre ", " Radovi Staroslavenskog Instituta ",
+          " Nastavni Vjesnik ", " Bibliotheca Enrico Damiani Diretta Da Nullo Minissi ", " Nast. Vjesnik ", 
+          " Problemi Sjevernog Jadrana ", " Narodna Starina ", " Starine Jugoslavenske Akademije Znanosti I Umjetnosti ",
+          " Vjestnik Kr. Hrvatsko-slavonsko-dalmatinskog Zemaljskog Arkiva ", " Vjestnik Kr. Hrvatsko-Slavonsko-Dalmatinskog Zemaljskog Arkiva ",
           " Zookeys ", /* The above will be automatically updated to alphabetical order */ 
 );
 const OBVIOUS_FOREIGN_WORDS = array(" Abhandlungen ", " Actes ", " Annales ", " Archiv ", " Archives de ",
