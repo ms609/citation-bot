@@ -142,6 +142,9 @@ const JOURNAL_ACRONYMS = array(/* The following will be automatically updated to
           " Publikacije Staroslavenske akademije na Krku ", " Vjesnik zemaljskog arkiva ",
           " Radovi Staroslavenskog zavoda ", " Starine Jugoslavenske Akademije Znanosti i Umjetnosti ",
           " Bibliotheca Enrico Damiani diretta da Nullo Minissi ", " Bogoslovska smotra ",
+          " Croatica et Slavica Iadertina ", " Radovi Instituta Jugoslavenske akademije znanosti i umjetnosti u Zadru ",
+          " Vjesnik Zemaljskog arhiva ", " Povijesni prilozi ", " Radovi Zavoda za povijesne znanosti HAZU Zadru ",
+          " Radovi Zavoda za povijesne znanosti HAZU Zadru ", " Prilozi povijesti otoka Hvara ",
           " ZooKeys ", /* The above will be automatically updated to alphabetical order */ 
 );
 const UCFIRST_JOURNAL_ACRONYMS = array(/* The following will be automatically updated to alphabetical order */
@@ -234,6 +237,9 @@ const UCFIRST_JOURNAL_ACRONYMS = array(/* The following will be automatically up
           " Publikacije Staroslavenske Akademije Na Krku ", " Vjesnik Zemaljskog Arkiva ",
           " Radovi Staroslavenskog Zavoda ", " Starine Jugoslavenske Akademije Znanosti I Umjetnosti ",
           " Bibliotheca Enrico Damiani Diretta Da Nullo Minissi ", " Bogoslovska Smotra ",
+          " Croatica Et Slavica Iadertina ", " Radovi Instituta Jugoslavenske Akademije Znanosti I Umjetnosti U Zadru ",
+          " Vjesnik Zemaljskog Arhiva ", " Povijesni Prilozi ", " Radovi Zavoda Za Povijesne Znanosti HAZU Zadru ",
+          " Radovi Zavoda Za Povijesne Znanosti Hazu Zadru ", " Prilozi Povijesti Otoka Hvara ",
           " Zookeys ", /* The above will be automatically updated to alphabetical order */ 
 );
 const OBVIOUS_FOREIGN_WORDS = array(" Abhandlungen ", " Actes ", " Annales ", " Archiv ", " Archives de ",
