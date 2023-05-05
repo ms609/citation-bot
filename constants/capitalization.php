@@ -154,7 +154,7 @@ const JOURNAL_ACRONYMS = array(/* The following will be automatically updated to
           " Radovi Instituta Jugoslavenske akademije znanosti i umjetnosti u Zadru ",
           " Vjesnik za arheologiju i historiju dalmatinsku ",
           " Radovi Instituta Jugoslavenske akademije znanosti i umjetnosti u Zadru ",
-          " Građa za povijest knjiž. hrv. ",
+          " Građa za povijest knjiž. hrv. ", " za g. ", " za g. "
           " ZooKeys ", /* The above will be automatically updated to alphabetical order */ 
 );
 const UCFIRST_JOURNAL_ACRONYMS = array(/* The following will be automatically updated to alphabetical order */
@@ -259,7 +259,7 @@ const UCFIRST_JOURNAL_ACRONYMS = array(/* The following will be automatically up
           " Radovi Instituta Jugoslavenske Akademije Znanosti I Umjetnosti U Zadru ",
           " Vjesnik Za Arheologiju i Historiju Dalmatinsku ",
           " Radovi Instituta Jugoslavenske Akademije Znanosti i Umjetnosti U Zadru ",
-          " Građa za povijest knjiž. HRV. ",
+          " Građa za povijest knjiž. HRV. ", " Za G. ", " za G. "
           " Zookeys ", /* The above will be automatically updated to alphabetical order */ 
 );
 const OBVIOUS_FOREIGN_WORDS = array(" Abhandlungen ", " Actes ", " Annales ", " Archiv ", " Archives de ",
