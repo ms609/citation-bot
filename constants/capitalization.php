@@ -124,7 +124,10 @@ const JOURNAL_ACRONYMS = array(/* The following will be automatically updated to
           " Zeitschrift für Physik A: Hadrons and Nuclei ", " Znanosti i Umjetnosti ", " Radovi Staroslavenskog instituta ",
           " Radovi Zavoda za povijesne znanosti HAZU u Zadru ", " Radovi Zavoda za povijesne znanosti HAZU u Zadru ", 
           " Sbornik' Otd. russ. jazyka i slovesnosti ", " Radovi Staroslav. instituta ", " Ргасе filologiczne ",
-          " eScripta ", " eScripta ", " Arhiv za slovensku filologiju ",
+          " eScripta ", " eScripta ", " Arhiv za slovensku filologiju ", " u Krku za ", " Vjesnik Staroslavenske akademije ",
+          " Glagoljski rukopisi ", 
+          " Posebna izdanja ", " Bulletin za likovne umjetnosti Jugoslavenske akademije ", " e-Scripta ", " e-Scripta ", 
+          " Radovi za slovensku filologiju ",
           " ZooKeys ", /* The above will be automatically updated to alphabetical order */ 
 );
 const UCFIRST_JOURNAL_ACRONYMS = array(/* The following will be automatically updated to alphabetical order */
@@ -199,7 +202,10 @@ const UCFIRST_JOURNAL_ACRONYMS = array(/* The following will be automatically up
           " Zeitschrift Für Physik a: Hadrons And Nuclei ", " Znanosti I Umjetnosti ", " Radovi Staroslavenskog Instituta ",
           " Radovi Zavoda Za Povijesne Znanosti HAZU U Zadru ", " Radovi Zavoda Za Povijesne Znanosti Hazu U Zadru ", 
           " Sbornik' Otd. Russ. Jazyka I Slovesnosti ", " Radovi Staroslav. Instituta ", " Ргасе Filologiczne ",
-          " Escripta ", " EScripta ", " Arhiv Za Slovensku Filologiju ",
+          " Escripta ", " EScripta ", " Arhiv Za Slovensku Filologiju ", " U Krku Za ", " Vjesnik Staroslavenske Akademije ",
+          " Glagoljski Rukopisi ", 
+          " Posebna Izdanja ", " Bulletin Za Likovne Umjetnosti Jugoslavenske Akademije ", " E-Scripta ", " E-scripta ", 
+          " Radovi Za Slovensku Filologiju ",
           " Zookeys ", /* The above will be automatically updated to alphabetical order */ 
 );
 const OBVIOUS_FOREIGN_WORDS = array(" Abhandlungen ", " Actes ", " Annales ", " Archiv ", " Archives de ",
