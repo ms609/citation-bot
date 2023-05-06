@@ -143,7 +143,7 @@ const JOURNAL_ACRONYMS = array(/* The following will be automatically updated to
           " Time Off Magazine ", " Time Out London ", " tot de ", " Transactions and archaeological record of the Cardiganshire Antiquarian Society ", 
           " u Krku za ", " U.S. ", " U.S.A. ", " U.S.A. ", " UBV Data ", " uHealth ", " uHealth ", 
           " UNED Research Journal ", " USGS ", " v Astronomicheskii Zhurna ", " van het ", 
-          " van het ", " Vjesnik Historijskih arhiva u Rijeci i Pazinu ", " Vjesnik historijskih arhiva u Rijeci i Pazinu ", 
+          " van het ", " Vjesnik historijskih arhiva u Rijeci i Pazinu ", " Vjesnik historijskih arhiva u Rijeci i Pazinu ", 
           " Vjesnik Hrv. dalm. zem. arkiva ", " Vjesnik Hrv. dalm. zem. arkiva ", " Vjesnik Kr. Drž. arkiva u Zagrebu ", 
           " Vjesnik kr. Hrvatsko-slavonsko-dalmatinskog zemaljskog arkiva ", " Vjesnik kr. hrvatsko-slavonsko-dalmatinskoga Zemaljskog arhiva ", 
           " Vjesnik kr. hrvatsko-slavonsko-dalmatinskoga Zemaljskog arhiva ", " Vjesnik Povijesnog arhiva Rijeka ", 
