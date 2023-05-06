@@ -199,7 +199,7 @@ const UCFIRST_JOURNAL_ACRONYMS = array(/* The following will be automatically up
           " for. Bull. ", " Föreningen I Stockholm ", " Für Anorganische und Allgemeine ", 
           " Gigascience ", " Gigiena I Sanitariia ", " Glagoljski Rukopisi ", " Glas SRP. Kr. Akademije ", 
           " Građa Za Povijest Knjiž. HRV. ", " Građa za povijest knjiž. HRV. ", " Hannaharendt.net ", 
-          " HessenARCHÄOLOGIE ", " Hessenarchäologie ", " Historická Revue: Vedecko-Populárny časopis O Dejinách ", 
+          " HessenARCHÄOLOGIE ", " Hessenarchäologie ", " Historická Revue: Vedecko-Populárny Časopis O Dejinách ", 
           " Historická revue: Vedecko-populárny časopis o dejinách ", " History of Science; an Annual Review of Literature ", 
           " HIV & Aids ", " HIV and Aids ", " HIV/Aids ", " Hiv/Aids ", " Hoaj Biology ", 
           " Hoppe-Seyler´s ", " Hprints ", " Hylli I Dritës ", " I Ee ", " I ee ", " I Teplovoznaja ", 
