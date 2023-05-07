@@ -140,7 +140,7 @@ public static function query_url_api_class(array $ids, array &$templates) : void
        }
        $doi = $template->get('doi');
        if (!doi_active($doi)) {
-         //  Gone -- if ($template->has('citeseerx'))
+         if ($template->has('citeseerx')) self::expand_by_zotero($template, ' https://citeseerx.ist.psu.edu/viewdoc/summary?doi=' . $template->get('citeseerx'));
          //  Has a CAPCHA --  if ($template->has('jfm'))
          //  Has a CAPCHA --  if ($template->has('zbl'))
          //  Do NOT do MR --  it is a review not the article itself.  Note that html does have doi, but do not use it.
