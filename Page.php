@@ -646,6 +646,7 @@ class Page {
            if ($failures[0] && $failures[1] && $failures[2] && $failures[3]) {
               report_error("Five failures in a row -- shutting down the bot on page " . $this->title);
            }
+           sleep(4);
            return FALSE;
          }
       } else {
