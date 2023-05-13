@@ -449,8 +449,12 @@ try {
     return !TRAVIS && isset(self::$last_WikipediaBot) && self::$last_WikipediaBot->get_the_user() === 'AManWithNoPlan';
   }
   
+  private function get_the_user_internal() : string {
+    return $this->the_user;
+  }
   static public function GetLastUser() : string {
-    return self::$last_WikipediaBot->get_the_user();
+    if(isset(self::$last_WikipediaBot)) return self::$last_WikipediaBot->get_the_user_internal();
+    return '';
   }
   
 /**
