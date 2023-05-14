@@ -1069,6 +1069,7 @@ final class Template {
         if (stripos($value, ' and Capstones') !== FALSE) return FALSE;
         if (stripos($value, ' and Problem Reports') !== FALSE) return FALSE;
         if (stripos($value, 'Doctoral ') !== FALSE) return FALSE;
+        if (stripos($value, 'IETF Datatracker') !== FALSE) return FALSE;
 
         if (!$this->blank(['booktitle', 'book-title'])) return FALSE;
         if (in_array(strtolower(sanitize_string($value)), BAD_TITLES )) return FALSE;
