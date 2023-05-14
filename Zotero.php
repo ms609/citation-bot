@@ -1195,6 +1195,13 @@ public static function find_indentifiers_in_urls(Template $template, ?string $ur
        }
        return TRUE;
     }
+  
+    if (preg_match("~^(https?://.+\/.+)\?casa_token=.+$~", $url, $matches)) {
+      $url = $matches[1];
+      if (is_null($url_sent)) {
+        $template->set($url_type, $url); // Update URL with cleaner one
+      }
+    }
 
     if (stripos($url, 'jstor') !== FALSE) {
      // Trim ?seq=1#page_scan_tab_contents off of jstor urls
