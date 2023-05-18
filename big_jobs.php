@@ -16,11 +16,11 @@ function big_jobs_we_died($lock_file) : void {
 function big_jobs_check_overused(int $page_count) : void {
  static $lock_file; // Force file handle to stay open
  if (!HTML_OUTPUT) return;
- clearstatcache(TRUE);
  if ($page_count < 50) return; // Used to be BIG_RUN constant
+ clearstatcache(TRUE);
  $fn = big_jobs_name();
  if (file_exists($fn) && (filemtime($fn) > (time()-3600))) { // More than an hour
-    unlink($fn);
+    @unlink($fn);
  }
  $lock_file = fopen($fn, 'w+');
  if ($lock_file === FALSE) {
