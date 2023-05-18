@@ -776,9 +776,12 @@ function title_capitalization(string $in, bool $caps_after_punctuation) : string
       }
     }
   }
-
-  $new_case = trim(str_replace(['Series a and B ', 'Series a & B '] , ['Series A and B ', 'Series A & B '], $new_case . ' ')); // TODO, use regex for any letter
   
+  if (preg_match('~Series ([a-zA-Z] )(\&|and)( [a-zA-Z] )~', $new_case . ' ', $matches)) {
+    $replace_me = 'Series ' . $matches[1] . $matches[2] . $matches[3];
+    $replace    = 'Series ' . strtoupper($matches[1]) . $matches[2] . strtoupper($matches[3]);
+    $new_case = trim(str_replace($replace_me, $replace, $new_case . ' '));
+  }
   // Part XII: Roman numerals
   $new_case = safe_preg_replace_callback(
     "~ part ([xvil]+): ~iu",
