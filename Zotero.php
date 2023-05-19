@@ -965,6 +965,7 @@ public static function process_zotero_response(string $zotero_response, Template
       case 'statute':       // @codeCoverageIgnore
       case 'interview':   // @codeCoverageIgnore
       case 'letter':   // @codeCoverageIgnore
+      case 'dataset':  // @codeCoverageIgnore
       case 'radioBroadcast':   // @codeCoverageIgnore
           // Do not change type.  Would need to think about parameters
       case 'patent':       // @codeCoverageIgnore
