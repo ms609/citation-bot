@@ -622,10 +622,6 @@ final class Template {
     return (bool) count(array_intersect($param, $this->used_by_api[$api]));
   }
 
-  public function api_has_not_used(string $api, array $param) : bool {
-    return !$this->api_has_used($api, $param);
-  }
-
   public function incomplete() : bool {   // FYI: some references will never be considered complete
     if (ZOTERO_ONLY && $this->has('title')) return FALSE;
     $possible_extra_authors = $this->get('author') . $this->get('authors') . $this->get('vauthors');
@@ -1770,9 +1766,7 @@ final class Template {
 
   public function get_doi_from_crossref() : bool {
     set_time_limit(120);
-    if ($this->has('doi')) {
-      return TRUE;
-    }
+    if ($this->has('doi')) return TRUE;
     if (ZOTERO_ONLY) return FALSE;
     report_action("Checking CrossRef database for doi. ");
     $page_range = $this->page_range();
@@ -1798,7 +1792,7 @@ final class Template {
 
     $novel_data = FALSE;
     foreach ($data as $key => $value) if ($value) {
-      if ($this->api_has_not_used('crossref', equivalent_parameters($key))) $novel_data = TRUE;
+      if (!$this->api_has_used('crossref', equivalent_parameters($key))) $novel_data = TRUE;
       $this->record_api_usage('crossref', $key);
     }
 
@@ -2056,10 +2050,8 @@ final class Template {
     if (stripos($this->get('jstor'), 'document') !== FALSE) return FALSE;
     if (stripos($this->get('jstor'), '.ch.') !== FALSE) return FALSE;
 
-    if ($this->api_has_used('adsabs', equivalent_parameters('bibcode'))) {
-      report_info("No need to repeat AdsAbs search for " . bibcode_link($this->get('bibcode'))); // @codeCoverageIgnore
-      return FALSE;                                                                              // @codeCoverageIgnore
-    }
+    if ($this->api_has_used('adsabs', equivalent_parameters('bibcode')) return FALSE;
+
     if ($this->has('bibcode')) $this->record_api_usage('adsabs', 'bibcode');
     if (strpos($this->get('doi'), '10.1093/') === 0) return FALSE;
     report_action("Checking AdsAbs database");
