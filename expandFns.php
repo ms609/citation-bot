@@ -1567,6 +1567,26 @@ function normalize_google_books(string &$url, int &$removed_redundant, string &$
       }
 }
 
+function doi_is_bad (string $doi) : bool {
+        if ($value === '10.5284/1000184') return TRUE; // DOI for the entire database
+        if ($value === '10.1267/science.040579197') return TRUE; // PMID test doi
+        if ($value === '10.2307/3511692') return TRUE; // common review
+        if ($value === '10.1377/forefront') return TRUE; // over-truncated
+        if ($value === '10.1126/science') return TRUE; // over-truncated
+        if (stripos($value, '10.5779/hypothesis') === 0) return TRUE; // SPAM took over
+        if (stripos($value, '10.5555/') === 0) return TRUE; // Test DOI prefix
+        if (stripos($value, '10.5860/choice.') === 0) return TRUE; // Paywalled book review
+        if (stripos($value, '10.1093/law:epil') === 0) return TRUE; // Those do not work
+        if (stripos($value, '10.1093/oi/authority') === 0) return TRUE; // Those do not work
+        if (stripos($value, '10.10520/') === 0 && !doi_works($value)) return TRUE; // Has doi in the URL, but is not a doi
+        if (stripos($value, '10.1967/') === 0 && !doi_works($value)) return TRUE; // Retired DOIs
+        if (stripos($value, '10.1043/0003-3219(') === 0 && !doi_works($value)) return TRUE; // Per-email.  The Angle Orthodontist will NEVER do these, since they have <> and [] in them
+        if (stripos($value, '10.3316/') === 0 && !doi_works($value)) return TRUE; // These do not work - https://search.informit.org/doi/10.3316/aeipt.207729 etc.
+        if (stripos($value, '10.1002/was.') === 0 && !doi_works($value)) return TRUE; // do's not doi's
+        if (stripos($value, '10.48550/arXiv') === 0) return TRUE;
+        return FALSE;
+}
+
 function get_possible_dois(string $doi) : array {
     $trial = array();
     $trial[] = $doi;
