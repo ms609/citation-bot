@@ -64,7 +64,6 @@ final class AdsAbsControl {
 function entrez_api(array $ids, array &$templates, string $db) : bool {   // Pointer to save memory
   set_time_limit(120);
   if (!count($ids)) return FALSE;
-  if (ZOTERO_ONLY) return FALSE;
   if ($ids == ['XYZ']) return FALSE; // junk data from test suite
   if ($ids == ['1']) return FALSE; // junk data from test suite
   if ($ids == ['']) return FALSE; // junk data from test suite
@@ -181,7 +180,6 @@ function query_bibcode_api(array $bibcodes, array &$templates) : bool { return a
   @param array<Template> $templates
 **/
 function expand_arxiv_templates (array &$templates) : bool {  // Pointer to save memory
-  if (ZOTERO_ONLY) return FALSE;
   $ids = array();
   $arxiv_templates = array();
   foreach ($templates as $this_template) {
@@ -310,7 +308,6 @@ function arxiv_api(array $ids, array &$templates) : bool {  // Pointer to save m
   @param array<Template> $templates
 **/
 function adsabs_api(array $ids, array &$templates, string $identifier) : bool {  // Pointer to save memory
-  if (ZOTERO_ONLY) return FALSE;
   set_time_limit(120);
   if (count($ids) === 0) return FALSE;
   
@@ -424,7 +421,6 @@ function query_doi_api(array $ids, array &$templates) : bool { // $id not used y
 }
 
 function expand_by_doi(Template $template, bool $force = FALSE) : bool {
-  if (ZOTERO_ONLY) return FALSE;
   set_time_limit(120);
   // Because it can recover rarely used parameters such as editors, series & isbn, 
   // there will be few instances where it could not in principle be profitable to 
@@ -573,7 +569,6 @@ function expand_by_doi(Template $template, bool $force = FALSE) : bool {
 }
 
 function query_crossref(string $doi) : ?object {
-  if (ZOTERO_ONLY) return NULL;
   if (strpos($doi, '10.2307') === 0) return NULL; // jstor API is better
   set_time_limit(120);
   $doi = str_replace(DOI_URL_DECODE, DOI_URL_ENCODE, $doi);
@@ -623,7 +618,6 @@ function expand_doi_with_dx(Template $template, string $doi) : bool {
      // Examples of DOI usage   https://www.doi.org/demos.html
      // This basically does this:
      // curl -LH "Accept: application/vnd.citationstyles.csl+json" https://dx.doi.org/10.5524/100077
-     if (ZOTERO_ONLY) return FALSE;
      if (strpos($doi, '10.2307') === 0) return FALSE; // jstor API is better
      if (strpos($doi, '10.24436') === 0) return FALSE; // They have horrible meta-data
      if (strpos($doi, '10.5284/1028203') === 0) return FALSE; // database
@@ -760,7 +754,6 @@ function expand_doi_with_dx(Template $template, string $doi) : bool {
 }
 
 function expand_by_jstor(Template $template) : bool {
-  if (ZOTERO_ONLY) return FALSE;
   set_time_limit(120);
   if ($template->incomplete() === FALSE) return FALSE;
   if ($template->has('jstor')) {
@@ -1022,7 +1015,6 @@ function parse_plain_text_reference(string $journal_data, Template $this_templat
 } 
 
 function getS2CID(string $url) : string {
-  if (ZOTERO_ONLY) return '';
   $context = stream_context_create(CONTEXT_S2);
   /** @psalm-taint-escape file */
   $url = urlencode(urldecode($url));
@@ -1048,7 +1040,6 @@ function getS2CID(string $url) : string {
 }
       
 function ConvertS2CID_DOI(string $s2cid) : string {
-  if (ZOTERO_ONLY) return '';
   $context = stream_context_create(CONTEXT_S2);
   /** @psalm-taint-escape file */
   $s2cid = urlencode($s2cid);

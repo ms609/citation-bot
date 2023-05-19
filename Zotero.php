@@ -101,7 +101,7 @@ public static function query_url_api_class(array $ids, array &$templates) : void
   if (!SLOW_MODE) return; // Zotero takes time
 
   curl_setopt(self::$zotero_ch, CURLOPT_TIMEOUT, 45); // Reset default
-  if (!TRAVIS && !ZOTERO_ONLY) { // try harder in tests
+  if (!TRAVIS) { // try harder in tests
     // @codeCoverageIgnoreStart
     curl_setopt(self::$zotero_ch, CURLOPT_CONNECTTIMEOUT, 3);
     $url_count = 0;
@@ -124,7 +124,6 @@ public static function query_url_api_class(array $ids, array &$templates) : void
      self::expand_by_zotero($template);
   }
   self::$zotero_announced = 2;
-  if (ZOTERO_ONLY) return;
   if (!TRAVIS) { // These are pretty reliable, unlike random urls
       curl_setopt(self::$zotero_ch, CURLOPT_TIMEOUT, 10);  // @codeCoverageIgnore
   }
@@ -202,7 +201,6 @@ public static function query_ieee_webpages(array &$templates) : void {  // Point
 **/
 public static function drop_urls_that_match_dois(array &$templates) : void {  // Pointer to save memory
   // Now that we have expanded URLs, try to lose them
-  if (ZOTERO_ONLY) return;
   $ch = curl_init();
   curl_setopt_array($ch,
         [CURLOPT_FOLLOWLOCATION => TRUE,
@@ -359,10 +357,6 @@ private static function zotero_request(string $url) : string {
     report_warning(curl_error(self::$zotero_ch) . "   For URL: " . echoable($url));
     if (strpos(curl_error(self::$zotero_ch), 'timed out after') !== FALSE) {
       self::$zotero_failures_count = self::$zotero_failures_count + 1;
-      if (ZOTERO_ONLY) {
-         self::$zotero_failures_count = 1;
-         sleep(10);
-      }
       if (self::$zotero_failures_count > self::ZOTERO_GIVE_UP) {
         report_warning("Giving up on URL expansion for a while");
         self::$zotero_failures_count = self::$zotero_failures_count + self::ZOTERO_SKIPS;
@@ -1067,7 +1061,6 @@ public static function url_simplify(string $url) : string {
 
 public static function find_indentifiers_in_urls(Template $template, ?string $url_sent = NULL) : bool {
     set_time_limit(120);
-    if (ZOTERO_ONLY) return FALSE;
     if (is_null($url_sent)) {
        // Chapter URLs are generally better than URLs for the whole book.
         if ($template->has('url') && $template->has('chapterurl')) {
