@@ -2,7 +2,6 @@
 declare(strict_types=1);
 /*
  * Handle most aspects of citation templates
- *
  * add_if_new() is generally called to add or sometimes overwrite parameters.
  */
 
@@ -623,7 +622,6 @@ final class Template {
   }
 
   public function incomplete() : bool {   // FYI: some references will never be considered complete
-    if (ZOTERO_ONLY && $this->has('title')) return FALSE;
     $possible_extra_authors = $this->get('author') . $this->get('authors') . $this->get('vauthors');
     if (strpos($possible_extra_authors, ' and ') !== FALSE ||
         strpos($possible_extra_authors, '; ')    !== FALSE ||
@@ -677,7 +675,6 @@ final class Template {
   }
 
   public function profoundly_incomplete(string $url = '') : bool {
-    if (ZOTERO_ONLY && $this->has('title')) return FALSE;
     // Zotero translation server often returns bad data, which is worth having if we have no data,
     // but we don't want to fill a single missing field with garbage if a reference is otherwise well formed.
     $has_date = $this->has('date') || $this->has('year') ;
@@ -1767,7 +1764,6 @@ final class Template {
   public function get_doi_from_crossref() : bool {
     set_time_limit(120);
     if ($this->has('doi')) return TRUE;
-    if (ZOTERO_ONLY) return FALSE;
     report_action("Checking CrossRef database for doi. ");
     $page_range = $this->page_range();
     $data = [
@@ -1836,7 +1832,6 @@ final class Template {
     if ($this->has('doi')) {
       return TRUE;
     }
-    if (ZOTERO_ONLY) return FALSE;
     if ($this->blank(['s2cid', 'S2CID'])) return FALSE;
     if ($this->has('s2cid') && $this->has('S2CID')) return FALSE;
     report_action("Checking semanticscholar database for doi. ");
@@ -1850,7 +1845,6 @@ final class Template {
 
   public function find_pmid() : void {
     set_time_limit(120);
-    if (ZOTERO_ONLY) return;
     if (!$this->blank('pmid')) return;
     report_action("Searching PubMed... ");
     $results = $this->query_pubmed();
@@ -1860,8 +1854,8 @@ final class Template {
         usleep(100000); // Wait 1/10 of a second since we just tried
         $xml = get_entrez_xml('pubmed', $results[0]);
         if ($xml === NULL || !is_object($xml->DocSum->Item)) {
-          report_inline("Unable to query pubmed.");     // @codeCoverageIgnore
-          return;                                       // @codeCoverageIgnore
+          report_inline("Unable to query pubmed."); // @codeCoverageIgnore
+          return;                                   // @codeCoverageIgnore
         }
         $Items = $xml->DocSum->Item;
         foreach ($Items as $item) {
@@ -1889,16 +1883,11 @@ final class Template {
   /** @return array{0: string, 1: int, 2: array} */
   protected function query_pubmed() : array {
 /*
- *
  * Performs a search based on article data, using the DOI preferentially, and failing that, the rest of the article details.
  * Returns an array:
  *   [0] => PMID of first matching result
  *   [1] => total number of results
- *
  */
-    if (ZOTERO_ONLY) {
-      return array('', 0, array());   // @codeCoverageIgnore
-    }
     if ($doi = $this->get_without_comments_and_placeholders('doi')) {
       if (doi_works($doi)) {
         $results = $this->do_pumbed_query(array("doi"));
@@ -1983,9 +1972,9 @@ final class Template {
         $key = $key_index[$term]; // Will crash if bad data is passed
         if ($val = $this->get_without_comments_and_placeholders($term)) {
           if (preg_match(REGEXP_PLAIN_WIKILINK, $val, $matches)) {
-              $val = $matches[1];    // @codeCoverageIgnore
+              $val = $matches[1];  // @codeCoverageIgnore
           } elseif (preg_match(REGEXP_PIPED_WIKILINK, $val, $matches)) {
-              $val = $matches[2];    // @codeCoverageIgnore
+              $val = $matches[2];  // @codeCoverageIgnore
           }
           $val = strip_diacritics($val);
           $val = straighten_quotes($val, TRUE);
@@ -2021,8 +2010,6 @@ final class Template {
   public function expand_by_adsabs() : bool {
     static $needs_told = TRUE;
     set_time_limit(120);
-    if (ZOTERO_ONLY) return FALSE;
-
     if ($this->has('bibcode') && $this->blank('doi')) {
       $doi = AdsAbsControl::get_bib2doi($this->get('bibcode'));
       if (doi_works($doi)) {
@@ -2084,8 +2071,8 @@ final class Template {
           ($this->has('doi') && doi_works($this->get('doi'))) ||    // good enough, usually includes abstract
           ($this->has('bibcode'))) // Must be GIGO
           {
-            report_inline('no record retrieved.');                // @codeCoverageIgnore
-            return FALSE;                                         // @codeCoverageIgnore
+            report_inline('no record retrieved.');  // @codeCoverageIgnore
+            return FALSE;                           // @codeCoverageIgnore
           }
     }
 
@@ -2094,15 +2081,15 @@ final class Template {
       if ($result->numFound === 0) return FALSE;
       $record = $result->docs[0];
       if (titles_are_dissimilar($this->get_without_comments_and_placeholders("title"), $record->title[0])) {  // Considering we searched for title, this is very paranoid
-        report_info("Similar title not found in database.");                // @codeCoverageIgnore
-        return FALSE;                                                       // @codeCoverageIgnore
+        report_info("Similar title not found in database."); // @codeCoverageIgnore
+        return FALSE;                                        // @codeCoverageIgnore
       }
       // If we have a match, but other links exists, and we have nothing journal like, then require exact title match
       if (!$this->blank(array_merge(['doi','pmc','pmid','eprint','arxiv'], ALL_URL_TYPES)) &&
           $this->blank(['issn', 'journal', 'volume', 'issue', 'number']) &&
           mb_strtolower($record->title[0]) !==  mb_strtolower($this->get_without_comments_and_placeholders('title'))) {  // Probably not a journal, trust zotero more
-          report_info("Exact title match not found in database.");    // @codeCoverageIgnore
-          return FALSE;                                               // @codeCoverageIgnore
+          report_info("Exact title match not found in database.");  // @codeCoverageIgnore
+          return FALSE;                                             // @codeCoverageIgnore
       }
     }
 
@@ -2119,8 +2106,8 @@ final class Template {
         . ("&fq=page:" . urlencode('"' . $pages[1] . '"'))
       );
       if ($result->numFound === 0 || !isset($result->docs[0]->pub)) {
-        report_inline('no record retrieved.');    // @codeCoverageIgnore
-        return FALSE;                             // @codeCoverageIgnore
+        report_inline('no record retrieved.'); // @codeCoverageIgnore
+        return FALSE;                          // @codeCoverageIgnore
       }
       $journal_string = explode(",", (string) $result->docs[0]->pub);
       $journal_fuzzyer = "~\([iI]ncorporating.+|\bof\b|\bthe\b|\ba|eedings\b|\W~";
@@ -2129,10 +2116,10 @@ final class Template {
                  mb_strtolower(safe_preg_replace($journal_fuzzyer, "", $journal_string[0]))
                  ) === FALSE
       ) {
-        report_info("Partial match but database journal \"" .         // @codeCoverageIgnore
-          echoable($journal_string[0]) . "\" didn't match \"" .       // @codeCoverageIgnore
-          echoable($journal) . "\".");                                // @codeCoverageIgnore
-        return FALSE;                                                 // @codeCoverageIgnore
+        report_info("Partial match but database journal \"" .    // @codeCoverageIgnoreStart
+          echoable($journal_string[0]) . "\" didn't match \"" .
+          echoable($journal) . "\".");
+        return FALSE;                                            // @codeCoverageIgnoreEnd
       }
     }
     if ($result->numFound === 1) {
@@ -2147,13 +2134,13 @@ final class Template {
       }
 
       if (!isset($record->title[0]) || !isset($record->bibcode)) {
-        report_info("Database entry not complete");       // @codeCoverageIgnore
-        return FALSE;                                     // @codeCoverageIgnore
+        report_info("Database entry not complete");  // @codeCoverageIgnore
+        return FALSE;                                // @codeCoverageIgnore
       }
       if ($this->has('title') && titles_are_dissimilar($this->get('title'), $record->title[0])
          && !in_array($this->get('title'), ['Archived copy', "{title}", 'ScienceDirect', "Google Books", "None"])) { // Verify the title matches.  We get some strange mis-matches {
-        report_info("Similar title not found in database");       // @codeCoverageIgnore
-        return FALSE;                                             // @codeCoverageIgnore
+        report_info("Similar title not found in database");  // @codeCoverageIgnore
+        return FALSE;                                        // @codeCoverageIgnore
       }
 
       if (isset($record->doi) && $this->get_without_comments_and_placeholders('doi')) {
@@ -2181,12 +2168,12 @@ final class Template {
       // @codeCoverageIgnoreEnd
       process_bibcode_data($this, $record);
       return TRUE;
-    } elseif ($result->numFound === 0) {                        // @codeCoverageIgnoreStart
+    } elseif ($result->numFound === 0) {               // @codeCoverageIgnoreStart
       report_inline('no record retrieved.');
       return FALSE;
     } else {
       report_inline('multiple records retrieved.  Ignoring.');
-      return FALSE;                                             // @codeCoverageIgnoreEnd
+      return FALSE;                                     // @codeCoverageIgnoreEnd
     }
   }
 
@@ -2366,7 +2353,6 @@ final class Template {
   }
 
   public function expand_by_pubmed(bool $force = FALSE) : void {
-    if (ZOTERO_ONLY) return;
     if (!$force && !$this->incomplete()) return;
     $this->this_array = array($this);
     if ($pm = $this->get('pmid')) {
@@ -2393,7 +2379,6 @@ final class Template {
 
   public function get_open_access_url() : void {
     if (!$this->blank(DOI_BROKEN_ALIASES)) return;
-    if (ZOTERO_ONLY) return;
     $doi = $this->get_without_comments_and_placeholders('doi');
     if (!$doi) return;
     if (strpos($doi, '10.1093/') === 0) return;
@@ -2448,10 +2433,10 @@ final class Template {
         }
         if (isset($best_location->url_for_landing_page)) {
           $oa_url = (string) $best_location->url_for_landing_page;  // Prefer to PDF
-        } elseif (isset($best_location->url)) {   // @codeCoverageIgnore
-          $oa_url = (string) $best_location->url; // @codeCoverageIgnore
-        } else {                                  // @codeCoverageIgnore
-          return 'nothing';                       // @codeCoverageIgnore
+        } elseif (isset($best_location->url)) {   // @codeCoverageIgnoreStart
+          $oa_url = (string) $best_location->url;
+        } else {
+          return 'nothing';                       // @codeCoverageIgnoreEnd
         }
         if (!$oa_url) return 'nothing';
 
@@ -2634,7 +2619,6 @@ final class Template {
 
   public function expand_by_google_books() : bool {
     $this->clean_google_books();
-    if (ZOTERO_ONLY) return FALSE;
     if ($this->has('doi') && doi_active($this->get('doi'))) return FALSE;
     foreach (['url', 'chapterurl', 'chapter-url'] as $url_type) {
        if ($this->expand_by_google_books_inner($url_type, TRUE)) return TRUE;
@@ -6609,8 +6593,8 @@ final class Template {
     }
     $doi_status = doi_works($doi);
     if ($doi_status === NULL) {
-      report_warning("DOI status unknown.  doi.org failed to respond to: " . doi_link($doi));  // @codeCoverageIgnore
-      return FALSE;                                                                            // @codeCoverageIgnore
+      report_warning("DOI status unknown.  doi.org failed to respond to: " . doi_link($doi)); // @codeCoverageIgnore
+      return FALSE;                                                                           // @codeCoverageIgnore
     } elseif ($doi_status === FALSE) {
       report_inline("It's not...");
       $this->add_if_new('doi-broken-date', date("Y-m-d"));
