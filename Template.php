@@ -626,7 +626,6 @@ final class Template {
   }
 
   public function incomplete() : bool {   // FYI: some references will never be considered complete
-    if (ZOTERO_ONLY && $this->has('title')) return FALSE;
     $possible_extra_authors = $this->get('author') . $this->get('authors') . $this->get('vauthors');
     if (strpos($possible_extra_authors, ' and ') !== FALSE ||
         strpos($possible_extra_authors, '; ')    !== FALSE ||
@@ -680,7 +679,6 @@ final class Template {
   }
 
   public function profoundly_incomplete(string $url = '') : bool {
-    if (ZOTERO_ONLY && $this->has('title')) return FALSE;
     // Zotero translation server often returns bad data, which is worth having if we have no data,
     // but we don't want to fill a single missing field with garbage if a reference is otherwise well formed.
     $has_date = $this->has('date') || $this->has('year') ;
@@ -1772,7 +1770,6 @@ final class Template {
     if ($this->has('doi')) {
       return TRUE;
     }
-    if (ZOTERO_ONLY) return FALSE;
     report_action("Checking CrossRef database for doi. ");
     $page_range = $this->page_range();
     $data = [
@@ -1841,7 +1838,6 @@ final class Template {
     if ($this->has('doi')) {
       return TRUE;
     }
-    if (ZOTERO_ONLY) return FALSE;
     if ($this->blank(['s2cid', 'S2CID'])) return FALSE;
     if ($this->has('s2cid') && $this->has('S2CID')) return FALSE;
     report_action("Checking semanticscholar database for doi. ");
@@ -1855,7 +1851,6 @@ final class Template {
 
   public function find_pmid() : void {
     set_time_limit(120);
-    if (ZOTERO_ONLY) return;
     if (!$this->blank('pmid')) return;
     report_action("Searching PubMed... ");
     $results = $this->query_pubmed();
@@ -1894,16 +1889,11 @@ final class Template {
   /** @return array{0: string, 1: int, 2: array} */
   protected function query_pubmed() : array {
 /*
- *
  * Performs a search based on article data, using the DOI preferentially, and failing that, the rest of the article details.
  * Returns an array:
  *   [0] => PMID of first matching result
  *   [1] => total number of results
- *
  */
-    if (ZOTERO_ONLY) {
-      return array('', 0, array()); // @codeCoverageIgnore
-    }
     if ($doi = $this->get_without_comments_and_placeholders('doi')) {
       if (doi_works($doi)) {
         $results = $this->do_pumbed_query(array("doi"));
@@ -2026,8 +2016,6 @@ final class Template {
   public function expand_by_adsabs() : bool {
     static $needs_told = TRUE;
     set_time_limit(120);
-    if (ZOTERO_ONLY) return FALSE;
-
     if ($this->has('bibcode') && $this->blank('doi')) {
       $doi = AdsAbsControl::get_bib2doi($this->get('bibcode'));
       if (doi_works($doi)) {
@@ -2373,7 +2361,6 @@ final class Template {
   }
 
   public function expand_by_pubmed(bool $force = FALSE) : void {
-    if (ZOTERO_ONLY) return;
     if (!$force && !$this->incomplete()) return;
     $this->this_array = array($this);
     if ($pm = $this->get('pmid')) {
@@ -2400,7 +2387,6 @@ final class Template {
 
   public function get_open_access_url() : void {
     if (!$this->blank(DOI_BROKEN_ALIASES)) return;
-    if (ZOTERO_ONLY) return;
     $doi = $this->get_without_comments_and_placeholders('doi');
     if (!$doi) return;
     if (strpos($doi, '10.1093/') === 0) return;
@@ -2641,7 +2627,6 @@ final class Template {
 
   public function expand_by_google_books() : bool {
     $this->clean_google_books();
-    if (ZOTERO_ONLY) return FALSE;
     if ($this->has('doi') && doi_active($this->get('doi'))) return FALSE;
     foreach (['url', 'chapterurl', 'chapter-url'] as $url_type) {
        if ($this->expand_by_google_books_inner($url_type, TRUE)) return TRUE;
