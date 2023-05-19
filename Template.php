@@ -2050,7 +2050,7 @@ final class Template {
     if (stripos($this->get('jstor'), 'document') !== FALSE) return FALSE;
     if (stripos($this->get('jstor'), '.ch.') !== FALSE) return FALSE;
 
-    if ($this->api_has_used('adsabs', equivalent_parameters('bibcode')) return FALSE;
+    if ($this->api_has_used('adsabs', equivalent_parameters('bibcode'))) return FALSE;
 
     if ($this->has('bibcode')) $this->record_api_usage('adsabs', 'bibcode');
     if (strpos($this->get('doi'), '10.1093/') === 0) return FALSE;
