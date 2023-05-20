@@ -1395,22 +1395,7 @@ final class Template {
         return FALSE;
 
       case 'doi':
-        if ($value === '10.5284/1000184') return FALSE; // DOI for the entire database
-        if ($value === '10.1267/science.040579197') return FALSE; // PMID test doi
-        if ($value === '10.2307/3511692') return FALSE; // common review
-        if ($value === '10.1377/forefront') return FALSE; // over-truncated
-        if ($value === '10.1126/science') return FALSE; // over-truncated
-        if (stripos($value, '10.5779/hypothesis') === 0) return FALSE; // SPAM took over
-        if (stripos($value, '10.5555/') === 0) return FALSE; // Test DOI prefix
-        if (stripos($value, '10.5860/choice.') === 0) return FALSE; // Paywalled book review
-        if (stripos($value, '10.1093/law:epil') === 0) return FALSE; // Those do not work
-        if (stripos($value, '10.1093/oi/authority') === 0) return FALSE; // Those do not work
-        if (stripos($value, '10.10520/') === 0 && !doi_works($value)) return FALSE; // Has doi in the URL, but is not a doi
-        if (stripos($value, '10.1967/') === 0 && !doi_works($value)) return FALSE; // Retired DOIs
-        if (stripos($value, '10.1043/0003-3219(') === 0 && !doi_works($value)) return FALSE; // Per-email.  The Angle Orthodontist will NEVER do these, since they have <> and [] in them
-        if (stripos($value, '10.3316/') === 0 && !doi_works($value)) return FALSE; // These do not work - https://search.informit.org/doi/10.3316/aeipt.207729 etc.
-        if (stripos($value, '10.1002/was.') === 0 && !doi_works($value)) return FALSE; // do's not doi's
-        if (stripos($value, '10.48550/arXiv') === 0) return FALSE;
+        if (doi_is_bad($value)) return FALSE;
         if (preg_match(REGEXP_DOI, $value, $match)) {
           if ($this->blank($param_name)) {
             if ($this->wikiname() === 'cite arxiv') $this->change_name_to('cite journal');
