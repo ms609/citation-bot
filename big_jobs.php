@@ -2,7 +2,7 @@
 
 function big_jobs_name() : string {
   $version = "_1"; // So we can reset everyone
-  $user = $_SESSION['citation_bot_user_id'];
+  $user = @$_SESSION['citation_bot_user_id'];
   return "./user_locks/" . str_replace(["'", "="], '', base64_encode($user) . $version);
 }
 
