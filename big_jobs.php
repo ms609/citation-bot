@@ -1,9 +1,10 @@
 <?php
+declare(strict_types=1);
 
 function big_jobs_name() : string {
-  $version = "_1"; // So we can reset everyone
-  $user = @$_SESSION['citation_bot_user_id'];
-  return "./user_locks/" . str_replace(["'", "="], '', base64_encode($user) . $version);
+  $version = "_1"; // So we can reset everyone, and we are 100% sure we do not get just the directory nam
+  $user = (string) @$_SESSION['citation_bot_user_id']; // No idea how/why we get this blank, but we can
+  return "./user_locks/" . str_replace(["'", "="], '', base64_encode($user) . $version); // Encode to avoid spaces, dot, slashes, stars, etc.
 }
 
 /** @param resource $lock_file **/
