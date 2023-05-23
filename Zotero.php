@@ -634,6 +634,12 @@ public static function process_zotero_response(string $zotero_response, Template
       $result->extra = trim(str_replace(trim($matches[0]), '', $result->extra));
       $template->add_if_new('ol', $matches[1]);
     }
+    
+    // UNUSED stuff goes below
+    
+    if (preg_match('~\sFormat: PDF\s~i', ' ' . $result->extra . ' ', $matches)) {
+      $result->extra = trim(str_replace(trim($matches[0]), '', $result->extra));
+    }
     if (preg_match('~\sIMDb ID: ((?:tt|co|nm)\d+)\s~i', ' ' . $result->extra . ' ', $matches)) { // We don't use it
       $result->extra = trim(str_replace(trim($matches[0]), '', $result->extra));
     }
