@@ -23,6 +23,7 @@ function death_time(string $err) : void {
 }
 
 function return_to_sender(string $where = 'https://citations.toolforge.org/') : void {
+  $where = preg_replace('~[^\s]+~', '', $where);  // Security paranoia
   header("Location: " . $where);
   exit(0);
 }
