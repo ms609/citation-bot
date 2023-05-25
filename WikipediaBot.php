@@ -496,8 +496,10 @@ try {
     } else {
        unset($_SESSION['access_key'], $_SESSION['access_secret']);
        session_write_close();
+       $return = $_SERVER['REQUEST_URI'];
+       $return = preg_replace('~[^\s]+~', '', $return); // Security paranoia
        /** @psalm-taint-escape header */
-       $return = urlencode($_SERVER['REQUEST_URI']);
+       $return = urlencode($return);
        @header("Location: authenticate.php?return=" . $return);
     }
     exit(0);
