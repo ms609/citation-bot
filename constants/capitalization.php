@@ -74,7 +74,7 @@ const JOURNAL_ACRONYMS = array(/* The following will be automatically updated to
           " CommLaw ", " Crkva na svijetu ", " Croatia sacra ", " Croatica Christiana periodica ", 
           " Croatica et Slavica Iadertina ", " CrystEngComm ", " Cultura i Literatura ", 
           " Cutter IT Journal ", " CytoJournal ", " Danica ilirska ", " de la Plata ", 
-          " de la Plata ", " de la Plata ", " dell'Accademia ", " Des. ", " Disease-a-Month ", 
+          " de la Plata ", " de la Plata ", " de la Plata, ", " de la Plata, ", " de la Plata, ", " dell'Accademia ", " Des. ", " Disease-a-Month ", 
           " Drug Des Deliv ", " Drug Des Devel ", " Dtsch ", " Dtsch. ", " e-Collaboration ", 
           " e-Health ", " e-Journal ", " e-Journal ", " e-Neuroforum ", " e-Neuroforum ", 
           " e-Print ", " e-Print ", " e-Prints ", " e-Prints ", " e-Scripta ", " e-Scripta ", 
@@ -160,7 +160,6 @@ const JOURNAL_ACRONYMS = array(/* The following will be automatically updated to
           " Zeitschrift für Physik A: Hadrons and Nuclei ", " Znanosti i Umjetnosti ", 
           " ZooKeys ", " Zprávy o zasedání Král. čes. společnosti nauk v Praze ", 
           " Zprávy o zasedání Král. čes. společnosti nauk v Praze ", " Zprávy o zasedání Král. čes. společnosti nauk v Praze ", 
-          " de la Plata ", " de la Plata ",
           " Ргасе filologiczne ", /* The above will be automatically updated to alphabetical order */ 
 );
 const UCFIRST_JOURNAL_ACRONYMS = array(/* The following will be automatically updated to alphabetical order */
@@ -184,7 +183,7 @@ const UCFIRST_JOURNAL_ACRONYMS = array(/* The following will be automatically up
           " Commlaw ", " Crkva Na Svijetu ", " Croatia Sacra ", " Croatica Christiana Periodica ", 
           " Croatica Et Slavica Iadertina ", " Crystengcomm ", " Cultura I Literatura ", 
           " Cutter It Journal ", " Cytojournal ", " Danica Ilirska ", " De La Plata ", 
-          " De la Plata ", " de La Plata ", " Dell'Accademia ", " des. ", " Disease-A-Month ", 
+          " De la Plata ", " de La Plata ", " De La Plata, ", " De la Plata, ", " de La Plata, ", " Dell'Accademia ", " des. ", " Disease-A-Month ", 
           " Drug des Deliv ", " Drug des Devel ", " DTSCH ", " DTSCH. ", " E-Collaboration ", 
           " E-Health ", " E-Journal ", " E-journal ", " E-Neuroforum ", " E-neuroforum ", 
           " E-Print ", " E-print ", " E-Prints ", " E-prints ", " E-Scripta ", " E-scripta ", 
@@ -272,7 +271,6 @@ const UCFIRST_JOURNAL_ACRONYMS = array(/* The following will be automatically up
           " Zeitschrift Für Physik a: Hadrons And Nuclei ", " Znanosti I Umjetnosti ", 
           " Zookeys ", " Zprávy O Zasedání Král. Čes. Společnosti Nauk V Praze ", 
           " Zprávy O Zasedání Král. čes. Společnosti Nauk V Praze ", " Zprávy o zasedání Král. čes. Společnosti nauk v Praze ", 
-          " de La Plata ", " De La Plata ",
           " Ргасе Filologiczne ", /* The above will be automatically updated to alphabetical order */ 
 );
 const OBVIOUS_FOREIGN_WORDS = array(" Abhandlungen ", " Actes ", " Annales ", " Archiv ", " Archives de ",
