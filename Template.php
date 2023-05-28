@@ -1210,6 +1210,7 @@ final class Template {
           if (preg_match('~^volume[:\s]+0*(.*)~i', $value, $matches)) {
             $value = $matches[1];
           }
+          if ((intval($value) > 1820)) && (stripos($this->get('doi'), '10.1515/crll') === 0)) return FALSE;
           $temp_string = strtolower($this->get('journal')) ;
           if(substr($temp_string, 0, 2) === "[[" && substr($temp_string, -2) === "]]") {  // Wikilinked journal title
                $temp_string = substr(substr($temp_string, 2), 0, -2); // Remove [[ and ]]
