@@ -597,6 +597,14 @@ function query_crossref(string $doi) : ?object {
       curl_close($ch);
       $result = $xml->query_result->body->query;
       if ((string) @$result["status"] === "resolved") {
+        if (stripos($doi, '10.1515/crll') === 0) {
+          $volume = trim((string) @$crossRef->volume);
+          $year = trim((string) @$crossRef->year);
+          if ($volume === $year) {
+            unset($crossRef->volume);
+            if (isset($crossRef->issue)) $crossRef->volume = $crossRef->issue;
+          }
+        }
         return $result;
       } else {
         return NULL;
