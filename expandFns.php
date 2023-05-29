@@ -124,7 +124,6 @@ function is_doi_works(string $doi) : ?bool {
   $headers_test = @get_headers("https://doi.org/" . doi_encode($doi), GET_THE_HEADERS, $context);
   $context = stream_context_create(CONTEXT_INSECURE_11);
   if ($headers_test === FALSE) {
-     if (ZOTERO_ONLY) return NULL;
      sleep(2);                                                                                        // @codeCoverageIgnore
      report_inline(' .');                                                                             // @codeCoverageIgnore
      set_time_limit(120);                                                                             // @codeCoverageIgnore
@@ -776,9 +775,12 @@ function title_capitalization(string $in, bool $caps_after_punctuation) : string
       }
     }
   }
-
-  $new_case = trim(str_replace(['Series a and B ', 'Series a & B '] , ['Series A and B ', 'Series A & B '], $new_case . ' ')); // TODO, use regex for any letter
   
+  if (preg_match('~Series ([a-zA-Z] )(\&|and)( [a-zA-Z] )~', $new_case . ' ', $matches)) {
+    $replace_me = 'Series ' . $matches[1] . $matches[2] . $matches[3];
+    $replace    = 'Series ' . strtoupper($matches[1]) . $matches[2] . strtoupper($matches[3]);
+    $new_case = trim(str_replace($replace_me, $replace, $new_case . ' '));
+  }
   // Part XII: Roman numerals
   $new_case = safe_preg_replace_callback(
     "~ part ([xvil]+): ~iu",
@@ -1413,7 +1415,7 @@ function normalize_google_books(string &$url, int &$removed_redundant, string &$
           case "gl": case "ovdme": case "sqi": case "w": case "rview": case "": case "kptab":
           case "pgis": case "ppis": case "output": case "gboemv": case "ie": case "nbsp;":
           case "fbclid": case "num": case "oe": case "pli": case "prev": case "vid": case "view":
-          case "as_drrb_is": case "sourceid": case "btnG": case "rls":
+          case "as_drrb_is": case "sourceid": case "btnG": case "rls": case "ov2":
           case "buy": case "edge": case "zoom": case "img": case "as_pt": // Safe to remove - many are how you searched for the book
             $removed_parts .= $part;
             $removed_redundant++;
@@ -1563,4 +1565,679 @@ function normalize_google_books(string &$url, int &$removed_redundant, string &$
       if (preg_match('~^(https://books\.google\.com/books\?id=[^#^&]+)(?:&printsec=frontcover|)(?:#v=onepage|v=snippet|)$~', $url, $matches)) {
          $url = $matches[1]; // URL Just wants the landing page
       }
+}
+
+function doi_is_bad (string $doi) : bool {
+        $doi = strtolower($doi);
+        if ($doi === '10.5284/1000184') return TRUE; // DOI for the entire database
+        if ($doi === '10.1267/science.040579197') return TRUE; // PMID test doi
+        if ($doi === '10.2307/3511692') return TRUE; // common review
+        if ($doi === '10.1377/forefront') return TRUE; // over-truncated
+        if ($doi === '10.1126/science') return TRUE; // over-truncated
+        if (strpos($doi, '10.5779/hypothesis') === 0) return TRUE; // SPAM took over
+        if (strpos($doi, '10.5555/') === 0) return TRUE; // Test DOI prefix
+        if (strpos($doi, '10.5860/choice.') === 0) return TRUE; // Paywalled book review
+        if (strpos($doi, '10.1093/law:epil') === 0) return TRUE; // Those do not work
+        if (strpos($doi, '10.1093/oi/authority') === 0) return TRUE; // Those do not work
+        if (strpos($doi, '10.10520/') === 0 && !doi_works($doi)) return TRUE; // Has doi in the URL, but is not a doi
+        if (strpos($doi, '10.1967/') === 0 && !doi_works($doi)) return TRUE; // Retired DOIs
+        if (strpos($doi, '10.1043/0003-3219(') === 0 && !doi_works($doi)) return TRUE; // Per-email.  The Angle Orthodontist will NEVER do these, since they have <> and [] in them
+        if (strpos($doi, '10.3316/') === 0 && !doi_works($doi)) return TRUE; // These do not work - https://search.informit.org/doi/10.3316/aeipt.207729 etc.
+        if (strpos($doi, '10.1002/was.') === 0 && !doi_works($doi)) return TRUE; // do's not doi's
+        if (strpos($doi, '10.48550/arxiv') === 0) return TRUE;
+        return FALSE;
+}
+
+function get_possible_dois(string $doi) : array {
+    $trial = array();
+    $trial[] = $doi;
+    // DOI not correctly formatted
+    switch (substr($doi, -1)) {
+      case ".":
+        // Missing a terminal 'x'?
+        $trial[] = $doi . "x";
+      case ",": case ";": case "\"":
+        // Or is this extra punctuation copied in?
+        $trial[] = substr($doi, 0, -1);
+    }
+    if (substr($doi, -4) === '</a>' || substr($doi, -4) === '</A>') {
+      $trial[] = substr($doi, 0, -4);
+    }
+    if (substr($doi, 0, 3) !== "10.") {
+      if (substr($doi, 0, 2) === "0.") {
+        $trial[] = "1" . $doi;
+      } elseif (substr($doi, 0, 1) === ".") {
+        $trial[] = "10" . $doi;
+      } else {
+        $trial[] = "10." . $doi;
+      }
+    }
+    if (preg_match("~^(.+)(10\.\d{4,6}/.+)~", trim($doi), $match)) {
+      $trial[] = $match[1];
+      $trial[] = $match[2];
+    }
+    if (strpos($doi, '10.1093') === 0 && doi_works($doi) !== TRUE) {
+          if (preg_match('~^10\.1093/(?:ref:|)odnb/9780198614128\.001\.0001/odnb\-9780198614128\-e\-(\d+)$~', $doi, $matches)) {
+              $trial[] = '10.1093/ref:odnb/' . $matches[1];
+              $trial[] = '10.1093/odnb/9780198614128.013.' . $matches[1];
+          }
+          if (preg_match('~^10\.1093/odnb/(\d+)$~', $doi, $matches)) {
+              $trial[] = '10.1093/ref:odnb/' . $matches[1];
+              $trial[] = '10.1093/odnb/9780198614128.013.' . $matches[1];
+          }
+          if (preg_match('~^10\.1093/ref:odnb/(\d+)$~', $doi, $matches)) {
+              $trial[] = '10.1093/odnb/9780198614128.013.' . $matches[1];
+          }
+          if (preg_match('~^10\.1093/9780198614128.013.(\d+)$~', $doi, $matches)) {
+              $trial[] = '10.1093/odnb/9780198614128.013.' . $matches[1];
+          }
+          if (preg_match('~^10\.1093/anb/9780198606697\.001\.0001/anb\-9780198606697\-e\-(\d+)$~', $doi, $matches)) {
+              $trial[] = '10.1093/anb/9780198606697.article.' . $matches[1];
+          }
+          if (preg_match('~^10\.1093/benz/9780199773787\.001\.0001/acref-9780199773787\-e\-(\d+)$~', $doi, $matches)) {
+              $trial[] = '10.1093/benz/9780199773787.article.B' . $matches[1];
+          }
+          if (preg_match('~^10\.1093/gao/9781884446054\.001\.0001/oao\-9781884446054\-e\-7000(\d+)$~', $doi, $matches)) {
+              $trial[] = '10.1093/gao/9781884446054.article.T' . $matches[1];
+          }
+          if (preg_match('~^10\.1093/gao/9781884446054\.001\.0001/oao\-9781884446054\-e\-700(\d+)$~', $doi, $matches)) {
+              $trial[] = '10.1093/gao/9781884446054.article.T' . $matches[1];
+          }
+          if (preg_match('~^10\.1093/acref/9780195301731\.001\.0001/acref\-9780195301731\-e\-(\d+)$~', $doi, $matches)) {
+              $trial[] = '10.1093/acref/9780195301731.013.' . $matches[1];
+          }
+          if (preg_match('~^10\.1093/ww/(9780199540891|9780199540884)\.001\.0001/ww\-9780199540884\-e\-(\d+)$~', $doi, $matches)) {
+              $trial[] = '10.1093/ww/9780199540884.013.U' . $matches[2];
+          }
+          if (preg_match('~^10\.1093/gmo/9781561592630\.001\.0001/omo-9781561592630-e-00000(\d+)$~', $doi, $matches)) {
+              $trial[] = '10.1093/gmo/9781561592630.article.' . $matches[1];
+          }
+          if (preg_match('~^10\.1093/gmo/9781561592630\.001\.0001/omo-9781561592630-e-100(\d+)$~', $doi, $matches)) {
+              $trial[] = '10.1093/gmo/9781561592630.article.A' . $matches[1];
+          }
+          if (preg_match('~^10\.1093/gmo/9781561592630\.001\.0001/omo-9781561592630-e-5000(\d+)$~', $doi, $matches)) {
+              $trial[] = '10.1093/gmo/9781561592630.article.O' . $matches[1];
+          }
+          if (preg_match('~^10\.1093/gmo/9781561592630\.001\.0001/omo-9781561592630-e-400(\d+)$~', $doi, $matches)) {
+              $trial[] = '10.1093/gmo/9781561592630.article.L' . $matches[1];
+          }
+          if (preg_match('~^10\.1093/gmo/9781561592630\.001\.0001/omo-9781561592630-e-2000(\d+)$~', $doi, $matches)) {
+              $trial[] = '10.1093/gmo/9781561592630.article.J' . $matches[1];
+          }
+          if (preg_match('~^10\.1093/acrefore/9780199366439\.001\.0001/acrefore\-9780199366439\-e\-(\d+)$~', $doi, $matches)) {
+              $trial[] = '10.1093/acrefore/9780199366439.013.' . $matches[1];
+          }
+          if (preg_match('~^10\.1093/acrefore/9780190228613\.001\.0001/acrefore\-9780190228613\-e\-(\d+)$~', $doi, $matches)) {
+              $trial[] = '10.1093/acrefore/9780190228613.013.' . $matches[1];
+          }
+          if (preg_match('~^10\.1093/acrefore/9780199389414\.001\.0001/acrefore\-9780199389414\-e\-(\d+)$~', $doi, $matches)) {
+              $trial[] = '10.1093/acrefore/9780199389414.013.' . $matches[1];
+          }
+          if (preg_match('~^10\.1093/acrefore/9780199329175\.001\.0001/acrefore\-9780199329175\-e\-(\d+)$~', $doi, $matches)) {
+              $trial[] = '10.1093/acrefore/9780199329175.013.' . $matches[1];
+          }
+          if (preg_match('~^10\.1093/acrefore/9780190277734\.001\.0001/acrefore\-9780190277734\-e\-(\d+)$~', $doi, $matches)) {
+              $trial[] = '10.1093/acrefore/9780190277734.013.' . $matches[1];
+          }
+          if (preg_match('~^10\.1093/acrefore/9780190846626\.001\.0001/acrefore\-9780190846626\-e\-(\d+)$~', $doi, $matches)) {
+              $trial[] = '10.1093/acrefore/9780190846626.013.' . $matches[1];
+          }
+          if (preg_match('~^10\.1093/acrefore/9780190228620\.001\.0001/acrefore\-9780190228620\-e\-(\d+)$~', $doi, $matches)) {
+              $trial[] = '10.1093/acrefore/9780190228620.013.' . $matches[1];
+          }
+          if (preg_match('~^10\.1093/acrefore/9780199340378\.001\.0001/acrefore\-9780199340378\-e\-(\d+)$~', $doi, $matches)) {
+              $trial[] = '10.1093/acrefore/9780199340378.013.' . $matches[1];
+          }
+          if (preg_match('~^10\.1093/acrefore/9780190854584\.001\.0001/acrefore\-9780190854584\-e\-(\d+)$~', $doi, $matches)) {
+              $trial[] = '10.1093/acrefore/9780190854584.013.' . $matches[1];
+          }
+          if (preg_match('~^10\.1093/acrefore/9780199381135\.001\.0001/acrefore\-9780199381135\-e\-(\d+)$~', $doi, $matches)) {
+              $trial[] = '10.1093/acrefore/9780199381135.013.' . $matches[1];
+          }
+          if (preg_match('~^10\.1093/acrefore/9780190236557\.001\.0001/acrefore\-9780190236557\-e\-(\d+)$~', $doi, $matches)) {
+              $trial[] = '10.1093/acrefore/9780190236557.013.' . $matches[1];
+          }
+          if (preg_match('~^10\.1093/acrefore/9780190228637\.001\.0001/acrefore\-9780190228637\-e\-(\d+)$~', $doi, $matches)) {
+              $trial[] = '10.1093/acrefore/9780190228637.013.' . $matches[1];
+          }
+          if (preg_match('~^10\.1093/acrefore/9780190201098\.001\.0001/acrefore\-9780190201098\-e\-(\d+)$~', $doi, $matches)) {
+              $trial[] = '10.1093/acrefore/9780190201098.013.' . $matches[1];
+          }
+          if (preg_match('~^10\.1093/oso/(\d{13})\.001\.0001/oso\-(\d{13})\-chapter\-(\d+)$~', $doi, $matches)) {
+            if ($matches[1] === $matches[2]) {
+              $trial[] = '10.1093/oso/' . $matches[1] . '.003.' . str_pad($matches[3], 4, "0", STR_PAD_LEFT);
+            }
+          }
+          if (preg_match('~^10\.1093/med/9780199592548\.001\.0001/med\-9780199592548-chapter-(\d+)$~', $doi, $matches)) {
+            $trial[] = '10.1093/med/9780199592548.003.' . str_pad($matches[1], 4, "0", STR_PAD_LEFT);
+          }
+          if (preg_match('~^10\.1093/oso/(\d{13})\.001\.0001/oso\-(\d{13})$~', $doi, $matches)) {
+            if ($matches[1] === $matches[2]) {
+              $trial[] = '10.1093/oso/' . $matches[1] . '.001.0001';
+            }
+          }
+          if (preg_match('~^10\.1093/oxfordhb/(\d{13})\.001\.0001/oxfordhb\-(\d{13})-e-(\d+)$~', $doi, $matches)) {
+            if ($matches[1] === $matches[2]) {
+              $trial[] = '10.1093/oxfordhb/' . $matches[1] . '.013.'  . $matches[3];
+              $trial[] = '10.1093/oxfordhb/' . $matches[1] . '.013.0' . $matches[3];
+              $trial[] = '10.1093/oxfordhb/' . $matches[1] . '.003.'  . $matches[3];
+              $trial[] = '10.1093/oxfordhb/' . $matches[1] . '.003.0' . $matches[3];
+            }
+          }
+    }
+    $replacements = array ("&lt;" => "<", "&gt;" => ">");
+    if (preg_match("~&[lg]t;~", $doi)) {
+      $trial[] = str_replace(array_keys($replacements), $replacements, $doi);
+    }
+    $changed = TRUE;
+    $try = $doi;
+    while ($changed) {
+      $changed = FALSE;
+      if ($pos = strrpos($try, '.')) {
+       $extension = substr($try, $pos);
+       if (in_array(strtolower($extension), array('.htm', '.html', '.jpg', '.jpeg', '.pdf', '.png', '.xml', '.full'))) {
+         $try = substr($try, 0, $pos);
+         $trial[] = $try;
+         $changed = TRUE;
+       }
+      }
+      if ($pos = strrpos($try, '#')) {
+       $extension = substr($try, $pos);
+       if (strpos(strtolower($extension), '#page_scan_tab_contents') === 0) {
+         $try = substr($try, 0, $pos);
+         $trial[] = $try;
+         $changed = TRUE;
+       }
+      }
+      if ($pos = strrpos($try, ';')) {
+       $extension = substr($try, $pos);
+       if (strpos(strtolower($extension), ';jsessionid') === 0) {
+         $try = substr($try, 0, $pos);
+         $trial[] = $try;
+         $changed = TRUE;
+       }
+      }
+      if ($pos = strrpos($try, '/')) {
+       $extension = substr($try, $pos);
+       if (in_array(strtolower($extension), array('/abstract', '/full', '/pdf', '/epdf', '/asset/', '/summary', '/short'))) {
+         $try = substr($try, 0, $pos);
+         $trial[] = $try;
+         $changed = TRUE;
+       }
+      }
+      if (preg_match('~^(.+)v\d{1,2}$~', $try, $matches)) { // Versions
+         $try = $matches[1];
+         $trial[] = $try;
+         $changed = TRUE;
+      }
+    }
+    return $trial;
+}
+
+function clean_up_oxford_stuff(Template $template, string $param) : void {
+          if (preg_match('~^https?://(latinamericanhistory|classics|psychology|americanhistory|africanhistory|internationalstudies|climatescience|religion|environmentalscience|politics)\.oxfordre\.com(/.+)$~', $template->get($param), $matches)) {
+               $template->set($param, 'https://oxfordre.com/' . $matches[1] . $matches[2]);
+          }
+
+          if (preg_match('~^(https?://(?:[\.+]|)oxfordre\.com)/([^/]+)/([^/]+)/([^/]+)/(.+)$~', $template->get($param), $matches)) {
+            if ($matches[2] === $matches[3] && $matches[2] === $matches[4]) {
+              $template->set($param, $matches[1] . '/' . $matches[2] . '/' . $matches[5]);
+            } elseif ($matches[2] === $matches[3]) {
+              $template->set($param, $matches[1] . '/' . $matches[2] . '/' . $matches[4] . '/' . $matches[5]);
+            }
+          }
+          if (preg_match('~^(https?://(?:[\.+]|)oxfordmusiconline\.com)/([^/]+)/([^/]+)/([^/]+)/(.+)$~', $template->get($param), $matches)) {
+            if ($matches[2] === $matches[3] && $matches[2] === $matches[4]) {
+              $template->set($param, $matches[1] . '/' . $matches[2] . '/' . $matches[5]);
+            } elseif ($matches[2] === $matches[3]) {
+              $template->set($param, $matches[1] . '/' . $matches[2] . '/' . $matches[4] . '/' . $matches[5]);
+            }
+          }
+
+          while (preg_match('~^(https?://www\.oxforddnb\.com/.+)(?:\?print|\?p=email|\;jsession|\?result=|\?rskey|\#|/version/\d+|\?backToResults)~', $template->get($param), $matches)) {
+               $template->set($param, $matches[1]);
+          }
+          while (preg_match('~^(https?://www\.anb\.org/.+)(?:\?print|\?p=email|\;jsession|\?result=|\?rskey|\#|/version/\d+|\?backToResults)~', $template->get($param), $matches)) {
+               $template->set($param, $matches[1]);
+          }
+          while (preg_match('~^(https?://www\.oxfordartonline\.com/.+)(?:\?print|\?p=email|\;jsession|\?result=|\?rskey|\#|/version/\d+|\?backToResults)~', $template->get($param), $matches)) {
+               $template->set($param, $matches[1]);
+          }
+          while (preg_match('~^(https?://www\.ukwhoswho\.com/.+)(?:\?print|\?p=email|\;jsession|\?result=|\?rskey|\#|/version/\d+|\?backToResults)~', $template->get($param), $matches)) {
+               $template->set($param, $matches[1]);
+          }
+          while (preg_match('~^(https?://www\.oxfordmusiconline\.com/.+)(?:\?print|\?p=email|\;jsession|\?result=|\?rskey|\#|/version/\d+|\?backToResults)~', $template->get($param), $matches)) {
+               $template->set($param, $matches[1]);
+          }
+          while (preg_match('~^(https?://oxfordre\.com/.+)(?:\?print|\?p=email|\;jsession|\?result=|\?rskey|\#|/version/\d+|\?backToResults)~', $template->get($param), $matches)) {
+               $template->set($param, $matches[1]);
+          }
+          while (preg_match('~^(https?://oxfordaasc\.com/.+)(?:\?print|\?p=email|\;jsession|\?result=|\?rskey|\#|/version/\d+|\?backToResults)~', $template->get($param), $matches)) {
+               $template->set($param, $matches[1]);
+          }
+          while (preg_match('~^(https?://oxford\.universitypressscholarship\.com/.+)(?:\?print|\?p=email|\;jsession|\?result=|\?rskey|\#|/version/\d+|\?backToResults)~', $template->get($param), $matches)) {
+               $template->set($param, $matches[1]);
+          }
+          while (preg_match('~^(https?://oxfordreference\.com/.+)(?:\?print|\?p=email|\;jsession|\?result=|\?rskey|\#|/version/\d+|\?backToResults)~', $template->get($param), $matches)) {
+               $template->set($param, $matches[1]);
+          }
+          if (preg_match('~^https?://www\.oxforddnb\.com/view/10\.1093/(?:ref:|)odnb/9780198614128\.001\.0001/odnb\-9780198614128\-e\-(\d+)$~', $template->get($param), $matches)) {
+              $new_doi = '10.1093/ref:odnb/' . $matches[1];
+              if (!doi_works($new_doi)) {
+                $new_doi = '10.1093/odnb/9780198614128.013.' . $matches[1];
+              }
+              if (doi_works($new_doi)) {
+                $template->add_if_new('isbn', '978-0-19-861412-8');
+                if ($template->has('doi') && $template->has('doi-broken-date')) {
+                    $template->set('doi', '');
+                    $template->forget('doi-broken-date');
+                    $template->add_if_new('doi', $new_doi);
+                 } elseif ($template->blank('doi')) {
+                    $template->add_if_new('doi', $new_doi);
+                }
+              }
+              $the_title = $template->get('title');
+              if (preg_match('~^(.+) \- Oxford Dictionary of National Biography$~', $the_title, $matches) ||
+                  preg_match('~^(.+) # # # CITATION_BOT_PLACEHOLDER_TEMPLATE \d+ # # # Oxford Dictionary of National Biography$~', $the_title, $matches) ||
+                  preg_match('~^(.+)  Oxford Dictionary of National Biography$~', $the_title, $matches) ||
+                  preg_match('~^(.+) &#\d+; Oxford Dictionary of National Biography$~', $the_title, $matches)) {
+                $template->set('title', trim($matches[1]));
+              }
+          }
+
+          if (preg_match('~^https?://www\.anb\.org/(?:view|abstract)/10\.1093/anb/9780198606697\.001\.0001/anb\-9780198606697\-e\-(\d+)$~', $template->get($param), $matches)) {
+              $new_doi = '10.1093/anb/9780198606697.article.' . $matches[1];
+              if (doi_works($new_doi)) {
+                $template->add_if_new('isbn', '978-0-19-860669-7');
+                if ($template->has('doi') && $template->has('doi-broken-date')) {
+                    $template->set('doi', '');
+                    $template->forget('doi-broken-date');
+                    $template->add_if_new('doi', $new_doi);
+                 } elseif ($template->blank('doi')) {
+                    $template->add_if_new('doi', $new_doi);
+                }
+              }
+          }
+
+          if (preg_match('~^https?://www\.oxfordartonline\.com/(?:benezit/|)(?:view|abstract)/10\.1093/benz/9780199773787\.001\.0001/acref-9780199773787\-e\-(\d+)$~', $template->get($param), $matches)) {
+              $new_doi = '10.1093/benz/9780199773787.article.B' . $matches[1];
+              if (doi_works($new_doi)) {
+                $template->add_if_new('isbn', '978-0-19-977378-7');
+                if ($template->has('doi') && $template->has('doi-broken-date')) {
+                    $template->set('doi', '');
+                    $template->forget('doi-broken-date');
+                    $template->add_if_new('doi', $new_doi);
+                 } elseif ($template->blank('doi')) {
+                    $template->add_if_new('doi', $new_doi);
+                }
+              }
+          }
+          if (preg_match('~^https?://www\.oxfordartonline\.com/(?:groveart/|)(?:view|abstract)/10\.1093/gao/9781884446054\.001\.0001/oao\-9781884446054\-e\-7000(\d+)$~', $template->get($param), $matches)) {
+              $new_doi = '10.1093/gao/9781884446054.article.T' . $matches[1];
+              if (doi_works($new_doi)) {
+                $template->add_if_new('isbn', '978-1-884446-05-4');
+                if ($template->has('doi') && $template->has('doi-broken-date')) {
+                    $template->set('doi', '');
+                    $template->forget('doi-broken-date');
+                    $template->add_if_new('doi', $new_doi);
+                 } elseif ($template->blank('doi')) {
+                    $template->add_if_new('doi', $new_doi);
+                }
+              }
+          }
+          if (preg_match('~^https?://www\.oxfordartonline\.com/(?:groveart/|)(?:view|abstract)/10\.1093/gao/9781884446054\.001\.0001/oao\-9781884446054\-e\-700(\d+)$~', $template->get($param), $matches)) {
+              $new_doi = '10.1093/gao/9781884446054.article.T' . $matches[1];
+              if (doi_works($new_doi)) {
+                $template->add_if_new('isbn', '978-1-884446-05-4');
+                if ($template->has('doi') && $template->has('doi-broken-date')) {
+                    $template->set('doi', '');
+                    $template->forget('doi-broken-date');
+                    $template->add_if_new('doi', $new_doi);
+                 } elseif ($template->blank('doi')) {
+                    $template->add_if_new('doi', $new_doi);
+                }
+              }
+          }
+
+          if (preg_match('~^https?://oxfordaasc\.com/view/10\.1093/acref/9780195301731\.001\.0001/acref\-9780195301731\-e\-(\d+)$~', $template->get($param), $matches)) {
+              $new_doi = '10.1093/acref/9780195301731.013.' . $matches[1];
+              if (doi_works($new_doi)) {
+                $template->add_if_new('isbn', '978-0-19-530173-1');
+                if ($template->has('doi') && $template->has('doi-broken-date')) {
+                    $template->set('doi', '');
+                    $template->forget('doi-broken-date');
+                    $template->add_if_new('doi', $new_doi);
+                 } elseif ($template->blank('doi')) {
+                    $template->add_if_new('doi', $new_doi);
+                }
+              }
+          }
+
+          if (preg_match('~^https?://www\.ukwhoswho\.com/(?:view|abstract)/10\.1093/ww/(9780199540891|9780199540884)\.001\.0001/ww\-9780199540884\-e\-(\d+)$~', $template->get($param), $matches)) {
+              $new_doi = '10.1093/ww/9780199540884.013.U' . $matches[2];
+              if (doi_works($new_doi)) {
+                $template->add_if_new('isbn', $matches[1]);
+                if ($template->has('doi') && $template->has('doi-broken-date')) {
+                    $template->set('doi', '');
+                    $template->forget('doi-broken-date');
+                    $template->add_if_new('doi', $new_doi);
+                 } elseif ($template->blank('doi')) {
+                    $template->add_if_new('doi', $new_doi);
+                }
+              }
+          }
+
+          if (preg_match('~^https?://www\.oxfordmusiconline\.com/(?:grovemusic/|)(?:view|abstract)/10\.1093/gmo/9781561592630\.001\.0001/omo-9781561592630-e-00000(\d+)$~', $template->get($param), $matches)) {
+              $new_doi = '10.1093/gmo/9781561592630.article.' . $matches[1];
+              if (doi_works($new_doi)) {
+                $template->add_if_new('isbn', '978-1-56159-263-0');
+                if ($template->has('doi') && $template->has('doi-broken-date')) {
+                    $template->set('doi', '');
+                    $template->forget('doi-broken-date');
+                    $template->add_if_new('doi', $new_doi);
+                 } elseif ($template->blank('doi')) {
+                    $template->add_if_new('doi', $new_doi);
+                }
+              }
+          }
+
+          if (preg_match('~^https?://www\.oxfordmusiconline\.com/(?:grovemusic/|)(?:view|abstract)/10\.1093/gmo/9781561592630\.001\.0001/omo-9781561592630-e-100(\d+)$~', $template->get($param), $matches)) {
+              $new_doi = '10.1093/gmo/9781561592630.article.A' . $matches[1];
+              if (doi_works($new_doi)) {
+                $template->add_if_new('isbn', '978-1-56159-263-0');
+                if ($template->has('doi') && $template->has('doi-broken-date')) {
+                    $template->set('doi', '');
+                    $template->forget('doi-broken-date');
+                    $template->add_if_new('doi', $new_doi);
+                 } elseif ($template->blank('doi')) {
+                    $template->add_if_new('doi', $new_doi);
+                }
+              }
+          }
+
+          if (preg_match('~^https?://www\.oxfordmusiconline\.com/(?:grovemusic/|)(?:view|abstract)/10\.1093/gmo/9781561592630\.001\.0001/omo-9781561592630-e-5000(\d+)$~', $template->get($param), $matches)) {
+              $new_doi = '10.1093/gmo/9781561592630.article.O' . $matches[1];
+              if (doi_works($new_doi)) {
+                $template->add_if_new('isbn', '978-1-56159-263-0');
+                if ($template->has('doi') && $template->has('doi-broken-date')) {
+                    $template->set('doi', '');
+                    $template->forget('doi-broken-date');
+                    $template->add_if_new('doi', $new_doi);
+                 } elseif ($template->blank('doi')) {
+                    $template->add_if_new('doi', $new_doi);
+                }
+              }
+          }
+
+          if (preg_match('~^https?://www\.oxfordmusiconline\.com/(?:grovemusic/|)(?:view|abstract)/10\.1093/gmo/9781561592630\.001\.0001/omo-9781561592630-e-400(\d+)$~', $template->get($param), $matches)) {
+              $new_doi = '10.1093/gmo/9781561592630.article.L' . $matches[1];
+              if (doi_works($new_doi)) {
+                $template->add_if_new('isbn', '978-1-56159-263-0');
+                if ($template->has('doi') && $template->has('doi-broken-date')) {
+                    $template->set('doi', '');
+                    $template->forget('doi-broken-date');
+                    $template->add_if_new('doi', $new_doi);
+                 } elseif ($template->blank('doi')) {
+                    $template->add_if_new('doi', $new_doi);
+                }
+              }
+          }
+
+          if (preg_match('~^https?://www\.oxfordmusiconline\.com/(?:grovemusic/|)(?:view|abstract)/10\.1093/gmo/9781561592630\.001\.0001/omo-9781561592630-e-2000(\d+)$~', $template->get($param), $matches)) {
+              $new_doi = '10.1093/gmo/9781561592630.article.J' . $matches[1];
+              if (doi_works($new_doi)) {
+                $template->add_if_new('isbn', '978-1-56159-263-0');
+                if ($template->has('doi') && $template->has('doi-broken-date')) {
+                    $template->set('doi', '');
+                    $template->forget('doi-broken-date');
+                    $template->add_if_new('doi', $new_doi);
+                 } elseif ($template->blank('doi')) {
+                    $template->add_if_new('doi', $new_doi);
+                }
+              }
+          }
+
+          if (preg_match('~^https?://oxfordre\.com/(?:|latinamericanhistory/)(?:view|abstract)/10\.1093/acrefore/9780199366439\.001\.0001/acrefore\-9780199366439\-e\-(\d+)$~', $template->get($param), $matches)) {
+              $new_doi = '10.1093/acrefore/9780199366439.013.' . $matches[1];
+              if (doi_works($new_doi)) {
+                $template->add_if_new('isbn', '978-0-19-936643-9');
+                if ($template->has('doi') && $template->has('doi-broken-date')) {
+                    $template->set('doi', '');
+                    $template->forget('doi-broken-date');
+                    $template->add_if_new('doi', $new_doi);
+                 } elseif ($template->blank('doi')) {
+                    $template->add_if_new('doi', $new_doi);
+                }
+              }
+          }
+
+          if (preg_match('~^https?://oxfordre\.com/(?:|communication/)(?:view|abstract)/10\.1093/acrefore/9780190228613\.001\.0001/acrefore\-9780190228613\-e\-(\d+)$~', $template->get($param), $matches)) {
+              $new_doi = '10.1093/acrefore/9780190228613.013.' . $matches[1];
+              if (doi_works($new_doi)) {
+                $template->add_if_new('isbn', '978-0-19-022861-3');
+                if ($template->has('doi') && $template->has('doi-broken-date')) {
+                    $template->set('doi', '');
+                    $template->forget('doi-broken-date');
+                    $template->add_if_new('doi', $new_doi);
+                 } elseif ($template->blank('doi')) {
+                    $template->add_if_new('doi', $new_doi);
+                }
+              }
+          }
+
+          if (preg_match('~^https?://oxfordre\.com/(?:|environmentalscience/)(?:view|abstract)/10\.1093/acrefore/9780199389414\.001\.0001/acrefore\-9780199389414\-e\-(\d+)$~', $template->get($param), $matches)) {
+              $new_doi = '10.1093/acrefore/9780199389414.013.' . $matches[1];
+              if (doi_works($new_doi)) {
+                $template->add_if_new('isbn', '978-0-19-938941-4');
+                if ($template->has('doi') && $template->has('doi-broken-date')) {
+                    $template->set('doi', '');
+                    $template->forget('doi-broken-date');
+                    $template->add_if_new('doi', $new_doi);
+                 } elseif ($template->blank('doi')) {
+                    $template->add_if_new('doi', $new_doi);
+                }
+              }
+          }
+
+          if (preg_match('~^https?://oxfordre\.com/(?:|americanhistory/)(?:view|abstract)/10\.1093/acrefore/9780199329175\.001\.0001/acrefore\-9780199329175\-e\-(\d+)$~', $template->get($param), $matches)) {
+              $new_doi = '10.1093/acrefore/9780199329175.013.' . $matches[1];
+              if (doi_works($new_doi)) {
+                $template->add_if_new('isbn', '978-0-19-932917-5');
+                if ($template->has('doi') && $template->has('doi-broken-date')) {
+                    $template->set('doi', '');
+                    $template->forget('doi-broken-date');
+                    $template->add_if_new('doi', $new_doi);
+                 } elseif ($template->blank('doi')) {
+                    $template->add_if_new('doi', $new_doi);
+                }
+              }
+          }
+
+          if (preg_match('~^https?://oxfordre\.com/(?:|africanhistory/)(?:view|abstract)/10\.1093/acrefore/9780190277734\.001\.0001/acrefore\-9780190277734\-e\-(\d+)$~', $template->get($param), $matches)) {
+              $new_doi = '10.1093/acrefore/9780190277734.013.' . $matches[1];
+              if (doi_works($new_doi)) {
+                $template->add_if_new('isbn', '978-0-19-027773-4');
+                if ($template->has('doi') && $template->has('doi-broken-date')) {
+                    $template->set('doi', '');
+                    $template->forget('doi-broken-date');
+                    $template->add_if_new('doi', $new_doi);
+                 } elseif ($template->blank('doi')) {
+                    $template->add_if_new('doi', $new_doi);
+                }
+              }
+          }
+
+          if (preg_match('~^https?://oxfordre\.com/(?:|internationalstudies/)(?:view|abstract)/10\.1093/acrefore/9780190846626\.001\.0001/acrefore\-9780190846626\-e\-(\d+)$~', $template->get($param), $matches)) {
+              $new_doi = '10.1093/acrefore/9780190846626.013.' . $matches[1];
+              if (doi_works($new_doi)) {
+                $template->add_if_new('isbn', '978-0-19-084662-6');
+                if ($template->has('doi') && $template->has('doi-broken-date')) {
+                    $template->set('doi', '');
+                    $template->forget('doi-broken-date');
+                    $template->add_if_new('doi', $new_doi);
+                 } elseif ($template->blank('doi')) {
+                    $template->add_if_new('doi', $new_doi);
+                }
+              }
+          }
+
+          if (preg_match('~^https?://oxfordre\.com/(?:|climatescience/)(?:view|abstract)/10\.1093/acrefore/9780190228620\.001\.0001/acrefore\-9780190228620\-e\-(\d+)$~', $template->get($param), $matches)) {
+              $new_doi = '10.1093/acrefore/9780190228620.013.' . $matches[1];
+              if (doi_works($new_doi)) {
+                $template->add_if_new('isbn', '978-0-19-022862-0');
+                if ($template->has('doi') && $template->has('doi-broken-date')) {
+                    $template->set('doi', '');
+                    $template->forget('doi-broken-date');
+                    $template->add_if_new('doi', $new_doi);
+                 } elseif ($template->blank('doi')) {
+                    $template->add_if_new('doi', $new_doi);
+                }
+              }
+          }
+
+          if (preg_match('~^https?://oxfordre\.com/(?:|religion/)(?:view|abstract)/10\.1093/acrefore/9780199340378\.001\.0001/acrefore\-9780199340378\-e\-(\d+)$~', $template->get($param), $matches)) {
+              $new_doi = '10.1093/acrefore/9780199340378.013.' . $matches[1];
+              if (doi_works($new_doi)) {
+                $template->add_if_new('isbn', '978-0-19-934037-8');
+                if ($template->has('doi') && $template->has('doi-broken-date')) {
+                    $template->set('doi', '');
+                    $template->forget('doi-broken-date');
+                    $template->add_if_new('doi', $new_doi);
+                 } elseif ($template->blank('doi')) {
+                    $template->add_if_new('doi', $new_doi);
+                }
+              }
+          }
+
+          if (preg_match('~^https?://oxfordre\.com/(?:|anthropology/)(?:view|abstract)/10\.1093/acrefore/9780190854584\.001\.0001/acrefore\-9780190854584\-e\-(\d+)$~', $template->get($param), $matches)) {
+              $new_doi = '10.1093/acrefore/9780190854584.013.' . $matches[1];
+              if (doi_works($new_doi)) {
+                $template->add_if_new('isbn', '978-0-19-085458-4');
+                if ($template->has('doi') && $template->has('doi-broken-date')) {
+                    $template->set('doi', '');
+                    $template->forget('doi-broken-date');
+                    $template->add_if_new('doi', $new_doi);
+                 } elseif ($template->blank('doi')) {
+                    $template->add_if_new('doi', $new_doi);
+                }
+              }
+          }
+
+          if (preg_match('~^https?://oxfordre\.com/(?:|classics/)(?:view|abstract)/10\.1093/acrefore/9780199381135\.001\.0001/acrefore\-9780199381135\-e\-(\d+)$~', $template->get($param), $matches)) {
+              $new_doi = '10.1093/acrefore/9780199381135.013.' . $matches[1];
+              if (doi_works($new_doi)) {
+                $template->add_if_new('isbn', '978-0-19-938113-5');
+                if ($template->has('doi') && $template->has('doi-broken-date')) {
+                    $template->set('doi', '');
+                    $template->forget('doi-broken-date');
+                    $template->add_if_new('doi', $new_doi);
+                 } elseif ($template->blank('doi')) {
+                    $template->add_if_new('doi', $new_doi);
+                }
+              }
+          }
+
+          if (preg_match('~^https?://oxfordre\.com/(?:|psychology/)(?:view|abstract)/10\.1093/acrefore/9780190236557\.001\.0001/acrefore\-9780190236557\-e\-(\d+)$~', $template->get($param), $matches)) {
+              $new_doi = '10.1093/acrefore/9780190236557.013.' . $matches[1];
+              if (doi_works($new_doi)) {
+                $template->add_if_new('isbn', '978-0-19-023655-7');
+                if ($template->has('doi') && $template->has('doi-broken-date')) {
+                    $template->set('doi', '');
+                    $template->forget('doi-broken-date');
+                    $template->add_if_new('doi', $new_doi);
+                 } elseif ($template->blank('doi')) {
+                    $template->add_if_new('doi', $new_doi);
+                }
+              }
+          }
+
+          if (preg_match('~^https?://oxfordre\.com/(?:|politics/)(?:view|abstract)/10\.1093/acrefore/9780190228637\.001\.0001/acrefore\-9780190228637\-e\-(\d+)$~', $template->get($param), $matches)) {
+              $new_doi = '10.1093/acrefore/9780190228637.013.' . $matches[1];
+              if (doi_works($new_doi)) {
+                $template->add_if_new('isbn', '978-0-19-022863-7');
+                if ($template->has('doi') && $template->has('doi-broken-date')) {
+                    $template->set('doi', '');
+                    $template->forget('doi-broken-date');
+                    $template->add_if_new('doi', $new_doi);
+                 } elseif ($template->blank('doi')) {
+                    $template->add_if_new('doi', $new_doi);
+                }
+              }
+          }
+
+          if (preg_match('~^https?://oxfordre\.com/(?:|literature/)(?:view|abstract)/10\.1093/acrefore/9780190201098\.001\.0001/acrefore\-9780190201098\-e\-(\d+)$~', $template->get($param), $matches)) {
+              $new_doi = '10.1093/acrefore/9780190201098.013.' . $matches[1];
+              if (doi_works($new_doi)) {
+                $template->add_if_new('isbn', '978-0-19-020109-8');
+                if ($template->has('doi') && $template->has('doi-broken-date')) {
+                    $template->set('doi', '');
+                    $template->forget('doi-broken-date');
+                    $template->add_if_new('doi', $new_doi);
+                 } elseif ($template->blank('doi')) {
+                    $template->add_if_new('doi', $new_doi);
+                }
+              }
+          }
+
+          if (preg_match('~^https?://oxford\.universitypressscholarship\.com/(?:view|abstract)/10\.1093/(oso|acprof:oso)/(\d{13})\.001\.0001/oso\-(\d{13})\-chapter\-(\d+)$~', $template->get($param), $matches)) {
+            if ($matches[2] === $matches[3]) {
+              $template->add_if_new('isbn', $matches[2]);
+              $new_doi = '10.1093/' . $matches[1] . '/' . $matches[2] . '.003.' . str_pad($matches[4], 4, "0", STR_PAD_LEFT);
+              if (doi_works($new_doi)) {
+                if ($template->has('doi') && $template->has('doi-broken-date')) {
+                    $template->set('doi', '');
+                    $template->forget('doi-broken-date');
+                    $template->add_if_new('doi', $new_doi);
+                 } elseif ($template->blank('doi')) {
+                    $template->add_if_new('doi', $new_doi);
+                }
+              }
+            }
+          }
+
+          if (preg_match('~^https?://(?:www\.|)oxfordmedicine\.com/(?:view|abstract)/10\.1093/med/9780199592548\.001\.0001/med\-9780199592548-chapter-(\d+)$~', $template->get($param), $matches)) {
+            $new_doi = '10.1093/med/9780199592548.003.' . str_pad($matches[1], 4, "0", STR_PAD_LEFT);
+            if (doi_works($new_doi)) {
+              $template->add_if_new('isbn', '978-0-19-959254-8');
+              if ($template->has('doi') && ($template->has('doi-broken-date') || $template->get('doi') === '10.1093/med/9780199592548.001.0001')) {
+                  $template->set('doi', '');
+                  $template->forget('doi-broken-date');
+                  $template->add_if_new('doi', $new_doi);
+               } elseif ($template->blank('doi')) {
+                  $template->add_if_new('doi', $new_doi);
+              }
+            }
+          }
+
+          if (preg_match('~^https?://oxford\.universitypressscholarship\.com/(?:view|abstract)/10\.1093/oso/(\d{13})\.001\.0001/oso\-(\d{13})$~', $template->get($param), $matches)) {
+            if ($matches[1] === $matches[2]) {
+              $template->add_if_new('isbn', $matches[1]);
+              $new_doi = '10.1093/oso/' . $matches[1] . '.001.0001';
+              if (doi_works($new_doi)) {
+                if ($template->has('doi') && $template->has('doi-broken-date')) {
+                    $template->set('doi', '');
+                    $template->forget('doi-broken-date');
+                    $template->add_if_new('doi', $new_doi);
+                 } elseif ($template->blank('doi')) {
+                    $template->add_if_new('doi', $new_doi);
+                }
+              }
+            }
+          }
+
+          if (preg_match('~^https?://(?:www\.|)oxfordhandbooks\.com/(?:view|abstract)/10\.1093/oxfordhb/(\d{13})\.001\.0001/oxfordhb\-(\d{13})-e-(\d+)$~', $template->get($param), $matches)) {
+            if ($matches[1] === $matches[2]) {
+              $new_doi = '10.1093/oxfordhb/' . $matches[1] . '.013.' . $matches[3];
+              if (doi_works($new_doi)) {
+                $template->add_if_new('isbn', $matches[1]);
+                if (($template->has('doi') && $template->has('doi-broken-date')) || ($template->get('doi') === '10.1093/oxfordhb/9780199552238.001.0001')) {
+                    $template->set('doi', '');
+                    $template->forget('doi-broken-date');
+                    $template->add_if_new('doi', $new_doi);
+                 } elseif ($template->blank('doi')) {
+                    $template->add_if_new('doi', $new_doi);
+                }
+              }
+            }
+          }
 }

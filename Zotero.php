@@ -101,7 +101,7 @@ public static function query_url_api_class(array $ids, array &$templates) : void
   if (!SLOW_MODE) return; // Zotero takes time
 
   curl_setopt(self::$zotero_ch, CURLOPT_TIMEOUT, 45); // Reset default
-  if (!TRAVIS && !ZOTERO_ONLY) { // try harder in tests
+  if (!TRAVIS) { // try harder in tests
     // @codeCoverageIgnoreStart
     curl_setopt(self::$zotero_ch, CURLOPT_CONNECTTIMEOUT, 3);
     $url_count = 0;
@@ -124,7 +124,6 @@ public static function query_url_api_class(array $ids, array &$templates) : void
      self::expand_by_zotero($template);
   }
   self::$zotero_announced = 2;
-  if (ZOTERO_ONLY) return;
   if (!TRAVIS) { // These are pretty reliable, unlike random urls
       curl_setopt(self::$zotero_ch, CURLOPT_TIMEOUT, 10);  // @codeCoverageIgnore
   }
@@ -140,7 +139,7 @@ public static function query_url_api_class(array $ids, array &$templates) : void
        }
        $doi = $template->get('doi');
        if (!doi_active($doi)) {
-         //  Gone -- if ($template->has('citeseerx'))
+         if ($template->has('citeseerx')) self::expand_by_zotero($template, ' https://citeseerx.ist.psu.edu/viewdoc/summary?doi=' . $template->get('citeseerx'));
          //  Has a CAPCHA --  if ($template->has('jfm'))
          //  Has a CAPCHA --  if ($template->has('zbl'))
          //  Do NOT do MR --  it is a review not the article itself.  Note that html does have doi, but do not use it.
@@ -202,7 +201,6 @@ public static function query_ieee_webpages(array &$templates) : void {  // Point
 **/
 public static function drop_urls_that_match_dois(array &$templates) : void {  // Pointer to save memory
   // Now that we have expanded URLs, try to lose them
-  if (ZOTERO_ONLY) return;
   $ch = curl_init();
   curl_setopt_array($ch,
         [CURLOPT_FOLLOWLOCATION => TRUE,
@@ -359,10 +357,6 @@ private static function zotero_request(string $url) : string {
     report_warning(curl_error(self::$zotero_ch) . "   For URL: " . echoable($url));
     if (strpos(curl_error(self::$zotero_ch), 'timed out after') !== FALSE) {
       self::$zotero_failures_count = self::$zotero_failures_count + 1;
-      if (ZOTERO_ONLY) {
-         self::$zotero_failures_count = 1;
-         sleep(10);
-      }
       if (self::$zotero_failures_count > self::ZOTERO_GIVE_UP) {
         report_warning("Giving up on URL expansion for a while");
         self::$zotero_failures_count = self::$zotero_failures_count + self::ZOTERO_SKIPS;
@@ -640,6 +634,12 @@ public static function process_zotero_response(string $zotero_response, Template
       $result->extra = trim(str_replace(trim($matches[0]), '', $result->extra));
       $template->add_if_new('ol', $matches[1]);
     }
+    
+    // UNUSED stuff goes below
+    
+    if (preg_match('~\sFormat: PDF\s~i', ' ' . $result->extra . ' ', $matches)) {
+      $result->extra = trim(str_replace(trim($matches[0]), '', $result->extra));
+    }
     if (preg_match('~\sIMDb ID: ((?:tt|co|nm)\d+)\s~i', ' ' . $result->extra . ' ', $matches)) { // We don't use it
       $result->extra = trim(str_replace(trim($matches[0]), '', $result->extra));
     }
@@ -701,6 +701,9 @@ public static function process_zotero_response(string $zotero_response, Template
     if (preg_match('~\s(INIS Reference Number: \d+)\s~i', ' ' . $result->extra . ' ', $matches)) { // We don't use it - https://inis.iaea.org
       $result->extra = trim(str_replace(trim($matches[0]), '', $result->extra));  // @codeCoverageIgnore
     }
+    if (preg_match('~\s(ERIC Number: \S+)\s~i', ' ' . $result->extra . ' ', $matches)) { // We don't use it
+      $result->extra = trim(str_replace(trim($matches[0]), '', $result->extra));  // @codeCoverageIgnore
+    }
     if (preg_match('~\s(\d+ cm\.)\s~i', ' ' . $result->extra . ' ', $matches)) { // We don't use it - size of book
       $result->extra = trim(str_replace(trim($matches[0]), '', $result->extra));  // @codeCoverageIgnore
     }
@@ -744,9 +747,15 @@ public static function process_zotero_response(string $zotero_response, Template
     if (preg_match('~Post URL:.+~i', ' ' . $result->extra . ' ', $matches)) {  // We don't use it
       $result->extra = trim(str_replace(trim($matches[0]), '', $result->extra));           // @codeCoverageIgnore
     }
+    if (preg_match('~Reference Number:.+~i', ' ' . $result->extra . ' ', $matches)) {  // We don't use it
+      $result->extra = trim(str_replace(trim($matches[0]), '', $result->extra));           // @codeCoverageIgnore
+    }
+    if (preg_match('~jurisdiction:.+~i', ' ' . $result->extra . ' ', $matches)) {  // We don't use it
+      $result->extra = trim(str_replace(trim($matches[0]), '', $result->extra));           // @codeCoverageIgnore
+    }
     $result->extra = trim($result->extra);
     if ($result->extra !== '') {
-      // TODO - look at this again at some point report_minor_error("Unhandled extra data: " . echoable($result->extra) .  ' FROM ' . echoable($url));          // @codeCoverageIgnore
+      report_minor_error("Unhandled extra data: " . echoable($result->extra) .  ' FROM ' . echoable($url));          // @codeCoverageIgnore
     }
   } 
   
@@ -940,6 +949,7 @@ public static function process_zotero_response(string $zotero_response, Template
       case 'webpage':
       case 'blogPost':
       case 'document':// Could be a journal article or a genuine web page.
+      case 'preprint':
       case 'entry':
       case 'videoRecording':
       case 'film':
@@ -957,6 +967,8 @@ public static function process_zotero_response(string $zotero_response, Template
       case 'case':       // @codeCoverageIgnore
       case 'statute':       // @codeCoverageIgnore
       case 'interview':   // @codeCoverageIgnore
+      case 'letter':   // @codeCoverageIgnore
+      case 'dataset':  // @codeCoverageIgnore
       case 'radioBroadcast':   // @codeCoverageIgnore
           // Do not change type.  Would need to think about parameters
       case 'patent':       // @codeCoverageIgnore
@@ -1058,7 +1070,6 @@ public static function url_simplify(string $url) : string {
 
 public static function find_indentifiers_in_urls(Template $template, ?string $url_sent = NULL) : bool {
     set_time_limit(120);
-    if (ZOTERO_ONLY) return FALSE;
     if (is_null($url_sent)) {
        // Chapter URLs are generally better than URLs for the whole book.
         if ($template->has('url') && $template->has('chapterurl')) {
@@ -1193,6 +1204,13 @@ public static function find_indentifiers_in_urls(Template $template, ?string $ur
          return TRUE;
        }
        return TRUE;
+    }
+  
+    if (preg_match("~^(https?://.+\/.+)\?casa_token=.+$~", $url, $matches)) {
+      $url = $matches[1];
+      if (is_null($url_sent)) {
+        $template->set($url_type, $url); // Update URL with cleaner one
+      }
     }
 
     if (stripos($url, 'jstor') !== FALSE) {
@@ -1490,7 +1508,7 @@ public static function find_indentifiers_in_urls(Template $template, ?string $ur
             }
             return FALSE; // A search such as https://www.ncbi.nlm.nih.gov/pubmed/?term=Sainis%20KB%5BAuthor%5D&cauthor=true&cauthor_uid=19447493
           }
-          quietly('report_modification', "Converting URL to PMID parameter");
+          if ($template->blank('pmid')) quietly('report_modification', "Converting URL to PMID parameter");
           if (is_null($url_sent)) {
             if ($template->has_good_free_copy()) $template->forget($url_type);
           }
@@ -1536,7 +1554,7 @@ public static function find_indentifiers_in_urls(Template $template, ?string $ur
       } elseif (stripos($url, 'pubmedcentralcanada.ca') !== FALSE) {
        if (preg_match("~^https?://(?:www\.|)pubmedcentralcanada\.ca/pmcc/articles/PMC(\d{4,})(?:|/.*)$~i", $url, $match)) {
         if ($template->wikiname() === 'cite web') $template->change_name_to('cite journal');
-        quietly('report_modification', "Converting Canadian URL to PMC parameter");
+        if ($template->blank('pmc')) quietly('report_modification', "Converting Canadian URL to PMC parameter");
         if (is_null($url_sent)) {
             $template->forget($url_type);  // Always do this conversion, since website is gone!
         }
@@ -1545,7 +1563,7 @@ public static function find_indentifiers_in_urls(Template $template, ?string $ur
        return FALSE;
       } elseif (stripos($url, 'citeseerx') !== FALSE) {
        if (preg_match("~^https?://citeseerx\.ist\.psu\.edu/viewdoc/(?:summary|download)(?:\;jsessionid=[^\?]+|)\?doi=([0-9.]*)(?:&.+)?~", $url, $match)) {
-        quietly('report_modification', "URL is hard-coded citeseerx; converting to use citeseerx parameter.");
+        if ($template->blank('citeseerx')) quietly('report_modification', "URL is hard-coded citeseerx; converting to use citeseerx parameter.");
         if (is_null($url_sent)) {
           if ($template->has_good_free_copy()) {
             $template->forget($url_type);
@@ -1673,7 +1691,7 @@ public static function find_indentifiers_in_urls(Template $template, ?string $ur
           // Verify that it works as a hdl
           $the_header_loc = hdl_works($handle);
           if ($the_header_loc === FALSE || $the_header_loc === NULL) return FALSE;
-          quietly('report_modification', "Converting URL to HDL parameter");
+          if ($template->blank('hdl')) quietly('report_modification', "Converting URL to HDL parameter");
           if (is_null($url_sent)) {
              if ($template->has_good_free_copy()) $template->forget($url_type);
           }
@@ -1685,7 +1703,7 @@ public static function find_indentifiers_in_urls(Template $template, ?string $ur
           return $template->add_if_new('hdl', $handle);
       } elseif (stripos($url, 'zbmath.org') !== FALSE) {
          if (preg_match("~^https?://zbmath\.org/\?(?:format=complete&|)q=an:([0-9][0-9][0-9][0-9]\.[0-9][0-9][0-9][0-9][0-9])~i", $url, $match)) {
-          quietly('report_modification', "Converting URL to ZBL parameter");
+          if ($template->blank('zbl')) quietly('report_modification', "Converting URL to ZBL parameter");
           if (is_null($url_sent)) {
              if ($template->has_good_free_copy()) {
                $template->forget($url_type);
@@ -1694,7 +1712,7 @@ public static function find_indentifiers_in_urls(Template $template, ?string $ur
           }
           return $template->add_if_new('zbl', $match[1]);
          } elseif (preg_match("~^https?://zbmath\.org/\?(?:format=complete&|)q=an:([0-9][0-9]\.[0-9][0-9][0-9][0-9]\.[0-9][0-9])~i", $url, $match)) {
-          quietly('report_modification', "Converting URL to JFM parameter");
+          if ($template->blank('jfm')) quietly('report_modification', "Converting URL to JFM parameter");
           if (is_null($url_sent)) {
              if ($template->has_good_free_copy()) {
                $template->forget($url_type);
@@ -1705,13 +1723,13 @@ public static function find_indentifiers_in_urls(Template $template, ?string $ur
          }
          return FALSE;
       } elseif (preg_match("~^https?://mathscinet\.ams\.org/mathscinet-getitem\?mr=([0-9]+)~i", $url, $match)) {
-          quietly('report_modification', "Converting URL to MR parameter");
+          if ($template->blank('mr')) quietly('report_modification', "Converting URL to MR parameter");
           if (is_null($url_sent)) {
              // SEP 2020 $template->forget($url_type); This points to a review and not the article
           }
           return $template->add_if_new('mr', $match[1]);
       } elseif (preg_match("~^https?://papers\.ssrn\.com(?:/sol3/papers\.cfm\?abstract_id=|/abstract=)([0-9]+)~i", $url, $match)) {
-          quietly('report_modification', "Converting URL to SSRN parameter");
+          if ($template->blank('ssrn')) quietly('report_modification', "Converting URL to SSRN parameter");
           if (is_null($url_sent)) {
              if ($template->has_good_free_copy()) {
                $template->forget($url_type);
@@ -1721,7 +1739,7 @@ public static function find_indentifiers_in_urls(Template $template, ?string $ur
           return $template->add_if_new('ssrn', $match[1]);
       } elseif (stripos($url, 'osti.gov') !== FALSE) {
          if (preg_match("~^https?://(?:www\.|)osti\.gov/(?:scitech/|)(?:biblio/|)(?:purl/|)([0-9]+)(?:\.pdf|)~i", $url, $match)) {
-          quietly('report_modification', "Converting URL to OSTI parameter");
+          if ($template->blank('osti')) quietly('report_modification', "Converting URL to OSTI parameter");
           if (is_null($url_sent)) {
              if ($template->has_good_free_copy()) {
                $template->forget($url_type);
@@ -1730,7 +1748,7 @@ public static function find_indentifiers_in_urls(Template $template, ?string $ur
           }
           return $template->add_if_new('osti', $match[1]);
          } elseif (preg_match("~^https?://(?:www\.|)osti\.gov/energycitations/product\.biblio\.jsp\?osti_id=([0-9]+)~i", $url, $match)) {
-          quietly('report_modification', "Converting URL to OSTI parameter");
+          if ($template->blank('osti')) quietly('report_modification', "Converting URL to OSTI parameter");
           if (is_null($url_sent)) {
              if ($template->has_good_free_copy()) {
                $template->forget($url_type);
@@ -1746,14 +1764,14 @@ public static function find_indentifiers_in_urls(Template $template, ?string $ur
             report_warning('Not adding OCLC because is appears to be a weblink to a list of editions: ' . $match[1]);
             return FALSE;
           }
-          quietly('report_modification', "Converting URL to OCLC parameter");
+          if ($template->blank('oclc')) quietly('report_modification', "Converting URL to OCLC parameter");
           if ($template->wikiname() === 'cite web') $template->change_name_to('cite book');  // Better template choice
           if (is_null($url_sent)) {
              // SEP 2020 $template->forget($url_type);
           }
           return $template->add_if_new('oclc', $match[1]);
         } elseif (preg_match("~^https?://(?:www\.|)worldcat\.org/issn/(\d{4})(?:|-)(\d{3}[\dxX])$~i", $url, $match)) {
-          quietly('report_modification', "Converting URL to ISSN parameter");
+          if ($template->blank('issn')) quietly('report_modification', "Converting URL to ISSN parameter");
           if ($template->wikiname() === 'cite web') $template->change_name_to('cite journal');  // Better template choice
           if (is_null($url_sent)) {
              // SEP 2020 $template->forget($url_type);
@@ -1764,13 +1782,13 @@ public static function find_indentifiers_in_urls(Template $template, ?string $ur
       } elseif (preg_match("~^https?://lccn\.loc\.gov/(\d{4,})$~i", $url, $match)  &&
                 (stripos($template->parsed_text(), 'library') === FALSE)) { // Sometimes it is web cite to Library of Congress
           if ($template->wikiname() === 'cite web') $template->change_name_to('cite book');  // Better template choice
-          quietly('report_modification', "Converting URL to LCCN parameter");
+          if ($template->blank('lccn')) quietly('report_modification', "Converting URL to LCCN parameter");
           if (is_null($url_sent)) {
              // SEP 2020 $template->forget($url_type);
           }
           return $template->add_if_new('lccn', $match[1]);
       } elseif (preg_match("~^https?://openlibrary\.org/books/OL/?(\d{4,}[WM])(?:|/.*)$~i", $url, $match)) { // We do W "work" and M "edition", but not A, which is author
-          quietly('report_modification', "Converting URL to OL parameter");
+          if ($template->blank('ol')) quietly('report_modification', "Converting URL to OL parameter");
           if ($template->wikiname() === 'cite web') $template->change_name_to('cite book');  // Better template choice
           if (is_null($url_sent)) {
              // SEP 2020 $template->forget($url_type);
