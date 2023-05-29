@@ -598,11 +598,11 @@ function query_crossref(string $doi) : ?object {
       $result = $xml->query_result->body->query;
       if ((string) @$result["status"] === "resolved") {
         if (stripos($doi, '10.1515/crll') === 0) {
-          $volume = intval(trim((string) @$crossRef->volume));
+          $volume = intval(trim((string) @$result->volume));
           if ($volume > 1820) {
-            unset($crossRef->volume);
-            if (isset($crossRef->issue)) $crossRef->volume = $crossRef->issue;
-            unset($crossRef->issue);
+            unset($result->volume);
+            if (isset($result->issue)) $result->volume = $result->issue;
+            unset($result->issue);
           }
         }
         return $result;
