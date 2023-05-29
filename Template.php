@@ -2204,7 +2204,7 @@ final class Template {
 
     foreach ($ris as $ris_line) {
       $ris_part = explode(" - ", $ris_line . " ", 2);
-      if (!isset($ris_part[1])) $ris_part[0]) = ""; // Ignore
+      if (!isset($ris_part[1])) $ris_part[0] = ""; // Ignore
       if (trim($ris_part[0]) === "TY") {
         if (in_array(trim($ris_part[1]), ['CHAP', 'BOOK', 'EBOOK', 'ECHAP', 'EDBOOK', 'DICT', 'ENCYC', 'GOVDOC'])) {
           $ris_book = TRUE; // See https://en.wikipedia.org/wiki/RIS_(file_format)#Type_of_reference
@@ -2224,7 +2224,7 @@ final class Template {
     foreach ($ris as $ris_line) {
       $ris_part = explode(" - ", $ris_line . " ", 2);
       $ris_parameter = FALSE;
-      if (!isset($ris_part[1])) $ris_part[0]) = ""; // Ignore
+      if (!isset($ris_part[1])) $ris_part[0] = ""; // Ignore
       switch (trim($ris_part[0])) {
         case "T1":
           if ($ris_fullbook) {
