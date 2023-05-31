@@ -755,7 +755,7 @@ public static function process_zotero_response(string $zotero_response, Template
     }
     $result->extra = trim($result->extra);
     if ($result->extra !== '') {
-      report_minor_error("Unhandled extra data: " . echoable($result->extra) .  ' FROM ' . echoable($url));          // @codeCoverageIgnore
+      ;// TODO - check back later on report_minor_error("Unhandled extra data: " . echoable($result->extra) .  ' FROM ' . echoable($url));          // @codeCoverageIgnore
     }
   } 
   
