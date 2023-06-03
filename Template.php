@@ -345,22 +345,22 @@ final class Template {
           $the_pages   = $this->get('pages');
           $initial_author_params_save = $this->initial_author_params;
           $bad_data = FALSE;
-          if ($the_pages === '0' || $the_pages === 'null' || $the_pages === 'n/a' || $the_pages === 'online' || $the_pages === 'Online' || $the_pages === 'Forthcoming') {
+          if ($the_pages === '0' || $the_pages === 'null' || $the_pages === 'n/a' || $the_pages === 'online' || $the_pages === 'Online' || $the_pages === 'Forthcoming' || $the_pages === 'forthcoming') {
               $this->rename('pages', 'CITATION_BOT_PLACEHOLDER_pages');
               $the_pages = '';
               $bad_data = TRUE;
           }
-          if ($the_page === '0' || $the_page === 'null' || $the_page === 'n/a' || $the_page === 'online' || $the_page === 'Online' || $the_page === 'Forthcoming') {
+          if ($the_page === '0' || $the_page === 'null' || $the_page === 'n/a' || $the_page === 'online' || $the_page === 'Online' || $the_page === 'Forthcoming' || $the_page === 'forthcoming') {
               $this->rename('page', 'CITATION_BOT_PLACEHOLDER_page');
               $the_page = '';
               $bad_data = TRUE;
           }
-          if ($the_volume === '0' || $the_volume === 'null' || $the_volume === 'n/a' || $the_volume === 'Online edition' || $the_volume === 'online' || $the_volume === 'Online' || $the_volume === 'in press'  || $the_volume === 'In press' || $the_volume === 'ahead-of-print' || $the_volume === 'Forthcoming') {
+          if ($the_volume === '0' || $the_volume === 'null' || $the_volume === 'n/a' || $the_volume === 'Online edition' || $the_volume === 'online' || $the_volume === 'Online' || $the_volume === 'in press'  || $the_volume === 'In press' || $the_volume === 'ahead-of-print' || $the_volume === 'Forthcoming' || $the_volume === 'forthcoming') {
               $this->rename('volume', 'CITATION_BOT_PLACEHOLDER_volume');
               $the_volume = '';
               $bad_data = TRUE;
           }
-          if ($the_issue === '0' || $the_issue === 'null' || $the_issue === 'ja' || $the_issue === 'n/a' || $the_issue === 'Online edition' || $the_issue === 'online' || $the_issue === 'Online' || $the_issue === 'in press' || $the_issue === 'In press' || $the_issue === 'ahead-of-print' || $the_issue === 'Forthcoming') {
+          if ($the_issue === '0' || $the_issue === 'null' || $the_issue === 'ja' || $the_issue === 'n/a' || $the_issue === 'Online edition' || $the_issue === 'online' || $the_issue === 'Online' || $the_issue === 'in press' || $the_issue === 'In press' || $the_issue === 'ahead-of-print' || $the_issue === 'Forthcoming' || $the_issue === 'forthcoming') {
               $this->rename('issue', 'CITATION_BOT_PLACEHOLDER_issue');
               $the_issue = '';
               $bad_data = TRUE;
