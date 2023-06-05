@@ -12,7 +12,7 @@ if (file_exists('git_pull.lock')) {
  */
 
 function bot_debug_log(string $log_this) : void {
-  file_put_contents('CodeCoverage', echoable(Page::$last_title) . " :: $log_this\n", FILE_APPEND);
+  if (function_exists('echoable')) file_put_contents('CodeCoverage', echoable(WikipediaBot::GetLastUser()) . " :: " . echoable(Page::$last_title) . " :: $log_this\n", FILE_APPEND);
 }
 
 $pig = array('en', 'simple');
@@ -60,7 +60,7 @@ ini_set("memory_limit", "1024M");
 ini_set("pcre.backtrack_limit", "1425000000");
 ini_set("pcre.recursion_limit", "425000000");
 if (isset($_REQUEST["pcre"]) || (strpos((string) @$_SERVER['PHP_SELF'], '/gadgetapi.php') !== FALSE)) { // Willing to take slight performance penalty on Gadget
-  ini_set("pcre.jit", "0"); // TODO - at some point this will hopefully not be needed for pages like https://citations.toolforge.org/process_page.php?edit=toolbar&page=List_of_public_sector_undertakings_in_India
+  ini_set("pcre.jit", "0");
 }
 
 date_default_timezone_set('UTC');

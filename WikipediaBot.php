@@ -420,7 +420,6 @@ try {
   
   static public function is_valid_user(string $user) : bool {
     if (!$user) return FALSE;
-    // if (in_array($user, array())) return FALSE; // TODO - add bad actors as needed
     $query = [
          "action" => "query",
          "usprop" => "blockinfo",
@@ -449,8 +448,12 @@ try {
     return !TRAVIS && isset(self::$last_WikipediaBot) && self::$last_WikipediaBot->get_the_user() === 'AManWithNoPlan';
   }
   
+  private function get_the_user_internal() : string {
+    return $this->the_user;
+  }
   static public function GetLastUser() : string {
-    return self::$last_WikipediaBot->get_the_user();
+    if(isset(self::$last_WikipediaBot)) return self::$last_WikipediaBot->get_the_user_internal();
+    return '';
   }
   
 /**
@@ -493,8 +496,10 @@ try {
     } else {
        unset($_SESSION['access_key'], $_SESSION['access_secret']);
        session_write_close();
+       $return = $_SERVER['REQUEST_URI'];
+       $return = preg_replace('~\s+~', '', $return); // Security paranoia
        /** @psalm-taint-escape header */
-       $return = urlencode($_SERVER['REQUEST_URI']);
+       $return = urlencode($return);
        @header("Location: authenticate.php?return=" . $return);
     }
     exit(0);
