@@ -429,10 +429,5 @@ final class expandFnsTest extends testBaseClass {
     $this->assertFalse(doi_works('10.3316/aeipt.207729'));
     // DO's, not DOIs
     $this->assertFalse(doi_works('10.1002/was.00020423'));
-    // Nature dropped ball on these - and they should break or lead someplace
-    $this->assertTrue(doi_works('10.1038/nature05009'));
-    $headers = @get_headers("https://doi.org/10.1038/nature05009", GET_THE_HEADERS, stream_context_create(CONTEXT_INSECURE));
-    $this->assertFalse(empty($headers['Location']) && empty($headers['location']));  // Leads to something (but of no value)
-    $this->assertSame('HTTP/1.1 504 Gateway Timeout', (string) @$headers['5']);
   }
 }

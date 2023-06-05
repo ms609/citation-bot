@@ -7,7 +7,7 @@ const HAS_NO_VOLUME = array("zookeys", "studia hibernica", "analecta hibernica",
                             "cap journal", "phytokeys", "starinar", "balcanica", "american museum novitates",
                             "european journal of taxonomy");  // Some journals have issues only, no volume numbers
 // oceanic linguistics special publications has the problem that issues will not show up within temlpates
-const HAS_NO_ISSUE = array("special papers in palaeontology", "oceanic linguistics special publications");  // Some journals have volumes only, no issue numbers
+const HAS_NO_ISSUE = array("special papers in palaeontology", "oceanic linguistics special publications", "cahiers balkaniques");  // Some journals have volumes only, no issue numbers
 const PREFER_VOLUMES = array("illinois classical studies"); // When issue=volume, drop issue.  JSTOR calls volumes issues
 const PREFER_ISSUES = array("mammalian species", "bulletin of the united states national museum");
 const BAD_ACCEPTED_MANUSCRIPT_TITLES = array("oup accepted manuscript", "placeholder for bad pdf file", 
@@ -28,7 +28,7 @@ const NON_HUMAN_AUTHORS = array('collaborat', 'reporter', 'journalist', 'corresp
 const BAD_PUBLISHERS = array('london', 'edinburgi', 'edinburgh', 'no publisher', 'no publisher given',
                              'no publisher specified', 'unknown', 'publisher not identified', 'report');
 
-const ARE_WORKS = array('medrxiv'); // Things with dois that should be {{cite document|work=THIS}}
+const ARE_WORKS = array('medrxiv', 'ietf datatracker'); // Things with dois that should be {{cite document|work=THIS}}
 
 const BAD_DOI_ARRAY = ['10.1126/science' => TRUE, '' => TRUE, '10.1267/science.040579197' => TRUE, '10.0000/Rubbish_bot_failure_test' => TRUE, '10.0000/Rubbish_bot_failure_test2' => TRUE];
 
