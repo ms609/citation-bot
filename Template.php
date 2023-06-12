@@ -5143,7 +5143,7 @@ final class Template {
               }
           }
           if (stripos($this->get($param), 'https://access.newspaperarchive.com/') === 0) {
-            $this->set($param, str_ireplace('https://access.newspaperarchive.com/', 'https://www.newspaperarchive.com/', $this->get($param));
+            $this->set($param, str_ireplace('https://access.newspaperarchive.com/', 'https://www.newspaperarchive.com/', $this->get($param)));
           }
 
           clean_up_oxford_stuff($this, $param);
