@@ -4979,8 +4979,6 @@ final class Template {
                  || preg_match("~^https?://onlinelibrarystatic\.wiley\.com/store/~", $this->get($param))) {
                  $this->forget($param);
                  return;
-             } elseif (preg_match("~^https?://(?:www\.|)figshare\.com/articles/journal_contribution/[^/]+/([0-9]+)$~i", $this->get($param), $matches)) {
-                 $this->set($param, 'https://figshare.com/articles/journal_contribution/' . $matches[1]);
              }
              if ($this->get_identifiers_from_url($this->get($param))) {
                if (extract_doi($this->get($param))[1] === '') { // If it gives a doi, then might want to keep it anyway since many archives have doi in the url string
@@ -5042,6 +5040,8 @@ final class Template {
               if (substr($matches[2], -1) === '#' || substr($matches[2], -1) === '.') $matches[2] = substr($matches[2], 0, -1); // Sometime just a trailing # after & part
               quietly('report_modification', "Unmasking Proquest eBook URL.");
               $this->set($param, 'https://public.ebookcentral.proquest.com/choice/publicfullrecord.aspx?p=' . $matches[1] . $matches[2]);
+          } elseif (preg_match("~^https?://(?:www\.|)figshare\.com/articles/journal_contribution/[^/]+/([0-9]+)$~i", $this->get($param), $matches)) {
+              $this->set($param, 'https://figshare.com/articles/journal_contribution/' . $matches[1]);
           }
 
           if (preg_match("~ebscohost.com.*AN=(\d+)$~", $this->get($param), $matches)) {
