@@ -1231,7 +1231,7 @@ public static function find_indentifiers_in_urls(Template $template, ?string $ur
        }
      }
            echo $template->get($url_type) . "  " . __LINE__;
-     if (preg_match("~^(https?://\S*jstor.org\S*)\?origin=~", $url, $matches)) {
+     if (preg_match("~^(https?://\S*jstor.org\S*)\?origin=~", $url, $matches) && stripos($url, "accept")===FALSE) {
        $url = $matches[1];
        if (is_null($url_sent)) {
          $template->set($url_type, $url); // Update URL with cleaner one
