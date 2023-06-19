@@ -4979,7 +4979,7 @@ final class Template {
                  || preg_match("~^https?://onlinelibrarystatic\.wiley\.com/store/~", $this->get($param))) {
                  $this->forget($param);
                  return;
-             } elseif (preg_match("~^https?://(?:www\.|)figshare\.com/articles/journal_contribution/[^/]+/([0-9]+)~i", $this->get($param), $matches)) {
+             } elseif (preg_match("~^https?://(?:www\.|)figshare\.com/articles/journal_contribution/[^/]+/([0-9]+)$~i", $this->get($param), $matches)) {
                  $this->set($param, 'https://figshare.com/articles/journal_contribution/' . $matches[1]);
              }
              if ($this->get_identifiers_from_url($this->get($param))) {
