@@ -1229,9 +1229,13 @@ public static function find_indentifiers_in_urls(Template $template, ?string $ur
        }
      }
      if (preg_match("~^(https?://\S*jstor.org\S*)\?origin=~", $url, $matches)) {
-       $url = $matches[1];
-       if (is_null($url_sent)) {
-         $template->set($url_type, $url); // Update URL with cleaner one
+       if (stripos($url, "accept") !== FALSE) {
+         bot_debug_log("Accept Terms and Conditions JSTOR found : " . $url);
+       } else {
+         $url = $matches[1];
+         if (is_null($url_sent)) {
+           $template->set($url_type, $url); // Update URL with cleaner one
+         }
        }
      }
      if (stripos($url, 'plants.jstor.org') !== FALSE) {
