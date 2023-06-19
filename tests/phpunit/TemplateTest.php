@@ -3277,6 +3277,12 @@ EP - 999 }}';
     $this->assertSame('https://www.academia.edu/123456', $prepared->get2('url'));
   }
  
+  public function testTrimFigShare() : void {
+    $text = '{{cite journal|url=http://figshare.com/articles/journal_contribution/Volcanic_Setting_of_the_Bajo_de_la_Alumbrera_Porphyry_Cu-Au_Deposit_Farallon_Negro_Volcanics_Northwest_Argentina/22859585}}';
+    $prepared = $this->process_citation($text);
+    $this->assertSame('https://figshare.com/articles/journal_contribution/22859585', $prepared->get2('url'));
+  }
+
   public function testTrimProquestEbook1() : void {
     $text = '{{cite web|url=https://ebookcentral.proquest.com/lib/claremont/detail.action?docID=123456}}';
     $prepared = $this->prepare_citation($text);
