@@ -161,7 +161,7 @@ const JOURNAL_ACRONYMS = array(/* The following will be automatically updated to
           " Zeitschrift für Physik A: Hadrons and Nuclei ", " Znanosti i Umjetnosti ", 
           " ZooKeys ", " Zprávy o zasedání Král. čes. společnosti nauk v Praze ", 
           " Zprávy o zasedání Král. čes. společnosti nauk v Praze ", " Zprávy o zasedání Král. čes. společnosti nauk v Praze ", 
-          " Des Moines "
+          " Des Moines ",
           " Ргасе filologiczne ", /* The above will be automatically updated to alphabetical order */ 
 );
 const UCFIRST_JOURNAL_ACRONYMS = array(/* The following will be automatically updated to alphabetical order */
