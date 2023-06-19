@@ -3225,7 +3225,7 @@ final class Template {
           case "genbank": case "better source needed": case "free access": case "required subscription":
           case "fahrplan-ch": case "incomplete short citation": case "music": case "bar-ads":
           case "subscription or libraries": case "gallica": case "gnd": case "ncbibook":
-          case "spaces": case "ndash":
+          case "spaces": case "ndash": case "dggs": case "self-published source": case "nobreak":
           case "gbooks": // TODO - should use
           case "isbnt": case "issn link": case "lccn8": // Assume not normal template for a reason
           case "google books": // Usually done for fancy formatting and because already has title-link/url
@@ -5142,7 +5142,12 @@ final class Template {
                 }
               }
           }
-
+          if (stripos($this->get($param), 'https://access.newspaperarchive.com/') === 0) {
+            $this->set($param, str_ireplace('https://access.newspaperarchive.com/', 'https://www.newspaperarchive.com/', $this->get($param)));
+          }
+          if (stripos($this->get($param), 'http://access.newspaperarchive.com/') === 0) {
+            $this->set($param, str_ireplace('http://access.newspaperarchive.com/', 'https://www.newspaperarchive.com/', $this->get($param)));
+          }
           clean_up_oxford_stuff($this, $param);
 
           if (preg_match('~^https?://([^/]+)/~', $this->get($param), $matches)) {
