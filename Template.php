@@ -663,7 +663,7 @@ final class Template {
     }
 
     return (!(
-             ($this->has('journal') || $this->has('periodical') || $this->has('work') || $this->has('newspaper') || $this->has('magazine'))
+             ($this->has('journal') || $this->has('periodical') || $this->has('work') || $this->has('newspaper') || $this->has('magazine') || $this->has('trans-work'))
           &&  $this->has('volume')
           && ($this->has('issue') || $this->has('number'))
           &&  $this->has('title')
@@ -696,7 +696,7 @@ final class Template {
 
     if (str_ireplace(NON_JOURNAL_WEBSITES, '', $url) !== $url) { // A website that will never give a volume
           return (!(
-             ($this->has('journal') || $this->has('periodical') || $this->has('work') ||
+             ($this->has('journal') || $this->has('periodical') || $this->has('work') || $this->has('trans-work') ||
               $this->has('website') || $this->has('publisher') || $this->has('newspaper') ||
               $this->has('magazine')|| $this->has('encyclopedia') || $this->has('encyclopaedia') ||
               $this->has('contribution'))
@@ -705,7 +705,7 @@ final class Template {
     ));
     }
     return (!(
-             ($this->has('journal') || $this->has('periodical'))
+             ($this->has('journal') || $this->has('periodical') || $this->has('trans-work'))
           &&  $this->has('volume')
           &&  $this->has('title')
           &&  $has_date
@@ -1074,6 +1074,7 @@ final class Template {
             $param_name = 'website';
           }
         }
+        if (!$this->blank('trans-work')) return FALSE;
         if (in_array(strtolower(sanitize_string($this->get('journal'))), BAD_TITLES)) $this->forget('journal'); // Update to real data
         if (preg_match('~^(?:www\.|)rte.ie$~i', $value)) $value = 'RTÉ News'; // Russian special case code
         if ($this->wikiname() === 'cite book' && $this->has('chapter') && $this->has('title') && $this->has('series')) return FALSE;
@@ -5610,7 +5611,7 @@ final class Template {
                   $bad = FALSE;
                 }
               }
-              if ($bad) report_warning('Perhaps page= of ' . echoable($value) . ' is actually a page range.  If so, change to pages=, otherwise change minus sign to {{endash}}');
+              if ($bad) report_warning('Perhaps page= of ' . echoable($value) . ' is actually a page range.  If so, change to pages=, otherwise change minus sign to {{hyphen}}');
             } else {
               $the_dash = (int) mb_strpos($value, "–"); // ALL must be mb_ functions because of long dash
               $part1 = trim(mb_substr($value, 0, $the_dash));
