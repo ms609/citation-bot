@@ -5609,7 +5609,7 @@ final class Template {
                   $bad = FALSE;
                 }
               }
-              if ($bad) report_warning('Perhaps page= of ' . echoable($value) . ' is actually a page range.  If so, change to pages=, otherwise change minus sign to {{endash}}');
+              if ($bad) report_warning('Perhaps page= of ' . echoable($value) . ' is actually a page range.  If so, change to pages=, otherwise change minus sign to {{hyphen}}');
             } else {
               $the_dash = (int) mb_strpos($value, "–"); // ALL must be mb_ functions because of long dash
               $part1 = trim(mb_substr($value, 0, $the_dash));
