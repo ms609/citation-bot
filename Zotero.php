@@ -1128,7 +1128,7 @@ public static function find_indentifiers_in_urls(Template $template, ?string $ur
       $url = $url_sent;
       $url_type = 'An invalid value';
     }
-
+     echo $template->get($url_type) . "  " . __LINE__;
     if (strtolower(substr( $url, 0, 6 )) === "ttp://" || strtolower(substr( $url, 0, 7 )) === "ttps://") { // Not unusual to lose first character in copy and paste
       $url = "h" . $url;
       if (is_null($url_sent)) {
@@ -1214,6 +1214,7 @@ public static function find_indentifiers_in_urls(Template $template, ?string $ur
     }
 
     if (stripos($url, 'jstor') !== FALSE) {
+           echo $template->get($url_type) . "  " . __LINE__;
      // Trim ?seq=1#page_scan_tab_contents off of jstor urls
      // We do this since not all jstor urls are recognized below
      if (preg_match("~^(https?://\S*jstor.org\S*)\?seq=1#[a-zA-Z_]+$~", $url, $matches)) {
@@ -1222,21 +1223,25 @@ public static function find_indentifiers_in_urls(Template $template, ?string $ur
          $template->set($url_type, $url); // Update URL with cleaner one
        }
      }
+           echo $template->get($url_type) . "  " . __LINE__;
      if (preg_match("~^(https?://\S*jstor.org\S*)\?refreqid=~", $url, $matches)) {
        $url = $matches[1];
        if (is_null($url_sent)) {
          $template->set($url_type, $url); // Update URL with cleaner one
        }
      }
+           echo $template->get($url_type) . "  " . __LINE__;
      if (preg_match("~^(https?://\S*jstor.org\S*)\?origin=~", $url, $matches)) {
        $url = $matches[1];
        if (is_null($url_sent)) {
          $template->set($url_type, $url); // Update URL with cleaner one
        }
      }
+           echo $template->get($url_type) . "  " . __LINE__;
      if (stripos($url, 'plants.jstor.org') !== FALSE) {
       return FALSE; # Plants database, not journal
      }
+           echo $template->get($url_type) . "  " . __LINE__;
      // https://www.jstor.org.stuff/proxy/stuff/stable/10.2307/3347357 and such
      // Optional 0- at front.
      // DO NOT change www.jstor.org to www\.jstor\.org  -- Many proxies use www-jstor-org
