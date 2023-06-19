@@ -75,7 +75,7 @@ const JOURNAL_ACRONYMS = array(/* The following will be automatically updated to
           " Croatica et Slavica Iadertina ", " CrystEngComm ", " Cultura i Literatura ", 
           " Cutter IT Journal ", " CytoJournal ", " Danica ilirska ", " de la Plata ", 
           " de la Plata ", " de la Plata ", " de la Plata, ", " de la Plata, ", " de la Plata, ", 
-          " dell'Accademia ", " Des. ", " Disease-a-Month ", " Drug Des Deliv ", " Drug Des Devel ", 
+          " dell'Accademi\Month ", " Drug Des Deliv ", " Drug Des Devel ", 
           " Dtsch ", " Dtsch. ", " e-Collaboration ", " e-Health ", " e-Journal ", " e-Journal ", 
           " e-Neuroforum ", " e-Neuroforum ", " e-Print ", " e-Print ", " e-Prints ", " e-Prints ", 
           " e-Scripta ", " e-Scripta ", " e-SPEN ", " e-SPEN ", " e-SPEN, ", " e-SPEN, ", 
@@ -161,7 +161,7 @@ const JOURNAL_ACRONYMS = array(/* The following will be automatically updated to
           " Zeitschrift für Physik A: Hadrons and Nuclei ", " Znanosti i Umjetnosti ", 
           " ZooKeys ", " Zprávy o zasedání Král. čes. společnosti nauk v Praze ", 
           " Zprávy o zasedání Král. čes. společnosti nauk v Praze ", " Zprávy o zasedání Král. čes. společnosti nauk v Praze ", 
-          " Des Moines ", " ESAIM: PS ",
+          " Des Moines ", " ESAIM: PS ",dfadsfdsfdsf
           " Ргасе filologiczne ", /* The above will be automatically updated to alphabetical order */ 
 );
 const UCFIRST_JOURNAL_ACRONYMS = array(/* The following will be automatically updated to alphabetical order */
