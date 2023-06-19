@@ -1246,6 +1246,7 @@ public static function find_indentifiers_in_urls(Template $template, ?string $ur
          $template->set($url_type, $url); // Update URL with cleaner one.  Will probably call forget on it below
        }
      }
+     echo $template->get($url_type) . "  " . __LINE__;
      // https://www.jstor.org.libweb.lib.utsa.edu/stable/3347357 and such
      // Optional 0- at front.
      // DO NOT change www.jstor.org to www\.jstor\.org  -- Many proxies use www-jstor-org
@@ -1256,6 +1257,7 @@ public static function find_indentifiers_in_urls(Template $template, ?string $ur
          $template->set($url_type, $url); // Update URL with cleaner one
        }
      }
+      echo $template->get($url_type) . "  " . __LINE__;
      // Remove junk from URLs
      while (preg_match('~^https?://www\.jstor\.org/stable/(.+)(?:&ved=|&usg=|%3Fseq%3D1|\?|#metadata_info_tab_contents)~i', $url, $matches)) {
        $url = 'https://www.jstor.org/stable/' . $matches[1] ;
@@ -1263,6 +1265,7 @@ public static function find_indentifiers_in_urls(Template $template, ?string $ur
          $template->set($url_type, $url); // Update URL with cleaner one
        }
      }
+      echo $template->get($url_type) . "  " . __LINE__;
 
      if (preg_match('~^https?://(?:www\.|)jstor\.org/stable/(?:pdf|pdfplus)/(.+)\.pdf$~i', $url, $matches) ||
         preg_match('~^https?://(?:www\.|)jstor\.org/tc/accept\?origin=(?:\%2F|/)stable(?:\%2F|/)pdf(?:\%2F|/)(\d{3,})\.pdf$~i', $url, $matches)) {
@@ -1294,6 +1297,7 @@ public static function find_indentifiers_in_urls(Template $template, ?string $ur
        return FALSE;
      }
     } // JSTOR
+  echo $template->get($url_type) . "  " . __LINE__;
     if (preg_match('~^https?://(?:www\.|)archive\.org/detail/jstor\-(\d{5,})$~i', $url, $matches)) {
        $template->add_if_new('jstor', $matches[1]);
        if (is_null($url_sent)) {
