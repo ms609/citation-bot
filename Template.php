@@ -705,7 +705,7 @@ final class Template {
     ));
     }
     return (!(
-             ($this->has('journal') || $this->has('periodical') || $this->has('trans-work')) $this->has('script-work') ||
+             ($this->has('journal') || $this->has('periodical') || $this->has('trans-work') || $this->has('script-work'))
           &&  $this->has('volume')
           &&  $this->has('title')
           &&  $has_date
