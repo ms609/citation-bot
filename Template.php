@@ -4421,6 +4421,12 @@ final class Template {
           if (preg_match('~\S+\s*\/\s*(?:|\[\[)Google News Archive~i', $publisher)) {
              return;  // this is Newspaper / Google News Archive
           }
+          if ($publisher === 'pubmed') {
+             if ($this->has('doi') || $this->has('pmid')) {
+                $this->forget($param);
+                return;
+             }
+          }
 
           foreach (NON_PUBLISHERS as $not_publisher) {
             if (stripos($publisher, $not_publisher) !== FALSE) {
