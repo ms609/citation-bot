@@ -4827,7 +4827,6 @@ final class Template {
 
           if ($publisher === strtolower($this->get('journal') . $this->get('website') . $this->get('newspaper') . $this->get('work') . $this->get('periodical'))) {
             $this->forget($param);
-            bot_debug_log('dropping: ' . $publisher);
           }
 
           return;
