@@ -16,7 +16,7 @@ const BAD_ACCEPTED_MANUSCRIPT_TITLES = array("oup accepted manuscript", "placeho
 const BAD_AUTHORS = array("unknown", "missing", "- -.", "- -", "no authorship indicated", "no authorship", "no author",
                            "no authors", "no author indicated", "no authorship indicated", "dk eyewitness", "united states",
                            "great britain", "indiatoday", "natural history museum bern", "daily sabah", 'el país', 'el pais', 
-			   "radio", "rundfunk");
+			   "radio", "rundfunk", "news agencies");
 const NON_HUMAN_AUTHORS = array('collaborat', 'reporter', 'journalist', 'correspondent', 'anchor', 'staff', 'foreign',
                                 'national', 'endowment', ' for the ', 'humanities', 'committee', 'group',
                                 'society', ' of america', 'association', ' at the ', 'board of ', 'communications',
@@ -24,7 +24,7 @@ const NON_HUMAN_AUTHORS = array('collaborat', 'reporter', 'journalist', 'corresp
                                 'dept of ', 'college', 'center for', 'office of', 'editor', 'institut', 'world bank',
                                 'world news', 'national news', 'eyewitness', 'information', 'business', 'bureau',
                                 'us census', 'indiatoday', 'natural history', 'museum', '試験所', 'circuit',
-                                'external', 'relations', 'nations', 'united', 'radio', 'rundfunk', 'new york');
+                                'external', 'relations', 'nations', 'united', 'radio', 'rundfunk', 'new york', 'agencies');
 const BAD_PUBLISHERS = array('london', 'edinburgi', 'edinburgh', 'no publisher', 'no publisher given',
                              'no publisher specified', 'unknown', 'publisher not identified', 'report');
 
