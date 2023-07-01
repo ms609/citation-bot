@@ -4825,7 +4825,7 @@ final class Template {
             return;
           }
 
-          if ($publisher === strtolower($this->get('journal') . $this->get('website') . $this->get('newspaper') . $this->get('work') . $this->get('periodical'))) {
+          if ($publisher === strtolower($this->get('journal') . $this->get('website') . $this->get('newspaper') . $this->get('work') . $this->get('periodical') . $this->get('magazine'))) {
             $this->forget($param);
           }
 
