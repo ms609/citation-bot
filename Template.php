@@ -6009,7 +6009,7 @@ final class Template {
         }
       }
       $this->tidy_parameter('doi'); // might be free, and freedom is date dependent for some journals
-      if ($this->blank(PAGE_ALIASES) && preg_match('~^10\.1103\/[a-zA-Z]+\.(\d+)\.(\d+)^~', $matches)) {
+      if ($this->blank(PAGE_ALIASES) && preg_match('~^10\.1103\/[a-zA-Z]+\.(\d+)\.(\d+)^~', $this->get('doi'), $matches)) {
         if ($matches[1] === $this->get('volume')) {
            $this->set('page', $matches[2]); // Often not in CrossRef
         }
