@@ -417,7 +417,12 @@ function wikify_external_text(string $title) : string {
 function restore_italics (string $text) : string {
   // <em> tags often go missing around species names in CrossRef
   if (str_ireplace(array('arxiv', 'ebay', 'aRMadillo', 'imac', 'FreeFab'), '', $text) !== $text) return $text; // Words with capitals in the middle, but not the first character
-  return safe_preg_replace('~([a-z]+)([A-Z][a-z]+\b)~', "$1 ''$2''", $text);
+  $new = safe_preg_replace('~([a-z]+)([A-Z][a-z]+\b)~', "$1 ''$2''", $text);
+  if ($new === $text) {
+    return $text;
+  }
+  bot_debug_log('restore_italics: ' . $text);
+  return $new;
 }
 
 function sanitize_string(string $str) : string {
