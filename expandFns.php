@@ -426,7 +426,16 @@ function restore_italics (string $text) : string {
                          'ConDeTri', 'HIrisPlex', 'CpGIMethPred', 'Quantum Dots', 'TopHat', 'WikiProject',
                          'RefSeq', 'geneCo', 'SpringerReference', 'aMeta', 'ChIP', 'OligArch',
                          'PyDamage', 'SayHerName', 'pDecays', 'BioMaterialia', 'FlexMed', 'GaTate',
-                         'iCloud', 'iPod'), '', $text) !== $text) return $text; // Words with capitals in the middle, but not the first character
+                         'iCloud', 'iPod', 'CamelCase', 'DryIce', 'CinemaScope', 'AstroTurf',
+                         'QuarkXPress', 'FedEx', 'YouTube', 'PlayStation', 'NeXT', 'InterCaps',
+                         'CorpoNym', 'ExxonMobil', 'HarperCollins', 'ConAgra', 'BumpyCaps', 'BumpyCase',
+                         'NerdCaps', 'CapWords', 'compoundNames', 'HumpintheMiddle', 'HumpBack', 'InterCap',
+                         'mixedCase', 'WikiWord', 'WikiCase', 'ProperCase', 'StUdLyCaPs', 'MasterCraft',
+                         'MasterCard', 'SportsCenter', 'CompuServe', 'WordStar', 'VisiCalc', 'WordPerfect',
+                         'NetWare', 'LaserJet', 'MacWorks', 'PostScript', 'PageMaker', 'ClarisWorks', 'HyperCard',
+                         'PowerPoint', 'WorldWideWeb', 'EchoStar', 'BellSouth', 'EastEnders', 'SpaceCamp',
+                         'HarperCollins', 'SeaTac', 'PricewaterhouseCoopers'
+                       ), '', $text) !== $text) return $text; // Words with capitals in the middle, but not the first character
   $new = safe_preg_replace('~([a-z]+)([A-Z][a-z]+\b)~', "$1 ''$2''", $text);
   if ($new === $text) {
     return $text;
