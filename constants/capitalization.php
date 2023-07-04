@@ -24,7 +24,7 @@ const LC_SMALL_WORDS = array(/* The following will be automatically updated to a
           " TCI: ", " te ", " TESOL ", " the ", " TheMarker ", " then ", " till ", " to ", 
           " UCLA ", " UK ", " um ", " und ", " unserer ", " up ", " USA ", " van ", " vir ", 
           " von ", " voor ", " when ", " with ", " within ", " woor ", " y ", " zu ", " zum ", 
-          " zur ", " Ambio "/* The above will be automatically updated to alphabetical order */ 
+          " zur ", " Ambio ", /* The above will be automatically updated to alphabetical order */ 
           // After this line we list exceptions that need re-capitalizing after they have been decapitalized.
           " El Dorado ", " Las Vegas ", " Los Angeles ", " N Y ", " U S A ");
 const UC_SMALL_WORDS = array(/* The following will be automatically updated to alphabetical order */
