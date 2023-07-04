@@ -2,7 +2,7 @@
 declare(strict_types=1);
 const LC_SMALL_WORDS = array(/* The following will be automatically updated to alphabetical order */
           " AAOHN ", " AAP ", " AAUP ", " ABC ", " AC ", " ACM ", " AGU ", " AI ", " AIAA ", 
-          " AIChE ", " AIP ", " AJHG ", " al ", " Ambio ", " an ", " and ", " and then ", 
+          " AIChE ", " AIP ", " AJHG ", " al ", " an ", " and ", " and then ", 
           " AOAC ", " APMIS ", " as ", " ASLIB ", " at ", " at ", " aus ", " av ", " BBA ", 
           " BBC ", " be ", " bei ", " BJPsych ", " BJU ", " BMC ", " BMJ ", " but ", " by ", 
           " CBC ", " CJEM ", " CNS ", " d'un ", " d'une ", " D.C. ", " D.C.L. ", " D.D.S. ", 
@@ -29,7 +29,7 @@ const LC_SMALL_WORDS = array(/* The following will be automatically updated to a
           " El Dorado ", " Las Vegas ", " Los Angeles ", " N Y ", " U S A ");
 const UC_SMALL_WORDS = array(/* The following will be automatically updated to alphabetical order */
           " Aaohn ", " Aap ", " Aaup ", " Abc ", " Ac ", " Acm ", " Agu ", " Ai ", " Aiaa ", 
-          " Aiche ", " Aip ", " Ajhg ", " Al ", " AMBIO ", " An ", " And ", " and Then ", 
+          " Aiche ", " Aip ", " Ajhg ", " Al ", " An ", " And ", " and Then ", 
           " Aoac ", " Apmis ", " As ", " Aslib ", " At ", " At ", " Aus ", " Av ", " Bba ", 
           " Bbc ", " Be ", " Bei ", " Bjpsych ", " Bju ", " Bmc ", " Bmj ", " But ", " By ", 
           " Cbc ", " Cjem ", " Cns ", " D'un ", " D'une ", " D.c. ", " D.c.l. ", " D.d.s. ", 
@@ -59,7 +59,7 @@ const JOURNAL_ACRONYMS = array(/* The following will be automatically updated to
           " (and the Middle East) ", " (BBA) ", " (online ed.) ", " AAPOS ", " AAPS ", 
           " ACM SIGGRAPH ", " ACS ", " Acta medico-historica Adriatica ", " Acta medico-historica Adriatica ", 
           " AIDS & Behavior ", " AIDS and Behavior ", " AIDS Care ", " AIDS Research ", 
-          " AIMS Microbiology ", " AJNR. ", " Algebra i Analiz ", " Algebra i Logika ", 
+          " AIMS Microbiology ", " AJNR. ", " Algebra i Analiz ", " Algebra i Logika ", " Ambio ",
           " Amphibian Species of the World: An Online ", " Amphibian Species of the World: an Online Reference. ", 
           " Angew Chem Int Ed ", " AOAC International ", " AoB Plants ", " AoB Plants ", 
           " AoB Plants ", " AORN J ", " AORN J. ", " AORN Journal ", " Applied ", " APS Division ", 
@@ -170,7 +170,7 @@ const UCFIRST_JOURNAL_ACRONYMS = array(/* The following will be automatically up
           " (And the Middle East) ", " (Bba) ", " (online Ed.) ", " Aapos ", " Aaps ", 
           " ACM Siggraph ", " Acs ", " Acta Medico-Historica Adriatica ", " Acta Medico-historica Adriatica ", 
           " Aids & Behavior ", " Aids and Behavior ", " Aids Care ", " Aids Research ", 
-          " Aims Microbiology ", " Ajnr. ", " Algebra I Analiz ", " Algebra I Logika ", 
+          " Aims Microbiology ", " Ajnr. ", " Algebra I Analiz ", " Algebra I Logika ", " AMBIO ",
           " Amphibian Species of the World: an Online ", " Amphibian Species of the World: An Online Reference. ", 
           " Angew Chem Int ed ", " AOAC INTERNATIONAL ", " AoB PLANTS ", " Aob PLANTS ", 
           " Aob Plants ", " Aorn J ", " Aorn J. ", " Aorn Journal ", " Appiled ", " Aps Division ", 
