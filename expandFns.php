@@ -416,7 +416,7 @@ function wikify_external_text(string $title) : string {
 
 function restore_italics (string $text) : string {
   // <em> tags often go missing around species names in CrossRef
-  if (str_ireplace(array('arxiv', 'ebay', 'aRMadillo', 'imac', 'FreeFab', 'HeartMath', 'MeToo', 'SysCon', 'DiMarco', ' Mc', ' Mac', 'DiMarco', 'DeepMind'), '', $text) !== $text) return $text; // Words with capitals in the middle, but not the first character
+  if (str_ireplace(array('arxiv', 'ebay', 'aRMadillo', 'HowNutsAreTheDutch', 'Liberalism', 'HoeGekIsNL', 'imac', 'FreeFab', 'HeartMath', 'MeToo', 'SysCon', 'DiMarco', ' Mc', ' Mac', 'DiMarco', 'DeepMind'), '', $text) !== $text) return $text; // Words with capitals in the middle, but not the first character
   $new = safe_preg_replace('~([a-z]+)([A-Z][a-z]+\b)~', "$1 ''$2''", $text);
   if ($new === $text) {
     return $text;
