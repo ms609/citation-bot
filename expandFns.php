@@ -421,7 +421,7 @@ function restore_italics (string $text) : string {
   if ($new === $text) {
     return $text;
   }
-  bot_debug_log('restore_italics: ' . $text);
+  bot_debug_log('restore_italics: ' . $text . '       WILL BE     ' . $new);
   return $new;
 }
 
