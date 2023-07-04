@@ -416,14 +416,17 @@ function wikify_external_text(string $title) : string {
 
 function restore_italics (string $text) : string {
   // <em> tags often go missing around species names in CrossRef
-  if (str_ireplace(array('arxiv', 'ebay', 'aRMadillo', 'HowNutsAreTheDutch', 'Liberalism', 'HoeGekIsNL',
-                         'imac', 'FreeFab', 'HeartMath', 'MeToo', 'SysCon', 'DiMarco', ' Mc', ' Mac',
+  if (strreplace(array('arXiv', 'eBay', 'aRMadillo', 'HowNutsAreTheDutch', 'Liberalism', 'HoeGekIsNL',
+                         'iMac', 'iPhone', 'iPad', 'iTunes', 'FreeFab', 'HeartMath', 'MeToo', 'SysCon', 'DiMarco', ' Mc', ' Mac',
                          'DiMarco', 'DeepMind', 'BabySeq', 'ClinVar',  'UCbase', 'miRfunc', 'GeneMatcher',
                          'TimeLapse', 'CapStarr', ' SpyTag', 'SpyCatcher', 'SpyBank', 'TaqMan',
                          'PhyreRisk', 'piggyBac', 'HapMap', 'MiSeq', 'QualComp', 'PastCast', 'InvAluable',
                          'NgAgo', ' MitoZoa', 'InterMitoBase', 'LaserTank', 'GeneBase', 'DesignSignatures',
                          'HeLa', 'QuadBase', 'GenBank', 'PowerPlex', 'ExInt', 'TissueInfo', 'HeliScope',
-                         'ConDeTri'), '', $text) !== $text) return $text; // Words with capitals in the middle, but not the first character
+                         'ConDeTri', 'HIrisPlex', 'CpGIMethPred', 'Quantum Dots', 'TopHat', 'WikiProject',
+                         'RefSeq', 'geneCo', 'SpringerReference', 'aMeta', 'ChIP', 'OligArch',
+                         'PyDamage', 'SayHerName', 'pDecays', 'BioMaterialia', 'FlexMed', 'GaTate',
+                         'iCloud', 'iPod'), '', $text) !== $text) return $text; // Words with capitals in the middle, but not the first character
   $new = safe_preg_replace('~([a-z]+)([A-Z][a-z]+\b)~', "$1 ''$2''", $text);
   if ($new === $text) {
     return $text;
