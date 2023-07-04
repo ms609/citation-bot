@@ -24,7 +24,7 @@ const LC_SMALL_WORDS = array(/* The following will be automatically updated to a
           " TCI: ", " te ", " TESOL ", " the ", " TheMarker ", " then ", " till ", " to ", 
           " UCLA ", " UK ", " um ", " und ", " unserer ", " up ", " USA ", " van ", " vir ", 
           " von ", " voor ", " when ", " with ", " within ", " woor ", " y ", " zu ", " zum ", 
-          " zur ", /* The above will be automatically updated to alphabetical order */ 
+          " zur ", " Ambio "/* The above will be automatically updated to alphabetical order */ 
           // After this line we list exceptions that need re-capitalizing after they have been decapitalized.
           " El Dorado ", " Las Vegas ", " Los Angeles ", " N Y ", " U S A ");
 const UC_SMALL_WORDS = array(/* The following will be automatically updated to alphabetical order */
@@ -51,7 +51,7 @@ const UC_SMALL_WORDS = array(/* The following will be automatically updated to a
           " Tci: ", " Te ", " Tesol ", " The ", " Themarker ", " Then ", " Till ", " To ", 
           " Ucla ", " Uk ", " Um ", " Und ", " Unserer ", " Up ", " Usa ", " Van ", " Vir ", 
           " Von ", " Voor ", " When ", " With ", " Within ", " Woor ", " Y ", " Zu ", " Zum ", 
-          " Zur ", /* The above will be automatically updated to alphabetical order */ 
+          " Zur ", " AMBIO ", /* The above will be automatically updated to alphabetical order */ 
           // After this line we list exceptions that need re-capitalizing after they have been decapitalized.
           " el Dorado ", " las Vegas ", " los Angeles ", " N y ", " U S a ");
           // For ones that start with lower-case, include both ELife and Elife versions in misspelled array
@@ -164,6 +164,7 @@ const JOURNAL_ACRONYMS = array(/* The following will be automatically updated to
           " Zeitschrift für Physik A: Hadrons and Nuclei ", " Znanosti i Umjetnosti ", 
           " ZooKeys ", " Zprávy o zasedání Král. čes. společnosti nauk v Praze ", 
           " Zprávy o zasedání Král. čes. společnosti nauk v Praze ", " Zprávy o zasedání Král. čes. společnosti nauk v Praze ", 
+          " International Journal of Intelligence and CounterIntelligence ",
           " Ргасе filologiczne ", /* The above will be automatically updated to alphabetical order */ 
 );
 const UCFIRST_JOURNAL_ACRONYMS = array(/* The following will be automatically updated to alphabetical order */
@@ -277,6 +278,7 @@ const UCFIRST_JOURNAL_ACRONYMS = array(/* The following will be automatically up
           " Zeitschrift Für Physik a: Hadrons And Nuclei ", " Znanosti I Umjetnosti ", 
           " Zookeys ", " Zprávy O Zasedání Král. Čes. Společnosti Nauk V Praze ", 
           " Zprávy O Zasedání Král. čes. Společnosti Nauk V Praze ", " Zprávy o zasedání Král. čes. Společnosti nauk v Praze ", 
+          " International Journal of Intelligence and Counterintelligence ",
           " Ргасе Filologiczne ", /* The above will be automatically updated to alphabetical order */ 
 );
 const OBVIOUS_FOREIGN_WORDS = array(" Abhandlungen ", " Actes ", " Annales ", " Archiv ", " Archives de ",
