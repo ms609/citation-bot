@@ -372,7 +372,7 @@ final class Template {
               $the_title = '';
               $bad_data = TRUE;
           }
-          if (strpos($the_title, 'SpringerLink') === 0) {
+          if (stripos($the_title, 'SpringerLink') === 0) {
               $this->rename('title', 'CITATION_BOT_PLACEHOLDER_title');
               $the_title = '';
               $bad_data = TRUE;
