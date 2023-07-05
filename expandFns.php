@@ -436,6 +436,7 @@ function restore_italics (string $text) : string {
                          'NetWare', 'LaserJet', 'MacWorks', 'PostScript', 'PageMaker', 'ClarisWorks', 'HyperCard',
                          'PowerPoint', 'WorldWideWeb', 'EchoStar', 'BellSouth', 'EastEnders', 'SpaceCamp',
                          'HarperCollins', 'SeaTac', 'PricewaterhouseCoopers', 'DataLab', 'DuBois', 
+                         'ScaFi', 
                        ), '', $padded) !== $padded) return $text; // Words with capitals in the middle, but not the first character
   $new = safe_preg_replace('~([a-z]+)([A-Z][a-z]+\b)~', "$1 ''$2''", $text);
   if ($new === $text) {
