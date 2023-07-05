@@ -6963,7 +6963,8 @@ final class Template {
   }
 
   private function is_book_series(string $param) : bool {
-    $simple = trim(str_replace(['-', '.',  '   ', '  '], [' ', ' ', ' ', ' '], strtolower($this->get($param))));
+    $simple = trim(str_replace(['-', '.',  '   ', '  ', '[[', ']]'], [' ', ' ', ' ', ' ', ' ', ' '], strtolower($this->get($param))));
+    $simple = trim(str_replace(['    ', '   ',  '  '], [' ', ' ', ' '], $simple);
     return in_array($simple, JOURNAL_IS_BOOK_SERIES);
   }
 
