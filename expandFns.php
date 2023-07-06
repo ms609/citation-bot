@@ -418,7 +418,7 @@ function restore_italics (string $text) : string {
   // <em> tags often go missing around species names in CrossRef
   $text = str_replace(
     ["MarketizingHindutva",      "TheBhagavadgītā,",      "theOrigin of Species",      "EncounteringHindutva"      ],
-    ["Marketizing ''Hindutva''", "The ''Bhagavadgītā'',", "the ''Origin of Species''", "Encountering ''Hindutva''" ]
+    ["Marketizing ''Hindutva''", "The ''Bhagavadgītā'',", "the ''Origin of Species''", "Encountering ''Hindutva''" ],
     $text); // Ones to always do, since they keep popping up in our logs
   $padded = ' '. $text . ' ';
   if (str_replace(array('arXiv', 'eBay', 'aRMadillo', 'HowNutsAreTheDutch', 'Liberalism', 'HoeGekIsNL',
