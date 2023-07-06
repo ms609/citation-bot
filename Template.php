@@ -345,6 +345,19 @@ final class Template {
           $the_pages   = $this->get('pages');
           $initial_author_params_save = $this->initial_author_params;
           $bad_data = FALSE;
+          if (stripos($the_journal, 'Advances in Cryptology') === 0) {
+              $this->rename('journal', 'CITATION_BOT_PLACEHOLDER_journal');
+              $the_journal = '';
+              $bad_data = TRUE;
+              if ($the_title !== '') {
+                  $this->rename('title', 'CITATION_BOT_PLACEHOLDER_title');
+                  $the_title = '';
+              }
+              if ($the_chapter !== '') {
+                  $this->rename('chapter', 'CITATION_BOT_PLACEHOLDER_chapter');
+                  $the_chapter = '';
+              }
+          }
           if ($the_pages === '0' || $the_pages === 'null' || $the_pages === 'n/a' || $the_pages === 'online' || $the_pages === 'Online' || $the_pages === 'Forthcoming' || $the_pages === 'forthcoming') {
               $this->rename('pages', 'CITATION_BOT_PLACEHOLDER_pages');
               $the_pages = '';
