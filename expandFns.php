@@ -417,8 +417,8 @@ function wikify_external_text(string $title) : string {
 function restore_italics (string $text) : string {
   // <em> tags often go missing around species names in CrossRef
   $text = str_replace(
-    ["MarketizingHindutva:"],
-    ["Marketizing ''Hindutva'':"],
+    ["MarketizingHindutva",      "TheBhagavadgītā,",      "theOrigin of Species",      "EncounteringHindutva"      ],
+    ["Marketizing ''Hindutva''", "The ''Bhagavadgītā'',", "the ''Origin of Species''", "Encountering ''Hindutva''" ]
     $text); // Ones to always do, since they keep popping up in our logs
   $padded = ' '. $text . ' ';
   if (str_replace(array('arXiv', 'eBay', 'aRMadillo', 'HowNutsAreTheDutch', 'Liberalism', 'HoeGekIsNL',
@@ -448,7 +448,7 @@ function restore_italics (string $text) : string {
                          'PtCo', 'ResearchGate', 'TimeTree', 'PhysiCell', 'VirtualLeaf', 'PhenoScanner',
                          'GeoSteiner', 'eCommerce', 'FrameNet', 'DeLury', 'GeGaLo', 'LeukArrest', 'IceCube',
                          'NeuroImages', 'UppSten', 'AngloMania', 'HiRes', 'PolyCystic', 'é', 'AlmaToo', 'CubeSat',
-                         'DeArmitt', 'ProQuest', 'SemNet'
+                         'DeArmitt', 'ProQuest', 'SemNet', 'ī', 'LaundroGraph',
                        ), '', $padded) !== $padded) return $text; // Words with capitals in the middle, but not the first character
   $new = safe_preg_replace('~([a-z]+)([A-Z][a-z]+\b)~', "$1 ''$2''", $text);
   if ($new === $text) {
