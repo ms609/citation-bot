@@ -345,7 +345,9 @@ final class Template {
           $the_pages   = $this->get('pages');
           $initial_author_params_save = $this->initial_author_params;
           $bad_data = FALSE;
-          if (stripos($the_journal, 'Advances in Cryptology') === 0) {
+          if (stripos($the_journal, 'Advances in Cryptology') === 0 ||
+              stripos($the_journal, 'IEEE Symposium') !== FALSE ||
+              stripos($the_journal, 'IEEE International Conference') !== FALSE ) {
               $this->rename('journal', 'CITATION_BOT_PLACEHOLDER_journal');
               $the_journal = '';
               $bad_data = TRUE;
