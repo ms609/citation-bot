@@ -416,6 +416,10 @@ function wikify_external_text(string $title) : string {
 
 function restore_italics (string $text) : string {
   // <em> tags often go missing around species names in CrossRef
+  $text = str_replace(
+    ["MarketizingHindutva:"],
+    ["Marketizing ''Hindutva'':"],
+    $text); // Ones to always do, since they keep popping up in our logs
   $padded = ' '. $text . ' ';
   if (str_replace(array('arXiv', 'eBay', 'aRMadillo', 'HowNutsAreTheDutch', 'Liberalism', 'HoeGekIsNL',
                          'iMac', 'iPhone', 'iPad', 'iTunes', 'FreeFab', 'HeartMath', 'MeToo', 'SysCon', 'DiMarco', ' Mc', ' Mac',
@@ -437,12 +441,14 @@ function restore_italics (string $text) : string {
                          'PowerPoint', 'WorldWideWeb', 'EchoStar', 'BellSouth', 'EastEnders', 'SpaceCamp',
                          'HarperCollins', 'SeaTac', 'PricewaterhouseCoopers', 'DataLab', 'DuBois', 
                          'ScaFi', '(Mc', '(Mac', 'BioShock', 'BreadTube', 'PewDiePie', 'LepVax', 'CrossMab', 'GyneFix',
-                         'ProsPeCtsi', 'sCIentIfICi', 'PsyCholoGyi', 'DiGeorge', 'AstraZeneca', 'SemCluster',
+                         'ProsPeCts', 'sCIentIfIC', 'PsyCholoGy', 'DiGeorge', 'AstraZeneca', 'SemCluster',
                          'VirtuReal', '-Mc', '-Mac', 'NexGard', 'AmBisome', 'AmbiOnp', 'SnapShot', 'LentiGlobin',
                          'SmartTutor', 'TarBase', 'miRecords', 'miRTarBase', 'deepBase', 'DeepImageTranslator',
                          'TikTok', ' pKa', ' MurA', 'pKa ', 'MurA ',  'IgDhi', ' bKa’ ', '117mSn', 'ClinicalTrials',
                          'PtCo', 'ResearchGate', 'TimeTree', 'PhysiCell', 'VirtualLeaf', 'PhenoScanner',
                          'GeoSteiner', 'eCommerce', 'FrameNet', 'DeLury', 'GeGaLo', 'LeukArrest', 'IceCube',
+                         'NeuroImages', 'UppSten', 'AngloMania', 'HiRes', 'PolyCystic', 'é', 'AlmaToo', 'CubeSat',
+                         'DeArmitt', 'ProQuest', 'SemNet'
                        ), '', $padded) !== $padded) return $text; // Words with capitals in the middle, but not the first character
   $new = safe_preg_replace('~([a-z]+)([A-Z][a-z]+\b)~', "$1 ''$2''", $text);
   if ($new === $text) {
