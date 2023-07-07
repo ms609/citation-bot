@@ -461,26 +461,10 @@ const ITALICS_LIST =
  "Sinovenator changii|" . 
  "Nedcolbertia justinhofmanni|" . 
  "Clostridium botulinum|" . 
+ "Bactrocera dorsalis|" . 
  "END_OF_CITE_list_junk"; // All real ones need pipe on end
 
-function restore_italics (string $text) : string {
-  $text = trim(str_replace(['        ', '      ', '    ', '   ', '  '], [' ', ' ', ' ', ' ', ' '], $text));
-  // <em> tags often go missing around species names in CrossRef
-  $old = $text;
-  $text = str_replace(
-    ["in vitroAssays",       "MarketizingHindutva",      "TheBhagavadgītā,",      "theOrigin of Species",      "EncounteringHindutva",      "ChineseHukouSystem",        "CisLatreille"],
-    [" ''in vitro'' Assays", "Marketizing ''Hindutva''", "The ''Bhagavadgītā'',", "the ''Origin of Species''", "Encountering ''Hindutva''", "Chinese  ''Hukou'' System", "'''Cis'''Latreille"],
-    $text); // Ones to always do, since they keep popping up in our logs
-  $text = trim(str_replace(['        ', '      ', '    ', '   ', '  '], [' ', ' ', ' ', ' ', ' '], $text));
-  while (preg_match('~([a-z])(' . ITALICS_LIST . ')([A-Z\-\?\:\.\)\,]|species|genus| in|$)~', $text, $matches)) {
-     $text = str_replace($matches[0], $matches[1] . " ''" . $matches[2] . "'' " . $matches[3], $text);
-  }
-  $text = trim(str_replace(['        ', '      ', '    ', '   ', '  '], [' ', ' ', ' ', ' ', ' '], $text));
-  if ($old !== $text) {
-     bot_debug_log('restore_italics: ' . $old . '    FORCED TO BE     ' . $text);
-  }
-  $padded = ' '. $text . ' ';
-  if (str_replace(array('arXiv', 'eBay', 'aRMadillo', 'HowNutsAreTheDutch', 'Liberalism', 'HoeGekIsNL',
+const CAMEL_CASE = array('arXiv', 'eBay', 'aRMadillo', 'HowNutsAreTheDutch', 'Liberalism', 'HoeGekIsNL',
                          'iMac', 'iPhone', 'iPad', 'iTunes', 'FreeFab', 'HeartMath', 'MeToo', 'SysCon', 'DiMarco', ' Mc', ' Mac',
                          'DiMarco', 'DeepMind', 'BabySeq', 'ClinVar',  'UCbase', 'miRfunc', 'GeneMatcher',
                          'TimeLapse', 'CapStarr', ' SpyTag', 'SpyCatcher', 'SpyBank', 'TaqMan',
@@ -516,7 +500,26 @@ function restore_italics (string $text) : string {
                          'GeneTree', 'GenAge', 'QnAs', 'BiDil', 'iAge', 'DevSec', 'SecOps', 'DevcOps',
                          'LeafCutter', 'CyBase','OxPhos', 'ArrayExpress', 'BepiColombo', 'RuleMonkey',
                          'OxyCo', 'CdZnTe', 
-                       ), '', $padded) !== $padded) return $text; // Words with capitals in the middle, but not the first character
+                       );
+
+function restore_italics (string $text) : string {
+  $text = trim(str_replace(['        ', '      ', '    ', '   ', '  '], [' ', ' ', ' ', ' ', ' '], $text));
+  // <em> tags often go missing around species names in CrossRef
+  $old = $text;
+  $text = str_replace(
+    ["in vitroAssays",       "MarketizingHindutva",      "TheBhagavadgītā,",      "theOrigin of Species",      "EncounteringHindutva",      "ChineseHukouSystem",        "CisLatreille"],
+    [" ''in vitro'' Assays", "Marketizing ''Hindutva''", "The ''Bhagavadgītā'',", "the ''Origin of Species''", "Encountering ''Hindutva''", "Chinese  ''Hukou'' System", "'''Cis'''Latreille"],
+    $text); // Ones to always do, since they keep popping up in our logs
+  $text = trim(str_replace(['        ', '      ', '    ', '   ', '  '], [' ', ' ', ' ', ' ', ' '], $text));
+  while (preg_match('~([a-z])(' . ITALICS_LIST . ')([A-Z\-\?\:\.\)\,]|species|genus| in|$)~', $text, $matches)) {
+     $text = str_replace($matches[0], $matches[1] . " ''" . $matches[2] . "'' " . $matches[3], $text);
+  }
+  $text = trim(str_replace(['        ', '      ', '    ', '   ', '  '], [' ', ' ', ' ', ' ', ' '], $text));
+  if ($old !== $text) {
+     bot_debug_log('restore_italics: ' . $old . '    FORCED TO BE     ' . $text);
+  }
+  $padded = ' '. $text . ' ';
+  if (str_replace(CAMEL_CASE, '', $padded) !== $padded) return $text; // Words with capitals in the middle, but not the first character
   $new = safe_preg_replace('~([a-z]+)([A-Z][a-z]+\b)~', "$1 ''$2''", $text);
   if ($new === $text) {
     return $text;
