@@ -464,13 +464,17 @@ const ITALICS_LIST =
 function restore_italics (string $text) : string {
   $text = str_replace(['    ', '   ', '  '], [' ', ' ', ' '], $text);
   // <em> tags often go missing around species names in CrossRef
+  $old = $text;
   $text = str_replace(
     ["MarketizingHindutva",      "TheBhagavadgītā,",      "theOrigin of Species",      "EncounteringHindutva",      "ChineseHukouSystem",        "CisLatreille"],
     ["Marketizing ''Hindutva''", "The ''Bhagavadgītā'',", "the ''Origin of Species''", "Encountering ''Hindutva''", "Chinese  ''Hukou'' System", "'''Cis'''Latreille"],
     $text); // Ones to always do, since they keep popping up in our logs
   $text = str_replace(['    ', '   ', '  '], [' ', ' ', ' '], $text);
-  while (preg_match('~([a-z])(' . ITALICS_LIST . ')([A-Z\-\?\:\.\)\,]|species| $)~', $text, $matches)) {
+  while (preg_match('~([a-z])(' . ITALICS_LIST . ')([A-Z\-\?\:\.\)\,]|species|genus|$)~', $text, $matches)) {
      $text = str_replace($matches[0], $matches[1] . " ''" . $matches[2] . "'' " . $matches[3], $text);
+  }
+  if ($old !== $text) {
+     bot_debug_log('restore_italics: ' . $old . '    FORCED TO BE     ' . $text);
   }
   $padded = ' '. $text . ' ';
   if (str_replace(array('arXiv', 'eBay', 'aRMadillo', 'HowNutsAreTheDutch', 'Liberalism', 'HoeGekIsNL',
