@@ -347,6 +347,7 @@ final class Template {
           $bad_data = FALSE;
           if (stripos($the_journal, 'Advances in Cryptology') === 0 && stripos($the_title, 'Advances in Cryptology') === 0) {
               $the_journal = '';
+              $this->forget('journal');
               $bad_data = TRUE;
           }
           if (stripos($the_journal, 'Advances in Cryptology') === 0 ||
