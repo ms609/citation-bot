@@ -460,6 +460,7 @@ const ITALICS_LIST =
  "Arthoniais|" . 
  "Sinovenator changii|" . 
  "Nedcolbertia justinhofmanni|" . 
+ "Clostridium botulinum|" . 
  "END_OF_CITE_list_junk"; // All real ones need pipe on end
 
 function restore_italics (string $text) : string {
@@ -471,7 +472,7 @@ function restore_italics (string $text) : string {
     [" ''in vitro'' Assays", "Marketizing ''Hindutva''", "The ''Bhagavadgītā'',", "the ''Origin of Species''", "Encountering ''Hindutva''", "Chinese  ''Hukou'' System", "'''Cis'''Latreille"],
     $text); // Ones to always do, since they keep popping up in our logs
   $text = trim(str_replace(['        ', '      ', '    ', '   ', '  '], [' ', ' ', ' ', ' ', ' '], $text));
-  while (preg_match('~([a-z])(' . ITALICS_LIST . ')([A-Z\-\?\:\.\)\,]|species|genus|$)~', $text, $matches)) {
+  while (preg_match('~([a-z])(' . ITALICS_LIST . ')([A-Z\-\?\:\.\)\,]|species|genus| in|$)~', $text, $matches)) {
      $text = str_replace($matches[0], $matches[1] . " ''" . $matches[2] . "'' " . $matches[3], $text);
   }
   if ($old !== $text) {
