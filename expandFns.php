@@ -414,12 +414,64 @@ function wikify_external_text(string $title) : string {
   return $title; 
 }
 
+const ITALICS_LIST = 
+ "Escherichia coli|" . 
+ "Bugulasensu lato|" . 
+ "Massospondylus carinatus|" . 
+ "Burkholderia pseudomallei|" . 
+ "Helicobacter pylori|" . 
+ "Drosophila silvestris|" . 
+ "Luzula nivea|" . 
+ "Bacillus pumilus|" . 
+ "Citipati Osmolskae|" . 
+ "Stichodactyla helianthusas|" . 
+ "Plasmodium falciparum|" . 
+ "Pyrobaculum calidifontis|" . 
+ "Arabidopsis thaliana|" . 
+ "Listeria monocytogenes|" . 
+ "Pristionchus|" . 
+ "Arabidopsis|" . 
+ "In Vitro|" . 
+ "Realpolitik|" . 
+ "Brachiosaurus altithorax|" . 
+ "Saccharomyces cerevisiae|" . 
+ "Paratirolites|" . 
+ "Staphylococcus aureus|" . 
+ "Arianops|" . 
+ "Loxosceles|" . 
+ "Hyloscirtus|" . 
+ "Pseudomonas|" . 
+ "Baryonyx|" . 
+ "Bromus laevipes|" . 
+ "Trypanosoma brucei|" . 
+ "Monacha|" . 
+ "Plesiosorex|" . 
+ "Bushiellas|" . 
+ "Godartiana|" . 
+ "Hapalotremus|" . 
+ "Orcus|" . 
+ "Tolegnaro|" . 
+ "Noideattella|" . 
+ "Euschistus|" . 
+ "Hulsanpes perlei|" . 
+ "Buitreraptor gonzalezorum|" . 
+ "Bellusaurus sui|" . 
+ "Arthoniais|" . 
+ "Sinovenator changii|" . 
+ "Nedcolbertia justinhofmanni|" . 
+ "END_OF_CITE_list_junk"; // All real ones need pipe on end
+
 function restore_italics (string $text) : string {
+  $text = str_replace(['    ', '   ', '  '], [' ', ' ', ' '], $text);
   // <em> tags often go missing around species names in CrossRef
   $text = str_replace(
-    ["MarketizingHindutva",      "TheBhagavadgītā,",      "theOrigin of Species",      "EncounteringHindutva"      ],
-    ["Marketizing ''Hindutva''", "The ''Bhagavadgītā'',", "the ''Origin of Species''", "Encountering ''Hindutva''" ],
+    ["MarketizingHindutva",      "TheBhagavadgītā,",      "theOrigin of Species",      "EncounteringHindutva",      "ChineseHukouSystem",        "CisLatreille"],
+    ["Marketizing ''Hindutva''", "The ''Bhagavadgītā'',", "the ''Origin of Species''", "Encountering ''Hindutva''", "Chinese  ''Hukou'' System", "'''Cis'''Latreille"],
     $text); // Ones to always do, since they keep popping up in our logs
+  $text = str_replace(['    ', '   ', '  '], [' ', ' ', ' '], $text);
+  while (preg_match('~([a-z])(' . ITALICS_LIST . ')([A-Z\-\?\:\.\)\,]|species| $)~', $text, $matches)) {
+     $text = str_replace($matches[0], $matches[1] . " ''" . $matches[2] . "'' " . $matches[3], $text);
+  }
   $padded = ' '. $text . ' ';
   if (str_replace(array('arXiv', 'eBay', 'aRMadillo', 'HowNutsAreTheDutch', 'Liberalism', 'HoeGekIsNL',
                          'iMac', 'iPhone', 'iPad', 'iTunes', 'FreeFab', 'HeartMath', 'MeToo', 'SysCon', 'DiMarco', ' Mc', ' Mac',
