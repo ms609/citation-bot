@@ -475,6 +475,7 @@ function restore_italics (string $text) : string {
   while (preg_match('~([a-z])(' . ITALICS_LIST . ')([A-Z\-\?\:\.\)\,]|species|genus| in|$)~', $text, $matches)) {
      $text = str_replace($matches[0], $matches[1] . " ''" . $matches[2] . "'' " . $matches[3], $text);
   }
+  $text = trim(str_replace(['        ', '      ', '    ', '   ', '  '], [' ', ' ', ' ', ' ', ' '], $text));
   if ($old !== $text) {
      bot_debug_log('restore_italics: ' . $old . '    FORCED TO BE     ' . $text);
   }
