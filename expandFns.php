@@ -438,6 +438,7 @@ const ITALICS_LIST =
  "Paratirolites|" . 
  "Staphylococcus aureus|" . 
  "Arianops|" . 
+ "Plutella xylostella|" . 
  "Loxosceles|" . 
  "Hyloscirtus|" . 
  "Pseudomonas|" . 
@@ -466,8 +467,8 @@ function restore_italics (string $text) : string {
   // <em> tags often go missing around species names in CrossRef
   $old = $text;
   $text = str_replace(
-    ["MarketizingHindutva",      "TheBhagavadgītā,",      "theOrigin of Species",      "EncounteringHindutva",      "ChineseHukouSystem",        "CisLatreille"],
-    ["Marketizing ''Hindutva''", "The ''Bhagavadgītā'',", "the ''Origin of Species''", "Encountering ''Hindutva''", "Chinese  ''Hukou'' System", "'''Cis'''Latreille"],
+    ["in vitroAssays",       "MarketizingHindutva",      "TheBhagavadgītā,",      "theOrigin of Species",      "EncounteringHindutva",      "ChineseHukouSystem",        "CisLatreille"],
+    [" ''in vitro'' Assays", "Marketizing ''Hindutva''", "The ''Bhagavadgītā'',", "the ''Origin of Species''", "Encountering ''Hindutva''", "Chinese  ''Hukou'' System", "'''Cis'''Latreille"],
     $text); // Ones to always do, since they keep popping up in our logs
   $text = str_replace(['    ', '   ', '  '], [' ', ' ', ' '], $text);
   while (preg_match('~([a-z])(' . ITALICS_LIST . ')([A-Z\-\?\:\.\)\,]|species|genus|$)~', $text, $matches)) {
