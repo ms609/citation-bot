@@ -450,7 +450,12 @@ function restore_italics (string $text) : string {
                          'NeuroImages', 'UppSten', 'AngloMania', 'HiRes', 'PolyCystic', 'é', 'AlmaToo', 'CubeSat',
                          'DeArmitt', 'ProQuest', 'SemNet', 'ī', 'LaundroGraph', 'ZoKrates', 'xJsnark', 'ç',
                          'GitHub', 'GitLab', 'iThings', 'FuzzBench', 'TinyLock', 'EvoPass', 'eGovernment',
-                         'TinyGarble',
+                         'TinyGarble', 'PhagoBurn', 'KwaZulu', 'BioNetGen', 'DataBase', 'GeneChip', 'TransRate',
+                         'StringTie', 'featureCounts', 'DiffSplice', 'QuantSeq', 'WebGestalt', 'flowCore',
+                         'flowClust', 'MetaGenomic', 'TlInGe', 'RapidArc', 'SmartArc', 'TomoHD', 'ViralZone',
+                         'HyPhy', 'MrBayes', 'SunTag', 'InterPro', 'SmProt', 'ChikDenMaZika', 'LitCovid',
+                         'GeneTree', 'GenAge', 'QnAs', 'BiDil', 'iAge', 'DevSec', 'SecOps', 'DevcOps',
+                         
                        ), '', $padded) !== $padded) return $text; // Words with capitals in the middle, but not the first character
   $new = safe_preg_replace('~([a-z]+)([A-Z][a-z]+\b)~', "$1 ''$2''", $text);
   if ($new === $text) {
