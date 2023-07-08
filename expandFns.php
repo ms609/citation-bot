@@ -415,6 +415,7 @@ function wikify_external_text(string $title) : string {
 }
 
 const ITALICS_LIST = 
+ "Tyrannotitan chubutensis|" .
  "Escherichia coli|" . 
  "Bugulasensu lato|" . 
  "Massospondylus carinatus|" . 
