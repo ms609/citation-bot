@@ -462,9 +462,45 @@ const ITALICS_LIST =
  "Nedcolbertia justinhofmanni|" . 
  "Clostridium botulinum|" . 
  "Bactrocera dorsalis|" . 
+ "Communist Manifesto|" . 
+ "Umm al-Kitāb|" . 
+ "Acacia|" . 
+ "Agaricus hondensis|" . 
+ "Campylobacter jejuni|" . 
+ "Actinomyces bovis|" . 
+ "Balaur bondoc|" . 
+ "Acrocomia mexicana|" . 
+ "Caenorhabditis elegans|" . 
+ "Berardiusin|" . 
+ "Paradisaea Raggiana|" . 
+ "Ilustrado|" . 
+ "Rg Veda|" . 
+ "Keśin|" . 
+ "Clusia|" . 
+ "Aspergillus terreus|" . 
+ "Ignicoccus hospitalis|" . 
+ "Ignicoccus|" . 
+ "Opus Caroli (Libri Carolini)|" . 
+ "Opus Caroli|" . 
+ "Libri Carolini|" . 
+ "Nanoarchaeum equitans|" . 
+ "Les Noces|" . 
+ "Hencke|" . 
+ "Batillipes mirusand|" . 
+ "Batillipes noerrevangi|" . 
+ "Batillipes|" . 
+ "Chenopodium|" . 
+ "Diplodocus|" . 
+ "Hipparchs|" . 
+ "Diagnostic and statistical manual|" . 
+ "Lepidobatrachus|" . 
+ "Chronicle(s) of Ioannina|" . 
  "END_OF_CITE_list_junk"; // All real ones need pipe on end
 
-const CAMEL_CASE = array('arXiv', 'eBay', 'aRMadillo', 'HowNutsAreTheDutch', 'Liberalism', 'HoeGekIsNL',
+const CAMEL_CASE = array('DeSoto', 'PubChem', 'BitTorrent', 'Al2O3', 'NiMo', 'CuZn', 'BxCyNz', 'ChemCam',
+                         'StatsRef', 'BuzzFeed', 'DeBenedetti', 'DeVries', 'TallyHo', 'JngJ', 'ENaCs',
+                         'MensRights',
+                         'arXiv', 'eBay', 'aRMadillo', 'HowNutsAreTheDutch', 'Liberalism', 'HoeGekIsNL',
                          'iMac', 'iPhone', 'iPad', 'iTunes', 'FreeFab', 'HeartMath', 'MeToo', 'SysCon', 'DiMarco', ' Mc', ' Mac',
                          'DiMarco', 'DeepMind', 'BabySeq', 'ClinVar',  'UCbase', 'miRfunc', 'GeneMatcher',
                          'TimeLapse', 'CapStarr', ' SpyTag', 'SpyCatcher', 'SpyBank', 'TaqMan',
