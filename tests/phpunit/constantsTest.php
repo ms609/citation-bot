@@ -439,9 +439,12 @@ final class constantsTest extends testBaseClass {
  public function testItalicsHardCode() : void {
     $this->assertSame(count(ITALICS_HARDCODE_IN), count(ITALICS_HARDCODE_OUT));
     for ($i = 0; $i < count(ITALICS_HARDCODE_OUT); $i++) {
+      $this->assertSame(0, substr_count("'''", ITALICS_HARDCODE_IN[$i]);
+      $this->assertSame(0, substr_count("'''", ITALICS_HARDCODE_OUT[$i]);
+      $this->assertTrue(substr_count("''", ITALICS_HARDCODE_OUT[$i] > 1);
       $in = str_replace(["'", " "], '', ITALICS_HARDCODE_IN[$i]);
       $out = str_replace(["'", " "], '', ITALICS_HARDCODE_IOUT[$i]);
-     $this->assertSame($in, $out); // Same once spaces and single quotes are removed
+      $this->assertSame($in, $out); // Same once spaces and single quotes are removed
     }
  }
 }
