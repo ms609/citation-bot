@@ -424,7 +424,7 @@ const ITALICS_LIST =
  "Luzula nivea|" . 
  "Bacillus pumilus|" . 
  "Citipati Osmolskae|" . 
- "Stichodactyla helianthusas|" . 
+ "Stichodactyla helianthusas|" . 
  "Plasmodium falciparum|" . 
  "Pyrobaculum calidifontis|" . 
  "Arabidopsis thaliana|" . 
