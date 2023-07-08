@@ -468,20 +468,28 @@ const ITALICS_LIST =
  "Communist Manifesto|" . 
  "Umm al-Kitāb|" . 
  "Acacia|" . 
+ "Acrocomia mexicana|" .
  "Agaricus hondensis|" . 
  "Campylobacter jejuni|" . 
  "Actinomyces bovis|" . 
  "Balaur bondoc|" . 
  "Acrocomia mexicana|" . 
+ "Lasalichthys|" .
  "Caenorhabditis elegans|" . 
  "Berardiusin|" . 
  "Paradisaea Raggiana|" . 
  "Ilustrado|" . 
+ "Screbinodus ornatus|" .
  "Rg Veda|" . 
  "Keśin|" . 
+ "Synorichthys|" .
  "Clusia|" . 
+ "Sinamia|" .
+ "Homo erectus|" .
+ "Piveteauia madagascariensis|" .
  "Aspergillus terreus|" . 
  "Ignicoccus hospitalis|" . 
+ "Watsonulus eugnathoides|" .
  "Ignicoccus|" . 
  "Opus Caroli \(Libri Carolini\)|" . 
  "Opus Caroli|" . 
@@ -494,6 +502,7 @@ const ITALICS_LIST =
  "Batillipes|" . 
  "Chenopodium|" . 
  "Diplodocus|" . 
+ "Robustichthys luopingensis|" .
  "Hipparchs|" . 
  "Diagnostic and statistical manual|" . 
  "Lepidobatrachus|" . 
@@ -509,6 +518,11 @@ const ITALICS_LIST =
  "Candida|" . 
  "Cannabis|" . 
  "Ilex asprella|" . 
+ "Aglyptorhynchus|" .
+ "Egertonia|" .
+ "Dapedium|" .
+ "Pycnodus|" .
+ "Metaceratodus|" .
  "END_OF_CITE_list_junk"; // All real ones need pipe on end
 //  YOU MUST ESCAPE () and other FUNNY Characters
 
