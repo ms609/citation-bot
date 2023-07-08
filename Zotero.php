@@ -1806,7 +1806,7 @@ public static function find_indentifiers_in_urls(Template $template, ?string $ur
           }
           return TRUE;
         }
-      } elseif (preg_match("~^https?:\/\/(www\.)?sciencedirect\.com\/book\/(978\d{10})(?:$|\/)~i", $url, $match) && $template->blank('isbn')) {
+      } elseif (preg_match("~^https?:\/\/(?:www\.)?sciencedirect\.com\/book\/(978\d{10})(?:$|\/)~i", $url, $match) && $template->blank('isbn')) {
         if ($template->add_if_new('isbn', $match[1])) {
           return TRUE;
         }
