@@ -360,4 +360,91 @@ final class constantsTest extends testBaseClass {
     }
     $this->assertFalse($failed);
   }
+
+  public function testItalicsOrder() : void {
+    $in_order = TRUE;
+    $spaces_at = 99999999;
+    $max_spaces = 0;
+    $italics = explode("|", ITALICS_LIST);
+    foreach ($italics as $item) {
+      $spaces = substr_count($item, " ");
+      if ($spaces > $spaces_at) $in_order = FALSE;
+      $max_spaces = max($max_spaces, $spaces);
+    }
+    if (!$in_order) {
+      echo "\n Correct values for italics.php\n";
+      echo "\n";
+      echo "<?php\n";
+      echo "declare(strict_types=1);\n";
+      echo "\n";
+      echo "const ITALICS_LIST =\n";
+      for ($i = $max_spaces; $i > -1 ; $i--) {
+        foreach ($italics as $item) {
+           if (substr_count($item, " ") === $i) {
+              echo ' "' . $item . '|" .' . "\n";
+           }
+        }
+      }
+    }
+    $this->assertTrue($in_order);
+    $this->assertSame("END_OF_CITE_list_junk", end($italics));
+  }
+
+  public function testItalicsNoDuplicates() : void {
+    $italics = explode("|", ITALICS_LIST);
+    sort($italics);
+    $last = "123412341234";
+    $good = TRUE;
+    foreach ($italics as $item) {
+      if ($item === $last) {
+        echo "\n Found duplicate: $item \n";
+        $good = FALSE;
+      }
+    }
+    $this->assertTrue($good);
+  }
+
+  public function testCamelNoDuplicates() : void {
+    $italics = CAMEL_CASE;
+    sort($italics);
+    $last = "123412341234";
+    $good = TRUE;
+    foreach ($italics as $item) {
+      if ($item === $last) {
+        echo "\n Found duplicate: $item \n";
+        $good = FALSE;
+      }
+    }
+    $this->assertTrue($good);
+  }
+
+
+  public function testItalicsEscaped() : void {
+     $italics = ITALICS_LIST;
+     $italics = str_replace(['\\(', '\\)'], '', $italics);
+     $this->assertSame(0 , substr_count($italics, '('));
+     $this->assertSame(0 , substr_count($italics, ')'));
+     $this->assertSame(0 , substr_count($italics, '\\'));
+     $this->assertSame(0 , substr_count($italics, '.'));
+  }
+
+ public function testItalicsNoSpaces() : void {
+    $italics = explode("|", ITALICS_LIST);
+    foreach ($italics as $item) {
+      $this->assertNotEquals(' ', substr($item, 0, 1));
+      $this->assertNotEquals(' ', substr($item, -1));
+    }
+ }
+
+ public function testItalicsHardCode() : void {
+    $this->assertSame(count(ITALICS_HARDCODE_IN), count(ITALICS_HARDCODE_OUT));
+    for ($i = 0; $i < count(ITALICS_HARDCODE_OUT); $i++) {
+      $this->assertSame(0, substr_count("'''", ITALICS_HARDCODE_IN[$i]));
+      $this->assertSame(0, substr_count("'''", ITALICS_HARDCODE_OUT[$i]));
+      $this->assertTrue(substr_count("''", ITALICS_HARDCODE_OUT[$i]) > 1);
+      $in = str_replace(["'", " "], '', ITALICS_HARDCODE_IN[$i]);
+      $out = str_replace(["'", " "], '', ITALICS_HARDCODE_IOUT[$i]);
+      $this->assertSame($in, $out); // Same once spaces and single quotes are removed
+    }
+ }
 }
