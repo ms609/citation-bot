@@ -495,11 +495,20 @@ const ITALICS_LIST =
  "Diagnostic and statistical manual|" . 
  "Lepidobatrachus|" . 
  "Chronicle(s) of Ioannina|" . 
+ "Uroplectes ansiedippenaarae|" . 
+ "Uroplectes|" . 
+ "Euroscaptor|" . 
+ "Homo sapiens sapiens|" . 
+ "Tornieria africana|" . 
+ "Pericope Adulterae|" . 
+ "Montifringilla|" . 
+ "Leucosticte|" . 
  "END_OF_CITE_list_junk"; // All real ones need pipe on end
 
 const CAMEL_CASE = array('DeSoto', 'PubChem', 'BitTorrent', 'Al2O3', 'NiMo', 'CuZn', 'BxCyNz', 'ChemCam',
                          'StatsRef', 'BuzzFeed', 'DeBenedetti', 'DeVries', 'TallyHo', 'JngJ', 'ENaCs',
-                         'MensRights',
+                         'MensRights', 'McCarthy', 'AmpliSeq', 'nRepeat', 'OpenStreetMap', 'DonThorsen',
+                        
                          'arXiv', 'eBay', 'aRMadillo', 'HowNutsAreTheDutch', 'Liberalism', 'HoeGekIsNL',
                          'iMac', 'iPhone', 'iPad', 'iTunes', 'FreeFab', 'HeartMath', 'MeToo', 'SysCon', 'DiMarco', ' Mc', ' Mac',
                          'DiMarco', 'DeepMind', 'BabySeq', 'ClinVar',  'UCbase', 'miRfunc', 'GeneMatcher',
@@ -543,8 +552,8 @@ function restore_italics (string $text) : string {
   // <em> tags often go missing around species names in CrossRef
   $old = $text;
   $text = str_replace(
-    ["in vitroAssays",       "MarketizingHindutva",      "TheBhagavadgītā,",      "theOrigin of Species",      "EncounteringHindutva",      "ChineseHukouSystem",        "CisLatreille"],
-    [" ''in vitro'' Assays", "Marketizing ''Hindutva''", "The ''Bhagavadgītā'',", "the ''Origin of Species''", "Encountering ''Hindutva''", "Chinese  ''Hukou'' System", "'''Cis'''Latreille"],
+    [" in Plutarch'sLives",      "FromSolidarityto",       " gp91phoxPromoter ",  "in vitroAssays",       "MarketizingHindutva",      "TheBhagavadgītā,",      "theOrigin of Species",      "EncounteringHindutva",      "ChineseHukouSystem",        "CisLatreille"],
+    [" in Plutarch's ''Lives''", "From ''Solidarity'' to", " gp91phox Promoter ", " ''in vitro'' Assays", "Marketizing ''Hindutva''", "The ''Bhagavadgītā'',", "the ''Origin of Species''", "Encountering ''Hindutva''", "Chinese  ''Hukou'' System", "'''Cis'''Latreille"],
     $text); // Ones to always do, since they keep popping up in our logs
   $text = trim(str_replace(['        ', '      ', '    ', '   ', '  '], [' ', ' ', ' ', ' ', ' '], $text));
   while (preg_match('~([a-z])(' . ITALICS_LIST . ')([A-Z\-\?\:\.\)\,]|species|genus| in|$)~', $text, $matches)) {
