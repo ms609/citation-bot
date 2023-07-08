@@ -419,6 +419,8 @@ const ITALICS_LIST =
  "Escherichia coli|" . 
  "Bugulasensu lato|" . 
  "Massospondylus carinatus|" . 
+ "Campylobacter jejuni|" .
+ "Adenanthera pavonina|" .
  "Burkholderia pseudomallei|" . 
  "Helicobacter pylori|" . 
  "Drosophila silvestris|" . 
