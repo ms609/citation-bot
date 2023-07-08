@@ -503,6 +503,9 @@ const ITALICS_LIST =
  "Pericope Adulterae|" . 
  "Montifringilla|" . 
  "Leucosticte|" . 
+ "Candida|" . 
+ "Cannabis|" . 
+ "Ilex asprella|" . 
  "END_OF_CITE_list_junk"; // All real ones need pipe on end
 
 const CAMEL_CASE = array('DeSoto', 'PubChem', 'BitTorrent', 'Al2O3', 'NiMo', 'CuZn', 'BxCyNz', 'ChemCam',
