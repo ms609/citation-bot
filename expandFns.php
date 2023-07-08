@@ -480,7 +480,7 @@ const ITALICS_LIST =
  "Aspergillus terreus|" . 
  "Ignicoccus hospitalis|" . 
  "Ignicoccus|" . 
- "Opus Caroli (Libri Carolini)|" . 
+ "Opus Caroli \(Libri Carolini\)|" . 
  "Opus Caroli|" . 
  "Libri Carolini|" . 
  "Nanoarchaeum equitans|" . 
@@ -494,7 +494,7 @@ const ITALICS_LIST =
  "Hipparchs|" . 
  "Diagnostic and statistical manual|" . 
  "Lepidobatrachus|" . 
- "Chronicle(s) of Ioannina|" . 
+ "Chronicle\(s\) of Ioannina|" . 
  "Uroplectes ansiedippenaarae|" . 
  "Uroplectes|" . 
  "Euroscaptor|" . 
@@ -507,6 +507,7 @@ const ITALICS_LIST =
  "Cannabis|" . 
  "Ilex asprella|" . 
  "END_OF_CITE_list_junk"; // All real ones need pipe on end
+//  YOU MUST ESCAPE () and other FUNNY Characters
 
 const CAMEL_CASE = array('DeSoto', 'PubChem', 'BitTorrent', 'Al2O3', 'NiMo', 'CuZn', 'BxCyNz', 'ChemCam',
                          'StatsRef', 'BuzzFeed', 'DeBenedetti', 'DeVries', 'TallyHo', 'JngJ', 'ENaCs',
