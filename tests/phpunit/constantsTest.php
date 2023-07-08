@@ -367,7 +367,7 @@ final class constantsTest extends testBaseClass {
     $max_spaces = 0;
     $italics = explode("|", ITALICS_LIST);
     foreach ($italics as $item) {
-      $spaces = substr_count($italics, " ");
+      $spaces = substr_count($item, " ");
       if ($spaces > $spaces_at) $in_order = FALSE;
       $max_spaces = max($max_spaces, $spaces);
     }
@@ -392,7 +392,7 @@ final class constantsTest extends testBaseClass {
 
   public function testItalicsNoDuplicates() : void {
     $italics = explode("|", ITALICS_LIST);
-    $italics = sort($italics);
+    sort($italics);
     $last = "123412341234";
     $good = TRUE;
     foreach ($italics as $item) {
@@ -406,7 +406,7 @@ final class constantsTest extends testBaseClass {
 
   public function testCamelNoDuplicates() : void {
     $italics = CAMEL_CASE;
-    $italics = sort($italics);
+    sort($italics);
     $last = "123412341234";
     $good = TRUE;
     foreach ($italics as $item) {
