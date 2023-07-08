@@ -419,6 +419,7 @@ function restore_italics (string $text) : string {
   // <em> tags often go missing around species names in CrossRef
   $old = $text;
   $text = str_replace(ITALICS_HARDCODE_IN, ITALICS_HARDCODE_OUT, $text); // Ones to always do, since they keep popping up in our logs
+  $text = str_replace("xAzathioprine therapy for patients with systemic lupus erythematosus", "Azathioprine therapy for patients with systemic lupus erythematosus", $text); // Annoying stupid bad data
   $text = trim(str_replace(['        ', '      ', '    ', '   ', '  '], [' ', ' ', ' ', ' ', ' '], $text));
   while (preg_match('~([a-z])(' . ITALICS_LIST . ')([A-Z\-\?\:\.\)\,]|species|genus| in|$)~', $text, $matches)) {
      $text = str_replace($matches[0], $matches[1] . " ''" . $matches[2] . "'' " . $matches[3], $text);
