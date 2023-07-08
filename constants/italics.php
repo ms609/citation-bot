@@ -23,6 +23,9 @@ const ITALICS_LIST =
  "Arabidopsis|" .
  "In Vitro|" .
  "Realpolitik|" .
+ "Mycoplasma pneumoniae|" .
+ "Balaur bondoc|" .
+ "Paradisaea Raggiana|" .
  "Brachiosaurus altithorax|" .
  "Saccharomyces cerevisiae|" .
  "Paratirolites|" .
