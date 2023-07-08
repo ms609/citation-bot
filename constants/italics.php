@@ -63,6 +63,7 @@ const ITALICS_LIST =
  "Acrocomia mexicana|" .
  "Lasalichthys|" .
  "Caenorhabditis elegans|" .
+ "Diagnostic and statistical manual|" .
  "Berardiusin|" .
  "Paradisaea Raggiana|" .
  "Ilustrado|" .
@@ -84,6 +85,7 @@ const ITALICS_LIST =
  "Nanoarchaeum equitans|" .
  "Les Noces|" .
  "Hencke|" .
+ "Aspergillus terreus|" .
  "Batillipes mirusand|" .
  "Batillipes noerrevangi|" .
  "Batillipes|" .
@@ -110,6 +112,7 @@ const ITALICS_LIST =
  "Dapedium|" .
  "Pycnodus|" .
  "Metaceratodus|" .
+ "Erwinia|" .
  "END_OF_CITE_list_junk"; // All real ones need pipe on end
 //  YOU MUST ESCAPE () and other FUNNY Characters
 
