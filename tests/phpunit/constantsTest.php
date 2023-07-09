@@ -399,7 +399,7 @@ final class constantsTest extends testBaseClass {
     foreach ($italics as $item) {
       $spaces = substr_count($item, " ");
       if ($spaces > $spaces_at) $in_order = FALSE;
-      $spaces = $spaces_at;
+      $spaces_at = $spaces;
       $max_spaces = max($max_spaces, $spaces);
     }
     if (!$in_order) {
