@@ -449,6 +449,7 @@ final class constantsTest extends testBaseClass {
         ob_flush();
         $good = FALSE;
       }
+      $last = $item;
     }
     $this->assertTrue($good);
   }
@@ -465,6 +466,7 @@ final class constantsTest extends testBaseClass {
         ob_flush();
         $good = FALSE;
       }
+      $last = $item;
     }
     $this->assertTrue($good);
   }
