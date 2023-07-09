@@ -440,6 +440,11 @@ function expand_by_doi(Template $template, bool $force = FALSE) : bool {
   }
   if ($doi && ($force || $template->incomplete())) {
     $crossRef = query_crossref($doi);
+    ob_flush();
+    echo "\n\n";
+    print_r($doi);
+    echo echoable(@$crossRef->article_title) . "\n\n";
+    ob_flush();
     if ($crossRef) {
       if (in_array(strtolower((string) @$crossRef->article_title), BAD_ACCEPTED_MANUSCRIPT_TITLES)) return FALSE ;
       if ($template->has('title') && trim((string) @$crossRef->article_title) && $template->get('title') !== 'none') { // Verify title of DOI matches existing data somewhat
