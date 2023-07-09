@@ -2,17 +2,27 @@
 declare(strict_types=1);
 
 const ITALICS_LIST =
+ "Night of the Living Dead|" .
+ "The Dream of the Rood|" .
  "Encyclopedia of Inorganic Chemistry|" .
  "Diagnostic and statistical manual|" .
  "Opus Caroli \(Libri Carolini\)|" .
  "Diagnostic and statistical manual|" .
+ "The City Of God|" .
+ "Miseducation of the Negro|" .
+ "The Book of Illusions|" .
+ "Opus Caroli \(Libri Carolini\)|" .
  "Magnalia Christi Americana|" .
  "Sydney morning herald|" .
  "Chronicle\(s\) of Ioannina|" .
  "Homo sapiens sapiens|" .
+ "Homo sapiens sapiens|" .
+ "Star Trek: Voyager|" .
  "Tyrannotitan chubutensis|" .
  "Escherichia coli|" .
  "Bugulasensu lato|" .
+ "The Double-Cross System|" .
+ "Catalogue of Women|" .
  "Massospondylus carinatus|" .
  "Campylobacter jejuni|" .
  "Adenanthera pavonina|" .
@@ -22,6 +32,11 @@ const ITALICS_LIST =
  "Luzula nivea|" .
  "Bacillus pumilus|" .
  "Citipati Osmolskae|" .
+ "Sui Generis|" .
+ "Communist Manifesto|" .
+ "Star Trek|" .
+ "Yarrowia lipolytica|" .
+ "Dunkleosteus terrelli|" .
  "Stichodactyla helianthusas|" .
  "Plasmodium falciparum|" .
  "Pyrobaculum calidifontis|" .
@@ -73,6 +88,25 @@ const ITALICS_LIST =
  "Tornieria africana|" .
  "Pericope Adulterae|" .
  "Ilex asprella|" .
+ "Candida albicans|" .
+ "Physcomitrella patens|" .
+ "China Daily|" .
+ "Tabula Peutingeriana|" .
+ "Diamond Sutra|" .
+ "Flemingia macrophylla|" .
+ "Glycine tomentella|" .
+ "Gymondinium pseudopalustre|" .
+ "Woloszynskia apiculata|" .
+ "Symbiodinium microadriaticum|" .
+ "Enfants Terribles|" .
+ "Mycobacterium tuberculosis|" .
+ "Puntius sophore|" .
+ "Murraya koenigii|" .
+ "Pseudomonas aeruginosa|" .
+ "Cherax destructor|" .
+ "Cocos nucifera|" .
+ "Chironomus riparius|" .
+ "Acathamoeba castellanii|" .
  "Pristionchus|" .
  "Arabidopsis|" .
  "Realpolitik|" .
@@ -119,47 +153,32 @@ const ITALICS_LIST =
  "Pycnodus|" .
  "Metaceratodus|" .
  "Erwinia|" .
- "The City Of God|" .
  "Chenopodium|" .
- "Opus Caroli \(Libri Carolini\)|" .
  "Lactobacillus|" .
  "Candidain|" .
  "Candida|" .
- "Candida albicans|" .
  "Cannabis|" .
  "Lasalichthys|" .
- "Physcomitrella patens|" .
  "Drosophila|" .
- "China Daily|" .
  "Dicynodon|" .
- "Tabula Peutingeriana|" .
  "Iudaea-Palestina|" .
  "Cymbeline|" .
- "Homo sapiens sapiens|" .
- "Diamond Sutra|" .
- "Flemingia macrophylla|" .
- "Glycine tomentella|" .
- "Gymondinium pseudopalustre|" .
- "Woloszynskia apiculata|" .
- "The Dream of the Rood|" .
  "Arabidopsis|" .
  "Gordonia|" .
  "Symbiodinium|" .
- "Symbiodinium microadriaticum|" .
  "Dhammapada|" .
- "Enfants Terribles|" .
- "Mycobacterium tuberculosis|" .
- "Puntius sophore|" .
  "Xenopusembryo|" .
- "Murraya koenigii|" .
- "Pseudomonas aeruginosa|" .
- "Cherax destructor|" .
- "Cocos nucifera|" .
  "Arumberia|" .
- "Chironomus riparius|" .
- "Acathamoeba castellanii|" .
- "Star Trek: Voyager|" .
  "Ridda|" .
+ "Laccognathus|" .
+ "Montifringilla|" .
+ "Karma|" .
+ "Cena|" .
+ "Satyricon|" .
+ "Cannabis|" .
+ "Nakbain|" .
+ "Nakba|" .
+ "Saurichthys|" .
  "END_OF_CITE_list_junk";
 //  All real ones need pipe on end
 //  YOU MUST ESCAPE () and other FUNNY Characters
