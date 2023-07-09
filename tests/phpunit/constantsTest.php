@@ -402,21 +402,20 @@ final class constantsTest extends testBaseClass {
       $spaces_at = $spaces;
       $max_spaces = max($max_spaces, $spaces);
     }
+    $this->assertSame('END_OF_CITE_list_junk', $item);
     if (!$in_order) {
       ob_flush();
       echo "\n Correct values for italics.php\n";
       echo "\n";
-      echo "<?php\n";
-      echo "declare(strict_types=1);\n";
-      echo "\n";
       echo "const ITALICS_LIST =\n";
       for ($i = $max_spaces; $i > -1 ; $i--) {
         foreach ($italics as $item) {
-           if (substr_count($item, " ") === $i) {
+           if (substr_count($item, " ") === $i && $item !== 'END_OF_CITE_list_junk') {
               echo ' "' . $item . '|" .' . "\n";
            }
         }
       }
+      echo ' "END_OF_CITE_list_junk";' . "\n";
       ob_flush();
     }
     $this->assertTrue($in_order);
