@@ -396,13 +396,13 @@ final class constantsTest extends testBaseClass {
     $spaces_at = 99999999;
     $max_spaces = 0;
     $italics = explode("|", ITALICS_LIST);
+    $this->assertSame("END_OF_CITE_list_junk", end($italics));
     foreach ($italics as $item) {
       $spaces = substr_count($item, " ");
       if ($spaces > $spaces_at) $in_order = FALSE;
       $spaces_at = $spaces;
       $max_spaces = max($max_spaces, $spaces);
     }
-    $this->assertSame('END_OF_CITE_list_junk', $item);
     if (!$in_order) {
       ob_flush();
       echo "\n Correct values for italics.php\n";
@@ -419,7 +419,22 @@ final class constantsTest extends testBaseClass {
       ob_flush();
     }
     $this->assertTrue($in_order);
-    $this->assertSame("END_OF_CITE_list_junk", end($italics));
+
+    // If we have "Specius" before "Speciusia" that is bad
+    $in_order = TRUE;
+    for ($i = 0; $i < count(ITALICS_LIST); $i++) {
+      $early = ITALICS_LIST[$i];
+      for ($j = $i+1; $j < count(ITALICS_LIST); $j++) {
+        $later = ITALICS_LIST[$j];
+        if (substr_count($later, $early) !== 0) {
+          $in_order = FALSE;
+          ob_flush();
+          echo "WRONG ORDER: $later   AND   $early\n";
+          ob_flush();
+        }
+      }
+    }
+    $this->assertTrue($in_order);
   }
 
   public function testItalicsNoDuplicates() : void {
