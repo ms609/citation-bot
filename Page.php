@@ -611,7 +611,7 @@ class Page {
     if (!$auto_summary) {
       $auto_summary = "Misc citation tidying. ";
     }
-    $auto_summary = $auto_summary . "| [[WP:UCB|Use this bot]]. [[WP:DBUG|Report bugs]]. ";
+    $auto_summary = $auto_summary . "| [[:en:WP:UCB|Use this bot]]. [[:en:WP:DBUG|Report bugs]]. ";
     if (WIKI_ROOT !== 'https://en.wikipedia.org/w/index.php') {
       $auto_summary = str_replace('[[WP:', '[[en:WP:', $auto_summary);  // @codeCoverageIgnore
     }

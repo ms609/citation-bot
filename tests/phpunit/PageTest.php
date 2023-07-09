@@ -22,75 +22,75 @@ final class PageTest extends testBaseClass {
 
   public function testPageChangeSummary1() : void {
       $page = $this->process_page('{{cite journal|chapter=chapter name|title=book name}}{stuff}{{{Stuffy|dsafsdf}}}'); // Change to book from journal
-      $this->assertSame('Alter: template type. | [[WP:UCB|Use this bot]]. [[WP:DBUG|Report bugs]]. ', $page->edit_summary());
+      $this->assertSame('Alter: template type. | [[:en:WP:UCB|Use this bot]]. [[:en:WP:DBUG|Report bugs]]. ', $page->edit_summary());
   }
 
   public function testPageChangeSummary2() : void {
       $page = $this->process_page('{{cite book||quote=a quote}}'); // Just lose extra pipe
-      $this->assertSame('Misc citation tidying. | [[WP:UCB|Use this bot]]. [[WP:DBUG|Report bugs]]. ', $page->edit_summary());
+      $this->assertSame('Misc citation tidying. | [[:en:WP:UCB|Use this bot]]. [[:en:WP:DBUG|Report bugs]]. ', $page->edit_summary());
   }
 
   public function testPageChangeSummary31() : void {
       $page = $this->process_page('<ref>http://onlinelibrary.wiley.com/doi/10.1111/j.1475-4983.2012.01203.x</ref>');
-      $this->assertSame('Alter: template type. Add: pages, issue, volume, journal, year, title, doi, authors 1-2. Changed bare reference to CS1/2. | [[WP:UCB|Use this bot]]. [[WP:DBUG|Report bugs]]. ', str_replace('s2cid, ', '', $page->edit_summary()));                
+      $this->assertSame('Alter: template type. Add: pages, issue, volume, journal, year, title, doi, authors 1-2. Changed bare reference to CS1/2. | [[:en:WP:UCB|Use this bot]]. [[:en:WP:DBUG|Report bugs]]. ', str_replace('s2cid, ', '', $page->edit_summary()));                
   }
  
   public function testPageChangeSummary32() : void { // Mixture of droping chapter-url and moving URL to chapter-url.  Bogus template content
       $page = $this->process_page('{{cite book|chapter=X|chapter-url= https://mathscinet.ams.org/mathscinet-getitem?mr=2320282|last1=X|last2=X|first1=X|first2=X |url= https://books.google.com/books?id=to0yXzq_EkQC&pg=PP154|title=Y|isbn=XXX|year=XXX}}');
-      $this->assertSame('Add: mr, date. Removed parameters. Some additions/deletions were parameter name changes. | [[WP:UCB|Use this bot]]. [[WP:DBUG|Report bugs]]. ', $page->edit_summary());                
+      $this->assertSame('Add: mr, date. Removed parameters. Some additions/deletions were parameter name changes. | [[:en:WP:UCB|Use this bot]]. [[:en:WP:DBUG|Report bugs]]. ', $page->edit_summary());                
   }
 
   public function testPageChangeSummary4() : void {
       $page = $this->process_page('{{cite web|<!-- comment --> journal=Journal Name}}'); // Comment BEFORE parameter
-      $this->assertSame('Alter: template type. | [[WP:UCB|Use this bot]]. [[WP:DBUG|Report bugs]]. ', $page->edit_summary());
+      $this->assertSame('Alter: template type. | [[:en:WP:UCB|Use this bot]]. [[:en:WP:DBUG|Report bugs]]. ', $page->edit_summary());
       $this->assertSame('{{cite journal|<!-- comment --> journal=Journal Name}}', $page->parsed_text());
   }
 
   public function testPageChangeSummary5() : void {
       $page = $this->process_page('{{cite web|journal<!-- comment -->=Journal Name}}'); // Comment AFTER parameter
-      $this->assertSame('Alter: template type. | [[WP:UCB|Use this bot]]. [[WP:DBUG|Report bugs]]. ', $page->edit_summary());
+      $this->assertSame('Alter: template type. | [[:en:WP:UCB|Use this bot]]. [[:en:WP:DBUG|Report bugs]]. ', $page->edit_summary());
       $this->assertSame('{{cite journal|journal<!-- comment -->=Journal Name}}', $page->parsed_text());
   }
 
   public function testPageChangeSummary7() : void {
       $page = $this->process_page('{{cite news|url=http://zbmath.org/?format=complete&q=an:1111.22222}}'); // Very little done to cite news
-      $this->assertSame('Add: zbl. | [[WP:UCB|Use this bot]]. [[WP:DBUG|Report bugs]]. ', $page->edit_summary());
+      $this->assertSame('Add: zbl. | [[:en:WP:UCB|Use this bot]]. [[:en:WP:DBUG|Report bugs]]. ', $page->edit_summary());
   }
  
   public function testPageChangeSummary8() : void {
       $page = $this->process_page('{{cite journal|chapter-url=https://mathscinet.ams.org/mathscinet-getitem?mr=1234|title=mr=1234}}');
       $this->assertSame('{{cite journal|url=https://mathscinet.ams.org/mathscinet-getitem?mr=1234|title=mr=1234| mr=1234 }}', $page->parsed_text());
-      $this->assertSame('Add: mr, url. Removed proxy/dead URL that duplicated identifier. | [[WP:UCB|Use this bot]]. [[WP:DBUG|Report bugs]]. ', $page->edit_summary());
+      $this->assertSame('Add: mr, url. Removed proxy/dead URL that duplicated identifier. | [[:en:WP:UCB|Use this bot]]. [[:en:WP:DBUG|Report bugs]]. ', $page->edit_summary());
   }
   public function testPageChangeSummary9() : void {
       $page = $this->process_page('{{cite journal|chapterurl=https://mathscinet.ams.org/mathscinet-getitem?mr=1234|title=mr=1234}}');
       $this->assertSame('{{cite journal|url=https://mathscinet.ams.org/mathscinet-getitem?mr=1234|title=mr=1234| mr=1234 }}', $page->parsed_text());
-      $this->assertSame('Add: mr, url. Removed proxy/dead URL that duplicated identifier. | [[WP:UCB|Use this bot]]. [[WP:DBUG|Report bugs]]. ', $page->edit_summary());
+      $this->assertSame('Add: mr, url. Removed proxy/dead URL that duplicated identifier. | [[:en:WP:UCB|Use this bot]]. [[:en:WP:DBUG|Report bugs]]. ', $page->edit_summary());
   }
    
   public function testPageChangeSummary10() : void {
       $page = $this->process_page('{{cite journal|distribution-url=https://mathscinet.ams.org/mathscinet-getitem?mr=1234|title=mr=1234}}');
-      $this->assertSame('Add: contribution-url. Removed parameters. | [[WP:UCB|Use this bot]]. [[WP:DBUG|Report bugs]]. ', $page->edit_summary());
+      $this->assertSame('Add: contribution-url. Removed parameters. | [[:en:WP:UCB|Use this bot]]. [[:en:WP:DBUG|Report bugs]]. ', $page->edit_summary());
   }
  
   public function testPageChangeSummary11() : void {
       $page = $this->process_page('{{cite journal|accessdate=12 Nov 2000}}');
-      $this->assertSame('Removed access-date with no URL. | [[WP:UCB|Use this bot]]. [[WP:DBUG|Report bugs]]. ', $page->edit_summary());
+      $this->assertSame('Removed access-date with no URL. | [[:en:WP:UCB|Use this bot]]. [[:en:WP:DBUG|Report bugs]]. ', $page->edit_summary());
   }
  
   public function testPageChangeSummary12() : void {
       $page = $this->process_page('{{cite journal|chapter-url=http://www.facebook.com/|title=X|journal=Y}}');
-      $this->assertSame('Add: url. Removed proxy/dead URL that duplicated identifier. | [[WP:UCB|Use this bot]]. [[WP:DBUG|Report bugs]]. ', $page->edit_summary());
+      $this->assertSame('Add: url. Removed proxy/dead URL that duplicated identifier. | [[:en:WP:UCB|Use this bot]]. [[:en:WP:DBUG|Report bugs]]. ', $page->edit_summary());
   }
  
   public function testPageChangeSummary13() : void {
       $page = $this->process_page('{{cite journal|notestitle=X}}');
-      $this->assertSame('Alter: template type. | [[WP:UCB|Use this bot]]. [[WP:DBUG|Report bugs]]. ', $page->edit_summary());
+      $this->assertSame('Alter: template type. | [[:en:WP:UCB|Use this bot]]. [[:en:WP:DBUG|Report bugs]]. ', $page->edit_summary());
   }
  
   public function testPageChangeSummary14() : void {
       $page = $this->process_page('{{cite journal|pages=44-55}}');
-      $this->assertSame('Alter: pages. Formatted [[WP:ENDASH|dashes]]. | [[WP:UCB|Use this bot]]. [[WP:DBUG|Report bugs]]. ', $page->edit_summary());
+      $this->assertSame('Alter: pages. Formatted [[WP:ENDASH|dashes]]. | [[:en:WP:UCB|Use this bot]]. [[:en:WP:DBUG|Report bugs]]. ', $page->edit_summary());
   }
  
   public function testBotReadblocked() : void {
@@ -385,35 +385,35 @@ final class PageTest extends testBaseClass {
     $text = "{{Cite LSA|url=https://books.google.uk.co/books?id=to0yXzq_EkQC&pg=}}";
     $page = $this->process_page($text);
     $this->assertSame("{{Cite LSA|url=https://books.google.com/books?id=to0yXzq_EkQC}}", $page->parsed_text());
-    $this->assertSame('Misc citation tidying. | [[WP:UCB|Use this bot]]. [[WP:DBUG|Report bugs]]. ', $page->edit_summary());
+    $this->assertSame('Misc citation tidying. | [[:en:WP:UCB|Use this bot]]. [[:en:WP:DBUG|Report bugs]]. ', $page->edit_summary());
   }
  
   public function testChapterUrlLots() : void {
     $text = "{{new cambridge medieval history|chapterurl=https://cnn.com|chapter=XYX}}";
     $page = $this->process_page($text);
     $this->assertSame("{{new cambridge medieval history|chapter-url=https://cnn.com|chapter=XYX}}", $page->parsed_text());
-    $this->assertSame('Misc citation tidying. | [[WP:UCB|Use this bot]]. [[WP:DBUG|Report bugs]]. ', $page->edit_summary());
+    $this->assertSame('Misc citation tidying. | [[:en:WP:UCB|Use this bot]]. [[:en:WP:DBUG|Report bugs]]. ', $page->edit_summary());
   }
  
   public function testChapterUrlChanges() : void {
     $text = "{{cite book|chapter-url=https://pep-web.org|title=X}}";
     $page = $this->process_page($text);
     $this->assertSame("{{cite book|url=https://pep-web.org|title=X}}", $page->parsed_text());
-    $this->assertSame('Add: url. Removed proxy/dead URL that duplicated identifier. | [[WP:UCB|Use this bot]]. [[WP:DBUG|Report bugs]]. ', $page->edit_summary());
+    $this->assertSame('Add: url. Removed proxy/dead URL that duplicated identifier. | [[:en:WP:UCB|Use this bot]]. [[:en:WP:DBUG|Report bugs]]. ', $page->edit_summary());
   }
  
   public function testRefHarv() : void {
     $text = "{{cite iucn|ref=harv}}";
     $page = $this->process_page($text);
     $this->assertSame("{{cite iucn}}", $page->parsed_text());
-    $this->assertSame('Misc citation tidying. | [[WP:UCB|Use this bot]]. [[WP:DBUG|Report bugs]]. ', $page->edit_summary());
+    $this->assertSame('Misc citation tidying. | [[:en:WP:UCB|Use this bot]]. [[:en:WP:DBUG|Report bugs]]. ', $page->edit_summary());
   }
  
   public function testRefBlank() : void {
     $text = "{{cite iucn|ref=}}";
     $page = $this->process_page($text);
     $this->assertSame("{{cite iucn}}", $page->parsed_text());
-    $this->assertSame('Misc citation tidying. | [[WP:UCB|Use this bot]]. [[WP:DBUG|Report bugs]]. ', $page->edit_summary());
+    $this->assertSame('Misc citation tidying. | [[:en:WP:UCB|Use this bot]]. [[:en:WP:DBUG|Report bugs]]. ', $page->edit_summary());
   }
  
   public function testInterview() : void {
@@ -425,19 +425,19 @@ final class PageTest extends testBaseClass {
   public function testAddEditorsSummary() : void {
     $text = "{{Cite journal | doi-access=free|url=http://www.hbw.com/species/somali-pigeon-columba-oliviae|title=Somali Pigeon (Columba oliviae)|journal=Birds of the World|date=4 March 2020|last1=Baptista|first1=Luis F.|last2=Trail|first2=Pepper W.|last3=Horblit|first3=H. M.|last4=Sharpe|first4=Christopher J.|last5=Boesman|first5=Peter F. D.|last6=Garcia|first6=Ernest|doi=10.2173/bow.sompig1.01}}";
     $page = $this->process_page($text);
-    $this->assertSame('Add: editors 1-5. | [[WP:UCB|Use this bot]]. [[WP:DBUG|Report bugs]]. ', $page->edit_summary());
+    $this->assertSame('Add: editors 1-5. | [[:en:WP:UCB|Use this bot]]. [[:en:WP:DBUG|Report bugs]]. ', $page->edit_summary());
   }
  
   public function testConvertURLSummary() : void {
     $text = "{{cite thesis |last=Hopkins-Weise |first=Jeffrey Ellis |date=2003-09-01 |title=Australian Involvement in the New Zealand Wars of the 1840s and 1860s |type=MPhil. |chapter=Sydney Manufacture of Coehorn Mortars |publisher=University of Queensland |docket= |oclc= |url=https://espace.library.uq.edu.au/data/UQ_198457/the17900.pdf?Expires=1650241198&Key-Pair-Id=APKAJKNBJ4MJBJNC6NLQ&Signature=gEyFpad5YhGNqdoOeq-utC-RLOB7KujpHfPCaNrUj-9KgjhunuqaY6gX5TIIrPQigy4To58NDSqVyGgr4a2DUE9O6AaiO8RjnVG8LDJWrgZqykR0H4xO8rJAy5cnCaTvhFhyAbeJLP7cOrqSgUfyuXvNO46SxiNoW3QNP-futcvJi7hbCKhYVJmTjoPl0HdsNunU3238Y8t2U3eCBtITFfiWcLXuX4od8xDf9Hbpb0~JwsZhyRnhzN0gv8FvD2V2vTku-MYR5H8KzcPsl3ovlP9HZ74cnlQpBXv4XKjG~6LzCBYHsnbNPxHERYLwR1qjnlrKTSAVBrV3mZ05z9Z2jQ__ |access-date=2022-04-18|page=57}}";
     $page = $this->process_page($text);
-    $this->assertSame('Misc citation tidying. | [[WP:UCB|Use this bot]]. [[WP:DBUG|Report bugs]]. ', $page->edit_summary());
+    $this->assertSame('Misc citation tidying. | [[:en:WP:UCB|Use this bot]]. [[:en:WP:DBUG|Report bugs]]. ', $page->edit_summary());
   }
  
   public function testConvertURLSummary2() : void {
     $text = "{{cite web |last=Hopkins-Weise |first=Jeffrey Ellis |date=2003-09-01 |title=Australian Involvement in the New Zealand Wars of the 1840s and 1860s |type=MPhil. |chapter=Sydney Manufacture of Coehorn Mortars |publisher=University of Queensland |docket= |oclc= |url=https://espace.library.uq.edu.au/data/UQ_198457/the17900.pdf?Expires=1650241198&Key-Pair-Id=APKAJKNBJ4MJBJNC6NLQ&Signature=gEyFpad5YhGNqdoOeq-utC-RLOB7KujpHfPCaNrUj-9KgjhunuqaY6gX5TIIrPQigy4To58NDSqVyGgr4a2DUE9O6AaiO8RjnVG8LDJWrgZqykR0H4xO8rJAy5cnCaTvhFhyAbeJLP7cOrqSgUfyuXvNO46SxiNoW3QNP-futcvJi7hbCKhYVJmTjoPl0HdsNunU3238Y8t2U3eCBtITFfiWcLXuX4od8xDf9Hbpb0~JwsZhyRnhzN0gv8FvD2V2vTku-MYR5H8KzcPsl3ovlP9HZ74cnlQpBXv4XKjG~6LzCBYHsnbNPxHERYLwR1qjnlrKTSAVBrV3mZ05z9Z2jQ__ |access-date=2022-04-18|page=57}}";
     $page = $this->process_page($text);
-    $this->assertSame('Alter: template type. Add: chapter-url. Removed or converted URL. | [[WP:UCB|Use this bot]]. [[WP:DBUG|Report bugs]]. ', $page->edit_summary());
+    $this->assertSame('Alter: template type. Add: chapter-url. Removed or converted URL. | [[:en:WP:UCB|Use this bot]]. [[:en:WP:DBUG|Report bugs]]. ', $page->edit_summary());
   }
 
   public function testConvertCiteNews() : void {

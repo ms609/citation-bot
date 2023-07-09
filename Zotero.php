@@ -1229,9 +1229,13 @@ public static function find_indentifiers_in_urls(Template $template, ?string $ur
        }
      }
      if (preg_match("~^(https?://\S*jstor.org\S*)\?origin=~", $url, $matches)) {
-       $url = $matches[1];
-       if (is_null($url_sent)) {
-         $template->set($url_type, $url); // Update URL with cleaner one
+       if (stripos($url, "accept") !== FALSE) {
+         bot_debug_log("Accept Terms and Conditions JSTOR found : " . $url);
+       } else {
+         $url = $matches[1];
+         if (is_null($url_sent)) {
+           $template->set($url_type, $url); // Update URL with cleaner one
+         }
        }
      }
      if (stripos($url, 'plants.jstor.org') !== FALSE) {
@@ -1429,7 +1433,7 @@ public static function find_indentifiers_in_urls(Template $template, ?string $ur
         }
       }
       if (preg_match("~^/(?:\w+/)*(\d{5,})[^\d%\-]*(?:\?|$)~", substr($url, (int) stripos($url, 'jstor.org') + 9), $match) ||
-                preg_match("~^https?://(?:www\.)?jstor\.org\S+(?:stable|discovery)/(?:10\.7591/|)(\d{5,}|(?:j|J|histirel|jeductechsoci|saoa)\.[a-zA-Z0-9\.]+)$~", $url, $match)) {
+                preg_match("~^https?://(?:www\.)?jstor\.org\S+(?:stable|discovery)/(?:10\.7591/|)(\d{5,}|(?:j|J|histirel|jeductechsoci|saoa|newyorkhist)\.[a-zA-Z0-9\.]+)$~", $url, $match)) {
         if (is_null($url_sent)) {
           if ($template->has_good_free_copy()) $template->forget($url_type);
         }
@@ -1802,6 +1806,11 @@ public static function find_indentifiers_in_urls(Template $template, ?string $ur
           }
           return TRUE;
         }
+      } elseif (preg_match("~^https?:\/\/(?:www\.)?sciencedirect\.com\/book\/(978\d{10})(?:$|\/)~i", $url, $match) && $template->blank('isbn')) {
+        if ($template->add_if_new('isbn', $match[1])) {
+          return TRUE;
+        }
+     /// THIS MUST BE LAST
       } elseif (($template->has('chapterurl') || $template->has('chapter-url') || $template->has('url') || ($url_type === 'url') || ($url_type === 'chapterurl')  || ($url_type === 'chapter-url')) && preg_match("~^https?://web\.archive\.org/web/\d{14}/(https?://.*)$~", $url, $match) && $template->blank(['archiveurl', 'archive-url'])) {
           if (is_null($url_sent)) {
              quietly('report_modification', 'Extracting URL from archive');
@@ -1810,6 +1819,7 @@ public static function find_indentifiers_in_urls(Template $template, ?string $ur
              return FALSE; // We really got nothing
           }
       }
+     /// THIS MUST BE LAST
     }
     return FALSE ;
  }

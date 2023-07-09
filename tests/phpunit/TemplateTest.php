@@ -2363,7 +2363,7 @@ EP - 999 }}';
    
     $text = "{{cite book|isbn=0-9749009-0-7|url=https://books.google.com/books?id=to0yXzq_EkQC|year=2019}}";
     $page = $this->process_page($text);
-    $this->assertSame('Alter: isbn. Add: title, authors 1-2. Upgrade ISBN10 to 13. | [[WP:UCB|Use this bot]]. [[WP:DBUG|Report bugs]]. ', $page->edit_summary());
+    $this->assertSame('Alter: isbn. Add: title, authors 1-2. Upgrade ISBN10 to 13. | [[:en:WP:UCB|Use this bot]]. [[:en:WP:DBUG|Report bugs]]. ', $page->edit_summary());
   }
    
   public function testEtAl() : void {
@@ -3277,6 +3277,12 @@ EP - 999 }}';
     $this->assertSame('https://www.academia.edu/123456', $prepared->get2('url'));
   }
  
+  public function testTrimFigShare() : void {
+    $text = '{{cite journal|url=http://figshare.com/articles/journal_contribution/Volcanic_Setting_of_the_Bajo_de_la_Alumbrera_Porphyry_Cu-Au_Deposit_Farallon_Negro_Volcanics_Northwest_Argentina/22859585}}';
+    $prepared = $this->process_citation($text);
+    $this->assertSame('https://figshare.com/articles/journal_contribution/22859585', $prepared->get2('url'));
+  }
+
   public function testTrimProquestEbook1() : void {
     $text = '{{cite web|url=https://ebookcentral.proquest.com/lib/claremont/detail.action?docID=123456}}';
     $prepared = $this->prepare_citation($text);
@@ -3300,7 +3306,7 @@ EP - 999 }}';
   public function testTrimProquestEbook5() : void {
     $text = '{{cite web|url=http://ebookcentral-proquest-com.libproxy.berkeley.edu/lib/claremont/detail.action?docID=123456#goto_toc}}';
     $page = $this->process_page($text);
-    $this->assertSame('Alter: url. URLs might have been anonymized. Add: website. | [[WP:UCB|Use this bot]]. [[WP:DBUG|Report bugs]]. ', $page->edit_summary());
+    $this->assertSame('Alter: url. URLs might have been anonymized. Add: website. | [[:en:WP:UCB|Use this bot]]. [[:en:WP:DBUG|Report bugs]]. ', $page->edit_summary());
   }
 
   public function testTrimGoogleStuff() : void {
