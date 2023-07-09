@@ -442,7 +442,7 @@ function expand_by_doi(Template $template, bool $force = FALSE) : bool {
     $crossRef = query_crossref($doi);
     ob_flush();
     echo "\n\n";
-    print_r($doi);
+    print_r($crossRef);
     echo echoable((string) @$crossRef->article_title) . "\n\n";
     ob_flush();
     if ($crossRef) {
