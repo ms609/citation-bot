@@ -422,10 +422,11 @@ final class constantsTest extends testBaseClass {
 
     // If we have "Specius" before "Speciusia" that is bad
     $in_order = TRUE;
-    for ($i = 0; $i < count(ITALICS_LIST); $i++) {
-      $early = ITALICS_LIST[$i];
-      for ($j = $i+1; $j < count(ITALICS_LIST); $j++) {
-        $later = ITALICS_LIST[$j];
+    $italics = explode("|", ITALICS_LIST);
+    for ($i = 0; $i < count($italics); $i++) {
+      $early = $italics[$i];
+      for ($j = $i+1; $j < count($italics); $j++) {
+        $later = $italics[$j];
         if (substr_count($later, $early) !== 0) {
           $in_order = FALSE;
           ob_flush();
