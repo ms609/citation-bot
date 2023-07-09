@@ -443,7 +443,7 @@ function expand_by_doi(Template $template, bool $force = FALSE) : bool {
     ob_flush();
     echo "\n\n";
     print_r($doi);
-    echo echoable(@$crossRef->article_title) . "\n\n";
+    echo echoable((string) @$crossRef->article_title) . "\n\n";
     ob_flush();
     if ($crossRef) {
       if (in_array(strtolower((string) @$crossRef->article_title), BAD_ACCEPTED_MANUSCRIPT_TITLES)) return FALSE ;
