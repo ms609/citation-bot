@@ -98,6 +98,9 @@ const ITALICS_LIST =
  "Cocos nucifera|" .
  "Chironomus riparius|" .
  "Acathamoeba castellanii|" .
+ "Ainiktozoon loganense|" .
+ "Panthera palaeosinensis|" .
+ "Loa loa|" .
  "Pristionchus|" .
  "Arabidopsis|" .
  "Realpolitik|" .
@@ -163,6 +166,11 @@ const ITALICS_LIST =
  "Nakbain|" .
  "Nakba|" .
  "Saurichthys|" .
+ "Analects|" .
+ "Leishmania|" .
+ "tryA|" .
+ "Rangifer|" .
+ "Graphidaceae|" .
  "END_OF_CITE_list_junk";
 //  All real ones need pipe on end
 //  YOU MUST ESCAPE () and other FUNNY Characters
@@ -172,7 +180,7 @@ const CAMEL_CASE = array('DeSoto', 'PubChem', 'BitTorrent', 'Al2O3', 'NiMo', 'Cu
                          'MensRights', 'McCarthy', 'AmpliSeq', 'nRepeat', 'OpenStreetMap', 'DonThorsen',
                          'arXiv', 'eBay', 'aRMadillo', 'HowNutsAreTheDutch', 'Liberalism', 'HoeGekIsNL',
                          'iMac', 'iPhone', 'iPad', 'iTunes', 'FreeFab', 'HeartMath', 'MeToo', 'SysCon', 'DiMarco', ' Mc', ' Mac',
-                         'DiMarco', 'DeepMind', 'BabySeq', 'ClinVar',  'UCbase', 'miRfunc', 'GeneMatcher',
+                         'DeepMind', 'BabySeq', 'ClinVar',  'UCbase', 'miRfunc', 'GeneMatcher',
                          'TimeLapse', 'CapStarr', ' SpyTag', 'SpyCatcher', 'SpyBank', 'TaqMan',
                          'PhyreRisk', 'piggyBac', 'HapMap', 'MiSeq', 'QualComp', 'PastCast', 'InvAluable',
                          'NgAgo', ' MitoZoa', 'InterMitoBase', 'LaserTank', 'GeneBase', 'DesignSignatures',
@@ -188,7 +196,7 @@ const CAMEL_CASE = array('DeSoto', 'PubChem', 'BitTorrent', 'Al2O3', 'NiMo', 'Cu
                          'MasterCard', 'SportsCenter', 'CompuServe', 'WordStar', 'VisiCalc', 'WordPerfect',
                          'NetWare', 'LaserJet', 'MacWorks', 'PostScript', 'PageMaker', 'ClarisWorks', 'HyperCard',
                          'PowerPoint', 'WorldWideWeb', 'EchoStar', 'BellSouth', 'EastEnders', 'SpaceCamp',
-                         'HarperCollins', 'SeaTac', 'PricewaterhouseCoopers', 'DataLab', 'DuBois',
+                         'SeaTac', 'PricewaterhouseCoopers', 'DataLab', 'DuBois', 'LivesMatter',
                          'ScaFi', '(Mc', '(Mac', 'BioShock', 'BreadTube', 'PewDiePie', 'LepVax', 'CrossMab', 'GyneFix',
                          'ProsPeCts', 'sCIentIfIC', 'PsyCholoGy', 'DiGeorge', 'AstraZeneca', 'SemCluster',
                          'VirtuReal', '-Mc', '-Mac', 'NexGard', 'AmBisome', 'AmbiOnp', 'SnapShot', 'LentiGlobin',
@@ -207,9 +215,10 @@ const CAMEL_CASE = array('DeSoto', 'PubChem', 'BitTorrent', 'Al2O3', 'NiMo', 'Cu
                          'LeafCutter', 'CyBase','OxPhos', 'ArrayExpress', 'BepiColombo', 'RuleMonkey',
                          'OxyCo', 'CdZnTe', 'EnChroma', 'FibroTest', 'ActiTest', 'FloTrac', 'FibroScan',
                          'ColorBrewer', 'StagLab', 'EveryManc', 'GaCl', 'DeepFace', 'WeChat', 'kDa ',
-                         'Tg-AD', 'mHealth', 'DomainKeys', 'mTc', 'SiCf', 'SiC', 'RoboCup',  '-kDa'
+                         'Tg-AD', 'mHealth', 'DomainKeys', 'mTc', 'SiCf', 'SiC', 'RoboCup',  '-kDa',
+                         'DrugBank', 'MnSe', 'ZnTe', 'GaMnAs', 'MnxSb', 'InSb'
                        );
 
-const ITALICS_HARDCODE_IN  = ["ElectrongValue",       "thetoxGene",      "GopashtamiandGovardhan",       "PolishLebensraum",       "theNachlassproblem",        " forAltalena:",      " in Plutarch'sLives",       "FromSolidarityto",        " gp91phoxPromoter",  "in vitroAssays",        "MarketizingHindutva",       "TheBhagavadgītā,",       "theOrigin of Species",       "EncounteringHindutva",       "ChineseHukouSystem",        "CisLatreille"];
-const ITALICS_HARDCODE_OUT = ["Electron ''g'' Value", "the ''tox'' Gene","Gopashtami ''and'' Govardhan", "Polish ''Lebensraum'' ", "the ''Nachlass'' problem ", " for ''Altalena'':", " in Plutarch's ''Lives'' ", "From ''Solidarity'' to ", " gp91phox Promoter", " ''in vitro'' Assays ", "Marketizing ''Hindutva'' ", "The ''Bhagavadgītā'', ", "the ''Origin of Species'' ", "Encountering ''Hindutva'' ", "Chinese ''Hukou'' System ", "''Cis'' Latreille"];
+const ITALICS_HARDCODE_IN  = ["CytochromebGenes",       "ElectrongValue",       "thetoxGene",      "GopashtamiandGovardhan",       "PolishLebensraum",       "theNachlassproblem",        " forAltalena:",      " in Plutarch'sLives",       "FromSolidarityto",        " gp91phoxPromoter",  "in vitroAssays",        "MarketizingHindutva",       "TheBhagavadgītā,",       "theOrigin of Species",       "EncounteringHindutva",       "ChineseHukouSystem",        "CisLatreille"];
+const ITALICS_HARDCODE_OUT = ["Cytochrome ''b'' Genes", "Electron ''g'' Value", "the ''tox'' Gene","Gopashtami ''and'' Govardhan", "Polish ''Lebensraum'' ", "the ''Nachlass'' problem ", " for ''Altalena'':", " in Plutarch's ''Lives'' ", "From ''Solidarity'' to ", " gp91phox Promoter", " ''in vitro'' Assays ", "Marketizing ''Hindutva'' ", "The ''Bhagavadgītā'', ", "the ''Origin of Species'' ", "Encountering ''Hindutva'' ", "Chinese ''Hukou'' System ", "''Cis'' Latreille"];
 
