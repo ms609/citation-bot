@@ -119,6 +119,47 @@ const ITALICS_LIST =
  "Pycnodus|" .
  "Metaceratodus|" .
  "Erwinia|" .
+ "The City Of God|" .
+ "Chenopodium|" .
+ "Opus Caroli \(Libri Carolini\)|" .
+ "Lactobacillus|" .
+ "Candidain|" .
+ "Candida|" .
+ "Candida albicans|" .
+ "Cannabis|" .
+ "Lasalichthys|" .
+ "Physcomitrella patens|" .
+ "Drosophila|" .
+ "China Daily|" .
+ "Dicynodon|" .
+ "Tabula Peutingeriana|" .
+ "Iudaea-Palestina|" .
+ "Cymbeline|" .
+ "Homo sapiens sapiens|" .
+ "Diamond Sutra|" .
+ "Flemingia macrophylla|" .
+ "Glycine tomentella|" .
+ "Gymondinium pseudopalustre|" .
+ "Woloszynskia apiculata|" .
+ "The Dream of the Rood|" .
+ "Arabidopsis|" .
+ "Gordonia|" .
+ "Symbiodinium|" .
+ "Symbiodinium microadriaticum|" .
+ "Dhammapada|" .
+ "Enfants Terribles|" .
+ "Mycobacterium tuberculosis|" .
+ "Puntius sophore|" .
+ "Xenopusembryo|" .
+ "Murraya koenigii|" .
+ "Pseudomonas aeruginosa|" .
+ "Cherax destructor|" .
+ "Cocos nucifera|" .
+ "Arumberia|" .
+ "Chironomus riparius|" .
+ "Acathamoeba castellanii|" .
+ "Star Trek: Voyager|" .
+ "Ridda|" .
  "END_OF_CITE_list_junk";
 //  All real ones need pipe on end
 //  YOU MUST ESCAPE () and other FUNNY Characters
@@ -161,9 +202,11 @@ const CAMEL_CASE = array('DeSoto', 'PubChem', 'BitTorrent', 'Al2O3', 'NiMo', 'Cu
                          'HyPhy', 'MrBayes', 'SunTag', 'InterPro', 'SmProt', 'ChikDenMaZika', 'LitCovid',
                          'GeneTree', 'GenAge', 'QnAs', 'BiDil', 'iAge', 'DevSec', 'SecOps', 'DevcOps',
                          'LeafCutter', 'CyBase','OxPhos', 'ArrayExpress', 'BepiColombo', 'RuleMonkey',
-                         'OxyCo', 'CdZnTe',
+                         'OxyCo', 'CdZnTe', 'EnChroma', 'FibroTest', 'ActiTest', 'FloTrac', 'FibroScan',
+                         'ColorBrewer', 'StagLab', 'EveryManc', 'GaCl', 'DeepFace', 'WeChat', 'kDa ',
+                         'Tg-AD', 'mHealth', 'DomainKeys', 'mTc', 'SiCf', 'SiC', 'RoboCup',  '-kDa'
                        );
 
-const ITALICS_HARDCODE_IN  = ["PolishLebensraum",       "theNachlassproblem",        " forAltalena:",      " in Plutarch'sLives",       "FromSolidarityto",        " gp91phoxPromoter",  "in vitroAssays",        "MarketizingHindutva",       "TheBhagavadgītā,",       "theOrigin of Species",       "EncounteringHindutva",       "ChineseHukouSystem",        "CisLatreille"];
-const ITALICS_HARDCODE_OUT = ["Polish ''Lebensraum'' ", "the ''Nachlass'' problem ", " for ''Altalena'':", " in Plutarch's ''Lives'' ", "From ''Solidarity'' to ", " gp91phox Promoter", " ''in vitro'' Assays ", "Marketizing ''Hindutva'' ", "The ''Bhagavadgītā'', ", "the ''Origin of Species'' ", "Encountering ''Hindutva'' ", "Chinese ''Hukou'' System ", "''Cis'' Latreille"];
+const ITALICS_HARDCODE_IN  = ["ElectrongValue",       "thetoxGene",      "GopashtamiandGovardhan",       "PolishLebensraum",       "theNachlassproblem",        " forAltalena:",      " in Plutarch'sLives",       "FromSolidarityto",        " gp91phoxPromoter",  "in vitroAssays",        "MarketizingHindutva",       "TheBhagavadgītā,",       "theOrigin of Species",       "EncounteringHindutva",       "ChineseHukouSystem",        "CisLatreille"];
+const ITALICS_HARDCODE_OUT = ["Electron ''g'' Value", "the ''tox'' Gene","Gopashtami ''and'' Govardhan", "Polish ''Lebensraum'' ", "the ''Nachlass'' problem ", " for ''Altalena'':", " in Plutarch's ''Lives'' ", "From ''Solidarity'' to ", " gp91phox Promoter", " ''in vitro'' Assays ", "Marketizing ''Hindutva'' ", "The ''Bhagavadgītā'', ", "the ''Origin of Species'' ", "Encountering ''Hindutva'' ", "Chinese ''Hukou'' System ", "''Cis'' Latreille"];
 
