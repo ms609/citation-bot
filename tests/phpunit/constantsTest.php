@@ -205,25 +205,33 @@ final class constantsTest extends testBaseClass {
       $our_internal_extra = array_diff($our_original_whitelist, $our_whitelist);
  
       if (count($our_internal_extra) !== 0) {
+         ob_flush();
          echo "\n \n testWhiteList:  What the Citation Bot has more than one copy of\n";
          print_r($our_internal_extra);
+         ob_flush();
          $we_failed = TRUE;
       }
       if (count($our_extra) !== 0) {
+         ob_flush();
          echo "\n \n testWhiteList:  What the Citation Bot has that Wikipedia does not\n";
          print_r($our_extra);
+         ob_flush();
          $we_failed = TRUE;
       }
       if (count($our_missing) !== 0) {
+         ob_flush();
          echo "\n \n testWhiteList:  What Wikipedia has that the Citation Bot does not\n";
          print_r($our_missing);
+         ob_flush();
          $we_failed = TRUE;
       }
       if ($our_whitelist !== $our_whitelist_sorted) {
+         ob_flush();
          echo "\n \n testWhiteList:  Citation Bot has values out of order.  Expected order:\n";
          foreach($our_whitelist_sorted as $value) {
            echo "'" . $value . "', ";
          }
+         ob_flush();
          $we_failed = TRUE;
       }
       $this->assertSame(FALSE, $we_failed);
@@ -268,7 +276,9 @@ final class constantsTest extends testBaseClass {
     if (empty($overlap)) {
       $this->assertTrue(TRUE);
     } else {
+      ob_flush();
       print_r($overlap);
+      ob_flush();
       $this->assertNull('testDead Failed - see error array directly above');
     }
   }
@@ -278,21 +288,27 @@ final class constantsTest extends testBaseClass {
     if (empty($overlap)) {
       $this->assertTrue(TRUE);
     } else {
+      ob_flush();
       print_r($overlap);
+      ob_flush();
       $this->assertNull('testMagazinesAndNot Failed - see error array directly above');
     }
     $overlap = array_intersect(ARE_MAGAZINES, ARE_NEWSPAPERS);
     if (empty($overlap)) {
       $this->assertTrue(TRUE);
     } else {
+      ob_flush();
       print_r($overlap);
+      ob_flush();
       $this->assertNull('testMagazinesAndNot Failed - see error array directly above');
     }
     $overlap = array_intersect(ARE_MANY_THINGS, ARE_NEWSPAPERS);
     if (empty($overlap)) {
       $this->assertTrue(TRUE);
     } else {
+      ob_flush();
       print_r($overlap);
+      ob_flush();
       $this->assertNull('testMagazinesAndNot Failed - see error array directly above');
     }
   }
@@ -310,18 +326,23 @@ final class constantsTest extends testBaseClass {
     $missing_flat = array_diff($test_flat, $flat);
     
     if (!empty($extra_flat)) {
+       ob_flush();
        echo "\n\n missing these in the AUTHOR_PARAMETERS array:\n";
        print_r($extra_flat);
+       ob_flush();
        $failed = TRUE;
     }
     if (!empty($missing_flat)) {
+       ob_flush();
        echo "\n\n missing these in the FLATTENED_AUTHOR_PARAMETERS array:\n";
        print_r($missing_flat);
        echo "\n expected \n";
        print_r($test_flat);
+       ob_flush();
        $failed = TRUE;
     }
     if (count($flat) !== count(array_unique($flat))) {
+       ob_flush();
        echo "\n\n duplicate entries in the FLATTENED_AUTHOR_PARAMETERS array:\n";
        sort($flat);
        $last = 'XXXXXXXX';
@@ -329,6 +350,7 @@ final class constantsTest extends testBaseClass {
          if ($param === $last) echo "\n" . $param . "\n";
          $last = $param;
        }
+       ob_flush();
        $failed = TRUE;
     } 
     $this->assertFalse($failed);
@@ -342,19 +364,27 @@ final class constantsTest extends testBaseClass {
     foreach ($flat as $param) {
       if (substr($param, -1) !== '/') {
          $failed = TRUE;
+         ob_flush();
          echo "\n\n Missing end slash in NON_JOURNAL_WEBSITES: " . $param . "\n\n";
+         ob_flush();
       }
       if ($param === $last) {
-        $failed = TRUE;
-        echo "\n\n Duplicate entry in NON_JOURNAL_WEBSITES: " . $param . "\n\n";
+         $failed = TRUE;
+         ob_flush();
+         echo "\n\n Duplicate entry in NON_JOURNAL_WEBSITES: " . $param . "\n\n";
+         ob_flush();
       }
       if (strpos($param, '.') === FALSE) {
          $failed = TRUE;
+         ob_flush();
          echo "\n\n Invalid hostname in NON_JOURNAL_WEBSITES: " . $param . "\n\n";
+         ob_flush();
       }
       if (preg_match('~\s~', $param) !== 0) {
          $failed = TRUE;
+         ob_flush();
          echo "\n\n Whitespace in NON_JOURNAL_WEBSITES: " . $param . "\n\n";
+         ob_flush();
       }
       $last = $param;
     }
@@ -373,6 +403,7 @@ final class constantsTest extends testBaseClass {
       $max_spaces = max($max_spaces, $spaces);
     }
     if (!$in_order) {
+      ob_flush();
       echo "\n Correct values for italics.php\n";
       echo "\n";
       echo "<?php\n";
@@ -386,6 +417,7 @@ final class constantsTest extends testBaseClass {
            }
         }
       }
+      ob_flush();
     }
     $this->assertTrue($in_order);
     $this->assertSame("END_OF_CITE_list_junk", end($italics));
@@ -398,7 +430,9 @@ final class constantsTest extends testBaseClass {
     $good = TRUE;
     foreach ($italics as $item) {
       if ($item === $last) {
+        ob_flush();
         echo "\n Found duplicate: $item \n";
+        ob_flush();
         $good = FALSE;
       }
     }
@@ -412,7 +446,9 @@ final class constantsTest extends testBaseClass {
     $good = TRUE;
     foreach ($italics as $item) {
       if ($item === $last) {
+        ob_flush();
         echo "\n Found duplicate: $item \n";
+        ob_flush();
         $good = FALSE;
       }
     }
