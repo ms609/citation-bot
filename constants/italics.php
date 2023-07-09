@@ -15,6 +15,8 @@ const ITALICS_LIST =
  "Chronicle\(s\) of Ioannina|" .
  "Homo sapiens sapiens|" .
  "Star Trek: Voyager|" .
+ "Fried Green Tomatoes|" .
+ "Game of Thrones|" .
  "The Double-Cross System|" .
  "Catalogue of Women|" .
  "Tyrannotitan chubutensis|" .
@@ -30,6 +32,7 @@ const ITALICS_LIST =
  "Citipati Osmolskae|" .
  "Sui Generis|" .
  "Communist Manifesto|" .
+ "Bacillus thuringiensis|" .
  "Star Trek|" .
  "Yarrowia lipolytica|" .
  "Dunkleosteus terrelli|" .
@@ -107,6 +110,7 @@ const ITALICS_LIST =
  "Paratirolites|" .
  "Arianops|" .
  "Loxosceles|" .
+ "Leveillula|" .
  "Hyloscirtus|" .
  "Pseudomonas|" .
  "Baryonyx|" .
@@ -216,7 +220,8 @@ const CAMEL_CASE = array('DeSoto', 'PubChem', 'BitTorrent', 'Al2O3', 'NiMo', 'Cu
                          'OxyCo', 'CdZnTe', 'EnChroma', 'FibroTest', 'ActiTest', 'FloTrac', 'FibroScan',
                          'ColorBrewer', 'StagLab', 'EveryManc', 'GaCl', 'DeepFace', 'WeChat', 'kDa ',
                          'Tg-AD', 'mHealth', 'DomainKeys', 'mTc', 'SiCf', 'SiC', 'RoboCup',  '-kDa',
-                         'DrugBank', 'MnSe', 'ZnTe', 'GaMnAs', 'MnxSb', 'InSb'
+                         'DrugBank', 'MnSe', 'ZnTe', 'GaMnAs', 'MnxSb', 'InSb', 'CovidSim', 'xPharm',
+                         'PubMed', 'MedlineRanker', 'MiSearch', 'pubMed', 'MedEvi'
                        );
 
 const ITALICS_HARDCODE_IN  = ["CytochromebGenes",       "ElectrongValue",       "thetoxGene",      "GopashtamiandGovardhan",       "PolishLebensraum",       "theNachlassproblem",        " forAltalena:",      " in Plutarch'sLives",       "FromSolidarityto",        " gp91phoxPromoter",  "in vitroAssays",        "MarketizingHindutva",       "TheBhagavadgītā,",       "theOrigin of Species",       "EncounteringHindutva",       "ChineseHukouSystem",        "CisLatreille"];
