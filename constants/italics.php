@@ -3,8 +3,13 @@ declare(strict_types=1);
 
 const ITALICS_LIST =
  "Encyclopedia of Inorganic Chemistry|" .
+ "Diagnostic and statistical manual|" .
+ "Opus Caroli \(Libri Carolini\)|" .
+ "Diagnostic and statistical manual|" .
  "Magnalia Christi Americana|" .
  "Sydney morning herald|" .
+ "Chronicle\(s\) of Ioannina|" .
+ "Homo sapiens sapiens|" .
  "Tyrannotitan chubutensis|" .
  "Escherichia coli|" .
  "Bugulasensu lato|" .
@@ -22,25 +27,61 @@ const ITALICS_LIST =
  "Pyrobaculum calidifontis|" .
  "Arabidopsis thaliana|" .
  "Listeria monocytogenes|" .
- "Pristionchus|" .
- "Arabidopsis|" .
  "In Vitro|" .
- "Realpolitik|" .
  "Mycoplasma pneumoniae|" .
  "Balaur bondoc|" .
  "Paradisaea Raggiana|" .
  "Brachiosaurus altithorax|" .
  "Saccharomyces cerevisiae|" .
- "Paratirolites|" .
  "Staphylococcus aureus|" .
- "Arianops|" .
  "Plutella xylostella|" .
+ "Bromus laevipes|" .
+ "Trypanosoma brucei|" .
+ "Hulsanpes perlei|" .
+ "Buitreraptor gonzalezorum|" .
+ "Bellusaurus sui|" .
+ "Sinovenator changii|" .
+ "Nedcolbertia justinhofmanni|" .
+ "Clostridium botulinum|" .
+ "Bactrocera dorsalis|" .
+ "Communist Manifesto|" .
+ "Umm al-Kitāb|" .
+ "Acrocomia mexicana|" .
+ "Agaricus hondensis|" .
+ "Campylobacter jejuni|" .
+ "Actinomyces bovis|" .
+ "Balaur bondoc|" .
+ "Acrocomia mexicana|" .
+ "Caenorhabditis elegans|" .
+ "Paradisaea Raggiana|" .
+ "Screbinodus ornatus|" .
+ "Rg Veda|" .
+ "Homo erectus|" .
+ "Piveteauia madagascariensis|" .
+ "Aspergillus terreus|" .
+ "Ignicoccus hospitalis|" .
+ "Watsonulus eugnathoides|" .
+ "Opus Caroli|" .
+ "Libri Carolini|" .
+ "Nanoarchaeum equitans|" .
+ "Les Noces|" .
+ "Aspergillus terreus|" .
+ "Batillipes mirusand|" .
+ "Batillipes noerrevangi|" .
+ "Robustichthys luopingensis|" .
+ "Uroplectes ansiedippenaarae|" .
+ "Tornieria africana|" .
+ "Pericope Adulterae|" .
+ "Ilex asprella|" .
+ "Pristionchus|" .
+ "Arabidopsis|" .
+ "Realpolitik|" .
+ "Paratirolites|" .
+ "Arianops|" .
  "Loxosceles|" .
  "Hyloscirtus|" .
  "Pseudomonas|" .
  "Baryonyx|" .
- "Bromus laevipes|" .
- "Trypanosoma brucei|" .
  "Monacha|" .
  "Plesiosorex|" .
  "Bushiellas|" .
@@ -50,76 +91,36 @@ const ITALICS_LIST =
  "Tolegnaro|" .
  "Noideattella|" .
  "Euschistus|" .
- "Hulsanpes perlei|" .
- "Buitreraptor gonzalezorum|" .
- "Bellusaurus sui|" .
  "Arthoniais|" .
- "Sinovenator changii|" .
- "Nedcolbertia justinhofmanni|" .
- "Clostridium botulinum|" .
- "Bactrocera dorsalis|" .
- "Communist Manifesto|" .
- "Umm al-Kitāb|" .
  "Acacia|" .
- "Acrocomia mexicana|" .
- "Agaricus hondensis|" .
- "Campylobacter jejuni|" .
- "Actinomyces bovis|" .
- "Balaur bondoc|" .
- "Acrocomia mexicana|" .
  "Lasalichthys|" .
- "Caenorhabditis elegans|" .
- "Diagnostic and statistical manual|" .
  "Berardiusin|" .
- "Paradisaea Raggiana|" .
  "Ilustrado|" .
- "Screbinodus ornatus|" .
- "Rg Veda|" .
  "Keśin|" .
  "Synorichthys|" .
  "Clusia|" .
  "Sinamia|" .
- "Homo erectus|" .
- "Piveteauia madagascariensis|" .
- "Aspergillus terreus|" .
- "Ignicoccus hospitalis|" .
- "Watsonulus eugnathoides|" .
  "Ignicoccus|" .
- "Opus Caroli \(Libri Carolini\)|" .
- "Opus Caroli|" .
- "Libri Carolini|" .
- "Nanoarchaeum equitans|" .
- "Les Noces|" .
  "Hencke|" .
- "Aspergillus terreus|" .
- "Batillipes mirusand|" .
- "Batillipes noerrevangi|" .
  "Batillipes|" .
  "Chenopodium|" .
  "Diplodocus|" .
- "Robustichthys luopingensis|" .
  "Hipparchs|" .
- "Diagnostic and statistical manual|" .
  "Lepidobatrachus|" .
- "Chronicle\(s\) of Ioannina|" .
- "Uroplectes ansiedippenaarae|" .
  "Uroplectes|" .
  "Euroscaptor|" .
- "Homo sapiens sapiens|" .
- "Tornieria africana|" .
- "Pericope Adulterae|" .
  "Montifringilla|" .
  "Leucosticte|" .
  "Candida|" .
  "Cannabis|" .
- "Ilex asprella|" .
  "Aglyptorhynchus|" .
  "Egertonia|" .
  "Dapedium|" .
  "Pycnodus|" .
  "Metaceratodus|" .
  "Erwinia|" .
- "END_OF_CITE_list_junk"; // All real ones need pipe on end
+ "END_OF_CITE_list_junk";
+//  All real ones need pipe on end
 //  YOU MUST ESCAPE () and other FUNNY Characters
 
 const CAMEL_CASE = array('DeSoto', 'PubChem', 'BitTorrent', 'Al2O3', 'NiMo', 'CuZn', 'BxCyNz', 'ChemCam',
