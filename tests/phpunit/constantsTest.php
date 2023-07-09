@@ -369,7 +369,7 @@ final class constantsTest extends testBaseClass {
     foreach ($italics as $item) {
       $spaces = substr_count($item, " ");
       if ($spaces > $spaces_at) $in_order = FALSE;
-      $spaces = spaces_at;
+      $spaces = $spaces_at;
       $max_spaces = max($max_spaces, $spaces);
     }
     if (!$in_order) {
@@ -443,7 +443,7 @@ final class constantsTest extends testBaseClass {
       $this->assertSame(0, substr_count("'''", ITALICS_HARDCODE_IN[$i]));
       $this->assertSame(0, substr_count("'''", ITALICS_HARDCODE_OUT[$i]));
       $in = str_replace(["'", " "], '', ITALICS_HARDCODE_IN[$i]);
-      $out = str_replace(["'", " "], '', ITALICS_HARDCODE_IOUT[$i]);
+      $out = str_replace(["'", " "], '', ITALICS_HARDCODE_OUT[$i]);
       $this->assertSame($in, $out); // Same once spaces and single quotes are removed
     }
  }
