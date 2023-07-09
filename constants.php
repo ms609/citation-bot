@@ -7,6 +7,7 @@ require_once 'constants/math.php';
 require_once 'constants/mistakes.php';
 require_once 'constants/parameters.php';  
 require_once 'constants/regular_expressions.php';
+require_once 'constants/italics.php';
 
 const PIPE_PLACEHOLDER = '# # # CITATION_BOT_PLACEHOLDER_PIPE # # #';
 const TEMP_PLACEHOLDER = "# # # CITATION_BOT_PLACEHOLDER_TEMPORARY %s # # #";

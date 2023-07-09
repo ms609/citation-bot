@@ -374,6 +374,18 @@ final class expandFnsTest extends testBaseClass {
     $template = $this->process_citation($text);
     $this->assertNull($template->get2('doi'));
   }
+
+  public function testRestorItalicsRegex1() : void {
+    $text = "{{cite journal|doi=10.7717/peerj.7240 }}";
+    $template = $this->process_citation($text);
+    $this->assertSame("Ngwevu intloko: A new early sauropodomorph dinosaur from the Lower Jurassic Elliot Formation of South Africa and comments on cranial ontogeny in ''Massospondylus carinatus''", $template->get2('title'));
+  }
+
+  public function testRestorItalicsRegex2() : void {
+    $text = "{{cite journal|doi=10.7717/peerj.4224 }}";
+    $template = $this->process_citation($text);
+    $this->assertSame("A revised cranial description of ''Massospondylus carinatus'' Owen (Dinosauria: Sauropodomorpha) based on computed tomographic scans and a review of cranial characters for basal Sauropodomorpha", $template->get2('title'));
+  }
   
   public function testVariousEncodes1() : void {
     $test="ã·ã§ããã³ã°";
