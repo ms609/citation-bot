@@ -163,6 +163,6 @@ const CAMEL_CASE = array('DeSoto', 'PubChem', 'BitTorrent', 'Al2O3', 'NiMo', 'Cu
                          'OxyCo', 'CdZnTe',
                        );
 
-const ITALICS_HARDCODE_IN  = ["PolishLebensraum",      "theNachlassproblem",       " forAltalena:",      " in Plutarch'sLives",      "FromSolidarityto",       " gp91phoxPromoter ",  "in vitroAssays",       "MarketizingHindutva",      "TheBhagavadgītā,",      "theOrigin of Species",      "EncounteringHindutva",      "ChineseHukouSystem",       "CisLatreille"];
-const ITALICS_HARDCODE_OUT = ["Polish ''Lebensraum''", "the ''Nachlass'' problem", " for ''Altalena'':", " in Plutarch's ''Lives''", "From ''Solidarity'' to", " gp91phox Promoter ", " ''in vitro'' Assays", "Marketizing ''Hindutva''", "The ''Bhagavadgītā'',", "the ''Origin of Species''", "Encountering ''Hindutva''", "Chinese ''Hukou'' System", "''Cis'' Latreille"];
+const ITALICS_HARDCODE_IN  = ["PolishLebensraum",       "theNachlassproblem",        " forAltalena:",      " in Plutarch'sLives",       "FromSolidarityto",        " gp91phoxPromoter",  "in vitroAssays",        "MarketizingHindutva",       "TheBhagavadgītā,",       "theOrigin of Species",       "EncounteringHindutva",       "ChineseHukouSystem",        "CisLatreille"];
+const ITALICS_HARDCODE_OUT = ["Polish ''Lebensraum'' ", "the ''Nachlass'' problem ", " for ''Altalena'':", " in Plutarch's ''Lives'' ", "From ''Solidarity'' to ", " gp91phox Promoter", " ''in vitro'' Assays ", "Marketizing ''Hindutva'' ", "The ''Bhagavadgītā'', ", "the ''Origin of Species'' ", "Encountering ''Hindutva'' ", "Chinese ''Hukou'' System ", "''Cis'' Latreille"];
 
