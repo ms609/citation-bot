@@ -2,6 +2,9 @@
 declare(strict_types=1);
 
 const ITALICS_LIST =
+ "Encyclopedia of Inorganic Chemistry|" .
+ "Magnalia Christi Americana|" .
+ "Sydney morning herald|" .
  "Tyrannotitan chubutensis|" .
  "Escherichia coli|" .
  "Bugulasensu lato|" .
