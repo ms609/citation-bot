@@ -422,7 +422,12 @@ function restore_italics (string $text) : string {
   $text = str_replace("xAzathioprine therapy for patients with systemic lupus erythematosus", "Azathioprine therapy for patients with systemic lupus erythematosus", $text); // Annoying stupid bad data
   $text = trim(str_replace(['        ', '      ', '    ', '   ', '  '], [' ', ' ', ' ', ' ', ' '], $text));
   while (preg_match('~([a-z])(' . ITALICS_LIST . ')([A-Z\-\?\:\.\)\,]|species|genus| in|$)~', $text, $matches)) {
-     $text = str_replace($matches[0], $matches[1] . " ''" . $matches[2] . "'' " . $matches[3], $text);
+     if (in_array($matches[3], [':', '.', '-', ','])) {
+       $pad = "";
+     } else {
+       $pad = " ";
+     }
+     $text = str_replace($matches[0], $matches[1] . " ''" . $matches[2] . "''" . $pad . $matches[3], $text);
   }
   $text = trim(str_replace(['        ', '      ', '    ', '   ', '  '], [' ', ' ', ' ', ' ', ' '], $text));
   if ($old !== $text) {
