@@ -7,24 +7,20 @@ const ITALICS_LIST =
  "Encyclopedia of Inorganic Chemistry|" .
  "Diagnostic and statistical manual|" .
  "Opus Caroli \(Libri Carolini\)|" .
- "Diagnostic and statistical manual|" .
  "The City Of God|" .
  "Miseducation of the Negro|" .
  "The Book of Illusions|" .
- "Opus Caroli \(Libri Carolini\)|" .
  "Magnalia Christi Americana|" .
  "Sydney morning herald|" .
  "Chronicle\(s\) of Ioannina|" .
  "Homo sapiens sapiens|" .
- "Homo sapiens sapiens|" .
  "Star Trek: Voyager|" .
+ "The Double-Cross System|" .
+ "Catalogue of Women|" .
  "Tyrannotitan chubutensis|" .
  "Escherichia coli|" .
  "Bugulasensu lato|" .
- "The Double-Cross System|" .
- "Catalogue of Women|" .
  "Massospondylus carinatus|" .
- "Campylobacter jejuni|" .
  "Adenanthera pavonina|" .
  "Burkholderia pseudomallei|" .
  "Helicobacter pylori|" .
@@ -44,7 +40,6 @@ const ITALICS_LIST =
  "Listeria monocytogenes|" .
  "In Vitro|" .
  "Mycoplasma pneumoniae|" .
- "Balaur bondoc|" .
  "Paradisaea Raggiana|" .
  "Brachiosaurus altithorax|" .
  "Saccharomyces cerevisiae|" .
@@ -59,16 +54,13 @@ const ITALICS_LIST =
  "Nedcolbertia justinhofmanni|" .
  "Clostridium botulinum|" .
  "Bactrocera dorsalis|" .
- "Communist Manifesto|" .
  "Umm al-Kitāb|" .
  "Acrocomia mexicana|" .
  "Agaricus hondensis|" .
  "Campylobacter jejuni|" .
  "Actinomyces bovis|" .
  "Balaur bondoc|" .
- "Acrocomia mexicana|" .
  "Caenorhabditis elegans|" .
- "Paradisaea Raggiana|" .
  "Screbinodus ornatus|" .
  "Rg Veda|" .
  "Homo erectus|" .
@@ -80,7 +72,6 @@ const ITALICS_LIST =
  "Libri Carolini|" .
  "Nanoarchaeum equitans|" .
  "Les Noces|" .
- "Aspergillus terreus|" .
  "Batillipes mirusand|" .
  "Batillipes noerrevangi|" .
  "Robustichthys luopingensis|" .
@@ -127,7 +118,6 @@ const ITALICS_LIST =
  "Euschistus|" .
  "Arthoniais|" .
  "Acacia|" .
- "Lasalichthys|" .
  "Berardiusin|" .
  "Ilustrado|" .
  "Keśin|" .
@@ -145,7 +135,6 @@ const ITALICS_LIST =
  "Euroscaptor|" .
  "Montifringilla|" .
  "Leucosticte|" .
- "Candida|" .
  "Cannabis|" .
  "Aglyptorhynchus|" .
  "Egertonia|" .
@@ -153,17 +142,14 @@ const ITALICS_LIST =
  "Pycnodus|" .
  "Metaceratodus|" .
  "Erwinia|" .
- "Chenopodium|" .
  "Lactobacillus|" .
  "Candidain|" .
  "Candida|" .
- "Cannabis|" .
  "Lasalichthys|" .
  "Drosophila|" .
  "Dicynodon|" .
  "Iudaea-Palestina|" .
  "Cymbeline|" .
- "Arabidopsis|" .
  "Gordonia|" .
  "Symbiodinium|" .
  "Dhammapada|" .
@@ -171,11 +157,9 @@ const ITALICS_LIST =
  "Arumberia|" .
  "Ridda|" .
  "Laccognathus|" .
- "Montifringilla|" .
  "Karma|" .
  "Cena|" .
  "Satyricon|" .
- "Cannabis|" .
  "Nakbain|" .
  "Nakba|" .
  "Saurichthys|" .
