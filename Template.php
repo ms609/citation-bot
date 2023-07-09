@@ -345,6 +345,26 @@ final class Template {
           $the_pages   = $this->get('pages');
           $initial_author_params_save = $this->initial_author_params;
           $bad_data = FALSE;
+          if (stripos($the_journal, 'Advances in Cryptology') === 0 && stripos($the_title, 'Advances in Cryptology') === 0) {
+              $the_journal = '';
+              $this->forget('journal');
+              $bad_data = TRUE;
+          }
+          if (stripos($the_journal, 'Advances in Cryptology') === 0 ||
+              stripos($the_journal, 'IEEE Symposium') !== FALSE ||
+              stripos($the_journal, 'IEEE International Conference') !== FALSE ) {
+              $this->rename('journal', 'CITATION_BOT_PLACEHOLDER_journal');
+              $the_journal = '';
+              $bad_data = TRUE;
+              if ($the_title !== '') {
+                  $this->rename('title', 'CITATION_BOT_PLACEHOLDER_title');
+                  $the_title = '';
+              }
+              if ($the_chapter !== '') {
+                  $this->rename('chapter', 'CITATION_BOT_PLACEHOLDER_chapter');
+                  $the_chapter = '';
+              }
+          }
           if ($the_pages === '0' || $the_pages === 'null' || $the_pages === 'n/a' || $the_pages === 'online' || $the_pages === 'Online' || $the_pages === 'Forthcoming' || $the_pages === 'forthcoming') {
               $this->rename('pages', 'CITATION_BOT_PLACEHOLDER_pages');
               $the_pages = '';
@@ -372,8 +392,14 @@ final class Template {
               $the_title = '';
               $bad_data = TRUE;
           }
+          if (stripos($the_title, 'SpringerLink') === 0) {
+              $this->rename('title', 'CITATION_BOT_PLACEHOLDER_title');
+              $the_title = '';
+              $bad_data = TRUE;
+          }                                                                                                                                                                                                   
           if ($the_title === 'null' || $the_title === '[No title found]' || $the_title === 'Archived copy' || $the_title === 'JSTOR' ||
-              $the_title === 'ShieldSquare Captcha' || $the_title === 'Shibboleth Authentication Request') { // title=none is often because title is "reviewed work....
+              $the_title === 'ShieldSquare Captcha' || $the_title === 'Shibboleth Authentication Request' || $the_title === 'Pubmed' ||
+              $the_title === 'Pubmed Central') { // title=none is often because title is "reviewed work....
               $this->rename('title', 'CITATION_BOT_PLACEHOLDER_title');
               $the_title = '';
               $bad_data = TRUE;
@@ -414,6 +440,11 @@ final class Template {
               $bad_data = TRUE;
               if ($this->wikiname() === 'cite journal') $this->change_name_to('cite arxiv');
           }
+          if (stripos($the_journal, 'ScienceDirect') !== FALSE) {
+              $this->rename('journal', 'CITATION_BOT_PLACEHOLDER_journal');
+              $the_journal = '';
+              $bad_data = TRUE;
+          }                                                                                                       
           if ($the_title !== '' && stripos($the_title, 'CITATION') === FALSE) {
             if (str_i_same($the_title, $the_journal) &&
                 str_i_same($the_title, $the_chapter)) { // Journal === Title === Chapter INSANE!  Never actually seen
@@ -663,7 +694,7 @@ final class Template {
     }
 
     return (!(
-             ($this->has('journal') || $this->has('periodical') || $this->has('work') || $this->has('newspaper') || $this->has('magazine'))
+             ($this->has('journal') || $this->has('periodical') || $this->has('work') || $this->has('newspaper') || $this->has('magazine') || $this->has('trans-work') || $this->has('script-work'))
           &&  $this->has('volume')
           && ($this->has('issue') || $this->has('number'))
           &&  $this->has('title')
@@ -696,7 +727,7 @@ final class Template {
 
     if (str_ireplace(NON_JOURNAL_WEBSITES, '', $url) !== $url) { // A website that will never give a volume
           return (!(
-             ($this->has('journal') || $this->has('periodical') || $this->has('work') ||
+             ($this->has('journal') || $this->has('periodical') || $this->has('work') || $this->has('trans-work') || $this->has('script-work') ||
               $this->has('website') || $this->has('publisher') || $this->has('newspaper') ||
               $this->has('magazine')|| $this->has('encyclopedia') || $this->has('encyclopaedia') ||
               $this->has('contribution'))
@@ -705,7 +736,7 @@ final class Template {
     ));
     }
     return (!(
-             ($this->has('journal') || $this->has('periodical'))
+             ($this->has('journal') || $this->has('periodical') || $this->has('trans-work') || $this->has('script-work'))
           &&  $this->has('volume')
           &&  $this->has('title')
           &&  $has_date
@@ -1074,6 +1105,7 @@ final class Template {
             $param_name = 'website';
           }
         }
+        if (!$this->blank(['trans-work','script-work'])) return FALSE;
         if (in_array(strtolower(sanitize_string($this->get('journal'))), BAD_TITLES)) $this->forget('journal'); // Update to real data
         if (preg_match('~^(?:www\.|)rte.ie$~i', $value)) $value = 'RTÉ News'; // Russian special case code
         if ($this->wikiname() === 'cite book' && $this->has('chapter') && $this->has('title') && $this->has('series')) return FALSE;
@@ -3707,6 +3739,13 @@ final class Template {
             }
             return;
 
+        case 'first':
+            if (!$pmatch[2] && $pmatch[1] === 'first' && !$this->blank(['last1', 'first2', 'last2'])) {
+              if ($this->blank('last1'))  $this->rename('last', 'last1');
+              if ($this->blank('first1')) $this->rename('first', 'first1');
+            }
+            return;
+
         case 'bibcode':
           if ($this->blank($param)) return;
           $bibcode_journal = (string) substr($this->get($param), 4);
@@ -4420,6 +4459,12 @@ final class Template {
           if (preg_match('~\S+\s*\/\s*(?:|\[\[)Google News Archive~i', $publisher)) {
              return;  // this is Newspaper / Google News Archive
           }
+          if ($publisher === 'pubmed' || $publisher === 'pubmed central') {
+             if ($this->has('doi') || $this->has('pmid')) {
+                $this->forget($param);
+                return;
+             }
+          }
 
           foreach (NON_PUBLISHERS as $not_publisher) {
             if (stripos($publisher, $not_publisher) !== FALSE) {
@@ -4818,6 +4863,10 @@ final class Template {
             return;
           }
 
+          if ($publisher === strtolower($this->get('journal') . $this->get('website') . $this->get('newspaper') . $this->get('work') . $this->get('periodical') . $this->get('magazine'))) {
+            $this->forget($param);
+          }
+
           return;
 
         case 'quotes':
@@ -5039,6 +5088,8 @@ final class Template {
               if (substr($matches[2], -1) === '#' || substr($matches[2], -1) === '.') $matches[2] = substr($matches[2], 0, -1); // Sometime just a trailing # after & part
               quietly('report_modification', "Unmasking Proquest eBook URL.");
               $this->set($param, 'https://public.ebookcentral.proquest.com/choice/publicfullrecord.aspx?p=' . $matches[1] . $matches[2]);
+          } elseif (preg_match("~^https?://(?:www\.|)figshare\.com/articles/journal_contribution/[^/]+/([0-9]+)$~i", $this->get($param), $matches)) {
+              $this->set($param, 'https://figshare.com/articles/journal_contribution/' . $matches[1]);
           }
 
           if (preg_match("~ebscohost.com.*AN=(\d+)$~", $this->get($param), $matches)) {
@@ -5608,7 +5659,7 @@ final class Template {
                   $bad = FALSE;
                 }
               }
-              if ($bad) report_warning('Perhaps page= of ' . echoable($value) . ' is actually a page range.  If so, change to pages=, otherwise change minus sign to {{endash}}');
+              if ($bad) report_warning('Perhaps page= of ' . echoable($value) . ' is actually a page range.  If so, change to pages=, otherwise change minus sign to {{hyphen}}');
             } else {
               $the_dash = (int) mb_strpos($value, "–"); // ALL must be mb_ functions because of long dash
               $part1 = trim(mb_substr($value, 0, $the_dash));
@@ -5996,6 +6047,11 @@ final class Template {
         }
       }
       $this->tidy_parameter('doi'); // might be free, and freedom is date dependent for some journals
+      if ($this->blank(PAGE_ALIASES) && preg_match('~^10\.1103\/[a-zA-Z]+\.(\d+)\.(\d+)$~', $this->get('doi'), $matches)) {
+        if ($matches[1] === $this->get('volume')) {
+           $this->set('page', $matches[2]); // Often not in CrossRef
+        }
+      }
       if (!empty($this->param)) {
         $drop_me_maybe = array();
         foreach (ALL_ALIASES as $alias_list) {
@@ -6939,7 +6995,8 @@ final class Template {
   }
 
   private function is_book_series(string $param) : bool {
-    $simple = trim(str_replace(['-', '.',  '   ', '  '], [' ', ' ', ' ', ' '], strtolower($this->get($param))));
+    $simple = trim(str_replace(['-', '.',  '   ', '  ', '[[', ']]'], [' ', ' ', ' ', ' ', ' ', ' '], strtolower($this->get($param))));
+    $simple = trim(str_replace(['    ', '   ',  '  '], [' ', ' ', ' '], $simple));
     return in_array($simple, JOURNAL_IS_BOOK_SERIES);
   }
 

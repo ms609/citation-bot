@@ -205,25 +205,33 @@ final class constantsTest extends testBaseClass {
       $our_internal_extra = array_diff($our_original_whitelist, $our_whitelist);
  
       if (count($our_internal_extra) !== 0) {
+         ob_flush();
          echo "\n \n testWhiteList:  What the Citation Bot has more than one copy of\n";
          print_r($our_internal_extra);
+         ob_flush();
          $we_failed = TRUE;
       }
       if (count($our_extra) !== 0) {
+         ob_flush();
          echo "\n \n testWhiteList:  What the Citation Bot has that Wikipedia does not\n";
          print_r($our_extra);
+         ob_flush();
          $we_failed = TRUE;
       }
       if (count($our_missing) !== 0) {
+         ob_flush();
          echo "\n \n testWhiteList:  What Wikipedia has that the Citation Bot does not\n";
          print_r($our_missing);
+         ob_flush();
          $we_failed = TRUE;
       }
       if ($our_whitelist !== $our_whitelist_sorted) {
+         ob_flush();
          echo "\n \n testWhiteList:  Citation Bot has values out of order.  Expected order:\n";
          foreach($our_whitelist_sorted as $value) {
            echo "'" . $value . "', ";
          }
+         ob_flush();
          $we_failed = TRUE;
       }
       $this->assertSame(FALSE, $we_failed);
@@ -268,7 +276,9 @@ final class constantsTest extends testBaseClass {
     if (empty($overlap)) {
       $this->assertTrue(TRUE);
     } else {
+      ob_flush();
       print_r($overlap);
+      ob_flush();
       $this->assertNull('testDead Failed - see error array directly above');
     }
   }
@@ -278,21 +288,27 @@ final class constantsTest extends testBaseClass {
     if (empty($overlap)) {
       $this->assertTrue(TRUE);
     } else {
+      ob_flush();
       print_r($overlap);
+      ob_flush();
       $this->assertNull('testMagazinesAndNot Failed - see error array directly above');
     }
     $overlap = array_intersect(ARE_MAGAZINES, ARE_NEWSPAPERS);
     if (empty($overlap)) {
       $this->assertTrue(TRUE);
     } else {
+      ob_flush();
       print_r($overlap);
+      ob_flush();
       $this->assertNull('testMagazinesAndNot Failed - see error array directly above');
     }
     $overlap = array_intersect(ARE_MANY_THINGS, ARE_NEWSPAPERS);
     if (empty($overlap)) {
       $this->assertTrue(TRUE);
     } else {
+      ob_flush();
       print_r($overlap);
+      ob_flush();
       $this->assertNull('testMagazinesAndNot Failed - see error array directly above');
     }
   }
@@ -310,18 +326,23 @@ final class constantsTest extends testBaseClass {
     $missing_flat = array_diff($test_flat, $flat);
     
     if (!empty($extra_flat)) {
+       ob_flush();
        echo "\n\n missing these in the AUTHOR_PARAMETERS array:\n";
        print_r($extra_flat);
+       ob_flush();
        $failed = TRUE;
     }
     if (!empty($missing_flat)) {
+       ob_flush();
        echo "\n\n missing these in the FLATTENED_AUTHOR_PARAMETERS array:\n";
        print_r($missing_flat);
        echo "\n expected \n";
        print_r($test_flat);
+       ob_flush();
        $failed = TRUE;
     }
     if (count($flat) !== count(array_unique($flat))) {
+       ob_flush();
        echo "\n\n duplicate entries in the FLATTENED_AUTHOR_PARAMETERS array:\n";
        sort($flat);
        $last = 'XXXXXXXX';
@@ -329,6 +350,7 @@ final class constantsTest extends testBaseClass {
          if ($param === $last) echo "\n" . $param . "\n";
          $last = $param;
        }
+       ob_flush();
        $failed = TRUE;
     } 
     $this->assertFalse($failed);
@@ -342,22 +364,140 @@ final class constantsTest extends testBaseClass {
     foreach ($flat as $param) {
       if (substr($param, -1) !== '/') {
          $failed = TRUE;
+         ob_flush();
          echo "\n\n Missing end slash in NON_JOURNAL_WEBSITES: " . $param . "\n\n";
+         ob_flush();
       }
       if ($param === $last) {
-        $failed = TRUE;
-        echo "\n\n Duplicate entry in NON_JOURNAL_WEBSITES: " . $param . "\n\n";
+         $failed = TRUE;
+         ob_flush();
+         echo "\n\n Duplicate entry in NON_JOURNAL_WEBSITES: " . $param . "\n\n";
+         ob_flush();
       }
       if (strpos($param, '.') === FALSE) {
          $failed = TRUE;
+         ob_flush();
          echo "\n\n Invalid hostname in NON_JOURNAL_WEBSITES: " . $param . "\n\n";
+         ob_flush();
       }
       if (preg_match('~\s~', $param) !== 0) {
          $failed = TRUE;
+         ob_flush();
          echo "\n\n Whitespace in NON_JOURNAL_WEBSITES: " . $param . "\n\n";
+         ob_flush();
       }
       $last = $param;
     }
     $this->assertFalse($failed);
   }
+
+  public function testItalicsOrder() : void {
+    $in_order = TRUE;
+    $spaces_at = 99999999;
+    $max_spaces = 0;
+    $italics = explode("|", ITALICS_LIST);
+    $this->assertSame("END_OF_CITE_list_junk", end($italics));
+    foreach ($italics as $item) {
+      $spaces = substr_count($item, " ");
+      if ($spaces > $spaces_at) $in_order = FALSE;
+      $spaces_at = $spaces;
+      $max_spaces = max($max_spaces, $spaces);
+    }
+    if (!$in_order) {
+      ob_flush();
+      echo "\n Correct values for italics.php\n";
+      echo "\n";
+      echo "const ITALICS_LIST =\n";
+      for ($i = $max_spaces; $i > -1 ; $i--) {
+        foreach ($italics as $item) {
+           if (substr_count($item, " ") === $i && $item !== 'END_OF_CITE_list_junk') {
+              echo ' "' . $item . '|" .' . "\n";
+           }
+        }
+      }
+      echo ' "END_OF_CITE_list_junk";' . "\n";
+      ob_flush();
+    }
+    $this->assertTrue($in_order);
+
+    // If we have "Specius" before "Speciusia" that is bad
+    $in_order = TRUE;
+    $italics = explode("|", ITALICS_LIST);
+    for ($i = 0; $i < count($italics); $i++) {
+      $early = $italics[$i];
+      for ($j = $i+1; $j < count($italics); $j++) {
+        $later = $italics[$j];
+        if (substr_count($later, $early) !== 0) {
+          $in_order = FALSE;
+          ob_flush();
+          echo "WRONG ORDER: $later   AND   $early\n";
+          ob_flush();
+        }
+      }
+    }
+    $this->assertTrue($in_order);
+  }
+
+  public function testItalicsNoDuplicates() : void {
+    $italics = explode("|", ITALICS_LIST);
+    sort($italics);
+    $last = "123412341234";
+    $good = TRUE;
+    foreach ($italics as $item) {
+      if ($item === $last) {
+        ob_flush();
+        echo "\n Found duplicate: $item \n";
+        ob_flush();
+        $good = FALSE;
+      }
+      $last = $item;
+    }
+    $this->assertTrue($good);
+  }
+
+  public function testCamelNoDuplicates() : void {
+    $italics = CAMEL_CASE;
+    sort($italics);
+    $last = "123412341234";
+    $good = TRUE;
+    foreach ($italics as $item) {
+      if ($item === $last) {
+        ob_flush();
+        echo "\n Found duplicate: $item \n";
+        ob_flush();
+        $good = FALSE;
+      }
+      $last = $item;
+    }
+    $this->assertTrue($good);
+  }
+
+
+  public function testItalicsEscaped() : void {
+     $italics = ITALICS_LIST;
+     $italics = str_replace(['\\(', '\\)'], '', $italics);
+     $this->assertSame(0 , substr_count($italics, '('));
+     $this->assertSame(0 , substr_count($italics, ')'));
+     $this->assertSame(0 , substr_count($italics, '\\'));
+     $this->assertSame(0 , substr_count($italics, '.'));
+  }
+
+ public function testItalicsNoSpaces() : void {
+    $italics = explode("|", ITALICS_LIST);
+    foreach ($italics as $item) {
+      $this->assertNotEquals(' ', substr($item, 0, 1));
+      $this->assertNotEquals(' ', substr($item, -1));
+    }
+ }
+
+ public function testItalicsHardCode() : void {
+    $this->assertSame(count(ITALICS_HARDCODE_IN), count(ITALICS_HARDCODE_OUT));
+    for ($i = 0; $i < count(ITALICS_HARDCODE_OUT); $i++) {
+      $this->assertSame(0, substr_count("'''", ITALICS_HARDCODE_IN[$i]));
+      $this->assertSame(0, substr_count("'''", ITALICS_HARDCODE_OUT[$i]));
+      $in = str_replace(["'", " "], '', ITALICS_HARDCODE_IN[$i]);
+      $out = str_replace(["'", " "], '', ITALICS_HARDCODE_OUT[$i]);
+      $this->assertSame($in, $out); // Same once spaces and single quotes are removed
+    }
+ }
 }
