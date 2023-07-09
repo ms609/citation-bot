@@ -3739,6 +3739,13 @@ final class Template {
             }
             return;
 
+        case 'first':
+            if (!$pmatch[2] && $pmatch[1] === 'first' && !$this->blank(['last1', 'first2', 'last2'])) {
+              if ($this->blank('last1'))  $this->rename('last', 'last1');
+              if ($this->blank('first1')) $this->rename('first', 'first1');
+            }
+            return;
+
         case 'bibcode':
           if ($this->blank($param)) return;
           $bibcode_journal = (string) substr($this->get($param), 4);
