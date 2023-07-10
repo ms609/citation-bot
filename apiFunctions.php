@@ -530,11 +530,11 @@ function expand_by_doi(Template $template, bool $force = FALSE) : bool {
         if (mb_strtolower($template->get('title')) === mb_strtolower((string) $crossRef->article_title)) {
            $template->rename('title', 'chapter');
          } else {
-           $template->add_if_new('chapter', $crossRef->article_title, 'crossref'); // add_if_new formats this value as a title
+           $template->add_if_new('chapter', (string) $crossRef->article_title, 'crossref'); // add_if_new formats this value as a title
         }
-        $template->add_if_new('title', $crossRef->volume_title, 'crossref'); // add_if_new will wikify title and sanitize the string
+        $template->add_if_new('title', (string) $crossRef->volume_title, 'crossref'); // add_if_new will wikify title and sanitize the string
       } else {
-        $template->add_if_new('title', $crossRef->article_title, 'crossref'); // add_if_new will wikify title and sanitize the string
+        $template->add_if_new('title', (string) $crossRef->article_title, 'crossref'); // add_if_new will wikify title and sanitize the string
       }
       $template->add_if_new('series', (string) $crossRef->series_title, 'crossref'); // add_if_new will format the title for a series?
       $template->add_if_new("year", (string) $crossRef->year, 'crossref');
