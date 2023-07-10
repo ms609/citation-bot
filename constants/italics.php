@@ -46,7 +46,6 @@ const ITALICS_LIST =
  "Polycotylus latipinnis|" .
  "Mycobacterium tuberculosis|" .
  "Ariolimax californicus|" .
- "Staphylococcus aureus|" .
  "Streptococcus pneumoniae|" .
  "In Vivo|" .
  "A. dolichophallus|" .
@@ -64,7 +63,6 @@ const ITALICS_LIST =
  "Paradisaea Raggiana|" .
  "Brachiosaurus altithorax|" .
  "Saccharomyces cerevisiae|" .
- "Staphylococcus aureus|" .
  "Plutella xylostella|" .
  "Bromus laevipes|" .
  "Trypanosoma brucei|" .
@@ -98,7 +96,6 @@ const ITALICS_LIST =
  "Robustichthys luopingensis|" .
  "Uroplectes ansiedippenaarae|" .
  "Tornieria africana|" .
- "Pericope Adulterae|" .
  "Ilex asprella|" .
  "Candida albicans|" .
  "Physcomitrella patens|" .
@@ -111,7 +108,6 @@ const ITALICS_LIST =
  "Woloszynskia apiculata|" .
  "Symbiodinium microadriaticum|" .
  "Enfants Terribles|" .
- "Mycobacterium tuberculosis|" .
  "Puntius sophore|" .
  "Murraya koenigii|" .
  "Pseudomonas aeruginosa|" .
@@ -143,7 +139,6 @@ const ITALICS_LIST =
  "Leuzea|" .
  "Ureaplasma|" .
  "Polyptychodon|" .
- "Drosophila|" .
  "Haratin|" .
  "Limulus|" .
  "Eschata|" .
