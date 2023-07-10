@@ -427,7 +427,7 @@ final class constantsTest extends testBaseClass {
       $early = $italics[$i];
       for ($j = $i+1; $j < count($italics); $j++) {
         $later = $italics[$j];
-        if (substr_count($later, $early) !== 0) {
+        if ((substr_count($later, $early) !== 0) && ($later !== $early)) {
           $in_order = FALSE;
           ob_flush();
           echo "WRONG ORDER: $later   AND   $early\n";
