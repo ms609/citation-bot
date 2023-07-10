@@ -15,6 +15,7 @@ const ITALICS_LIST =
  "Chronicle\(s\) of Ioannina|" .
  "Homo sapiens sapiens|" .
  "Star Trek: Voyager|" .
+ "Notechis scutatus scutatus|", .
  "Fried Green Tomatoes|" .
  "Game of Thrones|" .
  "The Double-Cross System|" .
@@ -34,6 +35,23 @@ const ITALICS_LIST =
  "Communist Manifesto|" .
  "Bacillus thuringiensis|" .
  "Star Trek|" .
+ "Candida albicansas|", .
+ "Candida albicans|", .
+ "Tyrannosaurus rex|", .
+ "Dolichorhynchops bonneri|", .
+ "Staphylococcus aureus|", .
+ "Pericope Adulterae|", .
+ "Salmonella typhimurium|", .
+ "Drosophila melanogaster|", .
+ "Polycotylus latipinnis|", .
+ "Mycobacterium tuberculosis|", .
+ "Ariolimax californicus|", .
+ "Staphylococcus aureus|", .
+ "Streptococcus pneumoniae|", .
+ "In Vivo|", .
+ "A. dolichophallus|", .
+ "Stachybotrys chartarum|", .
+ "Ras Lilas|", .
  "Yarrowia lipolytica|" .
  "Dunkleosteus terrelli|" .
  "Stichodactyla helianthusas|" .
@@ -120,6 +138,16 @@ const ITALICS_LIST =
  "Godartiana|" .
  "Hapalotremus|" .
  "Orcus|" .
+ "Rhaponticum|", .
+ "Arthropleura|", .
+ "Leuzea|", .
+ "Ureaplasma|", .
+ "Polyptychodon|", .
+ "Drosophila|", .
+ "Haratin|", .
+ "Limulus|", .
+ "Eschata|", .
+ "Dianthus|", .
  "Tolegnaro|" .
  "Noideattella|" .
  "Euschistus|" .
@@ -221,7 +249,9 @@ const CAMEL_CASE = array('DeSoto', 'PubChem', 'BitTorrent', 'Al2O3', 'NiMo', 'Cu
                          'ColorBrewer', 'StagLab', 'EveryManc', 'GaCl', 'DeepFace', 'WeChat', 'kDa ',
                          'Tg-AD', 'mHealth', 'DomainKeys', 'mTc', 'SiCf', 'SiC', 'RoboCup',  '-kDa',
                          'DrugBank', 'MnSe', 'ZnTe', 'GaMnAs', 'MnxSb', 'InSb', 'CovidSim', 'xPharm',
-                         'PubMed', 'MedlineRanker', 'MiSearch', 'pubMed', 'MedEvi'
+                         'PubMed', 'MedlineRanker', 'MiSearch', 'pubMed', 'MedEvi', 'CytoJournal',
+                         'NiAl', 'CaSe', 'SrSe', 'BaSe', 'EuSe', 'MalariaControl.net', 'scFv', 'WikiLeaks',
+                         'SysBio'
                        );
 
 const ITALICS_HARDCODE_IN  = ["CytochromebGenes",       "ElectrongValue",       "thetoxGene",      "GopashtamiandGovardhan",       "PolishLebensraum",       "theNachlassproblem",        " forAltalena:",      " in Plutarch'sLives",       "FromSolidarityto",        " gp91phoxPromoter",  "in vitroAssays",        "MarketizingHindutva",       "TheBhagavadgītā,",       "theOrigin of Species",       "EncounteringHindutva",       "ChineseHukouSystem",        "CisLatreille"];
