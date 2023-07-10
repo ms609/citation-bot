@@ -505,8 +505,8 @@ function expand_by_doi(Template $template, bool $force = FALSE) : bool {
       if ((string) @$crossRef->series_title === 'Professional Paper') unset($crossRef->series_title);
       if ($template->has('book-title')) unset($crossRef->volume_title);
 
-      $crossRef->volume_title = restore_italics((string) $crossRef->volume_title);
-      $original = (string) $crossRef->article_title;
+      if (isset($crossRef->volume_title)) $crossRef->volume_title = restore_italics((string) $crossRef->volume_title);
+      $original = (string) @$crossRef->article_title;
       $crossRef->article_title = restore_italics($original);
       if ($crossRef->article_title !== $original) {
          $ch_do_over = curl_init();
