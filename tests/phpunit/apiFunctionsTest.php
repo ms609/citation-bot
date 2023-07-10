@@ -982,7 +982,7 @@ final class apiFunctionsTest extends testBaseClass {
   } 
 
   public function testCrossRefAlternativeAPI() : void {
-    $text = "{{cite journal| doi=10.1086/689648 |s2cid=<!-- --> |pmid=<!-- --> |pmc=<!-- --> |arxiv=<!-- --> |jstor=<!-- --> |bibcode=<!-- --> }}";
+    $text = "{{cite journal| doi=10.1080/00222938700771131 |s2cid=<!-- --> |pmid=<!-- --> |pmc=<!-- --> |arxiv=<!-- --> |jstor=<!-- --> |bibcode=<!-- --> }}";
     $prepared = $this->process_citation($text);
     $this->assertSame($text, $prepared->parsed_text());
   }
