@@ -68,7 +68,6 @@ const ITALICS_LIST =
  "Yarrowia lipolytica|" .
  "Dunkleosteus terrelli|" .
  "Stichodactyla helianthusas|" .
- "Plasmodium falciparum|" .
  "Pyrobaculum calidifontis|" .
  "Arabidopsis thaliana|" .
  "Listeria monocytogenes|" .
@@ -93,7 +92,6 @@ const ITALICS_LIST =
  "Campylobacter jejuni|" .
  "Actinomyces bovis|" .
  "Balaur bondoc|" .
- "Caenorhabditis elegans|" .
  "Screbinodus ornatus|" .
  "Rg Veda|" .
  "Homo erectus|" .
@@ -111,7 +109,6 @@ const ITALICS_LIST =
  "Uroplectes ansiedippenaarae|" .
  "Tornieria africana|" .
  "Ilex asprella|" .
- "Candida albicans|" .
  "Physcomitrella patens|" .
  "China Daily|" .
  "Tabula Peutingeriana|" .
@@ -272,7 +269,7 @@ const CAMEL_CASE = array('DeSoto', 'PubChem', 'BitTorrent', 'Al2O3', 'NiMo', 'Cu
                          'NiAl', 'CaSe', 'SrSe', 'BaSe', 'EuSe', 'MalariaControl.net', 'scFv', 'WikiLeaks',
                          'SysBio', 'SciFinder', 'ClO4', 'baseMjondolo', 'eOceans', 'InSight', 'ActEarly',
                          '23andMe', 'CatScan', 'SpaceHort', 'NiAs', 'WhatsApp', 'HualcaHualca', ' Neo',
-                         'AdvocatingFor', ' #', 'LinkedIn', 'CdTe', 'GaAs', 'CdTe', 'CuInGa', 'D28kExhibit',
+                         'AdvocatingFor', ' #', 'LinkedIn', 'CdTe', 'GaAs', 'CuInGa', 'D28kExhibit',
                          'ThePleasantvilleEffect', 'ImmGen'
                        );
 
