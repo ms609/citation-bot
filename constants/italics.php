@@ -48,7 +48,7 @@ const ITALICS_LIST =
  "Ariolimax californicus|" .
  "Streptococcus pneumoniae|" .
  "In Vivo|" .
- "A. dolichophallus|" .
+ "A\. dolichophallus|" .
  "Stachybotrys chartarum|" .
  "Ras Lilas|" .
  "Yarrowia lipolytica|" .
