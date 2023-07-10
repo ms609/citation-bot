@@ -15,7 +15,7 @@ const ITALICS_LIST =
  "Chronicle\(s\) of Ioannina|" .
  "Homo sapiens sapiens|" .
  "Star Trek: Voyager|" .
- "Notechis scutatus scutatus|", .
+ "Notechis scutatus scutatus|" .
  "Fried Green Tomatoes|" .
  "Game of Thrones|" .
  "The Double-Cross System|" .
@@ -35,23 +35,23 @@ const ITALICS_LIST =
  "Communist Manifesto|" .
  "Bacillus thuringiensis|" .
  "Star Trek|" .
- "Candida albicansas|", .
- "Candida albicans|", .
- "Tyrannosaurus rex|", .
- "Dolichorhynchops bonneri|", .
- "Staphylococcus aureus|", .
- "Pericope Adulterae|", .
- "Salmonella typhimurium|", .
- "Drosophila melanogaster|", .
- "Polycotylus latipinnis|", .
- "Mycobacterium tuberculosis|", .
- "Ariolimax californicus|", .
- "Staphylococcus aureus|", .
- "Streptococcus pneumoniae|", .
- "In Vivo|", .
- "A. dolichophallus|", .
- "Stachybotrys chartarum|", .
- "Ras Lilas|", .
+ "Candida albicansas|" .
+ "Candida albicans|" .
+ "Tyrannosaurus rex|" .
+ "Dolichorhynchops bonneri|" .
+ "Staphylococcus aureus|" .
+ "Pericope Adulterae|" .
+ "Salmonella typhimurium|" .
+ "Drosophila melanogaster|" .
+ "Polycotylus latipinnis|" .
+ "Mycobacterium tuberculosis|" .
+ "Ariolimax californicus|" .
+ "Staphylococcus aureus|" .
+ "Streptococcus pneumoniae|" .
+ "In Vivo|" .
+ "A. dolichophallus|" .
+ "Stachybotrys chartarum|" .
+ "Ras Lilas|" .
  "Yarrowia lipolytica|" .
  "Dunkleosteus terrelli|" .
  "Stichodactyla helianthusas|" .
@@ -138,16 +138,16 @@ const ITALICS_LIST =
  "Godartiana|" .
  "Hapalotremus|" .
  "Orcus|" .
- "Rhaponticum|", .
- "Arthropleura|", .
- "Leuzea|", .
- "Ureaplasma|", .
- "Polyptychodon|", .
- "Drosophila|", .
- "Haratin|", .
- "Limulus|", .
- "Eschata|", .
- "Dianthus|", .
+ "Rhaponticum|" .
+ "Arthropleura|" .
+ "Leuzea|" .
+ "Ureaplasma|" .
+ "Polyptychodon|" .
+ "Drosophila|" .
+ "Haratin|" .
+ "Limulus|" .
+ "Eschata|" .
+ "Dianthus|" .
  "Tolegnaro|" .
  "Noideattella|" .
  "Euschistus|" .
