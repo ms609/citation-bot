@@ -473,12 +473,20 @@ final class constantsTest extends testBaseClass {
   }
 
 
-  public function testItalicsEscaped() : void {
-     $italics = ITALICS_LIST;
-     $italics = str_replace(['\\(', '\\)'], '', $italics);
+  public function testItalicsEscaped1() : void {
+     $italics = str_replace(['\\(', '\\)', '\\.'], '', ITALICS_LIST);
      $this->assertSame(0 , substr_count($italics, '('));
+  }
+  public function testItalicsEscaped2() : void {
+     $italics = str_replace(['\\(', '\\)', '\\.'], '', ITALICS_LIST);
      $this->assertSame(0 , substr_count($italics, ')'));
+  }
+  public function testItalicsEscaped3() : void {
+     $italics = str_replace(['\\(', '\\)', '\\.'], '', ITALICS_LIST);
      $this->assertSame(0 , substr_count($italics, '\\'));
+  }
+  public function testItalicsEscaped4() : void {
+     $italics = str_replace(['\\(', '\\)', '\\.'], '', ITALICS_LIST);
      $this->assertSame(0 , substr_count($italics, '.'));
   }
 
