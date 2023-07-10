@@ -517,7 +517,7 @@ function expand_by_doi(Template $template, bool $force = FALSE) : bool {
              CURLOPT_TIMEOUT => 15,
              CURLOPT_CONNECTTIMEOUT => 15,
              CURLOPT_USERAGENT => BOT_USER_AGENT]);
-         $json = (string) @curl_exec($ch);
+         $json = (string) @curl_exec($ch_do_over);
          $json=json_decode($json);
          if (isset($json->message->title[0]) && !isset($json->message->title[1])) {
            $new_title = (string) $json->message->title[0];
