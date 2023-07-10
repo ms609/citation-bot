@@ -41,6 +41,20 @@ const ITALICS_LIST =
  "Dolichorhynchops bonneri|" .
  "Staphylococcus aureus|" .
  "Pericope Adulterae|" .
+ "Plasmodium falciparum|" .
+ "Entamoeba histolytica|" .
+ "Fusarium pseudograminearum|" .
+ "Caenorhabditis elegans|" .
+ "Serratia marcescens|" .
+ "Bicyclus anynana|" .
+ "Argiope argentata|" .
+ "Saccharomyces boulardiiin|" .
+ "Bacillus anthracis|" .
+ "Bargmannia elongata|" .
+ "Phialella zappai|" .
+ "Onychiurus fimats|" .
+ "Phialella fragilis|" .
+ "Skeletonema costatum|" .
  "Salmonella typhimurium|" .
  "Drosophila melanogaster|" .
  "Polycotylus latipinnis|" .
@@ -134,6 +148,16 @@ const ITALICS_LIST =
  "Godartiana|" .
  "Hapalotremus|" .
  "Orcus|" .
+ "Phialella|" .
+ "Philometra|" .
+ "Apatosaurus|" .
+ "Phytophthora|" .
+ "Chrysops|" .
+ "Lophiomeryx|" .
+ "Bachitherium|" .
+ "Anoplotherium|" .
+ "Adenanthos|" .
+ "Thraustochytrium|" .
  "Rhaponticum|" .
  "Arthropleura|" .
  "Leuzea|" .
@@ -246,9 +270,12 @@ const CAMEL_CASE = array('DeSoto', 'PubChem', 'BitTorrent', 'Al2O3', 'NiMo', 'Cu
                          'DrugBank', 'MnSe', 'ZnTe', 'GaMnAs', 'MnxSb', 'InSb', 'CovidSim', 'xPharm',
                          'PubMed', 'MedlineRanker', 'MiSearch', 'pubMed', 'MedEvi', 'CytoJournal',
                          'NiAl', 'CaSe', 'SrSe', 'BaSe', 'EuSe', 'MalariaControl.net', 'scFv', 'WikiLeaks',
-                         'SysBio'
+                         'SysBio', 'SciFinder', 'ClO4', 'baseMjondolo', 'eOceans', 'InSight', 'ActEarly',
+                         '23andMe', 'CatScan', 'SpaceHort', 'NiAs', 'WhatsApp', 'HualcaHualca', ' Neo',
+                         'AdvocatingFor', ' #', 'LinkedIn', 'CdTe', 'GaAs', 'CdTe', 'CuInGa', 'D28kExhibit',
+                         'ThePleasantvilleEffect', 'ImmGen'
                        );
 
-const ITALICS_HARDCODE_IN  = ["CytochromebGenes",       "ElectrongValue",       "thetoxGene",      "GopashtamiandGovardhan",       "PolishLebensraum",       "theNachlassproblem",        " forAltalena:",      " in Plutarch'sLives",       "FromSolidarityto",        " gp91phoxPromoter",  "in vitroAssays",        "MarketizingHindutva",       "TheBhagavadgītā,",       "theOrigin of Species",       "EncounteringHindutva",       "ChineseHukouSystem",        "CisLatreille"];
-const ITALICS_HARDCODE_OUT = ["Cytochrome ''b'' Genes", "Electron ''g'' Value", "the ''tox'' Gene","Gopashtami ''and'' Govardhan", "Polish ''Lebensraum'' ", "the ''Nachlass'' problem ", " for ''Altalena'':", " in Plutarch's ''Lives'' ", "From ''Solidarity'' to ", " gp91phox Promoter", " ''in vitro'' Assays ", "Marketizing ''Hindutva'' ", "The ''Bhagavadgītā'', ", "the ''Origin of Species'' ", "Encountering ''Hindutva'' ", "Chinese ''Hukou'' System ", "''Cis'' Latreille"];
+const ITALICS_HARDCODE_IN  = [" Rgene", "CytochromebGenes",       "ElectrongValue",       "thetoxGene",      "GopashtamiandGovardhan",       "PolishLebensraum",       "theNachlassproblem",        " forAltalena:",      " in Plutarch'sLives",       "FromSolidarityto",        " gp91phoxPromoter",  "in vitroAssays",        "MarketizingHindutva",       "TheBhagavadgītā,",       "theOrigin of Species",       "EncounteringHindutva",       "ChineseHukouSystem",        "CisLatreille"];
+const ITALICS_HARDCODE_OUT = [" ''R'' gene", "Cytochrome ''b'' Genes", "Electron ''g'' Value", "the ''tox'' Gene","Gopashtami ''and'' Govardhan", "Polish ''Lebensraum'' ", "the ''Nachlass'' problem ", " for ''Altalena'':", " in Plutarch's ''Lives'' ", "From ''Solidarity'' to ", " gp91phox Promoter", " ''in vitro'' Assays ", "Marketizing ''Hindutva'' ", "The ''Bhagavadgītā'', ", "the ''Origin of Species'' ", "Encountering ''Hindutva'' ", "Chinese ''Hukou'' System ", "''Cis'' Latreille"];
 
