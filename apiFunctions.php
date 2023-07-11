@@ -1485,6 +1485,8 @@ function query_adsabs(string $options) : object {
      if (isset($json->message->title[0]) && !isset($json->message->title[1])) {
           $title = (string) $json->message->title[0];
           return str_ireplace(['<i>', '</i>', '</i> :', '  '], [' <i>', '</i> ', '</i>:', ' '], $title);
+     } else {
+          sleep(2);
+          return '';
      }
-     return '';   
   }
