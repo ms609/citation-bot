@@ -984,7 +984,7 @@ final class apiFunctionsTest extends testBaseClass {
   public function testCrossRefAlternativeAPI() : void {
     $text = "{{cite journal| doi=10.1080/00222938700771131 |s2cid=<!-- --> |pmid=<!-- --> |pmc=<!-- --> |arxiv=<!-- --> |jstor=<!-- --> |bibcode=<!-- --> }}";
     $prepared = $this->process_citation($text);
-    $this->assertSame($text, $prepared->parsed_text());
+    $this->assertSame("Life cycles of ''Phialella zappai'' n. Sp., ''Phialella fragilis'' and ''Phialella'' sp. (Cnidaria, Leptomedusae, Phialellidae) from central California", $prepared->get2('title'));
   }
 
 }
