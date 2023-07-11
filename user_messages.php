@@ -32,10 +32,15 @@ function report_forget(string $text) : void { user_notice("  -", "removed", $tex
 function report_inline(string $text) : void { if (!TRAVIS || defined("TRAVIS_PRINT")) echo " $text"; }
 // call report_warning to give users a message before we die
 function report_error(string $text) : void {
-  report_warning($text);  // @codeCoverageIgnore
-  // the trigger on the website logs this to error.log for debugging on the webserver
-  if (HTML_OUTPUT || TRAVIS) trigger_error($text);   // @codeCoverageIgnore 
-  exit();  // @codeCoverageIgnore 
+  report_warning($text);  // @codeCoverageIgnoreStart
+  if (TRAVIS) {
+     trigger_error($text);  // Stop this test now
+  } elseif (function_exists('bot_debug_log')) {
+     bot_debug_log($text);  // Code logfile, if defined
+  } else {
+     trigger_error($text);  // System Logfile
+  }
+  exit();  // @codeCoverageIgnoreEnd
 }
 function report_minor_error(string $text) : void {  // For things we want to error in tests, but continue on Wikipedia
   // @codeCoverageIgnoreStart
