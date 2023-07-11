@@ -2155,7 +2155,7 @@ final class TemplateTest extends testBaseClass {
     $expanded = $this->process_citation($text);
     $this->assertSame('1', $expanded->get2('display-authors'));
     $this->assertSame('Aielli', $expanded->get2('last30'));
-    $this->assertSame('Charged-particle multiplicities in pp interactions at s=900 GeV measured with the ATLAS detector at the LHC', $expanded->get2('title'));
+    $this->assertSame("Charged-particle multiplicities in pp interactions at <math>\sqrt{s}=900\text{ GeV}</math> measured with the ATLAS detector at the LHC", $expanded->get2('title'));
     $this->assertNull($expanded->get2('last31'));
   }
   
@@ -3151,9 +3151,9 @@ EP - 999 }}';
     $text = "{{Cite arxiv|eprint=1801.03103}}";
     $expanded = $this->process_citation($text);
     $title = $expanded->get2('title');
-    // For some reason we sometimes get the first one
+    // For some reason we sometimes get the first one - probably just ARXIV
     $title1 = 'A Candidate $z\sim10$ Galaxy Strongly Lensed into a Spatially Resolved Arc';
-    $title2 = 'RELICS: A Candidate z ∼ 10 Galaxy Strongly Lensed into a Spatially Resolved Arc';
+    $title2 = "RELICS: A Candidate ''z'' ∼ 10 Galaxy Strongly Lensed into a Spatially Resolved Arc";
     if (in_array($title, [$title1, $title2])) {
        $this->assertTrue(TRUE);
     } else {
@@ -4110,7 +4110,7 @@ EP - 999 }}';
   public function testArxivHasDOIwithoutData() : void { // This doi is dead, so it takes different path in code
     $text = '{{citation|arxiv=2202.10024|title=TESS discovery of a sub-Neptune orbiting a mid-M dwarf TOI-2136}}';
     $template = $this->process_citation($text);
-    $this->assertSame('TESS discovery of a sub-Neptune orbiting a mid-M dwarf TOI-2136', $template->get2('title'));
+    $this->assertSame("''TESS'' discovery of a sub-Neptune orbiting a mid-M dwarf TOI-2136", $template->get2('title'));
     $this->assertSame('10.1093/mnras/stac1448', $template->get2('doi'));
   }
  
