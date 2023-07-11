@@ -10,11 +10,11 @@ const ITALICS_LIST =
  "The City Of God|" .
  "Miseducation of the Negro|" .
  "The Book of Illusions|" .
+ "Capitalism, Socialism and Democracy|" .
  "Magnalia Christi Americana|" .
  "Sydney morning herald|" .
  "Chronicle\(s\) of Ioannina|" .
  "Homo sapiens sapiens|" .
- "Capitalism, Socialism and Democracy|" .
  "Trypanosoma brucei gambiense|" .
  "Star Trek: Voyager|" .
  "Notechis scutatus scutatus|" .
@@ -37,14 +37,12 @@ const ITALICS_LIST =
  "Dunkleosteus terrelli|" .
  "Mycoplasma genitalium|" .
  "In Vitro|" .
- "Escherichia coli|" .
  "Australopithecus afarensis|" .
  "Tabula Rasa|" .
  "Seize Mai|" .
  "Schistosoma mansoni|" .
  "Melanodrymia aurantiaca|" .
  "Paramphislomum cervi|" .
- "Bugulasensu lato|" .
  "Bacillus pumilus|" .
  "Citipati Osmolskae|" .
  "Sui Generis|" .
@@ -57,7 +55,6 @@ const ITALICS_LIST =
  "Dolichorhynchops bonneri|" .
  "Staphylococcus aureus|" .
  "Pericope Adulterae|" .
- "Plasmodium falciparum|" .
  "Entamoeba histolytica|" .
  "Fusarium pseudograminearum|" .
  "Caenorhabditis elegans|" .
@@ -82,12 +79,10 @@ const ITALICS_LIST =
  "Stachybotrys chartarum|" .
  "Ras Lilas|" .
  "Yarrowia lipolytica|" .
- "Dunkleosteus terrelli|" .
  "Stichodactyla helianthusas|" .
  "Pyrobaculum calidifontis|" .
  "Arabidopsis thaliana|" .
  "Listeria monocytogenes|" .
- "In Vitro|" .
  "Mycoplasma pneumoniae|" .
  "Paradisaea Raggiana|" .
  "Brachiosaurus altithorax|" .
@@ -175,12 +170,7 @@ const ITALICS_LIST =
  "Arthropleura|" .
  "Leuzea|" .
  "Ureaplasma|" .
- "Paratirolites|" .
- "Arianops|" .
  "Euschistus|" .
- "Godartiana|" .
- "Hapalotremus|" .
- "Loxosceles|" .
  "Noideattella|" .
  "Tolegnaro|" .
  "Cannabis|" .
@@ -191,9 +181,6 @@ const ITALICS_LIST =
  "Limulus|" .
  "Eschata|" .
  "Dianthus|" .
- "Tolegnaro|" .
- "Noideattella|" .
- "Euschistus|" .
  "Arthoniais|" .
  "Acacia|" .
  "Berardiusin|" .
@@ -213,7 +200,6 @@ const ITALICS_LIST =
  "Euroscaptor|" .
  "Montifringilla|" .
  "Leucosticte|" .
- "Cannabis|" .
  "Aglyptorhynchus|" .
  "Egertonia|" .
  "Dapedium|" .
@@ -224,7 +210,6 @@ const ITALICS_LIST =
  "Candidain|" .
  "Candida|" .
  "Lasalichthys|" .
- "Drosophila|" .
  "Dicynodon|" .
  "Iudaea-Palestina|" .
  "Cymbeline|" .
