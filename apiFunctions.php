@@ -518,7 +518,7 @@ function expand_by_doi(Template $template, bool $force = FALSE) : bool {
             if ($new_title !== '') {
               $template->add_if_new('chapter', $new_title);
             } else {
-              $template->add_if_new('chapter', restore_italics((string) $crossRef->article_title), 'crossref')
+              $template->add_if_new('chapter', restore_italics((string) $crossRef->article_title), 'crossref')dsfadsfd
             }
         }
         $template->add_if_new('title', restore_italics((string) $crossRef->volume_title), 'crossref'); // add_if_new will wikify title and sanitize the string
