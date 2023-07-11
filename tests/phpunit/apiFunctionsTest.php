@@ -993,5 +993,17 @@ final class apiFunctionsTest extends testBaseClass {
     $this->assertSame($text, $prepared->parsed_text());
   }
 
+  public function testCrossRefAlternativeAPI3() : void {
+    $text = "{{cite book |last=Galbács |first=Peter |title=The Theory of New Classical Macroeconomics. A Positive Critique |location=Heidelberg/New York/Dordrecht/London |publisher=Springer |year=2015 |isbn= 978-3-319-17578-2|doi=10.1007/978-3-319-17578-2 |series=Contributions to Economics }}";
+    $prepared = $this->process_citation($text);
+    $this->assertSame($text, $prepared->parsed_text());
+  }
+
+  public function testCrossRefAlternativeAPI4() : void {
+    $text = "{{Cite book |url=https://www.taylorfrancis.com/books/edit/10.4324/9781351295246/media-suicide-thomas-niederkrotenthaler-steven-stack |title=Media and Suicide: International Perspectives on Research, Theory, and Policy |date=2017-10-31 |publisher=Routledge |isbn=978-1-351-29524-6 |editor-last=Niederkrotenthaler |editor-first=Thomas |location=New York |doi=10.4324/9781351295246 |editor-last2=Stack |editor-first2=Steven}}";
+    $prepared = $this->process_citation($text);
+    $this->assertSame($text, $prepared->parsed_text());
+  }
+
   
 }
