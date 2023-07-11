@@ -987,4 +987,11 @@ final class apiFunctionsTest extends testBaseClass {
     $this->assertSame("Life cycles of ''Phialella zappai'' n. Sp., ''Phialella fragilis'' and ''Phialella'' sp. (Cnidaria, Leptomedusae, Phialellidae) from central California", $prepared->get2('title'));
   }
 
+  public function testCrossRefAlternativeAPI2() : void {
+    $text = "{{Cite book |date=2012-11-12 |title=The Analects of Confucius |url=http://dx.doi.org/10.4324/9780203715246 |doi=10.4324/9780203715246|isbn=9780203715246 |last1=Estate |first1=The Arthur Waley }}";
+    $prepared = $this->process_citation($text);
+    $this->assertSame($text, $prepared->parsed_text());
+  }
+
+  
 }
