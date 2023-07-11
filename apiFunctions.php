@@ -440,7 +440,7 @@ function expand_by_doi(Template $template, bool $force = FALSE) : bool {
   }
   if ($doi && ($force || $template->incomplete())) {
     $crossRef = query_crossref($doi);
-    ob_flush();
+    ob_flush(); 
     echo "\n\n";
     print_r($crossRef);
     echo echoable((string) @$crossRef->article_title) . "\n\n";
