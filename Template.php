@@ -5787,6 +5787,14 @@ final class Template {
                 $this->forget('author');
               }
           }
+          if ( strtolower($the_param) === 'www.sciencedirect.com' ||
+               strtolower($the_param) === 'sciencedirect.com' ||
+               strtolower($the_param) === 'sciencedirect'
+              ) {
+            if ($this->has('isbn')) {
+               $this->forget($param);
+            }
+          }
           return;
 
         case 'location':

@@ -132,7 +132,7 @@ abstract class testBaseClass extends PHPUnit\Framework\TestCase {
       $template->parse_text($matches[1]);
       return $template;
     } else {
-      trigger_error('Non-reference passsed to reference_to_template: ' . $text);
+      report_error('Non-reference passsed to reference_to_template: ' . $text);
     }
   }
   

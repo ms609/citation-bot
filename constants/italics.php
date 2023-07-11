@@ -10,11 +10,14 @@ const ITALICS_LIST =
  "The City Of God|" .
  "Miseducation of the Negro|" .
  "The Book of Illusions|" .
+ "Capitalism, Socialism and Democracy|" .
  "Magnalia Christi Americana|" .
  "Sydney morning herald|" .
  "Chronicle\(s\) of Ioannina|" .
  "Homo sapiens sapiens|" .
+ "Trypanosoma brucei gambiense|" .
  "Star Trek: Voyager|" .
+ "Notechis scutatus scutatus|" .
  "Fried Green Tomatoes|" .
  "Game of Thrones|" .
  "The Double-Cross System|" .
@@ -28,25 +31,62 @@ const ITALICS_LIST =
  "Helicobacter pylori|" .
  "Drosophila silvestris|" .
  "Luzula nivea|" .
+ "Plasmodium falciparum|" .
+ "Mycoplasma pneumoniaein|" .
+ "Inonotus radiatus|" .
+ "Dunkleosteus terrelli|" .
+ "Mycoplasma genitalium|" .
+ "In Vitro|" .
+ "Australopithecus afarensis|" .
+ "Tabula Rasa|" .
+ "Seize Mai|" .
+ "Schistosoma mansoni|" .
+ "Melanodrymia aurantiaca|" .
+ "Paramphislomum cervi|" .
  "Bacillus pumilus|" .
  "Citipati Osmolskae|" .
  "Sui Generis|" .
  "Communist Manifesto|" .
  "Bacillus thuringiensis|" .
  "Star Trek|" .
+ "Candida albicansas|" .
+ "Candida albicans|" .
+ "Tyrannosaurus rex|" .
+ "Dolichorhynchops bonneri|" .
+ "Staphylococcus aureus|" .
+ "Pericope Adulterae|" .
+ "Entamoeba histolytica|" .
+ "Fusarium pseudograminearum|" .
+ "Caenorhabditis elegans|" .
+ "Serratia marcescens|" .
+ "Bicyclus anynana|" .
+ "Argiope argentata|" .
+ "Saccharomyces boulardiiin|" .
+ "Bacillus anthracis|" .
+ "Bargmannia elongata|" .
+ "Phialella zappai|" .
+ "Onychiurus fimats|" .
+ "Phialella fragilis|" .
+ "Skeletonema costatum|" .
+ "Salmonella typhimurium|" .
+ "Drosophila melanogaster|" .
+ "Polycotylus latipinnis|" .
+ "Mycobacterium tuberculosis|" .
+ "Ariolimax californicus|" .
+ "Streptococcus pneumoniae|" .
+ "In Vivo|" .
+ "A\. dolichophallus|" .
+ "Stachybotrys chartarum|" .
+ "Ras Lilas|" .
  "Yarrowia lipolytica|" .
- "Dunkleosteus terrelli|" .
  "Stichodactyla helianthusas|" .
- "Plasmodium falciparum|" .
  "Pyrobaculum calidifontis|" .
  "Arabidopsis thaliana|" .
  "Listeria monocytogenes|" .
- "In Vitro|" .
  "Mycoplasma pneumoniae|" .
  "Paradisaea Raggiana|" .
  "Brachiosaurus altithorax|" .
  "Saccharomyces cerevisiae|" .
- "Staphylococcus aureus|" .
  "Plutella xylostella|" .
  "Bromus laevipes|" .
  "Trypanosoma brucei|" .
@@ -63,7 +103,6 @@ const ITALICS_LIST =
  "Campylobacter jejuni|" .
  "Actinomyces bovis|" .
  "Balaur bondoc|" .
- "Caenorhabditis elegans|" .
  "Screbinodus ornatus|" .
  "Rg Veda|" .
  "Homo erectus|" .
@@ -80,9 +119,7 @@ const ITALICS_LIST =
  "Robustichthys luopingensis|" .
  "Uroplectes ansiedippenaarae|" .
  "Tornieria africana|" .
- "Pericope Adulterae|" .
  "Ilex asprella|" .
- "Candida albicans|" .
  "Physcomitrella patens|" .
  "China Daily|" .
  "Tabula Peutingeriana|" .
@@ -93,7 +130,6 @@ const ITALICS_LIST =
  "Woloszynskia apiculata|" .
  "Symbiodinium microadriaticum|" .
  "Enfants Terribles|" .
- "Mycobacterium tuberculosis|" .
  "Puntius sophore|" .
  "Murraya koenigii|" .
  "Pseudomonas aeruginosa|" .
@@ -120,9 +156,31 @@ const ITALICS_LIST =
  "Godartiana|" .
  "Hapalotremus|" .
  "Orcus|" .
- "Tolegnaro|" .
- "Noideattella|" .
+ "Phialella|" .
+ "Philometra|" .
+ "Apatosaurus|" .
+ "Phytophthora|" .
+ "Chrysops|" .
+ "Lophiomeryx|" .
+ "Bachitherium|" .
+ "Anoplotherium|" .
+ "Adenanthos|" .
+ "Thraustochytrium|" .
+ "Rhaponticum|" .
+ "Arthropleura|" .
+ "Leuzea|" .
+ "Ureaplasma|" .
  "Euschistus|" .
+ "Noideattella|" .
+ "Tolegnaro|" .
+ "Cannabis|" .
+ "Drosophila|" .
+ "Duyfken|" .
+ "Polyptychodon|" .
+ "Haratin|" .
+ "Limulus|" .
+ "Eschata|" .
+ "Dianthus|" .
  "Arthoniais|" .
  "Acacia|" .
  "Berardiusin|" .
@@ -142,7 +200,6 @@ const ITALICS_LIST =
  "Euroscaptor|" .
  "Montifringilla|" .
  "Leucosticte|" .
- "Cannabis|" .
  "Aglyptorhynchus|" .
  "Egertonia|" .
  "Dapedium|" .
@@ -153,7 +210,6 @@ const ITALICS_LIST =
  "Candidain|" .
  "Candida|" .
  "Lasalichthys|" .
- "Drosophila|" .
  "Dicynodon|" .
  "Iudaea-Palestina|" .
  "Cymbeline|" .
@@ -221,9 +277,17 @@ const CAMEL_CASE = array('DeSoto', 'PubChem', 'BitTorrent', 'Al2O3', 'NiMo', 'Cu
                          'ColorBrewer', 'StagLab', 'EveryManc', 'GaCl', 'DeepFace', 'WeChat', 'kDa ',
                          'Tg-AD', 'mHealth', 'DomainKeys', 'mTc', 'SiCf', 'SiC', 'RoboCup',  '-kDa',
                          'DrugBank', 'MnSe', 'ZnTe', 'GaMnAs', 'MnxSb', 'InSb', 'CovidSim', 'xPharm',
-                         'PubMed', 'MedlineRanker', 'MiSearch', 'pubMed', 'MedEvi'
+                         'PubMed', 'MedlineRanker', 'MiSearch', 'pubMed', 'MedEvi', 'CytoJournal',
+                         'NiAl', 'CaSe', 'SrSe', 'BaSe', 'EuSe', 'MalariaControl.net', 'scFv', 'WikiLeaks',
+                         'SysBio', 'SciFinder', 'ClO4', 'baseMjondolo', 'eOceans', 'InSight', 'ActEarly',
+                         '23andMe', 'CatScan', 'SpaceHort', 'NiAs', 'WhatsApp', 'HualcaHualca', ' Neo',
+                         'AdvocatingFor', ' #', 'LinkedIn', 'CdTe', 'GaAs', 'CuInGa', 'D28kExhibit',
+                         'ThePleasantvilleEffect', 'ImmGen', 'GeV', 'KrCl', 'LiNi', 'DuBourg', 'MetaAnalysis',
+                         'MoCx', 'MoPx', 'MoNx', 'PedCheck', 'ImagiNation', 'HemOnc', 'nJunctions',
+                         'SkyMed', 'InterNyet', 'BattleZone', 'NoFap', 'CyberSightings', 'kHz', 'AngQb',
+                         'QuickStats', 'iDisorders', 'PremAir', '®', 'eCrime', 'AgInjuryNews', 'DreamWorks'
                        );
 
-const ITALICS_HARDCODE_IN  = ["CytochromebGenes",       "ElectrongValue",       "thetoxGene",      "GopashtamiandGovardhan",       "PolishLebensraum",       "theNachlassproblem",        " forAltalena:",      " in Plutarch'sLives",       "FromSolidarityto",        " gp91phoxPromoter",  "in vitroAssays",        "MarketizingHindutva",       "TheBhagavadgītā,",       "theOrigin of Species",       "EncounteringHindutva",       "ChineseHukouSystem",        "CisLatreille"];
-const ITALICS_HARDCODE_OUT = ["Cytochrome ''b'' Genes", "Electron ''g'' Value", "the ''tox'' Gene","Gopashtami ''and'' Govardhan", "Polish ''Lebensraum'' ", "the ''Nachlass'' problem ", " for ''Altalena'':", " in Plutarch's ''Lives'' ", "From ''Solidarity'' to ", " gp91phox Promoter", " ''in vitro'' Assays ", "Marketizing ''Hindutva'' ", "The ''Bhagavadgītā'', ", "the ''Origin of Species'' ", "Encountering ''Hindutva'' ", "Chinese ''Hukou'' System ", "''Cis'' Latreille"];
+const ITALICS_HARDCODE_IN  = [" Rgene", "CytochromebGenes",       "ElectrongValue",       "thetoxGene",      "GopashtamiandGovardhan",       "PolishLebensraum",       "theNachlassproblem",        " forAltalena:",      " in Plutarch'sLives",       "FromSolidarityto",        " gp91phoxPromoter",  "in vitroAssays",        "MarketizingHindutva",       "TheBhagavadgītā,",       "theOrigin of Species",       "EncounteringHindutva",       "ChineseHukouSystem",        "CisLatreille"];
+const ITALICS_HARDCODE_OUT = [" ''R'' gene", "Cytochrome ''b'' Genes", "Electron ''g'' Value", "the ''tox'' Gene","Gopashtami ''and'' Govardhan", "Polish ''Lebensraum'' ", "the ''Nachlass'' problem ", " for ''Altalena'':", " in Plutarch's ''Lives'' ", "From ''Solidarity'' to ", " gp91phox Promoter", " ''in vitro'' Assays ", "Marketizing ''Hindutva'' ", "The ''Bhagavadgītā'', ", "the ''Origin of Species'' ", "Encountering ''Hindutva'' ", "Chinese ''Hukou'' System ", "''Cis'' Latreille"];
 
