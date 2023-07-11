@@ -508,7 +508,9 @@ function expand_by_doi(Template $template, bool $force = FALSE) : bool {
 
       if ((string) @$crossRef->volume_title === 'Professional Paper') unset($crossRef->volume_title);
       if ((string) @$crossRef->series_title === 'Professional Paper') unset($crossRef->series_title);
+      afdafdsafdsfd
       if ($template->has('book-title')) unset($crossRef->volume_title);
+      dsfadsfdsfd
       if ($crossRef->volume_title && ($template->blank(WORK_ALIASES) || $template->wikiname() === 'cite book')) {
         if (mb_strtolower($template->get('title')) === mb_strtolower((string) $crossRef->article_title)) {
            $template->rename('title', 'chapter');
