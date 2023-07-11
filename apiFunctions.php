@@ -505,12 +505,12 @@ function expand_by_doi(Template $template, bool $force = FALSE) : bool {
       if ((string) @$crossRef->series_title === 'Professional Paper') unset($crossRef->series_title);
       if ($template->has('book-title')) unset($crossRef->volume_title);
 
-      if (isset($crossRef->volume_title)) $crossRef->volume_title = restore_italics((string) $crossRef->volume_title);
+      if ($crossRef->volume_title) $crossRef->volume_title = restore_italics((string) $crossRef->volume_title);
       // New enhanced CODE for titles
       $new_title = CrossRefTitle($doi);
       if ($new_title !== '') {
         $crossRef->article_title = $new_title;
-      } elseif (isset($crossRef->article_title)) { // Fall back to old code
+      } elseif ($crossRef->article_title) { // Fall back to old code
         $crossRef->article_title = restore_italics((string) $crossRef->article_title);
       }
 
