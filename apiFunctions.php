@@ -515,6 +515,7 @@ function expand_by_doi(Template $template, bool $force = FALSE) : bool {
            $template->rename('title', 'chapter');
         } else {
             $new_title = CrossRefTitle($doi);
+             ob_flush(); echo "\n\n NEW $new_title \n"; ob_flush(); 
             if ($new_title !== '') {
               $template->add_if_new('chapter', $new_title);
             } else {
@@ -524,6 +525,7 @@ function expand_by_doi(Template $template, bool $force = FALSE) : bool {
         $template->add_if_new('title', restore_italics((string) $crossRef->volume_title), 'crossref'); // add_if_new will wikify title and sanitize the string
       } else {
          $new_title = CrossRefTitle($doi);
+          ob_flush(); echo "\n\n NEW $new_title \n"; ob_flush(); 
          if ($new_title !== '') {
            $template->add_if_new('title', $new_title, 'crossref');
          } else {
