@@ -14,6 +14,8 @@ const ITALICS_LIST =
  "Sydney morning herald|" .
  "Chronicle\(s\) of Ioannina|" .
  "Homo sapiens sapiens|" .
+ "Capitalism, Socialism and Democracy|" .
+ "Trypanosoma brucei gambiense|" .
  "Star Trek: Voyager|" .
  "Notechis scutatus scutatus|" .
  "Fried Green Tomatoes|" .
@@ -29,6 +31,20 @@ const ITALICS_LIST =
  "Helicobacter pylori|" .
  "Drosophila silvestris|" .
  "Luzula nivea|" .
+ "Plasmodium falciparum|" .
+ "Mycoplasma pneumoniaein|" .
+ "Inonotus radiatus|" .
+ "Dunkleosteus terrelli|" .
+ "Mycoplasma genitalium|" .
+ "In Vitro|" .
+ "Escherichia coli|" .
+ "Australopithecus afarensis|" .
+ "Tabula Rasa|" .
+ "Seize Mai|" .
+ "Schistosoma mansoni|" .
+ "Melanodrymia aurantiaca|" .
+ "Paramphislomum cervi|" .
+ "Bugulasensu lato|" .
  "Bacillus pumilus|" .
  "Citipati Osmolskae|" .
  "Sui Generis|" .
@@ -159,6 +175,17 @@ const ITALICS_LIST =
  "Arthropleura|" .
  "Leuzea|" .
  "Ureaplasma|" .
+ "Paratirolites|" .
+ "Arianops|" .
+ "Euschistus|" .
+ "Godartiana|" .
+ "Hapalotremus|" .
+ "Loxosceles|" .
+ "Noideattella|" .
+ "Tolegnaro|" .
+ "Cannabis|" .
+ "Drosophila|" .
+ "Duyfken|" .
  "Polyptychodon|" .
  "Haratin|" .
  "Limulus|" .
@@ -270,7 +297,10 @@ const CAMEL_CASE = array('DeSoto', 'PubChem', 'BitTorrent', 'Al2O3', 'NiMo', 'Cu
                          'SysBio', 'SciFinder', 'ClO4', 'baseMjondolo', 'eOceans', 'InSight', 'ActEarly',
                          '23andMe', 'CatScan', 'SpaceHort', 'NiAs', 'WhatsApp', 'HualcaHualca', ' Neo',
                          'AdvocatingFor', ' #', 'LinkedIn', 'CdTe', 'GaAs', 'CuInGa', 'D28kExhibit',
-                         'ThePleasantvilleEffect', 'ImmGen'
+                         'ThePleasantvilleEffect', 'ImmGen', 'GeV', 'KrCl', 'LiNi', 'DuBourg', 'MetaAnalysis',
+                         'MoCx', 'MoPx', 'MoNx', 'PedCheck', 'ImagiNation', 'HemOnc', 'nJunctions',
+                         'SkyMed', 'InterNyet', 'BattleZone', 'NoFap', 'CyberSightings', 'kHz', 'AngQb',
+                         'QuickStats', 'iDisorders', 'PremAir', '®', 'eCrime', 'AgInjuryNews'
                        );
 
 const ITALICS_HARDCODE_IN  = [" Rgene", "CytochromebGenes",       "ElectrongValue",       "thetoxGene",      "GopashtamiandGovardhan",       "PolishLebensraum",       "theNachlassproblem",        " forAltalena:",      " in Plutarch'sLives",       "FromSolidarityto",        " gp91phoxPromoter",  "in vitroAssays",        "MarketizingHindutva",       "TheBhagavadgītā,",       "theOrigin of Species",       "EncounteringHindutva",       "ChineseHukouSystem",        "CisLatreille"];
