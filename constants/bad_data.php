@@ -7,7 +7,7 @@ const HAS_NO_VOLUME = array("zookeys", "studia hibernica", "analecta hibernica",
                             "cap journal", "phytokeys", "starinar", "balcanica", "american museum novitates",
                             "european journal of taxonomy");  // Some journals have issues only, no volume numbers
 // oceanic linguistics special publications has the problem that issues will not show up within temlpates
-const HAS_NO_ISSUE = array("special papers in palaeontology", "oceanic linguistics special publications", "cahiers balkaniques");  // Some journals have volumes only, no issue numbers
+const HAS_NO_ISSUE = array("special papers in palaeontology", "oceanic linguistics special publications", "cahiers balkaniques", "res historica");  // Some journals have volumes only, no issue numbers
 const PREFER_VOLUMES = array("illinois classical studies"); // When issue=volume, drop issue.  JSTOR calls volumes issues
 const PREFER_ISSUES = array("mammalian species", "bulletin of the united states national museum");
 const BAD_ACCEPTED_MANUSCRIPT_TITLES = array("oup accepted manuscript", "placeholder for bad pdf file", 
@@ -16,7 +16,7 @@ const BAD_ACCEPTED_MANUSCRIPT_TITLES = array("oup accepted manuscript", "placeho
 const BAD_AUTHORS = array("unknown", "missing", "- -.", "- -", "no authorship indicated", "no authorship", "no author",
                            "no authors", "no author indicated", "no authorship indicated", "dk eyewitness", "united states",
                            "great britain", "indiatoday", "natural history museum bern", "daily sabah", 'el país', 'el pais', 
-			   "radio", "rundfunk");
+			   "radio", "rundfunk", "news agencies");
 const NON_HUMAN_AUTHORS = array('collaborat', 'reporter', 'journalist', 'correspondent', 'anchor', 'staff', 'foreign',
                                 'national', 'endowment', ' for the ', 'humanities', 'committee', 'group',
                                 'society', ' of america', 'association', ' at the ', 'board of ', 'communications',
@@ -24,7 +24,7 @@ const NON_HUMAN_AUTHORS = array('collaborat', 'reporter', 'journalist', 'corresp
                                 'dept of ', 'college', 'center for', 'office of', 'editor', 'institut', 'world bank',
                                 'world news', 'national news', 'eyewitness', 'information', 'business', 'bureau',
                                 'us census', 'indiatoday', 'natural history', 'museum', '試験所', 'circuit',
-                                'external', 'relations', 'nations', 'united', 'radio', 'rundfunk', 'new york');
+                                'external', 'relations', 'nations', 'united', 'radio', 'rundfunk', 'new york', 'agencies');
 const BAD_PUBLISHERS = array('london', 'edinburgi', 'edinburgh', 'no publisher', 'no publisher given',
                              'no publisher specified', 'unknown', 'publisher not identified', 'report');
 
@@ -407,7 +407,8 @@ const NO_DATE_WEBSITES = array('wikipedia.org', 'web.archive.org', 'perma-archiv
                               'waybackmachine.org', 'siarchives.si.edu', 'gutenberg.org', 'archive.fo', 'archive.today', 'archive.ph',
                               'oireachtas.ie', 'webarchive.nla.gov.au', 'ebooks.adelaide.edu.au', 'archive.md', 'imdb.com',
                               'apps.des.qld.gov.au', 'billboard.com', 'music.apple.com', 'spotify.com', 'fred.stlouisfed.org',
-                              'simonsfoundation.org', 'chroniclingamerica.loc.gov', 'github.com');
+                              'simonsfoundation.org', 'chroniclingamerica.loc.gov', 'github.com', 'rottentomatoes.com', 'arts.gov/honors',
+			      'shop.schizoidshop.com');
 
 const ZOTERO_AVOID_REGEX = array("twitter\.",               // This should be {{cite tweet}}
                                  // Zotero seems to be doing better now "youtube\.", "youtu\.be",
@@ -886,6 +887,10 @@ const JOURNAL_IS_BOOK_SERIES = array('methods of molecular biology' , 'methods m
                                      'methods of molecular biology (clifton, n j )',
                                      'methods in molecular biology',
                                      'methods in molecular biology (clifton, n j )',
+				     'methods mol. biol.',
+				     'methods mol biol.',
+				     'methods mol biol',
+				     'methods mol. biol',
                                      'advances in pharmacology (san diego, calif )',
                                      'advances in pharmacology', 'inorganic syntheses',
                                      'advances in enzymology and related areas of molecular biology',

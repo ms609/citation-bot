@@ -415,9 +415,32 @@ function wikify_external_text(string $title) : string {
 }
 
 function restore_italics (string $text) : string {
+  $text = trim(str_replace(['        ', '      ', '    ', '   ', '  '], [' ', ' ', ' ', ' ', ' '], $text));
   // <em> tags often go missing around species names in CrossRef
-  if (str_ireplace(array('arxiv', 'ebay', 'aRMadillo', 'imac'), '', $text) !== $text) return $text; // Words with capitals in the middle, but not the first character
-  return safe_preg_replace('~([a-z]+)([A-Z][a-z]+\b)~', "$1 ''$2''", $text);
+  $old = $text;
+  $text = str_replace(ITALICS_HARDCODE_IN, ITALICS_HARDCODE_OUT, $text); // Ones to always do, since they keep popping up in our logs
+  $text = str_replace("xAzathioprine therapy for patients with systemic lupus erythematosus", "Azathioprine therapy for patients with systemic lupus erythematosus", $text); // Annoying stupid bad data
+  $text = trim(str_replace(['        ', '      ', '    ', '   ', '  '], [' ', ' ', ' ', ' ', ' '], $text));
+  while (preg_match('~([a-z])(' . ITALICS_LIST . ')([A-Z\-\?\:\.\)\,]|species|genus| in|$)~', $text, $matches)) {
+     if (in_array($matches[3], [':', '.', '-', ','])) {
+       $pad = "";
+     } else {
+       $pad = " ";
+     }
+     $text = str_replace($matches[0], $matches[1] . " ''" . $matches[2] . "''" . $pad . $matches[3], $text);
+  }
+  $text = trim(str_replace(['        ', '      ', '    ', '   ', '  '], [' ', ' ', ' ', ' ', ' '], $text));
+  if ($old !== $text) {
+     bot_debug_log('restore_italics: ' . $old . '    FORCED TO BE     ' . $text);
+  }
+  $padded = ' '. $text . ' ';
+  if (str_replace(CAMEL_CASE, '', $padded) !== $padded) return $text; // Words with capitals in the middle, but not the first character
+  $new = safe_preg_replace('~([a-z]+)([A-Z][a-z]+\b)~', "$1 ''$2''", $text);
+  if ($new === $text) {
+    return $text;
+  }
+  bot_debug_log('restore_italics: ' . $text . '       WILL BE     ' . $new);
+  return $new;
 }
 
 function sanitize_string(string $str) : string {

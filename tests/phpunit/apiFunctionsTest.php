@@ -980,5 +980,11 @@ final class apiFunctionsTest extends testBaseClass {
     $this->assertSame('10.1093/mnras/290.2.L28', $prepared->get2('doi'));
     $this->assertNotNull($prepared->get2('doi-broken-date')); // The DOI has to not work for this test to cover the code where a title and arxiv exist and a doi is found, but the doi does not add a title
   } 
-  
+
+  public function testCrossRefAlternativeAPI() : void {
+    $text = "{{cite journal| doi=10.1080/00222938700771131 |s2cid=<!-- --> |pmid=<!-- --> |pmc=<!-- --> |arxiv=<!-- --> |jstor=<!-- --> |bibcode=<!-- --> }}";
+    $prepared = $this->process_citation($text);
+    $this->assertSame("Life cycles of ''Phialella zappai'' n. Sp., ''Phialella fragilis'' and ''Phialella'' sp. (Cnidaria, Leptomedusae, Phialellidae) from central California", $prepared->get2('title'));
+  }
+
 }

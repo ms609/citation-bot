@@ -7,6 +7,7 @@ require_once 'constants/math.php';
 require_once 'constants/mistakes.php';
 require_once 'constants/parameters.php';  
 require_once 'constants/regular_expressions.php';
+require_once 'constants/italics.php';
 
 const PIPE_PLACEHOLDER = '# # # CITATION_BOT_PLACEHOLDER_PIPE # # #';
 const TEMP_PLACEHOLDER = "# # # CITATION_BOT_PLACEHOLDER_TEMPORARY %s # # #";
@@ -33,7 +34,7 @@ const PUBMEDUSERNAME   = 'martins+pubmed@gmail.com';
 
 const GET_THE_HEADERS = 1; // expects 1 in early PHP, and TRUE in newer versions
 
-const BOT_USER_AGENT = "Citation_bot; citations@tools.wmflabs.org";
+const BOT_USER_AGENT = "(Citation_bot (mailto:citations@tools.wmflabs.org; https://citations.toolforge.org/)";
 
 // Allow cheap journals to work
 const CONTEXT_INSECURE = array(
