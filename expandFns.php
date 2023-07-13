@@ -1456,7 +1456,7 @@ function normalize_google_books(string &$url, int &$removed_redundant, string &$
       // Clean up hash first
       $hash = '&' . trim($hash) . '&';
       $hash = str_replace(['&f=false', '&f=true', 'v=onepage'], ['','',''], $hash); // onepage is default
-      $hash = str_replace(['&q&', '&q=&', '&&&&', '&&&', '&&'], ['&', '&', '&', '&', '&'], $hash);
+      $hash = str_replace(['&q&', '&q=&', '&&&&', '&&&', '&&', '%20&%20'], ['&', '&', '&', '&', '&', '%20%26%20'], $hash);
       if (preg_match('~(&q=[^&]+)&~', $hash, $matcher)) {
           $hash = str_replace($matcher[1], '', $hash);
           if (isset($book_array['q'])) {
