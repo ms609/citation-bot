@@ -1407,7 +1407,9 @@ function normalize_google_books(string &$url, int &$removed_redundant, string &$
         $url = $url_parts[0];
         $hash = $url_parts[1];
       }
-      $url = str_replace("&amp;", "&", $url); 
+      // And symbol in a search quote
+      $url = str_replace("+&+", "+%26+", $url);
+      $url = str_replace("+&,+", "+%26,+", $url);
       $url_parts = explode("&", str_replace("&&", "&", str_replace("?", "&", $url)));
       $url = "https://books.google.com/books?id=" . $gid[1];
       $book_array = array();
