@@ -1816,7 +1816,7 @@ final class Template {
       return FALSE;
     }
     // They already allow some fuzziness in matches
-    if ($data['journal'] || $data['issn']) {
+    if (($data['journal'] || $data['issn']) && ($data['start_page'] || $data['author'])) {
       $url = "https://www.crossref.org/openurl/?noredirect=TRUE&pid=" . CROSSREFUSERNAME
            . ($data['title']      ? "&atitle=" . urlencode($data['title'])      : '')
            . ($data['author']     ? "&aulast=" . urlencode($data['author'])     : '')
@@ -1836,7 +1836,7 @@ final class Template {
       }
       $result = $result->query_result->body->query;
       if ((string) $result->attributes()->status === 'malformed') {
-        report_warning("Cannot search CrossRef: " . echoable((string) $result->msg));  // @codeCoverageIgnore
+        report_minor_error("Cannot search CrossRef: " . echoable((string) $result->msg));  // @codeCoverageIgnore
       } elseif ((string) $result->attributes()->status === "resolved") {
         if (!isset($result->doi)) return FALSE;
         report_info(" Successful!");
