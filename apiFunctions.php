@@ -572,7 +572,7 @@ function expand_by_doi(Template $template, bool $force = FALSE) : bool {
         }
       }
     } else {
-      report_warning("No CrossRef record found for doi '" . echoable($doi) ."'");
+      report_info("No CrossRef record found for doi '" . echoable($doi) ."'");
       expand_doi_with_dx($template, $doi);
     }
   }
