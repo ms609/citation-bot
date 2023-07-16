@@ -285,7 +285,8 @@ const CAMEL_CASE = array('DeSoto', 'PubChem', 'BitTorrent', 'Al2O3', 'NiMo', 'Cu
                          'ThePleasantvilleEffect', 'ImmGen', 'GeV', 'KrCl', 'LiNi', 'DuBourg', 'MetaAnalysis',
                          'MoCx', 'MoPx', 'MoNx', 'PedCheck', 'ImagiNation', 'HemOnc', 'nJunctions',
                          'SkyMed', 'InterNyet', 'BattleZone', 'NoFap', 'CyberSightings', 'kHz', 'AngQb',
-                         'QuickStats', 'iDisorders', 'PremAir', '®', 'eCrime', 'AgInjuryNews', 'DreamWorks'
+                         'QuickStats', 'iDisorders', 'PremAir', '®', 'eCrime', 'AgInjuryNews', 'DreamWorks',
+                         'SpaceOps'
                        );
 
 const ITALICS_HARDCODE_IN  = ["Knowing HowEssays on Knowledge, Mind, and Action",   " Rgene", "CytochromebGenes",       "ElectrongValue",       "thetoxGene",      "GopashtamiandGovardhan",       "PolishLebensraum",       "theNachlassproblem",        " forAltalena:",      " in Plutarch'sLives",       "FromSolidarityto",        " gp91phoxPromoter",  "in vitroAssays",        "MarketizingHindutva",       "TheBhagavadgītā,",       "theOrigin of Species",       "EncounteringHindutva",       "ChineseHukouSystem",        "CisLatreille"];
