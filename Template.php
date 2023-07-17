@@ -5841,9 +5841,10 @@ final class Template {
     } // Give up tidy after third time.  Something is goofy.
   }
 
-  public function final_tidy() : void {
+  public function final_tidy(boolean $external = TRUE /** Should not be passed in **/) : void {
     set_time_limit(120);
     if ($this->should_be_processed()) {
+      $original = $this->parsed_text();
       if ($this->initial_name !== $this->name) {
          $this->tidy();
       }
@@ -6136,6 +6137,9 @@ final class Template {
              }
            }
         }
+      }
+      if ($external && $original !== $this->parsed_text()) {
+        $this->final_tidy(FALSE);
       }
     } elseif (in_array($this->wikiname(), TEMPLATES_WE_SLIGHTLY_PROCESS)) {
       $this->tidy_parameter('publisher');
