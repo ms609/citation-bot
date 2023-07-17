@@ -896,7 +896,9 @@ const JOURNAL_IS_BOOK_SERIES = array('methods of molecular biology' , 'methods m
                                      'advances in enzymology and related areas of molecular biology',
                                      'studies in bilingualism', 'antibiotics and chemotherapy',
                                      'oceanic linguistics special publications',
-                                     'progress in brain research');
+                                     'progress in brain research',
+				     'advances in heterocyclic chemistry',
+				    );
 
 const ALWAYS_BAD_TITLES = array("Bloomberg - Are you a robot?", "Page not found",
                      "Breaking News, Analysis, Politics, Blogs, News Photos, Video, Tech Reviews",
