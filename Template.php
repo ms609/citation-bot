@@ -5841,7 +5841,7 @@ final class Template {
     } // Give up tidy after third time.  Something is goofy.
   }
 
-  public function final_tidy(boolean $external = TRUE /** Should not be passed in **/) : void {
+  public function final_tidy(bool $external = TRUE /** Should not be passed in **/) : void {
     set_time_limit(120);
     if ($this->should_be_processed()) {
       $original = $this->parsed_text();
