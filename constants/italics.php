@@ -234,6 +234,7 @@ const ITALICS_LIST =
  "tryA|" .
  "Rangifer|" .
  "Graphidaceae|" .
+ "Bacillus|"
  "END_OF_CITE_list_junk";
 //  All real ones need pipe on end
 //  YOU MUST ESCAPE () and other FUNNY Characters
