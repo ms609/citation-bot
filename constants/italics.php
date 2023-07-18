@@ -121,6 +121,9 @@ const ITALICS_LIST =
  "Tornieria africana|" .
  "Ilex asprella|" .
  "Physcomitrella patens|" .
+ "Carcharhinus brachyurus|" .
+ "C. obscurus|" .
+ "Sphyrna zygaena|" .
  "China Daily|" .
  "Tabula Peutingeriana|" .
  "Diamond Sutra|" .
