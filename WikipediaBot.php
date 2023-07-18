@@ -492,9 +492,11 @@ try {
      catch (Throwable $e) { ; }
     }
     if (empty($_SERVER['REQUEST_URI'])) {
-       @setcookie(@session_name(), @session_id(), @time()-42000);
+       $name = (string) @session_name();
+       $id = (string) @session_id();
        session_destroy(); // This is really bad news
        flush(); // Paranoid
+       @setcookie($name, $id, time()-42000);
        report_error('Invalid access attempt to internal API');
     } else {
        unset($_SESSION['access_key'], $_SESSION['access_secret']);
