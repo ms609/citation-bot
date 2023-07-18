@@ -49,6 +49,7 @@ function big_jobs_check_killed() : void {
  $fn = big_jobs_name();
  if (file_exists($fn)) {
    touch($fn);
+   flush();
  }
 }
 
@@ -60,4 +61,5 @@ function big_jobs_exists() : bool {
 function big_jobs_kill() : void {
  clearstatcache(TRUE);
  touch(big_jobs_name() . '_kill_job');
+ flush();
 }
