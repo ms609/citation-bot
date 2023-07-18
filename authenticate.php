@@ -22,7 +22,7 @@ function death_time(string $err) : void {
   $id = (string) @session_id();
   @session_destroy(); // This is really bad news. Do this before we kill the cookie
   flush(); // Paranoid
-  @setcookie($name, $id, @time()-42000);
+  @setcookie($name, $id, @time()-42000, "", "", TRUE, TRUE);
   echo '<!DOCTYPE html><html lang="en" dir="ltr"><head><title>Authentifcation System Failure</title></head><body><main>' . echoable($err) . '</main></body></html>';
   exit(0);
 }
