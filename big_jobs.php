@@ -14,6 +14,7 @@ function big_jobs_we_died($lock_file) : void {
   @clearstatcache(TRUE);
   @fclose($lock_file);
   @unlink(big_jobs_name());
+  flush();
 }
 
 function big_jobs_check_overused(int $page_count) : void {
@@ -24,6 +25,7 @@ function big_jobs_check_overused(int $page_count) : void {
  $fn = big_jobs_name();
  if (file_exists($fn) && (filemtime($fn) > (time()-3600))) { // More than an hour
     @unlink($fn);
+    flush();
  }
  $lock_file = fopen($fn, 'w+');
  if ($lock_file === FALSE) {
@@ -44,6 +46,7 @@ function big_jobs_check_killed() : void {
    echo '</pre><div style="text-align:center"><h1>Run killed as requested.</h1></div><footer><a href="./" title="Use Citation Bot again">Another</a>?</footer></body></html>';
    @unlink($fn);
    @unlink(big_jobs_name());
+   flush();
    exit();
  }
  $fn = big_jobs_name();
