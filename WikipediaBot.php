@@ -496,7 +496,7 @@ try {
        $id = (string) @session_id();
        session_destroy(); // This is really bad news
        flush(); // Paranoid
-       @setcookie($name, $id, time()-42000 "", "", TRUE, TRUE);
+       @setcookie($name, $id, time()-42000, "", "", TRUE, TRUE);
        report_error('Invalid access attempt to internal API');
     } else {
        unset($_SESSION['access_key'], $_SESSION['access_secret']);
