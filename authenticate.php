@@ -17,7 +17,12 @@ use MediaWiki\OAuthClient\Client;
 // The two ways we leave this script
 function death_time(string $err) : void {
   @session_start(); // Need write access
-  unset($_SESSION['access_key'], $_SESSION['access_secret'], $_SESSION['citation_bot_user_id'], $_SESSION['request_key'], $_SESSION['request_secret']);     
+  unset($_SESSION['access_key'], $_SESSION['access_secret'], $_SESSION['citation_bot_user_id'], $_SESSION['request_key'], $_SESSION['request_secret']);
+  $name = (string) @session_name();
+  $id = (string) @session_id();
+  @session_destroy(); // This is really bad news. Do this before we kill the cookie
+  flush(); // Paranoid
+  @setcookie($name, $id, @time()-42000);
   echo '<!DOCTYPE html><html lang="en" dir="ltr"><head><title>Authentifcation System Failure</title></head><body><main>' . echoable($err) . '</main></body></html>';
   exit(0);
 }
