@@ -39,12 +39,19 @@ function big_jobs_check_overused(int $page_count) : void {
  if ($lock_file === FALSE) {
    echo '</pre><div style="text-align:center"><h1>Unable to obtain large run lock.</h1></div><footer><a href="./" title="Use Citation Bot again">Another</a>?</footer></body></html>';
    exit();
- } else {
-   fflush($lock_file);
-   flush();
-   define('BIG_JOB_MODE', 'YES');
-   register_shutdown_function('big_jobs_we_died', $lock_file); // We now have a lock file that will magically go away when code dies/quits
  }
+ fflush($lock_file);
+ flush();
+ $file_data = stream_get_meta_data($lock_file);
+ $file_name = $file_data['uri'];
+ if ($file_name !== $fn) { // Sometimes get .nfs**** file
+   fclose($lock_file);
+   @unlink($file_name);
+   echo '</pre><div style="text-align:center"><h1>Unable to obtain large run lock.</h1></div><footer><a href="./" title="Use Citation Bot again">Another</a>?</footer></body></html>';
+   exit();
+ }
+ define('BIG_JOB_MODE', 'YES');
+ register_shutdown_function('big_jobs_we_died', $lock_file); // We now have a lock file that will magically go away when code dies/quits
 }
 
 function big_jobs_check_killed() : void {
