@@ -36,6 +36,7 @@ function big_jobs_check_overused(int $page_count) : void {
    echo '</pre><div style="text-align:center"><h1>Unable to obtain large run lock.</h1></div><footer><a href="./" title="Use Citation Bot again">Another</a>?</footer></body></html>';
    exit();
  } else {
+   fflush($lock_file);
    flush();
    define('BIG_JOB_MODE', 'YES');
    register_shutdown_function('big_jobs_we_died', $lock_file); // We now have a lock file that will magically go away when code dies/quits
