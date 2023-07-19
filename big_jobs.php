@@ -45,9 +45,8 @@ function big_jobs_check_killed() : void {
  if (file_exists($fn)) {
    echo '</pre><div style="text-align:center"><h1>Run killed as requested.</h1></div><footer><a href="./" title="Use Citation Bot again">Another</a>?</footer></body></html>';
    @unlink($fn);
-   @unlink(big_jobs_name());
    flush();
-   exit();
+   exit(); // Shutdown will close and delete lockfile
  }
  $fn = big_jobs_name();
  if (file_exists($fn)) {
