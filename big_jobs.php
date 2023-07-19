@@ -11,6 +11,7 @@ function big_jobs_name() : string { // NEVER save this string. Always use this f
   @clearstatcache();
   @clearstatcache(TRUE, $start);
   @clearstatcache(TRUE, $file);
+  @clearstatcache(TRUE, $file . '_kill_job');
   return $file;
 }
 
