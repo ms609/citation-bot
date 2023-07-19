@@ -31,7 +31,7 @@ function big_jobs_check_overused(int $page_count) : void {
    echo '</pre><div style="text-align:center"><h1>Run blocked by your existing big run.</h1></div><footer><a href="./" title="Use Citation Bot again">Another</a>?</footer></body></html>';
    exit();
  } 
- $lock_file = fopen($fn, 'w+');
+ $lock_file = fopen($fn, 'x+');
  if ($lock_file === FALSE) {
    echo '</pre><div style="text-align:center"><h1>Unable to obtain large run lock.</h1></div><footer><a href="./" title="Use Citation Bot again">Another</a>?</footer></body></html>';
    exit();
