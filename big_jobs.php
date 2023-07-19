@@ -3,11 +3,12 @@ declare(strict_types=1);
 
 function big_jobs_name() : string { // NEVER save this string. Always use this function so that clearstatcache is called
   $version = "_1"; // So we can reset everyone, and we are 100% sure we do not get just the directory name
-  $start = "/dev/shm/";
-  $user = (string) @$_SESSION['citation_bot_user_id']; // Sometimes is not set - clearly bogus                           
+  $start = "/dev/shm/"; // Avoid .nfs*** files, and auto-delete when container dies
+  $user = (string) @$_SESSION['citation_bot_user_id'];                      
   $user = base64_encode($user); // Sanitize - will now just be a-zA-Z0-9/+ and padded with = and surrounded by quotes because of PHP
   $user = str_replace(["'", "=", '"', "/"], ["", "", "", "_"], $user); // Sanitize more
   $file = $start . $user . $version;
+  // Paranoid, and lots of extra flush() calls an such - trying to be atomic without non-portable locks etc.
   @clearstatcache();
   @clearstatcache(TRUE, $start);
   @clearstatcache(TRUE, $file);
@@ -49,16 +50,16 @@ function big_jobs_check_overused(int $page_count) : void {
 function big_jobs_check_killed() : void {
  if (!HTML_OUTPUT) return;
  if (!defined('BIG_JOB_MODE')) return;
- $fn = big_jobs_name() . '_kill_job';
- if (file_exists($fn)) {
+ $lfile = big_jobs_name();
+ $kfile =  $lfile . '_kill_job';
+ if (file_exists($kfile)) {
    echo '</pre><div style="text-align:center"><h1>Run killed as requested.</h1></div><footer><a href="./" title="Use Citation Bot again">Another</a>?</footer></body></html>';
-   @unlink($fn);
+   @unlink($kfile);
    flush();
    exit(); // Shutdown will close and delete lockfile
  }
- $fn = big_jobs_name();
- if (file_exists($fn)) {
-   touch($fn);
+ if (file_exists($lfile)) {
+   touch($lfile);
    flush();
  }
 }
