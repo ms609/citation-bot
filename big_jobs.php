@@ -56,13 +56,10 @@ function big_jobs_check_killed() : void {
  }
 }
 
-function big_jobs_exists() : bool {
+function big_jobs_kill() : bool {
  clearstatcache(TRUE);
- return file_exists(big_jobs_name());
-}
-
-function big_jobs_kill() : void {
- clearstatcache(TRUE);
+ if (!file_exists(big_jobs_name())) return FALSE;
  touch(big_jobs_name() . '_kill_job');
  flush();
+ return TRUE;
 }

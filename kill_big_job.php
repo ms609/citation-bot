@@ -10,10 +10,9 @@ ob_implicit_flush();
 
 if (!isset($_SESSION['citation_bot_user_id'])) {
  echo '<!DOCTYPE html><html lang="en" dir="ltr"><head><title>Killing the big job</title></head><body><main><pre>You are not logged in</pre></main></body></html>';
-} elseif (!big_jobs_exists()) {
+} elseif (!big_jobs_kill()) {
  echo '<!DOCTYPE html><html lang="en" dir="ltr"><head><title>Killing the big job</title></head><body><main><pre>No exiting large job found</pre></main></body></html>';
 } else {
- big_jobs_kill();
  echo '<!DOCTYPE html><html lang="en" dir="ltr"><head><title>Killing the big job</title></head><body><main><pre>Existing large job flagged for stopping</pre></main></body></html>';
 }
 ?>
