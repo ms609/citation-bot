@@ -123,7 +123,7 @@ const ITALICS_LIST =
  "Ilex asprella|" .
  "Physcomitrella patens|" .
  "Carcharhinus brachyurus|" .
- "C. obscurus|" .
+ "C\. obscurus|" .
  "Sphyrna zygaena|" .
  "China Daily|" .
  "Tabula Peutingeriana|" .
