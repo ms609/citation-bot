@@ -6,7 +6,7 @@ function big_jobs_name() : string {
   $user = (string) @$_SESSION['citation_bot_user_id']; // Sometimes is not set - no idea how
   $user = base64_encode($user); // Sanitize - will now just be a-zA-Z0-9/+ and padded with = and surrounded by quotes because of PHP
   $user = str_replace(["'", "=", '"', "/"], ["", "", "", "_"], $user); // Sanitize more
-  return "./user_locks/" . $user . $version; 
+  return "/dev/shm/" . $user . $version; 
 }
 
 /** @param resource $lock_file **/
@@ -22,10 +22,6 @@ function big_jobs_check_overused(int $page_count) : void {
  if (!HTML_OUTPUT) return;
  if ($page_count < 50) return; // Used to be BIG_RUN constant
  clearstatcache();
- // This scans the directory.  We seem to have filesystem caching issues. This might help
- $handle = opendir("./user_locks/");
- while ($entry = readdir($handle)) { ; }
- closedir($handle);
  $fn = big_jobs_name();
  if (file_exists($fn) && (filemtime($fn) > (time()-3600))) { // More than an hour
     @unlink($fn);
@@ -42,14 +38,6 @@ function big_jobs_check_overused(int $page_count) : void {
  }
  fflush($lock_file);
  flush();
- $file_data = stream_get_meta_data($lock_file);
- $file_name = $file_data['uri'];
- if ($file_name !== $fn) { // Sometimes get .nfs**** file
-   fclose($lock_file);
-   @unlink($file_name);
-   echo '</pre><div style="text-align:center"><h1>Unable to obtain large run lock.</h1></div><footer><a href="./" title="Use Citation Bot again">Another</a>?</footer></body></html>';
-   exit();
- }
  define('BIG_JOB_MODE', 'YES');
  register_shutdown_function('big_jobs_we_died', $lock_file); // We now have a lock file that will magically go away when code dies/quits
 }
