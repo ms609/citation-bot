@@ -12,7 +12,8 @@ if (file_exists('git_pull.lock')) {
  */
 
 function bot_debug_log(string $log_this) : void {
-  @clearstatcache(TRUE); // Deal with multiple writers, but no so paranoid that we get a file lock
+  @clearstatcache(); // Deal with multiple writers, but not so paranoid that we get a file lock
+  flush();
   if (function_exists('echoable')) file_put_contents('CodeCoverage', echoable(WikipediaBot::GetLastUser()) . " :: " . echoable(Page::$last_title) . " :: $log_this\n", FILE_APPEND);
   flush();
 }
