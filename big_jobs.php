@@ -11,7 +11,7 @@ function big_jobs_name() : string {
 
 /** @param resource $lock_file **/
 function big_jobs_we_died($lock_file) : void {
-  @clearstatcache(TRUE);
+  @clearstatcache();
   @fclose($lock_file);
   @unlink(big_jobs_name());
   flush();
@@ -21,7 +21,7 @@ function big_jobs_check_overused(int $page_count) : void {
  static $lock_file; // Force file handle to stay open
  if (!HTML_OUTPUT) return;
  if ($page_count < 50) return; // Used to be BIG_RUN constant
- clearstatcache(TRUE);
+ clearstatcache();
  $fn = big_jobs_name();
  if (file_exists($fn) && (filemtime($fn) > (time()-3600))) { // More than an hour
     @unlink($fn);
@@ -46,7 +46,7 @@ function big_jobs_check_overused(int $page_count) : void {
 function big_jobs_check_killed() : void {
  if (!HTML_OUTPUT) return;
  if (!defined('BIG_JOB_MODE')) return;
- clearstatcache(TRUE);
+ clearstatcache();
  $fn = big_jobs_name() . '_kill_job';
  if (file_exists($fn)) {
    echo '</pre><div style="text-align:center"><h1>Run killed as requested.</h1></div><footer><a href="./" title="Use Citation Bot again">Another</a>?</footer></body></html>';
@@ -62,7 +62,7 @@ function big_jobs_check_killed() : void {
 }
 
 function big_jobs_kill() : bool {
- clearstatcache(TRUE);
+ clearstatcache();
  if (!file_exists(big_jobs_name())) return FALSE;
  touch(big_jobs_name() . '_kill_job');
  flush();
