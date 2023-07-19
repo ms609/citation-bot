@@ -82,6 +82,7 @@ const ITALICS_LIST =
  "Stichodactyla helianthusas|" .
  "Pyrobaculum calidifontis|" .
  "Arabidopsis thaliana|" .
+ "Xylella fastidiosa|" .
  "Listeria monocytogenes|" .
  "Mycoplasma pneumoniae|" .
  "Paradisaea Raggiana|" .
