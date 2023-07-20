@@ -3071,7 +3071,8 @@ final class Template {
         // remove leading spaces or hyphens (which may have been typoed for an equals)
         if (preg_match("~^[ -+]*(.+)~", (string) substr($dat, strlen($closest)), $match)) { // Cast FALSE to string
           $this->add_if_new($closest, $match[1]/* . " [$shortest / $comp = $shortish]"*/);
-          $dat = trim(preg_replace('~^.*' . preg_quote($match[1]) . '~', '', $dat));
+          $replace_pos = strrpos($dat, $match[1]) + strlen($match[1]);
+          $dat = trim(substr($dat, $replace_pos));
         }
       } elseif (preg_match("~(?<!\d)(\d{10})(?!\d)~", str_replace(Array(" ", "-"), "", $dat), $match)) {
         $the_isbn = str_split($match[1]);
