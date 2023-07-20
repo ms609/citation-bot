@@ -22,7 +22,7 @@ const LC_SMALL_WORDS = array(/* The following will be automatically updated to a
           " per ", " Ph.D. ", " PMLA ", " PNAS ", " PS: ", " R&D ", " RNA ", " RTÉ ", 
           " S&P ", " SAE ", " SciPost ", " SMPTE ", " SPIE ", " SpringerPlus ", " SSRN ", 
           " TAPPI ", " TCI: ", " te ", " TESOL ", " the ", " TheMarker ", " then ", " till ", 
-          " to ", " UCLA ", " UK ", " um ", " und ", " unserer ", " up ", " USA ", " van ", 
+          " to ", " UCLA ", " UK ", " um ", " und ", " unserer ", " up ", " USA ", " USSR ", " van ", 
           " vir ", " von ", " voor ", " when ", " with ", " within ", " woor ", " y ", 
           " zu ", " zum ", " zur ", /* The above will be automatically updated to alphabetical order */ 
           // After this line we list exceptions that need re-capitalizing after they have been decapitalized.
@@ -49,7 +49,7 @@ const UC_SMALL_WORDS = array(/* The following will be automatically updated to a
           " Per ", " Ph.d. ", " Pmla ", " Pnas ", " Ps: ", " R&d ", " Rna ", " Rté ", 
           " S&p ", " Sae ", " Scipost ", " Smpte ", " Spie ", " Springerplus ", " Ssrn ", 
           " Tappi ", " Tci: ", " Te ", " Tesol ", " The ", " Themarker ", " Then ", " Till ", 
-          " To ", " Ucla ", " Uk ", " Um ", " Und ", " Unserer ", " Up ", " Usa ", " Van ", 
+          " To ", " Ucla ", " Uk ", " Um ", " Und ", " Unserer ", " Up ", " Usa ", " Ussr ", " Van ", 
           " Vir ", " Von ", " Voor ", " When ", " With ", " Within ", " Woor ", " Y ", 
           " Zu ", " Zum ", " Zur ", /* The above will be automatically updated to alphabetical order */ 
           // After this line we list exceptions that need re-capitalizing after they have been decapitalized.
