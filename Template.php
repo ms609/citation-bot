@@ -352,6 +352,7 @@ final class Template {
           }
           if (stripos($the_journal, 'Advances in Cryptology') === 0 ||
               stripos($the_journal, 'IEEE Symposium') !== FALSE ||
+              stripos($the_journal, 'IEEE Conference') !== FALSE ||
               stripos($the_journal, 'IEEE International Conference') !== FALSE ) {
               $this->rename('journal', 'CITATION_BOT_PLACEHOLDER_journal');
               $the_journal = '';
@@ -363,6 +364,36 @@ final class Template {
               if ($the_chapter !== '') {
                   $this->rename('chapter', 'CITATION_BOT_PLACEHOLDER_chapter');
                   $the_chapter = '';
+              }
+          }
+          if (strpos($this->get('doi'), '10.1109/') === 0 && $this->has('isbn')) { // IEEE "book"
+              $data_to_check = $the_title . $the_journal . $the_chapter . $this->get('series');
+              if (stripos($data_to_check, 'Symposium') === FALSE && stripos($data_to_check, 'Conference') === FALSE) { // Looks like conference
+                if ($the_journal !== '') {
+                  $this->rename('journal', 'CITATION_BOT_PLACEHOLDER_journal');
+                  $the_journal = '';
+                }
+                if ($the_title !== '') {
+                  $this->rename('title', 'CITATION_BOT_PLACEHOLDER_title');
+                  $the_title = '';
+                }
+                if ($the_chapter !== '') {
+                  $this->rename('chapter', 'CITATION_BOT_PLACEHOLDER_chapter');
+                  $the_chapter = '';
+                }
+                $bad_data = TRUE;
+              } elseif (stripos($the_journal, 'Symposium') !== FALSE || stripos($the_journal, 'Conference') !== FALSE) {
+                 $this->rename('journal', 'CITATION_BOT_PLACEHOLDER_journal');
+                 $the_journal = '';
+                 $bad_data = TRUE;
+                 if ($the_title !== '') {
+                   $this->rename('title', 'CITATION_BOT_PLACEHOLDER_title');
+                   $the_title = '';
+                 }
+                 if ($the_chapter !== '') {
+                   $this->rename('chapter', 'CITATION_BOT_PLACEHOLDER_chapter');
+                   $the_chapter = '';
+                 }
               }
           }
           if ($the_pages === '_' || $the_pages === '0' || $the_pages === 'null' || $the_pages === 'n/a' || $the_pages === 'online' || $the_pages === 'Online' || $the_pages === 'Forthcoming' || $the_pages === 'forthcoming') {
