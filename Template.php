@@ -6096,6 +6096,19 @@ final class Template {
           }
         }
       }
+      if (preg_match('~^10\.1109/~', $this->get('doi')) &&
+        $this->has('title') && $this->has('chapter') && $this->has('isbn')  &&
+        $this->wikiname() === 'cite book' && doi_works($this->get('doi'))) {
+          if (stripos($this->get('title'), 'Conference') !== FALSE) {
+             if (stripos($this->get('website'), 'Conference') !== FALSE) $this->forget('website');
+             if (stripos($this->get('journal'), 'Conference') !== FALSE) $this->forget('journal');
+          }
+          if (stripos($this->get('title'), 'Symposium') !== FALSE) {
+             if (stripos($this->get('website'), 'Symposium') !== FALSE) $this->forget('website');
+             if (stripos($this->get('journal'), 'Symposium') !== FALSE) $this->forget('journal');
+          }
+      }
+
       $this->tidy_parameter('doi'); // might be free, and freedom is date dependent for some journals
       if ($this->blank(PAGE_ALIASES) && preg_match('~^10\.1103\/[a-zA-Z]+\.(\d+)\.(\d+)$~', $this->get('doi'), $matches)) {
         if ($matches[1] === $this->get('volume')) {
