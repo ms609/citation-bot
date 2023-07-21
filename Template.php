@@ -5865,6 +5865,11 @@ final class Template {
           $this->forget('series');
         }
       }
+      if ($this->has('journal') && str_equivalent($this->get('title'), $this->get('journal'))) {
+        if ($this->wikiname() === 'cite book' || $this->has('isbn')) {
+            $this->forget('journal');
+        }
+      }
       // Double check these troublesome "journals"
       if (($this->is_book_series('journal') || $this->is_book_series('series') ||
            $this->is_book_series('chapter') || $this->is_book_series('title')) ||
