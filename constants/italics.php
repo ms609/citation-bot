@@ -276,7 +276,7 @@ const CAMEL_CASE = array('DeSoto', 'PubChem', 'BitTorrent', 'Al2O3', 'NiMo', 'Cu
                          'StringTie', 'featureCounts', 'DiffSplice', 'QuantSeq', 'WebGestalt', 'flowCore',
                          'flowClust', 'MetaGenomic', 'TlInGe', 'RapidArc', 'SmartArc', 'TomoHD', 'ViralZone',
                          'HyPhy', 'MrBayes', 'SunTag', 'InterPro', 'SmProt', 'ChikDenMaZika', 'LitCovid',
-                         'GeneTree', 'GenAge', 'QnAs', 'BiDil', 'iAge', 'DevSec', 'SecOps', 'DevcOps',
+                         'GeneTree', 'GenAge', 'QnAs', 'BiDil', 'iAge', 'DevSec', 'SecOps', 'DevOps',
                          'LeafCutter', 'CyBase','OxPhos', 'ArrayExpress', 'BepiColombo', 'RuleMonkey',
                          'OxyCo', 'CdZnTe', 'EnChroma', 'FibroTest', 'ActiTest', 'FloTrac', 'FibroScan',
                          'ColorBrewer', 'StagLab', 'EveryManc', 'GaCl', 'DeepFace', 'WeChat', 'kDa ',
