@@ -292,7 +292,7 @@ const CAMEL_CASE = array('DeSoto', 'PubChem', 'BitTorrent', 'Al2O3', 'NiMo', 'Cu
                          'SkyMed', 'InterNyet', 'BattleZone', 'NoFap', 'CyberSightings', 'kHz', 'AngQb',
                          'QuickStats', 'iDisorders', 'PremAir', '®', 'eCrime', 'AgInjuryNews', 'DreamWorks',
                          'SpaceOps', 'DeMille', 'superVolcanoes', 'SuperVolcanoes', 'HotSpots', 'SmartCity',
-                         'RadarConf', 'BioRob', 'PuneCon', 'BioInformatics', 'BioEngineering', 'LatinCloud',
+                         'RadarConf', 'PuneCon', 'LatinCloud',
                          'PowerTech', 'SecDev', 'CodeSonar', 'eScience', 'BioWatch', 'IconSpace', 'HotWeb',
                          'SmartGrid', 'SmartNets', 'PiCom', 'CBDCom', 'CyberSciTech', 'CyberTech', 'SciTech',
                          'BioRob', 'LexisNexis', 'PlatCon', 'BigData', 'MobileCloud', 'BioInformatics',
