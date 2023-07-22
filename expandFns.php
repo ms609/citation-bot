@@ -359,6 +359,9 @@ function wikify_external_text(string $title) : string {
   $originalTags = array('<title>', '</title>', '</ title>', 'From the Cover: ');
   $wikiTags = array('','','','');
   $title = str_ireplace($originalTags, $wikiTags, $title);
+  $originalTags = array('<inf>', '</inf>');
+  $wikiTags = array('<sub>', '</sub>');
+  $title = str_ireplace($originalTags, $wikiTags, $title);
   $originalTags = array('.<br>', '.</br>', '.</ br>', '.<p>', '.</p>', '.</ p>', '.<strong>', '.</strong>', '.</ strong>');
   $wikiTags = array('. ','. ','. ','. ','. ','. ','. ','. ','. ');
   $title = str_ireplace($originalTags, $wikiTags, $title);
