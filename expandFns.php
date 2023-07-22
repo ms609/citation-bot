@@ -437,8 +437,8 @@ function restore_italics (string $text) : string {
   if ($new === $text) {
     return $text;
   }
-  bot_debug_log('restore_italics: ' . $text . '       WILL BE     ' . $new);
-  return $new;
+  bot_debug_log('restore_italics: ' . $text . '       SHOULD BE     ' . $new);
+  return $text; // NOT $new, since we are wrong much more often than wrong with new CrossRef Code
 }
 
 function sanitize_string(string $str) : string {
