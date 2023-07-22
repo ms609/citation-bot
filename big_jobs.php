@@ -1,6 +1,20 @@
 <?php
 declare(strict_types=1);
 
+// Paranoid, and lots of extra flush() calls an such - trying to be atomic without non-portable locks etc.
+
+// "hard" as in "try hard"
+function hard_touch(string $file) : void {
+  touch($file);
+  @fclose(@fopen($file, 'a')); // Do something else to file
+  flush();
+}
+
+function hard_unlink(string $file) : void {
+  @unlink($file);
+  flush();
+}
+
 function big_jobs_name() : string { // NEVER save this string. Always use this function so that clearstatcache is called
   $version = "_1"; // So we can reset everyone, and we are 100% sure we do not get just the directory name
   $start = "/dev/shm/"; // Avoid .nfs*** files, and auto-delete when container dies
@@ -8,7 +22,6 @@ function big_jobs_name() : string { // NEVER save this string. Always use this f
   $user = base64_encode($user); // Sanitize - will now just be a-zA-Z0-9/+ and padded with = and surrounded by quotes because of PHP
   $user = str_replace(["'", "=", '"', "/"], ["", "", "", "_"], $user); // Sanitize more
   $file = $start . $user . $version;
-  // Paranoid, and lots of extra flush() calls an such - trying to be atomic without non-portable locks etc.
   @clearstatcache();
   @clearstatcache(TRUE, $start);
   @clearstatcache(TRUE, $file);
@@ -19,8 +32,7 @@ function big_jobs_name() : string { // NEVER save this string. Always use this f
 /** @param resource $lock_file **/
 function big_jobs_we_died($lock_file) : void {
   @fclose($lock_file);
-  @unlink(big_jobs_name());
-  flush();
+  hard_unlink(big_jobs_name());
 }
 
 function big_jobs_check_overused(int $page_count) : void {
@@ -29,8 +41,7 @@ function big_jobs_check_overused(int $page_count) : void {
  if ($page_count < 50) return; // Used to be BIG_RUN constant
  $fn = big_jobs_name();
  if (file_exists($fn) && (filemtime($fn) < (time()-3600))) { // More than an hour
-    @unlink($fn);
-    flush();
+    hard_unlink($fn);
  }
  if (file_exists($fn)) {
    echo '</pre><div style="text-align:center"><h1>Run blocked by your existing big run.</h1></div><footer><a href="./" title="Use Citation Bot again">Another</a>?</footer></body></html>';
@@ -54,19 +65,16 @@ function big_jobs_check_killed() : void {
  $kfile =  $lfile . '_kill_job';
  if (file_exists($kfile)) {
    echo '</pre><div style="text-align:center"><h1>Run killed as requested.</h1></div><footer><a href="./" title="Use Citation Bot again">Another</a>?</footer></body></html>';
-   @unlink($kfile);
-   flush();
+   hard_unlink($kfile);
    exit(); // Shutdown will close and delete lockfile
  }
  if (file_exists($lfile)) {
-   touch($lfile);
-   flush();
+   hard_touch($lfile);
  }
 }
 
 function big_jobs_kill() : bool {
  if (!file_exists(big_jobs_name())) return FALSE;
- touch(big_jobs_name() . '_kill_job');
- flush();
+ hard_touch(big_jobs_name() . '_kill_job');
  return TRUE;
 }
