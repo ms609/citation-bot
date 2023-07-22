@@ -351,7 +351,6 @@ final class Template {
               $bad_data = TRUE;
           }
           if (stripos($the_journal, 'Advances in Cryptology') === 0 ||
-              stripos($the_journal, 'Proceedings of the AAAI Conference') !== FALSE ||
               stripos($the_journal, 'IEEE Symposium') !== FALSE ||
               stripos($the_journal, 'IEEE Conference') !== FALSE ||
               stripos($the_journal, 'IEEE International Conference') !== FALSE ) {
