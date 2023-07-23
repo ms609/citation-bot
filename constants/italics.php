@@ -299,7 +299,7 @@ const CAMEL_CASE = array('DeSoto', 'PubChem', 'BitTorrent', 'Al2O3', 'NiMo', 'Cu
                          'BioEngineering', 'NetSoft', 'ReConFig', 'FPGAs', 'ReConFigurable', 'NetCod', 
                          'PerCom', 'PowerAfrica', 'PacificVis', 'BigComp', 'RoboSoft', 'PerAc', 'QuickCast',
                          'QuickSort', 'EIConRus', 'CSCloud', 'EdgeCom', 'eBanking', 'GeoConference', 'eConference',
-                         'ConOps', 'EuroHaptics'
+                         'ConOps', 'EuroHaptics', 'WiMob', 'WeRob', 'MultiTemp', 'MediVis', 'BioMedical'
                        );
 
 const ITALICS_HARDCODE_IN  = ["International Conference onServices Computing",  "IEEE InternationalElectron Devices",  "Symposium onFoundations of",  "IEEE InternationalConference",  "Jewish QuestionIdentifying ",   "The Port NelsonRelations",      "Changes for DemocracyActors",   "SpymasterDai Li ",   "A New History of IrelandVolume",   "Devoted to DeathSanta Muerte, the Skeleton Saint",   "Knowing HowEssays on Knowledge, Mind, and Action",   " Rgene", "CytochromebGenes",       "ElectrongValue",       "thetoxGene",      "GopashtamiandGovardhan",       "PolishLebensraum",       "theNachlassproblem",        " forAltalena:",      " in Plutarch'sLives",       "FromSolidarityto",        " gp91phoxPromoter",  "in vitroAssays",        "MarketizingHindutva",       "TheBhagavadgītā,",       "theOrigin of Species",       "EncounteringHindutva",       "ChineseHukouSystem",        "CisLatreille"];
