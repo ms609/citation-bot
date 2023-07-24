@@ -368,7 +368,9 @@ final class Template {
           }
           if (strpos($this->get('doi'), '10.1109/') === 0 && $this->has('isbn')) { // IEEE "book"
               $data_to_check = $the_title . $the_journal . $the_chapter . $this->get('series');
-              if (stripos($data_to_check, 'Symposium') === FALSE && stripos($data_to_check, 'Conference') === FALSE) { // Looks like conference
+              if (stripos($data_to_check, 'IEEE Standard for') === FALSE && $this->blank('journal')) {
+                ; // Do nothing
+              } elseif (stripos($data_to_check, 'Symposium') === FALSE && stripos($data_to_check, 'Conference') === FALSE) { // Looks like conference
                 if ($the_journal !== '') {
                   $this->rename('journal', 'CITATION_BOT_PLACEHOLDER_journal');
                   $the_journal = '';
