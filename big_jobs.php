@@ -40,7 +40,7 @@ function big_jobs_check_overused(int $page_count) : void {
  if (!HTML_OUTPUT) return;
  if ($page_count < 50) return; // Used to be BIG_RUN constant
  $fn = big_jobs_name();
- if (file_exists($fn) && (filemtime($fn) < (time()-3600))) { // More than an hour
+ if (file_exists($fn) && (fileatime($fn) < (time()-3600))) { // More than an hour
     hard_unlink($fn);
  }
  if (file_exists($fn)) {
