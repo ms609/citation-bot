@@ -414,7 +414,7 @@ public static function expand_by_zotero(Template $template, ?string $url = NULL)
   if(stripos($url, 'CITATION_BOT_PLACEHOLDER') !== FALSE) return FALSE; // That's a bad url
 
   // Clean up URLs
-  if(preg_match('~^(https?://(?:www\.|)nature\.com/articles/[a-zA-Z0-9]+)\.pdf$~', $url, $matches)) {
+  if(preg_match('~^(https?://(?:www\.|)nature\.com/articles/[a-zA-Z0-9\.]+)\.pdf(?:|\?.*)$~', $url, $matches)) {
      $url = $matches[1]; // remove PDF from Nature urls
   }
   
