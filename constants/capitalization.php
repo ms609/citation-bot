@@ -126,7 +126,7 @@ const JOURNAL_ACRONYMS = array(/* The following will be automatically updated to
           " Nauka i Zhizn ", " NBER ", " NDT & E International ", " NeuroImage ", " NeuroReport ", 
           " Newspaper for IT Leaders ", " Notes of the AAS ", " Novye i Maloizvestnye ", 
           " Now and Then: ", " npj ", " NWSA Journal ", " Ny Forskning i Grammatik ", " Nyt Tidsskrift ", 
-          " Obsidian II ", " Ocean Science Journal : Osj ", " Oficial de La Rioja ", " PAJ: A Journal of Performance and Art ", 
+          " Obsidian II ", " Ocean Science Journal : OSJ ", " Oficial de La Rioja ", " PAJ: A Journal of Performance and Art ", 
           " PALAIOS ", " PalAsiatica ", " PalZ ", " PeerJ ", " PharmSci ", " PhD ", " PhytoKeys ", 
           " Pis'ma v Astronomicheskii ", " PLOS ", " PLOS ", " PLOS ", " PLOS ", " PLOS ", 
           " PLOS ONE ", " PNAS ", " Posebna izdanja ", " Povijesni prilozi ", " Prilozi povijesti otoka Hvara ", 
