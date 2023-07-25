@@ -60,7 +60,7 @@ const JOURNAL_ACRONYMS = array(/* The following will be automatically updated to
           " ACM SIGGRAPH ", " ACS ", " Acta medico-historica Adriatica ", " Acta medico-historica Adriatica ", 
           " AIDS & Behavior ", " AIDS and Behavior ", " AIDS Care ", " AIDS Research ", 
           " AIMS Microbiology ", " AJNR. ", " Algebra i Analiz ", " Algebra i Logika ", 
-          " Ambio ", " Amphibian Species of the World: An Online ", " Amphibian Species of the World: an Online Reference. ", 
+          " Ambio ", " Amphibian Species of the World: An Online ", " Amphibian Species of the World: An Online Reference. ", 
           " Angew Chem Int Ed ", " ANSI/IEEE ", " ANSI/IEEE ", " AOAC International ", 
           " AoB Plants ", " AoB Plants ", " AoB Plants ", " AORN J ", " AORN J. ", " AORN Journal ", 
           " Applied ", " APS Division ", " Arch Dis Child Fetal Neonatal Ed ", " Arctic ", 
@@ -165,6 +165,7 @@ const JOURNAL_ACRONYMS = array(/* The following will be automatically updated to
           " Zeitschrift für Physik A: Hadrons and Nuclei ", " Znanosti i Umjetnosti ", 
           " ZooKeys ", " Zprávy o zasedání Král. čes. společnosti nauk v Praze ", " LISP and Symbolic Computation ",
           " Zprávy o zasedání Král. čes. společnosti nauk v Praze ", " Zprávy o zasedání Král. čes. společnosti nauk v Praze ", 
+          " NWSA Journal ", " eBioMedicine ", " eBioMedicine ", " AMA Journal ",
           " Ргасе filologiczne ", /* The above will be automatically updated to alphabetical order */ 
 );
 const UCFIRST_JOURNAL_ACRONYMS = array(/* The following will be automatically updated to alphabetical order */
@@ -279,6 +280,7 @@ const UCFIRST_JOURNAL_ACRONYMS = array(/* The following will be automatically up
           " Zeitschrift Für Physik a: Hadrons And Nuclei ", " Znanosti I Umjetnosti ", 
           " Zookeys ", " Zprávy O Zasedání Král. Čes. Společnosti Nauk V Praze ", " Lisp and Symbolic Computation ",
           " Zprávy O Zasedání Král. čes. Společnosti Nauk V Praze ", " Zprávy o zasedání Král. čes. Společnosti nauk v Praze ", 
+          " Nwsa Journal ", " EBioMedicine ", " Ebiomedicine ", " Ama Journal ",
           " Ргасе Filologiczne ", /* The above will be automatically updated to alphabetical order */ 
 );
 const OBVIOUS_FOREIGN_WORDS = array(" Abhandlungen ", " Actes ", " Annales ", " Archiv ", " Archives de ",
