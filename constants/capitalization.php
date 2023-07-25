@@ -198,7 +198,7 @@ const UCFIRST_JOURNAL_ACRONYMS = array(/* The following will be automatically up
           " E-Journal ", " E-journal ", " E-Neuroforum ", " E-neuroforum ", " E-Print ", 
           " E-print ", " E-Prints ", " E-prints ", " E-Scripta ", " E-scripta ", " E-SPEN ", 
           " E-Spen ", " E-SPEN, ", " E-Spen, ", " e. M. Museum ", " e: ", " Early Modern Japan: An Interdisciplinary Journal ", 
-          " EBioMedicine ", " Ebiomedicine ", " EBiomedicine ", " Ecancermedicalscience ", 
+          " EBioMedicine ", " EBiomedicine ", " Ebiomedicine ", " Ecancermedicalscience ", 
           " EClinicalMedicine ", " Eclinicalmedicine ", " ECrypt ", " Ecrypt ", " EEarth ", 
           " Eesti Ja ", " Efsa ", " EGEMs ", " Egems ", " EJournal ", " Ejournal ", " Eksperimental'naia I Klinicheskaia ", 
           " Eksperimental'noi I Teoreticheskoi ", " el Salvador ", " Elh ", " ELife ", 
