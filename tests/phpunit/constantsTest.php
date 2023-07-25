@@ -63,7 +63,6 @@ final class constantsTest extends testBaseClass {
     }
   }
 
-
   public function testForDisasters() :void { // Did we get things out of order and cause a disaster?
     $this->assertSame('BJPsych', title_capitalization('Bjpsych', TRUE));
     $this->assertSame('HortScience', title_capitalization('Hortscience', TRUE));
@@ -71,9 +70,9 @@ final class constantsTest extends testBaseClass {
     $this->assertSame('Algebra i Analiz', title_capitalization('Algebra I Analiz', TRUE));
     $this->assertSame('ChemSystemsChem', title_capitalization('Chemsystemschem', TRUE));
     $this->assertSame('hessenARCHÄOLOGIE', title_capitalization('HessenARCHÄOLOGIE', TRUE));
-    $this->assertSame('Ocean Science Journal : OSJ', title_capitalization('Ocean Science Journal : Osj ', TRUE));
-    $this->assertSame('Starine Jugoslavenske akademije znanosti i umjetnosti', title_capitalization('', TRUE));
-    $this->assertSame('voor de geschiedenis der Nederlanden', title_capitalization('Starine Jugoslavenske Akademije Znanosti I Umjetnosti', TRUE));
+    $this->assertSame('Ocean Science Journal : OSJ', title_capitalization('Ocean Science Journal : Osj', TRUE));
+    $this->assertSame('Starine Jugoslavenske akademije znanosti i umjetnosti', title_capitalization('Starine Jugoslavenske Akademije Znanosti I Umjetnosti', TRUE));
+    $this->assertSame('voor de geschiedenis der Nederlanden', title_capitalization('Voor De Geschiedenis Der Nederlanden', TRUE));
     $this->assertSame('Zprávy o zasedání Král. čes. společnosti nauk v Praze', title_capitalization('Zprávy O Zasedání Král. Čes. Společnosti Nauk V Praze', TRUE));
   }
   
@@ -535,12 +534,15 @@ final class constantsTest extends testBaseClass {
  public function testConversionsGood() : void {
     $errors = "";
     foreach (TEMPLATE_CONVERSIONS as $convert) {
-       $good = $convert[1];
        // return -1 if page does not exist; 0 if exists and not redirect; 1 if is redirect
-       if (WikipediaBot::is_redirect($convert[0]) !== 1) {
+       $tem = 'Template:' . $convert[0];
+       $tem = str_replace(' ', '_', $tem);
+       if (WikipediaBot::is_redirect($tem) !== 1) {
           $errors = $errors . '#####' . $convert[0];
        }
-       if (WikipediaBot::is_redirect($convert[1]) !== 0) {
+       $tem = 'Template:' . $convert[1];
+       $tem = str_replace(' ', '_', $tem);
+       if (WikipediaBot::is_redirect($tem) !== 0) {
           $errors = $errors . '#####' . $convert[1];
        }
     }
