@@ -508,4 +508,21 @@ final class constantsTest extends testBaseClass {
       $this->assertSame($in, $out); // Same once spaces and single quotes are removed
     }
  }
+
+ public function testConversionsGood() : void {
+    $errors = "";
+    foreach (TEMPLATE_CONVERSIONS as $convert) {
+       $good = $convert[1];
+       // return -1 if page does not exist; 0 if exists and not redirect; 1 if is redirect
+       if (WikipediaBot::is_redirect($convert[0]) !== 1) {
+          $errors = $errors . '#####' . $convert[0];
+       }
+       if (WikipediaBot::is_redirect($convert[1]) !== 0) {
+          $errors = $errors . '#####' . $convert[1];
+       }
+    }
+    $this->assertSame("", $errors); // We want a list of all of them
+  }
+
+  
 }
