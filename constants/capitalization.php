@@ -174,7 +174,7 @@ const UCFIRST_JOURNAL_ACRONYMS = array(/* The following will be automatically up
           " ACM Siggraph ", " Acs ", " Acta Medico-Historica Adriatica ", " Acta Medico-historica Adriatica ", 
           " Aids & Behavior ", " Aids and Behavior ", " Aids Care ", " Aids Research ", 
           " Aims Microbiology ", " Ajnr. ", " Algebra I Analiz ", " Algebra I Logika ", 
-          " Ama Journal ", " AMBIO ", " Amphibian Species of the World: an Online ", " Amphibian Species of the World: An Online Reference. ", 
+          " Ama Journal ", " AMBIO ", " Amphibian Species of the World: an Online ", " Amphibian Species of the World: an Online Reference. ", 
           " Angew Chem Int ed ", " Ansi/IEEE ", " Ansi/ieee ", " AOAC INTERNATIONAL ", 
           " AoB PLANTS ", " Aob PLANTS ", " Aob Plants ", " Aorn J ", " Aorn J. ", " Aorn Journal ", 
           " Appiled ", " Aps Division ", " Arch Dis Child Fetal Neonatal ed ", " ARCTIC ", 
