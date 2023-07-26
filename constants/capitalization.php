@@ -224,7 +224,7 @@ const UCFIRST_JOURNAL_ACRONYMS = array(/* The following will be automatically up
           " Iphone ", " IScience ", " Iscience ", " Isme ", " Isrn Aids ", " Isrn Genetics ", 
           " J Gerontol a Biol Sci Med Sci ", " J SCH Nurs ", " J Siam ", " J. Siam ", " Jabs : Journal of Applied Biological Sciences ", 
           " Jak-Stat ", " Jama Psychiatry ", " JAZU U Zadru ", " Jazu U Zadru ", " Jezik in Slovstvo ", 
-          " Jmir ", " Jnci: Journal ", " Journal of E-Learning ", " Journal of Materials Chemistry A ", 
+          " Jmir ", " Jnci: Journal ", " Journal of E-Learning ", " Journal of Materials Chemistry a ", 
           " Journal of the A.i.i.e ", " Journal of the Iest ", " Journal Sur ", " JPN ", 
           " JPN. ", " Katorga I Ssylka ", " Keel Ja ", " Krčki Zbornik: Godišnjak Povijesnog Društva Otoka Krka ", 
           " Krčki zbornik: Godišnjak Povijesnog društva otoka Krka ", " L'Ihés ", " L'ihés ", 
