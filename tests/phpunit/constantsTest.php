@@ -549,7 +549,7 @@ final class constantsTest extends testBaseClass {
        }
        $tem = 'Template:' . $convert[1];
        $tem = str_replace(' ', '_', $tem);
-       if (WikipediaBot::is_redirect($tem) !== 0 && $tem !== 'Cite paper' && $tem !== 'cite paper') { // We use code to clean up cite paper
+       if (WikipediaBot::is_redirect($tem) !== 0 && $tem !== 'Cite_paper' && $tem !== 'cite_paper') { // We use code to clean up cite paper
           $errors = $errors . '#####' . $convert[1];
        }
     }
