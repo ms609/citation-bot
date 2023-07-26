@@ -234,7 +234,7 @@ const UCFIRST_JOURNAL_ACRONYMS = array(/* The following will be automatically up
           " Med SCH ", " Medchemcomm ", " Meddelelser Om Grønland ", " Meddelelser Om Grønland, ", 
           " MedRxiv ", " MedScape ", " Merip ", " Methods in Molecular Biology (Clifton, N.j.) ", 
           " MHealth ", " Mhealth ", " Microbiologyopen ", " Mikologiya I Fitopatologiya ", 
-          " Mis Quarterly ", " MLife ", " Mlife ", " Molecular and Cellular Biology ", 
+          " Mis Quarterly ", " MLife ", " Mlife ", " Molecular and cellular Biology ", 
           " Montana the Magazine of Western History ", " MSphere ", " Msphere ", " MSystems ", 
           " Msystems ", " Mycokeys ", " N.Paradoxa ", " Narodna Starina ", " Nasa Tech Briefs ", 
           " Nast. Vjesnik ", " Nastavni Vjesnik ", " Nauka I Zhizn ", " Nber ", " NDT & e International ", 
