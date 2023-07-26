@@ -544,13 +544,13 @@ final class constantsTest extends testBaseClass {
           $page->get_text_from($tem);
           $text = $page->parsed_text();
           if (stripos($text, '{{safesubst:') === FALSE) {
-            $errors = $errors . '#####' . $convert[0];
+            $errors = $errors . '   Is real:' . $convert[0];
           }
        }
        $tem = 'Template:' . $convert[1];
        $tem = str_replace(' ', '_', $tem);
-       if (WikipediaBot::is_redirect($tem) !== 0 && $tem !== 'Cite_paper' && $tem !== 'cite_paper') { // We use code to clean up cite paper
-          $errors = $errors . '#####' . $convert[1];
+       if (WikipediaBot::is_redirect($tem) !== 0 && $tem !== 'Template:Cite_paper' && $tem !== 'Template:cite_paper') { // We use code to clean up cite paper
+          $errors = $errors . '   In now a redirect:' . $convert[1];
        }
     }
     $this->assertSame("", $errors); // We want a list of all of them
