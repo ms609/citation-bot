@@ -302,7 +302,7 @@ const CAMEL_CASE = array('DeSoto', 'PubChem', 'BitTorrent', 'Al2O3', 'NiMo', 'Cu
                          'ConOps', 'EuroHaptics', 'WiMob', 'WeRob', 'MultiTemp', 'MediVis', 'BioMedical',
                          'BlackSeaCom', 'SecureCom', 'RobMech', 'PhysComp', 'IntelliSys', 'EnergyTech', 
                          'Conference on ElectroMagnetic Interference', 'SoutheastCon 2', 'CyCon', 'DiffServ',
-                         'ReSerVation'
+                         'ReSerVation', 'SysTol', 'IntelliSys', 'IEEE SoutheastCon'
                        );
 
 const ITALICS_HARDCODE_IN  = ["Eternal GodHeavenly Flesh",   "Conference onResearch, Innovation",  "Roman EmpireSoldiers,",   "SilencedHow Apostasy and Blasphemy",   "Cybernetics SocietyInformation Assurance",  "International Conference onServices Computing",  "IEEE InternationalElectron Devices",  "Symposium onFoundations of",  "IEEE InternationalConference",  "Jewish QuestionIdentifying ",   "The Port NelsonRelations",      "Changes for DemocracyActors",   "SpymasterDai Li ",   "A New History of IrelandVolume",   "Devoted to DeathSanta Muerte, the Skeleton Saint",   "Knowing HowEssays on Knowledge, Mind, and Action",   " Rgene", "CytochromebGenes",       "ElectrongValue",       "thetoxGene",      "GopashtamiandGovardhan",       "PolishLebensraum",       "theNachlassproblem",        " forAltalena:",      " in Plutarch'sLives",       "FromSolidarityto",        " gp91phoxPromoter",  "in vitroAssays",        "MarketizingHindutva",       "TheBhagavadgītā,",       "theOrigin of Species",       "EncounteringHindutva",       "ChineseHukouSystem",        "CisLatreille"];
