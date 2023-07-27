@@ -255,7 +255,7 @@ const UCFIRST_JOURNAL_ACRONYMS = array(/* The following will be automatically up
           " Revista del Museo de la Plata ", " Ricerche Slavistiche ", " Rna ", " S.a.p.i.en.s ", 
           " S.a.p.i.en.s. ", " Saggiatore Musicale ", " Sbornik' Otd. Russ. Jazyka I Slovesnosti ", 
           " Scalacs ", " SCH ", " SCR. ", " Siam Journal on ", " Siam Review ", " Sicot-J ", 
-          " Spums J ", " SRP Arh Celok Lek ", " Star Trek: The Official Monthly Magazine ", 
+          " Spums J ", " SRP Arh Celok Lek ", " Star Trek: the Official Monthly Magazine ", 
           " Stari Pisci Hrvatski ", " Starine Jugoslavenske Akademije Znanosti I Umjetnosti ", 
           " Starine Jugoslavenske Akademije Znanosti i Umjetnosti ", " Starine jugoslavenske akademije znanosti i umjetnosti ", 
           " STD & Aids ", " STDS ", " Swiss Express: The Swiss Railways Society Journal ", 
