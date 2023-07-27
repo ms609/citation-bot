@@ -3313,27 +3313,27 @@ final class TemplateTest2 extends testBaseClass {
      $text = '{{cite journal|date=2000}}';
      $template = $this->make_citation($text);
      $template->add_if_new('year', (string) date('Y'), 'crossref');
-     $this->assertSame((string) date('Y'), $template->get2('year'));
+     $this->assertSame((string) date('Y'), $template->get2('date'));
      
      $text = '{{cite journal|year=ZYX}}';
      $template = $this->make_citation($text);
      $template->add_if_new('year', (string) date('Y'), 'crossref');
-     $this->assertSame((string) date('Y'), $template->get2('year'));   
+     $this->assertSame((string) date('Y'), $template->get2('date'));   
    
      $text = '{{cite journal|year=ZYX}}';
      $template = $this->make_citation($text);
      $template->add_if_new('year', (string) date('Y'), 'crossref');
-     $this->assertSame((string) date('Y'), $template->get2('year'));   
+     $this->assertSame((string) date('Y'), $template->get2('date'));   
 
      $text = '{{cite journal}}';
      $template = $this->make_citation($text);
      $template->add_if_new('year', (string) date('Y'), 'crossref');
-     $this->assertSame((string) date('Y'), $template->get2('year'));   
+     $this->assertSame((string) date('Y'), $template->get2('date'));   
 
      $text = '{{cite journal|year=1000}}';
      $template = $this->make_citation($text);
      $template->add_if_new('year', (string) ((int) date('Y') - 10), 'crossref');
-     $this->assertSame('1000', $template->get2('year'));   
+     $this->assertSame('1000', $template->get2('date'));   
    
      $text = '{{cite journal|date=4000}}';
      $template = $this->make_citation($text);
@@ -3343,7 +3343,7 @@ final class TemplateTest2 extends testBaseClass {
      $text = '{{cite journal|year=4000}}';
      $template = $this->make_citation($text);
      $template->add_if_new('year', (string) date('Y'), 'crossref');
-     $this->assertSame('4000', $template->get2('year'));
+     $this->assertSame('4000', $template->get2('date'));
   }
  
   public function testVerifyDOI1() : void {
