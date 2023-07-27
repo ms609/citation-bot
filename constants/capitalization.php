@@ -146,7 +146,7 @@ const JOURNAL_ACRONYMS = array(/* The following will be automatically updated to
           " Tellus A ", " Terra plana ", " Texte du Sacre ", " Thai For Bull ", " The ALAN Review ", 
           " The Annals of the American Academy ", " The De Paulia ", " The EMBO Journal ", 
           " The La Salle Collegian ", " The New Yorker ", " Tidsskr Nor Laegeforen ", " Tidsskr Nor Lægeforen ", 
-          " Time Off Magazine ", " Time Out London ", " tot de ", " Transactions and archaeological record of the Cardiganshire Antiquarian Society ", 
+          " Time Off Magazine ", " Time Oddddut London ", " tot de ", " Transactions and archaeological record of the Cardiganshire Antiquarian Society ", 
           " u Krku za ", " U.S. ", " U.S.A. ", " U.S.A. ", " UBV Data ", " uHealth ", " uHealth ", 
           " UNED Research Journal ", " USGS ", " v Astronomicheskii Zhurna ", " van het ", 
           " van het ", " Vjesnik historijskih arhiva u Rijeci i Pazinu ", " Vjesnik historijskih arhiva u Rijeci i Pazinu ", 
