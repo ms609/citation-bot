@@ -44,11 +44,11 @@ function report_error(string $text) : void {
 }
 function report_minor_error(string $text) : void {  // For things we want to error in tests, but continue on Wikipedia
   // @codeCoverageIgnoreStart
-  bot_debug_log(html_entity_decode($text));
-  /** @psalm-suppress RedundantCondition */ /* PSALM thinks TRAVIS cannot be FALSE */
+  /** @psalm-suppress RedundantCondition */ /* PSALM thinks HTML_OUTPUT cannot be FALSE */
   if (!HTML_OUTPUT) { // command line and TRAVIS
     report_error($text);
   } else {
+    bot_debug_log($text);
     report_warning($text);
   }
   // @codeCoverageIgnoreEnd

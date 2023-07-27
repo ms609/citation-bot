@@ -352,6 +352,7 @@ final class Template {
           }
           if (stripos($the_journal, 'Advances in Cryptology') === 0 ||
               stripos($the_journal, 'IEEE Symposium') !== FALSE ||
+              stripos($the_journal, 'IEEE Conference') !== FALSE ||
               stripos($the_journal, 'IEEE International Conference') !== FALSE ) {
               $this->rename('journal', 'CITATION_BOT_PLACEHOLDER_journal');
               $the_journal = '';
@@ -365,22 +366,54 @@ final class Template {
                   $the_chapter = '';
               }
           }
-          if ($the_pages === '0' || $the_pages === 'null' || $the_pages === 'n/a' || $the_pages === 'online' || $the_pages === 'Online' || $the_pages === 'Forthcoming' || $the_pages === 'forthcoming') {
+          if (strpos($this->get('doi'), '10.1109/') === 0 && $this->has('isbn')) { // IEEE "book"
+              $data_to_check = $the_title . $the_journal . $the_chapter . $this->get('series');
+              if (stripos($data_to_check, 'IEEE Standard for') === FALSE && $this->blank('journal')) {
+                ; // Do nothing
+              } elseif (stripos($data_to_check, 'Symposium') === FALSE && stripos($data_to_check, 'Conference') === FALSE) { // Looks like conference
+                if ($the_journal !== '') {
+                  $this->rename('journal', 'CITATION_BOT_PLACEHOLDER_journal');
+                  $the_journal = '';
+                }
+                if ($the_title !== '') {
+                  $this->rename('title', 'CITATION_BOT_PLACEHOLDER_title');
+                  $the_title = '';
+                }
+                if ($the_chapter !== '') {
+                  $this->rename('chapter', 'CITATION_BOT_PLACEHOLDER_chapter');
+                  $the_chapter = '';
+                }
+                $bad_data = TRUE;
+              } elseif (stripos($the_journal, 'Symposium') !== FALSE || stripos($the_journal, 'Conference') !== FALSE) {
+                 $this->rename('journal', 'CITATION_BOT_PLACEHOLDER_journal');
+                 $the_journal = '';
+                 $bad_data = TRUE;
+                 if ($the_title !== '') {
+                   $this->rename('title', 'CITATION_BOT_PLACEHOLDER_title');
+                   $the_title = '';
+                 }
+                 if ($the_chapter !== '') {
+                   $this->rename('chapter', 'CITATION_BOT_PLACEHOLDER_chapter');
+                   $the_chapter = '';
+                 }
+              }
+          }
+          if ($the_pages === '_' || $the_pages === '0' || $the_pages === 'null' || $the_pages === 'n/a' || $the_pages === 'online' || $the_pages === 'Online' || $the_pages === 'Forthcoming' || $the_pages === 'forthcoming') {
               $this->rename('pages', 'CITATION_BOT_PLACEHOLDER_pages');
               $the_pages = '';
               $bad_data = TRUE;
           }
-          if ($the_page === '0' || $the_page === 'null' || $the_page === 'n/a' || $the_page === 'online' || $the_page === 'Online' || $the_page === 'Forthcoming' || $the_page === 'forthcoming') {
+          if ($the_page === '_' || $the_page === '0' || $the_page === 'null' || $the_page === 'n/a' || $the_page === 'online' || $the_page === 'Online' || $the_page === 'Forthcoming' || $the_page === 'forthcoming') {
               $this->rename('page', 'CITATION_BOT_PLACEHOLDER_page');
               $the_page = '';
               $bad_data = TRUE;
           }
-          if ($the_volume === '0' || $the_volume === 'null' || $the_volume === 'n/a' || $the_volume === 'Online edition' || $the_volume === 'online' || $the_volume === 'Online' || $the_volume === 'in press'  || $the_volume === 'In press' || $the_volume === 'ahead-of-print' || $the_volume === 'Forthcoming' || $the_volume === 'forthcoming') {
+          if ($the_volume === '_' || $the_volume === '0' || $the_volume === 'null' || $the_volume === 'n/a' || $the_volume === 'Online edition' || $the_volume === 'online' || $the_volume === 'Online' || $the_volume === 'in press'  || $the_volume === 'In press' || $the_volume === 'ahead-of-print' || $the_volume === 'Forthcoming' || $the_volume === 'forthcoming') {
               $this->rename('volume', 'CITATION_BOT_PLACEHOLDER_volume');
               $the_volume = '';
               $bad_data = TRUE;
           }
-          if ($the_issue === '0' || $the_issue === 'null' || $the_issue === 'ja' || $the_issue === 'n/a' || $the_issue === 'Online edition' || $the_issue === 'online' || $the_issue === 'Online' || $the_issue === 'in press' || $the_issue === 'In press' || $the_issue === 'ahead-of-print' || $the_issue === 'Forthcoming' || $the_issue === 'forthcoming') {
+          if ($the_issue === '_' || $the_issue === '0' || $the_issue === 'null' || $the_issue === 'ja' || $the_issue === 'n/a' || $the_issue === 'Online edition' || $the_issue === 'online' || $the_issue === 'Online' || $the_issue === 'in press' || $the_issue === 'In press' || $the_issue === 'ahead-of-print' || $the_issue === 'Forthcoming' || $the_issue === 'forthcoming') {
               $this->rename('issue', 'CITATION_BOT_PLACEHOLDER_issue');
               $the_issue = '';
               $bad_data = TRUE;
@@ -397,9 +430,9 @@ final class Template {
               $the_title = '';
               $bad_data = TRUE;
           }                                                                                                                                                                                                   
-          if ($the_title === 'null' || $the_title === '[No title found]' || $the_title === 'Archived copy' || $the_title === 'JSTOR' ||
+          if ($the_title === '_' || $the_title === 'null' || $the_title === '[No title found]' || $the_title === 'Archived copy' || $the_title === 'JSTOR' ||
               $the_title === 'ShieldSquare Captcha' || $the_title === 'Shibboleth Authentication Request' || $the_title === 'Pubmed' ||
-              $the_title === 'Pubmed Central') { // title=none is often because title is "reviewed work....
+              $the_title === 'Pubmed Central' || $the_title === 'Optica Publishing Group') { // title=none is often because title is "reviewed work....
               $this->rename('title', 'CITATION_BOT_PLACEHOLDER_title');
               $the_title = '';
               $bad_data = TRUE;
@@ -423,7 +456,7 @@ final class Template {
               $the_journal = '';
               $bad_data = TRUE;
           }
-          if (str_i_same($the_journal, 'JSTOR')) {
+          if (str_i_same($the_journal, 'JSTOR') || $the_journal === '_') {
               $this->rename('journal', 'CITATION_BOT_PLACEHOLDER_journal');
               $the_journal = '';
               $bad_data = TRUE;
@@ -444,7 +477,12 @@ final class Template {
               $this->rename('journal', 'CITATION_BOT_PLACEHOLDER_journal');
               $the_journal = '';
               $bad_data = TRUE;
-          }                                                                                                       
+          }
+          if ($the_chapter === '_') {
+              $this->rename('chapter', 'CITATION_BOT_PLACEHOLDER_chapter');
+              $the_chapter = '';
+              $bad_data = TRUE;
+          }
           if ($the_title !== '' && stripos($the_title, 'CITATION') === FALSE) {
             if (str_i_same($the_title, $the_journal) &&
                 str_i_same($the_title, $the_chapter)) { // Journal === Title === Chapter INSANE!  Never actually seen
@@ -1816,7 +1854,7 @@ final class Template {
       return FALSE;
     }
     // They already allow some fuzziness in matches
-    if ($data['journal'] || $data['issn']) {
+    if (($data['journal'] || $data['issn']) && ($data['start_page'] || $data['author'])) {
       $url = "https://www.crossref.org/openurl/?noredirect=TRUE&pid=" . CROSSREFUSERNAME
            . ($data['title']      ? "&atitle=" . urlencode($data['title'])      : '')
            . ($data['author']     ? "&aulast=" . urlencode($data['author'])     : '')
@@ -1836,7 +1874,7 @@ final class Template {
       }
       $result = $result->query_result->body->query;
       if ((string) $result->attributes()->status === 'malformed') {
-        report_warning("Cannot search CrossRef: " . echoable((string) $result->msg));  // @codeCoverageIgnore
+        report_minor_error("Cannot search CrossRef: " . echoable((string) $result->msg));  // @codeCoverageIgnore
       } elseif ((string) $result->attributes()->status === "resolved") {
         if (!isset($result->doi)) return FALSE;
         report_info(" Successful!");
@@ -3071,7 +3109,8 @@ final class Template {
         // remove leading spaces or hyphens (which may have been typoed for an equals)
         if (preg_match("~^[ -+]*(.+)~", (string) substr($dat, strlen($closest)), $match)) { // Cast FALSE to string
           $this->add_if_new($closest, $match[1]/* . " [$shortest / $comp = $shortish]"*/);
-          $dat = trim(preg_replace('~^.*' . preg_quote($match[1]) . '~', '', $dat));
+          $replace_pos = strrpos($dat, $match[1]) + strlen($match[1]);
+          $dat = trim(substr($dat, $replace_pos));
         }
       } elseif (preg_match("~(?<!\d)(\d{10})(?!\d)~", str_replace(Array(" ", "-"), "", $dat), $match)) {
         $the_isbn = str_split($match[1]);
@@ -4013,7 +4052,7 @@ final class Template {
           }
           if (!doi_works($doi)) {
             if (preg_match('~^10.1093\/oi\/authority\.\d{10,}$~', $doi) &&
-              preg_match('~(?:oxfordreference\.com|oxfordindex\.oup\.com)\/view\/10.1093\/oi\/authority\.\d{10,}~', $this->get('url'))) {
+              preg_match('~(?:oxfordreference\.com|oxfordindex\.oup\.com)\/[^\/]+\/10.1093\/oi\/authority\.\d{10,}~', $this->get('url'))) {
              $this->forget('doi');
              return;
             } elseif (preg_match('~^10\.1093\/law\:epil\/9780199231690\/law\-9780199231690~', $doi) &&
@@ -5864,6 +5903,11 @@ final class Template {
           $this->forget('series');
         }
       }
+      if ($this->has('journal') && str_equivalent($this->get('title'), $this->get('journal'))) {
+        if ($this->wikiname() === 'cite book' || $this->has('isbn')) {
+            $this->forget('journal');
+        }
+      }
       // Double check these troublesome "journals"
       if (($this->is_book_series('journal') || $this->is_book_series('series') ||
            $this->is_book_series('chapter') || $this->is_book_series('title')) ||
@@ -6054,6 +6098,19 @@ final class Template {
           }
         }
       }
+      if (preg_match('~^10\.1109/~', $this->get('doi')) &&
+        $this->has('title') && $this->has('chapter') && $this->has('isbn')  &&
+        $this->wikiname() === 'cite book' && doi_works($this->get('doi'))) {
+          if (stripos($this->get('title'), 'Conference') !== FALSE) {
+             if (stripos($this->get('website'), 'Conference') !== FALSE) $this->forget('website');
+             if (stripos($this->get('journal'), 'Conference') !== FALSE) $this->forget('journal');
+          }
+          if (stripos($this->get('title'), 'Symposium') !== FALSE) {
+             if (stripos($this->get('website'), 'Symposium') !== FALSE) $this->forget('website');
+             if (stripos($this->get('journal'), 'Symposium') !== FALSE) $this->forget('journal');
+          }
+      }
+
       $this->tidy_parameter('doi'); // might be free, and freedom is date dependent for some journals
       if ($this->blank(PAGE_ALIASES) && preg_match('~^10\.1103\/[a-zA-Z]+\.(\d+)\.(\d+)$~', $this->get('doi'), $matches)) {
         if ($matches[1] === $this->get('volume')) {
@@ -6792,6 +6849,7 @@ final class Template {
               preg_match("~^(\d+) \((\d+ Suppl \d+)\)$~i", $data, $matches) ||
               preg_match("~^Vol\.?(\d+)\((\d+)\)$~", $data, $matches) ||
               preg_match("~^(\d+) +\(No(?:\.|\. | )(\d+)\)$~i", $data, $matches) ||
+              preg_match("~^(\d+):(\d+)$~", $data, $matches) ||
               preg_match("~^(\d+) +\(Iss(?:\.|\. | )(\d+)\)$~i", $data, $matches)
          ) {
          $possible_volume=$matches[1];

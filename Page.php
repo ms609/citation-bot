@@ -726,13 +726,14 @@ class Page {
         $this->page_error = TRUE;
         report_warning('Regular expression failure in ' . echoable($this->title) . ' when extracting ' . $class . 's');
         if ($class === "Template") {
-          echo "<p>\n\n The following text might help you figure out where the <b>error on the page</b> is (Look for lone { and } characters)</h1>\n\n" . echoable($text) . "\n\n<p>";
+          echo "<p><h3>\n\n The following text might help you figure out where the <b>error on the page</b> is (Look for lone { and } characters)</h3>\n<h4> If that is not the problem, then run the single page with &prce=1 added to the URL to change the parsing engine</h4>\n" . echoable($text) . "\n\n<p>";
         }
         if (TRAVIS) {
           report_error("Critical Error on page: " . $this->title);
         } else {
           report_warning("Either page is too big and complex or there is an error with { and } characters balancing out.");
         }
+        gc_collect_cycles();
         // @codeCoverageIgnoreEnd
     }
     $this->text = $text;
