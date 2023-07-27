@@ -7,7 +7,7 @@ const HAS_NO_VOLUME = array("zookeys", "studia hibernica", "analecta hibernica",
                             "cap journal", "phytokeys", "starinar", "balcanica", "american museum novitates",
                             "european journal of taxonomy");  // Some journals have issues only, no volume numbers
 // oceanic linguistics special publications has the problem that issues will not show up within temlpates
-const HAS_NO_ISSUE = array("special papers in palaeontology", "oceanic linguistics special publications", "cahiers balkaniques");  // Some journals have volumes only, no issue numbers
+const HAS_NO_ISSUE = array("special papers in palaeontology", "oceanic linguistics special publications", "cahiers balkaniques", "res historica");  // Some journals have volumes only, no issue numbers
 const PREFER_VOLUMES = array("illinois classical studies"); // When issue=volume, drop issue.  JSTOR calls volumes issues
 const PREFER_ISSUES = array("mammalian species", "bulletin of the united states national museum");
 const BAD_ACCEPTED_MANUSCRIPT_TITLES = array("oup accepted manuscript", "placeholder for bad pdf file", 
@@ -83,7 +83,8 @@ const BAD_TITLES = array("unknown", "missing", "arxiv e-prints", "arxiv mathemat
                          "breaking news, analysis, politics, blogs, news photos, video, tech reviews - time.com",
                          "redirect notice", "oxford music online", "trove - archived webpage", "pagina inicia",
                          "404 not found", "404页面", "sign up ", "index of /home", "usa today - today's breaking news, us & world news",
-			 "403 unauthorized", "404错误", "internal server error", "error", "404", "error - lexisnexis® publisher");
+			 "403 unauthorized", "404错误", "internal server error", "error", "404", "error - lexisnexis® publisher",
+			 "optica publishing group");
 const IN_PRESS_ALIASES = array("in press", "inpress", "pending", "published", 
                                "published online", "no-no", "n/a", "online ahead of print", 
                                "unpublished", "unknown", "tba", "forthcoming", "in the press", 
@@ -142,7 +143,7 @@ const CANONICAL_PUBLISHER_URLS = array ('elsevier.com', 'springer.com', 'science
                                 'sciencemag.org', 'doi.apa.org', 'psycnet.apa.org', 'journals.upress.ufl.edu',
                                 'clinchem.org', 'cell.com', 'aeaweb.org', 'chestpubs.org', 'journal.chestnet.org',
                                 'chestjournal.org', 'biomedcentral.com', 'journals.royalsociety.org',
-                                'mdpi.com', 'frontiersin.org', 'scholarpedia.org',
+                                'mdpi.com', 'frontiersin.org', 'scholarpedia.org', '.acm.org',
                                 //  Below are journal search engines
                                 '.serialssolutions.com', '.ebscohost.com',
                                 //  Below are proxys
@@ -896,7 +897,9 @@ const JOURNAL_IS_BOOK_SERIES = array('methods of molecular biology' , 'methods m
                                      'advances in enzymology and related areas of molecular biology',
                                      'studies in bilingualism', 'antibiotics and chemotherapy',
                                      'oceanic linguistics special publications',
-                                     'progress in brain research');
+                                     'progress in brain research',
+				     'advances in heterocyclic chemistry',
+				    );
 
 const ALWAYS_BAD_TITLES = array("Bloomberg - Are you a robot?", "Page not found",
                      "Breaking News, Analysis, Politics, Blogs, News Photos, Video, Tech Reviews",

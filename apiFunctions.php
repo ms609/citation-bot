@@ -504,15 +504,26 @@ function expand_by_doi(Template $template, bool $force = FALSE) : bool {
       if ((string) @$crossRef->volume_title === 'Professional Paper') unset($crossRef->volume_title);
       if ((string) @$crossRef->series_title === 'Professional Paper') unset($crossRef->series_title);
       if ($template->has('book-title')) unset($crossRef->volume_title);
+
       if ($crossRef->volume_title && ($template->blank(WORK_ALIASES) || $template->wikiname() === 'cite book')) {
         if (mb_strtolower($template->get('title')) === mb_strtolower((string) $crossRef->article_title)) {
            $template->rename('title', 'chapter');
-         } else {
-           $template->add_if_new('chapter', restore_italics((string) $crossRef->article_title), 'crossref'); // add_if_new formats this value as a title
+        } else {
+            $new_title = CrossRefTitle($doi);
+            if ($new_title !== '' && $crossRef->article_title) {
+              $template->add_if_new('chapter', $new_title);
+            } else {
+              $template->add_if_new('chapter', restore_italics((string) $crossRef->article_title), 'crossref');
+            }
         }
         $template->add_if_new('title', restore_italics((string) $crossRef->volume_title), 'crossref'); // add_if_new will wikify title and sanitize the string
       } else {
-        $template->add_if_new('title', restore_italics((string) $crossRef->article_title), 'crossref'); // add_if_new will wikify title and sanitize the string
+         $new_title = CrossRefTitle($doi);
+         if ($new_title !== '' && $crossRef->article_title) {
+           $template->add_if_new('title', $new_title, 'crossref');
+         } else {
+           $template->add_if_new('title', restore_italics((string) $crossRef->article_title), 'crossref');
+         }
       }
       $template->add_if_new('series', (string) $crossRef->series_title, 'crossref'); // add_if_new will format the title for a series?
       $template->add_if_new("year", (string) $crossRef->year, 'crossref');
@@ -561,7 +572,7 @@ function expand_by_doi(Template $template, bool $force = FALSE) : bool {
         }
       }
     } else {
-      report_warning("No CrossRef record found for doi '" . echoable($doi) ."'");
+      report_info("No CrossRef record found for doi '" . echoable($doi) ."'");
       expand_doi_with_dx($template, $doi);
     }
   }
@@ -1257,7 +1268,7 @@ function Bibcode_Response_Processing(string $return, $ch, string $adsabs_url) : 
     if (preg_match_all('~\nX\-RateLimit\-\w+:\s*(\d+)\r~i', $header, $rate_limit)) {
       // @codeCoverageIgnoreStart
       if ($rate_limit[1][2]) {
-        report_info("AdsAbs search " . (string)((int) $rate_limit[1][0] - (int) $rate_limit[1][1]) . "/" . $rate_limit[1][0] . "\n");
+        report_info("AdsAbs search " . (string)((int) $rate_limit[1][0] - (int) $rate_limit[1][1]) . "/" . $rate_limit[1][0]);
       } else {
         throw new Exception('Too many requests', $http_response);
       }
@@ -1461,3 +1472,24 @@ function query_adsabs(string $options) : object {
     return $response;
   }
 
+  // Might want to look at using instead https://doi.crossref.org/openurl/?pid=email@address.com&id=doi:10.1080/00222938700771131&redirect=no&format=unixref
+  function CrossRefTitle(string $doi) : string {
+     $ch = curl_init();
+     curl_setopt_array($ch,
+            [CURLOPT_HEADER => FALSE,
+             CURLOPT_RETURNTRANSFER => TRUE,
+             CURLOPT_URL => "https://api.crossref.org/v1/works/". str_replace(DOI_URL_DECODE, DOI_URL_ENCODE, $doi),
+             CURLOPT_TIMEOUT => 15,
+             CURLOPT_CONNECTTIMEOUT => 15,
+             CURLOPT_USERAGENT => BOT_USER_AGENT]);
+     $json = (string) @curl_exec($ch);
+     curl_close($ch);
+     $json = @json_decode($json);
+     if (isset($json->message->title[0]) && !isset($json->message->title[1])) {
+          $title = (string) $json->message->title[0];
+          return str_ireplace(['<i>', '</i>', '</i> :', '  '], [' <i>', '</i> ', '</i>:', ' '], $title);
+     } else {
+          sleep(2);
+          return '';
+     }
+  }

@@ -980,5 +980,30 @@ final class apiFunctionsTest extends testBaseClass {
     $this->assertSame('10.1093/mnras/290.2.L28', $prepared->get2('doi'));
     $this->assertNotNull($prepared->get2('doi-broken-date')); // The DOI has to not work for this test to cover the code where a title and arxiv exist and a doi is found, but the doi does not add a title
   } 
+
+  public function testCrossRefAlternativeAPI() : void {
+    $text = "{{cite journal| doi=10.1080/00222938700771131 |s2cid=<!-- --> |pmid=<!-- --> |pmc=<!-- --> |arxiv=<!-- --> |jstor=<!-- --> |bibcode=<!-- --> }}";
+    $prepared = $this->process_citation($text);
+    $this->assertSame("Life cycles of ''Phialella zappai'' n. Sp., ''Phialella fragilis'' and ''Phialella'' sp. (Cnidaria, Leptomedusae, Phialellidae) from central California", $prepared->get2('title'));
+  }
+
+  public function testCrossRefAlternativeAPI2() : void {
+    $text = "{{Cite book |date=2012-11-12 |title=The Analects of Confucius |url=http://dx.doi.org/10.4324/9780203715246 |doi=10.4324/9780203715246|isbn=9780203715246 |last1=Estate |first1=The Arthur Waley }}";
+    $prepared = $this->process_citation($text);
+    $this->assertSame($text, $prepared->parsed_text());
+  }
+
+  public function testCrossRefAlternativeAPI3() : void {
+    $text = "{{cite book |last=Galbács |first=Peter |title=The Theory of New Classical Macroeconomics. A Positive Critique |location=Heidelberg/New York/Dordrecht/London |publisher=Springer |year=2015 |isbn= 978-3-319-17578-2|doi=10.1007/978-3-319-17578-2 |series=Contributions to Economics }}";
+    $prepared = $this->process_citation($text);
+    $this->assertSame($text, $prepared->parsed_text());
+  }
+
+  public function testCrossRefAlternativeAPI4() : void {
+    $text = "{{Cite book |url=https://www.taylorfrancis.com/books/edit/10.4324/9781351295246/media-suicide-thomas-niederkrotenthaler-steven-stack |title=Media and Suicide: International Perspectives on Research, Theory, and Policy |date=2017-10-31 |publisher=Routledge |isbn=978-1-351-29524-6 |editor-last=Niederkrotenthaler |editor-first=Thomas |location=New York |doi=10.4324/9781351295246 |editor-last2=Stack |editor-first2=Steven}}";
+    $prepared = $this->process_citation($text);
+    $this->assertSame($text, $prepared->parsed_text());
+  }
+
   
 }
