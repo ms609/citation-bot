@@ -108,7 +108,7 @@ function is_doi_works(string $doi) : ?bool {
   if (strpos($registrant, '10.') === 0) { // We have to deal with valid handles in the DOI field - very rare, so only check actual DOIs
     $registrant = substr($registrant,3);
     if (preg_match('~^[^1-3]\d\d\d\d\.\d\d*$~', $registrant)) return FALSE; // 5 digits with subcode (0xxxx, 40000+); accepts: 10000–39999
-    if (preg_match('~^[^1-5]\d\d\d\d$~', $registrant)) return FALSE;        // 5 digits without subcode (0xxxx, 60000+); accepts: 10000–59999
+    if (preg_match('~^[^1-6]\d\d\d\d$~', $registrant)) return FALSE;        // 5 digits without subcode (0xxxx, 60000+); accepts: 10000–59999
     if (preg_match('~^[^1-9]\d\d\d\.\d\d*$~', $registrant)) return FALSE;   // 4 digits with subcode (0xxx); accepts: 1000–9999
     if (preg_match('~^[^1-9]\d\d\d$~', $registrant)) return FALSE;          // 4 digits without subcode (0xxx); accepts: 1000–9999
     if (preg_match('~^\d\d\d\d\d\d+~', $registrant)) return FALSE;          // 6 or more digits
@@ -359,6 +359,9 @@ function wikify_external_text(string $title) : string {
   $originalTags = array('<title>', '</title>', '</ title>', 'From the Cover: ');
   $wikiTags = array('','','','');
   $title = str_ireplace($originalTags, $wikiTags, $title);
+  $originalTags = array('<inf>', '</inf>');
+  $wikiTags = array('<sub>', '</sub>');
+  $title = str_ireplace($originalTags, $wikiTags, $title);
   $originalTags = array('.<br>', '.</br>', '.</ br>', '.<p>', '.</p>', '.</ p>', '.<strong>', '.</strong>', '.</ strong>');
   $wikiTags = array('. ','. ','. ','. ','. ','. ','. ','. ','. ');
   $title = str_ireplace($originalTags, $wikiTags, $title);
@@ -417,7 +420,7 @@ function wikify_external_text(string $title) : string {
 function restore_italics (string $text) : string {
   $text = trim(str_replace(['        ', '      ', '    ', '   ', '  '], [' ', ' ', ' ', ' ', ' '], $text));
   // <em> tags often go missing around species names in CrossRef
-  $old = $text;
+  /** $old = $text; **/
   $text = str_replace(ITALICS_HARDCODE_IN, ITALICS_HARDCODE_OUT, $text); // Ones to always do, since they keep popping up in our logs
   $text = str_replace("xAzathioprine therapy for patients with systemic lupus erythematosus", "Azathioprine therapy for patients with systemic lupus erythematosus", $text); // Annoying stupid bad data
   $text = trim(str_replace(['        ', '      ', '    ', '   ', '  '], [' ', ' ', ' ', ' ', ' '], $text));
@@ -430,17 +433,15 @@ function restore_italics (string $text) : string {
      $text = str_replace($matches[0], $matches[1] . " ''" . $matches[2] . "''" . $pad . $matches[3], $text);
   }
   $text = trim(str_replace(['        ', '      ', '    ', '   ', '  '], [' ', ' ', ' ', ' ', ' '], $text));
-  if ($old !== $text) {
-     bot_debug_log('restore_italics: ' . $old . '    FORCED TO BE     ' . $text);
-  }
+  /** if ($old !== $text) bot_debug_log('restore_italics: ' . $old . '    FORCED TO BE     ' . $text); **/
   $padded = ' '. $text . ' ';
   if (str_replace(CAMEL_CASE, '', $padded) !== $padded) return $text; // Words with capitals in the middle, but not the first character
   $new = safe_preg_replace('~([a-z]+)([A-Z][a-z]+\b)~', "$1 ''$2''", $text);
   if ($new === $text) {
     return $text;
   }
-  bot_debug_log('restore_italics: ' . $text . '       WILL BE     ' . $new);
-  return $new;
+  bot_debug_log('restore_italics: ' . $text . '       SHOULD BE     ' . $new);
+  return $text; // NOT $new, since we are wrong much more often than wrong with new CrossRef Code
 }
 
 function sanitize_string(string $str) : string {
@@ -488,7 +489,7 @@ function str_remove_irrelevant_bits(string $str) : string {
   $str = trim($str);
   $str = str_ireplace(array('Proceedings', 'Proceeding', 'Symposium', 'Huffington ', 'the Journal of ', 'nytimes.com'   , '& '  , '(Clifton, N.J.)'),
                       array('Proc',        'Proc',       'Sym',       'Huff ',       'journal of ',     'New York Times', 'and ', ''), $str);
-  $str = str_ireplace(array('<sub>', '<sup>', '<i>', '<b>', '</sub>', '</sup>', '</i>', '</b>'), '', $str);
+  $str = str_ireplace(array('<sub>', '<sup>', '<i>', '<b>', '</sub>', '</sup>', '</i>', '</b>', '<p>', '</p>', '<title>', '</title>'), '', $str);
   $str = str_ireplace(array('SpringerVerlag', 'Springer Verlag Springer', 'Springer Verlag', 'Springer Springer'),
                       array('Springer',       'Springer',                 'Springer',        'Springer'         ), $str);
   $str = straighten_quotes($str, TRUE);
@@ -1407,7 +1408,9 @@ function normalize_google_books(string &$url, int &$removed_redundant, string &$
         $url = $url_parts[0];
         $hash = $url_parts[1];
       }
-      $url = str_replace("&amp;", "&", $url); 
+      // And symbol in a search quote
+      $url = str_replace("+&+", "+%26+", $url);
+      $url = str_replace("+&,+", "+%26,+", $url);
       $url_parts = explode("&", str_replace("&&", "&", str_replace("?", "&", $url)));
       $url = "https://books.google.com/books?id=" . $gid[1];
       $book_array = array();
@@ -1454,7 +1457,7 @@ function normalize_google_books(string &$url, int &$removed_redundant, string &$
       // Clean up hash first
       $hash = '&' . trim($hash) . '&';
       $hash = str_replace(['&f=false', '&f=true', 'v=onepage'], ['','',''], $hash); // onepage is default
-      $hash = str_replace(['&q&', '&q=&', '&&&&', '&&&', '&&'], ['&', '&', '&', '&', '&'], $hash);
+      $hash = str_replace(['&q&', '&q=&', '&&&&', '&&&', '&&', '%20&%20'], ['&', '&', '&', '&', '&', '%20%26%20'], $hash);
       if (preg_match('~(&q=[^&]+)&~', $hash, $matcher)) {
           $hash = str_replace($matcher[1], '', $hash);
           if (isset($book_array['q'])) {

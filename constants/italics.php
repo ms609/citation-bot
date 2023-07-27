@@ -82,6 +82,7 @@ const ITALICS_LIST =
  "Stichodactyla helianthusas|" .
  "Pyrobaculum calidifontis|" .
  "Arabidopsis thaliana|" .
+ "Xylella fastidiosa|" .
  "Listeria monocytogenes|" .
  "Mycoplasma pneumoniae|" .
  "Paradisaea Raggiana|" .
@@ -121,6 +122,9 @@ const ITALICS_LIST =
  "Tornieria africana|" .
  "Ilex asprella|" .
  "Physcomitrella patens|" .
+ "Carcharhinus brachyurus|" .
+ "C\. obscurus|" .
+ "Sphyrna zygaena|" .
  "China Daily|" .
  "Tabula Peutingeriana|" .
  "Diamond Sutra|" .
@@ -231,9 +235,10 @@ const ITALICS_LIST =
  "tryA|" .
  "Rangifer|" .
  "Graphidaceae|" .
+ "Bacillus|" .
  "END_OF_CITE_list_junk";
 //  All real ones need pipe on end
-//  YOU MUST ESCAPE () and other FUNNY Characters
+//  YOU MUST ESCAPE (.|) and other FUNNY Characters
 
 const CAMEL_CASE = array('DeSoto', 'PubChem', 'BitTorrent', 'Al2O3', 'NiMo', 'CuZn', 'BxCyNz', 'ChemCam',
                          'StatsRef', 'BuzzFeed', 'DeBenedetti', 'DeVries', 'TallyHo', 'JngJ', 'ENaCs',
@@ -271,7 +276,7 @@ const CAMEL_CASE = array('DeSoto', 'PubChem', 'BitTorrent', 'Al2O3', 'NiMo', 'Cu
                          'StringTie', 'featureCounts', 'DiffSplice', 'QuantSeq', 'WebGestalt', 'flowCore',
                          'flowClust', 'MetaGenomic', 'TlInGe', 'RapidArc', 'SmartArc', 'TomoHD', 'ViralZone',
                          'HyPhy', 'MrBayes', 'SunTag', 'InterPro', 'SmProt', 'ChikDenMaZika', 'LitCovid',
-                         'GeneTree', 'GenAge', 'QnAs', 'BiDil', 'iAge', 'DevSec', 'SecOps', 'DevcOps',
+                         'GeneTree', 'GenAge', 'QnAs', 'BiDil', 'iAge', 'DevSec', 'SecOps', 'DevOps',
                          'LeafCutter', 'CyBase','OxPhos', 'ArrayExpress', 'BepiColombo', 'RuleMonkey',
                          'OxyCo', 'CdZnTe', 'EnChroma', 'FibroTest', 'ActiTest', 'FloTrac', 'FibroScan',
                          'ColorBrewer', 'StagLab', 'EveryManc', 'GaCl', 'DeepFace', 'WeChat', 'kDa ',
@@ -285,9 +290,21 @@ const CAMEL_CASE = array('DeSoto', 'PubChem', 'BitTorrent', 'Al2O3', 'NiMo', 'Cu
                          'ThePleasantvilleEffect', 'ImmGen', 'GeV', 'KrCl', 'LiNi', 'DuBourg', 'MetaAnalysis',
                          'MoCx', 'MoPx', 'MoNx', 'PedCheck', 'ImagiNation', 'HemOnc', 'nJunctions',
                          'SkyMed', 'InterNyet', 'BattleZone', 'NoFap', 'CyberSightings', 'kHz', 'AngQb',
-                         'QuickStats', 'iDisorders', 'PremAir', '®', 'eCrime', 'AgInjuryNews', 'DreamWorks'
+                         'QuickStats', 'iDisorders', 'PremAir', '®', 'eCrime', 'AgInjuryNews', 'DreamWorks',
+                         'SpaceOps', 'DeMille', 'superVolcanoes', 'SuperVolcanoes', 'HotSpots', 'SmartCity',
+                         'RadarConf', 'PuneCon', 'LatinCloud',
+                         'PowerTech', 'SecDev', 'CodeSonar', 'eScience', 'BioWatch', 'IconSpace', 'HotWeb',
+                         'SmartGrid', 'SmartNets', 'PiCom', 'CBDCom', 'CyberSciTech', 'CyberTech', 'SciTech',
+                         'BioRob', 'LexisNexis', 'PlatCon', 'BigData', 'MobileCloud', 'BioInformatics',
+                         'BioEngineering', 'NetSoft', 'ReConFig', 'FPGAs', 'ReConFigurable', 'NetCod', 
+                         'PerCom', 'PowerAfrica', 'PacificVis', 'BigComp', 'RoboSoft', 'PerAc', 'QuickCast',
+                         'QuickSort', 'EIConRus', 'CSCloud', 'EdgeCom', 'eBanking', 'GeoConference', 'eConference',
+                         'ConOps', 'EuroHaptics', 'WiMob', 'WeRob', 'MultiTemp', 'MediVis', 'BioMedical',
+                         'BlackSeaCom', 'SecureCom', 'RobMech', 'PhysComp', 'IntelliSys', 'EnergyTech', 
+                         'Conference on ElectroMagnetic Interference', 'SoutheastCon 2', 'CyCon', 'DiffServ',
+                         'ReSerVation', 'SysTol', 'IEEE SoutheastCon'
                        );
 
-const ITALICS_HARDCODE_IN  = [" Rgene", "CytochromebGenes",       "ElectrongValue",       "thetoxGene",      "GopashtamiandGovardhan",       "PolishLebensraum",       "theNachlassproblem",        " forAltalena:",      " in Plutarch'sLives",       "FromSolidarityto",        " gp91phoxPromoter",  "in vitroAssays",        "MarketizingHindutva",       "TheBhagavadgītā,",       "theOrigin of Species",       "EncounteringHindutva",       "ChineseHukouSystem",        "CisLatreille"];
-const ITALICS_HARDCODE_OUT = [" ''R'' gene", "Cytochrome ''b'' Genes", "Electron ''g'' Value", "the ''tox'' Gene","Gopashtami ''and'' Govardhan", "Polish ''Lebensraum'' ", "the ''Nachlass'' problem ", " for ''Altalena'':", " in Plutarch's ''Lives'' ", "From ''Solidarity'' to ", " gp91phox Promoter", " ''in vitro'' Assays ", "Marketizing ''Hindutva'' ", "The ''Bhagavadgītā'', ", "the ''Origin of Species'' ", "Encountering ''Hindutva'' ", "Chinese ''Hukou'' System ", "''Cis'' Latreille"];
+const ITALICS_HARDCODE_IN  = ["Eternal GodHeavenly Flesh",   "Conference onResearch, Innovation",  "Roman EmpireSoldiers,",   "SilencedHow Apostasy and Blasphemy",   "Cybernetics SocietyInformation Assurance",  "International Conference onServices Computing",  "IEEE InternationalElectron Devices",  "Symposium onFoundations of",  "IEEE InternationalConference",  "Jewish QuestionIdentifying ",   "The Port NelsonRelations",      "Changes for DemocracyActors",   "SpymasterDai Li ",   "A New History of IrelandVolume",   "Devoted to DeathSanta Muerte, the Skeleton Saint",   "Knowing HowEssays on Knowledge, Mind, and Action",   " Rgene", "CytochromebGenes",       "ElectrongValue",       "thetoxGene",      "GopashtamiandGovardhan",       "PolishLebensraum",       "theNachlassproblem",        " forAltalena:",      " in Plutarch'sLives",       "FromSolidarityto",        " gp91phoxPromoter",  "in vitroAssays",        "MarketizingHindutva",       "TheBhagavadgītā,",       "theOrigin of Species",       "EncounteringHindutva",       "ChineseHukouSystem",        "CisLatreille"];
+const ITALICS_HARDCODE_OUT = ["Eternal God: Heavenly Flesh", "Conference on Research, Innovation", "Roman Empire: Soldiers,", "Silenced: How Apostasy and Blasphemy", "Cybernetics Society Information Assurance", "International Conference on Services Computing", "IEEE International Electron Devices", "Symposium on Foundations of", "IEEE International Conference", "Jewish Question: Identifying ", "The Port Nelson ''Relations''", "Changes for Democracy: Actors", "Spymaster: Dai Li ", "A New History of Ireland, Volume", "Devoted to Death: Santa Muerte, the Skeleton Saint", "Knowing How: Essays on Knowledge, Mind, and Action", " ''R'' gene", "Cytochrome ''b'' Genes", "Electron ''g'' Value", "the ''tox'' Gene","Gopashtami ''and'' Govardhan", "Polish ''Lebensraum'' ", "the ''Nachlass'' problem ", " for ''Altalena'':", " in Plutarch's ''Lives'' ", "From ''Solidarity'' to ", " gp91phox Promoter", " ''in vitro'' Assays ", "Marketizing ''Hindutva'' ", "The ''Bhagavadgītā'', ", "the ''Origin of Species'' ", "Encountering ''Hindutva'' ", "Chinese ''Hukou'' System ", "''Cis'' Latreille"];
 

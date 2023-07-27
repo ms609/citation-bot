@@ -579,7 +579,7 @@ function expand_by_doi(Template $template, bool $force = FALSE) : bool {
         }
       }
     } else {
-      report_warning("No CrossRef record found for doi '" . echoable($doi) ."'");
+      report_info("No CrossRef record found for doi '" . echoable($doi) ."'");
       expand_doi_with_dx($template, $doi);
     }
   }
@@ -1275,7 +1275,7 @@ function Bibcode_Response_Processing(string $return, $ch, string $adsabs_url) : 
     if (preg_match_all('~\nX\-RateLimit\-\w+:\s*(\d+)\r~i', $header, $rate_limit)) {
       // @codeCoverageIgnoreStart
       if ($rate_limit[1][2]) {
-        report_info("AdsAbs search " . (string)((int) $rate_limit[1][0] - (int) $rate_limit[1][1]) . "/" . $rate_limit[1][0] . "\n");
+        report_info("AdsAbs search " . (string)((int) $rate_limit[1][0] - (int) $rate_limit[1][1]) . "/" . $rate_limit[1][0]);
       } else {
         throw new Exception('Too many requests', $http_response);
       }

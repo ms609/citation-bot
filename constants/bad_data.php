@@ -83,7 +83,8 @@ const BAD_TITLES = array("unknown", "missing", "arxiv e-prints", "arxiv mathemat
                          "breaking news, analysis, politics, blogs, news photos, video, tech reviews - time.com",
                          "redirect notice", "oxford music online", "trove - archived webpage", "pagina inicia",
                          "404 not found", "404页面", "sign up ", "index of /home", "usa today - today's breaking news, us & world news",
-			 "403 unauthorized", "404错误", "internal server error", "error", "404", "error - lexisnexis® publisher");
+			 "403 unauthorized", "404错误", "internal server error", "error", "404", "error - lexisnexis® publisher",
+			 "optica publishing group");
 const IN_PRESS_ALIASES = array("in press", "inpress", "pending", "published", 
                                "published online", "no-no", "n/a", "online ahead of print", 
                                "unpublished", "unknown", "tba", "forthcoming", "in the press", 
@@ -896,7 +897,9 @@ const JOURNAL_IS_BOOK_SERIES = array('methods of molecular biology' , 'methods m
                                      'advances in enzymology and related areas of molecular biology',
                                      'studies in bilingualism', 'antibiotics and chemotherapy',
                                      'oceanic linguistics special publications',
-                                     'progress in brain research');
+                                     'progress in brain research',
+				     'advances in heterocyclic chemistry',
+				    );
 
 const ALWAYS_BAD_TITLES = array("Bloomberg - Are you a robot?", "Page not found",
                      "Breaking News, Analysis, Politics, Blogs, News Photos, Video, Tech Reviews",
