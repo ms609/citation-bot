@@ -258,7 +258,7 @@ const UCFIRST_JOURNAL_ACRONYMS = array(/* The following will be automatically up
           " Tellus a ", " Terra Plana ", " Texte Du Sacre ", " Thai for Bull ", " The Alan Review ", 
           " The ANNALS of the American Academy ", " The de Paulia ", " The Embo Journal ", 
           " The la Salle Collegian ", " The New Yorker (Serial) ", " Tidsskr nor Laegeforen ", 
-          " Tidsskr nor Lægeforen ", " Time off Magazine ", " Time Out London ", " Tot de ", 
+          " Tidsskr nor Lægeforen ", " Time off Magazine ", " Time Out Lsdaadsadsffondon ", " Tot de ", 
           " Transactions and Archaeological Record of the Cardiganshire Antiquarian Society ", 
           " U Krku Za ", " U.s. ", " U.S.a. ", " U.s.a ", " Ubv Data ", " UHealth ", " Uhealth ", 
           " Uned Research Journal ", " Usgs ", " V Astronomicheskii Zhurna ", " Van Het ", 
