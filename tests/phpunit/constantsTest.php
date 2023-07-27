@@ -53,6 +53,28 @@ final class constantsTest extends testBaseClass {
     $expanded = $this->process_citation($text);
     $this->assertSame($text, $expanded->parsed_text());
   }
+
+  public function testConstantsOoops() : void { // Did we forget to upper/lower case one of them?
+    for ($i = 0; $i < count(JOURNAL_ACRONYMS); $i++) {
+      $this->assertNotEquals(trim(JOURNAL_ACRONYMS[$i]), trim(UCFIRST_JOURNAL_ACRONYMS[$i]));
+    }
+    for ($i = 0; $i < count(LC_SMALL_WORDS); $i++) {
+      $this->assertNotEquals(trim(UC_SMALL_WORDS[$i]), trim(LC_SMALL_WORDS[$i]));
+    }
+  }
+
+  public function testForDisasters() :void { // Did we get things out of order and cause a disaster?
+    $this->assertSame('BJPsych', title_capitalization('Bjpsych', TRUE));
+    $this->assertSame('HortScience', title_capitalization('Hortscience', TRUE));
+    $this->assertSame('TheMarker', title_capitalization('Themarker', TRUE));
+    $this->assertSame('Algebra i Analiz', title_capitalization('Algebra I Analiz', TRUE));
+    $this->assertSame('ChemSystemsChem', title_capitalization('Chemsystemschem', TRUE));
+    $this->assertSame('hessenARCHÄOLOGIE', title_capitalization('HessenARCHÄOLOGIE', TRUE));
+    $this->assertSame('Ocean Science Journal : OSJ', title_capitalization('Ocean Science Journal : Osj', TRUE));
+    $this->assertSame('Starine Jugoslavenske akademije znanosti i umjetnosti', title_capitalization('Starine Jugoslavenske Akademije Znanosti I Umjetnosti', TRUE));
+    $this->assertSame('voor de geschiedenis der Nederlanden', title_capitalization('Voor De Geschiedenis Der Nederlanden', TRUE));
+    $this->assertSame('Zprávy o zasedání Král. čes. společnosti nauk v Praze', title_capitalization('Zprávy O Zasedání Král. Čes. Společnosti Nauk V Praze', TRUE));
+  }
   
   public function testImplicitConstants() : void {
     // Consonants
@@ -508,4 +530,31 @@ final class constantsTest extends testBaseClass {
       $this->assertSame($in, $out); // Same once spaces and single quotes are removed
     }
  }
+
+ public function testConversionsGood() : void {
+    WikipediaBot::make_ch();
+    $page = new TestPage();
+    $errors = "";
+    foreach (TEMPLATE_CONVERSIONS as $convert) {
+       // return -1 if page does not exist; 0 if exists and not redirect; 1 if is redirect
+       $tem = 'Template:' . $convert[0];
+       $tem = str_replace(' ', '_', $tem);
+       // Sometimes it is a redirect, sometimes a safesubst/invoke, and sometimes does not even exist and it comes from copy/paste other wikis
+       if (WikipediaBot::is_redirect($tem) === 0) { // The page actually exists
+          $page->get_text_from($tem);
+          $text = $page->parsed_text();
+          if (stripos($text, '{{safesubst:') === FALSE) {
+            $errors = $errors . '   Is real:' . $convert[0];
+          }
+       }
+       $tem = 'Template:' . $convert[1];
+       $tem = str_replace(' ', '_', $tem);
+       if (WikipediaBot::is_redirect($tem) !== 0 && $tem !== 'Template:Cite_paper' && $tem !== 'Template:cite_paper') { // We use code to clean up cite paper
+          $errors = $errors . '   In now a redirect:' . $convert[1];
+       }
+    }
+    $this->assertSame("", $errors); // We want a list of all of them
+  }
+
+  
 }
