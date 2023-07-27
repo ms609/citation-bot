@@ -460,7 +460,7 @@ try {
  * @codeCoverageIgnore
  */
   private function authenticate_user() : void {
-    @setcookie(session_name(),session_id(),time()+(7*24*3600)); // 7 days
+    @setcookie(session_name(),session_id(),time()+(7*24*3600), "", "", TRUE, TRUE); // 7 days
     if (isset($_SESSION['citation_bot_user_id']) &&
         isset($_SESSION['access_key']) &&
         isset($_SESSION['access_secret']) &&
@@ -480,17 +480,23 @@ try {
       $user = (string) $ident->username;
       if (!self::is_valid_user($user)) {
         unset($_SESSION['access_key'], $_SESSION['access_secret']);
-        report_error('User is either invalid or blocked according to ' . API_ROOT . '?action=query&usprop=blockinfo&format=json&list=users&ususers=' . urlencode(str_replace(" ", "_", $user)));
+        // report_error('User is either invalid or blocked according to ' . API_ROOT . '?action=query&usprop=blockinfo&format=json&list=users&ususers=' . urlencode(str_replace(" ", "_", $user)));
+        report_error('User ' . echoable(str_replace(" ", "_", $user)) . ' is either invalid or blocked');
       }
       $this->the_user = $user;
       $_SESSION['citation_bot_user_id'] = $this->the_user;
       session_write_close(); // Done with the session
+      flush(); // stability
       return;
      }
      catch (Throwable $e) { ; }
     }
     if (empty($_SERVER['REQUEST_URI'])) {
+       $name = (string) @session_name();
+       $id = (string) @session_id();
        session_destroy(); // This is really bad news
+       flush(); // Paranoid
+       @setcookie($name, $id, time()-42000, "", "", TRUE, TRUE);
        report_error('Invalid access attempt to internal API');
     } else {
        unset($_SESSION['access_key'], $_SESSION['access_secret']);

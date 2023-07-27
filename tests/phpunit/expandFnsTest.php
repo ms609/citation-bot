@@ -378,7 +378,7 @@ final class expandFnsTest extends testBaseClass {
   public function testRestorItalicsRegex1() : void {
     $text = "{{cite journal|doi=10.7717/peerj.7240 }}";
     $template = $this->process_citation($text);
-    $this->assertSame("Ngwevu intloko: A new early sauropodomorph dinosaur from the Lower Jurassic Elliot Formation of South Africa and comments on cranial ontogeny in ''Massospondylus carinatus''", $template->get2('title'));
+    $this->assertSame("''Ngwevu intloko'': A new early sauropodomorph dinosaur from the Lower Jurassic Elliot Formation of South Africa and comments on cranial ontogeny in ''Massospondylus carinatus''", $template->get2('title'));
   }
 
   public function testRestorItalicsRegex2() : void {
