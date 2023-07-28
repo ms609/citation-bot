@@ -833,6 +833,8 @@ function title_capitalization(string $in, bool $caps_after_punctuation) : string
     $new_case = 'SAGE Open';
   } elseif ($new_case === 'Ca') {
     $new_case = 'CA';
+  } elseif ($new_case === 'Pen International') {
+    $new_case = 'PEN International';
   }
   return $new_case;
 }
