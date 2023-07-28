@@ -23,7 +23,7 @@ const LC_SMALL_WORDS = array(/* The following will be automatically updated to a
           " SAE ", " SciPost ", " SMPTE ", " SPIE ", " SpringerPlus ", " SSRN ", " TAPPI ", 
           " TCI: ", " te ", " TESOL ", " the ", " TheMarker ", " then ", " till ", " to ", 
           " UCLA ", " UK ", " um ", " und ", " unserer ", " up ", " USA ", " USSR ", " van ", 
-          " vir ", " von ", " voor ", " when ", " with ", " within ", " woor ", " y ", 
+          " vir ", " von ", " voor ", " when ", " with ", " within ", " woor ", " y ", " NIST ",
           " zu ", " zum ", " zur ", /* The above will be automatically updated to alphabetical order */ 
           // After this line we list exceptions that need re-capitalizing after they have been decapitalized.
           " El Dorado ", " Las Vegas ", " Los Angeles ", " N Y ", " U S A ");
@@ -50,7 +50,7 @@ const UC_SMALL_WORDS = array(/* The following will be automatically updated to a
           " Sae ", " Scipost ", " Smpte ", " Spie ", " Springerplus ", " Ssrn ", " Tappi ", 
           " Tci: ", " Te ", " Tesol ", " The ", " Themarker ", " Then ", " Till ", " To ", 
           " Ucla ", " Uk ", " Um ", " Und ", " Unserer ", " Up ", " Usa ", " Ussr ", " Van ", 
-          " Vir ", " Von ", " Voor ", " When ", " With ", " Within ", " Woor ", " Y ", 
+          " Vir ", " Von ", " Voor ", " When ", " With ", " Within ", " Woor ", " Y ", " Nist ",
           " Zu ", " Zum ", " Zur ", /* The above will be automatically updated to alphabetical order */ 
           // After this line we list exceptions that need re-capitalizing after they have been decapitalized.
           " el Dorado ", " las Vegas ", " los Angeles ", " N y ", " U S a ");
