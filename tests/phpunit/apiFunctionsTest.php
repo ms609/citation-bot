@@ -104,7 +104,7 @@ final class apiFunctionsTest extends testBaseClass {
      $expanded = $this->process_citation($text);
      $this->assertSame('On the Interaction of Elementary Particles. I', $expanded->get2('title'));
      $this->assertSame('1935', $expanded->get2('year'));
-     $this->assertSame('Proceedings of the Physico-Mathematical Society of Japan. 3Rd Series', $expanded->get2('journal'));
+     $this->assertSame('Proceedings of the Physico-Mathematical Society of Japan. 3rd Series', $expanded->get2('journal'));
      $this->assertSame('17', $expanded->get2('volume'));
      $this->assertSame('YUKAWA', $expanded->get2('last1'));
      $this->assertSame('Hideki', $expanded->get2('first1'));
