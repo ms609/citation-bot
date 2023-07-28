@@ -805,6 +805,14 @@ function title_capitalization(string $in, bool $caps_after_punctuation) : string
     $replace    = 'Series ' . strtoupper($matches[1]) . $matches[2] . strtoupper($matches[3]);
     $new_case = trim(str_replace($replace_me, $replace, $new_case . ' '));
   }
+
+  // 42th, 33rd, 1st, ...
+  if(preg_match('~\s\d+(?:st|nd|rd|th)[\s\,\;\:\.])~i', ' ' . $new_case . ' ', $matches)) {
+    $replace_me = $matches[0];
+    $replace    = strtolower($matches[0]);
+    $new_case = trim(str_replace($replace_me, $replace, ' ' .$new_case . ' '));
+  }
+ 
   // Part XII: Roman numerals
   $new_case = safe_preg_replace_callback(
     "~ part ([xvil]+): ~iu",
