@@ -822,6 +822,10 @@ function title_capitalization(string $in, bool $caps_after_punctuation) : string
     "~ part ([xvi]+) ~iu",
     function (array $matches) : string {return " Part " . strtoupper($matches[1]) . " ";},
     $new_case);
+  $new_case = safe_preg_replace_callback(
+    "~ (?:Ii|Iii|Iv|Vi|Vii|Vii|Ix)$~u",
+    function (array $matches) : string {return strtoupper($matches[0]);},
+    $new_case);
   // Special cases - Only if the full title
   if ($new_case === 'Bioscience') {
     $new_case = 'BioScience';
