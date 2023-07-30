@@ -701,4 +701,12 @@ const TEMPLATE_CONVERSIONS = array(
                ['subscription', 'subscription required'],
                ['registration', 'registration required'],
                ['Registration', 'Registration required'],
+               ['reg', 'registration required'],
+               ['Reg', 'Registration required'],
+               ['regreq', 'registration required'],
+               ['Regreq', 'Registration required'],
+               ['registration-required', 'registration required'],
+               ['Registration-required', 'Registration required'],
+               ['registration needed', 'registration required'],
+               ['Registration needed', 'Registration required'],
                );
