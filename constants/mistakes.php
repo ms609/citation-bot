@@ -699,4 +699,6 @@ const TEMPLATE_CONVERSIONS = array(
                ['subscribers only', 'subscription required'],
                ['subreq', 'subscription required'],
                ['subscription', 'subscription required'],
+               ['registration', 'registration required'],
+               ['Registration', 'Registration required'],
                );
