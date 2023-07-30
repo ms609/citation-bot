@@ -56,7 +56,7 @@ const UC_SMALL_WORDS = array(/* The following will be automatically updated to a
           " el Dorado ", " las Vegas ", " los Angeles ", " N y ", " U S a ");
           // For ones that start with lower-case, include both ELife and Elife versions in misspelled array
 const JOURNAL_ACRONYMS = array(/* The following will be automatically updated to alphabetical order */
-          " (and the Middle East) ", " (BBA) ", " (online ed.) ", " AAPOS ", " AAPS ", 
+          " (and the Middle East) ", " (BBA) ", " (online ed.) ", " AA Files ", " AAPOS ", " AAPS ", 
           " ACM SIGGRAPH ", " ACS ", " Acta medico-historica Adriatica ", " Acta medico-historica Adriatica ", 
           " AIDS & Behavior ", " AIDS and Behavior ", " AIDS Care ", " AIDS Research ", 
           " AIMS Microbiology ", " AJNR. ", " Algae ", " Algebra i Analiz ", " Algebra i Logika ", 
@@ -171,7 +171,7 @@ const JOURNAL_ACRONYMS = array(/* The following will be automatically updated to
           " Ргасе filologiczne ", /* The above will be automatically updated to alphabetical order */ 
 );
 const UCFIRST_JOURNAL_ACRONYMS = array(/* The following will be automatically updated to alphabetical order */
-          " (And the Middle East) ", " (Bba) ", " (online Ed.) ", " Aapos ", " Aaps ", 
+          " (And the Middle East) ", " (Bba) ", " (online Ed.) ", " Aa Files ", " Aapos ", " Aaps ", 
           " ACM Siggraph ", " Acs ", " Acta Medico-Historica Adriatica ", " Acta Medico-historica Adriatica ", 
           " Aids & Behavior ", " Aids and Behavior ", " Aids Care ", " Aids Research ", 
           " Aims Microbiology ", " Ajnr. ", " ALAGE ", " Algebra I Analiz ", " Algebra I Logika ", 
