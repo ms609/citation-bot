@@ -826,6 +826,7 @@ function title_capitalization(string $in, bool $caps_after_punctuation) : string
     "~ (?:Ii|Iii|Iv|Vi|Vii|Vii|Ix)$~u",
     function (array $matches) : string {return strtoupper($matches[0]);},
     $new_case);
+  $new_case = trim($new_case);
   // Special cases - Only if the full title
   if ($new_case === 'Bioscience') {
     $new_case = 'BioScience';
@@ -839,6 +840,10 @@ function title_capitalization(string $in, bool $caps_after_punctuation) : string
     $new_case = 'CA';
   } elseif ($new_case === 'Pen International') {
     $new_case = 'PEN International';
+  } elseif ($new_case === 'Time off') {
+    $new_case = 'Time Off';
+  } elseif ($new_case === 'It Professional') {
+    $new_case = 'IT Professional';
   }
   return $new_case;
 }
