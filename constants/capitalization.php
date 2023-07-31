@@ -23,7 +23,7 @@ const LC_SMALL_WORDS = array(/* The following will be automatically updated to a
           " RTÉ ", " S&P ", " SAE ", " SciPost ", " SMPTE ", " SPIE ", " SpringerPlus ", 
           " SSRN ", " TAPPI ", " TCI: ", " te ", " TESOL ", " the ", " TheMarker ", " then ", 
           " till ", " to ", " UCLA ", " UK ", " um ", " und ", " unserer ", " up ", " USA ", 
-          " USSR ", " van ", " vir ", " von ", " voor ", " when ", " with ", " within ", 
+          " USSR ", " van ", " vir ", " von ", " voor ", " when ", " with ", " within ", " Nassp ",
           " woor ", " y ", " zu ", " zum ", " zur ", /* The above will be automatically updated to alphabetical order */ 
           // After this line we list exceptions that need re-capitalizing after they have been decapitalized.
           " El Dorado ", " Las Vegas ", " Los Angeles ", " N Y ", " U S A ");
@@ -50,7 +50,7 @@ const UC_SMALL_WORDS = array(/* The following will be automatically updated to a
           " Rté ", " S&p ", " Sae ", " Scipost ", " Smpte ", " Spie ", " Springerplus ", 
           " Ssrn ", " Tappi ", " Tci: ", " Te ", " Tesol ", " The ", " Themarker ", " Then ", 
           " Till ", " To ", " Ucla ", " Uk ", " Um ", " Und ", " Unserer ", " Up ", " Usa ", 
-          " Ussr ", " Van ", " Vir ", " Von ", " Voor ", " When ", " With ", " Within ", 
+          " Ussr ", " Van ", " Vir ", " Von ", " Voor ", " When ", " With ", " Within ", " NASSP ",
           " Woor ", " Y ", " Zu ", " Zum ", " Zur ", /* The above will be automatically updated to alphabetical order */ 
           // After this line we list exceptions that need re-capitalizing after they have been decapitalized.
           " el Dorado ", " las Vegas ", " los Angeles ", " N y ", " U S a ");
@@ -168,6 +168,7 @@ const JOURNAL_ACRONYMS = array(/* The following will be automatically updated to
           " Zeitschrift für Physik A: Hadrons and Nuclei ", " Znanosti i Umjetnosti ", 
           " ZooKeys ", " Zprávy o zasedání Král. čes. společnosti nauk v Praze ", 
           " Zprávy o zasedání Král. čes. společnosti nauk v Praze ", " Zprávy o zasedání Král. čes. společnosti nauk v Praze ", 
+          " Code4Lib ", " Saga-Book ", " MedPage ", " MIT Sloan ", " Kunstforum ", " Algae ", " PEN International ", " JCO Clinical ", " CovertAction Quarterly ", " Universum ", " Pain Practice ", " Cathair na Mart ", " Deutsches Ärzteblatt International ", " Geojournal ", " Kinema ", " D-Lib Magazine ", " GeoArabia ", " JCI Insight ", " ausländisches öffentliches Recht ", " Bilim ve Teknik ", " Babesch ", " USSR-Izvestiya ", " voor Geneeskunde ", 
           " Ргасе filologiczne ", /* The above will be automatically updated to alphabetical order */ 
 );
 const UCFIRST_JOURNAL_ACRONYMS = array(/* The following will be automatically updated to alphabetical order */
@@ -284,6 +285,7 @@ const UCFIRST_JOURNAL_ACRONYMS = array(/* The following will be automatically up
           " Zeitschrift Für Physik a: Hadrons And Nuclei ", " Znanosti I Umjetnosti ", 
           " Zookeys ", " Zprávy O Zasedání Král. Čes. Společnosti Nauk V Praze ", 
           " Zprávy O Zasedání Král. čes. Společnosti Nauk V Praze ", " Zprávy o zasedání Král. čes. Společnosti nauk v Praze ", 
+          " Code4lib ", " Saga-book ", " Medpage ", " Mit Sloan ", " KUNSTFORUM ", " ALGAE ", " Pen International ", " Jco Clinical ", " Covertaction Quarterly ", " UNIVERSUM ", " PAIN Practice ", " Cathair Na Mart ", " Deutsches Ärzteblatt international ", " GeoJournal ", " KINEMA ", " D-lib Magazine ", " Geoarabia ", " Jci Insight ", " Ausländisches Öffentliches Recht ", " Bilim Ve Teknik ", " BABesch ", " Ussr-Izvestiya ", " Voor Geneeskunde ", 
           " Ргасе Filologiczne ", /* The above will be automatically updated to alphabetical order */ 
 );
 const OBVIOUS_FOREIGN_WORDS = array(" Abhandlungen ", " Actes ", " Annales ", " Archiv ", " Archives de ",
