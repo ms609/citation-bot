@@ -2814,8 +2814,8 @@ final class Template {
     }
     $this->add_if_new('isbn', $isbn);
     // Possibly contains dud information on occasion - only add if data is good enough to have ISBN, and is probably a stand-alone book
-    if ($isbn !== '' && $this->blank(['doi', 'pmid', 'pmc', 's2cid', 'arxiv', 'eprint', 'journal', 'magazine', 'newspaper', 'series'])) {
-        $this->add_if_new('publisher', str_replace("___", ":", $xml->dc___publisher));
+    if (isset($xml->dc___publisher) && $isbn !== '' && $this->blank(['doi', 'pmid', 'pmc', 's2cid', 'arxiv', 'eprint', 'journal', 'magazine', 'newspaper', 'series'])) {
+        $this->add_if_new('publisher', str_replace("___", ":", (string) $xml->dc___publisher));
     }
 
     $i = 0;
