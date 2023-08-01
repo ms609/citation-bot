@@ -2214,7 +2214,7 @@ VL - 27
 ER -  }}';
      $prepared = $this->prepare_citation($text);
      $this->assertNull($prepared->get2('title'));
-     $this->assertNull($prepared->get2('date'));
+     $this->assertNull($prepared->get2('year'));
      $this->assertNull($prepared->get2('journal'));
      $this->assertSame('', $prepared->first_author());
      $this->assertNull($prepared->get2('last1'));
