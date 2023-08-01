@@ -153,6 +153,9 @@ public static function query_url_api_class(array $ids, array &$templates) : void
          if (!doi_active($doi) && doi_works($doi) && !preg_match(REGEXP_DOI_ISSN_ONLY, $doi)) {
            self::expand_by_zotero($template, 'https://dx.doi.org/' . $doi);  // DOIs without meta-data
          }
+         if (doi_works($doi) && $template->blank('title') && stripos($doi, "10.1023/A:") === 0) {
+           self::expand_by_zotero($template, 'https://link.springer.com/article/' . $doi);  // DOIs without title meta-data
+         }
        }
   }
 }
