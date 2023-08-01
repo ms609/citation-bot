@@ -805,6 +805,14 @@ function title_capitalization(string $in, bool $caps_after_punctuation) : string
     $replace    = 'Series ' . strtoupper($matches[1]) . $matches[2] . strtoupper($matches[3]);
     $new_case = trim(str_replace($replace_me, $replace, $new_case . ' '));
   }
+
+  // 42th, 33rd, 1st, ...
+  if(preg_match('~\s\d+(?:st|nd|rd|th)[\s\,\;\:\.]~i', ' ' . $new_case . ' ', $matches)) {
+    $replace_me = $matches[0];
+    $replace    = strtolower($matches[0]);
+    $new_case = trim(str_replace($replace_me, $replace, ' ' .$new_case . ' '));
+  }
+ 
   // Part XII: Roman numerals
   $new_case = safe_preg_replace_callback(
     "~ part ([xvil]+): ~iu",
@@ -814,6 +822,11 @@ function title_capitalization(string $in, bool $caps_after_punctuation) : string
     "~ part ([xvi]+) ~iu",
     function (array $matches) : string {return " Part " . strtoupper($matches[1]) . " ";},
     $new_case);
+  $new_case = safe_preg_replace_callback(
+    "~ (?:Ii|Iii|Iv|Vi|Vii|Vii|Ix)$~u",
+    function (array $matches) : string {return strtoupper($matches[0]);},
+    $new_case);
+  $new_case = trim($new_case);
   // Special cases - Only if the full title
   if ($new_case === 'Bioscience') {
     $new_case = 'BioScience';
@@ -825,6 +838,12 @@ function title_capitalization(string $in, bool $caps_after_punctuation) : string
     $new_case = 'SAGE Open';
   } elseif ($new_case === 'Ca') {
     $new_case = 'CA';
+  } elseif ($new_case === 'Pen International') {
+    $new_case = 'PEN International';
+  } elseif ($new_case === 'Time off') {
+    $new_case = 'Time Off';
+  } elseif ($new_case === 'It Professional') {
+    $new_case = 'IT Professional';
   }
   return $new_case;
 }
