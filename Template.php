@@ -2644,48 +2644,53 @@ final class Template {
 
   public function clean_google_books() : void {
     foreach (ALL_URL_TYPES as $url_type) {
-       if ($this->has($url_type) && preg_match('~^(https?://(?:books|www)\.google\.[^/]+/books.+)\?$~', $this->get($url_type), $matches)) {
-         $this->set($url_type, $matches[1]); // trailing ?
+      if ($this->has($url_type)) {
+       $url = $this->get($url_type);
+       if (preg_match('~^(https?://(?:books|www)\.google\.[^/]+/books.+)\?$~',$url, $matches)) {
+         $url = $matches[1]; // trailing ?
        }
-       if ($this->has($url_type) && preg_match('~^https?://books\.google\.[^/]+/booksid=(.+)$~', $this->get($url_type), $matches)) {
-         $this->set($url_type, 'https://books.google.com/books?id=' . $matches[1]);
+       if (preg_match('~^https?://books\.google\.[^/]+/booksid=(.+)$~', $url, $matches)) {
+         $url = 'https://books.google.com/books?id=' . $matches[1];
        }
-       if ($this->has($url_type) && preg_match('~^https?://www\.google\.[^/]+/books\?(.+)$~', $this->get($url_type), $matches)) {
-         $this->set($url_type, 'https://books.google.com/books?' . $matches[1]);
+       if (preg_match('~^https?://www\.google\.[^/]+/books\?(.+)$~', $url, $matches)) {
+         $url = 'https://books.google.com/books?' . $matches[1];
        }
-       if ($this->has($url_type) && preg_match('~^https?://books\.google\.[^/\?]+\?id=(.+)$~', $this->get($url_type), $matches)) {
-         $this->set($url_type, 'https://books.google.com/books?id=' . $matches[1]);
+       if (preg_match('~^https?://books\.google\.[^/\?]+\?id=(.+)$~', $url, $matches)) {
+         $url = 'https://books.google.com/books?id=' . $matches[1];
        }
-       if ($this->has($url_type) && preg_match('~^https?://books\.google\.[^/]+\/books\/about\/[^/]+\.html$~', $this->get($url_type), $matches)) {
-         $this->forget($url_type);
+       if (preg_match('~^https?://books\.google\.[^/]+\/books\/about\/[^/]+\.html$~', $url, $matches)) {
+         $url = '';
        }
-       if ($this->has($url_type) && preg_match('~^https?://(?:books|www)\.google\.[^/]+\/books\/edition\/[a-zA-Z0-9\_]+\/?$~', $this->get($url_type), $matches)) {
-         $this->forget($url_type);
+       if (preg_match('~^https?://(?:books|www)\.google\.[^/]+\/books\/edition\/[a-zA-Z0-9\_]+\/?$~', $url, $matches)) {
+        $url = '';
        }
-       if ($this->has($url_type) && preg_match('~^https?://(?:books|www)\.google\.[^/]+\/books\?pg=P\S\S\S\S*$~', $this->get($url_type), $matches)) {
-         $this->forget($url_type);
+       if (preg_match('~^https?://(?:books|www)\.google\.[^/]+\/books\?pg=P\S\S\S\S*$~', $url, $matches)) {
+         $url = '';
        }
-       if ($this->has($url_type) && preg_match('~^https?://(?:books|www)\.google\.[^/]+\/books\/edition\/[a-zA-Z0-9\_]+\/([a-zA-Z0-9\-]+)\?(.+)$~', $this->get($url_type), $matches)) {
-         $this->set($url_type, 'https://books.google.com/books?id=' . $matches[1] . '&' . $matches[2]);
+       if (preg_match('~^https?://(?:books|www)\.google\.[^/]+\/books\/edition\/[a-zA-Z0-9\_]+\/([a-zA-Z0-9\-]+)\?(.+)$~', $url, $matches)) {
+         $url = 'https://books.google.com/books?id=' . $matches[1] . '&' . $matches[2];
        }
-       if ($this->has($url_type) && preg_match('~^https?://books\.google\..*id\&\#61\;.*$~', $this->get($url_type), $matches)) {
-         $this->set($url_type, str_replace('&#61;', '=', $this->get($url_type)));
+       if (preg_match('~^https?://books\.google\..*id\&\#61\;.*$~', $url, $matches)) {
+         $url = str_replace('&#61;', '=', $url);
        }
-       if ($this->has($url_type) && preg_match('~^https?://books\.google\.[^/]+/(?:books|)\?[qv]id=(.+)$~', $this->get($url_type), $matches)) {
-         $this->set($url_type, 'https://books.google.com/books?id=' . $matches[1]);
+       if (preg_match('~^https?://books\.google\.[^/]+/(?:books|)\?[qv]id=(.+)$~', $url, $matches)) {
+         $url = 'https://books.google.com/books?id=' . $matches[1];
        }
-       if ($this->has($url_type) && preg_match('~^https?://(?:|www\.)books\.google\.com/\?id=(.+)$~', $this->get($url_type), $matches)) {
-         $this->set($url_type, 'https://books.google.com/books?id=' . $matches[1]);
+       if (preg_match('~^https?://(?:|www\.)books\.google\.com/\?id=(.+)$~', $url, $matches)) {
+         $url = 'https://books.google.com/books?id=' . $matches[1];
        }
-       if ($this->has($url_type) && preg_match('~^https?://www\.google\.[a-z\.]+/books\?id=(.+)$~', $this->get($url_type), $matches)) {
-           $this->set($url_type, 'https://books.google.com/books?id=' . $matches[1]);
+       if (preg_match('~^https?://www\.google\.[a-z\.]+/books\?id=(.+)$~', $url, $matches)) {
+         $url = 'https://books.google.com/books?id=' . $matches[1];
        }
+       $this->set($url_type, $url);
+       if ($url === '') $this->forget($url_type);
        $this->expand_by_google_books_inner($url_type, FALSE);
-       if ($this->has($url_type) && preg_match('~^https?://books\.google\.([^/]+)/books\?((?:isbn|vid)=.+)$~', $this->get($url_type), $matches)) {
+       if (preg_match('~^https?://books\.google\.([^/]+)/books\?((?:isbn|vid)=.+)$~', $this->get($url_type), $matches)) {
          if ($matches[1] !== 'com') {
            $this->set($url_type, 'https://books.google.com/books?' . $matches[2]);
          }
        }
+      }
     }
   }
 
