@@ -1069,10 +1069,7 @@ final class Template {
       ### DATE AND YEAR ###
 
       case "date":
-        if (preg_match("~^\d{4}$~", sanitize_string($value))) {
-          // Not adding any date data beyond the year, so 'year' parameter is more suitable
-          $param_name = "year";
-        } elseif (self::$date_style !== DATES_WHATEVER || preg_match('~^\d{4}\-\d{2}\-\d{2}$~', $value)) {
+        if (self::$date_style !== DATES_WHATEVER || preg_match('~^\d{4}\-\d{2}\-\d{2}$~', $value)) {
           $time = strtotime($value);
           if ($time) {
             $day = date('d', $time);
@@ -1092,18 +1089,22 @@ final class Template {
                || in_array(trim(strtolower($this->get_without_comments_and_placeholders('date'))), IN_PRESS_ALIASES))
             && ($this->blank('year')
                || in_array(trim(strtolower($this->get_without_comments_and_placeholders('year'))), IN_PRESS_ALIASES))
-          ) {
-          if ($param_name !== 'date') $this->forget('date'); // Delete any "in press" dates.
-          if ($param_name !== 'year') $this->forget('year'); // We only unset the other one so that parameters stay in order as much as possible
-          if ($this->add($param_name, $value)) {
+          ) {  // Delete any "in press" dates.
+          $this->forget('year'); // "year" is discouraged
+          if ($this->add('date', $value)) {
             $this->tidy_parameter('isbn');  // We just added a date, we now know if 2007 or later
             return TRUE;
           }
         }
         // Update Year with CrossRef data in a few limited cases
         if ($param_name === 'year' && $api === 'crossref' && $this->no_initial_doi && ((int) $this->year() < $value) && ((int)date('Y') - 3 < $value)) {
-          $this->forget('date');
-          $this->set('year', $value);
+          if ($this->blank('year')) {
+             $this->forget('year');
+             $this->set('date', $value);
+          } else {
+             $this->forget('date');
+             $this->set('year', $value);
+          }
           $this->tidy_parameter('isbn');
           return TRUE;
         }

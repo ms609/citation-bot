@@ -1100,7 +1100,7 @@ final class zoteroTest extends testBaseClass {
     $text = '{{Cite journal|url=https://www.ncbi.nlm.nih.gov/books/NBK24662/|access-date=2099-12-12}}';  // Date is before access-date so will expand
     $expanded = $this->expand_via_zotero($text);
     $this->assertSame('Science, Medicine, and Animals', $expanded->get2('title'));
-    $this->assertSame('2004', $expanded->get2('year'));
+    $this->assertSame('2004', $expanded->get2('date'));
     $this->assertSame('National Academies Press (US)', $expanded->get2('publisher'));
    });
   }
