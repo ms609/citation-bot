@@ -2806,8 +2806,6 @@ final class Template {
     } else {
       $this->add_if_new('title',  wikify_external_text(str_replace("___", ":", (string) $xml->title)));
     }
-    // Possibly contains dud information on occasion
-    // $this->add_if_new('publisher', str_replace("___", ":", $xml->dc___publisher));
     $isbn = '';
     foreach ($xml->dc___identifier as $ident) {
       if (preg_match("~isbn.*?([\d\-]{9}[\d\-]+)~i", (string) $ident, $match)) {
@@ -2815,6 +2813,10 @@ final class Template {
       }
     }
     $this->add_if_new('isbn', $isbn);
+    // Possibly contains dud information on occasion - only add if data is good enough to have ISBN, and is probably a stand-alone book
+    if ($isbn !== '' && $this->blank(['doi', 'pmid', 'pmc', 's2cid', 'arxiv', 'eprint', 'journal', 'magazine', 'newspaper', 'series'])) {
+        $this->add_if_new('publisher', str_replace("___", ":", $xml->dc___publisher));
+    }
 
     $i = 0;
     if ($this->blank(array_merge(FIRST_EDITOR_ALIASES, FIRST_AUTHOR_ALIASES, ['publisher', 'journal', 'magazine', 'periodical']))) { // Too many errors in gBook database to add to existing data.   Only add if blank.
