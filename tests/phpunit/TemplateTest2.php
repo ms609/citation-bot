@@ -3348,14 +3348,14 @@ final class TemplateTest2 extends testBaseClass {
      $text = '{{cite journal|date=4000}}';
      $template = $this->make_citation($text);
      $template->add_if_new('year', (string) date('Y'), 'crossref');
-     $this->assertSame('4000', $template->get2('year'));
+     $this->assertSame('4000', $template->get2('date'));
   }
 
   public function testUpdateYear7() : void {
      $text = '{{cite journal|year=4000}}';
      $template = $this->make_citation($text);
      $template->add_if_new('year', (string) date('Y'), 'crossref');
-     $this->assertSame('4000', $template->get2('date'));
+     $this->assertSame('4000', $template->get2('year'));
   }
  
   public function testVerifyDOI1() : void {
