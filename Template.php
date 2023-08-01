@@ -343,6 +343,16 @@ final class Template {
           $the_issue   = $this->get('issue');
           $the_page    = $this->get('page');
           $the_pages   = $this->get('pages');
+          if ($this->get2('chapter') === NULL) {
+             $no_start_chapter = TRUE;
+          } else {
+             $no_start_chapter = FALSE;
+          }
+          if ($this->get2('journal') === NULL) {
+             $no_start_journal = TRUE;
+          } else {
+             $no_start_journal = FALSE;
+          }
           $initial_author_params_save = $this->initial_author_params;
           $bad_data = FALSE;
           if (stripos($the_journal, 'Advances in Cryptology') === 0 && stripos($the_title, 'Advances in Cryptology') === 0) {
@@ -639,7 +649,10 @@ final class Template {
               }
             }
           }
+          if ($no_start_chapter && $this->blank('chapter')) $this->forget('chapter'));
+          if ($no_start_journal && $this->blank('journal')) $this->forget('journal'));
           unset($initial_author_params_save, $the_title, $the_journal, $the_chapter, $the_volume, $the_issue, $the_page, $the_pages, $bad_data);
+          unset($no_start_chapter, $no_start_journal);
         }
         $this->tidy();
         // Fix up URLs hiding in identifiers
