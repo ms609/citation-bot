@@ -2694,13 +2694,14 @@ final class Template {
     }
   }
 
-  public function expand_by_google_books() : bool {
+  public function expand_by_google_books() : void {
     $this->clean_google_books();
-    if ($this->has('doi') && doi_active($this->get('doi'))) return FALSE;
+    if ($this->has('doi') && doi_active($this->get('doi'))) return;
     foreach (['url', 'chapterurl', 'chapter-url'] as $url_type) {
-       if ($this->expand_by_google_books_inner($url_type, TRUE)) return TRUE;
+       if ($this->expand_by_google_books_inner($url_type, TRUE)) return;
     }
-    return $this->expand_by_google_books_inner('', TRUE);
+    $this->expand_by_google_books_inner('', TRUE);
+    return;
   }
 
   protected function expand_by_google_books_inner(string $url_type, bool $use_it) : bool {
