@@ -37,7 +37,7 @@ final class PageTest extends testBaseClass {
  
   public function testPageChangeSummary32() : void { // Mixture of droping chapter-url and moving URL to chapter-url.  Bogus template content
       $page = $this->process_page('{{cite book|chapter=X|chapter-url= https://mathscinet.ams.org/mathscinet-getitem?mr=2320282|last1=X|last2=X|first1=X|first2=X |url= https://books.google.com/books?id=to0yXzq_EkQC&pg=PP154|title=Y|isbn=XXX|year=XXX}}');
-      $this->assertSame('Add: mr, date. Removed parameters. Some additions/deletions were parameter name changes. | [[:en:WP:UCB|Use this bot]]. [[:en:WP:DBUG|Report bugs]]. ', $page->edit_summary());                
+      $this->assertSame('Add: mr, publisher, date. Removed parameters. Some additions/deletions were parameter name changes. | [[:en:WP:UCB|Use this bot]]. [[:en:WP:DBUG|Report bugs]]. ', $page->edit_summary());                
   }
 
   public function testPageChangeSummary4() : void {
