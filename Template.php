@@ -2813,10 +2813,6 @@ final class Template {
       }
     }
     $this->add_if_new('isbn', $isbn);
-    // Possibly contains dud information on occasion - only add if data is good enough to have ISBN, and is probably a stand-alone book
-    if (isset($xml->dc___publisher) && $isbn !== '' && $this->blank(['doi', 'pmid', 'pmc', 's2cid', 'arxiv', 'eprint', 'journal', 'magazine', 'newspaper', 'series'])) {
-        $this->add_if_new('publisher', str_replace("___", ":", (string) $xml->dc___publisher));
-    }
 
     $i = 0;
     if ($this->blank(array_merge(FIRST_EDITOR_ALIASES, FIRST_AUTHOR_ALIASES, ['publisher', 'journal', 'magazine', 'periodical']))) { // Too many errors in gBook database to add to existing data.   Only add if blank.
@@ -2826,6 +2822,11 @@ final class Template {
         $this->validate_and_add('author' . (string) ++$i, str_replace("___", ":", (string) $author), '', '', TRUE);
         if ($this->blank(['author' . (string) $i, 'first' . (string) $i, 'last' . (string) $i])) $i--; // It did not get added
       }
+    }
+
+    // Possibly contains dud information on occasion - only add if data is good enough to have ISBN, and is probably a stand-alone book
+    if (isset($xml->dc___publisher) && $isbn !== '' && $this->blank(['doi', 'pmid', 'pmc', 's2cid', 'arxiv', 'eprint', 'journal', 'magazine', 'newspaper', 'series'])) {
+        $this->add_if_new('publisher', str_replace("___", ":", (string) $xml->dc___publisher));
     }
 
     $google_date = sanitize_string(trim( (string) $xml->dc___date )); // Google often sends us YYYY-MM
