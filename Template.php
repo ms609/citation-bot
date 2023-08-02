@@ -3868,11 +3868,11 @@ final class Template {
           $day = $this->get('day');
           $month = $this->get('month');
           $year = $this->get('year');
-          if ($day === '' && preg_match('~^([a-zA-Z]+) (\d+)$~', $month, $matches)) {
+          if ($day === '' && preg_match('~^([a-zA-Z]+) 0*(\d+)$~', $month, $matches)) {
              $day = $matches[2];
              $month = $matches[1];
           }
-          if ($day === '' && preg_match('~^(\d+) ([a-zA-Z]+)$~', $month, $matches)) {
+          if ($day === '' && preg_match('~^0*(\d+) ([a-zA-Z]+)$~', $month, $matches)) {
              $day = $matches[1];
              $month = $matches[2];
           }
