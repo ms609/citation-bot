@@ -916,6 +916,7 @@ const ALWAYS_BAD_TITLES = array("Bloomberg - Are you a robot?", "Page not found"
                      "PressReader.com - Digital Newspaper & Magazine Subscriptions",
                      "PressReader.com - Digital Newspaper & Magazine Subscriptions.",
                      "PressReader.com – Digital Newspaper & Magazine Subscriptions",
+	             "How to access research remotely",
                      "Log In - ProQuest",
                     );
 
