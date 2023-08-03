@@ -412,11 +412,11 @@ final class Template {
               stripos($the_journal, 'IEEE Symposium') !== FALSE ||
               stripos($the_journal, 'IEEE Conference') !== FALSE ||
               stripos($the_journal, 'IEEE International Conference') !== FALSE ||
-              stripos($the_journal, 'ACM International Symposium) !== FALSE ||
-              stripos($the_journal, 'ACM Symposium) !== FALSE ||
-              stripos($the_journal, 'IEEE International Symposium) !== FALSE ||
-              stripos($the_journal, 'Symposium on Theoretical Aspects) !== FALSE ||
-              stripos($the_journal, 'Design Automation Conference) !== FALSE
+              stripos($the_journal, 'ACM International Symposium') !== FALSE ||
+              stripos($the_journal, 'ACM Symposium') !== FALSE ||
+              stripos($the_journal, 'IEEE International Symposium') !== FALSE ||
+              stripos($the_journal, 'Symposium on Theoretical Aspects') !== FALSE ||
+              stripos($the_journal, 'Design Automation Conference') !== FALSE
              ) {
               $this->rename('journal', 'CITATION_BOT_PLACEHOLDER_journal');
               $the_journal = '';
