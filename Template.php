@@ -380,7 +380,7 @@ final class Template {
               $data_to_check = $the_title . $the_journal . $the_chapter . $this->get('series');
               if (stripos($data_to_check, 'IEEE Standard for') === FALSE && $this->blank('journal')) {
                 ; // Do nothing
-              } elseif (stripos($data_to_check, 'Symposium') === FALSE && stripos($data_to_check, 'Conference') === FALSE) { // Looks like conference
+              } elseif (stripos($data_to_check, 'Symposium') === FALSE && stripos($data_to_check, 'Conference') === FALSE && stripos($data_to_check, 'Proceedings') === FALSE) { // Looks like conference
                 if ($the_journal !== '') {
                   $this->rename('journal', 'CITATION_BOT_PLACEHOLDER_journal');
                   $the_journal = '';
@@ -394,7 +394,7 @@ final class Template {
                   $the_chapter = '';
                 }
                 $bad_data = TRUE;
-              } elseif (stripos($the_journal, 'Symposium') !== FALSE || stripos($the_journal, 'Conference') !== FALSE) {
+              } elseif (stripos($the_journal, 'Symposium') !== FALSE || stripos($the_journal, 'Conference') !== FALSE || stripos($the_journal, 'Proceedings') !== FALSE) {
                  $this->rename('journal', 'CITATION_BOT_PLACEHOLDER_journal');
                  $the_journal = '';
                  $bad_data = TRUE;
