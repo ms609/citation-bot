@@ -6153,7 +6153,7 @@ final class Template {
           }
         }
       }
-      if (preg_match('~^10\.1109/~', $this->get('doi')) &&
+      if (strpos($this->get('doi'), '10.1109/') === 0 &&
         $this->has('title') && $this->has('chapter') && $this->has('isbn')  &&
         $this->wikiname() === 'cite book' && doi_works($this->get('doi'))) {
           if (stripos($this->get('title'), 'Conference') !== FALSE) {
