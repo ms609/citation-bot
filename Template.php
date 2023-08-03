@@ -4490,7 +4490,7 @@ final class Template {
           }
           if ($this->wikiname() === 'cite journal' && $this->has('journal') && $this->has('title') && $this->has('doi')) {
              $test_me = str_replace(array(']', '['), '', strtolower($this->get($param)));
-             if (in_array($test_me, array('sciencedirect', 'science direct))) {  // TODO add more
+             if (in_array($test_me, array('sciencedirect', 'science direct'))) {  // TODO add more
                 $this->forget($param);
              }
             return;
