@@ -360,22 +360,6 @@ final class Template {
               $this->forget('journal');
               $bad_data = TRUE;
           }
-          if (stripos($the_journal, 'Advances in Cryptology') === 0 ||
-              stripos($the_journal, 'IEEE Symposium') !== FALSE ||
-              stripos($the_journal, 'IEEE Conference') !== FALSE ||
-              stripos($the_journal, 'IEEE International Conference') !== FALSE ) {
-              $this->rename('journal', 'CITATION_BOT_PLACEHOLDER_journal');
-              $the_journal = '';
-              $bad_data = TRUE;
-              if ($the_title !== '') {
-                  $this->rename('title', 'CITATION_BOT_PLACEHOLDER_title');
-                  $the_title = '';
-              }
-              if ($the_chapter !== '') {
-                  $this->rename('chapter', 'CITATION_BOT_PLACEHOLDER_chapter');
-                  $the_chapter = '';
-              }
-          }
           $ieee_insanity = FALSE;
           if (strpos($this->get('doi'), '10.1109/') === 0 &&
               ($this->has('isbn') || (stripos($the_title, 'proceedings') !== FALSE && stripos($the_journal, 'proceedings') !== FALSE))) { // IEEE "book"
@@ -419,6 +403,22 @@ final class Template {
                    $this->rename('chapter', 'CITATION_BOT_PLACEHOLDER_chapter');
                    $the_chapter = '';
                  }
+              }
+          }
+          if (stripos($the_journal, 'Advances in Cryptology') === 0 ||
+              stripos($the_journal, 'IEEE Symposium') !== FALSE ||
+              stripos($the_journal, 'IEEE Conference') !== FALSE ||
+              stripos($the_journal, 'IEEE International Conference') !== FALSE ) {
+              $this->rename('journal', 'CITATION_BOT_PLACEHOLDER_journal');
+              $the_journal = '';
+              $bad_data = TRUE;
+              if ($the_title !== '') {
+                  $this->rename('title', 'CITATION_BOT_PLACEHOLDER_title');
+                  $the_title = '';
+              }
+              if ($the_chapter !== '') {
+                  $this->rename('chapter', 'CITATION_BOT_PLACEHOLDER_chapter');
+                  $the_chapter = '';
               }
           }
           if ($the_pages === '_' || $the_pages === '0' || $the_pages === 'null' || $the_pages === 'n/a' || $the_pages === 'online' || $the_pages === 'Online' || $the_pages === 'Forthcoming' || $the_pages === 'forthcoming') {
