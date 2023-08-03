@@ -337,7 +337,7 @@ final class Template {
       if (!$this->blank(['pmc', 'pmid', 'doi', 'jstor']) ||
          (stripos($this->get('journal') . $this->get('title'), 'arxiv') !== FALSE && !$this->blank(ARXIV_ALIASES))) { // Have some good data
           $the_title   = $this->get('title');
-          $the_journal = $this->get('journal');
+          $the_journal = str_replace(['[', ']'], '', $this->get('journal'));
           $the_chapter = $this->get('chapter');
           $the_volume  = $this->get('volume');
           $the_issue   = $this->get('issue');
@@ -451,10 +451,11 @@ final class Template {
               $this->rename('title', 'CITATION_BOT_PLACEHOLDER_title');
               $the_title = '';
               $bad_data = TRUE;
-          }                                                                                                                                                                                                   
+          }                                                                                                         
           if ($the_title === '_' || $the_title === 'null' || $the_title === '[No title found]' || $the_title === 'Archived copy' || $the_title === 'JSTOR' ||
               $the_title === 'ShieldSquare Captcha' || $the_title === 'Shibboleth Authentication Request' || $the_title === 'Pubmed' ||
-              $the_title === 'Pubmed Central' || $the_title === 'Optica Publishing Group') { // title=none is often because title is "reviewed work....
+              $the_title === 'Pubmed Central' || $the_title === 'Optica Publishing Group' || $the_title === 'BioOne' || $the_title === 'IEEE Xplore' ||
+              $the_title === 'ScienceDirect' || $the_title === 'Science Direct') { // title=none is often because title is "reviewed work....
               $this->rename('title', 'CITATION_BOT_PLACEHOLDER_title');
               $the_title = '';
               $bad_data = TRUE;
@@ -478,7 +479,7 @@ final class Template {
               $the_journal = '';
               $bad_data = TRUE;
           }
-          if (str_i_same($the_journal, 'JSTOR') || $the_journal === '_') {
+          if (str_i_same($the_journal, 'JSTOR') || $the_journal === '_' || str_i_same($the_journal, 'BioOne') || str_i_same($the_journal, 'IEEE Xplore') || str_i_same($the_journal, 'PubMed') || str_i_same($the_journal, 'PubMed Central') || str_i_same($the_journal, 'ScienceDirect') || str_i_same($the_journal, 'Science Direct')) {
               $this->rename('journal', 'CITATION_BOT_PLACEHOLDER_journal');
               $the_journal = '';
               $bad_data = TRUE;
@@ -4485,6 +4486,13 @@ final class Template {
         case 'publisher':
           if ($this->wikiname() === 'cite journal' && $this->has('journal') && $this->has('title') && $this->blank($param)) {
             $this->forget($param);  // Not good to encourage adding this
+            return;
+          }
+          if ($this->wikiname() === 'cite journal' && $this->has('journal') && $this->has('title') && $this->has('doi')) {
+             $test_me = str_replace(array(']', '['), '', strtolower($this->get($param)));
+             if (in_array($test_me, array('sciencedirect', 'science direct))) {  // TODO add more
+                $this->forget($param);
+             }
             return;
           }
           if (stripos($this->get($param), 'proquest') !== FALSE && stripos($this->get($param), 'llc') === FALSE) {
