@@ -174,7 +174,7 @@ final class constantsTest extends testBaseClass {
        $bit = next($alpha_bits);
        $alphaed .= $bit ? ($bit . ", ") : '';
        $line_length += $bit_length + 2;
-       if ($line_length > 86) {
+       if ($line_length > 76) {
          $alphaed .= $new_line;
          $line_length = 10;
         }
