@@ -362,7 +362,8 @@ final class Template {
           }
           $ieee_insanity = FALSE;
           if ((strpos($this->get('doi'), '10.1109/') === 0 || strpos($this->get('doi'), '10.1145/') === 0 || strpos($this->get('doi'), '10.1117/') === 0) &&
-              ($this->has('isbn') || (stripos($the_title, 'proceedings') !== FALSE && stripos($the_journal, 'proceedings') !== FALSE))) { // IEEE "book"
+              ($this->has('isbn') || (stripos($the_title, 'proceedings') !== FALSE && stripos($the_journal, 'proceedings') !== FALSE) ||
+              (stripos($the_title, 'Symposium') !== FALSE && stripos($the_journal, 'Symposium') !== FALSE))) { // IEEE/ACM/etc "book"
               $data_to_check = $the_title . $the_journal . $the_chapter . $this->get('series');
               if (stripos($data_to_check, 'IEEE Standard for') === FALSE && $this->blank('journal')) {
                 ; // Do nothing
@@ -410,7 +411,13 @@ final class Template {
           if (stripos($the_journal, 'Advances in Cryptology') === 0 ||
               stripos($the_journal, 'IEEE Symposium') !== FALSE ||
               stripos($the_journal, 'IEEE Conference') !== FALSE ||
-              stripos($the_journal, 'IEEE International Conference') !== FALSE ) {
+              stripos($the_journal, 'IEEE International Conference') !== FALSE ||
+              stripos($the_journal, 'ACM International Symposium) !== FALSE ||
+              stripos($the_journal, 'ACM Symposium) !== FALSE ||
+              stripos($the_journal, 'IEEE International Symposium) !== FALSE ||
+              stripos($the_journal, 'Symposium on Theoretical Aspects) !== FALSE ||
+              stripos($the_journal, 'Design Automation Conference) !== FALSE
+             ) {
               $this->rename('journal', 'CITATION_BOT_PLACEHOLDER_journal');
               $the_journal = '';
               $bad_data = TRUE;
