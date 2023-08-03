@@ -376,11 +376,17 @@ final class Template {
                   $the_chapter = '';
               }
           }
+          $ieee_insanity = FALSE;
           if (strpos($this->get('doi'), '10.1109/') === 0 && $this->has('isbn')) { // IEEE "book"
               $data_to_check = $the_title . $the_journal . $the_chapter . $this->get('series');
               if (stripos($data_to_check, 'IEEE Standard for') === FALSE && $this->blank('journal')) {
                 ; // Do nothing
-              } elseif (stripos($data_to_check, 'Symposium') === FALSE && stripos($data_to_check, 'Conference') === FALSE && stripos($data_to_check, 'Proceedings') === FALSE) { // Looks like conference
+              } elseif (stripos($data_to_check, 'Symposium') === FALSE &&
+                        stripos($data_to_check, 'Conference') === FALSE &&
+                        stripos($data_to_check, 'Proceedings') === FALSE &&
+                        stripos($data_to_check, 'Workshop') === FALSE &&
+                        stripos($data_to_check, 'Visual Languages and Human-Centric Computing') === FALSE
+                       ) { // Looks like conference done, but does not claim so
                 if ($the_journal !== '') {
                   $this->rename('journal', 'CITATION_BOT_PLACEHOLDER_journal');
                   $the_journal = '';
@@ -394,8 +400,14 @@ final class Template {
                   $the_chapter = '';
                 }
                 $bad_data = TRUE;
-              } elseif (stripos($the_journal, 'Symposium') !== FALSE || stripos($the_journal, 'Conference') !== FALSE || stripos($the_journal, 'Proceedings') !== FALSE) {
+              } elseif (stripos($the_journal, 'Symposium') !== FALSE ||
+                        stripos($the_journal, 'Conference') !== FALSE ||
+                        stripos($the_journal, 'Proceedings') !== FALSE ||
+                        stripos($the_journal, 'Workshop') !== FALSE ||
+                        stripos($the_journal, 'Visual Languages and Human-Centric Computing') !== FALSE
+                       ) {
                  $this->rename('journal', 'CITATION_BOT_PLACEHOLDER_journal');
+                 $ieee_insanity = TRUE;
                  $the_journal = '';
                  $bad_data = TRUE;
                  if ($the_title !== '') {
@@ -571,6 +583,9 @@ final class Template {
               expand_arxiv_templates($this->this_array);
             }
             $this->this_array = array();
+            if ($ieee_insanity && $this->has('chapter') && $this->has('title')) {
+              $this->forget('CITATION_BOT_PLACEHOLDER_journal');
+            }
             if ($this->has('CITATION_BOT_PLACEHOLDER_journal')) {
               if ($this->has('journal') && $this->get('journal') !== $this->get('CITATION_BOT_PLACEHOLDER_journal') &&
                   '[[' . $this->get('journal') . ']]' !== $this->get('CITATION_BOT_PLACEHOLDER_journal')) {
