@@ -377,7 +377,8 @@ final class Template {
               }
           }
           $ieee_insanity = FALSE;
-          if (strpos($this->get('doi'), '10.1109/') === 0 && $this->has('isbn')) { // IEEE "book"
+          if (strpos($this->get('doi'), '10.1109/') === 0 &&
+              ($this->has('isbn') || (stripos($the_title, 'proceedings') !== FALSE && stripos($the_journal, 'proceedings') !== FALSE))) { // IEEE "book"
               $data_to_check = $the_title . $the_journal . $the_chapter . $this->get('series');
               if (stripos($data_to_check, 'IEEE Standard for') === FALSE && $this->blank('journal')) {
                 ; // Do nothing
