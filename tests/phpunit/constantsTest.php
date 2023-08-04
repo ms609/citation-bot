@@ -171,13 +171,13 @@ final class constantsTest extends testBaseClass {
       $line_length = 10;
       array_unshift($alpha_bits, ''); // We use next below, need a fake bit at the start
       foreach ($bits_length as $bit_length) {
+       $line_length += $bit_length + 2;
+       if (($line_length > 76) && ($line_length - $bit_length > 25)) { // Just in case we something too long for single line, we do not want it to add blank lines
+         $alphaed .= $new_line;
+         $line_length = 10 + $bit_length + 2;
+       }
        $bit = next($alpha_bits);
        $alphaed .= $bit ? ($bit . ", ") : '';
-       $line_length += $bit_length + 2;
-       if ($line_length > 76) {
-         $alphaed .= $new_line;
-         $line_length = 10;
-        }
       }
       if ($alphaed == $new_line) $alphaed = '';
       $section = $alphaed . substr($section, $alpha_end);
