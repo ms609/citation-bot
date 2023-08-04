@@ -373,7 +373,8 @@ final class Template {
                         stripos($data_to_check, 'Workshop') === FALSE &&
                         stripos($data_to_check, 'Symp. On ') === FALSE &&
                         stripos($data_to_check, 'Meeting on ') !== FALSE &&
-                        stripos($data_to_check, 'Visual Languages and Human-Centric Computing') === FALSE
+                        stripos($the_journal, 'Visual Languages and Human-Centric Computing') !== FALSE ||
+                        stripos($the_journal, 'Active and Passive Microwave Remote Sensing for') !== FALSE
                        ) { // Looks like conference done, but does not claim so
                 if ($the_journal !== '') {
                   $this->rename('journal', 'CITATION_BOT_PLACEHOLDER_journal');
