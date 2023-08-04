@@ -363,7 +363,7 @@ final class Template {
           $ieee_insanity = FALSE;
           if ((strpos($this->get('doi'), '10.1109/') === 0 || strpos($this->get('doi'), '10.1145/') === 0 || strpos($this->get('doi'), '10.1117/') === 0) &&
               ($this->has('isbn') || (stripos($the_title, 'proceedings') !== FALSE && stripos($the_journal, 'proceedings') !== FALSE) ||
-              (stripos($the_title, 'Symposium') !== FALSE && stripos($the_journal, 'Symposium') !== FALSE))) { // IEEE/ACM/etc "book"
+              (stripos($the_title, 'Symposium') !== FALSE && stripos($the_journal, 'Symposium') !== FALSE) || (stripos($the_title, 'Meeting on ') !== FALSE && stripos($the_journal, 'Meeting on ') !== FALSE))) { // IEEE/ACM/etc "book"
               $data_to_check = $the_title . $the_journal . $the_chapter . $this->get('series');
               if (stripos($data_to_check, 'IEEE Standard for') === FALSE && $this->blank('journal')) {
                 ; // Do nothing
@@ -372,6 +372,7 @@ final class Template {
                         stripos($data_to_check, 'Proceedings') === FALSE &&
                         stripos($data_to_check, 'Workshop') === FALSE &&
                         stripos($data_to_check, 'Symp. On ') === FALSE &&
+                        stripos($data_to_check, 'Meeting on ') !== FALSE &&
                         stripos($data_to_check, 'Visual Languages and Human-Centric Computing') === FALSE
                        ) { // Looks like conference done, but does not claim so
                 if ($the_journal !== '') {
