@@ -844,6 +844,8 @@ function title_capitalization(string $in, bool $caps_after_punctuation) : string
     $new_case = 'Time Off';
   } elseif ($new_case === 'It Professional') {
     $new_case = 'IT Professional';
+  } elseif ($new_case === 'Jom') {
+    $new_case = 'JOM';
   }
   return $new_case;
 }
