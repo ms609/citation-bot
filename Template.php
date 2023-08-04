@@ -392,6 +392,7 @@ final class Template {
                         stripos($the_journal, 'Proceedings') !== FALSE ||
                         stripos($the_journal, 'Workshop') !== FALSE ||
                         stripos($the_journal, 'Symp. On ') !== FALSE ||
+                        stripos($the_journal, 'Meeting on ') !== FALSE ||
                         stripos($the_journal, 'Visual Languages and Human-Centric Computing') !== FALSE
                        ) {
                  $this->rename('journal', 'CITATION_BOT_PLACEHOLDER_journal');
