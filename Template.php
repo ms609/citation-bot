@@ -653,6 +653,8 @@ final class Template {
             if ($this->has('CITATION_BOT_PLACEHOLDER_year')) {
               if ($this->has('year') && ($this->get('year') !== $this->get('CITATION_BOT_PLACEHOLDER_year'))) {
                 $this->forget('CITATION_BOT_PLACEHOLDER_year');
+              } elseif ($this->has('date') && ($this->get('date') !== $this->get('CITATION_BOT_PLACEHOLDER_year'))) {
+                $this->forget('CITATION_BOT_PLACEHOLDER_year');
               } else {
                 $this->rename('CITATION_BOT_PLACEHOLDER_year', 'year');
               }
