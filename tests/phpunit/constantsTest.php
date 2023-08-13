@@ -556,5 +556,14 @@ final class constantsTest extends testBaseClass {
     $this->assertSame("", $errors); // We want a list of all of them
   }
 
+  public function testFreeDOI() : void {
+    foreach (DOI_FREE_PREFIX as $prefix) {
+      if (strpos($prefix, '/') === FALSE)) {
+        $this->assertSame('This needs a slash', $prefix);
+      }
+    }
+  }
+  
+
   
 }
