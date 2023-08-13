@@ -468,7 +468,7 @@ const PARAMETER_LIST = array(
   'inventor-link', 'inventor-link#', 'inventor-surname', 'inventor-surname#',
   'inventorlink', 'inventorlink#', 'isbn', 'ismn', 'issn', 'issue',
   'issue-date', 'jfm', 'journal', 'jstor', 'jstor-access', 'lang', 'language',
-  'last', 'last#', 'lay-date', 'lccn', 'location',
+  'last', 'last#', 'lccn', 'location',
   'magazine', 'mailing-list', 'map', 'map-format', 'map-url',
   'map-url-access', 'medium', 'message-id', 'minutes', 'mode', 'mr',
   'name-list-style', 'network', 'newsgroup', 'newspaper',
