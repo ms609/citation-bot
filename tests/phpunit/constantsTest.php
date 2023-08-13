@@ -558,7 +558,7 @@ final class constantsTest extends testBaseClass {
 
   public function testFreeDOI() : void {
     foreach (DOI_FREE_PREFIX as $prefix) {
-      if (strpos($prefix, '/') === FALSE)) {
+      if (strpos($prefix, '/') === FALSE) {
         $this->assertSame('This needs a slash', $prefix);
       }
     }
