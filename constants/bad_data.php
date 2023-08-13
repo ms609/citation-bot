@@ -400,6 +400,7 @@ const HOSTNAME_MAP  = array('public.ebookcentral.proquest.com' => '[[ProQuest]]'
 			    'sify.com' => '[[Sify]]',
 			    'animaldiversity.org' => '[[Animal Diversity Web]]',
 			    'bollywoodhungama.com' => '[[Bollywood Hungama]]',
+			    'dtnext.in'  => '[[DT Next]]',
                            ); // Be warned, some website host a seperate sunday edition, etc.  Be careful and when in doubt link to hostname
 
 const NO_DATE_WEBSITES = array('wikipedia.org', 'web.archive.org', 'perma-archives.org', 'webarchive.proni.gov.uk', 'perma.cc',
