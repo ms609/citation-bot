@@ -250,8 +250,14 @@ final class constantsTest extends testBaseClass {
       if ($our_whitelist !== $our_whitelist_sorted) {
          ob_flush();
          echo "\n \n testWhiteList:  Citation Bot has values out of order.  Expected order:\n";
+         $length = 0;
          foreach($our_whitelist_sorted as $value) {
            echo "'" . $value . "', ";
+           $length = $length + strlen($value) + 4;
+           if ($length > 76) {
+             $length = 0;
+             echo "\n";
+           }
          }
          ob_flush();
          $we_failed = TRUE;
