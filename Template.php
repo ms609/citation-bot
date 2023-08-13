@@ -4153,18 +4153,12 @@ final class Template {
               $this->set('issue', $matches[1]);
             }
           }
-          if (doi_works($doi) && (strpos($doi, '10.3389/') === 0 ||
-                                  strpos($doi, '10.3390/') === 0 ||
-                                  strpos($doi, '10.1155/') === 0 ||
-                                  strpos($doi, '10.1371/journal.pone') === 0 ||
-                                  strpos($doi, '10.3897/zookeys') === 0 ||
-                                  strpos($doi, '10.1016/j.jbc.') === 0 ||
-                                  strpos($doi, '10.1016/S0021-9258') === 0 ||
-                                  strpos($doi, '10.1074/jbc.') === 0 ||
-                                  strpos($doi, '10.1210/jendso/') === 0 ||
-                                  strpos($doi, '10.4249/') === 0
-                                 )) {
-            $this->add_if_new('doi-access', 'free');
+          if (doi_works($doi)) {
+            foreach (DOI_FREE_PREFIX as $prefix) {
+              if (strpos($doi, $prefix) === 0) {
+                 $this->add_if_new('doi-access', 'free');
+              }
+            }
           }
           if (doi_works($doi) && (strpos($doi, '10.1073/pnas') === 0)) {
             $template_year = $this->year();
