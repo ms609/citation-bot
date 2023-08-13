@@ -76,7 +76,7 @@ const TEMPLATES_WE_HARV = array('cite iucn', 'cite odnb', 'cite dnb', 'dnb', 'dn
 const ALL_URL_TYPES = array('url', 'article-url', 'chapter-url', 'chapterurl', 'conference-url', 'conferenceurl',
                   'contribution-url', 'contributionurl', 'entry-url', 'event-url', 'eventurl', 'lay-url',
                   'layurl', 'map-url', 'mapurl', 'section-url', 'sectionurl', 'transcript-url',
-                  'transcripturl', 'URL');
+                  'transcripturl', 'URL'); // Some of these are no longer valid
 
 const DATES_TO_CLEAN = array('air-date', 'airdate', 'archive-date', 'archivedate', 'date', 'pmc-embargo-date', 'publication-date', 'lay-date');
 
@@ -468,8 +468,7 @@ const PARAMETER_LIST = array(
   'inventor-link', 'inventor-link#', 'inventor-surname', 'inventor-surname#',
   'inventorlink', 'inventorlink#', 'isbn', 'ismn', 'issn', 'issue',
   'issue-date', 'jfm', 'journal', 'jstor', 'jstor-access', 'lang', 'language',
-  'last', 'last#', 'lay-date', 'lay-format',
-  'lay-source', 'lay-url', 'lccn', 'location',
+  'last', 'last#', 'lay-date', 'lccn', 'location',
   'magazine', 'mailing-list', 'map', 'map-format', 'map-url',
   'map-url-access', 'medium', 'message-id', 'minutes', 'mode', 'mr',
   'name-list-style', 'network', 'newsgroup', 'newspaper',
@@ -494,14 +493,17 @@ const PARAMETER_LIST = array(
   'trans-journal', 'trans-magazine', 'trans-map', 'trans-newspaper',
   'trans-periodical', 'trans-quote', 'trans-section', 'trans-title',
   'trans-website', 'trans-work', 'transcript', 'transcript-format',
-  'transcript-url', 'transcripturl', 'translator', 'translator#',
+  'transcript-url', 'translator', 'translator#',
   'translator#-first', 'translator#-given', 'translator#-last', 'translator#-link',
   'translator#-mask', 'translator#-surname', 'translator-first',
   'translator-first#', 'translator-given', 'translator-given#', 'translator-last',
   'translator-last#', 'translator-link', 'translator-link#', 'translator-mask',
   'translator-mask#', 'translator-surname', 'translator-surname#', 'type',
   'url', 'url-access', 'url-status', 'vauthors', 'veditors', 'version',
-  'via', 'volume', 'website', 'work', 'year', 'zbl'
+  'via', 'volume', 'website', 'work', 'year', 'zbl', 'medrxiv', 'subject-first',
+  'subject-given', 'subject-last', 'subject-surname', 'title-note', 'subject-first#',
+  'subject#-first', 'subject-given#', 'subject#-given', 'subject-last#',
+  'subject#-last', 'subject-surname#', 'subject#-surname'
 );
 
  const DEAD_PARAMETERS = array('PPPrefix', 'PPrefix', 'Ref', 'albumlink', 'albumtype',
@@ -521,7 +523,8 @@ const PARAMETER_LIST = array(
      'laydate', 'laysource', 'layurl', 'name-list-format', 'sectionurl', 'seriesno',
      'timecaption', 'titlelink', 'ref name', 'ISBN13', 'booktitle', 'chapterurl', 'episodelink',
      'isbn13', 'mailinglist', 'mapurl', 'nopp', 'publicationdate', 'publicationplace',
-     'serieslink', 'sid', 'note', 'do', 'lien');
+     'serieslink', 'sid', 'note', 'do', 'lien', 'lay-date', 'lay-format', 'lay-source',
+     'lay-url', 'transcripturl');
 
 // sid is actually page range in some no english wiki's but do not fix since so close to id=
 // lien is French template parameter, but also English work 
