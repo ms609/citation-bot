@@ -307,7 +307,7 @@ const CAMEL_CASE = array('DeSoto', 'PubChem', 'BitTorrent', 'Al2O3', 'NiMo', 'Cu
                          'ReSerVation', 'SysTol', 'IEEE SoutheastCon', 'eMagRes', 'eSpace', 'ElectroChemical',
                          'SystemVerilog', 'MobiQuitous', 'MobiCom', 'AlterEgo', 'DeathQuest', 'kVp', 'MeV',
                          'MVp', 'StarGuides ', 'FabLearn', 'CompSysTech', 'MindTrek', 'MpoxRadar', 'eXperiences',
-                         'iConference', 'Digital EcoSystems', 'RoMoCo', 'MobiCom', 'LaRouche', 'eXtensible',
+                         'iConference', 'Digital EcoSystems', 'RoMoCo', 'LaRouche', 'eXtensible',
                          'GlobalArctic Handbook'
                        );
 
