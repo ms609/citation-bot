@@ -199,7 +199,7 @@ const JOURNAL_ACRONYMS = array(/* The following will be automatically updated to
           " WRIR ", " z/Journal ", " z/Journal ", " za g. ", " za g. ", " za likovne umjetnosti ", 
           " zbMATH ", " Zeitschrift für Geologische Wissenschaften ", " Zeitschrift für Physik A Hadrons and Nuclei ", 
           " Zeitschrift für Physik A: Hadrons and Nuclei ", " Znanosti i Umjetnosti ", 
-          " ZooKeys ", " Zprávy o zasedání Král. čes. společnosti nauk v Praze ", 
+          " ZooKeys ", " Zprávy o zasedání Král. čes. společnosti nauk v Praze ",  " gen. nov. ",
           " Zprávy o zasedání Král. čes. společnosti nauk v Praze ", " Zprávy o zasedání Král. čes. společnosti nauk v Praze ", " IUCrJ ", " IOP Conference ",
           " RAND Journal ", " Annalen der Physik ", " Annalen der Physik ", " SoftwareX ", " HardwareX ", " Noticias de La Rioja ", " Noticias de La Rioja ",
           " Ргасе filologiczne ", /* The above will be automatically updated to alphabetical order */ 
@@ -340,7 +340,7 @@ const UCFIRST_JOURNAL_ACRONYMS = array(/* The following will be automatically up
           " Wrir ", " Z/Journal ", " Z/journal ", " Za G. ", " za G. ", " Za Likovne Umjetnosti ", 
           " ZbMATH ", " Zeitschrift Für Geologische Wissenschaften ", " Zeitschrift für Physik a Hadrons and Nuclei ", 
           " Zeitschrift Für Physik a: Hadrons And Nuclei ", " Znanosti I Umjetnosti ", 
-          " Zookeys ", " Zprávy O Zasedání Král. Čes. Společnosti Nauk V Praze ", 
+          " Zookeys ", " Zprávy O Zasedání Král. Čes. Společnosti Nauk V Praze ", " gen. Nov. ",
           " Zprávy O Zasedání Král. čes. Společnosti Nauk V Praze ", " Zprávy o zasedání Král. čes. Společnosti nauk v Praze ", " Iucrj ", " Iop Conference ",
           " Rand Journal ", " Annalen Der Physik ", " Annalen der physik ", " Softwarex ", " Hardwarex ", " Noticias de la Rioja ", " Noticias De La Rioja ",
           " Ргасе Filologiczne ", /* The above will be automatically updated to alphabetical order */ 
