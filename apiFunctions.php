@@ -1489,6 +1489,9 @@ function query_adsabs(string $options) : object {
      $json = @json_decode($json);
      if (isset($json->message->title[0]) && !isset($json->message->title[1])) {
           $title = (string) $json->message->title[0];
+          if (conference_doi($doi) && isset($json->message->subtitle[0]) && strlen((string) $json->message->subtitle[0]) > 4) {
+             $title = $title . ": " . (string) $json->message->subtitle[0];
+          }
           return str_ireplace(['<i>', '</i>', '</i> :', '  '], [' <i>', '</i> ', '</i>:', ' '], $title);
      } else {
           sleep(2);
