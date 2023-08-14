@@ -3731,7 +3731,11 @@ final class Template {
                    $this->set('work', 'AP News');
                  } elseif ($this->get('work') === 'Associated Press'){
                    $this->set('work', 'Associated Press News');
-                 }
+                 } elseif ($this->get('work') === '[[Associated Press]]'){
+                   $this->set('work', '[[Associated Press News]]');
+                 } elseif ($this->get('work') === '[[AP]]'){
+                   $this->set('work', '[[AP News]]');
+                 } 
                }
             }
           }
