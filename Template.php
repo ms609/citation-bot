@@ -286,7 +286,7 @@ final class Template {
         if ($this->has($date)) {
           $input = $this->get($date);
           if (stripos($input, 'citation') === FALSE) {
-            $output = $this->clean_dates($input);
+            $output = clean_dates($input);
             if ($input !== $output) {
               $this->set($date, $output);
             }
@@ -7223,60 +7223,6 @@ final class Template {
              $this->forget('doi-broken-date');
           }
       }
-  }
-
-  public function clean_dates(string $input) : string { // See https://en.wikipedia.org/wiki/Help:CS1_errors#bad_date
-    if ($input === '0001-11-30') return '';
-    $months_seasons = array('January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December', 'Winter', 'Spring', 'Summer', 'Fall', 'Autumn');
-    $input = str_ireplace($months_seasons, $months_seasons, $input); // capitalization
-    if (preg_match('~^(\d{4})[\-\/](\d{4})$~', $input, $matches)) { // Hyphen or slash in year range (use en dash)
-      return $matches[1] . '–' . $matches[2];
-    }
-    if (preg_match('~^(\d{4})\/ed$~i', $input, $matches)) { // 2002/ed
-      return $matches[1];
-    }
-    if (preg_match('~^First published(?: |\: | in | in\: | in\:)(\d{4})$~i', $input, $matches)) { // First published: 2002
-      return $matches[1];
-    }
-    if (preg_match('~^([A-Z][a-z]+)[\-\/]([A-Z][a-z]+) (\d{4})$~', $input, $matches)) { // Slash or hyphen in date range (use en dash)
-      return $matches[1] . '–' . $matches[2] . ' ' . $matches[3];
-    }
-    if (preg_match('~^([A-Z][a-z]+ \d{4})[\-\–]([A-Z][a-z]+ \d{4})$~', $input, $matches)) { // Missing space around en dash for range of full dates
-      return $matches[1] . ' – ' . $matches[2];
-    }
-    if (preg_match('~^([A-Z][a-z]+), (\d{4})$~', $input, $matches)) { // Comma with month/season and year
-      return $matches[1] . ' ' . $matches[2];
-    }
-    if (preg_match('~^([A-Z][a-z]+), (\d{4})[\-\–](\d{4})$~', $input, $matches)) { // Comma with month/season and years
-      return $matches[1] . ' ' . $matches[2] . '–' . $matches[3];
-    }
-    if (preg_match('~^([A-Z][a-z]+) 0(\d),? (\d{4})$~', $input, $matches)) { // Zero-padding
-      return $matches[1] . ' ' . $matches[2] . ', ' . $matches[3];
-    }
-    if (preg_match('~^([A-Z][a-z]+ \d{1,2})( \d{4})$~', $input, $matches)) { // Missing comma in format which requires it
-      return $matches[1] . ',' . $matches[2];
-    }
-    if (preg_match('~^Collected[\s\:]+((?:|[A-Z][a-z]+ )\d{4})$~', $input, $matches)) { // Collected 1999 stuff
-      return $matches[1];
-    }
-    if (preg_match('~^Effective[\s\:]+((?:|[A-Z][a-z]+ )\d{4})$~', $input, $matches)) { // Effective 1999 stuff
-      return $matches[1];
-    }
-    if (preg_match('~^(\d{4})\s*(?:&|and)\s*(\d{4})$~', $input, $matches)) { // &/and between years
-      $first = (int) $matches[1];
-      $second = (int) $matches[2];
-      if ($second === $first+1) {
-        return $matches[1] . '–' . $matches[2];
-      }
-    }
-    if (preg_match('~^(\d{4})\-(\d{2})$~', $input, $matches)) { // 2020-12 i.e. backwards
-      $year = $matches[1];
-      $month = (int) $matches[2];
-      if ($month > 0 && $month < 13) {
-        return $months_seasons[$month-1] . ' ' . $year;
-      }
-    }
-    return $input;
   }
 
   public function has_good_free_copy() : bool { // GOOD is critical - must title link - TODO add more if jstor-access or hdl-access title-link
