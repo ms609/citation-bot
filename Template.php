@@ -361,7 +361,7 @@ final class Template {
               $bad_data = TRUE;
           }
           $ieee_insanity = FALSE;
-          if ((strpos($this->get('doi'), '10.1109/') === 0 || strpos($this->get('doi'), '10.1145/') === 0 || strpos($this->get('doi'), '10.1117/') === 0 || strpos($this->get('doi'), '10.2991/') === 0 || stripos($this->get('doi'), '10.2991/erss') === 0 || stripos($this->get('doi'), '10.2991/jahp') === 0) &&
+          if (conference_doi($this->get('doi')) &&
               ($this->has('isbn') || (stripos($the_title, 'proceedings') !== FALSE && stripos($the_journal, 'proceedings') !== FALSE) ||
               (stripos($the_title, 'Symposium') !== FALSE && stripos($the_journal, 'Symposium') !== FALSE) || (stripos($the_title, 'Meeting on ') !== FALSE && stripos($the_journal, 'Meeting on ') !== FALSE))) { // IEEE/ACM/etc "book"
               $data_to_check = $the_title . $the_journal . $the_chapter . $this->get('series');
@@ -6164,7 +6164,7 @@ final class Template {
           }
         }
       }
-      if ((strpos($this->get('doi'), '10.1109/') === 0 || strpos($this->get('doi'), '10.1145/') === 0 || strpos($this->get('doi'), '10.1117/') === 0 || strpos($this->get('doi'), '10.2991/') === 0 || stripos($this->get('doi'), '10.2991/erss') === 0 || stripos($this->get('doi'), '10.2991/jahp') === 0) &&
+      if (conference_doi($this->get('doi')) &&
         $this->has('title') && $this->has('chapter') && $this->has('isbn')  &&
         $this->wikiname() === 'cite book' && doi_works($this->get('doi'))) {
           if (stripos($this->get('title'), 'Conference') !== FALSE) {
