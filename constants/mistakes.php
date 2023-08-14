@@ -455,6 +455,8 @@ const TEMPLATE_CONVERSIONS = array(
                ['citeencyclopedia', 'cite encyclopedia'],
                ['Encyclopedia', 'Cite encyclopedia'],
                ['encyclopedia', 'cite encyclopedia'],
+               ['Cite contribution', 'Cite encyclopedia'],
+               ['cite contribution', 'cite encyclopedia'],
                ['Cita pubblicazione', 'Cite journal'],
                ['cita pubblicazione', 'cite journal'],
                ['Citace elektronické monografie', 'Cite web'],
