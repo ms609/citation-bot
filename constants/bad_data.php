@@ -217,7 +217,7 @@ const HOSTNAME_MAP  = array('public.ebookcentral.proquest.com' => '[[ProQuest]]'
                             'ancestry.com' => '[[Ancestry.com]]',
                             'answers.com' => '[[Answers.com]]',
                             'ap.org' => '[[Associated Press]]',
-                            'apnews.com' => '[[Associated Press]]',
+                            'apnews.com' => '[[Associated Press News]]',
                             'avclub.com' => '[[The A.V. Club]]',
                             'baidu.com' => '[[Baidu]]',
                             'sohu.com' => '[[Sohu]]',
