@@ -880,7 +880,18 @@ public static function process_zotero_response(string $zotero_response, Template
         }
      }
   }
-  if ( isset($result->date) && strlen((string) $result->date)>3)$template->add_if_new('date', tidy_date((string) $result->date));
+  if ( isset($result->date) && strlen((string) $result->date)>3) {
+    $new_date = tidy_date((string) $result->date);
+    if (stripos($url, 'indiatimes') !== FALSE) { // "re-published" website all at once
+        $maybe_date = (int) strtotime($new_date);
+        $end_date1 = strtotime('10 January 2017');
+        $end_date2 = strtotime('21 January 2017');
+        if ($maybe_date > $end_date1 && $maybe_date < $end_date2) {
+           $new_date = '';
+        }
+    }
+    if ($new_date) $template->add_if_new('date', $new_date);
+  }
   if ( isset($result->series) && stripos($url, '.acm.org')===FALSE)  $template->add_if_new('series' , (string) $result->series);
   // Sometimes zotero lists the last name as "published" and puts the whole name in the first place
   $i = 0;
