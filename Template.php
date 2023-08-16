@@ -103,7 +103,7 @@ final class Template {
       } else {
         $this->name = $spacing[1] . 'Cite journal' . $spacing[2];
       }
-      // Cite paper and Cite document are really cite journal
+      // Cite paper is really cite journal
     } elseif ($trim_name === 'cite paper' || $trim_name === 'cite document') {
       if (!$this->blank_other_than_comments('journal')) {
         $this->name = $spacing[1] . 'cite journal' . $spacing[2];
