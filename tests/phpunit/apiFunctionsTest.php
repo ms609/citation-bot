@@ -47,7 +47,7 @@ final class apiFunctionsTest extends testBaseClass {
       $this->assertSame('Geology', $templates[5]->get2('journal'));
       $this->assertNull($templates[6]->get2('journal'));
       $this->assertNull($templates[6]->get2('title'));
-      $this->assertSame('2003', $templates[6]->get2('year'));
+      $this->assertSame('2003', $templates[6]->get2('date'));
       $this->assertSame('Astronomy and Astrophysics', $templates[7]->get2('journal'));
       $this->assertNull($templates[8]->get2('pages'));
       $this->assertNull($templates[8]->get2('page'));
@@ -95,7 +95,7 @@ final class apiFunctionsTest extends testBaseClass {
      $text = '{{Cite journal| doi= 10.13140/RG.2.1.1002.9609}}';
      $expanded = $this->process_citation($text);
      $this->assertSame('Lesson Study as a form of in-School Professional Development', $expanded->get2('title'));
-     $this->assertSame('2015', $expanded->get2('year'));
+     $this->assertSame('2015', $expanded->get2('date'));
      $this->assertSame('Aoibhinn Ni Shuilleabhain', $expanded->get2('author1'));
   }
   
@@ -103,8 +103,8 @@ final class apiFunctionsTest extends testBaseClass {
      $text = '{{cite journal|doi=10.11429/ppmsj1919.17.0_48}}';
      $expanded = $this->process_citation($text);
      $this->assertSame('On the Interaction of Elementary Particles. I', $expanded->get2('title'));
-     $this->assertSame('1935', $expanded->get2('year'));
-     $this->assertSame('Proceedings of the Physico-Mathematical Society of Japan. 3Rd Series', $expanded->get2('journal'));
+     $this->assertSame('1935', $expanded->get2('date'));
+     $this->assertSame('Proceedings of the Physico-Mathematical Society of Japan. 3rd Series', $expanded->get2('journal'));
      $this->assertSame('17', $expanded->get2('volume'));
      $this->assertSame('YUKAWA', $expanded->get2('last1'));
      $this->assertSame('Hideki', $expanded->get2('first1'));
@@ -113,43 +113,43 @@ final class apiFunctionsTest extends testBaseClass {
   public function testExpansion_doi_not_from_crossrefBook() : void {
      $expanded = $this->make_citation('{{Cite journal}}');
      expand_doi_with_dx($expanded, '10.1017/CBO9780511983658');  // This is cross-ref doi, so for DX DOI expansion
-     $this->assertSame('{{Cite book| year=1996 | isbn=9780521572903 | last1=Luo | first1=Zhi-Quan | last2=Pang | first2=Jong-Shi | last3=Ralph | first3=Daniel | title=Mathematical Programs with Equilibrium Constraints | publisher=Cambridge University Press }}', $expanded->parsed_text());
+     $this->assertSame('{{Cite book| date=1996 | isbn=9780521572903 | last1=Luo | first1=Zhi-Quan | last2=Pang | first2=Jong-Shi | last3=Ralph | first3=Daniel | title=Mathematical Programs with Equilibrium Constraints | publisher=Cambridge University Press }}', $expanded->parsed_text());
   }
   
   public function testExpansion_doi_not_from_crossrefBookChapter() : void {
      $expanded = $this->make_citation('{{Cite journal}}');
      expand_doi_with_dx($expanded, '10.1002/0470841559.ch1');  // This is cross-ref doi, so for DX DOI expansion
-     $this->assertSame('{{Cite book| year=2003 | title=Internetworking LANs and WANs | chapter=Network Concepts | publisher=John Wiley & Sons | location=Chichester, UK }}', $expanded->parsed_text());
+     $this->assertSame('{{Cite book| date=2003 | title=Internetworking LANs and WANs | chapter=Network Concepts | publisher=John Wiley & Sons | location=Chichester, UK }}', $expanded->parsed_text());
   }
   
   public function testExpansion_doi_not_from_crossrefDataCiteSubsets() : void {
      $expanded = $this->make_citation('{{Cite journal}}');
      expand_doi_with_dx($expanded, '10.1594/PANGAEA.726855');
-     $this->assertSame('{{Cite journal| year=2009 | last1=Irino | first1=Tomohisa | last2=Tada | first2=Ryuji | title=Chemical and mineral compositions of sediments from ODP Site 127-797 }}', $expanded->parsed_text());
+     $this->assertSame('{{Cite journal| date=2009 | last1=Irino | first1=Tomohisa | last2=Tada | first2=Ryuji | title=Chemical and mineral compositions of sediments from ODP Site 127-797 }}', $expanded->parsed_text());
   }
 
   public function testExpansion_doi_not_from_crossrefDataCiteEarthquake() : void {
      $expanded = $this->make_citation('{{Cite journal}}');
      expand_doi_with_dx($expanded, '10.1594/GFZ.GEOFON.gfz2009kciu');
-     $this->assertSame('{{Cite journal| year=2009 | author1=Geofon Operator | title=GEOFON event gfz2009kciu (NW Balkan Region) | publisher=Deutsches GeoForschungsZentrum GFZ }}', $expanded->parsed_text());
+     $this->assertSame('{{Cite journal| date=2009 | author1=Geofon Operator | title=GEOFON event gfz2009kciu (NW Balkan Region) | publisher=Deutsches GeoForschungsZentrum GFZ }}', $expanded->parsed_text());
   }
   
   public function testExpansion_doi_not_from_crossrefDataCiteMappedVisualization() : void {
      $expanded = $this->make_citation('{{Cite journal}}');
      expand_doi_with_dx($expanded, '10.1594/PANGAEA.667386');
-     $this->assertSame('{{Cite book| year=2008 | last1=Kraus | first1=Stefan | last2=del Valle | first2=Rodolfo | title=Geological map of Potter Peninsula (King George Island, South Shetland Islands, Antarctic Peninsula) | chapter=Impact of climate induced glacier melt on marine coastal systems, Antarctica (IMCOAST/IMCONet) | publisher=Pangaea }}', $expanded->parsed_text());
+     $this->assertSame('{{Cite book| date=2008 | last1=Kraus | first1=Stefan | last2=del Valle | first2=Rodolfo | title=Geological map of Potter Peninsula (King George Island, South Shetland Islands, Antarctic Peninsula) | chapter=Impact of climate induced glacier melt on marine coastal systems, Antarctica (IMCOAST/IMCONet) | publisher=Pangaea }}', $expanded->parsed_text());
   }
 
   public function testExpansion_doi_not_from_crossrefDataCitevideo() : void {
      $expanded = $this->make_citation('{{Cite journal}}');
      expand_doi_with_dx($expanded, '10.3207/2959859860');
-     $this->assertSame('{{Cite journal| year=2009 | last1=Kirchhof | first1=Bernd | title=Silicone oil bubbles entrapped in the vitreous base during silicone oil removal }}', $expanded->parsed_text());
+     $this->assertSame('{{Cite journal| date=2009 | last1=Kirchhof | first1=Bernd | title=Silicone oil bubbles entrapped in the vitreous base during silicone oil removal }}', $expanded->parsed_text());
   }
 
   public function testExpansion_doi_not_from_crossref_fISTIC_Journal() : void {
      $expanded = $this->make_citation('{{Cite journal}}');
      expand_doi_with_dx($expanded, '10.3866/PKU.WHXB201112303');
-     $this->assertSame('{{Cite journal| year=2012 | volume=28 | issue=3 | last1=Yu | first1=ZHANG | last3=Ning | first3=MA | last4=Wei-Zhou | first4=WANG | title=Correlation between Bond-Length Change and Vibrational Frequency Shift in Hydrogen-Bonded Complexes Revisited | journal=Acta Physico-Chimica Sinica }}', $expanded->parsed_text());
+     $this->assertSame('{{Cite journal| date=2012 | volume=28 | issue=3 | last1=Yu | first1=ZHANG | last3=Ning | first3=MA | last4=Wei-Zhou | first4=WANG | title=Correlation between Bond-Length Change and Vibrational Frequency Shift in Hydrogen-Bonded Complexes Revisited | journal=Acta Physico-Chimica Sinica }}', $expanded->parsed_text());
   }
   
   public function testExpansion_doi_not_from_crossref_fISTIC_Data() : void {
@@ -167,25 +167,25 @@ final class apiFunctionsTest extends testBaseClass {
   public function testExpansion_doi_not_from_crossref_JaLC_Journal() : void {
      $expanded = $this->make_citation('{{Cite journal}}');
      expand_doi_with_dx($expanded, '10.11467/isss2003.7.1_11');
-     $this->assertSame('{{Cite journal| year=2009 | volume=7 | last1=竹本 | first1=賢太郎 | last2=川東 | first2=正美 | last3=久保 | first3=信行 | last4=左近 | first4=多喜男 | title=大学におけるWebメールとターミナルサービスの研究 | journal=Society for Standardization Studies }}', $expanded->parsed_text());
+     $this->assertSame('{{Cite journal| date=2009 | volume=7 | last1=竹本 | first1=賢太郎 | last2=川東 | first2=正美 | last3=久保 | first3=信行 | last4=左近 | first4=多喜男 | title=大学におけるWebメールとターミナルサービスの研究 | journal=Society for Standardization Studies }}', $expanded->parsed_text());
   }
 
   public function testExpansion_doi_not_from_crossref_JaLC_Journal2() : void {
      $expanded = $this->make_citation('{{Cite journal}}');
      expand_doi_with_dx($expanded, '10.7875/leading.author.2.e008');
-     $this->assertSame('{{Cite journal| year=2013 | volume=2 | last1=川崎 | first1=努. | title=植物における免疫誘導と病原微生物の感染戦略 | journal=領域融合レビュー }}', $expanded->parsed_text());
+     $this->assertSame('{{Cite journal| date=2013 | volume=2 | last1=川崎 | first1=努. | title=植物における免疫誘導と病原微生物の感染戦略 | journal=領域融合レビュー }}', $expanded->parsed_text());
   }
 
   public function testExpansion_doi_not_from_crossref_mEDRA_Journal() : void {
      $expanded = $this->make_citation('{{Cite journal}}');
      expand_doi_with_dx($expanded, '10.1430/8105');
-     $this->assertSame("{{Cite journal| year=2002 | issue=4 | author1=Romano Prodi | title=L'Industria dopo l'euro | journal=L'Industria }}", $expanded->parsed_text());
+     $this->assertSame("{{Cite journal| date=2002 | issue=4 | author1=Romano Prodi | title=L'Industria dopo l'euro | journal=L'Industria }}", $expanded->parsed_text());
   }
   
   public function testExpansion_doi_not_from_crossref_mEDRA_Monograph() : void {
      $expanded = $this->make_citation('{{Cite journal}}');
      expand_doi_with_dx($expanded, '10.1392/BC1.0');
-     $this->assertSame('{{Cite journal| year=2004 | last1=Attanasio | first1=Piero | title=The use of Doi in eContent value chain | publisher=mEDRA }}', $expanded->parsed_text());
+     $this->assertSame('{{Cite journal| date=2004 | last1=Attanasio | first1=Piero | title=The use of Doi in eContent value chain | publisher=mEDRA }}', $expanded->parsed_text());
   }    
 
   // http://doi.airiti.com/
@@ -196,7 +196,7 @@ final class apiFunctionsTest extends testBaseClass {
      if ($expanded->parsed_text() === '{{Cite journal}}') {
        $this->assertSame('{{Cite journal}}',$expanded->parsed_text()) ;
      } else {
-       $this->assertSame('{{Cite journal| year=2018 | volume=無 | issue=57 | author1=Jun Aoyama | author2=Sam Wouthuyzen | author3=Michael J. Miller | author4=Hagi Y. Sugeha | author5=Mari Kuroki | author6=Shun Watanabe | author7=Augy Syahailatua | author8=Fadly Y. Tantu | author9=Seishi Hagihara | author10=Triyanto | author11=Tsuguo Otake | author12=Katsumi Tsukamoto | title=Reproductive Ecology and Biodiversity of Freshwater Eels around Sulawesi Island Indonesia | journal=Zoological Studies }}', $expanded->parsed_text());
+       $this->assertSame('{{Cite journal| date=2018 | volume=無 | issue=57 | author1=Jun Aoyama | author2=Sam Wouthuyzen | author3=Michael J. Miller | author4=Hagi Y. Sugeha | author5=Mari Kuroki | author6=Shun Watanabe | author7=Augy Syahailatua | author8=Fadly Y. Tantu | author9=Seishi Hagihara | author10=Triyanto | author11=Tsuguo Otake | author12=Katsumi Tsukamoto | title=Reproductive Ecology and Biodiversity of Freshwater Eels around Sulawesi Island Indonesia | journal=Zoological Studies }}', $expanded->parsed_text());
      }
   }
 
@@ -204,14 +204,14 @@ final class apiFunctionsTest extends testBaseClass {
   public function testExpansion_doi_not_from_crossref_eidr_Black_Panther_Movie() : void {
      $expanded = $this->make_citation('{{Cite journal}}');
      expand_doi_with_dx($expanded, '10.5240/7B2F-ED76-31F6-8CFB-4DB9-M');
-     $this->assertSame('{{Cite journal| year=2018 | last1=Coogler | first1=Ryan | title=Black Panther }}', $expanded->parsed_text());
+     $this->assertSame('{{Cite journal| date=2018 | last1=Coogler | first1=Ryan | title=Black Panther }}', $expanded->parsed_text());
   }
  
   // http://www.kisti.re.kr/eng/
   public function testExpansion_doi_not_from_crossref_kisti_journal() : void {
      $expanded = $this->make_citation('{{Cite journal}}');
      expand_doi_with_dx($expanded, '10.3743/KOSIM.2011.28.2.117');
-     $this->assertSame('{{Cite journal| year=2011 | volume=28 | issue=2 | last1=Kim | first1=Byung-Kyu | last2=Kang | first2=Mu-Yeong | last3=Choi | first3=Seon-Heui | last4=Kim | first4=Soon-Young | last5=You | first5=Beom-Jong | last6=Shin | first6=Jae-Do | title=Citing Behavior of Korean Scientists on Foreign Journals in KSCD | journal=Journal of the Korean Society for Information Management }}', $expanded->parsed_text());
+     $this->assertSame('{{Cite journal| date=2011 | volume=28 | issue=2 | last1=Kim | first1=Byung-Kyu | last2=Kang | first2=Mu-Yeong | last3=Choi | first3=Seon-Heui | last4=Kim | first4=Soon-Young | last5=You | first5=Beom-Jong | last6=Shin | first6=Jae-Do | title=Citing Behavior of Korean Scientists on Foreign Journals in KSCD | journal=Journal of the Korean Society for Information Management }}', $expanded->parsed_text());
   }
   
   // https://publications.europa.eu/en/
@@ -219,9 +219,9 @@ final class apiFunctionsTest extends testBaseClass {
      $expanded = $this->make_citation('{{Cite journal}}');
      expand_doi_with_dx($expanded, '10.2788/14231');
      if ($expanded->has('author1')) {
-       $this->assertSame('{{Cite journal| year=2007 | author1=European Commission. Joint Research Centre. Institute for Environment and Sustainability | last2=Vogt | first2=Jürgen | last3=Foisneau | first3=Stéphanie | title=European river and catchment database, version 2.0 (CCM2) : Analysis tools | publisher=Publications Office }}', $expanded->parsed_text());
+       $this->assertSame('{{Cite journal| date=2007 | author1=European Commission. Joint Research Centre. Institute for Environment and Sustainability | last2=Vogt | first2=Jürgen | last3=Foisneau | first3=Stéphanie | title=European river and catchment database, version 2.0 (CCM2) : Analysis tools | publisher=Publications Office }}', $expanded->parsed_text());
      } else {
-       $this->assertSame('{{Cite journal| year=2007 | last1=Vogt | first1=Jürgen | last2=Foisneau | first2=Stéphanie | title=European river and catchment database, version 2.0 (CCM2) : Analysis tools | publisher=Publications Office }}', $expanded->parsed_text());
+       $this->assertSame('{{Cite journal| date=2007 | last1=Vogt | first1=Jürgen | last2=Foisneau | first2=Stéphanie | title=European river and catchment database, version 2.0 (CCM2) : Analysis tools | publisher=Publications Office }}', $expanded->parsed_text());
      }
   }
   
@@ -241,7 +241,7 @@ final class apiFunctionsTest extends testBaseClass {
      $this->assertSame($doi, $template->get2('doi'));
      $this->assertSame("The caregiver's journey", $template->get2('title'));
      $this->assertSame('The University of Iowa', $template->get2('publisher'));
-     $this->assertSame('2018', $template->get2('year'));
+     $this->assertSame('2018', $template->get2('date'));
      $this->assertSame('Schumacher', $template->get2('last1')); 
      $this->assertSame('Lisa Anne', $template->get2('first1'));
   }
@@ -288,7 +288,7 @@ final class apiFunctionsTest extends testBaseClass {
     // Kind of messed up, but "matches" enough to expand
      $text = "{{Cite book | doi = 10.1063/1.2833100| title = AIP Conference Proceedings}}";
      $template = $this->process_citation($text);
-     $this->assertSame("2008", $template->get2('year'));
+     $this->assertSame("2008", $template->get2('date'));
   }
   
   public function testCrossRefAddEditors() : void {
@@ -528,7 +528,7 @@ final class apiFunctionsTest extends testBaseClass {
 );
      process_bibcode_data($template, $results);
      $this->assertSame('Journal of Paleontology', $template->get2('journal'));
-     $this->assertSame('1974',  $template->get2('year'));
+     $this->assertSame('1974',  $template->get2('date'));
   }
   
   public function testBibcodeData7() : void {
@@ -602,7 +602,7 @@ final class apiFunctionsTest extends testBaseClass {
    'year' => '1995',
 );
      process_bibcode_data($template, $results);
-     $this->assertSame('1995', $template->get2('year'));
+     $this->assertSame('1995', $template->get2('date'));
      $this->assertSame('astro-ph/9508159',  $template->get2('arxiv') . $template->get2('eprint'));
   }
   
@@ -677,7 +677,7 @@ final class apiFunctionsTest extends testBaseClass {
    'year' => '2019',
 );
      process_bibcode_data($template, $results);
-     $this->assertSame('2019', $template->get2('year'));
+     $this->assertSame('2019', $template->get2('date'));
      $this->assertSame('1905.02552',  $template->get2('arxiv') . $template->get2('eprint'));
   }
   
@@ -686,6 +686,7 @@ final class apiFunctionsTest extends testBaseClass {
      $template = $this->make_citation($text);
      $results = (object) array();
      expand_book_adsabs($template, $results);
+     $this->assertNull($template->get2('date'));
      $this->assertNull($template->get2('year'));
   }
 
@@ -720,7 +721,7 @@ final class apiFunctionsTest extends testBaseClass {
   ),
 );
      expand_book_adsabs($template, $results->docs[0]);
-     $this->assertSame('1958', $template->get2('year'));
+     $this->assertSame('1958', $template->get2('date'));
      $this->assertSame('structure and evolution of the stars', strtolower($template->get2('title')));
   }
 
@@ -967,7 +968,7 @@ final class apiFunctionsTest extends testBaseClass {
   public function testBlankTypeFromDX() : void {
     $text = "{{cite book| doi=10.14989/doctor.k19250 }}";
     $prepared = $this->process_citation($text);
-    $this->assertSame('2015', $prepared->get2('year'));
+    $this->assertSame('2015', $prepared->get2('date'));
     
     $text = "{{Cite journal|doi=10.26099/aacp-5268}}";
     $prepared = $this->process_citation($text);

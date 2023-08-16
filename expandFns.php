@@ -113,7 +113,7 @@ function is_doi_works(string $doi) : ?bool {
     if (preg_match('~^[^1-9]\d\d\d$~', $registrant)) return FALSE;          // 4 digits without subcode (0xxx); accepts: 1000–9999
     if (preg_match('~^\d\d\d\d\d\d+~', $registrant)) return FALSE;          // 6 or more digits
     if (preg_match('~^\d\d?\d?$~', $registrant)) return FALSE;              // less than 4 digits without subcode (3 digits with subcode is legitimate)
-    if (preg_match('~^\d\d?\.[\d\.]+~', $registrant)) return FALSE; 		    // 1 or 2 digits with subcode
+    if (preg_match('~^\d\d?\.[\d\.]+~', $registrant)) return FALSE;         // 1 or 2 digits with subcode
     if ($registrant === '5555') return FALSE;                               // test registrant will never resolve
     if (preg_match('~[^\d\.]~', $registrant)) return FALSE;                 // any character that isn't a digit or a dot
   }
@@ -805,6 +805,14 @@ function title_capitalization(string $in, bool $caps_after_punctuation) : string
     $replace    = 'Series ' . strtoupper($matches[1]) . $matches[2] . strtoupper($matches[3]);
     $new_case = trim(str_replace($replace_me, $replace, $new_case . ' '));
   }
+
+  // 42th, 33rd, 1st, ...
+  if(preg_match('~\s\d+(?:st|nd|rd|th)[\s\,\;\:\.]~i', ' ' . $new_case . ' ', $matches)) {
+    $replace_me = $matches[0];
+    $replace    = strtolower($matches[0]);
+    $new_case = trim(str_replace($replace_me, $replace, ' ' .$new_case . ' '));
+  }
+ 
   // Part XII: Roman numerals
   $new_case = safe_preg_replace_callback(
     "~ part ([xvil]+): ~iu",
@@ -814,6 +822,11 @@ function title_capitalization(string $in, bool $caps_after_punctuation) : string
     "~ part ([xvi]+) ~iu",
     function (array $matches) : string {return " Part " . strtoupper($matches[1]) . " ";},
     $new_case);
+  $new_case = safe_preg_replace_callback(
+    "~ (?:Ii|Iii|Iv|Vi|Vii|Vii|Ix)$~u",
+    function (array $matches) : string {return strtoupper($matches[0]);},
+    $new_case);
+  $new_case = trim($new_case);
   // Special cases - Only if the full title
   if ($new_case === 'Bioscience') {
     $new_case = 'BioScience';
@@ -825,6 +838,14 @@ function title_capitalization(string $in, bool $caps_after_punctuation) : string
     $new_case = 'SAGE Open';
   } elseif ($new_case === 'Ca') {
     $new_case = 'CA';
+  } elseif ($new_case === 'Pen International') {
+    $new_case = 'PEN International';
+  } elseif ($new_case === 'Time off') {
+    $new_case = 'Time Off';
+  } elseif ($new_case === 'It Professional') {
+    $new_case = 'IT Professional';
+  } elseif ($new_case === 'Jom') {
+    $new_case = 'JOM';
   }
   return $new_case;
 }
@@ -1572,6 +1593,7 @@ function normalize_google_books(string &$url, int &$removed_redundant, string &$
           $url .= '&dq=' . $book_array['dq'];
       }
       if (isset($book_array['pg'])){
+          if (preg_match('~^[pra]+\d~i', $book_array['pg'])) $book_array['pg'] = strtoupper($book_array['pg']);
           $url .= '&pg=' . $book_array['pg'];
       }
       if (isset($book_array['lpg'])){ // Currently NOT POSSIBLE - failsafe code for changes
@@ -2266,4 +2288,70 @@ function clean_up_oxford_stuff(Template $template, string $param) : void {
               }
             }
           }
+}
+
+function conference_doi(string $doi) : bool {
+  if (strpos($doi, '10.1109/') === 0 ||
+      strpos($doi, '10.1145/') === 0 ||
+      strpos($doi, '10.1117/') === 0 ||
+      strpos($doi, '10.2991/') === 0 ||
+      stripos($doi, '10.2991/erss') === 0 ||
+      stripos($doi, '10.2991/jahp') === 0) {
+         return TRUE;
+  }
+  return FALSE;
+}
+
+function clean_dates(string $input) : string { // See https://en.wikipedia.org/wiki/Help:CS1_errors#bad_date
+    if ($input === '0001-11-30') return '';
+    $months_seasons = array('January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December', 'Winter', 'Spring', 'Summer', 'Fall', 'Autumn');
+    $input = str_ireplace($months_seasons, $months_seasons, $input); // capitalization
+    if (preg_match('~^(\d{4})[\-\/](\d{4})$~', $input, $matches)) { // Hyphen or slash in year range (use en dash)
+      return $matches[1] . '–' . $matches[2];
+    }
+    if (preg_match('~^(\d{4})\/ed$~i', $input, $matches)) { // 2002/ed
+      return $matches[1];
+    }
+    if (preg_match('~^First published(?: |\: | in | in\: | in\:)(\d{4})$~i', $input, $matches)) { // First published: 2002
+      return $matches[1];
+    }
+    if (preg_match('~^([A-Z][a-z]+)[\-\/]([A-Z][a-z]+) (\d{4})$~', $input, $matches)) { // Slash or hyphen in date range (use en dash)
+      return $matches[1] . '–' . $matches[2] . ' ' . $matches[3];
+    }
+    if (preg_match('~^([A-Z][a-z]+ \d{4})[\-\–]([A-Z][a-z]+ \d{4})$~', $input, $matches)) { // Missing space around en dash for range of full dates
+      return $matches[1] . ' – ' . $matches[2];
+    }
+    if (preg_match('~^([A-Z][a-z]+), (\d{4})$~', $input, $matches)) { // Comma with month/season and year
+      return $matches[1] . ' ' . $matches[2];
+    }
+    if (preg_match('~^([A-Z][a-z]+), (\d{4})[\-\–](\d{4})$~', $input, $matches)) { // Comma with month/season and years
+      return $matches[1] . ' ' . $matches[2] . '–' . $matches[3];
+    }
+    if (preg_match('~^([A-Z][a-z]+) 0(\d),? (\d{4})$~', $input, $matches)) { // Zero-padding
+      return $matches[1] . ' ' . $matches[2] . ', ' . $matches[3];
+    }
+    if (preg_match('~^([A-Z][a-z]+ \d{1,2})( \d{4})$~', $input, $matches)) { // Missing comma in format which requires it
+      return $matches[1] . ',' . $matches[2];
+    }
+    if (preg_match('~^Collected[\s\:]+((?:|[A-Z][a-z]+ )\d{4})$~', $input, $matches)) { // Collected 1999 stuff
+      return $matches[1];
+    }
+    if (preg_match('~^Effective[\s\:]+((?:|[A-Z][a-z]+ )\d{4})$~', $input, $matches)) { // Effective 1999 stuff
+      return $matches[1];
+    }
+    if (preg_match('~^(\d{4})\s*(?:&|and)\s*(\d{4})$~', $input, $matches)) { // &/and between years
+      $first = (int) $matches[1];
+      $second = (int) $matches[2];
+      if ($second === $first+1) {
+        return $matches[1] . '–' . $matches[2];
+      }
+    }
+    if (preg_match('~^(\d{4})\-(\d{2})$~', $input, $matches)) { // 2020-12 i.e. backwards
+      $year = $matches[1];
+      $month = (int) $matches[2];
+      if ($month > 0 && $month < 13) {
+        return $months_seasons[$month-1] . ' ' . $year;
+      }
+    }
+    return $input;
 }

@@ -103,7 +103,7 @@ final class Template {
       } else {
         $this->name = $spacing[1] . 'Cite journal' . $spacing[2];
       }
-      // Cite paper and Cite document are really cite journal
+      // Cite paper is really cite journal
     } elseif ($trim_name === 'cite paper' || $trim_name === 'cite document') {
       if (!$this->blank_other_than_comments('journal')) {
         $this->name = $spacing[1] . 'cite journal' . $spacing[2];
@@ -286,7 +286,7 @@ final class Template {
         if ($this->has($date)) {
           $input = $this->get($date);
           if (stripos($input, 'citation') === FALSE) {
-            $output = $this->clean_dates($input);
+            $output = clean_dates($input);
             if ($input !== $output) {
               $this->set($date, $output);
             }
@@ -337,12 +337,22 @@ final class Template {
       if (!$this->blank(['pmc', 'pmid', 'doi', 'jstor']) ||
          (stripos($this->get('journal') . $this->get('title'), 'arxiv') !== FALSE && !$this->blank(ARXIV_ALIASES))) { // Have some good data
           $the_title   = $this->get('title');
-          $the_journal = $this->get('journal');
+          $the_journal = str_replace(['[', ']'], '', $this->get('journal'));
           $the_chapter = $this->get('chapter');
           $the_volume  = $this->get('volume');
           $the_issue   = $this->get('issue');
           $the_page    = $this->get('page');
           $the_pages   = $this->get('pages');
+          if ($this->get2('chapter') === NULL) {
+             $no_start_chapter = TRUE;
+          } else {
+             $no_start_chapter = FALSE;
+          }
+          if ($this->get2('journal') === NULL) {
+             $no_start_journal = TRUE;
+          } else {
+             $no_start_journal = FALSE;
+          }
           $initial_author_params_save = $this->initial_author_params;
           $bad_data = FALSE;
           if (stripos($the_journal, 'Advances in Cryptology') === 0 && stripos($the_title, 'Advances in Cryptology') === 0) {
@@ -350,27 +360,22 @@ final class Template {
               $this->forget('journal');
               $bad_data = TRUE;
           }
-          if (stripos($the_journal, 'Advances in Cryptology') === 0 ||
-              stripos($the_journal, 'IEEE Symposium') !== FALSE ||
-              stripos($the_journal, 'IEEE Conference') !== FALSE ||
-              stripos($the_journal, 'IEEE International Conference') !== FALSE ) {
-              $this->rename('journal', 'CITATION_BOT_PLACEHOLDER_journal');
-              $the_journal = '';
-              $bad_data = TRUE;
-              if ($the_title !== '') {
-                  $this->rename('title', 'CITATION_BOT_PLACEHOLDER_title');
-                  $the_title = '';
-              }
-              if ($the_chapter !== '') {
-                  $this->rename('chapter', 'CITATION_BOT_PLACEHOLDER_chapter');
-                  $the_chapter = '';
-              }
-          }
-          if (strpos($this->get('doi'), '10.1109/') === 0 && $this->has('isbn')) { // IEEE "book"
+          $ieee_insanity = FALSE;
+          if (conference_doi($this->get('doi')) &&
+              ($this->has('isbn') || (stripos($the_title, 'proceedings') !== FALSE && stripos($the_journal, 'proceedings') !== FALSE) ||
+              (stripos($the_title, 'Symposium') !== FALSE && stripos($the_journal, 'Symposium') !== FALSE) || (stripos($the_title, 'Meeting on ') !== FALSE && stripos($the_journal, 'Meeting on ') !== FALSE))) { // IEEE/ACM/etc "book"
               $data_to_check = $the_title . $the_journal . $the_chapter . $this->get('series');
               if (stripos($data_to_check, 'IEEE Standard for') === FALSE && $this->blank('journal')) {
                 ; // Do nothing
-              } elseif (stripos($data_to_check, 'Symposium') === FALSE && stripos($data_to_check, 'Conference') === FALSE) { // Looks like conference
+              } elseif (stripos($data_to_check, 'Symposium') === FALSE &&
+                        stripos($data_to_check, 'Conference') === FALSE &&
+                        stripos($data_to_check, 'Proceedings') === FALSE &&
+                        stripos($data_to_check, 'Workshop') === FALSE &&
+                        stripos($data_to_check, 'Symp. On ') === FALSE &&
+                        stripos($data_to_check, 'Meeting on ') !== FALSE &&
+                        stripos($the_journal, 'Visual Languages and Human-Centric Computing') !== FALSE ||
+                        stripos($the_journal, 'Active and Passive Microwave Remote Sensing for') !== FALSE
+                       ) { // Looks like conference done, but does not claim so
                 if ($the_journal !== '') {
                   $this->rename('journal', 'CITATION_BOT_PLACEHOLDER_journal');
                   $the_journal = '';
@@ -384,8 +389,16 @@ final class Template {
                   $the_chapter = '';
                 }
                 $bad_data = TRUE;
-              } elseif (stripos($the_journal, 'Symposium') !== FALSE || stripos($the_journal, 'Conference') !== FALSE) {
+              } elseif (stripos($the_journal, 'Symposium') !== FALSE ||
+                        stripos($the_journal, 'Conference') !== FALSE ||
+                        stripos($the_journal, 'Proceedings') !== FALSE ||
+                        stripos($the_journal, 'Workshop') !== FALSE ||
+                        stripos($the_journal, 'Symp. On ') !== FALSE ||
+                        stripos($the_journal, 'Meeting on ') !== FALSE ||
+                        stripos($the_journal, 'Visual Languages and Human-Centric Computing') !== FALSE
+                       ) {
                  $this->rename('journal', 'CITATION_BOT_PLACEHOLDER_journal');
+                 $ieee_insanity = TRUE;
                  $the_journal = '';
                  $bad_data = TRUE;
                  if ($the_title !== '') {
@@ -396,6 +409,28 @@ final class Template {
                    $this->rename('chapter', 'CITATION_BOT_PLACEHOLDER_chapter');
                    $the_chapter = '';
                  }
+              }
+          }
+          if (stripos($the_journal, 'Advances in Cryptology') === 0 ||
+              stripos($the_journal, 'IEEE Symposium') !== FALSE ||
+              stripos($the_journal, 'IEEE Conference') !== FALSE ||
+              stripos($the_journal, 'IEEE International Conference') !== FALSE ||
+              stripos($the_journal, 'ACM International Symposium') !== FALSE ||
+              stripos($the_journal, 'ACM Symposium') !== FALSE ||
+              stripos($the_journal, 'IEEE International Symposium') !== FALSE ||
+              stripos($the_journal, 'Symposium on Theoretical Aspects') !== FALSE ||
+              stripos($the_journal, 'Design Automation Conference') !== FALSE
+             ) {
+              $this->rename('journal', 'CITATION_BOT_PLACEHOLDER_journal');
+              $the_journal = '';
+              $bad_data = TRUE;
+              if ($the_title !== '') {
+                  $this->rename('title', 'CITATION_BOT_PLACEHOLDER_title');
+                  $the_title = '';
+              }
+              if ($the_chapter !== '') {
+                  $this->rename('chapter', 'CITATION_BOT_PLACEHOLDER_chapter');
+                  $the_chapter = '';
               }
           }
           if ($the_pages === '_' || $the_pages === '0' || $the_pages === 'null' || $the_pages === 'n/a' || $the_pages === 'online' || $the_pages === 'Online' || $the_pages === 'Forthcoming' || $the_pages === 'forthcoming') {
@@ -425,14 +460,15 @@ final class Template {
               $the_title = '';
               $bad_data = TRUE;
           }
-          if (stripos($the_title, 'SpringerLink') === 0) {
+          if (stripos($the_title, 'SpringerLink') !== FALSE) {
               $this->rename('title', 'CITATION_BOT_PLACEHOLDER_title');
               $the_title = '';
               $bad_data = TRUE;
-          }                                                                                                                                                                                                   
+          }                                                                                                         
           if ($the_title === '_' || $the_title === 'null' || $the_title === '[No title found]' || $the_title === 'Archived copy' || $the_title === 'JSTOR' ||
               $the_title === 'ShieldSquare Captcha' || $the_title === 'Shibboleth Authentication Request' || $the_title === 'Pubmed' ||
-              $the_title === 'Pubmed Central' || $the_title === 'Optica Publishing Group') { // title=none is often because title is "reviewed work....
+              $the_title === 'Pubmed Central' || $the_title === 'Optica Publishing Group' || $the_title === 'BioOne' || $the_title === 'IEEE Xplore' ||
+              $the_title === 'ScienceDirect' || $the_title === 'Science Direct') { // title=none is often because title is "reviewed work....
               $this->rename('title', 'CITATION_BOT_PLACEHOLDER_title');
               $the_title = '';
               $bad_data = TRUE;
@@ -456,7 +492,7 @@ final class Template {
               $the_journal = '';
               $bad_data = TRUE;
           }
-          if (str_i_same($the_journal, 'JSTOR') || $the_journal === '_') {
+          if (str_i_same($the_journal, 'JSTOR') || $the_journal === '_' || str_i_same($the_journal, 'BioOne') || str_i_same($the_journal, 'IEEE Xplore') || str_i_same($the_journal, 'PubMed') || str_i_same($the_journal, 'PubMed Central') || str_i_same($the_journal, 'ScienceDirect') || str_i_same($the_journal, 'Science Direct')) {
               $this->rename('journal', 'CITATION_BOT_PLACEHOLDER_journal');
               $the_journal = '';
               $bad_data = TRUE;
@@ -561,6 +597,9 @@ final class Template {
               expand_arxiv_templates($this->this_array);
             }
             $this->this_array = array();
+            if ($ieee_insanity && $this->has('chapter') && $this->has('title')) {
+              $this->forget('CITATION_BOT_PLACEHOLDER_journal');
+            }
             if ($this->has('CITATION_BOT_PLACEHOLDER_journal')) {
               if ($this->has('journal') && $this->get('journal') !== $this->get('CITATION_BOT_PLACEHOLDER_journal') &&
                   '[[' . $this->get('journal') . ']]' !== $this->get('CITATION_BOT_PLACEHOLDER_journal')) {
@@ -614,6 +653,11 @@ final class Template {
             if ($this->has('CITATION_BOT_PLACEHOLDER_year')) {
               if ($this->has('year') && ($this->get('year') !== $this->get('CITATION_BOT_PLACEHOLDER_year'))) {
                 $this->forget('CITATION_BOT_PLACEHOLDER_year');
+              } elseif ($this->has('date') && ($this->get('date') !== $this->get('CITATION_BOT_PLACEHOLDER_year'))) {
+                $this->forget('CITATION_BOT_PLACEHOLDER_year');
+              } elseif ($this->has('date') && ($this->get('date') === $this->get('CITATION_BOT_PLACEHOLDER_year'))) {
+                $this->forget('date');
+                $this->rename('CITATION_BOT_PLACEHOLDER_year', 'year');
               } else {
                 $this->rename('CITATION_BOT_PLACEHOLDER_year', 'year');
               }
@@ -639,7 +683,10 @@ final class Template {
               }
             }
           }
+          if ($no_start_chapter && $this->blank('chapter')) $this->forget('chapter');
+          if ($no_start_journal && $this->blank('journal')) $this->forget('journal');
           unset($initial_author_params_save, $the_title, $the_journal, $the_chapter, $the_volume, $the_issue, $the_page, $the_pages, $bad_data);
+          unset($no_start_chapter, $no_start_journal);
         }
         $this->tidy();
         // Fix up URLs hiding in identifiers
@@ -1056,10 +1103,7 @@ final class Template {
       ### DATE AND YEAR ###
 
       case "date":
-        if (preg_match("~^\d{4}$~", sanitize_string($value))) {
-          // Not adding any date data beyond the year, so 'year' parameter is more suitable
-          $param_name = "year";
-        } elseif (self::$date_style !== DATES_WHATEVER || preg_match('~^\d{4}\-\d{2}\-\d{2}$~', $value)) {
+        if (self::$date_style !== DATES_WHATEVER || preg_match('~^\d{4}\-\d{2}\-\d{2}$~', $value)) {
           $time = strtotime($value);
           if ($time) {
             $day = date('d', $time);
@@ -1079,18 +1123,22 @@ final class Template {
                || in_array(trim(strtolower($this->get_without_comments_and_placeholders('date'))), IN_PRESS_ALIASES))
             && ($this->blank('year')
                || in_array(trim(strtolower($this->get_without_comments_and_placeholders('year'))), IN_PRESS_ALIASES))
-          ) {
-          if ($param_name !== 'date') $this->forget('date'); // Delete any "in press" dates.
-          if ($param_name !== 'year') $this->forget('year'); // We only unset the other one so that parameters stay in order as much as possible
-          if ($this->add($param_name, $value)) {
+          ) {  // Delete any "in press" dates.
+          $this->forget('year'); // "year" is discouraged
+          if ($this->add('date', $value)) {
             $this->tidy_parameter('isbn');  // We just added a date, we now know if 2007 or later
             return TRUE;
           }
         }
         // Update Year with CrossRef data in a few limited cases
         if ($param_name === 'year' && $api === 'crossref' && $this->no_initial_doi && ((int) $this->year() < $value) && ((int)date('Y') - 3 < $value)) {
-          $this->forget('date');
-          $this->set('year', $value);
+          if ($this->blank('year')) {
+             $this->forget('year');
+             $this->set('date', $value);
+          } else {
+             $this->forget('date');
+             $this->set('year', $value);
+          }
           $this->tidy_parameter('isbn');
           return TRUE;
         }
@@ -1557,7 +1605,7 @@ final class Template {
            return $this->add($param_name, $value);
         }
         // TODO : re-checked & change this back to 6 months ago everyone in a while to compact all DOIs
-        $last_day = strtotime("23:59:59 31 December 2022");
+        $last_day = strtotime("23:59:59 31 July 2023");
         $check_date = $last_day - 126000;
         // @codeCoverageIgnoreStart
         if (($the_new > $last_day) && ($existing < $check_date)) {
@@ -2631,58 +2679,64 @@ final class Template {
 
   public function clean_google_books() : void {
     foreach (ALL_URL_TYPES as $url_type) {
-       if ($this->has($url_type) && preg_match('~^(https?://(?:books|www)\.google\.[^/]+/books.+)\?$~', $this->get($url_type), $matches)) {
-         $this->set($url_type, $matches[1]); // trailing ?
+      if ($this->has($url_type)) {
+       $url = $this->get($url_type);
+       if (preg_match('~^(https?://(?:books|www)\.google\.[^/]+/books.+)\?$~',$url, $matches)) {
+         $url = $matches[1]; // trailing ?
        }
-       if ($this->has($url_type) && preg_match('~^https?://books\.google\.[^/]+/booksid=(.+)$~', $this->get($url_type), $matches)) {
-         $this->set($url_type, 'https://books.google.com/books?id=' . $matches[1]);
+       if (preg_match('~^https?://books\.google\.[^/]+/booksid=(.+)$~', $url, $matches)) {
+         $url = 'https://books.google.com/books?id=' . $matches[1];
        }
-       if ($this->has($url_type) && preg_match('~^https?://www\.google\.[^/]+/books\?(.+)$~', $this->get($url_type), $matches)) {
-         $this->set($url_type, 'https://books.google.com/books?' . $matches[1]);
+       if (preg_match('~^https?://www\.google\.[^/]+/books\?(.+)$~', $url, $matches)) {
+         $url = 'https://books.google.com/books?' . $matches[1];
        }
-       if ($this->has($url_type) && preg_match('~^https?://books\.google\.[^/\?]+\?id=(.+)$~', $this->get($url_type), $matches)) {
-         $this->set($url_type, 'https://books.google.com/books?id=' . $matches[1]);
+       if (preg_match('~^https?://books\.google\.[^/\?]+\?id=(.+)$~', $url, $matches)) {
+         $url = 'https://books.google.com/books?id=' . $matches[1];
        }
-       if ($this->has($url_type) && preg_match('~^https?://books\.google\.[^/]+\/books\/about\/[^/]+\.html$~', $this->get($url_type), $matches)) {
-         $this->forget($url_type);
+       if (preg_match('~^https?://books\.google\.[^/]+\/books\/about\/[^/]+\.html$~', $url, $matches)) {
+         $url = '';
        }
-       if ($this->has($url_type) && preg_match('~^https?://(?:books|www)\.google\.[^/]+\/books\/edition\/[a-zA-Z0-9\_]+\/?$~', $this->get($url_type), $matches)) {
-         $this->forget($url_type);
+       if (preg_match('~^https?://(?:books|www)\.google\.[^/]+\/books\/edition\/[a-zA-Z0-9\_]+\/?$~', $url, $matches)) {
+        $url = '';
        }
-       if ($this->has($url_type) && preg_match('~^https?://(?:books|www)\.google\.[^/]+\/books\?pg=P\S\S\S\S*$~', $this->get($url_type), $matches)) {
-         $this->forget($url_type);
+       if (preg_match('~^https?://(?:books|www)\.google\.[^/]+\/books\?pg=P\S\S\S\S*$~', $url, $matches)) {
+         $url = '';
        }
-       if ($this->has($url_type) && preg_match('~^https?://(?:books|www)\.google\.[^/]+\/books\/edition\/[a-zA-Z0-9\_]+\/([a-zA-Z0-9\-]+)\?(.+)$~', $this->get($url_type), $matches)) {
-         $this->set($url_type, 'https://books.google.com/books?id=' . $matches[1] . '&' . $matches[2]);
+       if (preg_match('~^https?://(?:books|www)\.google\.[^/]+\/books\/edition\/[a-zA-Z0-9\_]+\/([a-zA-Z0-9\-]+)\?(.+)$~', $url, $matches)) {
+         $url = 'https://books.google.com/books?id=' . $matches[1] . '&' . $matches[2];
        }
-       if ($this->has($url_type) && preg_match('~^https?://books\.google\..*id\&\#61\;.*$~', $this->get($url_type), $matches)) {
-         $this->set($url_type, str_replace('&#61;', '=', $this->get($url_type)));
+       if (preg_match('~^https?://books\.google\..*id\&\#61\;.*$~', $url, $matches)) {
+         $url = str_replace('&#61;', '=', $url);
        }
-       if ($this->has($url_type) && preg_match('~^https?://books\.google\.[^/]+/(?:books|)\?[qv]id=(.+)$~', $this->get($url_type), $matches)) {
-         $this->set($url_type, 'https://books.google.com/books?id=' . $matches[1]);
+       if (preg_match('~^https?://books\.google\.[^/]+/(?:books|)\?[qv]id=(.+)$~', $url, $matches)) {
+         $url = 'https://books.google.com/books?id=' . $matches[1];
        }
-       if ($this->has($url_type) && preg_match('~^https?://(?:|www\.)books\.google\.com/\?id=(.+)$~', $this->get($url_type), $matches)) {
-         $this->set($url_type, 'https://books.google.com/books?id=' . $matches[1]);
+       if (preg_match('~^https?://(?:|www\.)books\.google\.com/\?id=(.+)$~', $url, $matches)) {
+         $url = 'https://books.google.com/books?id=' . $matches[1];
        }
-       if ($this->has($url_type) && preg_match('~^https?://www\.google\.[a-z\.]+/books\?id=(.+)$~', $this->get($url_type), $matches)) {
-           $this->set($url_type, 'https://books.google.com/books?id=' . $matches[1]);
+       if (preg_match('~^https?://www\.google\.[a-z\.]+/books\?id=(.+)$~', $url, $matches)) {
+         $url = 'https://books.google.com/books?id=' . $matches[1];
        }
+       $this->set($url_type, $url);
+       if ($url === '') $this->forget($url_type);
        $this->expand_by_google_books_inner($url_type, FALSE);
-       if ($this->has($url_type) && preg_match('~^https?://books\.google\.([^/]+)/books\?((?:isbn|vid)=.+)$~', $this->get($url_type), $matches)) {
+       if (preg_match('~^https?://books\.google\.([^/]+)/books\?((?:isbn|vid)=.+)$~', $this->get($url_type), $matches)) {
          if ($matches[1] !== 'com') {
            $this->set($url_type, 'https://books.google.com/books?' . $matches[2]);
          }
        }
+      }
     }
   }
 
-  public function expand_by_google_books() : bool {
+  public function expand_by_google_books() : void {
     $this->clean_google_books();
-    if ($this->has('doi') && doi_active($this->get('doi'))) return FALSE;
+    if ($this->has('doi') && doi_active($this->get('doi'))) return;
     foreach (['url', 'chapterurl', 'chapter-url'] as $url_type) {
-       if ($this->expand_by_google_books_inner($url_type, TRUE)) return TRUE;
+       if ($this->expand_by_google_books_inner($url_type, TRUE)) return;
     }
-    return $this->expand_by_google_books_inner('', TRUE);
+    $this->expand_by_google_books_inner('', TRUE);
+    return;
   }
 
   protected function expand_by_google_books_inner(string $url_type, bool $use_it) : bool {
@@ -2793,8 +2847,6 @@ final class Template {
     } else {
       $this->add_if_new('title',  wikify_external_text(str_replace("___", ":", (string) $xml->title)));
     }
-    // Possibly contains dud information on occasion
-    // $this->add_if_new('publisher', str_replace("___", ":", $xml->dc___publisher));
     $isbn = '';
     foreach ($xml->dc___identifier as $ident) {
       if (preg_match("~isbn.*?([\d\-]{9}[\d\-]+)~i", (string) $ident, $match)) {
@@ -2811,6 +2863,11 @@ final class Template {
         $this->validate_and_add('author' . (string) ++$i, str_replace("___", ":", (string) $author), '', '', TRUE);
         if ($this->blank(['author' . (string) $i, 'first' . (string) $i, 'last' . (string) $i])) $i--; // It did not get added
       }
+    }
+
+    // Possibly contains dud information on occasion - only add if data is good enough to have ISBN, and is probably a stand-alone book
+    if (isset($xml->dc___publisher) && $isbn !== '' && $this->blank(['doi', 'pmid', 'pmc', 's2cid', 'arxiv', 'eprint', 'journal', 'magazine', 'newspaper', 'series'])) {
+        $this->add_if_new('publisher', str_replace("___", ":", (string) $xml->dc___publisher));
     }
 
     $google_date = sanitize_string(trim( (string) $xml->dc___date )); // Google often sends us YYYY-MM
@@ -3297,7 +3354,7 @@ final class Template {
           case "fahrplan-ch": case "incomplete short citation": case "music": case "bar-ads":
           case "subscription or libraries": case "gallica": case "gnd": case "ncbibook":
           case "spaces": case "ndash": case "dggs": case "self-published source": case "nobreak":
-          case "gbooks": // TODO - should use
+          case "gbooks": case "gburl": // TODO - should use
           case "isbnt": case "issn link": case "lccn8": // Assume not normal template for a reason
           case "google books": // Usually done for fancy formatting and because already has title-link/url
           case "url": // Untrustable: used by bozos
@@ -3674,7 +3731,11 @@ final class Template {
                    $this->set('work', 'AP News');
                  } elseif ($this->get('work') === 'Associated Press'){
                    $this->set('work', 'Associated Press News');
-                 }
+                 } elseif ($this->get('work') === '[[Associated Press]]'){
+                   $this->set('work', '[[Associated Press News]]');
+                 } elseif ($this->get('work') === '[[AP]]'){
+                   $this->set('work', '[[AP News]]');
+                 } 
                }
             }
           }
@@ -3845,6 +3906,14 @@ final class Template {
           $day = $this->get('day');
           $month = $this->get('month');
           $year = $this->get('year');
+          if ($day === '' && preg_match('~^([a-zA-Z]+) 0*(\d+)$~', $month, $matches)) {
+             $day = $matches[2];
+             $month = $matches[1];
+          }
+          if ($day === '' && preg_match('~^0*(\d+) ([a-zA-Z]+)$~', $month, $matches)) {
+             $day = $matches[1];
+             $month = $matches[2];
+          }
           if (!preg_match('~^\d*$~', $day)) return;
           if (!preg_match('~^[a-zA-Z\–\-]+$~u', $month)) return;
           if (!preg_match('~^\d{4}$~', $year)) return;
@@ -4088,18 +4157,12 @@ final class Template {
               $this->set('issue', $matches[1]);
             }
           }
-          if (doi_works($doi) && (strpos($doi, '10.3389/') === 0 ||
-                                  strpos($doi, '10.3390/') === 0 ||
-                                  strpos($doi, '10.1155/') === 0 ||
-                                  strpos($doi, '10.1371/journal.pone') === 0 ||
-                                  strpos($doi, '10.3897/zookeys') === 0 ||
-                                  strpos($doi, '10.1016/j.jbc.') === 0 ||
-                                  strpos($doi, '10.1016/S0021-9258') === 0 ||
-                                  strpos($doi, '10.1074/jbc.') === 0 ||
-                                  strpos($doi, '10.1210/jendso/') === 0 ||
-                                  strpos($doi, '10.4249/') === 0
-                                 )) {
-            $this->add_if_new('doi-access', 'free');
+          if (doi_works($doi)) {
+            foreach (DOI_FREE_PREFIX as $prefix) {
+              if (strpos($doi, $prefix) === 0) {
+                 $this->add_if_new('doi-access', 'free');
+              }
+            }
           }
           if (doi_works($doi) && (strpos($doi, '10.1073/pnas') === 0)) {
             $template_year = $this->year();
@@ -4439,6 +4502,13 @@ final class Template {
         case 'publisher':
           if ($this->wikiname() === 'cite journal' && $this->has('journal') && $this->has('title') && $this->blank($param)) {
             $this->forget($param);  // Not good to encourage adding this
+            return;
+          }
+          if ($this->wikiname() === 'cite journal' && $this->has('journal') && $this->has('title') && $this->has('doi')) {
+             $test_me = str_replace(array(']', '['), '', strtolower($this->get($param)));
+             if (in_array($test_me, array('sciencedirect', 'science direct'))) {  // TODO add more
+                $this->forget($param);
+             }
             return;
           }
           if (stripos($this->get($param), 'proquest') !== FALSE && stripos($this->get($param), 'llc') === FALSE) {
@@ -6098,7 +6168,7 @@ final class Template {
           }
         }
       }
-      if (preg_match('~^10\.1109/~', $this->get('doi')) &&
+      if (conference_doi($this->get('doi')) &&
         $this->has('title') && $this->has('chapter') && $this->has('isbn')  &&
         $this->wikiname() === 'cite book' && doi_works($this->get('doi'))) {
           if (stripos($this->get('title'), 'Conference') !== FALSE) {
@@ -6847,6 +6917,8 @@ final class Template {
               preg_match("~^(\d+)\.(\d+)$~i", $data, $matches) ||
               preg_match("~^(\d+)\((\d+\/\d+)\)$~i", $data, $matches) ||
               preg_match("~^(\d+) \((\d+ Suppl \d+)\)$~i", $data, $matches) ||
+              preg_match("~^(\d+) (Suppl \d+)$~i", $data, $matches) ||
+              preg_match("~^(\d+) (S\d+)$~i", $data, $matches) ||
               preg_match("~^Vol\.?(\d+)\((\d+)\)$~", $data, $matches) ||
               preg_match("~^(\d+) +\(No(?:\.|\. | )(\d+)\)$~i", $data, $matches) ||
               preg_match("~^(\d+):(\d+)$~", $data, $matches) ||
@@ -7155,60 +7227,6 @@ final class Template {
              $this->forget('doi-broken-date');
           }
       }
-  }
-
-  public function clean_dates(string $input) : string { // See https://en.wikipedia.org/wiki/Help:CS1_errors#bad_date
-    if ($input === '0001-11-30') return '';
-    $months_seasons = array('January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December', 'Winter', 'Spring', 'Summer', 'Fall', 'Autumn');
-    $input = str_ireplace($months_seasons, $months_seasons, $input); // capitalization
-    if (preg_match('~^(\d{4})[\-\/](\d{4})$~', $input, $matches)) { // Hyphen or slash in year range (use en dash)
-      return $matches[1] . '–' . $matches[2];
-    }
-    if (preg_match('~^(\d{4})\/ed$~i', $input, $matches)) { // 2002/ed
-      return $matches[1];
-    }
-    if (preg_match('~^First published(?: |\: | in | in\: | in\:)(\d{4})$~i', $input, $matches)) { // First published: 2002
-      return $matches[1];
-    }
-    if (preg_match('~^([A-Z][a-z]+)[\-\/]([A-Z][a-z]+) (\d{4})$~', $input, $matches)) { // Slash or hyphen in date range (use en dash)
-      return $matches[1] . '–' . $matches[2] . ' ' . $matches[3];
-    }
-    if (preg_match('~^([A-Z][a-z]+ \d{4})[\-\–]([A-Z][a-z]+ \d{4})$~', $input, $matches)) { // Missing space around en dash for range of full dates
-      return $matches[1] . ' – ' . $matches[2];
-    }
-    if (preg_match('~^([A-Z][a-z]+), (\d{4})$~', $input, $matches)) { // Comma with month/season and year
-      return $matches[1] . ' ' . $matches[2];
-    }
-    if (preg_match('~^([A-Z][a-z]+), (\d{4})[\-\–](\d{4})$~', $input, $matches)) { // Comma with month/season and years
-      return $matches[1] . ' ' . $matches[2] . '–' . $matches[3];
-    }
-    if (preg_match('~^([A-Z][a-z]+) 0(\d),? (\d{4})$~', $input, $matches)) { // Zero-padding
-      return $matches[1] . ' ' . $matches[2] . ', ' . $matches[3];
-    }
-    if (preg_match('~^([A-Z][a-z]+ \d{1,2})( \d{4})$~', $input, $matches)) { // Missing comma in format which requires it
-      return $matches[1] . ',' . $matches[2];
-    }
-    if (preg_match('~^Collected[\s\:]+((?:|[A-Z][a-z]+ )\d{4})$~', $input, $matches)) { // Collected 1999 stuff
-      return $matches[1];
-    }
-    if (preg_match('~^Effective[\s\:]+((?:|[A-Z][a-z]+ )\d{4})$~', $input, $matches)) { // Effective 1999 stuff
-      return $matches[1];
-    }
-    if (preg_match('~^(\d{4})\s*(?:&|and)\s*(\d{4})$~', $input, $matches)) { // &/and between years
-      $first = (int) $matches[1];
-      $second = (int) $matches[2];
-      if ($second === $first+1) {
-        return $matches[1] . '–' . $matches[2];
-      }
-    }
-    if (preg_match('~^(\d{4})\-(\d{2})$~', $input, $matches)) { // 2020-12 i.e. backwards
-      $year = $matches[1];
-      $month = (int) $matches[2];
-      if ($month > 0 && $month < 13) {
-        return $months_seasons[$month-1] . ' ' . $year;
-      }
-    }
-    return $input;
   }
 
   public function has_good_free_copy() : bool { // GOOD is critical - must title link - TODO add more if jstor-access or hdl-access title-link

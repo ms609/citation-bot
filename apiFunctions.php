@@ -526,7 +526,9 @@ function expand_by_doi(Template $template, bool $force = FALSE) : bool {
          }
       }
       $template->add_if_new('series', (string) $crossRef->series_title, 'crossref'); // add_if_new will format the title for a series?
-      $template->add_if_new("year", (string) $crossRef->year, 'crossref');
+      if (strpos($doi, '10.7817/jameroriesoci') === FALSE || (string) $crossRef->year !== '2021') { // 10.7817/jameroriesoci "re-published" everything in 2021
+        $template->add_if_new("year", (string) $crossRef->year, 'crossref');
+      }
       if (   $template->blank(array('editor', 'editor1', 'editor-last', 'editor1-last', 'editor-last1')) // If editors present, authors may not be desired
           && $crossRef->contributors->contributor
         ) {
@@ -1487,6 +1489,9 @@ function query_adsabs(string $options) : object {
      $json = @json_decode($json);
      if (isset($json->message->title[0]) && !isset($json->message->title[1])) {
           $title = (string) $json->message->title[0];
+          if (conference_doi($doi) && isset($json->message->subtitle[0]) && strlen((string) $json->message->subtitle[0]) > 4) {
+             $title = $title . ": " . (string) $json->message->subtitle[0];
+          }
           return str_ireplace(['<i>', '</i>', '</i> :', '  '], [' <i>', '</i> ', '</i>:', ' '], $title);
      } else {
           sleep(2);
