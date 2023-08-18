@@ -464,7 +464,7 @@ final class Template {
               $this->rename('title', 'CITATION_BOT_PLACEHOLDER_title');
               $the_title = '';
               $bad_data = TRUE;
-          }                                                                                                         
+          }
           if ($the_title === '_' || $the_title === 'null' || $the_title === '[No title found]' || $the_title === 'Archived copy' || $the_title === 'JSTOR' ||
               $the_title === 'ShieldSquare Captcha' || $the_title === 'Shibboleth Authentication Request' || $the_title === 'Pubmed' ||
               $the_title === 'Pubmed Central' || $the_title === 'Optica Publishing Group' || $the_title === 'BioOne' || $the_title === 'IEEE Xplore' ||
@@ -3735,7 +3735,7 @@ final class Template {
                    $this->set('work', '[[Associated Press News]]');
                  } elseif ($this->get('work') === '[[AP]]'){
                    $this->set('work', '[[AP News]]');
-                 } 
+                 }
                }
             }
           }
@@ -3960,17 +3960,6 @@ final class Template {
           if (in_array($the_data, ['y', 'yes', 'true'])) {
             $this->rename($param, 'name-list-style', 'amp');
             $this->forget($param);
-          }
-          return;
-
-        case 'laysummary': case 'lay-summary':
-          if ($this->blank($param)) {
-            $this->forget($param);
-            return;
-          }
-          if (!$this->blank(['lay-url', 'layurl'])) return;
-          if (preg_match('~^https?://[^ ]+$~', $this->get($param))) {
-            $this->rename($param, 'lay-url');
           }
           return;
 
@@ -6875,7 +6864,7 @@ final class Template {
   protected function inline_doi_information() : ?array {
     if ($this->name !== "doi-inline") return NULL;
     if (count($this->param) !==2) return NULL;
-    $vals   = array();
+    $vals = array();
     $vals[0] = $this->param[0]->parsed_text();
     $vals[1] = $this->param[1]->parsed_text();
     return $vals;
@@ -7109,14 +7098,15 @@ final class Template {
       return $url;
   }
 
-  public function use_issn() : bool {
-    if ($this->blank('issn')) return FALSE; // Nothing to use
-    if (!$this->blank(WORK_ALIASES)) return FALSE; // Nothing to add
-    if ($this->has('series')) return FALSE; // Dangerous risk of duplication and most likely a series of "books"
-    if ($this->wikiname() === 'cite book' && $this->has('isbn')) return FALSE; // Probably a series of "books"
+  public function use_issn() : bool { // Only add if helpful and not a series of books
+    if ($this->blank('issn')) return FALSE;
+    if (!$this->blank(WORK_ALIASES)) return FALSE;
+    if ($this->has('series')) return FALSE;
+    if ($this->wikiname() === 'cite book' && $this->has('isbn')) return FALSE;
     $issn = $this->get('issn');
-    // @codeCoverageIgnoreStart
-    if ($issn === '0140-0460') { // Must use set to avoid escaping the [[ and ]]
+    if ($issn === '9999-9999') return FALSE;
+    if (!preg_match('~^\d{4}.?\d{3}[0-9xX]$~u', $issn)) return FALSE;
+    if ($issn === '0140-0460') { // Use set to avoid escaping [[ and ]]
       return $this->set('newspaper', '[[The Times]]');
     } elseif ($issn === '0190-8286') {
       return $this->set('newspaper', '[[The Washington Post]]');
@@ -7125,11 +7115,7 @@ final class Template {
     } elseif ($issn === '0163-089X' || $issn === '1092-0935') {
       return $this->set('newspaper', '[[The Wall Street Journal]]');
     }
-    // @codeCoverageIgnoreEnd
-    if ($issn === '9999-9999') return FALSE; // Fake test suite data
-    if (!preg_match('~^\d{4}.?\d{3}[0-9xX]$~u', $issn)) return FALSE;
-    /** TODO - this API is gone **/
-    return FALSE;
+    return FALSE; // TODO - the API is gone
   }
 
   private function is_book_series(string $param) : bool {
@@ -7229,7 +7215,7 @@ final class Template {
       }
   }
 
-  public function has_good_free_copy() : bool { // GOOD is critical - must title link - TODO add more if jstor-access or hdl-access title-link
+  public function has_good_free_copy() : bool { // Must link title - TODO add more if jstor-access or hdl-access link
     $this->tidy_parameter('pmc');
     $this->tidy_parameter('pmc-embargo-date');
     if (($this->has('pmc') && $this->blank('pmc-embargo-date') && preg_match('~^\d+$~', $this->get('pmc'))) ||
