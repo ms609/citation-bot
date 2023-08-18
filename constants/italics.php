@@ -31,7 +31,13 @@ const ITALICS_LIST =
  "Helicobacter pylori|" .
  "Drosophila silvestris|" .
  "Luzula nivea|" .
+ "Ustilago maydis|" .
  "Plasmodium falciparum|" .
+ "Agaricus blazei|" .
+ "Fusarium venenatum|" .
+ "Aspergillus nidulans|" .
+ "Trichoderma pseudokoningii|" .
+ "Vitis Vinifera|" .
  "Mycoplasma pneumoniaein|" .
  "Inonotus radiatus|" .
  "Dunkleosteus terrelli|" .
@@ -164,6 +170,12 @@ const ITALICS_LIST =
  "Orcus|" .
  "Phialella|" .
  "Philometra|" .
+ "Armillaria|" .
+ "Neurospora|" .
+ "Ascomycota|" .
+ "Mycena|" .
+ "Aspergillus|" .
+ "Ricinus|" .
  "Apatosaurus|" .
  "Phytophthora|" .
  "Chrysops|" .
@@ -308,9 +320,9 @@ const CAMEL_CASE = array('DeSoto', 'PubChem', 'BitTorrent', 'Al2O3', 'NiMo', 'Cu
                          'SystemVerilog', 'MobiQuitous', 'MobiCom', 'AlterEgo', 'DeathQuest', 'kVp', 'MeV',
                          'MVp', 'StarGuides ', 'FabLearn', 'CompSysTech', 'MindTrek', 'MpoxRadar', 'eXperiences',
                          'iConference', 'Digital EcoSystems', 'RoMoCo', 'LaRouche', 'eXtensible',
-                         'GlobalArctic Handbook', 'PlantOmics', 'SusTech', 'BrainNet'
+                         'GlobalArctic Handbook', 'PlantOmics', 'SusTech', 'BrainNet', 'AntiSuffrage'
                        );
 
-const ITALICS_HARDCODE_IN  = ["New MathematicsWestern Learning",   "Poor PeopleResource Control ",   " ObligationsRoman Foundations ",   " SirensMusical Technologies   ", "Two RomesRome and "  , "TantraSex, Secrecy",   "in EducationThe good",   "Eternal GodHeavenly Flesh",   "Conference onResearch, Innovation",  "Roman EmpireSoldiers,",   "SilencedHow Apostasy and Blasphemy",   "Cybernetics SocietyInformation Assurance",  "International Conference onServices Computing",  "IEEE InternationalElectron Devices",  "Symposium onFoundations of",  "IEEE InternationalConference",  "Jewish QuestionIdentifying ",   "The Port NelsonRelations",      "Changes for DemocracyActors",   "SpymasterDai Li ",   "A New History of IrelandVolume",   "Devoted to DeathSanta Muerte, the Skeleton Saint",   "Knowing HowEssays on Knowledge, Mind, and Action",   " Rgene", "CytochromebGenes",       "ElectrongValue",       "thetoxGene",      "GopashtamiandGovardhan",       "PolishLebensraum",       "theNachlassproblem",        " forAltalena:",      " in Plutarch'sLives",       "FromSolidarityto",        " gp91phoxPromoter",  "in vitroAssays",        "MarketizingHindutva",       "TheBhagavadgītā,",       "theOrigin of Species",       "EncounteringHindutva",       "ChineseHukouSystem",        "CisLatreille"];
-const ITALICS_HARDCODE_OUT = ["New Mathematics: Western Learning", "Poor People: Resource Control ", " Obligations: Roman Foundations ", " Sirens: Musical Technologies ", "Two Romes: Rome and ", "Tantra: Sex, Secrecy", "in Education: The good", "Eternal God: Heavenly Flesh", "Conference on Research, Innovation", "Roman Empire: Soldiers,", "Silenced: How Apostasy and Blasphemy", "Cybernetics Society Information Assurance", "International Conference on Services Computing", "IEEE International Electron Devices", "Symposium on Foundations of", "IEEE International Conference", "Jewish Question: Identifying ", "The Port Nelson ''Relations''", "Changes for Democracy: Actors", "Spymaster: Dai Li ", "A New History of Ireland, Volume", "Devoted to Death: Santa Muerte, the Skeleton Saint", "Knowing How: Essays on Knowledge, Mind, and Action", " ''R'' gene", "Cytochrome ''b'' Genes", "Electron ''g'' Value", "the ''tox'' Gene","Gopashtami ''and'' Govardhan", "Polish ''Lebensraum'' ", "the ''Nachlass'' problem ", " for ''Altalena'':", " in Plutarch's ''Lives'' ", "From ''Solidarity'' to ", " gp91phox Promoter", " ''in vitro'' Assays ", "Marketizing ''Hindutva'' ", "The ''Bhagavadgītā'', ", "the ''Origin of Species'' ", "Encountering ''Hindutva'' ", "Chinese ''Hukou'' System ", "''Cis'' Latreille"];
+const ITALICS_HARDCODE_IN  = ["in Montesquieu’sThe Spirit",   "antiquity of Francis Bacon'sNew Atlantis",   "New MathematicsWestern Learning",   "Poor PeopleResource Control ",   " ObligationsRoman Foundations ",   " SirensMusical Technologies   ", "Two RomesRome and "  , "TantraSex, Secrecy",   "in EducationThe good",   "Eternal GodHeavenly Flesh",   "Conference onResearch, Innovation",  "Roman EmpireSoldiers,",   "SilencedHow Apostasy and Blasphemy",   "Cybernetics SocietyInformation Assurance",  "International Conference onServices Computing",  "IEEE InternationalElectron Devices",  "Symposium onFoundations of",  "IEEE InternationalConference",  "Jewish QuestionIdentifying ",   "The Port NelsonRelations",      "Changes for DemocracyActors",   "SpymasterDai Li ",   "A New History of IrelandVolume",   "Devoted to DeathSanta Muerte, the Skeleton Saint",   "Knowing HowEssays on Knowledge, Mind, and Action",   " Rgene", "CytochromebGenes",       "ElectrongValue",       "thetoxGene",      "GopashtamiandGovardhan",       "PolishLebensraum",       "theNachlassproblem",        " forAltalena:",      " in Plutarch'sLives",       "FromSolidarityto",        " gp91phoxPromoter",  "in vitroAssays",        "MarketizingHindutva",       "TheBhagavadgītā,",       "theOrigin of Species",       "EncounteringHindutva",       "ChineseHukouSystem",        "CisLatreille"];
+const ITALICS_HARDCODE_OUT = ["in Montesquieu’s: The Spirit", "antiquity of Francis Bacon's: New Atlantis", "New Mathematics: Western Learning", "Poor People: Resource Control ", " Obligations: Roman Foundations ", " Sirens: Musical Technologies ", "Two Romes: Rome and ", "Tantra: Sex, Secrecy", "in Education: The good", "Eternal God: Heavenly Flesh", "Conference on Research, Innovation", "Roman Empire: Soldiers,", "Silenced: How Apostasy and Blasphemy", "Cybernetics Society Information Assurance", "International Conference on Services Computing", "IEEE International Electron Devices", "Symposium on Foundations of", "IEEE International Conference", "Jewish Question: Identifying ", "The Port Nelson ''Relations''", "Changes for Democracy: Actors", "Spymaster: Dai Li ", "A New History of Ireland, Volume", "Devoted to Death: Santa Muerte, the Skeleton Saint", "Knowing How: Essays on Knowledge, Mind, and Action", " ''R'' gene", "Cytochrome ''b'' Genes", "Electron ''g'' Value", "the ''tox'' Gene","Gopashtami ''and'' Govardhan", "Polish ''Lebensraum'' ", "the ''Nachlass'' problem ", " for ''Altalena'':", " in Plutarch's ''Lives'' ", "From ''Solidarity'' to ", " gp91phox Promoter", " ''in vitro'' Assays ", "Marketizing ''Hindutva'' ", "The ''Bhagavadgītā'', ", "the ''Origin of Species'' ", "Encountering ''Hindutva'' ", "Chinese ''Hukou'' System ", "''Cis'' Latreille"];
 
