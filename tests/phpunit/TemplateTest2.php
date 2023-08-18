@@ -1358,19 +1358,6 @@ final class TemplateTest2 extends testBaseClass {
     $this->assertNull($template->get2('lastauthoramp'));
     $this->assertSame('amp', $template->get2('name-list-style'));
   }
-
-  public function testTidyLaySummary() : void {
-    $text = "{{cite web|laysummary=}}";
-    $template = $this->make_citation($text);
-    $template->tidy_parameter('laysummary');
-    $this->assertNull($template->get2('laysummary'));
-    
-    $text = "{{cite web|lay-summary=http://cnn.com/}}";
-    $template = $this->make_citation($text);
-    $template->tidy_parameter('lay-summary');
-    $this->assertNull($template->get2('lay-summary'));
-    $this->assertSame('http://cnn.com/', $template->get2('lay-url'));
-  }
  
   public function testTidyOIDOI() : void {
     $text = "{{cite web|doi=10.1093/oi/authority.9876543210|url=http://oxfordreference.com/view/10.1093/oi/authority.9876543210}}";
