@@ -7158,6 +7158,8 @@ final class Template {
       if (stripos($url, 'pages') && !preg_match('~[^\d]1[-–]~u', $url)) return TRUE;
       return FALSE;
     }
+    if (strpos($url, 'link.springer.com/chapter/10.')) return TRUE;
+    if (preg_match('~10\.\1007\/97[89]-?[0-9]{1,5}\-?[0-9]+\-?[0-9]+\-?[0-9]\_\d{1,3}~', $url)) return TRUE;
     if ($force) return TRUE;
     // Only do a few select website unless we just converted to cite book from cite journal
     if (strpos($url, 'archive.org')) return TRUE;
