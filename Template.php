@@ -363,7 +363,7 @@ final class Template {
           $ieee_insanity = FALSE;
           if (conference_doi($this->get('doi')) &&
               ($this->has('isbn') || (stripos($the_title, 'proceedings') !== FALSE && stripos($the_journal, 'proceedings') !== FALSE) ||
-              (stripos($the_title, 'Symposium') !== FALSE && stripos($the_journal, 'Symposium') !== FALSE) || (stripos($the_title, 'Meeting on ') !== FALSE && stripos($the_journal, 'Meeting on ') !== FALSE))) { // IEEE/ACM/etc "book"
+              (stripos($the_title, 'Symposium') !== FALSE && stripos($the_journal, 'Conference') !== FALSE) || (stripos($the_title, 'Meeting on ') !== FALSE && stripos($the_journal, 'Meeting on ') !== FALSE))) { // IEEE/ACM/etc "book"
               $data_to_check = $the_title . $the_journal . $the_chapter . $this->get('series');
               if (stripos($data_to_check, 'IEEE Standard for') === FALSE && $this->blank('journal')) {
                 ; // Do nothing
@@ -420,6 +420,7 @@ final class Template {
               stripos($the_journal, 'IEEE International Symposium') !== FALSE ||
               stripos($the_journal, 'Symposium on Theoretical Aspects') !== FALSE ||
               stripos($the_journal, 'Lecture Notes in Computer Science') !== FALSE ||
+              stripos($the_journal, 'International Conference on ') !== FALSE ||
               stripos($the_journal, 'Design Automation Conference') !== FALSE
              ) {
               $this->rename('journal', 'CITATION_BOT_PLACEHOLDER_journal');
