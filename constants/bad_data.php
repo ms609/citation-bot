@@ -886,7 +886,8 @@ const AVOIDED_LINKS = array('', 'Digital_object_identifier', 'JSTOR', 'Website',
 
 
 // Lower case, and periods converted to spaces
-const JOURNAL_IS_BOOK_SERIES = array('methods of molecular biology' , 'methods mol biol',
+const JOURNAL_IS_BOOK_SERIES = array('methods of molecular biology' ,
+                                     'methods mol biol',
                                      'methods of molecular biology (clifton, n j )',
                                      'methods in molecular biology',
                                      'methods in molecular biology (clifton, n j )',
@@ -895,6 +896,8 @@ const JOURNAL_IS_BOOK_SERIES = array('methods of molecular biology' , 'methods m
                                      'methods mol biol',
                                      'methods mol. biol',
                                      'lecture notes in computer science',
+                                     'lecture notes in mathematics',
+                                     'lecture notes in physics',
                                      'advances in pharmacology (san diego, calif )',
                                      'advances in pharmacology', 'inorganic syntheses',
                                      'advances in enzymology and related areas of molecular biology',
