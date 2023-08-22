@@ -894,6 +894,7 @@ const JOURNAL_IS_BOOK_SERIES = array('methods of molecular biology' , 'methods m
                                      'methods mol biol.',
                                      'methods mol biol',
                                      'methods mol. biol',
+                                     'lecture notes in computer science',
                                      'advances in pharmacology (san diego, calif )',
                                      'advances in pharmacology', 'inorganic syntheses',
                                      'advances in enzymology and related areas of molecular biology',
