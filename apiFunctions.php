@@ -399,6 +399,7 @@ function adsabs_api(array $ids, array &$templates, string $identifier) : bool { 
   $unmatched_ids = array_diff($ids, $matched_ids);
   if (count($unmatched_ids)) {
     report_warning("No match for bibcode identifier: " . implode('; ', $unmatched_ids));  // @codeCoverageIgnore
+    bot_debug_log("No match for bibcode identifier: " . implode('; ', $unmatched_ids));  // @codeCoverageIgnore
   }
   foreach ($templates as $template) {
     if ($template->blank(['year', 'date']) && preg_match('~^(\d{4}).*book.*$~', $template->get('bibcode'), $matches)) {
