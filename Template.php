@@ -362,8 +362,8 @@ final class Template {
           }
           $ieee_insanity = FALSE;
           if (conference_doi($this->get('doi')) &&
-              ($this->has('isbn') || (stripos($the_title, 'proceedings') !== FALSE && stripos($the_journal, 'proceedings') !== FALSE) ||
-              (stripos($the_title, 'Symposium') !== FALSE && stripos($the_journal, 'Conference') !== FALSE) || (stripos($the_title, 'Meeting on ') !== FALSE && stripos($the_journal, 'Meeting on ') !== FALSE))) { // IEEE/ACM/etc "book"
+              ($this->has('isbn') || (stripos($the_title, 'proceedings') !== FALSE && stripos($the_journal, 'proceedings') !== FALSE) || (stripos($the_title, 'Conference') !== FALSE && stripos($the_journal, 'Conference') !== FALSE) || 
+              (stripos($the_title, 'Symposium') !== FALSE && stripos($the_journal, 'Symposium') !== FALSE) || (stripos($the_title, 'Meeting on ') !== FALSE && stripos($the_journal, 'Meeting on ') !== FALSE))) { // IEEE/ACM/etc "book"
               $data_to_check = $the_title . $the_journal . $the_chapter . $this->get('series');
               if (stripos($data_to_check, 'IEEE Standard for') === FALSE && $this->blank('journal')) {
                 ; // Do nothing
