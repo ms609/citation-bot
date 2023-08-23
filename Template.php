@@ -6188,13 +6188,12 @@ final class Template {
       if (conference_doi($this->get('doi')) &&
         $this->has('title') && $this->has('chapter') && $this->has('isbn')  &&
         $this->wikiname() === 'cite book' && doi_works($this->get('doi'))) {
-          if (stripos($this->get('title'), 'Conference') !== FALSE) {
-             if (stripos($this->get('website'), 'Conference') !== FALSE) $this->forget('website');
-             if (stripos($this->get('journal'), 'Conference') !== FALSE) $this->forget('journal');
-          }
-          if (stripos($this->get('title'), 'Symposium') !== FALSE) {
-             if (stripos($this->get('website'), 'Symposium') !== FALSE) $this->forget('website');
-             if (stripos($this->get('journal'), 'Symposium') !== FALSE) $this->forget('journal');
+          foreach (WORK_ALIASES as $worky) {
+            foreach (['Conference', 'Symposium', 'SIGGRAPH', 'workshop'] as $thingy) {
+              if (stripos($this->get('title'), $thingy) !== FALSE && stripos($this->get($worky), $thingy) !== FALSE)
+                $this->forget($worky);
+              }
+            }
           }
       }
 
