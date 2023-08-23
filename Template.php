@@ -3382,6 +3382,7 @@ final class Template {
           case "fahrplan-ch": case "incomplete short citation": case "music": case "bar-ads":
           case "subscription or libraries": case "gallica": case "gnd": case "ncbibook":
           case "spaces": case "ndash": case "dggs": case "self-published source": case "nobreak":
+          case "university of twente pure":
           case "gbooks": case "gburl": // TODO - should use
           case "isbnt": case "issn link": case "lccn8": // Assume not normal template for a reason
           case "google books": // Usually done for fancy formatting and because already has title-link/url
@@ -6190,7 +6191,7 @@ final class Template {
         $this->wikiname() === 'cite book' && doi_works($this->get('doi'))) {
           foreach (WORK_ALIASES as $worky) {
             foreach (['Conference', 'Symposium', 'SIGGRAPH', 'workshop'] as $thingy) {
-              if (stripos($this->get('title'), $thingy) !== FALSE && stripos($this->get($worky), $thingy) !== FALSE)
+              if (stripos($this->get('title'), $thingy) !== FALSE && stripos($this->get($worky), $thingy) !== FALSE) {
                 $this->forget($worky);
               }
             }
