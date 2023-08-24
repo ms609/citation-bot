@@ -6095,16 +6095,6 @@ final class Template {
       if ($this->wikiname() === 'cite arxiv' && $this->has('bibcode')) {
         $this->forget('bibcode'); // Not supported and 99% of the time just a arxiv bibcode anyway
       }
-      if ($this->wikiname() === 'citation') { // Special CS2 code goes here
-       if (!$this->blank_other_than_comments('title') && !$this->blank_other_than_comments('chapter') && !$this->blank_other_than_comments(WORK_ALIASES)) { // Invalid combination
-          report_info('CS2 template has incompatible parameters.  Changing to CS1 cite book. Please verify.');
-          if ($this->name === 'citation') { // Need special code to keep caps the same
-            $this->name = 'cite book';
-          } else {
-            $this->name = 'Cite book';
-          }
-       }
-      }
       if ($this->wikiname() === 'cite web') {
        if (!$this->blank_other_than_comments('title') && !$this->blank_other_than_comments('chapter')) {
           if ($this->name === 'cite web') { // Need special code to keep caps the same
