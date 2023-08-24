@@ -5106,6 +5106,7 @@ final class Template {
               preg_match('~academic\.oup\.com/crawlprevention~', $this->get($param)) ||
               preg_match('~https://meta\.wikimedia\.org/w/index\.php\?title\=Special\:UserLogin~', $this->get($param))) {
                 $this->forget($param);
+                if ($this->get('title') === 'Validate User') $this->set('title', '');
                 return;
           }
           if (preg_match('~^(https?://(?:www\.|)webcitation\.org/)([0-9a-zA-Z]{9})(?:|\?url=.*)$~', $this->get($param), $matches)) {
@@ -5211,6 +5212,7 @@ final class Template {
           } elseif (preg_match("~^https?://academic\.oup\.com/crawlprevention/governor\?content=([^\s]+)$~", $this->get($param), $matches)) {
              quietly('report_modification', "Decoding OUP URL.");
              $this->set($param, 'https://academic.oup.com' . urldecode($matches[1]));
+             if ($this->get('title') === 'Validate User') $this->set('title', '');
           } elseif (preg_match("~^https?://.*ebookcentral.proquest.+/lib/.+docID(?:%3D|=)(\d+)(|#.*|&.*)(?:|\.)$~i", $this->get($param), $matches)) {
               if ($matches[2] === '#' || $matches[2] === '#goto_toc' || $matches[2] === '&' ||
                   $matches[2] === '&query=' || $matches[2] === '&query=#' || preg_match('~^&tm=\d*$~', $matches[2])) {
