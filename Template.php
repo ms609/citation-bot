@@ -496,7 +496,7 @@ final class Template {
           if ($the_title === '_' || $the_title === 'null' || $the_title === '[No title found]' || $the_title === 'Archived copy' || $the_title === 'JSTOR' ||
               $the_title === 'ShieldSquare Captcha' || $the_title === 'Shibboleth Authentication Request' || $the_title === 'Pubmed' ||
               $the_title === 'Pubmed Central' || $the_title === 'Optica Publishing Group' || $the_title === 'BioOne' || $the_title === 'IEEE Xplore' ||
-              $the_title === 'ScienceDirect' || $the_title === 'Science Direct') { // title=none is often because title is "reviewed work....
+              $the_title === 'ScienceDirect' || $the_title === 'Science Direct' || $the_title === 'Validate User') { // title=none is often because title is "reviewed work....
               $this->rename('title', 'CITATION_BOT_PLACEHOLDER_title');
               $the_title = '';
               $bad_data = TRUE;
