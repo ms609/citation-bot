@@ -5103,6 +5103,7 @@ final class Template {
               preg_match('~https://apis\.google\.com/js/plusone\.js$~', $this->get($param)) ||
               preg_match('~https?://www\.britishnewspaperarchive\.co\.uk/account/register~', $this->get($param)) ||
               preg_match('~https://www\.google\-analytics\.com/ga\.js$~', $this->get($param)) ||
+              preg_match('~academic\.oup\.com/crawlprevention~', $this->get($param)) ||
               preg_match('~https://meta\.wikimedia\.org/w/index\.php\?title\=Special\:UserLogin~', $this->get($param))) {
                 $this->forget($param);
                 return;
@@ -5207,6 +5208,9 @@ final class Template {
                quietly('report_modification', "Decoding Bloomberg URL.");
                $this->set($param, 'https://www.bloomberg.com' .  base64_decode($matches[1]));
              }
+          } elseif (preg_match("~^https?://academic\.oup\.com/crawlprevention/governor\?content=([a-zA-Z0-9/\+])$~", $this->get($param), $matches)) {
+             quietly('report_modification', "Decoding OUP URL.");
+             $this->set($param, 'https://academic.oup.com' . urldecode($matches[1]));
           } elseif (preg_match("~^https?://.*ebookcentral.proquest.+/lib/.+docID(?:%3D|=)(\d+)(|#.*|&.*)(?:|\.)$~i", $this->get($param), $matches)) {
               if ($matches[2] === '#' || $matches[2] === '#goto_toc' || $matches[2] === '&' ||
                   $matches[2] === '&query=' || $matches[2] === '&query=#' || preg_match('~^&tm=\d*$~', $matches[2])) {
