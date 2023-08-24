@@ -5211,7 +5211,7 @@ final class Template {
              }
           } elseif (preg_match("~^https?://academic\.oup\.com/crawlprevention/governor\?content=([^\s]+)$~", $this->get($param), $matches)) {
              quietly('report_modification', "Decoding OUP URL.");
-             $this->set($param, 'https://academic.oup.com' . urldecode($matches[1]));
+             $this->set($param, 'https://academic.oup.com' . preg_replace('~\?login=false$~', '', urldecode($matches[1])));
              if ($this->get('title') === 'Validate User') $this->set('title', '');
           } elseif (preg_match("~^https?://.*ebookcentral.proquest.+/lib/.+docID(?:%3D|=)(\d+)(|#.*|&.*)(?:|\.)$~i", $this->get($param), $matches)) {
               if ($matches[2] === '#' || $matches[2] === '#goto_toc' || $matches[2] === '&' ||
