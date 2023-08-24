@@ -480,6 +480,7 @@ function str_remove_irrelevant_bits(string $str) : string {
   $str = safe_preg_replace(REGEXP_PIPED_WIKILINK, "$2", $str);   // Convert [[Y|X]] wikilinks into X
   $str = trim($str);
   $str = safe_preg_replace("~^the\s+~i", "", $str);  // Ignore leading "the" so "New York Times" == "The New York Times"
+  $str = safe_preg_replace("~\s~u", ' ', $str);
   // punctuation
   $str = str_replace(array('.', ',', ';', ': ', "…"), array(' ', ' ', ' ', ' ', ' '), $str);
   $str = str_replace(array(':', '-', '&mdash;', '&ndash;', '—', '–'), array('', '', '', '', '', ''), $str);
