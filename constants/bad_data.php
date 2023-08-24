@@ -129,7 +129,7 @@ const BAD_ZOTERO_TITLES = ['Browse publications', 'Central Authentication Servic
                                  '404 Page', '404. The page', "wasn't found on this server", '404. The URL', 
                                  'ShieldSquare', '404 Not Found', "404页面", "Sign up | LinkedIn", 'The-star.co.kr',
                                  'Connecting to the iTunes Store', '500 Internal Server Error', 'DomainMarket.com',
-                                 'bluehost.com'];
+                                 'bluehost.com', 'Validate User'];
 
 const CANONICAL_PUBLISHER_URLS = array ('elsevier.com', 'springer.com', 'sciencedirect.com', 'tandfonline.com',
                                 'taylorandfrancis.com', 'wiley.com', 'sagepub.com', 'sagepublications.com',
