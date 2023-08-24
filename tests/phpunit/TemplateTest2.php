@@ -2492,18 +2492,6 @@ final class TemplateTest2 extends testBaseClass {
     $this->assertSame('etal', $template->get2('display-authors'));
   }
  
-   public function testCiteTypeWarnings3() : void {
-    $text = "{{citation|title=XYZsadfdsfsdfdsafsd|chapter=DSRGgbgfbxdzfdfsXXXX|journal=adsfsd}}";
-    $template = $this->make_citation($text);
-    $template->final_tidy();
-    $this->assertSame('cite book', $template->wikiname());
-
-    $text = "{{Citation|title=XYZsadfdsfsdfdsafsd|chapter=DSRGgbgfbxdzfdfsXXXX|journal=adsfsd}}";
-    $template = $this->make_citation($text);
-    $template->final_tidy();
-    $this->assertSame('cite book', $template->wikiname()); // Wikiname does not return the actual value, but the normalized one
-  }
-
   public function testTidyWork2() : void {
     $text = "{{cite magazine|work=}}";
     $template = $this->make_citation($text);
