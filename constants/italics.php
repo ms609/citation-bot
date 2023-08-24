@@ -18,7 +18,7 @@ const ITALICS_LIST =
  "Trypanosoma brucei gambiense|" .
  "Star Trek: Voyager|" .
  "Notechis scutatus scutatus|" .
- "Myrmecia reticulata (Chlorophyta)|" .
+ "Myrmecia reticulata \(Chlorophyta\)|" .
  "Fried Green Tomatoes|" .
  "Game of Thrones|" .
  "The Double-Cross System|" .
