@@ -367,6 +367,7 @@ final class Template {
               (stripos($the_title, 'Conference') !== FALSE && stripos($the_journal, 'Conference') !== FALSE) ||
               (stripos($the_title, 'Colloquium') !== FALSE && stripos($the_journal, 'Colloquium') !== FALSE) ||
               (stripos($the_title, 'Symposium') !== FALSE && stripos($the_journal, 'Symposium') !== FALSE) ||
+              (stripos($the_title, 'Extended Abstracts') !== FALSE && stripos($the_journal, 'Extended Abstracts') !== FALSE) ||
               (stripos($the_title, 'Meeting on ') !== FALSE && stripos($the_journal, 'Meeting on ') !== FALSE))) { // IEEE/ACM/etc "book"
               $data_to_check = $the_title . $the_journal . $the_chapter . $this->get('series');
               if (stripos($data_to_check, 'IEEE Standard for') === FALSE && $this->blank('journal')) {
@@ -378,6 +379,7 @@ final class Template {
                         stripos($data_to_check, 'Symp. On ') === FALSE &&
                         stripos($data_to_check, 'Meeting on ') === FALSE &&
                         stripos($data_to_check, 'Colloquium') === FALSE &&
+                        stripos($data_to_check, 'Extended Abstracts') === FALSE &&
                         stripos($the_journal, 'Visual Languages and Human-Centric Computing') === FALSE &&
                         stripos($the_journal, 'Active and Passive Microwave Remote Sensing for') === FALSE
                        ) { // Looks like conference done, but does not claim so
@@ -401,6 +403,7 @@ final class Template {
                         stripos($the_journal, 'Symp. On ') !== FALSE ||
                         stripos($the_journal, 'Meeting on ') !== FALSE ||
                         stripos($the_journal, 'Colloquium') !== FALSE ||
+                        stripos($the_journal, 'Extended Abstracts') !== FALSE ||
                         stripos($the_journal, 'Active and Passive Microwave Remote Sensing for') !== FALSE ||
                         stripos($the_journal, 'Visual Languages and Human-Centric Computing') !== FALSE
                        ) {
@@ -424,6 +427,7 @@ final class Template {
               stripos($the_journal, 'IEEE International Conference') !== FALSE ||
               stripos($the_journal, 'ACM International Symposium') !== FALSE ||
               stripos($the_journal, 'ACM Symposium') !== FALSE ||
+              stripos($the_journal, 'Extended Abstracts') !== FALSE ||
               stripos($the_journal, 'IEEE International Symposium') !== FALSE ||
               stripos($the_journal, 'Symposium on Theoretical Aspects') !== FALSE ||
               stripos($the_journal, 'Lecture Notes in Computer Science') !== FALSE ||
