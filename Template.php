@@ -5027,6 +5027,10 @@ final class Template {
         case 'title':
           if ($this->blank($param)) return;
           $title = $this->get($param);
+          if ($title === 'Validate User') {
+             $this->set('title', '');
+             return;
+          }
           $title = straighten_quotes($title, FALSE);
           if ((   mb_substr($title, 0, 1) === '"'
                && mb_substr($title, -1)   === '"'
