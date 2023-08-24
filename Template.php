@@ -5208,7 +5208,7 @@ final class Template {
                quietly('report_modification', "Decoding Bloomberg URL.");
                $this->set($param, 'https://www.bloomberg.com' .  base64_decode($matches[1]));
              }
-          } elseif (preg_match("~^https?://academic\.oup\.com/crawlprevention/governor\?content=([a-zA-Z0-9/\+])$~", $this->get($param), $matches)) {
+          } elseif (preg_match("~^https?://academic\.oup\.com/crawlprevention/governor\?content=([^\s]+)$~", $this->get($param), $matches)) {
              quietly('report_modification', "Decoding OUP URL.");
              $this->set($param, 'https://academic.oup.com' . urldecode($matches[1]));
           } elseif (preg_match("~^https?://.*ebookcentral.proquest.+/lib/.+docID(?:%3D|=)(\d+)(|#.*|&.*)(?:|\.)$~i", $this->get($param), $matches)) {
