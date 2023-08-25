@@ -6211,7 +6211,7 @@ final class Template {
       }
       if ($this->wikiname() === 'cite book') {
         foreach (WORK_ALIASES as $worky) {
-          if ($this->blank($worky) $this->forget($worky); // Discourage filling these in
+          if ($this->blank($worky)) $this->forget($worky); // Discourage filling these in
         }
       }
       if (!empty($this->param)) {
