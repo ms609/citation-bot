@@ -6222,7 +6222,7 @@ final class Template {
             }
           }
         }
-      } else {
+      } elseif ($this->has('publisher')) {
         foreach (WORK_ALIASES as $worky) {
           if (strtolower($this->get('publisher')) === strtolower($this->get($worky))) $this->forget('publisher');
         }
