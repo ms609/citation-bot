@@ -6212,7 +6212,7 @@ final class Template {
         }
         // If one and only one work alias is set, the move it to publisher
         if ($this->blank('publisher')) {
-          $counting = 0
+          $counting = 0;
           foreach (WORK_ALIASES as $worky) {
             if ($this->has($worky)) $counting = $counting + 1;
           }
