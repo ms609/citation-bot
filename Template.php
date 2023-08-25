@@ -4994,10 +4994,6 @@ final class Template {
             return;
           }
 
-          if ($publisher === strtolower($this->get('journal') . $this->get('website') . $this->get('newspaper') . $this->get('work') . $this->get('periodical') . $this->get('magazine'))) {
-            $this->forget($param);
-          }
-
           return;
 
         case 'quotes':
@@ -6212,6 +6208,11 @@ final class Template {
       if ($this->wikiname() === 'cite book') {
         foreach (WORK_ALIASES as $worky) {
           if ($this->blank($worky)) $this->forget($worky); // Discourage filling these in
+          if (strtolower($this->get('publisher')) === strtolower($this->get($worky))) $this->forget($worky);
+        }
+      } else {
+        foreach (WORK_ALIASES as $worky) {
+          if (strtolower($this->get('publisher')) === strtolower($this->get($worky))) $this->forget('publisher');
         }
       }
       if (!empty($this->param)) {
