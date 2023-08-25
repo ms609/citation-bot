@@ -6209,6 +6209,11 @@ final class Template {
            $this->set('page', $matches[2]); // Often not in CrossRef
         }
       }
+      if ($this->wikiname() === 'cite book') {
+        foreach (WORK_ALIASES as $worky) {
+          if ($this->blank($worky) $this->forget($worky); // Discourage filling these in
+        }
+      }
       if (!empty($this->param)) {
         $drop_me_maybe = array();
         foreach (ALL_ALIASES as $alias_list) {
