@@ -6210,6 +6210,18 @@ final class Template {
           if ($this->blank($worky)) $this->forget($worky); // Discourage filling these in
           if (strtolower($this->get('publisher')) === strtolower($this->get($worky))) $this->forget($worky);
         }
+        // If one and only one work alias is set, the move it to publisher
+        if ($this->blank('publisher')) {
+          $counting = 0
+          foreach (WORK_ALIASES as $worky) {
+            if ($this->has($worky)) $counting = $counting + 1;
+          }
+          if ($counting === 1) {
+            foreach (WORK_ALIASES as $worky) {
+              if ($this->has($worky)) $this->rename($worky, 'publisher');
+            }
+          }
+        }
       } else {
         foreach (WORK_ALIASES as $worky) {
           if (strtolower($this->get('publisher')) === strtolower($this->get($worky))) $this->forget('publisher');
