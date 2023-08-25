@@ -6218,7 +6218,7 @@ final class Template {
           }
           if ($counting === 1) {
             foreach (WORK_ALIASES as $worky) {
-              if ($this->has($worky)) $this->rename($worky, 'publisher');
+              if ($this->has($worky)) bot_debug_log('WORKY ' . $this->get($worky)); // TODO $this->rename($worky, 'publisher');
             }
           }
         }
