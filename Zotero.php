@@ -1544,7 +1544,11 @@ public static function find_indentifiers_in_urls(Template $template, ?string $ur
           if ($match[1] === $template->get('pmc')) {
              $template->forget($url_type); // Same as PMC-auto-link
           } elseif ($match[1] === $template->get('pmid')) {
-             if ($template->has_good_free_copy()) $template->forget($url_type);
+             if ($template->has_good_free_copy()) {
+               $template->forget($url_type);
+             } else {
+                $template->set($url_type, 'https://pubmed.ncbi.nlm.nih.gov/' . $match[1];
+             }
           }
           return FALSE;
         } elseif (preg_match('~^https?://.*ncbi\.nlm\.nih\.gov/pubmed/?(\?term=.*)$~', $url, $matches)) {
