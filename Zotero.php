@@ -1547,7 +1547,7 @@ public static function find_indentifiers_in_urls(Template $template, ?string $ur
              if ($template->has_good_free_copy()) {
                $template->forget($url_type);
              } else {
-                $template->set($url_type, 'https://pubmed.ncbi.nlm.nih.gov/' . $match[1];
+                $template->set($url_type, 'https://pubmed.ncbi.nlm.nih.gov/' . $match[1]);
              }
           }
           return FALSE;
