@@ -926,6 +926,7 @@ function tidy_date(string $string) : string {
   $string=trim($string);
   if (stripos($string, 'Invalid') !== FALSE) return '';
   if (strpos($string, '1/1/0001') !== FALSE) return '';
+  if (strpos($string, '0001-01-01') !== FALSE) return '';
   if (!preg_match('~\d{2}~', $string)) return ''; // Not two numbers next to each other
   if (preg_match('~^\d{2}\-\-$~', $string)) return '';
   // Google sends ranges
