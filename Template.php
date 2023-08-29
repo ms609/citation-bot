@@ -2915,14 +2915,10 @@ final class Template {
     $google_date = tidy_date($google_date);
     $now = (integer) date("Y");
     // Some publishers give next year always for OLD stuff
-    $next_year = (string) ($now + 1);
-    $next2_year = (string) ($now + 2);
-    $next3_year = (string) ($now + 3);
-    $next4_year = (string) ($now + 4);
-    if (strpos($google_date, $next_year)  !== FALSE) return TRUE;
-    if (strpos($google_date, $next2_year) !== FALSE) return TRUE;
-    if (strpos($google_date, $next3_year) !== FALSE) return TRUE;
-    if (strpos($google_date, $next4_year) !== FALSE) return TRUE;
+    for ($i = 1; $i <= 30; $i++) {
+        $next_year = (string) ($now + $i);
+        if (strpos($google_date, $next_year) !== FALSE) return TRUE;
+    }
     if ($this->has('isbn')) { // Assume this is recent, and any old date is bogus
       if (preg_match('~1[0-8]\d\d~', $google_date)) return TRUE;
       if (!preg_match('~[12]\d\d\d~', $google_date)) return TRUE;
