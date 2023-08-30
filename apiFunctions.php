@@ -743,6 +743,15 @@ function expand_doi_with_dx(Template $template, string $doi) : bool {
        $try_to_add_it('chapter', @$json['title']);
        $try_to_add_it('location', @$json['publisher-location']);
        $try_to_add_it('publisher', @$json['publisher']);
+     } elseif (@$json['type'] == 'other') {
+       if (isset($json['container-title'])) {
+         $try_to_add_it('title', @$json['container-title']);
+         $try_to_add_it('chapter', @$json['title']);
+       } else {
+         $try_to_add_it('title', @$json['title']);
+       }
+       $try_to_add_it('location', @$json['publisher-location']);
+       $try_to_add_it('publisher', @$json['publisher']);
      } elseif (@$json['type'] == 'dataset') {
        $try_to_add_it('type', 'Data Set');
        $try_to_add_it('title', @$json['title']);
