@@ -6194,6 +6194,12 @@ final class Template {
             }
           }
       }
+      if (stripos($this->get('journal'), 'SIGGRAPH') !== FALSE && stripos($this->get('title'), 'SIGGRAPH') !== FALSE) {
+          $this->forget('journal');
+      }
+      if (stripos($this->get('journal'), 'SIGGRAPH') !== FALSE && $this->blank('title')) {
+          $this->rename('journal', 'title');
+      }
 
       $this->tidy_parameter('doi'); // might be free, and freedom is date dependent for some journals
       if ($this->blank(PAGE_ALIASES) && preg_match('~^10\.1103\/[a-zA-Z]+\.(\d+)\.(\d+)$~', $this->get('doi'), $matches)) {
