@@ -27,7 +27,7 @@ const LC_SMALL_WORDS = array(/* The following will be automatically updated to a
           " SSRN ", " TAPPI ", " TCI: ", " te ", " TESOL ", " the ", " TheMarker ", 
           " then ", " till ", " to ", " UCLA ", " UK ", " um ", " und ", " unserer ", 
           " up ", " USA ", " USSR ", " van ", " ve ", " vir ", " von ", " voor ", 
-          " when ", " with ", " within ", " woor ", " y ", " zu ", " zum ", " zur ", 
+          " when ", " with ", " within ", " woor ", " y ", " zu ", " zum ", " zur ", " ISPRS ",
           /* The above will be automatically updated to alphabetical order */ 
           // After this line we list exceptions that need re-capitalizing after they have been decapitalized.
           " El Dorado ", " Las Vegas ", " Los Angeles ", " N Y ", " U S A ");
@@ -58,7 +58,7 @@ const UC_SMALL_WORDS = array(/* The following will be automatically updated to a
           " Ssrn ", " Tappi ", " Tci: ", " Te ", " Tesol ", " The ", " Themarker ", 
           " Then ", " Till ", " To ", " Ucla ", " Uk ", " Um ", " Und ", " Unserer ", 
           " Up ", " Usa ", " Ussr ", " Van ", " Ve ", " Vir ", " Von ", " Voor ", 
-          " When ", " With ", " Within ", " Woor ", " Y ", " Zu ", " Zum ", " Zur ", 
+          " When ", " With ", " Within ", " Woor ", " Y ", " Zu ", " Zum ", " Zur ", " Isprs ",
           /* The above will be automatically updated to alphabetical order */ 
           // After this line we list exceptions that need re-capitalizing after they have been decapitalized.
           " el Dorado ", " las Vegas ", " los Angeles ", " N y ", " U S a ");
