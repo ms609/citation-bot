@@ -164,6 +164,7 @@ const ITALICS_LIST =
  "Realpolitik|" .
  "Paratirolites|" .
  "Arianops|" .
+ "Ottoia|" .
  "Loxosceles|" .
  "Leveillula|" .
  "Hyloscirtus|" .
