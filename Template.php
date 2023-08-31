@@ -6200,7 +6200,7 @@ final class Template {
       if (stripos($this->get('journal'), 'SIGGRAPH') !== FALSE && $this->blank('title')) {
           $this->rename('journal', 'title');
       }
-      if ($this->has('series') && stripos($this->get('title'), $this->get('series')) !=== FALSE) {
+      if ($this->has('series') && stripos($this->get('title'), $this->get('series')) !== FALSE) {
           $this->forget('series');
       }
 
