@@ -922,6 +922,7 @@ const JOURNAL_IS_BOOK_SERIES = array(
          'methods in molecular medicine',
          'profiles of drug substances, excipients and related methodology',
          'handbooks for the identification of british insects',
+         'advances in human genetics',
          'handbook of the birds of the world'
       );
 
