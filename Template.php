@@ -370,7 +370,9 @@ final class Template {
               (stripos($the_title, 'Extended Abstracts') !== FALSE && stripos($the_journal, 'Extended Abstracts') !== FALSE) ||
               (stripos($the_title, 'Meeting on ') !== FALSE && stripos($the_journal, 'Meeting on ') !== FALSE))) { // IEEE/ACM/etc "book"
               $data_to_check = $the_title . $the_journal . $the_chapter . $this->get('series');
-              if (stripos($data_to_check, 'IEEE Standard for') === FALSE && $this->blank('journal')) {
+              if (stripos($data_to_check, 'IEEE Standard for') !== FALSE && $this->blank('journal')) {
+                ; // Do nothing
+              } elseif (stripos($data_to_check, 'SIGCOMM Computer Communication Review') !== FALSE) { // Actual journal with ISBN
                 ; // Do nothing
               } elseif (stripos($data_to_check, 'Symposium') === FALSE &&
                         stripos($data_to_check, 'Conference') === FALSE &&
