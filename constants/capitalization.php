@@ -152,7 +152,7 @@ const JOURNAL_ACRONYMS = array(/* The following will be automatically updated to
           " Newspaper for IT Leaders ", " Notes of the AAS ", " Noticias de La Rioja ", 
           " Noticias de La Rioja ", " Novye i Maloizvestnye ", " Now and Then: ", 
           " npj ", " NWSA Journal ", " Ny Forskning i Grammatik ", " Nyt Tidsskrift ", 
-          " Obsidian II ", " Ocean Science Journal : OSJ ", " Oficial de La Rioja ", 
+          " Obsidian II ", " Ocean Science Journal : OSJ ", " of the ", " Oficial de La Rioja ", 
           " Pain Practice ", " PAJ: A Journal of Performance and Art ", " PALAIOS ", 
           " PalAsiatica ", " PalZ ", " PeerJ ", " PEN International ", " PharmSci ", 
           " PhD ", " PhytoKeys ", " Pis'ma v Astronomicheskii ", " PLOS ", " PLOS ", 
@@ -203,7 +203,7 @@ const JOURNAL_ACRONYMS = array(/* The following will be automatically updated to
           " zbMATH ", " Zeitschrift für Geologische Wissenschaften ", " Zeitschrift für Physik A Hadrons and Nuclei ", 
           " Zeitschrift für Physik A: Hadrons and Nuclei ", " Znanosti i Umjetnosti ", 
           " ZooKeys ", " Zprávy o zasedání Král. čes. společnosti nauk v Praze ", 
-          " Zprávy o zasedání Král. čes. společnosti nauk v Praze ", " Zprávy o zasedání Král. čes. společnosti nauk v Praze ", " of the ",
+          " Zprávy o zasedání Král. čes. společnosti nauk v Praze ", " Zprávy o zasedání Král. čes. společnosti nauk v Praze ", 
           " Ргасе filologiczne ", /* The above will be automatically updated to alphabetical order */ 
 );
 const UCFIRST_JOURNAL_ACRONYMS = array(/* The following will be automatically updated to alphabetical order */
@@ -295,7 +295,7 @@ const UCFIRST_JOURNAL_ACRONYMS = array(/* The following will be automatically up
           " Newspaper for It Leaders ", " Notes of the Aas ", " Noticias De La Rioja ", 
           " Noticias de la Rioja ", " Novye I Maloizvestnye ", " Now and then: ", 
           " NPJ ", " Nwsa Journal ", " NY Forskning I Grammatik ", " NYT Tidsskrift ", 
-          " Obsidian Ii ", " Ocean Science Journal : Osj ", " Oficial de la Rioja ", 
+          " Obsidian Ii ", " Ocean Science Journal : Osj ", " Of the ", " Oficial de la Rioja ", 
           " PAIN Practice ", " Paj: A Journal of Performance and Art ", " Palaios ", 
           " Palasiatica ", " Palz ", " Peerj ", " Pen International ", " Pharmsci ", 
           " PHD ", " Phytokeys ", " Pis'ma V Astronomicheskii ", " PLoS ", " PLos ", 
@@ -346,7 +346,7 @@ const UCFIRST_JOURNAL_ACRONYMS = array(/* The following will be automatically up
           " ZbMATH ", " Zeitschrift Für Geologische Wissenschaften ", " Zeitschrift für Physik a Hadrons and Nuclei ", 
           " Zeitschrift Für Physik a: Hadrons And Nuclei ", " Znanosti I Umjetnosti ", 
           " Zookeys ", " Zprávy O Zasedání Král. Čes. Společnosti Nauk V Praze ", 
-          " Zprávy O Zasedání Král. čes. Společnosti Nauk V Praze ", " Zprávy o zasedání Král. čes. Společnosti nauk v Praze ", " Of the ",
+          " Zprávy O Zasedání Král. čes. Společnosti Nauk V Praze ", " Zprávy o zasedání Král. čes. Společnosti nauk v Praze ", 
           " Ргасе Filologiczne ", /* The above will be automatically updated to alphabetical order */ 
 );
 const OBVIOUS_FOREIGN_WORDS = array(" Abhandlungen ", " Actes ", " Annales ", " Archiv ", " Archives de ",
