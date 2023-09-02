@@ -156,6 +156,7 @@ const ITALICS_LIST =
  "Paraponera clavata|" .
  "Lycium barbarum|" .
  "Poria cocos|" .
+ "Res Publica|" .
  "Angelica sinensis|" .
  "Dilophosaurus wetherilli|" .
  "Loa loa|" .
@@ -335,7 +336,7 @@ const CAMEL_CASE = array('DeSoto', 'PubChem', 'BitTorrent', 'Al2O3', 'NiMo', 'Cu
                          'NeuroImaging', 'NiTi', 'EuroSys', 'GeoComputation', 'FactsBook', 'UbiComp', 'vCard',
                          'EuroQol', 'CentroidAlign', 'CyloFold', 'FindNonCoding', 'GraphClust', 'miReader',
                          'MiRror', 'PseudoViewer', 'RNAconTest', 'RNAiFold', 'ScanFold', 'SimulFold',
-                         'TurboFold', 'TurboKnot', 'FusionSeq'
+                         'TurboFold', 'TurboKnot', 'FusionSeq', 'dRheb', 'GTPase'
                        );
 
 const ITALICS_HARDCODE_IN  = ["Small Greek WorldNetworks in",   " Magia SexualisSex, Magic",   " is NothingLost in ",   " Without UsDisability ",   "Human RightsThe Case ",   " Southeast AsiaNation and ",   " EcologicalAn Expedition ",   "tive CognitionExperimental Expl",   "Immigrant NarrativesOrientalism and Cultural",   "Caesar's CalendarAncient Time ",   " a Sure StartHow gov",   "Slum TravelersLadies and London",   "Modern MongoliaFrom Khans",   " Magia SexualisSex, Magic",   "in Montesquieu’sThe Spirit",   "antiquity of Francis Bacon'sNew Atlantis",   "New MathematicsWestern Learning",   "Poor PeopleResource Control ",   " ObligationsRoman Foundations ",   " SirensMusical Technologies   ", "Two RomesRome and "  , "TantraSex, Secrecy",   "in EducationThe good",   "Eternal GodHeavenly Flesh",   "Conference onResearch, Innovation",  "Roman EmpireSoldiers,",   "SilencedHow Apostasy and Blasphemy",   "Cybernetics SocietyInformation Assurance",  "International Conference onServices Computing",  "IEEE InternationalElectron Devices",  "Symposium onFoundations of",  "IEEE InternationalConference",  "Jewish QuestionIdentifying ",   "The Port NelsonRelations",      "Changes for DemocracyActors",   "SpymasterDai Li ",   "A New History of IrelandVolume",   "Devoted to DeathSanta Muerte, the Skeleton Saint",   "Knowing HowEssays on Knowledge, Mind, and Action",   " Rgene", "CytochromebGenes",       "ElectrongValue",       "thetoxGene",      "GopashtamiandGovardhan",       "PolishLebensraum",       "theNachlassproblem",        " forAltalena:",      " in Plutarch'sLives",       "FromSolidarityto",        " gp91phoxPromoter",  "in vitroAssays",        "MarketizingHindutva",       "TheBhagavadgītā,",       "theOrigin of Species",       "EncounteringHindutva",       "ChineseHukouSystem",        "CisLatreille"];
