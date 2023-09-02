@@ -101,8 +101,8 @@ function is_doi_works(string $doi) : ?bool {
   // And now some obvious fails
   if (strpos($doi, '/') === FALSE) return FALSE;
   if (strpos($doi, 'CITATION_BOT_PLACEHOLDER') !== FALSE) return FALSE;
-  if (!preg_match('~^([^\/]+)\/~', $doi)) return FALSE;
   if (preg_match('~^10\.1007/springerreference~', $doi)) return FALSE;
+  if (!preg_match('~^([^\/]+)\/~', $doi, $matches)) return FALSE;
   $registrant = $matches[1];
   // TODO this will need updated over time.  See registrant_err_patterns on https://en.wikipedia.org/wiki/Module:Citation/CS1/Identifiers
   // 14:43, January 14, 2023 version is last check
