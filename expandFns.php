@@ -574,6 +574,9 @@ function titles_simple(string $inTitle) : string {
         $inTitle2 = safe_preg_replace_callback('~^(?:Chapter \d+ \- )(.....+)~iu',
             function (array $matches) : string {return ($matches[1]);}, trim($inTitle));
         if ($inTitle2 !== "") $inTitle = $inTitle2;
+        // Chapter number at start
+        $inTitle2 = safe_preg_replace('~^\[\d+\]\s*~iu', '', trim($inTitle));
+        if ($inTitle2 !== "") $inTitle = $inTitle2)
         // Trailing "a review"
         $inTitle2 = safe_preg_replace('~(?:\: | |\:)a review$~iu', '', trim($inTitle));
         if ($inTitle2 !== "") $inTitle = $inTitle2;
