@@ -576,7 +576,7 @@ function titles_simple(string $inTitle) : string {
         if ($inTitle2 !== "") $inTitle = $inTitle2;
         // Chapter number at start
         $inTitle2 = safe_preg_replace('~^\[\d+\]\s*~iu', '', trim($inTitle));
-        if ($inTitle2 !== "") $inTitle = $inTitle2);
+        if ($inTitle2 !== "") $inTitle = $inTitle2;
         // Trailing "a review"
         $inTitle2 = safe_preg_replace('~(?:\: | |\:)a review$~iu', '', trim($inTitle));
         if ($inTitle2 !== "") $inTitle = $inTitle2;
