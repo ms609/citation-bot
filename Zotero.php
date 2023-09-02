@@ -1337,7 +1337,7 @@ public static function find_indentifiers_in_urls(Template $template, ?string $ur
          $template->set($url_type, $url); // Update URL with cleaner one
        }
     }
-    if (preg_match('~^https?://(dx\.)doi\.org/10\.1007/springerreference_(\d+)$~i', $url, $matches)) {
+    if (preg_match('~^https?://(?:dx\.|)doi\.org/10\.1007/springerreference_(\d+)$~i', $url, $matches)) {
        $url = 'http://www.springerreference.com/index/doi/10.1007/springerreference_' . $matches[1];
        if (is_null($url_sent)) {
          $template->set($url_type, $url); // Update URL with cleaner one
