@@ -1345,7 +1345,7 @@ public static function find_indentifiers_in_urls(Template $template, ?string $ur
     }
     if (preg_match('~springerreference\.com~', $url)) {
        if ($template->has('doi') || $template->has('isbn')) {
-         if (is_null($url_sent)) {
+         if (is_null($url_sent) && $template->has('chapter') && $template->has('title')) {
            $template->forget($url_type);
          }
        }
