@@ -1343,13 +1343,6 @@ public static function find_indentifiers_in_urls(Template $template, ?string $ur
          $template->set($url_type, $url); // Update URL with cleaner one
        }
     }
-    if (preg_match('~springerreference\.com~', $url)) {
-       if ($template->has('doi') || $template->has('isbn')) {
-         if (is_null($url_sent) && $template->has('chapter') && $template->has('title')) {
-           $template->forget($url_type);
-         }
-       }
-    }
   
     if (preg_match("~^https?://(?:(?:dx\.|www\.|)doi\.org|doi\.library\.ubc\.ca)/([^\?]*)~i", $url, $match)) {
       if ($template->has('doi')) {
