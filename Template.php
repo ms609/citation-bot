@@ -1314,6 +1314,7 @@ final class Template {
 
       case 'chapter': case 'contribution': case 'article': case 'section': //  We do not add article/section, but sometimes found floating in a template
         if (!$this->blank(['booktitle', 'book-title']) && $this->has('title')) return FALSE;
+        $value = preg_replace('~^\[\d+\]\s*~', '', $value);  // Remove chapter numbers
         if ($this->blank(CHAPTER_ALIASES)) {
           return $this->add($param_name, wikify_external_text($value));
         }
