@@ -1152,6 +1152,7 @@ final class Template {
         }
       // Don't break here; we want to go straight in to year;
       case "year":
+        if ($this-has('publication-date')) return FALSE; // No idea what to do with this
         if ($value === $this->year()) return FALSE;
         if (   ($this->blank('date')
                || in_array(trim(strtolower($this->get_without_comments_and_placeholders('date'))), IN_PRESS_ALIASES))
