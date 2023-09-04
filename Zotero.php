@@ -850,6 +850,7 @@ public static function process_zotero_response(string $zotero_response, Template
      if (preg_match('~\d~', $pos_pages) && !preg_match('~\d+\.\d+.\d+~', $pos_pages)) { // At least one number but not a dotted number from medRxiv
         $pos_pages = str_ireplace(['σελ.', 'σελ ', 'pages ', 'page ', 'pages:', 'page:', 'pages', 'page'], [' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '], $pos_pages);
         $pos_pages = trim($pos_pages);
+        $pos_pages = str_ireplace(['    ', '   ', '  '], [' ', ' ', ' '], $pos_pages);
         $template->add_if_new('pages'  , $pos_pages);
      }
   }
