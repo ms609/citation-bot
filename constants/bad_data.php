@@ -926,6 +926,7 @@ const JOURNAL_IS_BOOK_SERIES = array(
          'profiles of drug substances, excipients and related methodology',
          'handbooks for the identification of british insects',
          'advances in human genetics',
+         'the cambridge history of latin america',
          'handbook of the birds of the world'
       );
 
