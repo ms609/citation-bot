@@ -887,6 +887,9 @@ const AVOIDED_LINKS = array('', 'Digital_object_identifier', 'JSTOR', 'Website',
 
 // Lower case, and periods converted to spaces
 const JOURNAL_IS_BOOK_SERIES = array(
+         'novartis found symp',
+         'novartis found. symp.',
+         'novartis foundation symposia',
          'methods of molecular biology' ,
          'methods mol biol',
          'methods of molecular biology (clifton, n j )',
