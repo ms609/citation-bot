@@ -144,6 +144,7 @@ const CANONICAL_PUBLISHER_URLS = array ('elsevier.com', 'springer.com', 'science
                                 'clinchem.org', 'cell.com', 'aeaweb.org', 'chestpubs.org', 'journal.chestnet.org',
                                 'chestjournal.org', 'biomedcentral.com', 'journals.royalsociety.org',
                                 'mdpi.com', 'frontiersin.org', 'scholarpedia.org', '.acm.org', 'academic.oup.com',
+                                'wjgnet.com',
                                 //  Below are journal search engines
                                 '.serialssolutions.com', '.ebscohost.com',
                                 //  Below are proxys
