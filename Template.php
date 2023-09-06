@@ -500,7 +500,7 @@ final class Template {
               $bad_data = TRUE;
           }
           if ($the_title === '_' || $the_title === 'null' || $the_title === '[No title found]' || $the_title === 'Archived copy' || $the_title === 'JSTOR' ||
-              $the_title === 'ShieldSquare Captcha' || $the_title === 'Shibboleth Authentication Request' || $the_title === 'Pubmed' ||
+              $the_title === 'ShieldSquare Captcha' || $the_title === 'Shibboleth Authentication Request' || $the_title === 'Pubmed' || $the_title === 'usurped title' ||
               $the_title === 'Pubmed Central' || $the_title === 'Optica Publishing Group' || $the_title === 'BioOne' || $the_title === 'IEEE Xplore' ||
               $the_title === 'ScienceDirect' || $the_title === 'Science Direct' || $the_title === 'Validate User') { // title=none is often because title is "reviewed work....
               $this->rename('title', 'CITATION_BOT_PLACEHOLDER_title');
@@ -1325,7 +1325,7 @@ final class Template {
 
       case 'title':
         if (in_array(strtolower(sanitize_string($value)), BAD_TITLES )) return FALSE;
-        if ($this->blank($param_name) || in_array($this->get($param_name), ['Archived copy', "{title}", 'ScienceDirect', 'Google Books', 'None'])
+        if ($this->blank($param_name) || in_array($this->get($param_name), ['Archived copy', "{title}", 'ScienceDirect', 'Google Books', 'None', 'usurped title'])
                                       || (stripos($this->get($param_name), 'EZProxy') !== FALSE && stripos($value, 'EZProxy') === FALSE)) {
           foreach (['encyclopedia', 'encyclopaedia', 'work', 'dictionary', 'journal'] as $worky) {
             if (str_equivalent($this->get($worky), sanitize_string($value))) {
@@ -2279,7 +2279,7 @@ final class Template {
         return FALSE;                                // @codeCoverageIgnore
       }
       if ($this->has('title') && titles_are_dissimilar($this->get('title'), $record->title[0])
-         && !in_array($this->get('title'), ['Archived copy', "{title}", 'ScienceDirect', "Google Books", "None"])) { // Verify the title matches.  We get some strange mis-matches {
+         && !in_array($this->get('title'), ['Archived copy', "{title}", 'ScienceDirect', "Google Books", "None", 'usurped title'])) { // Verify the title matches.  We get some strange mis-matches {
         report_info("Similar title not found in database");  // @codeCoverageIgnore
         return FALSE;                                        // @codeCoverageIgnore
       }
