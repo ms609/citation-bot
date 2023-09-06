@@ -1130,13 +1130,15 @@ function expand_templates_from_archives(array &$templates) : void { // This is d
            CURLOPT_USERAGENT => BOT_USER_AGENT]);
   foreach ($templates as $template) {
     set_time_limit(120);
-    if ($template->has('script-title') && (strtolower($template->get('title')) === 'archived copy' || strtolower($template->get('title')) === 'archive copy')) {
+    if ($template->has('script-title') && (strtolower($template->get('title')) === 'usurped title' || strtolower($template->get('title')) === 'archived copy' || strtolower($template->get('title')) === 'archive copy')) {
       $template->forget('title');
     }
     if ($template->blank(['chapter', 'series', 'script-title']) &&
         !$template->blank(['archive-url', 'archiveurl']) &&
         ($template->blank(WORK_ALIASES) || $template->has('website'))  &&
-        ($template->blank('title') || strtolower($template->get('title')) === 'archived copy' || strtolower($template->get('title')) === 'archive copy' ||
+        ($template->blank('title') || strtolower($template->get('title')) === 'archived copy' ||
+                                      strtolower($template->get('title')) === 'archive copy' ||
+                                      strtolower($template->get('title')) === 'usurped title' ||
          substr_count($template->get('title'), '?') > 10 ||
          substr_count($template->get('title'), '') >0 ||
          substr_count($template->get('title'), '') >0 ||
