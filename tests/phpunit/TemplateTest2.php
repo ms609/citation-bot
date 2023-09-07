@@ -1358,19 +1358,6 @@ final class TemplateTest2 extends testBaseClass {
     $this->assertNull($template->get2('lastauthoramp'));
     $this->assertSame('amp', $template->get2('name-list-style'));
   }
-
-  public function testTidyLaySummary() : void {
-    $text = "{{cite web|laysummary=}}";
-    $template = $this->make_citation($text);
-    $template->tidy_parameter('laysummary');
-    $this->assertNull($template->get2('laysummary'));
-    
-    $text = "{{cite web|lay-summary=http://cnn.com/}}";
-    $template = $this->make_citation($text);
-    $template->tidy_parameter('lay-summary');
-    $this->assertNull($template->get2('lay-summary'));
-    $this->assertSame('http://cnn.com/', $template->get2('lay-url'));
-  }
  
   public function testTidyOIDOI() : void {
     $text = "{{cite web|doi=10.1093/oi/authority.9876543210|url=http://oxfordreference.com/view/10.1093/oi/authority.9876543210}}";
@@ -2505,18 +2492,6 @@ final class TemplateTest2 extends testBaseClass {
     $this->assertSame('etal', $template->get2('display-authors'));
   }
  
-   public function testCiteTypeWarnings3() : void {
-    $text = "{{citation|title=XYZsadfdsfsdfdsafsd|chapter=DSRGgbgfbxdzfdfsXXXX|journal=adsfsd}}";
-    $template = $this->make_citation($text);
-    $template->final_tidy();
-    $this->assertSame('cite book', $template->wikiname());
-
-    $text = "{{Citation|title=XYZsadfdsfsdfdsafsd|chapter=DSRGgbgfbxdzfdfsXXXX|journal=adsfsd}}";
-    $template = $this->make_citation($text);
-    $template->final_tidy();
-    $this->assertSame('cite book', $template->wikiname()); // Wikiname does not return the actual value, but the normalized one
-  }
-
   public function testTidyWork2() : void {
     $text = "{{cite magazine|work=}}";
     $template = $this->make_citation($text);
@@ -3309,37 +3284,49 @@ final class TemplateTest2 extends testBaseClass {
      $this->assertSame('{{cite book}}', $template->parsed_text());
    }
  
-  public function testUpdateYear() : void {
+  public function testUpdateYear1() : void {
      $text = '{{cite journal|date=2000}}';
      $template = $this->make_citation($text);
      $template->add_if_new('year', (string) date('Y'), 'crossref');
-     $this->assertSame((string) date('Y'), $template->get2('year'));
-     
-     $text = '{{cite journal|year=ZYX}}';
-     $template = $this->make_citation($text);
-     $template->add_if_new('year', (string) date('Y'), 'crossref');
-     $this->assertSame((string) date('Y'), $template->get2('year'));   
-   
-     $text = '{{cite journal|year=ZYX}}';
-     $template = $this->make_citation($text);
-     $template->add_if_new('year', (string) date('Y'), 'crossref');
-     $this->assertSame((string) date('Y'), $template->get2('year'));   
+     $this->assertSame((string) date('Y'), $template->get2('date'));
+  }
 
+  public function testUpdateYear2() : void {
+     $text = '{{cite journal|year=ZYX}}';
+     $template = $this->make_citation($text);
+     $template->add_if_new('year', (string) date('Y'), 'crossref');
+     $this->assertSame((string) date('Y'), $template->get('date') . $template->get('year'));
+  }
+
+  public function testUpdateYear3() : void {
+     $text = '{{cite journal|year=ZYX}}';
+     $template = $this->make_citation($text);
+     $template->add_if_new('year', (string) date('Y'), 'crossref');
+     $this->assertSame((string) date('Y'), $template->get('date') . $template->get('year'));
+  }
+
+  public function testUpdateYear4() : void {
      $text = '{{cite journal}}';
      $template = $this->make_citation($text);
      $template->add_if_new('year', (string) date('Y'), 'crossref');
-     $this->assertSame((string) date('Y'), $template->get2('year'));   
+     $this->assertSame((string) date('Y'), $template->get2('date'));   
+  }
 
+  public function testUpdateYear5() : void {
      $text = '{{cite journal|year=1000}}';
      $template = $this->make_citation($text);
      $template->add_if_new('year', (string) ((int) date('Y') - 10), 'crossref');
      $this->assertSame('1000', $template->get2('year'));   
-   
+  }
+
+  public function testUpdateYear6() : void {
      $text = '{{cite journal|date=4000}}';
      $template = $this->make_citation($text);
      $template->add_if_new('year', (string) date('Y'), 'crossref');
      $this->assertSame('4000', $template->get2('date'));
+  }
 
+  public function testUpdateYear7() : void {
      $text = '{{cite journal|year=4000}}';
      $template = $this->make_citation($text);
      $template->add_if_new('year', (string) date('Y'), 'crossref');

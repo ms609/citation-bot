@@ -399,6 +399,7 @@ function adsabs_api(array $ids, array &$templates, string $identifier) : bool { 
   $unmatched_ids = array_diff($ids, $matched_ids);
   if (count($unmatched_ids)) {
     report_warning("No match for bibcode identifier: " . implode('; ', $unmatched_ids));  // @codeCoverageIgnore
+    bot_debug_log("No match for bibcode identifier: " . implode('; ', $unmatched_ids));  // @codeCoverageIgnore
   }
   foreach ($templates as $template) {
     if ($template->blank(['year', 'date']) && preg_match('~^(\d{4}).*book.*$~', $template->get('bibcode'), $matches)) {
@@ -526,7 +527,9 @@ function expand_by_doi(Template $template, bool $force = FALSE) : bool {
          }
       }
       $template->add_if_new('series', (string) $crossRef->series_title, 'crossref'); // add_if_new will format the title for a series?
-      $template->add_if_new("year", (string) $crossRef->year, 'crossref');
+      if (strpos($doi, '10.7817/jameroriesoci') === FALSE || (string) $crossRef->year !== '2021') { // 10.7817/jameroriesoci "re-published" everything in 2021
+        $template->add_if_new("year", (string) $crossRef->year, 'crossref');
+      }
       if (   $template->blank(array('editor', 'editor1', 'editor-last', 'editor1-last', 'editor-last1')) // If editors present, authors may not be desired
           && $crossRef->contributors->contributor
         ) {
@@ -740,6 +743,15 @@ function expand_doi_with_dx(Template $template, string $doi) : bool {
        $try_to_add_it('chapter', @$json['title']);
        $try_to_add_it('location', @$json['publisher-location']);
        $try_to_add_it('publisher', @$json['publisher']);
+     } elseif (@$json['type'] == 'other') {
+       if (isset($json['container-title'])) {
+         $try_to_add_it('title', @$json['container-title']);
+         $try_to_add_it('chapter', @$json['title']);
+       } else {
+         $try_to_add_it('title', @$json['title']);
+       }
+       $try_to_add_it('location', @$json['publisher-location']);
+       $try_to_add_it('publisher', @$json['publisher']);
      } elseif (@$json['type'] == 'dataset') {
        $try_to_add_it('type', 'Data Set');
        $try_to_add_it('title', @$json['title']);
@@ -749,7 +761,7 @@ function expand_doi_with_dx(Template $template, string $doi) : bool {
            (($template->wikiname() === 'cite book') || $template->blank(WORK_ALIASES))) { // No journal/magazine set and can convert to book
           $try_to_add_it('chapter', @$json['categories']['0']);  // Not really right, but there is no cite data set template
        }
-     } elseif (@$json['type'] == '' || @$json['type'] == 'graphic' || @$json['type'] == 'report' ) {  // Add what we can where we can
+     } elseif (@$json['type'] == '' || @$json['type'] == 'graphic' || @$json['type'] == 'report' || @$json['type'] == 'report-component') {  // Add what we can where we can
        $try_to_add_it('title', @$json['title']);
        $try_to_add_it('location', @$json['publisher-location']);
        $try_to_add_it('publisher', @$json['publisher']);
@@ -1118,13 +1130,15 @@ function expand_templates_from_archives(array &$templates) : void { // This is d
            CURLOPT_USERAGENT => BOT_USER_AGENT]);
   foreach ($templates as $template) {
     set_time_limit(120);
-    if ($template->has('script-title') && (strtolower($template->get('title')) === 'archived copy' || strtolower($template->get('title')) === 'archive copy')) {
+    if ($template->has('script-title') && (strtolower($template->get('title')) === 'usurped title' || strtolower($template->get('title')) === 'archived copy' || strtolower($template->get('title')) === 'archive copy')) {
       $template->forget('title');
     }
     if ($template->blank(['chapter', 'series', 'script-title']) &&
         !$template->blank(['archive-url', 'archiveurl']) &&
         ($template->blank(WORK_ALIASES) || $template->has('website'))  &&
-        ($template->blank('title') || strtolower($template->get('title')) === 'archived copy' || strtolower($template->get('title')) === 'archive copy' ||
+        ($template->blank('title') || strtolower($template->get('title')) === 'archived copy' ||
+                                      strtolower($template->get('title')) === 'archive copy' ||
+                                      strtolower($template->get('title')) === 'usurped title' ||
          substr_count($template->get('title'), '?') > 10 ||
          substr_count($template->get('title'), '') >0 ||
          substr_count($template->get('title'), '') >0 ||
@@ -1487,6 +1501,9 @@ function query_adsabs(string $options) : object {
      $json = @json_decode($json);
      if (isset($json->message->title[0]) && !isset($json->message->title[1])) {
           $title = (string) $json->message->title[0];
+          if (conference_doi($doi) && isset($json->message->subtitle[0]) && strlen((string) $json->message->subtitle[0]) > 4) {
+             $title = $title . ": " . (string) $json->message->subtitle[0];
+          }
           return str_ireplace(['<i>', '</i>', '</i> :', '  '], [' <i>', '</i> ', '</i>:', ' '], $title);
      } else {
           sleep(2);
