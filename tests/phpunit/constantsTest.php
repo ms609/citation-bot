@@ -174,7 +174,7 @@ final class constantsTest extends testBaseClass {
        $bit = next($alpha_bits);
        $alphaed .= $bit ? ($bit . ", ") : '';
        $line_length += $bit_length + 2;
-       if ($line_length > 86) {
+       if ($line_length > 76) {
          $alphaed .= $new_line;
          $line_length = 10;
         }
@@ -250,8 +250,15 @@ final class constantsTest extends testBaseClass {
       if ($our_whitelist !== $our_whitelist_sorted) {
          ob_flush();
          echo "\n \n testWhiteList:  Citation Bot has values out of order.  Expected order:\n";
+         $length = 0;
+         echo "  ";
          foreach($our_whitelist_sorted as $value) {
            echo "'" . $value . "', ";
+           $length = $length + strlen($value) + 4;
+           if ($length > 76) {
+             $length = 0;
+             echo "\n  ";
+           }
          }
          ob_flush();
          $we_failed = TRUE;
@@ -555,6 +562,16 @@ final class constantsTest extends testBaseClass {
     }
     $this->assertSame("", $errors); // We want a list of all of them
   }
+
+  public function testFreeDOI() : void {
+    foreach (DOI_FREE_PREFIX as $prefix) {
+      $this->assertTrue($prefix != '');
+      if (strpos($prefix, '/') === FALSE) {
+        $this->assertSame('This needs a slash', $prefix);
+      }
+    }
+  }
+  
 
   
 }

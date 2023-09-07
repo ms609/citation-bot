@@ -1886,11 +1886,11 @@ final class TemplateTest extends testBaseClass {
 
       $text = "{{Cite web|year|year 2000}}";
       $expanded = $this->process_citation($text);
-      $this->assertSame('{{Cite web|year| year=2000 }}', $expanded->parsed_text());
+      $this->assertSame('{{Cite web|year| date=2000 }}', $expanded->parsed_text());
 
       $text = "{{Cite web|year 2000|year }}";
       $expanded = $this->process_citation($text);
-      $this->assertSame('{{Cite web|year | year=2000 }}', $expanded->parsed_text());
+      $this->assertSame('{{Cite web|year | date=2000 }}', $expanded->parsed_text());
      
       $text = '{{citation|year=2000|year=||||||||||||||||||||||||||||||||||||||||}}';
       $prepared = $this->process_citation($text);
@@ -2067,7 +2067,7 @@ final class TemplateTest extends testBaseClass {
     $this->assertSame('9780393307009', $expanded->get2('isbn')   );
     $this->assertSame('Gould'        , $expanded->get2('last1'));
     $this->assertSame('Stephen Jay'  , $expanded->get2('first1') );
-    $this->assertSame('1989'         , $expanded->get2('year'));
+    $this->assertSame('1989'         , $expanded->get2('date'));
     $this->assertNull($expanded->get2('pages')); // Do not expand pages.  Google might give total pages to us
    
     $text = "{{Cite web | http://books.google.co.uk/books/about/Wonderful_Life.html}}";
@@ -2132,7 +2132,7 @@ final class TemplateTest extends testBaseClass {
     $this->assertSame('9780393307009', $expanded->get2('isbn')   );
     $this->assertSame('Gould'        , $expanded->get2('last1'));
     $this->assertSame('Stephen Jay'  , $expanded->get2('first1') );
-    $this->assertSame('1989'         , $expanded->get2('year'));
+    $this->assertSame('1989'         , $expanded->get2('date'));
     $this->assertNull($expanded->get2('pages')); // Do not expand pages.  Google might give total pages to us
   }
 
@@ -2214,7 +2214,7 @@ VL - 27
 ER -  }}';
      $prepared = $this->prepare_citation($text);
      $this->assertNull($prepared->get2('title'));
-     $this->assertNull($prepared->get2('date'));
+     $this->assertNull($prepared->get2('year'));
      $this->assertNull($prepared->get2('journal'));
      $this->assertSame('', $prepared->first_author());
      $this->assertNull($prepared->get2('last1'));
@@ -2227,7 +2227,7 @@ Y1 - 1990
 T1 - This will be a subtitle
 T3 - This will be ignored}}';
      $prepared = $this->prepare_citation($text);
-     $this->assertSame('1990', $prepared->get2('year')); 
+     $this->assertSame('1990', $prepared->get2('date')); 
      $this->assertNull($prepared->get2('title'));
      $this->assertNull($prepared->get2('chapter'));
      $this->assertNull($prepared->get2('journal'));
@@ -2238,7 +2238,7 @@ Y1 - 1990
 JF - This is the Journal
 T1 - This is the Title }}';
      $prepared = $this->prepare_citation($text);
-     $this->assertSame('1990', $prepared->get2('year')); 
+     $this->assertSame('1990', $prepared->get2('date')); 
      $this->assertSame('This is the Journal', $prepared->get2('journal'));
      $this->assertSame('This is the Title', $prepared->get2('title'));
    
@@ -2249,7 +2249,7 @@ T1 - This is the Title
 SP - i 
 EP - 999 }}';
      $prepared = $this->prepare_citation($text);
-     $this->assertSame('1990', $prepared->get2('year')); 
+     $this->assertSame('1990', $prepared->get2('date')); 
      $this->assertSame('This is the Journal', $prepared->get2('journal'));
      $this->assertSame('This is the Title', $prepared->get2('title'));
      $this->assertNull($prepared->get2('page'));
@@ -2363,7 +2363,7 @@ EP - 999 }}';
    
     $text = "{{cite book|isbn=0-9749009-0-7|url=https://books.google.com/books?id=to0yXzq_EkQC|year=2019}}";
     $page = $this->process_page($text);
-    $this->assertSame('Alter: isbn. Add: title, authors 1-2. Upgrade ISBN10 to 13. | [[:en:WP:UCB|Use this bot]]. [[:en:WP:DBUG|Report bugs]]. ', $page->edit_summary());
+    $this->assertSame('Alter: isbn. Add: publisher, title, authors 1-2. Upgrade ISBN10 to 13. | [[:en:WP:UCB|Use this bot]]. [[:en:WP:DBUG|Report bugs]]. ', $page->edit_summary());
   }
    
   public function testEtAl() : void {
@@ -2715,7 +2715,7 @@ EP - 999 }}';
     $text = "{{Cite journal|url=$url}}";  // We use a rubbish ISSN and website so that this does not expand any more -- only test SICI code
     $expanded = $this->process_citation($text);
       
-    $this->assertSame('1961', $expanded->get2('year'));
+    $this->assertSame('1961', $expanded->get2('date'));
     $this->assertSame('81', $expanded->get2('volume'));
     $this->assertSame('1', $expanded->get2('issue'));
     $this->assertSame('43', $expanded->get2('page'));
@@ -2727,7 +2727,7 @@ EP - 999 }}';
     $expanded = $this->process_citation($text);
       
     $this->assertSame('594900', $expanded->get2('jstor'));
-    $this->assertSame('1961', $expanded->get2('year'));
+    $this->assertSame('1961', $expanded->get2('date'));
     $this->assertSame('81', $expanded->get2('volume'));
     $this->assertSame('1', $expanded->get2('issue'));
     $this->assertSame('43–52', $expanded->get2('pages'));  // The jstor expansion add the page ending
@@ -3506,7 +3506,7 @@ EP - 999 }}';
   public function testMultipleYears() : void {
     $text = '{{cite journal|doi=10.1080/1323238x.2006.11910818}}'; // Crossref has <year media_type="online">2017</year><year media_type="print">2006</year>
     $expanded = $this->process_citation($text);
-    $this->assertSame('2006', $expanded->get2('year'));
+    $this->assertSame('2006', $expanded->get2('date'));
   }
  
   public function testDuplicateParametersFlagging() : void {
