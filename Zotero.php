@@ -847,7 +847,10 @@ public static function process_zotero_response(string $zotero_response, Template
   if ( isset($result->issue))            $template->add_if_new('issue'  , (string) $result->issue);
   if ( isset($result->pages)) {
      $pos_pages = (string) $result->pages;
-     if (preg_match('~\d~', $pos_pages) && !preg_match('~\d+\.\d+.\d+~', $pos_pages)) { // At least one number but not a dotted number from medRxiv 
+     if (preg_match('~\d~', $pos_pages) && !preg_match('~\d+\.\d+.\d+~', $pos_pages)) { // At least one number but not a dotted number from medRxiv
+        $pos_pages = str_ireplace(['σελ.', 'σελ ', 'pages ', 'page ', 'pages:', 'page:', 'pages', 'page'], [' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '], $pos_pages);
+        $pos_pages = trim($pos_pages);
+        $pos_pages = str_ireplace(['    ', '   ', '  '], [' ', ' ', ' '], $pos_pages);
         $template->add_if_new('pages'  , $pos_pages);
      }
   }
@@ -1337,6 +1340,12 @@ public static function find_indentifiers_in_urls(Template $template, ?string $ur
          $template->set($url_type, $url); // Update URL with cleaner one
        }
     }
+    if (preg_match('~^https?://(?:dx\.|)doi\.org/10\.1007/springerreference_(\d+)$~i', $url, $matches)) {
+       $url = 'http://www.springerreference.com/index/doi/10.1007/springerreference_' . $matches[1];
+       if (is_null($url_sent)) {
+         $template->set($url_type, $url); // Update URL with cleaner one
+       }
+    }
   
     if (preg_match("~^https?://(?:(?:dx\.|www\.|)doi\.org|doi\.library\.ubc\.ca)/([^\?]*)~i", $url, $match)) {
       if ($template->has('doi')) {
@@ -1523,7 +1532,7 @@ public static function find_indentifiers_in_urls(Template $template, ?string $ur
         . "entrez/query\.fcgi\S+db=pubmed\S+|"
         . "pmc/articles/pmid/)"
         . ".*?=?(\d{4,})~i", $url, $match)||
-            preg_match("~^https?://pubmed\.ncbi\.nlm\.nih\.gov/(?:|entrez/eutils/elink.fcgi\?dbfrom=pubmed\&retmode=ref\&cmd=prlinks\&id=)(\d{4,})/?(?:|#.+|-.+|\?.+)$~", $url, $match)
+            preg_match("~^https?://(?:pubmed|www)\.ncbi\.nlm\.nih\.gov/(?:|entrez/eutils/elink.fcgi\?dbfrom=pubmed(?:|\&tool=sumsearch.org/cite)\&retmode=ref\&cmd=prlinks\&id=)(\d{4,})/?(?:|#.+|-.+|\?.+)$~", $url, $match)
           ) {
           if (preg_match("~\?term~i", $url) && !preg_match("~pubmed\.ncbi\.nlm\.nih\.gov/\d{4,}/\?from_term=~", $url)) {
             if (preg_match('~^https?://.*ncbi\.nlm\.nih\.gov/pubmed/?(\?term=.*)$~', $url, $matches)) {
@@ -1544,11 +1553,18 @@ public static function find_indentifiers_in_urls(Template $template, ?string $ur
           if ($match[1] === $template->get('pmc')) {
              $template->forget($url_type); // Same as PMC-auto-link
           } elseif ($match[1] === $template->get('pmid')) {
-             if ($template->has_good_free_copy()) $template->forget($url_type);
+             if ($template->has_good_free_copy()) {
+               $template->forget($url_type);
+             } else {
+                $template->set($url_type, 'https://pubmed.ncbi.nlm.nih.gov/' . $match[1]);
+             }
           }
           return FALSE;
         } elseif (preg_match('~^https?://.*ncbi\.nlm\.nih\.gov/pubmed/?(\?term=.*)$~', $url, $matches)) {
            $template->set($url_type, 'https://pubmed.ncbi.nlm.nih.gov/' . $matches[1]);
+           return FALSE;
+        } elseif (preg_match('~^(https://pubmed\.ncbi\.nlm\.nih\.gov/\d+)/#:~', $url, $matches)) {
+           $template->set($url_type, $matches[1]);
            return FALSE;
         }
 

@@ -129,7 +129,7 @@ const BAD_ZOTERO_TITLES = ['Browse publications', 'Central Authentication Servic
                                  '404 Page', '404. The page', "wasn't found on this server", '404. The URL', 
                                  'ShieldSquare', '404 Not Found', "404页面", "Sign up | LinkedIn", 'The-star.co.kr',
                                  'Connecting to the iTunes Store', '500 Internal Server Error', 'DomainMarket.com',
-                                 'bluehost.com'];
+                                 'bluehost.com', 'Validate User'];
 
 const CANONICAL_PUBLISHER_URLS = array ('elsevier.com', 'springer.com', 'sciencedirect.com', 'tandfonline.com',
                                 'taylorandfrancis.com', 'wiley.com', 'sagepub.com', 'sagepublications.com',
@@ -143,7 +143,8 @@ const CANONICAL_PUBLISHER_URLS = array ('elsevier.com', 'springer.com', 'science
                                 'sciencemag.org', 'doi.apa.org', 'psycnet.apa.org', 'journals.upress.ufl.edu',
                                 'clinchem.org', 'cell.com', 'aeaweb.org', 'chestpubs.org', 'journal.chestnet.org',
                                 'chestjournal.org', 'biomedcentral.com', 'journals.royalsociety.org',
-                                'mdpi.com', 'frontiersin.org', 'scholarpedia.org', '.acm.org',
+                                'mdpi.com', 'frontiersin.org', 'scholarpedia.org', '.acm.org', 'academic.oup.com',
+                                'wjgnet.com',
                                 //  Below are journal search engines
                                 '.serialssolutions.com', '.ebscohost.com',
                                 //  Below are proxys
@@ -810,11 +811,11 @@ const ARE_MAGAZINES = array('the new yorker', 'the new republic', 'new republic'
                            'nintendo power', 'playthings', 'entertainment weekly', 'official xbox magazine',
                            'electronic gaming monthly', 'official u.s. playstation magazine',
                            'playstation: the official magazine', 'play and silicon mag', 'games radar', 'hyper',
-                           'famitsu', 'gamepro', 'yachting world', 'kalki', 'sports illustrated',
+                           'famitsu', 'gamepro', 'yachting world', 'kalki', 'sports illustrated', 'new civil engineer',
                            ); // lowercase axact matches
 const ARE_MANY_THINGS = array('pc gamer', 'gamestar', 'rock paper shotgun', 'mcv', 'rock, paper, shotgun', 'edge',
                               'ballotpedia', 'npr', 'ballotpedia.org', 'npr.org', 'nih.gov', 'nih', 'eurogamer.it',
-                              'conceptcarz', 'the royal family', 'eurogamer.de',
+                              'conceptcarz', 'the royal family', 'eurogamer.de', 'east west main line partnership',
                               'national institutes of health', 'national institutes of health (nih)'); // lowercase axact matches.  These are things that are both websites and newspapers
 const ARE_NEWSPAPERS = array('the economist', 'la times', 'toronto sun', 'washington post', 'the washington post',
                              'philippine daily inquirer', 'the irish times', 'wikinews', 'wikinews.org'); // lowercase axact matches
@@ -886,22 +887,49 @@ const AVOIDED_LINKS = array('', 'Digital_object_identifier', 'JSTOR', 'Website',
 
 
 // Lower case, and periods converted to spaces
-const JOURNAL_IS_BOOK_SERIES = array('methods of molecular biology' , 'methods mol biol',
-                                     'methods of molecular biology (clifton, n j )',
-                                     'methods in molecular biology',
-                                     'methods in molecular biology (clifton, n j )',
-                                     'methods mol. biol.',
-                                     'methods mol biol.',
-                                     'methods mol biol',
-                                     'methods mol. biol',
-                                     'advances in pharmacology (san diego, calif )',
-                                     'advances in pharmacology', 'inorganic syntheses',
-                                     'advances in enzymology and related areas of molecular biology',
-                                     'studies in bilingualism', 'antibiotics and chemotherapy',
-                                     'oceanic linguistics special publications',
-                                     'progress in brain research',
-                                     'advances in heterocyclic chemistry',
-                    );
+const JOURNAL_IS_BOOK_SERIES = array(
+         'novartis found symp',
+         'novartis found. symp.',
+         'novartis foundation symposia',
+         'methods of molecular biology' ,
+         'methods mol biol',
+         'methods of molecular biology (clifton, n j )',
+         'methods in molecular biology',
+         'methods in molecular biology (clifton, n j )',
+         'methods mol. biol.',
+         'methods mol biol.',
+         'methods mol biol',
+         'methods mol. biol',
+         'lecture notes in computer science',
+         'lecture notes in mathematics',
+         'lecture notes in physics',
+         'advances in pharmacology (san diego, calif )',
+         'advances in pharmacology', 'inorganic syntheses',
+         'advances in enzymology and related areas of molecular biology',
+         'studies in bilingualism', 'antibiotics and chemotherapy',
+         'oceanic linguistics special publications',
+         'progress in brain research',
+         'handbook of clinical neurology',
+         'adv exp med biol',
+         'adv. exp. med. biol.',
+         'advances in experimental medicine and biology',
+         'adv immunol',
+         'adv. immunol.',
+         'advances in advertising research',
+         'advances in experimental medicine and biology',
+         'advances in immunology',
+         'advances in heterocyclic chemistry',
+         'methods enzymol.',
+         'methods in enzymology',
+         'international studies on childhood and adolescence',
+         'methods in cell biology',
+         'methods in molecular medicine',
+         'profiles of drug substances, excipients and related methodology',
+         'handbooks for the identification of british insects',
+         'advances in human genetics',
+         'the cambridge history of latin america',
+         'handbook of the birds of the world'
+      );
 
 const ALWAYS_BAD_TITLES = array(
                      "Bloomberg - Are you a robot?",
@@ -941,4 +969,4 @@ const DOI_FREE_PREFIX = array('10.1100/', '10.11131/', '10.1155/', '10.11569/', 
                   '10.57009/', '10.58647/', '10.59081/', '10.6064/', '10.6219/', '10.7167/', '10.7217/', '10.7287/',
                   '10.7482/', '10.7490/', '10.7554/', '10.7717/', '10.7766/', '10.3389/', '10.3390/', '10.1155/',
                   '10.1371/journal.pone', '10.3897/zookeys', '10.1016/j.jbc.', '10.1016/S0021-9258', '10.1074/jbc.',
-                  '10.1210/jendso', '10.4249/', '10.5210/fm');
+                  '10.1210/jendso', '10.4249/', '10.5210/fm', '10.3847/');

@@ -362,19 +362,28 @@ final class Template {
           }
           $ieee_insanity = FALSE;
           if (conference_doi($this->get('doi')) &&
-              ($this->has('isbn') || (stripos($the_title, 'proceedings') !== FALSE && stripos($the_journal, 'proceedings') !== FALSE) ||
-              (stripos($the_title, 'Symposium') !== FALSE && stripos($the_journal, 'Symposium') !== FALSE) || (stripos($the_title, 'Meeting on ') !== FALSE && stripos($the_journal, 'Meeting on ') !== FALSE))) { // IEEE/ACM/etc "book"
+              ($this->has('isbn') ||
+              (stripos($the_title, 'proceedings') !== FALSE && stripos($the_journal, 'proceedings') !== FALSE) ||
+              (stripos($the_title, 'Conference') !== FALSE && stripos($the_journal, 'Conference') !== FALSE) ||
+              (stripos($the_title, 'Colloquium') !== FALSE && stripos($the_journal, 'Colloquium') !== FALSE) ||
+              (stripos($the_title, 'Symposium') !== FALSE && stripos($the_journal, 'Symposium') !== FALSE) ||
+              (stripos($the_title, 'Extended Abstracts') !== FALSE && stripos($the_journal, 'Extended Abstracts') !== FALSE) ||
+              (stripos($the_title, 'Meeting on ') !== FALSE && stripos($the_journal, 'Meeting on ') !== FALSE))) { // IEEE/ACM/etc "book"
               $data_to_check = $the_title . $the_journal . $the_chapter . $this->get('series');
-              if (stripos($data_to_check, 'IEEE Standard for') === FALSE && $this->blank('journal')) {
+              if (stripos($data_to_check, 'IEEE Standard for') !== FALSE && $this->blank('journal')) {
+                ; // Do nothing
+              } elseif (stripos($data_to_check, 'SIGCOMM Computer Communication Review') !== FALSE) { // Actual journal with ISBN
                 ; // Do nothing
               } elseif (stripos($data_to_check, 'Symposium') === FALSE &&
                         stripos($data_to_check, 'Conference') === FALSE &&
                         stripos($data_to_check, 'Proceedings') === FALSE &&
                         stripos($data_to_check, 'Workshop') === FALSE &&
                         stripos($data_to_check, 'Symp. On ') === FALSE &&
-                        stripos($data_to_check, 'Meeting on ') !== FALSE &&
-                        stripos($the_journal, 'Visual Languages and Human-Centric Computing') !== FALSE ||
-                        stripos($the_journal, 'Active and Passive Microwave Remote Sensing for') !== FALSE
+                        stripos($data_to_check, 'Meeting on ') === FALSE &&
+                        stripos($data_to_check, 'Colloquium') === FALSE &&
+                        stripos($data_to_check, 'Extended Abstracts') === FALSE &&
+                        stripos($the_journal, 'Visual Languages and Human-Centric Computing') === FALSE &&
+                        stripos($the_journal, 'Active and Passive Microwave Remote Sensing for') === FALSE
                        ) { // Looks like conference done, but does not claim so
                 if ($the_journal !== '') {
                   $this->rename('journal', 'CITATION_BOT_PLACEHOLDER_journal');
@@ -395,6 +404,9 @@ final class Template {
                         stripos($the_journal, 'Workshop') !== FALSE ||
                         stripos($the_journal, 'Symp. On ') !== FALSE ||
                         stripos($the_journal, 'Meeting on ') !== FALSE ||
+                        stripos($the_journal, 'Colloquium') !== FALSE ||
+                        stripos($the_journal, 'Extended Abstracts') !== FALSE ||
+                        stripos($the_journal, 'Active and Passive Microwave Remote Sensing for') !== FALSE ||
                         stripos($the_journal, 'Visual Languages and Human-Centric Computing') !== FALSE
                        ) {
                  $this->rename('journal', 'CITATION_BOT_PLACEHOLDER_journal');
@@ -417,10 +429,32 @@ final class Template {
               stripos($the_journal, 'IEEE International Conference') !== FALSE ||
               stripos($the_journal, 'ACM International Symposium') !== FALSE ||
               stripos($the_journal, 'ACM Symposium') !== FALSE ||
+              stripos($the_journal, 'Extended Abstracts') !== FALSE ||
               stripos($the_journal, 'IEEE International Symposium') !== FALSE ||
               stripos($the_journal, 'Symposium on Theoretical Aspects') !== FALSE ||
+              stripos($the_journal, 'Lecture Notes in Computer Science') !== FALSE ||
+              stripos($the_journal, 'International Conference on ') !== FALSE ||
+              stripos($the_journal, 'ACM International Conference') !== FALSE ||
+              (stripos($the_journal, 'Proceedings of ') !== FALSE && stripos($the_journal, 'Conference') !== FALSE) ||
+              (stripos($the_journal, 'International') !== FALSE && stripos($the_journal, 'Conference') !== FALSE) ||
+              (stripos($the_journal, 'International') !== FALSE && stripos($the_journal, 'Meeting') !== FALSE) ||
+              (stripos($the_journal, 'International') !== FALSE && stripos($the_journal, 'Colloquium') !== FALSE) ||
+              stripos($the_journal, 'SIGGRAPH') !== FALSE ||
               stripos($the_journal, 'Design Automation Conference') !== FALSE
              ) {
+              $this->rename('journal', 'CITATION_BOT_PLACEHOLDER_journal');
+              $the_journal = '';
+              $bad_data = TRUE;
+              if ($the_title !== '') {
+                  $this->rename('title', 'CITATION_BOT_PLACEHOLDER_title');
+                  $the_title = '';
+              }
+              if ($the_chapter !== '') {
+                  $this->rename('chapter', 'CITATION_BOT_PLACEHOLDER_chapter');
+                  $the_chapter = '';
+              }
+          }
+          if ($this->is_book_series('series') && $the_journal !== "") {
               $this->rename('journal', 'CITATION_BOT_PLACEHOLDER_journal');
               $the_journal = '';
               $bad_data = TRUE;
@@ -464,11 +498,11 @@ final class Template {
               $this->rename('title', 'CITATION_BOT_PLACEHOLDER_title');
               $the_title = '';
               $bad_data = TRUE;
-          }                                                                                                         
+          }
           if ($the_title === '_' || $the_title === 'null' || $the_title === '[No title found]' || $the_title === 'Archived copy' || $the_title === 'JSTOR' ||
-              $the_title === 'ShieldSquare Captcha' || $the_title === 'Shibboleth Authentication Request' || $the_title === 'Pubmed' ||
+              $the_title === 'ShieldSquare Captcha' || $the_title === 'Shibboleth Authentication Request' || $the_title === 'Pubmed' || $the_title === 'usurped title' ||
               $the_title === 'Pubmed Central' || $the_title === 'Optica Publishing Group' || $the_title === 'BioOne' || $the_title === 'IEEE Xplore' ||
-              $the_title === 'ScienceDirect' || $the_title === 'Science Direct') { // title=none is often because title is "reviewed work....
+              $the_title === 'ScienceDirect' || $the_title === 'Science Direct' || $the_title === 'Validate User') { // title=none is often because title is "reviewed work....
               $this->rename('title', 'CITATION_BOT_PLACEHOLDER_title');
               $the_title = '';
               $bad_data = TRUE;
@@ -1118,6 +1152,7 @@ final class Template {
         }
       // Don't break here; we want to go straight in to year;
       case "year":
+        if ($this->has('publication-date')) return FALSE; // No idea what to do with this
         if ($value === $this->year()) return FALSE;
         if (   ($this->blank('date')
                || in_array(trim(strtolower($this->get_without_comments_and_placeholders('date'))), IN_PRESS_ALIASES))
@@ -1279,6 +1314,7 @@ final class Template {
 
       case 'chapter': case 'contribution': case 'article': case 'section': //  We do not add article/section, but sometimes found floating in a template
         if (!$this->blank(['booktitle', 'book-title']) && $this->has('title')) return FALSE;
+        $value = preg_replace('~^\[\d+\]\s*~', '', $value);  // Remove chapter numbers
         if ($this->blank(CHAPTER_ALIASES)) {
           return $this->add($param_name, wikify_external_text($value));
         }
@@ -1289,7 +1325,7 @@ final class Template {
 
       case 'title':
         if (in_array(strtolower(sanitize_string($value)), BAD_TITLES )) return FALSE;
-        if ($this->blank($param_name) || in_array($this->get($param_name), ['Archived copy', "{title}", 'ScienceDirect', 'Google Books', 'None'])
+        if ($this->blank($param_name) || in_array($this->get($param_name), ['Archived copy', "{title}", 'ScienceDirect', 'Google Books', 'None', 'usurped title'])
                                       || (stripos($this->get($param_name), 'EZProxy') !== FALSE && stripos($value, 'EZProxy') === FALSE)) {
           foreach (['encyclopedia', 'encyclopaedia', 'work', 'dictionary', 'journal'] as $worky) {
             if (str_equivalent($this->get($worky), sanitize_string($value))) {
@@ -2243,7 +2279,7 @@ final class Template {
         return FALSE;                                // @codeCoverageIgnore
       }
       if ($this->has('title') && titles_are_dissimilar($this->get('title'), $record->title[0])
-         && !in_array($this->get('title'), ['Archived copy', "{title}", 'ScienceDirect', "Google Books", "None"])) { // Verify the title matches.  We get some strange mis-matches {
+         && !in_array($this->get('title'), ['Archived copy', "{title}", 'ScienceDirect', "Google Books", "None", 'usurped title'])) { // Verify the title matches.  We get some strange mis-matches {
         report_info("Similar title not found in database");  // @codeCoverageIgnore
         return FALSE;                                        // @codeCoverageIgnore
       }
@@ -2883,14 +2919,10 @@ final class Template {
     $google_date = tidy_date($google_date);
     $now = (integer) date("Y");
     // Some publishers give next year always for OLD stuff
-    $next_year = (string) ($now + 1);
-    $next2_year = (string) ($now + 2);
-    $next3_year = (string) ($now + 3);
-    $next4_year = (string) ($now + 4);
-    if (strpos($google_date, $next_year)  !== FALSE) return TRUE;
-    if (strpos($google_date, $next2_year) !== FALSE) return TRUE;
-    if (strpos($google_date, $next3_year) !== FALSE) return TRUE;
-    if (strpos($google_date, $next4_year) !== FALSE) return TRUE;
+    for ($i = 1; $i <= 30; $i++) {
+        $next_year = (string) ($now + $i);
+        if (strpos($google_date, $next_year) !== FALSE) return TRUE;
+    }
     if ($this->has('isbn')) { // Assume this is recent, and any old date is bogus
       if (preg_match('~1[0-8]\d\d~', $google_date)) return TRUE;
       if (!preg_match('~[12]\d\d\d~', $google_date)) return TRUE;
@@ -3354,6 +3386,7 @@ final class Template {
           case "fahrplan-ch": case "incomplete short citation": case "music": case "bar-ads":
           case "subscription or libraries": case "gallica": case "gnd": case "ncbibook":
           case "spaces": case "ndash": case "dggs": case "self-published source": case "nobreak":
+          case "university of twente pure":
           case "gbooks": case "gburl": // TODO - should use
           case "isbnt": case "issn link": case "lccn8": // Assume not normal template for a reason
           case "google books": // Usually done for fancy formatting and because already has title-link/url
@@ -3735,7 +3768,7 @@ final class Template {
                    $this->set('work', '[[Associated Press News]]');
                  } elseif ($this->get('work') === '[[AP]]'){
                    $this->set('work', '[[AP News]]');
-                 } 
+                 }
                }
             }
           }
@@ -3960,17 +3993,6 @@ final class Template {
           if (in_array($the_data, ['y', 'yes', 'true'])) {
             $this->rename($param, 'name-list-style', 'amp');
             $this->forget($param);
-          }
-          return;
-
-        case 'laysummary': case 'lay-summary':
-          if ($this->blank($param)) {
-            $this->forget($param);
-            return;
-          }
-          if (!$this->blank(['lay-url', 'layurl'])) return;
-          if (preg_match('~^https?://[^ ]+$~', $this->get($param))) {
-            $this->rename($param, 'lay-url');
           }
           return;
 
@@ -4972,10 +4994,6 @@ final class Template {
             return;
           }
 
-          if ($publisher === strtolower($this->get('journal') . $this->get('website') . $this->get('newspaper') . $this->get('work') . $this->get('periodical') . $this->get('magazine'))) {
-            $this->forget($param);
-          }
-
           return;
 
         case 'quotes':
@@ -5009,6 +5027,10 @@ final class Template {
         case 'title':
           if ($this->blank($param)) return;
           $title = $this->get($param);
+          if ($title === 'Validate User') {
+             $this->set('title', '');
+             return;
+          }
           $title = straighten_quotes($title, FALSE);
           if ((   mb_substr($title, 0, 1) === '"'
                && mb_substr($title, -1)   === '"'
@@ -5085,8 +5107,10 @@ final class Template {
               preg_match('~https://apis\.google\.com/js/plusone\.js$~', $this->get($param)) ||
               preg_match('~https?://www\.britishnewspaperarchive\.co\.uk/account/register~', $this->get($param)) ||
               preg_match('~https://www\.google\-analytics\.com/ga\.js$~', $this->get($param)) ||
+              preg_match('~academic\.oup\.com/crawlprevention~', $this->get($param)) ||
               preg_match('~https://meta\.wikimedia\.org/w/index\.php\?title\=Special\:UserLogin~', $this->get($param))) {
                 $this->forget($param);
+                if ($this->get('title') === 'Validate User') $this->set('title', '');
                 return;
           }
           if (preg_match('~^(https?://(?:www\.|)webcitation\.org/)([0-9a-zA-Z]{9})(?:|\?url=.*)$~', $this->get($param), $matches)) {
@@ -5189,6 +5213,11 @@ final class Template {
                quietly('report_modification', "Decoding Bloomberg URL.");
                $this->set($param, 'https://www.bloomberg.com' .  base64_decode($matches[1]));
              }
+          } elseif (preg_match("~^https?://academic\.oup\.com/crawlprevention/governor\?content=([^\s]+)$~", $this->get($param), $matches)) {
+             quietly('report_modification', "Decoding OUP URL.");
+             $this->set($param, 'https://academic.oup.com' . preg_replace('~(?:\?login=false|\?redirectedFrom=fulltext|\?login=true)$~i', '', urldecode($matches[1])));
+             if ($this->get('title') === 'Validate User') $this->set('title', '');
+             if ($this->get('website') === 'academic.oup.com') $this->forget('website');
           } elseif (preg_match("~^https?://.*ebookcentral.proquest.+/lib/.+docID(?:%3D|=)(\d+)(|#.*|&.*)(?:|\.)$~i", $this->get($param), $matches)) {
               if ($matches[2] === '#' || $matches[2] === '#goto_toc' || $matches[2] === '&' ||
                   $matches[2] === '&query=' || $matches[2] === '&query=#' || preg_match('~^&tm=\d*$~', $matches[2])) {
@@ -6077,16 +6106,6 @@ final class Template {
       if ($this->wikiname() === 'cite arxiv' && $this->has('bibcode')) {
         $this->forget('bibcode'); // Not supported and 99% of the time just a arxiv bibcode anyway
       }
-      if ($this->wikiname() === 'citation') { // Special CS2 code goes here
-       if (!$this->blank_other_than_comments('title') && !$this->blank_other_than_comments('chapter') && !$this->blank_other_than_comments(WORK_ALIASES)) { // Invalid combination
-          report_info('CS2 template has incompatible parameters.  Changing to CS1 cite book. Please verify.');
-          if ($this->name === 'citation') { // Need special code to keep caps the same
-            $this->name = 'cite book';
-          } else {
-            $this->name = 'Cite book';
-          }
-       }
-      }
       if ($this->wikiname() === 'cite web') {
        if (!$this->blank_other_than_comments('title') && !$this->blank_other_than_comments('chapter')) {
           if ($this->name === 'cite web') { // Need special code to keep caps the same
@@ -6171,20 +6190,52 @@ final class Template {
       if (conference_doi($this->get('doi')) &&
         $this->has('title') && $this->has('chapter') && $this->has('isbn')  &&
         $this->wikiname() === 'cite book' && doi_works($this->get('doi'))) {
-          if (stripos($this->get('title'), 'Conference') !== FALSE) {
-             if (stripos($this->get('website'), 'Conference') !== FALSE) $this->forget('website');
-             if (stripos($this->get('journal'), 'Conference') !== FALSE) $this->forget('journal');
+          foreach (WORK_ALIASES as $worky) {
+            foreach (['Conference', 'Symposium', 'SIGGRAPH', 'workshop'] as $thingy) {
+              if (stripos($this->get('title'), $thingy) !== FALSE && stripos($this->get($worky), $thingy) !== FALSE) {
+                $this->forget($worky);
+              }
+            }
           }
-          if (stripos($this->get('title'), 'Symposium') !== FALSE) {
-             if (stripos($this->get('website'), 'Symposium') !== FALSE) $this->forget('website');
-             if (stripos($this->get('journal'), 'Symposium') !== FALSE) $this->forget('journal');
-          }
+      }
+      if (stripos($this->get('journal'), 'SIGGRAPH') !== FALSE && stripos($this->get('title'), 'SIGGRAPH') !== FALSE) {
+          $this->forget('journal');
+      }
+      if (stripos($this->get('journal'), 'SIGGRAPH') !== FALSE && $this->blank('title')) {
+          $this->rename('journal', 'title');
+      }
+      if ($this->has('series') && stripos($this->get('title'), $this->get('series')) !== FALSE) {
+          $this->forget('series');
       }
 
       $this->tidy_parameter('doi'); // might be free, and freedom is date dependent for some journals
       if ($this->blank(PAGE_ALIASES) && preg_match('~^10\.1103\/[a-zA-Z]+\.(\d+)\.(\d+)$~', $this->get('doi'), $matches)) {
         if ($matches[1] === $this->get('volume')) {
            $this->set('page', $matches[2]); // Often not in CrossRef
+        }
+      }
+      if ($this->wikiname() === 'cite book') {
+        foreach (WORK_ALIASES as $worky) {
+          if ($this->blank($worky)) $this->forget($worky); // Discourage filling these in
+          if (strtolower($this->get('publisher')) === strtolower($this->get($worky))) $this->forget($worky);
+        }
+        // If one and only one work alias is set, the move it to publisher
+        /**
+        if ($this->blank('publisher')) {
+          $counting = 0;
+          foreach (WORK_ALIASES as $worky) {
+            if ($this->has($worky)) $counting = $counting + 1;
+          }
+          if ($counting === 1) {
+            foreach (WORK_ALIASES as $worky) {
+              //TODO: convert to via/publisher/delete/log depending upon specificsif ($this->has($worky)) bot_debug_log('WORKY ' . $this->get($worky));
+            }
+          }
+        }
+        **/
+      } elseif ($this->has('publisher')) {
+        foreach (WORK_ALIASES as $worky) {
+          if (strtolower($this->get('publisher')) === strtolower($this->get($worky))) $this->forget('publisher');
         }
       }
       if (!empty($this->param)) {
@@ -6875,7 +6926,7 @@ final class Template {
   protected function inline_doi_information() : ?array {
     if ($this->name !== "doi-inline") return NULL;
     if (count($this->param) !==2) return NULL;
-    $vals   = array();
+    $vals = array();
     $vals[0] = $this->param[0]->parsed_text();
     $vals[1] = $this->param[1]->parsed_text();
     return $vals;
@@ -7109,14 +7160,15 @@ final class Template {
       return $url;
   }
 
-  public function use_issn() : bool {
-    if ($this->blank('issn')) return FALSE; // Nothing to use
-    if (!$this->blank(WORK_ALIASES)) return FALSE; // Nothing to add
-    if ($this->has('series')) return FALSE; // Dangerous risk of duplication and most likely a series of "books"
-    if ($this->wikiname() === 'cite book' && $this->has('isbn')) return FALSE; // Probably a series of "books"
+  public function use_issn() : bool { // Only add if helpful and not a series of books
+    if ($this->blank('issn')) return FALSE;
+    if (!$this->blank(WORK_ALIASES)) return FALSE;
+    if ($this->has('series')) return FALSE;
+    if ($this->wikiname() === 'cite book' && $this->has('isbn')) return FALSE;
     $issn = $this->get('issn');
-    // @codeCoverageIgnoreStart
-    if ($issn === '0140-0460') { // Must use set to avoid escaping the [[ and ]]
+    if ($issn === '9999-9999') return FALSE;
+    if (!preg_match('~^\d{4}.?\d{3}[0-9xX]$~u', $issn)) return FALSE;
+    if ($issn === '0140-0460') { // Use set to avoid escaping [[ and ]]
       return $this->set('newspaper', '[[The Times]]');
     } elseif ($issn === '0190-8286') {
       return $this->set('newspaper', '[[The Washington Post]]');
@@ -7125,11 +7177,7 @@ final class Template {
     } elseif ($issn === '0163-089X' || $issn === '1092-0935') {
       return $this->set('newspaper', '[[The Wall Street Journal]]');
     }
-    // @codeCoverageIgnoreEnd
-    if ($issn === '9999-9999') return FALSE; // Fake test suite data
-    if (!preg_match('~^\d{4}.?\d{3}[0-9xX]$~u', $issn)) return FALSE;
-    /** TODO - this API is gone **/
-    return FALSE;
+    return FALSE; // TODO - the API is gone
   }
 
   private function is_book_series(string $param) : bool {
@@ -7172,6 +7220,8 @@ final class Template {
       if (stripos($url, 'pages') && !preg_match('~[^\d]1[-–]~u', $url)) return TRUE;
       return FALSE;
     }
+    if (strpos($url, 'link.springer.com/chapter/10.')) return TRUE;
+    if (preg_match('~10\.\1007\/97[89]-?[0-9]{1,5}\-?[0-9]+\-?[0-9]+\-?[0-9]\_\d{1,3}~', $url)) return TRUE;
     if ($force) return TRUE;
     // Only do a few select website unless we just converted to cite book from cite journal
     if (strpos($url, 'archive.org')) return TRUE;
@@ -7229,7 +7279,7 @@ final class Template {
       }
   }
 
-  public function has_good_free_copy() : bool { // GOOD is critical - must title link - TODO add more if jstor-access or hdl-access title-link
+  public function has_good_free_copy() : bool { // Must link title - TODO add more if jstor-access or hdl-access link
     $this->tidy_parameter('pmc');
     $this->tidy_parameter('pmc-embargo-date');
     if (($this->has('pmc') && $this->blank('pmc-embargo-date') && preg_match('~^\d+$~', $this->get('pmc'))) ||

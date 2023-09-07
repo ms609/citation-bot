@@ -28,7 +28,7 @@ const REGEXP_IS_URL = '~^(?:(?:https?|ftp)://)(?:\\S+(?::\\S*)?@)?(?:(?!10(?:\\.
 const HANDLES_HOSTS = array('hdl.handle.net', 'kb.osu.edu', 'repositorio.aemet.es', 'fieldresearch.msf.org',
                             'dspace.lib.cranfield.ac.uk', 'dspace.lboro.ac.uk', 'scholarship.rice.edu',
                             'deepblue.lib.umich.edu', 'arrow.latrobe.edu.au', 'kb.osu.edu', 'scholarworks.csun.edu',
-                            'www.era.lib.ed.ac.uk', 'research-repository.st-andrews.ac.uk',
+                            'www.era.lib.ed.ac.uk', 'research-repository.st-andrews.ac.uk', 'spiral.imperial.ac.uk',
                             'dataverse.scholarsportal.info', 'idus.us.es', 'dspace.library.uu.nl',
                             'dspace.mit.edu', 'digital.csic.es', 'apps.who.int', 'repository.si.edu',
                             'lume.ufrgs.br', 'digitallibrary.amnh.org', 'hdl.cqu.edu.au', 'repository.bilkent.edu.tr',

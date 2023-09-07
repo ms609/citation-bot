@@ -101,6 +101,7 @@ function is_doi_works(string $doi) : ?bool {
   // And now some obvious fails
   if (strpos($doi, '/') === FALSE) return FALSE;
   if (strpos($doi, 'CITATION_BOT_PLACEHOLDER') !== FALSE) return FALSE;
+  if (preg_match('~^10\.1007/springerreference~', $doi)) return FALSE;
   if (!preg_match('~^([^\/]+)\/~', $doi, $matches)) return FALSE;
   $registrant = $matches[1];
   // TODO this will need updated over time.  See registrant_err_patterns on https://en.wikipedia.org/wiki/Module:Citation/CS1/Identifiers
@@ -424,7 +425,7 @@ function restore_italics (string $text) : string {
   $text = str_replace(ITALICS_HARDCODE_IN, ITALICS_HARDCODE_OUT, $text); // Ones to always do, since they keep popping up in our logs
   $text = str_replace("xAzathioprine therapy for patients with systemic lupus erythematosus", "Azathioprine therapy for patients with systemic lupus erythematosus", $text); // Annoying stupid bad data
   $text = trim(str_replace(['        ', '      ', '    ', '   ', '  '], [' ', ' ', ' ', ' ', ' '], $text));
-  while (preg_match('~([a-z])(' . ITALICS_LIST . ')([A-Z\-\?\:\.\)\,]|species|genus| in|$)~', $text, $matches)) {
+  while (preg_match('~([a-z])(' . ITALICS_LIST . ')([A-Z\-\?\:\.\)\,]|species|genus| in| the|$)~', $text, $matches)) {
      if (in_array($matches[3], [':', '.', '-', ','])) {
        $pad = "";
      } else {
@@ -480,6 +481,7 @@ function str_remove_irrelevant_bits(string $str) : string {
   $str = safe_preg_replace(REGEXP_PIPED_WIKILINK, "$2", $str);   // Convert [[Y|X]] wikilinks into X
   $str = trim($str);
   $str = safe_preg_replace("~^the\s+~i", "", $str);  // Ignore leading "the" so "New York Times" == "The New York Times"
+  $str = safe_preg_replace("~\s~u", ' ', $str);
   // punctuation
   $str = str_replace(array('.', ',', ';', ': ', "…"), array(' ', ' ', ' ', ' ', ' '), $str);
   $str = str_replace(array(':', '-', '&mdash;', '&ndash;', '—', '–'), array('', '', '', '', '', ''), $str);
@@ -572,6 +574,9 @@ function titles_simple(string $inTitle) : string {
         // Leading Chapter # -   Use callback to make sure there are a few characters after this
         $inTitle2 = safe_preg_replace_callback('~^(?:Chapter \d+ \- )(.....+)~iu',
             function (array $matches) : string {return ($matches[1]);}, trim($inTitle));
+        if ($inTitle2 !== "") $inTitle = $inTitle2;
+        // Chapter number at start
+        $inTitle2 = safe_preg_replace('~^\[\d+\]\s*~iu', '', trim($inTitle));
         if ($inTitle2 !== "") $inTitle = $inTitle2;
         // Trailing "a review"
         $inTitle2 = safe_preg_replace('~(?:\: | |\:)a review$~iu', '', trim($inTitle));
@@ -826,6 +831,10 @@ function title_capitalization(string $in, bool $caps_after_punctuation) : string
     "~ (?:Ii|Iii|Iv|Vi|Vii|Vii|Ix)$~u",
     function (array $matches) : string {return strtoupper($matches[0]);},
     $new_case);
+  $new_case = safe_preg_replace_callback(
+    "~^(?:Ii|Iii|Iv|Vi|Vii|Vii|Ix):~u",
+    function (array $matches) : string {return strtoupper($matches[0]);},
+    $new_case);
   $new_case = trim($new_case);
   // Special cases - Only if the full title
   if ($new_case === 'Bioscience') {
@@ -925,6 +934,7 @@ function tidy_date(string $string) : string {
   $string=trim($string);
   if (stripos($string, 'Invalid') !== FALSE) return '';
   if (strpos($string, '1/1/0001') !== FALSE) return '';
+  if (strpos($string, '0001-01-01') !== FALSE) return '';
   if (!preg_match('~\d{2}~', $string)) return ''; // Not two numbers next to each other
   if (preg_match('~^\d{2}\-\-$~', $string)) return '';
   // Google sends ranges
@@ -2295,6 +2305,7 @@ function conference_doi(string $doi) : bool {
       strpos($doi, '10.1145/') === 0 ||
       strpos($doi, '10.1117/') === 0 ||
       strpos($doi, '10.2991/') === 0 ||
+      (strpos($doi, '10.1007/978-') === 0 && strpos($doi, '_') !== FALSE) ||
       stripos($doi, '10.2991/erss') === 0 ||
       stripos($doi, '10.2991/jahp') === 0) {
          return TRUE;
