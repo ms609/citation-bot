@@ -5108,6 +5108,7 @@ final class Template {
               preg_match('~https?://www\.britishnewspaperarchive\.co\.uk/account/register~', $this->get($param)) ||
               preg_match('~https://www\.google\-analytics\.com/ga\.js$~', $this->get($param)) ||
               preg_match('~academic\.oup\.com/crawlprevention~', $this->get($param)) ||
+              preg_match('~ancestryinstitution~', $this->get($param)) ||
               preg_match('~https://meta\.wikimedia\.org/w/index\.php\?title\=Special\:UserLogin~', $this->get($param))) {
                 $this->forget($param);
                 if ($this->get('title') === 'Validate User') $this->set('title', '');
@@ -5304,8 +5305,19 @@ final class Template {
                  if ($this->has('via') && stripos($this->get('via'), 'library') !== FALSE) $this->forget('via');
               }
           }
+          if (preg_match("~^https://www\.ancestryinstitution\.com.*_phcmd.*(https://www\-ancestryinstitution\-com\.wikipedialibrary\.idm.oclc\.org.+)\'\,\'successSource\'\)$~i", $this->get($param), $matches)) {
+            $this->set($param, urldecode($matches[1]));
+          }
+        
+          if (stripos($this->get($param), 'https://www.ancestryinstitution.com/search/',$this->get($param)) === 0 &&
+             stripos($this->get($param), 'citation_bot',$this->get($param)) === FALSE) {
+            $this->set($param, str_replace('www.ancestryinstitution.com', 'www.ancestry.com', $this->get($param)));
+          }
+          if (preg_match("~^https://www\.ancestryinstitution\.com.+backurl=(http.+)$~i", $this->get($param), $matches)) {
+            $this->set($param, $matches[1]);
+          }
           // idm.oclc.org Proxy
-          if (stripos($this->get($param), 'idm.oclc.org') !== FALSE) {
+          if (stripos($this->get($param), 'idm.oclc.org') !== FALSE && stripos($this->get($param), 'ancestryinstitution') === FALSE) {
               $oclc_found = FALSE;
               if (preg_match("~^https://([^\.\-\/]+)-([^\.\-\/]+)-([^\.\-\/]+)\.[^\.\-\/]+\.idm\.oclc\.org/(.+)$~i", $this->get($param), $matches)) {
                  $this->set($param, 'https://' . $matches[1] . '.' . $matches[2] . '.' . $matches[3] . '/' . $matches[4]);
