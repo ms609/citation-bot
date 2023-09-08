@@ -5310,8 +5310,8 @@ final class Template {
           }
         
           if (stripos($this->get($param), 'https://www.ancestryinstitution.com/search/',$this->get($param)) === 0 &&
-             stripos($this->get($param), 'citation_bot',$this->get($param)) === FALSE) {
-            $this->set($param, str_replace('www.ancestryinstitution.com', 'www.ancestry.com', $this->get($param)));
+             stripos($this->get($param), 'citation_bot') === FALSE) {
+              $this->set($param, str_replace('www.ancestryinstitution.com', 'www.ancestry.com', $this->get($param)));
           }
           if (preg_match("~^https://www\.ancestryinstitution\.com.+backurl=(http.+)$~i", $this->get($param), $matches)) {
             $this->set($param, $matches[1]);
