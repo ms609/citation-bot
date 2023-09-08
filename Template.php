@@ -5321,6 +5321,12 @@ final class Template {
              stripos($this->get($param), 'citation_bot') === FALSE) {
               $this->set($param, str_replace('search.ancestryinstitution.com', 'search.ancestry.com', $this->get($param)));
           }
+          if (preg_match("~^https://search\.ancestryinstitution\.com.*cgi-bin/sse.dll.*_phcmd.*(https://www\-ancestryinstitution\-com\.wikipedialibrary\.idm.oclc\.org.+)\'\,\'successSource\'\)$~i", $this->get($param), $matches)) {
+            $this->set($param, str_replace(' ', '+', urldecode($matches[1])));
+          }
+          if (preg_match("~^https://search\.ancestryinstitution\.com.*cgi-bin/sse.dll.*_phcmd.*(https://www\-ancestryinstitution\-com\.wikipedialibrary\.idm.oclc\.org.+)%27\,%27successSource%27\)$~i", $this->get($param), $matches)) {
+            $this->set($param, str_replace(' ', '+', urldecode($matches[1])));
+          }
           // idm.oclc.org Proxy
           if (stripos($this->get($param), 'idm.oclc.org') !== FALSE && stripos($this->get($param), 'ancestryinstitution') === FALSE) {
               $oclc_found = FALSE;
