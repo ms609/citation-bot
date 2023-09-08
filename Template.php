@@ -5027,7 +5027,7 @@ final class Template {
         case 'title':
           if ($this->blank($param)) return;
           $title = $this->get($param);
-          if ($title === 'Validate User' || $title === 'Join Ancestry' || $title === 'Join Ancestry.com') {
+          if ($title === 'Validate User' || $title === 'Join Ancestry' || $title === 'Join Ancestry.com' || $title === 'Ancestry - Sign Up') {
              $this->set('title', '');
              return;
           }
@@ -5312,6 +5312,9 @@ final class Template {
           if (preg_match("~ancestry\.com/cs/offers/join.*url=(http.*)$~i", $this->get($param), $matches)) {
             $this->set($param, str_replace(' ', '+', urldecode($matches[1])));
           }
+          if (preg_match("~ancestry\.com/account/create.*returnurl=(http.*)$~i", $this->get($param), $matches)) {
+            $this->set($param, str_replace(' ', '+', urldecode($matches[1])));
+          }       
           if (preg_match("~^https://search\.ancestry(?:|institution)\.com.*cgi-bin/sse.dll.*_phcmd.*(http.+)\'\,\'successSource\'\)$~i", $this->get($param), $matches)) {
             $this->set($param, str_replace(' ', '+', urldecode($matches[1])));
           }
