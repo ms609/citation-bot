@@ -5305,15 +5305,15 @@ final class Template {
                  if ($this->has('via') && stripos($this->get('via'), 'library') !== FALSE) $this->forget('via');
               }
           }
-          if (preg_match("~^https://www\.ancestryinstitution\.com.*_phcmd.*(https://www\-ancestryinstitution\-com\.wikipedialibrary\.idm.oclc\.org.+)\'\,\'successSource\'\)$~i", $this->get($param), $matches)) {
-            $this->set($param, str_replace(' ', '+', urldecode($matches[1])));
-          }
-
-          if (preg_match("~^https://www\.ancestryinstitution\.com.*_phcmd.*(https://www\-ancestryinstitution\-com\.wikipedialibrary\.idm.oclc\.org.+)%27\,%27successSource%27\)$~i", $this->get($param), $matches)) {
-            $this->set($param, str_replace(' ', '+', urldecode($matches[1])));
+          if (preg_match("~^(https://www\.ancestry(?:institution|).com/discoveryui-content/view/\d+:\d+)\?.+$~i", $this->get($param), $matches)) {
+            $this->set($param, $matches[1]);
           }
         
           if (stripos($this->get($param), 'https://www.ancestryinstitution.com/search/') === 0 &&
+             stripos($this->get($param), 'citation_bot') === FALSE) {
+              $this->set($param, str_replace('www.ancestryinstitution.com', 'www.ancestry.com', $this->get($param)));
+          }
+          if (stripos($this->get($param), 'https://www.ancestryinstitution.com/discoveryui-content/view/') === 0 &&
              stripos($this->get($param), 'citation_bot') === FALSE) {
               $this->set($param, str_replace('www.ancestryinstitution.com', 'www.ancestry.com', $this->get($param)));
           }
