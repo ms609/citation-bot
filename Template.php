@@ -5027,7 +5027,7 @@ final class Template {
         case 'title':
           if ($this->blank($param)) return;
           $title = $this->get($param);
-          if ($title === 'Validate User') {
+          if ($title === 'Validate User' || $title === 'Join Ancestry' || $title === 'Join Ancestry.com') {
              $this->set('title', '');
              return;
           }
