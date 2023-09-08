@@ -5109,6 +5109,7 @@ final class Template {
               preg_match('~https://www\.google\-analytics\.com/ga\.js$~', $this->get($param)) ||
               preg_match('~academic\.oup\.com/crawlprevention~', $this->get($param)) ||
               preg_match('~ancestryinstitution~', $this->get($param)) ||
+              preg_match('~ancestry\.com/cs/offers~', $this->get($param)) ||
               preg_match('~https://meta\.wikimedia\.org/w/index\.php\?title\=Special\:UserLogin~', $this->get($param))) {
                 $this->forget($param);
                 if ($this->get('title') === 'Validate User') $this->set('title', '');
@@ -5308,7 +5309,9 @@ final class Template {
           if (preg_match("~^(https://www\.ancestry(?:institution|).com/discoveryui-content/view/\d+:\d+)\?.+$~i", $this->get($param), $matches)) {
             $this->set($param, $matches[1]);
           }
-        
+          if (preg_match("~ancestry\.com/cs/offers/join.*url=(http.*)$~i", $this->get($param), $matches)) {
+            $this->set($param, str_replace(' ', '+', urldecode($matches[1])));
+          }
           if (preg_match("~^https://search\.ancestry(?:|institution)\.com.*cgi-bin/sse.dll.*_phcmd.*(http.+)\'\,\'successSource\'\)$~i", $this->get($param), $matches)) {
             $this->set($param, str_replace(' ', '+', urldecode($matches[1])));
           }
