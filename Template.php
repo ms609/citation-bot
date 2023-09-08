@@ -5309,16 +5309,16 @@ final class Template {
             $this->set($param, $matches[1]);
           }
         
-          if (preg_match("~^https://search\.ancestryinstitution\.com.*cgi-bin/sse.dll.*_phcmd.*(http.+)\'\,\'successSource\'\)$~i", $this->get($param), $matches)) {
+          if (preg_match("~^https://search\.ancestry(?:|institution)\.com.*cgi-bin/sse.dll.*_phcmd.*(http.+)\'\,\'successSource\'\)$~i", $this->get($param), $matches)) {
             $this->set($param, str_replace(' ', '+', urldecode($matches[1])));
           }
-          if (preg_match("~^https://search\.ancestryinstitution\.com.*cgi-bin/sse.dll.*_phcmd.*(http.+)%27\,%27successSource%27\)$~i", $this->get($param), $matches)) {
+          if (preg_match("~^https://search\.ancestry(?:|institution)\.com.*cgi-bin/sse.dll.*_phcmd.*(http.+)%27\,%27successSource%27\)$~i", $this->get($param), $matches)) {
             $this->set($param, str_replace(' ', '+', urldecode($matches[1])));
           }
-          if (preg_match("~^https://www\.ancestryinstitution\.com/facts.*_phcmd.*(http.+)\'\,\'successSource\'\)$~i", $this->get($param), $matches)) {
+          if (preg_match("~^https://www\.ancestry(?:|institution)\.com/facts.*_phcmd.*(http.+)\'\,\'successSource\'\)$~i", $this->get($param), $matches)) {
             $this->set($param, str_replace(' ', '+', urldecode($matches[1])));
           }
-          if (preg_match("~^https://www\.ancestryinstitution\.com/facts.*_phcmd.*(http.+)%27\,%27successSource%27\)$~i", $this->get($param), $matches)) {
+          if (preg_match("~^https://www\.ancestry(?:|institution)\.com/facts.*_phcmd.*(http.+)%27\,%27successSource%27\)$~i", $this->get($param), $matches)) {
             $this->set($param, str_replace(' ', '+', urldecode($matches[1])));
           }
           // idm.oclc.org Proxy
