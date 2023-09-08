@@ -5313,7 +5313,7 @@ final class Template {
              stripos($this->get($param), 'citation_bot') === FALSE) {
               $this->set($param, str_replace('www.ancestryinstitution.com', 'www.ancestry.com', $this->get($param)));
           }
-          if (preg_match("~^https://www\.ancestryinstitution\.com.+backurl=(http.+)$~i", $this->get($param), $matches)) {
+          if (preg_match("~^https?://(?:|www\.|interactive\.)ancestryinstitution\.com.+backurl=(http.+)$~i", $this->get($param), $matches)) {
             $this->set($param, $matches[1]);
           }
           // idm.oclc.org Proxy
