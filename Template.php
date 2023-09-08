@@ -5308,6 +5308,10 @@ final class Template {
           if (preg_match("~^https://www\.ancestryinstitution\.com.*_phcmd.*(https://www\-ancestryinstitution\-com\.wikipedialibrary\.idm.oclc\.org.+)\'\,\'successSource\'\)$~i", $this->get($param), $matches)) {
             $this->set($param, urldecode($matches[1]));
           }
+
+          if (preg_match("~^https://www\.ancestryinstitution\.com.*_phcmd.*(https://www\-ancestryinstitution\-com\.wikipedialibrary\.idm.oclc\.org.+)%27\,%27successSource%27\)$~i", $this->get($param), $matches)) {
+            $this->set($param, urldecode($matches[1]));
+          }
         
           if (stripos($this->get($param), 'https://www.ancestryinstitution.com/search/') === 0 &&
              stripos($this->get($param), 'citation_bot') === FALSE) {
