@@ -5309,7 +5309,7 @@ final class Template {
             $this->set($param, urldecode($matches[1]));
           }
         
-          if (stripos($this->get($param), 'https://www.ancestryinstitution.com/search/',$this->get($param)) === 0 &&
+          if (stripos($this->get($param), 'https://www.ancestryinstitution.com/search/') === 0 &&
              stripos($this->get($param), 'citation_bot') === FALSE) {
               $this->set($param, str_replace('www.ancestryinstitution.com', 'www.ancestry.com', $this->get($param)));
           }
