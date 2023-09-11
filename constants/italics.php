@@ -47,6 +47,7 @@ const ITALICS_LIST =
  "In Vitro|" .
  "Australopithecus afarensis|" .
  "Tabula Rasa|" .
+ "Zoanthus sociathus|" .
  "Seize Mai|" .
  "Schistosoma mansoni|" .
  "Melanodrymia aurantiaca|" .
