@@ -434,6 +434,7 @@ const ZOTERO_AVOID_REGEX = array("twitter\.",               // This should be {{
                                  "ebooks\.adelaide\.edu\.au", // Dead
                                  "tnmaps\.tn\.nic\.in", // maps
                                  "lincstothepast\.com",
+                                 "elonet\.finna\.fi", // Zotero cannot handle this data-base well at all
                                  "washingtonpost\.com", // Fails 100%
                                  "cagematch\.net", // Fails 100%
                                  "www\.cbc\.ca", // Fails 100%
