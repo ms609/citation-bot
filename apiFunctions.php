@@ -381,12 +381,14 @@ function adsabs_api(array $ids, array &$templates, string $identifier) : bool { 
     report_info("Found match for bibcode " . bibcode_link($record->bibcode));
     $matched_ids[] = $record->bibcode;
     foreach($ids as $template_key => $an_id) { // Cannot use array_search since that only returns first
-      if (isset($record->bibcode) && $an_id === (string) $record->bibcode) {
+      if (isset($record->bibcode) && strtolower($an_id) === strtolower((string) $record->bibcode)) { // BibCodes at not case-sensitive
          $this_template = $templates[$template_key];
          if (isset($record->citation_bot_new_bibcode)) {
            $this_template->set('bibcode', (string) $record->citation_bot_new_bibcode);
            $record->bibcode = $record->citation_bot_new_bibcode;
            unset($record->citation_bot_new_bibcode);
+         } elseif ($an_id !== (string) $record->bibcode)) {  // Existing one is wrong case
+           $this_template->set('bibcode', (string) $record->bibcode);
          }
          if ((stripos($an_id, 'book') === FALSE) && (stripos($an_id, 'PhD') === FALSE)) {
            process_bibcode_data($this_template, $record);
@@ -396,7 +398,7 @@ function adsabs_api(array $ids, array &$templates, string $identifier) : bool { 
       }
     }
   }
-  $unmatched_ids = array_diff($ids, $matched_ids);
+  $unmatched_ids = array_udiff($ids, $matched_ids, 'strcasecmp');
   if (count($unmatched_ids)) {
     report_warning("No match for bibcode identifier: " . implode('; ', $unmatched_ids));  // @codeCoverageIgnore
     bot_debug_log("No match for bibcode identifier: " . implode('; ', $unmatched_ids));  // @codeCoverageIgnore
