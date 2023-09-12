@@ -184,9 +184,10 @@ const JOURNAL_ACRONYMS = array(/* The following will be automatically updated to
           " The New Yorker ", " Tidsskr Nor Laegeforen ", " Tidsskr Nor Lægeforen ", 
           " Time Off Magazine ", " Time Out London ", " Tinea ", " tot de ", 
           " Transactions and archaeological record of the Cardiganshire Antiquarian Society ", 
-          " u Krku za ", " U.S. ", " U.S.A. ", " U.S.A. ", " UBV Data ", " uHealth ", 
-          " uHealth ", " UNED Research Journal ", " Universum ", " USGS ", " USSR-Izvestiya ", 
-          " v Astronomicheskii Zhurna ", " van het ", " van het ", " Vjesnik historijskih arhiva u Rijeci i Pazinu ", 
+          " Transmitted Diseases and AIDS ", " u Krku za ", " U.S. ", " U.S.A. ", 
+          " U.S.A. ", " UBV Data ", " uHealth ", " uHealth ", " UNED Research Journal ", 
+          " Universum ", " USGS ", " USSR-Izvestiya ", " v Astronomicheskii Zhurna ", 
+          " van het ", " van het ", " Vjesnik historijskih arhiva u Rijeci i Pazinu ", 
           " Vjesnik historijskih arhiva u Rijeci i Pazinu ", " Vjesnik Hrv. dalm. zem. arkiva ", 
           " Vjesnik Hrv. dalm. zem. arkiva ", " Vjesnik Kr. Drž. arkiva u Zagrebu ", 
           " Vjesnik Kr. Drž. arkiva u Zagrebu ", " Vjesnik kr. Hrvatsko-slavonsko-dalmatinskog zemaljskog arkiva ", 
@@ -205,7 +206,6 @@ const JOURNAL_ACRONYMS = array(/* The following will be automatically updated to
           " Zeitschrift für Physik A: Hadrons and Nuclei ", " Znanosti i Umjetnosti ", 
           " ZooKeys ", " Zprávy o zasedání Král. čes. společnosti nauk v Praze ", 
           " Zprávy o zasedání Král. čes. společnosti nauk v Praze ", " Zprávy o zasedání Král. čes. společnosti nauk v Praze ", 
-          " Transmitted Diseases and AIDS ",
           " Ргасе filologiczne ", /* The above will be automatically updated to alphabetical order */ 
 );
 const UCFIRST_JOURNAL_ACRONYMS = array(/* The following will be automatically updated to alphabetical order */
@@ -329,9 +329,10 @@ const UCFIRST_JOURNAL_ACRONYMS = array(/* The following will be automatically up
           " The New Yorker (Serial) ", " Tidsskr nor Laegeforen ", " Tidsskr nor Lægeforen ", 
           " Time off Magazine ", " Time out London ", " TINEA ", " Tot de ", 
           " Transactions and Archaeological Record of the Cardiganshire Antiquarian Society ", 
-          " U Krku Za ", " U.s. ", " U.S.a. ", " U.s.a ", " Ubv Data ", " UHealth ", 
-          " Uhealth ", " Uned Research Journal ", " UNIVERSUM ", " Usgs ", " Ussr-Izvestiya ", 
-          " V Astronomicheskii Zhurna ", " Van Het ", " van Het ", " Vjesnik Historijskih Arhiva U Rijeci I Pazinu ", 
+          " Transmitted Diseases and Aids ", " U Krku Za ", " U.s. ", " U.S.a. ", 
+          " U.s.a ", " Ubv Data ", " UHealth ", " Uhealth ", " Uned Research Journal ", 
+          " UNIVERSUM ", " Usgs ", " Ussr-Izvestiya ", " V Astronomicheskii Zhurna ", 
+          " Van Het ", " van Het ", " Vjesnik Historijskih Arhiva U Rijeci I Pazinu ", 
           " Vjesnik Historijskih Arhiva U Rijeci I Pazinu ", " Vjesnik HRV. Dalm. Zem. Arkiva ", 
           " Vjesnik Hrv. Dalm. Zem. Arkiva ", " Vjesnik Kr. Drž. Arkiva U Zagrebu ", 
           " Vjesnik Kr. Drž. Arkiva u Zagrebu ", " Vjesnik Kr. Hrvatsko-slavonsko-dalmatinskog Zemaljskog Arkiva ", 
@@ -350,7 +351,6 @@ const UCFIRST_JOURNAL_ACRONYMS = array(/* The following will be automatically up
           " Zeitschrift Für Physik a: Hadrons And Nuclei ", " Znanosti I Umjetnosti ", 
           " Zookeys ", " Zprávy O Zasedání Král. Čes. Společnosti Nauk V Praze ", 
           " Zprávy O Zasedání Král. čes. Společnosti Nauk V Praze ", " Zprávy o zasedání Král. čes. Společnosti nauk v Praze ", 
-          " Transmitted Diseases and Aids ",
           " Ргасе Filologiczne ", /* The above will be automatically updated to alphabetical order */ 
 );
 const OBVIOUS_FOREIGN_WORDS = array(" Abhandlungen ", " Actes ", " Annales ", " Archiv ", " Archives de ",
