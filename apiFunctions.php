@@ -387,7 +387,7 @@ function adsabs_api(array $ids, array &$templates, string $identifier) : bool { 
            $this_template->set('bibcode', (string) $record->citation_bot_new_bibcode);
            $record->bibcode = $record->citation_bot_new_bibcode;
            unset($record->citation_bot_new_bibcode);
-         } elseif ($an_id !== (string) $record->bibcode)) {  // Existing one is wrong case
+         } elseif ($an_id !== (string) $record->bibcode) {  // Existing one is wrong case
            $this_template->set('bibcode', (string) $record->bibcode);
          }
          if ((stripos($an_id, 'book') === FALSE) && (stripos($an_id, 'PhD') === FALSE)) {
