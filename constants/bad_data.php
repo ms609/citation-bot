@@ -56,7 +56,7 @@ const PUBLISHERS_ARE_WORKS = array('the san diego union-tribune', 'forbes', 'sal
                                    'forbes asia', 'forbes israel', 'forbes global 2000', 'forbes china', '[[forbes]] (Russia)',
                                    'forbes việt nam', 'forbes vietnam', 'forbes viet nam', 'forbes contributor blogs',
                                    'the baltimore sun', 'nba.com', 'philippine news agency', 'www.pna.gov.ph',
-                                   'pia.gov.ph', 'philippine information agency',
+                                   'pia.gov.ph', 'philippine information agency', 'indiaglitz', 'india glitz'
                                    // WP:CITALICSRFC and MOS:ITALICWEBCITE  ?????     'abc news', 'nbc news', 'cbs news', 'bbc news'
                                   ); // LOWER CASE!  WWW not there too! 
 
