@@ -6335,6 +6335,14 @@ final class Template {
                  $this->add_if_new('website', $i_value);
                }
              }
+             //  Special Cases
+             if ($hostname === 'theweek.in') {
+                 foreach (WORK_ALIASES as $works) {
+                     if (strpos($this->get($works), '[[The Week]]') !== FALSE) {
+                         $this->set($works, '[[The Week (Indian magazine)|The Week]]');
+                     }
+                 }
+             }
            }
         }
       }
