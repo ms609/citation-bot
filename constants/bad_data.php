@@ -402,7 +402,10 @@ const HOSTNAME_MAP  = array('public.ebookcentral.proquest.com' => '[[ProQuest]]'
                             'sify.com' => '[[Sify]]',
                             'animaldiversity.org' => '[[Animal Diversity Web]]',
                             'bollywoodhungama.com' => '[[Bollywood Hungama]]',
-                            'dtnext.in'  => '[[DT Next]]',
+                            'dtnext.in' => '[[DT Next]]',
+                            'theweek.co.uk' => '[[The Week]]',
+                            'theweek.com' => '[[The Week]]',
+                            'theweek.in' => '[[The Week (Indian magazine)|The Week]]',
                            ); // Be warned, some website host a seperate sunday edition, etc.  Be careful and when in doubt link to hostname
 
 const NO_DATE_WEBSITES = array('wikipedia.org', 'web.archive.org', 'perma-archives.org', 'webarchive.proni.gov.uk', 'perma.cc',
