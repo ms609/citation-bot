@@ -643,8 +643,16 @@ final class Template {
               }
             }
             if ($this->has('CITATION_BOT_PLACEHOLDER_title')) {
-              if ($this->has('title') && $this->get('title') !== $this->get('CITATION_BOT_PLACEHOLDER_title')) {
-                $this->forget('CITATION_BOT_PLACEHOLDER_title');
+              if ($this->has('title')) {
+                $newer = str_replace(array(".", ",", ":", ";", "?", "!", " ", "-", "'", '"'), '', mb_strtolower($this->get('title')));
+                $older = str_replace(array(".", ",", ":", ";", "?", "!", " ", "-", "'", '"'), '', mb_strtolower($this->get('CITATION_BOT_PLACEHOLDER_title')));
+                if (($newer !== $older) && (strpos($older, $newer) === 0)) {
+                  $this->rename('CITATION_BOT_PLACEHOLDER_title', 'title'); // Lost sub-title
+                } elseif ($this->get('title') === $this->get('CITATION_BOT_PLACEHOLDER_title')) {
+                  $this->rename('CITATION_BOT_PLACEHOLDER_title', 'title');
+                } else {
+                  $this->forget('CITATION_BOT_PLACEHOLDER_title');
+                }
               } else {
                 $this->rename('CITATION_BOT_PLACEHOLDER_title', 'title');
               }
