@@ -647,7 +647,9 @@ final class Template {
                 $newer = str_replace(array(".", ",", ":", ";", "?", "!", " ", "-", "'", '"'), '', mb_strtolower($this->get('title')));
                 $older = str_replace(array(".", ",", ":", ";", "?", "!", " ", "-", "'", '"'), '', mb_strtolower($this->get('CITATION_BOT_PLACEHOLDER_title')));
                 if (($newer !== $older) && (strpos($older, $newer) === 0)) {
-                  $this->rename('CITATION_BOT_PLACEHOLDER_title', 'title'); // Lost sub-title
+                  $this->rename('CITATION_BOT_PLACEHOLDER_title', 'title'); // New title lost sub-title
+                } elseif (str_replace([" ", "'"], '', $this->get('title')) === str_replace(" ", '', $this->get('CITATION_BOT_PLACEHOLDER_title')0) {
+                  $this->rename('CITATION_BOT_PLACEHOLDER_title', 'title'); // New title lost italics
                 } elseif ($this->get('title') === $this->get('CITATION_BOT_PLACEHOLDER_title')) {
                   $this->rename('CITATION_BOT_PLACEHOLDER_title', 'title');
                 } else {
@@ -658,8 +660,18 @@ final class Template {
               }
             }
             if ($this->has('CITATION_BOT_PLACEHOLDER_chapter')) {
-              if ($this->has('chapter') && $this->get('chapter') !== $this->get('CITATION_BOT_PLACEHOLDER_chapter')) {
-                $this->forget('CITATION_BOT_PLACEHOLDER_chapter');
+              if ($this->has('chapter')) {
+                $newer = str_replace(array(".", ",", ":", ";", "?", "!", " ", "-", "'", '"'), '', mb_strtolower($this->get('chapter')));
+                $older = str_replace(array(".", ",", ":", ";", "?", "!", " ", "-", "'", '"'), '', mb_strtolower($this->get('CITATION_BOT_PLACEHOLDER_chapter')));
+                if (($newer !== $older) && (strpos($older, $newer) === 0)) {
+                  $this->rename('CITATION_BOT_PLACEHOLDER_chapter', 'chapter'); // New chapter lost sub-chapter
+                } elseif (str_replace([" ", "'"], '', $this->get('chapter')) === str_replace(" ", '', $this->get('CITATION_BOT_PLACEHOLDER_chapter')0) {
+                  $this->rename('CITATION_BOT_PLACEHOLDER_chapter', 'chapter'); // New chapter lost italics
+                } elseif ($this->get('chapter') === $this->get('CITATION_BOT_PLACEHOLDER_chapter')) {
+                  $this->rename('CITATION_BOT_PLACEHOLDER_chapter', 'chapter');
+                } else {
+                  $this->forget('CITATION_BOT_PLACEHOLDER_chapter');
+                }
               } else {
                 $this->rename('CITATION_BOT_PLACEHOLDER_chapter', 'chapter');
               }
