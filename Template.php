@@ -648,7 +648,7 @@ final class Template {
                 $older = str_replace(array(".", ",", ":", ";", "?", "!", " ", "-", "'", '"'), '', mb_strtolower($this->get('CITATION_BOT_PLACEHOLDER_title')));
                 if (($newer !== $older) && (strpos($older, $newer) === 0)) {
                   $this->rename('CITATION_BOT_PLACEHOLDER_title', 'title'); // New title lost sub-title
-                } elseif (str_replace([" ", "'"], '', $this->get('title')) === str_replace(" ", '', $this->get('CITATION_BOT_PLACEHOLDER_title'))) {
+                } elseif (str_replace(" ", '', $this->get('title')) === str_replace([" ", "'"], '', $this->get('CITATION_BOT_PLACEHOLDER_title'))) {
                   $this->rename('CITATION_BOT_PLACEHOLDER_title', 'title'); // New title lost italics
                 } elseif ($this->get('title') === $this->get('CITATION_BOT_PLACEHOLDER_title')) {
                   $this->rename('CITATION_BOT_PLACEHOLDER_title', 'title');
@@ -665,7 +665,7 @@ final class Template {
                 $older = str_replace(array(".", ",", ":", ";", "?", "!", " ", "-", "'", '"'), '', mb_strtolower($this->get('CITATION_BOT_PLACEHOLDER_chapter')));
                 if (($newer !== $older) && (strpos($older, $newer) === 0)) {
                   $this->rename('CITATION_BOT_PLACEHOLDER_chapter', 'chapter'); // New chapter lost sub-chapter
-                } elseif (str_replace([" ", "'"], '', $this->get('chapter')) === str_replace(" ", '', $this->get('CITATION_BOT_PLACEHOLDER_chapter'))) {
+                } elseif (str_replace(" ", '', $this->get('chapter')) === str_replace([" ", "'"], '', $this->get('CITATION_BOT_PLACEHOLDER_chapter'))) {
                   $this->rename('CITATION_BOT_PLACEHOLDER_chapter', 'chapter'); // New chapter lost italics
                 } elseif ($this->get('chapter') === $this->get('CITATION_BOT_PLACEHOLDER_chapter')) {
                   $this->rename('CITATION_BOT_PLACEHOLDER_chapter', 'chapter');
