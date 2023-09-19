@@ -772,7 +772,7 @@ function title_capitalization(string $in, bool $caps_after_punctuation) : string
   $new_case = mb_substr($new_case, 1, mb_strlen($new_case) - 2); // remove spaces, needed for matching in LC_SMALL_WORDS
 
   // Single letter at end should be capitalized  J Chem Phys E for example.  Obviously not the spanish word "e".
-  if (mb_substr($new_case, -2, 1) === ' ') $new_case = strrev(mb_ucfirst(strrev($new_case)));
+  if (mb_substr($new_case, -2, 1) === ' ') $new_case = mb_strrev(mb_ucfirst(mb_strrev($new_case)));
   
   if ($new_case === 'Now and then') $new_case = 'Now and Then'; // Odd journal name
 
@@ -872,6 +872,12 @@ function mb_ucfirst(string $string) : string
 function mb_ucfirst_force(string $string) : string
 {
     return mb_strtoupper(mb_substr($string, 0, 1)) . mb_substr($string, 1, NULL);
+}
+
+function mb_strrev(string $string, string $encode = null) : string
+{
+    $chars = mb_str_split($string, 1, $encode ?: mb_internal_encoding());
+    return implode('', array_reverse($chars));
 }
 
 function mb_ucwords(string $string) : string
