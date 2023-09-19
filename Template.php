@@ -5074,10 +5074,12 @@ final class Template {
           }
           if (mb_substr_count($title, '[[') !== 1 ||  // Completely remove multiple wikilinks
               mb_substr_count($title, ']]') !== 1) {
+            if (stripos($title, 'reviewed work') === FALSE) {
              $title = preg_replace(REGEXP_PLAIN_WIKILINK, "$1", $title);   // Convert [[X]] wikilinks into X
              $title = preg_replace(REGEXP_PIPED_WIKILINK, "$2", $title);   // Convert [[Y|X]] wikilinks into X
              $title = preg_replace("~\[\[~", "", $title); // Remove any extra [[ or ]] that should not be there
              $title = preg_replace("~\]\]~", "", $title);
+            }
           } elseif (strpos($title, '{{!}}') === FALSE) { // Convert a single link to a title-link
              if (preg_match(REGEXP_PLAIN_WIKILINK, $title, $matches)) {
                if (strlen($matches[1]) > (0.7 * (float) strlen($title)) && ($title !== '[[' . $matches[1] . ']]')) {  // Only add as title-link if a large part of title text
