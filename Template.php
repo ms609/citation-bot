@@ -7037,7 +7037,8 @@ final class Template {
             if ($this->blank(ISSUE_ALIASES)) {
               $this->add_if_new($the_issue, $possible_issue);
               $this->set('volume', $possible_volume);
-            } elseif ($this->get('issue') === $possible_issue || $this->get('number') === $possible_issue) {
+            } elseif (str_replace(".", "", $this->get('issue'))  === str_replace(".", "", $possible_issue) ||
+                      str_replace(".", "", $this->get('number')) === str_replace(".", "", $possible_issue)) {
               $this->set('volume', $possible_volume);
             }
          } else {
