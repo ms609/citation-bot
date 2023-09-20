@@ -932,6 +932,9 @@ const JOURNAL_IS_BOOK_SERIES = array(
          'handbooks for the identification of british insects',
          'advances in human genetics',
          'the cambridge history of latin america',
+         'adv. pharmacol.',
+         'advances in anatomy embryology and cell biology',
+         'adv anat embryol cell biol',
          'handbook of the birds of the world'
       );
 
