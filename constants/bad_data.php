@@ -890,20 +890,16 @@ const AVOIDED_LINKS = array('', 'Digital_object_identifier', 'JSTOR', 'Website',
                             'OSTI_(identifier)');
 
 
-// Lower case, and periods converted to spaces
+// Lower case, and periods and dashes converted to spaces
 const JOURNAL_IS_BOOK_SERIES = array(
          'novartis found symp',
-         'novartis found. symp.',
          'novartis foundation symposia',
          'methods of molecular biology' ,
          'methods mol biol',
          'methods of molecular biology (clifton, n j )',
          'methods in molecular biology',
          'methods in molecular biology (clifton, n j )',
-         'methods mol. biol.',
-         'methods mol biol.',
          'methods mol biol',
-         'methods mol. biol',
          'lecture notes in computer science',
          'lecture notes in mathematics',
          'lecture notes in physics',
@@ -915,15 +911,13 @@ const JOURNAL_IS_BOOK_SERIES = array(
          'progress in brain research',
          'handbook of clinical neurology',
          'adv exp med biol',
-         'adv. exp. med. biol.',
          'advances in experimental medicine and biology',
          'adv immunol',
-         'adv. immunol.',
          'advances in advertising research',
          'advances in experimental medicine and biology',
          'advances in immunology',
          'advances in heterocyclic chemistry',
-         'methods enzymol.',
+         'methods enzymol',
          'methods in enzymology',
          'international studies on childhood and adolescence',
          'methods in cell biology',
@@ -932,7 +926,7 @@ const JOURNAL_IS_BOOK_SERIES = array(
          'handbooks for the identification of british insects',
          'advances in human genetics',
          'the cambridge history of latin america',
-         'adv. pharmacol.',
+         'adv pharmacol',
          'advances in anatomy embryology and cell biology',
          'adv anat embryol cell biol',
          'handbook of the birds of the world'

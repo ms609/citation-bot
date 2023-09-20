@@ -114,6 +114,15 @@ final class constantsTest extends testBaseClass {
     }
   }
 
+  public function testMinimized() : void { // See is_book_series() function
+    $big_array = JOURNAL_IS_BOOK_SERIES;
+    foreach ($big_array as $actual) {
+      $simple = trim(str_replace(['-', '.',  '   ', '  ', '[[', ']]'], [' ', ' ', ' ', ' ', ' ', ' '], $actual));
+      $simple = trim(str_replace(['    ', '   ',  '  '], [' ', ' ', ' '], $simple));
+      $this->assertSame($simple, $actual);
+    }
+  }
+  
   public function testAllFreeOfUTF() : void { // If this fails, then we have to switch everything to MB_ (BAD_AUTHORS already has UTF-8)
     $big_array = array_merge(HAS_NO_VOLUME, BAD_ACCEPTED_MANUSCRIPT_TITLES,
                              PUBLISHER_ENDINGS, BAD_TITLES, IN_PRESS_ALIASES, NON_PUBLISHERS,
