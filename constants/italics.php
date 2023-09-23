@@ -190,11 +190,13 @@ const ITALICS_LIST =
  "Aspergillus|" .
  "Ricinus|" .
  "Apatosaurus|" .
+ "Candidatus|" .
  "Phytophthora|" .
  "Chrysops|" .
  "Lophiomeryx|" .
  "Bachitherium|" .
  "Anoplotherium|" .
+ "Saltatorellota|" .
  "Adenanthos|" .
  "Thraustochytrium|" .
  "Rhaponticum|" .
