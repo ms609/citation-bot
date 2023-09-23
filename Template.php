@@ -1236,7 +1236,8 @@ final class Template {
         if (stripos($value, 'Doctoral ') !== FALSE) return FALSE;
         if (stripos($value, 'IETF Datatracker') !== FALSE) return FALSE;
         if (stripos($value, 'Springerlink') !== FALSE) return FALSE;
-
+        if (stripos($value, 'Report No. ') !== FALSE) return FALSE;
+        if (stripos($value, 'Report Number ') !== FALSE) return FALSE;
         if (!$this->blank(['booktitle', 'book-title'])) return FALSE;
         if (in_array(strtolower(sanitize_string($value)), BAD_TITLES )) return FALSE;
         if (in_array(strtolower($value), ARE_MANY_THINGS)) {
