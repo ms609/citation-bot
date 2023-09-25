@@ -466,7 +466,12 @@ final class Template {
                   $this->rename('chapter', 'CITATION_BOT_PLACEHOLDER_chapter');
                   $the_chapter = '';
               }
-          }
+          } elseif ($this->is_book_series('series') && $the_chapter === '' && $the_title !== '' && $this->has('doi')) {
+              $bad_data = TRUE;
+              $this->rename('title', 'CITATION_BOT_PLACEHOLDER_title');
+              $the_title = '';
+          }                                                                                              
+                                                                                                                     
           if ($the_pages === '_' || $the_pages === '0' || $the_pages === 'null' || $the_pages === 'n/a' || $the_pages === 'online' || $the_pages === 'Online' || $the_pages === 'Forthcoming' || $the_pages === 'forthcoming') {
               $this->rename('pages', 'CITATION_BOT_PLACEHOLDER_pages');
               $the_pages = '';
