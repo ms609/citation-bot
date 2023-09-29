@@ -768,8 +768,9 @@ final class Template {
         if ($this->wikiname() === 'cite document') {
           foreach (ALL_URL_TYPES as $thing) {
             if ($this->blank($thing)) $this->forget($thing);
+            if ($this->blank($thing . '-access')) $this->forget($thing . '-access');
           }
-          foreach (['archive-url', 'archiveurl', 'archivedate', 'archive-date'] as $thing) {
+          foreach (['archive-url', 'archiveurl', 'archivedate', 'archive-date', 'url-status'] as $thing) {
             if ($this->blank($thing)) $this->forget($thing);
           }
         }
