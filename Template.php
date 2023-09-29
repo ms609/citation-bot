@@ -3591,6 +3591,7 @@ final class Template {
 
   public function change_name_to(string $new_name, bool $rename_cite_book = TRUE, bool $rename_anything = FALSE) : void {
     if (strpos($this->get('doi'), '10.1093') !== FALSE && $this->wikiname() !== 'cite web') return;
+    if (($new_name === 'cite document') && $this->blank('publisher')) return;
     if (bad_10_1093_doi($this->get('doi'))) return;
     foreach (WORK_ALIASES as $work) {
       $worky = mb_strtolower($this->get($work));
