@@ -770,6 +770,9 @@ final class Template {
             if ($this->blank($thing)) $this->forget($thing);
             if ($this->blank($thing . '-access')) $this->forget($thing . '-access');
           }
+          foreach (WORK_ALIASES as $thing) {
+            if ($this->blank($thing)) $this->forget($thing);
+          }
           foreach (['archive-url', 'archiveurl', 'archivedate', 'archive-date', 'url-status'] as $thing) {
             if ($this->blank($thing)) $this->forget($thing);
           }
