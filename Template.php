@@ -765,6 +765,14 @@ final class Template {
              }
           }
         }
+        if ($this->wikiname() === 'cite document') {
+          foreach (ALL_URL_TYPES as $thing) {
+            if ($this->blank($thing)) $this->forget($thing);
+          }
+          foreach (['archive-url', 'archiveurl', 'archivedate', 'archive-date'] as $thing) {
+            if ($this->blank($thing)) $this->forget($thing);
+          }
+        }
     } elseif ($this->wikiname() === 'cite magazine' &&  $this->blank('magazine') && $this->has_but_maybe_blank('work')) {
       // This is all we do with cite magazine
       $this->rename('work', 'magazine');
