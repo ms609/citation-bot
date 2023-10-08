@@ -56,7 +56,7 @@ const PUBLISHERS_ARE_WORKS = array('the san diego union-tribune', 'forbes', 'sal
                                    'forbes asia', 'forbes israel', 'forbes global 2000', 'forbes china', '[[forbes]] (Russia)',
                                    'forbes việt nam', 'forbes vietnam', 'forbes viet nam', 'forbes contributor blogs',
                                    'the baltimore sun', 'nba.com', 'philippine news agency', 'www.pna.gov.ph',
-                                   'pia.gov.ph', 'philippine information agency',
+                                   'pia.gov.ph', 'philippine information agency', 'indiaglitz', 'india glitz', 'indiaglitz.com'
                                    // WP:CITALICSRFC and MOS:ITALICWEBCITE  ?????     'abc news', 'nbc news', 'cbs news', 'bbc news'
                                   ); // LOWER CASE!  WWW not there too! 
 
@@ -144,7 +144,7 @@ const CANONICAL_PUBLISHER_URLS = array ('elsevier.com', 'springer.com', 'science
                                 'clinchem.org', 'cell.com', 'aeaweb.org', 'chestpubs.org', 'journal.chestnet.org',
                                 'chestjournal.org', 'biomedcentral.com', 'journals.royalsociety.org',
                                 'mdpi.com', 'frontiersin.org', 'scholarpedia.org', '.acm.org', 'academic.oup.com',
-                                'wjgnet.com',
+                                'wjgnet.com', 'emerald.com' , 'emeraldinsight.com',
                                 //  Below are journal search engines
                                 '.serialssolutions.com', '.ebscohost.com',
                                 //  Below are proxys
@@ -402,7 +402,10 @@ const HOSTNAME_MAP  = array('public.ebookcentral.proquest.com' => '[[ProQuest]]'
                             'sify.com' => '[[Sify]]',
                             'animaldiversity.org' => '[[Animal Diversity Web]]',
                             'bollywoodhungama.com' => '[[Bollywood Hungama]]',
-                            'dtnext.in'  => '[[DT Next]]',
+                            'dtnext.in' => '[[DT Next]]',
+                            'theweek.co.uk' => '[[The Week]]',
+                            'theweek.com' => '[[The Week]]',
+                            'theweek.in' => '[[The Week (Indian magazine)|The Week]]',
                            ); // Be warned, some website host a seperate sunday edition, etc.  Be careful and when in doubt link to hostname
 
 const NO_DATE_WEBSITES = array('wikipedia.org', 'web.archive.org', 'perma-archives.org', 'webarchive.proni.gov.uk', 'perma.cc',
@@ -412,7 +415,7 @@ const NO_DATE_WEBSITES = array('wikipedia.org', 'web.archive.org', 'perma-archiv
                               'oireachtas.ie', 'webarchive.nla.gov.au', 'ebooks.adelaide.edu.au', 'archive.md', 'imdb.com',
                               'apps.des.qld.gov.au', 'billboard.com', 'music.apple.com', 'spotify.com', 'fred.stlouisfed.org',
                               'simonsfoundation.org', 'chroniclingamerica.loc.gov', 'github.com', 'rottentomatoes.com', 'arts.gov/honors',
-                              'shop.schizoidshop.com');
+                              'shop.schizoidshop.com', 'elonet.finna.fi');
 
 const ZOTERO_AVOID_REGEX = array("twitter\.",               // This should be {{cite tweet}}
                                  // Zotero seems to be doing better now "youtube\.", "youtu\.be",
@@ -434,6 +437,7 @@ const ZOTERO_AVOID_REGEX = array("twitter\.",               // This should be {{
                                  "ebooks\.adelaide\.edu\.au", // Dead
                                  "tnmaps\.tn\.nic\.in", // maps
                                  "lincstothepast\.com",
+                                 "elonet\.finna\.fi", // Zotero cannot handle this data-base well at all
                                  "washingtonpost\.com", // Fails 100%
                                  "cagematch\.net", // Fails 100%
                                  "www\.cbc\.ca", // Fails 100%
@@ -886,20 +890,16 @@ const AVOIDED_LINKS = array('', 'Digital_object_identifier', 'JSTOR', 'Website',
                             'OSTI_(identifier)');
 
 
-// Lower case, and periods converted to spaces
+// Lower case, and periods and dashes converted to spaces
 const JOURNAL_IS_BOOK_SERIES = array(
          'novartis found symp',
-         'novartis found. symp.',
          'novartis foundation symposia',
          'methods of molecular biology' ,
          'methods mol biol',
          'methods of molecular biology (clifton, n j )',
          'methods in molecular biology',
          'methods in molecular biology (clifton, n j )',
-         'methods mol. biol.',
-         'methods mol biol.',
          'methods mol biol',
-         'methods mol. biol',
          'lecture notes in computer science',
          'lecture notes in mathematics',
          'lecture notes in physics',
@@ -911,15 +911,13 @@ const JOURNAL_IS_BOOK_SERIES = array(
          'progress in brain research',
          'handbook of clinical neurology',
          'adv exp med biol',
-         'adv. exp. med. biol.',
          'advances in experimental medicine and biology',
          'adv immunol',
-         'adv. immunol.',
          'advances in advertising research',
          'advances in experimental medicine and biology',
          'advances in immunology',
          'advances in heterocyclic chemistry',
-         'methods enzymol.',
+         'methods enzymol',
          'methods in enzymology',
          'international studies on childhood and adolescence',
          'methods in cell biology',
@@ -928,6 +926,9 @@ const JOURNAL_IS_BOOK_SERIES = array(
          'handbooks for the identification of british insects',
          'advances in human genetics',
          'the cambridge history of latin america',
+         'adv pharmacol',
+         'advances in anatomy embryology and cell biology',
+         'adv anat embryol cell biol',
          'handbook of the birds of the world'
       );
 

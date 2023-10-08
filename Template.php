@@ -466,7 +466,12 @@ final class Template {
                   $this->rename('chapter', 'CITATION_BOT_PLACEHOLDER_chapter');
                   $the_chapter = '';
               }
-          }
+          } elseif ($this->is_book_series('series') && $the_chapter === '' && $the_title !== '' && $this->has('doi')) {
+              $bad_data = TRUE;
+              $this->rename('title', 'CITATION_BOT_PLACEHOLDER_title');
+              $the_title = '';
+          }                                                                                              
+                                                                                                                     
           if ($the_pages === '_' || $the_pages === '0' || $the_pages === 'null' || $the_pages === 'n/a' || $the_pages === 'online' || $the_pages === 'Online' || $the_pages === 'Forthcoming' || $the_pages === 'forthcoming') {
               $this->rename('pages', 'CITATION_BOT_PLACEHOLDER_pages');
               $the_pages = '';
@@ -643,15 +648,35 @@ final class Template {
               }
             }
             if ($this->has('CITATION_BOT_PLACEHOLDER_title')) {
-              if ($this->has('title') && $this->get('title') !== $this->get('CITATION_BOT_PLACEHOLDER_title')) {
-                $this->forget('CITATION_BOT_PLACEHOLDER_title');
+              if ($this->has('title')) {
+                $newer = str_replace(array(".", ",", ":", ";", "?", "!", " ", "-", "'", '"'), '', mb_strtolower($this->get('title')));
+                $older = str_replace(array(".", ",", ":", ";", "?", "!", " ", "-", "'", '"'), '', mb_strtolower($this->get('CITATION_BOT_PLACEHOLDER_title')));
+                if (($newer !== $older) && (strpos($older, $newer) === 0)) {
+                  $this->rename('CITATION_BOT_PLACEHOLDER_title', 'title'); // New title lost sub-title
+                } elseif (str_replace(" ", '', $this->get('title')) === str_replace([" ", "'"], '', $this->get('CITATION_BOT_PLACEHOLDER_title'))) {
+                  $this->rename('CITATION_BOT_PLACEHOLDER_title', 'title'); // New title lost italics
+                } elseif ($this->get('title') === $this->get('CITATION_BOT_PLACEHOLDER_title')) {
+                  $this->rename('CITATION_BOT_PLACEHOLDER_title', 'title');
+                } else {
+                  $this->forget('CITATION_BOT_PLACEHOLDER_title');
+                }
               } else {
                 $this->rename('CITATION_BOT_PLACEHOLDER_title', 'title');
               }
             }
             if ($this->has('CITATION_BOT_PLACEHOLDER_chapter')) {
-              if ($this->has('chapter') && $this->get('chapter') !== $this->get('CITATION_BOT_PLACEHOLDER_chapter')) {
-                $this->forget('CITATION_BOT_PLACEHOLDER_chapter');
+              if ($this->has('chapter')) {
+                $newer = str_replace(array(".", ",", ":", ";", "?", "!", " ", "-", "'", '"'), '', mb_strtolower($this->get('chapter')));
+                $older = str_replace(array(".", ",", ":", ";", "?", "!", " ", "-", "'", '"'), '', mb_strtolower($this->get('CITATION_BOT_PLACEHOLDER_chapter')));
+                if (($newer !== $older) && (strpos($older, $newer) === 0)) {
+                  $this->rename('CITATION_BOT_PLACEHOLDER_chapter', 'chapter'); // New chapter lost sub-chapter
+                } elseif (str_replace(" ", '', $this->get('chapter')) === str_replace([" ", "'"], '', $this->get('CITATION_BOT_PLACEHOLDER_chapter'))) {
+                  $this->rename('CITATION_BOT_PLACEHOLDER_chapter', 'chapter'); // New chapter lost italics
+                } elseif ($this->get('chapter') === $this->get('CITATION_BOT_PLACEHOLDER_chapter')) {
+                  $this->rename('CITATION_BOT_PLACEHOLDER_chapter', 'chapter');
+                } else {
+                  $this->forget('CITATION_BOT_PLACEHOLDER_chapter');
+                }
               } else {
                 $this->rename('CITATION_BOT_PLACEHOLDER_chapter', 'chapter');
               }
@@ -738,6 +763,18 @@ final class Template {
                } else {
                  $this->rename('CITATION_BOT_PLACEHOLDER_possible', $possible);                }
              }
+          }
+        }
+        if ($this->wikiname() === 'cite document') {
+          foreach (ALL_URL_TYPES as $thing) {
+            if ($this->blank($thing)) $this->forget($thing);
+            if ($this->blank($thing . '-access')) $this->forget($thing . '-access');
+          }
+          foreach (WORK_ALIASES as $thing) {
+            if ($this->blank($thing)) $this->forget($thing);
+          }
+          foreach (['archive-url', 'archiveurl', 'archivedate', 'archive-date', 'url-status'] as $thing) {
+            if ($this->blank($thing)) $this->forget($thing);
           }
         }
     } elseif ($this->wikiname() === 'cite magazine' &&  $this->blank('magazine') && $this->has_but_maybe_blank('work')) {
@@ -1216,7 +1253,8 @@ final class Template {
         if (stripos($value, 'Doctoral ') !== FALSE) return FALSE;
         if (stripos($value, 'IETF Datatracker') !== FALSE) return FALSE;
         if (stripos($value, 'Springerlink') !== FALSE) return FALSE;
-
+        if (stripos($value, 'Report No. ') !== FALSE) return FALSE;
+        if (stripos($value, 'Report Number ') !== FALSE) return FALSE;
         if (!$this->blank(['booktitle', 'book-title'])) return FALSE;
         if (in_array(strtolower(sanitize_string($value)), BAD_TITLES )) return FALSE;
         if (in_array(strtolower($value), ARE_MANY_THINGS)) {
@@ -1407,7 +1445,7 @@ final class Template {
       case "page": case "pages":
         if (in_array($value, ['0', '0-0', '0–0'], TRUE)) return FALSE;  // Reject bogus zero page number
         if ($this->has('at')) return FALSE;  // Leave at= alone.  People often use that for at=See figure 17 on page......
-        if (preg_match('~^\d+$~', $value) && intval($value) > 1000000) return FALSE;  // Sometimes get HUGE values
+        if (preg_match('~^\d+$~', $value) && intval($value) > 50000) return FALSE;  // Sometimes get HUGE values
         $pages_value = $this->get('pages');
         $all_page_values = $pages_value . $this->get('page') . $this->get('pp') . $this->get('p') . $this->get('at');
         $en_dash = [chr(2013), chr(150), chr(226), '-', '&ndash;'];
@@ -3386,7 +3424,7 @@ final class Template {
           case "fahrplan-ch": case "incomplete short citation": case "music": case "bar-ads":
           case "subscription or libraries": case "gallica": case "gnd": case "ncbibook":
           case "spaces": case "ndash": case "dggs": case "self-published source": case "nobreak":
-          case "university of twente pure":
+          case "university of twente pure": case "mathscinet":
           case "gbooks": case "gburl": // TODO - should use
           case "isbnt": case "issn link": case "lccn8": // Assume not normal template for a reason
           case "google books": // Usually done for fancy formatting and because already has title-link/url
@@ -3557,6 +3595,7 @@ final class Template {
 
   public function change_name_to(string $new_name, bool $rename_cite_book = TRUE, bool $rename_anything = FALSE) : void {
     if (strpos($this->get('doi'), '10.1093') !== FALSE && $this->wikiname() !== 'cite web') return;
+    if (($new_name === 'cite document') && $this->blank('publisher')) return;
     if (bad_10_1093_doi($this->get('doi'))) return;
     foreach (WORK_ALIASES as $work) {
       $worky = mb_strtolower($this->get($work));
@@ -5027,7 +5066,7 @@ final class Template {
         case 'title':
           if ($this->blank($param)) return;
           $title = $this->get($param);
-          if ($title === 'Validate User') {
+          if ($title === 'Validate User' || $title === 'Join Ancestry' || $title === 'Join Ancestry.com' || $title === 'Ancestry - Sign Up') {
              $this->set('title', '');
              return;
           }
@@ -5054,10 +5093,12 @@ final class Template {
           }
           if (mb_substr_count($title, '[[') !== 1 ||  // Completely remove multiple wikilinks
               mb_substr_count($title, ']]') !== 1) {
+            if (stripos($title, 'reviewed work') === FALSE) {
              $title = preg_replace(REGEXP_PLAIN_WIKILINK, "$1", $title);   // Convert [[X]] wikilinks into X
              $title = preg_replace(REGEXP_PIPED_WIKILINK, "$2", $title);   // Convert [[Y|X]] wikilinks into X
              $title = preg_replace("~\[\[~", "", $title); // Remove any extra [[ or ]] that should not be there
              $title = preg_replace("~\]\]~", "", $title);
+            }
           } elseif (strpos($title, '{{!}}') === FALSE) { // Convert a single link to a title-link
              if (preg_match(REGEXP_PLAIN_WIKILINK, $title, $matches)) {
                if (strlen($matches[1]) > (0.7 * (float) strlen($title)) && ($title !== '[[' . $matches[1] . ']]')) {  // Only add as title-link if a large part of title text
@@ -5108,6 +5149,8 @@ final class Template {
               preg_match('~https?://www\.britishnewspaperarchive\.co\.uk/account/register~', $this->get($param)) ||
               preg_match('~https://www\.google\-analytics\.com/ga\.js$~', $this->get($param)) ||
               preg_match('~academic\.oup\.com/crawlprevention~', $this->get($param)) ||
+              preg_match('~ancestryinstitution~', $this->get($param)) ||
+              preg_match('~ancestry\.com/cs/offers~', $this->get($param)) ||
               preg_match('~https://meta\.wikimedia\.org/w/index\.php\?title\=Special\:UserLogin~', $this->get($param))) {
                 $this->forget($param);
                 if ($this->get('title') === 'Validate User') $this->set('title', '');
@@ -5304,8 +5347,29 @@ final class Template {
                  if ($this->has('via') && stripos($this->get('via'), 'library') !== FALSE) $this->forget('via');
               }
           }
+          if (preg_match("~^(https://www\.ancestry(?:institution|).com/discoveryui-content/view/\d+:\d+)\?.+$~i", $this->get($param), $matches)) {
+            $this->set($param, $matches[1]);
+          }
+          if (preg_match("~ancestry\.com/cs/offers/join.*url=(http.*)$~i", $this->get($param), $matches)) {
+            $this->set($param, str_replace(' ', '+', urldecode($matches[1])));
+          }
+          if (preg_match("~ancestry\.com/account/create.*returnurl=(http.*)$~i", $this->get($param), $matches)) {
+            $this->set($param, str_replace(' ', '+', urldecode($matches[1])));
+          }       
+          if (preg_match("~^https://search\.ancestry(?:|institution)\.com.*cgi-bin/sse.dll.*_phcmd.*(http.+)\'\,\'successSource\'\)$~i", $this->get($param), $matches)) {
+            $this->set($param, str_replace(' ', '+', urldecode($matches[1])));
+          }
+          if (preg_match("~^https://search\.ancestry(?:|institution)\.com.*cgi-bin/sse.dll.*_phcmd.*(http.+)%27\,%27successSource%27\)$~i", $this->get($param), $matches)) {
+            $this->set($param, str_replace(' ', '+', urldecode($matches[1])));
+          }
+          if (preg_match("~^https://www\.ancestry(?:|institution)\.com/facts.*_phcmd.*(http.+)\'\,\'successSource\'\)$~i", $this->get($param), $matches)) {
+            $this->set($param, str_replace(' ', '+', urldecode($matches[1])));
+          }
+          if (preg_match("~^https://www\.ancestry(?:|institution)\.com/facts.*_phcmd.*(http.+)%27\,%27successSource%27\)$~i", $this->get($param), $matches)) {
+            $this->set($param, str_replace(' ', '+', urldecode($matches[1])));
+          }
           // idm.oclc.org Proxy
-          if (stripos($this->get($param), 'idm.oclc.org') !== FALSE) {
+          if (stripos($this->get($param), 'idm.oclc.org') !== FALSE && stripos($this->get($param), 'ancestryinstitution') === FALSE) {
               $oclc_found = FALSE;
               if (preg_match("~^https://([^\.\-\/]+)-([^\.\-\/]+)-([^\.\-\/]+)\.[^\.\-\/]+\.idm\.oclc\.org/(.+)$~i", $this->get($param), $matches)) {
                  $this->set($param, 'https://' . $matches[1] . '.' . $matches[2] . '.' . $matches[3] . '/' . $matches[4]);
@@ -6312,12 +6376,26 @@ final class Template {
                  $this->add_if_new('website', $i_value);
                }
              }
+             //  Special Cases
+             if ($hostname === 'theweek.in') {
+                 foreach (WORK_ALIASES as $works) {
+                     if (strpos($this->get($works), '[[The Week]]') !== FALSE) {
+                         $this->set($works, '[[The Week (Indian magazine)|The Week]]');
+                     }
+                 }
+             }
            }
         }
       }
+   //   if (($this->get('url-status') === 'live') && $this->blank(['archive-url', 'archivedate', 'archiveurl', 'archived-date'])) {
+   //      $this->forget('url-status');
+   //   }
     } elseif (in_array($this->wikiname(), TEMPLATES_WE_SLIGHTLY_PROCESS)) {
       $this->tidy_parameter('publisher');
       $this->tidy_parameter('via');
+     // if (($this->get('url-status') === 'live') && $this->blank(['archive-url', 'archivedate', 'archiveurl', 'archived-date'])) {
+     //    $this->forget('url-status');
+     // }
     }
   }
 
@@ -6967,8 +7045,8 @@ final class Template {
               preg_match("~^(?:vol\. |Volume |vol |vol\.|)(\d+)[,\s]\s*(?:no\.|number|issue|Iss.|no )\s*(\d+(-|–|\–|\{\{ndash\}\})?\d*)$~i", $data, $matches) ||
               preg_match("~^(\d+)\.(\d+)$~i", $data, $matches) ||
               preg_match("~^(\d+)\((\d+\/\d+)\)$~i", $data, $matches) ||
-              preg_match("~^(\d+) \((\d+ Suppl \d+)\)$~i", $data, $matches) ||
-              preg_match("~^(\d+) (Suppl \d+)$~i", $data, $matches) ||
+              preg_match("~^(\d+) \((\d+ Suppl\.* \d+)\)$~i", $data, $matches) ||
+              preg_match("~^(\d+) (Suppl\.* \d+)$~i", $data, $matches) ||
               preg_match("~^(\d+) (S\d+)$~i", $data, $matches) ||
               preg_match("~^Vol\.?(\d+)\((\d+)\)$~", $data, $matches) ||
               preg_match("~^(\d+) +\(No(?:\.|\. | )(\d+)\)$~i", $data, $matches) ||
@@ -6986,7 +7064,8 @@ final class Template {
             if ($this->blank(ISSUE_ALIASES)) {
               $this->add_if_new($the_issue, $possible_issue);
               $this->set('volume', $possible_volume);
-            } elseif ($this->get('issue') === $possible_issue || $this->get('number') === $possible_issue) {
+            } elseif (str_replace(".", "", $this->get('issue'))  === str_replace(".", "", $possible_issue) ||
+                      str_replace(".", "", $this->get('number')) === str_replace(".", "", $possible_issue)) {
               $this->set('volume', $possible_volume);
             }
          } else {

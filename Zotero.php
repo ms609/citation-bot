@@ -252,7 +252,7 @@ public static function drop_urls_that_match_dois(array &$templates) : void {  //
        } elseif (str_ireplace(PROXY_HOSTS_TO_ALWAYS_DROP,'', $url) !== $url && $template->get('doi-access') === 'free') {
           report_forget("Existing proxy URL resulting from equivalent free DOI; dropping URL");
           $template->forget($url_kind);
-       } elseif (str_ireplace(PROXY_HOSTS_TO_ALWAYS_DROP,'', $url) !== $url) {
+       } elseif (str_ireplace(PROXY_HOSTS_TO_ALWAYS_DROP,'', $url) !== $url && $template->blank(['archive-url', 'archiveurl'])) {
           report_forget("Existing proxy URL resulting from equivalent DOI; fixing URL");
           $template->set($url_kind, "https://dx.doi.org/" . doi_encode($doi));
        } elseif (preg_match('~www.sciencedirect.com/science/article/B[^/\-]*\-[^/\-]+\-[^/\-]+/~', $url)) {
