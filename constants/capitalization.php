@@ -379,7 +379,8 @@ const OBVIOUS_FOREIGN_WORDS = array(" Abhandlungen ", " Actes ", " Annales ", " 
            " filmski ", " ljetopis ", " Saggiatore ", " musicale ", " artiste ", " Le Monde ",
            " univerzitet ", " Pravni ", " Fakultet ", " Gazeta ", " Caminhos ", " de Ferro ",
            " Jornal ", " comboios ", " Público ", " Revista ", " Olhar ", " Soudobé ", " dějiny ", " Maandblad ",
-           " geschiedenis ", " voor de ", " Tiede ", " ja ase ", " Jezik ", " slovstvo ");
+           " geschiedenis ", " voor de ", " Tiede ", " ja ase ", " Jezik ", " slovstvo ",
+           " Zborlu ", " Nostru ", " Razprave ", " gradivo ", " Revija ", " narodnostna ", " vprašanja ");
 const MAP_DIACRITICS = array("À"=>"A", "Á"=>"A", "Â"=>"A", "Ã"=>"A",
     "Ä"=>"A", "Å"=>"A", "Æ"=>"AE", "Ç"=>"C", "È"=>"E", "É"=>"E",
     "Ê"=>"E", "Ë"=>"E", "Ì"=>"I", "Í"=>"I", "Î"=>"I", "Ï"=>"I",
