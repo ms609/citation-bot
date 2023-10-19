@@ -350,7 +350,8 @@ const CAMEL_CASE = array('DeSoto', 'PubChem', 'BitTorrent', 'Al2O3', 'NiMo', 'Cu
                          'MoveOn', 'iSemantic', 'DigitalHeritage', 'iBroadway', 'TechSym'
                        );
 
-const ITALICS_HARDCODE_IN  = [" of SectarianismCommunity",
+const ITALICS_HARDCODE_IN  = [" of SectarianismCommunity", " for WonderNineteenth Century Travel ",  
+             " from the ShadowsAnalytical Feminist Contributions",  " der GattungEoeugnathus Brough",  " the CitizenMusic as Public ",
              " to the SirensMusical Technologies ",   " the DynastyPalace Women ",   "Divine CreaturesAnimal Mummies",   
              "Small Greek WorldNetworks in",   "Magia SexualisSex, Magic",   " is NothingLost in ",   " Without UsDisability ",   "Human RightsThe Case ",   
              " Southeast AsiaNation and ",   " EcologicalAn Expedition ",   "tive CognitionExperimental Expl",   "Immigrant NarrativesOrientalism and Cultural", 
@@ -365,7 +366,8 @@ const ITALICS_HARDCODE_IN  = [" of SectarianismCommunity",
              "ElectrongValue",       "thetoxGene",      "GopashtamiandGovardhan",       "PolishLebensraum",       "theNachlassproblem",
              " forAltalena:",      " in Plutarch'sLives",       "FromSolidarityto",        " gp91phoxPromoter",  "in vitroAssays",        "MarketizingHindutva",
              "TheBhagavadgītā,",       "theOrigin of Species",       "EncounteringHindutva",       "ChineseHukouSystem",        "CisLatreille"];
-const ITALICS_HARDCODE_OUT = [" of Sectarianism: Community",
+const ITALICS_HARDCODE_OUT = [" of Sectarianism: Community", " for Wonder: Nineteenth Century Travel ",  
+             " from the Shadows: Analytical Feminist Contributions",  " der Gattung: Eoeugnathus Brough",  " the Citizen: Music as Public ",
              " to the Sirens: Musical Technologies ", " the Dynasty: Palace Women ", "Divine Creatures: Animal Mummies", 
              "Small Greek World: Networks in", "Magia Sexualis: Sex, Magic", " is Nothing: Lost in ", " Without Us: Disability ", "Human Rights: The Case ", 
              " Southeast Asia: Nation and ", " Ecological: An Expedition ", "tive Cognition: Experimental Expl", "Immigrant Narratives: Orientalism and Cultural",
