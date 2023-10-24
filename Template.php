@@ -5349,6 +5349,9 @@ final class Template {
                  if ($this->has('via') && stripos($this->get('via'), 'library') !== FALSE) $this->forget('via');
               }
           }
+          if (preg_match("~^https://wikipedialibrary\.idm\.oclc\.org/login\?auth=production&url=(https?://.+)$~i", $this->get($param), $matches)) {
+            $this->set($param, $matches[1]);
+          }
           if (preg_match("~^(https://www\.ancestry(?:institution|).com/discoveryui-content/view/\d+:\d+)\?.+$~i", $this->get($param), $matches)) {
             $this->set($param, $matches[1]);
           }
