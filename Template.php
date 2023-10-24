@@ -4573,7 +4573,7 @@ final class Template {
              }
             return;
           }
-          if (stripos($this->get($param), 'proquest') !== FALSE && stripos($this->get($param), 'llc') === FALSE) {
+          if (stripos($this->get($param), 'proquest') !== FALSE && stripos($this->get($param), 'llc') === FALSE && stripos($this->get('title'), 'Magazines for Libraries') === FALSE) {
             $this->forget($param);
             if ($this->blank('via')) {
               $this_big_url = $this->get('url') . $this->get('thesis-url') . $this->get('thesisurl') . $this->get('chapter-url') . $this->get('chapterurl');
