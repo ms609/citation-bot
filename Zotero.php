@@ -537,6 +537,11 @@ public static function process_zotero_response(string $zotero_response, Template
     unset($result->author);
   }
 
+  if (stripos($url, 'newrepublic.com') !== FALSE) { // Bad data for all but first one
+    unset($result->creators['1']);
+    unset($result->author['1']);
+  }
+
   $result->title = convert_to_utf8($result->title);
   // Reject if we find more than 5 or more than 10% of the characters are �.  This means that character
   // set was not correct in Zotero and nothing is good.  We allow a couple of � for German umlauts that arer easily fixable by humans.
