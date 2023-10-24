@@ -820,7 +820,8 @@ const ARE_MAGAZINES = array('the new yorker', 'the new republic', 'new republic'
 const ARE_MANY_THINGS = array('pc gamer', 'gamestar', 'rock paper shotgun', 'mcv', 'rock, paper, shotgun', 'edge',
                               'ballotpedia', 'npr', 'ballotpedia.org', 'npr.org', 'nih.gov', 'nih', 'eurogamer.it',
                               'conceptcarz', 'the royal family', 'eurogamer.de', 'east west main line partnership',
-                              'national institutes of health', 'national institutes of health (nih)'); // lowercase axact matches.  These are things that are both websites and newspapers
+                              'national institutes of health', 'national institutes of health (nih)',
+                              'www.finna.fi', 'finna.fi', 'elonet'); // lowercase axact matches.  These are things that are both websites and newspapers
 const ARE_NEWSPAPERS = array('the economist', 'la times', 'toronto sun', 'washington post', 'the washington post',
                              'philippine daily inquirer', 'the irish times', 'wikinews', 'wikinews.org'); // lowercase axact matches
 const NO_PUBLISHER_NEEDED = array('los angeles times', 'new york times magazine', 'the new york times',
