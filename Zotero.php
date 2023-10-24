@@ -1223,8 +1223,8 @@ public static function find_indentifiers_in_urls(Template $template, ?string $ur
          }
        }
        if (is_null($url_sent) && get_semanticscholar_license($s2cid) === FALSE) {
-         report_warning('Should probably remove un-licensed Semantic Scholar URL that was converted to S2CID parameter');
-         // SEP 2020 $template->forget($url_type);
+         report_warning('Removing un-licensed Semantic Scholar URL that was converted to S2CID parameter');
+         $template->forget($url_type);
          return TRUE;
        }
        return TRUE;
