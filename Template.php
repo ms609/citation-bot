@@ -6389,15 +6389,15 @@ final class Template {
            }
         }
       }
-   //   if (($this->get('url-status') === 'live') && $this->blank(['archive-url', 'archivedate', 'archiveurl', 'archived-date'])) {
-   //      $this->forget('url-status');
-   //   }
+      if (($this->get('url-status') === 'live') && $this->blank(['archive-url', 'archivedate', 'archiveurl', 'archived-date'])) {
+         $this->forget('url-status');
+      }
     } elseif (in_array($this->wikiname(), TEMPLATES_WE_SLIGHTLY_PROCESS)) {
       $this->tidy_parameter('publisher');
       $this->tidy_parameter('via');
-     // if (($this->get('url-status') === 'live') && $this->blank(['archive-url', 'archivedate', 'archiveurl', 'archived-date'])) {
-     //    $this->forget('url-status');
-     // }
+      if (($this->get('url-status') === 'live') && $this->blank(['archive-url', 'archivedate', 'archiveurl', 'archived-date'])) {
+         $this->forget('url-status');
+      }
     }
   }
 
