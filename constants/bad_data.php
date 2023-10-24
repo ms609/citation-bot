@@ -415,7 +415,7 @@ const NO_DATE_WEBSITES = array('wikipedia.org', 'web.archive.org', 'perma-archiv
                               'oireachtas.ie', 'webarchive.nla.gov.au', 'ebooks.adelaide.edu.au', 'archive.md', 'imdb.com',
                               'apps.des.qld.gov.au', 'billboard.com', 'music.apple.com', 'spotify.com', 'fred.stlouisfed.org',
                               'simonsfoundation.org', 'chroniclingamerica.loc.gov', 'github.com', 'rottentomatoes.com', 'arts.gov/honors',
-                              'shop.schizoidshop.com', 'elonet.finna.fi', 'numismatics.org.uk');
+                              'shop.schizoidshop.com', 'elonet.finna.fi', 'numismatics.org.uk', 'itunes.apple.com');
 
 const ZOTERO_AVOID_REGEX = array("twitter\.",               // This should be {{cite tweet}}
                                  // Zotero seems to be doing better now "youtube\.", "youtu\.be",
