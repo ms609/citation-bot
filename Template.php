@@ -4199,6 +4199,7 @@ final class Template {
            if(!in_array(strtolower($doi), NON_JOURNAL_DOIS) &&
               (strpos($doi, '10.14344/') === FALSE) &&
               (stripos($doi, '10.7289/V') === FALSE) &&
+              (stripos($doi, '10.7282/') === FALSE) &&
               (stripos($doi, '10.5962/bhl.title.') === FALSE)) {
             $the_journal = $this->get('journal') . $this->get('work') . $this->get('periodical');
             if (str_replace(NON_JOURNALS, '', $the_journal) === $the_journal) {
