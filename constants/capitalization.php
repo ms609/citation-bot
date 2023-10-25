@@ -135,7 +135,7 @@ const JOURNAL_ACRONYMS = array(/* The following will be automatically updated to
           " Jezik in slovstvo ", " JMIR ", " JNCI: Journal ", " Journal of e-Learning ", 
           " Journal of Materials Chemistry A ", " Journal of the A.I.E.E. ", 
           " Journal of the IEST ", " Journal sur ", " Jpn ", " Jpn. ", " Katorga i Ssylka ", 
-          " Keel ja ", " Kinema ", " Krčki zbornik: godišnjak Povijesnog društva otoka Krka ", 
+          " Keel ja ", " Kinema ", " Komunikacija i Kultura Online ", " Krčki zbornik: godišnjak Povijesnog društva otoka Krka ", 
           " Krčki zbornik: godišnjak Povijesnog društva otoka Krka ", " Kunstforum ", 
           " l'IHÉS ", " l'IHÉS ", " l'IHÉS ", " l'IHÉS ", " L. Sch. L. ", 
           " La Trobe ", " Latina/o ", " Le chemin de fer ", " Le chemin de fer ", 
@@ -206,7 +206,6 @@ const JOURNAL_ACRONYMS = array(/* The following will be automatically updated to
           " Zeitschrift für Physik A: Hadrons and Nuclei ", " Znanosti i Umjetnosti ", 
           " ZooKeys ", " Zprávy o zasedání Král. čes. společnosti nauk v Praze ", 
           " Zprávy o zasedání Král. čes. společnosti nauk v Praze ", " Zprávy o zasedání Král. čes. společnosti nauk v Praze ", 
-          " Komunikacija i Kultura Online ",
           " Ргасе filologiczne ", /* The above will be automatically updated to alphabetical order */ 
 );
 const UCFIRST_JOURNAL_ACRONYMS = array(/* The following will be automatically updated to alphabetical order */
@@ -281,7 +280,7 @@ const UCFIRST_JOURNAL_ACRONYMS = array(/* The following will be automatically up
           " Jezik in Slovstvo ", " Jmir ", " Jnci: Journal ", " Journal of E-Learning ", 
           " Journal of Materials Chemistry a ", " Journal of the A.i.i.e ", " Journal of the Iest ", 
           " Journal Sur ", " JPN ", " JPN. ", " Katorga I Ssylka ", " Keel Ja ", 
-          " KINEMA ", " Krčki Zbornik: Godišnjak Povijesnog Društva Otoka Krka ", 
+          " KINEMA ", " Komunikacija I Kultura Online ", " Krčki Zbornik: Godišnjak Povijesnog Društva Otoka Krka ", 
           " Krčki zbornik: Godišnjak Povijesnog društva otoka Krka ", " KUNSTFORUM ", 
           " L'Ihés ", " L'ihés ", " l'Ihés ", " l'ihés ", " L. SCH. L. ", 
           " la Trobe ", " Latina/O ", " Le Chemin De Fer ", " Le Chemin de Fer ", 
@@ -352,7 +351,6 @@ const UCFIRST_JOURNAL_ACRONYMS = array(/* The following will be automatically up
           " Zeitschrift Für Physik a: Hadrons And Nuclei ", " Znanosti I Umjetnosti ", 
           " Zookeys ", " Zprávy O Zasedání Král. Čes. Společnosti Nauk V Praze ", 
           " Zprávy O Zasedání Král. čes. Společnosti Nauk V Praze ", " Zprávy o zasedání Král. čes. Společnosti nauk v Praze ", 
-          " Komunikacija I Kultura Online ",
           " Ргасе Filologiczne ", /* The above will be automatically updated to alphabetical order */ 
 );
 const OBVIOUS_FOREIGN_WORDS = array(" Abhandlungen ", " Actes ", " Annales ", " Archiv ", " Archives de ",
