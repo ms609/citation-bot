@@ -347,7 +347,7 @@ const CAMEL_CASE = array('DeSoto', 'PubChem', 'BitTorrent', 'Al2O3', 'NiMo', 'Cu
                          'TurboFold', 'TurboKnot', 'FusionSeq', 'dRheb', 'GTPase', 'NanoBiosensing', 'eHealth',
                          'iNet', 'NetGames', 'MultiMedia', 'PetaOp', 'AppleScript', 'GeNeDis', 'MeDoc',
                          'eEnvironment', 'AlphaFold', 'BirdLife', 'MetroLink', 'PhyloCode', 'JavaScript', 'AfricArXiv',
-                         'MoveOn', 'iSemantic', 'DigitalHeritage', 'iBroadway', 'TechSym'
+                         'MoveOn', 'iSemantic', 'DigitalHeritage', 'iBroadway', 'TechSym', 'HistoCrypt'
                        );
 
 const ITALICS_HARDCODE_IN  = [" of SectarianismCommunity", " for WonderNineteenth Century Travel ",  
