@@ -420,6 +420,9 @@ public static function expand_by_zotero(Template $template, ?string $url = NULL)
   if(preg_match('~^(https?://(?:www\.|)nature\.com/articles/[a-zA-Z0-9\.]+)\.pdf(?:|\?.*)$~', $url, $matches)) {
      $url = $matches[1]; // remove PDF from Nature urls
   }
+  if(preg_match('~^(https?://(?:www\.|)mdpi\.com/.+)(?:/pdf\-vor|/pdf)$~', $url, $matches)) {
+     $url = $matches[1];
+  }
   
   $bad_url = implode('|', ZOTERO_AVOID_REGEX);
   if(preg_match("~^https?://(?:www\.|m\.|)(?:" . $bad_url . ")~i", $url)) return FALSE; 
