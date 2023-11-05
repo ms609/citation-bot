@@ -4674,6 +4674,16 @@ final class TemplateTest2 extends testBaseClass {
       $expanded = $this->process_citation($text);
       $this->assertSame('cite journal', $expanded->wikiname());
       $this->assertSame('Chope, His Honour Robert Charles, (26 June 1913–17 Oct. 1988), a Circuit Judge (Formerly Judge of County Courts), 1965–85', $expanded->get2('chapter'));
-  }
+    }
+ 
+    public function testRemoveLinkUnderscores() : void {
+      $text = "{{cite journal|author-link3=A_X}}";
+      $expanded = $this->process_citation($text);
+      $this->assertSame('A X', $expanded->get3('author-link3'));
+
+      $text = "{{cite journal|author-link3=A_X http}}";
+      $expanded = $this->process_citation($text);
+      $this->assertSame('A_X http', $expanded->get3('author-link3'));
+    }
  
 }
