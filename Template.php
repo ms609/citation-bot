@@ -617,7 +617,7 @@ final class Template {
               }
           }
           if ($bad_data) {
-            if ($this->has('year')) { // Often the pre-print year
+            if ($this->has('year') && $this->blank(['isbn', 'lccn', 'oclc'])) { // Often the pre-print year
               $this->rename('year', 'CITATION_BOT_PLACEHOLDER_year');
             }
             if ($this->has('doi') && doi_active($this->get('doi'))) {
