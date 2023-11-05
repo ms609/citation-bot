@@ -882,7 +882,7 @@ final class TemplateTest extends testBaseClass {
   public function testDoiExpansion2() : void {
     $text = "{{Cite web | url = http://onlinelibrary.wiley.com/doi/10.1111/j.1475-4983.2012.01203.x/abstract}}";
     $expanded = $this->prepare_citation($text);
-    $this->assertSame('cite journal', $expanded->wikiname());
+    $this->assertSame('cite web', $expanded->wikiname());
     $this->assertSame('10.1111/j.1475-4983.2012.01203.x', $expanded->get2('doi'));
     $this->assertNotNull($expanded->get2('url'));
   }
@@ -2842,6 +2842,7 @@ EP - 999 }}';
     parse_plain_text_reference("Phys. Rev. Lett. 117, 211101 (2016)", $expanded, TRUE);
     $this->assertSame('cite journal', $expanded->wikiname());
     $this->assertSame('2016', $expanded->get2('year'));
+    $this->assertNull($expanded->parsed_text());
     $this->assertSame('211101', $expanded->get2('page'));
   }
     
@@ -2851,6 +2852,7 @@ EP - 999 }}';
     parse_plain_text_reference("Phys. Rev. B 79, 115202 (2009)", $expanded, TRUE);
     $this->assertSame('cite journal', $expanded->wikiname());
     $this->assertSame('2009', $expanded->get2('year'));
+    $this->assertNull($expanded->parsed_text());
     $this->assertSame('115202', $expanded->get2('page'));
   }
     
@@ -2869,6 +2871,7 @@ EP - 999 }}';
     parse_plain_text_reference("Phys. Rev. B 78, 245315 (2008)", $expanded, TRUE);
     $this->assertSame('cite journal', $expanded->wikiname());
     $this->assertSame('2008', $expanded->get2('year'));
+    $this->assertNull($expanded->parsed_text());
     $this->assertSame('245315', $expanded->get2('page'));
   }
     
