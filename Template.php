@@ -3750,7 +3750,7 @@ final class Template {
     if (in_array(strtolower($param), ['series', 'journal', 'newspaper']) && $this->has($param)) {
       $this->set($param, safe_preg_replace('~[™|®]$~u', '', $this->get($param))); // remove trailing TM/(R)
     }
-    if (in_array(str_replace('-', '', strtolower($param)), ['authorlink', 'chapterlink', 'contributorlink', 
+    if (in_array(str_replace(array('-','0','1','2','3','4','5','6','7','8','9'), '', strtolower($param)), ['authorlink', 'chapterlink', 'contributorlink', 
                  'editorlink', 'episodelink', 'interviewerlink', 'inventorlink', 'serieslink',
                  'subjectlink', 'titlelink', 'translatorlink']) && $this->has($param)) {
       $this->set($param, safe_preg_replace('~_~u', ' ', $this->get($param)));
