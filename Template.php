@@ -3750,6 +3750,12 @@ final class Template {
     if (in_array(strtolower($param), ['series', 'journal', 'newspaper']) && $this->has($param)) {
       $this->set($param, safe_preg_replace('~[™|®]$~u', '', $this->get($param))); // remove trailing TM/(R)
     }
+    if (in_array(str_replace('-', '', strtolower($param)), ['authorlink', 'chapterlink', 'contributorlink', 
+                 'editorlink', 'episodelink', 'interviewerlink', 'inventorlink', 'serieslink',
+                 'subjectlink', 'titlelink', 'translatorlink']) && $this->has($param)) {
+      $this->set($param, safe_preg_replace('~_~u', ' ', $this->get($param)));
+    }
+
     if (!preg_match('~^(\D+)(\d*)(\D*)$~', $param, $pmatch)) {
       report_minor_error("Unrecognized parameter name format in " . echoable($param));  // @codeCoverageIgnore
       return;                                                              // @codeCoverageIgnore
