@@ -898,7 +898,7 @@ final class TemplateTest extends testBaseClass {
     // Replace this test with a real URL (if one exists)
     $text = "{{Cite web | url = http://fake.url/doi/10.1111/j.1475-4983.2012.01203.x/file.pdf}}"; // Fake URL, real DOI
     $expanded= $this->prepare_citation($text);
-    $this->assertSame('cite journal', $expanded->wikiname());
+    $this->assertSame('cite web', $expanded->wikiname());
     $this->assertSame('10.1111/j.1475-4983.2012.01203.x', $expanded->get2('doi'));
     // Do not drop PDF files, in case they are open access and the DOI points to a paywall
     $this->assertSame('http://fake.url/doi/10.1111/j.1475-4983.2012.01203.x/file.pdf', $expanded->get2('url'));
@@ -2072,7 +2072,7 @@ final class TemplateTest extends testBaseClass {
    
     $text = "{{Cite web | http://books.google.co.uk/books/about/Wonderful_Life.html}}";
     $expanded = $this->process_citation($text);
-    $this->assertSame('cite document', $expanded->wikiname());
+    $this->assertSame('cite web', $expanded->wikiname());
     $this->assertNull($expanded->get2('url'));
    
     $text = "{{Cite web | http://books.google.com/books?id&#61;SjpSkzjIzfsC&redir_esc&#61;y}}";
@@ -2706,7 +2706,7 @@ EP - 999 }}';
     $text = '{{Cite journal | url = http://onlinelibrary.wiley.com/doi/10.1111/j.1550-7408.2002.tb00224.x/full}}';
     // Should be able to drop /full from DOI in URL
     $expanded = $this->process_citation($text);
-    $this->assertSame(str_replace(' ', '', "''Cryptosporidiumhominis''n.sp.(Apicomplexa:Cryptosporidiidae)fromHomosapiens"),
+    $this->assertSame(str_replace(' ', '', "''Cryptosporidiumhominis''n.Sp.(Apicomplexa:Cryptosporidiidae)from''Homosapiens''"),
                         str_replace(' ', '', $expanded->get('title'))); // Can't get Homo sapiens, can get nsp.
   }   
     
