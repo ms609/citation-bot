@@ -446,7 +446,7 @@ final class PageTest extends testBaseClass {
     $this->assertSame('10.1088/1742-6596/1087/6/062024', $template->get2('doi'));
     $this->assertSame('The application of 3D technology in video games', $template->get2('title'));
     $this->assertSame('1087', $template->get2('volume'));
-    $this->assertSame('cite journal', $template->wikiname());
+    $this->assertSame('cite news', $template->wikiname());
   }
 
 }
