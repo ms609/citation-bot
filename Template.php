@@ -3752,7 +3752,7 @@ final class Template {
     }
     if (in_array(str_replace(array('-','0','1','2','3','4','5','6','7','8','9'), '', strtolower($param)), ['authorlink', 'chapterlink', 'contributorlink', 
                  'editorlink', 'episodelink', 'interviewerlink', 'inventorlink', 'serieslink',
-                 'subjectlink', 'titlelink', 'translatorlink']) && $this->has($param)) {
+                 'subjectlink', 'titlelink', 'translatorlink']) && $this->has($param) && (stripos($this->get($param), 'http') === FALSE)) {
       $this->set($param, safe_preg_replace('~_~u', ' ', $this->get($param)));
     }
 
