@@ -2307,13 +2307,13 @@ function clean_up_oxford_stuff(Template $template, string $param) : void {
 }
 
 function conference_doi(string $doi) : bool {
+  if (stripos($doi, '10.1007/978-3-662-44777') === 0) return FALSE; // Manual override of stuff
   if (strpos($doi, '10.1109/') === 0 ||
       strpos($doi, '10.1145/') === 0 ||
       strpos($doi, '10.1117/') === 0 ||
       strpos($doi, '10.2991/') === 0 ||
       (strpos($doi, '10.1007/978-') === 0 && strpos($doi, '_') !== FALSE) ||
       stripos($doi, '10.2991/erss') === 0 ||
-      stripos($doi, '10.1007/978-3-662-44777') !== 0 || // Manual override of stuff
       stripos($doi, '10.2991/jahp') === 0) {
          return TRUE;
   }
