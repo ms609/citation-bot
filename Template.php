@@ -334,8 +334,9 @@ final class Template {
             report_action("Found and used SICI");
           }
       }
-      if (!$this->blank(['pmc', 'pmid', 'doi', 'jstor']) ||
-         (stripos($this->get('journal') . $this->get('title'), 'arxiv') !== FALSE && !$this->blank(ARXIV_ALIASES))) { // Have some good data
+      if ((stripos($this->text, 'citation_bot_placeholder_comment') === FALSE) &&
+         (!$this->blank(['pmc', 'pmid', 'doi', 'jstor']) ||
+         (stripos($this->get('journal') . $this->get('title'), 'arxiv') !== FALSE && !$this->blank(ARXIV_ALIASES)))) { // Have some good data
           $the_title   = $this->get('title');
           $the_journal = str_replace(['[', ']'], '', $this->get('journal'));
           $the_chapter = $this->get('chapter');
