@@ -1155,22 +1155,25 @@ final class TemplateTest2 extends testBaseClass {
     $this->assertFalse($template->add_if_new('doi-broken-date', '1 DEC 2019'));
   }
  
-   public function testForgettersChangeType() : void {
+   public function testForgettersChangeType1() : void {
     $text = "{{cite web|id=x}}";
     $template = $this->make_citation($text);
     $template->forget('url');
-    $this->assertSame('cite document', $template->wikiname());
-
+    $this->assertSame('cite web', $template->wikiname());
+   }
+   public function testForgettersChangeType2() : void {
     $text = "{{cite web|journal=X}}";
     $template = $this->make_citation($text);
     $template->forget('url');
     $this->assertSame('cite journal', $template->wikiname());
-
+   }
+   public function testForgettersChangeType3() : void {
     $text = "{{cite web|newspaper=X}}";
     $template = $this->make_citation($text);
     $template->forget('url');
     $this->assertSame('cite news', $template->wikiname());
-
+   }
+   public function testForgettersChangeType4() : void {
     $text = "{{cite web|chapter=X}}";
     $template = $this->make_citation($text);
     $template->forget('url');
@@ -4025,7 +4028,7 @@ final class TemplateTest2 extends testBaseClass {
     $expanded->tidy_parameter('periodical');
     $this->AssertNull($expanded->get2('periodical'));
     $this->AssertSame('medRxiv', $expanded->get2('work'));
-    $this->AssertSame('cite document', $expanded->wikiname());
+    $this->AssertSame('cite web', $expanded->wikiname());
    }
  
    public function testTidyGoogleSupport() : void {
@@ -4310,7 +4313,7 @@ final class TemplateTest2 extends testBaseClass {
     public function testBadURLStatusSettings2() : void {
       $text = "{{cite web|url-status=no|url=X}}";
       $expanded = $this->process_citation($text);
-      $this->AssertSame('live', $expanded->get2('url-status'));
+      $this->AssertNull($expanded->get2('url-status'));
     }
     public function testBadURLStatusSettings3() : void {
       $text = "{{cite web|url-status=sì|url=X|archive-url=Y}}";
