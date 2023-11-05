@@ -334,7 +334,7 @@ final class Template {
             report_action("Found and used SICI");
           }
       }
-      if ((stripos($this->text, 'citation_bot_placeholder_comment') === FALSE) &&
+      if ((stripos($this->rawtext, 'citation_bot_placeholder_comment') === FALSE) &&
          (!$this->blank(['pmc', 'pmid', 'doi', 'jstor']) ||
          (stripos($this->get('journal') . $this->get('title'), 'arxiv') !== FALSE && !$this->blank(ARXIV_ALIASES)))) { // Have some good data
           $the_title   = $this->get('title');
