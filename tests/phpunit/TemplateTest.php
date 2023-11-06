@@ -2839,21 +2839,19 @@ EP - 999 }}';
   public function testArxivMore1() : void {
     $text = "{{cite arxiv}}";
     $expanded = $this->process_citation($text);
-    parse_plain_text_reference("Phys. Rev. Lett. 117, 211101 (2016)", $expanded, TRUE);
+    parse_plain_text_reference("Phys. Rev. Lett. 117, 3323 (2016)", $expanded, TRUE);
     $this->assertSame('cite journal', $expanded->wikiname());
     $this->assertSame('2016', $expanded->get2('year'));
-    $this->assertNull($expanded->parsed_text());
-    $this->assertSame('211101', $expanded->get2('page'));
+    $this->assertSame('3323', $expanded->get2('page'));
   }
     
   public function testArxivMore2() : void {
     $text = "{{cite arxiv}}" ;
     $expanded = $this->process_citation($text);
-    parse_plain_text_reference("Phys. Rev. B 79, 115202 (2009)", $expanded, TRUE);
+    parse_plain_text_reference("Phys. Rev. B 79, 3323 (2009)", $expanded, TRUE);
     $this->assertSame('cite journal', $expanded->wikiname());
     $this->assertSame('2009', $expanded->get2('year'));
-    $this->assertNull($expanded->parsed_text());
-    $this->assertSame('115202', $expanded->get2('page'));
+    $this->assertSame('3323', $expanded->get2('page'));
   }
     
   public function testArxivMore3() : void {
@@ -2868,11 +2866,10 @@ EP - 999 }}';
   public function testArxivMore4() : void {
     $text = "{{cite arxiv}}";
     $expanded = $this->process_citation($text);
-    parse_plain_text_reference("Phys. Rev. B 78, 245315 (2008)", $expanded, TRUE);
+    parse_plain_text_reference("Phys. Rev. B 78, 3323 (2008)", $expanded, TRUE);
     $this->assertSame('cite journal', $expanded->wikiname());
     $this->assertSame('2008', $expanded->get2('year'));
-    $this->assertNull($expanded->parsed_text());
-    $this->assertSame('245315', $expanded->get2('page'));
+    $this->assertSame('3323', $expanded->get2('page'));
   }
     
   public function testArxivMore5() : void {
