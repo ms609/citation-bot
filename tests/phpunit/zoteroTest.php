@@ -1058,10 +1058,10 @@ final class zoteroTest extends testBaseClass {
   
   public function testZoteroRespectDates() : void {
    $this->requires_zotero(function() : void {
-      $text = '{{Use mdy dates}}{{cite web|url=https://pubmed.ncbi.nlm.nih.gov/20443582/}}';
+      $text = '{{Use mdy dates}}{{cite web|url=https://pubmed.ncbi.nlm.nih.gov/20443582/ |pmid=<!-- -->|pmc=<!-- -->|doi=<!-- -->|bibcode=<!-- --> |arxiv=<!-- -->|s2cid=<!-- -->}}';
       $page = $this->process_page($text);
       $this->assertTrue((bool) strpos($page->parsed_text(), 'August 26, 2010'));
-      $text = '{{Use dmy dates}}{{cite web|url=https://pubmed.ncbi.nlm.nih.gov/20443582/}}';
+      $text = '{{Use dmy dates}}{{cite web|url=https://pubmed.ncbi.nlm.nih.gov/20443582/ |pmid=<!-- -->|pmc=<!-- -->|doi=<!-- -->|bibcode=<!-- --> |arxiv=<!-- -->|s2cid=<!-- -->}}';
       $page = $this->process_page($text);
       $this->assertTrue((bool) strpos($page->parsed_text(), '26 August 2010'));
    });
