@@ -1625,6 +1625,7 @@ final class Template {
         return TRUE;
 
       case 's2cid':
+        if (in_array($value, ['11008564'])) return FALSE; // known bad values
         if ($this->blank(['s2cid', 'S2CID'])) {
           $this->add($param_name, $value);
           $this->get_doi_from_semanticscholar();
