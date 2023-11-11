@@ -2312,6 +2312,10 @@ function conference_doi(string $doi) : bool {
       strpos($doi, '10.1145/') === 0 ||
       strpos($doi, '10.1117/') === 0 ||
       strpos($doi, '10.2991/') === 0 ||
+      stripos($doi, '10.21437/Eurospeech') === 0 ||
+      stripos($doi, '10.21437/interspeech') === 0 ||
+      stripos($doi, '10.21437/SLTU') === 0 ||
+      stripos($doi, '10.21437/TAL') === 0 ||
       (strpos($doi, '10.1007/978-') === 0 && strpos($doi, '_') !== FALSE) ||
       stripos($doi, '10.2991/erss') === 0 ||
       stripos($doi, '10.2991/jahp') === 0) {
