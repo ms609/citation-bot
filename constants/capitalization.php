@@ -71,9 +71,9 @@ const JOURNAL_ACRONYMS = array(/* The following will be automatically updated to
           " Algae ", " Algae ", " Algebra i Analiz ", " Algebra i Logika ", " AMA Journal ", 
           " Ambio ", " Amphibian Species of the World: An Online ", " Amphibian Species of the World: An Online Reference. ", 
           " Angew Chem Int Ed ", " Annalen der Physik ", " Annalen der Physik ", 
-          " ANSI/IEEE ", " ANSI/IEEE ", " AOAC International ", " AoB Plants ", 
-          " AoB Plants ", " AoB Plants ", " AORN J ", " AORN J. ", " AORN Journal ", 
-          " Applied ", " APS Division ", " Arch Dis Child Fetal Neonatal Ed ", 
+          " ANSI/IEEE ", " ANSI/IEEE ", " Antibiotiki i Khimioterapiia ", " AOAC International ", 
+          " AoB Plants ", " AoB Plants ", " AoB Plants ", " AORN J ", " AORN J. ", 
+          " AORN Journal ", " Applied ", " APS Division ", " Arch Dis Child Fetal Neonatal Ed ", 
           " Arctic ", " Arhiv za slovensku filologiju ", " Arhivski vjesnik ", 
           " ASAIO ", " ASME AES ", " ASME MTD ", " ausländisches öffentliches Recht ", 
           " Avtomatika i Telemekhanika ", " B/gcvs ", " B/gcvs ", " B/gcvs ", 
@@ -206,7 +206,6 @@ const JOURNAL_ACRONYMS = array(/* The following will be automatically updated to
           " Zeitschrift für Physik A: Hadrons and Nuclei ", " Znanosti i Umjetnosti ", 
           " ZooKeys ", " Zprávy o zasedání Král. čes. společnosti nauk v Praze ", 
           " Zprávy o zasedání Král. čes. společnosti nauk v Praze ", " Zprávy o zasedání Král. čes. společnosti nauk v Praze ", 
-          " Antibiotiki i Khimioterapiia ",
           " Ргасе filologiczne ", /* The above will be automatically updated to alphabetical order */ 
 );
 const UCFIRST_JOURNAL_ACRONYMS = array(/* The following will be automatically updated to alphabetical order */
@@ -217,9 +216,9 @@ const UCFIRST_JOURNAL_ACRONYMS = array(/* The following will be automatically up
           " ALAGE ", " ALGAE ", " Algebra I Analiz ", " Algebra I Logika ", " Ama Journal ", 
           " AMBIO ", " Amphibian Species of the World: an Online ", " Amphibian Species of the World: an Online Reference. ", 
           " Angew Chem Int ed ", " Annalen Der Physik ", " Annalen der physik ", 
-          " Ansi/IEEE ", " Ansi/ieee ", " AOAC INTERNATIONAL ", " AoB PLANTS ", 
-          " Aob PLANTS ", " Aob Plants ", " Aorn J ", " Aorn J. ", " Aorn Journal ", 
-          " Appiled ", " Aps Division ", " Arch Dis Child Fetal Neonatal ed ", 
+          " Ansi/IEEE ", " Ansi/ieee ", " Antibiotiki I Khimioterapiia ", " AOAC INTERNATIONAL ", 
+          " AoB PLANTS ", " Aob PLANTS ", " Aob Plants ", " Aorn J ", " Aorn J. ", 
+          " Aorn Journal ", " Appiled ", " Aps Division ", " Arch Dis Child Fetal Neonatal ed ", 
           " ARCTIC ", " Arhiv Za Slovensku Filologiju ", " Arhivski Vjesnik ", 
           " Asaio ", " Asme Aes ", " Asme MTD ", " Ausländisches Öffentliches Recht ", 
           " Avtomatika I Telemekhanika ", " B/GCVS ", " B/Gcvs ", " b/gcvs ", 
@@ -352,7 +351,6 @@ const UCFIRST_JOURNAL_ACRONYMS = array(/* The following will be automatically up
           " Zeitschrift Für Physik a: Hadrons And Nuclei ", " Znanosti I Umjetnosti ", 
           " Zookeys ", " Zprávy O Zasedání Král. Čes. Společnosti Nauk V Praze ", 
           " Zprávy O Zasedání Král. čes. Společnosti Nauk V Praze ", " Zprávy o zasedání Král. čes. Společnosti nauk v Praze ", 
-          " Antibiotiki I Khimioterapiia ",
           " Ргасе Filologiczne ", /* The above will be automatically updated to alphabetical order */ 
 );
 const OBVIOUS_FOREIGN_WORDS = array(" Abhandlungen ", " Actes ", " Annales ", " Archiv ", " Archives de ",
