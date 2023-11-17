@@ -6013,6 +6013,13 @@ final class Template {
                $this->forget($param);
             }
           }
+
+          if ( strtolower($the_param) === 'ieeexplore.ieee.org') {
+            if ($this->has('isbn') || $this->has('doi') || $this->has('s2cid')) {
+               $this->forget($param);
+            }
+          }
+        
           return;
 
         case 'location':
