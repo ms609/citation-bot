@@ -382,3 +382,4 @@ const ITALICS_HARDCODE_OUT = ["Tweeting the ''Jihad'': Social Media", " of Secta
              "Electron ''g'' Value", "the ''tox'' Gene", "Gopashtami ''and'' Govardhan", "Polish ''Lebensraum'' ", "the ''Nachlass'' problem ",
              " for ''Altalena'':", " in Plutarch's ''Lives'' ", "From ''Solidarity'' to ", " gp91phox Promoter", " ''in vitro'' Assays ", "Marketizing ''Hindutva'' ",
              "The ''Bhagavadgītā'', ", "the ''Origin of Species'' ", "Encountering ''Hindutva'' ", "Chinese ''Hukou'' System ", "''Cis'' Latreille"];
+
