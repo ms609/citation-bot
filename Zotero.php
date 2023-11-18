@@ -245,7 +245,7 @@ public static function drop_urls_that_match_dois(array &$templates) : void {  //
        } elseif (str_ireplace(PROXY_HOSTS_TO_ALWAYS_DROP,'', $url) !== $url && $template->get('doi-access') === 'free') {
           report_forget("Existing proxy URL resulting from equivalent free DOI; dropping URL");
           $template->forget($url_kind);
-       } elseif (str_ireplace(PROXY_HOSTS_TO_ALWAYS_DROP,'', $url) !== $url) {
+       } elseif (str_ireplace(PROXY_HOSTS_TO_ALWAYS_DROP,'', $url) !== $url && $template->blank(['archive-url', 'archiveurl'])) {
           report_forget("Existing proxy URL resulting from equivalent DOI; fixing URL");
           $template->set($url_kind, "https://dx.doi.org/" . doi_encode($doi));
        } elseif (preg_match('~www.sciencedirect.com/science/article/B[^/\-]*\-[^/\-]+\-[^/\-]+/~', $url)) {
@@ -413,6 +413,9 @@ public static function expand_by_zotero(Template $template, ?string $url = NULL)
   if(preg_match('~^(https?://(?:www\.|)nature\.com/articles/[a-zA-Z0-9\.]+)\.pdf(?:|\?.*)$~', $url, $matches)) {
      $url = $matches[1]; // remove PDF from Nature urls
   }
+  if(preg_match('~^(https?://(?:www\.|)mdpi\.com/.+)(?:/pdf\-vor|/pdf)$~', $url, $matches)) {
+     $url = $matches[1];
+  }
   
   $bad_url = implode('|', ZOTERO_AVOID_REGEX);
   if(preg_match("~^https?://(?:www\.|m\.|)(?:" . $bad_url . ")~i", $url)) return FALSE; 
@@ -528,6 +531,11 @@ public static function process_zotero_response(string $zotero_response, Template
   if (stripos($url, 'www.royal.uk') !== FALSE) {
     unset($result->creators);
     unset($result->author);
+  }
+
+  if (stripos($url, 'newrepublic.com') !== FALSE) { // Bad data for all but first one
+    unset($result->creators['1']);
+    unset($result->author['1']);
   }
 
   $result->title = convert_to_utf8($result->title);
@@ -924,7 +932,10 @@ public static function process_zotero_response(string $zotero_response, Template
         if ($template->wikiname() === 'cite web' &&
             stripos($url . @$result->title . @$result->bookTitle . @$result->publicationTitle, 'review') === FALSE &&
             stripos($url, 'archive.org') === FALSE && !preg_match('~^https?://[^/]*journal~', $url) &&
-            stripos($url, 'booklistonline') === FALSE
+            stripos($url, 'booklistonline') === FALSE &&
+            stripos($url, 'finna.fi') === FALSE &&
+            stripos($url, 'planetebd.com') === FALSE &&
+            stripos($url, 'elonet.fi') === FALSE
            ) {
           $template->change_name_to('cite book');
         }
@@ -1213,9 +1224,9 @@ public static function find_indentifiers_in_urls(Template $template, ?string $ur
            return TRUE;
          }
        }
-       if (is_null($url_sent) && get_semanticscholar_license($s2cid) === FALSE) {
-         report_warning('Should probably remove un-licensed Semantic Scholar URL that was converted to S2CID parameter');
-         // SEP 2020 $template->forget($url_type);
+       if (is_null($url_sent) && get_semanticscholar_license($s2cid) === FALSE && stripos($url, 'pdf') === FALSE) {
+         report_warning('Removing un-licensed Semantic Scholar URL that was converted to S2CID parameter');
+         $template->forget($url_type);
          return TRUE;
        }
        return TRUE;

@@ -772,7 +772,7 @@ function title_capitalization(string $in, bool $caps_after_punctuation) : string
   $new_case = mb_substr($new_case, 1, mb_strlen($new_case) - 2); // remove spaces, needed for matching in LC_SMALL_WORDS
 
   // Single letter at end should be capitalized  J Chem Phys E for example.  Obviously not the spanish word "e".
-  if (mb_substr($new_case, -2, 1) === ' ') $new_case = strrev(mb_ucfirst(strrev($new_case)));
+  if (mb_substr($new_case, -2, 1) === ' ') $new_case = mb_strrev(mb_ucfirst(mb_strrev($new_case)));
   
   if ($new_case === 'Now and then') $new_case = 'Now and Then'; // Odd journal name
 
@@ -786,7 +786,7 @@ function title_capitalization(string $in, bool $caps_after_punctuation) : string
     foreach ($matches_in as $key => $_value) {
       if ($matches_in[$key][0] !== $matches_out[$key][0]  &&
           $matches_in[$key][1] === $matches_out[$key][1]) {
-        $new_case = mb_substr_replace($new_case, trim($matches_in[$key][0]), $matches_out[$key][1], 3);
+        $new_case = substr_replace($new_case, trim($matches_in[$key][0]), $matches_out[$key][1], 3); // PREG_OFFSET_CAPTURE is ALWAYS in BYTES, even for unicode
       }
     }
   }
@@ -800,7 +800,7 @@ function title_capitalization(string $in, bool $caps_after_punctuation) : string
     foreach ($matches_in as $key => $_value) {
       if ($matches_in[$key][0] !== $matches_out[$key][0]  &&
           $matches_in[$key][1] === $matches_out[$key][1]) {
-        $new_case = mb_substr_replace($new_case, trim($matches_in[$key][0]), $matches_out[$key][1], 3);
+        $new_case = substr_replace($new_case, trim($matches_in[$key][0]), $matches_out[$key][1], 3); ; // PREG_OFFSET_CAPTURE is ALWAYS in BYTES, even for unicode
       }
     }
   }
@@ -872,6 +872,12 @@ function mb_ucfirst(string $string) : string
 function mb_ucfirst_force(string $string) : string
 {
     return mb_strtoupper(mb_substr($string, 0, 1)) . mb_substr($string, 1, NULL);
+}
+
+function mb_strrev(string $string, string $encode = null) : string
+{
+    $chars = mb_str_split($string, 1, $encode ?: mb_internal_encoding());
+    return implode('', array_reverse($chars));
 }
 
 function mb_ucwords(string $string) : string
@@ -1412,7 +1418,7 @@ function convert_to_utf8(string $value) : string {
 
 function is_encoding_reasonable(string $encode) : bool { // common "default" ones that are often wrong
   $encode = strtolower($encode);
-  return !in_array($encode, ['utf-8', 'iso-8859-1', 'windows-1252', 'unicode', 'us-ascii', 'none', 'iso-8859-7']);
+  return !in_array($encode, ['utf-8', 'iso-8859-1', 'windows-1252', 'unicode', 'us-ascii', 'none', 'iso-8859-7', 'latin1']);
 }
 
 function smart_decode(string $title, string $encode, string $archive_url) : string {
@@ -2301,10 +2307,15 @@ function clean_up_oxford_stuff(Template $template, string $param) : void {
 }
 
 function conference_doi(string $doi) : bool {
+  if (stripos($doi, '10.1007/978-3-662-44777') === 0) return FALSE; // Manual override of stuff
   if (strpos($doi, '10.1109/') === 0 ||
       strpos($doi, '10.1145/') === 0 ||
       strpos($doi, '10.1117/') === 0 ||
       strpos($doi, '10.2991/') === 0 ||
+      stripos($doi, '10.21437/Eurospeech') === 0 ||
+      stripos($doi, '10.21437/interspeech') === 0 ||
+      stripos($doi, '10.21437/SLTU') === 0 ||
+      stripos($doi, '10.21437/TAL') === 0 ||
       (strpos($doi, '10.1007/978-') === 0 && strpos($doi, '_') !== FALSE) ||
       stripos($doi, '10.2991/erss') === 0 ||
       stripos($doi, '10.2991/jahp') === 0) {
