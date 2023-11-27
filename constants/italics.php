@@ -164,6 +164,7 @@ const ITALICS_LIST =
  "Res Publica|" .
  "Angelica sinensis|" .
  "Dilophosaurus wetherilli|" .
+ "Vernonia amygdalina|" .
  "Loa loa|" .
  "Homo nalediin|" .
  "Homo naledi|" .
@@ -175,6 +176,7 @@ const ITALICS_LIST =
  "Ottoia|" .
  "Loxosceles|" .
  "Leveillula|" .
+ "Lewisepeira|" .
  "Hyloscirtus|" .
  "Pseudomonas|" .
  "Baryonyx|" .
@@ -347,7 +349,8 @@ const CAMEL_CASE = array('DeSoto', 'PubChem', 'BitTorrent', 'Al2O3', 'NiMo', 'Cu
                          'TurboFold', 'TurboKnot', 'FusionSeq', 'dRheb', 'GTPase', 'NanoBiosensing', 'eHealth',
                          'iNet', 'NetGames', 'MultiMedia', 'PetaOp', 'AppleScript', 'GeNeDis', 'MeDoc',
                          'eEnvironment', 'AlphaFold', 'BirdLife', 'MetroLink', 'PhyloCode', 'JavaScript', 'AfricArXiv',
-                         'MoveOn', 'iSemantic', 'DigitalHeritage', 'iBroadway', 'TechSym', 'HistoCrypt', 'AaTh', 'ProComm'
+                         'MoveOn', 'iSemantic', 'DigitalHeritage', 'iBroadway', 'TechSym', 'HistoCrypt', 'AaTh', 'ProComm',
+                         'DeSmet', 
                        );
 
 const ITALICS_HARDCODE_IN  = ["Tweeting theJihad: Social Media", " of SectarianismCommunity", " for WonderNineteenth Century Travel ",  
@@ -365,7 +368,8 @@ const ITALICS_HARDCODE_IN  = ["Tweeting theJihad: Social Media", " of Sectariani
              "Devoted to DeathSanta Muerte, the Skeleton Saint",   "Knowing HowEssays on Knowledge, Mind, and Action",   " Rgene", "CytochromebGenes",
              "ElectrongValue",       "thetoxGene",      "GopashtamiandGovardhan",       "PolishLebensraum",       "theNachlassproblem",
              " forAltalena:",      " in Plutarch'sLives",       "FromSolidarityto",        " gp91phoxPromoter",  "in vitroAssays",        "MarketizingHindutva",
-             "TheBhagavadgītā,",       "theOrigin of Species",       "EncounteringHindutva",       "ChineseHukouSystem",        "CisLatreille"];
+             "TheBhagavadgītā,",       "theOrigin of Species",       "EncounteringHindutva",       "ChineseHukouSystem",        "CisLatreille",
+             "the 21stCentury"];
 const ITALICS_HARDCODE_OUT = ["Tweeting the ''Jihad'': Social Media", " of Sectarianism: Community", " for Wonder: Nineteenth Century Travel ",  
              " from the Shadows: Analytical Feminist Contributions",  " der Gattung: Eoeugnathus Brough",  " the Citizen: Music as Public ",
              " to the Sirens: Musical Technologies ", " the Dynasty: Palace Women ", "Divine Creatures: Animal Mummies", 
@@ -381,5 +385,6 @@ const ITALICS_HARDCODE_OUT = ["Tweeting the ''Jihad'': Social Media", " of Secta
              "Devoted to Death: Santa Muerte, the Skeleton Saint", "Knowing How: Essays on Knowledge, Mind, and Action", " ''R'' gene", "Cytochrome ''b'' Genes",
              "Electron ''g'' Value", "the ''tox'' Gene", "Gopashtami ''and'' Govardhan", "Polish ''Lebensraum'' ", "the ''Nachlass'' problem ",
              " for ''Altalena'':", " in Plutarch's ''Lives'' ", "From ''Solidarity'' to ", " gp91phox Promoter", " ''in vitro'' Assays ", "Marketizing ''Hindutva'' ",
-             "The ''Bhagavadgītā'', ", "the ''Origin of Species'' ", "Encountering ''Hindutva'' ", "Chinese ''Hukou'' System ", "''Cis'' Latreille"];
+             "The ''Bhagavadgītā'', ", "the ''Origin of Species'' ", "Encountering ''Hindutva'' ", "Chinese ''Hukou'' System ", "''Cis'' Latreille",
+             "the 21st Century"];
 
