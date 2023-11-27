@@ -75,7 +75,7 @@ const BAD_TITLES = array("unknown", "missing", "arxiv e-prints", "arxiv mathemat
                          "ebscohost login",  "library login", "google groups", "sciencedirect", "cur_title",
                          "wordpress › error", "ssrn temporarily unavailable", "log in - proquest",
                          "shibboleth authentication request", "nookmarkable url intermediate page",
-                         "google books", "rte.ie", "loading", "google book",
+                         "google books", "rte.ie", "loading", "google book", "just a moment",
                          "the article you have been looking for has expired and is not longer available on our system. this is due to newswire licensing terms.",
                          "openid transaction in progress", 'download limit exceeded', 'privacy settings',
                          "untitled-1", "untitled-2", "professional paper", "zbmath",
