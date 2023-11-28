@@ -16,7 +16,7 @@ const LC_SMALL_WORDS = array(/* The following will be automatically updated to a
           " from ", " för ", " før ", " für ", " GSA ", " HIV ", " HLA ", 
           " HortScience ", " HTMLGIANT ", " IBM ", " ICES ", " IEEE ", " IEICE ", 
           " IETF ", " if ", " ILR ", " in ", " INFLIBNET ", " into ", " is ", 
-          " iSciences ", " iSciences ", " ISPRS ", " its ", " IUCN ", " JAMA ", " JAMA: ", " la ", 
+          " ISPRS ", " its ", " IUCN ", " JAMA ", " JAMA: ", " la ", 
           " las ", " le ", " les ", " los ", " LRTAP ", " M.A. ", " M.D. ", " medRxiv ", 
           " mit ", " MNRAS ", " mot ", " N.Y. ", " N.Y.) ", " N.Z. ", " N.Z.) ", 
           " NASA ", " NASSP ", " NEJM ", " NIH ", " NIST ", " non ", " nor ", 
@@ -47,7 +47,7 @@ const UC_SMALL_WORDS = array(/* The following will be automatically updated to a
           " From ", " För ", " Før ", " Für ", " Gsa ", " Hiv ", " Hla ", 
           " Hortscience ", " Htmlgiant ", " Ibm ", " Ices ", " Ieee ", " Ieice ", 
           " Ietf ", " If ", " Ilr ", " In ", " Inflibnet ", " Into ", " Is ", 
-          " Isciences ", " ISciences ", " Isprs ", " Its ", " Iucn ", " Jama ", " Jama: ", " La ", 
+          " Isprs ", " Its ", " Iucn ", " Jama ", " Jama: ", " La ", 
           " Las ", " Le ", " Les ", " Los ", " Lrtap ", " M.a. ", " M.d. ", " Medrxiv ", 
           " Mit ", " Mnras ", " Mot ", " N.y. ", " N.y.) ", " N.z. ", " N.z.) ", 
           " Nasa ", " Nassp ", " Nejm ", " Nih ", " Nist ", " Non ", " Nor ", 
@@ -142,7 +142,7 @@ const JOURNAL_ACRONYMS = array(/* The following will be automatically updated to
           " Le chemin de fer ", " Le Monde artiste ", " LISP and Symbolic Computation ", 
           " Ltd ", " MAA Focus ", " mAbs ", " mAbs ", " Marion E. Wade ", " mBio ", 
           " mBio ", " Med Sch ", " MedChemComm ", " Meddelelser om Grønland ", 
-          " Meddelelser om Grønland, ", " MedPage ", " MedPage ", " medRxiv ", 
+          " Meddelelser om Grønland, ", " MedPage ", " medRxiv ", 
           " Medscape ", " MERIP ", " Methods in Molecular Biology ", " mHealth ", 
           " mHealth ", " MicrobiologyOpen ", " Mikologiya i Fitopatologiya ", 
           " MIS Quarterly ", " MIT Sloan ", " mLife ", " mLife ", " Molecular and Cellular Biology ", 
@@ -206,6 +206,7 @@ const JOURNAL_ACRONYMS = array(/* The following will be automatically updated to
           " Zeitschrift für Physik A: Hadrons and Nuclei ", " Znanosti i Umjetnosti ", 
           " ZooKeys ", " Zprávy o zasedání Král. čes. společnosti nauk v Praze ", 
           " Zprávy o zasedání Král. čes. společnosti nauk v Praze ", " Zprávy o zasedání Král. čes. společnosti nauk v Praze ", 
+                               " iSciences ", " iSciences ", 
           " Ргасе filologiczne ", /* The above will be automatically updated to alphabetical order */ 
 );
 const UCFIRST_JOURNAL_ACRONYMS = array(/* The following will be automatically updated to alphabetical order */
@@ -287,7 +288,7 @@ const UCFIRST_JOURNAL_ACRONYMS = array(/* The following will be automatically up
           " le Chemin de Fer ", " Le Monde Artiste ", " Lisp and Symbolic Computation ", 
           " LTD ", " Maa Focus ", " MAbs ", " Mabs ", " Marion e. Wade ", " MBio ", 
           " Mbio ", " Med SCH ", " Medchemcomm ", " Meddelelser Om Grønland ", 
-          " Meddelelser Om Grønland, ", " Medpage ", " Medpage ", " MedRxiv ", 
+          " Meddelelser Om Grønland, ", " Medpage ", " MedRxiv ", 
           " MedScape ", " Merip ", " Methods in Molecular Biology (Clifton, N.j.) ", 
           " MHealth ", " Mhealth ", " Microbiologyopen ", " Mikologiya I Fitopatologiya ", 
           " Mis Quarterly ", " Mit Sloan ", " MLife ", " Mlife ", " Molecular and cellular Biology ", 
@@ -351,6 +352,7 @@ const UCFIRST_JOURNAL_ACRONYMS = array(/* The following will be automatically up
           " Zeitschrift Für Physik a: Hadrons And Nuclei ", " Znanosti I Umjetnosti ", 
           " Zookeys ", " Zprávy O Zasedání Král. Čes. Společnosti Nauk V Praze ", 
           " Zprávy O Zasedání Král. čes. Společnosti Nauk V Praze ", " Zprávy o zasedání Král. čes. Společnosti nauk v Praze ", 
+                                       " Isciences ", " ISciences ", 
           " Ргасе Filologiczne ", /* The above will be automatically updated to alphabetical order */ 
 );
 const OBVIOUS_FOREIGN_WORDS = array(" Abhandlungen ", " Actes ", " Annales ", " Archiv ", " Archives de ",
