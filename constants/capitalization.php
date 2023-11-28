@@ -16,8 +16,8 @@ const LC_SMALL_WORDS = array(/* The following will be automatically updated to a
           " from ", " för ", " før ", " für ", " GSA ", " HIV ", " HLA ", 
           " HortScience ", " HTMLGIANT ", " IBM ", " ICES ", " IEEE ", " IEICE ", 
           " IETF ", " if ", " ILR ", " in ", " INFLIBNET ", " into ", " is ", 
-          " ISPRS ", " its ", " IUCN ", " JAMA ", " JAMA: ", " la ", " las ", 
-          " le ", " les ", " los ", " LRTAP ", " M.A. ", " M.D. ", " medRxiv ", 
+          " iSciences ", " iSciences ", " ISPRS ", " its ", " IUCN ", " JAMA ", " JAMA: ", " la ", 
+          " las ", " le ", " les ", " los ", " LRTAP ", " M.A. ", " M.D. ", " medRxiv ", 
           " mit ", " MNRAS ", " mot ", " N.Y. ", " N.Y.) ", " N.Z. ", " N.Z.) ", 
           " NASA ", " NASSP ", " NEJM ", " NIH ", " NIST ", " non ", " nor ", 
           " NRC ", " NY ", " NY) ", " NYC ", " NYT ", " NZ ", " NZ) ", " och ", 
@@ -28,7 +28,6 @@ const LC_SMALL_WORDS = array(/* The following will be automatically updated to a
           " the ", " TheMarker ", " then ", " till ", " to ", " UCLA ", " UK ", 
           " um ", " und ", " unserer ", " up ", " USA ", " USSR ", " van ", " ve ", 
           " vir ", " von ", " voor ", " when ", " with ", " within ", " woor ", 
-          " iSciences ",
           " y ", " zu ", " zum ", " zur ", /* The above will be automatically updated to alphabetical order */ 
           // After this line we list exceptions that need re-capitalizing after they have been decapitalized.
           " El Dorado ", " Las Vegas ", " Los Angeles ", " N Y ", " U S A ");
@@ -48,8 +47,8 @@ const UC_SMALL_WORDS = array(/* The following will be automatically updated to a
           " From ", " För ", " Før ", " Für ", " Gsa ", " Hiv ", " Hla ", 
           " Hortscience ", " Htmlgiant ", " Ibm ", " Ices ", " Ieee ", " Ieice ", 
           " Ietf ", " If ", " Ilr ", " In ", " Inflibnet ", " Into ", " Is ", 
-          " Isprs ", " Its ", " Iucn ", " Jama ", " Jama: ", " La ", " Las ", 
-          " Le ", " Les ", " Los ", " Lrtap ", " M.a. ", " M.d. ", " Medrxiv ", 
+          " Isciences ", " ISciences ", " Isprs ", " Its ", " Iucn ", " Jama ", " Jama: ", " La ", 
+          " Las ", " Le ", " Les ", " Los ", " Lrtap ", " M.a. ", " M.d. ", " Medrxiv ", 
           " Mit ", " Mnras ", " Mot ", " N.y. ", " N.y.) ", " N.z. ", " N.z.) ", 
           " Nasa ", " Nassp ", " Nejm ", " Nih ", " Nist ", " Non ", " Nor ", 
           " Nrc ", " Ny ", " Ny) ", " Nyc ", " Nyt ", " Nz ", " Nz) ", " Och ", 
@@ -60,7 +59,6 @@ const UC_SMALL_WORDS = array(/* The following will be automatically updated to a
           " The ", " Themarker ", " Then ", " Till ", " To ", " Ucla ", " Uk ", 
           " Um ", " Und ", " Unserer ", " Up ", " Usa ", " Ussr ", " Van ", " Ve ", 
           " Vir ", " Von ", " Voor ", " When ", " With ", " Within ", " Woor ", 
-          " ISciences ",
           " Y ", " Zu ", " Zum ", " Zur ", /* The above will be automatically updated to alphabetical order */ 
           // After this line we list exceptions that need re-capitalizing after they have been decapitalized.
           " el Dorado ", " las Vegas ", " los Angeles ", " N y ", " U S a ");
