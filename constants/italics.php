@@ -220,6 +220,7 @@ const ITALICS_LIST =
  "Eschata|" .
  "Dianthus|" .
  "Arthoniais|" .
+ "Arthropterygius|".
  "Acacia|" .
  "Berardiusin|" .
  "Ilustrado|" .
@@ -350,7 +351,8 @@ const CAMEL_CASE = array('DeSoto', 'PubChem', 'BitTorrent', 'Al2O3', 'NiMo', 'Cu
                          'iNet', 'NetGames', 'MultiMedia', 'PetaOp', 'AppleScript', 'GeNeDis', 'MeDoc',
                          'eEnvironment', 'AlphaFold', 'BirdLife', 'MetroLink', 'PhyloCode', 'JavaScript', 'AfricArXiv',
                          'MoveOn', 'iSemantic', 'DigitalHeritage', 'iBroadway', 'TechSym', 'HistoCrypt', 'AaTh', 'ProComm',
-                         'DeSmet', 
+                         'DeSmet', 'HfMoTaTiZr', 'HfMoNbTaTiZr', 'CoCrFeMnNi', 'alloy film', 'ProtSweep', '2Dsweep',
+                         'DomainSweep', 'McLaughlin', 'WikiPathways'
                        );
 
 const ITALICS_HARDCODE_IN  = ["Tweeting theJihad: Social Media", " of SectarianismCommunity", " for WonderNineteenth Century Travel ",  
