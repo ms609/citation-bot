@@ -906,8 +906,8 @@ public static function process_zotero_response(string $zotero_response, Template
   if ( isset($result->series) && stripos($url, '.acm.org')===FALSE)  $template->add_if_new('series' , (string) $result->series);
   $i = 0;
   while (isset($result->author[$i])) {
-      if ($this->is_bad_author((string) @$result->author[$i][1])) unset($result->author[$i][1]);
-      if ($this->is_bad_author((string) @$result->author[$i][0])) unset($result->author[$i][0]);
+      if (self::is_bad_author((string) @$result->author[$i][1])) unset($result->author[$i][1]);
+      if (self::is_bad_author((string) @$result->author[$i][0])) unset($result->author[$i][0]);
       $i++;
   }
   unset($i);
@@ -1040,8 +1040,8 @@ public static function process_zotero_response(string $zotero_response, Template
               $authorParam = '';                                                   // @codeCoverageIgnore
           }
          if ($authorParam && author_is_human($result->creators[$i]->firstName . ' ' . $result->creators[$i]->lastName)) {
-            if ($this->is_bad_author((string) $result->creators[$i]->lastName)) $result->creators[$i]->lastName  ='';
-            if ($this->is_bad_author((string) $result->creators[$i]->firstName)) $result->creators[$i]->firstName  ='';
+            if (self::is_bad_author((string) $result->creators[$i]->lastName)) $result->creators[$i]->lastName  ='';
+            if (self::is_bad_author((string) $result->creators[$i]->firstName)) $result->creators[$i]->firstName  ='';
             $template->validate_and_add($authorParam, (string) $result->creators[$i]->lastName, (string) $result->creators[$i]->firstName,
             isset($result->rights) ? (string) $result->rights : '', FALSE);
              // Break out if nothing added
