@@ -2853,9 +2853,9 @@ final class TemplateTest2 extends testBaseClass {
      $text='{{Cite journal |doi=((10.51134/sod.2013.039 )) }}';
      $template = $this->process_citation($text);
      $this->assertNull($template->get2('doi-broken-date'));
-     $this->assertNotNull($template->get2('journal'));
      $this->assertSame('10.51134/sod.2013.039', $template->get2('doi'));
      $this->assertSame('((10.51134/sod.2013.039 ))', $template->get3('doi'));
+     $this->assertNotNull($template->get2('journal'));
    }
  
    public function testAddEditorFalse() : void {
