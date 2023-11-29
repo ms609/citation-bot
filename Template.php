@@ -643,7 +643,7 @@ final class Template {
             if ($this->has('CITATION_BOT_PLACEHOLDER_journal')) {
               if ($this->has('journal') && $this->get('journal') !== $this->get('CITATION_BOT_PLACEHOLDER_journal') &&
                   '[[' . $this->get('journal') . ']]' !== $this->get('CITATION_BOT_PLACEHOLDER_journal')) {
-                $this->forget('CITATION_BOT_PLACEHOLDER_journal');
+                $this->move_and_forget('CITATION_BOT_PLACEHOLDER_journal');
               } else {
                 $this->rename('CITATION_BOT_PLACEHOLDER_journal', 'journal');
               }
@@ -659,7 +659,7 @@ final class Template {
                 } elseif ($this->get('title') === $this->get('CITATION_BOT_PLACEHOLDER_title')) {
                   $this->rename('CITATION_BOT_PLACEHOLDER_title', 'title');
                 } else {
-                  $this->forget('CITATION_BOT_PLACEHOLDER_title');
+                  $this->move_and_forget('CITATION_BOT_PLACEHOLDER_title');
                 }
               } else {
                 $this->rename('CITATION_BOT_PLACEHOLDER_title', 'title');
@@ -676,7 +676,7 @@ final class Template {
                 } elseif ($this->get('chapter') === $this->get('CITATION_BOT_PLACEHOLDER_chapter')) {
                   $this->rename('CITATION_BOT_PLACEHOLDER_chapter', 'chapter');
                 } else {
-                  $this->forget('CITATION_BOT_PLACEHOLDER_chapter');
+                  $this->move_and_forget('CITATION_BOT_PLACEHOLDER_chapter');
                 }
               } else {
                 $this->rename('CITATION_BOT_PLACEHOLDER_chapter', 'chapter');
@@ -684,37 +684,37 @@ final class Template {
             }
             if ($this->has('CITATION_BOT_PLACEHOLDER_issue')) {
               if ($this->has('issue') && $this->get('issue') !== $this->get('CITATION_BOT_PLACEHOLDER_issue')) {
-                $this->forget('CITATION_BOT_PLACEHOLDER_issue');
+                $this->move_and_forget('CITATION_BOT_PLACEHOLDER_issue');
               } else {
                 $this->rename('CITATION_BOT_PLACEHOLDER_issue', 'issue');
               }
             }
             if ($this->has('CITATION_BOT_PLACEHOLDER_volume')) {
               if ($this->has('volume') && $this->get('volume') !== $this->get('CITATION_BOT_PLACEHOLDER_volume')) {
-                $this->forget('CITATION_BOT_PLACEHOLDER_volume');
+                $this->move_and_forget('CITATION_BOT_PLACEHOLDER_volume');
               } else {
                 $this->rename('CITATION_BOT_PLACEHOLDER_volume', 'volume');
               }
             }
             if ($this->has('CITATION_BOT_PLACEHOLDER_page')) {
               if (($this->has('page') || $this->has('pages')) && ($this->get('page') . $this->get('pages') !== $this->get('CITATION_BOT_PLACEHOLDER_page'))) {
-                $this->forget('CITATION_BOT_PLACEHOLDER_page');
+                $this->move_and_forget('CITATION_BOT_PLACEHOLDER_page');
               } else {
                 $this->rename('CITATION_BOT_PLACEHOLDER_page', 'page');
               }
             }
             if ($this->has('CITATION_BOT_PLACEHOLDER_pages')) {
               if (($this->has('page') || $this->has('pages')) && ($this->get('page') . $this->get('pages') !== $this->get('CITATION_BOT_PLACEHOLDER_pages'))) {
-                $this->forget('CITATION_BOT_PLACEHOLDER_pages');
+                $this->move_and_forget('CITATION_BOT_PLACEHOLDER_pages');
               } else {
                 $this->rename('CITATION_BOT_PLACEHOLDER_pages', 'pages');
               }
             }
             if ($this->has('CITATION_BOT_PLACEHOLDER_year')) {
               if ($this->has('year') && ($this->get('year') !== $this->get('CITATION_BOT_PLACEHOLDER_year'))) {
-                $this->forget('CITATION_BOT_PLACEHOLDER_year');
+                $this->move_and_forget('CITATION_BOT_PLACEHOLDER_year');
               } elseif ($this->has('date') && ($this->get('date') !== $this->get('CITATION_BOT_PLACEHOLDER_year'))) {
-                $this->forget('CITATION_BOT_PLACEHOLDER_year');
+                $this->move_and_forget('CITATION_BOT_PLACEHOLDER_year');
               } elseif ($this->has('date') && ($this->get('date') === $this->get('CITATION_BOT_PLACEHOLDER_year'))) {
                 $this->forget('date');
                 $this->rename('CITATION_BOT_PLACEHOLDER_year', 'year');
@@ -7402,5 +7402,16 @@ final class Template {
      // So we do not get an error when we parse a second time
      unset($this->rawtext);  // @phan-suppress-current-line PhanTypeObjectUnsetDeclaredProperty
      $this->parse_text($tmp);
+  }
+
+  private function move_and_forget(string $para) : void {  // Try to keep parameters in the same order
+     $para2 = str_replace('CITATION_BOT_PLACEHOLDER_', '', $para);
+     if ($this->has($para2)) {
+       $this->set($para, $this->get($para2));
+       $this->rename($para, $para2);
+     } else {
+       $this->forget($para);
+       bot_debug_log('move_and_forget: ' . $para);
+     }
   }
 }
