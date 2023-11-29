@@ -33,6 +33,8 @@ const ITALICS_LIST =
  "Drosophila silvestris|" .
  "Luzula nivea|" .
  "Myrmecia reticulata|" .
+ "Aedes koreicus|" .
+ "Aedes japonicus|" .
  "Ustilago maydis|" .
  "Plasmodium falciparum|" .
  "Agaricus blazei|" .
@@ -352,7 +354,7 @@ const CAMEL_CASE = array('DeSoto', 'PubChem', 'BitTorrent', 'Al2O3', 'NiMo', 'Cu
                          'eEnvironment', 'AlphaFold', 'BirdLife', 'MetroLink', 'PhyloCode', 'JavaScript', 'AfricArXiv',
                          'MoveOn', 'iSemantic', 'DigitalHeritage', 'iBroadway', 'TechSym', 'HistoCrypt', 'AaTh', 'ProComm',
                          'DeSmet', 'HfMoTaTiZr', 'HfMoNbTaTiZr', 'CoCrFeMnNi', 'alloy film', 'ProtSweep', '2Dsweep',
-                         'DomainSweep', 'McLaughlin', 'WikiPathways'
+                         'DomainSweep', 'McLaughlin', 'WikiPathways', 'MediaArtHistories', 'SunLine'
                        );
 
 const ITALICS_HARDCODE_IN  = ["Tweeting theJihad: Social Media", " of SectarianismCommunity", " for WonderNineteenth Century Travel ",  
