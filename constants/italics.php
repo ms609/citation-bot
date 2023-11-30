@@ -59,6 +59,7 @@ const ITALICS_LIST =
  "Sui Generis|" .
  "Communist Manifesto|" .
  "Bacillus thuringiensis|" .
+ "Magnosaurus nethercombensis|" .
  "Star Trek|" .
  "Meringosphaera mediterranea|" .
  "Candida albicansas|" .
@@ -258,10 +259,13 @@ const ITALICS_LIST =
  "Symbiodinium|" .
  "Dhammapada|" .
  "Xenopusembryo|" .
+ "Chlamydomonas|" .
+ "Anaplecta|" .
  "Arumberia|" .
  "Ridda|" .
  "Dictyochloropsis|" .
  "Laccognathus|" .
+ "Stereum|" .
  "Karma|" .
  "Cena|" .
  "Satyricon|" .
@@ -354,7 +358,8 @@ const CAMEL_CASE = array('DeSoto', 'PubChem', 'BitTorrent', 'Al2O3', 'NiMo', 'Cu
                          'eEnvironment', 'AlphaFold', 'BirdLife', 'MetroLink', 'PhyloCode', 'JavaScript', 'AfricArXiv',
                          'MoveOn', 'iSemantic', 'DigitalHeritage', 'iBroadway', 'TechSym', 'HistoCrypt', 'AaTh', 'ProComm',
                          'DeSmet', 'HfMoTaTiZr', 'HfMoNbTaTiZr', 'CoCrFeMnNi', 'alloy film', 'ProtSweep', '2Dsweep',
-                         'DomainSweep', 'McLaughlin', 'WikiPathways', 'MediaArtHistories', 'SunLine'
+                         'DomainSweep', 'McLaughlin', 'WikiPathways', 'MediaArtHistories', 'SunLine', 'SnakeChunks',
+                         'LeGuin'
                        );
 
 const ITALICS_HARDCODE_IN  = ["Tweeting theJihad: Social Media", " of SectarianismCommunity", " for WonderNineteenth Century Travel ",  
