@@ -939,6 +939,7 @@ public static function process_zotero_response(string $zotero_response, Template
             stripos($url . @$result->title . @$result->bookTitle . @$result->publicationTitle, 'review') === FALSE &&
             stripos($url, 'archive.org') === FALSE && !preg_match('~^https?://[^/]*journal~', $url) &&
             stripos($url, 'booklistonline') === FALSE &&
+            stripos($url, 'catalogue.bnf') === FALSE &&
             stripos($url, 'finna.fi') === FALSE &&
             stripos($url, 'planetebd.com') === FALSE &&
             stripos($url, 'elonet.fi') === FALSE
