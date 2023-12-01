@@ -318,6 +318,9 @@ function extract_doi(string $text) : array {
 function wikify_external_text(string $title) : string {
   $replacement = [];
   $placeholder = [];
+  $title = safe_preg_replace_callback('~(?:\$\$)([^\$]+)(?:\$\$)~iu',
+      function (array $matches) : string {return ("<math>" . $matches[1] . "</math>");},
+      $title);
   if (preg_match_all("~<(?:mml:)?math[^>]*>(.*?)</(?:mml:)?math>~", $title, $matches)) {
     for ($i = 0; $i < count($matches[0]); $i++) {
       $replacement[$i] = '<math>' . 
@@ -369,8 +372,6 @@ function wikify_external_text(string $title) : string {
   $originalTags = array('<br>', '</br>', '</ br>', '<p>', '</p>', '</ p>', '<strong>', '</strong>', '</ strong>');
   $wikiTags = array('. ','. ','. ','. ','. ','. ', ' ',' ',' ');
   $title = trim(str_ireplace($originalTags, $wikiTags, $title));
-  $title = str_replace('\$\$\\\\', '\', $title);
-  $title = str_replace('\$\$', '', $title);
   if (preg_match("~^\. (.+)$~", $title, $matches)) {
     $title = trim($matches[1]);
   }
