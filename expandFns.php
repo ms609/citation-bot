@@ -369,8 +369,8 @@ function wikify_external_text(string $title) : string {
   $originalTags = array('<br>', '</br>', '</ br>', '<p>', '</p>', '</ p>', '<strong>', '</strong>', '</ strong>');
   $wikiTags = array('. ','. ','. ','. ','. ','. ', ' ',' ',' ');
   $title = trim(str_ireplace($originalTags, $wikiTags, $title));
-  $title = str_replace('$$\\', '\', $title);
-  $title = str_replace('$$', '', $title);
+  $title = str_replace('\$\$\\\\', '\', $title);
+  $title = str_replace('\$\$', '', $title);
   if (preg_match("~^\. (.+)$~", $title, $matches)) {
     $title = trim($matches[1]);
   }
