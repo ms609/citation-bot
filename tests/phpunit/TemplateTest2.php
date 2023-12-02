@@ -3646,7 +3646,7 @@ final class TemplateTest2 extends testBaseClass {
     $this->requires_bibcode(function() : void {
       $text = "{{Cite book|bibcode=1982mcts.book.....H}}";
       $expanded = $this->process_citation($text);
-      $this->assertSame('1982', $expanded->get2('year'));
+      $this->assertSame('1982', $expanded->get2('date'));
       $this->assertSame('Houk', $expanded->get2('last1'));
       $this->assertSame('N.', $expanded->get2('first1'));
       $this->assertNotNull($expanded->get2('title'));
@@ -3655,6 +3655,7 @@ final class TemplateTest2 extends testBaseClass {
     $expanded = $this->process_citation($text);
     $this->assertNull($expanded->get2('title'));
     $this->assertNull($expanded->get2('year'));
+    $this->assertNull($expanded->get2('date'));
   }
  
   public function testBibcodesFindBooks() : void {
