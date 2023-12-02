@@ -121,7 +121,7 @@ final class Template {
         $this->name = $spacing[1] . 'cite book' . $spacing[2];
       } elseif (!$this->blank_other_than_comments(['journal', 'pmid', 'pmc'])) {
         $this->name = $spacing[1] . 'cite journal' . $spacing[2];
-      } else (!$this->blank_other_than_comments('publisher')) {
+      } elseif (!$this->blank_other_than_comments('publisher') && $this->blank('url')) {
         $this->name = $spacing[1] . 'cite document' . $spacing[2];
       }
     } elseif ($trim_name === 'Cite paper' || $trim_name === 'Cite document') {
@@ -141,7 +141,7 @@ final class Template {
         $this->name = $spacing[1] . 'Cite book' . $spacing[2];
       } elseif (!$this->blank_other_than_comments(['journal', 'pmid', 'pmc'])) {
         $this->name = $spacing[1] . 'Cite journal' . $spacing[2];
-      } else (!$this->blank_other_than_comments('publisher')) {
+      } elseif (!$this->blank_other_than_comments('publisher') && $this->blank('url')) {
         $this->name = $spacing[1] . 'Cite document' . $spacing[2];
       }
     }
