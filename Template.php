@@ -121,7 +121,7 @@ final class Template {
         $this->name = $spacing[1] . 'cite book' . $spacing[2];
       } elseif (!$this->blank_other_than_comments(['journal', 'pmid', 'pmc'])) {
         $this->name = $spacing[1] . 'cite journal' . $spacing[2];
-      } else {
+      } elseif (!$this->blank_other_than_comments('publisher') && $this->blank('url')) {
         $this->name = $spacing[1] . 'cite document' . $spacing[2];
       }
     } elseif ($trim_name === 'Cite paper' || $trim_name === 'Cite document') {
@@ -141,7 +141,7 @@ final class Template {
         $this->name = $spacing[1] . 'Cite book' . $spacing[2];
       } elseif (!$this->blank_other_than_comments(['journal', 'pmid', 'pmc'])) {
         $this->name = $spacing[1] . 'Cite journal' . $spacing[2];
-      } else {
+      } elseif (!$this->blank_other_than_comments('publisher') && $this->blank('url')) {
         $this->name = $spacing[1] . 'Cite document' . $spacing[2];
       }
     }
@@ -334,8 +334,9 @@ final class Template {
             report_action("Found and used SICI");
           }
       }
-      if (!$this->blank(['pmc', 'pmid', 'doi', 'jstor']) ||
-         (stripos($this->get('journal') . $this->get('title'), 'arxiv') !== FALSE && !$this->blank(ARXIV_ALIASES))) { // Have some good data
+      if ((stripos($this->rawtext, 'citation_bot_placeholder_comment') === FALSE) &&
+         (!$this->blank(['pmc', 'pmid', 'doi', 'jstor']) ||
+         (stripos($this->get('journal') . $this->get('title'), 'arxiv') !== FALSE && !$this->blank(ARXIV_ALIASES)))) { // Have some good data
           $the_title   = $this->get('title');
           $the_journal = str_replace(['[', ']'], '', $this->get('journal'));
           $the_chapter = $this->get('chapter');
@@ -616,7 +617,7 @@ final class Template {
               }
           }
           if ($bad_data) {
-            if ($this->has('year')) { // Often the pre-print year
+            if ($this->has('year') && $this->blank(['isbn', 'lccn', 'oclc'])) { // Often the pre-print year
               $this->rename('year', 'CITATION_BOT_PLACEHOLDER_year');
             }
             if ($this->has('doi') && doi_active($this->get('doi'))) {
@@ -642,7 +643,7 @@ final class Template {
             if ($this->has('CITATION_BOT_PLACEHOLDER_journal')) {
               if ($this->has('journal') && $this->get('journal') !== $this->get('CITATION_BOT_PLACEHOLDER_journal') &&
                   '[[' . $this->get('journal') . ']]' !== $this->get('CITATION_BOT_PLACEHOLDER_journal')) {
-                $this->forget('CITATION_BOT_PLACEHOLDER_journal');
+                $this->move_and_forget('CITATION_BOT_PLACEHOLDER_journal');
               } else {
                 $this->rename('CITATION_BOT_PLACEHOLDER_journal', 'journal');
               }
@@ -658,7 +659,7 @@ final class Template {
                 } elseif ($this->get('title') === $this->get('CITATION_BOT_PLACEHOLDER_title')) {
                   $this->rename('CITATION_BOT_PLACEHOLDER_title', 'title');
                 } else {
-                  $this->forget('CITATION_BOT_PLACEHOLDER_title');
+                  $this->move_and_forget('CITATION_BOT_PLACEHOLDER_title');
                 }
               } else {
                 $this->rename('CITATION_BOT_PLACEHOLDER_title', 'title');
@@ -675,7 +676,7 @@ final class Template {
                 } elseif ($this->get('chapter') === $this->get('CITATION_BOT_PLACEHOLDER_chapter')) {
                   $this->rename('CITATION_BOT_PLACEHOLDER_chapter', 'chapter');
                 } else {
-                  $this->forget('CITATION_BOT_PLACEHOLDER_chapter');
+                  $this->move_and_forget('CITATION_BOT_PLACEHOLDER_chapter');
                 }
               } else {
                 $this->rename('CITATION_BOT_PLACEHOLDER_chapter', 'chapter');
@@ -683,37 +684,37 @@ final class Template {
             }
             if ($this->has('CITATION_BOT_PLACEHOLDER_issue')) {
               if ($this->has('issue') && $this->get('issue') !== $this->get('CITATION_BOT_PLACEHOLDER_issue')) {
-                $this->forget('CITATION_BOT_PLACEHOLDER_issue');
+                $this->move_and_forget('CITATION_BOT_PLACEHOLDER_issue');
               } else {
                 $this->rename('CITATION_BOT_PLACEHOLDER_issue', 'issue');
               }
             }
             if ($this->has('CITATION_BOT_PLACEHOLDER_volume')) {
               if ($this->has('volume') && $this->get('volume') !== $this->get('CITATION_BOT_PLACEHOLDER_volume')) {
-                $this->forget('CITATION_BOT_PLACEHOLDER_volume');
+                $this->move_and_forget('CITATION_BOT_PLACEHOLDER_volume');
               } else {
                 $this->rename('CITATION_BOT_PLACEHOLDER_volume', 'volume');
               }
             }
             if ($this->has('CITATION_BOT_PLACEHOLDER_page')) {
               if (($this->has('page') || $this->has('pages')) && ($this->get('page') . $this->get('pages') !== $this->get('CITATION_BOT_PLACEHOLDER_page'))) {
-                $this->forget('CITATION_BOT_PLACEHOLDER_page');
+                $this->move_and_forget('CITATION_BOT_PLACEHOLDER_page');
               } else {
                 $this->rename('CITATION_BOT_PLACEHOLDER_page', 'page');
               }
             }
             if ($this->has('CITATION_BOT_PLACEHOLDER_pages')) {
               if (($this->has('page') || $this->has('pages')) && ($this->get('page') . $this->get('pages') !== $this->get('CITATION_BOT_PLACEHOLDER_pages'))) {
-                $this->forget('CITATION_BOT_PLACEHOLDER_pages');
+                $this->move_and_forget('CITATION_BOT_PLACEHOLDER_pages');
               } else {
                 $this->rename('CITATION_BOT_PLACEHOLDER_pages', 'pages');
               }
             }
             if ($this->has('CITATION_BOT_PLACEHOLDER_year')) {
               if ($this->has('year') && ($this->get('year') !== $this->get('CITATION_BOT_PLACEHOLDER_year'))) {
-                $this->forget('CITATION_BOT_PLACEHOLDER_year');
+                $this->move_and_forget('CITATION_BOT_PLACEHOLDER_year');
               } elseif ($this->has('date') && ($this->get('date') !== $this->get('CITATION_BOT_PLACEHOLDER_year'))) {
-                $this->forget('CITATION_BOT_PLACEHOLDER_year');
+                $this->move_and_forget('CITATION_BOT_PLACEHOLDER_year');
               } elseif ($this->has('date') && ($this->get('date') === $this->get('CITATION_BOT_PLACEHOLDER_year'))) {
                 $this->forget('date');
                 $this->rename('CITATION_BOT_PLACEHOLDER_year', 'year');
@@ -943,6 +944,8 @@ final class Template {
   public function add_if_new(string $param_name, string $value, string $api = '') : bool {
     // Clean up weird stuff from CrossRef etc.
     $value = safe_preg_replace('~[\x{2000}-\x{200A}\x{00A0}\x{202F}\x{205F}\x{3000}]~u', ' ', $value); // Non-standard spaces
+    $value = safe_preg_replace("~^\xE2\x80\x8B~", " ", $value); // Zero-width at start
+    $value = safe_preg_replace("~\xE2\x80\x8B$~", " ", $value); // Zero-width at end
     $value = safe_preg_replace('~[\t\n\r\0\x0B]~u', ' ', $value); // tabs, linefeeds, null bytes
     $value = safe_preg_replace('~  +~u', ' ', $value); // multiple spaces
     $value = trim($value);
@@ -1177,6 +1180,7 @@ final class Template {
         if (self::$date_style !== DATES_WHATEVER || preg_match('~^\d{4}\-\d{2}\-\d{2}$~', $value)) {
           $time = strtotime($value);
           if ($time) {
+            if ($time === strtotime(date("Y-m-d"))) return FALSE; // Reject bad data
             $day = date('d', $time);
             if ($day !== '01') { // Probably just got month and year if day=1
               if (self::$date_style === DATES_MDY) {
@@ -1352,6 +1356,7 @@ final class Template {
 
       case 'chapter': case 'contribution': case 'article': case 'section': //  We do not add article/section, but sometimes found floating in a template
         if (!$this->blank(['booktitle', 'book-title']) && $this->has('title')) return FALSE;
+        if (!$this->blank(WORK_ALIASES) && $this->wikiname() === 'citation') return FALSE; // TODO - check for things that should be swapped etc.
         $value = preg_replace('~^\[\d+\]\s*~', '', $value);  // Remove chapter numbers
         if ($this->blank(CHAPTER_ALIASES)) {
           return $this->add($param_name, wikify_external_text($value));
@@ -1623,6 +1628,7 @@ final class Template {
         return TRUE;
 
       case 's2cid':
+        if (in_array($value, ['11008564'])) return FALSE; // known bad values
         if ($this->blank(['s2cid', 'S2CID'])) {
           $this->add($param_name, $value);
           $this->get_doi_from_semanticscholar();
@@ -2625,6 +2631,7 @@ final class Template {
         if (stripos($oa_url, 'timetravel.mementoweb.org') !== FALSE) return 'mementoweb'; // Not good ones
         if (stripos($oa_url, 'citeseerx') !== FALSE) return 'citeseerx'; // blacklisted due to copyright concerns
         if (stripos($oa_url, 'palgraveconnect') !== FALSE) return 'palgraveconnect';
+        if (stripos($oa_url, 'repository.upenn.edu') !== FALSE) return 'epository.upenn.edu'; // All links broken right now
         if ($this->get('url')) {
             if ($this->get('url') !== $oa_url) $this->get_identifiers_from_url($oa_url);  // Maybe we can get a new link type
             return 'have url';
@@ -3424,7 +3431,7 @@ final class Template {
           case "fahrplan-ch": case "incomplete short citation": case "music": case "bar-ads":
           case "subscription or libraries": case "gallica": case "gnd": case "ncbibook":
           case "spaces": case "ndash": case "dggs": case "self-published source": case "nobreak":
-          case "university of twente pure": case "mathscinet":
+          case "university of twente pure": case "mathscinet": case "discogs master":
           case "gbooks": case "gburl": // TODO - should use
           case "isbnt": case "issn link": case "lccn8": // Assume not normal template for a reason
           case "google books": // Usually done for fancy formatting and because already has title-link/url
@@ -3736,6 +3743,8 @@ final class Template {
          ) {
         // Non-breaking spaces at ends
         $this->set($param, trim($this->get($param), " \t\n\r\0\x0B"));
+        $this->set($param, safe_preg_replace("~^\xE2\x80\x8B~", " ", $this->get($param))); // Zero-width at start
+        $this->set($param, safe_preg_replace("~\xE2\x80\x8B$~", " ", $this->get($param))); // Zero-width at end
         while (preg_match("~^&nbsp;(.+)$~u", $this->get($param), $matches)) {
           $this->set($param, trim($matches[1], " \t\n\r\0\x0B"));
         }
@@ -3747,6 +3756,13 @@ final class Template {
     if (in_array(strtolower($param), ['series', 'journal', 'newspaper']) && $this->has($param)) {
       $this->set($param, safe_preg_replace('~[™|®]$~u', '', $this->get($param))); // remove trailing TM/(R)
     }
+    if (in_array(str_replace(array('-','0','1','2','3','4','5','6','7','8','9'), '', strtolower($param)), ['authorlink', 'chapterlink', 'contributorlink', 
+                 'editorlink', 'episodelink', 'interviewerlink', 'inventorlink', 'serieslink',
+                 'subjectlink', 'titlelink', 'translatorlink']) &&
+        $this->has($param) && (stripos($this->get($param), 'http') === FALSE) && (stripos($this->get($param), 'PLACEHOLDER') === FALSE)) {
+      $this->set($param, safe_preg_replace('~_~u', ' ', $this->get($param)));
+    }
+
     if (!preg_match('~^(\D+)(\d*)(\D*)$~', $param, $pmatch)) {
       report_minor_error("Unrecognized parameter name format in " . echoable($param));  // @codeCoverageIgnore
       return;                                                              // @codeCoverageIgnore
@@ -4198,9 +4214,10 @@ final class Template {
            if(!in_array(strtolower($doi), NON_JOURNAL_DOIS) &&
               (strpos($doi, '10.14344/') === FALSE) &&
               (stripos($doi, '10.7289/V') === FALSE) &&
+              (stripos($doi, '10.7282/') === FALSE) &&
               (stripos($doi, '10.5962/bhl.title.') === FALSE)) {
             $the_journal = $this->get('journal') . $this->get('work') . $this->get('periodical');
-            if (str_replace(NON_JOURNALS, '', $the_journal) === $the_journal) {
+            if (str_replace(NON_JOURNALS, '', $the_journal) === $the_journal && !$this->blank(WORK_ALIASES)) {
               $this->change_name_to('cite journal', FALSE);
             }
            }
@@ -4572,7 +4589,7 @@ final class Template {
              }
             return;
           }
-          if (stripos($this->get($param), 'proquest') !== FALSE && stripos($this->get($param), 'llc') === FALSE) {
+          if (stripos($this->get($param), 'proquest') !== FALSE && stripos($this->get($param), 'llc') === FALSE && stripos($this->get('title'), 'Magazines for Libraries') === FALSE) {
             $this->forget($param);
             if ($this->blank('via')) {
               $this_big_url = $this->get('url') . $this->get('thesis-url') . $this->get('thesisurl') . $this->get('chapter-url') . $this->get('chapterurl');
@@ -5347,6 +5364,9 @@ final class Template {
                  if ($this->has('via') && stripos($this->get('via'), 'library') !== FALSE) $this->forget('via');
               }
           }
+          if (preg_match("~^https://wikipedialibrary\.idm\.oclc\.org/login\?auth=production&url=(https?://.+)$~i", $this->get($param), $matches)) {
+            $this->set($param, $matches[1]);
+          }
           if (preg_match("~^(https://www\.ancestry(?:institution|).com/discoveryui-content/view/\d+:\d+)\?.+$~i", $this->get($param), $matches)) {
             $this->set($param, $matches[1]);
           }
@@ -5997,6 +6017,13 @@ final class Template {
                $this->forget($param);
             }
           }
+
+          if ( strtolower($the_param) === 'ieeexplore.ieee.org') {
+            if ($this->has('isbn') || $this->has('doi') || $this->has('s2cid')) {
+               $this->forget($param);
+            }
+          }
+        
           return;
 
         case 'location':
@@ -6387,15 +6414,15 @@ final class Template {
            }
         }
       }
-   //   if (($this->get('url-status') === 'live') && $this->blank(['archive-url', 'archivedate', 'archiveurl', 'archived-date'])) {
-   //      $this->forget('url-status');
-   //   }
+      if (($this->get('url-status') === 'live') && $this->blank(['archive-url', 'archivedate', 'archiveurl', 'archived-date'])) {
+         $this->forget('url-status');
+      }
     } elseif (in_array($this->wikiname(), TEMPLATES_WE_SLIGHTLY_PROCESS)) {
       $this->tidy_parameter('publisher');
       $this->tidy_parameter('via');
-     // if (($this->get('url-status') === 'live') && $this->blank(['archive-url', 'archivedate', 'archiveurl', 'archived-date'])) {
-     //    $this->forget('url-status');
-     // }
+      if (($this->get('url-status') === 'live') && $this->blank(['archive-url', 'archivedate', 'archiveurl', 'archived-date'])) {
+         $this->forget('url-status');
+      }
     }
   }
 
@@ -7379,5 +7406,16 @@ final class Template {
      // So we do not get an error when we parse a second time
      unset($this->rawtext);  // @phan-suppress-current-line PhanTypeObjectUnsetDeclaredProperty
      $this->parse_text($tmp);
+  }
+
+  private function move_and_forget(string $para) : void {  // Try to keep parameters in the same order
+     $para2 = str_replace('CITATION_BOT_PLACEHOLDER_', '', $para);
+     if ($this->has($para2)) {
+       $this->set($para, $this->get($para2));
+       $this->rename($para, $para2);
+     } else {
+       $this->forget($para);
+       bot_debug_log('move_and_forget: ' . $para);
+     }
   }
 }

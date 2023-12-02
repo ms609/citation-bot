@@ -420,6 +420,9 @@ public static function expand_by_zotero(Template $template, ?string $url = NULL)
   if(preg_match('~^(https?://(?:www\.|)nature\.com/articles/[a-zA-Z0-9\.]+)\.pdf(?:|\?.*)$~', $url, $matches)) {
      $url = $matches[1]; // remove PDF from Nature urls
   }
+  if(preg_match('~^(https?://(?:www\.|)mdpi\.com/.+)(?:/pdf\-vor|/pdf)$~', $url, $matches)) {
+     $url = $matches[1];
+  }
   
   $bad_url = implode('|', ZOTERO_AVOID_REGEX);
   if(preg_match("~^https?://(?:www\.|m\.|)(?:" . $bad_url . ")~i", $url)) return FALSE; 
@@ -535,6 +538,11 @@ public static function process_zotero_response(string $zotero_response, Template
   if (stripos($url, 'www.royal.uk') !== FALSE) {
     unset($result->creators);
     unset($result->author);
+  }
+
+  if (stripos($url, 'newrepublic.com') !== FALSE) { // Bad data for all but first one
+    unset($result->creators['1']);
+    unset($result->author['1']);
   }
 
   $result->title = convert_to_utf8($result->title);
@@ -885,7 +893,7 @@ public static function process_zotero_response(string $zotero_response, Template
   }
   if ( isset($result->date) && strlen((string) $result->date)>3) {
     $new_date = tidy_date((string) $result->date);
-    if (stripos($url, 'indiatimes') !== FALSE) { // "re-published" website all at once
+    if (stripos($url, 'indiatimes') !== FALSE) { // "re-posted" website all at once
         $maybe_date = (int) strtotime($new_date);
         $end_date1 = strtotime('10 January 2017');
         $end_date2 = strtotime('21 January 2017');
@@ -896,11 +904,10 @@ public static function process_zotero_response(string $zotero_response, Template
     if ($new_date) $template->add_if_new('date', $new_date);
   }
   if ( isset($result->series) && stripos($url, '.acm.org')===FALSE)  $template->add_if_new('series' , (string) $result->series);
-  // Sometimes zotero lists the last name as "published" and puts the whole name in the first place
   $i = 0;
   while (isset($result->author[$i])) {
-      if (@$result->author[$i][1] === 'published' || @$result->author[$i][1] === 'Published') unset($result->author[$i][1]);
-      if (@$result->author[$i][0] === 'published' || @$result->author[$i][0] === 'Published') unset($result->author[$i][0]);
+      if (self::is_bad_author((string) @$result->author[$i][1])) unset($result->author[$i][1]);
+      if (self::is_bad_author((string) @$result->author[$i][0])) unset($result->author[$i][0]);
       $i++;
   }
   unset($i);
@@ -931,7 +938,11 @@ public static function process_zotero_response(string $zotero_response, Template
         if ($template->wikiname() === 'cite web' &&
             stripos($url . @$result->title . @$result->bookTitle . @$result->publicationTitle, 'review') === FALSE &&
             stripos($url, 'archive.org') === FALSE && !preg_match('~^https?://[^/]*journal~', $url) &&
-            stripos($url, 'booklistonline') === FALSE
+            stripos($url, 'booklistonline') === FALSE &&
+            stripos($url, 'catalogue.bnf') === FALSE &&
+            stripos($url, 'finna.fi') === FALSE &&
+            stripos($url, 'planetebd.com') === FALSE &&
+            stripos($url, 'elonet.fi') === FALSE
            ) {
           $template->change_name_to('cite book');
         }
@@ -1030,8 +1041,8 @@ public static function process_zotero_response(string $zotero_response, Template
               $authorParam = '';                                                   // @codeCoverageIgnore
           }
          if ($authorParam && author_is_human($result->creators[$i]->firstName . ' ' . $result->creators[$i]->lastName)) {
-            if (strtolower((string) $result->creators[$i]->lastName ) === 'published') $result->creators[$i]->lastName  ='';
-            if (strtolower((string) $result->creators[$i]->firstName) === 'published') $result->creators[$i]->firstName ='';
+            if (self::is_bad_author((string) $result->creators[$i]->lastName)) $result->creators[$i]->lastName  ='';
+            if (self::is_bad_author((string) $result->creators[$i]->firstName)) $result->creators[$i]->firstName  ='';
             $template->validate_and_add($authorParam, (string) $result->creators[$i]->lastName, (string) $result->creators[$i]->firstName,
             isset($result->rights) ? (string) $result->rights : '', FALSE);
              // Break out if nothing added
@@ -1220,9 +1231,9 @@ public static function find_indentifiers_in_urls(Template $template, ?string $ur
            return TRUE;
          }
        }
-       if (is_null($url_sent) && get_semanticscholar_license($s2cid) === FALSE) {
-         report_warning('Should probably remove un-licensed Semantic Scholar URL that was converted to S2CID parameter');
-         // SEP 2020 $template->forget($url_type);
+       if (is_null($url_sent) && get_semanticscholar_license($s2cid) === FALSE && stripos($url, 'pdf') === FALSE) {
+         report_warning('Removing un-licensed Semantic Scholar URL that was converted to S2CID parameter');
+         $template->forget($url_type);
          return TRUE;
        }
        return TRUE;
@@ -1857,6 +1868,14 @@ public static function find_indentifiers_in_urls(Template $template, ?string $ur
      /// THIS MUST BE LAST
     }
     return FALSE ;
+ }
+
+ // Sometimes zotero lists the last name as "published" and puts the whole name in the first place or other silliness
+ private static function is_bad_author(string $aut) : bool {
+   if ($aut === '|') return TRUE;
+   $aut = strtolower($aut);
+   if ($aut === 'published') return TRUE;
+   return FALSE;
  }
   
 } // End of CLASS

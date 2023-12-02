@@ -318,6 +318,9 @@ function extract_doi(string $text) : array {
 function wikify_external_text(string $title) : string {
   $replacement = [];
   $placeholder = [];
+  $title = safe_preg_replace_callback('~(?:\$\$)([^\$]+)(?:\$\$)~iu',
+      function (array $matches) : string {return ("<math>" . $matches[1] . "</math>");},
+      $title);
   if (preg_match_all("~<(?:mml:)?math[^>]*>(.*?)</(?:mml:)?math>~", $title, $matches)) {
     for ($i = 0; $i < count($matches[0]); $i++) {
       $replacement[$i] = '<math>' . 
@@ -786,7 +789,7 @@ function title_capitalization(string $in, bool $caps_after_punctuation) : string
     foreach ($matches_in as $key => $_value) {
       if ($matches_in[$key][0] !== $matches_out[$key][0]  &&
           $matches_in[$key][1] === $matches_out[$key][1]) {
-        $new_case = mb_substr_replace($new_case, trim($matches_in[$key][0]), $matches_out[$key][1], 3);
+        $new_case = substr_replace($new_case, trim($matches_in[$key][0]), $matches_out[$key][1], 3); // PREG_OFFSET_CAPTURE is ALWAYS in BYTES, even for unicode
       }
     }
   }
@@ -800,7 +803,7 @@ function title_capitalization(string $in, bool $caps_after_punctuation) : string
     foreach ($matches_in as $key => $_value) {
       if ($matches_in[$key][0] !== $matches_out[$key][0]  &&
           $matches_in[$key][1] === $matches_out[$key][1]) {
-        $new_case = mb_substr_replace($new_case, trim($matches_in[$key][0]), $matches_out[$key][1], 3);
+        $new_case = substr_replace($new_case, trim($matches_in[$key][0]), $matches_out[$key][1], 3); ; // PREG_OFFSET_CAPTURE is ALWAYS in BYTES, even for unicode
       }
     }
   }
@@ -1418,7 +1421,7 @@ function convert_to_utf8(string $value) : string {
 
 function is_encoding_reasonable(string $encode) : bool { // common "default" ones that are often wrong
   $encode = strtolower($encode);
-  return !in_array($encode, ['utf-8', 'iso-8859-1', 'windows-1252', 'unicode', 'us-ascii', 'none', 'iso-8859-7']);
+  return !in_array($encode, ['utf-8', 'iso-8859-1', 'windows-1252', 'unicode', 'us-ascii', 'none', 'iso-8859-7', 'latin1']);
 }
 
 function smart_decode(string $title, string $encode, string $archive_url) : string {
@@ -2307,10 +2310,15 @@ function clean_up_oxford_stuff(Template $template, string $param) : void {
 }
 
 function conference_doi(string $doi) : bool {
+  if (stripos($doi, '10.1007/978-3-662-44777') === 0) return FALSE; // Manual override of stuff
   if (strpos($doi, '10.1109/') === 0 ||
       strpos($doi, '10.1145/') === 0 ||
       strpos($doi, '10.1117/') === 0 ||
       strpos($doi, '10.2991/') === 0 ||
+      stripos($doi, '10.21437/Eurospeech') === 0 ||
+      stripos($doi, '10.21437/interspeech') === 0 ||
+      stripos($doi, '10.21437/SLTU') === 0 ||
+      stripos($doi, '10.21437/TAL') === 0 ||
       (strpos($doi, '10.1007/978-') === 0 && strpos($doi, '_') !== FALSE) ||
       stripos($doi, '10.2991/erss') === 0 ||
       stripos($doi, '10.2991/jahp') === 0) {

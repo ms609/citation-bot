@@ -33,6 +33,8 @@ const ITALICS_LIST =
  "Drosophila silvestris|" .
  "Luzula nivea|" .
  "Myrmecia reticulata|" .
+ "Aedes koreicus|" .
+ "Aedes japonicus|" .
  "Ustilago maydis|" .
  "Plasmodium falciparum|" .
  "Agaricus blazei|" .
@@ -57,6 +59,7 @@ const ITALICS_LIST =
  "Sui Generis|" .
  "Communist Manifesto|" .
  "Bacillus thuringiensis|" .
+ "Magnosaurus nethercombensis|" .
  "Star Trek|" .
  "Meringosphaera mediterranea|" .
  "Candida albicansas|" .
@@ -142,6 +145,7 @@ const ITALICS_LIST =
  "Tabula Peutingeriana|" .
  "Diamond Sutra|" .
  "Flemingia macrophylla|" .
+ "Homo habilis|" .
  "Glycine tomentella|" .
  "Lathamus discolor|" .
  "Gymondinium pseudopalustre|" .
@@ -163,6 +167,7 @@ const ITALICS_LIST =
  "Res Publica|" .
  "Angelica sinensis|" .
  "Dilophosaurus wetherilli|" .
+ "Vernonia amygdalina|" .
  "Loa loa|" .
  "Homo nalediin|" .
  "Homo naledi|" .
@@ -174,6 +179,7 @@ const ITALICS_LIST =
  "Ottoia|" .
  "Loxosceles|" .
  "Leveillula|" .
+ "Lewisepeira|" .
  "Hyloscirtus|" .
  "Pseudomonas|" .
  "Baryonyx|" .
@@ -217,6 +223,7 @@ const ITALICS_LIST =
  "Eschata|" .
  "Dianthus|" .
  "Arthoniais|" .
+ "Arthropterygius|".
  "Acacia|" .
  "Berardiusin|" .
  "Ilustrado|" .
@@ -252,10 +259,13 @@ const ITALICS_LIST =
  "Symbiodinium|" .
  "Dhammapada|" .
  "Xenopusembryo|" .
+ "Chlamydomonas|" .
+ "Anaplecta|" .
  "Arumberia|" .
  "Ridda|" .
  "Dictyochloropsis|" .
  "Laccognathus|" .
+ "Stereum|" .
  "Karma|" .
  "Cena|" .
  "Satyricon|" .
@@ -346,9 +356,44 @@ const CAMEL_CASE = array('DeSoto', 'PubChem', 'BitTorrent', 'Al2O3', 'NiMo', 'Cu
                          'TurboFold', 'TurboKnot', 'FusionSeq', 'dRheb', 'GTPase', 'NanoBiosensing', 'eHealth',
                          'iNet', 'NetGames', 'MultiMedia', 'PetaOp', 'AppleScript', 'GeNeDis', 'MeDoc',
                          'eEnvironment', 'AlphaFold', 'BirdLife', 'MetroLink', 'PhyloCode', 'JavaScript', 'AfricArXiv',
-                         'MoveOn', 'iSemantic', 'DigitalHeritage', 'iBroadway', 'TechSym'
+                         'MoveOn', 'iSemantic', 'DigitalHeritage', 'iBroadway', 'TechSym', 'HistoCrypt', 'AaTh', 'ProComm',
+                         'DeSmet', 'HfMoTaTiZr', 'HfMoNbTaTiZr', 'CoCrFeMnNi', 'alloy film', 'ProtSweep', '2Dsweep',
+                         'DomainSweep', 'McLaughlin', 'WikiPathways', 'MediaArtHistories', 'SunLine', 'SnakeChunks',
+                         'LeGuin', 'LaCour', 'GetOrganelle', 'eInclusion',
                        );
 
-const ITALICS_HARDCODE_IN  = [" of SectarianismCommunity",   " to the SirensMusical Technologies ",   " the DynastyPalace Women ",   "Divine CreaturesAnimal Mummies",   "Small Greek WorldNetworks in",   "Magia SexualisSex, Magic",   " is NothingLost in ",   " Without UsDisability ",   "Human RightsThe Case ",   " Southeast AsiaNation and ",   " EcologicalAn Expedition ",   "tive CognitionExperimental Expl",   "Immigrant NarrativesOrientalism and Cultural",   "Caesar's CalendarAncient Time ",   " a Sure StartHow gov",   "Slum TravelersLadies and London",   "Modern MongoliaFrom Khans",   " Magia SexualisSex, Magic",   "in Montesquieu’sThe Spirit",   "antiquity of Francis Bacon'sNew Atlantis",   "New MathematicsWestern Learning",   "Poor PeopleResource Control ",   " ObligationsRoman Foundations ",   " SirensMusical Technologies   ", "Two RomesRome and "  , "TantraSex, Secrecy",   "in EducationThe good",   "Eternal GodHeavenly Flesh",   "Conference onResearch, Innovation",  "Roman EmpireSoldiers,",   "SilencedHow Apostasy and Blasphemy",   "Cybernetics SocietyInformation Assurance",  "International Conference onServices Computing",  "IEEE InternationalElectron Devices",  "Symposium onFoundations of",  "IEEE InternationalConference",  "Jewish QuestionIdentifying ",   "The Port NelsonRelations",      "Changes for DemocracyActors",   "SpymasterDai Li ",   "A New History of IrelandVolume",   "Devoted to DeathSanta Muerte, the Skeleton Saint",   "Knowing HowEssays on Knowledge, Mind, and Action",   " Rgene", "CytochromebGenes",       "ElectrongValue",       "thetoxGene",      "GopashtamiandGovardhan",       "PolishLebensraum",       "theNachlassproblem",        " forAltalena:",      " in Plutarch'sLives",       "FromSolidarityto",        " gp91phoxPromoter",  "in vitroAssays",        "MarketizingHindutva",       "TheBhagavadgītā,",       "theOrigin of Species",       "EncounteringHindutva",       "ChineseHukouSystem",        "CisLatreille"];
-const ITALICS_HARDCODE_OUT = [" of Sectarianism: Community", " to the Sirens: Musical Technologies ", " the Dynasty: Palace Women ", "Divine Creatures: Animal Mummies", "Small Greek World: Networks in", "Magia Sexualis: Sex, Magic", " is Nothing: Lost in ", " Without Us: Disability ", "Human Rights: The Case ", " Southeast Asia: Nation and ", " Ecological: An Expedition ", "tive Cognition: Experimental Expl", "Immigrant Narratives: Orientalism and Cultural", "Caesar's Calendar: Ancient Time ", " a Sure Start: How gov", "Slum Travelers: Ladies and London", "Modern Mongolia: From Khans", " Magia Sexualis: Sex, Magic", "in Montesquieu’s: The Spirit", "antiquity of Francis Bacon's: New Atlantis", "New Mathematics: Western Learning", "Poor People: Resource Control ", " Obligations: Roman Foundations ", " Sirens: Musical Technologies ", "Two Romes: Rome and ", "Tantra: Sex, Secrecy", "in Education: The good", "Eternal God: Heavenly Flesh", "Conference on Research, Innovation", "Roman Empire: Soldiers,", "Silenced: How Apostasy and Blasphemy", "Cybernetics Society Information Assurance", "International Conference on Services Computing", "IEEE International Electron Devices", "Symposium on Foundations of", "IEEE International Conference", "Jewish Question: Identifying ", "The Port Nelson ''Relations''", "Changes for Democracy: Actors", "Spymaster: Dai Li ", "A New History of Ireland, Volume", "Devoted to Death: Santa Muerte, the Skeleton Saint", "Knowing How: Essays on Knowledge, Mind, and Action", " ''R'' gene", "Cytochrome ''b'' Genes", "Electron ''g'' Value", "the ''tox'' Gene","Gopashtami ''and'' Govardhan", "Polish ''Lebensraum'' ", "the ''Nachlass'' problem ", " for ''Altalena'':", " in Plutarch's ''Lives'' ", "From ''Solidarity'' to ", " gp91phox Promoter", " ''in vitro'' Assays ", "Marketizing ''Hindutva'' ", "The ''Bhagavadgītā'', ", "the ''Origin of Species'' ", "Encountering ''Hindutva'' ", "Chinese ''Hukou'' System ", "''Cis'' Latreille"];
+const ITALICS_HARDCODE_IN  = ["Tweeting theJihad: Social Media", " of SectarianismCommunity", " for WonderNineteenth Century Travel ",  
+             " from the ShadowsAnalytical Feminist Contributions",  " der GattungEoeugnathus Brough",  " the CitizenMusic as Public ",
+             " to the SirensMusical Technologies ",   " the DynastyPalace Women ",   "Divine CreaturesAnimal Mummies",   
+             "Small Greek WorldNetworks in",   "Magia SexualisSex, Magic",   " is NothingLost in ",   " Without UsDisability ",   "Human RightsThe Case ",   
+             " Southeast AsiaNation and ",   " EcologicalAn Expedition ",   "tive CognitionExperimental Expl",   "Immigrant NarrativesOrientalism and Cultural", 
+             "Caesar's CalendarAncient Time ",   " a Sure StartHow gov",   "Slum TravelersLadies and London",   "Modern MongoliaFrom Khans",
+             " Magia SexualisSex, Magic",   "in Montesquieu’sThe Spirit",   "antiquity of Francis Bacon'sNew Atlantis",   "New MathematicsWestern Learning",
+             "Poor PeopleResource Control ",   " ObligationsRoman Foundations ",   " SirensMusical Technologies   ", "Two RomesRome and ",
+             "TantraSex, Secrecy",   "in EducationThe good",   "Eternal GodHeavenly Flesh",   "Conference onResearch, Innovation",  "Roman EmpireSoldiers,",
+             "SilencedHow Apostasy and Blasphemy",   "Cybernetics SocietyInformation Assurance",  "International Conference onServices Computing",
+             "IEEE InternationalElectron Devices",  "Symposium onFoundations of",  "IEEE InternationalConference",  "Jewish QuestionIdentifying ",
+             "The Port NelsonRelations",      "Changes for DemocracyActors",   "SpymasterDai Li ",   "A New History of IrelandVolume",
+             "Devoted to DeathSanta Muerte, the Skeleton Saint",   "Knowing HowEssays on Knowledge, Mind, and Action",   " Rgene", "CytochromebGenes",
+             "ElectrongValue",       "thetoxGene",      "GopashtamiandGovardhan",       "PolishLebensraum",       "theNachlassproblem",
+             " forAltalena:",      " in Plutarch'sLives",       "FromSolidarityto",        " gp91phoxPromoter",  "in vitroAssays",        "MarketizingHindutva",
+             "TheBhagavadgītā,",       "theOrigin of Species",       "EncounteringHindutva",       "ChineseHukouSystem",        "CisLatreille",
+             "the 21stCentury", " JonesSir William"];
+const ITALICS_HARDCODE_OUT = ["Tweeting the ''Jihad'': Social Media", " of Sectarianism: Community", " for Wonder: Nineteenth Century Travel ",  
+             " from the Shadows: Analytical Feminist Contributions",  " der Gattung: Eoeugnathus Brough",  " the Citizen: Music as Public ",
+             " to the Sirens: Musical Technologies ", " the Dynasty: Palace Women ", "Divine Creatures: Animal Mummies", 
+             "Small Greek World: Networks in", "Magia Sexualis: Sex, Magic", " is Nothing: Lost in ", " Without Us: Disability ", "Human Rights: The Case ", 
+             " Southeast Asia: Nation and ", " Ecological: An Expedition ", "tive Cognition: Experimental Expl", "Immigrant Narratives: Orientalism and Cultural",
+             "Caesar's Calendar: Ancient Time ", " a Sure Start: How gov", "Slum Travelers: Ladies and London", "Modern Mongolia: From Khans",
+             " Magia Sexualis: Sex, Magic", "in Montesquieu’s: The Spirit", "antiquity of Francis Bacon's: New Atlantis", "New Mathematics: Western Learning",
+             "Poor People: Resource Control ", " Obligations: Roman Foundations ", " Sirens: Musical Technologies ", "Two Romes: Rome and ",
+             "Tantra: Sex, Secrecy", "in Education: The good", "Eternal God: Heavenly Flesh", "Conference on Research, Innovation", "Roman Empire: Soldiers,",
+             "Silenced: How Apostasy and Blasphemy", "Cybernetics Society Information Assurance", "International Conference on Services Computing",
+             "IEEE International Electron Devices", "Symposium on Foundations of", "IEEE International Conference", "Jewish Question: Identifying ",
+             "The Port Nelson ''Relations''", "Changes for Democracy: Actors", "Spymaster: Dai Li ", "A New History of Ireland, Volume",
+             "Devoted to Death: Santa Muerte, the Skeleton Saint", "Knowing How: Essays on Knowledge, Mind, and Action", " ''R'' gene", "Cytochrome ''b'' Genes",
+             "Electron ''g'' Value", "the ''tox'' Gene", "Gopashtami ''and'' Govardhan", "Polish ''Lebensraum'' ", "the ''Nachlass'' problem ",
+             " for ''Altalena'':", " in Plutarch's ''Lives'' ", "From ''Solidarity'' to ", " gp91phox Promoter", " ''in vitro'' Assays ", "Marketizing ''Hindutva'' ",
+             "The ''Bhagavadgītā'', ", "the ''Origin of Species'' ", "Encountering ''Hindutva'' ", "Chinese ''Hukou'' System ", "''Cis'' Latreille",
+             "the 21st Century", " Jones: Sir William"];
 

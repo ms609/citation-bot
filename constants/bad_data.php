@@ -7,7 +7,8 @@ const HAS_NO_VOLUME = array("zookeys", "studia hibernica", "analecta hibernica",
                             "cap journal", "phytokeys", "starinar", "balcanica", "american museum novitates",
                             "european journal of taxonomy");  // Some journals have issues only, no volume numbers
 // oceanic linguistics special publications has the problem that issues will not show up within temlpates
-const HAS_NO_ISSUE = array("special papers in palaeontology", "oceanic linguistics special publications", "cahiers balkaniques", "res historica");  // Some journals have volumes only, no issue numbers
+const HAS_NO_ISSUE = array("special papers in palaeontology", "oceanic linguistics special publications",
+                           "cahiers balkaniques", "res historica", "archaeological reports");  // Some journals have volumes only, no issue numbers
 const PREFER_VOLUMES = array("illinois classical studies"); // When issue=volume, drop issue.  JSTOR calls volumes issues
 const PREFER_ISSUES = array("mammalian species", "bulletin of the united states national museum");
 const BAD_ACCEPTED_MANUSCRIPT_TITLES = array("oup accepted manuscript", "placeholder for bad pdf file", 
@@ -16,7 +17,7 @@ const BAD_ACCEPTED_MANUSCRIPT_TITLES = array("oup accepted manuscript", "placeho
 const BAD_AUTHORS = array("unknown", "missing", "- -.", "- -", "no authorship indicated", "no authorship", "no author",
                            "no authors", "no author indicated", "no authorship indicated", "dk eyewitness", "united states",
                            "great britain", "indiatoday", "natural history museum bern", "daily sabah", 'el país', 'el pais', 
-                           "radio", "rundfunk", "news agencies");
+                           "radio", "rundfunk", "news agencies" , "object");
 const NON_HUMAN_AUTHORS = array('collaborat', 'reporter', 'journalist', 'correspondent', 'anchor', 'staff', 'foreign',
                                 'national', 'endowment', ' for the ', 'humanities', 'committee', 'group',
                                 'society', ' of america', 'association', ' at the ', 'board of ', 'communications',
@@ -62,7 +63,8 @@ const PUBLISHERS_ARE_WORKS = array('the san diego union-tribune', 'forbes', 'sal
 
 const WORKS_ARE_PUBLISHERS = array('united states census bureau'); // LOWER CASE!
 
-const DUBIOUS_JOURNALS = array('fda', 'reuters', 'associated press', 'ap', 'ap wire', 'report', 'nist', 'national institute of standards and technology'); // Things we add, but only if publisher and agency are both blank
+const DUBIOUS_JOURNALS = array('oup academic', 'fda', 'reuters', 'associated press', 'ap', 'ap wire', 'report', 'nist',
+                               'national institute of standards and technology'); // Things we add, but only if publisher and agency are both blank
 
 // Catch 'authors' such as "hearst magazines", "time inc", "nielsen business media, inc"
 // Ordered alphabetically.
@@ -73,7 +75,7 @@ const BAD_TITLES = array("unknown", "missing", "arxiv e-prints", "arxiv mathemat
                          "ebscohost login",  "library login", "google groups", "sciencedirect", "cur_title",
                          "wordpress › error", "ssrn temporarily unavailable", "log in - proquest",
                          "shibboleth authentication request", "nookmarkable url intermediate page",
-                         "google books", "rte.ie", "loading", "google book",
+                         "google books", "rte.ie", "loading", "google book", "just a moment",
                          "the article you have been looking for has expired and is not longer available on our system. this is due to newswire licensing terms.",
                          "openid transaction in progress", 'download limit exceeded', 'privacy settings',
                          "untitled-1", "untitled-2", "professional paper", "zbmath",
@@ -84,7 +86,7 @@ const BAD_TITLES = array("unknown", "missing", "arxiv e-prints", "arxiv mathemat
                          "redirect notice", "oxford music online", "trove - archived webpage", "pagina inicia",
                          "404 not found", "404页面", "sign up ", "index of /home", "usa today - today's breaking news, us & world news",
                          "403 unauthorized", "404错误", "internal server error", "error", "404", "error - lexisnexis® publisher",
-                         "optica publishing group", "digital library - pdf document");
+                         "optica publishing group", "digital library - pdf document", "explore census data");
 const IN_PRESS_ALIASES = array("in press", "inpress", "pending", "published", 
                                "published online", "no-no", "n/a", "online ahead of print", 
                                "unpublished", "unknown", "tba", "forthcoming", "in the press", 
@@ -415,7 +417,7 @@ const NO_DATE_WEBSITES = array('wikipedia.org', 'web.archive.org', 'perma-archiv
                               'oireachtas.ie', 'webarchive.nla.gov.au', 'ebooks.adelaide.edu.au', 'archive.md', 'imdb.com',
                               'apps.des.qld.gov.au', 'billboard.com', 'music.apple.com', 'spotify.com', 'fred.stlouisfed.org',
                               'simonsfoundation.org', 'chroniclingamerica.loc.gov', 'github.com', 'rottentomatoes.com', 'arts.gov/honors',
-                              'shop.schizoidshop.com', 'elonet.finna.fi');
+                              'shop.schizoidshop.com', 'elonet.finna.fi', 'numismatics.org.uk', 'itunes.apple.com');
 
 const ZOTERO_AVOID_REGEX = array("twitter\.",               // This should be {{cite tweet}}
                                  // Zotero seems to be doing better now "youtube\.", "youtu\.be",
@@ -820,7 +822,8 @@ const ARE_MAGAZINES = array('the new yorker', 'the new republic', 'new republic'
 const ARE_MANY_THINGS = array('pc gamer', 'gamestar', 'rock paper shotgun', 'mcv', 'rock, paper, shotgun', 'edge',
                               'ballotpedia', 'npr', 'ballotpedia.org', 'npr.org', 'nih.gov', 'nih', 'eurogamer.it',
                               'conceptcarz', 'the royal family', 'eurogamer.de', 'east west main line partnership',
-                              'national institutes of health', 'national institutes of health (nih)'); // lowercase axact matches.  These are things that are both websites and newspapers
+                              'national institutes of health', 'national institutes of health (nih)',
+                              'www.finna.fi', 'finna.fi', 'elonet'); // lowercase axact matches.  These are things that are both websites and newspapers
 const ARE_NEWSPAPERS = array('the economist', 'la times', 'toronto sun', 'washington post', 'the washington post',
                              'philippine daily inquirer', 'the irish times', 'wikinews', 'wikinews.org'); // lowercase axact matches
 const NO_PUBLISHER_NEEDED = array('los angeles times', 'new york times magazine', 'the new york times',
@@ -929,6 +932,7 @@ const JOURNAL_IS_BOOK_SERIES = array(
          'adv pharmacol',
          'advances in anatomy embryology and cell biology',
          'adv anat embryol cell biol',
+         'applied biochemistry and biotechnology',
          'handbook of the birds of the world'
       );
 
