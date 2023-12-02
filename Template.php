@@ -3743,6 +3743,8 @@ final class Template {
          ) {
         // Non-breaking spaces at ends
         $this->set($param, trim($this->get($param), " \t\n\r\0\x0B"));
+        $this->set($param, safe_preg_replace("~^\xE2\x80\x8B~", " ", $this->get($param))); // Zero-width at start
+        $this->set($param, safe_preg_replace("~\xE2\x80\x8B$~", " ", $this->get($param))); // Zero-width at end
         while (preg_match("~^&nbsp;(.+)$~u", $this->get($param), $matches)) {
           $this->set($param, trim($matches[1], " \t\n\r\0\x0B"));
         }
