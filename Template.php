@@ -366,6 +366,7 @@ final class Template {
           if (conference_doi($this->get('doi')) && ($this->wikiname() === 'cite journal') &&
               ($this->has('isbn') ||
               (stripos($the_title, 'proceedings') !== FALSE && stripos($the_journal, 'proceedings') !== FALSE) ||
+              (stripos($the_title, 'proc. ') !== FALSE && stripos($the_journal, 'proc. ') !== FALSE) ||
               (stripos($the_title, 'Conference') !== FALSE && stripos($the_journal, 'Conference') !== FALSE) ||
               (stripos($the_title, 'Colloquium') !== FALSE && stripos($the_journal, 'Colloquium') !== FALSE) ||
               (stripos($the_title, 'Symposium') !== FALSE && stripos($the_journal, 'Symposium') !== FALSE) ||
@@ -379,6 +380,7 @@ final class Template {
               } elseif (stripos($data_to_check, 'Symposium') === FALSE &&
                         stripos($data_to_check, 'Conference') === FALSE &&
                         stripos($data_to_check, 'Proceedings') === FALSE &&
+                        stripos($data_to_check, 'Proc. ') === FALSE &&
                         stripos($data_to_check, 'Workshop') === FALSE &&
                         stripos($data_to_check, 'Symp. On ') === FALSE &&
                         stripos($data_to_check, 'Meeting on ') === FALSE &&
@@ -403,6 +405,7 @@ final class Template {
               } elseif (stripos($the_journal, 'Symposium') !== FALSE ||
                         stripos($the_journal, 'Conference') !== FALSE ||
                         stripos($the_journal, 'Proceedings') !== FALSE ||
+                        stripos($the_journal, 'Proc. ') !== FALSE ||                        
                         stripos($the_journal, 'Workshop') !== FALSE ||
                         stripos($the_journal, 'Symp. On ') !== FALSE ||
                         stripos($the_journal, 'Meeting on ') !== FALSE ||
@@ -438,6 +441,7 @@ final class Template {
               stripos($the_journal, 'International Conference on ') !== FALSE ||
               stripos($the_journal, 'ACM International Conference') !== FALSE ||
               (stripos($the_journal, 'Proceedings of ') !== FALSE && stripos($the_journal, 'Conference') !== FALSE) ||
+              (stripos($the_journal, 'Proc. ') !== FALSE && stripos($the_journal, 'Conference') !== FALSE) ||
               (stripos($the_journal, 'International') !== FALSE && stripos($the_journal, 'Conference') !== FALSE) ||
               (stripos($the_journal, 'International') !== FALSE && stripos($the_journal, 'Meeting') !== FALSE) ||
               (stripos($the_journal, 'International') !== FALSE && stripos($the_journal, 'Colloquium') !== FALSE) ||
