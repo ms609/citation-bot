@@ -80,7 +80,7 @@ const BAD_TITLES = array("unknown", "missing", "arxiv e-prints", "arxiv mathemat
                          "openid transaction in progress", 'download limit exceeded', 'privacy settings',
                          "untitled-1", "untitled-2", "professional paper", "zbmath",
                          "theses and dissertations available from proquest", "proquest ebook central", "report",
-                         "bloomberg - are you a robot?", "page not found", "free live sex cams", "graph drawing",
+                         "bloomberg - are you a robot?", "page not found", "free live sex cams",
                          "breaking news, analysis, politics, blogs, news photos, video, tech reviews",
                          "breaking news, analysis, politics, blogs, news photos, video, tech reviews - time.com",
                          "redirect notice", "oxford music online", "trove - archived webpage", "pagina inicia",
