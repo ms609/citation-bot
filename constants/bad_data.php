@@ -932,7 +932,6 @@ const JOURNAL_IS_BOOK_SERIES = array(
          'adv pharmacol',
          'advances in anatomy embryology and cell biology',
          'adv anat embryol cell biol',
-         'applied biochemistry and biotechnology',
          'handbook of the birds of the world'
       );
 
