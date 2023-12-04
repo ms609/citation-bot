@@ -335,6 +335,7 @@ final class Template {
           }
       }
       if ((stripos($this->rawtext, 'citation_bot_placeholder_comment') === FALSE) &&
+         (stripos($this->rawtext, 'graph title') === FALSE) &&
          (!$this->blank(['pmc', 'pmid', 'doi', 'jstor']) ||
          (stripos($this->get('journal') . $this->get('title'), 'arxiv') !== FALSE && !$this->blank(ARXIV_ALIASES)))) { // Have some good data
           $the_title   = $this->get('title');
