@@ -113,7 +113,7 @@ const ITALICS_LIST =
  "Buitreraptor gonzalezorum|" .
  "Bellusaurus sui|" .
  "Sinovenator changii|" .
- "Thermomonospora fusca" .
+ "Thermomonospora fusca|" .
  "Diplocynodon levantinicum|" .
  "Nedcolbertia justinhofmanni|" .
  "Clostridium botulinum|" .
@@ -127,7 +127,6 @@ const ITALICS_LIST =
  "Diplodocus carnegii|" .
  "Balaur bondoc|" .
  "Screbinodus ornatus|" .
- "Diplocynodon|" .
  "Rg Veda|" .
  "Homo erectus|" .
  "Piveteauia madagascariensis|" .
@@ -212,6 +211,7 @@ const ITALICS_LIST =
  "Ottoia|" .
  "Onychites|" .
  "Loxosceles|" .
+ "Diplocynodon|" .
  "Leveillula|" .
  "Lewisepeira|" .
  "Daspletosaurus|" .
@@ -268,7 +268,7 @@ const ITALICS_LIST =
  "Eschata|" .
  "Dianthus|" .
  "Arthoniais|" .
- "Arthropterygius|".
+ "Arthropterygius|" .
  "Acacia|" .
  "Berardiusin|" .
  "Ilustrado|" .
