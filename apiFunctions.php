@@ -1411,6 +1411,8 @@ function process_bibcode_data(Template $this_template, object $record) : void {
        unset($record->issue);
       } elseif (preg_match('~[A-Za-z]~', $tmp)) { // Do not trust anything with letters
        unset($record->page);
+      } elseif (($tmp === $this_template->get('issue')) || ($tmp === $this_template->get('volume'))) {
+       unset($record->page); // Probably is journal without pages, but article numbers and got mis-encoded
       }
     }
     if (isset($record->volume)) $this_template->add_if_new('volume', (string) $record->volume, 'adsabs');
