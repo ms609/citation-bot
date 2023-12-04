@@ -5246,10 +5246,10 @@ final class Template {
              }
           }
           // Remove trailing #
-          if (preg_match("~^(\S+)#$~u", $this->get($param), $match)) {
+          if (preg_match("~^(\S+)#$~u", $this->get($param), $matches)) {
             $this->set($param, $matches[1]);
             foreach (ALL_URL_TYPES as $url_types) {
-              if (preg_match("~^(\S+)#$~u", $this->get($url_types), $match)) {
+              if (preg_match("~^(\S+)#$~u", $this->get($url_types), $matches)) {
                 $this->set($url_types, $matches[1]);
               }
             }
