@@ -134,6 +134,7 @@ const ITALICS_LIST =
  "Aspergillus terreus|" .
  "Ignicoccus hospitalis|" .
  "Watsonulus eugnathoides|" .
+ "Cardiodectes bellottii|" .
  "Opus Caroli|" .
  "Libri Carolini|" .
  "Dibamus taylori|" .
@@ -163,12 +164,14 @@ const ITALICS_LIST =
  "Burkholderia mallei|" .
  "Homo habilis|" .
  "Glycine tomentella|" .
+ "Squilla armata|" .
  "Saurosuchus galilei|" .
  "Lathamus discolor|" .
  "Gymondinium pseudopalustre|" .
  "Woloszynskia apiculata|" .
  "Symbiodinium microadriaticum|" .
  "Alligator sinensis|" .
+ "Galeamopus pabsti|" .
  "Enfants Terribles|" .
  "Puntius sophore|" .
  "Murraya koenigii|" .
@@ -182,7 +185,10 @@ const ITALICS_LIST =
  "Paraponera clavata|" .
  "Lycium barbarum|" .
  "Poria cocos|" .
+ "Emiliania huxleyi|" .
  "Res Publica|" .
+ "de Novo|" .
+ "Boscia angustifolia|" .
  "Angelica sinensis|" .
  "Dilophosaurus wetherilli|" .
  "Scutarx deltatylus|" .
@@ -208,6 +214,8 @@ const ITALICS_LIST =
  "Loxosceles|" .
  "Leveillula|" .
  "Lewisepeira|" .
+ "Daspletosaurus|" .
+ "Diaphera|" .
  "Hyloscirtus|" .
  "Micrapis|" .
  "Pseudomonas|" .
@@ -215,6 +223,7 @@ const ITALICS_LIST =
  "Athrips|" .
  "Monacha|" .
  "Plesiosorex|" .
+ "Amazona|" .
  "Malassezia|" .
  "Bushiellas|" .
  "Godartiana|" .
@@ -225,9 +234,11 @@ const ITALICS_LIST =
  "Armillaria|" .
  "Neurospora|" .
  "Ascomycota|" .
+ "Puffinus|" .
  "Mycena|" .
  "Aspergillus|" .
  "Ricinus|" .
+ "Grammia|" .
  "Apatosaurus|" .
  "Candidatus|" .
  "Phytophthora|" .
@@ -243,6 +254,9 @@ const ITALICS_LIST =
  "Leuzea|" .
  "Ureaplasma|" .
  "Euschistus|" .
+ "Brachygastra|" .
+ "Gaojiashania|" .
+ "Boreogomphodon|" .
  "Noideattella|" .
  "Tolegnaro|" .
  "Cannabis|" .
@@ -262,6 +276,7 @@ const ITALICS_LIST =
  "Synorichthys|" .
  "Clusia|" .
  "Sinamia|" .
+ "Cambaytherium|" .
  "Ignicoccus|" .
  "Hencke|" .
  "Batillipes|" .
@@ -395,7 +410,8 @@ const CAMEL_CASE = array('DeSoto', 'PubChem', 'BitTorrent', 'Al2O3', 'NiMo', 'Cu
                          'eRegistries', 'CrossFit', 'IgMs', 'eLife', 'RxNorm', 'QuickTime', 'cDNA', 'PharmVar', 'GeneFocus',
                          'AgBioData', 'AuthorReward', 'PomBase', 'WikiProteins', 'ezTag', 'FlyBase', 'PubTator',
                          'RiceWiki', 'SciLite', 'ScispaCy', 'WormBase', 'VirFinder', 'UniProt', 'GaiaData', 'FoodOn',
-                         'GaiaHundred', 'WikiJournal', 'StarCraft', 'EuResist', 'PhageScope', 'CoVaMa',
+                         'GaiaHundred', 'WikiJournal', 'StarCraft', 'EuResist', 'PhageScope', 'CoVaMa', 'EuroMyositis',
+                         'DavEnd', 'CoLaus', 'MinerAlocorticoid'
                        );
 
 const ITALICS_HARDCODE_IN  = ["Tweeting theJihad: Social Media", " of SectarianismCommunity", " for WonderNineteenth Century Travel ",  
