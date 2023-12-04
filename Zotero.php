@@ -611,6 +611,8 @@ public static function process_zotero_response(string $zotero_response, Template
       $result->publicationTitle = 'Financial Post';
    } elseif ($tester === 'bloomberg.com') {
       $result->publicationTitle = 'Bloomberg';
+   } elseif ($tester === 'advanced books') {
+      unset($result->publicationTitle);
    }
   }
    
