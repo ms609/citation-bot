@@ -942,6 +942,7 @@ public static function process_zotero_response(string $zotero_response, Template
             stripos($url, 'catalogue.bnf') === FALSE &&
             stripos($url, 'finna.fi') === FALSE &&
             stripos($url, 'planetebd.com') === FALSE &&
+            stripos($url, 'data.bnf.fr') === FALSE &&
             stripos($url, 'elonet.fi') === FALSE
            ) {
           $template->change_name_to('cite book');
