@@ -625,7 +625,6 @@ function query_crossref(string $doi) : ?object {
             unset($result->volume);
             unset($result->page);
             unset($result->issue);
-          }
         }
         return $result;
       } else {
