@@ -97,6 +97,7 @@ const ITALICS_LIST =
  "Arabidopsis thaliana|" .
  "Xylella fastidiosa|" .
  "Listeria monocytogenes|" .
+ "Halszkaraptor escuilliei|" .
  "Mycoplasma pneumoniae|" .
  "Paradisaea Raggiana|" .
  "Brachiosaurus altithorax|" .
@@ -108,16 +109,20 @@ const ITALICS_LIST =
  "Buitreraptor gonzalezorum|" .
  "Bellusaurus sui|" .
  "Sinovenator changii|" .
+ "Thermomonospora fusca" .
+ "Diplocynodon levantinicum|" .
  "Nedcolbertia justinhofmanni|" .
  "Clostridium botulinum|" .
  "Bactrocera dorsalis|" .
  "Umm al-Kitāb|" .
  "Acrocomia mexicana|" .
+ "Brachylophosaurus canadensis|" .
  "Agaricus hondensis|" .
  "Campylobacter jejuni|" .
  "Actinomyces bovis|" .
  "Balaur bondoc|" .
  "Screbinodus ornatus|" .
+ "Diplocynodon|" .
  "Rg Veda|" .
  "Homo erectus|" .
  "Piveteauia madagascariensis|" .
@@ -144,13 +149,18 @@ const ITALICS_LIST =
  "China Daily|" .
  "Tabula Peutingeriana|" .
  "Diamond Sutra|" .
+ "Gasterophilus pecorum|" .
+ "Oxycarenus laetus|" .
  "Flemingia macrophylla|" .
+ "Suuwassea emilieae|" .
+ "Ganoderma applanatum|" .
  "Homo habilis|" .
  "Glycine tomentella|" .
  "Lathamus discolor|" .
  "Gymondinium pseudopalustre|" .
  "Woloszynskia apiculata|" .
  "Symbiodinium microadriaticum|" .
+ "Alligator sinensis|" .
  "Enfants Terribles|" .
  "Puntius sophore|" .
  "Murraya koenigii|" .
@@ -171,6 +181,10 @@ const ITALICS_LIST =
  "Loa loa|" .
  "Homo nalediin|" .
  "Homo naledi|" .
+ "Helicobacter Pylori|" .
+ "Panax ginseng|" .
+ "Lynx pardinus|" .
+ 
  "Pristionchus|" .
  "Arabidopsis|" .
  "Realpolitik|" .
@@ -185,6 +199,7 @@ const ITALICS_LIST =
  "Baryonyx|" .
  "Monacha|" .
  "Plesiosorex|" .
+ "Malassezia|" .
  "Bushiellas|" .
  "Godartiana|" .
  "Hapalotremus|" .
@@ -243,6 +258,7 @@ const ITALICS_LIST =
  "Montifringilla|" .
  "Leucosticte|" .
  "Aglyptorhynchus|" .
+ "Phidiana|" .
  "Egertonia|" .
  "Dapedium|" .
  "Pycnodus|" .
@@ -359,7 +375,8 @@ const CAMEL_CASE = array('DeSoto', 'PubChem', 'BitTorrent', 'Al2O3', 'NiMo', 'Cu
                          'MoveOn', 'iSemantic', 'DigitalHeritage', 'iBroadway', 'TechSym', 'HistoCrypt', 'AaTh', 'ProComm',
                          'DeSmet', 'HfMoTaTiZr', 'HfMoNbTaTiZr', 'CoCrFeMnNi', 'alloy film', 'ProtSweep', '2Dsweep',
                          'DomainSweep', 'McLaughlin', 'WikiPathways', 'MediaArtHistories', 'SunLine', 'SnakeChunks',
-                         'LeGuin', 'LaCour', 'GetOrganelle', 'eInclusion',
+                         'LeGuin', 'LaCour', 'GetOrganelle', 'eInclusion', 'SuperCollider', 'CatSper', 'VectorBase',
+                         'eRegistries', 'CrossFit', 'IgMs', 'eLife', 'RxNorm', 'QuickTime',
                        );
 
 const ITALICS_HARDCODE_IN  = ["Tweeting theJihad: Social Media", " of SectarianismCommunity", " for WonderNineteenth Century Travel ",  
