@@ -5245,6 +5245,15 @@ final class Template {
                 $this->add_if_new('url', $match[1]);
              }
           }
+          // Remove trailing #
+          if (preg_match("~^(\S+)#$~u", $this->get($param), $match)) {
+            $this->set($param, $matches[1]);
+            foreach (ALL_URL_TYPES as $url_types) {
+              if (preg_match("~^(\S+)#$~u", $this->get($url_types), $match)) {
+                $this->set($url_types, $matches[1]);
+              }
+            }
+          }
           return;
 
         case 'chapter-url':
