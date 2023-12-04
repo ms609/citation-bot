@@ -4513,6 +4513,12 @@ final class Template {
             $this->rename('CITATION_BOT_HOLDS_WORK', 'work');
             return;
           }
+          $the_title = $this->get('title');
+          foreach (CONFERENCE_LIST as $conf) {
+            if ((stripos($the_title, $conf) !== FALSE) && (stripos($the_title, $the_param) !== FALSE)) {
+               $this->forget($param);
+            }
+          }
           return;
 
         case 'jstor':

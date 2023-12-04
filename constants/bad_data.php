@@ -11,6 +11,7 @@ const HAS_NO_ISSUE = array("special papers in palaeontology", "oceanic linguisti
                            "cahiers balkaniques", "res historica", "archaeological reports");  // Some journals have volumes only, no issue numbers
 const PREFER_VOLUMES = array("illinois classical studies"); // When issue=volume, drop issue.  JSTOR calls volumes issues
 const PREFER_ISSUES = array("mammalian species", "bulletin of the united states national museum");
+const CONFERENCE_LIST = array("Proceedings of Advancing Astrophysics", "International Cosmic Ray Conference");
 const BAD_ACCEPTED_MANUSCRIPT_TITLES = array("oup accepted manuscript", "placeholder for bad pdf file", 
                                              "placeholder", "symbolic placeholder", "[placeholder]", 
                                              "placeholder for arabic language transliteration", "article not found");
