@@ -468,7 +468,7 @@ final class constantsTest extends testBaseClass {
         if ((substr_count($later, $early) !== 0) && ($later !== $early)) {
           $in_order = FALSE;
           ob_flush();
-          echo "WRONG ORDER: $later   AND   $early\n";
+          echo "\n\nWRONG ORDER: $later   AND   $early\n\n";
           ob_flush();
         }
       }
