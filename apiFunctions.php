@@ -621,6 +621,12 @@ function query_crossref(string $doi) : ?object {
             unset($result->issue);
           }
         }
+        if (stripos($doi, '10.3897/ab.') === 0) {
+            unset($result->volume);
+            unset($result->page);
+            unset($result->issue);
+          }
+        }
         return $result;
       } else {
         return NULL;
