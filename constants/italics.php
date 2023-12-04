@@ -202,7 +202,6 @@ const ITALICS_LIST =
  "Leuconostoc citrovorum|" .
  "Lynx pardinus|" .
  "Oenococcus oeni|" .
- "Caenorhabditis elegansby|" .
  "Pristionchus|" .
  "Arabidopsis|" .
  "Realpolitik|" .
