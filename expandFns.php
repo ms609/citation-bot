@@ -1612,7 +1612,7 @@ function normalize_google_books(string &$url, int &$removed_redundant, string &$
           $url .= '&dq=' . $book_array['dq'];
       }
       if (isset($book_array['pg'])){
-          if (preg_match('~^[pra]+\d~i', $book_array['pg'])) $book_array['pg'] = strtoupper($book_array['pg']);
+          if (preg_match('~^[pra]+\d~i', $book_array['pg'])) $book_array['pg'] = mb_strtoupper($book_array['pg']);
           $url .= '&pg=' . $book_array['pg'];
       }
       if (isset($book_array['lpg'])){ // Currently NOT POSSIBLE - failsafe code for changes
