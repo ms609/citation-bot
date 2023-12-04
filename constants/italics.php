@@ -430,7 +430,11 @@ const ITALICS_HARDCODE_IN  = ["Tweeting theJihad: Social Media", " of Sectariani
              "ElectrongValue",       "thetoxGene",      "GopashtamiandGovardhan",       "PolishLebensraum",       "theNachlassproblem",
              " forAltalena:",      " in Plutarch'sLives",       "FromSolidarityto",        " gp91phoxPromoter",  "in vitroAssays",        "MarketizingHindutva",
              "TheBhagavadgītā,",       "theOrigin of Species",       "EncounteringHindutva",       "ChineseHukouSystem",        "CisLatreille",
-             "the 21stCentury", " JonesSir William", "ofClinical Microbiology"];
+             "the 21stCentury", " JonesSir William", "ofClinical Microbiology", "Rallying theQaum:The", " of theHaratinin Morocco",
+             "future ofBorn in Flames", "ideology ofMakwerekwerein South Africa", "TheWhite Paperand the Making", "provocations ofThe Female Eunuch",
+             "Moving beyondPvalues:", "from theHubble Space TelescopeKey", "Evidence ofpepSolar Neutrinos", "Notes forContra Ursum",
+             "sThe Social Construction of Realityafter 50", "Love inShôjo Manga", "the re-reducedHipparcosintermediate "
+ ];
 const ITALICS_HARDCODE_OUT = ["Tweeting the ''Jihad'': Social Media", " of Sectarianism: Community", " for Wonder: Nineteenth Century Travel ",  
              " from the Shadows: Analytical Feminist Contributions",  " der Gattung: Eoeugnathus Brough",  " the Citizen: Music as Public ",
              " to the Sirens: Musical Technologies ", " the Dynasty: Palace Women ", "Divine Creatures: Animal Mummies", 
@@ -447,5 +451,9 @@ const ITALICS_HARDCODE_OUT = ["Tweeting the ''Jihad'': Social Media", " of Secta
              "Electron ''g'' Value", "the ''tox'' Gene", "Gopashtami ''and'' Govardhan", "Polish ''Lebensraum'' ", "the ''Nachlass'' problem ",
              " for ''Altalena'':", " in Plutarch's ''Lives'' ", "From ''Solidarity'' to ", " gp91phox Promoter", " ''in vitro'' Assays ", "Marketizing ''Hindutva'' ",
              "The ''Bhagavadgītā'', ", "the ''Origin of Species'' ", "Encountering ''Hindutva'' ", "Chinese ''Hukou'' System ", "''Cis'' Latreille",
-             "the 21st Century", " Jones: Sir William", "of Clinical Microbiology"];
+             "the 21st Century", " Jones: Sir William", "of Clinical Microbiology", "Rallying the ''Qaum'': The", " of the ''Haratin'' in Morocco",
+             "future of ''Born in Flames''", "ideology of ''Makwerekwere'' in South Africa", "The ''White Paper'' and the Making", "provocations of ''The Female Eunuch''",
+             "Moving beyond ''P'' values:", "from the ''Hubble Space Telescope'' Key", "Evidence of ''pep'' Solar Neutrinos", "Notes for ''Contra Ursum''",
+             "s ''The Social Construction of Reality'' after 50", "Love in ''Shôjo Manga''", "the re-reduced ''Hipparcos'' intermediate "
+             ];
 
