@@ -2636,6 +2636,7 @@ final class Template {
         if (stripos($oa_url, 'timetravel.mementoweb.org') !== FALSE) return 'mementoweb'; // Not good ones
         if (stripos($oa_url, 'citeseerx') !== FALSE) return 'citeseerx'; // blacklisted due to copyright concerns
         if (stripos($oa_url, 'palgraveconnect') !== FALSE) return 'palgraveconnect';
+        if (stripos($oa_url, 'muse.jhu.edu') !== FALSE) return 'projectmuse'; // Same as DOI 99% of the time
         if (stripos($oa_url, 'repository.upenn.edu') !== FALSE) return 'epository.upenn.edu'; // All links broken right now
         if ($this->get('url')) {
             if ($this->get('url') !== $oa_url) $this->get_identifiers_from_url($oa_url);  // Maybe we can get a new link type
