@@ -43,25 +43,25 @@ public static function create_ch_zotero() : void {
           CURLOPT_USERAGENT => BOT_USER_AGENT,
           CURLOPT_COOKIESESSION => TRUE,
           // Defaults used in TRAVIS overridden below when deployed
-          CURLOPT_CONNECTTIMEOUT => 10,
-          CURLOPT_TIMEOUT => 45]);
+          CURLOPT_CONNECTTIMEOUT => BOT_CONNECTION_TIMEOUT,
+          CURLOPT_TIMEOUT => BOT_HTTP_TIMEOUT * 2.5]);
 
   self::$ch_ieee = curl_init();
   curl_setopt_array(self::$ch_ieee,
          [CURLOPT_RETURNTRANSFER => TRUE,
           CURLOPT_HEADER => FALSE,
-          CURLOPT_TIMEOUT => 15,
+          CURLOPT_TIMEOUT => BOT_HTTP_TIMEOUT,
           CURLOPT_FOLLOWLOCATION => TRUE,
           CURLOPT_MAXREDIRS => 10,
-          CURLOPT_CONNECTTIMEOUT => 8,
+          CURLOPT_CONNECTTIMEOUT => BOT_CONNECTION_TIMEOUT,
           CURLOPT_COOKIESESSION => TRUE,
           CURLOPT_USERAGENT => 'curl/7.55.1']); // IEEE now requires JavaScript, unless you specify curl
    
   self::$ch_jstor = curl_init();
   curl_setopt_array(self::$ch_jstor,
        [CURLOPT_RETURNTRANSFER => TRUE,
-        CURLOPT_TIMEOUT => 15,
-        CURLOPT_CONNECTTIMEOUT => 10,
+        CURLOPT_TIMEOUT => BOT_HTTP_TIMEOUT,
+        CURLOPT_CONNECTTIMEOUT => BOT_CONNECTION_TIMEOUT,
         CURLOPT_COOKIESESSION => TRUE,
         CURLOPT_USERAGENT => BOT_USER_AGENT]);
    
@@ -69,8 +69,8 @@ public static function create_ch_zotero() : void {
   curl_setopt_array(self::$ch_dx,
         [CURLOPT_FOLLOWLOCATION => TRUE,
          CURLOPT_MAXREDIRS => 20, // No infinite loops for us, 20 for Elsevier and Springer websites
-         CURLOPT_CONNECTTIMEOUT =>  4, 
-         CURLOPT_TIMEOUT => 20,
+         CURLOPT_CONNECTTIMEOUT => BOT_CONNECTION_TIMEOUT,
+         CURLOPT_TIMEOUT => BOT_HTTP_TIMEOUT,
          CURLOPT_RETURNTRANSFER => TRUE,
          CURLOPT_AUTOREFERER => TRUE,
          CURLOPT_COOKIESESSION => TRUE,
@@ -79,8 +79,8 @@ public static function create_ch_zotero() : void {
   self::$ch_pmc = curl_init();
   curl_setopt_array(self::$ch_pmc,
         [CURLOPT_RETURNTRANSFER => TRUE,
-         CURLOPT_TIMEOUT => 15,
-         CURLOPT_CONNECTTIMEOUT => 10,
+         CURLOPT_TIMEOUT => BOT_HTTP_TIMEOUT,
+         CURLOPT_CONNECTTIMEOUT => BOT_CONNECTION_TIMEOUT,
          CURLOPT_COOKIESESSION => TRUE,
          CURLOPT_USERAGENT => BOT_USER_AGENT]);
 }
@@ -100,10 +100,10 @@ public static function unblock_zotero() : void {
 public static function query_url_api_class(array $ids, array &$templates) : void { // Pointer to save memory
   if (!SLOW_MODE) return; // Zotero takes time
 
-  curl_setopt(self::$zotero_ch, CURLOPT_TIMEOUT, 45); // Reset default
+  curl_setopt(self::$zotero_ch, CURLOPT_TIMEOUT, BOT_HTTP_TIMEOUT*2.5); // Reset default
   if (!TRAVIS) { // try harder in tests
     // @codeCoverageIgnoreStart
-    curl_setopt(self::$zotero_ch, CURLOPT_CONNECTTIMEOUT, 3);
+    curl_setopt(self::$zotero_ch, CURLOPT_CONNECTTIMEOUT, BOT_CONNECTION_TIMEOUT);
     $url_count = 0;
     foreach ($templates as $template) {
      if (!$template->blank(['url', 'chapter-url', 'chapterurl'])) {
@@ -111,11 +111,11 @@ public static function query_url_api_class(array $ids, array &$templates) : void
      }
     }
     if ($url_count < 5) {
-      curl_setopt(self::$zotero_ch, CURLOPT_TIMEOUT, 15);
+      curl_setopt(self::$zotero_ch, CURLOPT_TIMEOUT, BOT_HTTP_TIMEOUT * 1.0);
     } elseif ($url_count < 25) {
-      curl_setopt(self::$zotero_ch, CURLOPT_TIMEOUT, 10);
+      curl_setopt(self::$zotero_ch, CURLOPT_TIMEOUT, BOT_HTTP_TIMEOUT * 0.5);
     } else {
-      curl_setopt(self::$zotero_ch, CURLOPT_TIMEOUT, 5);
+      curl_setopt(self::$zotero_ch, CURLOPT_TIMEOUT, BOT_HTTP_TIMEOUT * 0.25);
     }
     // @codeCoverageIgnoreEnd
   }
@@ -125,7 +125,7 @@ public static function query_url_api_class(array $ids, array &$templates) : void
   }
   self::$zotero_announced = 2;
   if (!TRAVIS) { // These are pretty reliable, unlike random urls
-      curl_setopt(self::$zotero_ch, CURLOPT_TIMEOUT, 10);  // @codeCoverageIgnore
+      curl_setopt(self::$zotero_ch, CURLOPT_TIMEOUT, BOT_HTTP_TIMEOUT * 0.5);  // @codeCoverageIgnore
   }
   foreach ($templates as $template) {
        if ($template->has('biorxiv')) {
@@ -208,8 +208,8 @@ public static function drop_urls_that_match_dois(array &$templates) : void {  //
   curl_setopt_array($ch,
         [CURLOPT_FOLLOWLOCATION => TRUE,
          CURLOPT_MAXREDIRS => 20, // No infinite loops for us, 20 for Elsevier and Springer websites
-         CURLOPT_CONNECTTIMEOUT =>  4, 
-         CURLOPT_TIMEOUT => 20,
+         CURLOPT_CONNECTTIMEOUT =>  BOT_CONNECTION_TIMEOUT, 
+         CURLOPT_TIMEOUT => BOT_HTTP_TIMEOUT,
          CURLOPT_RETURNTRANSFER => TRUE,
          CURLOPT_AUTOREFERER => TRUE,
          CURLOPT_COOKIESESSION => TRUE,
