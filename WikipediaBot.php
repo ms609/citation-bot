@@ -511,7 +511,7 @@ try {
     exit(0);
   }
   
-  private static function reset(object &$obj) : object { // Make PHP 8 happy
+  private static function reset(&$obj) : object { // Make PHP 8 happy
      $arr = (array) $obj;
      return (object) reset($arr);
   }
