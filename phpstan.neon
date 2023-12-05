@@ -12,5 +12,5 @@ parameters:
 		- MAX_PAGES
 		- WIKI_ROOT
 		- API_ROOT
+		- SAVE_TO_FILES
 		- BOT_USER_AGENT
-		
