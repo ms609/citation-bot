@@ -1220,7 +1220,7 @@ function edit_a_list_of_pages(array $pages_in_category, WikipediaBot $api, strin
       {
         // Sanitize file name by replacing characters that are not allowed on most file systems to underscores, and also replace path characters
         // And add .md extension to avoid troubles with devices such as 'con' or 'aux'
-        $filename = preg_replace('/[\/\\:*?"<>|]/', '_', $page_title) . '.md';
+        $filename = preg_replace('~[\/\\:*?"<>|\s]~', '_', $page_title) . '.md';
         report_phase("Saving to file " . echoable($filename));
         $body = $page->parsed_text();
         $bodylen = strlen($body);
