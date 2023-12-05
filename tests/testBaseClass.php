@@ -11,7 +11,7 @@ abstract class testBaseClass extends PHPUnit\Framework\TestCase {
   private $testing_skip_wiki   = FALSE;
   
   function __construct() {
-    parent::__construct("CitationBot");
+    parent::__construct();
 
    // Non-trusted builds
     if (!PHP_ADSABSAPIKEY) $this->testing_skip_bibcode = TRUE;
