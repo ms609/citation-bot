@@ -2642,6 +2642,7 @@ final class Template {
             if ($this->get('url') !== $oa_url) $this->get_identifiers_from_url($oa_url);  // Maybe we can get a new link type
             return 'have url';
         }
+        $is_canonical_publisher=FALSE;
         if (preg_match("~^https?://([^\/]+)/~", $oa_url, $match) === 1)
         {
           $host_name = @$match[1];
