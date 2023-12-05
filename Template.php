@@ -2642,9 +2642,18 @@ final class Template {
             if ($this->get('url') !== $oa_url) $this->get_identifiers_from_url($oa_url);  // Maybe we can get a new link type
             return 'have url';
         }
-        preg_match("~^https?://([^\/]+)/~", $oa_url, $match);
-        $host_name = @$match[1];
-        if (str_ireplace(CANONICAL_PUBLISHER_URLS, '', $host_name) !== $host_name) return 'publisher';
+        if (preg_match("~^https?://([^\/]+)/~", $oa_url, $match) === 1)
+        {
+          $host_name = @$match[1];
+          if ($host_name)
+          {
+            if (str_ireplace(CANONICAL_PUBLISHER_URLS, '', $host_name) === $host_name) {$is_canonical_publisher=TRUE;}
+          }
+        }
+        if ($is_canonical_publisher!==TRUE)
+        {
+           return 'publisher';
+        }
         if (stripos($oa_url, 'bioone.org/doi') !== FALSE) return 'publisher';
         if (stripos($oa_url, 'gateway.isiknowledge.com') !== FALSE) return 'nothing';
         if (stripos($oa_url, 'orbit.dtu.dk/en/publications') !== FALSE) return 'nothing'; // Abstract only
