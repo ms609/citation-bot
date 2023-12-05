@@ -55,13 +55,13 @@ if (strpos((string) @$_SERVER['PHP_SELF'], '/gadgetapi.php') === FALSE) {
   define("FLUSHING_OKAY", FALSE);
 }
 
-if (isset($_REQUEST["slow"]) || TRAVIS || in_array('--slow', $argv)) {
+if (isset($_REQUEST["slow"]) || TRAVIS || (isset($argv) && in_array('--slow', $argv))) {
   define("SLOW_MODE", TRUE);
 } else {
   define("SLOW_MODE", FALSE);
 }
 
-if (in_array('--savetofiles', $argv)) {
+if (isset($argv) && in_array('--savetofiles', $argv)) {
   define("SAVETOFILES_MODE", TRUE);
 } else {
   define("SAVETOFILES_MODE", FALSE);
