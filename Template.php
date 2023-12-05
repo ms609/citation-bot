@@ -2604,8 +2604,8 @@ final class Template {
             [CURLOPT_HEADER => FALSE,
              CURLOPT_RETURNTRANSFER => TRUE,
              CURLOPT_URL => $url,
-             CURLOPT_TIMEOUT => 10,
-             CURLOPT_CONNECTTIMEOUT => 10,
+             CURLOPT_TIMEOUT => BOT_HTTP_TIMEOUT,
+             CURLOPT_CONNECTTIMEOUT => BOT_CONNECTION_TIMEOUT,
              CURLOPT_USERAGENT => BOT_USER_AGENT]);
     $json = (string) @curl_exec($ch);
     curl_close($ch);
@@ -2866,8 +2866,8 @@ final class Template {
                    [CURLOPT_USERAGENT => BOT_USER_AGENT,
                     CURLOPT_HEADER => FALSE,
                     CURLOPT_RETURNTRANSFER => TRUE,
-                    CURLOPT_TIMEOUT => 15,
-                    CURLOPT_CONNECTTIMEOUT => 10,
+                    CURLOPT_TIMEOUT => BOT_HTTP_TIMEOUT,
+                    CURLOPT_CONNECTTIMEOUT => BOT_CONNECTION_TIMEOUT,
                     CURLOPT_URL => $google_book_url]);
         $google_content = (string) @curl_exec($ch);
         curl_close($ch);
@@ -2917,8 +2917,8 @@ final class Template {
            [CURLOPT_USERAGENT => BOT_USER_AGENT,
             CURLOPT_HEADER => FALSE,
             CURLOPT_RETURNTRANSFER => TRUE,
-            CURLOPT_TIMEOUT => 15,
-            CURLOPT_CONNECTTIMEOUT => 10,
+            CURLOPT_TIMEOUT => BOT_HTTP_TIMEOUT,
+            CURLOPT_CONNECTTIMEOUT => BOT_CONNECTION_TIMEOUT,
             CURLOPT_URL => $google_book_url]);
     $data = (string) @curl_exec($ch);
     curl_close($ch);
@@ -4093,8 +4093,8 @@ final class Template {
               $ch = curl_init($test_url);
               curl_setopt_array($ch,
                        [CURLOPT_RETURNTRANSFER => TRUE,
-                        CURLOPT_TIMEOUT => 25,
-                        CURLOPT_CONNECTTIMEOUT => 10,
+                        CURLOPT_TIMEOUT => BOT_HTTP_TIMEOUT * 1.5,
+                        CURLOPT_CONNECTTIMEOUT => BOT_CONNECTION_TIMEOUT,
                         CURLOPT_USERAGENT => BOT_USER_AGENT]);
               @curl_exec($ch);
               $httpCode = (int) @curl_getinfo($ch, CURLINFO_HTTP_CODE);
@@ -5550,8 +5550,8 @@ final class Template {
                  curl_setopt_array($ch,
                          [CURLOPT_FOLLOWLOCATION => TRUE,
                           CURLOPT_MAXREDIRS => 20,
-                          CURLOPT_CONNECTTIMEOUT => 8,
-                          CURLOPT_TIMEOUT => 25,
+                          CURLOPT_CONNECTTIMEOUT => BOT_CONNECTION_TIMEOUT,
+                          CURLOPT_TIMEOUT => BOT_HTTP_TIMEOUT * 1.5,
                           CURLOPT_RETURNTRANSFER => TRUE,
                           CURLOPT_USERAGENT => BOT_USER_AGENT,
                           CURLOPT_COOKIEFILE => 'cookie.txt', // Seems to be a good idea for proquest
