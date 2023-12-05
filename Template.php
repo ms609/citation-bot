@@ -363,7 +363,7 @@ final class Template {
               $bad_data = TRUE;
           }
           $ieee_insanity = FALSE;
-          if (conference_doi($this->get('doi')) && ($this->wikiname() === 'cite journal') &&
+          if (conference_doi($this->get('doi')) && in_array($this->wikiname(), ['cite journal', 'cite web']) &&
               ($this->has('isbn') ||
               (stripos($the_title, 'proceedings') !== FALSE && stripos($the_journal, 'proceedings') !== FALSE) ||
               (stripos($the_title, 'proc. ') !== FALSE && stripos($the_journal, 'proc. ') !== FALSE) ||
