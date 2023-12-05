@@ -597,7 +597,7 @@ final class Template {
               $this->rename('title', 'CITATION_BOT_PLACEHOLDER_title');
               $the_title = '';
               $bad_data = TRUE;
-            } elseif (substr($the_title, 0, -12) === ' IEEE Xplore') {
+            } elseif (substr($the_title, -12) === ' IEEE Xplore') {
               $this->rename('title', 'CITATION_BOT_PLACEHOLDER_title');
               $the_title = '';
               $bad_data = TRUE;
