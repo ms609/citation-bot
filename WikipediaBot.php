@@ -244,7 +244,8 @@ try {
       report_warning("Pages array is non-existent.  Aborting.");
       return NULL;
     }
-    $myPage = reset($response->query->pages); // reset gives first element in list
+    $myPage = reset($response->query->pages); // CONFILICT
+    
     
     if (!isset($myPage->lastrevid) || !isset($myPage->revisions[0]->timestamp) || !isset($myPage->title)) {
       report_warning("Page seems not to exist. Aborting.");
