@@ -544,7 +544,7 @@ function titles_are_dissimilar(string $inTitle, string $dbTitle) : bool {
         $inTitle = strip_diacritics($inTitle);
         $dbTitle = strip_diacritics($dbTitle);
         // always decode new data
-        $dbTitle = titles_simple(mb_convert_encoding(html_entity_decode($dbTitle), "HTML-ENTITIES", 'UTF-8'));
+        $dbTitle = titles_simple(mb_convert_encoding(html_entity_decode($dbTitle), "HTML-ENTITIES", 'UTF-8'));dsfasdffdsdfsafds
         // old data both decoded and not
         $inTitle2 = titles_simple($inTitle);
         $inTitle = titles_simple(mb_convert_encoding(html_entity_decode($inTitle), "HTML-ENTITIES", 'UTF-8'));
