@@ -563,38 +563,51 @@ final class Template {
               $the_chapter = '';
               $bad_data = TRUE;
           }
-          if ($the_title !== '' && stripos($the_title, 'CITATION') === FALSE) {
+          if ($the_title !== '' && stripos(str_replace('CITATION_BOT_PLACEHOLDER_TEMPLATE', '', $the_title), 'CITATION') === FALSE) { // Templates are generally {{!}} and such
             if (str_i_same($the_title, $the_journal) &&
                 str_i_same($the_title, $the_chapter)) { // Journal === Title === Chapter INSANE!  Never actually seen
               $this->rename('title', 'CITATION_BOT_PLACEHOLDER_title');
               $this->rename('journal', 'CITATION_BOT_PLACEHOLDER_journal');
               $this->rename('chapter', 'CITATION_BOT_PLACEHOLDER_chapter');
+              $the_title = '';
+              $the_journal = '';
+              $the_chapter = '';
               $bad_data = TRUE;
             } elseif (str_i_same($the_title, $the_journal)) { // Journal === Title
               $this->rename('title', 'CITATION_BOT_PLACEHOLDER_title');
               $this->rename('journal', 'CITATION_BOT_PLACEHOLDER_journal');
+              $the_title = '';
+              $the_journal = '';
               $bad_data = TRUE;
             } elseif (str_i_same($the_title, $the_chapter)) { // Chapter === Title
               $this->rename('title', 'CITATION_BOT_PLACEHOLDER_title');
               $this->rename('chapter', 'CITATION_BOT_PLACEHOLDER_chapter');
+              $the_title = '';
+              $the_chapter = '';                                         
               $bad_data = TRUE;
             } elseif (substr($the_title, -9, 9) === ' on JSTOR') {
               $this->rename('title', 'CITATION_BOT_PLACEHOLDER_title'); // Ends in 'on jstor'
+              $the_title = '';
               $bad_data = TRUE;
             } elseif (substr($the_title, -20, 20) === 'IEEE Xplore Document') {
               $this->rename('title', 'CITATION_BOT_PLACEHOLDER_title');
+              $the_title = '';
               $bad_data = TRUE;
             } elseif (substr($the_title, 0, 12) === 'IEEE Xplore ') {
               $this->rename('title', 'CITATION_BOT_PLACEHOLDER_title');
+              $the_title = '';
               $bad_data = TRUE;
             } elseif (substr($the_title, 0, -12) === ' IEEE Xplore') {
               $this->rename('title', 'CITATION_BOT_PLACEHOLDER_title');
+              $the_title = '';
               $bad_data = TRUE;
             } elseif (preg_match('~.+(?: Volume| Vol\.| V. | Number| No\.| Num\.| Issue ).*\d+.*page.*\d+~i', $the_title)) {
               $this->rename('title', 'CITATION_BOT_PLACEHOLDER_title');
+              $the_title = '';
               $bad_data = TRUE;
             } elseif (preg_match('~^\[No title found\]$~i', $the_title)) {
               $this->rename('title', 'CITATION_BOT_PLACEHOLDER_title');
+              $the_title = '';
               $bad_data = TRUE;
             } elseif (stripos($the_title, 'arXiv') !== FALSE) {
               $this->rename('title', 'CITATION_BOT_PLACEHOLDER_title');
