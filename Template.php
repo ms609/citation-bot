@@ -584,7 +584,7 @@ final class Template {
             } elseif (substr($the_title, -20, 20) === 'IEEE Xplore Document') {
               $this->rename('title', 'CITATION_BOT_PLACEHOLDER_title');
               $bad_data = TRUE;
-            } elseif (substr($the_title, 0, 12) === 'IEEE Xplore ') {
+            } elseif (substr($the_title, 0, 11) === 'IEEE Xplore') {
               $this->rename('title', 'CITATION_BOT_PLACEHOLDER_title');
               $bad_data = TRUE;
             } elseif (preg_match('~.+(?: Volume| Vol\.| V. | Number| No\.| Num\.| Issue ).*\d+.*page.*\d+~i', $the_title)) {
@@ -599,6 +599,14 @@ final class Template {
               $bad_data = TRUE;
             }
           }
+          if (substr($the_title, 0, 11) === 'IEEE Xplore') {
+              $tmp = str_replace('CITATION_BOT_PLACEHOLDER_TEMPLATE', '', $the_title); // Get rid of {{!}}, but not comments
+              if (stripos($tmp, 'CITATION') === FALSE) {
+                  $this->rename('title', 'CITATION_BOT_PLACEHOLDER_title');stripos($the_title, 'CITATION') === FALSE
+                  $bad_data = TRUE;
+                  $the_title = '';
+              }
+          }                                                                         
           if ($this->has('coauthors')) {
               if ($this->has('first'))  $this->rename('first',  'CITATION_BOT_PLACEHOLDER_first');
               if ($this->has('last'))   $this->rename('last',   'CITATION_BOT_PLACEHOLDER_last');
