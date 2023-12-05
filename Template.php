@@ -336,6 +336,9 @@ final class Template {
       }
       if ((stripos($this->rawtext, 'citation_bot_placeholder_comment') === FALSE) &&
          (stripos($this->rawtext, 'graph drawing') === FALSE) &&
+         (stripos($this->rawtext, 'Lecture Notes in Computer Science') === FALSE) &&
+         (stripos($this->rawtext, 'LNCS ') === FALSE) &&
+         (stripos($this->rawtext, ' LNCS') === FALSE) &&
          (!$this->blank(['pmc', 'pmid', 'doi', 'jstor']) ||
          (stripos($this->get('journal') . $this->get('title'), 'arxiv') !== FALSE && !$this->blank(ARXIV_ALIASES)))) { // Have some good data
           $the_title   = $this->get('title');
@@ -363,7 +366,7 @@ final class Template {
               $bad_data = TRUE;
           }
           $ieee_insanity = FALSE;
-          if (conference_doi($this->get('doi')) && ($this->wikiname() === 'cite journal') &&
+          if (conference_doi($this->get('doi')) && in_array($this->wikiname(), ['cite journal', 'cite web']) &&
               ($this->has('isbn') ||
               (stripos($the_title, 'proceedings') !== FALSE && stripos($the_journal, 'proceedings') !== FALSE) ||
               (stripos($the_title, 'proc. ') !== FALSE && stripos($the_journal, 'proc. ') !== FALSE) ||
@@ -563,42 +566,58 @@ final class Template {
               $the_chapter = '';
               $bad_data = TRUE;
           }
-          if ($the_title !== '' && stripos($the_title, 'CITATION') === FALSE) {
+          if ($the_title !== '' && stripos(str_replace('CITATION_BOT_PLACEHOLDER_TEMPLATE', '', $the_title), 'CITATION') === FALSE) { // Templates are generally {{!}} and such
             if (str_i_same($the_title, $the_journal) &&
                 str_i_same($the_title, $the_chapter)) { // Journal === Title === Chapter INSANE!  Never actually seen
               $this->rename('title', 'CITATION_BOT_PLACEHOLDER_title');
               $this->rename('journal', 'CITATION_BOT_PLACEHOLDER_journal');
               $this->rename('chapter', 'CITATION_BOT_PLACEHOLDER_chapter');
+              $the_title = '';
+              $the_journal = '';
+              $the_chapter = '';
               $bad_data = TRUE;
             } elseif (str_i_same($the_title, $the_journal)) { // Journal === Title
               $this->rename('title', 'CITATION_BOT_PLACEHOLDER_title');
               $this->rename('journal', 'CITATION_BOT_PLACEHOLDER_journal');
+              $the_title = '';
+              $the_journal = '';
               $bad_data = TRUE;
             } elseif (str_i_same($the_title, $the_chapter)) { // Chapter === Title
               $this->rename('title', 'CITATION_BOT_PLACEHOLDER_title');
               $this->rename('chapter', 'CITATION_BOT_PLACEHOLDER_chapter');
+              $the_title = '';
+              $the_chapter = '';                                         
               $bad_data = TRUE;
             } elseif (substr($the_title, -9, 9) === ' on JSTOR') {
               $this->rename('title', 'CITATION_BOT_PLACEHOLDER_title'); // Ends in 'on jstor'
+              $the_title = '';
               $bad_data = TRUE;
             } elseif (substr($the_title, -20, 20) === 'IEEE Xplore Document') {
               $this->rename('title', 'CITATION_BOT_PLACEHOLDER_title');
+              $the_title = '';
               $bad_data = TRUE;
             } elseif (substr($the_title, 0, 12) === 'IEEE Xplore ') {
               $this->rename('title', 'CITATION_BOT_PLACEHOLDER_title');
+              $the_title = '';
+              $bad_data = TRUE;
+            } elseif (substr($the_title, -12) === ' IEEE Xplore') {
+              $this->rename('title', 'CITATION_BOT_PLACEHOLDER_title');
+              $the_title = '';
               $bad_data = TRUE;
             } elseif (preg_match('~.+(?: Volume| Vol\.| V. | Number| No\.| Num\.| Issue ).*\d+.*page.*\d+~i', $the_title)) {
               $this->rename('title', 'CITATION_BOT_PLACEHOLDER_title');
+              $the_title = '';
               $bad_data = TRUE;
             } elseif (preg_match('~^\[No title found\]$~i', $the_title)) {
               $this->rename('title', 'CITATION_BOT_PLACEHOLDER_title');
+              $the_title = '';
               $bad_data = TRUE;
             } elseif (stripos($the_title, 'arXiv') !== FALSE) {
               $this->rename('title', 'CITATION_BOT_PLACEHOLDER_title');
               $the_title = '';
               $bad_data = TRUE;
             }
-          }
+          }                                                                 
           if ($this->has('coauthors')) {
               if ($this->has('first'))  $this->rename('first',  'CITATION_BOT_PLACEHOLDER_first');
               if ($this->has('last'))   $this->rename('last',   'CITATION_BOT_PLACEHOLDER_last');
@@ -2604,8 +2623,8 @@ final class Template {
             [CURLOPT_HEADER => FALSE,
              CURLOPT_RETURNTRANSFER => TRUE,
              CURLOPT_URL => $url,
-             CURLOPT_TIMEOUT => 10,
-             CURLOPT_CONNECTTIMEOUT => 10,
+             CURLOPT_TIMEOUT => BOT_HTTP_TIMEOUT,
+             CURLOPT_CONNECTTIMEOUT => BOT_CONNECTION_TIMEOUT,
              CURLOPT_USERAGENT => BOT_USER_AGENT]);
     $json = (string) @curl_exec($ch);
     curl_close($ch);
@@ -2636,13 +2655,15 @@ final class Template {
         if (stripos($oa_url, 'citeseerx') !== FALSE) return 'citeseerx'; // blacklisted due to copyright concerns
         if (stripos($oa_url, 'palgraveconnect') !== FALSE) return 'palgraveconnect';
         if (stripos($oa_url, 'muse.jhu.edu') !== FALSE) return 'projectmuse'; // Same as DOI 99% of the time
+        if (stripos($oa_url, 'lib.myilibrary.com') !== FALSE) return 'proquest'; // Rubbish
         if (stripos($oa_url, 'repository.upenn.edu') !== FALSE) return 'epository.upenn.edu'; // All links broken right now
         if ($this->get('url')) {
             if ($this->get('url') !== $oa_url) $this->get_identifiers_from_url($oa_url);  // Maybe we can get a new link type
             return 'have url';
         }
         preg_match("~^https?://([^\/]+)/~", $oa_url, $match);
-        $host_name = (string) @$match[1]; // On very rare occasions we get a non-valid url
+        $host_name = (string) @$match[1]; // On very rare occasions we get a non-valid url, such as http://lib.myilibrary.com?id=281759
+        if ($host_name == '') return 'no_slash';
         if (str_ireplace(CANONICAL_PUBLISHER_URLS, '', $host_name) !== $host_name) return 'publisher';
         if (stripos($oa_url, 'bioone.org/doi') !== FALSE) return 'publisher';
         if (stripos($oa_url, 'gateway.isiknowledge.com') !== FALSE) return 'nothing';
@@ -2866,8 +2887,8 @@ final class Template {
                    [CURLOPT_USERAGENT => BOT_USER_AGENT,
                     CURLOPT_HEADER => FALSE,
                     CURLOPT_RETURNTRANSFER => TRUE,
-                    CURLOPT_TIMEOUT => 15,
-                    CURLOPT_CONNECTTIMEOUT => 10,
+                    CURLOPT_TIMEOUT => BOT_HTTP_TIMEOUT,
+                    CURLOPT_CONNECTTIMEOUT => BOT_CONNECTION_TIMEOUT,
                     CURLOPT_URL => $google_book_url]);
         $google_content = (string) @curl_exec($ch);
         curl_close($ch);
@@ -2917,8 +2938,8 @@ final class Template {
            [CURLOPT_USERAGENT => BOT_USER_AGENT,
             CURLOPT_HEADER => FALSE,
             CURLOPT_RETURNTRANSFER => TRUE,
-            CURLOPT_TIMEOUT => 15,
-            CURLOPT_CONNECTTIMEOUT => 10,
+            CURLOPT_TIMEOUT => BOT_HTTP_TIMEOUT,
+            CURLOPT_CONNECTTIMEOUT => BOT_CONNECTION_TIMEOUT,
             CURLOPT_URL => $google_book_url]);
     $data = (string) @curl_exec($ch);
     curl_close($ch);
@@ -4093,8 +4114,8 @@ final class Template {
               $ch = curl_init($test_url);
               curl_setopt_array($ch,
                        [CURLOPT_RETURNTRANSFER => TRUE,
-                        CURLOPT_TIMEOUT => 25,
-                        CURLOPT_CONNECTTIMEOUT => 10,
+                        CURLOPT_TIMEOUT => BOT_HTTP_TIMEOUT * 1.5,
+                        CURLOPT_CONNECTTIMEOUT => BOT_CONNECTION_TIMEOUT,
                         CURLOPT_USERAGENT => BOT_USER_AGENT]);
               @curl_exec($ch);
               $httpCode = (int) @curl_getinfo($ch, CURLINFO_HTTP_CODE);
@@ -5550,8 +5571,8 @@ final class Template {
                  curl_setopt_array($ch,
                          [CURLOPT_FOLLOWLOCATION => TRUE,
                           CURLOPT_MAXREDIRS => 20,
-                          CURLOPT_CONNECTTIMEOUT => 8,
-                          CURLOPT_TIMEOUT => 25,
+                          CURLOPT_CONNECTTIMEOUT => BOT_CONNECTION_TIMEOUT,
+                          CURLOPT_TIMEOUT => BOT_HTTP_TIMEOUT * 1.5,
                           CURLOPT_RETURNTRANSFER => TRUE,
                           CURLOPT_USERAGENT => BOT_USER_AGENT,
                           CURLOPT_COOKIEFILE => 'cookie.txt', // Seems to be a good idea for proquest
@@ -6315,7 +6336,7 @@ final class Template {
       if (stripos($this->get('journal'), 'SIGGRAPH') !== FALSE && $this->blank('title')) {
           $this->rename('journal', 'title');
       }
-      if ($this->has('series') && stripos($this->get('title'), $this->get('series')) !== FALSE) {
+      if ($this->has('series') && stripos($this->get('title'), $this->get('series')) !== FALSE && 'Surtees Society' !== $this->get('series')) {
           $this->forget('series');
       }
 
