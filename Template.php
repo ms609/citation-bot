@@ -602,7 +602,7 @@ final class Template {
           if (substr($the_title, 0, 11) === 'IEEE Xplore') {
               $tmp = str_replace('CITATION_BOT_PLACEHOLDER_TEMPLATE', '', $the_title); // Get rid of {{!}}, but not comments
               if (stripos($tmp, 'CITATION') === FALSE) {
-                  $this->rename('title', 'CITATION_BOT_PLACEHOLDER_title');stripos($the_title, 'CITATION') === FALSE
+                  $this->rename('title', 'CITATION_BOT_PLACEHOLDER_title');
                   $bad_data = TRUE;
                   $the_title = '';
               }
