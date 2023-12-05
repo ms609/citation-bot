@@ -245,7 +245,7 @@ try {
       report_warning("Pages array is non-existent.  Aborting.");
       return NULL;
     }
-    $myPage = reset($response->query->pages); // reset gives first element in list
+    $myPage = self::reset($response->query->pages);
     
     if (!isset($myPage->lastrevid) || !isset($myPage->revisions[0]->timestamp) || !isset($myPage->title)) {
       report_warning("Page seems not to exist. Aborting.");
@@ -334,7 +334,7 @@ try {
         report_minor_error("Failed to get article's last revision for " . $page);      // @codeCoverageIgnore
         return '';                                                                     // @codeCoverageIgnore
     }
-    $page = reset($res->query->pages);
+    $page = self::reset($res->query->pages);
     return  (isset($page->revisions[0]->revid) ? (string) $page->revisions[0]->revid : '');
   }
 
@@ -350,7 +350,7 @@ try {
         report_warning("Failed to get redirect status");    // @codeCoverageIgnore
         return -1;                                          // @codeCoverageIgnore
     }
-    $res = reset($res->query->pages);
+    $res = self::reset($res->query->pages);
     return (isset($res->missing) ? -1 : (isset($res->redirect) ? 1 : 0));
   }
   public static function redirect_target(string $page) : ?string {
@@ -509,5 +509,10 @@ try {
        @header("Location: authenticate.php?return=" . $return);
     }
     exit(0);
+  }
+  
+  private static function reset(object &$obj) : object { // Make PHP 8 happy
+     $arr = (array) $obj;
+     return (object) reset($arr);
   }
 }
