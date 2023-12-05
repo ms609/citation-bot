@@ -20,7 +20,7 @@ jobs:
     - name: Setup PHP with PCOV
       uses: shivammathur/setup-php@v2
       with:
-        php-version: '8.0'
+        php-version: '8.2'
         ini-values: pcov.directory=.
         coverage: pcov
 
@@ -47,5 +47,5 @@ jobs:
       run: php ./vendor/bin/phpstan --no-interaction analyse --memory-limit=2G constants/*.php html_headers.php Parameter.php user_messages.php constants.php big_jobs.php expandFns.php Zotero.php apiFunctions.php NameTools.php Comment.php Page.php WikipediaBot.php Template.php setup.php category.php generate_template.php linked_pages.php process_page.php authenticate.php
 
     - name: PHP phan
-      run: php ./vendor/bin/phan --analyze-twice --allow-polyfill-parser --target-php-version='8.0' --minimum-target-php-version='8.0'
+      run: php ./vendor/bin/phan --analyze-twice --allow-polyfill-parser --target-php-version='8.2' --minimum-target-php-version='8.2'
      
