@@ -154,8 +154,8 @@ function is_doi_works(string $doi) : ?bool {
             [CURLOPT_HEADER => TRUE,
              CURLOPT_RETURNTRANSFER => TRUE,
              CURLOPT_URL => "https://doi.org/" . doi_encode($doi),
-             CURLOPT_TIMEOUT => 15,
-             CURLOPT_CONNECTTIMEOUT => 10,
+             CURLOPT_TIMEOUT => BOT_HTTP_TIMEOUT,
+             CURLOPT_CONNECTTIMEOUT => BOT_CONNECTION_TIMEOUT,
              CURLOPT_NOBODY => TRUE,
              CURLOPT_FOLLOWLOCATION => TRUE,
              CURLOPT_SSL_VERIFYHOST => 0,
@@ -1131,8 +1131,8 @@ function check_doi_for_jstor(string $doi, Template $template) : void {
   $ch = curl_init();
   curl_setopt_array($ch,
           [CURLOPT_RETURNTRANSFER => TRUE,
-           CURLOPT_TIMEOUT => 10,
-           CURLOPT_CONNECTTIMEOUT => 10,
+           CURLOPT_TIMEOUT => BOT_HTTP_TIMEOUT,
+           CURLOPT_CONNECTTIMEOUT => BOT_CONNECTION_TIMEOUT,
            CURLOPT_URL => "https://www.jstor.org/citation/ris/" . $doi,
            CURLOPT_USERAGENT => BOT_USER_AGENT]);
   $ris = (string) @curl_exec($ch);
