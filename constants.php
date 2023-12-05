@@ -32,7 +32,7 @@ const DATES_DMY      = 2;
 const CROSSREFUSERNAME = 'martins@gmail.com';
 const PUBMEDUSERNAME   = 'martins+pubmed@gmail.com';
 
-const GET_THE_HEADERS = 1; // expects 1 in early PHP, and TRUE in newer versions
+const GET_THE_HEADERS = TRUE; // expects 1 in early PHP, and TRUE in newer versions
 
 const BOT_USER_AGENT = "Mozilla/5.0 (compatible; Citation_bot; mailto:citations@tools.wmflabs.org; +https://citations.toolforge.org/)";
 
