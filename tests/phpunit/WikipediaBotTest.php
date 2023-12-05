@@ -124,14 +124,16 @@ require_once __DIR__ . '/../testBaseClass.php';
     }
     public function test_response2page7() : void {
       $response = (object) array('batchcomplete' => 'we did it', 'query' => (object) array('pages'));
-      $response->query->pages= array((object) array('lastrevid' => 1, 'revisions' => 1, 'title' => 'x'));
-      $response->query->pages[0]->revisions = array('0' => (object) array('timestamp' => 1));
+      $pages = array((object) array('lastrevid' => 1, 'revisions' => 1, 'title' => 'x'));
+      $pages[0]->revisions = array('0' => (object) array('timestamp' => 1));
+      $response->query->pages= (object) $pages;
       $this->assertNull(WikipediaBot::response2page($response));
     }
     public function test_response2page8() : void {
       $response = (object) array('batchcomplete' => 'we did it', 'query' => (object) array('pages'));
-      $response->query->pages= array((object) array('lastrevid' => 1, 'revisions' => 1, 'title' => 'x'));
-      $response->query->pages[0]->revisions = array('0' => (object) array('timestamp' => 1));
+      $pages = array((object) array('lastrevid' => 1, 'revisions' => 1, 'title' => 'x'));;
+      $pages[0]->revisions = array('0' => (object) array('timestamp' => 1));
+      $response->query->pages= (object) $pages;
       $response->query->tokens = (object) array('csrftoken' => 1);
       $this->assertNotNull(WikipediaBot::response2page($response));
     }
