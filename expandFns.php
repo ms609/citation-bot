@@ -1216,6 +1216,21 @@ function edit_a_list_of_pages(array $pages_in_category, WikipediaBot $api, strin
     big_jobs_check_killed();
     $done++;
     if ($page->get_text_from($page_title) && $page->expand_text()) {
+    if (SAVETOFILES_MODE) 
+    {
+      // Sanitize file name by replacing characters that are not allowed on most file systems to underscores, and also replace path characters
+      // And add .md extension to avoid troubles with devices such as 'con' or 'aux'
+      $filename = preg_replace('/[\/\\:*?"<>|]/', '_', $page_title)+'.md';
+      report_phase("Saving to file " . echoable($filename)); 
+      if (file_put_contents($filename, $page->parsed_text()))
+      {
+        report_phase("Saved to file " . echoable($filename));
+      }
+      {
+        report_warning("Save to file failed.");
+      }
+    } else
+    {
       report_phase("Writing to " . echoable($page_title) . '... ');
       $attempts = 0;
       if ($total === 1) {
@@ -1239,6 +1254,7 @@ function edit_a_list_of_pages(array $pages_in_category, WikipediaBot $api, strin
         report_warning("Write failed.");
         $final_edit_overview .= "\n Write failed.      " . "<a href=" . WIKI_ROOT . "?title=" . urlencode($page_title) . ">" . echoable($page_title) . "</a>";
       }
+    } 
     } else {
       report_phase($page->parsed_text() ? "No changes required. \n\n    # # # " : "Blank page. \n\n    # # # ");
        $final_edit_overview .= "\n No changes needed. " . "<a href=" . WIKI_ROOT . "?title=" . urlencode($page_title) . ">" . echoable($page_title) . "</a>";
