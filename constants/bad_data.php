@@ -11,6 +11,7 @@ const HAS_NO_ISSUE = array("special papers in palaeontology", "oceanic linguisti
                            "cahiers balkaniques", "res historica", "archaeological reports");  // Some journals have volumes only, no issue numbers
 const PREFER_VOLUMES = array("illinois classical studies"); // When issue=volume, drop issue.  JSTOR calls volumes issues
 const PREFER_ISSUES = array("mammalian species", "bulletin of the united states national museum");
+const CONFERENCE_LIST = array("Proceedings of Advancing Astrophysics", "International Cosmic Ray Conference");
 const BAD_ACCEPTED_MANUSCRIPT_TITLES = array("oup accepted manuscript", "placeholder for bad pdf file", 
                                              "placeholder", "symbolic placeholder", "[placeholder]", 
                                              "placeholder for arabic language transliteration", "article not found");
@@ -24,7 +25,7 @@ const NON_HUMAN_AUTHORS = array('collaborat', 'reporter', 'journalist', 'corresp
                                 'corporation', 'incorporated', 'editorial', 'university', 'dept. of', 'department',
                                 'dept of ', 'college', 'center for', 'office of', 'editor', 'institut', 'world bank',
                                 'world news', 'national news', 'eyewitness', 'information', 'business', 'bureau',
-                                'us census', 'indiatoday', 'natural history', 'museum', '試験所', 'circuit',
+                                'us census', 'indiatoday', 'natural history', 'museum', '試験所', 'circuit', 'county',
                                 'external', 'relations', 'nations', 'united', 'radio', 'rundfunk', 'new york', 'agencies');
 const BAD_PUBLISHERS = array('london', 'edinburgi', 'edinburgh', 'no publisher', 'no publisher given',
                              'no publisher specified', 'unknown', 'publisher not identified', 'report');
@@ -75,7 +76,7 @@ const BAD_TITLES = array("unknown", "missing", "arxiv e-prints", "arxiv mathemat
                          "ebscohost login",  "library login", "google groups", "sciencedirect", "cur_title",
                          "wordpress › error", "ssrn temporarily unavailable", "log in - proquest",
                          "shibboleth authentication request", "nookmarkable url intermediate page",
-                         "google books", "rte.ie", "loading", "google book",
+                         "google books", "rte.ie", "loading", "google book", "just a moment",
                          "the article you have been looking for has expired and is not longer available on our system. this is due to newswire licensing terms.",
                          "openid transaction in progress", 'download limit exceeded', 'privacy settings',
                          "untitled-1", "untitled-2", "professional paper", "zbmath",
@@ -86,7 +87,7 @@ const BAD_TITLES = array("unknown", "missing", "arxiv e-prints", "arxiv mathemat
                          "redirect notice", "oxford music online", "trove - archived webpage", "pagina inicia",
                          "404 not found", "404页面", "sign up ", "index of /home", "usa today - today's breaking news, us & world news",
                          "403 unauthorized", "404错误", "internal server error", "error", "404", "error - lexisnexis® publisher",
-                         "optica publishing group", "digital library - pdf document");
+                         "optica publishing group", "digital library - pdf document", "explore census data");
 const IN_PRESS_ALIASES = array("in press", "inpress", "pending", "published", 
                                "published online", "no-no", "n/a", "online ahead of print", 
                                "unpublished", "unknown", "tba", "forthcoming", "in the press", 

@@ -23,6 +23,7 @@ const ITALICS_LIST =
  "Game of Thrones|" .
  "The Double-Cross System|" .
  "Catalogue of Women|" .
+ "Biomphalaria sudanica sudanic|" .
  "Tyrannotitan chubutensis|" .
  "Escherichia coli|" .
  "Bugulasensu lato|" .
@@ -33,6 +34,8 @@ const ITALICS_LIST =
  "Drosophila silvestris|" .
  "Luzula nivea|" .
  "Myrmecia reticulata|" .
+ "Aedes koreicus|" .
+ "Aedes japonicus|" .
  "Ustilago maydis|" .
  "Plasmodium falciparum|" .
  "Agaricus blazei|" .
@@ -42,6 +45,7 @@ const ITALICS_LIST =
  "Vitis Vinifera|" .
  "Mycoplasma pneumoniaein|" .
  "Inonotus radiatus|" .
+ "Plasmodium berghei|" .
  "Dunkleosteus terrelli|" .
  "Mycoplasma genitalium|" .
  "In Vitro|" .
@@ -50,6 +54,7 @@ const ITALICS_LIST =
  "Zoanthus sociathus|" .
  "Seize Mai|" .
  "Schistosoma mansoni|" .
+ "Platydemus manokwari|" .
  "Melanodrymia aurantiaca|" .
  "Paramphislomum cervi|" .
  "Bacillus pumilus|" .
@@ -57,6 +62,7 @@ const ITALICS_LIST =
  "Sui Generis|" .
  "Communist Manifesto|" .
  "Bacillus thuringiensis|" .
+ "Magnosaurus nethercombensis|" .
  "Star Trek|" .
  "Meringosphaera mediterranea|" .
  "Candida albicansas|" .
@@ -92,10 +98,13 @@ const ITALICS_LIST =
  "Stichodactyla helianthusas|" .
  "Pyrobaculum calidifontis|" .
  "Arabidopsis thaliana|" .
+ "Homo sapiens|" .
  "Xylella fastidiosa|" .
  "Listeria monocytogenes|" .
+ "Halszkaraptor escuilliei|" .
  "Mycoplasma pneumoniae|" .
  "Paradisaea Raggiana|" .
+ "Rothia mucilaginosa|" .
  "Brachiosaurus altithorax|" .
  "Saccharomyces cerevisiae|" .
  "Plutella xylostella|" .
@@ -105,14 +114,18 @@ const ITALICS_LIST =
  "Buitreraptor gonzalezorum|" .
  "Bellusaurus sui|" .
  "Sinovenator changii|" .
+ "Thermomonospora fusca|" .
+ "Diplocynodon levantinicum|" .
  "Nedcolbertia justinhofmanni|" .
  "Clostridium botulinum|" .
  "Bactrocera dorsalis|" .
  "Umm al-Kitāb|" .
  "Acrocomia mexicana|" .
+ "Brachylophosaurus canadensis|" .
  "Agaricus hondensis|" .
  "Campylobacter jejuni|" .
  "Actinomyces bovis|" .
+ "Diplodocus carnegii|" .
  "Balaur bondoc|" .
  "Screbinodus ornatus|" .
  "Rg Veda|" .
@@ -121,6 +134,7 @@ const ITALICS_LIST =
  "Aspergillus terreus|" .
  "Ignicoccus hospitalis|" .
  "Watsonulus eugnathoides|" .
+ "Cardiodectes bellottii|" .
  "Opus Caroli|" .
  "Libri Carolini|" .
  "Dibamus taylori|" .
@@ -141,13 +155,23 @@ const ITALICS_LIST =
  "China Daily|" .
  "Tabula Peutingeriana|" .
  "Diamond Sutra|" .
+ "Gasterophilus pecorum|" .
+ "Oxycarenus laetus|" .
  "Flemingia macrophylla|" .
+ "Suuwassea emilieae|" .
+ "Endoxocrinus parrae|" .
+ "Ganoderma applanatum|" .
+ "Burkholderia mallei|" .
  "Homo habilis|" .
  "Glycine tomentella|" .
+ "Squilla armata|" .
+ "Saurosuchus galilei|" .
  "Lathamus discolor|" .
  "Gymondinium pseudopalustre|" .
  "Woloszynskia apiculata|" .
  "Symbiodinium microadriaticum|" .
+ "Alligator sinensis|" .
+ "Galeamopus pabsti|" .
  "Enfants Terribles|" .
  "Puntius sophore|" .
  "Murraya koenigii|" .
@@ -161,25 +185,46 @@ const ITALICS_LIST =
  "Paraponera clavata|" .
  "Lycium barbarum|" .
  "Poria cocos|" .
+ "Emiliania huxleyi|" .
  "Res Publica|" .
+ "de Novo|" .
+ "Boscia angustifolia|" .
  "Angelica sinensis|" .
  "Dilophosaurus wetherilli|" .
+ "Scutarx deltatylus|" .
+ "Vernonia amygdalina|" .
  "Loa loa|" .
+ "Ixodes scapularis|" .
  "Homo nalediin|" .
  "Homo naledi|" .
+ "Helicobacter Pylori|" .
+ "Streptococcus diacetilactis|" .
+ "Panax ginseng|" .
+ "Leuconostoc citrovorum|" .
+ "Lynx pardinus|" .
+ "Oenococcus oeni|" .
  "Pristionchus|" .
  "Arabidopsis|" .
  "Realpolitik|" .
  "Paratirolites|" .
  "Arianops|" .
  "Ottoia|" .
+ "Onychites|" .
  "Loxosceles|" .
+ "Diplocynodon|" .
  "Leveillula|" .
+ "Lewisepeira|" .
+ "Daspletosaurus|" .
+ "Diaphera|" .
  "Hyloscirtus|" .
+ "Micrapis|" .
  "Pseudomonas|" .
  "Baryonyx|" .
+ "Athrips|" .
  "Monacha|" .
  "Plesiosorex|" .
+ "Amazona|" .
+ "Malassezia|" .
  "Bushiellas|" .
  "Godartiana|" .
  "Hapalotremus|" .
@@ -189,9 +234,11 @@ const ITALICS_LIST =
  "Armillaria|" .
  "Neurospora|" .
  "Ascomycota|" .
+ "Puffinus|" .
  "Mycena|" .
  "Aspergillus|" .
  "Ricinus|" .
+ "Grammia|" .
  "Apatosaurus|" .
  "Candidatus|" .
  "Phytophthora|" .
@@ -207,6 +254,9 @@ const ITALICS_LIST =
  "Leuzea|" .
  "Ureaplasma|" .
  "Euschistus|" .
+ "Brachygastra|" .
+ "Gaojiashania|" .
+ "Boreogomphodon|" .
  "Noideattella|" .
  "Tolegnaro|" .
  "Cannabis|" .
@@ -218,6 +268,7 @@ const ITALICS_LIST =
  "Eschata|" .
  "Dianthus|" .
  "Arthoniais|" .
+ "Arthropterygius|" .
  "Acacia|" .
  "Berardiusin|" .
  "Ilustrado|" .
@@ -225,6 +276,7 @@ const ITALICS_LIST =
  "Synorichthys|" .
  "Clusia|" .
  "Sinamia|" .
+ "Cambaytherium|" .
  "Ignicoccus|" .
  "Hencke|" .
  "Batillipes|" .
@@ -237,6 +289,7 @@ const ITALICS_LIST =
  "Montifringilla|" .
  "Leucosticte|" .
  "Aglyptorhynchus|" .
+ "Phidiana|" .
  "Egertonia|" .
  "Dapedium|" .
  "Pycnodus|" .
@@ -253,10 +306,13 @@ const ITALICS_LIST =
  "Symbiodinium|" .
  "Dhammapada|" .
  "Xenopusembryo|" .
+ "Chlamydomonas|" .
+ "Anaplecta|" .
  "Arumberia|" .
  "Ridda|" .
  "Dictyochloropsis|" .
  "Laccognathus|" .
+ "Stereum|" .
  "Karma|" .
  "Cena|" .
  "Satyricon|" .
@@ -347,7 +403,15 @@ const CAMEL_CASE = array('DeSoto', 'PubChem', 'BitTorrent', 'Al2O3', 'NiMo', 'Cu
                          'TurboFold', 'TurboKnot', 'FusionSeq', 'dRheb', 'GTPase', 'NanoBiosensing', 'eHealth',
                          'iNet', 'NetGames', 'MultiMedia', 'PetaOp', 'AppleScript', 'GeNeDis', 'MeDoc',
                          'eEnvironment', 'AlphaFold', 'BirdLife', 'MetroLink', 'PhyloCode', 'JavaScript', 'AfricArXiv',
-                         'MoveOn', 'iSemantic', 'DigitalHeritage', 'iBroadway', 'TechSym', 'HistoCrypt', 'AaTh', 'ProComm'
+                         'MoveOn', 'iSemantic', 'DigitalHeritage', 'iBroadway', 'TechSym', 'HistoCrypt', 'AaTh', 'ProComm',
+                         'DeSmet', 'HfMoTaTiZr', 'HfMoNbTaTiZr', 'CoCrFeMnNi', 'alloy film', 'ProtSweep', '2Dsweep',
+                         'DomainSweep', 'McLaughlin', 'WikiPathways', 'MediaArtHistories', 'SunLine', 'SnakeChunks',
+                         'LeGuin', 'LaCour', 'GetOrganelle', 'eInclusion', 'SuperCollider', 'CatSper', 'VectorBase',
+                         'eRegistries', 'CrossFit', 'IgMs', 'eLife', 'RxNorm', 'QuickTime', 'cDNA', 'PharmVar', 'GeneFocus',
+                         'AgBioData', 'AuthorReward', 'PomBase', 'WikiProteins', 'ezTag', 'FlyBase', 'PubTator',
+                         'RiceWiki', 'SciLite', 'ScispaCy', 'WormBase', 'VirFinder', 'UniProt', 'GaiaData', 'FoodOn',
+                         'GaiaHundred', 'WikiJournal', 'StarCraft', 'EuResist', 'PhageScope', 'CoVaMa', 'EuroMyositis',
+                         'DavEnd', 'CoLaus', 'MinerAlocorticoid', 'miRiad'
                        );
 
 const ITALICS_HARDCODE_IN  = ["Tweeting theJihad: Social Media", " of SectarianismCommunity", " for WonderNineteenth Century Travel ",  
@@ -365,7 +429,12 @@ const ITALICS_HARDCODE_IN  = ["Tweeting theJihad: Social Media", " of Sectariani
              "Devoted to DeathSanta Muerte, the Skeleton Saint",   "Knowing HowEssays on Knowledge, Mind, and Action",   " Rgene", "CytochromebGenes",
              "ElectrongValue",       "thetoxGene",      "GopashtamiandGovardhan",       "PolishLebensraum",       "theNachlassproblem",
              " forAltalena:",      " in Plutarch'sLives",       "FromSolidarityto",        " gp91phoxPromoter",  "in vitroAssays",        "MarketizingHindutva",
-             "TheBhagavadgītā,",       "theOrigin of Species",       "EncounteringHindutva",       "ChineseHukouSystem",        "CisLatreille"];
+             "TheBhagavadgītā,",       "theOrigin of Species",       "EncounteringHindutva",       "ChineseHukouSystem",        "CisLatreille",
+             "the 21stCentury", " JonesSir William", "ofClinical Microbiology", "Rallying theQaum:The", " of theHaratinin Morocco",
+             "future ofBorn in Flames", "ideology ofMakwerekwerein South Africa", "TheWhite Paperand the Making", "provocations ofThe Female Eunuch",
+             "Moving beyondPvalues:", "from theHubble Space TelescopeKey", "Evidence ofpepSolar Neutrinos", "Notes forContra Ursum",
+             "sThe Social Construction of Realityafter 50", "Love inShôjo Manga", "the re-reducedHipparcosintermediate "
+ ];
 const ITALICS_HARDCODE_OUT = ["Tweeting the ''Jihad'': Social Media", " of Sectarianism: Community", " for Wonder: Nineteenth Century Travel ",  
              " from the Shadows: Analytical Feminist Contributions",  " der Gattung: Eoeugnathus Brough",  " the Citizen: Music as Public ",
              " to the Sirens: Musical Technologies ", " the Dynasty: Palace Women ", "Divine Creatures: Animal Mummies", 
@@ -381,5 +450,10 @@ const ITALICS_HARDCODE_OUT = ["Tweeting the ''Jihad'': Social Media", " of Secta
              "Devoted to Death: Santa Muerte, the Skeleton Saint", "Knowing How: Essays on Knowledge, Mind, and Action", " ''R'' gene", "Cytochrome ''b'' Genes",
              "Electron ''g'' Value", "the ''tox'' Gene", "Gopashtami ''and'' Govardhan", "Polish ''Lebensraum'' ", "the ''Nachlass'' problem ",
              " for ''Altalena'':", " in Plutarch's ''Lives'' ", "From ''Solidarity'' to ", " gp91phox Promoter", " ''in vitro'' Assays ", "Marketizing ''Hindutva'' ",
-             "The ''Bhagavadgītā'', ", "the ''Origin of Species'' ", "Encountering ''Hindutva'' ", "Chinese ''Hukou'' System ", "''Cis'' Latreille"];
+             "The ''Bhagavadgītā'', ", "the ''Origin of Species'' ", "Encountering ''Hindutva'' ", "Chinese ''Hukou'' System ", "''Cis'' Latreille",
+             "the 21st Century", " Jones: Sir William", "of Clinical Microbiology", "Rallying the ''Qaum'': The", " of the ''Haratin'' in Morocco",
+             "future of ''Born in Flames''", "ideology of ''Makwerekwere'' in South Africa", "The ''White Paper'' and the Making", "provocations of ''The Female Eunuch''",
+             "Moving beyond ''P'' values:", "from the ''Hubble Space Telescope'' Key", "Evidence of ''pep'' Solar Neutrinos", "Notes for ''Contra Ursum''",
+             "s ''The Social Construction of Reality'' after 50", "Love in ''Shôjo Manga''", "the re-reduced ''Hipparcos'' intermediate "
+             ];
 
