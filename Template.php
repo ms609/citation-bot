@@ -2644,6 +2644,7 @@ final class Template {
         }
         preg_match("~^https?://([^\/]+)/~", $oa_url, $match);
         $host_name = (string) @$match[1]; // On very rare occasions we get a non-valid url, such as http://lib.myilibrary.com?id=281759
+        if ($host_name == '') return 'no_slash';
         if (str_ireplace(CANONICAL_PUBLISHER_URLS, '', $host_name) !== $host_name) return 'publisher';
         if (stripos($oa_url, 'bioone.org/doi') !== FALSE) return 'publisher';
         if (stripos($oa_url, 'gateway.isiknowledge.com') !== FALSE) return 'nothing';
