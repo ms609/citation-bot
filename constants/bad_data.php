@@ -809,7 +809,7 @@ const NON_JOURNAL_WEBSITES = array('-news.co.uk/', '.ajc.com/', '.al.com/',
                      // Just a list of ones that are obvious.  Add ones that time-out as we find them
                      // bbm.ca is short enough that we add /bbm.ca/ and .bbm.ca/ since we don't want to grab too many sites
 
-const NON_JOURNAL_DOIS = array('10.5531/db.vz.0001'); // lowercase exact matches
+const NON_JOURNAL_DOIS = array('10.5531/db.vz.0001', '10.1163/2352-0248'); // lowercase exact matches
 const NON_JOURNALS = array('Amphibian Species of the World', 'an Online Reference', 'An Online Reference',
                            'Boston Almanac and Guide1', 'Includes:reports from Commissioners, Inspectors and Others'); // Case-sensitive sub-string
 const ARE_MAGAZINES = array('the new yorker', 'the new republic', 'new republic', 'expedition magazine', 'wired', 'wired uk',
