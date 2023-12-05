@@ -2635,7 +2635,7 @@ final class Template {
             return 'have url';
         }
         preg_match("~^https?://([^\/]+)/~", $oa_url, $match);
-        $host_name = @$match[1];
+        CONFLICT $host_name = @$match[1];
         if (str_ireplace(CANONICAL_PUBLISHER_URLS, '', $host_name) !== $host_name) return 'publisher';
         if (stripos($oa_url, 'bioone.org/doi') !== FALSE) return 'publisher';
         if (stripos($oa_url, 'gateway.isiknowledge.com') !== FALSE) return 'nothing';
