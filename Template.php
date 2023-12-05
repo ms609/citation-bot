@@ -1353,7 +1353,6 @@ final class Template {
           if ($this->has('journal') && str_equivalent($this->get('journal'), $value)) return FALSE;
           if ($this->has('title') && str_equivalent($this->get('title'), $value)) return FALSE;
           if ($value === 'A Penguin book') return FALSE;
-          if ($value === 'Surtees Society') return FALSE;
           if ($value === 'Also known as:Official records of the Union and Confederate armies') return FALSE;
           return $this->add($param_name, $value);
         }
