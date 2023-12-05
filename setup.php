@@ -61,7 +61,7 @@ if (isset($_REQUEST["slow"]) || TRAVIS || in_array('--slow', $argv)) {
   define("SLOW_MODE", FALSE);
 }
 
-if (in_array('savetofiles', $argv)) {
+if (in_array('--savetofiles', $argv)) {
   define("SAVETOFILES_MODE", TRUE);
 } else {
   define("SAVETOFILES_MODE", FALSE);
