@@ -1334,7 +1334,7 @@ function Bibcode_Response_Processing(string $return, $ch, string $adsabs_url) : 
 
 function get_entrez_xml(string $type, string $query) : ?SimpleXMLElement {
    $url =  "https://eutils.ncbi.nlm.nih.gov/entrez/eutils/";
-   $post=  "tool=WikipediaCitationBot&email=" . PUBMEDUSERNAME;
+   $post=  "tool=WikipediaCitationBot&email=" . NLM_EMAIL . NLM_APIKEY;
    if ($type === "esearch_pubmed") {
       $url  .= "esearch.fcgi";
       $post .= "&db=pubmed&term=" . $query;
@@ -1349,10 +1349,7 @@ function get_entrez_xml(string $type, string $query) : ?SimpleXMLElement {
    }
    $xml = xml_post($url, $post);
    if ($xml === NULL) {
-      // @codeCoverageIgnoreStart
-     sleep(3);
-     $xml = xml_post($url, $post);
-     // @codeCoverageIgnoreEnd
+      sleep(1); // @codeCoverageIgnore
    }
    return $xml;
 }

@@ -1516,7 +1516,7 @@ public static function find_indentifiers_in_urls(Template $template, ?string $ur
           $new_pmc = @$match[1] . @$match[2];
           if (is_null($url_sent)) {
             if (stripos($url, ".pdf") !== FALSE) {
-              $test_url = "https://www.ncbi.nlm.nih.gov/pmc/articles/PMC" . $new_pmc . "/";
+              $test_url = "https://www.ncbi.nlm.nih.gov/pmc/articles/PMC" . $new_pmc . "/" . NLM_APIKEY;
               curl_setopt_array(self::$ch_pmc, [CURLOPT_URL => $test_url]);
               @curl_exec(self::$ch_pmc);
               $httpCode = (int) @curl_getinfo(self::$ch_pmc, CURLINFO_HTTP_CODE);
