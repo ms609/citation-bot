@@ -1352,7 +1352,7 @@ function has_nlm_apikey() : bool {
 
 function get_entrez_xml(string $type, string $query) : ?SimpleXMLElement {
    $url =  "https://eutils.ncbi.nlm.nih.gov/entrez/eutils/";
-   $post=  "tool=WikipediaCitationBot&email=" . urlencode(NLM_EMAIL) . get_nlm_apikey();
+   $post=  "tool=WikipediaCitationBot&email=" . NLM_EMAIL . get_nlm_apikey();
    if ($type === "esearch_pubmed") {
       $url  .= "esearch.fcgi";
       $post .= "&db=pubmed&term=" . $query;
