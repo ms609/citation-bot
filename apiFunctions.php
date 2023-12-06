@@ -1345,11 +1345,6 @@ function get_nlm_apikey() : string {
   }
 }
 
-function has_nlm_apikey() : bool {
-  return strlen(get_nlm_apikey()) > 0;
-}
-
-
 function get_entrez_xml(string $type, string $query) : ?SimpleXMLElement {
    $url =  "https://eutils.ncbi.nlm.nih.gov/entrez/eutils/";
    $post=  "tool=WikipediaCitationBot&email=" . NLM_EMAIL . get_nlm_apikey();
