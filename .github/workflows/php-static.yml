@@ -46,7 +46,7 @@ jobs:
       run: composer install --prefer-dist  -vvv --no-progress
 
     - name: PHP Lint test
-      run: ./vendor/bin/phplint --exclude=vendor --no-interaction --no-configuration -vv ./
+      run: which phplint && ./vendor/bin/phplint --exclude=vendor --no-interaction --no-configuration -vv ./
 
     - name: PHP psalm
       run: php ./vendor/bin/psalm --php-version='8.2'
