@@ -1332,22 +1332,9 @@ function Bibcode_Response_Processing(string $return, $ch, string $adsabs_url) : 
   // @codeCoverageIgnoreEnd
 }
 
-function get_nlm_apikey() : string {
-// see https://www.ncbi.nlm.nih.gov/books/NBK25497/ for more information
-// Without an API key, any site (IP address) posting more than 3 requests per second to the E-utilities will receive an error message. 
-  $nlm_apikey = NLM_APIKEY;
-  if (strlen($nlm_apikey) > 0)
-  {
-    return '&api_key='.urlencode($nlm_apikey);
-  } else
-  {
-    return "";
-  }
-}
-
 function get_entrez_xml(string $type, string $query) : ?SimpleXMLElement {
    $url =  "https://eutils.ncbi.nlm.nih.gov/entrez/eutils/";
-   $post=  "tool=WikipediaCitationBot&email=" . NLM_EMAIL . get_nlm_apikey();
+   $post=  "tool=WikipediaCitationBot&email=" . NLM_EMAIL . NLM_APIKEY;
    if ($type === "esearch_pubmed") {
       $url  .= "esearch.fcgi";
       $post .= "&db=pubmed&term=" . $query;
