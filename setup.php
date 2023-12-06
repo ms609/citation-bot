@@ -110,19 +110,13 @@ if ((string) getenv("PHP_S2APIKEY") !== "") {
 
 // see https://www.ncbi.nlm.nih.gov/books/NBK25497/ for more information
 // Without an API key, any site IP address posting more than 3 requests per second will receive an error message.
+$nlm_tool = "WikipediaCitationBot";
 $nlm_apikey = (string) getenv("NLM_APIKEY");
 $nlm_email = (string) getenv("NLM_EMAIL");
-if (strlen($nlm_apikey) >= 8) {
-  define("NLM_APIKEY", '&api_key=' . urlencode($nlm_apikey));
-} else {
-  define("NLM_APIKEY", "");  // Probably "xxxxx"
-}
-if (strpos($nlm_email, '@') > 0) {
-  define("NLM_EMAIL", urlencode($nlm_email));
-} else {
-  define("NLM_EMAIL", urlencode(PUBMEDUSERNAME));
-}
-unset($nlm_email, $nlm_apikey);
+if (!(strpos($nlm_email, '@') > 0)) $nlm_email = PUBMEDUSERNAME;
+if (strlen($nlm_apikey) < 8) $nlm_apikey = ""; // Probably "xxxxx"
+define ("NLM_LOGIN", "tool=" . $nlm_tool . "&email=" . urlencode($nlm_email) . ($nlm_apikey) ? '&api_key=' . urlencode($nlm_apikey) : "");
+unset($nlm_email, $nlm_apikey, $nlm_tool);
 
 function check_blocked() : void {
   if (!TRAVIS && ! WikipediaBot::is_valid_user('Citation_bot')) {
