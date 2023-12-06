@@ -108,6 +108,16 @@ if ((string) getenv("PHP_S2APIKEY") !== "") {
   define("CONTEXT_S2", array());
 }
 
+// see https://www.ncbi.nlm.nih.gov/books/NBK25497/ for more information
+// Without an API key, any site IP address posting more than 3 requests per second will receive an error message.
+$nlm_tool = "WikipediaCitationBot";
+$nlm_apikey = (string) getenv("NLM_APIKEY");
+$nlm_email = (string) getenv("NLM_EMAIL");
+if (!(strpos($nlm_email, '@') > 0)) $nlm_email = PUBMEDUSERNAME;
+if (strlen($nlm_apikey) < 8) $nlm_apikey = ""; // Probably "xxxxx"
+define ("NLM_LOGIN", "tool=" . urlencode($nlm_tool) . "&email=" . urlencode($nlm_email) . (($nlm_apikey === "") ? "" : ("&api_key=" . urlencode($nlm_apikey))));
+unset($nlm_email, $nlm_apikey, $nlm_tool);
+
 function check_blocked() : void {
   if (!TRAVIS && ! WikipediaBot::is_valid_user('Citation_bot')) {
     echo '</pre><div style="text-align:center"><h1>The Citation Bot is currently blocked because of disagreement over its usage.</h1><br/><h2><a href="https://en.wikipedia.org/wiki/User_talk:Citation_bot" title="Join the discussion" target="_blank">Please join in the discussion</a></h2></div><footer><a href="./" title="Use Citation Bot again">Another&nbsp;page</a>?</footer></body></html>';
