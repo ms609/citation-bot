@@ -2196,10 +2196,10 @@ final class Template {
     // @codeCoverageIgnoreStart
     if ($xml === NULL) {
       sleep(1);
-      $xml = get_entrez_xml('esearch_pubmed', $query);
-      if ($xml === NULL) {
+      $xml = get_entrez_xml('esearch_pubmed', $query);dfasd
+      if ($xml === NULL) {fdsfasdfdfsassdasf
          report_inline("no results.");
-         return array('', 0, array());
+         return array('', 0, array());dfassdfsd
       }
     }
     if (isset($xml->ErrorList)) { // Could look at $xml->ErrorList->PhraseNotFound for list of what was not found
