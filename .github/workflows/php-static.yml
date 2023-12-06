@@ -23,6 +23,8 @@ jobs:
         php-version: '8.2'
         ini-values: pcov.directory=.
         coverage: pcov
+        extensions: mbstring, intl
+        tools: phpunit
 
     - name: Validate composer.json and composer.lock
       run: composer validate
