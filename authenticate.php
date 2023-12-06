@@ -15,7 +15,7 @@ use MediaWiki\OAuthClient\ClientConfig;
 use MediaWiki\OAuthClient\Client;
 
 // The two ways we leave this script
-function death_time(string $err) : void {
+function death_time(string $err) : never {
   @session_start(); // Need write access
   unset($_SESSION['access_key'], $_SESSION['access_secret'], $_SESSION['citation_bot_user_id'], $_SESSION['request_key'], $_SESSION['request_secret']);
   $name = (string) @session_name();
@@ -27,7 +27,7 @@ function death_time(string $err) : void {
   exit(0);
 }
 
-function return_to_sender(string $where = 'https://citations.toolforge.org/') : void {
+function return_to_sender(string $where = 'https://citations.toolforge.org/') : never {
   $where = preg_replace('~\s+~', '', $where);  // Security paranoia
   header("Location: " . $where);
   exit(0);
@@ -41,7 +41,7 @@ try {
   $conf = new ClientConfig('https://meta.wikimedia.org/w/index.php?title=Special:OAuth');
 }
 catch (Throwable $e) {
-  death_time("Citation Bot Could not contact meta.wikimedia.org"); exit(0); // Exit call makes phpstan happy
+  death_time("Citation Bot Could not contact meta.wikimedia.org");
 }
 
 try {
@@ -51,7 +51,7 @@ try {
   unset($conf);
 }
 catch (Throwable $e) {
-  death_time("Citation Bot's internal authorization tokens did not work"); exit(0); // Exit call makes phpstan happy
+  death_time("Citation Bot's internal authorization tokens did not work");
 }
 
 // Existing Access Grant - verify that it works since we are here anyway
