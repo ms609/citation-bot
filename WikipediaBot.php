@@ -13,12 +13,12 @@ require_once 'constants.php';      // @codeCoverageIgnore
 
 final class WikipediaBot {
 
-  private Consumer $bot_consumer;
-  private Token $bot_token;
-  private Consumer $user_consumer;
-  private Client $user_client;
-  private Token $user_token;
-  private static CurlHandle $ch; // All wikipedia connections share a session
+  private readonly Consumer $bot_consumer;
+  private readonly Token $bot_token;
+  private readonly Consumer $user_consumer;
+  private readonly Client $user_client;
+  private readonly Token $user_token;
+  private static readonly CurlHandle $ch; // All wikipedia connections share a session
   private static bool $init_done = FALSE;
   private string $the_user = '';
   private static ?self $last_WikipediaBot; // For NonStandardMode()
