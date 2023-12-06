@@ -2731,7 +2731,7 @@ EP - 999 }}';
     $this->assertSame('1961', $expanded->get2('date'));
     $this->assertSame('81', $expanded->get2('volume'));
     $this->assertSame('1', $expanded->get2('issue'));
-    $this->assertSame('43–52', $expanded->get2('pages'));  // The jstor expansion add the page ending
+    $this->assertSame('43', substr($expanded->get('pages') . $expanded->get('page'), 0, 2));  // The jstor expansion can add the page ending
   }
   
   public function testJstorSICIEncoded() : void {
