@@ -25,7 +25,7 @@ inputs:
         - ".phan"
         - "gitpull.php"
     resolved_includes_file: ~
-    false_positives: progpilot2.json
+    false_positives: progpilot.json
     
 outputs:
     tainted_flow: true
