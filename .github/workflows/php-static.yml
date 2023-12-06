@@ -23,6 +23,7 @@ jobs:
         php-version: '8.2'
         ini-values: pcov.directory=.
         coverage: pcov
+        extensions: mbstring, intl
 
     - name: Validate composer.json and composer.lock
       run: composer validate
@@ -43,8 +44,8 @@ jobs:
       if: steps.composer-cache.outputs.cache-hit != 'true'
       run: composer install --prefer-dist  -vvv --no-progress
 
-    - name: PHP Lint test
-      run: ./vendor/bin/phplint --exclude=vendor --no-interaction --no-configuration -vv ./
-
     - name: PHP psalm
       run: php ./vendor/bin/psalm --php-version='8.2'
+
+    - name: PHP Lint test
+      run: ./vendor/bin/phplint --exclude=vendor --no-interaction --no-configuration -vv ./
