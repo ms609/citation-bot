@@ -20,16 +20,16 @@ final class Zotero {
   private const ZOTERO_SKIPS = 100;
   private const ERROR_DONE = 'ERROR_DONE'; 
   protected static int $zotero_announced = 0;
-  protected static CurlHandle $zotero_ch, $ch_ieee, $ch_jstor, $ch_dx, $ch_pmc;
+  protected static readonly CurlHandle $ch_zotero, $ch_ieee, $ch_jstor, $ch_dx, $ch_pmc;
   protected static int $zotero_failures_count = 0;
   private static bool $is_setup = FALSE;
 
 public static function create_ch_zotero() : void {
   if (self::$is_setup) return;
   self::$is_setup = TRUE;
-  self::$zotero_ch = curl_init();
+  self::$ch_zotero = curl_init();
   /** @psalm-suppress PossiblyNullArgument */ 
-  curl_setopt_array(self::$zotero_ch,
+  curl_setopt_array(self::$ch_zotero,
          [CURLOPT_URL => CITOID_ZOTERO,
           CURLOPT_HTTPHEADER => ['accept: application/json; charset=utf-8'],
           CURLOPT_RETURNTRANSFER => TRUE,
@@ -93,10 +93,10 @@ public static function unblock_zotero() : void {
 public static function query_url_api_class(array $ids, array &$templates) : void { // Pointer to save memory
   if (!SLOW_MODE) return; // Zotero takes time
 
-  curl_setopt(self::$zotero_ch, CURLOPT_TIMEOUT, BOT_HTTP_TIMEOUT*2.5); // Reset default
+  curl_setopt(self::$ch_zotero, CURLOPT_TIMEOUT, BOT_HTTP_TIMEOUT*2.5); // Reset default
   if (!TRAVIS) { // try harder in tests
     // @codeCoverageIgnoreStart
-    curl_setopt(self::$zotero_ch, CURLOPT_CONNECTTIMEOUT, BOT_CONNECTION_TIMEOUT);
+    curl_setopt(self::$ch_zotero, CURLOPT_CONNECTTIMEOUT, BOT_CONNECTION_TIMEOUT);
     $url_count = 0;
     foreach ($templates as $template) {
      if (!$template->blank(['url', 'chapter-url', 'chapterurl'])) {
@@ -104,11 +104,11 @@ public static function query_url_api_class(array $ids, array &$templates) : void
      }
     }
     if ($url_count < 5) {
-      curl_setopt(self::$zotero_ch, CURLOPT_TIMEOUT, BOT_HTTP_TIMEOUT * 1.0);
+      curl_setopt(self::$ch_zotero, CURLOPT_TIMEOUT, BOT_HTTP_TIMEOUT * 1.0);
     } elseif ($url_count < 25) {
-      curl_setopt(self::$zotero_ch, CURLOPT_TIMEOUT, BOT_HTTP_TIMEOUT * 0.5);
+      curl_setopt(self::$ch_zotero, CURLOPT_TIMEOUT, BOT_HTTP_TIMEOUT * 0.5);
     } else {
-      curl_setopt(self::$zotero_ch, CURLOPT_TIMEOUT, BOT_HTTP_TIMEOUT * 0.25);
+      curl_setopt(self::$ch_zotero, CURLOPT_TIMEOUT, BOT_HTTP_TIMEOUT * 0.25);
     }
     // @codeCoverageIgnoreEnd
   }
@@ -118,7 +118,7 @@ public static function query_url_api_class(array $ids, array &$templates) : void
   }
   self::$zotero_announced = 2;
   if (!TRAVIS) { // These are pretty reliable, unlike random urls
-      curl_setopt(self::$zotero_ch, CURLOPT_TIMEOUT, BOT_HTTP_TIMEOUT * 0.5);  // @codeCoverageIgnore
+      curl_setopt(self::$ch_zotero, CURLOPT_TIMEOUT, BOT_HTTP_TIMEOUT * 0.5);  // @codeCoverageIgnore
   }
   foreach ($templates as $template) {
        if ($template->has('biorxiv')) {
@@ -335,23 +335,23 @@ private static function zotero_request(string $url) : string {
 
   /** @psalm-taint-escape ssrf */
   $the_url = CITOID_ZOTERO . urlencode($url);
-  curl_setopt(self::$zotero_ch, CURLOPT_URL, $the_url);
+  curl_setopt(self::$ch_zotero, CURLOPT_URL, $the_url);
 
   if (self::$zotero_failures_count > self::ZOTERO_GIVE_UP) return self::ERROR_DONE;
   
   $delay = max(min(100000*(1+self::$zotero_failures_count), 10), 0); // 0.10 seconds delay throttle, with paranoid bounds checks
   usleep($delay);
-  $zotero_response = (string) @curl_exec(self::$zotero_ch);
+  $zotero_response = (string) @curl_exec(self::$ch_zotero);
   if ($zotero_response === '') {
      // @codeCoverageIgnoreStart
      sleep(2);
-     $zotero_response = (string) @curl_exec(self::$zotero_ch);
+     $zotero_response = (string) @curl_exec(self::$ch_zotero);
      // @codeCoverageIgnoreEnd
   }
   if ($zotero_response === '') {
     // @codeCoverageIgnoreStart
-    report_warning(curl_error(self::$zotero_ch) . "   For URL: " . echoable($url));
-    if (strpos(curl_error(self::$zotero_ch), 'timed out after') !== FALSE) {
+    report_warning(curl_error(self::$ch_zotero) . "   For URL: " . echoable($url));
+    if (strpos(curl_error(self::$ch_zotero), 'timed out after') !== FALSE) {
       self::$zotero_failures_count = self::$zotero_failures_count + 1;
       if (self::$zotero_failures_count > self::ZOTERO_GIVE_UP) {
         report_warning("Giving up on URL expansion for a while");
