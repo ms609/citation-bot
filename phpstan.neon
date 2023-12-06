@@ -12,5 +12,7 @@ parameters:
 		- MAX_PAGES
 		- WIKI_ROOT
 		- API_ROOT
+                - NLM_APIKEY
+                - NLM_EMAIL
 		- BOT_USER_AGENT
 		
