@@ -1334,7 +1334,7 @@ function Bibcode_Response_Processing(string $return, $ch, string $adsabs_url) : 
 
 function get_entrez_xml(string $type, string $query) : ?SimpleXMLElement {
    $url =  "https://eutils.ncbi.nlm.nih.gov/entrez/eutils/";
-   $post=  "tool=WikipediaCitationBot&email=" . NLM_EMAIL . NLM_APIKEY;
+   $post = NLM_LOGIN;
    if ($type === "esearch_pubmed") {
       $url  .= "esearch.fcgi";
       $post .= "&db=pubmed&term=" . $query;
