@@ -20,7 +20,7 @@ jobs:
     - name: Setup PHP with PCOV
       uses: shivammathur/setup-php@v2
       with:
-        php-version: '7.4'
+        php-version: '8.2'
         ini-values: pcov.directory=.
         coverage: pcov
 
@@ -37,7 +37,7 @@ jobs:
           ${{ runner.os }}-php-
 
     - name: Configure composer and dependencies
-      run: composer config allow-plugins.third-party/required-plugin true && composer config minimum-stability dev && composer config prefer-stable true && composer require mediawiki/oauthclient:2.0.0  phpunit/phpunit
+      run: composer config allow-plugins.third-party/required-plugin true && composer config minimum-stability dev && composer config prefer-stable true && composer require mediawiki/oauthclient:2.0.0  phpunit/phpunit:9.*.*
       
     - name: Install dependencies
       if: steps.composer-cache.outputs.cache-hit != 'true'

@@ -18,8 +18,7 @@ final class WikipediaBot {
   private Consumer $user_consumer;
   private Client $user_client;
   private Token $user_token;
-  /** @var resource $ch */
-  private static $ch; // All wikipedia connections share a session
+  private static CurlHandle $ch; // All wikipedia connections share a session
   private static bool $init_done = FALSE;
   private string $the_user = '';
   private static ?self $last_WikipediaBot; // For NonStandardMode()

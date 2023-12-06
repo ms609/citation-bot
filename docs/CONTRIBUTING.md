@@ -12,7 +12,7 @@ to test.
 All code is run through several tests.  The primary test is a suite of example pages and citation templates.  There are a variety of static code analysis tests that look for common errors.
 The security tainted data tests make sure that all "untrusted input" (data from wikipedia pages) is output wrapped with the echoable() function: this is not done primarily for security, but for proper output formatting.
 The GitHub provided CodeQL test suite is also enabled, but that just checks the one JavaScript file.
-Because files over 384K are not indexed by GitHub, there is a test to check for large files: the test will suggest LFS on failure, but do not do that. Template.php is currently the only file at risk.
+Because files over 384K are not indexed by GitHub, there is a test to check for large files: the test will suggest LFS on failure, but do not do that. Template.php is currently the only file failing.
 
 ## Submitting changes
 
@@ -36,7 +36,7 @@ Always write a clear log message for your commits. One-line messages are fine fo
   * We prefer `===` and `!==` to `==` and `!=`
   * We prefer `curl` to `file_get_contents` for easier debugging and greater control
   * We use `echo` and `exit` for normal code, and `print` and `die` for debug code that is intended to be removed later
-  * All code must be valid PHP 7.4
+  * All code must be valid PHP 8.2
   * Directly comparing strings to integer with comparision operators is different in PHP 7 and 8, so they should not be used
   * We want 100% code coverage with untestable code flagged in the source -- such as code that handles error conditions.  See the file apiFunctions.php for lots of examples of non-coverage code.
   * All curl_init() calls must also set CURLOPT_TIMEOUT to something reasonable for the importance of the data and the speed of the website

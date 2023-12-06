@@ -20,7 +20,7 @@ jobs:
     - name: Setup PHP with PCOV
       uses: shivammathur/setup-php@v2
       with:
-        php-version: '7.4'
+        php-version: '8.2'
         ini-values: pcov.directory=.
         coverage: pcov
 
@@ -44,7 +44,7 @@ jobs:
       run: composer install --prefer-dist  -vvv --no-progress
 
     - name: PHP psalm Taint
-      run: php ./vendor/bin/psalm --taint-analysis --php-version='7.4'
+      run: php ./vendor/bin/psalm --taint-analysis --php-version='8.2'
 
     - name: PHP Design Security
       run: ./vendor/bin/progpilot --configuration progpilot.yml html_headers.php category.php generate_template.php gitpull.php linked_pages.php process_page.php authenticate.php
