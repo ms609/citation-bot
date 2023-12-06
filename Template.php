@@ -2176,8 +2176,12 @@ final class Template {
     $xml = get_entrez_xml('esearch_pubmed', $query);
     // @codeCoverageIgnoreStart
     if ($xml === NULL) {
-      sleep(1);
-      $xml = get_entrez_xml('esearch_pubmed', $query);
+      if (!has_nlm_apikey())
+      {
+        // only retry if we have no api_key
+        sleep(1);
+        $xml = get_entrez_xml('esearch_pubmed', $query);
+      }
       if ($xml === NULL) {
          report_inline("no results.");
          return array('', 0, array());
