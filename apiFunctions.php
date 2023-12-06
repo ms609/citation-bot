@@ -1362,9 +1362,7 @@ function get_entrez_xml(string $type, string $query) : ?SimpleXMLElement {
    }
    $xml = xml_post($url, $post);
    if ($xml === NULL) {
-      // @codeCoverageIgnoreStart
-      sleep(1); // You should get an API key
-      // @codeCoverageIgnoreEnd
+      sleep(1); // @codeCoverageIgnore
    }
    return $xml;
 }
