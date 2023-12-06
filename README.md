@@ -71,7 +71,7 @@ Also beware the difference between `else if` and `elseif`.
 
 ## Deployment
 
-The bot requires PHP >= 7.4.
+The bot requires PHP >= 8.2.
 
 To run the bot from a new environment, you will need to create an `env.php` file (if one doesn't already exist) that sets the needed authentication tokens as environment variables. To do this, you can rename `env.php.example` to `env.php`, set the variables in the file, and then make sure the file is not world readable or writable:
 
@@ -81,11 +81,11 @@ To run the bot from a new environment, you will need to create an `env.php` file
 
     become citations[-dev]
     webservice stop
-    webservice --backend=kubernetes php7.4 start
+    webservice --backend=kubernetes php8.2 start
 
 Or for testing in the shell:
 
-    webservice --backend=kubernetes php7.4 shell
+    webservice --backend=kubernetes php8.2 shell
 
 Before entering the k8s shell, it may be necessary to install phpunit (as wget is not available in the k8s shell).
 
@@ -94,7 +94,7 @@ In order to run on the command line one needs OAuth tokens as documented in `env
 
     /usr/bin/php ./process_page.php "Covid Watch|Water|COVID-19_apps" --slow --savetofiles
     
-The command line tool will also accept `page_list.txt` and `page_list2.txt` as page names.  In those cases the bot expect a file of such name to contain a single line of | seperated page names.  This code requires PHP 7.4 with optional packages included: php74-mbstring php74-sockets php74-opcache php74-openssl php74-xmlrpc php74-gettext php74-curl php74-intl php74-iconv
+The command line tool will also accept `page_list.txt` and `page_list2.txt` as page names.  In those cases the bot expect a file of such name to contain a single line of | seperated page names.  This code requires PHP 8.2 with optional packages included: php82-mbstring php82-sockets php82-opcache php82-openssl php82-xmlrpc php82-gettext php82-curl php82-intl php82-iconv
 
 Command line parameters:
 * `--slow` - retrieve bibcodes and expand urls
