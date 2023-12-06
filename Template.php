@@ -2176,16 +2176,9 @@ final class Template {
     $xml = get_entrez_xml('esearch_pubmed', $query);
     // @codeCoverageIgnoreStart
     if ($xml === NULL) {
-      if (!has_nlm_apikey())
-      {
-        // only retry if we have no api_key
-        sleep(1);
-        $xml = get_entrez_xml('esearch_pubmed', $query);
-      }
-      if ($xml === NULL) {
-         report_inline("no results.");
-         return array('', 0, array());
-      }
+       sleep(1); // You should get a key
+       report_inline("no results.");
+       return array('', 0, array());
     }
     if (isset($xml->ErrorList)) { // Could look at $xml->ErrorList->PhraseNotFound for list of what was not found
       report_inline('no results.');
