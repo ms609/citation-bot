@@ -1368,13 +1368,8 @@ function get_entrez_xml(string $type, string $query) : ?SimpleXMLElement {
    $xml = xml_post($url, $post);
    if ($xml === NULL) {
       // @codeCoverageIgnoreStart
-     if (!has_nlm_apikey())
-     {
-       // only sleep if we have no API key; otherwise there is no reason to sleep
-       sleep(3);
-       $xml = xml_post($url, $post);
-       // @codeCoverageIgnoreEnd
-     }
+      sleep(1); // You should get an API key
+      // @codeCoverageIgnoreEnd
    }
    return $xml;
 }
