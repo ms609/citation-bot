@@ -20,9 +20,10 @@ jobs:
     - name: Setup PHP with PCOV
       uses: shivammathur/setup-php@v2
       with:
-        php-version: '7.4'
+        php-version: '8.2'
         ini-values: pcov.directory=.
         coverage: pcov
+        extensions: mbstring, intl
 
     - name: Validate composer.json and composer.lock
       run: composer validate

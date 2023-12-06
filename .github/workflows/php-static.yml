@@ -20,10 +20,10 @@ jobs:
     - name: Setup PHP with PCOV
       uses: shivammathur/setup-php@v2
       with:
-        php-version: '7.4'
+        php-version: '8.2'
         ini-values: pcov.directory=.
         coverage: pcov
-        dfasdfdsafdsfsd
+        extensions: mbstring, intl
 
     - name: Validate composer.json and composer.lock
       run: composer validate
@@ -38,14 +38,14 @@ jobs:
           ${{ runner.os }}-php-
 
     - name: Configure composer and dependencies
-      run: composer config allow-plugins.third-party/required-plugin true && composer config minimum-stability dev && composer config prefer-stable true && composer require mediawiki/oauthclient:2.0.0 && composer require overtrue/phplint vimeo/psalm:5.13.1   
+      run: composer config allow-plugins.third-party/required-plugin true && composer config minimum-stability dev && composer config prefer-stable true && composer require mediawiki/oauthclient:2.0.0 && composer require overtrue/phplint:8.*.* vimeo/psalm:5.13.1 
 
     - name: Install dependencies
       if: steps.composer-cache.outputs.cache-hit != 'true'
       run: composer install --prefer-dist  -vvv --no-progress
 
+    - name: PHP psalm
+      run: php ./vendor/bin/psalm --php-version='8.2'
+
     - name: PHP Lint test
       run: ./vendor/bin/phplint --exclude=vendor --no-interaction --no-configuration -vv ./
-
-    - name: PHP psalm
-      run: php ./vendor/bin/psalm --php-version='7.4'
