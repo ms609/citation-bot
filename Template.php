@@ -2176,7 +2176,7 @@ final class Template {
     $xml = get_entrez_xml('esearch_pubmed', $query);
     // @codeCoverageIgnoreStart
     if ($xml === NULL) {
-       sleep(1); // You should get a key
+       sleep(1);
        report_inline("no results.");
        return array('', 0, array());
     }
