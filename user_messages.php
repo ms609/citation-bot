@@ -31,7 +31,7 @@ function report_add(string $text) : void { user_notice("  +", "added", $text); }
 function report_forget(string $text) : void { user_notice("  -", "removed", $text); }
 function report_inline(string $text) : void { if (!TRAVIS || defined("TRAVIS_PRINT")) echo " $text"; }
 // call report_warning to give users a message before we die
-function report_error(string $text) : void {
+function report_error(string $text) : never {
   report_warning($text);  // @codeCoverageIgnoreStart
   if (TRAVIS) {
      trigger_error($text);  // Stop this test now
