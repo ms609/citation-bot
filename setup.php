@@ -108,25 +108,21 @@ if ((string) getenv("PHP_S2APIKEY") !== "") {
   define("CONTEXT_S2", array());
 }
 
-$nlm_apikey = (string) getenv("NLM_APIKEY");
 // see https://www.ncbi.nlm.nih.gov/books/NBK25497/ for more information
-// Without an API key, any site (IP address) posting more than 3 requests per second to the E-utilities will receive an error message.
-// NLM uses long API keys, values shorter than 8 characters will not be used
+// Without an API key, any site IP address posting more than 3 requests per second will receive an error message.
+$nlm_apikey = (string) getenv("NLM_APIKEY");
+$nlm_email = (string) getenv("NLM_EMAIL");
 if (strlen($nlm_apikey) >= 8) {
   define("NLM_APIKEY", '&api_key=' . urlencode($nlm_apikey));
 } else {
-  define("NLM_APIKEY", "");
+  define("NLM_APIKEY", "");  // Probably "xxxxx"
 }
-unset($nlm_apikey);
-
-$nlm_email = (string) getenv("NLM_EMAIL");
-// if no email is specified in the NLM_EMAIL environment variable, use default value from constants.php
 if (strpos($nlm_email, '@') > 0) {
   define("NLM_EMAIL", urlencode($nlm_email));
 } else {
   define("NLM_EMAIL", urlencode(PUBMEDUSERNAME));
 }
-unset($nlm_email);
+unset($nlm_email, $nlm_apikey);
 
 function check_blocked() : void {
   if (!TRAVIS && ! WikipediaBot::is_valid_user('Citation_bot')) {
