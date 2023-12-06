@@ -108,24 +108,19 @@ $nlm_apikey = (string) getenv("NLM_APIKEY");
 // NLM uses long API keys, values shorter than 8 characters will not be used, but we still test on default "xxxxx"
 if (($nlm_apikey !== "") && ($nlm_apikey !== "xxxxx") && (strlen($nlm_apikey) >= 8)) {
   define("NLM_APIKEY", $nlm_apikey);
-} else
-{
+} else {
   define("NLM_APIKEY", "");
 }
 unset($nlm_apikey);
 
 $nlm_email = (string) getenv("NLM_EMAIL");
 // if no email is specified in the NLM_EMAIL environment variable, use default value from constants.php
-if (($nlm_email !== "") && ($nlm_email !== "xxxxx") && (strpos($nlm_email, '@') > 0)) {
-  define("NLM_EMAIL", $nlm_email);
-} else
-{
-  define("NLM_EMAIL", PUBMEDUSERNAME); // if NLM_EMAIL is not defined, use default email from config
+if (strpos($nlm_email, '@') > 0)) {
+  define("NLM_EMAIL", urlencode($nlm_email));
+} else {
+  define("NLM_EMAIL", urlencode(PUBMEDUSERNAME));
 }
 unset($nlm_email);
-
-
-
 
 function check_blocked() : void {
   if (!TRAVIS && ! WikipediaBot::is_valid_user('Citation_bot')) {
