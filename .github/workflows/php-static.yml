@@ -24,7 +24,7 @@ jobs:
         ini-values: pcov.directory=.
         coverage: pcov
         extensions: mbstring, intl
-        tools: phpunit
+        tools: phplint
 
     - name: Validate composer.json and composer.lock
       run: composer validate
