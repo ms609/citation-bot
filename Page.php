@@ -698,7 +698,7 @@ class Page {
         $objects[] = $obj;
       }
     }
-    if ($preg_ok === FALSE && isset($regexp)) {
+    if ($preg_ok === FALSE && is_string($regexp)) {
       // @codeCoverageIgnoreStart
       $regexp = str_replace('~su', '~s', $regexp); // Try without unicode
       while ($preg_ok = preg_match($regexp, $text, $match)) { // Just use last most powerful REGEX
