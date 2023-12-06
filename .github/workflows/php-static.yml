@@ -17,6 +17,9 @@ jobs:
     - name: Checkout Repo
       uses: actions/checkout@v3
 
+    - name: Remove old php
+      run: apt remove php7.4-psr
+
     - name: Setup PHP with PCOV
       uses: shivammathur/setup-php@v2
       with:
