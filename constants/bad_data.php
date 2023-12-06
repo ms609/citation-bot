@@ -477,6 +477,7 @@ const ZOTERO_AVOID_REGEX = array("twitter\.",               // This should be {{
                                  "www\.virtualwall\.org", // Fails 100%
                                  "steubencourier\.com", // USA Today highjakced
                                  "biodiversity\.org\.au", // Zotero gives bad data
+                                 "timea\.rice\.edu", // gone
                                  "findarticles\.com", // Gone
                                 );
 const NON_JOURNAL_WEBSITES = array('-news.co.uk/', '.ajc.com/', '.al.com/',
@@ -808,7 +809,7 @@ const NON_JOURNAL_WEBSITES = array('-news.co.uk/', '.ajc.com/', '.al.com/',
                      // Just a list of ones that are obvious.  Add ones that time-out as we find them
                      // bbm.ca is short enough that we add /bbm.ca/ and .bbm.ca/ since we don't want to grab too many sites
 
-const NON_JOURNAL_DOIS = array('10.5531/db.vz.0001'); // lowercase exact matches
+const NON_JOURNAL_DOIS = array('10.5531/db.vz.0001', '10.1163/2352-0248'); // lowercase exact matches
 const NON_JOURNALS = array('Amphibian Species of the World', 'an Online Reference', 'An Online Reference',
                            'Boston Almanac and Guide1', 'Includes:reports from Commissioners, Inspectors and Others'); // Case-sensitive sub-string
 const ARE_MAGAZINES = array('the new yorker', 'the new republic', 'new republic', 'expedition magazine', 'wired', 'wired uk',
@@ -974,4 +975,4 @@ const DOI_FREE_PREFIX = array('10.1100/', '10.11131/', '10.1155/', '10.11569/', 
                   '10.57009/', '10.58647/', '10.59081/', '10.6064/', '10.6219/', '10.7167/', '10.7217/', '10.7287/',
                   '10.7482/', '10.7490/', '10.7554/', '10.7717/', '10.7766/', '10.3389/', '10.3390/', '10.1155/',
                   '10.1371/journal.pone', '10.3897/zookeys', '10.1016/j.jbc.', '10.1016/S0021-9258', '10.1074/jbc.',
-                  '10.1210/jendso', '10.4249/', '10.5210/fm', '10.3847/');
+                  '10.1210/jendso', '10.4249/', '10.5210/fm', '10.3847/', '10.22323/');

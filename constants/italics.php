@@ -104,6 +104,7 @@ const ITALICS_LIST =
  "Halszkaraptor escuilliei|" .
  "Mycoplasma pneumoniae|" .
  "Paradisaea Raggiana|" .
+ "Rothia mucilaginosa|" .
  "Brachiosaurus altithorax|" .
  "Saccharomyces cerevisiae|" .
  "Plutella xylostella|" .

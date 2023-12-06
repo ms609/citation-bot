@@ -55,12 +55,16 @@ if (strpos((string) @$_SERVER['PHP_SELF'], '/gadgetapi.php') === FALSE) {
   define("FLUSHING_OKAY", FALSE);
 }
 
-if (isset($_REQUEST["slow"]) || TRAVIS || (isset($argv[2]) && $argv[2] === '--slow')) {
+if (isset($_REQUEST["slow"]) || TRAVIS || (isset($argv) && in_array('--slow', $argv))) {
   define("SLOW_MODE", TRUE);
-} elseif (isset($argv[2])) {
-  exit("Unexpected text on the command.  Only --slow is valid second argument.");
 } else {
   define("SLOW_MODE", FALSE);
+}
+
+if (isset($argv) && in_array('--savetofiles', $argv)) {
+  define("SAVETOFILES_MODE", TRUE);
+} else {
+  define("SAVETOFILES_MODE", FALSE);
 }
 
 ob_implicit_flush();
@@ -94,8 +98,8 @@ if (isset($_REQUEST["pcre"]) || (strpos((string) @$_SERVER['PHP_SELF'], '/gadget
 date_default_timezone_set('UTC');
 
 /** @psalm-suppress UnusedFunctionCall */
-stream_context_set_default(['http' => ['timeout' => 20]]);
-ini_set('default_socket_timeout', '20');
+stream_context_set_default(['http' => ['timeout' => BOT_HTTP_TIMEOUT]]);
+ini_set('default_socket_timeout', strval(BOT_HTTP_TIMEOUT));
 
 define("PHP_ADSABSAPIKEY", (string) getenv("PHP_ADSABSAPIKEY"));
 if ((string) getenv("PHP_S2APIKEY") !== "") {
