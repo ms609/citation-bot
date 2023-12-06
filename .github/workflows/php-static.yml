@@ -23,6 +23,7 @@ jobs:
         php-version: '7.4'
         ini-values: pcov.directory=.
         coverage: pcov
+        dfasdfdsafdsfsd
 
     - name: Validate composer.json and composer.lock
       run: composer validate
