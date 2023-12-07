@@ -5,6 +5,9 @@ require_once 'constants.php';     // @codeCoverageIgnore
 require_once 'Template.php';      // @codeCoverageIgnore
 require_once 'big_jobs.php';      // @codeCoverageIgnore
 
+const MAX_CACHE_SIZE = 300000;
+const MAX_HDL_SIZE = 1024;
+
 // ============================================= DOI functions ======================================
 function doi_active(string $doi) : ?bool {
   // Greatly speed-up by having one array of each kind and only look for hash keys, not values
@@ -14,8 +17,8 @@ function doi_active(string $doi) : ?bool {
   if (isset($cache_good[$doi])) return TRUE;
   if (isset($cache_bad[$doi]))  return FALSE;
   // For really long category runs
-  if (count($cache_bad) > 2500) $cache_bad = [];
-  if (count($cache_good) > 100000) $cache_good = [];
+  if (count($cache_bad) > MAX_CACHE_SIZE) $cache_bad = [];
+  if (count($cache_good) > MAX_CACHE_SIZE) $cache_good = [];
   $works = doi_works($doi);
   if ($works === NULL) {
     return NULL; // @codeCoverageIgnore
@@ -42,11 +45,12 @@ function doi_works(string $doi) : ?bool {
   static $cache_good = [];
   static $cache_bad  = BAD_DOI_ARRAY;
   $doi = trim($doi);
+  if (strlen($doi) > MAX_HDL_SIZE) return NULL;
   if (isset($cache_good[$doi])) return TRUE;
   if (isset($cache_bad[$doi]))  return FALSE;
   // For really long category runs
-  if (count($cache_bad) > 2500) $cache_bad = BAD_DOI_ARRAY;
-  if (count($cache_good) > 100000) $cache_good = [];
+  if (count($cache_bad) > MAX_CACHE_SIZE) $cache_bad = BAD_DOI_ARRAY;
+  if (count($cache_good) > MAX_CACHE_SIZE) $cache_good = [];
   $works = is_doi_works($doi);
   if ($works === NULL) {
     // bot_debug_log($doi . " returns NULL from dx.doi.org");
@@ -1326,10 +1330,11 @@ function hdl_works(string $hdl) {
   static $cache_good = [];
   static $cache_bad  = [];
   $hdl = trim($hdl);
+  if (strlen($hdl) > MAX_HDL_SIZE) return NULL;
   if (isset($cache_good[$hdl])) return $cache_good[$hdl];
   if (isset($cache_bad[$hdl]))  return FALSE;
-  if (count($cache_bad) > 250) $cache_bad = []; // Lots of things that look like handles are not handles
-  if (count($cache_good) > 1000) $cache_good = [];
+  if (count($cache_bad)  > MAX_CACHE_SIZE) $cache_bad = []; // Lots of things that look like handles are not handles
+  if (count($cache_good) > MAX_CACHE_SIZE) $cache_good = [];
   $works = is_hdl_works($hdl);
   if ($works === NULL) {
     return NULL; // @codeCoverageIgnore
