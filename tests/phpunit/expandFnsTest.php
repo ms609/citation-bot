@@ -389,24 +389,30 @@ final class expandFnsTest extends testBaseClass {
 
   public function testVariousEncodes2() : void {
     $test="ショッピング";
-    $this->assertSame($test, smart_decode($test, 'UTF-8',''));
+    $decoded = smart_decode($test, 'UTF-8','');
+    $this->assertSame($test, $decoded);
   }
 
   public function testVariousEncodes3() : void {
     $test="ショッピング";
-    $this->assertSame('ใทใงใใใณใฐ', smart_decode($test,  "iso-8859-11",'')); // Clearly random junk
+    $decoded=smart_decode($test, "iso-8859-11",'');
+    $this->assertSame('ใทใงใใใณใฐ', $decoded); // Clearly random junk
   }
 
   /** TODO - figure out if this is possible
   
   public function testVariousEncodes1() : void {
-    $test="ã·ã§ããã³ã°";
-    $this->assertSame($test, convert_to_utf8($test));
+    $input  = "\xe3\x82\xb7\xe3\x83\xa7\xe3\x83\x83\xe3\x83\x94\xe3\x83\xb3\xe3\x82\xb0";
+    $sample = 'ショッピング';
+    $decoded = convert_to_utf8($input);
+    $this->assertSame($sample, $decoded);
   }
 
   public function testVariousEncodes4() : void {
-    $test="2xSP!#$%&'()*+,-./3x0123456789:;<=>?4x@ABCDEFGHIJKLMNO5xPQRSTUVWXYZ[\]^_6x`abcdefghijklmno7xpqrstuvwxyz{|}~8x9xAxNBSP¡¢£¤¥¦§¨©ª«¬SHY®¯Bx°±²³´µ¶·¸¹º»¼½¾¿CxÀÁÂÃÄÅÆÇÈÉÊËÌÍÎÏDxÐÑÒÓÔÕÖ×ØÙÚÛÜÝÞßExàáâãäåæçèéêëìíîïFxðñòóôõö÷øùúûüýþÿ";
-    $this->assertSame($test, mb_convert_encoding($test, "iso-8859-1",  "UTF-8"));
+    $sample = "2xSP!#$%&'()*+,-./3x0123456789:;<=>?4x@ABCDEFGHIJKLMNO5xPQRSTUVWXYZ[\]^_6x`abcdefghijklmno7xpqrstuvwxyz{|}~8x9xAxNBSP¡¢£¤¥¦§¨©ª«¬SHY®¯Bx°±²³´µ¶·¸¹º»¼½¾¿CxÀÁÂÃÄÅÆÇÈÉÊËÌÍÎÏDxÐÑÒÓÔÕÖ×ØÙÚÛÜÝÞßExàáâãäåæçèéêëìíîïFxðñòóôõö÷øùúûüýþÿ";
+    $urlencoded_iso_8859_1 = '2xSP%21%23%24%25%26%27%28%29%2A%2B%2C-.%2F3x0123456789%3A%3B%3C%3D%3E%3F4x%40ABCDEFGHIJKLMNO5xPQRSTUVWXYZ%5B%5C%5D%5E_6x%60abcdefghijklmno7xpqrstuvwxyz%7B%7C%7D%7E8x9xAxNBSP%A1%A2%A3%A4%A5%A6%A7%A8%A9%AA%AB%ACSHY%AE%AFBx%B0%B1%B2%B3%B4%B5%B6%B7%B8%B9%BA%BB%BC%BD%BE%BFCx%C0%C1%C2%C3%C4%C5%C6%C7%C8%C9%CA%CB%CC%CD%CE%CFDx%D0%D1%D2%D3%D4%D5%D6%D7%D8%D9%DA%DB%DC%DD%DE%DFEx%E0%E1%E2%E3%E4%E5%E6%E7%E8%E9%EA%EB%EC%ED%EE%EFFx%F0%F1%F2%F3%F4%F5%F6%F7%F8%F9%FA%FB%FC%FD%FE%FF';
+    $decoded = mb_convert_encoding(urldecode($urlencoded_iso_8859_1), "UTF-8", "iso-8859-1");
+    $this->assertSame($sample, $decoded);
   }
 
   **/
