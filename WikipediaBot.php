@@ -104,7 +104,8 @@ final class WikipediaBot {
     return TRUE;
   }
 
-  /** @phpstan-impure **/    /** @param array<string> $params **/
+  /** @phpstan-impure
+      @param array<mixed> $params **/
   private function fetch(array $params, int $depth = 1) : ?object {
     set_time_limit(120);
     if ($depth > 1) sleep($depth+2);
