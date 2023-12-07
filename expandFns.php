@@ -72,8 +72,7 @@ function doi_works(string $doi) : ?bool {
     if (abs(time() - $start_time) < max(BOT_HTTP_TIMEOUT, BOT_CONNECTION_TIMEOUT))
     {
       return NULL;
-    } else
-    {
+    } else {
       $works = FALSE;
     }
   }
