@@ -812,6 +812,9 @@ class Page {
     $this->modifications['modifications'] = array();
     $this->modifications['dashes'] = FALSE;
     $this->modifications['names'] = FALSE;
+    // This is a hack to put this here
+    global $dx_cache_null;
+    $dx_cache_null = array();
   }
 }
 
