@@ -6980,7 +6980,7 @@ final class Template {
     }
   }
 
-  /** @return array<mixed> **/
+  /** @return array<string|bool> **/
   public function modifications() : array {
     if ($this->has(strtolower('CITATION_BOT_PLACEHOLDER_BARE_URL'))) {
       if ($this->has('title') || $this->has('chapter')) {
