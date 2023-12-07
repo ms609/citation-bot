@@ -1259,13 +1259,11 @@ function edit_a_list_of_pages(array $pages_in_category, WikipediaBot $api, strin
         if (file_put_contents($filename, $body)===$bodylen)
         {
           report_phase("Saved to file " . echoable($filename));
-        } else
-        {
+        } else {
           report_warning("Save to file failed.");
         }
         unset($body);
-      } else
-      {
+      } else {
         report_phase("Writing to " . echoable($page_title) . '... ');
         $attempts = 0;
         if ($total === 1) {
