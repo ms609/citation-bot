@@ -29,8 +29,8 @@ function doi_active(string $doi) : ?bool {
   }
   // DX.DOI.ORG works, but is it on CrossRef
   $works = is_doi_active($doi);
-  if ($works === NULL) { // Nothing to retry, since nothing it followed
-      return NULL;
+  if ($works === NULL) {
+    return NULL;
   }
   if ($works === FALSE) {
     $cache_bad[$doi] = TRUE;
