@@ -38,6 +38,7 @@ final class Template {
   protected bool $mod_dashes = FALSE;
   protected bool $mod_names = FALSE;
   protected bool $no_initial_doi = FALSE;
+  /** @var array<array<string>> $used_by_api **/
   protected array $used_by_api = array(
                'adsabs'   => array(),
                'arxiv'    => array(),
@@ -826,6 +827,7 @@ final class Template {
     }
   }
 
+  /** @param array<string> $param **/
   public function api_has_used(string $api, array $param) : bool {
     if (!isset($this->used_by_api[$api])) report_error("Invalid API: $api");
     /** @psalm-suppress all */
@@ -2088,7 +2090,7 @@ final class Template {
     }
   }
 
-  /** @return array{0: string, 1: int, 2: array} */
+  /** @return array<string, int, array<string>> */
   protected function query_pubmed() : array {
 /*
  * Performs a search based on article data, using the DOI preferentially, and failing that, the rest of the article details.
@@ -2120,7 +2122,8 @@ final class Template {
     return array('', 0, array());
   }
 
-  /** @param array<string> $terms */  /** @return array{0: string, 1: int, 2: array} */
+  /** @param array<string> $terms
+      @return array<string, int, array<string>> */
   protected function do_pumbed_query(array $terms) : array {
     set_time_limit(120);
   /* do_query
@@ -6607,6 +6610,7 @@ final class Template {
     return '';
   }
 
+  /** @return array<string> **/
   public function initial_author_params() : array { return $this->initial_author_params; }
 
   protected function first_surname() : string {
@@ -6647,6 +6651,7 @@ final class Template {
 
   public function name() : string {return trim($this->name);}
 
+  /** @return ?array<string> **/
   protected function page_range() : ?array {
     preg_match("~(\w?\w?\d+\w?\w?)(?:\D+(\w?\w?\d+\w?\w?))?~", $this->page(), $pagenos);
     return $pagenos;
@@ -6975,6 +6980,7 @@ final class Template {
     }
   }
 
+  /** @return array<mixed> **/
   public function modifications() : array {
     if ($this->has(strtolower('CITATION_BOT_PLACEHOLDER_BARE_URL'))) {
       if ($this->has('title') || $this->has('chapter')) {
