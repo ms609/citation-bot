@@ -19,7 +19,7 @@ class Page {
 
   protected string $text = '';
   protected string $title = '';
-  /** @var array<mixed> $modifications **/
+  /** @var array<string|bool> $modifications **/
   protected array $modifications = array();
   protected int $date_style = DATES_WHATEVER;
   protected string $read_at = '';
@@ -742,7 +742,7 @@ class Page {
     return $objects;
   }
 
-  /** @param array<mixed> $objects **/
+  /** @param array<object> $objects **/
   protected function replace_object(array &$objects) : void {  // Pointer to save memory
     $i = count($objects);
     if ($objects) {
