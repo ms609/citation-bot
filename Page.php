@@ -660,7 +660,7 @@ class Page {
     }
   }
 
-  /** @return array<mixed> **/
+  /** @return array<object> **/
   public function extract_object(string $class) : array {
     $i = 0;
     $text = $this->text;
