@@ -37,14 +37,8 @@ function doi_active(string $doi) : ?bool {
   // DX.DOI.ORG works, but does crossref?
   $start_time = time();
   $works = is_doi_active($doi);
-  if ($works === NULL) {
-    // if little time passed, we will recheck again, otherwise mark as fail
-    if (abs(time() - $start_time) < max(BOT_HTTP_TIMEOUT, BOT_CONNECTION_TIMEOUT))
-    {
+  if ($works === NULL) { // Nothing to retry, since nothing it followed
       return NULL;
-    } else {
-      $works = FALSE;
-    }
   }
   if ($works === FALSE) {
     $cache_bad[$doi] = TRUE;
