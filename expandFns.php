@@ -21,16 +21,16 @@ function doi_active(string $doi) : ?bool {
   if (count($cache_good) > MAX_CACHE_SIZE) $cache_good = [];
   $works = doi_works($doi);
   if ($works === NULL) {
-    return NULL; // @codeCoverageIgnore
+    return NULL;
   }
   if ($works === FALSE) {
-    // $cache_bad[$doi] = TRUE; do not store to save memory
+    $cache_bad[$doi] = TRUE;
     return FALSE;
   }
-  // DX.DOI.ORG works, but does crossref?
+  // DX.DOI.ORG works, but is it on CrossRef
   $works = is_doi_active($doi);
   if ($works === NULL) {
-    return NULL; // @codeCoverageIgnore
+    return NULL;
   }
   if ($works === FALSE) {
     $cache_bad[$doi] = TRUE;
@@ -1237,13 +1237,11 @@ function edit_a_list_of_pages(array $pages_in_category, WikipediaBot $api, strin
         if (file_put_contents($filename, $body)===$bodylen)
         {
           report_phase("Saved to file " . echoable($filename));
-        } else
-        {
+        } else {
           report_warning("Save to file failed.");
         }
         unset($body);
-      } else
-      {
+      } else {
         report_phase("Writing to " . echoable($page_title) . '... ');
         $attempts = 0;
         if ($total === 1) {
