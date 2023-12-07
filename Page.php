@@ -19,7 +19,7 @@ class Page {
 
   protected string $text = '';
   protected string $title = '';
-  /** @var array<string|bool> $modifications **/
+  /** @var array<mixed> $modifications **/
   protected array $modifications = array();
   protected int $date_style = DATES_WHATEVER;
   protected string $read_at = '';
