@@ -19,6 +19,7 @@ class Page {
 
   protected string $text = '';
   protected string $title = '';
+  /** @val array<mixed> $modifications **/
   protected array $modifications = array();
   protected int $date_style = DATES_WHATEVER;
   protected string $read_at = '';
@@ -658,7 +659,8 @@ class Page {
       return FALSE;
     }
   }
-  
+
+  /** @return array<mixed> **/
   public function extract_object(string $class) : array {
     $i = 0;
     $text = $this->text;
@@ -740,7 +742,8 @@ class Page {
     return $objects;
   }
 
-  protected function replace_object (array &$objects) : void {  // Pointer to save memory
+  /** @param array<mixed> $objects **/
+  protected function replace_object(array &$objects) : void {  // Pointer to save memory
     $i = count($objects);
     if ($objects) {
       foreach (array_reverse($objects) as $obj) {
