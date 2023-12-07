@@ -8,7 +8,7 @@ require_once 'big_jobs.php';      // @codeCoverageIgnore
 const MAX_CACHE_SIZE = 300000;
 const MAX_HDL_SIZE = 1024;
 
-array $dx_cache_null = array();
+$dx_cache_null = array();
 
 // ============================================= DOI functions ======================================
 function doi_active(string $doi) : ?bool {
