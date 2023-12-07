@@ -2090,7 +2090,7 @@ final class Template {
     }
   }
 
-  /** @return array<string, int, array<string>> */
+  /** @return array{0: string, 1: int, 2: array<string>} */
   protected function query_pubmed() : array {
 /*
  * Performs a search based on article data, using the DOI preferentially, and failing that, the rest of the article details.
@@ -2123,7 +2123,7 @@ final class Template {
   }
 
   /** @param array<string> $terms
-      @return array<string, int, array<string>> */
+      @return array{0: string, 1: int, 2: array<string>} */
   protected function do_pumbed_query(array $terms) : array {
     set_time_limit(120);
   /* do_query
