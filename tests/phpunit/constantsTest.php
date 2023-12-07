@@ -559,7 +559,7 @@ final class constantsTest extends testBaseClass {
        if (WikipediaBot::is_redirect($tem) === 0) { // The page actually exists
           $page->get_text_from($tem);
           $text = $page->parsed_text();
-          if (stripos($text, '{{safesubst:') === FALSE) {
+          if (stripos($text, 'safesubst:') === FALSE) {
             $errors = $errors . '   Is real:' . $convert[0];
           }
        }
