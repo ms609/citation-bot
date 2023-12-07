@@ -14,20 +14,39 @@ function doi_active(string $doi) : ?bool {
   if (isset($cache_good[$doi])) return TRUE;
   if (isset($cache_bad[$doi]))  return FALSE;
   // For really long category runs
-  if (count($cache_bad) > 2500) $cache_bad = [];
-  if (count($cache_good) > 100000) $cache_good = [];
+  if (!defined('BOT_INFINITE_DOI_CACHE'))
+  {
+    if (count($cache_bad) > 2500) $cache_bad = [];
+    if (count($cache_good) > 100000) $cache_good = [];
+  }
+  $start_time = time();
   $works = doi_works($doi);
   if ($works === NULL) {
-    return NULL; // @codeCoverageIgnore
+    // if little time passed, we will recheck again, otherwise mark as fail
+    if (abs(time()-$start_time) < max(BOT_HTTP_TIMEOUT, BOT_CONNECTION_TIMEOUT))
+    {
+      return NULL; // @codeCoverageIgnore
+    } else
+    {
+      $works = FALSE;
+    }
   }
   if ($works === FALSE) {
-    // $cache_bad[$doi] = TRUE; do not store to save memory
+    $cache_bad[$doi] = TRUE; 
     return FALSE;
   }
   // DX.DOI.ORG works, but does crossref?
+  $start_time = time();
   $works = is_doi_active($doi);
   if ($works === NULL) {
-    return NULL; // @codeCoverageIgnore
+    // if little time passed, we will recheck again, otherwise mark as fail
+    if (abs(time() - $start_time) < max(BOT_HTTP_TIMEOUT, BOT_CONNECTION_TIMEOUT))
+    {
+      return NULL; // @codeCoverageIgnore
+    } else
+    {
+      $works = FALSE;
+    }
   }
   if ($works === FALSE) {
     $cache_bad[$doi] = TRUE;
@@ -45,12 +64,22 @@ function doi_works(string $doi) : ?bool {
   if (isset($cache_good[$doi])) return TRUE;
   if (isset($cache_bad[$doi]))  return FALSE;
   // For really long category runs
-  if (count($cache_bad) > 2500) $cache_bad = BAD_DOI_ARRAY;
-  if (count($cache_good) > 100000) $cache_good = [];
+  if (!defined('BOT_INFINITE_DOI_CACHE'))
+  {
+    if (count($cache_bad) > 2500) $cache_bad = BAD_DOI_ARRAY;
+    if (count($cache_good) > 100000) $cache_good = [];
+  }
+  $start_time = time();
   $works = is_doi_works($doi);
   if ($works === NULL) {
-    // bot_debug_log($doi . " returns NULL from dx.doi.org");
-    return NULL; // @codeCoverageIgnore
+    // if little time passed, we will recheck again, otherwise mark as fail
+    if (abs(time() - $start_time) < max(BOT_HTTP_TIMEOUT, BOT_CONNECTION_TIMEOUT))
+    {
+      return NULL; // @codeCoverageIgnore
+    } else
+    {
+      $works = FALSE;
+    }
   }
   if ($works === FALSE) {
     $cache_bad[$doi] = TRUE;
@@ -1322,11 +1351,22 @@ function hdl_works(string $hdl) {
   $hdl = trim($hdl);
   if (isset($cache_good[$hdl])) return $cache_good[$hdl];
   if (isset($cache_bad[$hdl]))  return FALSE;
-  if (count($cache_bad) > 250) $cache_bad = []; // Lots of things that look like handles are not handles
-  if (count($cache_good) > 1000) $cache_good = [];
+  if (!defined('BOT_INFINITE_HDL_CACHE'))
+  {
+    if (count($cache_bad) > 250) $cache_bad = []; // Lots of things that look like handles are not handles
+    if (count($cache_good) > 1000) $cache_good = [];
+  }
+  $start_time = time();
   $works = is_hdl_works($hdl);
   if ($works === NULL) {
-    return NULL; // @codeCoverageIgnore
+    // if little time passed, we will recheck again, otherwise mark as fail
+    if (abs(time()-$start_time) < max(BOT_HTTP_TIMEOUT, BOT_CONNECTION_TIMEOUT))
+    {
+      return NULL; // @codeCoverageIgnore
+    } else
+    {
+      $works = FALSE;
+    }
   }
   if ($works === FALSE) {
     $cache_bad[$hdl] = TRUE;
