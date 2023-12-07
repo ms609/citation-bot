@@ -25,9 +25,8 @@ function doi_active(string $doi) : ?bool {
     // if little time passed, we will recheck again, otherwise mark as fail
     if (abs(time()-$start_time) < max(BOT_HTTP_TIMEOUT, BOT_CONNECTION_TIMEOUT))
     {
-      return NULL; // @codeCoverageIgnore
-    } else
-    {
+      return NULL;
+    } else {
       $works = FALSE;
     }
   }
@@ -1364,9 +1363,8 @@ function hdl_works(string $hdl) {
     // if little time passed, we will recheck again, otherwise mark as fail
     if (abs(time()-$start_time) < max(BOT_HTTP_TIMEOUT, BOT_CONNECTION_TIMEOUT))
     {
-      return NULL; // @codeCoverageIgnore
-    } else
-    {
+      return NULL;
+    } else {
       $works = FALSE;
     }
   }
