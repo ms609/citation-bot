@@ -19,23 +19,15 @@ function doi_active(string $doi) : ?bool {
   // For really long category runs
   if (count($cache_bad) > MAX_CACHE_SIZE) $cache_bad = [];
   if (count($cache_good) > MAX_CACHE_SIZE) $cache_good = [];
-  $start_time = time();
   $works = doi_works($doi);
   if ($works === NULL) {
-    // if little time passed, we will recheck again, otherwise mark as fail
-    if (abs(time()-$start_time) < max(BOT_HTTP_TIMEOUT, BOT_CONNECTION_TIMEOUT))
-    {
-      return NULL;
-    } else {
-      $works = FALSE;
-    }
+    return NULL;
   }
   if ($works === FALSE) {
     $cache_bad[$doi] = TRUE; 
     return FALSE;
   }
-  // DX.DOI.ORG works, but does crossref?
-  $start_time = time();
+  // DX.DOI.ORG works, but is it on CrossRef
   $works = is_doi_active($doi);
   if ($works === NULL) { // Nothing to retry, since nothing it followed
       return NULL;
