@@ -203,7 +203,9 @@ function is_doi_works(string $doi) : ?bool {
   return NULL; // @codeCoverageIgnore
 }
 
-/** @psalm-suppress UnusedParam */
+/** @psalm-suppress UnusedParam
+    @param array<string> $ids
+    @param array<Template> $templates **/
 function query_jstor_api(array $ids, array &$templates) : bool { // $ids not used yet   // Pointer to save memory
   $return = FALSE;
   foreach ($templates as $template) {
@@ -1057,6 +1059,8 @@ function remove_comments(string $string) : string {
   return preg_replace("~<!--.*?-->~us", "", $string);
 }
 
+/** @param array<string> $list
+    @return array<string> **/
 function prior_parameters(string $par, array $list=array()) : array {
   array_unshift($list, $par);
   if (preg_match('~(\D+)(\d+)~', $par, $match) && stripos($par, 's2cid') === FALSE) {
@@ -1108,6 +1112,7 @@ function prior_parameters(string $par, array $list=array()) : array {
   }
 }
 
+/** @return array<string> **/
 function equivalent_parameters(string $par) : array {
   switch ($par) {
     case 'author': case 'authors': case 'author1': case 'last1': 
@@ -1190,6 +1195,7 @@ function hdl_decode(string $hdl) : string {
  * Only on webpage
  * @codeCoverageIgnore
  */
+/** @param array<string> $pages_in_category **/
 function edit_a_list_of_pages(array $pages_in_category, WikipediaBot $api, string $edit_summary_end) : void {
   $final_edit_overview = "";
   // Remove pages with blank as the name, if present
@@ -1456,6 +1462,7 @@ function smart_decode(string $title, string $encode, string $archive_url) : stri
   return $try;
 }
 
+/** @param array<string> $gid **/
 function normalize_google_books(string &$url, int &$removed_redundant, string &$removed_parts, array &$gid) : void { // PASS BY REFERENCE!!!!!!
       $removed_redundant = 0;
       $hash = '';
@@ -1674,6 +1681,7 @@ function doi_is_bad (string $doi) : bool {
         return FALSE;
 }
 
+/** @return array<string> **/
 function get_possible_dois(string $doi) : array {
     $trial = array();
     $trial[] = $doi;

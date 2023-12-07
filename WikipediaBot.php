@@ -103,8 +103,9 @@ final class WikipediaBot {
     }
     return TRUE;
   }
-  
-  /** @phpstan-impure **/
+
+  /** @phpstan-impure
+      @param array<mixed> $params **/
   private function fetch(array $params, int $depth = 1) : ?object {
     set_time_limit(120);
     if ($depth > 1) sleep($depth+2);
@@ -278,7 +279,8 @@ try {
     }
     return TRUE;
   }
-  
+
+  /** @return array<string> **/
   public static function category_members(string $cat) : array {
     $list = [];
     $vars = [
@@ -365,7 +367,8 @@ try {
     }
     return (string) $res->query->redirects[0]->to;
   }
-  
+
+  /** @param array<string> $params **/
   static private function QueryAPI(array $params) : string {
    try {
     $params['format'] = 'json';

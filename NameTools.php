@@ -7,6 +7,7 @@ require_once 'constants.php';    // @codeCoverageIgnore
  *  Input: $name - the name to be tested
  * Output: array ($name without Jr, if $name ends in Jr, Jr)
  */
+/** @return array<string> **/
 function junior_test(string $name) : array {
   $junior = (substr($name, -3) === " Jr")?" Jr":"";
   if ($junior) {
@@ -23,6 +24,7 @@ function junior_test(string $name) : array {
   return array($name, $junior);
 }
 
+/** @return array<string> **/
 function split_author(string $value) : array {
   if (substr_count($value, ',') !== 1) return array();
   return(explode(',', $value, 2));
@@ -324,6 +326,7 @@ function under_two_authors(string $text) : bool {
  * Assumes that there is more than one author to start with; 
  * check this using under_two_authors()
  */
+/** @return array<string> **/
 function split_authors(string $str) : array {
   if (strpos($str, ';')) return explode(';', $str);
   return explode(',', $str);
