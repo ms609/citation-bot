@@ -203,7 +203,9 @@ function is_doi_works(string $doi) : ?bool {
   return NULL; // @codeCoverageIgnore
 }
 
-/** @psalm-suppress UnusedParam */ /** @param array<string> $ids **/ /** @param array<Template> $templates **/
+/** @psalm-suppress UnusedParam
+    @param array<string> $ids
+    @param array<Template> $templates **/
 function query_jstor_api(array $ids, array &$templates) : bool { // $ids not used yet   // Pointer to save memory
   $return = FALSE;
   foreach ($templates as $template) {
@@ -1057,7 +1059,8 @@ function remove_comments(string $string) : string {
   return preg_replace("~<!--.*?-->~us", "", $string);
 }
 
-/** @param array<string> $list **/  /** @return array<string> **/
+/** @param array<string> $list
+    @return array<string> **/
 function prior_parameters(string $par, array $list=array()) : array {
   array_unshift($list, $par);
   if (preg_match('~(\D+)(\d+)~', $par, $match) && stripos($par, 's2cid') === FALSE) {
