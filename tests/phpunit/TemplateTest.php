@@ -2143,7 +2143,7 @@ final class TemplateTest extends testBaseClass {
     $expanded = $this->process_citation($text);
     $date = $expanded->get2('date');
     $expected_dates = array('February 1935', '1935-02');
-    $this->assertTrue(in_array($date, $expected_dates), 'Got: "'.$date.'", expected: "'.implode(' ', $accepted_dates).'"');
+    $this->assertTrue(in_array($date, $expected_dates), 'Got: "'.$date.'", expected: "'.implode(' ', $expected_dates).'"');
     // Google recovers Feb 1935; Zotero returns 1935-02.
   }
   

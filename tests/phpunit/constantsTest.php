@@ -82,7 +82,7 @@ final class constantsTest extends testBaseClass {
     $this->assertSame('Xz', title_capitalization('xz', TRUE));
     $this->assertSame('XZZ BBBB/EEE', title_capitalization('xzz bbbb/eee', TRUE));
     $this->assertSame('XZZZ', title_capitalization('xzzz', TRUE));
-    // Mixed
+    // Both
     $this->assertSame('Xzza', title_capitalization('xzza', TRUE));
     // Vowels
     $this->assertSame('AEIOU', title_capitalization('aeiou', TRUE));
@@ -559,7 +559,7 @@ final class constantsTest extends testBaseClass {
        if (WikipediaBot::is_redirect($tem) === 0) { // The page actually exists
           $page->get_text_from($tem);
           $text = $page->parsed_text();
-          if (stripos($text, '{{safesubst:') === FALSE) {
+          if (stripos($text, 'safesubst:') === FALSE) {
             $errors = $errors . '   Is real:' . $convert[0];
           }
        }
