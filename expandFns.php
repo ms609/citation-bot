@@ -8,7 +8,7 @@ require_once 'big_jobs.php';      // @codeCoverageIgnore
 const MAX_CACHE_SIZE = 300000;
 const MAX_HDL_SIZE = 1024;
 
-$dx_cache_null = array();
+$hdl_doi_cache_null = array(); // Reset for every page
 
 // ============================================= DOI functions ======================================
 function doi_active(string $doi) : ?bool {
@@ -46,18 +46,18 @@ function doi_works(string $doi) : ?bool {
   // Greatly speed-up by having one array of each kind and only look for hash keys, not values
   static $cache_good = [];
   static $cache_bad  = BAD_DOI_ARRAY;
-  global $dx_cache_null;
+  global $hdl_doi_cache_null;
   $doi = trim($doi);
   if (strlen($doi) > MAX_HDL_SIZE) return NULL;
   if (isset($cache_good[$doi])) return TRUE;
   if (isset($cache_bad[$doi]))  return FALSE;
-  if (isset($dx_cache_null[$doi])) return NULL;
+  if (isset($hdl_doi_cache_null[$doi])) return NULL;
   // For really long category runs
   if (count($cache_bad) > MAX_CACHE_SIZE) $cache_bad = BAD_DOI_ARRAY;
   if (count($cache_good) > MAX_CACHE_SIZE) $cache_good = [];
   $works = is_doi_works($doi);
   if ($works === NULL) {
-    $dx_cache_null[$doi] = TRUE;
+    $hdl_doi_cache_null[$doi] = TRUE;
     // bot_debug_log($doi . " returns NULL from dx.doi.org");
     return NULL;
   }
@@ -1332,16 +1332,19 @@ function bot_html_footer() : void {
    **/
 function hdl_works(string $hdl) {
   // Greatly speed-up by having one array of each kind and only look for hash keys, not values
+  global $hdl_doi_cache_null;
   static $cache_good = [];
   static $cache_bad  = [];
   $hdl = trim($hdl);
   if (strlen($hdl) > MAX_HDL_SIZE) return NULL;
   if (isset($cache_good[$hdl])) return $cache_good[$hdl];
   if (isset($cache_bad[$hdl]))  return FALSE;
+  if (isset($hdl_doi_cache_null[$hdl])) return NULL;
   if (count($cache_bad)  > MAX_CACHE_SIZE) $cache_bad = []; // Lots of things that look like handles are not handles
   if (count($cache_good) > MAX_CACHE_SIZE) $cache_good = [];
   $works = is_hdl_works($hdl);
   if ($works === NULL) {
+    $hdl_doi_cache_null[$hdl] = TRUE;
     return NULL; // @codeCoverageIgnore
   }
   if ($works === FALSE) {
