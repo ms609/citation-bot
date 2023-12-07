@@ -66,11 +66,11 @@ function doi_works(string $doi) : ?bool {
 
 function is_doi_active(string $doi) : ?bool {
   $doi = trim($doi);
-  $headers_test = @get_headers("https://api.crossref.org/works/" . doi_encode($doi), GET_THE_HEADERS);
+  $headers_test = @get_headers("https://api.crossref.org/works/" . doi_encode($doi), TRUE);
   if ($headers_test === FALSE) {
     sleep(2);                                                                                            // @codeCoverageIgnore
     report_inline(' .');                                                                                 // @codeCoverageIgnore
-    $headers_test = @get_headers("https://api.crossref.org/works/" . doi_encode($doi), GET_THE_HEADERS); // @codeCoverageIgnore
+    $headers_test = @get_headers("https://api.crossref.org/works/" . doi_encode($doi), TRUE); // @codeCoverageIgnore
   }
   if ($headers_test === FALSE) return NULL; // most likely bad, but will recheck again an again
   /** @psalm-suppress InvalidArrayOffset */
@@ -126,19 +126,19 @@ function is_doi_works(string $doi) : ?bool {
 
   $context = stream_context_create(CONTEXT_INSECURE);
   set_time_limit(120);
-  $headers_test = @get_headers("https://doi.org/" . doi_encode($doi), GET_THE_HEADERS, $context);
+  $headers_test = @get_headers("https://doi.org/" . doi_encode($doi), TRUE, $context);
   $context = stream_context_create(CONTEXT_INSECURE_11);
   if ($headers_test === FALSE) {
      sleep(2);                                                                                        // @codeCoverageIgnore
      report_inline(' .');                                                                             // @codeCoverageIgnore
      set_time_limit(120);                                                                             // @codeCoverageIgnore
-     $headers_test = @get_headers("https://doi.org/" . doi_encode($doi), GET_THE_HEADERS, $context);  // @codeCoverageIgnore
+     $headers_test = @get_headers("https://doi.org/" . doi_encode($doi), TRUE, $context);  // @codeCoverageIgnore
   }
   if ($headers_test === FALSE) {
      sleep(5);                                                                                        // @codeCoverageIgnore
      set_time_limit(120);                                                                             // @codeCoverageIgnore
      report_inline(' .');                                                                             // @codeCoverageIgnore
-     $headers_test = @get_headers("https://doi.org/" . doi_encode($doi), GET_THE_HEADERS, $context);  // @codeCoverageIgnore
+     $headers_test = @get_headers("https://doi.org/" . doi_encode($doi), TRUE, $context);  // @codeCoverageIgnore
   } else {
     /** @psalm-suppress InvalidArrayOffset */
     $resp0 = (string) @$headers_test['0'];                                                            // @codeCoverageIgnore
@@ -146,7 +146,7 @@ function is_doi_works(string $doi) : ?bool {
      sleep(5);                                                                                        // @codeCoverageIgnore
      set_time_limit(120);                                                                             // @codeCoverageIgnore
      report_inline(' .');                                                                             // @codeCoverageIgnore
-     $headers_test = @get_headers("https://doi.org/" . doi_encode($doi), GET_THE_HEADERS, $context);  // @codeCoverageIgnore
+     $headers_test = @get_headers("https://doi.org/" . doi_encode($doi), TRUE, $context);  // @codeCoverageIgnore
      if ($headers_test === FALSE) return FALSE; /** We trust previous failure **/                     // @codeCoverageIgnore
     }                                                                                                 // @codeCoverageIgnore
   }
@@ -1362,18 +1362,18 @@ function is_hdl_works(string $hdl) {
   usleep(100000);
   $test_url = "https://hdl.handle.net/" . $hdl;
   set_time_limit(120);
-  $headers_test = @get_headers($test_url, GET_THE_HEADERS, $context);
+  $headers_test = @get_headers($test_url, TRUE, $context);
   if ($headers_test === FALSE) {
       sleep(3);                                                           // @codeCoverageIgnore
       set_time_limit(120);                                                // @codeCoverageIgnore
       report_inline(' .');                                                // @codeCoverageIgnore
-      $headers_test = @get_headers($test_url, GET_THE_HEADERS, $context); // @codeCoverageIgnore
+      $headers_test = @get_headers($test_url, TRUE, $context); // @codeCoverageIgnore
   }
   if ($headers_test === FALSE) {
       sleep(8);                                                           // @codeCoverageIgnore
       set_time_limit(120);                                                // @codeCoverageIgnore
       report_inline(' .');                                                // @codeCoverageIgnore
-      $headers_test = @get_headers($test_url, GET_THE_HEADERS, $context); // @codeCoverageIgnore
+      $headers_test = @get_headers($test_url, TRUE, $context); // @codeCoverageIgnore
   }
   if ($headers_test === FALSE) return NULL; // most likely bad, but will recheck again and again
   if (empty($headers_test['Location']) && empty($headers_test['location'])) return FALSE; // leads nowhere
