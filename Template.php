@@ -39,6 +39,7 @@ final class Template {
   protected bool $mod_dashes = FALSE;
   protected bool $mod_names = FALSE;
   protected bool $no_initial_doi = FALSE;
+  /** @var array<array<string>> $used_by_api **/
   protected array $used_by_api = array(
                'adsabs'   => array(),
                'arxiv'    => array(),
@@ -827,6 +828,7 @@ final class Template {
     }
   }
 
+  /** @param array<string> $param **/
   public function api_has_used(string $api, array $param) : bool {
     if (!isset($this->used_by_api[$api])) report_error("Invalid API: $api");
     /** @psalm-suppress all */
@@ -1820,7 +1822,7 @@ final class Template {
         if (strpos(strtolower($value), 'privately printed') !== FALSE) return FALSE; // Common from archive.org
         if (str_equivalent($this->get('location'), $value)) return FALSE; // Catch some bad archive.org data
         if (strpos(strtolower($value), 'impressum') !== FALSE) return FALSE; // Common from archive.org
-        if (strpos(strtolower($value), ':') !== FALSE) return FALSE; // Common from archive.org when location is mixed in
+        if (strpos(strtolower($value), ':') !== FALSE) return FALSE; // Common from archive.org when location is included
         if (strpos(strtolower($value), '[etc.]') !== FALSE) return FALSE; // common from biodiversitylibrary.org - what does the etc. mean?
         if (($this->wikiname() !== 'cite book') && !$this->blank(WORK_ALIASES)) return FALSE;  // Do not add if work is set, unless explicitly a book
 
@@ -2089,7 +2091,7 @@ final class Template {
     }
   }
 
-  /** @return array{0: string, 1: int, 2: array} */
+  /** @return array{0: string, 1: int, 2: array<string>} */
   protected function query_pubmed() : array {
 /*
  * Performs a search based on article data, using the DOI preferentially, and failing that, the rest of the article details.
@@ -2121,7 +2123,8 @@ final class Template {
     return array('', 0, array());
   }
 
-  /** @param array<string> $terms */  /** @return array{0: string, 1: int, 2: array} */
+  /** @param array<string> $terms
+      @return array{0: string, 1: int, 2: array<string>} */
   protected function do_pumbed_query(array $terms) : array {
     set_time_limit(120);
   /* do_query
@@ -2758,7 +2761,7 @@ final class Template {
           $context = stream_context_create(CONTEXT_INSECURE);
           /** @psalm-taint-escape ssrf */
           $the_url = $this->get($url_type);
-          $headers_test = @get_headers($the_url, GET_THE_HEADERS, $context);
+          $headers_test = @get_headers($the_url, TRUE, $context);
           // @codeCoverageIgnoreStart
           if($headers_test ===FALSE) {
             $this->forget($url_type);
@@ -6707,6 +6710,7 @@ final class Template {
 
   public function name() : string {return trim($this->name);}
 
+  /** @return ?array<string> **/
   protected function page_range() : ?array {
     preg_match("~(\w?\w?\d+\w?\w?)(?:\D+(\w?\w?\d+\w?\w?))?~", $this->page(), $pagenos);
     return $pagenos;
@@ -7035,6 +7039,7 @@ final class Template {
     }
   }
 
+  /** @return array<mixed> **/
   public function modifications() : array {
     if ($this->has(strtolower('CITATION_BOT_PLACEHOLDER_BARE_URL'))) {
       if ($this->has('title') || $this->has('chapter')) {
@@ -7126,6 +7131,7 @@ final class Template {
     return $isbn13;
   }
 
+  /** @return ?array<string> **/
   protected function inline_doi_information() : ?array {
     if ($this->name !== "doi-inline") return NULL;
     if (count($this->param) !==2) return NULL;

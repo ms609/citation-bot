@@ -5,6 +5,9 @@ require_once 'constants.php';     // @codeCoverageIgnore
 require_once 'Template.php';      // @codeCoverageIgnore
 require_once 'big_jobs.php';      // @codeCoverageIgnore
 
+const MAX_CACHE_SIZE = 300000;
+const MAX_HDL_SIZE = 1024;
+
 // ============================================= DOI functions ======================================
 function doi_active(string $doi) : ?bool {
   // Greatly speed-up by having one array of each kind and only look for hash keys, not values
@@ -14,8 +17,8 @@ function doi_active(string $doi) : ?bool {
   if (isset($cache_good[$doi])) return TRUE;
   if (isset($cache_bad[$doi]))  return FALSE;
   // For really long category runs
-  if (count($cache_bad) > 2500) $cache_bad = [];
-  if (count($cache_good) > 100000) $cache_good = [];
+  if (count($cache_bad) > MAX_CACHE_SIZE) $cache_bad = [];
+  if (count($cache_good) > MAX_CACHE_SIZE) $cache_good = [];
   $works = doi_works($doi);
   if ($works === NULL) {
     return NULL; // @codeCoverageIgnore
@@ -42,11 +45,12 @@ function doi_works(string $doi) : ?bool {
   static $cache_good = [];
   static $cache_bad  = BAD_DOI_ARRAY;
   $doi = trim($doi);
+  if (strlen($doi) > MAX_HDL_SIZE) return NULL;
   if (isset($cache_good[$doi])) return TRUE;
   if (isset($cache_bad[$doi]))  return FALSE;
   // For really long category runs
-  if (count($cache_bad) > 2500) $cache_bad = BAD_DOI_ARRAY;
-  if (count($cache_good) > 100000) $cache_good = [];
+  if (count($cache_bad) > MAX_CACHE_SIZE) $cache_bad = BAD_DOI_ARRAY;
+  if (count($cache_good) > MAX_CACHE_SIZE) $cache_good = [];
   $works = is_doi_works($doi);
   if ($works === NULL) {
     // bot_debug_log($doi . " returns NULL from dx.doi.org");
@@ -62,11 +66,11 @@ function doi_works(string $doi) : ?bool {
 
 function is_doi_active(string $doi) : ?bool {
   $doi = trim($doi);
-  $headers_test = @get_headers("https://api.crossref.org/works/" . doi_encode($doi), GET_THE_HEADERS);
+  $headers_test = @get_headers("https://api.crossref.org/works/" . doi_encode($doi), TRUE);
   if ($headers_test === FALSE) {
     sleep(2);                                                                                            // @codeCoverageIgnore
     report_inline(' .');                                                                                 // @codeCoverageIgnore
-    $headers_test = @get_headers("https://api.crossref.org/works/" . doi_encode($doi), GET_THE_HEADERS); // @codeCoverageIgnore
+    $headers_test = @get_headers("https://api.crossref.org/works/" . doi_encode($doi), TRUE); // @codeCoverageIgnore
   }
   if ($headers_test === FALSE) return NULL; // most likely bad, but will recheck again an again
   /** @psalm-suppress InvalidArrayOffset */
@@ -122,19 +126,19 @@ function is_doi_works(string $doi) : ?bool {
 
   $context = stream_context_create(CONTEXT_INSECURE);
   set_time_limit(120);
-  $headers_test = @get_headers("https://doi.org/" . doi_encode($doi), GET_THE_HEADERS, $context);
+  $headers_test = @get_headers("https://doi.org/" . doi_encode($doi), TRUE, $context);
   $context = stream_context_create(CONTEXT_INSECURE_11);
   if ($headers_test === FALSE) {
      sleep(2);                                                                                        // @codeCoverageIgnore
      report_inline(' .');                                                                             // @codeCoverageIgnore
      set_time_limit(120);                                                                             // @codeCoverageIgnore
-     $headers_test = @get_headers("https://doi.org/" . doi_encode($doi), GET_THE_HEADERS, $context);  // @codeCoverageIgnore
+     $headers_test = @get_headers("https://doi.org/" . doi_encode($doi), TRUE, $context);  // @codeCoverageIgnore
   }
   if ($headers_test === FALSE) {
      sleep(5);                                                                                        // @codeCoverageIgnore
      set_time_limit(120);                                                                             // @codeCoverageIgnore
      report_inline(' .');                                                                             // @codeCoverageIgnore
-     $headers_test = @get_headers("https://doi.org/" . doi_encode($doi), GET_THE_HEADERS, $context);  // @codeCoverageIgnore
+     $headers_test = @get_headers("https://doi.org/" . doi_encode($doi), TRUE, $context);  // @codeCoverageIgnore
   } else {
     /** @psalm-suppress InvalidArrayOffset */
     $resp0 = (string) @$headers_test['0'];                                                            // @codeCoverageIgnore
@@ -142,7 +146,7 @@ function is_doi_works(string $doi) : ?bool {
      sleep(5);                                                                                        // @codeCoverageIgnore
      set_time_limit(120);                                                                             // @codeCoverageIgnore
      report_inline(' .');                                                                             // @codeCoverageIgnore
-     $headers_test = @get_headers("https://doi.org/" . doi_encode($doi), GET_THE_HEADERS, $context);  // @codeCoverageIgnore
+     $headers_test = @get_headers("https://doi.org/" . doi_encode($doi), TRUE, $context);  // @codeCoverageIgnore
      if ($headers_test === FALSE) return FALSE; /** We trust previous failure **/                     // @codeCoverageIgnore
     }                                                                                                 // @codeCoverageIgnore
   }
@@ -203,7 +207,9 @@ function is_doi_works(string $doi) : ?bool {
   return NULL; // @codeCoverageIgnore
 }
 
-/** @psalm-suppress UnusedParam */
+/** @psalm-suppress UnusedParam
+    @param array<string> $ids
+    @param array<Template> $templates **/
 function query_jstor_api(array $ids, array &$templates) : bool { // $ids not used yet   // Pointer to save memory
   $return = FALSE;
   foreach ($templates as $template) {
@@ -1057,6 +1063,8 @@ function remove_comments(string $string) : string {
   return preg_replace("~<!--.*?-->~us", "", $string);
 }
 
+/** @param array<string> $list
+    @return array<string> **/
 function prior_parameters(string $par, array $list=array()) : array {
   array_unshift($list, $par);
   if (preg_match('~(\D+)(\d+)~', $par, $match) && stripos($par, 's2cid') === FALSE) {
@@ -1108,6 +1116,7 @@ function prior_parameters(string $par, array $list=array()) : array {
   }
 }
 
+/** @return array<string> **/
 function equivalent_parameters(string $par) : array {
   switch ($par) {
     case 'author': case 'authors': case 'author1': case 'last1': 
@@ -1190,6 +1199,7 @@ function hdl_decode(string $hdl) : string {
  * Only on webpage
  * @codeCoverageIgnore
  */
+/** @param array<string> $pages_in_category **/
 function edit_a_list_of_pages(array $pages_in_category, WikipediaBot $api, string $edit_summary_end) : void {
   $final_edit_overview = "";
   // Remove pages with blank as the name, if present
@@ -1320,10 +1330,11 @@ function hdl_works(string $hdl) {
   static $cache_good = [];
   static $cache_bad  = [];
   $hdl = trim($hdl);
+  if (strlen($hdl) > MAX_HDL_SIZE) return NULL;
   if (isset($cache_good[$hdl])) return $cache_good[$hdl];
   if (isset($cache_bad[$hdl]))  return FALSE;
-  if (count($cache_bad) > 250) $cache_bad = []; // Lots of things that look like handles are not handles
-  if (count($cache_good) > 1000) $cache_good = [];
+  if (count($cache_bad)  > MAX_CACHE_SIZE) $cache_bad = []; // Lots of things that look like handles are not handles
+  if (count($cache_good) > MAX_CACHE_SIZE) $cache_good = [];
   $works = is_hdl_works($hdl);
   if ($works === NULL) {
     return NULL; // @codeCoverageIgnore
@@ -1351,18 +1362,18 @@ function is_hdl_works(string $hdl) {
   usleep(100000);
   $test_url = "https://hdl.handle.net/" . $hdl;
   set_time_limit(120);
-  $headers_test = @get_headers($test_url, GET_THE_HEADERS, $context);
+  $headers_test = @get_headers($test_url, TRUE, $context);
   if ($headers_test === FALSE) {
       sleep(3);                                                           // @codeCoverageIgnore
       set_time_limit(120);                                                // @codeCoverageIgnore
       report_inline(' .');                                                // @codeCoverageIgnore
-      $headers_test = @get_headers($test_url, GET_THE_HEADERS, $context); // @codeCoverageIgnore
+      $headers_test = @get_headers($test_url, TRUE, $context); // @codeCoverageIgnore
   }
   if ($headers_test === FALSE) {
       sleep(8);                                                           // @codeCoverageIgnore
       set_time_limit(120);                                                // @codeCoverageIgnore
       report_inline(' .');                                                // @codeCoverageIgnore
-      $headers_test = @get_headers($test_url, GET_THE_HEADERS, $context); // @codeCoverageIgnore
+      $headers_test = @get_headers($test_url, TRUE, $context); // @codeCoverageIgnore
   }
   if ($headers_test === FALSE) return NULL; // most likely bad, but will recheck again and again
   if (empty($headers_test['Location']) && empty($headers_test['location'])) return FALSE; // leads nowhere
@@ -1456,6 +1467,7 @@ function smart_decode(string $title, string $encode, string $archive_url) : stri
   return $try;
 }
 
+/** @param array<string> $gid **/
 function normalize_google_books(string &$url, int &$removed_redundant, string &$removed_parts, array &$gid) : void { // PASS BY REFERENCE!!!!!!
       $removed_redundant = 0;
       $hash = '';
@@ -1674,6 +1686,7 @@ function doi_is_bad (string $doi) : bool {
         return FALSE;
 }
 
+/** @return array<string> **/
 function get_possible_dois(string $doi) : array {
     $trial = array();
     $trial[] = $doi;
