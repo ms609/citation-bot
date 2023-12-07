@@ -6,9 +6,11 @@ require_once 'user_messages.php';    // @codeCoverageIgnore
 require_once 'Template.php';         // @codeCoverageIgnore
 require_once 'NameTools.php';        // @codeCoverageIgnore
 
-/** @param array<string> $pmids **/ /** @param array<Template> $templates **/
+/** @param array<string> $pmids
+    @param array<Template> $templates **/
 function query_pmid_api (array $pmids, array &$templates) : bool { return entrez_api($pmids, $templates, 'pubmed'); }  // Pointer to save memory
-/** @param array<string> $pmcs **/ /** @param array<Template> $templates **/
+/** @param array<string> $pmcs
+    @param array<Template> $templates **/
 function query_pmc_api  (array $pmcs, array &$templates) : bool { return entrez_api($pmcs,  $templates, 'pmc'); } // Pointer to save memory
 
 final class AdsAbsControl {
@@ -415,7 +417,9 @@ function adsabs_api(array $ids, array &$templates, string $identifier) : bool { 
   return TRUE;
 }
 
-/** @psalm-suppress UnusedParam */ /** @param array<string> $ids **/ /** @param array<Template> $templates **/
+/** @psalm-suppress UnusedParam
+    @param array<string> $ids
+    @param array<Template> $templates **/
 function query_doi_api(array $ids, array &$templates) : bool { // $id not used yet  // Pointer to save memory
   foreach ($templates as $template) {
     expand_by_doi($template);
