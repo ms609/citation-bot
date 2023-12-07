@@ -2760,7 +2760,7 @@ final class Template {
           $context = stream_context_create(CONTEXT_INSECURE);
           /** @psalm-taint-escape ssrf */
           $the_url = $this->get($url_type);
-          $headers_test = @get_headers($the_url, GET_THE_HEADERS, $context);
+          $headers_test = @get_headers($the_url, TRUE, $context);
           // @codeCoverageIgnoreStart
           if($headers_test ===FALSE) {
             $this->forget($url_type);
