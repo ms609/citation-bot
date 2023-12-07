@@ -51,10 +51,16 @@ function doi_works(string $doi) : ?bool {
   // For really long category runs
   if (count($cache_bad) > MAX_CACHE_SIZE) $cache_bad = BAD_DOI_ARRAY;
   if (count($cache_good) > MAX_CACHE_SIZE) $cache_good = [];
+  $start_time = time();
   $works = is_doi_works($doi);
   if ($works === NULL) {
-    // bot_debug_log($doi . " returns NULL from dx.doi.org");
-    return NULL; // @codeCoverageIgnore
+    // if little time passed, we will recheck again, otherwise mark as fail
+    if (abs(time() - $start_time) < max(BOT_HTTP_TIMEOUT, BOT_CONNECTION_TIMEOUT))
+    {
+      return NULL;
+    } else {
+      $works = FALSE;
+    }
   }
   if ($works === FALSE) {
     $cache_bad[$doi] = TRUE;
@@ -1333,9 +1339,16 @@ function hdl_works(string $hdl) {
   if (isset($cache_bad[$hdl]))  return FALSE;
   if (count($cache_bad)  > MAX_CACHE_SIZE) $cache_bad = []; // Lots of things that look like handles are not handles
   if (count($cache_good) > MAX_CACHE_SIZE) $cache_good = [];
+  $start_time = time();
   $works = is_hdl_works($hdl);
   if ($works === NULL) {
-    return NULL; // @codeCoverageIgnore
+    // if little time passed, we will recheck again, otherwise mark as fail
+    if (abs(time()-$start_time) < max(BOT_HTTP_TIMEOUT, BOT_CONNECTION_TIMEOUT))
+    {
+      return NULL;
+    } else {
+      $works = FALSE;
+    }
   }
   if ($works === FALSE) {
     $cache_bad[$hdl] = TRUE;
