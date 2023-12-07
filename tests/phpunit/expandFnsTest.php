@@ -398,8 +398,6 @@ final class expandFnsTest extends testBaseClass {
     $decoded=smart_decode($test, "iso-8859-11",'');
     $this->assertSame('ใทใงใใใณใฐ', $decoded); // Clearly random junk
   }
-
-  /** TODO - figure out if this is possible
   
   public function testVariousEncodes1() : void {
     $input  = "\xe3\x82\xb7\xe3\x83\xa7\xe3\x83\x83\xe3\x83\x94\xe3\x83\xb3\xe3\x82\xb0";
@@ -414,8 +412,6 @@ final class expandFnsTest extends testBaseClass {
     $decoded = mb_convert_encoding(urldecode($urlencoded_iso_8859_1), "UTF-8", "iso-8859-1");
     $this->assertSame($sample, $decoded);
   }
-
-  **/
   
   public function testVariousEncodes5() : void {
     $test="2xSP!#$%&'()*+,-./3x0123456789:;<=>?4x@ABCDEFGHIJKLMNO5xPQRSTUVWXYZ[\]^_6x`abcdefghijklmno7xpqrstuvwxyz{|}~8x9xAxNBSP¡¢£€20AC¥Š0160§š0161©ª«¬SHY®¯Bx°±²³Ž017Dµ¶·ž017E¹º»Œ0152œ0153Ÿ0178¿CxÀÁÂÃÄÅÆÇÈÉÊËÌÍÎÏDxÐÑÒÓÔÕÖ×ØÙÚÛÜÝÞßExàáâãäåæçèéêëìíîïFxðñòóôõö÷øùúûüýþÿ";
