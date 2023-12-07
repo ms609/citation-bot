@@ -1821,7 +1821,7 @@ final class Template {
         if (strpos(strtolower($value), 'privately printed') !== FALSE) return FALSE; // Common from archive.org
         if (str_equivalent($this->get('location'), $value)) return FALSE; // Catch some bad archive.org data
         if (strpos(strtolower($value), 'impressum') !== FALSE) return FALSE; // Common from archive.org
-        if (strpos(strtolower($value), ':') !== FALSE) return FALSE; // Common from archive.org when location is mixed in
+        if (strpos(strtolower($value), ':') !== FALSE) return FALSE; // Common from archive.org when location is included
         if (strpos(strtolower($value), '[etc.]') !== FALSE) return FALSE; // common from biodiversitylibrary.org - what does the etc. mean?
         if (($this->wikiname() !== 'cite book') && !$this->blank(WORK_ALIASES)) return FALSE;  // Do not add if work is set, unless explicitly a book
 
