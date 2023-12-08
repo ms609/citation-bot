@@ -1497,16 +1497,23 @@ function query_adsabs(string $options) : object {
     return $response;
   }
 
-  // Might want to look at using instead https://doi.crossref.org/openurl/?pid=email@address.com&id=doi:10.1080/00222938700771131&redirect=no&format=unixref
-  function CrossRefTitle(string $doi) : string {
+function curl_init_crossref(string $url) : CurlHandle {
      $ch = curl_init();
+     // see https://api.crossref.org/swagger-ui/index.html
      curl_setopt_array($ch,
             [CURLOPT_HEADER => FALSE,
              CURLOPT_RETURNTRANSFER => TRUE,
-             CURLOPT_URL => "https://api.crossref.org/v1/works/". str_replace(DOI_URL_DECODE, DOI_URL_ENCODE, $doi),
-             CURLOPT_TIMEOUT => 15,
-             CURLOPT_CONNECTTIMEOUT => 15,
-             CURLOPT_USERAGENT => BOT_USER_AGENT]);
+             CURLOPT_URL => $url,
+             CURLOPT_TIMEOUT => BOT_HTTP_TIMEOUT,
+             CURLOPT_CONNECTTIMEOUT => BOT_CONNECTION_TIMEOUT,
+             CURLOPT_USERAGENT => BOT_CROSSREF_USER_AGENT]);
+     return $ch;
+}
+
+// Might want to look at using instead https://doi.crossref.org/openurl/?pid=email@address.com&id=doi:10.1080/00222938700771131&redirect=no&format=unixref
+function CrossRefTitle(string $doi) : string {
+     $url = "https://api.crossref.org/v1/works/".str_replace(DOI_URL_DECODE, DOI_URL_ENCODE, $doi)."?mailto=".CROSSREFUSERNAME; // do not encode crossref email
+     $ch = curl_init_crossref($url);
      $json = (string) @curl_exec($ch);
      curl_close($ch);
      $json = @json_decode($json);
