@@ -4078,7 +4078,7 @@ final class Template {
           return;
 
         case 'doi-access':
-        if ($this->blank('doi') && $this->has('doi-access') {
+        if ($this->blank('doi') && $this->has('doi-access')) {
            $this->forget('doi-access');
         }
         return;
