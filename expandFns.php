@@ -44,22 +44,25 @@ function doi_works(string $doi) : ?bool {
   // Greatly speed-up by having one array of each kind and only look for hash keys, not values
   static $cache_good = [];
   static $cache_bad  = BAD_DOI_ARRAY;
+  static $cache_null = [];
   $doi = trim($doi);
   if (strlen($doi) > MAX_HDL_SIZE) return NULL;
   if (isset($cache_good[$doi])) return TRUE;
   if (isset($cache_bad[$doi]))  return FALSE;
+  if (isset($cache_null[$doi])) return NULL;
   // For really long category runs
   if (count($cache_bad) > MAX_CACHE_SIZE) $cache_bad = BAD_DOI_ARRAY;
   if (count($cache_good) > MAX_CACHE_SIZE) $cache_good = [];
+  if (count($cache_null) > MAX_CACHE_SIZE) $cache_null = [];
   $start_time = time();
   $works = is_doi_works($doi);
   if ($works === NULL) {
-    // if little time passed, we will recheck again, otherwise mark as fail
     if (abs(time() - $start_time) < max(BOT_HTTP_TIMEOUT, BOT_CONNECTION_TIMEOUT))
     {
       return NULL;
     } else {
-      $works = FALSE;
+      $cache_null[$doi] = TRUE;
+      return NULL;
     }
   }
   if ($works === FALSE) {
@@ -1333,21 +1336,23 @@ function hdl_works(string $hdl) {
   // Greatly speed-up by having one array of each kind and only look for hash keys, not values
   static $cache_good = [];
   static $cache_bad  = [];
+  static $cache_null = [];
   $hdl = trim($hdl);
   if (strlen($hdl) > MAX_HDL_SIZE) return NULL;
   if (isset($cache_good[$hdl])) return $cache_good[$hdl];
   if (isset($cache_bad[$hdl]))  return FALSE;
-  if (count($cache_bad)  > MAX_CACHE_SIZE) $cache_bad = []; // Lots of things that look like handles are not handles
+  if (count($cache_bad)  > MAX_CACHE_SIZE) $cache_bad = [];
   if (count($cache_good) > MAX_CACHE_SIZE) $cache_good = [];
+  if (count($cache_null) > MAX_CACHE_SIZE) $cache_null = [];
   $start_time = time();
   $works = is_hdl_works($hdl);
   if ($works === NULL) {
-    // if little time passed, we will recheck again, otherwise mark as fail
     if (abs(time()-$start_time) < max(BOT_HTTP_TIMEOUT, BOT_CONNECTION_TIMEOUT))
     {
       return NULL;
     } else {
-      $works = FALSE;
+      $cache_null[$hdl] = TRUE;
+      return NULL;
     }
   }
   if ($works === FALSE) {
