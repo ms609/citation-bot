@@ -4077,6 +4077,12 @@ final class Template {
           }
           return;
 
+        case 'doi-access':
+        if ($this->blank('doi') && $this->has($param_name)) return FALSE;
+           $this->forget($param_name);
+        }
+        return;
+
         case 'doi':
           $doi = $this->get($param);
           if (!$doi) return;
