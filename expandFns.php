@@ -1280,6 +1280,9 @@ function edit_a_list_of_pages(array $pages_in_category, WikipediaBot $api, strin
        $final_edit_overview .= "\n No changes needed. " . "<a href=" . WIKI_ROOT . "?title=" . urlencode($page_title) . ">" . echoable($page_title) . "</a>";
     }
     echo "\n";
+    // Clear variables before doing GC - PHP 8.2 seems to need the GC
+    $page->parse_text("");
+    gc_collect_cycles();
   }
   if ($total > 1) {
     if (!HTML_OUTPUT) $final_edit_overview = ''; 
