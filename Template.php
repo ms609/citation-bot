@@ -3741,6 +3741,7 @@ final class Template {
         $this->set($param, safe_preg_replace('~^\=+\s*(?![^a-zA-Z0-9\[\'\"])~u', '', $this->get($param)));  // Remove leading ='s sign if in front of letter or number
         $this->set($param, safe_preg_replace('~&#x2013;~u', '&ndash;', $this->get($param)));
         $this->set($param, safe_preg_replace('~&#x2014;~u', '&mdash;', $this->get($param)));
+        $this->set($param, safe_preg_replace('~&#x00026;~u', '&', $this->get($param)));
         $this->set($param, safe_preg_replace('~(?<!\&)&[Aa]mp;(?!&)~u', '&', $this->get($param))); // &Amp; => & but not if next character is & or previous character is ;
 
         // Remove final semi-colon from a few items
