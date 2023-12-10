@@ -16,7 +16,7 @@ declare(strict_types=1);
   '</mtext>' => '}',
   '<mfenced>'   =>  '\left(',
   '</mfenced>' => '\right)',
-  // Need to see these bits in action to work out how to resolve
+  // Need to see these bits in action to work out how to resolve - TODO
   // Perhaps unlikely to occur in article titles, anyway
   /*'<mfrac>'   =>  '\frac{%BLOCK1%}{%BLOCK2%}',
   '<msup>'  =>  '%BLOCK1%^{%BLOCK2%}',
