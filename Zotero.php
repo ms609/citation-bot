@@ -364,11 +364,11 @@ private static function zotero_request(string $url) : string {
   return $zotero_response;
 }
 
-public static function expand_by_zotero(Template $template, ?string $url = NULL) : bool {
+public static function expand_by_zotero(Template $template, ?string $url = NULL) : void {
   $access_date = 0;
   $url_kind = '';
   if (is_null($url)) {
-     if (in_array($template->get('url-status'),  ['usurped', 'unfit', 'dead', 'deviated'])) return FALSE;
+     if (in_array($template->get('url-status'),  ['usurped', 'unfit', 'dead', 'deviated'])) return;
      $access_date = (int) strtotime(tidy_date($template->get('accessdate') . ' ' . $template->get('access-date')));
      $archive_date = (int) strtotime(tidy_date($template->get('archivedate') . ' ' . $template->get('archive-date')));
      if ($access_date && $archive_date) {
@@ -386,28 +386,28 @@ public static function expand_by_zotero(Template $template, ?string $url = NULL)
        $url = $template->get('chapterurl');
        $url_kind = 'chapterurl';
      } else {
-       return FALSE;
+       return;
      }
      if (preg_match('~^https?://(?:dx\.|)doi\.org~i', $url)) {
-        return FALSE;
+        return;
      }
      if (preg_match('~^https?://semanticscholar\.org~i', $url)) {
-        return FALSE;
+        return;
      }
      if (preg_match(REGEXP_BIBCODE, urldecode($url))) {
-        return FALSE;
+        return;
      }
      if (preg_match("~^https?://citeseerx\.ist\.psu\.edu~i", $url)) {
-        return FALSE;
+        return;
      }
      if (preg_match("~\barxiv\.org/.*(?:pdf|abs|ftp/arxiv/papers/\d{4})/(.+?)(?:\.pdf)?$~i", $url)) {
-        return FALSE;
+        return;
      }     
   }
 
-  if (!$template->profoundly_incomplete($url)) return FALSE; // Only risk unvetted data if there's little good data to sully
+  if (!$template->profoundly_incomplete($url)) return; // Only risk unvetted data if there's little good data to sully
   
-  if(stripos($url, 'CITATION_BOT_PLACEHOLDER') !== FALSE) return FALSE; // That's a bad url
+  if(stripos($url, 'CITATION_BOT_PLACEHOLDER') !== FALSE) return; // That's a bad url
 
   // Clean up URLs
   if(preg_match('~^(https?://(?:www\.|)nature\.com/articles/[a-zA-Z0-9\.]+)\.pdf(?:|\?.*)$~', $url, $matches)) {
@@ -418,12 +418,12 @@ public static function expand_by_zotero(Template $template, ?string $url = NULL)
   }
   
   $bad_url = implode('|', ZOTERO_AVOID_REGEX);
-  if(preg_match("~^https?://(?:www\.|m\.|)(?:" . $bad_url . ")~i", $url)) return FALSE; 
+  if(preg_match("~^https?://(?:www\.|m\.|)(?:" . $bad_url . ")~i", $url)) return; 
 
   // Is it actually a URL.  Zotero will search for non-url things too!
-  if (preg_match('~^https?://[^/]+/?$~', $url) === 1) return FALSE; // Just a host name
+  if (preg_match('~^https?://[^/]+/?$~', $url) === 1) return;  // Just a host name
   set_time_limit(120); // This can be slow
-  if (preg_match(REGEXP_IS_URL, $url) !== 1) return FALSE;  // See https://mathiasbynens.be/demo/url-regex/  This regex is more exact than validator.  We only spend time on this after quick and dirty check is passed
+  if (preg_match(REGEXP_IS_URL, $url) !== 1) return;  // See https://mathiasbynens.be/demo/url-regex/  This regex is more exact than validator.  We only spend time on this after quick and dirty check is passed
   set_time_limit(120);
   if (self::$zotero_announced === 1) {
     report_action("Using Zotero translation server to retrieve details from URLs.");
@@ -441,7 +441,7 @@ public static function expand_by_zotero(Template $template, ?string $url = NULL)
      bot_debug_log('ZoteroFailed: ' . $url);
   }
   **/
-  return $return;
+  return;
 }
 
 public static function process_zotero_response(string $zotero_response, Template $template, string $url, string $url_kind, int $access_date) : bool {
