@@ -9,6 +9,7 @@ final class HandleCache {
   // Greatly speed-up by having one array of each kind and only look for hash keys, not values
   private const MAX_CACHE_SIZE = 300000;
   public const MAX_HDL_SIZE = 1024;
+  private const BAD_DOI_ARRAY = ['10.1126/science' => TRUE, '' => TRUE, '10.1267/science.040579197' => TRUE, '10.0000/Rubbish_bot_failure_test' => TRUE, '10.0000/Rubbish_bot_failure_test2' => TRUE];
 
   /** @var array<boolean> $cache_active */
   static public array $cache_active = [];
@@ -17,7 +18,7 @@ final class HandleCache {
   /** @var array<boolean> $cache_good */
   static public array $cache_good = [];
   /** @var array<boolean> $cache_bad */
-  static public array $cache_bad  = BAD_DOI_ARRAY;
+  static public array $cache_bad  = self::BAD_DOI_ARRAY;
   /** @var array<boolean> $cache_null */
   static public array $cache_null = [];
   /** @var array<string> $cache_hdl_loc */
@@ -40,7 +41,7 @@ final class HandleCache {
         self::$cache_active = [];
         self::$cache_inactive  = [];
         self::$cache_good = [];
-        self::$cache_bad  = BAD_DOI_ARRAY;
+        self::$cache_bad  = self::BAD_DOI_ARRAY;
         self::$cache_null = [];
         self::$cache_hdl_loc = [];
         self::$cache_hdl_bad  = [];
