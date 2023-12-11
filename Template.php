@@ -2597,7 +2597,7 @@ final class Template {
     $this->get_semanticscholar_url($doi);
   }
 
-  public function get_semanticscholar_url(string $doi) : void {
+  protected function get_semanticscholar_url(string $doi) : void {
    set_time_limit(120);
    if(      $this->has('pmc') ||
             ($this->has('doi') && $this->get('doi-access') === 'free') ||
