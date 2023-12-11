@@ -1810,7 +1810,7 @@ public static function find_indentifiers_in_urls(Template $template, ?string $ur
       } elseif (stripos($url, 'worldcat.org') !== FALSE) {
         if (preg_match("~^https?://(?:www\.|)worldcat\.org(?:/title/\S+)?/oclc/([0-9]+)~i", $url, $match)) {
           if (strpos($url, 'edition') && ($template->wikiname() !== 'cite book')) {
-            report_warning('Not adding OCLC because is appears to be a weblink to a list of editions: ' . $match[1]);
+            report_warning('Not adding OCLC because is appears to be a weblink to a list of editions: ' . echoable($match[1]));
             return FALSE;
           }
           if ($template->blank('oclc')) quietly('report_modification', "Converting URL to OCLC parameter");
