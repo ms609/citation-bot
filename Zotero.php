@@ -366,7 +366,6 @@ private static function zotero_request(string $url) : string {
 
 public static function expand_by_zotero(Template $template, ?string $url = NULL) : void {
   $access_date = 0;
-  $url_kind = '';
   if (is_null($url)) {
      if (in_array($template->get('url-status'),  ['usurped', 'unfit', 'dead', 'deviated'])) return;
      $access_date = (int) strtotime(tidy_date($template->get('accessdate') . ' ' . $template->get('access-date')));
@@ -378,13 +377,10 @@ public static function expand_by_zotero(Template $template, ?string $url = NULL)
      }
      if ($template->has('url')) {
        $url = $template->get('url');
-       $url_kind = 'url';
      } elseif ($template->has('chapter-url')) {
        $url = $template->get('chapter-url');
-       $url_kind = 'chapter-url';
      } elseif ($template->has('chapterurl')) {
        $url = $template->get('chapterurl');
-       $url_kind = 'chapterurl';
      } else {
        return;
      }
