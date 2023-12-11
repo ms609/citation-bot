@@ -62,7 +62,7 @@ class Page {
     
     $details = $my_details;
     if (isset($details->invalid)) {
-      report_warning("Page invalid: " . (isset($details->invalidreason) ? echoabla((string) $details->invalidreason) : ''));
+      report_warning("Page invalid: " . (isset($details->invalidreason) ? echoable((string) $details->invalidreason) : ''));
       return FALSE;
     }
     if ( !isset($details->touched) || !isset($details->lastrevid)) {
