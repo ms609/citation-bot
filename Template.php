@@ -6860,18 +6860,17 @@ final class Template {
     return TRUE;
   }
 
-  public function append_to(string $par, string $val) : bool {
+  public function append_to(string $par, string $val) : void {
     if (mb_stripos($this->get($par), 'CITATION_BOT_PLACEHOLDER_COMMENT') !== FALSE) {
-      return FALSE;
+      return;
     }
     $pos = $this->get_param_key($par);
     if ($pos !== NULL) { // Could be zero which is "FALSE"
       $this->param[$pos]->val = $this->param[$pos]->val . $val;
-      return TRUE;
     } else {
       $this->set($par, $val);
-      return TRUE;
     }
+    return;
   }
 
   public function quietly_forget(string $par) : void {
