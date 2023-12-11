@@ -7,8 +7,8 @@ require_once 'big_jobs.php';      // @codeCoverageIgnore
 
 final class HandleCache {
   // Greatly speed-up by having one array of each kind and only look for hash keys, not values
-  const int MAX_CACHE_SIZE = 300000;
-  const int MAX_HDL_SIZE = 1024;
+  private const MAX_CACHE_SIZE = 300000;
+  public const MAX_HDL_SIZE = 1024;
 
   /** @var array<boolean> $cache_active */
   static public array $cache_active = [];
