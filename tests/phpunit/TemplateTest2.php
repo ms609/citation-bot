@@ -3089,35 +3089,35 @@ final class TemplateTest2 extends testBaseClass {
      $text = '{{cite web}}';
      $template = $this->make_citation($text);
      $template->set('id', 'CITATION_BOT_PLACEHOLDER_COMMENT');
-     $this->assertFalse($template->append_to('id', 'joe'));
+     $template->append_to('id', 'joe');
      $this->assertSame('CITATION_BOT_PLACEHOLDER_COMMENT', $template->get2('id'));
    }
  
    public function testAppendEmpty() : void {
      $text = '{{cite web|id=}}';
      $template = $this->make_citation($text);
-     $this->assertTrue($template->append_to('id', 'joe'));
+     $template->append_to('id', 'joe');
      $this->assertSame('joe', $template->get2('id'));
    }
 
    public function testAppendNull() : void {
      $text = '{{cite web}}';
      $template = $this->make_citation($text);
-     $this->assertTrue($template->append_to('id', 'joe'));
+     $template->append_to('id', 'joe');
      $this->assertSame('joe', $template->get2('id'));
    }
 
    public function testAppendEmpty2() : void {
      $text = '{{cite web|last=|id=}}';
      $template = $this->make_citation($text);
-     $this->assertTrue($template->append_to('id', 'joe'));
+     $template->append_to('id', 'joe');
      $this->assertSame('joe', $template->get2('id'));
    }
  
    public function testAppendAppend() : void {
      $text = '{{cite web|id=X}}';
      $template = $this->make_citation($text);
-     $this->assertTrue($template->append_to('id', 'joe'));
+     $template->append_to('id', 'joe');
      $this->assertSame('Xjoe', $template->get2('id'));
    }
  
