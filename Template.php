@@ -7313,24 +7313,24 @@ final class Template {
       return $url;
   }
 
-  public function use_issn() : bool { // Only add if helpful and not a series of books
-    if ($this->blank('issn')) return FALSE;
-    if (!$this->blank(WORK_ALIASES)) return FALSE;
-    if ($this->has('series')) return FALSE;
-    if ($this->wikiname() === 'cite book' && $this->has('isbn')) return FALSE;
+  public function use_issn() : void { // Only add if helpful and not a series of books
+    if ($this->blank('issn')) return;
+    if (!$this->blank(WORK_ALIASES)) return;
+    if ($this->has('series')) return;
+    if ($this->wikiname() === 'cite book' && $this->has('isbn')) return;
     $issn = $this->get('issn');
-    if ($issn === '9999-9999') return FALSE;
-    if (!preg_match('~^\d{4}.?\d{3}[0-9xX]$~u', $issn)) return FALSE;
+    if ($issn === '9999-9999') return;
+    if (!preg_match('~^\d{4}.?\d{3}[0-9xX]$~u', $issn)) return;
     if ($issn === '0140-0460') { // Use set to avoid escaping [[ and ]]
-      return $this->set('newspaper', '[[The Times]]');
+      $this->set('newspaper', '[[The Times]]');
     } elseif ($issn === '0190-8286') {
-      return $this->set('newspaper', '[[The Washington Post]]');
+      $this->set('newspaper', '[[The Washington Post]]');
     } elseif ($issn === '0362-4331') {
-      return $this->set('newspaper', '[[The New York Times]]');
+      $this->set('newspaper', '[[The New York Times]]');
     } elseif ($issn === '0163-089X' || $issn === '1092-0935') {
-      return $this->set('newspaper', '[[The Wall Street Journal]]');
+      $this->set('newspaper', '[[The Wall Street Journal]]');
     }
-    return FALSE; // TODO - the API is gone
+    return; // TODO - the API is gone
   }
 
   private function is_book_series(string $param) : bool {
