@@ -7326,13 +7326,13 @@ final class Template {
     if ($issn === '9999-9999') return;
     if (!preg_match('~^\d{4}.?\d{3}[0-9xX]$~u', $issn)) return;
     if ($issn === '0140-0460') { // Use set to avoid escaping [[ and ]]
-      return $this->set('newspaper', '[[The Times]]');
+      $this->set('newspaper', '[[The Times]]');
     } elseif ($issn === '0190-8286') {
-      return $this->set('newspaper', '[[The Washington Post]]');
+      $this->set('newspaper', '[[The Washington Post]]');
     } elseif ($issn === '0362-4331') {
-      return $this->set('newspaper', '[[The New York Times]]');
+      $this->set('newspaper', '[[The New York Times]]');
     } elseif ($issn === '0163-089X' || $issn === '1092-0935') {
-      return $this->set('newspaper', '[[The Wall Street Journal]]');
+      $this->set('newspaper', '[[The Wall Street Journal]]');
     }
     return; // TODO - the API is gone
   }
