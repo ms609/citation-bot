@@ -433,7 +433,7 @@ public static function expand_by_zotero(Template $template, ?string $url = NULL)
   return;
 }
 
-public static function process_zotero_response(string $zotero_response, Template $template, string $url, int $access_date) : bool {
+public static function process_zotero_response(string $zotero_response, Template $template, string $url, int $access_date) : void {
   if ($zotero_response === self::ERROR_DONE) return FALSE;  // Error message already printed in zotero_request()
  
   switch (trim($zotero_response)) {
