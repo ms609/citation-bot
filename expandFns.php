@@ -20,7 +20,7 @@ final class HandleCache {
   static public array $cache_bad  = BAD_DOI_ARRAY;
   /** @var array<boolean> $cache_null */
   static public array $cache_null = [];
-  /** @var array<string> $cache_null */
+  /** @var array<string> $cache_hdl_loc */
   static public array $cache_hdl_loc = [];
   /** @var array<boolean> $cache_hdl_bad */
   static public array $cache_hdl_bad  = [];
@@ -76,7 +76,7 @@ function doi_active(string $doi) : ?bool {
 
 function doi_works(string $doi) : ?bool {
   $doi = trim($doi);
-  if (strlen($doi) > MAX_HDL_SIZE) return NULL;
+  if (strlen($doi) > HandleCache::MAX_HDL_SIZE) return NULL;
   if (isset(HandleCache::$cache_good[$doi])) return TRUE;
   if (isset(HandleCache::$cache_bad[$doi]))  return FALSE;
   if (isset(HandleCache::$cache_null[$doi])) return NULL;
@@ -1369,7 +1369,7 @@ function hdl_works(string $hdl) {
   if (strpos($hdl, '/') === FALSE) return FALSE;
   if (strpos($hdl, 'CITATION_BOT_PLACEHOLDER') !== FALSE) return FALSE;
   if (strpos($hdl, '123456789') === 0) return FALSE;
-  if (strlen($hdl) > MAX_HDL_SIZE) return NULL;
+  if (strlen($hdl) > HandleCache::MAX_HDL_SIZE) return NULL;
   if (isset(HandleCache::$cache_hdl_loc[$hdl])) return $cache_hdl_loc[$hdl];
   if (isset(HandleCache::$cache_hdl_bad[$hdl])) return FALSE;
   $start_time = time();
