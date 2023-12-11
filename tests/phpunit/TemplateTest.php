@@ -1483,7 +1483,7 @@ final class TemplateTest extends testBaseClass {
   public function testCiteArxivRecognition() : void {
     $text = '{{Cite web | eprint=1203.0149}}';
     $expanded = $this->process_citation($text);
-    $this->assertSame('Cite arXiv', $expanded->name());
+    $this->assertSame('Cite arXiv', $expanded->wikiname());
   }
  
   public function testTwoUrls() : void {
