@@ -32,8 +32,6 @@ const BAD_PUBLISHERS = array('london', 'edinburgi', 'edinburgh', 'no publisher',
 
 const ARE_WORKS = array('medrxiv', 'ietf datatracker'); // Things with dois that should be {{cite document|work=THIS}}
 
-const BAD_DOI_ARRAY = ['10.1126/science' => TRUE, '' => TRUE, '10.1267/science.040579197' => TRUE, '10.0000/Rubbish_bot_failure_test' => TRUE, '10.0000/Rubbish_bot_failure_test2' => TRUE];
-
 const PUBLISHERS_ARE_WORKS = array('the san diego union-tribune', 'forbes', 'salon', 'san jose mercury news', 'san jose mercury-news', 'new york times',
                                    'the new york times', 'daily news online', 'daily news', 'the sun', 'the times',
                                    'the star', 'washington post', 'the washington post', 'the tribune',
