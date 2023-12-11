@@ -59,7 +59,7 @@ function doi_active(string $doi) : ?bool {
   if (isset(HandleCache::$cache_inactive[$doi]))  return FALSE;
 
   $works = doi_works($doi);
-  if ($works === !== TRUE) {
+  if ($works !== TRUE) {
     return $works;
   }
 
