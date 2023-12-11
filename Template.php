@@ -2593,6 +2593,7 @@ final class Template {
     if (!$doi) return;
     if (strpos($doi, '10.1093/') === 0) return;
     $return = $this->get_unpaywall_url($doi);
+    if (in_array($return, array('publisher', 'projectmuse', 'have free'))) return; // Do continue on
     $this->get_semanticscholar_url($doi);
   }
 
