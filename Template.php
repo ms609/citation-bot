@@ -7317,7 +7317,7 @@ final class Template {
       return $url;
   }
 
-  public function use_issn() : null { // Only add if helpful and not a series of books
+  public function use_issn() : void { // Only add if helpful and not a series of books
     if ($this->blank('issn')) return;
     if (!$this->blank(WORK_ALIASES)) return;
     if ($this->has('series')) return;
