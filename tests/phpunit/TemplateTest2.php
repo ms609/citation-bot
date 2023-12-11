@@ -4649,12 +4649,12 @@ final class TemplateTest2 extends testBaseClass {
  
     public function testRandomISSNtests() : void {
       $text = "{{cite journal|issn=AAAA-AAAA}}";
-      $expanded = $this->make_citation($text);
-      $this->assertFalse($expanded->use_issn());
+      $expanded = $this->process_citation($text);
+      $this->assertSame($text, $expanded->parsed_text());
 
       $text = "{{cite journal|issn=1682-5845}}";
-      $expanded = $this->make_citation($text);
-      $this->assertFalse($expanded->use_issn()); // We no longer have an API
+      $expanded = $this->process_citation($text);
+      $this->assertSame($text, $expanded->parsed_text()); // We no longer have an API
     }
 
     public function testDuplicateCaps1() : void {
