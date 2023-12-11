@@ -53,7 +53,8 @@ final class zoteroTest extends testBaseClass {
   public function testAccessDateAndDate() : void {
      $text = "{{cite journal | archive-date=2020 |accessdate=2020|title=X|journal=X|date=2020|issue=X|volume=X|chapter=X|pages=X|last1=X|first1=X|last2=X|first2=X }}";
      $template = $this->make_citation($text);  // Does not do anything other than touch code
-     $this->assertFalse(Zotero::expand_by_zotero($template));
+     Zotero::expand_by_zotero($template);
+     $this->assertSame($text, $template->parsed_text());
   }
  
   public function testDropSomeProxies() : void {
