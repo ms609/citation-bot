@@ -6655,8 +6655,6 @@ final class Template {
     return '';
   }
 
-  public function name() : string {return trim($this->name);}
-
   /** @return ?array<string> **/
   protected function page_range() : ?array {
     preg_match("~(\w?\w?\d+\w?\w?)(?:\D+(\w?\w?\d+\w?\w?))?~", $this->page(), $pagenos);
