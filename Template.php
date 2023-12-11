@@ -2237,7 +2237,7 @@ final class Template {
       return;  // @codeCoverageIgnore
     }
 
-    if (!$this->blank_other_than_comments('bibcode') && stripos($this->get('bibcode'), 'tmp') === FALSE && stripos($this->get('bibcode'), 'arxiv') === FALSE ) return FALSE; // Now use big query API for existing bibcode - code below still assumes that we might use a bibcode
+    if (!$this->blank_other_than_comments('bibcode') && stripos($this->get('bibcode'), 'tmp') === FALSE && stripos($this->get('bibcode'), 'arxiv') === FALSE ) return; // Now use big query API for existing bibcode - code below still assumes that we might use a bibcode
     if (!SLOW_MODE && $this->blank('bibcode')) return; // Do not look for new bibcodes in slow mode
     if (stripos($this->get('bibcode'), 'CITATION') !== FALSE) return;
     // Do not search if it is a book - might find book review
