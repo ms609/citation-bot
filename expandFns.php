@@ -5,43 +5,40 @@ require_once 'constants.php';     // @codeCoverageIgnore
 require_once 'Template.php';      // @codeCoverageIgnore
 require_once 'big_jobs.php';      // @codeCoverageIgnore
 
+// Greatly speed-up by having one array of each kind and only look for hash keys, not values
 const MAX_CACHE_SIZE = 300000;
 const MAX_HDL_SIZE = 1024;
 
 // ============================================= DOI functions ======================================
 function doi_active(string $doi) : ?bool {
-  // Greatly speed-up by having one array of each kind and only look for hash keys, not values
-  static $cache_good = [];
-  static $cache_bad  = [];
+  static $cache_active = [];
+  static $cache_inactive  = [];
   $doi = trim($doi);
-  if (isset($cache_good[$doi])) return TRUE;
-  if (isset($cache_bad[$doi]))  return FALSE;
+  if (isset($cache_active[$doi])) return TRUE;
+  if (isset($cache_inactive[$doi]))  return FALSE;
   // For really long category runs
-  if (count($cache_bad) > MAX_CACHE_SIZE) $cache_bad = [];
-  if (count($cache_good) > MAX_CACHE_SIZE) $cache_good = [];
+  if (count($cache_inactive) > MAX_CACHE_SIZE) $cache_inactive = [];
+  if (count($cache_active) > MAX_CACHE_SIZE) $cache_active = [];
   $works = doi_works($doi);
   if ($works === NULL) {
     return NULL;
   }
   if ($works === FALSE) {
-    $cache_bad[$doi] = TRUE;
     return FALSE;
   }
-  // DX.DOI.ORG works, but is it on CrossRef
   $works = is_doi_active($doi);
   if ($works === NULL) {
-    return NULL;
+    return NULL; // Temporary problem
   }
   if ($works === FALSE) {
-    $cache_bad[$doi] = TRUE;
+    $cache_inactive[$doi] = TRUE;
     return FALSE;
   }
-  $cache_good[$doi] = TRUE;
+  $cache_active[$doi] = TRUE;
   return TRUE;
 }
 
 function doi_works(string $doi) : ?bool {
-  // Greatly speed-up by having one array of each kind and only look for hash keys, not values
   static $cache_good = [];
   static $cache_bad  = BAD_DOI_ARRAY;
   static $cache_null = [];
@@ -1336,17 +1333,16 @@ function bot_html_footer() : void {
    * @return string|null|false       Returns NULL/FALSE/String of location
    **/
 function hdl_works(string $hdl) {
-  // Greatly speed-up by having one array of each kind and only look for hash keys, not values
-  static $cache_good = [];
-  static $cache_bad  = [];
-  static $cache_null = [];
+  static $cache_hdl_loc = [];
+  static $cache_hdl_bad  = [];
+  static $cache_hdl_null = [];
   $hdl = trim($hdl);
   if (strlen($hdl) > MAX_HDL_SIZE) return NULL;
-  if (isset($cache_good[$hdl])) return $cache_good[$hdl];
-  if (isset($cache_bad[$hdl]))  return FALSE;
-  if (count($cache_bad)  > MAX_CACHE_SIZE) $cache_bad = [];
-  if (count($cache_good) > MAX_CACHE_SIZE) $cache_good = [];
-  if (count($cache_null) > MAX_CACHE_SIZE) $cache_null = [];
+  if (isset($cache_hdl_loc[$hdl])) return $cache_hdl_loc[$hdl];
+  if (isset($cache_hdl_bad[$hdl]))  return FALSE;
+  if (count($cache_hdl_bad)  > MAX_CACHE_SIZE) $cache_hdl_bad = [];
+  if (count($cache_hdl_loc)  > MAX_CACHE_SIZE) $cache_hdl_loc = [];
+  if (count($cache_hdl_null) > MAX_CACHE_SIZE) $cache_hdl_null = [];
   $start_time = time();
   $works = is_hdl_works($hdl);
   if ($works === NULL) {
@@ -1354,15 +1350,15 @@ function hdl_works(string $hdl) {
     {
       return NULL;
     } else {
-      $cache_null[$hdl] = TRUE;
+      $cache_hdl_null[$hdl] = TRUE;
       return NULL;
     }
   }
   if ($works === FALSE) {
-    $cache_bad[$hdl] = TRUE;
+    $cache_hdl_bad[$hdl] = TRUE;
     return FALSE;
   }
-  $cache_good[$hdl] = $works;
+  $cache_hdl_loc[$hdl] = $works;
   return $works;
 }
 
