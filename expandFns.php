@@ -36,7 +36,7 @@ final class HandleCache {
                count(self::$cache_null) +
                count(self::$cache_hdl_bad) +
                count(self::$cache_hdl_loc) +
-               count(self::$cache_hdl_null)
+               count(self::$cache_hdl_null);
       if ($usage > self::MAX_CACHE_SIZE) {
         self::$cache_active = [];
         self::$cache_inactive  = [];
