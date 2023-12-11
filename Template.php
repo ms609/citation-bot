@@ -3464,7 +3464,7 @@ final class Template {
           case "url": // Untrustable: used by bozos
             break;
           default:
-            report_minor_error("No match found for subtemplate type: " . $subtemplate_name);
+            report_minor_error("No match found for subtemplate type: " . echoable($subtemplate_name));
         }
       }
     }
@@ -5135,7 +5135,7 @@ final class Template {
                 && mb_substr($title, -1)   === "'"
                 && mb_substr_count($title, "'") === 2)
           ) {
-            report_warning("The quotes around the title are most likely an editor's error: " . mb_substr($title, 1, -1));
+            report_warning("The quotes around the title are most likely an editor's error: " . echoable(mb_substr($title, 1, -1)));
           }
           // Messed up cases:   [[sdfsad] or [dsfasdf]]
           if (preg_match('~^\[\[([^\]\[\|]+)\]$~', $title, $matches) ||
@@ -5910,8 +5910,7 @@ final class Template {
           if (!preg_match("~^[A-Za-z ]+\-~", $value) && mb_ereg(REGEXP_TO_EN_DASH, $value)
               && can_safely_modify_dashes($value) && ($pmatch[1] !== 'page')) {
             $this->mod_dashes = TRUE;
-            report_modification("Upgrading to en-dash in " . echoable($param) .
-                  " parameter");
+            report_modification("Upgrading to en-dash in " . echoable($param) . " parameter");
             $value =  mb_ereg_replace(REGEXP_TO_EN_DASH, REGEXP_EN_DASH, $value);
             $this->set($param, $value);
           }
