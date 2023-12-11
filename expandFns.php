@@ -28,7 +28,6 @@ final class HandleCache {
   static public array $cache_hdl_null = [];
 
   public static function check_memory_use() : void {
-      int $usage;
       $usage = count(self::$cache_inactive) +
                count(self::$cache_active) +
                count(self::$cache_bad) +
