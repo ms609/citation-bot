@@ -9,6 +9,8 @@
     strictBinaryOperands="true"
     allowStringToStandInForClass="true"
     findUnusedVariablesAndParams="true"
+    findUnusedBaselineEntry="true"
+    findUnusedCode="true"
     runTaintAnalysis="false"
 >
     <projectFiles>
