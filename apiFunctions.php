@@ -234,7 +234,7 @@ function arxiv_api(array $ids, array &$templates) : bool {  // Pointer to save m
       if (stripos($the_error, 'incorrect id format for') !== FALSE) {
         report_warning("arXiv search failed: " . echoable($the_error));
       } else {
-        report_minor_error("arXiv search failed - please report the error: " . echoable($the_error);  // @codeCoverageIgnore
+        report_minor_error("arXiv search failed - please report the error: " . echoable($the_error));  // @codeCoverageIgnore
       }
       return FALSE;
   }
