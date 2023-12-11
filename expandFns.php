@@ -1370,8 +1370,10 @@ function hdl_works(string $hdl) {
   if (strpos($hdl, 'CITATION_BOT_PLACEHOLDER') !== FALSE) return FALSE;
   if (strpos($hdl, '123456789') === 0) return FALSE;
   if (strlen($hdl) > HandleCache::MAX_HDL_SIZE) return NULL;
-  if (isset(HandleCache::$cache_hdl_loc[$hdl])) return $cache_hdl_loc[$hdl];
+  if (isset(HandleCache::$cache_hdl_loc[$hdl])) return HandleCache::$cache_hdl_loc[$hdl];
   if (isset(HandleCache::$cache_hdl_bad[$hdl])) return FALSE;
+  if (isset(HandleCache::$cache_hdl_null[$hdl])) return NULL;
+  if (strpos($hdl, '10.') === 0 && doi_works($hdl) === FALSE) return FALSE;
   $start_time = time();
   $works = is_hdl_works($hdl);
   if ($works === NULL) {
@@ -1396,7 +1398,6 @@ function hdl_works(string $hdl) {
    **/
 function is_hdl_works(string $hdl) {
   $hdl = trim($hdl);
-  if (strpos($hdl, '10.') === 0 && doi_works($hdl) === FALSE) return FALSE;
   // See if it works
   $context = stream_context_create(CONTEXT_INSECURE_11); // HDL does 1.1 always
   usleep(100000);
