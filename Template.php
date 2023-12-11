@@ -1971,9 +1971,9 @@ final class Template {
     }
   }
 
-  public function get_doi_from_crossref() : bool {
+  public function get_doi_from_crossref() : void {
     set_time_limit(120);
-    if ($this->has('doi')) return TRUE;
+    if ($this->has('doi')) return;
     report_action("Checking CrossRef database for doi. ");
     $page_range = $this->page_range();
     $data = [
@@ -2004,7 +2004,7 @@ final class Template {
 
     if (!$novel_data) {
       report_info("No new data since last CrossRef search.");
-      return FALSE;
+      return;
     }
     // They already allow some fuzziness in matches
     if (($data['journal'] || $data['issn']) && ($data['start_page'] || $data['author'])) {
@@ -2019,22 +2019,23 @@ final class Template {
       $result = @simplexml_load_file($url);
       if ($result === FALSE) {
         report_warning("Error loading simpleXML file from CrossRef.");  // @codeCoverageIgnore
-        return FALSE;                                                   // @codeCoverageIgnore
+        return;                                                   // @codeCoverageIgnore
       }
       if (!isset($result->query_result->body->query)) {
         report_warning("Unexpected simpleXML file from CrossRef.");  // @codeCoverageIgnore
-        return FALSE;                                                // @codeCoverageIgnore
+        return;                                                // @codeCoverageIgnore
       }
       $result = $result->query_result->body->query;
       if ((string) $result->attributes()->status === 'malformed') {
         report_minor_error("Cannot search CrossRef: " . echoable((string) $result->msg));  // @codeCoverageIgnore
       } elseif ((string) $result->attributes()->status === "resolved") {
-        if (!isset($result->doi)) return FALSE;
+        if (!isset($result->doi)) return;
         report_info(" Successful!");
-        return $this->add_if_new('doi', (string) $result->doi);
+        $this->add_if_new('doi', (string) $result->doi);
+        return;
       }
     }
-    return FALSE;
+    return;
   }
 
   public function get_doi_from_semanticscholar() : void {
