@@ -74,7 +74,7 @@ function entrez_api(array $ids, array &$templates, string $db) : bool {   // Poi
   if ($ids == ['1']) return FALSE; // junk data from test suite
   if ($ids == ['']) return FALSE; // junk data from test suite
   if ($db !== 'pubmed' && $db !== 'pmc') {
-    report_error("Invalid Entrez type passed in: " . $db);  // @codeCoverageIgnore
+    report_error("Invalid Entrez type passed in: " . echoable($db));  // @codeCoverageIgnore
   }
   
   $get_template = function(int $template_key) use($templates) : Template { // Only exists to make static tools understand this is a Template() type
@@ -91,7 +91,7 @@ function entrez_api(array $ids, array &$templates, string $db) : bool {   // Poi
 
   // A few PMC do not have any data, just pictures of stuff
   if (isset($xml->DocSum->Item) && count($xml->DocSum->Item) > 0) foreach($xml->DocSum as $document) {
-   report_info("Found match for $db identifier " . $document->Id);
+   report_info("Found match for $db identifier " . echoable($document->Id));
    foreach($ids as $template_key => $an_id) { // Cannot use array_search since that only returns first
    if (!array_key_exists($template_key, $templates)) {
        bot_debug_log('Key not found in entrez_api ' . (string) $template_key . ' ' . (string) $an_id);
@@ -232,9 +232,9 @@ function arxiv_api(array $ids, array &$templates) : bool {  // Pointer to save m
   if ((string)$xml->entry->title === "Error") {
       $the_error = (string)$xml->entry->summary;
       if (stripos($the_error, 'incorrect id format for') !== FALSE) {
-        report_warning("arXiv search failed: " . $the_error);
+        report_warning("arXiv search failed: " . echoable($the_error));
       } else {
-        report_minor_error("arXiv search failed - please report the error: " . $the_error);  // @codeCoverageIgnore
+        report_minor_error("arXiv search failed - please report the error: " . echoable($the_error);  // @codeCoverageIgnore
       }
       return FALSE;
   }
@@ -242,7 +242,7 @@ function arxiv_api(array $ids, array &$templates) : bool {  // Pointer to save m
   $this_template = current($templates); // advance at end of foreach loop
   foreach ($xml->entry as $entry) {
     $i = 0;
-    report_info("Found match for arXiv " . $ids[$i]);
+    report_info("Found match for arXiv " . echoable($ids[$i]));
     if ($this_template->add_if_new("doi", (string) $entry->arxivdoi, 'arxiv')) {
       if ($this_template->blank(['journal', 'volume', 'issue']) && $this_template->has('title')) {
         // Move outdated/bad arXiv title out of the way
@@ -406,7 +406,7 @@ function adsabs_api(array $ids, array &$templates, string $identifier) : bool { 
   }
   $unmatched_ids = array_udiff($ids, $matched_ids, 'strcasecmp');
   if (count($unmatched_ids)) {
-    report_warning("No match for bibcode identifier: " . implode('; ', $unmatched_ids));  // @codeCoverageIgnore
+    report_warning("No match for bibcode identifier: " . echoable(implode('; ', $unmatched_ids)));  // @codeCoverageIgnore
     bot_debug_log("No match for bibcode identifier: " . implode('; ', $unmatched_ids));  // @codeCoverageIgnore
   }
   foreach ($templates as $template) {
@@ -791,7 +791,7 @@ function expand_doi_with_dx(Template $template, string $doi) : bool {
        $try_to_add_it('title', @$json['title']);                                                 // @codeCoverageIgnore
        /** @psalm-suppress RedundantCondition */ /* PSALM thinks TRAVIS cannot be FALSE */
        if (!HTML_OUTPUT) print_r($json);                                                         // @codeCoverageIgnore
-       report_minor_error('dx.doi.org returned unexpected data type ' . (string) @$json['type'] . ' for ' . doi_link($doi));     // @codeCoverageIgnore
+       report_minor_error('dx.doi.org returned unexpected data type ' . echoable((string) @$json['type']) . ' for ' . doi_link($doi));     // @codeCoverageIgnore
      }
      return TRUE;
 }
@@ -1028,7 +1028,7 @@ function parse_plain_text_reference(string $journal_data, Template $this_templat
           // not wanting to figure this out reliably
       // Future formats -- print diagnostic message
       } else {
-    //    report_minor_error("Unexpected data found in parse_plain_text_reference. " . $journal_data );
+    //    report_minor_error("Unexpected data found in parse_plain_text_reference. " . echoable($journal_data));
       }
       if ($arxiv_journal && $arxiv_year && (intval($arxiv_year) > 1900) && (intval($arxiv_year) < (1+intval(date("Y"))))) { // if no journal then doomed.  If bad date or no date then doomed.
         $current_year = $this_template->get_without_comments_and_placeholders('year');
@@ -1075,7 +1075,7 @@ function getS2CID(string $url) : string {
     return '';                                             // @codeCoverageIgnore
   }
   if (!isset($json->corpusId)) {
-    report_minor_error("No corpusId found from semanticscholar for ". $url); // @codeCoverageIgnore
+    report_minor_error("No corpusId found from semanticscholar for " . echoable($url)); // @codeCoverageIgnore
     return '';                                                     // @codeCoverageIgnore
   }
   if (is_array($json->corpusId) || is_object($json->corpusId)) {
@@ -1294,7 +1294,7 @@ function Bibcode_Response_Processing(string $return, CurlHandle $ch, string $ads
     if (preg_match_all('~\nX\-RateLimit\-\w+:\s*(\d+)\r~i', $header, $rate_limit)) {
       // @codeCoverageIgnoreStart
       if ($rate_limit[1][2]) {
-        report_info("AdsAbs search " . (string)((int) $rate_limit[1][0] - (int) $rate_limit[1][1]) . "/" . $rate_limit[1][0]);
+        report_info("AdsAbs search " . (string)((int) $rate_limit[1][0] - (int) $rate_limit[1][1]) . "/" . (string)(int)$rate_limit[1][0]);
       } else {
         throw new Exception('Too many requests', $http_response);
       }
@@ -1349,7 +1349,7 @@ function get_entrez_xml(string $type, string $query) : ?SimpleXMLElement {
       $url .= "esummary.fcgi";
       $post .= "&db=pmc&id=" . $query;
    } else {
-      report_error("Invalid type passed to get_entrez_xml: " . $type);  // @codeCoverageIgnore
+      report_error("Invalid type passed to get_entrez_xml: " . echoable($type));  // @codeCoverageIgnore
    }
    $xml = xml_post($url, $post);
    if ($xml === NULL) {
