@@ -2930,7 +2930,7 @@ final class Template {
     return FALSE;
   }
 
-  protected function google_book_details(string $gid) : bool {
+  protected function google_book_details(string $gid) : void {
     set_time_limit(120);
     $google_book_url = "https://books.google.com/books/feeds/volumes/" . $gid;
     $ch = curl_init();
@@ -2943,11 +2943,11 @@ final class Template {
             CURLOPT_URL => $google_book_url]);
     $data = (string) @curl_exec($ch);
     curl_close($ch);
-    if ($data === '') return FALSE;
+    if ($data === '') return;
     $simplified_xml = str_replace('http___//www.w3.org/2005/Atom', 'http://www.w3.org/2005/Atom',
       str_replace(":", "___", $data));
     $xml = @simplexml_load_string($simplified_xml);
-    if ($xml === FALSE) return FALSE;
+    if ($xml === FALSE) return;
     if ($xml->dc___title[1]) {
       $this->add_if_new('title',
                wikify_external_text(str_replace("___", ":", $xml->dc___title[0] . ": " . $xml->dc___title[1])));
@@ -2992,15 +2992,15 @@ final class Template {
     // Some publishers give next year always for OLD stuff
     for ($i = 1; $i <= 30; $i++) {
         $next_year = (string) ($now + $i);
-        if (strpos($google_date, $next_year) !== FALSE) return TRUE;
+        if (strpos($google_date, $next_year) !== FALSE) return;
     }
     if ($this->has('isbn')) { // Assume this is recent, and any old date is bogus
-      if (preg_match('~1[0-8]\d\d~', $google_date)) return TRUE;
-      if (!preg_match('~[12]\d\d\d~', $google_date)) return TRUE;
+      if (preg_match('~1[0-8]\d\d~', $google_date)) return;
+      if (!preg_match('~[12]\d\d\d~', $google_date)) return;
     }
     $this->add_if_new('date', $google_date);
     // Don't add page count
-    return TRUE;
+    return;
   }
 
   ### parameter processing
