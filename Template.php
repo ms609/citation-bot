@@ -2593,10 +2593,11 @@ final class Template {
     if (!$doi) return;
     if (strpos($doi, '10.1093/') === 0) return;
     $return = $this->get_unpaywall_url($doi);
-    $this->get_semanticscholar_url($doi, $return);
+    if (in_array($return, array('publisher', 'projectmuse', 'have free'))) return; // Do continue on
+    $this->get_semanticscholar_url($doi);
   }
 
-  public function get_semanticscholar_url(string $doi, string $unpay) : void { // $unpay is unused right now
+  protected function get_semanticscholar_url(string $doi) : void {
    set_time_limit(120);
    if(      $this->has('pmc') ||
             ($this->has('doi') && $this->get('doi-access') === 'free') ||
