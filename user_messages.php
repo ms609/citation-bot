@@ -15,8 +15,12 @@ function user_notice(string $symbol, string $class, string $text) : void {
       echo '.'; // Echo something to keep the code alive, but not so much to overfill the cache
       return;
     }
+    // These are split over three lines to avoid creating a single long string during error conditions - which could blow out the memory
     /** @psalm-suppress TypeDoesNotContainType */ /* PSALM thinks HTML_OUTPUT cannot be false */
-    echo "\n " . (HTML_OUTPUT ? "<span class='$class'>" : "") . $symbol . $text . (HTML_OUTPUT ? "</span>" : "");
+    echo "\n " . (HTML_OUTPUT ? "<span class='$class'>" : "") . $symbol;
+    echo $text;
+    /** @psalm-suppress TypeDoesNotContainType */ /* PSALM thinks HTML_OUTPUT cannot be false */
+    echo HTML_OUTPUT ? "</span>" : "";
     // @codeCoverageIgnoreEnd
   }
 }
