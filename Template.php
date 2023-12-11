@@ -1971,9 +1971,9 @@ final class Template {
     }
   }
 
-  public function get_doi_from_crossref() : bool {
+  public function get_doi_from_crossref() : void {
     set_time_limit(120);
-    if ($this->has('doi')) return TRUE;
+    if ($this->has('doi')) return;
     report_action("Checking CrossRef database for doi. ");
     $page_range = $this->page_range();
     $data = [
@@ -2004,7 +2004,7 @@ final class Template {
 
     if (!$novel_data) {
       report_info("No new data since last CrossRef search.");
-      return FALSE;
+      return;
     }
     // They already allow some fuzziness in matches
     if (($data['journal'] || $data['issn']) && ($data['start_page'] || $data['author'])) {
@@ -2019,38 +2019,37 @@ final class Template {
       $result = @simplexml_load_file($url);
       if ($result === FALSE) {
         report_warning("Error loading simpleXML file from CrossRef.");  // @codeCoverageIgnore
-        return FALSE;                                                   // @codeCoverageIgnore
+        return;                                                   // @codeCoverageIgnore
       }
       if (!isset($result->query_result->body->query)) {
         report_warning("Unexpected simpleXML file from CrossRef.");  // @codeCoverageIgnore
-        return FALSE;                                                // @codeCoverageIgnore
+        return;                                                // @codeCoverageIgnore
       }
       $result = $result->query_result->body->query;
       if ((string) $result->attributes()->status === 'malformed') {
         report_minor_error("Cannot search CrossRef: " . echoable((string) $result->msg));  // @codeCoverageIgnore
       } elseif ((string) $result->attributes()->status === "resolved") {
-        if (!isset($result->doi)) return FALSE;
+        if (!isset($result->doi)) return;
         report_info(" Successful!");
-        return $this->add_if_new('doi', (string) $result->doi);
+        $this->add_if_new('doi', (string) $result->doi);
+        return;
       }
     }
-    return FALSE;
+    return;
   }
 
-  public function get_doi_from_semanticscholar() : bool {
+  public function get_doi_from_semanticscholar() : void {
     set_time_limit(120);
-    if ($this->has('doi')) {
-      return TRUE;
-    }
-    if ($this->blank(['s2cid', 'S2CID'])) return FALSE;
-    if ($this->has('s2cid') && $this->has('S2CID')) return FALSE;
+    if ($this->has('doi')) return;
+    if ($this->blank(['s2cid', 'S2CID'])) return;
+    if ($this->has('s2cid') && $this->has('S2CID')) return;
     report_action("Checking semanticscholar database for doi. ");
     $doi = ConvertS2CID_DOI($this->get('s2cid') . $this->get('S2CID'));
     if ($doi) {
       report_info(" Successful!");
-      return $this->add_if_new('doi', $doi);
+      $this->add_if_new('doi', $doi);
     }
-    return FALSE;
+    return;
   }
 
   public function find_pmid() : void {
@@ -2930,7 +2929,7 @@ final class Template {
     return FALSE;
   }
 
-  protected function google_book_details(string $gid) : bool {
+  protected function google_book_details(string $gid) : void {
     set_time_limit(120);
     $google_book_url = "https://books.google.com/books/feeds/volumes/" . $gid;
     $ch = curl_init();
@@ -2943,11 +2942,11 @@ final class Template {
             CURLOPT_URL => $google_book_url]);
     $data = (string) @curl_exec($ch);
     curl_close($ch);
-    if ($data === '') return FALSE;
+    if ($data === '') return;
     $simplified_xml = str_replace('http___//www.w3.org/2005/Atom', 'http://www.w3.org/2005/Atom',
       str_replace(":", "___", $data));
     $xml = @simplexml_load_string($simplified_xml);
-    if ($xml === FALSE) return FALSE;
+    if ($xml === FALSE) return;
     if ($xml->dc___title[1]) {
       $this->add_if_new('title',
                wikify_external_text(str_replace("___", ":", $xml->dc___title[0] . ": " . $xml->dc___title[1])));
@@ -2992,15 +2991,15 @@ final class Template {
     // Some publishers give next year always for OLD stuff
     for ($i = 1; $i <= 30; $i++) {
         $next_year = (string) ($now + $i);
-        if (strpos($google_date, $next_year) !== FALSE) return TRUE;
+        if (strpos($google_date, $next_year) !== FALSE) return;
     }
     if ($this->has('isbn')) { // Assume this is recent, and any old date is bogus
-      if (preg_match('~1[0-8]\d\d~', $google_date)) return TRUE;
-      if (!preg_match('~[12]\d\d\d~', $google_date)) return TRUE;
+      if (preg_match('~1[0-8]\d\d~', $google_date)) return;
+      if (!preg_match('~[12]\d\d\d~', $google_date)) return;
     }
     $this->add_if_new('date', $google_date);
     // Don't add page count
-    return TRUE;
+    return;
   }
 
   ### parameter processing
@@ -6655,8 +6654,6 @@ final class Template {
     return '';
   }
 
-  public function name() : string {return trim($this->name);}
-
   /** @return ?array<string> **/
   protected function page_range() : ?array {
     preg_match("~(\w?\w?\d+\w?\w?)(?:\D+(\w?\w?\d+\w?\w?))?~", $this->page(), $pagenos);
@@ -7317,24 +7314,24 @@ final class Template {
       return $url;
   }
 
-  public function use_issn() : bool { // Only add if helpful and not a series of books
-    if ($this->blank('issn')) return FALSE;
-    if (!$this->blank(WORK_ALIASES)) return FALSE;
-    if ($this->has('series')) return FALSE;
-    if ($this->wikiname() === 'cite book' && $this->has('isbn')) return FALSE;
+  public function use_issn() : void { // Only add if helpful and not a series of books
+    if ($this->blank('issn')) return;
+    if (!$this->blank(WORK_ALIASES)) return;
+    if ($this->has('series')) return;
+    if ($this->wikiname() === 'cite book' && $this->has('isbn')) return;
     $issn = $this->get('issn');
-    if ($issn === '9999-9999') return FALSE;
-    if (!preg_match('~^\d{4}.?\d{3}[0-9xX]$~u', $issn)) return FALSE;
+    if ($issn === '9999-9999') return;
+    if (!preg_match('~^\d{4}.?\d{3}[0-9xX]$~u', $issn)) return;
     if ($issn === '0140-0460') { // Use set to avoid escaping [[ and ]]
-      return $this->set('newspaper', '[[The Times]]');
+      $this->set('newspaper', '[[The Times]]');
     } elseif ($issn === '0190-8286') {
-      return $this->set('newspaper', '[[The Washington Post]]');
+      $this->set('newspaper', '[[The Washington Post]]');
     } elseif ($issn === '0362-4331') {
-      return $this->set('newspaper', '[[The New York Times]]');
+      $this->set('newspaper', '[[The New York Times]]');
     } elseif ($issn === '0163-089X' || $issn === '1092-0935') {
-      return $this->set('newspaper', '[[The Wall Street Journal]]');
+      $this->set('newspaper', '[[The Wall Street Journal]]');
     }
-    return FALSE; // TODO - the API is gone
+    return; // TODO - the API is gone
   }
 
   private function is_book_series(string $param) : bool {
