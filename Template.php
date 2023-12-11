@@ -1971,7 +1971,7 @@ final class Template {
     }
   }
 
-  public function get_doi_from_crossref() : null {
+  public function get_doi_from_crossref() : void {
     set_time_limit(120);
     if ($this->has('doi')) return;
     report_action("Checking CrossRef database for doi. ");
