@@ -123,7 +123,7 @@ final class Template {
         $this->name = $spacing[1] . 'cite book' . $spacing[2];
       } elseif (!$this->blank_other_than_comments(['journal', 'pmid', 'pmc'])) {
         $this->name = $spacing[1] . 'cite journal' . $spacing[2];
-      } elseif (!$this->blank_other_than_comments('publisher') && $this->blank('url')) {
+      } elseif (!$this->blank_other_than_comments('publisher') && $this->blank(['url', 'citeseerx', 's2cid'])) {
         $this->name = $spacing[1] . 'cite document' . $spacing[2];
       }
     } elseif ($trim_name === 'Cite paper' || $trim_name === 'Cite document') {
@@ -143,7 +143,7 @@ final class Template {
         $this->name = $spacing[1] . 'Cite book' . $spacing[2];
       } elseif (!$this->blank_other_than_comments(['journal', 'pmid', 'pmc'])) {
         $this->name = $spacing[1] . 'Cite journal' . $spacing[2];
-      } elseif (!$this->blank_other_than_comments('publisher') && $this->blank('url')) {
+      } elseif (!$this->blank_other_than_comments('publisher') && $this->blank(['url', 'citeseerx', 's2cid'])) {
         $this->name = $spacing[1] . 'Cite document' . $spacing[2];
       }
     }
@@ -1972,9 +1972,9 @@ final class Template {
     }
   }
 
-  public function get_doi_from_crossref() : bool {
+  public function get_doi_from_crossref() : void {
     set_time_limit(120);
-    if ($this->has('doi')) return TRUE;
+    if ($this->has('doi')) return;
     report_action("Checking CrossRef database for doi. ");
     $page_range = $this->page_range();
     $data = [
@@ -2005,7 +2005,7 @@ final class Template {
 
     if (!$novel_data) {
       report_info("No new data since last CrossRef search.");
-      return FALSE;
+      return;
     }
     // They already allow some fuzziness in matches
     if (($data['journal'] || $data['issn']) && ($data['start_page'] || $data['author'])) {
@@ -2020,38 +2020,37 @@ final class Template {
       $result = @simplexml_load_file($url);
       if ($result === FALSE) {
         report_warning("Error loading simpleXML file from CrossRef.");  // @codeCoverageIgnore
-        return FALSE;                                                   // @codeCoverageIgnore
+        return;                                                   // @codeCoverageIgnore
       }
       if (!isset($result->query_result->body->query)) {
         report_warning("Unexpected simpleXML file from CrossRef.");  // @codeCoverageIgnore
-        return FALSE;                                                // @codeCoverageIgnore
+        return;                                                // @codeCoverageIgnore
       }
       $result = $result->query_result->body->query;
       if ((string) $result->attributes()->status === 'malformed') {
         report_minor_error("Cannot search CrossRef: " . echoable((string) $result->msg));  // @codeCoverageIgnore
       } elseif ((string) $result->attributes()->status === "resolved") {
-        if (!isset($result->doi)) return FALSE;
+        if (!isset($result->doi)) return;
         report_info(" Successful!");
-        return $this->add_if_new('doi', (string) $result->doi);
+        $this->add_if_new('doi', (string) $result->doi);
+        return;
       }
     }
-    return FALSE;
+    return;
   }
 
-  public function get_doi_from_semanticscholar() : bool {
+  public function get_doi_from_semanticscholar() : void {
     set_time_limit(120);
-    if ($this->has('doi')) {
-      return TRUE;
-    }
-    if ($this->blank(['s2cid', 'S2CID'])) return FALSE;
-    if ($this->has('s2cid') && $this->has('S2CID')) return FALSE;
+    if ($this->has('doi')) return;
+    if ($this->blank(['s2cid', 'S2CID'])) return;
+    if ($this->has('s2cid') && $this->has('S2CID')) return;
     report_action("Checking semanticscholar database for doi. ");
     $doi = ConvertS2CID_DOI($this->get('s2cid') . $this->get('S2CID'));
     if ($doi) {
       report_info(" Successful!");
-      return $this->add_if_new('doi', $doi);
+      $this->add_if_new('doi', $doi);
     }
-    return FALSE;
+    return;
   }
 
   public function find_pmid() : void {
@@ -2216,7 +2215,7 @@ final class Template {
     }
   }
 
-  public function expand_by_adsabs() : bool {
+  public function expand_by_adsabs() : void {
     static $needs_told = TRUE;
     set_time_limit(120);
     if ($this->has('bibcode') && $this->blank('doi')) {
@@ -2236,20 +2235,20 @@ final class Template {
     // API docs at https://github.com/adsabs/adsabs-dev-api
     if ($this->has('bibcode') && !$this->incomplete() && stripos($this->get('bibcode'), 'tmp') === FALSE && stripos($this->get('bibcode'), 'arxiv') === FALSE  &&
         ($this->has('doi') || AdsAbsControl::get_bib2doi($this->get('bibcode')) === 'X')) {  // Don't waste a query, if it has a doi or will not find a doi
-      return FALSE;  // @codeCoverageIgnore
+      return;  // @codeCoverageIgnore
     }
 
-    if (!$this->blank_other_than_comments('bibcode') && stripos($this->get('bibcode'), 'tmp') === FALSE && stripos($this->get('bibcode'), 'arxiv') === FALSE ) return FALSE; // Now use big query API for existing bibcode - code below still assumes that we might use a bibcode
-    if (!SLOW_MODE && $this->blank('bibcode')) return FALSE; // Do not look for new bibcodes in slow mode
-    if (stripos($this->get('bibcode'), 'CITATION') !== FALSE) return FALSE;
+    if (!$this->blank_other_than_comments('bibcode') && stripos($this->get('bibcode'), 'tmp') === FALSE && stripos($this->get('bibcode'), 'arxiv') === FALSE ) return; // Now use big query API for existing bibcode - code below still assumes that we might use a bibcode
+    if (!SLOW_MODE && $this->blank('bibcode')) return; // Do not look for new bibcodes in slow mode
+    if (stripos($this->get('bibcode'), 'CITATION') !== FALSE) return;
     // Do not search if it is a book - might find book review
-    if (stripos($this->get('jstor'), 'document') !== FALSE) return FALSE;
-    if (stripos($this->get('jstor'), '.ch.') !== FALSE) return FALSE;
+    if (stripos($this->get('jstor'), 'document') !== FALSE) return;
+    if (stripos($this->get('jstor'), '.ch.') !== FALSE) return;
 
-    if ($this->api_has_used('adsabs', equivalent_parameters('bibcode'))) return FALSE;
+    if ($this->api_has_used('adsabs', equivalent_parameters('bibcode'))) return;
 
     if ($this->has('bibcode')) $this->record_api_usage('adsabs', 'bibcode');
-    if (strpos($this->get('doi'), '10.1093/') === 0) return FALSE;
+    if (strpos($this->get('doi'), '10.1093/') === 0) return;
     report_action("Checking AdsAbs database");
     // No longer use this code for exanding existing bibcodes
     // if ($this->has('bibcode')) {
@@ -2267,7 +2266,7 @@ final class Template {
 
     if ($result->numFound > 1) {
       report_warning("Multiple articles match identifiers "); // @codeCoverageIgnore
-      return FALSE;                                           // @codeCoverageIgnore
+      return;                                           // @codeCoverageIgnore
     }
 
     if ($result->numFound === 0) {
@@ -2281,24 +2280,24 @@ final class Template {
           ($this->has('bibcode'))) // Must be GIGO
           {
             report_inline('no record retrieved.');  // @codeCoverageIgnore
-            return FALSE;                           // @codeCoverageIgnore
+            return;                           // @codeCoverageIgnore
           }
     }
 
     if (($result->numFound !== 1) && $this->has('title')) { // Do assume failure to find arXiv means that it is not there
       $result = query_adsabs("title:" . urlencode('"' .  trim(str_replace('"', ' ', $this->get_without_comments_and_placeholders("title"))) . '"'));
-      if ($result->numFound === 0) return FALSE;
+      if ($result->numFound === 0) return;
       $record = $result->docs[0];
       if (titles_are_dissimilar($this->get_without_comments_and_placeholders("title"), $record->title[0])) {  // Considering we searched for title, this is very paranoid
         report_info("Similar title not found in database."); // @codeCoverageIgnore
-        return FALSE;                                        // @codeCoverageIgnore
+        return;                                        // @codeCoverageIgnore
       }
       // If we have a match, but other links exists, and we have nothing journal like, then require exact title match
       if (!$this->blank(array_merge(['doi','pmc','pmid','eprint','arxiv'], ALL_URL_TYPES)) &&
           $this->blank(['issn', 'journal', 'volume', 'issue', 'number']) &&
           mb_strtolower($record->title[0]) !==  mb_strtolower($this->get_without_comments_and_placeholders('title'))) {  // Probably not a journal, trust zotero more
           report_info("Exact title match not found in database.");  // @codeCoverageIgnore
-          return FALSE;                                             // @codeCoverageIgnore
+          return;                                             // @codeCoverageIgnore
       }
     }
 
@@ -2306,8 +2305,8 @@ final class Template {
       $journal = $this->get('journal');
       // try partial search using bibcode components:
       $pages = $this->page_range();
-      if (!$pages) return FALSE;
-      if ($this->blank('volume') && !$this->year()) return FALSE;
+      if (!$pages) return;
+      if ($this->blank('volume') && !$this->year()) return;
       $result = query_adsabs(
           ($this->has('journal') ? "pub:" . urlencode('"' . remove_brackets($journal) . '"') : "&fq=issn:" . urlencode($this->get('issn')))
         . ($this->year() ? ("&fq=year:" . urlencode($this->year())) : '')
@@ -2316,7 +2315,7 @@ final class Template {
       );
       if ($result->numFound === 0 || !isset($result->docs[0]->pub)) {
         report_inline('no record retrieved.'); // @codeCoverageIgnore
-        return FALSE;                          // @codeCoverageIgnore
+        return;                          // @codeCoverageIgnore
       }
       $journal_string = explode(",", (string) $result->docs[0]->pub);
       $journal_fuzzyer = "~\([iI]ncorporating.+|\bof\b|\bthe\b|\ba|eedings\b|\W~";
@@ -2328,7 +2327,7 @@ final class Template {
         report_info("Partial match but database journal \"" .    // @codeCoverageIgnoreStart
           echoable($journal_string[0]) . "\" didn't match \"" .
           echoable($journal) . "\".");
-        return FALSE;                                            // @codeCoverageIgnoreEnd
+        return;                                            // @codeCoverageIgnoreEnd
       }
     }
     if ($result->numFound === 1) {
@@ -2336,34 +2335,35 @@ final class Template {
       if (isset($record->year) && $this->year()) {
         $diff = abs((int)$record->year - (int)$this->year()); // Check for book reviews (fuzzy >2 for arxiv data)
         $today = (int) date("Y");
-        if ($diff > 2)                                    return FALSE;
-        if (($record->year < $today - 5)  && $diff > 1)   return FALSE;
-        if (($record->year < $today - 10) && $diff !== 0) return FALSE;
-        if ($this->has('doi')             && $diff !== 0) return FALSE;
+        if ($diff > 2)                                    return;
+        if (($record->year < $today - 5)  && $diff > 1)   return;
+        if (($record->year < $today - 10) && $diff !== 0) return;
+        if ($this->has('doi')             && $diff !== 0) return;
       }
 
       if (!isset($record->title[0]) || !isset($record->bibcode)) {
         report_info("Database entry not complete");  // @codeCoverageIgnore
-        return FALSE;                                // @codeCoverageIgnore
+        return;                                // @codeCoverageIgnore
       }
       if ($this->has('title') && titles_are_dissimilar($this->get('title'), $record->title[0])
          && !in_array($this->get('title'), ['Archived copy', "{title}", 'ScienceDirect', "Google Books", "None", 'usurped title'])) { // Verify the title matches.  We get some strange mis-matches {
         report_info("Similar title not found in database");  // @codeCoverageIgnore
-        return FALSE;                                        // @codeCoverageIgnore
+        return;                                        // @codeCoverageIgnore
       }
 
       if (isset($record->doi) && $this->get_without_comments_and_placeholders('doi')) {
-        if (!str_i_same((string) $record->doi[0], $this->get_without_comments_and_placeholders('doi'))) return FALSE; // New DOI does not match
+        if (!str_i_same((string) $record->doi[0], $this->get_without_comments_and_placeholders('doi'))) return; // New DOI does not match
       }
 
       if (strpos((string) $record->bibcode, 'book') !== FALSE) {  // Found a book.  Need special code
          $this->add_if_new('bibcode_nosearch', (string) $record->bibcode);
-         return expand_book_adsabs($this, $record);
+         expand_book_adsabs($this, $record);
+         return;
       }
 
       if ($this->looksLikeBookReview($record)) { // Possible book and we found book review in journal
           report_info("Suspect that BibCode " . bibcode_link((string) $record->bibcode) . " is book review.  Rejecting.");
-          return FALSE;
+          return;
       }
 
       if ($this->blank('bibcode')) {
@@ -2376,13 +2376,13 @@ final class Template {
       }
       // @codeCoverageIgnoreEnd
       process_bibcode_data($this, $record);
-      return TRUE;
+      return;
     } elseif ($result->numFound === 0) {               // @codeCoverageIgnoreStart
       report_inline('no record retrieved.');
-      return FALSE;
+      return;
     } else {
       report_inline('multiple records retrieved.  Ignoring.');
-      return FALSE;                                     // @codeCoverageIgnoreEnd
+      return;                                     // @codeCoverageIgnoreEnd
     }
   }
 
@@ -2594,10 +2594,11 @@ final class Template {
     if (!$doi) return;
     if (strpos($doi, '10.1093/') === 0) return;
     $return = $this->get_unpaywall_url($doi);
-    $this->get_semanticscholar_url($doi, $return);
+    if (in_array($return, array('publisher', 'projectmuse', 'have free'))) return; // Do continue on
+    $this->get_semanticscholar_url($doi);
   }
 
-  public function get_semanticscholar_url(string $doi, string $unpay) : void { // $unpay is unused right now
+  protected function get_semanticscholar_url(string $doi) : void {
    set_time_limit(120);
    if(      $this->has('pmc') ||
             ($this->has('doi') && $this->get('doi-access') === 'free') ||
@@ -2931,7 +2932,7 @@ final class Template {
     return FALSE;
   }
 
-  protected function google_book_details(string $gid) : bool {
+  protected function google_book_details(string $gid) : void {
     set_time_limit(120);
     $google_book_url = "https://books.google.com/books/feeds/volumes/" . $gid;
     $ch = curl_init();
@@ -2944,11 +2945,11 @@ final class Template {
             CURLOPT_URL => $google_book_url]);
     $data = (string) @curl_exec($ch);
     curl_close($ch);
-    if ($data === '') return FALSE;
+    if ($data === '') return;
     $simplified_xml = str_replace('http___//www.w3.org/2005/Atom', 'http://www.w3.org/2005/Atom',
       str_replace(":", "___", $data));
     $xml = @simplexml_load_string($simplified_xml);
-    if ($xml === FALSE) return FALSE;
+    if ($xml === FALSE) return;
     if ($xml->dc___title[1]) {
       $this->add_if_new('title',
                wikify_external_text(str_replace("___", ":", $xml->dc___title[0] . ": " . $xml->dc___title[1])));
@@ -2993,15 +2994,15 @@ final class Template {
     // Some publishers give next year always for OLD stuff
     for ($i = 1; $i <= 30; $i++) {
         $next_year = (string) ($now + $i);
-        if (strpos($google_date, $next_year) !== FALSE) return TRUE;
+        if (strpos($google_date, $next_year) !== FALSE) return;
     }
     if ($this->has('isbn')) { // Assume this is recent, and any old date is bogus
-      if (preg_match('~1[0-8]\d\d~', $google_date)) return TRUE;
-      if (!preg_match('~[12]\d\d\d~', $google_date)) return TRUE;
+      if (preg_match('~1[0-8]\d\d~', $google_date)) return;
+      if (!preg_match('~[12]\d\d\d~', $google_date)) return;
     }
     $this->add_if_new('date', $google_date);
     // Don't add page count
-    return TRUE;
+    return;
   }
 
   ### parameter processing
@@ -3465,7 +3466,7 @@ final class Template {
           case "url": // Untrustable: used by bozos
             break;
           default:
-            report_minor_error("No match found for subtemplate type: " . $subtemplate_name);
+            report_minor_error("No match found for subtemplate type: " . echoable($subtemplate_name));
         }
       }
     }
@@ -3803,6 +3804,7 @@ final class Template {
         $this->set($param, safe_preg_replace('~^\=+\s*(?![^a-zA-Z0-9\[\'\"])~u', '', $this->get($param)));  // Remove leading ='s sign if in front of letter or number
         $this->set($param, safe_preg_replace('~&#x2013;~u', '&ndash;', $this->get($param)));
         $this->set($param, safe_preg_replace('~&#x2014;~u', '&mdash;', $this->get($param)));
+        $this->set($param, safe_preg_replace('~&#x00026;~u', '&', $this->get($param)));
         $this->set($param, safe_preg_replace('~(?<!\&)&[Aa]mp;(?!&)~u', '&', $this->get($param))); // &Amp; => & but not if next character is & or previous character is ;
 
         // Remove final semi-colon from a few items
@@ -4138,6 +4140,12 @@ final class Template {
             $this->forget($param);
           }
           return;
+
+        case 'doi-access':
+        if ($this->blank('doi') && $this->has('doi-access')) {
+           $this->forget('doi-access');
+        }
+        return;
 
         case 'doi':
           $doi = $this->get($param);
@@ -5190,7 +5198,7 @@ final class Template {
                 && mb_substr($title, -1)   === "'"
                 && mb_substr_count($title, "'") === 2)
           ) {
-            report_warning("The quotes around the title are most likely an editor's error: " . mb_substr($title, 1, -1));
+            report_warning("The quotes around the title are most likely an editor's error: " . echoable(mb_substr($title, 1, -1)));
           }
           // Messed up cases:   [[sdfsad] or [dsfasdf]]
           if (preg_match('~^\[\[([^\]\[\|]+)\]$~', $title, $matches) ||
@@ -5965,8 +5973,7 @@ final class Template {
           if (!preg_match("~^[A-Za-z ]+\-~", $value) && mb_ereg(REGEXP_TO_EN_DASH, $value)
               && can_safely_modify_dashes($value) && ($pmatch[1] !== 'page')) {
             $this->mod_dashes = TRUE;
-            report_modification("Upgrading to en-dash in " . echoable($param) .
-                  " parameter");
+            report_modification("Upgrading to en-dash in " . echoable($param) . " parameter");
             $value =  mb_ereg_replace(REGEXP_TO_EN_DASH, REGEXP_EN_DASH, $value);
             $this->set($param, $value);
           }
@@ -6708,8 +6715,6 @@ final class Template {
     return '';
   }
 
-  public function name() : string {return trim($this->name);}
-
   /** @return ?array<string> **/
   protected function page_range() : ?array {
     preg_match("~(\w?\w?\d+\w?\w?)(?:\D+(\w?\w?\d+\w?\w?))?~", $this->page(), $pagenos);
@@ -6914,18 +6919,17 @@ final class Template {
     return TRUE;
   }
 
-  public function append_to(string $par, string $val) : bool {
+  public function append_to(string $par, string $val) : void {
     if (mb_stripos($this->get($par), 'CITATION_BOT_PLACEHOLDER_COMMENT') !== FALSE) {
-      return FALSE;
+      return;
     }
     $pos = $this->get_param_key($par);
     if ($pos !== NULL) { // Could be zero which is "FALSE"
       $this->param[$pos]->val = $this->param[$pos]->val . $val;
-      return TRUE;
     } else {
       $this->set($par, $val);
-      return TRUE;
     }
+    return;
   }
 
   public function quietly_forget(string $par) : void {
@@ -7370,24 +7374,24 @@ final class Template {
       return $url;
   }
 
-  public function use_issn() : bool { // Only add if helpful and not a series of books
-    if ($this->blank('issn')) return FALSE;
-    if (!$this->blank(WORK_ALIASES)) return FALSE;
-    if ($this->has('series')) return FALSE;
-    if ($this->wikiname() === 'cite book' && $this->has('isbn')) return FALSE;
+  public function use_issn() : void { // Only add if helpful and not a series of books
+    if ($this->blank('issn')) return;
+    if (!$this->blank(WORK_ALIASES)) return;
+    if ($this->has('series')) return;
+    if ($this->wikiname() === 'cite book' && $this->has('isbn')) return;
     $issn = $this->get('issn');
-    if ($issn === '9999-9999') return FALSE;
-    if (!preg_match('~^\d{4}.?\d{3}[0-9xX]$~u', $issn)) return FALSE;
+    if ($issn === '9999-9999') return;
+    if (!preg_match('~^\d{4}.?\d{3}[0-9xX]$~u', $issn)) return;
     if ($issn === '0140-0460') { // Use set to avoid escaping [[ and ]]
-      return $this->set('newspaper', '[[The Times]]');
+      $this->set('newspaper', '[[The Times]]');
     } elseif ($issn === '0190-8286') {
-      return $this->set('newspaper', '[[The Washington Post]]');
+      $this->set('newspaper', '[[The Washington Post]]');
     } elseif ($issn === '0362-4331') {
-      return $this->set('newspaper', '[[The New York Times]]');
+      $this->set('newspaper', '[[The New York Times]]');
     } elseif ($issn === '0163-089X' || $issn === '1092-0935') {
-      return $this->set('newspaper', '[[The Wall Street Journal]]');
+      $this->set('newspaper', '[[The Wall Street Journal]]');
     }
-    return FALSE; // TODO - the API is gone
+    return; // TODO - the API is gone
   }
 
   private function is_book_series(string $param) : bool {

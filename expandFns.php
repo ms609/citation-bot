@@ -5,62 +5,100 @@ require_once 'constants.php';     // @codeCoverageIgnore
 require_once 'Template.php';      // @codeCoverageIgnore
 require_once 'big_jobs.php';      // @codeCoverageIgnore
 
-const MAX_CACHE_SIZE = 300000;
-const MAX_HDL_SIZE = 1024;
+final class HandleCache {
+  // Greatly speed-up by having one array of each kind and only look for hash keys, not values
+  private const MAX_CACHE_SIZE = 300000;
+  public const MAX_HDL_SIZE = 1024;
+  private const BAD_DOI_ARRAY = ['10.1126/science' => TRUE, '' => TRUE, '10.1267/science.040579197' => TRUE, '10.0000/Rubbish_bot_failure_test' => TRUE, '10.0000/Rubbish_bot_failure_test2' => TRUE];
+
+  /** @var array<boolean> $cache_active */
+  static public array $cache_active = [];
+  /** @var array<boolean> $cache_inactive */
+  static public array $cache_inactive  = [];
+  /** @var array<boolean> $cache_good */
+  static public array $cache_good = [];
+  /** @var array<boolean> $cache_bad */
+  static public array $cache_bad  = self::BAD_DOI_ARRAY;
+  /** @var array<boolean> $cache_null */
+  static public array $cache_null = [];
+  /** @var array<string> $cache_hdl_loc */
+  static public array $cache_hdl_loc = [];
+  /** @var array<boolean> $cache_hdl_bad */
+  static public array $cache_hdl_bad  = [];
+  /** @var array<boolean> $cache_hdl_null */
+  static public array $cache_hdl_null = [];
+
+  public static function check_memory_use() : void {
+      $usage = count(self::$cache_inactive) +
+               count(self::$cache_active) +
+               count(self::$cache_bad) +
+               count(self::$cache_good) +
+               count(self::$cache_null) +
+               count(self::$cache_hdl_bad) +
+               count(self::$cache_hdl_loc) +
+               count(self::$cache_hdl_null);
+      if ($usage > self::MAX_CACHE_SIZE) {
+        self::$cache_active = [];
+        self::$cache_inactive  = [];
+        self::$cache_good = [];
+        self::$cache_bad  = self::BAD_DOI_ARRAY;
+        self::$cache_null = [];
+        self::$cache_hdl_loc = [];
+        self::$cache_hdl_bad  = [];
+        self::$cache_hdl_null = [];
+        gc_collect_cycles();
+      }
+  }
+}
+
 
 // ============================================= DOI functions ======================================
 function doi_active(string $doi) : ?bool {
-  // Greatly speed-up by having one array of each kind and only look for hash keys, not values
-  static $cache_good = [];
-  static $cache_bad  = [];
   $doi = trim($doi);
-  if (isset($cache_good[$doi])) return TRUE;
-  if (isset($cache_bad[$doi]))  return FALSE;
-  // For really long category runs
-  if (count($cache_bad) > MAX_CACHE_SIZE) $cache_bad = [];
-  if (count($cache_good) > MAX_CACHE_SIZE) $cache_good = [];
+  if (isset(HandleCache::$cache_active[$doi])) return TRUE;
+  if (isset(HandleCache::$cache_inactive[$doi]))  return FALSE;
+
   $works = doi_works($doi);
-  if ($works === NULL) {
-    return NULL; // @codeCoverageIgnore
+  if ($works !== TRUE) {
+    return $works;
   }
-  if ($works === FALSE) {
-    // $cache_bad[$doi] = TRUE; do not store to save memory
-    return FALSE;
-  }
-  // DX.DOI.ORG works, but does crossref?
+
   $works = is_doi_active($doi);
   if ($works === NULL) {
-    return NULL; // @codeCoverageIgnore
+    return NULL; // Temporary problem - do not cache
   }
   if ($works === FALSE) {
-    $cache_bad[$doi] = TRUE;
+    HandleCache::$cache_inactive[$doi] = TRUE;
     return FALSE;
   }
-  $cache_good[$doi] = TRUE;
+  HandleCache::$cache_active[$doi] = TRUE;
   return TRUE;
 }
 
 function doi_works(string $doi) : ?bool {
-  // Greatly speed-up by having one array of each kind and only look for hash keys, not values
-  static $cache_good = [];
-  static $cache_bad  = BAD_DOI_ARRAY;
   $doi = trim($doi);
-  if (strlen($doi) > MAX_HDL_SIZE) return NULL;
-  if (isset($cache_good[$doi])) return TRUE;
-  if (isset($cache_bad[$doi]))  return FALSE;
-  // For really long category runs
-  if (count($cache_bad) > MAX_CACHE_SIZE) $cache_bad = BAD_DOI_ARRAY;
-  if (count($cache_good) > MAX_CACHE_SIZE) $cache_good = [];
+  if (strlen($doi) > HandleCache::MAX_HDL_SIZE) return NULL;
+  if (isset(HandleCache::$cache_good[$doi])) return TRUE;
+  if (isset(HandleCache::$cache_bad[$doi]))  return FALSE;
+  if (isset(HandleCache::$cache_null[$doi])) return NULL;
+  HandleCache::check_memory_use();
+
+  $start_time = time();
   $works = is_doi_works($doi);
   if ($works === NULL) {
-    // bot_debug_log($doi . " returns NULL from dx.doi.org");
-    return NULL; // @codeCoverageIgnore
+    if (abs(time() - $start_time) < max(BOT_HTTP_TIMEOUT, BOT_CONNECTION_TIMEOUT))
+    {
+      return NULL;
+    } else {
+      HandleCache::$cache_null[$doi] = TRUE;
+      return NULL;
+    }
   }
   if ($works === FALSE) {
-    $cache_bad[$doi] = TRUE;
+    HandleCache::$cache_bad[$doi] = TRUE;
     return FALSE;
   }
-  $cache_good[$doi] = TRUE;
+  HandleCache::$cache_good[$doi] = TRUE;
   return TRUE;
 }
 
@@ -1237,13 +1275,11 @@ function edit_a_list_of_pages(array $pages_in_category, WikipediaBot $api, strin
         if (file_put_contents($filename, $body)===$bodylen)
         {
           report_phase("Saved to file " . echoable($filename));
-        } else
-        {
+        } else {
           report_warning("Save to file failed.");
         }
         unset($body);
-      } else
-      {
+      } else {
         report_phase("Writing to " . echoable($page_title) . '... ');
         $attempts = 0;
         if ($total === 1) {
@@ -1273,6 +1309,9 @@ function edit_a_list_of_pages(array $pages_in_category, WikipediaBot $api, strin
        $final_edit_overview .= "\n No changes needed. " . "<a href=" . WIKI_ROOT . "?title=" . urlencode($page_title) . ">" . echoable($page_title) . "</a>";
     }
     echo "\n";
+    // Clear variables before doing GC - PHP 8.2 seems to need the GC
+    $page->parse_text("");
+    gc_collect_cycles();
   }
   if ($total > 1) {
     if (!HTML_OUTPUT) $final_edit_overview = ''; 
@@ -1326,24 +1365,32 @@ function bot_html_footer() : void {
    * @return string|null|false       Returns NULL/FALSE/String of location
    **/
 function hdl_works(string $hdl) {
-  // Greatly speed-up by having one array of each kind and only look for hash keys, not values
-  static $cache_good = [];
-  static $cache_bad  = [];
   $hdl = trim($hdl);
-  if (strlen($hdl) > MAX_HDL_SIZE) return NULL;
-  if (isset($cache_good[$hdl])) return $cache_good[$hdl];
-  if (isset($cache_bad[$hdl]))  return FALSE;
-  if (count($cache_bad)  > MAX_CACHE_SIZE) $cache_bad = []; // Lots of things that look like handles are not handles
-  if (count($cache_good) > MAX_CACHE_SIZE) $cache_good = [];
+  // And now some obvious fails
+  if (strpos($hdl, '/') === FALSE) return FALSE;
+  if (strpos($hdl, 'CITATION_BOT_PLACEHOLDER') !== FALSE) return FALSE;
+  if (strpos($hdl, '123456789') === 0) return FALSE;
+  if (strlen($hdl) > HandleCache::MAX_HDL_SIZE) return NULL;
+  if (isset(HandleCache::$cache_hdl_loc[$hdl])) return HandleCache::$cache_hdl_loc[$hdl];
+  if (isset(HandleCache::$cache_hdl_bad[$hdl])) return FALSE;
+  if (isset(HandleCache::$cache_hdl_null[$hdl])) return NULL;
+  if (strpos($hdl, '10.') === 0 && doi_works($hdl) === FALSE) return FALSE;
+  $start_time = time();
   $works = is_hdl_works($hdl);
   if ($works === NULL) {
-    return NULL; // @codeCoverageIgnore
+    if (abs(time()-$start_time) < max(BOT_HTTP_TIMEOUT, BOT_CONNECTION_TIMEOUT))
+    {
+      return NULL;
+    } else {
+      HandleCache::$cache_hdl_null[$hdl] = TRUE;
+      return NULL;
+    }
   }
   if ($works === FALSE) {
-    $cache_bad[$hdl] = TRUE;
+    HandleCache::$cache_hdl_bad[$hdl] = TRUE;
     return FALSE;
   }
-  $cache_good[$hdl] = $works;
+  HandleCache::$cache_hdl_loc[$hdl] = $works;
   return $works;
 }
 
@@ -1352,11 +1399,6 @@ function hdl_works(string $hdl) {
    **/
 function is_hdl_works(string $hdl) {
   $hdl = trim($hdl);
-  // And now some obvious fails
-  if (strpos($hdl, '/') === FALSE) return FALSE;
-  if (strpos($hdl, 'CITATION_BOT_PLACEHOLDER') !== FALSE) return FALSE;
-  if (strpos($hdl, '123456789') === 0) return FALSE;
-  if (strpos($hdl, '10.') === 0 && doi_works($hdl) === FALSE) return FALSE;
   // See if it works
   $context = stream_context_create(CONTEXT_INSECURE_11); // HDL does 1.1 always
   usleep(100000);

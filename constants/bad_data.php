@@ -32,8 +32,6 @@ const BAD_PUBLISHERS = array('london', 'edinburgi', 'edinburgh', 'no publisher',
 
 const ARE_WORKS = array('medrxiv', 'ietf datatracker'); // Things with dois that should be {{cite document|work=THIS}}
 
-const BAD_DOI_ARRAY = ['10.1126/science' => TRUE, '' => TRUE, '10.1267/science.040579197' => TRUE, '10.0000/Rubbish_bot_failure_test' => TRUE, '10.0000/Rubbish_bot_failure_test2' => TRUE];
-
 const PUBLISHERS_ARE_WORKS = array('the san diego union-tribune', 'forbes', 'salon', 'san jose mercury news', 'san jose mercury-news', 'new york times',
                                    'the new york times', 'daily news online', 'daily news', 'the sun', 'the times',
                                    'the star', 'washington post', 'the washington post', 'the tribune',
@@ -132,7 +130,7 @@ const BAD_ZOTERO_TITLES = ['Browse publications', 'Central Authentication Servic
                                  '404 Page', '404. The page', "wasn't found on this server", '404. The URL', 
                                  'ShieldSquare', '404 Not Found', "404页面", "Sign up | LinkedIn", 'The-star.co.kr',
                                  'Connecting to the iTunes Store', '500 Internal Server Error', 'DomainMarket.com',
-                                 'bluehost.com', 'Validate User'];
+                                 'bluehost.com', 'Validate User', 'Document unavailable', 'Preview unavailable' ];
 
 const CANONICAL_PUBLISHER_URLS = array ('elsevier.com', 'springer.com', 'sciencedirect.com', 'tandfonline.com',
                                 'taylorandfrancis.com', 'wiley.com', 'sagepub.com', 'sagepublications.com',
@@ -975,4 +973,4 @@ const DOI_FREE_PREFIX = array('10.1100/', '10.11131/', '10.1155/', '10.11569/', 
                   '10.57009/', '10.58647/', '10.59081/', '10.6064/', '10.6219/', '10.7167/', '10.7217/', '10.7287/',
                   '10.7482/', '10.7490/', '10.7554/', '10.7717/', '10.7766/', '10.3389/', '10.3390/', '10.1155/',
                   '10.1371/journal.pone', '10.3897/zookeys', '10.1016/j.jbc.', '10.1016/S0021-9258', '10.1074/jbc.',
-                  '10.1210/jendso', '10.4249/', '10.5210/fm', '10.3847/', '10.22323/');
+                  '10.1210/jendso', '10.4249/', '10.5210/fm', '10.3847/', '10.22323/', '10.15347/', '10.1074/', '10.1194/');

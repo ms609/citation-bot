@@ -364,11 +364,10 @@ private static function zotero_request(string $url) : string {
   return $zotero_response;
 }
 
-public static function expand_by_zotero(Template $template, ?string $url = NULL) : bool {
+public static function expand_by_zotero(Template $template, ?string $url = NULL) : void {
   $access_date = 0;
-  $url_kind = '';
   if (is_null($url)) {
-     if (in_array($template->get('url-status'),  ['usurped', 'unfit', 'dead', 'deviated'])) return FALSE;
+     if (in_array($template->get('url-status'),  ['usurped', 'unfit', 'dead', 'deviated'])) return;
      $access_date = (int) strtotime(tidy_date($template->get('accessdate') . ' ' . $template->get('access-date')));
      $archive_date = (int) strtotime(tidy_date($template->get('archivedate') . ' ' . $template->get('archive-date')));
      if ($access_date && $archive_date) {
@@ -378,36 +377,33 @@ public static function expand_by_zotero(Template $template, ?string $url = NULL)
      }
      if ($template->has('url')) {
        $url = $template->get('url');
-       $url_kind = 'url';
      } elseif ($template->has('chapter-url')) {
        $url = $template->get('chapter-url');
-       $url_kind = 'chapter-url';
      } elseif ($template->has('chapterurl')) {
        $url = $template->get('chapterurl');
-       $url_kind = 'chapterurl';
      } else {
-       return FALSE;
+       return;
      }
      if (preg_match('~^https?://(?:dx\.|)doi\.org~i', $url)) {
-        return FALSE;
+        return;
      }
      if (preg_match('~^https?://semanticscholar\.org~i', $url)) {
-        return FALSE;
+        return;
      }
      if (preg_match(REGEXP_BIBCODE, urldecode($url))) {
-        return FALSE;
+        return;
      }
      if (preg_match("~^https?://citeseerx\.ist\.psu\.edu~i", $url)) {
-        return FALSE;
+        return;
      }
      if (preg_match("~\barxiv\.org/.*(?:pdf|abs|ftp/arxiv/papers/\d{4})/(.+?)(?:\.pdf)?$~i", $url)) {
-        return FALSE;
+        return;
      }     
   }
 
-  if (!$template->profoundly_incomplete($url)) return FALSE; // Only risk unvetted data if there's little good data to sully
+  if (!$template->profoundly_incomplete($url)) return; // Only risk unvetted data if there's little good data to sully
   
-  if(stripos($url, 'CITATION_BOT_PLACEHOLDER') !== FALSE) return FALSE; // That's a bad url
+  if(stripos($url, 'CITATION_BOT_PLACEHOLDER') !== FALSE) return; // That's a bad url
 
   // Clean up URLs
   if(preg_match('~^(https?://(?:www\.|)nature\.com/articles/[a-zA-Z0-9\.]+)\.pdf(?:|\?.*)$~', $url, $matches)) {
@@ -418,12 +414,12 @@ public static function expand_by_zotero(Template $template, ?string $url = NULL)
   }
   
   $bad_url = implode('|', ZOTERO_AVOID_REGEX);
-  if(preg_match("~^https?://(?:www\.|m\.|)(?:" . $bad_url . ")~i", $url)) return FALSE; 
+  if(preg_match("~^https?://(?:www\.|m\.|)(?:" . $bad_url . ")~i", $url)) return; 
 
   // Is it actually a URL.  Zotero will search for non-url things too!
-  if (preg_match('~^https?://[^/]+/?$~', $url) === 1) return FALSE; // Just a host name
+  if (preg_match('~^https?://[^/]+/?$~', $url) === 1) return;  // Just a host name
   set_time_limit(120); // This can be slow
-  if (preg_match(REGEXP_IS_URL, $url) !== 1) return FALSE;  // See https://mathiasbynens.be/demo/url-regex/  This regex is more exact than validator.  We only spend time on this after quick and dirty check is passed
+  if (preg_match(REGEXP_IS_URL, $url) !== 1) return;  // See https://mathiasbynens.be/demo/url-regex/  This regex is more exact than validator.  We only spend time on this after quick and dirty check is passed
   set_time_limit(120);
   if (self::$zotero_announced === 1) {
     report_action("Using Zotero translation server to retrieve details from URLs.");
@@ -433,56 +429,49 @@ public static function expand_by_zotero(Template $template, ?string $url = NULL)
     self::$zotero_announced = 0;
   }
   $zotero_response = self::zotero_request($url);
-  $return = self::process_zotero_response($zotero_response, $template, $url, $url_kind, $access_date);
-  /**
-  if ($return) {
-     bot_debug_log('ZoteroWorked: ' . $url);
-  } else {
-     bot_debug_log('ZoteroFailed: ' . $url);
-  }
-  **/
-  return $return;
+  self::process_zotero_response($zotero_response, $template, $url, $access_date);
+  return;
 }
 
-public static function process_zotero_response(string $zotero_response, Template $template, string $url, string $url_kind, int $access_date) : bool {
-  if ($zotero_response === self::ERROR_DONE) return FALSE;  // Error message already printed in zotero_request()
+public static function process_zotero_response(string $zotero_response, Template $template, string $url, int $access_date) : void {
+  if ($zotero_response === self::ERROR_DONE) return;  // Error message already printed in zotero_request()
  
   switch (trim($zotero_response)) {
     case '':
       report_info("Nothing returned for URL " . echoable($url));
-      return FALSE;
+      return;
     case 'Internal Server Error':
       report_info("Internal server error with URL " . echoable($url));
-      return FALSE;
+      return;
     case 'Remote page not found':
       report_info("Remote page not found for URL " . echoable($url));
-      return FALSE;
+      return;
     case 'No items returned from any translator':
       report_info("Remote page not interpretable for URL " . echoable($url));
-      return FALSE;
+      return;
     case 'An error occurred during translation. Please check translation with the Zotero client.':
       report_info("An error occurred during translation for URL " . echoable($url));
-      return FALSE;
+      return;
   }
   
   if (strpos($zotero_response, '502 Bad Gateway') !== FALSE) {
     report_warning("Bad Gateway error for URL ". echoable($url));
-    return FALSE;
+    return;
   }
   if (strpos($zotero_response, '503 Service Temporarily Unavailable') !== FALSE) {
     report_warning("Temporarily Unavailable error for URL " . echoable($url));  // @codeCoverageIgnore
-    return FALSE;                                                    // @codeCoverageIgnore
+    return;                                                    // @codeCoverageIgnore
   }
   $zotero_data = @json_decode($zotero_response, FALSE);
   if (!isset($zotero_data)) {
     report_warning("Could not parse JSON for URL ". echoable($url) . ": " . $zotero_response);
-    return FALSE;
+    return;
   } elseif (!is_array($zotero_data)) {
     if (is_object($zotero_data)) {
       $zotero_data = (array) $zotero_data;
     } else {
       report_warning("JSON did not parse correctly for URL ". echoable($url) . ": " . $zotero_response);
-      return FALSE;
+      return;
     }
   }
   if (!isset($zotero_data[0])) {
@@ -507,11 +496,11 @@ public static function process_zotero_response(string $zotero_response, Template
     } else {
        report_minor_error("Did not get a title for URL ". echoable($url) . ": " . $zotero_response); // Odd Error
     }
-    return FALSE;   // @codeCoverageIgnoreEnd
+    return;   // @codeCoverageIgnoreEnd
   }
   if (substr(strtolower(trim($result->title)), 0, 9) === 'not found') {
     report_info("Could not resolve URL " . echoable($url));
-    return FALSE;
+    return;
   }
   // Remove unused stuff
   unset($result->abstractNote);
@@ -551,14 +540,14 @@ public static function process_zotero_response(string $zotero_response, Template
   }
   if (($bad_count > 5) || ($total_count > 1 && (($bad_count/$total_count) > 0.1))) {
     report_info("Could parse unicode characters in " . echoable($url));
-    return FALSE;
+    return;
   }
   
   report_info("Retrieved info from " . echoable($url));
   // Verify that Zotero translation server did not think that this was a website and not a journal
   if (strtolower(substr(trim($result->title), -9)) === ' on jstor') {  // Not really "expanded", just add the title without " on jstor"
     $template->add_if_new('title', substr(trim($result->title), 0, -9)); // @codeCoverageIgnore
-    return FALSE;  // @codeCoverageIgnore
+    return;  // @codeCoverageIgnore
   }
   
   $test_data = '';
@@ -567,17 +556,17 @@ public static function process_zotero_response(string $zotero_response, Template
   foreach (BAD_ZOTERO_TITLES as $bad_title ) {
       if (mb_stripos($test_data, $bad_title) !== FALSE) {
         report_info("Received invalid title data for URL " . echoable($url) . ": $test_data");
-        return FALSE;
+        return;
       }
   }
-  if ($test_data === '404' || $test_data === '/404') return FALSE;
+  if ($test_data === '404' || $test_data === '/404') return;
   if (isset($result->bookTitle) && strtolower($result->bookTitle) === 'undefined') unset($result->bookTitle); // S2 without journals
   if (isset($result->publicationTitle) && strtolower($result->publicationTitle) === 'undefined') unset($result->publicationTitle); // S2 without journals
   if (isset($result->bookTitle)) {
    foreach (array_merge(BAD_ACCEPTED_MANUSCRIPT_TITLES, IN_PRESS_ALIASES) as $bad_title ) {
       if (str_i_same($result->bookTitle, $bad_title)) {
         report_info("Received invalid book title data for URL " . echoable($url) . ": $result->bookTitle");
-        return FALSE;
+        return;
       }
    }
   }
@@ -585,7 +574,7 @@ public static function process_zotero_response(string $zotero_response, Template
    foreach (array_merge(BAD_ACCEPTED_MANUSCRIPT_TITLES, IN_PRESS_ALIASES) as $bad_title ) {
       if (str_i_same($result->title, $bad_title)) {
         report_info("Received invalid title data for URL ". echoable($url) . ": $result->title");
-        return FALSE;
+        return;
       }
    }
   }
@@ -593,7 +582,7 @@ public static function process_zotero_response(string $zotero_response, Template
    foreach (array_merge(BAD_ACCEPTED_MANUSCRIPT_TITLES, IN_PRESS_ALIASES) as $bad_title ) {
       if (str_i_same($result->publicationTitle, $bad_title)) {
         report_info("Received invalid publication title data for URL ". echoable($url) . ": $result->publicationTitle");
-        return FALSE;
+        return;
       }
    }
    // Specific bad data that is correctable
@@ -782,7 +771,7 @@ public static function process_zotero_response(string $zotero_response, Template
       $template->add_if_new('doi', $possible_doi);
       expand_by_doi($template);
       if (stripos($url, 'jstor')) check_doi_for_jstor($template->get('doi'), $template);
-      if (!$template->profoundly_incomplete()) return TRUE;
+      if (!$template->profoundly_incomplete()) return;
     }
   }
 
@@ -801,7 +790,7 @@ public static function process_zotero_response(string $zotero_response, Template
     if($new_date) { // can compare
       if($new_date > $access_date) {
         report_info("URL appears to have changed since access-date " . echoable($url));
-        return FALSE;
+        return;
       }
     }
   }
@@ -809,7 +798,7 @@ public static function process_zotero_response(string $zotero_response, Template
       str_i_same(substr((string) @$result->bookTitle, 0, 4), 'http') ||
       str_i_same(substr((string) @$result->title, 0, 4), 'http')) {
     report_info("URL returned in Journal/Newpaper/Title/Chapter field for " . echoable($url));  // @codeCoverageIgnore
-    return FALSE;                                                                     // @codeCoverageIgnore
+    return;                                                                     // @codeCoverageIgnore
   }
   
   if (isset($result->bookTitle)) {
@@ -1079,7 +1068,7 @@ public static function process_zotero_response(string $zotero_response, Template
       $template->change_name_to('cite press release');
     }
   }
-  return TRUE;
+  return;
 }
 
 public static function url_simplify(string $url) : string {
@@ -1810,7 +1799,7 @@ public static function find_indentifiers_in_urls(Template $template, ?string $ur
       } elseif (stripos($url, 'worldcat.org') !== FALSE) {
         if (preg_match("~^https?://(?:www\.|)worldcat\.org(?:/title/\S+)?/oclc/([0-9]+)~i", $url, $match)) {
           if (strpos($url, 'edition') && ($template->wikiname() !== 'cite book')) {
-            report_warning('Not adding OCLC because is appears to be a weblink to a list of editions: ' . $match[1]);
+            report_warning('Not adding OCLC because is appears to be a weblink to a list of editions: ' . echoable($match[1]));
             return FALSE;
           }
           if ($template->blank('oclc')) quietly('report_modification', "Converting URL to OCLC parameter");
