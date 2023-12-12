@@ -1479,7 +1479,7 @@ function numberToRomanRepresentation(int $number) : string { // https://stackove
 
 function convert_to_utf8(string $value) : string {
     $encode1 =  mb_detect_encoding($value, ["UTF-8", "EUC-KR", "EUC-CN", "ISO-2022-JP", "WINDOWS-1252", "iso-8859-1"], TRUE);
-    if ($encode1 === FALSE || $encode1 === 'UTF-8') return $value;
+    if ($encode1 === FALSE || $encode1 === 'UTF-8' || $encode1 === 'WINDOWS-1252') return $value;
     $encode2 =  mb_detect_encoding($value, ["UTF-8", "EUC-CN", "EUC-KR", "ISO-2022-JP", "WINDOWS-1252", "iso-8859-1"], TRUE);
     if ($encode1 !== $encode2) return $value;
     $encode3 =  mb_detect_encoding($value, ["UTF-8", "ISO-2022-JP", "EUC-CN", "EUC-KR", "WINDOWS-1252", "iso-8859-1"], TRUE);
