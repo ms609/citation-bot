@@ -10,7 +10,7 @@
     allowStringToStandInForClass="true"
     findUnusedVariablesAndParams="true"
     runTaintAnalysis="false"
-    findUnusedBaselineEntry="false"
+    findUnusedBaselineEntry="true"
     findUnusedCode="false"
 >
     <projectFiles>
