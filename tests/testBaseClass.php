@@ -5,6 +5,21 @@ require_once __DIR__ . '/../setup.php';
 
 define("BAD_PAGE_API", ""); // Remember that debug_print_backtrace(0, 6) can be helpful
 
+
+final class TestPage extends Page {
+  function __construct() {
+    $trace = debug_backtrace();
+    $name = $trace[2]['function'];
+    $this->title = empty($name) ? 'Test Page' : $name;
+    self::$last_title = $this->title;
+    parent::__construct();
+  }
+  
+  public function overwrite_text(string $text) : void {
+    $this->text = $text;
+  } 
+}
+
 abstract class testBaseClass extends PHPUnit\Framework\TestCase {
 
   private $testing_skip_bibcode= FALSE;
