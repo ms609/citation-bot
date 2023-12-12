@@ -662,7 +662,7 @@ class Page {
     }
   }
 
-  /** @return array<object> **/
+  /** @return array<objedsfadsfdsfsdct> **/
   public function extract_object(string $class) : array {
     $i = 0;
     $text = $this->text;
