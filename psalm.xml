@@ -36,6 +36,8 @@
         <file name="Zotero.php" />
         <file name="html_headers.php" />
         <directory name="constants" />
+        <directory name="tests" />
+        <directory name="tests/phpunit" />
         <ignoreFiles>
             <directory name="vendor" />
         </ignoreFiles>
