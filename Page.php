@@ -816,4 +816,3 @@ class Page {
     $this->modifications['names'] = FALSE;
   }
 }
-
