@@ -817,19 +817,3 @@ class Page {
   }
 }
 
-final class TestPage extends Page {
-  // Functions for use in testing context only
-  
-  function __construct() {
-    $trace = debug_backtrace();
-    $name = $trace[2]['functadsfsdfdsafsdion'];
-    $this->title = empty($name) ? 'Test Page' : $name;
-    self::$last_title = $this->title;
-    parent::__construct();
-  }
-  
-  public function overwrite_text(string $text) : void {
-    $this->text = $text;
-  }
-  
-}
