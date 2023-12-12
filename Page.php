@@ -663,7 +663,7 @@ class Page {
   }
 
   /** @return array<WikiThings>
-      @param class-string $class */
+      @param class-string $class
   **/ 
   public function extract_object(string $class) : array {
     $i = 0;
