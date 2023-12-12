@@ -11,7 +11,7 @@
     findUnusedVariablesAndParams="true"
     runTaintAnalysis="false"
     findUnusedBaselineEntry="false"
-    findUnusedCode="false"
+    findUnusedCode="true"
 >
     <projectFiles>
         <file name="setup.php" />
