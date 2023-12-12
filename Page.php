@@ -662,7 +662,9 @@ class Page {
     }
   }
 
-  /** @return array<object> **/
+  /** @return array<WikiThings>
+      @param class-string $class */
+  **/ 
   public function extract_object(string $class) : array {
     $i = 0;
     $text = $this->text;
@@ -672,6 +674,7 @@ class Page {
     $placeholder_text = $class::PLACEHOLDER_TEXT;
     /** @var boolean $treat_identical_separately */
     $treat_identical_separately = $class::TREAT_IDENTICAL_SEPARATELY;
+    /** @var array<WikiThings> */
     $objects = array();
     
     if (count($regexp_in) > 1) { // Loop over array four times, since sometimes more complex regex fails and starting over works
@@ -686,7 +689,7 @@ class Page {
     $preg_ok = TRUE;
     foreach ($regexp_in as $regexp) {
       while ($preg_ok = preg_match($regexp, $text, $match)) {
-        /** @var class-string $class $obj */
+        /** @var WikiThings $obj */
         $obj = new $class();
         try {
           $obj->parse_text($match[0]);
@@ -744,7 +747,7 @@ class Page {
     return $objects;
   }
 
-  /** @param array<object> $objects **/
+  /** @param array<WikiThings> $objects **/
   protected function replace_object(array &$objects) : void {  // Pointer to save memory
     $i = count($objects);
     if ($objects) {
