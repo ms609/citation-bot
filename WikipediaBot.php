@@ -147,7 +147,7 @@ try {
     // @codeCoverageIgnoreStart
     } catch(Exception $E) {
       report_warning("Exception caught!\n");
-      report_info("Response: ". $E->getMessage());
+      report_info("Response: ". echoable($E->getMessage()));
     }
     return NULL;
     // @codeCoverageIgnoreEnd
@@ -156,7 +156,7 @@ try {
   /** @phpstan-impure **/
   public function write_page(string $page, string $text, string $editSummary, int $lastRevId, string $startedEditing) : bool {
     if (stripos($text, "CITATION_BOT_PLACEHOLDER") !== FALSE)  {
-      report_minor_error("\n ! Placeholder left escaped in text. Aborting for page " . $page);  // @codeCoverageIgnore
+      report_minor_error("\n ! Placeholder left escaped in text. Aborting for page " . echoable($page));  // @codeCoverageIgnore
       return FALSE;                                                                             // @codeCoverageIgnore
     }
 
@@ -228,11 +228,11 @@ try {
     }
     if (isset($response->warnings)) {
       if (isset($response->warnings->prop)) {
-        report_warning((string) $response->warnings->prop->{'*'});
+        report_warning(echoable((string) $response->warnings->prop->{'*'}));
         return NULL;
       }
       if (isset($response->warnings->info)) {
-        report_warning((string) $response->warnings->info->{'*'});
+        report_warning(echoable((string) $response->warnings->info->{'*'}));
         return NULL;
       }
     }
@@ -332,7 +332,7 @@ try {
       ]);
     $res = @json_decode($res);
     if (!isset($res->query->pages)) {
-        report_minor_error("Failed to get article's last revision for " . $page);      // @codeCoverageIgnore
+        report_minor_error("Failed to get article's last revision for " . echoable($page));      // @codeCoverageIgnore
         return '';                                                                     // @codeCoverageIgnore
     }
     $page = self::reset($res->query->pages);
@@ -389,7 +389,7 @@ try {
     // @codeCoverageIgnoreStart
    } catch(Exception $E) {
       report_warning("Exception caught!!\n");
-      report_info("Response: ". $E->getMessage());
+      report_info("Response: ". echoable($E->getMessage()));
    }
    return '';
   // @codeCoverageIgnoreEnd

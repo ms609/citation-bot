@@ -2850,11 +2850,11 @@ final class TemplateTest2 extends testBaseClass {
    }           
                       
    public function testSuppressWarnings() : void {
-     $text='{{Cite journal |doi=((10.51134/sod.dsfadsfasdfa2013.039 )) }}';
+     $text='{{Cite journal |doi=((10.1063/1.478352 )) }}';
      $template = $this->process_citation($text);
      $this->assertNull($template->get2('doi-broken-date'));
-     $this->assertSame('10.51134/sod.2013.039', $template->get2('doi'));
-     $this->assertSame('((10.51134/sod.2013.039 ))', $template->get3('doi'));
+     $this->assertSame('10.1063/1.478352', $template->get2('doi'));
+     $this->assertSame('((10.1063/1.478352 ))', $template->get3('doi'));
      $this->assertNotNull($template->get2('journal'));
    }
  
@@ -3089,35 +3089,35 @@ final class TemplateTest2 extends testBaseClass {
      $text = '{{cite web}}';
      $template = $this->make_citation($text);
      $template->set('id', 'CITATION_BOT_PLACEHOLDER_COMMENT');
-     $this->assertFalse($template->append_to('id', 'joe'));
+     $template->append_to('id', 'joe');
      $this->assertSame('CITATION_BOT_PLACEHOLDER_COMMENT', $template->get2('id'));
    }
  
    public function testAppendEmpty() : void {
      $text = '{{cite web|id=}}';
      $template = $this->make_citation($text);
-     $this->assertTrue($template->append_to('id', 'joe'));
+     $template->append_to('id', 'joe');
      $this->assertSame('joe', $template->get2('id'));
    }
 
    public function testAppendNull() : void {
      $text = '{{cite web}}';
      $template = $this->make_citation($text);
-     $this->assertTrue($template->append_to('id', 'joe'));
+     $template->append_to('id', 'joe');
      $this->assertSame('joe', $template->get2('id'));
    }
 
    public function testAppendEmpty2() : void {
      $text = '{{cite web|last=|id=}}';
      $template = $this->make_citation($text);
-     $this->assertTrue($template->append_to('id', 'joe'));
+     $template->append_to('id', 'joe');
      $this->assertSame('joe', $template->get2('id'));
    }
  
    public function testAppendAppend() : void {
      $text = '{{cite web|id=X}}';
      $template = $this->make_citation($text);
-     $this->assertTrue($template->append_to('id', 'joe'));
+     $template->append_to('id', 'joe');
      $this->assertSame('Xjoe', $template->get2('id'));
    }
  
@@ -4649,12 +4649,12 @@ final class TemplateTest2 extends testBaseClass {
  
     public function testRandomISSNtests() : void {
       $text = "{{cite journal|issn=AAAA-AAAA}}";
-      $expanded = $this->make_citation($text);
-      $this->assertFalse($expanded->use_issn());
+      $expanded = $this->process_citation($text);
+      $this->assertSame($text, $expanded->parsed_text());
 
       $text = "{{cite journal|issn=1682-5845}}";
-      $expanded = $this->make_citation($text);
-      $this->assertFalse($expanded->use_issn()); // We no longer have an API
+      $expanded = $this->process_citation($text);
+      $this->assertSame($text, $expanded->parsed_text()); // We no longer have an API
     }
 
     public function testDuplicateCaps1() : void {

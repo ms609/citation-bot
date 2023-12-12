@@ -46,7 +46,7 @@ class Page {
       // @codeCoverageIgnoreStart
       $message = "Error: Could not fetch page.";
       if (isset($details->error->info))  $message = $message . " " . (string) $details->error->info; 
-      report_warning($message);
+      report_warning(echoable($message));
       return FALSE;
       // @codeCoverageIgnoreEnd
     }
@@ -62,7 +62,7 @@ class Page {
     
     $details = $my_details;
     if (isset($details->invalid)) {
-      report_warning("Page invalid: " . (isset($details->invalidreason) ? (string) $details->invalidreason : ''));
+      report_warning("Page invalid: " . (isset($details->invalidreason) ? echoable((string) $details->invalidreason) : ''));
       return FALSE;
     }
     if ( !isset($details->touched) || !isset($details->lastrevid)) {
@@ -87,7 +87,7 @@ class Page {
              report_warning("Page is protected.");
              return FALSE;
            } else {
-             report_minor_error("Unexpected protection status: " . $the_level);  // @codeCoverageIgnore
+             report_minor_error("Unexpected protection status: " . echoable($the_level));  // @codeCoverageIgnore
            }
          }
        }
@@ -100,7 +100,7 @@ class Page {
     $this->text = WikipediaBot::GetAPage($title);
 
     if ($this->text === '') {
-       report_warning('Page '  . $title . ' from ' . str_replace(['/w/index.php', 'https://'], ['',''], WIKI_ROOT) . ' appears to be empty '); // @codeCoverageIgnore
+       report_warning('Page '  . echoable($title) . ' from ' . str_replace(['/w/index.php', 'https://'], ['',''], WIKI_ROOT) . ' appears to be empty '); // @codeCoverageIgnore
        return FALSE;                                                                          // @codeCoverageIgnore
     }
     $this->start_text = $this->text;
@@ -433,7 +433,7 @@ class Page {
       foreach (array_keys($template_mods) as $key) {
         if (!isset($this->modifications[$key])) {
           $this->modifications[$key] = $template_mods[$key];                     // @codeCoverageIgnore
-          report_minor_error('unexpected modifications key: ' . (string) $key);  // @codeCoverageIgnore
+          report_minor_error('unexpected modifications key: ' . echoable((string) $key));  // @codeCoverageIgnore
         } elseif (is_array($this->modifications[$key])) {
           $this->modifications[$key] = array_unique(array_merge($this->modifications[$key], $template_mods[$key]));
         } else {
@@ -459,7 +459,7 @@ class Page {
       foreach (array_keys($template_mods) as $key) {
         if (!isset($this->modifications[$key])) {
           $this->modifications[$key] = $template_mods[$key];                     // @codeCoverageIgnore
-          report_minor_error('unexpected modifications key: ' . (string) $key);  // @codeCoverageIgnore
+          report_minor_error('unexpected modifications key: ' . echoable((string) $key));  // @codeCoverageIgnore
         } elseif (is_array($this->modifications[$key])) {
           $this->modifications[$key] = array_unique(array_merge($this->modifications[$key], $template_mods[$key]));
         } else {
@@ -644,7 +644,7 @@ class Page {
          } else {
            $failures[4] = TRUE;
            if ($failures[0] && $failures[1] && $failures[2] && $failures[3]) {
-              report_error("Five failures in a row -- shutting down the bot on page " . $this->title);
+              report_error("Five failures in a row -- shutting down the bot on page " . echoable($this->title));
            }
            sleep(4);
            return FALSE;
@@ -731,7 +731,7 @@ class Page {
           echo "<p><h3>\n\n The following text might help you figure out where the <b>error on the page</b> is (Look for lone { and } characters)</h3>\n<h4> If that is not the problem, then run the single page with &prce=1 added to the URL to change the parsing engine</h4>\n" . echoable($text) . "\n\n<p>";
         }
         if (TRAVIS) {
-          report_error("Critical Error on page: " . $this->title);
+          report_error("Critical Error on page: " . echoable($this->title));
         } else {
           report_warning("Either page is too big and complex or there is an error with { and } characters balancing out.");
         }
