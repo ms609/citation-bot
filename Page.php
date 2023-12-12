@@ -272,7 +272,9 @@ class Page {
      }
     // TEMPLATES
     set_time_limit(120);
+    /** @var array<TripleBracket> $triplebrack */
     $triplebrack = $this->extract_object('TripleBracket');
+    /** @var array<SingleBracket> $singlebrack */
     $singlebrack = $this->extract_object('SingleBracket');
     /** @var array<Template> $all_templates */
     $all_templates = $this->extract_object('Template');
