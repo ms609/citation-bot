@@ -2850,11 +2850,11 @@ final class TemplateTest2 extends testBaseClass {
    }           
                       
    public function testSuppressWarnings() : void {
-     $text='{{Cite journal |doi=((10.51134/sod.2013.039 )) }}';
+     $text='{{Cite journal |doi=((10.1063/1.478352 )) }}';
      $template = $this->process_citation($text);
      $this->assertNull($template->get2('doi-broken-date'));
-     $this->assertSame('10.51134/sod.2013.039', $template->get2('doi'));
-     $this->assertSame('((10.51134/sod.2013.039 ))', $template->get3('doi'));
+     $this->assertSame('10.1063/1.478352', $template->get2('doi'));
+     $this->assertSame('((10.1063/1.478352 ))', $template->get3('doi'));
      $this->assertNotNull($template->get2('journal'));
    }
  
