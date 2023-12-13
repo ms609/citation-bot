@@ -3632,6 +3632,7 @@ final class Template {
       foreach($vanc_attribs as $vanc_idx => $vanc_attrib) {
         $vanc_f = $vanc_fa[$vanc_idx];
         $vanc_l = $vanc_la[$vanc_idx];
+        $v = '';
         if (!array_key_exists($vanc_attrib, $this->param) || !isset($this->param[$vanc_attrib]))
         {
           $arr = array();
@@ -3643,7 +3644,6 @@ final class Template {
           }
 
           // Convert firstN/lastN to vauthors
-          $v = '';
           $i = 1;
           while (TRUE){
             $fv = '';
@@ -3651,16 +3651,20 @@ final class Template {
             $fk = $vanc_f.strval($i);
             $lk = $vanc_l.strval($i);
             if (array_key_exists($fk, $arr)) {
-              if (isset($arr[$fk]) && strlen($arr[$fk])>0) {
-                $fv = $arr[$fk];
-              }
+              $tfk = $arr[$fk];
               unset($arr[$fk]);
+              if (is_string($tfk) && (strlen($tkf) > 0)) {
+                $fv = $tfk;
+              }
+              unset($tfk);
             }
             if (array_key_exists($lk, $arr)) {
-              if (isset($arr[$lk]) && strlen($arr[$lk])>0) {
-                $lv = $arr[$lk];
-              }
+              $tlk = $arr[$lk];
               unset($arr[$lk]);
+              if (is_string($tlk) && (strlen($tlk)>0)) {
+                $lv = $tlk;
+              }
+              unset($tlk);
             }
             if (($fv === '') && ($lv === '')) {
               break;

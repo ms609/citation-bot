@@ -787,18 +787,20 @@ class Page {
   }
 
   protected function set_name_list_style() : void {
-    // see {{Use vanc name-list-style}}, {{Use default name-list-style}}, {{Use amp name-list-style}}
-    $name_list_style = NAME_LIST_STYLE_DEFAULT;
-    if (preg_match('~\{\{Use vanc name-list-style[^\}\{]*\}\}~i',$this->text)) {
-      $name_list_style = NAME_LIST_STYLE_VANC;
+
+   // get value of name-list-style parameter in "cs1 config" templates such as {{cs1 config |name-list-style=vanc }} 
+
+    $name_list_style = NULL;
+    $pattern = '/{{\s*?cs1\s*?config[^}]*?name-list-style\s*?=\s*?(\w+)\b[^}]*?}}/im';
+    if (preg_match($pattern, $this->text, $matches) && array_key_exists(1, $matches)) {
+      $s = strtolower($matches[1]);
+      if     ($s === 'default') {$name_list_style = NAME_LIST_STYLE_DEFAULT;} 
+      elseif ($s === 'vanc')    {$name_list_style = NAME_LIST_STYLE_VANC;} 
+      elseif ($s === 'amp')     {$name_list_style = NAME_LIST_STYLE_AMP;} 
     }
-    if (preg_match('~\{\{Use amp name-list-style[^\}\{]*\}\}~i',$this->text)) {
-      $name_list_style = NAME_LIST_STYLE_AMP;
+    if ($name_list_style !== NULL) {
+      $this->name_list_style = $name_list_style;
     }
-    if (preg_match('~\{\{Use default name-list-style[^\}\{]*\}\}~i',$this->text)) {
-      $name_list_style = NAME_LIST_STYLE_DEFAULT;
-    }
-    $this->name_list_style = $name_list_style;
   }
   
   protected function set_date_pattern() : void {
