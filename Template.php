@@ -3743,6 +3743,8 @@ final class Template {
         $this->set($param, safe_preg_replace('~&#x2013;~u', '&ndash;', $this->get($param)));
         $this->set($param, safe_preg_replace('~&#x2014;~u', '&mdash;', $this->get($param)));
         $this->set($param, safe_preg_replace('~&#x00026;~u', '&', $this->get($param)));
+        $this->set($param, safe_preg_replace('~&#8203;~u', ' ', $this->get($param)));
+        $this->set($param, safe_preg_replace('~  +~u', ' ', $this->get($param))); // multiple spaces
         $this->set($param, safe_preg_replace('~(?<!\&)&[Aa]mp;(?!&)~u', '&', $this->get($param))); // &Amp; => & but not if next character is & or previous character is ;
 
         // Remove final semi-colon from a few items
