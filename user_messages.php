@@ -18,7 +18,12 @@ function user_notice(string $symbol, string $class, string $text) : void {
     // These are split over three lines to avoid creating a single long string during error conditions - which could blow out the memory
     /** @psalm-suppress TypeDoesNotContainType */ /* PSALM thinks HTML_OUTPUT cannot be false */
     echo "\n " . (HTML_OUTPUT ? "<span class='$class'>" : "") . $symbol;
-    (strlen($text) > 5242880) ? echo "HUGE amount of text NOT printed" : echo $text; //  much bigger than https://en.wikipedia.org/wiki/Special:LongPages
+    if (strlen($text) > 5242880) { //  much bigger than https://en.wikipedia.org/wiki/Special:LongPages
+      echo "HUGE amount of text NOT printed";
+      bot_debug_log("HUGE amount of text NOT printed");
+    } else {
+      echo $text;
+    }
     /** @psalm-suppress TypeDoesNotContainType */ /* PSALM thinks HTML_OUTPUT cannot be false */
     echo HTML_OUTPUT ? "</span>" : "";
     // @codeCoverageIgnoreEnd
