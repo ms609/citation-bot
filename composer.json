@@ -5,8 +5,4 @@
 	"require": {	
 		"mediawiki/oauthclient": "2.0.0"	
 	},
-	"require-dev": {
-		"phpstan/phpstan": "^1.10",
-		"phpunit/phpunit": "^10.5"
-	}
 }
