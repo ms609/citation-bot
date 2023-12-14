@@ -22,6 +22,7 @@ class Page {
   /** @var array<mixed> $modifications **/
   protected array $modifications = array();
   protected int $date_style = DATES_WHATEVER;
+  protected int $name_list_style = NAME_LIST_STYLE_DEFAULT;
   protected string $read_at = '';
   protected string $start_text = '';
   protected int $lastrevid = 0;
@@ -105,6 +106,7 @@ class Page {
     }
     $this->start_text = $this->text;
     $this->set_date_pattern();
+    $this->set_name_list_style();
 
     if (preg_match('~\#redirect *\[\[~i', $this->text)) {
       report_warning("Page is a redirect."); // @codeCoverageIgnoreStart
@@ -124,6 +126,7 @@ class Page {
     $this->text = $text;
     $this->start_text = $this->text;
     $this->set_date_pattern();
+    $this->set_name_list_style();
     $this->title = '';
     self::$last_title = '';
     $this->read_at = '';
@@ -286,6 +289,7 @@ class Page {
     }
     Template::$all_templates = &$all_templates; // Pointer to save memory
     Template::$date_style = $this->date_style;
+    Template::$name_list_style = $this->name_list_style;
     foreach ($all_templates as $this_template) {
       if ($this_template->wikiname() === 'void') {
         $this_template->block_modifications();
@@ -480,6 +484,7 @@ class Page {
     // remove circular memory reference that makes garbage collection harder and reset
     Template::$all_templates = array();
     Template::$date_style = DATES_WHATEVER;
+    Template::$name_list_style = NAME_LIST_STYLE_DEFAULT;
     unset($all_templates);
 
     $this->text = safe_preg_replace('~(\{\{[Cc]ite ODNB\s*\|[^\{\}\_]+_?[^\{\}\_]+\}\}\s*)\{\{ODNBsub\}\}~u', '$1', $this->text); // Allow only one underscore to shield us from MATH etc.
@@ -784,6 +789,26 @@ class Page {
       return FALSE;
     }
     return TRUE;
+  }
+
+  protected function set_name_list_style() : void {
+
+   // get value of name-list-style parameter in "cs1 config" templates such as {{cs1 config |name-list-style=vanc }} 
+
+    $name_list_style = NULL;
+    $pattern = '/{{\s*?cs1\s*?config[^}]*?name-list-style\s*?=\s*?(\w+)\b[^}]*?}}/im';
+    if (preg_match($pattern, $this->text, $matches) && array_key_exists(1, $matches)) {
+      $s = strtolower($matches[1]);
+      if     ($s === 'default') {$name_list_style = NAME_LIST_STYLE_DEFAULT;} 
+      elseif ($s === 'vanc')    {$name_list_style = NAME_LIST_STYLE_VANC;} 
+      elseif ($s === 'amp')     {$name_list_style = NAME_LIST_STYLE_AMP;} 
+      elseif ($s !== '')        {bot_debug_log('Weird name-list-style found: ' . echoable($s));}
+    }
+    if ($name_list_style !== NULL) {
+      $this->name_list_style = $name_list_style;
+    } else {
+      $this->name_list_style = NAME_LIST_STYLE_DEFAULT;
+    }
   }
   
   protected function set_date_pattern() : void {

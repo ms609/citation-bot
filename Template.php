@@ -20,6 +20,7 @@ final class Template {
   /** @var array<Template> $all_templates */
   public static array $all_templates = array();  // List of all the Template() on the Page() including this one.  Can only be set by the page class after all templates are made
   public static int $date_style = DATES_WHATEVER;
+  public static int $name_list_style = NAME_LIST_STYLE_DEFAULT;
   /** @psalm-suppress PropertyNotSetInConstructor */
   protected string $rawtext;  // Must start out as unset
   public string $last_searched_doi = '';
@@ -3619,7 +3620,73 @@ final class Template {
   }
 }
 
+  /** @return array<string> */
+  public function initial_author_params() : array { return $this->initial_author_params; }
+  public function had_initial_author() : bool {return (is_array($this->initial_author_params) && (sizeof($this->initial_author_params)>0));}
+
   protected function join_params() : string {
+    if ((self::$name_list_style === NAME_LIST_STYLE_VANC) && !$this->had_initial_author() && !$this->had_initial_editor)
+    {
+      $vanc_attribs = array('vauthors', 'veditors');
+      $vanc_fa = array('first', 'editor-first');
+      $vanc_la = array('last', 'editor-last');
+      foreach($vanc_attribs as $vanc_idx => $vanc_attrib) {
+        $vanc_f = $vanc_fa[$vanc_idx];
+        $vanc_l = $vanc_la[$vanc_idx];
+        $v = '';
+        if (!array_key_exists($vanc_attrib, $this->param) || !isset($this->param[$vanc_attrib]))
+        {
+          $arr = array();
+          foreach($this->param as $k => $p) {
+            if (str_starts_with($p->param, $vanc_f) || str_starts_with($p->param, $vanc_l)) {
+              $arr[$p->param] = $p->val;
+              unset($this->param[$k]);
+            }
+          }
+
+          // Convert firstN/lastN to vauthors
+          $i = 1;
+          while (TRUE){
+            $fv = '';
+            $lv = '';
+            $fk = $vanc_f.strval($i);
+            $lk = $vanc_l.strval($i);
+            if (array_key_exists($fk, $arr)) {
+              $tfk = $arr[$fk];
+              unset($arr[$fk]);
+              if (is_string($tfk) && (strlen($tfk) > 0)) {
+                $fv = $tfk;
+              }
+              unset($tfk);
+            }
+            if (array_key_exists($lk, $arr)) {
+              $tlk = $arr[$lk];
+              unset($arr[$lk]);
+              if (is_string($tlk) && (strlen($tlk)>0)) {
+                $lv = $tlk;
+              }
+              unset($tlk);
+            }
+            if (($fv === '') && ($lv === '')) {
+              break;
+            }
+            if ($v !== '') $v .= ', ';
+            $v .= trim($lv . ' ' . substr($fv, 0, 1));
+            $lve = explode(' ', $fv);
+            if (array_key_exists(1, $lve)) $v .= substr($lve[1], 0, 1);
+            $i++;
+          }
+        }
+        if ($v !== '')
+        {
+          $p = new Parameter();
+          $p->parse_text(' '.$vanc_attrib.' = '.$v.' ');
+          $p->param = $vanc_attrib;
+          $p->val = $v;
+          array_push($this->param, $p);
+        }
+      }
+    }
     $ret = '';
     foreach($this->param as $p) {
       $ret .= '|' . $p->parsed_text();
@@ -6618,9 +6685,6 @@ final class Template {
     }
     return '';
   }
-
-  /** @return array<string> **/
-  public function initial_author_params() : array { return $this->initial_author_params; }
 
   protected function first_surname() : string {
     // Fetch the surname of the first author only

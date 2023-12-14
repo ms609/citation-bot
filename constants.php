@@ -29,6 +29,10 @@ const DATES_WHATEVER = 0;
 const DATES_MDY      = 1;
 const DATES_DMY      = 2;
 
+const NAME_LIST_STYLE_DEFAULT = 0;
+const NAME_LIST_STYLE_AMP     = 1;
+const NAME_LIST_STYLE_VANC    = 2;
+
 const COMMONUSERNAME   = 'citations@tools.wmflabs.org';
 const CROSSREFUSERNAME = 'martins@gmail.com';
 const PUBMEDUSERNAME   = 'martins+pubmed@gmail.com';
