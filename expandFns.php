@@ -7,7 +7,7 @@ require_once 'big_jobs.php';      // @codeCoverageIgnore
 
 final class HandleCache {
   // Greatly speed-up by having one array of each kind and only look for hash keys, not values
-  private const MAX_CACHE_SIZE = 300000;
+  private const MAX_CACHE_SIZE = 100000;
   public const MAX_HDL_SIZE = 1024;
   private const BAD_DOI_ARRAY = ['10.1126/science' => TRUE, '' => TRUE, '10.1267/science.040579197' => TRUE, '10.0000/Rubbish_bot_failure_test' => TRUE, '10.0000/Rubbish_bot_failure_test2' => TRUE];
 
@@ -108,8 +108,8 @@ function is_doi_active(string $doi) : ?bool {
   $context = stream_context_create(CONTEXT_CROSSREF);
   $headers_test = @get_headers($url, TRUE, $context);
   if ($headers_test === FALSE) {
-    sleep(2);                                                                                            // @codeCoverageIgnore
-    report_inline(' .');                                                                                 // @codeCoverageIgnore
+    sleep(2);                                           // @codeCoverageIgnore
+    report_inline(' .');                                // @codeCoverageIgnore
     $headers_test = @get_headers($url, TRUE, $context); // @codeCoverageIgnore
   }
   unset($context);
@@ -1481,13 +1481,13 @@ function numberToRomanRepresentation(int $number) : string { // https://stackove
 }
 
 function convert_to_utf8(string $value) : string {
-    $encode1 =  mb_detect_encoding($value, ["UTF-8", "EUC-KR", "EUC-CN", "ISO-2022-JP", "WINDOWS-1252", "iso-8859-1"], TRUE);
-    if ($encode1 === FALSE || $encode1 === 'UTF-8') return $value;
-    $encode2 =  mb_detect_encoding($value, ["UTF-8", "EUC-CN", "EUC-KR", "ISO-2022-JP", "WINDOWS-1252", "iso-8859-1"], TRUE);
+    $encode1 =  mb_detect_encoding($value, ["UTF-8", "EUC-KR", "EUC-CN", "ISO-2022-JP", "Windows-1252", "iso-8859-1"], TRUE);
+    if ($encode1 === FALSE || $encode1 === 'UTF-8' || $encode1 === 'Windows-1252') return $value;
+    $encode2 =  mb_detect_encoding($value, ["UTF-8", "EUC-CN", "EUC-KR", "ISO-2022-JP", "Windows-1252", "iso-8859-1"], TRUE);
     if ($encode1 !== $encode2) return $value;
-    $encode3 =  mb_detect_encoding($value, ["UTF-8", "ISO-2022-JP", "EUC-CN", "EUC-KR", "WINDOWS-1252", "iso-8859-1"], TRUE);
+    $encode3 =  mb_detect_encoding($value, ["UTF-8", "ISO-2022-JP", "EUC-CN", "EUC-KR", "Windows-1252", "iso-8859-1"], TRUE);
     if ($encode1 !== $encode3) return $value;
-    $encode4 =  mb_detect_encoding($value, ["iso-8859-1", "UTF-8", "WINDOWS-1252", "ISO-2022-JP", "EUC-CN", "EUC-KR"], TRUE);
+    $encode4 =  mb_detect_encoding($value, ["iso-8859-1", "UTF-8", "Windows-1252", "ISO-2022-JP", "EUC-CN", "EUC-KR"], TRUE);
     if ($encode1 !== $encode4) return $value;
     $new_value = mb_convert_encoding($value, "UTF-8", $encode1);
     if ($new_value == "") return $value;
@@ -1504,7 +1504,11 @@ function smart_decode(string $title, string $encode, string $archive_url) : stri
   if (in_array(strtolower($encode), ["windows-1255", "maccyrillic", "windows-1253", "windows-1256", "tis-620", "windows-874", "iso-8859-11", "big5", "windows-1250"])) {
     $try = (string) @iconv($encode, "UTF-8", $title);
   } else {
-    $try = (string) @mb_convert_encoding($title, "UTF-8", $encode);
+    try {
+       $try = (string) @mb_convert_encoding($title, "UTF-8", $encode);
+    } catch (Exception $e) {
+       $try = "";  // Some encodings throw execptions such as "maccentraleurope"
+    }
   }
   if ($try == "") {
     bot_debug_log('Bad Encoding: ' . $encode . ' for ' . echoable($archive_url)); // @codeCoverageIgnore

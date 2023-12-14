@@ -8,11 +8,11 @@ const MAGIC_STRING_URLS = 'CITATION_BOT_PLACEHOLDER_URL_POINTER_';
 const CITOID_ZOTERO = "https://en.wikipedia.org/api/rest_v1/data/citation/zotero/";
 
 /**
-  @param array<string> $ids
+  @param array<string> $_ids
   @param array<Template> $templates
 **/
-function query_url_api(array $ids, array &$templates) : void {  // Pointer to save memory
-   Zotero::query_url_api_class($ids, $templates);
+function query_url_api(array $_ids, array &$templates) : void {  // Pointer to save memory
+   Zotero::query_url_api_class($templates);
 }
 
 final class Zotero {
@@ -87,10 +87,9 @@ public static function unblock_zotero() : void {
 }
 
 /**
-  @param array<string> $ids
   @param array<Template> $templates
 **/
-public static function query_url_api_class(array $ids, array &$templates) : void { // Pointer to save memory
+public static function query_url_api_class(array &$templates) : void { // Pointer to save memory
   if (!SLOW_MODE) return; // Zotero takes time
 
   curl_setopt(self::$zotero_ch, CURLOPT_TIMEOUT, BOT_HTTP_TIMEOUT*2.5); // Reset default
