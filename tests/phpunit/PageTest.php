@@ -125,6 +125,22 @@ final class PageTest extends testBaseClass {
       $page = $this->process_page($text);
       $this->assertNull(NULL);
   }
+
+   public function testDontCrashOnVanNames() : void { // Goofy ones too
+      $text = '{{cs1 config |name-list-style=vanc }}{{cite web}}';
+      $page = $this->process_page($text);
+      $text = '{{cs1 config |name-list-style=doggies }}{{cite web}}';
+      $page = $this->process_page($text);
+      $text = '{{cs1 config |name-list-style=burger }}{{cs1 config |name-list-style=fries }}{{cite web}}';
+      $page = $this->process_page($text);
+      $text = '{{cs1 config |name-list-style=burger }}{{cs1 config|name-list-style=vanc }}{{cite web}}';
+      $page = $this->process_page($text);
+      $text = '{{cs1 config |name-list-style=vanc }}{{cs1 config |name-list-style=fries }}{{cite web}}';
+      $page = $this->process_page($text);
+      $text =  '{{cs1 config |name-list-style=vanc }}{{cs1 config| name-list-style=vanc}}{{cite web}}';
+      $page = $this->process_page($text);
+      $this->assertNull(NULL);
+  }
  
   public function testOverwriteTestPage() : void {
       $page = new TestPage();
