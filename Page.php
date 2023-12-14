@@ -805,6 +805,8 @@ class Page {
     }
     if ($name_list_style !== NULL) {
       $this->name_list_style = $name_list_style;
+    } else {
+      $this->name_list_style = NAME_LIST_STYLE_DEFAULT;
     }
   }
   
