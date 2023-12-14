@@ -2125,6 +2125,7 @@ final class TemplateTest extends testBaseClass {
    }
  
   public function testGoogleBooksExpansionNEW() : void {
+    sleep(1); // Give google a break, since next test often fails
     $text = "{{Cite web | url=https://www.google.com/books/edition/_/SjpSkzjIzfsC?hl=en}}";
     $expanded = $this->process_citation($text);
     $this->assertSame('cite book', $expanded->wikiname());
@@ -2139,12 +2140,10 @@ final class TemplateTest extends testBaseClass {
 
   
   public function testGoogleDates() : void {
+    sleep(3); // Give google a break, since this often fails
     $text = "{{cite book|url=https://books.google.com/books?id=yN8DAAAAMBAJ&pg=PA253}}";
     $expanded = $this->process_citation($text);
-    $date = $expanded->get2('date');
-    $expected_dates = array('February 1935', '1935-02');
-    $this->assertTrue(in_array($date, $expected_dates), 'Got: "'.$date.'", expected: "'.implode(' ', $expected_dates).'"');
-    // Google recovers Feb 1935; Zotero returns 1935-02.
+    $this->assertSame('February 1935', $expanded->get2('date'));
   }
   
   public function testLongAuthorLists() : void {
