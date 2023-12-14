@@ -3620,6 +3620,7 @@ final class Template {
   }
 }
 
+  /** @return array<string> */
   public function initial_author_params() : array { return $this->initial_author_params; }
   public function had_initial_author() : bool {return (is_array($this->initial_author_params) && (sizeof($this->initial_author_params)>0));}
 
