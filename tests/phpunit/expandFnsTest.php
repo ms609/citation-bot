@@ -412,11 +412,13 @@ final class expandFnsTest extends testBaseClass {
     $decoded = mb_convert_encoding(urldecode($urlencoded_iso_8859_1), "UTF-8", "iso-8859-1");
     $this->assertSame($sample, $decoded);
   }
-  
+
+  /** WINDOWS-1252 support dropped because of too many false detections
   public function testVariousEncodes5() : void {
     $test="2xSP!#$%&'()*+,-./3x0123456789:;<=>?4x@ABCDEFGHIJKLMNO5xPQRSTUVWXYZ[\]^_6x`abcdefghijklmno7xpqrstuvwxyz{|}~8x9xAxNBSP¡¢£€20AC¥Š0160§š0161©ª«¬SHY®¯Bx°±²³Ž017Dµ¶·ž017E¹º»Œ0152œ0153Ÿ0178¿CxÀÁÂÃÄÅÆÇÈÉÊËÌÍÎÏDxÐÑÒÓÔÕÖ×ØÙÚÛÜÝÞßExàáâãäåæçèéêëìíîïFxðñòóôõö÷øùúûüýþÿ";
     $this->assertSame($test, convert_to_utf8(mb_convert_encoding($test, "WINDOWS-1252",  "UTF-8")));
   }
+  **/
   
   public function testVariousEncodes6() : void {
     $test="ア イ ウ エ オ カ キ ク ケ コ ガ ギ グ ゲ ゴ サ シ ス セ ソ ザ ジ ズ ゼ ゾ タ チ ツ テ ト ダ ヂ ヅ デ ド ナ ニ ヌ ネ ノ ハ ヒ フ ヘ ホ バ ビ ブ ベ ボ パ ピ プ ペ ポ マ ミ ム メ モ ヤ ユ ヨ ラ リ ル レ ロ ワ ヰ ヱ ヲ";
