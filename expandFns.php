@@ -104,12 +104,15 @@ function doi_works(string $doi) : ?bool {
 
 function is_doi_active(string $doi) : ?bool {
   $doi = trim($doi);
-  $headers_test = @get_headers("https://api.crossref.org/works/" . doi_encode($doi), TRUE);
+  $url = "https://api.crossref.org/works/" . doi_encode($doi);
+  $context = stream_context_create();
+  $headers_test = @get_headers($url, TRUE, $context);
   if ($headers_test === FALSE) {
-    sleep(2);                                                                                            // @codeCoverageIgnore
-    report_inline(' .');                                                                                 // @codeCoverageIgnore
-    $headers_test = @get_headers("https://api.crossref.org/works/" . doi_encode($doi), TRUE); // @codeCoverageIgnore
+    sleep(2);                                           // @codeCoverageIgnore
+    report_inline(' .');                                // @codeCoverageIgnore
+    $headers_test = @get_headers($url, TRUE, $context); // @codeCoverageIgnore
   }
+  unset($context);
   if ($headers_test === FALSE) return NULL; // most likely bad, but will recheck again an again
   /** @psalm-suppress InvalidArrayOffset */
   $response = (string) $headers_test['0'];
