@@ -3654,7 +3654,7 @@ final class Template {
             if (array_key_exists($fk, $arr)) {
               $tfk = $arr[$fk];
               unset($arr[$fk]);
-              if (is_string($tfk) && (strlen($tkf) > 0)) {
+              if (is_string($tfk) && (strlen($tfk) > 0)) {
                 $fv = $tfk;
               }
               unset($tfk);
