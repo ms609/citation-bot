@@ -144,13 +144,13 @@ final class PageTest extends testBaseClass {
 
   public function testVancNames1() : void {
       $page = $this->process_page('{|}{{cs1 config|name-list-style=vanc}}<!-- -->{{{|}}}{{cite journal | title = Food Ingredients That Inhibit Cholesterol Absorption | journal = Preventive Nutrition and Food Science | volume =  | issue =  | pages = 67–80 | date = June 2017 | pmid = 28702423 | pmc = 5503415 | doi = 10.3746/pnf.2017.22.2.67 | vauthors = }}');
-      $this->assertSame(          '{|}{{cs1 config|name-list-style=vanc}}<!-- -->{{{|}}}{{cite journal | title = Food Ingredients That Inhibit Cholesterol Absorption | journal = Preventive Nutrition and Food Science | volume =  22| issue =  2| pages = 67–80 | date = June 2017 | pmid = 28702423 | pmc = 5503415 | doi = 10.3746/pnf.2017.22.2.67 | vauthors = Jesch ED, Carr TP }}';
+      $this->assertSame(          '{|}{{cs1 config|name-list-style=vanc}}<!-- -->{{{|}}}{{cite journal | title = Food Ingredients That Inhibit Cholesterol Absorption | journal = Preventive Nutrition and Food Science | volume =  22| issue =  2| pages = 67–80 | date = June 2017 | pmid = 28702423 | pmc = 5503415 | doi = 10.3746/pnf.2017.22.2.67 | vauthors = Jesch ED, Carr TP }}', $page->parsed_text());
       $this->assertSame('Alter: volume, issue. Add: authors 1-2. Removed parameters. | [[:en:WP:UCB|Use this bot]]. [[:en:WP:DBUG|Report bugs]]. ', $page->edit_summary());
   }
 
-  public function testVancNames2() : void { // What the heck.  Where are the authors?
+  public function testVancNames2() : void {
       $page = $this->process_page('{|}{{cs1 config|name-list-style=bogus}}<!-- -->{{{|}}}{{cite journal | title = Food Ingredients That Inhibit Cholesterol Absorption | journal = Preventive Nutrition and Food Science | volume =  | issue =  | pages = 67–80 | date = June 2017 | pmid = 28702423 | pmc = 5503415 | doi = 10.3746/pnf.2017.22.2.67 | vauthors = }}');
-      $this->assertSame(          '{|}{{cs1 config|name-list-style=bogus}}<!-- -->{{{|}}}{{cite journal | title = Food Ingredients That Inhibit Cholesterol Absorption | journal = Preventive Nutrition and Food Science | volume =  | issue =  | pages = 67–80 | date = June 2017 | pmid = 28702423 | pmc = 5503415 | doi = 10.3746/pnf.2017.22.2.67 | vauthors = }}', $page->parsed_text());
+      $this->assertSame(          '{|}{{cs1 config|name-list-style=bogus}}<!-- -->{{{|}}}{{cite journal | title = Food Ingredients That Inhibit Cholesterol Absorption | journal = Preventive Nutrition and Food Science | volume =  | issue =  | pages = 67–80 | date = June 2017 | pmid = 28702423 | pmc = 5503415 | doi = 10.3746/pnf.2017.22.2.67 | last1 = Jesch | first1 = E. D. | last2 = Carr | first2 = T. P. }}', $page->parsed_text());
       $this->assertSame('Misc citation tidying. | [[:en:WP:UCB|Use this bot]]. [[:en:WP:DBUG|Report bugs]]. ', $page->edit_summary());
   }
 
