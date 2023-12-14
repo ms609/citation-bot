@@ -104,7 +104,7 @@ function doi_works(string $doi) : ?bool {
 
 function is_doi_active(string $doi) : ?bool {
   $doi = trim($doi);
-  $url = "https://api.crossref.org/works/" . doi_encode($doi);
+  $url = "https://api.crossref.org/v1/works/" . doi_encode($doi) . "&mailto=".CROSSREFUSERNAME; // do not encode crossref email
   $context = stream_context_create(CONTEXT_CROSSREF);
   $headers_test = @get_headers($url, TRUE, $context);
   if ($headers_test === FALSE) {
