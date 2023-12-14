@@ -5853,7 +5853,6 @@ final class Template {
             $value = safe_preg_replace('~^0+~', '', $value);
             if ($value === '') {
               $this->forget($param); // Was all zeros
-
             }
           }
           if ($value) {
