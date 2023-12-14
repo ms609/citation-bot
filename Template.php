@@ -2626,7 +2626,7 @@ final class Template {
 
   public function get_unpaywall_url(string $doi) : string {
     set_time_limit(120);
-    $url = "https://api.unpaywall.org/v2/$doi?email=" . CROSSREFUSERNAME . "&mailto=" . CROSSREFUSERNAME;
+    $url = "https://api.unpaywall.org/v2/$doi?email=" . CROSSREFUSERNAME;
     $ch = curl_init();
     curl_setopt_array($ch,
             [CURLOPT_HEADER => FALSE,
