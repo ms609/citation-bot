@@ -137,11 +137,46 @@ final class PageTest extends testBaseClass {
       $page = $this->process_page($text);
       $text = '{{cs1 config |name-list-style=vanc }}{{cs1 config |name-list-style=fries }}{{cite web}}';
       $page = $this->process_page($text);
-      $text =  '{{cs1 config |name-list-style=vanc }}{{cs1 config| name-list-style=vanc}}{{cite web}}';
+      $text =  '{{cs1 config |name-list-style=vanc }}{{cs1 config| name-list-style=amp}}{{cite web}}';
       $page = $this->process_page($text);
       $this->assertNull(NULL);
   }
- 
+
+  public function testVancNames1() : void {
+      $page = $this->process_page('{|}{{cs1 config|name-list-style=vanc}}<!-- -->{{{|}}}{{cite journal | title = Food Ingredients That Inhibit Cholesterol Absorption | journal = Preventive Nutrition and Food Science | volume =  | issue =  | pages = 67–80 | date = June 2017 | pmid = 28702423 | pmc = 5503415 | doi = 10.3746/pnf.2017.22.2.67 | vauthors = }}');
+      $this->assertSame('What will it be', $page->edit_summary() . $page->parsed_text());
+  }
+
+  public function testVancNames2() : void {
+      $page = $this->process_page('{|}{{cs1 config|name-list-style=bogus}}<!-- -->{{{|}}}{{cite journal | title = Food Ingredients That Inhibit Cholesterol Absorption | journal = Preventive Nutrition and Food Science | volume =  | issue =  | pages = 67–80 | date = June 2017 | pmid = 28702423 | pmc = 5503415 | doi = 10.3746/pnf.2017.22.2.67 | vauthors = }}');
+      $this->assertSame('What will it be', $page->edit_summary() . $page->parsed_text());
+  }
+
+  public function testVancNames3() : void {
+      $page = $this->process_page('{|}{{cs1 config|name-list-style=amp}}<!-- -->{{{|}}}{{cite journal | title = Food Ingredients That Inhibit Cholesterol Absorption | journal = Preventive Nutrition and Food Science | volume =  | issue =  | pages = 67–80 | date = June 2017 | pmid = 28702423 | pmc = 5503415 | doi = 10.3746/pnf.2017.22.2.67 | vauthors = }}');
+      $this->assertSame('What will it be', $page->edit_summary() . $page->parsed_text());
+  }
+
+  public function testVancNames4() : void {
+      $page = $this->process_page('{|}{{cs1 config|name-list-style=default}}<!-- -->{{{|}}}{{cite journal | title = Food Ingredients That Inhibit Cholesterol Absorption | journal = Preventive Nutrition and Food Science | volume =  | issue =  | pages = 67–80 | date = June 2017 | pmid = 28702423 | pmc = 5503415 | doi = 10.3746/pnf.2017.22.2.67 | vauthors = }}');
+      $this->assertSame('What will it be', $page->edit_summary() . $page->parsed_text());
+  }
+
+  public function testVancNames5() : void {
+      $page = $this->process_page('{|}{{cs1 config|name-list-style=}}<!-- -->{{{|}}}{{cite journal | title = Food Ingredients That Inhibit Cholesterol Absorption | journal = Preventive Nutrition and Food Science | volume =  | issue =  | pages = 67–80 | date = June 2017 | pmid = 28702423 | pmc = 5503415 | doi = 10.3746/pnf.2017.22.2.67 | vauthors = }}');
+      $this->assertSame('What will it be', $page->edit_summary() . $page->parsed_text());
+  }
+
+  public function testVancNames6() : void {
+      $page = $this->process_page('{|}{{cs1 config|name-list-style=vanc}}<!-- -->{{{|}}}{{cite journal | title = Food Ingredients That Inhibit Cholesterol Absorption | journal = Preventive Nutrition and Food Science | volume =  | issue =  | pages = 67–80 | date = June 2017 | pmid = 28702423 | pmc = 5503415 | doi = 10.3746/pnf.2017.22.2.67 | vauthors = <!-- -->}}');
+      $this->assertSame('What will it be', $page->edit_summary() . $page->parsed_text());
+  }
+
+  public function testVancNames7() : void {
+      $page = $this->process_page('{|}{{cs1 config|name-list-style=vanc}}<!-- -->{{{|}}}{{cite journal | title = Food Ingredients That Inhibit Cholesterol Absorption | journal = Preventive Nutrition and Food Science | volume =  | issue =  | pages = 67–80 | date = June 2017 | pmid = 28702423 | pmc = 5503415 | doi = 10.3746/pnf.2017.22.2.67 | last1 = Shehulk}}');
+      $this->assertSame('What will it be', $page->edit_summary() . $page->parsed_text());
+  }
+
   public function testOverwriteTestPage() : void {
       $page = new TestPage();
       $page->overwrite_text('Dogs');
