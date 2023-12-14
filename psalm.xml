@@ -10,6 +10,8 @@
     allowStringToStandInForClass="true"
     findUnusedVariablesAndParams="true"
     runTaintAnalysis="false"
+    findUnusedBaselineEntry="true"
+    findUnusedCode="false"
 >
     <projectFiles>
         <file name="setup.php" />
