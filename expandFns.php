@@ -12,39 +12,31 @@ final class HandleCache {
   private const BAD_DOI_ARRAY = ['10.1126/science' => TRUE, '' => TRUE, '10.1267/science.040579197' => TRUE, '10.0000/Rubbish_bot_failure_test' => TRUE, '10.0000/Rubbish_bot_failure_test2' => TRUE];
 
   /** @var array<boolean> $cache_active */
-  static public array $cache_active = [];
+  static public array $cache_active = [];        // DOI is in CrossRef and works
   /** @var array<boolean> $cache_inactive */
-  static public array $cache_inactive  = [];
+  static public array $cache_inactive  = [];     // DOI either is not in CrossRef or does not work
   /** @var array<boolean> $cache_good */
-  static public array $cache_good = [];
-  /** @var array<boolean> $cache_bad */
-  static public array $cache_bad  = self::BAD_DOI_ARRAY;
-  /** @var array<boolean> $cache_null */
-  static public array $cache_null = [];
+  static public array $cache_good = [];          // DOI works
   /** @var array<string> $cache_hdl_loc */
-  static public array $cache_hdl_loc = [];
+  static public array $cache_hdl_loc = [];       // Final HDL location URL
   /** @var array<boolean> $cache_hdl_bad */
-  static public array $cache_hdl_bad  = [];
+  static public array $cache_hdl_bad  = self::BAD_DOI_ARRAY;  // HDL/DOI does not resolve to anything
   /** @var array<boolean> $cache_hdl_null */
-  static public array $cache_hdl_null = [];
+  static public array $cache_hdl_null = [];      // HDL/DOI resolves to NULL
 
   public static function check_memory_use() : void {
       $usage = count(self::$cache_inactive) +
                count(self::$cache_active) +
-               count(self::$cache_bad) +
                count(self::$cache_good) +
-               count(self::$cache_null) +
                count(self::$cache_hdl_bad) +
-               count(self::$cache_hdl_loc) +
+               2*count(self::$cache_hdl_loc) + // These include a path too
                count(self::$cache_hdl_null);
       if ($usage > self::MAX_CACHE_SIZE) {
         self::$cache_active = [];
         self::$cache_inactive  = [];
         self::$cache_good = [];
-        self::$cache_bad  = self::BAD_DOI_ARRAY;
-        self::$cache_null = [];
         self::$cache_hdl_loc = [];
-        self::$cache_hdl_bad  = [];
+        self::$cache_hdl_bad  = self::BAD_DOI_ARRAY;
         self::$cache_hdl_null = [];
         gc_collect_cycles();
       }
@@ -79,8 +71,8 @@ function doi_works(string $doi) : ?bool {
   $doi = trim($doi);
   if (strlen($doi) > HandleCache::MAX_HDL_SIZE) return NULL;
   if (isset(HandleCache::$cache_good[$doi])) return TRUE;
-  if (isset(HandleCache::$cache_bad[$doi]))  return FALSE;
-  if (isset(HandleCache::$cache_null[$doi])) return NULL;
+  if (isset(HandleCache::$cache_hdl_bad[$doi]))  return FALSE;
+  if (isset(HandleCache::$cache_hdl_null[$doi])) return NULL;
   HandleCache::check_memory_use();
 
   $start_time = time();
@@ -90,12 +82,12 @@ function doi_works(string $doi) : ?bool {
     {
       return NULL;
     } else {
-      HandleCache::$cache_null[$doi] = TRUE;
+      HandleCache::$cache_hdl_null[$doi] = TRUE;
       return NULL;
     }
   }
   if ($works === FALSE) {
-    HandleCache::$cache_bad[$doi] = TRUE;
+    HandleCache::$cache_hdl_bad[$doi] = TRUE;
     return FALSE;
   }
   HandleCache::$cache_good[$doi] = TRUE;

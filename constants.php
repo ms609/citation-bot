@@ -29,7 +29,7 @@ const DATES_WHATEVER = 0;
 const DATES_MDY      = 1;
 const DATES_DMY      = 2;
 
-const COMMONUSERNAME   = 'sdaf@tools.wmflabs.org';
+const COMMONUSERNAME   = 'citations@tools.wmflabs.org';
 const CROSSREFUSERNAME = 'martins@gmail.com';
 const PUBMEDUSERNAME   = 'martins+pubmed@gmail.com';
 
