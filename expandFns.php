@@ -369,7 +369,7 @@ function wikify_external_text(string $title) : string {
       // Need to use a placeholder to protect contents from URL-safening
       $title = str_replace($matches[0][$i], $placeholder[$i], $title);
     }
-    $title = str_replace(['<mo stretchy="false">', "<mo stretchy='false'>", '', $title);
+    $title = str_replace(['<mo stretchy="false">', "<mo stretchy='false'>"], '', $title);
   }
   $title = html_entity_decode($title, ENT_COMPAT | ENT_HTML401, "UTF-8");
   $title = safe_preg_replace("~\s+~"," ", $title);  // Remove all white spaces before
