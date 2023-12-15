@@ -2016,8 +2016,16 @@ final class Template {
            . ($data['end_page']   ? "&epage="  . urlencode($data['end_page'])   : '')
            . ($data['year']       ? "&date="   . urlencode($data['year'])       : '')
            . ($data['volume']     ? "&volume=" . urlencode($data['volume'])     : '')
-           . ($data['issn']       ? "&issn="   . urlencode($data['issn'])       : "&title=" . urlencode($data['journal']));
-      $result = @simplexml_load_file($url);
+           . ($data['issn']       ? "&issn="   . urlencode($data['issn'])       : "&title=" . urlencode($data['journal']))
+           . "&mailto=".CROSSREFUSERNAME; // do not encode crossref email
+      $ch = curl_init_crossref($url);
+      $xml = curl_exec($ch);
+      if (is_string($xml) && (strlen($xml) > 0)) {
+        $result = simplexml_load_string($xml);
+      } else {
+        $result = FALSE;
+      }
+      curl_close($ch);
       if ($result === FALSE) {
         report_warning("Error loading simpleXML file from CrossRef.");  // @codeCoverageIgnore
         return;                                                   // @codeCoverageIgnore
@@ -2627,7 +2635,7 @@ final class Template {
              CURLOPT_URL => $url,
              CURLOPT_TIMEOUT => BOT_HTTP_TIMEOUT,
              CURLOPT_CONNECTTIMEOUT => BOT_CONNECTION_TIMEOUT,
-             CURLOPT_USERAGENT => BOT_USER_AGENT]);
+             CURLOPT_USERAGENT => BOT_CROSSREF_USER_AGENT]);
     $json = (string) @curl_exec($ch);
     curl_close($ch);
     if ($json) {
