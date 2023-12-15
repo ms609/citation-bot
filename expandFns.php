@@ -369,6 +369,7 @@ function wikify_external_text(string $title) : string {
       // Need to use a placeholder to protect contents from URL-safening
       $title = str_replace($matches[0][$i], $placeholder[$i], $title);
     }
+    $title = str_replace(['<mo stretchy="false">', "<mo stretchy='false'>", '', $title);
   }
   $title = html_entity_decode($title, ENT_COMPAT | ENT_HTML401, "UTF-8");
   $title = safe_preg_replace("~\s+~"," ", $title);  // Remove all white spaces before
@@ -455,6 +456,12 @@ function wikify_external_text(string $title) : string {
 
   for ($i = 0; $i < count($replacement); $i++) {
     $title = str_replace($placeholder[$i], $replacement[$i], $title); // @phan-suppress-current-line PhanTypePossiblyInvalidDimOffset
+  }
+
+  foreach (array('<msup>', '<msub>', '<mroot>', '<msubsup>', '<munderover>', '<mrow>', '<munder>', '<mtable>', '<mtr>', '<mtd>') as $mathy) {
+    if (strpos($title, $mathy) !== FALSE) {
+      return '<nowiki>' . $title . '</nowiki>';
+    }
   }
   return $title; 
 }
