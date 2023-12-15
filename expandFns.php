@@ -104,7 +104,6 @@ function is_doi_active(string $doi) : ?bool {
     report_inline(' .');                                // @codeCoverageIgnore
     $headers_test = @get_headers($url, TRUE, $context); // @codeCoverageIgnore
   }
-  unset($context);
   if ($headers_test === FALSE) return NULL; // most likely bad, but will recheck again an again
   /** @psalm-suppress InvalidArrayOffset */
   $response = (string) $headers_test['0'];
