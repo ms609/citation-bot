@@ -96,6 +96,7 @@ const ITALICS_LIST =
  "Ras Lilas|" .
  "Yarrowia lipolytica|" .
  "Stichodactyla helianthusas|" .
+ "Schistocephalus solidus|" .
  "Pyrobaculum calidifontis|" .
  "Arabidopsis thaliana|" .
  "Homo sapiens|" .
@@ -139,7 +140,6 @@ const ITALICS_LIST =
  "Libri Carolini|" .
  "Dibamus taylori|" .
  "Nanoarchaeum equitans|" .
- "Schistocephalus solidus|" .
  "Les Noces|" .
  "Batillipes mirusand|" .
  "Batillipes noerrevangi|" .
@@ -230,6 +230,7 @@ const ITALICS_LIST =
  "Hapalotremus|" .
  "Orcus|" .
  "Phialella|" .
+ "Schistocephalus|" .
  "Philometra|" .
  "Armillaria|" .
  "Neurospora|" .
