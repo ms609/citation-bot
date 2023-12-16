@@ -787,7 +787,8 @@ final class Template {
 			   if ($this->has($possible)) {
 				 $this->forget('CITATION_BOT_PLACEHOLDER_possible');
 			   } else {
-				 $this->rename('CITATION_BOT_PLACEHOLDER_possible', $possible); 			   }
+				 $this->rename('CITATION_BOT_PLACEHOLDER_possible', $possible);
+			   }
 			 }
 		  }
 		}
@@ -2028,11 +2029,11 @@ final class Template {
 	  curl_close($ch);
 	  if ($result === FALSE) {
 		report_warning("Error loading simpleXML file from CrossRef."); // @codeCoverageIgnore
-		return; 												  // @codeCoverageIgnore
+		return;   // @codeCoverageIgnore
 	  }
 	  if (!isset($result->query_result->body->query)) {
 		report_warning("Unexpected simpleXML file from CrossRef.");  // @codeCoverageIgnore
-		return; 											   // @codeCoverageIgnore
+		return;											   // @codeCoverageIgnore
 	  }
 	  $result = $result->query_result->body->query;
 	  if ((string) $result->attributes()->status === 'malformed') {
@@ -2073,7 +2074,7 @@ final class Template {
 		$xml = get_entrez_xml('pubmed', $results[0]);
 		if ($xml === NULL || !is_object($xml->DocSum->Item)) {
 		  report_inline("Unable to query pubmed."); // @codeCoverageIgnore
-		  return; 								// @codeCoverageIgnore
+		  return;								// @codeCoverageIgnore
 		}
 		$Items = $xml->DocSum->Item;
 		foreach ($Items as $item) {
@@ -2274,7 +2275,7 @@ final class Template {
 
 	if ($result->numFound > 1) {
 	  report_warning("Multiple articles match identifiers "); // @codeCoverageIgnore
-	  return; 										// @codeCoverageIgnore
+	  return;										// @codeCoverageIgnore
 	}
 
 	if ($result->numFound === 0) {
@@ -2288,7 +2289,7 @@ final class Template {
 		  ($this->has('bibcode'))) // Must be GIGO
 		  {
 			report_inline('no record retrieved.'); // @codeCoverageIgnore
-			return; 						  // @codeCoverageIgnore
+			return;						  // @codeCoverageIgnore
 		  }
 	}
 
@@ -2298,14 +2299,14 @@ final class Template {
 	  $record = $result->docs[0];
 	  if (titles_are_dissimilar($this->get_without_comments_and_placeholders("title"), $record->title[0])) {  // Considering we searched for title, this is very paranoid
 		report_info("Similar title not found in database."); // @codeCoverageIgnore
-		return; 									   // @codeCoverageIgnore
+		return;									   // @codeCoverageIgnore
 	  }
 	  // If we have a match, but other links exists, and we have nothing journal like, then require exact title match
 	  if (!$this->blank(array_merge(['doi','pmc','pmid','eprint','arxiv'], ALL_URL_TYPES)) &&
 		  $this->blank(['issn', 'journal', 'volume', 'issue', 'number']) &&
 		  mb_strtolower($record->title[0]) !== mb_strtolower($this->get_without_comments_and_placeholders('title'))) {  // Probably not a journal, trust zotero more
 		  report_info("Exact title match not found in database."); // @codeCoverageIgnore
-		  return; 										  // @codeCoverageIgnore
+		  return;										  // @codeCoverageIgnore
 	  }
 	}
 
@@ -2323,7 +2324,7 @@ final class Template {
 	  );
 	  if ($result->numFound === 0 || !isset($result->docs[0]->pub)) {
 		report_inline('no record retrieved.'); // @codeCoverageIgnore
-		return; 						 // @codeCoverageIgnore
+		return;						 // @codeCoverageIgnore
 	  }
 	  $journal_string = explode(",", (string) $result->docs[0]->pub);
 	  $journal_fuzzyer = "~\([iI]ncorporating.+|\bof\b|\bthe\b|\ba|eedings\b|\W~";
@@ -2335,7 +2336,7 @@ final class Template {
 		report_info("Partial match but database journal \"" . // @codeCoverageIgnoreStart
 		  echoable($journal_string[0]) . "\" didn't match \"" .
 		  echoable($journal) . "\".");
-		return; 										   // @codeCoverageIgnoreEnd
+		return;										   // @codeCoverageIgnoreEnd
 	  }
 	}
 	if ($result->numFound === 1) {
@@ -2351,12 +2352,12 @@ final class Template {
 
 	  if (!isset($record->title[0]) || !isset($record->bibcode)) {
 		report_info("Database entry not complete");  // @codeCoverageIgnore
-		return; 							   // @codeCoverageIgnore
+		return;							   // @codeCoverageIgnore
 	  }
 	  if ($this->has('title') && titles_are_dissimilar($this->get('title'), $record->title[0])
 		 && !in_array($this->get('title'), ['Archived copy', "{title}", 'ScienceDirect', "Google Books", "None", 'usurped title'])) { // Verify the title matches. We get some strange mis-matches {
 		report_info("Similar title not found in database");  // @codeCoverageIgnore
-		return; 									   // @codeCoverageIgnore
+		return;									   // @codeCoverageIgnore
 	  }
 
 	  if (isset($record->doi) && $this->get_without_comments_and_placeholders('doi')) {
@@ -2385,12 +2386,12 @@ final class Template {
 	  // @codeCoverageIgnoreEnd
 	  process_bibcode_data($this, $record);
 	  return;
-	} elseif ($result->numFound === 0) {  	   // @codeCoverageIgnoreStart
+	} elseif ($result->numFound === 0) {  // @codeCoverageIgnoreStart
 	  report_inline('no record retrieved.');
 	  return;
 	} else {
 	  report_inline('multiple records retrieved.  Ignoring.');
-	  return; 								  // @codeCoverageIgnoreEnd
+	  return;								  // @codeCoverageIgnoreEnd
 	}
   }
 
@@ -2649,14 +2650,14 @@ final class Template {
 		if (!isset($best_location->evidence)) return 'nothing';
 		if (isset($oa->journal_name) && $oa->journal_name === "Cochrane Database of Systematic Reviews" ) {
 		  report_warning("Ignored a OA from Cochrane Database of Systematic Reviews for DOI: " . echoable($doi)); // @codeCoverageIgnore
-		  return 'unreliable'; 																				  // @codeCoverageIgnore
+		  return 'unreliable';																				  // @codeCoverageIgnore
 		}
 		if (isset($best_location->url_for_landing_page)) {
 		  $oa_url = (string) $best_location->url_for_landing_page; // Prefer to PDF
 		} elseif (isset($best_location->url)) {   // @codeCoverageIgnoreStart
 		  $oa_url = (string) $best_location->url;
 		} else {
-		  return 'nothing'; 					  // @codeCoverageIgnoreEnd
+		  return 'nothing';				  // @codeCoverageIgnoreEnd
 		}
 		if (!$oa_url) return 'nothing';
 
@@ -2736,7 +2737,7 @@ final class Template {
 		// Double check URL against existing data
 		if (!preg_match('~^(?:https?|ftp):\/\/\/?([^\/\.]+\.[^\/]+)\/~i', $oa_url, $matches)) {
 		   report_minor_error(' OA database gave invalid URL: ' . echoable($oa_url)); // @codeCoverageIgnore
-		   return 'nothing'; 											// @codeCoverageIgnore
+		   return 'nothing';										// @codeCoverageIgnore
 		}
 		$oa_hostname = $matches[1];
 		if (($this->has('osti') && stripos($oa_hostname, 'osti.gov') !== FALSE) ||
@@ -3101,14 +3102,14 @@ final class Template {
 			  $dat = trim(str_replace("\n%$endnote_line", "", "\n" . $dat));
 			  $endnote_parameter = FALSE;
 			  break;
-			case "D": $endnote_parameter = "date"; 	 break;
+			case "D": $endnote_parameter = "date";  break;
 			case "I": $endnote_parameter = "publisher";  break;
 			case "C": $endnote_parameter = "location";  break;
 			case "J": $endnote_parameter = "journal";  break;
-			case "N": $endnote_parameter = "issue"; 	 break;
-			case "P": $endnote_parameter = "pages"; 	 break;
-			case "T": $endnote_parameter = "title"; 	 break;
-			case "U": $endnote_parameter = "url"; 	 break;
+			case "N": $endnote_parameter = "issue";  break;
+			case "P": $endnote_parameter = "pages";  break;
+			case "T": $endnote_parameter = "title";  break;
+			case "U": $endnote_parameter = "url";  break;
 			case "V": $endnote_parameter = "volume";  break;
 			case "@": // ISSN / ISBN
 			  if (preg_match("~@\s*([\d\-]{9,}[\dxX])~", $endnote_line, $matches)) {
@@ -3870,7 +3871,7 @@ final class Template {
 
 	if (!preg_match('~^(\D+)(\d*)(\D*)$~', $param, $pmatch)) {
 	  report_minor_error("Unrecognized parameter name format in " . echoable($param)); // @codeCoverageIgnore
-	  return; 														   // @codeCoverageIgnore
+	  return;														   // @codeCoverageIgnore
 	} else {
 	  // Put "odd ones" in "normalized" order - be careful down below about $param vs $pmatch values
 	  if (in_array(strtolower($param), ['s2cid','s2cid-access'])) {
@@ -3881,7 +3882,7 @@ final class Template {
 	  }
 	  if ($pmatch[3] !== '') {
 		report_minor_error("Unrecognized parameter name format in " . echoable($param));  // @codeCoverageIgnore
-		return; 															 // @codeCoverageIgnore
+		return;															 // @codeCoverageIgnore
 	  }
 	  switch ($pmatch[1]) {
 		// Parameters are listed mostly alphabetically, though those with numerical content are grouped under "year"
@@ -6509,7 +6510,7 @@ final class Template {
 			 $hostname_plus = mb_strtolower($matches[1]);
 		   } else {
 			 bot_debug_log($url . " generated matches nothing event"); // @codeCoverageIgnore
-			 $hostname_plus = 'matches nothing'; 				   // @codeCoverageIgnore
+			 $hostname_plus = 'matches nothing';			   // @codeCoverageIgnore
 		   }
 		   $hostname_plus = (string) preg_replace('~^(m\.|www\.)~', '', $hostname_plus);
 		   $hostname_plus = (string) preg_replace('~//+~', '/', $hostname_plus);
@@ -6597,7 +6598,7 @@ final class Template {
 	$doi_status = doi_works($doi);
 	if ($doi_status === NULL) {
 	  report_warning("DOI status unknown.  doi.org failed to respond to: " . doi_link($doi)); // @codeCoverageIgnore
-	  return FALSE; 																		  // @codeCoverageIgnore
+	  return FALSE;																	  // @codeCoverageIgnore
 	} elseif ($doi_status === FALSE) {
 	  report_inline("It's not...");
 	  $this->add_if_new('doi-broken-date', date("Y-m-d"));
