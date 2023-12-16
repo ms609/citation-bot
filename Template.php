@@ -41,13 +41,13 @@ final class Template {
   protected bool $no_initial_doi = FALSE;
   /** @var array<array<string>> $used_by_api **/
   protected array $used_by_api = array(
-			   'adsabs'	  => array(),
-			   'arxiv'	  => array(),
+			   'adsabs'   => array(),
+			   'arxiv'    => array(),
 			   'crossref' => array(),
-			   'dx'		  => array(),
-			   'entrez'	  => array(),
-			   'jstor'	  => array(),
-			   'zotero'	  => array(),
+			   'dx'       => array(),
+			   'entrez'   => array(),
+			   'jstor'    => array(),
+			   'zotero'   => array(),
 			);
   /** @var array<Template> $this_array */
   private array $this_array = array(); // Unset after using to avoid pointer loop that makes garbage collection harder
@@ -348,7 +348,7 @@ final class Template {
 		  $the_chapter = $this->get('chapter');
 		  $the_volume  = $this->get('volume');
 		  $the_issue   = $this->get('issue');
-		  $the_page	   = $this->get('page');
+		  $the_page    = $this->get('page');
 		  $the_pages   = $this->get('pages');
 		  if ($this->get2('chapter') === NULL) {
 			 $no_start_chapter = TRUE;
@@ -621,10 +621,10 @@ final class Template {
 			}
 		  }
 		  if ($this->has('coauthors')) {
-			  if ($this->has('first'))	$this->rename('first',	'CITATION_BOT_PLACEHOLDER_first');
-			  if ($this->has('last'))	$this->rename('last',	'CITATION_BOT_PLACEHOLDER_last');
+			  if ($this->has('first'))  $this->rename('first',  'CITATION_BOT_PLACEHOLDER_first');
+			  if ($this->has('last'))   $this->rename('last',   'CITATION_BOT_PLACEHOLDER_last');
 			  if ($this->has('first1')) $this->rename('first1', 'CITATION_BOT_PLACEHOLDER_first1');
-			  if ($this->has('last1'))	$this->rename('last1',	'CITATION_BOT_PLACEHOLDER_last1');
+			  if ($this->has('last1'))  $this->rename('last1',  'CITATION_BOT_PLACEHOLDER_last1');
 			  if ($this->has('author1'))$this->rename('author1','CITATION_BOT_PLACEHOLDER_author1');
 			  if ($this->has('author')) $this->rename('author', 'CITATION_BOT_PLACEHOLDER_author');
 			  $this->rename('coauthors', 'CITATION_BOT_PLACEHOLDER_coauthors');
@@ -632,10 +632,10 @@ final class Template {
 				$this->initial_author_params = array();
 				$bad_data = TRUE;
 			  } else {
-				if ($this->has('CITATION_BOT_PLACEHOLDER_first'))  $this->rename('CITATION_BOT_PLACEHOLDER_first',	'first');
-				if ($this->has('CITATION_BOT_PLACEHOLDER_last'))   $this->rename('CITATION_BOT_PLACEHOLDER_last',	'last');
+				if ($this->has('CITATION_BOT_PLACEHOLDER_first'))  $this->rename('CITATION_BOT_PLACEHOLDER_first',  'first');
+				if ($this->has('CITATION_BOT_PLACEHOLDER_last'))   $this->rename('CITATION_BOT_PLACEHOLDER_last',   'last');
 				if ($this->has('CITATION_BOT_PLACEHOLDER_first1')) $this->rename('CITATION_BOT_PLACEHOLDER_first1', 'first1');
-				if ($this->has('CITATION_BOT_PLACEHOLDER_last1'))  $this->rename('CITATION_BOT_PLACEHOLDER_last1',	'last1');
+				if ($this->has('CITATION_BOT_PLACEHOLDER_last1'))  $this->rename('CITATION_BOT_PLACEHOLDER_last1',  'last1');
 				if ($this->has('CITATION_BOT_PLACEHOLDER_author1'))$this->rename('CITATION_BOT_PLACEHOLDER_author1','author1');
 				if ($this->has('CITATION_BOT_PLACEHOLDER_author')) $this->rename('CITATION_BOT_PLACEHOLDER_author', 'author');
 				$this->rename('CITATION_BOT_PLACEHOLDER_coauthors', 'coauthors');
@@ -758,12 +758,12 @@ final class Template {
 				$this->forget('CITATION_BOT_PLACEHOLDER_coauthors');
 			  } else {
 				$this->initial_author_params = $initial_author_params_save;
-				if ($this->has('CITATION_BOT_PLACEHOLDER_first'))	$this->rename('CITATION_BOT_PLACEHOLDER_first',	 'first');
-				if ($this->has('CITATION_BOT_PLACEHOLDER_last'))	$this->rename('CITATION_BOT_PLACEHOLDER_last',	 'last');
-				if ($this->has('CITATION_BOT_PLACEHOLDER_first1'))	$this->rename('CITATION_BOT_PLACEHOLDER_first1', 'first1');
-				if ($this->has('CITATION_BOT_PLACEHOLDER_last1'))	$this->rename('CITATION_BOT_PLACEHOLDER_last1',	 'last1');
+				if ($this->has('CITATION_BOT_PLACEHOLDER_first'))   $this->rename('CITATION_BOT_PLACEHOLDER_first',  'first');
+				if ($this->has('CITATION_BOT_PLACEHOLDER_last'))    $this->rename('CITATION_BOT_PLACEHOLDER_last',   'last');
+				if ($this->has('CITATION_BOT_PLACEHOLDER_first1'))  $this->rename('CITATION_BOT_PLACEHOLDER_first1', 'first1');
+				if ($this->has('CITATION_BOT_PLACEHOLDER_last1'))   $this->rename('CITATION_BOT_PLACEHOLDER_last1',  'last1');
 				if ($this->has('CITATION_BOT_PLACEHOLDER_author1')) $this->rename('CITATION_BOT_PLACEHOLDER_author1','author1');
-				if ($this->has('CITATION_BOT_PLACEHOLDER_author'))	$this->rename('CITATION_BOT_PLACEHOLDER_author', 'author');
+				if ($this->has('CITATION_BOT_PLACEHOLDER_author'))  $this->rename('CITATION_BOT_PLACEHOLDER_author','author');
 				$this->rename('CITATION_BOT_PLACEHOLDER_coauthors', 'coauthors');
 			  }
 			}
@@ -818,7 +818,7 @@ final class Template {
 	  }
 	  $i = $i - 1;
 	  if (preg_match('~^et\.? ?al\.?$~i', $this->get('author' . (string) $i))) $this->rename('author' . (string) $i, 'display-authors', 'etal');
-	  if (preg_match('~^et\.? ?al\.?$~i', $this->get('last'	  . (string) $i))) $this->rename('last'	  . (string) $i, 'display-authors', 'etal');
+	  if (preg_match('~^et\.? ?al\.?$~i', $this->get('last'   . (string) $i))) $this->rename('last'   . (string) $i, 'display-authors', 'etal');
 	}
   }
 
@@ -1979,14 +1979,14 @@ final class Template {
 	report_action("Checking CrossRef database for doi. ");
 	$page_range = $this->page_range();
 	$data = [
-	  'title'	   => de_wikify($this->get('title')),
-	  'journal'	   => de_wikify($this->get('journal')),
-	  'author'	   => $this->first_surname(),
-	  'year'	   => (int) preg_replace("~([12]\d{3}).*~", "$1", $this->year()),
-	  'volume'	   => $this->get('volume'),
+	  'title'      => de_wikify($this->get('title')),
+	  'journal'    => de_wikify($this->get('journal')),
+	  'author'     => $this->first_surname(),
+	  'year'       => (int) preg_replace("~([12]\d{3}).*~", "$1", $this->year()),
+	  'volume'     => $this->get('volume'),
 	  'start_page' => isset($page_range[1]) ? $page_range[1] : NULL,
 	  'end_page'   => isset($page_range[2]) ? $page_range[2] : NULL,
-	  'issn'	   => $this->get('issn')
+	  'issn'       => $this->get('issn')
 	];
 
 	if ($data['year'] < 1900 || $data['year'] > ((int) date("Y") + 3)) {
@@ -2011,13 +2011,13 @@ final class Template {
 	// They already allow some fuzziness in matches
 	if (($data['journal'] || $data['issn']) && ($data['start_page'] || $data['author'])) {
 	  $url = "https://www.crossref.org/openurl/?noredirect=TRUE&pid=" . CROSSREFUSERNAME
-		   . ($data['title']	  ? "&atitle=" . urlencode($data['title'])		: '')
-		   . ($data['author']	  ? "&aulast=" . urlencode($data['author'])		: '')
+		   . ($data['title']      ? "&atitle=" . urlencode($data['title'])      : '')
+		   . ($data['author']     ? "&aulast=" . urlencode($data['author'])     : '')
 		   . ($data['start_page'] ? "&spage="  . urlencode($data['start_page']) : '')
-		   . ($data['end_page']	  ? "&epage="  . urlencode($data['end_page'])	: '')
-		   . ($data['year']		  ? "&date="   . urlencode($data['year'])		: '')
-		   . ($data['volume']	  ? "&volume=" . urlencode($data['volume'])		: '')
-		   . ($data['issn']		  ? "&issn="   . urlencode($data['issn'])		: "&title=" . urlencode($data['journal']))
+		   . ($data['end_page']   ? "&epage="  . urlencode($data['end_page'])   : '')
+		   . ($data['year']       ? "&date="   . urlencode($data['year'])       : '')
+		   . ($data['volume']     ? "&volume=" . urlencode($data['volume'])     : '')
+		   . ($data['issn']       ? "&issn="   . urlencode($data['issn'])       : "&title=" . urlencode($data['journal']))
 		   . "&mailto=".CROSSREFUSERNAME; // do not encode crossref email
 	  $ch = curl_init_crossref($url);
 	  $xml = curl_exec($ch);
@@ -2033,7 +2033,7 @@ final class Template {
 	  }
 	  if (!isset($result->query_result->body->query)) {
 		report_warning("Unexpected simpleXML file from CrossRef.");  // @codeCoverageIgnore
-		return;											   // @codeCoverageIgnore
+		return;      // @codeCoverageIgnore
 	  }
 	  $result = $result->query_result->body->query;
 	  if ((string) $result->attributes()->status === 'malformed') {
@@ -2074,7 +2074,7 @@ final class Template {
 		$xml = get_entrez_xml('pubmed', $results[0]);
 		if ($xml === NULL || !is_object($xml->DocSum->Item)) {
 		  report_inline("Unable to query pubmed."); // @codeCoverageIgnore
-		  return;								// @codeCoverageIgnore
+		  return;   					// @codeCoverageIgnore
 		}
 		$Items = $xml->DocSum->Item;
 		foreach ($Items as $item) {
@@ -2275,7 +2275,7 @@ final class Template {
 
 	if ($result->numFound > 1) {
 	  report_warning("Multiple articles match identifiers "); // @codeCoverageIgnore
-	  return;										// @codeCoverageIgnore
+	  return;   							// @codeCoverageIgnore
 	}
 
 	if ($result->numFound === 0) {
@@ -2289,7 +2289,7 @@ final class Template {
 		  ($this->has('bibcode'))) // Must be GIGO
 		  {
 			report_inline('no record retrieved.'); // @codeCoverageIgnore
-			return;						  // @codeCoverageIgnore
+			return;   			  // @codeCoverageIgnore
 		  }
 	}
 
@@ -2299,14 +2299,14 @@ final class Template {
 	  $record = $result->docs[0];
 	  if (titles_are_dissimilar($this->get_without_comments_and_placeholders("title"), $record->title[0])) {  // Considering we searched for title, this is very paranoid
 		report_info("Similar title not found in database."); // @codeCoverageIgnore
-		return;									   // @codeCoverageIgnore
+		return;   						   // @codeCoverageIgnore
 	  }
 	  // If we have a match, but other links exists, and we have nothing journal like, then require exact title match
 	  if (!$this->blank(array_merge(['doi','pmc','pmid','eprint','arxiv'], ALL_URL_TYPES)) &&
 		  $this->blank(['issn', 'journal', 'volume', 'issue', 'number']) &&
 		  mb_strtolower($record->title[0]) !== mb_strtolower($this->get_without_comments_and_placeholders('title'))) {  // Probably not a journal, trust zotero more
 		  report_info("Exact title match not found in database."); // @codeCoverageIgnore
-		  return;										  // @codeCoverageIgnore
+		  return;   							  // @codeCoverageIgnore
 	  }
 	}
 
@@ -2324,7 +2324,7 @@ final class Template {
 	  );
 	  if ($result->numFound === 0 || !isset($result->docs[0]->pub)) {
 		report_inline('no record retrieved.'); // @codeCoverageIgnore
-		return;						 // @codeCoverageIgnore
+		return;   			 // @codeCoverageIgnore
 	  }
 	  $journal_string = explode(",", (string) $result->docs[0]->pub);
 	  $journal_fuzzyer = "~\([iI]ncorporating.+|\bof\b|\bthe\b|\ba|eedings\b|\W~";
@@ -2336,7 +2336,7 @@ final class Template {
 		report_info("Partial match but database journal \"" . // @codeCoverageIgnoreStart
 		  echoable($journal_string[0]) . "\" didn't match \"" .
 		  echoable($journal) . "\".");
-		return;										   // @codeCoverageIgnoreEnd
+		return;   							   // @codeCoverageIgnoreEnd
 	  }
 	}
 	if ($result->numFound === 1) {
@@ -2344,20 +2344,20 @@ final class Template {
 	  if (isset($record->year) && $this->year()) {
 		$diff = abs((int)$record->year - (int)$this->year()); // Check for book reviews (fuzzy >2 for arxiv data)
 		$today = (int) date("Y");
-		if ($diff > 2)									  return;
-		if (($record->year < $today - 5)  && $diff > 1)	  return;
+		if ($diff > 2) return;
+		if (($record->year < $today - 5)  && $diff > 1) return;
 		if (($record->year < $today - 10) && $diff !== 0) return;
-		if ($this->has('doi')			  && $diff !== 0) return;
+		if ($this->has('doi') && $diff !== 0) return;
 	  }
 
 	  if (!isset($record->title[0]) || !isset($record->bibcode)) {
 		report_info("Database entry not complete");  // @codeCoverageIgnore
-		return;							   // @codeCoverageIgnore
+		return;   				   // @codeCoverageIgnore
 	  }
 	  if ($this->has('title') && titles_are_dissimilar($this->get('title'), $record->title[0])
 		 && !in_array($this->get('title'), ['Archived copy', "{title}", 'ScienceDirect', "Google Books", "None", 'usurped title'])) { // Verify the title matches. We get some strange mis-matches {
 		report_info("Similar title not found in database");  // @codeCoverageIgnore
-		return;									   // @codeCoverageIgnore
+		return;   						   // @codeCoverageIgnore
 	  }
 
 	  if (isset($record->doi) && $this->get_without_comments_and_placeholders('doi')) {
@@ -2391,7 +2391,7 @@ final class Template {
 	  return;
 	} else {
 	  report_inline('multiple records retrieved.  Ignoring.');
-	  return;								  // @codeCoverageIgnoreEnd
+	  return;   					  // @codeCoverageIgnoreEnd
 	}
   }
 
@@ -2399,15 +2399,15 @@ final class Template {
 	  if ($this->wikiname() === 'cite book' || $this->wikiname() === 'citation') {
 		$book_count = 0;
 		if($this->has('publisher')) $book_count += 1;
-		if($this->has('isbn'))		$book_count += 2;
-		if($this->has('location'))	$book_count += 1;
-		if($this->has('chapter'))	$book_count += 2;
-		if($this->has('oclc'))		$book_count += 1;
-		if($this->has('lccn'))		$book_count += 2;
-		if($this->has('journal'))	$book_count -= 2;
-		if($this->has('series'))	$book_count += 1;
-		if($this->has('edition'))	$book_count += 2;
-		if($this->has('asin'))		$book_count += 2;
+		if($this->has('isbn')) $book_count += 2;
+		if($this->has('location')) $book_count += 1;
+		if($this->has('chapter')) $book_count += 2;
+		if($this->has('oclc')) $book_count += 1;
+		if($this->has('lccn')) $book_count += 2;
+		if($this->has('journal')) $book_count -= 2;
+		if($this->has('series')) $book_count += 1;
+		if($this->has('edition')) $book_count += 2;
+		if($this->has('asin')) $book_count += 2;
 		if(stripos($this->get('url'), 'google') !== FALSE && stripos($this->get('url'), 'book') !== FALSE) $book_count += 2;
 		if(isset($record->year) && $this->year() && ((int)$record->year !== (int)$this->year())) $book_count += 1;
 		if($this->wikiname() === 'cite book') $book_count += 3;
@@ -2417,19 +2417,19 @@ final class Template {
   }
 
   public function expand_by_RIS(string &$dat, bool $add_url) : void { // Pass by pointer to wipe this data when called from use_unnamed_params()
-	$ris_review	   = FALSE;
-	$ris_issn	   = FALSE;
+	$ris_review = FALSE;
+	$ris_issn = FALSE;
 	$ris_publisher = FALSE;
-	$ris_book	   = FALSE;
-	$ris_fullbook  = FALSE;
-	$has_T2		   = FALSE;
-	$bad_EP		   = FALSE;
-	$bad_SP		   = FALSE;
+	$ris_book = FALSE;
+	$ris_fullbook = FALSE;
+	$has_T2 = FALSE;
+	$bad_EP = FALSE;
+	$bad_SP = FALSE;
 	// Convert &#x__; to characters
 	$ris = explode("\n", html_entity_decode($dat, ENT_COMPAT | ENT_HTML401, 'UTF-8'));
 	$ris_authors = 0;
 
-	if(preg_match('~(?:T[I1]).*-(.*)$~m', $dat,	 $match)) {
+	if(preg_match('~(?:T[I1]).*-(.*)$~m', $dat, $match)) {
 		if(in_array(strtolower(trim($match[1])), BAD_ACCEPTED_MANUSCRIPT_TITLES)) return ;
 	}
 
@@ -2609,7 +2609,7 @@ final class Template {
 
   protected function get_semanticscholar_url(string $doi) : void {
    set_time_limit(120);
-   if(		$this->has('pmc') ||
+   if(      $this->has('pmc') ||
 			($this->has('doi') && $this->get('doi-access') === 'free') ||
 			($this->has('jstor') && $this->get('jstor-access') === 'free')
 		   ) return; // do not add url if have OA already. Do indlude preprints in list
@@ -2650,14 +2650,14 @@ final class Template {
 		if (!isset($best_location->evidence)) return 'nothing';
 		if (isset($oa->journal_name) && $oa->journal_name === "Cochrane Database of Systematic Reviews" ) {
 		  report_warning("Ignored a OA from Cochrane Database of Systematic Reviews for DOI: " . echoable($doi)); // @codeCoverageIgnore
-		  return 'unreliable';																				  // @codeCoverageIgnore
+		  return 'unreliable';   // @codeCoverageIgnore
 		}
 		if (isset($best_location->url_for_landing_page)) {
 		  $oa_url = (string) $best_location->url_for_landing_page; // Prefer to PDF
 		} elseif (isset($best_location->url)) {   // @codeCoverageIgnoreStart
 		  $oa_url = (string) $best_location->url;
 		} else {
-		  return 'nothing';				  // @codeCoverageIgnoreEnd
+		  return 'nothing';   // @codeCoverageIgnoreEnd
 		}
 		if (!$oa_url) return 'nothing';
 
@@ -2737,7 +2737,7 @@ final class Template {
 		// Double check URL against existing data
 		if (!preg_match('~^(?:https?|ftp):\/\/\/?([^\/\.]+\.[^\/]+)\/~i', $oa_url, $matches)) {
 		   report_minor_error(' OA database gave invalid URL: ' . echoable($oa_url)); // @codeCoverageIgnore
-		   return 'nothing';										// @codeCoverageIgnore
+		   return 'nothing';   // @codeCoverageIgnore
 		}
 		$oa_hostname = $matches[1];
 		if (($this->has('osti') && stripos($oa_hostname, 'osti.gov') !== FALSE) ||
@@ -3265,10 +3265,10 @@ final class Template {
 	  // Deal with # values
 	  if(preg_match('~\d+~', $dat, $match)) {
 		$closest = str_replace('#', $match[0], $closest);
-		$comp	 = str_replace('#', $match[0], $comp);
+		$comp    = str_replace('#', $match[0], $comp);
 	  } else {
 		$closest = str_replace('#', "", $closest);
-		$comp	 = str_replace('#', "", $comp);
+		$comp    = str_replace('#', "", $comp);
 	  }
 	  if ($shortest < 3
 		 && strlen($test_dat) > 0
@@ -3285,24 +3285,24 @@ final class Template {
 		}
 	  } elseif (preg_match("~(?<!\d)(\d{10})(?!\d)~", str_replace(Array(" ", "-"), "", $dat), $match)) {
 		$the_isbn = str_split($match[1]);
-		preg_match(				 '~' . $the_isbn[0] . '[ -]?' . $the_isbn[1] . '[ -]?'
-									 . $the_isbn[2] . '[ -]?' . $the_isbn[3] . '[ -]?'
-									 . $the_isbn[4] . '[ -]?' . $the_isbn[5] . '[ -]?'
-									 . $the_isbn[6] . '[ -]?' . $the_isbn[7] . '[ -]?'
-									 . $the_isbn[8] . '[ -]?' . $the_isbn[9] .
-								 '~', $dat, $match); // Crazy to deal with dashes and spaces
+		preg_match('~' . $the_isbn[0] . '[ -]?' . $the_isbn[1] . '[ -]?'
+					   . $the_isbn[2] . '[ -]?' . $the_isbn[3] . '[ -]?'
+					   . $the_isbn[4] . '[ -]?' . $the_isbn[5] . '[ -]?'
+					   . $the_isbn[6] . '[ -]?' . $the_isbn[7] . '[ -]?'
+					   . $the_isbn[8] . '[ -]?' . $the_isbn[9] .
+				   '~', $dat, $match); // Crazy to deal with dashes and spaces
 		$this->add_if_new('isbn', $match[0]);
 		$dat = trim(str_replace($match[0], '', $dat));
 	  } elseif (preg_match("~(?<!\d)(\d{13})(?!\d)~", str_replace(Array(" ", "-"), "", $dat), $match)) {
 		$the_isbn = str_split($match[1]);
-		preg_match(				 '~' . $the_isbn[0] . '[ -]?' . $the_isbn[1] . '[ -]?'
-									 . $the_isbn[2] . '[ -]?' . $the_isbn[3] . '[ -]?'
-									 . $the_isbn[4] . '[ -]?' . $the_isbn[5] . '[ -]?'
-									 . $the_isbn[6] . '[ -]?' . $the_isbn[7] . '[ -]?'
-									 . $the_isbn[8] . '[ -]?' . $the_isbn[9] . '[ -]?'
-									 . $the_isbn[10]. '[ -]?' . $the_isbn[11]. '[ -]?'
-									 . $the_isbn[12].
-								 '~', $dat, $match); // Crazy to deal with dashes and spaces
+		preg_match('~' . $the_isbn[0] . '[ -]?' . $the_isbn[1] . '[ -]?'
+					   . $the_isbn[2] . '[ -]?' . $the_isbn[3] . '[ -]?'
+					   . $the_isbn[4] . '[ -]?' . $the_isbn[5] . '[ -]?'
+					   . $the_isbn[6] . '[ -]?' . $the_isbn[7] . '[ -]?'
+					   . $the_isbn[8] . '[ -]?' . $the_isbn[9] . '[ -]?'
+					   . $the_isbn[10]. '[ -]?' . $the_isbn[11]. '[ -]?'
+					   . $the_isbn[12].
+				   '~', $dat, $match); // Crazy to deal with dashes and spaces
 		$this->add_if_new('isbn', $match[0]);
 		$dat = trim(str_replace($match[0], '', $dat));
 	  }
@@ -3344,7 +3344,7 @@ final class Template {
 	while (preg_match("~\b(PMID|DOI|ISBN|ISSN|ARXIV|LCCN|CiteSeerX|s2cid|PMC)[\s:]*(\d[\d\s\-][^\s\}\{\|,;]*)(?:[,;] )?~iu", $id, $match)) {
 	  $the_type = mb_strtolower($match[1]);
 	  $the_data = $match[2];
-	  $the_all	= $match[0];
+	  $the_all  = $match[0];
 	  if ($the_type !== 'doi' && preg_match("~^([^\]\}\{\s\,\;\:\|\<\>]+)$~", $the_data, $matches)) {
 		$the_data = $matches[1];
 	  }
@@ -3520,7 +3520,7 @@ final class Template {
 	  $possible = $param . '-' . $before;
 	  if (in_array($possible, PARAMETER_LIST)) {
 		$p->param = $possible;
-		$p->val	  = $after;
+		$p->val   = $after;
 	  }
 	}
    }
@@ -3801,13 +3801,13 @@ final class Template {
 	}
 	if ($this->get($param) !== $this->get3($param)) return;
 	if($this->has($param)) {
-	  if (stripos($param, 'separator') === FALSE &&	  // lone punctuation valid
+	  if (stripos($param, 'separator') === FALSE &&  // lone punctuation valid
 		  stripos($param, 'postscript') === FALSE &&  // periods valid
-		  stripos($param, 'url') === FALSE &&		  // all characters are valid
-		  stripos($param, 'quot') === FALSE &&		  // someone might have formatted the quote
-		  stripos($param, 'link') === FALSE &&		  // inter-wiki links
-		  $param !== 'trans-title' &&				  // these can be very weird
-		  (($param !== 'chapter' && $param !== 'title') || strlen($this->get($param)) > 4)	// Avoid tiny titles that might be a smiley face
+		  stripos($param, 'url') === FALSE &&  // all characters are valid
+		  stripos($param, 'quot') === FALSE &&  // someone might have formatted the quote
+		  stripos($param, 'link') === FALSE &&  // inter-wiki links
+		  $param !== 'trans-title' &&   // these can be very weird
+		  (($param !== 'chapter' && $param !== 'title') || strlen($this->get($param)) > 4) // Avoid tiny titles that might be a smiley face
 		 ) {
 		$this->set($param, safe_preg_replace('~[\x{2000}-\x{200A}\x{00A0}\x{202F}\x{205F}\x{3000}]~u', ' ', $this->get($param))); // Non-standard spaces
 		$this->set($param, safe_preg_replace('~[\t\n\r\0\x0B]~u', ' ', $this->get($param))); // tabs, linefeeds, null bytes
@@ -3842,10 +3842,10 @@ final class Template {
 		}
 		$this->set($param, safe_preg_replace('~\x{00AD}~u', '', $this->get($param))); // Remove soft hyphen
 	  }
-	  if (stripos($param, 'separator') === FALSE &&	  // punctuation valid
-		  stripos($param, 'url') === FALSE &&		  // everything is valid
-		  stripos($param, 'link') === FALSE &&		  // inter-wiki links
-		  $param !== 'trans-title'					  // these can be very weird
+	  if (stripos($param, 'separator') === FALSE &&  // punctuation valid
+		  stripos($param, 'url') === FALSE &&  // everything is valid
+		  stripos($param, 'link') === FALSE &&  // inter-wiki links
+		  $param !== 'trans-title'  // these can be very weird
 		 ) {
 		// Non-breaking spaces at ends
 		$this->set($param, trim($this->get($param), " \t\n\r\0\x0B"));
@@ -3871,7 +3871,7 @@ final class Template {
 
 	if (!preg_match('~^(\D+)(\d*)(\D*)$~', $param, $pmatch)) {
 	  report_minor_error("Unrecognized parameter name format in " . echoable($param)); // @codeCoverageIgnore
-	  return;														   // @codeCoverageIgnore
+	  return;   			   // @codeCoverageIgnore
 	} else {
 	  // Put "odd ones" in "normalized" order - be careful down below about $param vs $pmatch values
 	  if (in_array(strtolower($param), ['s2cid','s2cid-access'])) {
@@ -3882,7 +3882,7 @@ final class Template {
 	  }
 	  if ($pmatch[3] !== '') {
 		report_minor_error("Unrecognized parameter name format in " . echoable($param));  // @codeCoverageIgnore
-		return;															 // @codeCoverageIgnore
+		return;   				 // @codeCoverageIgnore
 	  }
 	  switch ($pmatch[1]) {
 		// Parameters are listed mostly alphabetically, though those with numerical content are grouped under "year"
@@ -3960,9 +3960,9 @@ final class Template {
 			for ($looper = (int) $pmatch[2] + 1; $looper <= 100 ; $looper++) {
 			  $old = (string) $looper;
 			  $new = (string) ($looper-1);
-			  $this->rename('author' . $old, 'author' . $new);
-			  $this->rename('last'	 . $old, 'last'	  . $new);
-			  $this->rename('first'	 . $old, 'first'  . $new);
+			  $this->rename('author'. $old, 'author' . $new);
+			  $this->rename('last'  . $old, 'last'   . $new);
+			  $this->rename('first' . $old, 'first'  . $new);
 			  $this->rename('author-link' . $old, 'author-link' . $new);
 			  $this->rename('authorlink' . $old, 'authorlink' . $new);
 			  $this->rename('author' . $old . '-link', 'author' . $new . '-link');
@@ -4756,7 +4756,7 @@ final class Template {
 		  if (stripos($publisher, 'google') !== FALSE) {
 			$this_host = (string) parse_url($this->get('url'), PHP_URL_HOST);
 			if (stripos($this_host, 'google') === FALSE ||
-				stripos($this_host, 'blog')	  !== FALSE ||
+				stripos($this_host, 'blog')   !== FALSE ||
 				stripos($this_host, 'github') !== FALSE){
 			  return; // Case when Google actually IS a publisher
 			}
@@ -5206,8 +5206,8 @@ final class Template {
 			 return;
 		  }
 		  $title = straighten_quotes($title, FALSE);
-		  if ((	  mb_substr($title, 0, 1) === '"'
-			   && mb_substr($title, -1)	  === '"'
+		  if ((   mb_substr($title, 0, 1) === '"'
+			   && mb_substr($title, -1)   === '"'
 			   && mb_substr_count($title, '"') === 2)
 			   ||
 			   (   mb_substr($title, 0, 1) === "'"
@@ -5709,7 +5709,7 @@ final class Template {
 
 		case 'work':
 		  if ($this->has('work')
-		  && (	str_equivalent($this->get('work'), $this->get('series'))
+		  && (  str_equivalent($this->get('work'), $this->get('series'))
 			 || str_equivalent($this->get('work'), $this->get('title'))
 			 || str_equivalent($this->get('work'), $this->get('journal'))
 			 || str_equivalent($this->get('work'), $this->get('website'))
@@ -5802,7 +5802,7 @@ final class Template {
 
 		  return;
 
-		case 'via':	  // Should just remove all 'via' with no url, but do not want to make people angry
+		case 'via':  // Should just remove all 'via' with no url, but do not want to make people angry
 		  if ($this->blank(ALL_URL_TYPES)) { // Include blank via
 			if (stripos($this->get('via'), 'PubMed') !== FALSE && ($this->has('pmc') || $this->has('pmid'))) {
 			  $this->forget('via');
@@ -6510,7 +6510,7 @@ final class Template {
 			 $hostname_plus = mb_strtolower($matches[1]);
 		   } else {
 			 bot_debug_log($url . " generated matches nothing event"); // @codeCoverageIgnore
-			 $hostname_plus = 'matches nothing';			   // @codeCoverageIgnore
+			 $hostname_plus = 'matches nothing';   // @codeCoverageIgnore
 		   }
 		   $hostname_plus = (string) preg_replace('~^(m\.|www\.)~', '', $hostname_plus);
 		   $hostname_plus = (string) preg_replace('~//+~', '/', $hostname_plus);
@@ -6598,7 +6598,7 @@ final class Template {
 	$doi_status = doi_works($doi);
 	if ($doi_status === NULL) {
 	  report_warning("DOI status unknown.  doi.org failed to respond to: " . doi_link($doi)); // @codeCoverageIgnore
-	  return FALSE;																	  // @codeCoverageIgnore
+	  return FALSE;    // @codeCoverageIgnore
 	} elseif ($doi_status === FALSE) {
 	  report_inline("It's not...");
 	  $this->add_if_new('doi-broken-date', date("Y-m-d"));
@@ -7214,7 +7214,7 @@ final class Template {
 			if ($this->blank(ISSUE_ALIASES)) {
 			  $this->add_if_new($the_issue, $possible_issue);
 			  $this->set('volume', $possible_volume);
-			} elseif (str_replace(".", "", $this->get('issue'))	 === str_replace(".", "", $possible_issue) ||
+			} elseif (str_replace(".", "", $this->get('issue'))  === str_replace(".", "", $possible_issue) ||
 					  str_replace(".", "", $this->get('number')) === str_replace(".", "", $possible_issue)) {
 			  $this->set('volume', $possible_volume);
 			}
