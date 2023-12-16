@@ -410,7 +410,7 @@ final class Template {
               } elseif (stripos($the_journal, 'Symposium') !== FALSE ||
                         stripos($the_journal, 'Conference') !== FALSE ||
                         stripos($the_journal, 'Proceedings') !== FALSE ||
-                        stripos($the_journal, 'Proc. ') !== FALSE ||                        
+                        stripos($the_journal, 'Proc. ') !== FALSE ||
                         stripos($the_journal, 'Workshop') !== FALSE ||
                         stripos($the_journal, 'Symp. On ') !== FALSE ||
                         stripos($the_journal, 'Meeting on ') !== FALSE ||
@@ -481,8 +481,8 @@ final class Template {
               $bad_data = TRUE;
               $this->rename('title', 'CITATION_BOT_PLACEHOLDER_title');
               $the_title = '';
-          }                                                                                              
-                                                                                                                     
+          }
+
           if ($the_pages === '_' || $the_pages === '0' || $the_pages === 'null' || $the_pages === 'n/a' || $the_pages === 'online' || $the_pages === 'Online' || $the_pages === 'Forthcoming' || $the_pages === 'forthcoming') {
               $this->rename('pages', 'CITATION_BOT_PLACEHOLDER_pages');
               $the_pages = '';
@@ -588,7 +588,7 @@ final class Template {
               $this->rename('title', 'CITATION_BOT_PLACEHOLDER_title');
               $this->rename('chapter', 'CITATION_BOT_PLACEHOLDER_chapter');
               $the_title = '';
-              $the_chapter = '';                                         
+              $the_chapter = '';
               $bad_data = TRUE;
             } elseif (substr($the_title, -9, 9) === ' on JSTOR') {
               $this->rename('title', 'CITATION_BOT_PLACEHOLDER_title'); // Ends in 'on jstor'
@@ -619,7 +619,7 @@ final class Template {
               $the_title = '';
               $bad_data = TRUE;
             }
-          }                                                                 
+          }
           if ($this->has('coauthors')) {
               if ($this->has('first'))  $this->rename('first',  'CITATION_BOT_PLACEHOLDER_first');
               if ($this->has('last'))   $this->rename('last',   'CITATION_BOT_PLACEHOLDER_last');
@@ -3861,7 +3861,7 @@ final class Template {
     if (in_array(strtolower($param), ['series', 'journal', 'newspaper']) && $this->has($param)) {
       $this->set($param, safe_preg_replace('~[™|®]$~u', '', $this->get($param))); // remove trailing TM/(R)
     }
-    if (in_array(str_replace(array('-','0','1','2','3','4','5','6','7','8','9'), '', strtolower($param)), ['authorlink', 'chapterlink', 'contributorlink', 
+    if (in_array(str_replace(array('-','0','1','2','3','4','5','6','7','8','9'), '', strtolower($param)), ['authorlink', 'chapterlink', 'contributorlink',
                  'editorlink', 'episodelink', 'interviewerlink', 'inventorlink', 'serieslink',
                  'subjectlink', 'titlelink', 'translatorlink']) &&
         $this->has($param) && (stripos($this->get($param), 'http') === FALSE) && (stripos($this->get($param), 'PLACEHOLDER') === FALSE)) {
@@ -5501,7 +5501,7 @@ final class Template {
           }
           if (preg_match("~ancestry\.com/account/create.*returnurl=(http.*)$~i", $this->get($param), $matches)) {
             $this->set($param, str_replace(' ', '+', urldecode($matches[1])));
-          }       
+          }
           if (preg_match("~^https://search\.ancestry(?:|institution)\.com.*cgi-bin/sse.dll.*_phcmd.*(http.+)\'\,\'successSource\'\)$~i", $this->get($param), $matches)) {
             $this->set($param, str_replace(' ', '+', urldecode($matches[1])));
           }
@@ -6148,7 +6148,7 @@ final class Template {
                $this->forget($param);
             }
           }
-        
+
           return;
 
         case 'location':
