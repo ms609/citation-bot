@@ -2074,7 +2074,7 @@ final class Template {
 		$xml = get_entrez_xml('pubmed', $results[0]);
 		if ($xml === NULL || !is_object($xml->DocSum->Item)) {
 		  report_inline("Unable to query pubmed."); // @codeCoverageIgnore
-		  return;   					// @codeCoverageIgnore
+		  return;  // @codeCoverageIgnore
 		}
 		$Items = $xml->DocSum->Item;
 		foreach ($Items as $item) {
@@ -2275,7 +2275,7 @@ final class Template {
 
 	if ($result->numFound > 1) {
 	  report_warning("Multiple articles match identifiers "); // @codeCoverageIgnore
-	  return;   							// @codeCoverageIgnore
+	  return;   // @codeCoverageIgnore
 	}
 
 	if ($result->numFound === 0) {
@@ -2289,7 +2289,7 @@ final class Template {
 		  ($this->has('bibcode'))) // Must be GIGO
 		  {
 			report_inline('no record retrieved.'); // @codeCoverageIgnore
-			return;   			  // @codeCoverageIgnore
+			return;   // @codeCoverageIgnore
 		  }
 	}
 
@@ -2299,14 +2299,14 @@ final class Template {
 	  $record = $result->docs[0];
 	  if (titles_are_dissimilar($this->get_without_comments_and_placeholders("title"), $record->title[0])) {  // Considering we searched for title, this is very paranoid
 		report_info("Similar title not found in database."); // @codeCoverageIgnore
-		return;   						   // @codeCoverageIgnore
+		return;   // @codeCoverageIgnore
 	  }
 	  // If we have a match, but other links exists, and we have nothing journal like, then require exact title match
 	  if (!$this->blank(array_merge(['doi','pmc','pmid','eprint','arxiv'], ALL_URL_TYPES)) &&
 		  $this->blank(['issn', 'journal', 'volume', 'issue', 'number']) &&
 		  mb_strtolower($record->title[0]) !== mb_strtolower($this->get_without_comments_and_placeholders('title'))) {  // Probably not a journal, trust zotero more
 		  report_info("Exact title match not found in database."); // @codeCoverageIgnore
-		  return;   							  // @codeCoverageIgnore
+		  return;   // @codeCoverageIgnore
 	  }
 	}
 
@@ -2324,7 +2324,7 @@ final class Template {
 	  );
 	  if ($result->numFound === 0 || !isset($result->docs[0]->pub)) {
 		report_inline('no record retrieved.'); // @codeCoverageIgnore
-		return;   			 // @codeCoverageIgnore
+		return;   // @codeCoverageIgnore
 	  }
 	  $journal_string = explode(",", (string) $result->docs[0]->pub);
 	  $journal_fuzzyer = "~\([iI]ncorporating.+|\bof\b|\bthe\b|\ba|eedings\b|\W~";
@@ -2336,7 +2336,7 @@ final class Template {
 		report_info("Partial match but database journal \"" . // @codeCoverageIgnoreStart
 		  echoable($journal_string[0]) . "\" didn't match \"" .
 		  echoable($journal) . "\".");
-		return;   							   // @codeCoverageIgnoreEnd
+		return;   // @codeCoverageIgnoreEnd
 	  }
 	}
 	if ($result->numFound === 1) {
@@ -2352,12 +2352,12 @@ final class Template {
 
 	  if (!isset($record->title[0]) || !isset($record->bibcode)) {
 		report_info("Database entry not complete");  // @codeCoverageIgnore
-		return;   				   // @codeCoverageIgnore
+		return;  // @codeCoverageIgnore
 	  }
 	  if ($this->has('title') && titles_are_dissimilar($this->get('title'), $record->title[0])
 		 && !in_array($this->get('title'), ['Archived copy', "{title}", 'ScienceDirect', "Google Books", "None", 'usurped title'])) { // Verify the title matches. We get some strange mis-matches {
 		report_info("Similar title not found in database");  // @codeCoverageIgnore
-		return;   						   // @codeCoverageIgnore
+		return;  // @codeCoverageIgnore
 	  }
 
 	  if (isset($record->doi) && $this->get_without_comments_and_placeholders('doi')) {
@@ -2391,7 +2391,7 @@ final class Template {
 	  return;
 	} else {
 	  report_inline('multiple records retrieved.  Ignoring.');
-	  return;   					  // @codeCoverageIgnoreEnd
+	  return;   // @codeCoverageIgnoreEnd
 	}
   }
 
@@ -3871,7 +3871,7 @@ final class Template {
 
 	if (!preg_match('~^(\D+)(\d*)(\D*)$~', $param, $pmatch)) {
 	  report_minor_error("Unrecognized parameter name format in " . echoable($param)); // @codeCoverageIgnore
-	  return;   			   // @codeCoverageIgnore
+	  return;   // @codeCoverageIgnore
 	} else {
 	  // Put "odd ones" in "normalized" order - be careful down below about $param vs $pmatch values
 	  if (in_array(strtolower($param), ['s2cid','s2cid-access'])) {
@@ -3882,7 +3882,7 @@ final class Template {
 	  }
 	  if ($pmatch[3] !== '') {
 		report_minor_error("Unrecognized parameter name format in " . echoable($param));  // @codeCoverageIgnore
-		return;   				 // @codeCoverageIgnore
+		return;   // @codeCoverageIgnore
 	  }
 	  switch ($pmatch[1]) {
 		// Parameters are listed mostly alphabetically, though those with numerical content are grouped under "year"
