@@ -1029,6 +1029,10 @@ final class zoteroTest extends testBaseClass {
    $this->requires_zotero(function() : void {
     $text = '{{Cite journal| ssrn=195630 }}';
     $expanded = $this->process_citation($text);
+    if ($expanded->get('title') === "") {
+       sleep(2);
+       $expanded = $this->process_citation($text);
+    }
     $this->assertSame('The Pricing of Internet Stocks', $expanded->get2('title'));
     $this->assertSame('September 1999', $expanded->get2('date'));
    });
@@ -1036,12 +1040,16 @@ final class zoteroTest extends testBaseClass {
  
   public function testZoteroExpansionNYT() : void {
    $this->requires_zotero(function() : void {
-    $text = '{{Cite web|url =https://www.nytimes.com/2018/06/11/technology/net-neutrality-repeal.html}}';
+    $text = '{{Cite web|url=https://www.nytimes.com/2018/06/11/technology/net-neutrality-repeal.html}}';
     $expanded = $this->expand_via_zotero($text);
+    if ($expanded->get('title') === "") {
+       sleep(2);
+       $expanded = $this->expand_via_zotero($text);
+    }
     $this->assertSame("Net Neutrality Has Officially Been Repealed. Here's How That Could Affect You", str_replace('. (Published 2018)', '', $expanded->get('title')));
-    $this->assertSame('Keith', $expanded->get2('first1')); // Would be tidied to 'first' in final_parameter_tudy
+    $this->assertSame('cite news', $expanded->wikiname());  
+    $this->assertSame('Keith', $expanded->get2('first1'));
     $this->assertSame('Collins', $expanded->get2('last1'));
-    $this->assertSame('cite news', $expanded->wikiname());
    });
   }
  
