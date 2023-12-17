@@ -1029,8 +1029,12 @@ final class zoteroTest extends testBaseClass {
    $this->requires_zotero(function() : void {
     $text = '{{Cite journal| ssrn=195630 }}';
     $expanded = $this->process_citation($text);
+    if ($expanded->get('title') === "") { // Annoying
+       sleep(5);
+       $expanded = $this->process_citation($text);
+    }
     if ($expanded->get('title') === "") {
-       sleep(2);
+       sleep(5);
        $expanded = $this->process_citation($text);
     }
     $this->assertSame('The Pricing of Internet Stocks', $expanded->get2('title'));
