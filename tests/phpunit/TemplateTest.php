@@ -721,8 +721,13 @@ final class TemplateTest extends testBaseClass {
   }
   
   public function testPMC2PMID() : void {
+    sleep(1);
     $text = '{{cite journal|pmc=58796}}';
     $expanded = $this->process_citation($text);
+    if ($expanded->get('pmid') === "") {
+      sleep(2);
+      $expanded = $this->process_citation($text);
+    }
     $this->assertSame('11573006', $expanded->get2('pmid'));
   }
   
