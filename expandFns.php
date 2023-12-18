@@ -1502,10 +1502,12 @@ function smart_decode(string $title, string $encode, string $archive_url) : stri
   if (in_array(strtolower($encode), ["windows-1255", "maccyrillic", "windows-1253", "windows-1256", "tis-620", "windows-874", "iso-8859-11", "big5", "windows-1250"])) {
     $try = (string) @iconv($encode, "UTF-8", $title);
   } else {
-    try {
+    try {   // Some encodings throw execptions such as "maccentraleurope"
        $try = (string) @mb_convert_encoding($title, "UTF-8", $encode);
     } catch (Exception $e) {
-       $try = "";  // Some encodings throw execptions such as "maccentraleurope"
+       $try = "";
+    } catch (ValueError $v) {
+       $try = "";
     }
   }
   if ($try == "") {
