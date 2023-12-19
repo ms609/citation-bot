@@ -221,6 +221,9 @@ final class Template {
 		return base64_decode($this->get(strtolower('CITATION_BOT_PLACEHOLDER_BARE_URL')));
 	  }
 	}
+	if (stripos(trim($this->name), '#invoke:') === 0) {
+		return '{{' . $this->name . '|' . $this->join_params() . '}}';
+	}
 	return '{{' . $this->name . $this->join_params() . '}}';
   }
 
@@ -3763,6 +3766,7 @@ final class Template {
 
   public function wikiname() : string {
 	$name = trim(mb_strtolower(str_replace('_', ' ', $this->name)));
+	$name = trim(mb_strtolower(str_replace('#invoke:', '', $this->name)));
 	 // Treat the same since alias
 	if ($name === 'cite work') $name = 'cite book';
 	if ($name === 'cite chapter') $name = 'cite book';
