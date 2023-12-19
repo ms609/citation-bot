@@ -1499,16 +1499,22 @@ function is_encoding_reasonable(string $encode) : bool { // common "default" one
 
 function smart_decode(string $title, string $encode, string $archive_url) : string {
   if ($title === "") return "";
-  if (in_array(strtolower($encode), ["windows-1255", "maccyrillic", "windows-1253", "windows-1256", "tis-620", "windows-874", "iso-8859-11", "big5", "windows-1250"])) {
+  $master_list = mb_list_encodings();
+  $valid = [];
+  foreach ($master_list as $enc) {
+    $valid[] = strtolower($enc);
+  }
+  try {
+   if (in_array(strtolower($encode), ["windows-1255", "maccyrillic", "windows-1253", "windows-1256", "tis-620", "windows-874", "iso-8859-11", "big5", "windows-1250"]) ||
+     !in_array(strtolower($encode), $valid)) {
     $try = (string) @iconv($encode, "UTF-8", $title);
-  } else {
-    try {   // Some encodings throw execptions such as "maccentraleurope"
-       $try = (string) @mb_convert_encoding($title, "UTF-8", $encode);
-    } catch (Exception $e) {
+   } else {
+    $try = (string) @mb_convert_encoding($title, "UTF-8", $encode);
+   }
+  } catch (Exception $e) {
        $try = "";
-    } catch (ValueError $v) {
+  } catch (ValueError $v) {
        $try = "";
-    }
   }
   if ($try == "") {
     bot_debug_log('Bad Encoding: ' . $encode . ' for ' . echoable($archive_url)); // @codeCoverageIgnore
