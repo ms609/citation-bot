@@ -4225,9 +4225,9 @@ EP - 999 }}';
   }
 
    public function testInvoke3() : void {
-      $text = "<ref>{{#invoke:Cite||title=X}}{{#invoke:cite||title=X}}{{#invoke:Cite book||title=X}}{{Cite book||title=X}}{{#invoke:Cite book||title=X}}{{#invoke:Cite book || title=X}}{{#invoke:Cite book ||title=X}}{{#invoke:Cite book|| title=X}}<ref>";
+      $text = "<ref>{{#invoke:Citation||title=X}}{{#invoke:cite||title=X}}{{#invoke:Cite book||title=X}}{{Cite book||title=X}}{{#invoke:Cite book||title=X}}{{#invoke:Cite book || title=X}}{{#invoke:Cite book ||title=X}}{{#invoke:Cite book|| title=X}}<ref>";
       $page = $this->process_page($text);
-      $this->assertSame("<ref>{{#invoke:Citation||title=X}}{{#invoke:citation||title=X}}{{#invoke:Cite book||title=X}}{{Cite book|title=X}}{{#invoke:Cite book||title=X}}{{#invoke:Cite book || title=X}}{{#invoke:Cite book ||title=X}}{{#invoke:Cite book|| title=X}}<ref>", $page->parsed_text());
+      $this->assertSame("<ref>{{#invoke:Citation||title=X}}{{#invoke:cite||title=X}}{{#invoke:Cite book||title=X}}{{Cite book|title=X}}{{#invoke:Cite book||title=X}}{{#invoke:Cite book || title=X}}{{#invoke:Cite book ||title=X}}{{#invoke:Cite book|| title=X}}<ref>", $page->parsed_text());
   }
 
 }
