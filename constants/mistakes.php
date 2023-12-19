@@ -292,7 +292,6 @@ const COMMON_MISTAKES = array ( // Common mistakes that aren't picked up by the 
   "titre ouvrage"   =>  "work",
   "ville"           =>  "location",
   "titre chapitre"  =>  "chapter",
-  "pages totales"   =>  "pages",
   "format électronique" =>  "format",
   "příjmení" => "last1",
   "jméno" => "first1",
