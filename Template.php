@@ -221,6 +221,9 @@ final class Template {
 		return base64_decode($this->get(strtolower('CITATION_BOT_PLACEHOLDER_BARE_URL')));
 	  }
 	}
+	if (stripos(trim($this->name), '#invoke:') === 0) {
+		return '{{' . $this->name . '|' . $this->join_params() . '}}';
+	}
 	return '{{' . $this->name . $this->join_params() . '}}';
   }
 
