@@ -6035,6 +6035,12 @@ final class Template {
 		  }
 		  return;
 
+		case 'pages totales':
+		  if ($this->blank($param) || !$this->blank(PAGE_ALIASES)) {
+			$this->forget($param);
+		  }
+		  return;
+
 		case 'postscript': // postscript=. is the default in CS1 templates.  It literally does nothing.
 		  if ($this->wikiname() !== 'citation') {
 			if ($this->get($param) === '.') $this->forget($param); // Default action does not need specified
@@ -6044,13 +6050,13 @@ final class Template {
 
 		case 'website':
 		  if ($this->get($param) === 'Undefined' || $this->get($param) === 'undefined') {
-			 $this->forget($param);
+			$this->forget($param);
 			return;
 		  }
 		  if (($this->wikiname() === 'cite book') && (str_i_same($this->get($param), 'google.com') ||
-													  str_i_same($this->get($param), 'Google Books') ||
-													  str_i_same($this->get($param), 'Google Book') ||
-														 stripos($this->get($param), 'Books.google.') === 0)) {
+				str_i_same($this->get($param), 'Google Books') ||
+				str_i_same($this->get($param), 'Google Book') ||
+				stripos($this->get($param), 'Books.google.') === 0)) {
 			$this->forget($param);
 			return;
 		  }
