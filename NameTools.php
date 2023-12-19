@@ -126,7 +126,7 @@ function format_initials(string $str) : string {
   $str = trim($str);
         if ($str === "") return "";
         $end = (substr($str, strlen($str)-1) === ";") ? ";" : '';
-        preg_match_all("~\w~", $str, $match);
+        preg_match_all("~\w~u", $str, $match);
         return mb_strtoupper(implode(".",$match[0]) . ".") . $end;
 }
 
@@ -264,7 +264,7 @@ function format_multiple_authors(string $authors) : string {
 
   $return = array();
   ## Split the citation into an author by author account
-  $authors = preg_replace(array("~\band\b~i", "~[\d\+\*]+~"), ";", $authors); //Remove "and" and affiliation symbols
+  $authors = preg_replace(array("~\band\b~iu", "~[\d\+\*]+~u"), ";", $authors); //Remove "and" and affiliation symbols
 
   $authors = str_replace(array("&nbsp;", "(", ")"), array(" "), $authors); //Remove spaces and weird punctuation
   $authors = str_replace(array(".,", "&", "  "), ";", $authors); //Remove "and"
