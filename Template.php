@@ -3739,11 +3739,17 @@ final class Template {
 						   'display-editors','displayeditors','url'], FIRST_EDITOR_ALIASES))) return; // Unsupported parameters
 		$new_name = 'cite arXiv';  // Without the capital X is the alias
 	  }
+	  if (stripos($this->name, '#invoke:') !== 0) {
+		  $this->name = str_ireplace('#invoke:', '', $this->name);
+		  $invoke = '#invoke:';
+	  } else {
+		  $invoke = '';
+	  }
 	  preg_match("~^(\s*).*\b(\s*)$~", $this->name, $spacing);
 	  if (substr($this->name,0,1) === 'c') {
-		$this->name = $spacing[1] . $new_name . $spacing[2];
+		$this->name = $spacing[1] . $invoke . $new_name . $spacing[2];
 	  } else {
-		$this->name = $spacing[1] . mb_ucfirst($new_name) . $spacing[2];
+		$this->name = $spacing[1] . $invoke . mb_ucfirst($new_name) . $spacing[2];
 	  }
 	  switch (strtolower($new_name)) {
 		case 'cite journal':
@@ -3775,6 +3781,7 @@ final class Template {
 	if ($name === 'cite manual') $name = 'cite book';
 	if ($name === 'cite paper') $name = 'cite journal';
 	if ($name === 'cite contribution') $name = 'cite encyclopedia';
+	if ($name === 'cite') $name = 'citation';
 	return $name ;
   }
 
