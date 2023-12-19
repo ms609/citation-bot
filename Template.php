@@ -3739,7 +3739,7 @@ final class Template {
 						   'display-editors','displayeditors','url'], FIRST_EDITOR_ALIASES))) return; // Unsupported parameters
 		$new_name = 'cite arXiv';  // Without the capital X is the alias
 	  }
-	  if (stripos($this->name, '#invoke:') !== 0) {
+	  if (stripos($this->name, '#invoke:') !== FALSE) {
 		  $this->name = str_ireplace('#invoke:', '', $this->name);
 		  $invoke = '#invoke:';
 	  } else {
