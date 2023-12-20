@@ -1523,7 +1523,7 @@ function query_adsabs(string $options) : object {
       return (object) array('numFound' => 0);
     }
     return $response;
-}dsafdsfdsfsd
+}
 
 function curl_init_crossref(string $url) : CurlHandle {
      $ch = curl_init();
