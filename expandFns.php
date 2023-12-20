@@ -1487,7 +1487,7 @@ function convert_to_utf8(string $value) : string {
     if ($encode1 !== $encode3) return $value;
     $encode4 =  mb_detect_encoding($value, ["iso-8859-1", "UTF-8", "Windows-1252", "ISO-2022-JP", "EUC-CN", "EUC-KR"], TRUE);
     if ($encode1 !== $encode4) return $value;
-    $new_value = mb_convert_encoding($value, "UTF-8", $encode1);
+    $new_value = (string) @mb_convert_encoding($value, "UTF-8", $encode1);
     if ($new_value == "") return $value;
     return $new_value;
 }
