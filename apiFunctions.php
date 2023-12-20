@@ -1259,19 +1259,6 @@ function expand_templates_from_archives(array &$templates) : void { // This is d
   }
 }
 
-function formatUrlResponse(string $url, string $errorMessage1 = "", int $errorMessage2 = -9999) : string {
-  $message = '';
-  if (strlen($url) > 0) {
-    $host = parse_url($url, PHP_URL_HOST);
-    if (is_string($host) && (strlen($host) > 0)) {
-      $message = trim ($message.' Host: '.$host);
-    }
-  }
-  if ($errorMessage1 !== "") $message = trim($message.' '.$errorMessage1);
-  if ($errorMessage2 !== -9999) $message = trim($message.' '.$errorMessage2);
-  return $message;
-}
-
 function curlGetResponse(string $url, string $return, CurlHandle $ch, int &$http_response_code, string &$header, string &$body) : void
 {
   if ($return === "") {
@@ -1309,10 +1296,10 @@ function Bibcode_Response_Processing(string $adsabs_url, int $http_response_code
 
       // @codeCoverageIgnoreStart
       if (isset($decoded->error->trace)) {
-        throw new Exception(formatUrlResponse($adsabs_url, 'ADSABS website returned a stack trace'),
+        throw new Exception("ADSABS website returned a stack trace" . "\n - URL was:  " . $adsabs_url,
         (isset($decoded->error->code) ? $decoded->error->code : 999));
       } else {
-         throw new Exception(((isset($decoded->error->msg)) ? $decoded->error->msg : $decoded->error)),
+         throw new Exception(((isset($decoded->error->msg)) ? $decoded->error->msg : $decoded->error) . "\n - URL was:  " . $adsabs_url,
         (isset($decoded->error->code) ? $decoded->error->code : 999));
       }
       // @codeCoverageIgnoreEnd
