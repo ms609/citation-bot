@@ -201,7 +201,6 @@ function is_doi_works(string $doi) : ?bool {
     $head = (string) @curl_exec($ch);
     $url  = curl_getinfo($ch, CURLINFO_EFFECTIVE_URL);
     $code = curl_getinfo($ch, CURLINFO_HTTP_CODE);
-    curl_close($ch);
     if (($code === 302 || $code === 200) &&
         (stripos($url, 'doi.org') === FALSE) &&
         (strlen($head) > 55 &&
@@ -1185,7 +1184,6 @@ function check_doi_for_jstor(string $doi, Template $template) : void {
            CURLOPT_USERAGENT => BOT_USER_AGENT]);
   $ris = (string) @curl_exec($ch);
   $httpCode = (int) @curl_getinfo($ch, CURLINFO_HTTP_CODE);
-  curl_close($ch);
   if ($httpCode === 200 &&
       stripos($ris, $doi) !== FALSE &&
       strpos ($ris, 'Provider') !== FALSE &&
