@@ -372,6 +372,8 @@ function adsabs_api(array $ids, array &$templates, string $identifier) : bool { 
     $body = '';
     curlGetResponse($adsabs_url, $return, $ch, $http_response_code, $header, $body);
     unset($ch);
+  } catch (Exception $e) {
+    return FALSE;
   }
   $response = Bibcode_Response_Processing($adsabs_url, $http_response_code, $header, $body);
   if (!isset($response->docs)) return TRUE;
