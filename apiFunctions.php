@@ -1278,12 +1278,12 @@ function curlGetResponse(string $url, string $return, CurlHandle $ch, int &$http
     // @codeCoverageIgnoreStart
     $errorStr = curl_error($ch);
     $errnoInt = curl_errno($ch);
-    throw new Exception(formatUrlResponse($url, 'Curl error from adsabs website', $errorStr), $errnoInt);
+    throw new Exception('Curl error from adsabs website' . $errorStr), $errnoInt);
     // @codeCoverageIgnoreEnd
   } 
   $http_response_code = (int) @curl_getinfo($ch, CURLINFO_HTTP_CODE);
   $header_length = (int) @curl_getinfo($ch, CURLINFO_HEADER_SIZE);
-  if ($http_response_code === 0 || $header_length === 0) throw new Exception(formatUrlResponse($url, 'Size of zero from adsabs website'));
+  if ($http_response_code === 0 || $header_length === 0) throw new Exception('Size of zero from adsabs website');
   $header = substr($return, 0, $header_length);
   $body = substr($return, $header_length);
 }
@@ -1323,7 +1323,7 @@ function Bibcode_Response_Processing(string $adsabs_url, int $http_response_code
       $message = (string) strtok($header, "\n");
       /** @psalm-suppress UnusedFunctionCall */
       @strtok('',''); // Free internal buffers with empty unused call
-      throw new Exception(formatUrlResponse($adsabs_url, $message), $http_response_code);
+      throw new Exception($message, $http_response_code);
       // @codeCoverageIgnoreEnd
     }
 
@@ -1332,18 +1332,18 @@ function Bibcode_Response_Processing(string $adsabs_url, int $http_response_code
       if ($rate_limit[1][2]) {
         report_info("AdsAbs search " . (string)((int) $rate_limit[1][0] - (int) $rate_limit[1][1]) . "/" . (string)(int)$rate_limit[1][0]);
       } else {
-        throw new Exception(formatUrlResponse($adsabs_url, 'Too many requests'), $http_response_code);
+        throw new Exception('Too many requests', $http_response_code);
       }
       // @codeCoverageIgnoreEnd
     }
     if (!is_object($decoded)) {
-      throw new Exception(formatUrlResponse($adsabs_url, "Could not decode API response:\n" . $body), 5000);  // @codeCoverageIgnore
+      throw new Exception("Could not decode API response:\n" . $body, 5000);  // @codeCoverageIgnore
     } elseif (isset($decoded->response)) {
       return $decoded->response;
     } elseif (isset($decoded->error)) {                   // @codeCoverageIgnore
-      throw new Exception(formatUrlResponse($adsabs_url, "" . $decoded->error), 5000);    // @codeCoverageIgnore
+      throw new Exception("" . $decoded->error, 5000);    // @codeCoverageIgnore
     } else {
-      throw new Exception(formatUrlResponse($adsabs_url, "Could not decode AdsAbs response"), 5000);        // @codeCoverageIgnore
+      throw new Exception("Could not decode AdsAbs response", 5000);        // @codeCoverageIgnore
     }
   // @codeCoverageIgnoreStart
   } catch (Exception $e) {
