@@ -355,8 +355,8 @@ function adsabs_api(array $ids, array &$templates, string $identifier) : bool { 
   
   report_action("Expanding from BibCodes via AdsAbs API");
   $ch = curl_init();
-  try {
-    curl_setopt_array($ch,
+  try { 
+      curl_setopt_array($ch,
              [CURLOPT_URL => $adsabs_url,
               CURLOPT_TIMEOUT => BOT_HTTP_TIMEOUT,
               CURLOPT_CONNECTTIMEOUT => BOT_CONNECTION_TIMEOUT,
@@ -366,16 +366,17 @@ function adsabs_api(array $ids, array &$templates, string $identifier) : bool { 
               CURLOPT_HEADER => TRUE,
               CURLOPT_CUSTOMREQUEST => 'POST',
               CURLOPT_POSTFIELDS => "$identifier\n" . implode("\n", $ids)]);
-    $return = (string) @curl_exec($ch);
-    $http_response_code = 0;
-    $header = ''; 
-    $body = '';
-    curlGetResponse($adsabs_url, $return, $ch, $http_response_code, $header, $body);
-    unset($ch);
+      $return = (string) @curl_exec($ch);
+      $http_response_code = 0;
+      $header = ''; 
+      $body = '';
+      curlGetResponse($adsabs_url, $return, $ch, $http_response_code, $header, $body);
+      unset($ch);
   } catch (Exception $e) {
-    return FALSE;
+      return FALSE;
   }
   $response = Bibcode_Response_Processing($adsabs_url, $http_response_code, $header, $body);
+
   if (!isset($response->docs)) return TRUE;
 
   foreach ($response->docs as $record) { // Check for remapped bibcodes
