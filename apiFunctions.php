@@ -353,8 +353,9 @@ function adsabs_api(array $ids, array &$templates, string $identifier) : bool { 
               . "&fl=arxiv_class,author,bibcode,doi,doctype,identifier,"
               . "issue,page,pub,pubdate,title,volume,year&rows=2000";
   
-    report_action("Expanding from BibCodes via AdsAbs API");
-    $ch = curl_init();
+  report_action("Expanding from BibCodes via AdsAbs API");
+  $ch = curl_init();
+  try {
     curl_setopt_array($ch,
              [CURLOPT_URL => $adsabs_url,
               CURLOPT_TIMEOUT => BOT_HTTP_TIMEOUT,
@@ -366,9 +367,16 @@ function adsabs_api(array $ids, array &$templates, string $identifier) : bool { 
               CURLOPT_CUSTOMREQUEST => 'POST',
               CURLOPT_POSTFIELDS => "$identifier\n" . implode("\n", $ids)]);
     $return = (string) @curl_exec($ch);
-    $response = Bibcode_Response_Processing($return, $ch, $adsabs_url);
+    $http_response_code = 0;
+    $header = ''; 
+    $body = '';
+    curlGetResponse($adsabs_url, $return, $ch, $http_response_code, $header, $body);
+  } finally {
     curl_close($ch);
-    if (!isset($response->docs)) return TRUE;
+    unset($ch);
+  }
+  $response = Bibcode_Response_Processing($adsabs_url, $http_response_code, $header, $body);
+  if (!isset($response->docs)) return TRUE;
 
   foreach ($response->docs as $record) { // Check for remapped bibcodes
     $record = (object) $record; // Make static analysis happy
@@ -1252,42 +1260,56 @@ function expand_templates_from_archives(array &$templates) : void { // This is d
   curl_close($ch);
 }
 
-function Bibcode_Response_Processing(string $return, CurlHandle $ch, string $adsabs_url) : object {
+function formatUrlResponse(string $url, string $errorMessage1 = NULL, string $errorMessage2 = NULL) : string {
+  $message = '';
+  if (strlen($url) > 0) {
+    $host = parse_url($url, PHP_URL_HOST);
+    if (is_string($host) && (strlen($host) > 0)) {
+      $message = trim ($message.' Host: '.$host);
+    }
+  }
+  if ($errorMessage1 !== NULL) $message = trim($message.' '.$errorMessage1);
+  if ($errorMessage2 !== NULL) $message = trim($message.' '.$errorMessage2);
+  return $message;
+}
+
+function curlGetResponse(string $url, string $return, CurlHandle $ch, int &$http_response_code, string &$header, string &$body) : void
+{
+  if ($return === "") {
+    // @codeCoverageIgnoreStart
+    $errorStr = curl_error($ch);
+    $errnoInt = curl_errno($ch);
+    throw new Exception(formatUrlResponse($url, 'Curl error from adsabs website', $errorStr), $errnoInt);
+    // @codeCoverageIgnoreEnd
+  } 
+  $http_response_code = (int) @curl_getinfo($ch, CURLINFO_HTTP_CODE);
+  $header_length = (int) @curl_getinfo($ch, CURLINFO_HEADER_SIZE);
+  if ($http_response_code === 0 || $header_length === 0) throw new Exception(formatUrlResponse($url, 'Size of zero from adsabs website'));
+  $header = substr($return, 0, $header_length);
+  $body = substr($return, $header_length);
+}
+
+function Bibcode_Response_Processing(string $adsabs_url, int $http_response_code, string $header, string $body) : object {
   try {
-    if ($return === "") {
-      // @codeCoverageIgnoreStart
-      $error = curl_error($ch);
-      $errno = curl_errno($ch);
-      throw new Exception($error, $errno);
-      // @codeCoverageIgnoreEnd
-    } 
-    $http_response = (int) @curl_getinfo($ch, CURLINFO_HTTP_CODE);
-    $header_length = (int) @curl_getinfo($ch, CURLINFO_HEADER_SIZE);
-    if ($http_response === 0 || $header_length === 0) throw new Exception('Size of zero from adsabs website');
-    $header = substr($return, 0, $header_length);
-    $body = substr($return, $header_length);
     $decoded = @json_decode($body);
     if (is_object($decoded) && isset($decoded->error)) {
       // @codeCoverageIgnoreStart
       if (isset($decoded->error->trace)) {
-        throw new Exception(
-        "ADSABS website returned a stack trace"
-        . "\n - URL was:  " . $adsabs_url,
+        throw new Exception(formatUrlResponse($adsabs_url, 'ADSABS website returned a stack trace'),
         (isset($decoded->error->code) ? $decoded->error->code : 999));
       } else {
-         throw new Exception(
-        ((isset($decoded->error->msg)) ? $decoded->error->msg : $decoded->error)
-        . "\n - URL was:  " . $adsabs_url,
+         throw new Exception(formatUrlResponse($adsabs_url, 
+        ((isset($decoded->error->msg)) ? $decoded->error->msg : $decoded->error)),
         (isset($decoded->error->code) ? $decoded->error->code : 999));
       }
       // @codeCoverageIgnoreEnd
     }
-    if ($http_response !== 200) {
+    if ($http_response_code !== 200) {
       // @codeCoverageIgnoreStart
       $message = (string) strtok($header, "\n");
       /** @psalm-suppress UnusedFunctionCall */
       @strtok('',''); // Free internal buffers with empty unused call
-      throw new Exception($message, $http_response);
+      throw new Exception(formatUrlResponse($adsabs_url, $message), $http_response_code);
       // @codeCoverageIgnoreEnd
     }
 
@@ -1296,18 +1318,18 @@ function Bibcode_Response_Processing(string $return, CurlHandle $ch, string $ads
       if ($rate_limit[1][2]) {
         report_info("AdsAbs search " . (string)((int) $rate_limit[1][0] - (int) $rate_limit[1][1]) . "/" . (string)(int)$rate_limit[1][0]);
       } else {
-        throw new Exception('Too many requests', $http_response);
+        throw new Exception(formatUrlResponse($adsabs_url, 'Too many requests'), $http_response_code);
       }
       // @codeCoverageIgnoreEnd
     }
     if (!is_object($decoded)) {
-      throw new Exception("Could not decode API response:\n" . $body, 5000);  // @codeCoverageIgnore
+      throw new Exception(formatUrlResponse($adsabs_url, "Could not decode API response:\n" . $body), 5000);  // @codeCoverageIgnore
     } elseif (isset($decoded->response)) {
       return $decoded->response;
     } elseif (isset($decoded->error)) {                   // @codeCoverageIgnore
-      throw new Exception("" . $decoded->error, 5000);    // @codeCoverageIgnore
+      throw new Exception(formatUrlResponse($adsabs_url, "" . $decoded->error), 5000);    // @codeCoverageIgnore
     } else {
-      throw new Exception("Could not decode AdsAbs response", 5000);        // @codeCoverageIgnore
+      throw new Exception(formatUrlResponse($adsabs_url, "Could not decode AdsAbs response"), 5000);        // @codeCoverageIgnore
     }
   // @codeCoverageIgnoreStart
   } catch (Exception $e) {
@@ -1477,7 +1499,8 @@ function query_adsabs(string $options) : object {
     // API docs at https://github.com/adsabs/adsabs-dev-api/blob/master/Search_API.ipynb
     if (AdsAbsControl::small_gave_up_yet()) return (object) array('numFound' => 0);
     if (!PHP_ADSABSAPIKEY) return (object) array('numFound' => 0);
-      $ch = curl_init();
+    $ch = curl_init();
+    try {
       /** @psalm-suppress RedundantCondition */ /* PSALM thinks TRAVIS cannot be FALSE */
       $adsabs_url = "https://" . (TRAVIS ? 'qa' : 'api')
                   . ".adsabs.harvard.edu/v1/search/query"
@@ -1492,10 +1515,17 @@ function query_adsabs(string $options) : object {
                 CURLOPT_USERAGENT => BOT_USER_AGENT,
                 CURLOPT_URL => $adsabs_url]);
       $return = (string) @curl_exec($ch);
-      $response = Bibcode_Response_Processing($return, $ch, $adsabs_url);
+      $http_response_code = 0;
+      $header = ''; 
+      $body = '';
+      curlGetResponse($adsabs_url, $return, $ch, $http_response_code, $header, $body);
+    } finally {
       curl_close($ch);
+      unset($ch);
+    }
+    $response = Bibcode_Response_Processing($adsabs_url, $http_response_code, $header, $body);
     return $response;
-  }
+}
 
 function curl_init_crossref(string $url) : CurlHandle {
      $ch = curl_init();
