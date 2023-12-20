@@ -1268,6 +1268,21 @@ function Bibcode_Response_Processing(string $return, CurlHandle $ch, string $ads
     $body = substr($return, $header_length);
     $decoded = @json_decode($body);
     if (is_object($decoded) && isset($decoded->error)) {
+
+      $retrymsg='';
+      if (preg_match('~\nretry-after:\s*(\d+)\r~i', $header, $retry_after)) {
+         $rai=intval($retry_after[1]);
+         $retrymsg.='Need to retry after '.strval($rai).'s ('.date('H:i:s', $rai).').';
+      }
+      if (preg_match('~\nx-ratelimit-reset:\s*(\d+)\r~i', $header, $rate_limit_reset)) {
+         $rlr=intval($rate_limit_reset[1]);
+         $retrymsg.=' Rate limit resets on '.date('Y-m-d H:i:s', $rlr).' UTC.';
+      }
+      if ($retrymsg !== '') {
+        report_warning(trim($retrymsg));
+      }
+      unset($retrymsg);
+
       // @codeCoverageIgnoreStart
       if (isset($decoded->error->trace)) {
         throw new Exception(
@@ -1291,7 +1306,7 @@ function Bibcode_Response_Processing(string $return, CurlHandle $ch, string $ads
       // @codeCoverageIgnoreEnd
     }
 
-    if (preg_match_all('~\nX\-RateLimit\-\w+:\s*(\d+)\r~i', $header, $rate_limit)) {
+    if (preg_match_all('~\nx\-ratelimit\-\w+:\s*(\d+)\r~i', $header, $rate_limit)) {
       // @codeCoverageIgnoreStart
       if ($rate_limit[1][2]) {
         report_info("AdsAbs search " . (string)((int) $rate_limit[1][0] - (int) $rate_limit[1][1]) . "/" . (string)(int)$rate_limit[1][0]);
