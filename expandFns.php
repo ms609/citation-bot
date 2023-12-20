@@ -201,7 +201,6 @@ function is_doi_works(string $doi) : ?bool {
     $head = (string) @curl_exec($ch);
     $url  = curl_getinfo($ch, CURLINFO_EFFECTIVE_URL);
     $code = curl_getinfo($ch, CURLINFO_HTTP_CODE);
-    curl_close($ch);
     if (($code === 302 || $code === 200) &&
         (stripos($url, 'doi.org') === FALSE) &&
         (strlen($head) > 55 &&
@@ -1185,7 +1184,6 @@ function check_doi_for_jstor(string $doi, Template $template) : void {
            CURLOPT_USERAGENT => BOT_USER_AGENT]);
   $ris = (string) @curl_exec($ch);
   $httpCode = (int) @curl_getinfo($ch, CURLINFO_HTTP_CODE);
-  curl_close($ch);
   if ($httpCode === 200 &&
       stripos($ris, $doi) !== FALSE &&
       strpos ($ris, 'Provider') !== FALSE &&
@@ -1487,7 +1485,7 @@ function convert_to_utf8(string $value) : string {
     if ($encode1 !== $encode3) return $value;
     $encode4 =  mb_detect_encoding($value, ["iso-8859-1", "UTF-8", "Windows-1252", "ISO-2022-JP", "EUC-CN", "EUC-KR"], TRUE);
     if ($encode1 !== $encode4) return $value;
-    $new_value = mb_convert_encoding($value, "UTF-8", $encode1);
+    $new_value = (string) @mb_convert_encoding($value, "UTF-8", $encode1);
     if ($new_value == "") return $value;
     return $new_value;
 }

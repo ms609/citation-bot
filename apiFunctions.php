@@ -371,8 +371,6 @@ function adsabs_api(array $ids, array &$templates, string $identifier) : bool { 
     $header = ''; 
     $body = '';
     curlGetResponse($adsabs_url, $return, $ch, $http_response_code, $header, $body);
-  } finally {
-    curl_close($ch);
     unset($ch);
   }
   $response = Bibcode_Response_Processing($adsabs_url, $http_response_code, $header, $body);
@@ -622,7 +620,7 @@ function query_crossref(string $doi) : ?object {
           $raw_xml);
     $xml = @simplexml_load_string($raw_xml);
     if (is_object($xml) && isset($xml->query_result->body->query)) {
-      curl_close($ch);
+      unset($ch);
       $result = $xml->query_result->body->query;
       if ((string) @$result["status"] === "resolved") {
         if (stripos($doi, '10.1515/crll') === 0) {
@@ -647,7 +645,7 @@ function query_crossref(string $doi) : ?object {
       // Keep trying...
     }
   }
-  curl_close($ch);                                                                   // @codeCoverageIgnore
+  unset($ch);                                                                   // @codeCoverageIgnore
   report_warning("Error loading CrossRef file from DOI " . echoable($doi) . "!");    // @codeCoverageIgnore
   return NULL;                                                                       // @codeCoverageIgnore
 }
@@ -688,11 +686,10 @@ function expand_doi_with_dx(Template $template, string $doi) : bool {
      try {
        $data = (string) @curl_exec($ch);
      } catch (Exception $e) {                    // @codeCoverageIgnoreStart
-       curl_close($ch);
        $template->mark_inactive_doi();
        return FALSE;
      }                                           // @codeCoverageIgnoreEnd
-     curl_close($ch);
+     unset($ch);
      if ($data === "" || stripos($data, 'DOI Not Found') !== FALSE || stripos($data, 'DOI prefix') !== FALSE) {
        $template->mark_inactive_doi();
        return FALSE;
@@ -829,7 +826,7 @@ function expand_by_jstor(Template $template) : bool {
             CURLOPT_URL => 'https://www.jstor.org/citation/ris/' . $jstor,
             CURLOPT_USERAGENT => BOT_USER_AGENT]);
   $dat = (string) @curl_exec($ch);
-  curl_close($ch);
+  unset($ch);
   if ($dat === '') {
     report_info("JSTOR API returned nothing for ". jstor_link($jstor));     // @codeCoverageIgnore
     return FALSE;                                                           // @codeCoverageIgnore
@@ -1257,7 +1254,6 @@ function expand_templates_from_archives(array &$templates) : void { // This is d
       }
     }
   }
-  curl_close($ch);
 }
 
 function formatUrlResponse(string $url, string $errorMessage1 = NULL, string $errorMessage2 = NULL) : string {
@@ -1293,6 +1289,21 @@ function Bibcode_Response_Processing(string $adsabs_url, int $http_response_code
   try {
     $decoded = @json_decode($body);
     if (is_object($decoded) && isset($decoded->error)) {
+
+      $retrymsg='';
+      if (preg_match('~\nretry-after:\s*(\d+)\r~i', $header, $retry_after)) {
+         $rai=intval($retry_after[1]);
+         $retrymsg.='Need to retry after '.strval($rai).'s ('.date('H:i:s', $rai).').';
+      }
+      if (preg_match('~\nx-ratelimit-reset:\s*(\d+)\r~i', $header, $rate_limit_reset)) {
+         $rlr=intval($rate_limit_reset[1]);
+         $retrymsg.=' Rate limit resets on '.date('Y-m-d H:i:s', $rlr).' UTC.';
+      }
+      if ($retrymsg !== '') {
+        report_warning(trim($retrymsg));
+      }
+      unset($retrymsg);
+
       // @codeCoverageIgnoreStart
       if (isset($decoded->error->trace)) {
         throw new Exception(formatUrlResponse($adsabs_url, 'ADSABS website returned a stack trace'),
@@ -1313,7 +1324,7 @@ function Bibcode_Response_Processing(string $adsabs_url, int $http_response_code
       // @codeCoverageIgnoreEnd
     }
 
-    if (preg_match_all('~\nX\-RateLimit\-\w+:\s*(\d+)\r~i', $header, $rate_limit)) {
+    if (preg_match_all('~\nx\-ratelimit\-\w+:\s*(\d+)\r~i', $header, $rate_limit)) {
       // @codeCoverageIgnoreStart
       if ($rate_limit[1][2]) {
         report_info("AdsAbs search " . (string)((int) $rate_limit[1][0] - (int) $rate_limit[1][1]) . "/" . (string)(int)$rate_limit[1][0]);
@@ -1395,7 +1406,6 @@ function xml_post(string $url, string $post) : ?SimpleXMLElement {
                 CURLOPT_USERAGENT => BOT_USER_AGENT
                ]);
    $output = (string) @curl_exec($ch);
-   curl_close ($ch);
    $xml = @simplexml_load_string($output);
    if ($xml === FALSE) $xml = NULL;
    return $xml;
@@ -1519,9 +1529,6 @@ function query_adsabs(string $options) : object {
       $header = ''; 
       $body = '';
       curlGetResponse($adsabs_url, $return, $ch, $http_response_code, $header, $body);
-    } finally {
-      curl_close($ch);
-      unset($ch);
     }
     $response = Bibcode_Response_Processing($adsabs_url, $http_response_code, $header, $body);
     return $response;
@@ -1545,7 +1552,6 @@ function CrossRefTitle(string $doi) : string {
      $url = "https://api.crossref.org/v1/works/".str_replace(DOI_URL_DECODE, DOI_URL_ENCODE, $doi)."?mailto=".CROSSREFUSERNAME; // do not encode crossref email
      $ch = curl_init_crossref($url);
      $json = (string) @curl_exec($ch);
-     curl_close($ch);
      $json = @json_decode($json);
      if (isset($json->message->title[0]) && !isset($json->message->title[1])) {
           $title = (string) $json->message->title[0];

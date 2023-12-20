@@ -221,6 +221,14 @@ final class Template {
 		return base64_decode($this->get(strtolower('CITATION_BOT_PLACEHOLDER_BARE_URL')));
 	  }
 	}
+	if (stripos(trim($this->name), '#invoke:') === 0) {
+		$joined = $this->join_params();
+		if (strpos($joined, "||") === 0) {
+			return '{{' . $this->name . $joined . '}}';
+		} else {
+			return '{{' . $this->name . '|' . $joined . '}}';
+		}
+	}
 	return '{{' . $this->name . $this->join_params() . '}}';
   }
 
@@ -2021,12 +2029,12 @@ final class Template {
 		   . "&mailto=".CROSSREFUSERNAME; // do not encode crossref email
 	  $ch = curl_init_crossref($url);
 	  $xml = curl_exec($ch);
+	  unset($ch);
 	  if (is_string($xml) && (strlen($xml) > 0)) {
 		$result = simplexml_load_string($xml);
 	  } else {
 		$result = FALSE;
 	  }
-	  curl_close($ch);
 	  if ($result === FALSE) {
 		report_warning("Error loading simpleXML file from CrossRef."); // @codeCoverageIgnore
 		return;   // @codeCoverageIgnore
@@ -2638,7 +2646,7 @@ final class Template {
 			 CURLOPT_CONNECTTIMEOUT => BOT_CONNECTION_TIMEOUT,
 			 CURLOPT_USERAGENT => BOT_CROSSREF_USER_AGENT]);
 	$json = (string) @curl_exec($ch);
-	curl_close($ch);
+	unset($ch);
 	if ($json) {
 	  $oa = @json_decode($json);
 	  if ($oa !== FALSE && isset($oa->best_oa_location)) {
@@ -2902,7 +2910,7 @@ final class Template {
 					CURLOPT_CONNECTTIMEOUT => BOT_CONNECTION_TIMEOUT,
 					CURLOPT_URL => $google_book_url]);
 		$google_content = (string) @curl_exec($ch);
-		curl_close($ch);
+		unset($ch);
 		if ($google_content && preg_match_all('~[Bb]ooks\.[Gg]oogle\.com/books\?id=(............)&amp~', $google_content, $google_results)) {
 		  $google_results = $google_results[1];
 		  $google_results = array_unique($google_results);
@@ -2953,7 +2961,7 @@ final class Template {
 			CURLOPT_CONNECTTIMEOUT => BOT_CONNECTION_TIMEOUT,
 			CURLOPT_URL => $google_book_url]);
 	$data = (string) @curl_exec($ch);
-	curl_close($ch);
+	unset($ch);
 	if ($data === '') return;
 	$simplified_xml = str_replace('http___//www.w3.org/2005/Atom', 'http://www.w3.org/2005/Atom',
 	  str_replace(":", "___", $data));
@@ -3736,11 +3744,17 @@ final class Template {
 						   'display-editors','displayeditors','url'], FIRST_EDITOR_ALIASES))) return; // Unsupported parameters
 		$new_name = 'cite arXiv';  // Without the capital X is the alias
 	  }
+	  if (stripos($this->name, '#invoke:') !== FALSE) {
+		  $this->name = str_ireplace('#invoke:', '', $this->name);
+		  $invoke = '#invoke:';
+	  } else {
+		  $invoke = '';
+	  }
 	  preg_match("~^(\s*).*\b(\s*)$~", $this->name, $spacing);
 	  if (substr($this->name,0,1) === 'c') {
-		$this->name = $spacing[1] . $new_name . $spacing[2];
+		$this->name = $spacing[1] . $invoke . $new_name . $spacing[2];
 	  } else {
-		$this->name = $spacing[1] . mb_ucfirst($new_name) . $spacing[2];
+		$this->name = $spacing[1] . $invoke . mb_ucfirst($new_name) . $spacing[2];
 	  }
 	  switch (strtolower($new_name)) {
 		case 'cite journal':
@@ -3763,6 +3777,7 @@ final class Template {
 
   public function wikiname() : string {
 	$name = trim(mb_strtolower(str_replace('_', ' ', $this->name)));
+	$name = trim(mb_strtolower(str_replace('#invoke:', '', $name)));
 	 // Treat the same since alias
 	if ($name === 'cite work') $name = 'cite book';
 	if ($name === 'cite chapter') $name = 'cite book';
@@ -3771,6 +3786,7 @@ final class Template {
 	if ($name === 'cite manual') $name = 'cite book';
 	if ($name === 'cite paper') $name = 'cite journal';
 	if ($name === 'cite contribution') $name = 'cite encyclopedia';
+	if ($name === 'cite') $name = 'citation';
 	return $name ;
   }
 
@@ -4205,7 +4221,7 @@ final class Template {
 						CURLOPT_USERAGENT => BOT_USER_AGENT]);
 			  @curl_exec($ch);
 			  $httpCode = (int) @curl_getinfo($ch, CURLINFO_HTTP_CODE);
-			  curl_close($ch);
+			  unset($ch);
 			  if ($httpCode === 200) $this->add_if_new('url', $test_url);
 			}
 			return;
@@ -5676,7 +5692,7 @@ final class Template {
 					   $this->forget($param);
 					}
 				 }
-				 curl_close($ch);
+				 unset($ch);
 			}
 			if (preg_match("~^(.+)/se-[^\/]+/?$~", $this->get($param), $matches)) {
 			  $this->set($param, $matches[1]);
