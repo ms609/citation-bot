@@ -1259,9 +1259,9 @@ function Bibcode_Response_Processing(string $return, CurlHandle $ch, string $ads
       throw new Exception($error, $errno);
       // @codeCoverageIgnoreEnd
     } 
-    $http_response = (int) @curl_getinfo($ch, CURLINFO_HTTP_CODE);
+    $http_response_code = (int) @curl_getinfo($ch, CURLINFO_HTTP_CODE);
     $header_length = (int) @curl_getinfo($ch, CURLINFO_HEADER_SIZE);
-    if ($http_response === 0 || $header_length === 0) throw new Exception('Size of zero from adsabs website');
+    if ($http_response_code === 0 || $header_length === 0) throw new Exception('Size of zero from adsabs website');
     $header = substr($return, 0, $header_length);
     $body = substr($return, $header_length);
     $decoded = @json_decode($body);
@@ -1295,12 +1295,12 @@ function Bibcode_Response_Processing(string $return, CurlHandle $ch, string $ads
       }
       // @codeCoverageIgnoreEnd
     }
-    if ($http_response !== 200) {
+    if ($http_response_code !== 200) {
       // @codeCoverageIgnoreStart
       $message = (string) strtok($header, "\n");
       /** @psalm-suppress UnusedFunctionCall */
       @strtok('',''); // Free internal buffers with empty unused call
-      throw new Exception($message, $http_response);
+      throw new Exception($message, $http_response_code);
       // @codeCoverageIgnoreEnd
     }
 
@@ -1309,7 +1309,7 @@ function Bibcode_Response_Processing(string $return, CurlHandle $ch, string $ads
       if ($rate_limit[1][2]) {
         report_info("AdsAbs search " . (string)((int) $rate_limit[1][0] - (int) $rate_limit[1][1]) . "/" . (string)(int)$rate_limit[1][0]);
       } else {
-        throw new Exception('Too many requests', $http_response);
+        throw new Exception('Too many requests', $http_response_code);
       }
       // @codeCoverageIgnoreEnd
     }
