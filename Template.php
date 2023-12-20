@@ -222,7 +222,12 @@ final class Template {
 	  }
 	}
 	if (stripos(trim($this->name), '#invoke:') === 0) {
-		return '{{' . $this->name . '|' . $this->join_params() . '}}';
+		$joined = $this->join_params();
+		if (strpos($joined, "||") === 0) {
+			return '{{' . $this->name . $joined . '}}';
+		} else {
+			return '{{' . $this->name . '|' . $joined . '}}';
+		}
 	}
 	return '{{' . $this->name . $this->join_params() . '}}';
   }
