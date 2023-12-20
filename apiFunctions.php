@@ -367,7 +367,7 @@ function adsabs_api(array $ids, array &$templates, string $identifier) : bool { 
               CURLOPT_POSTFIELDS => "$identifier\n" . implode("\n", $ids)]);
     $return = (string) @curl_exec($ch);
     $response = Bibcode_Response_Processing($return, $ch, $adsabs_url);
-    curl_close($ch);
+    unset($ch);
     if (!isset($response->docs)) return TRUE;
 
   foreach ($response->docs as $record) { // Check for remapped bibcodes
@@ -614,7 +614,7 @@ function query_crossref(string $doi) : ?object {
           $raw_xml);
     $xml = @simplexml_load_string($raw_xml);
     if (is_object($xml) && isset($xml->query_result->body->query)) {
-      curl_close($ch);
+      unset($ch);
       $result = $xml->query_result->body->query;
       if ((string) @$result["status"] === "resolved") {
         if (stripos($doi, '10.1515/crll') === 0) {
@@ -639,7 +639,7 @@ function query_crossref(string $doi) : ?object {
       // Keep trying...
     }
   }
-  curl_close($ch);                                                                   // @codeCoverageIgnore
+  unset($ch);                                                                   // @codeCoverageIgnore
   report_warning("Error loading CrossRef file from DOI " . echoable($doi) . "!");    // @codeCoverageIgnore
   return NULL;                                                                       // @codeCoverageIgnore
 }
@@ -680,11 +680,10 @@ function expand_doi_with_dx(Template $template, string $doi) : bool {
      try {
        $data = (string) @curl_exec($ch);
      } catch (Exception $e) {                    // @codeCoverageIgnoreStart
-       curl_close($ch);
        $template->mark_inactive_doi();
        return FALSE;
      }                                           // @codeCoverageIgnoreEnd
-     curl_close($ch);
+     unset($ch);
      if ($data === "" || stripos($data, 'DOI Not Found') !== FALSE || stripos($data, 'DOI prefix') !== FALSE) {
        $template->mark_inactive_doi();
        return FALSE;
@@ -821,7 +820,7 @@ function expand_by_jstor(Template $template) : bool {
             CURLOPT_URL => 'https://www.jstor.org/citation/ris/' . $jstor,
             CURLOPT_USERAGENT => BOT_USER_AGENT]);
   $dat = (string) @curl_exec($ch);
-  curl_close($ch);
+  unset($ch);
   if ($dat === '') {
     report_info("JSTOR API returned nothing for ". jstor_link($jstor));     // @codeCoverageIgnore
     return FALSE;                                                           // @codeCoverageIgnore
@@ -1249,7 +1248,6 @@ function expand_templates_from_archives(array &$templates) : void { // This is d
       }
     }
   }
-  curl_close($ch);
 }
 
 function Bibcode_Response_Processing(string $return, CurlHandle $ch, string $adsabs_url) : object {
@@ -1388,7 +1386,6 @@ function xml_post(string $url, string $post) : ?SimpleXMLElement {
                 CURLOPT_USERAGENT => BOT_USER_AGENT
                ]);
    $output = (string) @curl_exec($ch);
-   curl_close ($ch);
    $xml = @simplexml_load_string($output);
    if ($xml === FALSE) $xml = NULL;
    return $xml;
@@ -1508,7 +1505,6 @@ function query_adsabs(string $options) : object {
                 CURLOPT_URL => $adsabs_url]);
       $return = (string) @curl_exec($ch);
       $response = Bibcode_Response_Processing($return, $ch, $adsabs_url);
-      curl_close($ch);
     return $response;
   }
 
@@ -1530,7 +1526,6 @@ function CrossRefTitle(string $doi) : string {
      $url = "https://api.crossref.org/v1/works/".str_replace(DOI_URL_DECODE, DOI_URL_ENCODE, $doi)."?mailto=".CROSSREFUSERNAME; // do not encode crossref email
      $ch = curl_init_crossref($url);
      $json = (string) @curl_exec($ch);
-     curl_close($ch);
      $json = @json_decode($json);
      if (isset($json->message->title[0]) && !isset($json->message->title[1])) {
           $title = (string) $json->message->title[0];
