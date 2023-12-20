@@ -2021,12 +2021,12 @@ final class Template {
 		   . "&mailto=".CROSSREFUSERNAME; // do not encode crossref email
 	  $ch = curl_init_crossref($url);
 	  $xml = curl_exec($ch);
+	  unset($ch);
 	  if (is_string($xml) && (strlen($xml) > 0)) {
 		$result = simplexml_load_string($xml);
 	  } else {
 		$result = FALSE;
 	  }
-	  curl_close($ch);
 	  if ($result === FALSE) {
 		report_warning("Error loading simpleXML file from CrossRef."); // @codeCoverageIgnore
 		return;   // @codeCoverageIgnore
@@ -2638,7 +2638,7 @@ final class Template {
 			 CURLOPT_CONNECTTIMEOUT => BOT_CONNECTION_TIMEOUT,
 			 CURLOPT_USERAGENT => BOT_CROSSREF_USER_AGENT]);
 	$json = (string) @curl_exec($ch);
-	curl_close($ch);
+	unset($ch);
 	if ($json) {
 	  $oa = @json_decode($json);
 	  if ($oa !== FALSE && isset($oa->best_oa_location)) {
@@ -2902,7 +2902,7 @@ final class Template {
 					CURLOPT_CONNECTTIMEOUT => BOT_CONNECTION_TIMEOUT,
 					CURLOPT_URL => $google_book_url]);
 		$google_content = (string) @curl_exec($ch);
-		curl_close($ch);
+		unset($ch);
 		if ($google_content && preg_match_all('~[Bb]ooks\.[Gg]oogle\.com/books\?id=(............)&amp~', $google_content, $google_results)) {
 		  $google_results = $google_results[1];
 		  $google_results = array_unique($google_results);
@@ -2953,7 +2953,7 @@ final class Template {
 			CURLOPT_CONNECTTIMEOUT => BOT_CONNECTION_TIMEOUT,
 			CURLOPT_URL => $google_book_url]);
 	$data = (string) @curl_exec($ch);
-	curl_close($ch);
+	unset($ch);
 	if ($data === '') return;
 	$simplified_xml = str_replace('http___//www.w3.org/2005/Atom', 'http://www.w3.org/2005/Atom',
 	  str_replace(":", "___", $data));
@@ -4205,7 +4205,7 @@ final class Template {
 						CURLOPT_USERAGENT => BOT_USER_AGENT]);
 			  @curl_exec($ch);
 			  $httpCode = (int) @curl_getinfo($ch, CURLINFO_HTTP_CODE);
-			  curl_close($ch);
+			  unset($ch);
 			  if ($httpCode === 200) $this->add_if_new('url', $test_url);
 			}
 			return;
@@ -5676,7 +5676,7 @@ final class Template {
 					   $this->forget($param);
 					}
 				 }
-				 curl_close($ch);
+				 unset($ch);
 			}
 			if (preg_match("~^(.+)/se-[^\/]+/?$~", $this->get($param), $matches)) {
 			  $this->set($param, $matches[1]);
