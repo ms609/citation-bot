@@ -1254,9 +1254,9 @@ function Bibcode_Response_Processing(string $return, CurlHandle $ch, string $ads
   try {
     if ($return === "") {
       // @codeCoverageIgnoreStart
-      $error = curl_error($ch);
-      $errno = curl_errno($ch);
-      throw new Exception($error, $errno);
+      $errorStr = curl_error($ch);
+      $errnoInt = curl_errno($ch);
+      throw new Exception($errorStr, $errnoInt);
       // @codeCoverageIgnoreEnd
     } 
     $http_response_code = (int) @curl_getinfo($ch, CURLINFO_HTTP_CODE);
