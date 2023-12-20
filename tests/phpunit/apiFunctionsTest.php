@@ -903,7 +903,6 @@ final class apiFunctionsTest extends testBaseClass {
         "year":"2019"}]
   }}';
     $response = Bibcode_Response_Processing($return, $ch, "No real URL");
-    curl_close($ch);
     $this->assertTrue(isset($response->docs));
     $this->assertSame(10, $response->numFound);
   }
