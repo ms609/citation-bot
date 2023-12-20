@@ -1258,7 +1258,7 @@ function expand_templates_from_archives(array &$templates) : void { // This is d
   }
 }
 
-function formatUrlResponse(string $url, string $errorMessage1 = NULL, string $errorMessage2 = NULL) : string {
+function formatUrlResponse(string $url, string $errorMessage1 = "", int $errorMessage2 = -9999) : string {
   $message = '';
   if (strlen($url) > 0) {
     $host = parse_url($url, PHP_URL_HOST);
@@ -1266,8 +1266,8 @@ function formatUrlResponse(string $url, string $errorMessage1 = NULL, string $er
       $message = trim ($message.' Host: '.$host);
     }
   }
-  if ($errorMessage1 !== NULL) $message = trim($message.' '.$errorMessage1);
-  if ($errorMessage2 !== NULL) $message = trim($message.' '.$errorMessage2);
+  if ($errorMessage1 !== "") $message = trim($message.' '.$errorMessage1);
+  if ($errorMessage2 !== -9999) $message = trim($message.' '.$errorMessage2);
   return $message;
 }
 
