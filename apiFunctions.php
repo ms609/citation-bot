@@ -1287,14 +1287,10 @@ function Bibcode_Response_Processing(string $return, CurlHandle $ch, string $ads
 
       // @codeCoverageIgnoreStart
       if (isset($decoded->error->trace)) {
-        throw new Exception(
-        "ADSABS website returned a stack trace"
-        . "\n - URL was:  " . $adsabs_url,
+        throw new Exception("ADSABS website returned a stack trace" . "\n - URL was:  " . $adsabs_url,
         (isset($decoded->error->code) ? $decoded->error->code : 999));
       } else {
-         throw new Exception(
-        ((isset($decoded->error->msg)) ? $decoded->error->msg : $decoded->error)
-        . "\n - URL was:  " . $adsabs_url,
+         throw new Exception(((isset($decoded->error->msg)) ? $decoded->error->msg : $decoded->error) . "\n - URL was:  " . $adsabs_url,
         (isset($decoded->error->code) ? $decoded->error->code : 999));
       }
       // @codeCoverageIgnoreEnd
