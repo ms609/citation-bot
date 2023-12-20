@@ -1533,7 +1533,7 @@ function query_adsabs(string $options) : object {
       $body = '';
       curlGetResponse($adsabs_url, $return, $ch, $http_response_code, $header, $body);
       $response = Bibcode_Response_Processing($adsabs_url, $http_response_code, $header, $body);
-    } catch (Exeception $e) {
+    } catch (Exception $e) {
       return (object) array('numFound' => 0);
     }
     return $response;
