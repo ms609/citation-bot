@@ -1312,8 +1312,7 @@ function Bibcode_Response_Processing(string $adsabs_url, int $http_response_code
         throw new Exception(formatUrlResponse($adsabs_url, 'ADSABS website returned a stack trace'),
         (isset($decoded->error->code) ? $decoded->error->code : 999));
       } else {
-         throw new Exception(formatUrlResponse($adsabs_url, 
-        ((isset($decoded->error->msg)) ? $decoded->error->msg : $decoded->error)),
+         throw new Exception(((isset($decoded->error->msg)) ? $decoded->error->msg : $decoded->error)),
         (isset($decoded->error->code) ? $decoded->error->code : 999));
       }
       // @codeCoverageIgnoreEnd
