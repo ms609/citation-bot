@@ -1278,7 +1278,7 @@ function curlGetResponse(string $url, string $return, CurlHandle $ch, int &$http
     // @codeCoverageIgnoreStart
     $errorStr = curl_error($ch);
     $errnoInt = curl_errno($ch);
-    throw new Exception('Curl error from adsabs website' . $errorStr), $errnoInt);
+    throw new Exception('Curl error from adsabs website: ' . $errorStr), $errnoInt);
     // @codeCoverageIgnoreEnd
   } 
   $http_response_code = (int) @curl_getinfo($ch, CURLINFO_HTTP_CODE);
