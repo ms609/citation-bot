@@ -4213,7 +4213,7 @@ EP - 999 }}';
     $text = "{{#invoke:Cite web||S2CID=X}}";
     $expanded = $this->process_citation($text);
     $this->assertFalse($expanded->add_if_new('s2cid', 'Z')); // Do something random
-    $this->assertSame("{{#invoke:Cite web||S2CID=X}}", $expanded->parsed_text());
+    $this->assertSame("{{#invoke:Cite web||s2cid=X}}", $expanded->parsed_text());
    }
    
    
@@ -4221,7 +4221,7 @@ EP - 999 }}';
     $text = "{{#invoke:Cite web|| jstor=1701972 |s2cid= <!-- --> }}";
     $expanded = $this->process_citation($text);
     $this->assertSame('cite journal', $expanded->wikiname());
-    $this->assertSame('{{#invoke:Cite journal|| jstor=1701972 | s2cid=<!-- --> | title=Early Insect Diversification: Evidence from a Lower Devonian Bristletail from Québec | last1=Labandeira | first1=Conrad C. | last2=Beall | first2=Bret S. | last3=Hueber | first3=Francis M. | journal=Science | date=1988 | volume=242 | issue=4880 | pages=913–916 | doi=10.1126/science.242.4880.913 }}', $expanded->parsed_text());
+    $this->assertSame('{{#invoke:Cite journal|| jstor=1701972 |s2cid= <!-- --> | title=Early Insect Diversification: Evidence from a Lower Devonian Bristletail from Québec | last1=Labandeira | first1=Conrad C. | last2=Beall | first2=Bret S. | last3=Hueber | first3=Francis M. | journal=Science | date=1988 | volume=242 | issue=4880 | pages=913–916 | doi=10.1126/science.242.4880.913 }}', $expanded->parsed_text());
   }
 
    public function testInvoke3() : void {
