@@ -1506,7 +1506,7 @@ function query_adsabs(string $options) : object {
                 CURLOPT_URL => $adsabs_url]);
       $return = (string) @curl_exec($ch);
       $response = Bibcode_Response_Processing($return, $ch, $adsabs_url);
-    } catch (Exeception $e) {
+    } catch (Exception $e) {
       return (object) array('numFound' => 0);
     }
     return $response;
