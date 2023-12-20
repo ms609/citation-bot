@@ -1260,7 +1260,7 @@ function Bibcode_Response_Processing(string $return, CurlHandle $ch, string $ads
       // @codeCoverageIgnoreStart
       $errorStr = curl_error($ch);
       $errnoInt = curl_errno($ch);
-      throw new Exception($errorStr, $errnoInt);
+      throw new Exception('Curl error from adsabs website: ' . $errorStr, $errnoInt);
       // @codeCoverageIgnoreEnd
     } 
     $http_response_code = (int) @curl_getinfo($ch, CURLINFO_HTTP_CODE);
