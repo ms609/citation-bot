@@ -376,7 +376,6 @@ function adsabs_api(array $ids, array &$templates, string $identifier) : bool { 
   } catch (Exception $e) {
       return FALSE;
   }
-
   if (!isset($response->docs)) return TRUE;
 
   foreach ($response->docs as $record) { // Check for remapped bibcodes
