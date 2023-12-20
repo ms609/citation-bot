@@ -1287,6 +1287,7 @@ function Bibcode_Response_Processing(string $return, CurlHandle $ch, string $ads
 
       // @codeCoverageIgnoreStart
       if (isset($decoded->error->trace)) {
+        bot_debug_log("ADSABS website returned a stack trace - URL was:  " . $adsabs_url);
         throw new Exception("ADSABS website returned a stack trace" . "\n - URL was:  " . $adsabs_url,
         (isset($decoded->error->code) ? $decoded->error->code : 999));
       } else {
@@ -1314,6 +1315,7 @@ function Bibcode_Response_Processing(string $return, CurlHandle $ch, string $ads
       // @codeCoverageIgnoreEnd
     }
     if (!is_object($decoded)) {
+      bot_debug_log("Could not decode ADSABS API response:\n" . $body . "\nURL was:  " . $adsabs_url);
       throw new Exception("Could not decode API response:\n" . $body, 5000);  // @codeCoverageIgnore
     } elseif (isset($decoded->response)) {
       return $decoded->response;
