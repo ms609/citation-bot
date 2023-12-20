@@ -1489,7 +1489,8 @@ function query_adsabs(string $options) : object {
     // API docs at https://github.com/adsabs/adsabs-dev-api/blob/master/Search_API.ipynb
     if (AdsAbsControl::small_gave_up_yet()) return (object) array('numFound' => 0);
     if (!PHP_ADSABSAPIKEY) return (object) array('numFound' => 0);
-      $ch = curl_init();
+    $ch = curl_init();
+    try {
       /** @psalm-suppress RedundantCondition */ /* PSALM thinks TRAVIS cannot be FALSE */
       $adsabs_url = "https://" . (TRAVIS ? 'qa' : 'api')
                   . ".adsabs.harvard.edu/v1/search/query"
@@ -1505,6 +1506,9 @@ function query_adsabs(string $options) : object {
                 CURLOPT_URL => $adsabs_url]);
       $return = (string) @curl_exec($ch);
       $response = Bibcode_Response_Processing($return, $ch, $adsabs_url);
+    } catch (Exeception $e) {
+      return (object) array('numFound' => 0);
+    }
     return $response;
   }
 
