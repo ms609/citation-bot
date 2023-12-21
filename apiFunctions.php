@@ -354,10 +354,7 @@ function adsabs_api(array $ids, array &$templates, string $identifier) : bool { 
               . "issue,page,pub,pubdate,title,volume,year&rows=2000";
   
   report_action("Expanding from BibCodes via AdsAbs API");
-  try {
-      $ch = curl_init();
-      curl_setopt_array($ch,
-             [CURLOPT_URL => $adsabs_url,
+  $curl_opts=[CURLOPT_URL => $adsabs_url,
               CURLOPT_TIMEOUT => BOT_HTTP_TIMEOUT,
               CURLOPT_CONNECTTIMEOUT => BOT_CONNECTION_TIMEOUT,
               CURLOPT_USERAGENT => BOT_USER_AGENT,
@@ -366,11 +363,7 @@ function adsabs_api(array $ids, array &$templates, string $identifier) : bool { 
               CURLOPT_HEADER => TRUE,
               CURLOPT_CUSTOMREQUEST => 'POST',
               CURLOPT_POSTFIELDS => "$identifier\n" . implode("\n", $ids)]);
-      $response = Bibcode_Response_Processing($ch, $adsabs_url);
-      unset($ch);
-  } catch (Exception $e) {
-      return FALSE;
-  }
+  $response = Bibcode_Response_Processing($curl_opts, $adsabs_url);
   if (!isset($response->docs)) return TRUE;
 
   foreach ($response->docs as $record) { // Check for remapped bibcodes
@@ -1253,8 +1246,10 @@ function expand_templates_from_archives(array &$templates) : void { // This is d
   }
 }
 
-function Bibcode_Response_Processing(CurlHandle $ch, string $adsabs_url) : object {
+function Bibcode_Response_Processing(array $curl_opts, string $adsabs_url) : object {
   try {
+    $ch = curl_init();
+    curl_setopt_array($ch, $curl_opts);
     $return = (string) @curl_exec($ch);
     if ($return === "") {
       // @codeCoverageIgnoreStart
@@ -1318,7 +1313,7 @@ function Bibcode_Response_Processing(CurlHandle $ch, string $adsabs_url) : objec
       bot_debug_log("Could not decode ADSABS API response:\n" . $body . "\nURL was:  " . $adsabs_url);
       throw new Exception("Could not decode API response:\n" . $body, 5000);  // @codeCoverageIgnore
     } elseif (isset($decoded->response)) {
-      return $decoded->response;
+      return $decoded->response;  /** NORMAL RETURN IS HIDDEN HERE **/
     } elseif (isset($decoded->error)) {                   // @codeCoverageIgnore
       throw new Exception("" . $decoded->error, 5000);    // @codeCoverageIgnore
     } else {
@@ -1491,25 +1486,19 @@ function query_adsabs(string $options) : object {
     // API docs at https://github.com/adsabs/adsabs-dev-api/blob/master/Search_API.ipynb
     if (AdsAbsControl::small_gave_up_yet()) return (object) array('numFound' => 0);
     if (!PHP_ADSABSAPIKEY) return (object) array('numFound' => 0);
-    try {
-      $ch = curl_init();
-      /** @psalm-suppress RedundantCondition */ /* PSALM thinks TRAVIS cannot be FALSE */
-      $adsabs_url = "https://" . (TRAVIS ? 'qa' : 'api')
+    /** @psalm-suppress RedundantCondition */ /* PSALM thinks TRAVIS cannot be FALSE */
+    $adsabs_url = "https://" . (TRAVIS ? 'qa' : 'api')
                   . ".adsabs.harvard.edu/v1/search/query"
                   . "?q=$options&fl=arxiv_class,author,bibcode,doi,doctype,identifier,"
                   . "issue,page,pub,pubdate,title,volume,year";
-      curl_setopt_array($ch,
-               [CURLOPT_HTTPHEADER => ['Authorization: Bearer ' . PHP_ADSABSAPIKEY],
+    $curl_opts=[CURLOPT_HTTPHEADER => ['Authorization: Bearer ' . PHP_ADSABSAPIKEY],
                 CURLOPT_RETURNTRANSFER => TRUE,
                 CURLOPT_HEADER => TRUE,
                 CURLOPT_TIMEOUT => BOT_HTTP_TIMEOUT,
                 CURLOPT_CONNECTTIMEOUT => BOT_CONNECTION_TIMEOUT,
                 CURLOPT_USERAGENT => BOT_USER_AGENT,
                 CURLOPT_URL => $adsabs_url]);
-      $response = Bibcode_Response_Processing($ch, $adsabs_url);
-    } catch (Exception $e) {
-      return (object) array('numFound' => 0);
-    }
+    $response = Bibcode_Response_Processing($curl_opts, $adsabs_url);
     return $response;
 }
 
