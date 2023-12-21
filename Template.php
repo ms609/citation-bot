@@ -215,12 +215,12 @@ final class Template {
 			strpos($wikiname, 'cite ') === 0) {
 			$add_pipe = TRUE;
 		}
-		$joined = $this->join_params();
+		$joined = str_replace(array("\t", "\n", "\r", " "), '', $this->join_params());
 		if (strpos($joined, "||") === 0) {
 			$add_pipe = FALSE;
 		}
 		if ($add_pipe) {
-			return '{{' . $this->name . '|' . $joined . '}}';
+			return '{{' . $this->name . '|' .  $this->join_params() . '}}';
 		}
 	}
 	return '{{' . $this->name . $this->join_params() . '}}';
