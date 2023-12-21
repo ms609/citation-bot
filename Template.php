@@ -2255,12 +2255,14 @@ final class Template {
 	  return;  // @codeCoverageIgnore
 	}
 
-	if (!$this->blank_other_than_comments('bibcode') && stripos($this->get('bibcode'), 'tmp') === FALSE && stripos($this->get('bibcode'), 'arxiv') === FALSE ) return; // Now use big query API for existing bibcode - code below still assumes that we might use a bibcode
-	if (!SLOW_MODE && $this->blank('bibcode')) return; // Do not look for new bibcodes in slow mode
+	if (!SLOW_MODE && $this->blank('bibcode')) return; // Only look for new bibcodes in slow mode
 	if (stripos($this->get('bibcode'), 'CITATION') !== FALSE) return;
 	// Do not search if it is a book - might find book review
 	if (stripos($this->get('jstor'), 'document') !== FALSE) return;
 	if (stripos($this->get('jstor'), '.ch.') !== FALSE) return;
+
+	// Now use big query API for existing bibcode - code below still assumes that we might use a bibcode
+	if (!$this->blank_other_than_comments('bibcode') && stripos($this->get('bibcode'), 'tmp') === FALSE && stripos($this->get('bibcode'), 'arxiv') === FALSE ) return;
 
 	if ($this->api_has_used('adsabs', equivalent_parameters('bibcode'))) return;
 
@@ -2467,7 +2469,7 @@ final class Template {
 	  switch (trim($ris_part[0])) {
 		case "T1":
 		  if ($ris_fullbook) {
-			; // Sub-title of main title most likely
+			 ; // Sub-title of main title most likely
 		  } elseif ($ris_book) {
 			 $ris_parameter = "chapter";
 		  } else {
@@ -2692,20 +2694,16 @@ final class Template {
 			 preg_match("~^https?://europepmc\.org/articles/pmc\d"
 					  . "|^https?://www\.pubmedcentral\.nih\.gov/articlerender.fcgi\?.*\bartid=\d"
 					  . "|^https?://www\.ncbi\.nlm\.nih\.gov/(?:m/)?pmc/articles/PMC\d~", $oa_url))
-		 ||($this->has('arxiv') &&
-			preg_match("~arxiv\.org/~", $oa_url))
-		 ||($this->has('eprint') &&
-			preg_match("~arxiv\.org/~", $oa_url))
-		 ||($this->has('citeseerx') &&
-			preg_match("~citeseerx\.ist\.psu\.edu~", $oa_url))) {
+		 ||($this->has('arxiv') && preg_match("~arxiv\.org/~", $oa_url))
+		 ||($this->has('eprint') && preg_match("~arxiv\.org/~", $oa_url))
+		 ||($this->has('citeseerx') && preg_match("~citeseerx\.ist\.psu\.edu~", $oa_url))) {
 		   return 'have free';
 		}
 		// @codeCoverageIgnoreStart
 		// These are not generally full-text.  Will probably never see
 		if(($this->has('bibcode') &&
 			preg_match(REGEXP_BIBCODE, urldecode($oa_url)))
-		 ||($this->has('pmid') &&
-			preg_match("~^https?://www.ncbi.nlm.nih.gov/.*pubmed/~", $oa_url))) {
+		 ||($this->has('pmid') && preg_match("~^https?://www.ncbi.nlm.nih.gov/.*pubmed/~", $oa_url))) {
 		   return 'probably not free';
 		}
 		// This should be found above when listed as location=publisher
