@@ -93,17 +93,16 @@ final class Template {
 	}
 	$trim_name = trim($this->name); // Update if changed above
 	// Cite article is actually cite news, but often used for journal by mistake - fix
-	if ($trim_name === 'cite article') {
-	  if ($this->blank(['journal', 'pmid', 'pmc', 'doi', 's2cid', 'citeseerx'])) {
-		$this->name = $spacing[1] . 'cite news' . $spacing[2];
+	if (strtolower($trim_name) === 'cite article') {
+	  if ($trim_name === 'Cite article') {
+		  $cite_caps = $spacing[1] . "Cite ";
 	  } else {
-		$this->name = $spacing[1] . 'cite journal' . $spacing[2];
+		  $cite_caps = $spacing[1] . "cite ";
 	  }
-	} elseif ($trim_name === 'Cite article') {
 	  if ($this->blank(['journal', 'pmid', 'pmc', 'doi', 's2cid', 'citeseerx'])) {
-		$this->name = $spacing[1] . 'Cite news' . $spacing[2];
+		$this->name = $cite_caps . 'news' . $spacing[2];
 	  } else {
-		$this->name = $spacing[1] . 'Cite journal' . $spacing[2];
+		$this->name = $cite_caps . 'journal' . $spacing[2];
 	  }
 	  // Cite paper is really cite journal
 	} elseif (strtolower($trim_name) === 'cite paper' || strtolower($trim_name) === 'cite document') {
