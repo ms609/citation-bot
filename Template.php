@@ -207,7 +207,7 @@ final class Template {
 	}
 	if (stripos(trim($this->name), '#invoke:') === 0) {
 		$add_pipe = FALSE;
-		$wikiname = $this->get('wikiname');
+		$wikiname = $this->wikiname();
 		if (in_array($wikiname, TEMPLATES_WE_PROCESS) ||
 			in_array($wikiname, TEMPLATES_WE_SLIGHTLY_PROCESS) ||
 			in_array($wikiname, TEMPLATES_WE_BARELY_PROCESS) ||
