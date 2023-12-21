@@ -106,45 +106,30 @@ final class Template {
 		$this->name = $spacing[1] . 'Cite journal' . $spacing[2];
 	  }
 	  // Cite paper is really cite journal
-	} elseif ($trim_name === 'cite paper' || $trim_name === 'cite document') {
-	  if (!$this->blank_other_than_comments('journal')) {
-		$this->name = $spacing[1] . 'cite journal' . $spacing[2];
-	  } elseif (!$this->blank_other_than_comments('newspaper')) {
-		$this->name = $spacing[1] . 'cite news' . $spacing[2];
-	  } elseif (!$this->blank_other_than_comments('website') && $this->has('url')) {
-		$this->name = $spacing[1] . 'cite web' . $spacing[2];
-	  } elseif (!$this->blank_other_than_comments('magazine')) {
-		$this->name = $spacing[1] . 'cite magazine' . $spacing[2];
-	  } elseif (!$this->blank_other_than_comments(['encyclopedia', 'encyclopaedia'])) {
-		$this->name = $spacing[1] . 'cite encyclopedia' . $spacing[2];
-	  } elseif (strpos($this->get('doi'), '/978-') !== FALSE || strpos($this->get('doi'), '/978019') !== FALSE || strpos($this->get('isbn'), '978-0-19') === 0 || strpos($this->get('isbn'), '978019') === 0) {
-		$this->name = $spacing[1] . 'cite book' . $spacing[2];
-	  } elseif (!$this->blank_other_than_comments('chapter') || !$this->blank_other_than_comments('isbn')) {
-		$this->name = $spacing[1] . 'cite book' . $spacing[2];
-	  } elseif (!$this->blank_other_than_comments(['journal', 'pmid', 'pmc'])) {
-		$this->name = $spacing[1] . 'cite journal' . $spacing[2];
-	  } elseif (!$this->blank_other_than_comments('publisher') && $this->blank(['url', 'citeseerx', 's2cid'])) {
-		$this->name = $spacing[1] . 'cite document' . $spacing[2];
+	} elseif (strtolower($trim_name) === 'cite paper' || strtolower($trim_name) === 'cite document') {
+	  if ($trim_name === 'Cite paper' || $trim_name === 'Cite document') {
+		  $cite_caps = $spacing[1] . "Cite ";
+	  } else {
+		  $cite_caps = $spacing[1] . "cite ";
 	  }
-	} elseif ($trim_name === 'Cite paper' || $trim_name === 'Cite document') {
 	  if (!$this->blank_other_than_comments('journal')) {
-		$this->name = $spacing[1] . 'Cite journal' . $spacing[2];
+		$this->name = $cite_caps . 'journal' . $spacing[2];
 	  } elseif (!$this->blank_other_than_comments('newspaper')) {
-		$this->name = $spacing[1] . 'Cite news' . $spacing[2];
+		$this->name = $cite_caps . 'news' . $spacing[2];
 	  } elseif (!$this->blank_other_than_comments('website') && $this->has('url')) {
-		$this->name = $spacing[1] . 'Cite web' . $spacing[2];
+		$this->name = $cite_caps . 'web' . $spacing[2];
 	  } elseif (!$this->blank_other_than_comments('magazine')) {
-		$this->name = $spacing[1] . 'Cite magazine' . $spacing[2];
+		$this->name = $cite_caps . 'magazine' . $spacing[2];
 	  } elseif (!$this->blank_other_than_comments(['encyclopedia', 'encyclopaedia'])) {
-		$this->name = $spacing[1] . 'Cite encyclopedia' . $spacing[2];
+		$this->name = $cite_caps . 'encyclopedia' . $spacing[2];
 	  } elseif (strpos($this->get('doi'), '/978-') !== FALSE || strpos($this->get('doi'), '/978019') !== FALSE || strpos($this->get('isbn'), '978-0-19') === 0 || strpos($this->get('isbn'), '978019') === 0) {
-		$this->name = $spacing[1] . 'Cite book' . $spacing[2];
+		$this->name = $cite_caps . 'book' . $spacing[2];
 	  } elseif (!$this->blank_other_than_comments('chapter') || !$this->blank_other_than_comments('isbn')) {
-		$this->name = $spacing[1] . 'Cite book' . $spacing[2];
+		$this->name = $cite_caps . 'book' . $spacing[2];
 	  } elseif (!$this->blank_other_than_comments(['journal', 'pmid', 'pmc'])) {
-		$this->name = $spacing[1] . 'Cite journal' . $spacing[2];
+		$this->name = $cite_caps . 'journal' . $spacing[2];
 	  } elseif (!$this->blank_other_than_comments('publisher') && $this->blank(['url', 'citeseerx', 's2cid'])) {
-		$this->name = $spacing[1] . 'Cite document' . $spacing[2];
+		$this->name = $cite_caps . 'document' . $spacing[2];
 	  }
 	}
 
@@ -911,9 +896,9 @@ final class Template {
 	if ($this->wikiname() =='cite book' || ($this->wikiname() =='citation' && $this->has('isbn'))) { // Assume book
 	  if ($this->display_authors() >= $this->number_of_authors()) return TRUE;
 	  return (!(
-			  $this->has('isbn')
-		  &&  $this->has('title')
-		  &&  $has_date
+		$this->has('isbn')
+		&&  $this->has('title')
+		&&  $has_date
 	  ));
 	}
 
