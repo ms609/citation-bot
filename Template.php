@@ -95,9 +95,9 @@ final class Template {
 	// Cite article is actually cite news, but often used for journal by mistake - fix
 	if (strtolower($trim_name) === 'cite article') {
 	  if ($trim_name === 'Cite article') {
-		  $cite_caps = $spacing[1] . "Cite ";
+		$cite_caps = $spacing[1] . "Cite ";
 	  } else {
-		  $cite_caps = $spacing[1] . "cite ";
+		$cite_caps = $spacing[1] . "cite ";
 	  }
 	  if ($this->blank(['journal', 'pmid', 'pmc', 'doi', 's2cid', 'citeseerx'])) {
 		$this->name = $cite_caps . 'news' . $spacing[2];
@@ -107,9 +107,9 @@ final class Template {
 	  // Cite paper is really cite journal
 	} elseif (strtolower($trim_name) === 'cite paper' || strtolower($trim_name) === 'cite document') {
 	  if ($trim_name === 'Cite paper' || $trim_name === 'Cite document') {
-		  $cite_caps = $spacing[1] . "Cite ";
+		$cite_caps = $spacing[1] . "Cite ";
 	  } else {
-		  $cite_caps = $spacing[1] . "cite ";
+		$cite_caps = $spacing[1] . "cite ";
 	  }
 	  if (!$this->blank_other_than_comments('journal')) {
 		$this->name = $cite_caps . 'journal' . $spacing[2];
