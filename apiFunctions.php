@@ -362,7 +362,7 @@ function adsabs_api(array $ids, array &$templates, string $identifier) : bool { 
               CURLOPT_RETURNTRANSFER => TRUE,
               CURLOPT_HEADER => TRUE,
               CURLOPT_CUSTOMREQUEST => 'POST',
-              CURLOPT_POSTFIELDS => "$identifier\n" . implode("\n", $ids)]);
+              CURLOPT_POSTFIELDS => "$identifier\n" . implode("\n", $ids)];
   $response = Bibcode_Response_Processing($curl_opts, $adsabs_url);
   if (!isset($response->docs)) return TRUE;
 
@@ -1497,7 +1497,7 @@ function query_adsabs(string $options) : object {
                 CURLOPT_TIMEOUT => BOT_HTTP_TIMEOUT,
                 CURLOPT_CONNECTTIMEOUT => BOT_CONNECTION_TIMEOUT,
                 CURLOPT_USERAGENT => BOT_USER_AGENT,
-                CURLOPT_URL => $adsabs_url]);
+                CURLOPT_URL => $adsabs_url];
     $response = Bibcode_Response_Processing($curl_opts, $adsabs_url);
     return $response;
 }
