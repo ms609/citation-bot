@@ -206,10 +206,20 @@ final class Template {
 	  }
 	}
 	if (stripos(trim($this->name), '#invoke:') === 0) {
+		$add_pipe = FALSE;
+		$wikiname = $this->get('wikiname');
+		if (in_array($wikiname, TEMPLATES_WE_PROCESS) ||
+			in_array($wikiname, TEMPLATES_WE_SLIGHTLY_PROCESS) ||
+			in_array($wikiname, TEMPLATES_WE_BARELY_PROCESS) ||
+			in_array($wikiname, TEMPLATES_WE_RENAME) ||
+			strpos($wikiname, 'cite ') === 0) {
+			$add_pipe = TRUE;
+		}
 		$joined = $this->join_params();
 		if (strpos($joined, "||") === 0) {
-			return '{{' . $this->name . $joined . '}}';
-		} else {
+			$add_pipe = FALSE;
+		}
+		if ($add_pipe) {
 			return '{{' . $this->name . '|' . $joined . '}}';
 		}
 	}
