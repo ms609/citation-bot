@@ -992,20 +992,9 @@ final class Template {
 	  report_error('invalid param_name passed to add_if_new()'); // @codeCoverageIgnore
 	}
 
-	if (str_i_same($value, 'null')) { // Hopeully name is not actually null
-	  return FALSE;
-	}
-
-	if (str_i_same($value, 'n/a')) {
-	  return FALSE;
-	}
-
-	if (str_i_same($value, 'undefined')) {
-	  return FALSE;
-	}
-
-	if (str_i_same($value, '0 0')) {
-	  return FALSE;
+	$low_value = strtolower($value);
+	if (in_array($low_value, array('null', 'n/a', 'undefined', '0 0'))) { // Hopeully name is not actually null
+		return FALSE;
 	}
 
 	if (mb_stripos($this->get($param_name), 'CITATION_BOT_PLACEHOLDER_COMMENT') !== FALSE) {
@@ -1039,7 +1028,7 @@ final class Template {
 	 }
 	 if (strpos($param_name, 'editor') === 0) {
 	  if ((int) substr($param_name, -4) > 0 || (int) substr($param_name, -3) > 0 || (int) substr($param_name, -2) > 30) {
-	   // Stop at 30 authors - or page codes will become cluttered!
+	   // Stop at 30 editors - or page codes will become cluttered!
 	   if ((bool) $this->get('editor29') || (bool) $this->get('editor-last29') || (bool) $this->get('editor29-last')) $this->add_if_new('display-editors', '1');
 	   return FALSE;
 	  }
