@@ -4230,4 +4230,9 @@ EP - 999 }}';
       $this->assertSame("<ref>{{#invoke:Citation||title=X}}{{#invoke:cite||title=X}}{{#invoke:Cite book||title=X}}{{Cite book|title=X}}{{#invoke:Cite book||title=X}}{{#invoke:Cite book || title=X}}{{#invoke:Cite book ||title=X}}{{#invoke:Cite book|| title=X}}<ref>", $page->parsed_text());
   }
 
+   public function testInvoke4() : void {
+    $text = "{{#invoke:Dummy||Y=X}}{{#invoke:Oddity|Y=X}}{{#invoke:Cite dummy||Y=X}}";
+    $expanded = $this->process_citation($text);
+    $this->assertSame($text, $expanded->parsed_text());
+   }
 }
