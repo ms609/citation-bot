@@ -4235,4 +4235,23 @@ EP - 999 }}';
     $expanded = $this->process_citation($text);
     $this->assertSame($text, $expanded->parsed_text());
    }
+
+   public function testInvoke5() : void {
+    $text = "{{#invoke:Dummy\n\t\r | \n\r\t|\n\t\r Y=X}}";
+    $expanded = $this->process_citation($text);
+    $this->assertSame($text, $expanded->parsed_text());
+   }
+
+   public function testInvoke6() : void {
+    $text = "{{#invoke:Oddity\n \r\t|\n \t\rY=X}}";
+    $expanded = $this->process_citation($text);
+    $this->assertSame($text, $expanded->parsed_text());
+   }
+
+   public function testInvoke7() : void {
+    $text = "{{#invoke:Cite dummy\n\t\r | \n\r\t |\n\r\t Y=X}}";
+    $expanded = $this->process_citation($text);
+    $this->assertSame($text, $expanded->parsed_text());
+   }
+ 
 }
