@@ -354,8 +354,8 @@ function adsabs_api(array $ids, array &$templates, string $identifier) : bool { 
               . "issue,page,pub,pubdate,title,volume,year&rows=2000";
   
   report_action("Expanding from BibCodes via AdsAbs API");
-  $ch = curl_init();
-  try { 
+  try {
+      $ch = curl_init();
       curl_setopt_array($ch,
              [CURLOPT_URL => $adsabs_url,
               CURLOPT_TIMEOUT => BOT_HTTP_TIMEOUT,
@@ -366,8 +366,7 @@ function adsabs_api(array $ids, array &$templates, string $identifier) : bool { 
               CURLOPT_HEADER => TRUE,
               CURLOPT_CUSTOMREQUEST => 'POST',
               CURLOPT_POSTFIELDS => "$identifier\n" . implode("\n", $ids)]);
-      $return = (string) @curl_exec($ch);
-      $response = Bibcode_Response_Processing($return, $ch, $adsabs_url);
+      $response = Bibcode_Response_Processing($ch, $adsabs_url);
       unset($ch);
   } catch (Exception $e) {
       return FALSE;
@@ -1254,8 +1253,9 @@ function expand_templates_from_archives(array &$templates) : void { // This is d
   }
 }
 
-function Bibcode_Response_Processing(string $return, CurlHandle $ch, string $adsabs_url) : object {
+function Bibcode_Response_Processing(CurlHandle $ch, string $adsabs_url) : object {
   try {
+    $return = (string) @curl_exec($ch);
     if ($return === "") {
       // @codeCoverageIgnoreStart
       $errorStr = curl_error($ch);
@@ -1491,8 +1491,8 @@ function query_adsabs(string $options) : object {
     // API docs at https://github.com/adsabs/adsabs-dev-api/blob/master/Search_API.ipynb
     if (AdsAbsControl::small_gave_up_yet()) return (object) array('numFound' => 0);
     if (!PHP_ADSABSAPIKEY) return (object) array('numFound' => 0);
-    $ch = curl_init();
     try {
+      $ch = curl_init();
       /** @psalm-suppress RedundantCondition */ /* PSALM thinks TRAVIS cannot be FALSE */
       $adsabs_url = "https://" . (TRAVIS ? 'qa' : 'api')
                   . ".adsabs.harvard.edu/v1/search/query"
@@ -1506,8 +1506,7 @@ function query_adsabs(string $options) : object {
                 CURLOPT_CONNECTTIMEOUT => BOT_CONNECTION_TIMEOUT,
                 CURLOPT_USERAGENT => BOT_USER_AGENT,
                 CURLOPT_URL => $adsabs_url]);
-      $return = (string) @curl_exec($ch);
-      $response = Bibcode_Response_Processing($return, $ch, $adsabs_url);
+      $response = Bibcode_Response_Processing($ch, $adsabs_url);
     } catch (Exception $e) {
       return (object) array('numFound' => 0);
     }
