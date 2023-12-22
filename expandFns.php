@@ -2414,6 +2414,7 @@ function conference_doi(string $doi) : bool {
 
 function clean_dates(string $input) : string { // See https://en.wikipedia.org/wiki/Help:CS1_errors#bad_date
     if ($input === '0001-11-30') return '';
+    $days_of_week = array('Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday', 'Mony', 'Tues', 'Wed', 'Thurs', 'Fri', 'Sat', 'Sun');
     $months_seasons = array('January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December', 'Winter', 'Spring', 'Summer', 'Fall', 'Autumn');
     $input = str_ireplace($months_seasons, $months_seasons, $input); // capitalization
     if (preg_match('~^(\d{4})[\-\/](\d{4})$~', $input, $matches)) { // Hyphen or slash in year range (use en dash)
@@ -2449,6 +2450,17 @@ function clean_dates(string $input) : string { // See https://en.wikipedia.org/w
     if (preg_match('~^Effective[\s\:]+((?:|[A-Z][a-z]+ )\d{4})$~', $input, $matches)) { // Effective 1999 stuff
       return $matches[1];
     }
+    if (preg_match('~^(\d+ [A-Z][a-z]+ \d{4})\.$~', $input, $matches)) { // 8 December 2022. (period on end)
+      return $matches[1];
+    }
+    if (preg_match('~^0(\d [A-Z][a-z]+ \d{4})$~', $input, $matches)) { // 08 December 2022 - leading zero
+      return $matches[1];
+    }
+    if (preg_match('~([A-Z][a-z]+)\,(\d [A-Z][a-z]+ \d{4})$~', $input, $matches)) { // Monday, November 2, 1981
+      if (in_array($matches[1], $days_of_week)) {
+        return $matches[2];
+      }
+    }                                              
     if (preg_match('~^(\d{4})\s*(?:&|and)\s*(\d{4})$~', $input, $matches)) { // &/and between years
       $first = (int) $matches[1];
       $second = (int) $matches[2];
