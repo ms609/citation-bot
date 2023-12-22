@@ -3813,6 +3813,8 @@ final class Template {
 		$this->set($param, safe_preg_replace('~(?<!:)[:,]$~u', '', $this->get($param)));   // Remove trailing commas, colons, but not semi-colons--They are HTML encoding stuff
 		$this->set($param, safe_preg_replace('~^[:,;](?!:)~u', '', $this->get($param)));  // Remove leading commas, colons, and semi-colons
 		$this->set($param, safe_preg_replace('~^\=+\s*(?![^a-zA-Z0-9\[\'\"])~u', '', $this->get($param))); // Remove leading ='s sign if in front of letter or number
+		$this->set($param, safe_preg_replace('~&#x2010;~u', '-', $this->get($param)));
+		$this->set($param, safe_preg_replace('~\x{2010}~u', '-', $this->get($param)));
 		$this->set($param, safe_preg_replace('~&#x2013;~u', '&ndash;', $this->get($param)));
 		$this->set($param, safe_preg_replace('~&#x2014;~u', '&mdash;', $this->get($param)));
 		$this->set($param, safe_preg_replace('~&#x00026;~u', '&', $this->get($param)));
