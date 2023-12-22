@@ -317,7 +317,7 @@ class Page {
         $this_template->get_identifiers_from_url();
         $this_template->expand_by_google_books();
         $this_template->tidy();
-        $this_template->tidy_parameter('dead-url');
+        $this_template->tidy_parameter('dead-url'); $this_template->tidy_parameter('deadurl');
         if ($this_template->wikiname() === 'cite conference') $our_templates_conferences[] = $this_template;
         $our_templates_ieee[] = $this_template;
       } elseif (in_array($this_template->wikiname(), TEMPLATES_WE_BARELY_PROCESS)) { // No capitalization of thesis, etc.
@@ -326,7 +326,7 @@ class Page {
         $this_template->correct_param_mistakes();
         $this_template->get_identifiers_from_url();
         $this_template->tidy();
-        $this_template->tidy_parameter('dead-url');
+        $this_template->tidy_parameter('dead-url'); $this_template->tidy_parameter('deadurl');
       } elseif (in_array($this_template->wikiname(), TEMPLATES_WE_CHAPTER_URL)) {
         $our_templates_slight[] = $this_template;
         $this_template->rename('chapterurl', 'chapter-url');
@@ -347,16 +347,20 @@ class Page {
       } elseif ($this_template->wikiname() === 'cite lsa') {
         $this_template->clean_google_books();
         $this_template->forget('ref'); // Common parameter that does not actually work
+        $this_template->tidy_parameter('title')
       } elseif ($this_template->wikiname() === 'cite odnb') {
         $this_template->clean_cite_odnb();
         $this_template->clean_google_books();
+        $this_template->tidy_parameter('title')
       } elseif ($this_template->wikiname() === 'cite episode' || $this_template->wikiname() === 'cite interview') {
         $this_template->clean_google_books();
         $this_template->correct_param_mistakes();
         $this_template->tidy_parameter('dead-url'); $this_template->tidy_parameter('deadurl');
+        $this_template->tidy_parameter('title')
       } elseif ((strpos($this_template->wikiname(), 'cite ') === 0)  || (strpos($this_template->wikiname(), 'vcite ') === 0)) {
         $this_template->clean_google_books();
         $this_template->tidy_parameter('dead-url'); $this_template->tidy_parameter('deadurl');
+        $this_template->tidy_parameter('title')
         // THIS CATCH ALL NEEDS TO BE LAST IN THE LIST!!!!!!
       }
     }
