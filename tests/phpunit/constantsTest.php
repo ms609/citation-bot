@@ -130,7 +130,7 @@ final class constantsTest extends testBaseClass {
                              PREFER_ISSUES, DEAD_PARAMETERS, PARAMETER_LIST, LOTS_OF_EDITORS,
                              TEMPLATES_WE_HARV, FLATTENED_AUTHOR_PARAMETERS, TEMPLATES_VCITE,
                              TEMPLATES_WE_CHAPTER_URL, TEMPLATES_WE_RENAME, TEMPLATES_WE_BARELY_PROCESS,
-                             TEMPLATES_WE_SLIGHTLY_PROCESS, TEMPLATES_WE_PROCESS);
+                             TEMPLATES_WE_SLIGHTLY_PROCESS, TEMPLATES_WE_PROCESS, TEMPLATES_WE_CLEAN_TITLES);
     foreach ($big_array as $actual) {
       $this->assertSame(mb_strtolower($actual), strtolower($actual));
       $this->assertSame(mb_strtoupper($actual), strtoupper($actual));
