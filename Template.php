@@ -5276,6 +5276,9 @@ final class Template {
 			  $this->add_if_new('archive-date', $matches[1] . '-' . $matches[2] . '-' . $matches[3]);
 			}
 		  }
+		  if (preg_match('~^(?:web\.|www\.).+$~', $this->get($param), $matches) && stripos($this->get($param), 'citation') === FALSE) {
+			  $this->set($param, 'http://' . $matches[0]);
+		  }
 		  if (preg_match('~^https?://(?:web\.archive\.org/web|archive\.today|archive\.\S\S|webarchive\.loc\.gov/all|www\.webarchive\.org\.uk/wayback/archive)/(?:save|\*)/~', $this->get($param)) ||
 			  preg_match('~https://www\.bloomberg\.com/tosv2\.html~', $this->get($param)) ||
 			  preg_match('~googleads\.g\.doubleclick\.net~', $this->get($param)) ||
@@ -5371,6 +5374,9 @@ final class Template {
 		  }
 		case 'url':
 		  if ($this->blank($param)) return;
+		  if (preg_match('~^(?:web\.|www\.).+$~', $this->get($param), $matches) && stripos($this->get($param), 'citation') === FALSE) {
+			  $this->set($param, 'http://' . $matches[0]);
+		  }
 		  $the_original_url = $this->get($param);
 		  if (preg_match("~^https?://(?:www\.|)researchgate\.net/[^\s]*publication/([0-9]+)_*~i", $this->get($param), $matches)) {
 			  $this->set($param, 'https://www.researchgate.net/publication/' . $matches[1]);
@@ -6170,6 +6176,28 @@ final class Template {
 			 }
 		  } else {
 			 $this->rename($param, 'url');
+		  }
+		  return;
+
+		case 'article-url':
+		case 'conference-url':
+		case 'conferenceurl':
+		case 'contribution-url':
+		case 'contributionurl':
+		case 'entry-url':
+		case 'event-url':
+		case 'eventurl':
+		case 'lay-url':
+		case 'layurl':
+		case 'map-url':
+		case 'mapurl':
+		case 'section-url':
+		case 'sectionurl':
+		case 'transcript-url':
+		case 'transcripturl':
+		case 'URL':
+		  if (preg_match('~^(?:web\.|www\.).+$~', $this->get($param), $matches) && stripos($this->get($param), 'citation') === FALSE) {
+			  $this->set($param, 'http://' . $matches[0]);
 		  }
 		  return;
 
