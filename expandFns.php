@@ -2456,11 +2456,11 @@ function clean_dates(string $input) : string { // See https://en.wikipedia.org/w
     if (preg_match('~^0(\d [A-Z][a-z]+ \d{4})$~', $input, $matches)) { // 08 December 2022 - leading zero
       return $matches[1];
     }
-    if (preg_match('~([A-Z][a-z]+)\,(\d [A-Z][a-z]+ \d{4})$~', $input, $matches)) { // Monday, November 2, 1981
+    if (preg_match('~^([A-Z][a-z]+)\, ([A-Z][a-z]+ \d+,* \d{4})$~', $input, $matches)) { // Monday, November 2, 1981
       if (in_array($matches[1], $days_of_week)) {
         return $matches[2];
       }
-    }                                              
+    }
     if (preg_match('~^(\d{4})\s*(?:&|and)\s*(\d{4})$~', $input, $matches)) { // &/and between years
       $first = (int) $matches[1];
       $second = (int) $matches[2];
