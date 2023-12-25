@@ -2472,7 +2472,7 @@ function clean_dates(string $input) : string { // See https://en.wikipedia.org/w
       return $matches[1] . '–' . $matches[2];
     }
     if (preg_match('~^([A-Z][a-z]+) (\d\d*) (\d{4})$~', $input, $matches)) { // December 7 2023 to December 7, 2023
-      if (in_array($matches[1], $months_seasons))
+      if (in_array($matches[1], $months_seasons)) {
         return $matches[1] . ' ' . $matches[2] . ', ' . $matches[3];
       }
     }
