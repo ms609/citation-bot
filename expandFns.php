@@ -1515,7 +1515,9 @@ function smart_decode(string $title, string $encode, string $archive_url) : stri
        $try = "";
   }
   if ($try == "") {
-    bot_debug_log('Bad Encoding: ' . $encode . ' for ' . echoable($archive_url)); // @codeCoverageIgnore
+    if (!in_array($encode, ['utf-8-sig', 'maccentraleurope'])) { // Known wonky ones
+       bot_debug_log('Bad Encoding: ' . $encode . ' for ' . echoable($archive_url)); // @codeCoverageIgnore
+    }
   }
   return $try;
 }
