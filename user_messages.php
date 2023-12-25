@@ -41,12 +41,14 @@ function report_forget(string $text) : void { user_notice("  -", "removed", $tex
 function report_inline(string $text) : void { if (!TRAVIS || defined("TRAVIS_PRINT")) echo " $text"; }
 // call report_warning to give users a message before we die
 function report_error(string $text) : never {
-  report_warning($text);  // @codeCoverageIgnoreStart
+  // @codeCoverageIgnoreStart
   if (TRAVIS) {
      trigger_error($text);  // Stop this test now
   } elseif (function_exists('bot_debug_log')) {
      bot_debug_log($text);  // Code logfile, if defined
+     report_warning($text); // To the user
   } else {
+     report_warning($text); // To the user
      trigger_error($text);  // System Logfile
   }
   exit();  // @codeCoverageIgnoreEnd
