@@ -975,7 +975,6 @@ final class Template {
 	$value = safe_preg_replace('~[\x{2000}-\x{200A}\x{00A0}\x{202F}\x{205F}\x{3000}]~u', ' ', $value); // Non-standard spaces
 	$value = safe_preg_replace("~^\xE2\x80\x8B~", " ", $value); // Zero-width at start
 	$value = safe_preg_replace("~\xE2\x80\x8B$~", " ", $value); // Zero-width at end
-	$value = safe_preg_replace("~\x{200B}~u", " ", $value); // Zero-width anywhere
 	$value = safe_preg_replace('~[\t\n\r\0\x0B]~u', ' ', $value); // tabs, linefeeds, null bytes
 	$value = safe_preg_replace('~  +~u', ' ', $value); // multiple spaces
 	$value = trim($value);
