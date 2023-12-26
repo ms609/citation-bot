@@ -1134,7 +1134,8 @@ function prior_parameters(string $par, array $list=array()) : array {
     case 'location': case 'publisher':return prior_parameters('page', array_merge(['pages'], $list));
     case 'doi':                       return prior_parameters('location', array_merge(['publisher'], $list));
     case 'doi-broken-date':           return prior_parameters('doi', $list);
-    case 'jstor':                     return prior_parameters('doi-broken-date', $list);
+    case 'doi-access':                return prior_parameters('doi-broken-date', $list);
+    case 'jstor':                     return prior_parameters('doi-access', $list);
     case 'pmid':                      return prior_parameters('jstor', $list);
     case 'pmc':                       return prior_parameters('pmid', $list);
     case 'arxiv': case 'eprint': case 'class' : return prior_parameters('pmc', $list);
@@ -1150,6 +1151,7 @@ function prior_parameters(string $par, array $list=array()) : array {
     case 'archive-date': case 'archivedate': return prior_parameters('archive-url', array_merge(['archiveurl', 'accessdate', 'access-date'], $list));
     case 'id': case 'type': case 'via':return prior_parameters('archive-date', array_merge(['archivedate'], $list));
     default:
+      bot_debug_log("prior_parameters missed: " . $par);
       return $list;
   }
 }
