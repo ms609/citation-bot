@@ -1211,7 +1211,7 @@ public static function find_indentifiers_in_urls(Template $template, ?string $ur
           return FALSE;
        }
        $template->add_if_new('s2cid', $s2cid);
-       if ($this->has('s2cid') && is_null($url_sent) && $template->blank(['archiveurl', 'archive-url'])) {
+       if ($template->has('s2cid') && is_null($url_sent) && $template->blank(['archiveurl', 'archive-url'])) {
            $template->forget($url_type);
            return TRUE;  // Time to clean up
        }
