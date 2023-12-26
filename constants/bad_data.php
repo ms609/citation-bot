@@ -175,7 +175,8 @@ const WEB_NEWSPAPERS = array(
                  'inquirer bandera', 'bandera.inquirer.net', 'pilipino star ngayon', 'irishtimes.com', 'the irish times',
                  'the seattle times', 'the news tribune', 'the spokesman-review', 'the montana standard', 'the missoulian',
                  'the spokesman-review', 'bozeman daily chronicle', 'the new york times', 'argus leader', 'the washington post',
-                 'rapid city journal', 'austin daily herald', 'la crosse tribune', 'chicago tribune',
+                 'rapid city journal', 'austin daily herald', 'la crosse tribune', 'chicago tribune', 
+                 'christian science monitor', 'csm', 'csmonitor.com',
                  'rochester democrat and chronicle', 'the boston globe', 'the indianapolis news');
 
 const HOSTS_TO_NOT_ADD  = array('this.fails', 'www.ncbi.nlm.nih.gov', 'dx.doi.org', 'doi.org');
@@ -818,7 +819,6 @@ const ARE_MAGAZINES = array('the new yorker', 'the new republic', 'new republic'
                            'electronic gaming monthly', 'official u.s. playstation magazine',
                            'playstation: the official magazine', 'play and silicon mag', 'games radar', 'hyper',
                            'famitsu', 'gamepro', 'yachting world', 'kalki', 'sports illustrated', 'new civil engineer',
-                           'christian science monitor'
                            ); // lowercase axact matches
 const ARE_MANY_THINGS = array('pc gamer', 'gamestar', 'rock paper shotgun', 'mcv', 'rock, paper, shotgun', 'edge',
                               'ballotpedia', 'npr', 'ballotpedia.org', 'npr.org', 'nih.gov', 'nih', 'eurogamer.it',
