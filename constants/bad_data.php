@@ -818,6 +818,7 @@ const ARE_MAGAZINES = array('the new yorker', 'the new republic', 'new republic'
                            'electronic gaming monthly', 'official u.s. playstation magazine',
                            'playstation: the official magazine', 'play and silicon mag', 'games radar', 'hyper',
                            'famitsu', 'gamepro', 'yachting world', 'kalki', 'sports illustrated', 'new civil engineer',
+                           'christian science monitor'
                            ); // lowercase axact matches
 const ARE_MANY_THINGS = array('pc gamer', 'gamestar', 'rock paper shotgun', 'mcv', 'rock, paper, shotgun', 'edge',
                               'ballotpedia', 'npr', 'ballotpedia.org', 'npr.org', 'nih.gov', 'nih', 'eurogamer.it',
