@@ -3771,6 +3771,7 @@ final class Template {
 	if ($name === 'cite manual') $name = 'cite book';
 	if ($name === 'cite paper') $name = 'cite journal';
 	if ($name === 'cite contribution') $name = 'cite encyclopedia';
+	if ($name === 'cite periodical') $name = 'cite magazine';
 	if ($name === 'cite') $name = 'citation';
 	return $name ;
   }
