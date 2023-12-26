@@ -1035,6 +1035,7 @@ final class Template {
 	  ### EDITORS
 	  case (bool) preg_match('~^editor(\d{1,})$~', $param_name, $match) :
 		if ($this->had_initial_editor) return FALSE;
+		if (stripos($this->get('doi'), '10.1093/gmo') !== FALSE) return FALSE;
 		if (!$this->blank(['editors', 'editor', 'editor-last', 'editor-first'])) return FALSE; // Existing incompatible data
 		if ($this->blank(['editor' . $match[1], 'editor' . $match[1] . '-last', 'editor' . $match[1] . '-first',
 						  'editor-last' . $match[1], 'editor-first' . $match[1]])) {
@@ -1044,6 +1045,7 @@ final class Template {
 
 	  case (bool) preg_match('~^editor-first(\d{1,})$~', $param_name, $match) :
 		if ($this->had_initial_editor) return FALSE;
+		if (stripos($this->get('doi'), '10.1093/gmo') !== FALSE) return FALSE;
 		if (!$this->blank(['editors', 'editor', 'editor-last', 'editor-first'])) return FALSE; // Existing incompatible data
 		if ($this->blank(['editor' . $match[1], 'editor' . $match[1] . '-first', 'editor-first' . $match[1]])) {
 		  return $this->add($param_name, clean_up_first_names($value));
@@ -1052,6 +1054,7 @@ final class Template {
 
 	  case (bool) preg_match('~^editor-last(\d{1,})$~', $param_name, $match) :
 		if ($this->had_initial_editor) return FALSE;
+		if (stripos($this->get('doi'), '10.1093/gmo') !== FALSE) return FALSE;
 		if (!$this->blank(['editors', 'editor', 'editor-last', 'editor-first'])) return FALSE; // Existing incompatible data
 		if ($this->blank(['editor' . $match[1], 'editor' . $match[1] . '-last', 'editor-last' . $match[1]])) {
 		  return $this->add($param_name, clean_up_last_names($value));
