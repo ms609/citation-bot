@@ -153,6 +153,7 @@ final class Template {
 		$this->had_initial_editor = TRUE;
 	  }
 	  if ($p->param === 'veditors' && $p->val) $this->had_initial_editor = TRUE;
+	  if ($p->param === 'others' && $p->val) $this->had_initial_editor = TRUE; // Often tossed in there
 	}
 	$this->no_initial_doi = $this->blank('doi');
 
