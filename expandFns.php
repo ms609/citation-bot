@@ -1131,8 +1131,8 @@ function prior_parameters(string $par, array $list=array()) : array {
     case 'volume':                    return prior_parameters('year', array_merge(['date'], $list));
     case 'issue': case 'number':      return prior_parameters('volume', $list);
     case 'page' : case 'pages':       return prior_parameters('issue', array_merge(['number'], $list));
-    case 'location': case 'publisher':return prior_parameters('page', array_merge(['pages'], $list));
-    case 'doi':                       return prior_parameters('location', array_merge(['publisher'], $list));
+    case 'location': case 'publisher': case 'edition': return prior_parameters('page', array_merge(['pages'], $list));
+    case 'doi':                       return prior_parameters('location', array_merge(['publisher', 'edition'], $list));
     case 'doi-broken-date':           return prior_parameters('doi', $list);
     case 'doi-access':                return prior_parameters('doi-broken-date', $list);
     case 'jstor':                     return prior_parameters('doi-access', $list);
@@ -1147,7 +1147,16 @@ function prior_parameters(string $par, array $list=array()) : array {
        return prior_parameters('isbn', array_merge(['biorxiv', 'citeseerx', 'jfm', 'zbl', 'mr', 'osti', 'ssrn', 'rfc'], $list));
     case 'url':
         return prior_parameters('lccn', array_merge(['issn', 'ol', 'oclc', 'asin', 's2cid'], $list));
-    case 'archive-url': case 'archiveurl': case 'accessdate': case 'access-date': return prior_parameters('url', $list);
+    case 'chapter-url': case 'article-url': case 'chapterurl': case 'conference-url': case 'conferenceurl':
+    case 'contribution-url': case 'contributionurl': case 'entry-url': case 'event-url': case 'eventurl': case 'lay-url':
+    case 'layurl': case 'map-url': case 'mapurl': case 'section-url': case 'sectionurl': case 'transcript-url':
+    case 'transcripturl': case 'URL':
+        return prior_parameters('url', $list);
+    case 'archive-url': case 'archiveurl': case 'accessdate': case 'access-date':
+        return prior_parameters('chapter-url', array_merge(['article-url', 'chapterurl', 'conference-url', 'conferenceurl', 
+        'contribution-url', 'contributionurl', 'entry-url', 'event-url', 'eventurl', 'lay-url', 
+        'layurl', 'map-url', 'mapurl', 'section-url', 'sectionurl', 'transcript-url', 
+        'transcripturl', 'URL'],$list));
     case 'archive-date': case 'archivedate': return prior_parameters('archive-url', array_merge(['archiveurl', 'accessdate', 'access-date'], $list));
     case 'id': case 'type': case 'via':return prior_parameters('archive-date', array_merge(['archivedate'], $list));
     default:
