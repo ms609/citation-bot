@@ -1022,7 +1022,7 @@ public static function process_zotero_response(string $zotero_response, Template
             case 'reviewedAuthor':   // @codeCoverageIgnore
               $authorParam = '';      // @codeCoverageIgnore
               break;                  // @codeCoverageIgnore
-            case 'performer': http://catalog.nypl.org/search/o77059475
+            case 'performer': // http://catalog.nypl.org/search/o77059475
               $authorParam = '';
               break;
             default:                                                               // @codeCoverageIgnore
