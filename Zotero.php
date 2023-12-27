@@ -1219,10 +1219,12 @@ public static function find_indentifiers_in_urls(Template $template, ?string $ur
            return TRUE;  // Time to clean up
        }
        if (is_null($url_sent) && stripos($url, 'pdf') === FALSE) {
-         if ($template->has_good_free_copy()) {
            $template->forget($url_type);
            return TRUE;
-         }
+       }
+       if (is_null($url_sent) && $template->has_good_free_copy()) {
+           $template->forget($url_type);
+           return TRUE;
        }
        if (is_null($url_sent) && get_semanticscholar_license($s2cid) === FALSE && stripos($url, 'pdf') === FALSE) {
          report_warning('Removing un-licensed Semantic Scholar URL that was converted to S2CID parameter');
