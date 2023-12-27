@@ -3526,7 +3526,7 @@ final class TemplateTest2 extends testBaseClass {
      $this->assertSame('cite journal', $template->wikiname());
      $this->assertNull($template->get2('s2cid-access'));
      $this->assertSame('11733879', $template->get2('s2cid')); 
-     $this->assertNotNull($template->get2('url'));
+     $this->assertNull($template->get2('url'));
    }
 
   public function testSemanticscholar3() : void {
