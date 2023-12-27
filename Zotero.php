@@ -1023,6 +1023,7 @@ public static function process_zotero_response(string $zotero_response, Template
               $authorParam = '';      // @codeCoverageIgnore
               break;                  // @codeCoverageIgnore
             case 'performer': http://catalog.nypl.org/search/o77059475
+              $authorParam = '';
               break;
             default:                                                               // @codeCoverageIgnore
               report_minor_error("Unrecognized creator type: " . echoable($creatorType) . ' FROM ' . echoable($url));    // @codeCoverageIgnore
