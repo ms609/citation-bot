@@ -176,8 +176,8 @@ try {
     if (($lastRevId !== 0 && $myPage->lastrevid !== $lastRevId)
      || ($startedEditing !== '' && strtotime($baseTimeStamp) > strtotime($startedEditing))) {
       report_warning("Possible edit conflict detected. Aborting.");      // @codeCoverageIgnore
-      return FALSE;                                                      // @codeCoverageIgnore
-    }
+      return TRUE;                                                      // @codeCoverageIgnore
+    }  // This returns true so that we do not try again
 
     if (empty($response->query->tokens->csrftoken) || !is_string($response->query->tokens->csrftoken)) {
         report_warning('unable to get bot tokens');     // @codeCoverageIgnore
