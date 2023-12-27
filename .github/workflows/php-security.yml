@@ -49,3 +49,10 @@ jobs:
 
     - name: PHP Design Security
       run: ./vendor/bin/progpilot --configuration progpilot.yml html_headers.php category.php generate_template.php gitpull.php linked_pages.php process_page.php authenticate.php
+
+    - name: The PHP Security Checker
+      uses: symfonycorp/security-checker-action@v4
+
+    - name: PHP Security Checker
+      uses: StephaneBour/actions-php-security-checker@1.1
+      
