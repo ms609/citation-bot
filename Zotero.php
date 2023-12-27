@@ -1019,9 +1019,11 @@ public static function process_zotero_response(string $zotero_response, Template
             case 'translator':
               $authorParam = 'translator' . (string) ++$translator_i;
               break;
-             case 'reviewedAuthor':   // @codeCoverageIgnore
+            case 'reviewedAuthor':   // @codeCoverageIgnore
               $authorParam = '';      // @codeCoverageIgnore
               break;                  // @codeCoverageIgnore
+            case 'performer': http://catalog.nypl.org/search/o77059475
+              break;
             default:                                                               // @codeCoverageIgnore
               report_minor_error("Unrecognized creator type: " . echoable($creatorType) . ' FROM ' . echoable($url));    // @codeCoverageIgnore
               $authorParam = '';                                                   // @codeCoverageIgnore
