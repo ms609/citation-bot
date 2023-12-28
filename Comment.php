@@ -22,12 +22,12 @@ abstract class WikiThings {
 
 final class Comment extends WikiThings {
   public const PLACEHOLDER_TEXT = '# # # CITATION_BOT_PLACEHOLDER_COMMENT %s # # #';
-  public const REGEXP = ['~<!--[\s\S]*?-->~us'];
+  public const REGEXP = ['~<!--[^\<\>\-]*?-->~us', '~<!--[\s\S]*?-->~us'];
 }
 
 final class Nowiki extends WikiThings {
   public const PLACEHOLDER_TEXT = '# # # CITATION_BOT_PLACEHOLDER_NOWIKI %s # # #';
-  public const REGEXP = ['~<nowiki>[\s\S]*?</nowiki>~us'];
+  public const REGEXP = ['~<nowiki>[^\<\>]*?</nowiki>~us', '~<nowiki>[\s\S]*?</nowiki>~us'];
 }
 
 final class Chemistry extends WikiThings {
