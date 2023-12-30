@@ -42,7 +42,7 @@ final class AdsAbsControl {
   public static function small_back_on() : void {
     self::$small_counter = 0;
   }
-dfasdf
+
   public static function add_doi_map(string $bib, string $doi) : void {
     if ($bib === '' || $doi === '') {
        report_minor_error('Bad parameter in add_doi_map: ' . echoable($bib) . ' : ' . echoable($doi)); // @codeCoverageIgnore
@@ -1302,7 +1302,6 @@ function Bibcode_Response_Processing(array $curl_opts, string $adsabs_url) : obj
           $retry_msg .= ' Exiting. Please run the bot later to retry AdsAbs API call when the limit will reset.';
           report_warning($retry_msg);
           report_error('The AdsAbs API limit reached, exiting due to "'.strval($limit_action).'" action configured in PHP_ADSABSAPILIMITACTION environment variable.');
-          exit(1);
         } else {
           report_warning($retry_msg);
         }
