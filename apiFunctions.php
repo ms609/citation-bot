@@ -42,7 +42,7 @@ final class AdsAbsControl {
   public static function small_back_on() : void {
     self::$small_counter = 0;
   }
-
+dfasdf
   public static function add_doi_map(string $bib, string $doi) : void {
     if ($bib === '' || $doi === '') {
        report_minor_error('Bad parameter in add_doi_map: ' . echoable($bib) . ' : ' . echoable($doi)); // @codeCoverageIgnore
