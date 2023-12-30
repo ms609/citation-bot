@@ -10,6 +10,7 @@ final class TestPage extends Page {
   function __construct() {
     $trace = debug_backtrace();
     $name = $trace[2]['function'];
+    print_r($trace); exit();
     $this->title = empty($name) ? 'Test Page' : $name;
     self::$last_title = $this->title;
     parent::__construct();
