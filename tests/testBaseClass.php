@@ -10,15 +10,25 @@ final class TestPage extends Page {
   function __construct() {
     $trace = debug_backtrace();
     $name = $trace[2]['function'];
-    print_r($trace); exit();
     $this->title = empty($name) ? 'Test Page' : $name;
     self::$last_title = $this->title;
+    if (trim(self::$last_title) == "" || self::$last_title == 'Test Page') {
+        print_r($trace);
+    }
+    return; // and we are done
     parent::__construct();
   }
   
   public function overwrite_text(string $text) : void {
     $this->text = $text;
-  } 
+  }
+
+  public funcion parse_text(string $text) : void {
+    $save_title = $this->title;
+    parent::parse_text($text);
+    $this->title =$save_title;
+    self::$last_title =$save_title;
+  }
 }
 
 abstract class testBaseClass extends PHPUnit\Framework\TestCase {
