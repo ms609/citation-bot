@@ -370,6 +370,9 @@ function wikify_external_text(string $title) : string {
     }
     $title = str_replace(['<mo stretchy="false">', "<mo stretchy='false'>"], '', $title);
   }
+  // Sometimes stuff is encoded more than once
+  $title = html_entity_decode($title, ENT_COMPAT | ENT_HTML401, "UTF-8");
+  $title = html_entity_decode($title, ENT_COMPAT | ENT_HTML401, "UTF-8");
   $title = html_entity_decode($title, ENT_COMPAT | ENT_HTML401, "UTF-8");
   $title = safe_preg_replace("~\s+~"," ", $title);  // Remove all white spaces before
   if (mb_substr($title, -6) === "&nbsp;") $title = mb_substr($title, 0, -6);
