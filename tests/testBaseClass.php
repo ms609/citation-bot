@@ -14,10 +14,17 @@ final class TestPage extends Page {
     self::$last_title = $this->title;
     parent::__construct();
   }
-  
+
   public function overwrite_text(string $text) : void {
     $this->text = $text;
-  } 
+  }
+
+  public function parse_text(string $text) : void { // Save title from test name
+    $save_title = $this->title;
+    parent::parse_text($text);
+    $this->title = $save_title;
+    self::$last_title = $save_title;
+  }
 }
 
 abstract class testBaseClass extends PHPUnit\Framework\TestCase {
