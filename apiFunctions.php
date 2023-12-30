@@ -1304,7 +1304,10 @@ function Bibcode_Response_Processing(array $curl_opts, string $adsabs_url) : obj
     if (preg_match_all('~\nx\-ratelimit\-\w+:\s*(\d+)\r~i', $header, $rate_limit)) {
       // @codeCoverageIgnoreStart
       if ($rate_limit[1][2]) {
-        report_info("AdsAbs search " . (string)((int) $rate_limit[1][0] - (int) $rate_limit[1][1]) . "/" . (string)(int)$rate_limit[1][0]);
+        $ratelimit_total = intval($rate_limit[1][0]);
+        $ratelimit_left = intval($rate_limit[1][1]);
+        $ratelimit_current  = $ratelimit_total - $ratelimit_left;
+        report_info("AdsAbs search " . strval($ratelimit_current) . "/" . strval($ratelimit_total));
       } else {
         throw new Exception('Too many requests', $http_response_code);
       }
