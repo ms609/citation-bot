@@ -89,7 +89,7 @@ if (file_exists('env.php')) {
 }
 
 if (!mb_internal_encoding('UTF-8') || !mb_regex_encoding('UTF-8')) { /** @phpstan-ignore-line */ /** We are very paranoid */
-  exit('Unable to set encoding'); 
+  exit('Unable to set encoding');
 }
 
 ini_set("memory_limit", "1324M");
@@ -106,6 +106,13 @@ stream_context_set_default(['http' => ['timeout' => BOT_HTTP_TIMEOUT]]);
 ini_set('default_socket_timeout', strval(BOT_HTTP_TIMEOUT));
 
 define("PHP_ADSABSAPIKEY", (string) getenv("PHP_ADSABSAPIKEY"));
+
+$env_limit_action = trim((string) getenv("PHP_ADSABSAPILIMITACTION"));
+if ($env_limit_action !== '') {
+  define("PHP_ADSABSAPILIMITACTION", $env_limit_action);
+}
+unset($env_limit_action);
+
 if ((string) getenv("PHP_S2APIKEY") !== "") {
   define("CONTEXT_S2", array('http'=>array('header'=>"x-api-key: " . (string) getenv("PHP_S2APIKEY") . "\r\n")));
 } else {
