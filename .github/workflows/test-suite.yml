@@ -60,6 +60,7 @@ jobs:
       run: /bin/bash <(curl -s https://codecov.io/bash)
 
     - name: Look for weird stuff
+      if: always()
       run: /bin/cat ./CodeCoverage
 
       
