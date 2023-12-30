@@ -410,6 +410,10 @@ function wikify_external_text(string $title) : string {
   $originalTags = array('<br>', '</br>', '</ br>', '<p>', '</p>', '</ p>', '<strong>', '</strong>', '</ strong>');
   $wikiTags = array('. ','. ','. ','. ','. ','. ', ' ',' ',' ');
   $title = trim(str_ireplace($originalTags, $wikiTags, $title));
+  // @&#x?????; stuff that works in utf-8
+  $originalTags = array('&#x000B0;');
+  $wikiTags = array('°');
+  $title = trim(str_ireplace($originalTags, $wikiTags, $title));
   if (preg_match("~^\. (.+)$~", $title, $matches)) {
     $title = trim($matches[1]);
   }
