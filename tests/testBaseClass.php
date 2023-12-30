@@ -23,7 +23,7 @@ final class TestPage extends Page {
     $this->text = $text;
   }
 
-  public funcion parse_text(string $text) : void {
+  public function parse_text(string $text) : void {
     $save_title = $this->title;
     parent::parse_text($text);
     $this->title =$save_title;
