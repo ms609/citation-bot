@@ -12,22 +12,22 @@ final class TestPage extends Page {
     $name = $trace[2]['function'];
     $this->title = empty($name) ? 'Test Page' : $name;
     self::$last_title = $this->title;
-    if (trim(self::$last_title) == "" || self::$last_title == 'Test Page') {
-        print_r($trace);
+    if (trim(self::$last_title) == "" || self::$last_title == 'Test Page' ||  self::$last_title == 'process_citation') {
+         flush(); print_r($trace); flush();
     }
-    return; // and we are done
+    trigger_error(""); // and we are done
     parent::__construct();
   }
-  
+
   public function overwrite_text(string $text) : void {
     $this->text = $text;
   }
 
-  public function parse_text(string $text) : void {
+  public function parse_text(string $text) : void { // Save title from test name
     $save_title = $this->title;
     parent::parse_text($text);
-    $this->title =$save_title;
-    self::$last_title =$save_title;
+    $this->title = $save_title;
+    self::$last_title = $save_title;
   }
 }
 
@@ -172,6 +172,8 @@ abstract class testBaseClass extends PHPUnit\Framework\TestCase {
   protected function fill_cache() : void { // complete list of DOIs and HDLs that TRUE/FALSE in test suite as of 18 MAY 2022
     Zotero::create_ch_zotero();
     weak::make_ch();
-    new WikipediaBot();
+    $wb = new WikipediaBot();
+    unset($wb);
+    WikipediaBot::make_ch();
   }
 }
