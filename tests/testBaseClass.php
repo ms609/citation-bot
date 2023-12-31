@@ -8,9 +8,26 @@ define("BAD_PAGE_API", ""); // Remember that debug_print_backtrace(0, 6) can be 
 
 final class TestPage extends Page {
   function __construct() {
+    $bad_functions = array('__construct', 'process_page', 'process_citation', 'runTest', 'runBare',
+                           'run', 'requires_secrets', 'requires_bibcode', 'requires_zotero', '{closure}',
+                           'make_citation', 'prepare_citation', 'parameter_parse_text_helper',
+                           'expand_via_zotero', 'reference_to_template', 'fill_cache', ''); // Some of these should never occur
     $trace = debug_backtrace();
-    $name = $trace[2]['function'];
-    $this->title = empty($name) ? 'Test Page' : $name;
+    $name = $trace[0]['function']; // Should be __construct
+    if (in_array($name, $bad_functions)) $name = $trace[1]['function'];
+    if (in_array($name, $bad_functions)) $name = $trace[2]['function'];
+    if (in_array($name, $bad_functions)) $name = $trace[3]['function'];
+    if (in_array($name, $bad_functions)) $name = $trace[4]['function'];
+    if (in_array($name, $bad_functions)) $name = $trace[5]['function'];
+    if (in_array($name, $bad_functions)) $name = $trace[6]['function'];
+    if (in_array($name, $bad_functions)) $name = $trace[7]['function'];
+    if (in_array($name, $bad_functions)) $name = $trace[8]['function'];
+    if (in_array($name, $bad_functions)) $name = $trace[9]['function'];
+    if (in_array($name, $bad_functions)) {
+      print_r($trace);
+      trigger_error("Bad function name in TestPage");
+    }
+    $this->title = $name;
     self::$last_title = $this->title;
     parent::__construct();
   }
@@ -94,6 +111,7 @@ abstract class testBaseClass extends PHPUnit\Framework\TestCase {
   } 
   
   protected function make_citation(string $text) : Template {
+    $tp = new TestPage(); unset($tp); // Fill page name with test name for debugging
     $this->flush();
     Template::$all_templates = array();
     Template::$date_style = DATES_WHATEVER;
