@@ -20,6 +20,7 @@ final class gadgetTest extends testBaseClass {
   }
  
   public function testGadget() : void {
+      $pg = new TestPage(); unset($pg); // Fill page name with test name for debugging
       ob_start();
       $_POST['text'] = '{{cite|pmid=34213}}';
       $_POST['summary'] = 'Something Nice';
