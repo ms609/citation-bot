@@ -25,7 +25,7 @@ final class TestPage extends Page {
     if (in_array($name, $bad_functions)) $name = $trace[9]['function'];
     if (in_array($name, $bad_functions)) {
       print_r($trace);
-      trigger_error("Bad function name in TestPage")
+      trigger_error("Bad function name in TestPage");
     }
     $this->title = $name;
     self::$last_title = $this->title;
