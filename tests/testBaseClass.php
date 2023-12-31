@@ -7,14 +7,24 @@ define("BAD_PAGE_API", ""); // Remember that debug_print_backtrace(0, 6) can be 
 
 
 final class TestPage extends Page {
-  function __construct() {
+  function __construct() {  
+    $bad_functions = array('__construct', 'process_page', 'process_citation', 'runTest', 'runBare',
+                           'run', 'requires_secrets', 'requires_bibcode', 'requires_zotero',
+                           'make_citation', 'prepare_citation', 'parameter_parse_text_helper',
+                           'expand_via_zotero', 'reference_to_template', 'fill_cache', ''); // Some of these should never occur
     $trace = debug_backtrace();
     $name = $trace[2]['function'];
-    $this->title = empty($name) ? 'Test Page' : $name;
-    self::$last_title = $this->title;
-    if (trim(self::$last_title) == "" || self::$last_title == 'Test Page' ||  self::$last_title == 'process_citation') {
-         flush(); print_r($trace); flush(); die;
+    if (in_array($name, $bad_functions)) $name = $trace[3]['function'];
+    if (in_array($name, $bad_functions)) $name = $trace[4]['function'];
+    if (in_array($name, $bad_functions)) $name = $trace[5]['function'];
+    if (in_array($name, $bad_functions)) $name = $trace[6]['function'];
+    if (in_array($name, $bad_functions)) {
+      print_r($trace);
+      trigger_error("");
     }
+    $this->title = $name;
+    self::$last_title = $this->title;
+    bot_debug_log("");
     trigger_error(""); // and we are done
     parent::__construct();
   }
