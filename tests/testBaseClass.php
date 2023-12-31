@@ -13,7 +13,7 @@ final class TestPage extends Page {
     $this->title = empty($name) ? 'Test Page' : $name;
     self::$last_title = $this->title;
     if (trim(self::$last_title) == "" || self::$last_title == 'Test Page' ||  self::$last_title == 'process_citation') {
-         flush(); print_r($trace); flush();
+         flush(); print_r($trace); flush(); die;
     }
     trigger_error(""); // and we are done
     parent::__construct();
