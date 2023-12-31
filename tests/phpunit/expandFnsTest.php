@@ -21,6 +21,7 @@ final class expandFnsTest extends testBaseClass {
   }
 
   public function testCapitalization1a() : void {
+    $pg = new TestPage(); unset($pg); // Fill page name with test name for debugging
     $this->assertSame('Molecular and Cellular Biology', title_capitalization(title_case('Molecular and cellular biology'), TRUE));
   }
   public function testCapitalization1b() : void {
