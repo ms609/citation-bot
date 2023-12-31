@@ -14,10 +14,17 @@ final class TestPage extends Page {
     self::$last_title = $this->title;
     parent::__construct();
   }
-  
+
   public function overwrite_text(string $text) : void {
     $this->text = $text;
-  } 
+  }
+
+  public function parse_text(string $text) : void { // Save title from test name
+    $save_title = $this->title;
+    parent::parse_text($text);
+    $this->title = $save_title;
+    self::$last_title = $save_title;
+  }
 }
 
 abstract class testBaseClass extends PHPUnit\Framework\TestCase {
@@ -160,6 +167,8 @@ abstract class testBaseClass extends PHPUnit\Framework\TestCase {
 
   protected function fill_cache() : void { // complete list of DOIs and HDLs that TRUE/FALSE in test suite as of 18 MAY 2022
     Zotero::create_ch_zotero();
+    $wb = new WikipediaBot();
+    unset($wb);
     WikipediaBot::make_ch();
     doi_active('Z123Z');
     doi_active('XXX/978-XXX');
