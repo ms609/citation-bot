@@ -21,6 +21,7 @@ final class NameToolsTest extends testBaseClass {
   }
 
   public function testFormatMultipleAuthors1() : void {
+    $pg = new TestPage(); unset($pg); // Fill page name with test name for debugging
     $authors = 'M.A. Smith, Smith M.A., Smith MA., Martin A. Smith, MA Smith, Martin Smith'; // unparsable gibberish formatted in many ways--basically exists to check for code changes
     $result=format_multiple_authors($authors);
     $this->assertSame('M. A. Smith, Smith M. A.; Smith, M. A.; Martin A. Smith, M.A. Smith', $result);

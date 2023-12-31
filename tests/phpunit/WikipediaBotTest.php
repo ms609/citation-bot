@@ -26,6 +26,7 @@ require_once __DIR__ . '/../testBaseClass.php';
     }
       
     public function testCategoryMembers() : void {
+      $pg = new TestPage(); unset($pg);  // Fill page name with test name for debugging
       $this->assertTrue(count(WikipediaBot::category_members('Indian drama films')) > 10);
       $this->assertSame(0, count(WikipediaBot::category_members('A category we expect to be empty')));
     }
@@ -95,6 +96,7 @@ require_once __DIR__ . '/../testBaseClass.php';
       $this->assertTrue(WikipediaBot::ret_okay($response));
     }
     public function test_ret_okay5() : void {
+      $pg = new TestPage(); unset($pg);  // Fill page name with test name for debugging
       $response = (object) array('error' => (object) array('info' =>  'weak'));
       $this->assertFalse(WikipediaBot::ret_okay($response));
     }

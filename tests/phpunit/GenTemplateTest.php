@@ -19,6 +19,7 @@ final class GenTemplateTest extends testBaseClass {
   }
 
   public function testGenTemplate() : void {
+      $pg = new TestPage(); unset($pg); // Fill page name with test name for debugging
       // Run API
       ob_start();
       ob_start();
