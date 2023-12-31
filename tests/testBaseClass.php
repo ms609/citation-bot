@@ -171,7 +171,6 @@ abstract class testBaseClass extends PHPUnit\Framework\TestCase {
 
   protected function fill_cache() : void { // complete list of DOIs and HDLs that TRUE/FALSE in test suite as of 18 MAY 2022
     Zotero::create_ch_zotero();
-    weak::make_ch();
     $wb = new WikipediaBot();
     unset($wb);
     WikipediaBot::make_ch();
