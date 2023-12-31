@@ -114,6 +114,8 @@ abstract class testBaseClass extends PHPUnit\Framework\TestCase {
   
   protected function make_citation(string $text) : Template {
     $this->flush();
+    $tp = new TestPage(); // Fill page name with test name for debugging
+    unset($tp);
     Template::$all_templates = array();
     Template::$date_style = DATES_WHATEVER;
     $this->assertSame('{{', mb_substr($text, 0, 2));
