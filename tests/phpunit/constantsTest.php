@@ -21,6 +21,7 @@ final class constantsTest extends testBaseClass {
   }
   
   public function testConstantsDefined() : void {
+    $pg = new TestPage(); unset($pg); // Fill page name with test name for debugging
     $this->assertSame(count(UCFIRST_JOURNAL_ACRONYMS), count(JOURNAL_ACRONYMS));
     for ($i = 0; $i < count(JOURNAL_ACRONYMS); $i++) {
       $this->assertSame(trim(JOURNAL_ACRONYMS[$i]), trim(title_capitalization(mb_ucwords(trim(UCFIRST_JOURNAL_ACRONYMS[$i])), TRUE)));
