@@ -9,7 +9,6 @@ define("BAD_PAGE_API", ""); // Remember that debug_print_backtrace(0, 6) can be 
 final class TestPage extends Page {
   function __construct() {
     static $dumped = FALSE;
-    if (self::$dumped) exit();
     $bad_functions = array('__construct', 'process_page', 'process_citation', 'runTest', 'runBare',
                            'run', 'requires_secrets', 'requires_bibcode', 'requires_zotero',
                            'make_citation', 'prepare_citation', 'parameter_parse_text_helper',
@@ -24,9 +23,8 @@ final class TestPage extends Page {
     if (in_array($name, $bad_functions)) $name = $trace[8]['function'];
     if (in_array($name, $bad_functions)) $name = $trace[9]['function'];
     if (in_array($name, $bad_functions)) {
-      print_r($trace);
-      self::$dumped = TRUE;
-      exit("");
+      if (!$dumped) print_r($trace);
+      $dumped = TRUE;
     }
     $this->title = $name;
     self::$last_title = $this->title;
