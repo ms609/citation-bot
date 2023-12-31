@@ -1256,35 +1256,35 @@ function Bibcode_Response_Processing(array $curl_opts, string $adsabs_url) : obj
       // @codeCoverageIgnoreStart
       $errorStr = curl_error($ch);
       $errnoInt = curl_errno($ch);
-      throw new Exception('Curl error from adsabs website: ' . $errorStr, $errnoInt);
+      throw new Exception('Curl error from AdsAbs website: ' . $errorStr, $errnoInt);
       // @codeCoverageIgnoreEnd
     }
     $http_response_code = (int) @curl_getinfo($ch, CURLINFO_HTTP_CODE);
     $header_length = (int) @curl_getinfo($ch, CURLINFO_HEADER_SIZE);
-    if ($http_response_code === 0 || $header_length === 0) throw new Exception('Size of zero from adsabs website');
+    if ($http_response_code === 0 || $header_length === 0) throw new Exception('Size of zero from AdsAbs website');
     $header = substr($return, 0, $header_length);
     $body = substr($return, $header_length);
     $decoded = @json_decode($body);
     if (is_object($decoded) && isset($decoded->error)) {
 
-      $retrymsg='';
+      $retry_msg='';
       if (preg_match('~\nretry-after:\s*(\d+)\r~i', $header, $retry_after)) {
          $rai=intval($retry_after[1]);
-         $retrymsg.='Need to retry after '.strval($rai).'s ('.date('H:i:s', $rai).').';
+         $retry_msg.='Need to retry after '.strval($rai).'s ('.date('H:i:s', $rai).').';
       }
       if (preg_match('~\nx-ratelimit-reset:\s*(\d+)\r~i', $header, $rate_limit_reset)) {
          $rlr=intval($rate_limit_reset[1]);
-         $retrymsg.=' Rate limit resets on '.date('Y-m-d H:i:s', $rlr).' UTC.';
+         $retry_msg.=' Rate limit resets on '.date('Y-m-d H:i:s', $rlr).' UTC.';
       }
-      if ($retrymsg !== '') {
-        report_warning(trim($retrymsg));
+      if ($retry_msg !== '') {
+        report_warning(trim($retry_msg));
       }
-      unset($retrymsg);
+      unset($retry_msg);
 
       // @codeCoverageIgnoreStart
       if (isset($decoded->error->trace)) {
-        bot_debug_log("ADSABS website returned a stack trace - URL was:  " . $adsabs_url);
-        throw new Exception("ADSABS website returned a stack trace" . "\n - URL was:  " . $adsabs_url,
+        bot_debug_log("AdsAbs website returned a stack trace - URL was:  " . $adsabs_url);
+        throw new Exception("AdsAbs website returned a stack trace" . "\n - URL was:  " . $adsabs_url,
         (isset($decoded->error->code) ? $decoded->error->code : 999));
       } else {
          throw new Exception(((isset($decoded->error->msg)) ? $decoded->error->msg : $decoded->error) . "\n - URL was:  " . $adsabs_url,
