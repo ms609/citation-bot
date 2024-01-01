@@ -4358,6 +4358,12 @@ final class Template {
 				 $this->add_if_new('doi-access', 'free');
 			  }
 			}
+			// Weird ones that are time dependent
+			$year = intval($this->year()); // Will be zero if not set
+			if (strpos($doi, '10.1155/') === 0 && $year > 2006) {
+				$this->add_if_new('doi-access', 'free');
+			}
+			unset($year);
 		  }
 		  if (doi_works($doi) && (strpos($doi, '10.1073/pnas') === 0)) {
 			$template_year = $this->year();
