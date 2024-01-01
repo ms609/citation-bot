@@ -1783,6 +1783,7 @@ final class Template {
 			 $value = '978-0-19-' . substr($value, 6, 6) . '-' . substr($value, 12, 1);
 		  }
 		  if (strlen($value) > 19) return FALSE; // Two ISBNs
+		  $value = self::addISBNdashes($value);
 		  return $this->add($param_name, $value);
 		}
 		return FALSE;
@@ -7585,5 +7586,25 @@ final class Template {
 	   $this->forget($para);
 	   bot_debug_log('move_and_forget: ' . $para);
 	 }
+  }
+
+  public static functionaddISBNdashes(string $isbn) : string {
+	if (substr_count($isbn, '-') > 1) return $isbn;
+	$new = str_replace('-', '', $isbn);
+	if (strlen($new) === 10) {
+		return $isbn; // TODO - deal with X
+		// TODO - split = $v[0], $v[1], $v[2], 1
+	} elseif (strlen($new) === 13) {
+		$num = (int) $isbn;
+		foreach (ISBN_HYPHEN_POS as $k => $v) {
+			if ($num <= $v) {
+				$split = $v;
+			}
+		}
+		// TODO - split = 3, $v[0], $v[1], $v[2], 1
+		return $isbn;
+	} else {
+		return $isbn;
+	}
   }
 }
