@@ -3444,7 +3444,7 @@ final class Template {
 		  case "lancaster university library": case "listed invalid isbn": case "ncbibook2":
 		  case "ncj": case "researchgatepub": case "university of south wales pure":
 		  case "usgs index id": case "us patent": case "us trademark": case "zdb":
-		  case "subscription required": case "ncid": case "wikileaks cable":
+		  case "subscription required": case "ncid": case "wikileaks cable": case "idp":
 		  case "bhl page": case "internet archive": case "youtube": case "nypl":
 		  case "bnf": case "dnb-idn": case "nara catalog record": case "urn": case "viaf":
 		  case "so-vid": case "philpapers": case "iccu": case "hathitrust": case "allmusic":
