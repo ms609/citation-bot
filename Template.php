@@ -7598,10 +7598,10 @@ final class Template {
 				$split = $v;
 			}
 		}
+		if (!isset($split)) return $isbn; // Paranoid
 		$v = $split;
-		$isbn = substr($new, 3, $v[0]) . '-' . substr($new, 3+$v[0], $v[1]) . '-' . substr($new, 3+$v[0]+$v[1], $v[2]) . '-' . substr($new, 3+$v[0]+$v[1]+$v[2], 1) ;
+		return substr($new, 3, $v[0]) . '-' . substr($new, 3+$v[0], $v[1]) . '-' . substr($new, 3+$v[0]+$v[1], $v[2]) . '-' . substr($new, 3+$v[0]+$v[1]+$v[2], 1) ;
 		// split = SKIP3, $v[0], $v[1], $v[2], 1
-		return $isbn;
 	} elseif (strlen($new) === 13) {
 		$num = (int) $new;
 		foreach (ISBN_HYPHEN_POS as $k => $v) {
@@ -7609,10 +7609,10 @@ final class Template {
 				$split = $v;
 			}
 		}
+		if (!isset($split)) return $isbn; // Paranoid
 		$v = $split;
-		$isbn = substr($new, 0, 3) . '-' . substr($new, 3, $v[0]) . '-' . substr($new, 3+$v[0], $v[1]) . '-' . substr($new, 3+$v[0]+$v[1], $v[2]) . '-' . substr($new, 3+$v[0]+$v[1]+$v[2], 1) ;  
+		return substr($new, 0, 3) . '-' . substr($new, 3, $v[0]) . '-' . substr($new, 3+$v[0], $v[1]) . '-' . substr($new, 3+$v[0]+$v[1], $v[2]) . '-' . substr($new, 3+$v[0]+$v[1]+$v[2], 1) ;  
 		// split = 3, $v[0], $v[1], $v[2], 1
-		return $isbn;
 	} else {
 		return $isbn;
 	}
