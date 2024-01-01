@@ -7588,20 +7588,28 @@ final class Template {
 	 }
   }
 
-  public static functionaddISBNdashes(string $isbn) : string {
+  public static function addISBNdashes(string $isbn) : string {
 	if (substr_count($isbn, '-') > 1) return $isbn;
 	$new = str_replace('-', '', $isbn);
 	if (strlen($new) === 10) {
-		return $isbn; // TODO - deal with X
-		// TODO - split = $v[0], $v[1], $v[2], 1
-	} elseif (strlen($new) === 13) {
-		$num = (int) $isbn;
+		$num = 9780000000000 + (int) str_ireplace('x','9', $new);
 		foreach (ISBN_HYPHEN_POS as $k => $v) {
 			if ($num <= $v) {
 				$split = $v;
 			}
 		}
-		// TODO - split = 3, $v[0], $v[1], $v[2], 1
+		$isbn = substr($new, 3, $v[0]) . '-' . substr($new, 3+$v[0], $v[1]) . '-' . substr($new, 3+$v[0]+$v[1], $v[2]) . '-' . substr($new, 3+$v[0]+$v[1]+$v[2], 1) ;
+		// split = SKIP3, $v[0], $v[1], $v[2], 1
+		return $isbn;
+	} elseif (strlen($new) === 13) {
+		$num = (int) $new;
+		foreach (ISBN_HYPHEN_POS as $k => $v) {
+			if ($num <= $v) {
+				$split = $v;
+			}
+		}
+		$isbn = substr($new, 0, 3) . '-' . substr($new, 3, $v[0]) . '-' . substr($new, 3+$v[0], $v[1]) . '-' . substr($new, 3+$v[0]+$v[1], $v[2]) . '-' . substr($new, 3+$v[0]+$v[1]+$v[2], 1) ;  
+		// split = 3, $v[0], $v[1], $v[2], 1
 		return $isbn;
 	} else {
 		return $isbn;
