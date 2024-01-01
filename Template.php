@@ -7598,6 +7598,7 @@ final class Template {
 				$split = $v;
 			}
 		}
+		$v = $split;
 		$isbn = substr($new, 3, $v[0]) . '-' . substr($new, 3+$v[0], $v[1]) . '-' . substr($new, 3+$v[0]+$v[1], $v[2]) . '-' . substr($new, 3+$v[0]+$v[1]+$v[2], 1) ;
 		// split = SKIP3, $v[0], $v[1], $v[2], 1
 		return $isbn;
@@ -7608,6 +7609,7 @@ final class Template {
 				$split = $v;
 			}
 		}
+		$v = $split;
 		$isbn = substr($new, 0, 3) . '-' . substr($new, 3, $v[0]) . '-' . substr($new, 3+$v[0], $v[1]) . '-' . substr($new, 3+$v[0]+$v[1], $v[2]) . '-' . substr($new, 3+$v[0]+$v[1]+$v[2], 1) ;  
 		// split = 3, $v[0], $v[1], $v[2], 1
 		return $isbn;
