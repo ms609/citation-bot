@@ -31,6 +31,7 @@ public static function create_ch_zotero() : void {
   /** @psalm-suppress PossiblyNullArgument */ 
   curl_setopt_array(self::$zotero_ch,
          [CURLOPT_URL => CITOID_ZOTERO,
+          CURLOPT_FOLLOWLOCATION => TRUE,
           CURLOPT_HTTPHEADER => ['accept: application/json; charset=utf-8'],
           CURLOPT_RETURNTRANSFER => TRUE,
           CURLOPT_USERAGENT => BOT_USER_AGENT,
@@ -42,6 +43,7 @@ public static function create_ch_zotero() : void {
   self::$ch_ieee = curl_init();
   curl_setopt_array(self::$ch_ieee,
          [CURLOPT_RETURNTRANSFER => TRUE,
+          CURLOPT_FOLLOWLOCATION => TRUE,
           CURLOPT_HEADER => FALSE,
           CURLOPT_TIMEOUT => BOT_HTTP_TIMEOUT,
           CURLOPT_FOLLOWLOCATION => TRUE,
@@ -53,6 +55,7 @@ public static function create_ch_zotero() : void {
   self::$ch_jstor = curl_init();
   curl_setopt_array(self::$ch_jstor,
        [CURLOPT_RETURNTRANSFER => TRUE,
+        CURLOPT_FOLLOWLOCATION => TRUE,
         CURLOPT_TIMEOUT => BOT_HTTP_TIMEOUT,
         CURLOPT_CONNECTTIMEOUT => BOT_CONNECTION_TIMEOUT,
         CURLOPT_COOKIESESSION => TRUE,
@@ -72,6 +75,7 @@ public static function create_ch_zotero() : void {
   self::$ch_pmc = curl_init();
   curl_setopt_array(self::$ch_pmc,
         [CURLOPT_RETURNTRANSFER => TRUE,
+         CURLOPT_FOLLOWLOCATION => TRUE,
          CURLOPT_TIMEOUT => BOT_HTTP_TIMEOUT,
          CURLOPT_CONNECTTIMEOUT => BOT_CONNECTION_TIMEOUT,
          CURLOPT_COOKIESESSION => TRUE,
@@ -1306,6 +1310,7 @@ public static function find_indentifiers_in_urls(Template $template, ?string $ur
        } elseif ($template->blank('jstor')) {
           curl_setopt_array(self::$ch_jstor,
                             [CURLOPT_URL => 'https://www.jstor.org/citation/ris/' . $matches[1],
+                             CURLOPT_FOLLOWLOCATION => TRUE,
                              CURLOPT_HEADER => FALSE,
                              CURLOPT_NOBODY => FALSE]);
           $dat = (string) @curl_exec(self::$ch_jstor);
@@ -1452,6 +1457,7 @@ public static function find_indentifiers_in_urls(Template $template, ?string $ur
         // Need to encode the sici bit that follows sici?sici= [10 characters]
         $encoded_url = substr($url, 0, $sici_pos + 10) . urlencode(urldecode(substr($url, $sici_pos + 10)));
         curl_setopt_array(self::$ch_jstor, [CURLOPT_URL => $encoded_url,
+                                            CURLOPT_FOLLOWLOCATION => TRUE,
                                             CURLOPT_HEADER => TRUE,
                                             CURLOPT_NOBODY => TRUE]);
         if (@curl_exec(self::$ch_jstor)) {

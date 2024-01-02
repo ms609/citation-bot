@@ -355,6 +355,7 @@ function adsabs_api(array $ids, array &$templates, string $identifier) : bool { 
 
   report_action("Expanding from BibCodes via AdsAbs API");
   $curl_opts=[CURLOPT_URL => $adsabs_url,
+              CURLOPT_FOLLOWLOCATION => TRUE,
               CURLOPT_TIMEOUT => BOT_HTTP_TIMEOUT,
               CURLOPT_CONNECTTIMEOUT => BOT_CONNECTION_TIMEOUT,
               CURLOPT_USERAGENT => BOT_USER_AGENT,
@@ -592,6 +593,7 @@ function query_crossref(string $doi) : ?object {
   $ch = curl_init();
   curl_setopt_array($ch,
             [CURLOPT_HEADER => FALSE,
+             CURLOPT_FOLLOWLOCATION => TRUE,
              CURLOPT_RETURNTRANSFER => TRUE,
              CURLOPT_URL =>  $url,
              CURLOPT_TIMEOUT => BOT_HTTP_TIMEOUT,
@@ -810,6 +812,7 @@ function expand_by_jstor(Template $template) : bool {
   $ch = curl_init();
   curl_setopt_array($ch,
            [CURLOPT_HEADER => FALSE,
+            CURLOPT_FOLLOWLOCATION => TRUE,
             CURLOPT_RETURNTRANSFER => TRUE,
             CURLOPT_TIMEOUT => BOT_HTTP_TIMEOUT,
             CURLOPT_CONNECTTIMEOUT => BOT_CONNECTION_TIMEOUT,
@@ -1376,6 +1379,7 @@ function xml_post(string $url, string $post) : ?SimpleXMLElement {
    $ch = curl_init();
       curl_setopt_array($ch,
                [CURLOPT_URL => $url,
+                CURLOPT_FOLLOWLOCATION => TRUE,
                 CURLOPT_POST => TRUE,
                 CURLOPT_POSTFIELDS => $post,
                 CURLOPT_RETURNTRANSFER => TRUE,
@@ -1496,6 +1500,7 @@ function query_adsabs(string $options) : object {
                   . "?q=$options&fl=arxiv_class,author,bibcode,doi,doctype,identifier,"
                   . "issue,page,pub,pubdate,title,volume,year";
     $curl_opts=[CURLOPT_HTTPHEADER => ['Authorization: Bearer ' . PHP_ADSABSAPIKEY],
+                CURLOPT_FOLLOWLOCATION => TRUE,
                 CURLOPT_RETURNTRANSFER => TRUE,
                 CURLOPT_HEADER => TRUE,
                 CURLOPT_TIMEOUT => BOT_HTTP_TIMEOUT,
@@ -1511,6 +1516,7 @@ function curl_init_crossref(string $url) : CurlHandle {
      // see https://api.crossref.org/swagger-ui/index.html
      curl_setopt_array($ch,
             [CURLOPT_HEADER => FALSE,
+             CURLOPT_FOLLOWLOCATION => TRUE,
              CURLOPT_RETURNTRANSFER => TRUE,
              CURLOPT_URL => $url,
              CURLOPT_TIMEOUT => BOT_HTTP_TIMEOUT,
