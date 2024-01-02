@@ -2630,6 +2630,7 @@ final class Template {
 	$ch = curl_init();
 	curl_setopt_array($ch,
 			[CURLOPT_HEADER => FALSE,
+                         CURLOPT_FOLLOWLOCATION => TRUE,
 			 CURLOPT_RETURNTRANSFER => TRUE,
 			 CURLOPT_URL => $url,
 			 CURLOPT_TIMEOUT => BOT_HTTP_TIMEOUT,
@@ -2890,6 +2891,7 @@ final class Template {
 		$ch = curl_init();
 		curl_setopt_array($ch,
 				   [CURLOPT_USERAGENT => BOT_USER_AGENT,
+                                        CURLOPT_FOLLOWLOCATION => TRUE,
 					CURLOPT_HEADER => FALSE,
 					CURLOPT_RETURNTRANSFER => TRUE,
 					CURLOPT_TIMEOUT => BOT_HTTP_TIMEOUT,
@@ -2941,6 +2943,7 @@ final class Template {
 	$ch = curl_init();
 	curl_setopt_array($ch,
 		   [CURLOPT_USERAGENT => BOT_USER_AGENT,
+                        CURLOPT_FOLLOWLOCATION => TRUE,
 			CURLOPT_HEADER => FALSE,
 			CURLOPT_RETURNTRANSFER => TRUE,
 			CURLOPT_TIMEOUT => BOT_HTTP_TIMEOUT,
@@ -4206,6 +4209,7 @@ final class Template {
 			  $ch = curl_init($test_url);
 			  curl_setopt_array($ch,
 					   [CURLOPT_RETURNTRANSFER => TRUE,
+                                                CURLOPT_FOLLOWLOCATION => TRUE,
 						CURLOPT_TIMEOUT => BOT_HTTP_TIMEOUT * 1.5,
 						CURLOPT_CONNECTTIMEOUT => BOT_CONNECTION_TIMEOUT,
 						CURLOPT_USERAGENT => BOT_USER_AGENT]);

@@ -1193,6 +1193,7 @@ function check_doi_for_jstor(string $doi, Template $template) : void {
   $ch = curl_init();
   curl_setopt_array($ch,
           [CURLOPT_RETURNTRANSFER => TRUE,
+           CURLOPT_FOLLOWLOCATION => TRUE,
            CURLOPT_TIMEOUT => BOT_HTTP_TIMEOUT,
            CURLOPT_CONNECTTIMEOUT => BOT_CONNECTION_TIMEOUT,
            CURLOPT_URL => "https://www.jstor.org/citation/ris/" . $doi,
