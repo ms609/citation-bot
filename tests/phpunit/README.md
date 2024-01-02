@@ -2,8 +2,8 @@
 
 To run the tests for Parameter.php (for example), first check that PHP is installed and that the
 php directory is added to your system `PATH` environment variable.
-Then navigate to the root directory in which you have checked out the citation bot code, 
-i.e. the folder containing setup.php. 
+Then navigate to the root directory in which you have checked out the citation bot code,
+i.e. the folder containing setup.php.
 
 Then, run the following command from the command line :
 
@@ -11,7 +11,7 @@ Then, run the following command from the command line :
 
 To run the tests on Toolforge, first
 
-    webservice --backend=kubernetes php7.4 shell
+    webservice --backend=kubernetes php8.2 shell
 
 then install phpunit and then test:
 
