@@ -2372,6 +2372,20 @@ EP - 999 }}';
     $page = $this->process_page($text);
     $this->assertSame('Alter: isbn. Add: publisher, title, authors 1-2. Upgrade ISBN10 to 13. | [[:en:WP:UCB|Use this bot]]. [[:en:WP:DBUG|Report bugs]]. ', $page->edit_summary());
   }
+
+  public function testConvertingISBN10Dashes() : void {
+    $text = "{{cite book|isbn=|year=2000}}";
+    $prepared = $this->prepare_citation($text);
+    $prepared->add_if_new('isbn', '0974900907');
+    $this->assertSame('0-9749009-0-7', $prepared->get2('isbn'));  // added with dashes
+  }
+
+   public function testConvertingISBN10DashesX() : void {
+    $text = "{{cite book|isbn=|year=2000}}";
+    $prepared = $this->prepare_citation($text);
+    $prepared->add_if_new('isbn', '155404295X');
+    $this->assertSame('1-55404-295-X', $prepared->get2('isbn'));  // added with dashes
+  }
    
   public function testEtAl() : void {
     $text = '{{cite book |auths=Alfred A Albertstein, Bertie B Benchmark, Charlie C. Chapman et al. }}';
