@@ -1,7 +1,7 @@
 <?php
 declare(strict_types=1);
 
-require_once 'constants.php';    // @codeCoverageIgnore 
+require_once 'constants.php';    // @codeCoverageIgnore
 
 /* junior_test - tests a name for a Junior appellation
  *  Input: $name - the name to be tested
@@ -96,7 +96,7 @@ function format_surname(string $surname) : string {
 }
 
 function format_surname_2(string $surname) : string {
-  $ret = preg_replace_callback("~(\p{L})(\p{L}+)~u", 
+  $ret = preg_replace_callback("~(\p{L})(\p{L}+)~u",
         function(array $matches) : string {
                 return mb_strtoupper($matches[1]) . mb_strtolower($matches[2]);
         },
@@ -147,7 +147,7 @@ function author_is_human(string $author) : bool {
   $author = trim($author);
   $chars = count_chars($author);
   if ($chars[ord(":")] > 0 || $chars[ord(" ")] > 3 || strlen($author) > 33
-    || substr(strtolower($author), 0, 4) === "the " 
+    || substr(strtolower($author), 0, 4) === "the "
     || (str_ireplace(NON_HUMAN_AUTHORS, '', $author) !== $author)  // This is the use a replace to see if a substring is present trick
     || preg_match("~[A-Z]{3}~", $author)
     || substr(strtolower($author),-4) === " inc"
@@ -165,16 +165,16 @@ function author_is_human(string $author) : bool {
 
 // Returns the author's name formatted as Surname, F.I.
 function format_author(string $author) : string {
-  
+
   // Requires an author who is formatted as SURNAME, FORENAME or SURNAME FORENAME or FORENAME SURNAME. Substitute initials for forenames if needed
   $surname = '';
   // Google and Zotero sometimes have these (sir) and just sir
   $author = preg_replace("~ ?\((?i)sir(?-i)\.?\)~", "", html_entity_decode($author, ENT_COMPAT | ENT_HTML401, 'UTF-8'));
   $author = preg_replace("~^( ?sir )~", "", $author);
   $author = preg_replace("~^(, sir )~", ", ", $author);
-  
+
   $ends_with_period = (substr(trim($author), -1) === ".");
-  
+
   $author = preg_replace("~(^[;,.\s]+|[;,.\s]+$)~", "", trim($author)); //Housekeeping
   $author = preg_replace("~^[aA]nd ~", "", trim($author)); // Just in case it has been split from a Smith; Jones; and Western
   if ($author === "") {
@@ -298,7 +298,7 @@ function format_multiple_authors(string $authors) : string {
         $return[] = format_author($savedChunk .  ($savedChunk?", ":"") . $chunk);
         $savedChunk = '';
       } else {
-        $savedChunk = $chunk;// could be first author, or an author with no initials, or a surname with initials to follow.
+        $savedChunk = $chunk; // could be first author, or an author with no initials, or a surname with initials to follow.
       }
     }
   }
@@ -323,7 +323,7 @@ function under_two_authors(string $text) : bool {
 }
 
 /* split_authors
- * Assumes that there is more than one author to start with; 
+ * Assumes that there is more than one author to start with;
  * check this using under_two_authors()
  */
 /** @return array<string> **/
