@@ -595,5 +595,12 @@ final class constantsTest extends testBaseClass {
 		}
   }
 
-
+  public function testForISBNListUpdates() : void { // https://en.wikipedia.org/w/index.php?title=Module:Format_ISBN/data&action=history
+      $context = stream_context_create(array(
+	'http' => array('ignore_errors' => TRUE),
+      ));
+      $wikipedia_response = (string) @file_get_contents('https://en.wikipedia.org/w/?title=Module:Format_ISBN/data&action=raw', FALSE, $context);
+      $this->assertSame(1, substr_count($wikipedia_response, 'RangeMessage timestamp:'));
+      $this->assertSame(1, substr_count($wikipedia_response, 'RangeMessage timestamp: 2024-01-01T04:24:03 GMT'));
+  }
 }
