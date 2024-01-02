@@ -12,12 +12,12 @@ const HAS_NO_ISSUE = array("special papers in palaeontology", "oceanic linguisti
 const PREFER_VOLUMES = array("illinois classical studies"); // When issue=volume, drop issue.  JSTOR calls volumes issues
 const PREFER_ISSUES = array("mammalian species", "bulletin of the united states national museum");
 const CONFERENCE_LIST = array("Proceedings of Advancing Astrophysics", "International Cosmic Ray Conference");
-const BAD_ACCEPTED_MANUSCRIPT_TITLES = array("oup accepted manuscript", "placeholder for bad pdf file", 
-                                             "placeholder", "symbolic placeholder", "[placeholder]", 
+const BAD_ACCEPTED_MANUSCRIPT_TITLES = array("oup accepted manuscript", "placeholder for bad pdf file",
+                                             "placeholder", "symbolic placeholder", "[placeholder]",
                                              "placeholder for arabic language transliteration", "article not found");
 const BAD_AUTHORS = array("unknown", "missing", "- -.", "- -", "no authorship indicated", "no authorship", "no author",
                            "no authors", "no author indicated", "no authorship indicated", "dk eyewitness", "united states",
-                           "great britain", "indiatoday", "natural history museum bern", "daily sabah", 'el país', 'el pais', 
+                           "great britain", "indiatoday", "natural history museum bern", "daily sabah", 'el país', 'el pais',
                            "radio", "rundfunk", "news agencies" , "object");
 const NON_HUMAN_AUTHORS = array('collaborat', 'reporter', 'journalist', 'correspondent', 'anchor', 'staff', 'foreign',
                                 'national', 'endowment', ' for the ', 'humanities', 'committee', 'group',
@@ -49,7 +49,7 @@ const PUBLISHERS_ARE_WORKS = array('the san diego union-tribune', 'forbes', 'sal
                                    'washtimes.com', 'washington times', 'findlaw', 'new york times magazine',
                                    'stripes', 'arizona daily star', 'the times of india', 'the times-news', 'san diego union tribune',
                                    'the star (malaysia)', 'utusan malaysia', 'daily news, sri lanka', 'daily news & analysis',
-                                   'new york daily news', 'new york daily news', 'daily news (new york)', 
+                                   'new york daily news', 'new york daily news', 'daily news (new york)',
                                    'anchorage daily news', 'palm beach daily news', 'daily news egypt', 'the daily news egypt',
                                    'daily news latino', 'forbes méxico', 'forbes mexico', 'forbes india', 'forbesmiddleeast',
                                    'forbes middle east', 'forbes russia', 'forbes.ru', 'forbes afrique', 'forbes magazine',
@@ -58,7 +58,7 @@ const PUBLISHERS_ARE_WORKS = array('the san diego union-tribune', 'forbes', 'sal
                                    'the baltimore sun', 'nba.com', 'philippine news agency', 'www.pna.gov.ph',
                                    'pia.gov.ph', 'philippine information agency', 'indiaglitz', 'india glitz', 'indiaglitz.com'
                                    // WP:CITALICSRFC and MOS:ITALICWEBCITE  ?????     'abc news', 'nbc news', 'cbs news', 'bbc news'
-                                  ); // LOWER CASE!  WWW not there too! 
+                                  ); // LOWER CASE!  WWW not there too!
 
 const WORKS_ARE_PUBLISHERS = array('united states census bureau'); // LOWER CASE!
 
@@ -69,7 +69,7 @@ const DUBIOUS_JOURNALS = array('oup academic', 'fda', 'reuters', 'associated pre
 // Ordered alphabetically.
 const PUBLISHER_ENDINGS = ["books", "corporation", 'centre', 'center', 'company', "inc.", "inc", "magazines",
                            'museum', "press", "publishers", "publishing", 'science'];
-const BAD_TITLES = array("unknown", "missing", "arxiv e-prints", "arxiv mathematics e-prints", 
+const BAD_TITLES = array("unknown", "missing", "arxiv e-prints", "arxiv mathematics e-prints",
                          "ssrn electronic journal", "dissertations available from proquest",
                          "ebscohost login",  "library login", "google groups", "sciencedirect", "cur_title",
                          "wordpress › error", "ssrn temporarily unavailable", "log in - proquest",
@@ -86,9 +86,9 @@ const BAD_TITLES = array("unknown", "missing", "arxiv e-prints", "arxiv mathemat
                          "404 not found", "404页面", "sign up ", "index of /home", "usa today - today's breaking news, us & world news",
                          "403 unauthorized", "404错误", "internal server error", "error", "404", "error - lexisnexis® publisher",
                          "optica publishing group", "digital library - pdf document", "explore census data");
-const IN_PRESS_ALIASES = array("in press", "inpress", "pending", "published", 
-                               "published online", "no-no", "n/a", "online ahead of print", 
-                               "unpublished", "unknown", "tba", "forthcoming", "in the press", 
+const IN_PRESS_ALIASES = array("in press", "inpress", "pending", "published",
+                               "published online", "no-no", "n/a", "online ahead of print",
+                               "unpublished", "unknown", "tba", "forthcoming", "in the press",
                                "na", "submitted", "tbd", "missing");
 const NON_JOURNAL_BIBCODES = array('arXiv', 'gr.qc', 'hep.ex', 'hep.lat', 'hep.ph', 'hep.th', 'astro.ph',
                                    'math', 'nucl.ex', 'nucl.th', 'physics', 'quant.ph', 'alg.geom',
@@ -103,7 +103,7 @@ const BAD_ZOTERO_TITLES = ['Browse publications', 'Central Authentication Servic
                                  'lease this domain', 'domain available', 'metaTags', 'An Error Occurred', 'User Cookie',
                                  'Cookies Disabled', 'page not found', '411 error', 'url not found',
                                  'limit exceeded', 'Error Page', '}}', '{{', 'EU Login', 'bad gateway', 'Captcha',
-                                 '.com', '.gov', '.org', 'View PDF', 'Wayback Machine', 'does not exist', 
+                                 '.com', '.gov', '.org', 'View PDF', 'Wayback Machine', 'does not exist',
                                  'Subscribe to read', 'Wiley Online Library', 'pagina is niet gevonden',
                                  'Zoeken in over NA', 'na een 404', '404 error', 'Account Suspended',
                                  'Error 404', 'EZProxy', 'EBSCOhost Login', '404 - Not Found', '404!',
@@ -122,12 +122,12 @@ const BAD_ZOTERO_TITLES = ['Browse publications', 'Central Authentication Servic
                                  'страница не найдена', 'Page non trouvée', 'An error occured',
                                  'Compare Payday Loans', 'Find the Best Loan Deal', '..::.. Error', "Pagina inicia",
                                  'Help Center - The Arizona Republic', '404 ERROR', '404 - URL invalid',
-                                 "404. That's an error", '404 - Page Not Found', 'Página não existe', 
+                                 "404. That's an error", '404 - Page Not Found', 'Página não existe',
                                  'This is not the page you requested', 'Page Not Found', '404 - - ', 'sex cams',
                                  '404 &#124; ',  'Missing page', '404 - File or directory not found', '错误页面',
                                  '404 Page - ', '404: Page Not Found ', '404: PAGE NOT FOUND', '404 Error',
                                  '404 | ', '页面不存在', 'De pagina is niet gevonden', '404 - ', ' Stranica nije pronađena',
-                                 '404 Page', '404. The page', "wasn't found on this server", '404. The URL', 
+                                 '404 Page', '404. The page', "wasn't found on this server", '404. The URL',
                                  'ShieldSquare', '404 Not Found', "404页面", "Sign up | LinkedIn", 'The-star.co.kr',
                                  'Connecting to the iTunes Store', '500 Internal Server Error', 'DomainMarket.com',
                                  'bluehost.com', 'Validate User', 'Document unavailable', 'Preview unavailable' ];
@@ -175,7 +175,7 @@ const WEB_NEWSPAPERS = array(
                  'inquirer bandera', 'bandera.inquirer.net', 'pilipino star ngayon', 'irishtimes.com', 'the irish times',
                  'the seattle times', 'the news tribune', 'the spokesman-review', 'the montana standard', 'the missoulian',
                  'the spokesman-review', 'bozeman daily chronicle', 'the new york times', 'argus leader', 'the washington post',
-                 'rapid city journal', 'austin daily herald', 'la crosse tribune', 'chicago tribune', 
+                 'rapid city journal', 'austin daily herald', 'la crosse tribune', 'chicago tribune',
                  'christian science monitor', 'csm', 'csmonitor.com',
                  'rochester democrat and chronicle', 'the boston globe', 'the indianapolis news');
 
@@ -889,7 +889,7 @@ const AVOIDED_LINKS = array('', 'Digital_object_identifier', 'JSTOR', 'Website',
                             'Mathematical_Reviews', 'Office_of_Scientific_and_Technical_Information',
                             'Request_for_Comments', 'Social_Science_Research_Network', 'Zentralblatt_MATH',
                             'Open_Library', 'ArXiv', 'OCLC', 'Cf.', 'Doi_(identifier)', 'PMC_(identifier)',
-                            'PMID_(identifier)', 'ArXiv_(identifier)', 'Bibcode_(identifier)', 
+                            'PMID_(identifier)', 'ArXiv_(identifier)', 'Bibcode_(identifier)',
                             'S2CID_(identifier)', 'ISBN_(identifier)', 'ISSN_(identifier)', 'OCLC_(identifier)',
                             'OSTI_(identifier)');
 
