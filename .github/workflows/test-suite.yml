@@ -39,11 +39,11 @@ jobs:
 
     - name: Configure composer and dependencies
       run: composer config allow-plugins.third-party/required-plugin true && composer config minimum-stability dev && composer config prefer-stable true && composer require mediawiki/oauthclient:2.0.0  phpunit/phpunit:9.*.*
-      
+
     - name: Install dependencies
       if: steps.composer-cache.outputs.cache-hit != 'true'
       run: composer install --prefer-dist  -vvv --no-progress
-      
+
     - name: Full test with PHP
       env:
          PHP_ADSABSAPIKEY: ${{ secrets.PHP_ADSABSAPIKEY }}
@@ -62,5 +62,3 @@ jobs:
     - name: Look for weird stuff
       if: always()
       run: /bin/cat ./CodeCoverage
-
-      
