@@ -6,7 +6,7 @@ declare(strict_types=1);
  */
 
 require_once __DIR__ . '/../testBaseClass.php';
- 
+
   final class WikipediaBotTest extends testBaseClass {
 
     protected function setUp(): void {
@@ -14,39 +14,39 @@ require_once __DIR__ . '/../testBaseClass.php';
        $this->markTestSkipped();
      }
     }
-   
+
     public function testFillCache() : void {
       $this->fill_cache();
       $this->assertTrue(TRUE);
     }
-   
+
     public function testCoverageFixer() : void {
        WikipediaBot::make_ch();
        $this->assertTrue(TRUE);
     }
-      
+
     public function testCategoryMembers() : void {
       $pg = new TestPage(); unset($pg);  // Fill page name with test name for debugging
       $this->assertTrue(count(WikipediaBot::category_members('Indian drama films')) > 10);
       $this->assertSame(0, count(WikipediaBot::category_members('A category we expect to be empty')));
     }
-    
+
     public function testRedirects() : void {
       $this->assertSame(-1, WikipediaBot::is_redirect('NoSuchPage:ThereCan-tBe'));
       $this->assertSame( 0, WikipediaBot::is_redirect('User:Citation_bot'));
       $this->assertSame( 1, WikipediaBot::is_redirect('WP:UCB'));
       $this->assertSame('User:Citation bot/use', WikipediaBot::redirect_target('WP:UCB'));
     }
-      
+
     public function testGetLastRevision() : void {
       $this->assertSame('805321380', WikipediaBot::get_last_revision('User:Blocked testing account/readtest'));
     }
-   
+
     public function testGetUserName() : void {
       $api = new WikipediaBot();
       $this->assertSame('Citation_bot', $api->get_the_user());
     }
-   
+
     public function testNonStandardMode() : void {
       $this->assertFalse(WikipediaBot::NonStandardMode());
     }
@@ -57,10 +57,10 @@ require_once __DIR__ . '/../testBaseClass.php';
       $result = WikipediaBot::is_valid_user('Stanlha'); // Random user who exists but does not have page as of Nov 2017
       $this->assertSame(TRUE, $result);
       $result = WikipediaBot::is_valid_user("David(Owner, Founder, Creator and Lead Developer)"); // Random user who has a name with funky characters
-      $this->assertSame(TRUE, $result);     
+      $this->assertSame(TRUE, $result);
     }
     public function testIsINValidUser() : void {
-      $result = WikipediaBot::is_valid_user('Not_a_valid_user_at_Dec_2017'); 
+      $result = WikipediaBot::is_valid_user('Not_a_valid_user_at_Dec_2017');
       $this->assertSame(FALSE, $result);
     }
     public function testIsIPUser() : void {
@@ -79,7 +79,7 @@ require_once __DIR__ . '/../testBaseClass.php';
       $json = WikipediaBot::get_links('Covid Watch');
       $this->assertTrue(substr_count($json, 'exists') > 15);
     }
-   
+
     public function test_ret_okay1() : void {
       $this->assertFalse(WikipediaBot::ret_okay(NULL));
     }
@@ -100,7 +100,7 @@ require_once __DIR__ . '/../testBaseClass.php';
       $response = (object) array('error' => (object) array('info' =>  'weak'));
       $this->assertFalse(WikipediaBot::ret_okay($response));
     }
-   
+
     public function test_response2page1() : void {
       $this->assertNull(WikipediaBot::response2page(NULL));
     }
@@ -139,11 +139,11 @@ require_once __DIR__ . '/../testBaseClass.php';
       $response->query->tokens = (object) array('csrftoken' => 1);
       $this->assertNotNull(WikipediaBot::response2page($response));
     }
-                                     
+
    public function test_resultsGood() : void {
       $result = NULL;
       $this->assertFalse(WikipediaBot::resultsGood($result));
-    
+
       $result = (object) array ('edit' => 'nonresult');
       $this->assertFalse(WikipediaBot::resultsGood($result));
 
@@ -152,9 +152,9 @@ require_once __DIR__ . '/../testBaseClass.php';
 
       $result = (object) array ('edit' => (object) array('result' => 'failed'));
       $this->assertFalse(WikipediaBot::resultsGood($result));
-    
+
       $result = (object) array ('edit' => (object) array('result' => 'Success'));
       $this->assertTrue(WikipediaBot::resultsGood($result));
   }
-   
+
 }

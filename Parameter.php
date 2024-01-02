@@ -31,11 +31,11 @@ final class Parameter {
       // $post_eq[3]: any whitespace after the parameter value (including newlines)
       preg_match('~^([ \n\r\t\p{Zs}]*)([\s\S]*?)(\s*+)$~u', $split[1], $post_eq);
       if (count($pre_eq) === 0) {
-        $this->eq    = $split[0] . '=' . $post_eq[1];
+	$this->eq    = $split[0] . '=' . $post_eq[1];
       } else {
-        $this->pre   = $pre_eq[1];
-        $this->param = $pre_eq[2];
-        $this->eq    = $pre_eq[3] . '=' . $post_eq[1];
+	$this->pre   = $pre_eq[1];
+	$this->param = $pre_eq[2];
+	$this->eq    = $pre_eq[3] . '=' . $post_eq[1];
       }
       $this->post  = $post_eq[3];
       $this->val   = $post_eq[2];
@@ -59,8 +59,8 @@ final class Parameter {
     // Clean up line feeds
     if ($this->val === '' && $this->post === '') {
       if (preg_match('~^([^=]*=[^\n\r]*)([\n\r][\s\S]*)$~u', $this->eq, $match)) {
-        $this->eq = $match[1];
-        $this->post = $match[2];
+	$this->eq = $match[1];
+	$this->post = $match[2];
       }
     }
 

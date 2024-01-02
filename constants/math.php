@@ -28,7 +28,7 @@ declare(strict_types=1);
   '<mtable>'    =>  '\matrix{%BLOCKS%}',
   '<mtr>'   =>  '%BLOCKS%\cr',
   '<mtd>'   =>  '%BLOCK1%&',*/
-  
+
   '&dot;'   =>  '\cdot',
   '&middot;'    =>  '\cdot',
   '&times;' =>  '\times',
@@ -40,7 +40,7 @@ declare(strict_types=1);
   '&lt;'    =>  '<',
   '&gt;'    =>  '>',
   '&InvisibleTimes;'    =>  '',
-  
+
   // Pfeile
   '&harr;'  =>  '\leftrightarrow',
   '&larr;'  =>  '\leftarrow',
@@ -48,10 +48,10 @@ declare(strict_types=1);
   '&hArr;'  =>  '\Leftrightarrow',
   '&lArr;'  =>  '\Leftarrow',
   '&rArr;'  =>  '\Rightarrow',
-  
+
   // dynamische Zeichen
   '&dd;'    =>  'd',
-  
+
   // griechisches Alphabet
   '&alpha;' =>  '\alpha',
   '&beta;'  =>  '\beta',
@@ -130,7 +130,7 @@ declare(strict_types=1);
   '&Ugr;'   =>  '\Upsilon',
   '&OHgr;'  =>  '\Omega',
   '&Zgr;'   =>  'Z',
-  
+
   // Pfeile und andere Operatoren
   '&perp;'  =>  '\bot',
   '&prime;' =>  '\prime',
