@@ -360,11 +360,11 @@ function wikify_external_text(string $title) : string {
       $title);
   if (preg_match_all("~<(?:mml:)?math[^>]*>(.*?)</(?:mml:)?math>~", $title, $matches)) {
     for ($i = 0; $i < count($matches[0]); $i++) {
-      $replacement[$i] = '<math>' . 
-        str_replace(array_keys(MML_TAGS), array_values(MML_TAGS), 
+      $replacement[$i] = '<math>' .
+        str_replace(array_keys(MML_TAGS), array_values(MML_TAGS),
           str_replace(['<mml:', '</mml:'], ['<', '</'], $matches[1][$i]))
         . '</math>';
-      $placeholder[$i] = sprintf(TEMP_PLACEHOLDER, $i); 
+      $placeholder[$i] = sprintf(TEMP_PLACEHOLDER, $i);
       // Need to use a placeholder to protect contents from URL-safening
       $title = str_replace($matches[0][$i], $placeholder[$i], $title);
     }
@@ -389,7 +389,7 @@ function wikify_external_text(string $title) : string {
     $last_word_start = (int) mb_strrpos(' ' . $title, ' ');
     $last_word = mb_substr($title, $last_word_start);
     if (mb_substr_count($last_word, '.') === 1 && // Do not remove if something like D.C. or D. C.
-        mb_substr($title, $last_word_start-2, 1) !== '.') { 
+        mb_substr($title, $last_word_start-2, 1) !== '.') {
       $title = mb_substr($title, 0, -1);
     }
    }
@@ -446,9 +446,9 @@ function wikify_external_text(string $title) : string {
   }
 
   $title = str_replace(['​'],[' '], $title); // Funky spaces
-  
+
   $title = str_ireplace('<p class="HeadingRun \'\'In\'\'">', ' ', $title);
-  
+
   $title = str_ireplace(['    ', '   ', '  '], [' ', ' ', ' '], $title);
   if (mb_strlen($title) === strlen($title)) {
      $title = trim($title," \t\n\r\0\x0B\xc2\xa0");
@@ -465,7 +465,7 @@ function wikify_external_text(string $title) : string {
       return '<nowiki>' . $title . '</nowiki>';
     }
   }
-  return $title; 
+  return $title;
 }
 
 function restore_italics (string $text) : string {
@@ -582,7 +582,7 @@ function titles_are_dissimilar(string $inTitle, string $dbTitle) : bool {
           $possible = preg_replace("~# # # CITATION_BOT_PLACEHOLDER_[A-Z]+ \d+ # # #~isu", ' ' , $inTitle);
           if ($possible !== NULL) {
              $inTitle = $possible;
-          } else { // When PHP fails with unicode, try withou it 
+          } else { // When PHP fails with unicode, try without it
             $inTitle = preg_replace("~# # # CITATION_BOT_PLACEHOLDER_[A-Z]+ \d+ # # #~i", ' ' , $inTitle);  // @codeCoverageIgnore
             if ($inTitle === NULL) return TRUE;                                                             // @codeCoverageIgnore
           }
@@ -611,7 +611,7 @@ function titles_are_dissimilar(string $inTitle, string $dbTitle) : bool {
                 || similar_text($inTitle, $dbTitle) / strlen($inTitle) < 0.98)
               : (levenshtein($inTitle, $dbTitle) > 3)
         )
-        &&  
+        &&
         ((strlen($inTitle2) > 254 || strlen($dbTitle) > 254)
               ? (strlen($inTitle2) !== strlen($dbTitle)
                 || similar_text($inTitle2, $dbTitle) / strlen($inTitle2) < 0.98)
@@ -637,13 +637,13 @@ function titles_simple(string $inTitle) : string {
         // Strip trailing (Third Edition)
         $inTitle2 = safe_preg_replace('~\([^\s\(\)]+ Edition\)^~iu', '', $inTitle);
         if ($inTitle2 !== "") $inTitle = $inTitle2;
-        // Strip leading International Symposium on 
+        // Strip leading International Symposium on
         $inTitle2 = safe_preg_replace('~^International Symposium on ~iu', '', $inTitle);
         if ($inTitle2 !== "") $inTitle = $inTitle2;
         // Strip leading the
         $inTitle2 = safe_preg_replace('~^The ~iu', '', $inTitle);
         if ($inTitle2 !== "") $inTitle = $inTitle2;
-        // Strip trailing 
+        // Strip trailing
         $inTitle2 = safe_preg_replace('~ A literature review$~iu', '', $inTitle);
         if ($inTitle2 !== "") $inTitle = $inTitle2;
         // Reduce punctuation
@@ -718,7 +718,7 @@ function title_case(string $text) : string {
 }
 
 /** Returns a properly capitalized title.
- *      If $caps_after_punctuation is TRUE (or there is an abundance of periods), it allows the 
+ *      If $caps_after_punctuation is TRUE (or there is an abundance of periods), it allows the
  *      letter after colons and other punctuation marks to remain capitalized.
  *      If not, it won't capitalize after : etc.
  */
@@ -729,12 +729,12 @@ function title_capitalization(string $in, bool $caps_after_punctuation) : string
      return $new_case; // We ignore wikilinked names and URL linked since who knows what's going on there.
                        // Changing case may break links (e.g. [[Journal YZ|J. YZ]] etc.)
   }
-  
+
   if (stripos($new_case, 'www.') !== FALSE || stripos($new_case, 'www-') !== FALSE || stripos($new_case, 'http://') !== FALSE) {
      return $new_case; // Who knows - duplicate code above
   }
 
-  if ($new_case === mb_strtoupper($new_case) 
+  if ($new_case === mb_strtoupper($new_case)
      && mb_strlen(str_replace(array("[", "]"), "", trim($in))) > 6
      ) {
     // ALL CAPS to Title Case
@@ -743,10 +743,10 @@ function title_capitalization(string $in, bool $caps_after_punctuation) : string
 
   // Implicit acronyms
   $new_case = ' ' . $new_case . ' ';
-  $new_case = safe_preg_replace_callback("~[^\w&][b-df-hj-np-tv-xz]{3,}(?=\W)~ui", 
+  $new_case = safe_preg_replace_callback("~[^\w&][b-df-hj-np-tv-xz]{3,}(?=\W)~ui",
       function (array $matches) : string {return mb_strtoupper($matches[0]);}, // Three or more consonants.  NOT Y
       $new_case);
-  $new_case = safe_preg_replace_callback("~[^\w&][aeiou]{3,}(?=\W)~ui", 
+  $new_case = safe_preg_replace_callback("~[^\w&][aeiou]{3,}(?=\W)~ui",
       function (array $matches) : string {return mb_strtoupper($matches[0]);}, // Three or more vowels.  NOT Y
       $new_case);
   $new_case = mb_substr($new_case, 1, -1); // Remove added spaces
@@ -774,13 +774,13 @@ function title_capitalization(string $in, bool $caps_after_punctuation) : string
   }
 
   $new_case = safe_preg_replace_callback(
-    "~ \([a-z]~u" /* uppercase after parenthesis */, 
+    "~ \([a-z]~u" /* uppercase after parenthesis */,
     function (array $matches) : string {return mb_strtoupper($matches[0]);},
     trim($new_case)
   );
 
   $new_case = safe_preg_replace_callback(
-    "~\w{2}'[A-Z]\b~u" /* Lowercase after apostrophes */, 
+    "~\w{2}'[A-Z]\b~u" /* Lowercase after apostrophes */,
     function (array $matches) : string {return mb_strtolower($matches[0]);},
     trim($new_case)
   );
@@ -823,10 +823,10 @@ function title_capitalization(string $in, bool $caps_after_punctuation) : string
 
   // Single letter at end should be capitalized  J Chem Phys E for example.  Obviously not the spanish word "e".
   if (mb_substr($new_case, -2, 1) === ' ') $new_case = mb_strrev(mb_ucfirst(mb_strrev($new_case)));
-  
+
   if ($new_case === 'Now and then') $new_case = 'Now and Then'; // Odd journal name
 
-  // Trust existing "ITS", "its", ... 
+  // Trust existing "ITS", "its", ...
   $its_in = preg_match_all('~ its(?= )~iu', ' ' . trim($in) . ' ', $matches_in, PREG_OFFSET_CAPTURE);
   $new_case = trim($new_case);
   $its_out = preg_match_all('~ its(?= )~iu', ' ' . $new_case . ' ', $matches_out, PREG_OFFSET_CAPTURE);
@@ -840,7 +840,7 @@ function title_capitalization(string $in, bool $caps_after_punctuation) : string
       }
     }
   }
-  // Trust existing "DOS", "dos", ... 
+  // Trust existing "DOS", "dos", ...
   $its_in = preg_match_all('~ dos(?= )~iu', ' ' . trim($in) . ' ', $matches_in, PREG_OFFSET_CAPTURE);
   $new_case = trim($new_case);
   $its_out = preg_match_all('~ dos(?= )~iu', ' ' . $new_case . ' ', $matches_out, PREG_OFFSET_CAPTURE);
@@ -854,7 +854,7 @@ function title_capitalization(string $in, bool $caps_after_punctuation) : string
       }
     }
   }
-  
+
   if (preg_match('~Series ([a-zA-Z] )(\&|and)( [a-zA-Z] )~', $new_case . ' ', $matches)) {
     $replace_me = 'Series ' . $matches[1] . $matches[2] . $matches[3];
     $replace    = 'Series ' . strtoupper($matches[1]) . $matches[2] . strtoupper($matches[3]);
@@ -867,7 +867,7 @@ function title_capitalization(string $in, bool $caps_after_punctuation) : string
     $replace    = strtolower($matches[0]);
     $new_case = trim(str_replace($replace_me, $replace, ' ' .$new_case . ' '));
   }
- 
+
   // Part XII: Roman numerals
   $new_case = safe_preg_replace_callback(
     "~ part ([xvil]+): ~iu",
@@ -918,7 +918,7 @@ function mb_ucfirst(string $string) : string
       return mb_strtoupper(mb_substr($string, 0, 1)) . mb_substr($string, 1, NULL);
     }
 }
-  
+
 function mb_ucfirst_force(string $string) : string
 {
     return mb_strtoupper(mb_substr($string, 0, 1)) . mb_substr($string, 1, NULL);
@@ -959,7 +959,7 @@ function throttle (int $min_interval) : void {
   static $phase = 0;
   $cycles = intdiv(180, $min_interval); // average over three minutes
   $phase = $phase + 1;
-  
+
   if ($last_write_time === 0) $last_write_time = time();
 
   if ($phase < $cycles) {
@@ -976,7 +976,7 @@ function throttle (int $min_interval) : void {
     $time_to_pause = floor($min_interval - $time_since_last_write);
     report_warning("Throttling: waiting $time_to_pause seconds...");
     for ($i = 0; $i < $time_to_pause; $i++) {
-      sleep(1); 
+      sleep(1);
       report_inline(' .');
     }
   }
@@ -998,7 +998,7 @@ function tidy_date(string $string) : string {
      if ($matches[1] === $matches[3]) {
        return date('j F', strtotime($matches[1].$matches[2])) . ' – ' . date('j F Y', strtotime($matches[3].$matches[4]));
      } else {
-       return date('j F Y', strtotime($matches[1].$matches[2])) . ' – ' . date('j F Y', strtotime($matches[3].$matches[4])); 
+       return date('j F Y', strtotime($matches[1].$matches[2])) . ' – ' . date('j F Y', strtotime($matches[3].$matches[4]));
      }
   }
   // Huge amount of character cleaning
@@ -1026,7 +1026,7 @@ function tidy_date(string $string) : string {
   if (strpos($string, '1969-12-31') !== FALSE) return '';
   if (str_i_same('19xx', $string)) return ''; //archive.org gives this if unknown
   if (preg_match('~^\d{4} \d{4}\-\d{4}$~', $string)) return ''; // si.edu
-  if (preg_match('~^(\d\d?)/(\d\d?)/(\d{4})$~', $string, $matches)) { // dates with slashes 
+  if (preg_match('~^(\d\d?)/(\d\d?)/(\d{4})$~', $string, $matches)) { // dates with slashes
     if (intval($matches[1]) < 13 && intval($matches[2]) > 12) {
       if (strlen($matches[1]) === 1) $matches[1] = '0' . $matches[1];
       return $matches[3] . '-' . $matches[1] . '-' . $matches[2];
@@ -1046,7 +1046,7 @@ function tidy_date(string $string) : string {
   if (preg_match('~^(\d{4}\-\d{2}\-\d{2})T\d{2}:\d{2}:\d{2}\+\d{2}:\d{2}$~', $string, $matches)) return tidy_date($matches[1]); // Remove time zone stuff from standard date format
   if (preg_match('~^\-?\d+$~', $string)) {
     $string = intval($string);
-    if ($string < -2000 || $string > (int)date("Y") + 10) return ''; // A number that is not a year; probably garbage 
+    if ($string < -2000 || $string > (int)date("Y") + 10) return ''; // A number that is not a year; probably garbage
     if ($string > -2 && $string < 2) return ''; // reject -1,0,1
     return (string) $string; // year
   }
@@ -1071,14 +1071,14 @@ function tidy_date(string $string) : string {
   if (preg_match('~\s(\d{4}\-\d{1,2}\-\d{1,2})$~',     $string, $matches)) return tidy_date($matches[1]);  // Ends with a date
   if (preg_match('~^(\d{1,2}/\d{1,2}/\d{4})[^0-9]~', $string, $matches)) return tidy_date($matches[1]); // Recursion to clean up 3/27/2000
   if (preg_match('~[^0-9](\d{1,2}/\d{1,2}/\d{4})$~', $string, $matches)) return tidy_date($matches[1]);
-  
+
   // Dates with dots -- convert to slashes and try again.
   if (preg_match('~(\d\d?)\.(\d\d?)\.(\d{2}(?:\d{2})?)$~', $string, $matches) || preg_match('~^(\d\d?)\.(\d\d?)\.(\d{2}(?:\d{2})?)~', $string, $matches)) {
     if (intval($matches[3]) < ((int) date("y")+2))  $matches[3] = (int) $matches[3] + 2000;
     if (intval($matches[3]) < 100)  $matches[3] = (int) $matches[3] + 1900;
     return tidy_date((string) $matches[1] . '/' . (string) $matches[2] . '/' . (string) $matches[3]);
   }
-  
+
   if (preg_match('~\s(\d{4})$~', $string, $matches)) return $matches[1]; // Last ditch effort - ends in a year
   return ''; // And we give up
 }
@@ -1157,9 +1157,9 @@ function prior_parameters(string $par, array $list=array()) : array {
     case 'transcripturl': case 'URL':
         return prior_parameters('url', $list);
     case 'archive-url': case 'archiveurl': case 'accessdate': case 'access-date':
-        return prior_parameters('chapter-url', array_merge(['article-url', 'chapterurl', 'conference-url', 'conferenceurl', 
-        'contribution-url', 'contributionurl', 'entry-url', 'event-url', 'eventurl', 'lay-url', 
-        'layurl', 'map-url', 'mapurl', 'section-url', 'sectionurl', 'transcript-url', 
+        return prior_parameters('chapter-url', array_merge(['article-url', 'chapterurl', 'conference-url', 'conferenceurl',
+        'contribution-url', 'contributionurl', 'entry-url', 'event-url', 'eventurl', 'lay-url',
+        'layurl', 'map-url', 'mapurl', 'section-url', 'sectionurl', 'transcript-url',
         'transcripturl', 'URL'],$list));
     case 'archive-date': case 'archivedate': return prior_parameters('archive-url', array_merge(['archiveurl', 'accessdate', 'access-date'], $list));
     case 'id': case 'type': case 'via':return prior_parameters('archive-date', array_merge(['archivedate'], $list));
@@ -1172,9 +1172,9 @@ function prior_parameters(string $par, array $list=array()) : array {
 /** @return array<string> **/
 function equivalent_parameters(string $par) : array {
   switch ($par) {
-    case 'author': case 'authors': case 'author1': case 'last1': 
+    case 'author': case 'authors': case 'author1': case 'last1':
       return FLATTENED_AUTHOR_PARAMETERS;
-    case 'pmid': case 'pmc': 
+    case 'pmid': case 'pmc':
       return array('pmc', 'pmid');
     case 'page_range': case 'start_page': case 'end_page': # From doi_crossref
     case 'pages': case 'page':
@@ -1182,7 +1182,7 @@ function equivalent_parameters(string $par) : array {
     default: return array($par);
   }
 }
-  
+
 function check_doi_for_jstor(string $doi, Template $template) : void {
   if ($template->has('jstor')) return;
   $doi = trim($doi);
@@ -1211,7 +1211,7 @@ function check_doi_for_jstor(string $doi, Template $template) : void {
   } elseif ($pos = strpos($doi, '?')) {
       $doi = substr($doi, 0, $pos);
       check_doi_for_jstor($doi, $template);
-  }      
+  }
 }
 
 function can_safely_modify_dashes(string $value) : bool {
@@ -1230,7 +1230,7 @@ function str_i_same(string $str1, string $str2) : bool {
    if (0 === strcasecmp($str1, $str2)) return TRUE; // Quick non-multi-byte compare short cut
    return (0 === strcmp(mb_strtoupper($str1), mb_strtoupper($str2)));
 }
-  
+
 function doi_encode (string $doi) : string {
    /** @psalm-taint-escape html
        @psalm-taint-escape has_quotes
@@ -1308,7 +1308,7 @@ function edit_a_list_of_pages(array $pages_in_category, WikipediaBot $api, strin
           html_echo(
           "\n  <a href=" . WIKI_ROOT . "?title=" . urlencode($page_title) . "&diff=prev&oldid="
           . $last_rev . ">diff</a>" .
-          " | <a href=" . WIKI_ROOT . "?title=" . urlencode($page_title) . "&action=history>history</a>", 
+          " | <a href=" . WIKI_ROOT . "?title=" . urlencode($page_title) . "&action=history>history</a>",
           "\n" . WIKI_ROOT . "?title=" . urlencode($page_title) . "&diff=prev&oldid=". $last_rev . "\n");
           $final_edit_overview .=
             "\n [ <a href=" . WIKI_ROOT . "?title=" . urlencode($page_title) . "&diff=prev&oldid="
@@ -1329,7 +1329,7 @@ function edit_a_list_of_pages(array $pages_in_category, WikipediaBot $api, strin
     gc_collect_cycles();
   }
   if ($total > 1) {
-    if (!HTML_OUTPUT) $final_edit_overview = ''; 
+    if (!HTML_OUTPUT) $final_edit_overview = '';
     echo "\n Done all " . (string) $total . " pages. \n  # # # \n" . $final_edit_overview;
   } else {
     echo "\n Done with page.";
@@ -2494,7 +2494,7 @@ function clean_dates(string $input) : string { // See https://en.wikipedia.org/w
         return $matches[1] . ' ' . $matches[2] . ', ' . $matches[3];
       }
     }
-                                        
+
     if (preg_match('~^(\d{4})\-(\d{2})$~', $input, $matches)) { // 2020-12 i.e. backwards
       $year = $matches[1];
       $month = (int) $matches[2];
