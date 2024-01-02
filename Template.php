@@ -7594,7 +7594,7 @@ final class Template {
 	if (strlen($new) === 10) {
 		$num = 9780000000000 + (int) str_ireplace('x','9', $new);
 		foreach (ISBN_HYPHEN_POS as $k => $v) {
-			if ($num <= $k) {
+			if ($num <= (int) $k) {
 				$split = $v;
 			}
 		}
@@ -7605,7 +7605,7 @@ final class Template {
 	} elseif (strlen($new) === 13) {
 		$num = (int) $new;
 		foreach (ISBN_HYPHEN_POS as $k => $v) {
-			if ($num <= $k) {
+			if ($num <= (int) $k) {
 				$split = $v;
 			}
 		}
