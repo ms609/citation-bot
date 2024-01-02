@@ -14,7 +14,7 @@ final class ParameterTest extends testBaseClass {
      $this->markTestSkipped();
    }
   }
-  
+
   public function testFillCache() : void {
     $this->fill_cache();
     $this->assertTrue(TRUE);
@@ -95,7 +95,7 @@ final class ParameterTest extends testBaseClass {
     $this->assertSame('first6', $parameter->val);
     $this->assertSame(" \n", $parameter->post);
   }
-  
+
   public function testNoEqualsAddStuff() : void {
     $text = "{{cite web|cnn}}";
     $template = $this->make_citation($text);
@@ -143,7 +143,7 @@ final class ParameterTest extends testBaseClass {
     $this->assertSame("24 April 2008 # # # Citation bot : comment placeholder 0 # # #", $parameter->val);
     $this->assertSame("", $parameter->post);
   }
-  
+
   public function testHasUnreplacedCommentInValue() : void {
     $text = "archivedate= 9 August 2006 <!--DASHBot-->";
     $parameter = $this->parameter_parse_text_helper($text);
@@ -159,7 +159,7 @@ final class ParameterTest extends testBaseClass {
     $template = $this->process_citation($text);
     $this->assertSame('{{citation|format=Joe}}', $template->parsed_text());
   }
-  
+
   public function testOddSpaces() : void {
     $text = "{{Infobox settlement\n| image_skyline            = \n \n| image_caption            = \n}}";
     $template = $this->process_citation($text);

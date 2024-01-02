@@ -4,7 +4,7 @@ declare(strict_types=1);
  * Tests for generate_template.php
  */
 require_once __DIR__ . '/../testBaseClass.php';
- 
+
 final class GenTemplateTest extends testBaseClass {
 
   protected function setUp(): void {
@@ -12,7 +12,7 @@ final class GenTemplateTest extends testBaseClass {
      $this->markTestSkipped();
    }
   }
- 
+
   public function testFillCache() : void {
     $this->fill_cache();
     $this->assertTrue(TRUE);
@@ -34,6 +34,6 @@ final class GenTemplateTest extends testBaseClass {
       ob_start(); // PHPUnit turns on a level of buffering itself -- Give it back to avoid "Risky Test"
       // Output checking time
       $this->assertTrue((bool) strpos($template_text, '{{cite journal | jstor=373737 |'));
-      $this->assertTrue((bool) strpos($template_text, 'DOCTYPE html'));   
+      $this->assertTrue((bool) strpos($template_text, 'DOCTYPE html'));
   }
 }

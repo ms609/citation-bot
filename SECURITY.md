@@ -11,4 +11,4 @@ Only the most current version is supported and deployed
 
 ## Reporting a Vulnerability
 
-Report them on https://en.wikipedia.org/wiki/User_talk:Citation_bot unless they are serious enough to not make public, then email the current developers listed there.  
+Report them on https://en.wikipedia.org/wiki/User_talk:Citation_bot unless they are serious enough to not make public, then email the current developers listed there.

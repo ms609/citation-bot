@@ -15,22 +15,22 @@ inputs:
     customrules:
       keep_defaults: true
       config_files:  ~
-    inclusions: 
-        - ~
-    exclusions: 
-        - "vendor"
-        - "tests"
-        - ".git"
-        - ".github"
-        - ".phan"
-        - "gitpull.php"
+    inclusions:
+	- ~
+    exclusions:
+	- "vendor"
+	- "tests"
+	- ".git"
+	- ".github"
+	- ".phan"
+	- "gitpull.php"
     resolved_includes_file: ~
     false_positives: progpilot.json  #  we do not verify some SSL things
-    
+
 outputs:
     tainted_flow: true
     include_failures_file: ~
-    
+
 options:
     analyze_includes: true
     debug_mode: false
@@ -39,4 +39,4 @@ options:
     max_definitions: 500
     max_file_size: 1000000
 
-    
+

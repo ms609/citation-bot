@@ -5,7 +5,7 @@ require_once 'constants.php';   // @codeCoverageIgnore
 
 function html_echo(string $text, string $alternate_text='') : void {
   /** @psalm-suppress TypeDoesNotContainType */ /* PSALM thinks HTML_OUTPUT and TRAVIS cannot be false */
-  if (!TRAVIS || defined("TRAVIS_PRINT")) echo HTML_OUTPUT ? $text : $alternate_text; // @codeCoverageIgnore 
+  if (!TRAVIS || defined("TRAVIS_PRINT")) echo HTML_OUTPUT ? $text : $alternate_text; // @codeCoverageIgnore
 }
 
 function user_notice(string $symbol, string $class, string $text) : void {
@@ -85,7 +85,7 @@ function echoable(?string $string) : string {
 
 function pubmed_link(string $identifier, string $pm) : string {
   /** @psalm-suppress TypeDoesNotContainType */ /* PSALM thinks HTML_OUTPUT cannot be false */
-  return HTML_OUTPUT 
+  return HTML_OUTPUT
        ? '<a href="https://www.ncbi.nlm.nih.gov/pubmed/' . urlencode($pm) . '" target="_blank">' . strtoupper($identifier) . ' ' . echoable($pm) . "</a>"   // @codeCoverageIgnore
        : strtoupper($identifier) . ' ' . echoable($pm);
 }
