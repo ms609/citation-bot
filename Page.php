@@ -46,7 +46,7 @@ class Page {
     if (!isset($details->query->pages)) {
       // @codeCoverageIgnoreStart
       $message = "Error: Could not fetch page.";
-      if (isset($details->error->info))  $message = $message . " " . (string) $details->error->info; 
+      if (isset($details->error->info))  $message = $message . " " . (string) $details->error->info;
       report_warning(echoable($message));
       return FALSE;
       // @codeCoverageIgnoreEnd
@@ -60,7 +60,7 @@ class Page {
       return FALSE;                                                    // @codeCoverageIgnore
     }
     $this->read_at = isset($details->curtimestamp) ? $details->curtimestamp : '';
-    
+
     $details = $my_details;
     if (isset($details->invalid)) {
       report_warning("Page invalid: " . (isset($details->invalidreason) ? echoable((string) $details->invalidreason) : ''));
@@ -70,12 +70,12 @@ class Page {
        report_warning("Could not even get the page.  Perhaps non-existent?");
        return FALSE;
     }
-    
+
     if (!isset($details->title)) {
        report_warning("Could not even get the page title.");  // @codeCoverageIgnore
        return FALSE;                                          // @codeCoverageIgnore
     }
-    
+
     if (!empty($details->protection)) {
        /** @var array<object> $the_protections */
        $the_protections = (array) $details->protection;
@@ -120,7 +120,7 @@ class Page {
     }
     return TRUE;
   }
-  
+
   public function parse_text(string $text) : void {
     $this->construct_modifications_array(); // Could be new page
     $this->text = $text;
@@ -132,7 +132,7 @@ class Page {
     $this->read_at = '';
     $this->lastrevid = 0;
   }
- 
+
   public function parsed_text() : string {
     return $this->text;
   }
@@ -145,7 +145,7 @@ class Page {
     $ids = array();
     set_time_limit(120);
     switch ($identifier) {
-      case 'pmid': 
+      case 'pmid':
       case 'pmc':     $api = 'entrez';   break;
       case 'bibcode': $api = 'adsabs';   break;
       case 'doi':     $api = 'crossref'; break;
@@ -162,13 +162,13 @@ class Page {
     }
     $api_function = 'query_' . $identifier . '_api';
     $api_function($ids, $templates);
-    
+
     foreach (array_keys($ids) as $i) {
       // Record this afterwards so we don't block the api_function itself
       $templates[$i]->record_api_usage($api, $identifier);
     }
   }
-  
+
   public function expand_text() : bool {
     set_time_limit(120);
     $this->page_error = FALSE;
@@ -222,7 +222,7 @@ class Page {
                       $this->text
                       );
     // Ones like <ref>[http://www... http://www...]</ref>
-    $this->text = preg_replace_callback(   
+    $this->text = preg_replace_callback(
                       "~(<(?:\s*)ref[^>]*?>)((\s*\[)(https?:\/\/[^\s>\}\{\]\[]+?)(\s+)(https?:\/\/[^\s>\}\{\]\[]+?)(\s*\]\s*))(<\s*?\/\s*?ref(?:\s*)>)~i",
                       function(array $matches) : string  {
                         if ($matches[4] === $matches[6]) {
@@ -231,7 +231,7 @@ class Page {
                         return $matches[0];
                       },
                       $this->text
-                      ); 
+                      );
      // PLAIN {{DOI}}, {{PMID}}, {{PMC}} {{isbn}} {{oclc}} {{bibcode}} {{arxiv}} Converted to templates
      $this->text = preg_replace_callback(   // like <ref>{{doi|10.1244/abc}}</ref>
                       "~(<(?:\s*)ref[^>]*?>)(\s*\{\{(?:doi\|10\.\d{4,6}\/[^\s\}\{\|]+?|pmid\|\d{4,9}|pmc\|\d{4,9}|oclc\|\d{4,9}|isbn\|[0-9\-xX]+?|arxiv\|\d{4}\.\d{4,5}(?:|v\d+)|arxiv\|[a-z\.\-]{2,12}\/\d{7,8}(?:|v\d+)|bibcode\|[12]\d{3}[\w\d\.&]{15}|jstor\|[^\s\}\{\|]+?)\}\}\s*)(<\s*?\/\s*?ref(?:\s*)>)~i",
@@ -396,7 +396,7 @@ class Page {
     $this->expand_templates_from_identifier('url',     $our_templates);
     Zotero::query_ieee_webpages($our_templates_ieee);
     Zotero::query_ieee_webpages($our_templates);
-    
+
     report_phase('Expand individual templates by API calls');
     foreach ($our_templates as $this_template) {
       set_time_limit(120);
@@ -420,7 +420,7 @@ class Page {
     set_time_limit(120);
     Zotero::drop_urls_that_match_dois($our_templates);
     Zotero::drop_urls_that_match_dois($our_templates_conferences);
-    
+
     // Last ditch usage of ISSN - This could mean running the bot again will add more things
     $issn_templates = array_merge(TEMPLATES_WE_PROCESS, TEMPLATES_WE_SLIGHTLY_PROCESS, ['cite magazine']);
     foreach ($all_templates as $this_template) {
@@ -461,8 +461,8 @@ class Page {
     }
     if ($log_bad_chapter) { // We can fix these and find these fast
       bot_debug_log($this->title . " page has ignored chapter"); // @codeCoverageIgnore
-    }  
-          
+    }
+
     foreach ($our_templates_slight as $this_template) {
       // Record any modifications that have been made:
       $template_mods = $this_template->modifications();
@@ -483,7 +483,7 @@ class Page {
     unset($our_templates_slight);
     unset($our_templates_conferences);
     unset($our_templates_ieee);
-    
+
     $this->replace_object($all_templates);
     // remove circular memory reference that makes garbage collection harder and reset
     Template::$all_templates = array();
@@ -493,7 +493,7 @@ class Page {
 
     $this->text = safe_preg_replace('~(\{\{[Cc]ite ODNB\s*\|[^\{\}\_]+_?[^\{\}\_]+\}\}\s*)\{\{ODNBsub\}\}~u', '$1', $this->text); // Allow only one underscore to shield us from MATH etc.
     $this->text = safe_preg_replace('~(\{\{[Cc]ite ODNB\s*\|[^\{\}\_]*ref ?= ?\{\{sfn[^\{\}\_]+\}\}[^\{\}\_]*\}\}\s*)\{\{ODNBsub\}\}~u', '$1', $this->text); // Allow a ref={{sfn in the template
-    
+
     set_time_limit(120);
     $this->replace_object($singlebrack); unset($singlebrack);
     $this->replace_object($triplebrack); unset($triplebrack);
@@ -504,7 +504,7 @@ class Page {
     $this->replace_object($nowiki); unset($nowiki);
     $this->replace_object($comments); unset($comments);
     set_time_limit(120);
-    
+
     if (stripos($this->text, 'CITATION_BOT_PLACEHOLDER') !== FALSE) {
       $this->text = $this->start_text;                                  // @codeCoverageIgnore
       if ($this->title !== "") bot_debug_log($this->title . " page failed"); // @codeCoverageIgnore
@@ -665,7 +665,7 @@ class Page {
       }
       // @codeCoverageIgnoreEnd
     } else {
-      report_warning("Can't write to " . echoable($this->title) . 
+      report_warning("Can't write to " . echoable($this->title) .
         " - prohibited by {{bots}} template.");
       return FALSE;
     }
@@ -673,7 +673,7 @@ class Page {
 
   /** @return array<WikiThings|Template>
       @param class-string $class
-  **/ 
+  **/
   public function extract_object(string $class) : array {
     $i = 0;
     $text = $this->text;
@@ -685,7 +685,7 @@ class Page {
     $treat_identical_separately = $class::TREAT_IDENTICAL_SEPARATELY;
     /** @var array<WikiThings|Template> */
     $objects = array();
-    
+
     if (count($regexp_in) > 1) { // Loop over array four times, since sometimes more complex regex fails and starting over works
       foreach ($regexp_in as $regexp) {
         $regexp_in[] = $regexp;
@@ -694,7 +694,7 @@ class Page {
         $regexp_in[] = $regexp;
       }
     }
-    
+
     $preg_ok = TRUE;
     foreach ($regexp_in as $regexp) {
       while ($preg_ok = preg_match($regexp, $text, $match)) {
@@ -734,7 +734,7 @@ class Page {
       }
       // @codeCoverageIgnoreEnd
     }
-    
+
     /** @psalm-suppress TypeDoesNotContainType */
     if ($preg_ok === FALSE) { // Something went wrong.  Often from bad wiki-text.  Generally, preg_match() cannot return FALSE, so supress psalm
         // PHP 5 segmentation faults. PHP 7.0 returns FALSE
@@ -769,14 +769,14 @@ class Page {
   protected function announce_page() : void {
     $url_encoded_title =  urlencode($this->title);
     if ($url_encoded_title === '') return;
-    html_echo ("\n<hr>[" . date("H:i:s") . "] Processing page '<a href='" . WIKI_ROOT . "?title=$url_encoded_title' style='font-weight:bold;'>" 
+    html_echo ("\n<hr>[" . date("H:i:s") . "] Processing page '<a href='" . WIKI_ROOT . "?title=$url_encoded_title' style='font-weight:bold;'>"
         . echoable($this->title)
         . "</a>' &mdash; <a href='" . WIKI_ROOT . "?title=$url_encoded_title"
         . "&action=edit' style='font-weight:bold;'>edit</a>&mdash;<a href='" . WIKI_ROOT . "?title=$url_encoded_title"
-        . "&action=history' style='font-weight:bold;'>history</a> ", 
+        . "&action=history' style='font-weight:bold;'>history</a> ",
         "\n[" . date("H:i:s") . "] Processing page " . $this->title . "...\n");
   }
-  
+
   protected function allow_bots() : bool {
     if (defined("BAD_PAGE_API") && BAD_PAGE_API !== "") {  // When testing the bot on a specific page, allow "editing"
       return TRUE; // @codeCoverageIgnore
@@ -797,15 +797,15 @@ class Page {
 
   protected function set_name_list_style() : void {
 
-   // get value of name-list-style parameter in "cs1 config" templates such as {{cs1 config |name-list-style=vanc }} 
+   // get value of name-list-style parameter in "cs1 config" templates such as {{cs1 config |name-list-style=vanc }}
 
     $name_list_style = NULL;
     $pattern = '/{{\s*?cs1\s*?config[^}]*?name-list-style\s*?=\s*?(\w+)\b[^}]*?}}/im';
     if (preg_match($pattern, $this->text, $matches) && array_key_exists(1, $matches)) {
       $s = strtolower($matches[1]);
-      if     ($s === 'default') {$name_list_style = NAME_LIST_STYLE_DEFAULT;} 
-      elseif ($s === 'vanc')    {$name_list_style = NAME_LIST_STYLE_VANC;} 
-      elseif ($s === 'amp')     {$name_list_style = NAME_LIST_STYLE_AMP;} 
+      if     ($s === 'default') {$name_list_style = NAME_LIST_STYLE_DEFAULT;}
+      elseif ($s === 'vanc')    {$name_list_style = NAME_LIST_STYLE_VANC;}
+      elseif ($s === 'amp')     {$name_list_style = NAME_LIST_STYLE_AMP;}
       elseif ($s !== '')        {bot_debug_log('Weird name-list-style found: ' . echoable($s));}
     }
     if ($name_list_style !== NULL) {
@@ -814,7 +814,7 @@ class Page {
       $this->name_list_style = NAME_LIST_STYLE_DEFAULT;
     }
   }
-  
+
   protected function set_date_pattern() : void {
     // see {{use_mdy_dates}} and {{use_dmy_dates}}
     $date_style = DATES_WHATEVER;
@@ -838,7 +838,7 @@ class Page {
     }
     $this->date_style = $date_style;
   }
-  
+
   protected function construct_modifications_array() : void {
     $this->modifications['changeonly'] = array();
     $this->modifications['additions'] = array();
