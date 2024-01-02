@@ -59,7 +59,7 @@ if (isset($_SESSION['access_key']) && isset($_SESSION['access_secret'])) {
    try {
       $client->makeOAuthCall(
       new Token($_SESSION['access_key'], $_SESSION['access_secret']),
-         'https://meta.wikimedia.org/w/api.php?action=query&meta=tokens&format=json');
+	 'https://meta.wikimedia.org/w/api.php?action=query&meta=tokens&format=json');
       return_to_sender();
    }
    catch (Throwable $e) { ; }
@@ -71,18 +71,18 @@ unset($_SESSION['access_key'], $_SESSION['access_secret']);
 // New Incoming Access Grant
 if (is_string(@$_GET['oauth_verifier']) && is_string(@$_SESSION['request_key']) && is_string(@$_SESSION['request_secret']) ) {
    try {
-        $accessToken = $client->complete(new Token($_SESSION['request_key'], $_SESSION['request_secret']), $_GET['oauth_verifier']);
-        if (empty($accessToken->key) || empty($accessToken->secret)) throw new Exception('OAuth complete() call failed');
-        $_SESSION['access_key'] = $accessToken->key;
-        $_SESSION['access_secret'] = $accessToken->secret;
-        unset($_SESSION['request_key'], $_SESSION['request_secret']);
-        if (is_string(@$_GET['return'])) {
-           // This could only be tainted input if OAuth server itself was hacked, so flag as safe
-           /** @psalm-taint-escape header */
-           $where = trim($_GET['return']);
-           return_to_sender($where);
-        }
-        return_to_sender();
+	$accessToken = $client->complete(new Token($_SESSION['request_key'], $_SESSION['request_secret']), $_GET['oauth_verifier']);
+	if (empty($accessToken->key) || empty($accessToken->secret)) throw new Exception('OAuth complete() call failed');
+	$_SESSION['access_key'] = $accessToken->key;
+	$_SESSION['access_secret'] = $accessToken->secret;
+	unset($_SESSION['request_key'], $_SESSION['request_secret']);
+	if (is_string(@$_GET['return'])) {
+	   // This could only be tainted input if OAuth server itself was hacked, so flag as safe
+	   /** @psalm-taint-escape header */
+	   $where = trim($_GET['return']);
+	   return_to_sender($where);
+	}
+	return_to_sender();
    }
    catch (Throwable $e) { ; }
    death_time("Incoming authorization tokens did not work - try again please");
@@ -93,8 +93,8 @@ unset($_SESSION['request_key'], $_SESSION['request_secret']);
 try {
       if (!isset($_SERVER['HTTP_HOST']) || !isset($_SERVER['REQUEST_URI'])) throw new Exception('Webserver URL variables not set');
       $proto = (
-         (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on') ||
-         (isset($_SERVER['HTTP_X_FORWARDED_PROTO']) && $_SERVER['HTTP_X_FORWARDED_PROTO'] === 'https')
+	 (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on') ||
+	 (isset($_SERVER['HTTP_X_FORWARDED_PROTO']) && $_SERVER['HTTP_X_FORWARDED_PROTO'] === 'https')
       ) ? "https://" : "http://";
       $newcallback = $proto . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI'];
       $client->setCallback($newcallback);

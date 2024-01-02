@@ -5,21 +5,22 @@ declare(strict_types=1);
  * Tests for gadgetapi.php
  */
 require_once __DIR__ . '/../testBaseClass.php';
- 
+
 final class gadgetTest extends testBaseClass {
- 
+
   protected function setUp(): void {
    if (BAD_PAGE_API !== '') {
      $this->markTestSkipped();
    }
   }
- 
+
   public function testFillCache() : void {
     $this->fill_cache();
     $this->assertTrue(TRUE);
   }
- 
+
   public function testGadget() : void {
+      $pg = new TestPage(); unset($pg); // Fill page name with test name for debugging
       ob_start();
       $_POST['text'] = '{{cite|pmid=34213}}';
       $_POST['summary'] = 'Something Nice';

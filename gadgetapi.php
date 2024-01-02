@@ -50,7 +50,7 @@ try {
  );
  unset($newText, $editSummary, $originalText, $page); // Free memory before encoding
  ob_end_clean();
- 
+
  echo (string) @json_encode($result);
 } catch (Throwable $e) {                          // @codeCoverageIgnore
  @ob_end_clean();@ob_end_clean();@ob_end_clean(); // @codeCoverageIgnore

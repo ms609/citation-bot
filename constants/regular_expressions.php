@@ -1,4 +1,4 @@
-<?php 
+<?php
 declare(strict_types=1);
 const REGEXP_PLAIN_WIKILINK = '~\[\[([^|\[\]]+?)\]\]~';
 const REGEXP_PLAIN_WIKILINK_ONLY = '~^\[\[([^|\[\]]+?)\]\]$~';
@@ -11,9 +11,9 @@ const REGEXP_EN_DASH = "\xe2\x80\x93"; // regexp for replacing to ndashes using 
 const REGEXP_BIBCODE = "~^https?://(?:(?:\w+.)?adsabs\.harvard\.edu|ads\.ari\.uni-heidelberg\.de|ads\.inasan\.ru|ads\.mao\.kiev\.ua|ads\.astro\.puc\.cl|ads\.on\.br|ads\.nao\.ac\.jp|ads\.bao\.ac\.cn|ads\.iucaa\.ernet\.in|ads\.lipi\.go\.id|cdsads\.u-strasbg\.fr|esoads\.eso\.org|ukads\.nottingham\.ac\.uk|www\.ads\.lipi\.go\.id)/.*(?:abs/|bibcode=|query\?|full/)([12]\d{3}[\w\d\.&]{15})~";
 const REGEXP_DOI = "~10\.\d[\d\.]+\d/\S+~";
 const REGEXP_SICI = "~(\d{4}-\d{3}[\dxX])" . // ISSN
-                    "\((\d{4})(\d{2})?/?(\d{2})?\)" . // Chronology, YY MM DD
-                    "(\d+):?([\+\d]*)" . // Enumeration: Volume / issue
-                    "[<\[]" . "(\d+)::?\w+" . "[>\]]" . "2\.0\.CO;2\-?[A-z0-9]?~";
+		    "\((\d{4})(\d{2})?/?(\d{2})?\)" . // Chronology, YY MM DD
+		    "(\d+):?([\+\d]*)" . // Enumeration: Volume / issue
+		    "[<\[]" . "(\d+)::?\w+" . "[>\]]" . "2\.0\.CO;2\-?[A-z0-9]?~";
 const REGEXP_DOI_ISSN_ONLY = '~^10.[^/]+/\(ISSN\)\d{4}-\d{3}[xX0-9]$~';
 
 // See https://mathiasbynens.be/demo/url-regex/  This regex is more exact than validator.  We only spend time on this after quick and dirty check is passed
@@ -26,21 +26,21 @@ const REGEXP_IS_URL = '~^(?:(?:https?|ftp)://)(?:\\S+(?::\\S*)?@)?(?:(?!10(?:\\.
 
 // The code changes the dots to \. in this list
 const HANDLES_HOSTS = array('hdl.handle.net', 'kb.osu.edu', 'repositorio.aemet.es', 'fieldresearch.msf.org',
-                            'dspace.lib.cranfield.ac.uk', 'dspace.lboro.ac.uk', 'scholarship.rice.edu',
-                            'deepblue.lib.umich.edu', 'arrow.latrobe.edu.au', 'kb.osu.edu', 'scholarworks.csun.edu',
-                            'www.era.lib.ed.ac.uk', 'research-repository.st-andrews.ac.uk', 'spiral.imperial.ac.uk',
-                            'dataverse.scholarsportal.info', 'idus.us.es', 'dspace.library.uu.nl',
-                            'dspace.mit.edu', 'digital.csic.es', 'apps.who.int', 'repository.si.edu',
-                            'lume.ufrgs.br', 'digitallibrary.amnh.org', 'hdl.cqu.edu.au', 'repository.bilkent.edu.tr',
-                            'digital.library.wisc.edu', 'www.territorystories.nt.gov.au', 'repository.up.ac.za',
-                            'researchonline.federation.edu.au', 'scholarspace.manoa.hawaii.edu', 'orbi.uliege.be',
-                            'repositorio.uasb.edu.ec', 'shodhganga.inflibnet.ac.in', 'www.tara.tcd.ie', 'conservancy.umn.edu');
+			    'dspace.lib.cranfield.ac.uk', 'dspace.lboro.ac.uk', 'scholarship.rice.edu',
+			    'deepblue.lib.umich.edu', 'arrow.latrobe.edu.au', 'kb.osu.edu', 'scholarworks.csun.edu',
+			    'www.era.lib.ed.ac.uk', 'research-repository.st-andrews.ac.uk', 'spiral.imperial.ac.uk',
+			    'dataverse.scholarsportal.info', 'idus.us.es', 'dspace.library.uu.nl',
+			    'dspace.mit.edu', 'digital.csic.es', 'apps.who.int', 'repository.si.edu',
+			    'lume.ufrgs.br', 'digitallibrary.amnh.org', 'hdl.cqu.edu.au', 'repository.bilkent.edu.tr',
+			    'digital.library.wisc.edu', 'www.territorystories.nt.gov.au', 'repository.up.ac.za',
+			    'researchonline.federation.edu.au', 'scholarspace.manoa.hawaii.edu', 'orbi.uliege.be',
+			    'repositorio.uasb.edu.ec', 'shodhganga.inflibnet.ac.in', 'www.tara.tcd.ie', 'conservancy.umn.edu');
 // Order here could matter
 // YOU MUST escape the RegEx
 const HANDLES_PATHS = array('/dspace/bitstream/handle/', '/msf/handle/', '/vital/access/HandleResolver/',
-                            '/handle/', '/dspace-jspui/handle/', '/dataset.xhtml\?persistentId=hdl:',
-                            '/dspace/handle/', '/handle2/', '/xmlui/handle/', '/iris/handle/',
-                            '/repository/bitstream/handle/', '/repository/handle/', 
-                            '/tools/dspace/load/\?file=/repository/bitstream/handle/',
-                            '/xmlui/bitstream/handle/', '/jspui/handle/', '/jspui/bitstream/',
-                            '/vital/access/HandleResolver/');
+			    '/handle/', '/dspace-jspui/handle/', '/dataset.xhtml\?persistentId=hdl:',
+			    '/dspace/handle/', '/handle2/', '/xmlui/handle/', '/iris/handle/',
+			    '/repository/bitstream/handle/', '/repository/handle/',
+			    '/tools/dspace/load/\?file=/repository/bitstream/handle/',
+			    '/xmlui/bitstream/handle/', '/jspui/handle/', '/jspui/bitstream/',
+			    '/vital/access/HandleResolver/');

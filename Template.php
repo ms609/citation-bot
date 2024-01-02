@@ -1783,6 +1783,7 @@ final class Template {
 			 $value = '978-0-19-' . substr($value, 6, 6) . '-' . substr($value, 12, 1);
 		  }
 		  if (strlen($value) > 19) return FALSE; // Two ISBNs
+		  $value = self::addISBNdashes($value);
 		  return $this->add($param_name, $value);
 		}
 		return FALSE;
@@ -2629,6 +2630,7 @@ final class Template {
 	$ch = curl_init();
 	curl_setopt_array($ch,
 			[CURLOPT_HEADER => FALSE,
+			 CURLOPT_FOLLOWLOCATION => TRUE,
 			 CURLOPT_RETURNTRANSFER => TRUE,
 			 CURLOPT_URL => $url,
 			 CURLOPT_TIMEOUT => BOT_HTTP_TIMEOUT,
@@ -2889,6 +2891,7 @@ final class Template {
 		$ch = curl_init();
 		curl_setopt_array($ch,
 				   [CURLOPT_USERAGENT => BOT_USER_AGENT,
+					CURLOPT_FOLLOWLOCATION => TRUE,
 					CURLOPT_HEADER => FALSE,
 					CURLOPT_RETURNTRANSFER => TRUE,
 					CURLOPT_TIMEOUT => BOT_HTTP_TIMEOUT,
@@ -2940,6 +2943,7 @@ final class Template {
 	$ch = curl_init();
 	curl_setopt_array($ch,
 		   [CURLOPT_USERAGENT => BOT_USER_AGENT,
+			CURLOPT_FOLLOWLOCATION => TRUE,
 			CURLOPT_HEADER => FALSE,
 			CURLOPT_RETURNTRANSFER => TRUE,
 			CURLOPT_TIMEOUT => BOT_HTTP_TIMEOUT,
@@ -3444,14 +3448,14 @@ final class Template {
 		  case "lancaster university library": case "listed invalid isbn": case "ncbibook2":
 		  case "ncj": case "researchgatepub": case "university of south wales pure":
 		  case "usgs index id": case "us patent": case "us trademark": case "zdb":
-		  case "subscription required": case "ncid": case "wikileaks cable":
+		  case "subscription required": case "ncid": case "wikileaks cable": case "idp":
 		  case "bhl page": case "internet archive": case "youtube": case "nypl":
 		  case "bnf": case "dnb-idn": case "nara catalog record": case "urn": case "viaf":
 		  case "so-vid": case "philpapers": case "iccu": case "hathitrust": case "allmusic":
 		  case "hal": case "icd11": case "coden": case "blcat": case "cobiss.bih":
 		  case "cobiss.rs": case "cobiss.sr": case "harvtxt": case "mathnet": case "eissn":
 		  case "ndljp": case "orcid": case "pq": case "sudoc": case "upc": case "ceeol":
-		  case "nps history library": case "smaller": case "zenodo": case "!":
+		  case "nps history library": case "smaller": case "zenodo": case "!": case "hathitrust catalog":
 		  case "eccc": case "ean": case "ethos": case "chmid": case "factiva": case "mesh":
 		  case "dggs citation id": case "harvp": case "nla": case "catkey": case "hyphen":
 		  case "mit libraries": case "epa national catalog": case "unt key": case "eram":
@@ -4205,6 +4209,7 @@ final class Template {
 			  $ch = curl_init($test_url);
 			  curl_setopt_array($ch,
 					   [CURLOPT_RETURNTRANSFER => TRUE,
+						CURLOPT_FOLLOWLOCATION => TRUE,
 						CURLOPT_TIMEOUT => BOT_HTTP_TIMEOUT * 1.5,
 						CURLOPT_CONNECTTIMEOUT => BOT_CONNECTION_TIMEOUT,
 						CURLOPT_USERAGENT => BOT_USER_AGENT]);
@@ -4358,6 +4363,12 @@ final class Template {
 				 $this->add_if_new('doi-access', 'free');
 			  }
 			}
+			// Weird ones that are time dependent
+			$year = intval($this->year()); // Will be zero if not set
+			if (strpos($doi, '10.1155/') === 0 && $year > 2006) {
+				$this->add_if_new('doi-access', 'free');
+			}
+			unset($year);
 		  }
 		  if (doi_works($doi) && (strpos($doi, '10.1073/pnas') === 0)) {
 			$template_year = $this->year();
@@ -7579,5 +7590,37 @@ final class Template {
 	   $this->forget($para);
 	   bot_debug_log('move_and_forget: ' . $para);
 	 }
+  }
+
+  public static function addISBNdashes(string $isbn) : string {
+	if (substr_count($isbn, '-') > 1) return $isbn;
+	$new = str_replace('-', '', $isbn);
+	if (strlen($new) === 10) {
+		$num = 9780000000000 + (int) str_ireplace('x','9', $new);
+		foreach (ISBN_HYPHEN_POS as $k => $v) {
+			if ($num <= (int) $k) {
+				$split = $v;
+				break;
+			}
+		}
+		if (!isset($split)) return $isbn; // Paranoid
+		$v = $split;
+		return substr($new, 0, $v[0]) . '-' . substr($new, $v[0], $v[1]) . '-' . substr($new, $v[0]+$v[1], $v[2]) . '-' . substr($new, $v[0]+$v[1]+$v[2], 1) ;
+		// split = SKIP3, $v[0], $v[1], $v[2], 1
+	} elseif (strlen($new) === 13) {
+		$num = (int) $new;
+		foreach (ISBN_HYPHEN_POS as $k => $v) {
+			if ($num <= (int) $k) {
+				$split = $v;
+				break;
+			}
+		}
+		if (!isset($split)) return $isbn; // Paranoid
+		$v = $split;
+		return substr($new, 0, 3) . '-' . substr($new, 3, $v[0]) . '-' . substr($new, 3+$v[0], $v[1]) . '-' . substr($new, 3+$v[0]+$v[1], $v[2]) . '-' . substr($new, 3+$v[0]+$v[1]+$v[2], 1) ;
+		// split = 3, $v[0], $v[1], $v[2], 1
+	} else {
+		return $isbn;
+	}
   }
 }

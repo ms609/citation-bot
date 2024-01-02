@@ -11,10 +11,10 @@ Then, run the following command from the command line :
 
 To run the tests on Toolforge, first
 
-    webservice --backend=kubernetes php7.4 shell
+    webservice --backend=kubernetes php8.2 shell
 
 then install phpunit and then test:
 
-    php ../phpunit-5.phar --bootstrap [etc]
+    php ../phpunit-9.phar --bootstrap [etc]
 
 Use Ctrl-D to escape from Toolforge.
