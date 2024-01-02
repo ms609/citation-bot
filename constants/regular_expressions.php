@@ -1,4 +1,4 @@
-<?php 
+<?php
 declare(strict_types=1);
 const REGEXP_PLAIN_WIKILINK = '~\[\[([^|\[\]]+?)\]\]~';
 const REGEXP_PLAIN_WIKILINK_ONLY = '~^\[\[([^|\[\]]+?)\]\]$~';
@@ -40,7 +40,7 @@ const HANDLES_HOSTS = array('hdl.handle.net', 'kb.osu.edu', 'repositorio.aemet.e
 const HANDLES_PATHS = array('/dspace/bitstream/handle/', '/msf/handle/', '/vital/access/HandleResolver/',
                             '/handle/', '/dspace-jspui/handle/', '/dataset.xhtml\?persistentId=hdl:',
                             '/dspace/handle/', '/handle2/', '/xmlui/handle/', '/iris/handle/',
-                            '/repository/bitstream/handle/', '/repository/handle/', 
+                            '/repository/bitstream/handle/', '/repository/handle/',
                             '/tools/dspace/load/\?file=/repository/bitstream/handle/',
                             '/xmlui/bitstream/handle/', '/jspui/handle/', '/jspui/bitstream/',
                             '/vital/access/HandleResolver/');
