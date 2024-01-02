@@ -867,7 +867,7 @@ final class TemplateTest extends testBaseClass {
     $text = "{{cite web|url=https://books.google.com/books?id=ecrwrKCRr7YC&pg=PA85&lpg=PA85&dq=vestibular+testing+lab+gianoli&keywords=lab&text=vestibular+testing+lab+gianoli|title=Practical Management of the Dizzy Patient|first=Joel A.|last=Goebel|date=6 December 2017|publisher=Lippincott Williams & Wilkins|via=Google Books}}";
     // Should add ISBN and thus convert to Cite book
     $expanded = $this->process_citation($text);
-    $this->assertSame('9780781765626', $expanded->get2('isbn'));
+    $this->assertSame('978-0-7817-6562-6', $expanded->get2('isbn'));
     $this->assertSame('cite book', $expanded->wikiname());
   }
   
@@ -2070,7 +2070,7 @@ final class TemplateTest extends testBaseClass {
     $this->assertSame('cite book', $expanded->wikiname());
     $this->assertSame('https://books.google.com/books?id=SjpSkzjIzfsC', $expanded->get2('url'));
     $this->assertSame('Wonderful Life: The Burgess Shale and the Nature of History', $expanded->get2('title'));
-    $this->assertSame('9780393307009', $expanded->get2('isbn')   );
+    $this->assertSame('978-0-393-30700-9', $expanded->get2('isbn')   );
     $this->assertSame('Gould'        , $expanded->get2('last1'));
     $this->assertSame('Stephen Jay'  , $expanded->get2('first1') );
     $this->assertSame('1989'         , $expanded->get2('date'));
@@ -2136,7 +2136,7 @@ final class TemplateTest extends testBaseClass {
     $this->assertSame('cite book', $expanded->wikiname());
     $this->assertSame('https://books.google.com/books?id=SjpSkzjIzfsC', $expanded->get2('url'));
     $this->assertSame('Wonderful Life: The Burgess Shale and the Nature of History',$expanded->get2('title'));
-    $this->assertSame('9780393307009', $expanded->get2('isbn')   );
+    $this->assertSame('978-0-393-30700-9', $expanded->get2('isbn')   );
     $this->assertSame('Gould'        , $expanded->get2('last1'));
     $this->assertSame('Stephen Jay'  , $expanded->get2('first1') );
     $this->assertSame('1989'         , $expanded->get2('date'));
@@ -2371,6 +2371,20 @@ EP - 999 }}';
     $text = "{{cite book|isbn=0-9749009-0-7|url=https://books.google.com/books?id=to0yXzq_EkQC|year=2019}}";
     $page = $this->process_page($text);
     $this->assertSame('Alter: isbn. Add: publisher, title, authors 1-2. Upgrade ISBN10 to 13. | [[:en:WP:UCB|Use this bot]]. [[:en:WP:DBUG|Report bugs]]. ', $page->edit_summary());
+  }
+
+  public function testConvertingISBN10Dashes() : void {
+    $text = "{{cite book|isbn=|year=2000}}";
+    $prepared = $this->prepare_citation($text);
+    $prepared->add_if_new('isbn', '0974900907');
+    $this->assertSame('0-9749009-0-7', $prepared->get2('isbn'));  // added with dashes
+  }
+
+   public function testConvertingISBN10DashesX() : void {
+    $text = "{{cite book|isbn=|year=2000}}";
+    $prepared = $this->prepare_citation($text);
+    $prepared->add_if_new('isbn', '155404295X');
+    $this->assertSame('1-55404-295-X', $prepared->get2('isbn'));  // added with dashes
   }
    
   public function testEtAl() : void {

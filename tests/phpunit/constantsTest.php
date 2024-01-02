@@ -582,6 +582,18 @@ final class constantsTest extends testBaseClass {
     }
   }
   
-
+  public function testISBNlist() : void {
+    $last = -1;
+		foreach (ISBN_HYPHEN_POS as $k => $v) {
+      $k = (int) $k;
+      $this->assertTrue($k > $last);
+      $last = $k;
+      $this->assertSame(3, count($v));
+      $this->assertTrue(is_int($v[0]));
+      $this->assertTrue(is_int($v[1]));
+      $this->assertTrue(is_int($v[2]));
+		}
+  }
+  
   
 }
