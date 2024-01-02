@@ -417,7 +417,8 @@ const CAMEL_CASE = array('DeSoto', 'PubChem', 'BitTorrent', 'Al2O3', 'NiMo', 'Cu
 			 'ReFocus:', 'FusionCatcher'
 		       );
 
-const ITALICS_HARDCODE_IN  = ["The Myth ofPiers Plowman", "BioelectromagnetismPrinciples and Applications", "Practice inThe Nice Valour", "Tweeting theJihad: Social Media", " of SectarianismCommunity", " for WonderNineteenth Century Travel ",
+const ITALICS_HARDCODE_IN  = ["The Myth ofPiers Plowman", "BioelectromagnetismPrinciples and Applications", "Practice inThe Nice Valour",
+	     "Tweeting theJihad: Social Media", " of SectarianismCommunity", " for WonderNineteenth Century Travel ",
 	     " from the ShadowsAnalytical Feminist Contributions",  " der GattungEoeugnathus Brough",  " the CitizenMusic as Public ",
 	     " to the SirensMusical Technologies ",   " the DynastyPalace Women ",   "Divine CreaturesAnimal Mummies",
 	     "Small Greek WorldNetworks in",   "Magia SexualisSex, Magic",   " is NothingLost in ",   " Without UsDisability ",   "Human RightsThe Case ",
@@ -438,7 +439,8 @@ const ITALICS_HARDCODE_IN  = ["The Myth ofPiers Plowman", "BioelectromagnetismPr
 	     "Moving beyondPvalues:", "from theHubble Space TelescopeKey", "Evidence ofpepSolar Neutrinos", "Notes forContra Ursum",
 	     "sThe Social Construction of Realityafter 50", "Love inShôjo Manga", "the re-reducedHipparcosintermediate "
  ];
-const ITALICS_HARDCODE_OUT = ["The Myth of ''Piers Plowman''", "Bioelectromagnetism: Principles and Applications", "Practice in ''The Nice Valour''", "Tweeting the ''Jihad'': Social Media", " of Sectarianism: Community", " for Wonder: Nineteenth Century Travel ",
+const ITALICS_HARDCODE_OUT = ["The Myth of ''Piers Plowman''", "Bioelectromagnetism: Principles and Applications", "Practice in ''The Nice Valour''",
+	     "Tweeting the ''Jihad'': Social Media", " of Sectarianism: Community", " for Wonder: Nineteenth Century Travel ",
 	     " from the Shadows: Analytical Feminist Contributions",  " der Gattung: Eoeugnathus Brough",  " the Citizen: Music as Public ",
 	     " to the Sirens: Musical Technologies ", " the Dynasty: Palace Women ", "Divine Creatures: Animal Mummies",
 	     "Small Greek World: Networks in", "Magia Sexualis: Sex, Magic", " is Nothing: Lost in ", " Without Us: Disability ", "Human Rights: The Case ",
