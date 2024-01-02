@@ -153,9 +153,9 @@ const COMMON_MISTAKES = array ( // Common mistakes that aren't picked up by the 
   "trans_chapter"   =>  "trans-chapter",
   "trans_title"     =>  "trans-title",
   "DOI"             =>  "doi",
-  "publication"     =>  "work", 
-  "publicationplace"  =>  "publication-place", 
-  "publicationdate"   =>  "publication-date", 
+  "publication"     =>  "work",
+  "publicationplace"  =>  "publication-place",
+  "publicationdate"   =>  "publication-date",
   "chapterurl"      =>  "chapter-url",
   "booktitle"       =>  "book-title",
   "conferenceurl"   =>  "conference-url",
@@ -321,7 +321,7 @@ const COMMON_MISTAKES = array ( // Common mistakes that aren't picked up by the 
   "til" => "language",
   "kirish sanasi" => "access-date",
   "joylashuv" => "location",
-  "iqtibos" => "quote", 
+  "iqtibos" => "quote",
 );
 
 const COMMON_MISTAKES_TOOL = array(
