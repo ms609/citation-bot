@@ -46,7 +46,6 @@ public static function create_ch_zotero() : void {
           CURLOPT_FOLLOWLOCATION => TRUE,
           CURLOPT_HEADER => FALSE,
           CURLOPT_TIMEOUT => BOT_HTTP_TIMEOUT,
-          CURLOPT_FOLLOWLOCATION => TRUE,
           CURLOPT_MAXREDIRS => 10,
           CURLOPT_CONNECTTIMEOUT => BOT_CONNECTION_TIMEOUT,
           CURLOPT_COOKIESESSION => TRUE,
