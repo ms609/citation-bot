@@ -3455,7 +3455,7 @@ final class Template {
 		  case "hal": case "icd11": case "coden": case "blcat": case "cobiss.bih":
 		  case "cobiss.rs": case "cobiss.sr": case "harvtxt": case "mathnet": case "eissn":
 		  case "ndljp": case "orcid": case "pq": case "sudoc": case "upc": case "ceeol":
-		  case "nps history library": case "smaller": case "zenodo": case "!":
+		  case "nps history library": case "smaller": case "zenodo": case "!": case "hathitrust catalog":
 		  case "eccc": case "ean": case "ethos": case "chmid": case "factiva": case "mesh":
 		  case "dggs citation id": case "harvp": case "nla": case "catkey": case "hyphen":
 		  case "mit libraries": case "epa national catalog": case "unt key": case "eram":
