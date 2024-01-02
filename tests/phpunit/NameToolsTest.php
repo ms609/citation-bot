@@ -75,84 +75,84 @@ final class NameToolsTest extends testBaseClass {
     $result=format_multiple_authors($authors);
     $this->assertSame('A.', $result);
   }
-    
-  public function testFormatAuthor1() : void {  
+
+  public function testFormatAuthor1() : void {
     $author = "Conway Morris S.C.";
     $result=format_author($author);
-    $this->assertSame('Conway Morris, S. C.', $result); // Was c, Conway Morris S 
+    $this->assertSame('Conway Morris, S. C.', $result); // Was c, Conway Morris S
   }
-  public function testFormatAuthor2() : void {  
+  public function testFormatAuthor2() : void {
     $author = "M.A. Smith";
     $result=format_author($author);
     $this->assertSame('Smith, M. A', $result);
   }
-  public function testFormatAuthor3() : void {  
+  public function testFormatAuthor3() : void {
     $author = "Smith M.A.";
     $result=format_author($author);
     $this->assertSame('Smith, M. A.', $result); // Was a, Smith M
   }
-  public function testFormatAuthor4() : void {  
+  public function testFormatAuthor4() : void {
     $author = "Smith MA.";
     $result=format_author($author);
     $this->assertSame('Smith, M. A.', $result);
   }
-  public function testFormatAuthor5() : void {  
+  public function testFormatAuthor5() : void {
     $author = "Martin A. Smith";
     $result=format_author($author);
     $this->assertSame('Smith, Martin A', $result);
   }
-  public function testFormatAuthor6() : void {  
+  public function testFormatAuthor6() : void {
     $author = "MA Smith";
     $result=format_author($author);
     $this->assertSame('Smith, M. A.', $result);
   }
-  public function testFormatAuthor7() : void {  
+  public function testFormatAuthor7() : void {
     $author = "Martin Smith";
     $result=format_author($author);
     $this->assertSame('Smith, Martin', $result);
   }
-  public function testFormatAuthor8() : void {  
+  public function testFormatAuthor8() : void {
     $author = "Conway Morris S.C..";
     $result=format_author($author);
     $this->assertSame('Conway Morris, S. C.', $result); //Was c, Conway Morris S
   }
-  public function testFormatAuthor9() : void {  
+  public function testFormatAuthor9() : void {
     $author = "Smith MA";
     $result=format_author($author);
     $this->assertSame('Smith, M. A.', $result);
   }
-  public function testFormatAuthor10() : void {  
+  public function testFormatAuthor10() : void {
     $author = "A B C D E F G H";
     $result=format_author($author);
     $this->assertSame('A. B. C. D. E. F. G. H.', $result);
   }
-  public function testFormatAuthor11() : void {  
+  public function testFormatAuthor11() : void {
     $author = "A. B. C. D. E. F. G. H.";
     $result=format_author($author);
     $this->assertSame('A. B. C. D. E. F. G. H.', $result);
   }
-  public function testFormatAuthor12() : void {  
+  public function testFormatAuthor12() : void {
     $author = "A.B.C.D.E.F.G.H.";
     $result=format_author($author);
     $this->assertSame('A. B. C. D. E. F. G. H.', $result);
   }
-  public function testFormatAuthor13() : void {  
+  public function testFormatAuthor13() : void {
     $author = "Smith"; // No first
     $result=format_author($author);
     $this->assertSame('Smith', $result);
   }
-  public function testFormatAuthor14() : void {  
+  public function testFormatAuthor14() : void {
     $author = "Smith.";  // No first, but with a period oddly
     $result=format_author($author);
     $this->assertSame('Smith', $result);
   }
-  public function testFormatAuthor15() : void {  
+  public function testFormatAuthor15() : void {
      $author = "S.SmithGuy.X.";  // Totally made up, but we should not eat parts of it - code used to
      $result=format_author($author);
      $this->assertSame('S. Smithguy X.', $result);
    }
 
-  public function testFormatAuthor16() : void {  
+  public function testFormatAuthor16() : void {
      $author = "abxxxc xyzd. d. dddss."; // Too man dots, special code
      $result=format_author($author);
      $this->assertSame('Abxxxc Xyzd D. Dddss', $result);
@@ -218,7 +218,7 @@ final class NameToolsTest extends testBaseClass {
   public function testFormat5() : void {
     $this->assertSame('Johnson, A. B. C. D. E. F. G', format_author('A. B. C. D. E. F. G. Johnson'));
   }
-  
+
   public function testCleanUpLastNames() : void {
     $this->assertSame('B A.', clean_up_last_names('B A.'));
     $this->assertSame('A.', clean_up_last_names('A.'));
