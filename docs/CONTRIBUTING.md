@@ -23,7 +23,7 @@ Please follow our coding conventions (below) and make sure all of your commits a
 Always write a clear log message for your commits. One-line messages are fine for small changes, but bigger changes should look like this:
 
     $ git commit -m "A brief summary of the commit
-    > 
+    >
     > A paragraph describing what changed and its impact."
 
 ## Coding conventions
@@ -54,5 +54,5 @@ The bot reports its activity to users using:
     * `~` denotes that the name or value of an existing parameter is being modified
     * `.` denotes that a change has been considered but deemed unnecessary or unsuitable
     * `!` is used to denote an outcome that may require review by the user or bot maintainer
-      
+
   We recommend using the "report_" family of functions defined in `user_messages.php` to communicate with the user.
