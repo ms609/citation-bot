@@ -48,7 +48,7 @@ abstract class testBaseClass extends PHPUnit\Framework\TestCase {
 
   private $testing_skip_bibcode= FALSE;
   private $testing_skip_wiki   = FALSE;
-  
+
   function __construct() {
     parent::__construct();
 
@@ -76,7 +76,7 @@ abstract class testBaseClass extends PHPUnit\Framework\TestCase {
     }
   }
 
-  // Only routines that absolutely need bibcode access since we are limited 
+  // Only routines that absolutely need bibcode access since we are limited
   protected function requires_bibcode(callable $function) : void {
     if ($this->testing_skip_bibcode) {
       $this->flush();
@@ -108,8 +108,8 @@ abstract class testBaseClass extends PHPUnit\Framework\TestCase {
       } finally {
         Zotero::block_zotero();
       }
-  } 
-  
+  }
+
   protected function make_citation(string $text) : Template {
     $tp = new TestPage(); unset($tp); // Fill page name with test name for debugging
     $this->flush();
@@ -121,13 +121,13 @@ abstract class testBaseClass extends PHPUnit\Framework\TestCase {
     $template->parse_text($text);
     return $template;
   }
-  
+
   protected function prepare_citation(string $text) : Template {
     $template = $this->make_citation($text);
     $template->prepare();
     return $template;
   }
-  
+
   protected function process_citation(string $text) : Template {
     $page = $this->process_page($text);
     $expanded_text = $page->parsed_text();
@@ -135,7 +135,7 @@ abstract class testBaseClass extends PHPUnit\Framework\TestCase {
     $template->parse_text($expanded_text);
     return $template;
   }
-    
+
   protected function process_page(string $text) : TestPage { // Only used if more than just a citation template
     $this->flush();
     Template::$all_templates = array();
@@ -165,7 +165,7 @@ abstract class testBaseClass extends PHPUnit\Framework\TestCase {
     $expanded->tidy();
     return $expanded;
   }
- 
+
   protected function reference_to_template(string $text) : Template {
     $text=trim($text);
     if (preg_match("~^(?:<(?:\s*)ref[^>]*?>)(.*)(?:<\s*?\/\s*?ref(?:\s*)>)$~i", $text, $matches)) {
@@ -176,7 +176,7 @@ abstract class testBaseClass extends PHPUnit\Framework\TestCase {
       report_error('Non-reference passsed to reference_to_template: ' . echoable($text));
     }
   }
-  
+
   protected function flush() : void {
      ob_end_flush();
      flush();
