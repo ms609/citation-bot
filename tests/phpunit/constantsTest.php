@@ -19,7 +19,7 @@ final class constantsTest extends testBaseClass {
     $this->fill_cache();
     $this->assertTrue(TRUE);
   }
-  
+
   public function testConstantsDefined() : void {
     $pg = new TestPage(); unset($pg); // Fill page name with test name for debugging
     $this->assertSame(count(UCFIRST_JOURNAL_ACRONYMS), count(JOURNAL_ACRONYMS));
@@ -47,7 +47,7 @@ final class constantsTest extends testBaseClass {
       $this->assertSame   (' ', mb_substr(UC_SMALL_WORDS[$i], -1, 1));
       $this->assertSame   (' ', mb_substr(UC_SMALL_WORDS[$i],  0, 1));
       $this->assertNotEquals(' ', mb_substr(UC_SMALL_WORDS[$i], -2, 1));
-      $this->assertNotEquals(' ', mb_substr(UC_SMALL_WORDS[$i],  1, 1)); 
+      $this->assertNotEquals(' ', mb_substr(UC_SMALL_WORDS[$i],  1, 1));
     }
     // Trailing dots and lots of dots....
     $text = "{{Cite journal|journal=Journal of the A.I.E.E.}}";
@@ -76,7 +76,7 @@ final class constantsTest extends testBaseClass {
     $this->assertSame('voor de geschiedenis der Nederlanden', title_capitalization('Voor De Geschiedenis Der Nederlanden', TRUE));
     $this->assertSame('Zprávy o zasedání Král. čes. společnosti nauk v Praze', title_capitalization('Zprávy O Zasedání Král. Čes. Společnosti Nauk V Praze', TRUE));
   }
-  
+
   public function testImplicitConstants() : void {
     // Consonants
     $this->assertSame('X', title_capitalization('x', TRUE));
@@ -94,7 +94,7 @@ final class constantsTest extends testBaseClass {
     $this->assertSame('Xzzzy Aeiouy AEIOU and xzzzy Aeiouy AEIOU', title_capitalization('xzzzy Aeiouy aeiou and xzzzy Aeiouy aeiou', TRUE));
     $this->assertSame('Xzzzy Aeiouy AEIOU and Xzzzy Aeiouy AEIOU', title_capitalization(mb_ucwords('xzzzy Aeiouy aeiou and xzzzy Aeiouy aeiou'), TRUE));
   }
-  
+
   public function testConstantsOrder() : void {
     $acronyms = JOURNAL_ACRONYMS;
     sort($acronyms, SORT_STRING | SORT_FLAG_CASE);
@@ -104,7 +104,7 @@ final class constantsTest extends testBaseClass {
       $expected = next($acronyms);
     }
   }
-  
+
   public function testAllLowerCase() : void {
     $big_array = array_merge(HAS_NO_VOLUME, BAD_ACCEPTED_MANUSCRIPT_TITLES, BAD_AUTHORS,
                              PUBLISHER_ENDINGS, BAD_TITLES, IN_PRESS_ALIASES, NON_PUBLISHERS,
@@ -123,7 +123,7 @@ final class constantsTest extends testBaseClass {
       $this->assertSame($simple, $actual);
     }
   }
-  
+
   public function testAllFreeOfUTF() : void { // If this fails, then we have to switch everything to MB_ (BAD_AUTHORS already has UTF-8)
     $big_array = array_merge(HAS_NO_VOLUME, BAD_ACCEPTED_MANUSCRIPT_TITLES,
                              PUBLISHER_ENDINGS, BAD_TITLES, IN_PRESS_ALIASES, NON_PUBLISHERS,
@@ -137,7 +137,7 @@ final class constantsTest extends testBaseClass {
       $this->assertSame(mb_strtoupper($actual), strtoupper($actual));
     }
   }
-  
+
   public function testNoSpacesOnEnds() : void {
     $big_array = array_merge(HAS_NO_VOLUME, BAD_ACCEPTED_MANUSCRIPT_TITLES, BAD_AUTHORS,
                              PUBLISHER_ENDINGS, BAD_TITLES, IN_PRESS_ALIASES, NON_PUBLISHERS,
@@ -149,7 +149,7 @@ final class constantsTest extends testBaseClass {
       }
     }
   }
-  
+
   public function testAtoZ() : void {
     $leader = TRUE;
     $start_alpha = '/* The following will be automatically updated to alphabetical order */';
@@ -192,10 +192,10 @@ final class constantsTest extends testBaseClass {
       if ($alphaed == $new_line) $alphaed = '';
       $section = $alphaed . substr($section, $alpha_end);
     }
-    unset ($section); // Destroy pointer to be safe 
-    
+    unset ($section); // Destroy pointer to be safe
+
     $new_contents = implode($start_alpha, $sections);
-    
+
     if (preg_replace('/\s+/','', $new_contents) == preg_replace('/\s+/','', $old_contents)) {
       $this->assertTrue(TRUE);
     } else {
@@ -206,7 +206,7 @@ final class constantsTest extends testBaseClass {
       $this->assertTrue(FALSE);
     }
   }
-  
+
  public function testWhiteList() : void {
       $we_failed = FALSE;
       $our_original_whitelist = PARAMETER_LIST;
@@ -235,7 +235,7 @@ final class constantsTest extends testBaseClass {
       $our_extra = array_diff($our_whitelist, $their_whitelist);
       $our_missing = array_diff($their_whitelist, $our_whitelist);
       $our_internal_extra = array_diff($our_original_whitelist, $our_whitelist);
- 
+
       if (count($our_internal_extra) !== 0) {
          ob_flush();
          echo "\n \n testWhiteList:  What the Citation Bot has more than one copy of\n";
@@ -309,7 +309,7 @@ final class constantsTest extends testBaseClass {
     }
     $this->assertSame($orig, $new);
   }
-  
+
   public function testDead() : void {
     $overlap = array_intersect(DEAD_PARAMETERS, PARAMETER_LIST);
     if (empty($overlap)) {
@@ -321,7 +321,7 @@ final class constantsTest extends testBaseClass {
       $this->assertNull('testDead Failed - see error array directly above');
     }
   }
-  
+
   public function testMagazinesAndNot() : void {
     $overlap = array_intersect(ARE_MAGAZINES, ARE_MANY_THINGS);
     if (empty($overlap)) {
@@ -351,7 +351,7 @@ final class constantsTest extends testBaseClass {
       $this->assertNull('testMagazinesAndNot Failed - see error array directly above');
     }
   }
-  
+
   public function testAuthorsFlat() {
     $failed = FALSE;
     $test_flat = [];
@@ -363,7 +363,7 @@ final class constantsTest extends testBaseClass {
     $flat = FLATTENED_AUTHOR_PARAMETERS;
     $extra_flat = array_diff($flat, $test_flat);
     $missing_flat = array_diff($test_flat, $flat);
-    
+
     if (!empty($extra_flat)) {
        ob_flush();
        echo "\n\n missing these in the AUTHOR_PARAMETERS array:\n";
@@ -391,10 +391,10 @@ final class constantsTest extends testBaseClass {
        }
        ob_flush();
        $failed = TRUE;
-    } 
+    }
     $this->assertFalse($failed);
   }
-  
+
   public function testNonJournalList() {
     $flat = NON_JOURNAL_WEBSITES;
     sort($flat);
@@ -581,7 +581,7 @@ final class constantsTest extends testBaseClass {
       }
     }
   }
-  
+
   public function testISBNlist() : void {
     $last = -1;
 		foreach (ISBN_HYPHEN_POS as $k => $v) {
@@ -594,6 +594,6 @@ final class constantsTest extends testBaseClass {
       $this->assertTrue(is_int($v[2]));
 		}
   }
-  
-  
+
+
 }
