@@ -7601,7 +7601,7 @@ final class Template {
 		}
 		if (!isset($split)) return $isbn; // Paranoid
 		$v = $split;
-		return substr($new, 3, $v[0]) . '-' . substr($new, 3+$v[0], $v[1]) . '-' . substr($new, 3+$v[0]+$v[1], $v[2]) . '-' . substr($new, 3+$v[0]+$v[1]+$v[2], 1) ;
+		return substr($new, 0, $v[0]) . '-' . substr($new, $v[0], $v[1]) . '-' . substr($new, $v[0]+$v[1], $v[2]) . '-' . substr($new, $v[0]+$v[1]+$v[2], 1) ;
 		// split = SKIP3, $v[0], $v[1], $v[2], 1
 	} elseif (strlen($new) === 13) {
 		$num = (int) $new;
