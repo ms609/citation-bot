@@ -22,7 +22,7 @@ final class WikipediaBot {
   private static bool $init_done = FALSE;
   private string $the_user = '';
   private static ?self $last_WikipediaBot; // For NonStandardMode()
-  
+
   public static function make_ch() : void {
     if (self::$init_done) return;
     self::$init_done = TRUE;
@@ -65,14 +65,14 @@ final class WikipediaBot {
     }
     self::$last_WikipediaBot = $this;
   }
-  
+
   public function get_the_user() : string {
     if ($this->the_user === '') {
       report_error('User Not Set');         // @codeCoverageIgnore
     }
     return $this->the_user;
   }
-  
+
   public static function ret_okay(?object $response) : bool { // We send back TRUE for thing that are page specific
     if (is_null($response)) {
       report_warning('Wikipedia response was not decoded.  Will sleep and move on.');
@@ -130,9 +130,9 @@ try {
             CURLOPT_HTTPHEADER => [$authenticationHeader],
             CURLOPT_URL => API_ROOT
           ]);
-    
+
       $data = (string) @curl_exec(self::$ch);
-      $ret = @json_decode($data); 
+      $ret = @json_decode($data);
       if (($ret === NULL) || ($ret === FALSE) || (isset($ret->error) && (   // @codeCoverageIgnoreStart
         (string) $ret->error->code === 'assertuserfailed' ||
         stripos((string) $ret->error->info, 'The database has been automatically locked') !== FALSE ||
@@ -142,7 +142,7 @@ try {
       ) {
         unset($data, $ret, $token, $consumer, $request, $authenticationHeader); // save memory during recursion
         return $this->fetch($params, $depth+1);
-        
+
       }         // @codeCoverageIgnoreEnd
       return (self::ret_okay($ret)) ? $ret : NULL;
     // @codeCoverageIgnoreStart
@@ -153,7 +153,7 @@ try {
     return NULL;
     // @codeCoverageIgnoreEnd
   }
-  
+
   /** @phpstan-impure **/
   public function write_page(string $page, string $text, string $editSummary, int $lastRevId, string $startedEditing) : bool {
     if (stripos($text, "CITATION_BOT_PLACEHOLDER") !== FALSE)  {
@@ -168,12 +168,12 @@ try {
             'meta' => 'tokens',
             'titles' => $page
           ]);
-    
+
     $myPage = self::response2page($response);
     if ($myPage === NULL) return FALSE;
-    
+
     $baseTimeStamp = $myPage->revisions[0]->timestamp;
-    
+
     if (($lastRevId !== 0 && $myPage->lastrevid !== $lastRevId)
      || ($startedEditing !== '' && strtotime($baseTimeStamp) > strtotime($startedEditing))) {
       report_warning("Possible edit conflict detected. Aborting.");      // @codeCoverageIgnore
@@ -209,9 +209,9 @@ try {
         'token' => $auth_token,
     );
     $result = $this->fetch($submit_vars);
-    
+
     if (!self::resultsGood($result)) return FALSE;
-    
+
     if (HTML_OUTPUT) {
       report_inline("\n <span style='reddish'>Written to <a href='"   // @codeCoverageIgnore
         . WIKI_ROOT . "?title=" . urlencode($myPage->title) . "'>"    // @codeCoverageIgnore
@@ -221,7 +221,7 @@ try {
     }
     return TRUE;
   }
-  
+
   public static function response2page(?object $response) : ?object {
     if ($response === NULL) {
       report_warning("Write request failed");
@@ -241,13 +241,13 @@ try {
       report_warning("Write request triggered no response from server");
       return NULL;
     }
-    
+
     if (!isset($response->query->pages)) {
       report_warning("Pages array is non-existent.  Aborting.");
       return NULL;
     }
     $myPage = self::reset($response->query->pages);
-    
+
     if (!isset($myPage->lastrevid) || !isset($myPage->revisions[0]->timestamp) || !isset($myPage->title)) {
       report_warning("Page seems not to exist. Aborting.");
       return NULL;
@@ -258,12 +258,12 @@ try {
     }
     return $myPage;
   }
-  
+
   public static function resultsGood(?object $result) : bool {
     if (isset($result->error)) {
-      report_warning("Write error: " . 
-                    echoable(mb_strtoupper($result->error->code)) . ": " . 
-                    str_replace(array("You ", " have "), array("This bot ", " has "), 
+      report_warning("Write error: " .
+                    echoable(mb_strtoupper($result->error->code)) . ": " .
+                    str_replace(array("You ", " have "), array("This bot ", " has "),
                     echoable((string) @$result->error->info)));
       return FALSE;
     } elseif (isset($result->edit->captcha)) {  // Bot account has flags set on en.wikipedia.org and simple.wikipedia.org to avoid captchas
@@ -290,7 +290,7 @@ try {
       "cmlimit" => "500",
       "list" => "categorymembers",
     ];
-    
+
     do {
       $res = self::QueryAPI($vars);
       $res = @json_decode($res);
@@ -306,12 +306,12 @@ try {
               stripos($page->title, 'Gadget:') === FALSE &&
               stripos($page->title, 'Portal:') === FALSE &&
               stripos($page->title, 'timedtext:') === FALSE &&
-              stripos($page->title, 'module:') === FALSE && 
-              stripos($page->title, 'category:') === FALSE &&  
-              stripos($page->title, 'Wikipedia:') === FALSE &&  
-              stripos($page->title, 'Gadget definition:') ===FALSE &&  
-              stripos($page->title, 'Topic:') === FALSE &&  
-              stripos($page->title, 'Education Program:') === FALSE &&  
+              stripos($page->title, 'module:') === FALSE &&
+              stripos($page->title, 'category:') === FALSE &&
+              stripos($page->title, 'Wikipedia:') === FALSE &&
+              stripos($page->title, 'Gadget definition:') ===FALSE &&
+              stripos($page->title, 'Topic:') === FALSE &&
+              stripos($page->title, 'Education Program:') === FALSE &&
               stripos($page->title, 'Book:') === FALSE) {
             $list[] = $page->title;
           }
@@ -396,22 +396,22 @@ try {
    return '';
   // @codeCoverageIgnoreEnd
   }
- 
+
   static public function ReadDetails(string $title) : object {
       $details = self::QueryAPI([
-            'action'=>'query', 
-            'prop'=>'info', 
-            'titles'=> $title, 
-            'curtimestamp'=>'true', 
-            'inprop' => 'protection', 
+            'action'=>'query',
+            'prop'=>'info',
+            'titles'=> $title,
+            'curtimestamp'=>'true',
+            'inprop' => 'protection',
           ]);
     return (object) @json_decode($details);
   }
-  
+
   static public function get_links(string $title) : string {
      return self::QueryAPI(['action' => 'parse', 'prop' => 'links', 'page' => $title]);
   }
-  
+
   static public function GetAPage(string $title) : string {
     curl_setopt_array(self::$ch,
               [CURLOPT_HTTPGET => TRUE,
@@ -421,8 +421,8 @@ try {
     $text = (string) @curl_exec(self::$ch);
     return $text;
   }
-  
-  
+
+
   static public function is_valid_user(string $user) : bool {
     if (!$user) return FALSE;
     $query = [
@@ -452,7 +452,7 @@ try {
   static public function NonStandardMode() : bool {
     return !TRAVIS && isset(self::$last_WikipediaBot) && self::$last_WikipediaBot->get_the_user() === 'AManWithNoPlan';
   }
-  
+
   private function get_the_user_internal() : string {
     return $this->the_user;
   }
@@ -460,7 +460,7 @@ try {
     if(isset(self::$last_WikipediaBot)) return self::$last_WikipediaBot->get_the_user_internal();
     return '';
   }
-  
+
 /**
  * Human interaction needed
  * @codeCoverageIgnore
@@ -515,7 +515,7 @@ try {
     }
     exit(0);
   }
-  
+
   private static function reset(object &$obj) : object { // Make PHP 8 happy
      $arr = (array) $obj;
      return (object) reset($arr);
