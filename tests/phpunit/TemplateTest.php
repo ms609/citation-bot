@@ -867,7 +867,7 @@ final class TemplateTest extends testBaseClass {
     $text = "{{cite web|url=https://books.google.com/books?id=ecrwrKCRr7YC&pg=PA85&lpg=PA85&dq=vestibular+testing+lab+gianoli&keywords=lab&text=vestibular+testing+lab+gianoli|title=Practical Management of the Dizzy Patient|first=Joel A.|last=Goebel|date=6 December 2017|publisher=Lippincott Williams & Wilkins|via=Google Books}}";
     // Should add ISBN and thus convert to Cite book
     $expanded = $this->process_citation($text);
-    $this->assertSame('9780781765626', $expanded->get2('isbn'));
+    $this->assertSame('978-0-7817-6562-6', $expanded->get2('isbn'));
     $this->assertSame('cite book', $expanded->wikiname());
   }
   
@@ -2070,7 +2070,7 @@ final class TemplateTest extends testBaseClass {
     $this->assertSame('cite book', $expanded->wikiname());
     $this->assertSame('https://books.google.com/books?id=SjpSkzjIzfsC', $expanded->get2('url'));
     $this->assertSame('Wonderful Life: The Burgess Shale and the Nature of History', $expanded->get2('title'));
-    $this->assertSame('9780393307009', $expanded->get2('isbn')   );
+    $this->assertSame('978-0-393-30700-9', $expanded->get2('isbn')   );
     $this->assertSame('Gould'        , $expanded->get2('last1'));
     $this->assertSame('Stephen Jay'  , $expanded->get2('first1') );
     $this->assertSame('1989'         , $expanded->get2('date'));
@@ -2136,7 +2136,7 @@ final class TemplateTest extends testBaseClass {
     $this->assertSame('cite book', $expanded->wikiname());
     $this->assertSame('https://books.google.com/books?id=SjpSkzjIzfsC', $expanded->get2('url'));
     $this->assertSame('Wonderful Life: The Burgess Shale and the Nature of History',$expanded->get2('title'));
-    $this->assertSame('9780393307009', $expanded->get2('isbn')   );
+    $this->assertSame('978-0-393-30700-9', $expanded->get2('isbn')   );
     $this->assertSame('Gould'        , $expanded->get2('last1'));
     $this->assertSame('Stephen Jay'  , $expanded->get2('first1') );
     $this->assertSame('1989'         , $expanded->get2('date'));
