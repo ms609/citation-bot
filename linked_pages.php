@@ -14,7 +14,7 @@ bot_html_header();
 check_blocked();
 
 if (is_string(@$_POST['linkpage'])) {
-  $page_name = $_POST['linkpage']; 
+  $page_name = $_POST['linkpage'];
 } else {
   report_warning(' Error in passing of linked page name ');
   bot_html_footer();
@@ -53,10 +53,10 @@ unset($array);
 $pages_in_category = [];
 foreach($links as $link) {
     if (isset($link['exists']) && ($link['ns'] === 0 || $link['ns'] === 118)) {  // normal and draft articles only
-        $linked_page = str_replace(' ', '_', $link['*']);
-        if(!in_array($linked_page, AVOIDED_LINKS) && stripos($linked_page, 'disambiguation') === FALSE) {
-            $pages_in_category[] = $linked_page;
-        }
+	$linked_page = str_replace(' ', '_', $link['*']);
+	if(!in_array($linked_page, AVOIDED_LINKS) && stripos($linked_page, 'disambiguation') === FALSE) {
+	    $pages_in_category[] = $linked_page;
+	}
     }
 }
 unset($links);

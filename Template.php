@@ -7617,7 +7617,7 @@ final class Template {
 		}
 		if (!isset($split)) return $isbn; // Paranoid
 		$v = $split;
-		return substr($new, 0, 3) . '-' . substr($new, 3, $v[0]) . '-' . substr($new, 3+$v[0], $v[1]) . '-' . substr($new, 3+$v[0]+$v[1], $v[2]) . '-' . substr($new, 3+$v[0]+$v[1]+$v[2], 1) ;  
+		return substr($new, 0, 3) . '-' . substr($new, 3, $v[0]) . '-' . substr($new, 3+$v[0], $v[1]) . '-' . substr($new, 3+$v[0]+$v[1], $v[2]) . '-' . substr($new, 3+$v[0]+$v[1]+$v[2], 1) ;
 		// split = 3, $v[0], $v[1], $v[2], 1
 	} else {
 		return $isbn;
