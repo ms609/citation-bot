@@ -7596,6 +7596,7 @@ final class Template {
 		foreach (ISBN_HYPHEN_POS as $k => $v) {
 			if ($num <= (int) $k) {
 				$split = $v;
+				break;
 			}
 		}
 		if (!isset($split)) return $isbn; // Paranoid
@@ -7607,6 +7608,7 @@ final class Template {
 		foreach (ISBN_HYPHEN_POS as $k => $v) {
 			if ($num <= (int) $k) {
 				$split = $v;
+				break;
 			}
 		}
 		if (!isset($split)) return $isbn; // Paranoid
