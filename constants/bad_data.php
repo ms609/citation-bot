@@ -108,7 +108,7 @@ const BAD_ZOTERO_TITLES = ['Browse publications', 'Central Authentication Servic
 				 'Zoeken in over NA', 'na een 404', '404 error', 'Account Suspended',
 				 'Error 404', 'EZProxy', 'EBSCOhost Login', '404 - Not Found', '404!',
 				 'Temporarily Unavailable', ' has expired', 'not longer available',
-				 'Article expired', 'This is due to newswire licensing terms',
+				 'Article expired', 'This is due to newswire licensing terms', 'DPG Media Privacy Gate',
 				 'OpenId transaction in progress', 'Download Limit Exceeded', 'Internet Archive Wayback Machine',
 				 'Url（アドレス）が変わりました', '404エラ', 'お探しのページは見つかりませんでした',
 				 'privacy settings', 'cookie settings', 'WebCite query', 'Ой!',
@@ -955,6 +955,7 @@ const ALWAYS_BAD_TITLES = array(
 		     "PressReader.com – Digital Newspaper & Magazine Subscriptions",
 		     "How to access research remotely",
 		     "Log In - ProQuest",
+		     "DPG Media Privacy Gate",
 		    );
 
 const DOI_FREE_PREFIX = array('10.1100/', '10.11131/', '10.11569/', '10.11647/', '10.11648/', '10.1186/', '10.12688/',
