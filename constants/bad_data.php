@@ -478,6 +478,7 @@ const ZOTERO_AVOID_REGEX = array("twitter\.",               // This should be {{
 				 "biodiversity\.org\.au", // Zotero gives bad data
 				 "timea\.rice\.edu", // gone
 				 "findarticles\.com", // Gone
+				 "myprivacy\.dpgmedia\.nl", // blocker
 				);
 const NON_JOURNAL_WEBSITES = array('-news.co.uk/', '.ajc.com/', '.al.com/',
 		      '.ap.org/', '.bbm.ca/', '.dw.com/', '.fec.gov/', '.ft.com/',
