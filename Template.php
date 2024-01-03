@@ -6072,7 +6072,7 @@ final class Template {
 		  return;
 
 		case 'website':
-		  if ($this->get($param) === 'Undefined' || $this->get($param) === 'undefined') {
+		  if ($this->get($param) === 'Undefined' || $this->get($param) === 'undefined' || $this->get($param) === 'myprivacy.dpgmedia.nl') {
 			$this->forget($param);
 			return;
 		  }
