@@ -20,7 +20,7 @@ final class Zotero {
   private const ZOTERO_SKIPS = 100;
   private const ERROR_DONE = 'ERROR_DONE';
   protected static int $zotero_announced = 0;
-  protected static CurlHandle $zotero_ch, $ch_ieee, $ch_jstor, $ch_dx, $ch_pmc;
+  protected static CurlHandle $zotero_ch, $ch_ieee, $ch_jstor, $ch_dx, $ch_pmc, $ch_doi;
   protected static int $zotero_failures_count = 0;
   private static bool $is_setup = FALSE;
 
@@ -77,6 +77,17 @@ public static function create_ch_zotero() : void {
 	 CURLOPT_FOLLOWLOCATION => TRUE,
 	 CURLOPT_TIMEOUT => BOT_HTTP_TIMEOUT,
 	 CURLOPT_CONNECTTIMEOUT => BOT_CONNECTION_TIMEOUT,
+	 CURLOPT_COOKIESESSION => TRUE,
+	 CURLOPT_USERAGENT => BOT_USER_AGENT]);
+
+  self::$ch_doi = curl_init();
+  curl_setopt_array(self::$ch_doi,
+	[CURLOPT_FOLLOWLOCATION => TRUE,
+	 CURLOPT_MAXREDIRS => 20, // No infinite loops for us, 20 for Elsevier and Springer websites
+	 CURLOPT_CONNECTTIMEOUT =>  BOT_CONNECTION_TIMEOUT,
+	 CURLOPT_TIMEOUT => BOT_HTTP_TIMEOUT,
+	 CURLOPT_RETURNTRANSFER => TRUE,
+	 CURLOPT_AUTOREFERER => TRUE,
 	 CURLOPT_COOKIESESSION => TRUE,
 	 CURLOPT_USERAGENT => BOT_USER_AGENT]);
 }
@@ -199,16 +210,6 @@ public static function query_ieee_webpages(array &$templates) : void {  // Point
 **/
 public static function drop_urls_that_match_dois(array &$templates) : void {  // Pointer to save memory
   // Now that we have expanded URLs, try to lose them
-  $ch = curl_init();
-  curl_setopt_array($ch,
-	[CURLOPT_FOLLOWLOCATION => TRUE,
-	 CURLOPT_MAXREDIRS => 20, // No infinite loops for us, 20 for Elsevier and Springer websites
-	 CURLOPT_CONNECTTIMEOUT =>  BOT_CONNECTION_TIMEOUT,
-	 CURLOPT_TIMEOUT => BOT_HTTP_TIMEOUT,
-	 CURLOPT_RETURNTRANSFER => TRUE,
-	 CURLOPT_AUTOREFERER => TRUE,
-	 CURLOPT_COOKIESESSION => TRUE,
-	 CURLOPT_USERAGENT => BOT_USER_AGENT]);
   foreach ($templates as $template) {
     $doi = $template->get_without_comments_and_placeholders('doi');
     if ($template->has('url')) {
@@ -302,10 +303,10 @@ public static function drop_urls_that_match_dois(array &$templates) : void {  //
 	    } else { // See if $url redirects
 	       /** @psalm-taint-escape ssrf */
 	       $the_url = $url;
-	       curl_setopt($ch, CURLOPT_URL, $the_url);
-	       $ch_return = (string) @curl_exec($ch);
+	       curl_setopt(self::$ch_doi, CURLOPT_URL, $the_url);
+	       $ch_return = (string) @curl_exec(self::$ch_doi);
 	       if (strlen($ch_return) > 60) {
-		  $redirectedUrl_url = curl_getinfo($ch, CURLINFO_EFFECTIVE_URL);
+		  $redirectedUrl_url = curl_getinfo(self::$ch_doi, CURLINFO_EFFECTIVE_URL);
 		  $redirectedUrl_url = self::url_simplify($redirectedUrl_url);
 		  if (stripos($redirectedUrl_url, $redirectedUrl_doi) !== FALSE ||
 		      stripos($redirectedUrl_doi, $redirectedUrl_url) !== FALSE) {
