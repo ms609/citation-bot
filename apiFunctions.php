@@ -1269,20 +1269,48 @@ function Bibcode_Response_Processing(array $curl_opts, string $adsabs_url) : obj
     $body = substr($return, $header_length);
     $decoded = @json_decode($body);
     if (is_object($decoded) && isset($decoded->error)) {
-
       $retry_msg='';
+      $time_to_sleep = NULL;
+      $limit_action = NULL;
       if (preg_match('~\nretry-after:\s*(\d+)\r~i', $header, $retry_after)) {
-	 $rai=intval($retry_after[1]);
-	 $retry_msg.='Need to retry after '.strval($rai).'s ('.date('H:i:s', $rai).').';
+         // AdsAbs limit reached: proceed according to the action configured in PHP_ADSABSAPILIMITACTION;
+         // available actions are: sleep, exit, ignore (default).
+         $rai=intval($retry_after[1]);
+         $retry_msg.='Need to retry after '.strval($rai).'s ('.date('H:i:s', $rai).').';
+         if (defined('PHP_ADSABSAPILIMITACTION') && is_string(PHP_ADSABSAPILIMITACTION)) {
+           $limit_action = strtolower(PHP_ADSABSAPILIMITACTION);
+         }
+         if ($limit_action === 'sleep') {
+           $time_to_sleep = $rai+1;
+         } elseif ($limit_action === 'exit') {
+           $time_to_sleep = -1;
+         } elseif ($limit_action === 'ignore' || $limit_action === '' || $limit_action === NULL) {
+           // just ignore the limit and continue
+         } else
+         {
+           $retry_msg.= ' The AdsAbs API limit reached, but the on-limit action "'.strval($limit_action).'" is not recognized and thus ignored.';
+         }
       }
       if (preg_match('~\nx-ratelimit-reset:\s*(\d+)\r~i', $header, $rate_limit_reset)) {
 	 $rlr=intval($rate_limit_reset[1]);
 	 $retry_msg.=' Rate limit resets on '.date('Y-m-d H:i:s', $rlr).' UTC.';
       }
+      $retry_msg = trim($retry_msg);
       if ($retry_msg !== '') {
-	report_warning(trim($retry_msg));
+        if (is_int($time_to_sleep) && ($time_to_sleep > 0)) {
+          $retry_msg .= ' Sleeping...';
+          report_warning($retry_msg);
+          sleep($time_to_sleep);
+        } elseif (is_int($time_to_sleep) && ($time_to_sleep < 0)) {
+          $retry_msg .= ' Exiting. Please run the bot later to retry AdsAbs API call when the limit will reset.';
+          report_warning($retry_msg);
+          report_error('The AdsAbs API limit reached, exiting due to "'.strval($limit_action).'" action configured in PHP_ADSABSAPILIMITACTION environment variable.');
+        } else {
+          report_warning($retry_msg);
+        }
       }
       unset($retry_msg);
+      unset($time_to_sleep);
 
       // @codeCoverageIgnoreStart
       if (isset($decoded->error->trace)) {
