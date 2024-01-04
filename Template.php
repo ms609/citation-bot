@@ -5423,6 +5423,12 @@ final class Template {
 			   quietly('report_modification', "Decoding Bloomberg URL.");
 			   $this->set($param, 'https://www.bloomberg.com' . base64_decode($matches[1]));
 			 }
+		  } elseif (preg_match("~^https:?//myprivacy\.dpgmedia\.nl/.+callbackUrl=(.+)$~", $this->get($param), $matches)) {
+			  $the_match = $matches[1];
+			  $the_match = urldecode(urldecode($the_match));
+			  if (preg_match("~^(https.+)/privacy-gate/accept-tcf2?redirectUri=(/.+)$~", $the_match, $matches)) {
+				$this->set($param, $matches[1] . $matches[2]);
+			  } 
 		  } elseif (preg_match("~^https?://academic\.oup\.com/crawlprevention/governor\?content=([^\s]+)$~", $this->get($param), $matches)) {
 			 quietly('report_modification', "Decoding OUP URL.");
 			 $this->set($param, 'https://academic.oup.com' . preg_replace('~(?:\?login=false|\?redirectedFrom=fulltext|\?login=true)$~i', '', urldecode($matches[1])));
