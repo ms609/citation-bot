@@ -5426,7 +5426,7 @@ final class Template {
 		  } elseif (preg_match("~^https:?//myprivacy\.dpgmedia\.nl/.+callbackUrl=(.+)$~", $this->get($param), $matches)) {
 			  $the_match = $matches[1];
 			  $the_match = urldecode(urldecode($the_match));
-			  if (preg_match("~^(https.+)/privacy-gate/accept-tcf2?redirectUri=(/.+)$~", $the_match, $matches)) {
+			  if (preg_match("~^(https.+)/privacy-gate/accept-tcf2\?redirectUri=(/.+)$~", $the_match, $matches)) {
 				$this->set($param, $matches[1] . $matches[2]);
 			  } 
 		  } elseif (preg_match("~^https?://academic\.oup\.com/crawlprevention/governor\?content=([^\s]+)$~", $this->get($param), $matches)) {
