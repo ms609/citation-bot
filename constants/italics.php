@@ -171,6 +171,7 @@ const ITALICS_LIST =
  "Woloszynskia apiculata|" .
  "Symbiodinium microadriaticum|" .
  "Alligator sinensis|" .
+ "Lesothosaurus diagnosticus|",
  "Galeamopus pabsti|" .
  "Enfants Terribles|" .
  "Puntius sophore|" .
@@ -414,7 +415,7 @@ const CAMEL_CASE = array('DeSoto', 'PubChem', 'BitTorrent', 'Al2O3', 'NiMo', 'Cu
 			 'RiceWiki', 'SciLite', 'ScispaCy', 'WormBase', 'VirFinder', 'UniProt', 'GaiaData', 'FoodOn',
 			 'GaiaHundred', 'WikiJournal', 'StarCraft', 'EuResist', 'PhageScope', 'CoVaMa', 'EuroMyositis',
 			 'DavEnd', 'CoLaus', 'MinerAlocorticoid', 'miRiad', 'kaSenzangakhona', 'BioChirality', 'DeGeer',
-			 'ReFocus:', 'FusionCatcher'
+			 'ReFocus:', 'FusionCatcher', 'cFos',
 		       );
 
 const ITALICS_HARDCODE_IN  = ["The Myth ofPiers Plowman", "BioelectromagnetismPrinciples and Applications", "Practice inThe Nice Valour",
