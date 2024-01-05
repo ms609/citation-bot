@@ -16,7 +16,7 @@ if ($category === '' && is_string(@$_GET["cat"])) {
    if (in_array($try, [
 		       'CS1 maint: PMC format',
 		       'CS1 maint: MR format',
-		       'CS1 maint: bibcode'
+		       'CS1 maint: bibcode',
 		       'CS1 maint: PMC embargo expired',
 		       'CS1 maint: extra punctuation',
 		       'CS1 maint: unflagged free DOI',
