@@ -171,7 +171,7 @@ const ITALICS_LIST =
  "Woloszynskia apiculata|" .
  "Symbiodinium microadriaticum|" .
  "Alligator sinensis|" .
- "Lesothosaurus diagnosticus|",
+ "Lesothosaurus diagnosticus|" .
  "Galeamopus pabsti|" .
  "Enfants Terribles|" .
  "Puntius sophore|" .
