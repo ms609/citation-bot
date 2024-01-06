@@ -99,6 +99,7 @@ const ITALICS_LIST =
  "Schistocephalus solidus|" .
  "Pyrobaculum calidifontis|" .
  "Arabidopsis thaliana|" .
+ "Fahraeusodus adentatus|" .
  "Homo sapiens|" .
  "Xylella fastidiosa|" .
  "Listeria monocytogenes|" .
@@ -216,6 +217,7 @@ const ITALICS_LIST =
  "Leveillula|" .
  "Lewisepeira|" .
  "Daspletosaurus|" .
+ "Pohlerodus|" .
  "Diaphera|" .
  "Hyloscirtus|" .
  "Micrapis|" .
