@@ -13,8 +13,10 @@ if (is_string(@$_POST["cat"])) $category = trim($_POST["cat"]);
 if (strtolower(substr($category, 0, 9)) === 'category:') $category = trim(substr($category, 9));
 if ($category === '' && is_string(@$_GET["cat"])) {
    $try = trim($_GET["cat"]);
+   $try = str_replace('_', ' ', $try);
    if (in_array($try, [
 		       'CS1 maint: PMC format',
+		       'CS1 maint: date format',
 		       'CS1 maint: MR format',
 		       'CS1 maint: bibcode',
 		       'CS1 maint: PMC embargo expired',
