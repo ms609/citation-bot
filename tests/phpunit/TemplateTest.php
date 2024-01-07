@@ -2370,7 +2370,7 @@ EP - 999 }}';
 
     $text = "{{cite book|isbn=0-9749009-0-7|url=https://books.google.com/books?id=to0yXzq_EkQC|year=2019}}";
     $page = $this->process_page($text);
-    $this->assertSame('Alter: isbn. Add: publisher, title, authors 1-2. Upgrade ISBN10 to 13. | [[:en:WP:UCB|Use this bot]]. [[:en:WP:DBUG|Report bugs]]. ', $page->edit_summary());
+    $this->assertSame('Altered isbn. Add: publisher, title, authors 1-2. Upgrade ISBN10 to 13. | [[:en:WP:UCB|Use this bot]]. [[:en:WP:DBUG|Report bugs]]. ', $page->edit_summary());
   }
 
   public function testConvertingISBN10Dashes() : void {
@@ -3327,7 +3327,7 @@ EP - 999 }}';
   public function testTrimProquestEbook5() : void {
     $text = '{{cite web|url=http://ebookcentral-proquest-com.libproxy.berkeley.edu/lib/claremont/detail.action?docID=123456#goto_toc}}';
     $page = $this->process_page($text);
-    $this->assertSame('Alter: url. URLs might have been anonymized. Add: website. | [[:en:WP:UCB|Use this bot]]. [[:en:WP:DBUG|Report bugs]]. ', $page->edit_summary());
+    $this->assertSame('Altered url. URLs might have been anonymized. Added website. | [[:en:WP:UCB|Use this bot]]. [[:en:WP:DBUG|Report bugs]]. ', $page->edit_summary());
   }
 
   public function testTrimGoogleStuff() : void {
