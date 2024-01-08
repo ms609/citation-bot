@@ -528,16 +528,22 @@ class Page {
 
   public function edit_summary() : string {
     $auto_summary = "";
-    if (count($this->modifications["changeonly"]) !== 0) {
-      $auto_summary .= "Alter: " . implode(", ", $this->modifications["changeonly"]) . ". ";
+    $altered_list = $this->modifications["changeonly"];
+    if (count($altered_list) !== 0) {
+      if (count($altered_list)===1) {$op = "Altered";} else {$op = "Alter:";}
+      $auto_summary .= $op . " " . implode(", ", $altered_list) . ". ";
+      unset($op);
     }
+    unset($altered_list);
     if (strpos(implode(" ", $this->modifications["changeonly"]), 'url') !== FALSE) {
       $auto_summary .= "URLs might have been anonymized. ";
     }
     if (count($this->modifications['additions']) !== 0) {
       /** @var array<string> $addns */
       $addns = $this->modifications["additions"];
-      $auto_summary .= "Add: ";
+      if (count($addns)===1) {$op = "Added";} else {$op = "Add:";}
+      $auto_summary .= $op." ";
+      unset($op);
       $min_au = 9999;
       $max_au = 0;
       $min_ed = 9999;

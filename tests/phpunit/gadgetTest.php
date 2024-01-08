@@ -36,6 +36,6 @@ final class gadgetTest extends testBaseClass {
       // Output checking time
       $json = json_decode($json_text);
       $this->assertSame('{{citation|pmid=34213 |date=1979 |last1=Weber |first1=F. |last2=Kayser |first2=F. H. |title=Antimicrobial resistance and serotypes of Streptococcus pneumoniae in Switzerland |journal=Schweizerische Medizinische Wochenschrift |volume=109 |issue=11 |pages=395–399 }}', $json->expandedtext);
-      $this->assertSame('Something Nice | Alter: template type. Add: pages, issue, volume, journal, title, date, authors 1-2. Removed Template redirect. | [[:en:WP:UCB|Use this tool]]. [[:en:WP:DBUG|Report bugs]]. | #UCB_Gadget ', $json->editsummary);
+      $this->assertSame('Something Nice | Altered template type. Add: pages, issue, volume, journal, title, date, authors 1-2. Removed Template redirect. | [[:en:WP:UCB|Use this tool]]. [[:en:WP:DBUG|Report bugs]]. | #UCB_Gadget ', $json->editsummary);
   }
 }
