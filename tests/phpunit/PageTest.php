@@ -22,7 +22,7 @@ final class PageTest extends testBaseClass {
 
   public function testPageChangeSummary1() : void {
       $page = $this->process_page('{{cite journal|chapter=chapter name|title=book name}}{stuff}{{{Stuffy|dsafsdf}}}'); // Change to book from journal
-      $this->assertSame('Alter: template type. | [[:en:WP:UCB|Use this bot]]. [[:en:WP:DBUG|Report bugs]]. ', $page->edit_summary());
+      $this->assertSame('Altered template type. | [[:en:WP:UCB|Use this bot]]. [[:en:WP:DBUG|Report bugs]]. ', $page->edit_summary());
   }
 
   public function testPageChangeSummary2() : void {
@@ -145,35 +145,35 @@ final class PageTest extends testBaseClass {
   public function testVancNames1() : void {
       $page = $this->process_page('{|}{{cs1 config|name-list-style=vanc}}<!-- -->{{{|}}}{{cite journal | title = Food Ingredients That Inhibit Cholesterol Absorption | journal = Preventive Nutrition and Food Science | volume =  | issue =  | pages = 67–80 | date = June 2017 | pmid = 28702423 | pmc = 5503415 | doi = <!-- --> | vauthors = }}');
       $this->assertSame(          '{|}{{cs1 config|name-list-style=vanc}}<!-- -->{{{|}}}{{cite journal | title = Food Ingredients That Inhibit Cholesterol Absorption | journal = Preventive Nutrition and Food Science | volume =  22| issue =  2| pages = 67–80 | date = June 2017 | pmid = 28702423 | pmc = 5503415 | doi = <!-- --> | vauthors = Jesch ED, Carr TP }}', $page->parsed_text());
-      $this->assertSame('Alter: volume, issue. Added authors 1-2. Removed parameters. | [[:en:WP:UCB|Use this bot]]. [[:en:WP:DBUG|Report bugs]]. ', $page->edit_summary());
+      $this->assertSame('Alter: volume, issue. Add: authors 1-2. Removed parameters. | [[:en:WP:UCB|Use this bot]]. [[:en:WP:DBUG|Report bugs]]. ', $page->edit_summary());
   }
 
   public function testVancNames2() : void {
       sleep(1);
       $page = $this->process_page('{|}{{cs1 config|name-list-style=bogus}}<!-- -->{{{|}}}{{cite journal | title = Food Ingredients That Inhibit Cholesterol Absorption | journal = Preventive Nutrition and Food Science | volume =  | issue =  | pages = 67–80 | date = June 2017 | pmid = 28702423 | pmc = 5503415 | doi = <!-- --> | vauthors = }}');
       $this->assertSame(          '{|}{{cs1 config|name-list-style=bogus}}<!-- -->{{{|}}}{{cite journal | title = Food Ingredients That Inhibit Cholesterol Absorption | journal = Preventive Nutrition and Food Science | volume =  22| issue =  2| pages = 67–80 | date = June 2017 | pmid = 28702423 | pmc = 5503415 | doi = <!-- --> | last1 = Jesch | first1 = E. D. | last2 = Carr | first2 = T. P. }}', $page->parsed_text());
-      $this->assertSame('Alter: volume, issue. Added authors 1-2. Removed parameters. | [[:en:WP:UCB|Use this bot]]. [[:en:WP:DBUG|Report bugs]]. ', $page->edit_summary());
+      $this->assertSame('Alter: volume, issue. Add: authors 1-2. Removed parameters. | [[:en:WP:UCB|Use this bot]]. [[:en:WP:DBUG|Report bugs]]. ', $page->edit_summary());
   }
 
   public function testVancNames3() : void {
       sleep(1);
       $page = $this->process_page('{|}{{cs1 config|name-list-style=amp}}<!-- -->{{{|}}}{{cite journal | title = Food Ingredients That Inhibit Cholesterol Absorption | journal = Preventive Nutrition and Food Science | volume =  | issue =  | pages = 67–80 | date = June 2017 | pmid = 28702423 | pmc = 5503415 | doi = <!-- --> | vauthors = }}');
       $this->assertSame(          '{|}{{cs1 config|name-list-style=amp}}<!-- -->{{{|}}}{{cite journal | title = Food Ingredients That Inhibit Cholesterol Absorption | journal = Preventive Nutrition and Food Science | volume =  22| issue =  2| pages = 67–80 | date = June 2017 | pmid = 28702423 | pmc = 5503415 | doi = <!-- --> | last1 = Jesch | first1 = E. D. | last2 = Carr | first2 = T. P. }}', $page->parsed_text());
-      $this->assertSame('Alter: volume, issue. Added authors 1-2. Removed parameters. | [[:en:WP:UCB|Use this bot]]. [[:en:WP:DBUG|Report bugs]]. ', $page->edit_summary());
+      $this->assertSame('Alter: volume, issue. Add: authors 1-2. Removed parameters. | [[:en:WP:UCB|Use this bot]]. [[:en:WP:DBUG|Report bugs]]. ', $page->edit_summary());
   }
 
   public function testVancNames4() : void {
       sleep(1); // Reduce failures
       $page = $this->process_page('{|}{{cs1 config|name-list-style=default}}<!-- -->{{{|}}}{{cite journal | title = Food Ingredients That Inhibit Cholesterol Absorption | journal = Preventive Nutrition and Food Science | volume =  | issue =  | pages = 67–80 | date = June 2017 | pmid = 28702423 | pmc = 5503415 | doi = <!-- --> | vauthors = }}');
       $this->assertSame(          '{|}{{cs1 config|name-list-style=default}}<!-- -->{{{|}}}{{cite journal | title = Food Ingredients That Inhibit Cholesterol Absorption | journal = Preventive Nutrition and Food Science | volume =  22| issue =  2| pages = 67–80 | date = June 2017 | pmid = 28702423 | pmc = 5503415 | doi = <!-- --> | last1 = Jesch | first1 = E. D. | last2 = Carr | first2 = T. P. }}', $page->parsed_text());
-      $this->assertSame('Alter: volume, issue. Added authors 1-2. Removed parameters. | [[:en:WP:UCB|Use this bot]]. [[:en:WP:DBUG|Report bugs]]. ', $page->edit_summary());
+      $this->assertSame('Alter: volume, issue. Add: authors 1-2. Removed parameters. | [[:en:WP:UCB|Use this bot]]. [[:en:WP:DBUG|Report bugs]]. ', $page->edit_summary());
   }
 
   public function testVancNames5() : void {
       sleep(1);
       $page = $this->process_page('{|}{{cs1 config|name-list-style=}}<!-- -->{{{|}}}{{cite journal | title = Food Ingredients That Inhibit Cholesterol Absorption | journal = Preventive Nutrition and Food Science | volume =  | issue =  | pages = 67–80 | date = June 2017 | pmid = 28702423 | pmc = 5503415 | doi = <!-- --> | vauthors = }}');
       $this->assertSame(          '{|}{{cs1 config|name-list-style=}}<!-- -->{{{|}}}{{cite journal | title = Food Ingredients That Inhibit Cholesterol Absorption | journal = Preventive Nutrition and Food Science | volume =  22| issue =  2| pages = 67–80 | date = June 2017 | pmid = 28702423 | pmc = 5503415 | doi = <!-- --> | last1 = Jesch | first1 = E. D. | last2 = Carr | first2 = T. P. }}', $page->parsed_text());
-      $this->assertSame('Alter: volume, issue. Added authors 1-2. Removed parameters. | [[:en:WP:UCB|Use this bot]]. [[:en:WP:DBUG|Report bugs]]. ', $page->edit_summary());
+      $this->assertSame('Alter: volume, issue. Add: authors 1-2. Removed parameters. | [[:en:WP:UCB|Use this bot]]. [[:en:WP:DBUG|Report bugs]]. ', $page->edit_summary());
   }
 
   public function testVancNames6() : void {
@@ -489,7 +489,7 @@ final class PageTest extends testBaseClass {
   public function testAddEditorsSummary() : void {
     $text = "{{Cite journal | doi-access=free|url=http://www.hbw.com/species/somali-pigeon-columba-oliviae|title=Somali Pigeon (Columba oliviae)|journal=Birds of the World|date=4 March 2020|last1=Baptista|first1=Luis F.|last2=Trail|first2=Pepper W.|last3=Horblit|first3=H. M.|last4=Sharpe|first4=Christopher J.|last5=Boesman|first5=Peter F. D.|last6=Garcia|first6=Ernest|doi=10.2173/bow.sompig1.01}}";
     $page = $this->process_page($text);
-    $this->assertSame('Added editors 1-5. | [[:en:WP:UCB|Use this bot]]. [[:en:WP:DBUG|Report bugs]]. ', $page->edit_summary());
+    $this->assertSame('Add: editors 1-5. | [[:en:WP:UCB|Use this bot]]. [[:en:WP:DBUG|Report bugs]]. ', $page->edit_summary());
   }
 
   public function testConvertURLSummary() : void {
