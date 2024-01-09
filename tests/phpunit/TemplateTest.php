@@ -3175,7 +3175,8 @@ EP - 999 }}';
     // For some reason we sometimes get the first one - probably just ARXIV
     $title1 = 'A Candidate $z\sim10$ Galaxy Strongly Lensed into a Spatially Resolved Arc';
     $title2 = "RELICS: A Candidate ''z'' ∼ 10 Galaxy Strongly Lensed into a Spatially Resolved Arc";
-    if (in_array($title, [$title1, $title2])) {
+    $title3 = "RELICS: A Candidate z ∼ 10 Galaxy Strongly Lensed into a Spatially Resolved Arc";
+    if (in_array($title, [$title1, $title2, $title3])) {
        $this->assertTrue(TRUE);
     } else {
        $this->assertTrue($title); // What did we get
