@@ -1520,7 +1520,7 @@ function smart_decode(string $title, string $encode, string $archive_url) : stri
   if ($title === "") return "";
   if ($encode === 'maccentraleurope') $encode = 'mac-centraleurope';
   if (in_array($encode, ['utf-8-sig', 'x-user-defined'])) { // Known wonky ones
-     return $title;
+     return "";
   }
   $master_list = mb_list_encodings();
   $valid = [];
@@ -1541,7 +1541,6 @@ function smart_decode(string $title, string $encode, string $archive_url) : stri
   }
   if ($try == "") {
        bot_debug_log('Bad Encoding: ' . $encode . ' for ' . echoable($archive_url)); // @codeCoverageIgnore
-       return $title;
   }
   return $try;
 }
