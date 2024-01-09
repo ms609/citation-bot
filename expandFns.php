@@ -1518,6 +1518,10 @@ function is_encoding_reasonable(string $encode) : bool { // common "default" one
 
 function smart_decode(string $title, string $encode, string $archive_url) : string {
   if ($title === "") return "";
+  if ($encode === 'maccentraleurope') $encode = 'mac-centraleurope';
+  if (in_array($encode, ['utf-8-sig', 'x-user-defined'])) { // Known wonky ones
+     return $string;
+  }
   $master_list = mb_list_encodings();
   $valid = [];
   foreach ($master_list as $enc) {
@@ -1536,9 +1540,7 @@ function smart_decode(string $title, string $encode, string $archive_url) : stri
        $try = "";
   }
   if ($try == "") {
-    if (!in_array($encode, ['utf-8-sig', 'maccentraleurope'])) { // Known wonky ones
        bot_debug_log('Bad Encoding: ' . $encode . ' for ' . echoable($archive_url)); // @codeCoverageIgnore
-    }
   }
   return $try;
 }
