@@ -507,6 +507,7 @@ try {
     } else {
        unset($_SESSION['access_key'], $_SESSION['access_secret']);
        session_write_close();
+       flush(); // stability
        $return = $_SERVER['REQUEST_URI'];
        $return = preg_replace('~\s+~', '', $return); // Security paranoia
        /** @psalm-taint-escape header */
