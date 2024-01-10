@@ -1,18 +1,16 @@
 <?php
 declare(strict_types=1);
 
-// Paranoid, and lots of extra flush() calls an such - trying to be atomic without non-portable locks etc.
+// Paranoid - trying to be atomic without non-portable locks etc.
 
-// "hard" as in "try hard"
+// "hard" as in "try hard" and ignore errors
 function hard_touch(string $file) : void {
   touch($file);
   @fclose(@fopen($file, 'a')); // Do something else to file
-  flush();
 }
 
 function hard_unlink(string $file) : void {
   @unlink($file);
-  flush();
 }
 
 function big_jobs_name() : string { // NEVER save this string. Always use this function so that clearstatcache is called
@@ -52,8 +50,6 @@ function big_jobs_check_overused(int $page_count) : void {
    echo '</pre><div style="text-align:center"><h1>Unable to obtain large run lock.</h1></div><footer><a href="./" title="Use Citation Bot again">Another</a>?</footer></body></html>';
    exit();
  }
- fflush($lock_file);
- flush();
  define('BIG_JOB_MODE', 'YES');
  register_shutdown_function('big_jobs_we_died', $lock_file); // We now have a lock file that will magically go away when code dies/quits
 }

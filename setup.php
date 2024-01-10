@@ -1,6 +1,10 @@
 <?php
 declare(strict_types=1);
 error_reporting(E_ALL);
+
+ob_implicit_flush(TRUE);
+flush();
+
 if (file_exists('git_pull.lock')) {
   sleep(5);
   exit('<!DOCTYPE html><html lang="en" dir="ltr"><head><title>Citation Bot: error</title></head><body><h1>GIT pull in progress - please retry again in a moment</h1></body></html>');
@@ -13,14 +17,12 @@ if (file_exists('git_pull.lock')) {
 
 function bot_debug_log(string $log_this) : void {
   @clearstatcache(); // Deal with multiple writers, but not so paranoid that we get a file lock
-  flush();
   if (function_exists('echoable')) {
      // Avoid making a new huge string, so do not combine
     file_put_contents('CodeCoverage', echoable(WikipediaBot::GetLastUser()) . " :: " . echoable(Page::$last_title) . " :: ", FILE_APPEND);
     file_put_contents('CodeCoverage', $log_this, FILE_APPEND);
     file_put_contents('CodeCoverage', "\n", FILE_APPEND);
   }
-  flush();
 }
 
 if (isset($_REQUEST["wiki_base"])){
@@ -71,9 +73,6 @@ if (isset($argv) && in_array('--savetofiles', $argv)) {
 } else {
   define("SAVETOFILES_MODE", FALSE);
 }
-
-ob_implicit_flush();
-flush();
 
 if (file_exists('env.php')) {
   // Set the environment variables with putenv(). Remember to set permissions (not readable!)
