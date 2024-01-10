@@ -3,7 +3,7 @@ set_time_limit(120);
 
 require_once 'html_headers.php';
 
-ob_implicit_flush();
+ob_implicit_flush(TRUE);
 echo '<!DOCTYPE html><html lang="en" dir="ltr"><head><title>Git Pull</title></head><body><main>';
 // phpinfo(INFO_ALL);
 echo '<pre>';
