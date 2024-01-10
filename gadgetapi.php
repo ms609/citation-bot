@@ -54,5 +54,5 @@ try {
  echo (string) @json_encode($result);
 } catch (Throwable $e) {                          // @codeCoverageIgnore
  @ob_end_clean();@ob_end_clean();@ob_end_clean(); // @codeCoverageIgnore
- // Above is paranoid panic code.  So paranoid that we even flush buffers two extra times
+ // Above is paranoid panic code.  So paranoid that we even empty buffers two extra times
 }
