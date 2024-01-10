@@ -1,6 +1,6 @@
 <?php
 declare(strict_types=1);
-ob_implicit_flush();
+ob_implicit_flush(TRUE);
 set_time_limit(120);
 $started = @session_start(['read_and_close' => TRUE]);
 
