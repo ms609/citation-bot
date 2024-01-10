@@ -492,7 +492,6 @@ try {
       $this->the_user = $user;
       $_SESSION['citation_bot_user_id'] = $this->the_user;
       session_write_close(); // Done with the session
-      flush(); // stability
       return;
      }
      catch (Throwable $e) { ; }
@@ -501,13 +500,11 @@ try {
        $name = (string) @session_name();
        $id = (string) @session_id();
        session_destroy(); // This is really bad news
-       flush(); // Paranoid
        @setcookie($name, $id, time()-42000, "", "", TRUE, TRUE);
        report_error('Invalid access attempt to internal API');
     } else {
        unset($_SESSION['access_key'], $_SESSION['access_secret']);
        session_write_close();
-       flush(); // stability
        $return = $_SERVER['REQUEST_URI'];
        $return = preg_replace('~\s+~', '', $return); // Security paranoia
        /** @psalm-taint-escape header */
