@@ -2,7 +2,7 @@
 declare(strict_types=1);
 error_reporting(E_ALL);
 
-ob_implicit_flush();
+ob_implicit_flush(TRUE);
 flush();
 
 if (file_exists('git_pull.lock')) {
