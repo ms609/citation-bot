@@ -12,8 +12,7 @@ $category = '';
 if (is_string(@$_POST["cat"])) $category = trim($_POST["cat"]);
 if (strtolower(substr($category, 0, 9)) === 'category:') $category = trim(substr($category, 9));
 if ($category === '' && is_string(@$_GET["cat"])) {
-   $try = trim($_GET["cat"]);
-   $try = str_replace(['_', '%20', '%3A'], [' ', ' ', ':'], $try);
+   $try = trim(str_replace(['_', '%20', '%3A'], [' ', ' ', ':'], $try));
    if (in_array($try, [
 		       'CS1 maint: PMC format',
 		       'CS1 maint: date format',
@@ -25,7 +24,6 @@ if ($category === '' && is_string(@$_GET["cat"])) {
 		       'Articles with missing Cite arXiv inputs',
 		       'CS1 errors: DOI',
 		       'CS1 errors: dates',
-		       'CS1 errors: extra text: edition‎',
 		       'CS1 errors: extra text: edition‎',
 		       'CS1 errors: extra text: issue‎',
 		       'CS1 errors: extra text: pages‎',
