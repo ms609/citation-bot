@@ -25,9 +25,9 @@ if ($category === '' && isset($_GET["cat"])) {
 		       'CS1 errors: DOI',
 		       'CS1 errors: dates',
 		       'CS1 errors: extra text: edition‎',
-		       'CS1 errors: extra text: issue‎',
-		       'CS1 errors: extra text: pages‎',
-		       'CS1 errors: extra text: volume‎',
+		       'CS1 errors: extra text: issue',
+		       'CS1 errors: extra text: pages',
+		       'CS1 errors: extra text: volume',
 		       'CS1 errors: chapter ignored',
 		       'CS1 errors: invisible characters',
 		])) $category = $try;
