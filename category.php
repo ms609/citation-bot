@@ -24,7 +24,7 @@ if ($category === '' && isset($_GET["cat"])) {
 		       'Articles with missing Cite arXiv inputs',
 		       'CS1 errors: DOI',
 		       'CS1 errors: dates',
-		       'CS1 errors: extra text: edition‎',
+		       'CS1 errors: extra text: edition',
 		       'CS1 errors: extra text: issue',
 		       'CS1 errors: extra text: pages',
 		       'CS1 errors: extra text: volume',
