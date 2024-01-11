@@ -11,8 +11,8 @@ $api = new WikipediaBot();
 $category = '';
 if (is_string(@$_POST["cat"])) $category = trim($_POST["cat"]);
 if (strtolower(substr($category, 0, 9)) === 'category:') $category = trim(substr($category, 9));
-if ($category === '' && is_string(@$_GET["cat"])) {
-   $try = trim(str_replace(['_', '%20', '%3A'], [' ', ' ', ':'], (string) @$_GET["cat"]));
+if ($category === '' && isset($_GET["cat"])) {
+   $try = trim(urldecode((string) $_GET["cat"]));
    if (in_array($try, [
 		       'CS1 maint: PMC format',
 		       'CS1 maint: date format',
