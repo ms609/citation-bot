@@ -417,7 +417,7 @@ const CAMEL_CASE = array('DeSoto', 'PubChem', 'BitTorrent', 'Al2O3', 'NiMo', 'Cu
 			 'RiceWiki', 'SciLite', 'ScispaCy', 'WormBase', 'VirFinder', 'UniProt', 'GaiaData', 'FoodOn',
 			 'GaiaHundred', 'WikiJournal', 'StarCraft', 'EuResist', 'PhageScope', 'CoVaMa', 'EuroMyositis',
 			 'DavEnd', 'CoLaus', 'MinerAlocorticoid', 'miRiad', 'kaSenzangakhona', 'BioChirality', 'DeGeer',
-			 'ReFocus:', 'FusionCatcher', 'cFos',
+			 'ReFocus:', 'FusionCatcher', 'cFos', 'ReOrienting'
 		       );
 
 const ITALICS_HARDCODE_IN  = ["The Myth ofPiers Plowman", "BioelectromagnetismPrinciples and Applications", "Practice inThe Nice Valour",
