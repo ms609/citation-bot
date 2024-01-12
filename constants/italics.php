@@ -87,6 +87,7 @@ const ITALICS_LIST =
  "Salmonella typhimurium|" .
  "Drosophila melanogaster|" .
  "Polycotylus latipinnis|" .
+ "Coprosma lucida|" .
  "Mycobacterium tuberculosis|" .
  "Ariolimax californicus|" .
  "Streptococcus pneumoniae|" .
