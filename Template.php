@@ -72,8 +72,14 @@ final class Template {
 	}
 	$this->initial_name = $this->name;
 	// Clean up outdated redirects
-	preg_match("~^(\s*).*\b(\s*)$~", $this->name, $spacing);
-	$trim_name = trim($this->name);
+	if (preg_match("~^(\s*).*\b(\s*)$~", $this->name, $spacing)) {
+	   $trim_name = trim($this->name);
+	} else { // Have gotten this in error logs - no idea how
+           $trim_name = $this->name;
+           $spacing = array();
+           $spacing[1] = '';
+           $spacing[2] = '';
+	}
 	if (strpos($trim_name, "_") !== FALSE) {
 	  $tmp_name = str_replace("_", " ", $trim_name);
 	  if (in_array(strtolower($tmp_name), array_merge(TEMPLATES_WE_PROCESS, TEMPLATES_WE_SLIGHTLY_PROCESS, TEMPLATES_WE_BARELY_PROCESS, TEMPLATES_WE_RENAME))) {
