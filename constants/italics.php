@@ -441,7 +441,8 @@ const ITALICS_HARDCODE_IN  = ["The Myth ofPiers Plowman", "BioelectromagnetismPr
 	     "the 21stCentury", " JonesSir William", "ofClinical Microbiology", "Rallying theQaum:The", " of theHaratinin Morocco",
 	     "future ofBorn in Flames", "ideology ofMakwerekwerein South Africa", "TheWhite Paperand the Making", "provocations ofThe Female Eunuch",
 	     "Moving beyondPvalues:", "from theHubble Space TelescopeKey", "Evidence ofpepSolar Neutrinos", "Notes forContra Ursum",
-	     "sThe Social Construction of Realityafter 50", "Love inShôjo Manga", "the re-reducedHipparcosintermediate "
+	     "sThe Social Construction of Realityafter 50", "Love inShôjo Manga", "the re-reducedHipparcosintermediate ",
+	     "Godly AmbitionJohn Stott", 
  ];
 const ITALICS_HARDCODE_OUT = ["The Myth of ''Piers Plowman''", "Bioelectromagnetism: Principles and Applications", "Practice in ''The Nice Valour''",
 	     "Tweeting the ''Jihad'': Social Media", " of Sectarianism: Community", " for Wonder: Nineteenth Century Travel ",
@@ -463,6 +464,7 @@ const ITALICS_HARDCODE_OUT = ["The Myth of ''Piers Plowman''", "Bioelectromagnet
 	     "the 21st Century", " Jones: Sir William", "of Clinical Microbiology", "Rallying the ''Qaum'': The", " of the ''Haratin'' in Morocco",
 	     "future of ''Born in Flames''", "ideology of ''Makwerekwere'' in South Africa", "The ''White Paper'' and the Making", "provocations of ''The Female Eunuch''",
 	     "Moving beyond ''P'' values:", "from the ''Hubble Space Telescope'' Key", "Evidence of ''pep'' Solar Neutrinos", "Notes for ''Contra Ursum''",
-	     "s ''The Social Construction of Reality'' after 50", "Love in ''Shôjo Manga''", "the re-reduced ''Hipparcos'' intermediate "
+	     "s ''The Social Construction of Reality'' after 50", "Love in ''Shôjo Manga''", "the re-reduced ''Hipparcos'' intermediate ",
+	     "Godly Ambition: John Stott", 
 	     ];
 
