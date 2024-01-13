@@ -72,9 +72,10 @@ final class Template {
 	}
 	$this->initial_name = $this->name;
 	// Clean up outdated redirects
-	if (preg_match("~^(\s*).*\b(\s*)$~", $this->name, $spacing)) {
+	if (preg_match("~^(\s*)[\s\S]*?(\s*)$~", $this->name, $spacing)) { // Use non-greedy RegEx
 	   $trim_name = trim($this->name);
-	} else { // {{!}}, and lots of other things
+	} else {
+           bot_debug_log("RegEx failure in Template name: " . $this->name);
            $trim_name = $this->name;
            $spacing = array();
            $spacing[1] = '';
