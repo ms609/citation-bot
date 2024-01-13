@@ -995,7 +995,7 @@ final class Template {
 	}
 
 	$low_value = strtolower($value);
-	if (in_array($low_value, array('null', 'n/a', 'undefined', '0 0'))) { // Hopeully name is not actually null
+	if (in_array($low_value, array('null', 'n/a', 'undefined', '0 0', '(:none)'))) { // Hopeully name is not actually null
 		return FALSE;
 	}
 
