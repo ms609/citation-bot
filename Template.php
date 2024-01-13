@@ -74,8 +74,7 @@ final class Template {
 	// Clean up outdated redirects
 	if (preg_match("~^(\s*).*\b(\s*)$~", $this->name, $spacing)) {
 	   $trim_name = trim($this->name);
-	} else { // Have gotten this in error logs - no idea how
-           bot_debug_log("RegEx failure in Template name: " . $this->name);
+	} else { // {{!}}, and lots of other things
            $trim_name = $this->name;
            $spacing = array();
            $spacing[1] = '';
