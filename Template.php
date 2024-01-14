@@ -7601,8 +7601,7 @@ final class Template {
 	   $this->set($para, $this->get($para2));
 	   $this->rename($para, $para2);
 	 } else {
-	   $this->forget($para);
-	   bot_debug_log('move_and_forget: ' . $para);
+	   $this->forget($para); // This can happen when there is less than ideal data, such as {{cite journal|jstor=3073767|pages=null|page=null|volume=n/a|issue=0|title=[No title found]|coauthors=Duh|last1=Duh|first1=Dum|first=Hello|last=By|author=Yup|author1=Nope|year=2002
 	 }
   }
 
