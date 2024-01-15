@@ -590,13 +590,11 @@ function query_crossref(string $doi) : ?object {
   set_time_limit(120);
   $doi = str_replace(DOI_URL_DECODE, DOI_URL_ENCODE, $doi);
   $url = "https://www.crossref.org/openurl/?pid=" . CROSSREFUSERNAME . "&id=doi:$doi&noredirect=TRUE";
-  $ch = curl_init_array(
+  $ch = curl_init_array(1.0,
 	    [CURLOPT_HEADER => FALSE,
 	     CURLOPT_FOLLOWLOCATION => TRUE,
 	     CURLOPT_RETURNTRANSFER => TRUE,
 	     CURLOPT_URL =>  $url,
-	     CURLOPT_TIMEOUT => BOT_HTTP_TIMEOUT,
-	     CURLOPT_CONNECTTIMEOUT => BOT_CONNECTION_TIMEOUT,
 	     CURLOPT_USERAGENT => BOT_USER_AGENT]);
   for ($i = 0; $i < 2; $i++) {
     $raw_xml = (string) @curl_exec($ch);
@@ -664,14 +662,12 @@ function expand_doi_with_dx(Template $template, string $doi) : bool {
        return $template->add_if_new($name, (string) $data, 'dx');
      };
      if (!$doi) return FALSE;
-     $ch = curl_init_array(
+     $ch = curl_init_array(1.5,  // can take a long time when nothing to be found
 	     [CURLOPT_USERAGENT => BOT_USER_AGENT,
 	      CURLOPT_URL => 'https://doi.org/' . $doi,
 	      CURLOPT_HTTPHEADER => ["Accept: application/vnd.citationstyles.csl+json"],
 	      CURLOPT_RETURNTRANSFER => TRUE,
-	      CURLOPT_FOLLOWLOCATION => TRUE,
-	      CURLOPT_CONNECTTIMEOUT => BOT_CONNECTION_TIMEOUT,
-	      CURLOPT_TIMEOUT => BOT_HTTP_TIMEOUT*1.5]); // can take a long time when nothing to be found
+	      CURLOPT_FOLLOWLOCATION => TRUE]);
      report_action("Querying dx.doi.org: doi:" . doi_link($doi));
      try {
        $data = (string) @curl_exec($ch);
@@ -807,12 +803,10 @@ function expand_by_jstor(Template $template) : bool {
   $jstor = trim($jstor);
   if (strpos($jstor, ' ') !== FALSE) return FALSE ; // Comment/template found
   if (substr($jstor, 0, 1) === 'i') return FALSE ; // We do not want i12342 kind
-  $ch = curl_init_array(
+  $ch = curl_init_array(1.0,
 	   [CURLOPT_HEADER => FALSE,
 	    CURLOPT_FOLLOWLOCATION => TRUE,
 	    CURLOPT_RETURNTRANSFER => TRUE,
-	    CURLOPT_TIMEOUT => BOT_HTTP_TIMEOUT,
-	    CURLOPT_CONNECTTIMEOUT => BOT_CONNECTION_TIMEOUT,
 	    CURLOPT_URL => 'https://www.jstor.org/citation/ris/' . $jstor,
 	    CURLOPT_USERAGENT => BOT_USER_AGENT]);
   $dat = (string) @curl_exec($ch);
@@ -1127,11 +1121,9 @@ function get_semanticscholar_license(string $s2cid) : ?bool {
 **/
 function expand_templates_from_archives(array &$templates) : void { // This is done very late as a latch ditch effort  // Pointer to save memory
   set_time_limit(120);
-  $ch = curl_init_array(
+  $ch = curl_init_array(1.0,
 	  [CURLOPT_HEADER => TRUE,
 	   CURLOPT_RETURNTRANSFER => TRUE,
-	   CURLOPT_TIMEOUT => BOT_HTTP_TIMEOUT,
-	   CURLOPT_CONNECTTIMEOUT => BOT_CONNECTION_TIMEOUT,
 	   CURLOPT_FOLLOWLOCATION => TRUE,
 	   CURLOPT_USERAGENT => BOT_USER_AGENT]);
   foreach ($templates as $template) {
@@ -1248,7 +1240,7 @@ function expand_templates_from_archives(array &$templates) : void { // This is d
 /** @param array<int|string|boolean|array<string>> $curl_opts **/
 function Bibcode_Response_Processing(array $curl_opts, string $adsabs_url) : object {
   try {
-    $ch = curl_init_array($curl_opts);
+    $ch = curl_init_array(1.0, $curl_opts);
     $return = (string) @curl_exec($ch);
     if ($return === "") {
       // @codeCoverageIgnoreStart
@@ -1399,7 +1391,7 @@ function get_entrez_xml(string $type, string $query) : ?SimpleXMLElement {
 }
 // Must use post in order to get DOIs with <, >, [, and ] in them and other problems
 function xml_post(string $url, string $post) : ?SimpleXMLElement {
-   $ch = curl_init_array(
+   $ch = curl_init_array(1.0,
 	       [CURLOPT_URL => $url,
 		CURLOPT_FOLLOWLOCATION => TRUE,
 		CURLOPT_POST => TRUE,
@@ -1408,8 +1400,6 @@ function xml_post(string $url, string $post) : ?SimpleXMLElement {
 		CURLOPT_HTTPHEADER => array(
 		     "Content-Type: application/x-www-form-urlencoded",
 		     "Accept: application/xml"),
-		CURLOPT_TIMEOUT => BOT_HTTP_TIMEOUT,
-		CURLOPT_CONNECTTIMEOUT => BOT_CONNECTION_TIMEOUT,
 		CURLOPT_USERAGENT => BOT_USER_AGENT
 	       ]);
    $output = (string) @curl_exec($ch);
@@ -1534,13 +1524,11 @@ function query_adsabs(string $options) : object {
 }
 
 function curl_init_crossref(string $url) : CurlHandle {  
-     $ch = curl_init_array(
+     $ch = curl_init_array(1.0,
 	    [CURLOPT_HEADER => FALSE,
 	     CURLOPT_FOLLOWLOCATION => TRUE,
 	     CURLOPT_RETURNTRANSFER => TRUE,
 	     CURLOPT_URL => $url,
-	     CURLOPT_TIMEOUT => BOT_HTTP_TIMEOUT,
-	     CURLOPT_CONNECTTIMEOUT => BOT_CONNECTION_TIMEOUT,
 	     CURLOPT_USERAGENT => BOT_CROSSREF_USER_AGENT]);
      return $ch;
 }

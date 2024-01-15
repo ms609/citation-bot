@@ -2634,13 +2634,12 @@ final class Template {
   public function get_unpaywall_url(string $doi) : string {
 	set_time_limit(120);
 	$url = "https://api.unpaywall.org/v2/$doi?email=" . CROSSREFUSERNAME;
-	$ch = curl_init_array([
+	$ch = curl_init_array(1.0,
+			[
 			 CURLOPT_HEADER => FALSE,
 			 CURLOPT_FOLLOWLOCATION => TRUE,
 			 CURLOPT_RETURNTRANSFER => TRUE,
 			 CURLOPT_URL => $url,
-			 CURLOPT_TIMEOUT => BOT_HTTP_TIMEOUT,
-			 CURLOPT_CONNECTTIMEOUT => BOT_CONNECTION_TIMEOUT,
 			 CURLOPT_USERAGENT => BOT_CROSSREF_USER_AGENT]);
 	$json = (string) @curl_exec($ch);
 	unset($ch);
@@ -2894,13 +2893,12 @@ final class Template {
 	  }
 	  if ($isbn) { // Try Books.Google.Com
 		$google_book_url = 'https://www.google.com/search?tbo=p&tbm=bks&q=isbn:' . $isbn;
-		$ch = curl_init_array([
+		$ch = curl_init_array(1.0,
+				      [
 					CURLOPT_USERAGENT => BOT_USER_AGENT,
 					CURLOPT_FOLLOWLOCATION => TRUE,
 					CURLOPT_HEADER => FALSE,
 					CURLOPT_RETURNTRANSFER => TRUE,
-					CURLOPT_TIMEOUT => BOT_HTTP_TIMEOUT,
-					CURLOPT_CONNECTTIMEOUT => BOT_CONNECTION_TIMEOUT,
 					CURLOPT_URL => $google_book_url]);
 		$google_content = (string) @curl_exec($ch);
 		unset($ch);
@@ -2945,13 +2943,11 @@ final class Template {
   protected function google_book_details(string $gid) : void {
 	set_time_limit(120);
 	$google_book_url = "https://books.google.com/books/feeds/volumes/" . $gid;
-	$ch = curl_init_array(
+	$ch = curl_init_array(1.0,
 			[CURLOPT_USERAGENT => BOT_USER_AGENT,
 			CURLOPT_FOLLOWLOCATION => TRUE,
 			CURLOPT_HEADER => FALSE,
 			CURLOPT_RETURNTRANSFER => TRUE,
-			CURLOPT_TIMEOUT => BOT_HTTP_TIMEOUT,
-			CURLOPT_CONNECTTIMEOUT => BOT_CONNECTION_TIMEOUT,
 			CURLOPT_URL => $google_book_url]);
 	$data = (string) @curl_exec($ch);
 	unset($ch);
@@ -4210,12 +4206,11 @@ final class Template {
 			if ($this->blank('url')) {
 			  /** @psalm-taint-escape ssrf */
 			  $test_url = 'https://plants.jstor.org/stable/' . $doi;
-			  $ch = curl_init_array([
+			  $ch = curl_init_array(1.5,
+						[
 						CURLOPT_URL => $test_url,
 						CURLOPT_RETURNTRANSFER => TRUE,
 						CURLOPT_FOLLOWLOCATION => TRUE,
-						CURLOPT_TIMEOUT => BOT_HTTP_TIMEOUT * 1.5,
-						CURLOPT_CONNECTTIMEOUT => BOT_CONNECTION_TIMEOUT,
 						CURLOPT_USERAGENT => BOT_USER_AGENT]);
 			  @curl_exec($ch);
 			  $httpCode = (int) @curl_getinfo($ch, CURLINFO_HTTP_CODE);
@@ -5686,11 +5681,9 @@ final class Template {
 				 $this->set($param, $matches[1]);
 			}
 			if (preg_match("~^https?://proquest\.umi\.com/.*$~", $this->get($param), $matches)) {
-				 $ch = curl_init_array(
+				 $ch = curl_init_array(1.5,
 						 [CURLOPT_FOLLOWLOCATION => TRUE,
 						  CURLOPT_MAXREDIRS => 20,
-						  CURLOPT_CONNECTTIMEOUT => BOT_CONNECTION_TIMEOUT,
-						  CURLOPT_TIMEOUT => BOT_HTTP_TIMEOUT * 1.5,
 						  CURLOPT_RETURNTRANSFER => TRUE,
 						  CURLOPT_USERAGENT => BOT_USER_AGENT,
 						  CURLOPT_COOKIEFILE => 'cookie.txt', // Seems to be a good idea for proquest
