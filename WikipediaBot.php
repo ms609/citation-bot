@@ -29,12 +29,8 @@ final class WikipediaBot {
     self::$ch = curl_init_array(1.0,
     [
 	CURLOPT_FAILONERROR => TRUE, // This is a little paranoid - see https://curl.se/libcurl/c/CURLOPT_FAILONERROR.html
-	CURLOPT_FOLLOWLOCATION => TRUE,
-	CURLOPT_MAXREDIRS => 5,
 	CURLOPT_HEADER => FALSE,
 	CURLOPT_RETURNTRANSFER => TRUE,
-	CURLOPT_USERAGENT => BOT_USER_AGENT,
-	CURLOPT_COOKIESESSION => TRUE,
     ]);
   }
 
@@ -122,7 +118,6 @@ final class WikipediaBot {
 
 try {
 	  curl_setopt_array(self::$ch, [
-	    CURLOPT_FOLLOWLOCATION => TRUE,
 	    CURLOPT_POST => TRUE,
 	    CURLOPT_POSTFIELDS => http_build_query($params),
 	    CURLOPT_HTTPHEADER => [$authenticationHeader],
@@ -373,7 +368,6 @@ try {
     $params['format'] = 'json';
 
 	    curl_setopt_array(self::$ch, [
-		CURLOPT_FOLLOWLOCATION => TRUE,
 		CURLOPT_POST => TRUE,
 		CURLOPT_POSTFIELDS => http_build_query($params),
 		CURLOPT_URL => API_ROOT,
@@ -413,7 +407,6 @@ try {
   static public function GetAPage(string $title) : string {
     curl_setopt_array(self::$ch,
 	      [CURLOPT_HTTPGET => TRUE,
-	       CURLOPT_FOLLOWLOCATION => TRUE,
 	       CURLOPT_HTTPHEADER => [],
 	       CURLOPT_URL => WIKI_ROOT . '?' . http_build_query(['title' => $title, 'action' =>'raw'])]);
     $text = (string) @curl_exec(self::$ch);
