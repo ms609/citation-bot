@@ -58,3 +58,8 @@ const CONTEXT_INSECURE_11 = array(
 	   'http' => ['ignore_errors' => TRUE, 'max_redirects' => 40, 'timeout' => BOT_HTTP_TIMEOUT * 1.0, 'follow_location' => 1, 'protocol_version' => 1.1,  'header'=> ['Connection: close'], "user_agent" => BOT_USER_AGENT]
 	   );
 
+function curl_init_array(array $ops) : CurlHandle {
+	$ch = curl_init();
+	curl_setopt_array($ch, $ops);
+	return $ch;
+}
