@@ -189,9 +189,8 @@ function is_doi_works(string $doi) : ?bool {
   }
   if (preg_match('~^10\.1038/nature\d{5}$~i', $doi) && $headers_test === FALSE) return FALSE; // Nature dropped the ball
   if ($headers_test === FALSE) { // Use CURL instead
-    if (strpos($doi, '10.2277/') === 0) return FALSE;
-    $ch = curl_init();
-    curl_setopt_array($ch,
+    if (strpos($doi, '10.2277/') === 0) return FALSE;		
+    $ch = curl_init_array(
 	    [CURLOPT_HEADER => TRUE,
 	     CURLOPT_RETURNTRANSFER => TRUE,
 	     CURLOPT_URL => "https://doi.org/" . doi_encode($doi),
@@ -1195,8 +1194,7 @@ function check_doi_for_jstor(string $doi, Template $template) : void {
   if (strpos($doi, '10.2307') === 0) { // special case
     $doi = substr($doi, 8);
   }
-  $ch = curl_init();
-  curl_setopt_array($ch,
+  $ch = curl_init_array(
 	  [CURLOPT_RETURNTRANSFER => TRUE,
 	   CURLOPT_FOLLOWLOCATION => TRUE,
 	   CURLOPT_TIMEOUT => BOT_HTTP_TIMEOUT,
