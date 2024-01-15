@@ -64,8 +64,9 @@ function curl_init_array(float $time, array $ops) : CurlHandle {
 	// 1 - Global Defaults
 	curl_setopt_array($ch, [
 		CURLOPT_FOLLOWLOCATION => TRUE,
-		CURLOPT_MAXREDIRS => 20,
+		CURLOPT_MAXREDIRS => 20,  // No infinite loops for us, 20 for Elsevier and Springer websites
 		CURLOPT_USERAGENT => BOT_USER_AGENT,
+		CURLOPT_AUTOREFERER => TRUE,
 		CURLOPT_COOKIESESSION => TRUE,
 	]);
 	// 2 - Default Time by ratio
