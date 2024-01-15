@@ -59,8 +59,11 @@ const CONTEXT_INSECURE_11 = array(
 	   );
 
 /** @param array<mixed> $ops **/
-function curl_init_array(array $ops) : CurlHandle {
+function curl_init_array(float $time, array $ops) : CurlHandle {
 	$ch = curl_init();
 	curl_setopt_array($ch, $ops);
+	curl_setopt_array(
+	  [CURLOPT_TIMEOUT => BOT_HTTP_TIMEOUT * $time,
+	   CURLOPT_CONNECTTIMEOUT => BOT_CONNECTION_TIMEOUT * $time]);
 	return $ch;
 }
