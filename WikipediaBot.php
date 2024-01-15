@@ -26,14 +26,13 @@ final class WikipediaBot {
   public static function make_ch() : void {
     if (self::$init_done) return;
     self::$init_done = TRUE;
-    self::$ch = curl_init_array([
+    self::$ch = curl_init_array(1.0,
+    [
 	CURLOPT_FAILONERROR => TRUE, // This is a little paranoid - see https://curl.se/libcurl/c/CURLOPT_FAILONERROR.html
 	CURLOPT_FOLLOWLOCATION => TRUE,
 	CURLOPT_MAXREDIRS => 5,
 	CURLOPT_HEADER => FALSE,
 	CURLOPT_RETURNTRANSFER => TRUE,
-	CURLOPT_CONNECTTIMEOUT => BOT_CONNECTION_TIMEOUT,
-	CURLOPT_TIMEOUT => BOT_HTTP_TIMEOUT,
 	CURLOPT_USERAGENT => BOT_USER_AGENT,
 	CURLOPT_COOKIESESSION => TRUE,
     ]);
