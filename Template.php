@@ -2637,7 +2637,6 @@ final class Template {
 	$ch = curl_init_array(1.0,
 			[
 			 CURLOPT_HEADER => FALSE,
-			 CURLOPT_FOLLOWLOCATION => TRUE,
 			 CURLOPT_RETURNTRANSFER => TRUE,
 			 CURLOPT_URL => $url,
 			 CURLOPT_USERAGENT => BOT_CROSSREF_USER_AGENT]);
@@ -2895,8 +2894,6 @@ final class Template {
 		$google_book_url = 'https://www.google.com/search?tbo=p&tbm=bks&q=isbn:' . $isbn;
 		$ch = curl_init_array(1.0,
 				      [
-					CURLOPT_USERAGENT => BOT_USER_AGENT,
-					CURLOPT_FOLLOWLOCATION => TRUE,
 					CURLOPT_HEADER => FALSE,
 					CURLOPT_RETURNTRANSFER => TRUE,
 					CURLOPT_URL => $google_book_url]);
@@ -2944,8 +2941,7 @@ final class Template {
 	set_time_limit(120);
 	$google_book_url = "https://books.google.com/books/feeds/volumes/" . $gid;
 	$ch = curl_init_array(1.0,
-			[CURLOPT_USERAGENT => BOT_USER_AGENT,
-			CURLOPT_FOLLOWLOCATION => TRUE,
+			[
 			CURLOPT_HEADER => FALSE,
 			CURLOPT_RETURNTRANSFER => TRUE,
 			CURLOPT_URL => $google_book_url]);
@@ -4209,9 +4205,7 @@ final class Template {
 			  $ch = curl_init_array(1.5,
 						[
 						CURLOPT_URL => $test_url,
-						CURLOPT_RETURNTRANSFER => TRUE,
-						CURLOPT_FOLLOWLOCATION => TRUE,
-						CURLOPT_USERAGENT => BOT_USER_AGENT]);
+						CURLOPT_RETURNTRANSFER => TRUE]);
 			  @curl_exec($ch);
 			  $httpCode = (int) @curl_getinfo($ch, CURLINFO_HTTP_CODE);
 			  unset($ch);
@@ -5682,11 +5676,8 @@ final class Template {
 			}
 			if (preg_match("~^https?://proquest\.umi\.com/.*$~", $this->get($param), $matches)) {
 				 $ch = curl_init_array(1.5,
-						 [CURLOPT_FOLLOWLOCATION => TRUE,
-						  CURLOPT_MAXREDIRS => 20,
+						 [
 						  CURLOPT_RETURNTRANSFER => TRUE,
-						  CURLOPT_USERAGENT => BOT_USER_AGENT,
-						  CURLOPT_COOKIEFILE => 'cookie.txt', // Seems to be a good idea for proquest
 						  CURLOPT_URL => $matches[0]]);
 				 if (@curl_exec($ch)) {
 					$redirectedUrl = (string) @curl_getinfo($ch, CURLINFO_EFFECTIVE_URL);  // Final URL
