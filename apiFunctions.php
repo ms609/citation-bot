@@ -592,10 +592,8 @@ function query_crossref(string $doi) : ?object {
   $url = "https://www.crossref.org/openurl/?pid=" . CROSSREFUSERNAME . "&id=doi:$doi&noredirect=TRUE";
   $ch = curl_init_array(1.0,
 	    [CURLOPT_HEADER => FALSE,
-	     CURLOPT_FOLLOWLOCATION => TRUE,
 	     CURLOPT_RETURNTRANSFER => TRUE,
-	     CURLOPT_URL =>  $url,
-	     CURLOPT_USERAGENT => BOT_USER_AGENT]);
+	     CURLOPT_URL =>  $url]);
   for ($i = 0; $i < 2; $i++) {
     $raw_xml = (string) @curl_exec($ch);
     if (!$raw_xml) {
@@ -663,11 +661,9 @@ function expand_doi_with_dx(Template $template, string $doi) : bool {
      };
      if (!$doi) return FALSE;
      $ch = curl_init_array(1.5,  // can take a long time when nothing to be found
-	     [CURLOPT_USERAGENT => BOT_USER_AGENT,
-	      CURLOPT_URL => 'https://doi.org/' . $doi,
+	     [CURLOPT_URL => 'https://doi.org/' . $doi,
 	      CURLOPT_HTTPHEADER => ["Accept: application/vnd.citationstyles.csl+json"],
-	      CURLOPT_RETURNTRANSFER => TRUE,
-	      CURLOPT_FOLLOWLOCATION => TRUE]);
+	      CURLOPT_RETURNTRANSFER => TRUE]);
      report_action("Querying dx.doi.org: doi:" . doi_link($doi));
      try {
        $data = (string) @curl_exec($ch);
@@ -805,10 +801,8 @@ function expand_by_jstor(Template $template) : bool {
   if (substr($jstor, 0, 1) === 'i') return FALSE ; // We do not want i12342 kind
   $ch = curl_init_array(1.0,
 	   [CURLOPT_HEADER => FALSE,
-	    CURLOPT_FOLLOWLOCATION => TRUE,
 	    CURLOPT_RETURNTRANSFER => TRUE,
-	    CURLOPT_URL => 'https://www.jstor.org/citation/ris/' . $jstor,
-	    CURLOPT_USERAGENT => BOT_USER_AGENT]);
+	    CURLOPT_URL => 'https://www.jstor.org/citation/ris/' . $jstor ]);
   $dat = (string) @curl_exec($ch);
   unset($ch);
   if ($dat === '') {
@@ -1123,9 +1117,7 @@ function expand_templates_from_archives(array &$templates) : void { // This is d
   set_time_limit(120);
   $ch = curl_init_array(1.0,
 	  [CURLOPT_HEADER => TRUE,
-	   CURLOPT_RETURNTRANSFER => TRUE,
-	   CURLOPT_FOLLOWLOCATION => TRUE,
-	   CURLOPT_USERAGENT => BOT_USER_AGENT]);
+	   CURLOPT_RETURNTRANSFER => TRUE]);
   foreach ($templates as $template) {
     set_time_limit(120);
     if ($template->has('script-title') && (strtolower($template->get('title')) === 'usurped title' || strtolower($template->get('title')) === 'archived copy' || strtolower($template->get('title')) === 'archive copy')) {
@@ -1393,14 +1385,12 @@ function get_entrez_xml(string $type, string $query) : ?SimpleXMLElement {
 function xml_post(string $url, string $post) : ?SimpleXMLElement {
    $ch = curl_init_array(1.0,
 	       [CURLOPT_URL => $url,
-		CURLOPT_FOLLOWLOCATION => TRUE,
 		CURLOPT_POST => TRUE,
 		CURLOPT_POSTFIELDS => $post,
 		CURLOPT_RETURNTRANSFER => TRUE,
 		CURLOPT_HTTPHEADER => array(
 		     "Content-Type: application/x-www-form-urlencoded",
-		     "Accept: application/xml"),
-		CURLOPT_USERAGENT => BOT_USER_AGENT
+		     "Accept: application/xml")
 	       ]);
    $output = (string) @curl_exec($ch);
    $xml = @simplexml_load_string($output);
@@ -1526,7 +1516,6 @@ function query_adsabs(string $options) : object {
 function curl_init_crossref(string $url) : CurlHandle {  
      $ch = curl_init_array(1.0,
 	    [CURLOPT_HEADER => FALSE,
-	     CURLOPT_FOLLOWLOCATION => TRUE,
 	     CURLOPT_RETURNTRANSFER => TRUE,
 	     CURLOPT_URL => $url,
 	     CURLOPT_USERAGENT => BOT_CROSSREF_USER_AGENT]);
