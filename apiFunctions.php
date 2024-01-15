@@ -355,10 +355,6 @@ function adsabs_api(array $ids, array &$templates, string $identifier) : bool { 
 
   report_action("Expanding from BibCodes via AdsAbs API");
   $curl_opts=[CURLOPT_URL => $adsabs_url,
-	      CURLOPT_FOLLOWLOCATION => TRUE,
-	      CURLOPT_TIMEOUT => BOT_HTTP_TIMEOUT,
-	      CURLOPT_CONNECTTIMEOUT => BOT_CONNECTION_TIMEOUT,
-	      CURLOPT_USERAGENT => BOT_USER_AGENT,
 	      CURLOPT_HTTPHEADER => ['Content-Type: big-query/csv', 'Authorization: Bearer ' . PHP_ADSABSAPIKEY],
 	      CURLOPT_RETURNTRANSFER => TRUE,
 	      CURLOPT_HEADER => TRUE,
@@ -1502,12 +1498,8 @@ function query_adsabs(string $options) : object {
 		  . "?q=$options&fl=arxiv_class,author,bibcode,doi,doctype,identifier,"
 		  . "issue,page,pub,pubdate,title,volume,year";
     $curl_opts=[CURLOPT_HTTPHEADER => ['Authorization: Bearer ' . PHP_ADSABSAPIKEY],
-		CURLOPT_FOLLOWLOCATION => TRUE,
 		CURLOPT_RETURNTRANSFER => TRUE,
 		CURLOPT_HEADER => TRUE,
-		CURLOPT_TIMEOUT => BOT_HTTP_TIMEOUT,
-		CURLOPT_CONNECTTIMEOUT => BOT_CONNECTION_TIMEOUT,
-		CURLOPT_USERAGENT => BOT_USER_AGENT,
 		CURLOPT_URL => $adsabs_url];
     $response = Bibcode_Response_Processing($curl_opts, $adsabs_url);
     return $response;
