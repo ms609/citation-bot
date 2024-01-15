@@ -590,8 +590,7 @@ function query_crossref(string $doi) : ?object {
   set_time_limit(120);
   $doi = str_replace(DOI_URL_DECODE, DOI_URL_ENCODE, $doi);
   $url = "https://www.crossref.org/openurl/?pid=" . CROSSREFUSERNAME . "&id=doi:$doi&noredirect=TRUE";
-  $ch = curl_init();
-  curl_setopt_array($ch,
+  $ch = curl_init_array(
 	    [CURLOPT_HEADER => FALSE,
 	     CURLOPT_FOLLOWLOCATION => TRUE,
 	     CURLOPT_RETURNTRANSFER => TRUE,
@@ -665,8 +664,7 @@ function expand_doi_with_dx(Template $template, string $doi) : bool {
        return $template->add_if_new($name, (string) $data, 'dx');
      };
      if (!$doi) return FALSE;
-     $ch = curl_init();
-     curl_setopt_array($ch,
+     $ch = curl_init_array(
 	     [CURLOPT_USERAGENT => BOT_USER_AGENT,
 	      CURLOPT_URL => 'https://doi.org/' . $doi,
 	      CURLOPT_HTTPHEADER => ["Accept: application/vnd.citationstyles.csl+json"],
@@ -809,8 +807,7 @@ function expand_by_jstor(Template $template) : bool {
   $jstor = trim($jstor);
   if (strpos($jstor, ' ') !== FALSE) return FALSE ; // Comment/template found
   if (substr($jstor, 0, 1) === 'i') return FALSE ; // We do not want i12342 kind
-  $ch = curl_init();
-  curl_setopt_array($ch,
+  $ch = curl_init_array(
 	   [CURLOPT_HEADER => FALSE,
 	    CURLOPT_FOLLOWLOCATION => TRUE,
 	    CURLOPT_RETURNTRANSFER => TRUE,
@@ -1130,8 +1127,7 @@ function get_semanticscholar_license(string $s2cid) : ?bool {
 **/
 function expand_templates_from_archives(array &$templates) : void { // This is done very late as a latch ditch effort  // Pointer to save memory
   set_time_limit(120);
-  $ch = curl_init();
-  curl_setopt_array($ch,
+  $ch = curl_init_array(
 	  [CURLOPT_HEADER => TRUE,
 	   CURLOPT_RETURNTRANSFER => TRUE,
 	   CURLOPT_TIMEOUT => BOT_HTTP_TIMEOUT,
@@ -1252,8 +1248,7 @@ function expand_templates_from_archives(array &$templates) : void { // This is d
 /** @param array<int|string|boolean|array<string>> $curl_opts **/
 function Bibcode_Response_Processing(array $curl_opts, string $adsabs_url) : object {
   try {
-    $ch = curl_init();
-    curl_setopt_array($ch, $curl_opts);
+    $ch = curl_init_array($curl_opts);
     $return = (string) @curl_exec($ch);
     if ($return === "") {
       // @codeCoverageIgnoreStart
@@ -1404,8 +1399,7 @@ function get_entrez_xml(string $type, string $query) : ?SimpleXMLElement {
 }
 // Must use post in order to get DOIs with <, >, [, and ] in them and other problems
 function xml_post(string $url, string $post) : ?SimpleXMLElement {
-   $ch = curl_init();
-      curl_setopt_array($ch,
+   $ch = curl_init_array(
 	       [CURLOPT_URL => $url,
 		CURLOPT_FOLLOWLOCATION => TRUE,
 		CURLOPT_POST => TRUE,
@@ -1539,10 +1533,8 @@ function query_adsabs(string $options) : object {
     return $response;
 }
 
-function curl_init_crossref(string $url) : CurlHandle {
-     $ch = curl_init();
-     // see https://api.crossref.org/swagger-ui/index.html
-     curl_setopt_array($ch,
+function curl_init_crossref(string $url) : CurlHandle {  
+     $ch = curl_init_array(
 	    [CURLOPT_HEADER => FALSE,
 	     CURLOPT_FOLLOWLOCATION => TRUE,
 	     CURLOPT_RETURNTRANSFER => TRUE,
