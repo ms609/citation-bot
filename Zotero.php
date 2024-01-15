@@ -28,7 +28,12 @@ public static function create_ch_zotero() : void {
   if (self::$is_setup) return;
   self::$is_setup = TRUE;
   /** @psalm-suppress PossiblyNullArgument */
-  self::$zotero_ch = curl_init_array(2.5, // Defaults used in TRAVIS overridden below when deployed
+  if (TRAVIS) {
+	  $time = 3.0;
+  } else {
+	  $time = 1.0;
+  }
+  self::$zotero_ch = curl_init_array($time,
 	 [CURLOPT_URL => CITOID_ZOTERO,
 	  CURLOPT_FOLLOWLOCATION => TRUE,
 	  CURLOPT_HTTPHEADER => ['accept: application/json; charset=utf-8'],
@@ -36,7 +41,7 @@ public static function create_ch_zotero() : void {
 	  CURLOPT_USERAGENT => BOT_USER_AGENT,
 	  CURLOPT_COOKIESESSION => TRUE]);
 
-  self::$ch_ieee = curl_init_array(1.0,
+  self::$ch_ieee = curl_init_array($time,
 	 [CURLOPT_RETURNTRANSFER => TRUE,
 	  CURLOPT_FOLLOWLOCATION => TRUE,
 	  CURLOPT_HEADER => FALSE,
@@ -44,13 +49,13 @@ public static function create_ch_zotero() : void {
 	  CURLOPT_COOKIESESSION => TRUE,
 	  CURLOPT_USERAGENT => 'curl/7.55.1']); // IEEE now requires JavaScript, unless you specify curl
 
-  self::$ch_jstor = curl_init_array(1.0,
+  self::$ch_jstor = curl_init_array($time,
        [CURLOPT_RETURNTRANSFER => TRUE,
 	CURLOPT_FOLLOWLOCATION => TRUE,
 	CURLOPT_COOKIESESSION => TRUE,
 	CURLOPT_USERAGENT => BOT_USER_AGENT]);
 
-  self::$ch_dx = curl_init_array(1.0,
+  self::$ch_dx = curl_init_array($time,
 	[CURLOPT_FOLLOWLOCATION => TRUE,
 	 CURLOPT_MAXREDIRS => 20, // No infinite loops for us, 20 for Elsevier and Springer websites
 	 CURLOPT_RETURNTRANSFER => TRUE,
@@ -58,13 +63,13 @@ public static function create_ch_zotero() : void {
 	 CURLOPT_COOKIESESSION => TRUE,
 	 CURLOPT_USERAGENT => BOT_USER_AGENT]);
 
-  self::$ch_pmc = curl_init_array(1.0,
+  self::$ch_pmc = curl_init_array($time,
 	[CURLOPT_RETURNTRANSFER => TRUE,
 	 CURLOPT_FOLLOWLOCATION => TRUE,
 	 CURLOPT_COOKIESESSION => TRUE,
 	 CURLOPT_USERAGENT => BOT_USER_AGENT]);
 
-  self::$ch_doi = curl_init_array(1.0,
+  self::$ch_doi = curl_init_array($time,
 	[CURLOPT_FOLLOWLOCATION => TRUE,
 	 CURLOPT_MAXREDIRS => 20, // No infinite loops for us, 20 for Elsevier and Springer websites
 	 CURLOPT_RETURNTRANSFER => TRUE,
@@ -87,33 +92,11 @@ public static function unblock_zotero() : void {
 public static function query_url_api_class(array &$templates) : void { // Pointer to save memory
   if (!SLOW_MODE) return; // Zotero takes time
 
-  curl_setopt(self::$zotero_ch, CURLOPT_TIMEOUT, BOT_HTTP_TIMEOUT*2.5); // Reset default
-  if (!TRAVIS) { // try harder in tests
-    // @codeCoverageIgnoreStart
-    curl_setopt(self::$zotero_ch, CURLOPT_CONNECTTIMEOUT, BOT_CONNECTION_TIMEOUT);
-    $url_count = 0;
-    foreach ($templates as $template) {
-     if (!$template->blank(['url', 'chapter-url', 'chapterurl'])) {
-       $url_count = $url_count + 1;
-     }
-    }
-    if ($url_count < 5) {
-      curl_setopt(self::$zotero_ch, CURLOPT_TIMEOUT, BOT_HTTP_TIMEOUT * 1.0);
-    } elseif ($url_count < 25) {
-      curl_setopt(self::$zotero_ch, CURLOPT_TIMEOUT, BOT_HTTP_TIMEOUT * 0.5);
-    } else {
-      curl_setopt(self::$zotero_ch, CURLOPT_TIMEOUT, BOT_HTTP_TIMEOUT * 0.25);
-    }
-    // @codeCoverageIgnoreEnd
-  }
   self::$zotero_announced = 1;
   foreach ($templates as $template) {
      self::expand_by_zotero($template);
   }
   self::$zotero_announced = 2;
-  if (!TRAVIS) { // These are pretty reliable, unlike random urls
-      curl_setopt(self::$zotero_ch, CURLOPT_TIMEOUT, BOT_HTTP_TIMEOUT * 0.5);  // @codeCoverageIgnore
-  }
   foreach ($templates as $template) {
        if ($template->has('biorxiv')) {
 	 if ($template->blank('doi')) {
