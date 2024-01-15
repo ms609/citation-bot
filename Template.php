@@ -2634,9 +2634,8 @@ final class Template {
   public function get_unpaywall_url(string $doi) : string {
 	set_time_limit(120);
 	$url = "https://api.unpaywall.org/v2/$doi?email=" . CROSSREFUSERNAME;
-	$ch = curl_init();
-	curl_setopt_array($ch,
-			[CURLOPT_HEADER => FALSE,
+	$ch = curl_init_array([
+			 CURLOPT_HEADER => FALSE,
 			 CURLOPT_FOLLOWLOCATION => TRUE,
 			 CURLOPT_RETURNTRANSFER => TRUE,
 			 CURLOPT_URL => $url,
@@ -2895,9 +2894,8 @@ final class Template {
 	  }
 	  if ($isbn) { // Try Books.Google.Com
 		$google_book_url = 'https://www.google.com/search?tbo=p&tbm=bks&q=isbn:' . $isbn;
-		$ch = curl_init();
-		curl_setopt_array($ch,
-				   [CURLOPT_USERAGENT => BOT_USER_AGENT,
+		$ch = curl_init_array([
+					CURLOPT_USERAGENT => BOT_USER_AGENT,
 					CURLOPT_FOLLOWLOCATION => TRUE,
 					CURLOPT_HEADER => FALSE,
 					CURLOPT_RETURNTRANSFER => TRUE,
@@ -2947,9 +2945,8 @@ final class Template {
   protected function google_book_details(string $gid) : void {
 	set_time_limit(120);
 	$google_book_url = "https://books.google.com/books/feeds/volumes/" . $gid;
-	$ch = curl_init();
-	curl_setopt_array($ch,
-		   [CURLOPT_USERAGENT => BOT_USER_AGENT,
+	$ch = curl_init_array(
+			[CURLOPT_USERAGENT => BOT_USER_AGENT,
 			CURLOPT_FOLLOWLOCATION => TRUE,
 			CURLOPT_HEADER => FALSE,
 			CURLOPT_RETURNTRANSFER => TRUE,
@@ -4213,9 +4210,9 @@ final class Template {
 			if ($this->blank('url')) {
 			  /** @psalm-taint-escape ssrf */
 			  $test_url = 'https://plants.jstor.org/stable/' . $doi;
-			  $ch = curl_init($test_url);
-			  curl_setopt_array($ch,
-					   [CURLOPT_RETURNTRANSFER => TRUE,
+			  $ch = curl_init_array([
+						CURLOPT_URL => $test_url,
+						CURLOPT_RETURNTRANSFER => TRUE,
 						CURLOPT_FOLLOWLOCATION => TRUE,
 						CURLOPT_TIMEOUT => BOT_HTTP_TIMEOUT * 1.5,
 						CURLOPT_CONNECTTIMEOUT => BOT_CONNECTION_TIMEOUT,
@@ -5689,8 +5686,7 @@ final class Template {
 				 $this->set($param, $matches[1]);
 			}
 			if (preg_match("~^https?://proquest\.umi\.com/.*$~", $this->get($param), $matches)) {
-				 $ch = curl_init();
-				 curl_setopt_array($ch,
+				 $ch = curl_init_array(
 						 [CURLOPT_FOLLOWLOCATION => TRUE,
 						  CURLOPT_MAXREDIRS => 20,
 						  CURLOPT_CONNECTTIMEOUT => BOT_CONNECTION_TIMEOUT,
