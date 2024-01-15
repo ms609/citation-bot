@@ -67,6 +67,7 @@ function curl_init_array(float $time, array $ops) : CurlHandle {
 		CURLOPT_MAXREDIRS => 20,
 		CURLOPT_USERAGENT => BOT_USER_AGENT,
 		CURLOPT_COOKIESESSION => TRUE,
+		CURLOPT_COOKIEFILE => 'cookie.txt', // Seems to be a good idea for proquest
 	]);
 	// 2 - Default Time by ratio
 	curl_setopt_array($ch, [CURLOPT_TIMEOUT => BOT_HTTP_TIMEOUT * $time, CURLOPT_CONNECTTIMEOUT => BOT_CONNECTION_TIMEOUT * $time]);
