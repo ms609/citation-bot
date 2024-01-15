@@ -7,5 +7,3 @@ tmp/*
 env.php
 core
 coverage.xml
-ZoteroWorked
-ZoteroFailed
