@@ -26,8 +26,7 @@ final class WikipediaBot {
   public static function make_ch() : void {
     if (self::$init_done) return;
     self::$init_done = TRUE;
-    self::$ch = curl_init();
-	curl_setopt_array(self::$ch, [
+    self::$ch = curl_init_array([
 	CURLOPT_FAILONERROR => TRUE, // This is a little paranoid - see https://curl.se/libcurl/c/CURLOPT_FAILONERROR.html
 	CURLOPT_FOLLOWLOCATION => TRUE,
 	CURLOPT_MAXREDIRS => 5,
