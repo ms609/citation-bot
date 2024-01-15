@@ -64,8 +64,9 @@ function curl_init_array(float $time, array $ops) : CurlHandle {
 	// 1 - Global Defaults
 	curl_setopt_array($ch, [
 		CURLOPT_FOLLOWLOCATION => TRUE,
-		CURLOPT_MAXREDIRS => 20
+		CURLOPT_MAXREDIRS => 20,
 		CURLOPT_USERAGENT => BOT_USER_AGENT,
+		CURLOPT_COOKIESESSION => TRUE,
 	]);
 	// 2 - Default Time by ratio
 	curl_setopt_array($ch, [CURLOPT_TIMEOUT => BOT_HTTP_TIMEOUT * $time, CURLOPT_CONNECTTIMEOUT => BOT_CONNECTION_TIMEOUT * $time]);
