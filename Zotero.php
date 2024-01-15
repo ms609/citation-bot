@@ -27,9 +27,8 @@ final class Zotero {
 public static function create_ch_zotero() : void {
   if (self::$is_setup) return;
   self::$is_setup = TRUE;
-  self::$zotero_ch = curl_init();
   /** @psalm-suppress PossiblyNullArgument */
-  curl_setopt_array(self::$zotero_ch,
+  self::$zotero_ch = curl_init_array(
 	 [CURLOPT_URL => CITOID_ZOTERO,
 	  CURLOPT_FOLLOWLOCATION => TRUE,
 	  CURLOPT_HTTPHEADER => ['accept: application/json; charset=utf-8'],
@@ -40,8 +39,7 @@ public static function create_ch_zotero() : void {
 	  CURLOPT_CONNECTTIMEOUT => BOT_CONNECTION_TIMEOUT,
 	  CURLOPT_TIMEOUT => BOT_HTTP_TIMEOUT * 2.5]);
 
-  self::$ch_ieee = curl_init();
-  curl_setopt_array(self::$ch_ieee,
+  self::$ch_ieee = curl_init_array(
 	 [CURLOPT_RETURNTRANSFER => TRUE,
 	  CURLOPT_FOLLOWLOCATION => TRUE,
 	  CURLOPT_HEADER => FALSE,
@@ -51,8 +49,7 @@ public static function create_ch_zotero() : void {
 	  CURLOPT_COOKIESESSION => TRUE,
 	  CURLOPT_USERAGENT => 'curl/7.55.1']); // IEEE now requires JavaScript, unless you specify curl
 
-  self::$ch_jstor = curl_init();
-  curl_setopt_array(self::$ch_jstor,
+  self::$ch_jstor = curl_init_array(
        [CURLOPT_RETURNTRANSFER => TRUE,
 	CURLOPT_FOLLOWLOCATION => TRUE,
 	CURLOPT_TIMEOUT => BOT_HTTP_TIMEOUT,
@@ -60,8 +57,7 @@ public static function create_ch_zotero() : void {
 	CURLOPT_COOKIESESSION => TRUE,
 	CURLOPT_USERAGENT => BOT_USER_AGENT]);
 
-  self::$ch_dx = curl_init();
-  curl_setopt_array(self::$ch_dx,
+  self::$ch_dx = curl_init_array(
 	[CURLOPT_FOLLOWLOCATION => TRUE,
 	 CURLOPT_MAXREDIRS => 20, // No infinite loops for us, 20 for Elsevier and Springer websites
 	 CURLOPT_CONNECTTIMEOUT => BOT_CONNECTION_TIMEOUT,
@@ -71,8 +67,7 @@ public static function create_ch_zotero() : void {
 	 CURLOPT_COOKIESESSION => TRUE,
 	 CURLOPT_USERAGENT => BOT_USER_AGENT]);
 
-  self::$ch_pmc = curl_init();
-  curl_setopt_array(self::$ch_pmc,
+  self::$ch_pmc = curl_init_array(
 	[CURLOPT_RETURNTRANSFER => TRUE,
 	 CURLOPT_FOLLOWLOCATION => TRUE,
 	 CURLOPT_TIMEOUT => BOT_HTTP_TIMEOUT,
@@ -80,8 +75,7 @@ public static function create_ch_zotero() : void {
 	 CURLOPT_COOKIESESSION => TRUE,
 	 CURLOPT_USERAGENT => BOT_USER_AGENT]);
 
-  self::$ch_doi = curl_init();
-  curl_setopt_array(self::$ch_doi,
+  self::$ch_doi = curl_init_array(
 	[CURLOPT_FOLLOWLOCATION => TRUE,
 	 CURLOPT_MAXREDIRS => 20, // No infinite loops for us, 20 for Elsevier and Springer websites
 	 CURLOPT_CONNECTTIMEOUT =>  BOT_CONNECTION_TIMEOUT,
