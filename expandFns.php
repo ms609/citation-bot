@@ -102,19 +102,26 @@ function doi_works(string $doi) : ?bool {
 function is_doi_active(string $doi) : ?bool {
   $doi = trim($doi);
   $url = "https://api.crossref.org/v1/works/" . doi_encode($doi) . "?mailto=".CROSSREFUSERNAME; // do not encode crossref email
-  $context = stream_context_create(CONTEXT_CROSSREF);
-  $headers_test = @get_headers($url, TRUE, $context);
+  $ch = curl_init_array(1.0,[
+		CURLOPT_HEADER => TRUE,
+		CURLOPT_NOBODY => TRUE,
+		CURLOPT_SSL_VERIFYHOST => 0,
+		CURLOPT_SSL_VERIFYPEER => FALSE,
+		CURLOPT_SSL_VERIFYSTATUS => FALSE,
+		CURLOPT_USERAGENT => BOT_CROSSREF_USER_AGENT,
+		CURLOPT_URL => $url
+		]);				 
+  $headers_test = @curl_exec($ch);
   if ($headers_test === FALSE) {
     sleep(2);                                           // @codeCoverageIgnore
     report_inline(' .');                                // @codeCoverageIgnore
-    $headers_test = @get_headers($url, TRUE, $context); // @codeCoverageIgnore
+    $headers_test = @curl_exec($ch); // @codeCoverageIgnore
   }
   if ($headers_test === FALSE) return NULL; // most likely bad, but will recheck again an again
-  /** @psalm-suppress InvalidArrayOffset */
-  $response = (string) $headers_test['0'];
-  if (stripos($response, '200 OK'       ) !== FALSE || stripos($response, 'HTTP/1.1 200') !== FALSE) return TRUE;
-  if (stripos($response, '404 Not Found') !== FALSE || stripos($response, 'HTTP/1.1 404') !== FALSE) return FALSE;
-  report_warning("CrossRef server error loading headers for DOI " . echoable($doi . " : " . $response));  // @codeCoverageIgnore
+  $response_code = curl_getinfo($ch, CURLINFO_RESPONSE_CODE);
+  if ($response_code === 200) return TRUE;
+  if ($response_code === 404) return FALSE;
+  report_warning("CrossRef server error loading headers for DOI " . echoable($doi . " : " . (string) $response_code));  // @codeCoverageIgnore
   return NULL;                                                                                            // @codeCoverageIgnore
 }
 
