@@ -214,10 +214,7 @@ final class constantsTest extends testBaseClass {
       $our_whitelist_sorted = $our_whitelist;
       sort($our_whitelist_sorted);
 
-      $context = stream_context_create(array(
-	'http' => array('ignore_errors' => TRUE),
-      ));
-      $wikipedia_response = @file_get_contents(WIKI_ROOT . '?title=Module:Citation/CS1/Whitelist&action=raw', FALSE, $context);
+      $wikipedia_response = WikipediaBot::GetAPage('Module:Citation/CS1/Whitelist');
       preg_match_all("~\s\[\'([a-zA-Z0-9\#\-\_ ]+?)\'\] = ~" , $wikipedia_response, $matches);
       $their_whitelist = $matches[1];
       $patent_whitelist = array('inventor', 'inventor#', 'inventor-surname', 'inventor#-surname', 'inventor-last',
@@ -596,10 +593,7 @@ final class constantsTest extends testBaseClass {
   }
 
   public function testForISBNListUpdates() : void { // https://en.wikipedia.org/w/index.php?title=Module:Format_ISBN/data&action=history
-      $context = stream_context_create(array(
-	'http' => array('ignore_errors' => TRUE),
-      ));
-      $wikipedia_response = (string) @file_get_contents('https://en.wikipedia.org/w/?title=Module:Format_ISBN/data&action=raw', FALSE, $context);
+      $wikipedia_response = WikipediaBot::GetAPage('Module:Format_ISBN/data');
       $this->assertSame(1, substr_count($wikipedia_response, 'RangeMessage timestamp:'));
       $this->assertSame(1, substr_count($wikipedia_response, 'RangeMessage timestamp: 2024-01-01T04:24:03 GMT'));
   }
