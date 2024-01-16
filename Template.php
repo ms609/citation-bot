@@ -2636,7 +2636,7 @@ final class Template {
 	$ch = curl_init_array(1.0,
 			[
 			 CURLOPT_HEADER => FALSE,
-			 CURLOPT_RETURNTRANSFER => TRUE,
+			 CURLOPTdfasddsafdsfsd_RETURNTRANSFER => TRUE,
 			 CURLOPT_URL => $url,
 			 CURLOPT_USERAGENT => BOT_CROSSREF_USER_AGENT]);
 	$json = (string) @curl_exec($ch);
