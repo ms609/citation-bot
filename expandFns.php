@@ -1432,7 +1432,7 @@ function is_hdl_works(string $hdl) {
   if (empty($headers_test['Location']) && empty($headers_test['location'])) return FALSE; // leads nowhere
   if (is_array($headers_test['Location']) && isset($headers_test['Location'][0])) {
       $the_header_loc = (string) $headers_test['Location'][0]; // @codeCoverageIgnore
-  } elseif (is_array(@$headers_test['location'] && isset($headers_test['location'][0)) {
+  } elseif (is_array(@$headers_test['location'] && isset($headers_test['location'][0])) {
       $the_header_loc = (string) $headers_test['location'][0]; // @codeCoverageIgnore
   } else {
       $the_header_loc = (string) @$headers_test['Location'] . (string) @$headers_test['location'];
