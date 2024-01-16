@@ -5,14 +5,11 @@ require_once 'constants.php';     // @codeCoverageIgnore
 require_once 'Template.php';      // @codeCoverageIgnore
 require_once 'big_jobs.php';      // @codeCoverageIgnore
 
-// Allow cheap journals to work
-const CONTEXT_INSECURE = array(
+function bot_get_headers(string $url, int $time) : mixed {
+  $context = stream_context_create(array(  // Allow cheap journals to work
 	   'ssl' => ['verify_peer' => FALSE, 'verify_peer_name' => FALSE, 'allow_self_signed' => TRUE, 'security_level' => 0, 'verify_depth' => 0],
 	   'http' => ['ignore_errors' => TRUE, 'max_redirects' => 40, 'timeout' => BOT_HTTP_TIMEOUT * 1.0, 'follow_location' => 1, 'header'=> ['Connection: close'], "user_agent" => BOT_USER_AGENT]
-	   );
-
-function bot_get_headers(string $url, int $time) : mixed {
-  $context = stream_context_create(CONTEXT_INSECURE);
+	   ));
   set_time_limit(120);
   if ($time !== 0) {
     report_inline(' .');
@@ -186,7 +183,6 @@ function is_doi_works(string $doi) : ?bool {
   throttle_dx();
 
   $url = "https://doi.org/" . doi_encode($doi);
-  $context = stream_context_create(CONTEXT_INSECURE);
   set_time_limit(120);
   $headers_test = bot_get_headers($url, 0);
   if ($headers_test === FALSE) {
@@ -1423,7 +1419,6 @@ function hdl_works(string $hdl) {
 function is_hdl_works(string $hdl) {
   $hdl = trim($hdl);
   // See if it works
-  $context = stream_context_create(CONTEXT_INSECURE);
   usleep(100000);
   $test_url = "https://hdl.handle.net/" . $hdl;
   $headers_test = bot_get_headers($test_url, 0);
