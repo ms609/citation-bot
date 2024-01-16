@@ -1033,7 +1033,7 @@ function parse_plain_text_reference(string $journal_data, Template $this_templat
 
 function getS2CID(string $url) : string {
   $url = 'https://api.semanticscholar.org/v1/paper/URL:' .  urlencode(urldecode($url));
-  $ch = curl_init_array(0.5, [CURLOPT_HTTPHEADER => CONTEXT_S2, CURLOPT_URL => $url]);
+  $ch = curl_init_array(0.5, [CURLOPT_HTTPHEADER => HEADER_S2, CURLOPT_URL => $url]);
   $response = (string) @curl_exec($ch);
   if (!$response) {
     report_warning("No response from semanticscholar.");   // @codeCoverageIgnore
@@ -1057,7 +1057,7 @@ function getS2CID(string $url) : string {
 
 function ConvertS2CID_DOI(string $s2cid) : string {
   $url = 'https://api.semanticscholar.org/v1/paper/CorpusID:' . urlencode($s2cid);
-  $ch = curl_init_array(0.5, [CURLOPT_HTTPHEADER => CONTEXT_S2, CURLOPT_URL => $url]);
+  $ch = curl_init_array(0.5, [CURLOPT_HTTPHEADER => HEADER_S2, CURLOPT_URL => $url]);
   $response = (string) @curl_exec($ch);
   if (!$response) {
     report_warning("No response from semanticscholar.");   // @codeCoverageIgnore
@@ -1087,7 +1087,7 @@ function ConvertS2CID_DOI(string $s2cid) : string {
 
 function get_semanticscholar_license(string $s2cid) : ?bool {
     $url = 'https://api.semanticscholar.org/v1/paper/CorpusID:' . urlencode($s2cid);
-    $ch = curl_init_array(0.5, [CURLOPT_HTTPHEADER => CONTEXT_S2, CURLOPT_URL => $url]);
+    $ch = curl_init_array(0.5, [CURLOPT_HTTPHEADER => HEADER_S2, CURLOPT_URL => $url]);
     $response = (string) @curl_exec($ch);
     if ($response === '') return NULL;
     if (stripos($response, 'Paper not found') !== FALSE) return FALSE;
