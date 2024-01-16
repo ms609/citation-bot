@@ -11,6 +11,17 @@ const CONTEXT_INSECURE = array(
 	   'http' => ['ignore_errors' => TRUE, 'max_redirects' => 40, 'timeout' => BOT_HTTP_TIMEOUT * 1.0, 'follow_location' => 1, 'header'=> ['Connection: close'], "user_agent" => BOT_USER_AGENT]
 	   );
 
+function bot_get_headers(string $url, integer $time) : mixed {
+  $context = stream_context_create(CONTEXT_INSECURE);
+  set_time_limit(120);
+  if ($time !== 0) {
+    report_inline(' .');
+    sleep($time);
+  }
+  $headers_test = @get_headers($url , TRUE, $context);
+  return $headers_test;
+}
+
 final class HandleCache {
   // Greatly speed-up by having one array of each kind and only look for hash keys, not values
   private const MAX_CACHE_SIZE = 100000;
@@ -177,26 +188,17 @@ function is_doi_works(string $doi) : ?bool {
   $url = "https://doi.org/" . doi_encode($doi);
   $context = stream_context_create(CONTEXT_INSECURE);
   set_time_limit(120);
-  $headers_test = @get_headers($url , TRUE, $context);
+  $headers_test = bot_get_headers($url, 0);
   if ($headers_test === FALSE) {
-     sleep(2);                                                                                        // @codeCoverageIgnore
-     report_inline(' .');                                                                             // @codeCoverageIgnore
-     set_time_limit(120);                                                                             // @codeCoverageIgnore
-     $headers_test = @get_headers($url , TRUE, $context);  // @codeCoverageIgnore
+     $headers_test = bot_get_headers($url, 2);  // @codeCoverageIgnore
   }
   if ($headers_test === FALSE) {
-     sleep(5);                                                                                        // @codeCoverageIgnore
-     set_time_limit(120);                                                                             // @codeCoverageIgnore
-     report_inline(' .');                                                                             // @codeCoverageIgnore
-     $headers_test = @get_headers($url , TRUE, $context);  // @codeCoverageIgnore
+     $headers_test = bot_get_headers($url, 5);  // @codeCoverageIgnore
   } else {
     /** @psalm-suppress InvalidArrayOffset */
     $resp0 = (string) @$headers_test['0'];                                                            // @codeCoverageIgnore
     if ((empty($headers_test['Location']) && empty($headers_test['location'])) || stripos($resp0, '404 Not Found') !== FALSE || stripos($resp0, 'HTTP/1.1 404') !== FALSE) { // @codeCoverageIgnore
-     sleep(5);                                                                                        // @codeCoverageIgnore
-     set_time_limit(120);                                                                             // @codeCoverageIgnore
-     report_inline(' .');                                                                             // @codeCoverageIgnore
-     $headers_test = @get_headers($url , TRUE, $context);  // @codeCoverageIgnore
+     $headers_test = bot_get_headers($url, 5);  // @codeCoverageIgnore
      if ($headers_test === FALSE) return FALSE; /** We trust previous failure **/                     // @codeCoverageIgnore
     }                                                                                                 // @codeCoverageIgnore
   }
@@ -1424,19 +1426,12 @@ function is_hdl_works(string $hdl) {
   $context = stream_context_create(CONTEXT_INSECURE);
   usleep(100000);
   $test_url = "https://hdl.handle.net/" . $hdl;
-  set_time_limit(120);
-  $headers_test = @get_headers($test_url, TRUE, $context);
+  $headers_test = bot_get_headers($test_url, 0);
   if ($headers_test === FALSE) {
-      sleep(3);                                                           // @codeCoverageIgnore
-      set_time_limit(120);                                                // @codeCoverageIgnore
-      report_inline(' .');                                                // @codeCoverageIgnore
-      $headers_test = @get_headers($test_url, TRUE, $context); // @codeCoverageIgnore
+      $headers_test = bot_get_headers($test_url, 3); // @codeCoverageIgnore
   }
   if ($headers_test === FALSE) {
-      sleep(8);                                                           // @codeCoverageIgnore
-      set_time_limit(120);                                                // @codeCoverageIgnore
-      report_inline(' .');                                                // @codeCoverageIgnore
-      $headers_test = @get_headers($test_url, TRUE, $context); // @codeCoverageIgnore
+      $headers_test = bot_get_headers($test_url, 8); // @codeCoverageIgnore
   }
   if ($headers_test === FALSE) return NULL; // most likely bad, but will recheck again and again
   if (empty($headers_test['Location']) && empty($headers_test['location'])) return FALSE; // leads nowhere
