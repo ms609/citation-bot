@@ -2622,7 +2622,7 @@ final class Template {
 		   ) return; // do not add url if have OA already. Do indlude preprints in list
 	if ($this->has('s2cid') || $this->has('S2CID')) return;
 	$url = 'https://api.semanticscholar.org/v1/paper/' . doi_encode(urldecode($doi));
-	$ch = curl_init_array(0.5, [CURLOPT_HTTPHEADER => CONTEXT_S2, CURLOPT_URL => $url]);
+	$ch = curl_init_array(0.5, [CURLOPT_HTTPHEADER => HEADER_S2, CURLOPT_URL => $url]);
 	$response = (string) curl_exec($ch);
 	if ($response) {
 	  $oa = @json_decode($response);
