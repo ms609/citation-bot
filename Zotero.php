@@ -29,47 +29,25 @@ public static function create_ch_zotero() : void {
   self::$is_setup = TRUE;
   self::$zotero_ch = curl_init_array(2.5, // Defaults used in TRAVIS overridden below when deployed
 	 [CURLOPT_URL => CITOID_ZOTERO,
-	  CURLOPT_FOLLOWLOCATION => TRUE,
 	  CURLOPT_HTTPHEADER => ['accept: application/json; charset=utf-8'],
-	  CURLOPT_RETURNTRANSFER => TRUE,
-	  CURLOPT_USERAGENT => BOT_USER_AGENT,
-	  CURLOPT_COOKIESESSION => TRUE]);
+	  CURLOPT_RETURNTRANSFER => TRUE]);
 
   self::$ch_ieee = curl_init_array(1.0,
 	 [CURLOPT_RETURNTRANSFER => TRUE,
-	  CURLOPT_FOLLOWLOCATION => TRUE,
 	  CURLOPT_HEADER => FALSE,
-	  CURLOPT_MAXREDIRS => 10,
-	  CURLOPT_COOKIESESSION => TRUE,
 	  CURLOPT_USERAGENT => 'curl/7.55.1']); // IEEE now requires JavaScript, unless you specify curl
 
   self::$ch_jstor = curl_init_array(1.0,
-       [CURLOPT_RETURNTRANSFER => TRUE,
-	CURLOPT_FOLLOWLOCATION => TRUE,
-	CURLOPT_COOKIESESSION => TRUE,
-	CURLOPT_USERAGENT => BOT_USER_AGENT]);
+       [CURLOPT_RETURNTRANSFER => TRUE]);
 
   self::$ch_dx = curl_init_array(1.0,
-	[CURLOPT_FOLLOWLOCATION => TRUE,
-	 CURLOPT_MAXREDIRS => 20, // No infinite loops for us, 20 for Elsevier and Springer websites
-	 CURLOPT_RETURNTRANSFER => TRUE,
-	 CURLOPT_AUTOREFERER => TRUE,
-	 CURLOPT_COOKIESESSION => TRUE,
-	 CURLOPT_USERAGENT => BOT_USER_AGENT]);
+	[CURLOPT_RETURNTRANSFER => TRUE]);
 
   self::$ch_pmc = curl_init_array(1.0,
-	[CURLOPT_RETURNTRANSFER => TRUE,
-	 CURLOPT_FOLLOWLOCATION => TRUE,
-	 CURLOPT_COOKIESESSION => TRUE,
-	 CURLOPT_USERAGENT => BOT_USER_AGENT]);
+	[CURLOPT_RETURNTRANSFER => TRUE]);
 
   self::$ch_doi = curl_init_array(1.0,
-	[CURLOPT_FOLLOWLOCATION => TRUE,
-	 CURLOPT_MAXREDIRS => 20, // No infinite loops for us, 20 for Elsevier and Springer websites
-	 CURLOPT_RETURNTRANSFER => TRUE,
-	 CURLOPT_AUTOREFERER => TRUE,
-	 CURLOPT_COOKIESESSION => TRUE,
-	 CURLOPT_USERAGENT => BOT_USER_AGENT]);
+	[CURLOPT_RETURNTRANSFER => TRUE]);
 }
 
 public static function block_zotero() : void {
