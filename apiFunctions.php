@@ -1493,17 +1493,12 @@ function query_adsabs(string $options) : object {
     return $response;
 }
 
-function curl_init_crossref(string $url) : CurlHandle {  
-     $ch = curl_init_array(1.0,
-	    [CURLOPT_URL => $url,
-	     CURLOPT_USERAGENT => BOT_CROSSREF_USER_AGENT]);
-     return $ch;
-}
-
 // Might want to look at using instead https://doi.crossref.org/openurl/?pid=email@address.com&id=doi:10.1080/00222938700771131&redirect=no&format=unixref
 function CrossRefTitle(string $doi) : string {
      $url = "https://api.crossref.org/v1/works/".str_replace(DOI_URL_DECODE, DOI_URL_ENCODE, $doi)."?mailto=".CROSSREFUSERNAME; // do not encode crossref email
-     $ch = curl_init_crossref($url);
+     $ch = curl_init_array(1.0,
+	    [CURLOPT_URL => $url,
+	     CURLOPT_USERAGENT => BOT_CROSSREF_USER_AGENT]);
      $json = (string) @curl_exec($ch);
      $json = @json_decode($json);
      if (isset($json->message->title[0]) && !isset($json->message->title[1])) {
