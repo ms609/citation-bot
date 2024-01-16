@@ -2619,10 +2619,9 @@ final class Template {
 			($this->has('jstor') && $this->get('jstor-access') === 'free')
 		   ) return; // do not add url if have OA already. Do indlude preprints in list
 	if ($this->has('s2cid') || $this->has('S2CID')) return;
-	$context = stream_context_create(CONTEXT_S2);
-	/** @psalm-taint-escape file */
-	$doi = doi_encode(urldecode($doi));
-	$response = (string) @file_get_contents('https://api.semanticscholar.org/v1/paper/' . $doi, FALSE, $context);
+	$url = 'https://api.semanticscholar.org/v1/paper/' . doi_encode(urldecode($doi));
+	$ch = curl_init_array(0.5, [CURLOPT_HTTPHEADER => CONTEXT_S2, CURLOPT_URL => $url]);
+	$response = (string) curl_exec($ch);
 	if ($response) {
 	  $oa = @json_decode($response);
 	  if ($oa !== FALSE && isset($oa->url) && isset($oa->is_publisher_licensed) && $oa->is_publisher_licensed) {

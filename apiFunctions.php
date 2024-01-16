@@ -1036,10 +1036,9 @@ function parse_plain_text_reference(string $journal_data, Template $this_templat
 }
 
 function getS2CID(string $url) : string {
-  $context = stream_context_create(CONTEXT_S2);
-  /** @psalm-taint-escape file */
-  $url = urlencode(urldecode($url));
-  $response = (string) @file_get_contents('https://api.semanticscholar.org/v1/paper/URL:' . $url, FALSE, $context);
+  $url = 'https://api.semanticscholar.org/v1/paper/URL:' .  urlencode(urldecode($url));
+  $ch = curl_init_array(0.5, [CURLOPT_HTTPHEADER => CONTEXT_S2, CURLOPT_URL => $url]);
+  $response = (string) @curl_exec($ch);
   if (!$response) {
     report_warning("No response from semanticscholar.");   // @codeCoverageIgnore
     return '';                                             // @codeCoverageIgnore
@@ -1061,10 +1060,9 @@ function getS2CID(string $url) : string {
 }
 
 function ConvertS2CID_DOI(string $s2cid) : string {
-  $context = stream_context_create(CONTEXT_S2);
-  /** @psalm-taint-escape file */
-  $s2cid = urlencode($s2cid);
-  $response = (string) @file_get_contents('https://api.semanticscholar.org/v1/paper/CorpusID:' . $s2cid, FALSE, $context);
+  $url = 'https://api.semanticscholar.org/v1/paper/CorpusID:' . urlencode($s2cid);
+  $ch = curl_init_array(0.5, [CURLOPT_HTTPHEADER => CONTEXT_S2, CURLOPT_URL => $url]);
+  $response = (string) @curl_exec($ch);
   if (!$response) {
     report_warning("No response from semanticscholar.");   // @codeCoverageIgnore
     return '';                                           // @codeCoverageIgnore
@@ -1092,8 +1090,9 @@ function ConvertS2CID_DOI(string $s2cid) : string {
 }
 
 function get_semanticscholar_license(string $s2cid) : ?bool {
-    $context = stream_context_create(CONTEXT_S2);
-    $response = (string) @file_get_contents('https://api.semanticscholar.org/v1/paper/CorpusID:' . $s2cid, FALSE, $context);
+    $url = 'https://api.semanticscholar.org/v1/paper/CorpusID:' . urlencode($s2cid);
+    $ch = curl_init_array(0.5, [CURLOPT_HTTPHEADER => CONTEXT_S2, CURLOPT_URL => $url]);
+    $response = (string) @curl_exec($ch);
     if ($response === '') return NULL;
     if (stripos($response, 'Paper not found') !== FALSE) return FALSE;
     $oa = @json_decode($response);
