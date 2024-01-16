@@ -1243,7 +1243,9 @@ public static function find_indentifiers_in_urls(Template $template, ?string $ur
 	 return FALSE;
        } elseif ($template->blank('jstor')) {
 	  curl_setopt_array(self::$ch_jstor,
-			    [CURLOPT_URL => 'https://www.jstor.org/citation/ris/' . $matches[1]]);
+			    [CURLOPT_URL => 'https://www.jstor.org/citation/ris/' . $matches[1],
+			     CURLOPT_HEADER => FALSE,
+			     CURLOPT_NOBODY => FALSE]);
 	  $dat = (string) @curl_exec(self::$ch_jstor);
 	  if ($dat &&
 	      stripos($dat, 'No RIS data found for') === FALSE &&
