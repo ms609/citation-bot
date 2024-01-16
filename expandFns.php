@@ -5,6 +5,12 @@ require_once 'constants.php';     // @codeCoverageIgnore
 require_once 'Template.php';      // @codeCoverageIgnore
 require_once 'big_jobs.php';      // @codeCoverageIgnore
 
+// Allow cheap journals to work
+const CONTEXT_INSECURE = array(
+	   'ssl' => ['verify_peer' => FALSE, 'verify_peer_name' => FALSE, 'allow_self_signed' => TRUE, 'security_level' => 0, 'verify_depth' => 0],
+	   'http' => ['ignore_errors' => TRUE, 'max_redirects' => 40, 'timeout' => BOT_HTTP_TIMEOUT * 1.0, 'follow_location' => 1, 'header'=> ['Connection: close'], "user_agent" => BOT_USER_AGENT]
+	   );
+
 final class HandleCache {
   // Greatly speed-up by having one array of each kind and only look for hash keys, not values
   private const MAX_CACHE_SIZE = 100000;
@@ -168,20 +174,21 @@ function is_doi_works(string $doi) : ?bool {
   }
   throttle_dx();
 
+  $url = "https://doi.org/" . doi_encode($doi);
   $context = stream_context_create(CONTEXT_INSECURE);
   set_time_limit(120);
-  $headers_test = @get_headers("https://doi.org/" . doi_encode($doi), TRUE, $context);
+  $headers_test = @get_headers($url , TRUE, $context);
   if ($headers_test === FALSE) {
      sleep(2);                                                                                        // @codeCoverageIgnore
      report_inline(' .');                                                                             // @codeCoverageIgnore
      set_time_limit(120);                                                                             // @codeCoverageIgnore
-     $headers_test = @get_headers("https://doi.org/" . doi_encode($doi), TRUE, $context);  // @codeCoverageIgnore
+     $headers_test = @get_headers($url , TRUE, $context);  // @codeCoverageIgnore
   }
   if ($headers_test === FALSE) {
      sleep(5);                                                                                        // @codeCoverageIgnore
      set_time_limit(120);                                                                             // @codeCoverageIgnore
      report_inline(' .');                                                                             // @codeCoverageIgnore
-     $headers_test = @get_headers("https://doi.org/" . doi_encode($doi), TRUE, $context);  // @codeCoverageIgnore
+     $headers_test = @get_headers($url , TRUE, $context);  // @codeCoverageIgnore
   } else {
     /** @psalm-suppress InvalidArrayOffset */
     $resp0 = (string) @$headers_test['0'];                                                            // @codeCoverageIgnore
@@ -189,7 +196,7 @@ function is_doi_works(string $doi) : ?bool {
      sleep(5);                                                                                        // @codeCoverageIgnore
      set_time_limit(120);                                                                             // @codeCoverageIgnore
      report_inline(' .');                                                                             // @codeCoverageIgnore
-     $headers_test = @get_headers("https://doi.org/" . doi_encode($doi), TRUE, $context);  // @codeCoverageIgnore
+     $headers_test = @get_headers($url , TRUE, $context);  // @codeCoverageIgnore
      if ($headers_test === FALSE) return FALSE; /** We trust previous failure **/                     // @codeCoverageIgnore
     }                                                                                                 // @codeCoverageIgnore
   }
@@ -198,7 +205,7 @@ function is_doi_works(string $doi) : ?bool {
     if (strpos($doi, '10.2277/') === 0) return FALSE;
     $ch = curl_init_array(1.0,
 	    [CURLOPT_HEADER => TRUE,
-	     CURLOPT_URL => "https://doi.org/" . doi_encode($doi),
+	     CURLOPT_URL => $url,
 	     CURLOPT_NOBODY => TRUE,
 	     CURLOPT_SSL_VERIFYHOST => 0,
 	     CURLOPT_SSL_VERIFYPEER => FALSE,
