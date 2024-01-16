@@ -2764,7 +2764,7 @@ final class Template {
 		}
 		$has_url_already = $this->has($url_type);
 		$this->add_if_new($url_type, $oa_url); // Will check for PMCs etc hidden in URL
-		if ($this->has($url_type) && !$has_url_already) {  // The above line might have eaten the URL and upgraded it\
+		if ($this->has($url_type) && !$has_url_already) {  // The above line might have eaten the URL and upgraded it
 		  $the_url = $this->get($url_type);
 		  $ch = curl_init_array(1.5,[
 					CURLOPT_HEADER => TRUE,
