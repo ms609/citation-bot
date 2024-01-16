@@ -20,7 +20,7 @@ final class Zotero {
   private const ZOTERO_SKIPS = 100;
   private const ERROR_DONE = 'ERROR_DONE';
   protected static int $zotero_announced = 0;
-  protected static CurlHandle $zotero_ch, $ch_ieee, $ch_jstor_body, $ch_jstor_header, $ch_dx, $ch_pmc, $ch_doi;
+  protected static CurlHandle $zotero_ch, $ch_ieee, $ch_jstor, $ch_dx, $ch_pmc, $ch_doi;
   protected static int $zotero_failures_count = 0;
   private static bool $is_setup = FALSE;
 
@@ -39,11 +39,7 @@ public static function create_ch_zotero() : void {
   self::$ch_ieee = curl_init_array($time,
 	 [CURLOPT_USERAGENT => 'curl/7.55.1']); // IEEE now requires JavaScript, unless you specify curl
 
-  self::$ch_jstor_body = curl_init_array($time, []);
-
-  self::$ch_jstor_header = curl_init_array($time,
-	 [CURLOPT_HEADER => TRUE,
-	  CURLOPT_NOBODY => TRUE]);
+  self::$ch_jstor = curl_init_array($time, []);
 
   self::$ch_dx = curl_init_array($time, []);
 
@@ -1242,8 +1238,8 @@ public static function find_indentifiers_in_urls(Template $template, ?string $ur
 	 }
 	 return FALSE;
        } elseif ($template->blank('jstor')) {
-	  curl_setopt(self::$ch_jstor_body, CURLOPT_URL, 'https://www.jstor.org/citation/ris/' . $matches[1]);
-	  $dat = (string) @curl_exec(self::$ch_jstor_body);
+	  curl_setopt(self::$ch_jstor, CURLOPT_URL, 'https://www.jstor.org/citation/ris/' . $matches[1]);
+	  $dat = (string) @curl_exec(self::$ch_jstor);
 	  if ($dat &&
 	      stripos($dat, 'No RIS data found for') === FALSE &&
 	      stripos($dat, 'Block Reference') === FALSE &&
@@ -1383,21 +1379,8 @@ public static function find_indentifiers_in_urls(Template $template, ?string $ur
     if (stripos($url, "jstor.org") !== FALSE) {
       $sici_pos = stripos($url, "sici");
       if ($sici_pos) {  //  Outdated url style
-	$template->use_sici(); // Grab what we can before getting rid off it
-	// Need to encode the sici bit that follows sici?sici= [10 characters]
-	$encoded_url = substr($url, 0, $sici_pos + 10) . urlencode(urldecode(substr($url, $sici_pos + 10)));
-	curl_setopt(self::$ch_jstor_header, CURLOPT_URL, $encoded_url);
-	if (@curl_exec(self::$ch_jstor_header)) {
-	  $redirect_url = (string) @curl_getinfo(self::$ch_jstor_header, CURLINFO_REDIRECT_URL);
-	  if (strpos($redirect_url, "jstor.org/stable/")) {
-	    $url = $redirect_url;
-	    if (is_null($url_sent)) {
-	      $template->set($url_type, $url); // Save it
-	    }
-	  } else {  // We do not want this URL incorrectly parsed below, or even waste time trying.
-	    return FALSE;     // @codeCoverageIgnore
-	  }
-	}
+	$template->use_sici(); // Grab what we can.  We do not want this URL incorrectly parsed below, or even waste time trying.
+	return FALSE;
       }
       if (preg_match("~^/(?:\w+/)*(\d{5,})[^\d%\-]*(?:\?|$)~", substr($url, (int) stripos($url, 'jstor.org') + 9), $match) ||
 		preg_match("~^https?://(?:www\.)?jstor\.org\S+(?:stable|discovery)/(?:10\.7591/|)(\d{5,}|(?:j|J|histirel|jeductechsoci|saoa|newyorkhist)\.[a-zA-Z0-9\.]+)$~", $url, $match)) {
