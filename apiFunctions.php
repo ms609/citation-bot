@@ -353,7 +353,7 @@ function adsabs_api(array $ids, array &$templates, string $identifier) : bool { 
 
   report_action("Expanding from BibCodes via AdsAbs API");
   $curl_opts=[CURLOPT_URL => $adsabs_url,
-	      CURLOPT_HTTPHEADER => ['Content-Type: big-query/csv', 'Authorization: Bearer ' . PHP_ADSABSAPIKEY],
+	      CURLOPT_HTTPHEADER => ['Content-Type: big-query/csv', 'Authorization: Bearer ' . PHP_ADSABSAPIKEY, 'Connection: close'],
 	      CURLOPT_HEADER => TRUE,
 	      CURLOPT_CUSTOMREQUEST => 'POST',
 	      CURLOPT_POSTFIELDS => "$identifier\n" . implode("\n", $ids)];
@@ -653,7 +653,7 @@ function expand_doi_with_dx(Template $template, string $doi) : bool {
      if (!$doi) return FALSE;
      $ch = curl_init_array(1.5,  // can take a long time when nothing to be found
 	     [CURLOPT_URL => 'https://doi.org/' . $doi,
-	      CURLOPT_HTTPHEADER => ["Accept: application/vnd.citationstyles.csl+json"]]);
+	      CURLOPT_HTTPHEADER => ["Accept: application/vnd.citationstyles.csl+json", 'Connection: close']]);
      report_action("Querying dx.doi.org: doi:" . doi_link($doi));
      try {
        $data = (string) @curl_exec($ch);
@@ -1033,7 +1033,7 @@ function parse_plain_text_reference(string $journal_data, Template $this_templat
 
 function getS2CID(string $url) : string {
   $url = 'https://api.semanticscholar.org/v1/paper/URL:' .  urlencode(urldecode($url));
-  $ch = curl_init_array(0.5, [CURLOPT_HTTPHEADER => CONTEXT_S2, CURLOPT_URL => $url]);
+  $ch = curl_init_array(0.5, [CURLOPT_HTTPHEADER => HEADER_S2, CURLOPT_URL => $url]);
   $response = (string) @curl_exec($ch);
   if (!$response) {
     report_warning("No response from semanticscholar.");   // @codeCoverageIgnore
@@ -1057,7 +1057,7 @@ function getS2CID(string $url) : string {
 
 function ConvertS2CID_DOI(string $s2cid) : string {
   $url = 'https://api.semanticscholar.org/v1/paper/CorpusID:' . urlencode($s2cid);
-  $ch = curl_init_array(0.5, [CURLOPT_HTTPHEADER => CONTEXT_S2, CURLOPT_URL => $url]);
+  $ch = curl_init_array(0.5, [CURLOPT_HTTPHEADER => HEADER_S2, CURLOPT_URL => $url]);
   $response = (string) @curl_exec($ch);
   if (!$response) {
     report_warning("No response from semanticscholar.");   // @codeCoverageIgnore
@@ -1087,7 +1087,7 @@ function ConvertS2CID_DOI(string $s2cid) : string {
 
 function get_semanticscholar_license(string $s2cid) : ?bool {
     $url = 'https://api.semanticscholar.org/v1/paper/CorpusID:' . urlencode($s2cid);
-    $ch = curl_init_array(0.5, [CURLOPT_HTTPHEADER => CONTEXT_S2, CURLOPT_URL => $url]);
+    $ch = curl_init_array(0.5, [CURLOPT_HTTPHEADER => HEADER_S2, CURLOPT_URL => $url]);
     $response = (string) @curl_exec($ch);
     if ($response === '') return NULL;
     if (stripos($response, 'Paper not found') !== FALSE) return FALSE;
@@ -1375,7 +1375,8 @@ function xml_post(string $url, string $post) : ?SimpleXMLElement {
 		CURLOPT_POSTFIELDS => $post,
 		CURLOPT_HTTPHEADER => array(
 		     "Content-Type: application/x-www-form-urlencoded",
-		     "Accept: application/xml")
+		     "Accept: application/xml",
+		     'Connection: close')
 	       ]);
    $output = (string) @curl_exec($ch);
    $xml = @simplexml_load_string($output);
@@ -1486,7 +1487,7 @@ function query_adsabs(string $options) : object {
 		  . ".adsabs.harvard.edu/v1/search/query"
 		  . "?q=$options&fl=arxiv_class,author,bibcode,doi,doctype,identifier,"
 		  . "issue,page,pub,pubdate,title,volume,year";
-    $curl_opts=[CURLOPT_HTTPHEADER => ['Authorization: Bearer ' . PHP_ADSABSAPIKEY],
+    $curl_opts=[CURLOPT_HTTPHEADER => ['Authorization: Bearer ' . PHP_ADSABSAPIKEY, 'Connection: close'],
 		CURLOPT_HEADER => TRUE,
 		CURLOPT_URL => $adsabs_url];
     $response = Bibcode_Response_Processing($curl_opts, $adsabs_url);
