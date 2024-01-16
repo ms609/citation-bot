@@ -198,7 +198,7 @@ function is_doi_works(string $doi) : ?bool {
 	return TRUE;
   } elseif (strpos($doi, '10.2277/') === 0) {
 	return FALSE;
-  } elseif (preg_match('~^10\.1038/nature\d{5}$~i', $doi) && $head === FALSE) {
+  } elseif (preg_match('~^10\.1038/nature\d{5}$~i', $doi) && $head === "") {
 	return FALSE; // Nature dropped the ball
   }
   if (stripos($head, 'location') === FALSE ) return FALSE; // leads nowhere
