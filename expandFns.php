@@ -11,11 +11,12 @@ const CONTEXT_INSECURE = array(
 	   'http' => ['ignore_errors' => TRUE, 'max_redirects' => 40, 'timeout' => BOT_HTTP_TIMEOUT * 1.0, 'follow_location' => 1, 'header'=> ['Connection: close'], "user_agent" => BOT_USER_AGENT]
 	   );
 
-/** @return false|array<mixed> **/
-function bot_get_headers(string $url) : mixed {
+/** @return array<mixed> **/
+function bot_get_headers(string $url) : array {
   $context = stream_context_create(CONTEXT_INSECURE);
   set_time_limit(120);
   $headers_test = @get_headers($url , TRUE, $context);
+  if ($headers_test === FALSE) $headers_test = array();
   return $headers_test;
 }
 
@@ -185,13 +186,13 @@ function is_doi_works(string $doi) : ?bool {
   $url = "https://doi.org/" . doi_encode($doi);
   set_time_limit(120);
   $headers_test = bot_get_headers($url);
-  if ($headers_test === FALSE) {
+  if (empty($headers_test)) {
      sleep(2);                                                                                        // @codeCoverageIgnore
      report_inline(' .');                                                                             // @codeCoverageIgnore
      set_time_limit(120);                                                                             // @codeCoverageIgnore
      $headers_test = bot_get_headers($url);  // @codeCoverageIgnore
   }
-  if ($headers_test === FALSE) {
+  if (empty($headers_test)) {
      sleep(5);                                                                                        // @codeCoverageIgnore
      set_time_limit(120);                                                                             // @codeCoverageIgnore
      report_inline(' .');                                                                             // @codeCoverageIgnore
@@ -207,8 +208,8 @@ function is_doi_works(string $doi) : ?bool {
      if ($headers_test === FALSE) return FALSE; /** We trust previous failure **/                     // @codeCoverageIgnore
     }                                                                                                 // @codeCoverageIgnore
   }
-  if (preg_match('~^10\.1038/nature\d{5}$~i', $doi) && $headers_test === FALSE) return FALSE; // Nature dropped the ball
-  if ($headers_test === FALSE) { // Use CURL instead
+  if (preg_match('~^10\.1038/nature\d{5}$~i', $doi) && empty($headers_test)) return FALSE; // Nature dropped the ball
+  if (empty($headers_test)) { // Use CURL instead
     if (strpos($doi, '10.2277/') === 0) return FALSE;
     $ch = curl_init_array(1.0,
 	    [CURLOPT_HEADER => TRUE,
@@ -1432,19 +1433,19 @@ function is_hdl_works(string $hdl) {
   $test_url = "https://hdl.handle.net/" . $hdl;
   set_time_limit(120);
   $headers_test = bot_get_headers($test_url);
-  if ($headers_test === FALSE) {
+  if (empty($headers_test)) {
       sleep(3);                                                           // @codeCoverageIgnore
       set_time_limit(120);                                                // @codeCoverageIgnore
       report_inline(' .');                                                // @codeCoverageIgnore
       $headers_test = bot_get_headers($test_url); // @codeCoverageIgnore
   }
-  if ($headers_test === FALSE) {
+  if (empty($headers_test)) {
       sleep(8);                                                           // @codeCoverageIgnore
       set_time_limit(120);                                                // @codeCoverageIgnore
       report_inline(' .');                                                // @codeCoverageIgnore
       $headers_test = bot_get_headers($test_url); // @codeCoverageIgnore
   }
-  if ($headers_test === FALSE) return NULL; // most likely bad, but will recheck again and again
+  if (empty($headers_test)) return NULL; // most likely bad, but will recheck again and again
   if (empty($headers_test['Location']) && empty($headers_test['location'])) return FALSE; // leads nowhere
   if (is_array(@$headers_test['Location'])) {
       $the_header_loc = (string) $headers_test['Location'][0]; // @codeCoverageIgnore
