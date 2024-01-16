@@ -2634,8 +2634,7 @@ final class Template {
 	set_time_limit(120);
 	$url = "https://api.unpaywall.org/v2/$doi?email=" . CROSSREFUSERNAME;
 	$ch = curl_init_array(1.0,
-			[CURLOPT_HEADER => FALSE,
-			 CURLOPT_URL => $url,
+			[CURLOPT_URL => $url,
 			 CURLOPT_USERAGENT => BOT_CROSSREF_USER_AGENT]);
 	$json = (string) @curl_exec($ch);
 	unset($ch);
@@ -2890,8 +2889,7 @@ final class Template {
 	  if ($isbn) { // Try Books.Google.Com
 		$google_book_url = 'https://www.google.com/search?tbo=p&tbm=bks&q=isbn:' . $isbn;
 		$ch = curl_init_array(1.0,
-				      [ CURLOPT_HEADER => FALSE,
-					CURLOPT_URL => $google_book_url]);
+				      [CURLOPT_URL => $google_book_url]);
 		$google_content = (string) @curl_exec($ch);
 		unset($ch);
 		if ($google_content && preg_match_all('~[Bb]ooks\.[Gg]oogle\.com/books\?id=(............)&amp~', $google_content, $google_results)) {
@@ -2936,8 +2934,7 @@ final class Template {
 	set_time_limit(120);
 	$google_book_url = "https://books.google.com/books/feeds/volumes/" . $gid;
 	$ch = curl_init_array(1.0,
-			[CURLOPT_HEADER => FALSE,
-			 CURLOPT_URL => $google_book_url]);
+			[CURLOPT_URL => $google_book_url]);
 	$data = (string) @curl_exec($ch);
 	unset($ch);
 	if ($data === '') return;

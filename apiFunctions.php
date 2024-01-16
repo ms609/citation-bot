@@ -584,8 +584,7 @@ function query_crossref(string $doi) : ?object {
   $doi = str_replace(DOI_URL_DECODE, DOI_URL_ENCODE, $doi);
   $url = "https://www.crossref.org/openurl/?pid=" . CROSSREFUSERNAME . "&id=doi:$doi&noredirect=TRUE";
   $ch = curl_init_array(1.0,
-	    [CURLOPT_HEADER => FALSE,
-	     CURLOPT_URL =>  $url]);
+	    [CURLOPT_URL =>  $url]);
   for ($i = 0; $i < 2; $i++) {
     $raw_xml = (string) @curl_exec($ch);
     if (!$raw_xml) {
@@ -791,8 +790,7 @@ function expand_by_jstor(Template $template) : bool {
   if (strpos($jstor, ' ') !== FALSE) return FALSE ; // Comment/template found
   if (substr($jstor, 0, 1) === 'i') return FALSE ; // We do not want i12342 kind
   $ch = curl_init_array(1.0,
-	   [CURLOPT_HEADER => FALSE,
-	    CURLOPT_URL => 'https://www.jstor.org/citation/ris/' . $jstor ]);
+	   [CURLOPT_URL => 'https://www.jstor.org/citation/ris/' . $jstor ]);
   $dat = (string) @curl_exec($ch);
   unset($ch);
   if ($dat === '') {
@@ -1497,8 +1495,7 @@ function query_adsabs(string $options) : object {
 
 function curl_init_crossref(string $url) : CurlHandle {  
      $ch = curl_init_array(1.0,
-	    [CURLOPT_HEADER => FALSE,
-	     CURLOPT_URL => $url,
+	    [CURLOPT_URL => $url,
 	     CURLOPT_USERAGENT => BOT_CROSSREF_USER_AGENT]);
      return $ch;
 }
