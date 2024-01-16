@@ -34,7 +34,7 @@ Always write a clear log message for your commits. One-line messages are fine fo
   * Regular expressions are defined using the symbol `~` in place of `/`, to reduce escaping and improve legibility when handling URLs.
   * We prefer `elseif` to `else if`
   * We prefer `===` and `!==` to `==` and `!=`
-  * We prefer `curl` to `file_get_contents` for easier debugging and greater control
+  * We prefer `curl` to `file_get_contents` and `get_headers`for easier debugging and greater control
   * We use `echo` and `exit` for normal code, and `print` and `die` for debug code that is intended to be removed later
   * All code must be valid PHP 8.2
   * Directly comparing strings to integer with comparision operators is different in PHP 7 and 8, so they should not be used
