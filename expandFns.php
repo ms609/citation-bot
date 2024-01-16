@@ -171,7 +171,6 @@ function is_doi_works(string $doi) : ?bool {
   $context = stream_context_create(CONTEXT_INSECURE);
   set_time_limit(120);
   $headers_test = @get_headers("https://doi.org/" . doi_encode($doi), TRUE, $context);
-  $context = stream_context_create(CONTEXT_INSECURE_11);
   if ($headers_test === FALSE) {
      sleep(2);                                                                                        // @codeCoverageIgnore
      report_inline(' .');                                                                             // @codeCoverageIgnore
@@ -1415,7 +1414,7 @@ function hdl_works(string $hdl) {
 function is_hdl_works(string $hdl) {
   $hdl = trim($hdl);
   // See if it works
-  $context = stream_context_create(CONTEXT_INSECURE_11); // HDL does 1.1 always
+  $context = stream_context_create(CONTEXT_INSECURE);
   usleep(100000);
   $test_url = "https://hdl.handle.net/" . $hdl;
   set_time_limit(120);
