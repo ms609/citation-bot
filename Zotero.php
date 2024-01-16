@@ -27,7 +27,6 @@ final class Zotero {
 public static function create_ch_zotero() : void {
   if (self::$is_setup) return;
   self::$is_setup = TRUE;
-  /** @psalm-suppress PossiblyNullArgument */
   self::$zotero_ch = curl_init_array(2.5, // Defaults used in TRAVIS overridden below when deployed
 	 [CURLOPT_URL => CITOID_ZOTERO,
 	  CURLOPT_FOLLOWLOCATION => TRUE,
