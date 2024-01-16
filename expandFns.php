@@ -11,7 +11,7 @@ const CONTEXT_INSECURE = array(
 	   'http' => ['ignore_errors' => TRUE, 'max_redirects' => 40, 'timeout' => BOT_HTTP_TIMEOUT * 1.0, 'follow_location' => 1, 'header'=> ['Connection: close'], "user_agent" => BOT_USER_AGENT]
 	   );
 
-function bot_get_headers(string $url, integer $time) : mixed {
+function bot_get_headers(string $url, int $time) : mixed {
   $context = stream_context_create(CONTEXT_INSECURE);
   set_time_limit(120);
   if ($time !== 0) {
