@@ -34,25 +34,23 @@ public static function create_ch_zotero() : void {
   }
   self::$zotero_ch = curl_init_array($time,
 	 [CURLOPT_URL => CITOID_ZOTERO,
-	  CURLOPT_HTTPHEADER => ['accept: application/json; charset=utf-8'],
-	  CURLOPT_RETURNTRANSFER => TRUE]);
+	  CURLOPT_HTTPHEADER => ['accept: application/json; charset=utf-8']]);
 
   self::$ch_ieee = curl_init_array($time,
-	 [CURLOPT_RETURNTRANSFER => TRUE,
-	  CURLOPT_HEADER => FALSE,
+	 [CURLOPT_HEADER => FALSE,
 	  CURLOPT_USERAGENT => 'curl/7.55.1']); // IEEE now requires JavaScript, unless you specify curl
 
   self::$ch_jstor = curl_init_array($time,
-       [CURLOPT_RETURNTRANSFER => TRUE]);
+	[]);
 
   self::$ch_dx = curl_init_array($time,
-	[CURLOPT_RETURNTRANSFER => TRUE]);
+	[]);
 
   self::$ch_pmc = curl_init_array($time,
-	[CURLOPT_RETURNTRANSFER => TRUE]);
+	[]);
 
   self::$ch_doi = curl_init_array($time,
-	[CURLOPT_RETURNTRANSFER => TRUE]);
+	[]);
 }
 
 public static function block_zotero() : void {

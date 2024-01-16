@@ -2634,9 +2634,7 @@ final class Template {
 	set_time_limit(120);
 	$url = "https://api.unpaywall.org/v2/$doi?email=" . CROSSREFUSERNAME;
 	$ch = curl_init_array(1.0,
-			[
-			 CURLOPT_HEADER => FALSE,
-			 CURLOPTdfasddsafdsfsd_RETURNTRANSFER => TRUE,
+			[CURLOPT_HEADER => FALSE,
 			 CURLOPT_URL => $url,
 			 CURLOPT_USERAGENT => BOT_CROSSREF_USER_AGENT]);
 	$json = (string) @curl_exec($ch);
@@ -2892,9 +2890,7 @@ final class Template {
 	  if ($isbn) { // Try Books.Google.Com
 		$google_book_url = 'https://www.google.com/search?tbo=p&tbm=bks&q=isbn:' . $isbn;
 		$ch = curl_init_array(1.0,
-				      [
-					CURLOPT_HEADER => FALSE,
-					CURLOPT_RETURNTRANSFER => TRUE,
+				      [ CURLOPT_HEADER => FALSE,
 					CURLOPT_URL => $google_book_url]);
 		$google_content = (string) @curl_exec($ch);
 		unset($ch);
@@ -2940,10 +2936,8 @@ final class Template {
 	set_time_limit(120);
 	$google_book_url = "https://books.google.com/books/feeds/volumes/" . $gid;
 	$ch = curl_init_array(1.0,
-			[
-			CURLOPT_HEADER => FALSE,
-			CURLOPT_RETURNTRANSFER => TRUE,
-			CURLOPT_URL => $google_book_url]);
+			[CURLOPT_HEADER => FALSE,
+			 CURLOPT_URL => $google_book_url]);
 	$data = (string) @curl_exec($ch);
 	unset($ch);
 	if ($data === '') return;
@@ -4202,9 +4196,7 @@ final class Template {
 			  /** @psalm-taint-escape ssrf */
 			  $test_url = 'https://plants.jstor.org/stable/' . $doi;
 			  $ch = curl_init_array(1.5,
-						[
-						CURLOPT_URL => $test_url,
-						CURLOPT_RETURNTRANSFER => TRUE]);
+						[CURLOPT_URL => $test_url]);
 			  @curl_exec($ch);
 			  $httpCode = (int) @curl_getinfo($ch, CURLINFO_HTTP_CODE);
 			  unset($ch);
@@ -5676,7 +5668,6 @@ final class Template {
 			if (preg_match("~^https?://proquest\.umi\.com/.*$~", $this->get($param), $matches)) {
 				 $ch = curl_init_array(1.5,
 						 [CURLOPT_COOKIEFILE => 'cookie.txt', // Needed for proquest
-						  CURLOPT_RETURNTRANSFER => TRUE,
 						  CURLOPT_URL => $matches[0]]);
 				 if (@curl_exec($ch)) {
 					$redirectedUrl = (string) @curl_getinfo($ch, CURLINFO_EFFECTIVE_URL);  // Final URL

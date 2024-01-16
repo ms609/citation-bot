@@ -30,7 +30,6 @@ final class WikipediaBot {
     [
 	CURLOPT_FAILONERROR => TRUE, // This is a little paranoid - see https://curl.se/libcurl/c/CURLOPT_FAILONERROR.html
 	CURLOPT_HEADER => FALSE,
-	CURLOPT_RETURNTRANSFER => TRUE,
     ]);
   }
 
