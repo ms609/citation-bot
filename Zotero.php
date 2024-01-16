@@ -39,17 +39,13 @@ public static function create_ch_zotero() : void {
   self::$ch_ieee = curl_init_array($time,
 	 [CURLOPT_USERAGENT => 'curl/7.55.1']); // IEEE now requires JavaScript, unless you specify curl
 
-  self::$ch_jstor = curl_init_array($time,
-	[]);
+  self::$ch_jstor = curl_init_array($time, []);
 
-  self::$ch_dx = curl_init_array($time,
-	[]);
+  self::$ch_dx = curl_init_array($time, []);
 
-  self::$ch_pmc = curl_init_array($time,
-	[]);
+  self::$ch_pmc = curl_init_array($time, []);
 
-  self::$ch_doi = curl_init_array($time,
-	[]);
+  self::$ch_doi = curl_init_array($time, []);
 }
 
 public static function block_zotero() : void {
@@ -1242,10 +1238,7 @@ public static function find_indentifiers_in_urls(Template $template, ?string $ur
 	 }
 	 return FALSE;
        } elseif ($template->blank('jstor')) {
-	  curl_setopt_array(self::$ch_jstor,
-			    [CURLOPT_URL => 'https://www.jstor.org/citation/ris/' . $matches[1],
-			     CURLOPT_HEADER => FALSE,
-			     CURLOPT_NOBODY => FALSE]);
+	  curl_setopt(self::$ch_jstor, CURLOPT_URL, 'https://www.jstor.org/citation/ris/' . $matches[1]);
 	  $dat = (string) @curl_exec(self::$ch_jstor);
 	  if ($dat &&
 	      stripos($dat, 'No RIS data found for') === FALSE &&
@@ -1386,23 +1379,8 @@ public static function find_indentifiers_in_urls(Template $template, ?string $ur
     if (stripos($url, "jstor.org") !== FALSE) {
       $sici_pos = stripos($url, "sici");
       if ($sici_pos) {  //  Outdated url style
-	$template->use_sici(); // Grab what we can before getting rid off it
-	// Need to encode the sici bit that follows sici?sici= [10 characters]
-	$encoded_url = substr($url, 0, $sici_pos + 10) . urlencode(urldecode(substr($url, $sici_pos + 10)));
-	curl_setopt_array(self::$ch_jstor, [CURLOPT_URL => $encoded_url,
-					    CURLOPT_HEADER => TRUE,
-					    CURLOPT_NOBODY => TRUE]);
-	if (@curl_exec(self::$ch_jstor)) {
-	  $redirect_url = (string) @curl_getinfo(self::$ch_jstor, CURLINFO_REDIRECT_URL);
-	  if (strpos($redirect_url, "jstor.org/stable/")) {
-	    $url = $redirect_url;
-	    if (is_null($url_sent)) {
-	      $template->set($url_type, $url); // Save it
-	    }
-	  } else {  // We do not want this URL incorrectly parsed below, or even waste time trying.
-	    return FALSE;     // @codeCoverageIgnore
-	  }
-	}
+	$template->use_sici(); // Grab what we can.  We do not want this URL incorrectly parsed below, or even waste time trying.
+	return FALSE;
       }
       if (preg_match("~^/(?:\w+/)*(\d{5,})[^\d%\-]*(?:\?|$)~", substr($url, (int) stripos($url, 'jstor.org') + 9), $match) ||
 		preg_match("~^https?://(?:www\.)?jstor\.org\S+(?:stable|discovery)/(?:10\.7591/|)(\d{5,}|(?:j|J|histirel|jeductechsoci|saoa|newyorkhist)\.[a-zA-Z0-9\.]+)$~", $url, $match)) {
@@ -1444,7 +1422,7 @@ public static function find_indentifiers_in_urls(Template $template, ?string $ur
 	  if (is_null($url_sent)) {
 	    if (stripos($url, ".pdf") !== FALSE) {
 	      $test_url = "https://www.ncbi.nlm.nih.gov/pmc/articles/PMC" . $new_pmc . "/";
-	      curl_setopt_array(self::$ch_pmc, [CURLOPT_URL => $test_url]);
+	      curl_setopt(self::$ch_pmc, CURLOPT_URL, $test_url);
 	      @curl_exec(self::$ch_pmc);
 	      $httpCode = (int) @curl_getinfo(self::$ch_pmc, CURLINFO_HTTP_CODE);
 	      if ($httpCode > 399 || ($httpCode === 0)) { // Some PMCs do NOT resolve.  So leave URL
