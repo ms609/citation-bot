@@ -113,7 +113,7 @@ if ($env_limit_action !== '') {
 unset($env_limit_action);
 
 if ((string) getenv("PHP_S2APIKEY") !== "") {
-  define("CONTEXT_S2", array("x-api-key: " . (string) getenv("PHP_S2APIKEY") . "\r\n")));
+  define("CONTEXT_S2", array("x-api-key: " . (string) getenv("PHP_S2APIKEY") . "\r\n"));
 } else {
   define("CONTEXT_S2", array());
 }
