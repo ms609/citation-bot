@@ -2,6 +2,7 @@
 declare(strict_types=1);
 error_reporting(E_ALL);
 
+date_default_timezone_set('UTC');
 ob_implicit_flush(TRUE);
 flush();
 
@@ -97,12 +98,6 @@ ini_set("pcre.recursion_limit", "425000000");
 if (isset($_REQUEST["pcre"]) || (strpos((string) @$_SERVER['PHP_SELF'], '/gadgetapi.php') !== FALSE)) { // Willing to take slight performance penalty on Gadget
   ini_set("pcre.jit", "0");
 }
-
-date_default_timezone_set('UTC');
-
-/** @psalm-suppress UnusedFunctionCall */
-stream_context_set_default(['http' => ['timeout' => BOT_HTTP_TIMEOUT]]);
-ini_set('default_socket_timeout', strval(BOT_HTTP_TIMEOUT));
 
 define("PHP_ADSABSAPIKEY", (string) getenv("PHP_ADSABSAPIKEY"));
 
