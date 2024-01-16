@@ -192,7 +192,6 @@ function is_doi_works(string $doi) : ?bool {
     if (strpos($doi, '10.2277/') === 0) return FALSE;
     $ch = curl_init_array(1.0,
 	    [CURLOPT_HEADER => TRUE,
-	     CURLOPT_RETURNTRANSFER => TRUE,
 	     CURLOPT_URL => "https://doi.org/" . doi_encode($doi),
 	     CURLOPT_NOBODY => TRUE,
 	     CURLOPT_SSL_VERIFYHOST => 0,
@@ -1191,8 +1190,7 @@ function check_doi_for_jstor(string $doi, Template $template) : void {
     $doi = substr($doi, 8);
   }
   $ch = curl_init_array(1.0,
-	  [CURLOPT_RETURNTRANSFER => TRUE,
-	   CURLOPT_URL => "https://www.jstor.org/citation/ris/" . $doi]);
+	  [CURLOPT_URL => "https://www.jstor.org/citation/ris/" . $doi]);
   $ris = (string) @curl_exec($ch);
   $httpCode = (int) @curl_getinfo($ch, CURLINFO_HTTP_CODE);
   if ($httpCode === 200 &&
