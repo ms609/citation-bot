@@ -211,12 +211,13 @@ function arxiv_api(array $ids, array &$templates) : bool {  // Pointer to save m
   set_time_limit(120);
   if (count($ids) === 0) return FALSE;
   report_action("Getting data from arXiv API");
-  $context = stream_context_create(array(
-    'http' => array('ignore_errors' => TRUE),
-  ));
-  /** @psalm-taint-escape file */
   $request = "https://export.arxiv.org/api/query?start=0&max_results=2000&id_list=" . implode(',', $ids);
-  $response = (string) @file_get_contents($request, FALSE, $context);
+  $ch = curl_init_array(1.0,
+	    [CURLOPT_URL => $request,
+	     CURLOPT_SSL_VERIFYHOST => 0,
+	     CURLOPT_SSL_VERIFYPEER => FALSE,
+	     CURLOPT_SSL_VERIFYSTATUS => FALSE]);						  
+  $response = (string) @curl_exec($ch);
   if ($response) {
     $xml = @simplexml_load_string(
       preg_replace("~(</?)(\w+):([^>]*>)~", "$1$2$3", $response)
