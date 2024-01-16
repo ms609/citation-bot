@@ -37,8 +37,7 @@ public static function create_ch_zotero() : void {
 	  CURLOPT_HTTPHEADER => ['accept: application/json; charset=utf-8']]);
 
   self::$ch_ieee = curl_init_array($time,
-	 [CURLOPT_HEADER => FALSE,
-	  CURLOPT_USERAGENT => 'curl/7.55.1']); // IEEE now requires JavaScript, unless you specify curl
+	 [CURLOPT_USERAGENT => 'curl/7.55.1']); // IEEE now requires JavaScript, unless you specify curl
 
   self::$ch_jstor = curl_init_array($time,
 	[]);
@@ -1245,9 +1244,7 @@ public static function find_indentifiers_in_urls(Template $template, ?string $ur
        } elseif ($template->blank('jstor')) {
 	  curl_setopt_array(self::$ch_jstor,
 			    [CURLOPT_URL => 'https://www.jstor.org/citation/ris/' . $matches[1],
-			     CURLOPT_FOLLOWLOCATION => TRUE,
-			     CURLOPT_HEADER => FALSE,
-			     CURLOPT_NOBODY => FALSE]);
+			     CURLOPT_FOLLOWLOCATION => TRUE]);
 	  $dat = (string) @curl_exec(self::$ch_jstor);
 	  if ($dat &&
 	      stripos($dat, 'No RIS data found for') === FALSE &&
@@ -1392,7 +1389,6 @@ public static function find_indentifiers_in_urls(Template $template, ?string $ur
 	// Need to encode the sici bit that follows sici?sici= [10 characters]
 	$encoded_url = substr($url, 0, $sici_pos + 10) . urlencode(urldecode(substr($url, $sici_pos + 10)));
 	curl_setopt_array(self::$ch_jstor, [CURLOPT_URL => $encoded_url,
-					    CURLOPT_FOLLOWLOCATION => TRUE,
 					    CURLOPT_HEADER => TRUE,
 					    CURLOPT_NOBODY => TRUE]);
 	if (@curl_exec(self::$ch_jstor)) {
