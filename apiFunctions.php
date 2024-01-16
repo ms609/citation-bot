@@ -213,10 +213,7 @@ function arxiv_api(array $ids, array &$templates) : bool {  // Pointer to save m
   report_action("Getting data from arXiv API");
   $request = "https://export.arxiv.org/api/query?start=0&max_results=2000&id_list=" . implode(',', $ids);
   $ch = curl_init_array(1.0,
-	    [CURLOPT_URL => $request,
-	     CURLOPT_SSL_VERIFYHOST => 0,
-	     CURLOPT_SSL_VERIFYPEER => FALSE,
-	     CURLOPT_SSL_VERIFYSTATUS => FALSE]);						  
+	    [CURLOPT_URL => $request]);						  
   $response = (string) @curl_exec($ch);
   if ($response) {
     $xml = @simplexml_load_string(
