@@ -2022,7 +2022,9 @@ final class Template {
 		   . ($data['volume']     ? "&volume=" . urlencode($data['volume'])     : '')
 		   . ($data['issn']       ? "&issn="   . urlencode($data['issn'])       : "&title=" . urlencode($data['journal']))
 		   . "&mailto=".CROSSREFUSERNAME; // do not encode crossref email
-	  $ch = curl_init_crossref($url);
+	  $ch = curl_init_array(1.0,
+	    [CURLOPT_URL => $url,
+	     CURLOPT_USERAGENT => BOT_CROSSREF_USER_AGENT]);
 	  $xml = curl_exec($ch);
 	  unset($ch);
 	  if (is_string($xml) && (strlen($xml) > 0)) {
