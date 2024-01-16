@@ -112,7 +112,6 @@ function is_doi_active(string $doi) : ?bool {
 		CURLOPT_URL => $url
 		]);				 
   $headers_test = @curl_exec($ch);
-  $headers_test = @get_headers($url, TRUE, $context);
   if ($headers_test === FALSE) {
     sleep(2);                                           // @codeCoverageIgnore
     report_inline(' .');                                // @codeCoverageIgnore
