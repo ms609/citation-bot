@@ -5676,7 +5676,7 @@ final class Template {
 			}
 			if (preg_match("~^https?://proquest\.umi\.com/.*$~", $this->get($param), $matches)) {
 				 $ch = curl_init_array(1.5,
-						 [
+						 [CURLOPT_COOKIEFILE => 'cookie.txt', // Needed for proquest
 						  CURLOPT_RETURNTRANSFER => TRUE,
 						  CURLOPT_URL => $matches[0]]);
 				 if (@curl_exec($ch)) {
