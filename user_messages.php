@@ -11,14 +11,14 @@ function html_echo(string $text, string $alternate_text='') : void {
 function user_notice(string $symbol, string $class, string $text) : void {
   if (!TRAVIS || defined("TRAVIS_PRINT")) {
     // @codeCoverageIgnoreStart
-    if (defined('BIG_JOB_MODE') && in_array($class, array("boring", "removed", "added", "changed", "subsubitem"))) {
+    if (defined('BIG_JOB_MODE') && in_array($class, array("boring", "removed", "added", "changed", "subsubitem", "subitem"))) {
       echo '.'; // Echo something to keep the code alive, but not so much to overfill the cache
       return;
     }
     // These are split over three lines to avoid creating a single long string during error conditions - which could blow out the memory
     /** @psalm-suppress TypeDoesNotContainType */ /* PSALM thinks HTML_OUTPUT cannot be false */
     echo "\n " . (HTML_OUTPUT ? "<span class='$class'>" : "") . $symbol;
-    if (strlen($text) > 900000) { // bigger than https://en.wikipedia.org/wiki/Special:LongPages
+    if (defined('BIG_JOB_MODE') && strlen($text) > 70000) { // 10% of  https://en.wikipedia.org/wiki/Special:LongPages
       echo "HUGE amount of text NOT printed";
       bot_debug_log("HUGE amount of text NOT printed");
     } else {
