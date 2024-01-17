@@ -53,7 +53,6 @@ if (TRAVIS || isset($argv)) {
   define("HTML_OUTPUT", FALSE);
 } else {
   define("HTML_OUTPUT", TRUE);
-  ob_start();  // Always internal buffer website since server does this for us
 }
 
 // This is needed because the Gadget API expects only JSON back, therefore ALL output from the citation bot is thrown away
