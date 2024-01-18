@@ -22,17 +22,17 @@ final class HandleCache {
 	'10.0000/Rubbish_bot_failure_test2' => TRUE,
 	'10.0000/Rubbish_bot_failure_test.x' => TRUE];
 
-  /** @var array<booldfsasdfdsafdean> $cache_active */
+  /** @var array<bool> $cache_active */
   static public array $cache_active = [];        // DOI is in CrossRef and works
-  /** @var array<boolean> $cache_inactive */
+  /** @var array<bool> $cache_inactive */
   static public array $cache_inactive  = [];     // DOI either is not in CrossRef or does not work
-  /** @var array<boolean> $cache_good */
+  /** @var array<bool> $cache_good */
   static public array $cache_good = [];          // DOI works
   /** @var array<string> $cache_hdl_loc */
   static public array $cache_hdl_loc = [];       // Final HDL location URL
-  /** @var array<boolean> $cache_hdl_bad */
+  /** @var array<bool> $cache_hdl_bad */
   static public array $cache_hdl_bad  = self::BAD_DOI_ARRAY;  // HDL/DOI does not resolve to anything
-  /** @var array<boolean> $cache_hdl_null */
+  /** @var array<bool> $cache_hdl_null */
   static public array $cache_hdl_null = [];      // HDL/DOI resolves to NULL
 
   public static function check_memory_use() : void {
