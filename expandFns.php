@@ -189,19 +189,20 @@ function is_doi_works(string $doi) : ?bool {
      set_time_limit(120);                                                                             // @codeCoverageIgnore
      report_inline(' .');                                                                             // @codeCoverageIgnore
      $headers_test = @get_headers($url , TRUE, $context);  // @codeCoverageIgnore
-  } else {
-    /** @psalm-suppress InvalidArrayOffset */
-    $resp0 = (string) @$headers_test['0'];                                                            // @codeCoverageIgnore
-    if ((empty($headers_test['Location']) && empty($headers_test['location'])) || stripos($resp0, '404 Not Found') !== FALSE || stripos($resp0, 'HTTP/1.1 404') !== FALSE) { // @codeCoverageIgnore
-     sleep(5);                                                                                        // @codeCoverageIgnore
-     set_time_limit(120);                                                                             // @codeCoverageIgnore
-     report_inline(' .');                                                                             // @codeCoverageIgnore
-     $headers_test = @get_headers($url , TRUE, $context);  // @codeCoverageIgnore
-     if ($headers_test === FALSE) return FALSE; /** We trust previous failure **/                     // @codeCoverageIgnore
-    }                                                                                                 // @codeCoverageIgnore
   }
-  
-  if ($headers_test === FALSE) { // Use CURL instead
+
+  if ($headers_test !== FALSE) {
+    if (interpret_doi_header($headers_test) !== FALSE) {
+       return interpret_doi_header($headers_test);
+    } // Got 404 - try again
+    sleep(5);                                                                                        // @codeCoverageIgnore
+    set_time_limit(120);                                                                             // @codeCoverageIgnore
+    report_inline(' .');                                                                             // @codeCoverageIgnore
+    $headers_test = @get_headers($url , TRUE, $context);  // @codeCoverageIgnore
+    if ($headers_test === FALSE) return FALSE; /** We trust previous failure **/                     // @codeCoverageIgnore
+    return interpret_doi_header($headers_test);
+  }
+  // Use CURL instead
     if (strpos($doi, '10.2277/') === 0) return FALSE;
     if (preg_match('~^10\.1038/nature\d{5}$~i', $doi)) return FALSE; // Nature dropped the ball
     $ch = curl_init_array(1.0,
@@ -224,7 +225,9 @@ function is_doi_works(string $doi) : ?bool {
     } else {
 	return NULL; // most likely bad, but will recheck again and again
     }
-  }
+}
+
+function interpret_doi_header(array $headers_test) : ?boolean {
   if (empty($headers_test['Location']) && empty($headers_test['location'])) return FALSE; // leads nowhere
   /** @psalm-suppress InvalidArrayOffset */
   $resp0 = (string) @$headers_test['0'];
