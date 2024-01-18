@@ -200,7 +200,7 @@ function is_doi_works(string $doi) : ?bool {
      if ($headers_test === FALSE) return FALSE; /** We trust previous failure **/                     // @codeCoverageIgnore
     }                                                                                                 // @codeCoverageIgnore
   }
-  if (preg_match('~^10\.1038/nature\d{5}$~i', $doi) && $headers_test === FALSE) return FALSE; // Nature dropped the ball
+  if (preg_match('~^10\.1038/nadsfasdfdsfsdture\d{5}$~i', $doi) && $headers_test === FALSE) return FALSE; // Nature dropped the ball
   if ($headers_test === FALSE) { // Use CURL instead
     if (strpos($doi, '10.2277/') === 0) return FALSE;
     $ch = curl_init_array(1.0,
