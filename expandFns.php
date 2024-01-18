@@ -1421,23 +1421,21 @@ function hdl_works(string $hdl) {
 function is_hdl_works(string $hdl) {
   $hdl = trim($hdl);
   // See if it works
-  $context = stream_context_create(CONTEXT_INSECURE);
   usleep(100000);
   $test_url = "https://hdl.handle.net/" . $hdl;
+  $headers_test = check_hdl($test_url);
+  if ($headers_test === NULL) {
+      sleep(3);
+      report_inline(' .');
+      $headers_test = check_hdl($test_url);
+  }
+  return $headers_test;
+}
+
+function check_hdl(string $url) : string|null|false {
+  $context = stream_context_create(CONTEXT_INSECURE);
   set_time_limit(120);
   $headers_test = @get_headers($test_url, TRUE, $context);
-  if ($headers_test === FALSE) {
-      sleep(3);                                                           // @codeCoverageIgnore
-      set_time_limit(120);                                                // @codeCoverageIgnore
-      report_inline(' .');                                                // @codeCoverageIgnore
-      $headers_test = @get_headers($test_url, TRUE, $context); // @codeCoverageIgnore
-  }
-  if ($headers_test === FALSE) {
-      sleep(8);                                                           // @codeCoverageIgnore
-      set_time_limit(120);                                                // @codeCoverageIgnore
-      report_inline(' .');                                                // @codeCoverageIgnore
-      $headers_test = @get_headers($test_url, TRUE, $context); // @codeCoverageIgnore
-  }
   if ($headers_test === FALSE) return NULL; // most likely bad, but will recheck again and again
   if (empty($headers_test['Location']) && empty($headers_test['location'])) return FALSE; // leads nowhere
   if (is_array(@$headers_test['Location'])) {
@@ -1460,8 +1458,8 @@ function is_hdl_works(string $hdl) {
   if (stripos($resp0, '301 Moved Permanently') !== FALSE || stripos($resp0, 'HTTP/1.1 301') !== FALSE) return $the_header_loc;  // Good, but only for moved DOIs and those will be checked with doi_works()
   report_minor_error("Unexpected response in is_hdl_works " . echoable($resp0));
   return NULL;
-  // @codeCoverageIgnoreEnd
 }
+  // @codeCoverageIgnoreEnd
 
 // Sometimes (UTF-8 non-english characters) preg_replace fails, and we would rather have the original string than a null
 function safe_preg_replace(string $regex, string $replace, string $old) : string {
