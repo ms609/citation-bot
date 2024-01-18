@@ -227,6 +227,7 @@ function is_doi_works(string $doi) : ?bool {
     }
 }
 
+/** @param array<mixed> $headers_test **/
 function interpret_doi_header(array $headers_test) : ?bool {
   if (empty($headers_test['Location']) && empty($headers_test['location'])) return FALSE; // leads nowhere
   /** @psalm-suppress InvalidArrayOffset */
