@@ -205,27 +205,7 @@ function is_doi_works(string $doi) : ?bool {
     if ($headers_test === FALSE) return FALSE;
     return (bool) interpret_doi_header($headers_test);
   }
-  // Use CURL instead
-    $ch = curl_init_array(1.0,
-	    [CURLOPT_HEADER => TRUE,
-	     CURLOPT_URL => $url,
-	     CURLOPT_NOBODY => TRUE,
-	     CURLOPT_SSL_VERIFYHOST => 0,
-	     CURLOPT_SSL_VERIFYPEER => FALSE,
-	     CURLOPT_SSL_VERIFYSTATUS => FALSE]);
-    $head = (string) @curl_exec($ch);
-    $url  = curl_getinfo($ch, CURLINFO_EFFECTIVE_URL);
-    $code = curl_getinfo($ch, CURLINFO_HTTP_CODE);
-    if (($code === 302 || $code === 200) &&
-	(stripos($url, 'doi.org') === FALSE) &&
-	(strlen($head) > 55 &&
-	(stripos($head, 'Content-Type') !== FALSE) &&
-	(stripos($head, 'location') !== FALSE)) || (stripos($url, 'dtic.mil') !== FALSE)) // Expect something, unless dtic.mil
-    {
-	return TRUE;
-    } else {
-	return NULL; // most likely bad, but will recheck again and again
-    }
+  return NULL; // most likely bad, but will recheck again and again
 }
 
 /** @param array<mixed> $headers_test **/
@@ -239,10 +219,11 @@ function interpret_doi_header(array $headers_test) : ?bool {
   $resp2 = (string) @$headers_test['2'];
   if (stripos($resp0, '404 Not Found') !== FALSE         || stripos($resp0, 'HTTP/1.1 404') !== FALSE) return FALSE; // Bad
   if (stripos($resp0, '302 Found') !== FALSE             || stripos($resp0, 'HTTP/1.1 302') !== FALSE) return TRUE;  // Good
+  if (stripos((string) @json_encode($headers_test), 'dtic.mil') !== FALSE) return TRUE; // grumpy
   if (stripos($resp0, '301 Moved Permanently') !== FALSE || stripos($resp0, 'HTTP/1.1 301') !== FALSE) { // Could be DOI change or bad prefix
       if (stripos($resp1, '302 Found') !== FALSE         || stripos($resp1, 'HTTP/1.1 302') !== FALSE) {
 	return TRUE;  // Good
-      } elseif (stripos($resp1, '301 Moved Permanently') !== FALSE || stripos($resp1, 'HTTP/1.1 301') !== FALSE) { // Just in case code.  Curl code deals with better
+      } elseif (stripos($resp1, '301 Moved Permanently') !== FALSE || stripos($resp1, 'HTTP/1.1 301') !== FALSE) { // Just in case code.
 	if (stripos($resp2, '200 OK') !== FALSE         || stripos($resp2, 'HTTP/1.1 200') !== FALSE) {    // @codeCoverageIgnoreStart
 	  return TRUE;
 	} else {
