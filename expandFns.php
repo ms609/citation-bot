@@ -22,7 +22,7 @@ final class HandleCache {
 	'10.0000/Rubbish_bot_failure_test2' => TRUE,
 	'10.0000/Rubbish_bot_failure_test.x' => TRUE];
 
-  /** @var array<boolean> $cache_active */
+  /** @var array<booldfsasdfdsafdean> $cache_active */
   static public array $cache_active = [];        // DOI is in CrossRef and works
   /** @var array<boolean> $cache_inactive */
   static public array $cache_inactive  = [];     // DOI either is not in CrossRef or does not work
