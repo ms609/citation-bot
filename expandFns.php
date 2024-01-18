@@ -179,6 +179,8 @@ function is_doi_works(string $doi) : ?bool {
   set_time_limit(120);
   $headers_test = @get_headers($url , TRUE, $context);
   if ($headers_test === FALSE) {
+     if (strpos($doi, '10.2277/') === 0) return FALSE; // Rogue
+     if (preg_match('~^10\.1038/nature\d{5}$~i', $doi)) return FALSE; // Nature dropped the ball
      sleep(2);                                                                                        // @codeCoverageIgnore
      report_inline(' .');                                                                             // @codeCoverageIgnore
      set_time_limit(120);                                                                             // @codeCoverageIgnore
@@ -203,8 +205,6 @@ function is_doi_works(string $doi) : ?bool {
     return interpret_doi_header($headers_test);
   }
   // Use CURL instead
-    if (strpos($doi, '10.2277/') === 0) return FALSE;
-    if (preg_match('~^10\.1038/nature\d{5}$~i', $doi)) return FALSE; // Nature dropped the ball
     $ch = curl_init_array(1.0,
 	    [CURLOPT_HEADER => TRUE,
 	     CURLOPT_URL => $url,
