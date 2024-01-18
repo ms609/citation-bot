@@ -1427,15 +1427,9 @@ function is_hdl_works(string $hdl) {
   set_time_limit(120);
   $headers_test = @get_headers($test_url, TRUE, $context);
   if ($headers_test === FALSE) {
-      sleep(3);                                                           // @codeCoverageIgnore
-      set_time_limit(120);                                                // @codeCoverageIgnore
-      report_inline(' .');                                                // @codeCoverageIgnore
-      $headers_test = @get_headers($test_url, TRUE, $context); // @codeCoverageIgnore
-  }
-  if ($headers_test === FALSE) {
-      sleep(8);                                                           // @codeCoverageIgnore
-      set_time_limit(120);                                                // @codeCoverageIgnore
-      report_inline(' .');                                                // @codeCoverageIgnore
+      sleep(5);                                                // @codeCoverageIgnore
+      set_time_limit(120);                                     // @codeCoverageIgnore
+      report_inline(' .');                                     // @codeCoverageIgnore
       $headers_test = @get_headers($test_url, TRUE, $context); // @codeCoverageIgnore
   }
   if ($headers_test === FALSE) return NULL; // most likely bad, but will recheck again and again
