@@ -1215,7 +1215,7 @@ function expand_templates_from_archives(array &$templates) : void { // This is d
   }
 }
 
-/** @param array<int|string|boolean|array<string>> $curl_opts **/
+/** @param array<int|string|bool|array<string>> $curl_opts **/
 function Bibcode_Response_Processing(array $curl_opts, string $adsabs_url) : object {
   try {
     $ch = curl_init_array(1.0, $curl_opts);
