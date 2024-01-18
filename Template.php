@@ -2028,7 +2028,7 @@ final class Template {
 	  $xml = curl_exec($ch);
 	  unset($ch);
 	  if (is_string($xml) && (strlen($xml) > 0)) {
-		$result = simplexml_load_string($xml);
+		$result = @simplexml_load_string($xml);
 	  } else {
 		$result = FALSE;
 	  }
