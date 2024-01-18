@@ -1383,9 +1383,9 @@ function bot_html_footer() : void {
 }
 
   /**
-   * @return string|null|false       Returns NULL/FALSE/String of location
+   * NULL/FALSE/String of location
    **/
-function hdl_works(string $hdl) {
+function hdl_works(string $hdl) : string|null|false {
   $hdl = trim($hdl);
   // And now some obvious fails
   if (strpos($hdl, '/') === FALSE) return FALSE;
@@ -1416,9 +1416,9 @@ function hdl_works(string $hdl) {
 }
 
   /**
-   * @return string|null|false       Returns NULL/FALSE/String of location
+   * Returns NULL/FALSE/String of location
    **/
-function is_hdl_works(string $hdl) {
+function is_hdl_works(string $hdl) : string|null|false {
   $hdl = trim($hdl);
   // See if it works
   $context = stream_context_create(CONTEXT_INSECURE);
