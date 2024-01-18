@@ -210,18 +210,17 @@ function is_doi_works(string $doi) : ?bool {
      $headers_test = @get_headers($url , TRUE, $context);  // @codeCoverageIgnore
   }
 
-  if ($headers_test !== FALSE) {
-    if (interpret_doi_header($headers_test) !== FALSE) {
+  if ($headers_test === FALSE) return NULL;
+  if (interpret_doi_header($headers_test) !== FALSE) {
        return interpret_doi_header($headers_test);
-    } // Got 404 - try again
-    sleep(5);
-    set_time_limit(120);
-    report_inline(' .');
-    $headers_test = @get_headers($url , TRUE, $context);
-    /** We trust previous failure, so fail and null are both false **/
-    if ($headers_test === FALSE) return FALSE;
-    return (bool) interpret_doi_header($headers_test);
-  }
+  } // Got 404 - try again
+  sleep(5);
+  set_time_limit(120);
+  report_inline(' .');
+  $headers_test = @get_headers($url , TRUE, $context);
+  /** We trust previous failure, so fail and null are both false **/
+  if ($headers_test === FALSE) return FALSE;
+  return (bool) interpret_doi_header($headers_test);
 }
 
 /** @param array<mixed> $headers_test **/
