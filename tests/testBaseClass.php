@@ -168,6 +168,7 @@ abstract class testBaseClass extends PHPUnit\Framework\TestCase {
 
   protected function flush() : void {
      ob_end_flush();
+     if (ob_get_level() !==0) trigger_error("levels");
      flush();
      ob_start();
   }
