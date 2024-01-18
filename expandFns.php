@@ -197,12 +197,13 @@ function is_doi_works(string $doi) : ?bool {
     if (interpret_doi_header($headers_test) !== FALSE) {
        return interpret_doi_header($headers_test);
     } // Got 404 - try again
-    sleep(5);                                                                                        // @codeCoverageIgnore
-    set_time_limit(120);                                                                             // @codeCoverageIgnore
-    report_inline(' .');                                                                             // @codeCoverageIgnore
-    $headers_test = @get_headers($url , TRUE, $context);  // @codeCoverageIgnore
-    if ($headers_test === FALSE) return FALSE; /** We trust previous failure **/                     // @codeCoverageIgnore
-    return interpret_doi_header($headers_test);
+    sleep(5);
+    set_time_limit(120);
+    report_inline(' .');
+    $headers_test = @get_headers($url , TRUE, $context);
+    /** We trust previous failure, so fail and null are both false **/
+    if ($headers_test === FALSE) return FALSE;
+    return (bool) interpret_doi_header($headers_test);
   }
   // Use CURL instead
     $ch = curl_init_array(1.0,
