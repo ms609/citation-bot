@@ -637,7 +637,7 @@ class Page {
   }
 
   public function write(WikipediaBot $api, string $edit_summary_end = '') : bool {
-    /** @var array<boolean> $failures */
+    /** @var array<bool> $failures */
     static $failures = array(FALSE, FALSE, FALSE, FALSE, FALSE);
     if ($this->allow_bots()) {
       $failures[0] = $failures[1];
@@ -687,7 +687,7 @@ class Page {
     $regexp_in = $class::REGEXP;
     /** @var string $placeholder_text */
     $placeholder_text = $class::PLACEHOLDER_TEXT;
-    /** @var boolean $treat_identical_separately */
+    /** @var bool $treat_identical_separately */
     $treat_identical_separately = $class::TREAT_IDENTICAL_SEPARATELY;
     /** @var array<WikiThings|Template> */
     $objects = array();
