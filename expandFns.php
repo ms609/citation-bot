@@ -175,18 +175,35 @@ function is_doi_works(string $doi) : ?bool {
   throttle_dx();
 
   $url = "https://doi.org/" . doi_encode($doi);
+
+  // Try CURL first
+  set_time_limit(120);
+  $ch = curl_init_array(1.0,
+	    [CURLOPT_HEADER => TRUE,
+	     CURLOPT_URL => $url,
+	     CURLOPT_NOBODY => TRUE,
+	     CURLOPT_SSL_VERIFYHOST => 0,
+	     CURLOPT_SSL_VERIFYPEER => FALSE,
+	     CURLOPT_SSL_VERIFYSTATUS => FALSE]);
+  $head = (string) @curl_exec($ch);
+  $url  = curl_getinfo($ch, CURLINFO_EFFECTIVE_URL);
+  $code = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+  if (($code === 302 || $code === 200) &&
+	(stripos($url, 'doi.org') === FALSE) &&
+	(strlen($head) > 55 &&
+	(stripos($head, 'Content-Type') !== FALSE) &&
+	(stripos($head, 'location') !== FALSE)) || (stripos($url, 'dtic.mil') !== FALSE)) // Expect something, unless dtic.mil
+  {
+	return TRUE;
+  }
+  // TODO - deal with NULL/FALSE options in CURL
+	
   $context = stream_context_create(CONTEXT_INSECURE);
   set_time_limit(120);
   $headers_test = @get_headers($url , TRUE, $context);
   if ($headers_test === FALSE) {
      if (strpos($doi, '10.2277/') === 0) return FALSE; // Rogue
      if (preg_match('~^10\.1038/nature\d{5}$~i', $doi)) return FALSE; // Nature dropped the ball
-     sleep(2);                                                                                        // @codeCoverageIgnore
-     report_inline(' .');                                                                             // @codeCoverageIgnore
-     set_time_limit(120);                                                                             // @codeCoverageIgnore
-     $headers_test = @get_headers($url , TRUE, $context);  // @codeCoverageIgnore
-  }
-  if ($headers_test === FALSE) {
      sleep(5);                                                                                        // @codeCoverageIgnore
      set_time_limit(120);                                                                             // @codeCoverageIgnore
      report_inline(' .');                                                                             // @codeCoverageIgnore
@@ -205,27 +222,6 @@ function is_doi_works(string $doi) : ?bool {
     if ($headers_test === FALSE) return FALSE;
     return (bool) interpret_doi_header($headers_test);
   }
-  // Use CURL instead
-    $ch = curl_init_array(1.0,
-	    [CURLOPT_HEADER => TRUE,
-	     CURLOPT_URL => $url,
-	     CURLOPT_NOBODY => TRUE,
-	     CURLOPT_SSL_VERIFYHOST => 0,
-	     CURLOPT_SSL_VERIFYPEER => FALSE,
-	     CURLOPT_SSL_VERIFYSTATUS => FALSE]);
-    $head = (string) @curl_exec($ch);
-    $url  = curl_getinfo($ch, CURLINFO_EFFECTIVE_URL);
-    $code = curl_getinfo($ch, CURLINFO_HTTP_CODE);
-    if (($code === 302 || $code === 200) &&
-	(stripos($url, 'doi.org') === FALSE) &&
-	(strlen($head) > 55 &&
-	(stripos($head, 'Content-Type') !== FALSE) &&
-	(stripos($head, 'location') !== FALSE)) || (stripos($url, 'dtic.mil') !== FALSE)) // Expect something, unless dtic.mil
-    {
-	return TRUE;
-    } else {
-	return NULL; // most likely bad, but will recheck again and again
-    }
 }
 
 /** @param array<mixed> $headers_test **/
