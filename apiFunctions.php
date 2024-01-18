@@ -715,7 +715,7 @@ function expand_doi_with_dx(Template $template, string $doi) : bool {
      } elseif (@$json['type'] == 'reference-entry') { // Very rare: Got this once from DOI:10.1002/14356007.a02_115.pub2
        $try_to_add_it('work', @$json['container-title']);      // @codeCoverageIgnore
        $try_to_add_it('title', @$json['title']);               // @codeCoverageIgnore
-     } elseif (@$json['type'] == 'monograph' || @$json['type'] == 'book') {
+     } elseif (@$json['type'] == 'monograph' || @$json['type'] == 'book' || @$json['type'] == 'edited-book') {
        $try_to_add_it('title', @$json['title']);
        $try_to_add_it('title', @$json['container-title']);// Usually not set, but just in case this instead of title is set
        $try_to_add_it('location', @$json['publisher-location']);
