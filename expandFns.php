@@ -199,7 +199,7 @@ function is_doi_works(string $doi) : ?bool {
      $headers_test = @get_headers($url , TRUE, $context);  // @codeCoverageIgnore
   }
   if ($headers_test === FALSE) {
-     bot_debug_log('Got NULL for DOI: ' . echoable($doi));
+     if (!in_array($doi, NULL_DOI_LIST)) bot_debug_log('Got NULL for DOI: ' . echoable($doi));
      return NULL; // most likely bad, but will recheck again and again - note that NULL means do not add or remove doi-broken-date from pages
   }
   if (interpret_doi_header($headers_test) !== FALSE) {
