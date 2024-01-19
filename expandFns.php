@@ -96,6 +96,7 @@ function doi_works(string $doi) : ?bool {
       } else {
         HandleCache::$cache_hdl_bad[$doi] = TRUE;
         return FALSE;
+      }
     }
     if (abs(time() - $start_time) < max(BOT_HTTP_TIMEOUT, BOT_CONNECTION_TIMEOUT))
     {
