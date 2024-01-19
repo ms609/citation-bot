@@ -91,7 +91,8 @@ function doi_works(string $doi) : ?bool {
   if ($works === NULL) {
     if (in_array($doi, NULL_DOI_LIST)) { // These are know to be bad, so only check one time during run
       HandleCache::$cache_hdl_null[$doi] = TRUE;
-      return NULL;
+      if (TRAVIS) return NULL;
+      return FALSE;
     }
     if (abs(time() - $start_time) < max(BOT_HTTP_TIMEOUT, BOT_CONNECTION_TIMEOUT))
     {
