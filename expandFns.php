@@ -89,6 +89,10 @@ function doi_works(string $doi) : ?bool {
   $start_time = time();
   $works = is_doi_works($doi);
   if ($works === NULL) {
+    if (in_array($doi, array('10.1036/0071422803', '10.5604/01.3001.0012.8474'))) { // TODO - add more as we find them 
+      HandleCache::$cache_hdl_null[$doi] = TRUE;
+      return NULL;
+    }
     if (abs(time() - $start_time) < max(BOT_HTTP_TIMEOUT, BOT_CONNECTION_TIMEOUT))
     {
       return NULL;
