@@ -127,8 +127,10 @@ function is_doi_active(string $doi) : ?bool {
   $response_code = curl_getinfo($ch, CURLINFO_RESPONSE_CODE);
   if ($response_code === 200) return TRUE;
   if ($response_code === 404) return FALSE;
-  report_warning("CrossRef server error loading headers for DOI " . echoable($doi . " : " . (string) $response_code));  // @codeCoverageIgnore
-  return NULL;                                                                                            // @codeCoverageIgnore
+  $err = "CrossRef server error loading headers for DOI " . echoable($doi . " : " . (string) $response_code); // @codeCoverageIgnore
+  bot_debug_log($err);   // @codeCoverageIgnore
+  report_warning($err);  // @codeCoverageIgnore
+  return NULL;           // @codeCoverageIgnore
 }
 
 function throttle_dx () : void {
@@ -192,11 +194,14 @@ function is_doi_works(string $doi) : ?bool {
      report_inline(' .');                                                                             // @codeCoverageIgnore
      $headers_test = @get_headers($url , TRUE, $context);  // @codeCoverageIgnore
   }
-  if ($headers_test === FALSE) return NULL; // most likely bad, but will recheck again and again
+  if ($headers_test === FALSE) {
+     bot_debug_log('Got NULL for DOI: ' . echoable($doi));
+     return NULL; // most likely bad, but will recheck again and again - note that NULL means do not add or remove doi-broken-date from pages
+  }
   if (interpret_doi_header($headers_test) !== FALSE) {
        return interpret_doi_header($headers_test);
   }
-  // Got 404 - try again
+  // Got 404 - try again, since we cache this and add doi-broken-date to pages, we should be double sure
   sleep(5);
   set_time_limit(120);
   report_inline(' .');
