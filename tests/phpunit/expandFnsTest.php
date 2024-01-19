@@ -372,8 +372,9 @@ final class expandFnsTest extends testBaseClass {
   }
 
   public function testHostIsGoneDOI() : void {
-    $this->assertNull(doi_works('10.1036/0071422803')); // goes to dead doi.contentdirections.com
-    $this->assertNull(doi_works('10.5604/01.3001.0012.8474')); // goes to dead swiatowit.online
+    foreach (NULL_DOI_LIST as $doi) {	    
+      $this->assertNull(doi_works($doi));
+    }
   }
 
   public function testBankruptDOICompany() : void {
