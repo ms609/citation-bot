@@ -89,7 +89,7 @@ function doi_works(string $doi) : ?bool {
   $start_time = time();
   $works = is_doi_works($doi);
   if ($works === NULL) {
-    if (in_array($doi, array('10.1036/0071422803', '10.5604/01.3001.0012.8474'))) { // TODO - add more as we find them 
+    if (in_array($doi, NULL_DOI_LIST)) { // These are know to be bad, so only check one time during run
       HandleCache::$cache_hdl_null[$doi] = TRUE;
       return NULL;
     }
