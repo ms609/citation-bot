@@ -805,11 +805,12 @@ const NON_JOURNAL_WEBSITES = array('-news.co.uk/', '.ajc.com/', '.al.com/',
 		      'yuzhnoye.com/', 'zap2it.com/', 'zdnet.com/', 'zeenews.india.com/',
 		      'zerohedge.com/', 'zhanqi.tv/', 'zoominfo.com/', 'hdr.undp.org/', '.nist.gov/',
 		      'ngdc.noaa.gov/', 'babel.hathitrust.org/', 'pcgames.de/', 'eurogamer.it/',
-		      'conceptcarz.com/', '.tvp.info/', 'archdioceseofbombay.org/', 'www.nist.gov/');
+		      'conceptcarz.com/', '.tvp.info/', 'archdioceseofbombay.org/', 'www.nist.gov/',
+		      'dib.ie/');
 		     // Just a list of ones that are obvious.  Add ones that time-out as we find them
 		     // bbm.ca is short enough that we add /bbm.ca/ and .bbm.ca/ since we don't want to grab too many sites
 
-const NON_JOURNAL_DOIS = array('10.5531/db.vz.0001', '10.1163/2352-0248'); // lowercase exact matches
+const NON_JOURNAL_DOIS = array('10.5531/db.vz.0001', '10.1163/2352-0248', '10.3318/dib'); // lowercase exact matches
 const NON_JOURNALS = array('Amphibian Species of the World', 'an Online Reference', 'An Online Reference',
 			   'Boston Almanac and Guide1', 'Includes:reports from Commissioners, Inspectors and Others'); // Case-sensitive sub-string
 const ARE_MAGAZINES = array('the new yorker', 'the new republic', 'new republic', 'expedition magazine', 'wired', 'wired uk',
@@ -820,6 +821,7 @@ const ARE_MAGAZINES = array('the new yorker', 'the new republic', 'new republic'
 			   'electronic gaming monthly', 'official u.s. playstation magazine',
 			   'playstation: the official magazine', 'play and silicon mag', 'games radar', 'hyper',
 			   'famitsu', 'gamepro', 'yachting world', 'kalki', 'sports illustrated', 'new civil engineer',
+			   "harper's magazine", "harper's bazaar", "harper's"
 			   ); // lowercase axact matches
 const ARE_MANY_THINGS = array('pc gamer', 'gamestar', 'rock paper shotgun', 'mcv', 'rock, paper, shotgun', 'edge',
 			      'ballotpedia', 'npr', 'ballotpedia.org', 'npr.org', 'nih.gov', 'nih', 'eurogamer.it',
