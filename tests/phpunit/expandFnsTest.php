@@ -372,9 +372,16 @@ final class expandFnsTest extends testBaseClass {
   }
 
   public function testHostIsGoneDOI() : void {
-    foreach (NULL_DOI_LIST as $doi) {	    
-      $this->assertNull(doi_works($doi));
+    $results = "";
+    foreach (NULL_DOI_LIST as $doi) {
+      $works = doi_works($doi);
+      if ($works === TRUE) {
+         $results = $results . "  This DOI is now working: " . $doi . "       ";
+      } elseif ($works === FALSE) {
+         $results = $results . "  This DOI is now longer giving NULL: " . $doi . "       ";
+      }
     }
+    $this->assertSame("", $results);
   }
 
   public function testBankruptDOICompany() : void {
