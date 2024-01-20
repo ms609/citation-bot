@@ -2705,14 +2705,14 @@ final class TemplateTest2 extends testBaseClass {
     $this->assertSame("November 2004", $template->get2('date'));
     $this->assertNull($template->get2('year')); // Not an empty string anymore
   }
-  public function testDateYearRedundancyEtc3() : void 
+  public function testDateYearRedundancyEtc3() : void {
     $text = "{{cite web|date=November 2004|year=Octorberish 2004}}";
     $template = $this->make_citation($text);
     $template->tidy();
     $this->assertSame("November 2004", $template->get2('date'));
     $this->assertNull($template->get2('year'));
   }
-  public function testDateYearRedundancyEtc4() : void 
+  public function testDateYearRedundancyEtc4() : void {
     $text = "{{cite web|date=|year=Sometimes around 2004}}";
     $template = $this->make_citation($text);
     $template->tidy();
