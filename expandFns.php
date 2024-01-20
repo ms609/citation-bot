@@ -5,7 +5,6 @@ require_once 'constants.php';     // @codeCoverageIgnore
 require_once 'Template.php';      // @codeCoverageIgnore
 require_once 'big_jobs.php';      // @codeCoverageIgnore
 
-
 // Allow cheap journals to work
 if (!defined('CONTEXT_INSECURE')) {
    define('CONTEXT_INSECURE', stream_context_create(array(
