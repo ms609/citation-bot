@@ -90,13 +90,8 @@ function doi_works(string $doi) : ?bool {
   $works = is_doi_works($doi);
   if ($works === NULL) {
     if (in_array($doi, NULL_DOI_LIST)) { // These are know to be bad, so only check one time during run
-      if (TRAVIS) {			
-        HandleCache::$cache_hdl_null[$doi] = TRUE;
-        return NULL;
-      } else {
         HandleCache::$cache_hdl_bad[$doi] = TRUE;
         return FALSE;
-      }
     }
     if (abs(time() - $start_time) < max(BOT_HTTP_TIMEOUT, BOT_CONNECTION_TIMEOUT))
     {
@@ -192,8 +187,8 @@ function is_doi_works(string $doi) : ?bool {
   if ($headers_test === FALSE) {
      if (strpos($doi, '10.2277/') === 0) return FALSE; // Rogue
      if (preg_match('~^10\.1038/nature\d{5}$~i', $doi)) return FALSE; // Nature dropped the ball
-     if (strpos($doi, '10.17312/harringtonparkpress/') === 0) return FALSE;
-     if (strpos($doi, '10.3149/csm.') === 0) return FALSE;
+     if (stripos($doi, '10.17312/harringtonparkpress/') === 0) return FALSE;
+     if (stripos($doi, '10.3149/csm.') === 0) return FALSE;
      sleep(2);                                                                                        // @codeCoverageIgnore
      report_inline(' .');                                                                             // @codeCoverageIgnore
      set_time_limit(120);                                                                             // @codeCoverageIgnore
