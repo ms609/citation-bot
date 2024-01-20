@@ -4143,7 +4143,7 @@ final class TemplateTest2 extends testBaseClass {
       $this->AssertNull($expanded->get2('deadurl'));
    }
 
-   public function testTidyMonth2() : void {
+   public function testTidyMonth3() : void {
       $text = "{{cite web|date=March 2000|month=march|day=11}}";
       $expanded = $this->make_citation($text);
       $expanded->tidy_parameter('month');
