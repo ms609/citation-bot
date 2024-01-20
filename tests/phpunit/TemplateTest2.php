@@ -3911,19 +3911,19 @@ final class TemplateTest2 extends testBaseClass {
      $this->assertNull($template->get2('location'));
      $this->assertSame('http://www.apple.com/indes.html', $template->get2('url'));
     }
-    public function testFixURLinLocations2() : void 
+    public function testFixURLinLocations2() : void {
      $text = '{{cite journal|location=http://www.apple.com/indes.html|url=http://www.apple.com/}}';
      $template = $this->process_citation($text);
      $this->assertNull($template->get2('location'));
      $this->assertSame('http://www.apple.com/indes.html', $template->get2('url'));
     }
-    public function testFixURLinLocations3() : void 
+    public function testFixURLinLocations3() : void {
      $text = '{{cite journal|url=http://www.apple.com/indes.html|location=http://www.apple.com/}}';
      $template = $this->process_citation($text);
      $this->assertNull($template->get2('location'));
      $this->assertSame('http://www.apple.com/indes.html', $template->get2('url'));
     }
-    public function testFixURLinLocations4() : void 
+    public function testFixURLinLocations4() : void {
      $text = '{{cite journal|url=http://www.apple.com/indes.html|location=http://www.ibm.com/}}';
      $template = $this->process_citation($text);
      $this->assertSame('http://www.ibm.com/', $template->get2('location'));
