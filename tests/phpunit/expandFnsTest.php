@@ -372,16 +372,32 @@ final class expandFnsTest extends testBaseClass {
   }
 
   public function testHostIsGoneDOI() : void {
-    $results = "";
+    $changed = FALSE;
+    $should = "\n";
+    $nulls = "";
     foreach (NULL_DOI_LIST as $doi) {
       $works = doi_works($doi);
       if ($works === TRUE) {
-         $results = $results . "  This DOI is now working: " . $doi . "       ";
+         $changed = TRUE;
+      } elseif ($works === FALSE) {
+         $should = $should . "'" . $doi . "',\n";
       } elseif ($works === NULL) { // These nulls are permanent and get mapped to FALSE
-         $results = $results . "  This DOI is being flagged as NULL: " . $doi . "       ";
+         $should = $should . "'" . $doi . "',\n";
+         $nulls = $nulls . "  This DOI is being flagged as NULL: " . $doi . "       ";
       }
     }
-    $this->assertSame("", $results);
+    if ($changed) {
+      $this->flush();
+      echo $should;
+      $this->flush();
+    }
+    if ($nulls !== "") {
+      $this->flush();
+      echo "\n\n" . $nulls . "\n\n";
+      $this->flush();    
+    }
+    $this->assertFalse($changed);
+    $this->assertSame("", $nulls);
   }
 
   public function testBankruptDOICompany() : void {
