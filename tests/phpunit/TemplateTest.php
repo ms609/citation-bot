@@ -4217,9 +4217,9 @@ EP - 999 }}';
   }
 
   public function testNullDOInoCrash() : void {
-    $text = '{{cite journal | doi=10.5604/01.3001.0012.8474 }}';
+    $text = '{{cite journal | doi=10.5604/01.3001.0012.8474 |doi-broken-date=<!-- --> }}';
     $template = $this->process_citation($text);
-    $this->assertSame('{{cite journal | doi=10.5604/01.3001.0012.8474 | s2cid=187373177 }}', $template->parsed_text());
+    $this->assertSame($text, $template->parsed_text());
   }
 
   public function testTidySomeStuff() : void {
