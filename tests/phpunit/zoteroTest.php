@@ -19,10 +19,12 @@ final class zoteroTest extends testBaseClass {
     $this->assertTrue(TRUE);
   }
 
-  public function testZoteroExpansion_biorxiv() : void {
+  public function testZoteroExpansion_biorxiv1() : void {
     $text = '{{Cite journal| biorxiv=326363 }}';
     $expanded = $this->process_citation($text);
     $this->assertSame('Sunbeam: An extensible pipeline for analyzing metagenomic sequencing experiments', $expanded->get2('title'));
+  }
+  public function testZoteroExpansion_biorxiv2() : void {
     $text = '{{Cite journal| biorxiv=326363 |doi=10.0000/Rubbish_bot_failure_test}}';
     $expanded = $this->process_citation($text);
     $this->assertSame('Sunbeam: An extensible pipeline for analyzing metagenomic sequencing experiments', $expanded->get2('title'));
@@ -277,15 +279,15 @@ final class zoteroTest extends testBaseClass {
     $url = '';
     $zotero_data[0] = (object) array('title' => 'oup accepted manuscript', 'itemType' => 'webpage');
     $zotero_response = json_encode($zotero_data);
-	Zotero::process_zotero_response($zotero_response, $template, $url, $access_date);
+    Zotero::process_zotero_response($zotero_response, $template, $url, $access_date);
     $this->assertSame($text, $template->parsed_text());
     $zotero_data[0] = (object) array('bookTitle' => 'oup accepted manuscript', 'itemType' => 'webpage', 'title'=> 'this is good stuff');
     $zotero_response = json_encode($zotero_data);
-	Zotero::process_zotero_response($zotero_response, $template, $url, $access_date);
+    Zotero::process_zotero_response($zotero_response, $template, $url, $access_date);
     $this->assertSame($text, $template->parsed_text());
     $zotero_data[0] = (object) array('publicationTitle' => 'oup accepted manuscript', 'itemType' => 'webpage', 'title'=> 'this is good stuff');
     $zotero_response = json_encode($zotero_data);
-	Zotero::process_zotero_response($zotero_response, $template, $url, $access_date);
+    Zotero::process_zotero_response($zotero_response, $template, $url, $access_date);
     $this->assertSame($text, $template->parsed_text());
   }
 
@@ -510,7 +512,7 @@ final class zoteroTest extends testBaseClass {
     $url = '';
     $zotero_data[0] = (object) array('title' => "������Junk�����������", 'itemType' => 'webpage');
     $zotero_response = json_encode($zotero_data);
-	Zotero::process_zotero_response($zotero_response, $template, $url, $access_date);
+    Zotero::process_zotero_response($zotero_response, $template, $url, $access_date);
     $this->assertNull($template->get2('title'));
   }
 
@@ -561,7 +563,7 @@ final class zoteroTest extends testBaseClass {
     $access_date = 0;
     $url = '';
     $zotero_response = 'No items returned from any translator';
-	Zotero::process_zotero_response($zotero_response, $template, $url, $access_date);
+    Zotero::process_zotero_response($zotero_response, $template, $url, $access_date);
     $this->assertSame($text, $template->parsed_text());
   }
 
@@ -571,7 +573,7 @@ final class zoteroTest extends testBaseClass {
     $access_date = 0;
     $url = '';
     $zotero_response = 'An error occurred during translation. Please check translation with the Zotero client.';
-	Zotero::process_zotero_response($zotero_response, $template, $url, $access_date);
+    Zotero::process_zotero_response($zotero_response, $template, $url, $access_date);
     $this->assertSame($text, $template->parsed_text());
   }
 
@@ -583,7 +585,7 @@ final class zoteroTest extends testBaseClass {
     $creators[0] = (object) array('creatorType' => 'author', 'firstName' => "Joe", "lastName" => "");
     $zotero_data[0] = (object) array('title' => 'Central Authentication Service', 'itemType' => 'report', 'creators' => $creators);
     $zotero_response = json_encode($zotero_data);
-	Zotero::process_zotero_response($zotero_response, $template, $url, $access_date);
+    Zotero::process_zotero_response($zotero_response, $template, $url, $access_date);
     $this->assertSame($text, $template->parsed_text());
   }
 
@@ -604,7 +606,7 @@ final class zoteroTest extends testBaseClass {
     $access_date = 0;
     $url = '';
     $zotero_response = 'Internal Server Error';
-	Zotero::process_zotero_response($zotero_response, $template, $url, $access_date);
+    Zotero::process_zotero_response($zotero_response, $template, $url, $access_date);
     $this->assertSame($text, $template->parsed_text());
   }
 
@@ -641,7 +643,7 @@ final class zoteroTest extends testBaseClass {
     $url = '';
     $zotero_data[0] = (object) array('date' => '12 December 2020', 'title' => 'Billy', 'itemType' => 'newspaperArticle', 'publicationTitle' => "X");
     $zotero_response = json_encode($zotero_data);
-	Zotero::process_zotero_response($zotero_response, $template, $url, $access_date);
+    Zotero::process_zotero_response($zotero_response, $template, $url, $access_date);
     $this->assertSame($text, $template->parsed_text());
   }
 
@@ -856,13 +858,14 @@ final class zoteroTest extends testBaseClass {
     $this->assertNull($template->get2('url'));
   }
 
-  public function testRemoveURLwithProxy3() : void { // CANONICAL_PUBLISHER_URLS
+  public function testRemoveURLwithProxy3a() : void { // CANONICAL_PUBLISHER_URLS
     $text = '{{cite journal|doi=10.1021/acs.analchem.8b04567|url=http://pubs.geoscienceworld.org|doi-access=free}}';
     $template = $this->make_citation($text);
     $tmp_array = [$template];
     Zotero::drop_urls_that_match_dois($tmp_array);
     $this->assertNotNull($template->get2('url'));
-
+  }
+  public function testRemoveURLwithProxy3b() : void { // CANONICAL_PUBLISHER_URLS
     $text = '{{cite journal|doi=10.1021/acs.analchem.8b04567|url=http://pubs.geoscienceworld.org|doi-access=free|issue=1|volume=1|pages=22-33|year=2022|journal=X|title=Y|author1=Y|author2=X}}';
     $template = $this->make_citation($text);
     $tmp_array = [$template];
@@ -870,7 +873,7 @@ final class zoteroTest extends testBaseClass {
     $this->assertNull($template->get2('url'));
   }
 
-   public function testUseArchive() : void {
+   public function testUseArchive1() : void {
     $text = '{{cite journal|archive-url=https://web.archive.org/web/20160418061734/http://www.weimarpedia.de/index.php?id=1&tx_wpj_pi1%5barticle%5d=104&tx_wpj_pi1%5baction%5d=show&tx_wpj_pi1%5bcontroller%5d=article&cHash=0fc8834241a91f8cb7d6f1c91bc93489}}';
     $template = $this->make_citation($text);
     $tmp_array = array($template);
@@ -882,7 +885,8 @@ final class zoteroTest extends testBaseClass {
       }
     }
     $this->assertSame('Goethe-Schiller-Denkmal - Weimarpedia', $template->get2('title'));
-
+   }
+   public function testUseArchive2() : void {
     $text = '{{cite journal|series=Xarchive-url=https://web.archive.org/web/20160418061734/http://www.weimarpedia.de/index.php?id=1&tx_wpj_pi1%5barticle%5d=104&tx_wpj_pi1%5baction%5d=show&tx_wpj_pi1%5bcontroller%5d=article&cHash=0fc8834241a91f8cb7d6f1c91bc93489}}';
     $template = $this->make_citation($text);
     $tmp_array = array($template);

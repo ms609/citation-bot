@@ -51,11 +51,15 @@ require_once __DIR__ . '/../testBaseClass.php';
       $this->assertFalse(WikipediaBot::NonStandardMode());
     }
 
-    public function testIsValidUser() : void {
+    public function testIsValidUser1() : void {
       $result = WikipediaBot::is_valid_user('Smith609');
       $this->assertSame(TRUE, $result);
+    }
+    public function testIsValidUser2() : void {
       $result = WikipediaBot::is_valid_user('Stanlha'); // Random user who exists but does not have page as of Nov 2017
       $this->assertSame(TRUE, $result);
+    }
+    public function testIsValidUser3() : void {
       $result = WikipediaBot::is_valid_user("David(Owner, Founder, Creator and Lead Developer)"); // Random user who has a name with funky characters
       $this->assertSame(TRUE, $result);
     }
@@ -140,19 +144,23 @@ require_once __DIR__ . '/../testBaseClass.php';
       $this->assertNotNull(WikipediaBot::response2page($response));
     }
 
-   public function test_resultsGood() : void {
+   public function test_resultsGood1() : void {
       $result = NULL;
       $this->assertFalse(WikipediaBot::resultsGood($result));
-
+   }
+   public function test_resultsGood2() : void {
       $result = (object) array ('edit' => 'nonresult');
       $this->assertFalse(WikipediaBot::resultsGood($result));
-
+   }
+   public function test_resultsGood3() : void {
       $result = (object) array ('error' => (object) array('code' => '3', 'info' => 'y'));
       $this->assertFalse(WikipediaBot::resultsGood($result));
-
+   }
+   public function test_resultsGood4() : void {
       $result = (object) array ('edit' => (object) array('result' => 'failed'));
       $this->assertFalse(WikipediaBot::resultsGood($result));
-
+   }
+   public function test_resultsGood5() : void {
       $result = (object) array ('edit' => (object) array('result' => 'Success'));
       $this->assertTrue(WikipediaBot::resultsGood($result));
   }
