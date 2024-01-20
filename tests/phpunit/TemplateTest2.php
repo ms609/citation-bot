@@ -823,14 +823,14 @@ final class TemplateTest2 extends testBaseClass {
     $this->assertNull($template->get2('isbn'));
    }
 
-  public function testIncomplete1() : void {
+  public function testIncomplete1a() : void {
     $text = "{{cite book|url=http://perma-archives.org/pqd1234|isbn=Xxxx|title=xxx|issue=a|volume=x}}"; // Non-date website
     $template = $this->make_citation($text);
     $this->assertTrue($template->profoundly_incomplete());
     $this->assertTrue($template->profoundly_incomplete('http://perma-archives.org/pqd1234'));
   }
   
-  public function testIncomplete1() : void {
+  public function testIncomplete1b() : void {
     $text = "{{cite book|url=http://a_perfectly_acceptable_website/pqd1234|isbn=Xxxx|issue=hh|volume=rrfff|title=xxx}}";
     $template = $this->make_citation($text);
     $this->assertTrue($template->profoundly_incomplete());
