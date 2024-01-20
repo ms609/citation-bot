@@ -129,6 +129,12 @@ function check_blocked() : void {
   }
 }
 
+// Allow cheap journals to work
+define('CONTEXT_INSECURE', stream_context_create(array(
+	   'ssl' => ['verify_peer' => FALSE, 'verify_peer_name' => FALSE, 'allow_self_signed' => TRUE, 'security_level' => 0, 'verify_depth' => 0],
+	   'http' => ['ignore_errors' => TRUE, 'max_redirects' => 40, 'timeout' => BOT_HTTP_TIMEOUT * 1.0, 'follow_location' => 1, 'header'=> ['Connection: close'], "user_agent" => BOT_USER_AGENT]
+);
+
 define("MAX_TRIES", 2);
 require_once 'Comment.php';
 require_once 'user_messages.php';
