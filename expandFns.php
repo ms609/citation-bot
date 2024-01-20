@@ -1432,9 +1432,9 @@ function is_hdl_works(string $hdl) : string|null|false {
       $headers_test = @get_headers($test_url, TRUE, CONTEXT_INSECURE); // @codeCoverageIgnore
   }
   if ($headers_test === FALSE) return NULL; // most likely bad, but will recheck again and again
+  if (empty($headers_test['Location']) && empty($headers_test['location'])) return FALSE; // leads nowhere
   if (interpret_doi_header($headers_test) === NULL) return NULL;
   if (interpret_doi_header($headers_test) === FALSE) return FALSE;
-  if (empty($headers_test['Location']) && empty($headers_test['location'])) return FALSE; // leads nowhere
   if (is_array(@$headers_test['Location'])) {
       $the_header_loc = (string) $headers_test['Location'][0];
   } elseif (is_array(@$headers_test['location'])) {
