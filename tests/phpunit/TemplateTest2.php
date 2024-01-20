@@ -1361,12 +1361,12 @@ final class TemplateTest2 extends testBaseClass {
     $template = $this->make_citation($text);
     $this->assertSame('2000', $template->year());
   }
-  public function testGetYear3() : void 
+  public function testGetYear3() : void {
     $text = "{{cite web|date=2000}}";
     $template = $this->make_citation($text);
     $this->assertSame('2000', $template->year());
   }
-  public function testGetYear4() : void 
+  public function testGetYear4() : void {
     $text = "{{cite web|year=2000}}";
     $template = $this->make_citation($text);
     $this->assertSame('2000', $template->year());
