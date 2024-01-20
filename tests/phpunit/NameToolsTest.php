@@ -65,12 +65,18 @@ final class NameToolsTest extends testBaseClass {
     $authors = ',a,';
     $result=format_multiple_authors($authors);
     $this->assertSame('A.', $result);
+  }
+  public function testFormatMultipleAuthors10() : void { 
     $authors = 'a';
     $result=format_multiple_authors($authors);
     $this->assertSame('A.', $result);
+  }
+  public function testFormatMultipleAuthors11() : void { 
     $authors = ',a';
     $result=format_multiple_authors($authors);
     $this->assertSame('A.', $result);
+  }
+  public function testFormatMultipleAuthors12() : void { 
     $authors = 'a,';
     $result=format_multiple_authors($authors);
     $this->assertSame('A.', $result);
@@ -208,8 +214,10 @@ final class NameToolsTest extends testBaseClass {
   public function testFormat2() : void {
     $this->assertSame('Johnson; Smith', format_surname('Johnson; Smith'));
   }
-  public function testFormat3() : void {
+  public function testFormat3a() : void {
     $this->assertSame('', format_author(''));
+  }
+  public function testFormat3b() : void {
     $this->assertSame('', format_multiple_authors(''));
   }
   public function testFormat4() : void {
@@ -219,8 +227,10 @@ final class NameToolsTest extends testBaseClass {
     $this->assertSame('Johnson, A. B. C. D. E. F. G', format_author('A. B. C. D. E. F. G. Johnson'));
   }
 
-  public function testCleanUpLastNames() : void {
+  public function testCleanUpLastNames1() : void {
     $this->assertSame('B A.', clean_up_last_names('B A.'));
+  }
+  public function testCleanUpLastNames2() : void {
     $this->assertSame('A.', clean_up_last_names('A.'));
   }
 }
