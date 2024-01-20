@@ -5,12 +5,6 @@ require_once 'constants.php';     // @codeCoverageIgnore
 require_once 'Template.php';      // @codeCoverageIgnore
 require_once 'big_jobs.php';      // @codeCoverageIgnore
 
-// Allow cheap journals to work
-const CONTEXT_INSECURE = array(
-	   'ssl' => ['verify_peer' => FALSE, 'verify_peer_name' => FALSE, 'allow_self_signed' => TRUE, 'security_level' => 0, 'verify_depth' => 0],
-	   'http' => ['ignore_errors' => TRUE, 'max_redirects' => 40, 'timeout' => BOT_HTTP_TIMEOUT * 1.0, 'follow_location' => 1, 'header'=> ['Connection: close'], "user_agent" => BOT_USER_AGENT]
-	   );
-
 final class HandleCache {
   // Greatly speed-up by having one array of each kind and only look for hash keys, not values
   private const MAX_CACHE_SIZE = 100000;
@@ -182,9 +176,8 @@ function is_doi_works(string $doi) : ?bool {
   throttle_dx();
 
   $url = "https://doi.org/" . doi_encode($doi);
-  $context = stream_context_create(CONTEXT_INSECURE);
   set_time_limit(120);
-  $headers_test = @get_headers($url , TRUE, $context);
+  $headers_test = @get_headers($url , TRUE, CONTEXT_INSECURE);
   if ($headers_test === FALSE) {
      if (strpos($doi, '10.2277/') === 0) return FALSE; // Rogue
      if (preg_match('~^10\.1038/nature\d{5}$~i', $doi)) return FALSE; // Nature dropped the ball
@@ -195,13 +188,13 @@ function is_doi_works(string $doi) : ?bool {
      sleep(2);                                                                                        // @codeCoverageIgnore
      report_inline(' .');                                                                             // @codeCoverageIgnore
      set_time_limit(120);                                                                             // @codeCoverageIgnore
-     $headers_test = @get_headers($url , TRUE, $context);  // @codeCoverageIgnore
+     $headers_test = @get_headers($url , TRUE, CONTEXT_INSECURE);  // @codeCoverageIgnore
   }
   if ($headers_test === FALSE) {
      sleep(5);                                                                                        // @codeCoverageIgnore
      set_time_limit(120);                                                                             // @codeCoverageIgnore
      report_inline(' .');                                                                             // @codeCoverageIgnore
-     $headers_test = @get_headers($url , TRUE, $context);  // @codeCoverageIgnore
+     $headers_test = @get_headers($url , TRUE, CONTEXT_INSECURE);  // @codeCoverageIgnore
   }
   if ($headers_test === FALSE) {
      if (!in_array($doi, NULL_DOI_LIST)) bot_debug_log('Got NULL for DOI: ' . echoable($doi));
@@ -214,7 +207,7 @@ function is_doi_works(string $doi) : ?bool {
   sleep(5);
   set_time_limit(120);
   report_inline(' .');
-  $headers_test = @get_headers($url , TRUE, $context);
+  $headers_test = @get_headers($url , TRUE, CONTEXT_INSECURE);
   /** We trust previous failure, so fail and null are both false **/
   if ($headers_test === FALSE) return FALSE;
   return (bool) interpret_doi_header($headers_test);
@@ -1420,16 +1413,15 @@ function hdl_works(string $hdl) : string|null|false {
 function is_hdl_works(string $hdl) : string|null|false {
   $hdl = trim($hdl);
   // See if it works
-  $context = stream_context_create(CONTEXT_INSECURE);
   usleep(100000);
   $test_url = "https://hdl.handle.net/" . $hdl;
   set_time_limit(120);
-  $headers_test = @get_headers($test_url, TRUE, $context);
+  $headers_test = @get_headers($test_url, TRUE, CONTEXT_INSECURE);
   if ($headers_test === FALSE) {
       sleep(5);                                                // @codeCoverageIgnore
       set_time_limit(120);                                     // @codeCoverageIgnore
       report_inline(' .');                                     // @codeCoverageIgnore
-      $headers_test = @get_headers($test_url, TRUE, $context); // @codeCoverageIgnore
+      $headers_test = @get_headers($test_url, TRUE, CONTEXT_INSECURE); // @codeCoverageIgnore
   }
   if ($headers_test === FALSE) return NULL; // most likely bad, but will recheck again and again
   if (empty($headers_test['Location']) && empty($headers_test['location'])) return FALSE; // leads nowhere
