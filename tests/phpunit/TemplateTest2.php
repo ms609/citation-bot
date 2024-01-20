@@ -2452,12 +2452,12 @@ final class TemplateTest2 extends testBaseClass {
     $this->assertNotNull($template->get2('url'));
     $this->assertSame('{{ProQuest|12341234}}', $template->get2('id'));
   }
-  public function testConversionOfURL6b() : void 
+  public function testConversionOfURL6b() : void {
     $text = "{{cite web|url=http://search.proquest.com/docview/12341234}}";  // No title
     $template = $this->make_citation($text);
     $this->assertFalse($template->get_identifiers_from_url());
   }
-  public function testConversionOfURL6c() : void 
+  public function testConversionOfURL6c() : void {
     $text = "{{cite web|url=http://search.proquest.com/docview/12341234|title=X|id=<!--- --->}}";  // Blocked by comment
     $template = $this->make_citation($text);
     $this->assertFalse($template->get_identifiers_from_url());
