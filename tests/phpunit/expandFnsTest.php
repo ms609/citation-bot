@@ -377,8 +377,8 @@ final class expandFnsTest extends testBaseClass {
       $works = doi_works($doi);
       if ($works === TRUE) {
          $results = $results . "  This DOI is now working: " . $doi . "       ";
-      } elseif ($works === FALSE) {
-         $results = $results . "  This DOI is now longer giving NULL: " . $doi . "       ";
+      } elseif ($works === NULL) { // These nulls are permanent and get mapped to FALSE
+         $results = $results . "  This DOI is being flagged as NULL: " . $doi . "       ";
       }
     }
     $this->assertSame("", $results);
