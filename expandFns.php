@@ -190,6 +190,7 @@ function is_doi_works(string $doi) : ?bool {
      if (stripos($doi, '10.17312/harringtonparkpress/') === 0) return FALSE;
      if (stripos($doi, '10.3149/csm.') === 0) return FALSE;
      if (stripos($doi, '10.5047/meep.') === 0) return FALSE;
+     if (stripos($doi, '10.4435/BSPI.') === 0) return FALSE;
      sleep(2);                                                                                        // @codeCoverageIgnore
      report_inline(' .');                                                                             // @codeCoverageIgnore
      set_time_limit(120);                                                                             // @codeCoverageIgnore
