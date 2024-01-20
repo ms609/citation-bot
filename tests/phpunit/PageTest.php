@@ -410,24 +410,34 @@ final class PageTest extends testBaseClass {
       $text = '{{cite thesis|url=https://mathscinet.ams.org/mathscinet-getitem?mr=1234}}{{bots|allow=Citation Bot}}';
       $page = $this->process_page($text);
       $this->assertSame('{{cite thesis|url=https://mathscinet.ams.org/mathscinet-getitem?mr=1234 | mr=1234 }}{{bots|allow=Citation Bot}}', $page->parsed_text());
+  }
+  public function testNobots5() : void {
       $text = '{{cite thesis|url=https://mathscinet.ams.org/mathscinet-getitem?mr=1234}}{{bots|allow=none}}';
       $page = $this->process_page($text);
       $this->assertSame($text, $page->parsed_text());
+  }
+  public function testNobots6() : void {
       $text = '{{cite thesis|url=https://mathscinet.ams.org/mathscinet-getitem?mr=1234}}{{bots|allow=BobsCoolBot}}';
       $page = $this->process_page($text);
       $this->assertSame($text, $page->parsed_text());
   }
 
-  public function testODNB() : void {
+  public function testODNB1() : void {
    $text='{{Cite ODNB|title=Pierrepoint, Albert, (1905–1992)|ref=harv}} {{ODNBsub}}';
    $page = $this->process_page($text);
    $this->assertSame('{{Cite ODNB|title=Pierrepoint, Albert, (1905–1992)}} ', $page->parsed_text());
+  }
+  public function testODNB2() : void {
    $text='{{Cite ODNB|title=Pierrepoint, Albert,_(1905–1992)}} {{ODNBsub}}';
    $page = $this->process_page($text);
    $this->assertSame('{{Cite ODNB|title=Pierrepoint, Albert,_(1905–1992)}} ', $page->parsed_text());
+  }
+  public function testODNB3() : void {
    $text='{{Cite ODNB|title=Pierrepoint,_Albert,_(1905–1992)}} {{ODNBsub}}';
    $page = $this->process_page($text);
    $this->assertSame($text, $page->parsed_text()); // two underscores
+  }
+  public function testODNB4() : void {
    $text='{{Cite ODNB|title=Pierrepoint, Albert, (1905–1992)}}{{Yup}}{{ODNBsub}}';
    $page = $this->process_page($text);
    $this->assertSame($text, $page->parsed_text()); // template in the way
