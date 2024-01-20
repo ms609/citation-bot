@@ -122,15 +122,16 @@ function is_doi_active(string $doi) : ?bool {
 		CURLOPT_URL => $url
 		]);				 
   $headers_test = @curl_exec($ch);
-  if ($headers_test === FALSE) {
-    sleep(2);                                           // @codeCoverageIgnore
-    report_inline(' .');                                // @codeCoverageIgnore
-    $headers_test = @curl_exec($ch); // @codeCoverageIgnore
+  if ($headers_test === FALSE || (curl_getinfo($ch, CURLINFO_RESPONSE_CODE) === 503)) {
+    sleep(4);
+    report_inline(' .');
+    $headers_test = @curl_exec($ch);
   }
   if ($headers_test === FALSE) return NULL; // most likely bad, but will recheck again an again
   $response_code = curl_getinfo($ch, CURLINFO_RESPONSE_CODE);
   if ($response_code === 200) return TRUE;
   if ($response_code === 404) return FALSE;
+  if ($response_code === 503) return NULL;
   $err = "CrossRef server error loading headers for DOI " . echoable($doi . " : " . (string) $response_code); // @codeCoverageIgnore
   bot_debug_log($err);   // @codeCoverageIgnore
   report_warning($err);  // @codeCoverageIgnore
