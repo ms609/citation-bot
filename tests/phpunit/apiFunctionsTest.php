@@ -782,11 +782,13 @@ final class apiFunctionsTest extends testBaseClass {
     $this->assertNull($prepared->get2('title'));
   }
 
-  public function testBlankTypeFromDX() : void {
+  public function testBlankTypeFromDX1() : void {
     $text = "{{cite book| doi=10.14989/doctor.k19250 }}";
     $prepared = $this->process_citation($text);
     $this->assertSame('2015', $prepared->get2('date'));
+  }
 
+  public function testBlankTypeFromDX2() : void {
     $text = "{{Cite journal|doi=10.26099/aacp-5268}}";
     $prepared = $this->process_citation($text);
     $this->assertSame('Collins', $prepared->get2('last1'));
