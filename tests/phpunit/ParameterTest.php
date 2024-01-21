@@ -145,13 +145,14 @@ final class ParameterTest extends testBaseClass {
   }
 
   public function testHasCommentInValueMany() : void {
-    $text = "# # # CITATION_BOT_PLACEHOLDER_COMMENT 1 # # # archivedate # # # CITATION_BOT_PLACEHOLDER_COMMENT 2 # # # = # # # CITATION_BOT_PLACEHOLDER_COMMENT 3 # # # 24 April 2008 # # # CITATION_BOT_PLACEHOLDER_COMMENT 4 # # # # # # CITATION_BOT_PLACEHOLDER_COMMENT 5 # # #";
+    $text = "# # # CITATION_BOT_PLACEHOLDER_COMMENT 1 # # # # # # CITATION_BOT_PLACEHOLDER_COMMENT 7 # # # archivedate # # # CITATION_BOT_PLACEHOLDER_COMMENT 9 # # #  # # # CITATION_BOT_PLACEHOLDER_COMMENT 2 # # # = # # # CITATION_BOT_PLACEHOLDER_COMMENT 3 # # # 24 April 2008 # # # CITATION_BOT_PLACEHOLDER_COMMENT 4 # # # # # # CITATION_BOT_PLACEHOLDER_COMMENT 5 # # #";
     $parameter = $this->parameter_parse_text_helper($text);
-    $this->assertSame('# # # CITATION_BOT_PLACEHOLDER_COMMENT 1 # # # ', $parameter->pre);
-    $this->assertSame('archivedate', $parameter->param);
-    $this->assertSame(' # # # CITATION_BOT_PLACEHOLDER_COMMENT 2 # # # = ', $parameter->eq);
-    $this->assertSame(# # # CITATION_BOT_PLACEHOLDER_COMMENT 3 # # # 24 April 2008 # # # CITATION_BOT_PLACEHOLDER_COMMENT 4 # # # # # # CITATION_BOT_PLACEHOLDER_COMMENT 5 # # #", $parameter->val);
-    $this->assertSame("", $parameter->post);
+    $this->assertSame('# # # CITATION_BOT_PLACEHOLDER_COMMENT 1 # # # # # # CITATION_BOT_PLACEHOLDER_COMMENT 7 # # # ', $parameter->pre);
+    $this->assertSame('archivedate', $parameter->param); // This is the key one
+    $this->assertSame(' # # # CITATION_BOT_PLACEHOLDER_COMMENT 9 # # #  # # # CITATION_BOT_PLACEHOLDER_COMMENT 2 # # # = ', $parameter->eq);
+    $this->assertSame('# # # CITATION_BOT_PLACEHOLDER_COMMENT 3 # # # 24 April 2008 # # # CITATION_BOT_PLACEHOLDER_COMMENT 4 # # # # # # CITATION_BOT_PLACEHOLDER_COMMENT 5 # # #', $parameter->val);
+    $this->assertSame('', $parameter->post);
+    $this->assertSame($text, $parameter->parsed_text());
   }  
 
   public function testHasUnreplacedCommentInValue() : void {
