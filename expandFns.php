@@ -45,14 +45,17 @@ final class HandleCache {
 	       2*count(self::$cache_hdl_loc) + // These include a path too
 	       count(self::$cache_hdl_null);
       if ($usage > self::MAX_CACHE_SIZE) {
-	self::$cache_active = [];
-	self::$cache_inactive  = [];
-	self::$cache_good = [];
-	self::$cache_hdl_loc = [];
-	self::$cache_hdl_bad  = self::BAD_DOI_ARRAY;
-	self::$cache_hdl_null = [];
-	gc_collect_cycles();
+	self::free_memory();
       }
+  }
+  public static function free_memory() : void {
+      self::$cache_active = [];
+      self::$cache_inactive  = [];
+      self::$cache_good = [];
+      self::$cache_hdl_loc = [];
+      self::$cache_hdl_bad  = self::BAD_DOI_ARRAY;
+      self::$cache_hdl_null = [];
+      gc_collect_cycles();
   }
 }
 
