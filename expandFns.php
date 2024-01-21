@@ -1377,6 +1377,7 @@ function bot_html_footer() : void {
    **/
 function hdl_works(string $hdl) : string|null|false {
   $hdl = trim($hdl);
+  $hdl = str_replace('%2F', '/', $hdl);
   // And now some obvious fails
   if (strpos($hdl, '/') === FALSE) return FALSE;
   if (strpos($hdl, 'CITATION_BOT_PLACEHOLDER') !== FALSE) return FALSE;
