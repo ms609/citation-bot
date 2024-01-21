@@ -1419,8 +1419,12 @@ function is_hdl_works(string $hdl) : string|null|false {
       $the_header_loc = (string) $headers_test['Location'][0];
   } elseif (isset($headers_test['location'][0]) && is_array(@$headers_test['location'])) {
       $the_header_loc = (string) $headers_test['location'][0];
+  } elseif (isset($headers_test['location'])) {
+      $the_header_loc = (string) $headers_test['location'];
+  } elseif (isset($headers_test['Location'])) {
+      $the_header_loc = (string) $headers_test['Location'];
   } else {
-      $the_header_loc = (string) @$headers_test['Location'] . (string) @$headers_test['location'];
+      $the_header_loc = NULL;
   }
   return $the_header_loc;
 }
