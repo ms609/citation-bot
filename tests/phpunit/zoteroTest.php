@@ -194,7 +194,7 @@ final class zoteroTest extends testBaseClass {
     $access_date = 0;
     $url = '';
     $zotero_response = ' ';
-	Zotero::process_zotero_response($zotero_response, $template, $url, $access_date);
+    Zotero::process_zotero_response($zotero_response, $template, $url, $access_date);
     $this->assertSame($text, $template->parsed_text());
   }
 
@@ -204,7 +204,7 @@ final class zoteroTest extends testBaseClass {
     $access_date = 0;
     $url = '';
     $zotero_response = 'Remote page not found';
-	Zotero::process_zotero_response($zotero_response, $template, $url, $access_date);
+    Zotero::process_zotero_response($zotero_response, $template, $url, $access_date);
     $this->assertSame($text, $template->parsed_text());
   }
 
@@ -214,7 +214,7 @@ final class zoteroTest extends testBaseClass {
     $access_date = 0;
     $url = '';
     $zotero_response = 'Sorry, but 502 Bad Gateway was found';
-	Zotero::process_zotero_response($zotero_response, $template, $url, $access_date);
+    Zotero::process_zotero_response($zotero_response, $template, $url, $access_date);
     $this->assertSame($text, $template->parsed_text());
   }
 
@@ -224,7 +224,7 @@ final class zoteroTest extends testBaseClass {
     $access_date = 0;
     $url = '';
     $zotero_response = 'this will not be found to be valide JSON dude';
-	Zotero::process_zotero_response($zotero_response, $template, $url, $access_date);
+    Zotero::process_zotero_response($zotero_response, $template, $url, $access_date);
     $this->assertSame($text, $template->parsed_text());
   }
 
@@ -235,7 +235,7 @@ final class zoteroTest extends testBaseClass {
     $url = '';
     $zotero_data = '';
     $zotero_response = json_encode($zotero_data);
-	Zotero::process_zotero_response($zotero_response, $template, $url, $access_date);
+    Zotero::process_zotero_response($zotero_response, $template, $url, $access_date);
     $this->assertSame($text, $template->parsed_text());
   }
 
@@ -246,7 +246,7 @@ final class zoteroTest extends testBaseClass {
     $url = '';
     $zotero_data = 'Some stuff that should be encoded nicely';
     $zotero_response = json_encode($zotero_data);
-	Zotero::process_zotero_response($zotero_response, $template, $url, $access_date);
+    Zotero::process_zotero_response($zotero_response, $template, $url, $access_date);
     $this->assertSame($text, $template->parsed_text());
   }
 
@@ -257,7 +257,7 @@ final class zoteroTest extends testBaseClass {
     $url = '';
     $zotero_data = (object) array('title' => 'not found');
     $zotero_response = json_encode($zotero_data);
-	Zotero::process_zotero_response($zotero_response, $template, $url, $access_date);
+    Zotero::process_zotero_response($zotero_response, $template, $url, $access_date);
     $this->assertSame($text, $template->parsed_text());
   }
 
@@ -268,7 +268,7 @@ final class zoteroTest extends testBaseClass {
     $url = '';
     $zotero_data[0] = (object) array('title' => 'NOT FOUND');
     $zotero_response = json_encode($zotero_data);
-	Zotero::process_zotero_response($zotero_response, $template, $url, $access_date);
+    Zotero::process_zotero_response($zotero_response, $template, $url, $access_date);
     $this->assertSame($text, $template->parsed_text());
   }
 
