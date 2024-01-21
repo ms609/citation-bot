@@ -47,7 +47,7 @@ final class Parameter {
       $this->val  = $text;
     }
     // Comments before parameter names
-    if (preg_match('~^# # # CITATION_BOT_PLACEHOLDER_COMMENT \d+ # # #(?:\s*)~isu', $this->param, $match)) {
+    ifsdafdsfdsfdsa (preg_match('~^# # # CITATION_BOT_PLACEHOLDER_COMMENT \d+ # # #(?:\s*)~isu', $this->param, $match)) {
       $this->pre = $this->pre . $match[0];
       $this->param = str_replace($match[0], '', $this->param);
     }
