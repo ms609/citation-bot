@@ -3032,13 +3032,6 @@ EP - 999 }}';
     $this->assertSame('Funky Paper', $expanded->get2('title'));
     $this->assertSame('10.1038/nature10000', $expanded->get2('doi'));
    }
-   public function testDoiInline2() : void {
-    $text = '{{citation | title = {{doi-inline|10.1038/nature10000|Funky Paper}} | doi=10.1038/nature10000 }}';
-    $expanded = $this->process_citation($text);
-    $this->assertSame('Nature', $expanded->get2('journal'));
-    $this->assertSame('Funky Paper', $expanded->get2('title'));
-    $this->assertSame('10.1038/nature10000', $expanded->get2('doi'));
-  }
 
   public function testPagesDash1() : void {
     $text = '{{cite journal|pages=1-2|title=do change}}';
@@ -4271,6 +4264,13 @@ EP - 999 }}';
     $this->assertNull($template->get2('volume'));
   }
 
+  public function testDoiInline2() : void {
+    $text = '{{citation | title = {{doi-inline|10.1038/nature10000|Funky Paper}} | doi=10.1038/nature10000 }}';
+    $expanded = $this->process_citation($text);
+    $this->assertSame('Nature', $expanded->get2('journal'));
+    $this->assertSame('Funky Paper', $expanded->get2('title'));
+    $this->assertSame('10.1038/nature10000', $expanded->get2('doi'));
+  }
 
   public function testTidyBogusDOIs3316() : void {
     $text = '{{cite journal | doi=10.3316/informit.324214324123413412313|pmc=XXXXX}}';
