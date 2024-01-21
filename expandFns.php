@@ -91,6 +91,7 @@ function doi_works(string $doi) : ?bool {
         HandleCache::$cache_good[$doi] = TRUE;
         return TRUE;
     }
+    bot_debug_log('Got NULL for DOI: ' . echoable($doi));
     if (abs(time() - $start_time) < max(BOT_HTTP_TIMEOUT, BOT_CONNECTION_TIMEOUT))
     {
       return NULL;
@@ -187,13 +188,14 @@ function is_doi_works(string $doi) : ?bool {
      if (stripos($doi, '10.3149/csm.') === 0) return FALSE;
      if (stripos($doi, '10.5047/meep.') === 0) return FALSE;
      if (stripos($doi, '10.4435/BSPI.') === 0) return FALSE;
+     if (in_array($doi, NULL_DOI_LIST)) return NULL;
+     if (in_array($doi, NULL_DOI_BUT_GOOD)) return NULL;
      $headers_test = get_headers_array($url);  // @codeCoverageIgnore
   }
   if ($headers_test === FALSE) {
      $headers_test = get_headers_array($url);  // @codeCoverageIgnore
   }
   if ($headers_test === FALSE) {
-     if (!in_array($doi, NULL_DOI_LIST)) bot_debug_log('Got NULL for DOI: ' . echoable($doi));
      return NULL; // most likely bad, but will recheck again and again - note that NULL means do not add or remove doi-broken-date from pages
   }
   if (interpret_doi_header($headers_test) !== FALSE) {
