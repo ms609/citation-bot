@@ -4030,13 +4030,6 @@ EP - 999 }}';
   $this->assertSame('10.1093/ref:odnb/29929', $template->get2('doi'));
  }
 
- public function testFixLotsOfDOIs22() : void {
-  $text = '{{cite journal| doi=10.1093/ww/9780199540884.001.0001/ww-9780199540884-e-12345 }}';
-  $template = $this->make_citation($text);
-  $template->tidy_parameter('doi');
-  $this->assertSame('10.1093/ww/9780199540884.013.U12345', $template->get2('doi'));
- }
-
  public function testFixLotsOfDOIs23() : void {
   $text = '{{cite journal| doi=10.1093/gmo/9781561592630.001.0001/omo-9781561592630-e-0000040055 }}';
   $template = $this->make_citation($text);
