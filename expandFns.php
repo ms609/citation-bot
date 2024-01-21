@@ -155,7 +155,6 @@ function throttle_archive () : void {
 }
 
 function is_doi_works(string $doi) : ?bool {
-  set_time_limit(120);
   $doi = trim($doi);
   // And now some obvious fails
   if (strpos($doi, '/') === FALSE) return FALSE;
@@ -180,7 +179,6 @@ function is_doi_works(string $doi) : ?bool {
   throttle_dx();
 
   $url = "https://doi.org/" . doi_encode($doi);
-  set_time_limit(120);
   $headers_test = get_headers_array($url);
   if ($headers_test === FALSE) {
      if (strpos($doi, '10.2277/') === 0) return FALSE; // Rogue
@@ -189,15 +187,9 @@ function is_doi_works(string $doi) : ?bool {
      if (stripos($doi, '10.3149/csm.') === 0) return FALSE;
      if (stripos($doi, '10.5047/meep.') === 0) return FALSE;
      if (stripos($doi, '10.4435/BSPI.') === 0) return FALSE;
-     sleep(2);                                                                                        // @codeCoverageIgnore
-     report_inline(' .');                                                                             // @codeCoverageIgnore
-     set_time_limit(120);                                                                             // @codeCoverageIgnore
      $headers_test = get_headers_array($url);  // @codeCoverageIgnore
   }
   if ($headers_test === FALSE) {
-     sleep(5);                                                                                        // @codeCoverageIgnore
-     set_time_limit(120);                                                                             // @codeCoverageIgnore
-     report_inline(' .');                                                                             // @codeCoverageIgnore
      $headers_test = get_headers_array($url);  // @codeCoverageIgnore
   }
   if ($headers_test === FALSE) {
@@ -208,9 +200,6 @@ function is_doi_works(string $doi) : ?bool {
        return interpret_doi_header($headers_test);
   }
   // Got 404 - try again, since we cache this and add doi-broken-date to pages, we should be double sure
-  sleep(5);
-  set_time_limit(120);
-  report_inline(' .');
   $headers_test = get_headers_array($url);
   /** We trust previous failure, so fail and null are both false **/
   if ($headers_test === FALSE) return FALSE;
@@ -1416,15 +1405,10 @@ function hdl_works(string $hdl) : string|null|false {
    **/
 function is_hdl_works(string $hdl) : string|null|false {
   $hdl = trim($hdl);
-  // See if it works
   usleep(100000);
-  $test_url = "https://hdl.handle.net/" . $hdl;
-  set_time_limit(120);
+  $url = "https://hdl.handle.net/" . $hdl;
   $headers_test = get_headers_array($url);
   if ($headers_test === FALSE) {
-      sleep(5);                                                // @codeCoverageIgnore
-      set_time_limit(120);                                     // @codeCoverageIgnore
-      report_inline(' .');                                     // @codeCoverageIgnore
       $headers_test = get_headers_array($url); // @codeCoverageIgnore
   }
   if ($headers_test === FALSE) return NULL; // most likely bad, but will recheck again and again
@@ -2492,7 +2476,8 @@ function clean_dates(string $input) : string { // See https://en.wikipedia.org/w
 }
 
 /** @return false|array<mixed> **/
-function get_headers_array($url) : false|array {
+function get_headers_array(string $url) : false|array {
+  static $last_url = "none yet";
   // Allow cheap journals to work
   static $context_insecure;
   if (!isset($context_insecure)) {
@@ -2500,5 +2485,11 @@ function get_headers_array($url) : false|array {
       'ssl' => ['verify_peer' => FALSE, 'verify_peer_name' => FALSE, 'allow_self_signed' => TRUE, 'security_level' => 0, 'verify_depth' => 0],
       'http' => ['ignore_errors' => TRUE, 'max_redirects' => 40, 'timeout' => BOT_HTTP_TIMEOUT * 1.0, 'follow_location' => 1, 'header'=> ['Connection: close'], "user_agent" => BOT_USER_AGENT]));
   }
+  set_time_limit(120);
+  if ($last_url === $url) {
+     sleep(5);
+     report_inline(' .');
+  }
+  $last_url = $url;
   return @get_headers($url, TRUE, $context_insecure);
 }
