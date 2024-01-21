@@ -1415,9 +1415,9 @@ function is_hdl_works(string $hdl) : string|null|false {
   if (empty($headers_test['Location']) && empty($headers_test['location'])) return FALSE; // leads nowhere
   if (interpret_doi_header($headers_test) === NULL) return NULL;
   if (interpret_doi_header($headers_test) === FALSE) return FALSE;
-  if (!is_null(@$headers_test['Location'][0])) {
+  if (isset($headers_test['Location'][0]) && is_array(@$headers_test['Location'][0])) {
       $the_header_loc = (string) $headers_test['Location'][0];
-  } elseif (!is_null(@$headers_test['location'][0])) {
+  } elseif (isset($headers_test['location'][0]) && is_array(@$headers_test['location'][0])) {
       $the_header_loc = (string) $headers_test['location'][0];
   } else {
       $the_header_loc = (string) @$headers_test['Location'] . (string) @$headers_test['location'];
