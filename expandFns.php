@@ -95,6 +95,10 @@ function doi_works(string $doi) : ?bool {
         HandleCache::$cache_hdl_bad[$doi] = TRUE;
         return FALSE;
     }
+    if (in_array($doi, NULL_DOI_BUT_GOOD)) { // These are know to be good, but null since PDF
+        HandleCache::$cache_good[$doi] = TRUE;
+        return TRUE;
+    }
     if (abs(time() - $start_time) < max(BOT_HTTP_TIMEOUT, BOT_CONNECTION_TIMEOUT))
     {
       return NULL;
