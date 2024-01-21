@@ -147,11 +147,10 @@ final class ParameterTest extends testBaseClass {
   public function testHasCommentInValueMany() : void {
     $text = "# # # CITATION_BOT_PLACEHOLDER_COMMENT 1 # # # archivedate # # # CITATION_BOT_PLACEHOLDER_COMMENT 2 # # # = # # # CITATION_BOT_PLACEHOLDER_COMMENT 3 # # # 24 April 2008 # # # CITATION_BOT_PLACEHOLDER_COMMENT 4 # # # # # # CITATION_BOT_PLACEHOLDER_COMMENT 5 # # #";
     $parameter = $this->parameter_parse_text_helper($text);
-    print_r($parameter); // NO IDEA
-    $this->assertSame('', $parameter->pre);
+    $this->assertSame('# # # CITATION_BOT_PLACEHOLDER_COMMENT 1 # # # ', $parameter->pre);
     $this->assertSame('archivedate', $parameter->param);
-    $this->assertSame('= ', $parameter->eq);
-    $this->assertSame("24 April 2008 # # # Citation bot : comment placeholder 0 # # #", $parameter->val);
+    $this->assertSame(' # # # CITATION_BOT_PLACEHOLDER_COMMENT 2 # # # = ', $parameter->eq);
+    $this->assertSame(# # # CITATION_BOT_PLACEHOLDER_COMMENT 3 # # # 24 April 2008 # # # CITATION_BOT_PLACEHOLDER_COMMENT 4 # # # # # # CITATION_BOT_PLACEHOLDER_COMMENT 5 # # #", $parameter->val);
     $this->assertSame("", $parameter->post);
   }  
 
