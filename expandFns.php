@@ -1433,27 +1433,16 @@ function is_hdl_works(string $hdl) : string|null|false {
   }
   if ($headers_test === FALSE) return NULL; // most likely bad, but will recheck again and again
   if (empty($headers_test['Location']) && empty($headers_test['location'])) return FALSE; // leads nowhere
+  if (interpret_doi_header($headers_test) === NULL) return NULL;
+  if (interpret_doi_header($headers_test) === FALSE) return FALSE;
   if (is_array(@$headers_test['Location'])) {
-      $the_header_loc = (string) $headers_test['Location'][0]; // @codeCoverageIgnore
+      $the_header_loc = (string) $headers_test['Location'][0];
   } elseif (is_array(@$headers_test['location'])) {
-      $the_header_loc = (string) $headers_test['location'][0]; // @codeCoverageIgnore
+      $the_header_loc = (string) $headers_test['location'][0];
   } else {
       $the_header_loc = (string) @$headers_test['Location'] . (string) @$headers_test['location'];
   }
-  /** @psalm-suppress InvalidArrayOffset */
-  $resp0 = (string) @$headers_test['0'];
-  /** @psalm-suppress InvalidArrayOffset */
-  $resp1 = (string) @$headers_test['1'];
-  if (stripos($resp0, '404 Not Found') !== FALSE         || stripos($resp0, 'HTTP/1.1 404') !== FALSE) return FALSE; // Bad
-  if ($resp1 !== '') {
-     if (stripos($resp1, '404 Not Found') !== FALSE      || stripos($resp1, 'HTTP/1.1 404') !== FALSE) return FALSE; // Bad next location
-  }
-  if (stripos($resp0, '302 Found') !== FALSE             || stripos($resp0, 'HTTP/1.1 302') !== FALSE) return $the_header_loc;  // Good
-  // @codeCoverageIgnoreStart
-  if (stripos($resp0, '301 Moved Permanently') !== FALSE || stripos($resp0, 'HTTP/1.1 301') !== FALSE) return $the_header_loc;  // Good, but only for moved DOIs and those will be checked with doi_works()
-  report_minor_error("Unexpected response in is_hdl_works " . echoable($resp0));
-  return NULL;
-  // @codeCoverageIgnoreEnd
+  return $the_header_loc;
 }
 
 // Sometimes (UTF-8 non-english characters) preg_replace fails, and we would rather have the original string than a null
