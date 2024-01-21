@@ -2494,8 +2494,11 @@ function clean_dates(string $input) : string { // See https://en.wikipedia.org/w
 /** @return false|array<mixed> **/
 function get_headers_array($url) : false|array {
   // Allow cheap journals to work
-  static $context_insecure = stream_context_create(array(
+  static $context_insecure;
+  if (!isset($context_insecure)) {
+    $context_insecure = stream_context_create(array(
       'ssl' => ['verify_peer' => FALSE, 'verify_peer_name' => FALSE, 'allow_self_signed' => TRUE, 'security_level' => 0, 'verify_depth' => 0],
       'http' => ['ignore_errors' => TRUE, 'max_redirects' => 40, 'timeout' => BOT_HTTP_TIMEOUT * 1.0, 'follow_location' => 1, 'header'=> ['Connection: close'], "user_agent" => BOT_USER_AGENT]));
+  }
   return @get_headers($url, TRUE, $context_insecure);
 }
