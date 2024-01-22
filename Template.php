@@ -4185,6 +4185,11 @@ final class Template {
 			$this->forget('doi');
 			return;
 		  }
+		  if ($doi === '10.7556/jaoa') {
+			// Over truncated
+			$this->forget('doi');
+			return;
+		  }
 		  if (stripos($doi, '10.48550/arXiv.') === 0) {
 			 $pos0 = strtolower(substr($doi, 15));
 			 $pos1 = strtolower($this->get('eprint'));
