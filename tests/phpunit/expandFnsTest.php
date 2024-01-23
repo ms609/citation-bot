@@ -375,7 +375,11 @@ final class expandFnsTest extends testBaseClass {
     $changed = FALSE;
     $should = "\n";
     $nulls = "";
+    $both = "":
     foreach (NULL_DOI_LIST as $doi) {
+      if (in_array($doi, NULL_DOI_BUT_GOOD)) {
+        $both = $both . "   In Both: " . $doi . "      ";
+      }    
       $works = doi_works($doi);
       if ($works === TRUE) {
          $changed = TRUE;
@@ -396,8 +400,14 @@ final class expandFnsTest extends testBaseClass {
       echo "\n\n" . $nulls . "\n\n";
       $this->flush();    
     }
-    $this->assertFalse($changed);
+    if ($both !== "") {
+      $this->flush();
+      echo "\n\n" . $both . "\n\n";
+      $this->flush();    
+    }
     $this->assertSame("", $nulls);
+    $this->assertSame("", $both);
+    $this->assertFalse($changed);
   }
 
   public function testBankruptDOICompany() : void {
