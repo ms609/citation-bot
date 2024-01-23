@@ -78,7 +78,7 @@ const ALL_URL_TYPES = array('url', 'article-url', 'chapter-url', 'chapterurl', '
 		  'layurl', 'map-url', 'mapurl', 'section-url', 'sectionurl', 'transcript-url',
 		  'transcripturl', 'URL'); // Some of these are no longer valid
 
-const DATES_TO_CLEAN = array('air-date', 'airdate', 'archive-date', 'archivedate', 'date', 'pmc-embargo-date', 'publication-date',
+const DATES_TO_CLEAN = array('air-date', 'airdate', 'archive-date', 'archivedate', 'date', 'pmc-embargo-date', 'publication-date', 'year',
 			     'lay-date', 'archive-date', 'archivedate', 'accessdate', 'access-date', 'orig-date', 'doi-broken-date');
 
 const AUTHOR_PARAMETERS = array(
