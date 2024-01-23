@@ -375,7 +375,7 @@ final class expandFnsTest extends testBaseClass {
     $changed = FALSE;
     $should = "\n";
     $nulls = "";
-    $both = "":
+    $both = "";
     foreach (NULL_DOI_LIST as $doi) {
       if (in_array($doi, NULL_DOI_BUT_GOOD)) {
         $both = $both . "   In Both: " . $doi . "      ";
