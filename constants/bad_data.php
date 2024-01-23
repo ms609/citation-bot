@@ -910,6 +910,7 @@ const JOURNAL_IS_BOOK_SERIES = array(
 	 'lecture notes in computer science',
 	 'lecture notes in mathematics',
 	 'lecture notes in physics',
+	 'current topics in microbiology and immunology',
 	 'advances in pharmacology (san diego, calif )',
 	 'advances in pharmacology', 'inorganic syntheses',
 	 'advances in enzymology and related areas of molecular biology',
