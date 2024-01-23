@@ -6467,7 +6467,7 @@ final class Template {
 		  $this->rename('journal', 'title');
 	  }
 	  if ($this->has('series') && stripos($this->get('title'), $this->get('series')) !== FALSE &&
-	      'Surtees Society' !== $this->get('series') && !preg_match(~^\d+$~,$this->get('series'))) {
+	      'Surtees Society' !== $this->get('series') && !preg_match('~^\d+$~',$this->get('series'))) {
 		  $this->forget('series');
 	  }
 
