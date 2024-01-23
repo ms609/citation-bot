@@ -982,8 +982,12 @@ const DOI_FREE_PREFIX = array('10.1100/', '10.11131/', '10.11569/', '10.11647/',
 		  '10.7759/cureus.', '10.1099/acmi', '10.1099/mic', '10.1099/00221287', '10.1099/mgen', '10.1045/',
 		  '10.1096/',);
 
-const NULL_DOI_LIST = /** Double check before removing - for example, 10.2225/vol9-issue3-fulltext-15 is liar and is dead **/
+const NULL_DOI_LIST =
 array(
+ /** Double check before removing - for example, these are liars **/
+'10.1511/2006.61.412', // goes to wrong page
+'10.2225/vol9-issue3-fulltext-15', // "Forbid"
+/** **/	
 '10.1007/BF00162691',
 '10.1007/BF00182435',
 '10.1007/BF00202951',
@@ -1013,7 +1017,6 @@ array(
 '10.14429/dsj.53.2282',
 '10.14429/dsj.60.344',
 '10.14496/dia.7104343513.14',
-'10.1511/2006.61.412',
 '10.1515/crll.1878.84.242',
 '10.1525/fq.1955.9.3.04a00070',
 '10.1525/ncl.1955.9.4.99p02537',
@@ -1040,7 +1043,6 @@ array(
 '10.21082/blpn.v12n2.2006.p83-88',
 '10.21154/justicia.v12i2.328',
 '10.22059/ijmge.2012.51321',
-'10.2225/vol9-issue3-fulltext-15',
 '10.22520/tubaked.2004-2.0007',
 '10.22679/AVS.2021.6.2.003',
 '10.2307/3818115',
@@ -1078,7 +1080,6 @@ array(
 '10.4435/BSPI.2017.08',
 '10.4435/BSPI.2017.19',
 '10.4435/BSPI.2018.11',
-'10.5027/andgeoV45n3-3117',
 '10.5047/meep.2019.00701.0001',
 '10.51437/jgns.v1i1.29',
 '10.51437/jgns.v1i1',
@@ -1098,6 +1099,7 @@ array(
 );
 
 const NULL_DOI_BUT_GOOD = array(
+'10.5027/andgeoV45n3-3117',
 '10.1093/anb/9780198606697.article.1302612',
 '10.1093/ref:odnb/12950	',
 '10.1093/ref:odnb/34349',
