@@ -91,7 +91,7 @@ if (!mb_internal_encoding('UTF-8') || !mb_regex_encoding('UTF-8')) { /** @phpsta
   exit('Unable to set encoding');
 }
 
-ini_set("memory_limit", "1324M");
+ini_set("memory_limit", "1824M");
 ini_set("pcre.backtrack_limit", "1425000000");
 ini_set("pcre.recursion_limit", "425000000");
 if (isset($_REQUEST["pcre"]) || (strpos((string) @$_SERVER['PHP_SELF'], '/gadgetapi.php') !== FALSE)) { // Willing to take slight performance penalty on Gadget
