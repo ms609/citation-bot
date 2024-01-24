@@ -988,7 +988,7 @@ array(
 '10.1511/2006.61.412',
 '10.2225/vol9-issue3-fulltext-15',
 '10.31754/2409-6105-2019-4-9-18',
-)
+);
 const NULL_DOI_LIST =
 array(
  /** Double check before removing - for example, these are liars - see NULL_DOI_ANNOYING above **/
