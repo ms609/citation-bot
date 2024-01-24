@@ -983,13 +983,19 @@ const DOI_FREE_PREFIX = array('10.1100/', '10.11131/', '10.11569/', '10.11647/',
 		  '10.7759/cureus.', '10.1099/acmi', '10.1099/mic', '10.1099/00221287', '10.1099/mgen', '10.1045/',
 		  '10.1096/',);
 
+const NULL_DOI_ANNOYING = // TODO - manually check these from time to time
+array(
+'10.1511/2006.61.412',
+'10.2225/vol9-issue3-fulltext-15',
+'10.31754/2409-6105-2019-4-9-18',
+);
 const NULL_DOI_LIST =
 array(
- /** Double check before removing - for example, these are liars **/
+ /** Double check before removing - for example, these are liars - see NULL_DOI_ANNOYING above **/
 '10.1511/2006.61.412', // goes to wrong page
 '10.2225/vol9-issue3-fulltext-15', // "Forbid"
 '10.31754/2409-6105-2019-4-9-18', // Nothing page
-/** **/
+/** end annoying **/
 '10.1007/BF00162691',
 '10.1007/BF00182435',
 '10.1007/BF00202951',
@@ -1110,7 +1116,7 @@ array(
 '10.9340/61.2135',
 );
 
-const NULL_DOI_BUT_GOOD = array(
+const NULL_DOI_BUT_GOOD = array(  // TODO - these need to be manually double checked once in a great while.  Note that a failed url on one computer does not mean it is gone, it might just be you
 '10.1017/S0025100306002659',
 '10.1093/anb/9780198606697.article.1302612',
 '10.1093/ref:odnb/12950	',

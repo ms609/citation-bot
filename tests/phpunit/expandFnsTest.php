@@ -381,7 +381,7 @@ final class expandFnsTest extends testBaseClass {
         $both = $both . "   In Both: " . $doi . "      ";
       }    
       $works = doi_works($doi);
-      if ($works === TRUE) {
+      if ($works === TRUE && !in_array($doi, NULL_DOI_ANNOYING)) {
          $changed = TRUE;
       } elseif ($works === FALSE) {
          $should = $should . "'" . $doi . "',\n";
@@ -389,6 +389,9 @@ final class expandFnsTest extends testBaseClass {
          $should = $should . "'" . $doi . "',\n";
          $nulls = $nulls . "  This DOI is being flagged as NULL: " . $doi . "       ";
       }
+    }
+    foreach (NULL_DOI_ANNOYING as $doi) {
+      $this->assertTrue(in_array($doi, NULL_DOI_LIST));
     }
     if ($changed) {
       $this->flush();
