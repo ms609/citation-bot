@@ -4352,7 +4352,7 @@ final class Template {
 			  $this->set('issue', $matches[1]);
 			}
 		  }
-		  if (doi_works($doi)) {
+		  /** if (doi_works($doi)) { We are flagging free dois even when the do not work, since template does this right now **/
 			foreach (DOI_FREE_PREFIX as $prefix) {
 			  if (strpos($doi, $prefix) === 0) {
 				 $this->add_if_new('doi-access', 'free');
@@ -4364,8 +4364,8 @@ final class Template {
 				$this->add_if_new('doi-access', 'free');
 			}
 			unset($year);
-		  }
-		  if (doi_works($doi) && (strpos($doi, '10.1073/pnas') === 0)) {
+		  /** } **/
+		  if (/** doi_works($doi) && **/ (strpos($doi, '10.1073/pnas') === 0)) {
 			$template_year = $this->year();
 			if ($template_year !== '') {
 			  $template_year = (int) $template_year;
