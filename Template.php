@@ -4367,6 +4367,7 @@ final class Template {
 		  /** } **/
 		  if (/** doi_works($doi) && **/ (strpos($doi, '10.1073/pnas') === 0)) {
 			$template_year = $this->year();
+			if ($template_year === '') $template_year = $this->get('publication-date'));
 			if ($template_year !== '') {
 			  $template_year = (int) $template_year;
 			  $year = (int) date("Y");
