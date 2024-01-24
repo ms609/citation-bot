@@ -1110,7 +1110,7 @@ array(
 '10.9340/61.2135',
 );
 
-const NULL_DOI_BUT_GOOD = array(
+const NULL_DOI_BUT_GOOD = array(  // TODO - these need to be manually double checked once in a great while.  Note that a failed url on one computer does not mean it is gone, it might just be you
 '10.1017/S0025100306002659',
 '10.1093/anb/9780198606697.article.1302612',
 '10.1093/ref:odnb/12950	',
