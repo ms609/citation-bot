@@ -716,7 +716,9 @@ class Page {
 	/** @var non-empty-string $separator */
 	$separator = $match[0];
 	$exploded = $treat_identical_separately ? explode($separator, $text, 2) : explode($separator, $text);
+	unset($separator, $text, $match);
 	$text = implode(sprintf($placeholder_text, $i++), $exploded);
+	unset($exploded);
 	$objects[] = $obj;
       }
     }
@@ -735,15 +737,16 @@ class Page {
 	/** @var non-empty-string $separator */
 	$separator = $match[0];
 	$exploded = $treat_identical_separately ? explode($separator, $text, 2) : explode($separator, $text);
+	unset($separator, $text, $match);    
 	$text = implode(sprintf($placeholder_text, $i++), $exploded);
+	unset($exploded);
 	$objects[] = $obj;
       }
       // @codeCoverageIgnoreEnd
     }
 
     /** @psalm-suppress TypeDoesNotContainType */
-    if ($preg_ok === FALSE) { // Something went wrong.  Often from bad wiki-text.  Generally, preg_match() cannot return FALSE, so supress psalm
-	// PHP 5 segmentation faults. PHP 7.0 returns FALSE
+    if ($preg_ok === FALSE) { // Something went wrong.  Often from bad wiki-text.  Normally, preg_match() does not return FALSE, so supress psalm
 	// @codeCoverageIgnoreStart
 	$this->page_error = TRUE;
 	report_warning('Regular expression failure in ' . echoable($this->title) . ' when extracting ' . $class . 's');
