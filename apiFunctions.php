@@ -14,6 +14,7 @@ function query_pmid_api (array $pmids, array &$templates) : bool { return entrez
 function query_pmc_api  (array $pmcs, array &$templates) : bool { return entrez_api($pmcs,  $templates, 'pmc'); } // Pointer to save memory
 
 final class AdsAbsControl {
+  const MAX_CACHE_SIZE = 50000;
   private static int $big_counter = 0;
   private static int $small_counter = 0;
   /** @var array<string> $doi2bib **/
@@ -44,6 +45,7 @@ final class AdsAbsControl {
   }
 
   public static function add_doi_map(string $bib, string $doi) : void {
+    self::check_memory_use();
     if ($bib === '' || $doi === '') {
        report_minor_error('Bad parameter in add_doi_map: ' . echoable($bib) . ' : ' . echoable($doi)); // @codeCoverageIgnore
        return; // @codeCoverageIgnore
@@ -61,6 +63,19 @@ final class AdsAbsControl {
   public static function get_bib2doi(string $bib) : string {
     return (string) @self::$bib2doi[$bib];
   }
+
+  public static function check_memory_use() : void {
+      $usage = count(self::$doi2bib) + count(self::$bib2doi);
+      if ($usage > self::MAX_CACHE_SIZE) {
+	self::free_memory();
+      }
+  }
+  public static function free_memory() : void {
+      self::$doi2bib = [];
+      self::$bib2doi = [];
+      gc_collect_cycles();
+  }
+	
 }
 
 /**
