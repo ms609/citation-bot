@@ -373,7 +373,7 @@ final class expandFnsTest extends testBaseClass {
 
   public function testHostIsGoneDOI() : void {
     $changed = FALSE;
-    $should = "\n";
+    $should = "";
     $nulls = "";
     $both = "";
     foreach (NULL_DOI_LIST as $doi) {
@@ -395,7 +395,7 @@ final class expandFnsTest extends testBaseClass {
     }
     if ($changed) {
       $this->flush();
-      echo $should;
+      echo "\n\n" . $should . "\n\n";
       $this->flush();
     }
     if ($nulls !== "") {
