@@ -72,7 +72,7 @@ final class AdsAbsControl {
   }
   public static function free_memory() : void {
       self::$doi2bib = [];
-      sself::$bib2doi  = [];
+      self::$bib2doi = [];
       gc_collect_cycles();
   }
 	
