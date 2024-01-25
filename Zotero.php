@@ -22,11 +22,11 @@ final class Zotero {
   protected static int $zotero_announced = 0;
   protected static CurlHandle $zotero_ch, $ch_ieee, $ch_jstor, $ch_dx, $ch_pmc, $ch_doi;
   protected static int $zotero_failures_count = 0;
-  private static bool $is_setup = FALSE;
 
 public static function create_ch_zotero() : void {
-  if (self::$is_setup) return;
-  self::$is_setup = TRUE;
+  static $is_setup = FALSE;
+  if ($is_setup) return;
+  $is_setup = TRUE;
   if (TRAVIS) {
 	  $time = 3.0;
   } else {
