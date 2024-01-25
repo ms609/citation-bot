@@ -9,6 +9,7 @@ require_once 'constants/parameters.php';
 require_once 'constants/regular_expressions.php';
 require_once 'constants/italics.php';
 require_once 'constants/isbn.php';
+require_once 'constants/null_doi.php';
 
 const PIPE_PLACEHOLDER = '# # # CITATION_BOT_PLACEHOLDER_PIPE # # #';
 const TEMP_PLACEHOLDER = "# # # CITATION_BOT_PLACEHOLDER_TEMPORARY %s # # #";
