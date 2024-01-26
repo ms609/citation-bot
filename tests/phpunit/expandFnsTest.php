@@ -357,8 +357,8 @@ final class expandFnsTest extends testBaseClass {
   }
 
   public function testThrottle() : void { // Just runs over the code and basically does nothing
-    for ($x = 0; $x <= 155; $x++) {
-      $this->assertNull(throttle(1));
+    for ($x = 0; $x <= 355; $x++) {
+      $this->assertNull(throttle());
     }
   }
 
