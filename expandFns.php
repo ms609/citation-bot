@@ -951,20 +951,18 @@ function remove_brackets(string $string) : string {
 
 // ============================================= Wikipedia functions ======================================
 
-function throttle (int $min_interval) : void {
+function throttle () : void {
   static $last_write_time = 0;
   static $phase = 0;
-  $cycles = intdiv(180, $min_interval); // average over three minutes
-  $phase = $phase + 1;
-
+  $cycles = 20;  // Check every this many writes
+  $min_interval = 2 * $cycles;  // How many seconds we want per-write on average
   if ($last_write_time === 0) $last_write_time = time();
 
+  $phase = $phase + 1;
   if ($phase < $cycles) {
     return;
   } else {
-    // @codeCoverageIgnoreStart
     $phase = 0;
-    $min_interval = $min_interval * $cycles;
   }
 
   $time_since_last_write = time() - $last_write_time;
@@ -975,7 +973,6 @@ function throttle (int $min_interval) : void {
     sleep($time_to_pause);
   }
   $last_write_time = time();
-  // @codeCoverageIgnoreEnd
 }
 
 // ============================================= Data processing functions ======================================

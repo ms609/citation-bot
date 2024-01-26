@@ -275,7 +275,7 @@ private static function zotero_request(string $url) : string {
 
   if (self::$zotero_failures_count > self::ZOTERO_GIVE_UP) return self::ERROR_DONE;
 
-  $delay = max(min(100000*(1+self::$zotero_failures_count), 10), 0); // 0.10 seconds delay throttle, with paranoid bounds checks
+  $delay = max(min(100000*(1+self::$zotero_failures_count), 10), 0); // 0.10 seconds delay, with paranoid bounds checks
   usleep($delay);
   $zotero_response = (string) @curl_exec(self::$zotero_ch);
   if ($zotero_response === '') {

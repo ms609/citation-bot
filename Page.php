@@ -645,7 +645,7 @@ class Page {
       $failures[2] = $failures[3];
       $failures[3] = $failures[4];
       $failures[4] = FALSE;
-      throttle(2); // This is only writing.  Not pages that are left unchanged
+      throttle(); // This is only writing.  Not pages that are left unchanged
       if ($api->write_page($this->title, $this->text,
 	      $this->edit_summary() . $edit_summary_end,
 	      $this->lastrevid, $this->read_at)) {
