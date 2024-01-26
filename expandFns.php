@@ -952,11 +952,12 @@ function remove_brackets(string $string) : string {
 // ============================================= Wikipedia functions ======================================
 
 function throttle () : void {
-  static $last_write_time = time();
+  static $last_write_time = 0;
   static $phase = 0;
   $cycles = 20;  // Check every this many writes
   $min_interval = 2 * $cycles;  // How many seconds we want per-write on average
-	
+  if ($last_write_time === 0) $last_write_time = time();
+
   $phase = $phase + 1;
   if ($phase < $cycles) {
     return;
