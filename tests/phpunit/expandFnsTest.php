@@ -379,8 +379,9 @@ final class expandFnsTest extends testBaseClass {
     foreach (NULL_DOI_LIST as $doi) {
       if (in_array($doi, NULL_DOI_BUT_GOOD)) {
         $both = $both . "   In Both: " . $doi . "      ";
-      }    
+      }
       $works = doi_works($doi);
+      sleep(1); // give dx.doi.org a break on this junk
       if ($works === TRUE && !in_array($doi, NULL_DOI_ANNOYING)) {
          $changed = TRUE;
       } elseif ($works === FALSE) {
