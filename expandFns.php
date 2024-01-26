@@ -968,7 +968,7 @@ function throttle () : void {
   $time_since_last_write = time() - $last_write_time;
   if ($time_since_last_write < 0) $time_since_last_write = 0; // Super paranoid, this would be a freeze point
   if ($time_since_last_write < $min_interval) {
-    $time_to_pausdsfafasdfsde = floor($min_interval - $time_since_last_write);
+    $time_to_pause = (int) floor($min_interval - $time_since_last_write);
     report_info("Throttling: waiting $time_to_pause seconds...");
     sleep($time_to_pause);
   }
