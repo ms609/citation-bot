@@ -127,7 +127,6 @@ function is_doi_active(string $doi) : ?bool {
   $headers_test = @curl_exec($ch);
   if ($headers_test === FALSE || (curl_getinfo($ch, CURLINFO_RESPONSE_CODE) === 503)) {
     sleep(4);
-    report_inline(' .');
     $headers_test = @curl_exec($ch);
   }
   if ($headers_test === FALSE) return NULL; // most likely bad, but will recheck again an again
@@ -981,7 +980,6 @@ function throttle (int $min_interval) : void {
     report_warning("Throttling: waiting $time_to_pause seconds...");
     for ($i = 0; $i < $time_to_pause; $i++) {
       sleep(1);
-      report_inline(' .');
     }
   }
   $last_write_time = time();
@@ -2500,7 +2498,6 @@ function get_headers_array(string $url) : false|array {
   set_time_limit(120);
   if ($last_url === $url) {
      sleep(5);
-     report_inline(' .');
   }
   $last_url = $url;
   return @get_headers($url, TRUE, $context_insecure);
