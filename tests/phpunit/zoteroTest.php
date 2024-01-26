@@ -180,6 +180,10 @@ final class zoteroTest extends testBaseClass {
   public function testIEEEdoi() : void {
     $url = "https://ieeexplore.ieee.org/document/4242344";
     $template = $this->process_citation('{{cite journal | url = ' . $url . ' }}');
+    if ($template->get('doi') === "") {
+      sleep(5);
+      $template = $this->process_citation('{{cite journal | url = ' . $url . ' }}');
+    }
     $this->assertSame('10.1109/ISSCC.2007.373373', $template->get2('doi'));
   }
 
@@ -1051,7 +1055,11 @@ final class zoteroTest extends testBaseClass {
     $text = '{{Cite web|url=https://www.nytimes.com/2018/06/11/technology/net-neutrality-repeal.html}}';
     $expanded = $this->expand_via_zotero($text);
     if ($expanded->get('title') === "") {
-       sleep(2);
+       sleep(5);
+       $expanded = $this->expand_via_zotero($text);
+    }
+    if ($expanded->get('title') === "") {
+       sleep(5);
        $expanded = $this->expand_via_zotero($text);
     }
     $this->assertSame("Net Neutrality Has Officially Been Repealed. Here's How That Could Affect You", str_replace('. (Published 2018)', '', $expanded->get('title')));

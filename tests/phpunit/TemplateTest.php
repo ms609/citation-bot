@@ -1349,6 +1349,10 @@ final class TemplateTest extends testBaseClass {
 
   public function testJournalCapitalization1() : void {
     $expanded = $this->process_citation("{{Cite journal|pmid=9858585}}");
+    if ($expanded->get2('journal') === "") {
+      sleep(5);
+      $expanded = $this->process_citation("{{Cite journal|pmid=9858585}}");
+    }
     $this->assertSame('Molecular and Cellular Biology', $expanded->get2('journal'));
   }
 
@@ -3742,6 +3746,11 @@ EP - 999 }}';
 	    "{{Cite web | title=IEEE Xplore This is a title with Document|pmid=1974138}}" .
 	    "{{Cite web | title=JSTOR This is a title document with Volume 3 and page 5|doi= 10.1021/jp101758y}}";
     $page = $this->process_page($text);
+    if (substr_count($page->parsed_text(), 'JSTOR') !== 0) {
+        sleep(3);
+        $text = $page->parsed_text();
+        $page = $this->process_page($text);
+    }
     $this->assertSame(0, substr_count($page->parsed_text(), 'JSTOR'));
   }
 
