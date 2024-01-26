@@ -84,7 +84,6 @@ function doi_works(string $doi) : ?bool {
   if (isset(HandleCache::$cache_hdl_null[$doi])) return NULL;
   HandleCache::check_memory_use();
 
-  $start_time = time();
   $works = is_doi_works($doi);
   if ($works === NULL) {
     if (in_array($doi, NULL_DOI_LIST)) { // These are know to be bad, so only check one time during run
@@ -96,13 +95,8 @@ function doi_works(string $doi) : ?bool {
         return TRUE;
     }
     bot_debug_log('Got NULL for DOI: ' . echoable($doi));
-    if (abs(time() - $start_time) < max(BOT_HTTP_TIMEOUT, BOT_CONNECTION_TIMEOUT))
-    {
-      return NULL;
-    } else {
-      HandleCache::$cache_hdl_null[$doi] = TRUE;
-      return NULL;
-    }
+    HandleCache::$cache_hdl_null[$doi] = TRUE;
+    return NULL;
   }
   if ($works === FALSE) {
     HandleCache::$cache_hdl_bad[$doi] = TRUE;
@@ -977,10 +971,8 @@ function throttle (int $min_interval) : void {
   if ($time_since_last_write < 0) $time_since_last_write = 0; // Super paranoid, this would be a freeze point
   if ($time_since_last_write < $min_interval) {
     $time_to_pause = floor($min_interval - $time_since_last_write);
-    report_warning("Throttling: waiting $time_to_pause seconds...");
-    for ($i = 0; $i < $time_to_pause; $i++) {
-      sleep(1);
-    }
+    report_info("Throttling: waiting $time_to_pause seconds...");
+    sleep($time_to_pause);
   }
   $last_write_time = time();
   // @codeCoverageIgnoreEnd
@@ -1387,16 +1379,10 @@ function hdl_works(string $hdl) : string|null|false {
   if (isset(HandleCache::$cache_hdl_bad[$hdl])) return FALSE;
   if (isset(HandleCache::$cache_hdl_null[$hdl])) return NULL;
   if (strpos($hdl, '10.') === 0 && doi_works($hdl) === FALSE) return FALSE;
-  $start_time = time();
   $works = is_hdl_works($hdl);
   if ($works === NULL) {
-    if (abs(time()-$start_time) < max(BOT_HTTP_TIMEOUT, BOT_CONNECTION_TIMEOUT))
-    {
-      return NULL;
-    } else {
-      HandleCache::$cache_hdl_null[$hdl] = TRUE;
-      return NULL;
-    }
+    HandleCache::$cache_hdl_null[$hdl] = TRUE;
+    return NULL;
   }
   if ($works === FALSE) {
     HandleCache::$cache_hdl_bad[$hdl] = TRUE;
