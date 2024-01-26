@@ -18,7 +18,7 @@ function user_notice(string $symbol, string $class, string $text) : void {
     // These are split over three lines to avoid creating a single long string during error conditions - which could blow out the memory
     /** @psalm-suppress TypeDoesNotContainType */ /* PSALM thinks HTML_OUTPUT cannot be false */
     echo "\n " . (HTML_OUTPUT ? "<span class='$class'>" : "") . $symbol;
-    if (defined('BIG_JOB_MODE') && strlen($text) > 70000) { // 10% of  https://en.wikipedia.org/wiki/Special:LongPages
+    if (defined('BIG_JOB_MODE') && strlen($text) > 1000) { // No one looks at this anyway
       echo "HUGE amount of text NOT printed";
       bot_debug_log("HUGE amount of text NOT printed");
     } else {
@@ -38,7 +38,7 @@ function report_warning(string $text) : void  { user_notice("  !", "warning", $t
 function report_modification(string $text) : void { user_notice("  ~", "changed", $text); }
 function report_add(string $text) : void { user_notice("  +", "added", $text); }
 function report_forget(string $text) : void { user_notice("  -", "removed", $text); }
-function report_inline(string $text) : void { if (!TRAVIS || defined("TRAVIS_PRINT")) echo " $text"; }
+function report_inline(string $text) : void { if ((!TRAVIS && defined('BIG_JOB_MODE')) || defined("TRAVIS_PRINT")) echo " $text"; }
 // call report_warning to give users a message before we die
 function report_error(string $text) : never {
   // @codeCoverageIgnoreStart
