@@ -377,6 +377,16 @@ final class expandFnsTest extends testBaseClass {
     $nulls = "";
     $both = "";
     foreach (NULL_DOI_LIST as $doi) {
+      $this->assertSame(trim($doi)), $doi);
+    }
+    foreach (NULL_DOI_ANNOYING as $doi) {
+      $this->assertSame(trim($doi)), $doi);
+    }
+    foreach (NULL_DOI_BUT_GOOD as $doi) {
+      $this->assertSame(trim($doi)), $doi);
+    }
+	    
+    foreach (NULL_DOI_LIST as $doi) {
       if (in_array($doi, NULL_DOI_BUT_GOOD)) {
         $both = $both . "   In Both: " . $doi . "      ";
       }
