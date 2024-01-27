@@ -1417,7 +1417,6 @@ function is_hdl_works(string $hdl) : string|null|false {
       $headers_test = get_headers_array($url); // @codeCoverageIgnore
   }
   if ($headers_test === FALSE) return NULL; // most likely bad, but will recheck again and again
-  if (empty($headers_test['Location']) && empty($headers_test['location'])) return FALSE; // leads nowhere
   if (interpret_doi_header($headers_test) === NULL) return NULL;
   if (interpret_doi_header($headers_test) === FALSE) return FALSE;
   if (isset($headers_test['Location'][0]) && is_array(@$headers_test['Location'])) {
