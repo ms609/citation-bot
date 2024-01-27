@@ -961,7 +961,7 @@ function throttle () : void {
   $mem_max = (string) @ini_get('memory_limit');
   if (preg_match('~^(\d+)M$~', $mem_max, $matches)) {
     $mem_used = memory_get_usage() / (1024*1024);
-    $mem_max = (@int_val($matches[1])) * 0.9;
+    $mem_max = 0.9 * @intval($matches[1]);
     if ($mem_max !== 0 && ($mem_used > $mem_max)) {
        @clearstatcache();
        @strtok('','');
