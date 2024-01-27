@@ -4187,7 +4187,7 @@ final class Template {
 			$this->forget('doi');
 			return;
 		  }
-		  if ($doi === '10.7556/jaoa') {
+		  if ($doi === '10.7556/jaoa' || $doi === '10.5334/sta.az') {
 			// Over truncated
 			$this->forget('doi');
 			return;
