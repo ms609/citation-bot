@@ -243,7 +243,7 @@ function get_loc_from_hdl_header(array $headers_test) : ?string {
   } elseif (isset($headers_test['location'])) {
       return(string) $headers_test['location'];
   } elseif (isset($headers_test['Location'])) {
-      $return (string) $headers_test['Location'];
+      return (string) $headers_test['Location'];
   } else {
       bot_debug_log("Got weird header from handle: " . echoable(print_r($headers_test, TRUE)));  // Is this even possible
       return NULL;
