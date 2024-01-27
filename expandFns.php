@@ -958,6 +958,17 @@ function throttle () : void {
   $min_interval = 2 * $cycles;  // How many seconds we want per-write on average
   if ($last_write_time === 0) $last_write_time = time();
 
+  $mem_max = (string) @ini_get('memory_limit');
+  if (preg_match('~^(\d+)M$~', $mem_max, $matches)) {
+    $mem_used = memory_get_usage() / (1024*1024);
+    $mem_max = (@int_val($matches[1])) * 0.9;
+    if ($mem_max !== 0 && ($mem_used > $mem_max)) {
+       @clearstatcache();
+       @strtok('','');
+       HandleCache::free_memory();
+       AdsAbsControl::free_memory();
+    }
+  }	
   $phase = $phase + 1;
   if ($phase < $cycles) {
     return;
