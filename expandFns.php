@@ -234,6 +234,22 @@ function interpret_doi_header(array $headers_test) : ?bool {
   return NULL; // @codeCoverageIgnore
 }
 
+/** @param array<mixed> $headers_test **/
+function get_loc_from_hdl_header(array $headers_test) : ?string {
+  if (isset($headers_test['Location'][0]) && is_array(@$headers_test['Location'])) {
+      return (string) $headers_test['Location'][0];
+  } elseif (isset($headers_test['location'][0]) && is_array(@$headers_test['location'])) {
+      return (string) $headers_test['location'][0];
+  } elseif (isset($headers_test['location'])) {
+      return(string) $headers_test['location'];
+  } elseif (isset($headers_test['Location'])) {
+      return (string) $headers_test['Location'];
+  } else {
+      bot_debug_log("Got weird header from handle: " . echoable(print_r($headers_test, TRUE)));  // Is this even possible
+      return NULL;
+  }
+}
+
 /** @psalm-suppress UnusedParam
     @param array<string> $ids
     @param array<Template> $templates **/
@@ -1419,18 +1435,7 @@ function is_hdl_works(string $hdl) : string|null|false {
   if ($headers_test === FALSE) return NULL; // most likely bad, but will recheck again and again
   if (interpret_doi_header($headers_test) === NULL) return NULL;
   if (interpret_doi_header($headers_test) === FALSE) return FALSE;
-  if (isset($headers_test['Location'][0]) && is_array(@$headers_test['Location'])) {
-      $the_header_loc = (string) $headers_test['Location'][0];
-  } elseif (isset($headers_test['location'][0]) && is_array(@$headers_test['location'])) {
-      $the_header_loc = (string) $headers_test['location'][0];
-  } elseif (isset($headers_test['location'])) {
-      $the_header_loc = (string) $headers_test['location'];
-  } elseif (isset($headers_test['Location'])) {
-      $the_header_loc = (string) $headers_test['Location'];
-  } else {
-      $the_header_loc = NULL;
-  }
-  return $the_header_loc;
+  return get_loc_from_hdl_header($headers_test);
 }
 
 // Sometimes (UTF-8 non-english characters) preg_replace fails, and we would rather have the original string than a null
