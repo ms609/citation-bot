@@ -26,7 +26,8 @@ const NON_HUMAN_AUTHORS = array('collaborat', 'reporter', 'journalist', 'corresp
 				'dept of ', 'college', 'center for', 'office of', 'editor', 'institut', 'world bank',
 				'world news', 'national news', 'eyewitness', 'information', 'business', 'bureau',
 				'us census', 'indiatoday', 'natural history', 'museum', '試験所', 'circuit', 'county',
-				'external', 'relations', 'nations', 'united', 'radio', 'rundfunk', 'new york', 'agencies');
+				'external', 'relations', 'nations', 'united', 'radio', 'rundfunk', 'new york', 'agencies',
+			        'european central', 'central bank');
 const BAD_PUBLISHERS = array('london', 'edinburgi', 'edinburgh', 'no publisher', 'no publisher given',
 			     'no publisher specified', 'unknown', 'publisher not identified', 'report');
 
@@ -417,7 +418,8 @@ const NO_DATE_WEBSITES = array('wikipedia.org', 'web.archive.org', 'perma-archiv
 			      'oireachtas.ie', 'webarchive.nla.gov.au', 'ebooks.adelaide.edu.au', 'archive.md', 'imdb.com',
 			      'apps.des.qld.gov.au', 'billboard.com', 'music.apple.com', 'spotify.com', 'fred.stlouisfed.org',
 			      'simonsfoundation.org', 'chroniclingamerica.loc.gov', 'github.com', 'rottentomatoes.com', 'arts.gov/honors',
-			      'shop.schizoidshop.com', 'elonet.finna.fi', 'numismatics.org.uk', 'itunes.apple.com', 'officialcharts.com');
+			      'shop.schizoidshop.com', 'elonet.finna.fi', 'numismatics.org.uk', 'itunes.apple.com', 'officialcharts.com',
+			      'ecb.europa.eu/stats');
 
 const ZOTERO_AVOID_REGEX = array("twitter\.",               // This should be {{cite tweet}}
 				 // Zotero seems to be doing better now "youtube\.", "youtu\.be",
