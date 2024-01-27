@@ -1,6 +1,7 @@
 {
     "false_positives":
 	[
-	    {"vuln_id":"e3692557cb00609ee7e831da482fb70d7cdb5c33a867a60e1fee86a8434e91d5"}
+	    {"vuln_id":"e3692557cb00609ee7e831da482fb70d7cdb5c33a867a60e1fee86a8434e91d5"},
+	    {"vuln_id":"19665692945ce3b1ca4b371ef31198756c956c2c04efd176dd93474a24505193"},
 	]
 }
