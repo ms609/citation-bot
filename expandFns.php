@@ -179,7 +179,6 @@ function is_doi_works(string $doi) : ?bool {
   $url = "https://doi.org/" . doi_encode($doi);
   $headers_test = get_headers_array($url);
   if ($headers_test === FALSE) {
-     usleep(50000); // one-twentieth of a second to throttle dx.doi.org
      if (strpos($doi, '10.2277/') === 0) return FALSE; // Rogue
      if (preg_match('~^10\.1038/nature\d{5}$~i', $doi)) return FALSE; // Nature dropped the ball
      if (stripos($doi, '10.17312/harringtonparkpress/') === 0) return FALSE;
