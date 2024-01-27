@@ -958,6 +958,22 @@ function throttle () : void {
   $min_interval = 2 * $cycles;  // How many seconds we want per-write on average
   if ($last_write_time === 0) $last_write_time = time();
 
+  $mem_max = (string) @ini_get('memory_limit');
+  if (preg_match('~^(\d+)M$~', $mem_max, $matches)) {
+    $mem_used = memory_get_usage() / (1024*1024);
+    $mem_max = 0.9 * @intval($matches[1]);
+    if ($mem_max !== 0 && ($mem_used > $mem_max)) { // Clear every buffer we have
+       /** @psalm-suppress UnusedFunctionCall */
+       @strtok('',''); // This should do nothing
+       HandleCache::free_memory();
+       $mem_used1 = (string) (memory_get_usage() / (1024*1024));
+       AdsAbsControl::free_memory();
+       unset($matches);
+       $mem_used2 = (string) (memory_get_usage() / (1024*1024));
+       $mem_used = (string) $mem_used;
+       bot_debug_log("Cleared memory: " . $mem_used2 . ' : '  . $mem_used1 . ' : ' . $mem_used);
+    }
+  }	
   $phase = $phase + 1;
   if ($phase < $cycles) {
     return;
