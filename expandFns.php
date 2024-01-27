@@ -1395,6 +1395,7 @@ function hdl_works(string $hdl) : string|null|false {
   $works = is_hdl_works($hdl);
   if ($works === NULL) {
     HandleCache::$cache_hdl_null[$hdl] = TRUE;
+    bot_debug_log('Got NULL for HDL: ' . echoable($hdl));
     return NULL;
   }
   if ($works === FALSE) {
