@@ -145,6 +145,7 @@ array(
 '10.7313/upo9781904761679.011',
 '10.7556/jaoa',
 '10.7575/aiac.ijalel.v.6n.3p.71',
+'10.1023/A:1021366131934',
 );
 
 const NULL_DOI_BUT_GOOD = array(  // TODO - these need to be manually double checked once in a great while.  Note that a failed url on one computer does not mean it is gone, it might just be you
@@ -292,4 +293,6 @@ const NULL_DOI_BUT_GOOD = array(  // TODO - these need to be manually double che
 '10.1261/rna.2338706',
 '10.1261/rna.2340906',
 '10.15581/017.23.67-84',
+'10.18520/cs/v112/i05/923-932',
+'10.15585/mmwr.mm6803a3',
 );
