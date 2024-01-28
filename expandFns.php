@@ -1409,8 +1409,8 @@ function hdl_works(string $hdl) : string|null|false {
   if (strpos($hdl, '10.') === 0 && doi_works($hdl) === FALSE) return FALSE;
   $works = is_hdl_works($hdl);
   if ($works === NULL) {
-    if (in_array($doi, NULL_DOI_LIST)) { // These are know to be bad, so only check one time during run
-        HandleCache::$cache_hdl_bad[$doi] = TRUE;
+    if (in_array($hdl, NULL_DOI_LIST)) { // These are know to be bad, so only check one time during run
+        HandleCache::$cache_hdl_bad[$hdl] = TRUE;
         return FALSE;
     }
     HandleCache::$cache_hdl_null[$hdl] = TRUE;
