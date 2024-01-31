@@ -165,8 +165,6 @@ array(
 '10.7313/upo9781904761679.011',
 '10.7556/jaoa',
 '10.7575/aiac.ijalel.v.6n.3p.71',
-'11336/80763',
-'11336/98158',
 );
 
 const NULL_DOI_BUT_GOOD = array(  // TODO - these need to be manually double checked once in a great while.  Note that a failed url on one computer does not mean it is gone, it might just be you
