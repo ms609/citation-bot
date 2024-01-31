@@ -27,10 +27,9 @@ final class WikipediaBot {
     static $init_done = FALSE;
     if ($init_done) return;
     $init_done = TRUE;
-    self::$ch_login = curl_init_array(1.0,
-    [CURLOPT_FAILONERROR => TRUE ]); // This is a little paranoid - see https://curl.se/libcurl/c/CURLOPT_FAILONERROR.html
-    self::$ch_logout = curl_init_array(1.0,
-    [CURLOPT_FAILONERROR => TRUE ]); // This is a little paranoid - see https://curl.se/libcurl/c/CURLOPT_FAILONERROR.html
+    // This is a little paranoid - see https://curl.se/libcurl/c/CURLOPT_FAILONERROR.html
+    self::$ch_login  = curl_init_array(1.0, [CURLOPT_FAILONERROR => TRUE ]); 
+    self::$ch_logout = curl_init_array(1.0, [CURLOPT_FAILONERROR => TRUE ]);
   }
 
   function __construct() {
