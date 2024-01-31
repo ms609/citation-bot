@@ -370,7 +370,7 @@ try {
   static private function QueryAPI(array $params) : string {
    try {
     $params['format'] = 'json';
-    curl_setopt(self::$ch_post, CURLOPT_POSTFIELDS => http_build_query($params));
+    curl_setopt(self::$ch_post, CURLOPT_POSTFIELDS, http_build_query($params));
 
     $data = (string) @curl_exec(self::$ch_post);
     if ($data === '') {
@@ -403,7 +403,7 @@ try {
   }
 
   static public function GetAPage(string $title) : string {
-    curl_setopt(self::$ch_get, CURLOPT_URL => WIKI_ROOT . '?' . http_build_query(['title' => $title, 'action' =>'raw']));
+    curl_setopt(self::$ch_get, CURLOPT_URL, WIKI_ROOT . '?' . http_build_query(['title' => $title, 'action' =>'raw']));
     $text = (string) @curl_exec(self::$ch_get);
     return $text;
   }
