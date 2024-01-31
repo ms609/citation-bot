@@ -1022,9 +1022,9 @@ public static function url_simplify(string $url) : string {
 		     ['/', '/', '/', '/', '/', '/', '/', '/', '/', '/', '/', '/', '/', '/', '/', '/', '/', '/'], $url);
   $url = substr($url, 0, -1); // Remove the ending slash we added
   $url = strtok($url, '?#');
-  $url = str_ireplace('https', 'http', $url);
   /** @psalm-suppress UnusedFunctionCall */
-  @strtok('',''); // Free internal buffers with empty unused call
+  @strtok('',''); // Free internal buffers
+  $url = str_ireplace('https', 'http', $url);
   return $url;
 }
 
