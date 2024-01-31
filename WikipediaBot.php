@@ -29,11 +29,11 @@ final class WikipediaBot {
     if ($init_done) return;
     $init_done = TRUE;
     self::$ch_write  = curl_init_array(1.0,
-       [CURLOPT_FAILONERROR => TRUE
+       [CURLOPT_FAILONERROR => TRUE,
         CURLOPT_POST => TRUE,
         CURLOPT_URL => API_ROOT]);
     self::$ch_post  = curl_init_array(1.0,
-       [CURLOPT_FAILONERROR => TRUE
+       [CURLOPT_FAILONERROR => TRUE,
         CURLOPT_POST => TRUE,
         CURLOPT_URL => API_ROOT]);
     self::$ch_get  = curl_init_array(1.0,
