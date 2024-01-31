@@ -57,7 +57,6 @@ function curl_init_array(float $time, array $ops) : CurlHandle {
 		CURLOPT_COOKIESESSION => TRUE,
 		CURLOPT_RETURNTRANSFER => TRUE,
 		CURLOPT_HEADEROPT => CURLHEADER_UNIFIED,
-		CURLOPT_HTTPHEADER => ['Connection: close'],
 	]);
 	// 2 - Default Time by ratio
 	curl_setopt_array($ch, [CURLOPT_TIMEOUT => BOT_HTTP_TIMEOUT * $time, CURLOPT_CONNECTTIMEOUT => BOT_CONNECTION_TIMEOUT * $time]);
