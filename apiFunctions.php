@@ -368,7 +368,7 @@ function adsabs_api(array $ids, array &$templates, string $identifier) : bool { 
 
   report_action("Expanding from BibCodes via AdsAbs API");
   $curl_opts=[CURLOPT_URL => $adsabs_url,
-	      CURLOPT_HTTPHEADER => ['Content-Type: big-query/csv', 'Authorization: Bearer ' . PHP_ADSABSAPIKEY, 'Connection: close'],
+	      CURLOPT_HTTPHEADER => ['Content-Type: big-query/csv', 'Authorization: Bearer ' . PHP_ADSABSAPIKEY],
 	      CURLOPT_HEADER => TRUE,
 	      CURLOPT_CUSTOMREQUEST => 'POST',
 	      CURLOPT_POSTFIELDS => "$identifier\n" . implode("\n", $ids)];
@@ -668,7 +668,7 @@ function expand_doi_with_dx(Template $template, string $doi) : bool {
      if (!$doi) return FALSE;
      $ch = curl_init_array(1.5,  // can take a long time when nothing to be found
 	     [CURLOPT_URL => 'https://doi.org/' . $doi,
-	      CURLOPT_HTTPHEADER => ["Accept: application/vnd.citationstyles.csl+json", 'Connection: close']]);
+	      CURLOPT_HTTPHEADER => ["Accept: application/vnd.citationstyles.csl+json"]]);
      report_action("Querying dx.doi.org: doi:" . doi_link($doi));
      try {
        $data = (string) @curl_exec($ch);
