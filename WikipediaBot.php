@@ -18,7 +18,7 @@ final class WikipediaBot {
   private Consumer $user_consumer;
   private Client $user_client;
   private Token $user_token;
-  private static CurlHandle $ch_login;
+  private static CurlHandle $ch_write;
   private static CurlHandle $ch_logout;
   private string $the_user = '';
   private static ?self $last_WikipediaBot; // For NonStandardMode()
@@ -28,7 +28,10 @@ final class WikipediaBot {
     if ($init_done) return;
     $init_done = TRUE;
     // This is a little paranoid - see https://curl.se/libcurl/c/CURLOPT_FAILONERROR.html
-    self::$ch_login  = curl_init_array(1.0, [CURLOPT_FAILONERROR => TRUE ]); 
+    self::$ch_write  = curl_init_array(1.0,
+       [CURLOPT_FAILONERROR => TRUE,
+        CURLOPT_POST => TRUE,
+        CURLOPT_URL => API_ROOT]);
     self::$ch_logout = curl_init_array(1.0, [CURLOPT_FAILONERROR => TRUE ]);
   }
 
@@ -115,14 +118,12 @@ final class WikipediaBot {
     $authenticationHeader = $request->toHeader();
 
 try {
-	  curl_setopt_array(self::$ch_login, [
-	    CURLOPT_POST => TRUE,
+	  curl_setopt_array(self::$ch_write, [
 	    CURLOPT_POSTFIELDS => http_build_query($params),
 	    CURLOPT_HTTPHEADER => [$authenticationHeader],
-	    CURLOPT_URL => API_ROOT
 	  ]);
 
-      $data = (string) @curl_exec(self::$ch_login);
+      $data = (string) @curl_exec(self::$ch_write);
       $ret = @json_decode($data);
       if (($ret === NULL) || ($ret === FALSE) || (isset($ret->error) && (   // @codeCoverageIgnoreStart
 	(string) $ret->error->code === 'assertuserfailed' ||
