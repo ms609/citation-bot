@@ -78,7 +78,7 @@ const BAD_TITLES = array("unknown", "missing", "arxiv e-prints", "arxiv mathemat
 			 "google books", "rte.ie", "loading", "google book", "just a moment",
 			 "the article you have been looking for has expired and is not longer available on our system. this is due to newswire licensing terms.",
 			 "openid transaction in progress", 'download limit exceeded', 'privacy settings',
-			 "untitled-1", "untitled-2", "professional paper", "zbmath",
+			 "untitled-1", "untitled-2", "professional paper", "zbmath", 'economics working paper archive',
 			 "theses and dissertations available from proquest", "proquest ebook central", "report",
 			 "bloomberg - are you a robot?", "page not found", "free live sex cams",
 			 "breaking news, analysis, politics, blogs, news photos, video, tech reviews",
