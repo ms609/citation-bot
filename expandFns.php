@@ -2500,7 +2500,7 @@ function get_headers_array(string $url) : false|array {
   if (!isset($context_insecure)) {
     $context_insecure = stream_context_create(array(
       'ssl' => ['verify_peer' => FALSE, 'verify_peer_name' => FALSE, 'allow_self_signed' => TRUE, 'security_level' => 0, 'verify_depth' => 0],
-      'http' => ['ignore_errors' => TRUE, 'max_redirects' => 40, 'timeout' => BOT_HTTP_TIMEOUT * 1.0, 'follow_location' => 1, 'header'=> ['Connection: close'], "user_agent" => BOT_USER_AGENT]));
+      'http' => ['ignore_errors' => TRUE, 'max_redirects' => 40, 'timeout' => BOT_HTTP_TIMEOUT * 1.0, 'follow_location' => 1, "user_agent" => BOT_USER_AGENT]));
   }
   set_time_limit(120);
   if ($last_url === $url) {
