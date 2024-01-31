@@ -107,9 +107,9 @@ if ($env_limit_action !== '') {
 unset($env_limit_action);
 
 if ((string) getenv("PHP_S2APIKEY") !== "") {
-  define("HEADER_S2", array("x-api-key: " . (string) getenv("PHP_S2APIKEY"), 'Connection: close'));
+  define("HEADER_S2", array("x-api-key: " . (string) getenv("PHP_S2APIKEY")));
 } else {
-  define("HEADER_S2", array('Connection: close'));
+  define("HEADER_S2", array());
 }
 
 // see https://www.ncbi.nlm.nih.gov/books/NBK25497/ for more information
