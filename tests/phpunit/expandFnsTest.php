@@ -372,10 +372,6 @@ final class expandFnsTest extends testBaseClass {
   }
 
   public function testHostIsGoneDOI() : void {
-    $changed = FALSE;
-    $should = "";
-    $nulls = "";
-    $both = "";
     foreach (NULL_DOI_LIST as $doi) {
       $this->assertSame(trim($doi), $doi);
     }
@@ -385,43 +381,25 @@ final class expandFnsTest extends testBaseClass {
     foreach (NULL_DOI_BUT_GOOD as $doi) {
       $this->assertSame(trim($doi), $doi);
     }
-	    
+    $changes = "";
     foreach (NULL_DOI_LIST as $doi) {
       if (in_array($doi, NULL_DOI_BUT_GOOD)) {
-        $both = $both . "   In Both: " . $doi . "      ";
+        $changes = $changes . "In Both: " . $doi . "        ";
       }
       $works = doi_works($doi);
       sleep(1); // give dx.doi.org a break on this junk
       if ($works === TRUE && !in_array($doi, NULL_DOI_ANNOYING)) {
-         $changed = TRUE;
-      } elseif ($works === FALSE) {
-         $should = $should . "'" . $doi . "',\n";
+        $changes = $changes . "Flagged as GOOD: " . $doi . "       ";
       } elseif ($works === NULL) { // These nulls are permanent and get mapped to FALSE
-         $should = $should . "'" . $doi . "',\n";
-         $nulls = $nulls . "  This DOI is being flagged as NULL: " . $doi . "       ";
+        $changes = $changes . "Flagged as NULL: " . $doi . "       ";
       }
     }
     foreach (NULL_DOI_ANNOYING as $doi) {
-      $this->assertTrue(in_array($doi, NULL_DOI_LIST));
+      if (!in_array($doi, NULL_DOI_LIST)) {
+        $changes = $changes . "Not in main NULL list: " . $doi . "       ";
+      }
     }
-    if ($changed) {
-      $this->flush();
-      echo "\n\n" . $should . "\n\n";
-      $this->flush();
-    }
-    if ($nulls !== "") {
-      $this->flush();
-      echo "\n\n" . $nulls . "\n\n";
-      $this->flush();    
-    }
-    if ($both !== "") {
-      $this->flush();
-      echo "\n\n" . $both . "\n\n";
-      $this->flush();    
-    }
-    $this->assertSame("", $nulls);
-    $this->assertSame("", $both);
-    $this->assertFalse($changed);
+    $this->assertSame("", $changes);
   }
 
   public function testBankruptDOICompany() : void {
