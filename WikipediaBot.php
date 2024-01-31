@@ -366,6 +366,7 @@ try {
 	    curl_setopt_array(self::$ch, [
 		CURLOPT_POST => TRUE,
 		CURLOPT_POSTFIELDS => http_build_query($params),
+		CURLOPT_HTTPHEADER => [],
 		CURLOPT_URL => API_ROOT,
 	  ]);
 
@@ -402,6 +403,7 @@ try {
   static public function GetAPage(string $title) : string {
     curl_setopt_array(self::$ch,
 	      [CURLOPT_HTTPGET => TRUE,
+	       CURLOPT_HTTPHEADER => [],
 	       CURLOPT_URL => WIKI_ROOT . '?' . http_build_query(['title' => $title, 'action' =>'raw'])]);
     $text = (string) @curl_exec(self::$ch);
     return $text;
