@@ -404,21 +404,19 @@ final class expandFnsTest extends testBaseClass {
     foreach (NULL_DOI_ANNOYING as $doi) {
       $this->assertTrue(in_array($doi, NULL_DOI_LIST));
     }
+    $echo_me = "";
     if ($changed) {
-      $this->flush();
-      echo "\n\n" . $should . "\n\n";
-      $this->flush();
+      $echo_me = $echo_me . "\n\n" . $should . "\n\n";
     }
     if ($nulls !== "") {
-      $this->flush();
-      echo "\n\n" . $nulls . "\n\n";
-      $this->flush();    
+      $echo_me = $echo_me . "\n\n" . $nulls . "\n\n";  
     }
     if ($both !== "") {
-      $this->flush();
-      echo "\n\n" . $both . "\n\n";
-      $this->flush();    
+      $echo_me = $echo_me . "\n\n" . $both . "\n\n";   
     }
+    $this->flush();
+    echo $echo_me; // do in one big string
+    $this->flush();
     $this->assertSame("", $nulls);
     $this->assertSame("", $both);
     $this->assertFalse($changed);
