@@ -18,8 +18,9 @@ final class WikipediaBot {
   private Consumer $user_consumer;
   private Client $user_client;
   private Token $user_token;
-  private static CurlHandle $ch_login;
-  private static CurlHandle $ch_logout;
+  private static CurlHandle $ch_write;
+  private static CurlHandle $ch_post;
+  private static CurlHandle $ch_get;
   private string $the_user = '';
   private static ?self $last_WikipediaBot; // For NonStandardMode()
 
@@ -27,9 +28,16 @@ final class WikipediaBot {
     static $init_done = FALSE;
     if ($init_done) return;
     $init_done = TRUE;
-    // This is a little paranoid - see https://curl.se/libcurl/c/CURLOPT_FAILONERROR.html
-    self::$ch_login  = curl_init_array(1.0, [CURLOPT_FAILONERROR => TRUE ]); 
-    self::$ch_logout = curl_init_array(1.0, [CURLOPT_FAILONERROR => TRUE ]);
+    self::$ch_write  = curl_init_array(1.0,
+       [CURLOPT_FAILONERROR => TRUE
+        CURLOPT_POST => TRUE,
+        CURLOPT_URL => API_ROOT]);
+    self::$ch_post  = curl_init_array(1.0,
+       [CURLOPT_FAILONERROR => TRUE
+        CURLOPT_POST => TRUE,
+        CURLOPT_URL => API_ROOT]);
+    self::$ch_get  = curl_init_array(1.0,
+       [CURLOPT_FAILONERROR => TRUE]); 
   }
 
   function __construct() {
@@ -115,14 +123,12 @@ final class WikipediaBot {
     $authenticationHeader = $request->toHeader();
 
 try {
-	  curl_setopt_array(self::$ch_login, [
-	    CURLOPT_POST => TRUE,
+	  curl_setopt_array(self::$ch_write, [
 	    CURLOPT_POSTFIELDS => http_build_query($params),
 	    CURLOPT_HTTPHEADER => [$authenticationHeader],
-	    CURLOPT_URL => API_ROOT
 	  ]);
 
-      $data = (string) @curl_exec(self::$ch_login);
+      $data = (string) @curl_exec(self::$ch_write);
       $ret = @json_decode($data);
       if (($ret === NULL) || ($ret === FALSE) || (isset($ret->error) && (   // @codeCoverageIgnoreStart
 	(string) $ret->error->code === 'assertuserfailed' ||
@@ -364,18 +370,14 @@ try {
   static private function QueryAPI(array $params) : string {
    try {
     $params['format'] = 'json';
-
-	    curl_setopt_array(self::$ch_logout, [
-		CURLOPT_POST => TRUE,
+    curl_setopt_array(self::$ch_post, [
 		CURLOPT_POSTFIELDS => http_build_query($params),
-		CURLOPT_HTTPHEADER => [],
-		CURLOPT_URL => API_ROOT,
-	  ]);
+    ]);
 
-    $data = (string) @curl_exec(self::$ch_logout);
+    $data = (string) @curl_exec(self::$ch_post);
     if ($data === '') {
        sleep(4);                                // @codeCoverageIgnore
-       $data = (string) @curl_exec(self::$ch_logout);  // @codeCoverageIgnore
+       $data = (string) @curl_exec(self::$ch_post);  // @codeCoverageIgnore
     }
     return (self::ret_okay(@json_decode($data))) ? $data : '';
     // @codeCoverageIgnoreStart
@@ -403,11 +405,9 @@ try {
   }
 
   static public function GetAPage(string $title) : string {
-    curl_setopt_array(self::$ch_logout,
-	      [CURLOPT_HTTPGET => TRUE,
-	       CURLOPT_HTTPHEADER => [],
-	       CURLOPT_URL => WIKI_ROOT . '?' . http_build_query(['title' => $title, 'action' =>'raw'])]);
-    $text = (string) @curl_exec(self::$ch_logout);
+    curl_setopt_array(self::$ch_get,
+        [CURLOPT_URL => WIKI_ROOT . '?' . http_build_query(['title' => $title, 'action' =>'raw'])]);
+    $text = (string) @curl_exec(self::$ch_get);
     return $text;
   }
 
