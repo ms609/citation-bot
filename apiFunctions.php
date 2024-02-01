@@ -230,7 +230,7 @@ function arxiv_api(array $ids, array &$templates) : bool {  // Pointer to save m
   set_time_limit(120);
   if (count($ids) === 0) return FALSE;
   report_action("Getting data from arXiv API");
-  /** @psalm-suppress TaintedSSRF */
+  /** @psalm-taint-escape ssrf */
   $request = "https://export.arxiv.org/api/query?start=0&max_results=2000&id_list=" . implode(',', $ids);
   curl_setopt($ch, CURLOPT_URL, $request);						  
   $response = (string) @curl_exec($ch);
@@ -605,7 +605,7 @@ function query_crossref(string $doi) : ?object {
   if (strpos($doi, '10.2307') === 0) return NULL; // jstor API is better
   set_time_limit(120);
   $doi = str_replace(DOI_URL_DECODE, DOI_URL_ENCODE, $doi);
-  /** @psalm-suppress TaintedSSRF */
+  /** @psalm-taint-escape ssrf */
   $url = "https://www.crossref.org/openurl/?pid=" . CROSSREFUSERNAME . "&id=doi:$doi&noredirect=TRUE";
   curl_setopt($ch, CURLOPT_URL, $url);
   for ($i = 0; $i < 2; $i++) {
@@ -677,7 +677,7 @@ function expand_doi_with_dx(Template $template, string $doi) : bool {
        return $template->add_if_new($name, (string) $data, 'dx');
      };
      if (!$doi) return FALSE;
-     /** @psalm-suppress TaintedSSRF */
+     /** @psalm-taint-escape ssrf */
      curl_setopt($ch, CURLOPT_URL, 'https://doi.org/' . $doi);
      report_action("Querying dx.doi.org: doi:" . doi_link($doi));
      try {
@@ -817,7 +817,7 @@ function expand_by_jstor(Template $template) : bool {
   $jstor = trim($jstor);
   if (strpos($jstor, ' ') !== FALSE) return FALSE ; // Comment/template found
   if (substr($jstor, 0, 1) === 'i') return FALSE ; // We do not want i12342 kind
-  /** @psalm-suppress TaintedSSRF */
+  /** @psalm-taint-escape ssrf */
   curl_setopt($ch, CURLOPT_URL, 'https://www.jstor.org/citation/ris/' . $jstor);
   $dat = (string) @curl_exec($ch);
   if ($dat === '') {
@@ -1091,7 +1091,7 @@ function ConvertS2CID_DOI(string $s2cid) : string {
   if ($ch === NULL) {
     $ch = curl_init_array(0.5, [CURLOPT_HTTPHEADER => HEADER_S2]);
   }
-  /** @psalm-suppress TaintedSSRF */
+  /** @psalm-taint-escape ssrf */
   $url = 'https://api.semanticscholar.org/v1/paper/CorpusID:' . urlencode($s2cid);
   curl_setopt($ch, CURLOPT_URL, $url);
   $response = (string) @curl_exec($ch);
@@ -1547,7 +1547,7 @@ function CrossRefTitle(string $doi) : string {
         $ch = curl_init_array(1.0,
 	    [CURLOPT_USERAGENT => BOT_CROSSREF_USER_AGENT]);
      }
-     /** @psalm-suppress TaintedSSRF */
+     /** @psalm-taint-escape ssrf */
      $url = "https://api.crossref.org/v1/works/".str_replace(DOI_URL_DECODE, DOI_URL_ENCODE, $doi)."?mailto=".CROSSREFUSERNAME; // do not encode crossref email
      curl_setopt($ch, CURLOPT_URL, $url);
      $json = (string) @curl_exec($ch);
