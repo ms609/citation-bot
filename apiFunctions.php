@@ -1416,7 +1416,7 @@ function xml_post(string $url, string $post) : ?SimpleXMLElement {
 		     'Connection: close')
 	       ]);
    }
-   curl_setopts_array($ch,
+   curl_setopt_array($ch,
 	       [CURLOPT_URL => $url,
 	        CURLOPT_POSTFIELDS => $post,
 	       ]);
