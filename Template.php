@@ -2028,7 +2028,7 @@ final class Template {
 		   . ($data['volume']     ? "&volume=" . urlencode($data['volume'])     : '')
 		   . ($data['issn']       ? "&issn="   . urlencode($data['issn'])       : "&title=" . urlencode($data['journal']))
 		   . "&mailto=".CROSSREFUSERNAME; // do not encode crossref email
-	  /** @psalm-suppress TaintedSSRF */
+	  /** @psalm-taint-escape ssrf */
 	  curl_setopt($ch, CURLOPT_URL, $url);
 	  $xml = curl_exec($ch);
 	  if (is_string($xml) && (strlen($xml) > 0)) {
@@ -2646,7 +2646,7 @@ final class Template {
 		$ch_oa = curl_init_array(0.5, [CURLOPT_USERAGENT => BOT_CROSSREF_USER_AGENT]);
 	}
 	set_time_limit(120);
-	/** @psalm-suppress TaintedSSRF */
+	/** @psalm-taint-escape ssrf */
 	$url = "https://api.unpaywall.org/v2/$doi?email=" . CROSSREFUSERNAME;
 	curl_setopt($ch_oa, CURLOPT_URL, $url);
 	$json = (string) @curl_exec($ch_oa);
@@ -2909,7 +2909,7 @@ final class Template {
 	  }
 	  if ($isbn) { // Try Books.Google.Com
 		$google_book_url = 'https://www.google.com/search?tbo=p&tbm=bks&q=isbn:' . $isbn;
-		/** @psalm-suppress TaintedSSRF */
+		/** @psalm-taint-escape ssrf */
 		curl_setopt($ch, CURLOPT_URL, $google_book_url);
 		$google_content = (string) @curl_exec($ch);
 		if ($google_content && preg_match_all('~[Bb]ooks\.[Gg]oogle\.com/books\?id=(............)&amp~', $google_content, $google_results)) {
