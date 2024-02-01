@@ -107,17 +107,16 @@ function doi_works(string $doi) : ?bool {
 }
 
 function is_doi_active(string $doi) : ?bool {
+  static $ch = NULL;
+  if ($ch === NULL) {
+     $ch = curl_init_array(1.0,[
+       CURLOPT_HEADER => TRUE,
+       CURLOPT_NOBODY => TRUE,
+       CURLOPT_USERAGENT => BOT_CROSSREF_USER_AGENT]);
+  }  
   $doi = trim($doi);
   $url = "https://api.crossref.org/v1/works/" . doi_encode($doi) . "?mailto=".CROSSREFUSERNAME; // do not encode crossref email
-  $ch = curl_init_array(1.0,[
-		CURLOPT_HEADER => TRUE,
-		CURLOPT_NOBODY => TRUE,
-		CURLOPT_SSL_VERIFYHOST => 0,
-		CURLOPT_SSL_VERIFYPEER => FALSE,
-		CURLOPT_SSL_VERIFYSTATUS => FALSE,
-		CURLOPT_USERAGENT => BOT_CROSSREF_USER_AGENT,
-		CURLOPT_URL => $url
-		]);				 
+  curl_setopt($ch, CURLOPT_URL, $url);	
   $headers_test = @curl_exec($ch);
   if ($headers_test === FALSE || (curl_getinfo($ch, CURLINFO_RESPONSE_CODE) === 503)) {
     sleep(4);
