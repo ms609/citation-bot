@@ -97,11 +97,11 @@ final class ParameterTest extends testBaseClass {
   }
 
   public function testNoEqualsAddStuff() : void {
-    $text = "{{cite web|cnn}}";
+    $text = "{{cite web|doggiesandcats}}";
     $template = $this->make_citation($text);
-    $this->assertSame('{{cite web|cnn}}', $template->parsed_text());
-    $template->set('cnn', 'joker');
-    $this->assertSame('{{cite web|cnn | cnn=joker }}', $template->parsed_text());
+    $this->assertSame('{{cite web|doggiesandcats}}', $template->parsed_text());
+    $template->set('doggiesandcats', 'joker');
+    $this->assertSame('{{cite web|doggiesandcats | doggiesandcats=joker }}', $template->parsed_text());
   }
 
   public function testBlankValueNonBreakingSpaces() : void {   //These are non-breaking spaces
