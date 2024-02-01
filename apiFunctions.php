@@ -1410,10 +1410,9 @@ function xml_post(string $url, string $post) : ?SimpleXMLElement {
    if ($ch === NULL) {
       $ch = curl_init_array(1.0,
 	       [CURLOPT_POST => TRUE,
-		CURLOPT_HTTPHEADER => array(
-		     "Content-Type: application/x-www-form-urlencoded",
-		     "Accept: application/xml",
-		     'Connectionsdfadsfadsfdsfsd: close')
+	       CURLOPT_HTTPHEADER => array(
+	       "Content-Type: application/x-www-form-urlencoded",
+		     "Accept: application/xml")
 	       ]);
    }
    curl_setopt_array($ch,
@@ -1529,7 +1528,7 @@ function query_adsabs(string $options) : object {
 		  . ".adsabs.harvard.edu/v1/search/query"
 		  . "?q=$options&fl=arxiv_class,author,bibcode,doi,doctype,identifier,"
 		  . "issue,page,pub,pubdate,title,volume,year";
-    $curl_opts=[CURLOPT_HTTPHEADER => ['Authorization: Bearer ' . PHP_ADSABSAPIKEY, 'Connection: close'],
+    $curl_opts=[CURLOPT_HTTPHEADER => ['Authorization: Bearer ' . PHP_ADSABSAPIKEY],
 		CURLOPT_HEADER => TRUE,
 		CURLOPT_URL => $adsabs_url];
     $response = Bibcode_Response_Processing($curl_opts, $adsabs_url);
