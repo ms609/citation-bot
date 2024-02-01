@@ -129,11 +129,11 @@ final class PageTest extends testBaseClass {
    public function testDontCrashOnVanNames() : void { // Goofy ones too
       $text = '{{cs1 config |name-list-style=vanc }}{{cite web}}';
       $page = $this->process_page($text);
-      $text = '{{cs1 config |name-list-style=doggies }}{{cite web}}';
+      $text = '{{cs1 config |name-list-style=doggiesandcats }}{{cite web}}';
       $page = $this->process_page($text);
-      $text = '{{cs1 config |name-list-style=burger }}{{cs1 config |name-list-style=fries }}{{cite web}}';
+      $text = '{{cs1 config |name-list-style=doggiesandcats }}{{cs1 config |name-list-style=fries }}{{cite web}}';
       $page = $this->process_page($text);
-      $text = '{{cs1 config |name-list-style=burger }}{{cs1 config|name-list-style=vanc }}{{cite web}}';
+      $text = '{{cs1 config |name-list-style=doggiesandcats }}{{cs1 config|name-list-style=vanc }}{{cite web}}';
       $page = $this->process_page($text);
       $text = '{{cs1 config |name-list-style=vanc }}{{cs1 config |name-list-style=fries }}{{cite web}}';
       $page = $this->process_page($text);
