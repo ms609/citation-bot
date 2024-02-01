@@ -94,7 +94,7 @@ function doi_works(string $doi) : ?bool {
         HandleCache::$cache_good[$doi] = TRUE;
         return TRUE;
     }
-    bot_debug_log('Got NULL for DOI: ' . echoable($doi));
+    bot_debug_log('Got NULL for DOI: ' . str_ireplace(['&lt;', '&gt;'], ['<', '>'],echoable($doi)));
     HandleCache::$cache_hdl_null[$doi] = TRUE;
     return NULL;
   }
@@ -1413,7 +1413,7 @@ function hdl_works(string $hdl) : string|null|false {
         return FALSE;
     }
     HandleCache::$cache_hdl_null[$hdl] = TRUE;
-    bot_debug_log('Got NULL for HDL: ' . echoable($hdl));
+    bot_debug_log('Got NULL for HDL: ' .str_ireplace(['&lt;', '&gt;'], ['<', '>'],echoable($hdl)));
     return NULL;
   }
   if ($works === FALSE) {
