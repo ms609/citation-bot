@@ -62,5 +62,3 @@ jobs:
     - name: Look for weird stuff
       if: always()
       run: /bin/cat ./CodeCoverage
-
-      

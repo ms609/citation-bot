@@ -101,7 +101,7 @@ require_once __DIR__ . '/../testBaseClass.php';
     }
     public function test_ret_okay5() : void {
       $pg = new TestPage(); unset($pg);  // Fill page name with test name for debugging
-      $response = (object) array('error' => (object) array('info' =>  'weak'));
+      $response = (object) array('error' => (object) array('info' =>  'doggiesandcats'));
       $this->assertFalse(WikipediaBot::ret_okay($response));
     }
 
