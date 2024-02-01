@@ -2019,6 +2019,7 @@ final class Template {
 	}
 	// They already allow some fuzziness in matches
 	if (($data['journal'] || $data['issn']) && ($data['start_page'] || $data['author'])) {
+	  /** @psalm-taint-escape ssrf */
 	  $url = "https://www.crossref.org/openurl/?noredirect=TRUE&pid=" . CROSSREFUSERNAME
 		   . ($data['title']      ? "&atitle=" . urlencode($data['title'])      : '')
 		   . ($data['author']     ? "&aulast=" . urlencode($data['author'])     : '')
@@ -2028,7 +2029,6 @@ final class Template {
 		   . ($data['volume']     ? "&volume=" . urlencode($data['volume'])     : '')
 		   . ($data['issn']       ? "&issn="   . urlencode($data['issn'])       : "&title=" . urlencode($data['journal']))
 		   . "&mailto=".CROSSREFUSERNAME; // do not encode crossref email
-	  /** @psalm-taint-escape ssrf */
 	  curl_setopt($ch, CURLOPT_URL, $url);
 	  $xml = curl_exec($ch);
 	  if (is_string($xml) && (strlen($xml) > 0)) {
