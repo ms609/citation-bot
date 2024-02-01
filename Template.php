@@ -1979,6 +1979,10 @@ final class Template {
   }
 
   public function get_doi_from_crossref() : void {
+	static $ch = NULL;
+	if ($ch === NULL) {
+	 $ch = curl_init_array(1.0, [CURLOPT_USERAGENT => BOT_CROSSREF_USER_AGENT]);
+	}
 	set_time_limit(120);
 	if ($this->has('doi')) return;
 	report_action("Checking CrossRef database for doi. ");
@@ -2024,11 +2028,8 @@ final class Template {
 		   . ($data['volume']     ? "&volume=" . urlencode($data['volume'])     : '')
 		   . ($data['issn']       ? "&issn="   . urlencode($data['issn'])       : "&title=" . urlencode($data['journal']))
 		   . "&mailto=".CROSSREFUSERNAME; // do not encode crossref email
-	  $ch = curl_init_array(1.0,
-	    [CURLOPT_URL => $url,
-	     CURLOPT_USERAGENT => BOT_CROSSREF_USER_AGENT]);
+	  curl_setopt($ch, CURLOPT_URL, $url);
 	  $xml = curl_exec($ch);
-	  unset($ch);
 	  if (is_string($xml) && (strlen($xml) > 0)) {
 		$result = @simplexml_load_string($xml);
 	  } else {
@@ -2617,6 +2618,10 @@ final class Template {
   }
 
   protected function get_semanticscholar_url(string $doi) : void {
+   static $ch = NULL;
+   if ($ch === NULL) {
+     $ch = curl_init_array(0.5, [CURLOPT_HTTPHEADER => HEADER_S2]);
+   }
    set_time_limit(120);
    if(      $this->has('pmc') ||
 			($this->has('doi') && $this->get('doi-access') === 'free') ||
@@ -2624,7 +2629,7 @@ final class Template {
 		   ) return; // do not add url if have OA already. Do indlude preprints in list
 	if ($this->has('s2cid') || $this->has('S2CID')) return;
 	$url = 'https://api.semanticscholar.org/v1/paper/' . doi_encode(urldecode($doi));
-	$ch = curl_init_array(0.5, [CURLOPT_HTTPHEADER => HEADER_S2, CURLOPT_URL => $url]);
+	curl_setopt($ch, CURLOPT_URL, $url);
 	$response = (string) curl_exec($ch);
 	if ($response) {
 	  $oa = @json_decode($response);
@@ -2635,13 +2640,14 @@ final class Template {
   }
 
   public function get_unpaywall_url(string $doi) : string {
+	static $ch_oa = NULL;
+	if ($ch_oa === NULL) {
+		$ch_oa = curl_init_array(0.5, [CURLOPT_USERAGENT => BOT_CROSSREF_USER_AGENT]);
+	}
 	set_time_limit(120);
 	$url = "https://api.unpaywall.org/v2/$doi?email=" . CROSSREFUSERNAME;
-	$ch = curl_init_array(1.0,
-			[CURLOPT_URL => $url,
-			 CURLOPT_USERAGENT => BOT_CROSSREF_USER_AGENT]);
-	$json = (string) @curl_exec($ch);
-	unset($ch);
+	curl_setopt($ch_oa, CURLOPT_URL, $url);
+	$json = (string) @curl_exec($ch_oa);
 	if ($json) {
 	  $oa = @json_decode($json);
 	  if ($oa !== FALSE && isset($oa->best_oa_location)) {
@@ -2862,6 +2868,10 @@ final class Template {
   }
 
   protected function expand_by_google_books_inner(string $url_type, bool $use_it) : bool {
+	static $ch = NULL;
+	if ($ch === NULL) {
+		$ch = curl_init_array(1.0, []);
+	}
 	set_time_limit(120);
 	if ($url_type) {
 	  $url = $this->get($url_type);
@@ -2897,8 +2907,7 @@ final class Template {
 	  }
 	  if ($isbn) { // Try Books.Google.Com
 		$google_book_url = 'https://www.google.com/search?tbo=p&tbm=bks&q=isbn:' . $isbn;
-		$ch = curl_init_array(1.0,
-				      [CURLOPT_URL => $google_book_url]);
+		curl_setopt($ch, CURLOPT_URL, $google_book_url);
 		$google_content = (string) @curl_exec($ch);
 		unset($ch);
 		if ($google_content && preg_match_all('~[Bb]ooks\.[Gg]oogle\.com/books\?id=(............)&amp~', $google_content, $google_results)) {
@@ -2940,10 +2949,13 @@ final class Template {
   }
 
   protected function google_book_details(string $gid) : void {
+	static $ch = NULL;
+	if ($ch === NULL) {
+	   $ch = curl_init_array(1.0, []);
+	}
 	set_time_limit(120);
 	$google_book_url = "https://books.google.com/books/feeds/volumes/" . $gid;
-	$ch = curl_init_array(1.0,
-			[CURLOPT_URL => $google_book_url]);
+	curl_setopt($ch, CURLOPT_URL, $google_book_url);
 	$data = (string) @curl_exec($ch);
 	unset($ch);
 	if ($data === '') return;
