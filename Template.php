@@ -6606,7 +6606,7 @@ final class Template {
 	if (!$doi) return FALSE;
 	if ($this->doi_valid) return TRUE;
 	if ($last_doi === $doi) {
-	  report_info("Rechecking if DOI " . echoable($doi) . " is operational...");  // Sometimes we get NULL, so check again for FALSE/TRUE
+	  return;  // This would be fast and pointless, since all is cached
 	} else {
 	  $last_doi = $doi;
 	  report_info("Checking that DOI " . echoable($doi) . " is operational...");
