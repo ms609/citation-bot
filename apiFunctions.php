@@ -223,12 +223,15 @@ function expand_arxiv_templates (array &$templates) : bool {  // Pointer to save
   @param array<Template> $templates
 **/
 function arxiv_api(array $ids, array &$templates) : bool {  // Pointer to save memory
+  static $ch = NULL;
+  if ($ch === NULL) {
+      $ch = curl_init_array(1.0, []);	
+  }
   set_time_limit(120);
   if (count($ids) === 0) return FALSE;
   report_action("Getting data from arXiv API");
   $request = "https://export.arxiv.org/api/query?start=0&max_results=2000&id_list=" . implode(',', $ids);
-  $ch = curl_init_array(1.0,
-	    [CURLOPT_URL => $request]);						  
+  curl_setopt($ch, CURLOPT_URL, $request);						  
   $response = (string) @curl_exec($ch);
   if ($response) {
     $xml = @simplexml_load_string(
@@ -594,12 +597,15 @@ function expand_by_doi(Template $template, bool $force = FALSE) : bool {
 }
 
 function query_crossref(string $doi) : ?object {
+  static $ch = NULL;
+  if ($ch === NULL) {
+    $ch = curl_init_array(1.0, []);
+  }
   if (strpos($doi, '10.2307') === 0) return NULL; // jstor API is better
   set_time_limit(120);
   $doi = str_replace(DOI_URL_DECODE, DOI_URL_ENCODE, $doi);
   $url = "https://www.crossref.org/openurl/?pid=" . CROSSREFUSERNAME . "&id=doi:$doi&noredirect=TRUE";
-  $ch = curl_init_array(1.0,
-	    [CURLOPT_URL =>  $url]);
+  curl_setopt($ch, CURLOPT_URL, $url);
   for ($i = 0; $i < 2; $i++) {
     $raw_xml = (string) @curl_exec($ch);
     if (!$raw_xml) {
@@ -613,7 +619,6 @@ function query_crossref(string $doi) : ?object {
 	  $raw_xml);
     $xml = @simplexml_load_string($raw_xml);
     if (is_object($xml) && isset($xml->query_result->body->query)) {
-      unset($ch);
       $result = $xml->query_result->body->query;
       if ((string) @$result["status"] === "resolved") {
 	if (stripos($doi, '10.1515/crll') === 0) {
@@ -638,7 +643,6 @@ function query_crossref(string $doi) : ?object {
       // Keep trying...
     }
   }
-  unset($ch);                                                                   // @codeCoverageIgnore
   report_warning("Error loading CrossRef file from DOI " . echoable($doi) . "!");    // @codeCoverageIgnore
   return NULL;                                                                       // @codeCoverageIgnore
 }
@@ -650,6 +654,11 @@ function expand_doi_with_dx(Template $template, string $doi) : bool {
      // Examples of DOI usage   https://www.doi.org/demos.html
      // This basically does this:
      // curl -LH "Accept: application/vnd.citationstyles.csl+json" https://dx.doi.org/10.5524/100077
+     static $ch = NULL;
+     if ($ch === NULL) {
+        $ch = curl_init_array(1.5,  // can take a long time when nothing to be found
+	     [CURLOPT_HTTPHEADER => ["Accept: application/vnd.citationstyles.csl+json"]]);
+     }
      if (strpos($doi, '10.2307') === 0) return FALSE; // jstor API is better
      if (strpos($doi, '10.24436') === 0) return FALSE; // They have horrible meta-data
      if (strpos($doi, '10.5284/1028203') === 0) return FALSE; // database
@@ -666,9 +675,7 @@ function expand_doi_with_dx(Template $template, string $doi) : bool {
        return $template->add_if_new($name, (string) $data, 'dx');
      };
      if (!$doi) return FALSE;
-     $ch = curl_init_array(1.5,  // can take a long time when nothing to be found
-	     [CURLOPT_URL => 'https://doi.org/' . $doi,
-	      CURLOPT_HTTPHEADER => ["Accept: application/vnd.citationstyles.csl+json"]]);
+     curl_setopt($ch, CURLOPT_URL, 'https://doi.org/' . $doi);
      report_action("Querying dx.doi.org: doi:" . doi_link($doi));
      try {
        $data = (string) @curl_exec($ch);
@@ -676,7 +683,6 @@ function expand_doi_with_dx(Template $template, string $doi) : bool {
        $template->mark_inactive_doi();
        return FALSE;
      }                                           // @codeCoverageIgnoreEnd
-     unset($ch);
      if ($data === "" || stripos($data, 'DOI Not Found') !== FALSE || stripos($data, 'DOI prefix') !== FALSE) {
        $template->mark_inactive_doi();
        return FALSE;
@@ -789,6 +795,10 @@ function expand_doi_with_dx(Template $template, string $doi) : bool {
 }
 
 function expand_by_jstor(Template $template) : bool {
+  static $ch = NULL;
+  if ($ch === NULL) {
+    $ch = curl_init_array(1.0, []);
+  }
   set_time_limit(120);
   if ($template->incomplete() === FALSE) return FALSE;
   if ($template->has('jstor')) {
@@ -804,10 +814,8 @@ function expand_by_jstor(Template $template) : bool {
   $jstor = trim($jstor);
   if (strpos($jstor, ' ') !== FALSE) return FALSE ; // Comment/template found
   if (substr($jstor, 0, 1) === 'i') return FALSE ; // We do not want i12342 kind
-  $ch = curl_init_array(1.0,
-	   [CURLOPT_URL => 'https://www.jstor.org/citation/ris/' . $jstor ]);
+  curl_setopt($ch, CURLOPT_URL, 'https://www.jstor.org/citation/ris/' . $jstor);
   $dat = (string) @curl_exec($ch);
-  unset($ch);
   if ($dat === '') {
     report_info("JSTOR API returned nothing for ". jstor_link($jstor));     // @codeCoverageIgnore
     return FALSE;                                                           // @codeCoverageIgnore
@@ -1047,8 +1055,12 @@ function parse_plain_text_reference(string $journal_data, Template $this_templat
 }
 
 function getS2CID(string $url) : string {
+  static $ch = NULL;
+  if ($ch === NULL) {
+    $ch = curl_init_array(0.5, [CURLOPT_HTTPHEADER => HEADER_S2]);
+  }
   $url = 'https://api.semanticscholar.org/v1/paper/URL:' .  urlencode(urldecode($url));
-  $ch = curl_init_array(0.5, [CURLOPT_HTTPHEADER => HEADER_S2, CURLOPT_URL => $url]);
+  curl_setopt($ch, CURLOPT_URL, $url);
   $response = (string) @curl_exec($ch);
   if (!$response) {
     report_warning("No response from semanticscholar.");   // @codeCoverageIgnore
@@ -1071,8 +1083,12 @@ function getS2CID(string $url) : string {
 }
 
 function ConvertS2CID_DOI(string $s2cid) : string {
+  static $ch = NULL;
+  if ($ch === NULL) {
+    $ch = curl_init_array(0.5, [CURLOPT_HTTPHEADER => HEADER_S2]);
+  }
   $url = 'https://api.semanticscholar.org/v1/paper/CorpusID:' . urlencode($s2cid);
-  $ch = curl_init_array(0.5, [CURLOPT_HTTPHEADER => HEADER_S2, CURLOPT_URL => $url]);
+  curl_setopt($ch, CURLOPT_URL, $url);
   $response = (string) @curl_exec($ch);
   if (!$response) {
     report_warning("No response from semanticscholar.");   // @codeCoverageIgnore
@@ -1101,8 +1117,12 @@ function ConvertS2CID_DOI(string $s2cid) : string {
 }
 
 function get_semanticscholar_license(string $s2cid) : ?bool {
+    static $ch = NULL;
+    if ($ch === NULL) {
+      $ch = curl_init_array(0.5, [CURLOPT_HTTPHEADER => HEADER_S2]);
+    }
     $url = 'https://api.semanticscholar.org/v1/paper/CorpusID:' . urlencode($s2cid);
-    $ch = curl_init_array(0.5, [CURLOPT_HTTPHEADER => HEADER_S2, CURLOPT_URL => $url]);
+    curl_setopt($ch, CURLOPT_URL, $url);
     $response = (string) @curl_exec($ch);
     if ($response === '') return NULL;
     if (stripos($response, 'Paper not found') !== FALSE) return FALSE;
@@ -1116,9 +1136,11 @@ function get_semanticscholar_license(string $s2cid) : ?bool {
   @param array<Template> $templates
 **/
 function expand_templates_from_archives(array &$templates) : void { // This is done very late as a latch ditch effort  // Pointer to save memory
+  static $ch = NULL;
   set_time_limit(120);
-  $ch = curl_init_array(1.0,
-	  [CURLOPT_HEADER => TRUE]);
+  if ($ch === NULL) {
+    $ch = curl_init_array(0.5, [CURLOPT_HEADER => TRUE]);
+  }
   foreach ($templates as $template) {
     set_time_limit(120);
     if ($template->has('script-title') && (strtolower($template->get('title')) === 'usurped title' || strtolower($template->get('title')) === 'archived copy' || strtolower($template->get('title')) === 'archive copy')) {
@@ -1233,7 +1255,7 @@ function expand_templates_from_archives(array &$templates) : void { // This is d
 /** @param array<int|string|bool|array<string>> $curl_opts **/
 function Bibcode_Response_Processing(array $curl_opts, string $adsabs_url) : object {
   try {
-    $ch = curl_init_array(1.0, $curl_opts);
+    $ch = curl_init_array(1.0, $curl_opts); // Type varies greatly
     $return = (string) @curl_exec($ch);
     if ($return === "") {
       // @codeCoverageIgnoreStart
@@ -1384,13 +1406,18 @@ function get_entrez_xml(string $type, string $query) : ?SimpleXMLElement {
 }
 // Must use post in order to get DOIs with <, >, [, and ] in them and other problems
 function xml_post(string $url, string $post) : ?SimpleXMLElement {
-   $ch = curl_init_array(1.0,
-	       [CURLOPT_URL => $url,
-		CURLOPT_POST => TRUE,
-		CURLOPT_POSTFIELDS => $post,
-		CURLOPT_HTTPHEADER => array(
-		     "Content-Type: application/x-www-form-urlencoded",
+   static $ch = NULL;
+   if ($ch === NULL) {
+      $ch = curl_init_array(1.0,
+	       [CURLOPT_POST => TRUE,
+	       CURLOPT_HTTPHEADER => array(
+	       "Content-Type: application/x-www-form-urlencoded",
 		     "Accept: application/xml")
+	       ]);
+   }
+   curl_setopt_array($ch,
+	       [CURLOPT_URL => $url,
+	        CURLOPT_POSTFIELDS => $post,
 	       ]);
    $output = (string) @curl_exec($ch);
    $xml = @simplexml_load_string($output);
@@ -1510,10 +1537,13 @@ function query_adsabs(string $options) : object {
 
 // Might want to look at using instead https://doi.crossref.org/openurl/?pid=email@address.com&id=doi:10.1080/00222938700771131&redirect=no&format=unixref
 function CrossRefTitle(string $doi) : string {
+     static $ch = NULL;
+     if ($ch === NULL) {
+        $ch = curl_init_array(1.0,
+	    [CURLOPT_USERAGENT => BOT_CROSSREF_USER_AGENT]);
+     }
      $url = "https://api.crossref.org/v1/works/".str_replace(DOI_URL_DECODE, DOI_URL_ENCODE, $doi)."?mailto=".CROSSREFUSERNAME; // do not encode crossref email
-     $ch = curl_init_array(1.0,
-	    [CURLOPT_URL => $url,
-	     CURLOPT_USERAGENT => BOT_CROSSREF_USER_AGENT]);
+     curl_setopt($ch, CURLOPT_URL, $url);
      $json = (string) @curl_exec($ch);
      $json = @json_decode($json);
      if (isset($json->message->title[0]) && !isset($json->message->title[1])) {

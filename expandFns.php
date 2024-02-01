@@ -1205,14 +1205,17 @@ function equivalent_parameters(string $par) : array {
 }
 
 function check_doi_for_jstor(string $doi, Template $template) : void {
+  static $ch = NULL;
+  if ($ch === NULL) {
+     $ch = curl_init_array(1.0, []);
+  }
   if ($template->has('jstor')) return;
   $doi = trim($doi);
   if ($doi === '') return;
   if (strpos($doi, '10.2307') === 0) { // special case
     $doi = substr($doi, 8);
   }
-  $ch = curl_init_array(1.0,
-	  [CURLOPT_URL => "https://www.jstor.org/citation/ris/" . $doi]);
+  curl_setopt($ch, CURLOPT_URL, "https://www.jstor.org/citation/ris/" . $doi);
   $ris = (string) @curl_exec($ch);
   $httpCode = (int) @curl_getinfo($ch, CURLINFO_HTTP_CODE);
   if ($httpCode === 200 &&
