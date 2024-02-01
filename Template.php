@@ -2908,8 +2908,8 @@ final class Template {
 		if (strlen($isbn) !== 13 && strlen($isbn) !== 10) $isbn='' ;
 	  }
 	  if ($isbn) { // Try Books.Google.Com
-		$google_book_url = 'https://www.google.com/search?tbo=p&tbm=bks&q=isbn:' . $isbn;
 		/** @psalm-taint-escape ssrf */
+		$google_book_url = 'https://www.google.com/search?tbo=p&tbm=bks&q=isbn:' . $isbn;
 		curl_setopt($ch, CURLOPT_URL, $google_book_url);
 		$google_content = (string) @curl_exec($ch);
 		if ($google_content && preg_match_all('~[Bb]ooks\.[Gg]oogle\.com/books\?id=(............)&amp~', $google_content, $google_results)) {
