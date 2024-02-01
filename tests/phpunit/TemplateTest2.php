@@ -4317,7 +4317,7 @@ final class TemplateTest2 extends testBaseClass {
     }
 
     public function testGoogleBooksHashCleanup10() : void {
-      $text = "{{cite LSA|url=https://books.google.com/books?id=12345&d=ser&pg=3241&lpg=321&article_id=3241&sitesec=reviews}}";
+      $text = "{{cite LSA|url=https://books.google.com/books?id=12345&d=doggiesandcats&pg=3241&lpg=321&article_id=3241&sitesec=reviews}}";
       $expanded = $this->process_citation($text);
       $this->AssertSame('https://books.google.com/books?id=12345&sitesec=reviews', $expanded->get2('url'));
     }
