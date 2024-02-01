@@ -1215,7 +1215,7 @@ function check_doi_for_jstor(string $doi, Template $template) : void {
   if (strpos($doi, '10.2307') === 0) { // special case
     $doi = substr($doi, 8);
   }
-  /** @psalm-suppress TaintedSSRF */
+  /** @psalm-taint-escape ssrf */
   curl_setopt($ch, CURLOPT_URL, "https://www.jstor.org/citation/ris/" . $doi);
   $ris = (string) @curl_exec($ch);
   $httpCode = (int) @curl_getinfo($ch, CURLINFO_HTTP_CODE);
