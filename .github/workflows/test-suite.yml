@@ -61,6 +61,4 @@ jobs:
 
     - name: Look for weird stuff
       if: always()
-      run: /bin/cat ./CodeCoverage
-
-      
+      run: /bin/cat ./CodeCoverage | /bin/grep -v doggiesandcats | /bin/grep -v 'testBadChapterStays page has ignored chapter' | /bin/grep -v  'testBadWikiTextPage page failed'
