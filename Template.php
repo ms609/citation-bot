@@ -2909,7 +2909,6 @@ final class Template {
 		$google_book_url = 'https://www.google.com/search?tbo=p&tbm=bks&q=isbn:' . $isbn;
 		curl_setopt($ch, CURLOPT_URL, $google_book_url);
 		$google_content = (string) @curl_exec($ch);
-		unset($ch);
 		if ($google_content && preg_match_all('~[Bb]ooks\.[Gg]oogle\.com/books\?id=(............)&amp~', $google_content, $google_results)) {
 		  $google_results = $google_results[1];
 		  $google_results = array_unique($google_results);
@@ -2957,7 +2956,6 @@ final class Template {
 	$google_book_url = "https://books.google.com/books/feeds/volumes/" . $gid;
 	curl_setopt($ch, CURLOPT_URL, $google_book_url);
 	$data = (string) @curl_exec($ch);
-	unset($ch);
 	if ($data === '') return;
 	$simplified_xml = str_replace('http___//www.w3.org/2005/Atom', 'http://www.w3.org/2005/Atom',
 	  str_replace(":", "___", $data));
