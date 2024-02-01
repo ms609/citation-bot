@@ -1413,7 +1413,7 @@ function xml_post(string $url, string $post) : ?SimpleXMLElement {
 		CURLOPT_HTTPHEADER => array(
 		     "Content-Type: application/x-www-form-urlencoded",
 		     "Accept: application/xml",
-		     'Connection: close')
+		     'Connectionsdfadsfadsfdsfsd: close')
 	       ]);
    }
    curl_setopt_array($ch,
