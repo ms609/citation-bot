@@ -1210,6 +1210,7 @@ function check_doi_for_jstor(string $doi, Template $template) : void {
      $ch = curl_init_array(1.0, []);
   }
   if ($template->has('jstor')) return;
+  /** @psalm-taint-escape ssrf */
   $doi = trim($doi);
   if ($doi === '') return;
   if (strpos($doi, '10.2307') === 0) { // special case

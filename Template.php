@@ -2019,6 +2019,7 @@ final class Template {
 	}
 	// They already allow some fuzziness in matches
 	if (($data['journal'] || $data['issn']) && ($data['start_page'] || $data['author'])) {
+	  /** @psalm-taint-escape ssrf */
 	  $url = "https://www.crossref.org/openurl/?noredirect=TRUE&pid=" . CROSSREFUSERNAME
 		   . ($data['title']      ? "&atitle=" . urlencode($data['title'])      : '')
 		   . ($data['author']     ? "&aulast=" . urlencode($data['author'])     : '')
@@ -2645,6 +2646,7 @@ final class Template {
 		$ch_oa = curl_init_array(0.5, [CURLOPT_USERAGENT => BOT_CROSSREF_USER_AGENT]);
 	}
 	set_time_limit(120);
+	/** @psalm-taint-escape ssrf */
 	$url = "https://api.unpaywall.org/v2/$doi?email=" . CROSSREFUSERNAME;
 	curl_setopt($ch_oa, CURLOPT_URL, $url);
 	$json = (string) @curl_exec($ch_oa);
@@ -2906,6 +2908,7 @@ final class Template {
 		if (strlen($isbn) !== 13 && strlen($isbn) !== 10) $isbn='' ;
 	  }
 	  if ($isbn) { // Try Books.Google.Com
+		/** @psalm-taint-escape ssrf */
 		$google_book_url = 'https://www.google.com/search?tbo=p&tbm=bks&q=isbn:' . $isbn;
 		curl_setopt($ch, CURLOPT_URL, $google_book_url);
 		$google_content = (string) @curl_exec($ch);
