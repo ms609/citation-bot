@@ -190,6 +190,7 @@ array(
 '10.7313/upo9781904761679.011',
 '10.7556/jaoa',
 '10.7575/aiac.ijalel.v.6n.3p.71',
+'10.46426/jp2kp.v20i1.42',
 );
 
 const NULL_DOI_BUT_GOOD = array(  // TODO - these need to be manually double checked once in a great while.  Note that a failed url on one computer does not mean it is gone, it might just be you
@@ -425,5 +426,6 @@ const NULL_DOI_BUT_GOOD = array(  // TODO - these need to be manually double che
 '10.7731/KIFSE.2015.29.2.039',
 '10.7770/rchdcp-V3N1-art348',
 '10.8080/4020100059499',
+'10.21504/amj.v3i1.732',
 /** We cannot add hdls, since we need the final URL **/
 );
