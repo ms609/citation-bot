@@ -6619,11 +6619,12 @@ final class Template {
 	if (!$doi) return FALSE;
 	if ($this->doi_valid) return TRUE;
 	if ($last_doi === $doi) {
-	  report_info("Rechecking if DOI " . echoable($doi) . " is operational...");  // Sometimes we get NULL, so check again for FALSE/TRUE
+	  $chatty = FALSE;
 	} else {
 	  $last_doi = $doi;
-	  report_info("Checking that DOI " . echoable($doi) . " is operational...");
+	  $chatty = TRUE;
 	}
+	if ($chatty) report_info("Checking that DOI " . echoable($doi) . " is operational...");
 	$trial = get_possible_dois($doi);
 	foreach ($trial as $try) {
 	  // Check that it begins with 10.
@@ -6633,7 +6634,7 @@ final class Template {
 		$this->doi_valid = TRUE;
 		foreach (DOI_BROKEN_ALIASES as $alias) $this->forget($alias);
 		if ($doi === $try) {
-		   report_inline('DOI ok.');
+		   if ($chatty) report_inline('DOI ok.');
 		} else {
 		   report_info("Modified DOI:  " . echoable($try) . " is operational...");
 		}
@@ -6648,7 +6649,7 @@ final class Template {
 		$this->doi_valid = TRUE;
 		foreach (DOI_BROKEN_ALIASES as $alias) $this->forget($alias);
 		if ($doi === $try) {
-		   report_inline('DOI ok.');
+		   if ($chatty) report_inline('DOI ok.');
 		} else {
 		   report_info("Modified DOI:  " . echoable($try) . " is operational...");
 		}
@@ -6660,7 +6661,7 @@ final class Template {
 	  report_warning("DOI status unknown.  doi.org failed to respond to: " . doi_link($doi)); // @codeCoverageIgnore
 	  return FALSE;    // @codeCoverageIgnore
 	} elseif ($doi_status === FALSE) {
-	  report_inline("It's not...");
+	  if ($chatty) report_inline("It's not...");
 	  $this->add_if_new('doi-broken-date', date("Y-m-d"));
 	  return FALSE;
 	} else {
@@ -6668,7 +6669,7 @@ final class Template {
 	  // @codeCoverageIgnoreStart
 	  foreach (DOI_BROKEN_ALIASES as $alias) $this->forget($alias);
 	  $this->doi_valid = TRUE;
-	  report_inline('DOI ok.');
+	  if ($chatty) report_inline('DOI ok.');
 	  return TRUE;
 	  // @codeCoverageIgnoreEnd
 	}

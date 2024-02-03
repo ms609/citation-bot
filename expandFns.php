@@ -122,7 +122,7 @@ function is_doi_active(string $doi) : ?bool {
     sleep(4);
     $headers_test = @curl_exec($ch);
   }
-  if ($headers_test === FALSE) return NULL; // most likely bad, but will recheck again an again
+  if ($headers_test === FALSE) return NULL; // most likely bad
   $response_code = curl_getinfo($ch, CURLINFO_RESPONSE_CODE);
   if ($response_code === 200) return TRUE;
   if ($response_code === 404) return FALSE;
@@ -192,7 +192,7 @@ function is_doi_works(string $doi) : ?bool {
      $headers_test = get_headers_array($url);  // @codeCoverageIgnore
   }
   if ($headers_test === FALSE) {
-     return NULL; // most likely bad, but will recheck again and again - note that NULL means do not add or remove doi-broken-date from pages
+     return NULL; // most likely bad - note that NULL means do not add or remove doi-broken-date from pages
   }
   if (interpret_doi_header($headers_test) !== FALSE) {
        return interpret_doi_header($headers_test);
@@ -1439,7 +1439,7 @@ function is_hdl_works(string $hdl) : string|null|false {
   if ($headers_test === FALSE) {
       $headers_test = get_headers_array($url); // @codeCoverageIgnore
   }
-  if ($headers_test === FALSE) return NULL; // most likely bad, but will recheck again and again
+  if ($headers_test === FALSE) return NULL; // most likely bad
   if (interpret_doi_header($headers_test) === NULL) return NULL;
   if (interpret_doi_header($headers_test) === FALSE) return FALSE;
   return get_loc_from_hdl_header($headers_test);
