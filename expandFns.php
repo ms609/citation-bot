@@ -94,7 +94,6 @@ function doi_works(string $doi) : ?bool {
         HandleCache::$cache_good[$doi] = TRUE;
         return TRUE;
     }
-    bot_debug_log('Got NULL for DOI: ' . str_ireplace(['&lt;', '&gt;'], ['<', '>'],echoable($doi)));
     HandleCache::$cache_hdl_null[$doi] = TRUE;
     return NULL;
   }
@@ -186,7 +185,8 @@ function is_doi_works(string $doi) : ?bool {
      if (stripos($doi, '10.4435/BSPI.') === 0) return FALSE;
      if (in_array($doi, NULL_DOI_LIST)) return NULL;
      if (in_array($doi, NULL_DOI_BUT_GOOD)) return NULL;
-     $headers_test = get_headers_array($url);  // @codeCoverageIgnore
+     $headers_test = get_headers_array($url);
+     bot_debug_log('Got NULL for DOI: ' . str_ireplace(['&lt;', '&gt;'], ['<', '>'],echoable($doi)));
   }
   if ($headers_test === FALSE) {
      $headers_test = get_headers_array($url);  // @codeCoverageIgnore
