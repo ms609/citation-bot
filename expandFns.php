@@ -975,7 +975,7 @@ function throttle () : void {
   $mem_max = (string) @ini_get('memory_limit');
   if (preg_match('~^(\d+)M$~', $mem_max, $matches)) {
     $mem_used = memory_get_usage() / (1024*1024);
-    $mem_max = 0.9 * @intval($matches[1]);
+    $mem_max = 0.8 * @intval($matches[1]);
     if ($mem_max !== 0 && ($mem_used > $mem_max)) { // Clear every buffer we have
        /** @psalm-suppress UnusedFunctionCall */
        @strtok('',''); // This should do nothing
@@ -987,7 +987,9 @@ function throttle () : void {
        $mem_used = (string) $mem_used;
        bot_debug_log("Cleared memory: " . $mem_used2 . ' : '  . $mem_used1 . ' : ' . $mem_used);
     }
-  }	
+  } else {
+    bot_debug_log("Memory Limit should end in M, but got: " . echoable($mem_max));
+  }
   $phase = $phase + 1;
   if ($phase < $cycles) {
     return;
