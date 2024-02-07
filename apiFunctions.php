@@ -436,17 +436,17 @@ function query_doi_api(array $ids, array &$templates) : bool { // $id not used y
   return TRUE;
 }
 
-function expand_by_doi(Template $template, bool $force = FALSE) : bool {
+function expand_by_doi(Template $template, bool $force = FALSE) : void {
   set_time_limit(120);
   // Because it can recover rarely used parameters such as editors, series & isbn,
   // there will be few instances where it could not in principle be profitable to
   // run this function, so we don't check this first.
 
-  if (!$template->verify_doi()) return FALSE;
+  if (!$template->verify_doi()) return;
   $doi = $template->get_without_comments_and_placeholders('doi');
-  if ($doi === $template->last_searched_doi) return FALSE;
+  if ($doi === $template->last_searched_doi) return;
   $template->last_searched_doi = $doi;
-  if (preg_match(REGEXP_DOI_ISSN_ONLY, $doi)) return FALSE; // We do not use DOI's that are just an ISSN.
+  if (preg_match(REGEXP_DOI_ISSN_ONLY, $doi)) return; // We do not use DOI's that are just an ISSN.
   if ($doi && preg_match('~^10\.2307/(\d+)$~', $doi)) {
       if ($template->add_if_new('jstor', substr($doi, 8)) &&
 	  $template->has('url') &&
@@ -457,7 +457,7 @@ function expand_by_doi(Template $template, bool $force = FALSE) : bool {
   if ($doi && ($force || $template->incomplete())) {
     $crossRef = query_crossref($doi);
     if ($crossRef) {
-      if (in_array(strtolower((string) @$crossRef->article_title), BAD_ACCEPTED_MANUSCRIPT_TITLES)) return FALSE ;
+      if (in_array(strtolower((string) @$crossRef->article_title), BAD_ACCEPTED_MANUSCRIPT_TITLES)) return ;
       if ($template->has('title') && trim((string) @$crossRef->article_title) && $template->get('title') !== 'none') { // Verify title of DOI matches existing data somewhat
 	$bad_data = TRUE;
 	$new = (string) $crossRef->article_title;
@@ -512,7 +512,7 @@ function expand_by_doi(Template $template, bool $force = FALSE) : bool {
 	      report_info("  Existing old title: " .  echoable($template->get($possible)));
 	   }
 	  }
-	  return FALSE;
+	  return;
 	}
       }
       report_action("Querying CrossRef: doi:" . doi_link($doi));
@@ -594,7 +594,7 @@ function expand_by_doi(Template $template, bool $force = FALSE) : bool {
       expand_doi_with_dx($template, $doi);
     }
   }
-  return TRUE;
+  return;
 }
 
 function query_crossref(string $doi) : ?object {
