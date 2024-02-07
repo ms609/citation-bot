@@ -93,8 +93,7 @@ function entrez_api(array $ids, array &$templates, string $db) : void {   // Poi
   }
 
   $get_template = function(int $template_key) use($templates) : Template { // Only exists to make static tools understand this is a Template() type
-       $templates[$template_key];
-       return;
+       return $templates[$template_key];
   };
 
   report_action("Using $db API to retrieve publication details: ");
