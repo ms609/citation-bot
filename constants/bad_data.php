@@ -481,6 +481,7 @@ const ZOTERO_AVOID_REGEX = array("twitter\.",               // This should be {{
 				 "timea\.rice\.edu", // gone
 				 "findarticles\.com", // Gone
 				 "myprivacy\.dpgmedia\.nl", // blocker
+				 "weblio\.jp/", // just scrapes other website like wiki and has bogus issue and volume numbers
 				);
 const NON_JOURNAL_WEBSITES = array('-news.co.uk/', '.ajc.com/', '.al.com/',
 		      '.ap.org/', '.bbm.ca/', '.dw.com/', '.fec.gov/', '.ft.com/',
