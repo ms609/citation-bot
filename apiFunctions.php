@@ -1038,7 +1038,7 @@ function parse_plain_text_reference(string $journal_data, Template $this_templat
 	  }
 	}
 	if (!$current_year
-	||  (preg_match('~\d{4}~', $current_year) && $current_year < $arxiv_year) {
+	||  (preg_match('~\d{4}~', $current_year) && $current_year < $arxiv_year)) {
 	  if ($this_template->has('date')) {
 	    $this_template->rename('date', 'year',$arxiv_year);
 	  } else {
