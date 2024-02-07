@@ -1059,6 +1059,7 @@ function parse_plain_text_reference(string $journal_data, Template $this_templat
         $new_text = $this_template->parsed_text();
 	$this_template->forget('publisher'); // This is either bad data, or refers to a preprint, not the journal
         if ($old_text !== $new_text) bot_debug_log('Got useful info from arXiv text: ' . $this_template->get('arxiv') . $this_template->get('eprint'));
+        // TODO - delete this whole subroutine if nothing useful comes from it.
       }
 }
 
