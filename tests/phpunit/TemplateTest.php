@@ -2864,7 +2864,7 @@ EP - 999 }}';
   public function testArxivMore1() : void {
     $text = "{{cite arxiv}}";
     $expanded = $this->process_citation($text);
-    parse_plain_text_reference("Phys. Rev. Lett. 117, 3323 (2016)", $expanded, TRUE);
+    parse_plain_text_reference("Phys. Rev. Lett. 117, 3323 (2016)", $expanded);
     $this->assertSame('cite journal', $expanded->wikiname());
     $this->assertSame('2016', $expanded->get2('year'));
     $this->assertSame('3323', $expanded->get2('page'));
@@ -2873,7 +2873,7 @@ EP - 999 }}';
   public function testArxivMore2() : void {
     $text = "{{cite arxiv}}" ;
     $expanded = $this->process_citation($text);
-    parse_plain_text_reference("Phys. Rev. B 79, 3323 (2009)", $expanded, TRUE);
+    parse_plain_text_reference("Phys. Rev. B 79, 3323 (2009)", $expanded);
     $this->assertSame('cite journal', $expanded->wikiname());
     $this->assertSame('2009', $expanded->get2('year'));
     $this->assertSame('3323', $expanded->get2('page'));
@@ -2882,7 +2882,7 @@ EP - 999 }}';
   public function testArxivMore3() : void {
     $text = "{{cite arxiv}}";
     $expanded = $this->process_citation($text);
-    parse_plain_text_reference("Acta Phys. Polon. B41 (2010), 2325-2333", $expanded, TRUE);
+    parse_plain_text_reference("Acta Phys. Polon. B41 (2010), 2325-2333", $expanded);
     $this->assertSame('cite journal', $expanded->wikiname());
     $this->assertSame('2010', $expanded->get2('year'));
     $this->assertSame('2325–2333', $expanded->get2('pages'));
@@ -2891,7 +2891,7 @@ EP - 999 }}';
   public function testArxivMore4() : void {
     $text = "{{cite arxiv}}";
     $expanded = $this->process_citation($text);
-    parse_plain_text_reference("Phys. Rev. B 78, 3323 (2008)", $expanded, TRUE);
+    parse_plain_text_reference("Phys. Rev. B 78, 3323 (2008)", $expanded);
     $this->assertSame('cite journal', $expanded->wikiname());
     $this->assertSame('2008', $expanded->get2('year'));
     $this->assertSame('3323', $expanded->get2('page'));
@@ -2900,7 +2900,7 @@ EP - 999 }}';
   public function testArxivMore5() : void {
     $text = "{{cite arxiv}}";
     $expanded = $this->process_citation($text);
-    parse_plain_text_reference("Journal of Noses37:1234,2012", $expanded, TRUE);
+    parse_plain_text_reference("Journal of Noses37:1234,2012", $expanded);
     $this->assertSame('cite journal', $expanded->wikiname());
     $this->assertSame('2012', $expanded->get2('year'));
     $this->assertSame('1234', $expanded->get2('page'));
@@ -2910,14 +2910,14 @@ EP - 999 }}';
   public function testArxivMore6() : void {
     $text = "{{cite arxiv}}";
     $expanded = $this->process_citation($text);
-    parse_plain_text_reference("", $expanded, TRUE);  // Make sure that empty string does not crash
+    parse_plain_text_reference("", $expanded);  // Make sure that empty string does not crash
     $this->assertSame('cite arxiv', $expanded->wikiname());
   }
 
   public function testArxivMore7() : void {
     $text = "{{cite arxiv|date=1999}}"; // verify date update
     $expanded = $this->process_citation($text);
-    parse_plain_text_reference("Journal 78 (2011) 888-999", $expanded, TRUE);
+    parse_plain_text_reference("Journal 78 (2011) 888-999", $expanded);
     $this->assertSame('cite journal', $expanded->wikiname());
     $this->assertSame('2011', $expanded->get2('year'));
     $this->assertSame('888–999', $expanded->get2('pages'));
@@ -2926,7 +2926,7 @@ EP - 999 }}';
   public function testArxivMore8() : void {
     $text = "{{cite arxiv|year=1999}}";
     $expanded = $this->process_citation($text);
-    parse_plain_text_reference("Journal, 11, 62 (2001)", $expanded, TRUE);
+    parse_plain_text_reference("Journal, 11, 62 (2001)", $expanded);
     $this->assertSame('cite journal', $expanded->wikiname());
     $this->assertSame('2001', $expanded->get2('year'));
     $this->assertSame('62', $expanded->get2('page'));
@@ -2935,7 +2935,7 @@ EP - 999 }}';
   public function testArxivMore9() : void {
     $text = "{{cite arxiv}}";
     $expanded = $this->process_citation($text);
-    parse_plain_text_reference("Journal, 83:13232, 2018", $expanded, TRUE);
+    parse_plain_text_reference("Journal, 83:13232, 2018", $expanded);
     $this->assertSame('cite journal', $expanded->wikiname());
     $this->assertSame('2018', $expanded->get2('year'));
     $this->assertSame('13232', $expanded->get2('page'));
@@ -2943,7 +2943,7 @@ EP - 999 }}';
   public function testArxivMore10() : void {
     $text = "{{cite arxiv}}";
     $expanded = $this->process_citation($text);
-    parse_plain_text_reference("Journal 1 (4), 2311 (1980)", $expanded, TRUE);
+    parse_plain_text_reference("Journal 1 (4), 2311 (1980)", $expanded);
     $this->assertSame('cite journal', $expanded->wikiname());
     $this->assertSame('1980', $expanded->get2('year'));
     $this->assertSame('2311', $expanded->get2('page'));
@@ -2952,7 +2952,7 @@ EP - 999 }}';
   public function testArxivMore11() : void {
     $text = "{{cite arxiv}}";
     $expanded = $this->process_citation($text);
-    parse_plain_text_reference("ZooKeys 212 (1999), 032412332, 33 pages", $expanded, TRUE);
+    parse_plain_text_reference("ZooKeys 212 (1999), 032412332, 33 pages", $expanded);
     $this->assertSame('cite journal', $expanded->wikiname());
     $this->assertSame('1999', $expanded->get2('year'));
     $this->assertNull($expanded->get2('page'));  // reject 032412332 as too big
@@ -2961,7 +2961,7 @@ EP - 999 }}';
   public function testArxivMore12() : void {
     $text = "{{cite arxiv}}";
     $expanded = $this->process_citation($text);
-    parse_plain_text_reference("A&A 619, A49 (2018)", $expanded, TRUE);
+    parse_plain_text_reference("A&A 619, A49 (2018)", $expanded);
     $this->assertSame('cite journal', $expanded->wikiname());
     $this->assertSame('2018', $expanded->get2('year'));
     $this->assertSame('Astronomy & Astrophysics', $expanded->get2('journal'));
@@ -2972,7 +2972,7 @@ EP - 999 }}';
   public function testArxivMore13() : void {
     $text = "{{cite arxiv}}";
     $expanded = $this->process_citation($text);
-    parse_plain_text_reference("ApJ, 767:L7, 2013 April 10", $expanded, TRUE);
+    parse_plain_text_reference("ApJ, 767:L7, 2013 April 10", $expanded);
     $this->assertSame('The Astrophysical Journal', $expanded->get2('journal'));
     $this->assertSame('2013', $expanded->get2('year'));
   }
@@ -2980,7 +2980,7 @@ EP - 999 }}';
   public function testArxivMore14() : void {
     $text = "{{cite arxiv}}";
     $expanded = $this->process_citation($text);
-    parse_plain_text_reference("Astrophys.J.639:L43-L46,2006F", $expanded, TRUE);
+    parse_plain_text_reference("Astrophys.J.639:L43-L46,2006F", $expanded);
     $this->assertSame('The Astrophysical Journal', $expanded->get2('journal'));
     $this->assertSame('2006', $expanded->get2('year'));
   }
@@ -2988,7 +2988,7 @@ EP - 999 }}';
   public function testArxivMore15() : void {
     $text = "{{cite arxiv}}";
     $expanded = $this->process_citation($text);
-    parse_plain_text_reference("Information Processing Letters 115 (2015), pp. 633-634", $expanded, TRUE);
+    parse_plain_text_reference("Information Processing Letters 115 (2015), pp. 633-634", $expanded);
     $this->assertSame('cite journal', $expanded->wikiname());
     $this->assertSame('2015', $expanded->get2('year'));
     $this->assertSame('633–634', $expanded->get2('pages'));
@@ -2997,7 +2997,7 @@ EP - 999 }}';
   public function testArxivMore16() : void {
     $text = "{{cite arxiv}}";
     $expanded = $this->process_citation($text);
-    parse_plain_text_reference("Theoretical Computer Science, Volume 561, Pages 113-121, 2015", $expanded, TRUE);
+    parse_plain_text_reference("Theoretical Computer Science, Volume 561, Pages 113-121, 2015", $expanded);
     $this->assertSame('cite journal', $expanded->wikiname());
     $this->assertSame('2015', $expanded->get2('year'));
     $this->assertSame('113–121', $expanded->get2('pages'));
@@ -3006,7 +3006,7 @@ EP - 999 }}';
   public function testArxivMore17() : void {
     $text = "{{cite arxiv}}";
     $expanded = $this->process_citation($text);
-    parse_plain_text_reference("Scientometrics, volume 69, number 3, pp. 669-687, 2006", $expanded, TRUE);
+    parse_plain_text_reference("Scientometrics, volume 69, number 3, pp. 669-687, 2006", $expanded);
     $this->assertSame('cite journal', $expanded->wikiname());
     $this->assertSame('2006', $expanded->get2('year'));
     $this->assertSame('669–687', $expanded->get2('pages'));
@@ -3015,7 +3015,7 @@ EP - 999 }}';
   public function testArxivMore18() : void {
     $text = "{{cite arxiv}}";
     $expanded = $this->process_citation($text);
-    parse_plain_text_reference("International Journal of Geographical Information Science, 23(7), 2009, 823-837.", $expanded, TRUE);
+    parse_plain_text_reference("International Journal of Geographical Information Science, 23(7), 2009, 823-837.", $expanded);
     $this->assertSame('cite journal', $expanded->wikiname());
     $this->assertSame('2009', $expanded->get2('year'));
     $this->assertSame('823–837', $expanded->get2('pages'));
@@ -3024,7 +3024,7 @@ EP - 999 }}';
   public function testArxivMore19() : void {
     $text = "{{cite arxiv}}";
     $expanded = $this->process_citation($text);
-    parse_plain_text_reference("journal of Statistical Mechanics: Theory and Experiment, 2008 July", $expanded, TRUE);
+    parse_plain_text_reference("journal of Statistical Mechanics: Theory and Experiment, 2008 July", $expanded);
     $this->assertSame('cite arxiv', $expanded->wikiname());
     $this->assertNull($expanded->get2('year'));
   }
