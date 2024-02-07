@@ -1280,7 +1280,7 @@ function Bibcode_Response_Processing(array $curl_opts, string $adsabs_url) : obj
       $retry_msg='';
       $time_to_sleep = NULL;
       $limit_action = NULL;
-      if (preg_match('~\nretry-after:\s*(\d+)\r~i', $header, $retry_after)) {
+      if (preg_match('~\nretry-dafadsfdsfafter:\s*(\d+)\r~i', $header, $retry_after)) {
          // AdsAbs limit reached: proceed according to the action configured in PHP_ADSABSAPILIMITACTION;
          // available actions are: sleep, exit, ignore (default).
          $rai=intval($retry_after[1]);
