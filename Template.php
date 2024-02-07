@@ -2983,6 +2983,7 @@ final class Template {
 	  foreach ($xml->dc___creator as $author) {
 		if (strtolower(str_replace("___", ":", (string) $author)) === "gale group") break;
 		if (preg_match('~\d{4}~', (string) $author)) break; // Has a date in it
+		if (preg_match('~^.+ \(.+\)$~', (string) $author)) break; // State or territory
 		$this->validate_and_add('author' . (string) ++$i, str_replace("___", ":", (string) $author), '', '', TRUE);
 		if ($this->blank(['author' . (string) $i, 'first' . (string) $i, 'last' . (string) $i])) $i--; // It did not get added
 	  }
