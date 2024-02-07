@@ -1276,11 +1276,29 @@ function Bibcode_Response_Processing(array $curl_opts, string $adsabs_url) : obj
     $header = substr($return, 0, $header_length);
     $body = substr($return, $header_length);
     $decoded = @json_decode($body);
+
+    $ratelimit_total = NULL;
+    $ratelimit_left = NULL;
+    $ratelimit_current = NULL;
+
+    if (preg_match_all('~\nx\-ratelimit\-\w+:\s*(\d+)\r~i', $header, $rate_limit)) {
+      // @codeCoverageIgnoreStart
+      if ($rate_limit[1][2]) {
+	$ratelimit_total = intval($rate_limit[1][0]);
+	$ratelimit_left = intval($rate_limit[1][1]);
+	$ratelimit_current = $ratelimit_total - $ratelimit_left;
+	report_info("AdsAbs search " . strval($ratelimit_current) . "/" . strval($ratelimit_total));
+      } else {
+	throw new Exception('Too many requests', $http_response_code);
+      }
+      // @codeCoverageIgnoreEnd
+    }
+
     if (is_object($decoded) && isset($decoded->error)) {
       $retry_msg='';
       $time_to_sleep = NULL;
       $limit_action = NULL;
-      if (preg_match('~\nretry-dafadsfdsfafter:\s*(\d+)\r~i', $header, $retry_after)) {
+      if (is_int($ratelimit_total) && is_int($ratelimit_left) && is_int($ratelimit_current) && ($ratelimit_left <= 0) && ($ratelimit_current >= $ratelimit_total) && preg_match('~\nretry-after:\s*(\d+)\r~i', $header, $retry_after)) {
          // AdsAbs limit reached: proceed according to the action configured in PHP_ADSABSAPILIMITACTION;
          // available actions are: sleep, exit, ignore (default).
          $rai=intval($retry_after[1]);
@@ -1340,18 +1358,6 @@ function Bibcode_Response_Processing(array $curl_opts, string $adsabs_url) : obj
       // @codeCoverageIgnoreEnd
     }
 
-    if (preg_match_all('~\nx\-ratelimit\-\w+:\s*(\d+)\r~i', $header, $rate_limit)) {
-      // @codeCoverageIgnoreStart
-      if ($rate_limit[1][2]) {
-	$ratelimit_total = intval($rate_limit[1][0]);
-	$ratelimit_left = intval($rate_limit[1][1]);
-	$ratelimit_current  = $ratelimit_total - $ratelimit_left;
-	report_info("AdsAbs search " . strval($ratelimit_current) . "/" . strval($ratelimit_total));
-      } else {
-	throw new Exception('Too many requests', $http_response_code);
-      }
-      // @codeCoverageIgnoreEnd
-    }
     if (!is_object($decoded)) {
       bot_debug_log("Could not decode ADSABS API response:\n" . $body . "\nURL was:  " . $adsabs_url);
       throw new Exception("Could not decode API response:\n" . $body, 5000);  // @codeCoverageIgnore
