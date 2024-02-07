@@ -359,9 +359,9 @@ function adsabs_api(array $ids, array &$templates, string $identifier) : void { 
       break;
     }
   }
-  if ($NONE_IS_INCOMPLETE) return FALSE;
-  if (AdsAbsControl::big_gave_up_yet()) return FALSE;
-  if (!PHP_ADSABSAPIKEY) return FALSE;
+  if ($NONE_IS_INCOMPLETE) return;
+  if (AdsAbsControl::big_gave_up_yet()) return;
+  if (!PHP_ADSABSAPIKEY) return;
 
   // API docs at https://github.com/adsabs/adsabs-dev-api/blob/master/Search_API.ipynb
   /** @psalm-suppress RedundantCondition */ /* PSALM thinks TRAVIS cannot be FALSE */
@@ -377,7 +377,7 @@ function adsabs_api(array $ids, array &$templates, string $identifier) : void { 
 	      CURLOPT_CUSTOMREQUEST => 'POST',
 	      CURLOPT_POSTFIELDS => "$identifier\n" . implode("\n", $ids)];
   $response = Bibcode_Response_Processing($curl_opts, $adsabs_url);
-  if (!isset($response->docs)) return TRUE;
+  if (!isset($response->docs)) return;
 
   foreach ($response->docs as $record) { // Check for remapped bibcodes
     $record = (object) $record; // Make static analysis happy
