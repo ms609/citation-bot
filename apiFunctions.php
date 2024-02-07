@@ -1504,27 +1504,23 @@ function process_bibcode_data(Template $this_template, object $record) : void {
     }
 }
 
-function expand_book_adsabs(Template $template, object $record) : bool {
+function expand_book_adsabs(Template $template, object $record) : void {
     set_time_limit(120);
-    $return = FALSE;
     if (isset($record->year)) {
       $template->add_if_new('year', preg_replace("~\D~", "", (string) $record->year));
-      $return = TRUE;
     }
     if (isset($record->title)) {
       $template->add_if_new('title', (string) $record->title[0]);
-      $return = TRUE;
     }
     if ($template->blank(array_merge(FIRST_EDITOR_ALIASES, FIRST_AUTHOR_ALIASES, ['publisher']))) { // Avoid re-adding editors as authors, etc.
        $i = 0;
        if (isset($record->author)) {
 	foreach ($record->author as $author) {
 	 $template->add_if_new('author' . (string) ++$i, $author);
-	 $return = TRUE;
 	}
        }
     }
-    return $return;
+    return;
   }
 
   // $options should be a series of field names, colons (optionally urlencoded), and
