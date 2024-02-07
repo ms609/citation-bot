@@ -311,7 +311,7 @@ function arxiv_api(array $ids, array &$templates) : bool {  // Pointer to save m
 
     if ($entry->arxivjournal_ref && $this_template->blank(['doi','pmid','pmc'])) {
       $journal_data = trim((string) $entry->arxivjournal_ref); // this is human readble text
-      parse_plain_text_reference($journal_data, $this_template, TRUE);
+      parse_plain_text_reference($journal_data, $this_template);
     }
     if ($this_template->has('publisher')) {
       if (stripos($this_template->get('publisher'), 'arxiv') !== FALSE) {
@@ -912,7 +912,7 @@ function expand_by_jstor(Template $template) : void {
 
 // This routine is actually not used much, since we often get a DOI and thus do not need to parse this thankfully
 // Do not add a new regex without adding a test too in TemplateTest.php
-function parse_plain_text_reference(string $journal_data, Template $this_template, bool $upgrade_years = FALSE ) : void {
+function parse_plain_text_reference(string $journal_data, Template $this_template) : void {
       $journal_data = trim($journal_data);
       if ($journal_data === "") return;
       $arxiv_journal=FALSE;
@@ -1038,7 +1038,7 @@ function parse_plain_text_reference(string $journal_data, Template $this_templat
 	  }
 	}
 	if (!$current_year
-	||  (preg_match('~\d{4}~', $current_year) && $current_year < $arxiv_year && $upgrade_years)) {
+	||  (preg_match('~\d{4}~', $current_year) && $current_year < $arxiv_year) {
 	  if ($this_template->has('date')) {
 	    $this_template->rename('date', 'year',$arxiv_year);
 	  } else {
