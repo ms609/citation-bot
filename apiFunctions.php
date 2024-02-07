@@ -798,44 +798,44 @@ function expand_doi_with_dx(Template $template, string $doi) : bool {
      return TRUE;
 }
 
-function expand_by_jstor(Template $template) : bool {
+function expand_by_jstor(Template $template) : void {
   static $ch = NULL;
   if ($ch === NULL) {
     $ch = curl_init_array(1.0, []);
   }
   set_time_limit(120);
-  if ($template->incomplete() === FALSE) return FALSE;
+  if ($template->incomplete() === FALSE) return;
   if ($template->has('jstor')) {
      $jstor = trim($template->get('jstor'));
   } elseif(preg_match('~^https?://(?:www\.|)jstor\.org/stable/(.*)$~', $template->get('url'), $match)) {
      $jstor = $match[1];
   } else {
-     return FALSE;
+     return;
   }
   if (preg_match('~^(.*)(?:\?.*)$~', $jstor, $match)) {
      $jstor = $match[1]; // remove ?seq= stuff
   }
   /** @psalm-taint-escape ssrf */
   $jstor = trim($jstor);
-  if (strpos($jstor, ' ') !== FALSE) return FALSE ; // Comment/template found
-  if (substr($jstor, 0, 1) === 'i') return FALSE ; // We do not want i12342 kind
+  if (strpos($jstor, ' ') !== FALSE) return ; // Comment/template found
+  if (substr($jstor, 0, 1) === 'i') return ; // We do not want i12342 kind
   curl_setopt($ch, CURLOPT_URL, 'https://www.jstor.org/citation/ris/' . $jstor);
   $dat = (string) @curl_exec($ch);
   if ($dat === '') {
     report_info("JSTOR API returned nothing for ". jstor_link($jstor));     // @codeCoverageIgnore
-    return FALSE;                                                           // @codeCoverageIgnore
+    return;                                                           // @codeCoverageIgnore
   }
   if (stripos($dat, 'No RIS data found for') !== FALSE) {
     report_info("JSTOR API found nothing for ".  jstor_link($jstor));       // @codeCoverageIgnore
-    return FALSE;                                                           // @codeCoverageIgnore
+    return;                                                           // @codeCoverageIgnore
   }
   if (stripos($dat, 'Block Reference') !== FALSE) {
     report_info("JSTOR API blocked bot for ".  jstor_link($jstor));         // @codeCoverageIgnore
-    return FALSE;                                                           // @codeCoverageIgnore
+    return;                                                           // @codeCoverageIgnore
   }
   if (stripos($dat, 'A problem occurred trying to deliver RIS data')  !== FALSE) {
     report_info("JSTOR API had a problem for ".  jstor_link($jstor));
-    return FALSE;
+    return;
   }
   if ($template->has('title')) {
     $bad_data = TRUE;
@@ -903,11 +903,11 @@ function expand_by_jstor(Template $template) : bool {
 	    report_info("  Existing old title: " .  echoable($template->get($possible)));
 	 }
        }
-       return FALSE;
+       return;
     }
   }
   $template->expand_by_RIS($dat, FALSE);
-  return TRUE;
+  return;
 }
 
 // This routine is actually not used much, since we often get a DOI and thus do not need to parse this thankfully
