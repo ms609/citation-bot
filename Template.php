@@ -342,9 +342,7 @@ final class Template {
 		  }
 		  break;
 		case "cite journal":
-		  if ($this->use_sici()) {
-			report_action("Found and used SICI");
-		  }
+		  $this->use_sici();
 	  }
 	  if ((stripos($this->rawtext, 'citation_bot_placeholder_comment') === FALSE) &&
 		 (stripos($this->rawtext, 'graph drawing') === FALSE) &&
@@ -2596,7 +2594,7 @@ final class Template {
 	$this->this_array = array();
   }
 
-  public function use_sici() : bool {
+  public function use_sici() : void {
 	if (preg_match(REGEXP_SICI, urldecode($this->parsed_text()), $sici)) {
 	  quietly('report_action', "Extracting information from SICI");
 	  $this->add_if_new('issn', $sici[1]); // Check whether journal is set in add_if_new
@@ -2604,8 +2602,8 @@ final class Template {
 	  $this->add_if_new('volume', (string) (int) $sici[5]);
 	  if ($sici[6]) $this->add_if_new('issue', (string) (int) $sici[6]);
 	  $this->add_if_new('pages', (string) (int) $sici[7]);
-	  return TRUE;
-	} else return FALSE;
+	  report_action("Found and used SICI");
+	}
   }
 
   public function get_open_access_url() : void {
