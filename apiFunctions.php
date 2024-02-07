@@ -1030,6 +1030,7 @@ function parse_plain_text_reference(string $journal_data, Template $this_templat
     //    report_minor_error("Unexpected data found in parse_plain_text_reference. " . echoable($journal_data));
       }
       if ($arxiv_journal && $arxiv_year && (intval($arxiv_year) > 1900) && (intval($arxiv_year) < (1+intval(date("Y"))))) { // if no journal then doomed.  If bad date or no date then doomed.
+        $old_text = $this_template->parsed_text();
 	$current_year = $this_template->get_without_comments_and_placeholders('year');
 	if (!$current_year) {
 	  $current_date = $this_template->get_without_comments_and_placeholders('date');
@@ -1055,7 +1056,9 @@ function parse_plain_text_reference(string $journal_data, Template $this_templat
 	  $this_template->add_if_new("issue", $arxiv_issue, 'arxiv');
 	}
 	$this_template->add_if_new("journal", wikify_external_text($arxiv_journal), 'arxiv');
+        $new_text = $this_template->parsed_text();
 	$this_template->forget('publisher'); // This is either bad data, or refers to a preprint, not the journal
+        if ($old_text !== $new_text) bot_debug_log('Got useful info from arXiv text: ' . $this_template->get('arxiv') . $this_template->get('eprint'));
       }
 }
 
