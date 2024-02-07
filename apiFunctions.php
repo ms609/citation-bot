@@ -649,7 +649,7 @@ function query_crossref(string $doi) : ?object {
   return NULL;                                                                       // @codeCoverageIgnore
 }
 
-function expand_doi_with_dx(Template $template, string $doi) : bool {
+function expand_doi_with_dx(Template $template, string $doi) : void {
      // See https://crosscite.org/docs.html for discussion of API we are using -- not all agencies resolve the same way
      // https://api.crossref.org/works/$doi can be used to find out the agency
      // https://www.doi.org/registration_agencies.html  https://www.doi.org/RA_Coverage.html List of all ten doi granting agencies - many do not do journals
@@ -661,9 +661,9 @@ function expand_doi_with_dx(Template $template, string $doi) : bool {
         $ch = curl_init_array(1.5,  // can take a long time when nothing to be found
 	     [CURLOPT_HTTPHEADER => ["Accept: application/vnd.citationstyles.csl+json"]]);
      }
-     if (strpos($doi, '10.2307') === 0) return FALSE; // jstor API is better
-     if (strpos($doi, '10.24436') === 0) return FALSE; // They have horrible meta-data
-     if (strpos($doi, '10.5284/1028203') === 0) return FALSE; // database
+     if (strpos($doi, '10.2307') === 0) return; // jstor API is better
+     if (strpos($doi, '10.24436') === 0) return; // They have horrible meta-data
+     if (strpos($doi, '10.5284/1028203') === 0) return; // database
      set_time_limit(120);
      /** @param array|string|null|int $data */ /** @psalm-suppress MissingClosureParamType */
      $try_to_add_it = function(string $name, $data) use($template) : bool {
@@ -676,7 +676,7 @@ function expand_doi_with_dx(Template $template, string $doi) : bool {
        if ($data == '') return FALSE;
        return $template->add_if_new($name, (string) $data, 'dx');
      };
-     if (!$doi) return FALSE;
+     if (!$doi) return;
      /** @psalm-taint-escape ssrf */
      $doi = trim($doi);
      curl_setopt($ch, CURLOPT_URL, 'https://doi.org/' . $doi);
@@ -685,14 +685,14 @@ function expand_doi_with_dx(Template $template, string $doi) : bool {
        $data = (string) @curl_exec($ch);
      } catch (Exception $e) {                    // @codeCoverageIgnoreStart
        $template->mark_inactive_doi();
-       return FALSE;
+       return;
      }                                           // @codeCoverageIgnoreEnd
      if ($data === "" || stripos($data, 'DOI Not Found') !== FALSE || stripos($data, 'DOI prefix') !== FALSE) {
        $template->mark_inactive_doi();
-       return FALSE;
+       return;
      }
      $json = @json_decode($data, TRUE);
-     if($json == FALSE) return FALSE;
+     if($json == FALSE) return;
      // BE WARNED:  this code uses the "@$var" method.
      // If the variable is not set, then PHP just passes NULL, then that is interpreted as a empty string
      if ($template->blank(['date', 'year'])) {
@@ -795,7 +795,7 @@ function expand_doi_with_dx(Template $template, string $doi) : bool {
        if (!HTML_OUTPUT) print_r($json);                                                         // @codeCoverageIgnore
        report_minor_error('dx.doi.org returned unexpected data type ' . echoable((string) @$json['type']) . ' for ' . doi_link($doi));     // @codeCoverageIgnore
      }
-     return TRUE;
+     return;
 }
 
 function expand_by_jstor(Template $template) : bool {
