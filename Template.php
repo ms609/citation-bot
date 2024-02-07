@@ -3014,7 +3014,7 @@ final class Template {
 	  if (preg_match('~1[0-8]\d\d~', $google_date)) return;
 	  if (!preg_match('~[12]\d\d\d~', $google_date)) return;
 	}
-	if (!preg_match("^\d{4}$", $google_date)) { // More than a year
+	if (!preg_match("~^\d{4}$~", $google_date)) { // More than a year
            $almost_now = time() - 604800;
            $new = (integer) strtotime($google_date);
            if ($new > $almost_now) return;
