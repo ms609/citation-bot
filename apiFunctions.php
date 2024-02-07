@@ -84,16 +84,17 @@ final class AdsAbsControl {
 **/
 function entrez_api(array $ids, array &$templates, string $db) : void {   // Pointer to save memory
   set_time_limit(120);
-  if (!count($ids)) return FALSE;
-  if ($ids == ['XYZ']) return FALSE; // junk data from test suite
-  if ($ids == ['1']) return FALSE; // junk data from test suite
-  if ($ids == ['']) return FALSE; // junk data from test suite
+  if (!count($ids)) return;
+  if ($ids == ['XYZ']) return; // junk data from test suite
+  if ($ids == ['1']) return; // junk data from test suite
+  if ($ids == ['']) return; // junk data from test suite
   if ($db !== 'pubmed' && $db !== 'pmc') {
     report_error("Invalid Entrez type passed in: " . echoable($db));  // @codeCoverageIgnore
   }
 
   $get_template = function(int $template_key) use($templates) : Template { // Only exists to make static tools understand this is a Template() type
-       return $templates[$template_key];
+       $templates[$template_key];
+       return;
   };
 
   report_action("Using $db API to retrieve publication details: ");
@@ -101,7 +102,7 @@ function entrez_api(array $ids, array &$templates, string $db) : void {   // Poi
 
   if ($xml === NULL) {
     report_warning("Error in PubMed search: No response from Entrez server");   // @codeCoverageIgnore
-    return FALSE;                                                               // @codeCoverageIgnore
+    return;                                                               // @codeCoverageIgnore
   }
 
   // A few PMC do not have any data, just pictures of stuff
@@ -188,7 +189,7 @@ function entrez_api(array $ids, array &$templates, string $db) : void {   // Poi
    }
    }
   }
-  return TRUE;
+  return;
 }
 
 /**
@@ -215,7 +216,7 @@ function expand_arxiv_templates (array &$templates) : void {  // Pointer to save
       $arxiv_templates[] = $this_template;
     }
   }
-  return arxiv_api($ids, $arxiv_templates);
+  arxiv_api($ids, $arxiv_templates);
 }
 
 /**
