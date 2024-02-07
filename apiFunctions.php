@@ -8,10 +8,10 @@ require_once 'NameTools.php';        // @codeCoverageIgnore
 
 /** @param array<string> $pmids
     @param array<Template> $templates **/
-function query_pmid_api (array $pmids, array &$templates) : bool { return entrez_api($pmids, $templates, 'pubmed'); }  // Pointer to save memory
+function query_pmid_api (array $pmids, array &$templates) : void { entrez_api($pmids, $templates, 'pubmed'); }  // Pointer to save memory
 /** @param array<string> $pmcs
     @param array<Template> $templates **/
-function query_pmc_api  (array $pmcs, array &$templates) : bool { return entrez_api($pmcs,  $templates, 'pmc'); } // Pointer to save memory
+function query_pmc_api  (array $pmcs, array &$templates) : void { entrez_api($pmcs,  $templates, 'pmc'); } // Pointer to save memory
 
 final class AdsAbsControl {
   const MAX_CACHE_SIZE = 50000;
@@ -82,7 +82,7 @@ final class AdsAbsControl {
   @param array<string> $ids
   @param array<Template> $templates
 **/
-function entrez_api(array $ids, array &$templates, string $db) : bool {   // Pointer to save memory
+function entrez_api(array $ids, array &$templates, string $db) : void {   // Pointer to save memory
   set_time_limit(120);
   if (!count($ids)) return FALSE;
   if ($ids == ['XYZ']) return FALSE; // junk data from test suite
@@ -195,12 +195,12 @@ function entrez_api(array $ids, array &$templates, string $db) : bool {   // Poi
   @param array<string> $bibcodes
   @param array<Template> $templates
 **/
-function query_bibcode_api(array $bibcodes, array &$templates) : bool { return adsabs_api($bibcodes, $templates, 'bibcode'); }  // Pointer to save memory
+function query_bibcode_api(array $bibcodes, array &$templates) : void { adsabs_api($bibcodes, $templates, 'bibcode'); }  // Pointer to save memory
 
 /**
   @param array<Template> $templates
 **/
-function expand_arxiv_templates (array &$templates) : bool {  // Pointer to save memory
+function expand_arxiv_templates (array &$templates) : void {  // Pointer to save memory
   $ids = array();
   $arxiv_templates = array();
   foreach ($templates as $this_template) {
@@ -222,13 +222,13 @@ function expand_arxiv_templates (array &$templates) : bool {  // Pointer to save
   @param array<string> $ids
   @param array<Template> $templates
 **/
-function arxiv_api(array $ids, array &$templates) : bool {  // Pointer to save memory
+function arxiv_api(array $ids, array &$templates) : void {  // Pointer to save memory
   static $ch = NULL;
   if ($ch === NULL) {
       $ch = curl_init_array(1.0, []);	
   }
   set_time_limit(120);
-  if (count($ids) === 0) return FALSE;
+  if (count($ids) === 0) return;
   report_action("Getting data from arXiv API");
   /** @psalm-taint-escape ssrf */
   $request = "https://export.arxiv.org/api/query?start=0&max_results=2000&id_list=" . implode(',', $ids);
@@ -240,11 +240,11 @@ function arxiv_api(array $ids, array &$templates) : bool {  // Pointer to save m
     );
   } else {
     report_warning("No response from arXiv.");       // @codeCoverageIgnore
-    return FALSE;                                    // @codeCoverageIgnore
+    return;                                    // @codeCoverageIgnore
   }
   if (!is_object($xml)) {
     report_warning("No valid from arXiv.");       // @codeCoverageIgnore
-    return FALSE;                                 // @codeCoverageIgnore
+    return;                                 // @codeCoverageIgnore
   }
   if ((string)$xml->entry->title === "Error") {
       $the_error = (string)$xml->entry->summary;
@@ -253,7 +253,7 @@ function arxiv_api(array $ids, array &$templates) : bool {  // Pointer to save m
       } else {
 	report_minor_error("arXiv search failed - please report the error: " . echoable($the_error));  // @codeCoverageIgnore
       }
-      return FALSE;
+      return;
   }
 
   $this_template = current($templates); // advance at end of foreach loop
@@ -323,16 +323,16 @@ function arxiv_api(array $ids, array &$templates) : bool {  // Pointer to save m
   if ($this_template !== FALSE) {
     report_minor_error('Unexpected error in arxiv_api()' . echoable($this_template->parsed_text()));   // @codeCoverageIgnore
   }
-  return TRUE;
+  return;
 }
 
 /**
   @param array<string> $ids
   @param array<Template> $templates
 **/
-function adsabs_api(array $ids, array &$templates, string $identifier) : bool {  // Pointer to save memory
+function adsabs_api(array $ids, array &$templates, string $identifier) : void {  // Pointer to save memory
   set_time_limit(120);
-  if (count($ids) === 0) return FALSE;
+  if (count($ids) === 0) return;
 
   foreach ($ids as $key => $bibcode) {
     if (stripos($bibcode, 'CITATION') !== FALSE || strlen($bibcode) !== 19) {
@@ -423,17 +423,17 @@ function adsabs_api(array $ids, array &$templates, string $identifier) : bool { 
 	$template->add_if_new('year', $matches[1]); // Fail safe book code to grab a year directly from the bibcode itself
     }
   }
-  return TRUE;
+  return;
 }
 
 /** @psalm-suppress UnusedParam
     @param array<string> $ids
     @param array<Template> $templates **/
-function query_doi_api(array $ids, array &$templates) : bool { // $id not used yet  // Pointer to save memory
+function query_doi_api(array $ids, array &$templates) : void { // $id not used yet  // Pointer to save memory
   foreach ($templates as $template) {
     expand_by_doi($template);
   }
-  return TRUE;
+  return;
 }
 
 function expand_by_doi(Template $template, bool $force = FALSE) : void {
