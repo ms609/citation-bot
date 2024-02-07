@@ -575,5 +575,7 @@ const NULL_DOI_BUT_GOOD = array(  // TODO - these need to be manually double che
 '10.7770/rchdcp-V3N1-art348',
 '10.8080/4020100059499',
 '10.9755/ejfa.2018.v30.i3.1639',
+'10.1017/S0021875811000508',
+'10.1093/ref:odnb/77340',
 /** We cannot add hdls, since we need the final URL **/
 );
