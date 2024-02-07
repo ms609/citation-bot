@@ -544,6 +544,7 @@ const NULL_DOI_BUT_GOOD = array(  // TODO - these need to be manually double che
 '10.3399/bjgp11X572427',
 '10.3399/bjgp18X698885',
 '10.34019/2594-8296.2019.v25.28740',
+'10.3406/befeo.1954.5607',
 '10.3746/pnf.2017.22.2.67',
 '10.3819/ccbr.2008.30003',
 '10.3916/c52-2017-10',
