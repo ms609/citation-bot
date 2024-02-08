@@ -252,11 +252,10 @@ function get_loc_from_hdl_header(array $headers_test) : ?string {
 /** @psalm-suppress UnusedParam
     @param array<string> $ids
     @param array<Template> $templates **/
-function query_jstor_api(array $ids, array &$templates) : bool { // $ids not used   // Pointer to save memory
+function query_jstor_api(array $ids, array &$templates) : void { // $ids not used   // Pointer to save memory
   foreach ($templates as $template) {
     expand_by_jstor($template);
   }
-  return TRUE;
 }
 
 function sanitize_doi(string $doi) : string {
