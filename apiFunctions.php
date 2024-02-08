@@ -665,8 +665,8 @@ function expand_doi_with_dx(Template $template, string $doi) : void {
      if (strpos($doi, '10.24436') === 0) return; // They have horrible meta-data
      if (strpos($doi, '10.5284/1028203') === 0) return; // database
      set_time_limit(120);
-     /** @param array|string|null|int $data */ /** @psalm-suppress MissingClosureParamType */
-     $try_to_add_it = function(string $name, $data) use($template) : void {
+     /** @param array|string|null|int $data */
+     $try_to_add_it = function(string $name, $data) use(Template $template) : void {
        if ($template->has($name)) return; // Not worth updating based upon DX
        if (is_null($data)) return;
        while (is_array($data)) {
