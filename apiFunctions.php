@@ -666,15 +666,16 @@ function expand_doi_with_dx(Template $template, string $doi) : void {
      if (strpos($doi, '10.5284/1028203') === 0) return; // database
      set_time_limit(120);
      /** @param array|string|null|int $data */ /** @psalm-suppress MissingClosureParamType */
-     $try_to_add_it = function(string $name, $data) use($template) : bool {
-       if ($template->has($name)) return FALSE; // Not worth updating based upon DX
-       if (is_null($data)) return FALSE;
+     $try_to_add_it = function(string $name, $data) use($template) : void {
+       if ($template->has($name)) return; // Not worth updating based upon DX
+       if (is_null($data)) return;
        while (is_array($data)) {
-	 if (!isset($data['0']) || isset($data['1'])) return FALSE; // @codeCoverageIgnore
-	 $data = $data['0'];                                        // @codeCoverageIgnore
+	 if (!isset($data['0']) || isset($data['1'])) return; // @codeCoverageIgnore
+	 $data = $data['0'];                                  // @codeCoverageIgnore
        }
-       if ($data == '') return FALSE;
-       return $template->add_if_new($name, (string) $data, 'dx');
+       if ($data == '') return;
+       $template->add_if_new($name, (string) $data, 'dx');
+       return; 
      };
      if (!$doi) return;
      /** @psalm-taint-escape ssrf */
