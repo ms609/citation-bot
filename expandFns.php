@@ -972,18 +972,18 @@ function throttle () : void {
 
   $mem_max = (string) @ini_get('memory_limit');
   if (preg_match('~^(\d+)M$~', $mem_max, $matches)) {
-    $mem_used = memory_get_usage() / (1024*1024);
-    $mem_max = 0.8 * @intval($matches[1]);
-    if ($mem_max !== 0 && ($mem_used > $mem_max)) { // Clear every buffer we have
+    $mem_max = (int) (0.8 * @intval($matches[1]));
+    unset($matches);
+    $mem_used = (int) (memory_get_usage() / 1048576);
+    if (($mem_max !== 0) && ($mem_used > $mem_max)) { // Clear every buffer we have
        /** @psalm-suppress UnusedFunctionCall */
        @strtok('',''); // This should do nothing
        HandleCache::free_memory();
-       $mem_used1 = (string) (memory_get_usage() / (1024*1024));
+       $mem_used1 = (string) (int) (memory_get_usage() / 1048576);
        AdsAbsControl::free_memory();
-       unset($matches);
-       $mem_used2 = (string) (memory_get_usage() / (1024*1024));
-       $mem_used = (string) $mem_used;
-       bot_debug_log("Cleared memory: " . $mem_used2 . ' : '  . $mem_used1 . ' : ' . $mem_used);
+       $mem_used2 = (string) (int) (memory_get_usage() / 1048576);
+       $mem_used0 = (string) $mem_used;
+       bot_debug_log("Cleared memory: " . $mem_used2 . ' : '  . $mem_used1 . ' : ' . $mem_used0);
     }
   } else {
     bot_debug_log("Memory Limit should end in M, but got: " . echoable($mem_max));
