@@ -17,6 +17,7 @@ const COMMON_MISTAKES = array ( // Common mistakes that aren't picked up by the 
   "OL"              =>  "ol",
   "OSTI"            =>  "osti",
   "PMC"             =>  "pmc",
+  "pmcid"           =>  "pmc",
   "PMID"            =>  "pmid",
   "RFC"             =>  "rfc",
   "S2CID"           =>  "s2cid",
