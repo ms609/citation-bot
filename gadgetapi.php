@@ -19,11 +19,11 @@ try {
  $originalText = $_POST['text'];
  $editSummary = $_POST['summary'];
 
- if (strlen(trim($originalText)) < 4) {
+ if (strlen($originalText) < 6) {
    throw new Exception('tiny page');  // @codeCoverageIgnore
- } elseif (strlen(trim($originalText)) > 650000) { // see https://en.wikipedia.org/wiki/Special:LongPages
+ } elseif (strlen($originalText)) > 650000) { // see https://en.wikipedia.org/wiki/Special:LongPages
    throw new Exception('bogus huge page');  // @codeCoverageIgnore
- } elseif (strlen(trim($editSummary)) > 5000) { // see https://en.wikipedia.org/wiki/Help:Edit_summary#The_500-character_limit
+ } elseif (strlen($editSummary)) > 5000) { // see https://en.wikipedia.org/wiki/Help:Edit_summary#The_500-character_limit
    throw new Exception('bogus summary');  // @codeCoverageIgnore
  }
 
