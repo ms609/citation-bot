@@ -1419,7 +1419,9 @@ function hdl_works(string $hdl) : string|null|false {
         return FALSE;
     }
     HandleCache::$cache_hdl_null[$hdl] = TRUE;
-    bot_debug_log('Got NULL for HDL: ' .str_ireplace(['&lt;', '&gt;'], ['<', '>'],echoable($hdl)));
+    if (!in_array($hdl, NULL_HDL_BUT_KNOWN)) {
+        bot_debug_log('Got NULL for HDL: ' .str_ireplace(['&lt;', '&gt;'], ['<', '>'],echoable($hdl)));
+    }
     return NULL;
   }
   if ($works === FALSE) {
