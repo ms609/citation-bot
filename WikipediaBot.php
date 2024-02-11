@@ -130,7 +130,7 @@ final class WikipediaBot {
         $errorStr = curl_error(self::$ch_write);
         report_warning('Curl error #'.$errnoInt.' on a Wikipedia write query: '.$errorStr);
       }
-      $data = (string) $data
+      $data = (string) $data;
       $ret = @json_decode($data);
       if (($ret === NULL) || ($ret === FALSE) || (isset($ret->error) && (   // @codeCoverageIgnoreStart
 	(string) $ret->error->code === 'assertuserfailed' ||
