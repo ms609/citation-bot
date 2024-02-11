@@ -1344,6 +1344,8 @@ function edit_a_list_of_pages(array $pages_in_category, WikipediaBot $api, strin
     }
     echo "\n";
     // Clear variables before doing GC - PHP 8.2 seems to need the GC
+    $mem_used = (int) (memory_get_usage() / 1048576);
+    if ($mem_used > 8) bot_debug_log('Memory Usage is up to " . (string) $mem_used . "MB");
     $page->parse_text("");
     gc_collect_cycles();
   }
