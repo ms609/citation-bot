@@ -130,7 +130,8 @@ final class WikipediaBot {
         $errorStr = curl_error(self::$ch_write);
         report_warning('Curl error #'.$errnoInt.' on a Wikipedia write query: '.$errorStr);
       }
-      $ret = @json_decode((string) $data);
+      $data = (string) $data
+      $ret = @json_decode($data);
       if (($ret === NULL) || ($ret === FALSE) || (isset($ret->error) && (   // @codeCoverageIgnoreStart
 	(string) $ret->error->code === 'assertuserfailed' ||
 	stripos((string) $ret->error->info, 'The database has been automatically locked') !== FALSE ||
@@ -385,11 +386,12 @@ final class WikipediaBot {
       $errorStr = curl_error(self::$ch_logout);
       report_warning('Curl error #'.$errnoInt.' on a Wikipedia API query: '.$errorStr);
     }
-    if ($data === false || $data === '') {
+    $data = (string) $data;
+    if ($data === '') {
        sleep(4);                                       // @codeCoverageIgnore
        $data = (string) @curl_exec(self::$ch_logout);  // @codeCoverageIgnore
     }
-    return (self::ret_okay(@json_decode((string) $data))) ? (string) $data : '';
+    return (self::ret_okay(@json_decode( $data))) ? $data : '';
     // @codeCoverageIgnoreStart
    } catch(Exception $E) {
       report_warning("Exception caught!!\n");
