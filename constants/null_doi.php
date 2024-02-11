@@ -802,5 +802,9 @@ const NULL_DOI_BUT_GOOD = array(  // TODO - these need to be manually double che
 '10.7780/kjrs.2020.36.3.2',
 '10.8080/4020100059499',
 '10.9755/ejfa.2018.v30.i3.1639',
-/** We cannot add hdls, since we need the final URL **/
+/** We cannot add hdls, since we need the final URL - see below **/
 );
+const NULL_HDL_BUT_KNOWN = array(  // Do not report these, since they work usually.
+);
+
+
