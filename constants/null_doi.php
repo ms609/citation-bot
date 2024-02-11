@@ -805,6 +805,8 @@ const NULL_DOI_BUT_GOOD = array(  // TODO - these need to be manually double che
 /** We cannot add hdls, since we need the final URL - see below **/
 );
 const NULL_HDL_BUT_KNOWN = array(  // Do not report these, since they work usually.
+'1828/7796',
+'20.500.11850/130560',
 );
 
 
