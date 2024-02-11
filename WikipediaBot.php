@@ -117,14 +117,20 @@ final class WikipediaBot {
     $request->signRequest(new HmacSha1(), $consumer, $token);
     $authenticationHeader = $request->toHeader();
 
-try {
+    try {
 	  curl_setopt_array(self::$ch_write, [
 	    CURLOPT_POSTFIELDS => http_build_query($params),
 	    CURLOPT_HTTPHEADER => [$authenticationHeader],
 	  ]);
 
-      $data = (string) @curl_exec(self::$ch_write);
-      $ret = @json_decode($data);
+      $data = @curl_exec(self::$ch_write);
+      if ($data === false)
+      {
+        $errnoInt = curl_errno(self::$ch_write);
+        $errorStr = curl_error(self::$ch_write);
+        report_warning('Curl error #'.$errnoInt.' on a Wikipedia write query: '.$errorStr);
+      }
+      $ret = @json_decode((string) $data);
       if (($ret === NULL) || ($ret === FALSE) || (isset($ret->error) && (   // @codeCoverageIgnoreStart
 	(string) $ret->error->code === 'assertuserfailed' ||
 	stripos((string) $ret->error->info, 'The database has been automatically locked') !== FALSE ||
@@ -372,12 +378,18 @@ try {
 		CURLOPT_URL => API_ROOT,
 	  ]);
 
-    $data = (string) @curl_exec(self::$ch_logout);
-    if ($data === '') {
-       sleep(4);                                // @codeCoverageIgnore
+    $data = @curl_exec(self::$ch_logout);
+    if ($data === false)
+    {
+      $errnoInt = curl_errno(self::$ch_logout);
+      $errorStr = curl_error(self::$ch_logout);
+      report_warning('Curl error #'.$errnoInt.' on a Wikipedia API query: '.$errorStr);
+    }
+    if ($data === false || $data === '') {
+       sleep(4);                                       // @codeCoverageIgnore
        $data = (string) @curl_exec(self::$ch_logout);  // @codeCoverageIgnore
     }
-    return (self::ret_okay(@json_decode($data))) ? $data : '';
+    return (self::ret_okay(@json_decode((string) $data))) ? (string) $data : '';
     // @codeCoverageIgnoreStart
    } catch(Exception $E) {
       report_warning("Exception caught!!\n");
@@ -406,8 +418,14 @@ try {
     curl_setopt_array(self::$ch_logout,
 	      [CURLOPT_HTTPGET => TRUE,
 	       CURLOPT_URL => WIKI_ROOT . '?' . http_build_query(['title' => $title, 'action' =>'raw'])]);
-    $text = (string) @curl_exec(self::$ch_logout);
-    return $text;
+    $text = @curl_exec(self::$ch_logout);
+    if ($text === false)
+    {
+      $errnoInt = curl_errno(self::$ch_logout);
+      $errorStr = curl_error(self::$ch_logout);
+      report_warning('Curl error #'.$errnoInt.' on getting Wikipedia page '.$title.': '.$errorStr);
+    }
+    return (string) $text;
   }
 
 
