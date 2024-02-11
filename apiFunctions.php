@@ -1082,7 +1082,7 @@ function getS2CID(string $url) : string {
     return '';                                             // @codeCoverageIgnore
   }
   if (!isset($json->corpusId)) {
-    report_minor_error("No corpusId found from semanticscholar for " . echoable($url)); // @codeCoverageIgnore
+    report_warning("No corpusId found from semanticscholar for " . echoable($url)); // @codeCoverageIgnore
     return '';                                                     // @codeCoverageIgnore
   }
   if (is_array($json->corpusId) || is_object($json->corpusId)) {
