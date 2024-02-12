@@ -45,22 +45,27 @@ const BOT_USER_AGENT          = "Mozilla/5.0 (compatible; Citation_bot; mailto:"
 const BOT_HTTP_TIMEOUT = 20;
 const BOT_CONNECTION_TIMEOUT = 10;
 
+function curl_limit_page_size(CurlHandle $_ch, int $_DownloadSize = 0, int $Downloaded = 0, int $_UploadSize = 0, int $_Uploaded = 0) : int {
+        return ($Downloaded > 2097152) ? 1 : 0; // If $Downloaded exceeds max-size of 2MB, returning non-0 breaks the connection!
+}
 /** @param array<mixed> $ops **/
 function curl_init_array(float $time, array $ops) : CurlHandle {
 	$ch = curl_init();
 	// 1 - Global Defaults
 	curl_setopt_array($ch, [
 		CURLOPT_FOLLOWLOCATION => TRUE,
+		CURLOPT_BUFFERSIZE => 524288, // 512kB chunks
 		CURLOPT_MAXREDIRS => 20,  // No infinite loops for us, 20 for Elsevier and Springer websites
 		CURLOPT_USERAGENT => BOT_USER_AGENT,
 		CURLOPT_AUTOREFERER => TRUE,
 		CURLOPT_COOKIESESSION => TRUE,
 		CURLOPT_RETURNTRANSFER => TRUE,
 		CURLOPT_HEADEROPT => CURLHEADER_UNIFIED,
-	]);
+		CURLOPT_PROGRESSFUNCTION => 'curl_limit_page_size', // By default this is not used, since MOST things are sane
 	// 2 - Default Time by ratio
-	curl_setopt_array($ch, [CURLOPT_TIMEOUT => BOT_HTTP_TIMEOUT * $time, CURLOPT_CONNECTTIMEOUT => BOT_CONNECTION_TIMEOUT * $time]);
-	// 3 - Specific options and overrides (after time, just in case ratio is different for both parts)
+		CURLOPT_TIMEOUT => BOT_HTTP_TIMEOUT * $time,
+		CURLOPT_CONNECTTIMEOUT => BOT_CONNECTION_TIMEOUT * $time]);
+	// 3 - Specific options and overrides of defaults
 	curl_setopt_array($ch, $ops);
 	return $ch;
 }
