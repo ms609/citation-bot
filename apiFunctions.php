@@ -1151,6 +1151,14 @@ function expand_templates_from_archives(array &$templates) : void { // This is d
   set_time_limit(120);
   if ($ch === NULL) {
     $ch = curl_init_array(0.5, [CURLOPT_HEADER => TRUE]);
+    // We have NO idea how big the file might be, so we limit it
+    curl_setopt($ch, CURLOPT_BUFFERSIZE, 524288); // 512kB chunks
+    curl_setopt($ch, CURLOPT_NOPROGRESS, FALSE);
+    curl_setopt($ch, CURLOPT_PROGRESSFUNCTION, function(
+        CurlHandle $_ch, int $_DownloadSize = 0, int $Downloaded = 0, int $_UploadSize = 0, int $_Uploaded = 0) : int {
+        // If $Downloaded exceeds max-size, returning non-0 breaks the connection!
+        return ($Downloaded > (2 * 1048576)) ? 1 : 0; // 2 MB limit
+    });
   }
   foreach ($templates as $template) {
     set_time_limit(120);
