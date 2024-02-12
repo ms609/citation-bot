@@ -1155,7 +1155,7 @@ function expand_templates_from_archives(array &$templates) : void { // This is d
     curl_setopt($ch, CURLOPT_BUFFERSIZE, 524288); // 512kB chunks
     curl_setopt($ch, CURLOPT_NOPROGRESS, FALSE);
     curl_setopt($ch, CURLOPT_PROGRESSFUNCTION, function(
-        int $DownloadSize = 0, int $Downloaded = 0, int $_UploadSize = 0, int $_Uploaded = 0) : int {
+        CurlHandle $_ch, int $_DownloadSize = 0, int $Downloaded = 0, int $_UploadSize = 0, int $_Uploaded = 0) : int {
         // If $Downloaded exceeds max-size, returning non-0 breaks the connection!
         return ($Downloaded > (2 * 1048576)) ? 1 : 0; // 2 MB limit
     });
