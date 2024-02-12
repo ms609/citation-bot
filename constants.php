@@ -46,7 +46,7 @@ const BOT_HTTP_TIMEOUT = 20;
 const BOT_CONNECTION_TIMEOUT = 10;
 
 function curl_limit_page_size(CurlHandle $_ch, int $_DownloadSize = 0, int $Downloaded = 0, int $_UploadSize = 0, int $_Uploaded = 0) : int {
-        return ($Downloaded > 2097152) ? 1 : 0; // If $Downloaded exceeds max-size of 2MB, returning non-0 breaks the connection!
+        return ($Downloaded > 4194304) ? 1 : 0; // If $Downloaded exceeds max-size of 4MB, returning non-0 breaks the connection!
 }
 /** @param array<mixed> $ops **/
 function curl_init_array(float $time, array $ops) : CurlHandle {
