@@ -62,6 +62,7 @@ function curl_init_array(float $time, array $ops) : CurlHandle {
 		CURLOPT_RETURNTRANSFER => TRUE,
 		CURLOPT_HEADEROPT => CURLHEADER_UNIFIED,
 		CURLOPT_PROGRESSFUNCTION => 'curl_limit_page_size', // By default this is not used, since MOST things are sane
+		CURLOPT_NOPROGRESS => TRUE,
 	// 2 - Default Time by ratio
 		CURLOPT_TIMEOUT => BOT_HTTP_TIMEOUT * $time,
 		CURLOPT_CONNECTTIMEOUT => BOT_CONNECTION_TIMEOUT * $time]);
