@@ -41,7 +41,7 @@ public static function create_ch_zotero() : void {
 
   self::$ch_jstor = curl_init_array($time, []);
 
-  self::$ch_dx = curl_init_array($time, []);
+  self::$ch_dx = curl_init_array($time, [CURLOPT_NOPROGRESS => FALSE]); // Limit size of downloads
 
   self::$ch_pmc = curl_init_array($time, []);
 
