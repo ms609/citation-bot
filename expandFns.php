@@ -1343,11 +1343,9 @@ function edit_a_list_of_pages(array $pages_in_category, WikipediaBot $api, strin
        $final_edit_overview .= "\n No changes needed. " . "<a href=" . WIKI_ROOT . "?title=" . urlencode($page_title) . ">" . echoable($page_title) . "</a>";
     }
     echo "\n";
-    // Clear variables before doing GC - PHP 8.2 seems to need the GC
-    $mem_used = (int) (memory_get_usage() / 1048576);
-    if ($mem_used > 8) bot_debug_log("Memory Usage is up to " . (string) $mem_used . "MB");
-    $page->parse_text("");
-    gc_collect_cycles();
+    check_memory_usage("After writing page");
+    $page->parse_text("");  // Clear variables before doing GC
+    gc_collect_cycles();    // This should do nothing
   }
   if ($total > 1) {
     if (!HTML_OUTPUT) $final_edit_overview = '';
@@ -1358,6 +1356,10 @@ function edit_a_list_of_pages(array $pages_in_category, WikipediaBot $api, strin
   bot_html_footer();
 }
 
+function check_memory_usage(string $where) : void {
+    $mem_used = (int) (memory_get_usage() / 1048576);
+    if ($mem_used > 8) bot_debug_log("Memory Usage is up to " . (string) $mem_used . "MB in " . $where);
+}
 
 /**
  * Only on webpage
