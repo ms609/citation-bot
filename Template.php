@@ -2633,8 +2633,11 @@ final class Template {
 	$response = (string) curl_exec($ch);
 	if ($response) {
 	  $oa = @json_decode($response);
+          unset($response);
 	  if ($oa !== FALSE && isset($oa->url) && isset($oa->is_publisher_licensed) && $oa->is_publisher_licensed) {
-		$this->get_identifiers_from_url($oa->url);
+		$url = $oa->url;
+		unset($oa);
+		$this->get_identifiers_from_url($url);
 	  }
 	}
   }
@@ -2651,6 +2654,7 @@ final class Template {
 	$json = (string) @curl_exec($ch_oa);
 	if ($json) {
 	  $oa = @json_decode($json);
+	  unset($json);
 	  if ($oa !== FALSE && isset($oa->best_oa_location)) {
 		$best_location = $oa->best_oa_location;
 		if ($best_location->host_type === 'publisher') {

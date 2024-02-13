@@ -132,6 +132,7 @@ final class WikipediaBot {
       }
       $data = (string) $data;
       $ret = @json_decode($data);
+      unset($data);
       if (($ret === NULL) || ($ret === FALSE) || (isset($ret->error) && (   // @codeCoverageIgnoreStart
 	(string) $ret->error->code === 'assertuserfailed' ||
 	stripos((string) $ret->error->info, 'The database has been automatically locked') !== FALSE ||
@@ -139,7 +140,7 @@ final class WikipediaBot {
 	stripos((string) $ret->error->info, 'protected') !== FALSE ||
 	stripos((string) $ret->error->info, 'Nonce already used') !== FALSE))
       ) {
-	unset($data, $ret, $token, $consumer, $request, $authenticationHeader); // save memory during recursion
+	unset($ret, $token, $consumer, $request, $authenticationHeader); // save memory during recursion
 	return $this->fetch($params, $depth+1);
 
       }         // @codeCoverageIgnoreEnd
