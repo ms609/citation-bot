@@ -4,15 +4,16 @@ declare(strict_types=1);
 const NULL_DOI_ANNOYING = // TODO - manually check these from time to time
 array(
 '10.1511/2006.61.412',
-'10.2225/vol9-issue3-fulltext-15',
-'10.31754/2409-6105-2019-4-9-18',
+'10.1515/vzoo-2017-0029',
 '10.2136/sh2012-53-6-lf',
+'10.2225/vol9-issue3-fulltext-15',
+'10.3134/ehtj.09.001',
+'10.31754/2409-6105-2019-4-9-18',
+'10.4103/0975-8844.103507',
 '10.4435/BSPI.2015.1',
 '10.4435/BSPI.2017.08',
 '10.4435/BSPI.2017.19',
 '10.4435/BSPI.2018.11',
-'10.4103/0975-8844.103507',
-'10.1515/vzoo-2017-0029',
 '10.5852/cr-palevol2022v21a20',
 '10.5852/cr-palevol2022v21a23',
 '10.5852/cr-palevol2022v21a38',
@@ -24,15 +25,16 @@ const NULL_DOI_LIST =
 array(
  /** Double check before removing - for example, these are liars - see NULL_DOI_ANNOYING above **/
 '10.1511/2006.61.412', // goes to wrong page
-'10.2225/vol9-issue3-fulltext-15', // "Forbid"
-'10.31754/2409-6105-2019-4-9-18', // Nothing page
+'10.1515/vzoo-2017-0029',
 '10.2136/sh2012-53-6-lf', // published landing page
+'10.2225/vol9-issue3-fulltext-15', // "Forbid"
+'10.3134/ehtj.09.001', // Spam  site
+'10.31754/2409-6105-2019-4-9-18', // Nothing page
+'10.4103/0975-8844.103507',
 '10.4435/BSPI.2015.1', // spam site
 '10.4435/BSPI.2017.08',
 '10.4435/BSPI.2017.19',
 '10.4435/BSPI.2018.11',
-'10.4103/0975-8844.103507',
-'10.1515/vzoo-2017-0029',
 '10.5852/cr-palevol2022v21a20',
 '10.5852/cr-palevol2022v21a23',
 '10.5852/cr-palevol2022v21a38',
@@ -183,7 +185,6 @@ array(
 '10.2979/NWS.2006.18.2.24',
 '10.30699/pjas.2.6.53',
 '10.31096/wua033-pls90b070',
-'10.3134/ehtj.09.001',
 '10.31421/IJHS/12/1/622',
 '10.3149/csm.0302.160',
 '10.3149/CSM.0401.63',
