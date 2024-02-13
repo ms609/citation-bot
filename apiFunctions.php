@@ -1284,7 +1284,6 @@ function Bibcode_Response_Processing(array $curl_opts, string $adsabs_url) : obj
     $header = substr($return, 0, $header_length);
     $body = substr($return, $header_length);
     $decoded = @json_decode($body);
-    unset($body);
 
     $ratelimit_total = NULL;
     $ratelimit_left = NULL;
