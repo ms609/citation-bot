@@ -60,6 +60,10 @@ const ITALICS_LIST =
  "Bacillus pumilus|" .
  "Citipati Osmolskae|" .
  "Sui Generis|" .
+ "Betta splendens|" .
+ "Mesonauta acora|" .
+ "Entobdella Soleae|" .
+ "Pterophyllum scalare |" .
  "Communist Manifesto|" .
  "Bacillus thuringiensis|" .
  "Magnosaurus nethercombensis|" .
@@ -238,6 +242,8 @@ const ITALICS_LIST =
  "Philometra|" .
  "Armillaria|" .
  "Neurospora|" .
+ "Symphysodon|" .
+ "Beggiatoa|" .
  "Ascomycota|" .
  "Puffinus|" .
  "Mycena|" .
@@ -418,7 +424,8 @@ const CAMEL_CASE = array('DeSoto', 'PubChem', 'BitTorrent', 'Al2O3', 'NiMo', 'Cu
 			 'RiceWiki', 'SciLite', 'ScispaCy', 'WormBase', 'VirFinder', 'UniProt', 'GaiaData', 'FoodOn',
 			 'GaiaHundred', 'WikiJournal', 'StarCraft', 'EuResist', 'PhageScope', 'CoVaMa', 'EuroMyositis',
 			 'DavEnd', 'CoLaus', 'MinerAlocorticoid', 'miRiad', 'kaSenzangakhona', 'BioChirality', 'DeGeer',
-			 'ReFocus:', 'FusionCatcher', 'cFos', 'ReOrienting', 'NatureServe', 'qNirvana'
+			 'ReFocus:', 'FusionCatcher', 'cFos', 'ReOrienting', 'NatureServe', 'qNirvana',
+			 'DenitrificationAnammox',
 		       );
 
 const ITALICS_HARDCODE_IN  = ["The Myth ofPiers Plowman", "BioelectromagnetismPrinciples and Applications", "Practice inThe Nice Valour",
@@ -443,6 +450,7 @@ const ITALICS_HARDCODE_IN  = ["The Myth ofPiers Plowman", "BioelectromagnetismPr
 	     "Moving beyondPvalues:", "from theHubble Space TelescopeKey", "Evidence ofpepSolar Neutrinos", "Notes forContra Ursum",
 	     "sThe Social Construction of Realityafter 50", "Love inShôjo Manga", "the re-reducedHipparcosintermediate ",
 	     "Godly AmbitionJohn Stott", "Becoming ChinesePassages to Modernity and Beyond", "Crusading PeaceChristendom, the",
+	     "Tourism in Danny Boyle'sSlumdog Millionaire",
  ];
 const ITALICS_HARDCODE_OUT = ["The Myth of ''Piers Plowman''", "Bioelectromagnetism: Principles and Applications", "Practice in ''The Nice Valour''",
 	     "Tweeting the ''Jihad'': Social Media", " of Sectarianism: Community", " for Wonder: Nineteenth Century Travel ",
@@ -466,5 +474,6 @@ const ITALICS_HARDCODE_OUT = ["The Myth of ''Piers Plowman''", "Bioelectromagnet
 	     "Moving beyond ''P'' values:", "from the ''Hubble Space Telescope'' Key", "Evidence of ''pep'' Solar Neutrinos", "Notes for ''Contra Ursum''",
 	     "s ''The Social Construction of Reality'' after 50", "Love in ''Shôjo Manga''", "the re-reduced ''Hipparcos'' intermediate ",
 	     "Godly Ambition: John Stott", "Becoming Chinese: Passages to Modernity and Beyond", "Crusading Peace: Christendom, the",
+	     "Tourism in Danny Boyle's ''Slumdog Millionaire''",
 	     ];
 
