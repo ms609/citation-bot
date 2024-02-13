@@ -693,6 +693,7 @@ function expand_doi_with_dx(Template $template, string $doi) : void {
        return;
      }
      $json = @json_decode($data, TRUE);
+     unset($data);
      if($json == FALSE) return;
      // BE WARNED:  this code uses the "@$var" method.
      // If the variable is not set, then PHP just passes NULL, then that is interpreted as a empty string
@@ -1077,6 +1078,7 @@ function getS2CID(string $url) : string {
     return '';                                             // @codeCoverageIgnore
   }
   $json = @json_decode($response);
+  unset($response);
   if (!$json) {
     report_warning("Bad response from semanticscholar.");  // @codeCoverageIgnore
     return '';                                             // @codeCoverageIgnore
@@ -1106,6 +1108,7 @@ function ConvertS2CID_DOI(string $s2cid) : string {
     return '';                                           // @codeCoverageIgnore
   }
   $json = @json_decode($response);
+  unset($response);
   if (!$json) {
     report_warning("Bad response from semanticscholar.");  // @codeCoverageIgnore
     return '';                                           // @codeCoverageIgnore
@@ -1281,6 +1284,7 @@ function Bibcode_Response_Processing(array $curl_opts, string $adsabs_url) : obj
     $header = substr($return, 0, $header_length);
     $body = substr($return, $header_length);
     $decoded = @json_decode($body);
+    unset($body);
 
     $ratelimit_total = NULL;
     $ratelimit_left = NULL;
