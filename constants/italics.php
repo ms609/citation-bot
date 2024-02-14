@@ -63,7 +63,7 @@ const ITALICS_LIST =
  "Betta splendens|" .
  "Mesonauta acora|" .
  "Entobdella Soleae|" .
- "Pterophyllum scalare |" .
+ "Pterophyllum scalare|" .
  "Communist Manifesto|" .
  "Bacillus thuringiensis|" .
  "Magnosaurus nethercombensis|" .
