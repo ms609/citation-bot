@@ -454,6 +454,7 @@ const ITALICS_HARDCODE_IN  = ["The Myth ofPiers Plowman", "BioelectromagnetismPr
 	     "sThe Social Construction of Realityafter 50", "Love inShôjo Manga", "the re-reducedHipparcosintermediate ",
 	     "Godly AmbitionJohn Stott", "Becoming ChinesePassages to Modernity and Beyond", "Crusading PeaceChristendom, the",
 	     "Tourism in Danny Boyle'sSlumdog Millionaire", "Study OfDagongmei: A Feminist", "on the National Capital RegionPlan for the Year 2000",
+	     "the Binary Dynamics ofRomeo and Juliet",
  ];
 const ITALICS_HARDCODE_OUT = ["The Myth of ''Piers Plowman''", "Bioelectromagnetism: Principles and Applications", "Practice in ''The Nice Valour''",
 	     "Tweeting the ''Jihad'': Social Media", " of Sectarianism: Community", " for Wonder: Nineteenth Century Travel ",
@@ -478,5 +479,6 @@ const ITALICS_HARDCODE_OUT = ["The Myth of ''Piers Plowman''", "Bioelectromagnet
 	     "s ''The Social Construction of Reality'' after 50", "Love in ''Shôjo Manga''", "the re-reduced ''Hipparcos'' intermediate ",
 	     "Godly Ambition: John Stott", "Becoming Chinese: Passages to Modernity and Beyond", "Crusading Peace: Christendom, the",
 	     "Tourism in Danny Boyle's ''Slumdog Millionaire''", "Study Of ''Dagongmei'': A Feminist", "on the National Capital Region ''Plan for the Year 2000''",
+	     "the Binary Dynamics of ''Romeo and Juliet''",
 	     ];
 
