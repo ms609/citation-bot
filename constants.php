@@ -58,10 +58,11 @@ function curl_init_array(float $time, array $ops) : CurlHandle {
 		CURLOPT_MAXREDIRS => 20,  // No infinite loops for us, 20 for Elsevier and Springer websites
 		CURLOPT_USERAGENT => BOT_USER_AGENT,
 		CURLOPT_AUTOREFERER => TRUE,
+		CURLOPT_REFERER => "https://en.wikipedia.org",
 		CURLOPT_COOKIESESSION => TRUE,
 		CURLOPT_RETURNTRANSFER => TRUE,
 		CURLOPT_HEADEROPT => CURLHEADER_UNIFIED,
-		CURLOPT_PROGRESSFUNCTION => 'curl_limit_page_size', // By default this is not used, since MOST things are sane
+		CURLOPT_PROGRESSFUNCTION => 'curl_limit_page_size', // By default this is not used, since MOST things are sane, stupidly large like S2 json data
 		CURLOPT_NOPROGRESS => TRUE,
 	// 2 - Default Time by ratio
 		CURLOPT_TIMEOUT => BOT_HTTP_TIMEOUT * $time,
