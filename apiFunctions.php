@@ -233,7 +233,7 @@ function arxiv_api(array $ids, array &$templates) : void {  // Pointer to save m
   /** @psalm-taint-escape ssrf */
   $request = "https://export.arxiv.org/api/query?start=0&max_results=2000&id_list=" . implode(',', $ids);
   curl_setopt($ch, CURLOPT_URL, $request);						  
-  $response = (string) @curl_exec($ch);
+  $response = bot_curl_exec($ch);
   if ($response) {
     $xml = @simplexml_load_string(
       preg_replace("~(</?)(\w+):([^>]*>)~", "$1$2$3", $response)
@@ -605,7 +605,7 @@ function query_crossref(string $doi) : ?object {
   $url = "https://www.crossref.org/openurl/?pid=" . CROSSREFUSERNAME . "&id=doi:$doi&noredirect=TRUE";
   curl_setopt($ch, CURLOPT_URL, $url);
   for ($i = 0; $i < 2; $i++) {
-    $raw_xml = (string) @curl_exec($ch);
+    $raw_xml = bot_curl_exec($ch);
     if (!$raw_xml) {
       sleep(1);               // @codeCoverageIgnore
       continue;               // @codeCoverageIgnore
@@ -679,7 +679,7 @@ function expand_doi_with_dx(Template $template, string $doi) : void {
      curl_setopt($ch, CURLOPT_URL, 'https://doi.org/' . $doi);
      report_action("Querying dx.doi.org: doi:" . doi_link($doi));
      try {
-       $data = (string) @curl_exec($ch);
+       $data = bot_curl_exec($ch);
      } catch (Exception $e) {                    // @codeCoverageIgnoreStart
        $template->mark_inactive_doi();
        return;
@@ -818,7 +818,7 @@ function expand_by_jstor(Template $template) : void {
   if (strpos($jstor, ' ') !== FALSE) return ; // Comment/template found
   if (substr($jstor, 0, 1) === 'i') return ; // We do not want i12342 kind
   curl_setopt($ch, CURLOPT_URL, 'https://www.jstor.org/citation/ris/' . $jstor);
-  $dat = (string) @curl_exec($ch);
+  $dat = bot_curl_exec($ch);
   if ($dat === '') {
     report_info("JSTOR API returned nothing for ". jstor_link($jstor));     // @codeCoverageIgnore
     return;                                                           // @codeCoverageIgnore
@@ -915,7 +915,7 @@ function getS2CID(string $url) : string {
   }
   $url = 'https://api.semanticscholar.org/v1/paper/URL:' .  urlencode(urldecode($url));
   curl_setopt($ch, CURLOPT_URL, $url);
-  $response = (string) @curl_exec($ch);
+  $response = bot_curl_exec($ch);
   if (!$response) {
     report_warning("No response from semanticscholar.");   // @codeCoverageIgnore
     return '';                                             // @codeCoverageIgnore
@@ -945,7 +945,7 @@ function ConvertS2CID_DOI(string $s2cid) : string {
   /** @psalm-taint-escape ssrf */
   $url = 'https://api.semanticscholar.org/v1/paper/CorpusID:' . urlencode($s2cid);
   curl_setopt($ch, CURLOPT_URL, $url);
-  $response = (string) @curl_exec($ch);
+  $response = bot_curl_exec($ch);
   if (!$response) {
     report_warning("No response from semanticscholar.");   // @codeCoverageIgnore
     return '';                                           // @codeCoverageIgnore
@@ -980,7 +980,7 @@ function get_semanticscholar_license(string $s2cid) : ?bool {
     }
     $url = 'https://api.semanticscholar.org/v1/paper/CorpusID:' . urlencode($s2cid);
     curl_setopt($ch, CURLOPT_URL, $url);
-    $response = (string) @curl_exec($ch);
+    $response = bot_curl_exec($ch);
     if ($response === '') return NULL;
     if (stripos($response, 'Paper not found') !== FALSE) return FALSE;
     $oa = @json_decode($response);
@@ -1030,7 +1030,7 @@ function expand_templates_from_archives(array &$templates) : void { // This is d
 	set_time_limit(120);
 	throttle_archive();
 	curl_setopt($ch, CURLOPT_URL, $archive_url);
-	$raw_html = (string) @curl_exec($ch);
+	$raw_html = bot_curl_exec($ch);
 	foreach (array('~doctype[\S\s]+?<head[\S\s]+?<title>([\S\s]+?\S[\S\s]+?)<\/title>[\S\s]+?head[\S\s]+?<body~i',
 		      '~doctype[\S\s]+?<head[\S\s]+?<meta property="og:title" content="([\S\s]+?\S[\S\s]+?)"\/>[\S\s]+?<title[\S\s]+?head[\S\s]+?<body~i',
 		      '~doctype[\S\s]+?<head[\S\s]+?<title>([\S\s]+?\S[\S\s]+?) \| Ghostarchive<\/title>[\S\s]+?head[\S\s]+?<body~i',
@@ -1113,7 +1113,7 @@ function expand_templates_from_archives(array &$templates) : void { // This is d
 function Bibcode_Response_Processing(array $curl_opts, string $adsabs_url) : object {
   try {
     $ch = curl_init_array(1.0, $curl_opts); // Type varies greatly
-    $return = (string) @curl_exec($ch);
+    $return = bot_curl_exec($ch);
     if ($return === "") {
       // @codeCoverageIgnoreStart
       $errorStr = curl_error($ch);
@@ -1282,7 +1282,7 @@ function xml_post(string $url, string $post) : ?SimpleXMLElement {
 	       [CURLOPT_URL => $url,
 	        CURLOPT_POSTFIELDS => $post,
 	       ]);
-   $output = (string) @curl_exec($ch);
+   $output = bot_curl_exec($ch);
    $xml = @simplexml_load_string($output);
    if ($xml === FALSE) $xml = NULL;
    return $xml;
@@ -1404,7 +1404,7 @@ function CrossRefTitle(string $doi) : string {
      /** @psalm-taint-escape ssrf */
      $url = "https://api.crossref.org/v1/works/".str_replace(DOI_URL_DECODE, DOI_URL_ENCODE, $doi)."?mailto=".CROSSREFUSERNAME; // do not encode crossref email
      curl_setopt($ch, CURLOPT_URL, $url);
-     $json = (string) @curl_exec($ch);
+     $json = bot_curl_exec($ch);
      $json = @json_decode($json);
      if (isset($json->message->title[0]) && !isset($json->message->title[1])) {
 	  $title = (string) $json->message->title[0];

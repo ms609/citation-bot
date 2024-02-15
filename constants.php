@@ -71,3 +71,8 @@ function curl_init_array(float $time, array $ops) : CurlHandle {
 	curl_setopt_array($ch, $ops);
 	return $ch;
 }
+
+function bot_curl_exec(CurlHandle $ch) : string {
+  curl_setopt($ch, CURLOPT_REFERER, WIKI_ROOT . "title=" . Page::$last_title);
+  return (string) @curl_exec($ch);
+}

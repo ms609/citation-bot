@@ -116,12 +116,12 @@ function is_doi_active(string $doi) : ?bool {
   $doi = trim($doi);
   $url = "https://api.crossref.org/v1/works/" . doi_encode($doi) . "?mailto=".CROSSREFUSERNAME; // do not encode crossref email
   curl_setopt($ch, CURLOPT_URL, $url);	
-  $headers_test = @curl_exec($ch);
-  if ($headers_test === FALSE || (curl_getinfo($ch, CURLINFO_RESPONSE_CODE) === 503)) {
+  $headers_test = bot_curl_exec($ch);
+  if ($headers_test === "" || (curl_getinfo($ch, CURLINFO_RESPONSE_CODE) === 503)) {
     sleep(4);
-    $headers_test = @curl_exec($ch);
+    $headers_test = bot_curl_exec($ch);
   }
-  if ($headers_test === FALSE) return NULL; // most likely bad
+  if ($headers_test === "") return NULL; // most likely bad
   $response_code = curl_getinfo($ch, CURLINFO_RESPONSE_CODE);
   if ($response_code === 200) return TRUE;
   if ($response_code === 404) return FALSE;
@@ -1217,7 +1217,7 @@ function check_doi_for_jstor(string $doi, Template $template) : void {
     $doi = substr($doi, 8);
   }
   curl_setopt($ch, CURLOPT_URL, "https://www.jstor.org/citation/ris/" . $doi);
-  $ris = (string) @curl_exec($ch);
+  $ris = bot_curl_exec($ch);
   $httpCode = (int) @curl_getinfo($ch, CURLINFO_HTTP_CODE);
   if ($httpCode === 200 &&
       stripos($ris, $doi) !== FALSE &&

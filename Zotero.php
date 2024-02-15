@@ -113,7 +113,7 @@ public static function query_ieee_webpages(array &$templates) : void {  // Point
        /** @psalm-taint-escape ssrf */
        $the_url = $template->get($kind);
        curl_setopt(self::$ch_ieee, CURLOPT_URL, $the_url);
-       $return = (string) @curl_exec(self::$ch_ieee);
+       $return = bot_curl_exec(self::$ch_ieee);
        if ($return !== "" && preg_match_all('~"doi":"(10\.\d{4}/[^\s"]+)"~', $return, $matches, PREG_PATTERN_ORDER)) {
 	  $dois = array_unique($matches[1]);
 	  if (count($dois) === 1) {
@@ -129,7 +129,7 @@ public static function query_ieee_webpages(array &$templates) : void {  // Point
        /** @psalm-taint-escape ssrf */
        $the_url = $template->get($kind);
        curl_setopt(self::$ch_ieee, CURLOPT_URL, $the_url);
-       $return = (string) @curl_exec(self::$ch_ieee);
+       $return = bot_curl_exec(self::$ch_ieee);
        if ($return !== "" && strpos($return, "<title> -  </title>") !== FALSE) {
 	 report_forget("Existing IEEE no longer works - dropping URL"); // @codeCoverageIgnore
 	 $template->forget($kind);                                      // @codeCoverageIgnore
@@ -220,7 +220,7 @@ public static function drop_urls_that_match_dois(array &$templates) : void {  //
 	  $template->forget($url_kind);
        } elseif (stripos($url, 'pdf') === FALSE && $template->get('doi-access') === 'free' && $template->has('pmc')) {
 	  curl_setopt(self::$ch_dx, CURLOPT_URL, "https://dx.doi.org/" . doi_encode($doi));
-	  $ch_return = (string) @curl_exec(self::$ch_dx);
+	  $ch_return = bot_curl_exec(self::$ch_dx);
 	  if (strlen($ch_return) > 50) { // Avoid bogus tiny pages
 	    $redirectedUrl_doi = curl_getinfo(self::$ch_dx, CURLINFO_EFFECTIVE_URL);  // Final URL
 	    if (stripos($redirectedUrl_doi, 'cookie') !== FALSE) break;
@@ -238,7 +238,7 @@ public static function drop_urls_that_match_dois(array &$templates) : void {  //
 	       /** @psalm-taint-escape ssrf */
 	       $the_url = $url;
 	       curl_setopt(self::$ch_doi, CURLOPT_URL, $the_url);
-	       $ch_return = (string) @curl_exec(self::$ch_doi);
+	       $ch_return = bot_curl_exec(self::$ch_doi);
 	       if (strlen($ch_return) > 60) {
 		  $redirectedUrl_url = curl_getinfo(self::$ch_doi, CURLINFO_EFFECTIVE_URL);
 		  $redirectedUrl_url = self::url_simplify($redirectedUrl_url);
@@ -277,11 +277,11 @@ private static function zotero_request(string $url) : string {
 
   $delay = max(min(100000*(1+self::$zotero_failures_count), 10), 0); // 0.10 seconds delay, with paranoid bounds checks
   usleep($delay);
-  $zotero_response = (string) @curl_exec(self::$zotero_ch);
+  $zotero_response = bot_curl_exec(self::$zotero_ch);
   if ($zotero_response === '') {
      // @codeCoverageIgnoreStart
      sleep(2);
-     $zotero_response = (string) @curl_exec(self::$zotero_ch);
+     $zotero_response = bot_curl_exec(self::$zotero_ch);
      // @codeCoverageIgnoreEnd
   }
   if ($zotero_response === '') {
@@ -1239,7 +1239,7 @@ public static function find_indentifiers_in_urls(Template $template, ?string $ur
 	 return FALSE;
        } elseif ($template->blank('jstor')) {
 	  curl_setopt(self::$ch_jstor, CURLOPT_URL, 'https://www.jstor.org/citation/ris/' . $matches[1]);
-	  $dat = (string) @curl_exec(self::$ch_jstor);
+	  $dat = bot_curl_exec(self::$ch_jstor);
 	  if ($dat &&
 	      stripos($dat, 'No RIS data found for') === FALSE &&
 	      stripos($dat, 'Block Reference') === FALSE &&
@@ -1423,7 +1423,7 @@ public static function find_indentifiers_in_urls(Template $template, ?string $ur
 	    if (stripos($url, ".pdf") !== FALSE) {
 	      $test_url = "https://www.ncbi.nlm.nih.gov/pmc/articles/PMC" . $new_pmc . "/";
 	      curl_setopt(self::$ch_pmc, CURLOPT_URL, $test_url);
-	      @curl_exec(self::$ch_pmc);
+	      bot_curl_exec(self::$ch_pmc);
 	      $httpCode = (int) @curl_getinfo(self::$ch_pmc, CURLINFO_HTTP_CODE);
 	      if ($httpCode > 399 || ($httpCode === 0)) { // Some PMCs do NOT resolve.  So leave URL
 		return $template->add_if_new('pmc', $new_pmc);
