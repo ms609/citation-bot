@@ -2029,8 +2029,8 @@ final class Template {
 		   . ($data['issn']       ? "&issn="   . urlencode($data['issn'])       : "&title=" . urlencode($data['journal']))
 		   . "&mailto=".CROSSREFUSERNAME; // do not encode crossref email
 	  curl_setopt($ch, CURLOPT_URL, $url);
-	  $xml = curl_exec($ch);
-	  if (is_string($xml) && (strlen($xml) > 0)) {
+	  $xml = bot_curl_exec($ch);
+	  if (strlen($xml) > 0) {
 		$result = @simplexml_load_string($xml);
 	  } else {
 		$result = FALSE;
@@ -2630,7 +2630,7 @@ final class Template {
 	if ($this->has('s2cid') || $this->has('S2CID')) return;
 	$url = 'https://api.semanticscholar.org/v1/paper/' . doi_encode(urldecode($doi));
 	curl_setopt($ch, CURLOPT_URL, $url);
-	$response = (string) curl_exec($ch);
+	$response = bot_curl_exec($ch);
 	if ($response) {
 	  $oa = @json_decode($response);
           unset($response);
@@ -2651,7 +2651,7 @@ final class Template {
 	/** @psalm-taint-escape ssrf */
 	$url = "https://api.unpaywall.org/v2/$doi?email=" . CROSSREFUSERNAME;
 	curl_setopt($ch_oa, CURLOPT_URL, $url);
-	$json = (string) @curl_exec($ch_oa);
+	$json = bot_curl_exec($ch_oa);
 	if ($json) {
 	  $oa = @json_decode($json);
 	  unset($json);
@@ -2787,9 +2787,9 @@ final class Template {
 					CURLOPT_SSL_VERIFYSTATUS => FALSE,
 					CURLOPT_URL => $the_url
 					]);				 
-		  $headers_test = @curl_exec($ch);
+		  $headers_test = bot_curl_exec($ch);
 		  // @codeCoverageIgnoreStart
-		  if($headers_test === FALSE) {
+		  if($headers_test === "") {
 			$this->forget($url_type);
 			report_warning("Open access URL was unreachable from Unpaywall API for doi: " . echoable($doi));
 			return 'nothing';
@@ -2914,7 +2914,7 @@ final class Template {
 		/** @psalm-taint-escape ssrf */
 		$google_book_url = 'https://www.google.com/search?tbo=p&tbm=bks&q=isbn:' . $isbn;
 		curl_setopt($ch, CURLOPT_URL, $google_book_url);
-		$google_content = (string) @curl_exec($ch);
+		$google_content = bot_curl_exec($ch);
 		if ($google_content && preg_match_all('~[Bb]ooks\.[Gg]oogle\.com/books\?id=(............)&amp~', $google_content, $google_results)) {
 		  $google_results = $google_results[1];
 		  $google_results = array_unique($google_results);
@@ -2961,7 +2961,7 @@ final class Template {
 	set_time_limit(120);
 	$google_book_url = "https://books.google.com/books/feeds/volumes/" . $gid;
 	curl_setopt($ch, CURLOPT_URL, $google_book_url);
-	$data = (string) @curl_exec($ch);
+	$data = bot_curl_exec($ch);
 	if ($data === '') return;
 	$simplified_xml = str_replace('http___//www.w3.org/2005/Atom', 'http://www.w3.org/2005/Atom',
 	  str_replace(":", "___", $data));
@@ -4230,7 +4230,7 @@ final class Template {
 			  $test_url = 'https://plants.jstor.org/stable/' . $doi;
 			  $ch = curl_init_array(1.5,
 						[CURLOPT_URL => $test_url]);
-			  @curl_exec($ch);
+			  bot_curl_exec($ch);
 			  $httpCode = (int) @curl_getinfo($ch, CURLINFO_HTTP_CODE);
 			  unset($ch);
 			  if ($httpCode === 200) $this->add_if_new('url', $test_url);
@@ -5703,7 +5703,7 @@ final class Template {
 				 $ch = curl_init_array(1.5,
 						 [CURLOPT_COOKIEFILE => 'cookie.txt', // Needed for proquest
 						  CURLOPT_URL => $matches[0]]);
-				 if (@curl_exec($ch)) {
+				 if (bot_curl_exec($ch) !== "") {
 					$redirectedUrl = (string) @curl_getinfo($ch, CURLINFO_EFFECTIVE_URL);  // Final URL
 					if (preg_match("~^https?://.+(\.proquest\.com/docview/\d{4,})(?:|/abstract.*|/fulltext.*|/preview.*)$~", $redirectedUrl, $matches) ||
 						preg_match("~^https?://.+(\.proquest\.com/openurl/handler/.+)$~", $redirectedUrl, $matches)) {
