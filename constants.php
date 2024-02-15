@@ -70,3 +70,7 @@ function curl_init_array(float $time, array $ops) : CurlHandle {
 	curl_setopt_array($ch, $ops);
 	return $ch;
 }
+
+function bot_curl_exec(CurlHandle $ch) : string {
+  return (string) @curl_exec($ch);
+}
