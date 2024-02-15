@@ -37,7 +37,7 @@ public static function create_ch_zotero() : void {
 	  CURLOPT_HTTPHEADER => ['accept: application/json; charset=utf-8']]);
 
   self::$ch_ieee = curl_init_array($time,
-	 [CURLOPT_USERAGENT => 'curl/7.55.1']); // IEEE now requires JavaScript, unless you specify curl
+	 [CURLOPT_USERAGENT => 'curl']); // IEEE now requires JavaScript, unless you specify curl
 
   self::$ch_jstor = curl_init_array($time, []);
 
