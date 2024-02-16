@@ -51,7 +51,6 @@ function curl_limit_page_size(CurlHandle $_ch, int $_DownloadSize = 0, int $Down
 	     return 1;  // If $Downloaded exceeds max-size of 128MB, returning non-0 breaks the connection!
 	}
 	return 0;
-	}
 }
 /** @param array<mixed> $ops **/
 function curl_init_array(float $time, array $ops) : CurlHandle {
