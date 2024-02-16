@@ -391,19 +391,19 @@ final class expandFnsTest extends testBaseClass {
 
     $changes = "";
     foreach (NULL_DOI_LIST as $doi => $value) {
-      if (in_array($doi, NULL_DOI_BUT_GOOD)) {
+      if (isset(NULL_DOI_BUT_GOOD[$doi])) {
         $changes = $changes . "In Both: " . $doi . "        ";
       }
       $works = doi_works($doi);
       sleep(1); // give dx.doi.org a break on this junk
-      if ($works === TRUE && !in_array($doi, NULL_DOI_ANNOYING)) {
+      if ($works === TRUE && !isset(NULL_DOI_ANNOYING[$doi])) {
         $changes = $changes . "Flagged as GOOD: " . $doi . "       ";
       } elseif ($works === NULL) { // These nulls are permanent and get mapped to FALSE
         $changes = $changes . "Flagged as NULL: " . $doi . "       ";
       }
     }
     foreach (NULL_DOI_ANNOYING as $doi => $value) {
-      if (!in_array($doi, NULL_DOI_LIST)) {
+      if (!isset(NULL_DOI_LIST[$doi])) {
         $changes = $changes . "Not in main NULL list: " . $doi . "       ";
       }
     }
