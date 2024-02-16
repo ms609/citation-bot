@@ -194,6 +194,9 @@ function is_doi_works(string $doi) : ?bool {
   if ($headers_test === FALSE) {
      return NULL; // most likely bad - note that NULL means do not add or remove doi-broken-date from pages
   }
+  if (stripos($doi, '10.1126/scidip.') === 0) {
+      if ((string) @$headers_test['1'] === 'HTTP/1.1 404 Forbidden') unset($headers_test['1']); // https://doi.org/10.1126/scidip.ado5059
+  }
   if (interpret_doi_header($headers_test) !== FALSE) {
        return interpret_doi_header($headers_test);
   }
