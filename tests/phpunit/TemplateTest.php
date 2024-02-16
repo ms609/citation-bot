@@ -2171,7 +2171,7 @@ final class TemplateTest extends testBaseClass {
   }
 
   public function testInPress() : void {
-    $text = '{{Cite journal|pmid=9858585|date =in press}}';
+    $text = '{{Cite journal|pmid=9858586|date =in press}}';
     $expanded = $this->process_citation($text);
     $this->assertSame('1999', $this->getDateAndYear($expanded));
   }
