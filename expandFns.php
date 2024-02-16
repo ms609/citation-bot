@@ -972,7 +972,7 @@ function throttle () : void {
 
   $mem_max = (string) @ini_get('memory_limit');
   if (preg_match('~^(\d+)M$~', $mem_max, $matches)) {
-    $mem_max = (int) (0.8 * @intval($matches[1]));
+    $mem_max = (int) (0.3 * @intval($matches[1])); // Memory limit is set super high just to avoid crash
     unset($matches);
     $mem_used = (int) (memory_get_usage() / 1048576);
     if (($mem_max !== 0) && ($mem_used > $mem_max)) { // Clear every buffer we have
