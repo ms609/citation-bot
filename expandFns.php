@@ -86,11 +86,11 @@ function doi_works(string $doi) : ?bool {
 
   $works = is_doi_works($doi);
   if ($works === NULL) {
-    if (in_array($doi, NULL_DOI_LIST)) { // These are know to be bad, so only check one time during run
+    if (isset(NULL_DOI_LIST[$doi])) { // These are know to be bad, so only check one time during run
         HandleCache::$cache_hdl_bad[$doi] = TRUE;
         return FALSE;
     }
-    if (in_array($doi, NULL_DOI_BUT_GOOD)) { // These are know to be good, but null since PDF
+    if (isset(NULL_DOI_BUT_GOOD[$doi])) { // These are know to be good, but null since PDF, etc
         HandleCache::$cache_good[$doi] = TRUE;
         return TRUE;
     }
@@ -183,8 +183,8 @@ function is_doi_works(string $doi) : ?bool {
      if (stripos($doi, '10.3149/csm.') === 0) return FALSE;
      if (stripos($doi, '10.5047/meep.') === 0) return FALSE;
      if (stripos($doi, '10.4435/BSPI.') === 0) return FALSE;
-     if (in_array($doi, NULL_DOI_LIST)) return NULL;
-     if (in_array($doi, NULL_DOI_BUT_GOOD)) return NULL;
+     if (isset(NULL_DOI_LIST[$doi])) return NULL;
+     if (isset(NULL_DOI_BUT_GOOD[$doi])) return NULL;
      $headers_test = get_headers_array($url);
      bot_debug_log('Got NULL for DOI: ' . str_ireplace(['&lt;', '&gt;'], ['<', '>'],echoable($doi)));
   }
@@ -1416,12 +1416,12 @@ function hdl_works(string $hdl) : string|null|false {
   if (strpos($hdl, '10.') === 0 && doi_works($hdl) === FALSE) return FALSE;
   $works = is_hdl_works($hdl);
   if ($works === NULL) {
-    if (in_array($hdl, NULL_DOI_LIST)) { // These are know to be bad, so only check one time during run
+    if (isset(NULL_DOI_LIST[$hdl])) { // These are know to be bad, so only check one time during run
         HandleCache::$cache_hdl_bad[$hdl] = TRUE;
         return FALSE;
     }
     HandleCache::$cache_hdl_null[$hdl] = TRUE;
-    if (!in_array($hdl, NULL_HDL_BUT_KNOWN)) {
+    if (!isset(NULL_HDL_BUT_KNOWN[$hdl])) {
         bot_debug_log('Got NULL for HDL: ' .str_ireplace(['&lt;', '&gt;'], ['<', '>'],echoable($hdl)));
     }
     return NULL;
