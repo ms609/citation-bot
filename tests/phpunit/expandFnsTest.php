@@ -372,30 +372,38 @@ final class expandFnsTest extends testBaseClass {
   }
 
   public function testHostIsGoneDOI() : void {
-    foreach (NULL_DOI_LIST as $doi) {
+    foreach (NULL_DOI_LIST as $doi => $value) {
       $this->assertSame(trim($doi), $doi);
+      $this->assertTrue($value);
     }
-    foreach (NULL_DOI_ANNOYING as $doi) {
+    foreach (NULL_DOI_ANNOYING as $doi => $value) {
       $this->assertSame(trim($doi), $doi);
+      $this->assertTrue($value);
     }
-    foreach (NULL_DOI_BUT_GOOD as $doi) {
+    foreach (NULL_DOI_BUT_GOOD as $doi => $value) {
       $this->assertSame(trim($doi), $doi);
+      $this->assertTrue($value);
     }
+    foreach (NULL_HDL_BUT_KNOWN as $doi => $value) {
+      $this->assertSame(trim($doi), $doi);
+      $this->assertTrue($value);
+    }
+
     $changes = "";
-    foreach (NULL_DOI_LIST as $doi) {
-      if (in_array($doi, NULL_DOI_BUT_GOOD)) {
+    foreach (NULL_DOI_LIST as $doi => $value) {
+      if (isset(NULL_DOI_BUT_GOOD[$doi])) {
         $changes = $changes . "In Both: " . $doi . "        ";
       }
       $works = doi_works($doi);
       sleep(1); // give dx.doi.org a break on this junk
-      if ($works === TRUE && !in_array($doi, NULL_DOI_ANNOYING)) {
+      if ($works === TRUE && !isset(NULL_DOI_ANNOYING[$doi])) {
         $changes = $changes . "Flagged as GOOD: " . $doi . "       ";
       } elseif ($works === NULL) { // These nulls are permanent and get mapped to FALSE
         $changes = $changes . "Flagged as NULL: " . $doi . "       ";
       }
     }
-    foreach (NULL_DOI_ANNOYING as $doi) {
-      if (!in_array($doi, NULL_DOI_LIST)) {
+    foreach (NULL_DOI_ANNOYING as $doi => $value) {
+      if (!isset(NULL_DOI_LIST[$doi])) {
         $changes = $changes . "Not in main NULL list: " . $doi . "       ";
       }
     }
