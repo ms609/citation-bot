@@ -48,7 +48,7 @@ const BOT_CONNECTION_TIMEOUT = 10;
 function curl_limit_page_size(CurlHandle $_ch, int $_DownloadSize = 0, int $Downloaded = 0, int $_UploadSize = 0, int $_Uploaded = 0) : int {
 	if ($Downloaded > 134217728) {
 	     bot_debug_log("Absurdly large curl");
-	     return 1;  / If $Downloaded exceeds max-size of 128MB, returning non-0 breaks the connection!
+	     return 1;  // If $Downloaded exceeds max-size of 128MB, returning non-0 breaks the connection!
 	}
 	return 0;
 	}
