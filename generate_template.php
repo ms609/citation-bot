@@ -27,6 +27,7 @@ foreach ($_GET as $param=>$value) {
       @psalm-taint-escape html */
   $param = mb_strtolower($param);
   if (strlen($value) === 0) exit('Unset parameter error</pre></body></html>');
+  if (strlen($value) > 10000) exit('Excessive parameter error</pre></body></html>');
   if ((strpos($value, "'") !== FALSE ) || (strpos($value, '"') !== FALSE ) || (strpos($value, "|") !== FALSE ) || (strpos($value, " ") !== FALSE )) {
      exit('Invalid parameter value error</pre></body></html>');  // @codeCoverageIgnore
   }
