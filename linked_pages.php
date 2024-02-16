@@ -35,6 +35,7 @@ if ($page_name === '') {
 $edit_summary_end = "| Suggested by " . $api->get_the_user() . " | Linked from $page_name | #UCB_webform_linked ";
 
 $json = WikipediaBot::get_links($page_name);
+unset($page_name);
 
 if ($json === '') {
   report_warning(' Error getting page list');
@@ -42,7 +43,7 @@ if ($json === '') {
   exit();
 }
 $array = @json_decode($json, TRUE);
-unset($json, $page_name);
+unset($json);
 if ($array === FALSE || !isset($array['parse']['links']) || !is_array($array['parse']['links'])) {
   report_warning(' Error interpreting page list - perhaps page requested does not even exist');
   bot_html_footer();
