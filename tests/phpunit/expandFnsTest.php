@@ -372,17 +372,25 @@ final class expandFnsTest extends testBaseClass {
   }
 
   public function testHostIsGoneDOI() : void {
-    foreach (NULL_DOI_LIST as $doi) {
+    foreach (NULL_DOI_LIST as $doi => $value) {
       $this->assertSame(trim($doi), $doi);
+      $this->assertTrue($value);
     }
-    foreach (NULL_DOI_ANNOYING as $doi) {
+    foreach (NULL_DOI_ANNOYING as $doi => $value) {
       $this->assertSame(trim($doi), $doi);
+      $this->assertTrue($value);
     }
-    foreach (NULL_DOI_BUT_GOOD as $doi) {
+    foreach (NULL_DOI_BUT_GOOD as $doi => $value) {
       $this->assertSame(trim($doi), $doi);
+      $this->assertTrue($value);
     }
+    foreach (NULL_HDL_BUT_KNOWN as $doi => $value) {
+      $this->assertSame(trim($doi), $doi);
+      $this->assertTrue($value);
+    }
+
     $changes = "";
-    foreach (NULL_DOI_LIST as $doi) {
+    foreach (NULL_DOI_LIST as $doi => $value) {
       if (in_array($doi, NULL_DOI_BUT_GOOD)) {
         $changes = $changes . "In Both: " . $doi . "        ";
       }
@@ -394,7 +402,7 @@ final class expandFnsTest extends testBaseClass {
         $changes = $changes . "Flagged as NULL: " . $doi . "       ";
       }
     }
-    foreach (NULL_DOI_ANNOYING as $doi) {
+    foreach (NULL_DOI_ANNOYING as $doi => $value) {
       if (!in_array($doi, NULL_DOI_LIST)) {
         $changes = $changes . "Not in main NULL list: " . $doi . "       ";
       }
