@@ -2304,7 +2304,7 @@ final class Template {
 	}
 
 	if (($result->numFound !== 1) && $this->has('title')) { // Do assume failure to find arXiv means that it is not there
-	  $result = query_adsabs("title:" . urlencode('"' . trim(remove_brackets(str_replace('"', ' ', $this->get_without_comments_and_placeholders("title")))) . '"'));
+	  $result = query_adsabs("title:" . urlencode('"' . trim(remove_brackets(str_replace(['"', "\\"], [' ', ' '], $this->get_without_comments_and_placeholders("title")))) . '"'));
 	  if ($result->numFound === 0) return;
 	  $record = $result->docs[0];
 	  if (titles_are_dissimilar($this->get_without_comments_and_placeholders("title"), $record->title[0])) {  // Considering we searched for title, this is very paranoid
