@@ -18,8 +18,6 @@ use MediaWiki\OAuthClient\Client;
 function death_time(string $err) : never {
   @session_start(); // Need write access
   unset($_SESSION['access_key'], $_SESSION['access_secret'], $_SESSION['citation_bot_user_id'], $_SESSION['request_key'], $_SESSION['request_secret']);
-  $name = (string) @session_name();
-  $id = (string) @session_id();
   echo '<!DOCTYPE html><html lang="en" dir="ltr"><head><title>Authentifcation System Failure</title></head><body><main>' . echoable($err) . '</main></body></html>';
   exit(0);
 }
