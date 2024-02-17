@@ -509,8 +509,6 @@ final class WikipediaBot {
      catch (Throwable $e) { ; }
     }
     if (empty($_SERVER['REQUEST_URI'])) {
-       $name = (string) @session_name();
-       $id = (string) @session_id();
        unset($_SESSION['access_key'], $_SESSION['access_secret'], $_SESSION['citation_bot_user_id'], $_SESSION['request_key'], $_SESSION['request_secret']); // Blow everything away
        report_error('Invalid access attempt to internal API');
     } else {
