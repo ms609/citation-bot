@@ -360,7 +360,6 @@ function adsabs_api(array $ids, array &$templates, string $identifier) : void { 
   if (!PHP_ADSABSAPIKEY) return;
 
   // API docs at https://github.com/adsabs/adsabs-dev-api/blob/master/Search_API.ipynb
-  /** @psalm-suppress RedundantCondition */ /* PSALM thinks TRAVIS cannot be FALSE */
   $adsabs_url = "https://" . (TRAVIS ? 'qa' : 'api')
 	      . ".adsabs.harvard.edu/v1/search/bigquery?q=*:*"
 	      . "&fl=arxiv_class,author,bibcode,doi,doctype,identifier,"
@@ -788,7 +787,6 @@ function expand_doi_with_dx(Template $template, string $doi) : void {
        $try_to_add_it('title', @$json['title']);
      } else {
        $try_to_add_it('title', @$json['title']);                                                 // @codeCoverageIgnore
-       /** @psalm-suppress RedundantCondition */ /* PSALM thinks TRAVIS cannot be FALSE */
        if (!HTML_OUTPUT) print_r($json);                                                         // @codeCoverageIgnore
        report_minor_error('dx.doi.org returned unexpected data type ' . echoable((string) @$json['type']) . ' for ' . doi_link($doi));     // @codeCoverageIgnore
      }
@@ -1381,7 +1379,6 @@ function query_adsabs(string $options) : object {
     // API docs at https://github.com/adsabs/adsabs-dev-api/blob/master/Search_API.ipynb
     if (AdsAbsControl::small_gave_up_yet()) return (object) array('numFound' => 0);
     if (!PHP_ADSABSAPIKEY) return (object) array('numFound' => 0);
-    /** @psalm-suppress RedundantCondition */ /* PSALM thinks TRAVIS cannot be FALSE */
     $adsabs_url = "https://" . (TRAVIS ? 'qa' : 'api')
 		  . ".adsabs.harvard.edu/v1/search/query"
 		  . "?q=$options&fl=arxiv_class,author,bibcode,doi,doctype,identifier,"
