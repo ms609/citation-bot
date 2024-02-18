@@ -422,10 +422,9 @@ function adsabs_api(array $ids, array &$templates, string $identifier) : void { 
   return;
 }
 
-/** @psalm-suppress UnusedParam
-    @param array<string> $ids
+/** @param array<string> $ids
     @param array<Template> $templates **/
-function query_doi_api(array $ids, array &$templates) : void { // $id not used yet  // Pointer to save memory
+function query_doi_api(array $_ids, array &$templates) : void { // $id not used yet  // Pointer to save memory
   foreach ($templates as $template) {
     expand_by_doi($template);
   }
