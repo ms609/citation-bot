@@ -8,7 +8,7 @@ require_once 'html_headers.php';
 require_once 'setup.php';
 
 $api = new WikipediaBot();
-/** @psalm-suppress RedundantCondition */ /* PSALM thinks HTML_OUTPUT cannot be FALSE */
+
 if (HTML_OUTPUT) {
   bot_html_header();
   $edit_summary_end = "| Suggested by " . $api->get_the_user() . " ";
@@ -62,7 +62,6 @@ if (isset($_REQUEST["edit"]) && $_REQUEST["edit"]) {
       $edit_summary_end = $edit_summary_end . "| #UCB_Other ";
    }
 } else {
-  /** @psalm-suppress RedundantCondition */ /* PSALM thinks HTML_OUTPUT cannot be FALSE */
   if (HTML_OUTPUT) {
      $edit_summary_end = $edit_summary_end . "| #UCB_webform ";
   } else {
