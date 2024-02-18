@@ -6329,7 +6329,8 @@ final class Template {
 	  if ($this->has('doi') && $this->has('issue') && ($this->get('issue') === $this->get('volume')) && // Issue = Volume and not NULL
 		($this->get('issue') === $this->get_without_comments_and_placeholders('issue')) &&
 		($this->get('volume') === $this->get_without_comments_and_placeholders('volume'))) { // No comments to flag problems
-		$crossRef = query_crossref($this->get_without_comments_and_placeholders('doi'));
+		$doi_template = $this->get_without_comments_and_placeholders('doi');
+		$crossRef = query_crossref($doi_template);
 		if ($crossRef) {
 		  $orig_data = trim($this->get('volume'));
 		   $possible_issue = trim((string) @$crossRef->issue);
@@ -6343,7 +6344,9 @@ final class Template {
 				 $this->set('issue', $possible_issue);
 				 report_action('Citation had volume and issue the same. Changing issue.');
 			   } else {
-				 report_inaction('Citation has volume and issue set to ' . echoable($orig_data) . ' which disagrees with CrossRef');  // @codeCoverageIgnore
+                                 $doi_crossref = $crossRef->doi;
+				 if (!is_string($doi_crossref) || (strlen($doi_crossref) < 2)) {$doi_crossref = $doi_template;}
+				 report_inaction('Citation for doi:' . echoable($doi_crossref) . ' has volume and issue set to ' . echoable($orig_data) . ' which disagrees with CrossRef (volume ' . echoable($possible_volume) . ', issue ' . echoable($possible_issue) . ')');  // @codeCoverageIgnore
 			   }
 			 }
 		   }
