@@ -1349,6 +1349,7 @@ function edit_a_list_of_pages(array $pages_in_category, WikipediaBot $api, strin
     check_memory_usage("After writing page");
     $page->parse_text("");  // Clear variables before doing GC
     gc_collect_cycles();    // This should do nothing
+    memory_reset_peak_usage();
   }
   if ($total > 1) {
     if (!HTML_OUTPUT) $final_edit_overview = '';
@@ -1363,10 +1364,7 @@ function check_memory_usage(string $where) : void {
     $mem_used = (int) (memory_get_usage() / 1048576);
     if ($mem_used > 8) bot_debug_log("Memory Usage is up to " . (string) $mem_used . "MB in " . $where);
     $mem_used = (int) (memory_get_peak_usage() / 1048576);
-    if ($mem_used > 128) {
-        bot_debug_log("Peak memory Usage is up to " . (string) $mem_used . "MB in " . $where);
-        memory_reset_peak_usage();
-    }
+    if ($mem_used > 128) bot_debug_log("Peak memory Usage is up to " . (string) $mem_used . "MB in " . $where);
 }
 
 /**
