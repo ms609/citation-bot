@@ -422,7 +422,7 @@ function adsabs_api(array $ids, array &$templates, string $identifier) : void { 
   return;
 }
 
-/** @param array<string> $ids
+/** @param array<string> $_ids
     @param array<Template> $templates **/
 function query_doi_api(array $_ids, array &$templates) : void { // $id not used yet  // Pointer to save memory
   foreach ($templates as $template) {
