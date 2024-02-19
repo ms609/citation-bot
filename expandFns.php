@@ -672,6 +672,10 @@ function titles_simple(string $inTitle) : string {
 	if ($inTitle2 !== "") $inTitle = $inTitle2;
 	$inTitle2 = safe_preg_replace("~RETRACTED~ui", "", $inTitle);
 	if ($inTitle2 !== "") $inTitle = $inTitle2;
+	$inTitle2 = safe_preg_replace("~^Editorial: ~ui", "", $inTitle);
+	if ($inTitle2 !== "") $inTitle = $inTitle2;
+	$inTitle2 = safe_preg_replace("~^Brief communication: ~ui", "", $inTitle);
+	if ($inTitle2 !== "") $inTitle = $inTitle2;
 	// Drop normal quotes
 	$inTitle = str_replace(array("'", '"'), "", $inTitle);
 	// Strip trailing periods
