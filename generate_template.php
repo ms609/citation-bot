@@ -29,7 +29,6 @@ $t = new Template();
 $t->parse_text('{{cite web }}');
   /** The user sent this in, so we declare it to not be tainted, and we do some checking */
   /** @psalm-taint-escape ssrf
-      @psalm-taint-escape has_quotes
       @psalm-taint-escape html */
 $t->set($param, $value);
 $text = $t->parsed_text();
