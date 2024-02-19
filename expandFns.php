@@ -660,6 +660,10 @@ function titles_simple(string $inTitle) : string {
 	// Strip trailing
 	$inTitle2 = safe_preg_replace('~ A literature review$~iu', '', $inTitle);
 	if ($inTitle2 !== "") $inTitle = $inTitle2;
+	$inTitle2 = safe_preg_replace("~^Editorial: ~ui", "", $inTitle);
+	if ($inTitle2 !== "") $inTitle = $inTitle2;
+	$inTitle2 = safe_preg_replace("~^Brief communication: ~ui", "", $inTitle);
+	if ($inTitle2 !== "") $inTitle = $inTitle2;
 	// Reduce punctuation
 	$inTitle = straighten_quotes(mb_strtolower($inTitle), TRUE);
 	$inTitle2 = safe_preg_replace("~(?: |‐|−|-|—|–|â€™|â€”|â€“)~u", "", $inTitle);
@@ -671,10 +675,6 @@ function titles_simple(string $inTitle) : string {
 	$inTitle2 = safe_preg_replace("~\(RETRACTED\)~ui", "", $inTitle);
 	if ($inTitle2 !== "") $inTitle = $inTitle2;
 	$inTitle2 = safe_preg_replace("~RETRACTED~ui", "", $inTitle);
-	if ($inTitle2 !== "") $inTitle = $inTitle2;
-	$inTitle2 = safe_preg_replace("~^Editorial: ~ui", "", $inTitle);
-	if ($inTitle2 !== "") $inTitle = $inTitle2;
-	$inTitle2 = safe_preg_replace("~^Brief communication: ~ui", "", $inTitle);
 	if ($inTitle2 !== "") $inTitle = $inTitle2;
 	// Drop normal quotes
 	$inTitle = str_replace(array("'", '"'), "", $inTitle);
