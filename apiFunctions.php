@@ -1199,9 +1199,7 @@ function Bibcode_Response_Processing(array $curl_opts, string $adsabs_url) : obj
     }
     if ($http_response_code !== 200) {
       // @codeCoverageIgnoreStart
-      $message = (string) strtok($header, "\n");
-      /** @psalm-suppress UnusedFunctionCall */
-      @strtok('',''); // Free internal buffers with empty unused call
+      $message = (string) explode($header, "\n", 2)[0];
       throw new Exception($message, $http_response_code);
       // @codeCoverageIgnoreEnd
     }
