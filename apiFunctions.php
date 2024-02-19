@@ -464,7 +464,7 @@ function expand_by_doi(Template $template, bool $force = FALSE) : void {
 	} else {
 	   $new_roman = FALSE;
 	}
-	foreach (['chapter', 'title', 'series', 'trans-title', 'book-title'] as $possible) {
+	foreach (THINGS_THAT_ARE_TITLES as $possible) {
 	  if ($template->has($possible)) {
 	    $old = $template->get($possible);
 	    if (preg_match('~^(.................+)[\.\?]\s+([IVX]+)\.\s.+$~i', $old, $matches)) {
@@ -490,7 +490,7 @@ function expand_by_doi(Template $template, bool $force = FALSE) : void {
 	  }
 	}
 	if (isset($crossRef->series_title)) {
-	  foreach (['chapter', 'title', 'trans-title', 'book-title'] as $possible) { // Series === series could easily be false positive
+	  foreach (THINGS_THAT_ARE_TITLES as $possible) { // Series === series could easily be false positive
 	    if ($template->has($possible) && titles_are_similar($template->get($possible), (string) $crossRef->series_title)) {
 		$bad_data = FALSE;
 		break;
@@ -501,7 +501,7 @@ function expand_by_doi(Template $template, bool $force = FALSE) : void {
 	  report_warning("CrossRef title did not match existing title: doi:" . doi_link($doi));
 	  if (isset($crossRef->series_title)) report_info("  Possible new title: " . str_replace("\n", "", echoable((string) $crossRef->series_title)));
 	  if (isset($crossRef->article_title)) report_info("  Possible new title: " .  echoable((string) $crossRef->article_title));
-	  foreach (['chapter', 'title', 'series'] as $possible) {
+	  foreach (THINGS_THAT_ARE_TITLES as $possible) {
 	   if ($template->has($possible)) {
 	      report_info("  Existing old title: " .  echoable($template->get($possible)));
 	   }
@@ -844,7 +844,7 @@ function expand_by_jstor(Template $template) : void {
 	case "T2":
 	case "BT":
 	  $new_title = trim($ris_part[1]);
-	  foreach (['chapter', 'title', 'series', 'trans-title', 'book-title'] as $possible) {
+	  foreach (THINGS_THAT_ARE_TITLES as $possible) {
 	    if ($template->has($possible) && titles_are_similar($template->get($possible), $new_title)) {
 	      $bad_data = FALSE;
 	    }
@@ -874,7 +874,7 @@ function expand_by_jstor(Template $template) : void {
 	}
       }
       if ($got_count === 110) { // Exactly one of each
-	foreach (['chapter', 'title', 'series', 'trans-title', 'book-title'] as $possible) {
+	foreach (THINGS_THAT_ARE_TITLES as $possible) {
 	  if ($template->has($possible) && titles_are_similar($template->get($possible), $new_title)) {
 	    $bad_data = FALSE;
 	  }
@@ -893,7 +893,7 @@ function expand_by_jstor(Template $template) : void {
 	   default: // @codeCoverageIgnore
 	 }
        }
-       foreach (['chapter', 'title', 'series'] as $possible) {
+       foreach (THINGS_THAT_ARE_TITLES as $possible) {
 	 if ($template->has($possible)) {
 	    report_info("  Existing old title: " .  echoable($template->get($possible)));
 	 }

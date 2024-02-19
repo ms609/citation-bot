@@ -81,6 +81,8 @@ const ALL_URL_TYPES = array('url', 'article-url', 'chapter-url', 'chapterurl', '
 const DATES_TO_CLEAN = array('air-date', 'airdate', 'archive-date', 'archivedate', 'date', 'pmc-embargo-date', 'publication-date', 'year',
 			     'lay-date', 'archive-date', 'archivedate', 'accessdate', 'access-date', 'orig-date', 'doi-broken-date');
 
+const THINGS_THAT_ARE_TITLES = array('chapter', 'title', 'series', 'trans-title', 'book-title', 'contribution');
+
 const AUTHOR_PARAMETERS = array(
     1  => array('surname'  , 'forename'  , 'initials'  , 'first'  , 'last'  , 'author',
 		'vauthors', 'authors', 'author-last', 'author-first',
