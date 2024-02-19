@@ -50,7 +50,6 @@ array(
 '10.1007/BF00190980' => TRUE,
 '10.1007/BF00202951' => TRUE,
 '10.1007/s10783-007-9033-2' => TRUE,
-'10.1017/CBO9780511607141' => TRUE,
 '10.1017/cbo9780511610486.005' => TRUE,
 '10.1017/cbo9781139696562.001' => TRUE,
 '10.1017/S0950017001230104' => TRUE,
@@ -316,10 +315,6 @@ array(
 '10.7556/jaoa' => TRUE,
 '10.7575/aiac.ijalel.v.6n.3p.71' => TRUE,
 '10.9775/kvfd.2010.2081' => TRUE,
-'10261/127752' => TRUE,
-'10261/15034' => TRUE,
-'10261/167700' => TRUE,
-'10508/11281' => TRUE,
 );
 
 const NULL_DOI_BUT_GOOD = array(  // TODO - these need to be manually double checked once in a great while.  Note that a failed url on one computer does not mean it is gone, it might just be you
@@ -342,6 +337,7 @@ const NULL_DOI_BUT_GOOD = array(  // TODO - these need to be manually double che
 '10.1016/S0021-9258(20)80600-0' => TRUE,
 '10.1017/9781108890960' => TRUE,
 '10.1017/CBO9780511498282' => TRUE,
+'10.1017/CBO9780511607141' => TRUE,
 '10.1017/CBO9781107415416' => TRUE,
 '10.1017/CBO9781139062404' => TRUE,
 '10.1017/S0020859000111332' => TRUE,
@@ -1138,12 +1134,16 @@ const NULL_DOI_BUT_GOOD = array(  // TODO - these need to be manually double che
 const NULL_HDL_BUT_KNOWN = array(  // Do not report these, since they work usually.
 '10026.1/19203' => TRUE,
 '10234/204329' => TRUE,
+'10261/127752' => TRUE,
 '10261/142920' => TRUE,
+'10261/15034' => TRUE,
 '10261/163554' => TRUE,
+'10261/167700' => TRUE,
 '10261/304243' => TRUE,
 '10261/46561' => TRUE,
 '10261/64087' => TRUE,
 '10399/1967' => TRUE,
+'10508/11281' => TRUE,
 '11250/2733873' => TRUE,
 '11336/194575' => TRUE,
 '11336/59894' => TRUE,
