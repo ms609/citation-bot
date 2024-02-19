@@ -41,10 +41,6 @@ try {
  }
  unset($originalText, $page);
 
- /**
-   * @psalm-taint-escape html
-   * @psalm-taint-escape has_quotes
-   */
  $result = array(
    'expandedtext' => $newText,
    'editsummary' => $editSummary
