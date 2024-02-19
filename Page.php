@@ -745,8 +745,7 @@ class Page {
       // @codeCoverageIgnoreEnd
     }
 
-    /** @psalm-suppress TypeDoesNotContainType */
-    if ($preg_ok === FALSE) { // Something went wrong.  Often from bad wiki-text.  Normally, preg_match() does not return FALSE, so supress psalm
+    if ($preg_ok === FALSE) { // Something went wrong.  Often from bad wiki-text.
 	// @codeCoverageIgnoreStart
 	$this->page_error = TRUE;
 	report_warning('Regular expression failure in ' . echoable($this->title) . ' when extracting ' . $class . 's');
