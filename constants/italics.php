@@ -428,7 +428,7 @@ const CAMEL_CASE = array('DeSoto', 'PubChem', 'BitTorrent', 'Al2O3', 'NiMo', 'Cu
 			 'GaiaHundred', 'WikiJournal', 'StarCraft', 'EuResist', 'PhageScope', 'CoVaMa', 'EuroMyositis',
 			 'DavEnd', 'CoLaus', 'MinerAlocorticoid', 'miRiad', 'kaSenzangakhona', 'BioChirality', 'DeGeer',
 			 'ReFocus:', 'FusionCatcher', 'cFos', 'ReOrienting', 'NatureServe', 'qNirvana',
-			 'DenitrificationAnammox',
+			 'DenitrificationAnammox', 'NomCom',
 		       );
 
 const ITALICS_HARDCODE_IN  = ["The Myth ofPiers Plowman", "BioelectromagnetismPrinciples and Applications", "Practice inThe Nice Valour",
