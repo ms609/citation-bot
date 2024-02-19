@@ -43,6 +43,7 @@ Always write a clear log message for your commits. One-line messages are fine fo
   * All curl_init() should be replaced with curl_init_array() calls, which sets reasonable defaults.  Also reasonable timeouts should be set depending upon the website.
   * error_reporting(E_ALL) and declare(strict_types=1) are both set
   * Multi-byte functions should be used in most cases, such as mb_ucwords instead of ucwords (there are many non-standard ones provided within the source code)
+  * Do not use `strtok` since it saves a buffer internally
 
 ## Bot output conventions
 The bot reports its activity to users using:
