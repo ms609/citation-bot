@@ -41,10 +41,6 @@ try {
  }
  unset($originalText, $page);
 
- /**
-   * @psalm-taint-escape html
-   * @psalm-taint-escape has_quotes
-   */
  $result = array(
    'expandedtext' => $newText,
    'editsummary' => $editSummary
@@ -52,6 +48,10 @@ try {
  unset($newText, $editSummary);
  ob_end_clean();
 
+ /**
+   * @psalm-taint-escape html
+   * @psalm-taint-escape has_quotes
+   */
  echo (string) @json_encode($result);
 } catch (Throwable $e) {                          // @codeCoverageIgnore
  @ob_end_clean();@ob_end_clean();@ob_end_clean(); // @codeCoverageIgnore
