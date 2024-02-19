@@ -10,36 +10,37 @@ echo '<!DOCTYPE html><html lang="en" dir="ltr"><head><title>Make a Template</tit
 
 require_once 'setup.php';
 
+if (count($_GET) !== 1) exit('Exactly one parameters must be passed</pre></body></html>');
+$param = array_keys($_GET)[0];
+$value = $_GET[$param];
+
+if (!is_string($param) || !is_string($value)) {
+    exit('Invalid parameter type error for passed parameter</pre></body></html>'); // @codeCoverageIgnore
+}
+if (strlen($value) < 1) exit('Unset parameter error</pre></body></html>');
+if (strlen($value) > 10000) exit('Excessive parameter error</pre></body></html>');
+if ((strpos($value, "'") !== FALSE ) || (strpos($value, '"') !== FALSE ) || (strpos($value, "|") !== FALSE ) || (strpos($value, " ") !== FALSE )) {
+     exit('Invalid parameter value error</pre></body></html>');  // @codeCoverageIgnore
+}
+$param = mb_strtolower($param);
+if (!in_array($param, ['jstor', 'doi', 'pmc', 's2cid', 'pmid', 'hdl', 'osti', 'isbn', 'lccn', 'ol', 'oclc'])) exit('Unexpected parameter passed</pre></body></html>');
+
 $t = new Template();
 $t->parse_text('{{cite web }}');
-if (count($_GET) !== 1) exit('Exactly one parameters must be passed</pre></body></html>');
-foreach ($_GET as $param=>$value) {
-  if (!is_string($param) || !is_string($value)) {
-    exit('Invalid parameter type error for passed parameter</pre></body></html>'); // @codeCoverageIgnore
-  }
   /** The user sent this in, so we declare it to not be tainted, and we do some checking */
   /** @psalm-taint-escape ssrf
       @psalm-taint-escape has_quotes
       @psalm-taint-escape html */
-  $value = mb_strtolower($value);
-  /** @psalm-taint-escape ssrf
-      @psalm-taint-escape has_quotes
-      @psalm-taint-escape html */
-  $param = mb_strtolower($param);
-  if (strlen($value) === 0) exit('Unset parameter error</pre></body></html>');
-  if (strlen($value) > 10000) exit('Excessive parameter error</pre></body></html>');
-  if ((strpos($value, "'") !== FALSE ) || (strpos($value, '"') !== FALSE ) || (strpos($value, "|") !== FALSE ) || (strpos($value, " ") !== FALSE )) {
-     exit('Invalid parameter value error</pre></body></html>');  // @codeCoverageIgnore
-  }
-  if (!in_array($param, PARAMETER_LIST)) exit('Unknown parameter passed</pre></body></html>');
-  $t->set($param, $value);
-}
+$t->set($param, $value);
+$text = $t->parsed_text();
+unset($t, $param, $value);
 
 $page = new Page();
-$page->parse_text($t->parsed_text());
-unset($t);
+$page->parse_text($text);
 $page->expand_text();
+$text = $page->parsed_text();
+unset($page);
 
-echo "\n\n" . echoable('<ref>' . $page->parsed_text() . '</ref>') . "\n\n</pre></main></body></html>";
+echo "\n\n" . echoable('<ref>' . $text . '</ref>') . "\n\n</pre></main></body></html>";
 
 ?>
