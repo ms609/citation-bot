@@ -108,11 +108,12 @@ public static function query_ieee_webpages(array &$templates) : void {  // Point
   foreach (['url', 'chapter-url', 'chapterurl'] as $kind) {
    foreach ($templates as $template) {
     set_time_limit(120);
-    if ($template->blank('doi') && preg_match("~^https://ieeexplore\.ieee\.org/document/(\d{5,})$~", $template->get($kind), $matches_url)) {
+    /** @psalm-taint-escape ssrf */
+    $the_url = $template->get($kind);
+    if (preg_match("~^https://ieeexplore\.ieee\.org/document/(\d{5,})$~", $the_url, $matches_url)) {
+     curl_setopt(self::$ch_ieee, CURLOPT_URL, $the_url);
+     if ($template->blank('doi')) {
        usleep(100000); // 0.10 seconds
-       /** @psalm-taint-escape ssrf */
-       $the_url = $template->get($kind);
-       curl_setopt(self::$ch_ieee, CURLOPT_URL, $the_url);
        $return = bot_curl_exec(self::$ch_ieee);
        if ($return !== "" && preg_match_all('~"doi":"(10\.\d{4}/[^\s"]+)"~', $return, $matches, PREG_PATTERN_ORDER)) {
 	  $dois = array_unique($matches[1]);
@@ -124,16 +125,14 @@ public static function query_ieee_webpages(array &$templates) : void {  // Point
 	    }
 	  }
        }
-    } elseif ($template->has('doi') && preg_match("~^https://ieeexplore\.ieee\.org/document/(\d{5,})$~", $template->get($kind), $matches_url) && doi_works($template->get('doi'))) {
+     } elseif (doi_works($template->get('doi'))) {
        usleep(100000); // 0.10 seconds
-       /** @psalm-taint-escape ssrf */
-       $the_url = $template->get($kind);
-       curl_setopt(self::$ch_ieee, CURLOPT_URL, $the_url);
        $return = bot_curl_exec(self::$ch_ieee);
        if ($return !== "" && strpos($return, "<title> -  </title>") !== FALSE) {
 	 report_forget("Existing IEEE no longer works - dropping URL"); // @codeCoverageIgnore
 	 $template->forget($kind);                                      // @codeCoverageIgnore
        }
+     }
     }
    }
   }
