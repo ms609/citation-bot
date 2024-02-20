@@ -514,7 +514,7 @@ const PARAMETER_LIST = array(
      'timecaption', 'titlelink', 'ref name', 'ISBN13', 'booktitle', 'chapterurl', 'episodelink',
      'isbn13', 'mailinglist', 'mapurl', 'nopp', 'publicationdate', 'publicationplace',
      'serieslink', 'sid', 'note', 'do', 'lien', 'lay-date', 'lay-format', 'lay-source',
-     'lay-url', 'transcripturl', 'pages totales');
+     'lay-url', 'transcripturl', 'pages totales', 'ppprefix', 'pprefix');
 
 // sid is actually page range in some no english wiki's but do not fix since so close to id=
 // lien is French template parameter, but also English work
