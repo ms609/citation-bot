@@ -705,6 +705,8 @@ function expand_doi_with_dx(Template $template, string $doi) : void {
        $i = 0;
        foreach ($json['author'] as $auth) {
 	  $i = $i + 1;
+	  $full_name = mb_strtolower(trim((string) @$auth['given'] . ' ' . (string) @$auth['family'] . (string) @$auth['literal']));
+	  if (in_array($full_name, BAD_AUTHORS)) break;
 	  if (((string) @$auth['family'] === '') && ((string) @$auth['given'] !== '')) {
 	     $try_to_add_it('author' . (string) $i, @$auth['given']); // First name without last name.  Probably an organization or chinese/korean/japanese name
 	  } else {
