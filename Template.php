@@ -3574,6 +3574,7 @@ final class Template {
 
 	  if (stripos($p->param, 'DUPLICATE_') === 0) {
 		report_modification("Left-over duplicate parameter " . echoable($p->param) . " ");
+		continue;
 	  } else {
 		report_modification("Unrecognized parameter " . echoable($p->param) . " ");
 	  }
