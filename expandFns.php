@@ -186,7 +186,7 @@ function is_doi_works(string $doi) : ?bool {
      if (isset(NULL_DOI_LIST[$doi])) return NULL;
      if (isset(NULL_DOI_BUT_GOOD[$doi])) return NULL;
      $headers_test = get_headers_array($url);
-     bot_debug_log('Got NULL for DOI: ' . str_ireplace(['&lt;', '&gt;'], ['<', '>'],echoable($doi)));
+     bot_debug_log('Got NULL for HDL: ' . str_ireplace(['&lt;', '&gt;'], ['<', '>'],echoable($doi)));
   }
   if ($headers_test === FALSE) {
      $headers_test = get_headers_array($url);  // @codeCoverageIgnore
