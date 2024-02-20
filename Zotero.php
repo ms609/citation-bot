@@ -108,7 +108,7 @@ public static function query_ieee_webpages(array &$templates) : void {  // Point
   foreach (['url', 'chapter-url', 'chapterurl'] as $kind) {
    foreach ($templates as $template) {
     set_time_limit(120);
-    $the_url = $template->get($kind)
+    $the_url = $template->get($kind);
     if (preg_match("~^https://ieeexplore\.ieee\.org/document/(\d{5,})$~", $the_url, $matches_url)) {
      /** @psalm-taint-escape ssrf */
      curl_setopt(self::$ch_ieee, CURLOPT_URL, $the_url);
