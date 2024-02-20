@@ -255,6 +255,7 @@ const COMMON_MISTAKES = array ( // Common mistakes that aren't picked up by the 
   "serie"           =>  "series",
   "sitioweb"        =>  "website",
   "sito"            =>  "website",
+  "site"            =>  "website",
   "tipo"            =>  "type",
   "título"          =>  "title",
   "ubicación"       =>  "location",
@@ -323,6 +324,7 @@ const COMMON_MISTAKES = array ( // Common mistakes that aren't picked up by the 
   "kirish sanasi" => "access-date",
   "joylashuv" => "location",
   "iqtibos" => "quote",
+  "langue" => "language",
 );
 
 const COMMON_MISTAKES_TOOL = array(
