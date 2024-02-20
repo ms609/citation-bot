@@ -1,7 +1,7 @@
 <?php
 declare(strict_types=1);
 
-const COMMON_MISTAKES = array ( // Common mistakes that aren't picked up by the levenshtein approach
+const COMMON_MISTAKES = array ( // Common mistakes that aren't picked up by the levenshtein approach.  And obvious ones to reduce levenshtein dependence
   "ASIN"            =>  "asin",
   "EISSN"           =>  "eissn",
   "HDL"             =>  "hdl",
@@ -327,6 +327,11 @@ const COMMON_MISTAKES = array ( // Common mistakes that aren't picked up by the 
   "joylashuv" => "location",
   "iqtibos" => "quote",
   "langue" => "language",
+  "authors1" => "author1",
+  "editors1" => "editor1",
+  "editor1mask" => "editor-mask1",
+  "editormask1" => "editor-mask1",
+  "subjectlink1" => "subject-link1",
 );
 
 const COMMON_MISTAKES_TOOL = array(
