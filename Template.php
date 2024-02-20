@@ -3628,14 +3628,17 @@ final class Template {
 	  if (in_array($p->param, $parameter_dead)) {
 		report_inline("Could not fix outdated " . echoable($p->param));
 	  } elseif ($shortest < 12 && $shortest < $shortish) {
+		bot_debug_log("levenshtein replaced " . $p->param . " with " . $closest);
 		$p->param = $closest;
 		report_inline("replaced with $closest (likelihood " . (string)round(24.0 - $shortest,1) . "/24)"); // Scale arbitrarily re-based by adding 12 so users are more impressed by size of similarity
 	  } else {
 		$similarity = (float) similar_text($p->param, $closest) / (float) strlen($p->param);
 		if ($similarity > 0.6) {
+		  bot_debug_log("levenshtein replaced " . $p->param . " with " . $closest);
 		  $p->param = $closest;
 		  report_inline("replaced with $closest (similarity " . (string)(round(24.0 * $similarity, 1)) . "/24)"); // Scale arbitrarily re-based by multiplying by 2 so users are more impressed by size of similarity
 		} else {
+		  bot_debug_log("levenshtein could not fix " . $p->param);
 		  report_inline("could not be replaced with confidence. Please check the citation yourself.");
 		}
 	  }
