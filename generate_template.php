@@ -17,8 +17,8 @@ $value = $_GET[$param];
 if (!is_string($param) || !is_string($value)) {
     exit('Invalid parameter type error for passed parameter</pre></body></html>'); // @codeCoverageIgnore
 }
-if (strlen($value) < 1) exit('Unset parameter error</pre></body></html>');
-if (strlen($value) > 10000) exit('Excessive parameter error</pre></body></html>');
+if (strlen($value) < 3) exit('Unset parameter error</pre></body></html>');
+if (strlen($value) > 100) exit('Excessive parameter error</pre></body></html>');
 if ((strpos($value, "'") !== FALSE ) || (strpos($value, '"') !== FALSE ) || (strpos($value, "|") !== FALSE ) || (strpos($value, " ") !== FALSE )) {
      exit('Invalid parameter value error</pre></body></html>');  // @codeCoverageIgnore
 }
