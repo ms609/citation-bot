@@ -1220,7 +1220,7 @@ function check_doi_for_jstor(string $doi, Template $template) : void {
   /** @psalm-taint-escape ssrf */
   $doi = trim($doi);
   if ($doi === '') return;
-  if (strpos($doi, '10.') !== 0) return; // Not even a DOI, could go very badly
+  if (preg_match('~^\d+$~', $doi)) return; // Just numbers - this WILL match a JSTOR, but who knows what it really is!
   if (strpos($doi, '10.2307') === 0) { // special case
     $doi = substr($doi, 8);
   }
