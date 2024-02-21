@@ -334,6 +334,12 @@ const COMMON_MISTAKES = array ( // Common mistakes that aren't picked up by the 
   "subjectlink1" => "subject-link1",
   "weebsite" => "website",
   "websites" => "website",
+  "url lưu trữ" => "archive-url",
+  "tựa đề" => "title",
+  "access date" => "access-date",
+  "tite" => "title",
+  "firs" => "first",
+  "urlstatus" => "url-status",
 );
 
 const COMMON_MISTAKES_TOOL = array(
