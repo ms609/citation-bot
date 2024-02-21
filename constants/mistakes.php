@@ -332,6 +332,8 @@ const COMMON_MISTAKES = array ( // Common mistakes that aren't picked up by the 
   "editor1mask" => "editor-mask1",
   "editormask1" => "editor-mask1",
   "subjectlink1" => "subject-link1",
+  "weebsite" => "website",
+  "websites" => "website",
 );
 
 const COMMON_MISTAKES_TOOL = array(
