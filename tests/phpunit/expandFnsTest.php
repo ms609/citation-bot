@@ -387,7 +387,7 @@ final class expandFnsTest extends testBaseClass {
     foreach (NULL_HDL_BUT_KNOWN as $doi => $value) {
       $this->assertSame(trim($doi), $doi);
       $this->assertTrue($value);
-      $this->assertTrue(strpos($value, '10.') !== 0); // No DOIs allowed
+      $this->assertTrue(strpos($doi, '10.') !== 0); // No DOIs allowed
     }
 
     $changes = "";
