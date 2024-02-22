@@ -45,10 +45,10 @@ const BOT_USER_AGENT          = "Mozilla/5.0 (compatible; Citation_bot; mailto:"
 const BOT_HTTP_TIMEOUT = 20;
 const BOT_CONNECTION_TIMEOUT = 10;
 
-function curl_limit_page_size(CurlHandle $_ch, int $_DE = 0, int $Down = 0, int $_UE = 0, int $_Up = 0) : int {
-	if ($Down > 134217728) {  // MOST things are sane, some things are stupidly large like S2 json data or archived PDFs
+function curl_limit_page_size(CurlHandle $_ch, int $_DE = 0, int $down = 0, int $_UE = 0, int $_Up = 0) : int {
+	if ($down > 134217728) {  // MOST things are sane, some things are stupidly large like S2 json data or archived PDFs
 	     bot_debug_log("Absurdly large curl");
-	     return 1;  // If $Downloaded exceeds max-size of 128MB, returning non-0 breaks the connection!
+	     return 1;  // If $down exceeds max-size of 128MB, returning non-0 breaks the connection!
 	}
 	return 0;
 }
