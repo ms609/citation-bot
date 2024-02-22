@@ -45,8 +45,8 @@ const BOT_USER_AGENT          = "Mozilla/5.0 (compatible; Citation_bot; mailto:"
 const BOT_HTTP_TIMEOUT = 20;
 const BOT_CONNECTION_TIMEOUT = 10;
 
-function curl_limit_page_size(CurlHandle $_ch, int $_DownloadSize = 0, int $Downloaded = 0, int $_UploadSize = 0, int $_Uploaded = 0) : int {
-	if ($Downloaded > 134217728) {
+function curl_limit_page_size(CurlHandle $_ch, int $_DE = 0, int $Down = 0, int $_UE = 0, int $_Up = 0) : int {
+	if ($Down > 134217728) {  // MOST things are sane, some things are stupidly large like S2 json data or archived PDFs
 	     bot_debug_log("Absurdly large curl");
 	     return 1;  // If $Downloaded exceeds max-size of 128MB, returning non-0 breaks the connection!
 	}
@@ -66,7 +66,7 @@ function curl_init_array(float $time, array $ops) : CurlHandle {
 		CURLOPT_COOKIESESSION => TRUE,
 		CURLOPT_RETURNTRANSFER => TRUE,
 		CURLOPT_HEADEROPT => CURLHEADER_UNIFIED,
-		CURLOPT_PROGRESSFUNCTION => 'curl_limit_page_size', // MOST things are sane, some things are stupidly large like S2 json data or archived PDFs
+		CURLOPT_PROGRESSFUNCTION => 'curl_limit_page_size',
 		CURLOPT_NOPROGRESS => FALSE,
 	// 2 - Default Time by ratio
 		CURLOPT_TIMEOUT => BOT_HTTP_TIMEOUT * $time,
