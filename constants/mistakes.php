@@ -340,6 +340,14 @@ const COMMON_MISTAKES = array ( // Common mistakes that aren't picked up by the 
   "tite" => "title",
   "firs" => "first",
   "urlstatus" => "url-status",
+  "acccessdate" => "accessdate",
+  "access_date" => "access-date",
+  "pubisher" => "publisher",
+  "tiêu đề" => "title",
+  "ngày" => "date",
+  "ngày truy cập" => "access-date",
+  "nhà xuất bản" => "publisher",
+  "nơi xuất bản" => "location",
 );
 
 const COMMON_MISTAKES_TOOL = array(
