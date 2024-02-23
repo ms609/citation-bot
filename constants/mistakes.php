@@ -348,6 +348,8 @@ const COMMON_MISTAKES = array ( // Common mistakes that aren't picked up by the 
   "ngày truy cập" => "access-date",
   "nhà xuất bản" => "publisher",
   "nơi xuất bản" => "location",
+  "titre" => "title",
+  "websitre" => "website",
 );
 
 const COMMON_MISTAKES_TOOL = array(
