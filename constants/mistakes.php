@@ -349,6 +349,7 @@ const COMMON_MISTAKES = array ( // Common mistakes that aren't picked up by the 
   "nhà xuất bản" => "publisher",
   "nơi xuất bản" => "location",
   "websitre" => "website",
+  "ইউআরএল-অবস্থা" => "url-status",
 );
 
 const COMMON_MISTAKES_TOOL = array(
