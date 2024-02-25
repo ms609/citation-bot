@@ -4151,7 +4151,7 @@ final class Template {
 		  if (in_array($the_data, ['y', 'yes', 'dead', 'si', 'sì', 'ja'])) {
 			$this->rename($param, 'url-status', 'dead');
 			$this->forget($param);
-		  } elseif (in_array($the_data, ['n', 'no', 'live', 'alive'])) {
+		  } elseif (in_array($the_data, ['n', 'no', 'live', 'alive', 'কার্যকর'])) {
 			$this->rename($param, 'url-status', 'live');
 			$this->forget($param);
 		  } elseif (in_array($the_data, ['', 'bot: unknown'])) {
@@ -4166,7 +4166,7 @@ final class Template {
 		  $the_data = mb_strtolower($this->get($param));
 		  if (in_array($the_data, ['y', 'yes', 'si', 'sì'])) {
 			$this->set($param, 'dead');
-		  } elseif (in_array($the_data, ['n', 'no', 'alive'])) {
+		  } elseif (in_array($the_data, ['n', 'no', 'alive', 'কার্যকর'])) {
 			$this->set($param, 'live');
 		  }
 		  return;
