@@ -3,6 +3,7 @@ declare(strict_types=1);
 
 const NULL_DOI_ANNOYING = // TODO - manually check these from time to time
 array(
+'10.1001/jama.275.17.1339' => TRUE,
 '10.1511/2006.61.412' => TRUE,
 '10.1515/vzoo-2017-0029' => TRUE,
 '10.2136/sh2012-53-6-lf' => TRUE,
