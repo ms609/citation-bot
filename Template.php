@@ -3516,8 +3516,9 @@ final class Template {
 	  if ($mistake_id) {
 		$new = $mistake_corrections[$mistake_id];
 		if ($this->blank($new)) {
+		   $old = $p->param;
 		   $p->param = $new;
-		   report_modification('replaced with ' . echoable($new) . ' (common mistakes list)');
+		   report_modification('replaced ' . echoable($old) .  ' with ' . echoable($new) . ' (common mistakes list)');
 		}
 		continue;
 	  }
