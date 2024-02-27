@@ -368,7 +368,6 @@ array(
 '10.6019/blueprint_20130405' => TRUE,
 '10.6072/H0.MP.A004235.01' => TRUE,
 '10.62015/np.2002.v10.503' => TRUE,
-'10.7146/aprja.v12i1.140450' => TRUE,
 '10.7146/cns.v6i0.122249' => TRUE,
 '10.7146/cns.v6i0.122251' => TRUE,
 '10.7182/prtr.1.6.1.f04016025hh795up' => TRUE,
@@ -1461,6 +1460,7 @@ const NULL_DOI_BUT_GOOD = array(  // TODO - these need to be manually double che
 '10.9755/ejfa.2018.v30.i3.1639' => TRUE,
 '10.9766/KIMST.2014.17.3.342' => TRUE,
 '10.9766/KIMST.2014.17.3.350' => TRUE,
+'10.7146/aprja.v12i1.140450' => TRUE,
 /** We cannot add hdls to this list, since we need the final URL - see below **/
 );
 const NULL_HDL_BUT_KNOWN = array(  // Do not report these, since they work usually
