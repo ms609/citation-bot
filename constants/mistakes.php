@@ -350,6 +350,14 @@ const COMMON_MISTAKES = array ( // Common mistakes that aren't picked up by the 
   "nơi xuất bản" => "location",
   "websitre" => "website",
   "ইউআরএল-অবস্থা" => "url-status",
+  "date of access" => "access-date",
+  "date of publication" => "publication-date",
+  "first name" => "first",
+  "last name" => "last",
+  "url of archive" => "archive-url",
+  "archive date" => "archive-date",
+  "issue date" => "issue-date",
+  "publication date" => "publication-date",
 );
 
 const COMMON_MISTAKES_TOOL = array(
