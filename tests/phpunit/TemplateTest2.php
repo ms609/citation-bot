@@ -3266,7 +3266,7 @@ final class TemplateTest2 extends testBaseClass {
    }
 
    public function testShortSpelling() : void {
-     $text = '{{cite journal|list=X}}';
+     $text = '{{cite journal|lust=X}}';
      $template = $this->prepare_citation($text);
      $this->assertSame('X', $template->get2('last'));
 
