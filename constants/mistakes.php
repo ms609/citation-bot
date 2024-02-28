@@ -358,6 +358,9 @@ const COMMON_MISTAKES = array ( // Common mistakes that aren't picked up by the 
   "archive date" => "archive-date",
   "issue date" => "issue-date",
   "publication date" => "publication-date",
+  "archived ate" => "archivedate",
+  "websute" => "website",
+  "datr" => "date",
 );
 
 const COMMON_MISTAKES_TOOL = array(
