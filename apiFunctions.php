@@ -491,7 +491,7 @@ function expand_by_doi(Template $template, bool $force = FALSE) : void {
 	}
 	if (isset($crossRef->series_title)) {
 	  foreach (THINGS_THAT_ARE_TITLES as $possible) { // Series === series could easily be false positive
-	    if ($template->has($possible) && titles_are_similar($template->get($possible), (string) $crossRef->series_title)) {
+	    if ($template->has($possible) && titles_are_similar(preg_replace("~# # # CITATION_BOT_PLACEHOLDER_TEMPLATE \d+ # # #~i", "�", $template->get($possible)), (string) $crossRef->series_title)) {
 		$bad_data = FALSE;
 		break;
 	    }
@@ -877,7 +877,7 @@ function expand_by_jstor(Template $template) : void {
       }
       if ($got_count === 110) { // Exactly one of each
 	foreach (THINGS_THAT_ARE_TITLES as $possible) {
-	  if ($template->has($possible) && titles_are_similar($template->get($possible), $new_title)) {
+	  if ($template->has($possible) && titles_are_similar(preg_replace("~# # # CITATION_BOT_PLACEHOLDER_TEMPLATE \d+ # # #~i", "�", $template->get($possible)), $new_title)) {
 	    $bad_data = FALSE;
 	  }
 	}
