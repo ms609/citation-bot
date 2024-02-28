@@ -503,7 +503,7 @@ function expand_by_doi(Template $template, bool $force = FALSE) : void {
 	  if (isset($crossRef->article_title)) report_info("  Possible new title: " .  echoable((string) $crossRef->article_title));
 	  foreach (THINGS_THAT_ARE_TITLES as $possible) {
 	   if ($template->has($possible)) {
-	      report_info("  Existing old title: " .  echoable($template->get($possible)));
+	      report_info("  Existing old title: " .  echoable(preg_replace("~# # # CITATION_BOT_PLACEHOLDER_TEMPLATE \d+ # # #~i", "�", $template->get($possible))));
 	   }
 	  }
 	  return;
@@ -897,7 +897,7 @@ function expand_by_jstor(Template $template) : void {
        }
        foreach (THINGS_THAT_ARE_TITLES as $possible) {
 	 if ($template->has($possible)) {
-	    report_info("  Existing old title: " .  echoable($template->get($possible)));
+	    report_info("  Existing old title: " .  echoable(preg_replace("~# # # CITATION_BOT_PLACEHOLDER_TEMPLATE \d+ # # #~i", "�", $template->get($possible))));
 	 }
        }
        return;
