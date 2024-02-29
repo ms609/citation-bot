@@ -361,6 +361,7 @@ const COMMON_MISTAKES = array ( // Common mistakes that aren't picked up by the 
   "archived ate" => "archivedate",
   "websute" => "website",
   "datr" => "date",
+  "trans-ttle" => "trans-title",
 );
 
 const COMMON_MISTAKES_TOOL = array(
