@@ -100,6 +100,7 @@ const ITALICS_LIST =
  "Streptococcus pneumoniae|" .
  "In Vivo|" .
  "A\. dolichophallus|" .
+ "Necrodes littoralis|" .
  "Stachybotrys chartarum|" .
  "Ras Lilas|" .
  "Yarrowia lipolytica|" .
