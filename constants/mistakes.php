@@ -362,6 +362,8 @@ const COMMON_MISTAKES = array ( // Common mistakes that aren't picked up by the 
   "websute" => "website",
   "datr" => "date",
   "trans-ttle" => "trans-title",
+  "date visited" => "access-date",
+  "ημερομηνία" => "date",
 );
 
 const COMMON_MISTAKES_TOOL = array(
