@@ -54,7 +54,8 @@ unset($array);
 $pages_in_category = [];
 foreach($links as $link) {
     if (isset($link['exists']) && ($link['ns'] === 0 || $link['ns'] === 118)) {  // normal and draft articles only
-	$linked_page = str_replace(' ', '_', $link['*']);
+	$linked_page = (string) $link['*'];
+	$linked_page = str_replace(' ', '_', $linked_page);
 	if(!in_array($linked_page, AVOIDED_LINKS) && stripos($linked_page, 'disambiguation') === FALSE) {
 	    $pages_in_category[] = $linked_page;
 	}
