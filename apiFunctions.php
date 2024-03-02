@@ -619,9 +619,8 @@ function query_crossref(string $doi) : ?object {
       if ((string) @$result["status"] === "resolved") {
 	if (stripos($doi, '10.1515/crll') === 0) {
 	  $volume = intval(trim((string) @$result->volume));
-	  if ($volume > 1820) {
-	    unset($result->volume);
-	    if (isset($result->issue)) $result->volume = $result->issue;
+	  if ($volume > 1820 && isset($result->issue)) {
+	    $result->volume = $result->issue;
 	    unset($result->issue);
 	  }
 	}
