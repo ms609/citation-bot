@@ -49,3 +49,9 @@ jobs:
 
     - name: PHP Lint test
       run: ./vendor/bin/phplint --exclude=vendor --no-interaction --no-configuration -vv ./
+
+    - name: PHP psalm 8.3
+      run: php ./vendor/bin/psalm --php-version='8.3'
+
+    - name: PHP psalm 8.4
+      run: php ./vendor/bin/psalm --php-version='8.4'
