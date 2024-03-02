@@ -58,3 +58,6 @@ jobs:
 
     - name: PHP psalm Taint 8.3
       run: php ./vendor/bin/psalm --taint-analysis --php-version='8.3'
+
+    - name: PHP psalm Taint 8.4
+      run: php ./vendor/bin/psalm --taint-analysis --php-version='8.4'
