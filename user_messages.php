@@ -18,7 +18,7 @@ function user_notice(string $symbol, string $class, string $text) : void {
     echo "\n " . (HTML_OUTPUT ? "<span class='$class'>" : "") . $symbol;
     if (defined('BIG_JOB_MODE') && strlen($text) > 1000) { // No one looks at this anyway
       echo "HUGE amount of text NOT printed";
-      bot_debug_log("HUGE amount of text NOT printed");
+      bot_debug_log("HUGE amount of text NOT printed.  Here is a bit: " .  substr($text, 0, 100));
     } else {
       echo $text;
     }
