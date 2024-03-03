@@ -375,6 +375,8 @@ const COMMON_MISTAKES = array ( // Common mistakes that aren't picked up by the 
   "datearchived" => "achive-date",
   "urlarchive" => "archive-url",
   "websitw" => "website",
+  "periodikum" => "periodical",
+  "
 );
 
 const COMMON_MISTAKES_TOOL = array(
