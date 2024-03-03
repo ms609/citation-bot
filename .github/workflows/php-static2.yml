@@ -47,12 +47,12 @@ jobs:
     - name: PHP phpstan
       run: php ./vendor/bin/phpstan --no-interaction analyse --memory-limit=2G constants/*.php html_headers.php Parameter.php user_messages.php constants.php big_jobs.php setup.php expandFns.php Zotero.php apiFunctions.php NameTools.php Comment.php Page.php WikipediaBot.php Template.php category.php generate_template.php linked_pages.php process_page.php authenticate.php
 
-    - name: PHP phan
+    - name: PHP phan 8.2
       run: php ./vendor/bin/phan --analyze-twice --allow-polyfill-parser --target-php-version='8.2' --minimum-target-php-version='8.2'
      
     - name: PHP phan 8.3
       run: php ./vendor/bin/phan --analyze-twice --allow-polyfill-parser --target-php-version='8.3' --minimum-target-php-version='8.3'
      
     - name: PHP phan 8.4
-      run: php ./vendor/bin/phan --analyze-twice --allow-polyfill-parser --target-php-version='8.4' --minimum-target-php-version='8.3'
+      run: php ./vendor/bin/phan --analyze-twice --allow-polyfill-parser --target-php-version='8.4' --minimum-target-php-version='8.4'
      
