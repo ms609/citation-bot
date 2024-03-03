@@ -211,17 +211,18 @@ function is_doi_works(string $doi) : ?bool {
 function interpret_doi_header(array $headers_test) : ?bool {
   if (empty($headers_test['Location']) && empty($headers_test['location'])) return FALSE; // leads nowhere
 
-  if (strpos((string) @$headers_test['2'], '40') !== FALSE) {
-    if ((string) @$headers_test['1'] === 'HTTP/1.1 302 Redirected') unset($headers_test['2']); // https://doi.org/10.1107/S2056989021000116
-    if ((string) @$headers_test['1'] === 'HTTP/1.1 301 Moved Permanently') unset($headers_test['2']); // https://doi.org/10.5152/UCD.2016.3683
-  }
-
   /** @psalm-suppress InvalidArrayOffset */
   $resp0 = (string) @$headers_test['0'];
   /** @psalm-suppress InvalidArrayOffset */
   $resp1 = (string) @$headers_test['1'];
   /** @psalm-suppress InvalidArrayOffset */
   $resp2 = (string) @$headers_test['2'];
+
+  if (strpos($resp2, '40') !== FALSE) {
+    if ($resp1 === 'HTTP/1.1 302 Redirected') $resp2 = ''; // https://doi.org/10.1107/S2056989021000116
+    if ($resp1 === 'HTTP/1.1 301 Moved Permanently') $resp2 = ''; // https://doi.org/10.5152/UCD.2016.3683
+  }
+
   if (stripos($resp0 . $resp1 . $resp2, '404 Not Found') !== FALSE || stripos($resp0 . $resp1 . $resp2, 'HTTP/1.1 404') !== FALSE) return FALSE; // Bad
   if (stripos($resp0, '302 Found') !== FALSE || stripos($resp0, 'HTTP/1.1 302') !== FALSE) return TRUE;  // Good
   if (stripos((string) @json_encode($headers_test), 'dtic.mil') !== FALSE) return TRUE; // grumpy
