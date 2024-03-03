@@ -369,6 +369,12 @@ const COMMON_MISTAKES = array ( // Common mistakes that aren't picked up by the 
   "дата-доступу" => "access-date",
   "мертвий-url" => "dead-url",
   "назва" => "author",
+  "datum přístupu" => "access-date",
+  "jazyk" => "language",
+  "titul" => "title",
+  "datearchived => "achive-date",
+  "urlarchive" => "archive-url",
+  "websitw" => "website",
 );
 
 const COMMON_MISTAKES_TOOL = array(
