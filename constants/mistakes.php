@@ -372,7 +372,7 @@ const COMMON_MISTAKES = array ( // Common mistakes that aren't picked up by the 
   "datum přístupu" => "access-date",
   "jazyk" => "language",
   "titul" => "title",
-  "datearchived => "achive-date",
+  "datearchived" => "achive-date",
   "urlarchive" => "archive-url",
   "websitw" => "website",
 );
