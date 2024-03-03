@@ -364,6 +364,11 @@ const COMMON_MISTAKES = array ( // Common mistakes that aren't picked up by the 
   "trans-ttle" => "trans-title",
   "date visited" => "access-date",
   "ημερομηνία" => "date",
+  "видавець" => "publisher",
+  "дата" => "date",
+  "дата-доступу" => "access-date",
+  "мертвий-url" => "dead-url",
+  "назва" => "author",
 );
 
 const COMMON_MISTAKES_TOOL = array(
