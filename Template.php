@@ -2079,7 +2079,7 @@ final class Template {
 	  // Double check title if we did not use DOI
 	  if ($this->has('title') && !in_array('doi', $results[2])) {
 		usleep(100000); // Wait 1/10 of a second since we just tried
-		$xml = get_entrez_xml('pubmed', $results[0]);
+		$xml = get_entrez_xml('pubmed', urlencode($results[0]));
 		if ($xml === NULL || !is_object($xml->DocSum->Item)) {
 		  report_inline("Unable to query pubmed."); // @codeCoverageIgnore
 		  return;  // @codeCoverageIgnore

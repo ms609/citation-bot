@@ -97,7 +97,17 @@ function entrez_api(array $ids, array &$templates, string $db) : void {   // Poi
   };
 
   report_action("Using $db API to retrieve publication details: ");
-  $xml = get_entrez_xml($db, implode(',', $ids));
+
+  $query = "";
+  foreach ($ids as &$value) {
+    if ($query !== "") {
+      $query = $query . ",";
+    }
+    $query = $query . urlencode($value);
+  }
+
+  $xml = get_entrez_xml($db, $query);
+  unset($query);
 
   if ($xml === NULL) {
     report_warning("Error in PubMed search: No response from Entrez server");   // @codeCoverageIgnore
@@ -359,18 +369,49 @@ function adsabs_api(array $ids, array &$templates, string $identifier) : void { 
   if (AdsAbsControl::big_gave_up_yet()) return;
   if (!PHP_ADSABSAPIKEY) return;
 
-  // API docs at https://github.com/adsabs/adsabs-dev-api/blob/master/Search_API.ipynb
-  $adsabs_url = "https://" . (TRAVIS ? 'qa' : 'api')
-	      . ".adsabs.harvard.edu/v1/search/bigquery?q=*:*"
-	      . "&fl=arxiv_class,author,bibcode,doi,doctype,identifier,"
-	      . "issue,page,pub,pubdate,title,volume,year&rows=2000";
-
   report_action("Expanding from BibCodes via AdsAbs API");
-  $curl_opts=[CURLOPT_URL => $adsabs_url,
+
+  $curl_opts = [
+     CURLOPT_HEADER => TRUE
+  ];
+
+  if (count($ids) === 1)
+  {
+    $bibcode = "";
+    foreach ($ids as &$value) {
+      $bibcode = $value;
+    }
+    $qparam = "bibcode:" . urlencode($bibcode);
+    $qtype = "query";
+    $small_query_opts=[
+	      CURLOPT_HTTPHEADER => ['Authorization: Bearer ' . PHP_ADSABSAPIKEY],
+	              ];
+    $curl_opts += $small_query_opts;
+    unset($small_query_opts);
+  } else
+  {
+    $big_query_opts=[
 	      CURLOPT_HTTPHEADER => ['Content-Type: big-query/csv', 'Authorization: Bearer ' . PHP_ADSABSAPIKEY],
-	      CURLOPT_HEADER => TRUE,
 	      CURLOPT_CUSTOMREQUEST => 'POST',
 	      CURLOPT_POSTFIELDS => "$identifier\n" . implode("\n", $ids)];
+    $curl_opts += $big_query_opts;
+    unset($big_query_opts);
+    $qparam = "*:*";
+    $qtype = "bigquery";
+  }
+
+  // API docs at https://github.com/adsabs/adsabs-dev-api/blob/master/Search_API.ipynb
+  $adsabs_url = "https://" . (TRAVIS ? 'qa' : 'api')
+	      . ".adsabs.harvard.edu/v1/search/". $qtype . "?q=" . $qparam 
+	      . "&fl=arxiv_class,author,bibcode,doi,doctype,identifier,"
+	      . "issue,page,pub,pubdate,title,volume,year&rows=2000";
+  unset($qparam);
+  unset($qtype);
+
+  $final_opts = [CURLOPT_URL => $adsabs_url];
+  $curl_opts += $final_opts;
+  unset($final_opts);
+
   $response = Bibcode_Response_Processing($curl_opts, $adsabs_url);
   if (!isset($response->docs)) return;
 
@@ -1248,40 +1289,36 @@ function Bibcode_Response_Processing(array $curl_opts, string $adsabs_url) : obj
 
 function get_entrez_xml(string $type, string $query) : ?SimpleXMLElement {
    $url =  "https://eutils.ncbi.nlm.nih.gov/entrez/eutils/";
-   $post = NLM_LOGIN;
+   $get = NLM_LOGIN;
    if ($type === "esearch_pubmed") {
       $url  .= "esearch.fcgi";
-      $post .= "&db=pubmed&term=" . $query;
+      $get .= "&db=pubmed&term=" . $query;
    } elseif ($type === "pubmed") {
       $url .= "esummary.fcgi";
-      $post .= "&db=pubmed&id=" . $query;
+      $get .= "&db=pubmed&id=" . $query;
    } elseif ($type === "pmc") {
       $url .= "esummary.fcgi";
-      $post .= "&db=pmc&id=" . $query;
+      $get .= "&db=pmc&id=" . $query;
    } else {
       report_error("Invalid type passed to get_entrez_xml: " . echoable($type));  // @codeCoverageIgnore
    }
-   $xml = xml_post($url, $post);
+   $xml = xml_get($url, $get);
    if ($xml === NULL) {
       sleep(1); // @codeCoverageIgnore
    }
    return $xml;
 }
-// Must use post in order to get DOIs with <, >, [, and ] in them and other problems
-function xml_post(string $url, string $post) : ?SimpleXMLElement {
+
+function xml_get(string $url, string $get) : ?SimpleXMLElement {
    static $ch = NULL;
    if ($ch === NULL) {
       $ch = curl_init_array(1.0,
-	       [CURLOPT_POST => TRUE,
-	       CURLOPT_HTTPHEADER => array(
-	       "Content-Type: application/x-www-form-urlencoded",
-		     "Accept: application/xml")
+	       [CURLOPT_HTTPHEADER => array("Accept: application/xml")
 	       ]);
    }
    curl_setopt_array($ch,
-	       [CURLOPT_URL => $url,
-	        CURLOPT_POSTFIELDS => $post,
-	       ]);
+	       [CURLOPT_URL => $url . "?" . urlencode($get)
+               ]);
    $output = bot_curl_exec($ch);
    $xml = @simplexml_load_string($output);
    if ($xml === FALSE) $xml = NULL;
