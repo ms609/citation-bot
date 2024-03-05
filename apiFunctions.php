@@ -225,7 +225,7 @@ function expand_arxiv_templates (array &$templates) : void {  // Pointer to save
 function arxiv_api(array $ids, array &$templates) : void {  // Pointer to save memory
   static $ch = NULL;
   if ($ch === NULL) {
-      $ch = curl_init_array(1.0, []);	
+      $ch = bot_curl_init(1.0, []);	
   }
   set_time_limit(120);
   if (count($ids) === 0) return;
@@ -594,7 +594,7 @@ function expand_by_doi(Template $template, bool $force = FALSE) : void {
 function query_crossref(string $doi) : ?object {
   static $ch = NULL;
   if ($ch === NULL) {
-    $ch = curl_init_array(1.0, []);
+    $ch = bot_curl_init(1.0, []);
   }
   if (strpos($doi, '10.2307') === 0) return NULL; // jstor API is better
   set_time_limit(120);
@@ -655,7 +655,7 @@ function expand_doi_with_dx(Template $template, string $doi) : void {
      // curl -LH "Accept: application/vnd.citationstyles.csl+json" https://dx.doi.org/10.5524/100077
      static $ch = NULL;
      if ($ch === NULL) {
-        $ch = curl_init_array(1.5,  // can take a long time when nothing to be found
+        $ch = bot_curl_init(1.5,  // can take a long time when nothing to be found
 	     [CURLOPT_HTTPHEADER => ["Accept: application/vnd.citationstyles.csl+json"]]);
      }
      if (strpos($doi, '10.2307') === 0) return; // jstor API is better
@@ -801,7 +801,7 @@ function expand_doi_with_dx(Template $template, string $doi) : void {
 function expand_by_jstor(Template $template) : void {
   static $ch = NULL;
   if ($ch === NULL) {
-    $ch = curl_init_array(1.0, []);
+    $ch = bot_curl_init(1.0, []);
   }
   set_time_limit(120);
   if ($template->incomplete() === FALSE) return;
@@ -913,7 +913,7 @@ function expand_by_jstor(Template $template) : void {
 function getS2CID(string $url) : string {
   static $ch = NULL;
   if ($ch === NULL) {
-    $ch = curl_init_array(0.5, [CURLOPT_HTTPHEADER => HEADER_S2]);
+    $ch = bot_curl_init(0.5, [CURLOPT_HTTPHEADER => HEADER_S2]);
   }
   $url = 'https://api.semanticscholar.org/v1/paper/URL:' .  urlencode(urldecode($url));
   curl_setopt($ch, CURLOPT_URL, $url);
@@ -942,7 +942,7 @@ function getS2CID(string $url) : string {
 function ConvertS2CID_DOI(string $s2cid) : string {
   static $ch = NULL;
   if ($ch === NULL) {
-    $ch = curl_init_array(0.5, [CURLOPT_HTTPHEADER => HEADER_S2]);
+    $ch = bot_curl_init(0.5, [CURLOPT_HTTPHEADER => HEADER_S2]);
   }
   /** @psalm-taint-escape ssrf */
   $url = 'https://api.semanticscholar.org/v1/paper/CorpusID:' . urlencode($s2cid);
@@ -978,7 +978,7 @@ function ConvertS2CID_DOI(string $s2cid) : string {
 function get_semanticscholar_license(string $s2cid) : ?bool {
     static $ch = NULL;
     if ($ch === NULL) {
-      $ch = curl_init_array(0.5, [CURLOPT_HTTPHEADER => HEADER_S2]);
+      $ch = bot_curl_init(0.5, [CURLOPT_HTTPHEADER => HEADER_S2]);
     }
     $url = 'https://api.semanticscholar.org/v1/paper/CorpusID:' . urlencode($s2cid);
     curl_setopt($ch, CURLOPT_URL, $url);
@@ -998,7 +998,7 @@ function expand_templates_from_archives(array &$templates) : void { // This is d
   static $ch = NULL;
   set_time_limit(120);
   if ($ch === NULL) {
-    $ch = curl_init_array(0.5, [CURLOPT_HEADER => TRUE, CURLOPT_NOPROGRESS => FALSE]); // We have NO idea how big the file might be, so we limit it
+    $ch = bot_curl_init(0.5, [CURLOPT_HEADER => TRUE, CURLOPT_NOPROGRESS => FALSE]); // We have NO idea how big the file might be, so we limit it
   }
   foreach ($templates as $template) {
     set_time_limit(120);
@@ -1114,7 +1114,7 @@ function expand_templates_from_archives(array &$templates) : void { // This is d
 /** @param array<int|string|bool|array<string>> $curl_opts **/
 function Bibcode_Response_Processing(array $curl_opts, string $adsabs_url) : object {
   try {
-    $ch = curl_init_array(1.0, $curl_opts); // Type varies greatly
+    $ch = bot_curl_init(1.0, $curl_opts); // Type varies greatly
     $return = bot_curl_exec($ch);
     if ($return === "") {
       // @codeCoverageIgnoreStart
@@ -1271,7 +1271,7 @@ function get_entrez_xml(string $type, string $query) : ?SimpleXMLElement {
 function xml_post(string $url, string $post) : ?SimpleXMLElement {
    static $ch = NULL;
    if ($ch === NULL) {
-      $ch = curl_init_array(1.0,
+      $ch = bot_curl_init(1.0,
 	       [CURLOPT_POST => TRUE,
 	       CURLOPT_HTTPHEADER => array(
 	       "Content-Type: application/x-www-form-urlencoded",
@@ -1397,7 +1397,7 @@ function query_adsabs(string $options) : object {
 function CrossRefTitle(string $doi) : string {
      static $ch = NULL;
      if ($ch === NULL) {
-        $ch = curl_init_array(1.0,
+        $ch = bot_curl_init(1.0,
 	    [CURLOPT_USERAGENT => BOT_CROSSREF_USER_AGENT]);
      }
      /** @psalm-taint-escape ssrf */
