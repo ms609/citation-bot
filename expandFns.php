@@ -108,7 +108,7 @@ function doi_works(string $doi) : ?bool {
 function is_doi_active(string $doi) : ?bool {
   static $ch = NULL;
   if ($ch === NULL) {
-     $ch = curl_init_array(1.0,[
+     $ch = bot_curl_init(1.0,[
        CURLOPT_HEADER => TRUE,
        CURLOPT_NOBODY => TRUE,
        CURLOPT_USERAGENT => BOT_CROSSREF_USER_AGENT]);
@@ -1221,7 +1221,7 @@ function equivalent_parameters(string $par) : array {
 function check_doi_for_jstor(string $doi, Template $template) : void {
   static $ch = NULL;
   if ($ch === NULL) {
-     $ch = curl_init_array(1.0, []);
+     $ch = bot_curl_init(1.0, []);
   }
   if ($template->has('jstor')) return;
   /** @psalm-taint-escape ssrf */
