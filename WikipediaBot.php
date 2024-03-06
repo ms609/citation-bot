@@ -28,12 +28,12 @@ final class WikipediaBot {
     if ($init_done) return;
     $init_done = TRUE;
     // This is a little paranoid - see https://curl.se/libcurl/c/CURLOPT_FAILONERROR.html
-    self::$ch_write  = curl_init_array(1.0,
+    self::$ch_write  = bot_curl_init(1.0,
        [CURLOPT_FAILONERROR => TRUE,
         CURLOPT_POST => TRUE,
         CURLOPT_REFERER => "https://citations.toolforge.org/",
         CURLOPT_URL => API_ROOT]);
-    self::$ch_logout = curl_init_array(1.0,
+    self::$ch_logout = bot_curl_init(1.0,
        [CURLOPT_REFERER => "https://citations.toolforge.org/",
         CURLOPT_FAILONERROR => TRUE ]);
   }

@@ -53,7 +53,7 @@ function curl_limit_page_size(CurlHandle $_ch, int $_DE = 0, int $down = 0, int 
 	return 0;
 }
 /** @param array<mixed> $ops **/
-function curl_init_array(float $time, array $ops) : CurlHandle {
+function bot_curl_init(float $time, array $ops) : CurlHandle {
 	$ch = curl_init();
 	// 1 - Global Defaults
 	curl_setopt_array($ch, [

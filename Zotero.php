@@ -32,20 +32,20 @@ public static function create_ch_zotero() : void {
   } else {
 	  $time = 1.0;
   }
-  self::$zotero_ch = curl_init_array($time,
+  self::$zotero_ch = bot_curl_init($time,
 	 [CURLOPT_URL => CITOID_ZOTERO,
 	  CURLOPT_HTTPHEADER => ['accept: application/json; charset=utf-8']]);
 
-  self::$ch_ieee = curl_init_array($time,
+  self::$ch_ieee = bot_curl_init($time,
 	 [CURLOPT_USERAGENT => 'curl']); // IEEE now requires JavaScript, unless you specify curl
 
-  self::$ch_jstor = curl_init_array($time, []);
+  self::$ch_jstor = bot_curl_init($time, []);
 
-  self::$ch_dx = curl_init_array($time, [CURLOPT_NOPROGRESS => FALSE]); // Limit size of downloads
+  self::$ch_dx = bot_curl_init($time, [CURLOPT_NOPROGRESS => FALSE]); // Limit size of downloads
 
-  self::$ch_pmc = curl_init_array($time, []);
+  self::$ch_pmc = bot_curl_init($time, []);
 
-  self::$ch_doi = curl_init_array($time, []);
+  self::$ch_doi = bot_curl_init($time, []);
 }
 
 public static function block_zotero() : void {

@@ -1980,7 +1980,7 @@ final class Template {
   public function get_doi_from_crossref() : void {
 	static $ch = NULL;
 	if ($ch === NULL) {
-	 $ch = curl_init_array(1.0, [CURLOPT_USERAGENT => BOT_CROSSREF_USER_AGENT]);
+	 $ch = bot_curl_init(1.0, [CURLOPT_USERAGENT => BOT_CROSSREF_USER_AGENT]);
 	}
 	set_time_limit(120);
 	if ($this->has('doi')) return;
@@ -2620,7 +2620,7 @@ final class Template {
   protected function get_semanticscholar_url(string $doi) : void {
    static $ch = NULL;
    if ($ch === NULL) {
-     $ch = curl_init_array(0.5, [CURLOPT_HTTPHEADER => HEADER_S2]);
+     $ch = bot_curl_init(0.5, [CURLOPT_HTTPHEADER => HEADER_S2]);
    }
    set_time_limit(120);
    if(      $this->has('pmc') ||
@@ -2645,7 +2645,7 @@ final class Template {
   public function get_unpaywall_url(string $doi) : string {
 	static $ch_oa = NULL;
 	if ($ch_oa === NULL) {
-		$ch_oa = curl_init_array(0.5, [CURLOPT_USERAGENT => BOT_CROSSREF_USER_AGENT]);
+		$ch_oa = bot_curl_init(0.5, [CURLOPT_USERAGENT => BOT_CROSSREF_USER_AGENT]);
 	}
 	set_time_limit(120);
 	/** @psalm-taint-escape ssrf */
@@ -2779,7 +2779,7 @@ final class Template {
 		$this->add_if_new($url_type, $oa_url); // Will check for PMCs etc hidden in URL
 		if ($this->has($url_type) && !$has_url_already) {  // The above line might have eaten the URL and upgraded it
 		  $the_url = $this->get($url_type);
-		  $ch = curl_init_array(1.5,[
+		  $ch = bot_curl_init(1.5,[
 					CURLOPT_HEADER => TRUE,
 					CURLOPT_NOBODY => TRUE,
 					CURLOPT_SSL_VERIFYHOST => 0,
@@ -2875,7 +2875,7 @@ final class Template {
   protected function expand_by_google_books_inner(string $url_type, bool $use_it) : bool {
 	static $ch = NULL;
 	if ($ch === NULL) {
-		$ch = curl_init_array(1.0, []);
+		$ch = bot_curl_init(1.0, []);
 	}
 	set_time_limit(120);
 	if ($url_type) {
@@ -2956,7 +2956,7 @@ final class Template {
   protected function google_book_details(string $gid) : void {
 	static $ch = NULL;
 	if ($ch === NULL) {
-	   $ch = curl_init_array(1.0, []);
+	   $ch = bot_curl_init(1.0, []);
 	}
 	set_time_limit(120);
 	$google_book_url = "https://books.google.com/books/feeds/volumes/" . $gid;
@@ -4233,7 +4233,7 @@ final class Template {
 			if ($this->blank('url')) {
 			  /** @psalm-taint-escape ssrf */
 			  $test_url = 'https://plants.jstor.org/stable/' . $doi;
-			  $ch = curl_init_array(1.5,
+			  $ch = bot_curl_init(1.5,
 						[CURLOPT_URL => $test_url]);
 			  bot_curl_exec($ch);
 			  $httpCode = (int) @curl_getinfo($ch, CURLINFO_HTTP_CODE);
@@ -5705,7 +5705,7 @@ final class Template {
 				 $this->set($param, $matches[1]);
 			}
 			if (preg_match("~^https?://proquest\.umi\.com/.*$~", $this->get($param), $matches)) {
-				 $ch = curl_init_array(1.5,
+				 $ch = bot_curl_init(1.5,
 						 [CURLOPT_COOKIEFILE => 'cookie.txt', // Needed for proquest
 						  CURLOPT_URL => $matches[0]]);
 				 if (bot_curl_exec($ch) !== "") {
