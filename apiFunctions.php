@@ -105,6 +105,7 @@ function entrez_api(array $ids, array &$templates, string $db) : void {   // Poi
     }
     $query = $query . urlencode($value);
   }
+  unset($value);
 
   $xml = get_entrez_xml($db, $query);
   unset($query);
@@ -377,10 +378,10 @@ function adsabs_api(array $ids, array &$templates, string $identifier) : void { 
 
   if (count($ids) === 1)
   {
-    $bibcode = "";
     foreach ($ids as &$value) {
       $bibcode = $value;
     }
+    unset($value);
     $qparam = "bibcode:" . urlencode($bibcode);
     $qtype = "query";
     $small_query_opts=[
