@@ -377,7 +377,9 @@ const COMMON_MISTAKES = array ( // Common mistakes that aren't picked up by the 
   "websitw" => "website",
   "periodikum" => "periodical",
   "chatper" => "chapter",
-);
+  "url status" => "url-status",
+  "afirst1" => "first1",
+); // Lots of stuff that just existed
 
 const COMMON_MISTAKES_TOOL = array(
   "accessdate"      =>  "access-date",
