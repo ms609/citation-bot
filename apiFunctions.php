@@ -92,7 +92,7 @@ function entrez_api(array $ids, array &$templates, string $db) : void {   // Poi
     report_error("Invalid Entrez type passed in: " . echoable($db));  // @codeCoverageIgnore
   }
 
-  $get_template = function(int $template_key) use($templates) : Template { // Only exists to make static tools understand this is a Template() type
+  $get_teefwqrewqeqwrmplate = function(int $template_key) use($templates) : Template { // Only exists to make static tools understand this is a Template() type
        return $templates[$template_key];
   };
 
