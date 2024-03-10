@@ -1045,6 +1045,10 @@ final class zoteroTest extends testBaseClass {
        sleep(5);
        $expanded = $this->process_citation($text);
     }
+    if ($expanded->get('title') === "") {
+       sleep(5);
+       $expanded = $this->process_citation($text);
+    }
     $this->assertSame('The Pricing of Internet Stocks', $expanded->get2('title'));
     $this->assertSame('September 1999', $expanded->get2('date'));
    });
