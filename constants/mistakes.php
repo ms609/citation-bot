@@ -379,6 +379,9 @@ const COMMON_MISTAKES = array ( // Common mistakes that aren't picked up by the 
   "chatper" => "chapter",
   "url status" => "url-status",
   "afirst1" => "first1",
+  "tác giả 1" => "author1",
+  "năm" => "year",
+  "tác giả" => "author",
 ); // Lots of stuff that just existed
 
 const COMMON_MISTAKES_TOOL = array(
