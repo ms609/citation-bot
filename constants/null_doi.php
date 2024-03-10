@@ -1,7 +1,7 @@
 <?php
 declare(strict_types=1);
 
-const NULL_DOI_ANNOYING = // TODO - manually check these from time to time
+const NULL_DOI_ANNOYING = // TODO - manually check these from time to time - Last Check 10 MAR 2024
 array(
 '10.1001/jama.275.17.1339' => TRUE,
 '10.1511/2006.61.412' => TRUE,
@@ -15,7 +15,6 @@ array(
 '10.26687/archnet-ijar.v9i1.558' => TRUE,
 '10.3134/ehtj.09.001' => TRUE,
 '10.31754/2409-6105-2019-4-9-18' => TRUE,
-'10.3233/THC-150910' => TRUE,
 '10.4056/sigs.1072907' => TRUE,
 '10.4056/sigs.1113067' => TRUE,
 '10.4056/sigs.1283367' => TRUE,
@@ -327,7 +326,6 @@ array(
 '10.31646/wa.252' => TRUE,
 '10.31754/2409-6105-2019-4-9-18' => TRUE, // Nothing page
 '10.3232/REB.2017.V4.N8.3069' => TRUE,
-'10.3233/THC-150910' => TRUE,
 '10.32350/jitc.92.07' => TRUE,
 '10.32945/atr4215.2020' => TRUE,
 '10.3320/1.2759009' => TRUE,
@@ -1651,6 +1649,7 @@ const NULL_DOI_BUT_GOOD = array(  // TODO - these need to be manually double che
 '10.3205/iprs000167' => TRUE,
 '10.3233/bd-2008-29110' => TRUE,
 '10.3233/PRM-140291' => TRUE,
+'10.3233/THC-150910' => TRUE,
 '10.3324/haematol.11192' => TRUE,
 '10.3324/haematol.12074' => TRUE,
 '10.3324/haematol.2010.024984' => TRUE,
