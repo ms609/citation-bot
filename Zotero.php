@@ -34,7 +34,7 @@ public static function create_ch_zotero() : void {
   }
   self::$zotero_ch = bot_curl_init($time,
 	 [CURLOPT_URL => CITOID_ZOTERO,
-	  CURLOPT_HTTPHEADER => ['accept: application/json; charset=utf-8']]);
+	  CURLOPT_HTTPHEADER => ['accept: application/json; charset=utf-8', 'Cache-Control: no-cache, must-revalidate']]);
 
   self::$ch_ieee = bot_curl_init($time,
 	 [CURLOPT_USERAGENT => 'curl']); // IEEE now requires JavaScript, unless you specify curl
