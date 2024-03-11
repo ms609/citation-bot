@@ -750,7 +750,6 @@ const NULL_DOI_BUT_GOOD = array(  // TODO - these need to be manually double che
 '10.1093/ref:odnb/17697' => TRUE,
 '10.1093/ref:odnb/17991' => TRUE,
 '10.1093/ref:odnb/19704' => TRUE,
-'10.1093/ref:odnb/19704' => TRUE,
 '10.1093/ref:odnb/19812' => TRUE,
 '10.1093/ref:odnb/19942' => TRUE,
 '10.1093/ref:odnb/19968' => TRUE,
