@@ -382,6 +382,10 @@ const COMMON_MISTAKES = array ( // Common mistakes that aren't picked up by the 
   "tác giả 1" => "author1",
   "năm" => "year",
   "tác giả" => "author",
+  "u rl-status" => "url-status",
+  "dat e" => "date",
+  "citação" => "quote",
+  "acessodat" => "access-date",
 ); // Lots of stuff that just existed
 
 const COMMON_MISTAKES_TOOL = array(
