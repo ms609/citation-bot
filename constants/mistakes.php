@@ -386,6 +386,8 @@ const COMMON_MISTAKES = array ( // Common mistakes that aren't picked up by the 
   "dat e" => "date",
   "citação" => "quote",
   "acessodat" => "access-date",
+  "issues" => "issue",
+  "issu" => "issue",
 ); // Lots of stuff that just existed
 
 const COMMON_MISTAKES_TOOL = array(
