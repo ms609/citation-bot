@@ -2634,7 +2634,7 @@ final class Template {
 	if ($response) {
 	  $oa = @json_decode($response);
           unset($response);
-	  if ($oa !== FALSE && isset($oa->url) && isset($oa->is_publisher_licensed) && $oa->is_publisher_licensed) {
+	  if ($oa !== FALSE && isset($oa->url) && isset($oa->is_publisher_licensed) && $oa->is_publisher_licensed && isset($oa->openAccessPdf) && $oa->openAccessPdf) {
 		$url = $oa->url;
 		unset($oa);
 		$this->get_identifiers_from_url($url);
