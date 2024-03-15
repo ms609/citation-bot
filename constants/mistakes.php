@@ -389,7 +389,13 @@ const COMMON_MISTAKES = array ( // Common mistakes that aren't picked up by the 
   "issues" => "issue",
   "issu" => "issue",
   "نویسنده" => "author",
-  "original-date" => "orig-date",		       
+  "original-date" => "orig-date",
+  "ссылка" => "url",
+  "jstor-accesss" => "jstor-access",
+  "irl" => "url",
+  "urn" => "url",
+  "websire" => "website",
+  "origdate" => "orig-date",
 ); // Lots of stuff that just existed
 
 const COMMON_MISTAKES_TOOL = array(
