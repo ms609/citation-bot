@@ -259,7 +259,8 @@ final class Template {
 	  if (in_array($this->get('title'), ALWAYS_BAD_TITLES)) {
 		  $this->set('title', '');
 	  }
-	  if (($this->get('title') === "Wayback Machine" || $this->get('title') === "Internet Archive Wayback Machine") && !$this->blank(['archive-url', 'archiveurl'])) {
+	  if (($this->get('title') === "Wayback Machine" || $this->get('title') === "Internet Archive Wayback Machine") &&
+	      !$this->blank(['archive-url', 'archiveurl']) && $this->get('url') !== 'https://archive.org/web/') {
 		  $this->set('title', '');
 	  }
 	  if ($this->get('last1') === 'Published' || $this->get('last1') === 'published') {
