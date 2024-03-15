@@ -1286,20 +1286,20 @@ function Bibcode_Response_Processing(array $curl_opts, string $adsabs_url) : obj
 
 function get_entrez_xml(string $type, string $query) : ?SimpleXMLElement {
    $url =  "https://eutils.ncbi.nlm.nih.gov/entrez/eutils/";
-   $get = NLM_LOGIN;
+   $request = NLM_LOGIN;
    if ($type === "esearch_pubmed") {
       $url  .= "esearch.fcgi";
-      $get .= "&db=pubmed&term=" . $query;
+      $request .= "&db=pubmed&term=" . $query;
    } elseif ($type === "pubmed") {
       $url .= "esummary.fcgi";
-      $get .= "&db=pubmed&id=" . $query;
+      $request .= "&db=pubmed&id=" . $query;
    } elseif ($type === "pmc") {
       $url .= "esummary.fcgi";
-      $get .= "&db=pmc&id=" . $query;
+      $request .= "&db=pmc&id=" . $query;
    } else {
       report_error("Invalid type passed to get_entrez_xml: " . echoable($type));  // @codeCoverageIgnore
    }
-   $xml = xml_get($url, $get);
+   $xml = xml_get($url, $request);
    if ($xml === NULL) {
       sleep(1); // @codeCoverageIgnore
    }
