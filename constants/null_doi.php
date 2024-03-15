@@ -4,6 +4,7 @@ declare(strict_types=1);
 const NULL_DOI_ANNOYING = // TODO - manually check these from time to time - Last Check 10 MAR 2024
 array(
 '10.1001/jama.275.17.1339' => TRUE,
+'10.1080/10798587.2007.10642974' => TRUE,
 '10.1511/2006.61.412' => TRUE,
 '10.1515/vzoo-2017-0029' => TRUE,
 '10.2136/sh2012-53-6-lf' => TRUE,
@@ -79,7 +80,7 @@ array(
 '10.1068/p2952' => TRUE,
 '10.1080/02786820300981' => TRUE,
 '10.1080/10503309912331332801' => TRUE,
-'10.1080/10798587.2007.10642974' => TRUE,
+'10.1080/10798587.2007.10642974' => TRUE, // Spam
 '10.1093/cq/54.2.630' => TRUE,
 '10.1093/ehr/114.454.235' => TRUE,
 '10.1093/eic/48.3.224' => TRUE,
