@@ -2648,7 +2648,7 @@ final class Template {
 	if ($ch_oa === NULL) {
 		$ch_oa = bot_curl_init(0.5, [CURLOPT_USERAGENT => BOT_CROSSREF_USER_AGENT]);
 	}
-        if (in_array($doi, ['10.4135/9781529742343', '10.1017/9781108859745']) return 'wrong'; // TODO - maybe all ISBN
+        if (in_array($doi, ['10.4135/9781529742343', '10.1017/9781108859745'])) return 'wrong'; // TODO - maybe all ISBN
 	set_time_limit(120);
 	/** @psalm-taint-escape ssrf */
 	$url = "https://api.unpaywall.org/v2/$doi?email=" . CROSSREFUSERNAME;
