@@ -1348,7 +1348,11 @@ final class TemplateTest extends testBaseClass {
   }
 
   public function testJournalCapitalization1() : void {
-    $expanded = $this->process_citation("{{Cite journal|pmid=9858585}}");
+    $expanded = $this->process_citation("{{Cite journal|pmid=9858585 |doi=<!-- --> |pmc=<!-- --> }}");
+    if ($expanded->get2('journal') === "") {
+      sleep(5);
+      $expanded = $this->process_citation("{{Cite journal|pmid=9858585}}");
+    }
     if ($expanded->get2('journal') === "") {
       sleep(5);
       $expanded = $this->process_citation("{{Cite journal|pmid=9858585}}");

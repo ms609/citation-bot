@@ -515,11 +515,12 @@ const PARAMETER_LIST = array(
      'isbn13', 'mailinglist', 'mapurl', 'nopp', 'publicationdate', 'publicationplace',
      'serieslink', 'sid', 'note', 'do', 'lien', 'lay-date', 'lay-format', 'lay-source',
      'lay-url', 'transcripturl', 'pages totales', 'ppprefix', 'pprefix', 'web', 'middle',
-     'editor-name', 'libellé', 'la', 'page-url', '-url', 'list');
+     'editor-name', 'libellé', 'la', 'page-url', '-url', 'list', 'user', 'postid',
+     'citation', 'name');
 
 // sid is actually page range in some no english wiki's but do not fix since so close to id=
 // lien is French template parameter, but also English work
 // web could be website or url
-// list should not be changed to last
+// list should not be changed to last, name should not become time, etc.
 
 

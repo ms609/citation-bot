@@ -376,7 +376,21 @@ const COMMON_MISTAKES = array ( // Common mistakes that aren't picked up by the 
   "urlarchive" => "archive-url",
   "websitw" => "website",
   "periodikum" => "periodical",
-);
+  "chatper" => "chapter",
+  "url status" => "url-status",
+  "afirst1" => "first1",
+  "tác giả 1" => "author1",
+  "năm" => "year",
+  "tác giả" => "author",
+  "u rl-status" => "url-status",
+  "dat e" => "date",
+  "citação" => "quote",
+  "acessodat" => "access-date",
+  "issues" => "issue",
+  "issu" => "issue",
+  "نویسنده" => "author",
+  "original-date" => "orig-date",		       
+); // Lots of stuff that just existed
 
 const COMMON_MISTAKES_TOOL = array(
   "accessdate"      =>  "access-date",
