@@ -494,7 +494,7 @@ function restore_italics (string $text) : string {
   $text = str_replace(ITALICS_HARDCODE_IN, ITALICS_HARDCODE_OUT, $text); // Ones to always do, since they keep popping up in our logs
   $text = str_replace("xAzathioprine therapy for patients with systemic lupus erythematosus", "Azathioprine therapy for patients with systemic lupus erythematosus", $text); // Annoying stupid bad data
   $text = trim(str_replace(['        ', '      ', '    ', '   ', '  '], [' ', ' ', ' ', ' ', ' '], $text));
-  while (preg_match('~([a-z])(' . ITALICS_LIST . ')([A-Z\-\?\:\.\)\,]|species|genus| in| the|$)~', $text, $matches)) {
+  while (preg_match('~([a-z])(' . ITALICS_LIST . ')([A-Z\-\?\:\.\)\(\,]|species|genus| in| the|$)~', $text, $matches)) {
      if (in_array($matches[3], [':', '.', '-', ','])) {
        $pad = "";
      } else {
