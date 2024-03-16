@@ -396,6 +396,9 @@ const COMMON_MISTAKES = array ( // Common mistakes that aren't picked up by the 
   "urn" => "url",
   "websire" => "website",
   "origdate" => "orig-date",
+  "datăaccesare" => "access-date",
+  "limbă" => "language",
+  "locaiton" => "location",
 ); // Lots of stuff that just existed
 
 const COMMON_MISTAKES_TOOL = array(
