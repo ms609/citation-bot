@@ -399,6 +399,12 @@ const COMMON_MISTAKES = array ( // Common mistakes that aren't picked up by the 
   "datăaccesare" => "access-date",
   "limbă" => "language",
   "locaiton" => "location",
+  "ietf-kielikoodi" => "language",
+  "acceessdate" => "accessdate",
+  "in url" => "url",
+  "auther" => "author",
+  "acess-date" => "access-date",
+  "datee" => "date",
 ); // Lots of stuff that just existed
 
 const COMMON_MISTAKES_TOOL = array(
