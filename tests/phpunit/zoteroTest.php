@@ -1033,27 +1033,6 @@ final class zoteroTest extends testBaseClass {
    });
   }
 
-  public function testZoteroExpansion_ssrn() : void {
-   $this->requires_zotero(function() : void {
-    $text = '{{Cite journal| ssrn=195630 }}';
-    $expanded = $this->process_citation($text);
-    if ($expanded->get('title') === "") { // Annoying
-       sleep(5);
-       $expanded = $this->process_citation($text);
-    }
-    if ($expanded->get('title') === "") {
-       sleep(5);
-       $expanded = $this->process_citation($text);
-    }
-    if ($expanded->get('title') === "") {
-       sleep(5);
-       $expanded = $this->process_citation($text);
-    }
-    $this->assertSame('The Pricing of Internet Stocks', $expanded->get2('title'));
-    $this->assertSame('September 1999', $expanded->get2('date'));
-   });
-  }
-
   public function testZoteroExpansionNYT() : void {
    $this->requires_zotero(function() : void {
     $text = '{{Cite web|url=https://www.nytimes.com/2018/06/11/technology/net-neutrality-repeal.html}}';
