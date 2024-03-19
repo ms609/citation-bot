@@ -356,7 +356,6 @@ array(
 '10.31646/wa.252' => TRUE,
 '10.31754/2409-6105-2019-4-9-18' => TRUE, // Nothing page
 '10.3232/REB.2017.V4.N8.3069' => TRUE,
-'10.32350/jitc.92.07' => TRUE,
 '10.32945/atr4215.2020' => TRUE,
 '10.3320/1.2759009' => TRUE,
 '10.3332/eCMS.2008.LTR76' => TRUE,
@@ -1846,6 +1845,7 @@ const NULL_DOI_BUT_GOOD = array(  // TODO - these need to be manually double che
 '10.3233/JRS-1993-4204' => TRUE,
 '10.3233/PRM-140291' => TRUE,
 '10.3233/THC-150910' => TRUE,
+'10.32350/jitc.92.07' => TRUE,
 '10.3324/haematol.11192' => TRUE,
 '10.3324/haematol.12074' => TRUE,
 '10.3324/haematol.2010.024984' => TRUE,
