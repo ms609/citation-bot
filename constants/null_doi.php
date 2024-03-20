@@ -148,10 +148,6 @@ array(
 '10.14240/jmhs.v2i3.32' => TRUE,
 '10.14240/jmhs.v5i1.81' => TRUE,
 '10.14334/wartazoa.v27i4.1692' => TRUE,
-'10.14429/dsj.33.6188' => TRUE,
-'10.14429/dsj.53.2279' => TRUE,
-'10.14429/dsj.53.2282' => TRUE,
-'10.14429/dsj.60.344' => TRUE,
 '10.14496/dia.7104343513.14' => TRUE,
 '10.1489/1544-581X(2004)072<0169:LOLSTP>2.0.CO;2' => TRUE,
 '10.15026/57434' => TRUE,
@@ -525,6 +521,10 @@ const NULL_DOI_BUT_GOOD = array(  // TODO - these need to be manually double che
                                   // Note that a failed url on one computer does not mean it is gone, it might just be you
                                   // You can use hdl.handle.org to show you the final url - russia and other countries firewall
                                   // Also, you can use various archive services to see (hdl.handle.org might not work while doi.org does work even!!!)
+'10.14429/dsj.33.6188' => TRUE,
+'10.14429/dsj.53.2279' => TRUE,
+'10.14429/dsj.53.2282' => TRUE,
+'10.14429/dsj.60.344' => TRUE,
 '10.1002/047084289X.rt358.pub2' => TRUE,
 '10.1002/0471221902' => TRUE,
 '10.1002/14651858.CD001431.pub5' => TRUE,
