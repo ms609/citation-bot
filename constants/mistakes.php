@@ -405,6 +405,7 @@ const COMMON_MISTAKES = array ( // Common mistakes that aren't picked up by the 
   "auther" => "author",
   "acess-date" => "access-date",
   "datee" => "date",
+  "chatper-url" => "chapter-url",
 ); // Lots of stuff that just existed
 
 const COMMON_MISTAKES_TOOL = array(
