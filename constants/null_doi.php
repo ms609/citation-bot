@@ -94,7 +94,6 @@ array(
 '10.1106/X21V-YQKU-PMKP-XGTP' => TRUE,
 '10.11113/umran2018.5n2.187' => TRUE,
 '10.11120/msor.2008.08030011' => TRUE,
-'10.11137/2005_1_158-173' => TRUE,
 '10.11157/rsrr1-1-10' => TRUE,
 '10.11157/rsrr1-2-412' => TRUE,
 '10.11160/bah.79' => TRUE,
@@ -234,7 +233,6 @@ array(
 '10.18809/jbms.2016.0108' => TRUE,
 '10.18845/tm.v28i3.2407' => TRUE,
 '10.19137/qs.v19i1.963' => TRUE,
-'10.20396/liames.v0i12.1486' => TRUE,
 '10.20960/nh.27' => TRUE,
 '10.20960/nh.559' => TRUE,
 '10.2104/bc090001' => TRUE,
@@ -486,7 +484,6 @@ array(
 '10.4435/BSPI.2018.11' => TRUE,
 '10.46426/jp2kp.v20i1.42' => TRUE,
 '10.46426/jp2kp.v20i2.49' => TRUE,
-'10.47749/T/UNICAMP.2006.368861' => TRUE,
 '10.5047/meep.2019.00701.0001' => TRUE,
 '10.51437/jgns.v1i1.29' => TRUE,
 '10.51437/jgns.v1i1' => TRUE,
@@ -526,6 +523,8 @@ const NULL_DOI_BUT_GOOD = array(  // TODO - these need to be manually double che
                                   // Note that a failed url on one computer does not mean it is gone, it might just be you
                                   // You can use hdl.handle.org to show you the final url - russia and other countries firewall
                                   // Also, you can use various archive services to see (hdl.handle.org might not work while doi.org does work even!!!)
+'10.11137/2005_1_158-173' => TRUE,
+'10.47749/T/UNICAMP.2006.368861' => TRUE,
 '10.1002/047084289X.rt358.pub2' => TRUE,
 '10.1002/0471221902' => TRUE,
 '10.1002/14651858.CD001431.pub5' => TRUE,
