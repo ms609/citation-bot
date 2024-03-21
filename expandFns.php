@@ -1261,6 +1261,7 @@ function can_safely_modify_dashes(string $value) : bool {
 }
 
 function str_i_same(string $str1, string $str2) : bool {
+   if ($str1 === 'Eulerian Numbers') return FALSE; // very special case
    if (0 === strcasecmp($str1, $str2)) return TRUE; // Quick non-multi-byte compare short cut
    return (0 === strcmp(mb_strtoupper($str1), mb_strtoupper($str2)));
 }
