@@ -3,6 +3,9 @@ declare(strict_types=1);
 
 const NULL_DOI_ANNOYING = // TODO - manually check these from time to time - Last Check 10 MAR 2024
 array(
+'10.17159/2078-5151/2018/v56n3a2557' => TRUE,
+'10.17159/2309-8392/2015/V60N2A1' => TRUE,
+'10.3949/ccjm.75.7.474' => TRUE, 
 '10.1001/jama.275.17.1339' => TRUE,
 '10.1080/10798587.2007.10642974' => TRUE,
 '10.12970/2311-1755.2015.03.02.2' => TRUE,
@@ -65,7 +68,6 @@ array(
 '10.1007/BF00202951' => TRUE,
 '10.1007/BF02110655' => TRUE,
 '10.1007/s10783-007-9033-2' => TRUE,
-'10.1016/b978-1-4377-0755-7.00351-1' => TRUE,
 '10.1017/CBO9780511526282' => TRUE,
 '10.1017/cbo9780511610486.005' => TRUE,
 '10.1017/cbo9781139696562.001' => TRUE,
@@ -238,8 +240,8 @@ array(
 '10.16893/IAFBTAC.22.8' => TRUE,
 '10.17014/ijog.v1i1.174' => TRUE,
 '10.17122/ogbus-2017-6-6-19' => TRUE,
-'10.17159/2078-5151/2018/v56n3a2557' => TRUE,
-'10.17159/2309-8392/2015/V60N2A1' => TRUE,
+'10.17159/2078-5151/2018/v56n3a2557' => TRUE, // Not found
+'10.17159/2309-8392/2015/V60N2A1' => TRUE, // Not found
 '10.17159/2413-3051/2013/v24i3a3138' => TRUE,
 '10.17312/harringtonparkpress/2014.09.msws.007' => TRUE,
 '10.17312/harringtonparkpress/2014.09.msws.010' => TRUE,
@@ -413,7 +415,7 @@ array(
 '10.3828/aj.2016.3' => TRUE,
 '10.3846/cpc.2017.286' => TRUE,
 '10.3920/978-90-8686-728-8_4' => TRUE,
-'10.3949/ccjm.75.7.474' => TRUE,
+'10.3949/ccjm.75.7.474' => TRUE, // Doi not found on website
 '10.3987/1995-01-0001' => TRUE,
 '10.3987/2007-72-0001' => TRUE,
 '10.3987/COM-00-9088' => TRUE,
@@ -547,9 +549,6 @@ array(
 '10.5812/ircmj.9588' => TRUE,
 '10.5850/JKSCT.2015.39.1.121' => TRUE,
 '10.5869/fc.2013.v19.103' => TRUE,
-'10.5958/0974-1283.2016.00063.3' => TRUE,
-'10.5958/2319-5886.2014.00034.4' => TRUE,
-'10.5958/2394-2754.2016.00043.6' => TRUE,
 '10.6019/blueprint_20130405' => TRUE,
 '10.6072/H0.MP.A004235.01' => TRUE,
 '10.6092/issn.2531-6133/13299' => TRUE, // bad gateway
@@ -571,6 +570,9 @@ const NULL_DOI_BUT_GOOD = array(  // TODO - these need to be manually double che
                                   // Note that a failed url on one computer does not mean it is gone, it might just be you
                                   // You can use hdl.handle.org to show you the final url - russia and other countries firewall
                                   // Also, you can use various archive services to see (hdl.handle.org might not work while doi.org does work even!!!)
+'10.5958/0974-1283.2016.00063.3' => TRUE,
+'10.5958/2319-5886.2014.00034.4' => TRUE,
+'10.5958/2394-2754.2016.00043.6' => TRUE,
 '10.1001/archpsyc.60.5.497' => TRUE,
 '10.1002/047084289X.rt358.pub2' => TRUE,
 '10.1002/0471221902' => TRUE,
