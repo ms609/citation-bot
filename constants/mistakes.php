@@ -411,7 +411,6 @@ const COMMON_MISTAKES = array ( // Common mistakes that aren't picked up by the 
   "archive url" => "archive-url",
   "archive- url" => "archive-url",
   "autho-link" => "authorlink",
-  "dare" => "date",
   "dateaccess" => "access-date",
   "dopi" => "doi",
   "lats1" => "last1",
@@ -419,11 +418,9 @@ const COMMON_MISTAKES = array ( // Common mistakes that aren't picked up by the 
   "lst" => "last",
   "publishing" => "publisher",
   "trans-tile" => "trans-title",
-  "url status" => "url-status",
   "vauthros" => "vauthors",
   "webiste" => "website",
   "websiet" => "website",
-  "ইউআরএল-অবস্থা" => "url-status",
   "retrieve" => "access-date",
 ); // Lots of stuff that just existed
 
