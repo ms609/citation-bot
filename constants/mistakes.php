@@ -409,6 +409,22 @@ const COMMON_MISTAKES = array ( // Common mistakes that aren't picked up by the 
   "dare" => "date",
   "langauge" => "language",
   "archive url" => "archive-url",
+  "archive- url" => "archive-url",
+  "autho-link" => "authorlink",
+  "dare" => "date",
+  "dateaccess" => "access-date",
+  "dopi" => "doi",
+  "lats1" => "last1",
+  "lsnguage" => "language",
+  "lst" => "last
+  "publishing" => "publisher",
+  "trans-tile" => "trans-title",
+  "url status" => "url-status",
+  "vauthros" => "vauthors",
+  "webiste" => "website",
+  "websiet" => "website",
+  "ইউআরএল-অবস্থা" => "url-status",
+  "retrieve" => "access-date",
 ); // Lots of stuff that just existed
 
 const COMMON_MISTAKES_TOOL = array(
