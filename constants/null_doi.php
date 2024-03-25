@@ -78,8 +78,6 @@ array(
 '10.1027/1016-9040.3.1.37' => TRUE,
 '10.1036/0071422803' => TRUE,
 '10.1036/0071457674' => TRUE,
-'10.1038/aja.2011.81' => TRUE,
-'10.1038/aja.2012.173' => TRUE,
 '10.1038/mp.a000304.01' => TRUE,
 '10.1038/mp.a002870.01' => TRUE,
 '10.1038/npre.2010.4600' => TRUE,
@@ -105,7 +103,6 @@ array(
 '10.1093/phr/115.1.25' => TRUE,
 '10.1093/phr/115.2.191' => TRUE,
 '10.1106/X21V-YQKU-PMKP-XGTP' => TRUE,
-'10.11113/umran2018.5n2.187' => TRUE,
 '10.11120/msor.2008.08030011' => TRUE,
 '10.11157/rsrr1-1-10' => TRUE,
 '10.11157/rsrr1-2-412' => TRUE,
@@ -292,7 +289,6 @@ array(
 '10.21767/2049-5471.1000e4' => TRUE,
 '10.2223/JPED.2083' => TRUE,
 '10.2225/vol9-issue3-fulltext-15' => TRUE, // "Forbid"
-'10.22251/jlcci.2020.20.6.835' => TRUE,
 '10.22353/mjbs.2004.02.13' => TRUE,
 '10.22374/cjgim.v13i3.258' => TRUE,
 '10.22520/tubaar.2000.0001' => TRUE,
@@ -572,6 +568,10 @@ const NULL_DOI_BUT_GOOD = array(  // TODO - these need to be manually double che
                                   // Note that a failed url on one computer does not mean it is gone, it might just be you
                                   // You can use hdl.handle.org to show you the final url - russia and other countries firewall
                                   // Also, you can use various archive services to see (hdl.handle.org might not work while doi.org does work even!!!)
+'10.1038/aja.2011.81' => TRUE,
+'10.22251/jlcci.2020.20.6.835' => TRUE,
+'10.11113/umran2018.5n2.187' => TRUE,
+'10.1038/aja.2012.173' => TRUE,
 '10.1001/archpsyc.60.5.497' => TRUE,
 '10.1002/047084289X.rt358.pub2' => TRUE,
 '10.1002/0471221902' => TRUE,
