@@ -1527,6 +1527,7 @@ function is_encoding_reasonable(string $encode) : bool { // common "default" one
 function smart_decode(string $title, string $encode, string $archive_url) : string {
   if ($title === "") return "";
   if ($encode === 'maccentraleurope') $encode = 'mac-centraleurope';
+  if ($encode === 'Shift_JIS') $encode = 'SJIS-win';
   if (in_array($encode, ['utf-8-sig', 'x-user-defined'])) { // Known wonky ones
      return "";
   }
