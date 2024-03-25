@@ -493,7 +493,8 @@ const PARAMETER_LIST = array(
   'translator-given#', 'translator-last', 'translator-last#', 'translator-link',
   'translator-link#', 'translator-mask', 'translator-mask#', 'translator-surname',
   'translator-surname#', 'type', 'url', 'url-access', 'url-status', 'vauthors',
-  'veditors', 'version', 'via', 'volume', 'website', 'work', 'year', 'zbl'
+  'veditors', 'version', 'via', 'volume', 'website', 'work', 'year', 'zbl',
+  'script-encyclopaedia', 'script-encyclopedia', 'trans-encyclopaedia', 'trans-encyclopedia'	
 );
 
  const DEAD_PARAMETERS = array('PPPrefix', 'PPrefix', 'Ref', 'albumlink', 'albumtype',
