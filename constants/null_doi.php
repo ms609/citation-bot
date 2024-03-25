@@ -572,10 +572,6 @@ const NULL_DOI_BUT_GOOD = array(  // TODO - these need to be manually double che
                                   // Note that a failed url on one computer does not mean it is gone, it might just be you
                                   // You can use hdl.handle.org to show you the final url - russia and other countries firewall
                                   // Also, you can use various archive services to see (hdl.handle.org might not work while doi.org does work even!!!)
-'10.1038/aja.2011.81' => TRUE,
-'10.22251/jlcci.2020.20.6.835' => TRUE,
-'10.11113/umran2018.5n2.187' => TRUE,
-'10.1038/aja.2012.173' => TRUE,
 '10.1001/archpsyc.60.5.497' => TRUE,
 '10.1002/047084289X.rt358.pub2' => TRUE,
 '10.1002/0471221902' => TRUE,
@@ -724,8 +720,10 @@ const NULL_DOI_BUT_GOOD = array(  // TODO - these need to be manually double che
 '10.1038/aja.2010.6' => TRUE,
 '10.1038/aja.2010.72' => TRUE,
 '10.1038/aja.2011.69' => TRUE,
+'10.1038/aja.2011.81' => TRUE,
 '10.1038/aja.2012.108' => TRUE,
 '10.1038/aja.2012.139' => TRUE,
+'10.1038/aja.2012.173' => TRUE,
 '10.1038/aja.2012.94' => TRUE,
 '10.1038/aja.2013.47' => TRUE,
 '10.1038/s41893-023-01089-6' => TRUE,
@@ -1272,6 +1270,7 @@ const NULL_DOI_BUT_GOOD = array(  // TODO - these need to be manually double che
 '10.1111/mms.12343' => TRUE,
 '10.1111/nph.14178' => TRUE,
 '10.1111/tgis.12786' => TRUE,
+'10.11113/umran2018.5n2.187' => TRUE,
 '10.1112/plms/s2-28.1.395' => TRUE,
 '10.1113/jphysiol.1965.sp007628' => TRUE,
 '10.1113/jphysiol.2006.115030' => TRUE,
@@ -2057,6 +2056,7 @@ const NULL_DOI_BUT_GOOD = array(  // TODO - these need to be manually double che
 '10.22199/issn.0718-1043-2021-0028' => TRUE,
 '10.22199/issn.0718-1043-2023-0016' => TRUE,
 '10.22201/iih.24485004e.2012.44.35787' => TRUE,
+'10.22251/jlcci.2020.20.6.835' => TRUE,
 '10.22459/FPWT.07.2008' => TRUE,
 '10.22462/06.08.2019.12' => TRUE,
 '10.22679/AVS.2021.6.2.003' => TRUE,
