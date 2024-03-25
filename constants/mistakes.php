@@ -422,6 +422,17 @@ const COMMON_MISTAKES = array ( // Common mistakes that aren't picked up by the 
   "webiste" => "website",
   "websiet" => "website",
   "retrieve" => "access-date",
+  "retrieval" => "access-date",
+  "acces-date" => "access-date",
+  "acccess-date" => "access-date",
+  "archive-rurl" => "archive-url",
+  "ccess-date" => "access-date",
+  "titles" => "title",
+  "author-maske" => "author-mask",
+  "accessd-ate" => "access-date",
+  "publishel" => "publisher",
+  "publiher" => "publisher",
+  "저자" => "author",
 ); // Lots of stuff that just existed
 
 const COMMON_MISTAKES_TOOL = array(
