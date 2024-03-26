@@ -566,7 +566,6 @@ array(
 '10.6019/blueprint_20130405' => TRUE,
 '10.6072/H0.MP.A004235.01' => TRUE,
 '10.6092/issn.2531-6133/13299' => TRUE, // bad gateway
-'10.62015/np.2002.v10.503' => TRUE,
 '10.7146/cns.v6i0.122249' => TRUE,
 '10.7146/cns.v6i0.122251' => TRUE,
 '10.7182/prtr.1.6.1.f04016025hh795up' => TRUE,
@@ -584,6 +583,7 @@ const NULL_DOI_BUT_GOOD = array(  // TODO - these need to be manually double che
                                   // Note that a failed url on one computer does not mean it is gone, it might just be you
                                   // You can use hdl.handle.org to show you the final url - russia and other countries firewall
                                   // Also, you can use various archive services to see (hdl.handle.org might not work while doi.org does work even!!!)
+'10.62015/np.2002.v10.503' => TRUE,
 '10.1001/archpsyc.60.5.497' => TRUE,
 '10.1002/047084289X.rt358.pub2' => TRUE,
 '10.1002/0471221902' => TRUE,
