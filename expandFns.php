@@ -1528,6 +1528,7 @@ function smart_decode(string $title, string $encode, string $archive_url) : stri
   if ($title === "") return "";
   if ($encode === 'maccentraleurope') $encode = 'mac-centraleurope';
   if ($encode === 'Shift_JIS') $encode = 'SJIS-win';
+  if ($encode === 'big5') $encode = 'BIG-5';
   if (in_array($encode, ['utf-8-sig', 'x-user-defined'])) { // Known wonky ones
      return "";
   }
