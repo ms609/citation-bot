@@ -60,12 +60,12 @@ final class PageTest extends testBaseClass {
   public function testPageChangeSummary8() : void {
       $page = $this->process_page('{{cite journal|chapter-url=https://mathscinet.ams.org/mathscinet-getitem?mr=1234|title=mr=1234}}');
       $this->assertSame('{{cite journal|url=https://mathscinet.ams.org/mathscinet-getitem?mr=1234|title=mr=1234| mr=1234 }}', $page->parsed_text());
-      $this->assertSame('Add: mr, url. Removed proxy/dead URL that duplicated identifier. | [[:en:WP:UCB|Use this bot]]. [[:en:WP:DBUG|Report bugs]]. ', $page->edit_summary());
+      $this->assertSame('Add: mr, url. Removed URL that duplicated identifier. | [[:en:WP:UCB|Use this bot]]. [[:en:WP:DBUG|Report bugs]]. ', $page->edit_summary());
   }
   public function testPageChangeSummary9() : void {
       $page = $this->process_page('{{cite journal|chapterurl=https://mathscinet.ams.org/mathscinet-getitem?mr=1234|title=mr=1234}}');
       $this->assertSame('{{cite journal|url=https://mathscinet.ams.org/mathscinet-getitem?mr=1234|title=mr=1234| mr=1234 }}', $page->parsed_text());
-      $this->assertSame('Add: mr, url. Removed proxy/dead URL that duplicated identifier. | [[:en:WP:UCB|Use this bot]]. [[:en:WP:DBUG|Report bugs]]. ', $page->edit_summary());
+      $this->assertSame('Add: mr, url. Removed URL that duplicated identifier. | [[:en:WP:UCB|Use this bot]]. [[:en:WP:DBUG|Report bugs]]. ', $page->edit_summary());
   }
 
   public function testPageChangeSummary10() : void {
@@ -80,7 +80,7 @@ final class PageTest extends testBaseClass {
 
   public function testPageChangeSummary12() : void {
       $page = $this->process_page('{{cite journal|chapter-url=http://www.facebook.com/|title=X|journal=Y}}');
-      $this->assertSame('Added url. Removed proxy/dead URL that duplicated identifier. | [[:en:WP:UCB|Use this bot]]. [[:en:WP:DBUG|Report bugs]]. ', $page->edit_summary());
+      $this->assertSame('Added url. Removed URL that duplicated identifier. | [[:en:WP:UCB|Use this bot]]. [[:en:WP:DBUG|Report bugs]]. ', $page->edit_summary());
   }
 
   public function testPageChangeSummary13() : void {
@@ -473,7 +473,7 @@ final class PageTest extends testBaseClass {
     $text = "{{cite book|chapter-url=https://pep-web.org|title=X}}";
     $page = $this->process_page($text);
     $this->assertSame("{{cite book|url=https://pep-web.org|title=X}}", $page->parsed_text());
-    $this->assertSame('Added url. Removed proxy/dead URL that duplicated identifier. | [[:en:WP:UCB|Use this bot]]. [[:en:WP:DBUG|Report bugs]]. ', $page->edit_summary());
+    $this->assertSame('Added url. Removed URL that duplicated identifier. | [[:en:WP:UCB|Use this bot]]. [[:en:WP:DBUG|Report bugs]]. ', $page->edit_summary());
   }
 
   public function testRefHarv() : void {
