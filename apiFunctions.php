@@ -719,6 +719,8 @@ function expand_doi_with_dx(Template $template, string $doi) : void {
      if (isset($json['container-title']) && isset($json['publisher']) && ($json['publisher'] === $json['container-title'])) {
 	unset($json['container-title']);   // @codeCoverageIgnore
      }
+     if (str_ends_with(@$json['title'], '.PDF')) unset($json['title']);
+     if (str_ends_with(@$json['title'], '.pdf')) unset($json['title']);
      if (@$json['type'] == 'article-journal' ||
 	 @$json['type'] == 'journal-article' ||
 	 @$json['type'] == 'article' ||
