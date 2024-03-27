@@ -436,6 +436,13 @@ const COMMON_MISTAKES = array ( // Common mistakes that aren't picked up by the 
   "text" => "quote",
   "nume" => "author",
   "prenume" => "first",
+  "other" => "others",
+  "wesbite" => "website",
+  "webite" => "website",
+  "aothers" => "others",
+  "deate" => "date",
+  "locationm" => "location",
+  "publsiher" => "publisher",
 ); // Lots of stuff that just existed
 
 const COMMON_MISTAKES_TOOL = array(
