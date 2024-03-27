@@ -52,6 +52,7 @@ abstract class testBaseClass extends PHPUnit\Framework\TestCase {
     AdsAbsControl::big_give_up();
     Zotero::block_zotero();
     gc_collect_cycles();
+    $this->flush();
   }
 
   protected function requires_secrets(callable $function) : void {
@@ -136,6 +137,7 @@ abstract class testBaseClass extends PHPUnit\Framework\TestCase {
   }
 
   protected function parameter_parse_text_helper(string $text) : Parameter {
+    $this->flush();
     $parameter = new Parameter();
     $parameter->parse_text($text);
     return $parameter;
@@ -156,6 +158,7 @@ abstract class testBaseClass extends PHPUnit\Framework\TestCase {
   }
 
   protected function reference_to_template(string $text) : Template {
+    $this->flush();
     $text=trim($text);
     if (preg_match("~^(?:<(?:\s*)ref[^>]*?>)(.*)(?:<\s*?\/\s*?ref(?:\s*)>)$~i", $text, $matches)) {
       $template = new Template();
@@ -172,7 +175,7 @@ abstract class testBaseClass extends PHPUnit\Framework\TestCase {
      ob_start();
   }
 
-  protected function fill_cache() : void { // complete list of DOIs and HDLs that TRUE/FALSE in test suite as of 18 MAY 2022
+  protected function fill_cache() : void { // Name is outdated
     Zotero::create_ch_zotero();
     $wb = new WikipediaBot();
     unset($wb);
