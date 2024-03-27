@@ -443,6 +443,7 @@ const COMMON_MISTAKES = array ( // Common mistakes that aren't picked up by the 
   "deate" => "date",
   "locationm" => "location",
   "publsiher" => "publisher",
+  "pulisher" => "publisher",
 ); // Lots of stuff that just existed
 
 const COMMON_MISTAKES_TOOL = array(
