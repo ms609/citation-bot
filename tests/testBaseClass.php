@@ -170,9 +170,11 @@ abstract class testBaseClass extends PHPUnit\Framework\TestCase {
   }
 
   protected function flush() : void {
-     ob_end_flush();
+     if (ob_get_level() > 0) { 
+       ob_end_flush();
+       ob_start();
+     }
      flush();
-     ob_start();
   }
 
   protected function fill_cache() : void { // Name is outdated
