@@ -444,6 +444,9 @@ const COMMON_MISTAKES = array ( // Common mistakes that aren't picked up by the 
   "locationm" => "location",
   "publsiher" => "publisher",
   "pulisher" => "publisher",
+  "date accessed" => "access-date",
+  "jahrea" => "year",
+  "lasct" => "last",
 ); // Lots of stuff that just existed
 
 const COMMON_MISTAKES_TOOL = array(
