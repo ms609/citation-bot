@@ -932,7 +932,7 @@ const JOURNAL_IS_BOOK_SERIES = array(
 	 'advances in heterocyclic chemistry',
 	 'methods enzymol',
 	 'methods in enzymology',
-	 'meth. enzymol.',
+	 'meth enzymol',
 	 'advances in genetics',
 	 'adv genetics',
 	 'international studies on childhood and adolescence',
