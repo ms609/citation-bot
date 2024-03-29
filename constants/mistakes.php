@@ -447,6 +447,10 @@ const COMMON_MISTAKES = array ( // Common mistakes that aren't picked up by the 
   "date accessed" => "access-date",
   "jahrea" => "year",
   "lasct" => "last",
+  "мовою" => "language",
+  "розміщення" => "date",
+  "url-архіву" => "archive-url",
+  "дата-архіву" => "archive-date",
 ); // Lots of stuff that just existed
 
 const COMMON_MISTAKES_TOOL = array(
