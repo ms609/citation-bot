@@ -2544,6 +2544,7 @@ final class Template {
 		case "LA": // Language
 		case "DA": // Date this is based upon, not written or published
 		case "CY": // Location
+		case "CR": // Cited Reference
 		case "TT": // Translated title - very rare and often poor
 		case "C1": case "DB": case "AB": case "Y2": // The following line is from JSTOR RIS (basically the header and blank lines)
 		case "": case "Provider: JSTOR http://www.jstor.org": case "Database: JSTOR": case "Content: text/plain; charset=\"UTF-8\"";
