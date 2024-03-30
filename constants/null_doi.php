@@ -177,7 +177,6 @@ array(
 '10.13176/11.106' => TRUE,
 '10.13176/11.54' => TRUE,
 '10.13176/11.6' => TRUE,
-'10.13187/ra.2015.10.288' => TRUE,
 '10.1336/0313268762' => TRUE,
 '10.1353/hyp.2006.0067' => TRUE,
 '10.1360/982005-575' => TRUE,
@@ -442,7 +441,6 @@ array(
 '10.36251/josi.136' => TRUE,
 '10.36251/josi.40' => TRUE,
 '10.3724/SP.J.1245.2011.00001' => TRUE,
-'10.3760/cma.j.issn.0376-2491.2016.48.003' => TRUE,
 '10.37837/2707-7683-2020-16' => TRUE,
 '10.3828/978-0-85323-106-6' => TRUE,
 '10.3828/978-0-85323-554-5' => TRUE,
@@ -608,6 +606,7 @@ const NULL_DOI_BUT_GOOD = array(  // TODO - these need to be manually double che
                                   // Note that a failed url on one computer does not mean it is gone, it might just be you
                                   // You can use hdl.handle.org to show you the final url - russia and other countries firewall
                                   // Also, you can use various archive services to see (hdl.handle.org might not work while doi.org does work even!!!)
+'10.13187/ra.2015.10.288' => TRUE,
 '10.1001/archpsyc.60.5.497' => TRUE,
 '10.1002/047084289X.rt358.pub2' => TRUE,
 '10.1002/0471221902' => TRUE,
