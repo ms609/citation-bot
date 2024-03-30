@@ -451,6 +451,10 @@ const COMMON_MISTAKES = array ( // Common mistakes that aren't picked up by the 
   "розміщення" => "date",
   "url-архіву" => "archive-url",
   "дата-архіву" => "archive-date",
+  "editoraу" => "editor",
+  "websitу" => "website",
+  "last 1у" => "last1",
+  "jounralу" => "journal",
 ); // Lots of stuff that just existed
 
 const COMMON_MISTAKES_TOOL = array(
