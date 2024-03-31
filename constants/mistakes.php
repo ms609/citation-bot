@@ -455,6 +455,20 @@ const COMMON_MISTAKES = array ( // Common mistakes that aren't picked up by the 
   "websitу" => "website",
   "last 1у" => "last1",
   "jounralу" => "journal",
+  "archvie-url" => "archive-url",
+  "ad1" => "author1",
+  "arşivtarihi" => "archive-date",
+  "dergi" => "journal",
+  "erişimtarihi" => "access-date",
+  "ölüurl" => "deadurl",
+  "sayfalar" => "pages",
+  "sayı" => "number",
+  "soyadı1" => "last1",
+  "yıl" => "year",
+  "arşivurl" => "archiveurl",
+  "tittle" => "title",
+  "titley" => "title",
+  "first-" => "first",
 ); // Lots of stuff that just existed
 
 const COMMON_MISTAKES_TOOL = array(
