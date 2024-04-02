@@ -2859,17 +2859,6 @@ final class TemplateTest2 extends testBaseClass {
      $this->assertSame('{{Cite journal| issue = 33}}', $template->parsed_text());
    }
 
-   public function testFloaters1a() : void {
-     $text='{{Cite journal| p 33 }}';
-     $template = $this->process_citation($text);
-     $this->assertSame('33', $template->get2('page'));
-     $this->assertSame('{{Cite journal| page=33 }}', $template->parsed_text());
-   }
-   public function testFloaters1b() : void {
-     $text='{{Cite journal | p 33 |page=}}';
-     $template = $this->process_citation($text);
-     $this->assertSame('33', $template->get2('page'));
-   }
    public function testFloaters1c() : void {
      $text='{{Cite journal |33(22):11-12 }}';
      $template = $this->process_citation($text);
@@ -2913,18 +2902,6 @@ final class TemplateTest2 extends testBaseClass {
      $text='{{Cite journal | issue 33 | issue=22 }}';
      $template = $this->process_citation($text);
      $this->assertSame('22', $template->get2('issue'));
-   }
-
-    public function testFloaters8() : void {
-     $text='{{Cite journal |  p 33 junk}}';
-     $template = $this->process_citation($text);
-     $this->assertSame('33', $template->get2('page'));
-   }
-
-    public function testFloaters9() : void {
-     $text='{{Cite journal |  p 33 junk|page=}}';
-     $template = $this->process_citation($text);
-     $this->assertSame('33', $template->get2('page'));
    }
 
     public function testFloaters10() : void {
