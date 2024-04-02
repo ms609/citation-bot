@@ -470,6 +470,10 @@ const COMMON_MISTAKES = array ( // Common mistakes that aren't picked up by the 
   "titley" => "title",
   "first-" => "first",
   "achive-url" => "archive-url",
+  "archive_date" => "archive-date",
+  "archive_url" => "archive-url",
+  "place of publication" => "publication-place",
+  "year of publication" => "publication-date",
 ); // Lots of stuff that just existed
 
 const COMMON_MISTAKES_TOOL = array(
