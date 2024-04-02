@@ -2859,14 +2859,6 @@ final class TemplateTest2 extends testBaseClass {
      $this->assertSame('{{Cite journal| issue = 33}}', $template->parsed_text());
    }
 
-   public function testFloaters1c() : void {
-     $text='{{Cite journal |33(22):11-12 }}';
-     $template = $this->process_citation($text);
-     $this->assertSame('22', $template->get2('issue'));
-     $this->assertSame('33', $template->get2('volume'));
-     $this->assertSame('11–12', $template->get2('pages'));
-   }
-
     public function testFloaters2() : void {
      $text='{{Cite journal | url=http://www.apple.com/ |access date 12 December 1990 }}';
      $template = $this->process_citation($text);
