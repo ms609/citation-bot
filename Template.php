@@ -3188,40 +3188,6 @@ final class Template {
 		$dat = str_replace($url, '', $dat);
 	  }
 
-	  if (preg_match_all("~(\w+)\.?[:\-\s]*([^\s;:,.]+)[;.,]*~", $dat, $match)) { #vol/page abbrev.
-		foreach ($match[0] as $i => $oMatch) {
-		  switch (strtolower($match[1][$i])) {
-			case "vol": case "v": case 'volume':
-			  $matched_parameter = "volume";
-			  break;
-			case "no": case "number": case 'issue': case 'n': case 'issues':
-			  $matched_parameter = "issue";
-			  break;
-			case 'pages': case 'pp': case 'pg': case 'pgs': case 'pag':
-			  $matched_parameter = "pages";
-			  break;
-			case 'p':
-			  $matched_parameter = "page";
-			  break;
-			default:
-			  $matched_parameter = FALSE;
-		  }
-		  if ($matched_parameter) {
-			$dat = trim(str_replace($oMatch, "", $dat));
-			$this->add_if_new($matched_parameter, $match[2][$i]);
-		  }
-		}
-	  }
-	  // Match vol(iss):pp
-	  if (preg_match("~(\d+)\s*(?:\((\d+)\))?\s*:\s*(\d+(?:\d\s*-\s*\d+))~", $dat, $match)) {
-		$this->add_if_new('volume', $match[1]);
-		if($match[2] > 2100 || $match[2] < 1500) { // if between 1500 and 2100, might be year or issue
-			 $this->add_if_new('issue' , $match[2]);
-		}
-		$this->add_if_new('pages' , $match[3]);
-		$dat = trim(str_replace($match[0], '', $dat));
-	  }
-
 	  $shortest = -1;
 	  $test_dat = '';
 	  $shortish = -1;
