@@ -469,6 +469,7 @@ const COMMON_MISTAKES = array ( // Common mistakes that aren't picked up by the 
   "tittle" => "title",
   "titley" => "title",
   "first-" => "first",
+  "achive-url" => "archive-url",
 ); // Lots of stuff that just existed
 
 const COMMON_MISTAKES_TOOL = array(
