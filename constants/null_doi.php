@@ -352,7 +352,6 @@ array(
 '10.2509/naf2013.008.013' => TRUE,
 '10.2509/naf2014.009.003' => TRUE,
 '10.2509/pnwf.2007.002.003' => TRUE,
-'10.25911/5fb398ee9c47d' => TRUE,
 '10.26442/terarkh2018901089-93' => TRUE,
 '10.26515/rzsi/v117/i4/2017/121400' => TRUE,
 '10.26628/ps.v90i5.917' => TRUE,
@@ -614,6 +613,7 @@ const NULL_DOI_BUT_GOOD = array(  // TODO - these need to be manually double che
                                   // Note that a failed url on one computer does not mean it is gone, it might just be you
                                   // You can use hdl.handle.org to show you the final url - russia and other countries firewall
                                   // Also, you can use various archive services to see (hdl.handle.org might not work while doi.org does work even!!!)
+'10.25911/5fb398ee9c47d' => TRUE,
 '10.6092/issn.2531-6133/13299' => TRUE,
 '10.18468/rbli.2020v3n2.p183-205' => TRUE,
 '10.1111/j.1464-410X.2012.11761.x' => TRUE,
