@@ -278,10 +278,8 @@ array(
 '10.18052/www.scipress.com/ILSHS.53.60' => TRUE,
 '10.18226/21789061.v11i2p400' => TRUE,
 '10.18232/alhe.952' => TRUE,
-'10.18268/BSGM2019v71n3a8' => TRUE,
 '10.18282/amor.v2.i4.58' => TRUE,
 '10.18435/vamp29396' => TRUE,
-'10.18468/rbli.2020v3n2.p183-205' => TRUE,
 '10.18520/cs/v110/i6/996-999' => TRUE,
 '10.18520/cs/v112/i01/52-61' => TRUE,
 '10.18551/issn1997-0749.2014-06' => TRUE,
@@ -617,6 +615,10 @@ const NULL_DOI_BUT_GOOD = array(  // TODO - these need to be manually double che
                                   // You can use hdl.handle.org to show you the final url - russia and other countries firewall
                                   // Also, you can use various archive services to see (hdl.handle.org might not work while doi.org does work even!!!)
 '10.6092/issn.2531-6133/13299' => TRUE,
+'10.18468/rbli.2020v3n2.p183-205' => TRUE,
+'10.1111/j.1464-410X.2012.11761.x' => TRUE,
+'10.1029/2006GL026196' => TRUE,
+'10.18268/BSGM2019v71n3a8' => TRUE,
 '10.1001/archpsyc.60.5.497' => TRUE,
 '10.1002/047084289X.rt358.pub2' => TRUE,
 '10.1002/0471221902' => TRUE,
