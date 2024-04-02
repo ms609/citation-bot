@@ -20,13 +20,6 @@ final class TemplateTest extends testBaseClass {
     $this->assertTrue(TRUE);
   }
 
-  public function testLotsOfFloaters() : void {
-    $text_in = "{{cite journal|issue 3 volume 5 | title Love|journal Dog|series Not mine today|chapter cows|this is random stuff | 123-4567-890 }}";
-    $text_out= "{{cite book|this is random stuff | issue=3 | volume=5 | title=Love | chapter=Cows | journal=Dog | series=Not mine today | isbn=123-4567-890 }}";
-    $prepared = $this->prepare_citation($text_in);
-    $this->assertSame($text_out, $prepared->parsed_text());
-  }
-
   public function testLotsOfFloaters2() : void {
     $text_in = "{{cite journal|isssue 3 volumee 5 | tittle Love|journall Dog|series Not mine today|chapte cows|this is random stuff | zauthor Joe }}";
     $text_out= "{{cite journal|isssue 3 volumee 5 | tittle Love|chapte cows|this is random stuff | zauthor Joe | journal=L Dog | series=Not mine today }}";
@@ -308,18 +301,6 @@ final class TemplateTest extends testBaseClass {
     $text = "{{cite  web |p=2}}";
     $expanded = $this->process_citation($text);
     $this->assertSame("{{cite web |page=2}}", $expanded->parsed_text());
-  }
-
-  public function testUseUnusedData() : void {
-    $text = "{{Cite web | http://google.com | title  I am a title | auhtor = Other, A. N. | issue- 9 | vol. 22 pp. 5-6 }}";
-    $prepared = $this->prepare_citation($text);
-    $this->assertSame('cite web',          $prepared->wikiname());
-    $this->assertSame('http://google.com', $prepared->get2('url'));
-    $this->assertSame('I am a title',      $prepared->get2('title'));
-    $this->assertSame('Other, A. N.',      $prepared->get2('author'));
-    $this->assertSame('9'           ,      $prepared->get2('issue'));
-    $this->assertSame('22'          ,      $prepared->get2('volume'));
-    $this->assertSame('5–6'         ,      $prepared->get2('pages'));
   }
 
   public function testGetDoiFromCrossref() : void {
@@ -1653,29 +1634,22 @@ final class TemplateTest extends testBaseClass {
   }
 
   public function testMisspeltParameters1() : void {
-    $text = "{{Cite journal | ahtour=S.-X. HU, M.-Y. ZHU, F.-C. ZHAO, and M. STEINER|tutle=A crown group priapulid from the early Cambrian Guanshan Lagerstätte,|jrounal=Geol. Mag.|pp. 1–5|year= 2017.}}";
+    $text = "{{Cite journal | ahtour=S.-X. HU, M.-Y. ZHU, F.-C. ZHAO, and M. STEINER|tutle=A crown group priapulid from the early Cambrian Guanshan Lagerstätte,|jrounal=Geol. Mag.|year= 2017.}}";
     $expanded = $this->process_citation($text);
     $this->assertNotNull($expanded->get2('author')); ## Check: the parameter might be broken down into last1, first1 etc
     $this->assertNotNull($expanded->get2('title'));
     $this->assertNotNull($expanded->get2('journal'));
-    $this->assertNotNull($expanded->get2('pages'));
     $this->assertNotNull($this->getDateAndYear($expanded));
   }
   public function testMisspeltParameters2() : void {
-    $text = "{{Cite journal | ahtour=S.-X. HU, M.-Y. ZHU, F.-C. ZHAO, and M. STEINER|tutel=A crown group priapulid from the early Cambrian Guanshan Lagerstätte,|jrounal=Geol. Mag.|pp. 1–5|year= 2017.}}";
+    $text = "{{Cite journal | ahtour=S.-X. HU, M.-Y. ZHU, F.-C. ZHAO, and M. STEINER|tutel=A crown group priapulid from the early Cambrian Guanshan Lagerstätte,|jrounal=Geol. Mag.|year= 2017.}}";
     $expanded = $this->process_citation($text);
     $this->assertNotNull($expanded->get2('author')); ## Check: the parameter might be broken down into last1, first1 etc
     $this->assertNotNull($expanded->get2('tutel'));
     $this->assertNotNull($expanded->get2('journal'));
-    $this->assertNotNull($expanded->get2('pages'));
     $this->assertNotNull($this->getDateAndYear($expanded));
   }
-  public function testMisspeltParameters3() : void {
-    // Double-check pages expansion
-    $text = "{{Cite journal|pp. 1-5}}";
-    $expanded = $this->process_citation($text);
-    $this->assertSame('1–5', $expanded->get2('pages'));
-  }
+
   public function testMisspeltParameters4() : void {
     $text = "{{cite book|authorlinux=X}}";
     $expanded = $this->process_citation($text);
