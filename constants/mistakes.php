@@ -474,6 +474,8 @@ const COMMON_MISTAKES = array ( // Common mistakes that aren't picked up by the 
   "archive_url" => "archive-url",
   "place of publication" => "publication-place",
   "year of publication" => "publication-date",
+  "access" => "access-date",
+  "linguage" => "language",
 ); // Lots of stuff that just existed
 
 const COMMON_MISTAKES_TOOL = array(
