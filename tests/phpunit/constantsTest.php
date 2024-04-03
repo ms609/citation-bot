@@ -581,7 +581,7 @@ final class constantsTest extends testBaseClass {
 
   public function testISBNlist() : void {
     $last = -1;
-		foreach (ISBN_HYPHEN_POS as $k => $v) {
+    foreach (ISBN_HYPHEN_POS as $k => $v) {
       $k = (int) $k;
       $this->assertTrue($k > $last);
       $last = $k;
@@ -589,12 +589,12 @@ final class constantsTest extends testBaseClass {
       $this->assertTrue(is_int($v[0]));
       $this->assertTrue(is_int($v[1]));
       $this->assertTrue(is_int($v[2]));
-		}
+    }
   }
 
   public function testForISBNListUpdates() : void { // https://en.wikipedia.org/w/index.php?title=Module:Format_ISBN/data&action=history
       $wikipedia_response = WikipediaBot::GetAPage('Module:Format_ISBN/data');
       $this->assertSame(1, substr_count($wikipedia_response, 'RangeMessage timestamp:'));
-      $this->assertSame(1, substr_count($wikipedia_response, 'RangeMessage timestamp: 2024-03-07T04:00:06 GMT'));
+      $this->assertSame(1, substr_count($wikipedia_response, 'RangeMessage timestamp: 2024-04-02T05:38:23 BST'));
   }
 }
