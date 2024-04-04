@@ -519,7 +519,9 @@ const PARAMETER_LIST = array(
      'lay-url', 'transcripturl', 'pages totales', 'ppprefix', 'pprefix', 'web', 'middle',
      'editor-name', 'libellé', 'la', 'page-url', '-url', 'list', 'user', 'postid',
      'citation', 'name', 'reference', 'book', 'tile', 'data', 'abruf-verborgen', 'kommentar',
-     'call-hidden', 'call', 'sins', 'filedate', 'style', 'sib', 'curator', 'titleerg');
+     'call-hidden', 'call', 'sins', 'filedate', 'style', 'sib', 'curator', 'titleerg',
+     'rowspan', 'archiv-bot', 'collection', 'published', 'area', 'source',
+    );
 
 // sid is actually page range in some no english wiki's but do not fix since so close to id=
 // lien is French template parameter, but also English work
