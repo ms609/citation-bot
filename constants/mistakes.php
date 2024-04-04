@@ -476,6 +476,20 @@ const COMMON_MISTAKES = array ( // Common mistakes that aren't picked up by the 
   "year of publication" => "publication-date",
   "access" => "access-date",
   "linguage" => "language",
+  "extrait" => "quote",
+  "arhcive-date" => "archivedate",
+  "webste" => "website",
+  "pagina's" => "pages",
+  "제목" => "title",
+  "확인날짜" => "access-date",
+  "brisé le" => " access-date",
+  "worl" => " work",
+  "shapter" => "chapter",
+  "editor-firs1t" => "editor-first",
+  "pubilsher" => "publisher",
+  "archive-.url" => "archive-url",
+  "access-dat" => "access-date",
+  "access-daite" => "access-date",
 ); // Lots of stuff that just existed
 
 const COMMON_MISTAKES_TOOL = array(
