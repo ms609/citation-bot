@@ -2507,7 +2507,6 @@ const NULL_DOI_BUT_GOOD = array(  // TODO - these need to be manually double che
 '10.2298/PAN160220031M' => TRUE,
 '10.2298/pan1604455r' => TRUE,
 '10.2298/sarh0410360i' => TRUE,
-'10.2298/sarh0410360i' => TRUE,
 '10.2298/SARH1212792K' => TRUE,
 '10.2298/STA0555161B' => TRUE,
 '10.2298/STA0858009S' => TRUE,
