@@ -490,6 +490,8 @@ const COMMON_MISTAKES = array ( // Common mistakes that aren't picked up by the 
   "archive-.url" => "archive-url",
   "access-dat" => "access-date",
   "access-daite" => "access-date",
+  "datearchivo" => "archive-date",
+  "surnames" => "surname",
 ); // Lots of stuff that just existed
 
 const COMMON_MISTAKES_TOOL = array(
