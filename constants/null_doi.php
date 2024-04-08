@@ -5,6 +5,7 @@ const NULL_DOI_ANNOYING = // TODO - manually check these from time to time - Las
 array(
 '10.1001/jama.275.17.1339' => TRUE,
 '10.1080/10798587.2007.10642974' => TRUE,
+'10.1139/gen-41-4-543' => TRUE,
 '10.12970/2311-1755.2015.03.02.2' => TRUE,
 '10.14195/0872-0851_43_7' => TRUE,
 '10.1511/2006.61.412' => TRUE,
@@ -23,6 +24,7 @@ array(
 '10.3134/ehtj.09.001' => TRUE,
 '10.31754/2409-6105-2019-4-9-18' => TRUE,
 '10.3362/1756-3488.2015.003' => TRUE,
+'10.3934/mbe' => TRUE,
 '10.3949/ccjm.75.7.474' => TRUE, 
 '10.4056/sigs.1072907' => TRUE,
 '10.4056/sigs.1113067' => TRUE,
@@ -52,12 +54,15 @@ array(
 '10.4103/0973-1229.87261' => TRUE,
 '10.4103/0974-1216.51902' => TRUE,
 '10.4103/0975-8844.103507' => TRUE,
+'10.4103/1596-4078.182319' => TRUE
+'10.4103/2141-9248.126601' => TRUE,
 '10.4435/BSPI.2015.1' => TRUE,
 '10.4435/BSPI.2017.08' => TRUE,
 '10.4435/BSPI.2017.19' => TRUE,
 '10.4435/BSPI.2018.11' => TRUE,
 '10.46426/jp2kp.v20i1.42' => TRUE,
 '10.46426/jp2kp.v20i2.49' => TRUE,
+'10.52486/01.00001.15' => TRUE,
 );
 const NULL_DOI_LIST =
 array(
@@ -155,7 +160,7 @@ array(
 '10.1136/vr.92.26.686' => TRUE,
 '10.1136/vr.99.14.267' => TRUE,
 '10.1137/1.9780898719512.ch1' => TRUE,
-'10.1139/gen-41-4-543' => TRUE,
+'10.1139/gen-41-4-543' => TRUE, // Journal in general
 '10.11588/xarep.00000104' => TRUE,
 '10.11588/xarep.00000109' => TRUE,
 '10.11588/xarep.00000110' => TRUE,
@@ -332,7 +337,6 @@ array(
 '10.19137/qs.v19i1.963' => TRUE,
 '10.19153/cleiej.8.2.1' => TRUE,
 '10.1920/wp.ifs.2022.3622' => TRUE,
-'10.20873/uft.2447-4266.2020v6n6a5pt' => TRUE,
 '10.20960/nh.27' => TRUE,
 '10.20960/nh.559' => TRUE,
 '10.2104/ag060007' => TRUE,
@@ -504,7 +508,7 @@ array(
 '10.3828/aj.2016.3' => TRUE,
 '10.3846/cpc.2017.286' => TRUE,
 '10.3920/978-90-8686-728-8_4' => TRUE,
-'10.3934/mbe' => TRUE,
+'10.3934/mbe' => TRUE, // 404
 '10.3949/ccjm.75.7.474' => TRUE, // Doi not found on website
 '10.3987/1995-01-0001' => TRUE,
 '10.3987/2007-72-0001' => TRUE,
@@ -610,8 +614,8 @@ array(
 '10.4103/0974-9233.80701' => TRUE,
 '10.4103/0974-9233.84062' => TRUE,
 '10.4103/0975-8844.103507' => TRUE,
-'10.4103/1596-4078.182319' => TRUE,
-'10.4103/2141-9248.126601' => TRUE,
+'10.4103/1596-4078.182319' => TRUE, // Bad gateway
+'10.4103/2141-9248.126601' => TRUE, // 404
 '10.4103/2278-330X.110506' => TRUE,
 '10.4169/002557010X529752' => TRUE,
 '10.4169/002557010x529815' => TRUE,
@@ -629,10 +633,9 @@ array(
 '10.46426/jp2kp.v20i1.42' => TRUE,
 '10.46426/jp2kp.v20i2.49' => TRUE,
 '10.5047/meep.2019.00701.0001' => TRUE,
-'10.5066/P985I7U2' => TRUE,
 '10.51437/jgns.v1i1.29' => TRUE,
 '10.51437/jgns.v1i1' => TRUE,
-'10.52486/01.00001.15' => TRUE,
+'10.52486/01.00001.15' => TRUE, // Journal in general
 '10.5334/sta.az' => TRUE,
 '10.5353/th_b3073066' => TRUE,
 '10.5353/th_b3122147' => TRUE,
@@ -678,6 +681,8 @@ const NULL_DOI_BUT_GOOD = array(  // TODO - these need to be manually double che
                                   // Note that a failed url on one computer does not mean it is gone, it might just be you
                                   // You can use hdl.handle.org to show you the final url - russia and other countries firewall
                                   // Also, you can use various archive services to see (hdl.handle.org might not work while doi.org does work even!!!)
+'10.20873/uft.2447-4266.2020v6n6a5pt' => TRUE,
+'10.5066/P985I7U2' => TRUE,
 '10.1001/archpsyc.60.5.497' => TRUE,
 '10.1002/047084289X.rt358.pub2' => TRUE,
 '10.1002/0471221902' => TRUE,
