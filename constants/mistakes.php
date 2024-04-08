@@ -492,6 +492,21 @@ const COMMON_MISTAKES = array ( // Common mistakes that aren't picked up by the 
   "access-daite" => "access-date",
   "datearchivo" => "archive-date",
   "surnames" => "surname",
+  "τίτλος" => "title",
+  "languege" => "language",
+  "publisherg" => "publisher",
+  "name" => "author",
+  "name1" => "author1",
+  "name2" => "author2",
+  "name3" => "author3",
+  "access- date" => "access-date",
+  "translit-title" => "trans-title",
+  "websitte" => "website",
+  "4rl" => "url",
+  "ur l" => "url",
+  "pubslisher" => "publisher",
+  "laguage" => "language",
+  "puplisher" => "publisher",
 ); // Lots of stuff that just existed
 
 const COMMON_MISTAKES_TOOL = array(
