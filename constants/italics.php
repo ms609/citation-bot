@@ -287,6 +287,7 @@ const ITALICS_LIST =
  "Arthoniais|" .
  "Arthropterygius|" .
  "Acacia|" .
+ "Cerastes|" .
  "Berardiusin|" .
  "Ilustrado|" .
  "Keśin|" .
