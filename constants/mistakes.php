@@ -507,6 +507,11 @@ const COMMON_MISTAKES = array ( // Common mistakes that aren't picked up by the 
   "pubslisher" => "publisher",
   "laguage" => "language",
   "puplisher" => "publisher",
+  "access-as te" => "access-date",
+  "frst" => "first",
+  "archive-url a" => "archive-url",
+  "link to author" => "author-link",
+  "access-daet" => "access-date",
 ); // Lots of stuff that just existed
 
 const COMMON_MISTAKES_TOOL = array(
