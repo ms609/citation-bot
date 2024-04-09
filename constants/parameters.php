@@ -521,6 +521,7 @@ const PARAMETER_LIST = array(
      'citation', 'name', 'reference', 'book', 'tile', 'data', 'abruf-verborgen', 'kommentar',
      'call-hidden', 'call', 'sins', 'filedate', 'style', 'sib', 'curator', 'titleerg',
      'rowspan', 'archiv-bot', 'collection', 'published', 'area', 'source', 'extrait',
+     '-date',
     );
 
 // sid is actually page range in some no english wiki's but do not fix since so close to id=
