@@ -17,6 +17,7 @@ array(
 '10.21143/jhp.vol8.no3.772' => TRUE,
 '10.2136/sh2012-53-6-lf' => TRUE,
 '10.21767/2049-5471.1000e4' => TRUE,
+'10.2225/vol8-issue1-fulltext-9' => TRUE,
 '10.2225/vol9-issue3-fulltext-15' => TRUE,
 '10.2307/440460' => TRUE,
 '10.2461/wbp.2013.9.6' => TRUE,
@@ -380,7 +381,7 @@ array(
 '10.21767/2049-5471.1000e4' => TRUE,
 '10.22054/scmw.2019.10140' => TRUE,
 '10.2223/JPED.2083' => TRUE,
-'10.2225/vol8-issue1-fulltext-9' => TRUE,
+'10.2225/vol8-issue1-fulltext-9' => TRUE, // "Forbid"
 '10.2225/vol9-issue3-fulltext-15' => TRUE, // "Forbid"
 '10.22353/mjbs.2004.02.13' => TRUE,
 '10.22374/cjgim.v13i3.258' => TRUE,
