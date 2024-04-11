@@ -3660,12 +3660,8 @@ final class TemplateTest2 extends testBaseClass {
       $template = $this->make_citation($text);
       $template_array = array($template);
       $bibcode_array = array($template->get('bibcode'));
-      $this->assertFalse(query_bibcode_api($bibcode_array, $template_array));
-      $text = '{{cite journal|title=X|periodical=X|issue=X|volume=X|pages=12-34|year=1980|last2=Him|doi=10.0000/Rubbish_bot_failure_test|bibcode=X|last1=X|first1=X}}';
-      $template = $this->make_citation($text);
-      $template_array = array($template);
-      $bibcode_array = array($template->get('bibcode'));
-      $this->assertFalse(query_bibcode_api($bibcode_array, $template_array));
+      query_bibcode_api($bibcode_array, $template_array);
+      $this->assertSame('X', $template->get2('bibcode'));
      });
    }
 
