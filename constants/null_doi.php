@@ -3,6 +3,7 @@ declare(strict_types=1);
 
 const NULL_DOI_ANNOYING = // TODO - manually check these from time to time - Last Check 10 MAR 2024
 array(
+'10.18551/issn1997-0749.2014-06' => TRUE,
 '10.1001/jama.275.17.1339' => TRUE,
 '10.1080/10798587.2007.10642974' => TRUE,
 '10.1139/gen-41-4-543' => TRUE,
@@ -343,7 +344,7 @@ array(
 '10.18435/vamp29396' => TRUE,
 '10.18520/cs/v110/i6/996-999' => TRUE,
 '10.18520/cs/v112/i01/52-61' => TRUE,
-'10.18551/issn1997-0749.2014-06' => TRUE,
+'10.18551/issn1997-0749.2014-06' => TRUE,  // Key not found
 '10.18803/capsi.v17.185-193' => TRUE,
 '10.18809/jbms.2015.0111' => TRUE,
 '10.18809/jbms.2016.0105' => TRUE,
