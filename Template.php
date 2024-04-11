@@ -2033,6 +2033,7 @@ final class Template {
 	  $xml = bot_curl_exec($ch);
 	  if (strlen($xml) > 0) {
 		$result = @simplexml_load_string($xml);
+		unset($xml);
 	  } else {
 		$result = FALSE;
 	  }
