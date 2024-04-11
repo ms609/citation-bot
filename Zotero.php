@@ -249,6 +249,7 @@ public static function drop_urls_that_match_dois(array &$templates) : void {  //
 	       }
 	    }
 	  }
+	  unset($ch_return);
        }
     }
     $url = $template->get($url_kind);
@@ -1249,6 +1250,7 @@ public static function find_indentifiers_in_urls(Template $template, ?string $ur
 	    if (is_null($url_sent) && $template->has_good_free_copy()) $template->forget($url_type);
 	    return $template->add_if_new('jstor', $matches[1]);
 	  }
+	  unset($dat);   
 	}
      }
      if ($template->has('jstor') && preg_match('~^https?://(?:www\.|)jstor\.org/(?:stable|discover)/(?:|pdf/)' . $template->get('jstor') . '(?:|\.pdf)$~i', $url)) {
