@@ -996,7 +996,7 @@ function expand_templates_from_archives(array &$templates) : void { // This is d
   static $ch = NULL;
   set_time_limit(120);
   if ($ch === NULL) {
-    $ch = bot_curl_init(0.5, [CURLOPT_HEADER => TRUE, CURLOPT_NOPROGRESS => FALSE]); // We have NO idea how big the file might be, so we limit it
+    $ch = bot_curl_init(0.5, [CURLOPT_HEADER => TRUE]);
   }
   foreach ($templates as $template) {
     set_time_limit(120);
