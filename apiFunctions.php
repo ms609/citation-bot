@@ -234,6 +234,7 @@ function arxiv_api(array $ids, array &$templates) : void {  // Pointer to save m
     $xml = @simplexml_load_string(
       preg_replace("~(</?)(\w+):([^>]*>)~", "$1$2$3", $response)
     );
+    unset($response);
   } else {
     report_warning("No response from arXiv.");       // @codeCoverageIgnore
     return;                                    // @codeCoverageIgnore
@@ -610,6 +611,7 @@ function query_crossref(string $doi) : ?object {
 	  '<year media_type="print">',
 	  $raw_xml);
     $xml = @simplexml_load_string($raw_xml);
+    unset($raw_xml);
     if (is_object($xml) && isset($xml->query_result->body->query)) {
       $result = $xml->query_result->body->query;
       if ((string) @$result["status"] === "resolved") {
@@ -934,7 +936,8 @@ function getS2CID(string $url) : string {
     report_warning("Bad data from semanticscholar.");  // @codeCoverageIgnore
     return '';                                         // @codeCoverageIgnore
   }
-  return (string) $json->corpusId;
+  $s2cid = (string) $json->corpusId;
+  return $s2cid;
 }
 
 function ConvertS2CID_DOI(string $s2cid) : string {
@@ -1126,6 +1129,7 @@ function Bibcode_Response_Processing(array $curl_opts, string $adsabs_url) : obj
     if ($http_response_code === 0 || $header_length === 0) throw new Exception('Size of zero from AdsAbs website');
     $header = substr($return, 0, $header_length);
     $body = substr($return, $header_length);
+    unset($return);
     $decoded = @json_decode($body);
 
     $ratelimit_total = NULL;
