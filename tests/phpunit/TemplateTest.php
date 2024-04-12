@@ -1448,7 +1448,7 @@ final class TemplateTest extends testBaseClass {
    }
 
   public function testLastVersusAuthor() : void {
-    $text = "{{cite journal|pmid=12858711}}";
+    $text = "{{cite journal|pmid=12858711 }}";
     $expanded = $this->process_citation($text);
     $this->assertNull($expanded->get2('author1'));
     $this->assertSame('Lovallo', $expanded->get2('last1'));
@@ -4071,11 +4071,11 @@ EP - 999 }}';
   }
 
   public function testDoiInline2() : void {
-    $text = '{{citation | title = {{doi-inline|10.1038/nature10000|Funky Paper}} | doi=10.1038/nature10000 }}';
+    $text = '{{citation | title = {{doi-inline|10.1021/jp101758y|Funky Paper}} | doi=10.1021/jp101758y }}';
     $expanded = $this->process_citation($text);
-    $this->assertSame('Nature', $expanded->get2('journal'));
+    $this->assertSame('The Journal of Physical Chemistry. A', $expanded->get2('journal'));
     $this->assertSame('Funky Paper', $expanded->get2('title'));
-    $this->assertSame('10.1038/nature10000', $expanded->get2('doi'));
+    $this->assertSame('10.1021/jp101758y', $expanded->get2('doi'));
   }
 
   public function testTidyBogusDOIs3316() : void {
