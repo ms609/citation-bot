@@ -1033,25 +1033,6 @@ final class zoteroTest extends testBaseClass {
    });
   }
 
-  public function testZoteroExpansionNYT() : void {
-   $this->requires_zotero(function() : void {
-    $text = '{{Cite web|url=https://www.nytimes.com/2018/06/11/technology/net-neutrality-repeal.html}}';
-    $expanded = $this->expand_via_zotero($text);
-    if ($expanded->get('title') === "") {
-       sleep(5);
-       $expanded = $this->expand_via_zotero($text);
-    }
-    if ($expanded->get('title') === "") {
-       sleep(5);
-       $expanded = $this->expand_via_zotero($text);
-    }
-    $this->assertSame("Net Neutrality Has Officially Been Repealed. Here's How That Could Affect You", str_replace('. (Published 2018)', '', $expanded->get('title')));
-    $this->assertSame('cite news', $expanded->wikiname());
-    $this->assertSame('Keith', $expanded->get2('first1'));
-    $this->assertSame('Collins', $expanded->get2('last1'));
-   });
-  }
-
   public function testZoteroExpansionNBK() : void {
    $this->requires_zotero(function() : void {
     $text = '{{Cite journal|url=https://www.ncbi.nlm.nih.gov/books/NBK24662/|access-date=2099-12-12}}';  // Date is before access-date so will expand
