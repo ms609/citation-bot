@@ -175,6 +175,7 @@ const ITALICS_LIST =
  "Prionailurus viverrinus|" .
  "Homo habilis|" .
  "Glycine tomentella|" .
+ "Culcita schmideliana|" .
  "Squilla armata|" .
  "Saurosuchus galilei|" .
  "Lathamus discolor|" .
