@@ -3,6 +3,7 @@ declare(strict_types=1);
 
 const NULL_DOI_ANNOYING = // TODO - manually check these from time to time - Last Check 10 MAR 2024
 array(
+'10.4194/1303-2712-v13_4_20' => TRUE,
 '10.1001/jama.275.17.1339' => TRUE,
 '10.1080/10798587.2007.10642974' => TRUE,
 '10.1139/gen-41-4-543' => TRUE,
@@ -387,7 +388,6 @@ array(
 '10.2174/138161211795428777' => TRUE,
 '10.2174/1874294701710010092' => TRUE,
 '10.21767/2049-5471.1000e4' => TRUE,
-'10.22054/scmw.2019.10140' => TRUE,
 '10.22108/LIAR.2017.21405' => TRUE,
 '10.2223/JPED.2083' => TRUE,
 '10.2225/vol8-issue1-fulltext-9' => TRUE, // "Forbid"
@@ -759,6 +759,7 @@ const NULL_DOI_BUT_GOOD = array(  // TODO - these need to be manually double che
                                   // Note that a failed url on one computer does not mean it is gone, it might just be you
                                   // You can use hdl.handle.org to show you the final url - russia and other countries firewall
                                   // Also, you can use various archive services to see (hdl.handle.org might not work while doi.org does work even!!!)
+'10.22054/scmw.2019.10140' => TRUE,
 '10.1001/archpsyc.60.5.497' => TRUE,
 '10.1002/047084289X.rt358.pub2' => TRUE,
 '10.1002/0471221902' => TRUE,
