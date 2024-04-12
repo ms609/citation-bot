@@ -513,6 +513,7 @@ const COMMON_MISTAKES = array ( // Common mistakes that aren't picked up by the 
   "link to author" => "author-link",
   "access-daet" => "access-date",
   "werk" => "work",
+  "abruf" => "access-date",			       
 ); // Lots of stuff that just existed
 
 const COMMON_MISTAKES_TOOL = array(
