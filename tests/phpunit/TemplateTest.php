@@ -1450,6 +1450,8 @@ final class TemplateTest extends testBaseClass {
   public function testLastVersusAuthor() : void {
     $text = "{{cite journal|pmid=12858711 }}";
     $expanded = $this->process_citation($text);
+    $text = $expanded->parsed_text();
+    $expanded = $this->process_citation($text);
     $this->assertNull($expanded->get2('author1'));
     $this->assertSame('Lovallo', $expanded->get2('last1'));
   }
