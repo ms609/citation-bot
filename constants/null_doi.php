@@ -394,7 +394,6 @@ array(
 '10.2225/vol9-issue3-fulltext-15' => TRUE, // "Forbid"
 '10.22353/mjbs.2004.02.13' => TRUE,
 '10.22374/cjgim.v13i3.258' => TRUE,
-'10.22518/16578953.34' => TRUE,
 '10.22520/tubaar.2000.0001' => TRUE,
 '10.22520/tubaar.2018.23.003' => TRUE,
 '10.22520/tubaar.2018.23.010' => TRUE,
@@ -762,6 +761,7 @@ const NULL_DOI_BUT_GOOD = array(  // TODO - these need to be manually double che
                                   // Note that a failed url on one computer does not mean it is gone, it might just be you
                                   // You can use hdl.handle.org to show you the final url - russia and other countries firewall
                                   // Also, you can use various archive services to see (hdl.handle.org might not work while doi.org does work even!!!)
+'10.22518/16578953.34' => TRUE,
 '10.1001/archpsyc.60.5.497' => TRUE,
 '10.1002/047084289X.rt358.pub2' => TRUE,
 '10.1002/0471221902' => TRUE,
