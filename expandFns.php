@@ -2025,7 +2025,7 @@ function clean_up_oxford_stuff(Template $template, string $param) : void {
 	      }
 	      $the_title = $template->get('title');
 	      if (preg_match('~^(.+) \- Oxford Dictionary of National Biography$~', $the_title, $matches) ||
-		  preg_match('~^(.+) # # # CITATION_BOT_PLACEHOLDER_TEMPLATE \d+ # # # Oxford Dictionary of National Biography$~', $the_title, $matches) ||
+		  preg_match('~^(.+) # # # (?:CITATION_BOT_PLACEHOLDER_TEMPLATE|citation_bot_placeholder_template) \d+ # # # Oxford Dictionary of National Biography$~i', $the_title, $matches) ||
 		  preg_match('~^(.+)  Oxford Dictionary of National Biography$~', $the_title, $matches) ||
 		  preg_match('~^(.+) &#\d+; Oxford Dictionary of National Biography$~', $the_title, $matches)) {
 		$template->set('title', trim($matches[1]));
