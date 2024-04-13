@@ -7211,7 +7211,7 @@ final class Template {
   }
 
   protected function get_inline_doi_from_title() : void {
-	 if (preg_match("~(?:\s)*(?:# # # CITATION_BOT_PLACEHOLDER_TEMPLATE )(\d+)(?: # # #)(?:\s)*~", $this->get('title'), $match)) {
+	 if (preg_match("~(?:\s)*(?:# # # CITATION_BOT_PLACEHOLDER_TEMPLATE )(\d+)(?: # # #)(?:\s)*~i", $this->get('title'), $match)) {
 	   if ($inline_doi = self::$all_templates[$match[1]]->inline_doi_information()) {
 		 if ($this->add_if_new('doi', trim($inline_doi[0]))) { // Add doi
 		   $this->set('title', trim($inline_doi[1]));
