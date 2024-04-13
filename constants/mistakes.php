@@ -529,6 +529,7 @@ const COMMON_MISTAKES = array ( // Common mistakes that aren't picked up by the 
   "پیوند بایگانی" => "archive-url",
   "نام" => "first",
   "نام خانوادگی" => "last",
+  "вебсайт" => "website",
 ); // Lots of stuff that just existed
 
 const COMMON_MISTAKES_TOOL = array(
