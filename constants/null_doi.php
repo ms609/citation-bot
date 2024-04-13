@@ -2805,7 +2805,6 @@ const NULL_DOI_BUT_GOOD = array(  // TODO - these need to be manually double che
 '10.17660/actahortic.2006.708.18' => TRUE,
 '10.17660/ActaHortic.2007.736.36' => TRUE,
 '10.17660/ActaHortic.2007.745.11' => TRUE,
-'10.17660/ActaHortic.2007.745.11' => TRUE,
 '10.17660/ActaHortic.2007.751.44' => TRUE,
 '10.17660/ActaHortic.2009.806.80' => TRUE,
 '10.17660/actahortic.2009.828.10' => TRUE,
