@@ -388,7 +388,6 @@ array(
 '10.2174/138161211795428777' => TRUE,
 '10.2174/1874294701710010092' => TRUE,
 '10.21767/2049-5471.1000e4' => TRUE,
-'10.22108/LIAR.2017.21405' => TRUE,
 '10.2223/JPED.2083' => TRUE,
 '10.2225/vol8-issue1-fulltext-9' => TRUE, // "Forbid"
 '10.2225/vol9-issue3-fulltext-15' => TRUE, // "Forbid"
@@ -761,6 +760,7 @@ const NULL_DOI_BUT_GOOD = array(  // TODO - these need to be manually double che
                                   // Note that a failed url on one computer does not mean it is gone, it might just be you
                                   // You can use hdl.handle.org to show you the final url - russia and other countries firewall
                                   // Also, you can use various archive services to see (hdl.handle.org might not work while doi.org does work even!!!)
+'10.22108/LIAR.2017.21405' => TRUE,
 '10.22518/16578953.34' => TRUE,
 '10.1001/archpsyc.60.5.497' => TRUE,
 '10.1002/047084289X.rt358.pub2' => TRUE,
