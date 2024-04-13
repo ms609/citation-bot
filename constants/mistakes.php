@@ -515,6 +515,20 @@ const COMMON_MISTAKES = array ( // Common mistakes that aren't picked up by the 
   "werk" => "work",
   "abruf" => "access-date",
   "archive0date" => "access-date",
+  "eebsite" => "website",
+  "author-lin" => "author-link",
+  "arhiivimisurl" => "archive-url",
+  "acessodata" => "access-date",
+  "ournal" => "journal",
+  "frist" => "first",
+  "locatio" => "location",
+  "ort" => "location",
+  "pealkiri" => "title",
+  "vaadatud" => "access-date",
+  "url-olek" => "url-status",
+  "پیوند بایگانی" => "archive-url",
+  "نام" => "first",
+  "نام خانوادگی" => "last",
 ); // Lots of stuff that just existed
 
 const COMMON_MISTAKES_TOOL = array(
