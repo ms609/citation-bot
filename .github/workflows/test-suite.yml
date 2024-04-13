@@ -23,7 +23,7 @@ jobs:
         php-version: '8.2'
         ini-values: pcov.directory=.
         coverage: pcov
-        extensions: mbstring, intl, sockets, opcache, openssl, xmlrpc, gettext, curl, iconv
+        extensions: mbstring, intl, sockets, opcache, openssl, xmlrpc, gettext, curl, iconv, pcre, lzf, zstd, zip, yaml
 
     - name: Validate composer.json and composer.lock
       run: composer validate
