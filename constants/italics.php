@@ -462,6 +462,7 @@ const ITALICS_HARDCODE_IN  = ["The Myth ofPiers Plowman", "BioelectromagnetismPr
 	     "the Binary Dynamics ofRomeo and Juliet", "llegada de los IncasAproximaciones desde", "Biomedical LawLegal and Extra",
 	     "Homo erectusPleistocene Evidence from ", "Technical Issues andFuture Directions", "on EarthJoseph Smith", "Brain and MemoryModulation and ",
 	     "Qusayr AmraArt and the", " ofDrosophilamotor circuits", "Understanding GenocideThe Social", "New Supreme CourtNational and",
+	     "the Limits of EmpireOpium and",
 ];
 const ITALICS_HARDCODE_OUT = ["The Myth of ''Piers Plowman''", "Bioelectromagnetism: Principles and Applications", "Practice in ''The Nice Valour''",
 	     "Tweeting the ''Jihad'': Social Media", " of Sectarianism: Community", " for Wonder: Nineteenth Century Travel ",
@@ -489,4 +490,5 @@ const ITALICS_HARDCODE_OUT = ["The Myth of ''Piers Plowman''", "Bioelectromagnet
 	     "the Binary Dynamics of ''Romeo and Juliet''", "llegada de los Incas. Aproximaciones desde", "Biomedical Law: Legal and Extra",
 	     "Homo erectus: Pleistocene Evidence from ", "Technical Issues and Future Directions", "on Earth: Joseph Smith", "Brain and Memory: Modulation and ",
 	     "Qusayr Amra: Art and the", " of ''Drosophila'' motor circuits", "Understanding Genocide: The Social", "New Supreme Court: National and",
+	     "the Limits of Empire: Opium and",
 ];
