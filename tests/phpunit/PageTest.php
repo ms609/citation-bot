@@ -394,6 +394,12 @@ final class PageTest extends testBaseClass {
       $this->assertTrue((bool) stripos($page->parsed_text(), 'PhysRevD.78.081701'));
   }
 
+  public function testUrlReferencesWithText17() : void {
+      $text = "<ref>{{isbn|9780974900902}}</ref>";
+      $page = $this->process_page($text);
+      $this->assertTrue((bool) stripos($page->parsed_text(), '978-0-9749009-0-2'));
+  }
+
   public function testMagazine() : void {
       $text = '{{cite magazine|work=Yup}}';
       $page = $this->process_page($text);
