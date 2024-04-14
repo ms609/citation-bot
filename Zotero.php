@@ -342,8 +342,8 @@ public static function expand_by_zotero(Template $template, ?string $url = NULL)
   if(stripos($url, 'CITATION_BOT_PLACEHOLDER') !== FALSE) return; // That's a bad url
 
   // Clean up URLs
-  if(preg_match('~^(https?://(?:www\.|)nature\.com/articles/[a-zA-Z0-9\.]+)\.pdf(?:|\?.*)$~', $url, $matches)) {
-     $url = $matches[1]; // remove PDF from Nature urls
+  if(preg_match('~^(https?://(?:www\.|)nature\.com/articles/[a-zA-Z0-9\.]+)\.pdf(?:|\?.*)$~i', $url, $matches)) { // remove .PDF from Nature urls
+     $url = $matches[1];  // @codeCoverageIgnore
   }
   if(preg_match('~^(https?://(?:www\.|)mdpi\.com/.+)(?:/pdf\-vor|/pdf)$~', $url, $matches)) {
      $url = $matches[1];
@@ -454,8 +454,8 @@ public static function process_zotero_response(string $zotero_response, Template
   unset($result->nameOfAct);
 
   if (stripos($url, 'www.royal.uk') !== FALSE) {
-    unset($result->creators);
-    unset($result->author);
+    unset($result->creators);  // @codeCoverageIgnore
+    unset($result->author);    // @codeCoverageIgnore
   }
 
   if (stripos($url, 'newrepublic.com') !== FALSE) { // Bad data for all but first one
@@ -1194,7 +1194,7 @@ public static function find_indentifiers_in_urls(Template $template, ?string $ur
      }
      if (preg_match("~^(https?://\S*jstor.org\S*)\?origin=~", $url, $matches)) {
        if (stripos($url, "accept") !== FALSE) {
-	 bot_debug_log("Accept Terms and Conditions JSTOR found : " . $url);
+	 bot_debug_log("Accept Terms and Conditions JSTOR found : " . $url);  // @codeCoverageIgnore
        } else {
 	 $url = $matches[1];
 	 if (is_null($url_sent)) {
