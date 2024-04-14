@@ -469,7 +469,7 @@ final class WikipediaBot {
   }
   static public function GetLastUser() : string {
     if(isset(self::$last_WikipediaBot)) return self::$last_WikipediaBot->get_the_user_internal();
-    return '';
+    return '';  // @codeCoverageIgnore
   }
 
 /**
