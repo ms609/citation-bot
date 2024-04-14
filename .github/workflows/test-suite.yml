@@ -57,6 +57,7 @@ jobs:
       run: ./vendor/bin/phpunit --coverage-clover coverage.xml 1>&2
 
     - name: Code Coverage
+      if: always()
       run: /bin/bash <(curl -s https://codecov.io/bash)
 
     - name: Look for weird stuff
