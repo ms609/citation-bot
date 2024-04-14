@@ -503,15 +503,15 @@ function restore_italics (string $text) : string {
      $text = str_replace($matches[0], $matches[1] . " ''" . $matches[2] . "''" . $pad . $matches[3], $text);
   }
   $text = trim(str_replace(['        ', '      ', '    ', '   ', '  '], [' ', ' ', ' ', ' ', ' '], $text));
-  /** if ($old !== $text) bot_debug_log('restore_italics: ' . $old . '    FORCED TO BE     ' . $text); **/
   $padded = ' '. $text . ' ';
   if (str_replace(CAMEL_CASE, '', $padded) !== $padded) return $text; // Words with capitals in the middle, but not the first character
   $new = safe_preg_replace('~([a-z]+)([A-Z][a-z]+\b)~', "$1 ''$2''", $text);
   if ($new === $text) {
     return $text;
   }
-  bot_debug_log('restore_italics: ' . $text . '       SHOULD BE     ' . $new);
-  return $text; // NOT $new, since we are wrong much more often than wrong with new CrossRef Code
+  // Do not return $new, since we are wrong much more often here than wrong with new CrossRef Code
+  bot_debug_log('restore_italics: ' . $text . '       SHOULD BE     ' . $new); // @codeCoverageIgnore
+  return $text; // @codeCoverageIgnore
 }
 
 function sanitize_string(string $str) : string {
