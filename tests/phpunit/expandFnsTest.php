@@ -82,6 +82,10 @@ final class expandFnsTest extends testBaseClass {
     $this->assertSame('CA',  title_capitalization('Ca' , TRUE));
   }
 
+  public function testCapitalization11() : void {
+    $this->assertSame('The Series A and B qu',  title_capitalization('The Series a and b qu' , TRUE));
+  }
+
   public function testFrenchCapitalization1() : void {
     $this->assertSame("L'Aerotecnica", title_capitalization(title_case("L'Aerotecnica"), TRUE));
   }
@@ -497,5 +501,17 @@ final class expandFnsTest extends testBaseClass {
     $this->assertFalse(doi_works('10.3316/aeipt.207729'));
     // DO's, not DOIs
     $this->assertFalse(doi_works('10.1002/was.00020423'));
+  }
+
+  public function testRestoreItalics1() : void {
+    $this->assertSame('Buitreraptor gonzalezorum', restore_italics('Buitreraptor gonzalezorum'));
+  }
+
+  public function testRestoreItalics2() : void {
+    $this->assertSame("Ca ''Buitreraptor gonzalezorum'' X", restore_italics('CaBuitreraptor gonzalezorumX'));
+  }
+
+  public function testRestoreItalics3() : void {
+    $this->assertSame('Buitreraptor gonzalezorumXXXX', restore_italics('Buitreraptor gonzalezorumXXXX'));
   }
 }
