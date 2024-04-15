@@ -131,7 +131,7 @@ final class WikipediaBot {
         $errnoInt = curl_errno(self::$ch_write);
         $errorStr = curl_error(self::$ch_write);
         report_warning('Curl error #'.$errnoInt.' on a Wikipedia write query: '.$errorStr);
-      }     // @codeCoverageIgnoreStart
+      }     // @codeCoverageIgnoreEnd
       $data = (string) $data;
       $ret = @json_decode($data);
       unset($data);
