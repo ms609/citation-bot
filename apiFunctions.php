@@ -70,11 +70,11 @@ final class AdsAbsControl {
 	self::free_memory(); // @codeCoverageIgnore
       }
   }
-  public static function free_memory() : void { // @codeCoverageIgnoreStart
+  public static function free_memory() : void {
       self::$doi2bib = [];
       self::$bib2doi = [];
       gc_collect_cycles();
-  } // @codeCoverageIgnoreEnd
+  }
 	
 }
 
