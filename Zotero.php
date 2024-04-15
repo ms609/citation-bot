@@ -30,7 +30,7 @@ public static function create_ch_zotero() : void {
   if (TRAVIS) {
 	  $time = 3.0;
   } else {
-	  $time = 1.0;
+	  $time = 1.0; // @codeCoverageIgnore
   }
   self::$zotero_ch = bot_curl_init($time,
 	 [CURLOPT_URL => CITOID_ZOTERO,
