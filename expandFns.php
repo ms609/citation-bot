@@ -38,7 +38,7 @@ final class HandleCache {
 	       10*count(self::$cache_hdl_loc) + // These include a path too
 	       count(self::$cache_hdl_null);
       if ($usage > self::MAX_CACHE_SIZE) {
-	self::free_memory();
+	self::free_memory();  // @codeCoverageIgnore
       }
   }
   public static function free_memory() : void {
