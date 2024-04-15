@@ -279,10 +279,8 @@ private static function zotero_request(string $url) : string {
   usleep($delay);
   $zotero_response = bot_curl_exec(self::$zotero_ch);
   if ($zotero_response === '') {
-     // @codeCoverageIgnoreStart
-     sleep(2);
-     $zotero_response = bot_curl_exec(self::$zotero_ch);
-     // @codeCoverageIgnoreEnd
+     sleep(2); // @codeCoverageIgnore
+     $zotero_response = bot_curl_exec(self::$zotero_ch); // @codeCoverageIgnore
   }
   if ($zotero_response === '') {
     // @codeCoverageIgnoreStart
