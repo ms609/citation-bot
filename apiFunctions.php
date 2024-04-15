@@ -67,14 +67,14 @@ final class AdsAbsControl {
   public static function check_memory_use() : void {
       $usage = count(self::$doi2bib) + count(self::$bib2doi);
       if ($usage > self::MAX_CACHE_SIZE) {
-	self::free_memory();
+	self::free_memory(); // @codeCoverageIgnore
       }
   }
-  public static function free_memory() : void {
+  public static function free_memory() : void { // @codeCoverageIgnoreStart
       self::$doi2bib = [];
       self::$bib2doi = [];
       gc_collect_cycles();
-  }
+  } // @codeCoverageIgnoreEnd
 	
 }
 
@@ -1150,7 +1150,7 @@ function Bibcode_Response_Processing(array $curl_opts, string $adsabs_url) : obj
     }
 
     if (is_object($decoded) && isset($decoded->error)) {
-      $retry_msg='';
+      $retry_msg='';                                                 // @codeCoverageIgnoreStart
       $time_to_sleep = NULL;
       $limit_action = NULL;
       if (is_int($ratelimit_total) && is_int($ratelimit_left) && is_int($ratelimit_current) && ($ratelimit_left <= 0) && ($ratelimit_current >= $ratelimit_total) && preg_match('~\nretry-after:\s*(\d+)\r~i', $header, $retry_after)) {
@@ -1193,7 +1193,6 @@ function Bibcode_Response_Processing(array $curl_opts, string $adsabs_url) : obj
       unset($retry_msg);
       unset($time_to_sleep);
 
-      // @codeCoverageIgnoreStart
       if (isset($decoded->error->trace)) {
 	bot_debug_log("AdsAbs website returned a stack trace - URL was:  " . $adsabs_url);
 	throw new Exception("AdsAbs website returned a stack trace" . "\n - URL was:  " . $adsabs_url,
@@ -1212,7 +1211,7 @@ function Bibcode_Response_Processing(array $curl_opts, string $adsabs_url) : obj
     }
 
     if (!is_object($decoded)) {
-      bot_debug_log("Could not decode ADSABS API response:\n" . $body . "\nURL was:  " . $adsabs_url);
+      bot_debug_log("Could not decode ADSABS API response:\n" . $body . "\nURL was:  " . $adsabs_url);  // @codeCoverageIgnore
       throw new Exception("Could not decode API response:\n" . $body, 5000);  // @codeCoverageIgnore
     } elseif (isset($decoded->response)) {
       return $decoded->response;  /** NORMAL RETURN IS HIDDEN HERE **/
