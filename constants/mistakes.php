@@ -530,6 +530,10 @@ const COMMON_MISTAKES = array ( // Common mistakes that aren't picked up by the 
   "نام" => "first",
   "نام خانوادگی" => "last",
   "вебсайт" => "website",
+  "siteweb" => "website",
+  "datefile" => "date",
+  "data archive" => "archive-date",
+  "editore" => "editor",
 ); // Lots of stuff that just existed
 
 const COMMON_MISTAKES_TOOL = array(
