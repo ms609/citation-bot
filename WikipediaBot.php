@@ -127,11 +127,11 @@ final class WikipediaBot {
 
       $data = @curl_exec(self::$ch_write);
       if ($data === false)
-      {
+      {     // @codeCoverageIgnoreStart
         $errnoInt = curl_errno(self::$ch_write);
         $errorStr = curl_error(self::$ch_write);
         report_warning('Curl error #'.$errnoInt.' on a Wikipedia write query: '.$errorStr);
-      }
+      }     // @codeCoverageIgnoreStart
       $data = (string) $data;
       $ret = @json_decode($data);
       unset($data);
@@ -384,11 +384,11 @@ final class WikipediaBot {
 
     $data = @curl_exec(self::$ch_logout);
     if ($data === false)
-    {
+    {   // @codeCoverageIgnoreStart
       $errnoInt = curl_errno(self::$ch_logout);
       $errorStr = curl_error(self::$ch_logout);
       report_warning('Curl error #'.$errnoInt.' on a Wikipedia API query: '.$errorStr);
-    }
+    }   // @codeCoverageIgnoreEnd
     $data = (string) $data;
     if ($data === '') {
        sleep(4);                                       // @codeCoverageIgnore
@@ -425,11 +425,11 @@ final class WikipediaBot {
 	       CURLOPT_URL => WIKI_ROOT . '?' . http_build_query(['title' => $title, 'action' =>'raw'])]);
     $text = @curl_exec(self::$ch_logout);
     if ($text === false)
-    {
+    {   // @codeCoverageIgnoreStart
       $errnoInt = curl_errno(self::$ch_logout);
       $errorStr = curl_error(self::$ch_logout);
       report_warning('Curl error #'.$errnoInt.' on getting Wikipedia page '.$title.': '.$errorStr);
-    }
+    }   // @codeCoverageIgnoreEnd
     return (string) $text;
   }
 
