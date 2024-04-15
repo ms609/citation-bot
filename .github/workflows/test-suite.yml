@@ -58,6 +58,8 @@ jobs:
 
     - name: Code Coverage
       if: always()
+      env:
+         CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
       uses: codecov/codecov-action@v4.3.0
       with:
          file: ./coverage.xml
