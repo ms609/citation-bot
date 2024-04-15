@@ -18,6 +18,11 @@ final class apiFunctionsTest extends testBaseClass {
     $this->assertTrue(TRUE);
   }
 
+  public function testS2CIDlicenseFALSE() : void {
+    sleep(1);
+    $this->assertFalse(get_semanticscholar_license('94502987'));
+  }
+
   public function testAdsabsApi() : void {
     $this->requires_bibcode(function() : void {
       $bibcodes = [
@@ -827,11 +832,8 @@ final class apiFunctionsTest extends testBaseClass {
     $this->assertSame($text, $prepared->parsed_text());
   }
 
-  public function testS2CIDlicenseFALSE() : void {
-    $this->assertFalse(get_semanticscholar_license('94502987'));
-  }
-
   public function testS2CIDlicenseTRUE() : void {
+    sleep(2);
     $this->assertTrue(get_semanticscholar_license('52813129'));
   }
 	
