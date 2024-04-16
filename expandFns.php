@@ -66,7 +66,7 @@ function doi_active(string $doi) : ?bool {
 
   $works = is_doi_active($doi);
   if ($works === NULL) { // Temporary problem - do not cache
-    return NULL; // @CodeCoverageIgnore
+    return NULL; // @codeCoverageIgnore
   }
   if ($works === FALSE) {
     HandleCache::$cache_inactive[$doi] = TRUE;
@@ -91,13 +91,13 @@ function doi_works(string $doi) : ?bool {
         return FALSE;
     }
     // These are know to be good, but sometimes null since PDF, etc
-    if (isset(NULL_DOI_BUT_GOOD[$doi])) {        // @CodeCoverageIgnoreStart
+    if (isset(NULL_DOI_BUT_GOOD[$doi])) {        // @codeCoverageIgnoreStart
         HandleCache::$cache_good[$doi] = TRUE;
         return TRUE;
     }
     // These are unexpected NULLs  
     HandleCache::$cache_hdl_null[$doi] = TRUE;
-    return NULL;                                 // @CodeCoverageIgnoreEnd
+    return NULL;                                 // @codeCoverageIgnoreEnd
   }
   if ($works === FALSE) {
     HandleCache::$cache_hdl_bad[$doi] = TRUE;
@@ -120,18 +120,18 @@ function is_doi_active(string $doi) : ?bool {
   curl_setopt($ch, CURLOPT_URL, $url);	
   $headers_test = bot_curl_exec($ch);
   if ($headers_test === "" || (curl_getinfo($ch, CURLINFO_RESPONSE_CODE) === 503)) {
-    sleep(4);                             // @CodeCoverageIgnore
-    $headers_test = bot_curl_exec($ch);   // @CodeCoverageIgnore
+    sleep(4);                             // @codeCoverageIgnore
+    $headers_test = bot_curl_exec($ch);   // @codeCoverageIgnore
   }
   if ($headers_test === "") return NULL; // most likely bad
   $response_code = curl_getinfo($ch, CURLINFO_RESPONSE_CODE);
   if ($response_code === 200) return TRUE;
   if ($response_code === 404) return FALSE;
-  if ($response_code === 503) return NULL;      // @CodeCoverageIgnoreStart
+  if ($response_code === 503) return NULL;      // @codeCoverageIgnoreStart
   $err = "CrossRef server error loading headers for DOI " . echoable($doi . " : " . (string) $response_code);
   bot_debug_log($err);
   report_warning($err);
-  return NULL;                                  // @CodeCoverageIgnoreEnd
+  return NULL;                                  // @codeCoverageIgnoreEnd
 }
 
 function throttle_dx () : void {
@@ -994,15 +994,15 @@ function throttle () : void {
     unset($matches);
     $mem_used = (int) (memory_get_usage() / 1048576);
     if (($mem_max !== 0) && ($mem_used > $mem_max)) {  // Clear every buffer we have
-       HandleCache::free_memory();                          // @CodeCoverageIgnoreStart
+       HandleCache::free_memory();                          // @codeCoverageIgnoreStart
        $mem_used1 = (string) (int) (memory_get_usage() / 1048576);
        AdsAbsControl::free_memory();
        $mem_used2 = (string) (int) (memory_get_usage() / 1048576);
        $mem_used0 = (string) $mem_used;
        bot_debug_log("Cleared memory: " . $mem_used2 . ' : '  . $mem_used1 . ' : ' . $mem_used0);
-    }                                                        // @CodeCoverageIgnoreEnd
+    }                                                        // @codeCoverageIgnoreEnd
   } else {
-    bot_debug_log("Memory Limit should end in M, but got: " . echoable($mem_max));  // @CodeCoverageIgnore
+    bot_debug_log("Memory Limit should end in M, but got: " . echoable($mem_max));  // @codeCoverageIgnore
   }
   $phase = $phase + 1;
   if ($phase < $cycles) {
@@ -1014,9 +1014,9 @@ function throttle () : void {
   $time_since_last_write = time() - $last_write_time;
   if ($time_since_last_write < 0) $time_since_last_write = 0; // Super paranoid, this would be a freeze point
   if ($time_since_last_write < $min_interval) {
-    $time_to_pause = (int) floor($min_interval - $time_since_last_write); // @CodeCoverageIgnore
-    report_info("Throttling: waiting $time_to_pause seconds...");         // @CodeCoverageIgnore
-    sleep($time_to_pause);                                                // @CodeCoverageIgnore
+    $time_to_pause = (int) floor($min_interval - $time_since_last_write); // @codeCoverageIgnore
+    report_info("Throttling: waiting $time_to_pause seconds...");         // @codeCoverageIgnore
+    sleep($time_to_pause);                                                // @codeCoverageIgnore
   }
   $last_write_time = time();
 }
