@@ -90,12 +90,14 @@ function doi_works(string $doi) : ?bool {
         HandleCache::$cache_hdl_bad[$doi] = TRUE;
         return FALSE;
     }
-    if (isset(NULL_DOI_BUT_GOOD[$doi])) { // These are know to be good, but null since PDF, etc
+    // These are know to be good, but sometimes null since PDF, etc
+    if (isset(NULL_DOI_BUT_GOOD[$doi])) {        // @CodeCoverageIgnoreStart
         HandleCache::$cache_good[$doi] = TRUE;
         return TRUE;
     }
-    HandleCache::$cache_hdl_null[$doi] = TRUE;   // @CodeCoverageIgnore
-    return NULL;   // @CodeCoverageIgnore
+    // These are unexpected NULLs  
+    HandleCache::$cache_hdl_null[$doi] = TRUE;
+    return NULL;                                 // @CodeCoverageIgnoreEnd
   }
   if ($works === FALSE) {
     HandleCache::$cache_hdl_bad[$doi] = TRUE;
