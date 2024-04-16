@@ -75,11 +75,11 @@ final class Template {
 	if (preg_match("~^(\s*)[\s\S]*?(\s*)$~", $this->name, $spacing)) { // Use non-greedy RegEx
 	   $trim_name = trim($this->name);
 	} else {
-           bot_debug_log("RegEx failure in Template name: " . $this->name);
+           bot_debug_log("RegEx failure in Template name: " . $this->name); // @codeCoverageIgnoreStart
            $trim_name = $this->name;
            $spacing = array();
            $spacing[1] = '';
-           $spacing[2] = '';
+           $spacing[2] = '';                                                // @codeCoverageIgnoreEnd
 	}
 	if (strpos($trim_name, "_") !== FALSE) {
 	  $tmp_name = str_replace("_", " ", $trim_name);
@@ -3460,7 +3460,7 @@ final class Template {
 		  case "url": // Untrustable: used by bozos
 			break;
 		  default:
-			report_minor_error("No match found for subtemplate type: " . echoable($subtemplate_name));
+			report_minor_error("No match found for subtemplate type: " . echoable($subtemplate_name));  // @codeCoverageIgnore
 		}
 	  }
 	}
