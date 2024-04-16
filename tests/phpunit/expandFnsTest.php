@@ -90,15 +90,15 @@ final class expandFnsTest extends testBaseClass {
     $this->assertSame('PEN International',  title_capitalization('Pen International' , TRUE));
   }
 
-  public function testCapitalization12() : void {
+  public function testCapitalization13() : void {
     $this->assertSame('Time Off',  title_capitalization('Time off' , TRUE));
   }
 
-  public function testCapitalization12() : void {
+  public function testCapitalization14() : void {
     $this->assertSame('IT Professional',  title_capitalization('It Professional' , TRUE));
   }
 
-  public function testCapitalization12() : void {
+  public function testCapitalization15() : void {
     $this->assertSame('JOM',  title_capitalization('Jom' , TRUE));
   }
 	
