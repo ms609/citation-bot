@@ -534,6 +534,10 @@ const COMMON_MISTAKES = array ( // Common mistakes that aren't picked up by the 
   "datefile" => "date",
   "data archive" => "archive-date",
   "editore" => "editor",
+  "urlfile" => "archive-url",
+  "fiorst4" => "first4",
+  "alst4" => "last4",
+  "las t" => "last",
 ); // Lots of stuff that just existed
 
 const COMMON_MISTAKES_TOOL = array(
