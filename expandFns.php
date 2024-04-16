@@ -65,8 +65,8 @@ function doi_active(string $doi) : ?bool {
   }
 
   $works = is_doi_active($doi);
-  if ($works === NULL) {
-    return NULL; // Temporary problem - do not cache
+  if ($works === NULL) { // Temporary problem - do not cache
+    return NULL; // @CodeCoverageIgnore
   }
   if ($works === FALSE) {
     HandleCache::$cache_inactive[$doi] = TRUE;
@@ -94,8 +94,8 @@ function doi_works(string $doi) : ?bool {
         HandleCache::$cache_good[$doi] = TRUE;
         return TRUE;
     }
-    HandleCache::$cache_hdl_null[$doi] = TRUE;
-    return NULL;
+    HandleCache::$cache_hdl_null[$doi] = TRUE;   // @CodeCoverageIgnore
+    return NULL;   // @CodeCoverageIgnore
   }
   if ($works === FALSE) {
     HandleCache::$cache_hdl_bad[$doi] = TRUE;
@@ -118,18 +118,18 @@ function is_doi_active(string $doi) : ?bool {
   curl_setopt($ch, CURLOPT_URL, $url);	
   $headers_test = bot_curl_exec($ch);
   if ($headers_test === "" || (curl_getinfo($ch, CURLINFO_RESPONSE_CODE) === 503)) {
-    sleep(4);
-    $headers_test = bot_curl_exec($ch);
+    sleep(4);                             // @CodeCoverageIgnore
+    $headers_test = bot_curl_exec($ch);   // @CodeCoverageIgnore
   }
   if ($headers_test === "") return NULL; // most likely bad
   $response_code = curl_getinfo($ch, CURLINFO_RESPONSE_CODE);
   if ($response_code === 200) return TRUE;
   if ($response_code === 404) return FALSE;
-  if ($response_code === 503) return NULL;
-  $err = "CrossRef server error loading headers for DOI " . echoable($doi . " : " . (string) $response_code); // @codeCoverageIgnore
-  bot_debug_log($err);   // @codeCoverageIgnore
-  report_warning($err);  // @codeCoverageIgnore
-  return NULL;           // @codeCoverageIgnore
+  if ($response_code === 503) return NULL;      // @CodeCoverageIgnoreStart
+  $err = "CrossRef server error loading headers for DOI " . echoable($doi . " : " . (string) $response_code);
+  bot_debug_log($err);
+  report_warning($err);
+  return NULL;                                  // @CodeCoverageIgnoreEnd
 }
 
 function throttle_dx () : void {
@@ -191,8 +191,8 @@ function is_doi_works(string $doi) : ?bool {
   if ($headers_test === FALSE) {
      $headers_test = get_headers_array($url);  // @codeCoverageIgnore
   }
-  if ($headers_test === FALSE) {
-     return NULL; // most likely bad - note that NULL means do not add or remove doi-broken-date from pages
+  if ($headers_test === FALSE) {  // most likely bad - note that NULL means do not add or remove doi-broken-date from pages
+     return NULL;  // @codeCoverageIgnore
   }
   if (stripos($doi, '10.1126/scidip.') === 0) {
       if ((string) @$headers_test['1'] === 'HTTP/1.1 404 Forbidden') unset($headers_test['1']); // https://doi.org/10.1126/scidip.ado5059
@@ -253,10 +253,10 @@ function get_loc_from_hdl_header(array $headers_test) : ?string {
       return(string) $headers_test['location'];
   } elseif (isset($headers_test['Location'])) {
       return (string) $headers_test['Location'];
-  } else {
+  } else { // @codeCoverageIgnoreStart
       bot_debug_log("Got weird header from handle: " . echoable(print_r($headers_test, TRUE)));  // Is this even possible
       return NULL;
-  }
+  }        // @codeCoverageIgnoreEnd
 }
 
 /** @psalm-suppress UnusedParam
@@ -991,16 +991,16 @@ function throttle () : void {
     $mem_max = (int) (0.3 * @intval($matches[1])); // Memory limit is set super high just to avoid crash
     unset($matches);
     $mem_used = (int) (memory_get_usage() / 1048576);
-    if (($mem_max !== 0) && ($mem_used > $mem_max)) { // Clear every buffer we have
-       HandleCache::free_memory();
+    if (($mem_max !== 0) && ($mem_used > $mem_max)) {  // Clear every buffer we have
+       HandleCache::free_memory();                          // @CodeCoverageIgnoreStart
        $mem_used1 = (string) (int) (memory_get_usage() / 1048576);
        AdsAbsControl::free_memory();
        $mem_used2 = (string) (int) (memory_get_usage() / 1048576);
        $mem_used0 = (string) $mem_used;
        bot_debug_log("Cleared memory: " . $mem_used2 . ' : '  . $mem_used1 . ' : ' . $mem_used0);
-    }
+    }                                                        // @CodeCoverageIgnoreEnd
   } else {
-    bot_debug_log("Memory Limit should end in M, but got: " . echoable($mem_max));
+    bot_debug_log("Memory Limit should end in M, but got: " . echoable($mem_max));  // @CodeCoverageIgnore
   }
   $phase = $phase + 1;
   if ($phase < $cycles) {
@@ -1012,9 +1012,9 @@ function throttle () : void {
   $time_since_last_write = time() - $last_write_time;
   if ($time_since_last_write < 0) $time_since_last_write = 0; // Super paranoid, this would be a freeze point
   if ($time_since_last_write < $min_interval) {
-    $time_to_pause = (int) floor($min_interval - $time_since_last_write);
-    report_info("Throttling: waiting $time_to_pause seconds...");
-    sleep($time_to_pause);
+    $time_to_pause = (int) floor($min_interval - $time_since_last_write); // @CodeCoverageIgnore
+    report_info("Throttling: waiting $time_to_pause seconds...");         // @CodeCoverageIgnore
+    sleep($time_to_pause);                                                // @CodeCoverageIgnore
   }
   $last_write_time = time();
 }
