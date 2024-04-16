@@ -20,7 +20,7 @@ final class apiFunctionsTest extends testBaseClass {
 
   public function testS2CIDlicenseFALSE() : void {
     sleep(1);
-    $this->assertFalse(get_semanticscholar_license('94502987'));
+    $this->assertFalse(get_semanticscholar_license('94502986'));
   }
 
   public function testAdsabsApi() : void {
