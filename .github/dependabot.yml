@@ -1,10 +1,12 @@
 version: 2
 updates:
   - package-ecosystem: "composer"
-    open-pull-requests-limit: 2
+    open-pull-requests-limit: 4
     directory: "/"
     ignore:
       - dependency-name: "*"
         update-types: ["version-update:semver-patch"]
     schedule:
-      interval: "weekly"
+        interval: "weekly"
+    env:
+        CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
