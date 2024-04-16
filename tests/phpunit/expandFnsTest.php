@@ -86,6 +86,22 @@ final class expandFnsTest extends testBaseClass {
     $this->assertSame('The Series A and B qu',  title_capitalization('The Series a and b qu' , TRUE));
   }
 
+  public function testCapitalization12() : void {
+    $this->assertSame('PEN International',  title_capitalization('Pen International' , TRUE));
+  }
+
+  public function testCapitalization12() : void {
+    $this->assertSame('Time Off',  title_capitalization('Time off' , TRUE));
+  }
+
+  public function testCapitalization12() : void {
+    $this->assertSame('IT Professional',  title_capitalization('It Professional' , TRUE));
+  }
+
+  public function testCapitalization12() : void {
+    $this->assertSame('JOM',  title_capitalization('Jom' , TRUE));
+  }
+	
   public function testFrenchCapitalization1() : void {
     $this->assertSame("L'Aerotecnica", title_capitalization(title_case("L'Aerotecnica"), TRUE));
   }
@@ -489,6 +505,11 @@ final class expandFnsTest extends testBaseClass {
     $this->assertSame($test, convert_to_utf8(mb_convert_encoding($test, "EUC-KR",  "UTF-8")));
   }
 
+  public function testVariousEncodes9() : void {
+    $this->assertSame('', smart_decode('test', 'utf-8-sig', 'http'));
+    $this->assertSame('', smart_decode('test', 'x-user-defined', 'http'
+  }
+
   public function testRomanNumbers() : void {
     $this->assertSame('MMCCCXXXI', numberToRomanRepresentation(2331));
   }
@@ -514,4 +535,34 @@ final class expandFnsTest extends testBaseClass {
   public function testRestoreItalics3() : void {
     $this->assertSame('Buitreraptor gonzalezorumXXXX', restore_italics('Buitreraptor gonzalezorumXXXX'));
   }
+
+  public function testcheck_memory_usage() : void {
+    check_memory_usage('testcheck_memory_usage');
+    $this->assertTrue(TRUE);
+  }
+
+  public function testCleanDates1() : void {
+    $this->assertSame('', clean_dates(''));
+  }
+
+  public function testCleanDates2() : void {
+    $this->assertSame('April–May 1995', clean_dates('April-May 1995'));
+  }
+
+  public function testCleanDates3() : void {
+    $this->assertSame('December 7, 2023', clean_dates('December 7 2023'));
+  }
+
+  public function testCleanDates4() : void {
+    $this->assertSame('8 December 2022', clean_dates('8 December 2022.'));
+  } 
+
+  public function testCleanDates5() : void {
+    $this->assertSame('8 December 2022', clean_dates('08 December 2022'));
+  }
+
+  public function testCleanDates6() : void {
+    $this->assertSame('November 2, 1981', clean_dates('Monday, November 2, 1981'));
+  }
+
 }
