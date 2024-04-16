@@ -1413,7 +1413,7 @@ function CrossRefTitle(string $doi) : string {
 	  }
 	  return str_ireplace(['<i>', '</i>', '</i> :', '  '], [' <i>', '</i> ', '</i>:', ' '], $title);
      } else {
-	  sleep(2);
-	  return '';
+	  sleep(2);  // @codeCoverageIgnore
+	  return ''; // @codeCoverageIgnore
      }
   }
