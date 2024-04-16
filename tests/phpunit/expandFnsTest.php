@@ -507,7 +507,7 @@ final class expandFnsTest extends testBaseClass {
 
   public function testVariousEncodes9() : void {
     $this->assertSame('', smart_decode('test', 'utf-8-sig', 'http'));
-    $this->assertSame('', smart_decode('test', 'x-user-defined', 'http'
+    $this->assertSame('', smart_decode('test', 'x-user-defined', 'http'));
   }
 
   public function testRomanNumbers() : void {
