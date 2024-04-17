@@ -540,6 +540,9 @@ const COMMON_MISTAKES = array ( // Common mistakes that aren't picked up by the 
   "las t" => "last",
   "firsst" => "first",
   "langugage" => "language",
+  "firast1" => "first1",
+  "volumeas" => "volume",
+  "publishr" => "publisher",
 ); // Lots of stuff that just existed
 
 const COMMON_MISTAKES_TOOL = array(
