@@ -418,7 +418,19 @@ final class expandFnsTest extends testBaseClass {
       if (isset(NULL_DOI_BUT_GOOD[$doi])) {
         $changes = $changes . "In Both: " . $doi . "        ";
       }
-      $works = doi_works($doi);
+      // Deal with super common ones that flood the list
+      if (strpos($doi, '10.1601/nm.') === 0 ||
+	  strpos($doi, '10.1601/tx.') === 0 ||
+	  strpos($doi, '10.5353/th_') === 0 ||
+	  strpos($doi, '10.1601/ex.') === 0 {
+        if (in_array($doi, array('10.1601/ex.9753', '10.1601/nm.10037', '10.1601/tx.11311', '10.5353/th_b3198302'))) {
+          $works = doi_works($doi);
+	} else {
+	  $works = FALSE;
+	}
+      } else {
+        $works = doi_works($doi);
+      }
       sleep(1); // give dx.doi.org a break on this junk
       if ($works === TRUE && !isset(NULL_DOI_ANNOYING[$doi])) {
         $changes = $changes . "Flagged as GOOD: " . $doi . "       ";
