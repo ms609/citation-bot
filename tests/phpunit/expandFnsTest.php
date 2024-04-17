@@ -419,10 +419,10 @@ final class expandFnsTest extends testBaseClass {
         $changes = $changes . "In Both: " . $doi . "        ";
       }
       // Deal with super common ones that flood the list
-      if (strpos($doi, '10.1601/nm.') === 0 ||
+      if (strpos($doi, '10.5353/th_') === 0 ||
 	  strpos($doi, '10.1601/tx.') === 0 ||
-	  strpos($doi, '10.5353/th_') === 0 ||
-	  strpos($doi, '10.1601/ex.') === 0 {
+	  strpos($doi, '10.1601/nm.') === 0 ||
+	  strpos($doi, '10.1601/ex.') === 0) {
         if (in_array($doi, array('10.1601/ex.9753', '10.1601/nm.10037', '10.1601/tx.11311', '10.5353/th_b3198302'))) {
           $works = doi_works($doi);
 	} else {
