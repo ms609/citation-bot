@@ -1,11 +1,8 @@
 version: 2
 updates:
   - package-ecosystem: "composer"
-    open-pull-requests-limit: 4
+    open-pull-requests-limit: 8
     directory: "/"
-    ignore:
-      - dependency-name: "*"
-        update-types: ["version-update:semver-patch"]
     schedule:
         interval: "daily"
     env:
