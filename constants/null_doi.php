@@ -5702,7 +5702,6 @@ const NULL_DOI_BUT_GOOD = array(  // TODO - these need to be manually double che
 '10.1553/0x003b1f5a' => TRUE,
 '10.15537/smj.2015.4.10210' => TRUE,
 '10.1554/05-399.1' => TRUE,
-'10.1554/05-399.1' => TRUE,
 '10.1558/bsor.v41i3.22' => TRUE,
 '10.1558/bsrv.v25i2.194' => TRUE,
 '10.1558/firn.35029' => TRUE,
