@@ -544,6 +544,8 @@ const COMMON_MISTAKES = array ( // Common mistakes that aren't picked up by the 
   "volumeas" => "volume",
   "publishr" => "publisher",
   "webstie" => "website",
+  "titule" => "title",
+  "titulo" => "title",
 ); // Lots of stuff that just existed
 
 const COMMON_MISTAKES_TOOL = array(
