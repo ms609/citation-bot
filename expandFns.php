@@ -238,26 +238,26 @@ function interpret_doi_header(array $headers_test) : ?bool {
   if (stripos($resp0, '301 Moved Permanently') !== FALSE || stripos($resp0, 'HTTP/1.1 301') !== FALSE) { // Could be DOI change or bad prefix
       if (stripos($resp1, '302 Found') !== FALSE         || stripos($resp1, 'HTTP/1.1 302') !== FALSE) {
 	return TRUE;  // Good
-      } elseif (stripos($resp1, '301 Moved Permanently') !== FALSE || stripos($resp1, 'HTTP/1.1 301') !== FALSE) { // Just in case code.
-	if (stripos($resp2, '200 OK') !== FALSE         || stripos($resp2, 'HTTP/1.1 200') !== FALSE) {    // @codeCoverageIgnoreStart
+      } elseif (stripos($resp1, '301 Moved Permanently') !== FALSE || stripos($resp1, 'HTTP/1.1 301') !== FALSE) {    // @codeCoverageIgnoreStart
+	if (stripos($resp2, '200 OK') !== FALSE         || stripos($resp2, 'HTTP/1.1 200') !== FALSE) {
 	  return TRUE;
 	} else {
 	  return FALSE;
-	}                                                                                                  // @codeCoverageIgnoreEnd
+	}
       } else {
 	return FALSE;
       }
   }
-  report_minor_error("Unexpected response in is_doi_works " . echoable($resp0)); // @codeCoverageIgnore
-  return NULL; // @codeCoverageIgnore
+  report_minor_error("Unexpected response in is_doi_works " . echoable($resp0));
+  return NULL; // @codeCoverageIgnoreEnd
 }
 
 /** @param array<mixed> $headers_test **/
 function get_loc_from_hdl_header(array $headers_test) : ?string {
-  if (isset($headers_test['Location'][0]) && is_array(@$headers_test['Location'])) {
-      return (string) $headers_test['Location'][0];
+  if (isset($headers_test['Location'][0]) && is_array(@$headers_test['Location'])) { // Should not be an array, but on rare occasions we get one
+      return (string) $headers_test['Location'][0];  // @codeCoverageIgnore
   } elseif (isset($headers_test['location'][0]) && is_array(@$headers_test['location'])) {
-      return (string) $headers_test['location'][0];
+      return (string) $headers_test['location'][0];  // @codeCoverageIgnore
   } elseif (isset($headers_test['location'])) {
       return(string) $headers_test['location'];
   } elseif (isset($headers_test['Location'])) {
