@@ -121,7 +121,7 @@ function is_doi_active(string $doi) : ?bool {
   $return = bot_curl_exec($ch);
   $header_length = (int) @curl_getinfo($ch, CURLINFO_HEADER_SIZE);
   $header = substr($return, 0, $return);
-  $body = substr($return, header_length);
+  $body = substr($return, $header_length);
   $response_code = curl_getinfo($ch, CURLINFO_RESPONSE_CODE);
   if ($header === "" || ($response_code === 503)) {
     sleep(4);                                                               // @codeCoverageIgnoreStart
@@ -129,7 +129,7 @@ function is_doi_active(string $doi) : ?bool {
     $response_code = curl_getinfo($ch, CURLINFO_RESPONSE_CODE);
     $header_length = (int) @curl_getinfo($ch, CURLINFO_HEADER_SIZE);
     $header = substr($return, 0, $return);
-    $body = substr($return, header_length);                                 // @codeCoverageIgnoreEnd
+    $body = substr($return, $header_length);                                 // @codeCoverageIgnoreEnd
   }
   if ($header === "" || ($response_code === 503)) return NULL;
   if ($body === 'Resource not found.') return FALSE;
