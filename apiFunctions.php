@@ -1051,13 +1051,13 @@ function expand_templates_from_archives(array &$templates) : void { // This is d
 	    $cleaned = FALSE;
 	    $encode = [];
 	    if (preg_match('~x-archive-guessed-charset: (\S+)~i', $raw_html, $match)) {
-	      if (is_encoding_reasonable($encode)) $encode[] = $match[1];
+	      if (is_encoding_reasonable($match[1])) $encode[] = $match[1];
 	    }
 	    if (preg_match('~<meta http-equiv="?content-type"? content="text\/html;[\s]*charset=([^"]+)"~i', $raw_html, $match)) {
-	      if (is_encoding_reasonable($encode)) $encode[] = $match[1];
+	      if (is_encoding_reasonable($match[1])) $encode[] = $match[1];
 	    }
 	    if (preg_match('~<meta http-equiv="?content-type"? content="text\/html;[\s]*charset=([^"]+)"~i', $raw_html, $match)) {
-	      if (strtolower($encode) !== 'utf-8') $encode[] = $match[1];
+	      if (strtolower($match[1]) !== 'utf-8') $encode[] = $match[1];
 	    }
 	    foreach ($encode as $pos_encode) {
 		if (!$cleaned) {
