@@ -543,6 +543,7 @@ const COMMON_MISTAKES = array ( // Common mistakes that aren't picked up by the 
   "firast1" => "first1",
   "volumeas" => "volume",
   "publishr" => "publisher",
+  "webstie" => "website",
 ); // Lots of stuff that just existed
 
 const COMMON_MISTAKES_TOOL = array(
