@@ -1049,43 +1049,33 @@ function expand_templates_from_archives(array &$templates) : void { // This is d
 	      $title !== ''
 	     ) {
 	    $cleaned = FALSE;
+	    $encode = [];
 	    if (preg_match('~x-archive-guessed-charset: (\S+)~i', $raw_html, $match)) {
-	      $encode = $match[1];
-	      if (is_encoding_reasonable($encode)) {
-		$try = smart_decode($title, $encode, $archive_url);
-		if ($try != "") {
-		  $title = $try;
-		  $cleaned = TRUE;
+	      if (is_encoding_reasonable($match[1])) $encode[] = $match[1];
+	    }
+	    if (preg_match('~<meta http-equiv="?content-type"? content="text\/html;[\s]*charset=([^"]+)"~i', $raw_html, $match)) {
+	      if (is_encoding_reasonable($match[1])) $encode[] = $match[1];
+	    }
+	    if (preg_match('~<meta http-equiv="?content-type"? content="text\/html;[\s]*charset=([^"]+)"~i', $raw_html, $match)) {
+	      if (strtolower($match[1]) !== 'utf-8') $encode[] = $match[1];
+	    }
+	    foreach ($encode as $pos_encode) {
+		if (!$cleaned) {
+		  $try = smart_decode($title, $pos_encode, $archive_url);
+		  if ($try != "") {
+		    $title = $try;
+		    $cleaned = TRUE;
+		  }
 		}
-	      }
-	    }
-	    if (!$cleaned && preg_match('~<meta http-equiv="?content-type"? content="text\/html;[\s]*charset=([^"]+)"~i', $raw_html, $match)) {
-	       $encode = $match[1];
-	       if (is_encoding_reasonable($encode)) {
-		 $try = smart_decode($title, $encode, $archive_url);
-		 if ($try != "") {
-		   $title = $try;
-		   $cleaned = TRUE;
-		 }
-	       }
-	    }
-	    if (!$cleaned && preg_match('~content-type: text/html; charset=(\S+)~i', $raw_html, $match)) {
-	      $encode = $match[1];
-	      if (strtolower($encode) !== 'utf-8') {
-		 $try = smart_decode($title, $encode, $archive_url);
-		 if ($try != "") {
-		   $title = $try;
-		   $cleaned = TRUE;
-		 }
-	      }
 	    }
 	    if (!$cleaned) $title = convert_to_utf8($title);
+	    unset($encode, $cleaned, $try, $match, $pos_encode);
 	    $good_title = TRUE;
 	    if (in_array(strtolower($title), BAD_ACCEPTED_MANUSCRIPT_TITLES) ||
 		in_array(strtolower($title), IN_PRESS_ALIASES)) {
 	      $good_title = FALSE;
 	    }
-	    foreach (BAD_ZOTERO_TITLES as $bad_title ) {
+	    foreach (BAD_ZOTERO_TITLES as $bad_title) {
 	       if (mb_stripos($title, $bad_title) !== FALSE) $good_title = FALSE;
 	    }
 	    if ($good_title) {
