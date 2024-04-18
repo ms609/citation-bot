@@ -120,7 +120,7 @@ function is_doi_active(string $doi) : ?bool {
   curl_setopt($ch, CURLOPT_URL, $url);	
   $return = bot_curl_exec($ch);
   $header_length = (int) @curl_getinfo($ch, CURLINFO_HEADER_SIZE);
-  $header = substr($return, 0, $return);
+  $header = substr($return, 0, $header_length);
   $body = substr($return, $header_length);
   $response_code = curl_getinfo($ch, CURLINFO_RESPONSE_CODE);
   if ($header === "" || ($response_code === 503)) {
@@ -128,7 +128,7 @@ function is_doi_active(string $doi) : ?bool {
     $return = bot_curl_exec($ch);
     $response_code = curl_getinfo($ch, CURLINFO_RESPONSE_CODE);
     $header_length = (int) @curl_getinfo($ch, CURLINFO_HEADER_SIZE);
-    $header = substr($return, 0, $return);
+    $header = substr($return, 0, $header_length);
     $body = substr($return, $header_length);                                 // @codeCoverageIgnoreEnd
   }
   if ($header === "" || ($response_code === 503)) return NULL;
