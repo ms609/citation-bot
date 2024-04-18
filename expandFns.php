@@ -1448,15 +1448,15 @@ function hdl_works(string $hdl) : string|null|false {
   if (strpos($hdl, '10.') === 0 && doi_works($hdl) === FALSE) return FALSE;
   $works = is_hdl_works($hdl);
   if ($works === NULL) {
-    if (isset(NULL_DOI_LIST[$hdl])) { // These are know to be bad, so only check one time during run
-        HandleCache::$cache_hdl_bad[$hdl] = TRUE;
+    if (isset(NULL_DOI_LIST[$hdl])) {        // @codeCoverageIgnoreStart
+        HandleCache::$cache_hdl_bad[$hdl] = TRUE;  // These are know to be bad, so only check one time during run
         return FALSE;
     }
     HandleCache::$cache_hdl_null[$hdl] = TRUE;
     if (!isset(NULL_HDL_BUT_KNOWN[$hdl])) {
         bot_debug_log('Got NULL for HDL: ' .str_ireplace(['&lt;', '&gt;'], ['<', '>'],echoable($hdl)));
     }
-    return NULL;
+    return NULL;                             // @codeCoverageIgnoreEnd
   }
   if ($works === FALSE) {
     HandleCache::$cache_hdl_bad[$hdl] = TRUE;
@@ -1557,11 +1557,11 @@ function smart_decode(string $title, string $encode, string $archive_url) : stri
    } else {
     $try = (string) @mb_convert_encoding($title, "UTF-8", $encode);
    }
-  } catch (Exception $e) {
+  } catch (Exception $e) { // @codeCoverageIgnoreBegin
        $try = "";
   } catch (ValueError $v) {
        $try = "";
-  }
+  }                        // @codeCoverageIgnoreEnd
   if ($try == "") {
        bot_debug_log('Bad Encoding: ' . $encode . ' for ' . echoable($archive_url)); // @codeCoverageIgnore
   }
