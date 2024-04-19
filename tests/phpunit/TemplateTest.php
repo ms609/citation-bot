@@ -459,6 +459,12 @@ final class TemplateTest extends testBaseClass {
     $this->assertSame('{{Cite document |doi=10.1093/gmo/9781561592630.article.J441700 |title=Tatum, Art(hur, Jr.) (jazz) |last=Howlett |first=Felicity |publisher=Oxford University Press |date=2002}}', $template->parsed_text());
   }
 
+  public function testDOI1093WW() : void {
+    $text = '{{cite web |doi=10.1093/ww/9780199540891.001.0001/ww-9780199540884-e-221850}}';
+    $template = $this->process_citation($text);
+    $this->assertSame('10.1093/ww/9780199540884.013.U221850', $template->get2('doi'));
+  }
+	
   public function testOxLit() : void {
     $text="{{cite web|url=https://oxfordre.com/literature/view/10.1093/acrefore/9780190201098.001.0001/acrefore-9780190201098-e-1357|doi-broken-date=X|doi=10.3421/32412xxxxxxx}}";
     $template = $this->process_citation($text);
