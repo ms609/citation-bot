@@ -374,8 +374,15 @@ final class expandFnsTest extends testBaseClass {
     $this->assertFalse(doi_active(''));
     $this->assertFalse(doi_works('   '));
     $this->assertFalse(doi_active('    '));
+  }
+
+  public function testDOIWorks2() : void {
     $this->assertTrue(doi_works('10.1594/PANGAEA.667386'));
-    $this->assertFalse(doi_active('10.1594/PANGAEA.667386'));  
+    $this->assertFalse(doi_active('10.1594/PANGAEA.667386'));
+  }
+
+  public function testDOIWorks3() : void {
+    $this->assertTrue(doi_works('10.1126/scidip.ado5059'));
   }
 
   public function testThrottle() : void { // Just runs over the code and basically does nothing
@@ -550,6 +557,10 @@ final class expandFnsTest extends testBaseClass {
     $this->assertSame('Buitreraptor gonzalezorumXXXX', restore_italics('Buitreraptor gonzalezorumXXXX'));
   }
 
+  public function testRestoreItalics4() : void {
+    $this->assertSame("To a ''Tyrannotitan chubutensis''-", restore_italics("To aTyrannotitan chubutensis-"));
+  }
+
   public function testcheck_memory_usage() : void {
     check_memory_usage('testcheck_memory_usage');
     $this->assertTrue(TRUE);
@@ -579,4 +590,11 @@ final class expandFnsTest extends testBaseClass {
     $this->assertSame('November 2, 1981', clean_dates('Monday, November 2, 1981'));
   }
 
+  public function testOur_mb_substr_replace() : void {
+    $in  = "ショッピング";
+    $out = "ショッXング";
+    $this->assertSame($out, mb_substr_replace($in, 'X', 3, 1));
+    $this->assertNotSame($out, substr_replace($in, 'X', 3, 1));
+  }
+	  
 }
