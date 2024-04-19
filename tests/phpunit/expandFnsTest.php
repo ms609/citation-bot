@@ -435,11 +435,12 @@ final class expandFnsTest extends testBaseClass {
 	} else {
 	  $works = FALSE;
 	}
+      } elseif (in_array($doi, NULL_DOI_ANNOYING)) {
+        $works = FALSE;
       } else {
         $works = doi_works($doi);
       }
-      sleep(1); // give dx.doi.org a break on this junk
-      if ($works === TRUE && !isset(NULL_DOI_ANNOYING[$doi])) {
+      if ($works === TRUE) {
         $changes = $changes . "Flagged as GOOD: " . $doi . "       ";
       } elseif ($works === NULL) { // These nulls are permanent and get mapped to FALSE
         $changes = $changes . "Flagged as NULL: " . $doi . "       ";
