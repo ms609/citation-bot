@@ -546,6 +546,11 @@ const COMMON_MISTAKES = array ( // Common mistakes that aren't picked up by the 
   "webstie" => "website",
   "titule" => "title",
   "titulo" => "title",
+  "accessyear" => "accessdate",
+  "publishers" => "publisher",
+  "trans-titl" => "trans-title",
+  "last 1" => "last1",
+  "nimike" => "title",
 ); // Lots of stuff that just existed
 
 const COMMON_MISTAKES_TOOL = array(
