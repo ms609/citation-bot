@@ -597,7 +597,7 @@ final class expandFnsTest extends testBaseClass {
     $this->assertNotSame($out, substr_replace($in, 'X', 3, 1));
   }
 
-  public function testGoogleBookNormalize1() : void {
+  public function testGoogleBookNormalize0() : void {
     $removed_redundant = 0;
     $removed_parts = '';
     $gid = array();
