@@ -1555,7 +1555,7 @@ function smart_decode(string $title, string $encode, string $archive_url) : stri
    } else {
     $try = (string) @mb_convert_encoding($title, "UTF-8", $encode);
    }
-  } catch (Exception $e) { // @codeCoverageIgnoreBegin
+  } catch (Exception $e) { // @codeCoverageIgnoreStart
        $try = "";
   } catch (ValueError $v) {
        $try = "";
