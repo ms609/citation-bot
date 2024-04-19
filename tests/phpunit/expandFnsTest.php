@@ -602,6 +602,7 @@ final class expandFnsTest extends testBaseClass {
     $removed_redundant = 0;
     $removed_parts = '';
     $gid = array();
+    $gid[1] = 'm8W2AgAAQBAJ';
     $url_in  = 'https://books.google.com/books?id=m8W2AgAAQBAJ&bsq=1234';
     $url_out = 'https://books.google.com/books?id=m8W2AgAAQBAJ&q=1234';
     normalize_google_books($url_in, $removed_redundant, $removed_parts, $gid); // Reference passed
@@ -612,6 +613,7 @@ final class expandFnsTest extends testBaseClass {
     $removed_redundant = 0;
     $removed_parts = '';
     $gid = array();
+    $gid[1] = 'm8W2AgAAQBAJ';
     $url_in  = 'https://books.google.com/books?id=m8W2AgAAQBAJ&bsq=1234&q=abc';
     $url_out = 'https://books.google.com/books?id=m8W2AgAAQBAJ&q=abc';
     normalize_google_books($url_in, $removed_redundant, $removed_parts, $gid); // Reference passed
@@ -622,6 +624,7 @@ final class expandFnsTest extends testBaseClass {
     $removed_redundant = 0;
     $removed_parts = '';
     $gid = array();
+    $gid[1] = 'm8W2AgAAQBAJ';
     $url_in  = 'https://books.google.com/books?id=m8W2AgAAQBAJ#PPA333,M1';
     $url_out = 'https://books.google.com/books?id=m8W2AgAAQBAJ&pg=PA333';
     normalize_google_books($url_in, $removed_redundant, $removed_parts, $gid); // Reference passed
@@ -632,6 +635,7 @@ final class expandFnsTest extends testBaseClass {
     $removed_redundant = 0;
     $removed_parts = '';
     $gid = array();
+    $gid[1] = 'm8W2AgAAQBAJ';
     $url_in  = 'https://books.google.com/books?id=m8W2AgAAQBAJ#PP333,M1';
     $url_out = 'https://books.google.com/books?id=m8W2AgAAQBAJ&pg=PP333';
     normalize_google_books($url_in, $removed_redundant, $removed_parts, $gid); // Reference passed
@@ -642,6 +646,7 @@ final class expandFnsTest extends testBaseClass {
     $removed_redundant = 0;
     $removed_parts = '';
     $gid = array();
+    $gid[1] = 'm8W2AgAAQBAJ';
     $url_in  = 'https://books.google.com/books?id=m8W2AgAAQBAJ#PPT333,M1';
     $url_out = 'https://books.google.com/books?id=m8W2AgAAQBAJ&pg=PT333';
     normalize_google_books($url_in, $removed_redundant, $removed_parts, $gid); // Reference passed
@@ -652,6 +657,7 @@ final class expandFnsTest extends testBaseClass {
     $removed_redundant = 0;
     $removed_parts = '';
     $gid = array();
+    $gid[1] = 'm8W2AgAAQBAJ';
     $url_in  = 'https://books.google.com/books?id=m8W2AgAAQBAJ#PR333,M1';
     $url_out = 'https://books.google.com/books?id=m8W2AgAAQBAJ&pg=PR333';
     normalize_google_books($url_in, $removed_redundant, $removed_parts, $gid); // Reference passed
