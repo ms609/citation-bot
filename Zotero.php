@@ -396,6 +396,10 @@ public static function process_zotero_response(string $zotero_response, Template
     report_warning("Temporarily Unavailable error for URL " . echoable($url));  // @codeCoverageIgnore
     return;                                                    // @codeCoverageIgnore
   }
+  if (strpos($zotero_response, '<title>Wikimedia Error</title>') !== FALSE) {
+    report_warning("Temporarily giving an error for URL " . echoable($url));  // @codeCoverageIgnore
+    return;                                                    // @codeCoverageIgnore
+  }
   $zotero_data = @json_decode($zotero_response, FALSE);
   if (!isset($zotero_data)) {
     report_warning("Could not parse JSON for URL ". echoable($url) . ": " . $zotero_response);
