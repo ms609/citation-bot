@@ -551,6 +551,15 @@ const COMMON_MISTAKES = array ( // Common mistakes that aren't picked up by the 
   "trans-titl" => "trans-title",
   "last 1" => "last1",
   "nimike" => "title",
+  "accessddate" => "access-date",
+  "tarih" => "date",
+  "yayıncı" => "publisher",
+  "çalışma" => "title",
+  "first name2" => "first2",
+  "last name2" => "last2",
+  "first name1" => "first1",
+  "last name1" => "last1",
+  "aurl" => "url",			       
 ); // Lots of stuff that just existed
 
 const COMMON_MISTAKES_TOOL = array(
