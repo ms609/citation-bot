@@ -144,7 +144,7 @@ final class constantsTest extends testBaseClass {
 			     JOURNAL_IS_BOOK_SERIES, HAS_NO_ISSUE, WORKS_ARE_PUBLISHERS, PREFER_VOLUMES,
 			     PREFER_ISSUES);
     foreach ($big_array as $actual) {
-      if (!in_array($actual, ["sign up "])) {
+      if (!in_array($actual, ["sign up "], TRUE)) {
        $this->assertSame(trim($actual), $actual);
       }
     }
