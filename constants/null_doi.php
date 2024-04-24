@@ -3,6 +3,9 @@ declare(strict_types=1);
 
 const NULL_DOI_ANNOYING = // TODO - manually check these from time to time - Last Check 10 MAR 2024
 array(
+'10.7497/j.issn.2095-3941.2015.0030' => TRUE, // Page not found
+'10.37389/abei.v12i0.3575' => TRUE, // Bad gateway
+'10.14421/ajis.2010.481.129-164' => TRUE, // Parked domain
 '10.4159/harvard.9780674492608.c21' => TRUE, // publisher main page
 '10.1001/jama.275.17.1339' => TRUE, // 404
 '10.1080/10798587.2007.10642974' => TRUE, // Spam
@@ -244,12 +247,11 @@ array(
 '10.14240/jmhs.v2i3.32' => TRUE,
 '10.14240/jmhs.v5i1.81' => TRUE,
 '10.14334/wartazoa.v27i4.1692' => TRUE,
-'10.14421/ajis.2010.481.129-164' => TRUE,
+'10.14421/ajis.2010.481.129-164' => TRUE, // Parked domain
 '10.14496/dia.51040851169.29' => TRUE,
 '10.14496/dia.7104343513.14' => TRUE,
 '10.1474/GGA.2005-01.0-05.0005' => TRUE,
 '10.1489/1544-581X(2004)072<0169:LOLSTP>2.0.CO;2' => TRUE,
-'10.15026/57434' => TRUE,
 '10.1511/2006.61.412' => TRUE, // goes to wrong page
 '10.1515/crll.1878.84.242' => TRUE,
 '10.1515/vzoo-2017-0029' => TRUE, // page not found
@@ -3548,7 +3550,7 @@ array(
 '10.3724/sp.j.1003.2011.02088' => TRUE,
 '10.3724/SP.J.1245.2011.00001' => TRUE,
 '10.3733/ca.v054n03p12' => TRUE,
-'10.37389/abei.v12i0.3575' => TRUE,
+'10.37389/abei.v12i0.3575' => TRUE, // Bad gateway
 '10.37837/2707-7683-2020-16' => TRUE,
 '10.3828/978-0-85323-106-6' => TRUE,
 '10.3828/978-0-85323-554-5' => TRUE,
@@ -3788,7 +3790,7 @@ array(
 '10.7313/upo9781904761679.011' => TRUE,
 '10.7313/upo9781907284991.018' => TRUE,
 '10.7454/irhs.v1i1.50' => TRUE, // DB Error
-'10.7497/j.issn.2095-3941.2015.0030' => TRUE,
+'10.7497/j.issn.2095-3941.2015.0030' => TRUE, // Page not found
 '10.7556/jaoa' => TRUE,
 '10.7575/aiac.ijalel.v.6n.3p.71' => TRUE,
 '10.7577/nibr/rapport/2002/03' => TRUE,
@@ -3803,6 +3805,7 @@ const NULL_DOI_BUT_GOOD = array(  // TODO - these need to be manually double che
                                   // You can use hdl.handle.org to show you the final url - russia and other countries firewall
                                   // Also, you can use various archive services to see (hdl.handle.org might not work while doi.org does work even!!!)
                                   /** ========================================================================================================================================================================== **/
+'10.15026/57434' => TRUE,
 '10.1001/archpsyc.60.5.497' => TRUE,
 '10.1001/journalofethics.2015.17.4.msoc1-1504' => TRUE,
 '10.1002/047084289X.rt358.pub2' => TRUE,
