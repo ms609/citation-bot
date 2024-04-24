@@ -10,7 +10,7 @@ function html_echo(string $text, string $alternate_text='') : void {
 function user_notice(string $symbol, string $class, string $text) : void {
   if (!TRAVIS || defined("TRAVIS_PRINT")) {
     // @codeCoverageIgnoreStart
-    if (defined('BIG_JOB_MODE') && in_array($class, array("boring", "removed", "added", "changed", "subsubitem", "subitem"))) {
+    if (defined('BIG_JOB_MODE') && in_array($class, array("boring", "removed", "added", "changed", "subsubitem", "subitem"), TRUE)) {
       echo '.'; // Echo something to keep the code alive, but not so much to overfill the cache
       return;
     }
