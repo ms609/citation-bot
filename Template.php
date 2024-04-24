@@ -1478,7 +1478,7 @@ final class Template {
 		return FALSE;
 
 	  case "page": case "pages":
-		if (in_array($value, ['0', '0-0', '0–0'], TRUE, TRUE)) return FALSE; // Reject bogus zero page number
+		if (in_array($value, ['0', '0-0', '0–0'], TRUE)) return FALSE; // Reject bogus zero page number
 		if ($this->has('at')) return FALSE;  // Leave at= alone.  People often use that for at=See figure 17 on page......
 		if (preg_match('~^\d+$~', $value) && intval($value) > 50000) return FALSE; // Sometimes get HUGE values
 		if (stripos($value, 'gigabyte') !== FALSE) return FALSE; // bad pmid data
