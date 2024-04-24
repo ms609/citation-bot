@@ -58,7 +58,7 @@ array(
 );
 const NULL_DOI_LIST =
 array(
- /** Double check before removing - for example, these are liars - see NULL_DOI_ANNOYING above **/
+ /** Double check before removing - for example, these are liars - see NULL_DOI_ANNOYING above **/  /** ===================================================================================== **/
 '10.1001/jama.275.17.1339' => TRUE, // 404
 '10.1007/978-3-7643-8140-0_245' => TRUE,
 '10.1007/BF00162691' => TRUE,
@@ -3494,6 +3494,7 @@ array(
 '10.2979/NWS.1998.10.3.224' => TRUE,
 '10.2979/NWS.1999.11.1.118' => TRUE,
 '10.2979/NWS.2000.12.1.84' => TRUE,
+'10.2979/NWS.2000.12.3.114' => TRUE,
 '10.2979/NWS.2001.13.2.87' => TRUE,
 '10.2979/NWS.2002.14.2.18' => TRUE,
 '10.2979/NWS.2002.14.3.1' => TRUE,
@@ -3787,6 +3788,7 @@ array(
 '10.7313/upo9781904761679.011' => TRUE,
 '10.7313/upo9781907284991.018' => TRUE,
 '10.7454/irhs.v1i1.50' => TRUE, // DB Error
+'10.7497/j.issn.2095-3941.2015.0030' => TRUE,
 '10.7556/jaoa' => TRUE,
 '10.7575/aiac.ijalel.v.6n.3p.71' => TRUE,
 '10.7577/nibr/rapport/2002/03' => TRUE,
@@ -3800,6 +3802,7 @@ const NULL_DOI_BUT_GOOD = array(  // TODO - these need to be manually double che
                                   // Note that a failed url on one computer does not mean it is gone, it might just be you
                                   // You can use hdl.handle.org to show you the final url - russia and other countries firewall
                                   // Also, you can use various archive services to see (hdl.handle.org might not work while doi.org does work even!!!)
+                                  /** ========================================================================================================================================================================== **/
 '10.1001/archpsyc.60.5.497' => TRUE,
 '10.1001/journalofethics.2015.17.4.msoc1-1504' => TRUE,
 '10.1002/047084289X.rt358.pub2' => TRUE,
@@ -4866,6 +4869,7 @@ const NULL_DOI_BUT_GOOD = array(  // TODO - these need to be manually double che
 '10.1101/102970' => TRUE,
 '10.1101/108175' => TRUE,
 '10.1101/127548' => TRUE,
+'10.1101/154559' => TRUE,
 '10.1101/2020.04.01.020883' => TRUE,
 '10.1101/2020.04.08.031427' => TRUE,
 '10.1101/2020.05.02.073940' => TRUE,
@@ -5241,6 +5245,7 @@ const NULL_DOI_BUT_GOOD = array(  // TODO - these need to be manually double che
 '10.1124/mol.60.6.1181' => TRUE,
 '10.1124/mol.61.4.861' => TRUE,
 '10.1124/pharmrev.120.000131' => TRUE,
+'10.1124/pr.107.07110' => TRUE,
 '10.1124/pr.110.002642' => TRUE,
 '10.1124/pr.111.005223' => TRUE,
 '10.1124/pr.112.007054' => TRUE,
@@ -5394,6 +5399,7 @@ const NULL_DOI_BUT_GOOD = array(  // TODO - these need to be manually double che
 '10.1136/bmj.282.6278.1755' => TRUE,
 '10.1136/bmj.288.6435.1950' => TRUE,
 '10.1136/bmj.296.6617.276' => TRUE,
+'10.1136/bmj.299.6692.166' => TRUE,
 '10.1136/bmj.3.5561.338' => TRUE,
 '10.1136/bmj.301.6755.776' => TRUE,
 '10.1136/bmj.301.6761.1111' => TRUE,
@@ -5557,6 +5563,7 @@ const NULL_DOI_BUT_GOOD = array(  // TODO - these need to be manually double che
 '10.1136/jech.2004.022913' => TRUE,
 '10.1136/jech.2006.059246' => TRUE,
 '10.1136/jech.38.3.259' => TRUE,
+'10.1136/jech.51.2.106' => TRUE,
 '10.1136/jech.55.9.688' => TRUE,
 '10.1136/jech.56.2.99' => TRUE,
 '10.1136/jech.58.1.53' => TRUE,
@@ -5612,6 +5619,7 @@ const NULL_DOI_BUT_GOOD = array(  // TODO - these need to be manually double che
 '10.1136/rmdopen-2015-000052' => TRUE,
 '10.1136/sextrans-2013-051184.0840' => TRUE,
 '10.1136/tc.11.suppl_1.i40' => TRUE,
+'10.1136/tc.2004.009191' => TRUE,
 '10.1136/tc.2004.009324' => TRUE,
 '10.1136/tc.2010.035931' => TRUE,
 '10.1136/thorax.58.6.525' => TRUE,
@@ -5919,6 +5927,7 @@ const NULL_DOI_BUT_GOOD = array(  // TODO - these need to be manually double che
 '10.15171/apb.2019.003' => TRUE,
 '10.15171/apb.2019.008' => TRUE,
 '10.15171/apb.2019.024' => TRUE,
+'10.15171/hpp.2015.023' => TRUE,
 '10.15184/aqy.2016.115' => TRUE,
 '10.15227/orgsyn.006.0066' => TRUE,
 '10.15227/orgsyn.014.0036' => TRUE,
@@ -5966,6 +5975,7 @@ const NULL_DOI_BUT_GOOD = array(  // TODO - these need to be manually double che
 '10.1523/JNEUROSCI.19-18-07770.1999' => TRUE,
 '10.1523/JNEUROSCI.19-20-08866.1999' => TRUE,
 '10.1523/JNEUROSCI.1917-08.2008' => TRUE,
+'10.1523/JNEUROSCI.1957-05.2005' => TRUE,
 '10.1523/JNEUROSCI.20-21-08138.2000' => TRUE,
 '10.1523/JNEUROSCI.21-11-03764.2001' => TRUE,
 '10.1523/JNEUROSCI.21-16-06405.2001' => TRUE,
@@ -5990,6 +6000,7 @@ const NULL_DOI_BUT_GOOD = array(  // TODO - these need to be manually double che
 '10.1523/JNEUROSCI.3728-06.2007' => TRUE,
 '10.1523/JNEUROSCI.3769-07.2007' => TRUE,
 '10.1523/JNEUROSCI.3821-06.2006' => TRUE,
+'10.1523/JNEUROSCI.3847-05.2006' => TRUE,
 '10.1523/JNEUROSCI.4118-06.2006' => TRUE,
 '10.1523/JNEUROSCI.4194-15.2016' => TRUE,
 '10.1523/JNEUROSCI.4547-13.2014' => TRUE,
@@ -6591,6 +6602,7 @@ const NULL_DOI_BUT_GOOD = array(  // TODO - these need to be manually double che
 '10.2436/20.1001.01.126' => TRUE,
 '10.2436/20.2006.01.182' => TRUE,
 '10.2436/20.7010.01.12' => TRUE,
+'10.24412/FhVW7saocmI' => TRUE,
 '10.24425/agp.2022.143598' => TRUE,
 '10.2460/javma.237.12.1403' => TRUE,
 '10.24729/00009315' => TRUE,
@@ -7161,6 +7173,7 @@ const NULL_DOI_BUT_GOOD = array(  // TODO - these need to be manually double che
 '10.5377/ruc.v1i1.6764' => TRUE,
 '10.53841/bpscpr.2011.27.1.44' => TRUE,
 '10.53841/bpslg.2005.6.2.124' => TRUE,
+'10.53841/bpspag.2013.1.88.5' => TRUE,
 '10.53910/26531313-E2021812458' => TRUE,
 '10.53910/26531313-E2021812563' => TRUE,
 '10.5392/IJoC.2014.10.1.036' => TRUE,
@@ -7434,10 +7447,15 @@ const NULL_DOI_BUT_GOOD = array(  // TODO - these need to be manually double che
 '10.9785/ovs.9783504384128.394' => TRUE,
 /** We cannot add hdls to this list, since we need the final URL - see below **/
 );
+/** ========================================================================================================================================================================== **/
 const NULL_HDL_BUT_KNOWN = array(  // Do not report these, since they work usually
 '10026.1/19203' => TRUE,
+'10045/34638' => TRUE,
+'10072/21024' => TRUE,
 '10072/385762' => TRUE,
+'10072/410186' => TRUE,
 '10072/6536' => TRUE,
+'10072/67425' => TRUE,
 '10088/29832' => TRUE,
 '10088/29937' => TRUE,
 '10088/8134' => TRUE,
