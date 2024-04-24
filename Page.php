@@ -82,9 +82,9 @@ class Page {
        foreach ($the_protections as $protects) {
 	 if (isset($protects->type) && (string) $protects->type === "edit" && isset($protects->level)) {
 	   $the_level = (string) $protects->level;
-	   if (in_array($the_level, ["autoconfirmed", "extendedconfirmed"])) {
+	   if (in_array($the_level, ["autoconfirmed", "extendedconfirmed"], TRUE)) {
 	     ;  // We are good
-	   } elseif (in_array($the_level, ["sysop", "templateeditor"])) {
+	   } elseif (in_array($the_level, ["sysop", "templateeditor"], TRUE)) {
 	     report_warning("Page is protected.");
 	     return FALSE;
 	   } else {
@@ -153,7 +153,7 @@ class Page {
       default:        $api = $identifier;
     }
     for ($i = 0; $i < count($templates); $i++) {
-      if (in_array($templates[$i]->wikiname(), TEMPLATES_WE_PROCESS)) {
+      if (in_array($templates[$i]->wikiname(), TEMPLATES_WE_PROCESS, TRUE)) {
 	if ($templates[$i]->has($identifier)
 	&& !$templates[$i]->api_has_used($api, equivalent_parameters($identifier))) {
 	    $ids[$i] = $templates[$i]->get_without_comments_and_placeholders($identifier);
@@ -306,11 +306,11 @@ class Page {
     report_phase('Remedial work to prepare citations');
     foreach ($all_templates as $this_template) {
       set_time_limit(120);
-      if (in_array($this_template->wikiname(), TEMPLATES_WE_PROCESS)) {
+      if (in_array($this_template->wikiname(), TEMPLATES_WE_PROCESS, TRUE)) {
 	$our_templates[] = $this_template;
 	$this_template->correct_param_mistakes();
 	$this_template->prepare();
-      } elseif (in_array($this_template->wikiname(), TEMPLATES_WE_SLIGHTLY_PROCESS)) {
+      } elseif (in_array($this_template->wikiname(), TEMPLATES_WE_SLIGHTLY_PROCESS, TRUE)) {
 	$our_templates_slight[] = $this_template;
 	$this_template->correct_param_mistakes();
 	$this_template->prepare(); // does very little
@@ -320,14 +320,14 @@ class Page {
 	$this_template->tidy_parameter('dead-url'); $this_template->tidy_parameter('deadurl');
 	if ($this_template->wikiname() === 'cite conference') $our_templates_conferences[] = $this_template;
 	$our_templates_ieee[] = $this_template;
-      } elseif (in_array($this_template->wikiname(), TEMPLATES_WE_BARELY_PROCESS)) { // No capitalization of thesis, etc.
+      } elseif (in_array($this_template->wikiname(), TEMPLATES_WE_BARELY_PROCESS, TRUE)) { // No capitalization of thesis, etc.
 	$our_templates_slight[] = $this_template;
 	$this_template->clean_google_books();
 	$this_template->correct_param_mistakes();
 	$this_template->get_identifiers_from_url();
 	$this_template->tidy();
 	$this_template->tidy_parameter('dead-url'); $this_template->tidy_parameter('deadurl');
-      } elseif (in_array($this_template->wikiname(), TEMPLATES_WE_CHAPTER_URL)) {
+      } elseif (in_array($this_template->wikiname(), TEMPLATES_WE_CHAPTER_URL, TRUE)) {
 	$our_templates_slight[] = $this_template;
 	$this_template->rename('chapterurl', 'chapter-url');
       } elseif ($this_template->wikiname() === 'cite magazine' || $this_template->wikiname() === 'cite periodical') {
@@ -424,7 +424,7 @@ class Page {
     // Last ditch usage of ISSN - This could mean running the bot again will add more things
     $issn_templates = array_merge(TEMPLATES_WE_PROCESS, TEMPLATES_WE_SLIGHTLY_PROCESS, ['cite magazine']);
     foreach ($all_templates as $this_template) {
-      if (in_array($this_template->wikiname(), $issn_templates)) {
+      if (in_array($this_template->wikiname(), $issn_templates, TRUE)) {
 	$this_template->use_issn();
       }
     }
@@ -454,7 +454,7 @@ class Page {
     $log_bad_chapter = FALSE;
     foreach ($all_templates as $this_template) {
       if ($this_template->has('chapter')) {
-	if (in_array($this_template->wikiname(), ['cite journal', 'cite news'])) {
+	if (in_array($this_template->wikiname(), ['cite journal', 'cite news'], TRUE)) {
 	  $log_bad_chapter = TRUE;
 	}
       }
