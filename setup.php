@@ -28,7 +28,7 @@ function bot_debug_log(string $log_this) : void {
 
 if (isset($_REQUEST["wiki_base"])){
   $wiki_base = trim((string) $_REQUEST["wiki_base"]);
-  if (!in_array($wiki_base, ['en', 'simple'])) {
+  if (!in_array($wiki_base, ['en', 'simple'], TRUE)) {
      exit('<!DOCTYPE html><html lang="en" dir="ltr"><head><title>Citation Bot: error</title></head><body><h1>Unsupported wiki requested - aborting</h1></body></html>');
   }
 } else {
@@ -62,13 +62,13 @@ if (strpos((string) @$_SERVER['PHP_SELF'], '/gadgetapi.php') === FALSE) {
   define("FLUSHING_OKAY", FALSE);
 }
 
-if (isset($_REQUEST["slow"]) || TRAVIS || (isset($argv) && in_array('--slow', $argv))) {
+if (isset($_REQUEST["slow"]) || TRAVIS || (isset($argv) && in_array('--slow', $argv, TRUE))) {
   define("SLOW_MODE", TRUE);
 } else {
   define("SLOW_MODE", FALSE);
 }
 
-if (isset($argv) && in_array('--savetofiles', $argv)) {
+if (isset($argv) && in_array('--savetofiles', $argv, TRUE) {
   define("SAVETOFILES_MODE", TRUE);
 } else {
   define("SAVETOFILES_MODE", FALSE);
