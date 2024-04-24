@@ -30,7 +30,7 @@ if ($category === '' && isset($_GET["cat"])) {
 		       'CS1 errors: extra text: volume',
 		       'CS1 errors: chapter ignored',
 		       'CS1 errors: invisible characters',
-		])) $category = $try;
+		], TRUE)) $category = $try;
 }
 
 bot_html_header();
