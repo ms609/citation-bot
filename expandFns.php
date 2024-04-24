@@ -296,7 +296,7 @@ function sanitize_doi(string $doi) : string {
   $doi = str_replace(HTML_ENCODE_DOI, HTML_DECODE_DOI, trim(urldecode($doi)));
   if ($pos = (int) strrpos($doi, '.')) {
    $extension = (string) substr($doi, $pos);
-   if (in_array(strtolower($extension), array('.htm', '.html', '.jpg', '.jpeg', '.pdf', '.png', '.xml', '.full'))) {
+   if (in_array(strtolower($extension), array('.htm', '.html', '.jpg', '.jpeg', '.pdf', '.png', '.xml', '.full'), TRUE)) {
       $doi = (string) substr($doi, 0, $pos);
    }
   }
@@ -314,7 +314,7 @@ function sanitize_doi(string $doi) : string {
   }
   if ($pos = (int) strrpos($doi, '/')) {
    $extension = (string) substr($doi, $pos);
-   if (in_array(strtolower($extension), array('/abstract', '/full', '/pdf', '/epdf', '/asset/', '/summary', '/short', '/meta', '/html', '/'))) {
+   if (in_array(strtolower($extension), array('/abstract', '/full', '/pdf', '/epdf', '/asset/', '/summary', '/short', '/meta', '/html', '/'), TRUE)) {
       $doi = (string) substr($doi, 0, $pos);
    }
   }
@@ -505,7 +505,7 @@ function restore_italics (string $text) : string {
   $text = str_replace("xAzathioprine therapy for patients with systemic lupus erythematosus", "Azathioprine therapy for patients with systemic lupus erythematosus", $text); // Annoying stupid bad data
   $text = trim(str_replace(['        ', '      ', '    ', '   ', '  '], [' ', ' ', ' ', ' ', ' '], $text));
   while (preg_match('~([a-z])(' . ITALICS_LIST . ')([A-Z\-\?\:\.\)\(\,]|species|genus| in| the|$)~', $text, $matches)) {
-     if (in_array($matches[3], [':', '.', '-', ','])) {
+     if (in_array($matches[3], [':', '.', '-', ','], TRUE)) {
        $pad = "";
      } else {
        $pad = " ";
@@ -1131,7 +1131,7 @@ function not_bad_10_1093_doi(string $url) : bool { // We assume DOIs are bad, un
   if(!preg_match('~10.1093/([^/]+)/~u', $url, $match)) return TRUE;
   $test = strtolower($match[1]);
   // March 2019 Good list
-  if (in_array($test, GOOD_10_1093_DOIS)) return TRUE;
+  if (in_array($test, GOOD_10_1093_DOIS, TRUE)) return TRUE;
   return FALSE;
 }
 
@@ -1533,7 +1533,7 @@ function convert_to_utf8(string $value) : string {
 
 function is_encoding_reasonable(string $encode) : bool { // common "default" ones that are often wrong
   $encode = strtolower($encode);
-  return !in_array($encode, ['utf-8', 'iso-8859-1', 'windows-1252', 'unicode', 'us-ascii', 'none', 'iso-8859-7', 'latin1']);
+  return !in_array($encode, ['utf-8', 'iso-8859-1', 'windows-1252', 'unicode', 'us-ascii', 'none', 'iso-8859-7', 'latin1'], TRUE);
 }
 
 function smart_decode(string $title, string $encode, string $archive_url) : string {
@@ -1541,7 +1541,7 @@ function smart_decode(string $title, string $encode, string $archive_url) : stri
   if ($encode === 'maccentraleurope') $encode = 'mac-centraleurope';
   if ($encode === 'Shift_JIS') $encode = 'SJIS-win';
   if ($encode === 'big5') $encode = 'BIG-5';
-  if (in_array($encode, ['utf-8-sig', 'x-user-defined'])) { // Known wonky ones
+  if (in_array($encode, ['utf-8-sig', 'x-user-defined'], TRUE)) { // Known wonky ones
      return "";
   }
   $master_list = mb_list_encodings();
@@ -1550,8 +1550,8 @@ function smart_decode(string $title, string $encode, string $archive_url) : stri
     $valid[] = strtolower($enc);
   }
   try {
-   if (in_array(strtolower($encode), ["windows-1255", "maccyrillic", "windows-1253", "windows-1256", "tis-620", "windows-874", "iso-8859-11", "big5", "windows-1250"]) ||
-     !in_array(strtolower($encode), $valid)) {
+   if (in_array(strtolower($encode), ["windows-1255", "maccyrillic", "windows-1253", "windows-1256", "tis-620", "windows-874", "iso-8859-11", "big5", "windows-1250"], TRUE) ||
+     !in_array(strtolower($encode), $valid, TRUE)) {
     $try = (string) @iconv($encode, "UTF-8", $title);
    } else {
     $try = (string) @mb_convert_encoding($title, "UTF-8", $encode);
@@ -1934,7 +1934,7 @@ function get_possible_dois(string $doi) : array {
       $changed = FALSE;
       if ($pos = strrpos($try, '.')) {
        $extension = substr($try, $pos);
-       if (in_array(strtolower($extension), array('.htm', '.html', '.jpg', '.jpeg', '.pdf', '.png', '.xml', '.full'))) {
+       if (in_array(strtolower($extension), array('.htm', '.html', '.jpg', '.jpeg', '.pdf', '.png', '.xml', '.full'), TRUE)) {
 	 $try = substr($try, 0, $pos);
 	 $trial[] = $try;
 	 $changed = TRUE;
@@ -1958,7 +1958,7 @@ function get_possible_dois(string $doi) : array {
       }
       if ($pos = strrpos($try, '/')) {
        $extension = substr($try, $pos);
-       if (in_array(strtolower($extension), array('/abstract', '/full', '/pdf', '/epdf', '/asset/', '/summary', '/short'))) {
+       if (in_array(strtolower($extension), array('/abstract', '/full', '/pdf', '/epdf', '/asset/', '/summary', '/short'), TRUE)) {
 	 $try = substr($try, 0, $pos);
 	 $trial[] = $try;
 	 $changed = TRUE;
@@ -2504,7 +2504,7 @@ function clean_dates(string $input) : string { // See https://en.wikipedia.org/w
       return $matches[1];
     }
     if (preg_match('~^([A-Z][a-z]+)\, ([A-Z][a-z]+ \d+,* \d{4})$~', $input, $matches)) { // Monday, November 2, 1981
-      if (in_array($matches[1], $days_of_week)) {
+      if (in_array($matches[1], $days_of_week, TRUE)) {
 	return $matches[2];
       }
     }

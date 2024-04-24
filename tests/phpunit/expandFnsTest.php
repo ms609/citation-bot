@@ -430,7 +430,7 @@ final class expandFnsTest extends testBaseClass {
 	  strpos($doi, '10.1601/tx.') === 0 ||
 	  strpos($doi, '10.1601/nm.') === 0 ||
 	  strpos($doi, '10.1601/ex.') === 0) {
-        if (in_array($doi, array('10.1601/ex.9753', '10.1601/nm.10037', '10.1601/tx.11311', '10.5353/th_b3198302'))) {
+        if (in_array($doi, array('10.1601/ex.9753', '10.1601/nm.10037', '10.1601/tx.11311', '10.5353/th_b3198302'), TRUE)) {
           $works = doi_works($doi);
 	} else {
 	  $works = FALSE;

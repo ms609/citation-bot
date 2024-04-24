@@ -373,9 +373,9 @@ function adsabs_api(array $ids, array &$templates, string $identifier) : void { 
 
   foreach ($response->docs as $record) { // Check for remapped bibcodes
     $record = (object) $record; // Make static analysis happy
-    if (isset($record->bibcode) && !in_array($record->bibcode, $ids) && isset($record->identifier)) {
+    if (isset($record->bibcode) && !in_array($record->bibcode, $ids, TRUE) && isset($record->identifier)) {
 	foreach ($record->identifier as $identity) {
-	  if (in_array($identity, $ids)) {
+	  if (in_array($identity, $ids, TRUE)) {
 	    $record->citation_bot_new_bibcode = $record->bibcode; // save it
 	    $record->bibcode = $identity; // unmap it
 	  }
@@ -448,7 +448,7 @@ function expand_by_doi(Template $template, bool $force = FALSE) : void {
   if ($doi && ($force || $template->incomplete())) {
     $crossRef = query_crossref($doi);
     if ($crossRef) {
-      if (in_array(strtolower((string) @$crossRef->article_title), BAD_ACCEPTED_MANUSCRIPT_TITLES)) return ;
+      if (in_array(strtolower((string) @$crossRef->article_title), BAD_ACCEPTED_MANUSCRIPT_TITLES, TRUE)) return ;
       if ($template->has('title') && trim((string) @$crossRef->article_title) && $template->get('title') !== 'none') { // Verify title of DOI matches existing data somewhat
 	$bad_data = TRUE;
 	$new = (string) $crossRef->article_title;
@@ -707,7 +707,7 @@ function expand_doi_with_dx(Template $template, string $doi) : void {
        foreach ($json['author'] as $auth) {
 	  $i = $i + 1;
 	  $full_name = mb_strtolower(trim((string) @$auth['given'] . ' ' . (string) @$auth['family'] . (string) @$auth['literal']));
-	  if (in_array($full_name, BAD_AUTHORS)) break;
+	  if (in_array($full_name, BAD_AUTHORS, TRUE)) break;
 	  if (((string) @$auth['family'] === '') && ((string) @$auth['given'] !== '')) {
 	     $try_to_add_it('author' . (string) $i, @$auth['given']); // First name without last name.  Probably an organization or chinese/korean/japanese name
 	  } else {
@@ -1071,8 +1071,8 @@ function expand_templates_from_archives(array &$templates) : void { // This is d
 	    if (!$cleaned) $title = convert_to_utf8($title);
 	    unset($encode, $cleaned, $try, $match, $pos_encode);
 	    $good_title = TRUE;
-	    if (in_array(strtolower($title), BAD_ACCEPTED_MANUSCRIPT_TITLES) ||
-		in_array(strtolower($title), IN_PRESS_ALIASES)) {
+	    if (in_array(strtolower($title), BAD_ACCEPTED_MANUSCRIPT_TITLES, TRUE) ||
+		in_array(strtolower($title), IN_PRESS_ALIASES, TRUE)) {
 	      $good_title = FALSE;
 	    }
 	    foreach (BAD_ZOTERO_TITLES as $bad_title) {

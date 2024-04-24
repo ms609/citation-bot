@@ -13,7 +13,7 @@ final class TestPage extends Page {
 			   'expand_via_zotero', 'reference_to_template', 'fill_cache', ''); // Some of these should never occur
     $trace = debug_backtrace();
     $i = 0;
-    while (in_array($trace[$i]['function'], $bad_functions)) {
+    while (in_array($trace[$i]['function'], $bad_functions, TRUE)) {
        $i++; // Climb stack to find useful name
     }
     $this->title = $trace[$i]['function'];

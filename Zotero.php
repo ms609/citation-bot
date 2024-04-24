@@ -301,7 +301,7 @@ private static function zotero_request(string $url) : string {
 public static function expand_by_zotero(Template $template, ?string $url = NULL) : void {
   $access_date = 0;
   if (is_null($url)) {
-     if (in_array($template->get('url-status'),  ['usurped', 'unfit', 'dead', 'deviated'])) return;
+     if (in_array($template->get('url-status'),  ['usurped', 'unfit', 'dead', 'deviated'], TRUE)) return;
      $access_date = (int) strtotime(tidy_date($template->get('accessdate') . ' ' . $template->get('access-date')));
      $archive_date = (int) strtotime(tidy_date($template->get('archivedate') . ' ' . $template->get('archive-date')));
      if ($access_date && $archive_date) {
@@ -790,7 +790,7 @@ public static function process_zotero_response(string $zotero_response, Template
   if (isset($result->itemType) && $result->itemType === 'newspaperArticle') {
     if ( isset($result->publicationTitle)) {
        $new_title = (string) $result->publicationTitle;
-       if (in_array(strtolower($new_title), WORKS_ARE_PUBLISHERS)) {
+       if (in_array(strtolower($new_title), WORKS_ARE_PUBLISHERS, TRUE)) {
 	  $template->add_if_new('publisher', $new_title);
        } else {
 	  $template->add_if_new('newspaper', $new_title);
@@ -946,7 +946,7 @@ public static function process_zotero_response(string $zotero_response, Template
 	report_minor_error("Unhandled itemType: " . echoable($result->itemType) . " for " . echoable($url));  // @codeCoverageIgnore
     }
 
-    if (in_array($result->itemType, ['journalArticle', 'newspaperArticle', 'report', 'magazineArticle', 'thesis'])) {
+    if (in_array($result->itemType, ['journalArticle', 'newspaperArticle', 'report', 'magazineArticle', 'thesis'], TRUE)) {
       // Websites often have non-authors listed in metadata
       // "Books" are often bogus
       $i = 0; $author_i = 0; $editor_i = 0; $translator_i = 0;
