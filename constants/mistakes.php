@@ -559,7 +559,11 @@ const COMMON_MISTAKES = array ( // Common mistakes that aren't picked up by the 
   "last name2" => "last2",
   "first name1" => "first1",
   "last name1" => "last1",
-  "aurl" => "url",			       
+  "aurl" => "url",
+  "год" => "year",
+  "doi-accesss" => "doi-access",
+  "arhiivimisaeg" => "archive-date",
+  "edition-" => "edition",
 ); // Lots of stuff that just existed
 
 const COMMON_MISTAKES_TOOL = array(
