@@ -7420,6 +7420,7 @@ const NULL_DOI_BUT_GOOD = array(  // TODO - these need to be manually double che
 '10.7591/9781501733451-005' => TRUE,
 '10.7592/EJHR2019.7.4.zekavat' => TRUE,
 '10.7717/peerj.1032' => TRUE,
+'10.7717/peerj.4224' => TRUE,
 '10.7717/peerj.7565' => TRUE,
 '10.7731/KIFSE.2015.29.2.039' => TRUE,
 '10.7738/JAH.2014.23.2.065' => TRUE,
