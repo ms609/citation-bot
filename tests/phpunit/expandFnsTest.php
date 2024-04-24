@@ -435,7 +435,7 @@ final class expandFnsTest extends testBaseClass {
 	} else {
 	  $works = FALSE;
 	}
-      } elseif (in_array($doi, NULL_DOI_ANNOYING)) {
+      } elseif (isset(NULL_DOI_ANNOYING[$doi])) {
         $works = FALSE;
       } else {
         $works = doi_works($doi);
