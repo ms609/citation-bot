@@ -1809,7 +1809,7 @@ public static function find_indentifiers_in_urls(Template $template, ?string $ur
 
  public static function get_doi_from_pii(string $pii) : string {
    curl_setopt(self::$ch_pii, CURLOPT_URL, "https://api.elsevier.com/content/object/pii/" . $pii);
-   $ch_return = (string) bot_curl_exec(self::$ch_dx);
+   $ch_return = (string) bot_curl_exec(self::$ch_pii);
    if (preg_match('~<prism:doi>(10\..+)<\/prism:doi>~', $ch_return, $match)) {
       return $match[1];
    }
