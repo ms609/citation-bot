@@ -3378,8 +3378,6 @@ array(
 '10.17159/2078-5151/2018/v56n3a2557' => TRUE, // Not found
 '10.17159/2309-8392/2015/V60N2A1' => TRUE, // Not found
 '10.17159/2413-3051/2013/v24i3a3138' => TRUE,
-'10.17312/harringtonparkpress/2014.09.msws.007' => TRUE,
-'10.17312/harringtonparkpress/2014.09.msws.010' => TRUE,
 '10.17402/205' => TRUE,
 '10.17493/nmr/2016/118221' => TRUE,
 '10.17694/bajece.06954' => TRUE,
@@ -3817,6 +3815,7 @@ const NULL_DOI_BUT_GOOD = array(  // TODO - these need to be manually double che
                                   // You can use hdl.handle.org to show you the final url - russia and other countries firewall
                                   // Also, you can use various archive services to see (hdl.handle.org might not work while doi.org does work even!!!)
                                   /** ========================================================================================================================================================================== **/
+'10.17312/harringtonparkpress/2014.09.msws.007' => TRUE,
 '10.1001/archpsyc.60.5.497' => TRUE,
 '10.1001/journalofethics.2015.17.4.msoc1-1504' => TRUE,
 '10.1002/047084289X.rt358.pub2' => TRUE,
