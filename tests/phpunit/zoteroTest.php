@@ -1108,4 +1108,12 @@ final class zoteroTest extends testBaseClass {
     $this->assertSame('https://pubmed.ncbi.nlm.nih.gov/21234/', $template->get2('url'));
     $this->assertSame('21234', $template->get2('pmid'));
   }
+
+  public function testPII() : void {
+    $pii = 'S0960076019302699';
+    $doi_expect = '10.1016/j.jsbmb.2019.105494';
+    $doi = Zotero::get_doi_from_pii($pii);
+    $this->assertSame($doi_expect, $doi);
+  }
+
 }

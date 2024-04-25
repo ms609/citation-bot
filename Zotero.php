@@ -20,7 +20,7 @@ final class Zotero {
   private const ZOTERO_SKIPS = 100;
   private const ERROR_DONE = 'ERROR_DONE';
   protected static int $zotero_announced = 0;
-  protected static CurlHandle $zotero_ch, $ch_ieee, $ch_jstor, $ch_dx, $ch_pmc, $ch_doi;
+  protected static CurlHandle $zotero_ch, $ch_ieee, $ch_jstor, $ch_dx, $ch_pmc, $ch_doi, $ch_pii;
   protected static int $zotero_failures_count = 0;
 
 public static function create_ch_zotero() : void {
@@ -46,6 +46,9 @@ public static function create_ch_zotero() : void {
   self::$ch_pmc = bot_curl_init($time, []);
 
   self::$ch_doi = bot_curl_init($time, []);
+
+  self::$ch_pii = bot_curl_init($time, []);
+
 }
 
 public static function block_zotero() : void {
@@ -60,6 +63,16 @@ public static function unblock_zotero() : void {
   @param array<Template> $templates
 **/
 public static function query_url_api_class(array &$templates) : void { // Pointer to save memory
+  foreach ($templates as $template) {
+   if (preg_match('~pii/(S\d{16})(?:|\/|\?|\:|\&|\;)$~i', $template->get('url'), $matches)) { // PII
+     if ($template->blank('doi')) {
+	$doi = self::get_doi_from_pii($matches[1]);
+        if (doi_works($doi)) $template->add_if_new('doi', $doi);
+     }
+     unset($doi, $matches);
+   }
+  }
+
   if (!SLOW_MODE) return; // Zotero takes time
 
   self::$zotero_announced = 1;
@@ -1792,6 +1805,15 @@ public static function find_indentifiers_in_urls(Template $template, ?string $ur
    $aut = strtolower($aut);
    if ($aut === 'published') return TRUE;
    return FALSE;
+ }
+
+ public static function get_doi_from_pii(string $pii) : string {
+   curl_setopt(self::$ch_pii, CURLOPT_URL, "https://api.elsevier.com/content/object/pii/" . $pii);
+   $ch_return = (string) bot_curl_exec(self::$ch_pii);
+   if (preg_match('~<prism:doi>(10\..+)<\/prism:doi>~', $ch_return, $match)) {
+      return $match[1];
+   }
+   return '';
  }
 
 } // End of CLASS
