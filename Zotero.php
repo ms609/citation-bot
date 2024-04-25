@@ -64,7 +64,7 @@ public static function unblock_zotero() : void {
 **/
 public static function query_url_api_class(array &$templates) : void { // Pointer to save memory
   foreach ($templates as $template) {
-   if (preg_match('~pii/(\d{16})(?:|\/|\?|\:|\&|\;)$~i', $template->get('url'), $matches)) { // PII
+   if (preg_match('~pii/(S\d{16})(?:|\/|\?|\:|\&|\;)$~i', $template->get('url'), $matches)) { // PII
      if ($template->blank('doi')) {
 	$doi = self::get_doi_from_pii($matches[1]);
         if (doi_works($doi)) $template->add_if_new('doi', $doi);
