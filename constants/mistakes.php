@@ -564,6 +564,9 @@ const COMMON_MISTAKES = array ( // Common mistakes that aren't picked up by the 
   "doi-accesss" => "doi-access",
   "arhiivimisaeg" => "archive-date",
   "edition-" => "edition",
+  "url-archive" => "archive-url",
+  "lasts" => "last",
+  "access-datee" => "access-date",
 ); // Lots of stuff that just existed
 
 const COMMON_MISTAKES_TOOL = array(
