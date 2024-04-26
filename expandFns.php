@@ -632,7 +632,7 @@ function titles_are_dissimilar(string $inTitle, string $dbTitle) : bool {
 	$inTitle2 = mb_strtolower($inTitle2);
 	$drops = [" ", "<strong>", "</strong>", "<em>", "</em>", "&nbsp", "&ensp", "&emsp", "&thinsp", "&zwnj",
 		  "&#45", "&#8208", "&#700", "&#039", "&#022", "&", "'", ",", ".", ";", '"', "\n", "\r", "\t", "\v", "\e", "‐",
-		  "-", "ʼ", "`", "]", "[", "(", ")", ":"];
+		  "-", "ʼ", "`", "]", "[", "(", ")", ":", "′", "−"];
 	$inTitle  = str_replace($drops, "", $inTitle);
 	$inTitle2 = str_replace($drops, "", $inTitle2);
 	$dbTitle  = str_replace($drops, "", $dbTitle);
