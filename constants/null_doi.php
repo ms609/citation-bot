@@ -138,7 +138,6 @@ array(
 '10.1080/10503309912331332801' => TRUE,
 '10.1080/10798587.2007.10642974' => TRUE, // Spam
 '10.1080/13651500310003219' => TRUE,
-'10.1093/ajcn/33.1.27' => TRUE,
 '10.1093/cq/54.2.630' => TRUE,
 '10.1093/ehr/114.454.235' => TRUE,
 '10.1093/eic/48.3.224' => TRUE,
@@ -3842,6 +3841,12 @@ const NULL_DOI_BUT_GOOD = array(  // TODO - these need to be manually double che
                                   // You can use hdl.handle.org to show you the final url - russia and other countries firewall
                                   // Also, you can use various archive services to see (hdl.handle.org might not work while doi.org does work even!!!)
                                   /** ========================================================================================================================================================================== **/
+'10.1093/ajcn/33.1.27' => TRUE,
+'10.5840/acpq200478325' => TRUE,
+'10.5840/acpq201622982' => TRUE,
+'10.5840/philtoday200650supplement23' => TRUE,
+'10.5840/swphilreview199511240' => TRUE,
+'10.5840/teachphil200932221' => TRUE,
 '10.1001/archpsyc.60.5.497' => TRUE,
 '10.1001/journalofethics.2015.17.4.msoc1-1504' => TRUE,
 '10.1002/047084289X.rt358.pub2' => TRUE,
