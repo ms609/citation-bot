@@ -3,6 +3,7 @@ declare(strict_types=1);
 
 const NULL_DOI_ANNOYING = // TODO - manually check these from time to time - Last Check 10 MAR 2024
 array(
+'10.2174/092986712804485719' => TRUE, // Cloud error
 '10.1001/jama.275.17.1339' => TRUE, // 404
 '10.1080/10798587.2007.10642974' => TRUE, // Spam
 '10.1139/gen-41-4-543' => TRUE, // Journal in general
@@ -132,7 +133,6 @@ array(
 '10.1063/1.2803618' => TRUE,
 '10.1067/mpd.2000.106225' => TRUE,
 '10.1068/p2952' => TRUE,
-'10.1075/ltba.38.2.09gaw' => TRUE,
 '10.1080/00855920310002717' => TRUE,
 '10.1080/01485010152104026' => TRUE,
 '10.1080/02786820300981' => TRUE,
@@ -3471,7 +3471,7 @@ array(
 '10.2174/0929867043364775' => TRUE,
 '10.2174/0929867043364784' => TRUE,
 '10.2174/0929867043364810' => TRUE,
-'10.2174/092986712804485719' => TRUE,
+'10.2174/092986712804485719' => TRUE, // Cloud error
 '10.2174/092986712804485755' => TRUE,
 '10.2174/138161211795049589' => TRUE,
 '10.2174/138161211795428777' => TRUE,
@@ -3481,7 +3481,6 @@ array(
 '10.21915/BIMAS.2018401' => TRUE,
 '10.22051/JAB.2020.26390.1307' => TRUE,
 '10.2223/JPED.2083' => TRUE,
-'10.2225/vol15-issue6-fulltext-7' => TRUE,
 '10.2225/vol8-issue1-fulltext-9' => TRUE, // "Forbid"
 '10.2225/vol9-issue3-fulltext-15' => TRUE, // "Forbid"
 '10.22353/mjbs.2004.02.13' => TRUE,
@@ -3606,8 +3605,6 @@ array(
 '10.3724/sp.j.1003.2011.02088' => TRUE,
 '10.3724/sp.j.1087.2009.00518' => TRUE,
 '10.3724/SP.J.1245.2011.00001' => TRUE,
-'10.3733/ca.v054n03p12' => TRUE,
-'10.3733/ca.v054n06p42' => TRUE,
 '10.37334/eras.v4i3.86' => TRUE, // Virus
 '10.37389/abei.v12i0.3575' => TRUE, // Bad gateway
 '10.37837/2707-7683-2020-16' => TRUE,
@@ -3736,8 +3733,6 @@ array(
 '10.46426/jp2kp.v20i2.49' => TRUE, // parked domain
 '10.48495/M613MZ00F' => TRUE,
 '10.48495/tm70mz48v' => TRUE,
-'10.5027/andgeoV46n1-3136' => TRUE,
-'10.5027/andgeoV46n2-3109' => TRUE,
 '10.5027/andgeoV46n2-3157' => TRUE,
 '10.5027/andgeoV46n3-3221' => TRUE,
 '10.5027/andgeoV50n3-3656' => TRUE,
@@ -3834,7 +3829,6 @@ array(
 '10.5812/ircmj.9588' => TRUE,
 '10.5840/jpr_1995_19' => TRUE,
 '10.5840/jpr2013386' => TRUE,
-'10.5840/pc201315240' => TRUE,
 '10.5850/JKSCT.2015.39.1.121' => TRUE,
 '10.5869/fc.2013.v19.103' => TRUE,
 '10.5944/aldaba.15.1990.20168' => TRUE,
@@ -3886,6 +3880,13 @@ const NULL_DOI_BUT_GOOD = array(  // TODO - these need to be manually double che
                                   // You can use hdl.handle.org to show you the final url - russia and other countries firewall
                                   // Also, you can use various archive services to see (hdl.handle.org might not work while doi.org does work even!!!)
                                   /** ========================================================================================================================================================================== **/
+'10.1075/ltba.38.2.09gaw' => TRUE,
+'10.3733/ca.v054n03p12' => TRUE,
+'10.3733/ca.v054n06p42' => TRUE,
+'10.5840/pc201315240' => TRUE,
+'10.2225/vol15-issue6-fulltext-7' => TRUE,
+'10.5027/andgeoV46n1-3136' => TRUE,
+'10.5027/andgeoV46n2-3109' => TRUE,
 '10.1001/archpsyc.60.5.497' => TRUE,
 '10.1001/jama.2020.6019' => TRUE,
 '10.1001/journalofethics.2015.17.4.msoc1-1504' => TRUE,
