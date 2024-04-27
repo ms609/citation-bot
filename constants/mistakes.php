@@ -567,6 +567,8 @@ const COMMON_MISTAKES = array ( // Common mistakes that aren't picked up by the 
   "url-archive" => "archive-url",
   "lasts" => "last",
   "access-datee" => "access-date",
+  "url-staus" => "url-status",
+  "translated-title" => "trans-title",
 ); // Lots of stuff that just existed
 
 const COMMON_MISTAKES_TOOL = array(
