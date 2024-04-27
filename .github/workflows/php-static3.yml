@@ -1,4 +1,4 @@
-name: PHP Static Coding Tests Part 1
+name: PHP Static Coding Tests Part 3
 
 on:
   push:
