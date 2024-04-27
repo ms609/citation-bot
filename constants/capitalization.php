@@ -64,7 +64,7 @@ const UC_SMALL_WORDS = array(/* The following will be automatically updated to a
 	  " el Dorado ", " las Vegas ", " los Angeles ", " N y ", " U S a ");
 	  // For ones that start with lower-case, include both ELife and Elife versions in misspelled array
 const JOURNAL_ACRONYMS = array(/* The following will be automatically updated to alphabetical order */
-	  " dan Kemasyarakatan ",
+	  " dan Kemasyarakatan ", " dan Bisnis ", " dan Sastra ",
 	  " (and the Middle East) ", " (BBA) ", " (online ed.) ", " AA Files ",
 	  " AAPOS ", " AAPS ", " ACM SIGGRAPH ", " ACS ", " Acta medico-historica Adriatica ",
 	  " Acta medico-historica Adriatica ", " AIDS & Behavior ", " AIDS and Behavior ",
@@ -210,7 +210,7 @@ const JOURNAL_ACRONYMS = array(/* The following will be automatically updated to
 	  " Ргасе filologiczne ", /* The above will be automatically updated to alphabetical order */
 );
 const UCFIRST_JOURNAL_ACRONYMS = array(/* The following will be automatically updated to alphabetical order */
-	  " Dan Kemasyarakatan ",
+	  " Dan Kemasyarakatan ", " Dan Bisnis ", " Dan Sastra ",
 	  " (And the Middle East) ", " (Bba) ", " (online Ed.) ", " Aa Files ",
 	  " Aapos ", " Aaps ", " ACM Siggraph ", " Acs ", " Acta Medico-Historica Adriatica ",
 	  " Acta Medico-historica Adriatica ", " Aids & Behavior ", " Aids and Behavior ",
