@@ -6,7 +6,7 @@ declare(strict_types=1);
  */
 require_once __DIR__ . '/../testBaseClass.php';
 
-final class ZZZLastTests extends testBaseClass {
+final readonly class ZZZLastTests extends testBaseClass {
 
   protected function setUp(): void {
    if (BAD_PAGE_API !== '') {
