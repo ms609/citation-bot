@@ -35,11 +35,23 @@ array(
 '10.37334/eras.v4i3.86' => TRUE, // Virus
 '10.37389/abei.v12i0.3575' => TRUE, // Bad gateway
 '10.3934/mbe' => TRUE, // 404
-'10.3949/ccjm.75.7.474' => TRUE, // Doi not found on website 
+'10.3949/ccjm.75.7.474' => TRUE, // Doi not found on website
+'10.4103/0019-5413.30524' => TRUE, // Slots
+'10.4103/0019-5413.30524' => TRUE, // Slots
+'10.4103/0019-5413.38576' => TRUE, // Slots
+'10.4103/0019-5413.38576' => TRUE, // Slots
+'10.4103/0019-5413.39572' => TRUE, // Slots
+'10.4103/0019-5413.39572' => TRUE, // Slots
+'10.4103/0019-5413.43371' => TRUE, // Slots
+'10.4103/0019-5413.43371' => TRUE, // Slots
 '10.4103/0019-5413.43373' => TRUE, // Slots
 '10.4103/0019-5413.45321' => TRUE, // Slots
+'10.4103/0019-5413.45332' => TRUE, // Slots
+'10.4103/0019-5413.45332' => TRUE, // Slots 
 '10.4103/0019-5413.49387' => TRUE, // Slots
 '10.4103/0019-5413.50844' => TRUE, // Slots
+'10.4103/0019-5413.50849' => TRUE, // Slots
+'10.4103/0019-5413.50849' => TRUE, // Slots
 '10.4103/0973-1229.104495' => TRUE, // Slots
 '10.4103/0973-1229.109335' => TRUE, // Slots
 '10.4103/0973-1229.109343' => TRUE, // Slots
@@ -3899,6 +3911,7 @@ const NULL_DOI_BUT_GOOD = array(  // TODO - these need to be manually double che
                                   // You can use hdl.handle.org to show you the final url - russia and other countries firewall
                                   // Also, you can use various archive services to see (hdl.handle.org might not work while doi.org does work even!!!)
                                   /** ========================================================================================================================================================================== **/
+'10.14429/dsj.56.1933' => TRUE,
 '10.1001/archneur.1989.00520400097026' => TRUE,
 '10.1001/archpsyc.60.5.497' => TRUE,
 '10.1001/jama.2020.6019' => TRUE,
