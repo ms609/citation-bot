@@ -35,17 +35,22 @@ final class TestPage extends Page {
 
 abstract class testBaseClass extends PHPUnit\Framework\TestCase {
 
-  private $testing_skip_bibcode= FALSE;
-  private $testing_skip_wiki   = FALSE;
+  private bool $testing_skip_bibcode;
+  private bool $testing_skip_wiki;
 
   function __construct() {
     parent::__construct();
 
-   // Non-trusted builds
-    if (!PHP_ADSABSAPIKEY) $this->testing_skip_bibcode = TRUE;
+    if (!PHP_ADSABSAPIKEY) {
+       $this->testing_skip_bibcode = TRUE;
+    } else {
+       $this->testing_skip_bibcode = FALSE;
+    }
     if (!getenv('PHP_OAUTH_CONSUMER_TOKEN') || !getenv('PHP_OAUTH_CONSUMER_SECRET') ||
 	!getenv('PHP_OAUTH_ACCESS_TOKEN')   || !getenv('PHP_OAUTH_ACCESS_SECRET')) {
        $this->testing_skip_wiki = TRUE;
+    } else {
+       $this->testing_skip_wiki = FALSE;
     }
 
     AdsAbsControl::small_give_up();
