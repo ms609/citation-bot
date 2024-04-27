@@ -5,7 +5,7 @@ require_once __DIR__ . '/../testBaseClass.php';
 
 // Some of these are unit tests that poke specific funtions that do not require actually connecting to adsabs
 
-final class apiFunctionsTest extends testBaseClass {
+final readonly class apiFunctionsTest extends testBaseClass {
 
   protected function setUp() : void {
    if (BAD_PAGE_API !== '') {
