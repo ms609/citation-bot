@@ -2,7 +2,7 @@
 declare(strict_types=1);
 
 const NULL_DOI_ANNOYING = // TODO - manually check these from time to time - Last Check 10 MAR 2024
-array(
+[
 '10.2174/092986712804485719' => TRUE, // Cloud error
 '10.1001/jama.275.17.1339' => TRUE, // 404
 '10.1080/10798587.2007.10642974' => TRUE, // Spam
@@ -77,9 +77,9 @@ array(
 '10.52486/01.00001.15' => TRUE, // Journal in general
 '10.7454/irhs.v1i1.50' => TRUE, // DB Error
 '10.7497/j.issn.2095-3941.2015.0030' => TRUE, // Page not found
-);
+];
 const NULL_DOI_LIST =
-array(
+[
  /** Double check before removing - for example, these are liars - see NULL_DOI_ANNOYING above **/  /** ===================================================================================== **/
 '10.1001/jama.275.17.1339' => TRUE, // 404
 '10.1007/978-3-7643-8140-0_245' => TRUE,
@@ -3907,9 +3907,9 @@ array(
 '10.9775/kvfd.2010.2081' => TRUE,
 '10.9775/kvfd.2012.5341' => TRUE,
 '10.9775/kvfd.2014.12722' => TRUE,
-);
+];
 
-const NULL_DOI_BUT_GOOD = array(  // TODO - these need to be manually double checked once in a great while.
+const NULL_DOI_BUT_GOOD = [       // TODO - these need to be manually double checked once in a great while.
                                   // Note that a failed url on one computer does not mean it is gone, it might just be you
                                   // You can use hdl.handle.org to show you the final url - russia and other countries firewall
                                   // Also, you can use various archive services to see (hdl.handle.org might not work while doi.org does work even!!!)
@@ -9403,9 +9403,9 @@ const NULL_DOI_BUT_GOOD = array(  // TODO - these need to be manually double che
 '10.9766/KIMST.2014.17.3.350' => TRUE,
 '10.9785/ovs.9783504384128.394' => TRUE,
 /** We cannot add hdls to this list, since we need the final URL - see below **/
-);
+];
 /** ========================================================================================================================================================================== **/
-const NULL_HDL_BUT_KNOWN = array(  // Do not report these, since they work usually
+const NULL_HDL_BUT_KNOWN = [  // Do not report these, since they work usually
 '10026.1/19203' => TRUE,
 '10045/34638' => TRUE,
 '10072/21024' => TRUE,
@@ -9529,6 +9529,6 @@ const NULL_HDL_BUT_KNOWN = array(  // Do not report these, since they work usual
 '2292/2414' => TRUE,
 '2292/5526' => TRUE,
 '2318/1651769' => TRUE,
-);
+];
 
 
