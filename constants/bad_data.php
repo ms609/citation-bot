@@ -134,7 +134,7 @@ const BAD_ZOTERO_TITLES = ['Browse publications', 'Central Authentication Servic
 				 'Connecting to the iTunes Store', '500 Internal Server Error', 'DomainMarket.com',
 				 'bluehost.com', 'Validate User', 'Document unavailable', 'Preview unavailable' ];
 
-const CANONICAL_PUBLISHER_URLS = array ('elsevier.com', 'springer.com', 'sciencedirect.com', 'tandfonline.com',
+const CANONICAL_PUBLISHER_URLS = ['elsevier.com', 'springer.com', 'sciencedirect.com', 'tandfonline.com',
 				'taylorandfrancis.com', 'wiley.com', 'sagepub.com', 'sagepublications.com',
 				'scielo.org', 'scielo.br', 'degruyter.com', 'hindawi.com', 'inderscience.com',
 				'cambridge.org', '.oup.com', 'nature.com', 'macmillan.com', 'ieeexplore.ieee.org',
