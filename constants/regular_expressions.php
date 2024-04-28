@@ -25,7 +25,7 @@ const REGEXP_IS_URL = '~^(?:(?:https?|ftp)://)(?:\\S+(?::\\S*)?@)?(?:(?!10(?:\\.
 // But, the code verifies each and every hdl, before the conversion is done, so even bad hosts should be fine
 
 // The code changes the dots to \. in this list
-const HANDLES_HOSTS = array('hdl.handle.net', 'kb.osu.edu', 'repositorio.aemet.es', 'fieldresearch.msf.org',
+const HANDLES_HOSTS =      ['hdl.handle.net', 'kb.osu.edu', 'repositorio.aemet.es', 'fieldresearch.msf.org',
 			    'dspace.lib.cranfield.ac.uk', 'dspace.lboro.ac.uk', 'scholarship.rice.edu',
 			    'deepblue.lib.umich.edu', 'arrow.latrobe.edu.au', 'kb.osu.edu', 'scholarworks.csun.edu',
 			    'www.era.lib.ed.ac.uk', 'research-repository.st-andrews.ac.uk', 'spiral.imperial.ac.uk',
@@ -35,13 +35,13 @@ const HANDLES_HOSTS = array('hdl.handle.net', 'kb.osu.edu', 'repositorio.aemet.e
 			    'digital.library.wisc.edu', 'www.territorystories.nt.gov.au', 'repository.up.ac.za',
 			    'researchonline.federation.edu.au', 'scholarspace.manoa.hawaii.edu', 'orbi.uliege.be',
 			    'repositorio.uasb.edu.ec', 'shodhganga.inflibnet.ac.in', 'www.tara.tcd.ie', 'conservancy.umn.edu',
-			    'library.oapen.org');
+			    'library.oapen.org'];
 // Order here could matter
 // YOU MUST escape the RegEx
-const HANDLES_PATHS = array('/dspace/bitstream/handle/', '/msf/handle/', '/vital/access/HandleResolver/',
+const HANDLES_PATHS =      ['/dspace/bitstream/handle/', '/msf/handle/', '/vital/access/HandleResolver/',
 			    '/handle/', '/dspace-jspui/handle/', '/dataset.xhtml\?persistentId=hdl:',
 			    '/dspace/handle/', '/handle2/', '/xmlui/handle/', '/iris/handle/',
 			    '/repository/bitstream/handle/', '/repository/handle/',
 			    '/tools/dspace/load/\?file=/repository/bitstream/handle/',
 			    '/xmlui/bitstream/handle/', '/jspui/handle/', '/jspui/bitstream/',
-			    '/vital/access/HandleResolver/');
+			    '/vital/access/HandleResolver/'];
