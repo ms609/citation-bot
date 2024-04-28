@@ -2663,31 +2663,31 @@ final class TemplateTest2 extends testBaseClass {
   public function testvalidate_and_add1() : void {
     $text = "{{cite web}}";
     $template = $this->make_citation($text);
-    $template->validate_and_add('author1', 'George @Hashtags Billy@hotmail.com', 'Sam @Hashtags Billy@hotmail.com', '', FALSE);
+    $template->validate_and_add('author1', 'George @Hashtags Billy@hotmail.com', 'Sam @Hashtags Billy@hotmail.com', '', false);
     $this->assertSame("{{cite web}}", $template->parsed_text());
   }
   public function testvalidate_and_add2() : void {
     $text = "{{cite web}}";
     $template = $this->make_citation($text);
-    $template->validate_and_add('author1', 'George @Hashtags', '', '', FALSE);
+    $template->validate_and_add('author1', 'George @Hashtags', '', '', false);
     $this->assertSame("{{cite web| author1=George }}", $template->parsed_text());
   }
   public function testvalidate_and_add3() : void {
     $text = "{{cite web}}";
     $template = $this->make_citation($text);
-    $template->validate_and_add('author1', 'George Billy@hotmail.com', 'Sam @Hashtag', '', FALSE);
+    $template->validate_and_add('author1', 'George Billy@hotmail.com', 'Sam @Hashtag', '', false);
     $this->assertSame("{{cite web| last1=George | first1=Sam }}", $template->parsed_text());
   }
   public function testvalidate_and_add4() : void {
     $text = "{{cite web}}";
     $template = $this->make_citation($text);
-    $template->validate_and_add('author1', 'com', 'Sam', '', FALSE);
+    $template->validate_and_add('author1', 'com', 'Sam', '', false);
     $this->assertSame("{{cite web| last1=Com | first1=Sam }}", $template->parsed_text());
   }
   public function testvalidate_and_add5() : void {
     $text = "{{cite web}}";
     $template = $this->make_citation($text);
-    $template->validate_and_add('author1', '',  'George @Hashtags', '', FALSE);
+    $template->validate_and_add('author1', '',  'George @Hashtags', '', false);
     $this->assertSame("{{cite web| author1=George }}", $template->parsed_text());
   }
 
@@ -2787,7 +2787,7 @@ final class TemplateTest2 extends testBaseClass {
    public function testArchiveAsURL() : void {
      $text='{{Cite web | url=https://web.archive.org/web/20111030210210/http://www.cap.ca/en/}}';
      $template = $this->make_citation($text);
-     $this->assertFalse($template->get_identifiers_from_url()); // FALSE because we add no parameters or such
+     $this->assertFalse($template->get_identifiers_from_url()); // false because we add no parameters or such
      $this->assertSame('http://www.cap.ca/en/', $template->get2('url'));
      $this->assertSame('https://web.archive.org/web/20111030210210/http://www.cap.ca/en/', $template->get2('archive-url'));
      $this->assertSame('2011-10-30', $template->get2('archive-date'));
@@ -3710,7 +3710,7 @@ final class TemplateTest2 extends testBaseClass {
     $text = "{{cite journal|bibcode=1995astro.ph..8159B|pages=8159}}"; // Pages from bibcode have slash in it astro-ph/8159B
     $expanded = $this->process_citation($text);
     $pages = (string) $expanded->get2('pages');
-    $this->assertSame(FALSE, stripos($pages, 'astro'));
+    $this->assertFalse(stripos($pages, 'astro'));
     $this->assertNull($expanded->get2('journal'));  // if we get a journal, the data is updated and test probably no longer gets bad data
    });
   }
