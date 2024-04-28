@@ -1,6 +1,6 @@
 <?php
 declare(strict_types=1);
-const LC_SMALL_WORDS = array(/* The following will be automatically updated to alphabetical order */
+const LC_SMALL_WORDS = [ /* The following will be automatically updated to alphabetical order */
 	  " AAOHN ", " AAP ", " AAUP ", " ABC ", " AC ", " ACM ", " AGU ",
 	  " AI ", " AIAA ", " AIChE ", " AIP ", " AJHG ", " al ", " an ", " and ",
 	  " and then ", " AOAC ", " APMIS ", " as ", " ASLIB ", " at ", " at ",
@@ -30,8 +30,8 @@ const LC_SMALL_WORDS = array(/* The following will be automatically updated to a
 	  " vir ", " von ", " voor ", " when ", " with ", " within ", " woor ",
 	  " y ", " zu ", " zum ", " zur ", /* The above will be automatically updated to alphabetical order */
 	  // After this line we list exceptions that need re-capitalizing after they have been decapitalized.
-	  " El Dorado ", " Las Vegas ", " Los Angeles ", " N Y ", " U S A ");
-const UC_SMALL_WORDS = array(/* The following will be automatically updated to alphabetical order */
+	  " El Dorado ", " Las Vegas ", " Los Angeles ", " N Y ", " U S A "];
+const UC_SMALL_WORDS = [ /* The following will be automatically updated to alphabetical order */
 	  " Aaohn ", " Aap ", " Aaup ", " Abc ", " Ac ", " Acm ", " Agu ",
 	  " Ai ", " Aiaa ", " Aiche ", " Aip ", " Ajhg ", " Al ", " An ", " And ",
 	  " and Then ", " Aoac ", " Apmis ", " As ", " Aslib ", " At ", " At ",
@@ -61,9 +61,9 @@ const UC_SMALL_WORDS = array(/* The following will be automatically updated to a
 	  " Vir ", " Von ", " Voor ", " When ", " With ", " Within ", " Woor ",
 	  " Y ", " Zu ", " Zum ", " Zur ", /* The above will be automatically updated to alphabetical order */
 	  // After this line we list exceptions that need re-capitalizing after they have been decapitalized.
-	  " el Dorado ", " las Vegas ", " los Angeles ", " N y ", " U S a ");
+	  " el Dorado ", " las Vegas ", " los Angeles ", " N y ", " U S a "];
 	  // For ones that start with lower-case, include both ELife and Elife versions in misspelled array
-const JOURNAL_ACRONYMS = array(/* The following will be automatically updated to alphabetical order */
+const JOURNAL_ACRONYMS = [ /* The following will be automatically updated to alphabetical order */
           " (and the Middle East) ", " (BBA) ", " (online ed.) ", " AA Files ", 
           " AAPOS ", " AAPS ", " ACM SIGGRAPH ", " ACS ", " Acta medico-historica Adriatica ", 
           " Acta medico-historica Adriatica ", " AIDS & Behavior ", " AIDS and Behavior ", 
@@ -207,8 +207,8 @@ const JOURNAL_ACRONYMS = array(/* The following will be automatically updated to
           " ZooKeys ", " Zprávy o zasedání Král. čes. společnosti nauk v Praze ", 
           " Zprávy o zasedání Král. čes. společnosti nauk v Praze ", " Zprávy o zasedání Král. čes. společnosti nauk v Praze ", 
           " Ргасе filologiczne ", /* The above will be automatically updated to alphabetical order */
-);
-const UCFIRST_JOURNAL_ACRONYMS = array(/* The following will be automatically updated to alphabetical order */
+];
+const UCFIRST_JOURNAL_ACRONYMS = [ /* The following will be automatically updated to alphabetical order */
           " (And the Middle East) ", " (Bba) ", " (online Ed.) ", " Aa Files ", 
           " Aapos ", " Aaps ", " ACM Siggraph ", " Acs ", " Acta Medico-Historica Adriatica ", 
           " Acta Medico-historica Adriatica ", " Aids & Behavior ", " Aids and Behavior ", 
@@ -352,8 +352,8 @@ const UCFIRST_JOURNAL_ACRONYMS = array(/* The following will be automatically up
           " Zookeys ", " Zprávy O Zasedání Král. Čes. Společnosti Nauk V Praze ", 
           " Zprávy O Zasedání Král. čes. Společnosti Nauk V Praze ", " Zprávy o zasedání Král. čes. Společnosti nauk v Praze ", 
           " Ргасе Filologiczne ", /* The above will be automatically updated to alphabetical order */
-);
-const OBVIOUS_FOREIGN_WORDS = array(" Abhandlungen ", " Actes ", " Annales ", " Archiv ", " Archives de ",
+];
+const OBVIOUS_FOREIGN_WORDS = [" Abhandlungen ", " Actes ", " Annales ", " Archiv ", " Archives de ",
 	   " Archives du ", " Archives des ", " Beiträge ", " Berichten ", " Blätter ", " Bulletin de ",
 	   " Bulletin des ", " Bulletin du ", " Cahiers ", " canaria ", " Carnets ", " Comptes rendus ",
 	   " Fachberichte ", " Historia ",
@@ -381,8 +381,8 @@ const OBVIOUS_FOREIGN_WORDS = array(" Abhandlungen ", " Actes ", " Annales ", " 
 	   " Jornal ", " comboios ", " Público ", " Revista ", " Olhar ", " Soudobé ", " dějiny ", " Maandblad ",
 	   " geschiedenis ", " voor de ", " Tiede ", " ja ase ", " Jezik ", " slovstvo ",
 	   " Zborlu ", " Nostru ", " Razprave ", " gradivo ", " Revija ", " narodnostna ", " vprašanja ",
-	   " Kultura ", " Komunikacija ", " Antibiotiki ", " Khimioterapiia ");
-const MAP_DIACRITICS = array("À"=>"A", "Á"=>"A", "Â"=>"A", "Ã"=>"A",
+	   " Kultura ", " Komunikacija ", " Antibiotiki ", " Khimioterapiia "];
+const MAP_DIACRITICS = ["À"=>"A", "Á"=>"A", "Â"=>"A", "Ã"=>"A",
     "Ä"=>"A", "Å"=>"A", "Æ"=>"AE", "Ç"=>"C", "È"=>"E", "É"=>"E",
     "Ê"=>"E", "Ë"=>"E", "Ì"=>"I", "Í"=>"I", "Î"=>"I", "Ï"=>"I",
     "Ð"=>"ETH", "Ñ"=>"N", "Ò"=>"O", "Ó"=>"O", "Ô"=>"O", "Õ"=>"O",
@@ -460,4 +460,4 @@ const MAP_DIACRITICS = array("À"=>"A", "Á"=>"A", "Â"=>"A", "Ã"=>"A",
     "ʊ"=>"upsilon", "ʋ"=>"v", "ʌ"=>"v", "ʍ"=>"w", "ʎ"=>"y", "ʐ"=>"z",
     "ʑ"=>"z", "ʒ"=>"ezh", "ʓ"=>"ezh", "ʚ"=>"e", "ʞ"=>"k", "ʠ"=>"q",
     "ʣ"=>"dz", "ʤ"=>"dezh", "ʥ"=>"dz", "ʦ"=>"ts", "ʧ"=>"tesh",
-    "ʨ"=>"tc", "ʩ"=>"feng", "ʪ"=>"ls", "ʫ"=>"lz", "ʮ"=>"h", "ʯ"=>"h");
+    "ʨ"=>"tc", "ʩ"=>"feng", "ʪ"=>"ls", "ʫ"=>"lz", "ʮ"=>"h", "ʯ"=>"h"];
