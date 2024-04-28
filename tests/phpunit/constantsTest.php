@@ -217,14 +217,14 @@ final class constantsTest extends testBaseClass {
       $wikipedia_response = WikipediaBot::GetAPage('Module:Citation/CS1/Whitelist');
       preg_match_all("~\s\[\'([a-zA-Z0-9\#\-\_ ]+?)\'\] = ~" , $wikipedia_response, $matches);
       $their_whitelist = $matches[1];
-      $patent_whitelist = array('inventor', 'inventor#', 'inventor-surname', 'inventor#-surname', 'inventor-last',
+      $patent_whitelist =      ['inventor', 'inventor#', 'inventor-surname', 'inventor#-surname', 'inventor-last',
 				'inventor#-last', 'inventor-given', 'inventor#-given', 'inventor-first', 'inventor#-first',
 				'inventor-first#', 'inventor-link', 'inventor#-link', 'inventor-link#', 'inventor#link',
 				'country-code', 'publication-number', 'patent-number', 'country', 'number', 'description',
 				'status', 'invent#', 'gdate', 'pubdate', 'publication-number', 'pridate', 'assign#',
 				'assignee', 'assign', 'inventor-surname#', 'inventor-last#', 'inventor-given#',
-				'inventorlink', 'inventorlink#', 'issue-date', 'fdate'); // Some are not valid, but people use them anyway
-      $their_whitelist = array_merge(array('CITATION_BOT_PLACEHOLDER_BARE_URL', 'citation_bot_placeholder_bare_url'),
+				'inventorlink', 'inventorlink#', 'issue-date', 'fdate']; // Some are not valid, but people use them anyway
+      $their_whitelist = array_merge(['CITATION_BOT_PLACEHOLDER_BARE_URL', 'citation_bot_placeholder_bare_url'],
 				     $patent_whitelist, $their_whitelist);
       $their_whitelist = array_unique($their_whitelist); // They might list the same thing twice
       $their_whitelist = array_diff($their_whitelist, ["template doc demo"]);
