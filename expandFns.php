@@ -602,7 +602,7 @@ function titles_are_similar(string $title1, string $title2) : bool {
 
 
 function de_wikify(string $string) : string {
-  return str_replace(["[", "]", "'''", "''", "&"], ["", "", "'", "'", "")], preg_replace(["~<[^>]*>~", "~\&[\w\d]{2,7};~", "~\[\[[^\|\]]*\|([^\]]*)\]\]~"], ["", "", "$1"],  $string));
+  return str_replace(["[", "]", "'''", "''", "&"], ["", "", "'", "'", ""], preg_replace(["~<[^>]*>~", "~\&[\w\d]{2,7};~", "~\[\[[^\|\]]*\|([^\]]*)\]\]~"], ["", "", "$1"],  $string));
 }
 
 function titles_are_dissimilar(string $inTitle, string $dbTitle) : bool {
