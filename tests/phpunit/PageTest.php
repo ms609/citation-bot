@@ -250,7 +250,7 @@ final class PageTest extends testBaseClass {
       $api = new WikipediaBot();
       $text = '{{cite thesis|url=https://mathscinet.ams.org/mathscinet-getitem?mr=1234}}{{nobots}}';
       $page = $this->process_page($text);
-      $this->assertFalse($page->parsed_text());
+      $this->assertSame($text, $page->parsed_text());
       $this->assertFalse($page->write($api, "Testing bot write function"));
   }
 
