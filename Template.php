@@ -2541,7 +2541,7 @@ final class Template {
 		case "M3": case "N1": case "N2": case "ER": case "TY": case "KW": case "T3":  // T3 is often the sub-title of a book
 		case "A2": // This can be of the book that is reviewed
 		case "A3": // Only seen this once and it duplicated AU
-		case "ET": // Might be edition of book as an integer
+		case "ET": // Might be edition of book as an int
 		case "LA": // Language
 		case "DA": // Date this is based upon, not written or published
 		case "CY": // Location
@@ -3012,7 +3012,7 @@ final class Template {
 		}
 	}
 	$google_date = tidy_date($google_date);
-	$now = (integer) date("Y");
+	$now = (int) date("Y");
 	// Some publishers give next year always for OLD stuff
 	for ($i = 1; $i <= 30; $i++) {
 		$next_year = (string) ($now + $i);
@@ -3024,7 +3024,7 @@ final class Template {
 	}
 	if (!preg_match("~^\d{4}$~", $google_date)) { // More than a year
            $almost_now = time() - 604800;
-           $new = (integer) strtotime($google_date);
+           $new = (int) strtotime($google_date);
            if ($new > $almost_now) return;
 	}
 	$this->add_if_new('date', $google_date);
@@ -6009,8 +6009,8 @@ final class Template {
 			if ($pmatch[1] === 'page') {
 			  $bad = TRUE;
 			  if (preg_match('~^(\d+)\–(\d+)$~', $value, $matches_dash)) {
-				$part1 = (integer) $matches_dash[1];
-				$part2 = (integer) $matches_dash[2];
+				$part1 = (int) $matches_dash[1];
+				$part2 = (int) $matches_dash[2];
 				if (($matches_dash[1][0] !== '0') && ($matches_dash[2][0] !== '0') &&
 				  ($part1 < $part2) &&
 				  ($part1 > 9)) { // Probably not a section
