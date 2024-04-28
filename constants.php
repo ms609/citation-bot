@@ -57,17 +57,17 @@ function bot_curl_init(float $time, array $ops) : CurlHandle {
 	$ch = curl_init();
 	// 1 - Global Defaults
 	curl_setopt_array($ch, [
-		CURLOPT_FOLLOWLOCATION => TRUE,
+		CURLOPT_FOLLOWLOCATION => true,
 		CURLOPT_BUFFERSIZE => 524288, // 512kB chunks
 		CURLOPT_MAXREDIRS => 20,  // No infinite loops for us, 20 for Elsevier and Springer websites
 		CURLOPT_USERAGENT => BOT_USER_AGENT,
-		CURLOPT_AUTOREFERER => TRUE,
+		CURLOPT_AUTOREFERER => true,
 		CURLOPT_REFERER => "https://en.wikipedia.org",
-		CURLOPT_COOKIESESSION => TRUE,
-		CURLOPT_RETURNTRANSFER => TRUE,
+		CURLOPT_COOKIESESSION => true,
+		CURLOPT_RETURNTRANSFER => true,
 		CURLOPT_HEADEROPT => CURLHEADER_UNIFIED,
 		CURLOPT_PROGRESSFUNCTION => 'curl_limit_page_size',
-		CURLOPT_NOPROGRESS => FALSE,
+		CURLOPT_NOPROGRESS => false,
 	// 2 - Default Time by ratio
 		CURLOPT_TIMEOUT => BOT_HTTP_TIMEOUT * $time,
 		CURLOPT_CONNECTTIMEOUT => BOT_CONNECTION_TIMEOUT * $time]);
