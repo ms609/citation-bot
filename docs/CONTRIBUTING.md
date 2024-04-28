@@ -38,6 +38,7 @@ Always write a clear log message for your commits. One-line messages are fine fo
   * We prefer `curl` to `file_get_contents` and `get_headers`for easier debugging and greater control
   * We use `echo` and `exit` for normal code, and `print` and `die` for debug code that is intended to be removed later
   * All code must be valid PHP 8.2
+  * We prefer [] to array()
   * in_array should always pass the strict parameter
   * Directly comparing strings to integer with comparision operators is different in PHP 7 and 8, so they should not be used
   * We want 100% code coverage with untestable code flagged in the source -- such as code that handles error conditions.  See the file apiFunctions.php for lots of examples of non-coverage code.
