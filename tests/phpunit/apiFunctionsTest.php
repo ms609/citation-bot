@@ -18,7 +18,7 @@ final class apiFunctionsTest extends testBaseClass {
     $this->assertTrue(true);
   }
 
-  public function testS2CIDlicenseFALSE() : void {
+  public function testS2CIDlicenseFalse() : void {
     sleep(1);
     $this->assertFalse(get_semanticscholar_license('94502986'));
   }
@@ -832,7 +832,7 @@ final class apiFunctionsTest extends testBaseClass {
     $this->assertSame($text, $prepared->parsed_text());
   }
 
-  public function testS2CIDlicenseTRUE() : void {
+  public function testS2CIDlicenseTrue() : void {
     sleep(2);
     $this->assertTrue(get_semanticscholar_license('52813129'));
   }
