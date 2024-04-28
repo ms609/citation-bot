@@ -1,26 +1,26 @@
 <?php
-declare(strict_types=1);
+declare(strict_types=1];
 // Some data we get from outside sources is bad or at least mis-defined
 // Use lower case for all of these, and then compare to a lower cased version
-const HAS_NO_VOLUME = array("zookeys", "studia hibernica", "analecta hibernica", "british art studies", "der spiegel",
+const HAS_NO_VOLUME = ["zookeys", "studia hibernica", "analecta hibernica", "british art studies", "der spiegel",
 			    "international astronomical union circular", "yale french studies", "capjournal",
 			    "cap journal", "phytokeys", "starinar", "balcanica", "american museum novitates",
-			    "european journal of taxonomy", "international journal of the sociology of language");  // Some journals have issues only, no volume numbers
+			    "european journal of taxonomy", "international journal of the sociology of language"];  // Some journals have issues only, no volume numbers
 // oceanic linguistics special publications has the problem that issues will not show up within temlpates
-const HAS_NO_ISSUE = array("special papers in palaeontology", "oceanic linguistics special publications",
-			   "cahiers balkaniques", "res historica", "archaeological reports");  // Some journals have volumes only, no issue numbers
-const PREFER_VOLUMES = array("illinois classical studies"); // When issue=volume, drop issue.  JSTOR calls volumes issues
-const PREFER_ISSUES = array("mammalian species", "bulletin of the united states national museum");
-const CONFERENCE_LIST = array("Proceedings of Advancing Astrophysics", "International Cosmic Ray Conference");
-const BAD_ACCEPTED_MANUSCRIPT_TITLES = array("oup accepted manuscript", "placeholder for bad pdf file",
+const HAS_NO_ISSUE = ["special papers in palaeontology", "oceanic linguistics special publications",
+			   "cahiers balkaniques", "res historica", "archaeological reports"];  // Some journals have volumes only, no issue numbers
+const PREFER_VOLUMES = ["illinois classical studies"]; // When issue=volume, drop issue.  JSTOR calls volumes issues
+const PREFER_ISSUES = ["mammalian species", "bulletin of the united states national museum"];
+const CONFERENCE_LIST = ["Proceedings of Advancing Astrophysics", "International Cosmic Ray Conference"];
+const BAD_ACCEPTED_MANUSCRIPT_TITLES = ["oup accepted manuscript", "placeholder for bad pdf file",
 					     "placeholder", "symbolic placeholder", "[placeholder]",
-					     "placeholder for arabic language transliteration", "article not found");
-const BAD_AUTHORS = array("unknown", "missing", "- -.", "- -", "no authorship indicated", "no authorship", "no author",
+					     "placeholder for arabic language transliteration", "article not found"];
+const BAD_AUTHORS = ["unknown", "missing", "- -.", "- -", "no authorship indicated", "no authorship", "no author",
 			   "no authors", "no author indicated", "no authorship indicated", "dk eyewitness", "united states",
 			   "great britain", "indiatoday", "natural history museum bern", "daily sabah", 'el país', 'el pais',
 			   "radio", "rundfunk", "news agencies" , "object", 'united states. interstate commerce commission',
-			   "(:unav)");
-const NON_HUMAN_AUTHORS = array('collaborat', 'reporter', 'journalist', 'correspondent', 'anchor', 'staff', 'foreign',
+			   "(:unav)"];
+const NON_HUMAN_AUTHORS = ['collaborat', 'reporter', 'journalist', 'correspondent', 'anchor', 'staff', 'foreign',
 				'national', 'endowment', ' for the ', 'humanities', 'committee', 'group',
 				'society', ' of america', 'association', ' at the ', 'board of ', 'communications',
 				'corporation', 'incorporated', 'editorial', 'university', 'dept. of', 'department',
@@ -28,13 +28,13 @@ const NON_HUMAN_AUTHORS = array('collaborat', 'reporter', 'journalist', 'corresp
 				'world news', 'national news', 'eyewitness', 'information', 'business', 'bureau',
 				'us census', 'indiatoday', 'natural history', 'museum', '試験所', 'circuit', 'county',
 				'external', 'relations', 'nations', 'united', 'radio', 'rundfunk', 'new york', 'agencies',
-			        'european central', 'central bank', 'commission', 'interstate', 'commerce');
-const BAD_PUBLISHERS = array('london', 'edinburgi', 'edinburgh', 'no publisher', 'no publisher given',
-			     'no publisher specified', 'unknown', 'publisher not identified', 'report');
+			        'european central', 'central bank', 'commission', 'interstate', 'commerce'];
+const BAD_PUBLISHERS = ['london', 'edinburgi', 'edinburgh', 'no publisher', 'no publisher given',
+			     'no publisher specified', 'unknown', 'publisher not identified', 'report'];
 
-const ARE_WORKS = array('medrxiv', 'ietf datatracker'); // Things with dois that should be {{cite document|work=THIS}}
+const ARE_WORKS = ['medrxiv', 'ietf datatracker']; // Things with dois that should be {{cite document|work=THIS}}
 
-const PUBLISHERS_ARE_WORKS = array('the san diego union-tribune', 'forbes', 'salon', 'san jose mercury news', 'san jose mercury-news', 'new york times',
+const PUBLISHERS_ARE_WORKS = ['the san diego union-tribune', 'forbes', 'salon', 'san jose mercury news', 'san jose mercury-news', 'new york times',
 				   'the new york times', 'daily news online', 'daily news', 'the sun', 'the times',
 				   'the star', 'washington post', 'the washington post', 'the tribune',
 				   'los angeles times', 'la times', 'the la times', 'htmlgiant', 'the los angeles times',
@@ -60,18 +60,18 @@ const PUBLISHERS_ARE_WORKS = array('the san diego union-tribune', 'forbes', 'sal
 				   'the baltimore sun', 'nba.com', 'philippine news agency', 'www.pna.gov.ph',
 				   'pia.gov.ph', 'philippine information agency', 'indiaglitz', 'india glitz', 'indiaglitz.com'
 				   // WP:CITALICSRFC and MOS:ITALICWEBCITE  ?????     'abc news', 'nbc news', 'cbs news', 'bbc news'
-				  ); // LOWER CASE!  WWW not there too!
+				  ]; // LOWER CASE!  WWW not there too!
 
-const WORKS_ARE_PUBLISHERS = array('united states census bureau'); // LOWER CASE!
+const WORKS_ARE_PUBLISHERS = ['united states census bureau']; // LOWER CASE!
 
-const DUBIOUS_JOURNALS = array('oup academic', 'fda', 'reuters', 'associated press', 'ap', 'ap wire', 'report', 'nist',
-			       'national institute of standards and technology'); // Things we add, but only if publisher and agency are both blank
+const DUBIOUS_JOURNALS = ['oup academic', 'fda', 'reuters', 'associated press', 'ap', 'ap wire', 'report', 'nist',
+			       'national institute of standards and technology']; // Things we add, but only if publisher and agency are both blank
 
 // Catch 'authors' such as "hearst magazines", "time inc", "nielsen business media, inc"
 // Ordered alphabetically.
 const PUBLISHER_ENDINGS = ["books", "corporation", 'centre', 'center', 'company', "inc.", "inc", "magazines",
 			   'museum', "press", "publishers", "publishing", 'science'];
-const BAD_TITLES = array("unknown", "missing", "arxiv e-prints", "arxiv mathematics e-prints",
+const BAD_TITLES = ["unknown", "missing", "arxiv e-prints", "arxiv mathematics e-prints",
 			 "ssrn electronic journal", "dissertations available from proquest",
 			 "ebscohost login",  "library login", "google groups", "sciencedirect", "cur_title",
 			 "wordpress › error", "ssrn temporarily unavailable", "log in - proquest",
@@ -87,14 +87,14 @@ const BAD_TITLES = array("unknown", "missing", "arxiv e-prints", "arxiv mathemat
 			 "redirect notice", "oxford music online", "trove - archived webpage", "pagina inicia",
 			 "404 not found", "404页面", "sign up ", "index of /home", "usa today - today's breaking news, us & world news",
 			 "403 unauthorized", "404错误", "internal server error", "error", "404", "error - lexisnexis® publisher",
-			 "optica publishing group", "digital library - pdf document", "explore census data");
-const IN_PRESS_ALIASES = array("in press", "inpress", "pending", "published",
+			 "optica publishing group", "digital library - pdf document", "explore census data"];
+const IN_PRESS_ALIASES = ["in press", "inpress", "pending", "published",
 			       "published online", "no-no", "n/a", "online ahead of print",
 			       "unpublished", "unknown", "tba", "forthcoming", "in the press",
-			       "na", "submitted", "tbd", "missing");
-const NON_JOURNAL_BIBCODES = array('arXiv', 'gr.qc', 'hep.ex', 'hep.lat', 'hep.ph', 'hep.th', 'astro.ph',
+			       "na", "submitted", "tbd", "missing"];
+const NON_JOURNAL_BIBCODES = ['arXiv', 'gr.qc', 'hep.ex', 'hep.lat', 'hep.ph', 'hep.th', 'astro.ph',
 				   'math', 'nucl.ex', 'nucl.th', 'physics', 'quant.ph', 'alg.geom',
-				   'cond.mat', 'cs.', 'econ.', 'eess.', 'nlin.');
+				   'cond.mat', 'cs.', 'econ.', 'eess.', 'nlin.'];
 const NON_PUBLISHERS = ['books.google', 'google books', 'google news', 'google.co', 'google book',
 			'zenodo', 'archive.org', 'citeseerx.ist.psu.edu', 'archive.fo', 'archive.today',
 			'hdl.handle.net', 'pub med', 'researchgate']; // Google Inc is a valid publisher, however.
@@ -153,20 +153,20 @@ const CANONICAL_PUBLISHER_URLS = array ('elsevier.com', 'springer.com', 'science
 				//  Below are proxys
 				'proxy.libraries', 'proxy.lib.', '.ezproxy.', '-ezproxy.', '/ezproxy.',
 				//  Below are sites that are simply DOI resolvers, like dx.doi.org
-				'doi.library.ubc.ca');
+				'doi.library.ubc.ca'];
 
-const PROXY_HOSTS_TO_ALWAYS_DROP = array('proxy.libraries', 'proxy.lib.', '.ezproxy.', '-ezproxy.', '/ezproxy.',
+const PROXY_HOSTS_TO_ALWAYS_DROP = ['proxy.libraries', 'proxy.lib.', '.ezproxy.', '-ezproxy.', '/ezproxy.',
 				  '.serialssolutions.com', 'search.ebscohost.com', 'findarticles.com',
-				  'journals.royalsociety.org', '.idm.oclc.org'); // Drop these if there is a valid DOI
+				  'journals.royalsociety.org', '.idm.oclc.org']; // Drop these if there is a valid DOI
 
-const PROXY_HOSTS_TO_DROP = array('proxy.libraries', 'proxy.lib.', '.ezproxy.', '-ezproxy.', '/ezproxy.',
+const PROXY_HOSTS_TO_DROP = ['proxy.libraries', 'proxy.lib.', '.ezproxy.', '-ezproxy.', '/ezproxy.',
 				  '.serialssolutions.com', '.ebscohost.com', 'linkinghub.elsevier.com',
 				  'doi.library.ubc.ca', 'ingentaconnect.com/content', 'sciencedirect.com/science?_ob',
 				  'informaworld.com/smpp', '.search.serialssolutions.com', 'doi.apa.org',
 				  'onlinelibrary.wiley.com/resolve/openurl', 'findarticles.com', 'psycnet.apa.org',
-				  'delivery.acm.org'); // Drop these if there is a valid FREE DOI
+				  'delivery.acm.org']; // Drop these if there is a valid FREE DOI
 
-const WEB_NEWSPAPERS = array(
+const WEB_NEWSPAPERS = [
 		 'bbc news', 'bbc', 'news.bbc.co.uk', 'bbc sports', 'bbc sport', 'www.bbc.co.uk', 'the economist', 'washington post',
 		 'philippine daily inquirer', 'www.inquirer.net', 'manila bulletin', 'mb.com.ph', 'the philippine star', 'www.philstar.com',
 		 'the manila times', 'www.manilatimes.net', 'manila standard', 'manilastandard.net', 'sunstar', 'www.sunstar.com.ph',
@@ -179,11 +179,11 @@ const WEB_NEWSPAPERS = array(
 		 'the spokesman-review', 'bozeman daily chronicle', 'the new york times', 'argus leader', 'the washington post',
 		 'rapid city journal', 'austin daily herald', 'la crosse tribune', 'chicago tribune',
 		 'christian science monitor', 'csm', 'csmonitor.com',
-		 'rochester democrat and chronicle', 'the boston globe', 'the indianapolis news');
+		 'rochester democrat and chronicle', 'the boston globe', 'the indianapolis news'];
 
-const HOSTS_TO_NOT_ADD  = array('this.fails', 'www.ncbi.nlm.nih.gov', 'dx.doi.org', 'doi.org');
+const HOSTS_TO_NOT_ADD  = ['this.fails', 'www.ncbi.nlm.nih.gov', 'dx.doi.org', 'doi.org'];
 
-const HOSTNAME_MAP  = array('public.ebookcentral.proquest.com' => '[[ProQuest]]',
+const HOSTNAME_MAP  = ['public.ebookcentral.proquest.com' => '[[ProQuest]]',
 			    'proquest.com' => '[[ProQuest]]',
 			    'search.proquest.com' => '[[ProQuest]]',
 			    'cnn.com' => '[[CNN]]',
@@ -410,9 +410,9 @@ const HOSTNAME_MAP  = array('public.ebookcentral.proquest.com' => '[[ProQuest]]'
 			    'theweek.co.uk' => '[[The Week]]',
 			    'theweek.com' => '[[The Week]]',
 			    'theweek.in' => '[[The Week (Indian magazine)|The Week]]',
-			   ); // Be warned, some website host a seperate sunday edition, etc.  Be careful and when in doubt link to hostname
+			   ]; // Be warned, some website host a seperate sunday edition, etc.  Be careful and when in doubt link to hostname
 
-const NO_DATE_WEBSITES = array('wikipedia.org', 'web.archive.org', 'perma-archives.org', 'webarchive.proni.gov.uk', 'perma.cc',
+const NO_DATE_WEBSITES = ['wikipedia.org', 'web.archive.org', 'perma-archives.org', 'webarchive.proni.gov.uk', 'perma.cc',
 			      'wayback', 'web.archive.bibalex.org', 'web.petabox.bibalex.org', 'webharvest.gov', 'archive.wikiwix.com',
 			      'archive.is', 'archive-it.org', 'nationalarchives.gov.uk', 'freezepage.com', 'webcitation.org',
 			      'waybackmachine.org', 'siarchives.si.edu', 'gutenberg.org', 'archive.fo', 'archive.today', 'archive.ph',
@@ -420,9 +420,9 @@ const NO_DATE_WEBSITES = array('wikipedia.org', 'web.archive.org', 'perma-archiv
 			      'apps.des.qld.gov.au', 'billboard.com', 'music.apple.com', 'spotify.com', 'fred.stlouisfed.org',
 			      'simonsfoundation.org', 'chroniclingamerica.loc.gov', 'github.com', 'rottentomatoes.com', 'arts.gov/honors',
 			      'shop.schizoidshop.com', 'elonet.finna.fi', 'numismatics.org.uk', 'itunes.apple.com', 'officialcharts.com',
-			      'ecb.europa.eu/stats', 'ballotbox.scot');
+			      'ecb.europa.eu/stats', 'ballotbox.scot'];
 
-const ZOTERO_AVOID_REGEX = array("twitter\.",               // This should be {{cite tweet}}
+const ZOTERO_AVOID_REGEX = ["twitter\.",               // This should be {{cite tweet}}
 				 // Zotero seems to be doing better now "youtube\.", "youtu\.be",
 				 "books\.google\.",         // We have special google books code
 				 "google\.com/search",      // Google search results
@@ -484,8 +484,8 @@ const ZOTERO_AVOID_REGEX = array("twitter\.",               // This should be {{
 				 "myprivacy\.dpgmedia\.nl", // blocker
 				 "explore\.bl\.uk/primo_library", // Fails 100%
 				 "weblio\.jp/", // just scrapes other website like wiki and has bogus issue and volume numbers
-				);
-const NON_JOURNAL_WEBSITES = array('-news.co.uk/', '.ajc.com/', '.al.com/',
+				];
+const NON_JOURNAL_WEBSITES = ['-news.co.uk/', '.ajc.com/', '.al.com/',
 		      '.ap.org/', '.bbm.ca/', '.dw.com/', '.fec.gov/', '.ft.com/',
 		      '.google.com/', '.ign.com/', '.jd.com/', '.mic.com/', '.newsbank.com/',
 		      '.nj.com/', '.pbs.org/', '.qq.com/', '.rt.com/', '.svg.com/', '.time.com/',
@@ -811,14 +811,14 @@ const NON_JOURNAL_WEBSITES = array('-news.co.uk/', '.ajc.com/', '.al.com/',
 		      'zerohedge.com/', 'zhanqi.tv/', 'zoominfo.com/', 'hdr.undp.org/', '.nist.gov/',
 		      'ngdc.noaa.gov/', 'babel.hathitrust.org/', 'pcgames.de/', 'eurogamer.it/',
 		      'conceptcarz.com/', '.tvp.info/', 'archdioceseofbombay.org/', 'www.nist.gov/',
-		      'dib.ie/', 'ideas.repec.org/', 'weblio.jp/');
+		      'dib.ie/', 'ideas.repec.org/', 'weblio.jp/'];
 		     // Just a list of ones that are obvious.  Add ones that time-out as we find them
 		     // bbm.ca is short enough that we add /bbm.ca/ and .bbm.ca/ since we don't want to grab too many sites
 
-const NON_JOURNAL_DOIS = array('10.5531/db.vz.0001', '10.1163/2352-0248', '10.3318/dib'); // lowercase exact matches
-const NON_JOURNALS = array('Amphibian Species of the World', 'an Online Reference', 'An Online Reference',
-			   'Boston Almanac and Guide1', 'Includes:reports from Commissioners, Inspectors and Others'); // Case-sensitive sub-string
-const ARE_MAGAZINES = array('the new yorker', 'the new republic', 'new republic', 'expedition magazine', 'wired', 'wired uk',
+const NON_JOURNAL_DOIS = ['10.5531/db.vz.0001', '10.1163/2352-0248', '10.3318/dib']; // lowercase exact matches
+const NON_JOURNALS = ['Amphibian Species of the World', 'an Online Reference', 'An Online Reference',
+			   'Boston Almanac and Guide1', 'Includes:reports from Commissioners, Inspectors and Others']; // Case-sensitive sub-string
+const ARE_MAGAZINES = ['the new yorker', 'the new republic', 'new republic', 'expedition magazine', 'wired', 'wired uk',
 			   'computer gaming world', 'edge (magazine)', 'game informer', 'pc gamer uk',
 			   'wired (magazine)', 'time', 'life', 'time (magazine)', 'life (magazine)', 'billboard',
 			   'billboard (magazine)', 'rolling stone', 'mcv/develop', 'vanity fair',
@@ -827,21 +827,21 @@ const ARE_MAGAZINES = array('the new yorker', 'the new republic', 'new republic'
 			   'playstation: the official magazine', 'play and silicon mag', 'games radar', 'hyper',
 			   'famitsu', 'gamepro', 'yachting world', 'kalki', 'sports illustrated', 'new civil engineer',
 			   "harper's magazine", "harper's bazaar", "harper's"
-			   ); // lowercase axact matches
-const ARE_MANY_THINGS = array('pc gamer', 'gamestar', 'rock paper shotgun', 'mcv', 'rock, paper, shotgun', 'edge',
+			   ]; // lowercase axact matches
+const ARE_MANY_THINGS = ['pc gamer', 'gamestar', 'rock paper shotgun', 'mcv', 'rock, paper, shotgun', 'edge',
 			      'ballotpedia', 'npr', 'ballotpedia.org', 'npr.org', 'nih.gov', 'nih', 'eurogamer.it',
 			      'conceptcarz', 'the royal family', 'eurogamer.de', 'east west main line partnership',
 			      'national institutes of health', 'national institutes of health (nih)',
-			      'www.finna.fi', 'finna.fi', 'elonet'); // lowercase axact matches.  These are things that are both websites and newspapers
-const ARE_NEWSPAPERS = array('the economist', 'la times', 'toronto sun', 'washington post', 'the washington post',
-			     'philippine daily inquirer', 'the irish times', 'wikinews', 'wikinews.org'); // lowercase axact matches
-const NO_PUBLISHER_NEEDED = array('los angeles times', 'new york times magazine', 'the new york times',
+			      'www.finna.fi', 'finna.fi', 'elonet']; // lowercase axact matches.  These are things that are both websites and newspapers
+const ARE_NEWSPAPERS = ['the economist', 'la times', 'toronto sun', 'washington post', 'the washington post',
+			     'philippine daily inquirer', 'the irish times', 'wikinews', 'wikinews.org']; // lowercase axact matches
+const NO_PUBLISHER_NEEDED = ['los angeles times', 'new york times magazine', 'the new york times',
 				  'new york times', 'huffington post', 'the daily telegraph', 'forbes.com',
-				  'forbes magazine'); // lowercase axact matches
+				  'forbes magazine']; // lowercase axact matches
 
-const ENCYCLOPEDIA_WEB = array('plato.stanford.edu', 'britannica.com');
+const ENCYCLOPEDIA_WEB = ['plato.stanford.edu', 'britannica.com'];
 
-const GOOD_10_1093_DOIS = array( // March 2019 list
+const GOOD_10_1093_DOIS = [ // March 2019 list
 	  'abbs', 'abm', 'abt', 'acn', 'adaptation', 'advances', 'ae', 'aepp', 'aesa', 'af', 'afraf',
 	  'ageing', 'ahr', 'ajae', 'ajcl', 'ajcn', 'ajcp', 'aje', 'ajh', 'ajhp', 'ajj', 'ajlh',
 	  'alcalc', 'aler', 'alh', 'alrr', 'amt', 'analysis', 'annhyg', 'annonc', 'antitrust', 'aob',
@@ -886,11 +886,11 @@ const GOOD_10_1093_DOIS = array( // March 2019 list
 	  'sq', 'ssjj', 'sw', 'swr', 'swra', 'synbio', 'sysbio', 'tandt', 'tas', 'tbm',
 	  'tcbh', 'teamat', 'toxsci', 'transactionslinnean', 'transactionslinneanbot', 'transactionslinneanzoo', 'treephys', 'tropej', 'trstmh', 'tse',
 	  'ulr', 've', 'wber', 'wbro', 'whq', 'wjaf', 'workar', 'yel', 'yielaw', 'ywcct',
-	  'ywes', 'zoolinnean');
+	  'ywes', 'zoolinnean'];
 
 
 // List of things to not print links to, since they occur all the time
-const AVOIDED_LINKS = array('', 'Digital_object_identifier', 'JSTOR', 'Website', 'International_Standard_Book_Number',
+const AVOIDED_LINKS = ['', 'Digital_object_identifier', 'JSTOR', 'Website', 'International_Standard_Book_Number',
 			    'Library_of_Congress_Control_Number', 'Handle_System', 'PubMed_Central', 'PubMed',
 			    'PubMed_Identifier', 'Bibcode', 'International_Standard_Serial_Number', 'bioRxiv',
 			    'CiteSeerX', 'Zentralblatt_MATH', 'Jahrbuch_über_die_Fortschritte_der_Mathematik',
@@ -899,11 +899,11 @@ const AVOIDED_LINKS = array('', 'Digital_object_identifier', 'JSTOR', 'Website',
 			    'Open_Library', 'ArXiv', 'OCLC', 'Cf.', 'Doi_(identifier)', 'PMC_(identifier)',
 			    'PMID_(identifier)', 'ArXiv_(identifier)', 'Bibcode_(identifier)',
 			    'S2CID_(identifier)', 'ISBN_(identifier)', 'ISSN_(identifier)', 'OCLC_(identifier)',
-			    'OSTI_(identifier)');
+			    'OSTI_(identifier)'];
 
 
 // Lower case, and periods and dashes converted to spaces
-const JOURNAL_IS_BOOK_SERIES = array(
+const JOURNAL_IS_BOOK_SERIES = [
 	 'novartis found symp',
 	 'novartis foundation symposia',
 	 'methods of molecular biology' ,
@@ -946,9 +946,9 @@ const JOURNAL_IS_BOOK_SERIES = array(
 	 'advances in anatomy embryology and cell biology',
 	 'adv anat embryol cell biol',
 	 'handbook of the birds of the world'
-      );
+      ];
 
-const ALWAYS_BAD_TITLES = array(
+const ALWAYS_BAD_TITLES = [
 		     "Bloomberg - Are you a robot?",
 		     "Page not found",
 		     "Breaking News, Analysis, Politics, Blogs, News Photos, Video, Tech Reviews",
@@ -968,9 +968,9 @@ const ALWAYS_BAD_TITLES = array(
 		     "How to access research remotely",
 		     "Log In - ProQuest",
 		     "DPG Media Privacy Gate",
-		    );
+		    ];
 
-const DOI_FREE_PREFIX = array('10.1100/', '10.11131/', '10.11569/', '10.11647/', '10.11648/', '10.1186/', '10.12688/',
+const DOI_FREE_PREFIX = ['10.1100/', '10.11131/', '10.11569/', '10.11647/', '10.11648/', '10.1186/', '10.12688/',
 		  '10.12703/', '10.12715/', '10.12998/', '10.13105/', '10.1371/', '10.14293/', '10.14303/', '10.15215/',
 		  '10.15412/', '10.15560/', '10.1629/', '10.16995/', '10.17645/', '10.19080/', '10.19173/', '10.1989/',
 		  '10.1999/', '10.20944/', '10.21037/', '10.21468/', '10.2147/', '10.21767/', '10.2196/', '10.22261/',
@@ -989,5 +989,5 @@ const DOI_FREE_PREFIX = array('10.1100/', '10.11131/', '10.11569/', '10.11647/',
 		  '10.1371/journal.pone', '10.3897/zookeys', '10.1016/j.jbc.', '10.1016/S0021-9258', '10.1074/jbc.',
 		  '10.1210/jendso', '10.4249/', '10.5210/', '10.3847/', '10.22323/', '10.15347/', '10.1074/', '10.1194/',
 		  '10.7759/cureus.', '10.1099/acmi', '10.1099/mic', '10.1099/00221287', '10.1099/mgen', '10.1045/',
-		  '10.1096/', '10.1016/j.heliyon');
+		  '10.1096/', '10.1016/j.heliyon'];
 
