@@ -296,7 +296,7 @@ function sanitize_doi(string $doi) : string {
   $doi = str_replace(HTML_ENCODE_DOI, HTML_DECODE_DOI, trim(urldecode($doi)));
   if ($pos = (int) strrpos($doi, '.')) {
    $extension = (string) substr($doi, $pos);
-   if (in_array(strtolower($extension), array('.htm', '.html', '.jpg', '.jpeg', '.pdf', '.png', '.xml', '.full'), TRUE)) {
+   if (in_array(strtolower($extension), ['.htm', '.html', '.jpg', '.jpeg', '.pdf', '.png', '.xml', '.full'], TRUE)) {
       $doi = (string) substr($doi, 0, $pos);
    }
   }
@@ -314,7 +314,7 @@ function sanitize_doi(string $doi) : string {
   }
   if ($pos = (int) strrpos($doi, '/')) {
    $extension = (string) substr($doi, $pos);
-   if (in_array(strtolower($extension), array('/abstract', '/full', '/pdf', '/epdf', '/asset/', '/summary', '/short', '/meta', '/html', '/'), TRUE)) {
+   if (in_array(strtolower($extension), ['/abstract', '/full', '/pdf', '/epdf', '/asset/', '/summary', '/short', '/meta', '/html', '/'], TRUE)) {
       $doi = (string) substr($doi, 0, $pos);
    }
   }
@@ -361,7 +361,7 @@ function extract_doi(string $text) : array {
     $doi_candidate = sanitize_doi($doi);
     while (preg_match(REGEXP_DOI, $doi_candidate) && !doi_works($doi_candidate)) {
       $last_delimiter = 0;
-      foreach (array('/', '.', '#', '?') as $delimiter) {
+      foreach (['/', '.', '#', '?')] as $delimiter) {
 	$delimiter_position = (int) strrpos($doi_candidate, $delimiter);
 	$last_delimiter = ($delimiter_position > $last_delimiter) ? $delimiter_position : $last_delimiter;
       }
@@ -371,13 +371,13 @@ function extract_doi(string $text) : array {
     if (!doi_works($doi) && !doi_works(sanitize_doi($doi))) { // Reject URLS like ...../25.10.2015/2137303/default.htm
       if (preg_match('~^10\.([12]\d{3})~', $doi, $new_match)) {
 	if (preg_match("~[0-3][0-9]\.10\." . $new_match[1] . "~", $text)) {
-	  return array('', '');
+	  return ['', ''];
 	}
       }
     }
-    return array($match[0], sanitize_doi($doi));
+    return [$match[0], sanitize_doi($doi)];
   }
-  return array('', '');
+  return ['', ''];
 }
 
 // ============================================= String/Text functions ======================================
@@ -426,21 +426,21 @@ function wikify_external_text(string $title) : string {
   $title = safe_preg_replace('~[\*]$~', '', $title);
   $title = title_capitalization($title, TRUE);
 
-  $htmlBraces  = array("&lt;", "&gt;");
-  $angleBraces = array("<", ">");
+  $htmlBraces  = ["&lt;", "&gt;"];
+  $angleBraces = ["<", ">"];
   $title = str_ireplace($htmlBraces, $angleBraces, $title);
 
-  $originalTags = array('<title>', '</title>', '</ title>', 'From the Cover: ');
-  $wikiTags = array('','','','');
+  $originalTags = ['<title>', '</title>', '</ title>', 'From the Cover: '];
+  $wikiTags = ['','','',''];
   $title = str_ireplace($originalTags, $wikiTags, $title);
-  $originalTags = array('<inf>', '</inf>');
-  $wikiTags = array('<sub>', '</sub>');
+  $originalTags = ['<inf>', '</inf>'];
+  $wikiTags = ['<sub>', '</sub>'];
   $title = str_ireplace($originalTags, $wikiTags, $title);
-  $originalTags = array('.<br>', '.</br>', '.</ br>', '.<p>', '.</p>', '.</ p>', '.<strong>', '.</strong>', '.</ strong>');
-  $wikiTags = array('. ','. ','. ','. ','. ','. ','. ','. ','. ');
+  $originalTags = ['.<br>', '.</br>', '.</ br>', '.<p>', '.</p>', '.</ p>', '.<strong>', '.</strong>', '.</ strong>'];
+  $wikiTags = ['. ','. ','. ','. ','. ','. ','. ','. ','. '];
   $title = str_ireplace($originalTags, $wikiTags, $title);
-  $originalTags = array('<br>', '</br>', '</ br>', '<p>', '</p>', '</ p>', '<strong>', '</strong>', '</ strong>');
-  $wikiTags = array('. ','. ','. ','. ','. ','. ', ' ',' ',' ');
+  $originalTags = ['<br>', '</br>', '</ br>', '<p>', '</p>', '</ p>', '<strong>', '</strong>', '</ strong>'];
+  $wikiTags = ['. ','. ','. ','. ','. ','. ', ' ',' ',' '];
   $title = trim(str_ireplace($originalTags, $wikiTags, $title));
   if (preg_match("~^\. (.+)$~", $title, $matches)) {
     $title = trim($matches[1]);
@@ -489,7 +489,7 @@ function wikify_external_text(string $title) : string {
     $title = str_replace($placeholder[$i], $replacement[$i], $title); // @phan-suppress-current-line PhanTypePossiblyInvalidDimOffset
   }
 
-  foreach (array('<msup>', '<msub>', '<mroot>', '<msubsup>', '<munderover>', '<mrow>', '<munder>', '<mtable>', '<mtr>', '<mtd>') as $mathy) {
+  foreach (['<msup>', '<msub>', '<mroot>', '<msubsup>', '<munderover>', '<mrow>', '<munder>', '<mtable>', '<mtr>', '<mtd>'] as $mathy) {
     if (strpos($title, $mathy) !== FALSE) {
       return '<nowiki>' . $title . '</nowiki>';
     }
@@ -562,17 +562,17 @@ function str_remove_irrelevant_bits(string $str) : string {
   $str = safe_preg_replace("~^the\s+~i", "", $str);  // Ignore leading "the" so "New York Times" == "The New York Times"
   $str = safe_preg_replace("~\s~u", ' ', $str);
   // punctuation
-  $str = str_replace(array('.', ',', ';', ': ', "…"), array(' ', ' ', ' ', ' ', ' '), $str);
-  $str = str_replace(array(':', '-', '&mdash;', '&ndash;', '—', '–'), array('', '', '', '', '', ''), $str);
-  $str = str_replace(array('   ', '  '), array(' ', ' '), $str);
+  $str = str_replace(['.', ',', ';', ': ', "…"], [' ', ' ', ' ', ' ', ' '], $str);
+  $str = str_replace([':', '-', '&mdash;', '&ndash;', '—', '–'], ['', '', '', '', '', ''], $str);
+  $str = str_replace(['   ', '  '], [' ', ' '], $str);
   $str = str_replace(" & ", " and ", $str);
   $str = str_replace(" / ", " and ", $str);
   $str = trim($str);
-  $str = str_ireplace(array('Proceedings', 'Proceeding', 'Symposium', 'Huffington ', 'the Journal of ', 'nytimes.com'   , '& '  , '(Clifton, N.J.)'),
-		      array('Proc',        'Proc',       'Sym',       'Huff ',       'journal of ',     'New York Times', 'and ', ''), $str);
-  $str = str_ireplace(array('<sub>', '<sup>', '<i>', '<b>', '</sub>', '</sup>', '</i>', '</b>', '<p>', '</p>', '<title>', '</title>'), '', $str);
-  $str = str_ireplace(array('SpringerVerlag', 'Springer Verlag Springer', 'Springer Verlag', 'Springer Springer'),
-		      array('Springer',       'Springer',                 'Springer',        'Springer'         ), $str);
+  $str = str_ireplace(['Proceedings', 'Proceeding', 'Symposium', 'Huffington ', 'the Journal of ', 'nytimes.com'   , '& '  , '(Clifton, N.J.)'],
+		      ['Proc',        'Proc',       'Sym',       'Huff ',       'journal of ',     'New York Times', 'and ', ''], $str);
+  $str = str_ireplace(['<sub>', '<sup>', '<i>', '<b>', '</sub>', '</sup>', '</i>', '</b>', '<p>', '</p>', '<title>', '</title>'], '', $str);
+  $str = str_ireplace(['SpringerVerlag', 'Springer Verlag Springer', 'Springer Verlag', 'Springer Springer'],
+		      ['Springer',       'Springer',                 'Springer',        'Springer'         ], $str);
   $str = straighten_quotes($str, TRUE);
   $str = str_replace("′","'", $str);
   $str = safe_preg_replace('~\(Incorporating .*\)$~i', '', $str);  // Physical Chemistry Chemical Physics (Incorporating Faraday Transactions)
@@ -602,7 +602,7 @@ function titles_are_similar(string $title1, string $title2) : bool {
 
 
 function de_wikify(string $string) : string {
-  return str_replace(Array("[", "]", "'''", "''", "&"), Array("", "", "'", "'", ""), preg_replace(Array("~<[^>]*>~", "~\&[\w\d]{2,7};~", "~\[\[[^\|\]]*\|([^\]]*)\]\]~"), Array("", "", "$1"),  $string));
+  return str_replace(["[", "]", "'''", "''", "&"], ["", "", "'", "'", "")], preg_replace(["~<[^>]*>~", "~\&[\w\d]{2,7};~", "~\[\[[^\|\]]*\|([^\]]*)\]\]~"], ["", "", "$1"],  $string));
 }
 
 function titles_are_dissimilar(string $inTitle, string $dbTitle) : bool {
@@ -685,7 +685,7 @@ function titles_simple(string $inTitle) : string {
 	$inTitle = straighten_quotes(mb_strtolower($inTitle), TRUE);
 	$inTitle2 = safe_preg_replace("~(?: |‐|−|-|—|–|â€™|â€”|â€“)~u", "", $inTitle);
 	if ($inTitle2 !== "") $inTitle = $inTitle2;
-	$inTitle = str_replace(array("\n", "\r", "\t", "&#8208;", ":", "&ndash;", "&mdash;", "&ndash", "&mdash"), "", $inTitle);
+	$inTitle = str_replace(["\n", "\r", "\t", "&#8208;", ":", "&ndash;", "&mdash;", "&ndash", "&mdash"], "", $inTitle);
 	// Retracted
 	$inTitle2 = safe_preg_replace("~\[RETRACTED\]~ui", "", $inTitle);
 	if ($inTitle2 !== "") $inTitle = $inTitle2;
@@ -694,7 +694,7 @@ function titles_simple(string $inTitle) : string {
 	$inTitle2 = safe_preg_replace("~RETRACTED~ui", "", $inTitle);
 	if ($inTitle2 !== "") $inTitle = $inTitle2;
 	// Drop normal quotes
-	$inTitle = str_replace(array("'", '"'), "", $inTitle);
+	$inTitle = str_replace(["'", '"'], "", $inTitle);
 	// Strip trailing periods
 	$inTitle = trim(rtrim($inTitle, '.'));
 	// &
@@ -770,7 +770,7 @@ function title_capitalization(string $in, bool $caps_after_punctuation) : string
   }
 
   if ($new_case === mb_strtoupper($new_case)
-     && mb_strlen(str_replace(array("[", "]"), "", trim($in))) > 6
+     && mb_strlen(str_replace(["[", "]"], "", trim($in))) > 6
      ) {
     // ALL CAPS to Title Case
     $new_case = mb_convert_case($new_case, MB_CASE_TITLE, "UTF-8");
@@ -1149,18 +1149,18 @@ function remove_comments(string $string) : string {
 
 /** @param array<string> $list
     @return array<string> **/
-function prior_parameters(string $par, array $list=array()) : array {
+function prior_parameters(string $par, array $list=[] ) : array {
   array_unshift($list, $par);
   if (preg_match('~(\D+)(\d+)~', $par, $match) && stripos($par, 's2cid') === FALSE) {
     $before = (string) ((int) $match[2] - 1);
     switch ($match[1]) {
       case 'first': case 'initials': case 'forename':
-	return array('last' . $match[2], 'surname' . $match[2], 'author' . $before);
+	return ['last' . $match[2], 'surname' . $match[2], 'author' . $before];
       case 'last': case 'surname': case 'author':
-	return array('first' . $before, 'forename' . $before, 'initials' . $before, 'author' . $before);
+	return ['first' . $before, 'forename' . $before, 'initials' . $before, 'author' . $before];
       default:
 	$base = $match[1] . $before;
-	return array_merge(FLATTENED_AUTHOR_PARAMETERS, array($base, $base . '-last', $base . '-first'));
+	return array_merge(FLATTENED_AUTHOR_PARAMETERS, [$base, $base . '-last', $base . '-first']);
     }
   }
   switch ($par) {
@@ -1218,11 +1218,12 @@ function equivalent_parameters(string $par) : array {
     case 'author': case 'authors': case 'author1': case 'last1':
       return FLATTENED_AUTHOR_PARAMETERS;
     case 'pmid': case 'pmc':
-      return array('pmc', 'pmid');
+      return ['pmc', 'pmid'];
     case 'page_range': case 'start_page': case 'end_page': # From doi_crossref
     case 'pages': case 'page':
-      return array('page_range', 'pages', 'page', 'end_page', 'start_page');
-    default: return array($par);
+      return ['page_range', 'pages', 'page', 'end_page', 'start_page'];
+    default:
+      return [$par];
   }
 }
 
@@ -1497,13 +1498,13 @@ function safe_preg_replace_callback(string $regex, callable $replace, string $ol
 }
 
 function wikifyURL(string $url) : string {
-   $in  = array(' '  , '"'  , "'"  , '<'  ,'>'   , '['  , ']'  , '{'  , '|'  , '}');
-   $out = array('%20', '%22', '%27', '%3C', '%3E', '%5B', '%5D', '%7B', '%7C', '%7D');
+   $in  = [' '  , '"'  , "'"  , '<'  ,'>'   , '['  , ']'  , '{'  , '|'  , '}'];
+   $out = ['%20', '%22', '%27', '%3C', '%3E', '%5B', '%5D', '%7B', '%7C', '%7D'];
    return str_replace($in, $out, $url);
 }
 
 function numberToRomanRepresentation(int $number) : string { // https://stackoverflow.com/questions/14994941/numbers-to-roman-numbers-with-php
-    $map = array('M' => 1000, 'CM' => 900, 'D' => 500, 'CD' => 400, 'C' => 100, 'XC' => 90, 'L' => 50, 'XL' => 40, 'X' => 10, 'IX' => 9, 'V' => 5, 'IV' => 4, 'I' => 1);
+    $map = ['M' => 1000, 'CM' => 900, 'D' => 500, 'CD' => 400, 'C' => 100, 'XC' => 90, 'L' => 50, 'XL' => 40, 'X' => 10, 'IX' => 9, 'V' => 5, 'IV' => 4, 'I' => 1];
     $returnValue = '';
     while ($number > 0) {
 	foreach ($map as $roman => $int) {
@@ -1584,7 +1585,7 @@ function normalize_google_books(string &$url, int &$removed_redundant, string &$
       $url = str_replace("+&,+", "+%26,+", $url);
       $url_parts = explode("&", str_replace("&&", "&", str_replace("?", "&", $url)));
       $url = "https://books.google.com/books?id=" . $gid[1];
-      $book_array = array();
+      $book_array = [];
       foreach ($url_parts as $part) {
 	$part_start = explode("=", $part, 2);
 	if ($part_start[0] === 'text')     $part_start[0] = 'dq';
@@ -1788,7 +1789,7 @@ function doi_is_bad (string $doi) : bool {
 
 /** @return array<string> **/
 function get_possible_dois(string $doi) : array {
-    $trial = array();
+    $trial = [];
     $trial[] = $doi;
     // DOI not correctly formatted
     switch (substr($doi, -1)) {
@@ -1934,7 +1935,7 @@ function get_possible_dois(string $doi) : array {
       $changed = FALSE;
       if ($pos = strrpos($try, '.')) {
        $extension = substr($try, $pos);
-       if (in_array(strtolower($extension), array('.htm', '.html', '.jpg', '.jpeg', '.pdf', '.png', '.xml', '.full'), TRUE)) {
+       if (in_array(strtolower($extension), ['.htm', '.html', '.jpg', '.jpeg', '.pdf', '.png', '.xml', '.full'], TRUE)) {
 	 $try = substr($try, 0, $pos);
 	 $trial[] = $try;
 	 $changed = TRUE;
@@ -1958,7 +1959,7 @@ function get_possible_dois(string $doi) : array {
       }
       if ($pos = strrpos($try, '/')) {
        $extension = substr($try, $pos);
-       if (in_array(strtolower($extension), array('/abstract', '/full', '/pdf', '/epdf', '/asset/', '/summary', '/short'), TRUE)) {
+       if (in_array(strtolower($extension), ['/abstract', '/full', '/pdf', '/epdf', '/asset/', '/summary', '/short'], TRUE)) {
 	 $try = substr($try, 0, $pos);
 	 $trial[] = $try;
 	 $changed = TRUE;
@@ -2461,8 +2462,8 @@ function conference_doi(string $doi) : bool {
 
 function clean_dates(string $input) : string { // See https://en.wikipedia.org/wiki/Help:CS1_errors#bad_date
     if ($input === '0001-11-30') return '';
-    $days_of_week = array('Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday', 'Mony', 'Tues', 'Wed', 'Thurs', 'Fri', 'Sat', 'Sun');
-    $months_seasons = array('January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December', 'Winter', 'Spring', 'Summer', 'Fall', 'Autumn');
+    $days_of_week = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday', 'Mony', 'Tues', 'Wed', 'Thurs', 'Fri', 'Sat', 'Sun'];
+    $months_seasons = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December', 'Winter', 'Spring', 'Summer', 'Fall', 'Autumn'];
     $input = str_ireplace($months_seasons, $months_seasons, $input); // capitalization
     if (preg_match('~^(\d{4})[\-\/](\d{4})$~', $input, $matches)) { // Hyphen or slash in year range (use en dash)
       return $matches[1] . '–' . $matches[2];
@@ -2532,9 +2533,9 @@ function get_headers_array(string $url) : false|array {
   // Allow cheap journals to work
   static $context_insecure;
   if (!isset($context_insecure)) {
-    $context_insecure = stream_context_create(array(
+    $context_insecure = stream_context_create([
       'ssl' => ['verify_peer' => FALSE, 'verify_peer_name' => FALSE, 'allow_self_signed' => TRUE, 'security_level' => 0, 'verify_depth' => 0],
-      'http' => ['ignore_errors' => TRUE, 'max_redirects' => 40, 'timeout' => BOT_HTTP_TIMEOUT * 1.0, 'follow_location' => 1, "user_agent" => BOT_USER_AGENT]));
+      'http' => ['ignore_errors' => TRUE, 'max_redirects' => 40, 'timeout' => BOT_HTTP_TIMEOUT * 1.0, 'follow_location' => 1, "user_agent" => BOT_USER_AGENT]]);
   }
   set_time_limit(120);
   if ($last_url === $url) {
