@@ -2,7 +2,7 @@
 declare(strict_types=1);
 set_time_limit(120);
 
-@session_start(['read_and_close' => TRUE]);
+@session_start(['read_and_close' => true]);
 
 require_once 'html_headers.php';
 
@@ -26,7 +26,7 @@ if ($page_name === '') {
   report_warning('Nothing requested on webform -- OR -- page name got lost during initial authorization ');
   bot_html_footer();
   exit();
-} elseif (substr($page_name, 0, 5) !== 'User:' && !in_array($api->get_the_user(), ['Headbomb', 'AManWithNoPlan'], TRUE)) { // Do not let people run willy-nilly
+} elseif (substr($page_name, 0, 5) !== 'User:' && !in_array($api->get_the_user(), ['Headbomb', 'AManWithNoPlan'], true)) { // Do not let people run willy-nilly
   report_warning('API only intended for User generated pages for fixing specific issues ');
   bot_html_footer();
   exit();
@@ -42,9 +42,9 @@ if ($json === '') {
   bot_html_footer();
   exit();
 }
-$array = @json_decode($json, TRUE);
+$array = @json_decode($json, true);
 unset($json);
-if ($array === FALSE || !isset($array['parse']['links']) || !is_array($array['parse']['links'])) {
+if ($array === false || !isset($array['parse']['links']) || !is_array($array['parse']['links'])) {
   report_warning(' Error interpreting page list - perhaps page requested does not even exist');
   bot_html_footer();
   exit();
@@ -56,7 +56,7 @@ foreach($links as $link) {
     if (isset($link['exists']) && ($link['ns'] === 0 || $link['ns'] === 118)) {  // normal and draft articles only
 	$linked_page = (string) $link['*'];
 	$linked_page = str_replace(' ', '_', $linked_page);
-	if(!in_array($linked_page, AVOIDED_LINKS, TRUE) && stripos($linked_page, 'disambiguation') === FALSE) {
+	if(!in_array($linked_page, AVOIDED_LINKS, true) && stripos($linked_page, 'disambiguation') === false) {
 	    $pages_in_category[] = $linked_page;
 	}
     }
