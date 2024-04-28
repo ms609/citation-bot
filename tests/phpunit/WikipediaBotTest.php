@@ -53,31 +53,31 @@ require_once __DIR__ . '/../testBaseClass.php';
 
     public function testIsValidUser1() : void {
       $result = WikipediaBot::is_valid_user('Smith609');
-      $this->assertSame(TRUE, $result);
+      $this->assertTrue($result);
     }
     public function testIsValidUser2() : void {
       $result = WikipediaBot::is_valid_user('Stanlha'); // Random user who exists but does not have page as of Nov 2017
-      $this->assertSame(TRUE, $result);
+      $this->assertTrue($result);
     }
     public function testIsValidUser3() : void {
       $result = WikipediaBot::is_valid_user("David(Owner, Founder, Creator and Lead Developer)"); // Random user who has a name with funky characters
-      $this->assertSame(TRUE, $result);
+      $this->assertTrue($result);
     }
     public function testIsINValidUser() : void {
       $result = WikipediaBot::is_valid_user('Not_a_valid_user_at_Dec_2017');
-      $this->assertSame(FALSE, $result);
+      $this->assertFalse($result);
     }
     public function testIsIPUser() : void {
       $result = WikipediaBot::is_valid_user('178.16.5.186'); // IP address with talk page
-      $this->assertSame(FALSE, $result);
+      $this->assertFalse($result);
     }
     public function testIsIP6User() : void {
       $result = WikipediaBot::is_valid_user('2602:306:bc8a:21e0:f0d4:b9dc:c050:2b2c'); // IP6 address with talk page
-      $this->assertSame(FALSE, $result);
+      $this->assertFalse($result);
     }
     public function testIsBlockedUser() : void {
       $result = WikipediaBot::is_valid_user('RickK'); // BLOCKED
-      $this->assertSame(FALSE, $result);
+      $this->assertFalse($result);
     }
     public function testGetLinks() : void {
       $json = WikipediaBot::get_links('Covid Watch');
