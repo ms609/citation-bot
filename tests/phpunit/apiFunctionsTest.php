@@ -510,7 +510,7 @@ final class apiFunctionsTest extends testBaseClass {
   [
     0 => 'astro-ph',
     1 => 'hep-ph',
-  ]),
+  ],
    'author' => [0 => 'Brandenberger, Robert H.'],
    'doctype' => 'eprint',
    'identifier' =>
@@ -523,7 +523,7 @@ final class apiFunctionsTest extends testBaseClass {
    'pubdate' => '1995-09-00',
    'title' => [0 => 'Formation of Structure in the Universe'],
    'year' => '1995',
-]);
+];
      process_bibcode_data($template, $results);
      $this->assertSame('1995', $template->get2('date'));
      $this->assertSame('astro-ph/9508159',  $template->get2('arxiv') . $template->get2('eprint'));
