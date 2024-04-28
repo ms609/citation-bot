@@ -17,12 +17,12 @@ require_once __DIR__ . '/../testBaseClass.php';
 
     public function testFillCache() : void {
       $this->fill_cache();
-      $this->assertTrue(TRUE);
+      $this->assertTrue(true);
     }
 
     public function testCoverageFixer() : void {
        WikipediaBot::make_ch();
-       $this->assertTrue(TRUE);
+       $this->assertTrue(true);
     }
 
     public function testCategoryMembers() : void {
@@ -85,7 +85,7 @@ require_once __DIR__ . '/../testBaseClass.php';
     }
 
     public function test_ret_okay1() : void {
-      $this->assertFalse(WikipediaBot::ret_okay(NULL));
+      $this->assertFalse(WikipediaBot::ret_okay(null));
     }
     public function test_ret_okay2() : void {
       $response = (object) ['error' => (object) ['info' =>  'Hello, The database has been automatically locked so give up']];
@@ -106,7 +106,7 @@ require_once __DIR__ . '/../testBaseClass.php';
     }
 
     public function test_response2page1() : void {
-      $this->assertNull(WikipediaBot::response2page(NULL));
+      $this->assertNull(WikipediaBot::response2page(null));
     }
     public function test_response2page2() : void {
       $response = (object) ['warnings' => (object)['prop' =>  (object) ['*' => 'this is a prop']]];
@@ -145,7 +145,7 @@ require_once __DIR__ . '/../testBaseClass.php';
     }
 
    public function test_resultsGood1() : void {
-      $result = NULL;
+      $result = null;
       $this->assertFalse(WikipediaBot::resultsGood($result));
    }
    public function test_resultsGood2() : void {
