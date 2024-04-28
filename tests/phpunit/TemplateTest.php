@@ -1188,8 +1188,8 @@ final class TemplateTest extends testBaseClass {
   }
 
   public function testPublisherRemoval() : void {
-    foreach (array('Google News Archive', '[[Google]]', 'Google News',
-		   'Google.com', '[[Google News]]') as $publisher) {
+    foreach (['Google News Archive', '[[Google]]', 'Google News',
+		   'Google.com', '[[Google News]]'] as $publisher) {
       $text = "{{cite journal | publisher = $publisher|url=http://google/}}";
       $prepared = $this->prepare_citation($text);
       $this->assertNull($prepared->get2('publisher'));
@@ -3925,10 +3925,10 @@ EP - 999 }}';
     $template->add('title', 'Thus');
     $this->assertNotNull($template->get2('citation_bot_placeholder_bare_url'));
     $array = $template->modifications();
-    $expected =       [ 'modifications' =>  array ( 0 => 'title',  ),
-			'additions' =>  array ( 0 => 'title',  ),
-			'deletions' =>  array ( 0 => 'citation_bot_placeholder_bare_url', ),
-			'changeonly' => array (  ),
+    $expected =       [ 'modifications' =>  [0 => 'title',  ],
+			'additions' =>  [0 => 'title',  ],
+			'deletions' =>  [0 => 'citation_bot_placeholder_bare_url', ],
+			'changeonly' => [],
 			'dashes' => false,
 			'names' => false];
     $this->assertEqualsCanonicalizing($expected, $array);
@@ -3939,7 +3939,7 @@ EP - 999 }}';
     $text = '{{new cambridge medieval history|ed10=That Guy}}';
     $template = $this->prepare_citation($text);
     $array = $template->modifications();
-    $expected = array ('modifications' => array ( ), 'additions' => array ( ), 'deletions' => array ( ), 'changeonly' => array ( ), 'dashes' => false, 'names' => false, );
+    $expected = ['modifications' => [], 'additions' => [], 'deletions' => [], 'changeonly' => [], 'dashes' => false, 'names' => false];
     $this->assertEqualsCanonicalizing($expected, $array);
   }
 
