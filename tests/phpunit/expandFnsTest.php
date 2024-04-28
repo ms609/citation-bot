@@ -430,7 +430,7 @@ final class expandFnsTest extends testBaseClass {
 	  strpos($doi, '10.1601/tx.') === 0 ||
 	  strpos($doi, '10.1601/nm.') === 0 ||
 	  strpos($doi, '10.1601/ex.') === 0) {
-        if (in_array($doi, array('10.1601/ex.9753', '10.1601/nm.10037', '10.1601/tx.11311', '10.5353/th_b3198302'), TRUE)) {
+        if (in_array($doi, ['10.1601/ex.9753', '10.1601/nm.10037', '10.1601/tx.11311', '10.5353/th_b3198302'], TRUE)) {
           $works = doi_works($doi);
 	} else {
 	  $works = FALSE;
@@ -601,7 +601,7 @@ final class expandFnsTest extends testBaseClass {
   public function testGoogleBookNormalize0() : void {
     $removed_redundant = 0;
     $removed_parts = '';
-    $gid = array();
+    $gid = [];
     $gid[1] = 'm8W2AgAAQBAJ';
     $url_in  = 'https://books.google.com/books?id=m8W2AgAAQBAJ&bsq=1234';
     $url_out = 'https://books.google.com/books?id=m8W2AgAAQBAJ&q=1234';
@@ -612,7 +612,7 @@ final class expandFnsTest extends testBaseClass {
   public function testGoogleBookNormalize1() : void {
     $removed_redundant = 0;
     $removed_parts = '';
-    $gid = array();
+    $gid = [];
     $gid[1] = 'm8W2AgAAQBAJ';
     $url_in  = 'https://books.google.com/books?id=m8W2AgAAQBAJ&bsq=1234&q=abc';
     $url_out = 'https://books.google.com/books?id=m8W2AgAAQBAJ&q=abc';
@@ -623,7 +623,7 @@ final class expandFnsTest extends testBaseClass {
   public function testGoogleBookNormalize2() : void {
     $removed_redundant = 0;
     $removed_parts = '';
-    $gid = array();
+    $gid = [];
     $gid[1] = 'm8W2AgAAQBAJ';
     $url_in  = 'https://books.google.com/books?id=m8W2AgAAQBAJ#PPA333,M1';
     $url_out = 'https://books.google.com/books?id=m8W2AgAAQBAJ&pg=PA333';
@@ -634,7 +634,7 @@ final class expandFnsTest extends testBaseClass {
   public function testGoogleBookNormalize3() : void {
     $removed_redundant = 0;
     $removed_parts = '';
-    $gid = array();
+    $gid = [];
     $gid[1] = 'm8W2AgAAQBAJ';
     $url_in  = 'https://books.google.com/books?id=m8W2AgAAQBAJ#PP333,M1';
     $url_out = 'https://books.google.com/books?id=m8W2AgAAQBAJ&pg=PP333';
@@ -645,7 +645,7 @@ final class expandFnsTest extends testBaseClass {
   public function testGoogleBookNormalize4() : void {
     $removed_redundant = 0;
     $removed_parts = '';
-    $gid = array();
+    $gid = [];
     $gid[1] = 'm8W2AgAAQBAJ';
     $url_in  = 'https://books.google.com/books?id=m8W2AgAAQBAJ#PPT333,M1';
     $url_out = 'https://books.google.com/books?id=m8W2AgAAQBAJ&pg=PT333';
@@ -656,7 +656,7 @@ final class expandFnsTest extends testBaseClass {
   public function testGoogleBookNormalize5() : void {
     $removed_redundant = 0;
     $removed_parts = '';
-    $gid = array();
+    $gid = [];
     $gid[1] = 'm8W2AgAAQBAJ';
     $url_in  = 'https://books.google.com/books?id=m8W2AgAAQBAJ#PR333,M1';
     $url_out = 'https://books.google.com/books?id=m8W2AgAAQBAJ&pg=PR333';

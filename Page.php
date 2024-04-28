@@ -20,7 +20,7 @@ class Page {
   protected string $text = '';
   protected string $title = '';
   /** @var array<mixed> $modifications **/
-  protected array $modifications = array();
+  protected array $modifications = [];
   protected int $date_style = DATES_WHATEVER;
   protected int $name_list_style = NAME_LIST_STYLE_DEFAULT;
   protected string $read_at = '';
@@ -137,12 +137,12 @@ class Page {
     return $this->text;
   }
   // $identifier: parameter to send to api_function, e.g. "pmid"
-  // $templates: Array of pointers to the templates
+  // $templates: array of pointers to the templates
 /**
   @param array<Template> $templates
 **/
   public function expand_templates_from_identifier(string $identifier, array &$templates) : void { // Pointer to save memory
-    $ids = array();
+    $ids = [];
     set_time_limit(120);
     switch ($identifier) {
       case 'pmid':
@@ -296,13 +296,13 @@ class Page {
       }
     }
     /** @var array<Template> $our_templates */
-    $our_templates = array();
+    $our_templates = [];
     /** @var array<Template> $our_templates_slight */
-    $our_templates_slight = array();
+    $our_templates_slight = [];
     /** @var array<Template> $our_templates_conferences */
-    $our_templates_conferences = array();
+    $our_templates_conferences = [];
     /** @var array<Template> $our_templates_ieee */
-    $our_templates_ieee = array();
+    $our_templates_ieee = [];
     report_phase('Remedial work to prepare citations');
     foreach ($all_templates as $this_template) {
       set_time_limit(120);
@@ -382,7 +382,7 @@ class Page {
 	$the_url = $this_template->get('url');
 	$new_url = str_ireplace(['nytimes.com', 'mdpi.com', 'frontiersin.org', 'plos.org', 'sciencedirect.com', 'onlinelibrary.wiley.com'], '', $the_url); // TODO - add more "blessed" hosts that probably should not be cite news
 	if (($the_url !== $new_url) || $this_template->blank('title') || ($this_template->has('via') && $this_template->blank(WORK_ALIASES))) {
-	   $array_of_template = array($this_template);
+	   $array_of_template = [$this_template];
 	   $this->expand_templates_from_identifier('url', $array_of_template);
 	}
       }
@@ -486,7 +486,7 @@ class Page {
 
     $this->replace_object($all_templates);
     // remove circular memory reference that makes garbage collection harder and reset
-    Template::$all_templates = array();
+    Template::$all_templates = [];
     Template::$date_style = DATES_WHATEVER;
     Template::$name_list_style = NAME_LIST_STYLE_DEFAULT;
     unset($all_templates);
@@ -513,14 +513,14 @@ class Page {
 
     // we often just fix Journal caps, so must be case sensitive compare
     // Avoid minor edits - gadget API will make these changes, since it does not check return code
-    $caps_ok = array('isbn', '{{jstor', '{{youtube');
-    $last_first_in  = array(' last=',  ' last =',  '|last=',  '|last =',  ' first=',  ' first =',  '|first=',  '|first =', 'cite newspaper', 'Cite newspaper', '| format=PDF ', '| format = PDF ', '|format=PDF ', '|format = PDF ', '| format=PDF', '| format = PDF', '|format=PDF', '|format = PDF', 'Cite ', 'cite ', 'ubscription required');
-    $last_first_out = array(' last1=', ' last1 =', '|last1=', '|last1 =', ' first1=', ' first1 =', '|first1=', '|first1 =','cite news',      'Cite news',      '',              '',                '',              '',              '',             '',               '',            '',              'Cite' , 'cite' , 'ubscription');
+    $caps_ok = ['isbn', '{{jstor', '{{youtube'];
+    $last_first_in  = [' last=',  ' last =',  '|last=',  '|last =',  ' first=',  ' first =',  '|first=',  '|first =', 'cite newspaper', 'Cite newspaper', '| format=PDF ', '| format = PDF ', '|format=PDF ', '|format = PDF ', '| format=PDF', '| format = PDF', '|format=PDF', '|format = PDF', 'Cite ', 'cite ', 'ubscription required'];
+    $last_first_out = [' last1=', ' last1 =', '|last1=', '|last1 =', ' first1=', ' first1 =', '|first1=', '|first1 =','cite news',      'Cite news',      '',              '',                '',              '',              '',             '',               '',            '',              'Cite' , 'cite' , 'ubscription'];
     // @codeCoverageIgnoreStart
     if ((WIKI_ROOT === 'https://simple.wikipedia.org/w/index.php') || (stripos($this->title, "draft:") === 0)) { // Backload clean-up
-       $caps_ok = array();
-       $last_first_in  = array();
-       $last_first_out = array();
+       $caps_ok = [];
+       $last_first_in  = [];
+       $last_first_out = [];
     } // @codeCoverageIgnoreEnd
     return strcmp(str_replace($last_first_in, $last_first_out, str_ireplace($caps_ok, $caps_ok, $this->text)),
 		  str_replace($last_first_in, $last_first_out, str_ireplace($caps_ok, $caps_ok, $this->start_text))) !== 0;
@@ -638,7 +638,7 @@ class Page {
 
   public function write(WikipediaBot $api, string $edit_summary_end = '') : bool {
     /** @var array<bool> $failures */
-    static $failures = array(FALSE, FALSE, FALSE, FALSE, FALSE);
+    static $failures = [FALSE, FALSE, FALSE, FALSE, FALSE];
     if ($this->allow_bots()) {
       $failures[0] = $failures[1];
       $failures[1] = $failures[2];
@@ -690,7 +690,7 @@ class Page {
     /** @var bool $treat_identical_separately */
     $treat_identical_separately = $class::TREAT_IDENTICAL_SEPARATELY;
     /** @var array<WikiThings|Template> */
-    $objects = array();
+    $objects = [];
 
     if (count($regexp_in) > 1) { // Loop over array four times, since sometimes more complex regex fails and starting over works
       foreach ($regexp_in as $regexp) {
@@ -848,10 +848,10 @@ class Page {
   }
 
   protected function construct_modifications_array() : void {
-    $this->modifications['changeonly'] = array();
-    $this->modifications['additions'] = array();
-    $this->modifications['deletions'] = array();
-    $this->modifications['modifications'] = array();
+    $this->modifications['changeonly'] = [];
+    $this->modifications['additions'] = [];
+    $this->modifications['deletions'] = [];
+    $this->modifications['modifications'] = [];
     $this->modifications['dashes'] = FALSE;
     $this->modifications['names'] = FALSE;
   }

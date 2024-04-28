@@ -348,7 +348,7 @@ const ITALICS_LIST =
 //  All real ones need pipe on end
 //  YOU MUST ESCAPE (.|) and other FUNNY Characters
 
-const CAMEL_CASE = array('DeSoto', 'PubChem', 'BitTorrent', 'Al2O3', 'NiMo', 'CuZn', 'BxCyNz', 'ChemCam',
+const CAMEL_CASE =      ['DeSoto', 'PubChem', 'BitTorrent', 'Al2O3', 'NiMo', 'CuZn', 'BxCyNz', 'ChemCam',
 			 'StatsRef', 'BuzzFeed', 'DeBenedetti', 'DeVries', 'TallyHo', 'JngJ', 'ENaCs',
 			 'MensRights', 'McCarthy', 'AmpliSeq', 'nRepeat', 'OpenStreetMap', 'DonThorsen',
 			 'arXiv', 'eBay', 'aRMadillo', 'HowNutsAreTheDutch', 'Liberalism', 'HoeGekIsNL',
@@ -434,7 +434,7 @@ const CAMEL_CASE = array('DeSoto', 'PubChem', 'BitTorrent', 'Al2O3', 'NiMo', 'Cu
 			 'ReFocus:', 'FusionCatcher', 'cFos', 'ReOrienting', 'NatureServe', 'qNirvana',
 			 'DenitrificationAnammox', 'NomCom', 'ReScript', 'NanoBiotechnology', 'PhotonIcs',
 			 'NeuroPsychopharmacotherapy', 'eFieldnotes', 'rNying-ma', 'MiniVess',
-		       );
+		       ];
 
 const ITALICS_HARDCODE_IN  = ["The Myth ofPiers Plowman", "BioelectromagnetismPrinciples and Applications", "Practice inThe Nice Valour",
 	     "Tweeting theJihad: Social Media", " of SectarianismCommunity", " for WonderNineteenth Century Travel ",

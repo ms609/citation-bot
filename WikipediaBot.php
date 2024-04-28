@@ -197,7 +197,7 @@ final class WikipediaBot {
 	report_error('unable to get user tokens');
       }
     }                              // @codeCoverageIgnoreEnd
-    $submit_vars = array(
+    $submit_vars = [
 	"action" => "edit",
 	"title" => $page,
 	"text" => $text,
@@ -209,7 +209,7 @@ final class WikipediaBot {
 	"nocreate" => "1",
 	"watchlist" => "nochange",
 	'token' => $auth_token,
-    );
+    ];
     $result = $this->fetch($submit_vars);
 
     if (!self::resultsGood($result)) return FALSE;
@@ -245,7 +245,7 @@ final class WikipediaBot {
     }
 
     if (!isset($response->query->pages)) {
-      report_warning("Pages array is non-existent.  Aborting.");
+      report_warning("Pages list is non-existent.  Aborting.");
       return NULL;
     }
     $myPage = self::reset($response->query->pages);
@@ -265,7 +265,7 @@ final class WikipediaBot {
     if (isset($result->error)) {
       report_warning("Write error: " .
 		    echoable(mb_strtoupper($result->error->code)) . ": " .
-		    str_replace(array("You ", " have "), array("This bot ", " has "),
+		    str_replace(["You ", " have "], ["This bot ", " has "],
 		    echoable((string) @$result->error->info)));
       return FALSE;
     } elseif (isset($result->edit->captcha)) {  // Bot account has flags set on en.wikipedia.org and simple.wikipedia.org to avoid captchas
@@ -320,7 +320,7 @@ final class WikipediaBot {
 	}
       } else {
 	report_warning('Error reading API for category ' . echoable($cat) . "\n\n");   // @codeCoverageIgnore
-	return array();                                                                // @codeCoverageIgnore
+	return [];                                                                     // @codeCoverageIgnore
       }
       $vars["cmcontinue"] = isset($res->continue) ? $res->continue->cmcontinue : FALSE;
     } while ($vars["cmcontinue"]);
@@ -452,7 +452,7 @@ final class WikipediaBot {
       $response = self::QueryAPI($query);
     }
     if ($response === '') return FALSE;
-    $response = str_replace(array("\r", "\n"), '', $response);  // paranoid
+    $response = str_replace(["\r", "\n"], '', $response);  // paranoid
     if (strpos($response, '"invalid"') !== FALSE) return FALSE; // IP Address and similar stuff
     if (strpos($response, '"blockid"') !== FALSE) return FALSE; // Valid but blocked
     if (strpos($response, '"missing"') !== FALSE) return FALSE; // No such account

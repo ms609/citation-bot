@@ -1,7 +1,7 @@
 <?php
 declare(strict_types=1);
 
-const COMMON_MISTAKES = array ( // Common mistakes that aren't picked up by the levenshtein approach.  And obvious ones to reduce levenshtein dependence
+const COMMON_MISTAKES = [ // Common mistakes that aren't picked up by the levenshtein approach.  And obvious ones to reduce levenshtein dependence
   "ASIN"            =>  "asin",
   "EISSN"           =>  "eissn",
   "HDL"             =>  "hdl",
@@ -569,19 +569,19 @@ const COMMON_MISTAKES = array ( // Common mistakes that aren't picked up by the 
   "access-datee" => "access-date",
   "url-staus" => "url-status",
   "translated-title" => "trans-title",
-); // Lots of stuff that just existed
+]; // Lots of stuff that just existed
 
-const COMMON_MISTAKES_TOOL = array(
+const COMMON_MISTAKES_TOOL = [
   "accessdate"      =>  "access-date",
   "archivedate"     =>  "archive-date",
   "archiveurl"      =>  "archive-url",
   "authorlink"      =>  "author-link",
   "origyear"        =>  "orig-date",
   "origdate"        =>  "orig-date",
-  "airdate"         =>  "air-date");
+  "airdate"         =>  "air-date"];
 
     // Find these with this on all the various types https://en.wikipedia.org/w/index.php?title=Special:WhatLinksHere/Template:Citation&hidelinks=1&hidetrans=1
-const TEMPLATE_CONVERSIONS = array(
+const TEMPLATE_CONVERSIONS = [
 	       ['cite', 'citation'],
 	       ['Cite', 'Citation'],
 	       ['citebook', 'cite book'],
@@ -957,4 +957,4 @@ const TEMPLATE_CONVERSIONS = array(
 	       ['Registration-required', 'Registration required'],
 	       ['registration needed', 'registration required'],
 	       ['Registration needed', 'Registration required'],
-	       );
+	       ];
