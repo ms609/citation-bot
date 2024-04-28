@@ -13,7 +13,7 @@ final class TestPage extends Page {
 			   'expand_via_zotero', 'reference_to_template', 'fill_cache', '']; // Some of these should never occur
     $trace = debug_backtrace();
     $i = 0;
-    while (in_array($trace[$i]['function'], $bad_functions, TRUE)) {
+    while (in_array($trace[$i]['function'], $bad_functions, true)) {
        $i++; // Climb stack to find useful name
     }
     $this->title = $trace[$i]['function'];
@@ -42,15 +42,15 @@ abstract class testBaseClass extends PHPUnit\Framework\TestCase {
     parent::__construct();
 
     if (!PHP_ADSABSAPIKEY) {
-       $this->testing_skip_bibcode = TRUE;
+       $this->testing_skip_bibcode = true;
     } else {
-       $this->testing_skip_bibcode = FALSE;
+       $this->testing_skip_bibcode = false;
     }
     if (!getenv('PHP_OAUTH_CONSUMER_TOKEN') || !getenv('PHP_OAUTH_CONSUMER_SECRET') ||
 	!getenv('PHP_OAUTH_ACCESS_TOKEN')   || !getenv('PHP_OAUTH_ACCESS_SECRET')) {
-       $this->testing_skip_wiki = TRUE;
+       $this->testing_skip_wiki = true;
     } else {
-       $this->testing_skip_wiki = FALSE;
+       $this->testing_skip_wiki = false;
     }
 
     AdsAbsControl::small_give_up();
@@ -65,7 +65,7 @@ abstract class testBaseClass extends PHPUnit\Framework\TestCase {
       $this->flush();
       echo 'A'; // For API, since W is taken
       $this->flush();
-      $this->assertNull(NULL);
+      $this->assertNull(null);
     } else {
       $function();
     }
@@ -81,7 +81,7 @@ abstract class testBaseClass extends PHPUnit\Framework\TestCase {
       AdsAbsControl::big_give_up();
       AdsAbsControl::small_back_on();
       AdsAbsControl::small_give_up();
-      $this->assertNull(NULL);
+      $this->assertNull(null);
     } else {
       try {
 	AdsAbsControl::big_back_on();
